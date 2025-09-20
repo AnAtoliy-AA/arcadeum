@@ -37,3 +37,12 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+.idea/
+android/app/build/
+android/.gradle/
+
+ios/build/
+ios/Pods/
+ios/*.xcworkspace
+ios/Podfile.lock

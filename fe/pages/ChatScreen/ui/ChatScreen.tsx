@@ -5,24 +5,14 @@ import { useLocalSearchParams } from 'expo-router';
 import { socket, useSocket } from '@/hooks/useSocket';
 import uuid from 'react-native-uuid';
 import { ThemedText } from '@/components/ThemedText';
-
-interface Message {
-  _id: string;
-  content: string;
-  timestamp: Date;
-  senderId: string;
-}
+import { ChatParams, Message } from '../model/types';
 
 export default function ChatScreen() {
-  const { chatId, userId, receiverId } = useLocalSearchParams<{
-    chatId: string;
-    userId: string;
-    receiverId: string;
-  }>();
+  const { chatId, userId, receiverId } = useLocalSearchParams<ChatParams>();
   const [messages, setMessages] = useState<IMessage[]>([]);
 
   useEffect(() => {
-    socket.emit('joinChat', { chatId, user1: userId, user2: receiverId });
+    socket.emit('joinChat', { chatId, users: [userId, receiverId] });
   }, [chatId, userId, receiverId]);
 
   useSocket('chatMessages', (loadedMessages: Message[]) => {
@@ -66,23 +56,48 @@ export default function ChatScreen() {
 
   // On socket confirmation
   useSocket('message', (confirmedMessage) => {
-    setMessages((prev) =>
-      prev.map((msg) =>
-        msg.text === confirmedMessage.content &&
-        (msg.createdAt instanceof Date ? msg.createdAt : new Date(msg.createdAt)).getTime() === new Date(confirmedMessage.timestamp).getTime()
-          ? { 
-              _id: confirmedMessage._id, // use real MongoDB ID
-              text: confirmedMessage.content,
-              createdAt: new Date(confirmedMessage.timestamp),
-              user: {
-                _id: confirmedMessage.senderId,
-                name: confirmedMessage.senderId,
-              },
-              pending: false
-            }
-          : msg
-      )
-    );
+    setMessages((prev) => {
+      // If optimistic message exists, replace it with confirmed message
+      const hasOptimistic = prev.some(
+        (msg) =>
+          msg.pending &&
+          msg.text === confirmedMessage.content &&
+          msg.user._id === confirmedMessage.senderId
+      );
+      if (hasOptimistic) {
+        return prev.map((msg) =>
+          msg.pending &&
+          msg.text === confirmedMessage.content &&
+          msg.user._id === confirmedMessage.senderId
+            ? {
+                _id: confirmedMessage._id,
+                text: confirmedMessage.content,
+                createdAt: new Date(confirmedMessage.timestamp),
+                user: {
+                  _id: confirmedMessage.senderId,
+                  name: confirmedMessage.senderId,
+                },
+                pending: false,
+              }
+            : msg
+        );
+      }
+      // Otherwise, add new message
+      if (prev.some((msg) => msg._id === confirmedMessage._id)) {
+        return prev;
+      }
+      const newMsg: IMessage = {
+        _id: confirmedMessage._id,
+        text: confirmedMessage.content,
+        createdAt: new Date(confirmedMessage.timestamp),
+        user: {
+          _id: confirmedMessage.senderId,
+          name: confirmedMessage.senderId,
+        },
+        pending: false,
+      };
+      return GiftedChat.append(prev, [newMsg]);
+    });
   });
 
   const isConnected = socket.connected;

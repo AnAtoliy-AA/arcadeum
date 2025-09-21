@@ -43,9 +43,12 @@ export class ChatGateway {
   ): Promise<void> {
     const chat = await this.chatService.findOrCreateChat(chatDTO);
 
-    // Let both users join the chat room
-    await client.join(chat.user1);
-    await client.join(chat.user2);
+    // Let all users join the chat room
+    if (chat.users && Array.isArray(chat.users)) {
+      for (const userId of chat.users) {
+        await client.join(userId);
+      }
+    }
 
     // Send back initial messages if needed
     const messages = await this.chatService.getMessagesByChatId(chat.chatId);

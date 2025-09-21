@@ -6,12 +6,8 @@ export class Chat extends Document {
   @Prop({ required: true })
   chatId: string;
 
-  // If you already have a User scehma, please update user1 and user2 to reference your User schema.
-  @Prop({ required: true })
-  user1: string; // ID of the first user
-
-  @Prop({ required: true })
-  user2: string; // ID of the second user
+  @Prop({ type: [String], required: true })
+  users: string[];
 }
 
 export const ChatSchema = SchemaFactory.createForClass(Chat);

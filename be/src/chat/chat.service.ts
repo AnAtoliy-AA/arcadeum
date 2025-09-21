@@ -14,12 +14,12 @@ export class ChatService {
 
   // Find an existing one-on-one chat or create a new one
   async findOrCreateChat(chatDTO: ChatDTO): Promise<Chat> {
-    let chat = await this.chatModel
-      .findOne({
-        user1: chatDTO.user1,
-        user2: chatDTO.user2,
-      })
-      .exec();
+    if (!chatDTO.users || chatDTO.users.length === 0) {
+      throw new Error('Chat must have at least one user.');
+    }
+
+    // Find chat with exact same users (regardless of order)
+    let chat = await this.chatModel.findOne({ chatId: chatDTO.chatId }).exec();
 
     if (!chat) {
       chat = new this.chatModel(chatDTO);
@@ -31,10 +31,13 @@ export class ChatService {
 
   // Save a new message to a chat
   async saveMessage(messageDTO: MessageDTO): Promise<Message> {
+    // For group chat, sender and all receivers should be in users array
     await this.findOrCreateChat({
       chatId: messageDTO.chatId,
-      user1: messageDTO.senderId,
-      user2: messageDTO.receiverId,
+      users: [
+        messageDTO.senderId,
+        ...(messageDTO.receiverId ? [messageDTO.receiverId] : []),
+      ],
     });
 
     const message = new this.messageModel(messageDTO);

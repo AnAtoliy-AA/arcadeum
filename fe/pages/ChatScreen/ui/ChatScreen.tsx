@@ -1,23 +1,38 @@
 import React from 'react';
 import { GiftedChat } from 'react-native-gifted-chat';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, useColorScheme } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ChatParams } from '../model/types';
 import { useChat } from '../model/useChat';
+import { Colors } from '@/constants/Colors';
+import { styles } from './ChatScreen.styles';
 
 export default function ChatScreen() {
   const { chatId, userId, receiverId } = useLocalSearchParams<ChatParams>();
   const { messages, onSend, isConnected } = useChat({ chatId, userId, receiverId });
+  const colorScheme = useColorScheme() ?? 'light';
+
+  const statusColor = isConnected
+    ? Colors[colorScheme].statusConnected
+    : Colors[colorScheme].statusDisconnected;
 
   return (
-    <View style={styles.container}>
-      <ThemedText>Chats:</ThemedText>
-      {isConnected ? (
-        <Text>Connected to chat server</Text>
-      ) : (
-        <Text>Connecting...</Text>
-      )}
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+      <View style={styles.statusRow}>
+        <View
+          style={[
+            styles.statusCircle,
+            {
+              backgroundColor: statusColor,
+            },
+          ]}
+        />
+        <ThemedText style={styles.statusText}>
+          {isConnected ? 'Connected to chat server' : 'Connecting...'}
+        </ThemedText>
+      </View>
       <GiftedChat
         messages={messages}
         onSend={onSend}
@@ -25,13 +40,6 @@ export default function ChatScreen() {
         showUserAvatar
         renderUsernameOnMessage
       />
-    </View>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-});

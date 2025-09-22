@@ -31,8 +31,12 @@ export class ChatGateway {
   async handleMessage(@MessageBody() messageDTO: MessageDTO): Promise<void> {
     const message = await this.chatService.saveMessage(messageDTO);
 
-    // Emit the message to the receiver's socket
-    this.server.to(messageDTO.receiverId).emit('message', message);
+    if (Array.isArray(messageDTO.receiverIds)) {
+      for (const receiverId of messageDTO.receiverIds) {
+        this.server.to(receiverId).emit('message', message);
+      }
+    }
+
     this.server.to(messageDTO.senderId).emit('message', message);
   }
 

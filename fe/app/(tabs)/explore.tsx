@@ -27,20 +27,29 @@ export default function TabTwoScreen() {
         <Link
           href={{
             pathname: "/chat",
-            params: { chatId: "123", userId: "user1", receiverId: "user2" },
+            params: { chatId: "123", userId: "user2", receiverIds: ["user1", "user3"] },
+          }}
+          style={styles.link}
+        >
+          <ThemedText type="link">Go to Chat</ThemedText>
+        </Link>
+        <Link
+          href={{
+            pathname: "/chat",
+            params: { chatId: "123", userId: "user1", receiverIds: ["user2", "user3"] },
           }}
           style={styles.link}
         >
           <ThemedText type="link">Go to Chat 2</ThemedText>
         </Link>
-                <Link
+        <Link
           href={{
             pathname: "/chat",
-            params: { chatId: "123", userId: "user2", receiverId: "user1" },
+            params: { chatId: "123", userId: "user3", receiverIds: ["user1", "user2"] },
           }}
           style={styles.link}
         >
-          <ThemedText type="link">Go to Chat</ThemedText>
+          <ThemedText type="link">Go to Chat 3</ThemedText>
         </Link>
       </ThemedView>
       <ThemedText>
@@ -143,7 +152,7 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   titleContainer: {
-    flexDirection: "row",
+    flexDirection: "column",
     gap: 8,
   },
   link: {

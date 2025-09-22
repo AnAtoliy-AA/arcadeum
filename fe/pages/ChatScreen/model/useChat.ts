@@ -1,21 +1,23 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { GiftedChat, IMessage, User } from 'react-native-gifted-chat';
 import { socket, useSocket } from '@/hooks/useSocket';
 import uuid from 'react-native-uuid';
-import { Message } from '../model/types';
+import { ChatParams, Message } from '../model/types';
 
-interface UseChatProps {
-  chatId: string;
-  userId: string;
-  receiverId: string;
-}
-
-export function useChat({ chatId, userId, receiverId }: UseChatProps) {
+export function useChat({ chatId, userId, receiverIds: receiverIdsString }: ChatParams) {
   const [messages, setMessages] = useState<IMessage[]>([]);
 
+  const receiverIds= useMemo(() => {
+    return Array.isArray(receiverIdsString)
+      ? receiverIdsString
+      : typeof receiverIdsString === 'string'
+        ? receiverIdsString.split(',')
+        : [];
+  }, [receiverIdsString]);
+
   useEffect(() => {
-    socket.emit('joinChat', { chatId, users: [userId, receiverId] });
-  }, [chatId, userId, receiverId]);
+    socket.emit('joinChat', { chatId, users: [userId, ...receiverIds] });
+  }, [chatId, userId, receiverIds]);
 
   useSocket('chatMessages', (loadedMessages: Message[]) => {
     const formattedMessages: IMessage[] = loadedMessages.map((msg) => ({
@@ -46,13 +48,13 @@ export function useChat({ chatId, userId, receiverId }: UseChatProps) {
         socket.emit('sendMessage', {
           chatId,
           senderId: userId,
-          receiverId,
+          receiverIds,
           content: message.text,
           timestamp: new Date(),
         });
       });
     },
-    [chatId, userId, receiverId]
+    [chatId, userId, receiverIds]
   );
 
   useSocket('message', (confirmedMessage) => {

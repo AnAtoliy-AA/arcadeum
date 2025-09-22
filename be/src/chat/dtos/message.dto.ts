@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsDate } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsDate,
+  IsArray,
+  ArrayNotEmpty,
+} from 'class-validator';
 
 export class MessageDTO {
   @IsString()
@@ -9,9 +15,9 @@ export class MessageDTO {
   @IsNotEmpty({ message: 'Sender ID must not be empty' })
   readonly senderId: string;
 
-  @IsString()
-  @IsNotEmpty({ message: 'Receiver ID must not be empty' })
-  readonly receiverId: string;
+  @IsArray()
+  @ArrayNotEmpty({ message: 'Receiver IDs array must not be empty' })
+  readonly receiverIds: string[];
 
   @IsString()
   @IsNotEmpty({ message: 'Content must not be empty' })

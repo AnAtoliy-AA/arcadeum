@@ -10,8 +10,8 @@ import { Colors } from '@/constants/Colors';
 import { styles } from './ChatScreen.styles';
 
 export default function ChatScreen() {
-  const { chatId, userId, receiverId } = useLocalSearchParams<ChatParams>();
-  const { messages, onSend, isConnected } = useChat({ chatId, userId, receiverId });
+  const { chatId, userId, receiverIds } = useLocalSearchParams<ChatParams>();
+  const { messages, onSend, isConnected } = useChat({ chatId, userId, receiverIds });
   const colorScheme = useColorScheme() ?? 'light';
 
   const statusColor = isConnected

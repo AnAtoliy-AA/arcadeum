@@ -8,5 +8,5 @@ export interface Message {
 export type ChatParams = {
   chatId: string;
   userId: string;
-  receiverId: string;
+  receiverIds: string[] | string;
 };

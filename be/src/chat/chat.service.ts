@@ -36,7 +36,9 @@ export class ChatService {
       chatId: messageDTO.chatId,
       users: [
         messageDTO.senderId,
-        ...(messageDTO.receiverId ? [messageDTO.receiverId] : []),
+        ...(Array.isArray(messageDTO.receiverIds)
+          ? messageDTO.receiverIds
+          : []),
       ],
     });
 

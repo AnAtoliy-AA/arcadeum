@@ -4,6 +4,35 @@ apply plugin: "com.facebook.react"
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 
+// Load AUTH_ANDROID_REDIRECT_SCHEME from fe/.env (or derive from AUTH_ANDROID_CLIENT_ID)
+def feDir = rootProject.projectDir.getParentFile()
+def envFile = new File(feDir, ".env")
+def env = [:]
+if (envFile.exists()) {
+    envFile.eachLine { line ->
+        if (!line || line.trim().startsWith('#') || !line.contains('=')) return
+        def idx = line.indexOf('=')
+        def key = line.substring(0, idx).trim()
+        def val = line.substring(idx + 1).trim()
+        if (val.startsWith('"') && val.endsWith('"')) {
+            val = val.substring(1, val.length() - 1)
+        }
+        env[key] = val
+    }
+}
+def envOr = { k -> System.getenv(k) ?: env[k] }
+def redirectSchemeFromEnv = envOr('AUTH_ANDROID_REDIRECT_SCHEME')
+def androidClientId = envOr('AUTH_ANDROID_CLIENT_ID')
+def appSchemeFromEnv = envOr('APP_SCHEME') ?: 'mobile'
+if (!redirectSchemeFromEnv && androidClientId) {
+    def idPart = androidClientId.replaceAll(/\.apps\.googleusercontent\.com$/, '')
+    redirectSchemeFromEnv = "com.googleusercontent.apps.${idPart}"
+}
+def APP_AUTH_REDIRECT_SCHEME = redirectSchemeFromEnv
+if (!APP_AUTH_REDIRECT_SCHEME) {
+    throw new GradleException("Missing AUTH_ANDROID_REDIRECT_SCHEME (or AUTH_ANDROID_CLIENT_ID to derive it). Set it in fe/.env or environment.")
+}
+
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -94,6 +123,11 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0.0"
+    // Required by react-native-app-auth for redirect scheme and app deep link scheme
+    manifestPlaceholders = [
+        appAuthRedirectScheme: APP_AUTH_REDIRECT_SCHEME,
+        appScheme: appSchemeFromEnv
+    ]
     }
     signingConfigs {
         debug {

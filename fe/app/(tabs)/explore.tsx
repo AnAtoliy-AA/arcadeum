@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
-import { Link } from "expo-router";
-import { Platform, StyleSheet } from "react-native";
+import { Link, router } from "expo-router";
+import { Platform, StyleSheet, Button } from "react-native";
 
 import { Collapsible } from "@/components/Collapsible";
 import { ExternalLink } from "@/components/ExternalLink";
@@ -51,6 +51,7 @@ export default function TabTwoScreen() {
         >
           <ThemedText type="link">Go to Chat 3</ThemedText>
         </Link>
+        <Button title="Go to Auth" onPress={() => router.push("/auth")} />
       </ThemedView>
       <ThemedText>
         This app includes example code to help you get started.

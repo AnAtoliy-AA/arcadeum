@@ -16,6 +16,7 @@ export const Colors = {
     tabIconSelected: tintColorLight,
     statusConnected: '#2ecc40',
     statusDisconnected: '#ff4136',
+    error: '#ff4136',
   },
   dark: {
     text: '#ECEDEE',
@@ -26,5 +27,6 @@ export const Colors = {
     tabIconSelected: tintColorDark,
     statusConnected: '#2ecc40',
     statusDisconnected: '#ff4136',
+    error: '#ff4136',
   },
 };

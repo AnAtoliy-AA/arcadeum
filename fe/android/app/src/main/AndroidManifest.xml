@@ -24,7 +24,14 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="mobile"/>
+        <data android:scheme="${appScheme}"/>
+      </intent-filter>
+      <!-- Literal scheme for Expo Dev Client deep link to avoid placeholder resolution issues -->
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="mobile" android:host="expo-development-client"/>
       </intent-filter>
     </activity>
   </application>

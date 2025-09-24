@@ -1,0 +1,25 @@
+# Example Sentry CLI configuration (Frontend)
+# Do NOT commit real credentials.
+# Prefer environment variables in CI over this file.
+#
+# Environment variable equivalents:
+# - auth.token       -> SENTRY_AUTH_TOKEN
+# - defaults.org     -> SENTRY_ORG
+# - defaults.project -> SENTRY_PROJECT
+# - defaults.url     -> SENTRY_URL (default: https://sentry.io/)
+#
+# Usage options:
+# 1) Local only: copy to ".sentry.properties" and fill in placeholders
+# 2) CI recommended: set env vars above and do NOT create the file
+
+# Personal auth token with minimal required scopes (e.g., project:releases)
+# NEVER embed this in mobile apps or client-side code.
+auth.token=YOUR_SENTRY_AUTH_TOKEN
+
+# Your Sentry organization and project slugs
+defaults.org=YOUR_SENTRY_ORG
+# Example projects: aicoapp-fe (mobile), aicoapp-be (backend)
+defaults.project=YOUR_SENTRY_PROJECT
+
+# Sentry base URL (SaaS default below)
+defaults.url=https://sentry.io/

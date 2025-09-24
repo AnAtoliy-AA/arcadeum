@@ -35,6 +35,14 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "aicoapp-fe",
+          "organization": "aicoapp"
+        }
       ]
     ],
     "experiments": {

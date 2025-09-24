@@ -48,3 +48,8 @@ ios/build/
 ios/Pods/
 ios/*.xcworkspace
 ios/Podfile.lock
+
+# Sentry properties (do not commit real credentials)
+.sentry.properties
+android/sentry.properties
+ios/sentry.properties

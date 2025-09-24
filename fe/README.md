@@ -91,6 +91,24 @@ npx expo config --type public | grep -E 'AUTH_|router'
 
 You should see your `AUTH_*` values and the router config reflected in the output.
 
+## Error reporting (Sentry)
+
+- Set `EXPO_PUBLIC_SENTRY_DSN` in `.env` to enable Sentry in the mobile app.
+- Sentry is initialized in `app/_layout.tsx` via `fe/sentry.ts`.
+- For backend reporting, set `SENTRY_DSN` in `be/.env`.
+
+Sentry CLI (build-time uploads) via environment variables:
+
+- `SENTRY_AUTH_TOKEN` ↔ `auth.token`
+- `SENTRY_ORG` ↔ `defaults.org`
+- `SENTRY_PROJECT` ↔ `defaults.project`
+- `SENTRY_URL` (optional) ↔ `defaults.url` (default `https://sentry.io/`)
+
+Example properties file (for local only): `fe/.sentry.properties.example`
+
+- Prefer CI env vars; avoid committing a real `.sentry.properties`.
+- Native `sentry.properties` files under `android/` and `ios/` are git-ignored.
+
 ## Scripts
 
 Convenient scripts defined in `package.json`:

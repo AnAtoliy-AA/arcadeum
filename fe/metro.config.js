@@ -1,5 +1,5 @@
-import { getSentryExpoConfig } from "@sentry/react-native/metro";
+// Use CommonJS require to avoid ESM subpath resolution issues (Error: Cannot find module '@sentry/react-native/metro')
+// This follows Sentry's official React Native + Expo docs.
+const { getSentryExpoConfig } = require('@sentry/react-native/metro');
 
-const config = getSentryExpoConfig(__dirname);
-
-export default config;
+module.exports = getSentryExpoConfig(__dirname);

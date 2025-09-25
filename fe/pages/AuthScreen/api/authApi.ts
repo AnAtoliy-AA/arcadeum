@@ -1,4 +1,4 @@
-import { authorize, AuthorizeResult } from 'react-native-app-auth';
+import { authorize, AuthorizeResult, revoke } from 'react-native-app-auth';
 import { Platform } from 'react-native';
 import * as AuthSession from 'expo-auth-session';
 import { authConfig } from '../config/authConfig';
@@ -35,8 +35,13 @@ async function startWebAuth(): Promise<AuthorizeResult> {
     redirectUri: authConfig.redirectUrl!,
     scopes: authConfig.scopes,
     responseType: AuthSession.ResponseType.Code,
+    usePKCE: true,
   });
   const authUrl = await request.makeAuthUrlAsync(discovery);
+  try {
+    sessionStorage.setItem('oauth_code_verifier', request.codeVerifier || '');
+    sessionStorage.setItem('oauth_state', request.state || '');
+  } catch {}
   window.location.assign(authUrl);
   // Navigation will unload the page; return a pending promise to satisfy typing.
   return new Promise<AuthorizeResult>(() => {});
@@ -59,5 +64,31 @@ export async function loginWithOAuth(): Promise<AuthorizeResult> {
     const message = e?.message || String(e);
     console.error(`[${Platform.OS}] OAuth authorize failed:`, message);
     throw e;
+  }
+}
+
+export async function logoutOAuth(params: { accessToken?: string; refreshToken?: string }) {
+  const { accessToken, refreshToken } = params;
+
+  try {
+    if (Platform.OS === 'web') {
+      if (!accessToken) return; // nothing to revoke client-side
+      const discovery = await AuthSession.fetchDiscoveryAsync(authConfig.issuer);
+      if (discovery.revocationEndpoint) {
+        await AuthSession.revokeAsync({ token: accessToken, clientId: authConfig.clientId! }, discovery);
+      }
+      return;
+    }
+
+    // Native (Android/iOS) — revoke access and refresh tokens if present
+    if (accessToken) {
+      await revoke(authConfig as any, { tokenToRevoke: accessToken, sendClientId: true });
+    }
+    if (refreshToken) {
+      await revoke(authConfig as any, { tokenToRevoke: refreshToken, sendClientId: true });
+    }
+  } catch (e: any) {
+    const message = e?.message || String(e);
+    console.warn(`[${Platform.OS}] OAuth revoke failed:`, message);
   }
 }

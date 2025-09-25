@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import * as Sentry from '@sentry/nestjs';
+import './config/required-env';
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,

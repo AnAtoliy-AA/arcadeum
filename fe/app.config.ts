@@ -1,21 +1,23 @@
-import 'dotenv/config';
-import type { ExpoConfig } from 'expo/config';
+import "dotenv/config";
+import type { ExpoConfig } from "expo/config";
 
-const iosRedirectScheme = process.env.AUTH_IOS_REDIRECT_SCHEME as string | undefined;
-const appScheme = (process.env.APP_SCHEME as string | undefined) ?? 'mobile';
+const iosRedirectScheme = process.env.AUTH_IOS_REDIRECT_SCHEME as
+  | string
+  | undefined;
+const appScheme = (process.env.APP_SCHEME as string | undefined) ?? "mobile";
 
 const config: ExpoConfig = {
-  name: 'mobile',
-  slug: 'mobile',
-  version: '1.0.0',
-  orientation: 'portrait',
-  icon: './assets/images/icon.png',
+  name: "mobile",
+  slug: "mobile",
+  version: "1.0.0",
+  orientation: "portrait",
+  icon: "./assets/images/icon.png",
   scheme: appScheme,
-  userInterfaceStyle: 'automatic',
+  userInterfaceStyle: "automatic",
   newArchEnabled: true,
   ios: {
     supportsTablet: true,
-    bundleIdentifier: 'com.anonymous.mobile',
+    bundleIdentifier: "com.anonymous.mobile",
     ...(iosRedirectScheme
       ? {
           infoPlist: {
@@ -30,26 +32,26 @@ const config: ExpoConfig = {
   },
   android: {
     adaptiveIcon: {
-      foregroundImage: './assets/images/adaptive-icon.png',
-      backgroundColor: '#ffffff',
+      foregroundImage: "./assets/images/adaptive-icon.png",
+      backgroundColor: "#ffffff",
     },
     edgeToEdgeEnabled: true,
-    package: 'com.anonymous.mobile',
+    package: "com.anonymous.mobile",
   },
   web: {
-    bundler: 'metro',
-    output: 'static',
-    favicon: './assets/images/favicon.png',
+    bundler: "metro",
+    output: "static",
+    favicon: "./assets/images/favicon.png",
   },
   plugins: [
-    'expo-router',
+    "expo-router",
     [
-      'expo-splash-screen',
+      "expo-splash-screen",
       {
-        image: './assets/images/splash-icon.png',
+        image: "./assets/images/splash-icon.png",
         imageWidth: 200,
-        resizeMode: 'contain',
-        backgroundColor: '#ffffff',
+        resizeMode: "contain",
+        backgroundColor: "#ffffff",
       },
     ],
   ],
@@ -67,6 +69,7 @@ const config: ExpoConfig = {
     AUTH_ANDROID_REDIRECT_SCHEME: process.env.AUTH_ANDROID_REDIRECT_SCHEME,
     AUTH_IOS_REDIRECT_SCHEME: process.env.AUTH_IOS_REDIRECT_SCHEME,
     AUTH_WEB_REDIRECT_URL: process.env.AUTH_WEB_REDIRECT_URL,
+    API_BASE_URL: process.env.EXPO_PUBLIC_API_BASE_URL,
     // Router uses this at runtime
     router: {
       origin: false,

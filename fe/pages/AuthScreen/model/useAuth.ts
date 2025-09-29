@@ -5,6 +5,7 @@ import { Platform } from 'react-native';
 import { authConfig } from '../config/authConfig';
 import { useLocalSearchParams, useRootNavigationState } from 'expo-router';
 import Constants from 'expo-constants';
+import { useSessionTokens } from '@/stores/sessionTokens';
 
 export function useAuth() {
   const [authState, setAuthState] = useState<AuthorizeResult | null>(null);
@@ -13,6 +14,12 @@ export function useAuth() {
   const navState = useRootNavigationState();
   const isReady = !!navState?.key;
   const processedRef = useRef(false);
+  const {
+    tokens: sessionTokens,
+    hydrated: sessionHydrated,
+    setTokens: persistTokens,
+    clearTokens: clearStoredTokens,
+  } = useSessionTokens();
 
   type ExtendedAuthorizeResult = AuthorizeResult & {
     refreshToken?: string;
@@ -28,11 +35,22 @@ export function useAuth() {
     expiresIn?: number;
     message?: string; // backend error shape
     error?: string;   // possible provider error passthrough
+    refreshTokenExpiresAt?: string;
   }
 
   const login = async () => {
     try {
       const result = await loginWithOAuth();
+      const extended = result as ExtendedAuthorizeResult;
+      if (extended.accessToken) {
+        await persistTokens({
+          provider: 'oauth',
+          accessToken: extended.accessToken,
+          refreshToken: extended.refreshToken ?? null,
+          tokenType: extended.tokenType ?? 'Bearer',
+          accessTokenExpiresAt: extended.accessTokenExpirationDate ?? null,
+        });
+      }
       setAuthState(result);
       setError(null);
     } catch (e) {
@@ -45,6 +63,7 @@ export function useAuth() {
       ? { accessToken: authState.accessToken, refreshToken: (authState as ExtendedAuthorizeResult).refreshToken }
       : { accessToken: undefined, refreshToken: undefined };
     await logoutOAuth(tokens);
+    await clearStoredTokens();
     setAuthState(null);
   };
 
@@ -103,6 +122,16 @@ export function useAuth() {
           if (json.refreshToken) baseResult.refreshToken = json.refreshToken;
           if (json.idToken) baseResult.idToken = json.idToken;
           const authorizeResult = baseResult as ExtendedAuthorizeResult;
+          if (authorizeResult.accessToken) {
+            await persistTokens({
+              provider: 'oauth',
+              accessToken: authorizeResult.accessToken,
+              refreshToken: authorizeResult.refreshToken ?? null,
+              tokenType: authorizeResult.tokenType ?? 'Bearer',
+              accessTokenExpiresAt: authorizeResult.accessTokenExpirationDate ?? null,
+              refreshTokenExpiresAt: json.refreshTokenExpiresAt ?? null,
+            });
+          }
           setAuthState(authorizeResult as AuthorizeResult);
           setError(null);
         } catch (err) {
@@ -124,12 +153,14 @@ export function useAuth() {
         }
       })();
     }
-  }, [isReady, params, authState]);
+  }, [isReady, params, authState, persistTokens]);
 
   return {
     authState,
     error,
     login,
     logout,
+    sessionTokens,
+    sessionHydrated,
   };
 }

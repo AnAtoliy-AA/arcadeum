@@ -1,0 +1,145 @@
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { SecureStoreShim } from '@/lib/secureStore';
+
+type SessionProviderId = 'oauth' | 'local';
+
+export interface SessionTokensSnapshot {
+  provider: SessionProviderId | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  tokenType: string | null;
+  accessTokenExpiresAt: string | null;
+  refreshTokenExpiresAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface SetSessionTokensInput {
+  provider?: SessionProviderId | null;
+  accessToken?: string | null;
+  refreshToken?: string | null;
+  tokenType?: string | null;
+  accessTokenExpiresAt?: string | Date | null;
+  refreshTokenExpiresAt?: string | Date | null;
+}
+
+export interface SessionTokensContextValue {
+  tokens: SessionTokensSnapshot;
+  hydrated: boolean;
+  setTokens: (input: SetSessionTokensInput) => Promise<SessionTokensSnapshot>;
+  clearTokens: () => Promise<void>;
+  reload: () => Promise<SessionTokensSnapshot>;
+}
+
+const STORAGE_KEY = 'session_tokens_v1';
+
+const defaultSnapshot: SessionTokensSnapshot = {
+  provider: null,
+  accessToken: null,
+  refreshToken: null,
+  tokenType: null,
+  accessTokenExpiresAt: null,
+  refreshTokenExpiresAt: null,
+  updatedAt: null,
+};
+
+function toIso(value?: string | Date | null): string | null {
+  if (!value) return null;
+  if (value instanceof Date) return value.toISOString();
+  return value;
+}
+
+function sanitizeSnapshot(value: Partial<SessionTokensSnapshot> | null | undefined): SessionTokensSnapshot {
+  if (!value) return { ...defaultSnapshot };
+  return {
+    provider: (value.provider ?? null) as SessionProviderId | null,
+    accessToken: value.accessToken ?? null,
+    refreshToken: value.refreshToken ?? null,
+    tokenType: value.tokenType ?? null,
+    accessTokenExpiresAt: value.accessTokenExpiresAt ?? null,
+    refreshTokenExpiresAt: value.refreshTokenExpiresAt ?? null,
+    updatedAt: value.updatedAt ?? null,
+  };
+}
+
+async function readFromStorage(): Promise<SessionTokensSnapshot> {
+  try {
+    const raw = await SecureStoreShim.getItemAsync(STORAGE_KEY);
+    if (!raw) return { ...defaultSnapshot };
+    const parsed = JSON.parse(raw) as Partial<SessionTokensSnapshot>;
+    return sanitizeSnapshot(parsed);
+  } catch {
+    return { ...defaultSnapshot };
+  }
+}
+
+function buildNextSnapshot(current: SessionTokensSnapshot, input: SetSessionTokensInput): SessionTokensSnapshot {
+  const next: SessionTokensSnapshot = {
+    provider: (input.provider ?? current.provider ?? null) as SessionProviderId | null,
+    accessToken: input.accessToken ?? current.accessToken ?? null,
+    refreshToken: input.refreshToken ?? current.refreshToken ?? null,
+    tokenType: input.tokenType ?? current.tokenType ?? null,
+    accessTokenExpiresAt: toIso(input.accessTokenExpiresAt) ?? current.accessTokenExpiresAt ?? null,
+    refreshTokenExpiresAt: toIso(input.refreshTokenExpiresAt) ?? current.refreshTokenExpiresAt ?? null,
+    updatedAt: new Date().toISOString(),
+  };
+  return next;
+}
+
+const SessionTokensContext = createContext<SessionTokensContextValue | undefined>(undefined);
+
+export function SessionTokensProvider({ children }: { children: React.ReactNode }) {
+  const [tokens, setTokensState] = useState<SessionTokensSnapshot>({ ...defaultSnapshot });
+  const [hydrated, setHydrated] = useState(false);
+
+  const reload = useCallback(async () => {
+    const next = await readFromStorage();
+    setTokensState(next);
+    setHydrated(true);
+    return next;
+  }, []);
+
+  useEffect(() => {
+    reload();
+  }, [reload]);
+
+  const setTokens = useCallback(
+    async (input: SetSessionTokensInput) => {
+      const next = buildNextSnapshot(tokens, input);
+      setTokensState(next);
+      setHydrated(true);
+      try {
+        const serialized = JSON.stringify(next);
+        await SecureStoreShim.setItemAsync(STORAGE_KEY, serialized);
+      } catch {
+        // ignore persistence failures for now
+      }
+      return next;
+    },
+    [tokens],
+  );
+
+  const clearTokens = useCallback(async () => {
+    setTokensState({ ...defaultSnapshot });
+    setHydrated(true);
+    try {
+      await SecureStoreShim.deleteItemAsync(STORAGE_KEY);
+    } catch {
+      // ignore persistence failures for now
+    }
+  }, []);
+
+  const value = useMemo<SessionTokensContextValue>(
+    () => ({ tokens, hydrated, setTokens, clearTokens, reload }),
+    [tokens, hydrated, setTokens, clearTokens, reload],
+  );
+
+  return <SessionTokensContext.Provider value={value}>{children}</SessionTokensContext.Provider>;
+}
+
+export function useSessionTokens(): SessionTokensContextValue {
+  const ctx = useContext(SessionTokensContext);
+  if (!ctx) {
+    throw new Error('useSessionTokens must be used within a SessionTokensProvider');
+  }
+  return ctx;
+}

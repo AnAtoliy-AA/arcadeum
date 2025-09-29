@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { loginLocal, registerLocal, me } from '../api/authApi';
-import { SecureStoreShim } from './secureStore';
+import { SecureStoreShim } from '@/lib/secureStore';
+import { useSessionTokens } from '@/stores/sessionTokens';
 
 interface LocalAuthState {
   accessToken: string | null;
@@ -11,8 +12,6 @@ interface LocalAuthState {
   mode: 'login' | 'register';
 }
 
-const ACCESS_TOKEN_KEY = 'auth_access_token';
-const REFRESH_TOKEN_KEY = 'auth_refresh_token';
 const EMAIL_KEY = 'auth_email';
 
 async function persist(key: string, value: string | null) {
@@ -31,6 +30,14 @@ export function useLocalAuth() {
     error: null,
     mode: 'login',
   });
+
+  const {
+    tokens: sessionTokens,
+    hydrated: sessionHydrated,
+    setTokens: persistSessionTokens,
+    clearTokens: clearSessionTokens,
+    reload: reloadSessionTokens,
+  } = useSessionTokens();
 
   const toggleMode = useCallback(() => {
     setState(s => ({ ...s, mode: s.mode === 'login' ? 'register' : 'login', error: null }));
@@ -51,48 +58,58 @@ export function useLocalAuth() {
     setState(s => ({ ...s, loading: true, error: null }));
     try {
       const resp = await loginLocal(email, password);
-      await persist(ACCESS_TOKEN_KEY, resp.accessToken);
-      if (resp.refreshToken) await persist(REFRESH_TOKEN_KEY, resp.refreshToken);
+      const snapshot = await persistSessionTokens({
+        provider: 'local',
+        accessToken: resp.accessToken,
+        refreshToken: resp.refreshToken ?? null,
+        tokenType: 'Bearer',
+        refreshTokenExpiresAt: resp.refreshTokenExpiresAt ?? null,
+      });
       await persist(EMAIL_KEY, email);
       setState(s => ({
         ...s,
-        accessToken: resp.accessToken,
-        refreshToken: resp.refreshToken || null,
+        accessToken: snapshot.accessToken,
+        refreshToken: snapshot.refreshToken,
         email,
         loading: false,
       }));
     } catch (e) {
       setState(s => ({ ...s, loading: false, error: e instanceof Error ? e.message : String(e) }));
     }
-  }, []);
+  }, [persistSessionTokens]);
 
   const checkSession = useCallback(async () => {
     setState(s => ({ ...s, loading: true }));
     try {
-      const token = await SecureStoreShim.getItemAsync(ACCESS_TOKEN_KEY);
       const email = await SecureStoreShim.getItemAsync(EMAIL_KEY);
+      const snapshot = sessionHydrated ? sessionTokens : await reloadSessionTokens();
+      const token = snapshot.accessToken;
       if (token) {
         try {
           await me(token);
-          setState(s => ({ ...s, accessToken: token, email, loading: false }));
+          setState(s => ({
+            ...s,
+            accessToken: token,
+            refreshToken: snapshot.refreshToken,
+            email,
+            loading: false,
+          }));
           return;
         } catch {
-          // invalid token -> clear
-          await persist(ACCESS_TOKEN_KEY, null);
+          await clearSessionTokens();
         }
       }
-      setState(s => ({ ...s, loading: false }));
+      setState(s => ({ ...s, accessToken: null, refreshToken: null, email, loading: false }));
     } catch {
       setState(s => ({ ...s, loading: false }));
     }
-  }, []);
+  }, [sessionHydrated, sessionTokens, reloadSessionTokens, clearSessionTokens]);
 
   const logout = useCallback(async () => {
-    await persist(ACCESS_TOKEN_KEY, null);
-    await persist(REFRESH_TOKEN_KEY, null);
+    await clearSessionTokens();
     await persist(EMAIL_KEY, null);
     setState(s => ({ ...s, accessToken: null, refreshToken: null, email: null }));
-  }, []);
+  }, [clearSessionTokens]);
 
   return {
     ...state,

@@ -1,4 +1,5 @@
 import { authorize, AuthorizeResult, revoke } from 'react-native-app-auth';
+import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import * as AuthSession from 'expo-auth-session';
 import { authConfig } from '../config/authConfig';
@@ -91,4 +92,58 @@ export async function logoutOAuth(params: { accessToken?: string; refreshToken?:
     const message = e?.message || String(e);
     console.warn(`[${Platform.OS}] OAuth revoke failed:`, message);
   }
+}
+
+// ----- Local Auth (email/password) API helpers -----
+
+interface RegisterResponse {
+  id: string;
+  email: string;
+  createdAt?: string;
+}
+
+interface LoginResponse {
+  accessToken: string;
+  refreshToken?: string;
+  refreshTokenExpiresAt?: string | Date;
+}
+
+function apiBase(): string {
+  const extra = (Constants as any)?.expoConfig?.extra as Record<string, any> | undefined;
+  const raw = (extra?.API_BASE_URL as string | undefined) || process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:4000';
+  return raw.replace(/\/$/, '');
+}
+
+export async function registerLocal(email: string, password: string): Promise<RegisterResponse> {
+  const res = await fetch(`${apiBase()}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || 'Registration failed');
+  }
+  return res.json() as Promise<RegisterResponse>;
+}
+
+export async function loginLocal(email: string, password: string): Promise<LoginResponse> {
+  const res = await fetch(`${apiBase()}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || 'Login failed');
+  }
+  return res.json() as Promise<LoginResponse>;
+}
+
+export async function me(accessToken: string): Promise<{ status: string }> {
+  const res = await fetch(`${apiBase()}/auth/me`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!res.ok) throw new Error('Unauthorized');
+  return res.json();
 }

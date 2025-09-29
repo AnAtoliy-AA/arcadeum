@@ -25,6 +25,40 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Security & Hardening
+
+See [SECURITY.md](./SECURITY.md) for details on:
+
+- Password hashing (bcrypt)
+- JWT access tokens (15m) and planned refresh rotation
+- OAuth code exchange (confidential client)
+- Recommended rate limiting & brute force protections
+- Secret management and roadmap
+
+### Auth Endpoints (Current)
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/auth/register` | POST | Register user (email, password) |
+| `/auth/login` | POST | Obtain access token |
+| `/auth/token` | POST | OAuth code -> token exchange (Google/OIDC) |
+| `/auth/me` | GET | Test protected route (Bearer access token) |
+
+### (Upcoming) Refresh Tokens
+Planned implementation will introduce:
+1. `refresh_token` issued alongside `accessToken` on login.
+2. Rotation: each refresh invalidates the previous token.
+3. Endpoint: `POST /auth/refresh` returning new pair.
+4. Storage: HttpOnly Secure cookie (web) / secure storage (mobile).
+
+### (Upcoming) Password Reset Flow
+Skeleton will include:
+1. `POST /auth/password/request` (email) – issues time-bound reset token.
+2. `POST /auth/password/reset` (token, newPassword) – validates & updates hash.
+3. Token format: signed, short-lived (e.g., 15–30 min) or DB persisted hashed token.
+
+Refer to SECURITY.md for more context and roadmap details.
+
 ## Project setup
 
 ```bash

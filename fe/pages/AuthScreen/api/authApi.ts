@@ -96,9 +96,13 @@ export async function logoutOAuth(params: { accessToken?: string; refreshToken?:
 
 // ----- Local Auth (email/password) API helpers -----
 
-interface RegisterResponse {
+export interface AuthUserProfile {
   id: string;
   email: string;
+  username: string;
+}
+
+interface RegisterResponse extends AuthUserProfile {
   createdAt?: string;
 }
 
@@ -106,7 +110,10 @@ interface LoginResponse {
   accessToken: string;
   refreshToken?: string;
   refreshTokenExpiresAt?: string | Date;
+  user: AuthUserProfile;
 }
+
+type MeResponse = AuthUserProfile;
 
 function apiBase(): string {
   const extra = (Constants as any)?.expoConfig?.extra as Record<string, any> | undefined;
@@ -147,6 +154,10 @@ function resolveDeviceAwareBase(urlString: string): string {
     // Swallow parse errors and fall through to original urlString
   }
   return urlString;
+}
+
+export function resolveApiBase(): string {
+  return apiBase();
 }
 
 function isLocalHost(host: string): boolean {
@@ -204,11 +215,11 @@ function extractRemoteHost(candidate?: string): string | undefined {
   }
 }
 
-export async function registerLocal(email: string, password: string): Promise<RegisterResponse> {
+export async function registerLocal(email: string, password: string, username: string): Promise<RegisterResponse> {
   const res = await fetch(`${apiBase()}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password, username }),
   });
   if (!res.ok) {
     const text = await res.text();
@@ -230,10 +241,10 @@ export async function loginLocal(email: string, password: string): Promise<Login
   return res.json() as Promise<LoginResponse>;
 }
 
-export async function me(accessToken: string): Promise<{ status: string }> {
+export async function me(accessToken: string): Promise<MeResponse> {
   const res = await fetch(`${apiBase()}/auth/me`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
   if (!res.ok) throw new Error('Unauthorized');
-  return res.json();
+  return res.json() as Promise<MeResponse>;
 }

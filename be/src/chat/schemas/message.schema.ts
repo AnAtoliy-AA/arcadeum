@@ -10,6 +10,9 @@ export class Message extends Document {
   @Prop({ required: true })
   senderId: string; // ID of the sender
 
+  @Prop({ required: true })
+  senderUsername: string;
+
   @Prop({ type: [String], required: true })
   receiverIds: string[]; // Array of receiver user IDs
 

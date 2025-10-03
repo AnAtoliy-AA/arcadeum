@@ -14,6 +14,7 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [username, setUsername] = useState('');
   const isRegister = auth.mode === 'register';
 
   useEffect(() => {
@@ -23,26 +24,48 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
   }, [auth.checkSession]);
 
   useEffect(() => {
+    if (!isRegister) {
+      setUsername('');
+      setConfirm('');
+    }
+  }, [isRegister]);
+
+  useEffect(() => {
     if (auth.accessToken && onAuthenticated) {
       onAuthenticated(auth.accessToken);
     }
   }, [auth.accessToken, onAuthenticated]);
 
+  const usernameTrimmed = username.trim();
+  const emailTrimmed = email.trim();
   const disabled = auth.loading;
   const passwordMismatch = isRegister && password && confirm && password !== confirm;
+  const usernameInvalid = isRegister && usernameTrimmed.length < 3;
+  const usernameTooShort =
+    isRegister && usernameTrimmed.length > 0 && usernameTrimmed.length < 3;
 
   const submit = () => {
     if (isRegister) {
-      if (passwordMismatch) return;
-      auth.register(email.trim(), password);
+      if (passwordMismatch || usernameInvalid) return;
+      auth.register(emailTrimmed, password, usernameTrimmed);
     } else {
-      auth.login(email.trim(), password);
+      auth.login(emailTrimmed, password);
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>{isRegister ? 'Create Account' : 'Login'}</Text>
+      {isRegister && (
+        <TextInput
+          autoCapitalize="none"
+          autoCorrect={false}
+          placeholder="Username"
+          style={[styles.input, { borderColor: palette.icon, backgroundColor: palette.background }]}
+          value={username}
+          onChangeText={(value) => setUsername(value.replace(/[^a-zA-Z0-9_-]/g, ''))}
+        />
+      )}
       <TextInput
         autoCapitalize="none"
         autoCorrect={false}
@@ -69,12 +92,18 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
         />
       )}
   {passwordMismatch && <Text style={[styles.error, { color: palette.error }]}>Passwords do not match</Text>}
+  {usernameTooShort && (
+    <Text style={[styles.error, { color: palette.error }]}>Username must be at least 3 characters</Text>
+  )}
+  {isRegister && (
+    <Text style={[styles.small, { color: palette.icon }]}>Allowed characters: letters, numbers, underscores, hyphens</Text>
+  )}
   {auth.error && <Text style={[styles.error, { color: palette.error }]}>{auth.error}</Text>}
       <View style={styles.buttonRow}>
         <Button
           title={isRegister ? 'Register' : 'Login'}
           onPress={submit}
-          disabled={!!(disabled || passwordMismatch)}
+          disabled={!!(disabled || passwordMismatch || usernameInvalid)}
         />
         <Button
           title={isRegister ? 'Have an account?' : 'Need an account?'}
@@ -86,6 +115,12 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
       {auth.accessToken && (
         <View style={styles.sessionBox}>
           <Text style={[styles.small, { color: palette.text }]}>Authenticated</Text>
+          {auth.email && (
+            <Text style={[styles.small, { color: palette.text }]}>Email: {auth.email}</Text>
+          )}
+          {auth.username && (
+            <Text style={[styles.small, { color: palette.text }]}>Username: {auth.username}</Text>
+          )}
           <Button title="Logout" onPress={auth.logout} />
         </View>
       )}

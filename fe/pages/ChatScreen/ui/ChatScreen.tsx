@@ -8,11 +8,27 @@ import { ChatParams } from '../model/types';
 import { useChat } from '../model/useChat';
 import { useThemedStyles, Palette } from '@/hooks/useThemedStyles';
 import { useSessionScreenGate } from '@/hooks/useSessionScreenGate';
+import { useSessionTokens } from '@/stores/sessionTokens';
 
 export default function ChatScreen() {
   const styles = useThemedStyles(createStyles);
-  const { chatId, userId, receiverIds } = useLocalSearchParams<ChatParams>();
-  const { messages, onSend, isConnected } = useChat({ chatId, userId, receiverIds });
+  const params = useLocalSearchParams<ChatParams>();
+  const { tokens } = useSessionTokens();
+  const rawChatId = Array.isArray(params.chatId) ? params.chatId[0] : params.chatId;
+  const rawReceiverIds = params.receiverIds;
+  const conversationTitle = Array.isArray(params.title) ? params.title[0] : params.title;
+
+  const currentUserId = tokens.userId ?? '';
+  const currentUsername = tokens.username ?? tokens.email ?? null;
+  const giftedUserId = currentUserId || 'local-user';
+  const giftedUserName = currentUsername ?? giftedUserId;
+
+  const { messages, onSend, isConnected } = useChat({
+    chatId: rawChatId ?? '',
+    currentUserId,
+    currentUsername,
+    receiverIds: rawReceiverIds,
+  });
   const { shouldBlock } = useSessionScreenGate({
     whenUnauthenticated: '/auth',
     enableOn: ['web'],
@@ -20,6 +36,22 @@ export default function ChatScreen() {
   });
 
   if (shouldBlock) {
+    return (
+      <SafeAreaView style={styles.loadingContainer} edges={['bottom', 'left', 'right']}>
+        <ActivityIndicator size="large" />
+      </SafeAreaView>
+    );
+  }
+
+  if (!rawChatId) {
+    return (
+      <SafeAreaView style={styles.loadingContainer} edges={['bottom', 'left', 'right']}>
+        <ThemedText style={styles.statusText}>Chat not found</ThemedText>
+      </SafeAreaView>
+    );
+  }
+
+  if (!currentUserId) {
     return (
       <SafeAreaView style={styles.loadingContainer} edges={['bottom', 'left', 'right']}>
         <ActivityIndicator size="large" />
@@ -39,10 +71,18 @@ export default function ChatScreen() {
           {isConnected ? 'Connected to chat server' : 'Connecting...'}
         </ThemedText>
       </View>
+      {conversationTitle && (
+        <ThemedText style={styles.chatTitle} numberOfLines={2}>
+          {conversationTitle}
+        </ThemedText>
+      )}
       <GiftedChat
         messages={messages}
         onSend={onSend}
-        user={{ _id: userId as string }}
+        user={{
+          _id: giftedUserId,
+          name: giftedUserName,
+        }}
         showUserAvatar
         renderUsernameOnMessage
       />
@@ -77,6 +117,13 @@ function createStyles(palette: Palette) {
     statusText: {
       fontSize: 16,
       color: palette.text,
+    },
+    chatTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: palette.text,
+      marginHorizontal: 16,
+      marginBottom: 8,
     },
     loadingContainer: {
       flex: 1,

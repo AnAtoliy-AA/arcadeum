@@ -1,10 +1,4 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsDate,
-  IsArray,
-  ArrayNotEmpty,
-} from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, ArrayNotEmpty } from 'class-validator';
 
 export class MessageDTO {
   @IsString()
@@ -22,7 +16,4 @@ export class MessageDTO {
   @IsString()
   @IsNotEmpty({ message: 'Content must not be empty' })
   readonly content: string;
-
-  @IsDate()
-  readonly timestamp: Date;
 }

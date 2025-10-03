@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { Image } from 'expo-image';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { ActivityIndicator, Platform, StyleSheet, Button } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { Collapsible } from '@/components/Collapsible';
@@ -51,24 +51,6 @@ export default function ExploreScreen() {
     >
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Explore</ThemedText>
-        <Link
-          href={{ pathname: '/chat', params: { chatId: '123', userId: 'user2', receiverIds: ['user1', 'user3'] } }}
-          style={styles.link}
-        >
-          <ThemedText type="link">Go to Chat</ThemedText>
-        </Link>
-        <Link
-          href={{ pathname: '/chat', params: { chatId: '123', userId: 'user1', receiverIds: ['user2', 'user3'] } }}
-          style={styles.link}
-        >
-          <ThemedText type="link">Go to Chat 2</ThemedText>
-        </Link>
-        <Link
-          href={{ pathname: '/chat', params: { chatId: '123', userId: 'user3', receiverIds: ['user1', 'user2'] } }}
-          style={styles.link}
-        >
-          <ThemedText type="link">Go to Chat 3</ThemedText>
-        </Link>
         <Button
           title={isAuthenticated ? 'Log out' : 'Go to Auth'}
           onPress={isAuthenticated ? handleLogout : handleGoToAuth}

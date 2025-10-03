@@ -11,6 +11,9 @@ export interface SessionTokensSnapshot {
   accessTokenExpiresAt: string | null;
   refreshTokenExpiresAt: string | null;
   updatedAt: string | null;
+  userId: string | null;
+  email: string | null;
+  username: string | null;
 }
 
 export interface SetSessionTokensInput {
@@ -20,6 +23,9 @@ export interface SetSessionTokensInput {
   tokenType?: string | null;
   accessTokenExpiresAt?: string | Date | null;
   refreshTokenExpiresAt?: string | Date | null;
+  userId?: string | null;
+  email?: string | null;
+  username?: string | null;
 }
 
 export interface SessionTokensContextValue {
@@ -40,6 +46,9 @@ const defaultSnapshot: SessionTokensSnapshot = {
   accessTokenExpiresAt: null,
   refreshTokenExpiresAt: null,
   updatedAt: null,
+  userId: null,
+  email: null,
+  username: null,
 };
 
 function toIso(value?: string | Date | null): string | null {
@@ -58,6 +67,9 @@ function sanitizeSnapshot(value: Partial<SessionTokensSnapshot> | null | undefin
     accessTokenExpiresAt: value.accessTokenExpiresAt ?? null,
     refreshTokenExpiresAt: value.refreshTokenExpiresAt ?? null,
     updatedAt: value.updatedAt ?? null,
+    userId: value.userId ?? null,
+    email: value.email ?? null,
+    username: value.username ?? null,
   };
 }
 
@@ -81,6 +93,9 @@ function buildNextSnapshot(current: SessionTokensSnapshot, input: SetSessionToke
     accessTokenExpiresAt: toIso(input.accessTokenExpiresAt) ?? current.accessTokenExpiresAt ?? null,
     refreshTokenExpiresAt: toIso(input.refreshTokenExpiresAt) ?? current.refreshTokenExpiresAt ?? null,
     updatedAt: new Date().toISOString(),
+    userId: input.userId ?? current.userId ?? null,
+    email: input.email ?? current.email ?? null,
+    username: input.username ?? current.username ?? null,
   };
   return next;
 }

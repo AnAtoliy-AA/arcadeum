@@ -1,12 +1,15 @@
-export interface Message {
-  _id: string;
-  content: string;
-  timestamp: Date;
+export interface MessagePayload {
+  id: string;
+  chatId: string;
   senderId: string;
+  senderUsername: string;
+  receiverIds: string[];
+  content: string;
+  timestamp: string;
 }
 
 export type ChatParams = {
   chatId: string;
-  userId: string;
-  receiverIds: string[] | string;
+  receiverIds?: string[] | string;
+  title?: string;
 };

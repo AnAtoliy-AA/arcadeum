@@ -13,9 +13,14 @@ import {
   RefreshTokenDocument,
 } from './schemas/refresh-token.schema';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
+
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 interface OidcDiscoveryDoc {
   token_endpoint?: string;
@@ -28,6 +33,13 @@ export interface OAuthTokenResponse {
   tokenType?: string;
   scope?: string;
   expiresIn?: number;
+}
+
+export interface AuthUserProfile {
+  id: string;
+  email: string;
+  username: string;
+  createdAt?: Date;
 }
 
 @Injectable()
@@ -137,20 +149,37 @@ export class AuthService {
   }
 
   // Local auth (email/password)
-  async register(
-    data: RegisterDto,
-  ): Promise<{ id: string; email: string; createdAt?: Date }> {
+  async register(data: RegisterDto): Promise<AuthUserProfile> {
     const email = data.email.toLowerCase();
-    const existing = await this.userModel.exists({ email });
-    if (existing) throw new ConflictException('Email already registered');
+    const username = data.username.trim();
+    const usernameNormalized = username.toLowerCase();
+
+    const [existingEmail, existingUsername] = await Promise.all([
+      this.userModel.exists({ email }),
+      this.userModel.exists({ usernameNormalized }),
+    ]);
+
+    if (existingEmail) {
+      throw new ConflictException('Email already registered');
+    }
+
+    if (existingUsername) {
+      throw new ConflictException('Username already taken');
+    }
 
     const passwordHash = await bcrypt.hash(data.password, 12);
-    const created = await this.userModel.create({ email, passwordHash });
+    const created = await this.userModel.create({
+      email,
+      passwordHash,
+      username,
+      usernameNormalized,
+    });
     // Access timestamps defensively (schema has timestamps: true)
     const createdAt = (created as Partial<{ createdAt: Date }>).createdAt;
     return {
       id: String(created.id),
       email: created.email,
+      username: created.username,
       createdAt,
     };
   }
@@ -159,17 +188,21 @@ export class AuthService {
     accessToken: string;
     refreshToken: string;
     refreshTokenExpiresAt: Date;
+    user: AuthUserProfile;
   }> {
     const email = data.email.toLowerCase();
-    const user = await this.userModel.findOne({ email });
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+    const userDoc = await this.userModel.findOne({ email });
+    if (!userDoc) throw new UnauthorizedException('Invalid credentials');
+
+    const user = await this.ensureUserUsername(userDoc);
 
     const passwordOk = await bcrypt.compare(data.password, user.passwordHash);
     if (!passwordOk) throw new UnauthorizedException('Invalid credentials');
 
-    const payload: { sub: string; email: string } = {
+    const payload: { sub: string; email: string; username: string } = {
       sub: String(user.id),
       email: user.email,
+      username: user.username,
     };
     const accessToken = await this.jwt.signAsync(payload);
     // Also issue refresh token
@@ -178,6 +211,7 @@ export class AuthService {
       accessToken,
       refreshToken: refresh.token,
       refreshTokenExpiresAt: refresh.expiresAt,
+      user: { id: String(user.id), email: user.email, username: user.username },
     }; // token is raw value
   }
 
@@ -212,11 +246,87 @@ export class AuthService {
     if (!stored) throw new UnauthorizedException('Invalid token');
     // Placeholder: in real flow we would find by hash match using bcrypt.compare
     const userId = String(stored.userId);
-    const newAccess = await this.jwt.signAsync({ sub: userId });
+    const userDoc = await this.userModel.findById(userId);
+    if (!userDoc) {
+      throw new UnauthorizedException('User not found for refresh token');
+    }
+    const user = await this.ensureUserUsername(userDoc);
+    const newAccess = await this.jwt.signAsync({
+      sub: userId,
+      email: user.email,
+      username: user.username,
+    });
     const rotated = await this.issueRefreshToken(userId, String(stored.id));
     // Mark old as revoked
     stored.revoked = true;
     await stored.save();
     return { accessToken: newAccess, refreshToken: rotated.token };
+  }
+
+  async searchUsers(params: {
+    query: string;
+    requestingUserId: string;
+    limit?: number;
+  }): Promise<Array<{ id: string; email: string; username: string }>> {
+    const trimmed = params.query?.trim();
+    if (!trimmed) {
+      return [];
+    }
+
+    const limit = Math.min(Math.max(params.limit ?? 10, 1), 25);
+    const pattern = new RegExp(escapeRegex(trimmed), 'i');
+
+    const users = await this.userModel
+      .find({
+        _id: { $ne: params.requestingUserId },
+        $or: [
+          { username: pattern },
+          { usernameNormalized: pattern },
+          { email: pattern },
+        ],
+      })
+      .sort({ usernameNormalized: 1 })
+      .limit(limit)
+      .exec();
+
+    return users.map((user) => ({
+      id: String(user.id),
+      email: user.email,
+      username: user.username,
+    }));
+  }
+
+  private sanitizeUsernameCandidate(source: string): string {
+    const base = source.replace(/[^a-zA-Z0-9_-]/g, '');
+    if (base.length >= 3) return base;
+    return `user${Math.floor(Math.random() * 9000 + 1000)}`;
+  }
+
+  private async ensureUserUsername(user: UserDocument): Promise<UserDocument> {
+    if (user.username && user.usernameNormalized) {
+      return user;
+    }
+
+    const emailLocal = user.email.split('@')[0] ?? 'user';
+    const base = this.sanitizeUsernameCandidate(emailLocal);
+    let candidate = base;
+    let normalized = candidate.toLowerCase();
+    let suffix = 1;
+
+    while (
+      await this.userModel.exists({
+        usernameNormalized: normalized,
+        _id: { $ne: user._id },
+      })
+    ) {
+      candidate = `${base}${suffix}`;
+      normalized = candidate.toLowerCase();
+      suffix += 1;
+    }
+
+    user.username = candidate;
+    user.usernameNormalized = normalized;
+    await user.save();
+    return user;
   }
 }

@@ -1,6 +1,7 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 import uuid from 'react-native-uuid';
+
 import { socket, useSocket } from '@/hooks/useSocket';
 import { MessagePayload } from './types';
 
@@ -12,6 +13,21 @@ type UseChatParams = {
 };
 
 type ExtendedMessage = IMessage & { pending?: boolean };
+
+function mapToExtendedMessage(payload: MessagePayload): ExtendedMessage {
+  const createdAt = payload.timestamp ? new Date(payload.timestamp) : new Date();
+
+  return {
+    _id: payload.id,
+    text: payload.content,
+    createdAt,
+    user: {
+      _id: payload.senderId,
+      name: payload.senderUsername || payload.senderId,
+    },
+    pending: false,
+  };
+}
 
 export function useChat({
   chatId,
@@ -25,40 +41,62 @@ export function useChat({
     if (Array.isArray(receiverIdsRaw)) {
       return receiverIdsRaw.filter(Boolean);
     }
+
     if (typeof receiverIdsRaw === 'string' && receiverIdsRaw.trim().length > 0) {
-      return receiverIdsRaw.split(',').map((value) => value.trim()).filter(Boolean);
+      return receiverIdsRaw
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean);
     }
+
     return [];
   }, [receiverIdsRaw]);
 
   useEffect(() => {
-    if (!chatId || !currentUserId) return;
+    setMessages([]);
+  }, [chatId]);
+
+  useEffect(() => {
+    if (!chatId || !currentUserId) {
+      return;
+    }
+
     const users = Array.from(new Set([currentUserId, ...receiverIds]));
     socket.emit('joinChat', { chatId, users });
   }, [chatId, currentUserId, receiverIds]);
 
-  useSocket('chatMessages', (loadedMessages: MessagePayload[]) => {
-    const formattedMessages: ExtendedMessage[] = loadedMessages
-      .map((msg) => ({
-        _id: msg.id,
-        text: msg.content,
-        createdAt: new Date(msg.timestamp),
-        user: {
-          _id: msg.senderId,
-          name: msg.senderUsername ?? msg.senderId,
-        },
-      }))
-      .sort((a, b) =>
-        (b.createdAt as Date).getTime() - (a.createdAt as Date).getTime(),
-      );
-    setMessages(formattedMessages);
-  });
+  const handleChatMessages = useCallback(
+    (loadedMessages: MessagePayload[] = []) => {
+      if (!chatId || !Array.isArray(loadedMessages)) {
+        return;
+      }
+
+      const filtered = loadedMessages.filter((payload) => payload.chatId === chatId);
+
+      if (!filtered.length) {
+        return;
+      }
+
+      const normalized = filtered
+        .map(mapToExtendedMessage)
+        .sort(
+          (a, b) =>
+            (b.createdAt as Date).getTime() - (a.createdAt as Date).getTime(),
+        );
+
+      setMessages(normalized);
+    },
+    [chatId],
+  );
+
+  useSocket('chatMessages', handleChatMessages);
 
   const onSend = useCallback(
     (newMessages: IMessage[] = []) => {
       if (!chatId || !currentUserId) {
         return;
       }
+
       newMessages.forEach((message) => {
         const tempId = String(uuid.v4());
         const optimisticMessage: ExtendedMessage = {
@@ -71,6 +109,7 @@ export function useChat({
           },
           pending: true,
         };
+
         setMessages((prev) => GiftedChat.append(prev, [optimisticMessage]));
 
         socket.emit('sendMessage', {
@@ -84,61 +123,51 @@ export function useChat({
     [chatId, currentUserId, currentUsername, receiverIds],
   );
 
-  useSocket('message', (confirmedMessage: MessagePayload) => {
-    setMessages((prev) => {
-      if (!confirmedMessage?.id) {
-        return prev;
+  const handleIncomingMessage = useCallback(
+    (confirmedMessage: MessagePayload) => {
+      if (!chatId || confirmedMessage?.chatId !== chatId) {
+        return;
       }
-      const confirmedId = confirmedMessage.id;
-      const confirmedTimestamp = new Date(confirmedMessage.timestamp);
 
-      const hasOptimistic = prev.some(
-        (msg) =>
-          msg.pending &&
-          msg.text === confirmedMessage.content &&
-          msg.user._id === confirmedMessage.senderId,
-      );
+      setMessages((prev) => {
+        if (!confirmedMessage?.id) {
+          return prev;
+        }
 
-      if (hasOptimistic) {
-        return prev.map((msg) => {
-          if (
+        const normalized = mapToExtendedMessage(confirmedMessage);
+
+        const hasOptimistic = prev.some(
+          (msg) =>
             msg.pending &&
             msg.text === confirmedMessage.content &&
-            msg.user._id === confirmedMessage.senderId
-          ) {
-            return {
-              _id: confirmedId,
-              text: confirmedMessage.content,
-              createdAt: confirmedTimestamp,
-              user: {
-                _id: confirmedMessage.senderId,
-                name: confirmedMessage.senderUsername ?? confirmedMessage.senderId,
-              },
-              pending: false,
-            };
-          }
-          return msg;
-        });
-      }
+            msg.user._id === confirmedMessage.senderId,
+        );
 
-      if (prev.some((msg) => msg._id === confirmedId)) {
-        return prev;
-      }
+        if (hasOptimistic) {
+          return prev.map((msg) => {
+            if (
+              msg.pending &&
+              msg.text === confirmedMessage.content &&
+              msg.user._id === confirmedMessage.senderId
+            ) {
+              return normalized;
+            }
 
-      const newMsg: ExtendedMessage = {
-        _id: confirmedId,
-        text: confirmedMessage.content,
-        createdAt: confirmedTimestamp,
-        user: {
-          _id: confirmedMessage.senderId,
-          name: confirmedMessage.senderUsername ?? confirmedMessage.senderId,
-        },
-        pending: false,
-      };
+            return msg;
+          });
+        }
 
-      return GiftedChat.append(prev, [newMsg]);
-    });
-  });
+        if (prev.some((msg) => msg._id === confirmedMessage.id)) {
+          return prev;
+        }
+
+        return GiftedChat.append(prev, [normalized]);
+      });
+    },
+    [chatId],
+  );
+
+  useSocket('message', handleIncomingMessage);
 
   const isConnected = socket.connected;
 

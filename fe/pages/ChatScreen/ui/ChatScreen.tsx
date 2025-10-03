@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { GiftedChat } from 'react-native-gifted-chat';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ChatParams } from '../model/types';
 import { useChat } from '../model/useChat';
@@ -14,6 +14,9 @@ export default function ChatScreen() {
   const styles = useThemedStyles(createStyles);
   const params = useLocalSearchParams<ChatParams>();
   const { tokens } = useSessionTokens();
+  const router = useRouter();
+  const chatListRoute = '/(tabs)/chats' as const satisfies Href;
+  const homeRoute = '/(tabs)' as const satisfies Href;
   const rawChatId = Array.isArray(params.chatId) ? params.chatId[0] : params.chatId;
   const rawReceiverIds = params.receiverIds;
   const conversationTitle = Array.isArray(params.title) ? params.title[0] : params.title;
@@ -35,9 +38,21 @@ export default function ChatScreen() {
     blockWhenUnauthenticated: true,
   });
 
+  const handleGoBack = useCallback(() => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace({ pathname: chatListRoute });
+    }
+  }, [router, chatListRoute]);
+
+  const handleGoHome = useCallback(() => {
+    router.replace({ pathname: homeRoute });
+  }, [router, homeRoute]);
+
   if (shouldBlock) {
     return (
-      <SafeAreaView style={styles.loadingContainer} edges={['bottom', 'left', 'right']}>
+      <SafeAreaView style={styles.loadingContainer} edges={['top', 'bottom', 'left', 'right']}>
         <ActivityIndicator size="large" />
       </SafeAreaView>
     );
@@ -45,7 +60,7 @@ export default function ChatScreen() {
 
   if (!rawChatId) {
     return (
-      <SafeAreaView style={styles.loadingContainer} edges={['bottom', 'left', 'right']}>
+      <SafeAreaView style={styles.loadingContainer} edges={['top', 'bottom', 'left', 'right']}>
         <ThemedText style={styles.statusText}>Chat not found</ThemedText>
       </SafeAreaView>
     );
@@ -53,13 +68,21 @@ export default function ChatScreen() {
 
   if (!currentUserId) {
     return (
-      <SafeAreaView style={styles.loadingContainer} edges={['bottom', 'left', 'right']}>
+      <SafeAreaView style={styles.loadingContainer} edges={['top', 'bottom', 'left', 'right']}>
         <ActivityIndicator size="large" />
       </SafeAreaView>
     );
   }
   return (
-    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
+      <View style={styles.navRow}>
+        <TouchableOpacity style={styles.navButton} onPress={handleGoBack}>
+          <ThemedText style={styles.navButtonText}>Back to chats</ThemedText>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton} onPress={handleGoHome}>
+          <ThemedText style={styles.navButtonText}>Go to home</ThemedText>
+        </TouchableOpacity>
+      </View>
       <View style={styles.statusRow}>
         <View
           style={[
@@ -95,6 +118,7 @@ function createStyles(palette: Palette) {
     container: {
       flex: 1,
       backgroundColor: palette.background,
+      paddingTop: 12,
     },
     statusRow: {
       flexDirection: 'row',
@@ -130,6 +154,26 @@ function createStyles(palette: Palette) {
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: palette.background,
+      paddingTop: 12,
+    },
+    navRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      gap: 12,
+    },
+    navButton: {
+      paddingVertical: 8,
+      paddingHorizontal: 12,
+      borderRadius: 8,
+      backgroundColor: palette.tint,
+    },
+    navButtonText: {
+      color: palette.background,
+      fontSize: 14,
+      fontWeight: '600',
     },
   });
 }

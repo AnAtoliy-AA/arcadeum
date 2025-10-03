@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -339,41 +340,51 @@ export default function ChatListScreen() {
 
   if (shouldBlock) {
     return (
-      <ThemedView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" />
-      </ThemedView>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom', 'left', 'right']}>
+        <ThemedView style={styles.loadingContainer}>
+          <ActivityIndicator size="large" />
+        </ThemedView>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ThemedView style={styles.container}>
-      <FlatList
-        data={chats}
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContent}
-        keyboardShouldPersistTaps="handled"
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={refresh} />
-        }
-        ListHeaderComponent={listHeader}
-        ListEmptyComponent={emptyComponent}
-      />
-    </ThemedView>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom', 'left', 'right']}>
+      <ThemedView style={styles.container}>
+        <FlatList
+          data={chats}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContent}
+          keyboardShouldPersistTaps="handled"
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+          }
+          ListHeaderComponent={listHeader}
+          ListEmptyComponent={emptyComponent}
+        />
+      </ThemedView>
+    </SafeAreaView>
   );
 }
 
 function createStyles(palette: Palette) {
   return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: palette.background,
+    },
     container: {
       flex: 1,
       backgroundColor: palette.background,
+      paddingTop: 12,
     },
     loadingContainer: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: palette.background,
+      paddingTop: 12,
     },
     listContent: {
       paddingVertical: 12,

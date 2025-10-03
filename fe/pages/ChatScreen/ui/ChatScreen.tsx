@@ -1,17 +1,31 @@
 import React from 'react';
 import { GiftedChat } from 'react-native-gifted-chat';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ChatParams } from '../model/types';
 import { useChat } from '../model/useChat';
 import { useThemedStyles, Palette } from '@/hooks/useThemedStyles';
+import { useSessionScreenGate } from '@/hooks/useSessionScreenGate';
 
 export default function ChatScreen() {
   const styles = useThemedStyles(createStyles);
   const { chatId, userId, receiverIds } = useLocalSearchParams<ChatParams>();
   const { messages, onSend, isConnected } = useChat({ chatId, userId, receiverIds });
+  const { shouldBlock } = useSessionScreenGate({
+    whenUnauthenticated: '/auth',
+    enableOn: ['web'],
+    blockWhenUnauthenticated: true,
+  });
+
+  if (shouldBlock) {
+    return (
+      <SafeAreaView style={styles.loadingContainer} edges={['bottom', 'left', 'right']}>
+        <ActivityIndicator size="large" />
+      </SafeAreaView>
+    );
+  }
   return (
     <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
       <View style={styles.statusRow}>
@@ -63,6 +77,12 @@ function createStyles(palette: Palette) {
     statusText: {
       fontSize: 16,
       color: palette.text,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: palette.background,
     },
   });
 }

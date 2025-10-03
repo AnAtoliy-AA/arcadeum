@@ -1,13 +1,36 @@
 import React from 'react';
-import { StyleSheet, View, Text, Button, Platform, SafeAreaView } from 'react-native';
+import { StyleSheet, View, Text, Button, SafeAreaView, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useThemedStyles, Palette } from '@/hooks/useThemedStyles';
+import { useSessionScreenGate } from '@/hooks/useSessionScreenGate';
+import { platform } from '@/constants/platform';
 
 export default function WelcomeScreen() {
   const router = useRouter();
   const styles = useThemedStyles(createStyles);
+  const { isAuthenticated, redirectEnabled, shouldBlock } = useSessionScreenGate({
+    whenAuthenticated: '/(tabs)',
+    enableOn: ['web'],
+    blockWhenAuthenticated: true,
+  });
+
+  if (shouldBlock) {
+    return (
+      <ThemedView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" />
+      </ThemedView>
+    );
+  }
+
+  const handlePrimaryPress = () => {
+    if (isAuthenticated && !redirectEnabled) {
+      router.replace('/(tabs)');
+    } else {
+      router.push('/auth');
+    }
+  };
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -20,11 +43,14 @@ export default function WelcomeScreen() {
             modular architecture, and theming for mobile & web via Expo.
           </Text>
           <View style={styles.actions}>
-            <Button title="Get Started" onPress={() => router.push('/auth')} />
+            <Button
+              title={isAuthenticated && !redirectEnabled ? 'Open the app' : 'Get Started'}
+              onPress={handlePrimaryPress}
+            />
           </View>
         </View>
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Running on {Platform.OS}</Text>
+          <Text style={styles.footerText}>Running on {platform.os}</Text>
         </View>
       </SafeAreaView>
     </ThemedView>
@@ -58,8 +84,8 @@ function createStyles(palette: Palette) {
       letterSpacing: 0.5,
       textAlign: 'center',
       lineHeight: 52,
-      paddingTop: Platform.OS === 'ios' ? 8 : 0,
-      marginTop: Platform.OS === 'ios' ? 4 : 0,
+  paddingTop: platform.isIos ? 8 : 0,
+  marginTop: platform.isIos ? 4 : 0,
       color: palette.text,
     },
     tagline: {
@@ -85,6 +111,12 @@ function createStyles(palette: Palette) {
       fontSize: 12,
       color: palette.icon,
       textAlign: 'center',
+    },
+    loadingContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: palette.background,
     },
   });
 }

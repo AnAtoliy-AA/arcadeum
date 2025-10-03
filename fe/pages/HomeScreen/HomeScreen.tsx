@@ -1,14 +1,28 @@
 import React from 'react';
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { HelloWave } from '@/components/HelloWave';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemedStyles, Palette } from '@/hooks/useThemedStyles';
+import { useSessionScreenGate } from '@/hooks/useSessionScreenGate';
 
 export default function HomeScreen() {
   const styles = useThemedStyles(createStyles);
+  const { shouldBlock } = useSessionScreenGate({
+    whenUnauthenticated: '/auth',
+    enableOn: ['web'],
+    blockWhenUnauthenticated: true,
+  });
+
+  if (shouldBlock) {
+    return (
+      <ThemedView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" />
+      </ThemedView>
+    );
+  }
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -70,6 +84,12 @@ function createStyles(palette: Palette) {
       left: 0,
       position: 'absolute',
       // not themed intentionally; image asset coloration stands alone
+    },
+    loadingContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: palette.background,
     },
   });
 }

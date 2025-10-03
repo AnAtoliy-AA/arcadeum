@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
-import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+import { platform } from '@/constants/platform';
 
 function resolveSocketUrl(): string {
   // 1) Explicit override via env (works in Expo with EXPO_PUBLIC_*)
@@ -17,12 +17,12 @@ function resolveSocketUrl(): string {
   if (hostFromExpo) return `http://${hostFromExpo}:4000`;
 
   // 3) Web: use current hostname
-  if (Platform.OS === 'web' && typeof window !== 'undefined') {
+  if (platform.isWeb && typeof window !== 'undefined') {
     return `http://${window.location.hostname}:4000`;
   }
 
   // 4) Emulators fallback
-  const fallbackHost = Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
+  const fallbackHost = platform.isAndroid ? '10.0.2.2' : 'localhost';
 
   return `http://${fallbackHost}:4000`;
 }

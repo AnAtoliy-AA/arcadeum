@@ -1,7 +1,7 @@
 import { authorize, AuthorizeResult, revoke } from 'react-native-app-auth';
 import Constants from 'expo-constants';
-import { Platform } from 'react-native';
 import * as AuthSession from 'expo-auth-session';
+import { platform } from '@/constants/platform';
 import { authConfig } from '../config/authConfig';
 
 function validateConfig() {
@@ -11,7 +11,7 @@ function validateConfig() {
   if (!authConfig.issuer) missing.push('issuer');
   if (missing.length) {
     throw new Error(
-      `Missing OAuth config for ${Platform.OS}. Missing: ${missing.join(', ')}. Check your .env and app.config.ts.`
+  `Missing OAuth config for ${platform.os}. Missing: ${missing.join(', ')}. Check your .env and app.config.ts.`
     );
   }
 }
@@ -51,19 +51,19 @@ async function startWebAuth(): Promise<AuthorizeResult> {
 export async function loginWithOAuth(): Promise<AuthorizeResult> {
   validateConfig();
 
-  if (Platform.OS === 'web') {
+  if (platform.isWeb) {
     logDevConfig('Web');
     return startWebAuth();
   }
 
-  if (Platform.OS === 'android') logDevConfig('Android');
-  if (Platform.OS === 'ios') logDevConfig('iOS');
+  if (platform.isAndroid) logDevConfig('Android');
+  if (platform.isIos) logDevConfig('iOS');
 
   try {
     return await authorize(authConfig);
   } catch (e: any) {
     const message = e?.message || String(e);
-    console.error(`[${Platform.OS}] OAuth authorize failed:`, message);
+    console.error(`[${platform.os}] OAuth authorize failed:`, message);
     throw e;
   }
 }
@@ -72,7 +72,7 @@ export async function logoutOAuth(params: { accessToken?: string; refreshToken?:
   const { accessToken, refreshToken } = params;
 
   try {
-    if (Platform.OS === 'web') {
+    if (platform.isWeb) {
       if (!accessToken) return; // nothing to revoke client-side
       const discovery = await AuthSession.fetchDiscoveryAsync(authConfig.issuer);
       if (discovery.revocationEndpoint) {
@@ -90,7 +90,7 @@ export async function logoutOAuth(params: { accessToken?: string; refreshToken?:
     }
   } catch (e: any) {
     const message = e?.message || String(e);
-    console.warn(`[${Platform.OS}] OAuth revoke failed:`, message);
+    console.warn(`[${platform.os}] OAuth revoke failed:`, message);
   }
 }
 
@@ -111,7 +111,97 @@ interface LoginResponse {
 function apiBase(): string {
   const extra = (Constants as any)?.expoConfig?.extra as Record<string, any> | undefined;
   const raw = (extra?.API_BASE_URL as string | undefined) || process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:4000';
-  return raw.replace(/\/$/, '');
+  const normalized = raw.replace(/\/$/, '');
+
+  if (platform.isWeb) {
+    return normalized;
+  }
+
+  return resolveDeviceAwareBase(normalized);
+}
+
+function resolveDeviceAwareBase(urlString: string): string {
+  try {
+    const parsed = new URL(urlString);
+    if (!isLocalHost(parsed.hostname)) {
+      return urlString;
+    }
+
+    const overrideHost = pickHostOverride();
+    if (overrideHost) {
+      parsed.hostname = overrideHost;
+      return parsed.toString().replace(/\/$/, '');
+    }
+
+    const hostOverride = deriveDevServerHost();
+    if (hostOverride) {
+      parsed.hostname = hostOverride;
+      return parsed.toString().replace(/\/$/, '');
+    }
+
+    if (platform.isAndroid) {
+      parsed.hostname = '10.0.2.2';
+      return parsed.toString().replace(/\/$/, '');
+    }
+  } catch {
+    // Swallow parse errors and fall through to original urlString
+  }
+  return urlString;
+}
+
+function isLocalHost(host: string): boolean {
+  return host === 'localhost' || host === '127.0.0.1';
+}
+
+function deriveDevServerHost(): string | undefined {
+  const expoConfig = Constants as any;
+  const expoGo = expoConfig?.expoGoConfig ?? {};
+  const manifest = expoConfig?.manifest ?? {};
+  const manifest2 = expoConfig?.manifest2 ?? {};
+
+  const candidates: (string | undefined)[] = [
+    expoGo.debuggerHost,
+    expoGo.hostUri,
+    expoGo.url,
+    expoConfig?.expoConfig?.hostUri,
+    manifest.debuggerHost,
+    manifest.hostUri,
+    manifest2?.extra?.expoGo?.developer?.host,
+  ];
+
+  for (const candidate of candidates) {
+    const host = extractRemoteHost(candidate);
+    if (host && !isLocalHost(host)) {
+      return host;
+    }
+  }
+
+  return undefined;
+}
+
+function pickHostOverride(): string | undefined {
+  const extra = (Constants as any)?.expoConfig?.extra as Record<string, unknown> | undefined;
+  const envValue = process.env.EXPO_PUBLIC_ANDROID_DEV_HOST as string | undefined;
+  const extraValue = (extra?.ANDROID_DEV_HOST as string | undefined) ?? (extra?.androidDevHost as string | undefined);
+
+  const host = extractRemoteHost(envValue ?? extraValue);
+  if (host && !isLocalHost(host)) {
+    return host;
+  }
+  return undefined;
+}
+
+function extractRemoteHost(candidate?: string): string | undefined {
+  if (!candidate) return undefined;
+
+  try {
+    const url = new URL(candidate.includes('://') ? candidate : `http://${candidate}`);
+    return url.hostname;
+  } catch {
+    const withoutScheme = candidate.replace(/^[a-zA-Z]+:\/\//, '');
+    const host = withoutScheme.split(':')[0]?.split('/')[0]?.trim();
+    return host || undefined;
+  }
 }
 
 export async function registerLocal(email: string, password: string): Promise<RegisterResponse> {

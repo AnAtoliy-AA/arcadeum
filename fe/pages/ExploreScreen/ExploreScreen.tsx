@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Image } from 'expo-image';
 import { Link, router } from 'expo-router';
-import { Platform, StyleSheet, Button } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, Button } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -9,9 +9,34 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles, Palette } from '@/hooks/useThemedStyles';
+import { useSessionScreenGate } from '@/hooks/useSessionScreenGate';
+import { useSessionTokens } from '@/stores/sessionTokens';
 
 export default function ExploreScreen() {
   const styles = useThemedStyles(createStyles);
+  const { clearTokens } = useSessionTokens();
+  const { shouldBlock, isAuthenticated } = useSessionScreenGate({
+    whenUnauthenticated: '/auth',
+    enableOn: ['web'],
+    blockWhenUnauthenticated: true,
+  });
+
+  const handleGoToAuth = useCallback(() => {
+    router.push('/auth');
+  }, []);
+
+  const handleLogout = useCallback(async () => {
+    await clearTokens();
+    router.replace('/auth');
+  }, [clearTokens]);
+
+  if (shouldBlock) {
+    return (
+      <ThemedView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" />
+      </ThemedView>
+    );
+  }
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -44,7 +69,10 @@ export default function ExploreScreen() {
         >
           <ThemedText type="link">Go to Chat 3</ThemedText>
         </Link>
-        <Button title="Go to Auth" onPress={() => router.push('/auth')} />
+        <Button
+          title={isAuthenticated ? 'Log out' : 'Go to Auth'}
+          onPress={isAuthenticated ? handleLogout : handleGoToAuth}
+        />
       </ThemedView>
       <ThemedText>
         This app includes example code to help you get started.
@@ -122,6 +150,12 @@ function createStyles(palette: Palette) {
     link: {
       marginLeft: 10,
       paddingVertical: 8,
+    },
+    loadingContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: palette.background,
     },
   });
 }

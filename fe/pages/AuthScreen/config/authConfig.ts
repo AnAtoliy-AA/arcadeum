@@ -1,7 +1,6 @@
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-
-const isWeb = Platform.OS === 'web';
+import { platform } from '@/constants/platform';
 const extra = (Constants.expoConfig?.extra ?? (Constants.manifest as any)?.extra ?? {}) as Record<string, string | undefined>;
 
 const {
@@ -17,7 +16,7 @@ const {
 const clientId = Platform.select({
   android: AUTH_ANDROID_CLIENT_ID,
   ios: AUTH_IOS_CLIENT_ID,
-  default: isWeb
+  default: platform.isWeb
     ? process.env.EXPO_PUBLIC_AUTH_WEB_CLIENT_ID || AUTH_WEB_CLIENT_ID
     : AUTH_WEB_CLIENT_ID,
 });
@@ -29,7 +28,7 @@ const redirectUrl = Platform.select({
   ios: AUTH_IOS_REDIRECT_SCHEME
     ? `${AUTH_IOS_REDIRECT_SCHEME}:/oauth2redirect/google`
     : undefined,
-  default: isWeb
+  default: platform.isWeb
     ? process.env.EXPO_PUBLIC_AUTH_WEB_REDIRECT_URL || AUTH_WEB_REDIRECT_URL
     : AUTH_WEB_REDIRECT_URL,
 });

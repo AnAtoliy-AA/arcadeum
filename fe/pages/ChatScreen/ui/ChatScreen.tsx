@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { View, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ChatParams } from '../model/types';
@@ -15,6 +15,7 @@ export default function ChatScreen() {
   const params = useLocalSearchParams<ChatParams>();
   const { tokens } = useSessionTokens();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const chatListRoute = '/(tabs)/chats' as const satisfies Href;
   const homeRoute = '/(tabs)' as const satisfies Href;
   const rawChatId = Array.isArray(params.chatId) ? params.chatId[0] : params.chatId;
@@ -52,69 +53,85 @@ export default function ChatScreen() {
 
   if (shouldBlock) {
     return (
-      <SafeAreaView style={styles.loadingContainer} edges={['top', 'bottom', 'left', 'right']}>
-        <ActivityIndicator size="large" />
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <View style={[styles.loadingContainer, { paddingBottom: insets.bottom }]}>
+          <ActivityIndicator size="large" />
+        </View>
       </SafeAreaView>
     );
   }
 
   if (!rawChatId) {
     return (
-      <SafeAreaView style={styles.loadingContainer} edges={['top', 'bottom', 'left', 'right']}>
-        <ThemedText style={styles.statusText}>Chat not found</ThemedText>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <View style={[styles.loadingContainer, { paddingBottom: insets.bottom }]}>
+          <ThemedText style={styles.statusText}>Chat not found</ThemedText>
+        </View>
       </SafeAreaView>
     );
   }
 
   if (!currentUserId) {
     return (
-      <SafeAreaView style={styles.loadingContainer} edges={['top', 'bottom', 'left', 'right']}>
-        <ActivityIndicator size="large" />
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <View style={[styles.loadingContainer, { paddingBottom: insets.bottom }]}>
+          <ActivityIndicator size="large" />
+        </View>
       </SafeAreaView>
     );
   }
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
-      <View style={styles.navRow}>
-        <TouchableOpacity style={styles.navButton} onPress={handleGoBack}>
-          <ThemedText style={styles.navButtonText}>Back to chats</ThemedText>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress={handleGoHome}>
-          <ThemedText style={styles.navButtonText}>Go to home</ThemedText>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.statusRow}>
-        <View
-          style={[
-            styles.statusCircle,
-            { backgroundColor: isConnected ? styles.statusCircleConnected.backgroundColor : styles.statusCircleDisconnected.backgroundColor },
-          ]}
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <View style={[styles.container, { paddingBottom: insets.bottom }]}>
+        <View style={styles.navRow}>
+          <TouchableOpacity style={styles.navButton} onPress={handleGoBack}>
+            <ThemedText style={styles.navButtonText}>Back to chats</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navButton} onPress={handleGoHome}>
+            <ThemedText style={styles.navButtonText}>Go to home</ThemedText>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.statusRow}>
+          <View
+            style={[
+              styles.statusCircle,
+              {
+                backgroundColor: isConnected
+                  ? styles.statusCircleConnected.backgroundColor
+                  : styles.statusCircleDisconnected.backgroundColor,
+              },
+            ]}
+          />
+          <ThemedText style={styles.statusText}>
+            {isConnected ? 'Connected to chat server' : 'Connecting...'}
+          </ThemedText>
+        </View>
+        {conversationTitle && (
+          <ThemedText style={styles.chatTitle} numberOfLines={2}>
+            {conversationTitle}
+          </ThemedText>
+        )}
+        <GiftedChat
+          messages={messages}
+          onSend={onSend}
+          user={{
+            _id: giftedUserId,
+            name: giftedUserName,
+          }}
+          showUserAvatar
+          renderUsernameOnMessage
         />
-        <ThemedText style={styles.statusText}>
-          {isConnected ? 'Connected to chat server' : 'Connecting...'}
-        </ThemedText>
       </View>
-      {conversationTitle && (
-        <ThemedText style={styles.chatTitle} numberOfLines={2}>
-          {conversationTitle}
-        </ThemedText>
-      )}
-      <GiftedChat
-        messages={messages}
-        onSend={onSend}
-        user={{
-          _id: giftedUserId,
-          name: giftedUserName,
-        }}
-        showUserAvatar
-        renderUsernameOnMessage
-      />
     </SafeAreaView>
   );
 }
 
 function createStyles(palette: Palette) {
   return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: palette.background,
+    },
     container: {
       flex: 1,
       backgroundColor: palette.background,

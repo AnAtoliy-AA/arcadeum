@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { loginLocal, registerLocal, me } from '../api/authApi';
+import { loginLocal, registerLocal, me, resolveApiBase } from '../api/authApi';
 import { SecureStoreShim } from '@/lib/secureStore';
 import { useSessionTokens } from '@/stores/sessionTokens';
 
@@ -81,7 +81,13 @@ export function useLocalAuth() {
         loading: false,
       }));
     } catch (e) {
-      setState(s => ({ ...s, loading: false, error: e instanceof Error ? e.message : String(e) }));
+      const message = e instanceof Error ? e.message : String(e);
+      const apiHint = resolveApiBase();
+      setState(s => ({
+        ...s,
+        loading: false,
+        error: `${message}\nCheck that the backend at ${apiHint} is running and accessible from the web app.`,
+      }));
     }
   }, [persistSessionTokens]);
 

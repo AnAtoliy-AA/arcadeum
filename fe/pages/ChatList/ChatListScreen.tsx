@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -88,6 +88,7 @@ function useChatList(accessToken?: string | null) {
 export default function ChatListScreen() {
   const styles = useThemedStyles(createStyles);
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { tokens } = useSessionTokens();
   const {
     shouldBlock,
@@ -340,8 +341,8 @@ export default function ChatListScreen() {
 
   if (shouldBlock) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom', 'left', 'right']}>
-        <ThemedView style={styles.loadingContainer}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <ThemedView style={[styles.loadingContainer, { paddingBottom: insets.bottom }]}>
           <ActivityIndicator size="large" />
         </ThemedView>
       </SafeAreaView>
@@ -349,8 +350,8 @@ export default function ChatListScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom', 'left', 'right']}>
-      <ThemedView style={styles.container}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <ThemedView style={[styles.container, { paddingBottom: insets.bottom }]}>
         <FlatList
           data={chats}
           keyExtractor={keyExtractor}

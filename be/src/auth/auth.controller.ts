@@ -15,6 +15,7 @@ import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
 import { JwtAuthGuard } from './jwt/jwt.guard';
 import { AuthenticatedUser } from './jwt/jwt.strategy';
+import { OAuthLoginDto } from './dtos/oauth-login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -37,6 +38,11 @@ export class AuthController {
   @Post('login')
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
+  }
+
+  @Post('oauth/login')
+  oauthLogin(@Body() dto: OAuthLoginDto) {
+    return this.authService.loginWithOAuth(dto);
   }
 
   @Get('me')

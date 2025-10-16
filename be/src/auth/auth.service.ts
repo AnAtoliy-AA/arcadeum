@@ -17,6 +17,7 @@ import * as crypto from 'crypto';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
+import { OAuthLoginDto } from './dtos/oauth-login.dto';
 
 function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -40,6 +41,14 @@ export interface AuthUserProfile {
   email: string;
   username: string;
   createdAt?: Date;
+}
+
+interface GoogleUserProfile {
+  sub: string;
+  email: string;
+  emailVerified: boolean;
+  name?: string;
+  audience?: string;
 }
 
 @Injectable()
@@ -215,6 +224,48 @@ export class AuthService {
     }; // token is raw value
   }
 
+  async loginWithOAuth(data: OAuthLoginDto): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    refreshTokenExpiresAt: Date;
+    user: AuthUserProfile;
+  }> {
+    if (data.provider !== 'google') {
+      throw new UnauthorizedException('Unsupported OAuth provider');
+    }
+
+    if (!data.accessToken && !data.idToken) {
+      throw new UnauthorizedException('Missing OAuth credentials');
+    }
+
+    const profile = await this.fetchGoogleProfile({
+      accessToken: data.accessToken,
+      idToken: data.idToken,
+    });
+
+    if (!profile.emailVerified) {
+      throw new UnauthorizedException('Google account email not verified');
+    }
+
+    const user = await this.getOrCreateOAuthUser(profile);
+
+    const payload: { sub: string; email: string; username: string } = {
+      sub: String(user.id),
+      email: user.email,
+      username: user.username,
+    };
+
+    const accessToken = await this.jwt.signAsync(payload);
+    const refresh = await this.issueRefreshToken(String(user.id), null);
+
+    return {
+      accessToken,
+      refreshToken: refresh.token,
+      refreshTokenExpiresAt: refresh.expiresAt,
+      user: { id: String(user.id), email: user.email, username: user.username },
+    };
+  }
+
   // Refresh token issuance (rotation)
   private async issueRefreshToken(
     userId: string,
@@ -328,5 +379,146 @@ export class AuthService {
     user.usernameNormalized = normalized;
     await user.save();
     return user;
+  }
+
+  private async getOrCreateOAuthUser(
+    profile: GoogleUserProfile,
+  ): Promise<UserDocument> {
+    const email = profile.email.toLowerCase();
+    const existing = await this.userModel.findOne({ email });
+    if (existing) {
+      return this.ensureUserUsername(existing);
+    }
+
+    const preferredName = profile.name?.trim() || email.split('@')[0] || 'user';
+    const base = this.sanitizeUsernameCandidate(preferredName);
+    let candidate = base;
+    let normalized = candidate.toLowerCase();
+    let suffix = 1;
+
+    while (await this.userModel.exists({ usernameNormalized: normalized })) {
+      candidate = `${base}${suffix}`;
+      normalized = candidate.toLowerCase();
+      suffix += 1;
+    }
+
+    const placeholderPassword = await bcrypt.hash(crypto.randomUUID(), 12);
+
+    const created = await this.userModel.create({
+      email,
+      passwordHash: placeholderPassword,
+      username: candidate,
+      usernameNormalized: normalized,
+    });
+
+    return created;
+  }
+
+  private getAllowedOAuthClientIds(): string[] {
+    const clientIds = [
+      this.config.get<string>('OAUTH_WEB_CLIENT_ID'),
+      this.config.get<string>('OAUTH_ANDROID_CLIENT_ID'),
+      this.config.get<string>('OAUTH_IOS_CLIENT_ID'),
+    ];
+
+    return clientIds.filter((value): value is string => Boolean(value));
+  }
+
+  private async fetchGoogleProfile(params: {
+    accessToken?: string;
+    idToken?: string;
+  }): Promise<GoogleUserProfile> {
+    const allowedAudiences = this.getAllowedOAuthClientIds();
+
+    const attemptFromAccessToken = async () => {
+      if (!params.accessToken) return null;
+      const res = await fetch(
+        'https://openidconnect.googleapis.com/v1/userinfo',
+        {
+          headers: { Authorization: `Bearer ${params.accessToken}` },
+        },
+      );
+      if (!res.ok) {
+        return null;
+      }
+      const json = (await res.json()) as Record<string, unknown>;
+      const email =
+        typeof json.email === 'string' ? json.email.toLowerCase() : '';
+      const sub = typeof json.sub === 'string' ? json.sub : '';
+      const name = typeof json.name === 'string' ? json.name : undefined;
+      const emailVerifiedRaw = json.email_verified;
+      const emailVerified =
+        emailVerifiedRaw === true ||
+        emailVerifiedRaw === 'true' ||
+        emailVerifiedRaw === 1 ||
+        emailVerifiedRaw === '1';
+      const aud = typeof json.aud === 'string' ? json.aud : undefined;
+
+      if (!email || !sub) {
+        return null;
+      }
+
+      if (allowedAudiences.length && aud && !allowedAudiences.includes(aud)) {
+        throw new UnauthorizedException('OAuth client mismatch');
+      }
+
+      return {
+        sub,
+        email,
+        emailVerified,
+        name,
+        audience: aud,
+      } satisfies GoogleUserProfile;
+    };
+
+    const attemptFromIdToken = async () => {
+      if (!params.idToken) return null;
+      const res = await fetch(
+        `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(params.idToken)}`,
+      );
+      if (!res.ok) {
+        return null;
+      }
+      const json = (await res.json()) as Record<string, unknown>;
+      const email =
+        typeof json.email === 'string' ? json.email.toLowerCase() : '';
+      const sub = typeof json.sub === 'string' ? json.sub : '';
+      const name = typeof json.name === 'string' ? json.name : undefined;
+      const emailVerifiedRaw = json.email_verified;
+      const emailVerified =
+        emailVerifiedRaw === true ||
+        emailVerifiedRaw === 'true' ||
+        emailVerifiedRaw === 1 ||
+        emailVerifiedRaw === '1';
+      const aud = typeof json.aud === 'string' ? json.aud : undefined;
+
+      if (!email || !sub) {
+        return null;
+      }
+
+      if (allowedAudiences.length && aud && !allowedAudiences.includes(aud)) {
+        throw new UnauthorizedException('OAuth client mismatch');
+      }
+
+      return {
+        sub,
+        email,
+        emailVerified,
+        name,
+        audience: aud,
+      } satisfies GoogleUserProfile;
+    };
+
+    const fromAccessToken = await attemptFromAccessToken();
+    if (fromAccessToken) {
+      return fromAccessToken;
+    }
+
+    const fromIdToken = await attemptFromIdToken();
+    if (fromIdToken) {
+      return fromIdToken;
+    }
+
+    throw new UnauthorizedException('Unable to validate OAuth tokens');
   }
 }

@@ -106,7 +106,7 @@ interface RegisterResponse extends AuthUserProfile {
   createdAt?: string;
 }
 
-interface LoginResponse {
+export interface LoginResponse {
   accessToken: string;
   refreshToken?: string;
   refreshTokenExpiresAt?: string | Date;
@@ -237,6 +237,23 @@ export async function loginLocal(email: string, password: string): Promise<Login
   if (!res.ok) {
     const text = await res.text();
     throw new Error(text || 'Login failed');
+  }
+  return res.json() as Promise<LoginResponse>;
+}
+
+export async function loginOAuthSession(params: {
+  provider: 'google';
+  accessToken?: string;
+  idToken?: string;
+}): Promise<LoginResponse> {
+  const res = await fetch(`${apiBase()}/auth/oauth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || 'OAuth session exchange failed');
   }
   return res.json() as Promise<LoginResponse>;
 }

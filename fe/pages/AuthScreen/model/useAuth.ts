@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { AuthorizeResult } from 'react-native-app-auth';
-import { loginWithOAuth, logoutOAuth } from '../api/authApi';
+import { loginOAuthSession, loginWithOAuth, logoutOAuth } from '../api/authApi';
 import { Platform } from 'react-native';
 import { authConfig } from '../config/authConfig';
 import { useLocalSearchParams, useRootNavigationState } from 'expo-router';
 import Constants from 'expo-constants';
 import { useSessionTokens } from '@/stores/sessionTokens';
+import type { LoginResponse } from '../api/authApi';
 
 export function useAuth() {
   const [authState, setAuthState] = useState<AuthorizeResult | null>(null);
@@ -42,15 +43,27 @@ export function useAuth() {
     try {
       const result = await loginWithOAuth();
       const extended = result as ExtendedAuthorizeResult;
-      if (extended.accessToken) {
-        await persistTokens({
-          provider: 'oauth',
-          accessToken: extended.accessToken,
-          refreshToken: extended.refreshToken ?? null,
-          tokenType: extended.tokenType ?? 'Bearer',
-          accessTokenExpiresAt: extended.accessTokenExpirationDate ?? null,
-        });
+      if (!extended.accessToken && !extended.idToken) {
+        throw new Error('OAuth provider did not return usable tokens');
       }
+
+      const session = await loginOAuthSession({
+        provider: 'google',
+        accessToken: extended.accessToken,
+        idToken: extended.idToken,
+      });
+
+      await persistTokens({
+        provider: 'oauth',
+        accessToken: session.accessToken,
+        refreshToken: session.refreshToken ?? null,
+        tokenType: 'Bearer',
+        refreshTokenExpiresAt: session.refreshTokenExpiresAt ?? null,
+        userId: session.user?.id ?? null,
+        email: session.user?.email ?? null,
+        username: session.user?.username ?? null,
+      });
+
       setAuthState(result);
       setError(null);
     } catch (e) {
@@ -122,16 +135,27 @@ export function useAuth() {
           if (json.refreshToken) baseResult.refreshToken = json.refreshToken;
           if (json.idToken) baseResult.idToken = json.idToken;
           const authorizeResult = baseResult as ExtendedAuthorizeResult;
-          if (authorizeResult.accessToken) {
-            await persistTokens({
-              provider: 'oauth',
-              accessToken: authorizeResult.accessToken,
-              refreshToken: authorizeResult.refreshToken ?? null,
-              tokenType: authorizeResult.tokenType ?? 'Bearer',
-              accessTokenExpiresAt: authorizeResult.accessTokenExpirationDate ?? null,
-              refreshTokenExpiresAt: json.refreshTokenExpiresAt ?? null,
-            });
+
+          if (!authorizeResult.accessToken && !authorizeResult.idToken) {
+            throw new Error('OAuth provider did not return usable tokens');
           }
+
+          const session: LoginResponse = await loginOAuthSession({
+            provider: 'google',
+            accessToken: authorizeResult.accessToken,
+            idToken: authorizeResult.idToken ?? json.idToken,
+          });
+
+          await persistTokens({
+            provider: 'oauth',
+            accessToken: session.accessToken,
+            refreshToken: session.refreshToken ?? null,
+            tokenType: 'Bearer',
+            refreshTokenExpiresAt: session.refreshTokenExpiresAt ?? null,
+            userId: session.user?.id ?? null,
+            email: session.user?.email ?? null,
+            username: session.user?.username ?? null,
+          });
           setAuthState(authorizeResult as AuthorizeResult);
           setError(null);
         } catch (err) {

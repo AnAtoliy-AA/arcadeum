@@ -56,6 +56,7 @@ export function useAuth() {
       await persistTokens({
         provider: 'oauth',
         accessToken: session.accessToken,
+        accessTokenExpiresAt: session.accessTokenExpiresAt ?? null,
         refreshToken: session.refreshToken ?? null,
         tokenType: 'Bearer',
         refreshTokenExpiresAt: session.refreshTokenExpiresAt ?? null,
@@ -149,6 +150,7 @@ export function useAuth() {
           await persistTokens({
             provider: 'oauth',
             accessToken: session.accessToken,
+            accessTokenExpiresAt: session.accessTokenExpiresAt ?? null,
             refreshToken: session.refreshToken ?? null,
             tokenType: 'Bearer',
             refreshTokenExpiresAt: session.refreshTokenExpiresAt ?? null,

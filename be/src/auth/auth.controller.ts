@@ -16,13 +16,14 @@ import { LoginDto } from './dtos/login.dto';
 import { JwtAuthGuard } from './jwt/jwt.guard';
 import { AuthenticatedUser } from './jwt/jwt.strategy';
 import { OAuthLoginDto } from './dtos/oauth-login.dto';
+import { RefreshTokenRequestDto } from './dtos/refresh-token-request.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('token')
-  async exchange(@Body() dto: TokenExchangeDto) {
+  async exchange(@Body() dto: TokenExchangeDto): Promise<any> {
     return await this.authService.exchangeCode({
       code: dto.code,
       codeVerifier: dto.codeVerifier,
@@ -36,13 +37,18 @@ export class AuthController {
   }
 
   @Post('login')
-  login(@Body() dto: LoginDto) {
+  login(@Body() dto: LoginDto): Promise<any> {
     return this.authService.login(dto);
   }
 
   @Post('oauth/login')
-  oauthLogin(@Body() dto: OAuthLoginDto) {
+  oauthLogin(@Body() dto: OAuthLoginDto): Promise<any> {
     return this.authService.loginWithOAuth(dto);
+  }
+
+  @Post('refresh')
+  refresh(@Body() dto: RefreshTokenRequestDto): Promise<any> {
+    return this.authService.refreshToken(dto.refreshToken);
   }
 
   @Get('me')

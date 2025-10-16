@@ -1,5 +1,6 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { SecureStoreShim } from '@/lib/secureStore';
+import { refreshSession } from '@/pages/AuthScreen/api/authApi';
 
 type SessionProviderId = 'oauth' | 'local';
 
@@ -34,6 +35,7 @@ export interface SessionTokensContextValue {
   setTokens: (input: SetSessionTokensInput) => Promise<SessionTokensSnapshot>;
   clearTokens: () => Promise<void>;
   reload: () => Promise<SessionTokensSnapshot>;
+  refreshTokens: () => Promise<SessionTokensSnapshot>;
 }
 
 const STORAGE_KEY = 'session_tokens_v1';
@@ -105,6 +107,7 @@ const SessionTokensContext = createContext<SessionTokensContextValue | undefined
 export function SessionTokensProvider({ children }: { children: React.ReactNode }) {
   const [tokens, setTokensState] = useState<SessionTokensSnapshot>({ ...defaultSnapshot });
   const [hydrated, setHydrated] = useState(false);
+  const refreshInFlight = useRef<Promise<SessionTokensSnapshot> | null>(null);
 
   const reload = useCallback(async () => {
     const next = await readFromStorage();
@@ -143,9 +146,83 @@ export function SessionTokensProvider({ children }: { children: React.ReactNode 
     }
   }, []);
 
+  const refreshTokens = useCallback(async () => {
+    const refreshTokenValue = tokens.refreshToken;
+    if (!refreshTokenValue) {
+      throw new Error('No refresh token available');
+    }
+
+    if (refreshInFlight.current) {
+      return refreshInFlight.current;
+    }
+
+    const operation = (async () => {
+      try {
+        const response = await refreshSession(refreshTokenValue);
+        const next = await setTokens({
+          provider: tokens.provider,
+          accessToken: response.accessToken,
+          accessTokenExpiresAt: response.accessTokenExpiresAt ?? null,
+          refreshToken: response.refreshToken ?? null,
+          refreshTokenExpiresAt: response.refreshTokenExpiresAt ?? null,
+          tokenType: tokens.tokenType ?? 'Bearer',
+          userId: response.user?.id ?? tokens.userId ?? null,
+          email: response.user?.email ?? tokens.email ?? null,
+          username: response.user?.username ?? tokens.username ?? null,
+        });
+        return next;
+      } catch (error) {
+        await clearTokens();
+        throw error;
+      } finally {
+        refreshInFlight.current = null;
+      }
+    })();
+
+    refreshInFlight.current = operation;
+    return operation;
+  }, [tokens, setTokens, clearTokens]);
+
+  useEffect(() => {
+    if (!tokens.refreshToken) {
+      return;
+    }
+
+    const expiresAtIso = tokens.accessTokenExpiresAt;
+    if (!expiresAtIso) {
+      return;
+    }
+
+    const expiresAtMs = Date.parse(expiresAtIso);
+    if (Number.isNaN(expiresAtMs)) {
+      return;
+    }
+
+    const now = Date.now();
+    const leadMs = 60 * 1000; // refresh 1 minute before expiry
+    const delay = expiresAtMs - now - leadMs;
+
+    if (delay <= 0) {
+      refreshTokens().catch(() => {
+        // errors handled inside refreshTokens (clears tokens)
+      });
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      refreshTokens().catch(() => {
+        // errors handled inside refreshTokens
+      });
+    }, delay);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [tokens.accessToken, tokens.accessTokenExpiresAt, tokens.refreshToken, refreshTokens]);
+
   const value = useMemo<SessionTokensContextValue>(
-    () => ({ tokens, hydrated, setTokens, clearTokens, reload }),
-    [tokens, hydrated, setTokens, clearTokens, reload],
+    () => ({ tokens, hydrated, setTokens, clearTokens, reload, refreshTokens }),
+    [tokens, hydrated, setTokens, clearTokens, reload, refreshTokens],
   );
 
   return <SessionTokensContext.Provider value={value}>{children}</SessionTokensContext.Provider>;

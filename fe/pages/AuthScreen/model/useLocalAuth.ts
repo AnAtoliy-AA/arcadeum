@@ -39,6 +39,7 @@ export function useLocalAuth() {
     setTokens: persistSessionTokens,
     clearTokens: clearSessionTokens,
     reload: reloadSessionTokens,
+    refreshTokens: refreshSessionTokens,
   } = useSessionTokens();
 
   const toggleMode = useCallback(() => {
@@ -64,6 +65,7 @@ export function useLocalAuth() {
       const snapshot = await persistSessionTokens({
         provider: 'local',
         accessToken: resp.accessToken,
+        accessTokenExpiresAt: resp.accessTokenExpiresAt ?? null,
         refreshToken: resp.refreshToken ?? null,
         tokenType: 'Bearer',
         refreshTokenExpiresAt: resp.refreshTokenExpiresAt ?? null,
@@ -116,7 +118,31 @@ export function useLocalAuth() {
           }));
           return;
         } catch {
-          await clearSessionTokens();
+          try {
+            const refreshedSnapshot = await refreshSessionTokens();
+            const refreshedToken = refreshedSnapshot.accessToken;
+            if (refreshedToken) {
+              const profile = await me(refreshedToken);
+              const updatedSnapshot = await persistSessionTokens({
+                userId: profile.id ?? null,
+                email: profile.email ?? email ?? null,
+                username: profile.username ?? null,
+              });
+              setState(s => ({
+                ...s,
+                accessToken: refreshedToken,
+                refreshToken: refreshedSnapshot.refreshToken,
+                email: updatedSnapshot.email ?? email,
+                username:
+                  updatedSnapshot.username ?? refreshedSnapshot.username ?? profile.username ?? null,
+                loading: false,
+              }));
+              return;
+            }
+            await clearSessionTokens();
+          } catch {
+            await clearSessionTokens();
+          }
         }
       }
       setState(s => ({ ...s, accessToken: null, refreshToken: null, email, username: null, loading: false }));
@@ -129,6 +155,7 @@ export function useLocalAuth() {
     reloadSessionTokens,
     clearSessionTokens,
     persistSessionTokens,
+    refreshSessionTokens,
   ]);
 
   const logout = useCallback(async () => {

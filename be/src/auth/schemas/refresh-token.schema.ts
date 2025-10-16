@@ -6,6 +6,9 @@ export class RefreshToken {
   @Prop({ type: Types.ObjectId, ref: 'User', index: true, required: true })
   userId!: Types.ObjectId;
 
+  @Prop({ type: String, unique: true, sparse: true })
+  tokenId?: string;
+
   @Prop({ required: true, unique: true, index: true })
   tokenHash!: string;
 

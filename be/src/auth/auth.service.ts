@@ -51,6 +51,14 @@ interface GoogleUserProfile {
   audience?: string;
 }
 
+interface AuthTokensResponse {
+  accessToken: string;
+  accessTokenExpiresAt: Date | null;
+  refreshToken: string;
+  refreshTokenExpiresAt: Date;
+  user: AuthUserProfile;
+}
+
 @Injectable()
 export class AuthService {
   private discovery: OidcDiscoveryDoc | null = null;
@@ -193,12 +201,7 @@ export class AuthService {
     };
   }
 
-  async login(data: LoginDto): Promise<{
-    accessToken: string;
-    refreshToken: string;
-    refreshTokenExpiresAt: Date;
-    user: AuthUserProfile;
-  }> {
+  async login(data: LoginDto): Promise<AuthTokensResponse> {
     const email = data.email.toLowerCase();
     const userDoc = await this.userModel.findOne({ email });
     if (!userDoc) throw new UnauthorizedException('Invalid credentials');
@@ -214,22 +217,19 @@ export class AuthService {
       username: user.username,
     };
     const accessToken = await this.jwt.signAsync(payload);
+    const accessTokenExpiresAt = this.deriveAccessTokenExpiration(accessToken);
     // Also issue refresh token
     const refresh = await this.issueRefreshToken(String(user.id), null);
     return {
       accessToken,
+      accessTokenExpiresAt,
       refreshToken: refresh.token,
       refreshTokenExpiresAt: refresh.expiresAt,
       user: { id: String(user.id), email: user.email, username: user.username },
     }; // token is raw value
   }
 
-  async loginWithOAuth(data: OAuthLoginDto): Promise<{
-    accessToken: string;
-    refreshToken: string;
-    refreshTokenExpiresAt: Date;
-    user: AuthUserProfile;
-  }> {
+  async loginWithOAuth(data: OAuthLoginDto): Promise<AuthTokensResponse> {
     if (data.provider !== 'google') {
       throw new UnauthorizedException('Unsupported OAuth provider');
     }
@@ -256,10 +256,12 @@ export class AuthService {
     };
 
     const accessToken = await this.jwt.signAsync(payload);
+    const accessTokenExpiresAt = this.deriveAccessTokenExpiration(accessToken);
     const refresh = await this.issueRefreshToken(String(user.id), null);
 
     return {
       accessToken,
+      accessTokenExpiresAt,
       refreshToken: refresh.token,
       refreshTokenExpiresAt: refresh.expiresAt,
       user: { id: String(user.id), email: user.email, username: user.username },
@@ -272,6 +274,7 @@ export class AuthService {
     parentId: string | null,
   ): Promise<{ token: string; expiresAt: Date; id: string }> {
     const raw = crypto.randomUUID() + '.' + crypto.randomUUID();
+    const tokenId = this.extractRefreshTokenId(raw);
     const hash = await bcrypt.hash(raw, 10);
     const ttlDays = Number(
       this.config.get<string>('REFRESH_TOKEN_TTL_DAYS') || '7',
@@ -280,6 +283,7 @@ export class AuthService {
     const rotationParentId = parentId || 'root';
     const doc = await this.refreshModel.create({
       userId,
+      ...(tokenId ? { tokenId } : {}),
       tokenHash: hash,
       expiresAt,
       rotationParentId,
@@ -287,31 +291,107 @@ export class AuthService {
     return { token: raw, expiresAt, id: String(doc.id) };
   }
 
-  async refreshToken(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _rawToken: string,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
-    // Basic skeleton: verify, rotate, return new tokens
-    const stored = await this.refreshModel.findOne({ revoked: false });
-    // NOTE: For brevity, we are not querying by token hash yet (needs hash comparison)
-    if (!stored) throw new UnauthorizedException('Invalid token');
-    // Placeholder: in real flow we would find by hash match using bcrypt.compare
+  private extractRefreshTokenId(raw: string): string | null {
+    if (!raw) return null;
+    const delimiterIndex = raw.indexOf('.');
+    if (delimiterIndex === -1) {
+      return raw;
+    }
+    const tokenId = raw.slice(0, delimiterIndex);
+    return tokenId || null;
+  }
+
+  private async findRefreshTokenDocument(
+    raw: string,
+  ): Promise<RefreshTokenDocument | null> {
+    const tokenId = this.extractRefreshTokenId(raw);
+    if (tokenId) {
+      const byId = await this.refreshModel.findOne({ tokenId });
+      if (byId) {
+        return byId;
+      }
+    }
+
+    const candidates = await this.refreshModel.find({ revoked: false });
+    for (const candidate of candidates) {
+      if (await bcrypt.compare(raw, candidate.tokenHash)) {
+        return candidate;
+      }
+    }
+
+    return null;
+  }
+
+  private deriveAccessTokenExpiration(token: string): Date | null {
+    const decoded: unknown = this.jwt.decode(token);
+    if (!decoded || typeof decoded !== 'object') {
+      return null;
+    }
+    const payload = decoded as Record<string, unknown>;
+    const expValue = payload['exp'];
+    if (typeof expValue !== 'number') {
+      return null;
+    }
+    return new Date(expValue * 1000);
+  }
+
+  async refreshToken(rawToken: string): Promise<AuthTokensResponse> {
+    const candidate = rawToken?.trim();
+    if (!candidate) {
+      throw new UnauthorizedException('Missing refresh token');
+    }
+
+    const stored = await this.findRefreshTokenDocument(candidate);
+    if (!stored) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    if (stored.revoked) {
+      throw new UnauthorizedException('Refresh token revoked');
+    }
+
+    if (stored.expiresAt.getTime() <= Date.now()) {
+      stored.revoked = true;
+      await stored.save();
+      throw new UnauthorizedException('Refresh token expired');
+    }
+
+    const matches = await bcrypt.compare(candidate, stored.tokenHash);
+    if (!matches) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
     const userId = String(stored.userId);
     const userDoc = await this.userModel.findById(userId);
     if (!userDoc) {
+      stored.revoked = true;
+      await stored.save();
       throw new UnauthorizedException('User not found for refresh token');
     }
+
     const user = await this.ensureUserUsername(userDoc);
-    const newAccess = await this.jwt.signAsync({
+    const accessToken = await this.jwt.signAsync({
       sub: userId,
       email: user.email,
       username: user.username,
     });
+    const accessTokenExpiresAt = this.deriveAccessTokenExpiration(accessToken);
+
     const rotated = await this.issueRefreshToken(userId, String(stored.id));
-    // Mark old as revoked
     stored.revoked = true;
     await stored.save();
-    return { accessToken: newAccess, refreshToken: rotated.token };
+
+    return {
+      accessToken,
+      accessTokenExpiresAt,
+      refreshToken: rotated.token,
+      refreshTokenExpiresAt: rotated.expiresAt,
+      user: {
+        id: userId,
+        email: user.email,
+        username: user.username,
+      },
+    };
   }
 
   async searchUsers(params: {

@@ -108,6 +108,7 @@ interface RegisterResponse extends AuthUserProfile {
 
 export interface LoginResponse {
   accessToken: string;
+  accessTokenExpiresAt?: string | Date;
   refreshToken?: string;
   refreshTokenExpiresAt?: string | Date;
   user: AuthUserProfile;
@@ -254,6 +255,19 @@ export async function loginOAuthSession(params: {
   if (!res.ok) {
     const text = await res.text();
     throw new Error(text || 'OAuth session exchange failed');
+  }
+  return res.json() as Promise<LoginResponse>;
+}
+
+export async function refreshSession(refreshToken: string): Promise<LoginResponse> {
+  const res = await fetch(`${apiBase()}/auth/refresh`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refreshToken }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || 'Refresh failed');
   }
   return res.json() as Promise<LoginResponse>;
 }

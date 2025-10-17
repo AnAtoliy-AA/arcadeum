@@ -36,8 +36,8 @@ export default function GameDetailScreen() {
 
   const handleCreateRoom = useCallback(() => {
     if (!game) return;
-    Alert.alert('Matchmaking coming soon', `We're finishing the lobby experience for ${game.name}. Stay tuned!`);
-  }, [game]);
+    router.push({ pathname: '/games/create', params: { gameId: game.id } });
+  }, [game, router]);
 
   const handleInvite = useCallback(async () => {
     if (!game) return;

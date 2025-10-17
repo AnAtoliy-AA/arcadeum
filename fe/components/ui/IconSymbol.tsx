@@ -24,6 +24,7 @@ const MAPPING = {
   'person.3.fill': 'groups',
   'clock.fill': 'schedule',
   'sparkles': 'auto-awesome',
+  'lock.fill': 'lock',
 } as IconMapping;
 
 /**

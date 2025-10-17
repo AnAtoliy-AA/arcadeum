@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -11,6 +11,13 @@ import { gamesCatalog, type GameCatalogueEntry } from './catalog';
 export default function GamesScreen() {
   const styles = useThemedStyles(createStyles);
   const router = useRouter();
+  const navigateToCreate = useCallback((gameId?: string) => {
+    if (gameId) {
+      router.push({ pathname: '/games/create', params: { gameId } } as never);
+    } else {
+      router.push('/games/create' as never);
+    }
+  }, [router]);
   const { shouldBlock } = useSessionScreenGate({
     enableOn: ['web'],
     whenUnauthenticated: '/auth',
@@ -18,8 +25,8 @@ export default function GamesScreen() {
   });
 
   const handleCreate = useCallback((game: GameCatalogueEntry) => {
-    Alert.alert('Matchmaking coming soon', `Creating a room for ${game.name} will be available shortly.`);
-  }, []);
+    navigateToCreate(game.id);
+  }, [navigateToCreate]);
 
   const handlePreview = useCallback((game: GameCatalogueEntry) => {
     router.push({ pathname: '/games/[id]', params: { id: game.id } });
@@ -43,7 +50,10 @@ export default function GamesScreen() {
               Spin up real-time rooms, invite your friends, and let AICO handle rules, scoring, and moderation.
             </ThemedText>
           </View>
-          <IconSymbol name="gamecontroller.fill" size={42} color={styles.headerIcon.color as string} />
+          <TouchableOpacity style={styles.headerButton} onPress={() => navigateToCreate()}>
+            <IconSymbol name="sparkles" size={18} color={styles.headerButtonText.color as string} />
+            <ThemedText style={styles.headerButtonText}>New room</ThemedText>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.section}>
@@ -107,6 +117,11 @@ export default function GamesScreen() {
             </ThemedText>
           </View>
         </View>
+
+        <TouchableOpacity style={styles.fab} onPress={() => navigateToCreate()}>
+          <IconSymbol name="gamecontroller.fill" size={24} color={styles.fabIcon.color as string} />
+          <ThemedText style={styles.fabText}>Create room</ThemedText>
+        </TouchableOpacity>
       </ScrollView>
     </ThemedView>
   );
@@ -142,8 +157,25 @@ function createStyles(palette: Palette) {
       marginTop: 6,
       color: palette.icon,
     },
-    headerIcon: {
+    headerButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      borderRadius: 999,
+      backgroundColor: cardBackground,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor,
+      shadowColor: surfaceShadow,
+      shadowOpacity: isLight ? 1 : 0.6,
+      shadowRadius: 8,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 1,
+    },
+    headerButtonText: {
       color: palette.tint,
+      fontWeight: '600',
     },
     section: {
       marginTop: 8,
@@ -291,6 +323,29 @@ function createStyles(palette: Palette) {
       fontSize: 12,
       fontWeight: '600',
       color: palette.text,
+    },
+    fab: {
+      marginTop: 12,
+      borderRadius: 16,
+      backgroundColor: palette.tint,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+      paddingVertical: 14,
+      shadowColor: surfaceShadow,
+      shadowOpacity: isLight ? 1 : 0.6,
+      shadowRadius: 10,
+      shadowOffset: { width: 0, height: 4 },
+      elevation: 2,
+    },
+    fabIcon: {
+      color: palette.background,
+    },
+    fabText: {
+      color: palette.background,
+      fontWeight: '700',
+      fontSize: 16,
     },
   });
 }

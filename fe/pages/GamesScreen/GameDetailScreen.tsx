@@ -135,6 +135,17 @@ export default function GameDetailScreen() {
     });
   }, []);
 
+  const navigateToRoomScreen = useCallback((nextRoom: GameRoomSummary) => {
+    router.push({
+      pathname: '/games/rooms/[id]',
+      params: {
+        id: nextRoom.id,
+        gameId: nextRoom.gameId,
+        roomName: nextRoom.name,
+      },
+    });
+  }, [router]);
+
   const joinRoom = useCallback(async (room: GameRoomSummary, inviteCode?: string) => {
     setJoiningRoomId(room.id);
     if (inviteCode) {
@@ -150,14 +161,11 @@ export default function GameDetailScreen() {
         },
       );
 
-    updateRoomList(response.room);
+      updateRoomList(response.room);
 
-    setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
+      setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
 
-      Alert.alert(
-        'Joined room',
-        'You’re in! The host will start the session when everyone arrives.',
-      );
+      navigateToRoomScreen(response.room);
       void fetchRooms('refresh');
     } catch (error) {
       const { type, message: rawMessage } = interpretJoinError(error);
@@ -195,7 +203,7 @@ export default function GameDetailScreen() {
     } finally {
       setJoiningRoomId(null);
     }
-  }, [fetchRooms, refreshTokens, tokens.accessToken, updateRoomList]);
+  }, [fetchRooms, navigateToRoomScreen, refreshTokens, tokens.accessToken, updateRoomList]);
 
   const handleJoinRoom = useCallback((room: GameRoomSummary) => {
     if (!tokens.accessToken) {

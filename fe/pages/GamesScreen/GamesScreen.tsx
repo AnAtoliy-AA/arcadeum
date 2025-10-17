@@ -123,6 +123,17 @@ export default function GamesScreen() {
     });
   }, []);
 
+  const navigateToRoomScreen = useCallback((room: GameRoomSummary) => {
+    router.push({
+      pathname: '/games/rooms/[id]',
+      params: {
+        id: room.id,
+        gameId: room.gameId,
+        roomName: room.name,
+      },
+    });
+  }, [router]);
+
   const joinRoom = useCallback(async (room: GameRoomSummary, inviteCode?: string) => {
     setJoiningRoomId(room.id);
     if (inviteCode) {
@@ -138,11 +149,11 @@ export default function GamesScreen() {
         },
       );
 
-    updateRoomList(response.room);
+      updateRoomList(response.room);
 
-    setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
+      setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
 
-      Alert.alert('Joined room', 'You are in! The host will kick things off soon.');
+      navigateToRoomScreen(response.room);
       void fetchRooms('refresh');
     } catch (error) {
       const { type, message: rawMessage } = interpretJoinError(error);
@@ -180,7 +191,7 @@ export default function GamesScreen() {
     } finally {
       setJoiningRoomId(null);
     }
-  }, [fetchRooms, refreshTokens, tokens.accessToken, updateRoomList]);
+  }, [fetchRooms, navigateToRoomScreen, refreshTokens, tokens.accessToken, updateRoomList]);
 
   const joinRoomByInviteCode = useCallback(async (code: string) => {
     if (!tokens.accessToken) {
@@ -219,10 +230,7 @@ export default function GamesScreen() {
 
       setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
 
-      Alert.alert(
-        'Joined room',
-        `You’re in “${response.room.name}”. The host will kick things off soon.`,
-      );
+      navigateToRoomScreen(response.room);
       void fetchRooms('refresh');
     } catch (error) {
       const { type, message: rawMessage } = interpretJoinError(error);
@@ -252,7 +260,7 @@ export default function GamesScreen() {
               : rawMessage,
       });
     }
-  }, [fetchRooms, refreshTokens, router, tokens.accessToken, updateRoomList]);
+  }, [fetchRooms, navigateToRoomScreen, refreshTokens, router, tokens.accessToken, updateRoomList]);
 
   const handleJoinRoom = useCallback((room: GameRoomSummary) => {
     if (!tokens.accessToken) {

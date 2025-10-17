@@ -32,6 +32,7 @@ import { InviteCodeDialog } from './InviteCodeDialog';
 type InvitePromptState = {
   visible: boolean;
   room: GameRoomSummary | null;
+  mode: 'room' | 'manual';
   loading: boolean;
   error: string | null;
 };
@@ -56,6 +57,7 @@ export default function GameDetailScreen() {
   const [invitePrompt, setInvitePrompt] = useState<InvitePromptState>({
     visible: false,
     room: null,
+    mode: 'room',
     loading: false,
     error: null,
   });
@@ -120,10 +122,22 @@ export default function GameDetailScreen() {
     );
   }, [rooms]);
 
+  const updateRoomList = useCallback((room: GameRoomSummary) => {
+    setRooms((current) => {
+      const next = [...current];
+      const existingIndex = next.findIndex((existing) => existing.id === room.id);
+      if (existingIndex >= 0) {
+        next[existingIndex] = room;
+        return next;
+      }
+      return [room, ...next];
+    });
+  }, []);
+
   const joinRoom = useCallback(async (room: GameRoomSummary, inviteCode?: string) => {
     setJoiningRoomId(room.id);
     if (inviteCode) {
-      setInvitePrompt({ visible: true, room, loading: true, error: null });
+      setInvitePrompt({ visible: true, room, mode: 'room', loading: true, error: null });
     }
 
     try {
@@ -135,13 +149,9 @@ export default function GameDetailScreen() {
         },
       );
 
-      setRooms((current) =>
-        current.map((existing) =>
-          existing.id === response.room.id ? response.room : existing,
-        ),
-      );
+      updateRoomList(response.room);
 
-      setInvitePrompt({ visible: false, room: null, loading: false, error: null });
+  setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
 
       Alert.alert(
         'Joined room',
@@ -156,7 +166,7 @@ export default function GameDetailScreen() {
       const needsInvite = message.toLowerCase().includes('invite code');
 
       if (!inviteCode && needsInvite) {
-        setInvitePrompt({ visible: true, room, loading: false, error: null });
+  setInvitePrompt({ visible: true, room, mode: 'room', loading: false, error: null });
         return;
       }
 
@@ -164,6 +174,7 @@ export default function GameDetailScreen() {
         setInvitePrompt({
           visible: true,
           room,
+          mode: 'room',
           loading: false,
           error: 'Invite code didn’t work. Double-check and try again.',
         });
@@ -174,6 +185,7 @@ export default function GameDetailScreen() {
         setInvitePrompt({
           visible: true,
           room,
+          mode: 'room',
           loading: false,
           error: message,
         });
@@ -184,7 +196,7 @@ export default function GameDetailScreen() {
     } finally {
       setJoiningRoomId(null);
     }
-  }, [fetchRooms, refreshTokens, tokens.accessToken]);
+  }, [fetchRooms, refreshTokens, tokens.accessToken, updateRoomList]);
 
   const handleJoinRoom = useCallback((room: GameRoomSummary) => {
     if (!tokens.accessToken) {
@@ -206,13 +218,15 @@ export default function GameDetailScreen() {
   }, [joinRoom, router, tokens.accessToken]);
 
   const handleInviteCancel = useCallback(() => {
-    setInvitePrompt({ visible: false, room: null, loading: false, error: null });
+    setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
   }, []);
 
   const handleInviteSubmit = useCallback((code: string) => {
-    if (!invitePrompt.room) return;
+    if (invitePrompt.mode !== 'room' || !invitePrompt.room) {
+      return;
+    }
     void joinRoom(invitePrompt.room, code);
-  }, [invitePrompt.room, joinRoom]);
+  }, [invitePrompt.mode, invitePrompt.room, joinRoom]);
 
   const handleBack = useCallback(() => {
     if (router.canGoBack()) {
@@ -521,6 +535,7 @@ export default function GameDetailScreen() {
       <InviteCodeDialog
         visible={invitePrompt.visible}
         roomName={invitePrompt.room?.name}
+        mode={invitePrompt.mode}
         loading={invitePrompt.loading}
         error={invitePrompt.error}
         onSubmit={handleInviteSubmit}

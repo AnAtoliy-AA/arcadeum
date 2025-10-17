@@ -17,6 +17,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 export interface InviteCodeDialogProps {
   visible: boolean;
   roomName?: string;
+  mode?: 'room' | 'manual';
   loading?: boolean;
   error?: string | null;
   onSubmit: (code: string) => void;
@@ -26,6 +27,7 @@ export interface InviteCodeDialogProps {
 export function InviteCodeDialog({
   visible,
   roomName,
+  mode = 'room',
   loading = false,
   error = null,
   onSubmit,
@@ -52,6 +54,13 @@ export function InviteCodeDialog({
     setCode(value.toUpperCase());
   }, []);
 
+  const headerIcon = mode === 'manual' ? 'lock.open' : 'lock.fill';
+  const description = mode === 'manual'
+    ? 'Got an invite from a host? Enter their six-character code to hop into their lobby instantly.'
+    : roomName
+      ? `This lobby is invite-only. Ask the host for their code to join “${roomName}”.`
+      : 'This lobby is invite-only. Enter the code from the host to join.';
+
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
       <KeyboardAvoidingView
@@ -63,16 +72,12 @@ export function InviteCodeDialog({
         </TouchableWithoutFeedback>
         <View style={styles.sheet}>
           <View style={styles.headerRow}>
-            <IconSymbol name="lock.fill" size={20} color={styles.headerIcon.color as string} />
+            <IconSymbol name={headerIcon} size={20} color={styles.headerIcon.color as string} />
             <ThemedText type="subtitle">
               Enter invite code
             </ThemedText>
           </View>
-          <ThemedText style={styles.description}>
-            {roomName
-              ? `This lobby is invite-only. Ask the host for their code to join “${roomName}”.`
-              : 'This lobby is invite-only. Enter the code from the host to join.'}
-          </ThemedText>
+          <ThemedText style={styles.description}>{description}</ThemedText>
           <TextInput
             value={code}
             onChangeText={handleChange}
@@ -84,6 +89,9 @@ export function InviteCodeDialog({
             style={styles.input}
             editable={!loading}
           />
+          {mode === 'manual' ? (
+            <ThemedText style={styles.helperText}>We’ll uppercase automatically—just type the letters you received.</ThemedText>
+          ) : null}
           {error ? (
             <View style={styles.errorRow}>
               <IconSymbol name="exclamationmark.triangle.fill" size={16} color={styles.errorText.color as string} />
@@ -173,6 +181,12 @@ function createStyles(palette: Palette) {
     },
     inputPlaceholder: {
       color: palette.icon,
+    },
+    helperText: {
+      color: palette.icon,
+      fontSize: 12,
+      textAlign: 'center',
+      marginTop: -4,
     },
     errorRow: {
       flexDirection: 'row',

@@ -32,6 +32,7 @@ import { InviteCodeDialog } from './InviteCodeDialog';
 type InvitePromptState = {
   visible: boolean;
   room: GameRoomSummary | null;
+  mode: 'room' | 'manual';
   loading: boolean;
   error: string | null;
 };
@@ -61,6 +62,7 @@ export default function GamesScreen() {
   const [invitePrompt, setInvitePrompt] = useState<InvitePromptState>({
     visible: false,
     room: null,
+    mode: 'room',
     loading: false,
     error: null,
   });
@@ -108,10 +110,22 @@ export default function GamesScreen() {
     return [...rooms].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [rooms]);
 
+  const updateRoomList = useCallback((room: GameRoomSummary) => {
+    setRooms((current) => {
+      const next = [...current];
+      const existingIndex = next.findIndex((existing) => existing.id === room.id);
+      if (existingIndex >= 0) {
+        next[existingIndex] = room;
+        return next;
+      }
+      return [room, ...next];
+    });
+  }, []);
+
   const joinRoom = useCallback(async (room: GameRoomSummary, inviteCode?: string) => {
     setJoiningRoomId(room.id);
     if (inviteCode) {
-      setInvitePrompt({ visible: true, room, loading: true, error: null });
+      setInvitePrompt({ visible: true, room, mode: 'room', loading: true, error: null });
     }
 
     try {
@@ -123,13 +137,9 @@ export default function GamesScreen() {
         },
       );
 
-      setRooms((current) =>
-        current.map((existing) =>
-          existing.id === response.room.id ? response.room : existing,
-        ),
-      );
+      updateRoomList(response.room);
 
-      setInvitePrompt({ visible: false, room: null, loading: false, error: null });
+  setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
 
       Alert.alert('Joined room', 'You are in! The host will kick things off soon.');
       void fetchRooms('refresh');
@@ -141,7 +151,7 @@ export default function GamesScreen() {
       const needsInvite = message.toLowerCase().includes('invite code');
 
       if (!inviteCode && needsInvite) {
-        setInvitePrompt({ visible: true, room, loading: false, error: null });
+  setInvitePrompt({ visible: true, room, mode: 'room', loading: false, error: null });
         return;
       }
 
@@ -149,6 +159,7 @@ export default function GamesScreen() {
         setInvitePrompt({
           visible: true,
           room,
+          mode: 'room',
           loading: false,
           error: 'Invite code didn’t work. Double-check and try again.',
         });
@@ -159,6 +170,7 @@ export default function GamesScreen() {
         setInvitePrompt({
           visible: true,
           room,
+          mode: 'room',
           loading: false,
           error: message,
         });
@@ -169,7 +181,68 @@ export default function GamesScreen() {
     } finally {
       setJoiningRoomId(null);
     }
-  }, [fetchRooms, refreshTokens, tokens.accessToken]);
+  }, [fetchRooms, refreshTokens, tokens.accessToken, updateRoomList]);
+
+  const joinRoomByInviteCode = useCallback(async (code: string) => {
+    if (!tokens.accessToken) {
+      Alert.alert(
+        'Sign in required',
+        'Log in to redeem an invite code and sync your seat with the host.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Sign in',
+            onPress: () => router.push('/auth' as never),
+          },
+        ],
+      );
+      return;
+    }
+
+    setInvitePrompt({
+      visible: true,
+      room: null,
+      mode: 'manual',
+      loading: true,
+      error: null,
+    });
+
+    try {
+      const response = await joinGameRoom(
+        { inviteCode: code },
+        {
+          accessToken: tokens.accessToken,
+          refreshTokens,
+        },
+      );
+
+      updateRoomList(response.room);
+
+      setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
+
+      Alert.alert(
+        'Joined room',
+        `You’re in “${response.room.name}”. The host will kick things off soon.`,
+      );
+      void fetchRooms('refresh');
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Unable to join that room right now.';
+      const needsInvite = message.toLowerCase().includes('invite code');
+
+      setInvitePrompt({
+        visible: true,
+        room: null,
+        mode: 'manual',
+        loading: false,
+        error: needsInvite
+          ? 'Invite code didn’t work. Double-check and try again.'
+          : message,
+      });
+    }
+  }, [fetchRooms, refreshTokens, router, tokens.accessToken, updateRoomList]);
 
   const handleJoinRoom = useCallback((room: GameRoomSummary) => {
     if (!tokens.accessToken) {
@@ -193,13 +266,40 @@ export default function GamesScreen() {
   }, [joinRoom, router, tokens.accessToken]);
 
   const handleInviteCancel = useCallback(() => {
-    setInvitePrompt({ visible: false, room: null, loading: false, error: null });
+    setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
   }, []);
 
   const handleInviteSubmit = useCallback((code: string) => {
-    if (!invitePrompt.room) return;
+    if (invitePrompt.mode === 'manual') {
+      void joinRoomByInviteCode(code);
+      return;
+    }
+
+    if (!invitePrompt.room) {
+      return;
+    }
+
     void joinRoom(invitePrompt.room, code);
-  }, [invitePrompt.room, joinRoom]);
+  }, [invitePrompt.mode, invitePrompt.room, joinRoom, joinRoomByInviteCode]);
+
+  const handleManualInvite = useCallback(() => {
+    if (!tokens.accessToken) {
+      Alert.alert(
+        'Sign in required',
+        'Log in to redeem an invite code and sync your seat with the host.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Sign in',
+            onPress: () => router.push('/auth' as never),
+          },
+        ],
+      );
+      return;
+    }
+
+    setInvitePrompt({ visible: true, room: null, mode: 'manual', loading: false, error: null });
+  }, [router, tokens.accessToken]);
 
   const handleCreate = useCallback((game: GameCatalogueEntry) => {
     navigateToCreate(game.id);
@@ -299,6 +399,10 @@ export default function GamesScreen() {
           <ThemedText style={styles.sectionCaption}>
             Jump into a lobby that&apos;s already spinning up or scope what&apos;s happening live.
           </ThemedText>
+          <TouchableOpacity style={styles.manualInviteTrigger} onPress={handleManualInvite}>
+            <IconSymbol name="lock.open" size={16} color={styles.manualInviteTriggerText.color as string} />
+            <ThemedText style={styles.manualInviteTriggerText}>Have an invite code?</ThemedText>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.roomsContainer}>
@@ -428,6 +532,7 @@ export default function GamesScreen() {
       <InviteCodeDialog
         visible={invitePrompt.visible}
         roomName={invitePrompt.room?.name}
+        mode={invitePrompt.mode}
         loading={invitePrompt.loading}
         error={invitePrompt.error}
         onSubmit={handleInviteSubmit}
@@ -499,6 +604,24 @@ function createStyles(palette: Palette) {
     },
     sectionCaption: {
       color: palette.icon,
+    },
+    manualInviteTrigger: {
+      marginTop: 8,
+      alignSelf: 'flex-start',
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 999,
+      backgroundColor: raisedBackground,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor,
+    },
+    manualInviteTriggerText: {
+      color: palette.tint,
+      fontWeight: '600',
+      fontSize: 13,
     },
     card: {
       backgroundColor: cardBackground,

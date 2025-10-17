@@ -1,16 +1,37 @@
-import React, { useCallback } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
 import { useSessionScreenGate } from '@/hooks/useSessionScreenGate';
 import { gamesCatalog, type GameCatalogueEntry } from './catalog';
+import {
+  joinGameRoom,
+  listGameRooms,
+  type GameRoomSummary,
+} from './api/gamesApi';
+import { useSessionTokens } from '@/stores/sessionTokens';
+import {
+  formatRoomGame,
+  formatRoomHost,
+  formatRoomTimestamp,
+  getRoomStatusLabel,
+} from './roomUtils';
 
 export default function GamesScreen() {
   const styles = useThemedStyles(createStyles);
   const router = useRouter();
+  const { tokens, refreshTokens } = useSessionTokens();
   const navigateToCreate = useCallback((gameId?: string) => {
     if (gameId) {
       router.push({ pathname: '/games/create', params: { gameId } } as never);
@@ -23,6 +44,102 @@ export default function GamesScreen() {
     whenUnauthenticated: '/auth',
     blockWhenUnauthenticated: true,
   });
+
+  const [rooms, setRooms] = useState<GameRoomSummary[]>([]);
+  const [roomsLoading, setRoomsLoading] = useState(false);
+  const [roomsRefreshing, setRoomsRefreshing] = useState(false);
+  const [roomsError, setRoomsError] = useState<string | null>(null);
+  const [joiningRoomId, setJoiningRoomId] = useState<string | null>(null);
+
+  const fetchRooms = useCallback(
+    async (mode: 'initial' | 'refresh' = 'initial') => {
+      if (!tokens.accessToken) {
+        setRooms([]);
+        setRoomsError(null);
+        return;
+      }
+
+      const setLoadingFlag = mode === 'initial' ? setRoomsLoading : setRoomsRefreshing;
+      setLoadingFlag(true);
+
+      try {
+        const response = await listGameRooms(undefined, {
+          accessToken: tokens.accessToken,
+          refreshTokens,
+        });
+        setRooms(response.rooms ?? []);
+        setRoomsError(null);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unable to load rooms right now.';
+        setRoomsError(message);
+      } finally {
+        setLoadingFlag(false);
+      }
+    },
+    [refreshTokens, tokens.accessToken],
+  );
+
+  useEffect(() => {
+    fetchRooms();
+  }, [fetchRooms]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchRooms('refresh');
+    }, [fetchRooms]),
+  );
+
+  const sortedRooms = useMemo(() => {
+    if (!rooms.length) return [];
+    return [...rooms].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [rooms]);
+
+  const handleJoinRoom = useCallback(async (room: GameRoomSummary) => {
+    if (!tokens.accessToken) {
+      Alert.alert(
+        'Sign in required',
+        'Log in to join a lobby and sync your seat with the host.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Sign in',
+            onPress: () => {
+              router.push('/auth' as never);
+            },
+          },
+        ],
+      );
+      return;
+    }
+
+    setJoiningRoomId(room.id);
+    try {
+      const response = await joinGameRoom(
+        { roomId: room.id },
+        {
+          accessToken: tokens.accessToken,
+          refreshTokens,
+        },
+      );
+
+      setRooms((current) =>
+        current.map((existing) =>
+          existing.id === response.room.id ? response.room : existing,
+        ),
+      );
+
+      Alert.alert('Joined room', 'You are in! The host will kick things off soon.');
+      void fetchRooms('refresh');
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'We could not join that room right now.';
+      Alert.alert('Couldn’t join room', message);
+    } finally {
+      setJoiningRoomId(null);
+    }
+  }, [fetchRooms, refreshTokens, router, tokens.accessToken]);
 
   const handleCreate = useCallback((game: GameCatalogueEntry) => {
     navigateToCreate(game.id);
@@ -42,7 +159,16 @@ export default function GamesScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={(
+          <RefreshControl
+            refreshing={roomsRefreshing}
+            onRefresh={() => fetchRooms('refresh')}
+            tintColor={styles.refreshControlTint.color as string}
+          />
+        )}
+      >
         <View style={styles.header}>
           <View>
             <ThemedText type="title">Tabletop Lounge</ThemedText>
@@ -108,6 +234,122 @@ export default function GamesScreen() {
           );
         })}
 
+        <View style={styles.section}>
+          <ThemedText type="subtitle">Active rooms</ThemedText>
+          <ThemedText style={styles.sectionCaption}>
+            Jump into a lobby that&apos;s already spinning up or scope what&apos;s happening live.
+          </ThemedText>
+        </View>
+
+        <View style={styles.roomsContainer}>
+          {roomsLoading ? (
+            <ThemedView style={styles.roomSkeleton}>
+              <ActivityIndicator size="small" color={styles.roomSkeletonSpinner.color as string} />
+              <ThemedText style={styles.roomSkeletonText}>Fetching rooms...</ThemedText>
+            </ThemedView>
+          ) : roomsError ? (
+            <ThemedView style={styles.roomErrorCard}>
+              <IconSymbol name="exclamationmark.triangle.fill" size={20} color={styles.roomErrorIcon.color as string} />
+              <View style={styles.roomErrorCopy}>
+                <ThemedText style={styles.roomErrorTitle}>Can&apos;t reach the lounge</ThemedText>
+                <ThemedText style={styles.roomErrorText}>{roomsError}</ThemedText>
+              </View>
+              <TouchableOpacity style={styles.roomRetryButton} onPress={() => fetchRooms('refresh')}>
+                <IconSymbol name="arrow.clockwise" size={16} color={styles.roomRetryText.color as string} />
+                <ThemedText style={styles.roomRetryText}>Retry</ThemedText>
+              </TouchableOpacity>
+            </ThemedView>
+          ) : sortedRooms.length === 0 ? (
+            <ThemedView style={styles.roomEmptyCard}>
+              <IconSymbol name="sparkles" size={22} color={styles.roomEmptyIcon.color as string} />
+              <ThemedText style={styles.roomEmptyTitle}>No rooms yet</ThemedText>
+              <ThemedText style={styles.roomEmptyText}>
+                Be the trailblazer—kick off the first lobby or tap refresh to check again in a few.
+              </ThemedText>
+            </ThemedView>
+          ) : (
+            sortedRooms.map(room => {
+              const statusStyle =
+                room.status === 'lobby'
+                  ? styles.roomStatusLobby
+                  : room.status === 'in_progress'
+                    ? styles.roomStatusInProgress
+                    : styles.roomStatusCompleted;
+
+              const statusLabel = getRoomStatusLabel(room.status);
+              const capacityLabel = room.maxPlayers
+                ? `${room.playerCount}/${room.maxPlayers} players`
+                : `${room.playerCount} players`;
+              const createdLabel = formatRoomTimestamp(room.createdAt);
+              const isJoining = joiningRoomId === room.id;
+              const isPrivate = room.visibility === 'private';
+
+              return (
+                <ThemedView key={room.id} style={styles.roomCard}>
+                  <View style={styles.roomHeader}>
+                    <ThemedText type="defaultSemiBold" style={styles.roomTitle}>{room.name}</ThemedText>
+                    <View style={[styles.roomStatusPill, statusStyle]}>
+                      <ThemedText style={styles.roomStatusText}>{statusLabel}</ThemedText>
+                    </View>
+                  </View>
+                  <ThemedText style={styles.roomGameLabel}>{formatRoomGame(room.gameId)}</ThemedText>
+                  <View style={styles.roomMetaRow}>
+                    <IconSymbol name="person.crop.circle" size={16} color={styles.roomMetaIcon.color as string} />
+                    <ThemedText style={styles.roomMetaText}>Hosted by {formatRoomHost(room.hostId)}</ThemedText>
+                  </View>
+                  <View style={styles.roomMetaRow}>
+                    <IconSymbol name="person.3.fill" size={16} color={styles.roomMetaIcon.color as string} />
+                    <ThemedText style={styles.roomMetaText}>{capacityLabel}</ThemedText>
+                  </View>
+                  <View style={styles.roomFooter}>
+                    <View style={styles.roomBadgeRow}>
+                      <View
+                        style={[
+                          styles.roomVisibilityChip,
+                          isPrivate
+                            ? styles.roomVisibilityChipPrivate
+                            : styles.roomVisibilityChipPublic,
+                        ]}
+                      >
+                        <IconSymbol
+                          name={isPrivate ? 'lock.fill' : 'sparkles'}
+                          size={14}
+                          color={styles.roomVisibilityChipIcon.color as string}
+                        />
+                        <ThemedText style={styles.roomVisibilityChipText}>
+                          {isPrivate ? 'Invite only' : 'Open lobby'}
+                        </ThemedText>
+                      </View>
+                      <ThemedText style={styles.roomTimestamp}>Created {createdLabel}</ThemedText>
+                    </View>
+                    <TouchableOpacity
+                      style={[styles.roomJoinButton, isJoining && styles.roomJoinButtonDisabled]}
+                      onPress={() => handleJoinRoom(room)}
+                      disabled={isJoining}
+                    >
+                      {isJoining ? (
+                        <ActivityIndicator
+                          size="small"
+                          color={styles.roomJoinButtonText.color as string}
+                        />
+                      ) : (
+                        <>
+                          <IconSymbol
+                            name="arrow.right.circle.fill"
+                            size={18}
+                            color={styles.roomJoinButtonText.color as string}
+                          />
+                          <ThemedText style={styles.roomJoinButtonText}>Join room</ThemedText>
+                        </>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                </ThemedView>
+              );
+            })
+          )}
+        </View>
+
         <View style={styles.footerCard}>
           <IconSymbol name="sparkles" size={26} color={styles.footerIcon.color as string} />
           <View style={styles.footerCopy}>
@@ -136,6 +378,9 @@ function createStyles(palette: Palette) {
   const statusDesignBg = isLight ? '#EDE3FF' : '#2A2542';
   const statusRoadmapBg = isLight ? '#E0F6ED' : '#1F3A32';
   const surfaceShadow = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(8, 10, 15, 0.45)';
+  const statusLobbyBg = isLight ? '#DCFCE7' : '#1D3A28';
+  const statusInProgressBg = isLight ? '#FDE68A' : '#42381F';
+  const statusCompletedBg = isLight ? '#E2E8F0' : '#2B3038';
 
   return StyleSheet.create({
     container: {
@@ -176,6 +421,9 @@ function createStyles(palette: Palette) {
     headerButtonText: {
       color: palette.tint,
       fontWeight: '600',
+    },
+    refreshControlTint: {
+      color: palette.tint,
     },
     section: {
       marginTop: 8,
@@ -347,5 +595,200 @@ function createStyles(palette: Palette) {
       fontWeight: '700',
       fontSize: 16,
     },
+    roomsContainer: {
+      gap: 12,
+    },
+    roomSkeleton: {
+      borderRadius: 16,
+      padding: 20,
+      backgroundColor: cardBackground,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    roomSkeletonSpinner: {
+      color: palette.tint,
+    },
+    roomSkeletonText: {
+      color: palette.icon,
+    },
+    roomErrorCard: {
+      borderRadius: 16,
+      padding: 18,
+      backgroundColor: cardBackground,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    roomErrorIcon: {
+      color: '#F97316',
+    },
+    roomErrorCopy: {
+      flex: 1,
+      gap: 4,
+    },
+    roomErrorTitle: {
+      color: palette.text,
+      fontWeight: '600',
+    },
+    roomErrorText: {
+      color: palette.icon,
+    },
+    roomRetryButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 999,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor,
+      backgroundColor: raisedBackground,
+    },
+    roomRetryText: {
+      color: palette.tint,
+      fontWeight: '600',
+    },
+    roomEmptyCard: {
+      borderRadius: 16,
+      padding: 24,
+      backgroundColor: cardBackground,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor,
+      alignItems: 'center',
+      gap: 10,
+    },
+    roomEmptyIcon: {
+      color: palette.tint,
+    },
+    roomEmptyTitle: {
+      color: palette.text,
+      fontWeight: '600',
+    },
+    roomEmptyText: {
+      color: palette.icon,
+      textAlign: 'center',
+      lineHeight: 20,
+    },
+    roomCard: {
+      backgroundColor: cardBackground,
+      borderRadius: 16,
+      padding: 20,
+      gap: 10,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor,
+      shadowColor: surfaceShadow,
+      shadowOpacity: isLight ? 1 : 0.6,
+      shadowRadius: 12,
+      shadowOffset: { width: 0, height: 4 },
+      elevation: 2,
+    },
+    roomHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      gap: 12,
+    },
+    roomTitle: {
+      color: palette.text,
+      fontSize: 16,
+    },
+    roomStatusPill: {
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 999,
+    },
+    roomStatusLobby: {
+      backgroundColor: statusLobbyBg,
+    },
+    roomStatusInProgress: {
+      backgroundColor: statusInProgressBg,
+    },
+    roomStatusCompleted: {
+      backgroundColor: statusCompletedBg,
+    },
+    roomStatusText: {
+      fontSize: 12,
+      fontWeight: '600',
+      color: palette.text,
+    },
+    roomGameLabel: {
+      color: palette.icon,
+      fontSize: 13,
+    },
+    roomMetaRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    roomMetaIcon: {
+      color: palette.tint,
+    },
+    roomMetaText: {
+      color: palette.text,
+      fontSize: 13,
+    },
+    roomFooter: {
+      marginTop: 6,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 12,
+    },
+    roomBadgeRow: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      flexWrap: 'wrap',
+    },
+    roomVisibilityChip: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      paddingVertical: 6,
+      paddingHorizontal: 10,
+      borderRadius: 999,
+    },
+    roomVisibilityChipPrivate: {
+      backgroundColor: '#bf5af233',
+    },
+    roomVisibilityChipPublic: {
+      backgroundColor: '#22c55e33',
+    },
+    roomVisibilityChipIcon: {
+      color: palette.tint,
+    },
+    roomVisibilityChipText: {
+      color: palette.text,
+      fontSize: 12,
+      fontWeight: '600',
+    },
+    roomTimestamp: {
+      color: palette.icon,
+      fontSize: 11,
+    },
+    roomJoinButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      borderRadius: 12,
+      backgroundColor: palette.tint,
+    },
+    roomJoinButtonDisabled: {
+      opacity: 0.7,
+    },
+    roomJoinButtonText: {
+      color: palette.background,
+      fontWeight: '700',
+      fontSize: 13,
+    },
   });
 }
+

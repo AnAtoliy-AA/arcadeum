@@ -1,0 +1,112 @@
+import { randomUUID } from 'crypto';
+
+export type ExplodingCatsCard =
+  | 'exploding_cat'
+  | 'defuse'
+  | 'attack'
+  | 'skip'
+  | 'cat';
+
+export interface ExplodingCatsPlayerState {
+  playerId: string;
+  hand: ExplodingCatsCard[];
+  alive: boolean;
+}
+
+export interface ExplodingCatsLogEntry {
+  id: string;
+  type: 'system' | 'action';
+  message: string;
+  createdAt: string;
+}
+
+export interface ExplodingCatsState {
+  deck: ExplodingCatsCard[];
+  discardPile: ExplodingCatsCard[];
+  playerOrder: string[];
+  currentTurnIndex: number;
+  pendingDraws: number;
+  players: ExplodingCatsPlayerState[];
+  logs: ExplodingCatsLogEntry[];
+}
+
+function repeatCard(
+  card: ExplodingCatsCard,
+  count: number,
+): ExplodingCatsCard[] {
+  return Array.from({ length: count }, () => card);
+}
+
+function shuffleInPlace<T>(items: T[]): void {
+  for (let i = items.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = items[i];
+    items[i] = items[j];
+    items[j] = tmp;
+  }
+}
+
+export function createInitialExplodingCatsState(
+  playerIds: string[],
+): ExplodingCatsState {
+  if (playerIds.length < 2) {
+    throw new Error('Exploding Cats requires at least two players.');
+  }
+
+  // Base deck with enough neutral/action cards for initial deal
+  const deck: ExplodingCatsCard[] = [
+    ...repeatCard('attack', 6),
+    ...repeatCard('skip', 6),
+    ...repeatCard('cat', 20),
+    ...repeatCard('defuse', 2),
+  ];
+
+  shuffleInPlace(deck);
+
+  const players: ExplodingCatsPlayerState[] = playerIds.map((playerId) => ({
+    playerId,
+    hand: [],
+    alive: true,
+  }));
+
+  // Deal four cards plus one guaranteed defuse to each player
+  players.forEach((player) => {
+    const drawn: ExplodingCatsCard[] = [];
+    for (let i = 0; i < 4; i += 1) {
+      const card = deck.pop();
+      if (!card) {
+        break;
+      }
+      drawn.push(card);
+    }
+    player.hand = ['defuse', ...drawn];
+  });
+
+  // Insert exploding cats into the deck (players minus one)
+  const bombsToAdd = Math.max(playerIds.length - 1, 1);
+  for (let i = 0; i < bombsToAdd; i += 1) {
+    deck.push('exploding_cat');
+  }
+
+  // Add an extra defuse for late saves
+  deck.push('defuse');
+
+  shuffleInPlace(deck);
+
+  return {
+    deck,
+    discardPile: [],
+    playerOrder: [...playerIds],
+    currentTurnIndex: 0,
+    pendingDraws: 1,
+    players,
+    logs: [
+      {
+        id: randomUUID(),
+        type: 'system',
+        message: `Game started with ${playerIds.length} players`,
+        createdAt: new Date().toISOString(),
+      },
+    ],
+  };
+}

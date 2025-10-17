@@ -27,6 +27,7 @@ export class GameRoom extends Document {
 
   @Prop({
     required: true,
+    type: String,
     enum: GAME_ROOM_VISIBILITY_VALUES,
     default: 'public',
   })
@@ -40,6 +41,7 @@ export class GameRoom extends Document {
 
   @Prop({
     required: true,
+    type: String,
     enum: GAME_ROOM_STATUS_VALUES,
     default: 'lobby',
   })
@@ -53,5 +55,3 @@ export class GameRoom extends Document {
 }
 
 export const GameRoomSchema = SchemaFactory.createForClass(GameRoom);
-
-GameRoomSchema.index({ inviteCode: 1 }, { unique: true, sparse: true });

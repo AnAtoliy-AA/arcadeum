@@ -9,6 +9,14 @@ import { FilterQuery, Model } from 'mongoose';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { JoinGameRoomDto } from './dtos/join-game-room.dto';
 import { GameRoom, type GameRoomStatus } from './schemas/game-room.schema';
+import {
+  GameSession,
+  type GameSessionStatus,
+} from './schemas/game-session.schema';
+import {
+  createInitialExplodingCatsState,
+  type ExplodingCatsState,
+} from './exploding-cats/exploding-cats.state';
 
 export interface GameRoomSummary {
   id: string;
@@ -23,11 +31,32 @@ export interface GameRoomSummary {
   inviteCode?: string;
 }
 
+export interface GameSessionSummary {
+  id: string;
+  roomId: string;
+  gameId: string;
+  engine: string;
+  status: GameSessionStatus;
+  state: Record<string, any>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StartExplodingCatsSessionResult {
+  room: GameRoomSummary;
+  session: GameSessionSummary;
+}
+
+const EXPLODING_CATS_GAME_ID = 'exploding-kittens';
+const EXPLODING_CATS_ENGINE_ID = 'exploding_cats_v1';
+
 @Injectable()
 export class GamesService {
   constructor(
     @InjectModel(GameRoom.name)
     private readonly gameRoomModel: Model<GameRoom>,
+    @InjectModel(GameSession.name)
+    private readonly gameSessionModel: Model<GameSession>,
   ) {}
 
   async createRoom(
@@ -163,6 +192,179 @@ export class GamesService {
     return this.toSummary(room);
   }
 
+  async findSessionByRoom(roomId: string): Promise<GameSessionSummary | null> {
+    const trimmedRoomId = roomId.trim();
+    if (!trimmedRoomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    const session = await this.gameSessionModel
+      .findOne({ roomId: trimmedRoomId })
+      .exec();
+
+    return session ? this.toSessionSummary(session) : null;
+  }
+
+  async createSession(options: {
+    roomId: string;
+    gameId: string;
+    engine: string;
+    status?: GameSessionStatus;
+    state: Record<string, any>;
+  }): Promise<GameSessionSummary> {
+    const roomId = options.roomId?.trim?.();
+    const gameId = options.gameId?.trim?.();
+    const engine = options.engine?.trim?.();
+
+    if (!roomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+    if (!gameId) {
+      throw new BadRequestException('Game ID is required.');
+    }
+    if (!engine) {
+      throw new BadRequestException('Engine identifier is required.');
+    }
+
+    const existing = await this.gameSessionModel.findOne({ roomId }).exec();
+    if (existing) {
+      throw new BadRequestException(
+        'An active session already exists for this room.',
+      );
+    }
+
+    const session = new this.gameSessionModel({
+      roomId,
+      gameId,
+      engine,
+      status: options.status ?? 'waiting',
+      state: options.state,
+    });
+
+    const saved = await session.save();
+    return this.toSessionSummary(saved);
+  }
+
+  async upsertSessionState(options: {
+    roomId: string;
+    state?: Record<string, any>;
+    status?: GameSessionStatus;
+  }): Promise<GameSessionSummary> {
+    const roomId = options.roomId?.trim?.();
+    if (!roomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    const update: Partial<GameSession> = {};
+    if (options.state !== undefined) {
+      update.state = options.state;
+    }
+    if (options.status !== undefined) {
+      update.status = options.status;
+    }
+
+    const updated = await this.gameSessionModel
+      .findOneAndUpdate({ roomId }, update, {
+        new: true,
+        upsert: false,
+      })
+      .exec();
+
+    if (!updated) {
+      throw new NotFoundException('Game session not found for room.');
+    }
+
+    return this.toSessionSummary(updated);
+  }
+
+  async startExplodingCatsSession(
+    hostId: string,
+    roomId: string,
+    engineOverride?: string,
+  ): Promise<StartExplodingCatsSessionResult> {
+    const normalizedHostId = hostId.trim();
+    if (!normalizedHostId) {
+      throw new BadRequestException('Host identifier is required.');
+    }
+
+    const normalizedRoomId = roomId.trim();
+    if (!normalizedRoomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    const room = await this.gameRoomModel.findById(normalizedRoomId).exec();
+    if (!room) {
+      throw new NotFoundException('Game room not found.');
+    }
+
+    if ((room.hostId ?? '').trim() !== normalizedHostId) {
+      throw new ForbiddenException('Only the host can start this game.');
+    }
+
+    if (room.status !== 'lobby') {
+      throw new BadRequestException(
+        'This room is no longer in the lobby phase.',
+      );
+    }
+
+    if (room.gameId !== EXPLODING_CATS_GAME_ID) {
+      throw new BadRequestException(
+        'Exploding Cats is not enabled for this room.',
+      );
+    }
+
+    const uniquePlayerIds = Array.from(
+      new Set(
+        (Array.isArray(room.playerIds) ? room.playerIds : [])
+          .map((playerId) => playerId.trim())
+          .filter((value) => value.length > 0),
+      ),
+    );
+
+    if (!uniquePlayerIds.includes(normalizedHostId)) {
+      uniquePlayerIds.unshift(normalizedHostId);
+    }
+
+    if (uniquePlayerIds.length < 2) {
+      throw new BadRequestException(
+        'At least two players are required to start.',
+      );
+    }
+
+    let explodingCatsState: ExplodingCatsState;
+    try {
+      explodingCatsState = createInitialExplodingCatsState(uniquePlayerIds);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Unable to start game.';
+      throw new BadRequestException(message);
+    }
+
+    const engineId = engineOverride?.trim?.() || EXPLODING_CATS_ENGINE_ID;
+
+    const session = await this.createSession({
+      roomId: normalizedRoomId,
+      gameId: room.gameId,
+      engine: engineId,
+      status: 'active',
+      state: {
+        engine: 'exploding-cats',
+        version: 1,
+        snapshot: explodingCatsState,
+        lastUpdatedAt: new Date().toISOString(),
+      },
+    });
+
+    room.playerIds = uniquePlayerIds;
+    room.status = 'in_progress';
+    const updatedRoom = await room.save();
+
+    return {
+      room: this.toSummary(updatedRoom),
+      session,
+    };
+  }
+
   private toSummary(room: GameRoom): GameRoomSummary {
     const createdAt =
       room.createdAt instanceof Date
@@ -209,5 +411,27 @@ export class GamesService {
 
     // Fallback to timestamp-based code to guarantee uniqueness
     return `ROOM-${Date.now().toString(36).toUpperCase()}`;
+  }
+
+  private toSessionSummary(session: GameSession): GameSessionSummary {
+    const createdAt =
+      session.createdAt instanceof Date
+        ? session.createdAt.toISOString()
+        : new Date(session.createdAt ?? Date.now()).toISOString();
+    const updatedAt =
+      session.updatedAt instanceof Date
+        ? session.updatedAt.toISOString()
+        : new Date(session.updatedAt ?? Date.now()).toISOString();
+
+    return {
+      id: session._id?.toString?.() ?? String(session._id),
+      roomId: session.roomId,
+      gameId: session.gameId,
+      engine: session.engine,
+      status: session.status ?? 'waiting',
+      state: session.state ?? {},
+      createdAt,
+      updatedAt,
+    };
   }
 }

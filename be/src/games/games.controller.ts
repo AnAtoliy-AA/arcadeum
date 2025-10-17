@@ -11,9 +11,13 @@ import {
 import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { type AuthenticatedUser } from '../auth/jwt/jwt.strategy';
-import { GamesService } from './games.service';
+import {
+  GamesService,
+  type StartExplodingCatsSessionResult,
+} from './games.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { JoinGameRoomDto } from './dtos/join-game-room.dto';
+import { StartGameDto } from './dtos/start-game.dto';
 
 @Controller('games')
 @UseGuards(JwtAuthGuard)
@@ -60,5 +64,22 @@ export class GamesController {
 
     const room = await this.gamesService.joinRoom(user.userId, dto);
     return { room };
+  }
+
+  @Post('rooms/start')
+  async startRoom(
+    @Req() req: Request,
+    @Body() dto: StartGameDto,
+  ): Promise<StartExplodingCatsSessionResult> {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return this.gamesService.startExplodingCatsSession(
+      user.userId,
+      dto.roomId,
+      dto.engine,
+    );
   }
 }

@@ -14,6 +14,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSessionScreenGate } from '@/hooks/useSessionScreenGate';
 import { useSessionTokens } from '@/stores/sessionTokens';
+import type { SessionTokensSnapshot } from '@/stores/sessionTokens';
 import { useThemedStyles, Palette } from '@/hooks/useThemedStyles';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import {
@@ -24,11 +25,14 @@ import {
   searchUsers,
 } from '@/pages/ChatScreen/api/chatApi';
 
-function useChatList(accessToken?: string | null) {
+function useChatList(params: { accessToken?: string | null; refreshTokens?: () => Promise<SessionTokensSnapshot> }) {
+  const { accessToken, refreshTokens } = params;
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [chats, setChats] = useState<ChatSummary[]>([]);
+
+  const fetchOptions = useMemo(() => (refreshTokens ? { refreshTokens } : undefined), [refreshTokens]);
 
   const loadChats = useCallback(async () => {
     if (!accessToken) {
@@ -39,7 +43,7 @@ function useChatList(accessToken?: string | null) {
     try {
       setLoading(true);
       setError(null);
-      const data = await fetchChats(accessToken);
+      const data = await fetchChats(accessToken, fetchOptions);
       setChats(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -47,7 +51,7 @@ function useChatList(accessToken?: string | null) {
     } finally {
       setLoading(false);
     }
-  }, [accessToken]);
+  }, [accessToken, fetchOptions]);
 
   useEffect(() => {
     if (accessToken) {
@@ -61,14 +65,14 @@ function useChatList(accessToken?: string | null) {
     if (!accessToken) return;
     try {
       setRefreshing(true);
-      const data = await fetchChats(accessToken);
+      const data = await fetchChats(accessToken, fetchOptions);
       setChats(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
       setRefreshing(false);
     }
-  }, [accessToken]);
+  }, [accessToken, fetchOptions]);
 
   const upsertChat = useCallback((chat: ChatSummary) => {
     setChats((previous) => {
@@ -82,14 +86,14 @@ function useChatList(accessToken?: string | null) {
     });
   }, []);
 
-  return { loading, refreshing, chats, error, refresh, reload: loadChats, upsertChat };
+  return { loading, refreshing, chats, error, refresh, reload: loadChats, upsertChat, fetchOptions };
 }
 
 export default function ChatListScreen() {
   const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { tokens } = useSessionTokens();
+  const { tokens, refreshTokens } = useSessionTokens();
   const {
     shouldBlock,
     isAuthenticated,
@@ -99,7 +103,10 @@ export default function ChatListScreen() {
     blockWhenUnauthenticated: false,
   });
 
-  const { loading, refreshing, chats, error, refresh, upsertChat } = useChatList(tokens.accessToken);
+  const { loading, refreshing, chats, error, refresh, upsertChat, fetchOptions } = useChatList({
+    accessToken: tokens.accessToken,
+    refreshTokens,
+  });
 
   const currentUserId = tokens.userId ?? '';
   const accessToken = tokens.accessToken;
@@ -133,7 +140,7 @@ export default function ChatListScreen() {
 
     const timeoutId = setTimeout(async () => {
       try {
-        const results = await searchUsers(trimmed, accessToken, abortController.signal);
+        const results = await searchUsers(trimmed, accessToken, abortController.signal, fetchOptions);
         setSearchResults(results.filter((participant) => participant.id !== currentUserId));
       } catch (error) {
         if (abortController.signal.aborted) {
@@ -152,7 +159,7 @@ export default function ChatListScreen() {
       abortController.abort();
       clearTimeout(timeoutId);
     };
-  }, [searchQuery, accessToken, currentUserId]);
+  }, [searchQuery, accessToken, currentUserId, fetchOptions]);
 
   const handleSelectUser = useCallback(
     async (user: ChatParticipant) => {
@@ -166,7 +173,7 @@ export default function ChatListScreen() {
 
       try {
         const participantIds = Array.from(new Set([currentUserId, user.id]));
-        const createdChat = await createChat(participantIds, accessToken);
+        const createdChat = await createChat(participantIds, accessToken, undefined, fetchOptions);
         upsertChat(createdChat);
         setSearchQuery('');
         setSearchResults([]);
@@ -193,7 +200,7 @@ export default function ChatListScreen() {
         setCreatingChatUserId(null);
       }
     },
-    [accessToken, currentUserId, router, upsertChat],
+    [accessToken, currentUserId, router, upsertChat, fetchOptions],
   );
 
   const renderItem = useCallback(

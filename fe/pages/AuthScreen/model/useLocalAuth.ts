@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
-import { loginLocal, registerLocal, me, resolveApiBase } from '../api/authApi';
+import { loginLocal, registerLocal, me, resolveApiBase, type AuthUserProfile } from '../api/authApi';
 import { SecureStoreShim } from '@/lib/secureStore';
-import { useSessionTokens } from '@/stores/sessionTokens';
+import { useSessionTokens, type SessionTokensSnapshot } from '@/stores/sessionTokens';
 
 interface LocalAuthState {
   accessToken: string | null;
@@ -45,6 +45,34 @@ export function useLocalAuth() {
   const toggleMode = useCallback(() => {
     setState(s => ({ ...s, mode: s.mode === 'login' ? 'register' : 'login', error: null }));
   }, []);
+
+  const applyProfileSnapshot = useCallback(
+    async (profile: AuthUserProfile, snapshot: SessionTokensSnapshot, fallbackEmail: string | null) => {
+      const emailValue = profile.email ?? fallbackEmail ?? null;
+      await persist(EMAIL_KEY, emailValue);
+      const mergedSnapshot = await persistSessionTokens({
+        provider: snapshot.provider ?? null,
+        accessToken: snapshot.accessToken ?? null,
+        accessTokenExpiresAt: snapshot.accessTokenExpiresAt ?? null,
+        refreshToken: snapshot.refreshToken ?? null,
+        refreshTokenExpiresAt: snapshot.refreshTokenExpiresAt ?? null,
+        tokenType: snapshot.tokenType ?? null,
+        userId: profile.id ?? snapshot.userId ?? null,
+        email: emailValue,
+        username: profile.username ?? snapshot.username ?? null,
+      });
+      setState(s => ({
+        ...s,
+        accessToken: mergedSnapshot.accessToken,
+        refreshToken: mergedSnapshot.refreshToken,
+        email: mergedSnapshot.email ?? emailValue,
+        username: mergedSnapshot.username ?? profile.username ?? null,
+        loading: false,
+        error: null,
+      }));
+    },
+    [persistSessionTokens],
+  );
 
   const register = useCallback(async (email: string, password: string, username: string) => {
     setState(s => ({ ...s, loading: true, error: null }));
@@ -94,58 +122,52 @@ export function useLocalAuth() {
   }, [persistSessionTokens]);
 
   const checkSession = useCallback(async () => {
-    setState(s => ({ ...s, loading: true }));
+    setState(s => ({ ...s, loading: true, error: null }));
     try {
-      const email = await SecureStoreShim.getItemAsync(EMAIL_KEY);
-      const snapshot = sessionHydrated ? sessionTokens : await reloadSessionTokens();
-      const token = snapshot.accessToken;
-      if (token) {
-        try {
-          const profile = await me(token);
-          const updatedSnapshot = await persistSessionTokens({
-            userId: profile.id ?? null,
-            email: profile.email ?? email ?? null,
-            username: profile.username ?? null,
-          });
-          setState(s => ({
-            ...s,
-            accessToken: token,
-            refreshToken: snapshot.refreshToken,
-            email: updatedSnapshot.email ?? email,
-            username:
-              updatedSnapshot.username ?? snapshot.username ?? profile.username ?? null,
-            loading: false,
-          }));
-          return;
-        } catch {
-          try {
-            const refreshedSnapshot = await refreshSessionTokens();
-            const refreshedToken = refreshedSnapshot.accessToken;
-            if (refreshedToken) {
-              const profile = await me(refreshedToken);
-              const updatedSnapshot = await persistSessionTokens({
-                userId: profile.id ?? null,
-                email: profile.email ?? email ?? null,
-                username: profile.username ?? null,
-              });
-              setState(s => ({
-                ...s,
-                accessToken: refreshedToken,
-                refreshToken: refreshedSnapshot.refreshToken,
-                email: updatedSnapshot.email ?? email,
-                username:
-                  updatedSnapshot.username ?? refreshedSnapshot.username ?? profile.username ?? null,
-                loading: false,
-              }));
-              return;
-            }
-            await clearSessionTokens();
-          } catch {
-            await clearSessionTokens();
-          }
-        }
+      const storedEmail = await SecureStoreShim.getItemAsync(EMAIL_KEY);
+      const baseSnapshot = sessionHydrated ? sessionTokens : await reloadSessionTokens();
+      const token = baseSnapshot.accessToken;
+
+      if (!token) {
+        setState(s => ({
+          ...s,
+          accessToken: null,
+          refreshToken: null,
+          email: storedEmail,
+          username: null,
+          loading: false,
+        }));
+        return;
       }
-      setState(s => ({ ...s, accessToken: null, refreshToken: null, email, username: null, loading: false }));
+
+      try {
+        const profile = await me(token, { refreshTokens: refreshSessionTokens });
+        const latestSnapshot = sessionTokens.accessToken ? sessionTokens : await reloadSessionTokens();
+        const snapshotForProfile = latestSnapshot.accessToken ? latestSnapshot : baseSnapshot;
+        await applyProfileSnapshot(profile, snapshotForProfile, storedEmail);
+        return;
+      } catch {
+        try {
+          const refreshedSnapshot = await refreshSessionTokens();
+          const refreshedToken = refreshedSnapshot.accessToken;
+          if (refreshedToken) {
+            const profile = await me(refreshedToken);
+            await applyProfileSnapshot(profile, refreshedSnapshot, storedEmail);
+            return;
+          }
+        } catch {
+          // fall through to clear
+        }
+        await clearSessionTokens();
+        setState(s => ({
+          ...s,
+          accessToken: null,
+          refreshToken: null,
+          email: storedEmail,
+          username: null,
+          loading: false,
+        }));
+      }
     } catch {
       setState(s => ({ ...s, loading: false }));
     }
@@ -154,8 +176,8 @@ export function useLocalAuth() {
     sessionTokens,
     reloadSessionTokens,
     clearSessionTokens,
-    persistSessionTokens,
     refreshSessionTokens,
+    applyProfileSnapshot,
   ]);
 
   const logout = useCallback(async () => {

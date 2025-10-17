@@ -3,6 +3,7 @@ import Constants from 'expo-constants';
 import * as AuthSession from 'expo-auth-session';
 import { platform } from '@/constants/platform';
 import { authConfig } from '../config/authConfig';
+import { fetchWithRefresh, type FetchWithRefreshOptions } from '@/lib/fetchWithRefresh';
 
 function validateConfig() {
   const missing: string[] = [];
@@ -272,10 +273,11 @@ export async function refreshSession(refreshToken: string): Promise<LoginRespons
   return res.json() as Promise<LoginResponse>;
 }
 
-export async function me(accessToken: string): Promise<MeResponse> {
-  const res = await fetch(`${apiBase()}/auth/me`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
+export async function me(accessToken: string, options?: FetchWithRefreshOptions): Promise<MeResponse> {
+  const response = await fetchWithRefresh(`${apiBase()}/auth/me`, {}, {
+    accessToken,
+    refreshTokens: options?.refreshTokens,
   });
-  if (!res.ok) throw new Error('Unauthorized');
-  return res.json() as Promise<MeResponse>;
+  if (!response.ok) throw new Error('Unauthorized');
+  return response.json() as Promise<MeResponse>;
 }

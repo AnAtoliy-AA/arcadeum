@@ -1,4 +1,5 @@
 import { resolveApiBase } from '@/pages/AuthScreen/api/authApi';
+import { fetchWithRefresh, FetchWithRefreshOptions } from '@/lib/fetchWithRefresh';
 
 export interface MessageView {
   id: string;
@@ -54,26 +55,27 @@ async function authorizedJson<T>(
   path: string,
   accessToken: string,
   init: RequestInit = {},
+  options?: FetchWithRefreshOptions,
 ): Promise<T> {
   const url = `${resolveApiBase()}${path}`;
-  const headers = new Headers(init.headers);
-  if (!headers.has('Authorization')) {
-    headers.set('Authorization', `Bearer ${accessToken}`);
-  }
   const method = init.method?.toUpperCase() ?? 'GET';
+  const headers = new Headers(init.headers);
   if (method !== 'GET' && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
   }
 
-  const res = await fetch(url, { ...init, method, headers });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text || `Request failed with status ${res.status}`);
+  const response = await fetchWithRefresh(url, { ...init, method, headers }, {
+    accessToken,
+    refreshTokens: options?.refreshTokens,
+  });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || `Request failed with status ${response.status}`);
   }
-  if (res.status === 204) {
+  if (response.status === 204) {
     return undefined as T;
   }
-  return res.json() as Promise<T>;
+  return response.json() as Promise<T>;
 }
 
 function mapParticipant(raw: RawChatParticipant): ChatParticipant {
@@ -106,8 +108,11 @@ function mapChatSummary(raw: RawChatSummary): ChatSummary {
   };
 }
 
-export async function fetchChats(accessToken: string): Promise<ChatSummary[]> {
-  const data = await authorizedJson<RawChatSummary[]>('/chat', accessToken);
+export async function fetchChats(
+  accessToken: string,
+  options?: FetchWithRefreshOptions,
+): Promise<ChatSummary[]> {
+  const data = await authorizedJson<RawChatSummary[]>('/chat', accessToken, undefined, options);
   if (!Array.isArray(data)) {
     return [];
   }
@@ -118,6 +123,7 @@ export async function searchUsers(
   query: string,
   accessToken: string,
   signal?: AbortSignal,
+  options?: FetchWithRefreshOptions,
 ): Promise<ChatParticipant[]> {
   const trimmed = query.trim();
   if (!trimmed) {
@@ -128,6 +134,7 @@ export async function searchUsers(
     `/auth/users/search?${params.toString()}`,
     accessToken,
     { signal },
+    options,
   );
   if (!Array.isArray(data)) {
     return [];
@@ -141,6 +148,7 @@ export async function createChat(
   participantIds: string[],
   accessToken: string,
   chatId?: string,
+  options?: FetchWithRefreshOptions,
 ): Promise<ChatSummary> {
   const payload: { users: string[]; chatId?: string } = {
     users: participantIds,
@@ -152,6 +160,6 @@ export async function createChat(
   const data = await authorizedJson<RawChatSummary>('/chat', accessToken, {
     method: 'POST',
     body: JSON.stringify(payload),
-  });
+  }, options);
   return mapChatSummary(data);
 }

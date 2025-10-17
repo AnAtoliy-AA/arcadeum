@@ -7,6 +7,7 @@ import { useLocalSearchParams, useRootNavigationState } from 'expo-router';
 import Constants from 'expo-constants';
 import { useSessionTokens } from '@/stores/sessionTokens';
 import type { LoginResponse } from '../api/authApi';
+import { fetchWithRefresh } from '@/lib/fetchWithRefresh';
 
 export function useAuth() {
   const [authState, setAuthState] = useState<AuthorizeResult | null>(null);
@@ -108,11 +109,25 @@ export function useAuth() {
           const maybeExtra = (Constants.expoConfig as any)?.extra as Record<string, unknown> | undefined;
           const apiBaseRaw = (maybeExtra?.API_BASE_URL as string | undefined) || process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:4000';
           const apiBase = apiBaseRaw.replace(/\/$/, '');
-          const resp = await fetch(`${apiBase}/auth/token`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code, codeVerifier, redirectUri: authConfig.redirectUrl }),
-          });
+          const payload = JSON.stringify({ code, codeVerifier, redirectUri: authConfig.redirectUrl });
+          const controller = new AbortController();
+          const fetchAuthToken = async () => {
+            return fetchWithRefresh(`${apiBase}/auth/token`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: payload,
+              signal: controller.signal,
+            });
+          };
+          let resp = await fetchAuthToken();
+          if (resp.status === 401) {
+            controller.abort();
+            resp = await fetch(`${apiBase}/auth/token`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: payload,
+            });
+          }
           let json: TokenExchangeResponse = {};
           try {
             json = (await resp.json()) as TokenExchangeResponse;

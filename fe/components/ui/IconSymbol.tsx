@@ -18,6 +18,7 @@ const MAPPING = {
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  'chevron.left': 'chevron-left',
   'message.fill': 'chat',
   'gamecontroller.fill': 'sports-esports',
   'person.3.fill': 'groups',

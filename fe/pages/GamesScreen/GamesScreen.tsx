@@ -6,46 +6,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
 import { useSessionScreenGate } from '@/hooks/useSessionScreenGate';
-
-const tabletopGames: TabletopGame[] = [
-  {
-    id: 'exploding-kittens',
-    name: 'Exploding Cats',
-    players: '2-5 players',
-    duration: '15 min',
-    summary: 'Push your luck, avoid the exploding cats, and sabotage opponents with wild cards.',
-    status: 'In prototype',
-    tags: ['Card game', 'Party', 'Humor'],
-  },
-  {
-    id: 'coup',
-    name: 'Coup',
-    players: '2-6 players',
-    duration: '10 min',
-    summary: 'Bluff, deduce, and outmaneuver rivals in a fast-paced game of influence.',
-    status: 'In design',
-    tags: ['Bluffing', 'Strategy'],
-  },
-  {
-    id: 'pandemic-lite',
-    name: 'Pandemic: Rapid Response',
-    players: '2-4 players',
-    duration: '20 min',
-    summary: 'Coordinate with friends in real time to stop global outbreaks before time runs out.',
-    status: 'Roadmap',
-    tags: ['Co-op', 'Strategy'],
-  },
-];
-
-interface TabletopGame {
-  id: string;
-  name: string;
-  players: string;
-  duration: string;
-  summary: string;
-  status: 'In prototype' | 'In design' | 'Roadmap';
-  tags: string[];
-}
+import { gamesCatalog, type GameCatalogueEntry } from './catalog';
 
 export default function GamesScreen() {
   const styles = useThemedStyles(createStyles);
@@ -56,12 +17,12 @@ export default function GamesScreen() {
     blockWhenUnauthenticated: true,
   });
 
-  const handleCreate = useCallback((game: TabletopGame) => {
+  const handleCreate = useCallback((game: GameCatalogueEntry) => {
     Alert.alert('Matchmaking coming soon', `Creating a room for ${game.name} will be available shortly.`);
   }, []);
 
-  const handlePreview = useCallback((game: TabletopGame) => {
-    router.push({ pathname: '/explore', params: { highlight: game.id } });
+  const handlePreview = useCallback((game: GameCatalogueEntry) => {
+    router.push({ pathname: '/games/[id]', params: { id: game.id } });
   }, [router]);
 
   if (shouldBlock) {
@@ -92,7 +53,7 @@ export default function GamesScreen() {
           </ThemedText>
         </View>
 
-        {tabletopGames.map(game => {
+  {gamesCatalog.map(game => {
           const statusStyle =
             game.status === 'In prototype'
               ? styles.statusPrototype

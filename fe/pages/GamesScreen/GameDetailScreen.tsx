@@ -28,6 +28,7 @@ import {
   getRoomStatusLabel,
 } from './roomUtils';
 import { InviteCodeDialog } from './InviteCodeDialog';
+import { interpretJoinError } from './joinErrorUtils';
 
 type InvitePromptState = {
   visible: boolean;
@@ -149,9 +150,9 @@ export default function GameDetailScreen() {
         },
       );
 
-      updateRoomList(response.room);
+    updateRoomList(response.room);
 
-  setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
+    setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
 
       Alert.alert(
         'Joined room',
@@ -159,40 +160,38 @@ export default function GameDetailScreen() {
       );
       void fetchRooms('refresh');
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Unable to join that room right now.';
-      const needsInvite = message.toLowerCase().includes('invite code');
+      const { type, message: rawMessage } = interpretJoinError(error);
 
-      if (!inviteCode && needsInvite) {
-  setInvitePrompt({ visible: true, room, mode: 'room', loading: false, error: null });
+      if (!inviteCode && type === 'invite-required') {
+        setInvitePrompt({ visible: true, room, mode: 'room', loading: false, error: null });
         return;
       }
 
-      if (inviteCode && needsInvite) {
+      if (inviteCode && (type === 'invite-required' || type === 'invite-invalid')) {
         setInvitePrompt({
           visible: true,
           room,
           mode: 'room',
           loading: false,
-          error: 'Invite code didn’t work. Double-check and try again.',
+          error:
+            type === 'invite-required'
+              ? 'This lobby needs an invite code from the host.'
+              : 'Invite code didn’t work. Double-check and try again.',
         });
         return;
       }
 
-      if (inviteCode) {
-        setInvitePrompt({
-          visible: true,
-          room,
-          mode: 'room',
-          loading: false,
-          error: message,
-        });
+      if (type === 'room-full') {
+        Alert.alert('Room is full', 'That lobby has hit its player cap. Try a different room or create your own.');
         return;
       }
 
-      Alert.alert('Couldn’t join room', message);
+      if (type === 'room-locked') {
+        Alert.alert('Match already started', 'The host already kicked off this session. Join another lobby or wait for the next one.');
+        return;
+      }
+
+      Alert.alert('Couldn’t join room', rawMessage);
     } finally {
       setJoiningRoomId(null);
     }

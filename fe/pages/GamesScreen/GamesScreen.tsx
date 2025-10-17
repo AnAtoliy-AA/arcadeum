@@ -28,6 +28,7 @@ import {
   getRoomStatusLabel,
 } from './roomUtils';
 import { InviteCodeDialog } from './InviteCodeDialog';
+import { interpretJoinError } from './joinErrorUtils';
 
 type InvitePromptState = {
   visible: boolean;
@@ -137,47 +138,45 @@ export default function GamesScreen() {
         },
       );
 
-      updateRoomList(response.room);
+    updateRoomList(response.room);
 
-  setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
+    setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
 
       Alert.alert('Joined room', 'You are in! The host will kick things off soon.');
       void fetchRooms('refresh');
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'We could not join that room right now.';
-      const needsInvite = message.toLowerCase().includes('invite code');
+      const { type, message: rawMessage } = interpretJoinError(error);
 
-      if (!inviteCode && needsInvite) {
-  setInvitePrompt({ visible: true, room, mode: 'room', loading: false, error: null });
+      if (!inviteCode && type === 'invite-required') {
+        setInvitePrompt({ visible: true, room, mode: 'room', loading: false, error: null });
         return;
       }
 
-      if (inviteCode && needsInvite) {
+      if (inviteCode && (type === 'invite-required' || type === 'invite-invalid')) {
         setInvitePrompt({
           visible: true,
           room,
           mode: 'room',
           loading: false,
-          error: 'Invite code didn’t work. Double-check and try again.',
+          error:
+            type === 'invite-required'
+              ? 'This lobby needs an invite code from the host.'
+              : 'Invite code didn’t work. Double-check and try again.',
         });
         return;
       }
 
-      if (inviteCode) {
-        setInvitePrompt({
-          visible: true,
-          room,
-          mode: 'room',
-          loading: false,
-          error: message,
-        });
+      if (type === 'room-full') {
+        Alert.alert('Room is full', 'That lobby has hit its player cap. Try another room or create your own.');
         return;
       }
 
-      Alert.alert('Couldn’t join room', message);
+      if (type === 'room-locked') {
+        Alert.alert('Match already started', 'This lobby is already in progress. Join a different room or check back later.');
+        return;
+      }
+
+      Alert.alert('Couldn’t join room', rawMessage);
     } finally {
       setJoiningRoomId(null);
     }
@@ -226,20 +225,31 @@ export default function GamesScreen() {
       );
       void fetchRooms('refresh');
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Unable to join that room right now.';
-      const needsInvite = message.toLowerCase().includes('invite code');
+      const { type, message: rawMessage } = interpretJoinError(error);
+
+      if (type === 'room-full') {
+        setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
+        Alert.alert('Room is full', 'That lobby has already reached its player cap. Try another code or create a new room.');
+        return;
+      }
+
+      if (type === 'room-locked') {
+        setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
+        Alert.alert('Match already started', 'The host already kicked off that session. Ask them for a fresh invite code.');
+        return;
+      }
 
       setInvitePrompt({
         visible: true,
         room: null,
         mode: 'manual',
         loading: false,
-        error: needsInvite
-          ? 'Invite code didn’t work. Double-check and try again.'
-          : message,
+        error:
+          type === 'invite-invalid'
+            ? 'We couldn’t find a room with that invite code. Double-check the letters and try again.'
+            : type === 'invite-required'
+              ? 'This lobby needs an invite code from the host.'
+              : rawMessage,
       });
     }
   }, [fetchRooms, refreshTokens, router, tokens.accessToken, updateRoomList]);

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import {
   ActivityIndicator,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -70,6 +71,7 @@ interface ExplodingCatsTableProps {
   onStart: () => void;
   onDraw: () => void;
   onPlay: (card: 'skip' | 'attack') => void;
+  fullScreen?: boolean;
 }
 
 export function ExplodingCatsTable({
@@ -82,6 +84,7 @@ export function ExplodingCatsTable({
   onStart,
   onDraw,
   onPlay,
+  fullScreen = false,
 }: ExplodingCatsTableProps) {
   const styles = useThemedStyles(createStyles);
 
@@ -134,8 +137,8 @@ export function ExplodingCatsTable({
   const canStart = isHost && !isSessionActive && !isSessionCompleted && !snapshot;
   const logs = useMemo(() => (snapshot?.logs ?? []).slice(-12).reverse(), [snapshot]);
 
-  return (
-    <ThemedView style={styles.card}>
+  const tableContent = (
+    <>
       <View style={styles.headerRow}>
         <View style={styles.headerTitle}>
           <IconSymbol name="rectangle.grid.2x2" size={18} color={styles.headerIcon.color as string} />
@@ -303,13 +306,39 @@ export function ExplodingCatsTable({
           ))}
         </View>
       ) : null}
-    </ThemedView>
+    </>
   );
+
+  if (fullScreen) {
+    return (
+      <ThemedView style={[styles.card, styles.cardFullScreen]}>
+        <ScrollView
+          contentContainerStyle={styles.fullScreenScroll}
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+        >
+          <View style={styles.fullScreenInner}>{tableContent}</View>
+        </ScrollView>
+      </ThemedView>
+    );
+  }
+
+  return <ThemedView style={styles.card}>{tableContent}</ThemedView>;
 }
 
 function createStyles(palette: Palette) {
   const isLight = palette.background === '#fff';
-  const { surface, raised, border, shadow, playerSelf, playerCurrent, destructiveBg, destructiveText } = palette.gameTable;
+  const tableTheme = palette.gameTable ?? {
+    surface: isLight ? '#F6F8FC' : '#1E2229',
+    raised: isLight ? '#E7EDF7' : '#262A32',
+    border: isLight ? '#D8DFEA' : '#33373E',
+    shadow: isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(0, 0, 0, 0.45)',
+    playerSelf: isLight ? '#ECFEFF' : '#11252A',
+    playerCurrent: isLight ? '#FEF3C7' : '#3B2E11',
+    destructiveBg: isLight ? '#FEE2E2' : '#3A2020',
+    destructiveText: isLight ? '#991B1B' : '#FECACA',
+  } as const;
+  const { surface, raised, border, shadow, playerSelf, playerCurrent, destructiveBg, destructiveText } = tableTheme;
 
   return StyleSheet.create({
     card: {
@@ -324,6 +353,26 @@ function createStyles(palette: Palette) {
       shadowRadius: 12,
       shadowOffset: { width: 0, height: 4 },
       elevation: 2,
+    },
+    cardFullScreen: {
+      flex: 1,
+      borderRadius: 0,
+      borderWidth: 0,
+      shadowOpacity: 0,
+      shadowRadius: 0,
+      shadowOffset: { width: 0, height: 0 },
+      elevation: 0,
+      paddingHorizontal: 24,
+      paddingVertical: 24,
+      backgroundColor: surface,
+      gap: 0,
+    },
+    fullScreenScroll: {
+      flexGrow: 1,
+    },
+    fullScreenInner: {
+      gap: 16,
+      paddingBottom: 32,
     },
     headerRow: {
       flexDirection: 'row',

@@ -359,6 +359,65 @@ export default function GameRoomScreen() {
   const displayGame = room ? formatRoomGame(room.gameId) : gameId ? formatRoomGame(gameId) : undefined;
 
   const isLoading = loading && !refreshing;
+  const hasSessionSnapshot = Boolean(
+    session?.state && typeof session.state === 'object' && (session.state as Record<string, any>).snapshot,
+  );
+
+  const renderTopBar = useCallback(
+    (variant: 'lobby' | 'table') => (
+      <View style={variant === 'table' ? styles.fullscreenTopBar : styles.topBar}>
+        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+          <IconSymbol name="chevron.left" size={20} color={styles.backButtonText.color as string} />
+          <ThemedText style={styles.backButtonText}>Back</ThemedText>
+        </TouchableOpacity>
+        <View style={styles.actionGroup}>
+          <TouchableOpacity style={styles.gameButton} onPress={handleViewGame} disabled={!room && !gameId}>
+            <IconSymbol name="book" size={16} color={styles.gameButtonText.color as string} />
+            <ThemedText style={styles.gameButtonText}>View game</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.leaveButton, leaving ? styles.leaveButtonDisabled : null]}
+            onPress={handleLeaveRoom}
+            disabled={leaving}
+          >
+            {leaving ? (
+              <ActivityIndicator size="small" color={styles.leaveSpinner.color as string} />
+            ) : (
+              <>
+                <IconSymbol name="rectangle.portrait.and.arrow.right" size={16} color={styles.leaveButtonText.color as string} />
+                <ThemedText style={styles.leaveButtonText}>Leave</ThemedText>
+              </>
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+    ),
+    [gameId, handleBack, handleLeaveRoom, handleViewGame, leaving, room, styles],
+  );
+
+  const topBar = renderTopBar(hasSessionSnapshot ? 'table' : 'lobby');
+
+  if (hasSessionSnapshot) {
+    return (
+      <ThemedView style={styles.fullscreenContainer}>
+        {topBar}
+        <View style={styles.fullscreenTableWrapper}>
+          <ExplodingCatsTable
+            room={room}
+            session={session}
+            currentUserId={tokens.userId}
+            actionBusy={actionBusy}
+            startBusy={startBusy}
+            isHost={isHost}
+            onStart={handleStartMatch}
+            onDraw={handleDrawCard}
+            onPlay={handlePlayCard}
+            fullScreen
+          />
+        </View>
+      </ThemedView>
+    );
+  }
 
   return (
     <ThemedView style={styles.container}>
@@ -372,32 +431,7 @@ export default function GameRoomScreen() {
           />
         )}
       >
-        <View style={styles.topBar}>
-          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-            <IconSymbol name="chevron.left" size={20} color={styles.backButtonText.color as string} />
-            <ThemedText style={styles.backButtonText}>Back</ThemedText>
-          </TouchableOpacity>
-          <View style={styles.actionGroup}>
-            <TouchableOpacity style={styles.gameButton} onPress={handleViewGame} disabled={!room && !gameId}>
-              <IconSymbol name="book" size={16} color={styles.gameButtonText.color as string} />
-              <ThemedText style={styles.gameButtonText}>View game</ThemedText>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.leaveButton, leaving ? styles.leaveButtonDisabled : null]}
-              onPress={handleLeaveRoom}
-              disabled={leaving}
-            >
-              {leaving ? (
-                <ActivityIndicator size="small" color={styles.leaveSpinner.color as string} />
-              ) : (
-                <>
-                  <IconSymbol name="rectangle.portrait.and.arrow.right" size={16} color={styles.leaveButtonText.color as string} />
-                  <ThemedText style={styles.leaveButtonText}>Leave</ThemedText>
-                </>
-              )}
-            </TouchableOpacity>
-          </View>
-        </View>
+        {topBar}
 
         <ThemedView style={styles.headerCard}>
           <View style={styles.headerRow}>
@@ -523,6 +557,10 @@ function createStyles(palette: Palette) {
       flex: 1,
       backgroundColor: palette.background,
     },
+    fullscreenContainer: {
+      flex: 1,
+      backgroundColor: palette.background,
+    },
     content: {
       padding: 24,
       gap: 20,
@@ -535,6 +573,21 @@ function createStyles(palette: Palette) {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
+    },
+    fullscreenTopBar: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingTop: 24,
+      paddingHorizontal: 24,
+      paddingBottom: 16,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: borderColor,
+    },
+    fullscreenTableWrapper: {
+      flex: 1,
+      paddingHorizontal: 24,
+      paddingBottom: 24,
     },
     actionGroup: {
       flexDirection: 'row',

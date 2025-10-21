@@ -27,7 +27,9 @@ function resolveSocketUrl(): string {
   return `http://${fallbackHost}:4000`;
 }
 
-export const socket = io(resolveSocketUrl(), { transports: ['websocket'] });
+export const socket = io(`${resolveSocketUrl()}/games`, {
+  transports: ['websocket'],
+});
 
 interface SocketEventHandler {
   (...args: any[]): void;

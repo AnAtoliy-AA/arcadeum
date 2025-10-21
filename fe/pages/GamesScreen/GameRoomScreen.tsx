@@ -13,14 +13,22 @@ import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { socket } from '@/hooks/useSocket';
 import { useSessionTokens } from '@/stores/sessionTokens';
-import { leaveGameRoom, listGameRooms, type GameRoomSummary } from './api/gamesApi';
+import {
+  leaveGameRoom,
+  listGameRooms,
+  startGameRoom,
+  type GameRoomSummary,
+  type GameSessionSummary,
+} from './api/gamesApi';
 import {
   formatRoomGame,
   formatRoomHost,
   formatRoomTimestamp,
   getRoomStatusLabel,
 } from './roomUtils';
+import { ExplodingCatsTable } from './components/ExplodingCatsTable';
 
 function resolveParam(value: string | string[] | undefined): string | undefined {
   if (!value) return undefined;
@@ -41,12 +49,17 @@ export default function GameRoomScreen() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [session, setSession] = useState<GameSessionSummary | null>(null);
+  const [actionBusy, setActionBusy] = useState<'draw' | 'skip' | 'attack' | null>(null);
+  const [startBusy, setStartBusy] = useState(false);
+  const isHost = room?.hostId && tokens.userId ? room.hostId === tokens.userId : false;
   const [leaving, setLeaving] = useState(false);
 
   const fetchRoom = useCallback(
     async (mode: 'initial' | 'refresh' = 'initial') => {
       if (!roomId || !tokens.accessToken) {
         setRoom(null);
+        setSession(null);
         setError(
           roomId
             ? 'Sign in to load room details.'
@@ -69,11 +82,13 @@ export default function GameRoomScreen() {
           setError(null);
         } else {
           setRoom(null);
+          setSession(null);
           setError('This room is no longer active or you have left the lobby.');
         }
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Unable to load room details.';
         setRoom(null);
+        setSession(null);
         setError(message);
       } finally {
         setFlag(false);
@@ -93,6 +108,81 @@ export default function GameRoomScreen() {
     }, [fetchRoom]),
   );
 
+  useEffect(() => {
+    if (!roomId || !tokens.userId) {
+      return;
+    }
+
+    const handleConnect = () => {
+      socket.emit('games.room.join', {
+        roomId,
+        userId: tokens.userId,
+      });
+    };
+
+    const handleJoined = (payload: { room?: GameRoomSummary; session?: GameSessionSummary | null }) => {
+      if (payload?.room) {
+        setRoom(payload.room);
+      }
+      if (payload?.session) {
+        setSession(payload.session);
+      }
+    };
+
+    const handleRoomUpdate = (payload: { room?: GameRoomSummary }) => {
+      if (payload?.room && payload.room.id === roomId) {
+        setRoom(payload.room);
+      }
+    };
+
+    const handleSnapshot = (payload: { roomId?: string; session?: GameSessionSummary }) => {
+      if (payload?.roomId && payload.roomId !== roomId) {
+        return;
+      }
+      if (payload?.session) {
+        setSession(payload.session);
+      }
+      setActionBusy(null);
+    };
+
+    const handleSessionStarted = (payload: { room: GameRoomSummary; session: GameSessionSummary }) => {
+      if (!payload?.room || payload.room.id !== roomId) {
+        return;
+      }
+      setRoom(payload.room);
+      setSession(payload.session);
+      setStartBusy(false);
+      setActionBusy(null);
+    };
+
+    const handleException = (payload: { message?: string }) => {
+      const message = payload?.message ?? 'Something went wrong.';
+      setActionBusy(null);
+      setStartBusy(false);
+      Alert.alert('Action failed', message);
+    };
+
+    socket.on('connect', handleConnect);
+    socket.on('games.room.joined', handleJoined);
+    socket.on('games.room.update', handleRoomUpdate);
+    socket.on('games.session.snapshot', handleSnapshot);
+    socket.on('games.session.started', handleSessionStarted);
+    socket.on('exception', handleException);
+
+    if (socket.connected) {
+      handleConnect();
+    }
+
+    return () => {
+      socket.off('connect', handleConnect);
+      socket.off('games.room.joined', handleJoined);
+      socket.off('games.room.update', handleRoomUpdate);
+      socket.off('games.session.snapshot', handleSnapshot);
+      socket.off('games.session.started', handleSessionStarted);
+      socket.off('exception', handleException);
+    };
+  }, [roomId, tokens.userId]);
+
   const performLeave = useCallback(async () => {
     if (!roomId || !tokens.accessToken) {
       return;
@@ -108,6 +198,9 @@ export default function GameRoomScreen() {
         },
       );
 
+      setSession(null);
+      setActionBusy(null);
+      setStartBusy(false);
       router.replace('/(tabs)/games');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Could not leave the room.';
@@ -156,6 +249,85 @@ export default function GameRoomScreen() {
       ],
     );
   }, [leaving, performLeave, roomId, router, tokens.accessToken]);
+
+  const handleStartMatch = useCallback(() => {
+    if (!roomId) {
+      return;
+    }
+
+    if (!tokens.accessToken) {
+      Alert.alert('Sign in required', 'Sign in to start the match for this lobby.', [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Sign in',
+          onPress: () => router.push('/auth' as never),
+        },
+      ]);
+      return;
+    }
+
+    if (!isHost || startBusy) {
+      return;
+    }
+
+    setStartBusy(true);
+    startGameRoom(
+      { roomId, engine: 'exploding_cats_v1' },
+      {
+        accessToken: tokens.accessToken,
+        refreshTokens,
+      },
+    )
+      .then((response) => {
+        setRoom(response.room);
+        setSession(response.session);
+      })
+      .catch((err) => {
+        const message = err instanceof Error ? err.message : 'Unable to start the match right now.';
+        Alert.alert('Unable to start match', message);
+      })
+      .finally(() => {
+        setStartBusy(false);
+      });
+  }, [isHost, refreshTokens, roomId, router, startBusy, tokens.accessToken]);
+
+  const handleDrawCard = useCallback(() => {
+    if (!roomId || !tokens.userId) {
+      Alert.alert('Sign in required', 'Log in to take turns at the table.');
+      return;
+    }
+
+    if (actionBusy) {
+      return;
+    }
+
+    setActionBusy('draw');
+    socket.emit('games.session.draw', {
+      roomId,
+      userId: tokens.userId,
+    });
+  }, [actionBusy, roomId, tokens.userId]);
+
+  const handlePlayCard = useCallback(
+    (card: 'skip' | 'attack') => {
+      if (!roomId || !tokens.userId) {
+        Alert.alert('Sign in required', 'Log in to play action cards.');
+        return;
+      }
+
+      if (actionBusy) {
+        return;
+      }
+
+      setActionBusy(card);
+      socket.emit('games.session.play_action', {
+        roomId,
+        userId: tokens.userId,
+        card,
+      });
+    },
+    [actionBusy, roomId, tokens.userId],
+  );
 
   const handleBack = useCallback(() => {
     if (router.canGoBack()) {
@@ -293,6 +465,18 @@ export default function GameRoomScreen() {
             coordinate in chat, review the rules, and gather your crew while we finish the real-time experience.
           </ThemedText>
         </ThemedView>
+
+        <ExplodingCatsTable
+          room={room}
+          session={session}
+          currentUserId={tokens.userId}
+          actionBusy={actionBusy}
+          startBusy={startBusy}
+          isHost={isHost}
+          onStart={handleStartMatch}
+          onDraw={handleDrawCard}
+          onPlay={handlePlayCard}
+        />
 
         <ThemedView style={styles.footerCard}>
           <IconSymbol name="arrow.clockwise" size={18} color={styles.footerIcon.color as string} />

@@ -17,6 +17,16 @@ export const Colors = {
     statusConnected: '#2ecc40',
     statusDisconnected: '#ff4136',
     error: '#ff4136',
+    gameTable: {
+      surface: '#F6F8FC',
+      raised: '#E7EDF7',
+      border: '#D8DFEA',
+      shadow: 'rgba(15, 23, 42, 0.08)',
+      playerSelf: '#ECFEFF',
+      playerCurrent: '#FEF3C7',
+      destructiveBg: '#FEE2E2',
+      destructiveText: '#991B1B',
+    },
   },
   dark: {
     text: '#ECEDEE',
@@ -28,5 +38,15 @@ export const Colors = {
     statusConnected: '#2ecc40',
     statusDisconnected: '#ff4136',
     error: '#ff4136',
+    gameTable: {
+      surface: '#1E2229',
+      raised: '#262A32',
+      border: '#33373E',
+      shadow: 'rgba(0, 0, 0, 0.45)',
+      playerSelf: '#11252A',
+      playerCurrent: '#3B2E11',
+      destructiveBg: '#3A2020',
+      destructiveText: '#FECACA',
+    },
   },
 };

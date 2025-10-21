@@ -130,6 +130,56 @@ export class GamesGateway {
     }
   }
 
+  @SubscribeMessage('games.session.play_action')
+  async handleSessionPlayAction(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: { roomId?: string; userId?: string; card?: string },
+  ): Promise<void> {
+    const roomId =
+      typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
+    const userId =
+      typeof payload?.userId === 'string' ? payload.userId.trim() : '';
+    const cardRaw =
+      typeof payload?.card === 'string'
+        ? payload.card.trim().toLowerCase()
+        : '';
+
+    if (!roomId) {
+      throw new WsException('roomId is required.');
+    }
+    if (!userId) {
+      throw new WsException('userId is required.');
+    }
+
+    const isAllowedCard = cardRaw === 'skip' || cardRaw === 'attack';
+    if (!isAllowedCard) {
+      throw new WsException('card is not supported.');
+    }
+
+    const card: 'skip' | 'attack' = cardRaw === 'attack' ? 'attack' : 'skip';
+
+    try {
+      await this.gamesService.playExplodingCatsAction(userId, roomId, card);
+      client.emit('games.session.action.played', {
+        roomId,
+        userId,
+        card,
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error && typeof error.message === 'string'
+          ? error.message
+          : 'Unable to play card.';
+
+      this.logger.warn(
+        `Failed to play ${card} for room ${roomId}, user ${userId}: ${message}`,
+      );
+
+      throw new WsException(message);
+    }
+  }
+
   @SubscribeMessage('games.session.start')
   async handleSessionStart(
     @ConnectedSocket() client: Socket,

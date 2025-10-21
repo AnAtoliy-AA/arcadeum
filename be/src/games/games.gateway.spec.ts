@@ -11,7 +11,12 @@ import type {
 describe('GamesGateway', () => {
   let gateway: GamesGateway;
   let gamesService: jest.Mocked<
-    Pick<GamesService, 'startExplodingCatsSession' | 'drawExplodingCatsCard'>
+    Pick<
+      GamesService,
+      | 'startExplodingCatsSession'
+      | 'drawExplodingCatsCard'
+      | 'playExplodingCatsAction'
+    >
   >;
   let realtime: jest.Mocked<Partial<GamesRealtimeService>>;
   let client: jest.Mocked<Pick<Socket, 'emit'>>;
@@ -20,8 +25,14 @@ describe('GamesGateway', () => {
     gamesService = {
       startExplodingCatsSession: jest.fn(),
       drawExplodingCatsCard: jest.fn(),
+      playExplodingCatsAction: jest.fn(),
     } as jest.Mocked<
-      Pick<GamesService, 'startExplodingCatsSession' | 'drawExplodingCatsCard'>
+      Pick<
+        GamesService,
+        | 'startExplodingCatsSession'
+        | 'drawExplodingCatsCard'
+        | 'playExplodingCatsAction'
+      >
     >;
 
     realtime = {} as jest.Mocked<Partial<GamesRealtimeService>>;
@@ -167,6 +178,75 @@ describe('GamesGateway', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(WsException);
         expect((error as WsException).message).toBe('Deck is empty.');
+      }
+    });
+  });
+
+  describe('handleSessionPlayAction', () => {
+    it('plays an action card and emits acknowledgement', async () => {
+      const payload = {
+        roomId: ' room-123 ',
+        userId: ' host-456 ',
+        card: ' attack ',
+      };
+
+      gamesService.playExplodingCatsAction.mockResolvedValue({
+        id: 'session-1',
+        roomId: 'room-123',
+        gameId: 'exploding-kittens',
+        engine: 'exploding_cats_v1',
+        status: 'active',
+        state: {},
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+
+      await gateway.handleSessionPlayAction(
+        client as unknown as Socket,
+        payload,
+      );
+
+      expect(gamesService.playExplodingCatsAction).toHaveBeenCalledWith(
+        'host-456',
+        'room-123',
+        'attack',
+      );
+      expect(client.emit).toHaveBeenCalledWith('games.session.action.played', {
+        roomId: 'room-123',
+        userId: 'host-456',
+        card: 'attack',
+      });
+    });
+
+    it('throws when payload is missing required fields', async () => {
+      await expect(
+        gateway.handleSessionPlayAction(client as unknown as Socket, {
+          roomId: 'room-123',
+          userId: 'host-456',
+          card: undefined,
+        }),
+      ).rejects.toBeInstanceOf(WsException);
+    });
+
+    it('wraps service errors in WsException', async () => {
+      gamesService.playExplodingCatsAction.mockRejectedValue(
+        new BadRequestException('Cannot play this card right now.'),
+      );
+
+      expect.assertions(2);
+
+      try {
+        await gateway.handleSessionPlayAction(client as unknown as Socket, {
+          roomId: 'room-123',
+          userId: 'host-456',
+          card: 'skip',
+        });
+        throw new Error('Expected handleSessionPlayAction to throw');
+      } catch (error) {
+        expect(error).toBeInstanceOf(WsException);
+        expect((error as WsException).message).toBe(
+          'Cannot play this card right now.',
+        );
       }
     });
   });

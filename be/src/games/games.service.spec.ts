@@ -411,4 +411,183 @@ describe('GamesService', () => {
       );
     });
   });
+
+  describe('playExplodingCatsAction', () => {
+    const createSnapshot = (options?: {
+      deck?: ExplodingCatsCard[];
+      hostHand?: ExplodingCatsCard[];
+      guestHand?: ExplodingCatsCard[];
+      pendingDraws?: number;
+      currentTurnIndex?: number;
+    }): ExplodingCatsState => ({
+      deck: options?.deck ?? ['attack'],
+      discardPile: [],
+      playerOrder: ['host-1', 'guest-2'],
+      currentTurnIndex: options?.currentTurnIndex ?? 0,
+      pendingDraws: options?.pendingDraws ?? 1,
+      players: [
+        {
+          playerId: 'host-1',
+          hand: options?.hostHand ? [...options.hostHand] : ['defuse'],
+          alive: true,
+        },
+        {
+          playerId: 'guest-2',
+          hand: options?.guestHand ? [...options.guestHand] : ['defuse'],
+          alive: true,
+        },
+      ],
+      logs: [],
+    });
+
+    const createSessionDocument = (snapshot: ExplodingCatsState) => ({
+      roomId: 'room-123',
+      engine: 'exploding_cats_v1',
+      status: 'active',
+      state: {
+        engine: 'exploding-cats',
+        version: 1,
+        snapshot,
+        lastUpdatedAt: new Date('2025-01-01T00:00:00.000Z').toISOString(),
+      },
+    });
+
+    it('plays skip to end the turn when pending draws are satisfied', async () => {
+      const roomDoc = createRoomDocument({ status: 'in_progress' });
+      const snapshot = createSnapshot({ hostHand: ['skip', 'defuse'] });
+      const sessionDoc = createSessionDocument(snapshot);
+
+      gameRoomModel.findById.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(roomDoc),
+      });
+
+      gameSessionModel.findOne = jest
+        .fn()
+        .mockReturnValue({ exec: jest.fn().mockResolvedValue(sessionDoc) });
+
+      let updatedState: MockExplodingCatsSessionState | undefined;
+      gameSessionModel.findOneAndUpdate = jest
+        .fn()
+        .mockImplementation(
+          (
+            _filter: unknown,
+            update: { state: MockExplodingCatsSessionState; status?: string },
+          ) => {
+            updatedState = update.state;
+            return {
+              exec: jest.fn().mockResolvedValue({
+                ...sessionDoc,
+                status: update.status ?? sessionDoc.status,
+                state: update.state,
+              }),
+            };
+          },
+        );
+
+      await service.playExplodingCatsAction('host-1', roomDoc.id, 'skip');
+
+      const state = updatedState as MockExplodingCatsSessionState;
+      const hostHand = state.snapshot.players.find(
+        (player: { playerId: string }) => player.playerId === 'host-1',
+      )?.hand;
+
+      expect(hostHand).toEqual(['defuse']);
+      expect(state.snapshot.currentTurnIndex).toBe(1);
+      expect(state.snapshot.pendingDraws).toBe(1);
+      expect(state.snapshot.discardPile).toContain('skip');
+      expect(
+        state.snapshot.logs.some((log: { message: string }) =>
+          log.message.includes('played a Skip'),
+        ),
+      ).toBe(true);
+      expect(realtime.emitSessionSnapshot).toHaveBeenCalled();
+    });
+
+    it('reduces pending draws when skip is played under attack stack', async () => {
+      const roomDoc = createRoomDocument({ status: 'in_progress' });
+      const snapshot = createSnapshot({
+        hostHand: ['skip'],
+        pendingDraws: 3,
+      });
+      const sessionDoc = createSessionDocument(snapshot);
+
+      gameRoomModel.findById.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(roomDoc),
+      });
+
+      gameSessionModel.findOne = jest
+        .fn()
+        .mockReturnValue({ exec: jest.fn().mockResolvedValue(sessionDoc) });
+
+      let updatedState: MockExplodingCatsSessionState | undefined;
+      gameSessionModel.findOneAndUpdate = jest
+        .fn()
+        .mockImplementation(
+          (
+            _filter: unknown,
+            update: { state: MockExplodingCatsSessionState; status?: string },
+          ) => {
+            updatedState = update.state;
+            return {
+              exec: jest.fn().mockResolvedValue({
+                ...sessionDoc,
+                status: update.status ?? sessionDoc.status,
+                state: update.state,
+              }),
+            };
+          },
+        );
+
+      await service.playExplodingCatsAction('host-1', roomDoc.id, 'skip');
+
+      const state = updatedState as MockExplodingCatsSessionState;
+      expect(state.snapshot.pendingDraws).toBe(2);
+      expect(state.snapshot.currentTurnIndex).toBe(0);
+    });
+
+    it('plays attack to pass turn with increased draws to next player', async () => {
+      const roomDoc = createRoomDocument({ status: 'in_progress' });
+      const snapshot = createSnapshot({ hostHand: ['attack', 'defuse'] });
+      const sessionDoc = createSessionDocument(snapshot);
+
+      gameRoomModel.findById.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(roomDoc),
+      });
+
+      gameSessionModel.findOne = jest
+        .fn()
+        .mockReturnValue({ exec: jest.fn().mockResolvedValue(sessionDoc) });
+
+      let updatedState: MockExplodingCatsSessionState | undefined;
+      gameSessionModel.findOneAndUpdate = jest
+        .fn()
+        .mockImplementation(
+          (
+            _filter: unknown,
+            update: { state: MockExplodingCatsSessionState; status?: string },
+          ) => {
+            updatedState = update.state;
+            return {
+              exec: jest.fn().mockResolvedValue({
+                ...sessionDoc,
+                status: update.status ?? sessionDoc.status,
+                state: update.state,
+              }),
+            };
+          },
+        );
+
+      await service.playExplodingCatsAction('host-1', roomDoc.id, 'attack');
+
+      const state = updatedState as MockExplodingCatsSessionState;
+      const guestState = state.snapshot.players.find(
+        (player: { playerId: string }) => player.playerId === 'guest-2',
+      );
+
+      expect(state.snapshot.currentTurnIndex).toBe(1);
+      expect(state.snapshot.pendingDraws).toBe(2);
+      expect(state.snapshot.discardPile).toContain('attack');
+      expect(guestState?.alive).toBe(true);
+    });
+  });
 });

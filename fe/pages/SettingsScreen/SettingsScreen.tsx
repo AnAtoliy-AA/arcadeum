@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -16,6 +17,7 @@ import {
   themePreferences,
   useSettings,
 } from '@/stores/settings';
+import { useSessionTokens } from '@/stores/sessionTokens';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { useTranslation } from '@/lib/i18n';
@@ -32,6 +34,12 @@ export default function SettingsScreen() {
   const colorScheme = useColorScheme();
   const palette = Colors[colorScheme];
   const { t } = useTranslation();
+  const router = useRouter();
+  const { tokens, clearTokens } = useSessionTokens();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const isAuthenticated = Boolean(tokens.accessToken);
+  const accountName = tokens.username ?? tokens.email ?? null;
 
   const handleThemeSelect = useCallback((preference: (typeof themePreferences)[number]['code']) => {
     setThemePreference(preference);
@@ -40,6 +48,23 @@ export default function SettingsScreen() {
   const handleLanguageSelect = useCallback((code: (typeof settingsLanguages)[number]['code']) => {
     setLanguage(code);
   }, [setLanguage]);
+
+  const handleGoToAuth = useCallback(() => {
+    router.push('/auth');
+  }, [router]);
+
+  const handleLogout = useCallback(async () => {
+    if (!isAuthenticated || isLoggingOut) {
+      return;
+    }
+    setIsLoggingOut(true);
+    try {
+      await clearTokens();
+      router.replace('/auth');
+    } finally {
+      setIsLoggingOut(false);
+    }
+  }, [clearTokens, isAuthenticated, isLoggingOut, router]);
 
   if (!hydrated) {
     return (
@@ -116,6 +141,46 @@ export default function SettingsScreen() {
             })}
           </View>
         </View>
+
+          <View style={styles.section}>
+            <ThemedText style={styles.sectionTitle}>{t('settings.accountTitle')}</ThemedText>
+            <ThemedText style={styles.sectionDescription}>
+              {t('settings.accountDescription')}
+            </ThemedText>
+            {isAuthenticated ? (
+              <View style={styles.accountCard}>
+                <ThemedText style={styles.accountStatus}>
+                  {accountName
+                    ? t('settings.signedInAs', { user: accountName })
+                    : t('common.statuses.authenticated')}
+                </ThemedText>
+                <TouchableOpacity
+                  style={[styles.accountButton, styles.logoutButton, isLoggingOut ? styles.logoutButtonDisabled : null]}
+                  activeOpacity={0.85}
+                  onPress={handleLogout}
+                  disabled={isLoggingOut}
+                >
+                  {isLoggingOut ? (
+                    <ActivityIndicator size="small" color={palette.background} style={styles.buttonSpinner} />
+                  ) : null}
+                  <ThemedText style={styles.logoutButtonText}>{t('common.actions.logout')}</ThemedText>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.accountCard}>
+                <ThemedText style={styles.accountStatus}>
+                  {t('settings.accountSignedOut')}
+                </ThemedText>
+                <TouchableOpacity
+                  style={[styles.accountButton, styles.loginButton]}
+                  activeOpacity={0.85}
+                  onPress={handleGoToAuth}
+                >
+                  <ThemedText style={styles.loginButtonText}>{t('common.actions.login')}</ThemedText>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
       </ScrollView>
     </ThemedView>
   );
@@ -187,6 +252,46 @@ function createStyles(palette: Palette) {
     optionDescription: {
       color: palette.icon,
       fontSize: 13,
+    },
+    accountCard: {
+      gap: 12,
+    },
+    accountStatus: {
+      color: palette.icon,
+      fontSize: 14,
+      lineHeight: 20,
+    },
+    accountButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 18,
+      paddingVertical: 12,
+      borderRadius: 14,
+    },
+    logoutButton: {
+      backgroundColor: palette.tint,
+    },
+    logoutButtonDisabled: {
+      opacity: 0.75,
+    },
+    logoutButtonText: {
+      color: palette.background,
+      fontSize: 15,
+      fontWeight: '600',
+    },
+    loginButton: {
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: palette.tint,
+      backgroundColor: palette.background,
+    },
+    loginButtonText: {
+      color: palette.tint,
+      fontSize: 15,
+      fontWeight: '600',
+    },
+    buttonSpinner: {
+      marginRight: 8,
     },
   });
 }

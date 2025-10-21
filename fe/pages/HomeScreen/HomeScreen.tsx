@@ -54,7 +54,7 @@ export default function HomeScreen() {
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">{t('home.step2Title')}</ThemedText>
         <ThemedText>
-          {t('home.step2Body', { tabName: t('navigation.exploreTab') })}
+          {t('home.step2Body')}
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>

@@ -18,6 +18,7 @@ import {
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { JoinGameRoomDto } from './dtos/join-game-room.dto';
 import { StartGameDto } from './dtos/start-game.dto';
+import { LeaveGameRoomDto } from './dtos/leave-game-room.dto';
 
 @Controller('games')
 @UseGuards(JwtAuthGuard)
@@ -81,5 +82,18 @@ export class GamesController {
       dto.roomId,
       dto.engine,
     );
+  }
+
+  @Post('rooms/leave')
+  leaveRoom(
+    @Req() req: Request,
+    @Body() dto: LeaveGameRoomDto,
+  ): Promise<Awaited<ReturnType<GamesService['leaveRoom']>>> {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return this.gamesService.leaveRoom(user.userId, dto.roomId);
   }
 }

@@ -51,6 +51,13 @@ export interface StartExplodingCatsSessionResult {
   session: GameSessionSummary;
 }
 
+export interface LeaveGameRoomResult {
+  room: GameRoomSummary | null;
+  session: GameSessionSummary | null;
+  deleted: boolean;
+  removedPlayerId: string;
+}
+
 const EXPLODING_CATS_GAME_ID = 'exploding-kittens';
 const EXPLODING_CATS_ENGINE_ID = 'exploding_cats_v1';
 const EXPLODING_CATS_ACTION_CARDS = ['skip', 'attack'] as const;
@@ -608,6 +615,171 @@ export class GamesService {
     state: ExplodingCatsState,
   ): ExplodingCatsState {
     return JSON.parse(JSON.stringify(state)) as ExplodingCatsState;
+  }
+
+  async leaveRoom(
+    userId: string,
+    roomId: string,
+  ): Promise<LeaveGameRoomResult> {
+    const normalizedUserId = userId.trim();
+    if (!normalizedUserId) {
+      throw new BadRequestException('User ID is required.');
+    }
+
+    const normalizedRoomId = roomId.trim();
+    if (!normalizedRoomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    const room = await this.gameRoomModel.findById(normalizedRoomId).exec();
+    if (!room) {
+      throw new NotFoundException('Game room not found.');
+    }
+
+    const members = Array.isArray(room.playerIds)
+      ? room.playerIds.map((id) => id.trim())
+      : [];
+
+    if (!members.includes(normalizedUserId)) {
+      throw new ForbiddenException('You are not a participant of this room.');
+    }
+
+    const remainingIds = members.filter((id) => id !== normalizedUserId);
+
+    const sessionDoc = await this.gameSessionModel
+      .findOne({ roomId: normalizedRoomId })
+      .exec();
+
+    let sessionSummary: GameSessionSummary | null = null;
+
+    const handleExplodingCatsDeparture = async () => {
+      if (!sessionDoc || sessionDoc.engine !== EXPLODING_CATS_ENGINE_ID) {
+        return;
+      }
+
+      const state = sessionDoc.state ?? {};
+      const snapshotRaw = state.snapshot as ExplodingCatsState | undefined;
+      if (!snapshotRaw) {
+        return;
+      }
+
+      const snapshot = this.cloneExplodingCatsState(snapshotRaw);
+      const removalIndex = snapshot.playerOrder.findIndex(
+        (id) => id === normalizedUserId,
+      );
+
+      snapshot.playerOrder = snapshot.playerOrder.filter(
+        (id) => id !== normalizedUserId,
+      );
+      snapshot.players = snapshot.players.filter(
+        (player) => player.playerId !== normalizedUserId,
+      );
+
+      if (removalIndex >= 0) {
+        if (snapshot.currentTurnIndex > removalIndex) {
+          snapshot.currentTurnIndex -= 1;
+        } else if (snapshot.currentTurnIndex === removalIndex) {
+          if (snapshot.currentTurnIndex >= snapshot.playerOrder.length) {
+            snapshot.currentTurnIndex = snapshot.playerOrder.length - 1;
+          }
+          if (snapshot.currentTurnIndex < 0) {
+            snapshot.currentTurnIndex = 0;
+          }
+        }
+      }
+
+      if (snapshot.currentTurnIndex < 0) {
+        snapshot.currentTurnIndex = 0;
+      }
+
+      const nowIso = new Date().toISOString();
+      snapshot.logs.push({
+        id: randomUUID(),
+        type: 'system',
+        message: `${normalizedUserId} left the game.`,
+        createdAt: nowIso,
+      });
+
+      let sessionStatus: GameSessionStatus | undefined;
+      if (
+        snapshot.playerOrder.length <= 1 &&
+        sessionDoc.status !== 'completed'
+      ) {
+        sessionStatus = 'completed';
+        if (snapshot.playerOrder.length === 1) {
+          const winnerId = snapshot.playerOrder[0];
+          snapshot.logs.push({
+            id: randomUUID(),
+            type: 'system',
+            message: `${winnerId} wins the game!`,
+            createdAt: nowIso,
+          });
+        }
+      }
+
+      if (snapshot.currentTurnIndex >= snapshot.playerOrder.length) {
+        snapshot.currentTurnIndex = 0;
+      }
+
+      const nextState = {
+        ...state,
+        snapshot,
+        lastUpdatedAt: nowIso,
+      };
+
+      sessionSummary = await this.upsertSessionState({
+        roomId: normalizedRoomId,
+        state: nextState,
+        status: sessionStatus,
+      });
+
+      this.realtime.emitSessionSnapshot(normalizedRoomId, sessionSummary);
+
+      if (sessionStatus === 'completed' && room.status !== 'completed') {
+        room.status = 'completed';
+      }
+    };
+
+    if (remainingIds.length === 0) {
+      if (sessionDoc) {
+        await this.gameSessionModel
+          .deleteOne({ roomId: normalizedRoomId })
+          .exec();
+      }
+
+      await this.gameRoomModel.deleteOne({ _id: normalizedRoomId }).exec();
+
+      return {
+        room: null,
+        session: null,
+        deleted: true,
+        removedPlayerId: normalizedUserId,
+      };
+    }
+
+    room.playerIds = room.playerIds.filter(
+      (id) => id.trim() !== normalizedUserId,
+    );
+
+    if ((room.hostId ?? '').trim() === normalizedUserId) {
+      const nextHost = room.playerIds.find((id) => id && id.trim().length > 0);
+      if (nextHost) {
+        room.hostId = nextHost;
+      }
+    }
+
+    await handleExplodingCatsDeparture();
+
+    const savedRoom = await room.save();
+    const roomSummary = this.toSummary(savedRoom);
+    this.realtime.emitRoomUpdate(roomSummary);
+
+    return {
+      room: roomSummary,
+      session: sessionSummary,
+      deleted: false,
+      removedPlayerId: normalizedUserId,
+    };
   }
 
   async playExplodingCatsAction(

@@ -17,6 +17,7 @@ import {
   createInitialExplodingCatsState,
   type ExplodingCatsState,
 } from './exploding-cats/exploding-cats.state';
+import { GamesRealtimeService } from './games.realtime.service';
 
 export interface GameRoomSummary {
   id: string;
@@ -57,6 +58,7 @@ export class GamesService {
     private readonly gameRoomModel: Model<GameRoom>,
     @InjectModel(GameSession.name)
     private readonly gameSessionModel: Model<GameSession>,
+    private readonly realtime: GamesRealtimeService,
   ) {}
 
   async createRoom(
@@ -187,6 +189,40 @@ export class GamesService {
 
       room.playerIds = [...members, normalizedUserId];
       await room.save();
+      const summary = this.toSummary(room);
+      this.realtime.emitRoomUpdate(summary);
+      return summary;
+    }
+
+    return this.toSummary(room);
+  }
+
+  async ensureParticipant(
+    roomId: string,
+    userId: string,
+  ): Promise<GameRoomSummary> {
+    const normalizedRoomId = roomId.trim();
+    if (!normalizedRoomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    const normalizedUserId = userId.trim();
+    if (!normalizedUserId) {
+      throw new BadRequestException('User ID is required.');
+    }
+
+    const room = await this.gameRoomModel.findById(normalizedRoomId).exec();
+    if (!room) {
+      throw new NotFoundException('Game room not found.');
+    }
+
+    const members = Array.isArray(room.playerIds)
+      ? room.playerIds.map((id) => id.trim())
+      : [];
+    const host = (room.hostId ?? '').trim();
+
+    if (host !== normalizedUserId && !members.includes(normalizedUserId)) {
+      throw new ForbiddenException('Access to this room is not permitted.');
     }
 
     return this.toSummary(room);
@@ -274,7 +310,9 @@ export class GamesService {
       throw new NotFoundException('Game session not found for room.');
     }
 
-    return this.toSessionSummary(updated);
+    const summary = this.toSessionSummary(updated);
+    this.realtime.emitSessionSnapshot(roomId, summary);
+    return summary;
   }
 
   async startExplodingCatsSession(
@@ -358,9 +396,13 @@ export class GamesService {
     room.playerIds = uniquePlayerIds;
     room.status = 'in_progress';
     const updatedRoom = await room.save();
+    const roomSummary = this.toSummary(updatedRoom);
+
+    this.realtime.emitRoomUpdate(roomSummary);
+    this.realtime.emitSessionSnapshot(normalizedRoomId, session);
 
     return {
-      room: this.toSummary(updatedRoom),
+      room: roomSummary,
       session,
     };
   }

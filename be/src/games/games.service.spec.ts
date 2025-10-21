@@ -4,6 +4,7 @@ import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { GamesService, type GameSessionSummary } from './games.service';
 import { GameRoom } from './schemas/game-room.schema';
 import { GameSession } from './schemas/game-session.schema';
+import { GamesRealtimeService } from './games.realtime.service';
 
 interface FakeRoomDocument {
   _id: string;
@@ -45,6 +46,13 @@ describe('GamesService', () => {
   let service: GamesService;
   let gameRoomModel: { findById: jest.Mock };
   let gameSessionModel: Record<string, unknown>;
+  let realtime: {
+    registerServer: jest.Mock;
+    roomChannel: jest.Mock;
+    emitRoomUpdate: jest.Mock;
+    emitSessionSnapshot: jest.Mock;
+    emitSessionSnapshotToClient: jest.Mock;
+  };
 
   beforeEach(async () => {
     gameRoomModel = {
@@ -56,6 +64,14 @@ describe('GamesService', () => {
       findOneAndUpdate: jest.fn(),
     };
 
+    realtime = {
+      registerServer: jest.fn(),
+      roomChannel: jest.fn((roomId: string) => `game-room:${roomId}`),
+      emitRoomUpdate: jest.fn(),
+      emitSessionSnapshot: jest.fn(),
+      emitSessionSnapshotToClient: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GamesService,
@@ -64,6 +80,7 @@ describe('GamesService', () => {
           provide: getModelToken(GameSession.name),
           useValue: gameSessionModel,
         },
+        { provide: GamesRealtimeService, useValue: realtime },
       ],
     }).compile();
 
@@ -142,6 +159,13 @@ describe('GamesService', () => {
       ]);
 
       expect(roomDoc.save).toHaveBeenCalledTimes(1);
+      expect(realtime.emitRoomUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({ id: roomDoc.id }),
+      );
+      expect(realtime.emitSessionSnapshot).toHaveBeenCalledWith(
+        roomDoc.id,
+        sessionSummary,
+      );
       expect(result.room.status).toBe('in_progress');
       expect(result.session).toEqual(sessionSummary);
     });

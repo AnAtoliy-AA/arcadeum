@@ -4,6 +4,8 @@ import { GamesController } from './games.controller';
 import { GamesService } from './games.service';
 import { GameRoom, GameRoomSchema } from './schemas/game-room.schema';
 import { GameSession, GameSessionSchema } from './schemas/game-session.schema';
+import { GamesRealtimeService } from './games.realtime.service';
+import { GamesGateway } from './games.gateway';
 
 @Module({
   imports: [
@@ -13,7 +15,7 @@ import { GameSession, GameSessionSchema } from './schemas/game-session.schema';
     ]),
   ],
   controllers: [GamesController],
-  providers: [GamesService],
+  providers: [GamesService, GamesRealtimeService, GamesGateway],
   exports: [GamesService],
 })
 export class GamesModule {}

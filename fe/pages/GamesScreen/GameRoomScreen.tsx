@@ -16,6 +16,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { socket } from '@/hooks/useSocket';
 import { useSessionTokens } from '@/stores/sessionTokens';
 import {
+  deleteGameRoom,
   leaveGameRoom,
   listGameRooms,
   startGameRoom,
@@ -56,6 +57,7 @@ export default function GameRoomScreen() {
   const [startBusy, setStartBusy] = useState(false);
   const isHost = room?.hostId && tokens.userId ? room.hostId === tokens.userId : false;
   const [leaving, setLeaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchRoom = useCallback(
     async (mode: 'initial' | 'refresh' = 'initial') => {
@@ -140,6 +142,34 @@ export default function GameRoomScreen() {
       }
     };
 
+    const handleRoomDeleted = (payload: { roomId?: string }) => {
+      if (payload?.roomId && payload.roomId !== roomId) {
+        return;
+      }
+
+      if (deleting) {
+        return;
+      }
+
+      setRoom(null);
+      setSession(null);
+      setActionBusy(null);
+      setStartBusy(false);
+
+      Alert.alert(
+        t('games.alerts.roomDeletedTitle'),
+        t('games.alerts.roomDeletedMessage'),
+        [
+          {
+            text: t('common.actions.ok'),
+            onPress: () => {
+              router.replace('/(tabs)/games');
+            },
+          },
+        ],
+      );
+    };
+
     const handleSnapshot = (payload: { roomId?: string; session?: GameSessionSummary }) => {
       if (payload?.roomId && payload.roomId !== roomId) {
         return;
@@ -170,6 +200,7 @@ export default function GameRoomScreen() {
     socket.on('connect', handleConnect);
     socket.on('games.room.joined', handleJoined);
     socket.on('games.room.update', handleRoomUpdate);
+  socket.on('games.room.deleted', handleRoomDeleted);
     socket.on('games.session.snapshot', handleSnapshot);
     socket.on('games.session.started', handleSessionStarted);
     socket.on('exception', handleException);
@@ -182,11 +213,12 @@ export default function GameRoomScreen() {
       socket.off('connect', handleConnect);
       socket.off('games.room.joined', handleJoined);
       socket.off('games.room.update', handleRoomUpdate);
+      socket.off('games.room.deleted', handleRoomDeleted);
       socket.off('games.session.snapshot', handleSnapshot);
       socket.off('games.session.started', handleSessionStarted);
       socket.off('exception', handleException);
     };
-  }, [roomId, t, tokens.userId]);
+  }, [deleting, roomId, router, t, tokens.userId]);
 
   const performLeave = useCallback(async () => {
     if (!roomId || !tokens.accessToken) {
@@ -212,6 +244,33 @@ export default function GameRoomScreen() {
       Alert.alert(t('games.alerts.couldNotLeaveTitle'), message);
     } finally {
       setLeaving(false);
+    }
+  }, [refreshTokens, roomId, router, t, tokens.accessToken]);
+
+  const performDelete = useCallback(async () => {
+    if (!roomId || !tokens.accessToken) {
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      await deleteGameRoom(
+        { roomId },
+        {
+          accessToken: tokens.accessToken,
+          refreshTokens,
+        },
+      );
+
+      setSession(null);
+      setActionBusy(null);
+      setStartBusy(false);
+      router.replace('/(tabs)/games');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t('games.alerts.genericError');
+      Alert.alert(t('games.alerts.actionFailedTitle'), message);
+    } finally {
+      setDeleting(false);
     }
   }, [refreshTokens, roomId, router, t, tokens.accessToken]);
 
@@ -254,6 +313,51 @@ export default function GameRoomScreen() {
       ],
     );
   }, [leaving, performLeave, roomId, router, t, tokens.accessToken]);
+
+  const handleDeleteRoom = useCallback(() => {
+    if (!roomId) {
+      return;
+    }
+
+    if (!isHost) {
+      handleLeaveRoom();
+      return;
+    }
+
+    if (!tokens.accessToken) {
+      Alert.alert(
+        t('games.alerts.signInRequiredTitle'),
+        t('games.alerts.signInManageSeatMessage'),
+        [
+          { text: t('common.cancel'), style: 'cancel' },
+          {
+            text: t('common.signIn'),
+            onPress: () => router.push('/auth' as never),
+          },
+        ],
+      );
+      return;
+    }
+
+    if (deleting) {
+      return;
+    }
+
+    Alert.alert(
+      t('games.alerts.deletePromptTitle'),
+      t('games.alerts.deletePromptMessage'),
+      [
+        { text: t('common.actions.stay'), style: 'cancel' },
+        {
+          text: t('games.room.buttons.deleteRoom'),
+          style: 'destructive',
+          onPress: () => {
+            void performDelete();
+          },
+        },
+      ],
+    );
+  }, [deleting, handleLeaveRoom, isHost, performDelete, roomId, router, t, tokens.accessToken]);
 
   const handleStartMatch = useCallback(() => {
     if (!roomId) {
@@ -381,24 +485,57 @@ export default function GameRoomScreen() {
             <IconSymbol name="book" size={16} color={styles.gameButtonText.color as string} />
             <ThemedText style={styles.gameButtonText}>{t('games.room.buttons.viewGame')}</ThemedText>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.leaveButton, leaving ? styles.leaveButtonDisabled : null]}
-            onPress={handleLeaveRoom}
-            disabled={leaving}
-          >
-            {leaving ? (
-              <ActivityIndicator size="small" color={styles.leaveSpinner.color as string} />
-            ) : (
-              <>
-                <IconSymbol name="rectangle.portrait.and.arrow.right" size={16} color={styles.leaveButtonText.color as string} />
-                <ThemedText style={styles.leaveButtonText}>{t('common.actions.leave')}</ThemedText>
-              </>
-            )}
-          </TouchableOpacity>
+          {isHost ? (
+            <>
+              <TouchableOpacity
+                style={[styles.deleteButton, deleting ? styles.deleteButtonDisabled : null]}
+                onPress={handleDeleteRoom}
+                disabled={deleting}
+              >
+                {deleting ? (
+                  <ActivityIndicator size="small" color={styles.deleteSpinner.color as string} />
+                ) : (
+                  <>
+                    <IconSymbol name="trash" size={16} color={styles.deleteButtonText.color as string} />
+                    <ThemedText style={styles.deleteButtonText}>{t('games.room.buttons.deleteRoom')}</ThemedText>
+                  </>
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.leaveButton, leaving ? styles.leaveButtonDisabled : null]}
+                onPress={handleLeaveRoom}
+                disabled={leaving}
+              >
+                {leaving ? (
+                  <ActivityIndicator size="small" color={styles.leaveSpinner.color as string} />
+                ) : (
+                  <>
+                    <IconSymbol name="rectangle.portrait.and.arrow.right" size={16} color={styles.leaveButtonText.color as string} />
+                    <ThemedText style={styles.leaveButtonText}>{t('common.actions.leave')}</ThemedText>
+                  </>
+                )}
+              </TouchableOpacity>
+            </>
+          ) : (
+            <TouchableOpacity
+              style={[styles.leaveButton, leaving ? styles.leaveButtonDisabled : null]}
+              onPress={handleLeaveRoom}
+              disabled={leaving}
+            >
+              {leaving ? (
+                <ActivityIndicator size="small" color={styles.leaveSpinner.color as string} />
+              ) : (
+                <>
+                  <IconSymbol name="rectangle.portrait.and.arrow.right" size={16} color={styles.leaveButtonText.color as string} />
+                  <ThemedText style={styles.leaveButtonText}>{t('common.actions.leave')}</ThemedText>
+                </>
+              )}
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     ),
-    [gameId, handleBack, handleLeaveRoom, handleViewGame, leaving, room, styles, t],
+    [deleting, gameId, handleBack, handleDeleteRoom, handleLeaveRoom, handleViewGame, isHost, leaving, room, styles, t],
   );
 
   const topBar = renderTopBar(hasSessionSnapshot ? 'table' : 'lobby');
@@ -568,6 +705,9 @@ function createStyles(palette: Palette) {
   const leaveBackground = isLight ? '#FEE2E2' : '#3A2020';
   const leaveDisabledBackground = isLight ? '#E2E8F0' : '#31353C';
   const leaveTint = isLight ? '#B91C1C' : '#FCA5A5';
+  const deleteBackground = isLight ? '#F97316' : '#4A1D0D';
+  const deleteDisabledBackground = isLight ? '#E2E8F0' : '#31353C';
+  const deleteTint = isLight ? '#7C2D12' : '#FCD7BE';
 
   return StyleSheet.create({
     container: {
@@ -654,6 +794,27 @@ function createStyles(palette: Palette) {
     },
     leaveSpinner: {
       color: leaveTint,
+    },
+    deleteButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 999,
+      backgroundColor: deleteBackground,
+    },
+    deleteButtonDisabled: {
+      backgroundColor: deleteDisabledBackground,
+      opacity: 0.7,
+    },
+    deleteButtonText: {
+      color: deleteTint,
+      fontWeight: '600',
+      fontSize: 13,
+    },
+    deleteSpinner: {
+      color: deleteTint,
     },
     headerCard: {
       padding: 20,

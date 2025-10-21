@@ -61,6 +61,15 @@ export interface LeaveGameRoomResponse {
   removedPlayerId: string;
 }
 
+export interface DeleteGameRoomParams {
+  roomId: string;
+}
+
+export interface DeleteGameRoomResponse {
+  roomId: string;
+  deleted: boolean;
+}
+
 export interface StartGameRoomParams {
   roomId: string;
   engine?: string;
@@ -138,4 +147,16 @@ export async function startGameRoom(params: StartGameRoomParams, options?: Fetch
     throw new Error(errorText || 'Failed to start game');
   }
   return response.json() as Promise<StartGameRoomResponse>;
+}
+
+export async function deleteGameRoom(params: DeleteGameRoomParams, options?: FetchWithRefreshOptions): Promise<DeleteGameRoomResponse> {
+  const response = await fetchWithRefresh(`${apiBase()}/games/rooms/delete`, buildInit({
+    method: 'POST',
+    body: JSON.stringify(params),
+  }), options);
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Failed to delete game room');
+  }
+  return response.json() as Promise<DeleteGameRoomResponse>;
 }

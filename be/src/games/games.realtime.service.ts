@@ -26,6 +26,15 @@ export class GamesRealtimeService {
     });
   }
 
+  emitRoomRemoved(roomId: string): void {
+    if (!this.server) {
+      return;
+    }
+    this.server.to(this.roomChannel(roomId)).emit('games.room.deleted', {
+      roomId,
+    });
+  }
+
   emitSessionSnapshot(roomId: string, session: GameSessionSummary): void {
     if (!this.server) {
       return;

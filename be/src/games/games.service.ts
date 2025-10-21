@@ -59,6 +59,11 @@ export interface LeaveGameRoomResult {
   removedPlayerId: string;
 }
 
+export interface DeleteGameRoomResult {
+  roomId: string;
+  deleted: boolean;
+}
+
 const EXPLODING_CATS_GAME_ID = 'exploding-kittens';
 const EXPLODING_CATS_ENGINE_ID = 'exploding_cats_v1';
 const EXPLODING_CATS_ACTION_CARDS = ['skip', 'attack'] as const;
@@ -757,6 +762,8 @@ export class GamesService {
 
       await this.gameRoomModel.deleteOne({ _id: normalizedRoomId }).exec();
 
+      this.realtime.emitRoomRemoved(normalizedRoomId);
+
       return {
         room: null,
         session: null,
@@ -787,6 +794,41 @@ export class GamesService {
       session: sessionSummary,
       deleted: false,
       removedPlayerId: normalizedUserId,
+    };
+  }
+
+  async deleteRoom(
+    userId: string,
+    roomId: string,
+  ): Promise<DeleteGameRoomResult> {
+    const normalizedUserId = userId.trim();
+    if (!normalizedUserId) {
+      throw new BadRequestException('User ID is required.');
+    }
+
+    const normalizedRoomId = roomId.trim();
+    if (!normalizedRoomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    const room = await this.gameRoomModel.findById(normalizedRoomId).exec();
+    if (!room) {
+      throw new NotFoundException('Game room not found.');
+    }
+
+    if ((room.hostId ?? '').trim() !== normalizedUserId) {
+      throw new ForbiddenException('Only the host can delete this room.');
+    }
+
+    await this.gameSessionModel.deleteOne({ roomId: normalizedRoomId }).exec();
+
+    await this.gameRoomModel.deleteOne({ _id: normalizedRoomId }).exec();
+
+    this.realtime.emitRoomRemoved(normalizedRoomId);
+
+    return {
+      roomId: normalizedRoomId,
+      deleted: true,
     };
   }
 

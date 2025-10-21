@@ -19,6 +19,7 @@ import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { JoinGameRoomDto } from './dtos/join-game-room.dto';
 import { StartGameDto } from './dtos/start-game.dto';
 import { LeaveGameRoomDto } from './dtos/leave-game-room.dto';
+import { DeleteGameRoomDto } from './dtos/delete-game-room.dto';
 
 @Controller('games')
 @UseGuards(JwtAuthGuard)
@@ -95,5 +96,19 @@ export class GamesController {
     }
 
     return this.gamesService.leaveRoom(user.userId, dto.roomId);
+  }
+
+  @Post('rooms/delete')
+  async deleteRoom(
+    @Req() req: Request,
+    @Body() dto: DeleteGameRoomDto,
+  ): Promise<Awaited<ReturnType<GamesService['deleteRoom']>>> {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const result = await this.gamesService.deleteRoom(user.userId, dto.roomId);
+    return result;
   }
 }

@@ -25,6 +25,7 @@ export const translations = {
         getStarted: 'Get started',
         leave: 'Leave',
         stay: 'Stay',
+  ok: 'OK',
       },
       prompts: {
         haveAccount: 'Have an account?',
@@ -160,11 +161,15 @@ export const translations = {
         unableToStartTitle: 'Unable to start match',
         unableToStartMessage: 'Unable to start the match right now.',
         leavePromptTitle: 'Leave this room?',
-        leavePromptMessage: 'You will give up your seat and may need a new invite to return.',
+  leavePromptMessage: 'You will give up your seat and may need a new invite to return.',
+  deletePromptTitle: 'Delete this room?',
+  deletePromptMessage: 'This will remove the lobby for everyone. Players will be disconnected immediately.',
         signInManageSeatMessage: 'Sign in to manage your seat in this lobby.',
         signInTakeTurnMessage: 'Log in to take turns at the table.',
         signInPlayCardMessage: 'Log in to play action cards.',
         signInStartMatchMessage: 'Sign in to start the match for this lobby.',
+  roomDeletedTitle: 'Room deleted',
+  roomDeletedMessage: 'This lobby has been removed by the host.',
       },
       inviteDialog: {
         title: 'Enter invite code',
@@ -254,6 +259,7 @@ export const translations = {
         },
         buttons: {
           viewGame: 'View game',
+          deleteRoom: 'Delete room',
         },
       },
       table: {
@@ -398,6 +404,7 @@ export const translations = {
         getStarted: 'Comenzar',
         leave: 'Salir',
         stay: 'Quedarse',
+  ok: 'Aceptar',
       },
       prompts: {
         haveAccount: '¿Ya tienes cuenta?',
@@ -534,10 +541,14 @@ export const translations = {
         unableToStartMessage: 'No se puede iniciar la partida en este momento.',
         leavePromptTitle: '¿Salir de esta sala?',
         leavePromptMessage: 'Perderás tu asiento y podrías necesitar una nueva invitación para volver.',
+  deletePromptTitle: '¿Eliminar esta sala?',
+  deletePromptMessage: 'Esto eliminará el lobby para todos. Los jugadores se desconectarán de inmediato.',
         signInManageSeatMessage: 'Inicia sesión para gestionar tu asiento en este lobby.',
         signInTakeTurnMessage: 'Inicia sesión para tomar turnos en la mesa.',
         signInPlayCardMessage: 'Inicia sesión para jugar cartas de acción.',
         signInStartMatchMessage: 'Inicia sesión para comenzar la partida de este lobby.',
+  roomDeletedTitle: 'Sala eliminada',
+  roomDeletedMessage: 'El anfitrión eliminó este lobby.',
       },
       inviteDialog: {
         title: 'Introduce el código de invitación',
@@ -627,6 +638,7 @@ export const translations = {
         },
         buttons: {
           viewGame: 'Ver juego',
+          deleteRoom: 'Eliminar sala',
         },
       },
       table: {
@@ -771,6 +783,7 @@ export const translations = {
         getStarted: 'Commencer',
         leave: 'Quitter',
         stay: 'Rester',
+  ok: 'OK',
       },
       prompts: {
         haveAccount: 'Vous avez déjà un compte ?',
@@ -907,10 +920,14 @@ export const translations = {
         unableToStartMessage: 'Impossible de lancer la partie pour le moment.',
         leavePromptTitle: 'Quitter cette salle ?',
         leavePromptMessage: "Vous perdrez votre place et aurez peut-être besoin d'une nouvelle invitation pour revenir.",
+  deletePromptTitle: 'Supprimer cette salle ?',
+  deletePromptMessage: 'Cela supprimera le lobby pour tout le monde. Les joueurs seront déconnectés immédiatement.',
         signInManageSeatMessage: 'Connectez-vous pour gérer votre place dans ce lobby.',
         signInTakeTurnMessage: 'Connectez-vous pour jouer vos tours à la table.',
         signInPlayCardMessage: "Connectez-vous pour jouer des cartes d'action.",
         signInStartMatchMessage: 'Connectez-vous pour lancer la partie dans ce lobby.',
+  roomDeletedTitle: 'Salle supprimée',
+  roomDeletedMessage: "L'hôte a supprimé ce lobby.",
       },
       inviteDialog: {
         title: "Saisir le code d'invitation",
@@ -1000,6 +1017,7 @@ export const translations = {
         },
         buttons: {
           viewGame: 'Voir le jeu',
+          deleteRoom: 'Supprimer la salle',
         },
       },
       table: {

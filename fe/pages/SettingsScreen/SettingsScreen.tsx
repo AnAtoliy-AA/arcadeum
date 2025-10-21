@@ -71,8 +71,8 @@ export default function SettingsScreen() {
                   onPress={() => handleThemeSelect(option.code)}
                 >
                   <View style={styles.optionTextWrapper}>
-                    <ThemedText style={styles.optionTitle}>{option.label}</ThemedText>
-                    <ThemedText style={styles.optionDescription}>{option.description}</ThemedText>
+                    <ThemedText style={styles.optionTitle}>{t(option.labelKey)}</ThemedText>
+                    <ThemedText style={styles.optionDescription}>{t(option.descriptionKey)}</ThemedText>
                   </View>
                   <IconSymbol
                     name={selected ? 'checkmark.circle.fill' : 'circle'}
@@ -101,7 +101,7 @@ export default function SettingsScreen() {
                   onPress={() => handleLanguageSelect(option.code)}
                 >
                   <View style={styles.optionTextWrapper}>
-                    <ThemedText style={styles.optionTitle}>{option.label}</ThemedText>
+                    <ThemedText style={styles.optionTitle}>{t(option.labelKey)}</ThemedText>
                     <ThemedText style={styles.optionDescription}>
                       {selected ? t('settings.activeSelection') : t('settings.tapToSwitch')}
                     </ThemedText>

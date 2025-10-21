@@ -29,6 +29,7 @@ import {
 } from './roomUtils';
 import { InviteCodeDialog } from './InviteCodeDialog';
 import { interpretJoinError } from './joinErrorUtils';
+import { useTranslation } from '@/lib/i18n';
 
 type InvitePromptState = {
   visible: boolean;
@@ -43,6 +44,7 @@ export default function GameDetailScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
   const router = useRouter();
   const { tokens, refreshTokens } = useSessionTokens();
+  const { t } = useTranslation();
   const { shouldBlock } = useSessionScreenGate({
     enableOn: ['web'],
     whenUnauthenticated: '/auth',
@@ -93,13 +95,13 @@ export default function GameDetailScreen() {
         const message =
           error instanceof Error
             ? error.message
-            : 'Unable to load rooms right now.';
+            : t('games.errors.loadRooms');
         setRoomsError(message);
       } finally {
         setLoading(false);
       }
     },
-    [gameId, refreshTokens, tokens.accessToken],
+    [gameId, refreshTokens, t, tokens.accessToken],
   );
 
   useEffect(() => {
@@ -183,37 +185,40 @@ export default function GameDetailScreen() {
           loading: false,
           error:
             type === 'invite-required'
-              ? 'This lobby needs an invite code from the host.'
-              : 'Invite code didn’t work. Double-check and try again.',
+              ? t('games.alerts.inviteRequired')
+              : t('games.alerts.inviteInvalid'),
         });
         return;
       }
 
       if (type === 'room-full') {
-        Alert.alert('Room is full', 'That lobby has hit its player cap. Try a different room or create your own.');
+        Alert.alert(t('games.alerts.roomFullTitle'), t('games.alerts.roomFullMessage'));
         return;
       }
 
       if (type === 'room-locked') {
-        Alert.alert('Match already started', 'The host already kicked off this session. Join another lobby or wait for the next one.');
+        Alert.alert(t('games.alerts.roomLockedTitle'), t('games.alerts.roomLockedMessage'));
         return;
       }
 
-      Alert.alert('Couldn’t join room', rawMessage);
+      const fallbackMessage = rawMessage && rawMessage !== 'Something went wrong.'
+        ? rawMessage
+        : t('games.alerts.genericError');
+      Alert.alert(t('games.alerts.genericJoinFailedTitle'), fallbackMessage);
     } finally {
       setJoiningRoomId(null);
     }
-  }, [fetchRooms, navigateToRoomScreen, refreshTokens, tokens.accessToken, updateRoomList]);
+  }, [fetchRooms, navigateToRoomScreen, refreshTokens, t, tokens.accessToken, updateRoomList]);
 
   const handleJoinRoom = useCallback((room: GameRoomSummary) => {
     if (!tokens.accessToken) {
       Alert.alert(
-        'Sign in required',
-        'Log in to grab a seat in this lobby.',
+        t('games.alerts.signInRequiredTitle'),
+        t('games.alerts.signInDetailMessage'),
         [
-          { text: 'Cancel', style: 'cancel' },
+          { text: t('common.cancel'), style: 'cancel' },
           {
-            text: 'Sign in',
+            text: t('common.signIn'),
             onPress: () => router.push('/auth' as never),
           },
         ],
@@ -222,7 +227,7 @@ export default function GameDetailScreen() {
     }
 
     void joinRoom(room);
-  }, [joinRoom, router, tokens.accessToken]);
+  }, [joinRoom, router, t, tokens.accessToken]);
 
   const handleInviteCancel = useCallback(() => {
     setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
@@ -252,13 +257,13 @@ export default function GameDetailScreen() {
     if (!game) return;
     try {
       await Share.share({
-        title: `Join me for ${game.name}`,
-        message: `Jump into ${game.name} on AICO. I'll create a room as soon as the prototype opens!`,
+        title: t('games.share.title', { game: game.name }),
+        message: t('games.share.message', { game: game.name }),
       });
     } catch {
-      Alert.alert('Invite not sent', 'Copy a link or ping friends manually while we add native invites.');
+      Alert.alert(t('games.alerts.inviteShareFailedTitle'), t('games.alerts.inviteShareFailedMessage'));
     }
-  }, [game]);
+  }, [game, t]);
 
   if (shouldBlock) {
     return (
@@ -275,17 +280,15 @@ export default function GameDetailScreen() {
           <View style={styles.topBar}>
             <TouchableOpacity style={styles.backButton} onPress={handleBack}>
               <IconSymbol name="chevron.left" size={20} color={styles.backText.color as string} />
-              <ThemedText style={styles.backText}>Back</ThemedText>
+              <ThemedText style={styles.backText}>{t('games.detail.backToLobby')}</ThemedText>
             </TouchableOpacity>
           </View>
           <ThemedView style={styles.emptyCard}>
             <IconSymbol name="sparkles" size={36} color={styles.emptyIcon.color as string} />
-            <ThemedText type="title" style={styles.emptyTitle}>Game coming soon</ThemedText>
-            <ThemedText style={styles.emptyCopy}>
-              We couldn&apos;t find that title. Browse the lounge for active prototypes and upcoming releases.
-            </ThemedText>
+            <ThemedText type="title" style={styles.emptyTitle}>{t('games.detail.emptyTitle')}</ThemedText>
+            <ThemedText style={styles.emptyCopy}>{t('games.detail.emptyDescription')}</ThemedText>
             <TouchableOpacity style={styles.primaryButton} onPress={handleBack}>
-              <ThemedText style={styles.primaryButtonText}>Browse games</ThemedText>
+              <ThemedText style={styles.primaryButtonText}>{t('games.detail.backToLobby')}</ThemedText>
             </TouchableOpacity>
           </ThemedView>
         </ScrollView>
@@ -311,11 +314,11 @@ export default function GameDetailScreen() {
         <View style={styles.topBar}>
           <TouchableOpacity style={styles.backButton} onPress={handleBack}>
             <IconSymbol name="chevron.left" size={20} color={styles.backText.color as string} />
-            <ThemedText style={styles.backText}>Back</ThemedText>
+            <ThemedText style={styles.backText}>{t('games.detail.backToLobby')}</ThemedText>
           </TouchableOpacity>
           <TouchableOpacity style={styles.inviteButton} onPress={handleInvite}>
             <IconSymbol name="paperplane.fill" size={18} color={styles.inviteText.color as string} />
-            <ThemedText style={styles.inviteText}>Invite friends</ThemedText>
+            <ThemedText style={styles.inviteText}>{t('games.detail.inviteButton')}</ThemedText>
           </TouchableOpacity>
         </View>
 
@@ -349,7 +352,7 @@ export default function GameDetailScreen() {
 
         <ThemedView style={styles.roomsCard}>
           <View style={styles.roomsHeader}>
-            <ThemedText type="subtitle">Open rooms</ThemedText>
+            <ThemedText type="subtitle">{t('games.detail.openRoomsTitle')}</ThemedText>
             <TouchableOpacity
               style={styles.roomsRefreshButton}
               onPress={() => fetchRooms('refresh')}
@@ -367,13 +370,13 @@ export default function GameDetailScreen() {
                     size={16}
                     color={styles.roomsRefreshText.color as string}
                   />
-                  <ThemedText style={styles.roomsRefreshText}>Refresh</ThemedText>
+                  <ThemedText style={styles.roomsRefreshText}>{t('games.detail.refresh')}</ThemedText>
                 </>
               )}
             </TouchableOpacity>
           </View>
           <ThemedText style={styles.roomsCaption}>
-            Jump into a live lobby or create your own session if nothing&apos;s open yet.
+            {t('games.detail.openRoomsCaption')}
           </ThemedText>
 
           {roomsLoading ? (
@@ -382,7 +385,7 @@ export default function GameDetailScreen() {
                 size="small"
                 color={styles.roomsSkeletonSpinner.color as string}
               />
-              <ThemedText style={styles.roomsSkeletonText}>Loading rooms…</ThemedText>
+              <ThemedText style={styles.roomsSkeletonText}>{t('games.detail.loadingRooms')}</ThemedText>
             </View>
           ) : roomsError ? (
             <View style={styles.roomsErrorCard}>
@@ -392,7 +395,7 @@ export default function GameDetailScreen() {
                 color={styles.roomsErrorIcon.color as string}
               />
               <View style={styles.roomsErrorCopy}>
-                <ThemedText style={styles.roomsErrorTitle}>Can&apos;t fetch rooms</ThemedText>
+                <ThemedText style={styles.roomsErrorTitle}>{t('games.detail.errorTitle')}</ThemedText>
                 <ThemedText style={styles.roomsErrorText}>{roomsError}</ThemedText>
               </View>
               <TouchableOpacity style={styles.roomsRetryButton} onPress={() => fetchRooms('refresh')}>
@@ -401,7 +404,7 @@ export default function GameDetailScreen() {
                   size={16}
                   color={styles.roomsRetryText.color as string}
                 />
-                <ThemedText style={styles.roomsRetryText}>Retry</ThemedText>
+                <ThemedText style={styles.roomsRetryText}>{t('common.retry')}</ThemedText>
               </TouchableOpacity>
             </View>
           ) : sortedRooms.length === 0 ? (
@@ -411,12 +414,12 @@ export default function GameDetailScreen() {
                 size={24}
                 color={styles.roomsEmptyIcon.color as string}
               />
-              <ThemedText style={styles.roomsEmptyTitle}>Your table could be first</ThemedText>
+              <ThemedText style={styles.roomsEmptyTitle}>{t('games.detail.emptyRoomsTitle')}</ThemedText>
               <ThemedText style={styles.roomsEmptyText}>
-                Kick things off by spinning up a room tailored for this game.
+                {t('games.detail.emptyRoomsCaption')}
               </ThemedText>
               <TouchableOpacity style={styles.roomsEmptyButton} onPress={handleCreateRoom}>
-                <ThemedText style={styles.roomsEmptyButtonText}>Create room</ThemedText>
+                <ThemedText style={styles.roomsEmptyButtonText}>{t('games.common.createRoom')}</ThemedText>
               </TouchableOpacity>
             </View>
           ) : (
@@ -428,11 +431,16 @@ export default function GameDetailScreen() {
                     ? styles.roomStatusInProgress
                     : styles.roomStatusCompleted;
 
-              const statusLabel = getRoomStatusLabel(room.status);
+              const statusLabel = t(getRoomStatusLabel(room.status));
               const capacityLabel = room.maxPlayers
-                ? `${room.playerCount}/${room.maxPlayers} players`
-                : `${room.playerCount} players`;
-              const createdLabel = formatRoomTimestamp(room.createdAt);
+                ? t('games.rooms.capacityWithMax', { current: room.playerCount, max: room.maxPlayers })
+                : t('games.rooms.capacityWithoutMax', { count: room.playerCount });
+              const createdLabelRaw = formatRoomTimestamp(room.createdAt);
+              const createdLabel = createdLabelRaw === 'Just created'
+                ? t('games.rooms.justCreated')
+                : createdLabelRaw;
+              const hostRaw = formatRoomHost(room.hostId);
+              const hostDisplay = hostRaw === 'mystery captain' ? t('games.rooms.mysteryHost') : hostRaw;
               const isJoining = joiningRoomId === room.id;
               const isPrivate = room.visibility === 'private';
 
@@ -446,7 +454,7 @@ export default function GameDetailScreen() {
                   </View>
                   <View style={styles.roomMetaRow}>
                     <IconSymbol name="person.crop.circle" size={16} color={styles.roomMetaIcon.color as string} />
-                    <ThemedText style={styles.roomMetaText}>Hosted by {formatRoomHost(room.hostId)}</ThemedText>
+                    <ThemedText style={styles.roomMetaText}>{t('games.rooms.hostedBy', { host: hostDisplay })}</ThemedText>
                   </View>
                   <View style={styles.roomMetaRow}>
                     <IconSymbol name="person.3.fill" size={16} color={styles.roomMetaIcon.color as string} />
@@ -468,10 +476,10 @@ export default function GameDetailScreen() {
                           color={styles.roomVisibilityChipIcon.color as string}
                         />
                         <ThemedText style={styles.roomVisibilityChipText}>
-                          {isPrivate ? 'Invite only' : 'Open lobby'}
+                          {isPrivate ? t('games.rooms.visibility.private') : t('games.rooms.visibility.public')}
                         </ThemedText>
                       </View>
-                      <ThemedText style={styles.roomTimestamp}>Created {createdLabel}</ThemedText>
+                      <ThemedText style={styles.roomTimestamp}>{t('games.rooms.created', { timestamp: createdLabel })}</ThemedText>
                     </View>
                     <TouchableOpacity
                       style={[styles.roomJoinButton, isJoining && styles.roomJoinButtonDisabled]}
@@ -490,7 +498,7 @@ export default function GameDetailScreen() {
                             size={18}
                             color={styles.roomJoinButtonText.color as string}
                           />
-                          <ThemedText style={styles.roomJoinButtonText}>Join room</ThemedText>
+                          <ThemedText style={styles.roomJoinButtonText}>{t('games.common.joinRoom')}</ThemedText>
                         </>
                       )}
                     </TouchableOpacity>
@@ -501,7 +509,7 @@ export default function GameDetailScreen() {
           )}
         </ThemedView>
 
-        <Section title="Highlights" description={game.summary}>
+  <Section title={t('games.detail.highlightsTitle')} description={game.summary}>
           {game.highlights.map(feature => (
             <View key={feature.title} style={styles.listItem}>
               <IconSymbol name="sparkles" size={20} color={styles.listIcon.color as string} />
@@ -513,7 +521,10 @@ export default function GameDetailScreen() {
           ))}
         </Section>
 
-        <Section title="How to play" description="Three quick beats so new players can jump in without a rulebook.">
+        <Section
+          title={t('games.detail.howToPlayTitle')}
+          description={t('games.detail.howToPlayCaption')}
+        >
           {game.howToPlay.map(step => (
             <View key={step.title} style={styles.stepItem}>
               <View style={styles.stepBadge}>
@@ -527,7 +538,10 @@ export default function GameDetailScreen() {
           ))}
         </Section>
 
-        <Section title="What&apos;s next" description="We&apos;re polishing these systems before the public beta drops.">
+        <Section
+          title={t('games.detail.comingSoonTitle')}
+          description={t('games.detail.comingSoonCaption')}
+        >
           {game.comingSoon.map(item => (
             <View key={item.title} style={styles.listItem}>
               <IconSymbol name="gamecontroller.fill" size={20} color={styles.listIcon.color as string} />

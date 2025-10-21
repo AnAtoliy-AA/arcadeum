@@ -112,26 +112,26 @@ export function useSettings(): SettingsContextValue {
   return ctx;
 }
 
-export const settingsLanguages: { code: LanguagePreference; label: string }[] = [
-  { code: 'en', label: 'English' },
-  { code: 'es', label: 'Español' },
-  { code: 'fr', label: 'Français' },
-];
+export const settingsLanguages = [
+  { code: 'en', labelKey: 'settings.languageOptions.en' },
+  { code: 'es', labelKey: 'settings.languageOptions.es' },
+  { code: 'fr', labelKey: 'settings.languageOptions.fr' },
+] as const;
 
-export const themePreferences: { code: ThemePreference; label: string; description: string }[] = [
+export const themePreferences = [
   {
     code: 'system',
-    label: 'System default',
-    description: 'Follow your device appearance settings.',
+    labelKey: 'settings.themeOptions.system.label',
+    descriptionKey: 'settings.themeOptions.system.description',
   },
   {
     code: 'light',
-    label: 'Light',
-    description: 'Always use the light interface.',
+    labelKey: 'settings.themeOptions.light.label',
+    descriptionKey: 'settings.themeOptions.light.description',
   },
   {
     code: 'dark',
-    label: 'Dark',
-    description: 'Always use the dark interface.',
+    labelKey: 'settings.themeOptions.dark.label',
+    descriptionKey: 'settings.themeOptions.dark.description',
   },
-];
+] as const;

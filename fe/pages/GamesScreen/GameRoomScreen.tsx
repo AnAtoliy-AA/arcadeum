@@ -29,6 +29,7 @@ import {
   getRoomStatusLabel,
 } from './roomUtils';
 import { ExplodingCatsTable } from './components/ExplodingCatsTable';
+import { useTranslation } from '@/lib/i18n';
 
 function resolveParam(value: string | string[] | undefined): string | undefined {
   if (!value) return undefined;
@@ -40,6 +41,7 @@ export default function GameRoomScreen() {
   const params = useLocalSearchParams<{ id?: string; gameId?: string; roomName?: string }>();
   const router = useRouter();
   const { tokens, refreshTokens } = useSessionTokens();
+  const { t } = useTranslation();
 
   const roomId = useMemo(() => resolveParam(params?.id), [params]);
   const gameId = useMemo(() => resolveParam(params?.gameId), [params]);
@@ -57,14 +59,17 @@ export default function GameRoomScreen() {
 
   const fetchRoom = useCallback(
     async (mode: 'initial' | 'refresh' = 'initial') => {
-      if (!roomId || !tokens.accessToken) {
+      if (!roomId) {
         setRoom(null);
         setSession(null);
-        setError(
-          roomId
-            ? 'Sign in to load room details.'
-            : 'Room not found. The invite link may be incomplete.',
-        );
+        setError(t('games.room.errors.notFound'));
+        return;
+      }
+
+      if (!tokens.accessToken) {
+        setRoom(null);
+        setSession(null);
+        setError(t('games.room.errors.signInRequired'));
         return;
       }
 
@@ -83,10 +88,10 @@ export default function GameRoomScreen() {
         } else {
           setRoom(null);
           setSession(null);
-          setError('This room is no longer active or you have left the lobby.');
+          setError(t('games.room.errors.inactive'));
         }
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Unable to load room details.';
+        const message = err instanceof Error ? err.message : t('games.errors.loadRoomDetails');
         setRoom(null);
         setSession(null);
         setError(message);
@@ -94,7 +99,7 @@ export default function GameRoomScreen() {
         setFlag(false);
       }
     },
-    [gameId, refreshTokens, roomId, tokens.accessToken],
+    [gameId, refreshTokens, roomId, t, tokens.accessToken],
   );
 
   useEffect(() => {
@@ -156,10 +161,10 @@ export default function GameRoomScreen() {
     };
 
     const handleException = (payload: { message?: string }) => {
-      const message = payload?.message ?? 'Something went wrong.';
+      const message = payload?.message ?? t('games.alerts.genericError');
       setActionBusy(null);
       setStartBusy(false);
-      Alert.alert('Action failed', message);
+      Alert.alert(t('games.alerts.actionFailedTitle'), message);
     };
 
     socket.on('connect', handleConnect);
@@ -181,7 +186,7 @@ export default function GameRoomScreen() {
       socket.off('games.session.started', handleSessionStarted);
       socket.off('exception', handleException);
     };
-  }, [roomId, tokens.userId]);
+  }, [roomId, t, tokens.userId]);
 
   const performLeave = useCallback(async () => {
     if (!roomId || !tokens.accessToken) {
@@ -203,12 +208,12 @@ export default function GameRoomScreen() {
       setStartBusy(false);
       router.replace('/(tabs)/games');
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Could not leave the room.';
-      Alert.alert('Could not leave room', message);
+      const message = err instanceof Error ? err.message : t('games.alerts.couldNotLeaveMessage');
+      Alert.alert(t('games.alerts.couldNotLeaveTitle'), message);
     } finally {
       setLeaving(false);
     }
-  }, [refreshTokens, roomId, router, tokens.accessToken]);
+  }, [refreshTokens, roomId, router, t, tokens.accessToken]);
 
   const handleLeaveRoom = useCallback(() => {
     if (!roomId) {
@@ -217,12 +222,12 @@ export default function GameRoomScreen() {
 
     if (!tokens.accessToken) {
       Alert.alert(
-        'Sign in required',
-        'Sign in to manage your seat in this lobby.',
+        t('games.alerts.signInRequiredTitle'),
+        t('games.alerts.signInManageSeatMessage'),
         [
-          { text: 'Cancel', style: 'cancel' },
+          { text: t('common.cancel'), style: 'cancel' },
           {
-            text: 'Sign in',
+            text: t('common.signIn'),
             onPress: () => router.push('/auth' as never),
           },
         ],
@@ -235,12 +240,12 @@ export default function GameRoomScreen() {
     }
 
     Alert.alert(
-      'Leave this room?',
-      'You will give up your seat and may need a new invite to return.',
+      t('games.alerts.leavePromptTitle'),
+      t('games.alerts.leavePromptMessage'),
       [
-        { text: 'Stay', style: 'cancel' },
+        { text: t('common.actions.stay'), style: 'cancel' },
         {
-          text: 'Leave',
+          text: t('common.actions.leave'),
           style: 'destructive',
           onPress: () => {
             void performLeave();
@@ -248,7 +253,7 @@ export default function GameRoomScreen() {
         },
       ],
     );
-  }, [leaving, performLeave, roomId, router, tokens.accessToken]);
+  }, [leaving, performLeave, roomId, router, t, tokens.accessToken]);
 
   const handleStartMatch = useCallback(() => {
     if (!roomId) {
@@ -256,10 +261,10 @@ export default function GameRoomScreen() {
     }
 
     if (!tokens.accessToken) {
-      Alert.alert('Sign in required', 'Sign in to start the match for this lobby.', [
-        { text: 'Cancel', style: 'cancel' },
+      Alert.alert(t('games.alerts.signInRequiredTitle'), t('games.alerts.signInStartMatchMessage'), [
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Sign in',
+          text: t('common.signIn'),
           onPress: () => router.push('/auth' as never),
         },
       ]);
@@ -283,17 +288,17 @@ export default function GameRoomScreen() {
         setSession(response.session);
       })
       .catch((err) => {
-        const message = err instanceof Error ? err.message : 'Unable to start the match right now.';
-        Alert.alert('Unable to start match', message);
+        const message = err instanceof Error ? err.message : t('games.alerts.unableToStartMessage');
+        Alert.alert(t('games.alerts.unableToStartTitle'), message);
       })
       .finally(() => {
         setStartBusy(false);
       });
-  }, [isHost, refreshTokens, roomId, router, startBusy, tokens.accessToken]);
+  }, [isHost, refreshTokens, roomId, router, startBusy, t, tokens.accessToken]);
 
   const handleDrawCard = useCallback(() => {
     if (!roomId || !tokens.userId) {
-      Alert.alert('Sign in required', 'Log in to take turns at the table.');
+      Alert.alert(t('games.alerts.signInRequiredTitle'), t('games.alerts.signInTakeTurnMessage'));
       return;
     }
 
@@ -306,12 +311,12 @@ export default function GameRoomScreen() {
       roomId,
       userId: tokens.userId,
     });
-  }, [actionBusy, roomId, tokens.userId]);
+  }, [actionBusy, roomId, t, tokens.userId]);
 
   const handlePlayCard = useCallback(
     (card: 'skip' | 'attack') => {
       if (!roomId || !tokens.userId) {
-        Alert.alert('Sign in required', 'Log in to play action cards.');
+        Alert.alert(t('games.alerts.signInRequiredTitle'), t('games.alerts.signInPlayCardMessage'));
         return;
       }
 
@@ -326,7 +331,7 @@ export default function GameRoomScreen() {
         card,
       });
     },
-    [actionBusy, roomId, tokens.userId],
+    [actionBusy, roomId, t, tokens.userId],
   );
 
   const handleBack = useCallback(() => {
@@ -355,8 +360,9 @@ export default function GameRoomScreen() {
     }
   }, [room, styles.statusCompleted, styles.statusInProgress, styles.statusLobby]);
 
-  const displayName = room?.name ?? fallbackName ?? 'Game room';
-  const displayGame = room ? formatRoomGame(room.gameId) : gameId ? formatRoomGame(gameId) : undefined;
+  const displayName = room?.name ?? fallbackName ?? t('games.room.defaultName');
+  const displayGameRaw = room ? formatRoomGame(room.gameId) : gameId ? formatRoomGame(gameId) : undefined;
+  const displayGame = displayGameRaw === 'Unknown game' ? t('games.rooms.unknownGame') : displayGameRaw;
 
   const isLoading = loading && !refreshing;
   const hasSessionSnapshot = Boolean(
@@ -368,12 +374,12 @@ export default function GameRoomScreen() {
       <View style={variant === 'table' ? styles.fullscreenTopBar : styles.topBar}>
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <IconSymbol name="chevron.left" size={20} color={styles.backButtonText.color as string} />
-          <ThemedText style={styles.backButtonText}>Back</ThemedText>
+          <ThemedText style={styles.backButtonText}>{t('games.detail.backToLobby')}</ThemedText>
         </TouchableOpacity>
         <View style={styles.actionGroup}>
           <TouchableOpacity style={styles.gameButton} onPress={handleViewGame} disabled={!room && !gameId}>
             <IconSymbol name="book" size={16} color={styles.gameButtonText.color as string} />
-            <ThemedText style={styles.gameButtonText}>View game</ThemedText>
+            <ThemedText style={styles.gameButtonText}>{t('games.room.buttons.viewGame')}</ThemedText>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.leaveButton, leaving ? styles.leaveButtonDisabled : null]}
@@ -385,14 +391,14 @@ export default function GameRoomScreen() {
             ) : (
               <>
                 <IconSymbol name="rectangle.portrait.and.arrow.right" size={16} color={styles.leaveButtonText.color as string} />
-                <ThemedText style={styles.leaveButtonText}>Leave</ThemedText>
+                <ThemedText style={styles.leaveButtonText}>{t('common.actions.leave')}</ThemedText>
               </>
             )}
           </TouchableOpacity>
         </View>
       </View>
     ),
-    [gameId, handleBack, handleLeaveRoom, handleViewGame, leaving, room, styles],
+    [gameId, handleBack, handleLeaveRoom, handleViewGame, leaving, room, styles, t],
   );
 
   const topBar = renderTopBar(hasSessionSnapshot ? 'table' : 'lobby');
@@ -442,42 +448,58 @@ export default function GameRoomScreen() {
               ) : null}
             </View>
             <View style={[styles.statusPill, statusStyle]}>
-              <ThemedText style={styles.statusText}>{getRoomStatusLabel(room?.status ?? 'lobby')}</ThemedText>
+              <ThemedText style={styles.statusText}>{t(getRoomStatusLabel(room?.status ?? 'lobby'))}</ThemedText>
             </View>
           </View>
 
           {room ? (
             <View style={styles.metaGrid}>
-              <MetaItem
-                icon="person.crop.circle"
-                label="Host"
-                value={formatRoomHost(room.hostId)}
-              />
-              <MetaItem
-                icon="person.3.fill"
-                label="Players"
-                value={room.maxPlayers ? `${room.playerCount}/${room.maxPlayers}` : `${room.playerCount}`}
-              />
-              <MetaItem
-                icon="clock.fill"
-                label="Created"
-                value={formatRoomTimestamp(room.createdAt)}
-              />
-              <MetaItem
-                icon={room.visibility === 'private' ? 'lock.fill' : 'sparkles'}
-                label="Access"
-                value={room.visibility === 'private' ? 'Invite only' : 'Open lobby'}
-              />
-              {room.inviteCode ? (
-                <MetaItem icon="number" label="Invite code" value={room.inviteCode} />
-              ) : null}
+              {(() => {
+                const hostLabelRaw = formatRoomHost(room.hostId);
+                const hostValue = hostLabelRaw === 'mystery captain' ? t('games.rooms.mysteryHost') : hostLabelRaw;
+                const playersValue = room.maxPlayers
+                  ? t('games.rooms.capacityWithMax', { current: room.playerCount, max: room.maxPlayers })
+                  : t('games.rooms.capacityWithoutMax', { count: room.playerCount });
+                const createdRaw = formatRoomTimestamp(room.createdAt);
+                const createdValue = createdRaw === 'Just created' ? t('games.rooms.justCreated') : createdRaw;
+                const accessValue = room.visibility === 'private'
+                  ? t('games.rooms.visibility.private')
+                  : t('games.rooms.visibility.public');
+                return (
+                  <>
+                    <MetaItem
+                      icon="person.crop.circle"
+                      label={t('games.room.meta.host')}
+                      value={hostValue}
+                    />
+                    <MetaItem
+                      icon="person.3.fill"
+                      label={t('games.room.meta.players')}
+                      value={playersValue}
+                    />
+                    <MetaItem
+                      icon="clock.fill"
+                      label={t('games.room.meta.created')}
+                      value={t('games.rooms.created', { timestamp: createdValue })}
+                    />
+                    <MetaItem
+                      icon={room.visibility === 'private' ? 'lock.fill' : 'sparkles'}
+                      label={t('games.room.meta.access')}
+                      value={accessValue}
+                    />
+                    {room.inviteCode ? (
+                      <MetaItem icon="number" label={t('games.room.meta.inviteCode')} value={room.inviteCode} />
+                    ) : null}
+                  </>
+                );
+              })()}
             </View>
           ) : null}
 
           {isLoading ? (
             <View style={styles.loadingRow}>
               <ActivityIndicator size="small" color={styles.refreshTint.color as string} />
-              <ThemedText style={styles.loadingText}>Syncing room details…</ThemedText>
+              <ThemedText style={styles.loadingText}>{t('games.room.loading')}</ThemedText>
             </View>
           ) : null}
 
@@ -492,12 +514,9 @@ export default function GameRoomScreen() {
         <ThemedView style={styles.bodyCard}>
           <View style={styles.bodyHeader}>
             <IconSymbol name="sparkles" size={18} color={styles.bodyHeaderText.color as string} />
-            <ThemedText style={styles.bodyHeaderText}>Table preparation</ThemedText>
+            <ThemedText style={styles.bodyHeaderText}>{t('games.room.preparationTitle')}</ThemedText>
           </View>
-          <ThemedText style={styles.bodyCopy}>
-            We&apos;ll guide players through setup, turn flow, and scoring once the interactive tabletop is ready. For now,
-            coordinate in chat, review the rules, and gather your crew while we finish the real-time experience.
-          </ThemedText>
+          <ThemedText style={styles.bodyCopy}>{t('games.room.preparationCopy')}</ThemedText>
         </ThemedView>
 
         <ExplodingCatsTable
@@ -515,10 +534,8 @@ export default function GameRoomScreen() {
         <ThemedView style={styles.footerCard}>
           <IconSymbol name="arrow.clockwise" size={18} color={styles.footerIcon.color as string} />
           <View style={styles.footerCopy}>
-            <ThemedText type="subtitle">Waiting on more players?</ThemedText>
-            <ThemedText style={styles.footerText}>
-              Keep this screen open—we&apos;ll auto-refresh the lobby when teammates join or the host starts the match.
-            </ThemedText>
+            <ThemedText type="subtitle">{t('games.room.waitingTitle')}</ThemedText>
+            <ThemedText style={styles.footerText}>{t('games.room.waitingCopy')}</ThemedText>
           </View>
         </ThemedView>
       </ScrollView>

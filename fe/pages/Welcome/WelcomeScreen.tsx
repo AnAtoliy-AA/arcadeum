@@ -6,6 +6,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { useThemedStyles, Palette } from '@/hooks/useThemedStyles';
 import { useSessionScreenGate } from '@/hooks/useSessionScreenGate';
 import { platform } from '@/constants/platform';
+import { useTranslation } from '@/lib/i18n';
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function WelcomeScreen() {
     enableOn: ['web'],
     blockWhenAuthenticated: true,
   });
+  const { t } = useTranslation();
 
   if (shouldBlock) {
     return (
@@ -36,21 +38,17 @@ export default function WelcomeScreen() {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.heroBlock}>
           <ThemedText type="title" style={styles.title}>AICO</ThemedText>
-          <Text style={styles.tagline}>Intelligent, secure, and extensible real‑time collaboration.</Text>
-          <Text style={styles.description}>
-            Experience OAuth and local email/password authentication, JWT access with upcoming refresh rotation,
-            and real-time messaging powered by websockets. This playground app demonstrates secure patterns,
-            modular architecture, and theming for mobile & web via Expo.
-          </Text>
+          <Text style={styles.tagline}>{t('welcome.tagline')}</Text>
+          <Text style={styles.description}>{t('welcome.description')}</Text>
           <View style={styles.actions}>
             <Button
-              title={isAuthenticated && !redirectEnabled ? 'Open the app' : 'Get Started'}
+              title={isAuthenticated && !redirectEnabled ? t('common.actions.openApp') : t('common.actions.getStarted')}
               onPress={handlePrimaryPress}
             />
           </View>
         </View>
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Running on {platform.os}</Text>
+          <Text style={styles.footerText}>{t('welcome.runningOn', { platform: platform.os })}</Text>
         </View>
       </SafeAreaView>
     </ThemedView>

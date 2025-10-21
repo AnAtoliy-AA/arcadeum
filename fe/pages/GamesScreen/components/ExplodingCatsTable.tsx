@@ -10,10 +10,13 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
+import { useTranslation } from '@/lib/i18n';
+import type { TranslationKey } from '@/lib/i18n/messages';
 import type {
   GameRoomSummary,
   GameSessionSummary,
 } from '../api/gamesApi';
+import { getRoomStatusLabel } from '../roomUtils';
 
 const TABLE_DIAMETER = 260;
 const PLAYER_SEAT_SIZE = 88;
@@ -54,18 +57,31 @@ interface ExplodingCatsSnapshot {
   logs: ExplodingCatsLogEntry[];
 }
 
-function formatCardName(card: ExplodingCatsCard): string {
+function getCardTranslationKey(card: ExplodingCatsCard): TranslationKey {
   switch (card) {
     case 'exploding_cat':
-      return 'Exploding Cat';
+      return 'games.table.cards.explodingCat';
     case 'defuse':
-      return 'Defuse';
+      return 'games.table.cards.defuse';
     case 'attack':
-      return 'Attack';
+      return 'games.table.cards.attack';
     case 'skip':
-      return 'Skip';
+      return 'games.table.cards.skip';
     default:
-      return 'Cat';
+      return 'games.table.cards.generic';
+  }
+}
+
+function getSessionStatusTranslationKey(status: GameSessionSummary['status'] | undefined | null): TranslationKey {
+  switch (status) {
+    case 'active':
+      return 'games.table.sessionStatus.active';
+    case 'completed':
+      return 'games.table.sessionStatus.completed';
+    case 'waiting':
+      return 'games.table.sessionStatus.pending';
+    default:
+      return 'games.table.sessionStatus.unknown';
   }
 }
 
@@ -95,6 +111,7 @@ export function ExplodingCatsTable({
   fullScreen = false,
 }: ExplodingCatsTableProps) {
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
 
   const snapshot = useMemo<ExplodingCatsSnapshot | null>(() => {
     const raw = session?.state?.snapshot;
@@ -185,22 +202,29 @@ export function ExplodingCatsTable({
   const canPlayAttack = isSessionActive && isMyTurn && hasAttack && (selfPlayer?.alive ?? false);
   const canStart = isHost && !isSessionActive && !isSessionCompleted && !snapshot;
   const logs = useMemo(() => (snapshot?.logs ?? []).slice(-12).reverse(), [snapshot]);
+  const translateCardName = (card: ExplodingCatsCard) => t(getCardTranslationKey(card));
+  const statusLabel = session?.status
+    ? t(getSessionStatusTranslationKey(session.status))
+    : t(getRoomStatusLabel((room?.status ?? 'lobby') as GameRoomSummary['status']));
+  const placeholderText = `${t('games.table.placeholder.waiting')}${isHost ? ` ${t('games.table.placeholder.hostSuffix')}` : ''}`;
+  const pendingDrawsLabel = pendingDraws > 0 ? pendingDraws : t('games.table.info.none');
+  const pendingDrawsCaption = pendingDraws === 1 ? t('games.table.info.pendingSingular') : t('games.table.info.pendingPlural');
 
   const tableContent = (
     <>
       <View style={styles.headerRow}>
         <View style={styles.headerTitle}>
           <IconSymbol name="rectangle.grid.2x2" size={18} color={styles.headerIcon.color as string} />
-          <ThemedText style={styles.headerText}>Exploding Cats table</ThemedText>
+          <ThemedText style={styles.headerText}>{t('games.table.headerTitle')}</ThemedText>
         </View>
         <View style={styles.statusBadge}>
-          <ThemedText style={styles.statusText}>{session?.status ? session.status.replace('_', ' ') : room?.status ?? 'lobby'}</ThemedText>
+          <ThemedText style={styles.statusText}>{statusLabel}</ThemedText>
         </View>
       </View>
       {isSessionCompleted ? (
         <View style={styles.messageCard}>
           <IconSymbol name="crown.fill" size={18} color={styles.messageText.color as string} />
-          <ThemedText style={styles.messageText}>Session completed. Start a new match to play again.</ThemedText>
+          <ThemedText style={styles.messageText}>{t('games.table.messageCompleted')}</ThemedText>
         </View>
       ) : null}
 
@@ -212,22 +236,22 @@ export function ExplodingCatsTable({
                 <View style={styles.tableInfoCard}>
                   <IconSymbol name="rectangle.stack" size={18} color={styles.tableInfoIcon.color as string} />
                   <ThemedText style={styles.tableInfoTitle}>{deckCount}</ThemedText>
-                  <ThemedText style={styles.tableInfoSubtitle}>in deck</ThemedText>
+                  <ThemedText style={styles.tableInfoSubtitle}>{t('games.table.info.inDeck')}</ThemedText>
                 </View>
                 <View style={styles.tableInfoCard}>
                   <IconSymbol name="arrow.triangle.2.circlepath" size={18} color={styles.tableInfoIcon.color as string} />
                   <ThemedText style={styles.tableInfoTitle}>
-                    {discardTop ? formatCardName(discardTop) : 'Empty'}
+                    {discardTop ? translateCardName(discardTop) : t('games.table.info.empty')}
                   </ThemedText>
-                  <ThemedText style={styles.tableInfoSubtitle}>top discard</ThemedText>
+                  <ThemedText style={styles.tableInfoSubtitle}>{t('games.table.info.topDiscard')}</ThemedText>
                 </View>
                 <View style={styles.tableInfoCard}>
                   <IconSymbol name="hourglass" size={18} color={styles.tableInfoIcon.color as string} />
                   <ThemedText style={styles.tableInfoTitle}>
-                    {pendingDraws > 0 ? pendingDraws : 'None'}
+                    {pendingDrawsLabel}
                   </ThemedText>
                   <ThemedText style={styles.tableInfoSubtitle}>
-                    {pendingDraws === 1 ? 'draw pending' : 'draws pending'}
+                    {pendingDrawsCaption}
                   </ThemedText>
                 </View>
               </View>
@@ -235,6 +259,17 @@ export function ExplodingCatsTable({
               {tableSeats.map((seat) => {
                 const isCurrent =
                   seat.player.isCurrentTurn && isSessionActive && !isSessionCompleted;
+                const cardsLabel = t(
+                  seat.player.handSize === 1
+                    ? 'games.table.seats.cardsSingular'
+                    : 'games.table.seats.cardsPlural',
+                  { count: seat.player.handSize },
+                );
+                const seatStatusLabel = t(
+                  seat.player.alive
+                    ? 'games.table.seats.status.alive'
+                    : 'games.table.seats.status.out',
+                );
                 return (
                   <View
                     key={seat.player.playerId}
@@ -259,10 +294,10 @@ export function ExplodingCatsTable({
                       {seat.player.displayName}
                     </ThemedText>
                     <ThemedText style={styles.seatCardCount}>
-                      {seat.player.handSize} card{seat.player.handSize === 1 ? '' : 's'}
+                      {cardsLabel}
                     </ThemedText>
                     <ThemedText style={styles.seatStatus}>
-                      {seat.player.alive ? 'Alive' : 'Out'}
+                      {seatStatusLabel}
                     </ThemedText>
                   </View>
                 );
@@ -274,7 +309,7 @@ export function ExplodingCatsTable({
             <View style={styles.handSection}>
               <View style={styles.handHeader}>
                 <IconSymbol name="hand.draw.fill" size={18} color={styles.handTitleIcon.color as string} />
-                <ThemedText style={styles.handTitle}>Your cards</ThemedText>
+                <ThemedText style={styles.handTitle}>{t('games.table.hand.title')}</ThemedText>
                 <View
                   style={[
                     styles.handStatusPill,
@@ -287,7 +322,7 @@ export function ExplodingCatsTable({
                       selfPlayer.alive ? null : styles.handStatusTextOut,
                     ]}
                   >
-                    {selfPlayer.alive ? 'Alive' : 'Out'}
+                    {t(selfPlayer.alive ? 'games.table.hand.statusAlive' : 'games.table.hand.statusOut')}
                   </ThemedText>
                 </View>
               </View>
@@ -301,15 +336,15 @@ export function ExplodingCatsTable({
                   {selfPlayer.hand.map((card, index) => (
                     <View key={`${card}-${index}`} style={styles.handCard}>
                       <ThemedText style={styles.handCardTitle} numberOfLines={2}>
-                        {formatCardName(card)}
+                        {translateCardName(card)}
                       </ThemedText>
-                      <ThemedText style={styles.handCardLabel}>Card</ThemedText>
+                      <ThemedText style={styles.handCardLabel}>{t('games.table.hand.cardLabel')}</ThemedText>
                     </View>
                   ))}
                 </ScrollView>
               ) : (
                 <View style={styles.handEmpty}>
-                  <ThemedText style={styles.handEmptyText}>No cards in hand</ThemedText>
+                  <ThemedText style={styles.handEmptyText}>{t('games.table.hand.empty')}</ThemedText>
                 </View>
               )}
 
@@ -325,7 +360,7 @@ export function ExplodingCatsTable({
                     ) : (
                       <>
                         <IconSymbol name="hand.draw.fill" size={16} color={styles.primaryButtonText.color as string} />
-                        <ThemedText style={styles.primaryButtonText}>Draw card</ThemedText>
+                        <ThemedText style={styles.primaryButtonText}>{t('games.table.actions.draw')}</ThemedText>
                       </>
                     )}
                   </TouchableOpacity>
@@ -342,7 +377,7 @@ export function ExplodingCatsTable({
                     ) : (
                       <>
                         <IconSymbol name="figure.walk" size={16} color={styles.secondaryButtonText.color as string} />
-                        <ThemedText style={styles.secondaryButtonText}>Play Skip</ThemedText>
+                        <ThemedText style={styles.secondaryButtonText}>{t('games.table.actions.playSkip')}</ThemedText>
                       </>
                     )}
                   </TouchableOpacity>
@@ -359,7 +394,7 @@ export function ExplodingCatsTable({
                     ) : (
                       <>
                         <IconSymbol name="bolt.fill" size={16} color={styles.destructiveButtonText.color as string} />
-                        <ThemedText style={styles.destructiveButtonText}>Play Attack</ThemedText>
+                        <ThemedText style={styles.destructiveButtonText}>{t('games.table.actions.playAttack')}</ThemedText>
                       </>
                     )}
                   </TouchableOpacity>
@@ -367,7 +402,7 @@ export function ExplodingCatsTable({
               </View>
 
               {!selfPlayer.alive ? (
-                <ThemedText style={styles.eliminatedNote}>You blew up this round. Hang tight for the next match.</ThemedText>
+                <ThemedText style={styles.eliminatedNote}>{t('games.table.hand.eliminatedNote')}</ThemedText>
               ) : null}
             </View>
           ) : null}
@@ -375,7 +410,7 @@ export function ExplodingCatsTable({
       ) : (
         <View style={styles.placeholder}>
           <ThemedText style={styles.placeholderText}>
-            Waiting for the host to start the interactive tabletop.{isHost ? ' Fire it up when everyone is ready.' : ''}
+            {placeholderText}
           </ThemedText>
           {canStart ? (
             <TouchableOpacity
@@ -388,7 +423,7 @@ export function ExplodingCatsTable({
               ) : (
                 <>
                   <IconSymbol name="play.fill" size={16} color={styles.primaryButtonText.color as string} />
-                  <ThemedText style={styles.primaryButtonText}>Start match</ThemedText>
+                  <ThemedText style={styles.primaryButtonText}>{t('games.table.actions.start')}</ThemedText>
                 </>
               )}
             </TouchableOpacity>
@@ -400,7 +435,7 @@ export function ExplodingCatsTable({
         <View style={styles.logsSection}>
           <View style={styles.logsHeader}>
             <IconSymbol name="list.bullet.rectangle" size={16} color={styles.logsHeaderText.color as string} />
-            <ThemedText style={styles.logsHeaderText}>Recent turns</ThemedText>
+            <ThemedText style={styles.logsHeaderText}>{t('games.table.logs.title')}</ThemedText>
           </View>
           {logs.map((log) => (
             <View key={log.id} style={styles.logRow}>

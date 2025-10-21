@@ -9,10 +9,12 @@ import { AuthResult } from './AuthResult';
 import { AuthError } from './AuthError';
 import { useSessionScreenGate } from '@/hooks/useSessionScreenGate';
 import { platform } from '@/constants/platform';
+import { useTranslation } from '@/lib/i18n';
 
 export default function AuthScreen() {
   const { authState, error, login, logout } = useAuth();
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
   const { isAuthenticated, redirectEnabled, shouldBlock } = useSessionScreenGate({
     whenAuthenticated: '/(tabs)',
     enableOn: ['web'],
@@ -35,9 +37,9 @@ export default function AuthScreen() {
   return (
     <ThemedView style={styles.container}>
       <View style={styles.column}>
-        <Text style={styles.sectionHeading}>OAuth</Text>
+        <Text style={styles.sectionHeading}>{t('auth.sections.oauth')}</Text>
         {!authState ? (
-          <Button title="Login with OAuth" onPress={login} />
+          <Button title={t('auth.oauth.loginButton')} onPress={login} />
         ) : (
           <AuthResult
             accessToken={authState.accessToken}
@@ -47,12 +49,12 @@ export default function AuthScreen() {
         )}
         {error && <AuthError error={error} />}
         {!redirectEnabled && isAuthenticated && (
-          <Button title="Open the app" onPress={() => router.replace('/(tabs)')} />
+          <Button title={t('common.actions.openApp')} onPress={() => router.replace('/(tabs)')} />
         )}
       </View>
       <View style={styles.divider} />
       <View style={styles.column}>
-        <Text style={styles.sectionHeading}>Local Account</Text>
+        <Text style={styles.sectionHeading}>{t('auth.sections.local')}</Text>
         <LocalAuthForm onAuthenticated={!redirectEnabled ? handleLocalAuthSuccess : undefined} />
       </View>
     </ThemedView>

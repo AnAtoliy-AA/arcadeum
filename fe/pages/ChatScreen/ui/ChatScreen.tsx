@@ -9,6 +9,7 @@ import { useChat } from '../model/useChat';
 import { useThemedStyles, Palette } from '@/hooks/useThemedStyles';
 import { useSessionScreenGate } from '@/hooks/useSessionScreenGate';
 import { useSessionTokens } from '@/stores/sessionTokens';
+import { useTranslation } from '@/lib/i18n';
 
 export default function ChatScreen() {
   const styles = useThemedStyles(createStyles);
@@ -38,6 +39,7 @@ export default function ChatScreen() {
     enableOn: ['web'],
     blockWhenUnauthenticated: true,
   });
+  const { t } = useTranslation();
 
   const handleGoBack = useCallback(() => {
     if (router.canGoBack()) {
@@ -65,7 +67,7 @@ export default function ChatScreen() {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         <View style={[styles.loadingContainer, { paddingBottom: insets.bottom }]}>
-          <ThemedText style={styles.statusText}>Chat not found</ThemedText>
+          <ThemedText style={styles.statusText}>{t('chat.notFound')}</ThemedText>
         </View>
       </SafeAreaView>
     );
@@ -85,10 +87,10 @@ export default function ChatScreen() {
       <View style={[styles.container, { paddingBottom: insets.bottom }]}>
         <View style={styles.navRow}>
           <TouchableOpacity style={styles.navButton} onPress={handleGoBack}>
-            <ThemedText style={styles.navButtonText}>Back to chats</ThemedText>
+            <ThemedText style={styles.navButtonText}>{t('chat.nav.backToChats')}</ThemedText>
           </TouchableOpacity>
           <TouchableOpacity style={styles.navButton} onPress={handleGoHome}>
-            <ThemedText style={styles.navButtonText}>Go to home</ThemedText>
+            <ThemedText style={styles.navButtonText}>{t('chat.nav.goHome')}</ThemedText>
           </TouchableOpacity>
         </View>
         <View style={styles.statusRow}>
@@ -103,7 +105,7 @@ export default function ChatScreen() {
             ]}
           />
           <ThemedText style={styles.statusText}>
-            {isConnected ? 'Connected to chat server' : 'Connecting...'}
+            {isConnected ? t('chat.status.connected') : t('chat.status.connecting')}
           </ThemedText>
         </View>
         {conversationTitle && (

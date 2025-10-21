@@ -1,5 +1,6 @@
 import { gamesCatalog } from './catalog';
 import type { GameRoomSummary } from './api/gamesApi';
+import type { TranslationKey } from '@/lib/i18n/messages';
 
 export function formatRoomGame(gameId: string): string {
   return gamesCatalog.find((game) => game.id === gameId)?.name ?? 'Unknown game';
@@ -11,16 +12,16 @@ export function formatRoomHost(hostId: string): string {
   return `${hostId.slice(0, 4)}…${hostId.slice(-2)}`;
 }
 
-export function getRoomStatusLabel(status: GameRoomSummary['status']): string {
+export function getRoomStatusLabel(status: GameRoomSummary['status']): TranslationKey {
   switch (status) {
     case 'lobby':
-      return 'Lobby open';
+      return 'games.rooms.status.lobby';
     case 'in_progress':
-      return 'Match running';
+      return 'games.rooms.status.inProgress';
     case 'completed':
-      return 'Session wrapped';
+      return 'games.rooms.status.completed';
     default:
-      return 'Unknown status';
+      return 'games.rooms.status.unknown';
   }
 }
 

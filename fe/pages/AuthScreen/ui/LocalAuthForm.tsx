@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, ActivityIndicator, useColorScheme } from 'react-native';
 import { Colors } from '@/constants/Colors';
+import { useTranslation } from '@/lib/i18n';
 import { useLocalAuth } from '../model/useLocalAuth';
 
 interface Props {
@@ -11,6 +12,7 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
   const auth = useLocalAuth();
   const scheme = useColorScheme() || 'light';
   const palette = Colors[scheme];
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -55,12 +57,14 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>{isRegister ? 'Create Account' : 'Login'}</Text>
+      <Text style={styles.heading}>
+        {isRegister ? t('auth.local.heading.register') : t('auth.local.heading.login')}
+      </Text>
       {isRegister && (
         <TextInput
           autoCapitalize="none"
           autoCorrect={false}
-          placeholder="Username"
+          placeholder={t('common.labels.username')}
           style={[styles.input, { borderColor: palette.icon, backgroundColor: palette.background }]}
           value={username}
           onChangeText={(value) => setUsername(value.replace(/[^a-zA-Z0-9_-]/g, ''))}
@@ -70,43 +74,45 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
         autoCapitalize="none"
         autoCorrect={false}
         keyboardType="email-address"
-        placeholder="Email"
-  style={[styles.input, { borderColor: palette.icon, backgroundColor: palette.background }]}
+        placeholder={t('common.labels.email')}
+        style={[styles.input, { borderColor: palette.icon, backgroundColor: palette.background }]}
         value={email}
         onChangeText={setEmail}
       />
       <TextInput
         secureTextEntry
-        placeholder="Password"
-  style={[styles.input, { borderColor: palette.icon, backgroundColor: palette.background }]}
+        placeholder={t('common.labels.password')}
+        style={[styles.input, { borderColor: palette.icon, backgroundColor: palette.background }]}
         value={password}
         onChangeText={setPassword}
       />
       {isRegister && (
         <TextInput
           secureTextEntry
-            placeholder="Confirm Password"
-            style={[styles.input, { borderColor: palette.icon, backgroundColor: palette.background }]}
-            value={confirm}
-            onChangeText={setConfirm}
+          placeholder={t('common.labels.confirmPassword')}
+          style={[styles.input, { borderColor: palette.icon, backgroundColor: palette.background }]}
+          value={confirm}
+          onChangeText={setConfirm}
         />
       )}
-  {passwordMismatch && <Text style={[styles.error, { color: palette.error }]}>Passwords do not match</Text>}
-  {usernameTooShort && (
-    <Text style={[styles.error, { color: palette.error }]}>Username must be at least 3 characters</Text>
-  )}
-  {isRegister && (
-    <Text style={[styles.small, { color: palette.icon }]}>Allowed characters: letters, numbers, underscores, hyphens</Text>
-  )}
+      {passwordMismatch && (
+        <Text style={[styles.error, { color: palette.error }]}>{t('auth.local.errors.passwordMismatch')}</Text>
+      )}
+      {usernameTooShort && (
+        <Text style={[styles.error, { color: palette.error }]}>{t('auth.local.errors.usernameTooShort')}</Text>
+      )}
+      {isRegister && (
+        <Text style={[styles.small, { color: palette.icon }]}>{t('auth.local.helper.allowedCharacters')}</Text>
+      )}
   {auth.error && <Text style={[styles.error, { color: palette.error }]}>{auth.error}</Text>}
       <View style={styles.buttonRow}>
         <Button
-          title={isRegister ? 'Register' : 'Login'}
+          title={isRegister ? t('common.actions.register') : t('common.actions.login')}
           onPress={submit}
           disabled={!!(disabled || passwordMismatch || usernameInvalid)}
         />
         <Button
-          title={isRegister ? 'Have an account?' : 'Need an account?'}
+          title={isRegister ? t('common.prompts.haveAccount') : t('common.prompts.needAccount')}
           onPress={auth.toggleMode}
           disabled={disabled}
         />
@@ -114,14 +120,18 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
       {auth.loading && <ActivityIndicator style={{ marginTop: 12 }} />}
       {auth.accessToken && (
         <View style={styles.sessionBox}>
-          <Text style={[styles.small, { color: palette.text }]}>Authenticated</Text>
+          <Text style={[styles.small, { color: palette.text }]}>{t('common.statuses.authenticated')}</Text>
           {auth.email && (
-            <Text style={[styles.small, { color: palette.text }]}>Email: {auth.email}</Text>
+            <Text style={[styles.small, { color: palette.text }]}>
+              {t('common.labels.email')}: {auth.email}
+            </Text>
           )}
           {auth.username && (
-            <Text style={[styles.small, { color: palette.text }]}>Username: {auth.username}</Text>
+            <Text style={[styles.small, { color: palette.text }]}>
+              {t('common.labels.username')}: {auth.username}
+            </Text>
           )}
-          <Button title="Logout" onPress={auth.logout} />
+          <Button title={t('common.actions.logout')} onPress={auth.logout} />
         </View>
       )}
     </View>

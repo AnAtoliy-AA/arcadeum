@@ -13,6 +13,7 @@ import {
 import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useTranslation } from '@/lib/i18n';
 
 export interface InviteCodeDialogProps {
   visible: boolean;
@@ -34,6 +35,7 @@ export function InviteCodeDialog({
   onCancel,
 }: InviteCodeDialogProps) {
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
   const [code, setCode] = useState('');
 
   useEffect(() => {
@@ -56,10 +58,10 @@ export function InviteCodeDialog({
 
   const headerIcon = mode === 'manual' ? 'lock.open' : 'lock.fill';
   const description = mode === 'manual'
-    ? 'Got an invite from a host? Enter their six-character code to hop into their lobby instantly.'
+    ? t('games.inviteDialog.manualDescription')
     : roomName
-      ? `This lobby is invite-only. Ask the host for their code to join “${roomName}”.`
-      : 'This lobby is invite-only. Enter the code from the host to join.';
+      ? t('games.inviteDialog.roomDescriptionWithName', { room: roomName })
+      : t('games.inviteDialog.roomDescription');
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
@@ -74,14 +76,14 @@ export function InviteCodeDialog({
           <View style={styles.headerRow}>
             <IconSymbol name={headerIcon} size={20} color={styles.headerIcon.color as string} />
             <ThemedText type="subtitle">
-              Enter invite code
+              {t('games.inviteDialog.title')}
             </ThemedText>
           </View>
           <ThemedText style={styles.description}>{description}</ThemedText>
           <TextInput
             value={code}
             onChangeText={handleChange}
-            placeholder="ABC123"
+            placeholder={t('games.inviteDialog.placeholder')}
             placeholderTextColor={styles.inputPlaceholder.color as string}
             autoCapitalize="characters"
             autoCorrect={false}
@@ -90,7 +92,7 @@ export function InviteCodeDialog({
             editable={!loading}
           />
           {mode === 'manual' ? (
-            <ThemedText style={styles.helperText}>We’ll uppercase automatically—just type the letters you received.</ThemedText>
+            <ThemedText style={styles.helperText}>{t('games.inviteDialog.helper')}</ThemedText>
           ) : null}
           {error ? (
             <View style={styles.errorRow}>
@@ -104,7 +106,7 @@ export function InviteCodeDialog({
               onPress={onCancel}
               disabled={loading}
             >
-              <ThemedText style={styles.secondaryButtonText}>Cancel</ThemedText>
+              <ThemedText style={styles.secondaryButtonText}>{t('common.cancel')}</ThemedText>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.button, styles.primaryButton, loading && styles.buttonDisabled]}
@@ -114,7 +116,7 @@ export function InviteCodeDialog({
               {loading ? (
                 <ActivityIndicator size="small" color={styles.primaryButtonText.color as string} />
               ) : (
-                <ThemedText style={styles.primaryButtonText}>Join room</ThemedText>
+                <ThemedText style={styles.primaryButtonText}>{t('games.common.joinRoom')}</ThemedText>
               )}
             </TouchableOpacity>
           </View>

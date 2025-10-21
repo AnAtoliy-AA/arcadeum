@@ -9,6 +9,7 @@ import { gamesCatalog, type GameCatalogueEntry } from './catalog';
 import { createGameRoom, type CreateGameRoomParams } from './api/gamesApi';
 import { useSessionScreenGate } from '@/hooks/useSessionScreenGate';
 import { useSessionTokens } from '@/stores/sessionTokens';
+import { useTranslation } from '@/lib/i18n';
 
 export default function CreateGameRoomScreen() {
   const styles = useThemedStyles(createStyles);
@@ -16,6 +17,7 @@ export default function CreateGameRoomScreen() {
   const params = useLocalSearchParams<{ gameId?: string }>();
   const { shouldBlock } = useSessionScreenGate({ enableOn: ['web'], whenUnauthenticated: '/auth', blockWhenUnauthenticated: true });
   const { tokens, refreshTokens } = useSessionTokens();
+  const { t } = useTranslation();
 
   const initialGameId = useMemo(() => {
     const value = params?.gameId;
@@ -59,16 +61,16 @@ export default function CreateGameRoomScreen() {
 
   const handleSubmit = useCallback(async () => {
     if (!tokens.accessToken) {
-      Alert.alert('Sign in required', 'Please sign in again to create a game room.');
+      Alert.alert(t('games.alerts.signInRequiredTitle'), t('games.create.alerts.signInMessage'));
       return;
     }
     if (!state.name.trim()) {
-      Alert.alert('Name required', 'Give your room a fun name to help friends recognize it.');
+      Alert.alert(t('games.create.alerts.nameRequiredTitle'), t('games.create.alerts.nameRequiredMessage'));
       return;
     }
     const maxPlayers = state.maxPlayers.trim() ? Number(state.maxPlayers) : undefined;
     if (maxPlayers !== undefined && (Number.isNaN(maxPlayers) || maxPlayers < 2)) {
-      Alert.alert('Invalid player count', 'Max players should be a number greater than or equal to 2.');
+      Alert.alert(t('games.create.alerts.invalidPlayersTitle'), t('games.create.alerts.invalidPlayersMessage'));
       return;
     }
 
@@ -85,15 +87,20 @@ export default function CreateGameRoomScreen() {
         accessToken: tokens.accessToken,
         refreshTokens,
       });
-      Alert.alert('Room created', `Invite code: ${response.room.inviteCode ?? 'pending'}`);
+      Alert.alert(
+        t('games.create.alerts.roomCreatedTitle'),
+        t('games.create.alerts.roomCreatedMessage', {
+          code: response.room.inviteCode ?? t('games.create.alerts.invitePending'),
+        }),
+      );
       router.replace({ pathname: '/games/[id]', params: { id: state.gameId } });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to create room.';
-      Alert.alert('Couldn\'t create room', message);
+      const message = error instanceof Error ? error.message : t('games.create.alerts.createFailedMessage');
+      Alert.alert(t('games.create.alerts.createFailedTitle'), message);
     } finally {
       setState(prev => ({ ...prev, loading: false }));
     }
-  }, [refreshTokens, router, state.gameId, state.maxPlayers, state.name, state.notes, state.visibility, tokens.accessToken]);
+  }, [refreshTokens, router, state.gameId, state.maxPlayers, state.name, state.notes, state.visibility, t, tokens.accessToken]);
 
   if (shouldBlock) {
     return (
@@ -110,7 +117,7 @@ export default function CreateGameRoomScreen() {
           <View style={styles.topBar}>
             <TouchableOpacity style={styles.backButton} onPress={handleBack}>
               <IconSymbol name="chevron.left" size={20} color={styles.backButtonText.color as string} />
-              <ThemedText style={styles.backButtonText}>Back</ThemedText>
+              <ThemedText style={styles.backButtonText}>{t('common.back')}</ThemedText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.visibilityToggle} onPress={handleToggleVisibility}>
               <IconSymbol
@@ -119,20 +126,20 @@ export default function CreateGameRoomScreen() {
                 color={styles.visibilityToggleText.color as string}
               />
               <ThemedText style={styles.visibilityToggleText}>
-                {state.visibility === 'public' ? 'Public room' : 'Private room'}
+                {state.visibility === 'public' ? t('games.create.visibilityPublic') : t('games.create.visibilityPrivate')}
               </ThemedText>
             </TouchableOpacity>
           </View>
 
           <View style={styles.section}>
-            <ThemedText type="title">Create a room</ThemedText>
+            <ThemedText type="title">{t('games.create.title')}</ThemedText>
             <ThemedText style={styles.sectionSubtitle}>
-              Pick your game, name the lobby, and share the invite with your crew.
+              {t('games.create.subtitle')}
             </ThemedText>
           </View>
 
           <View style={styles.section}>
-            <ThemedText type="subtitle">Game</ThemedText>
+            <ThemedText type="subtitle">{t('games.create.sectionGame')}</ThemedText>
             <View style={styles.gameSelector}>
               {gamesCatalog.map(game => {
                 const isActive = game.id === state.gameId;
@@ -153,12 +160,12 @@ export default function CreateGameRoomScreen() {
           </View>
 
           <View style={styles.section}>
-            <ThemedText type="subtitle">Room details</ThemedText>
+            <ThemedText type="subtitle">{t('games.create.sectionDetails')}</ThemedText>
             <View style={styles.formGroup}>
               <View style={styles.formField}>
-                <ThemedText style={styles.inputLabel}>Room name</ThemedText>
+                <ThemedText style={styles.inputLabel}>{t('games.create.fieldName')}</ThemedText>
                 <ThemedTextInput
-                  placeholder={`e.g. ${selectedGame?.name ?? 'Game'} squad`}
+                  placeholder={t('games.create.namePlaceholder', { example: selectedGame?.name ?? t('games.rooms.unknownGame') })}
                   value={state.name}
                   onChangeText={handleChange('name')}
                   returnKeyType="done"
@@ -166,9 +173,9 @@ export default function CreateGameRoomScreen() {
               </View>
               <View style={styles.formFieldRow}>
                 <View style={styles.formFieldHalf}>
-                  <ThemedText style={styles.inputLabel}>Max players</ThemedText>
+                  <ThemedText style={styles.inputLabel}>{t('games.create.fieldMaxPlayers')}</ThemedText>
                   <ThemedTextInput
-                    placeholder="Auto"
+                    placeholder={t('games.create.autoPlaceholder')}
                     value={state.maxPlayers}
                     onChangeText={handleChange('maxPlayers')}
                     keyboardType="number-pad"
@@ -176,16 +183,18 @@ export default function CreateGameRoomScreen() {
                   />
                 </View>
                 <View style={styles.formFieldHalf}>
-                  <ThemedText style={styles.inputLabel}>Visibility</ThemedText>
+                  <ThemedText style={styles.inputLabel}>{t('games.create.fieldVisibility')}</ThemedText>
                   <View style={[styles.pill, state.visibility === 'public' ? styles.pillPublic : styles.pillPrivate]}>
-                    <ThemedText style={styles.pillText}>{state.visibility === 'public' ? 'Public' : 'Private'}</ThemedText>
+                    <ThemedText style={styles.pillText}>
+                      {state.visibility === 'public' ? t('games.create.pillPublic') : t('games.create.pillPrivate')}
+                    </ThemedText>
                   </View>
                 </View>
               </View>
               <View style={styles.formField}>
-                <ThemedText style={styles.inputLabel}>Notes</ThemedText>
+                <ThemedText style={styles.inputLabel}>{t('games.create.fieldNotes')}</ThemedText>
                 <ThemedTextInput
-                  placeholder="Rules, house twists, or reminders"
+                  placeholder={t('games.create.notesPlaceholder')}
                   value={state.notes}
                   onChangeText={handleChange('notes')}
                   multiline
@@ -197,7 +206,7 @@ export default function CreateGameRoomScreen() {
           </View>
 
           <View style={styles.section}>
-            <ThemedText type="subtitle">Preview</ThemedText>
+            <ThemedText type="subtitle">{t('games.create.sectionPreview')}</ThemedText>
             <ThemedView style={styles.previewCard}>
               <ThemedText type="defaultSemiBold" style={styles.previewTitle}>{selectedGame?.name}</ThemedText>
               <ThemedText style={styles.previewSummary}>{selectedGame?.tagline}</ThemedText>
@@ -215,7 +224,9 @@ export default function CreateGameRoomScreen() {
           onPress={handleSubmit}
           disabled={state.loading}
         >
-          <ThemedText style={styles.submitButtonText}>{state.loading ? 'Creating...' : 'Create room'}</ThemedText>
+          <ThemedText style={styles.submitButtonText}>
+            {state.loading ? t('games.create.submitCreating') : t('games.common.createRoom')}
+          </ThemedText>
         </TouchableOpacity>
       </ThemedView>
     </KeyboardAvoidingView>

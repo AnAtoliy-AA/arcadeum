@@ -18,6 +18,7 @@ import { useSessionTokens } from '@/stores/sessionTokens';
 import type { SessionTokensSnapshot } from '@/stores/sessionTokens';
 import { useThemedStyles, Palette } from '@/hooks/useThemedStyles';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTranslation } from '@/lib/i18n';
 import {
   ChatParticipant,
   ChatSummary,
@@ -95,6 +96,7 @@ export default function ChatListScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { tokens, refreshTokens } = useSessionTokens();
+  const { t } = useTranslation();
   const {
     shouldBlock,
     isAuthenticated,
@@ -166,7 +168,7 @@ export default function ChatListScreen() {
   const handleSelectUser = useCallback(
     async (user: ChatParticipant) => {
       if (!accessToken || !currentUserId) {
-        setSearchError('You need to be signed in to start a chat.');
+        setSearchError(t('chatList.errors.authRequired'));
         return;
       }
 
@@ -185,7 +187,7 @@ export default function ChatListScreen() {
         );
         const title = otherParticipants.length
           ? otherParticipants.map((participant) => participant.username).join(', ')
-          : 'Direct chat';
+          : t('chatList.messages.directChat');
         const receiverIds = otherParticipants.map((participant) => participant.id).join(',');
 
         router.push({
@@ -202,7 +204,7 @@ export default function ChatListScreen() {
         setCreatingChatUserId(null);
       }
     },
-    [accessToken, currentUserId, router, upsertChat, fetchOptions],
+    [accessToken, currentUserId, router, t, upsertChat, fetchOptions],
   );
 
   const renderItem = useCallback(
@@ -212,11 +214,11 @@ export default function ChatListScreen() {
       );
       const title = otherParticipants.length
         ? otherParticipants.map((participant) => participant.username).join(', ')
-        : 'Direct chat';
+        : t('chatList.messages.directChat');
 
       const subtitle = item.lastMessage
         ? `${item.lastMessage.senderUsername}: ${item.lastMessage.content}`
-        : 'No messages yet';
+        : t('chatList.messages.noMessagesYet');
 
       const handlePress = () => {
         const receiverIds = otherParticipants.map((participant) => participant.id).join(',');
@@ -253,7 +255,7 @@ export default function ChatListScreen() {
         </TouchableOpacity>
       );
     },
-    [avatarIconColor, currentUserId, router, styles],
+    [avatarIconColor, currentUserId, router, styles, t],
   );
 
   const keyExtractor = useCallback((item: ChatSummary) => item.chatId, []);
@@ -263,7 +265,7 @@ export default function ChatListScreen() {
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Search users by username or email"
+          placeholder={t('chatList.search.placeholder')}
           placeholderTextColor={placeholderColor}
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -275,12 +277,12 @@ export default function ChatListScreen() {
         {searchLoading && (
           <View style={styles.searchStatus}>
             <ActivityIndicator size="small" />
-            <ThemedText style={styles.placeholderText}>Searching…</ThemedText>
+            <ThemedText style={styles.placeholderText}>{t('chatList.search.searching')}</ThemedText>
           </View>
         )}
         {!accessToken && (
           <View style={styles.searchStatus}>
-            <ThemedText style={styles.placeholderText}>Sign in to start a chat.</ThemedText>
+            <ThemedText style={styles.placeholderText}>{t('chatList.search.signInRequired')}</ThemedText>
           </View>
         )}
         {searchError && (
@@ -292,7 +294,7 @@ export default function ChatListScreen() {
           <View style={styles.searchResultsContainer}>
             {searchResults.length === 0 ? (
               <View style={styles.searchResultItem}>
-                <ThemedText style={styles.placeholderText}>No users found.</ThemedText>
+                <ThemedText style={styles.placeholderText}>{t('chatList.search.noResults')}</ThemedText>
               </View>
             ) : (
               searchResults.map((result) => {
@@ -324,7 +326,7 @@ export default function ChatListScreen() {
         )}
       </View>
     );
-  }, [avatarIconColor, styles, placeholderColor, searchQuery, searchLoading, searchError, searchResults, creatingChatUserId, handleSelectUser, accessToken]);
+  }, [avatarIconColor, styles, placeholderColor, searchQuery, searchLoading, searchError, searchResults, creatingChatUserId, handleSelectUser, accessToken, t]);
 
   const emptyComponent = useMemo(() => {
     if (searchQuery.trim().length > 0) {
@@ -347,16 +349,16 @@ export default function ChatListScreen() {
     if (!isAuthenticated) {
       return (
         <View style={styles.emptyContainer}>
-          <ThemedText style={styles.placeholderText}>Sign in to view your chats.</ThemedText>
+          <ThemedText style={styles.placeholderText}>{t('chatList.empty.unauthenticated')}</ThemedText>
         </View>
       );
     }
     return (
       <View style={styles.emptyContainer}>
-        <ThemedText style={styles.placeholderText}>No chats yet.</ThemedText>
+        <ThemedText style={styles.placeholderText}>{t('chatList.empty.noChats')}</ThemedText>
       </View>
     );
-  }, [loading, error, styles, isAuthenticated, searchQuery]);
+  }, [loading, error, styles, isAuthenticated, searchQuery, t]);
 
   if (shouldBlock) {
     return (

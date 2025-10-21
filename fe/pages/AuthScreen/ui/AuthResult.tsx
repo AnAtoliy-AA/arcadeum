@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 
+import { useTranslation } from '@/lib/i18n';
+
 interface AuthResultProps {
   accessToken: string;
   authorizationCode?: string;
@@ -8,14 +10,15 @@ interface AuthResultProps {
 }
 
 export function AuthResult({ accessToken, authorizationCode, onLogout }: AuthResultProps) {
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
       {authorizationCode ? (
-        <Text>Authorization Code: {authorizationCode}</Text>
+        <Text>{`${t('auth.oauth.authorizationCodeLabel')}: ${authorizationCode}`}</Text>
       ) : (
-        <Text>Access Token: {accessToken}</Text>
+        <Text>{`${t('auth.oauth.accessTokenLabel')}: ${accessToken}`}</Text>
       )}
-      <Button title="Logout" onPress={onLogout} />
+      <Button title={t('common.actions.logout')} onPress={onLogout} />
     </View>
   );
 }

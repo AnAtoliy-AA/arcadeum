@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 import uuid from 'react-native-uuid';
 
-import { socket, useSocket } from '@/hooks/useSocket';
+import { chatSocket, useChatSocket } from '@/hooks/useSocket';
 import { MessagePayload } from './types';
 
 type UseChatParams = {
@@ -36,10 +36,15 @@ export function useChat({
   receiverIds: receiverIdsRaw,
 }: UseChatParams) {
   const [messages, setMessages] = useState<ExtendedMessage[]>([]);
+  const [isConnected, setIsConnected] = useState<boolean>(
+    chatSocket.connected,
+  );
 
   const receiverIds = useMemo(() => {
     if (Array.isArray(receiverIdsRaw)) {
-      return receiverIdsRaw.filter(Boolean);
+      return receiverIdsRaw
+        .map((value) => (typeof value === 'string' ? value.trim() : ''))
+        .filter((value) => value.length > 0);
     }
 
     if (typeof receiverIdsRaw === 'string' && receiverIdsRaw.trim().length > 0) {
@@ -57,13 +62,34 @@ export function useChat({
   }, [chatId]);
 
   useEffect(() => {
-    if (!chatId || !currentUserId) {
+    const handleConnect = () => {
+      setIsConnected(true);
+    };
+    const handleDisconnect = () => {
+      setIsConnected(false);
+    };
+
+    chatSocket.on('connect', handleConnect);
+    chatSocket.on('disconnect', handleDisconnect);
+
+    return () => {
+      chatSocket.off('connect', handleConnect);
+      chatSocket.off('disconnect', handleDisconnect);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!chatId || !currentUserId || !isConnected) {
       return;
     }
 
     const users = Array.from(new Set([currentUserId, ...receiverIds]));
-    socket.emit('joinChat', { chatId, users });
-  }, [chatId, currentUserId, receiverIds]);
+    chatSocket.emit('joinChat', {
+      chatId,
+      users,
+      currentUserId,
+    });
+  }, [chatId, currentUserId, receiverIds, isConnected]);
 
   const handleChatMessages = useCallback(
     (loadedMessages: MessagePayload[] = []) => {
@@ -89,7 +115,7 @@ export function useChat({
     [chatId],
   );
 
-  useSocket('chatMessages', handleChatMessages);
+  useChatSocket('chatMessages', handleChatMessages);
 
   const onSend = useCallback(
     (newMessages: IMessage[] = []) => {
@@ -112,7 +138,7 @@ export function useChat({
 
         setMessages((prev) => GiftedChat.append(prev, [optimisticMessage]));
 
-        socket.emit('sendMessage', {
+        chatSocket.emit('sendMessage', {
           chatId,
           senderId: currentUserId,
           receiverIds,
@@ -167,9 +193,7 @@ export function useChat({
     [chatId],
   );
 
-  useSocket('message', handleIncomingMessage);
-
-  const isConnected = socket.connected;
+  useChatSocket('message', handleIncomingMessage);
 
   return {
     messages,

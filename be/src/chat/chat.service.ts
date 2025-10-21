@@ -4,7 +4,7 @@ import { Model, Types } from 'mongoose';
 import { randomUUID } from 'crypto';
 import { Chat } from './schemas/chat.schema';
 import { Message } from './schemas/message.schema';
-import { ChatDTO, MessageDTO } from './dtos';
+import { MessageDTO } from './dtos';
 import { User, UserDocument } from '../auth/schemas/user.schema';
 
 export interface MessageView {
@@ -174,18 +174,43 @@ export class ChatService {
   }
 
   // Find an existing one-on-one chat or create a new one
-  async findOrCreateChat(chatDTO: ChatDTO): Promise<Chat> {
-    if (!chatDTO.users || chatDTO.users.length === 0) {
+  async findOrCreateChat(options: {
+    chatId: string;
+    users: string[];
+  }): Promise<Chat> {
+    const normalizedChatId = options.chatId?.trim?.() ?? '';
+    if (!normalizedChatId) {
+      throw new Error('Chat must include a chat identifier.');
+    }
+
+    if (!options.users || options.users.length === 0) {
       throw new Error('Chat must have at least one user.');
     }
 
-    const uniqueUsers = Array.from(new Set(chatDTO.users));
+    const uniqueUsers = Array.from(
+      new Set(
+        options.users
+          .map((userId) =>
+            typeof userId === 'string' ? userId.trim() : String(userId ?? ''),
+          )
+          .filter((value) => value.length > 0),
+      ),
+    );
+
+    if (!uniqueUsers.length) {
+      throw new Error('Chat must include at least one valid user.');
+    }
 
     // Find chat with matching chatId
-    let chat = await this.chatModel.findOne({ chatId: chatDTO.chatId }).exec();
+    let chat = await this.chatModel
+      .findOne({ chatId: normalizedChatId })
+      .exec();
 
     if (!chat) {
-      chat = new this.chatModel({ ...chatDTO, users: uniqueUsers });
+      chat = new this.chatModel({
+        chatId: normalizedChatId,
+        users: uniqueUsers,
+      });
       await chat.save();
     } else {
       const existing = new Set(chat.users.map((id) => id.toString()));
@@ -206,27 +231,48 @@ export class ChatService {
 
   // Save a new message to a chat
   async saveMessage(messageDTO: MessageDTO): Promise<MessageView> {
-    const receiverIds = Array.isArray(messageDTO.receiverIds)
+    const sanitizedSenderId = messageDTO.senderId?.trim?.() ?? '';
+    const sanitizedChatId = messageDTO.chatId?.trim?.() ?? '';
+    const sanitizedContent = messageDTO.content?.trim?.() ?? '';
+
+    if (!sanitizedSenderId) {
+      throw new Error('Sender identifier is required.');
+    }
+    if (!sanitizedChatId) {
+      throw new Error('Chat identifier is required.');
+    }
+    if (!sanitizedContent) {
+      throw new Error('Message content must not be empty.');
+    }
+
+    const providedReceiverIds = Array.isArray(messageDTO.receiverIds)
       ? messageDTO.receiverIds
       : [];
 
-    await this.findOrCreateChat({
-      chatId: messageDTO.chatId,
-      users: Array.from(new Set([messageDTO.senderId, ...receiverIds])),
+    const candidateUserIds = providedReceiverIds
+      .map((value) => (typeof value === 'string' ? value.trim() : ''))
+      .filter((value) => value.length > 0);
+
+    const chat = await this.findOrCreateChat({
+      chatId: sanitizedChatId,
+      users: [sanitizedSenderId, ...candidateUserIds],
     });
 
+    const participants = this.normalizeUserIds(chat.users ?? []);
+    const receiverIds = participants.filter((id) => id !== sanitizedSenderId);
+
     const sender = await this.userModel
-      .findById(messageDTO.senderId)
+      .findById(sanitizedSenderId)
       .lean()
       .exec();
-    const senderUsername = sender?.username ?? messageDTO.senderId;
+    const senderUsername = sender?.username ?? sanitizedSenderId;
 
     const message = new this.messageModel({
-      chatId: messageDTO.chatId,
-      senderId: messageDTO.senderId,
+      chatId: chat.chatId,
+      senderId: sanitizedSenderId,
       senderUsername,
       receiverIds,
-      content: messageDTO.content,
+      content: sanitizedContent,
       timestamp: new Date(),
     });
 

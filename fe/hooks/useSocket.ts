@@ -27,7 +27,13 @@ function resolveSocketUrl(): string {
   return `http://${fallbackHost}:4000`;
 }
 
-export const socket = io(`${resolveSocketUrl()}/games`, {
+const SOCKET_BASE_URL = resolveSocketUrl();
+
+export const socket = io(`${SOCKET_BASE_URL}/games`, {
+  transports: ['websocket'],
+});
+
+export const chatSocket = io(SOCKET_BASE_URL, {
   transports: ['websocket'],
 });
 
@@ -41,6 +47,19 @@ export function useSocket(event: string, handler: SocketEventHandler): void {
 
     return () => {
       socket.off(event, handler);
+    };
+  }, [event, handler]);
+}
+
+export function useChatSocket(
+  event: string,
+  handler: SocketEventHandler,
+): void {
+  useEffect(() => {
+    chatSocket.on(event, handler);
+
+    return () => {
+      chatSocket.off(event, handler);
     };
   }, [event, handler]);
 }

@@ -528,26 +528,18 @@ export function ExplodingCatsTable({
 
 function createStyles(palette: Palette) {
   const isLight = palette.background === '#fff';
-  const tableTheme = palette.gameTable ?? {
-    surface: isLight ? '#F6F8FC' : '#1E2229',
-    raised: isLight ? '#E7EDF7' : '#262A32',
-    border: isLight ? '#D8DFEA' : '#33373E',
-    shadow: isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(0, 0, 0, 0.45)',
-    playerSelf: isLight ? '#ECFEFF' : '#11252A',
-    playerCurrent: isLight ? '#FEF3C7' : '#3B2E11',
-    destructiveBg: isLight ? '#FEE2E2' : '#3A2020',
-    destructiveText: isLight ? '#991B1B' : '#FECACA',
-    playerIcon: isLight ? '#0F172A' : '#F1F5F9',
-  } as const;
+  const tableTheme = palette.gameTable;
   const {
     surface,
     raised,
     border,
     shadow,
-  playerCurrent,
-  destructiveBg,
-  destructiveText,
+    playerCurrent,
+    destructiveBg,
+    destructiveText,
   } = tableTheme;
+  const primaryBgColor = palette.tint;
+  const primaryTextColor = palette.background;
 
   const innerDiameter = Math.max(
     TABLE_DIAMETER - PLAYER_SEAT_SIZE - 32,
@@ -862,13 +854,13 @@ function createStyles(palette: Palette) {
       paddingHorizontal: 14,
       paddingVertical: 10,
       borderRadius: 12,
-      backgroundColor: palette.tint,
+      backgroundColor: primaryBgColor,
     },
     primaryButtonDisabled: {
       opacity: 0.6,
     },
     primaryButtonText: {
-      color: isLight ? '#0F172A' : '#F8FAFC',
+      color: primaryTextColor,
       fontWeight: '700',
       fontSize: 13,
     },

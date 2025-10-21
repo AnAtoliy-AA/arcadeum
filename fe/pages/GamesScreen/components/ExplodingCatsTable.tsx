@@ -155,6 +155,14 @@ export function ExplodingCatsTable({
     [players],
   );
 
+  const playerNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    players.forEach((player) => {
+      map.set(player.playerId, player.displayName);
+    });
+    return map;
+  }, [players]);
+
   const tableSeats = useMemo(() => {
     if (!otherPlayers.length) {
       return [];
@@ -209,6 +217,18 @@ export function ExplodingCatsTable({
   const placeholderText = `${t('games.table.placeholder.waiting')}${isHost ? ` ${t('games.table.placeholder.hostSuffix')}` : ''}`;
   const pendingDrawsLabel = pendingDraws > 0 ? pendingDraws : t('games.table.info.none');
   const pendingDrawsCaption = pendingDraws === 1 ? t('games.table.info.pendingSingular') : t('games.table.info.pendingPlural');
+  const formatLogMessage = (message: string) => {
+    if (!message) {
+      return message;
+    }
+    let next = message;
+    playerNameMap.forEach((displayName, playerId) => {
+      if (playerId && displayName && playerId !== displayName) {
+        next = next.split(playerId).join(displayName);
+      }
+    });
+    return next;
+  };
 
   const tableContent = (
     <>
@@ -481,7 +501,7 @@ export function ExplodingCatsTable({
           {logs.map((log) => (
             <View key={log.id} style={styles.logRow}>
               <ThemedText style={styles.logTimestamp}>{new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</ThemedText>
-              <ThemedText style={styles.logMessage}>{log.message}</ThemedText>
+              <ThemedText style={styles.logMessage}>{formatLogMessage(log.message)}</ThemedText>
             </View>
           ))}
         </View>

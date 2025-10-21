@@ -11,7 +11,7 @@ import type {
 describe('GamesGateway', () => {
   let gateway: GamesGateway;
   let gamesService: jest.Mocked<
-    Pick<GamesService, 'startExplodingCatsSession'>
+    Pick<GamesService, 'startExplodingCatsSession' | 'drawExplodingCatsCard'>
   >;
   let realtime: jest.Mocked<Partial<GamesRealtimeService>>;
   let client: jest.Mocked<Pick<Socket, 'emit'>>;
@@ -19,7 +19,10 @@ describe('GamesGateway', () => {
   beforeEach(() => {
     gamesService = {
       startExplodingCatsSession: jest.fn(),
-    } as jest.Mocked<Pick<GamesService, 'startExplodingCatsSession'>>;
+      drawExplodingCatsCard: jest.fn(),
+    } as jest.Mocked<
+      Pick<GamesService, 'startExplodingCatsSession' | 'drawExplodingCatsCard'>
+    >;
 
     realtime = {} as jest.Mocked<Partial<GamesRealtimeService>>;
 
@@ -105,6 +108,65 @@ describe('GamesGateway', () => {
         expect((error as WsException).message).toBe(
           'Room is no longer active.',
         );
+      }
+    });
+  });
+
+  describe('handleSessionDraw', () => {
+    it('draws a card and emits an acknowledgement', async () => {
+      const payload = {
+        roomId: ' room-123 ',
+        userId: ' guest-2 ',
+      };
+
+      gamesService.drawExplodingCatsCard.mockResolvedValue({
+        id: 'session-1',
+        roomId: 'room-123',
+        gameId: 'exploding-kittens',
+        engine: 'exploding_cats_v1',
+        status: 'active',
+        state: {},
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+
+      await gateway.handleSessionDraw(client as unknown as Socket, payload);
+
+      expect(gamesService.drawExplodingCatsCard).toHaveBeenCalledWith(
+        'guest-2',
+        'room-123',
+      );
+      expect(client.emit).toHaveBeenCalledWith('games.session.drawn', {
+        roomId: 'room-123',
+        userId: 'guest-2',
+      });
+    });
+
+    it('throws when identifiers are missing', async () => {
+      await expect(
+        gateway.handleSessionDraw(client as unknown as Socket, {
+          roomId: undefined,
+          userId: 'guest-2',
+        }),
+      ).rejects.toBeInstanceOf(WsException);
+    });
+
+    it('wraps draw errors in WsException', async () => {
+      gamesService.drawExplodingCatsCard.mockRejectedValue(
+        new BadRequestException('Deck is empty.'),
+      );
+
+      expect.assertions(2);
+
+      try {
+        await gateway.handleSessionDraw(client as unknown as Socket, {
+          roomId: 'room-123',
+          userId: 'guest-2',
+        });
+        throw new Error('Expected handleSessionDraw to throw');
+      } catch (error) {
+        expect(error).toBeInstanceOf(WsException);
+        expect((error as WsException).message).toBe('Deck is empty.');
       }
     });
   });

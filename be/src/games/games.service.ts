@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import {
   Injectable,
   BadRequestException,
@@ -15,6 +16,8 @@ import {
 } from './schemas/game-session.schema';
 import {
   createInitialExplodingCatsState,
+  type ExplodingCatsCard,
+  type ExplodingCatsPlayerState,
   type ExplodingCatsState,
 } from './exploding-cats/exploding-cats.state';
 import { GamesRealtimeService } from './games.realtime.service';
@@ -405,6 +408,269 @@ export class GamesService {
       room: roomSummary,
       session,
     };
+  }
+
+  async drawExplodingCatsCard(
+    userId: string,
+    roomId: string,
+  ): Promise<GameSessionSummary> {
+    const normalizedUserId = userId.trim();
+    if (!normalizedUserId) {
+      throw new BadRequestException('User ID is required.');
+    }
+
+    const normalizedRoomId = roomId.trim();
+    if (!normalizedRoomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    const room = await this.ensureParticipant(
+      normalizedRoomId,
+      normalizedUserId,
+    );
+    if (room.status !== 'in_progress') {
+      throw new BadRequestException('The game has not started for this room.');
+    }
+
+    const sessionDoc = await this.gameSessionModel
+      .findOne({ roomId: normalizedRoomId })
+      .exec();
+    if (!sessionDoc) {
+      throw new NotFoundException('Game session not found for this room.');
+    }
+
+    if (sessionDoc.engine !== EXPLODING_CATS_ENGINE_ID) {
+      throw new BadRequestException(
+        'Draw action is only supported for Exploding Cats sessions.',
+      );
+    }
+
+    const state = sessionDoc.state ?? {};
+    const snapshotRaw = state.snapshot as ExplodingCatsState | undefined;
+    if (!snapshotRaw) {
+      throw new NotFoundException('Exploding Cats snapshot is unavailable.');
+    }
+
+    const snapshot = this.cloneExplodingCatsState(snapshotRaw);
+    const player = this.findExplodingCatsPlayer(snapshot, normalizedUserId);
+
+    if (!player) {
+      throw new ForbiddenException('Player is not part of this session.');
+    }
+
+    if (!player.alive) {
+      throw new ForbiddenException('Player has already been eliminated.');
+    }
+
+    if (!snapshot.playerOrder.length) {
+      throw new BadRequestException(
+        'There are no active players in this session.',
+      );
+    }
+
+    const currentPlayerId =
+      snapshot.playerOrder[snapshot.currentTurnIndex] ?? '';
+    if (currentPlayerId !== normalizedUserId) {
+      throw new ForbiddenException('It is not your turn to draw.');
+    }
+
+    if (snapshot.pendingDraws < 1) {
+      snapshot.pendingDraws = 1;
+    }
+
+    const { card, deckRefilled } = this.drawExplodingCatsCardFromDeck(snapshot);
+    const nowIso = new Date().toISOString();
+
+    const logEntries: ExplodingCatsState['logs'] = [
+      {
+        id: randomUUID(),
+        type: 'action',
+        message:
+          card === 'exploding_cat'
+            ? `${normalizedUserId} drew an Exploding Cat!`
+            : `${normalizedUserId} drew a card.`,
+        createdAt: nowIso,
+      },
+    ];
+
+    if (deckRefilled) {
+      logEntries.push({
+        id: randomUUID(),
+        type: 'system',
+        message: 'Deck was reshuffled from the discard pile.',
+        createdAt: nowIso,
+      });
+    }
+
+    let sessionStatus: GameSessionStatus | undefined;
+    let playerEliminated = false;
+
+    if (card === 'exploding_cat') {
+      const defuseIndex = player.hand.findIndex((item) => item === 'defuse');
+
+      if (defuseIndex >= 0) {
+        player.hand.splice(defuseIndex, 1);
+        const insertIndex = Math.floor(
+          Math.random() * (snapshot.deck.length + 1),
+        );
+        snapshot.deck.splice(insertIndex, 0, 'exploding_cat');
+
+        logEntries.push({
+          id: randomUUID(),
+          type: 'action',
+          message: `${normalizedUserId} used a Defuse card.`,
+          createdAt: nowIso,
+        });
+      } else {
+        player.alive = false;
+        player.hand = [];
+        snapshot.discardPile.push('exploding_cat');
+        snapshot.playerOrder = snapshot.playerOrder.filter(
+          (id) => id !== normalizedUserId,
+        );
+        playerEliminated = true;
+
+        logEntries.push({
+          id: randomUUID(),
+          type: 'system',
+          message: `${normalizedUserId} exploded and has been eliminated.`,
+          createdAt: nowIso,
+        });
+
+        if (snapshot.playerOrder.length <= 1) {
+          sessionStatus = 'completed';
+          if (snapshot.playerOrder.length === 1) {
+            const winnerId = snapshot.playerOrder[0];
+            logEntries.push({
+              id: randomUUID(),
+              type: 'system',
+              message: `${winnerId} wins the game!`,
+              createdAt: nowIso,
+            });
+          }
+        }
+      }
+    } else {
+      player.hand.push(card);
+    }
+
+    snapshot.logs.push(...logEntries);
+
+    if (sessionStatus !== 'completed') {
+      if (snapshot.pendingDraws > 1 && !playerEliminated) {
+        snapshot.pendingDraws -= 1;
+      } else {
+        snapshot.pendingDraws = 1;
+
+        if (playerEliminated && snapshot.playerOrder.length > 0) {
+          if (snapshot.currentTurnIndex >= snapshot.playerOrder.length) {
+            snapshot.currentTurnIndex = snapshot.playerOrder.length - 1;
+          } else {
+            snapshot.currentTurnIndex =
+              (snapshot.currentTurnIndex - 1 + snapshot.playerOrder.length) %
+              snapshot.playerOrder.length;
+          }
+        }
+
+        this.advanceExplodingCatsTurn(snapshot);
+      }
+    }
+
+    const nextState = {
+      ...state,
+      snapshot,
+      lastUpdatedAt: nowIso,
+    };
+
+    const summary = await this.upsertSessionState({
+      roomId: normalizedRoomId,
+      state: nextState,
+      status: sessionStatus,
+    });
+
+    if (sessionStatus === 'completed') {
+      const roomDoc = await this.gameRoomModel
+        .findById(normalizedRoomId)
+        .exec();
+      if (roomDoc && roomDoc.status !== 'completed') {
+        roomDoc.status = 'completed';
+        const savedRoom = await roomDoc.save();
+        this.realtime.emitRoomUpdate(this.toSummary(savedRoom));
+      }
+    }
+
+    return summary;
+  }
+
+  private cloneExplodingCatsState(
+    state: ExplodingCatsState,
+  ): ExplodingCatsState {
+    return JSON.parse(JSON.stringify(state)) as ExplodingCatsState;
+  }
+
+  private findExplodingCatsPlayer(
+    snapshot: ExplodingCatsState,
+    playerId: string,
+  ): ExplodingCatsPlayerState | undefined {
+    return snapshot.players.find((entry) => entry.playerId === playerId);
+  }
+
+  private drawExplodingCatsCardFromDeck(snapshot: ExplodingCatsState): {
+    card: ExplodingCatsCard;
+    deckRefilled: boolean;
+  } {
+    let deckRefilled = false;
+
+    if (snapshot.deck.length === 0) {
+      if (snapshot.discardPile.length === 0) {
+        throw new BadRequestException('The deck has no cards remaining.');
+      }
+
+      const reshuffled = [...snapshot.discardPile];
+      this.shuffleInPlace(reshuffled);
+      snapshot.deck = reshuffled;
+      snapshot.discardPile = [];
+      deckRefilled = true;
+    }
+
+    const card = snapshot.deck.pop();
+    if (!card) {
+      throw new BadRequestException('The deck has no cards remaining.');
+    }
+
+    return { card, deckRefilled };
+  }
+
+  private advanceExplodingCatsTurn(snapshot: ExplodingCatsState): void {
+    const playerCount = snapshot.playerOrder.length;
+
+    if (playerCount === 0) {
+      snapshot.currentTurnIndex = 0;
+      return;
+    }
+
+    if (snapshot.currentTurnIndex >= playerCount) {
+      snapshot.currentTurnIndex = playerCount - 1;
+    }
+
+    for (let offset = 1; offset <= playerCount; offset += 1) {
+      const candidateIndex = (snapshot.currentTurnIndex + offset) % playerCount;
+      const candidateId = snapshot.playerOrder[candidateIndex];
+      const candidate = this.findExplodingCatsPlayer(snapshot, candidateId);
+      if (candidate?.alive) {
+        snapshot.currentTurnIndex = candidateIndex;
+        return;
+      }
+    }
+  }
+
+  private shuffleInPlace<T>(items: T[]): void {
+    for (let i = items.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = items[i];
+      items[i] = items[j];
+      items[j] = temp;
+    }
   }
 
   private toSummary(room: GameRoom): GameRoomSummary {

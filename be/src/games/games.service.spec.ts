@@ -5,6 +5,10 @@ import { GamesService, type GameSessionSummary } from './games.service';
 import { GameRoom } from './schemas/game-room.schema';
 import { GameSession } from './schemas/game-session.schema';
 import { GamesRealtimeService } from './games.realtime.service';
+import type {
+  ExplodingCatsCard,
+  ExplodingCatsState,
+} from './exploding-cats/exploding-cats.state';
 
 interface FakeRoomDocument {
   _id: string;
@@ -40,6 +44,11 @@ const createRoomDocument = (overrides: Partial<FakeRoomDocument> = {}) => {
   };
 
   return Object.assign(base, overrides);
+};
+
+type MockExplodingCatsSessionState = {
+  snapshot: ExplodingCatsState;
+  [key: string]: unknown;
 };
 
 describe('GamesService', () => {
@@ -194,6 +203,212 @@ describe('GamesService', () => {
       await expect(
         service.startExplodingCatsSession('guest-2', roomDoc.id),
       ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe('drawExplodingCatsCard', () => {
+    const createSnapshot = (options?: {
+      deck?: ExplodingCatsCard[];
+      hostHand?: ExplodingCatsCard[];
+      guestHand?: ExplodingCatsCard[];
+      pendingDraws?: number;
+    }): ExplodingCatsState => ({
+      deck: options?.deck ?? ['attack'],
+      discardPile: [],
+      playerOrder: ['host-1', 'guest-2'],
+      currentTurnIndex: 0,
+      pendingDraws: options?.pendingDraws ?? 1,
+      players: [
+        {
+          playerId: 'host-1',
+          hand: options?.hostHand ? [...options.hostHand] : ['defuse'],
+          alive: true,
+        },
+        {
+          playerId: 'guest-2',
+          hand: options?.guestHand ? [...options.guestHand] : ['defuse'],
+          alive: true,
+        },
+      ],
+      logs: [],
+    });
+
+    const createSessionDocument = (snapshot: ExplodingCatsState) => ({
+      roomId: 'room-123',
+      engine: 'exploding_cats_v1',
+      status: 'active',
+      state: {
+        engine: 'exploding-cats',
+        version: 1,
+        snapshot,
+        lastUpdatedAt: new Date('2025-01-01T00:00:00.000Z').toISOString(),
+      },
+    });
+
+    it('draws a card, updates the snapshot, and advances the turn', async () => {
+      const roomDoc = createRoomDocument({ status: 'in_progress' });
+      const snapshot = createSnapshot({ deck: ['attack'] });
+      const sessionDoc = createSessionDocument(snapshot);
+
+      gameRoomModel.findById.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(roomDoc),
+      });
+
+      gameSessionModel.findOne = jest
+        .fn()
+        .mockReturnValue({ exec: jest.fn().mockResolvedValue(sessionDoc) });
+
+      let updatedState: MockExplodingCatsSessionState | undefined;
+      let updatedStatus: string | undefined;
+      gameSessionModel.findOneAndUpdate = jest
+        .fn()
+        .mockImplementation(
+          (
+            _filter: unknown,
+            update: { state: MockExplodingCatsSessionState; status?: string },
+          ) => {
+            updatedState = update.state;
+            updatedStatus = update.status;
+            return {
+              exec: jest.fn().mockResolvedValue({
+                ...sessionDoc,
+                status: update.status ?? sessionDoc.status,
+                state: update.state,
+              }),
+            };
+          },
+        );
+
+      const summary = await service.drawExplodingCatsCard('host-1', roomDoc.id);
+
+      expect(gameSessionModel.findOne).toHaveBeenCalled();
+      expect(gameSessionModel.findOneAndUpdate).toHaveBeenCalled();
+      expect(updatedStatus).toBeUndefined();
+      expect(updatedState).toBeDefined();
+      const state = updatedState as MockExplodingCatsSessionState;
+      expect(state.snapshot.players[0].hand).toEqual(
+        expect.arrayContaining(['defuse', 'attack']),
+      );
+      expect(state.snapshot.deck).toHaveLength(0);
+      expect(state.snapshot.currentTurnIndex).toBe(1);
+      expect(state.snapshot.pendingDraws).toBe(1);
+      expect(state.snapshot.logs.length).toBeGreaterThan(0);
+      expect(summary.status).toBe('active');
+      expect(realtime.emitSessionSnapshot).toHaveBeenCalledWith(
+        roomDoc.id,
+        expect.objectContaining({ state }),
+      );
+    });
+
+    it('defuses an exploding cat when the player has a defuse card', async () => {
+      const roomDoc = createRoomDocument({ status: 'in_progress' });
+      const snapshot = createSnapshot({
+        deck: ['exploding_cat'],
+        hostHand: ['defuse', 'attack'],
+      });
+      const sessionDoc = createSessionDocument(snapshot);
+
+      gameRoomModel.findById.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(roomDoc),
+      });
+
+      gameSessionModel.findOne = jest
+        .fn()
+        .mockReturnValue({ exec: jest.fn().mockResolvedValue(sessionDoc) });
+
+      let updatedState: MockExplodingCatsSessionState | undefined;
+      let updatedStatus: string | undefined;
+      gameSessionModel.findOneAndUpdate = jest
+        .fn()
+        .mockImplementation(
+          (
+            _filter: unknown,
+            update: { state: MockExplodingCatsSessionState; status?: string },
+          ) => {
+            updatedState = update.state;
+            updatedStatus = update.status;
+            return {
+              exec: jest.fn().mockResolvedValue({
+                ...sessionDoc,
+                status: update.status ?? sessionDoc.status,
+                state: update.state,
+              }),
+            };
+          },
+        );
+
+      await service.drawExplodingCatsCard('host-1', roomDoc.id);
+
+      const state = updatedState as MockExplodingCatsSessionState;
+      const hostState = state.snapshot.players.find(
+        (player: { playerId: string }) => player.playerId === 'host-1',
+      );
+
+      expect(hostState).toBeDefined();
+      expect(hostState?.hand).toEqual(['attack']);
+      expect(updatedStatus).toBeUndefined();
+      expect(state.snapshot.playerOrder).toEqual(['host-1', 'guest-2']);
+      expect(state.snapshot.deck).toContain('exploding_cat');
+      expect(
+        state.snapshot.logs.some((log: { message: string }) =>
+          log.message.includes('used a Defuse'),
+        ),
+      ).toBe(true);
+    });
+
+    it('eliminates the player and completes the session when no defuse is available', async () => {
+      const roomDoc = createRoomDocument({ status: 'in_progress' });
+      const snapshot = createSnapshot({
+        deck: ['exploding_cat'],
+        hostHand: [],
+      });
+      const sessionDoc = createSessionDocument(snapshot);
+
+      gameRoomModel.findById.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(roomDoc),
+      });
+
+      gameSessionModel.findOne = jest
+        .fn()
+        .mockReturnValue({ exec: jest.fn().mockResolvedValue(sessionDoc) });
+
+      let updatedState: MockExplodingCatsSessionState | undefined;
+      let updatedStatus: string | undefined;
+      gameSessionModel.findOneAndUpdate = jest
+        .fn()
+        .mockImplementation(
+          (
+            _filter: unknown,
+            update: { state: MockExplodingCatsSessionState; status?: string },
+          ) => {
+            updatedState = update.state;
+            updatedStatus = update.status;
+            return {
+              exec: jest.fn().mockResolvedValue({
+                ...sessionDoc,
+                status: update.status ?? sessionDoc.status,
+                state: update.state,
+              }),
+            };
+          },
+        );
+
+      await service.drawExplodingCatsCard('host-1', roomDoc.id);
+
+      const state = updatedState as MockExplodingCatsSessionState;
+      const hostState = state.snapshot.players.find(
+        (player: { playerId: string }) => player.playerId === 'host-1',
+      );
+
+      expect(hostState).toBeDefined();
+      expect(hostState?.alive).toBe(false);
+      expect(state.snapshot.playerOrder).toEqual(['guest-2']);
+      expect(updatedStatus).toBe('completed');
+      expect(roomDoc.save).toHaveBeenCalledTimes(1);
+      expect(roomDoc.status).toBe('completed');
+      expect(realtime.emitRoomUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({ id: roomDoc.id, status: 'completed' }),
+      );
     });
   });
 });

@@ -93,6 +93,43 @@ export class GamesGateway {
     this.realtime.emitSessionSnapshotToClient(client, roomId, session);
   }
 
+  @SubscribeMessage('games.session.draw')
+  async handleSessionDraw(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { roomId?: string; userId?: string },
+  ): Promise<void> {
+    const roomId =
+      typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
+    const userId =
+      typeof payload?.userId === 'string' ? payload.userId.trim() : '';
+
+    if (!roomId) {
+      throw new WsException('roomId is required.');
+    }
+    if (!userId) {
+      throw new WsException('userId is required.');
+    }
+
+    try {
+      await this.gamesService.drawExplodingCatsCard(userId, roomId);
+      client.emit('games.session.drawn', {
+        roomId,
+        userId,
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error && typeof error.message === 'string'
+          ? error.message
+          : 'Unable to draw card.';
+
+      this.logger.warn(
+        `Failed to draw card for room ${roomId}, user ${userId}: ${message}`,
+      );
+
+      throw new WsException(message);
+    }
+  }
+
   @SubscribeMessage('games.session.start')
   async handleSessionStart(
     @ConnectedSocket() client: Socket,

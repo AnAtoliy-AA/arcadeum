@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'expo-router';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useTranslation } from '@/lib/i18n';
 
 const HIDDEN_ROUTE_PREFIXES = ['/auth', '/settings'];
 
@@ -15,6 +16,7 @@ export function SettingsLauncher() {
   const pathname = usePathname();
   const colorScheme = useColorScheme();
   const palette = Colors[colorScheme];
+  const { t } = useTranslation();
 
   const shouldHide = useMemo(() => {
     if (!pathname) {
@@ -36,7 +38,8 @@ export function SettingsLauncher() {
   return (
     <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
       <Pressable
-        accessibilityHint="Open settings"
+        accessibilityLabel={t('navigation.settingsTitle')}
+        accessibilityHint={t('navigation.openSettingsHint')}
         accessibilityRole="button"
         onPress={handlePress}
         style={({ pressed }) => [

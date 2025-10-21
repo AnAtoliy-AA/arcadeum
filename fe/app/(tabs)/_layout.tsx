@@ -8,8 +8,10 @@ import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { platform } from '@/constants/platform';
+import { useTranslation } from '@/lib/i18n';
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { t } = useTranslation();
   const screenOptions = useMemo<BottomTabNavigationOptions>(() => {
     const base: BottomTabNavigationOptions = {
       tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
@@ -34,28 +36,28 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: t('navigation.homeTab'),
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="explore"
         options={{
-          title: 'Explore',
+          title: t('navigation.exploreTab'),
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="games"
         options={{
-          title: 'Games',
+          title: t('navigation.gamesTab'),
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="gamecontroller.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="chats"
         options={{
-          title: 'Chats',
+          title: t('navigation.chatsTab'),
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="message.fill" color={color} />,
         }}
       />

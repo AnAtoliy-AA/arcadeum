@@ -10,6 +10,7 @@ import * as Sentry from '@sentry/react-native';
 import { SessionTokensProvider } from '@/stores/sessionTokens';
 import { SettingsProvider } from '@/stores/settings';
 import { SettingsLauncher } from '@/components/ui/SettingsLauncher';
+import { useTranslation } from '@/lib/i18n';
 
 export default Sentry.wrap(function RootLayout() {
   const [loaded] = useFonts({
@@ -32,6 +33,7 @@ export default Sentry.wrap(function RootLayout() {
 
 function NavigationRoot() {
   const colorScheme = useColorScheme();
+  const { t } = useTranslation();
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -40,7 +42,7 @@ function NavigationRoot() {
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="chat" options={{ headerShown: false }} />
-        <Stack.Screen name="settings" options={{ title: 'Settings' }} />
+        <Stack.Screen name="settings" options={{ title: t('navigation.settingsTitle') }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <SettingsLauncher />

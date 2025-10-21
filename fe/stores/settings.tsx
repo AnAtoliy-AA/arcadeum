@@ -1,8 +1,8 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { SecureStoreShim } from '@/lib/secureStore';
 
-type ThemePreference = 'system' | 'light' | 'dark';
-type LanguagePreference = 'en' | 'es' | 'fr';
+export type ThemePreference = 'system' | 'light' | 'dark';
+export type LanguagePreference = 'en' | 'es' | 'fr';
 
 export interface SettingsSnapshot {
   themePreference: ThemePreference;

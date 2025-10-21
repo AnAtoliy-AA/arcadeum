@@ -7,14 +7,22 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemedStyles, Palette } from '@/hooks/useThemedStyles';
 import { useSessionScreenGate } from '@/hooks/useSessionScreenGate';
+import { useTranslation } from '@/lib/i18n';
 
 export default function HomeScreen() {
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
   const { shouldBlock } = useSessionScreenGate({
     whenUnauthenticated: '/auth',
     enableOn: ['web'],
     blockWhenUnauthenticated: true,
   });
+
+  const devToolsShortcut = Platform.select({ ios: 'cmd + d', android: 'cmd + m', web: 'F12', default: 'cmd + d' });
+  const primaryFile = 'app/(tabs)/index.tsx';
+  const resetCommand = 'npm run reset-project';
+  const appDirectory = 'app';
+  const exampleDirectory = 'app-example';
 
   if (shouldBlock) {
     return (
@@ -34,32 +42,29 @@ export default function HomeScreen() {
       }
     >
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
+        <ThemedText type="title">{t('home.welcomeTitle')}</ThemedText>
         <HelloWave />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
+        <ThemedText type="subtitle">{t('home.step1Title')}</ThemedText>
         <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes. Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m', web: 'F12' })}
-          </ThemedText>{' '}to open developer tools.
+          {t('home.step1Body', { file: primaryFile, shortcut: devToolsShortcut })}
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
+        <ThemedText type="subtitle">{t('home.step2Title')}</ThemedText>
         <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
+          {t('home.step2Body', { tabName: t('navigation.exploreTab') })}
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
+        <ThemedText type="subtitle">{t('home.step3Title')}</ThemedText>
         <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
+          {t('home.step3Body', {
+            command: resetCommand,
+            appName: appDirectory,
+            exampleName: exampleDirectory,
+          })}
         </ThemedText>
       </ThemedView>
     </ParallaxScrollView>

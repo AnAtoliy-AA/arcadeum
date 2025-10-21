@@ -18,6 +18,7 @@ import {
 } from '@/stores/settings';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
+import { useTranslation } from '@/lib/i18n';
 
 export default function SettingsScreen() {
   const styles = useThemedStyles(createStyles);
@@ -30,6 +31,7 @@ export default function SettingsScreen() {
   } = useSettings();
   const colorScheme = useColorScheme();
   const palette = Colors[colorScheme];
+  const { t } = useTranslation();
 
   const handleThemeSelect = useCallback((preference: (typeof themePreferences)[number]['code']) => {
     setThemePreference(preference);
@@ -54,9 +56,9 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.section}>
-          <ThemedText style={styles.sectionTitle}>Appearance</ThemedText>
+          <ThemedText style={styles.sectionTitle}>{t('settings.appearanceTitle')}</ThemedText>
           <ThemedText style={styles.sectionDescription}>
-            Tweak how the interface looks regardless of your device theme.
+            {t('settings.appearanceDescription')}
           </ThemedText>
           <View style={styles.optionGroup}>
             {themePreferences.map((option) => {
@@ -84,9 +86,9 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.section}>
-          <ThemedText style={styles.sectionTitle}>Language</ThemedText>
+          <ThemedText style={styles.sectionTitle}>{t('settings.languageTitle')}</ThemedText>
           <ThemedText style={styles.sectionDescription}>
-            Choose the language you prefer for in-app copy. We&apos;re rolling out more translations soon.
+            {t('settings.languageDescription')}
           </ThemedText>
           <View style={styles.optionGroup}>
             {settingsLanguages.map((option) => {
@@ -101,7 +103,7 @@ export default function SettingsScreen() {
                   <View style={styles.optionTextWrapper}>
                     <ThemedText style={styles.optionTitle}>{option.label}</ThemedText>
                     <ThemedText style={styles.optionDescription}>
-                      {selected ? 'Active selection' : 'Tap to switch'}
+                      {selected ? t('settings.activeSelection') : t('settings.tapToSwitch')}
                     </ThemedText>
                   </View>
                   <IconSymbol

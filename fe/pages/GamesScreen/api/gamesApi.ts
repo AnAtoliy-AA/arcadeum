@@ -40,6 +40,28 @@ export interface JoinGameRoomResponse {
   room: GameRoomSummary;
 }
 
+export interface GameSessionSummary {
+  id: string;
+  roomId: string;
+  gameId: string;
+  engine: string;
+  status: 'waiting' | 'active' | 'completed';
+  state: Record<string, any>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LeaveGameRoomParams {
+  roomId: string;
+}
+
+export interface LeaveGameRoomResponse {
+  room: GameRoomSummary | null;
+  session: GameSessionSummary | null;
+  deleted: boolean;
+  removedPlayerId: string;
+}
+
 function apiBase(): string {
   const extra = (Constants as any)?.expoConfig?.extra as Record<string, any> | undefined;
   const raw = (extra?.API_BASE_URL as string | undefined) || process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:4000';
@@ -87,4 +109,16 @@ export async function joinGameRoom(params: JoinGameRoomParams, options?: FetchWi
     throw new Error(errorText || 'Failed to join game room');
   }
   return response.json() as Promise<JoinGameRoomResponse>;
+}
+
+export async function leaveGameRoom(params: LeaveGameRoomParams, options?: FetchWithRefreshOptions): Promise<LeaveGameRoomResponse> {
+  const response = await fetchWithRefresh(`${apiBase()}/games/rooms/leave`, buildInit({
+    method: 'POST',
+    body: JSON.stringify(params),
+  }), options);
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Failed to leave game room');
+  }
+  return response.json() as Promise<LeaveGameRoomResponse>;
 }

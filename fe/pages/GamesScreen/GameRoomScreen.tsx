@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -13,7 +14,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useSessionTokens } from '@/stores/sessionTokens';
-import { listGameRooms, type GameRoomSummary } from './api/gamesApi';
+import { leaveGameRoom, listGameRooms, type GameRoomSummary } from './api/gamesApi';
 import {
   formatRoomGame,
   formatRoomHost,
@@ -40,6 +41,7 @@ export default function GameRoomScreen() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [leaving, setLeaving] = useState(false);
 
   const fetchRoom = useCallback(
     async (mode: 'initial' | 'refresh' = 'initial') => {
@@ -91,6 +93,70 @@ export default function GameRoomScreen() {
     }, [fetchRoom]),
   );
 
+  const performLeave = useCallback(async () => {
+    if (!roomId || !tokens.accessToken) {
+      return;
+    }
+
+    setLeaving(true);
+    try {
+      await leaveGameRoom(
+        { roomId },
+        {
+          accessToken: tokens.accessToken,
+          refreshTokens,
+        },
+      );
+
+      router.replace('/(tabs)/games');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Could not leave the room.';
+      Alert.alert('Could not leave room', message);
+    } finally {
+      setLeaving(false);
+    }
+  }, [refreshTokens, roomId, router, tokens.accessToken]);
+
+  const handleLeaveRoom = useCallback(() => {
+    if (!roomId) {
+      return;
+    }
+
+    if (!tokens.accessToken) {
+      Alert.alert(
+        'Sign in required',
+        'Sign in to manage your seat in this lobby.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Sign in',
+            onPress: () => router.push('/auth' as never),
+          },
+        ],
+      );
+      return;
+    }
+
+    if (leaving) {
+      return;
+    }
+
+    Alert.alert(
+      'Leave this room?',
+      'You will give up your seat and may need a new invite to return.',
+      [
+        { text: 'Stay', style: 'cancel' },
+        {
+          text: 'Leave',
+          style: 'destructive',
+          onPress: () => {
+            void performLeave();
+          },
+        },
+      ],
+    );
+  }, [leaving, performLeave, roomId, router, tokens.accessToken]);
+
   const handleBack = useCallback(() => {
     if (router.canGoBack()) {
       router.back();
@@ -139,10 +205,26 @@ export default function GameRoomScreen() {
             <IconSymbol name="chevron.left" size={20} color={styles.backButtonText.color as string} />
             <ThemedText style={styles.backButtonText}>Back</ThemedText>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.gameButton} onPress={handleViewGame} disabled={!room && !gameId}>
-            <IconSymbol name="book" size={16} color={styles.gameButtonText.color as string} />
-            <ThemedText style={styles.gameButtonText}>View game</ThemedText>
-          </TouchableOpacity>
+          <View style={styles.actionGroup}>
+            <TouchableOpacity style={styles.gameButton} onPress={handleViewGame} disabled={!room && !gameId}>
+              <IconSymbol name="book" size={16} color={styles.gameButtonText.color as string} />
+              <ThemedText style={styles.gameButtonText}>View game</ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.leaveButton, leaving ? styles.leaveButtonDisabled : null]}
+              onPress={handleLeaveRoom}
+              disabled={leaving}
+            >
+              {leaving ? (
+                <ActivityIndicator size="small" color={styles.leaveSpinner.color as string} />
+              ) : (
+                <>
+                  <IconSymbol name="rectangle.portrait.and.arrow.right" size={16} color={styles.leaveButtonText.color as string} />
+                  <ThemedText style={styles.leaveButtonText}>Leave</ThemedText>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
 
         <ThemedView style={styles.headerCard}>
@@ -248,6 +330,9 @@ function createStyles(palette: Palette) {
   const statusLobbyBg = isLight ? '#DCFCE7' : '#1D3A28';
   const statusInProgressBg = isLight ? '#FDE68A' : '#42381F';
   const statusCompletedBg = isLight ? '#E2E8F0' : '#2B3038';
+  const leaveBackground = isLight ? '#FEE2E2' : '#3A2020';
+  const leaveDisabledBackground = isLight ? '#E2E8F0' : '#31353C';
+  const leaveTint = isLight ? '#B91C1C' : '#FCA5A5';
 
   return StyleSheet.create({
     container: {
@@ -266,6 +351,11 @@ function createStyles(palette: Palette) {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
+    },
+    actionGroup: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
     },
     backButton: {
       flexDirection: 'row',
@@ -289,6 +379,27 @@ function createStyles(palette: Palette) {
       color: palette.tint,
       fontWeight: '600',
       fontSize: 13,
+    },
+    leaveButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 999,
+      backgroundColor: leaveBackground,
+    },
+    leaveButtonDisabled: {
+      backgroundColor: leaveDisabledBackground,
+      opacity: 0.7,
+    },
+    leaveButtonText: {
+      color: leaveTint,
+      fontWeight: '600',
+      fontSize: 13,
+    },
+    leaveSpinner: {
+      color: leaveTint,
     },
     headerCard: {
       padding: 20,

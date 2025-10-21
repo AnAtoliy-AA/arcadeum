@@ -26,6 +26,7 @@ export const Colors = {
       playerCurrent: '#FEF3C7',
       destructiveBg: '#FEE2E2',
       destructiveText: '#991B1B',
+      playerIcon: '#0F172A',
     },
   },
   dark: {
@@ -47,6 +48,7 @@ export const Colors = {
       playerCurrent: '#3B2E11',
       destructiveBg: '#3A2020',
       destructiveText: '#FECACA',
+      playerIcon: '#F1F5F9',
     },
   },
 };

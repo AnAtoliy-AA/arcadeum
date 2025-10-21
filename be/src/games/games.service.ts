@@ -21,6 +21,7 @@ import {
   type ExplodingCatsState,
 } from './exploding-cats/exploding-cats.state';
 import { GamesRealtimeService } from './games.realtime.service';
+import { User } from '../auth/schemas/user.schema';
 
 export interface GameRoomSummary {
   id: string;
@@ -70,6 +71,8 @@ export class GamesService {
     private readonly gameRoomModel: Model<GameRoom>,
     @InjectModel(GameSession.name)
     private readonly gameSessionModel: Model<GameSession>,
+    @InjectModel(User.name)
+    private readonly userModel: Model<User>,
     private readonly realtime: GamesRealtimeService,
   ) {}
 
@@ -250,7 +253,11 @@ export class GamesService {
       .findOne({ roomId: trimmedRoomId })
       .exec();
 
-    return session ? this.toSessionSummary(session) : null;
+    if (!session) {
+      return null;
+    }
+
+    return this.enrichSessionSummary(this.toSessionSummary(session));
   }
 
   async createSession(options: {
@@ -290,7 +297,7 @@ export class GamesService {
     });
 
     const saved = await session.save();
-    return this.toSessionSummary(saved);
+    return this.enrichSessionSummary(this.toSessionSummary(saved));
   }
 
   async upsertSessionState(options: {
@@ -322,7 +329,8 @@ export class GamesService {
       throw new NotFoundException('Game session not found for room.');
     }
 
-    const summary = this.toSessionSummary(updated);
+    const baseSummary = this.toSessionSummary(updated);
+    const summary = await this.enrichSessionSummary(baseSummary);
     this.realtime.emitSessionSnapshot(roomId, summary);
     return summary;
   }
@@ -1010,6 +1018,108 @@ export class GamesService {
 
     // Fallback to timestamp-based code to guarantee uniqueness
     return `ROOM-${Date.now().toString(36).toUpperCase()}`;
+  }
+
+  private async enrichSessionSummary(
+    summary: GameSessionSummary,
+  ): Promise<GameSessionSummary> {
+    const state = summary.state ?? {};
+    const snapshot = state.snapshot as Record<string, any> | undefined;
+
+    const candidateIds: string[] = [];
+    if (snapshot && typeof snapshot === 'object') {
+      const order = Array.isArray(snapshot.playerOrder)
+        ? (snapshot.playerOrder as unknown[])
+        : [];
+      for (const value of order) {
+        if (typeof value === 'string') {
+          const trimmed = value.trim();
+          if (trimmed.length > 0) {
+            candidateIds.push(trimmed);
+          }
+        }
+      }
+
+      const playerStates = Array.isArray(snapshot.players)
+        ? (snapshot.players as Array<{ playerId?: string }>)
+        : [];
+      for (const item of playerStates) {
+        const rawId = item?.playerId;
+        if (typeof rawId === 'string') {
+          const trimmed = rawId.trim();
+          if (trimmed.length > 0) {
+            candidateIds.push(trimmed);
+          }
+        }
+      }
+    }
+
+    const uniqueIds = Array.from(
+      new Set(
+        candidateIds.filter((id) => typeof id === 'string' && id.length > 0),
+      ),
+    );
+
+    if (!uniqueIds.length) {
+      if (Array.isArray(state.players)) {
+        return summary;
+      }
+
+      return {
+        ...summary,
+        state: {
+          ...state,
+          players: [],
+        },
+      };
+    }
+
+    try {
+      const users = await this.userModel
+        .find({ _id: { $in: uniqueIds } })
+        .select(['username', 'email'])
+        .exec();
+
+      const lookup = new Map<string, { username?: string; email?: string }>();
+      for (const user of users) {
+        const id = user._id?.toString?.();
+        if (id) {
+          lookup.set(id, {
+            username: user.username ?? undefined,
+            email: user.email ?? undefined,
+          });
+        }
+      }
+
+      const players = uniqueIds.map((id) => {
+        const user = lookup.get(id);
+        return {
+          id,
+          username: user?.username,
+          email: user?.email ?? null,
+        };
+      });
+
+      return {
+        ...summary,
+        state: {
+          ...state,
+          players,
+        },
+      };
+    } catch {
+      return {
+        ...summary,
+        state: {
+          ...state,
+          players: uniqueIds.map((id) => ({
+            id,
+            username: undefined,
+            email: null,
+          })),
+        },
+      };
+    }
   }
 
   private toSessionSummary(session: GameSession): GameSessionSummary {

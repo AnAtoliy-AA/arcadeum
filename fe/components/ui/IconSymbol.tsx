@@ -25,6 +25,23 @@ const MAPPING = {
   'clock.fill': 'schedule',
   'sparkles': 'auto-awesome',
   'lock.fill': 'lock',
+  'lock.open': 'lock-open',
+  'book': 'menu-book',
+  'rectangle.portrait.and.arrow.right': 'logout',
+  'exclamationmark.triangle.fill': 'warning',
+  'arrow.clockwise': 'refresh',
+  'person.crop.circle': 'person-outline',
+  'person.circle.fill': 'person',
+  'rectangle.grid.2x2': 'grid-view',
+  'rectangle.stack': 'layers',
+  'arrow.triangle.2.circlepath': 'autorenew',
+  'hourglass': 'hourglass-empty',
+  'crown.fill': 'emoji-events',
+  'play.fill': 'play-arrow',
+  'hand.draw.fill': 'back-hand',
+  'figure.walk': 'directions-walk',
+  'bolt.fill': 'bolt',
+  'list.bullet.rectangle': 'list',
 } as IconMapping;
 
 /**

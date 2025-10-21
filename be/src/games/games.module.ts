@@ -4,6 +4,7 @@ import { GamesController } from './games.controller';
 import { GamesService } from './games.service';
 import { GameRoom, GameRoomSchema } from './schemas/game-room.schema';
 import { GameSession, GameSessionSchema } from './schemas/game-session.schema';
+import { User, UserSchema } from '../auth/schemas/user.schema';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GamesGateway } from './games.gateway';
 
@@ -12,6 +13,7 @@ import { GamesGateway } from './games.gateway';
     MongooseModule.forFeature([
       { name: GameRoom.name, schema: GameRoomSchema },
       { name: GameSession.name, schema: GameSessionSchema },
+      { name: User.name, schema: UserSchema },
     ]),
   ],
   controllers: [GamesController],

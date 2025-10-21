@@ -12,6 +12,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useSessionScreenGate } from '@/hooks/useSessionScreenGate';
 import { useSessionTokens } from '@/stores/sessionTokens';
 import type { SessionTokensSnapshot } from '@/stores/sessionTokens';
@@ -110,7 +111,8 @@ export default function ChatListScreen() {
 
   const currentUserId = tokens.userId ?? '';
   const accessToken = tokens.accessToken;
-  const placeholderColor = useThemeColor({}, 'icon');
+  const placeholderColor = useThemeColor({}, 'icon') as string;
+  const avatarIconColor = useThemeColor({}, 'background') as string;
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<ChatParticipant[]>([]);
@@ -230,13 +232,18 @@ export default function ChatListScreen() {
 
       return (
         <TouchableOpacity style={styles.chatItem} onPress={handlePress}>
-          <View style={styles.chatTextContainer}>
-            <ThemedText style={styles.chatTitle} numberOfLines={1}>
-              {title}
-            </ThemedText>
-            <ThemedText style={styles.chatSubtitle} numberOfLines={2}>
-              {subtitle}
-            </ThemedText>
+          <View style={styles.chatItemContent}>
+            <View style={styles.chatAvatar}>
+              <IconSymbol name="person.circle.fill" size={20} color={avatarIconColor} />
+            </View>
+            <View style={styles.chatTextContainer}>
+              <ThemedText style={styles.chatTitle} numberOfLines={1}>
+                {title}
+              </ThemedText>
+              <ThemedText style={styles.chatSubtitle} numberOfLines={2}>
+                {subtitle}
+              </ThemedText>
+            </View>
           </View>
           {item.lastMessage && (
             <ThemedText style={styles.chatTimestamp}>
@@ -246,7 +253,7 @@ export default function ChatListScreen() {
         </TouchableOpacity>
       );
     },
-    [currentUserId, router, styles],
+    [avatarIconColor, currentUserId, router, styles],
   );
 
   const keyExtractor = useCallback((item: ChatSummary) => item.chatId, []);
@@ -281,7 +288,7 @@ export default function ChatListScreen() {
             <ThemedText style={styles.errorText}>{searchError}</ThemedText>
           </View>
         )}
-  {accessToken && searchQuery.trim().length > 0 && !searchLoading && !searchError && (
+        {accessToken && searchQuery.trim().length > 0 && !searchLoading && !searchError && (
           <View style={styles.searchResultsContainer}>
             {searchResults.length === 0 ? (
               <View style={styles.searchResultItem}>
@@ -297,11 +304,16 @@ export default function ChatListScreen() {
                     onPress={() => handleSelectUser(result)}
                     disabled={disabled}
                   >
-                    <View style={styles.searchResultTextContainer}>
-                      <ThemedText style={styles.searchResultTitle}>{result.username}</ThemedText>
-                      {result.email ? (
-                        <ThemedText style={styles.searchResultSubtitle}>{result.email}</ThemedText>
-                      ) : null}
+                    <View style={styles.searchResultContent}>
+                      <View style={styles.searchResultAvatar}>
+                        <IconSymbol name="person.circle.fill" size={18} color={avatarIconColor} />
+                      </View>
+                      <View style={styles.searchResultTextContainer}>
+                        <ThemedText style={styles.searchResultTitle}>{result.username}</ThemedText>
+                        {result.email ? (
+                          <ThemedText style={styles.searchResultSubtitle}>{result.email}</ThemedText>
+                        ) : null}
+                      </View>
                     </View>
                     {disabled && <ActivityIndicator size="small" />}
                   </TouchableOpacity>
@@ -312,7 +324,7 @@ export default function ChatListScreen() {
         )}
       </View>
     );
-  }, [styles, placeholderColor, searchQuery, searchLoading, searchError, searchResults, creatingChatUserId, handleSelectUser, accessToken]);
+  }, [avatarIconColor, styles, placeholderColor, searchQuery, searchLoading, searchError, searchResults, creatingChatUserId, handleSelectUser, accessToken]);
 
   const emptyComponent = useMemo(() => {
     if (searchQuery.trim().length > 0) {
@@ -407,6 +419,20 @@ function createStyles(palette: Palette) {
       justifyContent: 'space-between',
       gap: 12,
     },
+    chatItemContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+      gap: 12,
+    },
+    chatAvatar: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: palette.tint,
+    },
     chatTextContainer: {
       flex: 1,
       gap: 4,
@@ -478,6 +504,20 @@ function createStyles(palette: Palette) {
     },
     searchResultItemDisabled: {
       opacity: 0.6,
+    },
+    searchResultContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      flex: 1,
+    },
+    searchResultAvatar: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: palette.tint,
     },
     searchResultTextContainer: {
       flex: 1,

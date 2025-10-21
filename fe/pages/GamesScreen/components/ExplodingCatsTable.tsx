@@ -10,11 +10,16 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
-import { formatRoomHost } from '../roomUtils';
 import type {
   GameRoomSummary,
   GameSessionSummary,
 } from '../api/gamesApi';
+
+interface SessionPlayerProfile {
+  id: string;
+  username?: string;
+  email?: string | null;
+}
 
 export type ExplodingCatsCard =
   | 'exploding_cat'
@@ -102,10 +107,17 @@ export function ExplodingCatsTable({
         return [];
       }
 
+      const rawPlayers = Array.isArray((session as any)?.state?.players)
+        ? ((session as any).state.players as SessionPlayerProfile[])
+        : [];
+      const lookup = new Map(rawPlayers.map((player) => [player.id, player]));
+
       return snapshot.playerOrder.map((playerId, index) => {
         const base = snapshot.players.find((player) => player.playerId === playerId);
+        const userProfile = lookup.get(playerId);
         return {
           playerId,
+          displayName: userProfile?.username || userProfile?.email || playerId,
           hand: base?.hand ?? [],
           alive: base?.alive ?? false,
           isCurrentTurn: index === snapshot.currentTurnIndex,
@@ -114,7 +126,7 @@ export function ExplodingCatsTable({
         };
       });
     },
-    [snapshot, currentUserId],
+  [snapshot, currentUserId, session],
   );
 
   const selfPlayer = useMemo(
@@ -187,9 +199,15 @@ export function ExplodingCatsTable({
                 style={[styles.playerCard, player.isSelf ? styles.playerSelf : null, isCurrent ? styles.playerCurrent : null, !player.alive ? styles.playerEliminated : null]}
               >
                 <View style={styles.playerHeader}>
-                  <View style={styles.playerNameRow}>
-                    <IconSymbol name={player.isSelf ? 'person.circle.fill' : 'person.crop.circle'} size={18} color={styles.playerName.color as string} />
-                    <ThemedText style={styles.playerName}>{formatRoomHost(player.playerId)}</ThemedText>
+                    <View style={styles.playerNameRow}>
+                      <View style={[styles.playerAvatar, player.isSelf ? styles.playerAvatarSelf : null]}>
+                        <IconSymbol
+                          name="person.circle.fill"
+                          size={18}
+                          color={player.isSelf ? styles.playerAvatarSelfIcon.color as string : styles.playerAvatarIcon.color as string}
+                        />
+                      </View>
+                    <ThemedText style={styles.playerName}>{player.displayName}</ThemedText>
                   </View>
                   <View style={[styles.playerStatusPill, player.alive ? styles.playerAlive : styles.playerOut]}>
                     <ThemedText style={styles.playerStatusText}>{player.alive ? 'Alive' : 'Out'}</ThemedText>
@@ -337,8 +355,18 @@ function createStyles(palette: Palette) {
     playerCurrent: isLight ? '#FEF3C7' : '#3B2E11',
     destructiveBg: isLight ? '#FEE2E2' : '#3A2020',
     destructiveText: isLight ? '#991B1B' : '#FECACA',
+    playerIcon: isLight ? '#0F172A' : '#F1F5F9',
   } as const;
-  const { surface, raised, border, shadow, playerSelf, playerCurrent, destructiveBg, destructiveText } = tableTheme;
+  const {
+    surface,
+    raised,
+    border,
+    shadow,
+    playerSelf,
+    playerCurrent,
+    destructiveBg,
+    destructiveText,
+  } = tableTheme;
 
   return StyleSheet.create({
     card: {
@@ -467,7 +495,24 @@ function createStyles(palette: Palette) {
     playerNameRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 6,
+      gap: 8,
+    },
+    playerAvatar: {
+      width: 28,
+      height: 28,
+      borderRadius: 14,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: raised,
+    },
+    playerAvatarSelf: {
+      backgroundColor: palette.tint,
+    },
+    playerAvatarIcon: {
+      color: palette.gameTable?.playerIcon ?? (isLight ? '#0F172A' : '#F1F5F9'),
+    },
+    playerAvatarSelfIcon: {
+      color: palette.background,
     },
     playerName: {
       color: palette.text,

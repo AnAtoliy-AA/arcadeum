@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
-import { loginLocal, registerLocal, me, resolveApiBase, type AuthUserProfile } from '../api/authApi';
+import { loginLocal, registerLocal, me, type AuthUserProfile } from '../api/authApi';
+import { resolveApiBase } from '@/lib/apiBase';
 import { SecureStoreShim } from '@/lib/secureStore';
 import { useSessionTokens, type SessionTokensSnapshot } from '@/stores/sessionTokens';
 

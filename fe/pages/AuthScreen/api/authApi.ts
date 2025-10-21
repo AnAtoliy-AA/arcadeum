@@ -1,9 +1,9 @@
 import { authorize, AuthorizeResult, revoke } from 'react-native-app-auth';
-import Constants from 'expo-constants';
 import * as AuthSession from 'expo-auth-session';
 import { platform } from '@/constants/platform';
 import { authConfig } from '../config/authConfig';
 import { fetchWithRefresh, type FetchWithRefreshOptions } from '@/lib/fetchWithRefresh';
+import { resolveApiBase } from '@/lib/apiBase';
 
 function validateConfig() {
   const missing: string[] = [];
@@ -118,103 +118,7 @@ export interface LoginResponse {
 type MeResponse = AuthUserProfile;
 
 function apiBase(): string {
-  const extra = (Constants as any)?.expoConfig?.extra as Record<string, any> | undefined;
-  const raw = (extra?.API_BASE_URL as string | undefined) || process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:4000';
-  const normalized = raw.replace(/\/$/, '');
-
-  if (platform.isWeb) {
-    return normalized;
-  }
-
-  return resolveDeviceAwareBase(normalized);
-}
-
-function resolveDeviceAwareBase(urlString: string): string {
-  try {
-    const parsed = new URL(urlString);
-    if (!isLocalHost(parsed.hostname)) {
-      return urlString;
-    }
-
-    const overrideHost = pickHostOverride();
-    if (overrideHost) {
-      parsed.hostname = overrideHost;
-      return parsed.toString().replace(/\/$/, '');
-    }
-
-    const hostOverride = deriveDevServerHost();
-    if (hostOverride) {
-      parsed.hostname = hostOverride;
-      return parsed.toString().replace(/\/$/, '');
-    }
-
-    if (platform.isAndroid) {
-      parsed.hostname = '10.0.2.2';
-      return parsed.toString().replace(/\/$/, '');
-    }
-  } catch {
-    // Swallow parse errors and fall through to original urlString
-  }
-  return urlString;
-}
-
-export function resolveApiBase(): string {
-  return apiBase();
-}
-
-function isLocalHost(host: string): boolean {
-  return host === 'localhost' || host === '127.0.0.1';
-}
-
-function deriveDevServerHost(): string | undefined {
-  const expoConfig = Constants as any;
-  const expoGo = expoConfig?.expoGoConfig ?? {};
-  const manifest = expoConfig?.manifest ?? {};
-  const manifest2 = expoConfig?.manifest2 ?? {};
-
-  const candidates: (string | undefined)[] = [
-    expoGo.debuggerHost,
-    expoGo.hostUri,
-    expoGo.url,
-    expoConfig?.expoConfig?.hostUri,
-    manifest.debuggerHost,
-    manifest.hostUri,
-    manifest2?.extra?.expoGo?.developer?.host,
-  ];
-
-  for (const candidate of candidates) {
-    const host = extractRemoteHost(candidate);
-    if (host && !isLocalHost(host)) {
-      return host;
-    }
-  }
-
-  return undefined;
-}
-
-function pickHostOverride(): string | undefined {
-  const extra = (Constants as any)?.expoConfig?.extra as Record<string, unknown> | undefined;
-  const envValue = process.env.EXPO_PUBLIC_ANDROID_DEV_HOST as string | undefined;
-  const extraValue = (extra?.ANDROID_DEV_HOST as string | undefined) ?? (extra?.androidDevHost as string | undefined);
-
-  const host = extractRemoteHost(envValue ?? extraValue);
-  if (host && !isLocalHost(host)) {
-    return host;
-  }
-  return undefined;
-}
-
-function extractRemoteHost(candidate?: string): string | undefined {
-  if (!candidate) return undefined;
-
-  try {
-    const url = new URL(candidate.includes('://') ? candidate : `http://${candidate}`);
-    return url.hostname;
-  } catch {
-    const withoutScheme = candidate.replace(/^[a-zA-Z]+:\/\//, '');
-    const host = withoutScheme.split(':')[0]?.split('/')[0]?.trim();
-    return host || undefined;
-  }
+  return resolveApiBase();
 }
 
 export async function registerLocal(email: string, password: string, username: string): Promise<RegisterResponse> {

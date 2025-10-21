@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { AuthorizeResult } from 'react-native-app-auth';
 import { loginOAuthSession, loginWithOAuth, logoutOAuth } from '../api/authApi';
 import { Platform } from 'react-native';
+import { resolveApiBase } from '@/lib/apiBase';
 import { authConfig } from '../config/authConfig';
 import { useLocalSearchParams, useRootNavigationState } from 'expo-router';
-import Constants from 'expo-constants';
 import { useSessionTokens } from '@/stores/sessionTokens';
 import type { LoginResponse } from '../api/authApi';
 import { fetchWithRefresh } from '@/lib/fetchWithRefresh';
@@ -106,9 +106,7 @@ export function useAuth() {
       (async () => {
         try {
           const codeVerifier = typeof window !== 'undefined' ? sessionStorage.getItem('oauth_code_verifier') || undefined : undefined;
-          const maybeExtra = (Constants.expoConfig as any)?.extra as Record<string, unknown> | undefined;
-          const apiBaseRaw = (maybeExtra?.API_BASE_URL as string | undefined) || process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:4000';
-          const apiBase = apiBaseRaw.replace(/\/$/, '');
+          const apiBase = resolveApiBase();
           const payload = JSON.stringify({ code, codeVerifier, redirectUri: authConfig.redirectUrl });
           const controller = new AbortController();
           const fetchAuthToken = async () => {

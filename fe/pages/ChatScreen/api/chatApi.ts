@@ -1,5 +1,5 @@
-import { resolveApiBase } from '@/pages/AuthScreen/api/authApi';
 import { fetchWithRefresh, FetchWithRefreshOptions } from '@/lib/fetchWithRefresh';
+import { resolveApiBase } from '@/lib/apiBase';
 
 export interface MessageView {
   id: string;

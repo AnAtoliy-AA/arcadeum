@@ -1,6 +1,5 @@
-import Constants from 'expo-constants';
 import { fetchWithRefresh, type FetchWithRefreshOptions } from '@/lib/fetchWithRefresh';
-import { platform } from '@/constants/platform';
+import { resolveApiBase } from '@/lib/apiBase';
 
 export interface CreateGameRoomParams {
   gameId: string;
@@ -73,11 +72,7 @@ export interface StartGameRoomResponse {
 }
 
 function apiBase(): string {
-  const extra = (Constants as any)?.expoConfig?.extra as Record<string, any> | undefined;
-  const raw = (extra?.API_BASE_URL as string | undefined) || process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:4000';
-  const normalized = raw.replace(/\/$/, '');
-  if (platform.isWeb) return normalized;
-  return normalized;
+  return resolveApiBase();
 }
 
 function buildInit(init?: RequestInit): RequestInit {

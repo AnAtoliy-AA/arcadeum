@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { resolveApiBase } from '@/lib/apiBase';
 
-const API_URL = 'http://localhost:4000'; // Replace with your backend IP
+const API_URL = resolveApiBase();
 
 export const getUser = async (id: string) => {
   const res = await axios.get(`${API_URL}/user/${id}`);

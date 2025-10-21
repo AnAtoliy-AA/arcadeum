@@ -333,14 +333,55 @@ export function ExplodingCatsTable({
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={styles.handScrollContent}
                 >
-                  {selfPlayer.hand.map((card, index) => (
-                    <View key={`${card}-${index}`} style={styles.handCard}>
-                      <ThemedText style={styles.handCardTitle} numberOfLines={2}>
-                        {translateCardName(card)}
-                      </ThemedText>
-                      <ThemedText style={styles.handCardLabel}>{t('games.table.hand.cardLabel')}</ThemedText>
-                    </View>
-                  ))}
+                  {selfPlayer.hand.map((card, index) => {
+                    const cardKey = `${card}-${index}`;
+                    const cardAction = card === 'skip' ? 'skip' : card === 'attack' ? 'attack' : null;
+                    const canPlayCard = cardAction === 'skip'
+                      ? canPlaySkip
+                      : cardAction === 'attack'
+                        ? canPlayAttack
+                        : false;
+                    const isActionBusy = cardAction ? actionBusy === cardAction : false;
+                    const actionLabel = cardAction === 'skip'
+                      ? t('games.table.actions.playSkip')
+                      : cardAction === 'attack'
+                        ? t('games.table.actions.playAttack')
+                        : null;
+
+                    return (
+                      <TouchableOpacity
+                        key={cardKey}
+                        style={[
+                          styles.handCard,
+                          cardAction && canPlayCard ? styles.handCardPlayable : null,
+                          cardAction && !canPlayCard ? styles.handCardDisabled : null,
+                          isActionBusy ? styles.handCardBusy : null,
+                        ]}
+                        activeOpacity={cardAction && canPlayCard ? 0.8 : 1}
+                        onPress={cardAction && canPlayCard && !isActionBusy ? () => onPlay(cardAction) : undefined}
+                        disabled={!cardAction || !canPlayCard || isActionBusy}
+                        accessibilityRole={cardAction && canPlayCard ? 'button' : 'text'}
+                        accessibilityLabel={translateCardName(card)}
+                        accessibilityHint={cardAction && canPlayCard ? actionLabel ?? undefined : undefined}
+                      >
+                        {isActionBusy ? (
+                          <ActivityIndicator size="small" color={styles.handCardBusySpinner.color as string} />
+                        ) : (
+                          <>
+                            <ThemedText style={styles.handCardTitle} numberOfLines={2}>
+                              {translateCardName(card)}
+                            </ThemedText>
+                            <ThemedText style={styles.handCardLabel}>{t('games.table.hand.cardLabel')}</ThemedText>
+                            {cardAction && canPlayCard && actionLabel ? (
+                              <ThemedText style={styles.handCardHint} numberOfLines={1}>
+                                {actionLabel}
+                              </ThemedText>
+                            ) : null}
+                          </>
+                        )}
+                      </TouchableOpacity>
+                    );
+                  })}
                 </ScrollView>
               ) : (
                 <View style={styles.handEmpty}>
@@ -746,6 +787,19 @@ function createStyles(palette: Palette) {
       shadowOffset: { width: 0, height: 4 },
       elevation: 3,
     },
+    handCardPlayable: {
+      borderColor: palette.tint,
+      shadowOpacity: isLight ? 0.35 : 0.6,
+    },
+    handCardDisabled: {
+      opacity: 0.65,
+    },
+    handCardBusy: {
+      justifyContent: 'center',
+    },
+    handCardBusySpinner: {
+      color: palette.tint,
+    },
     handCardTitle: {
       color: palette.text,
       fontWeight: '700',
@@ -755,6 +809,11 @@ function createStyles(palette: Palette) {
     handCardLabel: {
       color: palette.icon,
       fontSize: 11,
+    },
+    handCardHint: {
+      color: palette.tint,
+      fontSize: 11,
+      fontWeight: '600',
     },
     handEmpty: {
       paddingVertical: 16,

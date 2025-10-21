@@ -15,6 +15,9 @@ import type {
   GameSessionSummary,
 } from '../api/gamesApi';
 
+const TABLE_DIAMETER = 260;
+const PLAYER_SEAT_SIZE = 88;
+
 interface SessionPlayerProfile {
   id: string;
   username?: string;
@@ -123,11 +126,45 @@ export function ExplodingCatsTable({
           isCurrentTurn: index === snapshot.currentTurnIndex,
           handSize: base?.hand?.length ?? 0,
           isSelf: currentUserId ? playerId === currentUserId : false,
+          orderIndex: index,
         };
       });
     },
-  [snapshot, currentUserId, session],
+    [snapshot, currentUserId, session],
   );
+
+  const otherPlayers = useMemo(
+    () => players.filter((player) => !player.isSelf),
+    [players],
+  );
+
+  const tableSeats = useMemo(() => {
+    if (!otherPlayers.length) {
+      return [];
+    }
+
+    const total = otherPlayers.length;
+    const center = TABLE_DIAMETER / 2;
+    const radius = Math.max(center - PLAYER_SEAT_SIZE / 2 - 8, 0);
+
+    return otherPlayers.map((player, index) => {
+      const angle = (2 * Math.PI * index) / total - Math.PI / 2;
+      const left = Math.round(
+        center + radius * Math.cos(angle) - PLAYER_SEAT_SIZE / 2,
+      );
+      const top = Math.round(
+        center + radius * Math.sin(angle) - PLAYER_SEAT_SIZE / 2,
+      );
+
+      return {
+        player,
+        position: {
+          left,
+          top,
+        },
+      };
+    });
+  }, [otherPlayers]);
 
   const selfPlayer = useMemo(
     () => players.find((player) => player.isSelf) ?? null,
@@ -160,28 +197,6 @@ export function ExplodingCatsTable({
           <ThemedText style={styles.statusText}>{session?.status ? session.status.replace('_', ' ') : room?.status ?? 'lobby'}</ThemedText>
         </View>
       </View>
-
-      {snapshot ? (
-        <View style={styles.stateRow}>
-          <View style={styles.stateChip}>
-            <IconSymbol name="rectangle.stack" size={16} color={styles.stateChipText.color as string} />
-            <ThemedText style={styles.stateChipText}>{deckCount} in deck</ThemedText>
-          </View>
-          <View style={styles.stateChip}>
-            <IconSymbol name="arrow.triangle.2.circlepath" size={16} color={styles.stateChipText.color as string} />
-            <ThemedText style={styles.stateChipText}>
-              {discardTop ? `Top discard: ${formatCardName(discardTop)}` : 'Discard pile empty'}
-            </ThemedText>
-          </View>
-          <View style={styles.stateChip}>
-            <IconSymbol name="hourglass" size={16} color={styles.stateChipText.color as string} />
-            <ThemedText style={styles.stateChipText}>
-              {pendingDraws > 0 ? `${pendingDraws} draw${pendingDraws > 1 ? 's' : ''} pending` : 'No pending draws'}
-            </ThemedText>
-          </View>
-        </View>
-      ) : null}
-
       {isSessionCompleted ? (
         <View style={styles.messageCard}>
           <IconSymbol name="crown.fill" size={18} color={styles.messageText.color as string} />
@@ -190,43 +205,173 @@ export function ExplodingCatsTable({
       ) : null}
 
       {snapshot ? (
-        <View style={styles.playersGrid}>
-          {players.map((player) => {
-            const isCurrent = player.isCurrentTurn && isSessionActive && !isSessionCompleted;
-            return (
-              <View
-                key={player.playerId}
-                style={[styles.playerCard, player.isSelf ? styles.playerSelf : null, isCurrent ? styles.playerCurrent : null, !player.alive ? styles.playerEliminated : null]}
-              >
-                <View style={styles.playerHeader}>
-                    <View style={styles.playerNameRow}>
-                      <View style={[styles.playerAvatar, player.isSelf ? styles.playerAvatarSelf : null]}>
-                        <IconSymbol
-                          name="person.circle.fill"
-                          size={18}
-                          color={player.isSelf ? styles.playerAvatarSelfIcon.color as string : styles.playerAvatarIcon.color as string}
-                        />
-                      </View>
-                    <ThemedText style={styles.playerName}>{player.displayName}</ThemedText>
-                  </View>
-                  <View style={[styles.playerStatusPill, player.alive ? styles.playerAlive : styles.playerOut]}>
-                    <ThemedText style={styles.playerStatusText}>{player.alive ? 'Alive' : 'Out'}</ThemedText>
-                  </View>
+        <>
+          <View style={styles.tableSection}>
+            <View style={styles.tableRing}>
+              <View style={styles.tableCenter}>
+                <View style={styles.tableInfoCard}>
+                  <IconSymbol name="rectangle.stack" size={18} color={styles.tableInfoIcon.color as string} />
+                  <ThemedText style={styles.tableInfoTitle}>{deckCount}</ThemedText>
+                  <ThemedText style={styles.tableInfoSubtitle}>in deck</ThemedText>
                 </View>
-                <ThemedText style={styles.playerDetail}>
-                  {player.isSelf
-                    ? player.hand.length
-                      ? `Your hand: ${player.hand.map((card) => formatCardName(card)).join(', ')}`
-                      : 'Your hand is empty'
-                    : `${player.handSize} card${player.handSize === 1 ? '' : 's'} in hand`}
-                </ThemedText>
-                {isCurrent ? (
-                  <ThemedText style={styles.turnBadge}>Taking a turn…</ThemedText>
+                <View style={styles.tableInfoCard}>
+                  <IconSymbol name="arrow.triangle.2.circlepath" size={18} color={styles.tableInfoIcon.color as string} />
+                  <ThemedText style={styles.tableInfoTitle}>
+                    {discardTop ? formatCardName(discardTop) : 'Empty'}
+                  </ThemedText>
+                  <ThemedText style={styles.tableInfoSubtitle}>top discard</ThemedText>
+                </View>
+                <View style={styles.tableInfoCard}>
+                  <IconSymbol name="hourglass" size={18} color={styles.tableInfoIcon.color as string} />
+                  <ThemedText style={styles.tableInfoTitle}>
+                    {pendingDraws > 0 ? pendingDraws : 'None'}
+                  </ThemedText>
+                  <ThemedText style={styles.tableInfoSubtitle}>
+                    {pendingDraws === 1 ? 'draw pending' : 'draws pending'}
+                  </ThemedText>
+                </View>
+              </View>
+
+              {tableSeats.map((seat) => {
+                const isCurrent =
+                  seat.player.isCurrentTurn && isSessionActive && !isSessionCompleted;
+                return (
+                  <View
+                    key={seat.player.playerId}
+                    style={[
+                      styles.tableSeat,
+                      {
+                        left: seat.position.left,
+                        top: seat.position.top,
+                      },
+                      isCurrent ? styles.tableSeatCurrent : null,
+                      !seat.player.alive ? styles.tableSeatOut : null,
+                    ]}
+                  >
+                    <View style={styles.seatAvatar}>
+                      <IconSymbol
+                        name="person.circle.fill"
+                        size={20}
+                        color={styles.seatAvatarIcon.color as string}
+                      />
+                    </View>
+                    <ThemedText style={styles.seatName} numberOfLines={1}>
+                      {seat.player.displayName}
+                    </ThemedText>
+                    <ThemedText style={styles.seatCardCount}>
+                      {seat.player.handSize} card{seat.player.handSize === 1 ? '' : 's'}
+                    </ThemedText>
+                    <ThemedText style={styles.seatStatus}>
+                      {seat.player.alive ? 'Alive' : 'Out'}
+                    </ThemedText>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+
+          {selfPlayer ? (
+            <View style={styles.handSection}>
+              <View style={styles.handHeader}>
+                <IconSymbol name="hand.draw.fill" size={18} color={styles.handTitleIcon.color as string} />
+                <ThemedText style={styles.handTitle}>Your cards</ThemedText>
+                <View
+                  style={[
+                    styles.handStatusPill,
+                    selfPlayer.alive ? styles.handStatusAlive : styles.handStatusOut,
+                  ]}
+                >
+                  <ThemedText
+                    style={[
+                      styles.handStatusText,
+                      selfPlayer.alive ? null : styles.handStatusTextOut,
+                    ]}
+                  >
+                    {selfPlayer.alive ? 'Alive' : 'Out'}
+                  </ThemedText>
+                </View>
+              </View>
+
+              {selfPlayer.hand.length ? (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.handScrollContent}
+                >
+                  {selfPlayer.hand.map((card, index) => (
+                    <View key={`${card}-${index}`} style={styles.handCard}>
+                      <ThemedText style={styles.handCardTitle} numberOfLines={2}>
+                        {formatCardName(card)}
+                      </ThemedText>
+                      <ThemedText style={styles.handCardLabel}>Card</ThemedText>
+                    </View>
+                  ))}
+                </ScrollView>
+              ) : (
+                <View style={styles.handEmpty}>
+                  <ThemedText style={styles.handEmptyText}>No cards in hand</ThemedText>
+                </View>
+              )}
+
+              <View style={styles.handActions}>
+                {canDraw ? (
+                  <TouchableOpacity
+                    style={[styles.primaryButton, actionBusy && actionBusy !== 'draw' ? styles.primaryButtonDisabled : null]}
+                    onPress={onDraw}
+                    disabled={actionBusy === 'draw'}
+                  >
+                    {actionBusy === 'draw' ? (
+                      <ActivityIndicator size="small" color={styles.primaryButtonText.color as string} />
+                    ) : (
+                      <>
+                        <IconSymbol name="hand.draw.fill" size={16} color={styles.primaryButtonText.color as string} />
+                        <ThemedText style={styles.primaryButtonText}>Draw card</ThemedText>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                ) : null}
+
+                {canPlaySkip ? (
+                  <TouchableOpacity
+                    style={[styles.secondaryButton, actionBusy && actionBusy !== 'skip' ? styles.secondaryButtonDisabled : null]}
+                    onPress={() => onPlay('skip')}
+                    disabled={actionBusy === 'skip'}
+                  >
+                    {actionBusy === 'skip' ? (
+                      <ActivityIndicator size="small" color={styles.secondaryButtonText.color as string} />
+                    ) : (
+                      <>
+                        <IconSymbol name="figure.walk" size={16} color={styles.secondaryButtonText.color as string} />
+                        <ThemedText style={styles.secondaryButtonText}>Play Skip</ThemedText>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                ) : null}
+
+                {canPlayAttack ? (
+                  <TouchableOpacity
+                    style={[styles.destructiveButton, actionBusy && actionBusy !== 'attack' ? styles.destructiveButtonDisabled : null]}
+                    onPress={() => onPlay('attack')}
+                    disabled={actionBusy === 'attack'}
+                  >
+                    {actionBusy === 'attack' ? (
+                      <ActivityIndicator size="small" color={styles.destructiveButtonText.color as string} />
+                    ) : (
+                      <>
+                        <IconSymbol name="bolt.fill" size={16} color={styles.destructiveButtonText.color as string} />
+                        <ThemedText style={styles.destructiveButtonText}>Play Attack</ThemedText>
+                      </>
+                    )}
+                  </TouchableOpacity>
                 ) : null}
               </View>
-            );
-          })}
-        </View>
+
+              {!selfPlayer.alive ? (
+                <ThemedText style={styles.eliminatedNote}>You blew up this round. Hang tight for the next match.</ThemedText>
+              ) : null}
+            </View>
+          ) : null}
+        </>
       ) : (
         <View style={styles.placeholder}>
           <ThemedText style={styles.placeholderText}>
@@ -250,65 +395,6 @@ export function ExplodingCatsTable({
           ) : null}
         </View>
       )}
-
-      {snapshot && selfPlayer ? (
-        <View style={styles.actionsRow}>
-          {canDraw ? (
-            <TouchableOpacity
-              style={[styles.primaryButton, actionBusy && actionBusy !== 'draw' ? styles.primaryButtonDisabled : null]}
-              onPress={onDraw}
-              disabled={actionBusy === 'draw'}
-            >
-              {actionBusy === 'draw' ? (
-                <ActivityIndicator size="small" color={styles.primaryButtonText.color as string} />
-              ) : (
-                <>
-                  <IconSymbol name="hand.draw.fill" size={16} color={styles.primaryButtonText.color as string} />
-                  <ThemedText style={styles.primaryButtonText}>Draw card</ThemedText>
-                </>
-              )}
-            </TouchableOpacity>
-          ) : null}
-
-          {canPlaySkip ? (
-            <TouchableOpacity
-              style={[styles.secondaryButton, actionBusy && actionBusy !== 'skip' ? styles.secondaryButtonDisabled : null]}
-              onPress={() => onPlay('skip')}
-              disabled={actionBusy === 'skip'}
-            >
-              {actionBusy === 'skip' ? (
-                <ActivityIndicator size="small" color={styles.secondaryButtonText.color as string} />
-              ) : (
-                <>
-                  <IconSymbol name="figure.walk" size={16} color={styles.secondaryButtonText.color as string} />
-                  <ThemedText style={styles.secondaryButtonText}>Play Skip</ThemedText>
-                </>
-              )}
-            </TouchableOpacity>
-          ) : null}
-
-          {canPlayAttack ? (
-            <TouchableOpacity
-              style={[styles.destructiveButton, actionBusy && actionBusy !== 'attack' ? styles.destructiveButtonDisabled : null]}
-              onPress={() => onPlay('attack')}
-              disabled={actionBusy === 'attack'}
-            >
-              {actionBusy === 'attack' ? (
-                <ActivityIndicator size="small" color={styles.destructiveButtonText.color as string} />
-              ) : (
-                <>
-                  <IconSymbol name="bolt.fill" size={16} color={styles.destructiveButtonText.color as string} />
-                  <ThemedText style={styles.destructiveButtonText}>Play Attack</ThemedText>
-                </>
-              )}
-            </TouchableOpacity>
-          ) : null}
-
-          {!selfPlayer.alive ? (
-            <ThemedText style={styles.eliminatedNote}>You blew up this round. Hang tight for the next match.</ThemedText>
-          ) : null}
-        </View>
-      ) : null}
 
       {logs.length ? (
         <View style={styles.logsSection}>
@@ -362,11 +448,15 @@ function createStyles(palette: Palette) {
     raised,
     border,
     shadow,
-    playerSelf,
-    playerCurrent,
-    destructiveBg,
-    destructiveText,
+  playerCurrent,
+  destructiveBg,
+  destructiveText,
   } = tableTheme;
+
+  const innerDiameter = Math.max(
+    TABLE_DIAMETER - PLAYER_SEAT_SIZE - 32,
+    140,
+  );
 
   return StyleSheet.create({
     card: {
@@ -432,25 +522,6 @@ function createStyles(palette: Palette) {
       fontWeight: '600',
       textTransform: 'capitalize',
     },
-    stateRow: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: 8,
-    },
-    stateChip: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 6,
-      paddingHorizontal: 12,
-      paddingVertical: 6,
-      borderRadius: 999,
-      backgroundColor: raised,
-    },
-    stateChipText: {
-      color: palette.icon,
-      fontSize: 12,
-      fontWeight: '600',
-    },
     messageCard: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -463,86 +534,116 @@ function createStyles(palette: Palette) {
       color: palette.icon,
       fontWeight: '600',
     },
-    playersGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: 12,
+    tableSection: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 16,
     },
-    playerCard: {
-      flexBasis: '48%',
-      padding: 14,
-      borderRadius: 16,
-      backgroundColor: isLight ? '#fff' : '#14171C',
+    tableRing: {
+      width: TABLE_DIAMETER,
+      height: TABLE_DIAMETER,
+      borderRadius: TABLE_DIAMETER / 2,
+      backgroundColor: raised,
       borderWidth: StyleSheet.hairlineWidth,
       borderColor: border,
-      gap: 8,
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'relative',
+      padding: 16,
+      shadowColor: shadow,
+      shadowOpacity: isLight ? 0.25 : 0.45,
+      shadowRadius: 18,
+      shadowOffset: { width: 0, height: 6 },
+      elevation: 4,
     },
-    playerSelf: {
-      backgroundColor: playerSelf,
+    tableCenter: {
+      width: innerDiameter,
+      height: innerDiameter,
+      borderRadius: innerDiameter / 2,
+      backgroundColor: surface,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 12,
     },
-    playerCurrent: {
+    tableInfoCard: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 4,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      borderRadius: 16,
+      backgroundColor: raised,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: border,
+      minWidth: 110,
+    },
+    tableInfoIcon: {
+      color: palette.tint,
+    },
+    tableInfoTitle: {
+      color: palette.text,
+      fontWeight: '700',
+      fontSize: 16,
+    },
+    tableInfoSubtitle: {
+      color: palette.icon,
+      fontSize: 12,
+      textTransform: 'uppercase',
+      letterSpacing: 0.4,
+    },
+    tableSeat: {
+      position: 'absolute',
+      width: PLAYER_SEAT_SIZE,
+      height: PLAYER_SEAT_SIZE,
+      borderRadius: 20,
+      backgroundColor: raised,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: border,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 12,
+      paddingHorizontal: 10,
+      gap: 4,
+      shadowColor: shadow,
+      shadowOpacity: isLight ? 0.2 : 0.35,
+      shadowRadius: 8,
+      shadowOffset: { width: 0, height: 4 },
+      elevation: 3,
+    },
+    tableSeatCurrent: {
       borderColor: palette.tint,
       backgroundColor: playerCurrent,
+      shadowOpacity: 0.5,
     },
-    playerEliminated: {
-      opacity: 0.55,
+    tableSeatOut: {
+      opacity: 0.45,
     },
-    playerHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    playerNameRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 8,
-    },
-    playerAvatar: {
-      width: 28,
-      height: 28,
-      borderRadius: 14,
+    seatAvatar: {
+      width: 34,
+      height: 34,
+      borderRadius: 17,
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: raised,
     },
-    playerAvatarSelf: {
-      backgroundColor: palette.tint,
+    seatAvatarIcon: {
+      color: palette.tint,
     },
-    playerAvatarIcon: {
-      color: palette.gameTable?.playerIcon ?? (isLight ? '#0F172A' : '#F1F5F9'),
-    },
-    playerAvatarSelfIcon: {
-      color: palette.background,
-    },
-    playerName: {
+    seatName: {
       color: palette.text,
       fontWeight: '600',
+      fontSize: 13,
+      textAlign: 'center',
     },
-    playerStatusPill: {
-      paddingHorizontal: 10,
-      paddingVertical: 4,
-      borderRadius: 999,
-    },
-    playerAlive: {
-      backgroundColor: '#DCFCE7',
-    },
-    playerOut: {
-      backgroundColor: '#FEE2E2',
-    },
-    playerStatusText: {
-      color: '#134E4A',
-      fontSize: 11,
-      fontWeight: '700',
-      textTransform: 'uppercase',
-    },
-    playerDetail: {
+    seatCardCount: {
       color: palette.icon,
       fontSize: 12,
     },
-    turnBadge: {
-      color: palette.tint,
+    seatStatus: {
+      color: palette.icon,
+      fontSize: 11,
       fontWeight: '700',
-      fontSize: 12,
+      textTransform: 'uppercase',
     },
     placeholder: {
       gap: 12,
@@ -552,6 +653,92 @@ function createStyles(palette: Palette) {
     },
     placeholderText: {
       color: palette.icon,
+    },
+    handSection: {
+      gap: 12,
+    },
+    handHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    handTitleIcon: {
+      color: palette.tint,
+    },
+    handTitle: {
+      color: palette.text,
+      fontWeight: '700',
+      fontSize: 16,
+    },
+    handStatusPill: {
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 999,
+    },
+    handStatusAlive: {
+      backgroundColor: '#DCFCE7',
+    },
+    handStatusOut: {
+      backgroundColor: '#FEE2E2',
+    },
+    handStatusText: {
+      color: '#134E4A',
+      fontSize: 11,
+      fontWeight: '700',
+      textTransform: 'uppercase',
+    },
+    handStatusTextOut: {
+      color: '#991B1B',
+    },
+    handScrollContent: {
+      gap: 12,
+      paddingVertical: 8,
+      paddingHorizontal: 4,
+    },
+    handCard: {
+      width: 96,
+      height: 128,
+      borderRadius: 18,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+      backgroundColor: isLight ? '#FFFFFF' : '#14171C',
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: border,
+      shadowColor: shadow,
+      shadowOpacity: isLight ? 0.25 : 0.45,
+      shadowRadius: 10,
+      shadowOffset: { width: 0, height: 4 },
+      elevation: 3,
+    },
+    handCardTitle: {
+      color: palette.text,
+      fontWeight: '700',
+      fontSize: 13,
+      textAlign: 'center',
+    },
+    handCardLabel: {
+      color: palette.icon,
+      fontSize: 11,
+    },
+    handEmpty: {
+      paddingVertical: 16,
+      paddingHorizontal: 20,
+      borderRadius: 12,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: border,
+      backgroundColor: raised,
+      alignItems: 'center',
+    },
+    handEmptyText: {
+      color: palette.icon,
+      fontSize: 13,
+    },
+    handActions: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 10,
+      alignItems: 'center',
     },
     primaryButton: {
       flexDirection: 'row',
@@ -611,12 +798,6 @@ function createStyles(palette: Palette) {
       color: palette.icon,
       fontSize: 12,
       fontStyle: 'italic',
-    },
-    actionsRow: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: 10,
-      alignItems: 'center',
     },
     logsSection: {
       gap: 8,

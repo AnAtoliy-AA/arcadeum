@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Modal,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -32,7 +33,47 @@ export type ExplodingCatsCard =
   | 'defuse'
   | 'attack'
   | 'skip'
-  | 'cat';
+  | 'tacocat'
+  | 'hairy_potato_cat'
+  | 'rainbow_ralphing_cat'
+  | 'cattermelon'
+  | 'bearded_cat';
+
+export type ExplodingCatsCatCard =
+  | 'tacocat'
+  | 'hairy_potato_cat'
+  | 'rainbow_ralphing_cat'
+  | 'cattermelon'
+  | 'bearded_cat';
+
+export const CAT_COMBO_CARDS: ExplodingCatsCatCard[] = [
+  'tacocat',
+  'hairy_potato_cat',
+  'rainbow_ralphing_cat',
+  'cattermelon',
+  'bearded_cat',
+];
+
+const DESIRED_CARD_OPTIONS: ExplodingCatsCard[] = [
+  'exploding_cat',
+  'defuse',
+  'attack',
+  'skip',
+  ...CAT_COMBO_CARDS,
+];
+
+export type ExplodingCatsCatComboInput =
+  | {
+      cat: ExplodingCatsCatCard;
+      mode: 'pair';
+      targetPlayerId: string;
+    }
+  | {
+      cat: ExplodingCatsCatCard;
+      mode: 'trio';
+      targetPlayerId: string;
+      desiredCard: ExplodingCatsCard;
+    };
 
 interface ExplodingCatsPlayerState {
   playerId: string;
@@ -57,6 +98,17 @@ interface ExplodingCatsSnapshot {
   logs: ExplodingCatsLogEntry[];
 }
 
+interface CatComboPromptState {
+  cat: ExplodingCatsCatCard;
+  mode: 'pair' | 'trio' | null;
+  targetPlayerId: string | null;
+  desiredCard: ExplodingCatsCard | null;
+  available: {
+    pair: boolean;
+    trio: boolean;
+  };
+}
+
 function getCardTranslationKey(card: ExplodingCatsCard): TranslationKey {
   switch (card) {
     case 'exploding_cat':
@@ -67,6 +119,16 @@ function getCardTranslationKey(card: ExplodingCatsCard): TranslationKey {
       return 'games.table.cards.attack';
     case 'skip':
       return 'games.table.cards.skip';
+    case 'tacocat':
+      return 'games.table.cards.tacocat';
+    case 'hairy_potato_cat':
+      return 'games.table.cards.hairyPotatoCat';
+    case 'rainbow_ralphing_cat':
+      return 'games.table.cards.rainbowRalphingCat';
+    case 'cattermelon':
+      return 'games.table.cards.cattermelon';
+    case 'bearded_cat':
+      return 'games.table.cards.beardedCat';
     default:
       return 'games.table.cards.generic';
   }
@@ -89,12 +151,13 @@ interface ExplodingCatsTableProps {
   room: GameRoomSummary | null;
   session: GameSessionSummary | null;
   currentUserId: string | null;
-  actionBusy: 'draw' | 'skip' | 'attack' | null;
+  actionBusy: 'draw' | 'skip' | 'attack' | 'cat_pair' | 'cat_trio' | null;
   startBusy: boolean;
   isHost: boolean;
   onStart: () => void;
   onDraw: () => void;
   onPlay: (card: 'skip' | 'attack') => void;
+  onPlayCatCombo: (payload: ExplodingCatsCatComboInput) => void;
   fullScreen?: boolean;
 }
 
@@ -108,6 +171,7 @@ export function ExplodingCatsTable({
   onStart,
   onDraw,
   onPlay,
+  onPlayCatCombo,
   fullScreen = false,
 }: ExplodingCatsTableProps) {
   const styles = useThemedStyles(createStyles);
@@ -229,6 +293,169 @@ export function ExplodingCatsTable({
     });
     return next;
   };
+
+  const aliveOpponents = useMemo(
+    () => otherPlayers.filter((player) => player.alive),
+    [otherPlayers],
+  );
+
+  const catCardCounts = useMemo(() => {
+    const counts: Record<ExplodingCatsCatCard, number> = {
+      tacocat: 0,
+      hairy_potato_cat: 0,
+      rainbow_ralphing_cat: 0,
+      cattermelon: 0,
+      bearded_cat: 0,
+    };
+
+    if (selfPlayer?.hand?.length) {
+      selfPlayer.hand.forEach((card) => {
+        if (CAT_COMBO_CARDS.includes(card as ExplodingCatsCatCard)) {
+          const catCard = card as ExplodingCatsCatCard;
+          counts[catCard] = (counts[catCard] ?? 0) + 1;
+        }
+      });
+    }
+
+    return counts;
+  }, [selfPlayer?.hand]);
+
+  const catComboAvailability = useMemo(() => {
+    const availability: Record<ExplodingCatsCatCard, { pair: boolean; trio: boolean }> = {
+      tacocat: { pair: false, trio: false },
+      hairy_potato_cat: { pair: false, trio: false },
+      rainbow_ralphing_cat: { pair: false, trio: false },
+      cattermelon: { pair: false, trio: false },
+      bearded_cat: { pair: false, trio: false },
+    };
+
+    CAT_COMBO_CARDS.forEach((cat) => {
+      const count = catCardCounts[cat] ?? 0;
+      availability[cat] = {
+        pair: count >= 2 && aliveOpponents.length > 0,
+        trio: count >= 3 && aliveOpponents.length > 0,
+      };
+    });
+
+    return availability;
+  }, [catCardCounts, aliveOpponents]);
+
+  const [catComboPrompt, setCatComboPrompt] = useState<CatComboPromptState | null>(null);
+  const catComboBusy = actionBusy === 'cat_pair' || actionBusy === 'cat_trio';
+
+  const closeCatComboPrompt = useCallback(() => {
+    setCatComboPrompt(null);
+  }, []);
+
+  const openCatComboPrompt = useCallback(
+    (cat: ExplodingCatsCatCard) => {
+      const availability = catComboAvailability[cat];
+      if (!availability || (!availability.pair && !availability.trio)) {
+        return;
+      }
+
+      const preferredMode = availability.pair ? 'pair' : 'trio';
+      const defaultTarget = aliveOpponents[0]?.playerId ?? null;
+      const defaultDesired = availability.trio ? 'defuse' : null;
+
+      if (!defaultTarget) {
+        return;
+      }
+
+      setCatComboPrompt({
+        cat,
+        mode: preferredMode,
+        targetPlayerId: defaultTarget,
+        desiredCard: preferredMode === 'trio' ? defaultDesired : null,
+        available: availability,
+      });
+    },
+    [aliveOpponents, catComboAvailability],
+  );
+
+  const handleCatComboModeChange = useCallback(
+    (mode: 'pair' | 'trio') => {
+      setCatComboPrompt((prev) => {
+        if (!prev || !prev.available[mode]) {
+          return prev;
+        }
+        const nextTarget = prev.targetPlayerId ?? aliveOpponents[0]?.playerId ?? null;
+        const nextDesired = mode === 'trio'
+          ? prev.desiredCard ?? 'defuse'
+          : null;
+        return {
+          ...prev,
+          mode,
+          targetPlayerId: nextTarget,
+          desiredCard: nextDesired,
+        };
+      });
+    },
+    [aliveOpponents],
+  );
+
+  const handleCatComboTargetChange = useCallback((playerId: string) => {
+    setCatComboPrompt((prev) => {
+      if (!prev) {
+        return prev;
+      }
+      return {
+        ...prev,
+        targetPlayerId: playerId,
+      };
+    });
+  }, []);
+
+  const handleCatComboDesiredCardChange = useCallback((card: ExplodingCatsCard) => {
+    setCatComboPrompt((prev) => {
+      if (!prev) {
+        return prev;
+      }
+      return {
+        ...prev,
+        desiredCard: card,
+      };
+    });
+  }, []);
+
+  const handleConfirmCatCombo = useCallback(() => {
+    if (!catComboPrompt || !catComboPrompt.mode) {
+      return;
+    }
+
+    if (!catComboPrompt.targetPlayerId) {
+      return;
+    }
+
+    if (catComboPrompt.mode === 'pair') {
+      onPlayCatCombo({
+        cat: catComboPrompt.cat,
+        mode: 'pair',
+        targetPlayerId: catComboPrompt.targetPlayerId,
+      });
+      setCatComboPrompt(null);
+      return;
+    }
+
+    if (!catComboPrompt.desiredCard) {
+      return;
+    }
+
+    onPlayCatCombo({
+      cat: catComboPrompt.cat,
+      mode: 'trio',
+      targetPlayerId: catComboPrompt.targetPlayerId,
+      desiredCard: catComboPrompt.desiredCard,
+    });
+    setCatComboPrompt(null);
+  }, [catComboPrompt, onPlayCatCombo]);
+
+  const comboConfirmDisabled = !catComboPrompt
+    ? true
+    : catComboBusy
+      || !catComboPrompt.mode
+      || !catComboPrompt.targetPlayerId
+      || (catComboPrompt.mode === 'trio' && !catComboPrompt.desiredCard);
 
   const tableContent = (
     <>
@@ -355,34 +582,71 @@ export function ExplodingCatsTable({
                 >
                   {selfPlayer.hand.map((card, index) => {
                     const cardKey = `${card}-${index}`;
-                    const cardAction = card === 'skip' ? 'skip' : card === 'attack' ? 'attack' : null;
+                    const cardAction: 'skip' | 'attack' | null = card === 'skip'
+                      ? 'skip'
+                      : card === 'attack'
+                        ? 'attack'
+                        : null;
+                    const isCatCard = CAT_COMBO_CARDS.includes(card as ExplodingCatsCatCard);
+                    const comboAvailability = isCatCard
+                      ? catComboAvailability[card as ExplodingCatsCatCard]
+                      : null;
+                    const canPlayCatCombo = Boolean(
+                      isCatCard
+                        && comboAvailability
+                        && (comboAvailability.pair || comboAvailability.trio)
+                        && isSessionActive
+                        && isMyTurn
+                        && (selfPlayer?.alive ?? false),
+                    );
                     const canPlayCard = cardAction === 'skip'
                       ? canPlaySkip
                       : cardAction === 'attack'
                         ? canPlayAttack
+                        : canPlayCatCombo;
+                    const isActionBusy = cardAction
+                      ? actionBusy === cardAction
+                      : isCatCard
+                        ? catComboBusy
                         : false;
-                    const isActionBusy = cardAction ? actionBusy === cardAction : false;
                     const actionLabel = cardAction === 'skip'
                       ? t('games.table.actions.playSkip')
                       : cardAction === 'attack'
                         ? t('games.table.actions.playAttack')
-                        : null;
+                        : isCatCard && canPlayCatCombo
+                          ? t('games.table.actions.playCatCombo')
+                          : null;
+                    const comboHint = isCatCard && comboAvailability
+                      ? comboAvailability.pair && comboAvailability.trio
+                        ? t('games.table.catCombo.optionPairOrTrio')
+                        : comboAvailability.trio
+                          ? t('games.table.catCombo.optionTrio')
+                          : comboAvailability.pair
+                            ? t('games.table.catCombo.optionPair')
+                            : null
+                      : null;
+                    const handlePress = cardAction && canPlayCard && !isActionBusy
+                      ? () => onPlay(cardAction)
+                      : isCatCard && canPlayCard && !isActionBusy
+                        ? () => openCatComboPrompt(card as ExplodingCatsCatCard)
+                        : undefined;
+                    const isDisabled = !canPlayCard || isActionBusy;
 
                     return (
                       <TouchableOpacity
                         key={cardKey}
                         style={[
                           styles.handCard,
-                          cardAction && canPlayCard ? styles.handCardPlayable : null,
-                          cardAction && !canPlayCard ? styles.handCardDisabled : null,
+                          canPlayCard ? styles.handCardPlayable : null,
+                          !canPlayCard ? styles.handCardDisabled : null,
                           isActionBusy ? styles.handCardBusy : null,
                         ]}
-                        activeOpacity={cardAction && canPlayCard ? 0.8 : 1}
-                        onPress={cardAction && canPlayCard && !isActionBusy ? () => onPlay(cardAction) : undefined}
-                        disabled={!cardAction || !canPlayCard || isActionBusy}
-                        accessibilityRole={cardAction && canPlayCard ? 'button' : 'text'}
+                        activeOpacity={canPlayCard ? 0.8 : 1}
+                        onPress={handlePress}
+                        disabled={isDisabled}
+                        accessibilityRole={canPlayCard ? 'button' : 'text'}
                         accessibilityLabel={translateCardName(card)}
-                        accessibilityHint={cardAction && canPlayCard ? actionLabel ?? undefined : undefined}
+                        accessibilityHint={canPlayCard && actionLabel ? actionLabel : undefined}
                       >
                         {isActionBusy ? (
                           <ActivityIndicator size="small" color={styles.handCardBusySpinner.color as string} />
@@ -392,9 +656,14 @@ export function ExplodingCatsTable({
                               {translateCardName(card)}
                             </ThemedText>
                             <ThemedText style={styles.handCardLabel}>{t('games.table.hand.cardLabel')}</ThemedText>
-                            {cardAction && canPlayCard && actionLabel ? (
+                            {actionLabel ? (
                               <ThemedText style={styles.handCardHint} numberOfLines={1}>
                                 {actionLabel}
+                              </ThemedText>
+                            ) : null}
+                            {comboHint ? (
+                              <ThemedText style={styles.handCardHint} numberOfLines={1}>
+                                {comboHint}
                               </ThemedText>
                             ) : null}
                           </>
@@ -509,21 +778,182 @@ export function ExplodingCatsTable({
     </>
   );
 
+  const comboModal = catComboPrompt ? (
+    <Modal
+      visible
+      transparent
+      animationType="fade"
+      onRequestClose={closeCatComboPrompt}
+    >
+      <View style={styles.comboModalBackdrop}>
+        <ThemedView style={styles.comboModalCard}>
+          <ThemedText style={styles.comboModalTitle}>
+            {t('games.table.catCombo.title', { card: translateCardName(catComboPrompt.cat) })}
+          </ThemedText>
+          <ThemedText style={styles.comboModalDescription}>
+            {t('games.table.catCombo.description')}
+          </ThemedText>
+          <View style={styles.comboModeRow}>
+            {catComboPrompt.available.pair ? (
+              <TouchableOpacity
+                style={[
+                  styles.comboModeButton,
+                  catComboPrompt.mode === 'pair' ? styles.comboModeButtonSelected : null,
+                ]}
+                onPress={() => handleCatComboModeChange('pair')}
+              >
+                <ThemedText
+                  style={[
+                    styles.comboModeButtonText,
+                    catComboPrompt.mode === 'pair' ? styles.comboModeButtonTextSelected : null,
+                  ]}
+                >
+                  {t('games.table.catCombo.modePair')}
+                </ThemedText>
+              </TouchableOpacity>
+            ) : null}
+            {catComboPrompt.available.trio ? (
+              <TouchableOpacity
+                style={[
+                  styles.comboModeButton,
+                  catComboPrompt.mode === 'trio' ? styles.comboModeButtonSelected : null,
+                ]}
+                onPress={() => handleCatComboModeChange('trio')}
+              >
+                <ThemedText
+                  style={[
+                    styles.comboModeButtonText,
+                    catComboPrompt.mode === 'trio' ? styles.comboModeButtonTextSelected : null,
+                  ]}
+                >
+                  {t('games.table.catCombo.modeTrio')}
+                </ThemedText>
+              </TouchableOpacity>
+            ) : null}
+          </View>
+          {catComboPrompt.mode ? (
+            <View style={styles.comboSection}>
+              <ThemedText style={styles.comboSectionLabel}>{t('games.table.catCombo.targetLabel')}</ThemedText>
+              {aliveOpponents.length ? (
+                <View style={styles.comboOptionGroup}>
+                  {aliveOpponents.map((player) => (
+                    <TouchableOpacity
+                      key={player.playerId}
+                      style={[
+                        styles.comboOptionButton,
+                        catComboPrompt.targetPlayerId === player.playerId
+                          ? styles.comboOptionButtonSelected
+                          : null,
+                      ]}
+                      onPress={() => handleCatComboTargetChange(player.playerId)}
+                    >
+                      <ThemedText
+                        style={[
+                          styles.comboOptionLabel,
+                          catComboPrompt.targetPlayerId === player.playerId
+                            ? styles.comboOptionLabelSelected
+                            : null,
+                        ]}
+                        numberOfLines={1}
+                      >
+                        {player.displayName}
+                      </ThemedText>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              ) : (
+                <ThemedText style={styles.comboEmptyText}>
+                  {t('games.table.catCombo.noTargets')}
+                </ThemedText>
+              )}
+            </View>
+          ) : null}
+          {catComboPrompt.mode === 'trio' ? (
+            <View style={styles.comboSection}>
+              <ThemedText style={styles.comboSectionLabel}>{t('games.table.catCombo.desiredCardLabel')}</ThemedText>
+              <View style={styles.comboOptionGroup}>
+                {DESIRED_CARD_OPTIONS.map((cardOption) => (
+                  <TouchableOpacity
+                    key={cardOption}
+                    style={[
+                      styles.comboOptionButton,
+                      catComboPrompt.desiredCard === cardOption
+                        ? styles.comboOptionButtonSelected
+                        : null,
+                    ]}
+                    onPress={() => handleCatComboDesiredCardChange(cardOption)}
+                  >
+                    <ThemedText
+                      style={[
+                        styles.comboOptionLabel,
+                        catComboPrompt.desiredCard === cardOption
+                          ? styles.comboOptionLabelSelected
+                          : null,
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {translateCardName(cardOption)}
+                    </ThemedText>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          ) : null}
+          <View style={styles.comboActions}>
+            <TouchableOpacity
+              style={styles.comboCancelButton}
+              onPress={closeCatComboPrompt}
+              disabled={catComboBusy}
+            >
+              <ThemedText style={styles.comboCancelText}>
+                {t('games.table.catCombo.cancel')}
+              </ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.comboConfirmButton,
+                comboConfirmDisabled ? styles.comboConfirmButtonDisabled : null,
+              ]}
+              onPress={handleConfirmCatCombo}
+              disabled={comboConfirmDisabled}
+            >
+              {catComboBusy ? (
+                <ActivityIndicator size="small" color={styles.comboConfirmText.color as string} />
+              ) : (
+                <ThemedText style={styles.comboConfirmText}>
+                  {t('games.table.catCombo.confirm')}
+                </ThemedText>
+              )}
+            </TouchableOpacity>
+          </View>
+        </ThemedView>
+      </View>
+    </Modal>
+  ) : null;
+
   if (fullScreen) {
     return (
-      <ThemedView style={[styles.card, styles.cardFullScreen]}>
-        <ScrollView
-          contentContainerStyle={styles.fullScreenScroll}
-          showsVerticalScrollIndicator={false}
-          bounces={false}
-        >
-          <View style={styles.fullScreenInner}>{tableContent}</View>
-        </ScrollView>
-      </ThemedView>
+      <>
+        <ThemedView style={[styles.card, styles.cardFullScreen]}>
+          <ScrollView
+            contentContainerStyle={styles.fullScreenScroll}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+          >
+            <View style={styles.fullScreenInner}>{tableContent}</View>
+          </ScrollView>
+        </ThemedView>
+        {comboModal}
+      </>
     );
   }
 
-  return <ThemedView style={styles.card}>{tableContent}</ThemedView>;
+  return (
+    <>
+      <ThemedView style={styles.card}>{tableContent}</ThemedView>
+      {comboModal}
+    </>
+  );
 }
 
 function createStyles(palette: Palette) {
@@ -790,14 +1220,14 @@ function createStyles(palette: Palette) {
       alignItems: 'center',
       justifyContent: 'center',
       gap: 8,
-  backgroundColor: surface,
-  borderWidth: 2,
-  borderColor: border,
-  shadowColor: shadow,
-  shadowOpacity: isLight ? 0.35 : 0.55,
-  shadowRadius: 14,
-  shadowOffset: { width: 0, height: 6 },
-  elevation: 5,
+      backgroundColor: surface,
+      borderWidth: 2,
+      borderColor: border,
+      shadowColor: shadow,
+      shadowOpacity: isLight ? 0.35 : 0.55,
+      shadowRadius: 14,
+      shadowOffset: { width: 0, height: 6 },
+      elevation: 5,
     },
     handCardPlayable: {
       borderColor: palette.tint,
@@ -826,6 +1256,131 @@ function createStyles(palette: Palette) {
       color: palette.tint,
       fontSize: 11,
       fontWeight: '600',
+    },
+    comboModalBackdrop: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.45)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 24,
+    },
+    comboModalCard: {
+      width: '100%',
+      maxWidth: 360,
+      borderRadius: 18,
+      backgroundColor: surface,
+      padding: 20,
+      gap: 16,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: border,
+      shadowColor: shadow,
+      shadowOpacity: isLight ? 0.4 : 0.8,
+      shadowRadius: 10,
+      shadowOffset: { width: 0, height: 6 },
+      elevation: 3,
+    },
+    comboModalTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: palette.text,
+    },
+    comboModalDescription: {
+      fontSize: 14,
+      lineHeight: 20,
+      color: palette.icon,
+    },
+    comboModeRow: {
+      flexDirection: 'row',
+      gap: 8,
+    },
+    comboModeButton: {
+      flex: 1,
+      paddingVertical: 10,
+      borderRadius: 12,
+      backgroundColor: raised,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: border,
+      alignItems: 'center',
+    },
+    comboModeButtonSelected: {
+      backgroundColor: primaryBgColor,
+      borderColor: primaryBgColor,
+    },
+    comboModeButtonText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: palette.text,
+    },
+    comboModeButtonTextSelected: {
+      color: primaryTextColor,
+    },
+    comboSection: {
+      gap: 8,
+    },
+    comboSectionLabel: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: palette.text,
+    },
+    comboOptionGroup: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+    },
+    comboOptionButton: {
+      paddingVertical: 6,
+      paddingHorizontal: 12,
+      borderRadius: 12,
+      backgroundColor: raised,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: border,
+    },
+    comboOptionButtonSelected: {
+      backgroundColor: primaryBgColor,
+      borderColor: primaryBgColor,
+    },
+    comboOptionLabel: {
+      fontSize: 14,
+      color: palette.text,
+    },
+    comboOptionLabelSelected: {
+      color: primaryTextColor,
+    },
+    comboEmptyText: {
+      fontSize: 14,
+      color: palette.icon,
+    },
+    comboActions: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      gap: 16,
+    },
+    comboCancelButton: {
+      paddingVertical: 8,
+      paddingHorizontal: 12,
+    },
+    comboCancelText: {
+      fontSize: 14,
+      color: palette.icon,
+    },
+    comboConfirmButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 10,
+      paddingHorizontal: 18,
+      borderRadius: 12,
+      backgroundColor: primaryBgColor,
+      gap: 8,
+    },
+    comboConfirmButtonDisabled: {
+      opacity: 0.6,
+    },
+    comboConfirmText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: primaryTextColor,
     },
     handEmpty: {
       paddingVertical: 16,

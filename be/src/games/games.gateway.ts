@@ -10,6 +10,38 @@ import { Injectable, Logger } from '@nestjs/common';
 import type { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
 import { GamesRealtimeService } from './games.realtime.service';
+import type {
+  ExplodingCatsCard,
+  ExplodingCatsCatCard,
+} from './exploding-cats/exploding-cats.state';
+
+const CAT_COMBO_CARD_VALUES = [
+  'tacocat',
+  'hairy_potato_cat',
+  'rainbow_ralphing_cat',
+  'cattermelon',
+  'bearded_cat',
+] as const satisfies ReadonlyArray<ExplodingCatsCatCard>;
+
+const ALL_EXPLODING_CATS_CARDS = [
+  'exploding_cat',
+  'defuse',
+  'attack',
+  'skip',
+  ...CAT_COMBO_CARD_VALUES,
+] as const satisfies ReadonlyArray<ExplodingCatsCard>;
+
+function isCatComboCard(value: string): value is ExplodingCatsCatCard {
+  return CAT_COMBO_CARD_VALUES.includes(value as ExplodingCatsCatCard);
+}
+
+function toExplodingCatsCard(value?: string): ExplodingCatsCard | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const lower = value.toLowerCase() as ExplodingCatsCard;
+  return ALL_EXPLODING_CATS_CARDS.includes(lower) ? lower : undefined;
+}
 
 @WebSocketGateway({
   namespace: 'games',
@@ -174,6 +206,96 @@ export class GamesGateway {
 
       this.logger.warn(
         `Failed to play ${card} for room ${roomId}, user ${userId}: ${message}`,
+      );
+
+      throw new WsException(message);
+    }
+  }
+
+  @SubscribeMessage('games.session.play_cat_combo')
+  async handleSessionPlayCatCombo(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: {
+      roomId?: string;
+      userId?: string;
+      cat?: string;
+      mode?: string;
+      targetPlayerId?: string;
+      desiredCard?: string;
+    },
+  ): Promise<void> {
+    const roomId =
+      typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
+    const userId =
+      typeof payload?.userId === 'string' ? payload.userId.trim() : '';
+    const cat =
+      typeof payload?.cat === 'string' ? payload.cat.trim().toLowerCase() : '';
+    const modeRaw =
+      typeof payload?.mode === 'string'
+        ? payload.mode.trim().toLowerCase()
+        : '';
+    const targetPlayerId =
+      typeof payload?.targetPlayerId === 'string'
+        ? payload.targetPlayerId.trim()
+        : '';
+    const desiredCard =
+      typeof payload?.desiredCard === 'string'
+        ? payload.desiredCard.trim().toLowerCase()
+        : undefined;
+
+    if (!roomId) {
+      throw new WsException('roomId is required.');
+    }
+    if (!userId) {
+      throw new WsException('userId is required.');
+    }
+    if (!cat) {
+      throw new WsException('cat is required.');
+    }
+    if (!targetPlayerId) {
+      throw new WsException('targetPlayerId is required.');
+    }
+
+    const mode =
+      modeRaw === 'trio' ? 'trio' : modeRaw === 'pair' ? 'pair' : null;
+    if (!mode) {
+      throw new WsException('mode is required.');
+    }
+
+    if (!isCatComboCard(cat)) {
+      throw new WsException('cat is not supported.');
+    }
+
+    const desiredCardValue = toExplodingCatsCard(desiredCard);
+
+    if (mode === 'trio' && !desiredCardValue) {
+      throw new WsException('desiredCard is required for trio combos.');
+    }
+
+    try {
+      await this.gamesService.playExplodingCatsCatCombo(userId, roomId, cat, {
+        mode,
+        targetPlayerId,
+        desiredCard: desiredCardValue,
+      });
+
+      client.emit('games.session.cat_combo.played', {
+        roomId,
+        userId,
+        cat,
+        mode,
+        targetPlayerId,
+        desiredCard: desiredCardValue,
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error && typeof error.message === 'string'
+          ? error.message
+          : 'Unable to play cat combo.';
+
+      this.logger.warn(
+        `Failed to play ${cat} combo for room ${roomId}, user ${userId}: ${message}`,
       );
 
       throw new WsException(message);

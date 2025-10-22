@@ -602,6 +602,193 @@ describe('GamesService', () => {
     });
   });
 
+  describe('playExplodingCatsCatCombo', () => {
+    const createSnapshot = (options?: {
+      hostHand?: ExplodingCatsCard[];
+      guestHand?: ExplodingCatsCard[];
+    }): ExplodingCatsState => ({
+      deck: [],
+      discardPile: [],
+      playerOrder: ['host-1', 'guest-2'],
+      currentTurnIndex: 0,
+      pendingDraws: 1,
+      players: [
+        {
+          playerId: 'host-1',
+          hand: options?.hostHand ? [...options.hostHand] : ['defuse'],
+          alive: true,
+        },
+        {
+          playerId: 'guest-2',
+          hand: options?.guestHand ? [...options.guestHand] : ['defuse'],
+          alive: true,
+        },
+      ],
+      logs: [],
+    });
+
+    const createSessionDocument = (snapshot: ExplodingCatsState) => ({
+      roomId: 'room-123',
+      engine: 'exploding_cats_v1',
+      status: 'active' as const,
+      state: {
+        engine: 'exploding-cats',
+        version: 1,
+        snapshot,
+        lastUpdatedAt: new Date('2025-01-01T00:00:00.000Z').toISOString(),
+      },
+    });
+
+    afterEach(() => {
+      jest.spyOn(Math, 'random').mockRestore();
+    });
+
+    it('steals a random card when playing a pair combo', async () => {
+      const roomDoc = createRoomDocument({ status: 'in_progress' });
+      const snapshot = createSnapshot({
+        hostHand: ['tacocat', 'tacocat', 'defuse'],
+        guestHand: ['attack', 'skip'],
+      });
+      const sessionDoc = createSessionDocument(snapshot);
+
+      jest.spyOn(Math, 'random').mockReturnValue(0.4);
+
+      gameRoomModel.findById.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(roomDoc),
+      });
+
+      gameSessionModel.findOne = jest
+        .fn()
+        .mockReturnValue({ exec: jest.fn().mockResolvedValue(sessionDoc) });
+
+      let updatedState: MockExplodingCatsSessionState | undefined;
+      gameSessionModel.findOneAndUpdate = jest
+        .fn()
+        .mockImplementation(
+          (
+            _filter: unknown,
+            update: { state: MockExplodingCatsSessionState; status?: string },
+          ) => {
+            updatedState = update.state;
+            return {
+              exec: jest.fn().mockResolvedValue({
+                ...sessionDoc,
+                status: update.status ?? sessionDoc.status,
+                state: update.state,
+              }),
+            };
+          },
+        );
+
+      await service.playExplodingCatsCatCombo('host-1', roomDoc.id, 'tacocat', {
+        mode: 'pair',
+        targetPlayerId: 'guest-2',
+      });
+
+      expect(gameSessionModel.findOneAndUpdate).toHaveBeenCalled();
+      const state = updatedState as MockExplodingCatsSessionState;
+      const host = state.snapshot.players.find(
+        (player: { playerId: string }) => player.playerId === 'host-1',
+      );
+      const guest = state.snapshot.players.find(
+        (player: { playerId: string }) => player.playerId === 'guest-2',
+      );
+
+      expect(host?.hand).toEqual(expect.arrayContaining(['defuse', 'attack']));
+      expect(guest?.hand?.length).toBe(1);
+      expect(
+        state.snapshot.discardPile.filter((card) => card === 'tacocat'),
+      ).toHaveLength(2);
+    });
+
+    it('requests a named card when using a trio combo', async () => {
+      const roomDoc = createRoomDocument({ status: 'in_progress' });
+      const snapshot = createSnapshot({
+        hostHand: ['hairy_potato_cat', 'hairy_potato_cat', 'hairy_potato_cat'],
+        guestHand: ['attack', 'skip'],
+      });
+      const sessionDoc = createSessionDocument(snapshot);
+
+      gameRoomModel.findById.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(roomDoc),
+      });
+
+      gameSessionModel.findOne = jest
+        .fn()
+        .mockReturnValue({ exec: jest.fn().mockResolvedValue(sessionDoc) });
+
+      let updatedState: MockExplodingCatsSessionState | undefined;
+      gameSessionModel.findOneAndUpdate = jest
+        .fn()
+        .mockImplementation(
+          (
+            _filter: unknown,
+            update: { state: MockExplodingCatsSessionState; status?: string },
+          ) => {
+            updatedState = update.state;
+            return {
+              exec: jest.fn().mockResolvedValue({
+                ...sessionDoc,
+                status: update.status ?? sessionDoc.status,
+                state: update.state,
+              }),
+            };
+          },
+        );
+
+      await service.playExplodingCatsCatCombo(
+        'host-1',
+        roomDoc.id,
+        'hairy_potato_cat',
+        {
+          mode: 'trio',
+          targetPlayerId: 'guest-2',
+          desiredCard: 'attack',
+        },
+      );
+
+      const state = updatedState as MockExplodingCatsSessionState;
+      const host = state.snapshot.players.find(
+        (player: { playerId: string }) => player.playerId === 'host-1',
+      );
+      const guest = state.snapshot.players.find(
+        (player: { playerId: string }) => player.playerId === 'guest-2',
+      );
+
+      expect(host?.hand).toContain('attack');
+      expect(guest?.hand).not.toContain('attack');
+      expect(
+        state.snapshot.discardPile.filter(
+          (card) => card === 'hairy_potato_cat',
+        ),
+      ).toHaveLength(3);
+    });
+
+    it('throws when desired card is missing for trio combo', async () => {
+      const roomDoc = createRoomDocument({ status: 'in_progress' });
+      const snapshot = createSnapshot({
+        hostHand: ['cattermelon', 'cattermelon', 'cattermelon'],
+        guestHand: ['attack'],
+      });
+      const sessionDoc = createSessionDocument(snapshot);
+
+      gameRoomModel.findById.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(roomDoc),
+      });
+
+      gameSessionModel.findOne = jest
+        .fn()
+        .mockReturnValue({ exec: jest.fn().mockResolvedValue(sessionDoc) });
+
+      await expect(
+        service.playExplodingCatsCatCombo('host-1', roomDoc.id, 'cattermelon', {
+          mode: 'trio',
+          targetPlayerId: 'guest-2',
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
+  });
+
   describe('leaveRoom', () => {
     const createSnapshot = (overrides?: {
       playerOrder?: string[];

@@ -29,7 +29,10 @@ import {
   formatRoomTimestamp,
   getRoomStatusLabel,
 } from './roomUtils';
-import { ExplodingCatsTable } from './components/ExplodingCatsTable';
+import {
+  ExplodingCatsTable,
+  type ExplodingCatsCatComboInput,
+} from './components/ExplodingCatsTable';
 import { useTranslation } from '@/lib/i18n';
 
 function resolveParam(value: string | string[] | undefined): string | undefined {
@@ -53,7 +56,9 @@ export default function GameRoomScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [session, setSession] = useState<GameSessionSummary | null>(null);
-  const [actionBusy, setActionBusy] = useState<'draw' | 'skip' | 'attack' | null>(null);
+  const [actionBusy, setActionBusy] = useState<
+    'draw' | 'skip' | 'attack' | 'cat_pair' | 'cat_trio' | null
+  >(null);
   const [startBusy, setStartBusy] = useState(false);
   const isHost = room?.hostId && tokens.userId ? room.hostId === tokens.userId : false;
   const [leaving, setLeaving] = useState(false);
@@ -190,6 +195,13 @@ export default function GameRoomScreen() {
       setActionBusy(null);
     };
 
+    const handleCatComboPlayed = (payload: { roomId?: string }) => {
+      if (payload?.roomId && payload.roomId !== roomId) {
+        return;
+      }
+      setActionBusy(null);
+    };
+
     const handleException = (payload: { message?: string }) => {
       const message = payload?.message ?? t('games.alerts.genericError');
       setActionBusy(null);
@@ -203,6 +215,7 @@ export default function GameRoomScreen() {
   socket.on('games.room.deleted', handleRoomDeleted);
     socket.on('games.session.snapshot', handleSnapshot);
     socket.on('games.session.started', handleSessionStarted);
+    socket.on('games.session.cat_combo.played', handleCatComboPlayed);
     socket.on('exception', handleException);
 
     if (socket.connected) {
@@ -216,6 +229,7 @@ export default function GameRoomScreen() {
       socket.off('games.room.deleted', handleRoomDeleted);
       socket.off('games.session.snapshot', handleSnapshot);
       socket.off('games.session.started', handleSessionStarted);
+      socket.off('games.session.cat_combo.played', handleCatComboPlayed);
       socket.off('exception', handleException);
     };
   }, [deleting, roomId, router, t, tokens.userId]);
@@ -438,6 +452,30 @@ export default function GameRoomScreen() {
     [actionBusy, roomId, t, tokens.userId],
   );
 
+  const handlePlayCatCombo = useCallback(
+    (input: ExplodingCatsCatComboInput) => {
+      if (!roomId || !tokens.userId) {
+        Alert.alert(t('games.alerts.signInRequiredTitle'), t('games.alerts.signInPlayCardMessage'));
+        return;
+      }
+
+      if (actionBusy) {
+        return;
+      }
+
+      setActionBusy(input.mode === 'pair' ? 'cat_pair' : 'cat_trio');
+      socket.emit('games.session.play_cat_combo', {
+        roomId,
+        userId: tokens.userId,
+        cat: input.cat,
+        mode: input.mode,
+        targetPlayerId: input.targetPlayerId,
+        desiredCard: input.mode === 'trio' ? input.desiredCard : undefined,
+      });
+    },
+    [actionBusy, roomId, t, tokens.userId],
+  );
+
   const handleBack = useCallback(() => {
     if (router.canGoBack()) {
       router.back();
@@ -548,13 +586,14 @@ export default function GameRoomScreen() {
           <ExplodingCatsTable
             room={room}
             session={session}
-            currentUserId={tokens.userId}
+            currentUserId={tokens.userId ?? null}
             actionBusy={actionBusy}
             startBusy={startBusy}
             isHost={isHost}
             onStart={handleStartMatch}
             onDraw={handleDrawCard}
             onPlay={handlePlayCard}
+            onPlayCatCombo={handlePlayCatCombo}
             fullScreen
           />
         </View>
@@ -659,13 +698,14 @@ export default function GameRoomScreen() {
         <ExplodingCatsTable
           room={room}
           session={session}
-          currentUserId={tokens.userId}
+          currentUserId={tokens.userId ?? null}
           actionBusy={actionBusy}
           startBusy={startBusy}
           isHost={isHost}
           onStart={handleStartMatch}
           onDraw={handleDrawCard}
           onPlay={handlePlayCard}
+          onPlayCatCombo={handlePlayCatCombo}
         />
 
         <ThemedView style={styles.footerCard}>

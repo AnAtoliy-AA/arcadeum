@@ -1,11 +1,18 @@
 import { randomUUID } from 'crypto';
 
+export type ExplodingCatsCatCard =
+  | 'tacocat'
+  | 'hairy_potato_cat'
+  | 'rainbow_ralphing_cat'
+  | 'cattermelon'
+  | 'bearded_cat';
+
 export type ExplodingCatsCard =
   | 'exploding_cat'
   | 'defuse'
   | 'attack'
   | 'skip'
-  | 'cat';
+  | ExplodingCatsCatCard;
 
 export interface ExplodingCatsPlayerState {
   playerId: string;
@@ -55,10 +62,14 @@ export function createInitialExplodingCatsState(
 
   // Base deck with enough neutral/action cards for initial deal
   const deck: ExplodingCatsCard[] = [
-    ...repeatCard('attack', 6),
-    ...repeatCard('skip', 6),
-    ...repeatCard('cat', 20),
-    ...repeatCard('defuse', 2),
+    ...repeatCard('attack', 4),
+    ...repeatCard('skip', 4),
+    ...repeatCard('tacocat', 4),
+    ...repeatCard('hairy_potato_cat', 4),
+    ...repeatCard('rainbow_ralphing_cat', 4),
+    ...repeatCard('cattermelon', 4),
+    ...repeatCard('bearded_cat', 4),
+    ...repeatCard('defuse', 6),
   ];
 
   shuffleInPlace(deck);
@@ -79,7 +90,14 @@ export function createInitialExplodingCatsState(
       }
       drawn.push(card);
     }
-    player.hand = ['defuse', ...drawn];
+
+    const defuseIndex = deck.findIndex((card) => card === 'defuse');
+    const guaranteedDefuse =
+      defuseIndex !== -1
+        ? (deck.splice(defuseIndex, 1)[0] ?? 'defuse')
+        : 'defuse';
+
+    player.hand = [guaranteedDefuse, ...drawn];
   });
 
   // Insert exploding cats into the deck (players minus one)

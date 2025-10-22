@@ -16,6 +16,7 @@ describe('GamesGateway', () => {
       | 'startExplodingCatsSession'
       | 'drawExplodingCatsCard'
       | 'playExplodingCatsAction'
+      | 'playExplodingCatsCatCombo'
     >
   >;
   let realtime: jest.Mocked<Partial<GamesRealtimeService>>;
@@ -26,12 +27,14 @@ describe('GamesGateway', () => {
       startExplodingCatsSession: jest.fn(),
       drawExplodingCatsCard: jest.fn(),
       playExplodingCatsAction: jest.fn(),
+      playExplodingCatsCatCombo: jest.fn(),
     } as jest.Mocked<
       Pick<
         GamesService,
         | 'startExplodingCatsSession'
         | 'drawExplodingCatsCard'
         | 'playExplodingCatsAction'
+        | 'playExplodingCatsCatCombo'
       >
     >;
 
@@ -247,6 +250,89 @@ describe('GamesGateway', () => {
         expect((error as WsException).message).toBe(
           'Cannot play this card right now.',
         );
+      }
+    });
+  });
+
+  describe('handleSessionPlayCatCombo', () => {
+    it('plays a cat combo and emits acknowledgement', async () => {
+      const payload = {
+        roomId: ' room-123 ',
+        userId: ' host-456 ',
+        cat: ' tacocat ',
+        mode: ' pair ',
+        targetPlayerId: ' guest-2 ',
+      };
+
+      gamesService.playExplodingCatsCatCombo.mockResolvedValue({
+        id: 'session-1',
+        roomId: 'room-123',
+        gameId: 'exploding-kittens',
+        engine: 'exploding_cats_v1',
+        status: 'active',
+        state: {},
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+
+      await gateway.handleSessionPlayCatCombo(
+        client as unknown as Socket,
+        payload,
+      );
+
+      expect(gamesService.playExplodingCatsCatCombo).toHaveBeenCalledWith(
+        'host-456',
+        'room-123',
+        'tacocat',
+        {
+          mode: 'pair',
+          targetPlayerId: 'guest-2',
+          desiredCard: undefined,
+        },
+      );
+      expect(client.emit).toHaveBeenCalledWith(
+        'games.session.cat_combo.played',
+        expect.objectContaining({
+          roomId: 'room-123',
+          userId: 'host-456',
+          cat: 'tacocat',
+          mode: 'pair',
+          targetPlayerId: 'guest-2',
+        }),
+      );
+    });
+
+    it('throws when required fields are missing', async () => {
+      await expect(
+        gateway.handleSessionPlayCatCombo(client as unknown as Socket, {
+          roomId: 'room-123',
+          userId: 'host-456',
+          cat: undefined,
+          mode: 'pair',
+          targetPlayerId: 'guest-2',
+        }),
+      ).rejects.toBeInstanceOf(WsException);
+    });
+
+    it('wraps service errors in WsException', async () => {
+      gamesService.playExplodingCatsCatCombo.mockRejectedValue(
+        new BadRequestException('Combo not allowed.'),
+      );
+
+      expect.assertions(2);
+
+      try {
+        await gateway.handleSessionPlayCatCombo(client as unknown as Socket, {
+          roomId: 'room-123',
+          userId: 'host-456',
+          cat: 'tacocat',
+          mode: 'pair',
+          targetPlayerId: 'guest-2',
+        });
+        throw new Error('Expected handleSessionPlayCatCombo to throw');
+      } catch (error) {
+        expect(error).toBeInstanceOf(WsException);
+        expect((error as WsException).message).toBe('Combo not allowed.');
       }
     });
   });

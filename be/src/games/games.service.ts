@@ -17,6 +17,7 @@ import {
 import {
   createInitialExplodingCatsState,
   type ExplodingCatsCard,
+  type ExplodingCatsCatCard,
   type ExplodingCatsPlayerState,
   type ExplodingCatsState,
 } from './exploding-cats/exploding-cats.state';
@@ -68,6 +69,13 @@ const EXPLODING_CATS_GAME_ID = 'exploding-kittens';
 const EXPLODING_CATS_ENGINE_ID = 'exploding_cats_v1';
 const EXPLODING_CATS_ACTION_CARDS = ['skip', 'attack'] as const;
 type ExplodingCatsActionCard = (typeof EXPLODING_CATS_ACTION_CARDS)[number];
+const EXPLODING_CATS_CAT_CARDS = [
+  'tacocat',
+  'hairy_potato_cat',
+  'rainbow_ralphing_cat',
+  'cattermelon',
+  'bearded_cat',
+] as const satisfies ReadonlyArray<ExplodingCatsCatCard>;
 
 @Injectable()
 export class GamesService {
@@ -933,6 +941,200 @@ export class GamesService {
       const nextPending = pendingBefore + 1;
       this.advanceExplodingCatsTurn(snapshot);
       snapshot.pendingDraws = nextPending;
+    }
+
+    snapshot.logs.push(...logEntries);
+
+    const nextState = {
+      ...state,
+      snapshot,
+      lastUpdatedAt: nowIso,
+    };
+
+    return this.upsertSessionState({
+      roomId: normalizedRoomId,
+      state: nextState,
+    });
+  }
+
+  async playExplodingCatsCatCombo(
+    userId: string,
+    roomId: string,
+    catCard: ExplodingCatsCatCard,
+    options: {
+      mode: 'pair' | 'trio';
+      targetPlayerId: string;
+      desiredCard?: ExplodingCatsCard;
+    },
+  ): Promise<GameSessionSummary> {
+    const normalizedUserId = userId.trim();
+    if (!normalizedUserId) {
+      throw new BadRequestException('User ID is required.');
+    }
+
+    const normalizedRoomId = roomId.trim();
+    if (!normalizedRoomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    if (!EXPLODING_CATS_CAT_CARDS.includes(catCard)) {
+      throw new BadRequestException('Unsupported cat card.');
+    }
+
+    const mode = options.mode;
+    if (mode !== 'pair' && mode !== 'trio') {
+      throw new BadRequestException('Unsupported combo mode.');
+    }
+
+    const targetPlayerId = options.targetPlayerId?.trim();
+    if (!targetPlayerId) {
+      throw new BadRequestException('Target player is required.');
+    }
+
+    if (targetPlayerId === normalizedUserId) {
+      throw new BadRequestException(
+        'Target player must be different from actor.',
+      );
+    }
+
+    const room = await this.ensureParticipant(
+      normalizedRoomId,
+      normalizedUserId,
+    );
+    if (room.status !== 'in_progress') {
+      throw new BadRequestException('The game has not started for this room.');
+    }
+
+    const sessionDoc = await this.gameSessionModel
+      .findOne({ roomId: normalizedRoomId })
+      .exec();
+    if (!sessionDoc) {
+      throw new NotFoundException('Game session not found for this room.');
+    }
+
+    if (sessionDoc.engine !== EXPLODING_CATS_ENGINE_ID) {
+      throw new BadRequestException(
+        'Cat combos are only supported for Exploding Cats sessions.',
+      );
+    }
+
+    const state = sessionDoc.state ?? {};
+    const snapshotRaw = state.snapshot as ExplodingCatsState | undefined;
+    if (!snapshotRaw) {
+      throw new NotFoundException('Exploding Cats snapshot is unavailable.');
+    }
+
+    const snapshot = this.cloneExplodingCatsState(snapshotRaw);
+    const player = this.findExplodingCatsPlayer(snapshot, normalizedUserId);
+
+    if (!player) {
+      throw new ForbiddenException('Player is not part of this session.');
+    }
+
+    if (!player.alive) {
+      throw new ForbiddenException('Player has already been eliminated.');
+    }
+
+    const targetPlayer = this.findExplodingCatsPlayer(snapshot, targetPlayerId);
+    if (!targetPlayer || !targetPlayer.alive) {
+      throw new BadRequestException('Target player is not available.');
+    }
+
+    const requiredCount = mode === 'pair' ? 2 : 3;
+    const availableCount = player.hand.filter(
+      (value) => value === catCard,
+    ).length;
+    if (availableCount < requiredCount) {
+      throw new BadRequestException('Card combo is not available.');
+    }
+
+    if (mode === 'trio') {
+      const desiredCard = options.desiredCard;
+      if (!desiredCard) {
+        throw new BadRequestException(
+          'Desired card is required for trio combo.',
+        );
+      }
+    }
+
+    let desiredCard: ExplodingCatsCard | undefined = undefined;
+    if (mode === 'trio') {
+      desiredCard = options.desiredCard;
+      if (!desiredCard) {
+        throw new BadRequestException(
+          'Desired card is required for trio combo.',
+        );
+      }
+    }
+
+    // Remove the combo cards from the acting player and discard them.
+    let removed = 0;
+    for (
+      let i = player.hand.length - 1;
+      i >= 0 && removed < requiredCount;
+      i -= 1
+    ) {
+      if (player.hand[i] === catCard) {
+        player.hand.splice(i, 1);
+        snapshot.discardPile.push(catCard);
+        removed += 1;
+      }
+    }
+
+    if (removed < requiredCount) {
+      throw new BadRequestException('Unable to remove combo cards from hand.');
+    }
+
+    const nowIso = new Date().toISOString();
+    const logEntries: ExplodingCatsState['logs'] = [];
+
+    if (mode === 'pair') {
+      if (!targetPlayer.hand.length) {
+        logEntries.push({
+          id: randomUUID(),
+          type: 'action',
+          message: `${normalizedUserId} used a ${catCard} pair on ${targetPlayerId}, but they had no cards.`,
+          createdAt: nowIso,
+        });
+      } else {
+        const stolenIndex = Math.floor(
+          Math.random() * targetPlayer.hand.length,
+        );
+        const [stolenCard] = targetPlayer.hand.splice(stolenIndex, 1);
+        if (stolenCard) {
+          player.hand.push(stolenCard);
+        }
+
+        logEntries.push({
+          id: randomUUID(),
+          type: 'action',
+          message: `${normalizedUserId} stole a card from ${targetPlayerId} with a ${catCard} pair.`,
+          createdAt: nowIso,
+        });
+      }
+    } else {
+      let resolved = false;
+      if (desiredCard && targetPlayer.hand.includes(desiredCard)) {
+        const cardIndex = targetPlayer.hand.findIndex(
+          (value) => value === desiredCard,
+        );
+        if (cardIndex !== -1) {
+          const [givenCard] = targetPlayer.hand.splice(cardIndex, 1);
+          if (givenCard) {
+            player.hand.push(givenCard);
+            resolved = true;
+          }
+        }
+      }
+
+      logEntries.push({
+        id: randomUUID(),
+        type: 'action',
+        message: resolved
+          ? `${normalizedUserId} named ${desiredCard} and received it from ${targetPlayerId} with a ${catCard} trio.`
+          : `${normalizedUserId} named ${desiredCard ?? 'a card'} with a ${catCard} trio, but ${targetPlayerId} did not have it.`,
+        createdAt: nowIso,
+      });
     }
 
     snapshot.logs.push(...logEntries);

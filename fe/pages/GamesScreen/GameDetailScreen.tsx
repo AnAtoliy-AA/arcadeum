@@ -44,7 +44,7 @@ export default function GameDetailScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
   const router = useRouter();
   const { tokens, refreshTokens } = useSessionTokens();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { shouldBlock } = useSessionScreenGate({
     enableOn: ['web'],
     whenUnauthenticated: '/auth',
@@ -72,6 +72,15 @@ export default function GameDetailScreen() {
   }, [params]);
 
   const game = useMemo(() => (gameId ? getGameById(gameId) : undefined), [gameId]);
+  const localizedOverview = useMemo(() => {
+    return game?.localizations?.[locale]?.overview ?? game?.overview ?? '';
+  }, [game, locale]);
+  const localizedSummary = useMemo(() => {
+    return game?.localizations?.[locale]?.summary ?? game?.summary ?? '';
+  }, [game, locale]);
+  const localizedHowToPlay = useMemo(() => {
+    return game?.localizations?.[locale]?.howToPlay ?? game?.howToPlay ?? [];
+  }, [game, locale]);
 
   const fetchRooms = useCallback(
     async (mode: 'initial' | 'refresh' = 'initial') => {
@@ -337,7 +346,7 @@ export default function GameDetailScreen() {
             <MetaChip label={game.duration} icon="clock.fill" />
             <MetaChip label={game.mechanics[0]} icon="sparkles" />
           </View>
-          <ThemedText style={styles.overview}>{game.overview}</ThemedText>
+          <ThemedText style={styles.overview}>{localizedOverview}</ThemedText>
           <View style={styles.tagGroup}>
             {game.bestFor.map(item => (
               <View key={item} style={styles.tagChip}>
@@ -509,7 +518,7 @@ export default function GameDetailScreen() {
           )}
         </ThemedView>
 
-  <Section title={t('games.detail.highlightsTitle')} description={game.summary}>
+  <Section title={t('games.detail.highlightsTitle')} description={localizedSummary}>
           {game.highlights.map(feature => (
             <View key={feature.title} style={styles.listItem}>
               <IconSymbol name="sparkles" size={20} color={styles.listIcon.color as string} />
@@ -525,10 +534,10 @@ export default function GameDetailScreen() {
           title={t('games.detail.howToPlayTitle')}
           description={t('games.detail.howToPlayCaption')}
         >
-          {game.howToPlay.map(step => (
+          {localizedHowToPlay.map(step => (
             <View key={step.title} style={styles.stepItem}>
               <View style={styles.stepBadge}>
-                <ThemedText style={styles.stepBadgeText}>{String(game.howToPlay.indexOf(step) + 1).padStart(2, '0')}</ThemedText>
+                <ThemedText style={styles.stepBadgeText}>{String(localizedHowToPlay.indexOf(step) + 1).padStart(2, '0')}</ThemedText>
               </View>
               <View style={styles.stepCopy}>
                 <ThemedText type="defaultSemiBold" style={styles.listTitle}>{step.title}</ThemedText>

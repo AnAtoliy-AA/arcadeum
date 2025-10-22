@@ -1,3 +1,5 @@
+import type { LanguagePreference } from '@/stores/settings';
+
 export type GameStatus = 'In prototype' | 'In design' | 'Roadmap';
 
 export interface GameSectionItem {
@@ -25,6 +27,21 @@ export interface GameCatalogueEntry {
   highlights: GameSectionItem[];
   howToPlay: GameStep[];
   comingSoon: GameSectionItem[];
+  localizations?: Partial<Record<LanguagePreference, GameCatalogueLocalization>>;
+}
+
+export interface GameCatalogueLocalization {
+  tagline?: string;
+  summary?: string;
+  overview?: string;
+  players?: string;
+  duration?: string;
+  tags?: string[];
+  bestFor?: string[];
+  mechanics?: string[];
+  highlights?: GameSectionItem[];
+  howToPlay?: GameStep[];
+  comingSoon?: GameSectionItem[];
 }
 
 export const gamesCatalog: GameCatalogueEntry[] = [
@@ -33,8 +50,7 @@ export const gamesCatalog: GameCatalogueEntry[] = [
     name: 'Exploding Cats',
     tagline: 'Dodge the detonations, weaponize your deck, and stay nine lives ahead.',
     summary: 'Push your luck, avoid the exploding cats, and sabotage opponents with wild cards.',
-    overview:
-      'Exploding Cats brings the beloved party-card chaos online with simultaneous turns, smart animations, and optional house rules. Our rules engine tracks every interaction so you can focus on bluffing, defusing, and taunting your friends in real time.',
+    overview: `Exploding Cats brings the beloved party-card chaos online with simultaneous turns, smart animations, and optional house rules. Our rules engine tracks every interaction so you can focus on bluffing, defusing, and taunting your friends in real time. Setup follows the official deck prep: make sure there is one fewer Exploding Cat than players, give every player a Defuse plus four additional cards, then shuffle the remaining Defuse cards and bombs back into the draw pile. On your turn you may play any number of cards (including combos), resolve their effects with optional Nope responses, and then draw to end your turn unless an Attack pushed the obligation to the next player. Card effects mirror the physical rules: Attack ends your turn and forces the next player to take two draws, Skip ends your turn without drawing, Favor takes a random card from an opponent, Shuffle randomizes the draw pile, See the Future reveals the top three cards, Nope cancels any action except Defuse or Exploding Cat resolution, Defuse prevents an explosion and lets you tuck the bomb back anywhere in the deck, and drawing an Exploding Cat without a Defuse eliminates you from the round. The five cat personalities—Tacocat, Hairy Potato Cat, Rainbow Ralphing Cat, Cattermelon, and Bearded Cat—gain power only when played as pairs or three-of-a-kind, which is why single copies stay inactive until you assemble a combo.`,
     status: 'In prototype',
     players: '2-5 players',
     duration: '15 min',
@@ -57,16 +73,24 @@ export const gamesCatalog: GameCatalogueEntry[] = [
     ],
     howToPlay: [
       {
-        title: 'Draw at the end of your turn',
-        detail: 'If you draw an exploding cat without a defuse card, you detonate and leave the round.',
+        title: 'Set up the deck',
+        detail:
+          'Deal four cards plus one Defuse to each player, trim the Exploding Cats to players minus one, then shuffle the remaining Defuse cards and bombs back into the deck.',
       },
       {
-        title: 'Chain action cards',
-        detail: 'Use skip, attack, favor, and shuffle cards in any combination—our engine resolves the stack automatically.',
+        title: 'Take your turn',
+        detail:
+          'Play as many cards as you like (including combos) in any order, respond with Nope cards to cancel opponents, and finish by drawing—unless an Attack passed extra draws to you.',
       },
       {
-        title: 'Strategize your defuses',
-        detail: 'Defuse cards let you reinsert the bomb anywhere in the deck, forcing future mayhem.',
+        title: 'Know every card',
+        detail:
+          'Attack ends your turn and forces the next player to draw twice; Skip ends your turn with no draw; Favor forces another player to give you one card; Shuffle reshuffles the draw pile; See the Future peeks at the top three cards; Nope cancels any action except a Defuse or Exploding Cat resolution; Defuse stops an explosion and lets you hide the bomb back in the deck; Exploding Cat knocks you out if you cannot Defuse.',
+      },
+      {
+        title: 'Cat combos explained',
+        detail:
+          'Tacocat, Hairy Potato Cat, Rainbow Ralphing Cat, Cattermelon, and Bearded Cat have power only when played as pairs or trios—pairs steal a random card, trios let you name and take a specific card. Because single cat cards lack standalone actions, the tabletop UI keeps them disabled until you assemble the required combo.',
       },
     ],
     comingSoon: [
@@ -79,6 +103,60 @@ export const gamesCatalog: GameCatalogueEntry[] = [
         description: 'Upload your own cat art and card ideas for community-voted variants.',
       },
     ],
+    localizations: {
+      es: {
+        overview:
+          'Exploding Cats ofrece el caos del juego original con turnos simultáneos, animaciones inteligentes y reglas opcionales para tu grupo. La preparación sigue las reglas oficiales: usa un Exploding Cat menos que la cantidad de jugadores, reparte a cada persona un Defuse más cuatro cartas adicionales y vuelve a barajar los Defuse sobrantes y las bombas en el mazo. En tu turno puedes jugar tantas cartas como quieras (incluyendo combinaciones), resolver sus efectos mientras los demás pueden responder con Nope y, al final, robar una carta salvo que un Attack haya pasado la obligación al siguiente jugador. Cada carta conserva su efecto físico: Attack termina tu turno y obliga al siguiente jugador a robar dos cartas, Skip termina tu turno sin robar, Favor roba una carta al azar a otro jugador, Shuffle baraja el mazo, See the Future muestra las tres primeras cartas, Nope cancela cualquier acción excepto un Defuse o la resolución de un Exploding Cat, Defuse evita la explosión y te permite esconder la bomba en cualquier parte del mazo, y robar un Exploding Cat sin Defuse te elimina de la ronda. Las cinco personalidades felinas —Tacocat, Hairy Potato Cat, Rainbow Ralphing Cat, Cattermelon y Bearded Cat— solo tienen poder cuando se juegan en pareja o trío, por lo que las cartas individuales permanecen inactivas hasta que completes la combinación.',
+        howToPlay: [
+          {
+            title: 'Prepara el mazo',
+            detail:
+              'Reparte cuatro cartas más un Defuse a cada jugador, deja en el mazo una cantidad de Exploding Cats igual al número de jugadores menos uno y baraja allí los Defuse restantes junto con las bombas.',
+          },
+          {
+            title: 'Juega tu turno',
+            detail:
+              'Puedes jugar todas las cartas que quieras en cualquier orden, lanzar combinaciones y permitir que otros respondan con Nope antes de terminar tu turno. Finaliza robando una carta, a menos que un Attack haya pasado las robas al siguiente jugador.',
+          },
+          {
+            title: 'Conoce cada carta',
+            detail:
+              'Attack termina tu turno y obliga al siguiente jugador a robar dos cartas; Skip termina tu turno sin robar; Favor te da una carta aleatoria de otro jugador; Shuffle baraja el mazo; See the Future revela las tres primeras cartas; Nope cancela cualquier acción excepto Defuse o la resolución de un Exploding Cat; Defuse detiene la explosión y te deja colocar la bomba en cualquier posición; un Exploding Cat sin Defuse te elimina.',
+          },
+          {
+            title: 'Combina los gatos',
+            detail:
+              'Tacocat, Hairy Potato Cat, Rainbow Ralphing Cat, Cattermelon y Bearded Cat solo activan efectos cuando se juegan en parejas o tríos: las parejas roban una carta aleatoria y los tríos te permiten nombrar y tomar una carta específica. Por eso las cartas individuales permanecen deshabilitadas hasta que completes la combinación.',
+          },
+        ],
+      },
+      fr: {
+        overview:
+          'Exploding Cats transpose le chaos du jeu original avec des tours simultanés, des animations travaillées et des variantes maison facultatives. La mise en place respecte les règles officielles : utilisez une carte Exploding Cat de moins que le nombre de joueurs, donnez à chacun un Defuse ainsi que quatre cartes supplémentaires, puis mélangez les Defuse restants et les bombes dans la pioche. À votre tour, jouez autant de cartes que vous le souhaitez (y compris des combinaisons), appliquez leurs effets pendant que les adversaires peuvent répondre avec Nope, puis piochez pour terminer le tour, sauf si une carte Attack a reporté l’obligation sur le joueur suivant. Chaque carte conserve son effet physique : Attack termine votre tour et impose deux pioches au joueur suivant, Skip termine le tour sans pioche, Favor vous fait prendre une carte au hasard chez un adversaire, Shuffle mélange la pioche, See the Future révèle les trois prochaines cartes, Nope annule toute action sauf un Defuse ou la résolution d’un Exploding Cat, Defuse empêche l’explosion et vous permet de replacer la bombe où vous le souhaitez, et piocher un Exploding Cat sans Defuse vous élimine de la manche. Les cinq chats —Tacocat, Hairy Potato Cat, Rainbow Ralphing Cat, Cattermelon et Bearded Cat— ne gagnent du pouvoir qu’en paire ou en trio, d’où l’inactivité des cartes seules tant que la combinaison n’est pas réunie.',
+        howToPlay: [
+          {
+            title: 'Préparez la pioche',
+            detail:
+              'Distribuez quatre cartes et un Defuse à chaque joueur, gardez un nombre de cartes Exploding Cat égal au nombre de joueurs moins un, puis mélangez les Defuse restants et les bombes dans la pioche.',
+          },
+          {
+            title: 'Jouez votre tour',
+            detail:
+              'Jouez autant de cartes que vous le souhaitez dans l’ordre de votre choix, composez des combos et laissez les autres répondre avec Nope avant de terminer. Finissez en piochant une carte, sauf si une carte Attack a transféré les pioches au joueur suivant.',
+          },
+          {
+            title: 'Maîtrisez chaque carte',
+            detail:
+              'Attack termine votre tour et impose deux pioches au joueur suivant ; Skip termine votre tour sans piocher ; Favor vous fait prendre une carte aléatoire à un adversaire ; Shuffle mélange la pioche ; See the Future révèle les trois premières cartes ; Nope annule toute action sauf un Defuse ou la résolution d’un Exploding Cat ; Defuse arrête l’explosion et vous permet de replacer la bombe ; piocher un Exploding Cat sans Defuse vous élimine.',
+          },
+          {
+            title: 'Comprendre les combos de chats',
+            detail:
+              'Tacocat, Hairy Potato Cat, Rainbow Ralphing Cat, Cattermelon et Bearded Cat n’ont d’effet qu’en paire ou en trio : les paires volent une carte au hasard et les trios vous laissent nommer et prendre une carte précise. C’est pourquoi les cartes seules restent inactives tant que la combinaison n’est pas réunie.',
+          },
+        ],
+      },
+    },
   },
   {
     id: 'coup',

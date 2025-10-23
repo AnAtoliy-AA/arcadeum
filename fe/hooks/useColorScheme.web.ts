@@ -1,21 +1,28 @@
 import { useEffect, useState } from 'react';
-import { useColorScheme as useRNColorScheme } from 'react-native';
+import { useColorScheme as useSystemColorScheme } from 'react-native';
+
+import { useSettings } from '@/stores/settings';
 
 /**
- * To support static rendering, this value needs to be re-calculated on the client side for web
+ * Web needs a hydration guard to avoid React mismatches during SSR/static rendering.
+ * Once the client hydrates we mirror the shared hook logic with settings awareness.
  */
-export function useColorScheme() {
-  const [hasHydrated, setHasHydrated] = useState(false);
+export function useColorScheme(): 'light' | 'dark' {
+  const { themePreference } = useSettings();
+  const systemScheme = useSystemColorScheme();
+  const [clientHydrated, setClientHydrated] = useState(false);
 
   useEffect(() => {
-    setHasHydrated(true);
+    setClientHydrated(true);
   }, []);
 
-  const colorScheme = useRNColorScheme();
-
-  if (hasHydrated) {
-    return colorScheme;
+  if (themePreference === 'system') {
+    if (!clientHydrated) {
+      // Match the document's initial light background until hydration completes.
+      return 'light';
+    }
+    return systemScheme === 'dark' ? 'dark' : 'light';
   }
 
-  return 'light';
+  return themePreference;
 }

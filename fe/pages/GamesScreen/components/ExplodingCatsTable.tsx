@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
+import { ExplodingCatsCard as ExplodingCatsArtwork, type CardKey as CardArtworkKey } from '@/components/cards';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
 import { useTranslation } from '@/lib/i18n';
@@ -61,6 +62,20 @@ const DESIRED_CARD_OPTIONS: ExplodingCatsCard[] = [
   'skip',
   ...CAT_COMBO_CARDS,
 ];
+
+type CardArtworkVariant = 1 | 2 | 3;
+
+const CARD_ART_SETTINGS: Record<ExplodingCatsCard, { key: CardArtworkKey; variant: CardArtworkVariant }> = {
+  exploding_cat: { key: 'exploding-cat', variant: 1 },
+  defuse: { key: 'defuse', variant: 2 },
+  attack: { key: 'attack', variant: 1 },
+  skip: { key: 'skip', variant: 2 },
+  tacocat: { key: 'tacocat', variant: 1 },
+  hairy_potato_cat: { key: 'hairy-potato-cat', variant: 2 },
+  rainbow_ralphing_cat: { key: 'rainbow-ralphing-cat', variant: 2 },
+  cattermelon: { key: 'cattermelon', variant: 1 },
+  bearded_cat: { key: 'bearded-cat', variant: 3 },
+};
 
 export type ExplodingCatsCatComboInput =
   | {
@@ -131,6 +146,31 @@ function getCardTranslationKey(card: ExplodingCatsCard): TranslationKey {
       return 'games.table.cards.beardedCat';
     default:
       return 'games.table.cards.generic';
+  }
+}
+
+function getCardDescriptionKey(card: ExplodingCatsCard): TranslationKey {
+  switch (card) {
+    case 'exploding_cat':
+      return 'games.table.cardDescriptions.explodingCat';
+    case 'defuse':
+      return 'games.table.cardDescriptions.defuse';
+    case 'attack':
+      return 'games.table.cardDescriptions.attack';
+    case 'skip':
+      return 'games.table.cardDescriptions.skip';
+    case 'tacocat':
+      return 'games.table.cardDescriptions.tacocat';
+    case 'hairy_potato_cat':
+      return 'games.table.cardDescriptions.hairyPotatoCat';
+    case 'rainbow_ralphing_cat':
+      return 'games.table.cardDescriptions.rainbowRalphingCat';
+    case 'cattermelon':
+      return 'games.table.cardDescriptions.cattermelon';
+    case 'bearded_cat':
+      return 'games.table.cardDescriptions.beardedCat';
+    default:
+      return 'games.table.cardDescriptions.generic';
   }
 }
 
@@ -275,6 +315,7 @@ export function ExplodingCatsTable({
   const canStart = isHost && !isSessionActive && !isSessionCompleted && !snapshot;
   const logs = useMemo(() => (snapshot?.logs ?? []).slice(-12).reverse(), [snapshot]);
   const translateCardName = (card: ExplodingCatsCard) => t(getCardTranslationKey(card));
+  const translateCardDescription = (card: ExplodingCatsCard) => t(getCardDescriptionKey(card));
   const statusLabel = session?.status
     ? t(getSessionStatusTranslationKey(session.status))
     : t(getRoomStatusLabel((room?.status ?? 'lobby') as GameRoomSummary['status']));
@@ -625,6 +666,10 @@ export function ExplodingCatsTable({
                             ? t('games.table.catCombo.optionPair')
                             : null
                       : null;
+                    const artConfig = CARD_ART_SETTINGS[card] ?? CARD_ART_SETTINGS.exploding_cat;
+                    const baseVariant = artConfig.variant;
+                    const artVariant = (((baseVariant - 1 + index) % 3) + 1) as CardArtworkVariant;
+                    const description = translateCardDescription(card);
                     const handlePress = cardAction && canPlayCard && !isActionBusy
                       ? () => onPlay(cardAction)
                       : isCatCard && canPlayCard && !isActionBusy
@@ -652,20 +697,41 @@ export function ExplodingCatsTable({
                           <ActivityIndicator size="small" color={styles.handCardBusySpinner.color as string} />
                         ) : (
                           <>
-                            <ThemedText style={styles.handCardTitle} numberOfLines={2}>
-                              {translateCardName(card)}
-                            </ThemedText>
-                            <ThemedText style={styles.handCardLabel}>{t('games.table.hand.cardLabel')}</ThemedText>
-                            {actionLabel ? (
-                              <ThemedText style={styles.handCardHint} numberOfLines={1}>
-                                {actionLabel}
-                              </ThemedText>
-                            ) : null}
-                            {comboHint ? (
-                              <ThemedText style={styles.handCardHint} numberOfLines={1}>
-                                {comboHint}
-                              </ThemedText>
-                            ) : null}
+                            <View style={styles.handCardArt} accessible={false} pointerEvents="none">
+                              <ExplodingCatsArtwork
+                                card={artConfig.key}
+                                variant={artVariant}
+                                width="100%"
+                                height="100%"
+                                preserveAspectRatio="xMidYMid slice"
+                                accessible={false}
+                                focusable={false}
+                              />
+                              <View style={styles.handCardOverlay} pointerEvents="none">
+                                <ThemedText
+                                  style={styles.handCardOverlayTitle}
+                                  numberOfLines={2}
+                                  ellipsizeMode="tail"
+                                >
+                                  {translateCardName(card)}
+                                </ThemedText>
+                                <ThemedText style={styles.handCardOverlayDescription} numberOfLines={2}>
+                                  {description}
+                                </ThemedText>
+                              </View>
+                            </View>
+                            <View style={styles.handCardMeta} pointerEvents="none" accessible={false}>
+                              {actionLabel ? (
+                                <ThemedText style={styles.handCardHint} numberOfLines={1}>
+                                  {actionLabel}
+                                </ThemedText>
+                              ) : null}
+                              {comboHint ? (
+                                <ThemedText style={styles.handCardHint} numberOfLines={1}>
+                                  {comboHint}
+                                </ThemedText>
+                              ) : null}
+                            </View>
                           </>
                         )}
                       </TouchableOpacity>
@@ -975,6 +1041,7 @@ function createStyles(palette: Palette) {
     TABLE_DIAMETER - PLAYER_SEAT_SIZE - 32,
     140,
   );
+  const overlayShadow = isLight ? 'rgba(15, 23, 42, 0.45)' : 'rgba(15, 23, 42, 0.65)';
 
   return StyleSheet.create({
     card: {
@@ -1214,12 +1281,14 @@ function createStyles(palette: Palette) {
       paddingHorizontal: 4,
     },
     handCard: {
-      width: 96,
-      height: 128,
-      borderRadius: 18,
+      width: 148,
+      height: 228,
+      borderRadius: 20,
       alignItems: 'center',
-      justifyContent: 'center',
-      gap: 8,
+      justifyContent: 'flex-start',
+      paddingHorizontal: 12,
+      paddingVertical: 12,
+      gap: 10,
       backgroundColor: surface,
       borderWidth: 2,
       borderColor: border,
@@ -1228,6 +1297,56 @@ function createStyles(palette: Palette) {
       shadowRadius: 14,
       shadowOffset: { width: 0, height: 6 },
       elevation: 5,
+      flexShrink: 0,
+    },
+    handCardArt: {
+      width: '100%',
+      aspectRatio: 0.68,
+      position: 'relative',
+      borderRadius: 14,
+      overflow: 'hidden',
+      backgroundColor: raised,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: border,
+    },
+    handCardOverlay: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: 0,
+      paddingHorizontal: 12,
+      paddingVertical: 12,
+      gap: 6,
+      shadowColor: overlayShadow,
+      shadowOpacity: isLight ? 0.9 : 0.8,
+      shadowRadius: 12,
+      shadowOffset: { width: 0, height: 8 },
+    },
+    handCardOverlayTitle: {
+      color: '#FDE68A',
+      fontWeight: '800',
+      fontSize: 16,
+      lineHeight: 20,
+      textAlign: 'center',
+      textTransform: 'uppercase',
+      letterSpacing: 0.8,
+      textShadowColor: 'rgba(15, 23, 42, 0.55)',
+      textShadowOffset: { width: 0, height: 4 },
+      textShadowRadius: 8,
+    },
+    handCardOverlayDescription: {
+      color: '#F8FAFC',
+      fontSize: 12,
+      lineHeight: 18,
+      textAlign: 'center',
+      textShadowColor: 'rgba(15, 23, 42, 0.45)',
+      textShadowOffset: { width: 0, height: 3 },
+      textShadowRadius: 6,
+    },
+    handCardMeta: {
+      width: '100%',
+      alignItems: 'center',
+      gap: 4,
     },
     handCardPlayable: {
       borderColor: palette.tint,
@@ -1242,20 +1361,19 @@ function createStyles(palette: Palette) {
     handCardBusySpinner: {
       color: palette.tint,
     },
-    handCardTitle: {
-      color: palette.text,
-      fontWeight: '700',
-      fontSize: 13,
-      textAlign: 'center',
-    },
     handCardLabel: {
       color: palette.icon,
       fontSize: 11,
+      textAlign: 'center',
+      textTransform: 'uppercase',
+      fontWeight: '600',
+      letterSpacing: 0.4,
     },
     handCardHint: {
       color: palette.tint,
       fontSize: 11,
       fontWeight: '600',
+      textAlign: 'center',
     },
     comboModalBackdrop: {
       flex: 1,

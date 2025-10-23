@@ -5,10 +5,31 @@ const { getSentryExpoConfig } = require('@sentry/react-native/metro');
 
 const isProd = process.env.NODE_ENV === 'production';
 
+function withSvgSupport(config) {
+	const transformer = config.transformer ?? {};
+	config.transformer = {
+		...transformer,
+		babelTransformerPath: require.resolve('react-native-svg-transformer'),
+	};
+
+	const resolver = config.resolver ?? { assetExts: [], sourceExts: [] };
+	const assetExts = Array.isArray(resolver.assetExts)
+		? resolver.assetExts.filter((ext) => ext !== 'svg')
+		: [];
+	const sourceExts = Array.isArray(resolver.sourceExts) ? resolver.sourceExts : [];
+	config.resolver = {
+		...resolver,
+		assetExts,
+		sourceExts: sourceExts.includes('svg') ? sourceExts : [...sourceExts, 'svg'],
+	};
+
+	return config;
+}
+
 if (isProd) {
-	module.exports = getSentryExpoConfig(__dirname);
+	module.exports = withSvgSupport(getSentryExpoConfig(__dirname));
 } else {
-	const config = getDefaultConfig(__dirname);
+	const config = withSvgSupport(getDefaultConfig(__dirname));
 	// Improve web debugging: keep module names and disable inline requires for clearer stack & sources
 	config.transformer = {
 		...config.transformer,

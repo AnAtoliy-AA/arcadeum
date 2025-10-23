@@ -1,6 +1,8 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Animated,
+  Easing,
   Modal,
   ScrollView,
   StyleSheet,
@@ -22,6 +24,7 @@ import { getRoomStatusLabel } from '../roomUtils';
 
 const TABLE_DIAMETER = 260;
 const PLAYER_SEAT_SIZE = 88;
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 interface SessionPlayerProfile {
   id: string;
@@ -216,6 +219,9 @@ export function ExplodingCatsTable({
 }: ExplodingCatsTableProps) {
   const styles = useThemedStyles(createStyles);
   const { t } = useTranslation();
+  const cardPressScale = useRef(new Animated.Value(1)).current;
+  const deckPulseScale = useRef(new Animated.Value(1)).current;
+  const [animatingCardKey, setAnimatingCardKey] = useState<string | null>(null);
 
   const snapshot = useMemo<ExplodingCatsSnapshot | null>(() => {
     const raw = session?.state?.snapshot;
@@ -498,6 +504,54 @@ export function ExplodingCatsTable({
       || !catComboPrompt.targetPlayerId
       || (catComboPrompt.mode === 'trio' && !catComboPrompt.desiredCard);
 
+  const triggerCardAnimation = useCallback((key: string, onComplete: () => void) => {
+    setAnimatingCardKey(key);
+    cardPressScale.setValue(1);
+    Animated.sequence([
+      Animated.timing(cardPressScale, {
+        toValue: 0.92,
+        duration: 90,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+      Animated.timing(cardPressScale, {
+        toValue: 1.06,
+        duration: 140,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+      Animated.timing(cardPressScale, {
+        toValue: 1,
+        duration: 140,
+        easing: Easing.inOut(Easing.quad),
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setAnimatingCardKey(null);
+      onComplete();
+    });
+  }, [cardPressScale]);
+
+  useEffect(() => {
+    if (actionBusy === 'draw') {
+      deckPulseScale.setValue(1);
+      Animated.sequence([
+        Animated.timing(deckPulseScale, {
+          toValue: 1.1,
+          duration: 150,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.spring(deckPulseScale, {
+          toValue: 1,
+          friction: 5,
+          tension: 120,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [actionBusy, deckPulseScale]);
+
   const tableContent = (
     <>
       <View style={styles.headerRow}>
@@ -521,11 +575,11 @@ export function ExplodingCatsTable({
           <View style={styles.tableSection}>
             <View style={styles.tableRing}>
               <View style={styles.tableCenter}>
-                <View style={styles.tableInfoCard}>
+                <Animated.View style={[styles.tableInfoCard, { transform: [{ scale: deckPulseScale }] }]}>
                   <IconSymbol name="rectangle.stack" size={18} color={styles.tableInfoIcon.color as string} />
                   <ThemedText style={styles.tableInfoTitle}>{deckCount}</ThemedText>
                   <ThemedText style={styles.tableInfoSubtitle}>{t('games.table.info.inDeck')}</ThemedText>
-                </View>
+                </Animated.View>
                 <View style={styles.tableInfoCard}>
                   <IconSymbol name="arrow.triangle.2.circlepath" size={18} color={styles.tableInfoIcon.color as string} />
                   <ThemedText style={styles.tableInfoTitle}>
@@ -670,24 +724,37 @@ export function ExplodingCatsTable({
                     const baseVariant = artConfig.variant;
                     const artVariant = (((baseVariant - 1 + index) % 3) + 1) as CardArtworkVariant;
                     const description = translateCardDescription(card);
-                    const handlePress = cardAction && canPlayCard && !isActionBusy
-                      ? () => onPlay(cardAction)
-                      : isCatCard && canPlayCard && !isActionBusy
-                        ? () => openCatComboPrompt(card as ExplodingCatsCatCard)
-                        : undefined;
-                    const isDisabled = !canPlayCard || isActionBusy;
+
+                    const isAnimatingThisCard = animatingCardKey === cardKey;
+                    const isDisabled = !canPlayCard || isActionBusy || animatingCardKey !== null;
+
+                    const runCardAction = () => {
+                      if (cardAction) {
+                        onPlay(cardAction);
+                      } else if (isCatCard) {
+                        openCatComboPrompt(card as ExplodingCatsCatCard);
+                      }
+                    };
+
+                    const handleCardPress = () => {
+                      if (!canPlayCard || isActionBusy || animatingCardKey !== null) {
+                        return;
+                      }
+                      triggerCardAnimation(cardKey, runCardAction);
+                    };
 
                     return (
-                      <TouchableOpacity
+                      <AnimatedTouchableOpacity
                         key={cardKey}
                         style={[
                           styles.handCard,
                           canPlayCard ? styles.handCardPlayable : null,
                           !canPlayCard ? styles.handCardDisabled : null,
                           isActionBusy ? styles.handCardBusy : null,
+                          isAnimatingThisCard ? { transform: [{ scale: cardPressScale }] } : null,
                         ]}
                         activeOpacity={canPlayCard ? 0.8 : 1}
-                        onPress={handlePress}
+                        onPress={handleCardPress}
                         disabled={isDisabled}
                         accessibilityRole={canPlayCard ? 'button' : 'text'}
                         accessibilityLabel={translateCardName(card)}
@@ -715,7 +782,7 @@ export function ExplodingCatsTable({
                                 >
                                   {translateCardName(card)}
                                 </ThemedText>
-                                <ThemedText style={styles.handCardOverlayDescription} numberOfLines={2}>
+                                <ThemedText style={styles.handCardOverlayDescription} numberOfLines={3}>
                                   {description}
                                 </ThemedText>
                               </View>
@@ -734,7 +801,7 @@ export function ExplodingCatsTable({
                             </View>
                           </>
                         )}
-                      </TouchableOpacity>
+                      </AnimatedTouchableOpacity>
                     );
                   })}
                 </ScrollView>

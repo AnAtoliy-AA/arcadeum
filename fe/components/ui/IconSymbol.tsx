@@ -24,6 +24,7 @@ const MAPPING = {
   'person.3.fill': 'groups',
   'clock.fill': 'schedule',
   'sparkles': 'auto-awesome',
+  'gearshape.fill': 'settings',
   'lock.fill': 'lock',
   'lock.open': 'lock-open',
   'book': 'menu-book',

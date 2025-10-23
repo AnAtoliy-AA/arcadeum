@@ -53,8 +53,6 @@ export default function GamesScreen() {
   }, [router]);
   const { shouldBlock } = useSessionScreenGate({
     enableOn: ['web'],
-    whenUnauthenticated: '/auth',
-    blockWhenUnauthenticated: true,
   });
 
   const [rooms, setRooms] = useState<GameRoomSummary[]>([]);
@@ -72,20 +70,17 @@ export default function GamesScreen() {
 
   const fetchRooms = useCallback(
     async (mode: 'initial' | 'refresh' = 'initial') => {
-      if (!tokens.accessToken) {
-        setRooms([]);
-        setRoomsError(null);
-        return;
-      }
-
       const setLoadingFlag = mode === 'initial' ? setRoomsLoading : setRoomsRefreshing;
       setLoadingFlag(true);
 
       try {
-        const response = await listGameRooms(undefined, {
-          accessToken: tokens.accessToken,
-          refreshTokens,
-        });
+        const authOptions = tokens.accessToken
+          ? {
+              accessToken: tokens.accessToken,
+              refreshTokens,
+            }
+          : undefined;
+        const response = await listGameRooms(undefined, authOptions);
         setRooms(response.rooms ?? []);
         setRoomsError(null);
       } catch (error) {
@@ -290,6 +285,13 @@ export default function GamesScreen() {
     void joinRoom(room);
   }, [joinRoom, router, t, tokens.accessToken]);
 
+  const handleWatchRoom = useCallback(
+    (room: GameRoomSummary) => {
+      navigateToRoomScreen(room);
+    },
+    [navigateToRoomScreen],
+  );
+
   const handleInviteCancel = useCallback(() => {
     setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
   }, []);
@@ -479,6 +481,7 @@ export default function GamesScreen() {
               const hostDisplay = room.hostId ? formatRoomHost(room.hostId) : t('games.rooms.mysteryHost');
               const gameName = formatRoomGame(room.gameId);
               const gameLabel = gameName === 'Unknown game' ? t('games.rooms.unknownGame') : gameName;
+              const canWatch = room.visibility === 'public' || Boolean(tokens.accessToken);
 
               return (
                 <ThemedView key={room.id} style={styles.roomCard}>
@@ -520,27 +523,46 @@ export default function GamesScreen() {
                         {t('games.rooms.created', { timestamp: createdTimestamp })}
                       </ThemedText>
                     </View>
-                    <TouchableOpacity
-                      style={[styles.roomJoinButton, isJoining && styles.roomJoinButtonDisabled]}
-                      onPress={() => handleJoinRoom(room)}
-                      disabled={isJoining}
-                    >
-                      {isJoining ? (
-                        <ActivityIndicator
-                          size="small"
-                          color={styles.roomJoinButtonText.color as string}
+                    <View style={styles.roomActionButtons}>
+                      <TouchableOpacity
+                        style={[
+                          styles.roomWatchButton,
+                          !canWatch ? styles.roomWatchButtonDisabled : null,
+                        ]}
+                        onPress={() => handleWatchRoom(room)}
+                        disabled={!canWatch}
+                      >
+                        <IconSymbol
+                          name="eye.fill"
+                          size={16}
+                          color={styles.roomWatchButtonText.color as string}
                         />
-                      ) : (
-                        <>
-                          <IconSymbol
-                            name="arrow.right.circle.fill"
-                            size={18}
+                        <ThemedText style={styles.roomWatchButtonText}>
+                          {t('games.common.watchRoom')}
+                        </ThemedText>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.roomJoinButton, isJoining && styles.roomJoinButtonDisabled]}
+                        onPress={() => handleJoinRoom(room)}
+                        disabled={isJoining}
+                      >
+                        {isJoining ? (
+                          <ActivityIndicator
+                            size="small"
                             color={styles.roomJoinButtonText.color as string}
                           />
-                          <ThemedText style={styles.roomJoinButtonText}>{t('games.common.joinRoom')}</ThemedText>
-                        </>
-                      )}
-                    </TouchableOpacity>
+                        ) : (
+                          <>
+                            <IconSymbol
+                              name="arrow.right.circle.fill"
+                              size={18}
+                              color={styles.roomJoinButtonText.color as string}
+                            />
+                            <ThemedText style={styles.roomJoinButtonText}>{t('games.common.joinRoom')}</ThemedText>
+                          </>
+                        )}
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </ThemedView>
               );
@@ -971,6 +993,11 @@ function createStyles(palette: Palette) {
       gap: 8,
       flexWrap: 'wrap',
     },
+    roomActionButtons: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
     roomVisibilityChip: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -1012,6 +1039,25 @@ function createStyles(palette: Palette) {
     roomJoinButtonText: {
       color: palette.background,
       fontWeight: '700',
+      fontSize: 13,
+    },
+    roomWatchButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: palette.tint,
+      backgroundColor: 'transparent',
+    },
+    roomWatchButtonDisabled: {
+      opacity: 0.6,
+    },
+    roomWatchButtonText: {
+      color: palette.tint,
+      fontWeight: '600',
       fontSize: 13,
     },
   });

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet, Text, ActivityIndicator, useColorScheme } from 'react-native';
+import { View, TextInput, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useTranslation } from '@/lib/i18n';
 import { useLocalAuth } from '../model/useLocalAuth';
+import { ThemedButton } from '@/components/ui/ThemedButton';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 interface Props {
   onAuthenticated?: (accessToken: string) => void;
@@ -10,13 +12,14 @@ interface Props {
 
 export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
   const auth = useLocalAuth();
-  const scheme = useColorScheme() || 'light';
+  const scheme = useColorScheme();
   const palette = Colors[scheme];
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [username, setUsername] = useState('');
+  const inputBackground = scheme === 'dark' ? '#1F2123' : palette.background;
   const isRegister = auth.mode === 'register';
 
   useEffect(() => {
@@ -57,7 +60,7 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>
+      <Text style={[styles.heading, { color: palette.text }]}>
         {isRegister ? t('auth.local.heading.register') : t('auth.local.heading.login')}
       </Text>
       {isRegister && (
@@ -65,7 +68,15 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
           autoCapitalize="none"
           autoCorrect={false}
           placeholder={t('common.labels.username')}
-          style={[styles.input, { borderColor: palette.icon, backgroundColor: palette.background }]}
+          placeholderTextColor={palette.icon}
+          style={[
+            styles.input,
+            {
+              borderColor: palette.icon,
+              backgroundColor: inputBackground,
+              color: palette.text,
+            },
+          ]}
           value={username}
           onChangeText={(value) => setUsername(value.replace(/[^a-zA-Z0-9_-]/g, ''))}
         />
@@ -75,14 +86,30 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
         autoCorrect={false}
         keyboardType="email-address"
         placeholder={t('common.labels.email')}
-        style={[styles.input, { borderColor: palette.icon, backgroundColor: palette.background }]}
+        placeholderTextColor={palette.icon}
+        style={[
+          styles.input,
+          {
+            borderColor: palette.icon,
+            backgroundColor: inputBackground,
+            color: palette.text,
+          },
+        ]}
         value={email}
         onChangeText={setEmail}
       />
       <TextInput
         secureTextEntry
         placeholder={t('common.labels.password')}
-        style={[styles.input, { borderColor: palette.icon, backgroundColor: palette.background }]}
+        placeholderTextColor={palette.icon}
+        style={[
+          styles.input,
+          {
+            borderColor: palette.icon,
+            backgroundColor: inputBackground,
+            color: palette.text,
+          },
+        ]}
         value={password}
         onChangeText={setPassword}
       />
@@ -90,7 +117,15 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
         <TextInput
           secureTextEntry
           placeholder={t('common.labels.confirmPassword')}
-          style={[styles.input, { borderColor: palette.icon, backgroundColor: palette.background }]}
+          placeholderTextColor={palette.icon}
+          style={[
+            styles.input,
+            {
+              borderColor: palette.icon,
+              backgroundColor: inputBackground,
+              color: palette.text,
+            },
+          ]}
           value={confirm}
           onChangeText={setConfirm}
         />
@@ -104,17 +139,20 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
       {isRegister && (
         <Text style={[styles.small, { color: palette.icon }]}>{t('auth.local.helper.allowedCharacters')}</Text>
       )}
-  {auth.error && <Text style={[styles.error, { color: palette.error }]}>{auth.error}</Text>}
+      {auth.error && <Text style={[styles.error, { color: palette.error }]}>{auth.error}</Text>}
       <View style={styles.buttonRow}>
-        <Button
+        <ThemedButton
           title={isRegister ? t('common.actions.register') : t('common.actions.login')}
           onPress={submit}
           disabled={!!(disabled || passwordMismatch || usernameInvalid)}
+          style={styles.button}
         />
-        <Button
+        <ThemedButton
           title={isRegister ? t('common.prompts.haveAccount') : t('common.prompts.needAccount')}
           onPress={auth.toggleMode}
           disabled={disabled}
+          variant="outline"
+          style={styles.button}
         />
       </View>
       {auth.loading && <ActivityIndicator style={{ marginTop: 12 }} />}
@@ -131,7 +169,12 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
               {t('common.labels.username')}: {auth.username}
             </Text>
           )}
-          <Button title={t('common.actions.logout')} onPress={auth.logout} />
+          <ThemedButton
+            title={t('common.actions.logout')}
+            onPress={auth.logout}
+            variant="outline"
+            style={styles.sessionButton}
+          />
         </View>
       )}
     </View>
@@ -140,8 +183,9 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: '90%',
+    width: '100%',
     maxWidth: 420,
+    alignSelf: 'center',
     gap: 10,
   },
   heading: {
@@ -152,10 +196,8 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#999',
     padding: 10,
     borderRadius: 6,
-    backgroundColor: 'white',
   },
   error: {
     fontSize: 13,
@@ -165,10 +207,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 8,
   },
+  button: {
+    flex: 1,
+  },
   sessionBox: {
     marginTop: 16,
     alignItems: 'center',
     gap: 8,
+  },
+  sessionButton: {
+    alignSelf: 'stretch',
   },
   small: {
     fontSize: 12,

@@ -43,7 +43,10 @@ export const translations = {
     auth: {
       sections: {
         oauth: "OAuth",
-        local: "Local Account",
+        local: "Login",
+      },
+      shortcuts: {
+        browseGames: "Browse games without signing in",
       },
       oauth: {
         loginButton: "Login with OAuth",
@@ -100,6 +103,7 @@ export const translations = {
         newRoom: "New room",
         createRoom: "Create room",
         joinRoom: "Join room",
+        watchRoom: "Watch room",
         viewRules: "View rules",
         invitePending: "pending",
       },
@@ -272,6 +276,9 @@ export const translations = {
           players: "Players",
           created: "Created",
           access: "Access",
+          shortcuts: {
+            browseGames: "Voir les salles sans se connecter",
+          },
           inviteCode: "Invite code",
         },
         loading: "Syncing room details...",
@@ -474,7 +481,10 @@ export const translations = {
     auth: {
       sections: {
         oauth: "OAuth",
-        local: "Cuenta local",
+        local: "Iniciar sesión",
+      },
+      shortcuts: {
+        browseGames: "Explorar salas sin iniciar sesión",
       },
       oauth: {
         loginButton: "Iniciar sesión con OAuth",
@@ -532,6 +542,7 @@ export const translations = {
         newRoom: "Sala nueva",
         createRoom: "Crear sala",
         joinRoom: "Unirse a la sala",
+        watchRoom: "Ver sala",
         viewRules: "Ver reglas",
         invitePending: "pendiente",
       },
@@ -913,7 +924,7 @@ export const translations = {
     auth: {
       sections: {
         oauth: "OAuth",
-        local: "Compte local",
+        local: "Connexion",
       },
       oauth: {
         loginButton: "Se connecter avec OAuth",
@@ -971,6 +982,7 @@ export const translations = {
         newRoom: "Nouvelle salle",
         createRoom: "Créer une salle",
         joinRoom: "Rejoindre la salle",
+        watchRoom: "Observer la salle",
         viewRules: "Voir les règles",
         invitePending: "en attente",
       },

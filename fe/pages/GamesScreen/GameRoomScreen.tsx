@@ -18,7 +18,8 @@ import { useSessionTokens } from '@/stores/sessionTokens';
 import {
   deleteGameRoom,
   leaveGameRoom,
-  listGameRooms,
+  getGameRoom,
+  getGameRoomSession,
   startGameRoom,
   type GameRoomSummary,
   type GameSessionSummary,
@@ -44,7 +45,7 @@ export default function GameRoomScreen() {
   const styles = useThemedStyles(createStyles);
   const params = useLocalSearchParams<{ id?: string; gameId?: string; roomName?: string }>();
   const router = useRouter();
-  const { tokens, refreshTokens } = useSessionTokens();
+  const { tokens, refreshTokens, hydrated } = useSessionTokens();
   const { t } = useTranslation();
 
   const roomId = useMemo(() => resolveParam(params?.id), [params]);
@@ -73,10 +74,7 @@ export default function GameRoomScreen() {
         return;
       }
 
-      if (!tokens.accessToken) {
-        setRoom(null);
-        setSession(null);
-        setError(t('games.room.errors.signInRequired'));
+      if (!hydrated) {
         return;
       }
 
@@ -84,21 +82,28 @@ export default function GameRoomScreen() {
       setFlag(true);
 
       try {
-        const response = await listGameRooms(gameId, {
-          accessToken: tokens.accessToken,
-          refreshTokens,
-        });
-        const nextRoom = response.rooms.find((item) => item.id === roomId);
-        if (nextRoom) {
-          setRoom(nextRoom);
-          setError(null);
-        } else {
-          setRoom(null);
+        const authOptions = tokens.accessToken
+          ? {
+              accessToken: tokens.accessToken,
+              refreshTokens,
+            }
+          : undefined;
+
+        const response = await getGameRoom(roomId, authOptions);
+        setRoom(response.room);
+        setError(null);
+
+        try {
+          const sessionResponse = await getGameRoomSession(roomId, authOptions);
+          setSession(sessionResponse.session ?? null);
+        } catch {
           setSession(null);
-          setError(t('games.room.errors.inactive'));
         }
       } catch (err) {
-        const message = err instanceof Error ? err.message : t('games.errors.loadRoomDetails');
+        const message =
+          err instanceof Error && err.message
+            ? err.message
+            : t('games.errors.loadRoomDetails');
         setRoom(null);
         setSession(null);
         setError(message);
@@ -106,7 +111,7 @@ export default function GameRoomScreen() {
         setFlag(false);
       }
     },
-    [gameId, refreshTokens, roomId, t, tokens.accessToken],
+    [hydrated, refreshTokens, roomId, t, tokens.accessToken],
   );
 
   useEffect(() => {
@@ -121,23 +126,26 @@ export default function GameRoomScreen() {
   );
 
   useEffect(() => {
-    if (!roomId || !tokens.userId) {
+    if (!roomId || !hydrated) {
       return;
     }
 
+    const isParticipant = Boolean(tokens.userId);
+    const joinEvent = isParticipant ? 'games.room.join' : 'games.room.watch';
+    const joinPayload = isParticipant
+      ? { roomId, userId: tokens.userId }
+      : { roomId };
+
     const handleConnect = () => {
-      socket.emit('games.room.join', {
-        roomId,
-        userId: tokens.userId,
-      });
+      socket.emit(joinEvent, joinPayload);
     };
 
     const handleJoined = (payload: { room?: GameRoomSummary; session?: GameSessionSummary | null }) => {
       if (payload?.room) {
         setRoom(payload.room);
       }
-      if (payload?.session) {
-        setSession(payload.session);
+      if (payload && Object.prototype.hasOwnProperty.call(payload, 'session')) {
+        setSession(payload?.session ?? null);
       }
     };
 
@@ -175,12 +183,12 @@ export default function GameRoomScreen() {
       );
     };
 
-    const handleSnapshot = (payload: { roomId?: string; session?: GameSessionSummary }) => {
+    const handleSnapshot = (payload: { roomId?: string; session?: GameSessionSummary | null }) => {
       if (payload?.roomId && payload.roomId !== roomId) {
         return;
       }
-      if (payload?.session) {
-        setSession(payload.session);
+      if (payload && Object.prototype.hasOwnProperty.call(payload, 'session')) {
+        setSession(payload?.session ?? null);
       }
       setActionBusy(null);
     };
@@ -211,8 +219,9 @@ export default function GameRoomScreen() {
 
     socket.on('connect', handleConnect);
     socket.on('games.room.joined', handleJoined);
+    socket.on('games.room.watching', handleJoined);
     socket.on('games.room.update', handleRoomUpdate);
-  socket.on('games.room.deleted', handleRoomDeleted);
+    socket.on('games.room.deleted', handleRoomDeleted);
     socket.on('games.session.snapshot', handleSnapshot);
     socket.on('games.session.started', handleSessionStarted);
     socket.on('games.session.cat_combo.played', handleCatComboPlayed);
@@ -225,6 +234,7 @@ export default function GameRoomScreen() {
     return () => {
       socket.off('connect', handleConnect);
       socket.off('games.room.joined', handleJoined);
+      socket.off('games.room.watching', handleJoined);
       socket.off('games.room.update', handleRoomUpdate);
       socket.off('games.room.deleted', handleRoomDeleted);
       socket.off('games.session.snapshot', handleSnapshot);
@@ -232,7 +242,7 @@ export default function GameRoomScreen() {
       socket.off('games.session.cat_combo.played', handleCatComboPlayed);
       socket.off('exception', handleException);
     };
-  }, [deleting, roomId, router, t, tokens.userId]);
+  }, [deleting, hydrated, roomId, router, t, tokens.userId]);
 
   const performLeave = useCallback(async () => {
     if (!roomId || !tokens.accessToken) {
@@ -294,17 +304,11 @@ export default function GameRoomScreen() {
     }
 
     if (!tokens.accessToken) {
-      Alert.alert(
-        t('games.alerts.signInRequiredTitle'),
-        t('games.alerts.signInManageSeatMessage'),
-        [
-          { text: t('common.cancel'), style: 'cancel' },
-          {
-            text: t('common.signIn'),
-            onPress: () => router.push('/auth' as never),
-          },
-        ],
-      );
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace('/(tabs)/games');
+      }
       return;
     }
 

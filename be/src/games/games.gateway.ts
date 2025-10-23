@@ -106,6 +106,45 @@ export class GamesGateway {
     }
   }
 
+  @SubscribeMessage('games.room.watch')
+  async handleWatchRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { roomId?: string },
+  ): Promise<void> {
+    const roomId =
+      typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
+
+    if (!roomId) {
+      throw new WsException('roomId is required.');
+    }
+
+    try {
+      const room = await this.gamesService.getRoom(roomId);
+      const session = await this.gamesService.findSessionByRoom(room.id);
+
+      const channel = this.realtime.roomChannel(room.id);
+      await client.join(channel);
+
+      client.emit('games.room.watching', {
+        room,
+        session,
+      });
+
+      if (session) {
+        this.realtime.emitSessionSnapshotToClient(client, room.id, session);
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error && typeof error.message === 'string'
+          ? error.message
+          : 'Unable to spectate this room.';
+      this.logger.warn(
+        `Failed to register spectator for room ${roomId}: ${message}`,
+      );
+      throw new WsException(message);
+    }
+  }
+
   @SubscribeMessage('games.session.request')
   async handleSessionRequest(
     @ConnectedSocket() client: Socket,
@@ -115,6 +154,11 @@ export class GamesGateway {
       typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
     if (!roomId) {
       throw new WsException('roomId is required.');
+    }
+
+    const channel = this.realtime.roomChannel(roomId);
+    if (!client.rooms.has(channel)) {
+      throw new WsException('Join the room before requesting the session.');
     }
 
     const session = await this.gamesService.findSessionByRoom(roomId);

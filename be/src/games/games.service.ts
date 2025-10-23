@@ -138,7 +138,10 @@ export class GamesService {
     return this.toSummary(saved);
   }
 
-  async listRooms(userId: string, gameId?: string): Promise<GameRoomSummary[]> {
+  async listRooms(
+    userId?: string,
+    gameId?: string,
+  ): Promise<GameRoomSummary[]> {
     const query: FilterQuery<GameRoom> = {};
     if (gameId) {
       query.gameId = gameId;
@@ -149,19 +152,62 @@ export class GamesService {
       .sort({ createdAt: -1 })
       .exec();
 
-    const normalizedUserId = userId.trim();
-
     return rooms
-      .filter((room) => {
-        if (room.visibility === 'public') {
-          return true;
-        }
-        const members = Array.isArray(room.playerIds) ? room.playerIds : [];
-        return (
-          room.hostId === normalizedUserId || members.includes(normalizedUserId)
-        );
-      })
+      .filter((room) => this.canViewRoom(room, userId))
       .map((room) => this.toSummary(room));
+  }
+
+  async getRoom(roomId: string, userId?: string): Promise<GameRoomSummary> {
+    const normalizedRoomId = roomId.trim();
+    if (!normalizedRoomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    const room = await this.gameRoomModel.findById(normalizedRoomId).exec();
+    if (!room) {
+      throw new NotFoundException('Game room not found.');
+    }
+
+    if (!this.canViewRoom(room, userId)) {
+      throw new ForbiddenException('Access to this room is not permitted.');
+    }
+
+    return this.toSummary(room);
+  }
+
+  async getRoomSession(
+    roomId: string,
+    userId?: string,
+  ): Promise<GameSessionSummary | null> {
+    const summary = await this.getRoom(roomId, userId);
+    return this.findSessionByRoom(summary.id);
+  }
+
+  private canViewRoom(room: GameRoom, userId?: string | null): boolean {
+    if (room.visibility === 'public') {
+      return true;
+    }
+
+    const normalizedUserId = typeof userId === 'string' ? userId.trim() : '';
+    if (!normalizedUserId) {
+      return false;
+    }
+
+    const members = Array.isArray(room.playerIds)
+      ? room.playerIds
+          .map((value) =>
+            typeof value === 'string' ? value.trim() : String(value ?? ''),
+          )
+          .filter((value) => value.length > 0)
+      : [];
+
+    const hostId = typeof room.hostId === 'string' ? room.hostId.trim() : '';
+
+    if (hostId && hostId === normalizedUserId) {
+      return true;
+    }
+
+    return members.includes(normalizedUserId);
   }
 
   async joinRoom(

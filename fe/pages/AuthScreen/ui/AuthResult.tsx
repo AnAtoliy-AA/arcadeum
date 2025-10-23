@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
 import { useTranslation } from '@/lib/i18n';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedButton } from '@/components/ui/ThemedButton';
 
 interface AuthResultProps {
   accessToken: string;
@@ -14,11 +16,16 @@ export function AuthResult({ accessToken, authorizationCode, onLogout }: AuthRes
   return (
     <View style={styles.container}>
       {authorizationCode ? (
-        <Text>{`${t('auth.oauth.authorizationCodeLabel')}: ${authorizationCode}`}</Text>
+        <ThemedText>{`${t('auth.oauth.authorizationCodeLabel')}: ${authorizationCode}`}</ThemedText>
       ) : (
-        <Text>{`${t('auth.oauth.accessTokenLabel')}: ${accessToken}`}</Text>
+        <ThemedText>{`${t('auth.oauth.accessTokenLabel')}: ${accessToken}`}</ThemedText>
       )}
-      <Button title={t('common.actions.logout')} onPress={onLogout} />
+      <ThemedButton
+        title={t('common.actions.logout')}
+        onPress={onLogout}
+        variant="outline"
+        style={styles.logoutButton}
+      />
     </View>
   );
 }
@@ -26,5 +33,8 @@ export function AuthResult({ accessToken, authorizationCode, onLogout }: AuthRes
 const styles = StyleSheet.create({
   container: {
     marginTop: 20,
+  },
+  logoutButton: {
+    marginTop: 12,
   },
 });

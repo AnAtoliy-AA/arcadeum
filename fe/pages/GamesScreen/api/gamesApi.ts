@@ -39,6 +39,10 @@ export interface JoinGameRoomResponse {
   room: GameRoomSummary;
 }
 
+export interface GetGameRoomResponse {
+  room: GameRoomSummary;
+}
+
 export interface GameSessionSummary {
   id: string;
   roomId: string;
@@ -80,6 +84,10 @@ export interface StartGameRoomResponse {
   session: GameSessionSummary;
 }
 
+export interface GetGameRoomSessionResponse {
+  session: GameSessionSummary | null;
+}
+
 function apiBase(): string {
   return resolveApiBase();
 }
@@ -111,6 +119,22 @@ export async function listGameRooms(gameId?: string, options?: FetchWithRefreshO
     throw new Error(errorText || 'Failed to fetch game rooms');
   }
   return response.json() as Promise<ListGameRoomsResponse>;
+}
+
+export async function getGameRoom(
+  roomId: string,
+  options?: FetchWithRefreshOptions,
+): Promise<GetGameRoomResponse> {
+  const response = await fetchWithRefresh(
+    `${apiBase()}/games/rooms/${encodeURIComponent(roomId)}`,
+    buildInit(),
+    options,
+  );
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Failed to load game room');
+  }
+  return response.json() as Promise<GetGameRoomResponse>;
 }
 
 export async function joinGameRoom(params: JoinGameRoomParams, options?: FetchWithRefreshOptions): Promise<JoinGameRoomResponse> {
@@ -147,6 +171,22 @@ export async function startGameRoom(params: StartGameRoomParams, options?: Fetch
     throw new Error(errorText || 'Failed to start game');
   }
   return response.json() as Promise<StartGameRoomResponse>;
+}
+
+export async function getGameRoomSession(
+  roomId: string,
+  options?: FetchWithRefreshOptions,
+): Promise<GetGameRoomSessionResponse> {
+  const response = await fetchWithRefresh(
+    `${apiBase()}/games/rooms/${encodeURIComponent(roomId)}/session`,
+    buildInit(),
+    options,
+  );
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Failed to load game session');
+  }
+  return response.json() as Promise<GetGameRoomSessionResponse>;
 }
 
 export async function deleteGameRoom(params: DeleteGameRoomParams, options?: FetchWithRefreshOptions): Promise<DeleteGameRoomResponse> {

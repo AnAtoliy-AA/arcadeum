@@ -20,11 +20,16 @@ export interface ExplodingCatsPlayerState {
   alive: boolean;
 }
 
+export type ExplodingCatsLogVisibility = 'all' | 'players';
+
 export interface ExplodingCatsLogEntry {
   id: string;
-  type: 'system' | 'action';
+  type: 'system' | 'action' | 'message';
   message: string;
   createdAt: string;
+  scope?: ExplodingCatsLogVisibility;
+  senderId?: string | null;
+  senderName?: string | null;
 }
 
 export interface ExplodingCatsState {
@@ -124,6 +129,7 @@ export function createInitialExplodingCatsState(
         type: 'system',
         message: `Game started with ${playerIds.length} players`,
         createdAt: new Date().toISOString(),
+        scope: 'all',
       },
     ],
   };

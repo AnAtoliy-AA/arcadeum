@@ -6,6 +6,7 @@ import {
   Modal,
   ScrollView,
   StyleSheet,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -99,11 +100,16 @@ interface ExplodingCatsPlayerState {
   alive: boolean;
 }
 
+export type LogVisibility = 'all' | 'players';
+
 interface ExplodingCatsLogEntry {
   id: string;
-  type: 'system' | 'action';
+  type: 'system' | 'action' | 'message';
   message: string;
   createdAt: string;
+  senderId?: string | null;
+  senderName?: string | null;
+  scope?: LogVisibility;
 }
 
 interface ExplodingCatsSnapshot {
@@ -201,6 +207,7 @@ interface ExplodingCatsTableProps {
   onDraw: () => void;
   onPlay: (card: 'skip' | 'attack') => void;
   onPlayCatCombo: (payload: ExplodingCatsCatComboInput) => void;
+  onPostHistoryNote?: (message: string, scope: LogVisibility) => Promise<void> | void;
   fullScreen?: boolean;
   tableOnly?: boolean;
 }
@@ -216,6 +223,7 @@ export function ExplodingCatsTable({
   onDraw,
   onPlay,
   onPlayCatCombo,
+  onPostHistoryNote,
   fullScreen = false,
   tableOnly = false,
 }: ExplodingCatsTableProps) {
@@ -228,6 +236,9 @@ export function ExplodingCatsTable({
   const cardPressScale = useRef(new Animated.Value(1)).current;
   const deckPulseScale = useRef(new Animated.Value(1)).current;
   const [animatingCardKey, setAnimatingCardKey] = useState<string | null>(null);
+  const [messageDraft, setMessageDraft] = useState('');
+  const [messageVisibility, setMessageVisibility] = useState<LogVisibility>('all');
+  const [historySending, setHistorySending] = useState(false);
 
   const snapshot = useMemo<ExplodingCatsSnapshot | null>(() => {
     const raw = session?.state?.snapshot;
@@ -323,7 +334,19 @@ export function ExplodingCatsTable({
   const canPlaySkip = isSessionActive && isMyTurn && hasSkip && (selfPlayer?.alive ?? false);
   const canPlayAttack = isSessionActive && isMyTurn && hasAttack && (selfPlayer?.alive ?? false);
   const canStart = isHost && !isSessionActive && !isSessionCompleted && !snapshot;
-  const logs = useMemo(() => (snapshot?.logs ?? []).slice(-12).reverse(), [snapshot]);
+  const isCurrentUserPlayer = Boolean(selfPlayer);
+  const logs = useMemo(() => {
+    const source = snapshot?.logs ?? [];
+    const filtered = source.filter((entry) => (
+      entry.scope !== 'players' || isCurrentUserPlayer
+    ));
+    const ordered = [...filtered].sort((a, b) => {
+      const aTime = new Date(a.createdAt).getTime();
+      const bTime = new Date(b.createdAt).getTime();
+      return aTime - bTime;
+    });
+    return ordered.slice(-20).reverse();
+  }, [snapshot, isCurrentUserPlayer]);
   const translateCardName = (card: ExplodingCatsCard) => t(getCardTranslationKey(card));
   const translateCardDescription = (card: ExplodingCatsCard) => t(getCardDescriptionKey(card));
   const statusLabel = session?.status
@@ -332,7 +355,9 @@ export function ExplodingCatsTable({
   const placeholderText = `${t('games.table.placeholder.waiting')}${isHost ? ` ${t('games.table.placeholder.hostSuffix')}` : ''}`;
   const pendingDrawsLabel = pendingDraws > 0 ? pendingDraws : t('games.table.info.none');
   const pendingDrawsCaption = pendingDraws === 1 ? t('games.table.info.pendingSingular') : t('games.table.info.pendingPlural');
-  const formatLogMessage = (message: string) => {
+  const trimmedMessage = messageDraft.trim();
+  const canSendHistoryMessage = isCurrentUserPlayer && trimmedMessage.length > 0;
+  const formatLogMessage = useCallback((message: string) => {
     if (!message) {
       return message;
     }
@@ -343,7 +368,7 @@ export function ExplodingCatsTable({
       }
     });
     return next;
-  };
+  }, [playerNameMap]);
 
   const aliveOpponents = useMemo(
     () => otherPlayers.filter((player) => player.alive),
@@ -394,6 +419,12 @@ export function ExplodingCatsTable({
   const [catComboPrompt, setCatComboPrompt] = useState<CatComboPromptState | null>(null);
   const catComboBusy = actionBusy === 'cat_pair' || actionBusy === 'cat_trio';
 
+  useEffect(() => {
+    setMessageDraft('');
+    setMessageVisibility('all');
+    setHistorySending(false);
+  }, [session?.id]);
+
   const closeCatComboPrompt = useCallback(() => {
     setCatComboPrompt(null);
   }, []);
@@ -423,6 +454,29 @@ export function ExplodingCatsTable({
     },
     [aliveOpponents, catComboAvailability],
   );
+
+  const handleSendHistoryNote = useCallback(async () => {
+    if (!canSendHistoryMessage || historySending) {
+      return;
+    }
+
+    if (!onPostHistoryNote) {
+      setMessageDraft('');
+      return;
+    }
+
+    setHistorySending(true);
+    try {
+      await onPostHistoryNote(trimmedMessage, messageVisibility);
+      setMessageDraft('');
+    } finally {
+      setHistorySending(false);
+    }
+  }, [canSendHistoryMessage, historySending, onPostHistoryNote, trimmedMessage, messageVisibility]);
+
+  const toggleMessageVisibility = useCallback(() => {
+    setMessageVisibility((prev) => (prev === 'all' ? 'players' : 'all'));
+  }, []);
 
   const handleCatComboModeChange = useCallback(
     (mode: 'pair' | 'trio') => {
@@ -926,18 +980,105 @@ export function ExplodingCatsTable({
         </View>
       )}
 
-      {showLogs && logs.length ? (
+      {showLogs ? (
         <View style={styles.logsSection}>
           <View style={styles.logsHeader}>
             <IconSymbol name="list.bullet.rectangle" size={16} color={styles.logsHeaderText.color as string} />
             <ThemedText style={styles.logsHeaderText}>{t('games.table.logs.title')}</ThemedText>
           </View>
-          {logs.map((log) => (
-            <View key={log.id} style={styles.logRow}>
-              <ThemedText style={styles.logTimestamp}>{new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</ThemedText>
-              <ThemedText style={styles.logMessage}>{formatLogMessage(log.message)}</ThemedText>
-            </View>
-          ))}
+          {isCurrentUserPlayer ? (
+            <>
+              <View style={styles.logsComposer}>
+                <TextInput
+                  style={styles.logsInput}
+                  value={messageDraft}
+                  onChangeText={setMessageDraft}
+                  placeholder={t('games.table.logs.composerPlaceholder')}
+                  placeholderTextColor={styles.logsInputPlaceholder.color as string}
+                  multiline
+                  maxLength={500}
+                  editable={!historySending}
+                  textAlignVertical="top"
+                />
+                <TouchableOpacity
+                  style={[
+                    styles.logsSendButton,
+                    (!canSendHistoryMessage || historySending)
+                      ? styles.logsSendButtonDisabled
+                      : null,
+                  ]}
+                  onPress={handleSendHistoryNote}
+                  disabled={!canSendHistoryMessage || historySending}
+                >
+                  {historySending ? (
+                    <ActivityIndicator size="small" color={styles.logsSendButtonText.color as string} />
+                  ) : (
+                    <>
+                      <IconSymbol name="paperplane.fill" size={14} color={styles.logsSendButtonText.color as string} />
+                      <ThemedText style={styles.logsSendButtonText}>{t('games.table.logs.send')}</ThemedText>
+                    </>
+                  )}
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity style={styles.logsCheckboxRow} onPress={toggleMessageVisibility}>
+                <View style={[styles.checkboxBox, messageVisibility === 'players' ? styles.checkboxBoxChecked : null]}>
+                  {messageVisibility === 'players' ? (
+                    <IconSymbol name="checkmark" size={12} color={styles.checkboxCheck.color as string} />
+                  ) : null}
+                </View>
+                <View style={styles.checkboxCopy}>
+                  <ThemedText style={styles.checkboxLabel}>
+                    {t(messageVisibility === 'players' ? 'games.table.logs.checkboxLabelPlayers' : 'games.table.logs.checkboxLabelAll')}
+                  </ThemedText>
+                  <ThemedText style={styles.checkboxHint}>{t('games.table.logs.checkboxHint')}</ThemedText>
+                </View>
+              </TouchableOpacity>
+            </>
+          ) : null}
+          {logs.length ? (
+            logs.map((log) => {
+              const timestamp = new Date(log.createdAt);
+              const timeLabel = Number.isNaN(timestamp.getTime())
+                ? '--:--'
+                : timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              const isMessage = log.type === 'message';
+              let senderDisplayName: string | null = null;
+              if (isMessage) {
+                if (log.senderName) {
+                  senderDisplayName = log.senderName;
+                } else if (log.senderId) {
+                  senderDisplayName = playerNameMap.get(log.senderId)
+                    ?? (currentUserId && log.senderId === currentUserId ? t('games.table.logs.you') : null);
+                }
+                if (!senderDisplayName) {
+                  senderDisplayName = t('games.table.logs.unknownSender');
+                }
+              }
+
+              return (
+                <View key={log.id} style={styles.logRow}>
+                  <ThemedText style={styles.logTimestamp}>{timeLabel}</ThemedText>
+                  {isMessage ? (
+                    <View style={styles.logMessageColumn}>
+                      <View style={styles.logMessageHeader}>
+                        <ThemedText style={styles.logMessageSender} numberOfLines={1}>{senderDisplayName}</ThemedText>
+                        {log.scope === 'players' ? (
+                          <View style={styles.logScopeBadge}>
+                            <ThemedText style={styles.logScopeBadgeText}>{t('games.table.logs.playersOnlyTag')}</ThemedText>
+                          </View>
+                        ) : null}
+                      </View>
+                      <ThemedText style={styles.logMessageText}>{log.message}</ThemedText>
+                    </View>
+                  ) : (
+                    <ThemedText style={styles.logMessage}>{formatLogMessage(log.message)}</ThemedText>
+                  )}
+                </View>
+              );
+            })
+          ) : (
+            <ThemedText style={styles.logsEmptyText}>{t('games.table.logs.empty')}</ThemedText>
+          )}
         </View>
       ) : null}
     </>
@@ -1748,7 +1889,7 @@ function createStyles(palette: Palette) {
       fontStyle: 'italic',
     },
     logsSection: {
-      gap: 8,
+      gap: 12,
     },
     logsHeader: {
       flexDirection: 'row',
@@ -1758,6 +1899,11 @@ function createStyles(palette: Palette) {
     logsHeaderText: {
       color: palette.icon,
       fontWeight: '600',
+    },
+    logsEmptyText: {
+      color: palette.icon,
+      fontSize: 12,
+      fontStyle: 'italic',
     },
     logRow: {
       flexDirection: 'row',
@@ -1773,6 +1919,109 @@ function createStyles(palette: Palette) {
       flex: 1,
       color: palette.text,
       fontSize: 12,
+    },
+    logMessageColumn: {
+      flex: 1,
+      gap: 4,
+    },
+    logMessageHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
+    logMessageSender: {
+      color: palette.text,
+      fontWeight: '600',
+      fontSize: 12,
+    },
+    logScopeBadge: {
+      paddingHorizontal: 6,
+      paddingVertical: 2,
+      borderRadius: 8,
+      backgroundColor: raised,
+    },
+    logScopeBadgeText: {
+      color: palette.icon,
+      fontSize: 10,
+      fontWeight: '600',
+      textTransform: 'uppercase',
+    },
+    logMessageText: {
+      color: palette.text,
+      fontSize: 12,
+      lineHeight: 16,
+    },
+    logsComposer: {
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      gap: 10,
+    },
+    logsInput: {
+      flex: 1,
+      minHeight: 40,
+      maxHeight: 96,
+      borderRadius: 12,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      backgroundColor: raised,
+      color: palette.text,
+      fontSize: 13,
+    },
+    logsInputPlaceholder: {
+      color: palette.icon,
+    },
+    logsSendButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 6,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      borderRadius: 12,
+      backgroundColor: primaryBgColor,
+    },
+    logsSendButtonDisabled: {
+      opacity: 0.5,
+    },
+    logsSendButtonText: {
+      color: primaryTextColor,
+      fontWeight: '700',
+      fontSize: 13,
+    },
+    logsCheckboxRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+    },
+    checkboxBox: {
+      width: 20,
+      height: 20,
+      borderRadius: 6,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: border,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: surface,
+    },
+    checkboxBoxChecked: {
+      backgroundColor: primaryBgColor,
+      borderColor: primaryBgColor,
+    },
+    checkboxCheck: {
+      color: primaryTextColor,
+    },
+    checkboxCopy: {
+      flex: 1,
+      gap: 2,
+    },
+    checkboxLabel: {
+      color: palette.text,
+      fontWeight: '600',
+      fontSize: 12,
+    },
+    checkboxHint: {
+      color: palette.icon,
+      fontSize: 11,
     },
   });
 }

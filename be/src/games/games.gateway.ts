@@ -346,6 +346,66 @@ export class GamesGateway {
     }
   }
 
+  @SubscribeMessage('games.session.history_note')
+  async handleSessionHistoryNote(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: {
+      roomId?: string;
+      userId?: string;
+      message?: string;
+      scope?: string;
+    },
+  ): Promise<void> {
+    const roomId =
+      typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
+    const userId =
+      typeof payload?.userId === 'string' ? payload.userId.trim() : '';
+    const message =
+      typeof payload?.message === 'string' ? payload.message.trim() : '';
+    const scopeRaw =
+      typeof payload?.scope === 'string'
+        ? payload.scope.trim().toLowerCase()
+        : 'all';
+
+    if (!roomId) {
+      throw new WsException('roomId is required.');
+    }
+    if (!userId) {
+      throw new WsException('userId is required.');
+    }
+    if (!message) {
+      throw new WsException('message is required.');
+    }
+
+    const scope = scopeRaw === 'players' ? 'players' : 'all';
+
+    try {
+      await this.gamesService.postExplodingCatsHistoryNote(
+        userId,
+        roomId,
+        message,
+        scope,
+      );
+      client.emit('games.session.history_note.ack', {
+        roomId,
+        userId,
+        scope,
+      });
+    } catch (error) {
+      const messageText =
+        error instanceof Error && typeof error.message === 'string'
+          ? error.message
+          : 'Unable to post history note.';
+
+      this.logger.warn(
+        `Failed to post history note for room ${roomId}, user ${userId}: ${messageText}`,
+      );
+
+      throw new WsException(messageText);
+    }
+  }
+
   @SubscribeMessage('games.session.start')
   async handleSessionStart(
     @ConnectedSocket() client: Socket,

@@ -18,6 +18,7 @@ import {
   createInitialExplodingCatsState,
   type ExplodingCatsCard,
   type ExplodingCatsCatCard,
+  type ExplodingCatsLogVisibility,
   type ExplodingCatsPlayerState,
   type ExplodingCatsState,
 } from './exploding-cats/exploding-cats.state';
@@ -1184,6 +1185,90 @@ export class GamesService {
     }
 
     snapshot.logs.push(...logEntries);
+
+    const nextState = {
+      ...state,
+      snapshot,
+      lastUpdatedAt: nowIso,
+    };
+
+    return this.upsertSessionState({
+      roomId: normalizedRoomId,
+      state: nextState,
+    });
+  }
+
+  async postExplodingCatsHistoryNote(
+    userId: string,
+    roomId: string,
+    message: string,
+    visibility: ExplodingCatsLogVisibility = 'all',
+  ): Promise<GameSessionSummary> {
+    const normalizedUserId = userId.trim();
+    if (!normalizedUserId) {
+      throw new BadRequestException('User ID is required.');
+    }
+
+    const normalizedRoomId = roomId.trim();
+    if (!normalizedRoomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage) {
+      throw new BadRequestException('Message must not be empty.');
+    }
+
+    const safeMessage = trimmedMessage.slice(0, 500);
+    const scope: ExplodingCatsLogVisibility =
+      visibility === 'players' ? 'players' : 'all';
+
+    const room = await this.ensureParticipant(
+      normalizedRoomId,
+      normalizedUserId,
+    );
+    if (room.status !== 'in_progress') {
+      throw new BadRequestException('The game has not started for this room.');
+    }
+
+    const sessionDoc = await this.gameSessionModel
+      .findOne({ roomId: normalizedRoomId })
+      .exec();
+    if (!sessionDoc) {
+      throw new NotFoundException('Game session not found for this room.');
+    }
+
+    if (sessionDoc.engine !== EXPLODING_CATS_ENGINE_ID) {
+      throw new BadRequestException(
+        'History notes are only supported for Exploding Cats sessions.',
+      );
+    }
+
+    const state = sessionDoc.state ?? {};
+    const snapshotRaw = state.snapshot as ExplodingCatsState | undefined;
+    if (!snapshotRaw) {
+      throw new NotFoundException('Exploding Cats snapshot is unavailable.');
+    }
+
+    const snapshot = this.cloneExplodingCatsState(snapshotRaw);
+    const player = this.findExplodingCatsPlayer(snapshot, normalizedUserId);
+    if (!player) {
+      throw new ForbiddenException('Player is not part of this session.');
+    }
+
+    const nowIso = new Date().toISOString();
+    snapshot.logs.push({
+      id: randomUUID(),
+      type: 'message',
+      message: safeMessage,
+      createdAt: nowIso,
+      senderId: normalizedUserId,
+      scope,
+    });
+
+    if (snapshot.logs.length > 200) {
+      snapshot.logs = snapshot.logs.slice(-200);
+    }
 
     const nextState = {
       ...state,

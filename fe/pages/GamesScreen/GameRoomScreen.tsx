@@ -34,6 +34,7 @@ import {
 import {
   ExplodingCatsTable,
   type ExplodingCatsCatComboInput,
+  type LogVisibility,
 } from './components/ExplodingCatsTable';
 import { useTranslation } from '@/lib/i18n';
 import { platform } from '@/constants/platform';
@@ -493,6 +494,30 @@ export default function GameRoomScreen() {
     [actionBusy, roomId, t, tokens.userId],
   );
 
+  const handlePostHistoryNote = useCallback(
+    (message: string, scope: LogVisibility) => {
+      if (!roomId || !tokens.userId) {
+        Alert.alert(t('games.alerts.signInRequiredTitle'), t('games.alerts.signInTakeTurnMessage'));
+        return Promise.resolve();
+      }
+
+      const trimmed = message.trim();
+      if (!trimmed) {
+        return Promise.resolve();
+      }
+
+      socket.emit('games.session.history_note', {
+        roomId,
+        userId: tokens.userId,
+        message: trimmed,
+        scope,
+      });
+
+      return Promise.resolve();
+    },
+    [roomId, t, tokens.userId],
+  );
+
   const handleBack = useCallback(() => {
     if (router.canGoBack()) {
       router.back();
@@ -658,6 +683,7 @@ export default function GameRoomScreen() {
             onDraw={handleDrawCard}
             onPlay={handlePlayCard}
             onPlayCatCombo={handlePlayCatCombo}
+            onPostHistoryNote={handlePostHistoryNote}
             fullScreen
             tableOnly
           />
@@ -693,6 +719,7 @@ export default function GameRoomScreen() {
             onDraw={handleDrawCard}
             onPlay={handlePlayCard}
             onPlayCatCombo={handlePlayCatCombo}
+            onPostHistoryNote={handlePostHistoryNote}
             fullScreen
           />
         </View>
@@ -805,6 +832,7 @@ export default function GameRoomScreen() {
           onDraw={handleDrawCard}
           onPlay={handlePlayCard}
           onPlayCatCombo={handlePlayCatCombo}
+          onPostHistoryNote={handlePostHistoryNote}
         />
 
         <ThemedView style={styles.footerCard}>

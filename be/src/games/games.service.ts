@@ -567,6 +567,7 @@ export class GamesService {
             ? `${normalizedUserId} drew an Exploding Cat!`
             : `${normalizedUserId} drew a card.`,
         createdAt: nowIso,
+        scope: 'all',
       },
     ];
 
@@ -576,6 +577,7 @@ export class GamesService {
         type: 'system',
         message: 'Deck was reshuffled from the discard pile.',
         createdAt: nowIso,
+        scope: 'all',
       });
     }
 
@@ -597,6 +599,7 @@ export class GamesService {
           type: 'action',
           message: `${normalizedUserId} used a Defuse card.`,
           createdAt: nowIso,
+          scope: 'all',
         });
       } else {
         player.alive = false;
@@ -612,6 +615,7 @@ export class GamesService {
           type: 'system',
           message: `${normalizedUserId} exploded and has been eliminated.`,
           createdAt: nowIso,
+          scope: 'all',
         });
 
         if (snapshot.playerOrder.length <= 1) {
@@ -623,6 +627,7 @@ export class GamesService {
               type: 'system',
               message: `${winnerId} wins the game!`,
               createdAt: nowIso,
+              scope: 'all',
             });
           }
         }
@@ -766,6 +771,7 @@ export class GamesService {
         type: 'system',
         message: `${normalizedUserId} left the game.`,
         createdAt: nowIso,
+        scope: 'all',
       });
 
       let sessionStatus: GameSessionStatus | undefined;
@@ -781,6 +787,7 @@ export class GamesService {
             type: 'system',
             message: `${winnerId} wins the game!`,
             createdAt: nowIso,
+            scope: 'all',
           });
         }
       }
@@ -972,6 +979,7 @@ export class GamesService {
         type: 'action',
         message: `${normalizedUserId} played a ${capitalizedCard} card.`,
         createdAt: nowIso,
+        scope: 'all',
       },
     ];
 
@@ -1142,6 +1150,7 @@ export class GamesService {
           type: 'action',
           message: `${normalizedUserId} used a ${catCard} pair on ${targetPlayerId}, but they had no cards.`,
           createdAt: nowIso,
+          scope: 'all',
         });
       } else {
         const stolenIndex = Math.floor(
@@ -1157,6 +1166,7 @@ export class GamesService {
           type: 'action',
           message: `${normalizedUserId} stole a card from ${targetPlayerId} with a ${catCard} pair.`,
           createdAt: nowIso,
+          scope: 'all',
         });
       }
     } else {
@@ -1181,6 +1191,7 @@ export class GamesService {
           ? `${normalizedUserId} named ${desiredCard} and received it from ${targetPlayerId} with a ${catCard} trio.`
           : `${normalizedUserId} named ${desiredCard ?? 'a card'} with a ${catCard} trio, but ${targetPlayerId} did not have it.`,
         createdAt: nowIso,
+        scope: 'all',
       });
     }
 

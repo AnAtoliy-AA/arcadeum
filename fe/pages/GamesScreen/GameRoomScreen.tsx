@@ -76,6 +76,7 @@ export default function GameRoomScreen() {
   const isHost = room?.hostId && tokens.userId ? room.hostId === tokens.userId : false;
   const [leaving, setLeaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [tableFullScreen, setTableFullScreen] = useState(false);
 
   const fetchRoom = useCallback(
     async (mode: 'initial' | 'refresh' = 'initial') => {
@@ -527,6 +528,20 @@ export default function GameRoomScreen() {
     session?.state && typeof session.state === 'object' && (session.state as Record<string, any>).snapshot,
   );
 
+  useEffect(() => {
+    if (!hasSessionSnapshot) {
+      setTableFullScreen(false);
+    }
+  }, [hasSessionSnapshot]);
+
+  const handleEnterFullScreen = useCallback(() => {
+    setTableFullScreen(true);
+  }, []);
+
+  const handleExitFullScreen = useCallback(() => {
+    setTableFullScreen(false);
+  }, []);
+
   const renderTopBar = useCallback(
     (variant: 'lobby' | 'table') => (
       <View
@@ -540,6 +555,22 @@ export default function GameRoomScreen() {
           <ThemedText style={styles.backButtonText}>{t('games.detail.backToLobby')}</ThemedText>
         </TouchableOpacity>
         <View style={styles.actionGroup}>
+          {hasSessionSnapshot ? (
+            <TouchableOpacity
+              style={[styles.gameButton, tableFullScreen ? styles.buttonDisabled : null]}
+              onPress={handleEnterFullScreen}
+              disabled={tableFullScreen}
+              accessibilityRole="button"
+              accessibilityLabel={t('games.room.buttons.enterFullscreen')}
+            >
+              <IconSymbol
+                name="arrow.up.left.and.arrow.down.right"
+                size={16}
+                color={styles.gameButtonText.color as string}
+              />
+              <ThemedText style={styles.gameButtonText}>{t('games.room.buttons.enterFullscreen')}</ThemedText>
+            </TouchableOpacity>
+          ) : null}
           <TouchableOpacity style={styles.gameButton} onPress={handleViewGame} disabled={!room && !gameId}>
             <IconSymbol name="book" size={16} color={styles.gameButtonText.color as string} />
             <ThemedText style={styles.gameButtonText}>{t('games.room.buttons.viewGame')}</ThemedText>
@@ -594,8 +625,55 @@ export default function GameRoomScreen() {
         </View>
       </View>
     ),
-    [deleting, gameId, handleBack, handleDeleteRoom, handleLeaveRoom, handleViewGame, isHost, leaving, room, styles, t],
+    [
+      deleting,
+      gameId,
+      handleBack,
+      handleDeleteRoom,
+      handleEnterFullScreen,
+      handleLeaveRoom,
+      handleViewGame,
+      hasSessionSnapshot,
+      isHost,
+      leaving,
+      room,
+      styles,
+      t,
+      tableFullScreen,
+    ],
   );
+
+  if (tableFullScreen && hasSessionSnapshot) {
+    return (
+      <ThemedView style={fullscreenContainerStyle}>
+        <View style={styles.fullscreenTableWrapper}>
+          <ExplodingCatsTable
+            room={room}
+            session={session}
+            currentUserId={tokens.userId ?? null}
+            actionBusy={actionBusy}
+            startBusy={startBusy}
+            isHost={isHost}
+            onStart={handleStartMatch}
+            onDraw={handleDrawCard}
+            onPlay={handlePlayCard}
+            onPlayCatCombo={handlePlayCatCombo}
+            fullScreen
+            tableOnly
+          />
+        </View>
+        <TouchableOpacity
+          style={[styles.tableOnlyCloseButton, { top: iosTopInset + 16 }]}
+          onPress={handleExitFullScreen}
+          accessibilityRole="button"
+          accessibilityLabel={t('games.room.buttons.exitFullscreen')}
+        >
+          <IconSymbol name="xmark" size={18} color={styles.tableOnlyCloseIcon.color as string} />
+          <ThemedText style={styles.tableOnlyCloseText}>{t('games.room.buttons.exitFullscreen')}</ThemedText>
+        </TouchableOpacity>
+      </ThemedView>
+    );
+  }
 
   const topBar = renderTopBar(hasSessionSnapshot ? 'table' : 'lobby');
 
@@ -837,6 +915,9 @@ function createStyles(palette: Palette) {
       borderRadius: 999,
       backgroundColor: raisedBackground,
     },
+    buttonDisabled: {
+      opacity: 0.6,
+    },
     gameButtonText: {
       color: palette.tint,
       fontWeight: '600',
@@ -1024,6 +1105,32 @@ function createStyles(palette: Palette) {
     footerText: {
       color: palette.icon,
       lineHeight: 19,
+    },
+    tableOnlyCloseButton: {
+      position: 'absolute',
+      left: 24,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      borderRadius: 999,
+      backgroundColor: palette.background,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor,
+      shadowColor: surfaceShadow,
+      shadowOpacity: isLight ? 0.85 : 0.75,
+      shadowRadius: 12,
+      shadowOffset: { width: 0, height: 6 },
+      elevation: 3,
+    },
+    tableOnlyCloseIcon: {
+      color: palette.text,
+    },
+    tableOnlyCloseText: {
+      color: palette.text,
+      fontWeight: '600',
+      fontSize: 13,
     },
   });
 }

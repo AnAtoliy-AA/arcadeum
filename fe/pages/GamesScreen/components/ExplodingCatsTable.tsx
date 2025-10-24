@@ -202,6 +202,7 @@ interface ExplodingCatsTableProps {
   onPlay: (card: 'skip' | 'attack') => void;
   onPlayCatCombo: (payload: ExplodingCatsCatComboInput) => void;
   fullScreen?: boolean;
+  tableOnly?: boolean;
 }
 
 export function ExplodingCatsTable({
@@ -216,9 +217,14 @@ export function ExplodingCatsTable({
   onPlay,
   onPlayCatCombo,
   fullScreen = false,
+  tableOnly = false,
 }: ExplodingCatsTableProps) {
   const styles = useThemedStyles(createStyles);
   const { t } = useTranslation();
+  const showHeader = !tableOnly;
+  const showStats = !tableOnly;
+  const showHandHeader = !tableOnly;
+  const showLogs = true;
   const cardPressScale = useRef(new Animated.Value(1)).current;
   const deckPulseScale = useRef(new Animated.Value(1)).current;
   const [animatingCardKey, setAnimatingCardKey] = useState<string | null>(null);
@@ -552,20 +558,24 @@ export function ExplodingCatsTable({
 
   const tableContent = (
     <>
-      <View style={styles.headerRow}>
-        <View style={styles.headerTitle}>
-          <IconSymbol name="rectangle.grid.2x2" size={18} color={styles.headerIcon.color as string} />
-          <ThemedText style={styles.headerText}>{t('games.table.headerTitle')}</ThemedText>
-        </View>
-        <View style={styles.statusBadge}>
-          <ThemedText style={styles.statusText}>{statusLabel}</ThemedText>
-        </View>
-      </View>
-      {isSessionCompleted ? (
-        <View style={styles.messageCard}>
-          <IconSymbol name="crown.fill" size={18} color={styles.messageText.color as string} />
-          <ThemedText style={styles.messageText}>{t('games.table.messageCompleted')}</ThemedText>
-        </View>
+      {showHeader ? (
+        <>
+          <View style={styles.headerRow}>
+            <View style={styles.headerTitle}>
+              <IconSymbol name="rectangle.grid.2x2" size={18} color={styles.headerIcon.color as string} />
+              <ThemedText style={styles.headerText}>{t('games.table.headerTitle')}</ThemedText>
+            </View>
+            <View style={styles.statusBadge}>
+              <ThemedText style={styles.statusText}>{statusLabel}</ThemedText>
+            </View>
+          </View>
+          {isSessionCompleted ? (
+            <View style={styles.messageCard}>
+              <IconSymbol name="crown.fill" size={18} color={styles.messageText.color as string} />
+              <ThemedText style={styles.messageText}>{t('games.table.messageCompleted')}</ThemedText>
+            </View>
+          ) : null}
+        </>
       ) : null}
 
       {snapshot ? (
@@ -647,45 +657,49 @@ export function ExplodingCatsTable({
                 );
               })}
             </View>
-            <View style={styles.tableStatsRow}>
-              <Animated.View style={[styles.tableStatCard, { transform: [{ scale: deckPulseScale }] }]}> 
-                <IconSymbol name="rectangle.stack" size={18} color={styles.tableStatIcon.color as string} />
-                <View style={styles.tableStatTextGroup}>
-                  <ThemedText style={styles.tableStatTitle}>{deckCount}</ThemedText>
-                  <ThemedText style={styles.tableStatSubtitle}>{t('games.table.info.inDeck')}</ThemedText>
-                </View>
-              </Animated.View>
-              <View style={styles.tableStatCard}>
-                <IconSymbol name="hourglass" size={18} color={styles.tableStatIcon.color as string} />
-                <View style={styles.tableStatTextGroup}>
-                  <ThemedText style={styles.tableStatTitle}>{pendingDrawsLabel}</ThemedText>
-                  <ThemedText style={styles.tableStatSubtitle}>{pendingDrawsCaption}</ThemedText>
+            {showStats ? (
+              <View style={styles.tableStatsRow}>
+                <Animated.View style={[styles.tableStatCard, { transform: [{ scale: deckPulseScale }] }]}> 
+                  <IconSymbol name="rectangle.stack" size={18} color={styles.tableStatIcon.color as string} />
+                  <View style={styles.tableStatTextGroup}>
+                    <ThemedText style={styles.tableStatTitle}>{deckCount}</ThemedText>
+                    <ThemedText style={styles.tableStatSubtitle}>{t('games.table.info.inDeck')}</ThemedText>
+                  </View>
+                </Animated.View>
+                <View style={styles.tableStatCard}>
+                  <IconSymbol name="hourglass" size={18} color={styles.tableStatIcon.color as string} />
+                  <View style={styles.tableStatTextGroup}>
+                    <ThemedText style={styles.tableStatTitle}>{pendingDrawsLabel}</ThemedText>
+                    <ThemedText style={styles.tableStatSubtitle}>{pendingDrawsCaption}</ThemedText>
+                  </View>
                 </View>
               </View>
-            </View>
+            ) : null}
           </View>
 
           {selfPlayer ? (
             <View style={styles.handSection}>
-              <View style={styles.handHeader}>
-                <IconSymbol name="hand.draw.fill" size={18} color={styles.handTitleIcon.color as string} />
-                <ThemedText style={styles.handTitle}>{t('games.table.hand.title')}</ThemedText>
-                <View
-                  style={[
-                    styles.handStatusPill,
-                    selfPlayer.alive ? styles.handStatusAlive : styles.handStatusOut,
-                  ]}
-                >
-                  <ThemedText
+              {showHandHeader ? (
+                <View style={styles.handHeader}>
+                  <IconSymbol name="hand.draw.fill" size={18} color={styles.handTitleIcon.color as string} />
+                  <ThemedText style={styles.handTitle}>{t('games.table.hand.title')}</ThemedText>
+                  <View
                     style={[
-                      styles.handStatusText,
-                      selfPlayer.alive ? null : styles.handStatusTextOut,
+                      styles.handStatusPill,
+                      selfPlayer.alive ? styles.handStatusAlive : styles.handStatusOut,
                     ]}
                   >
-                    {t(selfPlayer.alive ? 'games.table.hand.statusAlive' : 'games.table.hand.statusOut')}
-                  </ThemedText>
+                    <ThemedText
+                      style={[
+                        styles.handStatusText,
+                        selfPlayer.alive ? null : styles.handStatusTextOut,
+                      ]}
+                    >
+                      {t(selfPlayer.alive ? 'games.table.hand.statusAlive' : 'games.table.hand.statusOut')}
+                    </ThemedText>
+                  </View>
                 </View>
-              </View>
+              ) : null}
 
               {selfPlayer.hand.length ? (
                 <ScrollView
@@ -912,7 +926,7 @@ export function ExplodingCatsTable({
         </View>
       )}
 
-      {logs.length ? (
+      {showLogs && logs.length ? (
         <View style={styles.logsSection}>
           <View style={styles.logsHeader}>
             <IconSymbol name="list.bullet.rectangle" size={16} color={styles.logsHeaderText.color as string} />

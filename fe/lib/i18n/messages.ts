@@ -296,6 +296,8 @@ export const translations = {
         buttons: {
           viewGame: "View game",
           deleteRoom: "Delete room",
+          enterFullscreen: "Full screen",
+          exitFullscreen: "Exit full screen",
         },
       },
       table: {
@@ -738,6 +740,8 @@ export const translations = {
         buttons: {
           viewGame: "Ver juego",
           deleteRoom: "Eliminar sala",
+          enterFullscreen: "Pantalla completa",
+          exitFullscreen: "Salir de pantalla completa",
         },
       },
       table: {
@@ -1181,6 +1185,8 @@ export const translations = {
         buttons: {
           viewGame: "Voir le jeu",
           deleteRoom: "Supprimer la salle",
+          enterFullscreen: "Plein écran",
+          exitFullscreen: "Quitter le plein écran",
         },
       },
       table: {

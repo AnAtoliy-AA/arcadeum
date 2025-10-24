@@ -529,7 +529,12 @@ export default function GameRoomScreen() {
 
   const renderTopBar = useCallback(
     (variant: 'lobby' | 'table') => (
-      <View style={variant === 'table' ? styles.fullscreenTopBar : styles.topBar}>
+      <View
+        style={[
+          variant === 'table' ? styles.fullscreenTopBar : styles.topBar,
+          styles.topBarContent,
+        ]}
+      >
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <IconSymbol name="chevron.left" size={20} color={styles.backButtonText.color as string} />
           <ThemedText style={styles.backButtonText}>{t('games.detail.backToLobby')}</ThemedText>
@@ -783,19 +788,23 @@ function createStyles(palette: Palette) {
       color: palette.tint,
     },
     topBar: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      width: '100%',
+      paddingTop: 4,
+      paddingRight: 48,
     },
     fullscreenTopBar: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
       paddingTop: 24,
       paddingHorizontal: 24,
       paddingBottom: 16,
       borderBottomWidth: StyleSheet.hairlineWidth,
       borderBottomColor: borderColor,
+    },
+    topBarContent: {
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      gap: 12,
+      width: '100%',
+      paddingRight: 48,
     },
     fullscreenTableWrapper: {
       flex: 1,
@@ -804,8 +813,11 @@ function createStyles(palette: Palette) {
     },
     actionGroup: {
       flexDirection: 'row',
+      flexWrap: 'wrap',
       alignItems: 'center',
+      justifyContent: 'flex-start',
       gap: 8,
+      alignSelf: 'stretch',
     },
     backButton: {
       flexDirection: 'row',

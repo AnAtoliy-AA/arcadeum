@@ -22,7 +22,7 @@ import type {
 } from '../api/gamesApi';
 import { getRoomStatusLabel } from '../roomUtils';
 
-const TABLE_DIAMETER = 260;
+const TABLE_DIAMETER = 230;
 const PLAYER_SEAT_SIZE = 88;
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -280,16 +280,12 @@ export function ExplodingCatsTable({
 
     const total = otherPlayers.length;
     const center = TABLE_DIAMETER / 2;
-    const radius = Math.max(center - PLAYER_SEAT_SIZE / 2 - 8, 0);
+    const radius = Math.max(center + PLAYER_SEAT_SIZE / 2 - 12, 0);
 
     return otherPlayers.map((player, index) => {
       const angle = (2 * Math.PI * index) / total - Math.PI / 2;
-      const left = Math.round(
-        center + radius * Math.cos(angle) - PLAYER_SEAT_SIZE / 2,
-      );
-      const top = Math.round(
-        center + radius * Math.sin(angle) - PLAYER_SEAT_SIZE / 2,
-      );
+      const left = Math.round(center + radius * Math.cos(angle) - PLAYER_SEAT_SIZE / 2);
+      const top = Math.round(center + radius * Math.sin(angle) - PLAYER_SEAT_SIZE / 2);
 
       return {
         player,
@@ -308,6 +304,8 @@ export function ExplodingCatsTable({
 
   const deckCount = snapshot?.deck?.length ?? 0;
   const discardTop = snapshot?.discardPile?.[snapshot.discardPile.length - 1] ?? null;
+  const discardArt = discardTop ? CARD_ART_SETTINGS[discardTop] ?? CARD_ART_SETTINGS.exploding_cat : null;
+  const discardArtVariant: CardArtworkVariant = discardArt ? discardArt.variant : 1;
   const pendingDraws = snapshot?.pendingDraws ?? 0;
   const currentTurnPlayerId = snapshot?.playerOrder?.[snapshot.currentTurnIndex] ?? null;
   const isMyTurn = Boolean(currentUserId && currentTurnPlayerId === currentUserId);
@@ -575,25 +573,24 @@ export function ExplodingCatsTable({
           <View style={styles.tableSection}>
             <View style={styles.tableRing}>
               <View style={styles.tableCenter}>
-                <Animated.View style={[styles.tableInfoCard, { transform: [{ scale: deckPulseScale }] }]}>
-                  <IconSymbol name="rectangle.stack" size={18} color={styles.tableInfoIcon.color as string} />
-                  <ThemedText style={styles.tableInfoTitle}>{deckCount}</ThemedText>
-                  <ThemedText style={styles.tableInfoSubtitle}>{t('games.table.info.inDeck')}</ThemedText>
-                </Animated.View>
-                <View style={styles.tableInfoCard}>
-                  <IconSymbol name="arrow.triangle.2.circlepath" size={18} color={styles.tableInfoIcon.color as string} />
+                <View style={[styles.tableInfoCard, discardTop ? styles.tableInfoCardWithArtwork : null]}>
+                  {discardTop && discardArt ? (
+                    <View style={styles.tableInfoArtwork}>
+                      <ExplodingCatsArtwork
+                        card={discardArt.key}
+                        variant={discardArtVariant}
+                        width="100%"
+                        height="100%"
+                        preserveAspectRatio="xMidYMid slice"
+                        accessible={false}
+                        focusable={false}
+                      />
+                    </View>
+                  ) : (
+                    <IconSymbol name="arrow.triangle.2.circlepath" size={18} color={styles.tableInfoIcon.color as string} />
+                  )}
                   <ThemedText style={styles.tableInfoTitle}>
                     {discardTop ? translateCardName(discardTop) : t('games.table.info.empty')}
-                  </ThemedText>
-                  <ThemedText style={styles.tableInfoSubtitle}>{t('games.table.info.topDiscard')}</ThemedText>
-                </View>
-                <View style={styles.tableInfoCard}>
-                  <IconSymbol name="hourglass" size={18} color={styles.tableInfoIcon.color as string} />
-                  <ThemedText style={styles.tableInfoTitle}>
-                    {pendingDrawsLabel}
-                  </ThemedText>
-                  <ThemedText style={styles.tableInfoSubtitle}>
-                    {pendingDrawsCaption}
                   </ThemedText>
                 </View>
               </View>
@@ -601,49 +598,70 @@ export function ExplodingCatsTable({
               {tableSeats.map((seat) => {
                 const isCurrent =
                   seat.player.isCurrentTurn && isSessionActive && !isSessionCompleted;
-                const cardsLabel = t(
-                  seat.player.handSize === 1
-                    ? 'games.table.seats.cardsSingular'
-                    : 'games.table.seats.cardsPlural',
-                  { count: seat.player.handSize },
-                );
-                const seatStatusLabel = t(
-                  seat.player.alive
-                    ? 'games.table.seats.status.alive'
-                    : 'games.table.seats.status.out',
-                );
                 return (
                   <View
                     key={seat.player.playerId}
-                    style={[
-                      styles.tableSeat,
-                      {
-                        left: seat.position.left,
-                        top: seat.position.top,
-                      },
-                      isCurrent ? styles.tableSeatCurrent : null,
-                      !seat.player.alive ? styles.tableSeatOut : null,
-                    ]}
+                    style={{
+                      position: 'absolute',
+                      left: seat.position.left,
+                      top: seat.position.top,
+                    }}
                   >
-                    <View style={styles.seatAvatar}>
-                      <IconSymbol
-                        name="person.circle.fill"
-                        size={20}
-                        color={styles.seatAvatarIcon.color as string}
-                      />
+                    <View
+                      style={[styles.tableSeatRow, isCurrent ? styles.tableSeatRowCurrent : null, !seat.player.alive ? styles.tableSeatRowOut : null]}
+                    >
+                        <View style={styles.seatAvatarColumn}>
+                          <View style={styles.seatAvatar}>
+                            <IconSymbol
+                              name="person.circle.fill"
+                              size={28}
+                              color={styles.seatAvatarIcon.color as string}
+                            />
+                            <View
+                              style={[
+                                styles.seatStatusDot,
+                                seat.player.alive
+                                  ? styles.seatStatusDotAlive
+                                  : styles.seatStatusDotOut,
+                              ]}
+                            />
+                          </View>
+                          <ThemedText style={styles.seatName} numberOfLines={1}>
+                            {seat.player.displayName}
+                          </ThemedText>
+                          <View style={styles.seatCardStrip}>
+                            {Array.from({ length: Math.min(seat.player.handSize, 6) }).map((_, cardIndex) => (
+                              <View
+                                key={cardIndex}
+                                style={[styles.seatCardBack, cardIndex > 0 ? styles.seatCardBackStacked : null]}
+                              />
+                            ))}
+                            <ThemedText style={styles.seatCardCount}>
+                              {seat.player.handSize}
+                              {seat.player.handSize > 6 ? '+' : ''}
+                            </ThemedText>
+                          </View>
+                        </View>
                     </View>
-                    <ThemedText style={styles.seatName} numberOfLines={1}>
-                      {seat.player.displayName}
-                    </ThemedText>
-                    <ThemedText style={styles.seatCardCount}>
-                      {cardsLabel}
-                    </ThemedText>
-                    <ThemedText style={styles.seatStatus}>
-                      {seatStatusLabel}
-                    </ThemedText>
                   </View>
                 );
               })}
+            </View>
+            <View style={styles.tableStatsRow}>
+              <Animated.View style={[styles.tableStatCard, { transform: [{ scale: deckPulseScale }] }]}> 
+                <IconSymbol name="rectangle.stack" size={18} color={styles.tableStatIcon.color as string} />
+                <View style={styles.tableStatTextGroup}>
+                  <ThemedText style={styles.tableStatTitle}>{deckCount}</ThemedText>
+                  <ThemedText style={styles.tableStatSubtitle}>{t('games.table.info.inDeck')}</ThemedText>
+                </View>
+              </Animated.View>
+              <View style={styles.tableStatCard}>
+                <IconSymbol name="hourglass" size={18} color={styles.tableStatIcon.color as string} />
+                <View style={styles.tableStatTextGroup}>
+                  <ThemedText style={styles.tableStatTitle}>{pendingDrawsLabel}</ThemedText>
+                  <ThemedText style={styles.tableStatSubtitle}>{pendingDrawsCaption}</ThemedText>
+                </View>
+              </View>
             </View>
           </View>
 
@@ -1097,7 +1115,6 @@ function createStyles(palette: Palette) {
     raised,
     border,
     shadow,
-    playerCurrent,
     destructiveBg,
     destructiveText,
   } = tableTheme;
@@ -1105,8 +1122,8 @@ function createStyles(palette: Palette) {
   const primaryTextColor = palette.background;
 
   const innerDiameter = Math.max(
-    TABLE_DIAMETER - PLAYER_SEAT_SIZE - 32,
-    140,
+    TABLE_DIAMETER - PLAYER_SEAT_SIZE - 20,
+    180,
   );
   const overlayShadow = isLight ? 'rgba(15, 23, 42, 0.45)' : 'rgba(15, 23, 42, 0.65)';
 
@@ -1121,8 +1138,6 @@ function createStyles(palette: Palette) {
       shadowColor: shadow,
       shadowOpacity: isLight ? 1 : 0.6,
       shadowRadius: 12,
-      shadowOffset: { width: 0, height: 4 },
-      elevation: 2,
     },
     cardFullScreen: {
       flex: 1,
@@ -1190,6 +1205,7 @@ function createStyles(palette: Palette) {
       alignItems: 'center',
       justifyContent: 'center',
       gap: 16,
+      paddingTop: PLAYER_SEAT_SIZE * 0.9,
     },
     tableRing: {
       width: TABLE_DIAMETER,
@@ -1215,7 +1231,49 @@ function createStyles(palette: Palette) {
       backgroundColor: surface,
       alignItems: 'center',
       justifyContent: 'center',
+      padding: 16,
       gap: 12,
+    },
+    tableStatsRow: {
+      alignSelf: 'stretch',
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      gap: 12,
+      marginTop: 16,
+    },
+    tableStatCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      borderRadius: 16,
+      backgroundColor: raised,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: border,
+      shadowColor: shadow,
+      shadowOpacity: isLight ? 0.25 : 0.45,
+      shadowRadius: 12,
+      shadowOffset: { width: 0, height: 4 },
+      elevation: 3,
+      minWidth: 132,
+    },
+    tableStatIcon: {
+      color: palette.tint,
+    },
+    tableStatTextGroup: {
+      gap: 2,
+    },
+    tableStatTitle: {
+      color: palette.text,
+      fontWeight: '700',
+      fontSize: 16,
+    },
+    tableStatSubtitle: {
+      color: palette.icon,
+      fontSize: 11,
+      textTransform: 'uppercase',
+      letterSpacing: 0.4,
     },
     tableInfoCard: {
       alignItems: 'center',
@@ -1229,8 +1287,23 @@ function createStyles(palette: Palette) {
       borderColor: border,
       minWidth: 110,
     },
+    tableInfoCardWithArtwork: {
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      minWidth: 136,
+      gap: 8,
+    },
     tableInfoIcon: {
       color: palette.tint,
+    },
+    tableInfoArtwork: {
+      width: 62,
+      aspectRatio: 0.68,
+      borderRadius: 14,
+      overflow: 'hidden',
+      backgroundColor: raised,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: border,
     },
     tableInfoTitle: {
       color: palette.text,
@@ -1243,59 +1316,78 @@ function createStyles(palette: Palette) {
       textTransform: 'uppercase',
       letterSpacing: 0.4,
     },
-    tableSeat: {
-      position: 'absolute',
-      width: PLAYER_SEAT_SIZE,
-      height: PLAYER_SEAT_SIZE,
-      borderRadius: 20,
-      backgroundColor: raised,
-      borderWidth: StyleSheet.hairlineWidth,
-      borderColor: border,
+    tableSeatRow: {
+      flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'center',
-      paddingVertical: 12,
-      paddingHorizontal: 10,
-      gap: 4,
-      shadowColor: shadow,
-      shadowOpacity: isLight ? 0.2 : 0.35,
-      shadowRadius: 8,
-      shadowOffset: { width: 0, height: 4 },
-      elevation: 3,
+      gap: 12,
     },
-    tableSeatCurrent: {
-      borderColor: palette.tint,
-      backgroundColor: playerCurrent,
-      shadowOpacity: 0.5,
+    tableSeatRowCurrent: {
+      opacity: 1,
     },
-    tableSeatOut: {
+    tableSeatRowOut: {
       opacity: 0.45,
     },
+    seatAvatarColumn: {
+      alignItems: 'center',
+      gap: 6,
+      minWidth: 52,
+    },
     seatAvatar: {
-      width: 34,
-      height: 34,
-      borderRadius: 17,
+      width: 44,
+      height: 44,
+      borderRadius: 22,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: raised,
+      position: 'relative',
     },
     seatAvatarIcon: {
       color: palette.tint,
+    },
+    seatStatusDot: {
+      position: 'absolute',
+      width: 10,
+      height: 10,
+      borderRadius: 5,
+      bottom: 2,
+      right: 2,
+      borderWidth: 1.5,
+      borderColor: surface,
+    },
+    seatStatusDotAlive: {
+      backgroundColor: '#22C55E',
+    },
+    seatStatusDotOut: {
+      backgroundColor: '#9CA3AF',
     },
     seatName: {
       color: palette.text,
       fontWeight: '600',
       fontSize: 13,
+      marginTop: 2,
       textAlign: 'center',
+      maxWidth: 80,
+    },
+    seatCardStrip: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      alignSelf: 'center',
+    },
+    seatCardBack: {
+      width: 18,
+      height: 26,
+      borderRadius: 4,
+      backgroundColor: palette.background,
+      marginHorizontal: 2,
+    },
+    seatCardBackStacked: {
+      marginLeft: 0,
     },
     seatCardCount: {
       color: palette.icon,
-      fontSize: 12,
-    },
-    seatStatus: {
-      color: palette.icon,
       fontSize: 11,
-      fontWeight: '700',
-      textTransform: 'uppercase',
+      marginLeft: 6,
+      fontWeight: '600',
     },
     placeholder: {
       gap: 12,
@@ -1357,13 +1449,11 @@ function createStyles(palette: Palette) {
       paddingVertical: 12,
       gap: 10,
       backgroundColor: surface,
-      borderWidth: 2,
-      borderColor: border,
       shadowColor: shadow,
-      shadowOpacity: isLight ? 0.35 : 0.55,
-      shadowRadius: 14,
-      shadowOffset: { width: 0, height: 6 },
-      elevation: 5,
+      shadowOpacity: isLight ? 0.24 : 0.42,
+      shadowRadius: 10,
+      shadowOffset: { width: 0, height: 4 },
+      elevation: 3,
       flexShrink: 0,
     },
     handCardArt: {
@@ -1373,8 +1463,6 @@ function createStyles(palette: Palette) {
       borderRadius: 14,
       overflow: 'hidden',
       backgroundColor: raised,
-      borderWidth: StyleSheet.hairlineWidth,
-      borderColor: border,
     },
     handCardOverlay: {
       position: 'absolute',

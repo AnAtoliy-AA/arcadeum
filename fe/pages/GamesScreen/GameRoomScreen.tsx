@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -35,6 +36,7 @@ import {
   type ExplodingCatsCatComboInput,
 } from './components/ExplodingCatsTable';
 import { useTranslation } from '@/lib/i18n';
+import { platform } from '@/constants/platform';
 
 function resolveParam(value: string | string[] | undefined): string | undefined {
   if (!value) return undefined;
@@ -42,11 +44,21 @@ function resolveParam(value: string | string[] | undefined): string | undefined 
 }
 
 export default function GameRoomScreen() {
+  const insets = useSafeAreaInsets();
   const styles = useThemedStyles(createStyles);
   const params = useLocalSearchParams<{ id?: string; gameId?: string; roomName?: string }>();
   const router = useRouter();
   const { tokens, refreshTokens, hydrated } = useSessionTokens();
   const { t } = useTranslation();
+  const iosTopInset = platform.isIos ? insets.top : 0;
+  const lobbyContentStyle = useMemo(
+    () => [styles.content, { paddingTop: 24 + iosTopInset }],
+    [styles.content, iosTopInset],
+  );
+  const fullscreenContainerStyle = useMemo(
+    () => [styles.fullscreenContainer, platform.isIos ? { paddingTop: iosTopInset } : null],
+    [styles.fullscreenContainer, iosTopInset],
+  );
 
   const roomId = useMemo(() => resolveParam(params?.id), [params]);
   const gameId = useMemo(() => resolveParam(params?.gameId), [params]);
@@ -584,7 +596,7 @@ export default function GameRoomScreen() {
 
   if (hasSessionSnapshot) {
     return (
-      <ThemedView style={styles.fullscreenContainer}>
+      <ThemedView style={fullscreenContainerStyle}>
         {topBar}
         <View style={styles.fullscreenTableWrapper}>
           <ExplodingCatsTable
@@ -608,7 +620,7 @@ export default function GameRoomScreen() {
   return (
     <ThemedView style={styles.container}>
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={lobbyContentStyle}
         refreshControl={(
           <RefreshControl
             refreshing={refreshing}

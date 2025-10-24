@@ -309,7 +309,7 @@ export const translations = {
         messageCompleted: "Session completed. Start a new match to play again.",
         info: {
           inDeck: "in deck",
-          topDiscard: "top discard",
+          topDiscard: "last discarded card",
           empty: "Empty",
           none: "None",
           pendingSingular: "draw pending",
@@ -752,7 +752,7 @@ export const translations = {
           "Partida terminada. Inicia una nueva para volver a jugar.",
         info: {
           inDeck: "en el mazo",
-          topDiscard: "carta superior del descarte",
+          topDiscard: "última carta descartada",
           empty: "Vacío",
           none: "Ninguno",
           pendingSingular: "robo pendiente",
@@ -1195,7 +1195,7 @@ export const translations = {
           "Partie terminée. Lancez un nouveau match pour rejouer.",
         info: {
           inDeck: "dans la pioche",
-          topDiscard: "défausse du dessus",
+          topDiscard: "dernière carte défaussée",
           empty: "Vide",
           none: "Aucun",
           pendingSingular: "pioche en attente",

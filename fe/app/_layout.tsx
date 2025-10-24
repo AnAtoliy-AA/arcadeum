@@ -1,20 +1,24 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import "react-native-reanimated";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-import '../sentry';
-import * as Sentry from '@sentry/react-native';
-import { SessionTokensProvider } from '@/stores/sessionTokens';
-import { SettingsProvider } from '@/stores/settings';
-import { SettingsLauncher } from '@/components/ui/SettingsLauncher';
-import { useTranslation } from '@/lib/i18n';
+import { useColorScheme } from "@/hooks/useColorScheme";
+import "../sentry";
+import * as Sentry from "@sentry/react-native";
+import { SessionTokensProvider } from "@/stores/sessionTokens";
+import { SettingsProvider } from "@/stores/settings";
+import { SettingsLauncher } from "@/components/ui/SettingsLauncher";
+import { useTranslation } from "@/lib/i18n";
 
 export default Sentry.wrap(function RootLayout() {
   const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
   if (!loaded) {
@@ -36,17 +40,23 @@ function NavigationRoot() {
   const { t } = useTranslation();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
-
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="chat" options={{ headerShown: false }} />
-        <Stack.Screen name="settings" options={{ title: t('navigation.settingsTitle') }} />
+        <Stack.Screen
+          name="games/rooms/[id]"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="settings"
+          options={{ title: t("navigation.settingsTitle")}}
+        />
         <Stack.Screen name="+not-found" />
       </Stack>
       <SettingsLauncher />
-      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
     </ThemeProvider>
   );
 }

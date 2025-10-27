@@ -114,11 +114,15 @@ export const translations = {
       },
       actions: {
         viewDetails: "View details",
+        refresh: "Refresh history",
       },
       errors: {
         authRequired: "You need to be signed in to view history.",
         detailFailed: "Unable to load match details.",
         rematchMinimum: "Select at least one other participant to start a rematch.",
+        removeFailed: "Unable to remove match from history.",
+        detailRemoved:
+          "This match is no longer available. Refresh your history to update the list.",
       },
       detail: {
         lastActivity: "Last activity {{timestamp}}",
@@ -133,6 +137,11 @@ export const translations = {
         rematchDescription: "Select who is ready for another round.",
         rematchAction: "Start rematch",
         backToList: "Back to history",
+        removeTitle: "Remove match from history",
+        removeDescription: "This hides the match for you and keeps it for other players.",
+        removeAction: "Remove from history",
+        removeConfirm: "Remove",
+        removeCancel: "Keep",
       },
     },
     games: {
@@ -141,6 +150,7 @@ export const translations = {
         createRoom: "Create room",
         joinRoom: "Join room",
         watchRoom: "Watch room",
+        removeFailed: "No se pudo quitar la partida del historial.",
         viewRules: "View rules",
         invitePending: "pending",
       },
@@ -155,6 +165,11 @@ export const translations = {
         activeCaption:
           "Jump into a lobby that's already spinning up or scope what's happening live.",
         haveInvite: "Have an invite code?",
+        removeTitle: "¿Quitar partida del historial?",
+        removeDescription: "Solo se ocultará para ti; los demás jugadores la seguirán viendo.",
+        removeAction: "Quitar del historial",
+        removeConfirm: "Quitar",
+        removeCancel: "Mantener",
         loadingRooms: "Fetching rooms...",
         errorTitle: "Can't reach the lounge",
         emptyTitle: "No rooms yet",
@@ -332,6 +347,7 @@ export const translations = {
         },
         buttons: {
           viewGame: "View game",
+          refresh: "Actualizar historial",
           deleteRoom: "Delete room",
           enterFullscreen: "Full screen",
           exitFullscreen: "Exit full screen",
@@ -339,6 +355,8 @@ export const translations = {
       },
       table: {
         headerTitle: "Exploding Cats table",
+          detailRemoved:
+            "Esta partida ya no está disponible. Actualiza tu historial para ver la lista al día.",
         sessionStatus: {
           active: "Active",
           completed: "Completed",

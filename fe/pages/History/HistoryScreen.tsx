@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Modal,
   RefreshControl,
@@ -11,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -27,6 +28,8 @@ import {
   fetchHistory,
   fetchHistoryDetail,
   requestRematch,
+  removeHistoryEntry,
+  ApiError,
   type HistoryDetail,
   type HistorySummary,
 } from './api/historyApi';
@@ -170,14 +173,18 @@ export default function HistoryScreen() {
   const mutedTextColor = useThemeColor({}, 'icon') as string;
   const tintColor = useThemeColor({}, 'tint') as string;
   const buttonTextColor = useThemeColor({}, 'background') as string;
+  const dangerColor = useThemeColor({}, 'error') as string;
 
   const [selectedSummary, setSelectedSummary] = useState<HistorySummary | null>(null);
   const [detail, setDetail] = useState<HistoryDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState<string | null>(null);
+  const [detailErrorNeedsRefresh, setDetailErrorNeedsRefresh] = useState(false);
   const [participantSelection, setParticipantSelection] = useState<ParticipantsSelection>({});
   const [rematchLoading, setRematchLoading] = useState(false);
   const [rematchError, setRematchError] = useState<string | null>(null);
+  const [removeLoading, setRemoveLoading] = useState(false);
+  const [removeError, setRemoveError] = useState<string | null>(null);
 
   const isHost = detail?.summary.host.id === currentUserId;
 
@@ -193,8 +200,11 @@ export default function HistoryScreen() {
     setSelectedSummary(null);
     setDetail(null);
     setDetailError(null);
+    setDetailErrorNeedsRefresh(false);
     setParticipantSelection({});
     setRematchError(null);
+    setRemoveError(null);
+    setRemoveLoading(false);
   }, []);
 
   const handleSelectEntry = useCallback(
@@ -202,11 +212,14 @@ export default function HistoryScreen() {
       setSelectedSummary(entry);
       setDetail(null);
       setDetailError(null);
+      setDetailErrorNeedsRefresh(false);
       setParticipantSelection({});
       setRematchError(null);
+      setRemoveError(null);
+      setRemoveLoading(false);
 
       if (!accessToken) {
-  setDetailError(t('history.errors.authRequired'));
+        setDetailError(t('history.errors.authRequired'));
         return;
       }
 
@@ -218,17 +231,34 @@ export default function HistoryScreen() {
           fetchOptions,
         );
         setDetail(result);
+        setDetailErrorNeedsRefresh(false);
       } catch (err) {
-        setDetailError(
-          err instanceof Error
-            ? err.message
-            : t('history.errors.detailFailed'),
-        );
+        if (err instanceof ApiError && err.status === 404) {
+          setDetailError(t('history.errors.detailRemoved'));
+          setDetailErrorNeedsRefresh(true);
+        } else {
+          setDetailError(
+            err instanceof Error
+              ? err.message
+              : t('history.errors.detailFailed'),
+          );
+          setDetailErrorNeedsRefresh(false);
+        }
       } finally {
         setDetailLoading(false);
       }
     },
     [accessToken, fetchOptions, t],
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!accessToken) {
+        return;
+      }
+
+      void reload();
+    }, [accessToken, reload]),
   );
 
   useEffect(() => {
@@ -252,7 +282,7 @@ export default function HistoryScreen() {
 
   const handleStartRematch = useCallback(async () => {
     if (!detail || !accessToken) {
-  setRematchError(t('history.errors.authRequired'));
+      setRematchError(t('history.errors.authRequired'));
       return;
     }
 
@@ -261,7 +291,7 @@ export default function HistoryScreen() {
       .map(([id]) => id);
 
     if (!consenting.length) {
-  setRematchError(t('history.errors.rematchMinimum'));
+      setRematchError(t('history.errors.rematchMinimum'));
       return;
     }
 
@@ -295,6 +325,70 @@ export default function HistoryScreen() {
     handleCloseModal,
     reload,
   ]);
+
+  const confirmRemoveFromHistory = useCallback(async () => {
+    if (!detail || !accessToken) {
+      setRemoveError(t('history.errors.authRequired'));
+      return;
+    }
+
+    try {
+      setRemoveLoading(true);
+      setRemoveError(null);
+      await removeHistoryEntry(detail.summary.roomId, accessToken, fetchOptions);
+      handleCloseModal();
+      await reload();
+    } catch (err) {
+      setRemoveError(
+        err instanceof Error ? err.message : t('history.errors.removeFailed'),
+      );
+    } finally {
+      setRemoveLoading(false);
+    }
+  }, [
+    detail,
+    accessToken,
+    fetchOptions,
+    handleCloseModal,
+    reload,
+    t,
+  ]);
+
+  const handleRemoveRequest = useCallback(() => {
+    if (!detail || removeLoading) {
+      return;
+    }
+
+    Alert.alert(
+      t('history.detail.removeTitle'),
+      t('history.detail.removeDescription'),
+      [
+        {
+          text: t('history.detail.removeCancel'),
+          style: 'cancel',
+        },
+        {
+          text: t('history.detail.removeConfirm'),
+          style: 'destructive',
+          onPress: () => {
+            void confirmRemoveFromHistory();
+          },
+        },
+      ],
+    );
+  }, [detail, removeLoading, t, confirmRemoveFromHistory]);
+
+  const handleRefreshHistoryAfterRemoval = useCallback(() => {
+    handleCloseModal();
+    void reload();
+  }, [handleCloseModal, reload]);
+
+  const handleManualRefresh = useCallback(() => {
+    if (loading || refreshing) {
+      return;
+    }
+    void reload();
+  }, [loading, refreshing, reload]);
 
   const renderItem = useCallback(
     ({ item }: { item: HistorySummary }) => {
@@ -413,6 +507,19 @@ export default function HistoryScreen() {
                 <IconSymbol name="chevron.left" size={16} color={tintColor} />
                 <ThemedText style={styles.backButtonLabel}>{t('common.back')}</ThemedText>
               </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.headerRefreshButton,
+                  (loading || refreshing) && styles.headerRefreshButtonDisabled,
+                ]}
+                onPress={handleManualRefresh}
+                disabled={loading || refreshing}
+              >
+                <IconSymbol name="arrow.clockwise" size={16} color={tintColor} />
+                <ThemedText style={styles.headerRefreshLabel}>
+                  {t('history.actions.refresh')}
+                </ThemedText>
+              </TouchableOpacity>
             </View>
           }
           refreshControl={
@@ -452,6 +559,17 @@ export default function HistoryScreen() {
             ) : detailError ? (
               <View style={styles.modalLoading}>
                 <ThemedText style={styles.errorText}>{detailError}</ThemedText>
+                {detailErrorNeedsRefresh ? (
+                  <TouchableOpacity
+                    style={styles.refreshButton}
+                    onPress={handleRefreshHistoryAfterRemoval}
+                  >
+                    <IconSymbol name="arrow.clockwise" size={16} color={buttonTextColor} />
+                    <ThemedText style={styles.refreshButtonText}>
+                      {t('history.actions.refresh')}
+                    </ThemedText>
+                  </TouchableOpacity>
+                ) : null}
               </View>
             ) : detail ? (
               <ScrollView style={styles.modalScroll} contentContainerStyle={styles.modalScrollContent}>
@@ -542,6 +660,40 @@ export default function HistoryScreen() {
 
                 <View style={styles.modalSection}>
                   <ThemedText style={styles.sectionTitle}>
+                    {t('history.detail.removeTitle')}
+                  </ThemedText>
+                  <ThemedText style={styles.sectionDescription}>
+                    {t('history.detail.removeDescription')}
+                  </ThemedText>
+                  {removeError ? (
+                    <ThemedText style={styles.errorText}>{removeError}</ThemedText>
+                  ) : null}
+                  <TouchableOpacity
+                    style={[
+                      styles.removeButton,
+                      { borderColor: dangerColor },
+                      removeLoading && styles.removeButtonDisabled,
+                    ]}
+                    onPress={handleRemoveRequest}
+                    disabled={removeLoading}
+                  >
+                    {removeLoading ? (
+                      <ActivityIndicator size="small" color={dangerColor} />
+                    ) : (
+                      <>
+                        <IconSymbol name="trash" size={16} color={dangerColor} />
+                        <ThemedText
+                          style={[styles.removeButtonText, { color: dangerColor }]}
+                        >
+                          {t('history.detail.removeAction')}
+                        </ThemedText>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.modalSection}>
+                  <ThemedText style={styles.sectionTitle}>
                     {t('history.detail.logsTitle')}
                   </ThemedText>
                   {detail.logs.length === 0 ? (
@@ -607,8 +759,12 @@ function createStyles(palette: Palette) {
       gap: 12,
     },
     listHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
       paddingHorizontal: 16,
       paddingBottom: 8,
+      paddingRight: 80,
     },
     backButton: {
       flexDirection: 'row',
@@ -617,6 +773,24 @@ function createStyles(palette: Palette) {
       paddingVertical: 6,
     },
     backButtonLabel: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: palette.tint,
+    },
+    headerRefreshButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: palette.tint,
+      borderRadius: 18,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+    },
+    headerRefreshButtonDisabled: {
+      opacity: 0.6,
+    },
+    headerRefreshLabel: {
       fontSize: 14,
       fontWeight: '600',
       color: palette.tint,
@@ -847,6 +1021,36 @@ function createStyles(palette: Palette) {
       fontSize: 15,
       fontWeight: '600',
       color: palette.background,
+    },
+    refreshButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderRadius: 10,
+      backgroundColor: palette.tint,
+    },
+    refreshButtonText: {
+      fontSize: 15,
+      fontWeight: '600',
+      color: palette.background,
+    },
+    removeButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+      paddingVertical: 12,
+      borderRadius: 10,
+      borderWidth: StyleSheet.hairlineWidth,
+    },
+    removeButtonText: {
+      fontSize: 15,
+      fontWeight: '600',
+    },
+    removeButtonDisabled: {
+      opacity: 0.6,
     },
     detailTimestamp: {
       fontSize: 13,

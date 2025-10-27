@@ -22,6 +22,7 @@ const MAPPING = {
   'message.fill': 'chat',
   'gamecontroller.fill': 'sports-esports',
   'person.3.fill': 'groups',
+  clock: 'schedule',
   'clock.fill': 'schedule',
   'sparkles': 'auto-awesome',
   'gearshape.fill': 'settings',

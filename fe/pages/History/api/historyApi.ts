@@ -2,6 +2,18 @@ import { fetchWithRefresh, type FetchWithRefreshOptions } from '@/lib/fetchWithR
 import { resolveApiBase } from '@/lib/apiBase';
 import type { GameRoomSummary } from '@/pages/GamesScreen/api/gamesApi';
 
+export class ApiError extends Error {
+  status: number;
+  body?: unknown;
+
+  constructor(message: string, status: number, body?: unknown) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.body = body;
+  }
+}
+
 export type HistoryStatus =
   | 'lobby'
   | 'in_progress'
@@ -77,8 +89,33 @@ async function authorizedJson<T>(
   );
 
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(text || `Request failed with status ${response.status}`);
+    const contentType = response.headers.get('content-type') ?? '';
+    let parsedBody: unknown = undefined;
+    let fallbackText = '';
+
+    if (contentType.includes('application/json')) {
+      try {
+        parsedBody = await response.json();
+      } catch (err) {
+        fallbackText = err instanceof Error ? err.message : '';
+      }
+    }
+
+    if (typeof parsedBody === 'undefined') {
+      fallbackText = await response.text();
+    }
+
+    const body = typeof parsedBody === 'undefined' ? fallbackText : parsedBody;
+    const messageFromBody =
+      typeof body === 'object' && body !== null && 'message' in body
+        ? (body as { message?: unknown }).message
+        : undefined;
+    const message =
+      typeof messageFromBody === 'string' && messageFromBody.trim().length > 0
+        ? messageFromBody
+        : fallbackText || `Request failed with status ${response.status}`;
+
+    throw new ApiError(message, response.status, body);
   }
 
   if (response.status === 204) {
@@ -139,6 +176,25 @@ export async function requestRematch(
     {
       method: 'POST',
       body: JSON.stringify(payload ?? {}),
+    },
+    options,
+  );
+}
+
+export async function removeHistoryEntry(
+  roomId: string,
+  accessToken: string,
+  options?: FetchWithRefreshOptions,
+): Promise<void> {
+  if (!roomId || !accessToken) {
+    throw new Error('Room identifier and access token are required.');
+  }
+
+  await authorizedJson<void>(
+    `/games/history/${encodeURIComponent(roomId)}`,
+    accessToken,
+    {
+      method: 'DELETE',
     },
     options,
   );

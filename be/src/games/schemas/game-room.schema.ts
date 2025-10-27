@@ -50,6 +50,9 @@ export class GameRoom extends Document {
   @Prop({ unique: true, sparse: true, trim: true })
   inviteCode?: string;
 
+  @Prop({ type: Boolean, default: false })
+  historyHiddenForAll?: boolean;
+
   createdAt?: Date;
   updatedAt?: Date;
 }

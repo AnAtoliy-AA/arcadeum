@@ -14,6 +14,7 @@ import {
   GameSession,
   type GameSessionStatus,
 } from './schemas/game-session.schema';
+import { GameHistoryHidden } from './schemas/game-history-hidden.schema';
 import {
   createInitialExplodingCatsState,
   type ExplodingCatsCard,
@@ -122,6 +123,8 @@ export class GamesService {
     private readonly gameRoomModel: Model<GameRoom>,
     @InjectModel(GameSession.name)
     private readonly gameSessionModel: Model<GameSession>,
+    @InjectModel(GameHistoryHidden.name)
+    private readonly historyHiddenModel: Model<GameHistoryHidden>,
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
     private readonly realtime: GamesRealtimeService,
@@ -1338,6 +1341,7 @@ export class GamesService {
 
     const rooms = await this.gameRoomModel
       .find({
+        historyHiddenForAll: { $ne: true },
         $or: [{ hostId: normalizedUserId }, { playerIds: normalizedUserId }],
       })
       .sort({ updatedAt: -1 })
@@ -1347,7 +1351,34 @@ export class GamesService {
       return [];
     }
 
-    const roomIds = rooms
+    const hiddenEntries = await this.historyHiddenModel
+      .find({ userId: normalizedUserId })
+      .select(['roomId'])
+      .lean()
+      .exec();
+    const hiddenRoomIds = new Set<string>(
+      hiddenEntries
+        .map((entry) =>
+          typeof entry.roomId === 'string'
+            ? entry.roomId.trim()
+            : String(entry.roomId),
+        )
+        .filter((roomId) => roomId.length > 0),
+    );
+
+    const visibleRooms = rooms.filter((room) => {
+      if (room.historyHiddenForAll) {
+        return false;
+      }
+      const roomId = room._id?.toString?.() ?? String(room._id);
+      return !hiddenRoomIds.has(roomId);
+    });
+
+    if (!visibleRooms.length) {
+      return [];
+    }
+
+    const roomIds = visibleRooms
       .map((room) => room._id?.toString?.() ?? String(room._id))
       .filter((id) => typeof id === 'string' && id.length > 0);
 
@@ -1361,7 +1392,7 @@ export class GamesService {
     }
 
     const participantIds = new Set<string>();
-    for (const room of rooms) {
+    for (const room of visibleRooms) {
       participantIds.add(room.hostId);
       const members = Array.isArray(room.playerIds) ? room.playerIds : [];
       for (const entry of members) {
@@ -1380,7 +1411,7 @@ export class GamesService {
       Array.from(participantIds),
     );
 
-    const summaries = rooms.map((room) => {
+    const summaries = visibleRooms.map((room) => {
       const roomId = room._id?.toString?.() ?? String(room._id);
       const sessionDoc = sessionLookup.get(roomId) ?? null;
       return this.createHistorySummary(room, sessionDoc, userLookup);
@@ -1414,6 +1445,10 @@ export class GamesService {
       throw new NotFoundException('Game room not found.');
     }
 
+    if (room.historyHiddenForAll) {
+      throw new NotFoundException('Game room not found.');
+    }
+
     const participants = this.normalizeUserIds([
       room.hostId,
       ...(Array.isArray(room.playerIds) ? room.playerIds : []),
@@ -1428,6 +1463,13 @@ export class GamesService {
     const sessionDoc = await this.gameSessionModel
       .findOne({ roomId: normalizedRoomId })
       .exec();
+
+    const isHidden = await this.historyHiddenModel
+      .exists({ userId: normalizedUserId, roomId: normalizedRoomId })
+      .lean();
+    if (isHidden) {
+      throw new NotFoundException('Game room not found.');
+    }
 
     const rawLogs: ExplodingCatsEngineLogEntry[] = [];
     const logUserIds: string[] = [];
@@ -1568,6 +1610,66 @@ export class GamesService {
       summary,
       logs,
     };
+  }
+
+  async hideHistoryEntry(userId: string, roomId: string): Promise<void> {
+    const normalizedUserId = userId.trim();
+    if (!normalizedUserId) {
+      throw new BadRequestException('User ID is required.');
+    }
+
+    const normalizedRoomId = roomId.trim();
+    if (!normalizedRoomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    const room = await this.gameRoomModel.findById(normalizedRoomId).exec();
+    if (!room) {
+      throw new NotFoundException('Game room not found.');
+    }
+
+    if (room.historyHiddenForAll) {
+      return;
+    }
+
+    const participants = this.normalizeUserIds([
+      room.hostId,
+      ...(Array.isArray(room.playerIds) ? room.playerIds : []),
+    ]);
+
+    if (!participants.includes(normalizedUserId)) {
+      throw new ForbiddenException(
+        'Access to this history entry is not permitted.',
+      );
+    }
+
+    const [normalizedHostId] = this.normalizeUserIds([room.hostId]);
+    const isHost = normalizedHostId === normalizedUserId;
+
+    if (isHost) {
+      if (!room.historyHiddenForAll) {
+        room.historyHiddenForAll = true;
+        await room.save();
+      }
+
+      await this.historyHiddenModel
+        .deleteMany({ roomId: normalizedRoomId })
+        .exec();
+      return;
+    }
+
+    await this.historyHiddenModel
+      .updateOne(
+        { userId: normalizedUserId, roomId: normalizedRoomId },
+        {
+          $set: {
+            userId: normalizedUserId,
+            roomId: normalizedRoomId,
+          },
+        },
+        { upsert: true },
+      )
+      .exec();
   }
 
   async createRematchFromHistory(

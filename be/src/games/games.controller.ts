@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   Param,
   Post,
   Query,
@@ -137,6 +139,21 @@ export class GamesController {
     );
 
     return { room };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('history/:roomId')
+  @HttpCode(204)
+  async removeHistoryEntry(
+    @Req() req: Request,
+    @Param('roomId') roomId: string,
+  ): Promise<void> {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    await this.gamesService.hideHistoryEntry(user.userId, roomId);
   }
 
   @UseGuards(JwtAuthGuard)

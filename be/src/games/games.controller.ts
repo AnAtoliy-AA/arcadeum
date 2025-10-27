@@ -22,6 +22,7 @@ import { JoinGameRoomDto } from './dtos/join-game-room.dto';
 import { StartGameDto } from './dtos/start-game.dto';
 import { LeaveGameRoomDto } from './dtos/leave-game-room.dto';
 import { DeleteGameRoomDto } from './dtos/delete-game-room.dto';
+import { HistoryRematchDto } from './dtos/history-rematch.dto';
 
 @Controller('games')
 export class GamesController {
@@ -76,6 +77,66 @@ export class GamesController {
       user?.userId,
     );
     return { session };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('history')
+  async listHistory(@Req() req: Request): Promise<{
+    entries: Awaited<ReturnType<GamesService['listHistoryForUser']>>;
+  }> {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const entries = await this.gamesService.listHistoryForUser(user.userId);
+    return { entries };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('history/:roomId')
+  async getHistoryEntry(
+    @Req() req: Request,
+    @Param('roomId') roomId: string,
+  ): Promise<Awaited<ReturnType<GamesService['getHistoryEntry']>>> {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return this.gamesService.getHistoryEntry(user.userId, roomId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('history/:roomId/rematch')
+  async requestRematch(
+    @Req() req: Request,
+    @Param('roomId') roomId: string,
+    @Body() dto: HistoryRematchDto,
+  ): Promise<{
+    room: Awaited<ReturnType<GamesService['createRematchFromHistory']>>;
+  }> {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const participantIds = Array.isArray(dto.participantIds)
+      ? dto.participantIds
+      : [];
+
+    const room = await this.gamesService.createRematchFromHistory(
+      user.userId,
+      roomId,
+      participantIds,
+      {
+        gameId: dto.gameId,
+        name: dto.name,
+        visibility: dto.visibility,
+      },
+    );
+
+    return { room };
   }
 
   @UseGuards(JwtAuthGuard)

@@ -6,6 +6,7 @@ export const translations = {
       homeTab: "Home",
       gamesTab: "Games",
       chatsTab: "Chats",
+      historyTab: "History",
       settingsTitle: "Settings",
       openSettingsHint: "Open settings",
     },
@@ -81,7 +82,7 @@ export const translations = {
     },
     chatList: {
       search: {
-        placeholder: "Search users by username or email",
+        placeholder: "Search users by name or email",
         searching: "Searching...",
         signInRequired: "Sign in to start a chat.",
         noResults: "No users found.",
@@ -91,11 +92,47 @@ export const translations = {
         noMessagesYet: "No messages yet",
       },
       empty: {
-        unauthenticated: "Sign in to view your chats.",
+        unauthenticated: "Sign in to see your chats.",
         noChats: "No chats yet.",
       },
       errors: {
-        authRequired: "You need to be signed in to start a chat.",
+        authRequired: "You must be signed in to start a chat.",
+      },
+    },
+    history: {
+      unknownGame: "Unknown game",
+      status: {
+        lobby: "Lobby",
+        inProgress: "In progress",
+        completed: "Completed",
+        waiting: "Waiting",
+        active: "In progress",
+      },
+      list: {
+        emptySignedOut: "Sign in to review your past games.",
+        emptyNoEntries: "No completed games yet. Play a match to build your history.",
+      },
+      actions: {
+        viewDetails: "View details",
+      },
+      errors: {
+        authRequired: "You need to be signed in to view history.",
+        detailFailed: "Unable to load match details.",
+        rematchMinimum: "Select at least one other participant to start a rematch.",
+      },
+      detail: {
+        lastActivity: "Last activity {{timestamp}}",
+        participantsTitle: "Participants",
+        hostLabel: "Host",
+        logsTitle: "Match log",
+        noLogs: "No moves or messages recorded yet.",
+        scopePlayers: "Visible to players",
+        scopeAll: "Visible to everyone",
+        sender: "From {{name}}",
+        rematchTitle: "Rematch",
+        rematchDescription: "Select who is ready for another round.",
+        rematchAction: "Start rematch",
+        backToList: "Back to history",
       },
     },
     games: {
@@ -455,6 +492,7 @@ export const translations = {
       homeTab: "Inicio",
       gamesTab: "Juegos",
       chatsTab: "Chats",
+      historyTab: "Historial",
       settingsTitle: "Ajustes",
       openSettingsHint: "Abrir ajustes",
     },
@@ -521,7 +559,7 @@ export const translations = {
     chat: {
       notFound: "Chat no encontrado",
       nav: {
-        backToChats: "Volver a chats",
+        backToChats: "Volver a los chats",
         goHome: "Ir al inicio",
       },
       status: {
@@ -546,6 +584,42 @@ export const translations = {
       },
       errors: {
         authRequired: "Debes iniciar sesión para iniciar un chat.",
+      },
+    },
+    history: {
+      unknownGame: "Juego desconocido",
+      status: {
+        lobby: "Sala",
+        inProgress: "En progreso",
+        completed: "Finalizada",
+        waiting: "En espera",
+        active: "En curso",
+      },
+      list: {
+        emptySignedOut: "Inicia sesión para revisar tus partidas anteriores.",
+        emptyNoEntries: "Aún no tienes partidas finalizadas. Juega para crear tu historial.",
+      },
+      actions: {
+        viewDetails: "Ver detalles",
+      },
+      errors: {
+        authRequired: "Debes iniciar sesión para ver el historial.",
+        detailFailed: "No se pudieron cargar los detalles de la partida.",
+        rematchMinimum: "Selecciona al menos a otro participante para iniciar una revancha.",
+      },
+      detail: {
+        lastActivity: "Última actividad {{timestamp}}",
+        participantsTitle: "Participantes",
+        hostLabel: "Anfitrión",
+        logsTitle: "Registro de la partida",
+        noLogs: "No hay movimientos ni mensajes registrados.",
+        scopePlayers: "Visible para los jugadores",
+        scopeAll: "Visible para todos",
+        sender: "De {{name}}",
+        rematchTitle: "Revancha",
+        rematchDescription: "Selecciona quién está listo para otra ronda.",
+        rematchAction: "Crear revancha",
+        backToList: "Volver al historial",
       },
     },
     games: {
@@ -909,6 +983,7 @@ export const translations = {
       homeTab: "Accueil",
       gamesTab: "Jeux",
       chatsTab: "Discussions",
+      historyTab: "Historique",
       settingsTitle: "Paramètres",
       openSettingsHint: "Ouvrir les paramètres",
     },

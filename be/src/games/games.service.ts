@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, Types } from 'mongoose';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { JoinGameRoomDto } from './dtos/join-game-room.dto';
 import { GameRoom, type GameRoomStatus } from './schemas/game-room.schema';
@@ -64,6 +64,42 @@ export interface LeaveGameRoomResult {
 export interface DeleteGameRoomResult {
   roomId: string;
   deleted: boolean;
+}
+
+export interface HistoryParticipantSummary {
+  id: string;
+  username: string;
+  email: string | null;
+  isHost: boolean;
+}
+
+export type GameHistoryStatus = GameRoomStatus | GameSessionStatus;
+
+export interface GameHistorySummary {
+  roomId: string;
+  sessionId: string | null;
+  gameId: string;
+  roomName: string;
+  status: GameHistoryStatus;
+  startedAt: string | null;
+  completedAt: string | null;
+  lastActivityAt: string;
+  host: HistoryParticipantSummary;
+  participants: HistoryParticipantSummary[];
+}
+
+export interface GameHistoryLogEntry {
+  id: string;
+  type: 'system' | 'action' | 'message';
+  message: string;
+  createdAt: string;
+  scope?: ExplodingCatsLogVisibility;
+  sender?: HistoryParticipantSummary;
+}
+
+export interface GameHistoryDetail {
+  summary: GameHistorySummary;
+  logs: GameHistoryLogEntry[];
 }
 
 const EXPLODING_CATS_GAME_ID = 'exploding-kittens';
@@ -1291,6 +1327,383 @@ export class GamesService {
       roomId: normalizedRoomId,
       state: nextState,
     });
+  }
+
+  async listHistoryForUser(userId: string): Promise<GameHistorySummary[]> {
+    const normalizedUserId = userId.trim();
+    if (!normalizedUserId) {
+      throw new BadRequestException('User ID is required.');
+    }
+
+    const rooms = await this.gameRoomModel
+      .find({
+        $or: [{ hostId: normalizedUserId }, { playerIds: normalizedUserId }],
+      })
+      .sort({ updatedAt: -1 })
+      .exec();
+
+    if (!rooms.length) {
+      return [];
+    }
+
+    const roomIds = rooms
+      .map((room) => room._id?.toString?.() ?? String(room._id))
+      .filter((id) => typeof id === 'string' && id.length > 0);
+
+    const sessionDocs = roomIds.length
+      ? await this.gameSessionModel.find({ roomId: { $in: roomIds } }).exec()
+      : [];
+
+    const sessionLookup = new Map<string, GameSession>();
+    for (const session of sessionDocs) {
+      sessionLookup.set(session.roomId, session);
+    }
+
+    const participantIds = new Set<string>();
+    for (const room of rooms) {
+      participantIds.add(room.hostId);
+      const members = Array.isArray(room.playerIds) ? room.playerIds : [];
+      for (const entry of members) {
+        if (typeof entry === 'string') {
+          const trimmed = entry.trim();
+          if (trimmed.length > 0) {
+            participantIds.add(trimmed);
+          }
+        } else if (entry != null) {
+          participantIds.add(String(entry));
+        }
+      }
+    }
+
+    const userLookup = await this.fetchUserSummaries(
+      Array.from(participantIds),
+    );
+
+    const summaries = rooms.map((room) => {
+      const roomId = room._id?.toString?.() ?? String(room._id);
+      const sessionDoc = sessionLookup.get(roomId) ?? null;
+      return this.createHistorySummary(room, sessionDoc, userLookup);
+    });
+
+    summaries.sort((a, b) => {
+      const aTime = new Date(a.lastActivityAt).getTime();
+      const bTime = new Date(b.lastActivityAt).getTime();
+      return bTime - aTime;
+    });
+
+    return summaries;
+  }
+
+  async getHistoryEntry(
+    userId: string,
+    roomId: string,
+  ): Promise<GameHistoryDetail> {
+    const normalizedUserId = userId.trim();
+    if (!normalizedUserId) {
+      throw new BadRequestException('User ID is required.');
+    }
+
+    const normalizedRoomId = roomId.trim();
+    if (!normalizedRoomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    const room = await this.gameRoomModel.findById(normalizedRoomId).exec();
+    if (!room) {
+      throw new NotFoundException('Game room not found.');
+    }
+
+    const participants = this.normalizeUserIds([
+      room.hostId,
+      ...(Array.isArray(room.playerIds) ? room.playerIds : []),
+    ]);
+
+    if (!participants.includes(normalizedUserId)) {
+      throw new ForbiddenException(
+        'Access to this history entry is not permitted.',
+      );
+    }
+
+    const sessionDoc = await this.gameSessionModel
+      .findOne({ roomId: normalizedRoomId })
+      .exec();
+
+    const userLookup = await this.fetchUserSummaries(participants);
+    const summary = this.createHistorySummary(room, sessionDoc, userLookup);
+
+    const logs: GameHistoryLogEntry[] = [];
+
+    if (sessionDoc && sessionDoc.engine === EXPLODING_CATS_ENGINE_ID) {
+      const state = sessionDoc.state ?? {};
+      const snapshot = state.snapshot as ExplodingCatsState | undefined;
+      if (snapshot && Array.isArray(snapshot.logs)) {
+        snapshot.logs.forEach((entry) => {
+          if (!entry) {
+            return;
+          }
+
+          const id = typeof entry.id === 'string' ? entry.id : randomUUID();
+          const createdAt =
+            typeof entry.createdAt === 'string'
+              ? entry.createdAt
+              : new Date().toISOString();
+          const scope: ExplodingCatsLogVisibility =
+            entry.scope === 'players' ? 'players' : 'all';
+          const senderId =
+            typeof entry.senderId === 'string'
+              ? entry.senderId.trim()
+              : undefined;
+
+          let sender: HistoryParticipantSummary | undefined = undefined;
+          if (senderId) {
+            const user = userLookup.get(senderId);
+            sender = {
+              id: senderId,
+              username: user?.username ?? senderId,
+              email: user?.email ?? null,
+              isHost: summary.host.id === senderId,
+            };
+          }
+
+          logs.push({
+            id,
+            type:
+              entry.type === 'action' || entry.type === 'message'
+                ? entry.type
+                : 'system',
+            message: typeof entry.message === 'string' ? entry.message : '',
+            createdAt,
+            scope,
+            sender,
+          });
+        });
+      }
+    }
+
+    logs.sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    );
+
+    return {
+      summary,
+      logs,
+    };
+  }
+
+  async createRematchFromHistory(
+    hostId: string,
+    roomId: string,
+    participantIds: string[] = [],
+    options?: {
+      gameId?: string;
+      name?: string;
+      visibility?: GameRoom['visibility'];
+    },
+  ): Promise<GameRoomSummary> {
+    const normalizedHostId = hostId.trim();
+    if (!normalizedHostId) {
+      throw new BadRequestException('Host ID is required.');
+    }
+
+    const normalizedRoomId = roomId.trim();
+    if (!normalizedRoomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    const sourceRoom = await this.gameRoomModel
+      .findById(normalizedRoomId)
+      .exec();
+    if (!sourceRoom) {
+      throw new NotFoundException('Game room not found.');
+    }
+
+    if (sourceRoom.hostId !== normalizedHostId) {
+      throw new ForbiddenException(
+        'Only the original host may initiate a rematch.',
+      );
+    }
+
+    const eligibleParticipants = this.normalizeUserIds([
+      sourceRoom.hostId,
+      ...(Array.isArray(sourceRoom.playerIds) ? sourceRoom.playerIds : []),
+    ]);
+
+    const selected = new Set<string>();
+    selected.add(normalizedHostId);
+
+    for (const raw of participantIds ?? []) {
+      if (typeof raw !== 'string') {
+        continue;
+      }
+      const trimmed = raw.trim();
+      if (trimmed && eligibleParticipants.includes(trimmed)) {
+        selected.add(trimmed);
+      }
+    }
+
+    if (selected.size < 2) {
+      throw new BadRequestException(
+        'At least one consenting participant is required for a rematch.',
+      );
+    }
+
+    const inviteCode = await this.generateInviteCode();
+    const name = options?.name?.trim() || `${sourceRoom.name} Rematch`;
+    const gameId = options?.gameId?.trim() || sourceRoom.gameId;
+    if (!gameId) {
+      throw new BadRequestException('Game ID is required for rematch.');
+    }
+
+    const visibility: GameRoom['visibility'] = options?.visibility ?? 'private';
+
+    const baseMaxPlayers =
+      typeof sourceRoom.maxPlayers === 'number' && sourceRoom.maxPlayers > 0
+        ? sourceRoom.maxPlayers
+        : undefined;
+    const maxPlayers = Math.max(baseMaxPlayers ?? selected.size, selected.size);
+
+    const newRoom = new this.gameRoomModel({
+      gameId,
+      name,
+      hostId: normalizedHostId,
+      visibility,
+      maxPlayers,
+      status: 'lobby',
+      inviteCode,
+      notes: sourceRoom.notes,
+      playerIds: Array.from(selected),
+    });
+
+    const saved = await newRoom.save();
+    const summary = this.toSummary(saved);
+    this.realtime.emitRoomUpdate(summary);
+    return summary;
+  }
+
+  private normalizeUserIds(values: unknown[]): string[] {
+    const seen = new Set<string>();
+    for (const value of values) {
+      let parsed = '';
+      if (typeof value === 'string') {
+        parsed = value.trim();
+      } else if (value instanceof Types.ObjectId) {
+        parsed = value.toHexString();
+      } else if (typeof value === 'number' || typeof value === 'bigint') {
+        parsed = value.toString();
+      }
+
+      const trimmed = parsed.trim();
+      if (trimmed) {
+        seen.add(trimmed);
+      }
+    }
+    return Array.from(seen);
+  }
+
+  private async fetchUserSummaries(
+    userIds: string[],
+  ): Promise<Map<string, { username?: string; email?: string | null }>> {
+    const normalized = Array.from(
+      new Set(
+        userIds
+          .map((id) => (typeof id === 'string' ? id.trim() : ''))
+          .filter((id) => id.length > 0),
+      ),
+    );
+
+    const lookup = new Map<
+      string,
+      { username?: string; email?: string | null }
+    >();
+    if (!normalized.length) {
+      return lookup;
+    }
+
+    const users = await this.userModel
+      .find({ _id: { $in: normalized } })
+      .select(['username', 'email'])
+      .exec();
+
+    for (const user of users) {
+      const id = user._id?.toString?.();
+      if (id) {
+        lookup.set(id, {
+          username: user.username ?? undefined,
+          email: user.email ?? null,
+        });
+      }
+    }
+
+    return lookup;
+  }
+
+  private createHistorySummary(
+    room: GameRoom,
+    sessionDoc: GameSession | null,
+    userLookup: Map<string, { username?: string; email?: string | null }>,
+  ): GameHistorySummary {
+    const roomId = room._id?.toString?.() ?? String(room._id);
+    const participants = this.normalizeUserIds([
+      room.hostId,
+      ...(Array.isArray(room.playerIds) ? room.playerIds : []),
+    ]);
+
+    const participantSummaries: HistoryParticipantSummary[] = participants.map(
+      (id) => {
+        const user = userLookup.get(id);
+        return {
+          id,
+          username: user?.username ?? id,
+          email: user?.email ?? null,
+          isHost: id === room.hostId,
+        };
+      },
+    );
+
+    let host = participantSummaries.find((entry) => entry.isHost);
+    if (!host) {
+      const user = userLookup.get(room.hostId);
+      host = {
+        id: room.hostId,
+        username: user?.username ?? room.hostId,
+        email: user?.email ?? null,
+        isHost: true,
+      };
+      participantSummaries.unshift(host);
+    }
+
+    let sessionSummary: GameSessionSummary | null = null;
+    if (sessionDoc) {
+      sessionSummary = this.toSessionSummary(sessionDoc);
+    }
+
+    const status = sessionSummary?.status ?? room.status ?? 'lobby';
+    const startedAt = sessionSummary?.createdAt ?? null;
+    const completedAt =
+      status === 'completed' ? (sessionSummary?.updatedAt ?? null) : null;
+
+    const roomUpdatedAt =
+      room.updatedAt instanceof Date
+        ? room.updatedAt.toISOString()
+        : room.createdAt instanceof Date
+          ? room.createdAt.toISOString()
+          : new Date().toISOString();
+
+    const lastActivityAt = sessionSummary?.updatedAt ?? roomUpdatedAt;
+
+    return {
+      roomId,
+      sessionId: sessionSummary?.id ?? null,
+      gameId: room.gameId,
+      roomName: room.name,
+      status,
+      startedAt,
+      completedAt,
+      lastActivityAt,
+      host,
+      participants: participantSummaries,
+    };
   }
 
   private findExplodingCatsPlayer(

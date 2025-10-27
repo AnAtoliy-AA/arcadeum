@@ -53,6 +53,12 @@ export class GameRoom extends Document {
   @Prop({ type: Boolean, default: false })
   historyHiddenForAll?: boolean;
 
+  @Prop({ type: String, trim: true, index: true, default: null })
+  parentRoomId?: string | null;
+
+  @Prop({ type: String, trim: true, index: true, default: null })
+  rootRoomId?: string | null;
+
   createdAt?: Date;
   updatedAt?: Date;
 }

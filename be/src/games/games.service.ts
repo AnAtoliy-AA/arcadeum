@@ -18,6 +18,7 @@ import {
   createInitialExplodingCatsState,
   type ExplodingCatsCard,
   type ExplodingCatsCatCard,
+  type ExplodingCatsLogEntry as ExplodingCatsEngineLogEntry,
   type ExplodingCatsLogVisibility,
   type ExplodingCatsPlayerState,
   type ExplodingCatsState,
@@ -1428,10 +1429,8 @@ export class GamesService {
       .findOne({ roomId: normalizedRoomId })
       .exec();
 
-    const userLookup = await this.fetchUserSummaries(participants);
-    const summary = this.createHistorySummary(room, sessionDoc, userLookup);
-
-    const logs: GameHistoryLogEntry[] = [];
+    const rawLogs: ExplodingCatsEngineLogEntry[] = [];
+    const logUserIds: string[] = [];
 
     if (sessionDoc && sessionDoc.engine === EXPLODING_CATS_ENGINE_ID) {
       const state = sessionDoc.state ?? {};
@@ -1441,44 +1440,124 @@ export class GamesService {
           if (!entry) {
             return;
           }
-
-          const id = typeof entry.id === 'string' ? entry.id : randomUUID();
-          const createdAt =
-            typeof entry.createdAt === 'string'
-              ? entry.createdAt
-              : new Date().toISOString();
-          const scope: ExplodingCatsLogVisibility =
-            entry.scope === 'players' ? 'players' : 'all';
+          rawLogs.push(entry);
           const senderId =
             typeof entry.senderId === 'string'
               ? entry.senderId.trim()
               : undefined;
-
-          let sender: HistoryParticipantSummary | undefined = undefined;
           if (senderId) {
-            const user = userLookup.get(senderId);
-            sender = {
-              id: senderId,
-              username: user?.username ?? senderId,
-              email: user?.email ?? null,
-              isHost: summary.host.id === senderId,
-            };
+            logUserIds.push(senderId);
           }
-
-          logs.push({
-            id,
-            type:
-              entry.type === 'action' || entry.type === 'message'
-                ? entry.type
-                : 'system',
-            message: typeof entry.message === 'string' ? entry.message : '',
-            createdAt,
-            scope,
-            sender,
-          });
         });
       }
     }
+
+    const userLookup = await this.fetchUserSummaries([
+      ...participants,
+      ...logUserIds,
+    ]);
+
+    const displayNameLookup = new Map<string, string>();
+
+    const deriveDisplayName = (id: string, fallbackName?: string | null) => {
+      const normalizedId = id.trim();
+      if (!normalizedId) {
+        return id;
+      }
+
+      const user = userLookup.get(normalizedId);
+      const normalizedFallback = fallbackName?.trim();
+      if (user?.username?.trim()) {
+        return user.username.trim();
+      }
+      if (normalizedFallback) {
+        return normalizedFallback;
+      }
+      const trimmedEmail = user?.email?.trim();
+      if (trimmedEmail) {
+        const [localPart] = trimmedEmail.split('@');
+        if (localPart?.trim()) {
+          return localPart.trim();
+        }
+        return trimmedEmail;
+      }
+      return normalizedId;
+    };
+
+    const registerDisplayName = (
+      id: string | undefined,
+      fallback?: string | null,
+    ) => {
+      const normalizedId = id?.trim();
+      if (!normalizedId) {
+        return;
+      }
+      const existing = displayNameLookup.get(normalizedId);
+      if (existing && existing !== normalizedId) {
+        return;
+      }
+      displayNameLookup.set(
+        normalizedId,
+        deriveDisplayName(normalizedId, fallback),
+      );
+    };
+
+    participants.forEach((participantId) => registerDisplayName(participantId));
+    logUserIds.forEach((logUserId) => registerDisplayName(logUserId));
+
+    const summary = this.createHistorySummary(room, sessionDoc, userLookup);
+
+    const logs: GameHistoryLogEntry[] = rawLogs.map((entry) => {
+      const id =
+        typeof entry.id === 'string' && entry.id.trim().length > 0
+          ? entry.id
+          : randomUUID();
+      const createdAt =
+        typeof entry.createdAt === 'string'
+          ? entry.createdAt
+          : new Date().toISOString();
+      const scope: ExplodingCatsLogVisibility =
+        entry.scope === 'players' ? 'players' : 'all';
+      const senderId =
+        typeof entry.senderId === 'string' ? entry.senderId.trim() : undefined;
+
+      registerDisplayName(senderId, entry.senderName ?? null);
+
+      let sender: HistoryParticipantSummary | undefined;
+      if (senderId) {
+        const user = userLookup.get(senderId);
+        const username = displayNameLookup.get(senderId) ?? senderId;
+        sender = {
+          id: senderId,
+          username,
+          email: user?.email ?? null,
+          isHost: summary.host.id === senderId,
+        };
+      }
+
+      let message = typeof entry.message === 'string' ? entry.message : '';
+      const replacements = Array.from(displayNameLookup.entries()).sort(
+        (a, b) => b[0].length - a[0].length,
+      );
+      replacements.forEach(([userId, name]) => {
+        if (!name || name === userId || !message.includes(userId)) {
+          return;
+        }
+        message = message.split(userId).join(name);
+      });
+
+      return {
+        id,
+        type:
+          entry.type === 'action' || entry.type === 'message'
+            ? entry.type
+            : 'system',
+        message,
+        createdAt,
+        scope,
+        sender,
+      };
+    });
 
     logs.sort(
       (a, b) =>

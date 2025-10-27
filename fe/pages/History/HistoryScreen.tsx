@@ -123,8 +123,24 @@ function useHistoryList(params: HistoryHookParams) {
   };
 }
 
-function formatParticipantDisplayName(id: string, username: string | null | undefined) {
-  return username?.trim().length ? username : id;
+function formatParticipantDisplayName(
+  id: string,
+  username: string | null | undefined,
+  email?: string | null | undefined,
+) {
+  const normalizedUsername = username?.trim();
+  if (normalizedUsername) {
+    return normalizedUsername;
+  }
+
+  const normalizedEmail = email?.trim();
+  if (normalizedEmail) {
+    const [localPart] = normalizedEmail.split('@');
+    const candidate = localPart?.trim();
+    return candidate || normalizedEmail;
+  }
+
+  return id;
 }
 
 export default function HistoryScreen() {
@@ -287,7 +303,11 @@ export default function HistoryScreen() {
       const others = item.participants
         .filter((participant) => participant.id !== currentUserId)
         .map((participant) =>
-          formatParticipantDisplayName(participant.id, participant.username),
+          formatParticipantDisplayName(
+            participant.id,
+            participant.username,
+            participant.email,
+          ),
         )
         .join(', ');
       const lastActivity = new Date(item.lastActivityAt).toLocaleString();
@@ -308,7 +328,11 @@ export default function HistoryScreen() {
           </ThemedText>
           <ThemedText style={styles.entryParticipants} numberOfLines={1}>
             {others ||
-              formatParticipantDisplayName(item.host.id, item.host.username)}
+              formatParticipantDisplayName(
+                item.host.id,
+                item.host.username,
+                item.host.email,
+              )}
           </ThemedText>
           <View style={styles.entryFooter}>
             <IconSymbol name="clock" size={14} color={mutedTextColor} />
@@ -482,6 +506,7 @@ export default function HistoryScreen() {
                     const name = formatParticipantDisplayName(
                       participant.id,
                       participant.username,
+                      participant.email,
                     );
                     const hostBadge = participant.isHost
                       ? t('history.detail.hostLabel')
@@ -542,6 +567,7 @@ export default function HistoryScreen() {
                               name: formatParticipantDisplayName(
                                 log.sender.id,
                                 log.sender.username,
+                                log.sender.email,
                               ),
                             })}
                           </ThemedText>

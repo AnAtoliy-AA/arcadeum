@@ -94,10 +94,13 @@ export default function GameDetailScreen() {
       setLoading(true);
 
       try {
-        const response = await listGameRooms(gameId, {
-          accessToken: tokens.accessToken,
-          refreshTokens,
-        });
+        const response = await listGameRooms(
+          { gameId },
+          {
+            accessToken: tokens.accessToken,
+            refreshTokens,
+          },
+        );
         setRooms(response.rooms ?? []);
         setRoomsError(null);
       } catch (error) {

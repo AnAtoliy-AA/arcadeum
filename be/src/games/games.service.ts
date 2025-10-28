@@ -38,6 +38,9 @@ export interface GameRoomSummary {
   createdAt: string;
   status: GameRoomStatus;
   inviteCode?: string;
+  viewerRole?: 'host' | 'participant' | 'none';
+  viewerHasJoined?: boolean;
+  viewerIsHost?: boolean;
 }
 
 export interface GameSessionSummary {
@@ -125,6 +128,24 @@ export interface GameHistoryWinnerSummary {
   wins: number;
 }
 
+export const GAME_ROOM_PARTICIPATION_FILTERS = [
+  'all',
+  'hosting',
+  'joined',
+  'not_joined',
+] as const;
+
+export type GameRoomParticipationFilter =
+  (typeof GAME_ROOM_PARTICIPATION_FILTERS)[number];
+
+type ListRoomsFilters = {
+  userId?: string | null;
+  gameId?: string;
+  statuses?: GameRoomStatus[];
+  visibility?: GameRoom['visibility'][];
+  participation?: GameRoomParticipationFilter;
+};
+
 const EXPLODING_CATS_GAME_ID = 'exploding-kittens';
 const EXPLODING_CATS_ENGINE_ID = 'exploding_cats_v1';
 const EXPLODING_CATS_ACTION_CARDS = ['skip', 'attack'] as const;
@@ -204,16 +225,17 @@ export class GamesService {
     }
 
     const saved = await room.save();
-    return this.toSummary(saved);
+    return this.toViewerSummary(saved, trimmedHostId);
   }
 
-  async listRooms(
-    userId?: string,
-    gameId?: string,
-  ): Promise<GameRoomSummary[]> {
+  async listRooms(params: ListRoomsFilters = {}): Promise<GameRoomSummary[]> {
+    const { userId, gameId, statuses, visibility, participation } = params;
+
+    const normalizedUserId = typeof userId === 'string' ? userId.trim() : '';
+
     const query: FilterQuery<GameRoom> = {};
-    if (gameId) {
-      query.gameId = gameId;
+    if (gameId?.trim()) {
+      query.gameId = gameId.trim();
     }
 
     const rooms = await this.gameRoomModel
@@ -221,9 +243,34 @@ export class GamesService {
       .sort({ createdAt: -1 })
       .exec();
 
-    return rooms
-      .filter((room) => this.canViewRoom(room, userId))
-      .map((room) => this.toSummary(room));
+    const filtered = rooms.filter((room) => {
+      if (!this.canViewRoom(room, normalizedUserId || undefined)) {
+        return false;
+      }
+
+      if (Array.isArray(statuses) && statuses.length > 0) {
+        if (!statuses.includes(room.status ?? 'lobby')) {
+          return false;
+        }
+      }
+
+      if (Array.isArray(visibility) && visibility.length > 0) {
+        if (!visibility.includes(room.visibility)) {
+          return false;
+        }
+      }
+
+      const participationFilter = participation ?? 'all';
+      return this.matchesParticipationFilter(
+        room,
+        normalizedUserId || null,
+        participationFilter,
+      );
+    });
+
+    return filtered.map((room) =>
+      this.toViewerSummary(room, normalizedUserId || undefined),
+    );
   }
 
   async getRoom(roomId: string, userId?: string): Promise<GameRoomSummary> {
@@ -241,7 +288,7 @@ export class GamesService {
       throw new ForbiddenException('Access to this room is not permitted.');
     }
 
-    return this.toSummary(room);
+    return this.toViewerSummary(room, userId);
   }
 
   async getRoomSession(
@@ -331,13 +378,13 @@ export class GamesService {
       }
 
       room.playerIds = [...members, normalizedUserId];
-      await room.save();
-      const summary = this.toSummary(room);
-      this.realtime.emitRoomUpdate(summary);
-      return summary;
+      const savedRoom = await room.save();
+      const publicSummary = this.toSummary(savedRoom);
+      this.realtime.emitRoomUpdate(publicSummary);
+      return this.toViewerSummary(savedRoom, normalizedUserId);
     }
 
-    return this.toSummary(room);
+    return this.toViewerSummary(room, normalizedUserId);
   }
 
   async ensureParticipant(
@@ -368,7 +415,7 @@ export class GamesService {
       throw new ForbiddenException('Access to this room is not permitted.');
     }
 
-    return this.toSummary(room);
+    return this.toViewerSummary(room, normalizedUserId);
   }
 
   async findSessionByRoom(roomId: string): Promise<GameSessionSummary | null> {
@@ -544,13 +591,13 @@ export class GamesService {
     room.playerIds = uniquePlayerIds;
     room.status = 'in_progress';
     const updatedRoom = await room.save();
-    const roomSummary = this.toSummary(updatedRoom);
+    const publicSummary = this.toSummary(updatedRoom);
 
-    this.realtime.emitRoomUpdate(roomSummary);
+    this.realtime.emitRoomUpdate(publicSummary);
     this.realtime.emitSessionSnapshot(normalizedRoomId, session);
 
     return {
-      room: roomSummary,
+      room: this.toViewerSummary(updatedRoom, normalizedHostId),
       session,
     };
   }
@@ -916,11 +963,11 @@ export class GamesService {
     await handleExplodingCatsDeparture();
 
     const savedRoom = await room.save();
-    const roomSummary = this.toSummary(savedRoom);
-    this.realtime.emitRoomUpdate(roomSummary);
+    const publicSummary = this.toSummary(savedRoom);
+    this.realtime.emitRoomUpdate(publicSummary);
 
     return {
-      room: roomSummary,
+      room: this.toViewerSummary(savedRoom, normalizedUserId),
       session: sessionSummary,
       deleted: false,
       removedPlayerId: normalizedUserId,
@@ -1943,9 +1990,95 @@ export class GamesService {
     }
 
     const saved = await newRoom.save();
-    const summary = this.toSummary(saved);
-    this.realtime.emitRoomUpdate(summary);
-    return summary;
+    const publicSummary = this.toSummary(saved);
+    this.realtime.emitRoomUpdate(publicSummary);
+    return this.toViewerSummary(saved, normalizedHostId);
+  }
+
+  private toViewerSummary(
+    room: GameRoom,
+    viewerId?: string | null,
+  ): GameRoomSummary {
+    const baseSummary = this.toSummary(room);
+    const context = this.resolveViewerContext(room, viewerId);
+    return {
+      ...baseSummary,
+      viewerRole: context.viewerRole,
+      viewerHasJoined: context.viewerHasJoined,
+      viewerIsHost: context.viewerIsHost,
+    };
+  }
+
+  private resolveViewerContext(
+    room: GameRoom,
+    viewerId?: string | null,
+  ): {
+    viewerRole: 'host' | 'participant' | 'none';
+    viewerHasJoined: boolean;
+    viewerIsHost: boolean;
+  } {
+    const normalizedViewerId =
+      typeof viewerId === 'string' ? viewerId.trim() : '';
+    if (!normalizedViewerId) {
+      return {
+        viewerRole: 'none',
+        viewerHasJoined: false,
+        viewerIsHost: false,
+      };
+    }
+
+    const hostId = (room.hostId ?? '').trim();
+    if (hostId && hostId === normalizedViewerId) {
+      return {
+        viewerRole: 'host',
+        viewerHasJoined: true,
+        viewerIsHost: true,
+      };
+    }
+
+    const participantIds = this.normalizeUserIds(
+      Array.isArray(room.playerIds) ? room.playerIds : [],
+    );
+    if (participantIds.includes(normalizedViewerId)) {
+      return {
+        viewerRole: 'participant',
+        viewerHasJoined: true,
+        viewerIsHost: false,
+      };
+    }
+
+    return {
+      viewerRole: 'none',
+      viewerHasJoined: false,
+      viewerIsHost: false,
+    };
+  }
+
+  private matchesParticipationFilter(
+    room: GameRoom,
+    viewerId: string | null,
+    filter: GameRoomParticipationFilter,
+  ): boolean {
+    if (!filter || filter === 'all') {
+      return true;
+    }
+
+    const normalizedViewer = viewerId?.trim() ?? '';
+    if (!normalizedViewer) {
+      return false;
+    }
+
+    const context = this.resolveViewerContext(room, normalizedViewer);
+    switch (filter) {
+      case 'hosting':
+        return context.viewerIsHost;
+      case 'joined':
+        return context.viewerHasJoined;
+      case 'not_joined':
+        return !context.viewerHasJoined;
+      default:
+        return true;
+    }
   }
 
   private normalizeUserIds(values: unknown[]): string[] {

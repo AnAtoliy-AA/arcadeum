@@ -16,7 +16,9 @@ import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { JwtOptionalAuthGuard } from '../auth/jwt/jwt-optional.guard';
 import { type AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 import {
+  GAME_ROOM_PARTICIPATION_FILTERS,
   GamesService,
+  type GameRoomParticipationFilter,
   type StartExplodingCatsSessionResult,
 } from './games.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
@@ -25,6 +27,12 @@ import { StartGameDto } from './dtos/start-game.dto';
 import { LeaveGameRoomDto } from './dtos/leave-game-room.dto';
 import { DeleteGameRoomDto } from './dtos/delete-game-room.dto';
 import { HistoryRematchDto } from './dtos/history-rematch.dto';
+import {
+  GAME_ROOM_STATUS_VALUES,
+  GAME_ROOM_VISIBILITY_VALUES,
+  type GameRoomStatus,
+  type GameRoomVisibility,
+} from './schemas/game-room.schema';
 
 @Controller('games')
 export class GamesController {
@@ -50,9 +58,69 @@ export class GamesController {
   async listRooms(
     @Req() req: Request,
     @Query('gameId') gameId?: string,
+    @Query('status') statusParam?: string,
+    @Query('visibility') visibilityParam?: string,
+    @Query('participation') participationParam?: string,
   ): Promise<{ rooms: Awaited<ReturnType<GamesService['listRooms']>> }> {
     const user = req.user as AuthenticatedUser | undefined | null;
-    const rooms = await this.gamesService.listRooms(user?.userId, gameId);
+    const parseList = (value?: string): string[] => {
+      if (!value) {
+        return [];
+      }
+      return value
+        .split(',')
+        .map((entry) => entry.trim())
+        .filter((entry) => entry.length > 0);
+    };
+
+    const statusFilters = parseList(statusParam).reduce<GameRoomStatus[]>(
+      (acc, value) => {
+        if (
+          GAME_ROOM_STATUS_VALUES.includes(value as GameRoomStatus) &&
+          !acc.includes(value as GameRoomStatus)
+        ) {
+          acc.push(value as GameRoomStatus);
+        }
+        return acc;
+      },
+      [],
+    );
+
+    const visibilityFilters = parseList(visibilityParam).reduce<
+      GameRoomVisibility[]
+    >((acc, value) => {
+      if (
+        GAME_ROOM_VISIBILITY_VALUES.includes(value as GameRoomVisibility) &&
+        !acc.includes(value as GameRoomVisibility)
+      ) {
+        acc.push(value as GameRoomVisibility);
+      }
+      return acc;
+    }, []);
+
+    let participationFilter: GameRoomParticipationFilter | undefined;
+    if (typeof participationParam === 'string') {
+      const trimmed = participationParam.trim();
+      if (
+        GAME_ROOM_PARTICIPATION_FILTERS.includes(
+          trimmed as GameRoomParticipationFilter,
+        )
+      ) {
+        participationFilter = trimmed as GameRoomParticipationFilter;
+      }
+    }
+
+    if (participationFilter === 'all') {
+      participationFilter = undefined;
+    }
+
+    const rooms = await this.gamesService.listRooms({
+      userId: user?.userId,
+      gameId,
+      statuses: statusFilters.length ? statusFilters : undefined,
+      visibility: visibilityFilters.length ? visibilityFilters : undefined,
+      participation: participationFilter,
+    });
     return { rooms };
   }
 

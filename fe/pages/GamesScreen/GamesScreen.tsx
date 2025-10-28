@@ -18,6 +18,7 @@ import {
   joinGameRoom,
   listGameRooms,
   type GameRoomSummary,
+  type ListGameRoomsParams,
 } from './api/gamesApi';
 import { useSessionTokens } from '@/stores/sessionTokens';
 import {
@@ -37,6 +38,13 @@ type InvitePromptState = {
   loading: boolean;
   error: string | null;
 };
+
+type StatusFilterValue = 'all' | 'lobby' | 'in_progress' | 'completed';
+type ParticipationFilterValue =
+  | 'all'
+  | 'hosting'
+  | 'joined'
+  | 'not_joined';
 
 export default function GamesScreen() {
   const styles = useThemedStyles(createStyles);
@@ -66,10 +74,71 @@ export default function GamesScreen() {
     loading: false,
     error: null,
   });
+  const [statusFilter, setStatusFilter] = useState<StatusFilterValue>('all');
+  const [participationFilter, setParticipationFilter] =
+    useState<ParticipationFilterValue>('all');
+  const isAuthenticated = Boolean(tokens.accessToken && tokens.userId);
+
+  const statusOptions = useMemo(() => {
+    const options: { value: StatusFilterValue; label: string }[] = [
+      { value: 'all', label: t('games.lounge.filters.status.all') },
+      { value: 'lobby', label: t('games.lounge.filters.status.lobby') },
+      {
+        value: 'in_progress',
+        label: t('games.lounge.filters.status.inProgress'),
+      },
+      {
+        value: 'completed',
+        label: t('games.lounge.filters.status.completed'),
+      },
+    ];
+    return options;
+  }, [t]);
+
+  const participationOptions = useMemo(() => {
+    const options: {
+      value: ParticipationFilterValue;
+      label: string;
+      requiresAuth: boolean;
+    }[] = [
+      {
+        value: 'all',
+        label: t('games.lounge.filters.participation.all'),
+        requiresAuth: false,
+      },
+      {
+        value: 'hosting',
+        label: t('games.lounge.filters.participation.hosting'),
+        requiresAuth: true,
+      },
+      {
+        value: 'joined',
+        label: t('games.lounge.filters.participation.joined'),
+        requiresAuth: true,
+      },
+      {
+        value: 'not_joined',
+        label: t('games.lounge.filters.participation.notJoined'),
+        requiresAuth: true,
+      },
+    ];
+    return options;
+  }, [t]);
+
+  const filtersActive = useMemo(() => {
+    return statusFilter !== 'all' || participationFilter !== 'all';
+  }, [participationFilter, statusFilter]);
+
+  useEffect(() => {
+    if (!isAuthenticated && participationFilter !== 'all') {
+      setParticipationFilter('all');
+    }
+  }, [isAuthenticated, participationFilter]);
 
   const fetchRooms = useCallback(
     async (mode: 'initial' | 'refresh' = 'initial') => {
-      const setLoadingFlag = mode === 'initial' ? setRoomsLoading : setRoomsRefreshing;
+      const setLoadingFlag =
+        mode === 'initial' ? setRoomsLoading : setRoomsRefreshing;
       setLoadingFlag(true);
 
       try {
@@ -79,17 +148,36 @@ export default function GamesScreen() {
               refreshTokens,
             }
           : undefined;
-        const response = await listGameRooms(undefined, authOptions);
+
+        const filters: ListGameRoomsParams = {};
+        if (statusFilter !== 'all') {
+          filters.statuses = [statusFilter];
+        }
+        if (participationFilter !== 'all') {
+          filters.participation = participationFilter;
+        }
+
+        const response = await listGameRooms(
+          Object.keys(filters).length > 0 ? filters : undefined,
+          authOptions,
+        );
         setRooms(response.rooms ?? []);
         setRoomsError(null);
       } catch (error) {
-        const message = error instanceof Error ? error.message : t('games.errors.loadRooms');
+        const message =
+          error instanceof Error ? error.message : t('games.errors.loadRooms');
         setRoomsError(message);
       } finally {
         setLoadingFlag(false);
       }
     },
-    [refreshTokens, t, tokens.accessToken],
+    [
+      participationFilter,
+      refreshTokens,
+      statusFilter,
+      t,
+      tokens.accessToken,
+    ],
   );
 
   useEffect(() => {
@@ -364,6 +452,85 @@ export default function GamesScreen() {
           <ThemedText style={styles.manualInviteTriggerText}>{t('games.lounge.haveInvite')}</ThemedText>
         </TouchableOpacity>
 
+        <View style={styles.filtersContainer}>
+          <View style={styles.filterGroup}>
+            <ThemedText style={styles.filterLabel}>
+              {t('games.lounge.filters.statusLabel')}
+            </ThemedText>
+            <View style={styles.filterChipsRow}>
+              {statusOptions.map((option) => {
+                const selected = option.value === statusFilter;
+                return (
+                  <TouchableOpacity
+                    key={option.value}
+                    style={[
+                      styles.filterChip,
+                      selected && styles.filterChipActive,
+                    ]}
+                    onPress={() => {
+                      setStatusFilter(option.value);
+                    }}
+                    disabled={selected}
+                  >
+                    <ThemedText
+                      style={[
+                        styles.filterChipText,
+                        selected && styles.filterChipTextActive,
+                      ]}
+                    >
+                      {option.label}
+                    </ThemedText>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+
+          <View style={styles.filterGroup}>
+            <ThemedText style={styles.filterLabel}>
+              {t('games.lounge.filters.participationLabel')}
+            </ThemedText>
+            <View style={styles.filterChipsRow}>
+              {participationOptions.map((option) => {
+                const selected = option.value === participationFilter;
+                const disabled = option.requiresAuth && !isAuthenticated;
+                return (
+                  <TouchableOpacity
+                    key={option.value}
+                    style={[
+                      styles.filterChip,
+                      selected && styles.filterChipActive,
+                      disabled && styles.filterChipDisabled,
+                    ]}
+                    onPress={() => {
+                      if (disabled) {
+                        return;
+                      }
+                      setParticipationFilter(option.value);
+                    }}
+                    disabled={disabled || selected}
+                  >
+                    <ThemedText
+                      style={[
+                        styles.filterChipText,
+                        selected && styles.filterChipTextActive,
+                        disabled && styles.filterChipTextDisabled,
+                      ]}
+                    >
+                      {option.label}
+                    </ThemedText>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+            {!isAuthenticated && (
+              <ThemedText style={styles.filterHelperText}>
+                {t('games.lounge.filters.participationSignedOut')}
+              </ThemedText>
+            )}
+          </View>
+        </View>
+
         <View style={styles.roomsContainer}>
           {roomsLoading ? (
             <ThemedView style={styles.roomSkeleton}>
@@ -385,9 +552,15 @@ export default function GamesScreen() {
           ) : sortedRooms.length === 0 ? (
             <ThemedView style={styles.roomEmptyCard}>
               <IconSymbol name="sparkles" size={22} color={styles.roomEmptyIcon.color as string} />
-              <ThemedText style={styles.roomEmptyTitle}>{t('games.lounge.emptyTitle')}</ThemedText>
+              <ThemedText style={styles.roomEmptyTitle}>
+                {filtersActive
+                  ? t('games.lounge.filterEmptyTitle')
+                  : t('games.lounge.emptyTitle')}
+              </ThemedText>
               <ThemedText style={styles.roomEmptyText}>
-                {t('games.lounge.emptyDescription')}
+                {filtersActive
+                  ? t('games.lounge.filterEmptyDescription')
+                  : t('games.lounge.emptyDescription')}
               </ThemedText>
             </ThemedView>
           ) : (
@@ -585,6 +758,54 @@ function createStyles(palette: Palette) {
       color: palette.tint,
       fontWeight: '600',
       fontSize: 13,
+    },
+    filtersContainer: {
+      marginTop: 8,
+      gap: 16,
+    },
+    filterGroup: {
+      gap: 8,
+    },
+    filterLabel: {
+      color: palette.text,
+      fontWeight: '600',
+      fontSize: 13,
+    },
+    filterChipsRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+    },
+    filterChip: {
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 999,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor,
+      backgroundColor: raisedBackground,
+    },
+    filterChipActive: {
+      backgroundColor: palette.tint,
+      borderColor: palette.tint,
+    },
+    filterChipDisabled: {
+      opacity: 0.6,
+    },
+    filterChipText: {
+      color: palette.text,
+      fontSize: 13,
+      fontWeight: '500',
+    },
+    filterChipTextActive: {
+      color: palette.background,
+    },
+    filterChipTextDisabled: {
+      color: palette.icon,
+    },
+    filterHelperText: {
+      color: palette.icon,
+      fontSize: 12,
+      lineHeight: 16,
     },
     roomsContainer: {
       gap: 12,

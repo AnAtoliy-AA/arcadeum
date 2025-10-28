@@ -16,10 +16,13 @@ export interface GameRoomSummary {
   hostId: string;
   visibility: 'public' | 'private';
   playerCount: number;
-  maxPlayers: number;
+  maxPlayers: number | null;
   createdAt: string;
   status: 'lobby' | 'in_progress' | 'completed';
   inviteCode?: string;
+  viewerRole?: 'host' | 'participant' | 'none';
+  viewerHasJoined?: boolean;
+  viewerIsHost?: boolean;
 }
 
 export interface CreateGameRoomResponse {
@@ -28,6 +31,13 @@ export interface CreateGameRoomResponse {
 
 export interface ListGameRoomsResponse {
   rooms: GameRoomSummary[];
+}
+
+export interface ListGameRoomsParams {
+  gameId?: string;
+  statuses?: ('lobby' | 'in_progress' | 'completed')[];
+  visibility?: ('public' | 'private')[];
+  participation?: 'all' | 'hosting' | 'joined' | 'not_joined';
 }
 
 export interface JoinGameRoomParams {
@@ -110,9 +120,24 @@ export async function createGameRoom(params: CreateGameRoomParams, options?: Fet
   return response.json() as Promise<CreateGameRoomResponse>;
 }
 
-export async function listGameRooms(gameId?: string, options?: FetchWithRefreshOptions): Promise<ListGameRoomsResponse> {
+export async function listGameRooms(
+  params?: ListGameRoomsParams,
+  options?: FetchWithRefreshOptions,
+): Promise<ListGameRoomsResponse> {
   const url = new URL(`${apiBase()}/games/rooms`);
-  if (gameId) url.searchParams.set('gameId', gameId);
+  if (params?.gameId) {
+    url.searchParams.set('gameId', params.gameId);
+  }
+  if (params?.statuses?.length) {
+    url.searchParams.set('status', params.statuses.join(','));
+  }
+  if (params?.visibility?.length) {
+    url.searchParams.set('visibility', params.visibility.join(','));
+  }
+  if (params?.participation) {
+    url.searchParams.set('participation', params.participation);
+  }
+
   const response = await fetchWithRefresh(url.toString(), buildInit(), options);
   if (!response.ok) {
     const errorText = await response.text();

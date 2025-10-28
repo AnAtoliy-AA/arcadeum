@@ -157,7 +157,7 @@ export const translations = {
       lounge: {
         title: "Tabletop Lounge",
         subtitle:
-          "Spin up real-time rooms, invite your friends, and let AICO handle rules, scoring, and moderation.",
+          "Spin up real-time rooms, invite your friends, and let {{appName}} handle rules, scoring, and moderation.",
         featuredTitle: "Featured games",
         featuredCaption:
           "Early access titles we're polishing for launch. Tap to explore rules and reserve a playtest slot.",
@@ -281,7 +281,7 @@ export const translations = {
       share: {
         title: "Join me for {{game}}",
         message:
-          "Jump into {{game}} on AICO. I'll create a room as soon as the prototype opens!",
+          "Jump into {{game}} on {{appName}}. I'll create a room as soon as the prototype opens!",
       },
       create: {
         title: "Create a room",
@@ -485,9 +485,9 @@ export const translations = {
         "When you're ready, run {{command}} to get a fresh {{appName}} directory. This will move the current {{appName}} to {{exampleName}}.",
     },
     welcome: {
-      tagline: "Intelligent, secure, and extensible real-time collaboration.",
+      tagline: "{{appName}} is your remote-friendly arcade for fast tabletop playtests.",
       description:
-        "Experience OAuth and local email/password authentication, JWT access with upcoming refresh rotation, and real-time messaging powered by websockets. This playground app demonstrates secure patterns, modular architecture, and theming for mobile and web via Expo.",
+        "Spin up real-time rooms, rally your playtest crew, and let {{appName}} automate rules, scoring, and moderation so you can focus on the fun.",
       runningOn: "Running on {{platform}}",
     },
     settings: {
@@ -672,7 +672,7 @@ export const translations = {
       lounge: {
         title: "Salón de juegos de mesa",
         subtitle:
-          "Crea salas en tiempo real, invita a tus amigos y deja que AICO se encargue de las reglas, la puntuación y la moderación.",
+          "Crea salas en tiempo real, invita a tus amigos y deja que {{appName}} se encargue de las reglas, la puntuación y la moderación.",
         featuredTitle: "Juegos destacados",
         featuredCaption:
           "Títulos de acceso anticipado que seguimos puliendo. Toca para explorar las reglas y reservar un lugar de prueba.",
@@ -797,7 +797,7 @@ export const translations = {
       share: {
         title: "Únete conmigo a {{game}}",
         message:
-          "Entra a {{game}} en AICO. Crearé una sala en cuanto abra el prototipo.",
+          "Entra a {{game}} en {{appName}}. Crearé una sala en cuanto abra el prototipo.",
       },
       create: {
         title: "Crear una sala",
@@ -997,9 +997,9 @@ export const translations = {
         "Cuando estés listo, ejecuta {{command}} para obtener un nuevo directorio {{appName}}. Esto moverá el {{appName}} actual a {{exampleName}}.",
     },
     welcome: {
-      tagline: "Colaboración en tiempo real inteligente, segura y extensible.",
+      tagline: "{{appName}} es tu arcade remoto para playtests de mesa rápidos.",
       description:
-        "Experimenta autenticación OAuth y local con correo y contraseña, acceso JWT con próxima rotación de tokens refresh, y mensajería en tiempo real impulsada por websockets. Esta app de pruebas muestra patrones seguros, arquitectura modular y tematización para móvil y web con Expo.",
+        "Lanza salas en tiempo real, reúne a tu equipo de pruebas y deja que {{appName}} automatice reglas, puntuaciones y moderación para que te concentres en la diversión.",
       runningOn: "Se ejecuta en {{platform}}",
     },
     settings: {
@@ -1145,7 +1145,7 @@ export const translations = {
       lounge: {
         title: "Salon jeux de plateau",
         subtitle:
-          "Crée des salles en temps réel, invite tes amis et laisse AICO gérer règles, score et modération.",
+          "Crée des salles en temps réel, invite tes amis et laisse {{appName}} gérer règles, score et modération.",
         featuredTitle: "Jeux à la une",
         featuredCaption:
           "Titres en accès anticipé que nous peaufinons encore. Touchez pour explorer les règles et réserver un créneau de test.",
@@ -1270,7 +1270,7 @@ export const translations = {
       share: {
         title: "Rejoins-moi pour {{game}}",
         message:
-          "Rejoins {{game}} sur AICO. Je créerai une salle dès que le prototype ouvrira !",
+          "Rejoins {{game}} sur {{appName}}. Je créerai une salle dès que le prototype ouvrira !",
       },
       create: {
         title: "Créer une salle",
@@ -1476,9 +1476,9 @@ export const translations = {
     },
     welcome: {
       tagline:
-        "Collaboration en temps réel intelligente, sécurisée et extensible.",
+        "{{appName}} est ton arcade connecté pour des playtests de plateau express.",
       description:
-        "Découvrez l'authentification OAuth et locale par e-mail/mot de passe, l'accès JWT avec rotation de jetons à venir, et la messagerie en temps réel alimentée par WebSockets. Cette application de démonstration illustre des modèles sécurisés, une architecture modulaire et un thème pour mobile et web avec Expo.",
+        "Crée des salles en temps réel, rassemble ton équipe de test et laisse {{appName}} automatiser règles, score et modération pour te concentrer sur le fun.",
       runningOn: "Fonctionne sur {{platform}}",
     },
     settings: {

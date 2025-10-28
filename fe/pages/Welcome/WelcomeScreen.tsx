@@ -7,6 +7,7 @@ import { useThemedStyles, Palette } from '@/hooks/useThemedStyles';
 import { useSessionScreenGate } from '@/hooks/useSessionScreenGate';
 import { platform } from '@/constants/platform';
 import { useTranslation } from '@/lib/i18n';
+import { useAppName } from '@/hooks/useAppName';
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -17,6 +18,7 @@ export default function WelcomeScreen() {
     blockWhenAuthenticated: true,
   });
   const { t } = useTranslation();
+  const appName = useAppName();
 
   if (shouldBlock) {
     return (
@@ -37,9 +39,9 @@ export default function WelcomeScreen() {
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.heroBlock}>
-          <ThemedText type="title" style={styles.title}>AICO</ThemedText>
-          <Text style={styles.tagline}>{t('welcome.tagline')}</Text>
-          <Text style={styles.description}>{t('welcome.description')}</Text>
+          <ThemedText type="title" style={styles.title}>{appName}</ThemedText>
+          <Text style={styles.tagline}>{t('welcome.tagline', { appName })}</Text>
+          <Text style={styles.description}>{t('welcome.description', { appName })}</Text>
           <View style={styles.actions}>
             <Button
               title={isAuthenticated && !redirectEnabled ? t('common.actions.openApp') : t('common.actions.getStarted')}

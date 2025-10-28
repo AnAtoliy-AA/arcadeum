@@ -6,6 +6,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
 import { useTranslation } from '@/lib/i18n';
+import { useAppName } from '@/hooks/useAppName';
 import { gamesCatalog, type GameCatalogueEntry } from '@/pages/GamesScreen/catalog';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -16,6 +17,7 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const appName = useAppName();
 
   const navigateToCreate = useCallback((gameId?: string) => {
     if (gameId) {
@@ -38,7 +40,7 @@ export default function HomeScreen() {
       <ScrollView contentContainerStyle={[styles.content, { paddingTop: BASE_TOP_PADDING + insets.top }]}>
         <View style={styles.header}>
           <ThemedText type="title" style={styles.title}>{t('games.lounge.title')}</ThemedText>
-          <ThemedText style={styles.subtitle}>{t('games.lounge.subtitle')}</ThemedText>
+          <ThemedText style={styles.subtitle}>{t('games.lounge.subtitle', { appName })}</ThemedText>
           <TouchableOpacity style={styles.headerButton} onPress={() => navigateToCreate()}>
             <IconSymbol name="sparkles" size={18} color={styles.headerButtonText.color as string} />
             <ThemedText style={styles.headerButtonText}>{t('games.common.createRoom')}</ThemedText>

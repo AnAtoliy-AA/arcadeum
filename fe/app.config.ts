@@ -4,11 +4,19 @@ import type { ExpoConfig } from "expo/config";
 const iosRedirectScheme = process.env.AUTH_IOS_REDIRECT_SCHEME as
   | string
   | undefined;
+const rawAppName = (process.env.EXPO_PUBLIC_APP_NAME as string | undefined)?.trim();
+const appName = rawAppName && rawAppName.length > 0 ? rawAppName : "Arcadeum";
+const rawAppSlug = (process.env.EXPO_PUBLIC_APP_SLUG as string | undefined)?.trim();
+const derivedSlug = appName
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, "-")
+  .replace(/(^-|-$)/g, "");
+const appSlug = rawAppSlug && rawAppSlug.length > 0 ? rawAppSlug : derivedSlug || "arcadeum";
 const appScheme = (process.env.APP_SCHEME as string | undefined) ?? "mobile";
 
 const config: ExpoConfig = {
-  name: "mobile",
-  slug: "mobile",
+  name: appName,
+  slug: appSlug,
   version: "1.0.0",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
@@ -59,6 +67,8 @@ const config: ExpoConfig = {
     typedRoutes: true,
   },
   extra: {
+    APP_NAME: appName,
+    APP_SLUG: appSlug,
     APP_SCHEME: appScheme,
     // Sentry
     SENTRY_DSN: process.env.EXPO_PUBLIC_SENTRY_DSN ?? process.env.SENTRY_DSN,

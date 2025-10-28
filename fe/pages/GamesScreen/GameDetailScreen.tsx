@@ -30,6 +30,7 @@ import {
 import { InviteCodeDialog } from './InviteCodeDialog';
 import { interpretJoinError } from './joinErrorUtils';
 import { useTranslation } from '@/lib/i18n';
+import { useAppName } from '@/hooks/useAppName';
 
 type InvitePromptState = {
   visible: boolean;
@@ -64,6 +65,7 @@ export default function GameDetailScreen() {
     loading: false,
     error: null,
   });
+  const appName = useAppName();
 
   const gameId = useMemo(() => {
     const value = params?.id;
@@ -270,12 +272,12 @@ export default function GameDetailScreen() {
     try {
       await Share.share({
         title: t('games.share.title', { game: game.name }),
-        message: t('games.share.message', { game: game.name }),
+        message: t('games.share.message', { game: game.name, appName }),
       });
     } catch {
       Alert.alert(t('games.alerts.inviteShareFailedTitle'), t('games.alerts.inviteShareFailedMessage'));
     }
-  }, [game, t]);
+  }, [appName, game, t]);
 
   if (shouldBlock) {
     return (

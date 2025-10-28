@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, Button, SafeAreaView, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -35,6 +35,10 @@ export default function WelcomeScreen() {
       router.push('/auth');
     }
   };
+  const handleSupportPress = () => {
+    router.push('/support');
+  };
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -43,10 +47,14 @@ export default function WelcomeScreen() {
           <Text style={styles.tagline}>{t('welcome.tagline', { appName })}</Text>
           <Text style={styles.description}>{t('welcome.description', { appName })}</Text>
           <View style={styles.actions}>
-            <Button
-              title={isAuthenticated && !redirectEnabled ? t('common.actions.openApp') : t('common.actions.getStarted')}
-              onPress={handlePrimaryPress}
-            />
+            <TouchableOpacity style={[styles.actionButton, styles.primaryAction]} onPress={handlePrimaryPress}>
+              <ThemedText style={styles.primaryActionText}>
+                {isAuthenticated && !redirectEnabled ? t('common.actions.openApp') : t('common.actions.getStarted')}
+              </ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.actionButton, styles.secondaryAction]} onPress={handleSupportPress}>
+              <ThemedText style={styles.secondaryActionText}>{t('welcome.supportCta')}</ThemedText>
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.footer}>
@@ -84,8 +92,8 @@ function createStyles(palette: Palette) {
       letterSpacing: 0.5,
       textAlign: 'center',
       lineHeight: 52,
-  paddingTop: platform.isIos ? 8 : 0,
-  marginTop: platform.isIos ? 4 : 0,
+      paddingTop: platform.isIos ? 8 : 0,
+      marginTop: platform.isIos ? 4 : 0,
       color: palette.text,
     },
     tagline: {
@@ -101,7 +109,32 @@ function createStyles(palette: Palette) {
     actions: {
       marginTop: 8,
       flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'center',
       gap: 12,
+    },
+    actionButton: {
+      paddingVertical: 14,
+      paddingHorizontal: 22,
+      borderRadius: 999,
+      alignItems: 'center',
+      justifyContent: 'center',
+      minWidth: 160,
+    },
+    primaryAction: {
+      backgroundColor: palette.tint,
+    },
+    secondaryAction: {
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: palette.tint,
+    },
+    primaryActionText: {
+      color: palette.background,
+      fontWeight: '600',
+    },
+    secondaryActionText: {
+      color: palette.tint,
+      fontWeight: '600',
     },
     footer: {
       marginTop: 'auto',

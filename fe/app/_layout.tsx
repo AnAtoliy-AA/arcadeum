@@ -53,6 +53,10 @@ function NavigationRoot() {
           name="settings"
           options={{ title: t("navigation.settingsTitle")}}
         />
+        <Stack.Screen
+          name="support"
+          options={{ title: t("navigation.supportTitle") }}
+        />
         <Stack.Screen name="+not-found" />
       </Stack>
       <SettingsLauncher />

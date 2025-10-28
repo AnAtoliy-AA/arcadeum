@@ -1,5 +1,23 @@
 import type { TranslationLeafPaths, TranslationMap } from "./types";
 
+const SUPPORT_TEAM_NAMES = {
+  en: {
+    producer: "Anatoliy Aliaksandrau",
+    designer: "Anatoliy Aliaksandrau",
+    engineer: "Anatoliy Aliaksandrau",
+  },
+  es: {
+    producer: "Anatoliy Aliaksandrau",
+    designer: "Anatoliy Aliaksandrau",
+    engineer: "Anatoliy Aliaksandrau",
+  },
+  fr: {
+    producer: "Anatoliy Aliaksandrau",
+    designer: "Anatoliy Aliaksandrau",
+    engineer: "Anatoliy Aliaksandrau",
+  },
+} as const;
+
 export const translations = {
   en: {
     navigation: {
@@ -8,6 +26,7 @@ export const translations = {
       chatsTab: "Chats",
       historyTab: "History",
       settingsTitle: "Settings",
+  supportTitle: "Support the developers",
       openSettingsHint: "Open settings",
     },
     common: {
@@ -78,6 +97,7 @@ export const translations = {
       status: {
         connected: "Connected to chat server",
         connecting: "Connecting...",
+          supportTitle: "Soutenir l'équipe",
       },
     },
     chatList: {
@@ -489,6 +509,48 @@ export const translations = {
       description:
         "Spin up real-time rooms, rally your playtest crew, and let {{appName}} automate rules, scoring, and moderation so you can focus on the fun.",
       runningOn: "Running on {{platform}}",
+      supportCta: "Support the developers",
+    },
+    support: {
+      title: "Support the developers",
+      tagline: "Keep {{appName}} iterating quickly and accessible to the tabletop community.",
+      description:
+        "Arcade labs, infrastructure, and community events are self-funded today. Your backing keeps the realtime servers online, unlocks more playtest nights, and helps us ship the next wave of prototypes.",
+      team: {
+        title: "Meet the core team",
+        members: {
+          producer: {
+            name: SUPPORT_TEAM_NAMES.en.producer,
+            role: "Product & realtime systems",
+            bio: "Keeps prototypes organized, roadmaps realistic, and the realtime engine humming for every playtest night.",
+          },
+          designer: {
+            name: SUPPORT_TEAM_NAMES.en.designer,
+            role: "Game designer & UX",
+            bio: "Turns raw playtest feedback into balanced mechanics, polished flows, and welcoming onboarding experiences.",
+          },
+          engineer: {
+            name: SUPPORT_TEAM_NAMES.en.engineer,
+            role: "Full-stack engineer",
+            bio: "Builds cross-platform features, maintains the component toolkit, and keeps performance snappy across devices.",
+          },
+        },
+      },
+      contribute: {
+        title: "Ways to contribute",
+        sponsorTitle: "Recurring sponsorship",
+        sponsorDescription:
+          "Set up a monthly or annual contribution to underwrite hosting, QA sessions, and new game prototypes.",
+        sponsorCta: "Sponsor development",
+        coffeeTitle: "One-time boost",
+        coffeeDescription:
+          "Prefer a quick thank-you? Send the crew coffee and snacks so late-night playtests stay energized.",
+        coffeeCta: "Buy the team a coffee",
+      },
+      thanks: "Every contribution keeps {{appName}} evolving. Thank you for helping us build the future of remote tabletop play!",
+      errors: {
+        unableToOpen: "We couldn't open that link. Try again shortly.",
+      },
     },
     settings: {
       appearanceTitle: "Appearance",
@@ -532,6 +594,7 @@ export const translations = {
       chatsTab: "Chats",
       historyTab: "Historial",
       settingsTitle: "Ajustes",
+  supportTitle: "Apoyar al equipo",
       openSettingsHint: "Abrir ajustes",
     },
     common: {
@@ -1001,6 +1064,48 @@ export const translations = {
       description:
         "Lanza salas en tiempo real, reúne a tu equipo de pruebas y deja que {{appName}} automatice reglas, puntuaciones y moderación para que te concentres en la diversión.",
       runningOn: "Se ejecuta en {{platform}}",
+      supportCta: "Apoyar al equipo",
+    },
+    support: {
+      title: "Apoya al equipo de desarrollo",
+      tagline: "Ayuda a que {{appName}} evolucione rápido y siga abierto para la comunidad de juegos de mesa.",
+      description:
+        "Hoy financiamos por nuestra cuenta los laboratorios de pruebas, la infraestructura y los eventos con la comunidad. Tu aporte mantiene los servidores en tiempo real, habilita más noches de playtest y nos permite lanzar la próxima oleada de prototipos.",
+      team: {
+        title: "Conoce al equipo central",
+        members: {
+          producer: {
+            name: SUPPORT_TEAM_NAMES.es.producer,
+            role: "Producto y sistemas en tiempo real",
+            bio: "Organiza los prototipos, aterriza la hoja de ruta y mantiene el motor en tiempo real listo para cada sesión.",
+          },
+          designer: {
+            name: SUPPORT_TEAM_NAMES.es.designer,
+            role: "Diseño de juegos y UX",
+            bio: "Convierte el feedback crudo de los playtests en mecánicas balanceadas, flujos pulidos y experiencias de bienvenida.",
+          },
+          engineer: {
+            name: SUPPORT_TEAM_NAMES.es.engineer,
+            role: "Ingeniería full-stack",
+            bio: "Construye funciones multiplataforma, cuida la librería de componentes y mantiene el rendimiento fluido en todos los dispositivos.",
+          },
+        },
+      },
+      contribute: {
+        title: "Formas de contribuir",
+        sponsorTitle: "Patrocinio recurrente",
+        sponsorDescription:
+          "Configura un aporte mensual o anual que cubra hosting, sesiones de QA y nuevos prototipos de juegos.",
+        sponsorCta: "Patrocinar desarrollo",
+        coffeeTitle: "Impulso puntual",
+        coffeeDescription:
+          "¿Prefieres un agradecimiento rápido? Manda café y snacks al equipo para mantener la energía en los playtests nocturnos.",
+        coffeeCta: "Invitar un café",
+      },
+      thanks: "Cada contribución ayuda a que {{appName}} siga evolucionando. ¡Gracias por impulsar el futuro del juego de mesa remoto!",
+      errors: {
+        unableToOpen: "No pudimos abrir ese enlace. Intenta de nuevo en unos minutos.",
+      },
     },
     settings: {
       appearanceTitle: "Aspecto",
@@ -1480,6 +1585,50 @@ export const translations = {
       description:
         "Crée des salles en temps réel, rassemble ton équipe de test et laisse {{appName}} automatiser règles, score et modération pour te concentrer sur le fun.",
       runningOn: "Fonctionne sur {{platform}}",
+      supportCta: "Soutenir l'équipe",
+    },
+    support: {
+      title: "Soutenir l'équipe de développement",
+      tagline:
+        "Aide {{appName}} à progresser rapidement tout en restant accessible à la communauté des jeux de société.",
+      description:
+        "Nos laboratoires de tests, l'infrastructure et les événements communautaires sont entièrement autofinancés. Ton soutien maintient les serveurs temps réel, finance de nouvelles soirées playtest et nous permet de livrer la prochaine vague de prototypes.",
+      team: {
+        title: "Rencontrez l'équipe cœur",
+        members: {
+          producer: {
+            name: SUPPORT_TEAM_NAMES.fr.producer,
+            role: "Produit & systèmes temps réel",
+            bio: "Orchestre les prototypes, ajuste la feuille de route et veille au bon fonctionnement du moteur temps réel à chaque session.",
+          },
+          designer: {
+            name: SUPPORT_TEAM_NAMES.fr.designer,
+            role: "Game designer & UX",
+            bio: "Transforme les retours de playtest en mécaniques équilibrées, parcours fluides et expériences accueillantes.",
+          },
+          engineer: {
+            name: SUPPORT_TEAM_NAMES.fr.engineer,
+            role: "Ingénieur full-stack",
+            bio: "Déploie des fonctionnalités multiplateformes, maintient la bibliothèque de composants et garantit des performances constantes.",
+          },
+        },
+      },
+      contribute: {
+        title: "Comment contribuer",
+        sponsorTitle: "Parrainage récurrent",
+        sponsorDescription:
+          "Mets en place une contribution mensuelle ou annuelle pour financer l'hébergement, les sessions QA et de nouveaux prototypes.",
+        sponsorCta: "Parrainer le développement",
+        coffeeTitle: "Coup de pouce ponctuel",
+        coffeeDescription:
+          "Envie d'un merci rapide ? Offre café et encas pour garder l'équipe en forme pendant les playtests nocturnes.",
+        coffeeCta: "Offrir un café",
+      },
+      thanks:
+        "Chaque contribution fait évoluer {{appName}}. Merci de nous aider à imaginer l'avenir du jeu de plateau à distance !",
+      errors: {
+        unableToOpen: "Impossible d'ouvrir ce lien pour le moment. Réessaie bientôt.",
+      },
     },
     settings: {
       appearanceTitle: "Apparence",

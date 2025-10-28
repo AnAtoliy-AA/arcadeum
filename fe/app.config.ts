@@ -13,6 +13,10 @@ const derivedSlug = appName
   .replace(/(^-|-$)/g, "");
 const appSlug = rawAppSlug && rawAppSlug.length > 0 ? rawAppSlug : derivedSlug || "arcadeum";
 const appScheme = (process.env.APP_SCHEME as string | undefined) ?? "mobile";
+const supportUrl = ((process.env.EXPO_PUBLIC_SUPPORT_URL ?? process.env.SUPPORT_URL) as string | undefined)?.trim();
+const supportCoffeeUrl = ((
+  process.env.EXPO_PUBLIC_SUPPORT_COFFEE_URL ?? process.env.SUPPORT_COFFEE_URL
+) as string | undefined)?.trim();
 
 const config: ExpoConfig = {
   name: appName,
@@ -80,6 +84,9 @@ const config: ExpoConfig = {
     AUTH_IOS_REDIRECT_SCHEME: process.env.AUTH_IOS_REDIRECT_SCHEME,
     AUTH_WEB_REDIRECT_URL: process.env.AUTH_WEB_REDIRECT_URL,
     API_BASE_URL: process.env.EXPO_PUBLIC_API_BASE_URL,
+    SUPPORT_URL: supportUrl && supportUrl.length > 0 ? supportUrl : undefined,
+    SUPPORT_COFFEE_URL:
+      supportCoffeeUrl && supportCoffeeUrl.length > 0 ? supportCoffeeUrl : undefined,
     // Router uses this at runtime
     router: {
       origin: false,

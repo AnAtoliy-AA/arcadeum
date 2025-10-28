@@ -44,6 +44,12 @@ const MAPPING = {
   'figure.walk': 'directions-walk',
   'bolt.fill': 'bolt',
   'list.bullet.rectangle': 'list',
+  'star.circle.fill': 'stars',
+  'cup.and.saucer.fill': 'local-cafe',
+  'person.2.fill': 'people',
+  'paintpalette.fill': 'palette',
+  'cpu.fill': 'memory',
+  'arrow.up.right': 'north-east',
 } as IconMapping;
 
 /**

@@ -49,7 +49,9 @@ const MAPPING = {
   'person.2.fill': 'people',
   'paintpalette.fill': 'palette',
   'cpu.fill': 'memory',
-  'arrow.up.right': 'north-east',
+  'creditcard.fill': 'credit-card',
+  'arrow.up.right': 'open-in-new',
+  'doc.on.doc': 'content-copy',
 } as IconMapping;
 
 /**

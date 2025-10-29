@@ -1,6 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
 import { Alert, Linking, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import Constants from 'expo-constants';
+import { useRouter } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -9,22 +11,37 @@ import { useTranslation } from '@/lib/i18n';
 import { useAppName } from '@/hooks/useAppName';
 import type { TranslationKey } from '@/lib/i18n/messages';
 
-const DEFAULT_SPONSOR_URL = 'https://arcadeum.dev/support';
-const DEFAULT_COFFEE_URL = 'https://buymeacoffee.com/arcadeum';
-
-type SupportActionKey = 'sponsor' | 'coffee';
 type TeamMemberKey = 'producer' | 'designer' | 'engineer';
 
 type IconName = Parameters<typeof IconSymbol>[0]['name'];
 
-type SupportAction = {
+type SupportActionKey = 'payment' | 'sponsor' | 'coffee' | 'iban';
+
+type BaseSupportAction = {
   key: SupportActionKey;
   icon: IconName;
   titleKey: TranslationKey;
   descriptionKey: TranslationKey;
   ctaKey: TranslationKey;
+};
+
+type LinkSupportAction = BaseSupportAction & {
+  kind: 'link';
   url: string;
 };
+
+type CopySupportAction = BaseSupportAction & {
+  kind: 'copy';
+  value: string;
+  copySuccessKey: TranslationKey;
+};
+
+type RouteSupportAction = BaseSupportAction & {
+  kind: 'route';
+  route: string;
+};
+
+type SupportAction = LinkSupportAction | CopySupportAction | RouteSupportAction;
 
 type TeamMember = {
   key: TeamMemberKey;
@@ -34,7 +51,7 @@ type TeamMember = {
   bio: string;
 };
 
-function resolveExtraUrl(key: string, fallback: string): string {
+function resolveExtraString(key: string, fallback: string): string {
   const extra = (Constants as any)?.expoConfig?.extra as Record<string, unknown> | undefined;
   if (extra) {
     const raw = extra[key];
@@ -57,35 +74,72 @@ function resolveExtraUrl(key: string, fallback: string): string {
   return fallback;
 }
 
+function resolveExtraUrl(key: string, fallback: string): string {
+  return resolveExtraString(key, fallback);
+}
+
 export default function SupportScreen() {
   const styles = useThemedStyles(createStyles);
   const { t } = useTranslation();
   const appName = useAppName();
+  const { push } = useRouter();
 
-  const sponsorUrl = useMemo(() => resolveExtraUrl('SUPPORT_URL', DEFAULT_SPONSOR_URL), []);
-  const coffeeUrl = useMemo(() => resolveExtraUrl('SUPPORT_COFFEE_URL', DEFAULT_COFFEE_URL), []);
+  const sponsorUrl = useMemo(() => resolveExtraUrl('SUPPORT_URL', ''), []);
+  const coffeeUrl = useMemo(() => resolveExtraUrl('SUPPORT_COFFEE_URL', ''), []);
+  const ibanValue = useMemo(() => resolveExtraString('SUPPORT_IBAN', ''), []);
 
-  const actions = useMemo<SupportAction[]>(
-    () => [
+  const actions = useMemo<SupportAction[]>(() => {
+    const list: SupportAction[] = [
       {
+        key: 'payment',
+        kind: 'route',
+        icon: 'creditcard.fill',
+        titleKey: 'support.contribute.paymentTitle',
+        descriptionKey: 'support.contribute.paymentDescription',
+        ctaKey: 'support.contribute.paymentCta',
+        route: '/payment',
+      },
+    ];
+
+    if (sponsorUrl) {
+      list.push({
         key: 'sponsor',
+        kind: 'link',
         icon: 'star.circle.fill',
         titleKey: 'support.contribute.sponsorTitle',
         descriptionKey: 'support.contribute.sponsorDescription',
         ctaKey: 'support.contribute.sponsorCta',
         url: sponsorUrl,
-      },
-      {
+      });
+    }
+
+    if (coffeeUrl) {
+      list.push({
         key: 'coffee',
+        kind: 'link',
         icon: 'cup.and.saucer.fill',
         titleKey: 'support.contribute.coffeeTitle',
         descriptionKey: 'support.contribute.coffeeDescription',
         ctaKey: 'support.contribute.coffeeCta',
         url: coffeeUrl,
-      },
-    ],
-    [coffeeUrl, sponsorUrl],
-  );
+      });
+    }
+
+    if (ibanValue) {
+      list.push({
+        key: 'iban',
+        kind: 'copy',
+        icon: 'creditcard.fill',
+        titleKey: 'support.contribute.ibanTitle',
+        descriptionKey: 'support.contribute.ibanDescription',
+        ctaKey: 'support.contribute.ibanCta',
+        value: ibanValue,
+        copySuccessKey: 'support.contribute.ibanCopied',
+      });
+    }
+
+    return list;
+  }, [coffeeUrl, ibanValue, sponsorUrl]);
 
   const teamMembers = useMemo<TeamMember[]>(
     () => [
@@ -114,20 +168,39 @@ export default function SupportScreen() {
     [t],
   );
 
-  const handleOpen = useCallback(
+  const handleActionPress = useCallback(
     async (action: SupportAction) => {
-      try {
-        const supported = await Linking.canOpenURL(action.url);
-        if (!supported) {
-          throw new Error('unsupported');
+      if (action.kind === 'route') {
+        push(action.route as never);
+        return;
+      }
+
+      if (action.kind === 'link') {
+        try {
+          const supported = await Linking.canOpenURL(action.url);
+          if (!supported) {
+            throw new Error('unsupported');
+          }
+          await Linking.openURL(action.url);
+        } catch (error) {
+          console.error('support-link-error', error);
+          Alert.alert(t('support.title'), t('support.errors.unableToOpen'));
         }
-        await Linking.openURL(action.url);
+        return;
+      }
+
+      try {
+        await Clipboard.setStringAsync(action.value);
+        Alert.alert(
+          t(action.titleKey),
+          t(action.copySuccessKey, { iban: action.value }),
+        );
       } catch (error) {
-        console.error('support-link-error', error);
+        console.error('support-iban-copy-error', error);
         Alert.alert(t('support.title'), t('support.errors.unableToOpen'));
       }
     },
-    [t],
+    [push, t],
   );
 
   return (
@@ -159,15 +232,33 @@ export default function SupportScreen() {
           <ThemedText type="subtitle" style={styles.sectionTitle}>{t('support.contribute.title')}</ThemedText>
           <View style={styles.actionList}>
             {actions.map((action) => (
-              <TouchableOpacity key={action.key} style={styles.actionCard} onPress={() => handleOpen(action)}>
+              <TouchableOpacity
+                key={action.key}
+                style={styles.actionCard}
+                onPress={() => handleActionPress(action)}
+              >
                 <View style={styles.actionHeader}>
                   <IconSymbol name={action.icon} size={22} color={styles.actionIcon.color as string} />
                   <ThemedText style={styles.actionTitle}>{t(action.titleKey)}</ThemedText>
                 </View>
-                <ThemedText style={styles.actionDescription}>{t(action.descriptionKey)}</ThemedText>
+                <ThemedText style={styles.actionDescription}>
+                  {action.kind === 'copy'
+                    ? t(action.descriptionKey, { iban: action.value, appName })
+                    : t(action.descriptionKey, { appName })}
+                </ThemedText>
                 <View style={styles.actionCtaRow}>
                   <ThemedText style={styles.actionCta}>{t(action.ctaKey)}</ThemedText>
-                  <IconSymbol name="arrow.up.right" size={16} color={styles.actionCta.color as string} />
+                  <IconSymbol
+                    name={
+                      action.kind === 'copy'
+                        ? 'doc.on.doc'
+                        : action.kind === 'route'
+                          ? 'chevron.right'
+                          : 'arrow.up.right'
+                    }
+                    size={16}
+                    color={styles.actionCta.color as string}
+                  />
                 </View>
               </TouchableOpacity>
             ))}

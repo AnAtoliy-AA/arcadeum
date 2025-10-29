@@ -19,6 +19,8 @@ export const Colors = {
     statusConnected: '#2ecc40',
     statusDisconnected: '#ff4136',
     error: '#ff4136',
+    destructive: '#ff4136',
+    warning: '#f59e0b',
     gameTable: {
       surface: '#F6F8FC',
       raised: '#E7EDF7',
@@ -43,6 +45,8 @@ export const Colors = {
     statusConnected: '#2ecc40',
     statusDisconnected: '#ff4136',
     error: '#ff4136',
+    destructive: '#ff6b6b',
+    warning: '#fbbf24',
     gameTable: {
       surface: '#1E2229',
       raised: '#262A32',

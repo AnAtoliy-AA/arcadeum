@@ -36,7 +36,7 @@ cp .env.example .env
 
 - `APP_SCHEME`: App deep link scheme (non-OAuth). Default: `mobile`.
 - `EXPO_PUBLIC_APP_NAME`: Display name shown in Expo clients. Default: `Arcadeum`.
-- `EXPO_PUBLIC_SUPPORT_URL` / `EXPO_PUBLIC_SUPPORT_COFFEE_URL`: Optional external links for the Support screen sponsorship buttons.
+- `EXPO_PUBLIC_SUPPORT_URL` / `EXPO_PUBLIC_SUPPORT_COFFEE_URL` / `EXPO_PUBLIC_SUPPORT_IBAN`: Optional links or bank info for the Support screen contribution buttons.
 - `AUTH_ISSUER`: Usually `https://accounts.google.com`.
 - `AUTH_ANDROID_CLIENT_ID`: Android OAuth client ID (ends with `.apps.googleusercontent.com`).
 - `AUTH_ANDROID_REDIRECT_SCHEME`: Reverse client ID scheme (e.g., `com.googleusercontent.apps.<id>`). If omitted, Android build derives it from the client ID.

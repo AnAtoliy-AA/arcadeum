@@ -8,6 +8,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { SentryModule, SentryGlobalFilter } from '@sentry/nestjs/setup';
 import { APP_FILTER } from '@nestjs/core';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { APP_FILTER } from '@nestjs/core';
     ChatModule,
     AuthModule,
     GamesModule,
+    PaymentsModule,
     MongooseModule.forRoot(process.env.MONGODB_URI || ''),
   ],
   controllers: [AppController],

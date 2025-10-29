@@ -25,8 +25,9 @@ export const translations = {
       gamesTab: "Games",
       chatsTab: "Chats",
       historyTab: "History",
-      settingsTitle: "Settings",
-  supportTitle: "Support the developers",
+    settingsTitle: "Settings",
+    supportTitle: "Support the developers",
+    paymentTitle: "Card payment",
       openSettingsHint: "Open settings",
     },
     common: {
@@ -546,10 +547,42 @@ export const translations = {
         coffeeDescription:
           "Prefer a quick thank-you? Send the crew coffee and snacks so late-night playtests stay energized.",
         coffeeCta: "Buy the team a coffee",
+        paymentTitle: "Card payment",
+        paymentDescription:
+          "Enter an amount and we'll open Payze's secure checkout in your browser.",
+        paymentCta: "Enter amount",
+        ibanTitle: "Bank transfer",
+        ibanDescription:
+          "Need to pay by card through your bank? Enter the IBAN {{iban}} to send funds directly to {{appName}}.",
+        ibanCta: "Copy IBAN details",
+        ibanCopied: "IBAN copied to clipboard: {{iban}}",
       },
       thanks: "Every contribution keeps {{appName}} evolving. Thank you for helping us build the future of remote tabletop play!",
       errors: {
         unableToOpen: "We couldn't open that link. Try again shortly.",
+      },
+    },
+    payments: {
+      title: "Secure card payment",
+      intro:
+        "Enter an amount and complete your contribution in Payze's secure checkout.",
+      amountLabel: "Amount",
+      amountPlaceholder: "e.g. 25",
+      currencyLabel: "Currency",
+      currencyPlaceholder: "e.g. GEL",
+      noteLabel: "Optional note",
+      notePlaceholder: "Add a note for the team",
+      submit: "Continue to payment",
+      status: {
+        pending: "Opening Payze checkout...",
+        success:
+          "Payze checkout opened in your browser. Complete the payment there.",
+        cancelled: "Checkout closed before starting. You can try again.",
+      },
+      errors: {
+        amountRequired: "Enter a valid amount greater than zero.",
+        sessionFailed:
+          "We couldn't process the payment. Try again in a moment.",
       },
     },
     settings: {
@@ -593,8 +626,9 @@ export const translations = {
       gamesTab: "Juegos",
       chatsTab: "Chats",
       historyTab: "Historial",
-      settingsTitle: "Ajustes",
-  supportTitle: "Apoyar al equipo",
+    settingsTitle: "Ajustes",
+    supportTitle: "Apoyar al equipo",
+    paymentTitle: "Pago con tarjeta",
       openSettingsHint: "Abrir ajustes",
     },
     common: {
@@ -1101,10 +1135,42 @@ export const translations = {
         coffeeDescription:
           "¿Prefieres un agradecimiento rápido? Manda café y snacks al equipo para mantener la energía en los playtests nocturnos.",
         coffeeCta: "Invitar un café",
+        paymentTitle: "Pago con tarjeta",
+        paymentDescription:
+          "Ingresa un monto y abriremos el checkout seguro de Payze en tu navegador.",
+        paymentCta: "Ingresar monto",
+        ibanTitle: "Transferencia bancaria",
+        ibanDescription:
+          "¿Necesitas pagar con tarjeta desde tu banco? Introduce el IBAN {{iban}} y envía fondos directo a {{appName}}.",
+        ibanCta: "Copiar IBAN",
+        ibanCopied: "IBAN copiado al portapapeles: {{iban}}",
       },
       thanks: "Cada contribución ayuda a que {{appName}} siga evolucionando. ¡Gracias por impulsar el futuro del juego de mesa remoto!",
       errors: {
         unableToOpen: "No pudimos abrir ese enlace. Intenta de nuevo en unos minutos.",
+      },
+    },
+    payments: {
+      title: "Pago seguro con tarjeta",
+      intro:
+        "Ingresa un monto y completa tu contribución en el checkout seguro de Payze.",
+      amountLabel: "Importe",
+      amountPlaceholder: "p. ej. 25",
+      currencyLabel: "Moneda",
+      currencyPlaceholder: "p. ej. GEL",
+      noteLabel: "Nota opcional",
+      notePlaceholder: "Deja un mensaje para el equipo",
+      submit: "Continuar con el pago",
+      status: {
+        pending: "Abriendo el checkout de Payze...",
+        success:
+          "Checkout de Payze abierto en tu navegador. Completa el pago allí.",
+        cancelled: "Checkout cerrado antes de iniciar. Puedes intentarlo de nuevo.",
+      },
+      errors: {
+        amountRequired: "Introduce un importe válido mayor que cero.",
+        sessionFailed:
+          "No pudimos procesar el pago. Inténtalo otra vez en unos segundos.",
       },
     },
     settings: {
@@ -1149,6 +1215,8 @@ export const translations = {
       chatsTab: "Discussions",
       historyTab: "Historique",
       settingsTitle: "Paramètres",
+  supportTitle: "Soutenir l'équipe",
+  paymentTitle: "Paiement par carte",
       openSettingsHint: "Ouvrir les paramètres",
     },
     common: {
@@ -1623,11 +1691,43 @@ export const translations = {
         coffeeDescription:
           "Envie d'un merci rapide ? Offre café et encas pour garder l'équipe en forme pendant les playtests nocturnes.",
         coffeeCta: "Offrir un café",
+        paymentTitle: "Paiement par carte",
+        paymentDescription:
+          "Indique un montant et nous ouvrons le checkout sécurisé de Payze dans ton navigateur.",
+        paymentCta: "Saisir le montant",
+        ibanTitle: "Virement bancaire",
+        ibanDescription:
+          "Besoin de payer par carte via ta banque ? Saisis l'IBAN {{iban}} pour envoyer des fonds directement à {{appName}}.",
+        ibanCta: "Copier l'IBAN",
+        ibanCopied: "IBAN copié dans le presse-papiers : {{iban}}",
       },
       thanks:
         "Chaque contribution fait évoluer {{appName}}. Merci de nous aider à imaginer l'avenir du jeu de plateau à distance !",
       errors: {
         unableToOpen: "Impossible d'ouvrir ce lien pour le moment. Réessaie bientôt.",
+      },
+    },
+    payments: {
+      title: "Paiement sécurisé par carte",
+      intro:
+        "Indique un montant et finalise ta contribution dans le checkout sécurisé de Payze.",
+      amountLabel: "Montant",
+      amountPlaceholder: "ex. 25",
+      currencyLabel: "Devise",
+      currencyPlaceholder: "ex. GEL",
+      noteLabel: "Note optionnelle",
+      notePlaceholder: "Ajoute un message pour l'équipe",
+      submit: "Continuer vers le paiement",
+      status: {
+        pending: "Ouverture du checkout Payze...",
+        success:
+          "Checkout Payze ouvert dans ton navigateur. Termine le paiement là-bas.",
+        cancelled: "Checkout fermé avant de démarrer. Tu peux réessayer.",
+      },
+      errors: {
+        amountRequired: "Entre un montant valide supérieur à zéro.",
+        sessionFailed:
+          "Impossible de traiter le paiement. Réessaie dans un instant.",
       },
     },
     settings: {

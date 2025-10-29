@@ -17,6 +17,7 @@ const supportUrl = ((process.env.EXPO_PUBLIC_SUPPORT_URL ?? process.env.SUPPORT_
 const supportCoffeeUrl = ((
   process.env.EXPO_PUBLIC_SUPPORT_COFFEE_URL ?? process.env.SUPPORT_COFFEE_URL
 ) as string | undefined)?.trim();
+const supportIban = ((process.env.EXPO_PUBLIC_SUPPORT_IBAN ?? process.env.SUPPORT_IBAN) as string | undefined)?.trim();
 
 const config: ExpoConfig = {
   name: appName,
@@ -87,6 +88,7 @@ const config: ExpoConfig = {
     SUPPORT_URL: supportUrl && supportUrl.length > 0 ? supportUrl : undefined,
     SUPPORT_COFFEE_URL:
       supportCoffeeUrl && supportCoffeeUrl.length > 0 ? supportCoffeeUrl : undefined,
+    SUPPORT_IBAN: supportIban && supportIban.length > 0 ? supportIban : undefined,
     // Router uses this at runtime
     router: {
       origin: false,

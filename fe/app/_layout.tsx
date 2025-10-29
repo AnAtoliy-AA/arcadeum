@@ -54,6 +54,10 @@ function NavigationRoot() {
           options={{ title: t("navigation.settingsTitle")}}
         />
         <Stack.Screen
+          name="payment"
+          options={{ title: t("navigation.paymentTitle") }}
+        />
+        <Stack.Screen
           name="support"
           options={{ title: t("navigation.supportTitle") }}
         />

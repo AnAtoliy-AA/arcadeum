@@ -14,6 +14,7 @@ import * as Sentry from "@sentry/react-native";
 import { SessionTokensProvider } from "@/stores/sessionTokens";
 import { SettingsProvider } from "@/stores/settings";
 import { SettingsLauncher } from "@/components/ui/SettingsLauncher";
+import { ErrorToastProvider } from "@/components/ui/ErrorToastProvider";
 import { useTranslation } from "@/lib/i18n";
 
 export default Sentry.wrap(function RootLayout() {
@@ -29,7 +30,9 @@ export default Sentry.wrap(function RootLayout() {
   return (
     <SessionTokensProvider>
       <SettingsProvider>
-        <NavigationRoot />
+        <ErrorToastProvider>
+          <NavigationRoot />
+        </ErrorToastProvider>
       </SettingsProvider>
     </SessionTokensProvider>
   );

@@ -60,6 +60,9 @@ export const translations = {
       statuses: {
         authenticated: "Authenticated",
       },
+      errors: {
+        genericApiError: "Something went wrong. Please try again.",
+      },
     },
     auth: {
       sections: {
@@ -661,6 +664,9 @@ export const translations = {
       statuses: {
         authenticated: "Autenticado",
       },
+      errors: {
+        genericApiError: "Ocurrió un error. Intenta nuevamente.",
+      },
     },
     auth: {
       sections: {
@@ -1248,6 +1254,9 @@ export const translations = {
       },
       statuses: {
         authenticated: "Authentifié",
+      },
+      errors: {
+        genericApiError: "Une erreur est survenue. Réessaie plus tard.",
       },
     },
     auth: {

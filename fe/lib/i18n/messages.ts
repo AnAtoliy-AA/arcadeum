@@ -549,7 +549,7 @@ export const translations = {
         coffeeCta: "Buy the team a coffee",
         paymentTitle: "Card payment",
         paymentDescription:
-          "Enter an amount and we'll open Payze's secure checkout in your browser.",
+          "Enter an amount and we'll open UniPAY's secure checkout in your browser.",
         paymentCta: "Enter amount",
         ibanTitle: "Bank transfer",
         ibanDescription:
@@ -565,7 +565,7 @@ export const translations = {
     payments: {
       title: "Secure card payment",
       intro:
-        "Enter an amount and complete your contribution in Payze's secure checkout.",
+        "Enter an amount and complete your contribution in UniPAY's secure checkout.",
       amountLabel: "Amount",
       amountPlaceholder: "e.g. 25",
       currencyLabel: "Currency",
@@ -574,9 +574,9 @@ export const translations = {
       notePlaceholder: "Add a note for the team",
       submit: "Continue to payment",
       status: {
-        pending: "Opening Payze checkout...",
+        pending: "Opening UniPAY checkout...",
         success:
-          "Payze checkout opened in your browser. Complete the payment there.",
+          "UniPAY checkout opened in your browser. Complete the payment there.",
         cancelled: "Checkout closed before starting. You can try again.",
       },
       errors: {
@@ -1137,7 +1137,7 @@ export const translations = {
         coffeeCta: "Invitar un café",
         paymentTitle: "Pago con tarjeta",
         paymentDescription:
-          "Ingresa un monto y abriremos el checkout seguro de Payze en tu navegador.",
+          "Ingresa un monto y abriremos el checkout seguro de UniPAY en tu navegador.",
         paymentCta: "Ingresar monto",
         ibanTitle: "Transferencia bancaria",
         ibanDescription:
@@ -1153,7 +1153,7 @@ export const translations = {
     payments: {
       title: "Pago seguro con tarjeta",
       intro:
-        "Ingresa un monto y completa tu contribución en el checkout seguro de Payze.",
+  "Ingresa un monto y completa tu contribución en el checkout seguro de UniPAY.",
       amountLabel: "Importe",
       amountPlaceholder: "p. ej. 25",
       currencyLabel: "Moneda",
@@ -1162,9 +1162,9 @@ export const translations = {
       notePlaceholder: "Deja un mensaje para el equipo",
       submit: "Continuar con el pago",
       status: {
-        pending: "Abriendo el checkout de Payze...",
+        pending: "Abriendo el checkout de UniPAY...",
         success:
-          "Checkout de Payze abierto en tu navegador. Completa el pago allí.",
+          "Checkout de UniPAY abierto en tu navegador. Completa el pago allí.",
         cancelled: "Checkout cerrado antes de iniciar. Puedes intentarlo de nuevo.",
       },
       errors: {
@@ -1693,7 +1693,7 @@ export const translations = {
         coffeeCta: "Offrir un café",
         paymentTitle: "Paiement par carte",
         paymentDescription:
-          "Indique un montant et nous ouvrons le checkout sécurisé de Payze dans ton navigateur.",
+          "Indique un montant et nous ouvrons le checkout sécurisé de UniPAY dans ton navigateur.",
         paymentCta: "Saisir le montant",
         ibanTitle: "Virement bancaire",
         ibanDescription:
@@ -1710,7 +1710,7 @@ export const translations = {
     payments: {
       title: "Paiement sécurisé par carte",
       intro:
-        "Indique un montant et finalise ta contribution dans le checkout sécurisé de Payze.",
+  "Indique un montant et finalise ta contribution dans le checkout sécurisé de UniPAY.",
       amountLabel: "Montant",
       amountPlaceholder: "ex. 25",
       currencyLabel: "Devise",
@@ -1719,9 +1719,9 @@ export const translations = {
       notePlaceholder: "Ajoute un message pour l'équipe",
       submit: "Continuer vers le paiement",
       status: {
-        pending: "Ouverture du checkout Payze...",
+        pending: "Ouverture du checkout UniPAY...",
         success:
-          "Checkout Payze ouvert dans ton navigateur. Termine le paiement là-bas.",
+          "Checkout UniPAY ouvert dans ton navigateur. Termine le paiement là-bas.",
         cancelled: "Checkout fermé avant de démarrer. Tu peux réessayer.",
       },
       errors: {

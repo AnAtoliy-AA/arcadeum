@@ -132,14 +132,8 @@ export function ErrorToastProvider({ children }: { children: React.ReactNode }) 
     <ErrorToastContext.Provider value={contextValue}>
       {children}
       <View
-        {...(Platform.OS === 'web' ? {} : { pointerEvents: 'box-none' as const })}
-        style={[
-          styles.host,
-          { top: insets.top + 12 },
-          Platform.OS === 'web'
-            ? ({ pointerEvents: 'box-none' } as ViewStyle)
-            : null,
-        ] as StyleProp<ViewStyle>}
+        pointerEvents="box-none"
+        style={[styles.host, { top: insets.top + 12 }] as StyleProp<ViewStyle>}
       >
         {toasts.map((toast) => (
           <ToastBubble

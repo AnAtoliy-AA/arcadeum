@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Pressable, StyleSheet, View, Platform, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePathname, useRouter } from 'expo-router';
 
@@ -37,15 +37,7 @@ export function SettingsLauncher() {
   const topOffset = Math.max(insets.top, 10) + 8;
 
   return (
-    <View
-      {...(Platform.OS === 'web' ? {} : { pointerEvents: 'box-none' as const })}
-      style={[
-        styles.container,
-        Platform.OS === 'web'
-          ? ({ pointerEvents: 'box-none' } as ViewStyle)
-          : null,
-      ]}
-    >
+    <View pointerEvents="box-none" style={styles.container}>
       <Pressable
         accessibilityLabel={t('navigation.settingsTitle')}
         accessibilityHint={t('navigation.openSettingsHint')}

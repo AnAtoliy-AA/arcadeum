@@ -14,7 +14,7 @@ import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { socket } from '@/hooks/useSocket';
+import { gameSocket as socket } from '@/hooks/useSocket';
 import { useSessionTokens } from '@/stores/sessionTokens';
 import { showGlobalError } from '@/components/ui/ErrorToastProvider';
 import { findApiMessageDescriptor, inferTranslationKeyFromMessageKey } from '@/lib/apiMessageCatalog';
@@ -810,11 +810,13 @@ export default function GameRoomScreen() {
           {room ? (
             <View style={styles.metaGrid}>
               {(() => {
-                const hostLabelRaw = formatRoomHost(room.hostId);
+                const hostLabelRaw = room.host?.displayName ?? formatRoomHost(room.hostId);
                 const hostValue = hostLabelRaw === 'mystery captain' ? t('games.rooms.mysteryHost') : hostLabelRaw;
-                const playersValue = room.maxPlayers
+                const baseCapacity = room.maxPlayers
                   ? t('games.rooms.capacityWithMax', { current: room.playerCount, max: room.maxPlayers })
                   : t('games.rooms.capacityWithoutMax', { count: room.playerCount });
+                const playerNames = room.members?.map((member) => member.displayName).filter(Boolean).join(', ');
+                const playersValue = playerNames ? `${baseCapacity} • ${playerNames}` : baseCapacity;
                 const createdRaw = formatRoomTimestamp(room.createdAt);
                 const createdValue = createdRaw === 'Just created' ? t('games.rooms.justCreated') : createdRaw;
                 const accessValue = room.visibility === 'private'

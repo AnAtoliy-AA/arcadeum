@@ -578,13 +578,16 @@ export default function GamesScreen() {
               const capacityLabel = room.maxPlayers
                 ? t('games.rooms.capacityWithMax', { current: room.playerCount, max: room.maxPlayers })
                 : t('games.rooms.capacityWithoutMax', { count: room.playerCount });
+              const playerNames = room.members?.map((member) => member.displayName).filter(Boolean).join(', ');
+              const capacityDetail = playerNames ? `${capacityLabel} • ${playerNames}` : capacityLabel;
               const createdLabel = formatRoomTimestamp(room.createdAt);
               const createdTimestamp = createdLabel === 'Just created'
                 ? t('games.rooms.justCreated')
                 : createdLabel;
               const isJoining = joiningRoomId === room.id;
               const isPrivate = room.visibility === 'private';
-              const hostDisplay = room.hostId ? formatRoomHost(room.hostId) : t('games.rooms.mysteryHost');
+              const hostDisplay = room.host?.displayName
+                ?? (room.hostId ? formatRoomHost(room.hostId) : t('games.rooms.mysteryHost'));
               const gameName = formatRoomGame(room.gameId);
               const gameLabel = gameName === 'Unknown game' ? t('games.rooms.unknownGame') : gameName;
               const canWatch = room.visibility === 'public' || Boolean(tokens.accessToken);
@@ -604,7 +607,7 @@ export default function GamesScreen() {
                   </View>
                   <View style={styles.roomMetaRow}>
                     <IconSymbol name="person.3.fill" size={16} color={styles.roomMetaIcon.color as string} />
-                    <ThemedText style={styles.roomMetaText}>{capacityLabel}</ThemedText>
+                    <ThemedText style={styles.roomMetaText}>{capacityDetail}</ThemedText>
                   </View>
                   <View style={styles.roomFooter}>
                     <View style={styles.roomBadgeRow}>

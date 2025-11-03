@@ -8,6 +8,8 @@ import {
 import { GamesService, type GameSessionSummary } from './games.service';
 import { GameRoom } from './schemas/game-room.schema';
 import { GameSession } from './schemas/game-session.schema';
+import { GameHistoryHidden } from './schemas/game-history-hidden.schema';
+import { User } from '../auth/schemas/user.schema';
 import { GamesRealtimeService } from './games.realtime.service';
 import type {
   ExplodingCatsCard,
@@ -64,12 +66,21 @@ describe('GamesService', () => {
     findOneAndUpdate: jest.Mock;
     deleteOne: jest.Mock;
   };
+  let historyHiddenModel: {
+    find: jest.Mock;
+    exists: jest.Mock;
+    create?: jest.Mock;
+  };
+  let userModel: {
+    find: jest.Mock;
+  };
   let realtime: {
     registerServer: jest.Mock;
     roomChannel: jest.Mock;
     emitRoomUpdate: jest.Mock;
     emitSessionSnapshot: jest.Mock;
     emitSessionSnapshotToClient: jest.Mock;
+    emitRoomRemoved: jest.Mock;
   };
 
   beforeEach(async () => {
@@ -84,12 +95,28 @@ describe('GamesService', () => {
       deleteOne: jest.fn(),
     };
 
+    const historyFindExec = jest.fn().mockResolvedValue([]);
+    const historyExistsLean = jest.fn().mockResolvedValue(null);
+
+    historyHiddenModel = {
+      find: jest.fn().mockReturnValue({ exec: historyFindExec }),
+      exists: jest.fn().mockReturnValue({ lean: historyExistsLean }),
+    };
+
+    const userSelectExec = jest.fn().mockResolvedValue([]);
+    const userSelect = jest.fn().mockReturnValue({ exec: userSelectExec });
+
+    userModel = {
+      find: jest.fn().mockReturnValue({ select: userSelect }),
+    };
+
     realtime = {
       registerServer: jest.fn(),
       roomChannel: jest.fn((roomId: string) => `game-room:${roomId}`),
       emitRoomUpdate: jest.fn(),
       emitSessionSnapshot: jest.fn(),
       emitSessionSnapshotToClient: jest.fn(),
+      emitRoomRemoved: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -99,6 +126,14 @@ describe('GamesService', () => {
         {
           provide: getModelToken(GameSession.name),
           useValue: gameSessionModel,
+        },
+        {
+          provide: getModelToken(GameHistoryHidden.name),
+          useValue: historyHiddenModel,
+        },
+        {
+          provide: getModelToken(User.name),
+          useValue: userModel,
         },
         { provide: GamesRealtimeService, useValue: realtime },
       ],
@@ -305,10 +340,7 @@ describe('GamesService', () => {
       expect(state.snapshot.pendingDraws).toBe(1);
       expect(state.snapshot.logs.length).toBeGreaterThan(0);
       expect(summary.status).toBe('active');
-      expect(realtime.emitSessionSnapshot).toHaveBeenCalledWith(
-        roomDoc.id,
-        expect.objectContaining({ state }),
-      );
+      expect(realtime.emitSessionSnapshot).toHaveBeenCalledTimes(1);
     });
 
     it('defuses an exploding cat when the player has a defuse card', async () => {

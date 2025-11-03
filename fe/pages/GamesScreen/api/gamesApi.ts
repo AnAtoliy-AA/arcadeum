@@ -9,6 +9,14 @@ export interface CreateGameRoomParams {
   notes?: string;
 }
 
+export interface GameRoomMemberSummary {
+  id: string;
+  displayName: string;
+  username?: string | null;
+  email?: string | null;
+  isHost: boolean;
+}
+
 export interface GameRoomSummary {
   id: string;
   gameId: string;
@@ -20,6 +28,8 @@ export interface GameRoomSummary {
   createdAt: string;
   status: 'lobby' | 'in_progress' | 'completed';
   inviteCode?: string;
+  host?: GameRoomMemberSummary;
+  members?: GameRoomMemberSummary[];
   viewerRole?: 'host' | 'participant' | 'none';
   viewerHasJoined?: boolean;
   viewerIsHost?: boolean;

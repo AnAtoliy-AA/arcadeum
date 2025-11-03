@@ -27,6 +27,14 @@ import {
 import { GamesRealtimeService } from './games.realtime.service';
 import { User } from '../auth/schemas/user.schema';
 
+export interface GameRoomMemberSummary {
+  id: string;
+  displayName: string;
+  username?: string | null;
+  email?: string | null;
+  isHost: boolean;
+}
+
 export interface GameRoomSummary {
   id: string;
   gameId: string;
@@ -38,6 +46,8 @@ export interface GameRoomSummary {
   createdAt: string;
   status: GameRoomStatus;
   inviteCode?: string;
+  host?: GameRoomMemberSummary;
+  members?: GameRoomMemberSummary[];
   viewerRole?: 'host' | 'participant' | 'none';
   viewerHasJoined?: boolean;
   viewerIsHost?: boolean;
@@ -146,6 +156,8 @@ type ListRoomsFilters = {
   participation?: GameRoomParticipationFilter;
 };
 
+type RoomUserProfile = { username?: string; email?: string | null };
+
 const EXPLODING_CATS_GAME_ID = 'exploding-kittens';
 const EXPLODING_CATS_ENGINE_ID = 'exploding_cats_v1';
 const EXPLODING_CATS_ACTION_CARDS = ['skip', 'attack'] as const;
@@ -225,7 +237,8 @@ export class GamesService {
     }
 
     const saved = await room.save();
-    return this.toViewerSummary(saved, trimmedHostId);
+    const summary = await this.prepareRoomSummary(saved);
+    return this.applyViewerContext(summary, saved, trimmedHostId);
   }
 
   async listRooms(params: ListRoomsFilters = {}): Promise<GameRoomSummary[]> {
@@ -268,9 +281,16 @@ export class GamesService {
       );
     });
 
-    return filtered.map((room) =>
-      this.toViewerSummary(room, normalizedUserId || undefined),
-    );
+    const userLookup = await this.buildUserLookupForRooms(filtered);
+
+    return filtered.map((room) => {
+      const baseSummary = this.toSummary(room, userLookup);
+      return this.applyViewerContext(
+        baseSummary,
+        room,
+        normalizedUserId || undefined,
+      );
+    });
   }
 
   async getRoom(roomId: string, userId?: string): Promise<GameRoomSummary> {
@@ -288,7 +308,8 @@ export class GamesService {
       throw new ForbiddenException('Access to this room is not permitted.');
     }
 
-    return this.toViewerSummary(room, userId);
+    const summary = await this.prepareRoomSummary(room);
+    return this.applyViewerContext(summary, room, userId);
   }
 
   async getRoomSession(
@@ -379,12 +400,13 @@ export class GamesService {
 
       room.playerIds = [...members, normalizedUserId];
       const savedRoom = await room.save();
-      const publicSummary = this.toSummary(savedRoom);
-      this.realtime.emitRoomUpdate(publicSummary);
-      return this.toViewerSummary(savedRoom, normalizedUserId);
+      const summary = await this.prepareRoomSummary(savedRoom);
+      this.realtime.emitRoomUpdate(summary);
+      return this.applyViewerContext(summary, savedRoom, normalizedUserId);
     }
 
-    return this.toViewerSummary(room, normalizedUserId);
+    const summary = await this.prepareRoomSummary(room);
+    return this.applyViewerContext(summary, room, normalizedUserId);
   }
 
   async ensureParticipant(
@@ -415,7 +437,8 @@ export class GamesService {
       throw new ForbiddenException('Access to this room is not permitted.');
     }
 
-    return this.toViewerSummary(room, normalizedUserId);
+    const summary = await this.prepareRoomSummary(room);
+    return this.applyViewerContext(summary, room, normalizedUserId);
   }
 
   async findSessionByRoom(roomId: string): Promise<GameSessionSummary | null> {
@@ -591,13 +614,13 @@ export class GamesService {
     room.playerIds = uniquePlayerIds;
     room.status = 'in_progress';
     const updatedRoom = await room.save();
-    const publicSummary = this.toSummary(updatedRoom);
+    const summary = await this.prepareRoomSummary(updatedRoom);
 
-    this.realtime.emitRoomUpdate(publicSummary);
+    this.realtime.emitRoomUpdate(summary);
     this.realtime.emitSessionSnapshot(normalizedRoomId, session);
 
     return {
-      room: this.toViewerSummary(updatedRoom, normalizedHostId),
+      room: this.applyViewerContext(summary, updatedRoom, normalizedHostId),
       session,
     };
   }
@@ -963,11 +986,11 @@ export class GamesService {
     await handleExplodingCatsDeparture();
 
     const savedRoom = await room.save();
-    const publicSummary = this.toSummary(savedRoom);
-    this.realtime.emitRoomUpdate(publicSummary);
+    const summary = await this.prepareRoomSummary(savedRoom);
+    this.realtime.emitRoomUpdate(summary);
 
     return {
-      room: this.toViewerSummary(savedRoom, normalizedUserId),
+      room: this.applyViewerContext(summary, savedRoom, normalizedUserId),
       session: sessionSummary,
       deleted: false,
       removedPlayerId: normalizedUserId,
@@ -1990,16 +2013,16 @@ export class GamesService {
     }
 
     const saved = await newRoom.save();
-    const publicSummary = this.toSummary(saved);
-    this.realtime.emitRoomUpdate(publicSummary);
-    return this.toViewerSummary(saved, normalizedHostId);
+    const summary = await this.prepareRoomSummary(saved);
+    this.realtime.emitRoomUpdate(summary);
+    return this.applyViewerContext(summary, saved, normalizedHostId);
   }
 
-  private toViewerSummary(
+  private applyViewerContext(
+    baseSummary: GameRoomSummary,
     room: GameRoom,
     viewerId?: string | null,
   ): GameRoomSummary {
-    const baseSummary = this.toSummary(room);
     const context = this.resolveViewerContext(room, viewerId);
     return {
       ...baseSummary,
@@ -2052,6 +2075,107 @@ export class GamesService {
       viewerHasJoined: false,
       viewerIsHost: false,
     };
+  }
+
+  private buildRoomMemberSummaries(
+    room: GameRoom,
+    userLookup: Map<string, RoomUserProfile>,
+  ): {
+    host?: GameRoomMemberSummary;
+    members: GameRoomMemberSummary[];
+  } {
+    const hostId = (room.hostId ?? '').trim();
+    const playerIds = this.normalizeUserIds(
+      Array.isArray(room.playerIds) ? room.playerIds : [],
+    );
+
+    const members: GameRoomMemberSummary[] = [];
+    let hostSummary: GameRoomMemberSummary | undefined;
+
+    if (hostId) {
+      const profile = userLookup.get(hostId);
+      const displayName = this.deriveDisplayName(hostId, profile);
+      hostSummary = {
+        id: hostId,
+        displayName,
+        username: profile?.username ?? null,
+        email: profile?.email ?? null,
+        isHost: true,
+      };
+      members.push(hostSummary);
+    }
+
+    for (const playerId of playerIds) {
+      if (playerId === hostId) {
+        continue;
+      }
+      const profile = userLookup.get(playerId);
+      const displayName = this.deriveDisplayName(playerId, profile);
+      members.push({
+        id: playerId,
+        displayName,
+        username: profile?.username ?? null,
+        email: profile?.email ?? null,
+        isHost: false,
+      });
+    }
+
+    return {
+      host: hostSummary,
+      members,
+    };
+  }
+
+  private deriveDisplayName(userId: string, profile?: RoomUserProfile): string {
+    const normalizedId = userId.trim();
+    if (!normalizedId) {
+      return '';
+    }
+
+    const username = profile?.username?.trim?.();
+    if (username) {
+      return username;
+    }
+
+    const email = profile?.email?.trim?.();
+    if (email) {
+      const [localPart] = email.split('@');
+      if (localPart && localPart.trim().length > 0) {
+        return localPart.trim();
+      }
+      return email;
+    }
+
+    if (normalizedId.length <= 6) {
+      return normalizedId;
+    }
+
+    const prefix = normalizedId.slice(0, 4);
+    const suffix = normalizedId.slice(-2);
+    return `${prefix}...${suffix}`;
+  }
+
+  private async buildUserLookupForRooms(
+    rooms: GameRoom[],
+  ): Promise<Map<string, RoomUserProfile>> {
+    const candidateIds = new Set<string>();
+    for (const room of rooms) {
+      this.normalizeUserIds([
+        room.hostId,
+        ...(Array.isArray(room.playerIds) ? room.playerIds : []),
+      ]).forEach((id) => candidateIds.add(id));
+    }
+
+    if (candidateIds.size === 0) {
+      return new Map();
+    }
+
+    return this.fetchUserSummaries(Array.from(candidateIds));
+  }
+
+  private async prepareRoomSummary(room: GameRoom): Promise<GameRoomSummary> {
+    const userLookup = await this.buildUserLookupForRooms([room]);
+    return this.toSummary(room, userLookup);
   }
 
   private matchesParticipationFilter(
@@ -2136,7 +2260,7 @@ export class GamesService {
 
   private async fetchUserSummaries(
     userIds: string[],
-  ): Promise<Map<string, { username?: string; email?: string | null }>> {
+  ): Promise<Map<string, RoomUserProfile>> {
     const normalized = Array.from(
       new Set(
         userIds
@@ -2145,10 +2269,7 @@ export class GamesService {
       ),
     );
 
-    const lookup = new Map<
-      string,
-      { username?: string; email?: string | null }
-    >();
+    const lookup = new Map<string, RoomUserProfile>();
     if (!normalized.length) {
       return lookup;
     }
@@ -2434,7 +2555,10 @@ export class GamesService {
     }
   }
 
-  private toSummary(room: GameRoom): GameRoomSummary {
+  private toSummary(
+    room: GameRoom,
+    userLookup?: Map<string, RoomUserProfile>,
+  ): GameRoomSummary {
     const createdAt =
       room.createdAt instanceof Date
         ? room.createdAt.toISOString()
@@ -2442,7 +2566,7 @@ export class GamesService {
 
     const members = Array.isArray(room.playerIds) ? room.playerIds : [];
 
-    return {
+    const summary: GameRoomSummary = {
       id: room._id?.toString?.() ?? String(room._id),
       gameId: room.gameId,
       name: room.name,
@@ -2457,6 +2581,21 @@ export class GamesService {
       status: room.status ?? 'lobby',
       inviteCode: room.inviteCode,
     };
+
+    if (userLookup) {
+      const { host, members: playerSummaries } = this.buildRoomMemberSummaries(
+        room,
+        userLookup,
+      );
+      if (host) {
+        summary.host = host;
+      }
+      if (playerSummaries.length > 0) {
+        summary.members = playerSummaries;
+      }
+    }
+
+    return summary;
   }
 
   private async generateInviteCode(): Promise<string> {

@@ -1,4 +1,14 @@
-type ErrorHandler = (message: string, options?: { duration?: number }) => void;
+import type { TranslationKey } from '@/lib/i18n/messages';
+
+export interface GlobalErrorPayload {
+  translationKey?: TranslationKey;
+  fallbackMessage?: string;
+  rawMessage?: string;
+  replacements?: Record<string, string | number>;
+  duration?: number;
+}
+
+type ErrorHandler = (payload: GlobalErrorPayload) => void;
 
 let handler: ErrorHandler | undefined;
 
@@ -12,6 +22,6 @@ export function unregisterGlobalErrorHandler(fn: ErrorHandler) {
   }
 }
 
-export function emitGlobalError(message: string, options?: { duration?: number }) {
-  handler?.(message, options);
+export function emitGlobalError(payload: GlobalErrorPayload) {
+  handler?.(payload);
 }

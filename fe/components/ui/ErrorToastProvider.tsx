@@ -21,15 +21,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/ThemedText';
 import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
 import { useTranslation } from '@/lib/i18n';
-import { emitGlobalError, registerGlobalErrorHandler, unregisterGlobalErrorHandler } from '@/lib/globalErrorHandler';
-import type { TranslationKey } from '@/lib/i18n/messages';
-
-interface ErrorToastOptions {
-  duration?: number;
-}
+import {
+  emitGlobalError,
+  registerGlobalErrorHandler,
+  unregisterGlobalErrorHandler,
+  type GlobalErrorPayload,
+} from '@/lib/globalErrorHandler';
 
 interface ErrorToastContextValue {
-  showError(message: string, options?: ErrorToastOptions): void;
+  showError(message: string, options?: { duration?: number }): void;
   clearErrors(): void;
 }
 
@@ -69,19 +69,43 @@ export function ErrorToastProvider({ children }: { children: React.ReactNode }) 
     timersRef.current.set(id, timer);
   }, [removeToast]);
 
-  const showError = useCallback((rawMessage: string, options?: ErrorToastOptions) => {
-    const trimmed = rawMessage?.trim();
-    const fallback = t('common.errors.genericApiError');
-    const translated = trimmed
-      ? t(trimmed as TranslationKey, { defaultValue: trimmed })
-      : fallback;
-    const message = translated || fallback;
-    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    const duration = Math.max(options?.duration ?? DEFAULT_DURATION, 1000);
+  const pushToast = useCallback(
+    (payload: GlobalErrorPayload): void => {
+      const fallback =
+        payload.fallbackMessage?.trim() ||
+        payload.rawMessage?.trim() ||
+        t('common.errors.genericApiError');
 
-    setToasts((current) => [...current, { id, message, duration }]);
-    scheduleRemoval(id, duration);
-  }, [scheduleRemoval, t]);
+      let message = fallback;
+      if (payload.translationKey) {
+        message = t(payload.translationKey, payload.replacements);
+      }
+
+      if (!message || !message.trim()) {
+        message = fallback;
+      }
+
+      const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const duration = Math.max(payload.duration ?? DEFAULT_DURATION, 1000);
+
+      setToasts((current) => [...current, { id, message, duration }]);
+      scheduleRemoval(id, duration);
+    },
+    [scheduleRemoval, t],
+  );
+
+  const showError = useCallback(
+    (rawMessage: string, options?: { duration?: number }) => {
+      const trimmed = rawMessage?.trim();
+      if (!trimmed) {
+        pushToast({ duration: options?.duration });
+        return;
+      }
+
+      pushToast({ rawMessage: trimmed, fallbackMessage: trimmed, duration: options?.duration });
+    },
+    [pushToast],
+  );
 
   const clearErrors = useCallback(() => {
     timersRef.current.forEach((timer) => clearTimeout(timer));
@@ -90,12 +114,12 @@ export function ErrorToastProvider({ children }: { children: React.ReactNode }) 
   }, []);
 
   useEffect(() => {
-    registerGlobalErrorHandler(showError);
+    registerGlobalErrorHandler(pushToast);
     return () => {
-      unregisterGlobalErrorHandler(showError);
+      unregisterGlobalErrorHandler(pushToast);
       clearErrors();
     };
-  }, [clearErrors, showError]);
+  }, [clearErrors, pushToast]);
 
   const contextValue = useMemo<ErrorToastContextValue>(() => ({
     showError,
@@ -197,6 +221,21 @@ function createStyles(palette: Palette) {
 }
 
 // Allow modules outside React tree to trigger errors when the context is already set up.
-export function showGlobalError(message: string, options?: ErrorToastOptions) {
-  emitGlobalError(message, options);
+export function showGlobalError(
+  message: string | GlobalErrorPayload,
+  options?: { duration?: number },
+) {
+  if (typeof message === 'string') {
+    emitGlobalError({
+      rawMessage: message,
+      fallbackMessage: message,
+      duration: options?.duration,
+    });
+    return;
+  }
+
+  emitGlobalError({
+    ...message,
+    duration: message.duration ?? options?.duration,
+  });
 }

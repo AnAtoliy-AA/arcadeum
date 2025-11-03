@@ -138,16 +138,6 @@ export default function CreateGameRoomScreen() {
               <IconSymbol name="chevron.left" size={20} color={styles.backButtonText.color as string} />
               <ThemedText style={styles.backButtonText}>{t('common.back')}</ThemedText>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.visibilityToggle} onPress={handleToggleVisibility}>
-              <IconSymbol
-                name={state.visibility === 'public' ? 'sparkles' : 'lock.fill'}
-                size={18}
-                color={styles.visibilityToggleText.color as string}
-              />
-              <ThemedText style={styles.visibilityToggleText}>
-                {state.visibility === 'public' ? t('games.create.visibilityPublic') : t('games.create.visibilityPrivate')}
-              </ThemedText>
-            </TouchableOpacity>
           </View>
 
           <View style={styles.section}>
@@ -232,11 +222,28 @@ export default function CreateGameRoomScreen() {
                 </View>
                 <View style={styles.formFieldHalf}>
                   <ThemedText style={styles.inputLabel}>{t('games.create.fieldVisibility')}</ThemedText>
-                  <View style={[styles.pill, state.visibility === 'public' ? styles.pillPublic : styles.pillPrivate]}>
-                    <ThemedText style={styles.pillText}>
-                      {state.visibility === 'public' ? t('games.create.pillPublic') : t('games.create.pillPrivate')}
+                  <TouchableOpacity
+                    style={[
+                      styles.visibilityToggle,
+                      state.visibility === 'public'
+                        ? styles.visibilityTogglePublic
+                        : styles.visibilityTogglePrivate,
+                    ]}
+                    onPress={handleToggleVisibility}
+                    accessibilityRole="button"
+                    accessibilityState={{ checked: state.visibility === 'public' }}
+                  >
+                    <IconSymbol
+                      name={state.visibility === 'public' ? 'sparkles' : 'lock.fill'}
+                      size={18}
+                      color={styles.visibilityToggleIcon.color as string}
+                    />
+                    <ThemedText style={styles.visibilityToggleText}>
+                      {state.visibility === 'public'
+                        ? t('games.create.visibilityPublic')
+                        : t('games.create.visibilityPrivate')}
                     </ThemedText>
-                  </View>
+                  </TouchableOpacity>
                 </View>
               </View>
               <View style={styles.formField}>
@@ -371,7 +378,20 @@ function createStyles(palette: Palette) {
       paddingHorizontal: 12,
       paddingVertical: 8,
       borderRadius: 999,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor,
       backgroundColor: raisedBackground,
+    },
+    visibilityTogglePublic: {
+      backgroundColor: '#1fb6ff33',
+      borderColor: '#1fb6ff66',
+    },
+    visibilityTogglePrivate: {
+      backgroundColor: '#bf5af233',
+      borderColor: '#bf5af266',
+    },
+    visibilityToggleIcon: {
+      color: palette.tint,
     },
     visibilityToggleText: {
       color: palette.tint,
@@ -469,23 +489,6 @@ function createStyles(palette: Palette) {
     },
     textInputPlaceholder: {
       color: palette.icon,
-    },
-    pill: {
-      borderRadius: 999,
-      paddingVertical: 8,
-      paddingHorizontal: 12,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    pillPublic: {
-      backgroundColor: '#1fb6ff33',
-    },
-    pillPrivate: {
-      backgroundColor: '#bf5af233',
-    },
-    pillText: {
-      color: palette.text,
-      fontWeight: '600',
     },
     previewCard: {
       backgroundColor: cardBackground,

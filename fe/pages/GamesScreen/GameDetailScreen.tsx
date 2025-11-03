@@ -75,6 +75,7 @@ export default function GameDetailScreen() {
   }, [params]);
 
   const game = useMemo(() => (gameId ? getGameById(gameId) : undefined), [gameId]);
+  const isPlayable = Boolean(game?.isPlayable);
   const localizedOverview = useMemo(() => {
     return game?.localizations?.[locale]?.overview ?? game?.overview ?? '';
   }, [game, locale]);
@@ -162,6 +163,13 @@ export default function GameDetailScreen() {
       },
     });
   }, [router]);
+
+  const showUnavailableAlert = useCallback(() => {
+    Alert.alert(
+      t('games.create.alerts.gameUnavailableTitle'),
+      t('games.create.alerts.gameUnavailableMessage'),
+    );
+  }, [t]);
 
   const joinRoom = useCallback(async (room: GameRoomSummary, inviteCode?: string) => {
     setJoiningRoomId(room.id);
@@ -264,9 +272,17 @@ export default function GameDetailScreen() {
   }, [router]);
 
   const handleCreateRoom = useCallback(() => {
-    if (!game) return;
+    if (!game) {
+      return;
+    }
+
+    if (!game.isPlayable) {
+      showUnavailableAlert();
+      return;
+    }
+
     router.push({ pathname: '/games/create', params: { gameId: game.id } });
-  }, [game, router]);
+  }, [game, router, showUnavailableAlert]);
 
   const handleInvite = useCallback(async () => {
     if (!game) return;
@@ -360,9 +376,24 @@ export default function GameDetailScreen() {
               </View>
             ))}
           </View>
-          <TouchableOpacity style={styles.primaryButton} onPress={handleCreateRoom}>
-            <ThemedText style={styles.primaryButtonText}>Create room</ThemedText>
+          <TouchableOpacity
+            style={[styles.primaryButton, !isPlayable && styles.primaryButtonDisabled]}
+            onPress={handleCreateRoom}
+            disabled={!isPlayable}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: !isPlayable }}
+          >
+            <ThemedText
+              style={[styles.primaryButtonText, !isPlayable && styles.primaryButtonTextDisabled]}
+            >
+              {t('games.common.createRoom')}
+            </ThemedText>
           </TouchableOpacity>
+          {!isPlayable ? (
+            <ThemedText style={styles.comingSoonHint}>
+              {t('games.create.badgeComingSoon')}
+            </ThemedText>
+          ) : null}
         </ThemedView>
 
         <ThemedView style={styles.roomsCard}>
@@ -433,9 +464,24 @@ export default function GameDetailScreen() {
               <ThemedText style={styles.roomsEmptyText}>
                 {t('games.detail.emptyRoomsCaption')}
               </ThemedText>
-              <TouchableOpacity style={styles.roomsEmptyButton} onPress={handleCreateRoom}>
-                <ThemedText style={styles.roomsEmptyButtonText}>{t('games.common.createRoom')}</ThemedText>
+              <TouchableOpacity
+                style={[styles.roomsEmptyButton, !isPlayable && styles.roomsEmptyButtonDisabled]}
+                onPress={handleCreateRoom}
+                disabled={!isPlayable}
+                accessibilityRole="button"
+                accessibilityState={{ disabled: !isPlayable }}
+              >
+                <ThemedText
+                  style={[styles.roomsEmptyButtonText, !isPlayable && styles.roomsEmptyButtonTextDisabled]}
+                >
+                  {t('games.common.createRoom')}
+                </ThemedText>
               </TouchableOpacity>
+              {!isPlayable ? (
+                <ThemedText style={styles.comingSoonHint}>
+                  {t('games.create.badgeComingSoon')}
+                </ThemedText>
+              ) : null}
             </View>
           ) : (
             sortedRooms.map(room => {
@@ -763,10 +809,22 @@ function createStyles(palette: Palette) {
       paddingVertical: 14,
       alignItems: 'center',
     },
+    primaryButtonDisabled: {
+      opacity: 0.45,
+    },
     primaryButtonText: {
       color: palette.background,
       fontWeight: '700',
       fontSize: 16,
+    },
+    primaryButtonTextDisabled: {
+      opacity: 0.75,
+    },
+    comingSoonHint: {
+      marginTop: 6,
+      color: palette.icon,
+      fontSize: 12,
+      fontStyle: 'italic',
     },
     roomsCard: {
       backgroundColor: cardBackground,
@@ -885,9 +943,15 @@ function createStyles(palette: Palette) {
       borderRadius: 12,
       backgroundColor: palette.tint,
     },
+    roomsEmptyButtonDisabled: {
+      opacity: 0.45,
+    },
     roomsEmptyButtonText: {
       color: palette.background,
       fontWeight: '600',
+    },
+    roomsEmptyButtonTextDisabled: {
+      opacity: 0.75,
     },
     roomCard: {
       backgroundColor: cardBackground,

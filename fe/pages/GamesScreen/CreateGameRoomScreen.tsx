@@ -20,11 +20,23 @@ export default function CreateGameRoomScreen() {
   const { tokens, refreshTokens } = useSessionTokens();
   const { t } = useTranslation();
 
+  const playableGames = useMemo(
+    () => gamesCatalog.filter(game => game.isPlayable),
+    [],
+  );
+  const availableGames = gamesCatalog;
+
   const initialGameId = useMemo(() => {
     const value = params?.gameId;
-    if (!value) return gamesCatalog[0]?.id ?? '';
-    return Array.isArray(value) ? value[0] : value;
-  }, [params]);
+    const requestedId = Array.isArray(value) ? value[0] : value;
+    if (
+      requestedId &&
+      playableGames.some(game => game.id === requestedId)
+    ) {
+      return requestedId;
+    }
+    return playableGames[0]?.id ?? gamesCatalog[0]?.id ?? '';
+  }, [params, playableGames]);
 
   const [state, setState] = useState({
     gameId: initialGameId,
@@ -36,8 +48,8 @@ export default function CreateGameRoomScreen() {
   });
 
   const selectedGame: GameCatalogueEntry | undefined = useMemo(
-    () => gamesCatalog.find(game => game.id === state.gameId) ?? gamesCatalog[0],
-    [state.gameId],
+    () => availableGames.find(game => game.id === state.gameId) ?? availableGames[0],
+    [availableGames, state.gameId],
   );
 
   const handleBack = useCallback(() => {
@@ -56,9 +68,15 @@ export default function CreateGameRoomScreen() {
     setState(prev => ({ ...prev, visibility: prev.visibility === 'public' ? 'private' : 'public' }));
   }, []);
 
-  const handleSelectGame = useCallback((gameId: string) => {
-    setState(prev => ({ ...prev, gameId }));
-  }, []);
+  const handleSelectGame = useCallback(
+    (gameId: string) => {
+      if (playableGames.length && !playableGames.some(game => game.id === gameId)) {
+        return;
+      }
+      setState(prev => ({ ...prev, gameId }));
+    },
+    [playableGames],
+  );
 
   const handleSubmit = useCallback(async () => {
     if (!tokens.accessToken) {
@@ -142,18 +160,47 @@ export default function CreateGameRoomScreen() {
           <View style={styles.section}>
             <ThemedText type="subtitle">{t('games.create.sectionGame')}</ThemedText>
             <View style={styles.gameSelector}>
-              {gamesCatalog.map(game => {
+              {availableGames.map(game => {
                 const isActive = game.id === state.gameId;
+                const isDisabled = Boolean(playableGames.length) && !game.isPlayable;
                 return (
                   <TouchableOpacity
                     key={game.id}
-                    style={[styles.gameTile, isActive && styles.gameTileActive]}
-                    onPress={() => handleSelectGame(game.id)}
+                    style={[styles.gameTile, isActive && styles.gameTileActive, isDisabled && styles.gameTileDisabled]}
+                    onPress={() => {
+                      if (isDisabled) {
+                        Alert.alert(
+                          t('games.create.alerts.gameUnavailableTitle'),
+                          t('games.create.alerts.gameUnavailableMessage'),
+                        );
+                        return;
+                      }
+                      handleSelectGame(game.id);
+                    }}
+                    disabled={isDisabled}
                   >
-                    <ThemedText style={[styles.gameTileName, isActive && styles.gameTileNameActive]}>{game.name}</ThemedText>
-                    <ThemedText style={[styles.gameTileSummary, isActive && styles.gameTileSummaryActive]} numberOfLines={2}>
+                    <ThemedText
+                      style={[
+                        styles.gameTileName,
+                        isActive && styles.gameTileNameActive,
+                        isDisabled && styles.gameTileNameDisabled,
+                      ]}
+                    >
+                      {game.name}
+                    </ThemedText>
+                    <ThemedText
+                      style={[
+                        styles.gameTileSummary,
+                        isActive && styles.gameTileSummaryActive,
+                        isDisabled && styles.gameTileSummaryDisabled,
+                      ]}
+                      numberOfLines={2}
+                    >
                       {game.summary}
                     </ThemedText>
+                    {isDisabled ? (
+                      <ThemedText style={styles.gameTileBadge}>{t('games.create.badgeComingSoon')}</ThemedText>
+                    ) : null}
                   </TouchableOpacity>
                 );
               })}
@@ -272,6 +319,7 @@ function createStyles(palette: Palette) {
   const raisedBackground = isLight ? '#E9EEF6' : '#262A31';
   const borderColor = isLight ? '#D8DFEA' : '#33373D';
   const surfaceShadow = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(8, 10, 15, 0.45)';
+  const disabledText = isLight ? '#8E97A7' : '#5A606D';
 
   return StyleSheet.create({
     container: {
@@ -351,6 +399,11 @@ function createStyles(palette: Palette) {
       backgroundColor: cardBackground,
       borderColor: palette.tint,
     },
+    gameTileDisabled: {
+      opacity: 0.6,
+      borderStyle: 'dashed',
+      borderColor: disabledText,
+    },
     gameTileName: {
       color: palette.text,
       fontWeight: '600',
@@ -359,12 +412,30 @@ function createStyles(palette: Palette) {
     gameTileNameActive: {
       color: palette.tint,
     },
+    gameTileNameDisabled: {
+      color: disabledText,
+    },
     gameTileSummary: {
       color: palette.icon,
       lineHeight: 18,
     },
     gameTileSummaryActive: {
       color: palette.text,
+    },
+    gameTileSummaryDisabled: {
+      color: disabledText,
+    },
+    gameTileBadge: {
+      alignSelf: 'flex-start',
+      marginTop: 8,
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 999,
+      backgroundColor: raisedBackground,
+      color: palette.icon,
+      fontSize: 12,
+      fontWeight: '600',
+      textTransform: 'uppercase',
     },
     formGroup: {
       gap: 16,

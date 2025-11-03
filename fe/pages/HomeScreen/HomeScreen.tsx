@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -16,21 +16,48 @@ const BASE_TOP_PADDING = 24;
 export default function HomeScreen() {
   const styles = useThemedStyles(createStyles);
   const { t } = useTranslation();
-  const router = useRouter();
   const insets = useSafeAreaInsets();
   const appName = useAppName();
+  const router = useRouter();
 
-  const navigateToCreate = useCallback((gameId?: string) => {
-    if (gameId) {
-      router.push({ pathname: '/games/create', params: { gameId } } as never);
-    } else {
-      router.push('/games/create' as never);
-    }
-  }, [router]);
+  const playableGames = useMemo(
+    () => gamesCatalog.filter((game) => game.isPlayable),
+    [],
+  );
+  const defaultPlayableId = playableGames[0]?.id;
+  const canCreateAny = Boolean(defaultPlayableId);
 
-  const handleCreate = useCallback((game: GameCatalogueEntry) => {
-    navigateToCreate(game.id);
-  }, [navigateToCreate]);
+  const showUnavailableAlert = useCallback(() => {
+    Alert.alert(
+      t('games.create.alerts.gameUnavailableTitle'),
+      t('games.create.alerts.gameUnavailableMessage'),
+    );
+  }, [t]);
+
+  const navigateToCreate = useCallback(
+    (gameId?: string) => {
+      const targetId = gameId ?? defaultPlayableId;
+      if (!targetId) {
+        showUnavailableAlert();
+        return;
+      }
+
+      router.push({ pathname: '/games/create', params: { gameId: targetId } } as never);
+    },
+    [defaultPlayableId, router, showUnavailableAlert],
+  );
+
+  const handleCreate = useCallback(
+    (game: GameCatalogueEntry) => {
+      if (!game.isPlayable) {
+        showUnavailableAlert();
+        return;
+      }
+
+      navigateToCreate(game.id);
+    },
+    [navigateToCreate, showUnavailableAlert],
+  );
 
   const handlePreview = useCallback((game: GameCatalogueEntry) => {
     router.push({ pathname: '/games/[id]', params: { id: game.id } });
@@ -42,7 +69,13 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <ThemedText type="title" style={styles.title}>{t('games.lounge.title')}</ThemedText>
           <ThemedText style={styles.subtitle}>{t('games.lounge.subtitle', { appName })}</ThemedText>
-          <TouchableOpacity style={styles.headerButton} onPress={() => navigateToCreate()}>
+          <TouchableOpacity
+            style={[styles.headerButton, !canCreateAny && styles.headerButtonDisabled]}
+            onPress={() => navigateToCreate()}
+            disabled={!canCreateAny}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: !canCreateAny }}
+          >
             <IconSymbol name="sparkles" size={18} color={styles.headerButtonText.color as string} />
             <ThemedText style={styles.headerButtonText}>{t('games.common.createRoom')}</ThemedText>
           </TouchableOpacity>
@@ -60,6 +93,7 @@ export default function HomeScreen() {
               : game.status === 'In design'
                 ? styles.statusDesign
                 : styles.statusRoadmap;
+          const isPlayable = Boolean(game.isPlayable);
 
           return (
             <ThemedView key={game.id} style={styles.card}>
@@ -88,13 +122,28 @@ export default function HomeScreen() {
                 ))}
               </View>
               <View style={styles.actionsRow}>
-                <TouchableOpacity style={styles.primaryButton} onPress={() => handleCreate(game)}>
-                  <ThemedText style={styles.primaryButtonText}>{t('games.common.createRoom')}</ThemedText>
+                <TouchableOpacity
+                  style={[styles.primaryButton, !isPlayable && styles.primaryButtonDisabled]}
+                  onPress={() => handleCreate(game)}
+                  disabled={!isPlayable}
+                  accessibilityRole="button"
+                  accessibilityState={{ disabled: !isPlayable }}
+                >
+                  <ThemedText
+                    style={[styles.primaryButtonText, !isPlayable && styles.primaryButtonTextDisabled]}
+                  >
+                    {t('games.common.createRoom')}
+                  </ThemedText>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.secondaryButton} onPress={() => handlePreview(game)}>
                   <ThemedText style={styles.secondaryButtonText}>{t('games.common.viewRules')}</ThemedText>
                 </TouchableOpacity>
               </View>
+              {!isPlayable ? (
+                <ThemedText style={styles.comingSoonHint}>
+                  {t('games.create.badgeComingSoon')}
+                </ThemedText>
+              ) : null}
             </ThemedView>
           );
         })}
@@ -162,6 +211,9 @@ function createStyles(palette: Palette) {
         offset: { width: 0, height: 2 },
         elevation: 1,
       }),
+    },
+    headerButtonDisabled: {
+      opacity: 0.5,
     },
     headerButtonText: {
       color: palette.tint,
@@ -251,10 +303,16 @@ function createStyles(palette: Palette) {
       alignItems: 'center',
       justifyContent: 'center',
     },
+    primaryButtonDisabled: {
+      opacity: 0.45,
+    },
     primaryButtonText: {
       color: palette.background,
       fontWeight: '600',
       fontSize: 15,
+    },
+    primaryButtonTextDisabled: {
+      color: palette.background,
     },
     secondaryButton: {
       flex: 1,
@@ -269,6 +327,12 @@ function createStyles(palette: Palette) {
       color: palette.tint,
       fontWeight: '600',
       fontSize: 15,
+    },
+    comingSoonHint: {
+      marginTop: 6,
+      color: palette.icon,
+      fontSize: 12,
+      fontStyle: 'italic',
     },
     statusPill: {
       paddingHorizontal: 10,

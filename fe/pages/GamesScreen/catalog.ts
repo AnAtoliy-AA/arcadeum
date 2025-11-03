@@ -27,6 +27,7 @@ export interface GameCatalogueEntry {
   highlights: GameSectionItem[];
   howToPlay: GameStep[];
   comingSoon: GameSectionItem[];
+  isPlayable?: boolean;
   localizations?: Partial<Record<LanguagePreference, GameCatalogueLocalization>>;
 }
 
@@ -103,6 +104,7 @@ export const gamesCatalog: GameCatalogueEntry[] = [
         description: 'Upload your own cat art and card ideas for community-voted variants.',
       },
     ],
+    isPlayable: true,
     localizations: {
       es: {
         overview:

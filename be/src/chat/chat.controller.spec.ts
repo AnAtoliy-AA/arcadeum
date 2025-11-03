@@ -53,4 +53,30 @@ describe('ChatController', () => {
       expect(result).toBe(summary);
     });
   });
+
+  describe('listChats', () => {
+    it('throws when user missing on request', async () => {
+      await expect(
+        controller.listChats({} as AuthenticatedRequest),
+      ).rejects.toThrow('User context missing');
+    });
+
+    it('returns chats for authenticated user', async () => {
+      const request = {
+        user: { userId: 'alpha-user' },
+      } as AuthenticatedRequest;
+      const summaries = [
+        { chatId: 'chat-1', participants: [], lastMessage: null },
+        { chatId: 'chat-2', participants: [], lastMessage: null },
+      ];
+      chatServiceMock.listChatsForUser.mockResolvedValue(summaries);
+
+      const result = await controller.listChats(request);
+
+      expect(chatServiceMock.listChatsForUser).toHaveBeenCalledWith(
+        'alpha-user',
+      );
+      expect(result).toBe(summaries);
+    });
+  });
 });

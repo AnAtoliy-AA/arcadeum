@@ -13,7 +13,9 @@ import { MessageCodeInterceptor } from './common/interceptors/message-code.inter
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     ChatModule,
     AuthModule,
     GamesModule,

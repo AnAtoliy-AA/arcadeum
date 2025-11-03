@@ -115,16 +115,42 @@ export function useAuth() {
               headers: { 'Content-Type': 'application/json' },
               body: payload,
               signal: controller.signal,
+            }, {
+              suppressErrorToast: true,
             });
           };
           let resp = await fetchAuthToken();
           if (resp.status === 401) {
             controller.abort();
-            resp = await fetch(`${apiBase}/auth/token`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: payload,
-            });
+
+            const MAX_ATTEMPTS = 3;
+            let attempt = 1;
+            let lastError: Error | null = null;
+
+            while (attempt <= MAX_ATTEMPTS) {
+              try {
+                resp = await fetch(`${apiBase}/auth/token`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: payload,
+                });
+
+                if (resp.ok || resp.status !== 401) {
+                  lastError = null;
+                  break;
+                }
+              } catch (fetchErr) {
+                lastError = fetchErr instanceof Error ? fetchErr : new Error(String(fetchErr));
+              }
+
+              attempt += 1;
+            }
+
+            if (!resp.ok && resp.status === 401) {
+              const finalError =
+                lastError ?? new Error('Unable to complete authentication. Please try again later.');
+              throw finalError;
+            }
           }
           let json: TokenExchangeResponse = {};
           try {

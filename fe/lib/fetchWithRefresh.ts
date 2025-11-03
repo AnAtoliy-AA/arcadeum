@@ -5,6 +5,7 @@ import { emitGlobalError, type GlobalErrorPayload } from '@/lib/globalErrorHandl
 export interface FetchWithRefreshOptions {
   accessToken?: string | null;
   refreshTokens?: () => Promise<SessionTokensSnapshot>;
+  suppressErrorToast?: boolean;
 }
 
 async function performFetch(
@@ -24,11 +25,12 @@ export async function fetchWithRefresh(
   init: RequestInit = {},
   options: FetchWithRefreshOptions = {},
 ): Promise<Response> {
-  const { accessToken, refreshTokens } = options;
+  const { accessToken, refreshTokens, suppressErrorToast } = options;
+  const shouldNotifyErrors = !suppressErrorToast;
   const firstResponse = await performFetch(url, init, accessToken ?? undefined);
 
   if (firstResponse.status !== 401 || !refreshTokens) {
-    if (!firstResponse.ok) {
+    if (!firstResponse.ok && shouldNotifyErrors) {
       notifyResponseError(firstResponse);
     }
     return firstResponse;
@@ -38,18 +40,18 @@ export async function fetchWithRefresh(
     const refreshed = await refreshTokens();
     const nextToken = refreshed.accessToken;
     if (!nextToken || nextToken === accessToken) {
-      if (!firstResponse.ok) {
+      if (!firstResponse.ok && shouldNotifyErrors) {
         notifyResponseError(firstResponse);
       }
       return firstResponse;
     }
     const retryResponse = await performFetch(url, init, nextToken);
-    if (!retryResponse.ok) {
+    if (!retryResponse.ok && shouldNotifyErrors) {
       notifyResponseError(retryResponse);
     }
     return retryResponse;
   } catch {
-    if (!firstResponse.ok) {
+    if (!firstResponse.ok && shouldNotifyErrors) {
       notifyResponseError(firstResponse);
     }
     return firstResponse;

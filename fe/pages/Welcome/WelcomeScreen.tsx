@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useThemedStyles, Palette } from '@/hooks/useThemedStyles';
@@ -17,7 +17,6 @@ import { useTranslation } from '@/lib/i18n';
 import { useAppName } from '@/hooks/useAppName';
 
 export default function WelcomeScreen() {
-  const router = useRouter();
   const styles = useThemedStyles(createStyles);
   const { isAuthenticated, redirectEnabled, shouldBlock } =
     useSessionScreenGate({
@@ -25,6 +24,7 @@ export default function WelcomeScreen() {
       enableOn: ['web'],
       blockWhenAuthenticated: true,
     });
+  const router = useRouter();
   const { t } = useTranslation();
   const appName = useAppName();
 
@@ -36,13 +36,29 @@ export default function WelcomeScreen() {
     );
   }
 
+  const primaryHref = isAuthenticated && !redirectEnabled ? '/(tabs)' : '/auth';
+  const primaryReplace = isAuthenticated && !redirectEnabled;
+
+  const primaryActionStyle = StyleSheet.flatten([
+    styles.actionButton,
+    styles.primaryAction,
+    styles.webLinkAction,
+  ]);
+  const secondaryActionStyle = StyleSheet.flatten([
+    styles.actionButton,
+    styles.secondaryAction,
+    styles.webLinkAction,
+  ]);
+
   const handlePrimaryPress = () => {
-    if (isAuthenticated && !redirectEnabled) {
-      router.replace('/(tabs)');
-    } else {
-      router.push('/auth');
+    if (primaryReplace) {
+      router.replace(primaryHref);
+      return;
     }
+
+    router.push(primaryHref);
   };
+
   const handleSupportPress = () => {
     router.push('/support');
   };
@@ -61,24 +77,59 @@ export default function WelcomeScreen() {
             {t('welcome.description', { appName })}
           </Text>
           <View style={styles.actions}>
-            <TouchableOpacity
-              style={[styles.actionButton, styles.primaryAction]}
-              onPress={handlePrimaryPress}
-            >
-              <ThemedText style={styles.primaryActionText}>
-                {isAuthenticated && !redirectEnabled
-                  ? t('common.actions.openApp')
-                  : t('common.actions.getStarted')}
-              </ThemedText>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.actionButton, styles.secondaryAction]}
-              onPress={handleSupportPress}
-            >
-              <ThemedText style={styles.secondaryActionText}>
-                {t('welcome.supportCta')}
-              </ThemedText>
-            </TouchableOpacity>
+            {platform.isWeb ? (
+              <Link
+                href={primaryHref}
+                replace={primaryReplace}
+                accessibilityRole="link"
+                accessibilityLabel={t('common.actions.getStarted')}
+                style={primaryActionStyle}
+              >
+                <ThemedText style={styles.primaryActionText}>
+                  {isAuthenticated && !redirectEnabled
+                    ? t('common.actions.openApp')
+                    : t('common.actions.getStarted')}
+                </ThemedText>
+              </Link>
+            ) : (
+              <TouchableOpacity
+                activeOpacity={0.85}
+                accessibilityRole="button"
+                accessibilityLabel={t('common.actions.getStarted')}
+                onPress={handlePrimaryPress}
+                style={[styles.actionButton, styles.primaryAction]}
+              >
+                <ThemedText style={styles.primaryActionText}>
+                  {isAuthenticated && !redirectEnabled
+                    ? t('common.actions.openApp')
+                    : t('common.actions.getStarted')}
+                </ThemedText>
+              </TouchableOpacity>
+            )}
+            {platform.isWeb ? (
+              <Link
+                href="/support"
+                accessibilityRole="link"
+                accessibilityLabel={t('welcome.supportCta')}
+                style={secondaryActionStyle}
+              >
+                <ThemedText style={styles.secondaryActionText}>
+                  {t('welcome.supportCta')}
+                </ThemedText>
+              </Link>
+            ) : (
+              <TouchableOpacity
+                activeOpacity={0.85}
+                accessibilityRole="button"
+                accessibilityLabel={t('welcome.supportCta')}
+                onPress={handleSupportPress}
+                style={[styles.actionButton, styles.secondaryAction]}
+              >
+                <ThemedText style={styles.secondaryActionText}>
+                  {t('welcome.supportCta')}
+                </ThemedText>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
         <View style={styles.footer}>
@@ -146,6 +197,10 @@ function createStyles(palette: Palette) {
       alignItems: 'center',
       justifyContent: 'center',
       minWidth: 160,
+    },
+    webLinkAction: {
+      display: 'flex',
+      textDecorationLine: 'none',
     },
     primaryAction: {
       backgroundColor: palette.tint,

@@ -21,6 +21,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "format": "prettier --write \"{api,app,components,constants,hooks,lib,pages,scripts,stores}/**/*.{js,jsx,ts,tsx,json}\"",
+    "build": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch"
   },

@@ -31,7 +31,7 @@ export default function WelcomeScreen() {
   if (shouldBlock) {
     return (
       <ThemedView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" testID="welcome-loading-indicator" />
       </ThemedView>
     );
   }

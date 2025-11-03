@@ -40,6 +40,7 @@ export interface AuthUserProfile {
   id: string;
   email: string;
   username: string;
+  displayName: string;
   createdAt?: Date;
 }
 
@@ -191,14 +192,7 @@ export class AuthService {
       username,
       usernameNormalized,
     });
-    // Access timestamps defensively (schema has timestamps: true)
-    const createdAt = (created as Partial<{ createdAt: Date }>).createdAt;
-    return {
-      id: String(created.id),
-      email: created.email,
-      username: created.username,
-      createdAt,
-    };
+    return this.buildAuthUserProfile(created);
   }
 
   async login(data: LoginDto): Promise<AuthTokensResponse> {
@@ -220,12 +214,13 @@ export class AuthService {
     const accessTokenExpiresAt = this.deriveAccessTokenExpiration(accessToken);
     // Also issue refresh token
     const refresh = await this.issueRefreshToken(String(user.id), null);
+    const authUser = this.buildAuthUserProfile(user);
     return {
       accessToken,
       accessTokenExpiresAt,
       refreshToken: refresh.token,
       refreshTokenExpiresAt: refresh.expiresAt,
-      user: { id: String(user.id), email: user.email, username: user.username },
+      user: authUser,
     }; // token is raw value
   }
 
@@ -238,16 +233,16 @@ export class AuthService {
       throw new UnauthorizedException('Missing OAuth credentials');
     }
 
-    const profile = await this.fetchGoogleProfile({
+    const googleProfile = await this.fetchGoogleProfile({
       accessToken: data.accessToken,
       idToken: data.idToken,
     });
 
-    if (!profile.emailVerified) {
+    if (!googleProfile.emailVerified) {
       throw new UnauthorizedException('Google account email not verified');
     }
 
-    const user = await this.getOrCreateOAuthUser(profile);
+    const user = await this.getOrCreateOAuthUser(googleProfile);
 
     const payload: { sub: string; email: string; username: string } = {
       sub: String(user.id),
@@ -258,13 +253,14 @@ export class AuthService {
     const accessToken = await this.jwt.signAsync(payload);
     const accessTokenExpiresAt = this.deriveAccessTokenExpiration(accessToken);
     const refresh = await this.issueRefreshToken(String(user.id), null);
+    const userProfile = this.buildAuthUserProfile(user);
 
     return {
       accessToken,
       accessTokenExpiresAt,
       refreshToken: refresh.token,
       refreshTokenExpiresAt: refresh.expiresAt,
-      user: { id: String(user.id), email: user.email, username: user.username },
+      user: userProfile,
     };
   }
 
@@ -386,11 +382,7 @@ export class AuthService {
       accessTokenExpiresAt,
       refreshToken: rotated.token,
       refreshTokenExpiresAt: rotated.expiresAt,
-      user: {
-        id: userId,
-        email: user.email,
-        username: user.username,
-      },
+      user: this.buildAuthUserProfile(user),
     };
   }
 
@@ -398,7 +390,9 @@ export class AuthService {
     query: string;
     requestingUserId: string;
     limit?: number;
-  }): Promise<Array<{ id: string; email: string; username: string }>> {
+  }): Promise<
+    Array<{ id: string; email: string; username: string; displayName: string }>
+  > {
     const trimmed = params.query?.trim();
     if (!trimmed) {
       return [];
@@ -424,6 +418,7 @@ export class AuthService {
       id: String(user.id),
       email: user.email,
       username: user.username,
+      displayName: this.resolveDisplayName(user),
     }));
   }
 
@@ -467,7 +462,13 @@ export class AuthService {
     const email = profile.email.toLowerCase();
     const existing = await this.userModel.findOne({ email });
     if (existing) {
-      return this.ensureUserUsername(existing);
+      const ensured = await this.ensureUserUsername(existing);
+      const preferredDisplay = profile.name?.trim();
+      if (preferredDisplay && ensured.displayName !== preferredDisplay) {
+        ensured.displayName = preferredDisplay;
+        await ensured.save();
+      }
+      return ensured;
     }
 
     const preferredName = profile.name?.trim() || email.split('@')[0] || 'user';
@@ -489,9 +490,57 @@ export class AuthService {
       passwordHash: placeholderPassword,
       username: candidate,
       usernameNormalized: normalized,
+      displayName: profile.name?.trim() || undefined,
     });
 
     return created;
+  }
+
+  private resolveDisplayName(
+    user: Pick<User, 'displayName' | 'username' | 'email'>,
+  ): string {
+    const preferred = user.displayName?.trim?.();
+    if (preferred) {
+      return preferred;
+    }
+
+    const username = user.username?.trim?.();
+    if (username) {
+      return username;
+    }
+
+    const [localPart] = user.email?.split?.('@') ?? [];
+    const local = localPart?.trim?.();
+    if (local) {
+      return local;
+    }
+
+    return user.email;
+  }
+
+  private buildAuthUserProfile(user: UserDocument): AuthUserProfile {
+    const profile: AuthUserProfile = {
+      id: String(user.id),
+      email: user.email,
+      username: user.username,
+      displayName: this.resolveDisplayName(user),
+    };
+
+    const createdAt = (user as Partial<{ createdAt: Date }>).createdAt;
+    if (createdAt instanceof Date) {
+      profile.createdAt = createdAt;
+    }
+
+    return profile;
+  }
+
+  async getUserProfileById(userId: string): Promise<AuthUserProfile> {
+    const doc = await this.userModel.findById(userId);
+    if (!doc) {
+      throw new UnauthorizedException('User not found');
+    }
+    const ensured = await this.ensureUserUsername(doc);
+    return this.buildAuthUserProfile(ensured);
   }
 
   private getAllowedOAuthClientIds(): string[] {

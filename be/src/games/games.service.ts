@@ -156,7 +156,11 @@ type ListRoomsFilters = {
   participation?: GameRoomParticipationFilter;
 };
 
-type RoomUserProfile = { username?: string; email?: string | null };
+type RoomUserProfile = {
+  username?: string;
+  email?: string | null;
+  displayName?: string | null;
+};
 
 const EXPLODING_CATS_GAME_ID = 'exploding-kittens';
 const EXPLODING_CATS_ENGINE_ID = 'exploding_cats_v1';
@@ -2132,6 +2136,11 @@ export class GamesService {
       return '';
     }
 
+    const profileDisplay = profile?.displayName?.trim?.();
+    if (profileDisplay) {
+      return profileDisplay;
+    }
+
     const username = profile?.username?.trim?.();
     if (username) {
       return username;
@@ -2276,7 +2285,7 @@ export class GamesService {
 
     const users = await this.userModel
       .find({ _id: { $in: normalized } })
-      .select(['username', 'email'])
+      .select(['username', 'email', 'displayName'])
       .exec();
 
     for (const user of users) {
@@ -2285,6 +2294,7 @@ export class GamesService {
         lookup.set(id, {
           username: user.username ?? undefined,
           email: user.email ?? null,
+          displayName: user.displayName ?? null,
         });
       }
     }
@@ -2296,7 +2306,7 @@ export class GamesService {
     rootRoom: GameRoom;
     rooms: GameRoom[];
     sessionLookup: Map<string, GameSession>;
-    userLookup: Map<string, { username?: string; email?: string | null }>;
+    userLookup: Map<string, RoomUserProfile>;
   }): {
     summary: GameHistorySummary;
     rounds: Array<{
@@ -2343,7 +2353,7 @@ export class GamesService {
       const user = userLookup.get(id);
       return {
         id,
-        username: user?.username ?? id,
+        username: user?.displayName ?? user?.username ?? id,
         email: user?.email ?? null,
         isHost: id === rootRoom.hostId,
       };

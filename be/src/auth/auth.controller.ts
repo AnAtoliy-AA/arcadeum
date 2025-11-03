@@ -53,16 +53,12 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  me(@Req() req: Request) {
+  async me(@Req() req: Request) {
     const user = req.user as AuthenticatedUser | undefined;
     if (!user) {
       throw new UnauthorizedException();
     }
-    return {
-      id: user.userId,
-      email: user.email,
-      username: user.username,
-    };
+    return this.authService.getUserProfileById(user.userId);
   }
 
   @Get('users/search')

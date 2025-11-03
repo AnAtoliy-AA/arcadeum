@@ -16,6 +16,7 @@ export interface SessionTokensSnapshot {
   userId: string | null;
   email: string | null;
   username: string | null;
+  displayName: string | null;
 }
 
 export interface SetSessionTokensInput {
@@ -28,6 +29,7 @@ export interface SetSessionTokensInput {
   userId?: string | null;
   email?: string | null;
   username?: string | null;
+  displayName?: string | null;
 }
 
 export interface SessionTokensContextValue {
@@ -52,6 +54,7 @@ const defaultSnapshot: SessionTokensSnapshot = {
   userId: null,
   email: null,
   username: null,
+  displayName: null,
 };
 
 function toIso(value?: string | Date | null): string | null {
@@ -73,6 +76,7 @@ function sanitizeSnapshot(value: Partial<SessionTokensSnapshot> | null | undefin
     userId: value.userId ?? null,
     email: value.email ?? null,
     username: value.username ?? null,
+    displayName: value.displayName ?? null,
   };
 }
 
@@ -99,6 +103,7 @@ function buildNextSnapshot(current: SessionTokensSnapshot, input: SetSessionToke
     userId: input.userId ?? current.userId ?? null,
     email: input.email ?? current.email ?? null,
     username: input.username ?? current.username ?? null,
+    displayName: input.displayName ?? current.displayName ?? null,
   };
   return next;
 }
@@ -171,6 +176,7 @@ export function SessionTokensProvider({ children }: { children: React.ReactNode 
           userId: response.user?.id ?? tokens.userId ?? null,
           email: response.user?.email ?? tokens.email ?? null,
           username: response.user?.username ?? tokens.username ?? null,
+          displayName: response.user?.displayName ?? tokens.displayName ?? null,
         });
         return next;
       } catch (error) {

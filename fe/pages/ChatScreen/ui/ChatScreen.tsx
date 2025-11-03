@@ -24,14 +24,14 @@ export default function ChatScreen() {
   const conversationTitle = Array.isArray(params.title) ? params.title[0] : params.title;
 
   const currentUserId = tokens.userId ?? '';
-  const currentUsername = tokens.username ?? tokens.email ?? null;
+  const currentDisplayName = tokens.displayName ?? tokens.username ?? tokens.email ?? null;
   const giftedUserId = currentUserId || 'local-user';
-  const giftedUserName = currentUsername ?? giftedUserId;
+  const giftedUserName = currentDisplayName ?? giftedUserId;
 
   const { messages, onSend, isConnected } = useChat({
     chatId: rawChatId ?? '',
     currentUserId,
-    currentUsername,
+    currentUsername: currentDisplayName,
     receiverIds: rawReceiverIds,
   });
   const { shouldBlock } = useSessionScreenGate({

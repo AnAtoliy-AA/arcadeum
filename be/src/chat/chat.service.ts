@@ -21,6 +21,7 @@ export interface ChatParticipantSummary {
   id: string;
   username: string;
   email: string | null;
+  displayName: string | null;
 }
 
 export interface ChatSummary {
@@ -76,6 +77,42 @@ export class ChatService {
     return b.every((id) => set.has(id));
   }
 
+  private resolveParticipantDisplayName(
+    source: {
+      displayName?: string | null;
+      username?: string | null;
+      email?: string | null;
+    },
+    fallback?: string,
+  ): string {
+    const preferred = source.displayName?.trim?.();
+    if (preferred) {
+      return preferred;
+    }
+
+    const userName = source.username?.trim?.();
+    if (userName) {
+      return userName;
+    }
+
+    const normalizedEmail = source.email?.trim?.();
+    if (normalizedEmail) {
+      const [localPart] = normalizedEmail.split('@');
+      const local = localPart?.trim?.();
+      if (local) {
+        return local;
+      }
+      return normalizedEmail;
+    }
+
+    const normalizedFallback = fallback?.trim?.();
+    if (normalizedFallback) {
+      return normalizedFallback;
+    }
+
+    return 'Player';
+  }
+
   private async hydrateParticipants(
     participantIds: string[],
   ): Promise<Map<string, ChatParticipantSummary>> {
@@ -87,7 +124,7 @@ export class ChatService {
 
     const users = (await this.userModel
       .find({ _id: { $in: normalized } })
-      .select(['username', 'email'])
+      .select(['username', 'email', 'displayName'])
       .exec()) as UserDocument[];
 
     for (const user of users) {
@@ -95,10 +132,19 @@ export class ChatService {
         user._id instanceof Types.ObjectId
           ? user._id.toString()
           : String(user._id);
+      const displayName = this.resolveParticipantDisplayName(
+        {
+          username: user.username,
+          email: user.email,
+          displayName: user.displayName,
+        },
+        id,
+      );
       lookup.set(id, {
         id,
         username: user.username,
         email: user.email ?? null,
+        displayName,
       });
     }
 
@@ -108,6 +154,7 @@ export class ChatService {
           id,
           username: id,
           email: null,
+          displayName: id,
         });
       }
     }
@@ -261,11 +308,23 @@ export class ChatService {
     const participants = this.normalizeUserIds(chat.users ?? []);
     const receiverIds = participants.filter((id) => id !== sanitizedSenderId);
 
-    const sender = await this.userModel
+    const sender = (await this.userModel
       .findById(sanitizedSenderId)
+      .select(['username', 'email', 'displayName'])
       .lean()
-      .exec();
-    const senderUsername = sender?.username ?? sanitizedSenderId;
+      .exec()) as
+      | (Pick<User, 'username' | 'email' | 'displayName'> & {
+          _id?: Types.ObjectId | string;
+        })
+      | null;
+    const senderUsername = this.resolveParticipantDisplayName(
+      {
+        username: sender?.username,
+        email: sender?.email,
+        displayName: sender?.displayName,
+      },
+      sanitizedSenderId,
+    );
 
     const message = new this.messageModel({
       chatId: chat.chatId,
@@ -324,6 +383,7 @@ export class ChatService {
           id,
           username: id,
           email: null,
+          displayName: id,
         },
     );
 
@@ -360,6 +420,7 @@ export class ChatService {
             id: participantId,
             username: participantId,
             email: null,
+            displayName: participantId,
           }
         );
       });
@@ -405,14 +466,22 @@ export class ChatService {
     if (missingSenderIds.size) {
       const users = (await this.userModel
         .find({ _id: { $in: Array.from(missingSenderIds) } })
-        .select(['username'])
+        .select(['username', 'email', 'displayName'])
         .exec()) as UserDocument[];
 
       for (const user of users) {
         const rawId = user._id;
         const id =
           rawId instanceof Types.ObjectId ? rawId.toString() : String(rawId);
-        usernameLookup.set(id, user.username);
+        const displayName = this.resolveParticipantDisplayName(
+          {
+            username: user.username,
+            email: user.email,
+            displayName: user.displayName,
+          },
+          id,
+        );
+        usernameLookup.set(id, displayName);
       }
     }
 

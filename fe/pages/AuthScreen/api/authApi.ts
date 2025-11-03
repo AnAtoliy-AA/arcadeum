@@ -101,6 +101,7 @@ export interface AuthUserProfile {
   id: string;
   email: string;
   username: string;
+  displayName: string;
 }
 
 interface RegisterResponse extends AuthUserProfile {

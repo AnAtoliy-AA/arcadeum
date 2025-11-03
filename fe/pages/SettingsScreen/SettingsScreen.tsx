@@ -39,7 +39,7 @@ export default function SettingsScreen() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const isAuthenticated = Boolean(tokens.accessToken);
-  const accountName = tokens.username ?? tokens.email ?? null;
+  const accountName = tokens.displayName ?? tokens.username ?? tokens.email ?? null;
 
   const handleThemeSelect = useCallback((preference: (typeof themePreferences)[number]['code']) => {
     setThemePreference(preference);

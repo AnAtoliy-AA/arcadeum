@@ -9,6 +9,7 @@ interface LocalAuthState {
   refreshToken?: string | null;
   email?: string | null;
   username?: string | null;
+  displayName?: string | null;
   loading: boolean;
   error: string | null;
   mode: 'login' | 'register';
@@ -29,6 +30,7 @@ export function useLocalAuth() {
     refreshToken: null,
     email: null,
     username: null,
+    displayName: null,
     loading: false,
     error: null,
     mode: 'login',
@@ -61,6 +63,7 @@ export function useLocalAuth() {
         userId: profile.id ?? snapshot.userId ?? null,
         email: emailValue,
         username: profile.username ?? snapshot.username ?? null,
+        displayName: profile.displayName ?? snapshot.displayName ?? null,
       });
       setState(s => ({
         ...s,
@@ -68,6 +71,7 @@ export function useLocalAuth() {
         refreshToken: mergedSnapshot.refreshToken,
         email: mergedSnapshot.email ?? emailValue,
         username: mergedSnapshot.username ?? profile.username ?? null,
+        displayName: mergedSnapshot.displayName ?? profile.displayName ?? null,
         loading: false,
         error: null,
       }));
@@ -101,6 +105,7 @@ export function useLocalAuth() {
         userId: resp.user?.id ?? null,
         email: resp.user?.email ?? normalizedEmail,
         username: resp.user?.username ?? null,
+        displayName: resp.user?.displayName ?? resp.user?.username ?? null,
       });
       await persist(EMAIL_KEY, resp.user?.email ?? normalizedEmail);
       setState(s => ({
@@ -109,6 +114,7 @@ export function useLocalAuth() {
         refreshToken: snapshot.refreshToken,
         email: snapshot.email ?? normalizedEmail,
         username: snapshot.username,
+        displayName: snapshot.displayName ?? resp.user?.displayName ?? resp.user?.username ?? null,
         loading: false,
       }));
     } catch (e) {
@@ -136,6 +142,7 @@ export function useLocalAuth() {
           refreshToken: null,
           email: storedEmail,
           username: null,
+          displayName: null,
           loading: false,
         }));
         return;
@@ -166,6 +173,7 @@ export function useLocalAuth() {
           refreshToken: null,
           email: storedEmail,
           username: null,
+          displayName: null,
           loading: false,
         }));
       }
@@ -184,7 +192,7 @@ export function useLocalAuth() {
   const logout = useCallback(async () => {
     await clearSessionTokens();
     await persist(EMAIL_KEY, null);
-    setState(s => ({ ...s, accessToken: null, refreshToken: null, email: null, username: null }));
+    setState(s => ({ ...s, accessToken: null, refreshToken: null, email: null, username: null, displayName: null }));
   }, [clearSessionTokens]);
 
   return {

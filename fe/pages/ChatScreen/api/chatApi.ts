@@ -15,6 +15,7 @@ export interface ChatParticipant {
   id: string;
   username: string;
   email: string | null;
+  displayName: string | null;
 }
 
 export interface ChatSummary {
@@ -27,6 +28,7 @@ type RawChatParticipant = {
   id: string;
   username?: string;
   email?: string | null;
+  displayName?: string | null;
 };
 
 type RawMessageView = {
@@ -49,6 +51,7 @@ type RawUserSummary = {
   id: string;
   username?: string;
   email?: string | null;
+  displayName?: string | null;
 };
 
 async function authorizedJson<T>(
@@ -83,6 +86,7 @@ function mapParticipant(raw: RawChatParticipant): ChatParticipant {
     id: raw.id,
     username: raw.username ?? raw.id,
     email: raw.email ?? null,
+    displayName: raw.displayName ?? raw.username ?? raw.id ?? null,
   };
 }
 
@@ -141,7 +145,9 @@ export async function searchUsers(
   }
   return data
     .filter((item) => typeof item?.id === 'string' && item.id.trim().length > 0)
-    .map((item) => mapParticipant({ id: item.id, username: item.username, email: item.email }));
+    .map(({ id, username, email, displayName }) =>
+      mapParticipant({ id, username, email, displayName }),
+    );
 }
 
 export async function createChat(

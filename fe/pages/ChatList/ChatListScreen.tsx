@@ -186,7 +186,9 @@ export default function ChatListScreen() {
           (participant) => participant.id !== currentUserId,
         );
         const title = otherParticipants.length
-          ? otherParticipants.map((participant) => participant.username).join(', ')
+          ? otherParticipants
+              .map((participant) => participant.displayName ?? participant.username)
+              .join(', ')
           : t('chatList.messages.directChat');
         const receiverIds = otherParticipants.map((participant) => participant.id).join(',');
 
@@ -212,8 +214,10 @@ export default function ChatListScreen() {
       const otherParticipants: ChatParticipant[] = item.participants.filter(
         (participant) => participant.id !== currentUserId,
       );
-      const title = otherParticipants.length
-        ? otherParticipants.map((participant) => participant.username).join(', ')
+        const title = otherParticipants.length
+          ? otherParticipants
+              .map((participant) => participant.displayName ?? participant.username)
+              .join(', ')
         : t('chatList.messages.directChat');
 
       const subtitle = item.lastMessage
@@ -311,7 +315,9 @@ export default function ChatListScreen() {
                         <IconSymbol name="person.circle.fill" size={18} color={avatarIconColor} />
                       </View>
                       <View style={styles.searchResultTextContainer}>
-                        <ThemedText style={styles.searchResultTitle}>{result.username}</ThemedText>
+                        <ThemedText style={styles.searchResultTitle}>
+                          {result.displayName ?? result.username}
+                        </ThemedText>
                         {result.email ? (
                           <ThemedText style={styles.searchResultSubtitle}>{result.email}</ThemedText>
                         ) : null}

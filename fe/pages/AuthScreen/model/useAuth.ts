@@ -64,6 +64,8 @@ export function useAuth() {
         userId: session.user?.id ?? null,
         email: session.user?.email ?? null,
         username: session.user?.username ?? null,
+        displayName:
+          session.user?.displayName ?? session.user?.username ?? session.user?.email ?? null,
       });
 
       setAuthState(result);
@@ -196,6 +198,8 @@ export function useAuth() {
             userId: session.user?.id ?? null,
             email: session.user?.email ?? null,
             username: session.user?.username ?? null,
+            displayName:
+              session.user?.displayName ?? session.user?.username ?? session.user?.email ?? null,
           });
           setAuthState(authorizeResult as AuthorizeResult);
           setError(null);

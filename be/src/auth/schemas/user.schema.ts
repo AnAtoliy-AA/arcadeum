@@ -14,6 +14,9 @@ export class User {
 
   @Prop({ required: true, unique: true })
   usernameNormalized!: string;
+
+  @Prop({ trim: true })
+  displayName?: string;
 }
 
 export type UserDocument = User & Document;

@@ -10,6 +10,7 @@ import { createGameRoom, type CreateGameRoomParams } from './api/gamesApi';
 import { useSessionScreenGate } from '@/hooks/useSessionScreenGate';
 import { useSessionTokens } from '@/stores/sessionTokens';
 import { useTranslation } from '@/lib/i18n';
+import { platformShadow } from '@/lib/platformShadow';
 
 export default function CreateGameRoomScreen() {
   const styles = useThemedStyles(createStyles);
@@ -422,11 +423,13 @@ function createStyles(palette: Palette) {
       gap: 12,
       borderWidth: StyleSheet.hairlineWidth,
       borderColor,
-      shadowColor: surfaceShadow,
-      shadowOpacity: isLight ? 1 : 0.6,
-      shadowRadius: 12,
-      shadowOffset: { width: 0, height: 4 },
-      elevation: 2,
+      ...platformShadow({
+        color: surfaceShadow,
+        opacity: isLight ? 1 : 0.6,
+        radius: 12,
+        offset: { width: 0, height: 4 },
+        elevation: 2,
+      }),
     },
     previewTitle: {
       color: palette.text,

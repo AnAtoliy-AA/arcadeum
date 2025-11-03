@@ -13,6 +13,7 @@ import {
   Pressable,
   StyleSheet,
   View,
+  Platform,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
@@ -20,6 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/ThemedText';
 import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
+import { platformShadow } from '@/lib/platformShadow';
 import { useTranslation } from '@/lib/i18n';
 import {
   emitGlobalError,
@@ -129,7 +131,16 @@ export function ErrorToastProvider({ children }: { children: React.ReactNode }) 
   return (
     <ErrorToastContext.Provider value={contextValue}>
       {children}
-      <View pointerEvents="box-none" style={[styles.host, { top: insets.top + 12 }] as StyleProp<ViewStyle>}>
+      <View
+        {...(Platform.OS === 'web' ? {} : { pointerEvents: 'box-none' as const })}
+        style={[
+          styles.host,
+          { top: insets.top + 12 },
+          Platform.OS === 'web'
+            ? ({ pointerEvents: 'box-none' } as ViewStyle)
+            : null,
+        ] as StyleProp<ViewStyle>}
+      >
         {toasts.map((toast) => (
           <ToastBubble
             key={toast.id}
@@ -202,11 +213,13 @@ function createStyles(palette: Palette) {
     toast: {
       borderRadius: 16,
       backgroundColor: palette.destructive,
-      shadowColor: '#000',
-      shadowOpacity: 0.25,
-      shadowRadius: 12,
-      shadowOffset: { width: 0, height: 6 },
-      elevation: 8,
+      ...platformShadow({
+        color: '#000',
+        opacity: 0.25,
+        radius: 12,
+        offset: { width: 0, height: 6 },
+        elevation: Platform.OS === 'android' ? 8 : undefined,
+      }),
     },
     toastPressable: {
       paddingHorizontal: 16,

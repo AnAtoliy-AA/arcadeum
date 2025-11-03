@@ -9,6 +9,7 @@ import { useTranslation } from '@/lib/i18n';
 import { useAppName } from '@/hooks/useAppName';
 import { gamesCatalog, type GameCatalogueEntry } from '@/pages/GamesScreen/catalog';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { platformShadow } from '@/lib/platformShadow';
 
 const BASE_TOP_PADDING = 24;
 
@@ -154,11 +155,13 @@ function createStyles(palette: Palette) {
       backgroundColor: cardBackground,
       borderWidth: StyleSheet.hairlineWidth,
       borderColor,
-      shadowColor: surfaceShadow,
-      shadowOpacity: isLight ? 1 : 0.6,
-      shadowRadius: 8,
-      shadowOffset: { width: 0, height: 2 },
-      elevation: 1,
+      ...platformShadow({
+        color: surfaceShadow,
+        opacity: isLight ? 1 : 0.6,
+        radius: 8,
+        offset: { width: 0, height: 2 },
+        elevation: 1,
+      }),
     },
     headerButtonText: {
       color: palette.tint,
@@ -178,11 +181,13 @@ function createStyles(palette: Palette) {
       gap: 12,
       borderWidth: StyleSheet.hairlineWidth,
       borderColor,
-      shadowColor: surfaceShadow,
-      shadowOpacity: isLight ? 1 : 0.6,
-      shadowRadius: 12,
-      shadowOffset: { width: 0, height: 4 },
-      elevation: 2,
+      ...platformShadow({
+        color: surfaceShadow,
+        opacity: isLight ? 1 : 0.6,
+        radius: 12,
+        offset: { width: 0, height: 4 },
+        elevation: 2,
+      }),
     },
     cardHeader: {
       flexDirection: 'row',

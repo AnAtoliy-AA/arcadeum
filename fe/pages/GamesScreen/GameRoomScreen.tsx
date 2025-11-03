@@ -18,6 +18,7 @@ import { socket } from '@/hooks/useSocket';
 import { useSessionTokens } from '@/stores/sessionTokens';
 import { showGlobalError } from '@/components/ui/ErrorToastProvider';
 import { findApiMessageDescriptor, inferTranslationKeyFromMessageKey } from '@/lib/apiMessageCatalog';
+import { platformShadow } from '@/lib/platformShadow';
 import {
   deleteGameRoom,
   leaveGameRoom,
@@ -1052,11 +1053,13 @@ function createStyles(palette: Palette) {
       borderWidth: StyleSheet.hairlineWidth,
       borderColor,
       gap: 16,
-      shadowColor: surfaceShadow,
-      shadowOpacity: isLight ? 1 : 0.6,
-      shadowRadius: 12,
-      shadowOffset: { width: 0, height: 4 },
-      elevation: 2,
+      ...platformShadow({
+        color: surfaceShadow,
+        opacity: isLight ? 1 : 0.6,
+        radius: 12,
+        offset: { width: 0, height: 4 },
+        elevation: 2,
+      }),
     },
     headerRow: {
       flexDirection: 'row',
@@ -1146,11 +1149,13 @@ function createStyles(palette: Palette) {
       borderWidth: StyleSheet.hairlineWidth,
       borderColor,
       gap: 14,
-      shadowColor: surfaceShadow,
-      shadowRadius: 10,
-      shadowOpacity: isLight ? 1 : 0.6,
-      shadowOffset: { width: 0, height: 4 },
-      elevation: 1,
+      ...platformShadow({
+        color: surfaceShadow,
+        radius: 10,
+        opacity: isLight ? 1 : 0.6,
+        offset: { width: 0, height: 4 },
+        elevation: 1,
+      }),
     },
     bodyHeader: {
       flexDirection: 'row',
@@ -1198,11 +1203,13 @@ function createStyles(palette: Palette) {
       backgroundColor: palette.background,
       borderWidth: StyleSheet.hairlineWidth,
       borderColor,
-      shadowColor: surfaceShadow,
-      shadowOpacity: isLight ? 0.85 : 0.75,
-      shadowRadius: 12,
-      shadowOffset: { width: 0, height: 6 },
-      elevation: 3,
+      ...platformShadow({
+        color: surfaceShadow,
+        opacity: isLight ? 0.85 : 0.75,
+        radius: 12,
+        offset: { width: 0, height: 6 },
+        elevation: 3,
+      }),
     },
     tableOnlyCloseIcon: {
       color: palette.text,

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View, Platform, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePathname, useRouter } from 'expo-router';
 
@@ -7,6 +7,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useTranslation } from '@/lib/i18n';
+import { platformShadow } from '@/lib/platformShadow';
 
 const HIDDEN_ROUTE_PREFIXES = ['/auth', '/settings'];
 
@@ -36,7 +37,15 @@ export function SettingsLauncher() {
   const topOffset = Math.max(insets.top, 10) + 8;
 
   return (
-    <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
+    <View
+      {...(Platform.OS === 'web' ? {} : { pointerEvents: 'box-none' as const })}
+      style={[
+        styles.container,
+        Platform.OS === 'web'
+          ? ({ pointerEvents: 'box-none' } as ViewStyle)
+          : null,
+      ]}
+    >
       <Pressable
         accessibilityLabel={t('navigation.settingsTitle')}
         accessibilityHint={t('navigation.openSettingsHint')}
@@ -60,16 +69,21 @@ export function SettingsLauncher() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    ...StyleSheet.absoluteFillObject,
+  },
   button: {
     position: 'absolute',
     paddingVertical: 10,
     paddingHorizontal: 12,
     borderRadius: 18,
     borderWidth: StyleSheet.hairlineWidth,
-    shadowColor: 'rgba(15, 23, 42, 0.2)',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 2,
+    ...platformShadow({
+      color: 'rgba(15, 23, 42, 0.2)',
+      opacity: 0.2,
+      radius: 6,
+      offset: { width: 0, height: 2 },
+      elevation: 2,
+    }),
   },
 });

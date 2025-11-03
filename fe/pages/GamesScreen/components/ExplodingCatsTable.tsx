@@ -4,11 +4,14 @@ import {
   Animated,
   Easing,
   Modal,
+  Platform,
   ScrollView,
   StyleSheet,
   TextInput,
   TouchableOpacity,
   View,
+  type TextStyle,
+  type ViewStyle,
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -22,6 +25,7 @@ import type {
   GameSessionSummary,
 } from '../api/gamesApi';
 import { getRoomStatusLabel } from '../roomUtils';
+import { platformShadow } from '@/lib/platformShadow';
 
 const TABLE_DIAMETER = 230;
 const PLAYER_SEAT_SIZE = 88;
@@ -850,7 +854,7 @@ export function ExplodingCatsTable({
                           <ActivityIndicator size="small" color={styles.handCardBusySpinner.color as string} />
                         ) : (
                           <>
-                            <View style={styles.handCardArt} accessible={false} pointerEvents="none">
+                            <View style={styles.handCardArt} accessible={false}>
                               <ExplodingCatsArtwork
                                 card={artConfig.key}
                                 variant={artVariant}
@@ -860,7 +864,7 @@ export function ExplodingCatsTable({
                                 accessible={false}
                                 focusable={false}
                               />
-                              <View style={styles.handCardOverlay} pointerEvents="none">
+                              <View style={styles.handCardOverlay}>
                                 <ThemedText
                                   style={styles.handCardOverlayTitle}
                                   numberOfLines={2}
@@ -873,7 +877,7 @@ export function ExplodingCatsTable({
                                 </ThemedText>
                               </View>
                             </View>
-                            <View style={styles.handCardMeta} pointerEvents="none" accessible={false}>
+                            <View style={styles.handCardMeta} accessible={false}>
                               {actionLabel ? (
                                 <ThemedText style={styles.handCardHint} numberOfLines={1}>
                                   {actionLabel}
@@ -1281,27 +1285,88 @@ function createStyles(palette: Palette) {
     180,
   );
   const overlayShadow = isLight ? 'rgba(15, 23, 42, 0.45)' : 'rgba(15, 23, 42, 0.65)';
+  const cardShadow = platformShadow({
+    color: shadow,
+    opacity: isLight ? 1 : 0.6,
+    radius: 12,
+  });
+  const tableRingShadow = platformShadow({
+    color: shadow,
+    opacity: isLight ? 0.25 : 0.45,
+    radius: 18,
+    offset: { width: 0, height: 6 },
+    elevation: 4,
+  });
+  const tableStatShadow = platformShadow({
+    color: shadow,
+    opacity: isLight ? 0.25 : 0.45,
+    radius: 12,
+    offset: { width: 0, height: 4 },
+    elevation: 3,
+  });
+  const handCardShadow = platformShadow({
+    color: shadow,
+    opacity: isLight ? 0.24 : 0.42,
+    radius: 10,
+    offset: { width: 0, height: 4 },
+    elevation: 3,
+  });
+  const handCardPlayableShadow = platformShadow({
+    color: shadow,
+    opacity: isLight ? 0.35 : 0.6,
+    radius: 10,
+    offset: { width: 0, height: 4 },
+    elevation: 3,
+  });
+  const handCardOverlayShadow = platformShadow({
+    color: overlayShadow,
+    opacity: isLight ? 0.9 : 0.8,
+    radius: 12,
+    offset: { width: 0, height: 8 },
+  });
+  const comboModalShadow = platformShadow({
+    color: shadow,
+    opacity: isLight ? 0.4 : 0.8,
+    radius: 10,
+    offset: { width: 0, height: 6 },
+    elevation: 3,
+  });
+  const handCardTitleShadow: TextStyle = Platform.OS === 'web'
+    ? {}
+    : {
+        textShadowColor: 'rgba(15, 23, 42, 0.55)',
+        textShadowOffset: { width: 0, height: 4 },
+        textShadowRadius: 8,
+      };
+  const handCardDescriptionShadow: TextStyle = Platform.OS === 'web'
+    ? {}
+    : {
+        textShadowColor: 'rgba(15, 23, 42, 0.45)',
+        textShadowOffset: { width: 0, height: 3 },
+        textShadowRadius: 6,
+      };
 
   return StyleSheet.create({
     card: {
+      ...cardShadow,
       padding: 20,
       borderRadius: 20,
       backgroundColor: surface,
       borderWidth: StyleSheet.hairlineWidth,
       borderColor: border,
       gap: 16,
-      shadowColor: shadow,
-      shadowOpacity: isLight ? 1 : 0.6,
-      shadowRadius: 12,
     },
     cardFullScreen: {
+      ...platformShadow({
+        color: shadow,
+        opacity: 0,
+        radius: 0,
+        offset: { width: 0, height: 0 },
+        elevation: 0,
+      }),
       flex: 1,
       borderRadius: 0,
       borderWidth: 0,
-      shadowOpacity: 0,
-      shadowRadius: 0,
-      shadowOffset: { width: 0, height: 0 },
-      elevation: 0,
       paddingHorizontal: 24,
       paddingVertical: 24,
       backgroundColor: surface,
@@ -1363,6 +1428,7 @@ function createStyles(palette: Palette) {
       paddingTop: PLAYER_SEAT_SIZE * 0.9,
     },
     tableRing: {
+      ...tableRingShadow,
       width: TABLE_DIAMETER,
       height: TABLE_DIAMETER,
       borderRadius: TABLE_DIAMETER / 2,
@@ -1373,11 +1439,6 @@ function createStyles(palette: Palette) {
       justifyContent: 'center',
       position: 'relative',
       padding: 16,
-      shadowColor: shadow,
-      shadowOpacity: isLight ? 0.25 : 0.45,
-      shadowRadius: 18,
-      shadowOffset: { width: 0, height: 6 },
-      elevation: 4,
     },
     tableCenter: {
       width: innerDiameter,
@@ -1397,6 +1458,7 @@ function createStyles(palette: Palette) {
       marginTop: 16,
     },
     tableStatCard: {
+      ...tableStatShadow,
       flexDirection: 'row',
       alignItems: 'center',
       gap: 10,
@@ -1406,11 +1468,6 @@ function createStyles(palette: Palette) {
       backgroundColor: raised,
       borderWidth: StyleSheet.hairlineWidth,
       borderColor: border,
-      shadowColor: shadow,
-      shadowOpacity: isLight ? 0.25 : 0.45,
-      shadowRadius: 12,
-      shadowOffset: { width: 0, height: 4 },
-      elevation: 3,
       minWidth: 132,
     },
     tableStatIcon: {
@@ -1595,6 +1652,7 @@ function createStyles(palette: Palette) {
       paddingHorizontal: 4,
     },
     handCard: {
+      ...handCardShadow,
       width: 148,
       height: 228,
       borderRadius: 20,
@@ -1604,11 +1662,6 @@ function createStyles(palette: Palette) {
       paddingVertical: 12,
       gap: 10,
       backgroundColor: surface,
-      shadowColor: shadow,
-      shadowOpacity: isLight ? 0.24 : 0.42,
-      shadowRadius: 10,
-      shadowOffset: { width: 0, height: 4 },
-      elevation: 3,
       flexShrink: 0,
     },
     handCardArt: {
@@ -1618,8 +1671,10 @@ function createStyles(palette: Palette) {
       borderRadius: 14,
       overflow: 'hidden',
       backgroundColor: raised,
+      pointerEvents: 'none' as ViewStyle['pointerEvents'],
     },
     handCardOverlay: {
+      ...handCardOverlayShadow,
       position: 'absolute',
       left: 0,
       right: 0,
@@ -1627,10 +1682,7 @@ function createStyles(palette: Palette) {
       paddingHorizontal: 12,
       paddingVertical: 12,
       gap: 6,
-      shadowColor: overlayShadow,
-      shadowOpacity: isLight ? 0.9 : 0.8,
-      shadowRadius: 12,
-      shadowOffset: { width: 0, height: 8 },
+      pointerEvents: 'none' as ViewStyle['pointerEvents'],
     },
     handCardOverlayTitle: {
       color: '#FDE68A',
@@ -1638,29 +1690,25 @@ function createStyles(palette: Palette) {
       fontSize: 16,
       lineHeight: 20,
       textAlign: 'center',
-      textTransform: 'uppercase',
       letterSpacing: 0.8,
-      textShadowColor: 'rgba(15, 23, 42, 0.55)',
-      textShadowOffset: { width: 0, height: 4 },
-      textShadowRadius: 8,
+      ...handCardTitleShadow,
     },
     handCardOverlayDescription: {
       color: '#F8FAFC',
       fontSize: 12,
       lineHeight: 18,
       textAlign: 'center',
-      textShadowColor: 'rgba(15, 23, 42, 0.45)',
-      textShadowOffset: { width: 0, height: 3 },
-      textShadowRadius: 6,
+      ...handCardDescriptionShadow,
     },
     handCardMeta: {
       width: '100%',
       alignItems: 'center',
       gap: 4,
+      pointerEvents: 'none' as ViewStyle['pointerEvents'],
     },
     handCardPlayable: {
+      ...handCardPlayableShadow,
       borderColor: palette.tint,
-      shadowOpacity: isLight ? 0.35 : 0.6,
     },
     handCardDisabled: {
       opacity: 0.65,
@@ -1693,6 +1741,7 @@ function createStyles(palette: Palette) {
       padding: 24,
     },
     comboModalCard: {
+      ...comboModalShadow,
       width: '100%',
       maxWidth: 360,
       borderRadius: 18,
@@ -1701,11 +1750,6 @@ function createStyles(palette: Palette) {
       gap: 16,
       borderWidth: StyleSheet.hairlineWidth,
       borderColor: border,
-      shadowColor: shadow,
-      shadowOpacity: isLight ? 0.4 : 0.8,
-      shadowRadius: 10,
-      shadowOffset: { width: 0, height: 6 },
-      elevation: 3,
     },
     comboModalTitle: {
       fontSize: 18,

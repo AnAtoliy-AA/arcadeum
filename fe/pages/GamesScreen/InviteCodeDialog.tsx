@@ -14,6 +14,7 @@ import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTranslation } from '@/lib/i18n';
+import { platformShadow } from '@/lib/platformShadow';
 
 export interface InviteCodeDialogProps {
   visible: boolean;
@@ -150,11 +151,13 @@ function createStyles(palette: Palette) {
       backgroundColor: cardBackground,
       borderWidth: StyleSheet.hairlineWidth,
       borderColor,
-      shadowColor: isLight ? 'rgba(15, 23, 42, 0.15)' : 'rgba(0, 0, 0, 0.6)',
-      shadowOffset: { width: 0, height: 12 },
-      shadowOpacity: 1,
-      shadowRadius: 24,
-      elevation: 10,
+      ...platformShadow({
+        color: isLight ? 'rgba(15, 23, 42, 0.15)' : 'rgba(0, 0, 0, 0.6)',
+        opacity: 1,
+        radius: 24,
+        offset: { width: 0, height: 12 },
+        elevation: 10,
+      }),
     },
     headerRow: {
       flexDirection: 'row',

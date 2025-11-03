@@ -7,7 +7,10 @@
     "format": "npm run format:be && npm run format:fe",
     "format:be": "npm --prefix be run format",
     "format:fe": "npm --prefix fe run format",
-    "dev": "concurrently \"npm --prefix be run dev\" \"npm --prefix fe run dev\""
+    "dev": "concurrently \"npm --prefix be run dev\" \"npm --prefix fe run dev\"",
+    "test": "npm run test:be && npm run test:fe",
+    "test:be": "npm --prefix be run test",
+    "test:fe": "npm --prefix fe run test --if-present"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",

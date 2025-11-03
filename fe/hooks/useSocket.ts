@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { io } from 'socket.io-client';
+import { io, type Socket } from 'socket.io-client';
 import Constants from 'expo-constants';
 import { platform } from '@/constants/platform';
 
@@ -29,13 +29,69 @@ function resolveSocketUrl(): string {
 
 const SOCKET_BASE_URL = resolveSocketUrl();
 
-export const socket = io(`${SOCKET_BASE_URL}/games`, {
-  transports: ['websocket'],
-});
+type AuthenticatedSocket = Socket & {
+  auth: Record<string, unknown>;
+};
 
-export const chatSocket = io(SOCKET_BASE_URL, {
-  transports: ['websocket'],
-});
+const SOCKET_OPTIONS = {
+  transports: ['websocket'] as string[],
+  autoConnect: false,
+};
+
+const gamesSocket = io(`${SOCKET_BASE_URL}/games`, SOCKET_OPTIONS) as AuthenticatedSocket;
+const chatsSocket = io(SOCKET_BASE_URL, SOCKET_OPTIONS) as AuthenticatedSocket;
+
+let currentAuthToken: string | null = null;
+
+function applyAuth(socketInstance: AuthenticatedSocket, token: string): void {
+  socketInstance.auth = { token };
+}
+
+export function connectSockets(token: string | null | undefined): void {
+  if (!token) {
+    disconnectSockets();
+    return;
+  }
+
+  if (currentAuthToken !== token) {
+    currentAuthToken = token;
+
+    if (gamesSocket.connected) {
+      gamesSocket.disconnect();
+    }
+    if (chatsSocket.connected) {
+      chatsSocket.disconnect();
+    }
+  }
+
+  applyAuth(gamesSocket, token);
+  applyAuth(chatsSocket, token);
+
+  if (!gamesSocket.connected) {
+    gamesSocket.connect();
+  }
+  if (!chatsSocket.connected) {
+    chatsSocket.connect();
+  }
+}
+
+export function disconnectSockets(): void {
+  currentAuthToken = null;
+
+  if (gamesSocket.connected) {
+    gamesSocket.disconnect();
+  }
+  if (chatsSocket.connected) {
+    chatsSocket.disconnect();
+  }
+
+  gamesSocket.auth = {};
+  chatsSocket.auth = {};
+}
+
+export const gameSocket: Socket = gamesSocket;
+
+export const chatSocket: Socket = chatsSocket;
 
 interface SocketEventHandler {
   (...args: any[]): void;
@@ -43,10 +99,10 @@ interface SocketEventHandler {
 
 export function useSocket(event: string, handler: SocketEventHandler): void {
   useEffect(() => {
-    socket.on(event, handler);
+    gameSocket.on(event, handler);
 
     return () => {
-      socket.off(event, handler);
+      gameSocket.off(event, handler);
     };
   }, [event, handler]);
 }

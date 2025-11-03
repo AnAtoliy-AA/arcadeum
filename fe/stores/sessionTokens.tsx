@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { SecureStoreShim } from '@/lib/secureStore';
 import { refreshSession } from '@/pages/AuthScreen/api/authApi';
+import { connectSockets, disconnectSockets } from '@/hooks/useSocket';
 
 type SessionProviderId = 'oauth' | 'local';
 
@@ -139,6 +140,7 @@ export function SessionTokensProvider({ children }: { children: React.ReactNode 
   const clearTokens = useCallback(async () => {
     setTokensState({ ...defaultSnapshot });
     setHydrated(true);
+    disconnectSockets();
     try {
       await SecureStoreShim.deleteItemAsync(STORAGE_KEY);
     } catch {
@@ -224,6 +226,18 @@ export function SessionTokensProvider({ children }: { children: React.ReactNode 
     () => ({ tokens, hydrated, setTokens, clearTokens, reload, refreshTokens }),
     [tokens, hydrated, setTokens, clearTokens, reload, refreshTokens],
   );
+
+  useEffect(() => {
+    if (!hydrated) {
+      return;
+    }
+
+    if (tokens.accessToken) {
+      connectSockets(tokens.accessToken);
+    } else {
+      disconnectSockets();
+    }
+  }, [hydrated, tokens.accessToken]);
 
   return <SessionTokensContext.Provider value={value}>{children}</SessionTokensContext.Provider>;
 }

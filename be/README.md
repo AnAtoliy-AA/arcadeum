@@ -85,23 +85,8 @@ Create a `.env` in `be/` to configure the server. Common variables:
 ```bash
 # MongoDB connection
 MONGODB_URI=mongodb://localhost:27017/aicoapp
-
-# Sentry error reporting (optional)
-SENTRY_DSN=https://<publicKey>@oXXXXXX.ingest.sentry.io/<projectId>
 NODE_ENV=development
 ```
-
-### Sentry (backend)
-
-- Runtime DSN: set `SENTRY_DSN` in `be/.env`.
-- SDK: `@sentry/nestjs` is initialized via `SentryModule.forRoot()` and early in `src/instrument.ts`.
-- CI uploads (source maps, releases) should use env vars:
-  - `SENTRY_AUTH_TOKEN` (never commit to repo)
-  - `SENTRY_ORG`
-  - `SENTRY_PROJECT` (e.g., `aicoapp-be`)
-  - optional `SENTRY_URL` for self-hosted
-
-Security: never place tokens in client/mobile env files. If any token was committed, rotate it immediately in Sentry.
 
 ## Run tests
 

@@ -75,8 +75,6 @@ const config: ExpoConfig = {
     APP_NAME: appName,
     APP_SLUG: appSlug,
     APP_SCHEME: appScheme,
-    // Sentry
-    SENTRY_DSN: process.env.EXPO_PUBLIC_SENTRY_DSN ?? process.env.SENTRY_DSN,
     AUTH_ISSUER: process.env.AUTH_ISSUER,
     AUTH_ANDROID_CLIENT_ID: process.env.AUTH_ANDROID_CLIENT_ID,
     AUTH_IOS_CLIENT_ID: process.env.AUTH_IOS_CLIENT_ID,

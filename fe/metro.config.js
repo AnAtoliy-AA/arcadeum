@@ -1,9 +1,6 @@
-// Conditional Metro configuration: default Expo config in development for clearer source maps,
-// Sentry-enhanced config only in production (where we upload source maps / artifacts).
+// Metro configuration tweaks: ensure SVG support for all builds and
+// keep dev defaults aligned with the Expo workflow.
 const { getDefaultConfig } = require('expo/metro-config');
-const { getSentryExpoConfig } = require('@sentry/react-native/metro');
-
-const isProd = process.env.NODE_ENV === 'production';
 
 function withSvgSupport(config) {
 	const transformer = config.transformer ?? {};
@@ -26,10 +23,9 @@ function withSvgSupport(config) {
 	return config;
 }
 
-if (isProd) {
-	module.exports = withSvgSupport(getSentryExpoConfig(__dirname));
-} else {
-	const config = withSvgSupport(getDefaultConfig(__dirname));
+const config = withSvgSupport(getDefaultConfig(__dirname));
+
+if (process.env.NODE_ENV !== 'production') {
 	// Improve web debugging: keep module names and disable inline requires for clearer stack & sources
 	config.transformer = {
 		...config.transformer,
@@ -44,8 +40,7 @@ if (isProd) {
 			},
 		}),
 	};
-    
-	// No extra server overrides needed; rely on Expo defaults for dev.
+
 	config.server = {
 		...config.server,
 		enhanceMiddleware: (mw) => (req, res, next) => {
@@ -53,6 +48,6 @@ if (isProd) {
 			return mw(req, res, next);
 		},
 	};
-
-	module.exports = config;
 }
+
+module.exports = config;

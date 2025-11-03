@@ -9,15 +9,13 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import "../sentry";
-import * as Sentry from "@sentry/react-native";
 import { SessionTokensProvider } from "@/stores/sessionTokens";
 import { SettingsProvider } from "@/stores/settings";
 import { SettingsLauncher } from "@/components/ui/SettingsLauncher";
 import { ErrorToastProvider } from "@/components/ui/ErrorToastProvider";
 import { useTranslation } from "@/lib/i18n";
 
-export default Sentry.wrap(function RootLayout() {
+export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -36,7 +34,7 @@ export default Sentry.wrap(function RootLayout() {
       </SettingsProvider>
     </SessionTokensProvider>
   );
-});
+}
 
 function NavigationRoot() {
   const colorScheme = useColorScheme();

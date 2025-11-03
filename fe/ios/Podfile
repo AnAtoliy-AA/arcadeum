@@ -60,5 +60,26 @@ target 'mobile' do
         end
       end
     end
+
+    hermes_phase_name = '[CP-User] [Hermes] Replace Hermes for the right configuration, if needed'
+    hermes_stamp_path = '${DERIVED_FILE_DIR}/hermes-engine-configuration.stamp'
+
+    installer.pods_project.targets.each do |target|
+      target.build_phases.each do |phase|
+        next unless phase.respond_to?(:name) && phase.name == hermes_phase_name
+
+        existing_inputs = phase.input_paths || []
+        unless existing_inputs.include?('${PODS_ROOT}/Local Podspecs/hermes-engine.podspec.json')
+          phase.input_paths = existing_inputs + ['${PODS_ROOT}/Local Podspecs/hermes-engine.podspec.json']
+        end
+
+        existing_outputs = phase.output_paths || []
+        phase.output_paths = existing_outputs.include?(hermes_stamp_path) ? existing_outputs : existing_outputs + [hermes_stamp_path]
+
+        unless phase.shell_script.include?(hermes_stamp_path)
+          phase.shell_script = "#{phase.shell_script}\n\ntouch \"#{hermes_stamp_path}\"\n"
+        end
+      end
+    end
   end
 end

@@ -66,9 +66,6 @@ async function main() {
   // Users can still force dev-client by omitting web or editing this script.
   const forceNoDevClient = targets.web;
 
-  if (process.env.SENTRY_DEBUG === undefined) {
-    process.env.SENTRY_DEBUG = 'true';
-  }
   console.log(`[dev] Launching targets: web=${targets.web} android=${targets.android} ios=${targets.ios}`);
   console.log('[dev] NODE_ENV =', process.env.NODE_ENV);
   console.log('[dev] Args =', process.argv.slice(2).join(' ') || '(none)');

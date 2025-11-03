@@ -6,9 +6,11 @@
     "prepare": "husky",
     "format": "npm run format:be && npm run format:fe",
     "format:be": "npm --prefix be run format",
-    "format:fe": "npm --prefix fe run format"
+    "format:fe": "npm --prefix fe run format",
+    "dev": "concurrently \"npm --prefix be run dev\" \"npm --prefix fe run dev\""
   },
   "devDependencies": {
+    "concurrently": "^9.1.2",
     "husky": "^9.1.4"
   }
 }

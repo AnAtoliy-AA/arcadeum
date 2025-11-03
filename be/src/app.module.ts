@@ -7,8 +7,10 @@ import { GamesModule } from './games/games.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { SentryModule, SentryGlobalFilter } from '@sentry/nestjs/setup';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { PaymentsModule } from './payments/payments.module';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { MessageCodeInterceptor } from './common/interceptors/message-code.interceptor';
 
 @Module({
   imports: [
@@ -26,6 +28,14 @@ import { PaymentsModule } from './payments/payments.module';
     {
       provide: APP_FILTER,
       useClass: SentryGlobalFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: MessageCodeInterceptor,
     },
   ],
 })

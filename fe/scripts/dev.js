@@ -56,7 +56,7 @@ function runExpoStart(
   },
 ) {
   const bin = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-  const args = ['--yes', 'expo', 'start', '--host', 'localhost'];
+  const args = ['--yes', 'expo', 'start', '--host', 'localhost', '--clear'];
   const usingDevClient = !noDevClient && !forceNoDevClient;
   if (usingDevClient) args.push('--dev-client');
   if (web) args.push('--web');

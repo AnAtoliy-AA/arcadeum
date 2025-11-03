@@ -1,6 +1,5 @@
 import type { SessionTokensSnapshot } from '@/stores/sessionTokens';
-import type { TranslationKey } from '@/lib/i18n/messages';
-import { findApiMessageDescriptor } from '@/lib/apiMessageCatalog';
+import { findApiMessageDescriptor, inferTranslationKeyFromMessageKey } from '@/lib/apiMessageCatalog';
 import { emitGlobalError, type GlobalErrorPayload } from '@/lib/globalErrorHandler';
 
 export interface FetchWithRefreshOptions {
@@ -106,12 +105,16 @@ async function extractErrorPayload(response: Response): Promise<GlobalErrorPaylo
     });
 
     const fallbackDetail = extractFallbackMessage(parsed?.details);
+    const replacements = extractReplacements(parsed?.details);
+    const duration = extractDuration(parsed?.details);
 
     return {
       translationKey:
         descriptor?.translationKey ?? inferTranslationKeyFromMessageKey(messageKey),
       fallbackMessage: fallbackDetail ?? descriptor?.fallbackMessage ?? message,
       rawMessage: shouldExposeRawMessage(message) ? message : undefined,
+      replacements,
+      ...(duration ? { duration } : {}),
     };
   } catch {
     return {};
@@ -165,20 +168,67 @@ function normalizeToString(value: unknown): string | undefined {
   return undefined;
 }
 
-function extractFallbackMessage(details: unknown): string | undefined {
-  if (!details || typeof details !== 'object') {
+function toPlainRecord(value: unknown): Record<string, unknown> | undefined {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
     return undefined;
   }
 
-  const record = details as Record<string, unknown>;
+  return value as Record<string, unknown>;
+}
+
+function extractFallbackMessage(details: unknown): string | undefined {
+  const record = toPlainRecord(details);
+  if (!record) {
+    return undefined;
+  }
+
   return normalizeToString(record.fallbackMessage);
 }
 
-function inferTranslationKeyFromMessageKey(messageKey?: string): TranslationKey | undefined {
-  if (!messageKey || !/^[a-z]+(\.[a-zA-Z0-9]+)+$/.test(messageKey)) {
+function extractReplacements(details: unknown): Record<string, string | number> | undefined {
+  const record = toPlainRecord(details);
+  if (!record) {
     return undefined;
   }
-  return `api.${messageKey}` as TranslationKey;
+
+  const raw = record.replacements;
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    return undefined;
+  }
+
+  const normalized: Record<string, string | number> = {};
+  for (const [key, value] of Object.entries(raw)) {
+    if (typeof value === 'string' || typeof value === 'number') {
+      normalized[key] = value;
+    }
+  }
+
+  return Object.keys(normalized).length > 0 ? normalized : undefined;
+}
+
+function extractDuration(details: unknown): number | undefined {
+  const record = toPlainRecord(details);
+  if (!record) {
+    return undefined;
+  }
+
+  const candidate = record.duration
+    ?? record.toastDuration
+    ?? record.toastDurationMs
+    ?? record.durationMs;
+
+  if (typeof candidate === 'number' && Number.isFinite(candidate) && candidate > 0) {
+    return candidate;
+  }
+
+  if (typeof candidate === 'string') {
+    const parsed = Number.parseInt(candidate, 10);
+    if (Number.isFinite(parsed) && parsed > 0) {
+      return parsed;
+    }
+  }
+
+  return undefined;
 }
 
 function shouldExposeRawMessage(message?: string): boolean {

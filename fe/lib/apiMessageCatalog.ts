@@ -571,11 +571,36 @@ const DESCRIPTORS: ApiMessageDescriptor[] = [
 const CODE_LOOKUP: Record<number, ApiMessageDescriptor> = {};
 const ALIAS_LOOKUP: Record<string, ApiMessageDescriptor> = {};
 
+function registerAlias(alias: string, descriptor: ApiMessageDescriptor) {
+  const trimmed = alias.trim();
+  if (!trimmed) {
+    return;
+  }
+
+  ALIAS_LOOKUP[trimmed] = descriptor;
+  ALIAS_LOOKUP[trimmed.toLowerCase()] = descriptor;
+}
+
 for (const descriptor of DESCRIPTORS) {
   CODE_LOOKUP[descriptor.code] = descriptor;
   descriptor.aliases?.forEach((alias) => {
-    ALIAS_LOOKUP[alias] = descriptor;
+    registerAlias(alias, descriptor);
   });
+
+  registerAlias(String(descriptor.code), descriptor);
+}
+
+function findByAlias(candidate: unknown): ApiMessageDescriptor | undefined {
+  if (typeof candidate !== 'string') {
+    return undefined;
+  }
+
+  const trimmed = candidate.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+
+  return ALIAS_LOOKUP[trimmed] ?? ALIAS_LOOKUP[trimmed.toLowerCase()];
 }
 
 export function findApiMessageDescriptor(params: {
@@ -590,18 +615,14 @@ export function findApiMessageDescriptor(params: {
     }
   }
 
-  if (typeof params.messageKey === 'string') {
-    const found = ALIAS_LOOKUP[params.messageKey];
-    if (found) {
-      return found;
-    }
+  const byKey = findByAlias(params.messageKey);
+  if (byKey) {
+    return byKey;
   }
 
-  if (typeof params.message === 'string') {
-    const found = ALIAS_LOOKUP[params.message];
-    if (found) {
-      return found;
-    }
+  const byMessage = findByAlias(params.message);
+  if (byMessage) {
+    return byMessage;
   }
 
   return undefined;
@@ -612,4 +633,25 @@ export function getApiMessageDescriptorByCode(code?: number | null): ApiMessageD
     return undefined;
   }
   return CODE_LOOKUP[code];
+}
+
+export function inferTranslationKeyFromMessageKey(messageKey?: string): TranslationKey | undefined {
+  if (typeof messageKey !== 'string') {
+    return undefined;
+  }
+
+  const trimmed = messageKey.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+
+  if (!/^[a-z]+(\.[a-zA-Z0-9]+)+$/.test(trimmed.replace(/^api\./, ''))) {
+    return undefined;
+  }
+
+  if (trimmed.startsWith('api.')) {
+    return trimmed as TranslationKey;
+  }
+
+  return `api.${trimmed}` as TranslationKey;
 }

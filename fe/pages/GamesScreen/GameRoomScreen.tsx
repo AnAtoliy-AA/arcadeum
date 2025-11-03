@@ -16,6 +16,8 @@ import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { socket } from '@/hooks/useSocket';
 import { useSessionTokens } from '@/stores/sessionTokens';
+import { showGlobalError } from '@/components/ui/ErrorToastProvider';
+import { findApiMessageDescriptor, inferTranslationKeyFromMessageKey } from '@/lib/apiMessageCatalog';
 import {
   deleteGameRoom,
   leaveGameRoom,
@@ -42,6 +44,27 @@ import { platform } from '@/constants/platform';
 function resolveParam(value: string | string[] | undefined): string | undefined {
   if (!value) return undefined;
   return Array.isArray(value) ? value[0] : value;
+}
+
+function normalizeWsMessageCode(raw: unknown): number | undefined {
+  if (typeof raw === 'number' && Number.isFinite(raw)) {
+    return raw;
+  }
+
+  if (typeof raw === 'string') {
+    const parsed = Number.parseInt(raw, 10);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  }
+
+  return undefined;
+}
+
+function shouldExposeRawWsMessage(message?: string): boolean {
+  if (!message) {
+    return false;
+  }
+
+  return /\s/.test(message);
 }
 
 export default function GameRoomScreen() {
@@ -224,11 +247,40 @@ export default function GameRoomScreen() {
       setActionBusy(null);
     };
 
-    const handleException = (payload: { message?: string }) => {
-      const message = payload?.message ?? t('games.alerts.genericError');
+    const handleException = (payload: unknown) => {
       setActionBusy(null);
       setStartBusy(false);
-      Alert.alert(t('games.alerts.actionFailedTitle'), message);
+
+      const detail =
+        payload && typeof payload === 'object'
+          ? (payload as Record<string, unknown>)
+          : undefined;
+
+      const message = typeof detail?.message === 'string'
+        ? detail.message
+        : typeof payload === 'string'
+          ? payload
+          : undefined;
+
+      const messageKey = typeof detail?.messageKey === 'string' ? detail.messageKey : undefined;
+      const messageCode =
+        normalizeWsMessageCode(detail?.messageCode)
+        ?? normalizeWsMessageCode(detail?.code);
+
+      const descriptor = findApiMessageDescriptor({
+        code: messageCode,
+        messageKey,
+        message,
+      });
+
+      const fallback = descriptor?.fallbackMessage ?? message ?? t('games.alerts.genericError');
+
+      showGlobalError({
+        translationKey:
+          descriptor?.translationKey ?? inferTranslationKeyFromMessageKey(messageKey),
+        fallbackMessage: fallback,
+        rawMessage: shouldExposeRawWsMessage(message) ? message : undefined,
+      });
     };
 
     socket.on('connect', handleConnect);

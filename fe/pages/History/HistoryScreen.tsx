@@ -11,7 +11,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -41,7 +44,10 @@ type HistoryHookParams = {
 
 type ParticipantsSelection = Record<string, boolean>;
 
-const STATUS_TRANSLATION_KEYS: Record<HistorySummary['status'], TranslationKey> = {
+const STATUS_TRANSLATION_KEYS: Record<
+  HistorySummary['status'],
+  TranslationKey
+> = {
   lobby: 'history.status.lobby',
   in_progress: 'history.status.inProgress',
   completed: 'history.status.completed',
@@ -49,7 +55,9 @@ const STATUS_TRANSLATION_KEYS: Record<HistorySummary['status'], TranslationKey> 
   active: 'history.status.active',
 };
 
-const gameNameLookup = new Map(gamesCatalog.map((game) => [game.id, game.name]));
+const gameNameLookup = new Map(
+  gamesCatalog.map((game) => [game.id, game.name]),
+);
 
 function resolveGameName(gameId: string): string | undefined {
   const trimmed = gameId.trim();
@@ -160,27 +168,23 @@ export default function HistoryScreen() {
     blockWhenUnauthenticated: false,
   });
 
-  const {
-    loading,
-    refreshing,
-    entries,
-    error,
-    refresh,
-    reload,
-    fetchOptions,
-  } = useHistoryList({ accessToken, refreshTokens });
+  const { loading, refreshing, entries, error, refresh, reload, fetchOptions } =
+    useHistoryList({ accessToken, refreshTokens });
 
   const mutedTextColor = useThemeColor({}, 'icon') as string;
   const tintColor = useThemeColor({}, 'tint') as string;
   const buttonTextColor = useThemeColor({}, 'background') as string;
   const dangerColor = useThemeColor({}, 'error') as string;
 
-  const [selectedSummary, setSelectedSummary] = useState<HistorySummary | null>(null);
+  const [selectedSummary, setSelectedSummary] = useState<HistorySummary | null>(
+    null,
+  );
   const [detail, setDetail] = useState<HistoryDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState<string | null>(null);
   const [detailErrorNeedsRefresh, setDetailErrorNeedsRefresh] = useState(false);
-  const [participantSelection, setParticipantSelection] = useState<ParticipantsSelection>({});
+  const [participantSelection, setParticipantSelection] =
+    useState<ParticipantsSelection>({});
   const [rematchLoading, setRematchLoading] = useState(false);
   const [rematchError, setRematchError] = useState<string | null>(null);
   const [removeLoading, setRemoveLoading] = useState(false);
@@ -335,7 +339,11 @@ export default function HistoryScreen() {
     try {
       setRemoveLoading(true);
       setRemoveError(null);
-      await removeHistoryEntry(detail.summary.roomId, accessToken, fetchOptions);
+      await removeHistoryEntry(
+        detail.summary.roomId,
+        accessToken,
+        fetchOptions,
+      );
       handleCloseModal();
       await reload();
     } catch (err) {
@@ -345,14 +353,7 @@ export default function HistoryScreen() {
     } finally {
       setRemoveLoading(false);
     }
-  }, [
-    detail,
-    accessToken,
-    fetchOptions,
-    handleCloseModal,
-    reload,
-    t,
-  ]);
+  }, [detail, accessToken, fetchOptions, handleCloseModal, reload, t]);
 
   const handleRemoveRequest = useCallback(() => {
     if (!detail || removeLoading) {
@@ -393,7 +394,8 @@ export default function HistoryScreen() {
   const renderItem = useCallback(
     ({ item }: { item: HistorySummary }) => {
       const statusLabel = t(STATUS_TRANSLATION_KEYS[item.status]);
-      const displayName = resolveGameName(item.gameId) ?? t('history.unknownGame');
+      const displayName =
+        resolveGameName(item.gameId) ?? t('history.unknownGame');
       const others = item.participants
         .filter((participant) => participant.id !== currentUserId)
         .map((participant) =>
@@ -430,7 +432,9 @@ export default function HistoryScreen() {
           </ThemedText>
           <View style={styles.entryFooter}>
             <IconSymbol name="clock" size={14} color={mutedTextColor} />
-            <ThemedText style={styles.entryTimestamp}>{lastActivity}</ThemedText>
+            <ThemedText style={styles.entryTimestamp}>
+              {lastActivity}
+            </ThemedText>
           </View>
           <View style={styles.entryCTA}>
             <ThemedText style={styles.entryCTAtext}>
@@ -451,7 +455,9 @@ export default function HistoryScreen() {
       return (
         <View style={styles.emptyContainer}>
           <ActivityIndicator />
-          <ThemedText style={styles.placeholderText}>{t('common.loading')}</ThemedText>
+          <ThemedText style={styles.placeholderText}>
+            {t('common.loading')}
+          </ThemedText>
         </View>
       );
     }
@@ -460,7 +466,9 @@ export default function HistoryScreen() {
         <View style={styles.emptyContainer}>
           <ThemedText style={styles.errorText}>{error}</ThemedText>
           <TouchableOpacity style={styles.retryButton} onPress={reload}>
-            <ThemedText style={styles.retryText}>{t('common.retry')}</ThemedText>
+            <ThemedText style={styles.retryText}>
+              {t('common.retry')}
+            </ThemedText>
           </TouchableOpacity>
         </View>
       );
@@ -486,7 +494,12 @@ export default function HistoryScreen() {
   if (shouldBlock) {
     return (
       <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={[styles.loadingContainer, { paddingBottom: insetStyles.bottom }]}>
+        <ThemedView
+          style={[
+            styles.loadingContainer,
+            { paddingBottom: insetStyles.bottom },
+          ]}
+        >
           <ActivityIndicator size="large" />
         </ThemedView>
       </SafeAreaView>
@@ -495,7 +508,9 @@ export default function HistoryScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-  <ThemedView style={[styles.container, { paddingBottom: insetStyles.bottom }] }>
+      <ThemedView
+        style={[styles.container, { paddingBottom: insetStyles.bottom }]}
+      >
         <FlatList
           data={entries}
           keyExtractor={keyExtractor}
@@ -503,9 +518,14 @@ export default function HistoryScreen() {
           contentContainerStyle={styles.listContent}
           ListHeaderComponent={
             <View style={styles.listHeader}>
-              <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
+              <TouchableOpacity
+                style={styles.backButton}
+                onPress={handleGoBack}
+              >
                 <IconSymbol name="chevron.left" size={16} color={tintColor} />
-                <ThemedText style={styles.backButtonLabel}>{t('common.back')}</ThemedText>
+                <ThemedText style={styles.backButtonLabel}>
+                  {t('common.back')}
+                </ThemedText>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
@@ -515,7 +535,11 @@ export default function HistoryScreen() {
                 onPress={handleManualRefresh}
                 disabled={loading || refreshing}
               >
-                <IconSymbol name="arrow.clockwise" size={16} color={tintColor} />
+                <IconSymbol
+                  name="arrow.clockwise"
+                  size={16}
+                  color={tintColor}
+                />
                 <ThemedText style={styles.headerRefreshLabel}>
                   {t('history.actions.refresh')}
                 </ThemedText>
@@ -534,9 +558,17 @@ export default function HistoryScreen() {
         onRequestClose={handleCloseModal}
       >
         <SafeAreaView style={styles.modalSafeArea}>
-          <View style={[styles.modalContainer, { paddingBottom: insetStyles.bottom }] }>
+          <View
+            style={[
+              styles.modalContainer,
+              { paddingBottom: insetStyles.bottom },
+            ]}
+          >
             <View style={styles.modalHeader}>
-              <TouchableOpacity style={styles.modalBackButton} onPress={handleCloseModal}>
+              <TouchableOpacity
+                style={styles.modalBackButton}
+                onPress={handleCloseModal}
+              >
                 <IconSymbol name="chevron.left" size={18} color={tintColor} />
                 <ThemedText style={styles.modalBackLabel}>
                   {t('history.detail.backToList')}
@@ -544,7 +576,8 @@ export default function HistoryScreen() {
               </TouchableOpacity>
               <ThemedText style={styles.modalTitle} numberOfLines={2}>
                 {selectedSummary
-                  ? resolveGameName(selectedSummary.gameId) ?? t('history.unknownGame')
+                  ? (resolveGameName(selectedSummary.gameId) ??
+                    t('history.unknownGame'))
                   : ''}
               </ThemedText>
               <View style={styles.modalBackSpacer} />
@@ -564,7 +597,11 @@ export default function HistoryScreen() {
                     style={styles.refreshButton}
                     onPress={handleRefreshHistoryAfterRemoval}
                   >
-                    <IconSymbol name="arrow.clockwise" size={16} color={buttonTextColor} />
+                    <IconSymbol
+                      name="arrow.clockwise"
+                      size={16}
+                      color={buttonTextColor}
+                    />
                     <ThemedText style={styles.refreshButtonText}>
                       {t('history.actions.refresh')}
                     </ThemedText>
@@ -572,10 +609,15 @@ export default function HistoryScreen() {
                 ) : null}
               </View>
             ) : detail ? (
-              <ScrollView style={styles.modalScroll} contentContainerStyle={styles.modalScrollContent}>
+              <ScrollView
+                style={styles.modalScroll}
+                contentContainerStyle={styles.modalScrollContent}
+              >
                 <ThemedText style={styles.detailTimestamp}>
                   {t('history.detail.lastActivity', {
-                    timestamp: new Date(detail.summary.lastActivityAt).toLocaleString(),
+                    timestamp: new Date(
+                      detail.summary.lastActivityAt,
+                    ).toLocaleString(),
                   })}
                 </ThemedText>
 
@@ -588,7 +630,9 @@ export default function HistoryScreen() {
                       {t('history.detail.rematchDescription')}
                     </ThemedText>
                     {rematchError ? (
-                      <ThemedText style={styles.errorText}>{rematchError}</ThemedText>
+                      <ThemedText style={styles.errorText}>
+                        {rematchError}
+                      </ThemedText>
                     ) : null}
                     <TouchableOpacity
                       style={[
@@ -599,7 +643,10 @@ export default function HistoryScreen() {
                       disabled={rematchLoading}
                     >
                       {rematchLoading ? (
-                        <ActivityIndicator size="small" color={buttonTextColor} />
+                        <ActivityIndicator
+                          size="small"
+                          color={buttonTextColor}
+                        />
                       ) : (
                         <>
                           <IconSymbol
@@ -636,21 +683,34 @@ export default function HistoryScreen() {
                       <View style={styles.participantRow} key={participant.id}>
                         <View style={styles.participantInfo}>
                           <IconSymbol
-                            name={participant.isHost ? 'crown.fill' : 'person.fill'}
+                            name={
+                              participant.isHost ? 'crown.fill' : 'person.fill'
+                            }
                             size={18}
-                            color={participant.isHost ? tintColor : mutedTextColor}
+                            color={
+                              participant.isHost ? tintColor : mutedTextColor
+                            }
                           />
-                          <ThemedText style={styles.participantName} numberOfLines={1}>
+                          <ThemedText
+                            style={styles.participantName}
+                            numberOfLines={1}
+                          >
                             {name}
                           </ThemedText>
                           {hostBadge ? (
-                            <ThemedText style={styles.hostBadge}>{hostBadge}</ThemedText>
+                            <ThemedText style={styles.hostBadge}>
+                              {hostBadge}
+                            </ThemedText>
                           ) : null}
                         </View>
                         {canToggle ? (
                           <Switch
-                            value={participantSelection[participant.id] ?? false}
-                            onValueChange={(value) => handleToggleParticipant(participant.id, value)}
+                            value={
+                              participantSelection[participant.id] ?? false
+                            }
+                            onValueChange={(value) =>
+                              handleToggleParticipant(participant.id, value)
+                            }
                           />
                         ) : null}
                       </View>
@@ -666,7 +726,9 @@ export default function HistoryScreen() {
                     {t('history.detail.removeDescription')}
                   </ThemedText>
                   {removeError ? (
-                    <ThemedText style={styles.errorText}>{removeError}</ThemedText>
+                    <ThemedText style={styles.errorText}>
+                      {removeError}
+                    </ThemedText>
                   ) : null}
                   <TouchableOpacity
                     style={[
@@ -681,9 +743,16 @@ export default function HistoryScreen() {
                       <ActivityIndicator size="small" color={dangerColor} />
                     ) : (
                       <>
-                        <IconSymbol name="trash" size={16} color={dangerColor} />
+                        <IconSymbol
+                          name="trash"
+                          size={16}
+                          color={dangerColor}
+                        />
                         <ThemedText
-                          style={[styles.removeButtonText, { color: dangerColor }]}
+                          style={[
+                            styles.removeButtonText,
+                            { color: dangerColor },
+                          ]}
                         >
                           {t('history.detail.removeAction')}
                         </ThemedText>
@@ -724,7 +793,9 @@ export default function HistoryScreen() {
                             })}
                           </ThemedText>
                         ) : null}
-                        <ThemedText style={styles.logMessage}>{log.message}</ThemedText>
+                        <ThemedText style={styles.logMessage}>
+                          {log.message}
+                        </ThemedText>
                       </View>
                     ))
                   )}

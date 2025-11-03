@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+npm run format:be || exit 1
+npm run format:fe || exit 1
+
+git add --update

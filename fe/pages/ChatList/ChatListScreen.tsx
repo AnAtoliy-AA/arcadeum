@@ -8,7 +8,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -27,14 +30,20 @@ import {
   searchUsers,
 } from '@/pages/ChatScreen/api/chatApi';
 
-function useChatList(params: { accessToken?: string | null; refreshTokens?: () => Promise<SessionTokensSnapshot> }) {
+function useChatList(params: {
+  accessToken?: string | null;
+  refreshTokens?: () => Promise<SessionTokensSnapshot>;
+}) {
   const { accessToken, refreshTokens } = params;
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [chats, setChats] = useState<ChatSummary[]>([]);
 
-  const fetchOptions = useMemo(() => (refreshTokens ? { refreshTokens } : undefined), [refreshTokens]);
+  const fetchOptions = useMemo(
+    () => (refreshTokens ? { refreshTokens } : undefined),
+    [refreshTokens],
+  );
 
   const loadChats = useCallback(async () => {
     if (!accessToken) {
@@ -88,7 +97,16 @@ function useChatList(params: { accessToken?: string | null; refreshTokens?: () =
     });
   }, []);
 
-  return { loading, refreshing, chats, error, refresh, reload: loadChats, upsertChat, fetchOptions };
+  return {
+    loading,
+    refreshing,
+    chats,
+    error,
+    refresh,
+    reload: loadChats,
+    upsertChat,
+    fetchOptions,
+  };
 }
 
 export default function ChatListScreen() {
@@ -97,16 +115,21 @@ export default function ChatListScreen() {
   const insets = useSafeAreaInsets();
   const { tokens, refreshTokens } = useSessionTokens();
   const { t } = useTranslation();
-  const {
-    shouldBlock,
-    isAuthenticated,
-  } = useSessionScreenGate({
+  const { shouldBlock, isAuthenticated } = useSessionScreenGate({
     whenUnauthenticated: '/auth',
     enableOn: ['web'],
     blockWhenUnauthenticated: false,
   });
 
-  const { loading, refreshing, chats, error, refresh, upsertChat, fetchOptions } = useChatList({
+  const {
+    loading,
+    refreshing,
+    chats,
+    error,
+    refresh,
+    upsertChat,
+    fetchOptions,
+  } = useChatList({
     accessToken: tokens.accessToken,
     refreshTokens,
   });
@@ -120,7 +143,9 @@ export default function ChatListScreen() {
   const [searchResults, setSearchResults] = useState<ChatParticipant[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
-  const [creatingChatUserId, setCreatingChatUserId] = useState<string | null>(null);
+  const [creatingChatUserId, setCreatingChatUserId] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!accessToken) {
@@ -144,8 +169,15 @@ export default function ChatListScreen() {
 
     const timeoutId = setTimeout(async () => {
       try {
-        const results = await searchUsers(trimmed, accessToken, abortController.signal, fetchOptions);
-        setSearchResults(results.filter((participant) => participant.id !== currentUserId));
+        const results = await searchUsers(
+          trimmed,
+          accessToken,
+          abortController.signal,
+          fetchOptions,
+        );
+        setSearchResults(
+          results.filter((participant) => participant.id !== currentUserId),
+        );
       } catch (error) {
         if (abortController.signal.aborted) {
           return;
@@ -177,7 +209,12 @@ export default function ChatListScreen() {
 
       try {
         const participantIds = Array.from(new Set([currentUserId, user.id]));
-        const createdChat = await createChat(participantIds, accessToken, undefined, fetchOptions);
+        const createdChat = await createChat(
+          participantIds,
+          accessToken,
+          undefined,
+          fetchOptions,
+        );
         upsertChat(createdChat);
         setSearchQuery('');
         setSearchResults([]);
@@ -187,10 +224,15 @@ export default function ChatListScreen() {
         );
         const title = otherParticipants.length
           ? otherParticipants
-              .map((participant) => participant.displayName ?? participant.username)
+              .map(
+                (participant) =>
+                  participant.displayName ?? participant.username,
+              )
               .join(', ')
           : t('chatList.messages.directChat');
-        const receiverIds = otherParticipants.map((participant) => participant.id).join(',');
+        const receiverIds = otherParticipants
+          .map((participant) => participant.id)
+          .join(',');
 
         router.push({
           pathname: '/chat',
@@ -214,10 +256,12 @@ export default function ChatListScreen() {
       const otherParticipants: ChatParticipant[] = item.participants.filter(
         (participant) => participant.id !== currentUserId,
       );
-        const title = otherParticipants.length
-          ? otherParticipants
-              .map((participant) => participant.displayName ?? participant.username)
-              .join(', ')
+      const title = otherParticipants.length
+        ? otherParticipants
+            .map(
+              (participant) => participant.displayName ?? participant.username,
+            )
+            .join(', ')
         : t('chatList.messages.directChat');
 
       const subtitle = item.lastMessage
@@ -225,7 +269,9 @@ export default function ChatListScreen() {
         : t('chatList.messages.noMessagesYet');
 
       const handlePress = () => {
-        const receiverIds = otherParticipants.map((participant) => participant.id).join(',');
+        const receiverIds = otherParticipants
+          .map((participant) => participant.id)
+          .join(',');
         router.push({
           pathname: '/chat',
           params: {
@@ -240,7 +286,11 @@ export default function ChatListScreen() {
         <TouchableOpacity style={styles.chatItem} onPress={handlePress}>
           <View style={styles.chatItemContent}>
             <View style={styles.chatAvatar}>
-              <IconSymbol name="person.circle.fill" size={20} color={avatarIconColor} />
+              <IconSymbol
+                name="person.circle.fill"
+                size={20}
+                color={avatarIconColor}
+              />
             </View>
             <View style={styles.chatTextContainer}>
               <ThemedText style={styles.chatTitle} numberOfLines={1}>
@@ -281,12 +331,16 @@ export default function ChatListScreen() {
         {searchLoading && (
           <View style={styles.searchStatus}>
             <ActivityIndicator size="small" />
-            <ThemedText style={styles.placeholderText}>{t('chatList.search.searching')}</ThemedText>
+            <ThemedText style={styles.placeholderText}>
+              {t('chatList.search.searching')}
+            </ThemedText>
           </View>
         )}
         {!accessToken && (
           <View style={styles.searchStatus}>
-            <ThemedText style={styles.placeholderText}>{t('chatList.search.signInRequired')}</ThemedText>
+            <ThemedText style={styles.placeholderText}>
+              {t('chatList.search.signInRequired')}
+            </ThemedText>
           </View>
         )}
         {searchError && (
@@ -294,45 +348,71 @@ export default function ChatListScreen() {
             <ThemedText style={styles.errorText}>{searchError}</ThemedText>
           </View>
         )}
-        {accessToken && searchQuery.trim().length > 0 && !searchLoading && !searchError && (
-          <View style={styles.searchResultsContainer}>
-            {searchResults.length === 0 ? (
-              <View style={styles.searchResultItem}>
-                <ThemedText style={styles.placeholderText}>{t('chatList.search.noResults')}</ThemedText>
-              </View>
-            ) : (
-              searchResults.map((result) => {
-                const disabled = creatingChatUserId === result.id;
-                return (
-                  <TouchableOpacity
-                    key={result.id}
-                    style={[styles.searchResultItem, disabled && styles.searchResultItemDisabled]}
-                    onPress={() => handleSelectUser(result)}
-                    disabled={disabled}
-                  >
-                    <View style={styles.searchResultContent}>
-                      <View style={styles.searchResultAvatar}>
-                        <IconSymbol name="person.circle.fill" size={18} color={avatarIconColor} />
+        {accessToken &&
+          searchQuery.trim().length > 0 &&
+          !searchLoading &&
+          !searchError && (
+            <View style={styles.searchResultsContainer}>
+              {searchResults.length === 0 ? (
+                <View style={styles.searchResultItem}>
+                  <ThemedText style={styles.placeholderText}>
+                    {t('chatList.search.noResults')}
+                  </ThemedText>
+                </View>
+              ) : (
+                searchResults.map((result) => {
+                  const disabled = creatingChatUserId === result.id;
+                  return (
+                    <TouchableOpacity
+                      key={result.id}
+                      style={[
+                        styles.searchResultItem,
+                        disabled && styles.searchResultItemDisabled,
+                      ]}
+                      onPress={() => handleSelectUser(result)}
+                      disabled={disabled}
+                    >
+                      <View style={styles.searchResultContent}>
+                        <View style={styles.searchResultAvatar}>
+                          <IconSymbol
+                            name="person.circle.fill"
+                            size={18}
+                            color={avatarIconColor}
+                          />
+                        </View>
+                        <View style={styles.searchResultTextContainer}>
+                          <ThemedText style={styles.searchResultTitle}>
+                            {result.displayName ?? result.username}
+                          </ThemedText>
+                          {result.email ? (
+                            <ThemedText style={styles.searchResultSubtitle}>
+                              {result.email}
+                            </ThemedText>
+                          ) : null}
+                        </View>
                       </View>
-                      <View style={styles.searchResultTextContainer}>
-                        <ThemedText style={styles.searchResultTitle}>
-                          {result.displayName ?? result.username}
-                        </ThemedText>
-                        {result.email ? (
-                          <ThemedText style={styles.searchResultSubtitle}>{result.email}</ThemedText>
-                        ) : null}
-                      </View>
-                    </View>
-                    {disabled && <ActivityIndicator size="small" />}
-                  </TouchableOpacity>
-                );
-              })
-            )}
-          </View>
-        )}
+                      {disabled && <ActivityIndicator size="small" />}
+                    </TouchableOpacity>
+                  );
+                })
+              )}
+            </View>
+          )}
       </View>
     );
-  }, [avatarIconColor, styles, placeholderColor, searchQuery, searchLoading, searchError, searchResults, creatingChatUserId, handleSelectUser, accessToken, t]);
+  }, [
+    avatarIconColor,
+    styles,
+    placeholderColor,
+    searchQuery,
+    searchLoading,
+    searchError,
+    searchResults,
+    creatingChatUserId,
+    handleSelectUser,
+    accessToken,
+    t,
+  ]);
 
   const emptyComponent = useMemo(() => {
     if (searchQuery.trim().length > 0) {
@@ -355,13 +435,17 @@ export default function ChatListScreen() {
     if (!isAuthenticated) {
       return (
         <View style={styles.emptyContainer}>
-          <ThemedText style={styles.placeholderText}>{t('chatList.empty.unauthenticated')}</ThemedText>
+          <ThemedText style={styles.placeholderText}>
+            {t('chatList.empty.unauthenticated')}
+          </ThemedText>
         </View>
       );
     }
     return (
       <View style={styles.emptyContainer}>
-        <ThemedText style={styles.placeholderText}>{t('chatList.empty.noChats')}</ThemedText>
+        <ThemedText style={styles.placeholderText}>
+          {t('chatList.empty.noChats')}
+        </ThemedText>
       </View>
     );
   }, [loading, error, styles, isAuthenticated, searchQuery, t]);
@@ -369,7 +453,9 @@ export default function ChatListScreen() {
   if (shouldBlock) {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-        <ThemedView style={[styles.loadingContainer, { paddingBottom: insets.bottom }]}>
+        <ThemedView
+          style={[styles.loadingContainer, { paddingBottom: insets.bottom }]}
+        >
           <ActivityIndicator size="large" />
         </ThemedView>
       </SafeAreaView>

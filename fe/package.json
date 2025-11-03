@@ -19,7 +19,8 @@
     "android": "npm run android:reverse && npm run android:install && npm run android:open",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "format": "prettier --write \"{api,app,components,constants,hooks,lib,pages,scripts,stores}/**/*.{js,jsx,ts,tsx,json}\""
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
@@ -68,7 +69,8 @@
     "eslint": "^9.25.0",
     "eslint-config-expo": "~9.2.0",
     "react-native-svg-transformer": "^1.5.1",
-    "typescript": "~5.8.3"
+    "typescript": "~5.8.3",
+    "prettier": "^3.4.2"
   },
   "private": true
 }

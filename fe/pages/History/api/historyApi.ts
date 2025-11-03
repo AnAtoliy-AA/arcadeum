@@ -1,4 +1,7 @@
-import { fetchWithRefresh, type FetchWithRefreshOptions } from '@/lib/fetchWithRefresh';
+import {
+  fetchWithRefresh,
+  type FetchWithRefreshOptions,
+} from '@/lib/fetchWithRefresh';
 import { resolveApiBase } from '@/lib/apiBase';
 import type { GameRoomSummary } from '@/pages/GamesScreen/api/gamesApi';
 

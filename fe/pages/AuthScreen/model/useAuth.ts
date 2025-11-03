@@ -12,7 +12,11 @@ import { fetchWithRefresh } from '@/lib/fetchWithRefresh';
 export function useAuth() {
   const [authState, setAuthState] = useState<AuthorizeResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const params = useLocalSearchParams<{ code?: string; error?: string; state?: string }>();
+  const params = useLocalSearchParams<{
+    code?: string;
+    error?: string;
+    state?: string;
+  }>();
   const navState = useRootNavigationState();
   const isReady = !!navState?.key;
   const processedRef = useRef(false);
@@ -36,7 +40,7 @@ export function useAuth() {
     scope?: string;
     expiresIn?: number;
     message?: string; // backend error shape
-    error?: string;   // possible provider error passthrough
+    error?: string; // possible provider error passthrough
     refreshTokenExpiresAt?: string;
   }
 
@@ -65,7 +69,10 @@ export function useAuth() {
         email: session.user?.email ?? null,
         username: session.user?.username ?? null,
         displayName:
-          session.user?.displayName ?? session.user?.username ?? session.user?.email ?? null,
+          session.user?.displayName ??
+          session.user?.username ??
+          session.user?.email ??
+          null,
       });
 
       setAuthState(result);
@@ -77,7 +84,10 @@ export function useAuth() {
 
   const logout = async () => {
     const tokens = authState
-      ? { accessToken: authState.accessToken, refreshToken: (authState as ExtendedAuthorizeResult).refreshToken }
+      ? {
+          accessToken: authState.accessToken,
+          refreshToken: (authState as ExtendedAuthorizeResult).refreshToken,
+        }
       : { accessToken: undefined, refreshToken: undefined };
     await logoutOAuth(tokens);
     await clearStoredTokens();
@@ -89,9 +99,10 @@ export function useAuth() {
     if (!isReady || Platform.OS !== 'web' || processedRef.current) return;
     const codeFromParams = params?.code ? String(params.code) : undefined;
     const errorFromParams = params?.error ? String(params.error) : undefined;
-    const codeFromSearch = typeof window !== 'undefined'
-      ? new URLSearchParams(window.location.search).get('code') || undefined
-      : undefined;
+    const codeFromSearch =
+      typeof window !== 'undefined'
+        ? new URLSearchParams(window.location.search).get('code') || undefined
+        : undefined;
 
     if (errorFromParams) {
       setError(errorFromParams);
@@ -107,19 +118,30 @@ export function useAuth() {
     if (code && !authState) {
       (async () => {
         try {
-          const codeVerifier = typeof window !== 'undefined' ? sessionStorage.getItem('oauth_code_verifier') || undefined : undefined;
+          const codeVerifier =
+            typeof window !== 'undefined'
+              ? sessionStorage.getItem('oauth_code_verifier') || undefined
+              : undefined;
           const apiBase = resolveApiBase();
-          const payload = JSON.stringify({ code, codeVerifier, redirectUri: authConfig.redirectUrl });
+          const payload = JSON.stringify({
+            code,
+            codeVerifier,
+            redirectUri: authConfig.redirectUrl,
+          });
           const controller = new AbortController();
           const fetchAuthToken = async () => {
-            return fetchWithRefresh(`${apiBase}/auth/token`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: payload,
-              signal: controller.signal,
-            }, {
-              suppressErrorToast: true,
-            });
+            return fetchWithRefresh(
+              `${apiBase}/auth/token`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: payload,
+                signal: controller.signal,
+              },
+              {
+                suppressErrorToast: true,
+              },
+            );
           };
           let resp = await fetchAuthToken();
           if (resp.status === 401) {
@@ -142,7 +164,10 @@ export function useAuth() {
                   break;
                 }
               } catch (fetchErr) {
-                lastError = fetchErr instanceof Error ? fetchErr : new Error(String(fetchErr));
+                lastError =
+                  fetchErr instanceof Error
+                    ? fetchErr
+                    : new Error(String(fetchErr));
               }
 
               attempt += 1;
@@ -150,7 +175,10 @@ export function useAuth() {
 
             if (!resp.ok && resp.status === 401) {
               const finalError =
-                lastError ?? new Error('Unable to complete authentication. Please try again later.');
+                lastError ??
+                new Error(
+                  'Unable to complete authentication. Please try again later.',
+                );
               throw finalError;
             }
           }
@@ -199,7 +227,10 @@ export function useAuth() {
             email: session.user?.email ?? null,
             username: session.user?.username ?? null,
             displayName:
-              session.user?.displayName ?? session.user?.username ?? session.user?.email ?? null,
+              session.user?.displayName ??
+              session.user?.username ??
+              session.user?.email ??
+              null,
           });
           setAuthState(authorizeResult as AuthorizeResult);
           setError(null);

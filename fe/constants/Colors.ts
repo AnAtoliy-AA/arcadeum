@@ -39,7 +39,7 @@ export const Colors = {
     tint: tintColorDark,
     icon: '#9BA1A6',
     cardBackground: '#1F2228',
-  cardBorder: '#32353D',
+    cardBorder: '#32353D',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
     statusConnected: '#2ecc40',

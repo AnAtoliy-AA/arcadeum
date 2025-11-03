@@ -29,7 +29,8 @@ function waitForMetro(url = 'http://localhost:8081/status', timeoutMs = 30000) {
         })
         .on('error', retry);
       function retry() {
-        if (Date.now() - start > timeoutMs) return reject(new Error('Metro not responding'));
+        if (Date.now() - start > timeoutMs)
+          return reject(new Error('Metro not responding'));
         setTimeout(poll, 1000);
       }
     })();
@@ -37,20 +38,38 @@ function waitForMetro(url = 'http://localhost:8081/status', timeoutMs = 30000) {
 }
 
 function runNpm(cmd, args = []) {
-  return spawn(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['run', cmd, ...args], {
-    stdio: 'inherit',
-    shell: true,
-  });
+  return spawn(
+    process.platform === 'win32' ? 'npm.cmd' : 'npm',
+    ['run', cmd, ...args],
+    {
+      stdio: 'inherit',
+      shell: true,
+    },
+  );
 }
 
-function runExpoStart({ web, noDevClient, forceNoDevClient } = { web: false, noDevClient: false, forceNoDevClient: false }) {
+function runExpoStart(
+  { web, noDevClient, forceNoDevClient } = {
+    web: false,
+    noDevClient: false,
+    forceNoDevClient: false,
+  },
+) {
   const bin = process.platform === 'win32' ? 'npx.cmd' : 'npx';
   const args = ['--yes', 'expo', 'start', '--host', 'localhost'];
   const usingDevClient = !noDevClient && !forceNoDevClient;
   if (usingDevClient) args.push('--dev-client');
   if (web) args.push('--web');
   console.log('[dev] expo command:', bin, args.join(' '));
-  console.log('[dev] Flags => web:', web, ' dev-client:', usingDevClient, ' (suppressed due to web?:', forceNoDevClient, ')');
+  console.log(
+    '[dev] Flags => web:',
+    web,
+    ' dev-client:',
+    usingDevClient,
+    ' (suppressed due to web?:',
+    forceNoDevClient,
+    ')',
+  );
   return spawn(bin, args, { stdio: 'inherit', shell: true });
 }
 
@@ -66,24 +85,42 @@ async function main() {
   // Users can still force dev-client by omitting web or editing this script.
   const forceNoDevClient = targets.web;
 
-  console.log(`[dev] Launching targets: web=${targets.web} android=${targets.android} ios=${targets.ios}`);
+  console.log(
+    `[dev] Launching targets: web=${targets.web} android=${targets.android} ios=${targets.ios}`,
+  );
   console.log('[dev] NODE_ENV =', process.env.NODE_ENV);
   console.log('[dev] Args =', process.argv.slice(2).join(' ') || '(none)');
   if (forceNoDevClient) {
-    console.log('[dev] Web detected -> skipping --dev-client for better Chrome source maps.');
+    console.log(
+      '[dev] Web detected -> skipping --dev-client for better Chrome source maps.',
+    );
   } else if (!targets.noDevClient) {
-    console.log('[dev] Using dev-client mode (native). Pass --no-dev-client to disable.');
+    console.log(
+      '[dev] Using dev-client mode (native). Pass --no-dev-client to disable.',
+    );
   }
 
   // Start Expo dev server (with web if requested)
-  const metro = runExpoStart({ web: targets.web, noDevClient: targets.noDevClient || forceNoDevClient, forceNoDevClient });
+  const metro = runExpoStart({
+    web: targets.web,
+    noDevClient: targets.noDevClient || forceNoDevClient,
+    forceNoDevClient,
+  });
 
   // Cleanup on exit
   const clean = () => {
-    try { metro.kill('SIGINT'); } catch {}
+    try {
+      metro.kill('SIGINT');
+    } catch {}
   };
-  process.on('SIGINT', () => { clean(); process.exit(0); });
-  process.on('SIGTERM', () => { clean(); process.exit(0); });
+  process.on('SIGINT', () => {
+    clean();
+    process.exit(0);
+  });
+  process.on('SIGTERM', () => {
+    clean();
+    process.exit(0);
+  });
 
   // Wait for Metro to respond
   try {
@@ -111,7 +148,9 @@ async function main() {
   }
 
   // Keep process alive while children run
-  procs.forEach((p) => p.on('exit', (code) => console.log(`[child exited] code=${code}`)));
+  procs.forEach((p) =>
+    p.on('exit', (code) => console.log(`[child exited] code=${code}`)),
+  );
 }
 
 main().catch((e) => {

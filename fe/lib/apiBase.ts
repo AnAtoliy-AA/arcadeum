@@ -8,7 +8,9 @@ function isLocalHost(host: string): boolean {
 function extractRemoteHost(candidate?: string): string | undefined {
   if (!candidate) return undefined;
   try {
-    const url = new URL(candidate.includes('://') ? candidate : `http://${candidate}`);
+    const url = new URL(
+      candidate.includes('://') ? candidate : `http://${candidate}`,
+    );
     return url.hostname;
   } catch {
     const withoutScheme = candidate.replace(/^[a-zA-Z]+:\/\//, '');
@@ -18,9 +20,15 @@ function extractRemoteHost(candidate?: string): string | undefined {
 }
 
 function pickHostOverride(): string | undefined {
-  const extra = (Constants as any)?.expoConfig?.extra as Record<string, unknown> | undefined;
-  const envValue = process.env.EXPO_PUBLIC_ANDROID_DEV_HOST as string | undefined;
-  const extraValue = (extra?.ANDROID_DEV_HOST as string | undefined) ?? (extra?.androidDevHost as string | undefined);
+  const extra = (Constants as any)?.expoConfig?.extra as
+    | Record<string, unknown>
+    | undefined;
+  const envValue = process.env.EXPO_PUBLIC_ANDROID_DEV_HOST as
+    | string
+    | undefined;
+  const extraValue =
+    (extra?.ANDROID_DEV_HOST as string | undefined) ??
+    (extra?.androidDevHost as string | undefined);
 
   const host = extractRemoteHost(envValue ?? extraValue);
   if (host && !isLocalHost(host)) {
@@ -29,7 +37,9 @@ function pickHostOverride(): string | undefined {
   return undefined;
 }
 
-function extractHostFromCandidates(candidates: (string | undefined)[]): string | undefined {
+function extractHostFromCandidates(
+  candidates: (string | undefined)[],
+): string | undefined {
   for (const candidate of candidates) {
     const host = extractRemoteHost(candidate);
     if (host && !isLocalHost(host)) {
@@ -86,8 +96,13 @@ function resolveDeviceAwareBase(urlString: string): string {
 }
 
 export function resolveApiBase(): string {
-  const extra = (Constants as any)?.expoConfig?.extra as Record<string, any> | undefined;
-  const raw = (extra?.API_BASE_URL as string | undefined) || process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:4000';
+  const extra = (Constants as any)?.expoConfig?.extra as
+    | Record<string, any>
+    | undefined;
+  const raw =
+    (extra?.API_BASE_URL as string | undefined) ||
+    process.env.EXPO_PUBLIC_API_BASE_URL ||
+    'http://localhost:4000';
   const normalized = raw.replace(/\/$/, '');
 
   if (!platform.isNative) {

@@ -1,7 +1,15 @@
 import React, { useCallback } from 'react';
 import { GiftedChat } from 'react-native-gifted-chat';
-import { View, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ChatParams } from '../model/types';
@@ -19,12 +27,17 @@ export default function ChatScreen() {
   const insets = useSafeAreaInsets();
   const chatListRoute = '/(tabs)/chats' as const satisfies Href;
   const homeRoute = '/(tabs)' as const satisfies Href;
-  const rawChatId = Array.isArray(params.chatId) ? params.chatId[0] : params.chatId;
+  const rawChatId = Array.isArray(params.chatId)
+    ? params.chatId[0]
+    : params.chatId;
   const rawReceiverIds = params.receiverIds;
-  const conversationTitle = Array.isArray(params.title) ? params.title[0] : params.title;
+  const conversationTitle = Array.isArray(params.title)
+    ? params.title[0]
+    : params.title;
 
   const currentUserId = tokens.userId ?? '';
-  const currentDisplayName = tokens.displayName ?? tokens.username ?? tokens.email ?? null;
+  const currentDisplayName =
+    tokens.displayName ?? tokens.username ?? tokens.email ?? null;
   const giftedUserId = currentUserId || 'local-user';
   const giftedUserName = currentDisplayName ?? giftedUserId;
 
@@ -56,7 +69,9 @@ export default function ChatScreen() {
   if (shouldBlock) {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-        <View style={[styles.loadingContainer, { paddingBottom: insets.bottom }]}>
+        <View
+          style={[styles.loadingContainer, { paddingBottom: insets.bottom }]}
+        >
           <ActivityIndicator size="large" />
         </View>
       </SafeAreaView>
@@ -66,8 +81,12 @@ export default function ChatScreen() {
   if (!rawChatId) {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-        <View style={[styles.loadingContainer, { paddingBottom: insets.bottom }]}>
-          <ThemedText style={styles.statusText}>{t('chat.notFound')}</ThemedText>
+        <View
+          style={[styles.loadingContainer, { paddingBottom: insets.bottom }]}
+        >
+          <ThemedText style={styles.statusText}>
+            {t('chat.notFound')}
+          </ThemedText>
         </View>
       </SafeAreaView>
     );
@@ -76,7 +95,9 @@ export default function ChatScreen() {
   if (!currentUserId) {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-        <View style={[styles.loadingContainer, { paddingBottom: insets.bottom }]}>
+        <View
+          style={[styles.loadingContainer, { paddingBottom: insets.bottom }]}
+        >
           <ActivityIndicator size="large" />
         </View>
       </SafeAreaView>
@@ -87,10 +108,14 @@ export default function ChatScreen() {
       <View style={[styles.container, { paddingBottom: insets.bottom }]}>
         <View style={styles.navRow}>
           <TouchableOpacity style={styles.navButton} onPress={handleGoBack}>
-            <ThemedText style={styles.navButtonText}>{t('chat.nav.backToChats')}</ThemedText>
+            <ThemedText style={styles.navButtonText}>
+              {t('chat.nav.backToChats')}
+            </ThemedText>
           </TouchableOpacity>
           <TouchableOpacity style={styles.navButton} onPress={handleGoHome}>
-            <ThemedText style={styles.navButtonText}>{t('chat.nav.goHome')}</ThemedText>
+            <ThemedText style={styles.navButtonText}>
+              {t('chat.nav.goHome')}
+            </ThemedText>
           </TouchableOpacity>
         </View>
         <View style={styles.statusRow}>
@@ -105,7 +130,9 @@ export default function ChatScreen() {
             ]}
           />
           <ThemedText style={styles.statusText}>
-            {isConnected ? t('chat.status.connected') : t('chat.status.connecting')}
+            {isConnected
+              ? t('chat.status.connected')
+              : t('chat.status.connecting')}
           </ThemedText>
         </View>
         {conversationTitle && (
@@ -196,4 +223,3 @@ function createStyles(palette: Palette) {
     },
   });
 }
-

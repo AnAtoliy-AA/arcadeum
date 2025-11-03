@@ -1,6 +1,12 @@
 import type { SessionTokensSnapshot } from '@/stores/sessionTokens';
-import { findApiMessageDescriptor, inferTranslationKeyFromMessageKey } from '@/lib/apiMessageCatalog';
-import { emitGlobalError, type GlobalErrorPayload } from '@/lib/globalErrorHandler';
+import {
+  findApiMessageDescriptor,
+  inferTranslationKeyFromMessageKey,
+} from '@/lib/apiMessageCatalog';
+import {
+  emitGlobalError,
+  type GlobalErrorPayload,
+} from '@/lib/globalErrorHandler';
 
 export interface FetchWithRefreshOptions {
   accessToken?: string | null;
@@ -63,7 +69,9 @@ function notifyResponseError(response: Response) {
   void (async () => {
     const payload = await extractErrorPayload(clone);
     const fallback =
-      payload.fallbackMessage ?? payload.rawMessage ?? `Request failed (${response.status})`;
+      payload.fallbackMessage ??
+      payload.rawMessage ??
+      `Request failed (${response.status})`;
     emitGlobalError({
       ...payload,
       fallbackMessage: fallback,
@@ -71,7 +79,9 @@ function notifyResponseError(response: Response) {
   })();
 }
 
-async function extractErrorPayload(response: Response): Promise<GlobalErrorPayload> {
+async function extractErrorPayload(
+  response: Response,
+): Promise<GlobalErrorPayload> {
   try {
     const raw = await response.text();
     const trimmed = raw.trim();
@@ -112,7 +122,8 @@ async function extractErrorPayload(response: Response): Promise<GlobalErrorPaylo
 
     return {
       translationKey:
-        descriptor?.translationKey ?? inferTranslationKeyFromMessageKey(messageKey),
+        descriptor?.translationKey ??
+        inferTranslationKeyFromMessageKey(messageKey),
       fallbackMessage: fallbackDetail ?? descriptor?.fallbackMessage ?? message,
       rawMessage: shouldExposeRawMessage(message) ? message : undefined,
       replacements,
@@ -187,7 +198,9 @@ function extractFallbackMessage(details: unknown): string | undefined {
   return normalizeToString(record.fallbackMessage);
 }
 
-function extractReplacements(details: unknown): Record<string, string | number> | undefined {
+function extractReplacements(
+  details: unknown,
+): Record<string, string | number> | undefined {
   const record = toPlainRecord(details);
   if (!record) {
     return undefined;
@@ -214,12 +227,17 @@ function extractDuration(details: unknown): number | undefined {
     return undefined;
   }
 
-  const candidate = record.duration
-    ?? record.toastDuration
-    ?? record.toastDurationMs
-    ?? record.durationMs;
+  const candidate =
+    record.duration ??
+    record.toastDuration ??
+    record.toastDurationMs ??
+    record.durationMs;
 
-  if (typeof candidate === 'number' && Number.isFinite(candidate) && candidate > 0) {
+  if (
+    typeof candidate === 'number' &&
+    Number.isFinite(candidate) &&
+    candidate > 0
+  ) {
     return candidate;
   }
 

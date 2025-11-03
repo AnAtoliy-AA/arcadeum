@@ -1,5 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
-import { Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -7,7 +13,10 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
 import { useTranslation } from '@/lib/i18n';
 import { useAppName } from '@/hooks/useAppName';
-import { gamesCatalog, type GameCatalogueEntry } from '@/pages/GamesScreen/catalog';
+import {
+  gamesCatalog,
+  type GameCatalogueEntry,
+} from '@/pages/GamesScreen/catalog';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { platformShadow } from '@/lib/platformShadow';
 
@@ -42,7 +51,10 @@ export default function HomeScreen() {
         return;
       }
 
-      router.push({ pathname: '/games/create', params: { gameId: targetId } } as never);
+      router.push({
+        pathname: '/games/create',
+        params: { gameId: targetId },
+      } as never);
     },
     [defaultPlayableId, router, showUnavailableAlert],
   );
@@ -59,31 +71,56 @@ export default function HomeScreen() {
     [navigateToCreate, showUnavailableAlert],
   );
 
-  const handlePreview = useCallback((game: GameCatalogueEntry) => {
-    router.push({ pathname: '/games/[id]', params: { id: game.id } });
-  }, [router]);
+  const handlePreview = useCallback(
+    (game: GameCatalogueEntry) => {
+      router.push({ pathname: '/games/[id]', params: { id: game.id } });
+    },
+    [router],
+  );
 
   return (
     <ThemedView style={styles.container}>
-      <ScrollView contentContainerStyle={[styles.content, { paddingTop: BASE_TOP_PADDING + insets.top }]}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.content,
+          { paddingTop: BASE_TOP_PADDING + insets.top },
+        ]}
+      >
         <View style={styles.header}>
-          <ThemedText type="title" style={styles.title}>{t('games.lounge.title')}</ThemedText>
-          <ThemedText style={styles.subtitle}>{t('games.lounge.subtitle', { appName })}</ThemedText>
+          <ThemedText type="title" style={styles.title}>
+            {t('games.lounge.title')}
+          </ThemedText>
+          <ThemedText style={styles.subtitle}>
+            {t('games.lounge.subtitle', { appName })}
+          </ThemedText>
           <TouchableOpacity
-            style={[styles.headerButton, !canCreateAny && styles.headerButtonDisabled]}
+            style={[
+              styles.headerButton,
+              !canCreateAny && styles.headerButtonDisabled,
+            ]}
             onPress={() => navigateToCreate()}
             disabled={!canCreateAny}
             accessibilityRole="button"
             accessibilityState={{ disabled: !canCreateAny }}
           >
-            <IconSymbol name="sparkles" size={18} color={styles.headerButtonText.color as string} />
-            <ThemedText style={styles.headerButtonText}>{t('games.common.createRoom')}</ThemedText>
+            <IconSymbol
+              name="sparkles"
+              size={18}
+              color={styles.headerButtonText.color as string}
+            />
+            <ThemedText style={styles.headerButtonText}>
+              {t('games.common.createRoom')}
+            </ThemedText>
           </TouchableOpacity>
         </View>
 
         <View style={styles.section}>
-          <ThemedText type="subtitle">{t('games.lounge.featuredTitle')}</ThemedText>
-          <ThemedText style={styles.sectionCaption}>{t('games.lounge.featuredCaption')}</ThemedText>
+          <ThemedText type="subtitle">
+            {t('games.lounge.featuredTitle')}
+          </ThemedText>
+          <ThemedText style={styles.sectionCaption}>
+            {t('games.lounge.featuredCaption')}
+          </ThemedText>
         </View>
 
         {gamesCatalog.map((game) => {
@@ -98,20 +135,36 @@ export default function HomeScreen() {
           return (
             <ThemedView key={game.id} style={styles.card}>
               <View style={styles.cardHeader}>
-                <ThemedText type="subtitle" style={styles.cardTitle}>{game.name}</ThemedText>
+                <ThemedText type="subtitle" style={styles.cardTitle}>
+                  {game.name}
+                </ThemedText>
                 <View style={[styles.statusPill, statusStyle]}>
-                  <ThemedText style={styles.statusText}>{game.status}</ThemedText>
+                  <ThemedText style={styles.statusText}>
+                    {game.status}
+                  </ThemedText>
                 </View>
               </View>
               <ThemedText style={styles.cardSummary}>{game.summary}</ThemedText>
               <View style={styles.metaRow}>
                 <View style={styles.metaChip}>
-                  <IconSymbol name="person.3.fill" size={16} color={styles.metaChipIcon.color as string} />
-                  <ThemedText style={styles.metaChipText}>{game.players}</ThemedText>
+                  <IconSymbol
+                    name="person.3.fill"
+                    size={16}
+                    color={styles.metaChipIcon.color as string}
+                  />
+                  <ThemedText style={styles.metaChipText}>
+                    {game.players}
+                  </ThemedText>
                 </View>
                 <View style={styles.metaChip}>
-                  <IconSymbol name="clock.fill" size={16} color={styles.metaChipIcon.color as string} />
-                  <ThemedText style={styles.metaChipText}>{game.duration}</ThemedText>
+                  <IconSymbol
+                    name="clock.fill"
+                    size={16}
+                    color={styles.metaChipIcon.color as string}
+                  />
+                  <ThemedText style={styles.metaChipText}>
+                    {game.duration}
+                  </ThemedText>
                 </View>
               </View>
               <View style={styles.tagRow}>
@@ -123,20 +176,31 @@ export default function HomeScreen() {
               </View>
               <View style={styles.actionsRow}>
                 <TouchableOpacity
-                  style={[styles.primaryButton, !isPlayable && styles.primaryButtonDisabled]}
+                  style={[
+                    styles.primaryButton,
+                    !isPlayable && styles.primaryButtonDisabled,
+                  ]}
                   onPress={() => handleCreate(game)}
                   disabled={!isPlayable}
                   accessibilityRole="button"
                   accessibilityState={{ disabled: !isPlayable }}
                 >
                   <ThemedText
-                    style={[styles.primaryButtonText, !isPlayable && styles.primaryButtonTextDisabled]}
+                    style={[
+                      styles.primaryButtonText,
+                      !isPlayable && styles.primaryButtonTextDisabled,
+                    ]}
                   >
                     {t('games.common.createRoom')}
                   </ThemedText>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.secondaryButton} onPress={() => handlePreview(game)}>
-                  <ThemedText style={styles.secondaryButtonText}>{t('games.common.viewRules')}</ThemedText>
+                <TouchableOpacity
+                  style={styles.secondaryButton}
+                  onPress={() => handlePreview(game)}
+                >
+                  <ThemedText style={styles.secondaryButtonText}>
+                    {t('games.common.viewRules')}
+                  </ThemedText>
                 </TouchableOpacity>
               </View>
               {!isPlayable ? (
@@ -149,10 +213,18 @@ export default function HomeScreen() {
         })}
 
         <View style={styles.footerCard}>
-          <IconSymbol name="sparkles" size={26} color={styles.footerIcon.color as string} />
+          <IconSymbol
+            name="sparkles"
+            size={26}
+            color={styles.footerIcon.color as string}
+          />
           <View style={styles.footerCopy}>
-            <ThemedText type="subtitle">{t('games.lounge.footerTitle')}</ThemedText>
-            <ThemedText style={styles.footerText}>{t('games.lounge.footerText')}</ThemedText>
+            <ThemedText type="subtitle">
+              {t('games.lounge.footerTitle')}
+            </ThemedText>
+            <ThemedText style={styles.footerText}>
+              {t('games.lounge.footerText')}
+            </ThemedText>
           </View>
         </View>
       </ScrollView>
@@ -165,7 +237,9 @@ function createStyles(palette: Palette) {
   const cardBackground = isLight ? '#F6F8FC' : '#1F2228';
   const raisedBackground = isLight ? '#E9EEF6' : '#262A31';
   const borderColor = isLight ? '#D8DFEA' : '#33373D';
-  const surfaceShadow = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(8, 10, 15, 0.45)';
+  const surfaceShadow = isLight
+    ? 'rgba(15, 23, 42, 0.08)'
+    : 'rgba(8, 10, 15, 0.45)';
   const statusPrototypeBg = isLight ? '#D8F1FF' : '#1D3B48';
   const statusDesignBg = isLight ? '#EDE3FF' : '#2A2542';
   const statusRoadmapBg = isLight ? '#E0F6ED' : '#1F3A32';

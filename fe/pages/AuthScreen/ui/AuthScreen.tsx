@@ -24,11 +24,12 @@ export default function AuthScreen() {
   const { authState, error, login, logout } = useAuth();
   const styles = useThemedStyles(createStyles);
   const { t } = useTranslation();
-  const { isAuthenticated, redirectEnabled, shouldBlock } = useSessionScreenGate({
-    whenAuthenticated: '/(tabs)',
-    enableOn: ['web'],
-    blockWhenAuthenticated: true,
-  });
+  const { isAuthenticated, redirectEnabled, shouldBlock } =
+    useSessionScreenGate({
+      whenAuthenticated: '/(tabs)',
+      enableOn: ['web'],
+      blockWhenAuthenticated: true,
+    });
   const router = useRouter();
   const handleLocalAuthSuccess = useCallback(() => {
     if (!redirectEnabled) {
@@ -49,14 +50,27 @@ export default function AuthScreen() {
   return (
     <ThemedView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.gamesShortcut} onPress={handleGoToGames}>
-          <IconSymbol name="gamecontroller.fill" size={18} color={styles.gamesShortcutIcon.color as string} />
-          <ThemedText style={styles.gamesShortcutText}>{t('auth.shortcuts.browseGames')}</ThemedText>
+        <TouchableOpacity
+          style={styles.gamesShortcut}
+          onPress={handleGoToGames}
+        >
+          <IconSymbol
+            name="gamecontroller.fill"
+            size={18}
+            color={styles.gamesShortcutIcon.color as string}
+          />
+          <ThemedText style={styles.gamesShortcutText}>
+            {t('auth.shortcuts.browseGames')}
+          </ThemedText>
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
         <View style={styles.column}>
-          <LocalAuthForm onAuthenticated={!redirectEnabled ? handleLocalAuthSuccess : undefined} />
+          <LocalAuthForm
+            onAuthenticated={
+              !redirectEnabled ? handleLocalAuthSuccess : undefined
+            }
+          />
         </View>
         <View style={styles.divider} />
         <View style={styles.column}>
@@ -66,7 +80,9 @@ export default function AuthScreen() {
           ) : (
             <AuthResult
               accessToken={authState.accessToken}
-              authorizationCode={(authState as any)?.tokenAdditionalParameters?.authorizationCode}
+              authorizationCode={
+                (authState as any)?.tokenAdditionalParameters?.authorizationCode
+              }
               onLogout={logout}
             />
           )}

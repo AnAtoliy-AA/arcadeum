@@ -1,5 +1,8 @@
 import { useMemo } from 'react';
-import { useSessionRedirect, SessionRedirectOptions } from '@/hooks/useSessionRedirect';
+import {
+  useSessionRedirect,
+  SessionRedirectOptions,
+} from '@/hooks/useSessionRedirect';
 
 export interface SessionScreenGateOptions extends SessionRedirectOptions {
   blockWhenAuthenticated?: boolean;
@@ -20,11 +23,21 @@ export function useSessionScreenGate(options: SessionScreenGateOptions) {
       return false;
     }
 
-    const shouldBlockAuthenticated = Boolean(blockWhenAuthenticated && isAuthenticated);
-    const shouldBlockUnauthenticated = Boolean(blockWhenUnauthenticated && !isAuthenticated);
+    const shouldBlockAuthenticated = Boolean(
+      blockWhenAuthenticated && isAuthenticated,
+    );
+    const shouldBlockUnauthenticated = Boolean(
+      blockWhenUnauthenticated && !isAuthenticated,
+    );
 
     return shouldBlockAuthenticated || shouldBlockUnauthenticated;
-  }, [hydrated, redirectEnabled, isAuthenticated, blockWhenAuthenticated, blockWhenUnauthenticated]);
+  }, [
+    hydrated,
+    redirectEnabled,
+    isAuthenticated,
+    blockWhenAuthenticated,
+    blockWhenUnauthenticated,
+  ]);
 
   return {
     ...redirect,

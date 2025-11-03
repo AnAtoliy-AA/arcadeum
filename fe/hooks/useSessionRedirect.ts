@@ -32,14 +32,22 @@ export function useSessionRedirect(options: SessionRedirectOptions) {
   useEffect(() => {
     if (!hydrated || !redirectEnabled) return;
 
-    if (redirectAuthenticatedHref && redirectAuthenticatedPath && isAuthenticated) {
+    if (
+      redirectAuthenticatedHref &&
+      redirectAuthenticatedPath &&
+      isAuthenticated
+    ) {
       if (!pathname.startsWith(redirectAuthenticatedPath)) {
         router.replace(redirectAuthenticatedHref);
       }
       return;
     }
 
-    if (redirectUnauthenticatedHref && redirectUnauthenticatedPath && !isAuthenticated) {
+    if (
+      redirectUnauthenticatedHref &&
+      redirectUnauthenticatedPath &&
+      !isAuthenticated
+    ) {
       if (!pathname.startsWith(redirectUnauthenticatedPath)) {
         router.replace(redirectUnauthenticatedHref);
       }
@@ -69,7 +77,11 @@ function normalizeHref(href?: Href): string | undefined {
   return undefined;
 }
 
-const DEFAULT_ENABLED_PLATFORMS: ('ios' | 'android' | 'web')[] = ['ios', 'android', 'web'];
+const DEFAULT_ENABLED_PLATFORMS: ('ios' | 'android' | 'web')[] = [
+  'ios',
+  'android',
+  'web',
+];
 
 function resolveRedirectPlatform(): 'ios' | 'android' | 'web' {
   if (platform.isIos) return 'ios';

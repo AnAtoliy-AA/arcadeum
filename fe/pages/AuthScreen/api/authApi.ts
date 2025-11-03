@@ -2,7 +2,10 @@ import { authorize, AuthorizeResult, revoke } from 'react-native-app-auth';
 import * as AuthSession from 'expo-auth-session';
 import { platform } from '@/constants/platform';
 import { authConfig } from '../config/authConfig';
-import { fetchWithRefresh, type FetchWithRefreshOptions } from '@/lib/fetchWithRefresh';
+import {
+  fetchWithRefresh,
+  type FetchWithRefreshOptions,
+} from '@/lib/fetchWithRefresh';
 import { resolveApiBase } from '@/lib/apiBase';
 
 function validateConfig() {
@@ -12,7 +15,7 @@ function validateConfig() {
   if (!authConfig.issuer) missing.push('issuer');
   if (missing.length) {
     throw new Error(
-  `Missing OAuth config for ${platform.os}. Missing: ${missing.join(', ')}. Check your .env and app.config.ts.`
+      `Missing OAuth config for ${platform.os}. Missing: ${missing.join(', ')}. Check your .env and app.config.ts.`,
     );
   }
 }
@@ -69,25 +72,39 @@ export async function loginWithOAuth(): Promise<AuthorizeResult> {
   }
 }
 
-export async function logoutOAuth(params: { accessToken?: string; refreshToken?: string }) {
+export async function logoutOAuth(params: {
+  accessToken?: string;
+  refreshToken?: string;
+}) {
   const { accessToken, refreshToken } = params;
 
   try {
     if (platform.isWeb) {
       if (!accessToken) return; // nothing to revoke client-side
-      const discovery = await AuthSession.fetchDiscoveryAsync(authConfig.issuer);
+      const discovery = await AuthSession.fetchDiscoveryAsync(
+        authConfig.issuer,
+      );
       if (discovery.revocationEndpoint) {
-        await AuthSession.revokeAsync({ token: accessToken, clientId: authConfig.clientId! }, discovery);
+        await AuthSession.revokeAsync(
+          { token: accessToken, clientId: authConfig.clientId! },
+          discovery,
+        );
       }
       return;
     }
 
     // Native (Android/iOS) — revoke access and refresh tokens if present
     if (accessToken) {
-      await revoke(authConfig as any, { tokenToRevoke: accessToken, sendClientId: true });
+      await revoke(authConfig as any, {
+        tokenToRevoke: accessToken,
+        sendClientId: true,
+      });
     }
     if (refreshToken) {
-      await revoke(authConfig as any, { tokenToRevoke: refreshToken, sendClientId: true });
+      await revoke(authConfig as any, {
+        tokenToRevoke: refreshToken,
+        sendClientId: true,
+      });
     }
   } catch (e: any) {
     const message = e?.message || String(e);
@@ -122,7 +139,11 @@ function apiBase(): string {
   return resolveApiBase();
 }
 
-export async function registerLocal(email: string, password: string, username: string): Promise<RegisterResponse> {
+export async function registerLocal(
+  email: string,
+  password: string,
+  username: string,
+): Promise<RegisterResponse> {
   const res = await fetch(`${apiBase()}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -135,7 +156,10 @@ export async function registerLocal(email: string, password: string, username: s
   return res.json() as Promise<RegisterResponse>;
 }
 
-export async function loginLocal(email: string, password: string): Promise<LoginResponse> {
+export async function loginLocal(
+  email: string,
+  password: string,
+): Promise<LoginResponse> {
   const res = await fetch(`${apiBase()}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -165,7 +189,9 @@ export async function loginOAuthSession(params: {
   return res.json() as Promise<LoginResponse>;
 }
 
-export async function refreshSession(refreshToken: string): Promise<LoginResponse> {
+export async function refreshSession(
+  refreshToken: string,
+): Promise<LoginResponse> {
   const res = await fetch(`${apiBase()}/auth/refresh`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -178,11 +204,18 @@ export async function refreshSession(refreshToken: string): Promise<LoginRespons
   return res.json() as Promise<LoginResponse>;
 }
 
-export async function me(accessToken: string, options?: FetchWithRefreshOptions): Promise<MeResponse> {
-  const response = await fetchWithRefresh(`${apiBase()}/auth/me`, {}, {
-    accessToken,
-    refreshTokens: options?.refreshTokens,
-  });
+export async function me(
+  accessToken: string,
+  options?: FetchWithRefreshOptions,
+): Promise<MeResponse> {
+  const response = await fetchWithRefresh(
+    `${apiBase()}/auth/me`,
+    {},
+    {
+      accessToken,
+      refreshTokens: options?.refreshTokens,
+    },
+  );
   if (!response.ok) throw new Error('Unauthorized');
   return response.json() as Promise<MeResponse>;
 }

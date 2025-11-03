@@ -2,22 +2,22 @@ import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
-} from "@react-navigation/native";
-import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import "react-native-reanimated";
+} from '@react-navigation/native';
+import { useFonts } from 'expo-font';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import 'react-native-reanimated';
 
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { SessionTokensProvider } from "@/stores/sessionTokens";
-import { SettingsProvider } from "@/stores/settings";
-import { SettingsLauncher } from "@/components/ui/SettingsLauncher";
-import { ErrorToastProvider } from "@/components/ui/ErrorToastProvider";
-import { useTranslation } from "@/lib/i18n";
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { SessionTokensProvider } from '@/stores/sessionTokens';
+import { SettingsProvider } from '@/stores/settings';
+import { SettingsLauncher } from '@/components/ui/SettingsLauncher';
+import { ErrorToastProvider } from '@/components/ui/ErrorToastProvider';
+import { useTranslation } from '@/lib/i18n';
 
 export default function RootLayout() {
   const [loaded] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
   if (!loaded) {
@@ -41,7 +41,7 @@ function NavigationRoot() {
   const { t } = useTranslation();
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -52,20 +52,20 @@ function NavigationRoot() {
         />
         <Stack.Screen
           name="settings"
-          options={{ title: t("navigation.settingsTitle")}}
+          options={{ title: t('navigation.settingsTitle') }}
         />
         <Stack.Screen
           name="payment"
-          options={{ title: t("navigation.paymentTitle") }}
+          options={{ title: t('navigation.paymentTitle') }}
         />
         <Stack.Screen
           name="support"
-          options={{ title: t("navigation.supportTitle") }}
+          options={{ title: t('navigation.supportTitle') }}
         />
         <Stack.Screen name="+not-found" />
       </Stack>
       <SettingsLauncher />
-      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
     </ThemeProvider>
   );
 }

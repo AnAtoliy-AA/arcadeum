@@ -43,12 +43,24 @@ const CARD_ARTWORK = {
   defuse: [Defuse1, Defuse2, Defuse3],
   attack: [Attack1, Attack2, Attack3],
   skip: [Skip1, Skip2, Skip3],
-  'hairball-redirect': [HairballRedirect1, HairballRedirect2, HairballRedirect3],
-  'temporal-laser-pointer': [TemporalLaserPointer1, TemporalLaserPointer2, TemporalLaserPointer3],
+  'hairball-redirect': [
+    HairballRedirect1,
+    HairballRedirect2,
+    HairballRedirect3,
+  ],
+  'temporal-laser-pointer': [
+    TemporalLaserPointer1,
+    TemporalLaserPointer2,
+    TemporalLaserPointer3,
+  ],
   'catnip-firewall': [CatnipFirewall1, CatnipFirewall2, CatnipFirewall3],
   tacocat: [Tacocat1, Tacocat2, Tacocat3],
   'hairy-potato-cat': [HairyPotatoCat1, HairyPotatoCat2, HairyPotatoCat3],
-  'rainbow-ralphing-cat': [RainbowRalphingCat1, RainbowRalphingCat2, RainbowRalphingCat3],
+  'rainbow-ralphing-cat': [
+    RainbowRalphingCat1,
+    RainbowRalphingCat2,
+    RainbowRalphingCat3,
+  ],
   cattermelon: [Cattermelon1, Cattermelon2, Cattermelon3],
   'bearded-cat': [BeardedCat1, BeardedCat2, BeardedCat3],
 } as const;
@@ -61,22 +73,33 @@ type ExplodingCatsCardProps = SvgProps & {
   accessibilityLabel?: string;
 };
 
-export const ExplodingCatsCard = memo(({ card, variant = 1, accessibilityLabel, accessibilityRole, accessible, ...svgProps }: ExplodingCatsCardProps) => {
-  const variants = CARD_ARTWORK[card];
-  const index = Math.min(Math.max(variant, 1), variants.length) - 1;
-  const Artwork = variants[index];
+export const ExplodingCatsCard = memo(
+  ({
+    card,
+    variant = 1,
+    accessibilityLabel,
+    accessibilityRole,
+    accessible,
+    ...svgProps
+  }: ExplodingCatsCardProps) => {
+    const variants = CARD_ARTWORK[card];
+    const index = Math.min(Math.max(variant, 1), variants.length) - 1;
+    const Artwork = variants[index];
 
-  const role = accessible === false ? undefined : accessibilityRole ?? 'image';
-  const label = accessible === false ? undefined : accessibilityLabel ?? `${card} card`;
+    const role =
+      accessible === false ? undefined : (accessibilityRole ?? 'image');
+    const label =
+      accessible === false ? undefined : (accessibilityLabel ?? `${card} card`);
 
-  return (
-    <Artwork
-      accessible={accessible}
-      accessibilityRole={role}
-      accessibilityLabel={label}
-      {...svgProps}
-    />
-  );
-});
+    return (
+      <Artwork
+        accessible={accessible}
+        accessibilityRole={role}
+        accessibilityLabel={label}
+        {...svgProps}
+      />
+    );
+  },
+);
 
 ExplodingCatsCard.displayName = 'ExplodingCatsCard';

@@ -1,5 +1,12 @@
 import React from 'react';
-import { StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextStyle,
+  TouchableOpacity,
+  TouchableOpacityProps,
+} from 'react-native';
 import { useThemedStyles, Palette } from '@/hooks/useThemedStyles';
 
 export type ThemedButtonVariant = 'solid' | 'outline';

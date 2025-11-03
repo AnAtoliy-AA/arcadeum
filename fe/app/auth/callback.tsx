@@ -1,10 +1,18 @@
-import { useLocalSearchParams, Redirect, useRootNavigationState } from 'expo-router';
+import {
+  useLocalSearchParams,
+  Redirect,
+  useRootNavigationState,
+} from 'expo-router';
 import { StyleSheet } from 'react-native';
 import { ThemedView } from '../../components/ThemedView';
 import { ThemedText } from '../../components/ThemedText';
 
 export default function AuthCallback() {
-  const params = useLocalSearchParams<{ code?: string; state?: string; error?: string }>();
+  const params = useLocalSearchParams<{
+    code?: string;
+    state?: string;
+    error?: string;
+  }>();
   const navState = useRootNavigationState();
   const isReady = !!navState?.key;
 
@@ -17,7 +25,11 @@ export default function AuthCallback() {
   }
 
   if (params.error) {
-    return <Redirect href={{ pathname: '/auth', params: { error: String(params.error) } }} />;
+    return (
+      <Redirect
+        href={{ pathname: '/auth', params: { error: String(params.error) } }}
+      />
+    );
   }
 
   if (params.code) {
@@ -25,7 +37,10 @@ export default function AuthCallback() {
       <Redirect
         href={{
           pathname: '/auth',
-          params: { code: String(params.code), state: String(params.state || '') },
+          params: {
+            code: String(params.code),
+            state: String(params.state || ''),
+          },
         }}
       />
     );

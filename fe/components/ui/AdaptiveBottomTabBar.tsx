@@ -38,12 +38,19 @@ function stripShadowProps(style: ViewStyle | undefined): ViewStyle | undefined {
   return sanitized;
 }
 
-function WebBottomTabBar({ state, descriptors, navigation, insets }: BottomTabBarProps) {
+function WebBottomTabBar({
+  state,
+  descriptors,
+  navigation,
+  insets,
+}: BottomTabBarProps) {
   const colorScheme = useColorScheme() ?? 'light';
   const palette = Colors[colorScheme];
   const focusedOptions = descriptors[state.routes[state.index].key].options;
   const backgroundElement = focusedOptions.tabBarBackground?.();
-  const flattenedTabBarStyle = StyleSheet.flatten(focusedOptions.tabBarStyle) as ViewStyle | undefined;
+  const flattenedTabBarStyle = StyleSheet.flatten(
+    focusedOptions.tabBarStyle,
+  ) as ViewStyle | undefined;
   const containerStyle: ViewStyle = {
     backgroundColor: palette.cardBackground ?? palette.background,
     borderTopWidth: StyleSheet.hairlineWidth,
@@ -78,19 +85,35 @@ function WebBottomTabBar({ state, descriptors, navigation, insets }: BottomTabBa
         const focused = index === state.index;
         const descriptor = descriptors[route.key];
         const options = descriptor.options;
-        const labelFromOptions = options.tabBarLabel ?? options.title ?? route.name;
-        const label = typeof labelFromOptions === 'function'
-          ? labelFromOptions({ focused, color: focused ? palette.tint : palette.icon, position: 'below-icon', children: route.name })
-          : labelFromOptions;
+        const labelFromOptions =
+          options.tabBarLabel ?? options.title ?? route.name;
+        const label =
+          typeof labelFromOptions === 'function'
+            ? labelFromOptions({
+                focused,
+                color: focused ? palette.tint : palette.icon,
+                position: 'below-icon',
+                children: route.name,
+              })
+            : labelFromOptions;
 
         const activeTintColor = options.tabBarActiveTintColor ?? palette.tint;
-        const inactiveTintColor = options.tabBarInactiveTintColor ?? palette.icon;
-        const activeBackgroundColor = options.tabBarActiveBackgroundColor ?? 'transparent';
-        const inactiveBackgroundColor = options.tabBarInactiveBackgroundColor ?? 'transparent';
+        const inactiveTintColor =
+          options.tabBarInactiveTintColor ?? palette.icon;
+        const activeBackgroundColor =
+          options.tabBarActiveBackgroundColor ?? 'transparent';
+        const inactiveBackgroundColor =
+          options.tabBarInactiveBackgroundColor ?? 'transparent';
         const tintColor = focused ? activeTintColor : inactiveTintColor;
-        const backgroundColor = focused ? activeBackgroundColor : inactiveBackgroundColor;
+        const backgroundColor = focused
+          ? activeBackgroundColor
+          : inactiveBackgroundColor;
 
-        const icon = options.tabBarIcon?.({ focused, color: tintColor, size: ICON_SIZE });
+        const icon = options.tabBarIcon?.({
+          focused,
+          color: tintColor,
+          size: ICON_SIZE,
+        });
         const badge = options.tabBarBadge;
         const showLabel = options.tabBarShowLabel ?? true;
 
@@ -116,20 +139,31 @@ function WebBottomTabBar({ state, descriptors, navigation, insets }: BottomTabBa
           });
         };
 
-        const labelNode = typeof label === 'string'
-          ? (
+        const labelNode =
+          typeof label === 'string' ? (
             <Text
-              style={[styles.label, options.tabBarLabelStyle as TextStyle, { color: tintColor }]}
+              style={[
+                styles.label,
+                options.tabBarLabelStyle as TextStyle,
+                { color: tintColor },
+              ]}
               numberOfLines={1}
             >
               {label}
             </Text>
-          )
-          : label;
+          ) : (
+            label
+          );
 
-        const flattenedItemStyle = StyleSheet.flatten(options.tabBarItemStyle) as ViewStyle | undefined;
-        const flattenedIconStyle = StyleSheet.flatten(options.tabBarIconStyle) as ViewStyle | undefined;
-        const flattenedBadgeStyle = StyleSheet.flatten(options.tabBarBadgeStyle) as ViewStyle | undefined;
+        const flattenedItemStyle = StyleSheet.flatten(
+          options.tabBarItemStyle,
+        ) as ViewStyle | undefined;
+        const flattenedIconStyle = StyleSheet.flatten(
+          options.tabBarIconStyle,
+        ) as ViewStyle | undefined;
+        const flattenedBadgeStyle = StyleSheet.flatten(
+          options.tabBarBadgeStyle,
+        ) as ViewStyle | undefined;
 
         return (
           <Pressable
@@ -151,14 +185,21 @@ function WebBottomTabBar({ state, descriptors, navigation, insets }: BottomTabBa
           >
             <View style={styles.iconLabelRow}>
               {icon ? (
-                <View style={[styles.iconContainer, stripShadowProps(flattenedIconStyle)]}>
+                <View
+                  style={[
+                    styles.iconContainer,
+                    stripShadowProps(flattenedIconStyle),
+                  ]}
+                >
                   {icon}
                 </View>
               ) : null}
               {showLabel ? labelNode : null}
             </View>
             {badge != null ? (
-              <View style={[styles.badge, stripShadowProps(flattenedBadgeStyle)]}>
+              <View
+                style={[styles.badge, stripShadowProps(flattenedBadgeStyle)]}
+              >
                 <Text style={styles.badgeText}>{badge}</Text>
               </View>
             ) : null}

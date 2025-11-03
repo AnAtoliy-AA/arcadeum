@@ -1,4 +1,12 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { SecureStoreShim } from '@/lib/secureStore';
 import { refreshSession } from '@/pages/AuthScreen/api/authApi';
 import { connectSockets, disconnectSockets } from '@/hooks/useSocket';
@@ -63,7 +71,9 @@ function toIso(value?: string | Date | null): string | null {
   return value;
 }
 
-function sanitizeSnapshot(value: Partial<SessionTokensSnapshot> | null | undefined): SessionTokensSnapshot {
+function sanitizeSnapshot(
+  value: Partial<SessionTokensSnapshot> | null | undefined,
+): SessionTokensSnapshot {
   if (!value) return { ...defaultSnapshot };
   return {
     provider: (value.provider ?? null) as SessionProviderId | null,
@@ -91,14 +101,23 @@ async function readFromStorage(): Promise<SessionTokensSnapshot> {
   }
 }
 
-function buildNextSnapshot(current: SessionTokensSnapshot, input: SetSessionTokensInput): SessionTokensSnapshot {
+function buildNextSnapshot(
+  current: SessionTokensSnapshot,
+  input: SetSessionTokensInput,
+): SessionTokensSnapshot {
   const next: SessionTokensSnapshot = {
-    provider: (input.provider ?? current.provider ?? null) as SessionProviderId | null,
+    provider: (input.provider ??
+      current.provider ??
+      null) as SessionProviderId | null,
     accessToken: input.accessToken ?? current.accessToken ?? null,
     refreshToken: input.refreshToken ?? current.refreshToken ?? null,
     tokenType: input.tokenType ?? current.tokenType ?? null,
-    accessTokenExpiresAt: toIso(input.accessTokenExpiresAt) ?? current.accessTokenExpiresAt ?? null,
-    refreshTokenExpiresAt: toIso(input.refreshTokenExpiresAt) ?? current.refreshTokenExpiresAt ?? null,
+    accessTokenExpiresAt:
+      toIso(input.accessTokenExpiresAt) ?? current.accessTokenExpiresAt ?? null,
+    refreshTokenExpiresAt:
+      toIso(input.refreshTokenExpiresAt) ??
+      current.refreshTokenExpiresAt ??
+      null,
     updatedAt: new Date().toISOString(),
     userId: input.userId ?? current.userId ?? null,
     email: input.email ?? current.email ?? null,
@@ -108,10 +127,18 @@ function buildNextSnapshot(current: SessionTokensSnapshot, input: SetSessionToke
   return next;
 }
 
-const SessionTokensContext = createContext<SessionTokensContextValue | undefined>(undefined);
+const SessionTokensContext = createContext<
+  SessionTokensContextValue | undefined
+>(undefined);
 
-export function SessionTokensProvider({ children }: { children: React.ReactNode }) {
-  const [tokens, setTokensState] = useState<SessionTokensSnapshot>({ ...defaultSnapshot });
+export function SessionTokensProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [tokens, setTokensState] = useState<SessionTokensSnapshot>({
+    ...defaultSnapshot,
+  });
   const [hydrated, setHydrated] = useState(false);
   const refreshInFlight = useRef<Promise<SessionTokensSnapshot> | null>(null);
 
@@ -226,7 +253,12 @@ export function SessionTokensProvider({ children }: { children: React.ReactNode 
     return () => {
       clearTimeout(timeout);
     };
-  }, [tokens.accessToken, tokens.accessTokenExpiresAt, tokens.refreshToken, refreshTokens]);
+  }, [
+    tokens.accessToken,
+    tokens.accessTokenExpiresAt,
+    tokens.refreshToken,
+    refreshTokens,
+  ]);
 
   const value = useMemo<SessionTokensContextValue>(
     () => ({ tokens, hydrated, setTokens, clearTokens, reload, refreshTokens }),
@@ -245,13 +277,19 @@ export function SessionTokensProvider({ children }: { children: React.ReactNode 
     }
   }, [hydrated, tokens.accessToken]);
 
-  return <SessionTokensContext.Provider value={value}>{children}</SessionTokensContext.Provider>;
+  return (
+    <SessionTokensContext.Provider value={value}>
+      {children}
+    </SessionTokensContext.Provider>
+  );
 }
 
 export function useSessionTokens(): SessionTokensContextValue {
   const ctx = useContext(SessionTokensContext);
   if (!ctx) {
-    throw new Error('useSessionTokens must be used within a SessionTokensProvider');
+    throw new Error(
+      'useSessionTokens must be used within a SessionTokensProvider',
+    );
   }
   return ctx;
 }

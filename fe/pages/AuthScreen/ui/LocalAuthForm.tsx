@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  Text,
+  ActivityIndicator,
+} from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useTranslation } from '@/lib/i18n';
 import { useLocalAuth } from '../model/useLocalAuth';
@@ -44,7 +50,8 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
   const usernameTrimmed = username.trim();
   const emailTrimmed = email.trim();
   const disabled = auth.loading;
-  const passwordMismatch = isRegister && password && confirm && password !== confirm;
+  const passwordMismatch =
+    isRegister && password && confirm && password !== confirm;
   const usernameInvalid = isRegister && usernameTrimmed.length < 3;
   const usernameTooShort =
     isRegister && usernameTrimmed.length > 0 && usernameTrimmed.length < 3;
@@ -61,7 +68,9 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
   return (
     <View style={styles.container}>
       <Text style={[styles.heading, { color: palette.text }]}>
-        {isRegister ? t('auth.local.heading.register') : t('auth.local.heading.login')}
+        {isRegister
+          ? t('auth.local.heading.register')
+          : t('auth.local.heading.login')}
       </Text>
       {isRegister && (
         <TextInput
@@ -78,7 +87,9 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
             },
           ]}
           value={username}
-          onChangeText={(value) => setUsername(value.replace(/[^a-zA-Z0-9_-]/g, ''))}
+          onChangeText={(value) =>
+            setUsername(value.replace(/[^a-zA-Z0-9_-]/g, ''))
+          }
         />
       )}
       <TextInput
@@ -131,24 +142,42 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
         />
       )}
       {passwordMismatch && (
-        <Text style={[styles.error, { color: palette.error }]}>{t('auth.local.errors.passwordMismatch')}</Text>
+        <Text style={[styles.error, { color: palette.error }]}>
+          {t('auth.local.errors.passwordMismatch')}
+        </Text>
       )}
       {usernameTooShort && (
-        <Text style={[styles.error, { color: palette.error }]}>{t('auth.local.errors.usernameTooShort')}</Text>
+        <Text style={[styles.error, { color: palette.error }]}>
+          {t('auth.local.errors.usernameTooShort')}
+        </Text>
       )}
       {isRegister && (
-        <Text style={[styles.small, { color: palette.icon }]}>{t('auth.local.helper.allowedCharacters')}</Text>
+        <Text style={[styles.small, { color: palette.icon }]}>
+          {t('auth.local.helper.allowedCharacters')}
+        </Text>
       )}
-      {auth.error && <Text style={[styles.error, { color: palette.error }]}>{auth.error}</Text>}
+      {auth.error && (
+        <Text style={[styles.error, { color: palette.error }]}>
+          {auth.error}
+        </Text>
+      )}
       <View style={styles.buttonRow}>
         <ThemedButton
-          title={isRegister ? t('common.actions.register') : t('common.actions.login')}
+          title={
+            isRegister
+              ? t('common.actions.register')
+              : t('common.actions.login')
+          }
           onPress={submit}
           disabled={!!(disabled || passwordMismatch || usernameInvalid)}
           style={styles.button}
         />
         <ThemedButton
-          title={isRegister ? t('common.prompts.haveAccount') : t('common.prompts.needAccount')}
+          title={
+            isRegister
+              ? t('common.prompts.haveAccount')
+              : t('common.prompts.needAccount')
+          }
           onPress={auth.toggleMode}
           disabled={disabled}
           variant="outline"
@@ -158,7 +187,9 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
       {auth.loading && <ActivityIndicator style={{ marginTop: 12 }} />}
       {auth.accessToken && (
         <View style={styles.sessionBox}>
-          <Text style={[styles.small, { color: palette.text }]}>{t('common.statuses.authenticated')}</Text>
+          <Text style={[styles.small, { color: palette.text }]}>
+            {t('common.statuses.authenticated')}
+          </Text>
           {auth.email && (
             <Text style={[styles.small, { color: palette.text }]}>
               {t('common.labels.email')}: {auth.email}

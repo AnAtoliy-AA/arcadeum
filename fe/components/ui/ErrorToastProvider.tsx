@@ -41,11 +41,17 @@ interface ToastItem {
   duration: number;
 }
 
-const ErrorToastContext = createContext<ErrorToastContextValue | undefined>(undefined);
+const ErrorToastContext = createContext<ErrorToastContextValue | undefined>(
+  undefined,
+);
 
 const DEFAULT_DURATION = 3000;
 
-export function ErrorToastProvider({ children }: { children: React.ReactNode }) {
+export function ErrorToastProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const styles = useThemedStyles(createStyles);
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -64,12 +70,15 @@ export function ErrorToastProvider({ children }: { children: React.ReactNode }) 
     }
   }, []);
 
-  const scheduleRemoval = useCallback((id: string, duration: number) => {
-    const timer = setTimeout(() => {
-      removeToast(id);
-    }, duration);
-    timersRef.current.set(id, timer);
-  }, [removeToast]);
+  const scheduleRemoval = useCallback(
+    (id: string, duration: number) => {
+      const timer = setTimeout(() => {
+        removeToast(id);
+      }, duration);
+      timersRef.current.set(id, timer);
+    },
+    [removeToast],
+  );
 
   const pushToast = useCallback(
     (payload: GlobalErrorPayload): void => {
@@ -104,7 +113,11 @@ export function ErrorToastProvider({ children }: { children: React.ReactNode }) 
         return;
       }
 
-      pushToast({ rawMessage: trimmed, fallbackMessage: trimmed, duration: options?.duration });
+      pushToast({
+        rawMessage: trimmed,
+        fallbackMessage: trimmed,
+        duration: options?.duration,
+      });
     },
     [pushToast],
   );
@@ -123,10 +136,13 @@ export function ErrorToastProvider({ children }: { children: React.ReactNode }) 
     };
   }, [clearErrors, pushToast]);
 
-  const contextValue = useMemo<ErrorToastContextValue>(() => ({
-    showError,
-    clearErrors,
-  }), [clearErrors, showError]);
+  const contextValue = useMemo<ErrorToastContextValue>(
+    () => ({
+      showError,
+      clearErrors,
+    }),
+    [clearErrors, showError],
+  );
 
   return (
     <ErrorToastContext.Provider value={contextValue}>
@@ -188,7 +204,11 @@ function ToastBubble({
 
   return (
     <Animated.View style={[style, { opacity }] as StyleProp<ViewStyle>}>
-      <Pressable onPress={onDismiss} style={styles.toastPressable} accessibilityRole="alert">
+      <Pressable
+        onPress={onDismiss}
+        style={styles.toastPressable}
+        accessibilityRole="alert"
+      >
         <ThemedText style={styles.toastText}>{message}</ThemedText>
       </Pressable>
     </Animated.View>

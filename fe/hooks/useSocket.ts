@@ -6,7 +6,7 @@ import { platform } from '@/constants/platform';
 function resolveSocketUrl(): string {
   // 1) Explicit override via env (works in Expo with EXPO_PUBLIC_*)
   const envUrl = process.env.EXPO_PUBLIC_API_URL;
-  
+
   if (envUrl) return envUrl;
 
   // 2) Expo Go / Dev Client: derive host from Metro debugger host
@@ -38,7 +38,10 @@ const SOCKET_OPTIONS = {
   autoConnect: false,
 };
 
-const gamesSocket = io(`${SOCKET_BASE_URL}/games`, SOCKET_OPTIONS) as AuthenticatedSocket;
+const gamesSocket = io(
+  `${SOCKET_BASE_URL}/games`,
+  SOCKET_OPTIONS,
+) as AuthenticatedSocket;
 const chatsSocket = io(SOCKET_BASE_URL, SOCKET_OPTIONS) as AuthenticatedSocket;
 
 let currentAuthToken: string | null = null;

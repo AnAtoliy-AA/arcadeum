@@ -3,7 +3,9 @@ import type { GameRoomSummary } from './api/gamesApi';
 import type { TranslationKey } from '@/lib/i18n/messages';
 
 export function formatRoomGame(gameId: string): string {
-  return gamesCatalog.find((game) => game.id === gameId)?.name ?? 'Unknown game';
+  return (
+    gamesCatalog.find((game) => game.id === gameId)?.name ?? 'Unknown game'
+  );
 }
 
 export function formatRoomHost(hostId: string): string {
@@ -12,7 +14,9 @@ export function formatRoomHost(hostId: string): string {
   return `${hostId.slice(0, 4)}…${hostId.slice(-2)}`;
 }
 
-export function getRoomStatusLabel(status: GameRoomSummary['status']): TranslationKey {
+export function getRoomStatusLabel(
+  status: GameRoomSummary['status'],
+): TranslationKey {
   switch (status) {
     case 'lobby':
       return 'games.rooms.status.lobby';

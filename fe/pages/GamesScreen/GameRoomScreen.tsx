@@ -17,7 +17,10 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { gameSocket as socket } from '@/hooks/useSocket';
 import { useSessionTokens } from '@/stores/sessionTokens';
 import { showGlobalError } from '@/components/ui/ErrorToastProvider';
-import { findApiMessageDescriptor, inferTranslationKeyFromMessageKey } from '@/lib/apiMessageCatalog';
+import {
+  findApiMessageDescriptor,
+  inferTranslationKeyFromMessageKey,
+} from '@/lib/apiMessageCatalog';
 import { platformShadow } from '@/lib/platformShadow';
 import {
   deleteGameRoom,
@@ -42,7 +45,9 @@ import {
 import { useTranslation } from '@/lib/i18n';
 import { platform } from '@/constants/platform';
 
-function resolveParam(value: string | string[] | undefined): string | undefined {
+function resolveParam(
+  value: string | string[] | undefined,
+): string | undefined {
   if (!value) return undefined;
   return Array.isArray(value) ? value[0] : value;
 }
@@ -71,7 +76,11 @@ function shouldExposeRawWsMessage(message?: string): boolean {
 export default function GameRoomScreen() {
   const insets = useSafeAreaInsets();
   const styles = useThemedStyles(createStyles);
-  const params = useLocalSearchParams<{ id?: string; gameId?: string; roomName?: string }>();
+  const params = useLocalSearchParams<{
+    id?: string;
+    gameId?: string;
+    roomName?: string;
+  }>();
   const router = useRouter();
   const { tokens, refreshTokens, hydrated } = useSessionTokens();
   const { t } = useTranslation();
@@ -81,7 +90,10 @@ export default function GameRoomScreen() {
     [styles.content, iosTopInset],
   );
   const fullscreenContainerStyle = useMemo(
-    () => [styles.fullscreenContainer, platform.isIos ? { paddingTop: iosTopInset } : null],
+    () => [
+      styles.fullscreenContainer,
+      platform.isIos ? { paddingTop: iosTopInset } : null,
+    ],
     [styles.fullscreenContainer, iosTopInset],
   );
 
@@ -98,7 +110,8 @@ export default function GameRoomScreen() {
     'draw' | 'skip' | 'attack' | 'cat_pair' | 'cat_trio' | null
   >(null);
   const [startBusy, setStartBusy] = useState(false);
-  const isHost = room?.hostId && tokens.userId ? room.hostId === tokens.userId : false;
+  const isHost =
+    room?.hostId && tokens.userId ? room.hostId === tokens.userId : false;
   const [leaving, setLeaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [tableFullScreen, setTableFullScreen] = useState(false);
@@ -178,7 +191,10 @@ export default function GameRoomScreen() {
       socket.emit(joinEvent, joinPayload);
     };
 
-    const handleJoined = (payload: { room?: GameRoomSummary; session?: GameSessionSummary | null }) => {
+    const handleJoined = (payload: {
+      room?: GameRoomSummary;
+      session?: GameSessionSummary | null;
+    }) => {
       if (payload?.room) {
         setRoom(payload.room);
       }
@@ -221,7 +237,10 @@ export default function GameRoomScreen() {
       );
     };
 
-    const handleSnapshot = (payload: { roomId?: string; session?: GameSessionSummary | null }) => {
+    const handleSnapshot = (payload: {
+      roomId?: string;
+      session?: GameSessionSummary | null;
+    }) => {
       if (payload?.roomId && payload.roomId !== roomId) {
         return;
       }
@@ -231,7 +250,10 @@ export default function GameRoomScreen() {
       setActionBusy(null);
     };
 
-    const handleSessionStarted = (payload: { room: GameRoomSummary; session: GameSessionSummary }) => {
+    const handleSessionStarted = (payload: {
+      room: GameRoomSummary;
+      session: GameSessionSummary;
+    }) => {
       if (!payload?.room || payload.room.id !== roomId) {
         return;
       }
@@ -257,16 +279,18 @@ export default function GameRoomScreen() {
           ? (payload as Record<string, unknown>)
           : undefined;
 
-      const message = typeof detail?.message === 'string'
-        ? detail.message
-        : typeof payload === 'string'
-          ? payload
-          : undefined;
+      const message =
+        typeof detail?.message === 'string'
+          ? detail.message
+          : typeof payload === 'string'
+            ? payload
+            : undefined;
 
-      const messageKey = typeof detail?.messageKey === 'string' ? detail.messageKey : undefined;
+      const messageKey =
+        typeof detail?.messageKey === 'string' ? detail.messageKey : undefined;
       const messageCode =
-        normalizeWsMessageCode(detail?.messageCode)
-        ?? normalizeWsMessageCode(detail?.code);
+        normalizeWsMessageCode(detail?.messageCode) ??
+        normalizeWsMessageCode(detail?.code);
 
       const descriptor = findApiMessageDescriptor({
         code: messageCode,
@@ -274,11 +298,15 @@ export default function GameRoomScreen() {
         message,
       });
 
-      const fallback = descriptor?.fallbackMessage ?? message ?? t('games.alerts.genericError');
+      const fallback =
+        descriptor?.fallbackMessage ??
+        message ??
+        t('games.alerts.genericError');
 
       showGlobalError({
         translationKey:
-          descriptor?.translationKey ?? inferTranslationKeyFromMessageKey(messageKey),
+          descriptor?.translationKey ??
+          inferTranslationKeyFromMessageKey(messageKey),
         fallbackMessage: fallback,
         rawMessage: shouldExposeRawWsMessage(message) ? message : undefined,
       });
@@ -331,7 +359,10 @@ export default function GameRoomScreen() {
       setStartBusy(false);
       router.replace('/(tabs)/games');
     } catch (err) {
-      const message = err instanceof Error ? err.message : t('games.alerts.couldNotLeaveMessage');
+      const message =
+        err instanceof Error
+          ? err.message
+          : t('games.alerts.couldNotLeaveMessage');
       Alert.alert(t('games.alerts.couldNotLeaveTitle'), message);
     } finally {
       setLeaving(false);
@@ -358,7 +389,8 @@ export default function GameRoomScreen() {
       setStartBusy(false);
       router.replace('/(tabs)/games');
     } catch (err) {
-      const message = err instanceof Error ? err.message : t('games.alerts.genericError');
+      const message =
+        err instanceof Error ? err.message : t('games.alerts.genericError');
       Alert.alert(t('games.alerts.actionFailedTitle'), message);
     } finally {
       setDeleting(false);
@@ -442,7 +474,16 @@ export default function GameRoomScreen() {
         },
       ],
     );
-  }, [deleting, handleLeaveRoom, isHost, performDelete, roomId, router, t, tokens.accessToken]);
+  }, [
+    deleting,
+    handleLeaveRoom,
+    isHost,
+    performDelete,
+    roomId,
+    router,
+    t,
+    tokens.accessToken,
+  ]);
 
   const handleStartMatch = useCallback(() => {
     if (!roomId) {
@@ -450,13 +491,17 @@ export default function GameRoomScreen() {
     }
 
     if (!tokens.accessToken) {
-      Alert.alert(t('games.alerts.signInRequiredTitle'), t('games.alerts.signInStartMatchMessage'), [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('common.signIn'),
-          onPress: () => router.push('/auth' as never),
-        },
-      ]);
+      Alert.alert(
+        t('games.alerts.signInRequiredTitle'),
+        t('games.alerts.signInStartMatchMessage'),
+        [
+          { text: t('common.cancel'), style: 'cancel' },
+          {
+            text: t('common.signIn'),
+            onPress: () => router.push('/auth' as never),
+          },
+        ],
+      );
       return;
     }
 
@@ -477,7 +522,10 @@ export default function GameRoomScreen() {
         setSession(response.session);
       })
       .catch((err) => {
-        const message = err instanceof Error ? err.message : t('games.alerts.unableToStartMessage');
+        const message =
+          err instanceof Error
+            ? err.message
+            : t('games.alerts.unableToStartMessage');
         Alert.alert(t('games.alerts.unableToStartTitle'), message);
       })
       .finally(() => {
@@ -487,7 +535,10 @@ export default function GameRoomScreen() {
 
   const handleDrawCard = useCallback(() => {
     if (!roomId || !tokens.userId) {
-      Alert.alert(t('games.alerts.signInRequiredTitle'), t('games.alerts.signInTakeTurnMessage'));
+      Alert.alert(
+        t('games.alerts.signInRequiredTitle'),
+        t('games.alerts.signInTakeTurnMessage'),
+      );
       return;
     }
 
@@ -505,7 +556,10 @@ export default function GameRoomScreen() {
   const handlePlayCard = useCallback(
     (card: 'skip' | 'attack') => {
       if (!roomId || !tokens.userId) {
-        Alert.alert(t('games.alerts.signInRequiredTitle'), t('games.alerts.signInPlayCardMessage'));
+        Alert.alert(
+          t('games.alerts.signInRequiredTitle'),
+          t('games.alerts.signInPlayCardMessage'),
+        );
         return;
       }
 
@@ -526,7 +580,10 @@ export default function GameRoomScreen() {
   const handlePlayCatCombo = useCallback(
     (input: ExplodingCatsCatComboInput) => {
       if (!roomId || !tokens.userId) {
-        Alert.alert(t('games.alerts.signInRequiredTitle'), t('games.alerts.signInPlayCardMessage'));
+        Alert.alert(
+          t('games.alerts.signInRequiredTitle'),
+          t('games.alerts.signInPlayCardMessage'),
+        );
         return;
       }
 
@@ -550,7 +607,10 @@ export default function GameRoomScreen() {
   const handlePostHistoryNote = useCallback(
     (message: string, scope: LogVisibility) => {
       if (!roomId || !tokens.userId) {
-        Alert.alert(t('games.alerts.signInRequiredTitle'), t('games.alerts.signInTakeTurnMessage'));
+        Alert.alert(
+          t('games.alerts.signInRequiredTitle'),
+          t('games.alerts.signInTakeTurnMessage'),
+        );
         return Promise.resolve();
       }
 
@@ -595,15 +655,29 @@ export default function GameRoomScreen() {
       default:
         return styles.statusLobby;
     }
-  }, [room, styles.statusCompleted, styles.statusInProgress, styles.statusLobby]);
+  }, [
+    room,
+    styles.statusCompleted,
+    styles.statusInProgress,
+    styles.statusLobby,
+  ]);
 
   const displayName = room?.name ?? fallbackName ?? t('games.room.defaultName');
-  const displayGameRaw = room ? formatRoomGame(room.gameId) : gameId ? formatRoomGame(gameId) : undefined;
-  const displayGame = displayGameRaw === 'Unknown game' ? t('games.rooms.unknownGame') : displayGameRaw;
+  const displayGameRaw = room
+    ? formatRoomGame(room.gameId)
+    : gameId
+      ? formatRoomGame(gameId)
+      : undefined;
+  const displayGame =
+    displayGameRaw === 'Unknown game'
+      ? t('games.rooms.unknownGame')
+      : displayGameRaw;
 
   const isLoading = loading && !refreshing;
   const hasSessionSnapshot = Boolean(
-    session?.state && typeof session.state === 'object' && (session.state as Record<string, any>).snapshot,
+    session?.state &&
+      typeof session.state === 'object' &&
+      (session.state as Record<string, any>).snapshot,
   );
 
   useEffect(() => {
@@ -629,13 +703,22 @@ export default function GameRoomScreen() {
         ]}
       >
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <IconSymbol name="chevron.left" size={20} color={styles.backButtonText.color as string} />
-          <ThemedText style={styles.backButtonText}>{t('games.detail.backToLobby')}</ThemedText>
+          <IconSymbol
+            name="chevron.left"
+            size={20}
+            color={styles.backButtonText.color as string}
+          />
+          <ThemedText style={styles.backButtonText}>
+            {t('games.detail.backToLobby')}
+          </ThemedText>
         </TouchableOpacity>
         <View style={styles.actionGroup}>
           {hasSessionSnapshot ? (
             <TouchableOpacity
-              style={[styles.gameButton, tableFullScreen ? styles.buttonDisabled : null]}
+              style={[
+                styles.gameButton,
+                tableFullScreen ? styles.buttonDisabled : null,
+              ]}
               onPress={handleEnterFullScreen}
               disabled={tableFullScreen}
               accessibilityRole="button"
@@ -646,56 +729,104 @@ export default function GameRoomScreen() {
                 size={16}
                 color={styles.gameButtonText.color as string}
               />
-              <ThemedText style={styles.gameButtonText}>{t('games.room.buttons.enterFullscreen')}</ThemedText>
+              <ThemedText style={styles.gameButtonText}>
+                {t('games.room.buttons.enterFullscreen')}
+              </ThemedText>
             </TouchableOpacity>
           ) : null}
-          <TouchableOpacity style={styles.gameButton} onPress={handleViewGame} disabled={!room && !gameId}>
-            <IconSymbol name="book" size={16} color={styles.gameButtonText.color as string} />
-            <ThemedText style={styles.gameButtonText}>{t('games.room.buttons.viewGame')}</ThemedText>
+          <TouchableOpacity
+            style={styles.gameButton}
+            onPress={handleViewGame}
+            disabled={!room && !gameId}
+          >
+            <IconSymbol
+              name="book"
+              size={16}
+              color={styles.gameButtonText.color as string}
+            />
+            <ThemedText style={styles.gameButtonText}>
+              {t('games.room.buttons.viewGame')}
+            </ThemedText>
           </TouchableOpacity>
           {isHost ? (
             <>
               <TouchableOpacity
-                style={[styles.deleteButton, deleting ? styles.deleteButtonDisabled : null]}
+                style={[
+                  styles.deleteButton,
+                  deleting ? styles.deleteButtonDisabled : null,
+                ]}
                 onPress={handleDeleteRoom}
                 disabled={deleting}
               >
                 {deleting ? (
-                  <ActivityIndicator size="small" color={styles.deleteSpinner.color as string} />
+                  <ActivityIndicator
+                    size="small"
+                    color={styles.deleteSpinner.color as string}
+                  />
                 ) : (
                   <>
-                    <IconSymbol name="trash" size={16} color={styles.deleteButtonText.color as string} />
-                    <ThemedText style={styles.deleteButtonText}>{t('games.room.buttons.deleteRoom')}</ThemedText>
+                    <IconSymbol
+                      name="trash"
+                      size={16}
+                      color={styles.deleteButtonText.color as string}
+                    />
+                    <ThemedText style={styles.deleteButtonText}>
+                      {t('games.room.buttons.deleteRoom')}
+                    </ThemedText>
                   </>
                 )}
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.leaveButton, leaving ? styles.leaveButtonDisabled : null]}
+                style={[
+                  styles.leaveButton,
+                  leaving ? styles.leaveButtonDisabled : null,
+                ]}
                 onPress={handleLeaveRoom}
                 disabled={leaving}
               >
                 {leaving ? (
-                  <ActivityIndicator size="small" color={styles.leaveSpinner.color as string} />
+                  <ActivityIndicator
+                    size="small"
+                    color={styles.leaveSpinner.color as string}
+                  />
                 ) : (
                   <>
-                    <IconSymbol name="rectangle.portrait.and.arrow.right" size={16} color={styles.leaveButtonText.color as string} />
-                    <ThemedText style={styles.leaveButtonText}>{t('common.actions.leave')}</ThemedText>
+                    <IconSymbol
+                      name="rectangle.portrait.and.arrow.right"
+                      size={16}
+                      color={styles.leaveButtonText.color as string}
+                    />
+                    <ThemedText style={styles.leaveButtonText}>
+                      {t('common.actions.leave')}
+                    </ThemedText>
                   </>
                 )}
               </TouchableOpacity>
             </>
           ) : (
             <TouchableOpacity
-              style={[styles.leaveButton, leaving ? styles.leaveButtonDisabled : null]}
+              style={[
+                styles.leaveButton,
+                leaving ? styles.leaveButtonDisabled : null,
+              ]}
               onPress={handleLeaveRoom}
               disabled={leaving}
             >
               {leaving ? (
-                <ActivityIndicator size="small" color={styles.leaveSpinner.color as string} />
+                <ActivityIndicator
+                  size="small"
+                  color={styles.leaveSpinner.color as string}
+                />
               ) : (
                 <>
-                  <IconSymbol name="rectangle.portrait.and.arrow.right" size={16} color={styles.leaveButtonText.color as string} />
-                  <ThemedText style={styles.leaveButtonText}>{t('common.actions.leave')}</ThemedText>
+                  <IconSymbol
+                    name="rectangle.portrait.and.arrow.right"
+                    size={16}
+                    color={styles.leaveButtonText.color as string}
+                  />
+                  <ThemedText style={styles.leaveButtonText}>
+                    {t('common.actions.leave')}
+                  </ThemedText>
                 </>
               )}
             </TouchableOpacity>
@@ -747,8 +878,14 @@ export default function GameRoomScreen() {
           accessibilityRole="button"
           accessibilityLabel={t('games.room.buttons.exitFullscreen')}
         >
-          <IconSymbol name="xmark" size={18} color={styles.tableOnlyCloseIcon.color as string} />
-          <ThemedText style={styles.tableOnlyCloseText}>{t('games.room.buttons.exitFullscreen')}</ThemedText>
+          <IconSymbol
+            name="xmark"
+            size={18}
+            color={styles.tableOnlyCloseIcon.color as string}
+          />
+          <ThemedText style={styles.tableOnlyCloseText}>
+            {t('games.room.buttons.exitFullscreen')}
+          </ThemedText>
         </TouchableOpacity>
       </ThemedView>
     );
@@ -784,44 +921,70 @@ export default function GameRoomScreen() {
     <ThemedView style={styles.container}>
       <ScrollView
         contentContainerStyle={lobbyContentStyle}
-        refreshControl={(
+        refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={() => fetchRoom('refresh')}
             tintColor={styles.refreshTint.color as string}
           />
-        )}
+        }
       >
         {topBar}
 
         <ThemedView style={styles.headerCard}>
           <View style={styles.headerRow}>
             <View style={styles.nameBlock}>
-              <ThemedText type="title" style={styles.roomTitle} numberOfLines={2}>{displayName}</ThemedText>
+              <ThemedText
+                type="title"
+                style={styles.roomTitle}
+                numberOfLines={2}
+              >
+                {displayName}
+              </ThemedText>
               {displayGame ? (
                 <ThemedText style={styles.gameLabel}>{displayGame}</ThemedText>
               ) : null}
             </View>
             <View style={[styles.statusPill, statusStyle]}>
-              <ThemedText style={styles.statusText}>{t(getRoomStatusLabel(room?.status ?? 'lobby'))}</ThemedText>
+              <ThemedText style={styles.statusText}>
+                {t(getRoomStatusLabel(room?.status ?? 'lobby'))}
+              </ThemedText>
             </View>
           </View>
 
           {room ? (
             <View style={styles.metaGrid}>
               {(() => {
-                const hostLabelRaw = room.host?.displayName ?? formatRoomHost(room.hostId);
-                const hostValue = hostLabelRaw === 'mystery captain' ? t('games.rooms.mysteryHost') : hostLabelRaw;
+                const hostLabelRaw =
+                  room.host?.displayName ?? formatRoomHost(room.hostId);
+                const hostValue =
+                  hostLabelRaw === 'mystery captain'
+                    ? t('games.rooms.mysteryHost')
+                    : hostLabelRaw;
                 const baseCapacity = room.maxPlayers
-                  ? t('games.rooms.capacityWithMax', { current: room.playerCount, max: room.maxPlayers })
-                  : t('games.rooms.capacityWithoutMax', { count: room.playerCount });
-                const playerNames = room.members?.map((member) => member.displayName).filter(Boolean).join(', ');
-                const playersValue = playerNames ? `${baseCapacity} • ${playerNames}` : baseCapacity;
+                  ? t('games.rooms.capacityWithMax', {
+                      current: room.playerCount,
+                      max: room.maxPlayers,
+                    })
+                  : t('games.rooms.capacityWithoutMax', {
+                      count: room.playerCount,
+                    });
+                const playerNames = room.members
+                  ?.map((member) => member.displayName)
+                  .filter(Boolean)
+                  .join(', ');
+                const playersValue = playerNames
+                  ? `${baseCapacity} • ${playerNames}`
+                  : baseCapacity;
                 const createdRaw = formatRoomTimestamp(room.createdAt);
-                const createdValue = createdRaw === 'Just created' ? t('games.rooms.justCreated') : createdRaw;
-                const accessValue = room.visibility === 'private'
-                  ? t('games.rooms.visibility.private')
-                  : t('games.rooms.visibility.public');
+                const createdValue =
+                  createdRaw === 'Just created'
+                    ? t('games.rooms.justCreated')
+                    : createdRaw;
+                const accessValue =
+                  room.visibility === 'private'
+                    ? t('games.rooms.visibility.private')
+                    : t('games.rooms.visibility.public');
                 return (
                   <>
                     <MetaItem
@@ -837,15 +1000,23 @@ export default function GameRoomScreen() {
                     <MetaItem
                       icon="clock.fill"
                       label={t('games.room.meta.created')}
-                      value={t('games.rooms.created', { timestamp: createdValue })}
+                      value={t('games.rooms.created', {
+                        timestamp: createdValue,
+                      })}
                     />
                     <MetaItem
-                      icon={room.visibility === 'private' ? 'lock.fill' : 'sparkles'}
+                      icon={
+                        room.visibility === 'private' ? 'lock.fill' : 'sparkles'
+                      }
                       label={t('games.room.meta.access')}
                       value={accessValue}
                     />
                     {room.inviteCode ? (
-                      <MetaItem icon="number" label={t('games.room.meta.inviteCode')} value={room.inviteCode} />
+                      <MetaItem
+                        icon="number"
+                        label={t('games.room.meta.inviteCode')}
+                        value={room.inviteCode}
+                      />
                     ) : null}
                   </>
                 );
@@ -855,14 +1026,23 @@ export default function GameRoomScreen() {
 
           {isLoading ? (
             <View style={styles.loadingRow}>
-              <ActivityIndicator size="small" color={styles.refreshTint.color as string} />
-              <ThemedText style={styles.loadingText}>{t('games.room.loading')}</ThemedText>
+              <ActivityIndicator
+                size="small"
+                color={styles.refreshTint.color as string}
+              />
+              <ThemedText style={styles.loadingText}>
+                {t('games.room.loading')}
+              </ThemedText>
             </View>
           ) : null}
 
           {error ? (
             <View style={styles.errorCard}>
-              <IconSymbol name="exclamationmark.triangle.fill" size={18} color={styles.errorText.color as string} />
+              <IconSymbol
+                name="exclamationmark.triangle.fill"
+                size={18}
+                color={styles.errorText.color as string}
+              />
               <ThemedText style={styles.errorText}>{error}</ThemedText>
             </View>
           ) : null}
@@ -870,10 +1050,18 @@ export default function GameRoomScreen() {
 
         <ThemedView style={styles.bodyCard}>
           <View style={styles.bodyHeader}>
-            <IconSymbol name="sparkles" size={18} color={styles.bodyHeaderText.color as string} />
-            <ThemedText style={styles.bodyHeaderText}>{t('games.room.preparationTitle')}</ThemedText>
+            <IconSymbol
+              name="sparkles"
+              size={18}
+              color={styles.bodyHeaderText.color as string}
+            />
+            <ThemedText style={styles.bodyHeaderText}>
+              {t('games.room.preparationTitle')}
+            </ThemedText>
           </View>
-          <ThemedText style={styles.bodyCopy}>{t('games.room.preparationCopy')}</ThemedText>
+          <ThemedText style={styles.bodyCopy}>
+            {t('games.room.preparationCopy')}
+          </ThemedText>
         </ThemedView>
 
         <ExplodingCatsTable
@@ -891,10 +1079,18 @@ export default function GameRoomScreen() {
         />
 
         <ThemedView style={styles.footerCard}>
-          <IconSymbol name="arrow.clockwise" size={18} color={styles.footerIcon.color as string} />
+          <IconSymbol
+            name="arrow.clockwise"
+            size={18}
+            color={styles.footerIcon.color as string}
+          />
           <View style={styles.footerCopy}>
-            <ThemedText type="subtitle">{t('games.room.waitingTitle')}</ThemedText>
-            <ThemedText style={styles.footerText}>{t('games.room.waitingCopy')}</ThemedText>
+            <ThemedText type="subtitle">
+              {t('games.room.waitingTitle')}
+            </ThemedText>
+            <ThemedText style={styles.footerText}>
+              {t('games.room.waitingCopy')}
+            </ThemedText>
           </View>
         </ThemedView>
       </ScrollView>
@@ -902,11 +1098,23 @@ export default function GameRoomScreen() {
   );
 }
 
-function MetaItem({ icon, label, value }: { icon: Parameters<typeof IconSymbol>[0]['name']; label: string; value: string }) {
+function MetaItem({
+  icon,
+  label,
+  value,
+}: {
+  icon: Parameters<typeof IconSymbol>[0]['name'];
+  label: string;
+  value: string;
+}) {
   const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.metaItem}>
-      <IconSymbol name={icon} size={16} color={styles.metaItemLabel.color as string} />
+      <IconSymbol
+        name={icon}
+        size={16}
+        color={styles.metaItemLabel.color as string}
+      />
       <View style={styles.metaItemCopy}>
         <ThemedText style={styles.metaItemLabel}>{label}</ThemedText>
         <ThemedText style={styles.metaItemValue}>{value}</ThemedText>
@@ -920,7 +1128,9 @@ function createStyles(palette: Palette) {
   const cardBackground = isLight ? '#F6F8FC' : '#1F2228';
   const raisedBackground = isLight ? '#E9EEF6' : '#262A31';
   const borderColor = isLight ? '#D8DFEA' : '#33373D';
-  const surfaceShadow = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(8, 10, 15, 0.45)';
+  const surfaceShadow = isLight
+    ? 'rgba(15, 23, 42, 0.08)'
+    : 'rgba(8, 10, 15, 0.45)';
   const statusLobbyBg = isLight ? '#DCFCE7' : '#1D3A28';
   const statusInProgressBg = isLight ? '#FDE68A' : '#42381F';
   const statusCompletedBg = isLight ? '#E2E8F0' : '#2B3038';

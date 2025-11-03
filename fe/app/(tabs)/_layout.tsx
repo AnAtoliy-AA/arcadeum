@@ -17,7 +17,8 @@ export default function TabLayout() {
   const { t } = useTranslation();
   const screenOptions = useMemo<BottomTabNavigationOptions>(() => {
     const palette = Colors[colorScheme ?? 'light'];
-    const tabShadowColor = colorScheme === 'dark' ? 'rgba(0, 0, 0, 0.45)' : 'rgba(15, 23, 42, 0.12)';
+    const tabShadowColor =
+      colorScheme === 'dark' ? 'rgba(0, 0, 0, 0.45)' : 'rgba(15, 23, 42, 0.12)';
     const nativeShadowOpacity = colorScheme === 'dark' ? 0.45 : 0.2;
     const baseTabBarStyle = {
       backgroundColor: palette.cardBackground ?? palette.background,
@@ -62,28 +63,36 @@ export default function TabLayout() {
         name="index"
         options={{
           title: t('navigation.homeTab'),
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="house.fill" color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="games"
         options={{
           title: t('navigation.gamesTab'),
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="gamecontroller.fill" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="gamecontroller.fill" color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="chats"
         options={{
           title: t('navigation.chatsTab'),
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="message.fill" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="message.fill" color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="history"
         options={{
           title: t('navigation.historyTab'),
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="clock" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="clock" color={color} />
+          ),
         }}
       />
     </Tabs>

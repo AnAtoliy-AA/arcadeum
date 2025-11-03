@@ -5,7 +5,10 @@ import { useSettings, type LanguagePreference } from '@/stores/settings';
 import { translations, type TranslationKey } from './i18n/messages';
 import type { Replacements, TranslationTree } from './i18n/types';
 
-function resolveKey(tree: TranslationTree | string | undefined, segments: string[]): string | undefined {
+function resolveKey(
+  tree: TranslationTree | string | undefined,
+  segments: string[],
+): string | undefined {
   if (typeof tree === 'string') {
     return tree;
   }
@@ -27,7 +30,10 @@ function resolveKey(tree: TranslationTree | string | undefined, segments: string
   return resolveKey(nextValue, rest);
 }
 
-function applyReplacements(template: string, replacements: Replacements): string {
+function applyReplacements(
+  template: string,
+  replacements: Replacements,
+): string {
   if (!replacements) {
     return template;
   }
@@ -38,7 +44,11 @@ function applyReplacements(template: string, replacements: Replacements): string
   });
 }
 
-export function translate(locale: LanguagePreference, key: TranslationKey, replacements?: Replacements): string {
+export function translate(
+  locale: LanguagePreference,
+  key: TranslationKey,
+  replacements?: Replacements,
+): string {
   const segments = key.split('.');
   const localeTemplate = resolveKey(translations[locale], segments);
   const fallbackTemplate = resolveKey(translations.en, segments);
@@ -49,9 +59,12 @@ export function translate(locale: LanguagePreference, key: TranslationKey, repla
 export function useTranslation() {
   const { language } = useSettings();
 
-  const t = useCallback((key: TranslationKey, replacements?: Replacements) => {
-    return translate(language, key, replacements);
-  }, [language]);
+  const t = useCallback(
+    (key: TranslationKey, replacements?: Replacements) => {
+      return translate(language, key, replacements);
+    },
+    [language],
+  );
 
   return { t, locale: language };
 }

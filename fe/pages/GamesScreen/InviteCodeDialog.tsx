@@ -58,14 +58,20 @@ export function InviteCodeDialog({
   }, []);
 
   const headerIcon = mode === 'manual' ? 'lock.open' : 'lock.fill';
-  const description = mode === 'manual'
-    ? t('games.inviteDialog.manualDescription')
-    : roomName
-      ? t('games.inviteDialog.roomDescriptionWithName', { room: roomName })
-      : t('games.inviteDialog.roomDescription');
+  const description =
+    mode === 'manual'
+      ? t('games.inviteDialog.manualDescription')
+      : roomName
+        ? t('games.inviteDialog.roomDescriptionWithName', { room: roomName })
+        : t('games.inviteDialog.roomDescription');
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onCancel}
+    >
       <KeyboardAvoidingView
         style={styles.overlay}
         behavior={Platform.select({ ios: 'padding', android: undefined })}
@@ -75,7 +81,11 @@ export function InviteCodeDialog({
         </TouchableWithoutFeedback>
         <View style={styles.sheet}>
           <View style={styles.headerRow}>
-            <IconSymbol name={headerIcon} size={20} color={styles.headerIcon.color as string} />
+            <IconSymbol
+              name={headerIcon}
+              size={20}
+              color={styles.headerIcon.color as string}
+            />
             <ThemedText type="subtitle">
               {t('games.inviteDialog.title')}
             </ThemedText>
@@ -93,11 +103,17 @@ export function InviteCodeDialog({
             editable={!loading}
           />
           {mode === 'manual' ? (
-            <ThemedText style={styles.helperText}>{t('games.inviteDialog.helper')}</ThemedText>
+            <ThemedText style={styles.helperText}>
+              {t('games.inviteDialog.helper')}
+            </ThemedText>
           ) : null}
           {error ? (
             <View style={styles.errorRow}>
-              <IconSymbol name="exclamationmark.triangle.fill" size={16} color={styles.errorText.color as string} />
+              <IconSymbol
+                name="exclamationmark.triangle.fill"
+                size={16}
+                color={styles.errorText.color as string}
+              />
               <ThemedText style={styles.errorText}>{error}</ThemedText>
             </View>
           ) : null}
@@ -107,17 +123,28 @@ export function InviteCodeDialog({
               onPress={onCancel}
               disabled={loading}
             >
-              <ThemedText style={styles.secondaryButtonText}>{t('common.cancel')}</ThemedText>
+              <ThemedText style={styles.secondaryButtonText}>
+                {t('common.cancel')}
+              </ThemedText>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.button, styles.primaryButton, loading && styles.buttonDisabled]}
+              style={[
+                styles.button,
+                styles.primaryButton,
+                loading && styles.buttonDisabled,
+              ]}
               onPress={handleSubmit}
               disabled={loading || !code.trim()}
             >
               {loading ? (
-                <ActivityIndicator size="small" color={styles.primaryButtonText.color as string} />
+                <ActivityIndicator
+                  size="small"
+                  color={styles.primaryButtonText.color as string}
+                />
               ) : (
-                <ThemedText style={styles.primaryButtonText}>{t('games.common.joinRoom')}</ThemedText>
+                <ThemedText style={styles.primaryButtonText}>
+                  {t('games.common.joinRoom')}
+                </ThemedText>
               )}
             </TouchableOpacity>
           </View>

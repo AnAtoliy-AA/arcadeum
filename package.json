@@ -1,0 +1,14 @@
+{
+  "name": "aicoapp-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "format": "npm run format:be && npm run format:fe",
+    "format:be": "npm --prefix be run format",
+    "format:fe": "npm --prefix fe run format"
+  },
+  "devDependencies": {
+    "husky": "^9.1.4"
+  }
+}

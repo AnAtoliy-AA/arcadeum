@@ -1,5 +1,15 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -16,12 +26,16 @@ export default function CreateGameRoomScreen() {
   const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const params = useLocalSearchParams<{ gameId?: string }>();
-  const { shouldBlock } = useSessionScreenGate({ enableOn: ['web'], whenUnauthenticated: '/auth', blockWhenUnauthenticated: true });
+  const { shouldBlock } = useSessionScreenGate({
+    enableOn: ['web'],
+    whenUnauthenticated: '/auth',
+    blockWhenUnauthenticated: true,
+  });
   const { tokens, refreshTokens } = useSessionTokens();
   const { t } = useTranslation();
 
   const playableGames = useMemo(
-    () => gamesCatalog.filter(game => game.isPlayable),
+    () => gamesCatalog.filter((game) => game.isPlayable),
     [],
   );
   const availableGames = gamesCatalog;
@@ -29,10 +43,7 @@ export default function CreateGameRoomScreen() {
   const initialGameId = useMemo(() => {
     const value = params?.gameId;
     const requestedId = Array.isArray(value) ? value[0] : value;
-    if (
-      requestedId &&
-      playableGames.some(game => game.id === requestedId)
-    ) {
+    if (requestedId && playableGames.some((game) => game.id === requestedId)) {
       return requestedId;
     }
     return playableGames[0]?.id ?? gamesCatalog[0]?.id ?? '';
@@ -48,7 +59,9 @@ export default function CreateGameRoomScreen() {
   });
 
   const selectedGame: GameCatalogueEntry | undefined = useMemo(
-    () => availableGames.find(game => game.id === state.gameId) ?? availableGames[0],
+    () =>
+      availableGames.find((game) => game.id === state.gameId) ??
+      availableGames[0],
     [availableGames, state.gameId],
   );
 
@@ -60,40 +73,63 @@ export default function CreateGameRoomScreen() {
     }
   }, [router]);
 
-  const handleChange = useCallback((field: 'name' | 'maxPlayers' | 'notes') => (value: string) => {
-    setState(prev => ({ ...prev, [field]: value }));
-  }, []);
+  const handleChange = useCallback(
+    (field: 'name' | 'maxPlayers' | 'notes') => (value: string) => {
+      setState((prev) => ({ ...prev, [field]: value }));
+    },
+    [],
+  );
 
   const handleToggleVisibility = useCallback(() => {
-    setState(prev => ({ ...prev, visibility: prev.visibility === 'public' ? 'private' : 'public' }));
+    setState((prev) => ({
+      ...prev,
+      visibility: prev.visibility === 'public' ? 'private' : 'public',
+    }));
   }, []);
 
   const handleSelectGame = useCallback(
     (gameId: string) => {
-      if (playableGames.length && !playableGames.some(game => game.id === gameId)) {
+      if (
+        playableGames.length &&
+        !playableGames.some((game) => game.id === gameId)
+      ) {
         return;
       }
-      setState(prev => ({ ...prev, gameId }));
+      setState((prev) => ({ ...prev, gameId }));
     },
     [playableGames],
   );
 
   const handleSubmit = useCallback(async () => {
     if (!tokens.accessToken) {
-      Alert.alert(t('games.alerts.signInRequiredTitle'), t('games.create.alerts.signInMessage'));
+      Alert.alert(
+        t('games.alerts.signInRequiredTitle'),
+        t('games.create.alerts.signInMessage'),
+      );
       return;
     }
     if (!state.name.trim()) {
-      Alert.alert(t('games.create.alerts.nameRequiredTitle'), t('games.create.alerts.nameRequiredMessage'));
+      Alert.alert(
+        t('games.create.alerts.nameRequiredTitle'),
+        t('games.create.alerts.nameRequiredMessage'),
+      );
       return;
     }
-    const maxPlayers = state.maxPlayers.trim() ? Number(state.maxPlayers) : undefined;
-    if (maxPlayers !== undefined && (Number.isNaN(maxPlayers) || maxPlayers < 2)) {
-      Alert.alert(t('games.create.alerts.invalidPlayersTitle'), t('games.create.alerts.invalidPlayersMessage'));
+    const maxPlayers = state.maxPlayers.trim()
+      ? Number(state.maxPlayers)
+      : undefined;
+    if (
+      maxPlayers !== undefined &&
+      (Number.isNaN(maxPlayers) || maxPlayers < 2)
+    ) {
+      Alert.alert(
+        t('games.create.alerts.invalidPlayersTitle'),
+        t('games.create.alerts.invalidPlayersMessage'),
+      );
       return;
     }
 
-    setState(prev => ({ ...prev, loading: true }));
+    setState((prev) => ({ ...prev, loading: true }));
     try {
       const payload: CreateGameRoomParams = {
         gameId: state.gameId,
@@ -109,17 +145,31 @@ export default function CreateGameRoomScreen() {
       Alert.alert(
         t('games.create.alerts.roomCreatedTitle'),
         t('games.create.alerts.roomCreatedMessage', {
-          code: response.room.inviteCode ?? t('games.create.alerts.invitePending'),
+          code:
+            response.room.inviteCode ?? t('games.create.alerts.invitePending'),
         }),
       );
       router.replace({ pathname: '/games/[id]', params: { id: state.gameId } });
     } catch (error) {
-      const message = error instanceof Error ? error.message : t('games.create.alerts.createFailedMessage');
+      const message =
+        error instanceof Error
+          ? error.message
+          : t('games.create.alerts.createFailedMessage');
       Alert.alert(t('games.create.alerts.createFailedTitle'), message);
     } finally {
-      setState(prev => ({ ...prev, loading: false }));
+      setState((prev) => ({ ...prev, loading: false }));
     }
-  }, [refreshTokens, router, state.gameId, state.maxPlayers, state.name, state.notes, state.visibility, t, tokens.accessToken]);
+  }, [
+    refreshTokens,
+    router,
+    state.gameId,
+    state.maxPlayers,
+    state.name,
+    state.notes,
+    state.visibility,
+    t,
+    tokens.accessToken,
+  ]);
 
   if (shouldBlock) {
     return (
@@ -130,13 +180,22 @@ export default function CreateGameRoomScreen() {
   }
 
   return (
-    <KeyboardAvoidingView behavior={Platform.select({ ios: 'padding', android: undefined })} style={{ flex: 1 }}>
+    <KeyboardAvoidingView
+      behavior={Platform.select({ ios: 'padding', android: undefined })}
+      style={{ flex: 1 }}
+    >
       <ThemedView style={styles.container}>
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.topBar}>
             <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-              <IconSymbol name="chevron.left" size={20} color={styles.backButtonText.color as string} />
-              <ThemedText style={styles.backButtonText}>{t('common.back')}</ThemedText>
+              <IconSymbol
+                name="chevron.left"
+                size={20}
+                color={styles.backButtonText.color as string}
+              />
+              <ThemedText style={styles.backButtonText}>
+                {t('common.back')}
+              </ThemedText>
             </TouchableOpacity>
           </View>
 
@@ -148,15 +207,22 @@ export default function CreateGameRoomScreen() {
           </View>
 
           <View style={styles.section}>
-            <ThemedText type="subtitle">{t('games.create.sectionGame')}</ThemedText>
+            <ThemedText type="subtitle">
+              {t('games.create.sectionGame')}
+            </ThemedText>
             <View style={styles.gameSelector}>
-              {availableGames.map(game => {
+              {availableGames.map((game) => {
                 const isActive = game.id === state.gameId;
-                const isDisabled = Boolean(playableGames.length) && !game.isPlayable;
+                const isDisabled =
+                  Boolean(playableGames.length) && !game.isPlayable;
                 return (
                   <TouchableOpacity
                     key={game.id}
-                    style={[styles.gameTile, isActive && styles.gameTileActive, isDisabled && styles.gameTileDisabled]}
+                    style={[
+                      styles.gameTile,
+                      isActive && styles.gameTileActive,
+                      isDisabled && styles.gameTileDisabled,
+                    ]}
                     onPress={() => {
                       if (isDisabled) {
                         Alert.alert(
@@ -189,7 +255,9 @@ export default function CreateGameRoomScreen() {
                       {game.summary}
                     </ThemedText>
                     {isDisabled ? (
-                      <ThemedText style={styles.gameTileBadge}>{t('games.create.badgeComingSoon')}</ThemedText>
+                      <ThemedText style={styles.gameTileBadge}>
+                        {t('games.create.badgeComingSoon')}
+                      </ThemedText>
                     ) : null}
                   </TouchableOpacity>
                 );
@@ -198,12 +266,18 @@ export default function CreateGameRoomScreen() {
           </View>
 
           <View style={styles.section}>
-            <ThemedText type="subtitle">{t('games.create.sectionDetails')}</ThemedText>
+            <ThemedText type="subtitle">
+              {t('games.create.sectionDetails')}
+            </ThemedText>
             <View style={styles.formGroup}>
               <View style={styles.formField}>
-                <ThemedText style={styles.inputLabel}>{t('games.create.fieldName')}</ThemedText>
+                <ThemedText style={styles.inputLabel}>
+                  {t('games.create.fieldName')}
+                </ThemedText>
                 <ThemedTextInput
-                  placeholder={t('games.create.namePlaceholder', { example: selectedGame?.name ?? t('games.rooms.unknownGame') })}
+                  placeholder={t('games.create.namePlaceholder', {
+                    example: selectedGame?.name ?? t('games.rooms.unknownGame'),
+                  })}
                   value={state.name}
                   onChangeText={handleChange('name')}
                   returnKeyType="done"
@@ -211,7 +285,9 @@ export default function CreateGameRoomScreen() {
               </View>
               <View style={styles.formFieldRow}>
                 <View style={styles.formFieldHalf}>
-                  <ThemedText style={styles.inputLabel}>{t('games.create.fieldMaxPlayers')}</ThemedText>
+                  <ThemedText style={styles.inputLabel}>
+                    {t('games.create.fieldMaxPlayers')}
+                  </ThemedText>
                   <ThemedTextInput
                     placeholder={t('games.create.autoPlaceholder')}
                     value={state.maxPlayers}
@@ -221,7 +297,9 @@ export default function CreateGameRoomScreen() {
                   />
                 </View>
                 <View style={styles.formFieldHalf}>
-                  <ThemedText style={styles.inputLabel}>{t('games.create.fieldVisibility')}</ThemedText>
+                  <ThemedText style={styles.inputLabel}>
+                    {t('games.create.fieldVisibility')}
+                  </ThemedText>
                   <TouchableOpacity
                     style={[
                       styles.visibilityToggle,
@@ -231,10 +309,14 @@ export default function CreateGameRoomScreen() {
                     ]}
                     onPress={handleToggleVisibility}
                     accessibilityRole="button"
-                    accessibilityState={{ checked: state.visibility === 'public' }}
+                    accessibilityState={{
+                      checked: state.visibility === 'public',
+                    }}
                   >
                     <IconSymbol
-                      name={state.visibility === 'public' ? 'sparkles' : 'lock.fill'}
+                      name={
+                        state.visibility === 'public' ? 'sparkles' : 'lock.fill'
+                      }
                       size={18}
                       color={styles.visibilityToggleIcon.color as string}
                     />
@@ -247,7 +329,9 @@ export default function CreateGameRoomScreen() {
                 </View>
               </View>
               <View style={styles.formField}>
-                <ThemedText style={styles.inputLabel}>{t('games.create.fieldNotes')}</ThemedText>
+                <ThemedText style={styles.inputLabel}>
+                  {t('games.create.fieldNotes')}
+                </ThemedText>
                 <ThemedTextInput
                   placeholder={t('games.create.notesPlaceholder')}
                   value={state.notes}
@@ -261,26 +345,46 @@ export default function CreateGameRoomScreen() {
           </View>
 
           <View style={styles.section}>
-            <ThemedText type="subtitle">{t('games.create.sectionPreview')}</ThemedText>
+            <ThemedText type="subtitle">
+              {t('games.create.sectionPreview')}
+            </ThemedText>
             <ThemedView style={styles.previewCard}>
-              <ThemedText type="defaultSemiBold" style={styles.previewTitle}>{selectedGame?.name}</ThemedText>
-              <ThemedText style={styles.previewSummary}>{selectedGame?.tagline}</ThemedText>
+              <ThemedText type="defaultSemiBold" style={styles.previewTitle}>
+                {selectedGame?.name}
+              </ThemedText>
+              <ThemedText style={styles.previewSummary}>
+                {selectedGame?.tagline}
+              </ThemedText>
               <View style={styles.previewMetaRow}>
-                <MetaChip label={selectedGame?.players ?? ''} icon="person.3.fill" />
-                <MetaChip label={selectedGame?.duration ?? ''} icon="clock.fill" />
-                <MetaChip label={selectedGame?.mechanics[0] ?? ''} icon="sparkles" />
+                <MetaChip
+                  label={selectedGame?.players ?? ''}
+                  icon="person.3.fill"
+                />
+                <MetaChip
+                  label={selectedGame?.duration ?? ''}
+                  icon="clock.fill"
+                />
+                <MetaChip
+                  label={selectedGame?.mechanics[0] ?? ''}
+                  icon="sparkles"
+                />
               </View>
             </ThemedView>
           </View>
         </ScrollView>
 
         <TouchableOpacity
-          style={[styles.submitButton, state.loading && styles.submitButtonDisabled]}
+          style={[
+            styles.submitButton,
+            state.loading && styles.submitButtonDisabled,
+          ]}
           onPress={handleSubmit}
           disabled={state.loading}
         >
           <ThemedText style={styles.submitButtonText}>
-            {state.loading ? t('games.create.submitCreating') : t('games.common.createRoom')}
+            {state.loading
+              ? t('games.create.submitCreating')
+              : t('games.common.createRoom')}
           </ThemedText>
         </TouchableOpacity>
       </ThemedView>
@@ -292,9 +396,18 @@ function AlertFallback() {
   const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.alertFallback}>
-      <ActivityIndicator size="large" color={styles.alertFallbackSpinner.color as string} />
-      <IconSymbol name="sparkles" size={36} color={styles.alertFallbackIcon.color as string} />
-      <ThemedText style={styles.alertFallbackText}>Hold tight while we load your session...</ThemedText>
+      <ActivityIndicator
+        size="large"
+        color={styles.alertFallbackSpinner.color as string}
+      />
+      <IconSymbol
+        name="sparkles"
+        size={36}
+        color={styles.alertFallbackIcon.color as string}
+      />
+      <ThemedText style={styles.alertFallbackText}>
+        Hold tight while we load your session...
+      </ThemedText>
     </View>
   );
 }
@@ -304,17 +417,31 @@ function ThemedTextInput(props: React.ComponentProps<typeof TextInput>) {
   return (
     <TextInput
       {...props}
-      style={[styles.textInput, props.multiline && styles.textInputMultiline, props.style]}
+      style={[
+        styles.textInput,
+        props.multiline && styles.textInputMultiline,
+        props.style,
+      ]}
       placeholderTextColor={styles.textInputPlaceholder.color as string}
     />
   );
 }
 
-function MetaChip({ label, icon }: { label: string; icon: Parameters<typeof IconSymbol>[0]['name'] }) {
+function MetaChip({
+  label,
+  icon,
+}: {
+  label: string;
+  icon: Parameters<typeof IconSymbol>[0]['name'];
+}) {
   const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.metaChip}>
-      <IconSymbol name={icon} size={16} color={styles.metaChipIcon.color as string} />
+      <IconSymbol
+        name={icon}
+        size={16}
+        color={styles.metaChipIcon.color as string}
+      />
       <ThemedText style={styles.metaChipText}>{label}</ThemedText>
     </View>
   );
@@ -325,7 +452,9 @@ function createStyles(palette: Palette) {
   const cardBackground = isLight ? '#F6F8FC' : '#1F2228';
   const raisedBackground = isLight ? '#E9EEF6' : '#262A31';
   const borderColor = isLight ? '#D8DFEA' : '#33373D';
-  const surfaceShadow = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(8, 10, 15, 0.45)';
+  const surfaceShadow = isLight
+    ? 'rgba(15, 23, 42, 0.08)'
+    : 'rgba(8, 10, 15, 0.45)';
   const disabledText = isLight ? '#8E97A7' : '#5A606D';
 
   return StyleSheet.create({

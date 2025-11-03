@@ -72,13 +72,20 @@ const DESCRIPTORS: ApiMessageDescriptor[] = [
     code: 3003,
     translationKey: 'api.games.roomNotInProgress',
     fallbackMessage: 'The game has not started for this room.',
-    aliases: ['games.roomNotInProgress', 'The game has not started for this room.'],
+    aliases: [
+      'games.roomNotInProgress',
+      'The game has not started for this room.',
+    ],
   },
   {
     code: 3004,
     translationKey: 'api.games.hostIdRequired',
     fallbackMessage: 'Host ID is required.',
-    aliases: ['games.hostIdRequired', 'Host ID is required.', 'Host identifier is required.'],
+    aliases: [
+      'games.hostIdRequired',
+      'Host ID is required.',
+      'Host identifier is required.',
+    ],
   },
   {
     code: 3005,
@@ -90,7 +97,10 @@ const DESCRIPTORS: ApiMessageDescriptor[] = [
     code: 3006,
     translationKey: 'api.games.rematchGameIdRequired',
     fallbackMessage: 'Game ID is required for rematch.',
-    aliases: ['games.rematchGameIdRequired', 'Game ID is required for rematch.'],
+    aliases: [
+      'games.rematchGameIdRequired',
+      'Game ID is required for rematch.',
+    ],
   },
   {
     code: 3007,
@@ -108,7 +118,10 @@ const DESCRIPTORS: ApiMessageDescriptor[] = [
     code: 3009,
     translationKey: 'api.games.roomOrInviteRequired',
     fallbackMessage: 'Provide either roomId or inviteCode.',
-    aliases: ['games.roomOrInviteRequired', 'Provide either roomId or inviteCode.'],
+    aliases: [
+      'games.roomOrInviteRequired',
+      'Provide either roomId or inviteCode.',
+    ],
   },
   {
     code: 3010,
@@ -126,13 +139,19 @@ const DESCRIPTORS: ApiMessageDescriptor[] = [
     code: 3012,
     translationKey: 'api.games.roomAccessForbidden',
     fallbackMessage: 'Access to this room is not permitted.',
-    aliases: ['games.roomAccessForbidden', 'Access to this room is not permitted.'],
+    aliases: [
+      'games.roomAccessForbidden',
+      'Access to this room is not permitted.',
+    ],
   },
   {
     code: 3013,
     translationKey: 'api.games.inviteCodeRequired',
     fallbackMessage: 'Invite code required to join this room.',
-    aliases: ['games.inviteCodeRequired', 'Invite code required to join this room.'],
+    aliases: [
+      'games.inviteCodeRequired',
+      'Invite code required to join this room.',
+    ],
   },
   {
     code: 3014,
@@ -144,7 +163,11 @@ const DESCRIPTORS: ApiMessageDescriptor[] = [
     code: 3015,
     translationKey: 'api.games.sessionNotFound',
     fallbackMessage: 'Game session not found for this room.',
-    aliases: ['games.sessionNotFound', 'Game session not found for room.', 'Game session not found for this room.'],
+    aliases: [
+      'games.sessionNotFound',
+      'Game session not found for room.',
+      'Game session not found for this room.',
+    ],
   },
   {
     code: 3016,
@@ -198,13 +221,20 @@ const DESCRIPTORS: ApiMessageDescriptor[] = [
     code: 3024,
     translationKey: 'api.games.comboRemovalFailed',
     fallbackMessage: 'Unable to remove combo cards from hand.',
-    aliases: ['games.comboRemovalFailed', 'Unable to remove combo cards from hand.'],
+    aliases: [
+      'games.comboRemovalFailed',
+      'Unable to remove combo cards from hand.',
+    ],
   },
   {
     code: 3025,
     translationKey: 'api.games.deckEmpty',
     fallbackMessage: 'The deck has no cards remaining.',
-    aliases: ['games.deckEmpty', 'The deck has no cards remaining.', 'Deck is empty.'],
+    aliases: [
+      'games.deckEmpty',
+      'The deck has no cards remaining.',
+      'Deck is empty.',
+    ],
   },
   {
     code: 3026,
@@ -222,7 +252,10 @@ const DESCRIPTORS: ApiMessageDescriptor[] = [
     code: 3028,
     translationKey: 'api.games.playerNotParticipant',
     fallbackMessage: 'Player is not part of this session.',
-    aliases: ['games.playerNotParticipant', 'Player is not part of this session.'],
+    aliases: [
+      'games.playerNotParticipant',
+      'Player is not part of this session.',
+    ],
   },
   {
     code: 3029,
@@ -246,13 +279,19 @@ const DESCRIPTORS: ApiMessageDescriptor[] = [
     code: 3032,
     translationKey: 'api.games.notParticipant',
     fallbackMessage: 'You are not a participant of this room.',
-    aliases: ['games.notParticipant', 'You are not a participant of this room.'],
+    aliases: [
+      'games.notParticipant',
+      'You are not a participant of this room.',
+    ],
   },
   {
     code: 3033,
     translationKey: 'api.games.snapshotUnavailable',
     fallbackMessage: 'Exploding Cats snapshot is unavailable.',
-    aliases: ['games.snapshotUnavailable', 'Exploding Cats snapshot is unavailable.'],
+    aliases: [
+      'games.snapshotUnavailable',
+      'Exploding Cats snapshot is unavailable.',
+    ],
   },
   {
     code: 3034,
@@ -276,91 +315,141 @@ const DESCRIPTORS: ApiMessageDescriptor[] = [
     code: 3037,
     translationKey: 'api.games.joinBeforeSession',
     fallbackMessage: 'Join the room before requesting the session.',
-    aliases: ['games.joinBeforeSession', 'Join the room before requesting the session.'],
+    aliases: [
+      'games.joinBeforeSession',
+      'Join the room before requesting the session.',
+    ],
   },
   {
     code: 3038,
     translationKey: 'api.games.historyAccessForbidden',
     fallbackMessage: 'Access to this history entry is not permitted.',
-    aliases: ['games.historyAccessForbidden', 'Access to this history entry is not permitted.'],
+    aliases: [
+      'games.historyAccessForbidden',
+      'Access to this history entry is not permitted.',
+    ],
   },
   {
     code: 3039,
     translationKey: 'api.games.rematchParticipantRequired',
-    fallbackMessage: 'At least one consenting participant is required for a rematch.',
-    aliases: ['games.rematchParticipantRequired', 'At least one consenting participant is required for a rematch.'],
+    fallbackMessage:
+      'At least one consenting participant is required for a rematch.',
+    aliases: [
+      'games.rematchParticipantRequired',
+      'At least one consenting participant is required for a rematch.',
+    ],
   },
   {
     code: 3040,
     translationKey: 'api.games.startRequiresTwoPlayers',
     fallbackMessage: 'At least two players are required to start.',
-    aliases: ['games.startRequiresTwoPlayers', 'At least two players are required to start.'],
+    aliases: [
+      'games.startRequiresTwoPlayers',
+      'At least two players are required to start.',
+    ],
   },
   {
     code: 3041,
     translationKey: 'api.games.catCombosExplodingOnly',
-    fallbackMessage: 'Cat combos are only supported for Exploding Cats sessions.',
-    aliases: ['games.catCombosExplodingOnly', 'Cat combos are only supported for Exploding Cats sessions.'],
+    fallbackMessage:
+      'Cat combos are only supported for Exploding Cats sessions.',
+    aliases: [
+      'games.catCombosExplodingOnly',
+      'Cat combos are only supported for Exploding Cats sessions.',
+    ],
   },
   {
     code: 3042,
     translationKey: 'api.games.desiredCardRequired',
     fallbackMessage: 'Desired card is required for trio combo.',
-    aliases: ['games.desiredCardRequired', 'Desired card is required for trio combo.'],
+    aliases: [
+      'games.desiredCardRequired',
+      'Desired card is required for trio combo.',
+    ],
   },
   {
     code: 3043,
     translationKey: 'api.games.drawActionExplodingOnly',
-    fallbackMessage: 'Draw action is only supported for Exploding Cats sessions.',
-    aliases: ['games.drawActionExplodingOnly', 'Draw action is only supported for Exploding Cats sessions.'],
+    fallbackMessage:
+      'Draw action is only supported for Exploding Cats sessions.',
+    aliases: [
+      'games.drawActionExplodingOnly',
+      'Draw action is only supported for Exploding Cats sessions.',
+    ],
   },
   {
     code: 3044,
     translationKey: 'api.games.explodingCatsDisabled',
     fallbackMessage: 'Exploding Cats is not enabled for this room.',
-    aliases: ['games.explodingCatsDisabled', 'Exploding Cats is not enabled for this room.'],
+    aliases: [
+      'games.explodingCatsDisabled',
+      'Exploding Cats is not enabled for this room.',
+    ],
   },
   {
     code: 3045,
     translationKey: 'api.games.historyNotesExplodingOnly',
-    fallbackMessage: 'History notes are only supported for Exploding Cats sessions.',
-    aliases: ['games.historyNotesExplodingOnly', 'History notes are only supported for Exploding Cats sessions.'],
+    fallbackMessage:
+      'History notes are only supported for Exploding Cats sessions.',
+    aliases: [
+      'games.historyNotesExplodingOnly',
+      'History notes are only supported for Exploding Cats sessions.',
+    ],
   },
   {
     code: 3046,
     translationKey: 'api.games.originalHostOnlyRematch',
     fallbackMessage: 'Only the original host may initiate a rematch.',
-    aliases: ['games.originalHostOnlyRematch', 'Only the original host may initiate a rematch.'],
+    aliases: [
+      'games.originalHostOnlyRematch',
+      'Only the original host may initiate a rematch.',
+    ],
   },
   {
     code: 3047,
     translationKey: 'api.games.playActionExplodingOnly',
-    fallbackMessage: 'Play action is only supported for Exploding Cats sessions.',
-    aliases: ['games.playActionExplodingOnly', 'Play action is only supported for Exploding Cats sessions.'],
+    fallbackMessage:
+      'Play action is only supported for Exploding Cats sessions.',
+    aliases: [
+      'games.playActionExplodingOnly',
+      'Play action is only supported for Exploding Cats sessions.',
+    ],
   },
   {
     code: 3048,
     translationKey: 'api.games.targetMustDiffer',
     fallbackMessage: 'Target player must be different from actor.',
-    aliases: ['games.targetMustDiffer', 'Target player must be different from actor.'],
+    aliases: [
+      'games.targetMustDiffer',
+      'Target player must be different from actor.',
+    ],
   },
   {
     code: 3049,
     translationKey: 'api.games.noActivePlayers',
     fallbackMessage: 'There are no active players in this session.',
-    aliases: ['games.noActivePlayers', 'There are no active players in this session.'],
+    aliases: [
+      'games.noActivePlayers',
+      'There are no active players in this session.',
+    ],
   },
   {
     code: 3050,
     translationKey: 'api.games.notInLobbyPhase',
     fallbackMessage: 'This room is no longer in the lobby phase.',
-    aliases: ['games.notInLobbyPhase', 'This room is no longer in the lobby phase.'],
+    aliases: [
+      'games.notInLobbyPhase',
+      'This room is no longer in the lobby phase.',
+    ],
   },
   {
     code: 3051,
     translationKey: 'api.games.sessionAlreadyActive',
     fallbackMessage: 'An active session already exists for this room.',
-    aliases: ['games.sessionAlreadyActive', 'An active session already exists for this room.'],
+    aliases: [
+      'games.sessionAlreadyActive',
+      'An active session already exists for this room.',
+    ],
   },
   {
     code: 3100,
@@ -628,14 +717,18 @@ export function findApiMessageDescriptor(params: {
   return undefined;
 }
 
-export function getApiMessageDescriptorByCode(code?: number | null): ApiMessageDescriptor | undefined {
+export function getApiMessageDescriptorByCode(
+  code?: number | null,
+): ApiMessageDescriptor | undefined {
   if (typeof code !== 'number') {
     return undefined;
   }
   return CODE_LOOKUP[code];
 }
 
-export function inferTranslationKeyFromMessageKey(messageKey?: string): TranslationKey | undefined {
+export function inferTranslationKeyFromMessageKey(
+  messageKey?: string,
+): TranslationKey | undefined {
   if (typeof messageKey !== 'string') {
     return undefined;
   }

@@ -41,24 +41,23 @@ type InvitePromptState = {
 };
 
 type StatusFilterValue = 'all' | 'lobby' | 'in_progress' | 'completed';
-type ParticipationFilterValue =
-  | 'all'
-  | 'hosting'
-  | 'joined'
-  | 'not_joined';
+type ParticipationFilterValue = 'all' | 'hosting' | 'joined' | 'not_joined';
 
 export default function GamesScreen() {
   const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { tokens, refreshTokens } = useSessionTokens();
   const { t } = useTranslation();
-  const navigateToCreate = useCallback((gameId?: string) => {
-    if (gameId) {
-      router.push({ pathname: '/games/create', params: { gameId } } as never);
-    } else {
-      router.push('/games/create' as never);
-    }
-  }, [router]);
+  const navigateToCreate = useCallback(
+    (gameId?: string) => {
+      if (gameId) {
+        router.push({ pathname: '/games/create', params: { gameId } } as never);
+      } else {
+        router.push('/games/create' as never);
+      }
+    },
+    [router],
+  );
   const { shouldBlock } = useSessionScreenGate({
     enableOn: ['web'],
   });
@@ -172,13 +171,7 @@ export default function GamesScreen() {
         setLoadingFlag(false);
       }
     },
-    [
-      participationFilter,
-      refreshTokens,
-      statusFilter,
-      t,
-      tokens.accessToken,
-    ],
+    [participationFilter, refreshTokens, statusFilter, t, tokens.accessToken],
   );
 
   useEffect(() => {
@@ -193,13 +186,18 @@ export default function GamesScreen() {
 
   const sortedRooms = useMemo(() => {
     if (!rooms.length) return [];
-    return [...rooms].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return [...rooms].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
   }, [rooms]);
 
   const updateRoomList = useCallback((room: GameRoomSummary) => {
     setRooms((current) => {
       const next = [...current];
-      const existingIndex = next.findIndex((existing) => existing.id === room.id);
+      const existingIndex = next.findIndex(
+        (existing) => existing.id === room.id,
+      );
       if (existingIndex >= 0) {
         next[existingIndex] = room;
         return next;
@@ -208,80 +206,284 @@ export default function GamesScreen() {
     });
   }, []);
 
-  const navigateToRoomScreen = useCallback((room: GameRoomSummary) => {
-    router.push({
-      pathname: '/games/rooms/[id]',
-      params: {
-        id: room.id,
-        gameId: room.gameId,
-        roomName: room.name,
-      },
-    });
-  }, [router]);
-
-  const joinRoom = useCallback(async (room: GameRoomSummary, inviteCode?: string) => {
-    setJoiningRoomId(room.id);
-    if (inviteCode) {
-      setInvitePrompt({ visible: true, room, mode: 'room', loading: true, error: null });
-    }
-
-    try {
-      const response = await joinGameRoom(
-        { roomId: room.id, inviteCode },
-        {
-          accessToken: tokens.accessToken,
-          refreshTokens,
+  const navigateToRoomScreen = useCallback(
+    (room: GameRoomSummary) => {
+      router.push({
+        pathname: '/games/rooms/[id]',
+        params: {
+          id: room.id,
+          gameId: room.gameId,
+          roomName: room.name,
         },
-      );
+      });
+    },
+    [router],
+  );
 
-      updateRoomList(response.room);
-
-      setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
-
-      navigateToRoomScreen(response.room);
-      void fetchRooms('refresh');
-    } catch (error) {
-      const { type, message: rawMessage } = interpretJoinError(error);
-
-      if (!inviteCode && type === 'invite-required') {
-        setInvitePrompt({ visible: true, room, mode: 'room', loading: false, error: null });
-        return;
-      }
-
-      if (inviteCode && (type === 'invite-required' || type === 'invite-invalid')) {
+  const joinRoom = useCallback(
+    async (room: GameRoomSummary, inviteCode?: string) => {
+      setJoiningRoomId(room.id);
+      if (inviteCode) {
         setInvitePrompt({
           visible: true,
           room,
           mode: 'room',
+          loading: true,
+          error: null,
+        });
+      }
+
+      try {
+        const response = await joinGameRoom(
+          { roomId: room.id, inviteCode },
+          {
+            accessToken: tokens.accessToken,
+            refreshTokens,
+          },
+        );
+
+        updateRoomList(response.room);
+
+        setInvitePrompt({
+          visible: false,
+          room: null,
+          mode: 'room',
+          loading: false,
+          error: null,
+        });
+
+        navigateToRoomScreen(response.room);
+        void fetchRooms('refresh');
+      } catch (error) {
+        const { type, message: rawMessage } = interpretJoinError(error);
+
+        if (!inviteCode && type === 'invite-required') {
+          setInvitePrompt({
+            visible: true,
+            room,
+            mode: 'room',
+            loading: false,
+            error: null,
+          });
+          return;
+        }
+
+        if (
+          inviteCode &&
+          (type === 'invite-required' || type === 'invite-invalid')
+        ) {
+          setInvitePrompt({
+            visible: true,
+            room,
+            mode: 'room',
+            loading: false,
+            error:
+              type === 'invite-required'
+                ? t('games.alerts.inviteRequired')
+                : t('games.alerts.inviteInvalid'),
+          });
+          return;
+        }
+
+        if (type === 'room-full') {
+          Alert.alert(
+            t('games.alerts.roomFullTitle'),
+            t('games.alerts.roomFullMessage'),
+          );
+          return;
+        }
+
+        if (type === 'room-locked') {
+          Alert.alert(
+            t('games.alerts.roomLockedTitle'),
+            t('games.alerts.roomLockedMessage'),
+          );
+          return;
+        }
+
+        const fallbackMessage =
+          rawMessage && rawMessage !== 'Something went wrong.'
+            ? rawMessage
+            : t('games.alerts.genericError');
+        Alert.alert(t('games.alerts.genericJoinFailedTitle'), fallbackMessage);
+      } finally {
+        setJoiningRoomId(null);
+      }
+    },
+    [
+      fetchRooms,
+      navigateToRoomScreen,
+      refreshTokens,
+      t,
+      tokens.accessToken,
+      updateRoomList,
+    ],
+  );
+
+  const joinRoomByInviteCode = useCallback(
+    async (code: string) => {
+      if (!tokens.accessToken) {
+        Alert.alert(
+          t('games.alerts.signInRequiredTitle'),
+          t('games.alerts.signInInviteMessage'),
+          [
+            { text: t('common.cancel'), style: 'cancel' },
+            {
+              text: t('common.signIn'),
+              onPress: () => router.push('/auth' as never),
+            },
+          ],
+        );
+        return;
+      }
+
+      setInvitePrompt({
+        visible: true,
+        room: null,
+        mode: 'manual',
+        loading: true,
+        error: null,
+      });
+
+      try {
+        const response = await joinGameRoom(
+          { inviteCode: code },
+          {
+            accessToken: tokens.accessToken,
+            refreshTokens,
+          },
+        );
+
+        updateRoomList(response.room);
+
+        setInvitePrompt({
+          visible: false,
+          room: null,
+          mode: 'room',
+          loading: false,
+          error: null,
+        });
+
+        navigateToRoomScreen(response.room);
+        void fetchRooms('refresh');
+      } catch (error) {
+        const { type, message: rawMessage } = interpretJoinError(error);
+
+        if (type === 'room-full') {
+          setInvitePrompt({
+            visible: false,
+            room: null,
+            mode: 'room',
+            loading: false,
+            error: null,
+          });
+          Alert.alert(
+            t('games.alerts.roomFullTitle'),
+            t('games.alerts.roomFullManualMessage'),
+          );
+          return;
+        }
+
+        if (type === 'room-locked') {
+          setInvitePrompt({
+            visible: false,
+            room: null,
+            mode: 'room',
+            loading: false,
+            error: null,
+          });
+          Alert.alert(
+            t('games.alerts.roomLockedTitle'),
+            t('games.alerts.roomLockedManualMessage'),
+          );
+          return;
+        }
+
+        setInvitePrompt({
+          visible: true,
+          room: null,
+          mode: 'manual',
           loading: false,
           error:
-            type === 'invite-required'
-              ? t('games.alerts.inviteRequired')
-              : t('games.alerts.inviteInvalid'),
+            type === 'invite-invalid'
+              ? t('games.alerts.inviteInvalidManual')
+              : type === 'invite-required'
+                ? t('games.alerts.inviteRequired')
+                : rawMessage && rawMessage !== 'Something went wrong.'
+                  ? rawMessage
+                  : t('games.alerts.genericError'),
         });
+      }
+    },
+    [
+      fetchRooms,
+      navigateToRoomScreen,
+      refreshTokens,
+      router,
+      t,
+      tokens.accessToken,
+      updateRoomList,
+    ],
+  );
+
+  const handleJoinRoom = useCallback(
+    (room: GameRoomSummary) => {
+      if (!tokens.accessToken) {
+        Alert.alert(
+          t('games.alerts.signInRequiredTitle'),
+          t('games.alerts.signInJoinMessage'),
+          [
+            { text: t('common.cancel'), style: 'cancel' },
+            {
+              text: t('common.signIn'),
+              onPress: () => {
+                router.push('/auth' as never);
+              },
+            },
+          ],
+        );
         return;
       }
 
-      if (type === 'room-full') {
-        Alert.alert(t('games.alerts.roomFullTitle'), t('games.alerts.roomFullMessage'));
+      void joinRoom(room);
+    },
+    [joinRoom, router, t, tokens.accessToken],
+  );
+
+  const handleWatchRoom = useCallback(
+    (room: GameRoomSummary) => {
+      navigateToRoomScreen(room);
+    },
+    [navigateToRoomScreen],
+  );
+
+  const handleInviteCancel = useCallback(() => {
+    setInvitePrompt({
+      visible: false,
+      room: null,
+      mode: 'room',
+      loading: false,
+      error: null,
+    });
+  }, []);
+
+  const handleInviteSubmit = useCallback(
+    (code: string) => {
+      if (invitePrompt.mode === 'manual') {
+        void joinRoomByInviteCode(code);
         return;
       }
 
-      if (type === 'room-locked') {
-        Alert.alert(t('games.alerts.roomLockedTitle'), t('games.alerts.roomLockedMessage'));
+      if (!invitePrompt.room) {
         return;
       }
 
-      const fallbackMessage = rawMessage && rawMessage !== 'Something went wrong.'
-        ? rawMessage
-        : t('games.alerts.genericError');
-      Alert.alert(t('games.alerts.genericJoinFailedTitle'), fallbackMessage);
-    } finally {
-      setJoiningRoomId(null);
-    }
-  }, [fetchRooms, navigateToRoomScreen, refreshTokens, t, tokens.accessToken, updateRoomList]);
+      void joinRoom(invitePrompt.room, code);
+    },
+    [invitePrompt.mode, invitePrompt.room, joinRoom, joinRoomByInviteCode],
+  );
 
-  const joinRoomByInviteCode = useCallback(async (code: string) => {
+  const handleManualInvite = useCallback(() => {
     if (!tokens.accessToken) {
       Alert.alert(
         t('games.alerts.signInRequiredTitle'),
@@ -301,119 +503,9 @@ export default function GamesScreen() {
       visible: true,
       room: null,
       mode: 'manual',
-      loading: true,
+      loading: false,
       error: null,
     });
-
-    try {
-      const response = await joinGameRoom(
-        { inviteCode: code },
-        {
-          accessToken: tokens.accessToken,
-          refreshTokens,
-        },
-      );
-
-      updateRoomList(response.room);
-
-      setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
-
-      navigateToRoomScreen(response.room);
-      void fetchRooms('refresh');
-    } catch (error) {
-      const { type, message: rawMessage } = interpretJoinError(error);
-
-      if (type === 'room-full') {
-        setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
-        Alert.alert(t('games.alerts.roomFullTitle'), t('games.alerts.roomFullManualMessage'));
-        return;
-      }
-
-      if (type === 'room-locked') {
-        setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
-        Alert.alert(t('games.alerts.roomLockedTitle'), t('games.alerts.roomLockedManualMessage'));
-        return;
-      }
-
-      setInvitePrompt({
-        visible: true,
-        room: null,
-        mode: 'manual',
-        loading: false,
-        error:
-          type === 'invite-invalid'
-            ? t('games.alerts.inviteInvalidManual')
-            : type === 'invite-required'
-              ? t('games.alerts.inviteRequired')
-              : rawMessage && rawMessage !== 'Something went wrong.'
-                ? rawMessage
-                : t('games.alerts.genericError'),
-      });
-    }
-  }, [fetchRooms, navigateToRoomScreen, refreshTokens, router, t, tokens.accessToken, updateRoomList]);
-
-  const handleJoinRoom = useCallback((room: GameRoomSummary) => {
-    if (!tokens.accessToken) {
-      Alert.alert(
-        t('games.alerts.signInRequiredTitle'),
-        t('games.alerts.signInJoinMessage'),
-        [
-          { text: t('common.cancel'), style: 'cancel' },
-          {
-            text: t('common.signIn'),
-            onPress: () => {
-              router.push('/auth' as never);
-            },
-          },
-        ],
-      );
-      return;
-    }
-
-    void joinRoom(room);
-  }, [joinRoom, router, t, tokens.accessToken]);
-
-  const handleWatchRoom = useCallback(
-    (room: GameRoomSummary) => {
-      navigateToRoomScreen(room);
-    },
-    [navigateToRoomScreen],
-  );
-
-  const handleInviteCancel = useCallback(() => {
-    setInvitePrompt({ visible: false, room: null, mode: 'room', loading: false, error: null });
-  }, []);
-
-  const handleInviteSubmit = useCallback((code: string) => {
-    if (invitePrompt.mode === 'manual') {
-      void joinRoomByInviteCode(code);
-      return;
-    }
-
-    if (!invitePrompt.room) {
-      return;
-    }
-
-    void joinRoom(invitePrompt.room, code);
-  }, [invitePrompt.mode, invitePrompt.room, joinRoom, joinRoomByInviteCode]);
-
-  const handleManualInvite = useCallback(() => {
-    if (!tokens.accessToken) {
-      Alert.alert(
-        t('games.alerts.signInRequiredTitle'),
-        t('games.alerts.signInInviteMessage'),
-        [
-          { text: t('common.cancel'), style: 'cancel' },
-          {
-            text: t('common.signIn'),
-            onPress: () => router.push('/auth' as never),
-          },
-        ],
-      );
-      return;
-    }
-
-    setInvitePrompt({ visible: true, room: null, mode: 'manual', loading: false, error: null });
   }, [router, t, tokens.accessToken]);
 
   if (shouldBlock) {
@@ -428,29 +520,49 @@ export default function GamesScreen() {
     <ThemedView style={styles.container}>
       <ScrollView
         contentContainerStyle={styles.content}
-        refreshControl={(
+        refreshControl={
           <RefreshControl
             refreshing={roomsRefreshing}
             onRefresh={() => fetchRooms('refresh')}
             tintColor={styles.refreshControlTint.color as string}
           />
-        )}
+        }
       >
         <View style={styles.header}>
           <View>
-            <ThemedText type="title">{t('games.lounge.activeTitle')}</ThemedText>
+            <ThemedText type="title">
+              {t('games.lounge.activeTitle')}
+            </ThemedText>
             <ThemedText style={styles.subtitle}>
               {t('games.lounge.activeCaption')}
             </ThemedText>
           </View>
-          <TouchableOpacity style={styles.headerButton} onPress={() => navigateToCreate()}>
-            <IconSymbol name="sparkles" size={18} color={styles.headerButtonText.color as string} />
-            <ThemedText style={styles.headerButtonText}>{t('games.common.createRoom')}</ThemedText>
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={() => navigateToCreate()}
+          >
+            <IconSymbol
+              name="sparkles"
+              size={18}
+              color={styles.headerButtonText.color as string}
+            />
+            <ThemedText style={styles.headerButtonText}>
+              {t('games.common.createRoom')}
+            </ThemedText>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.manualInviteTrigger} onPress={handleManualInvite}>
-          <IconSymbol name="lock.open" size={16} color={styles.manualInviteTriggerText.color as string} />
-          <ThemedText style={styles.manualInviteTriggerText}>{t('games.lounge.haveInvite')}</ThemedText>
+        <TouchableOpacity
+          style={styles.manualInviteTrigger}
+          onPress={handleManualInvite}
+        >
+          <IconSymbol
+            name="lock.open"
+            size={16}
+            color={styles.manualInviteTriggerText.color as string}
+          />
+          <ThemedText style={styles.manualInviteTriggerText}>
+            {t('games.lounge.haveInvite')}
+          </ThemedText>
         </TouchableOpacity>
 
         <View style={styles.filtersContainer}>
@@ -535,24 +647,50 @@ export default function GamesScreen() {
         <View style={styles.roomsContainer}>
           {roomsLoading ? (
             <ThemedView style={styles.roomSkeleton}>
-              <ActivityIndicator size="small" color={styles.roomSkeletonSpinner.color as string} />
-              <ThemedText style={styles.roomSkeletonText}>{t('games.lounge.loadingRooms')}</ThemedText>
+              <ActivityIndicator
+                size="small"
+                color={styles.roomSkeletonSpinner.color as string}
+              />
+              <ThemedText style={styles.roomSkeletonText}>
+                {t('games.lounge.loadingRooms')}
+              </ThemedText>
             </ThemedView>
           ) : roomsError ? (
             <ThemedView style={styles.roomErrorCard}>
-              <IconSymbol name="exclamationmark.triangle.fill" size={20} color={styles.roomErrorIcon.color as string} />
+              <IconSymbol
+                name="exclamationmark.triangle.fill"
+                size={20}
+                color={styles.roomErrorIcon.color as string}
+              />
               <View style={styles.roomErrorCopy}>
-                <ThemedText style={styles.roomErrorTitle}>{t('games.lounge.errorTitle')}</ThemedText>
-                <ThemedText style={styles.roomErrorText}>{roomsError}</ThemedText>
+                <ThemedText style={styles.roomErrorTitle}>
+                  {t('games.lounge.errorTitle')}
+                </ThemedText>
+                <ThemedText style={styles.roomErrorText}>
+                  {roomsError}
+                </ThemedText>
               </View>
-              <TouchableOpacity style={styles.roomRetryButton} onPress={() => fetchRooms('refresh')}>
-                <IconSymbol name="arrow.clockwise" size={16} color={styles.roomRetryText.color as string} />
-                <ThemedText style={styles.roomRetryText}>{t('common.retry')}</ThemedText>
+              <TouchableOpacity
+                style={styles.roomRetryButton}
+                onPress={() => fetchRooms('refresh')}
+              >
+                <IconSymbol
+                  name="arrow.clockwise"
+                  size={16}
+                  color={styles.roomRetryText.color as string}
+                />
+                <ThemedText style={styles.roomRetryText}>
+                  {t('common.retry')}
+                </ThemedText>
               </TouchableOpacity>
             </ThemedView>
           ) : sortedRooms.length === 0 ? (
             <ThemedView style={styles.roomEmptyCard}>
-              <IconSymbol name="sparkles" size={22} color={styles.roomEmptyIcon.color as string} />
+              <IconSymbol
+                name="sparkles"
+                size={22}
+                color={styles.roomEmptyIcon.color as string}
+              />
               <ThemedText style={styles.roomEmptyTitle}>
                 {filtersActive
                   ? t('games.lounge.filterEmptyTitle')
@@ -565,7 +703,7 @@ export default function GamesScreen() {
               </ThemedText>
             </ThemedView>
           ) : (
-            sortedRooms.map(room => {
+            sortedRooms.map((room) => {
               const statusStyle =
                 room.status === 'lobby'
                   ? styles.roomStatusLobby
@@ -576,38 +714,74 @@ export default function GamesScreen() {
               const statusKey = getRoomStatusLabel(room.status);
               const statusLabel = t(statusKey);
               const capacityLabel = room.maxPlayers
-                ? t('games.rooms.capacityWithMax', { current: room.playerCount, max: room.maxPlayers })
-                : t('games.rooms.capacityWithoutMax', { count: room.playerCount });
-              const playerNames = room.members?.map((member) => member.displayName).filter(Boolean).join(', ');
-              const capacityDetail = playerNames ? `${capacityLabel} • ${playerNames}` : capacityLabel;
+                ? t('games.rooms.capacityWithMax', {
+                    current: room.playerCount,
+                    max: room.maxPlayers,
+                  })
+                : t('games.rooms.capacityWithoutMax', {
+                    count: room.playerCount,
+                  });
+              const playerNames = room.members
+                ?.map((member) => member.displayName)
+                .filter(Boolean)
+                .join(', ');
+              const capacityDetail = playerNames
+                ? `${capacityLabel} • ${playerNames}`
+                : capacityLabel;
               const createdLabel = formatRoomTimestamp(room.createdAt);
-              const createdTimestamp = createdLabel === 'Just created'
-                ? t('games.rooms.justCreated')
-                : createdLabel;
+              const createdTimestamp =
+                createdLabel === 'Just created'
+                  ? t('games.rooms.justCreated')
+                  : createdLabel;
               const isJoining = joiningRoomId === room.id;
               const isPrivate = room.visibility === 'private';
-              const hostDisplay = room.host?.displayName
-                ?? (room.hostId ? formatRoomHost(room.hostId) : t('games.rooms.mysteryHost'));
+              const hostDisplay =
+                room.host?.displayName ??
+                (room.hostId
+                  ? formatRoomHost(room.hostId)
+                  : t('games.rooms.mysteryHost'));
               const gameName = formatRoomGame(room.gameId);
-              const gameLabel = gameName === 'Unknown game' ? t('games.rooms.unknownGame') : gameName;
-              const canWatch = room.visibility === 'public' || Boolean(tokens.accessToken);
+              const gameLabel =
+                gameName === 'Unknown game'
+                  ? t('games.rooms.unknownGame')
+                  : gameName;
+              const canWatch =
+                room.visibility === 'public' || Boolean(tokens.accessToken);
 
               return (
                 <ThemedView key={room.id} style={styles.roomCard}>
                   <View style={styles.roomHeader}>
-                    <ThemedText type="defaultSemiBold" style={styles.roomTitle}>{room.name}</ThemedText>
+                    <ThemedText type="defaultSemiBold" style={styles.roomTitle}>
+                      {room.name}
+                    </ThemedText>
                     <View style={[styles.roomStatusPill, statusStyle]}>
-                      <ThemedText style={styles.roomStatusText}>{statusLabel}</ThemedText>
+                      <ThemedText style={styles.roomStatusText}>
+                        {statusLabel}
+                      </ThemedText>
                     </View>
                   </View>
-                  <ThemedText style={styles.roomGameLabel}>{gameLabel}</ThemedText>
+                  <ThemedText style={styles.roomGameLabel}>
+                    {gameLabel}
+                  </ThemedText>
                   <View style={styles.roomMetaRow}>
-                    <IconSymbol name="person.crop.circle" size={16} color={styles.roomMetaIcon.color as string} />
-                    <ThemedText style={styles.roomMetaText}>{t('games.rooms.hostedBy', { host: hostDisplay })}</ThemedText>
+                    <IconSymbol
+                      name="person.crop.circle"
+                      size={16}
+                      color={styles.roomMetaIcon.color as string}
+                    />
+                    <ThemedText style={styles.roomMetaText}>
+                      {t('games.rooms.hostedBy', { host: hostDisplay })}
+                    </ThemedText>
                   </View>
                   <View style={styles.roomMetaRow}>
-                    <IconSymbol name="person.3.fill" size={16} color={styles.roomMetaIcon.color as string} />
-                    <ThemedText style={styles.roomMetaText}>{capacityDetail}</ThemedText>
+                    <IconSymbol
+                      name="person.3.fill"
+                      size={16}
+                      color={styles.roomMetaIcon.color as string}
+                    />
+                    <ThemedText style={styles.roomMetaText}>
+                      {capacityDetail}
+                    </ThemedText>
                   </View>
                   <View style={styles.roomFooter}>
                     <View style={styles.roomBadgeRow}>
@@ -625,11 +799,15 @@ export default function GamesScreen() {
                           color={styles.roomVisibilityChipIcon.color as string}
                         />
                         <ThemedText style={styles.roomVisibilityChipText}>
-                          {isPrivate ? t('games.rooms.visibility.private') : t('games.rooms.visibility.public')}
+                          {isPrivate
+                            ? t('games.rooms.visibility.private')
+                            : t('games.rooms.visibility.public')}
                         </ThemedText>
                       </View>
                       <ThemedText style={styles.roomTimestamp}>
-                        {t('games.rooms.created', { timestamp: createdTimestamp })}
+                        {t('games.rooms.created', {
+                          timestamp: createdTimestamp,
+                        })}
                       </ThemedText>
                     </View>
                     <View style={styles.roomActionButtons}>
@@ -651,7 +829,10 @@ export default function GamesScreen() {
                         </ThemedText>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        style={[styles.roomJoinButton, isJoining && styles.roomJoinButtonDisabled]}
+                        style={[
+                          styles.roomJoinButton,
+                          isJoining && styles.roomJoinButtonDisabled,
+                        ]}
                         onPress={() => handleJoinRoom(room)}
                         disabled={isJoining}
                       >
@@ -667,7 +848,9 @@ export default function GamesScreen() {
                               size={18}
                               color={styles.roomJoinButtonText.color as string}
                             />
-                            <ThemedText style={styles.roomJoinButtonText}>{t('games.common.joinRoom')}</ThemedText>
+                            <ThemedText style={styles.roomJoinButtonText}>
+                              {t('games.common.joinRoom')}
+                            </ThemedText>
                           </>
                         )}
                       </TouchableOpacity>
@@ -697,7 +880,9 @@ function createStyles(palette: Palette) {
   const cardBackground = isLight ? '#F6F8FC' : '#1F2228';
   const raisedBackground = isLight ? '#E9EEF6' : '#262A31';
   const borderColor = isLight ? '#D8DFEA' : '#33373D';
-  const surfaceShadow = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(8, 10, 15, 0.45)';
+  const surfaceShadow = isLight
+    ? 'rgba(15, 23, 42, 0.08)'
+    : 'rgba(8, 10, 15, 0.45)';
   const statusLobbyBg = isLight ? '#DCFCE7' : '#1D3A28';
   const statusInProgressBg = isLight ? '#FDE68A' : '#42381F';
   const statusCompletedBg = isLight ? '#E2E8F0' : '#2B3038';
@@ -1041,4 +1226,3 @@ function createStyles(palette: Palette) {
     },
   });
 }
-

@@ -15,7 +15,9 @@ type UseChatParams = {
 type ExtendedMessage = IMessage & { pending?: boolean };
 
 function mapToExtendedMessage(payload: MessagePayload): ExtendedMessage {
-  const createdAt = payload.timestamp ? new Date(payload.timestamp) : new Date();
+  const createdAt = payload.timestamp
+    ? new Date(payload.timestamp)
+    : new Date();
 
   return {
     _id: payload.id,
@@ -36,9 +38,7 @@ export function useChat({
   receiverIds: receiverIdsRaw,
 }: UseChatParams) {
   const [messages, setMessages] = useState<ExtendedMessage[]>([]);
-  const [isConnected, setIsConnected] = useState<boolean>(
-    chatSocket.connected,
-  );
+  const [isConnected, setIsConnected] = useState<boolean>(chatSocket.connected);
 
   const receiverIds = useMemo(() => {
     if (Array.isArray(receiverIdsRaw)) {
@@ -47,7 +47,10 @@ export function useChat({
         .filter((value) => value.length > 0);
     }
 
-    if (typeof receiverIdsRaw === 'string' && receiverIdsRaw.trim().length > 0) {
+    if (
+      typeof receiverIdsRaw === 'string' &&
+      receiverIdsRaw.trim().length > 0
+    ) {
       return receiverIdsRaw
         .split(',')
         .map((value) => value.trim())
@@ -97,7 +100,9 @@ export function useChat({
         return;
       }
 
-      const filtered = loadedMessages.filter((payload) => payload.chatId === chatId);
+      const filtered = loadedMessages.filter(
+        (payload) => payload.chatId === chatId,
+      );
 
       if (!filtered.length) {
         return;

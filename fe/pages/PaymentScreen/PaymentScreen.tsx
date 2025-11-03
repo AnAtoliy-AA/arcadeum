@@ -48,17 +48,20 @@ export default function PaymentScreen() {
     setStatus('idle');
 
     try {
-      const response = await fetchWithRefresh(resolveApiUrl('/payments/session'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetchWithRefresh(
+        resolveApiUrl('/payments/session'),
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            amount: normalizedAmount,
+            currency: currency.trim().toUpperCase(),
+            description: note.trim() || undefined,
+          }),
         },
-        body: JSON.stringify({
-          amount: normalizedAmount,
-          currency: currency.trim().toUpperCase(),
-          description: note.trim() || undefined,
-        }),
-      });
+      );
 
       if (!response.ok) {
         throw new Error(`payment-session-failed:${response.status}`);
@@ -92,12 +95,19 @@ export default function PaymentScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <ThemedText type="title" style={styles.title}>{t('payments.title')}</ThemedText>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+      >
+        <ThemedText type="title" style={styles.title}>
+          {t('payments.title')}
+        </ThemedText>
         <ThemedText style={styles.subtitle}>{t('payments.intro')}</ThemedText>
 
         <View style={styles.fieldGroup}>
-          <ThemedText style={styles.label}>{t('payments.amountLabel')}</ThemedText>
+          <ThemedText style={styles.label}>
+            {t('payments.amountLabel')}
+          </ThemedText>
           <TextInput
             style={styles.input}
             keyboardType="decimal-pad"
@@ -111,7 +121,9 @@ export default function PaymentScreen() {
         </View>
 
         <View style={styles.fieldGroup}>
-          <ThemedText style={styles.label}>{t('payments.currencyLabel')}</ThemedText>
+          <ThemedText style={styles.label}>
+            {t('payments.currencyLabel')}
+          </ThemedText>
           <TextInput
             style={styles.input}
             autoCapitalize="characters"
@@ -126,7 +138,9 @@ export default function PaymentScreen() {
         </View>
 
         <View style={styles.fieldGroup}>
-          <ThemedText style={styles.label}>{t('payments.noteLabel')}</ThemedText>
+          <ThemedText style={styles.label}>
+            {t('payments.noteLabel')}
+          </ThemedText>
           <TextInput
             style={[styles.input, styles.multilineInput]}
             value={note}
@@ -139,7 +153,9 @@ export default function PaymentScreen() {
           />
         </View>
 
-        {formError ? <ThemedText style={styles.errorText}>{formError}</ThemedText> : null}
+        {formError ? (
+          <ThemedText style={styles.errorText}>{formError}</ThemedText>
+        ) : null}
         {status !== 'idle' ? (
           <ThemedText
             style={
@@ -160,15 +176,23 @@ export default function PaymentScreen() {
           disabled={isSubmitting}
         >
           {isSubmitting ? (
-            <ActivityIndicator size="small" color={styles.primaryButtonText.color as string} />
+            <ActivityIndicator
+              size="small"
+              color={styles.primaryButtonText.color as string}
+            />
           ) : (
             <>
-              <IconSymbol name="creditcard.fill" size={16} color={styles.primaryButtonText.color as string} />
-              <ThemedText style={styles.primaryButtonText}>{t('payments.submit')}</ThemedText>
+              <IconSymbol
+                name="creditcard.fill"
+                size={16}
+                color={styles.primaryButtonText.color as string}
+              />
+              <ThemedText style={styles.primaryButtonText}>
+                {t('payments.submit')}
+              </ThemedText>
             </>
           )}
         </TouchableOpacity>
-
       </ScrollView>
     </ThemedView>
   );

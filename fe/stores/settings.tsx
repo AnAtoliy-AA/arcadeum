@@ -1,4 +1,11 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { SecureStoreShim } from '@/lib/secureStore';
 
 export type ThemePreference = 'system' | 'light' | 'dark';
@@ -22,7 +29,9 @@ const defaultSettings: SettingsSnapshot = {
   language: 'en',
 };
 
-const SettingsContext = createContext<SettingsContextValue | undefined>(undefined);
+const SettingsContext = createContext<SettingsContextValue | undefined>(
+  undefined,
+);
 
 async function readSettingsFromStorage(): Promise<SettingsSnapshot> {
   try {
@@ -33,8 +42,14 @@ async function readSettingsFromStorage(): Promise<SettingsSnapshot> {
 
     const parsed = JSON.parse(raw) as Partial<SettingsSnapshot>;
     return {
-      themePreference: parsed.themePreference === 'light' || parsed.themePreference === 'dark' ? parsed.themePreference : 'system',
-      language: parsed.language === 'es' || parsed.language === 'fr' ? parsed.language : 'en',
+      themePreference:
+        parsed.themePreference === 'light' || parsed.themePreference === 'dark'
+          ? parsed.themePreference
+          : 'system',
+      language:
+        parsed.language === 'es' || parsed.language === 'fr'
+          ? parsed.language
+          : 'en',
     };
   } catch {
     return { ...defaultSettings };
@@ -50,7 +65,9 @@ async function persistSettingsSnapshot(snapshot: SettingsSnapshot) {
 }
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
-  const [settings, setSettings] = useState<SettingsSnapshot>({ ...defaultSettings });
+  const [settings, setSettings] = useState<SettingsSnapshot>({
+    ...defaultSettings,
+  });
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -72,7 +89,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       if (current.themePreference === preference) {
         return current;
       }
-      const next: SettingsSnapshot = { ...current, themePreference: preference };
+      const next: SettingsSnapshot = {
+        ...current,
+        themePreference: preference,
+      };
       void persistSettingsSnapshot(next);
       return next;
     });
@@ -101,7 +121,11 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     [settings, hydrated, setThemePreference, setLanguage],
   );
 
-  return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;
+  return (
+    <SettingsContext.Provider value={value}>
+      {children}
+    </SettingsContext.Provider>
+  );
 }
 
 export function useSettings(): SettingsContextValue {

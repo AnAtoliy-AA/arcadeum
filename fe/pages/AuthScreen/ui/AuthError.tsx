@@ -9,7 +9,9 @@ interface AuthErrorProps {
 export function AuthError({ error }: AuthErrorProps) {
   const colorScheme = useColorScheme() ?? 'light';
   return (
-    <Text style={[styles.base, { color: Colors[colorScheme].error }]}>{error}</Text>
+    <Text style={[styles.base, { color: Colors[colorScheme].error }]}>
+      {error}
+    </Text>
   );
 }
 

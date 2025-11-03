@@ -1,7 +1,9 @@
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { platform } from '@/constants/platform';
-const extra = (Constants.expoConfig?.extra ?? (Constants.manifest as any)?.extra ?? {}) as Record<string, string | undefined>;
+const extra = (Constants.expoConfig?.extra ??
+  (Constants.manifest as any)?.extra ??
+  {}) as Record<string, string | undefined>;
 
 const {
   AUTH_ISSUER,

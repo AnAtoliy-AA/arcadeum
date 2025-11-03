@@ -11,7 +11,11 @@ interface AuthResultProps {
   onLogout: () => void;
 }
 
-export function AuthResult({ accessToken, authorizationCode, onLogout }: AuthResultProps) {
+export function AuthResult({
+  accessToken,
+  authorizationCode,
+  onLogout,
+}: AuthResultProps) {
   const { t } = useTranslation();
   return (
     <View style={styles.container}>

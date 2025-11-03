@@ -5,7 +5,10 @@ import { SymbolWeight, SymbolViewProps } from 'expo-symbols';
 import { ComponentProps } from 'react';
 import { OpaqueColorValue, type StyleProp, type TextStyle } from 'react-native';
 
-type IconMapping = Record<SymbolViewProps['name'], ComponentProps<typeof MaterialIcons>['name']>;
+type IconMapping = Record<
+  SymbolViewProps['name'],
+  ComponentProps<typeof MaterialIcons>['name']
+>;
 type IconSymbolName = keyof typeof MAPPING;
 
 /**
@@ -24,11 +27,11 @@ const MAPPING = {
   'person.3.fill': 'groups',
   clock: 'schedule',
   'clock.fill': 'schedule',
-  'sparkles': 'auto-awesome',
+  sparkles: 'auto-awesome',
   'gearshape.fill': 'settings',
   'lock.fill': 'lock',
   'lock.open': 'lock-open',
-  'book': 'menu-book',
+  book: 'menu-book',
   'rectangle.portrait.and.arrow.right': 'logout',
   'exclamationmark.triangle.fill': 'warning',
   'arrow.clockwise': 'refresh',
@@ -37,7 +40,7 @@ const MAPPING = {
   'rectangle.grid.2x2': 'grid-view',
   'rectangle.stack': 'layers',
   'arrow.triangle.2.circlepath': 'autorenew',
-  'hourglass': 'hourglass-empty',
+  hourglass: 'hourglass-empty',
   'crown.fill': 'emoji-events',
   'play.fill': 'play-arrow',
   'hand.draw.fill': 'back-hand',
@@ -71,5 +74,12 @@ export function IconSymbol({
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
 }) {
-  return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
+  return (
+    <MaterialIcons
+      color={color}
+      size={size}
+      name={MAPPING[name]}
+      style={style}
+    />
+  );
 }

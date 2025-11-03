@@ -67,7 +67,11 @@ function resolveRgba(color: string, opacity: number): string {
   if (rgbaMatch) {
     const parts = rgbaMatch[1].split(',').map((part) => part.trim());
     const baseAlpha = parts.length === 4 ? Number.parseFloat(parts[3]) : 1;
-    const alpha = clamp((Number.isFinite(baseAlpha) ? baseAlpha : 1) * normalizedOpacity, 0, 1);
+    const alpha = clamp(
+      (Number.isFinite(baseAlpha) ? baseAlpha : 1) * normalizedOpacity,
+      0,
+      1,
+    );
     return `rgba(${parts[0]}, ${parts[1]}, ${parts[2]}, ${alpha})`;
   }
 
@@ -78,9 +82,13 @@ function resolveRgba(color: string, opacity: number): string {
 
   if (color.startsWith('#')) {
     const hex = color.slice(1);
-    const expanded = hex.length === 3
-      ? hex.split('').map((char) => char + char).join('')
-      : hex.padEnd(6, '0');
+    const expanded =
+      hex.length === 3
+        ? hex
+            .split('')
+            .map((char) => char + char)
+            .join('')
+        : hex.padEnd(6, '0');
 
     const intValue = Number.parseInt(expanded, 16);
     if (!Number.isFinite(intValue)) {

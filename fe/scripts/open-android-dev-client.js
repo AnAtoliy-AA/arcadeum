@@ -3,7 +3,9 @@ const { execSync, spawnSync } = require('child_process');
 
 function listDevices() {
   try {
-    const output = execSync('adb devices', { stdio: ['ignore', 'pipe', 'ignore'] }).toString();
+    const output = execSync('adb devices', {
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).toString();
     return output
       .split('\n')
       .slice(1)
@@ -21,7 +23,9 @@ function pickDevice(devices) {
       console.log(`[android:open] Using device from environment: ${envSerial}`);
       return envSerial;
     }
-    console.warn(`[android:open] Environment device ${envSerial} not connected. Falling back to auto selection.`);
+    console.warn(
+      `[android:open] Environment device ${envSerial} not connected. Falling back to auto selection.`,
+    );
   }
   if (!devices.length) {
     return null;
@@ -34,7 +38,9 @@ function pickDevice(devices) {
   const emulator = devices.find(([serial]) => serial.startsWith('emulator-'));
   const chosen = emulator ? emulator[0] : devices[0][0];
   const list = devices.map(([serial]) => serial).join(', ');
-  console.log(`[android:open] Multiple devices detected (${list}). Using ${chosen}. Set ANDROID_SERIAL to override.`);
+  console.log(
+    `[android:open] Multiple devices detected (${list}). Using ${chosen}. Set ANDROID_SERIAL to override.`,
+  );
   return chosen;
 }
 
@@ -42,7 +48,9 @@ function ensureDevice() {
   const devices = listDevices();
   const serial = pickDevice(devices);
   if (!serial) {
-    console.error('No Android devices or emulators detected. Connect one and try again.');
+    console.error(
+      'No Android devices or emulators detected. Connect one and try again.',
+    );
     process.exit(1);
   }
   return serial;
@@ -51,9 +59,11 @@ function ensureDevice() {
 function getScheme() {
   if (process.env.APP_SCHEME) return process.env.APP_SCHEME;
   try {
-    const out = execSync('npx --yes expo config --type public', { stdio: ['ignore', 'pipe', 'ignore'] }).toString();
+    const out = execSync('npx --yes expo config --type public', {
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).toString();
     const cfg = JSON.parse(out);
-    return (cfg?.extra?.APP_SCHEME || cfg?.scheme || 'mobile');
+    return cfg?.extra?.APP_SCHEME || cfg?.scheme || 'mobile';
   } catch (_e) {
     return 'mobile';
   }
@@ -64,18 +74,31 @@ function ensureAdbReverse() {
   try {
     execSync(`adb -s ${serial} reverse tcp:8081 tcp:8081`, { stdio: 'ignore' });
   } catch (error) {
-    console.warn(`[android:open] Unable to set adb reverse for ${serial}:`, error.message);
+    console.warn(
+      `[android:open] Unable to set adb reverse for ${serial}:`,
+      error.message,
+    );
   }
   return serial;
 }
 
 function openDevClient(scheme, serial) {
   const url = `${scheme}://expo-development-client/?url=http://localhost:8081`;
-  const args = ['shell', 'am', 'start', '-a', 'android.intent.action.VIEW', '-d', url];
+  const args = [
+    'shell',
+    'am',
+    'start',
+    '-a',
+    'android.intent.action.VIEW',
+    '-d',
+    url,
+  ];
   const adbArgs = serial ? ['-s', serial, ...args] : args;
   const res = spawnSync('adb', adbArgs, { stdio: 'inherit' });
   if (res.status !== 0) {
-    console.error('Failed to open dev client via adb. Ensure the app is installed and the scheme is registered.');
+    console.error(
+      'Failed to open dev client via adb. Ensure the app is installed and the scheme is registered.',
+    );
     process.exit(res.status || 1);
   }
 }

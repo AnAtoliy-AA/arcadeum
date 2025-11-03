@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   ActivityIndicator,
   Animated,
@@ -15,21 +21,22 @@ import {
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import { ExplodingCatsCard as ExplodingCatsArtwork, type CardKey as CardArtworkKey } from '@/components/cards';
+import {
+  ExplodingCatsCard as ExplodingCatsArtwork,
+  type CardKey as CardArtworkKey,
+} from '@/components/cards';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
 import { useTranslation } from '@/lib/i18n';
 import type { TranslationKey } from '@/lib/i18n/messages';
-import type {
-  GameRoomSummary,
-  GameSessionSummary,
-} from '../api/gamesApi';
+import type { GameRoomSummary, GameSessionSummary } from '../api/gamesApi';
 import { getRoomStatusLabel } from '../roomUtils';
 import { platformShadow } from '@/lib/platformShadow';
 
 const TABLE_DIAMETER = 230;
 const PLAYER_SEAT_SIZE = 88;
-const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+const AnimatedTouchableOpacity =
+  Animated.createAnimatedComponent(TouchableOpacity);
 
 interface SessionPlayerProfile {
   id: string;
@@ -73,7 +80,10 @@ const DESIRED_CARD_OPTIONS: ExplodingCatsCard[] = [
 
 type CardArtworkVariant = 1 | 2 | 3;
 
-const CARD_ART_SETTINGS: Record<ExplodingCatsCard, { key: CardArtworkKey; variant: CardArtworkVariant }> = {
+const CARD_ART_SETTINGS: Record<
+  ExplodingCatsCard,
+  { key: CardArtworkKey; variant: CardArtworkVariant }
+> = {
   exploding_cat: { key: 'exploding-cat', variant: 1 },
   defuse: { key: 'defuse', variant: 2 },
   attack: { key: 'attack', variant: 1 },
@@ -187,7 +197,9 @@ function getCardDescriptionKey(card: ExplodingCatsCard): TranslationKey {
   }
 }
 
-function getSessionStatusTranslationKey(status: GameSessionSummary['status'] | undefined | null): TranslationKey {
+function getSessionStatusTranslationKey(
+  status: GameSessionSummary['status'] | undefined | null,
+): TranslationKey {
   switch (status) {
     case 'active':
       return 'games.table.sessionStatus.active';
@@ -211,7 +223,10 @@ interface ExplodingCatsTableProps {
   onDraw: () => void;
   onPlay: (card: 'skip' | 'attack') => void;
   onPlayCatCombo: (payload: ExplodingCatsCatComboInput) => void;
-  onPostHistoryNote?: (message: string, scope: LogVisibility) => Promise<void> | void;
+  onPostHistoryNote?: (
+    message: string,
+    scope: LogVisibility,
+  ) => Promise<void> | void;
   fullScreen?: boolean;
   tableOnly?: boolean;
 }
@@ -241,7 +256,8 @@ export function ExplodingCatsTable({
   const deckPulseScale = useRef(new Animated.Value(1)).current;
   const [animatingCardKey, setAnimatingCardKey] = useState<string | null>(null);
   const [messageDraft, setMessageDraft] = useState('');
-  const [messageVisibility, setMessageVisibility] = useState<LogVisibility>('all');
+  const [messageVisibility, setMessageVisibility] =
+    useState<LogVisibility>('all');
   const [historySending, setHistorySending] = useState(false);
 
   const snapshot = useMemo<ExplodingCatsSnapshot | null>(() => {
@@ -252,34 +268,33 @@ export function ExplodingCatsTable({
     return raw as ExplodingCatsSnapshot;
   }, [session]);
 
-  const players = useMemo(
-    () => {
-      if (!snapshot) {
-        return [];
-      }
+  const players = useMemo(() => {
+    if (!snapshot) {
+      return [];
+    }
 
-      const rawPlayers = Array.isArray((session as any)?.state?.players)
-        ? ((session as any).state.players as SessionPlayerProfile[])
-        : [];
-      const lookup = new Map(rawPlayers.map((player) => [player.id, player]));
+    const rawPlayers = Array.isArray((session as any)?.state?.players)
+      ? ((session as any).state.players as SessionPlayerProfile[])
+      : [];
+    const lookup = new Map(rawPlayers.map((player) => [player.id, player]));
 
-      return snapshot.playerOrder.map((playerId, index) => {
-        const base = snapshot.players.find((player) => player.playerId === playerId);
-        const userProfile = lookup.get(playerId);
-        return {
-          playerId,
-          displayName: userProfile?.username || userProfile?.email || playerId,
-          hand: base?.hand ?? [],
-          alive: base?.alive ?? false,
-          isCurrentTurn: index === snapshot.currentTurnIndex,
-          handSize: base?.hand?.length ?? 0,
-          isSelf: currentUserId ? playerId === currentUserId : false,
-          orderIndex: index,
-        };
-      });
-    },
-    [snapshot, currentUserId, session],
-  );
+    return snapshot.playerOrder.map((playerId, index) => {
+      const base = snapshot.players.find(
+        (player) => player.playerId === playerId,
+      );
+      const userProfile = lookup.get(playerId);
+      return {
+        playerId,
+        displayName: userProfile?.username || userProfile?.email || playerId,
+        hand: base?.hand ?? [],
+        alive: base?.alive ?? false,
+        isCurrentTurn: index === snapshot.currentTurnIndex,
+        handSize: base?.hand?.length ?? 0,
+        isSelf: currentUserId ? playerId === currentUserId : false,
+        orderIndex: index,
+      };
+    });
+  }, [snapshot, currentUserId, session]);
 
   const otherPlayers = useMemo(
     () => players.filter((player) => !player.isSelf),
@@ -305,8 +320,12 @@ export function ExplodingCatsTable({
 
     return otherPlayers.map((player, index) => {
       const angle = (2 * Math.PI * index) / total - Math.PI / 2;
-      const left = Math.round(center + radius * Math.cos(angle) - PLAYER_SEAT_SIZE / 2);
-      const top = Math.round(center + radius * Math.sin(angle) - PLAYER_SEAT_SIZE / 2);
+      const left = Math.round(
+        center + radius * Math.cos(angle) - PLAYER_SEAT_SIZE / 2,
+      );
+      const top = Math.round(
+        center + radius * Math.sin(angle) - PLAYER_SEAT_SIZE / 2,
+      );
 
       return {
         player,
@@ -324,26 +343,41 @@ export function ExplodingCatsTable({
   );
 
   const deckCount = snapshot?.deck?.length ?? 0;
-  const discardTop = snapshot?.discardPile?.[snapshot.discardPile.length - 1] ?? null;
-  const discardArt = discardTop ? CARD_ART_SETTINGS[discardTop] ?? CARD_ART_SETTINGS.exploding_cat : null;
-  const discardArtVariant: CardArtworkVariant = discardArt ? discardArt.variant : 1;
+  const discardTop =
+    snapshot?.discardPile?.[snapshot.discardPile.length - 1] ?? null;
+  const discardArt = discardTop
+    ? (CARD_ART_SETTINGS[discardTop] ?? CARD_ART_SETTINGS.exploding_cat)
+    : null;
+  const discardArtVariant: CardArtworkVariant = discardArt
+    ? discardArt.variant
+    : 1;
   const pendingDraws = snapshot?.pendingDraws ?? 0;
-  const currentTurnPlayerId = snapshot?.playerOrder?.[snapshot.currentTurnIndex] ?? null;
-  const isMyTurn = Boolean(currentUserId && currentTurnPlayerId === currentUserId);
+  const currentTurnPlayerId =
+    snapshot?.playerOrder?.[snapshot.currentTurnIndex] ?? null;
+  const isMyTurn = Boolean(
+    currentUserId && currentTurnPlayerId === currentUserId,
+  );
   const hasSkip = (selfPlayer?.hand ?? []).includes('skip');
   const hasAttack = (selfPlayer?.hand ?? []).includes('attack');
   const isSessionActive = session?.status === 'active';
   const isSessionCompleted = session?.status === 'completed';
-  const canDraw = isSessionActive && isMyTurn && (selfPlayer?.alive ?? false) && pendingDraws > 0;
-  const canPlaySkip = isSessionActive && isMyTurn && hasSkip && (selfPlayer?.alive ?? false);
-  const canPlayAttack = isSessionActive && isMyTurn && hasAttack && (selfPlayer?.alive ?? false);
-  const canStart = isHost && !isSessionActive && !isSessionCompleted && !snapshot;
+  const canDraw =
+    isSessionActive &&
+    isMyTurn &&
+    (selfPlayer?.alive ?? false) &&
+    pendingDraws > 0;
+  const canPlaySkip =
+    isSessionActive && isMyTurn && hasSkip && (selfPlayer?.alive ?? false);
+  const canPlayAttack =
+    isSessionActive && isMyTurn && hasAttack && (selfPlayer?.alive ?? false);
+  const canStart =
+    isHost && !isSessionActive && !isSessionCompleted && !snapshot;
   const isCurrentUserPlayer = Boolean(selfPlayer);
   const logs = useMemo(() => {
     const source = snapshot?.logs ?? [];
-    const filtered = source.filter((entry) => (
-      entry.scope !== 'players' || isCurrentUserPlayer
-    ));
+    const filtered = source.filter(
+      (entry) => entry.scope !== 'players' || isCurrentUserPlayer,
+    );
     const ordered = [...filtered].sort((a, b) => {
       const aTime = new Date(a.createdAt).getTime();
       const bTime = new Date(b.createdAt).getTime();
@@ -351,28 +385,42 @@ export function ExplodingCatsTable({
     });
     return ordered.slice(-20).reverse();
   }, [snapshot, isCurrentUserPlayer]);
-  const translateCardName = (card: ExplodingCatsCard) => t(getCardTranslationKey(card));
-  const translateCardDescription = (card: ExplodingCatsCard) => t(getCardDescriptionKey(card));
+  const translateCardName = (card: ExplodingCatsCard) =>
+    t(getCardTranslationKey(card));
+  const translateCardDescription = (card: ExplodingCatsCard) =>
+    t(getCardDescriptionKey(card));
   const statusLabel = session?.status
     ? t(getSessionStatusTranslationKey(session.status))
-    : t(getRoomStatusLabel((room?.status ?? 'lobby') as GameRoomSummary['status']));
+    : t(
+        getRoomStatusLabel(
+          (room?.status ?? 'lobby') as GameRoomSummary['status'],
+        ),
+      );
   const placeholderText = `${t('games.table.placeholder.waiting')}${isHost ? ` ${t('games.table.placeholder.hostSuffix')}` : ''}`;
-  const pendingDrawsLabel = pendingDraws > 0 ? pendingDraws : t('games.table.info.none');
-  const pendingDrawsCaption = pendingDraws === 1 ? t('games.table.info.pendingSingular') : t('games.table.info.pendingPlural');
+  const pendingDrawsLabel =
+    pendingDraws > 0 ? pendingDraws : t('games.table.info.none');
+  const pendingDrawsCaption =
+    pendingDraws === 1
+      ? t('games.table.info.pendingSingular')
+      : t('games.table.info.pendingPlural');
   const trimmedMessage = messageDraft.trim();
-  const canSendHistoryMessage = isCurrentUserPlayer && trimmedMessage.length > 0;
-  const formatLogMessage = useCallback((message: string) => {
-    if (!message) {
-      return message;
-    }
-    let next = message;
-    playerNameMap.forEach((displayName, playerId) => {
-      if (playerId && displayName && playerId !== displayName) {
-        next = next.split(playerId).join(displayName);
+  const canSendHistoryMessage =
+    isCurrentUserPlayer && trimmedMessage.length > 0;
+  const formatLogMessage = useCallback(
+    (message: string) => {
+      if (!message) {
+        return message;
       }
-    });
-    return next;
-  }, [playerNameMap]);
+      let next = message;
+      playerNameMap.forEach((displayName, playerId) => {
+        if (playerId && displayName && playerId !== displayName) {
+          next = next.split(playerId).join(displayName);
+        }
+      });
+      return next;
+    },
+    [playerNameMap],
+  );
 
   const aliveOpponents = useMemo(
     () => otherPlayers.filter((player) => player.alive),
@@ -401,7 +449,10 @@ export function ExplodingCatsTable({
   }, [selfPlayer?.hand]);
 
   const catComboAvailability = useMemo(() => {
-    const availability: Record<ExplodingCatsCatCard, { pair: boolean; trio: boolean }> = {
+    const availability: Record<
+      ExplodingCatsCatCard,
+      { pair: boolean; trio: boolean }
+    > = {
       tacocat: { pair: false, trio: false },
       hairy_potato_cat: { pair: false, trio: false },
       rainbow_ralphing_cat: { pair: false, trio: false },
@@ -420,7 +471,8 @@ export function ExplodingCatsTable({
     return availability;
   }, [catCardCounts, aliveOpponents]);
 
-  const [catComboPrompt, setCatComboPrompt] = useState<CatComboPromptState | null>(null);
+  const [catComboPrompt, setCatComboPrompt] =
+    useState<CatComboPromptState | null>(null);
   const catComboBusy = actionBusy === 'cat_pair' || actionBusy === 'cat_trio';
 
   useEffect(() => {
@@ -476,7 +528,13 @@ export function ExplodingCatsTable({
     } finally {
       setHistorySending(false);
     }
-  }, [canSendHistoryMessage, historySending, onPostHistoryNote, trimmedMessage, messageVisibility]);
+  }, [
+    canSendHistoryMessage,
+    historySending,
+    onPostHistoryNote,
+    trimmedMessage,
+    messageVisibility,
+  ]);
 
   const toggleMessageVisibility = useCallback(() => {
     setMessageVisibility((prev) => (prev === 'all' ? 'players' : 'all'));
@@ -488,10 +546,10 @@ export function ExplodingCatsTable({
         if (!prev || !prev.available[mode]) {
           return prev;
         }
-        const nextTarget = prev.targetPlayerId ?? aliveOpponents[0]?.playerId ?? null;
-        const nextDesired = mode === 'trio'
-          ? prev.desiredCard ?? 'defuse'
-          : null;
+        const nextTarget =
+          prev.targetPlayerId ?? aliveOpponents[0]?.playerId ?? null;
+        const nextDesired =
+          mode === 'trio' ? (prev.desiredCard ?? 'defuse') : null;
         return {
           ...prev,
           mode,
@@ -515,17 +573,20 @@ export function ExplodingCatsTable({
     });
   }, []);
 
-  const handleCatComboDesiredCardChange = useCallback((card: ExplodingCatsCard) => {
-    setCatComboPrompt((prev) => {
-      if (!prev) {
-        return prev;
-      }
-      return {
-        ...prev,
-        desiredCard: card,
-      };
-    });
-  }, []);
+  const handleCatComboDesiredCardChange = useCallback(
+    (card: ExplodingCatsCard) => {
+      setCatComboPrompt((prev) => {
+        if (!prev) {
+          return prev;
+        }
+        return {
+          ...prev,
+          desiredCard: card,
+        };
+      });
+    },
+    [],
+  );
 
   const handleConfirmCatCombo = useCallback(() => {
     if (!catComboPrompt || !catComboPrompt.mode) {
@@ -561,38 +622,41 @@ export function ExplodingCatsTable({
 
   const comboConfirmDisabled = !catComboPrompt
     ? true
-    : catComboBusy
-      || !catComboPrompt.mode
-      || !catComboPrompt.targetPlayerId
-      || (catComboPrompt.mode === 'trio' && !catComboPrompt.desiredCard);
+    : catComboBusy ||
+      !catComboPrompt.mode ||
+      !catComboPrompt.targetPlayerId ||
+      (catComboPrompt.mode === 'trio' && !catComboPrompt.desiredCard);
 
-  const triggerCardAnimation = useCallback((key: string, onComplete: () => void) => {
-    setAnimatingCardKey(key);
-    cardPressScale.setValue(1);
-    Animated.sequence([
-      Animated.timing(cardPressScale, {
-        toValue: 0.92,
-        duration: 90,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      }),
-      Animated.timing(cardPressScale, {
-        toValue: 1.06,
-        duration: 140,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      }),
-      Animated.timing(cardPressScale, {
-        toValue: 1,
-        duration: 140,
-        easing: Easing.inOut(Easing.quad),
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      setAnimatingCardKey(null);
-      onComplete();
-    });
-  }, [cardPressScale]);
+  const triggerCardAnimation = useCallback(
+    (key: string, onComplete: () => void) => {
+      setAnimatingCardKey(key);
+      cardPressScale.setValue(1);
+      Animated.sequence([
+        Animated.timing(cardPressScale, {
+          toValue: 0.92,
+          duration: 90,
+          easing: Easing.out(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(cardPressScale, {
+          toValue: 1.06,
+          duration: 140,
+          easing: Easing.out(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(cardPressScale, {
+          toValue: 1,
+          duration: 140,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setAnimatingCardKey(null);
+        onComplete();
+      });
+    },
+    [cardPressScale],
+  );
 
   useEffect(() => {
     if (actionBusy === 'draw') {
@@ -620,8 +684,14 @@ export function ExplodingCatsTable({
         <>
           <View style={styles.headerRow}>
             <View style={styles.headerTitle}>
-              <IconSymbol name="rectangle.grid.2x2" size={18} color={styles.headerIcon.color as string} />
-              <ThemedText style={styles.headerText}>{t('games.table.headerTitle')}</ThemedText>
+              <IconSymbol
+                name="rectangle.grid.2x2"
+                size={18}
+                color={styles.headerIcon.color as string}
+              />
+              <ThemedText style={styles.headerText}>
+                {t('games.table.headerTitle')}
+              </ThemedText>
             </View>
             <View style={styles.statusBadge}>
               <ThemedText style={styles.statusText}>{statusLabel}</ThemedText>
@@ -629,8 +699,14 @@ export function ExplodingCatsTable({
           </View>
           {isSessionCompleted ? (
             <View style={styles.messageCard}>
-              <IconSymbol name="crown.fill" size={18} color={styles.messageText.color as string} />
-              <ThemedText style={styles.messageText}>{t('games.table.messageCompleted')}</ThemedText>
+              <IconSymbol
+                name="crown.fill"
+                size={18}
+                color={styles.messageText.color as string}
+              />
+              <ThemedText style={styles.messageText}>
+                {t('games.table.messageCompleted')}
+              </ThemedText>
             </View>
           ) : null}
         </>
@@ -641,7 +717,12 @@ export function ExplodingCatsTable({
           <View style={styles.tableSection}>
             <View style={styles.tableRing}>
               <View style={styles.tableCenter}>
-                <View style={[styles.tableInfoCard, discardTop ? styles.tableInfoCardWithArtwork : null]}>
+                <View
+                  style={[
+                    styles.tableInfoCard,
+                    discardTop ? styles.tableInfoCardWithArtwork : null,
+                  ]}
+                >
                   {discardTop && discardArt ? (
                     <View style={styles.tableInfoArtwork}>
                       <ExplodingCatsArtwork
@@ -655,17 +736,25 @@ export function ExplodingCatsTable({
                       />
                     </View>
                   ) : (
-                    <IconSymbol name="arrow.triangle.2.circlepath" size={18} color={styles.tableInfoIcon.color as string} />
+                    <IconSymbol
+                      name="arrow.triangle.2.circlepath"
+                      size={18}
+                      color={styles.tableInfoIcon.color as string}
+                    />
                   )}
                   <ThemedText style={styles.tableInfoTitle}>
-                    {discardTop ? translateCardName(discardTop) : t('games.table.info.empty')}
+                    {discardTop
+                      ? translateCardName(discardTop)
+                      : t('games.table.info.empty')}
                   </ThemedText>
                 </View>
               </View>
 
               {tableSeats.map((seat) => {
                 const isCurrent =
-                  seat.player.isCurrentTurn && isSessionActive && !isSessionCompleted;
+                  seat.player.isCurrentTurn &&
+                  isSessionActive &&
+                  !isSessionCompleted;
                 return (
                   <View
                     key={seat.player.playerId}
@@ -676,40 +765,51 @@ export function ExplodingCatsTable({
                     }}
                   >
                     <View
-                      style={[styles.tableSeatRow, isCurrent ? styles.tableSeatRowCurrent : null, !seat.player.alive ? styles.tableSeatRowOut : null]}
+                      style={[
+                        styles.tableSeatRow,
+                        isCurrent ? styles.tableSeatRowCurrent : null,
+                        !seat.player.alive ? styles.tableSeatRowOut : null,
+                      ]}
                     >
-                        <View style={styles.seatAvatarColumn}>
-                          <View style={styles.seatAvatar}>
-                            <IconSymbol
-                              name="person.circle.fill"
-                              size={28}
-                              color={styles.seatAvatarIcon.color as string}
-                            />
+                      <View style={styles.seatAvatarColumn}>
+                        <View style={styles.seatAvatar}>
+                          <IconSymbol
+                            name="person.circle.fill"
+                            size={28}
+                            color={styles.seatAvatarIcon.color as string}
+                          />
+                          <View
+                            style={[
+                              styles.seatStatusDot,
+                              seat.player.alive
+                                ? styles.seatStatusDotAlive
+                                : styles.seatStatusDotOut,
+                            ]}
+                          />
+                        </View>
+                        <ThemedText style={styles.seatName} numberOfLines={1}>
+                          {seat.player.displayName}
+                        </ThemedText>
+                        <View style={styles.seatCardStrip}>
+                          {Array.from({
+                            length: Math.min(seat.player.handSize, 6),
+                          }).map((_, cardIndex) => (
                             <View
+                              key={cardIndex}
                               style={[
-                                styles.seatStatusDot,
-                                seat.player.alive
-                                  ? styles.seatStatusDotAlive
-                                  : styles.seatStatusDotOut,
+                                styles.seatCardBack,
+                                cardIndex > 0
+                                  ? styles.seatCardBackStacked
+                                  : null,
                               ]}
                             />
-                          </View>
-                          <ThemedText style={styles.seatName} numberOfLines={1}>
-                            {seat.player.displayName}
+                          ))}
+                          <ThemedText style={styles.seatCardCount}>
+                            {seat.player.handSize}
+                            {seat.player.handSize > 6 ? '+' : ''}
                           </ThemedText>
-                          <View style={styles.seatCardStrip}>
-                            {Array.from({ length: Math.min(seat.player.handSize, 6) }).map((_, cardIndex) => (
-                              <View
-                                key={cardIndex}
-                                style={[styles.seatCardBack, cardIndex > 0 ? styles.seatCardBackStacked : null]}
-                              />
-                            ))}
-                            <ThemedText style={styles.seatCardCount}>
-                              {seat.player.handSize}
-                              {seat.player.handSize > 6 ? '+' : ''}
-                            </ThemedText>
-                          </View>
                         </View>
+                      </View>
                     </View>
                   </View>
                 );
@@ -717,18 +817,39 @@ export function ExplodingCatsTable({
             </View>
             {showStats ? (
               <View style={styles.tableStatsRow}>
-                <Animated.View style={[styles.tableStatCard, { transform: [{ scale: deckPulseScale }] }]}> 
-                  <IconSymbol name="rectangle.stack" size={18} color={styles.tableStatIcon.color as string} />
+                <Animated.View
+                  style={[
+                    styles.tableStatCard,
+                    { transform: [{ scale: deckPulseScale }] },
+                  ]}
+                >
+                  <IconSymbol
+                    name="rectangle.stack"
+                    size={18}
+                    color={styles.tableStatIcon.color as string}
+                  />
                   <View style={styles.tableStatTextGroup}>
-                    <ThemedText style={styles.tableStatTitle}>{deckCount}</ThemedText>
-                    <ThemedText style={styles.tableStatSubtitle}>{t('games.table.info.inDeck')}</ThemedText>
+                    <ThemedText style={styles.tableStatTitle}>
+                      {deckCount}
+                    </ThemedText>
+                    <ThemedText style={styles.tableStatSubtitle}>
+                      {t('games.table.info.inDeck')}
+                    </ThemedText>
                   </View>
                 </Animated.View>
                 <View style={styles.tableStatCard}>
-                  <IconSymbol name="hourglass" size={18} color={styles.tableStatIcon.color as string} />
+                  <IconSymbol
+                    name="hourglass"
+                    size={18}
+                    color={styles.tableStatIcon.color as string}
+                  />
                   <View style={styles.tableStatTextGroup}>
-                    <ThemedText style={styles.tableStatTitle}>{pendingDrawsLabel}</ThemedText>
-                    <ThemedText style={styles.tableStatSubtitle}>{pendingDrawsCaption}</ThemedText>
+                    <ThemedText style={styles.tableStatTitle}>
+                      {pendingDrawsLabel}
+                    </ThemedText>
+                    <ThemedText style={styles.tableStatSubtitle}>
+                      {pendingDrawsCaption}
+                    </ThemedText>
                   </View>
                 </View>
               </View>
@@ -739,12 +860,20 @@ export function ExplodingCatsTable({
             <View style={styles.handSection}>
               {showHandHeader ? (
                 <View style={styles.handHeader}>
-                  <IconSymbol name="hand.draw.fill" size={18} color={styles.handTitleIcon.color as string} />
-                  <ThemedText style={styles.handTitle}>{t('games.table.hand.title')}</ThemedText>
+                  <IconSymbol
+                    name="hand.draw.fill"
+                    size={18}
+                    color={styles.handTitleIcon.color as string}
+                  />
+                  <ThemedText style={styles.handTitle}>
+                    {t('games.table.hand.title')}
+                  </ThemedText>
                   <View
                     style={[
                       styles.handStatusPill,
-                      selfPlayer.alive ? styles.handStatusAlive : styles.handStatusOut,
+                      selfPlayer.alive
+                        ? styles.handStatusAlive
+                        : styles.handStatusOut,
                     ]}
                   >
                     <ThemedText
@@ -753,7 +882,11 @@ export function ExplodingCatsTable({
                         selfPlayer.alive ? null : styles.handStatusTextOut,
                       ]}
                     >
-                      {t(selfPlayer.alive ? 'games.table.hand.statusAlive' : 'games.table.hand.statusOut')}
+                      {t(
+                        selfPlayer.alive
+                          ? 'games.table.hand.statusAlive'
+                          : 'games.table.hand.statusOut',
+                      )}
                     </ThemedText>
                   </View>
                 </View>
@@ -767,56 +900,66 @@ export function ExplodingCatsTable({
                 >
                   {selfPlayer.hand.map((card, index) => {
                     const cardKey = `${card}-${index}`;
-                    const cardAction: 'skip' | 'attack' | null = card === 'skip'
-                      ? 'skip'
-                      : card === 'attack'
-                        ? 'attack'
-                        : null;
-                    const isCatCard = CAT_COMBO_CARDS.includes(card as ExplodingCatsCatCard);
+                    const cardAction: 'skip' | 'attack' | null =
+                      card === 'skip'
+                        ? 'skip'
+                        : card === 'attack'
+                          ? 'attack'
+                          : null;
+                    const isCatCard = CAT_COMBO_CARDS.includes(
+                      card as ExplodingCatsCatCard,
+                    );
                     const comboAvailability = isCatCard
                       ? catComboAvailability[card as ExplodingCatsCatCard]
                       : null;
                     const canPlayCatCombo = Boolean(
-                      isCatCard
-                        && comboAvailability
-                        && (comboAvailability.pair || comboAvailability.trio)
-                        && isSessionActive
-                        && isMyTurn
-                        && (selfPlayer?.alive ?? false),
+                      isCatCard &&
+                        comboAvailability &&
+                        (comboAvailability.pair || comboAvailability.trio) &&
+                        isSessionActive &&
+                        isMyTurn &&
+                        (selfPlayer?.alive ?? false),
                     );
-                    const canPlayCard = cardAction === 'skip'
-                      ? canPlaySkip
-                      : cardAction === 'attack'
-                        ? canPlayAttack
-                        : canPlayCatCombo;
+                    const canPlayCard =
+                      cardAction === 'skip'
+                        ? canPlaySkip
+                        : cardAction === 'attack'
+                          ? canPlayAttack
+                          : canPlayCatCombo;
                     const isActionBusy = cardAction
                       ? actionBusy === cardAction
                       : isCatCard
                         ? catComboBusy
                         : false;
-                    const actionLabel = cardAction === 'skip'
-                      ? t('games.table.actions.playSkip')
-                      : cardAction === 'attack'
-                        ? t('games.table.actions.playAttack')
-                        : isCatCard && canPlayCatCombo
-                          ? t('games.table.actions.playCatCombo')
-                          : null;
-                    const comboHint = isCatCard && comboAvailability
-                      ? comboAvailability.pair && comboAvailability.trio
-                        ? t('games.table.catCombo.optionPairOrTrio')
-                        : comboAvailability.trio
-                          ? t('games.table.catCombo.optionTrio')
-                          : comboAvailability.pair
-                            ? t('games.table.catCombo.optionPair')
-                            : null
-                      : null;
-                    const artConfig = CARD_ART_SETTINGS[card] ?? CARD_ART_SETTINGS.exploding_cat;
+                    const actionLabel =
+                      cardAction === 'skip'
+                        ? t('games.table.actions.playSkip')
+                        : cardAction === 'attack'
+                          ? t('games.table.actions.playAttack')
+                          : isCatCard && canPlayCatCombo
+                            ? t('games.table.actions.playCatCombo')
+                            : null;
+                    const comboHint =
+                      isCatCard && comboAvailability
+                        ? comboAvailability.pair && comboAvailability.trio
+                          ? t('games.table.catCombo.optionPairOrTrio')
+                          : comboAvailability.trio
+                            ? t('games.table.catCombo.optionTrio')
+                            : comboAvailability.pair
+                              ? t('games.table.catCombo.optionPair')
+                              : null
+                        : null;
+                    const artConfig =
+                      CARD_ART_SETTINGS[card] ??
+                      CARD_ART_SETTINGS.exploding_cat;
                     const baseVariant = artConfig.variant;
-                    const artVariant = (((baseVariant - 1 + index) % 3) + 1) as CardArtworkVariant;
+                    const artVariant = (((baseVariant - 1 + index) % 3) +
+                      1) as CardArtworkVariant;
                     const description = translateCardDescription(card);
 
                     const isAnimatingThisCard = animatingCardKey === cardKey;
-                    const isDisabled = !canPlayCard || isActionBusy || animatingCardKey !== null;
+                    const isDisabled =
+                      !canPlayCard || isActionBusy || animatingCardKey !== null;
 
                     const runCardAction = () => {
                       if (cardAction) {
@@ -827,7 +970,11 @@ export function ExplodingCatsTable({
                     };
 
                     const handleCardPress = () => {
-                      if (!canPlayCard || isActionBusy || animatingCardKey !== null) {
+                      if (
+                        !canPlayCard ||
+                        isActionBusy ||
+                        animatingCardKey !== null
+                      ) {
                         return;
                       }
                       triggerCardAnimation(cardKey, runCardAction);
@@ -841,17 +988,24 @@ export function ExplodingCatsTable({
                           canPlayCard ? styles.handCardPlayable : null,
                           !canPlayCard ? styles.handCardDisabled : null,
                           isActionBusy ? styles.handCardBusy : null,
-                          isAnimatingThisCard ? { transform: [{ scale: cardPressScale }] } : null,
+                          isAnimatingThisCard
+                            ? { transform: [{ scale: cardPressScale }] }
+                            : null,
                         ]}
                         activeOpacity={canPlayCard ? 0.8 : 1}
                         onPress={handleCardPress}
                         disabled={isDisabled}
                         accessibilityRole={canPlayCard ? 'button' : 'text'}
                         accessibilityLabel={translateCardName(card)}
-                        accessibilityHint={canPlayCard && actionLabel ? actionLabel : undefined}
+                        accessibilityHint={
+                          canPlayCard && actionLabel ? actionLabel : undefined
+                        }
                       >
                         {isActionBusy ? (
-                          <ActivityIndicator size="small" color={styles.handCardBusySpinner.color as string} />
+                          <ActivityIndicator
+                            size="small"
+                            color={styles.handCardBusySpinner.color as string}
+                          />
                         ) : (
                           <>
                             <View style={styles.handCardArt} accessible={false}>
@@ -872,19 +1026,31 @@ export function ExplodingCatsTable({
                                 >
                                   {translateCardName(card)}
                                 </ThemedText>
-                                <ThemedText style={styles.handCardOverlayDescription} numberOfLines={3}>
+                                <ThemedText
+                                  style={styles.handCardOverlayDescription}
+                                  numberOfLines={3}
+                                >
                                   {description}
                                 </ThemedText>
                               </View>
                             </View>
-                            <View style={styles.handCardMeta} accessible={false}>
+                            <View
+                              style={styles.handCardMeta}
+                              accessible={false}
+                            >
                               {actionLabel ? (
-                                <ThemedText style={styles.handCardHint} numberOfLines={1}>
+                                <ThemedText
+                                  style={styles.handCardHint}
+                                  numberOfLines={1}
+                                >
                                   {actionLabel}
                                 </ThemedText>
                               ) : null}
                               {comboHint ? (
-                                <ThemedText style={styles.handCardHint} numberOfLines={1}>
+                                <ThemedText
+                                  style={styles.handCardHint}
+                                  numberOfLines={1}
+                                >
                                   {comboHint}
                                 </ThemedText>
                               ) : null}
@@ -897,23 +1063,39 @@ export function ExplodingCatsTable({
                 </ScrollView>
               ) : (
                 <View style={styles.handEmpty}>
-                  <ThemedText style={styles.handEmptyText}>{t('games.table.hand.empty')}</ThemedText>
+                  <ThemedText style={styles.handEmptyText}>
+                    {t('games.table.hand.empty')}
+                  </ThemedText>
                 </View>
               )}
 
               <View style={styles.handActions}>
                 {canDraw ? (
                   <TouchableOpacity
-                    style={[styles.primaryButton, actionBusy && actionBusy !== 'draw' ? styles.primaryButtonDisabled : null]}
+                    style={[
+                      styles.primaryButton,
+                      actionBusy && actionBusy !== 'draw'
+                        ? styles.primaryButtonDisabled
+                        : null,
+                    ]}
                     onPress={onDraw}
                     disabled={actionBusy === 'draw'}
                   >
                     {actionBusy === 'draw' ? (
-                      <ActivityIndicator size="small" color={styles.primaryButtonText.color as string} />
+                      <ActivityIndicator
+                        size="small"
+                        color={styles.primaryButtonText.color as string}
+                      />
                     ) : (
                       <>
-                        <IconSymbol name="hand.draw.fill" size={16} color={styles.primaryButtonText.color as string} />
-                        <ThemedText style={styles.primaryButtonText}>{t('games.table.actions.draw')}</ThemedText>
+                        <IconSymbol
+                          name="hand.draw.fill"
+                          size={16}
+                          color={styles.primaryButtonText.color as string}
+                        />
+                        <ThemedText style={styles.primaryButtonText}>
+                          {t('games.table.actions.draw')}
+                        </ThemedText>
                       </>
                     )}
                   </TouchableOpacity>
@@ -921,16 +1103,30 @@ export function ExplodingCatsTable({
 
                 {canPlaySkip ? (
                   <TouchableOpacity
-                    style={[styles.secondaryButton, actionBusy && actionBusy !== 'skip' ? styles.secondaryButtonDisabled : null]}
+                    style={[
+                      styles.secondaryButton,
+                      actionBusy && actionBusy !== 'skip'
+                        ? styles.secondaryButtonDisabled
+                        : null,
+                    ]}
                     onPress={() => onPlay('skip')}
                     disabled={actionBusy === 'skip'}
                   >
                     {actionBusy === 'skip' ? (
-                      <ActivityIndicator size="small" color={styles.secondaryButtonText.color as string} />
+                      <ActivityIndicator
+                        size="small"
+                        color={styles.secondaryButtonText.color as string}
+                      />
                     ) : (
                       <>
-                        <IconSymbol name="figure.walk" size={16} color={styles.secondaryButtonText.color as string} />
-                        <ThemedText style={styles.secondaryButtonText}>{t('games.table.actions.playSkip')}</ThemedText>
+                        <IconSymbol
+                          name="figure.walk"
+                          size={16}
+                          color={styles.secondaryButtonText.color as string}
+                        />
+                        <ThemedText style={styles.secondaryButtonText}>
+                          {t('games.table.actions.playSkip')}
+                        </ThemedText>
                       </>
                     )}
                   </TouchableOpacity>
@@ -938,16 +1134,30 @@ export function ExplodingCatsTable({
 
                 {canPlayAttack ? (
                   <TouchableOpacity
-                    style={[styles.destructiveButton, actionBusy && actionBusy !== 'attack' ? styles.destructiveButtonDisabled : null]}
+                    style={[
+                      styles.destructiveButton,
+                      actionBusy && actionBusy !== 'attack'
+                        ? styles.destructiveButtonDisabled
+                        : null,
+                    ]}
                     onPress={() => onPlay('attack')}
                     disabled={actionBusy === 'attack'}
                   >
                     {actionBusy === 'attack' ? (
-                      <ActivityIndicator size="small" color={styles.destructiveButtonText.color as string} />
+                      <ActivityIndicator
+                        size="small"
+                        color={styles.destructiveButtonText.color as string}
+                      />
                     ) : (
                       <>
-                        <IconSymbol name="bolt.fill" size={16} color={styles.destructiveButtonText.color as string} />
-                        <ThemedText style={styles.destructiveButtonText}>{t('games.table.actions.playAttack')}</ThemedText>
+                        <IconSymbol
+                          name="bolt.fill"
+                          size={16}
+                          color={styles.destructiveButtonText.color as string}
+                        />
+                        <ThemedText style={styles.destructiveButtonText}>
+                          {t('games.table.actions.playAttack')}
+                        </ThemedText>
                       </>
                     )}
                   </TouchableOpacity>
@@ -955,7 +1165,9 @@ export function ExplodingCatsTable({
               </View>
 
               {!selfPlayer.alive ? (
-                <ThemedText style={styles.eliminatedNote}>{t('games.table.hand.eliminatedNote')}</ThemedText>
+                <ThemedText style={styles.eliminatedNote}>
+                  {t('games.table.hand.eliminatedNote')}
+                </ThemedText>
               ) : null}
             </View>
           ) : null}
@@ -967,16 +1179,28 @@ export function ExplodingCatsTable({
           </ThemedText>
           {canStart ? (
             <TouchableOpacity
-              style={[styles.primaryButton, startBusy ? styles.primaryButtonDisabled : null]}
+              style={[
+                styles.primaryButton,
+                startBusy ? styles.primaryButtonDisabled : null,
+              ]}
               onPress={onStart}
               disabled={startBusy}
             >
               {startBusy ? (
-                <ActivityIndicator size="small" color={styles.primaryButtonText.color as string} />
+                <ActivityIndicator
+                  size="small"
+                  color={styles.primaryButtonText.color as string}
+                />
               ) : (
                 <>
-                  <IconSymbol name="play.fill" size={16} color={styles.primaryButtonText.color as string} />
-                  <ThemedText style={styles.primaryButtonText}>{t('games.table.actions.start')}</ThemedText>
+                  <IconSymbol
+                    name="play.fill"
+                    size={16}
+                    color={styles.primaryButtonText.color as string}
+                  />
+                  <ThemedText style={styles.primaryButtonText}>
+                    {t('games.table.actions.start')}
+                  </ThemedText>
                 </>
               )}
             </TouchableOpacity>
@@ -987,8 +1211,14 @@ export function ExplodingCatsTable({
       {showLogs ? (
         <View style={styles.logsSection}>
           <View style={styles.logsHeader}>
-            <IconSymbol name="list.bullet.rectangle" size={16} color={styles.logsHeaderText.color as string} />
-            <ThemedText style={styles.logsHeaderText}>{t('games.table.logs.title')}</ThemedText>
+            <IconSymbol
+              name="list.bullet.rectangle"
+              size={16}
+              color={styles.logsHeaderText.color as string}
+            />
+            <ThemedText style={styles.logsHeaderText}>
+              {t('games.table.logs.title')}
+            </ThemedText>
           </View>
           {isCurrentUserPlayer ? (
             <>
@@ -998,7 +1228,9 @@ export function ExplodingCatsTable({
                   value={messageDraft}
                   onChangeText={setMessageDraft}
                   placeholder={t('games.table.logs.composerPlaceholder')}
-                  placeholderTextColor={styles.logsInputPlaceholder.color as string}
+                  placeholderTextColor={
+                    styles.logsInputPlaceholder.color as string
+                  }
                   multiline
                   maxLength={500}
                   editable={!historySending}
@@ -1007,7 +1239,7 @@ export function ExplodingCatsTable({
                 <TouchableOpacity
                   style={[
                     styles.logsSendButton,
-                    (!canSendHistoryMessage || historySending)
+                    !canSendHistoryMessage || historySending
                       ? styles.logsSendButtonDisabled
                       : null,
                   ]}
@@ -1015,26 +1247,55 @@ export function ExplodingCatsTable({
                   disabled={!canSendHistoryMessage || historySending}
                 >
                   {historySending ? (
-                    <ActivityIndicator size="small" color={styles.logsSendButtonText.color as string} />
+                    <ActivityIndicator
+                      size="small"
+                      color={styles.logsSendButtonText.color as string}
+                    />
                   ) : (
                     <>
-                      <IconSymbol name="paperplane.fill" size={14} color={styles.logsSendButtonText.color as string} />
-                      <ThemedText style={styles.logsSendButtonText}>{t('games.table.logs.send')}</ThemedText>
+                      <IconSymbol
+                        name="paperplane.fill"
+                        size={14}
+                        color={styles.logsSendButtonText.color as string}
+                      />
+                      <ThemedText style={styles.logsSendButtonText}>
+                        {t('games.table.logs.send')}
+                      </ThemedText>
                     </>
                   )}
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity style={styles.logsCheckboxRow} onPress={toggleMessageVisibility}>
-                <View style={[styles.checkboxBox, messageVisibility === 'players' ? styles.checkboxBoxChecked : null]}>
+              <TouchableOpacity
+                style={styles.logsCheckboxRow}
+                onPress={toggleMessageVisibility}
+              >
+                <View
+                  style={[
+                    styles.checkboxBox,
+                    messageVisibility === 'players'
+                      ? styles.checkboxBoxChecked
+                      : null,
+                  ]}
+                >
                   {messageVisibility === 'players' ? (
-                    <IconSymbol name="checkmark" size={12} color={styles.checkboxCheck.color as string} />
+                    <IconSymbol
+                      name="checkmark"
+                      size={12}
+                      color={styles.checkboxCheck.color as string}
+                    />
                   ) : null}
                 </View>
                 <View style={styles.checkboxCopy}>
                   <ThemedText style={styles.checkboxLabel}>
-                    {t(messageVisibility === 'players' ? 'games.table.logs.checkboxLabelPlayers' : 'games.table.logs.checkboxLabelAll')}
+                    {t(
+                      messageVisibility === 'players'
+                        ? 'games.table.logs.checkboxLabelPlayers'
+                        : 'games.table.logs.checkboxLabelAll',
+                    )}
                   </ThemedText>
-                  <ThemedText style={styles.checkboxHint}>{t('games.table.logs.checkboxHint')}</ThemedText>
+                  <ThemedText style={styles.checkboxHint}>
+                    {t('games.table.logs.checkboxHint')}
+                  </ThemedText>
                 </View>
               </TouchableOpacity>
             </>
@@ -1044,15 +1305,21 @@ export function ExplodingCatsTable({
               const timestamp = new Date(log.createdAt);
               const timeLabel = Number.isNaN(timestamp.getTime())
                 ? '--:--'
-                : timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                : timestamp.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  });
               const isMessage = log.type === 'message';
               let senderDisplayName: string | null = null;
               if (isMessage) {
                 if (log.senderName) {
                   senderDisplayName = log.senderName;
                 } else if (log.senderId) {
-                  senderDisplayName = playerNameMap.get(log.senderId)
-                    ?? (currentUserId && log.senderId === currentUserId ? t('games.table.logs.you') : null);
+                  senderDisplayName =
+                    playerNameMap.get(log.senderId) ??
+                    (currentUserId && log.senderId === currentUserId
+                      ? t('games.table.logs.you')
+                      : null);
                 }
                 if (!senderDisplayName) {
                   senderDisplayName = t('games.table.logs.unknownSender');
@@ -1061,27 +1328,42 @@ export function ExplodingCatsTable({
 
               return (
                 <View key={log.id} style={styles.logRow}>
-                  <ThemedText style={styles.logTimestamp}>{timeLabel}</ThemedText>
+                  <ThemedText style={styles.logTimestamp}>
+                    {timeLabel}
+                  </ThemedText>
                   {isMessage ? (
                     <View style={styles.logMessageColumn}>
                       <View style={styles.logMessageHeader}>
-                        <ThemedText style={styles.logMessageSender} numberOfLines={1}>{senderDisplayName}</ThemedText>
+                        <ThemedText
+                          style={styles.logMessageSender}
+                          numberOfLines={1}
+                        >
+                          {senderDisplayName}
+                        </ThemedText>
                         {log.scope === 'players' ? (
                           <View style={styles.logScopeBadge}>
-                            <ThemedText style={styles.logScopeBadgeText}>{t('games.table.logs.playersOnlyTag')}</ThemedText>
+                            <ThemedText style={styles.logScopeBadgeText}>
+                              {t('games.table.logs.playersOnlyTag')}
+                            </ThemedText>
                           </View>
                         ) : null}
                       </View>
-                      <ThemedText style={styles.logMessageText}>{log.message}</ThemedText>
+                      <ThemedText style={styles.logMessageText}>
+                        {log.message}
+                      </ThemedText>
                     </View>
                   ) : (
-                    <ThemedText style={styles.logMessage}>{formatLogMessage(log.message)}</ThemedText>
+                    <ThemedText style={styles.logMessage}>
+                      {formatLogMessage(log.message)}
+                    </ThemedText>
                   )}
                 </View>
               );
             })
           ) : (
-            <ThemedText style={styles.logsEmptyText}>{t('games.table.logs.empty')}</ThemedText>
+            <ThemedText style={styles.logsEmptyText}>
+              {t('games.table.logs.empty')}
+            </ThemedText>
           )}
         </View>
       ) : null}
@@ -1098,7 +1380,9 @@ export function ExplodingCatsTable({
       <View style={styles.comboModalBackdrop}>
         <ThemedView style={styles.comboModalCard}>
           <ThemedText style={styles.comboModalTitle}>
-            {t('games.table.catCombo.title', { card: translateCardName(catComboPrompt.cat) })}
+            {t('games.table.catCombo.title', {
+              card: translateCardName(catComboPrompt.cat),
+            })}
           </ThemedText>
           <ThemedText style={styles.comboModalDescription}>
             {t('games.table.catCombo.description')}
@@ -1108,14 +1392,18 @@ export function ExplodingCatsTable({
               <TouchableOpacity
                 style={[
                   styles.comboModeButton,
-                  catComboPrompt.mode === 'pair' ? styles.comboModeButtonSelected : null,
+                  catComboPrompt.mode === 'pair'
+                    ? styles.comboModeButtonSelected
+                    : null,
                 ]}
                 onPress={() => handleCatComboModeChange('pair')}
               >
                 <ThemedText
                   style={[
                     styles.comboModeButtonText,
-                    catComboPrompt.mode === 'pair' ? styles.comboModeButtonTextSelected : null,
+                    catComboPrompt.mode === 'pair'
+                      ? styles.comboModeButtonTextSelected
+                      : null,
                   ]}
                 >
                   {t('games.table.catCombo.modePair')}
@@ -1126,14 +1414,18 @@ export function ExplodingCatsTable({
               <TouchableOpacity
                 style={[
                   styles.comboModeButton,
-                  catComboPrompt.mode === 'trio' ? styles.comboModeButtonSelected : null,
+                  catComboPrompt.mode === 'trio'
+                    ? styles.comboModeButtonSelected
+                    : null,
                 ]}
                 onPress={() => handleCatComboModeChange('trio')}
               >
                 <ThemedText
                   style={[
                     styles.comboModeButtonText,
-                    catComboPrompt.mode === 'trio' ? styles.comboModeButtonTextSelected : null,
+                    catComboPrompt.mode === 'trio'
+                      ? styles.comboModeButtonTextSelected
+                      : null,
                   ]}
                 >
                   {t('games.table.catCombo.modeTrio')}
@@ -1143,7 +1435,9 @@ export function ExplodingCatsTable({
           </View>
           {catComboPrompt.mode ? (
             <View style={styles.comboSection}>
-              <ThemedText style={styles.comboSectionLabel}>{t('games.table.catCombo.targetLabel')}</ThemedText>
+              <ThemedText style={styles.comboSectionLabel}>
+                {t('games.table.catCombo.targetLabel')}
+              </ThemedText>
               {aliveOpponents.length ? (
                 <View style={styles.comboOptionGroup}>
                   {aliveOpponents.map((player) => (
@@ -1155,7 +1449,9 @@ export function ExplodingCatsTable({
                           ? styles.comboOptionButtonSelected
                           : null,
                       ]}
-                      onPress={() => handleCatComboTargetChange(player.playerId)}
+                      onPress={() =>
+                        handleCatComboTargetChange(player.playerId)
+                      }
                     >
                       <ThemedText
                         style={[
@@ -1180,7 +1476,9 @@ export function ExplodingCatsTable({
           ) : null}
           {catComboPrompt.mode === 'trio' ? (
             <View style={styles.comboSection}>
-              <ThemedText style={styles.comboSectionLabel}>{t('games.table.catCombo.desiredCardLabel')}</ThemedText>
+              <ThemedText style={styles.comboSectionLabel}>
+                {t('games.table.catCombo.desiredCardLabel')}
+              </ThemedText>
               <View style={styles.comboOptionGroup}>
                 {DESIRED_CARD_OPTIONS.map((cardOption) => (
                   <TouchableOpacity
@@ -1228,7 +1526,10 @@ export function ExplodingCatsTable({
               disabled={comboConfirmDisabled}
             >
               {catComboBusy ? (
-                <ActivityIndicator size="small" color={styles.comboConfirmText.color as string} />
+                <ActivityIndicator
+                  size="small"
+                  color={styles.comboConfirmText.color as string}
+                />
               ) : (
                 <ThemedText style={styles.comboConfirmText}>
                   {t('games.table.catCombo.confirm')}
@@ -1269,22 +1570,15 @@ export function ExplodingCatsTable({
 function createStyles(palette: Palette) {
   const isLight = palette.background === '#fff';
   const tableTheme = palette.gameTable;
-  const {
-    surface,
-    raised,
-    border,
-    shadow,
-    destructiveBg,
-    destructiveText,
-  } = tableTheme;
+  const { surface, raised, border, shadow, destructiveBg, destructiveText } =
+    tableTheme;
   const primaryBgColor = palette.tint;
   const primaryTextColor = palette.background;
 
-  const innerDiameter = Math.max(
-    TABLE_DIAMETER - PLAYER_SEAT_SIZE - 20,
-    180,
-  );
-  const overlayShadow = isLight ? 'rgba(15, 23, 42, 0.45)' : 'rgba(15, 23, 42, 0.65)';
+  const innerDiameter = Math.max(TABLE_DIAMETER - PLAYER_SEAT_SIZE - 20, 180);
+  const overlayShadow = isLight
+    ? 'rgba(15, 23, 42, 0.45)'
+    : 'rgba(15, 23, 42, 0.65)';
   const cardShadow = platformShadow({
     color: shadow,
     opacity: isLight ? 1 : 0.6,
@@ -1331,20 +1625,22 @@ function createStyles(palette: Palette) {
     offset: { width: 0, height: 6 },
     elevation: 3,
   });
-  const handCardTitleShadow: TextStyle = Platform.OS === 'web'
-    ? {}
-    : {
-        textShadowColor: 'rgba(15, 23, 42, 0.55)',
-        textShadowOffset: { width: 0, height: 4 },
-        textShadowRadius: 8,
-      };
-  const handCardDescriptionShadow: TextStyle = Platform.OS === 'web'
-    ? {}
-    : {
-        textShadowColor: 'rgba(15, 23, 42, 0.45)',
-        textShadowOffset: { width: 0, height: 3 },
-        textShadowRadius: 6,
-      };
+  const handCardTitleShadow: TextStyle =
+    Platform.OS === 'web'
+      ? {}
+      : {
+          textShadowColor: 'rgba(15, 23, 42, 0.55)',
+          textShadowOffset: { width: 0, height: 4 },
+          textShadowRadius: 8,
+        };
+  const handCardDescriptionShadow: TextStyle =
+    Platform.OS === 'web'
+      ? {}
+      : {
+          textShadowColor: 'rgba(15, 23, 42, 0.45)',
+          textShadowOffset: { width: 0, height: 3 },
+          textShadowRadius: 6,
+        };
 
   return StyleSheet.create({
     card: {

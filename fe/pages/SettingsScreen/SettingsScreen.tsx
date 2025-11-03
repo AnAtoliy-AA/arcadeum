@@ -39,15 +39,22 @@ export default function SettingsScreen() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const isAuthenticated = Boolean(tokens.accessToken);
-  const accountName = tokens.displayName ?? tokens.username ?? tokens.email ?? null;
+  const accountName =
+    tokens.displayName ?? tokens.username ?? tokens.email ?? null;
 
-  const handleThemeSelect = useCallback((preference: (typeof themePreferences)[number]['code']) => {
-    setThemePreference(preference);
-  }, [setThemePreference]);
+  const handleThemeSelect = useCallback(
+    (preference: (typeof themePreferences)[number]['code']) => {
+      setThemePreference(preference);
+    },
+    [setThemePreference],
+  );
 
-  const handleLanguageSelect = useCallback((code: (typeof settingsLanguages)[number]['code']) => {
-    setLanguage(code);
-  }, [setLanguage]);
+  const handleLanguageSelect = useCallback(
+    (code: (typeof settingsLanguages)[number]['code']) => {
+      setLanguage(code);
+    },
+    [setLanguage],
+  );
 
   const handleGoToAuth = useCallback(() => {
     router.push('/auth');
@@ -81,7 +88,9 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.section}>
-          <ThemedText style={styles.sectionTitle}>{t('settings.appearanceTitle')}</ThemedText>
+          <ThemedText style={styles.sectionTitle}>
+            {t('settings.appearanceTitle')}
+          </ThemedText>
           <ThemedText style={styles.sectionDescription}>
             {t('settings.appearanceDescription')}
           </ThemedText>
@@ -91,44 +100,19 @@ export default function SettingsScreen() {
               return (
                 <TouchableOpacity
                   key={option.code}
-                  style={[styles.optionCard, selected ? styles.optionCardSelected : null]}
+                  style={[
+                    styles.optionCard,
+                    selected ? styles.optionCardSelected : null,
+                  ]}
                   activeOpacity={0.85}
                   onPress={() => handleThemeSelect(option.code)}
                 >
                   <View style={styles.optionTextWrapper}>
-                    <ThemedText style={styles.optionTitle}>{t(option.labelKey)}</ThemedText>
-                    <ThemedText style={styles.optionDescription}>{t(option.descriptionKey)}</ThemedText>
-                  </View>
-                  <IconSymbol
-                    name={selected ? 'checkmark.circle.fill' : 'circle'}
-                    size={20}
-                    color={selected ? palette.tint : palette.icon}
-                  />
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <ThemedText style={styles.sectionTitle}>{t('settings.languageTitle')}</ThemedText>
-          <ThemedText style={styles.sectionDescription}>
-            {t('settings.languageDescription')}
-          </ThemedText>
-          <View style={styles.optionGroup}>
-            {settingsLanguages.map((option) => {
-              const selected = option.code === language;
-              return (
-                <TouchableOpacity
-                  key={option.code}
-                  style={[styles.optionCard, selected ? styles.optionCardSelected : null]}
-                  activeOpacity={0.85}
-                  onPress={() => handleLanguageSelect(option.code)}
-                >
-                  <View style={styles.optionTextWrapper}>
-                    <ThemedText style={styles.optionTitle}>{t(option.labelKey)}</ThemedText>
+                    <ThemedText style={styles.optionTitle}>
+                      {t(option.labelKey)}
+                    </ThemedText>
                     <ThemedText style={styles.optionDescription}>
-                      {selected ? t('settings.activeSelection') : t('settings.tapToSwitch')}
+                      {t(option.descriptionKey)}
                     </ThemedText>
                   </View>
                   <IconSymbol
@@ -142,54 +126,110 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-          <View style={styles.section}>
-            <ThemedText style={styles.sectionTitle}>{t('settings.accountTitle')}</ThemedText>
-            <ThemedText style={styles.sectionDescription}>
-              {t('settings.accountDescription')}
-            </ThemedText>
-            {isAuthenticated ? (
-              <View style={styles.accountCard}>
-                <ThemedText style={styles.accountStatus}>
-                  {accountName
-                    ? t('settings.signedInAs', { user: accountName })
-                    : t('common.statuses.authenticated')}
-                </ThemedText>
+        <View style={styles.section}>
+          <ThemedText style={styles.sectionTitle}>
+            {t('settings.languageTitle')}
+          </ThemedText>
+          <ThemedText style={styles.sectionDescription}>
+            {t('settings.languageDescription')}
+          </ThemedText>
+          <View style={styles.optionGroup}>
+            {settingsLanguages.map((option) => {
+              const selected = option.code === language;
+              return (
                 <TouchableOpacity
-                  style={[styles.accountButton, styles.logoutButton, isLoggingOut ? styles.logoutButtonDisabled : null]}
+                  key={option.code}
+                  style={[
+                    styles.optionCard,
+                    selected ? styles.optionCardSelected : null,
+                  ]}
                   activeOpacity={0.85}
-                  onPress={handleLogout}
-                  disabled={isLoggingOut}
+                  onPress={() => handleLanguageSelect(option.code)}
                 >
-                  {isLoggingOut ? (
-                    <ActivityIndicator size="small" color={palette.background} style={styles.buttonSpinner} />
-                  ) : null}
-                  <ThemedText style={styles.logoutButtonText}>{t('common.actions.logout')}</ThemedText>
+                  <View style={styles.optionTextWrapper}>
+                    <ThemedText style={styles.optionTitle}>
+                      {t(option.labelKey)}
+                    </ThemedText>
+                    <ThemedText style={styles.optionDescription}>
+                      {selected
+                        ? t('settings.activeSelection')
+                        : t('settings.tapToSwitch')}
+                    </ThemedText>
+                  </View>
+                  <IconSymbol
+                    name={selected ? 'checkmark.circle.fill' : 'circle'}
+                    size={20}
+                    color={selected ? palette.tint : palette.icon}
+                  />
                 </TouchableOpacity>
-              </View>
-            ) : (
-              <View style={styles.accountCard}>
-                <ThemedText style={styles.accountStatus}>
-                  {t('settings.accountSignedOut')}
-                </ThemedText>
-                <TouchableOpacity
-                  style={[styles.accountButton, styles.loginButton]}
-                  activeOpacity={0.85}
-                  onPress={handleGoToAuth}
-                >
-                  <ThemedText style={styles.loginButtonText}>{t('common.actions.login')}</ThemedText>
-                </TouchableOpacity>
-              </View>
-            )}
+              );
+            })}
           </View>
+        </View>
+
+        <View style={styles.section}>
+          <ThemedText style={styles.sectionTitle}>
+            {t('settings.accountTitle')}
+          </ThemedText>
+          <ThemedText style={styles.sectionDescription}>
+            {t('settings.accountDescription')}
+          </ThemedText>
+          {isAuthenticated ? (
+            <View style={styles.accountCard}>
+              <ThemedText style={styles.accountStatus}>
+                {accountName
+                  ? t('settings.signedInAs', { user: accountName })
+                  : t('common.statuses.authenticated')}
+              </ThemedText>
+              <TouchableOpacity
+                style={[
+                  styles.accountButton,
+                  styles.logoutButton,
+                  isLoggingOut ? styles.logoutButtonDisabled : null,
+                ]}
+                activeOpacity={0.85}
+                onPress={handleLogout}
+                disabled={isLoggingOut}
+              >
+                {isLoggingOut ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={palette.background}
+                    style={styles.buttonSpinner}
+                  />
+                ) : null}
+                <ThemedText style={styles.logoutButtonText}>
+                  {t('common.actions.logout')}
+                </ThemedText>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.accountCard}>
+              <ThemedText style={styles.accountStatus}>
+                {t('settings.accountSignedOut')}
+              </ThemedText>
+              <TouchableOpacity
+                style={[styles.accountButton, styles.loginButton]}
+                activeOpacity={0.85}
+                onPress={handleGoToAuth}
+              >
+                <ThemedText style={styles.loginButtonText}>
+                  {t('common.actions.login')}
+                </ThemedText>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
       </ScrollView>
     </ThemedView>
   );
 }
 
 function createStyles(palette: Palette) {
-  const selectedOverlay = palette.tint === '#fff'
-    ? 'rgba(255, 255, 255, 0.12)'
-    : 'rgba(10, 126, 164, 0.12)';
+  const selectedOverlay =
+    palette.tint === '#fff'
+      ? 'rgba(255, 255, 255, 0.12)'
+      : 'rgba(10, 126, 164, 0.12)';
 
   return StyleSheet.create({
     container: {

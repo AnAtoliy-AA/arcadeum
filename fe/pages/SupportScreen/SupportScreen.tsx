@@ -1,5 +1,12 @@
 import React, { useCallback, useMemo } from 'react';
-import { Alert, Linking, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
@@ -52,7 +59,9 @@ type TeamMember = {
 };
 
 function resolveExtraString(key: string, fallback: string): string {
-  const extra = (Constants as any)?.expoConfig?.extra as Record<string, unknown> | undefined;
+  const extra = (Constants as any)?.expoConfig?.extra as
+    | Record<string, unknown>
+    | undefined;
   if (extra) {
     const raw = extra[key];
     if (typeof raw === 'string') {
@@ -85,7 +94,10 @@ export default function SupportScreen() {
   const { push } = useRouter();
 
   const sponsorUrl = useMemo(() => resolveExtraUrl('SUPPORT_URL', ''), []);
-  const coffeeUrl = useMemo(() => resolveExtraUrl('SUPPORT_COFFEE_URL', ''), []);
+  const coffeeUrl = useMemo(
+    () => resolveExtraUrl('SUPPORT_COFFEE_URL', ''),
+    [],
+  );
   const ibanValue = useMemo(() => resolveExtraString('SUPPORT_IBAN', ''), []);
 
   const actions = useMemo<SupportAction[]>(() => {
@@ -206,20 +218,36 @@ export default function SupportScreen() {
   return (
     <ThemedView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <ThemedText type="title" style={styles.title}>{t('support.title')}</ThemedText>
-        <ThemedText style={styles.tagline}>{t('support.tagline', { appName })}</ThemedText>
-        <ThemedText style={styles.description}>{t('support.description', { appName })}</ThemedText>
+        <ThemedText type="title" style={styles.title}>
+          {t('support.title')}
+        </ThemedText>
+        <ThemedText style={styles.tagline}>
+          {t('support.tagline', { appName })}
+        </ThemedText>
+        <ThemedText style={styles.description}>
+          {t('support.description', { appName })}
+        </ThemedText>
 
         <View style={styles.section}>
-          <ThemedText type="subtitle" style={styles.sectionTitle}>{t('support.team.title')}</ThemedText>
+          <ThemedText type="subtitle" style={styles.sectionTitle}>
+            {t('support.team.title')}
+          </ThemedText>
           <View style={styles.teamList}>
             {teamMembers.map((member) => (
               <View key={member.key} style={styles.teamCard}>
                 <View style={styles.teamHeader}>
-                  <IconSymbol name={member.icon} size={22} color={styles.teamIcon.color as string} />
+                  <IconSymbol
+                    name={member.icon}
+                    size={22}
+                    color={styles.teamIcon.color as string}
+                  />
                   <View style={styles.teamMeta}>
-                    <ThemedText style={styles.teamName}>{member.name}</ThemedText>
-                    <ThemedText style={styles.teamRole}>{member.role}</ThemedText>
+                    <ThemedText style={styles.teamName}>
+                      {member.name}
+                    </ThemedText>
+                    <ThemedText style={styles.teamRole}>
+                      {member.role}
+                    </ThemedText>
                   </View>
                 </View>
                 <ThemedText style={styles.teamBio}>{member.bio}</ThemedText>
@@ -229,7 +257,9 @@ export default function SupportScreen() {
         </View>
 
         <View style={styles.section}>
-          <ThemedText type="subtitle" style={styles.sectionTitle}>{t('support.contribute.title')}</ThemedText>
+          <ThemedText type="subtitle" style={styles.sectionTitle}>
+            {t('support.contribute.title')}
+          </ThemedText>
           <View style={styles.actionList}>
             {actions.map((action) => (
               <TouchableOpacity
@@ -238,8 +268,14 @@ export default function SupportScreen() {
                 onPress={() => handleActionPress(action)}
               >
                 <View style={styles.actionHeader}>
-                  <IconSymbol name={action.icon} size={22} color={styles.actionIcon.color as string} />
-                  <ThemedText style={styles.actionTitle}>{t(action.titleKey)}</ThemedText>
+                  <IconSymbol
+                    name={action.icon}
+                    size={22}
+                    color={styles.actionIcon.color as string}
+                  />
+                  <ThemedText style={styles.actionTitle}>
+                    {t(action.titleKey)}
+                  </ThemedText>
                 </View>
                 <ThemedText style={styles.actionDescription}>
                   {action.kind === 'copy'
@@ -247,7 +283,9 @@ export default function SupportScreen() {
                     : t(action.descriptionKey, { appName })}
                 </ThemedText>
                 <View style={styles.actionCtaRow}>
-                  <ThemedText style={styles.actionCta}>{t(action.ctaKey)}</ThemedText>
+                  <ThemedText style={styles.actionCta}>
+                    {t(action.ctaKey)}
+                  </ThemedText>
                   <IconSymbol
                     name={
                       action.kind === 'copy'
@@ -265,7 +303,9 @@ export default function SupportScreen() {
           </View>
         </View>
 
-        <ThemedText style={styles.thanks}>{t('support.thanks', { appName })}</ThemedText>
+        <ThemedText style={styles.thanks}>
+          {t('support.thanks', { appName })}
+        </ThemedText>
       </ScrollView>
     </ThemedView>
   );

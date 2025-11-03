@@ -1,4 +1,7 @@
-import { fetchWithRefresh, FetchWithRefreshOptions } from '@/lib/fetchWithRefresh';
+import {
+  fetchWithRefresh,
+  FetchWithRefreshOptions,
+} from '@/lib/fetchWithRefresh';
 import { resolveApiBase } from '@/lib/apiBase';
 
 export interface MessageView {
@@ -67,10 +70,14 @@ async function authorizedJson<T>(
     headers.set('Content-Type', 'application/json');
   }
 
-  const response = await fetchWithRefresh(url, { ...init, method, headers }, {
-    accessToken,
-    refreshTokens: options?.refreshTokens,
-  });
+  const response = await fetchWithRefresh(
+    url,
+    { ...init, method, headers },
+    {
+      accessToken,
+      refreshTokens: options?.refreshTokens,
+    },
+  );
   if (!response.ok) {
     const text = await response.text();
     throw new Error(text || `Request failed with status ${response.status}`);
@@ -116,7 +123,12 @@ export async function fetchChats(
   accessToken: string,
   options?: FetchWithRefreshOptions,
 ): Promise<ChatSummary[]> {
-  const data = await authorizedJson<RawChatSummary[]>('/chat', accessToken, undefined, options);
+  const data = await authorizedJson<RawChatSummary[]>(
+    '/chat',
+    accessToken,
+    undefined,
+    options,
+  );
   if (!Array.isArray(data)) {
     return [];
   }
@@ -163,9 +175,14 @@ export async function createChat(
     payload.chatId = chatId;
   }
 
-  const data = await authorizedJson<RawChatSummary>('/chat', accessToken, {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  }, options);
+  const data = await authorizedJson<RawChatSummary>(
+    '/chat',
+    accessToken,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+    options,
+  );
   return mapChatSummary(data);
 }

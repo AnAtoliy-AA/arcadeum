@@ -192,14 +192,6 @@ export default function HistoryScreen() {
 
   const isHost = detail?.summary.host.id === currentUserId;
 
-  const handleGoBack = useCallback(() => {
-    if (router.canGoBack()) {
-      router.back();
-      return;
-    }
-    router.navigate('/');
-  }, [router]);
-
   const handleCloseModal = useCallback(() => {
     setSelectedSummary(null);
     setDetail(null);
@@ -493,7 +485,7 @@ export default function HistoryScreen() {
 
   if (shouldBlock) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
         <ThemedView
           style={[
             styles.loadingContainer,
@@ -507,7 +499,7 @@ export default function HistoryScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
       <ThemedView
         style={[styles.container, { paddingBottom: insetStyles.bottom }]}
       >
@@ -518,15 +510,6 @@ export default function HistoryScreen() {
           contentContainerStyle={styles.listContent}
           ListHeaderComponent={
             <View style={styles.listHeader}>
-              <TouchableOpacity
-                style={styles.backButton}
-                onPress={handleGoBack}
-              >
-                <IconSymbol name="chevron.left" size={16} color={tintColor} />
-                <ThemedText style={styles.backButtonLabel}>
-                  {t('common.back')}
-                </ThemedText>
-              </TouchableOpacity>
               <TouchableOpacity
                 style={[
                   styles.headerRefreshButton,
@@ -557,7 +540,10 @@ export default function HistoryScreen() {
         animationType="slide"
         onRequestClose={handleCloseModal}
       >
-        <SafeAreaView style={styles.modalSafeArea}>
+        <SafeAreaView
+          style={styles.modalSafeArea}
+          edges={['left', 'right', 'bottom']}
+        >
           <View
             style={[
               styles.modalContainer,
@@ -832,21 +818,10 @@ function createStyles(palette: Palette) {
     listHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-end',
       paddingHorizontal: 16,
       paddingBottom: 8,
-      paddingRight: 80,
-    },
-    backButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 6,
-      paddingVertical: 6,
-    },
-    backButtonLabel: {
-      fontSize: 14,
-      fontWeight: '600',
-      color: palette.tint,
+      paddingRight: 8,
     },
     headerRefreshButton: {
       flexDirection: 'row',

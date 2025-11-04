@@ -520,6 +520,7 @@ export default function GamesScreen() {
     <ThemedView style={styles.container}>
       <ScrollView
         contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="never"
         refreshControl={
           <RefreshControl
             refreshing={roomsRefreshing}

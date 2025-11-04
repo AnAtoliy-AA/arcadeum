@@ -1,16 +1,11 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { GiftedChat } from 'react-native-gifted-chat';
-import {
-  View,
-  StyleSheet,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ChatParams } from '../model/types';
 import { useChat } from '../model/useChat';
@@ -23,10 +18,7 @@ export default function ChatScreen() {
   const styles = useThemedStyles(createStyles);
   const params = useLocalSearchParams<ChatParams>();
   const { tokens } = useSessionTokens();
-  const router = useRouter();
   const insets = useSafeAreaInsets();
-  const chatListRoute = '/(tabs)/chats' as const satisfies Href;
-  const homeRoute = '/(tabs)' as const satisfies Href;
   const rawChatId = Array.isArray(params.chatId)
     ? params.chatId[0]
     : params.chatId;
@@ -54,21 +46,9 @@ export default function ChatScreen() {
   });
   const { t } = useTranslation();
 
-  const handleGoBack = useCallback(() => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace({ pathname: chatListRoute });
-    }
-  }, [router, chatListRoute]);
-
-  const handleGoHome = useCallback(() => {
-    router.replace({ pathname: homeRoute });
-  }, [router, homeRoute]);
-
   if (shouldBlock) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
         <View
           style={[styles.loadingContainer, { paddingBottom: insets.bottom }]}
         >
@@ -80,7 +60,7 @@ export default function ChatScreen() {
 
   if (!rawChatId) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
         <View
           style={[styles.loadingContainer, { paddingBottom: insets.bottom }]}
         >
@@ -94,7 +74,7 @@ export default function ChatScreen() {
 
   if (!currentUserId) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
         <View
           style={[styles.loadingContainer, { paddingBottom: insets.bottom }]}
         >
@@ -104,20 +84,8 @@ export default function ChatScreen() {
     );
   }
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
       <View style={[styles.container, { paddingBottom: insets.bottom }]}>
-        <View style={styles.navRow}>
-          <TouchableOpacity style={styles.navButton} onPress={handleGoBack}>
-            <ThemedText style={styles.navButtonText}>
-              {t('chat.nav.backToChats')}
-            </ThemedText>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navButton} onPress={handleGoHome}>
-            <ThemedText style={styles.navButtonText}>
-              {t('chat.nav.goHome')}
-            </ThemedText>
-          </TouchableOpacity>
-        </View>
         <View style={styles.statusRow}>
           <View
             style={[
@@ -201,25 +169,6 @@ function createStyles(palette: Palette) {
       alignItems: 'center',
       backgroundColor: palette.background,
       paddingTop: 12,
-    },
-    navRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingHorizontal: 16,
-      paddingVertical: 8,
-      gap: 12,
-    },
-    navButton: {
-      paddingVertical: 8,
-      paddingHorizontal: 12,
-      borderRadius: 8,
-      backgroundColor: palette.tint,
-    },
-    navButtonText: {
-      color: palette.background,
-      fontSize: 14,
-      fontWeight: '600',
     },
   });
 }

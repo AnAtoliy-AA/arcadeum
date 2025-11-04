@@ -321,14 +321,6 @@ export default function GameDetailScreen() {
     [invitePrompt.mode, invitePrompt.room, joinRoom],
   );
 
-  const handleBack = useCallback(() => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/(tabs)/games');
-    }
-  }, [router]);
-
   const handleCreateRoom = useCallback(() => {
     if (!game) {
       return;
@@ -369,18 +361,6 @@ export default function GameDetailScreen() {
     return (
       <ThemedView style={styles.container}>
         <ScrollView contentContainerStyle={styles.content}>
-          <View style={styles.topBar}>
-            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-              <IconSymbol
-                name="chevron.left"
-                size={20}
-                color={styles.backText.color as string}
-              />
-              <ThemedText style={styles.backText}>
-                {t('games.detail.backToLobby')}
-              </ThemedText>
-            </TouchableOpacity>
-          </View>
           <ThemedView style={styles.emptyCard}>
             <IconSymbol
               name="sparkles"
@@ -393,11 +373,6 @@ export default function GameDetailScreen() {
             <ThemedText style={styles.emptyCopy}>
               {t('games.detail.emptyDescription')}
             </ThemedText>
-            <TouchableOpacity style={styles.primaryButton} onPress={handleBack}>
-              <ThemedText style={styles.primaryButtonText}>
-                {t('games.detail.backToLobby')}
-              </ThemedText>
-            </TouchableOpacity>
           </ThemedView>
         </ScrollView>
       </ThemedView>
@@ -424,16 +399,6 @@ export default function GameDetailScreen() {
         }
       >
         <View style={styles.topBar}>
-          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-            <IconSymbol
-              name="chevron.left"
-              size={20}
-              color={styles.backText.color as string}
-            />
-            <ThemedText style={styles.backText}>
-              {t('games.detail.backToLobby')}
-            </ThemedText>
-          </TouchableOpacity>
           <TouchableOpacity style={styles.inviteButton} onPress={handleInvite}>
             <IconSymbol
               name="paperplane.fill"
@@ -898,18 +863,9 @@ function createStyles(palette: Palette) {
     },
     topBar: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-end',
       alignItems: 'center',
       marginBottom: 4,
-    },
-    backButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 6,
-    },
-    backText: {
-      color: palette.tint,
-      fontWeight: '600',
     },
     inviteButton: {
       flexDirection: 'row',

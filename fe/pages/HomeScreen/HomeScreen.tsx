@@ -17,7 +17,6 @@ import {
   gamesCatalog,
   type GameCatalogueEntry,
 } from '@/pages/GamesScreen/catalog';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { platformShadow } from '@/lib/platformShadow';
 
 const BASE_TOP_PADDING = 24;
@@ -25,7 +24,6 @@ const BASE_TOP_PADDING = 24;
 export default function HomeScreen() {
   const styles = useThemedStyles(createStyles);
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const appName = useAppName();
   const router = useRouter();
 
@@ -81,10 +79,8 @@ export default function HomeScreen() {
   return (
     <ThemedView style={styles.container}>
       <ScrollView
-        contentContainerStyle={[
-          styles.content,
-          { paddingTop: BASE_TOP_PADDING + insets.top },
-        ]}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="never"
       >
         <View style={styles.header}>
           <ThemedText type="title" style={styles.title}>

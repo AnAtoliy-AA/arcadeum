@@ -631,14 +631,6 @@ export default function GameRoomScreen() {
     [roomId, t, tokens.userId],
   );
 
-  const handleBack = useCallback(() => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/(tabs)/games');
-    }
-  }, [router]);
-
   const handleViewGame = useCallback(() => {
     const targetGameId = room?.gameId ?? gameId;
     if (!targetGameId) return;
@@ -702,16 +694,6 @@ export default function GameRoomScreen() {
           styles.topBarContent,
         ]}
       >
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <IconSymbol
-            name="chevron.left"
-            size={20}
-            color={styles.backButtonText.color as string}
-          />
-          <ThemedText style={styles.backButtonText}>
-            {t('games.detail.backToLobby')}
-          </ThemedText>
-        </TouchableOpacity>
         <View style={styles.actionGroup}>
           {hasSessionSnapshot ? (
             <TouchableOpacity
@@ -837,7 +819,6 @@ export default function GameRoomScreen() {
     [
       deleting,
       gameId,
-      handleBack,
       handleDeleteRoom,
       handleEnterFullScreen,
       handleLeaveRoom,
@@ -1189,15 +1170,6 @@ function createStyles(palette: Palette) {
       justifyContent: 'flex-start',
       gap: 8,
       alignSelf: 'stretch',
-    },
-    backButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 6,
-    },
-    backButtonText: {
-      color: palette.tint,
-      fontWeight: '600',
     },
     gameButton: {
       flexDirection: 'row',

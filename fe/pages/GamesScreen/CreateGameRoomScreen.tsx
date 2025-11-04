@@ -65,14 +65,6 @@ export default function CreateGameRoomScreen() {
     [availableGames, state.gameId],
   );
 
-  const handleBack = useCallback(() => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/(tabs)/games');
-    }
-  }, [router]);
-
   const handleChange = useCallback(
     (field: 'name' | 'maxPlayers' | 'notes') => (value: string) => {
       setState((prev) => ({ ...prev, [field]: value }));
@@ -186,19 +178,6 @@ export default function CreateGameRoomScreen() {
     >
       <ThemedView style={styles.container}>
         <ScrollView contentContainerStyle={styles.content}>
-          <View style={styles.topBar}>
-            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-              <IconSymbol
-                name="chevron.left"
-                size={20}
-                color={styles.backButtonText.color as string}
-              />
-              <ThemedText style={styles.backButtonText}>
-                {t('common.back')}
-              </ThemedText>
-            </TouchableOpacity>
-          </View>
-
           <View style={styles.section}>
             <ThemedText type="title">{t('games.create.title')}</ThemedText>
             <ThemedText style={styles.sectionSubtitle}>
@@ -485,20 +464,6 @@ function createStyles(palette: Palette) {
     },
     alertFallbackText: {
       color: palette.icon,
-    },
-    topBar: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    backButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 6,
-    },
-    backButtonText: {
-      color: palette.tint,
-      fontWeight: '600',
     },
     visibilityToggle: {
       flexDirection: 'row',

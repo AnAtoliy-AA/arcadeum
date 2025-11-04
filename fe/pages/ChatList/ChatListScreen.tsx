@@ -452,7 +452,7 @@ export default function ChatListScreen() {
 
   if (shouldBlock) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
         <ThemedView
           style={[styles.loadingContainer, { paddingBottom: insets.bottom }]}
         >
@@ -463,7 +463,7 @@ export default function ChatListScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
       <ThemedView style={[styles.container, { paddingBottom: insets.bottom }]}>
         <FlatList
           data={chats}

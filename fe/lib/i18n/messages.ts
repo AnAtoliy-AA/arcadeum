@@ -438,6 +438,12 @@ export const translations = {
       statuses: {
         authenticated: 'Authenticated',
       },
+      pendingNotice: {
+        title: 'Free hosts are spinning back up...',
+        message:
+          "Our free-tier backend servers snooze when idle, so everything is stretching its legs. Back us on the support page to help keep it running 24/7!",
+  timer: 'Server wake-up timer: {{seconds}}s ⏳',
+      },
       errors: {
         genericApiError: 'Something went wrong. Please try again.',
       },
@@ -1074,6 +1080,12 @@ export const translations = {
       statuses: {
         authenticated: 'Autenticado',
       },
+      pendingNotice: {
+        title: 'Los servidores gratuitos están reactivándose...',
+        message:
+          'Nuestros servidores de backend gratuitos se duermen si no hay tráfico, así que ahora mismo están despertando. Visita la página de soporte para ayudarnos a mantenerlos activos.',
+  timer: 'Cronómetro de reactivación del servidor: {{seconds}}s ⏳',
+      },
       errors: {
         genericApiError: 'Ocurrió un error. Intenta nuevamente.',
       },
@@ -1699,6 +1711,12 @@ export const translations = {
       },
       statuses: {
         authenticated: 'Authentifié',
+      },
+      pendingNotice: {
+        title: 'Les serveurs gratuits se relancent...',
+        message:
+          "Nos serveurs backend gratuits s'endorment quand ils sont inactifs, ils se remettent donc en route. Passe sur la page de soutien pour nous aider à les garder éveillés !",
+        timer: 'Chrono de réveil du serveur : {{seconds}} s ⏳',
       },
       errors: {
         genericApiError: 'Une erreur est survenue. Réessaie plus tard.',

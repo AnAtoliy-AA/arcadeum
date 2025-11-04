@@ -16,6 +16,7 @@ import { SessionTokensProvider } from '@/stores/sessionTokens';
 import { SettingsProvider } from '@/stores/settings';
 import { ErrorToastProvider } from '@/components/ui/ErrorToastProvider';
 import { useTranslation } from '@/lib/i18n';
+import { PendingRequestNotice } from '@/components/ui/PendingRequestNotice';
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -91,42 +92,45 @@ function NavigationRoot() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack
-        screenOptions={({ route, navigation }) => {
-          if (route.name === '(tabs)') {
-            return { headerShown: false };
-          }
+      <>
+        <Stack
+          screenOptions={({ route, navigation }) => {
+            if (route.name === '(tabs)') {
+              return { headerShown: false };
+            }
 
-          const canGoBack = navigation.canGoBack();
-          const title = getTitleForRoute(route.name);
+            const canGoBack = navigation.canGoBack();
+            const title = getTitleForRoute(route.name);
 
-          return {
-            header: () => (
-              <AppHeader
-                title={title}
-                canGoBack={canGoBack}
-                onBack={canGoBack ? () => navigation.goBack() : undefined}
-                onSettingsPress={handleSettingsPress}
-                settingsDisabled={route.name === 'settings'}
-              />
-            ),
-          };
-        }}
-      >
-        <Stack.Screen name="index" />
-        <Stack.Screen name="auth" />
-        <Stack.Screen name="auth/callback" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="chat" />
-        <Stack.Screen name="games/create" />
-        <Stack.Screen name="games/[id]" />
-        <Stack.Screen name="games/rooms/[id]" />
-        <Stack.Screen name="settings" />
-        <Stack.Screen name="payment" />
-        <Stack.Screen name="support" />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+            return {
+              header: () => (
+                <AppHeader
+                  title={title}
+                  canGoBack={canGoBack}
+                  onBack={canGoBack ? () => navigation.goBack() : undefined}
+                  onSettingsPress={handleSettingsPress}
+                  settingsDisabled={route.name === 'settings'}
+                />
+              ),
+            };
+          }}
+        >
+          <Stack.Screen name="index" />
+          <Stack.Screen name="auth" />
+          <Stack.Screen name="auth/callback" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="chat" />
+          <Stack.Screen name="games/create" />
+          <Stack.Screen name="games/[id]" />
+          <Stack.Screen name="games/rooms/[id]" />
+          <Stack.Screen name="settings" />
+          <Stack.Screen name="payment" />
+          <Stack.Screen name="support" />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        <PendingRequestNotice />
+      </>
     </ThemeProvider>
   );
 }

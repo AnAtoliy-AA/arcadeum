@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -10,7 +10,7 @@ import { useRouter } from 'expo-router';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { SelectField } from '@/components/ui/SelectField';
 import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
 import {
   settingsLanguages,
@@ -56,6 +56,25 @@ export default function SettingsScreen() {
     [setLanguage],
   );
 
+  const themeOptions = useMemo(
+    () =>
+      themePreferences.map((option) => ({
+        value: option.code,
+        label: t(option.labelKey),
+        description: t(option.descriptionKey),
+      })),
+    [t],
+  );
+
+  const languageOptions = useMemo(
+    () =>
+      settingsLanguages.map((option) => ({
+        value: option.code,
+        label: t(option.labelKey),
+      })),
+    [t],
+  );
+
   const handleGoToAuth = useCallback(() => {
     router.push('/auth');
   }, [router]);
@@ -94,35 +113,13 @@ export default function SettingsScreen() {
           <ThemedText style={styles.sectionDescription}>
             {t('settings.appearanceDescription')}
           </ThemedText>
-          <View style={styles.optionGroup}>
-            {themePreferences.map((option) => {
-              const selected = option.code === themePreference;
-              return (
-                <TouchableOpacity
-                  key={option.code}
-                  style={[
-                    styles.optionCard,
-                    selected ? styles.optionCardSelected : null,
-                  ]}
-                  activeOpacity={0.85}
-                  onPress={() => handleThemeSelect(option.code)}
-                >
-                  <View style={styles.optionTextWrapper}>
-                    <ThemedText style={styles.optionTitle}>
-                      {t(option.labelKey)}
-                    </ThemedText>
-                    <ThemedText style={styles.optionDescription}>
-                      {t(option.descriptionKey)}
-                    </ThemedText>
-                  </View>
-                  <IconSymbol
-                    name={selected ? 'checkmark.circle.fill' : 'circle'}
-                    size={20}
-                    color={selected ? palette.tint : palette.icon}
-                  />
-                </TouchableOpacity>
-              );
-            })}
+          <View style={styles.fieldGroup}>
+            <SelectField
+              label={t('settings.themeLabel')}
+              value={themePreference}
+              options={themeOptions}
+              onSelect={handleThemeSelect}
+            />
           </View>
         </View>
 
@@ -133,37 +130,13 @@ export default function SettingsScreen() {
           <ThemedText style={styles.sectionDescription}>
             {t('settings.languageDescription')}
           </ThemedText>
-          <View style={styles.optionGroup}>
-            {settingsLanguages.map((option) => {
-              const selected = option.code === language;
-              return (
-                <TouchableOpacity
-                  key={option.code}
-                  style={[
-                    styles.optionCard,
-                    selected ? styles.optionCardSelected : null,
-                  ]}
-                  activeOpacity={0.85}
-                  onPress={() => handleLanguageSelect(option.code)}
-                >
-                  <View style={styles.optionTextWrapper}>
-                    <ThemedText style={styles.optionTitle}>
-                      {t(option.labelKey)}
-                    </ThemedText>
-                    <ThemedText style={styles.optionDescription}>
-                      {selected
-                        ? t('settings.activeSelection')
-                        : t('settings.tapToSwitch')}
-                    </ThemedText>
-                  </View>
-                  <IconSymbol
-                    name={selected ? 'checkmark.circle.fill' : 'circle'}
-                    size={20}
-                    color={selected ? palette.tint : palette.icon}
-                  />
-                </TouchableOpacity>
-              );
-            })}
+          <View style={styles.fieldGroup}>
+            <SelectField
+              label={t('settings.languageLabel')}
+              value={language}
+              options={languageOptions}
+              onSelect={handleLanguageSelect}
+            />
           </View>
         </View>
 
@@ -226,11 +199,6 @@ export default function SettingsScreen() {
 }
 
 function createStyles(palette: Palette) {
-  const selectedOverlay =
-    palette.tint === '#fff'
-      ? 'rgba(255, 255, 255, 0.12)'
-      : 'rgba(10, 126, 164, 0.12)';
-
   return StyleSheet.create({
     container: {
       flex: 1,
@@ -261,37 +229,8 @@ function createStyles(palette: Palette) {
       fontSize: 14,
       lineHeight: 20,
     },
-    optionGroup: {
-      gap: 12,
-    },
-    optionCard: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingHorizontal: 16,
-      paddingVertical: 14,
-      borderRadius: 16,
-      borderWidth: StyleSheet.hairlineWidth,
-      borderColor: palette.icon,
-      backgroundColor: palette.background,
-    },
-    optionCardSelected: {
-      borderColor: palette.tint,
-      backgroundColor: selectedOverlay,
-    },
-    optionTextWrapper: {
-      flex: 1,
-      gap: 4,
-      paddingRight: 12,
-    },
-    optionTitle: {
-      color: palette.text,
-      fontSize: 16,
-      fontWeight: '600',
-    },
-    optionDescription: {
-      color: palette.icon,
-      fontSize: 13,
+    fieldGroup: {
+      marginTop: 4,
     },
     accountCard: {
       gap: 12,

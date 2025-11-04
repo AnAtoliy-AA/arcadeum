@@ -985,6 +985,8 @@ export const translations = {
       appearanceTitle: 'Appearance',
       appearanceDescription:
         'Tweak how the interface looks regardless of your device theme.',
+      themeLabel: 'Theme preference',
+      languageLabel: 'App language',
       themeOptions: {
         system: {
           label: 'System default',
@@ -1606,6 +1608,8 @@ export const translations = {
       appearanceTitle: 'Aspecto',
       appearanceDescription:
         'Ajusta el aspecto de la interfaz sin importar el tema del dispositivo.',
+      themeLabel: 'Preferencia de tema',
+      languageLabel: 'Idioma de la app',
       themeOptions: {
         system: {
           label: 'Predeterminado del sistema',
@@ -2191,6 +2195,8 @@ export const translations = {
       appearanceTitle: 'Apparence',
       appearanceDescription:
         "Ajustez l'apparence de l'interface indépendamment du thème de votre appareil.",
+      themeLabel: 'Préférence de thème',
+      languageLabel: "Langue de l'application",
       themeOptions: {
         system: {
           label: 'Réglage du système',

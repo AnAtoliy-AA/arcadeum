@@ -22,6 +22,8 @@ const MAPPING = {
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
   'chevron.left': 'chevron-left',
+  'chevron.down': 'expand-more',
+  'chevron.up': 'expand-less',
   'message.fill': 'chat',
   'gamecontroller.fill': 'sports-esports',
   'person.3.fill': 'groups',
@@ -55,6 +57,8 @@ const MAPPING = {
   'creditcard.fill': 'credit-card',
   'arrow.up.right': 'open-in-new',
   'doc.on.doc': 'content-copy',
+  'checkmark.circle.fill': 'check-circle',
+  circle: 'radio-button-unchecked',
 } as IconMapping;
 
 /**

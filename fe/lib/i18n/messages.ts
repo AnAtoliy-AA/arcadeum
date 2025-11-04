@@ -903,7 +903,6 @@ export const translations = {
         '{{appName}} is your remote-friendly arcade for fast tabletop playtests.',
       description:
         'Spin up real-time rooms, rally your playtest crew, and let {{appName}} automate rules, scoring, and moderation so you can focus on the fun.',
-      runningOn: 'Running on {{platform}}',
       supportCta: 'Support the developers',
     },
     support: {
@@ -1524,7 +1523,6 @@ export const translations = {
         '{{appName}} es tu arcade remoto para playtests de mesa rápidos.',
       description:
         'Lanza salas en tiempo real, reúne a tu equipo de pruebas y deja que {{appName}} automatice reglas, puntuaciones y moderación para que te concentres en la diversión.',
-      runningOn: 'Se ejecuta en {{platform}}',
       supportCta: 'Apoyar al equipo',
     },
     support: {
@@ -2112,7 +2110,6 @@ export const translations = {
         '{{appName}} est ton arcade connecté pour des playtests de plateau express.',
       description:
         'Crée des salles en temps réel, rassemble ton équipe de test et laisse {{appName}} automatiser règles, score et modération pour te concentrer sur le fun.',
-      runningOn: 'Fonctionne sur {{platform}}',
       supportCta: "Soutenir l'équipe",
     },
     support: {

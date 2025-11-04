@@ -132,11 +132,7 @@ export default function WelcomeScreen() {
             )}
           </View>
         </View>
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            {t('welcome.runningOn', { platform: platform.os })}
-          </Text>
-        </View>
+        <View style={styles.footer} />
       </SafeAreaView>
     </ThemedView>
   );
@@ -220,11 +216,6 @@ function createStyles(palette: Palette) {
     footer: {
       marginTop: 'auto',
       paddingBottom: 32,
-    },
-    footerText: {
-      fontSize: 12,
-      color: palette.icon,
-      textAlign: 'center',
     },
     loadingContainer: {
       flex: 1,

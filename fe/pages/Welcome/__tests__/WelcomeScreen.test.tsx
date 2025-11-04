@@ -68,7 +68,6 @@ const translationTable: Record<string, string> = {
   'common.actions.getStarted': 'Get started',
   'common.actions.openApp': 'Open app',
   'welcome.supportCta': 'Support the developers',
-  'welcome.runningOn': 'Running on {{platform}}',
 };
 
 function buildTranslator() {

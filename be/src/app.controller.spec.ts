@@ -15,8 +15,12 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return a live status snapshot', () => {
+      const rootStatus = appController.getRootStatus();
+
+      expect(rootStatus.status).toBe('ok');
+      expect(typeof rootStatus.timestamp).toBe('string');
+      expect(typeof rootStatus.uptimeSeconds).toBe('number');
     });
   });
 });

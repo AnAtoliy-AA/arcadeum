@@ -24,11 +24,27 @@ module.exports = {
     }
     return [`cd fe && npx prettier --write ${relativeFiles}`];
   },
-  "be/**/*.{ts,js}": [
-    "npm --prefix be exec -- eslint --max-warnings=0 --fix",
-    "npm --prefix be exec -- prettier --write"
-  ],
-  "be/**/*.{json,md,yml,yaml}": [
-    "npm --prefix be exec -- prettier --write"
-  ]
+  "be/**/*.{ts,js}": (files) => {
+    const relativeFiles = files
+      .map((file) => path.relative('be', file))
+      .map((file) => `"${file}"`)
+      .join(' ');
+    if (!relativeFiles) {
+      return [];
+    }
+    return [
+      `cd be && npx eslint --max-warnings=0 --fix ${relativeFiles}`,
+      `cd be && npx prettier --write ${relativeFiles}`,
+    ];
+  },
+  "be/**/*.{json,md,yml,yaml}": (files) => {
+    const relativeFiles = files
+      .map((file) => path.relative('be', file))
+      .map((file) => `"${file}"`)
+      .join(' ');
+    if (!relativeFiles) {
+      return [];
+    }
+    return [`cd be && npx prettier --write ${relativeFiles}`];
+  },
 };

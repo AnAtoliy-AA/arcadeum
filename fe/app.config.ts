@@ -18,6 +18,8 @@ const supportCoffeeUrl = ((
   process.env.EXPO_PUBLIC_SUPPORT_COFFEE_URL ?? process.env.SUPPORT_COFFEE_URL
 ) as string | undefined)?.trim();
 const supportIban = ((process.env.EXPO_PUBLIC_SUPPORT_IBAN ?? process.env.SUPPORT_IBAN) as string | undefined)?.trim();
+const rawAppOrigin = ((process.env.EXPO_PUBLIC_APP_ORIGIN ?? process.env.APP_ORIGIN) as string | undefined)?.trim();
+const appOrigin = rawAppOrigin && rawAppOrigin.length > 0 ? rawAppOrigin : "http://localhost:3000";
 
 const config: ExpoConfig = {
   name: appName,
@@ -57,7 +59,12 @@ const config: ExpoConfig = {
     favicon: "./assets/images/favicon.png",
   },
   plugins: [
-    "expo-router",
+    [
+      "expo-router",
+      {
+        origin: appOrigin,
+      },
+    ],
     [
       "expo-splash-screen",
       {
@@ -89,7 +96,7 @@ const config: ExpoConfig = {
     SUPPORT_IBAN: supportIban && supportIban.length > 0 ? supportIban : undefined,
     // Router uses this at runtime
     router: {
-      origin: false,
+      origin: appOrigin,
     },
   },
 };

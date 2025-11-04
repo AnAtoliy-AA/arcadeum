@@ -261,45 +261,56 @@ export default function SupportScreen() {
             {t('support.contribute.title')}
           </ThemedText>
           <View style={styles.actionList}>
-            {actions.map((action) => (
-              <TouchableOpacity
-                key={action.key}
-                style={styles.actionCard}
-                onPress={() => handleActionPress(action)}
-              >
-                <View style={styles.actionHeader}>
-                  <IconSymbol
-                    name={action.icon}
-                    size={22}
-                    color={styles.actionIcon.color as string}
-                  />
-                  <ThemedText style={styles.actionTitle}>
-                    {t(action.titleKey)}
+            {actions.map((action) => {
+              const accessibilityLabel = t(action.ctaKey);
+              const accessibilityHint =
+                action.kind === 'copy'
+                  ? t(action.descriptionKey, { iban: action.value, appName })
+                  : t(action.descriptionKey, { appName });
+
+              return (
+                <TouchableOpacity
+                  key={action.key}
+                  style={styles.actionCard}
+                  onPress={() => handleActionPress(action)}
+                  accessibilityRole="button"
+                  accessibilityLabel={accessibilityLabel}
+                  accessibilityHint={accessibilityHint}
+                >
+                  <View style={styles.actionHeader}>
+                    <IconSymbol
+                      name={action.icon}
+                      size={22}
+                      color={styles.actionIcon.color as string}
+                    />
+                    <ThemedText style={styles.actionTitle}>
+                      {t(action.titleKey)}
+                    </ThemedText>
+                  </View>
+                  <ThemedText style={styles.actionDescription}>
+                    {action.kind === 'copy'
+                      ? t(action.descriptionKey, { iban: action.value, appName })
+                      : t(action.descriptionKey, { appName })}
                   </ThemedText>
-                </View>
-                <ThemedText style={styles.actionDescription}>
-                  {action.kind === 'copy'
-                    ? t(action.descriptionKey, { iban: action.value, appName })
-                    : t(action.descriptionKey, { appName })}
-                </ThemedText>
-                <View style={styles.actionCtaRow}>
-                  <ThemedText style={styles.actionCta}>
-                    {t(action.ctaKey)}
-                  </ThemedText>
-                  <IconSymbol
-                    name={
-                      action.kind === 'copy'
-                        ? 'doc.on.doc'
-                        : action.kind === 'route'
-                          ? 'chevron.right'
-                          : 'arrow.up.right'
-                    }
-                    size={16}
-                    color={styles.actionCta.color as string}
-                  />
-                </View>
-              </TouchableOpacity>
-            ))}
+                  <View style={styles.actionCtaRow}>
+                    <ThemedText style={styles.actionCta}>
+                      {t(action.ctaKey)}
+                    </ThemedText>
+                    <IconSymbol
+                      name={
+                        action.kind === 'copy'
+                          ? 'doc.on.doc'
+                          : action.kind === 'route'
+                            ? 'chevron.right'
+                            : 'arrow.up.right'
+                      }
+                      size={16}
+                      color={styles.actionCta.color as string}
+                    />
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
 

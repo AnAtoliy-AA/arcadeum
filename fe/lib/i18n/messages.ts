@@ -899,6 +899,10 @@ export const translations = {
         "When you're ready, run {{command}} to get a fresh {{appName}} directory. This will move the current {{appName}} to {{exampleName}}.",
     },
     welcome: {
+      seoTitle:
+        '{{appName}} · Remote-friendly arcade for tabletop playtests',
+      seoDescription:
+        'Spin up real-time rooms, rally your playtest crew, and let {{appName}} automate rules, scoring, and moderation so you can focus on the fun.',
       tagline:
         '{{appName}} is your remote-friendly arcade for fast tabletop playtests.',
       description:
@@ -1519,6 +1523,10 @@ export const translations = {
         'Cuando estés listo, ejecuta {{command}} para obtener un nuevo directorio {{appName}}. Esto moverá el {{appName}} actual a {{exampleName}}.',
     },
     welcome: {
+      seoTitle:
+        '{{appName}} · Arcade remoto para playtests de mesa',
+      seoDescription:
+        'Lanza salas en tiempo real, reúne a tu equipo de pruebas y deja que {{appName}} automatice reglas, puntuaciones y moderación para que te concentres en la diversión.',
       tagline:
         '{{appName}} es tu arcade remoto para playtests de mesa rápidos.',
       description:
@@ -2106,6 +2114,10 @@ export const translations = {
         'Quand vous êtes prêt, exécutez {{command}} pour recréer le dossier {{appName}}. Le dossier {{appName}} actuel sera déplacé vers {{exampleName}}.',
     },
     welcome: {
+      seoTitle:
+        "{{appName}} · Arcade à distance pour playtests de jeux de société",
+      seoDescription:
+        'Crée des salles en temps réel, rassemble ton équipe de test et laisse {{appName}} automatiser règles, score et modération pour te concentrer sur le fun.',
       tagline:
         '{{appName}} est ton arcade connecté pour des playtests de plateau express.',
       description:

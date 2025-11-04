@@ -64,10 +64,14 @@ export default function WelcomeScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={styles.container} webRole="main">
       <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
         <View style={styles.heroBlock}>
-          <ThemedText type="title" style={styles.title}>
+          <ThemedText
+            type="title"
+            style={styles.title}
+            {...(platform.isWeb ? { accessibilityRole: 'header' as const } : {})}
+          >
             {appName}
           </ThemedText>
           <Text style={styles.tagline}>

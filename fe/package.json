@@ -16,6 +16,7 @@
     "ios:check-redirect": "node ./scripts/check-ios-redirect.js",
     "ios:open": "node ./scripts/open-ios-dev-client.js",
     "reset-project": "node ./scripts/reset-project.js",
+    "export:web": "expo export --platform web --output-dir dist/web-build",
     "android": "npm run android:reverse && npm run android:install && npm run android:open",
     "ios": "expo run:ios",
     "web": "expo start --web",

@@ -2,8 +2,4 @@
 
 set -e
 
-npm run format:be
-npm run format:fe
-npm test
-
-git add --update
+npm exec lint-staged

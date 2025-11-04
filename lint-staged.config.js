@@ -1,11 +1,29 @@
+const path = require('path');
+
 module.exports = {
-  "fe/**/*.{ts,tsx,js,jsx}": [
-    "npm --prefix fe exec -- eslint --max-warnings=0 --fix",
-    "npm --prefix fe exec -- prettier --write"
-  ],
-  "fe/**/*.{json,md,yml,yaml}": [
-    "npm --prefix fe exec -- prettier --write"
-  ],
+  "fe/**/*.{ts,tsx,js,jsx}": (files) => {
+    const relativeFiles = files
+      .map((file) => path.relative('fe', file))
+      .map((file) => `"${file}"`)
+      .join(' ');
+    if (!relativeFiles) {
+      return [];
+    }
+    return [
+      `cd fe && npx eslint --max-warnings=0 --fix ${relativeFiles}`,
+      `cd fe && npx prettier --write ${relativeFiles}`,
+    ];
+  },
+  "fe/**/*.{json,md,yml,yaml}": (files) => {
+    const relativeFiles = files
+      .map((file) => path.relative('fe', file))
+      .map((file) => `"${file}"`)
+      .join(' ');
+    if (!relativeFiles) {
+      return [];
+    }
+    return [`cd fe && npx prettier --write ${relativeFiles}`];
+  },
   "be/**/*.{ts,js}": [
     "npm --prefix be exec -- eslint --max-warnings=0 --fix",
     "npm --prefix be exec -- prettier --write"

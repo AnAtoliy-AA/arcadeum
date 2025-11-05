@@ -759,6 +759,9 @@ export const translations = {
       },
       room: {
         defaultName: 'Game room',
+        heroTagline: 'Match lobby overview',
+        controlsTitle: 'Room controls',
+        controlsSubtitle: 'Quick actions for hosts and players.',
         meta: {
           host: 'Host',
           players: 'Players',
@@ -1390,6 +1393,9 @@ export const translations = {
       },
       room: {
         defaultName: 'Sala de juego',
+        heroTagline: 'Resumen del lobby',
+        controlsTitle: 'Controles de la sala',
+        controlsSubtitle: 'Acciones rápidas para anfitriones y jugadores.',
         meta: {
           host: 'Anfitrión',
           players: 'Jugadores',
@@ -1982,6 +1988,9 @@ export const translations = {
       },
       room: {
         defaultName: 'Salle de jeu',
+        heroTagline: 'Vue d’ensemble du lobby',
+        controlsTitle: 'Contrôles de la salle',
+        controlsSubtitle: 'Actions rapides pour hôtes et joueurs.',
         meta: {
           host: 'Hôte',
           players: 'Joueurs',

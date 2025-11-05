@@ -43,7 +43,6 @@ import {
   type LogVisibility,
 } from './components/ExplodingCatsTable';
 import { useTranslation } from '@/lib/i18n';
-import { platform } from '@/constants/platform';
 
 function resolveParam(
   value: string | string[] | undefined,
@@ -84,18 +83,6 @@ export default function GameRoomScreen() {
   const router = useRouter();
   const { tokens, refreshTokens, hydrated } = useSessionTokens();
   const { t } = useTranslation();
-  const iosTopInset = platform.isIos ? insets.top : 0;
-  const lobbyContentStyle = useMemo(
-    () => [styles.content, { paddingTop: 24 + iosTopInset }],
-    [styles.content, iosTopInset],
-  );
-  const fullscreenContainerStyle = useMemo(
-    () => [
-      styles.fullscreenContainer,
-      platform.isIos ? { paddingTop: iosTopInset } : null,
-    ],
-    [styles.fullscreenContainer, iosTopInset],
-  );
 
   const roomId = useMemo(() => resolveParam(params?.id), [params]);
   const gameId = useMemo(() => resolveParam(params?.gameId), [params]);
@@ -689,12 +676,31 @@ export default function GameRoomScreen() {
   const renderTopBar = useCallback(
     (variant: 'lobby' | 'table') => (
       <View
-        style={[
-          variant === 'table' ? styles.fullscreenTopBar : styles.topBar,
-          styles.topBarContent,
-        ]}
+        style={
+          variant === 'table' ? styles.fullscreenTopBar : styles.topBar
+        }
       >
-        <View style={styles.actionGroup}>
+        <View style={styles.topBarCard}>
+          <View style={styles.topBarHeaderRow}>
+            <View style={styles.topBarTitleRow}>
+              <IconSymbol
+                name={
+                  variant === 'table'
+                    ? 'sparkles'
+                    : 'rectangle.grid.2x2'
+                }
+                size={18}
+                color={styles.topBarTitleIcon.color as string}
+              />
+              <ThemedText style={styles.topBarTitle}>
+                {t('games.room.controlsTitle')}
+              </ThemedText>
+            </View>
+            <ThemedText style={styles.topBarSubtitle} numberOfLines={2}>
+              {t('games.room.controlsSubtitle')}
+            </ThemedText>
+          </View>
+          <View style={styles.actionGroup}>
           {hasSessionSnapshot ? (
             <TouchableOpacity
               style={[
@@ -815,6 +821,7 @@ export default function GameRoomScreen() {
           )}
         </View>
       </View>
+    </View>
     ),
     [
       deleting,
@@ -835,7 +842,7 @@ export default function GameRoomScreen() {
 
   if (tableFullScreen && hasSessionSnapshot) {
     return (
-      <ThemedView style={fullscreenContainerStyle}>
+      <ThemedView style={styles.fullscreenContainer}>
         <View style={styles.fullscreenTableWrapper}>
           <ExplodingCatsTable
             room={room}
@@ -854,7 +861,10 @@ export default function GameRoomScreen() {
           />
         </View>
         <TouchableOpacity
-          style={[styles.tableOnlyCloseButton, { top: iosTopInset + 16 }]}
+          style={[
+            styles.tableOnlyCloseButton,
+            { top: insets.top + 16 },
+          ]}
           onPress={handleExitFullScreen}
           accessibilityRole="button"
           accessibilityLabel={t('games.room.buttons.exitFullscreen')}
@@ -876,7 +886,7 @@ export default function GameRoomScreen() {
 
   if (hasSessionSnapshot) {
     return (
-      <ThemedView style={fullscreenContainerStyle}>
+      <ThemedView style={styles.fullscreenContainer}>
         {topBar}
         <View style={styles.fullscreenTableWrapper}>
           <ExplodingCatsTable
@@ -901,7 +911,8 @@ export default function GameRoomScreen() {
   return (
     <ThemedView style={styles.container}>
       <ScrollView
-        contentContainerStyle={lobbyContentStyle}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic"
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -913,28 +924,46 @@ export default function GameRoomScreen() {
         {topBar}
 
         <ThemedView style={styles.headerCard}>
-          <View style={styles.headerRow}>
-            <View style={styles.nameBlock}>
-              <ThemedText
-                type="title"
-                style={styles.roomTitle}
-                numberOfLines={2}
-              >
-                {displayName}
-              </ThemedText>
-              {displayGame ? (
-                <ThemedText style={styles.gameLabel}>{displayGame}</ThemedText>
-              ) : null}
+          <View style={styles.heroBackdrop} pointerEvents="none" />
+          <View style={styles.heroGlow} pointerEvents="none" />
+          <View style={styles.heroGlowSecondary} pointerEvents="none" />
+          <View style={styles.headerContent}>
+            <View style={styles.heroHeader}>
+              <View style={styles.heroBadge}>
+                <IconSymbol
+                  name="gamecontroller.fill"
+                  size={16}
+                  color={styles.heroBadgeIcon.color as string}
+                />
+                <ThemedText style={styles.heroBadgeText} numberOfLines={1}>
+                  {displayGame ?? t('games.rooms.unknownGame')}
+                </ThemedText>
+              </View>
+              <View style={[styles.statusPill, statusStyle]}>
+                <ThemedText style={styles.statusText}>
+                  {t(getRoomStatusLabel(room?.status ?? 'lobby'))}
+                </ThemedText>
+              </View>
             </View>
-            <View style={[styles.statusPill, statusStyle]}>
-              <ThemedText style={styles.statusText}>
-                {t(getRoomStatusLabel(room?.status ?? 'lobby'))}
-              </ThemedText>
-            </View>
-          </View>
 
-          {room ? (
-            <View style={styles.metaGrid}>
+            <ThemedText style={styles.heroTagline} numberOfLines={1}>
+              {t('games.room.heroTagline')}
+            </ThemedText>
+
+            <ThemedText
+              type="title"
+              style={styles.roomTitle}
+              numberOfLines={2}
+            >
+              {displayName}
+            </ThemedText>
+
+            {displayGame ? (
+              <ThemedText style={styles.gameLabel}>{displayGame}</ThemedText>
+            ) : null}
+
+            {room ? (
+              <View style={styles.metaGrid}>
               {(() => {
                 const hostLabelRaw =
                   room.host?.displayName ?? formatRoomHost(room.hostId);
@@ -1002,31 +1031,32 @@ export default function GameRoomScreen() {
                   </>
                 );
               })()}
-            </View>
-          ) : null}
+              </View>
+            ) : null}
 
-          {isLoading ? (
-            <View style={styles.loadingRow}>
-              <ActivityIndicator
-                size="small"
-                color={styles.refreshTint.color as string}
-              />
-              <ThemedText style={styles.loadingText}>
-                {t('games.room.loading')}
-              </ThemedText>
-            </View>
-          ) : null}
+            {isLoading ? (
+              <View style={styles.loadingRow}>
+                <ActivityIndicator
+                  size="small"
+                  color={styles.refreshTint.color as string}
+                />
+                <ThemedText style={styles.loadingText}>
+                  {t('games.room.loading')}
+                </ThemedText>
+              </View>
+            ) : null}
 
-          {error ? (
-            <View style={styles.errorCard}>
-              <IconSymbol
-                name="exclamationmark.triangle.fill"
-                size={18}
-                color={styles.errorText.color as string}
-              />
-              <ThemedText style={styles.errorText}>{error}</ThemedText>
-            </View>
-          ) : null}
+            {error ? (
+              <View style={styles.errorCard}>
+                <IconSymbol
+                  name="exclamationmark.triangle.fill"
+                  size={18}
+                  color={styles.errorText.color as string}
+                />
+                <ThemedText style={styles.errorText}>{error}</ThemedText>
+              </View>
+            ) : null}
+          </View>
         </ThemedView>
 
         <ThemedView style={styles.bodyCard}>
@@ -1093,8 +1123,8 @@ function MetaItem({
     <View style={styles.metaItem}>
       <IconSymbol
         name={icon}
-        size={16}
-        color={styles.metaItemLabel.color as string}
+        size={18}
+        color={styles.metaItemIcon.color as string}
       />
       <View style={styles.metaItemCopy}>
         <ThemedText style={styles.metaItemLabel}>{label}</ThemedText>
@@ -1106,21 +1136,37 @@ function MetaItem({
 
 function createStyles(palette: Palette) {
   const isLight = palette.background === '#fff';
-  const cardBackground = isLight ? '#F6F8FC' : '#1F2228';
-  const raisedBackground = isLight ? '#E9EEF6' : '#262A31';
-  const borderColor = isLight ? '#D8DFEA' : '#33373D';
-  const surfaceShadow = isLight
-    ? 'rgba(15, 23, 42, 0.08)'
-    : 'rgba(8, 10, 15, 0.45)';
-  const statusLobbyBg = isLight ? '#DCFCE7' : '#1D3A28';
-  const statusInProgressBg = isLight ? '#FDE68A' : '#42381F';
-  const statusCompletedBg = isLight ? '#E2E8F0' : '#2B3038';
-  const leaveBackground = isLight ? '#FEE2E2' : '#3A2020';
-  const leaveDisabledBackground = isLight ? '#E2E8F0' : '#31353C';
-  const leaveTint = isLight ? '#B91C1C' : '#FCA5A5';
-  const deleteBackground = isLight ? '#F97316' : '#4A1D0D';
-  const deleteDisabledBackground = isLight ? '#E2E8F0' : '#31353C';
-  const deleteTint = isLight ? '#7C2D12' : '#FCD7BE';
+  const {
+    gameRoom: {
+      raisedBackground,
+      border: borderColor,
+      surfaceShadow,
+      heroBackground,
+      heroGlowPrimary,
+      heroGlowSecondary,
+      topBarSurface,
+      topBarBorder,
+      heroBadgeBackground,
+      heroBadgeBorder,
+      heroBadgeIcon: heroBadgeIconColor,
+      heroBadgeText: heroBadgeTextColor,
+      actionBackground,
+      actionBorder,
+      statusLobby,
+      statusInProgress,
+      statusCompleted,
+      leaveBackground,
+      leaveDisabledBackground,
+      leaveTint,
+      deleteBackground,
+      deleteDisabledBackground,
+      deleteTint,
+      errorBackground,
+      errorBorder,
+      errorText,
+    },
+  } = palette;
+  const fill = StyleSheet.absoluteFillObject;
 
   return StyleSheet.create({
     container: {
@@ -1141,8 +1187,9 @@ function createStyles(palette: Palette) {
     },
     topBar: {
       width: '100%',
+      paddingHorizontal: 24,
       paddingTop: 4,
-      paddingRight: 48,
+      paddingBottom: 4,
     },
     fullscreenTopBar: {
       paddingTop: 24,
@@ -1151,12 +1198,47 @@ function createStyles(palette: Palette) {
       borderBottomWidth: StyleSheet.hairlineWidth,
       borderBottomColor: borderColor,
     },
-    topBarContent: {
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      gap: 12,
+    topBarCard: {
       width: '100%',
-      paddingRight: 48,
+      backgroundColor: topBarSurface,
+      borderRadius: 24,
+      padding: 16,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: topBarBorder,
+      gap: 16,
+      ...platformShadow({
+        color: surfaceShadow,
+        opacity: isLight ? 0.9 : 0.7,
+        radius: 14,
+        offset: { width: 0, height: 6 },
+        elevation: 3,
+      }),
+    },
+    topBarHeaderRow: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      justifyContent: 'space-between',
+      gap: 16,
+    },
+    topBarTitleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+    },
+    topBarTitleIcon: {
+      color: palette.tint,
+    },
+    topBarTitle: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: palette.text,
+    },
+    topBarSubtitle: {
+      flex: 1,
+      textAlign: 'right',
+      color: palette.icon,
+      fontSize: 13,
+      lineHeight: 18,
     },
     fullscreenTableWrapper: {
       flex: 1,
@@ -1168,17 +1250,27 @@ function createStyles(palette: Palette) {
       flexWrap: 'wrap',
       alignItems: 'center',
       justifyContent: 'flex-start',
-      gap: 8,
+      gap: 10,
       alignSelf: 'stretch',
+      marginTop: 4,
     },
     gameButton: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 6,
-      paddingHorizontal: 12,
-      paddingVertical: 8,
+      gap: 8,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
       borderRadius: 999,
-      backgroundColor: raisedBackground,
+      backgroundColor: actionBackground,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: actionBorder,
+      ...platformShadow({
+        color: surfaceShadow,
+        opacity: isLight ? 0.4 : 0.6,
+        radius: 10,
+        offset: { width: 0, height: 4 },
+        elevation: 2,
+      }),
     },
     buttonDisabled: {
       opacity: 0.6,
@@ -1191,11 +1283,18 @@ function createStyles(palette: Palette) {
     leaveButton: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 6,
-      paddingHorizontal: 12,
-      paddingVertical: 8,
+      gap: 8,
+      paddingHorizontal: 16,
+      paddingVertical: 10,
       borderRadius: 999,
       backgroundColor: leaveBackground,
+      ...platformShadow({
+        color: surfaceShadow,
+        opacity: isLight ? 0.5 : 0.7,
+        radius: 12,
+        offset: { width: 0, height: 4 },
+        elevation: 2,
+      }),
     },
     leaveButtonDisabled: {
       backgroundColor: leaveDisabledBackground,
@@ -1212,11 +1311,18 @@ function createStyles(palette: Palette) {
     deleteButton: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 6,
-      paddingHorizontal: 12,
-      paddingVertical: 8,
+      gap: 8,
+      paddingHorizontal: 16,
+      paddingVertical: 10,
       borderRadius: 999,
       backgroundColor: deleteBackground,
+      ...platformShadow({
+        color: surfaceShadow,
+        opacity: isLight ? 0.45 : 0.65,
+        radius: 12,
+        offset: { width: 0, height: 4 },
+        elevation: 2,
+      }),
     },
     deleteButtonDisabled: {
       backgroundColor: deleteDisabledBackground,
@@ -1232,49 +1338,108 @@ function createStyles(palette: Palette) {
     },
     headerCard: {
       padding: 20,
-      borderRadius: 20,
-      backgroundColor: cardBackground,
+      borderRadius: 24,
+      backgroundColor: heroBackground,
       borderWidth: StyleSheet.hairlineWidth,
-      borderColor,
-      gap: 16,
+      borderColor: borderColor,
+      overflow: 'hidden',
+      position: 'relative',
       ...platformShadow({
         color: surfaceShadow,
-        opacity: isLight ? 1 : 0.6,
-        radius: 12,
-        offset: { width: 0, height: 4 },
-        elevation: 2,
+        opacity: isLight ? 0.9 : 0.65,
+        radius: 18,
+        offset: { width: 0, height: 8 },
+        elevation: 3,
       }),
     },
-    headerRow: {
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      justifyContent: 'space-between',
+    heroBackdrop: {
+      ...fill,
+      backgroundColor: heroBackground,
+      opacity: isLight ? 0.92 : 0.88,
+    },
+    heroGlow: {
+      position: 'absolute',
+      width: 220,
+      height: 220,
+      borderRadius: 140,
+      backgroundColor: `${heroGlowPrimary}33`,
+      top: -80,
+      right: -60,
+    },
+    heroGlowSecondary: {
+      position: 'absolute',
+      width: 200,
+      height: 200,
+      borderRadius: 120,
+      backgroundColor: `${heroGlowSecondary}26`,
+      bottom: -90,
+      left: -70,
+    },
+    headerContent: {
       gap: 16,
     },
-    nameBlock: {
-      flex: 1,
-      gap: 6,
+    heroHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 12,
+    },
+    heroBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      paddingHorizontal: 14,
+      paddingVertical: 8,
+      borderRadius: 999,
+      backgroundColor: heroBadgeBackground,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: heroBadgeBorder,
+    },
+    heroBadgeIcon: {
+      color: heroBadgeIconColor,
+    },
+    heroBadgeText: {
+      color: heroBadgeTextColor,
+      fontWeight: '700',
+      fontSize: 13,
     },
     roomTitle: {
       color: palette.text,
+      fontSize: 26,
+      fontWeight: '700',
+      lineHeight: 30,
     },
     gameLabel: {
       color: palette.icon,
       fontSize: 13,
     },
+    heroTagline: {
+      color: palette.icon,
+      textTransform: 'uppercase',
+      fontSize: 12,
+      letterSpacing: 1.2,
+      fontWeight: '600',
+    },
     statusPill: {
       paddingHorizontal: 12,
       paddingVertical: 6,
       borderRadius: 999,
+      ...platformShadow({
+        color: surfaceShadow,
+        opacity: isLight ? 0.35 : 0.5,
+        radius: 8,
+        offset: { width: 0, height: 2 },
+        elevation: 1,
+      }),
     },
     statusLobby: {
-      backgroundColor: statusLobbyBg,
+      backgroundColor: statusLobby,
     },
     statusInProgress: {
-      backgroundColor: statusInProgressBg,
+      backgroundColor: statusInProgress,
     },
     statusCompleted: {
-      backgroundColor: statusCompletedBg,
+      backgroundColor: statusCompleted,
     },
     statusText: {
       fontSize: 12,
@@ -1284,13 +1449,28 @@ function createStyles(palette: Palette) {
     metaGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: 16,
+      gap: 12,
     },
     metaItem: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
+      gap: 10,
       minWidth: '45%',
+      padding: 12,
+      borderRadius: 16,
+      backgroundColor: actionBackground,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: actionBorder,
+      ...platformShadow({
+        color: surfaceShadow,
+        opacity: isLight ? 0.3 : 0.5,
+        radius: 8,
+        offset: { width: 0, height: 3 },
+        elevation: 2,
+      }),
+    },
+    metaItemIcon: {
+      color: palette.tint,
     },
     metaItemCopy: {
       gap: 2,
@@ -1318,20 +1498,20 @@ function createStyles(palette: Palette) {
       gap: 8,
       padding: 12,
       borderRadius: 14,
-      backgroundColor: '#F9731620',
+      backgroundColor: errorBackground,
       borderWidth: StyleSheet.hairlineWidth,
-      borderColor: '#F9731655',
+      borderColor: errorBorder,
     },
     errorText: {
-      color: '#F97316',
+      color: errorText,
       fontWeight: '600',
     },
     bodyCard: {
       padding: 20,
       borderRadius: 20,
-      backgroundColor: cardBackground,
+      backgroundColor: raisedBackground,
       borderWidth: StyleSheet.hairlineWidth,
-      borderColor,
+  borderColor: borderColor,
       gap: 14,
       ...platformShadow({
         color: surfaceShadow,
@@ -1360,9 +1540,16 @@ function createStyles(palette: Palette) {
       gap: 16,
       padding: 20,
       borderRadius: 20,
-      backgroundColor: cardBackground,
+      backgroundColor: raisedBackground,
       borderWidth: StyleSheet.hairlineWidth,
-      borderColor,
+  borderColor: borderColor,
+      ...platformShadow({
+        color: surfaceShadow,
+        opacity: isLight ? 0.35 : 0.55,
+        radius: 10,
+        offset: { width: 0, height: 4 },
+        elevation: 2,
+      }),
     },
     footerIcon: {
       color: palette.tint,
@@ -1386,7 +1573,7 @@ function createStyles(palette: Palette) {
       borderRadius: 999,
       backgroundColor: palette.background,
       borderWidth: StyleSheet.hairlineWidth,
-      borderColor,
+  borderColor: borderColor,
       ...platformShadow({
         color: surfaceShadow,
         opacity: isLight ? 0.85 : 0.75,

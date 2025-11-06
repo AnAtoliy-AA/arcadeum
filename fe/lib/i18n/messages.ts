@@ -421,6 +421,8 @@ export const translations = {
         register: 'Register',
         openApp: 'Open the app',
         getStarted: 'Get started',
+        downloadIos: 'Download for iOS',
+        downloadAndroid: 'Download for Android',
         leave: 'Leave',
         stay: 'Stay',
         ok: 'OK',
@@ -919,6 +921,9 @@ export const translations = {
       description:
         'Spin up real-time rooms, rally your playtest crew, and let {{appName}} automate rules, scoring, and moderation so you can focus on the fun.',
       supportCta: 'Support the developers',
+      downloadTitle: 'Install the mobile builds',
+      downloadDescription:
+        'Grab the latest Expo builds for iOS and Android directly from the web app.',
     },
     support: {
       title: 'Support the developers',
@@ -1030,6 +1035,9 @@ export const translations = {
         'Manage your sign-in status and session tokens for this device.',
       accountSignedOut: 'You are browsing without signing in.',
       signedInAs: 'Signed in as {{user}}',
+      downloadsTitle: 'Downloads',
+      downloadsDescription:
+        'Access the latest Expo builds for installing on physical devices.',
     },
   },
   es: {
@@ -1070,6 +1078,8 @@ export const translations = {
         getStarted: 'Comenzar',
         leave: 'Salir',
         stay: 'Quedarse',
+        downloadIos: 'Descargar para iOS',
+        downloadAndroid: 'Descargar para Android',
         ok: 'Aceptar',
       },
       prompts: {
@@ -1554,6 +1564,9 @@ export const translations = {
       description:
         'Lanza salas en tiempo real, reúne a tu equipo de pruebas y deja que {{appName}} automatice reglas, puntuaciones y moderación para que te concentres en la diversión.',
       supportCta: 'Apoyar al equipo',
+      downloadTitle: 'Instala las versiones móviles',
+      downloadDescription:
+        'Descarga las últimas compilaciones de Expo para iOS y Android directamente desde la app web.',
     },
     support: {
       title: 'Apoya al equipo de desarrollo',
@@ -1667,6 +1680,9 @@ export const translations = {
         'Administra tu estado de inicio de sesión y los tokens guardados en este dispositivo.',
       accountSignedOut: 'Estás navegando sin iniciar sesión.',
       signedInAs: 'Sesión iniciada como {{user}}',
+      downloadsTitle: 'Descargas',
+      downloadsDescription:
+        'Accede a las últimas compilaciones de Expo para instalarlas en tus dispositivos.',
     },
   },
   fr: {
@@ -1705,6 +1721,8 @@ export const translations = {
         register: "S'inscrire",
         openApp: "Ouvrir l'application",
         getStarted: 'Commencer',
+        downloadIos: 'Télécharger sur iOS',
+        downloadAndroid: 'Télécharger sur Android',
         leave: 'Quitter',
         stay: 'Rester',
         ok: 'OK',
@@ -2156,6 +2174,9 @@ export const translations = {
       description:
         'Crée des salles en temps réel, rassemble ton équipe de test et laisse {{appName}} automatiser règles, score et modération pour te concentrer sur le fun.',
       supportCta: "Soutenir l'équipe",
+      downloadTitle: 'Installez les versions mobiles',
+      downloadDescription:
+        "Téléchargez les dernières compilations Expo pour iOS et Android directement depuis l'application web.",
     },
     support: {
       title: "Soutenir l'équipe de développement",
@@ -2268,6 +2289,9 @@ export const translations = {
         'Gérez votre état de connexion et les jetons enregistrés sur cet appareil.',
       accountSignedOut: 'Vous naviguez sans être connecté.',
       signedInAs: 'Connecté en tant que {{user}}',
+      downloadsTitle: 'Téléchargements',
+      downloadsDescription:
+        'Accédez aux dernières compilations Expo à installer sur vos appareils.',
     },
   },
 } as const satisfies TranslationMap;

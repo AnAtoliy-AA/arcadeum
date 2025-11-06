@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Linking,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -21,6 +22,9 @@ import { useSessionTokens } from '@/stores/sessionTokens';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { useTranslation } from '@/lib/i18n';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import { getDownloadLinks } from '@/lib/downloadLinks';
+import { platform } from '@/constants/platform';
 
 export default function SettingsScreen() {
   const styles = useThemedStyles(createStyles);
@@ -37,6 +41,8 @@ export default function SettingsScreen() {
   const router = useRouter();
   const { tokens, clearTokens } = useSessionTokens();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { ios: iosDownloadUrl, android: androidDownloadUrl } = getDownloadLinks();
+  const showDownloads = platform.isWeb && (iosDownloadUrl || androidDownloadUrl);
 
   const isAuthenticated = Boolean(tokens.accessToken);
   const accountName =
@@ -140,6 +146,57 @@ export default function SettingsScreen() {
           </View>
         </View>
 
+        {showDownloads ? (
+          <View style={styles.section}>
+            <ThemedText style={styles.sectionTitle}>
+              {t('settings.downloadsTitle')}
+            </ThemedText>
+            <ThemedText style={styles.sectionDescription}>
+              {t('settings.downloadsDescription')}
+            </ThemedText>
+            <View style={styles.downloadButtons}>
+              {iosDownloadUrl ? (
+                <TouchableOpacity
+                  style={styles.downloadButton}
+                  accessibilityRole="link"
+                  accessibilityLabel={t('common.actions.downloadIos')}
+                  onPress={() => {
+                    void Linking.openURL(iosDownloadUrl);
+                  }}
+                >
+                  <IconSymbol
+                    name="arrow.down.circle"
+                    size={16}
+                    color={styles.downloadButtonText.color as string}
+                  />
+                  <ThemedText style={styles.downloadButtonText}>
+                    {t('common.actions.downloadIos')}
+                  </ThemedText>
+                </TouchableOpacity>
+              ) : null}
+              {androidDownloadUrl ? (
+                <TouchableOpacity
+                  style={styles.downloadButton}
+                  accessibilityRole="link"
+                  accessibilityLabel={t('common.actions.downloadAndroid')}
+                  onPress={() => {
+                    void Linking.openURL(androidDownloadUrl);
+                  }}
+                >
+                  <IconSymbol
+                    name="arrow.down.circle"
+                    size={16}
+                    color={styles.downloadButtonText.color as string}
+                  />
+                  <ThemedText style={styles.downloadButtonText}>
+                    {t('common.actions.downloadAndroid')}
+                  </ThemedText>
+                </TouchableOpacity>
+              ) : null}
+            </View>
+          </View>
+        ) : null}
+
         <View style={styles.section}>
           <ThemedText style={styles.sectionTitle}>
             {t('settings.accountTitle')}
@@ -231,6 +288,28 @@ function createStyles(palette: Palette) {
     },
     fieldGroup: {
       marginTop: 4,
+    },
+    downloadButtons: {
+      marginTop: 8,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 12,
+    },
+    downloadButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      paddingHorizontal: 18,
+      paddingVertical: 12,
+      borderRadius: 14,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: palette.icon,
+      backgroundColor: palette.cardBackground,
+    },
+    downloadButtonText: {
+      color: palette.text,
+      fontSize: 15,
+      fontWeight: '600',
     },
     accountCard: {
       gap: 12,

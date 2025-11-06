@@ -5,6 +5,7 @@ import {
   Text,
   ActivityIndicator,
   TouchableOpacity,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, useRouter } from 'expo-router';
@@ -15,6 +16,8 @@ import { useSessionScreenGate } from '@/hooks/useSessionScreenGate';
 import { platform } from '@/constants/platform';
 import { useTranslation } from '@/lib/i18n';
 import { useAppName } from '@/hooks/useAppName';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import { getDownloadLinks } from '@/lib/downloadLinks';
 
 export default function WelcomeScreen() {
   const styles = useThemedStyles(createStyles);
@@ -27,6 +30,8 @@ export default function WelcomeScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const appName = useAppName();
+  const { ios: iosDownloadUrl, android: androidDownloadUrl } = getDownloadLinks();
+  const showDownloads = platform.isWeb && (iosDownloadUrl || androidDownloadUrl);
 
   if (shouldBlock) {
     return (
@@ -135,6 +140,56 @@ export default function WelcomeScreen() {
               </TouchableOpacity>
             )}
           </View>
+          {showDownloads ? (
+            <View style={styles.downloadSection}>
+              <ThemedText style={styles.downloadTitle}>
+                {t('welcome.downloadTitle')}
+              </ThemedText>
+              <Text style={styles.downloadDescription}>
+                {t('welcome.downloadDescription')}
+              </Text>
+              <View style={styles.downloadButtons}>
+                {iosDownloadUrl ? (
+                  <TouchableOpacity
+                    style={styles.downloadButton}
+                    onPress={() => {
+                      void Linking.openURL(iosDownloadUrl);
+                    }}
+                    accessibilityRole="link"
+                    accessibilityLabel={t('common.actions.downloadIos')}
+                  >
+                    <IconSymbol
+                      name="arrow.down.circle"
+                      size={16}
+                      color={styles.downloadButtonText.color as string}
+                    />
+                    <ThemedText style={styles.downloadButtonText}>
+                      {t('common.actions.downloadIos')}
+                    </ThemedText>
+                  </TouchableOpacity>
+                ) : null}
+                {androidDownloadUrl ? (
+                  <TouchableOpacity
+                    style={styles.downloadButton}
+                    onPress={() => {
+                      void Linking.openURL(androidDownloadUrl);
+                    }}
+                    accessibilityRole="link"
+                    accessibilityLabel={t('common.actions.downloadAndroid')}
+                  >
+                    <IconSymbol
+                      name="arrow.down.circle"
+                      size={16}
+                      color={styles.downloadButtonText.color as string}
+                    />
+                    <ThemedText style={styles.downloadButtonText}>
+                      {t('common.actions.downloadAndroid')}
+                    </ThemedText>
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+            </View>
+          ) : null}
         </View>
         <View style={styles.footer} />
       </SafeAreaView>
@@ -189,6 +244,45 @@ function createStyles(palette: Palette) {
       flexWrap: 'wrap',
       justifyContent: 'center',
       gap: 12,
+    },
+    downloadSection: {
+      marginTop: 12,
+      gap: 12,
+      alignItems: 'center',
+    },
+    downloadTitle: {
+      color: palette.text,
+      fontSize: 18,
+      fontWeight: '600',
+      textAlign: 'center',
+    },
+    downloadDescription: {
+      color: palette.icon,
+      fontSize: 14,
+      lineHeight: 20,
+      textAlign: 'center',
+      maxWidth: 560,
+    },
+    downloadButtons: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+      gap: 12,
+    },
+    downloadButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      paddingVertical: 12,
+      paddingHorizontal: 18,
+      borderRadius: 999,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: palette.icon,
+      backgroundColor: palette.cardBackground,
+    },
+    downloadButtonText: {
+      color: palette.text,
+      fontWeight: '600',
     },
     actionButton: {
       paddingVertical: 14,

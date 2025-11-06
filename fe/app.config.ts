@@ -20,10 +20,13 @@ const supportCoffeeUrl = ((
 const supportIban = ((process.env.EXPO_PUBLIC_SUPPORT_IBAN ?? process.env.SUPPORT_IBAN) as string | undefined)?.trim();
 const rawAppOrigin = ((process.env.EXPO_PUBLIC_APP_ORIGIN ?? process.env.APP_ORIGIN) as string | undefined)?.trim();
 const appOrigin = rawAppOrigin && rawAppOrigin.length > 0 ? rawAppOrigin : "http://localhost:3000";
+const iosDownloadUrl = (process.env.EXPO_PUBLIC_IOS_DOWNLOAD_URL as string | undefined)?.trim();
+const androidDownloadUrl = (process.env.EXPO_PUBLIC_ANDROID_DOWNLOAD_URL as string | undefined)?.trim();
 
 const config: ExpoConfig = {
   name: appName,
   slug: appSlug,
+  owner: "anatoliyaliaksandrau",
   version: "1.0.0",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
@@ -94,6 +97,13 @@ const config: ExpoConfig = {
     SUPPORT_COFFEE_URL:
       supportCoffeeUrl && supportCoffeeUrl.length > 0 ? supportCoffeeUrl : undefined,
     SUPPORT_IBAN: supportIban && supportIban.length > 0 ? supportIban : undefined,
+    downloadLinks: {
+      ios: iosDownloadUrl && iosDownloadUrl.length > 0 ? iosDownloadUrl : undefined,
+      android: androidDownloadUrl && androidDownloadUrl.length > 0 ? androidDownloadUrl : undefined,
+    },
+    eas: {
+      projectId: "3a39020b-71d4-4062-a7b9-0f5d70a333fa",
+    },
     // Router uses this at runtime
     router: {
       origin: appOrigin,

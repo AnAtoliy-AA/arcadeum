@@ -790,6 +790,8 @@ export const translations = {
           deleteRoom: 'Delete room',
           enterFullscreen: 'Full screen',
           exitFullscreen: 'Exit full screen',
+          hideControls: 'Hide controls',
+          showControls: 'Show controls',
         },
       },
       table: {
@@ -1421,6 +1423,8 @@ export const translations = {
           deleteRoom: 'Eliminar sala',
           enterFullscreen: 'Pantalla completa',
           exitFullscreen: 'Salir de pantalla completa',
+          hideControls: 'Ocultar controles',
+          showControls: 'Mostrar controles',
         },
       },
       table: {
@@ -2018,6 +2022,8 @@ export const translations = {
           deleteRoom: 'Supprimer la salle',
           enterFullscreen: 'Plein écran',
           exitFullscreen: 'Quitter le plein écran',
+          hideControls: 'Masquer les contrôles',
+          showControls: 'Afficher les contrôles',
         },
       },
       table: {

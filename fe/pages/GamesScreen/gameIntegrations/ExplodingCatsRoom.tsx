@@ -30,6 +30,8 @@ import {
 import { gameSocket as socket } from '@/hooks/useSocket';
 import { useTranslation } from '@/lib/i18n';
 import type { SessionTokensSnapshot } from '@/stores/sessionTokens';
+import { ExplodingCatsRoomTopBar } from './components/ExplodingCatsRoomTopBar';
+import { ExplodingCatsRoomMetaItem as MetaItem } from './components/ExplodingCatsRoomMetaItem';
 
 export interface ExplodingCatsRoomHandle {
   onSessionSnapshot: () => void;
@@ -92,6 +94,7 @@ export const ExplodingCatsRoom = forwardRef<ExplodingCatsRoomHandle, ExplodingCa
     >(null);
     const [startBusy, setStartBusy] = useState(false);
     const [tableFullScreen, setTableFullScreen] = useState(false);
+    const [controlsCollapsed, setControlsCollapsed] = useState(false);
 
     const displayName = room?.name ?? fallbackName ?? t('games.room.defaultName');
     const displayGameRaw = room
@@ -301,147 +304,29 @@ export const ExplodingCatsRoom = forwardRef<ExplodingCatsRoomHandle, ExplodingCa
       setTableFullScreen(false);
     }, []);
 
-    const renderTopBar = useCallback(
-      (variant: 'lobby' | 'table') => (
-        <View style={variant === 'table' ? styles.fullscreenTopBar : styles.topBar}>
-          <View style={styles.topBarCard}>
-            <View style={styles.topBarHeaderRow}>
-              <View style={styles.topBarTitleRow}>
-                <IconSymbol
-                  name={variant === 'table' ? 'sparkles' : 'rectangle.grid.2x2'}
-                  size={18}
-                  color={styles.topBarTitleIcon.color as string}
-                />
-                <ThemedText style={styles.topBarTitle}>
-                  {t('games.room.controlsTitle')}
-                </ThemedText>
-              </View>
-              <ThemedText style={styles.topBarSubtitle} numberOfLines={2}>
-                {t('games.room.controlsSubtitle')}
-              </ThemedText>
-            </View>
-            <View style={styles.actionGroup}>
-              {hasSessionSnapshot ? (
-                <TouchableOpacity
-                  style={[styles.gameButton, tableFullScreen ? styles.buttonDisabled : null]}
-                  onPress={handleEnterFullScreen}
-                  disabled={tableFullScreen}
-                  accessibilityRole="button"
-                  accessibilityLabel={t('games.room.buttons.enterFullscreen')}
-                >
-                  <IconSymbol
-                    name="arrow.up.left.and.arrow.down.right"
-                    size={16}
-                    color={styles.gameButtonText.color as string}
-                  />
-                  <ThemedText style={styles.gameButtonText}>
-                    {t('games.room.buttons.enterFullscreen')}
-                  </ThemedText>
-                </TouchableOpacity>
-              ) : null}
-              <TouchableOpacity
-                style={styles.gameButton}
-                onPress={onViewGame}
-                disabled={!room && !gameId}
-              >
-                <IconSymbol
-                  name="book"
-                  size={16}
-                  color={styles.gameButtonText.color as string}
-                />
-                <ThemedText style={styles.gameButtonText}>
-                  {t('games.room.buttons.viewGame')}
-                </ThemedText>
-              </TouchableOpacity>
-              {isHost ? (
-                <>
-                  <TouchableOpacity
-                    style={[styles.deleteButton, deleting ? styles.deleteButtonDisabled : null]}
-                    onPress={onDeleteRoom}
-                    disabled={deleting}
-                  >
-                    {deleting ? (
-                      <ActivityIndicator size="small" color={styles.deleteSpinner.color as string} />
-                    ) : (
-                      <>
-                        <IconSymbol
-                          name="trash"
-                          size={16}
-                          color={styles.deleteButtonText.color as string}
-                        />
-                        <ThemedText style={styles.deleteButtonText}>
-                          {t('games.room.buttons.deleteRoom')}
-                        </ThemedText>
-                      </>
-                    )}
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.leaveButton, leaving ? styles.leaveButtonDisabled : null]}
-                    onPress={onLeaveRoom}
-                    disabled={leaving}
-                  >
-                    {leaving ? (
-                      <ActivityIndicator size="small" color={styles.leaveSpinner.color as string} />
-                    ) : (
-                      <>
-                        <IconSymbol
-                          name="rectangle.portrait.and.arrow.right"
-                          size={16}
-                          color={styles.leaveButtonText.color as string}
-                        />
-                        <ThemedText style={styles.leaveButtonText}>
-                          {t('common.actions.leave')}
-                        </ThemedText>
-                      </>
-                    )}
-                  </TouchableOpacity>
-                </>
-              ) : (
-                <TouchableOpacity
-                  style={[styles.leaveButton, leaving ? styles.leaveButtonDisabled : null]}
-                  onPress={onLeaveRoom}
-                  disabled={leaving}
-                >
-                  {leaving ? (
-                    <ActivityIndicator size="small" color={styles.leaveSpinner.color as string} />
-                  ) : (
-                    <>
-                      <IconSymbol
-                        name="rectangle.portrait.and.arrow.right"
-                        size={16}
-                        color={styles.leaveButtonText.color as string}
-                      />
-                      <ThemedText style={styles.leaveButtonText}>
-                        {t('common.actions.leave')}
-                      </ThemedText>
-                    </>
-                  )}
-                </TouchableOpacity>
-              )}
-            </View>
-          </View>
-        </View>
-      ),
-      [
-        deleting,
-        gameId,
-        hasSessionSnapshot,
-        isHost,
-        leaving,
-        onDeleteRoom,
-        onLeaveRoom,
-        onViewGame,
-        styles,
-        t,
-        tableFullScreen,
-        handleEnterFullScreen,
-        room,
-      ],
-    );
+    const handleToggleControls = useCallback(() => {
+      setControlsCollapsed((prev) => !prev);
+    }, []);
 
-    const topBar = useMemo(
-      () => renderTopBar(hasSessionSnapshot ? 'table' : 'lobby'),
-      [hasSessionSnapshot, renderTopBar],
+    const topBarVariant: 'lobby' | 'table' = hasSessionSnapshot ? 'table' : 'lobby';
+    const topBar = (
+      <ExplodingCatsRoomTopBar
+        variant={topBarVariant}
+        controlsCollapsed={controlsCollapsed}
+        onToggleControls={handleToggleControls}
+        hasSessionSnapshot={hasSessionSnapshot}
+        tableFullScreen={tableFullScreen}
+        onEnterFullScreen={handleEnterFullScreen}
+        onViewGame={onViewGame}
+        onDeleteRoom={onDeleteRoom}
+        onLeaveRoom={onLeaveRoom}
+        deleting={deleting}
+        leaving={leaving}
+        isHost={isHost}
+        room={room}
+        gameId={gameId}
+        styles={styles}
+      />
     );
 
     if (tableFullScreen && hasSessionSnapshot) {
@@ -591,11 +476,13 @@ export const ExplodingCatsRoom = forwardRef<ExplodingCatsRoomHandle, ExplodingCa
                           icon="person.crop.circle"
                           label={t('games.room.meta.host')}
                           value={hostValue}
+                          styles={styles}
                         />
                         <MetaItem
                           icon="person.3.fill"
                           label={t('games.room.meta.players')}
                           value={playersValue}
+                          styles={styles}
                         />
                         <MetaItem
                           icon="clock.fill"
@@ -603,17 +490,20 @@ export const ExplodingCatsRoom = forwardRef<ExplodingCatsRoomHandle, ExplodingCa
                           value={t('games.rooms.created', {
                             timestamp: createdValue,
                           })}
+                          styles={styles}
                         />
                         <MetaItem
                           icon={room.visibility === 'private' ? 'lock.fill' : 'sparkles'}
                           label={t('games.room.meta.access')}
                           value={accessValue}
+                          styles={styles}
                         />
                         {room.inviteCode ? (
                           <MetaItem
                             icon="number"
                             label={t('games.room.meta.inviteCode')}
                             value={room.inviteCode}
+                            styles={styles}
                           />
                         ) : null}
                       </>
@@ -693,26 +583,7 @@ export const ExplodingCatsRoom = forwardRef<ExplodingCatsRoomHandle, ExplodingCa
 
 ExplodingCatsRoom.displayName = 'ExplodingCatsRoom';
 
-function MetaItem({
-  icon,
-  label,
-  value,
-}: {
-  icon: Parameters<typeof IconSymbol>[0]['name'];
-  label: string;
-  value: string;
-}) {
-  const styles = useThemedStyles(createStyles);
-  return (
-    <View style={styles.metaItem}>
-      <IconSymbol name={icon} size={18} color={styles.metaItemIcon.color as string} />
-      <View style={styles.metaItemCopy}>
-        <ThemedText style={styles.metaItemLabel}>{label}</ThemedText>
-        <ThemedText style={styles.metaItemValue}>{value}</ThemedText>
-      </View>
-    </View>
-  );
-}
+export type ExplodingCatsRoomStyles = ReturnType<typeof createStyles>;
 
 function createStyles(palette: Palette) {
   const isLight = palette.background === '#fff';
@@ -747,7 +618,6 @@ function createStyles(palette: Palette) {
     },
   } = palette;
   const fill = StyleSheet.absoluteFillObject;
-
   return StyleSheet.create({
     container: {
       flex: 1,
@@ -794,31 +664,70 @@ function createStyles(palette: Palette) {
         elevation: 3,
       }),
     },
+    topBarCardCollapsed: {
+      gap: 12,
+      paddingBottom: 12,
+    },
     topBarHeaderRow: {
       flexDirection: 'row',
-      alignItems: 'flex-start',
+      alignItems: 'center',
       justifyContent: 'space-between',
-      gap: 16,
+      gap: 12,
+      flexWrap: 'nowrap',
     },
     topBarTitleRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 10,
+      gap: 8,
+      flexGrow: 1,
+      flexShrink: 1,
+      minWidth: 0,
+      flexWrap: 'wrap',
     },
     topBarTitleIcon: {
       color: palette.tint,
     },
     topBarTitle: {
-      fontSize: 16,
-      fontWeight: '700',
-      color: palette.text,
-    },
-    topBarSubtitle: {
-      flex: 1,
-      textAlign: 'right',
       color: palette.icon,
       fontSize: 13,
       lineHeight: 18,
+      fontWeight: '600',
+    },
+    topBarSubtitle: {
+      color: palette.icon,
+      fontSize: 12,
+      lineHeight: 16,
+      marginTop: 2,
+      flexShrink: 1,
+      maxWidth: '100%',
+    },
+    controlsToggleButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      borderRadius: 999,
+      backgroundColor: actionBackground,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: actionBorder,
+      flexShrink: 0,
+      marginLeft: 'auto',
+      ...platformShadow({
+        color: surfaceShadow,
+        opacity: isLight ? 0.35 : 0.55,
+        radius: 8,
+        offset: { width: 0, height: 3 },
+        elevation: 2,
+      }),
+    },
+    controlsToggleIcon: {
+      color: palette.tint,
+    },
+    controlsToggleText: {
+      color: palette.tint,
+      fontSize: 12,
+      fontWeight: '600',
     },
     fullscreenTableWrapper: {
       flex: 1,

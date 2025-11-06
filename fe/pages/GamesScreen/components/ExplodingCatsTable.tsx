@@ -19,6 +19,7 @@ import {
   type TextStyle,
   type ViewStyle,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import {
@@ -102,6 +103,11 @@ const CARD_ART_SETTINGS: Record<
   cattermelon: { key: 'cattermelon', variant: 1 },
   bearded_cat: { key: 'bearded-cat', variant: 3 },
 };
+
+const CARD_GRADIENT_COORDS = {
+  start: { x: 0.08, y: 0 },
+  end: { x: 0.92, y: 1 },
+} as const;
 
 export type ExplodingCatsCatComboInput =
   | {
@@ -255,6 +261,31 @@ export function ExplodingCatsTable({
   tableOnly = false,
 }: ExplodingCatsTableProps) {
   const styles = useThemedStyles(createStyles);
+  const cardGradientColors = useMemo(
+    () => [
+      StyleSheet.flatten(styles.cardGradientSwatchA).backgroundColor as string,
+      StyleSheet.flatten(styles.cardGradientSwatchB).backgroundColor as string,
+      StyleSheet.flatten(styles.cardGradientSwatchC).backgroundColor as string,
+    ],
+    [styles],
+  );
+  const cardDecor = useMemo(
+    () => (
+      <View style={styles.cardBackdrop} pointerEvents="none">
+        <LinearGradient
+          colors={cardGradientColors}
+          start={CARD_GRADIENT_COORDS.start}
+          end={CARD_GRADIENT_COORDS.end}
+          style={styles.cardGradientLayer}
+        />
+        <View style={styles.cardGlowPrimary} />
+        <View style={styles.cardGlowSecondary} />
+        <View style={styles.cardAccentTop} />
+        <View style={styles.cardAccentBottom} />
+      </View>
+    ),
+    [cardGradientColors, styles],
+  );
   const { t } = useTranslation();
   const showHeader = !tableOnly;
   const showStats = !tableOnly;
@@ -1648,6 +1679,7 @@ export function ExplodingCatsTable({
     return (
       <>
         <ThemedView style={[styles.card, styles.cardFullScreen]}>
+          {cardDecor}
           <ScrollView
             contentContainerStyle={styles.fullScreenScroll}
             showsVerticalScrollIndicator={false}
@@ -1663,7 +1695,10 @@ export function ExplodingCatsTable({
 
   return (
     <>
-      <ThemedView style={styles.card}>{tableContent}</ThemedView>
+      <ThemedView style={styles.card}>
+        {cardDecor}
+        <View style={styles.fullScreenInner}>{tableContent}</View>
+      </ThemedView>
       {comboModal}
     </>
   );
@@ -1672,10 +1707,33 @@ export function ExplodingCatsTable({
 function createStyles(palette: Palette) {
   const isLight = palette.background === '#fff';
   const tableTheme = palette.gameTable;
-  const { surface, raised, border, shadow, destructiveBg, destructiveText } =
+  const { shadow, destructiveBg, destructiveText, playerCurrent, playerIcon } =
     tableTheme;
-  const primaryBgColor = palette.tint;
-  const primaryTextColor = palette.background;
+  const {
+    heroBackground: cardBackground,
+    raisedBackground: ringSurface,
+    border: cardBorder,
+    actionBackground: panelSurface,
+    actionBorder: panelBorder,
+    heroGlowPrimary,
+    heroGlowSecondary,
+    backgroundGlow: roomGlow,
+    decorPlay,
+    decorCheck,
+    decorAlert,
+    heroBadgeBackground,
+    heroBadgeBorder,
+    heroBadgeText,
+    statusLobby,
+    errorBackground,
+    errorText,
+    titleText,
+  } = palette.gameRoom;
+  const surface = cardBackground;
+  const raised = panelSurface;
+  const border = panelBorder;
+  const primaryBgColor = decorCheck;
+  const primaryTextColor = heroBadgeText;
 
   const innerDiameter = Math.max(TABLE_DIAMETER - PLAYER_SEAT_SIZE - 20, 180);
   const overlayShadow = isLight
@@ -1747,12 +1805,12 @@ function createStyles(palette: Palette) {
   return StyleSheet.create({
     card: {
       ...cardShadow,
-      padding: 20,
-      borderRadius: 20,
+      borderRadius: 28,
       backgroundColor: surface,
       borderWidth: StyleSheet.hairlineWidth,
-      borderColor: border,
-      gap: 16,
+      borderColor: cardBorder,
+      position: 'relative',
+      overflow: 'hidden',
     },
     cardFullScreen: {
       ...platformShadow({
@@ -1763,19 +1821,76 @@ function createStyles(palette: Palette) {
         elevation: 0,
       }),
       flex: 1,
-      borderRadius: 0,
-      borderWidth: 0,
-      paddingHorizontal: 24,
-      paddingVertical: 24,
+      borderRadius: 28,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: cardBorder,
       backgroundColor: surface,
-      gap: 0,
     },
     fullScreenScroll: {
       flexGrow: 1,
     },
     fullScreenInner: {
-      gap: 16,
-      paddingBottom: 32,
+      gap: 24,
+      paddingHorizontal: 24,
+      paddingVertical: 24,
+      paddingBottom: 40,
+    },
+    cardBackdrop: {
+      ...StyleSheet.absoluteFillObject,
+      zIndex: 0,
+    },
+    cardGradientLayer: {
+      ...StyleSheet.absoluteFillObject,
+      opacity: 0.85,
+    },
+    cardGlowPrimary: {
+      position: 'absolute',
+      width: 260,
+      height: 260,
+      borderRadius: 180,
+      backgroundColor: `${heroGlowPrimary}33`,
+      top: -140,
+      right: -100,
+    },
+    cardGlowSecondary: {
+      position: 'absolute',
+      width: 240,
+      height: 240,
+      borderRadius: 160,
+      backgroundColor: `${heroGlowSecondary}29`,
+      bottom: -140,
+      left: -120,
+    },
+    cardAccentTop: {
+      position: 'absolute',
+      width: 180,
+      height: 180,
+      borderRadius: 140,
+      top: -80,
+      left: -70,
+      backgroundColor: `${decorPlay}20`,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: `${decorPlay}60`,
+    },
+    cardAccentBottom: {
+      position: 'absolute',
+      width: 200,
+      height: 200,
+      borderRadius: 150,
+      bottom: -90,
+      right: -60,
+      backgroundColor: `${decorAlert}1f`,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: `${decorAlert}55`,
+    },
+    cardGradientSwatchA: {
+      backgroundColor: `${heroGlowSecondary}29`,
+    },
+    cardGradientSwatchB: {
+      backgroundColor: surface,
+    },
+    cardGradientSwatchC: {
+      backgroundColor: `${heroGlowPrimary}2f`,
     },
     headerRow: {
       flexDirection: 'row',
@@ -1788,21 +1903,24 @@ function createStyles(palette: Palette) {
       gap: 8,
     },
     headerIcon: {
-      color: palette.tint,
+      color: decorCheck,
     },
     headerText: {
-      color: palette.text,
+      color: titleText,
       fontWeight: '700',
       fontSize: 16,
+      letterSpacing: 0.3,
     },
     statusBadge: {
-      paddingHorizontal: 10,
-      paddingVertical: 4,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
       borderRadius: 999,
-      backgroundColor: raised,
+      backgroundColor: heroBadgeBackground,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: heroBadgeBorder,
     },
     statusText: {
-      color: palette.icon,
+      color: heroBadgeText,
       fontSize: 12,
       fontWeight: '600',
       textTransform: 'capitalize',
@@ -1812,11 +1930,13 @@ function createStyles(palette: Palette) {
       alignItems: 'center',
       gap: 8,
       padding: 12,
-      borderRadius: 14,
-      backgroundColor: raised,
+      borderRadius: 16,
+      backgroundColor: `${decorAlert}1f`,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: `${decorAlert}55`,
     },
     messageText: {
-      color: palette.icon,
+      color: heroBadgeText,
       fontWeight: '600',
     },
     tableSection: {
@@ -1830,7 +1950,7 @@ function createStyles(palette: Palette) {
       width: TABLE_DIAMETER,
       height: TABLE_DIAMETER,
       borderRadius: TABLE_DIAMETER / 2,
-      backgroundColor: raised,
+      backgroundColor: ringSurface,
       borderWidth: StyleSheet.hairlineWidth,
       borderColor: border,
       alignItems: 'center',
@@ -1860,30 +1980,30 @@ function createStyles(palette: Palette) {
       flexDirection: 'row',
       alignItems: 'center',
       gap: 10,
-      paddingHorizontal: 16,
-      paddingVertical: 10,
-      borderRadius: 16,
+      paddingHorizontal: 18,
+      paddingVertical: 12,
+      borderRadius: 18,
       backgroundColor: raised,
       borderWidth: StyleSheet.hairlineWidth,
-      borderColor: border,
+      borderColor: `${decorCheck}40`,
       minWidth: 132,
     },
     tableStatIcon: {
-      color: palette.tint,
+      color: decorCheck,
     },
     tableStatTextGroup: {
       gap: 2,
     },
     tableStatTitle: {
-      color: palette.text,
+      color: titleText,
       fontWeight: '700',
       fontSize: 16,
     },
     tableStatSubtitle: {
-      color: palette.icon,
+      color: heroBadgeText,
       fontSize: 11,
       textTransform: 'uppercase',
-      letterSpacing: 0.4,
+      letterSpacing: 0.6,
     },
     tableInfoCard: {
       alignItems: 'center',
@@ -1891,10 +2011,10 @@ function createStyles(palette: Palette) {
       gap: 4,
       paddingHorizontal: 14,
       paddingVertical: 10,
-      borderRadius: 16,
+      borderRadius: 18,
       backgroundColor: raised,
       borderWidth: StyleSheet.hairlineWidth,
-      borderColor: border,
+      borderColor: `${decorPlay}40`,
       minWidth: 110,
     },
     tableInfoCardWithArtwork: {
@@ -1904,7 +2024,7 @@ function createStyles(palette: Palette) {
       gap: 8,
     },
     tableInfoIcon: {
-      color: palette.tint,
+      color: decorCheck,
     },
     tableInfoArtwork: {
       width: 62,
@@ -1913,18 +2033,18 @@ function createStyles(palette: Palette) {
       overflow: 'hidden',
       backgroundColor: raised,
       borderWidth: StyleSheet.hairlineWidth,
-      borderColor: border,
+      borderColor: `${decorPlay}55`,
     },
     tableInfoTitle: {
-      color: palette.text,
+      color: titleText,
       fontWeight: '700',
       fontSize: 16,
     },
     tableInfoSubtitle: {
-      color: palette.icon,
+      color: heroBadgeText,
       fontSize: 12,
       textTransform: 'uppercase',
-      letterSpacing: 0.4,
+      letterSpacing: 0.6,
     },
     // Action effect overlay (center of table)
     effectOverlay: {
@@ -1950,19 +2070,19 @@ function createStyles(palette: Palette) {
       elevation: 6,
     },
     effectCircleDefault: {
-      backgroundColor: 'rgba(255,255,255,0.06)',
+      backgroundColor: roomGlow,
     },
     effectCircleDraw: {
-      backgroundColor: primaryBgColor,
+      backgroundColor: `${decorCheck}33`,
     },
     effectCircleAttack: {
-      backgroundColor: destructiveBg,
+      backgroundColor: `${destructiveBg}cc`,
     },
     effectCircleSkip: {
-      backgroundColor: palette.icon,
+      backgroundColor: `${decorPlay}33`,
     },
     effectCircleCombo: {
-      backgroundColor: 'rgba(94, 234, 212, 0.14)',
+      backgroundColor: `${heroGlowSecondary}33`,
     },
     effectIconWrap: {
       position: 'absolute',
@@ -1976,9 +2096,17 @@ function createStyles(palette: Palette) {
       flexDirection: 'row',
       alignItems: 'center',
       gap: 12,
+      paddingHorizontal: 10,
+      paddingVertical: 10,
+      borderRadius: 18,
+      backgroundColor: `${playerCurrent}18`,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: `${decorCheck}26`,
     },
     tableSeatRowCurrent: {
       opacity: 1,
+      borderColor: `${decorCheck}8f`,
+      backgroundColor: `${playerCurrent}66`,
     },
     tableSeatRowOut: {
       opacity: 0.45,
@@ -1995,9 +2123,12 @@ function createStyles(palette: Palette) {
       alignItems: 'center',
       justifyContent: 'center',
       position: 'relative',
+      backgroundColor: `${decorCheck}14`,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: `${decorCheck}55`,
     },
     seatAvatarIcon: {
-      color: palette.tint,
+      color: playerIcon,
     },
     seatStatusDot: {
       position: 'absolute',
@@ -2010,13 +2141,13 @@ function createStyles(palette: Palette) {
       borderColor: surface,
     },
     seatStatusDotAlive: {
-      backgroundColor: '#22C55E',
+      backgroundColor: decorCheck,
     },
     seatStatusDotOut: {
-      backgroundColor: '#9CA3AF',
+      backgroundColor: decorAlert,
     },
     seatName: {
-      color: palette.text,
+      color: heroBadgeText,
       fontWeight: '600',
       fontSize: 13,
       marginTop: 2,
@@ -2033,14 +2164,16 @@ function createStyles(palette: Palette) {
       width: 18,
       height: 26,
       borderRadius: 4,
-      backgroundColor: palette.background,
+      backgroundColor: `${decorCheck}24`,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: `${decorCheck}50`,
       marginHorizontal: 2,
     },
     seatCardBackStacked: {
       marginLeft: 0,
     },
     seatCardCount: {
-      color: palette.icon,
+      color: heroBadgeText,
       fontSize: 11,
       marginLeft: 6,
       fontWeight: '600',
@@ -2050,9 +2183,11 @@ function createStyles(palette: Palette) {
       padding: 16,
       borderRadius: 16,
       backgroundColor: raised,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: `${decorPlay}33`,
     },
     placeholderText: {
-      color: palette.icon,
+      color: heroBadgeText,
     },
     handSection: {
       gap: 12,
@@ -2063,10 +2198,10 @@ function createStyles(palette: Palette) {
       gap: 8,
     },
     handTitleIcon: {
-      color: palette.tint,
+      color: decorCheck,
     },
     handTitle: {
-      color: palette.text,
+      color: titleText,
       fontWeight: '700',
       fontSize: 16,
     },
@@ -2074,21 +2209,24 @@ function createStyles(palette: Palette) {
       paddingHorizontal: 10,
       paddingVertical: 4,
       borderRadius: 999,
+      borderWidth: StyleSheet.hairlineWidth,
     },
     handStatusAlive: {
-      backgroundColor: '#DCFCE7',
+      backgroundColor: statusLobby,
+      borderColor: `${decorCheck}66`,
     },
     handStatusOut: {
-      backgroundColor: '#FEE2E2',
+      backgroundColor: errorBackground,
+      borderColor: `${errorText}5c`,
     },
     handStatusText: {
-      color: '#134E4A',
+      color: decorCheck,
       fontSize: 11,
       fontWeight: '700',
       textTransform: 'uppercase',
     },
     handStatusTextOut: {
-      color: '#991B1B',
+      color: errorText,
     },
     handScrollContent: {
       gap: 12,
@@ -2129,7 +2267,7 @@ function createStyles(palette: Palette) {
       pointerEvents: 'none' as ViewStyle['pointerEvents'],
     },
     handCardOverlayTitle: {
-      color: '#FDE68A',
+      color: titleText,
       fontWeight: '800',
       fontSize: 16,
       lineHeight: 20,
@@ -2138,7 +2276,7 @@ function createStyles(palette: Palette) {
       ...handCardTitleShadow,
     },
     handCardOverlayDescription: {
-      color: '#F8FAFC',
+      color: heroBadgeText,
       fontSize: 12,
       lineHeight: 18,
       textAlign: 'center',
@@ -2152,7 +2290,7 @@ function createStyles(palette: Palette) {
     },
     handCardPlayable: {
       ...handCardPlayableShadow,
-      borderColor: palette.tint,
+      borderColor: decorCheck,
     },
     handCardDisabled: {
       opacity: 0.65,
@@ -2161,10 +2299,10 @@ function createStyles(palette: Palette) {
       justifyContent: 'center',
     },
     handCardBusySpinner: {
-      color: palette.tint,
+      color: decorCheck,
     },
     handCardLabel: {
-      color: palette.icon,
+      color: heroBadgeText,
       fontSize: 11,
       textAlign: 'center',
       textTransform: 'uppercase',
@@ -2172,7 +2310,7 @@ function createStyles(palette: Palette) {
       letterSpacing: 0.4,
     },
     handCardHint: {
-      color: palette.tint,
+      color: decorCheck,
       fontSize: 11,
       fontWeight: '600',
       textAlign: 'center',
@@ -2193,17 +2331,17 @@ function createStyles(palette: Palette) {
       padding: 20,
       gap: 16,
       borderWidth: StyleSheet.hairlineWidth,
-      borderColor: border,
+      borderColor: `${decorPlay}55`,
     },
     comboModalTitle: {
       fontSize: 18,
       fontWeight: '700',
-      color: palette.text,
+      color: titleText,
     },
     comboModalDescription: {
       fontSize: 14,
       lineHeight: 20,
-      color: palette.icon,
+      color: heroBadgeText,
     },
     comboModeRow: {
       flexDirection: 'row',
@@ -2215,7 +2353,7 @@ function createStyles(palette: Palette) {
       borderRadius: 12,
       backgroundColor: raised,
       borderWidth: StyleSheet.hairlineWidth,
-      borderColor: border,
+      borderColor: `${decorPlay}40`,
       alignItems: 'center',
     },
     comboModeButtonSelected: {
@@ -2225,7 +2363,7 @@ function createStyles(palette: Palette) {
     comboModeButtonText: {
       fontSize: 14,
       fontWeight: '600',
-      color: palette.text,
+      color: heroBadgeText,
     },
     comboModeButtonTextSelected: {
       color: primaryTextColor,
@@ -2236,7 +2374,7 @@ function createStyles(palette: Palette) {
     comboSectionLabel: {
       fontSize: 14,
       fontWeight: '600',
-      color: palette.text,
+      color: titleText,
     },
     comboOptionGroup: {
       flexDirection: 'row',
@@ -2249,7 +2387,7 @@ function createStyles(palette: Palette) {
       borderRadius: 12,
       backgroundColor: raised,
       borderWidth: StyleSheet.hairlineWidth,
-      borderColor: border,
+      borderColor: `${decorPlay}40`,
     },
     comboOptionButtonSelected: {
       backgroundColor: primaryBgColor,
@@ -2257,14 +2395,14 @@ function createStyles(palette: Palette) {
     },
     comboOptionLabel: {
       fontSize: 14,
-      color: palette.text,
+      color: heroBadgeText,
     },
     comboOptionLabelSelected: {
       color: primaryTextColor,
     },
     comboEmptyText: {
       fontSize: 14,
-      color: palette.icon,
+      color: heroBadgeText,
     },
     comboActions: {
       flexDirection: 'row',
@@ -2278,7 +2416,7 @@ function createStyles(palette: Palette) {
     },
     comboCancelText: {
       fontSize: 14,
-      color: palette.icon,
+      color: heroBadgeText,
     },
     comboConfirmButton: {
       flexDirection: 'row',
@@ -2303,12 +2441,12 @@ function createStyles(palette: Palette) {
       paddingHorizontal: 20,
       borderRadius: 12,
       borderWidth: StyleSheet.hairlineWidth,
-      borderColor: border,
+      borderColor: `${decorPlay}40`,
       backgroundColor: raised,
       alignItems: 'center',
     },
     handEmptyText: {
-      color: palette.icon,
+      color: heroBadgeText,
       fontSize: 13,
     },
     handActions: {
@@ -2349,7 +2487,7 @@ function createStyles(palette: Palette) {
       opacity: 0.6,
     },
     secondaryButtonText: {
-      color: palette.tint,
+      color: decorCheck,
       fontWeight: '700',
       fontSize: 13,
     },
@@ -2372,7 +2510,7 @@ function createStyles(palette: Palette) {
       fontSize: 13,
     },
     eliminatedNote: {
-      color: palette.icon,
+      color: heroBadgeText,
       fontSize: 12,
       fontStyle: 'italic',
     },
@@ -2385,11 +2523,11 @@ function createStyles(palette: Palette) {
       gap: 6,
     },
     logsHeaderText: {
-      color: palette.icon,
+      color: heroBadgeText,
       fontWeight: '600',
     },
     logsEmptyText: {
-      color: palette.icon,
+      color: heroBadgeText,
       fontSize: 12,
       fontStyle: 'italic',
     },
@@ -2398,14 +2536,14 @@ function createStyles(palette: Palette) {
       gap: 10,
     },
     logTimestamp: {
-      color: palette.icon,
+      color: heroBadgeText,
       fontSize: 11,
       width: 52,
       fontVariant: ['tabular-nums'],
     },
     logMessage: {
       flex: 1,
-      color: palette.text,
+      color: titleText,
       fontSize: 12,
     },
     logMessageColumn: {
@@ -2418,7 +2556,7 @@ function createStyles(palette: Palette) {
       gap: 6,
     },
     logMessageSender: {
-      color: palette.text,
+      color: titleText,
       fontWeight: '600',
       fontSize: 12,
     },
@@ -2427,15 +2565,17 @@ function createStyles(palette: Palette) {
       paddingVertical: 2,
       borderRadius: 8,
       backgroundColor: raised,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: `${decorPlay}44`,
     },
     logScopeBadgeText: {
-      color: palette.icon,
+      color: heroBadgeText,
       fontSize: 10,
       fontWeight: '600',
       textTransform: 'uppercase',
     },
     logMessageText: {
-      color: palette.text,
+      color: heroBadgeText,
       fontSize: 12,
       lineHeight: 16,
     },
@@ -2452,11 +2592,11 @@ function createStyles(palette: Palette) {
       paddingHorizontal: 12,
       paddingVertical: 10,
       backgroundColor: raised,
-      color: palette.text,
+      color: titleText,
       fontSize: 13,
     },
     logsInputPlaceholder: {
-      color: palette.icon,
+      color: heroBadgeText,
     },
     logsSendButton: {
       flexDirection: 'row',
@@ -2503,12 +2643,12 @@ function createStyles(palette: Palette) {
       gap: 2,
     },
     checkboxLabel: {
-      color: palette.text,
+      color: titleText,
       fontWeight: '600',
       fontSize: 12,
     },
     checkboxHint: {
-      color: palette.icon,
+      color: heroBadgeText,
       fontSize: 11,
     },
   });

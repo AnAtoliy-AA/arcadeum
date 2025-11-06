@@ -38,6 +38,14 @@ const PLAYER_SEAT_SIZE = 88;
 const AnimatedTouchableOpacity =
   Animated.createAnimatedComponent(TouchableOpacity);
 
+type ActionEffectType =
+  | 'draw'
+  | 'skip'
+  | 'attack'
+  | 'steal'
+  | 'defuse'
+  | 'cat_combo';
+
 interface SessionPlayerProfile {
   id: string;
   username?: string;
@@ -254,6 +262,12 @@ export function ExplodingCatsTable({
   const showLogs = true;
   const cardPressScale = useRef(new Animated.Value(1)).current;
   const deckPulseScale = useRef(new Animated.Value(1)).current;
+  const effectScale = useRef(new Animated.Value(0)).current;
+  const effectOpacity = useRef(new Animated.Value(0)).current;
+  const effectRotate = useRef(new Animated.Value(0)).current;
+  const [activeEffect, setActiveEffect] = useState<ActionEffectType | null>(
+    null,
+  );
   const [animatingCardKey, setAnimatingCardKey] = useState<string | null>(null);
   const [messageDraft, setMessageDraft] = useState('');
   const [messageVisibility, setMessageVisibility] =
@@ -659,6 +673,7 @@ export function ExplodingCatsTable({
   );
 
   useEffect(() => {
+    // deck pulse for draws
     if (actionBusy === 'draw') {
       deckPulseScale.setValue(1);
       Animated.sequence([
@@ -676,7 +691,49 @@ export function ExplodingCatsTable({
         }),
       ]).start();
     }
-  }, [actionBusy, deckPulseScale]);
+
+    // Trigger simple centered effects for actions
+    const mapBusyToEffect = (busy: typeof actionBusy): ActionEffectType | null => {
+      if (!busy) return null;
+      if (busy === 'cat_pair' || busy === 'cat_trio') return 'cat_combo';
+      if (busy === 'draw' || busy === 'skip' || busy === 'attack') {
+        return busy as ActionEffectType;
+      }
+      return null;
+    };
+
+    const effectType = mapBusyToEffect(actionBusy);
+    if (effectType) {
+      // kickoff overlay animation
+      setActiveEffect(effectType);
+      effectScale.setValue(0.6);
+      effectOpacity.setValue(0.95);
+      effectRotate.setValue(0);
+
+      Animated.parallel([
+        Animated.timing(effectScale, {
+          toValue: 1.35,
+          duration: 420,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(effectOpacity, {
+          toValue: 0,
+          duration: 520,
+          easing: Easing.out(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(effectRotate, {
+          toValue: 1,
+          duration: 520,
+          easing: Easing.out(Easing.quad),
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setActiveEffect(null);
+      });
+    }
+  }, [actionBusy, deckPulseScale, effectScale, effectOpacity, effectRotate]);
 
   const tableContent = (
     <>
@@ -748,6 +805,51 @@ export function ExplodingCatsTable({
                       : t('games.table.info.empty')}
                   </ThemedText>
                 </View>
+                {/* Centered action effect overlay */}
+                {activeEffect ? (
+                  <Animated.View
+                    pointerEvents="none"
+                    style={[
+                      styles.effectOverlay,
+                      {
+                        opacity: effectOpacity,
+                        transform: [
+                          { scale: effectScale },
+                          {
+                            rotate: effectRotate.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: ['0deg', '360deg'],
+                            }),
+                          },
+                        ],
+                      },
+                    ]}
+                  >
+                    <Animated.View
+                      style={[
+                        styles.effectCircle,
+                        activeEffect === 'draw'
+                          ? styles.effectCircleDraw
+                          : activeEffect === 'attack'
+                          ? styles.effectCircleAttack
+                          : activeEffect === 'skip'
+                          ? styles.effectCircleSkip
+                          : activeEffect === 'cat_combo'
+                          ? styles.effectCircleCombo
+                          : styles.effectCircleDefault,
+                      ]}
+                    />
+                    {activeEffect === 'attack' ? (
+                      <Animated.View style={styles.effectIconWrap}>
+                        <IconSymbol
+                          name="bolt.fill"
+                          size={28}
+                          color={styles.effectIcon.color as string}
+                        />
+                      </Animated.View>
+                    ) : null}
+                  </Animated.View>
+                ) : null}
               </View>
 
               {tableSeats.map((seat) => {
@@ -1823,6 +1925,52 @@ function createStyles(palette: Palette) {
       fontSize: 12,
       textTransform: 'uppercase',
       letterSpacing: 0.4,
+    },
+    // Action effect overlay (center of table)
+    effectOverlay: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 6,
+      pointerEvents: 'none' as ViewStyle['pointerEvents'],
+    },
+    effectCircle: {
+      width: 110,
+      height: 110,
+      borderRadius: 64,
+      backgroundColor: 'transparent',
+      shadowColor: shadow,
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: isLight ? 0.18 : 0.32,
+      shadowRadius: 14,
+      elevation: 6,
+    },
+    effectCircleDefault: {
+      backgroundColor: 'rgba(255,255,255,0.06)',
+    },
+    effectCircleDraw: {
+      backgroundColor: primaryBgColor,
+    },
+    effectCircleAttack: {
+      backgroundColor: destructiveBg,
+    },
+    effectCircleSkip: {
+      backgroundColor: palette.icon,
+    },
+    effectCircleCombo: {
+      backgroundColor: 'rgba(94, 234, 212, 0.14)',
+    },
+    effectIconWrap: {
+      position: 'absolute',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    effectIcon: {
+      color: primaryTextColor,
     },
     tableSeatRow: {
       flexDirection: 'row',

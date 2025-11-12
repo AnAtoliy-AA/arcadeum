@@ -826,6 +826,10 @@ export const translations = {
         hand: {
           title: 'Your cards',
           cardLabel: 'Card',
+          viewRow: 'Row view',
+          viewGrid: 'Grid view',
+          sizeIncrease: 'Increase card size',
+          sizeDecrease: 'Decrease card size',
           empty: 'No cards in hand',
           statusAlive: 'Alive',
           statusOut: 'Out',
@@ -1474,6 +1478,10 @@ export const translations = {
         hand: {
           title: 'Tus cartas',
           cardLabel: 'Carta',
+          viewRow: 'Vista en fila',
+          viewGrid: 'Vista en cuadrícula',
+          sizeIncrease: 'Aumentar tamaño de las cartas',
+          sizeDecrease: 'Reducir tamaño de las cartas',
           empty: 'No tienes cartas',
           statusAlive: 'Activo',
           statusOut: 'Fuera',
@@ -2089,6 +2097,10 @@ export const translations = {
         hand: {
           title: 'Vos cartes',
           cardLabel: 'Carte',
+          viewRow: 'Vue en ligne',
+          viewGrid: 'Vue en grille',
+          sizeIncrease: 'Augmenter la taille des cartes',
+          sizeDecrease: 'Réduire la taille des cartes',
           empty: 'Aucune carte en main',
           statusAlive: 'En jeu',
           statusOut: 'Éliminé',

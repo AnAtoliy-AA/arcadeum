@@ -40,6 +40,8 @@ const MAPPING = {
   'person.crop.circle': 'person-outline',
   'person.circle.fill': 'person',
   'rectangle.grid.2x2': 'grid-view',
+  'square.grid.2x2': 'grid-view',
+  rectangle: 'view-stream',
   'rectangle.stack': 'layers',
   'arrow.triangle.2.circlepath': 'autorenew',
   hourglass: 'hourglass-empty',
@@ -59,6 +61,8 @@ const MAPPING = {
   'doc.on.doc': 'content-copy',
   'checkmark.circle.fill': 'check-circle',
   circle: 'radio-button-unchecked',
+  minus: 'remove',
+  plus: 'add',
 } as IconMapping;
 
 /**

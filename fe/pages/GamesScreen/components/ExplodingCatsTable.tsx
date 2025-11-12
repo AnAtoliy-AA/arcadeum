@@ -116,6 +116,12 @@ const CARD_GRADIENT_COORDS = {
   end: { x: 0.92, y: 1 },
 } as const;
 
+const CARD_ASPECT_RATIO = 228 / 148;
+const GRID_CARD_MIN_WIDTH = 80;
+const DEFAULT_GRID_COLUMNS = 3;
+const MIN_GRID_COLUMNS = 1;
+const MAX_GRID_COLUMNS = 6;
+
 export type ExplodingCatsCatComboInput =
   | {
       cat: ExplodingCatsCatCard;
@@ -166,6 +172,25 @@ interface CatComboPromptState {
     pair: boolean;
     trio: boolean;
   };
+}
+
+interface ExplodingCatsTableProps {
+  room: GameRoomSummary | null;
+  session: GameSessionSummary | null;
+  currentUserId: string | null;
+  actionBusy: 'draw' | 'skip' | 'attack' | 'cat_pair' | 'cat_trio' | null;
+  startBusy: boolean;
+  isHost: boolean;
+  onStart: () => void;
+  onDraw: () => void;
+  onPlay: (card: 'skip' | 'attack') => void;
+  onPlayCatCombo: (payload: ExplodingCatsCatComboInput) => void;
+  onPostHistoryNote?: (
+    message: string,
+    scope: LogVisibility,
+  ) => Promise<void> | void;
+  fullScreen?: boolean;
+  tableOnly?: boolean;
 }
 
 function getCardTranslationKey(card: ExplodingCatsCard): TranslationKey {
@@ -233,25 +258,6 @@ function getSessionStatusTranslationKey(
   }
 }
 
-interface ExplodingCatsTableProps {
-  room: GameRoomSummary | null;
-  session: GameSessionSummary | null;
-  currentUserId: string | null;
-  actionBusy: 'draw' | 'skip' | 'attack' | 'cat_pair' | 'cat_trio' | null;
-  startBusy: boolean;
-  isHost: boolean;
-  onStart: () => void;
-  onDraw: () => void;
-  onPlay: (card: 'skip' | 'attack') => void;
-  onPlayCatCombo: (payload: ExplodingCatsCatComboInput) => void;
-  onPostHistoryNote?: (
-    message: string,
-    scope: LogVisibility,
-  ) => Promise<void> | void;
-  fullScreen?: boolean;
-  tableOnly?: boolean;
-}
-
 export function ExplodingCatsTable({
   room,
   session,
@@ -303,7 +309,7 @@ export function ExplodingCatsTable({
   }, [cardScrollMaxHeight, styles.cardScroll]);
   const showHeader = !tableOnly;
   const showStats = !tableOnly;
-  const showHandHeader = !tableOnly;
+  const showHandHeader = fullScreen || !tableOnly;
   const showLogs = true;
   const cardPressScale = useRef(new Animated.Value(1)).current;
   const deckPulseScale = useRef(new Animated.Value(1)).current;
@@ -318,6 +324,86 @@ export function ExplodingCatsTable({
   const [messageVisibility, setMessageVisibility] =
     useState<LogVisibility>('all');
   const [historySending, setHistorySending] = useState(false);
+  const [handViewMode, setHandViewMode] = useState<'row' | 'grid'>('row');
+  const [gridColumns, setGridColumns] = useState<number>(DEFAULT_GRID_COLUMNS);
+  const [gridContainerWidth, setGridContainerWidth] = useState<number>(0);
+  const handGridSpacing = useMemo(() => {
+    const flattened = StyleSheet.flatten(
+      styles.handGridContainer,
+    ) as Record<string, unknown> | null;
+    const horizontalPadding =
+      flattened && typeof flattened['paddingHorizontal'] === 'number'
+        ? (flattened['paddingHorizontal'] as number)
+        : 0;
+    const gap =
+      flattened && typeof flattened['gap'] === 'number'
+        ? (flattened['gap'] as number)
+        : 12;
+    return { horizontalPadding, gap };
+  }, [styles.handGridContainer]);
+  const maxColumnsByWidth = useMemo(() => {
+    if (gridContainerWidth <= 0) {
+      return MAX_GRID_COLUMNS;
+    }
+
+    const { horizontalPadding, gap } = handGridSpacing;
+    const usableWidth = gridContainerWidth - horizontalPadding * 2;
+    if (usableWidth <= 0) {
+      return MIN_GRID_COLUMNS;
+    }
+
+    const capacity = Math.floor(
+      (usableWidth + gap) / (GRID_CARD_MIN_WIDTH + gap),
+    );
+    const normalizedCapacity = Number.isFinite(capacity)
+      ? capacity
+      : MIN_GRID_COLUMNS;
+
+    return Math.min(
+      MAX_GRID_COLUMNS,
+      Math.max(MIN_GRID_COLUMNS, normalizedCapacity),
+    );
+  }, [gridContainerWidth, handGridSpacing]);
+
+  useEffect(() => {
+    if (gridColumns > maxColumnsByWidth) {
+      setGridColumns(maxColumnsByWidth);
+    }
+  }, [gridColumns, maxColumnsByWidth]);
+
+  const gridCardDimensions = useMemo(() => {
+    const columnCount = Math.max(
+      MIN_GRID_COLUMNS,
+      Math.min(gridColumns, MAX_GRID_COLUMNS, maxColumnsByWidth),
+    );
+
+    if (gridContainerWidth <= 0) {
+      const fallbackWidth = 128;
+      return {
+        width: fallbackWidth,
+        height: Math.round(fallbackWidth * CARD_ASPECT_RATIO),
+      };
+    }
+
+    const { horizontalPadding, gap } = handGridSpacing;
+    const spacingTotal = gap * Math.max(columnCount - 1, 0);
+    const usableWidth =
+      gridContainerWidth - horizontalPadding * 2 - spacingTotal;
+    const rawWidth = usableWidth / columnCount;
+    const safeWidth = Number.isFinite(rawWidth)
+      ? rawWidth
+      : GRID_CARD_MIN_WIDTH;
+    const width = Math.max(
+      GRID_CARD_MIN_WIDTH,
+      Math.floor(safeWidth),
+    );
+    const height = Math.round(width * CARD_ASPECT_RATIO);
+
+    return { width, height };
+  }, [gridColumns, gridContainerWidth, handGridSpacing, maxColumnsByWidth]);
+
+  const gridCardWidth = gridCardDimensions.width;
+  const gridCardHeight = gridCardDimensions.height;
 
   const snapshot = useMemo<ExplodingCatsSnapshot | null>(() => {
     const raw = session?.state?.snapshot;
@@ -402,7 +488,7 @@ export function ExplodingCatsTable({
   );
   const selfPlayerHandSize = selfPlayer?.hand?.length ?? 0;
   const handScrollRef = useHorizontalDragScroll<ScrollView>({
-    dependencyKey: selfPlayerHandSize,
+    dependencyKey: `${handViewMode}-${selfPlayerHandSize}`,
   });
 
   const deckCount = snapshot?.deck?.length ?? 0;
@@ -451,10 +537,14 @@ export function ExplodingCatsTable({
   const logsScrollRef = useVerticalDragScroll<ScrollView>({
     dependencyKey: logs.length,
   });
-  const translateCardName = (card: ExplodingCatsCard) =>
-    t(getCardTranslationKey(card));
-  const translateCardDescription = (card: ExplodingCatsCard) =>
-    t(getCardDescriptionKey(card));
+  const translateCardName = useCallback(
+    (card: ExplodingCatsCard) => t(getCardTranslationKey(card)),
+    [t],
+  );
+  const translateCardDescription = useCallback(
+    (card: ExplodingCatsCard) => t(getCardDescriptionKey(card)),
+    [t],
+  );
   const statusLabel = session?.status
     ? t(getSessionStatusTranslationKey(session.status))
     : t(
@@ -787,6 +877,199 @@ export function ExplodingCatsTable({
     }
   }, [actionBusy, deckPulseScale, effectScale, effectOpacity, effectRotate]);
 
+  const renderHandCard = useCallback(
+    (card: ExplodingCatsCard, index: number, mode: 'row' | 'grid' = 'row') => {
+      const cardKey = `${card}-${index}`;
+      const quickAction = card === 'skip' ? 'skip' : card === 'attack' ? 'attack' : null;
+      const isCatCard = CAT_COMBO_CARDS.includes(card as ExplodingCatsCatCard);
+      const comboAvailability = isCatCard
+        ? catComboAvailability[card as ExplodingCatsCatCard]
+        : null;
+      const comboPlayable = Boolean(
+        isCatCard &&
+          comboAvailability &&
+          (comboAvailability.pair || comboAvailability.trio) &&
+          isSessionActive &&
+          isMyTurn &&
+          (selfPlayer?.alive ?? false),
+      );
+
+      const isPlayable =
+        quickAction === 'skip'
+          ? canPlaySkip
+          : quickAction === 'attack'
+          ? canPlayAttack
+          : comboPlayable;
+
+      const isBusy =
+        quickAction === 'skip'
+          ? actionBusy === 'skip'
+          : quickAction === 'attack'
+          ? actionBusy === 'attack'
+          : isCatCard && catComboBusy;
+
+      const cardArt = CARD_ART_SETTINGS[card] ?? CARD_ART_SETTINGS.exploding_cat;
+      const cardVariant = (((cardArt.variant ?? 1) - 1 + index) % 3) + 1 as CardArtworkVariant;
+      const isAnimating = animatingCardKey === cardKey;
+    const isGrid = mode === 'grid';
+    const cardWidth = isGrid ? gridCardWidth : 148;
+    const cardHeight = isGrid ? gridCardHeight : 228;
+      const overlayTitleLines = isGrid ? 1 : 2;
+      const overlayDescriptionLines = isGrid ? 2 : 3;
+
+      const actionHint =
+        quickAction === 'skip'
+          ? t('games.table.actions.playSkip')
+          : quickAction === 'attack'
+          ? t('games.table.actions.playAttack')
+          : comboPlayable
+          ? t('games.table.actions.playCatCombo')
+          : undefined;
+
+      const comboHint =
+        comboPlayable && comboAvailability
+          ? comboAvailability.pair && comboAvailability.trio
+            ? t('games.table.catCombo.optionPairOrTrio')
+            : comboAvailability.trio
+            ? t('games.table.catCombo.optionTrio')
+            : t('games.table.catCombo.optionPair')
+          : undefined;
+
+      const handlePress = () => {
+        if (!isPlayable || isBusy || animatingCardKey !== null) {
+          return;
+        }
+
+        const execute = () => {
+          if (quickAction) {
+            onPlay(quickAction);
+            return;
+          }
+
+          if (isCatCard) {
+            openCatComboPrompt(card as ExplodingCatsCatCard);
+          }
+        };
+
+        triggerCardAnimation(cardKey, execute);
+      };
+
+      return (
+        <AnimatedTouchableOpacity
+          key={cardKey}
+          style={[
+            isGrid ? styles.handCardGrid : styles.handCard,
+            isGrid ? { width: cardWidth, height: cardHeight } : null,
+            isPlayable ? styles.handCardPlayable : null,
+            isPlayable ? null : styles.handCardDisabled,
+            isBusy ? styles.handCardBusy : null,
+            isAnimating ? { transform: [{ scale: cardPressScale }] } : null,
+          ]}
+          activeOpacity={isPlayable ? 0.82 : 1}
+          onPress={handlePress}
+          disabled={!isPlayable || isBusy || animatingCardKey !== null}
+          accessibilityRole={isPlayable ? 'button' : 'text'}
+          accessibilityLabel={translateCardName(card)}
+          accessibilityHint={isPlayable && actionHint ? actionHint : undefined}
+        >
+          {isBusy ? (
+            <ActivityIndicator
+              size="small"
+              color={styles.handCardBusySpinner.color as string}
+            />
+          ) : (
+            <>
+              <View
+                style={[
+                  styles.handCardArt,
+                  isGrid ? { height: Math.round(cardHeight * 0.68) } : null,
+                ]}
+                {...ACCESSIBILITY_DISABLED_PROPS}
+              >
+                <ExplodingCatsArtwork
+                  {...ACCESSIBILITY_DISABLED_PROPS}
+                  card={cardArt.key}
+                  variant={cardVariant}
+                  width="100%"
+                  height="100%"
+                  preserveAspectRatio="xMidYMid slice"
+                  focusable={false}
+                />
+                <View style={styles.handCardOverlay} {...ACCESSIBILITY_DISABLED_PROPS}>
+                  <ThemedText style={styles.handCardOverlayTitle} numberOfLines={overlayTitleLines}>
+                    {translateCardName(card)}
+                  </ThemedText>
+                  <ThemedText
+                    style={styles.handCardOverlayDescription}
+                    numberOfLines={overlayDescriptionLines}
+                  >
+                    {translateCardDescription(card)}
+                  </ThemedText>
+                </View>
+              </View>
+              <View
+                style={[
+                  styles.handCardMeta,
+                  isGrid ? { paddingHorizontal: 2, maxWidth: '100%' } : null,
+                ]}
+                {...ACCESSIBILITY_DISABLED_PROPS}
+              >
+                {actionHint ? (
+                  <ThemedText style={styles.handCardHint} numberOfLines={1}>
+                    {actionHint}
+                  </ThemedText>
+                ) : null}
+                {comboHint ? (
+                  <ThemedText style={styles.handCardHint} numberOfLines={1}>
+                    {comboHint}
+                  </ThemedText>
+                ) : null}
+              </View>
+            </>
+          )}
+        </AnimatedTouchableOpacity>
+      );
+    },
+    [
+      actionBusy,
+      animatingCardKey,
+      canPlayAttack,
+      canPlaySkip,
+      catComboAvailability,
+      catComboBusy,
+  gridCardHeight,
+  gridCardWidth,
+      isMyTurn,
+      isSessionActive,
+      onPlay,
+      openCatComboPrompt,
+      selfPlayer?.alive,
+      t,
+      translateCardDescription,
+      translateCardName,
+      triggerCardAnimation,
+      styles,
+      cardPressScale,
+    ],
+  );
+
+  const showGridSizeControls = handViewMode === 'grid';
+  const canDecreaseGridColumns = gridColumns > MIN_GRID_COLUMNS;
+  const canIncreaseGridColumns = gridColumns < maxColumnsByWidth;
+
+  const handleDecreaseGridColumns = useCallback(() => {
+    setGridColumns((value) => Math.max(MIN_GRID_COLUMNS, value - 1));
+  }, []);
+
+  const handleIncreaseGridColumns = useCallback(() => {
+    setGridColumns((value) =>
+      Math.min(
+        maxColumnsByWidth,
+        Math.min(MAX_GRID_COLUMNS, value + 1),
+      ),
+    );
+  }, [maxColumnsByWidth]);
+
   const tableContent = (
     <>
       {showHeader ? (
@@ -1045,185 +1328,127 @@ export function ExplodingCatsTable({
                       )}
                     </ThemedText>
                   </View>
+                  <View style={styles.handHeaderControls}>
+                    <View
+                      style={[
+                        styles.handSizeControls,
+                        showGridSizeControls ? null : styles.handSizeControlsHidden,
+                      ]}
+                      pointerEvents={showGridSizeControls ? 'auto' : 'none'}
+                    >
+                      <TouchableOpacity
+                        style={[
+                          styles.handSizeButton,
+                          !canDecreaseGridColumns
+                            ? styles.handSizeButtonDisabled
+                            : null,
+                        ]}
+                        onPress={handleDecreaseGridColumns}
+                        accessibilityRole="button"
+                        accessibilityLabel={t('games.table.hand.sizeDecrease')}
+                        accessibilityState={{ disabled: !canDecreaseGridColumns }}
+                        disabled={!canDecreaseGridColumns}
+                      >
+                        <IconSymbol
+                          name="minus"
+                          size={12}
+                          color={styles.handTitleIcon.color as string}
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[
+                          styles.handSizeButton,
+                          !canIncreaseGridColumns
+                            ? styles.handSizeButtonDisabled
+                            : null,
+                        ]}
+                        onPress={handleIncreaseGridColumns}
+                        accessibilityRole="button"
+                        accessibilityLabel={t('games.table.hand.sizeIncrease')}
+                        accessibilityState={{ disabled: !canIncreaseGridColumns }}
+                        disabled={!canIncreaseGridColumns}
+                      >
+                        <IconSymbol
+                          name="plus"
+                          size={12}
+                          color={styles.handTitleIcon.color as string}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    <TouchableOpacity
+                      style={[
+                        styles.handViewButton,
+                        handViewMode === 'grid' ? styles.handViewButtonActive : null,
+                      ]}
+                      onPress={() => setHandViewMode('grid')}
+                      accessibilityRole="button"
+                      accessibilityLabel={t('games.table.hand.viewGrid')}
+                      accessibilityState={{ selected: handViewMode === 'grid' }}
+                    >
+                      <IconSymbol
+                        name="square.grid.2x2"
+                        size={14}
+                        color={
+                          (handViewMode === 'grid'
+                            ? styles.handViewButtonIconActive.color
+                            : styles.handTitleIcon.color) as string
+                        }
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.handViewButton,
+                        handViewMode === 'row' ? styles.handViewButtonActive : null,
+                      ]}
+                      onPress={() => setHandViewMode('row')}
+                      accessibilityRole="button"
+                      accessibilityLabel={t('games.table.hand.viewRow')}
+                      accessibilityState={{ selected: handViewMode === 'row' }}
+                    >
+                      <IconSymbol
+                        name="rectangle"
+                        size={14}
+                        color={
+                          (handViewMode === 'row'
+                            ? styles.handViewButtonIconActive.color
+                            : styles.handTitleIcon.color) as string
+                        }
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               ) : null}
 
               {selfPlayer.hand.length ? (
-                <ScrollView
-                  horizontal
-                  style={styles.handScroll}
-                  ref={handScrollRef}
-                  nestedScrollEnabled
-                  showsHorizontalScrollIndicator={false}
-                  contentInsetAdjustmentBehavior="never"
-                  contentContainerStyle={styles.handScrollContent}
-                >
-                  {selfPlayer.hand.map((card, index) => {
-                    const cardKey = `${card}-${index}`;
-                    const cardAction: 'skip' | 'attack' | null =
-                      card === 'skip'
-                        ? 'skip'
-                        : card === 'attack'
-                          ? 'attack'
-                          : null;
-                    const isCatCard = CAT_COMBO_CARDS.includes(
-                      card as ExplodingCatsCatCard,
-                    );
-                    const comboAvailability = isCatCard
-                      ? catComboAvailability[card as ExplodingCatsCatCard]
-                      : null;
-                    const canPlayCatCombo = Boolean(
-                      isCatCard &&
-                        comboAvailability &&
-                        (comboAvailability.pair || comboAvailability.trio) &&
-                        isSessionActive &&
-                        isMyTurn &&
-                        (selfPlayer?.alive ?? false),
-                    );
-                    const canPlayCard =
-                      cardAction === 'skip'
-                        ? canPlaySkip
-                        : cardAction === 'attack'
-                          ? canPlayAttack
-                          : canPlayCatCombo;
-                    const isActionBusy = cardAction
-                      ? actionBusy === cardAction
-                      : isCatCard
-                        ? catComboBusy
-                        : false;
-                    const actionLabel =
-                      cardAction === 'skip'
-                        ? t('games.table.actions.playSkip')
-                        : cardAction === 'attack'
-                          ? t('games.table.actions.playAttack')
-                          : isCatCard && canPlayCatCombo
-                            ? t('games.table.actions.playCatCombo')
-                            : null;
-                    const comboHint =
-                      isCatCard && comboAvailability
-                        ? comboAvailability.pair && comboAvailability.trio
-                          ? t('games.table.catCombo.optionPairOrTrio')
-                          : comboAvailability.trio
-                            ? t('games.table.catCombo.optionTrio')
-                            : comboAvailability.pair
-                              ? t('games.table.catCombo.optionPair')
-                              : null
-                        : null;
-                    const artConfig =
-                      CARD_ART_SETTINGS[card] ??
-                      CARD_ART_SETTINGS.exploding_cat;
-                    const baseVariant = artConfig.variant;
-                    const artVariant = (((baseVariant - 1 + index) % 3) +
-                      1) as CardArtworkVariant;
-                    const description = translateCardDescription(card);
-
-                    const isAnimatingThisCard = animatingCardKey === cardKey;
-                    const isDisabled =
-                      !canPlayCard || isActionBusy || animatingCardKey !== null;
-
-                    const runCardAction = () => {
-                      if (cardAction) {
-                        onPlay(cardAction);
-                      } else if (isCatCard) {
-                        openCatComboPrompt(card as ExplodingCatsCatCard);
-                      }
-                    };
-
-                    const handleCardPress = () => {
-                      if (
-                        !canPlayCard ||
-                        isActionBusy ||
-                        animatingCardKey !== null
-                      ) {
-                        return;
-                      }
-                      triggerCardAnimation(cardKey, runCardAction);
-                    };
-
-                    return (
-                      <AnimatedTouchableOpacity
-                        key={cardKey}
-                        style={[
-                          styles.handCard,
-                          canPlayCard ? styles.handCardPlayable : null,
-                          !canPlayCard ? styles.handCardDisabled : null,
-                          isActionBusy ? styles.handCardBusy : null,
-                          isAnimatingThisCard
-                            ? { transform: [{ scale: cardPressScale }] }
-                            : null,
-                        ]}
-                        activeOpacity={canPlayCard ? 0.8 : 1}
-                        onPress={handleCardPress}
-                        disabled={isDisabled}
-                        accessibilityRole={canPlayCard ? 'button' : 'text'}
-                        accessibilityLabel={translateCardName(card)}
-                        accessibilityHint={
-                          canPlayCard && actionLabel ? actionLabel : undefined
-                        }
-                      >
-                        {isActionBusy ? (
-                          <ActivityIndicator
-                            size="small"
-                            color={styles.handCardBusySpinner.color as string}
-                          />
-                        ) : (
-                          <>
-                            <View
-                              style={styles.handCardArt}
-                              {...ACCESSIBILITY_DISABLED_PROPS}
-                            >
-                              <ExplodingCatsArtwork
-                                {...ACCESSIBILITY_DISABLED_PROPS}
-                                card={artConfig.key}
-                                variant={artVariant}
-                                width="100%"
-                                height="100%"
-                                preserveAspectRatio="xMidYMid slice"
-                                focusable={false}
-                              />
-                              <View style={styles.handCardOverlay}>
-                                <ThemedText
-                                  style={styles.handCardOverlayTitle}
-                                  numberOfLines={2}
-                                  ellipsizeMode="tail"
-                                >
-                                  {translateCardName(card)}
-                                </ThemedText>
-                                <ThemedText
-                                  style={styles.handCardOverlayDescription}
-                                  numberOfLines={3}
-                                >
-                                  {description}
-                                </ThemedText>
-                              </View>
-                            </View>
-                            <View
-                              style={styles.handCardMeta}
-                              {...ACCESSIBILITY_DISABLED_PROPS}
-                            >
-                              {actionLabel ? (
-                                <ThemedText
-                                  style={styles.handCardHint}
-                                  numberOfLines={1}
-                                >
-                                  {actionLabel}
-                                </ThemedText>
-                              ) : null}
-                              {comboHint ? (
-                                <ThemedText
-                                  style={styles.handCardHint}
-                                  numberOfLines={1}
-                                >
-                                  {comboHint}
-                                </ThemedText>
-                              ) : null}
-                            </View>
-                          </>
-                        )}
-                      </AnimatedTouchableOpacity>
-                    );
-                  })}
-                </ScrollView>
+                handViewMode === 'row' ? (
+                  <ScrollView
+                    horizontal
+                    style={styles.handScroll}
+                    ref={handScrollRef}
+                    nestedScrollEnabled
+                    showsHorizontalScrollIndicator={false}
+                    contentInsetAdjustmentBehavior="never"
+                    contentContainerStyle={styles.handScrollContent}
+                  >
+                    {selfPlayer.hand.map((card, index) => renderHandCard(card, index))}
+                  </ScrollView>
+                ) : (
+                  <View
+                    style={styles.handGridContainer}
+                    onLayout={({ nativeEvent: { layout } }) => {
+                      const layoutWidth = Math.round(layout.width);
+                      setGridContainerWidth((previousWidth) =>
+                        previousWidth !== layoutWidth
+                          ? layoutWidth
+                          : previousWidth,
+                      );
+                    }}
+                  >
+                    {selfPlayer.hand.map((card, index) =>
+                      renderHandCard(card, index, 'grid')
+                    )}
+                  </View>
+                )
               ) : (
                 <View style={styles.handEmpty}>
                   <ThemedText style={styles.handEmptyText}>
@@ -2283,6 +2508,12 @@ function createStyles(palette: Palette) {
       alignItems: 'center',
       gap: 8,
     },
+    handHeaderControls: {
+      marginLeft: 'auto',
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
     logsList: {
       maxHeight: 260,
       marginTop: 12,
@@ -2388,6 +2619,20 @@ function createStyles(palette: Palette) {
       ...handCardPlayableShadow,
       borderColor: decorCheck,
     },
+    handCardGrid: {
+      ...handCardShadow,
+      borderRadius: 18,
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      paddingHorizontal: 10,
+      paddingVertical: 10,
+      gap: 8,
+      backgroundColor: surface,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: `${decorPlay}33`,
+      flexShrink: 0,
+      overflow: 'hidden',
+    },
     handCardDisabled: {
       opacity: 0.65,
     },
@@ -2410,6 +2655,56 @@ function createStyles(palette: Palette) {
       fontSize: 11,
       fontWeight: '600',
       textAlign: 'center',
+    },
+    handViewButton: {
+      width: 32,
+      height: 32,
+      borderRadius: 10,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: raised,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: `${decorPlay}35`,
+    },
+    handViewButtonActive: {
+      backgroundColor: decorCheck,
+      borderColor: decorCheck,
+    },
+    handViewButtonIconActive: {
+      color: primaryTextColor,
+    },
+    handSizeControls: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      width: 72,
+      justifyContent: 'center',
+      marginRight: 6,
+    },
+    handSizeControlsHidden: {
+      opacity: 0,
+    },
+    handSizeButton: {
+      width: 28,
+      height: 28,
+      borderRadius: 9,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: raised,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: `${decorPlay}35`,
+    },
+    handSizeButtonDisabled: {
+      opacity: 0.45,
+    },
+    handGridContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 12,
+      paddingVertical: 6,
+      paddingHorizontal: 4,
+      justifyContent: 'flex-start',
+      alignContent: 'flex-start',
     },
     comboModalBackdrop: {
       flex: 1,

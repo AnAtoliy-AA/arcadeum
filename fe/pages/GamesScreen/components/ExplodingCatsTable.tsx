@@ -29,7 +29,10 @@ import {
 } from '@/components/cards';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
-import { useHorizontalDragScroll } from '@/hooks/useDragScroll';
+import {
+  useHorizontalDragScroll,
+  useVerticalDragScroll,
+} from '@/hooks/useDragScroll';
 import { useTranslation } from '@/lib/i18n';
 import type { TranslationKey } from '@/lib/i18n/messages';
 import type { GameRoomSummary, GameSessionSummary } from '../api/gamesApi';
@@ -445,6 +448,9 @@ export function ExplodingCatsTable({
     });
     return ordered.slice(-20).reverse();
   }, [snapshot, isCurrentUserPlayer]);
+  const logsScrollRef = useVerticalDragScroll<ScrollView>({
+    dependencyKey: logs.length,
+  });
   const translateCardName = (card: ExplodingCatsCard) =>
     t(getCardTranslationKey(card));
   const translateCardDescription = (card: ExplodingCatsCard) =>
@@ -1460,8 +1466,9 @@ export function ExplodingCatsTable({
           {logs.length ? (
             <ScrollView
               style={styles.logsList}
+              ref={logsScrollRef}
               contentContainerStyle={styles.logsListContent}
-              showsVerticalScrollIndicator
+              showsVerticalScrollIndicator={false}
               nestedScrollEnabled
               keyboardShouldPersistTaps="handled"
             >

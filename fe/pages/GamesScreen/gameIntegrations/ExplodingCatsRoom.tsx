@@ -859,8 +859,6 @@ function createStyles(palette: Palette) {
     },
     fullscreenTableWrapper: {
       flex: 1,
-      paddingHorizontal: 24,
-      paddingBottom: 24,
     },
     actionGroup: {
       flexDirection: 'row',

@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { Platform } from 'react-native';
 import type { SvgProps } from 'react-native-svg';
 
 import ExplodingCat1 from '@/assets/cards/exploding-cat-1.svg';
@@ -86,14 +87,22 @@ export const ExplodingCatsCard = memo(
     const index = Math.min(Math.max(variant, 1), variants.length) - 1;
     const Artwork = variants[index];
 
-    const role =
-      accessible === false ? undefined : (accessibilityRole ?? 'image');
-    const label =
-      accessible === false ? undefined : (accessibilityLabel ?? `${card} card`);
+    const isAccessibilityDisabled = accessible === false;
+    const normalizedAccessible =
+      Platform.OS === 'web' && isAccessibilityDisabled
+        ? undefined
+        : accessible;
+
+    const role = isAccessibilityDisabled
+      ? undefined
+      : accessibilityRole ?? 'image';
+    const label = isAccessibilityDisabled
+      ? undefined
+      : accessibilityLabel ?? `${card} card`;
 
     return (
       <Artwork
-        accessible={accessible}
+        accessible={normalizedAccessible}
         accessibilityRole={role}
         accessibilityLabel={label}
         {...svgProps}

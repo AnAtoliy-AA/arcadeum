@@ -16,6 +16,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  useWindowDimensions,
   type TextStyle,
   type ViewStyle,
 } from 'react-native';
@@ -28,6 +29,7 @@ import {
 } from '@/components/cards';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
+import { useHorizontalDragScroll } from '@/hooks/useDragScroll';
 import { useTranslation } from '@/lib/i18n';
 import type { TranslationKey } from '@/lib/i18n/messages';
 import type { GameRoomSummary, GameSessionSummary } from '../api/gamesApi';
@@ -38,6 +40,8 @@ const TABLE_DIAMETER = 230;
 const PLAYER_SEAT_SIZE = 88;
 const AnimatedTouchableOpacity =
   Animated.createAnimatedComponent(TouchableOpacity);
+const ACCESSIBILITY_DISABLED_PROPS: { accessible?: boolean } =
+  Platform.OS === 'web' ? {} : { accessible: false };
 
 type ActionEffectType =
   | 'draw'
@@ -287,6 +291,13 @@ export function ExplodingCatsTable({
     [cardGradientColors, styles],
   );
   const { t } = useTranslation();
+  const { height: windowHeight } = useWindowDimensions();
+  const cardScrollMaxHeight = Math.max(windowHeight - 240, 320);
+  const cardScrollStyle = useMemo(() => {
+    return Platform.OS === 'web'
+      ? [styles.cardScroll, { height: cardScrollMaxHeight }]
+      : [styles.cardScroll, { maxHeight: cardScrollMaxHeight }];
+  }, [cardScrollMaxHeight, styles.cardScroll]);
   const showHeader = !tableOnly;
   const showStats = !tableOnly;
   const showHandHeader = !tableOnly;
@@ -386,6 +397,10 @@ export function ExplodingCatsTable({
     () => players.find((player) => player.isSelf) ?? null,
     [players],
   );
+  const selfPlayerHandSize = selfPlayer?.hand?.length ?? 0;
+  const handScrollRef = useHorizontalDragScroll<ScrollView>({
+    dependencyKey: selfPlayerHandSize,
+  });
 
   const deckCount = snapshot?.deck?.length ?? 0;
   const discardTop =
@@ -814,12 +829,12 @@ export function ExplodingCatsTable({
                   {discardTop && discardArt ? (
                     <View style={styles.tableInfoArtwork}>
                       <ExplodingCatsArtwork
+                        {...ACCESSIBILITY_DISABLED_PROPS}
                         card={discardArt.key}
                         variant={discardArtVariant}
                         width="100%"
                         height="100%"
                         preserveAspectRatio="xMidYMid slice"
-                        accessible={false}
                         focusable={false}
                       />
                     </View>
@@ -1028,7 +1043,11 @@ export function ExplodingCatsTable({
               {selfPlayer.hand.length ? (
                 <ScrollView
                   horizontal
+                  style={styles.handScroll}
+                  ref={handScrollRef}
+                  nestedScrollEnabled
                   showsHorizontalScrollIndicator={false}
+                  contentInsetAdjustmentBehavior="never"
                   contentContainerStyle={styles.handScrollContent}
                 >
                   {selfPlayer.hand.map((card, index) => {
@@ -1141,14 +1160,17 @@ export function ExplodingCatsTable({
                           />
                         ) : (
                           <>
-                            <View style={styles.handCardArt} accessible={false}>
+                            <View
+                              style={styles.handCardArt}
+                              {...ACCESSIBILITY_DISABLED_PROPS}
+                            >
                               <ExplodingCatsArtwork
+                                {...ACCESSIBILITY_DISABLED_PROPS}
                                 card={artConfig.key}
                                 variant={artVariant}
                                 width="100%"
                                 height="100%"
                                 preserveAspectRatio="xMidYMid slice"
-                                accessible={false}
                                 focusable={false}
                               />
                               <View style={styles.handCardOverlay}>
@@ -1169,7 +1191,7 @@ export function ExplodingCatsTable({
                             </View>
                             <View
                               style={styles.handCardMeta}
-                              accessible={false}
+                              {...ACCESSIBILITY_DISABLED_PROPS}
                             >
                               {actionLabel ? (
                                 <ThemedText
@@ -1434,65 +1456,73 @@ export function ExplodingCatsTable({
             </>
           ) : null}
           {logs.length ? (
-            logs.map((log) => {
-              const timestamp = new Date(log.createdAt);
-              const timeLabel = Number.isNaN(timestamp.getTime())
-                ? '--:--'
-                : timestamp.toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  });
-              const isMessage = log.type === 'message';
-              let senderDisplayName: string | null = null;
-              if (isMessage) {
-                if (log.senderName) {
-                  senderDisplayName = log.senderName;
-                } else if (log.senderId) {
-                  senderDisplayName =
-                    playerNameMap.get(log.senderId) ??
-                    (currentUserId && log.senderId === currentUserId
-                      ? t('games.table.logs.you')
-                      : null);
+            <ScrollView
+              style={styles.logsList}
+              contentContainerStyle={styles.logsListContent}
+              showsVerticalScrollIndicator
+              nestedScrollEnabled
+              keyboardShouldPersistTaps="handled"
+            >
+              {logs.map((log) => {
+                const timestamp = new Date(log.createdAt);
+                const timeLabel = Number.isNaN(timestamp.getTime())
+                  ? '--:--'
+                  : timestamp.toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    });
+                const isMessage = log.type === 'message';
+                let senderDisplayName: string | null = null;
+                if (isMessage) {
+                  if (log.senderName) {
+                    senderDisplayName = log.senderName;
+                  } else if (log.senderId) {
+                    senderDisplayName =
+                      playerNameMap.get(log.senderId) ??
+                      (currentUserId && log.senderId === currentUserId
+                        ? t('games.table.logs.you')
+                        : null);
+                  }
+                  if (!senderDisplayName) {
+                    senderDisplayName = t('games.table.logs.unknownSender');
+                  }
                 }
-                if (!senderDisplayName) {
-                  senderDisplayName = t('games.table.logs.unknownSender');
-                }
-              }
 
-              return (
-                <View key={log.id} style={styles.logRow}>
-                  <ThemedText style={styles.logTimestamp}>
-                    {timeLabel}
-                  </ThemedText>
-                  {isMessage ? (
-                    <View style={styles.logMessageColumn}>
-                      <View style={styles.logMessageHeader}>
-                        <ThemedText
-                          style={styles.logMessageSender}
-                          numberOfLines={1}
-                        >
-                          {senderDisplayName}
-                        </ThemedText>
-                        {log.scope === 'players' ? (
-                          <View style={styles.logScopeBadge}>
-                            <ThemedText style={styles.logScopeBadgeText}>
-                              {t('games.table.logs.playersOnlyTag')}
-                            </ThemedText>
-                          </View>
-                        ) : null}
-                      </View>
-                      <ThemedText style={styles.logMessageText}>
-                        {log.message}
-                      </ThemedText>
-                    </View>
-                  ) : (
-                    <ThemedText style={styles.logMessage}>
-                      {formatLogMessage(log.message)}
+                return (
+                  <View key={log.id} style={styles.logRow}>
+                    <ThemedText style={styles.logTimestamp}>
+                      {timeLabel}
                     </ThemedText>
-                  )}
-                </View>
-              );
-            })
+                    {isMessage ? (
+                      <View style={styles.logMessageColumn}>
+                        <View style={styles.logMessageHeader}>
+                          <ThemedText
+                            style={styles.logMessageSender}
+                            numberOfLines={1}
+                          >
+                            {senderDisplayName}
+                          </ThemedText>
+                          {log.scope === 'players' ? (
+                            <View style={styles.logScopeBadge}>
+                              <ThemedText style={styles.logScopeBadgeText}>
+                                {t('games.table.logs.playersOnlyTag')}
+                              </ThemedText>
+                            </View>
+                          ) : null}
+                        </View>
+                        <ThemedText style={styles.logMessageText}>
+                          {log.message}
+                        </ThemedText>
+                      </View>
+                    ) : (
+                      <ThemedText style={styles.logMessage}>
+                        {formatLogMessage(log.message)}
+                      </ThemedText>
+                    )}
+                  </View>
+                );
+              })}
+            </ScrollView>
           ) : (
             <ThemedText style={styles.logsEmptyText}>
               {t('games.table.logs.empty')}
@@ -1684,6 +1714,8 @@ export function ExplodingCatsTable({
             contentContainerStyle={styles.fullScreenScroll}
             showsVerticalScrollIndicator={false}
             bounces={false}
+            nestedScrollEnabled
+            keyboardShouldPersistTaps="handled"
           >
             <View style={styles.fullScreenInner}>{tableContent}</View>
           </ScrollView>
@@ -1697,7 +1729,16 @@ export function ExplodingCatsTable({
     <>
       <ThemedView style={styles.card}>
         {cardDecor}
-        <View style={styles.fullScreenInner}>{tableContent}</View>
+        <ScrollView
+          style={cardScrollStyle}
+          showsVerticalScrollIndicator={false}
+          nestedScrollEnabled
+          keyboardShouldPersistTaps="handled"
+          contentInsetAdjustmentBehavior="never"
+          contentContainerStyle={styles.cardScrollContent}
+        >
+          <View style={styles.fullScreenInner}>{tableContent}</View>
+        </ScrollView>
       </ThemedView>
       {comboModal}
     </>
@@ -1801,6 +1842,26 @@ function createStyles(palette: Palette) {
           textShadowOffset: { width: 0, height: 3 },
           textShadowRadius: 6,
         };
+  const handScrollBase: ViewStyle =
+    Platform.OS === 'web'
+      ? ({
+          width: '100%',
+          maxWidth: '100%',
+          flexGrow: 0,
+          flexShrink: 1,
+          minWidth: 0,
+          overflowX: 'auto',
+          overflowY: 'hidden',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        } as ViewStyle)
+      : {
+          width: '100%',
+          flexGrow: 0,
+          flexShrink: 1,
+          minWidth: 0,
+        };
 
   return StyleSheet.create({
     card: {
@@ -1825,6 +1886,14 @@ function createStyles(palette: Palette) {
       borderWidth: StyleSheet.hairlineWidth,
       borderColor: cardBorder,
       backgroundColor: surface,
+    },
+    cardScroll: {
+      width: '100%',
+      flexGrow: 0,
+      flexShrink: 0,
+    },
+    cardScrollContent: {
+      paddingBottom: 32,
     },
     fullScreenScroll: {
       flexGrow: 1,
@@ -2192,10 +2261,19 @@ function createStyles(palette: Palette) {
     handSection: {
       gap: 12,
     },
+    handScroll: handScrollBase,
     handHeader: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: 8,
+    },
+    logsList: {
+      maxHeight: 260,
+      marginTop: 12,
+    },
+    logsListContent: {
+      gap: 12,
+      paddingBottom: 8,
     },
     handTitleIcon: {
       color: decorCheck,
@@ -2229,6 +2307,8 @@ function createStyles(palette: Palette) {
       color: errorText,
     },
     handScrollContent: {
+      flexDirection: 'row',
+      alignItems: 'stretch',
       gap: 12,
       paddingVertical: 8,
       paddingHorizontal: 4,

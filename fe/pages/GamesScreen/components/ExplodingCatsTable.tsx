@@ -906,11 +906,13 @@ export function ExplodingCatsTable({
                 return (
                   <View
                     key={seat.player.playerId}
-                    style={{
-                      position: 'absolute',
-                      left: seat.position.left,
-                      top: seat.position.top,
-                    }}
+                    style={[
+                      styles.tableSeatAnchor,
+                      {
+                        left: seat.position.left,
+                        top: seat.position.top,
+                      },
+                    ]}
                   >
                     <View
                       style={[
@@ -2171,6 +2173,13 @@ function createStyles(palette: Palette) {
       backgroundColor: `${playerCurrent}18`,
       borderWidth: StyleSheet.hairlineWidth,
       borderColor: `${decorCheck}26`,
+    },
+    tableSeatAnchor: {
+      position: 'absolute',
+      width: PLAYER_SEAT_SIZE,
+      height: PLAYER_SEAT_SIZE,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     tableSeatRowCurrent: {
       opacity: 1,

@@ -8,29 +8,28 @@ import { AppHeader } from '@/components/ui/AppHeader';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { AdaptiveBottomTabBar } from '@/components/ui/AdaptiveBottomTabBar';
 import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
+import { Colors, type ThemePalette } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useAppName } from '@/hooks/useAppName';
 import { platform } from '@/constants/platform';
 import { platformShadow } from '@/lib/platformShadow';
 import { useTranslation } from '@/lib/i18n';
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { colorScheme, isDarkLike } = useColorScheme();
   const { t } = useTranslation();
   const router = useRouter();
   const appName = useAppName();
 
-  const palette = Colors[colorScheme ?? 'light'];
+  const palette: ThemePalette = Colors[colorScheme];
 
   const tabShadowColor = useMemo(
-    () =>
-      colorScheme === 'dark' ? 'rgba(0, 0, 0, 0.45)' : 'rgba(15, 23, 42, 0.12)',
-    [colorScheme],
+    () => (isDarkLike ? 'rgba(0, 0, 0, 0.45)' : 'rgba(15, 23, 42, 0.12)'),
+    [isDarkLike],
   );
 
   const nativeShadowOpacity = useMemo(
-    () => (colorScheme === 'dark' ? 0.45 : 0.2),
-    [colorScheme],
+    () => (isDarkLike ? 0.45 : 0.2),
+    [isDarkLike],
   );
 
   const baseTabBarStyle = useMemo(

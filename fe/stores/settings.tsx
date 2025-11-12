@@ -7,8 +7,9 @@ import React, {
   useState,
 } from 'react';
 import { SecureStoreShim } from '@/lib/secureStore';
+import { Colors, type AppThemeName } from '@/constants/Colors';
 
-export type ThemePreference = 'system' | 'light' | 'dark';
+export type ThemePreference = 'system' | AppThemeName;
 export type LanguagePreference = 'en' | 'es' | 'fr';
 
 export interface SettingsSnapshot {
@@ -29,6 +30,20 @@ const defaultSettings: SettingsSnapshot = {
   language: 'en',
 };
 
+const availableThemeCodes = new Set<AppThemeName>(
+  Object.keys(Colors) as AppThemeName[],
+);
+
+function resolveThemePreference(value: unknown): ThemePreference {
+  if (value === 'system') {
+    return 'system';
+  }
+  if (typeof value === 'string' && availableThemeCodes.has(value as AppThemeName)) {
+    return value as AppThemeName;
+  }
+  return 'system';
+}
+
 const SettingsContext = createContext<SettingsContextValue | undefined>(
   undefined,
 );
@@ -42,10 +57,7 @@ async function readSettingsFromStorage(): Promise<SettingsSnapshot> {
 
     const parsed = JSON.parse(raw) as Partial<SettingsSnapshot>;
     return {
-      themePreference:
-        parsed.themePreference === 'light' || parsed.themePreference === 'dark'
-          ? parsed.themePreference
-          : 'system',
+      themePreference: resolveThemePreference(parsed.themePreference),
       language:
         parsed.language === 'es' || parsed.language === 'fr'
           ? parsed.language
@@ -157,5 +169,15 @@ export const themePreferences = [
     code: 'dark',
     labelKey: 'settings.themeOptions.dark.label',
     descriptionKey: 'settings.themeOptions.dark.description',
+  },
+  {
+    code: 'neonLight',
+    labelKey: 'settings.themeOptions.neonLight.label',
+    descriptionKey: 'settings.themeOptions.neonLight.description',
+  },
+  {
+    code: 'neonDark',
+    labelKey: 'settings.themeOptions.neonDark.label',
+    descriptionKey: 'settings.themeOptions.neonDark.description',
   },
 ] as const;

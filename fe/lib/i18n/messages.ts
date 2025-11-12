@@ -1019,6 +1019,14 @@ export const translations = {
           label: 'Dark',
           description: 'Always use the dark interface.',
         },
+        neonLight: {
+          label: 'Neon Light',
+          description: 'Use neon gradients with brighter surfaces.',
+        },
+        neonDark: {
+          label: 'Neon Dark',
+          description: 'Embrace the full neon arcade glow.',
+        },
       },
       languageTitle: 'Language',
       languageDescription:
@@ -1664,6 +1672,14 @@ export const translations = {
           label: 'Oscuro',
           description: 'Usa siempre la interfaz oscura.',
         },
+        neonLight: {
+          label: 'Neón Claro',
+          description: 'Usa gradientes neón con superficies más brillantes.',
+        },
+        neonDark: {
+          label: 'Neón Oscuro',
+          description: 'Disfruta del brillo arcade neón completo.',
+        },
       },
       languageTitle: 'Idioma',
       languageDescription:
@@ -2272,6 +2288,14 @@ export const translations = {
         dark: {
           label: 'Sombre',
           description: "Utilise toujours l'interface sombre.",
+        },
+        neonLight: {
+          label: 'Néon clair',
+          description: 'Utilisez des dégradés néon avec des surfaces plus lumineuses.',
+        },
+        neonDark: {
+          label: 'Néon sombre',
+          description: "Plongez dans l'ambiance arcade néon complète.",
         },
       },
       languageTitle: 'Langue',

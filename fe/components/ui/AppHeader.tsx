@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { Colors } from '@/constants/Colors';
+import { Colors, type ThemePalette } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useTranslation } from '@/lib/i18n';
 import { platformShadow } from '@/lib/platformShadow';
@@ -24,14 +24,14 @@ export function AppHeader({
   settingsDisabled = false,
 }: AppHeaderProps) {
   const insets = useSafeAreaInsets();
-  const colorScheme = useColorScheme();
-  const palette = Colors[colorScheme ?? 'light'];
+  const { colorScheme, isDarkLike } = useColorScheme();
+  const palette: ThemePalette = Colors[colorScheme];
   const { t } = useTranslation();
 
   const topPadding = useMemo(() => Math.max(insets.top, 12), [insets.top]);
   const borderColor = palette.cardBorder ?? 'rgba(148, 163, 184, 0.24)';
   const shadowColor =
-    colorScheme === 'dark' ? 'rgba(0, 0, 0, 0.45)' : 'rgba(15, 23, 42, 0.12)';
+    isDarkLike ? 'rgba(0, 0, 0, 0.45)' : 'rgba(15, 23, 42, 0.12)';
 
   const handleBackPress = () => {
     if (canGoBack && onBack) {

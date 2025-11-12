@@ -12,7 +12,8 @@ export function Collapsible({
   title,
 }: PropsWithChildren & { title: string }) {
   const [isOpen, setIsOpen] = useState(false);
-  const theme = useColorScheme() ?? 'light';
+  const { colorScheme } = useColorScheme();
+  const iconColor = Colors[colorScheme].icon;
 
   return (
     <ThemedView>
@@ -25,7 +26,7 @@ export function Collapsible({
           name="chevron.right"
           size={18}
           weight="medium"
-          color={theme === 'light' ? Colors.light.icon : Colors.dark.icon}
+          color={iconColor}
           style={{ transform: [{ rotate: isOpen ? '90deg' : '0deg' }] }}
         />
 

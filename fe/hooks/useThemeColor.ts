@@ -3,31 +3,23 @@
  * https://docs.expo.dev/guides/color-schemes/
  */
 
-import { Colors } from '@/constants/Colors';
+import { Colors, type AppThemeName, type ThemePalette } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-type LightPalette = typeof Colors.light;
-type DarkPalette = typeof Colors.dark;
-type SharedColorKey = keyof LightPalette & keyof DarkPalette;
-type ResolvedColorKey = {
-  [K in SharedColorKey]: LightPalette[K] extends string
-    ? DarkPalette[K] extends string
-      ? K
-      : never
-    : never;
-}[SharedColorKey];
+type PaletteStringKeys = {
+  [K in keyof ThemePalette]: ThemePalette[K] extends string ? K : never;
+}[keyof ThemePalette];
 
 export function useThemeColor(
-  props: { light?: string; dark?: string },
-  colorName: ResolvedColorKey,
+  props: Partial<Record<AppThemeName, string>>,
+  colorName: PaletteStringKeys,
 ): string {
-  const theme = useColorScheme();
-  const resolvedTheme = theme === 'dark' ? 'dark' : 'light';
-  const colorFromProps = props[resolvedTheme];
+  const { colorScheme } = useColorScheme();
+  const colorFromProps = props[colorScheme];
 
   if (colorFromProps) {
     return colorFromProps;
   }
 
-  return Colors[resolvedTheme][colorName] as string;
+  return Colors[colorScheme][colorName];
 }

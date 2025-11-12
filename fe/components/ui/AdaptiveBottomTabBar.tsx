@@ -8,12 +8,13 @@ import {
   StyleSheet,
   Text,
   View,
-  useColorScheme,
   type TextStyle,
   type ViewStyle,
 } from 'react-native';
 
 import { Colors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
 
 const ICON_SIZE = 24;
 const SHADOW_PROP_KEYS: readonly (keyof ViewStyle)[] = [
@@ -44,28 +45,22 @@ function WebBottomTabBar({
   navigation,
   insets,
 }: BottomTabBarProps) {
-  const colorScheme = useColorScheme() ?? 'light';
+  const { colorScheme } = useColorScheme();
   const palette = Colors[colorScheme];
+  const styles = useThemedStyles(createStyles);
   const focusedOptions = descriptors[state.routes[state.index].key].options;
   const backgroundElement = focusedOptions.tabBarBackground?.();
   const flattenedTabBarStyle = StyleSheet.flatten(
     focusedOptions.tabBarStyle,
   ) as ViewStyle | undefined;
-  const containerStyle: ViewStyle = {
-    backgroundColor: palette.cardBackground ?? palette.background,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: palette.cardBorder ?? 'rgba(148, 163, 184, 0.24)',
-    paddingBottom: insets.bottom,
-    paddingHorizontal: 12,
-    paddingTop: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    position: 'relative',
-  };
 
   return (
     <View
-      style={[containerStyle, stripShadowProps(flattenedTabBarStyle)]}
+      style={[
+        styles.container,
+        stripShadowProps(flattenedTabBarStyle),
+        { paddingBottom: insets.bottom },
+      ]}
       role="tablist"
     >
       {backgroundElement ? (
@@ -218,46 +213,57 @@ export function AdaptiveBottomTabBar(props: BottomTabBarProps) {
   return <BottomTabBar {...props} />;
 }
 
-const styles = StyleSheet.create({
-  item: {
-    flex: 1,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-  },
-  iconLabelRow: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  label: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  badge: {
-    minWidth: 18,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 999,
-    backgroundColor: '#EF4444',
-    position: 'absolute',
-    top: 4,
-    right: 12,
-  },
-  badgeText: {
-    fontSize: 11,
-    lineHeight: 14,
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: '700',
-  },
-  backgroundOverlay: {
-    ...StyleSheet.absoluteFillObject,
-  },
-});
+const createStyles = (palette: Palette) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: palette.cardBackground ?? palette.background,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: palette.cardBorder ?? 'rgba(148, 163, 184, 0.24)',
+      paddingHorizontal: 12,
+      paddingTop: 10,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      position: 'relative',
+    },
+    item: {
+      flex: 1,
+      borderRadius: 16,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 6,
+      paddingHorizontal: 8,
+    },
+    iconLabelRow: {
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    iconContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    label: {
+      fontSize: 12,
+      fontWeight: '600',
+    },
+    badge: {
+      minWidth: 18,
+      paddingHorizontal: 6,
+      paddingVertical: 2,
+      borderRadius: 999,
+      backgroundColor: '#EF4444',
+      position: 'absolute',
+      top: 4,
+      right: 12,
+    },
+    badgeText: {
+      fontSize: 11,
+      lineHeight: 14,
+      color: '#fff',
+      textAlign: 'center',
+      fontWeight: '700',
+    },
+    backgroundOverlay: {
+      ...StyleSheet.absoluteFillObject,
+    },
+  });

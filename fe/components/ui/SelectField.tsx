@@ -10,7 +10,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import { Colors } from '@/constants/Colors';
+import { Colors, type ThemePalette } from '@/constants/Colors';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -42,9 +42,8 @@ export function SelectField<T extends string | number>({
   style,
 }: SelectFieldProps<T>) {
   const styles = useThemedStyles(createStyles);
-  const colorScheme = useColorScheme();
-  const paletteKey = colorScheme === 'dark' ? 'dark' : 'light';
-  const palette = Colors[paletteKey];
+  const { colorScheme } = useColorScheme();
+  const palette: ThemePalette = Colors[colorScheme];
   const [isOpen, setIsOpen] = useState(false);
 
   const selectedOption = useMemo(() => {

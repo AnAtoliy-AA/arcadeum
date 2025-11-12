@@ -40,7 +40,7 @@ export default function RootLayout() {
 }
 
 function NavigationRoot() {
-  const colorScheme = useColorScheme();
+  const { isDarkLike } = useColorScheme();
   const { t } = useTranslation();
   const router = useRouter();
   const appName = useAppName();
@@ -91,7 +91,7 @@ function NavigationRoot() {
   }, [router]);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={isDarkLike ? DarkTheme : DefaultTheme}>
       <>
         <Stack
           screenOptions={({ route, navigation }) => {
@@ -128,7 +128,7 @@ function NavigationRoot() {
           <Stack.Screen name="support" />
           <Stack.Screen name="+not-found" />
         </Stack>
-        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        <StatusBar style={isDarkLike ? 'light' : 'dark'} />
         <PendingRequestNotice />
       </>
     </ThemeProvider>

@@ -15,7 +15,7 @@ export function SettingsLauncher() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const pathname = usePathname();
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const palette = Colors[colorScheme];
   const { t } = useTranslation();
 

@@ -35,7 +35,7 @@ export default function SettingsScreen() {
     setLanguage,
     hydrated,
   } = useSettings();
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const palette = Colors[colorScheme];
   const { t } = useTranslation();
   const router = useRouter();

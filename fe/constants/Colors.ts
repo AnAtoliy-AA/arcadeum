@@ -3,10 +3,80 @@
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
 
+import { NeonTheme } from './themes/neon';
+
 const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
 
-export const Colors = {
+type GameTablePalette = {
+  surface: string;
+  raised: string;
+  border: string;
+  shadow: string;
+  playerSelf: string;
+  playerCurrent: string;
+  destructiveBg: string;
+  destructiveText: string;
+  playerIcon: string;
+};
+
+type GameRoomPalette = {
+  raisedBackground: string;
+  border: string;
+  surfaceShadow: string;
+  heroBackground: string;
+  heroGlowPrimary: string;
+  heroGlowSecondary: string;
+  topBarSurface: string;
+  topBarBorder: string;
+  heroBadgeBackground: string;
+  heroBadgeBorder: string;
+  heroBadgeIcon: string;
+  heroBadgeText: string;
+  actionBackground: string;
+  actionBorder: string;
+  statusLobby: string;
+  statusInProgress: string;
+  statusCompleted: string;
+  leaveBackground: string;
+  leaveDisabledBackground: string;
+  leaveTint: string;
+  deleteBackground: string;
+  deleteDisabledBackground: string;
+  deleteTint: string;
+  errorBackground: string;
+  errorBorder: string;
+  errorText: string;
+  backgroundGradient: readonly [string, string, string];
+  backgroundGlow: string;
+  decorPlay: string;
+  decorCheck: string;
+  decorAlert: string;
+  titleBackground: string;
+  titleBorder: string;
+  titleGlow: string;
+  titleText: string;
+};
+
+export type ThemePalette = {
+  text: string;
+  background: string;
+  tint: string;
+  icon: string;
+  cardBackground: string;
+  cardBorder: string;
+  tabIconDefault: string;
+  tabIconSelected: string;
+  statusConnected: string;
+  statusDisconnected: string;
+  error: string;
+  destructive: string;
+  warning: string;
+  gameTable: GameTablePalette;
+  gameRoom: GameRoomPalette;
+};
+
+export const Colors: Record<'light' | 'dark' | 'neonLight' | 'neonDark', ThemePalette> = {
   light: {
     text: '#11181C',
     background: '#fff',
@@ -16,58 +86,58 @@ export const Colors = {
     cardBorder: '#D8DFEA',
     tabIconDefault: '#687076',
     tabIconSelected: tintColorLight,
-    statusConnected: '#2ecc40',
-    statusDisconnected: '#ff4136',
-    error: '#ff4136',
-    destructive: '#ff4136',
+    statusConnected: '#22c55e',
+    statusDisconnected: '#ef4444',
+    error: '#ef4444',
+    destructive: '#ef4444',
     warning: '#f59e0b',
     gameTable: {
-      surface: '#160835',
-      raised: '#1e0d44',
-      border: '#331d63',
-      shadow: 'rgba(8, 5, 24, 0.65)',
-      playerSelf: '#2a1351',
-      playerCurrent: '#331d63',
-      destructiveBg: '#3e1234',
-      destructiveText: '#ff9acb',
-      playerIcon: '#fdf4ff',
+      surface: '#F3F4F6',
+      raised: '#FFFFFF',
+      border: '#D1D5DB',
+      shadow: 'rgba(15, 23, 42, 0.12)',
+      playerSelf: '#DBEAFE',
+      playerCurrent: '#C7D2FE',
+      destructiveBg: '#FEE2E2',
+      destructiveText: '#B91C1C',
+      playerIcon: '#1F2937',
     },
     gameRoom: {
-      raisedBackground: 'rgba(22, 10, 55, 0.82)',
-      border: 'rgba(93, 63, 158, 0.65)',
-      surfaceShadow: 'rgba(8, 3, 28, 0.65)',
-      heroBackground: 'rgba(18, 4, 46, 0.9)',
-      heroGlowPrimary: '#ff58f6',
-      heroGlowSecondary: '#40d2ff',
-      topBarSurface: 'rgba(16, 5, 42, 0.82)',
-      topBarBorder: 'rgba(102, 69, 182, 0.6)',
-      heroBadgeBackground: 'rgba(35, 9, 82, 0.85)',
-      heroBadgeBorder: '#6c3ff1',
-      heroBadgeIcon: '#ff90ff',
-      heroBadgeText: '#f8edff',
-      actionBackground: 'rgba(28, 11, 66, 0.85)',
-      actionBorder: '#6847d6',
-      statusLobby: 'rgba(30, 218, 163, 0.22)',
-      statusInProgress: 'rgba(255, 214, 96, 0.22)',
-      statusCompleted: 'rgba(99, 102, 241, 0.22)',
-      leaveBackground: 'rgba(109, 16, 60, 0.78)',
-      leaveDisabledBackground: 'rgba(40, 32, 71, 0.7)',
-      leaveTint: '#fbb6ce',
-      deleteBackground: 'rgba(95, 33, 112, 0.85)',
-      deleteDisabledBackground: 'rgba(40, 32, 71, 0.7)',
-      deleteTint: '#ffd6ff',
-      errorBackground: 'rgba(255, 90, 95, 0.18)',
-      errorBorder: 'rgba(255, 90, 95, 0.42)',
-      errorText: '#ff9bbb',
-      backgroundGradient: ['#110025', '#1d0450', '#012c73'],
-      backgroundGlow: 'rgba(255, 255, 255, 0.04)',
-      decorPlay: '#ff6af7',
-      decorCheck: '#54e4ff',
-      decorAlert: '#ff9b45',
-      titleBackground: 'rgba(15, 3, 40, 0.85)',
-      titleBorder: '#5fd6ff',
-      titleGlow: '#57c3ff',
-      titleText: '#f5f7ff',
+      raisedBackground: 'rgba(255, 255, 255, 0.92)',
+      border: 'rgba(148, 163, 184, 0.35)',
+      surfaceShadow: 'rgba(15, 23, 42, 0.08)',
+      heroBackground: 'rgba(248, 250, 252, 0.95)',
+      heroGlowPrimary: '#BAE6FD',
+      heroGlowSecondary: '#EDE9FE',
+      topBarSurface: 'rgba(255, 255, 255, 0.9)',
+      topBarBorder: 'rgba(148, 163, 184, 0.35)',
+      heroBadgeBackground: 'rgba(226, 232, 240, 0.85)',
+      heroBadgeBorder: '#94A3B8',
+      heroBadgeIcon: '#3B82F6',
+      heroBadgeText: '#1F2937',
+      actionBackground: 'rgba(241, 245, 249, 0.9)',
+      actionBorder: '#CBD5F5',
+      statusLobby: 'rgba(34, 197, 94, 0.12)',
+      statusInProgress: 'rgba(249, 115, 22, 0.12)',
+      statusCompleted: 'rgba(59, 130, 246, 0.12)',
+      leaveBackground: '#FEE2E2',
+      leaveDisabledBackground: '#E2E8F0',
+      leaveTint: '#B91C1C',
+      deleteBackground: '#EDE9FE',
+      deleteDisabledBackground: '#E2E8F0',
+      deleteTint: '#6B21A8',
+      errorBackground: '#FEE2E2',
+      errorBorder: '#FCA5A5',
+      errorText: '#B91C1C',
+      backgroundGradient: ['#F8FAFC', '#EEF2FF', '#E0F2FE'],
+      backgroundGlow: 'rgba(148, 163, 184, 0.18)',
+      decorPlay: '#6366F1',
+      decorCheck: '#0EA5E9',
+      decorAlert: '#F97316',
+      titleBackground: 'rgba(148, 163, 184, 0.22)',
+      titleBorder: '#38BDF8',
+      titleGlow: '#60A5FA',
+      titleText: '#1F2937',
     },
   },
   dark: {
@@ -79,58 +149,94 @@ export const Colors = {
     cardBorder: '#32353D',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
-    statusConnected: '#2ecc40',
-    statusDisconnected: '#ff4136',
-    error: '#ff4136',
+    statusConnected: '#22c55e',
+    statusDisconnected: '#ef4444',
+    error: '#ef4444',
     destructive: '#ff6b6b',
     warning: '#fbbf24',
     gameTable: {
-      surface: '#130932',
-      raised: '#1d0f44',
-      border: '#2d1b59',
-      shadow: 'rgba(6, 2, 18, 0.75)',
-      playerSelf: '#2d1455',
-      playerCurrent: '#38206f',
-      destructiveBg: '#401235',
-      destructiveText: '#ff9ecb',
-      playerIcon: '#fdf4ff',
+      surface: '#111827',
+      raised: '#1F2937',
+      border: '#334155',
+      shadow: 'rgba(2, 6, 23, 0.6)',
+      playerSelf: '#1E3A8A',
+      playerCurrent: '#334155',
+      destructiveBg: '#4C1D1D',
+      destructiveText: '#FCA5A5',
+      playerIcon: '#E2E8F0',
     },
     gameRoom: {
-      raisedBackground: 'rgba(22, 10, 55, 0.82)',
-      border: 'rgba(105, 74, 178, 0.6)',
-      surfaceShadow: 'rgba(5, 2, 20, 0.72)',
-      heroBackground: 'rgba(18, 4, 46, 0.9)',
-      heroGlowPrimary: '#ff58f6',
-      heroGlowSecondary: '#40d2ff',
-      topBarSurface: 'rgba(16, 5, 42, 0.84)',
-      topBarBorder: 'rgba(102, 69, 182, 0.68)',
-      heroBadgeBackground: 'rgba(35, 9, 82, 0.88)',
-      heroBadgeBorder: '#6c3ff1',
-      heroBadgeIcon: '#ff90ff',
-      heroBadgeText: '#f8edff',
-      actionBackground: 'rgba(28, 11, 66, 0.88)',
-      actionBorder: '#6847d6',
-      statusLobby: 'rgba(30, 218, 163, 0.28)',
-      statusInProgress: 'rgba(255, 214, 96, 0.28)',
-      statusCompleted: 'rgba(99, 102, 241, 0.28)',
-      leaveBackground: 'rgba(109, 16, 60, 0.78)',
-      leaveDisabledBackground: 'rgba(40, 32, 71, 0.7)',
-      leaveTint: '#fbb6ce',
-      deleteBackground: 'rgba(95, 33, 112, 0.9)',
-      deleteDisabledBackground: 'rgba(40, 32, 71, 0.7)',
-      deleteTint: '#ffd6ff',
-      errorBackground: 'rgba(255, 90, 95, 0.22)',
-      errorBorder: 'rgba(255, 90, 95, 0.45)',
-      errorText: '#ff9bbb',
-      backgroundGradient: ['#0a001c', '#15033d', '#00225a'],
-      backgroundGlow: 'rgba(255, 255, 255, 0.05)',
-      decorPlay: '#ff6af7',
-      decorCheck: '#54e4ff',
-      decorAlert: '#ff9b45',
-      titleBackground: 'rgba(12, 2, 30, 0.85)',
-      titleBorder: '#5fd6ff',
-      titleGlow: '#57c3ff',
-      titleText: '#f5f7ff',
+      raisedBackground: 'rgba(17, 24, 39, 0.92)',
+      border: 'rgba(51, 65, 85, 0.6)',
+      surfaceShadow: 'rgba(2, 6, 23, 0.65)',
+      heroBackground: 'rgba(15, 23, 42, 0.94)',
+      heroGlowPrimary: '#60A5FA',
+      heroGlowSecondary: '#C084FC',
+      topBarSurface: 'rgba(17, 24, 39, 0.9)',
+      topBarBorder: 'rgba(51, 65, 85, 0.6)',
+      heroBadgeBackground: 'rgba(30, 41, 59, 0.85)',
+      heroBadgeBorder: '#64748B',
+      heroBadgeIcon: '#93C5FD',
+      heroBadgeText: '#F8FAFC',
+      actionBackground: 'rgba(30, 41, 59, 0.9)',
+      actionBorder: '#475569',
+      statusLobby: 'rgba(34, 197, 94, 0.2)',
+      statusInProgress: 'rgba(249, 115, 22, 0.2)',
+      statusCompleted: 'rgba(59, 130, 246, 0.2)',
+      leaveBackground: 'rgba(127, 29, 29, 0.75)',
+      leaveDisabledBackground: 'rgba(30, 41, 59, 0.75)',
+      leaveTint: '#FCA5A5',
+      deleteBackground: 'rgba(76, 29, 149, 0.75)',
+      deleteDisabledBackground: 'rgba(30, 41, 59, 0.7)',
+      deleteTint: '#E9D5FF',
+      errorBackground: 'rgba(127, 29, 29, 0.24)',
+      errorBorder: 'rgba(248, 113, 113, 0.35)',
+      errorText: '#FECACA',
+      backgroundGradient: ['#0F172A', '#111827', '#1E293B'],
+      backgroundGlow: 'rgba(148, 163, 184, 0.12)',
+      decorPlay: '#60A5FA',
+      decorCheck: '#22D3EE',
+      decorAlert: '#F97316',
+      titleBackground: 'rgba(15, 23, 42, 0.85)',
+      titleBorder: '#38BDF8',
+      titleGlow: '#0EA5E9',
+      titleText: '#F8FAFC',
     },
   },
+  neonLight: {
+    text: NeonTheme.light.textPrimary,
+    background: NeonTheme.light.background,
+    tint: NeonTheme.light.accentPrimary,
+    icon: NeonTheme.light.textMuted,
+    cardBackground: NeonTheme.light.card.background,
+    cardBorder: NeonTheme.light.card.border,
+    tabIconDefault: NeonTheme.light.textMuted,
+    tabIconSelected: NeonTheme.light.accentPrimary,
+    statusConnected: NeonTheme.light.status.success,
+    statusDisconnected: NeonTheme.light.status.danger,
+    error: NeonTheme.light.status.danger,
+    destructive: NeonTheme.light.status.danger,
+    warning: NeonTheme.light.status.warning,
+    gameTable: NeonTheme.light.gameTable,
+    gameRoom: NeonTheme.light.gameRoom,
+  },
+  neonDark: {
+    text: NeonTheme.dark.textPrimary,
+    background: NeonTheme.dark.background,
+    tint: NeonTheme.dark.accentPrimary,
+    icon: NeonTheme.dark.textMuted,
+    cardBackground: NeonTheme.dark.card.background,
+    cardBorder: NeonTheme.dark.card.border,
+    tabIconDefault: NeonTheme.dark.textMuted,
+    tabIconSelected: NeonTheme.dark.accentPrimary,
+    statusConnected: NeonTheme.dark.status.success,
+    statusDisconnected: NeonTheme.dark.status.danger,
+    error: NeonTheme.dark.status.danger,
+    destructive: NeonTheme.dark.status.danger,
+    warning: NeonTheme.dark.status.warning,
+    gameTable: NeonTheme.dark.gameTable,
+    gameRoom: NeonTheme.dark.gameRoom,
+  },
 };
+
+export type AppThemeName = keyof typeof Colors;

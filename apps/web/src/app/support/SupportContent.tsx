@@ -21,10 +21,10 @@ const Page = styled.div`
   display: flex;
   justify-content: center;
   background:
-    radial-gradient(circle at top left, rgba(87, 195, 255, 0.35), transparent 55%),
-    radial-gradient(circle at bottom right, rgba(255, 106, 247, 0.35), transparent 55%),
-    #06011b;
-  color: #f5f7ff;
+    radial-gradient(circle at top left, ${({ theme }) => theme.background.radialStart}, transparent 55%),
+    radial-gradient(circle at bottom right, ${({ theme }) => theme.background.radialEnd}, transparent 55%),
+    ${({ theme }) => theme.background.base};
+  color: ${({ theme }) => theme.text.primary};
   font-family: var(--font-geist-sans);
 `;
 
@@ -40,11 +40,11 @@ const Header = styled.header`
   flex-direction: column;
   gap: 1rem;
   text-align: center;
-  background: rgba(6, 1, 27, 0.58);
+  background: ${({ theme }) => theme.surfaces.hero.background};
   border-radius: 24px;
-  border: 1px solid rgba(245, 247, 255, 0.08);
+  border: 1px solid ${({ theme }) => theme.surfaces.hero.border};
   padding: clamp(2rem, 5vw, 3.5rem);
-  box-shadow: 0 32px 80px rgba(5, 0, 40, 0.35);
+  box-shadow: ${({ theme }) => theme.surfaces.hero.shadow};
   backdrop-filter: blur(18px);
 
   @media (max-width: 700px) {
@@ -56,32 +56,32 @@ const Title = styled.h1`
   margin: 0;
   font-size: clamp(2.2rem, 5vw, 2.8rem);
   font-weight: 700;
-  color: #f7f8ff;
+  color: ${({ theme }) => theme.text.secondary};
 `;
 
 const Tagline = styled.p`
   margin: 0;
   font-size: clamp(1.05rem, 3vw, 1.25rem);
   font-weight: 500;
-  color: rgba(223, 230, 255, 0.9);
+  color: ${({ theme }) => theme.text.secondary};
 `;
 
 const Description = styled.p`
   margin: 0;
   font-size: 1rem;
   line-height: 1.7;
-  color: rgba(223, 230, 255, 0.78);
+  color: ${({ theme }) => theme.text.muted};
 `;
 
 const Section = styled.section`
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  background: rgba(9, 4, 38, 0.68);
+  background: ${({ theme }) => theme.surfaces.panel.background};
   border-radius: 24px;
-  border: 1px solid rgba(245, 247, 255, 0.08);
+  border: 1px solid ${({ theme }) => theme.surfaces.panel.border};
   padding: clamp(1.75rem, 4vw, 2.5rem);
-  box-shadow: 0 22px 60px rgba(5, 0, 40, 0.32);
+  box-shadow: ${({ theme }) => theme.surfaces.panel.shadow};
   backdrop-filter: blur(14px);
 
   @media (max-width: 700px) {
@@ -93,7 +93,7 @@ const SectionTitle = styled.h2`
   margin: 0;
   font-size: 1.35rem;
   font-weight: 600;
-  color: #f7f8ff;
+  color: ${({ theme }) => theme.text.secondary};
 `;
 
 const TeamGrid = styled.div`
@@ -106,11 +106,11 @@ const TeamCard = styled.article`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  background: rgba(14, 10, 48, 0.9);
+  background: ${({ theme }) => theme.surfaces.card.background};
   border-radius: 18px;
-  border: 1px solid rgba(111, 127, 255, 0.25);
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
   padding: 1.5rem;
-  color: rgba(223, 230, 255, 0.9);
+  color: ${({ theme }) => theme.text.secondary};
 `;
 
 const TeamIcon = styled.span`
@@ -121,20 +121,20 @@ const TeamName = styled.h3`
   margin: 0;
   font-size: 1.05rem;
   font-weight: 600;
-  color: #f7f8ff;
+  color: ${({ theme }) => theme.text.secondary};
 `;
 
 const TeamRole = styled.p`
   margin: 0;
   font-size: 0.9rem;
-  color: rgba(189, 201, 255, 0.8);
+  color: ${({ theme }) => theme.text.muted};
 `;
 
 const TeamBio = styled.p`
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.6;
-  color: rgba(223, 230, 255, 0.75);
+  color: ${({ theme }) => theme.text.muted};
 `;
 
 const ActionList = styled.div`
@@ -149,10 +149,10 @@ const ActionCard = styled.article`
   gap: 0.75rem;
   padding: 1.5rem;
   border-radius: 18px;
-  border: 1px solid rgba(111, 127, 255, 0.25);
-  background: rgba(14, 10, 48, 0.9);
-  color: rgba(223, 230, 255, 0.85);
-  box-shadow: 0 16px 40px rgba(5, 0, 40, 0.28);
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  background: ${({ theme }) => theme.surfaces.card.background};
+  color: ${({ theme }) => theme.text.secondary};
+  box-shadow: ${({ theme }) => theme.surfaces.card.shadow};
 `;
 
 const ActionHeader = styled.header`
@@ -165,14 +165,14 @@ const ActionTitle = styled.h3`
   margin: 0;
   font-size: 1.05rem;
   font-weight: 600;
-  color: #f7f8ff;
+  color: ${({ theme }) => theme.text.secondary};
 `;
 
 const ActionDescription = styled.p`
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.6;
-  color: rgba(223, 230, 255, 0.75);
+  color: ${({ theme }) => theme.text.muted};
 `;
 
 const CtaRow = styled.div`
@@ -192,21 +192,21 @@ const ctaStyles = css`
   border-radius: 999px;
   font-weight: 600;
   text-decoration: none;
-  border: 1px solid rgba(135, 152, 255, 0.45);
-  background: rgba(15, 11, 46, 0.65);
-  color: #9fb3ff;
+  border: 1px solid ${({ theme }) => theme.buttons.secondary.border};
+  background: ${({ theme }) => theme.buttons.secondary.background};
+  color: ${({ theme }) => theme.buttons.secondary.text};
   transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 
   &:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.9);
+    outline: 2px solid ${({ theme }) => theme.outlines.focus};
     outline-offset: 3px;
   }
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       transform: translateY(-2px);
-      border-color: rgba(163, 176, 255, 0.65);
-      background: rgba(24, 19, 70, 0.72);
+      border-color: ${({ theme }) => theme.buttons.secondary.hoverBorder};
+      background: ${({ theme }) => theme.buttons.secondary.hoverBackground};
     }
   }
 
@@ -244,7 +244,7 @@ const CopyActionWrapper = styled(CopyActionButton)`
     margin-top: 0.35rem;
     min-height: 1.2rem;
     font-size: 0.8rem;
-    color: #81f1ff;
+    color: ${({ theme }) => theme.copyNotice};
     text-align: center;
   }
 `;
@@ -258,7 +258,7 @@ const Thanks = styled.p`
   text-align: center;
   font-size: 1rem;
   line-height: 1.7;
-  color: rgba(223, 230, 255, 0.82);
+  color: ${({ theme }) => theme.text.muted};
 `;
 
 export default function SupportContent({

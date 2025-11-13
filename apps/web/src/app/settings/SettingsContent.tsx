@@ -1,8 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import styled, { css } from "styled-components";
+
+import { useThemeController } from "@/app/theme/ThemeContext";
+import { loadStoredSettings, saveStoredSettings } from "@/lib/settings-storage";
+import type { ThemePreference } from "@/lib/theme";
 
 type DownloadConfig = {
   title: string;
@@ -23,20 +27,9 @@ export type SettingsContentProps = {
   description: string;
 };
 
-type ThemePreference = "system" | "light" | "dark" | "neonLight" | "neonDark";
 type LanguagePreference = "en" | "es" | "fr";
 
-type SettingsSnapshot = {
-  themePreference: ThemePreference;
-  language: LanguagePreference;
-};
-
-const STORAGE_KEY = "aicoapp_web_settings_v1";
-
-const DEFAULT_SETTINGS: SettingsSnapshot = {
-  themePreference: "system",
-  language: "en",
-};
+const DEFAULT_LANGUAGE: LanguagePreference = "en";
 
 const THEME_OPTIONS: Array<{
   code: ThemePreference;
@@ -51,22 +44,22 @@ const THEME_OPTIONS: Array<{
   {
     code: "light",
     label: "Light",
-    description: "Crisp whites with subtle gradients and light chrome.",
+    description: "Bright neutrals with airy surfaces and subtle gradients.",
   },
   {
     code: "dark",
     label: "Dark",
-    description: "Deep midnight palette ideal for low light play sessions.",
+    description: "Contemporary midnight palette ideal for low-light play.",
   },
   {
     code: "neonLight",
     label: "Neon Light",
-    description: "Arcade-inspired glow with brighter panels and neon edges.",
+    description: "Arcade-inspired glow with luminous panels and neon edges.",
   },
   {
     code: "neonDark",
     label: "Neon Dark",
-    description: "High contrast vaporwave styling for dramatic tables.",
+    description: "High-contrast vaporwave styling for dramatic game tables.",
   },
 ];
 
@@ -79,40 +72,12 @@ const LANGUAGE_OPTIONS: Array<{
   { code: "fr", label: "Français" },
 ];
 
-function readSettingsFromStorage(): SettingsSnapshot {
-  if (typeof window === "undefined") {
-    return { ...DEFAULT_SETTINGS };
+function readStoredLanguage(): LanguagePreference {
+  const stored = loadStoredSettings();
+  if (stored.language && LANGUAGE_OPTIONS.some((option) => option.code === stored.language)) {
+    return stored.language as LanguagePreference;
   }
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return { ...DEFAULT_SETTINGS };
-    }
-    const parsed = JSON.parse(raw) as Partial<SettingsSnapshot>;
-    const theme = THEME_OPTIONS.some((option) => option.code === parsed.themePreference)
-      ? (parsed.themePreference as ThemePreference)
-      : DEFAULT_SETTINGS.themePreference;
-    const language = LANGUAGE_OPTIONS.some((option) => option.code === parsed.language)
-      ? (parsed.language as LanguagePreference)
-      : DEFAULT_SETTINGS.language;
-    return {
-      themePreference: theme,
-      language,
-    };
-  } catch {
-    return { ...DEFAULT_SETTINGS };
-  }
-}
-
-function persistSettingsSnapshot(snapshot: SettingsSnapshot) {
-  if (typeof window === "undefined") {
-    return;
-  }
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
-  } catch {
-    // ignore persistence failures
-  }
+  return DEFAULT_LANGUAGE;
 }
 
 export default function SettingsContent({
@@ -121,48 +86,52 @@ export default function SettingsContent({
   supportCta,
   description,
 }: SettingsContentProps) {
-  const [settings, setSettings] = useState<SettingsSnapshot>(() =>
-    readSettingsFromStorage(),
-  );
+  const { themePreference, setThemePreference } = useThemeController();
+  const [language, setLanguage] = useState<LanguagePreference>(DEFAULT_LANGUAGE);
+  const hasHydratedLanguage = useRef(false);
 
   useEffect(() => {
-    persistSettingsSnapshot(settings);
-  }, [settings]);
-
-  useEffect(() => {
-    if (typeof document === "undefined") {
-      return;
-    }
-    const root = document.documentElement;
-    if (settings.themePreference === "system") {
-      root.removeAttribute("data-theme");
-    } else {
-      root.setAttribute("data-theme", settings.themePreference);
-    }
-  }, [settings.themePreference]);
-
-  useEffect(() => {
-    if (typeof document === "undefined") {
-      return;
-    }
-    document.documentElement.setAttribute("lang", settings.language);
-  }, [settings.language]);
-
-  const handleThemeSelect = useCallback((code: ThemePreference) => {
-    setSettings((current) => {
-      if (current.themePreference === code) {
-        return current;
+    const storedLanguage = readStoredLanguage();
+    if (storedLanguage !== DEFAULT_LANGUAGE) {
+      const apply = () => {
+        setLanguage(storedLanguage);
+      };
+      if (typeof queueMicrotask === "function") {
+        queueMicrotask(apply);
+      } else {
+        Promise.resolve().then(apply);
       }
-      return { ...current, themePreference: code };
-    });
+    }
   }, []);
 
+  useEffect(() => {
+    if (!hasHydratedLanguage.current) {
+      hasHydratedLanguage.current = true;
+      return;
+    }
+    saveStoredSettings({ language });
+  }, [language]);
+
+  useEffect(() => {
+    if (typeof document === "undefined") {
+      return;
+    }
+    document.documentElement.setAttribute("lang", language);
+  }, [language]);
+
+  const handleThemeSelect = useCallback(
+    (code: ThemePreference) => {
+      setThemePreference(code);
+    },
+    [setThemePreference],
+  );
+
   const handleLanguageSelect = useCallback((code: LanguagePreference) => {
-    setSettings((current) => {
-      if (current.language === code) {
+    setLanguage((current) => {
+      if (current === code) {
         return current;
       }
-      return { ...current, language: code };
+      return code;
     });
   }, []);
 
@@ -195,9 +164,9 @@ export default function SettingsContent({
               <OptionButton
                 key={option.code}
                 type="button"
-                $active={settings.themePreference === option.code}
+                $active={themePreference === option.code}
                 onClick={() => handleThemeSelect(option.code)}
-                aria-pressed={settings.themePreference === option.code}
+                aria-pressed={themePreference === option.code}
               >
                 <OptionLabel>{option.label}</OptionLabel>
                 <OptionDescription>{option.description}</OptionDescription>
@@ -216,9 +185,9 @@ export default function SettingsContent({
               <PillButton
                 key={option.code}
                 type="button"
-                $active={settings.language === option.code}
+                $active={language === option.code}
                 onClick={() => handleLanguageSelect(option.code)}
-                aria-pressed={settings.language === option.code}
+                aria-pressed={language === option.code}
               >
                 {option.label}
               </PillButton>
@@ -266,8 +235,8 @@ const Page = styled.main`
   padding: clamp(2.5rem, 6vw, 5rem) clamp(1.5rem, 6vw, 4rem);
   display: flex;
   justify-content: center;
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: ${({ theme }) => theme.background.base};
+  color: ${({ theme }) => theme.text.primary};
 `;
 
 const Wrapper = styled.div`
@@ -281,11 +250,11 @@ const Header = styled.header`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  background: var(--card-background);
-  border: 1px solid var(--card-border);
+  background: ${({ theme }) => theme.surfaces.hero.background};
+  border: 1px solid ${({ theme }) => theme.surfaces.hero.border};
   border-radius: 24px;
   padding: clamp(2rem, 5vw, 3.5rem);
-  box-shadow: 0 32px 80px rgba(5, 0, 40, 0.35);
+  box-shadow: ${({ theme }) => theme.surfaces.hero.shadow};
   backdrop-filter: blur(18px);
 `;
 
@@ -293,24 +262,25 @@ const Title = styled.h1`
   margin: 0;
   font-size: clamp(2.2rem, 5vw, 2.8rem);
   font-weight: 700;
+  color: ${({ theme }) => theme.text.secondary};
 `;
 
 const Description = styled.p`
   margin: 0;
   font-size: 1rem;
   line-height: 1.7;
-  color: var(--muted-foreground);
+  color: ${({ theme }) => theme.text.muted};
 `;
 
 const Section = styled.section`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  background: var(--surface-background);
-  border: 1px solid var(--card-border);
+  background: ${({ theme }) => theme.surfaces.panel.background};
+  border: 1px solid ${({ theme }) => theme.surfaces.panel.border};
   border-radius: 24px;
   padding: clamp(1.75rem, 4vw, 2.5rem);
-  box-shadow: 0 22px 60px rgba(5, 0, 40, 0.32);
+  box-shadow: ${({ theme }) => theme.surfaces.panel.shadow};
   backdrop-filter: blur(14px);
 `;
 
@@ -318,13 +288,14 @@ const SectionTitle = styled.h2`
   margin: 0;
   font-size: 1.35rem;
   font-weight: 600;
+  color: ${({ theme }) => theme.text.secondary};
 `;
 
 const SectionDescription = styled.p`
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.6;
-  color: var(--muted-foreground);
+  color: ${({ theme }) => theme.text.muted};
 `;
 
 const OptionList = styled.div`
@@ -333,9 +304,9 @@ const OptionList = styled.div`
 `;
 
 const activeOptionStyles = css`
-  border-color: rgba(143, 155, 255, 0.6);
-  background: rgba(15, 11, 46, 0.75);
-  box-shadow: 0 18px 56px rgba(87, 195, 255, 0.25);
+  border-color: ${({ theme }) => theme.interactive.option.activeBorder};
+  background: ${({ theme }) => theme.interactive.option.activeBackground};
+  box-shadow: ${({ theme }) => theme.interactive.option.activeShadow};
 `;
 
 const OptionButton = styled.button<{ $active: boolean }>`
@@ -345,14 +316,14 @@ const OptionButton = styled.button<{ $active: boolean }>`
   gap: 0.35rem;
   padding: 1.1rem 1.25rem;
   border-radius: 18px;
-  border: 1px solid var(--card-border);
-  background: rgba(10, 7, 36, 0.4);
-  color: var(--foreground);
+  border: 1px solid ${({ theme }) => theme.interactive.option.border};
+  background: ${({ theme }) => theme.interactive.option.background};
+  color: ${({ theme }) => theme.text.primary};
   cursor: pointer;
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 
   &:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.9);
+    outline: 2px solid ${({ theme }) => theme.outlines.focus};
     outline-offset: 3px;
   }
 
@@ -361,7 +332,7 @@ const OptionButton = styled.button<{ $active: boolean }>`
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       transform: translateY(-2px);
-      border-color: rgba(163, 176, 255, 0.65);
+      border-color: ${({ theme }) => theme.interactive.option.hoverBorder};
     }
   }
 `;
@@ -369,11 +340,12 @@ const OptionButton = styled.button<{ $active: boolean }>`
 const OptionLabel = styled.span`
   font-size: 1.05rem;
   font-weight: 600;
+  color: ${({ theme }) => theme.text.secondary};
 `;
 
 const OptionDescription = styled.span`
   font-size: 0.9rem;
-  color: var(--muted-foreground);
+  color: ${({ theme }) => theme.text.muted};
 `;
 
 const PillGroup = styled.div`
@@ -385,30 +357,30 @@ const PillGroup = styled.div`
 const PillButton = styled.button<{ $active: boolean }>`
   padding: 0.6rem 1.2rem;
   border-radius: 999px;
-  border: 1px solid var(--card-border);
-  background: ${(props) => (props.$active ? "rgba(143, 155, 255, 0.25)" : "rgba(10, 7, 36, 0.25)")};
-  color: var(--foreground);
+  border: 1px solid ${({ $active, theme }) => ($active ? theme.interactive.pill.activeBorder : theme.interactive.pill.border)};
+  background: ${({ $active, theme }) =>
+    $active ? theme.interactive.pill.activeBackground : theme.interactive.pill.inactiveBackground};
+  color: ${({ theme }) => theme.text.primary};
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 
   ${(props) =>
     props.$active
       ? css`
-          border-color: rgba(143, 155, 255, 0.6);
-          box-shadow: 0 12px 32px rgba(87, 195, 255, 0.2);
+          box-shadow: ${props.theme.interactive.pill.activeShadow};
         `
       : null}
 
   &:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.9);
+    outline: 2px solid ${({ theme }) => theme.outlines.focus};
     outline-offset: 3px;
   }
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       transform: translateY(-1px);
-      border-color: rgba(163, 176, 255, 0.55);
+      border-color: ${({ theme }) => theme.interactive.pill.hoverBorder};
     }
   }
 `;
@@ -425,21 +397,22 @@ const DownloadLink = styled.a`
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   border-radius: 14px;
-  border: 1px solid var(--card-border);
-  background: rgba(15, 11, 46, 0.6);
-  color: var(--foreground);
+  border: 1px solid ${({ theme }) => theme.interactive.download.border};
+  background: ${({ theme }) => theme.interactive.download.background};
+  color: ${({ theme }) => theme.text.primary};
   font-weight: 600;
   transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 
   &:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.9);
+    outline: 2px solid ${({ theme }) => theme.outlines.focus};
     outline-offset: 3px;
   }
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       transform: translateY(-2px);
-      border-color: rgba(210, 220, 255, 0.6);
+      border-color: ${({ theme }) => theme.interactive.download.hoverBorder};
+      background: ${({ theme }) => theme.interactive.download.hoverBackground};
     }
   }
 `;
@@ -447,22 +420,23 @@ const DownloadLink = styled.a`
 const DownloadIcon = styled.span`
   font-size: 0.9rem;
   line-height: 1;
+  color: ${({ theme }) => theme.text.accent};
 `;
 
 const AccountCard = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  background: rgba(10, 7, 36, 0.35);
+  background: ${({ theme }) => theme.account.cardBackground};
   border-radius: 18px;
-  border: 1px solid var(--card-border);
+  border: 1px solid ${({ theme }) => theme.account.border};
   padding: 1.5rem;
 `;
 
 const AccountStatus = styled.p`
   margin: 0;
   font-size: 0.95rem;
-  color: var(--muted-foreground);
+  color: ${({ theme }) => theme.text.muted};
 `;
 
 const AccountActions = styled.div`
@@ -479,12 +453,13 @@ const baseActionStyles = css`
   border-radius: 999px;
   font-weight: 600;
   text-decoration: none;
-  transition: transform 0.2s ease, background-color 0.2s ease,
-    border-color 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+
   &:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.9);
+    outline: 2px solid ${({ theme }) => theme.outlines.focus};
     outline-offset: 3px;
   }
+
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       transform: translateY(-2px);
@@ -494,14 +469,32 @@ const baseActionStyles = css`
 
 const ActionButton = styled(Link)`
   ${baseActionStyles}
-  background: linear-gradient(135deg, #57c3ff, #8f9bff);
-  color: #050316;
+  background: linear-gradient(
+    135deg,
+    ${({ theme }) => theme.buttons.primary.gradientStart},
+    ${({ theme }) => theme.buttons.primary.gradientEnd}
+  );
+  color: ${({ theme }) => theme.buttons.primary.text};
   border: 1px solid transparent;
+  box-shadow: ${({ theme }) => theme.buttons.primary.shadow};
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      box-shadow: ${({ theme }) => theme.buttons.primary.hoverShadow};
+    }
+  }
 `;
 
 const SecondaryButton = styled(Link)`
   ${baseActionStyles}
-  border: 1px solid rgba(143, 155, 255, 0.45);
-  background: rgba(15, 11, 46, 0.6);
-  color: var(--foreground);
+  border: 1px solid ${({ theme }) => theme.buttons.secondary.border};
+  background: ${({ theme }) => theme.buttons.secondary.background};
+  color: ${({ theme }) => theme.buttons.secondary.text};
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: ${({ theme }) => theme.buttons.secondary.hoverBorder};
+      background: ${({ theme }) => theme.buttons.secondary.hoverBackground};
+    }
+  }
 `;

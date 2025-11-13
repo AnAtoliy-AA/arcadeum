@@ -12,10 +12,10 @@ const Page = styled.main`
   justify-content: center;
   padding: 3.5rem 1.5rem;
   background:
-    radial-gradient(circle at top left, rgba(87, 195, 255, 0.35), transparent 55%),
-    radial-gradient(circle at bottom right, rgba(255, 106, 247, 0.35), transparent 55%),
-    #06011b;
-  color: #f5f7ff;
+    radial-gradient(circle at top left, ${({ theme }) => theme.background.radialStart}, transparent 55%),
+    radial-gradient(circle at bottom right, ${({ theme }) => theme.background.radialEnd}, transparent 55%),
+    ${({ theme }) => theme.background.base};
+  color: ${({ theme }) => theme.text.primary};
   font-family: var(--font-geist-sans);
 
   @media (max-width: 640px) {
@@ -32,9 +32,9 @@ const Hero = styled.section`
   text-align: center;
   padding: 3rem clamp(1.5rem, 5vw, 3.5rem);
   border-radius: 24px;
-  border: 1px solid rgba(245, 247, 255, 0.08);
-  background: rgba(6, 1, 27, 0.58);
-  box-shadow: 0 32px 80px rgba(5, 0, 40, 0.35);
+  border: 1px solid ${({ theme }) => theme.surfaces.hero.border};
+  background: ${({ theme }) => theme.surfaces.hero.background};
+  box-shadow: ${({ theme }) => theme.surfaces.hero.shadow};
   backdrop-filter: blur(18px);
 
   @media (max-width: 640px) {
@@ -47,7 +47,7 @@ const Kicker = styled.span`
   font-size: 0.75rem;
   letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: rgba(223, 230, 255, 0.7);
+  color: ${({ theme }) => theme.text.accentSoft};
 `;
 
 const Title = styled.h1`
@@ -55,14 +55,14 @@ const Title = styled.h1`
   font-size: clamp(2.6rem, 5vw, 3.4rem);
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: #f7f8ff;
+  color: ${({ theme }) => theme.text.secondary};
 `;
 
 const Tagline = styled.p`
   margin: 0;
   font-size: clamp(1.15rem, 3vw, 1.35rem);
   font-weight: 500;
-  color: rgba(223, 230, 255, 0.9);
+  color: ${({ theme }) => theme.text.secondary};
 `;
 
 const Description = styled.p`
@@ -70,7 +70,7 @@ const Description = styled.p`
   max-width: 600px;
   font-size: 1.05rem;
   line-height: 1.7;
-  color: rgba(223, 230, 255, 0.82);
+  color: ${({ theme }) => theme.text.muted};
 `;
 
 const Actions = styled.div`
@@ -98,7 +98,7 @@ const ActionLink = styled(Link)`
     border-color 0.2s ease;
 
   &:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.9);
+    outline: 2px solid ${({ theme }) => theme.outlines.focus};
     outline-offset: 3px;
   }
 
@@ -112,14 +112,18 @@ const ActionLink = styled(Link)`
 `;
 
 const PrimaryAction = styled(ActionLink)`
-  background: linear-gradient(135deg, #57c3ff, #8f9bff);
-  color: #050316;
-  box-shadow: 0 12px 30px rgba(87, 195, 255, 0.35);
+  background: linear-gradient(
+    135deg,
+    ${({ theme }) => theme.buttons.primary.gradientStart},
+    ${({ theme }) => theme.buttons.primary.gradientEnd}
+  );
+  color: ${({ theme }) => theme.buttons.primary.text};
+  box-shadow: ${({ theme }) => theme.buttons.primary.shadow};
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 16px 36px rgba(87, 195, 255, 0.45);
+      box-shadow: ${({ theme }) => theme.buttons.primary.hoverShadow};
     }
   }
 
@@ -129,15 +133,15 @@ const PrimaryAction = styled(ActionLink)`
 `;
 
 const SecondaryAction = styled(ActionLink)`
-  border: 1px solid rgba(135, 152, 255, 0.45);
-  color: #9fb3ff;
-  background: rgba(15, 11, 46, 0.6);
+  border: 1px solid ${({ theme }) => theme.buttons.secondary.border};
+  color: ${({ theme }) => theme.buttons.secondary.text};
+  background: ${({ theme }) => theme.buttons.secondary.background};
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       transform: translateY(-2px);
-      border-color: rgba(163, 176, 255, 0.65);
-      background: rgba(24, 19, 70, 0.72);
+      border-color: ${({ theme }) => theme.buttons.secondary.hoverBorder};
+      background: ${({ theme }) => theme.buttons.secondary.hoverBackground};
     }
   }
 
@@ -159,7 +163,7 @@ const DownloadTitle = styled.h2`
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #f7f8ff;
+  color: ${({ theme }) => theme.text.secondary};
 `;
 
 const DownloadDescription = styled.p`
@@ -167,7 +171,7 @@ const DownloadDescription = styled.p`
   max-width: 520px;
   font-size: 0.95rem;
   line-height: 1.6;
-  color: rgba(223, 230, 255, 0.75);
+  color: ${({ theme }) => theme.text.muted};
 `;
 
 const DownloadButtons = styled.div`
@@ -187,22 +191,22 @@ const DownloadButton = styled.a`
   gap: 0.5rem;
   padding: 0.75rem 1.6rem;
   border-radius: 999px;
-  border: 1px solid rgba(245, 247, 255, 0.28);
-  background: rgba(15, 11, 46, 0.6);
-  color: #f5f7ff;
+  border: 1px solid ${({ theme }) => theme.interactive.download.border};
+  background: ${({ theme }) => theme.interactive.download.background};
+  color: ${({ theme }) => theme.text.primary};
   text-decoration: none;
   transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 
   &:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.9);
+    outline: 2px solid ${({ theme }) => theme.outlines.focus};
     outline-offset: 3px;
   }
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       transform: translateY(-2px);
-      border-color: rgba(210, 220, 255, 0.6);
-      background: rgba(15, 11, 46, 0.72);
+      border-color: ${({ theme }) => theme.interactive.download.hoverBorder};
+      background: ${({ theme }) => theme.interactive.download.hoverBackground};
     }
   }
 
@@ -223,6 +227,7 @@ const DownloadButton = styled.a`
 const DownloadIcon = styled.span`
   font-size: 0.9rem;
   line-height: 1;
+  color: ${({ theme }) => theme.text.accent};
 `;
 
 export default function Home() {

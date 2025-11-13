@@ -1,0 +1,24 @@
+name: Deploy Web to Vercel
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'apps/web/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel deploy hook
+        run: |
+          if [ -z "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}" ]; then
+            echo "VERCEL_DEPLOY_HOOK_URL is not set in repository secrets." >&2
+            exit 1
+          fi
+          curl -X POST \
+            -H 'Content-Type: application/json' \
+            -d '{"trigger": "github-action"}' \
+            "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"

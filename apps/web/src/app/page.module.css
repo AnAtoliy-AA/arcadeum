@@ -1,141 +1,202 @@
 .page {
-  --background: #fafafa;
-  --foreground: #fff;
-
-  --text-primary: #000;
-  --text-secondary: #666;
-
-  --button-primary-hover: #383838;
-  --button-secondary-hover: #f2f2f2;
-  --button-secondary-border: #ebebeb;
-
-  display: flex;
   min-height: 100vh;
+  display: flex;
   align-items: center;
   justify-content: center;
+  padding: 3.5rem 1.5rem;
   font-family: var(--font-geist-sans);
-  background-color: var(--background);
+  background:
+    radial-gradient(circle at top left, rgba(87, 195, 255, 0.35), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(255, 106, 247, 0.35), transparent 55%),
+    #06011b;
+  color: #f5f7ff;
 }
 
-.main {
-  display: flex;
-  min-height: 100vh;
-  width: 100%;
-  max-width: 800px;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  background-color: var(--foreground);
-  padding: 120px 60px;
-}
-
-.intro {
+.hero {
+  width: min(760px, 100%);
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-  gap: 24px;
-}
-
-.intro h1 {
-  max-width: 320px;
-  font-size: 40px;
-  font-weight: 600;
-  line-height: 48px;
-  letter-spacing: -2.4px;
-  text-wrap: balance;
-  color: var(--text-primary);
-}
-
-.intro p {
-  max-width: 440px;
-  font-size: 18px;
-  line-height: 32px;
-  text-wrap: balance;
-  color: var(--text-secondary);
-}
-
-.intro a {
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.ctas {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  max-width: 440px;
-  gap: 16px;
-  font-size: 14px;
-}
-
-.ctas a {
-  display: flex;
-  justify-content: center;
+  gap: 1.5rem;
   align-items: center;
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 128px;
-  border: 1px solid transparent;
-  transition: 0.2s;
-  cursor: pointer;
-  width: fit-content;
+  text-align: center;
+  padding: 3rem clamp(1.5rem, 5vw, 3.5rem);
+  border-radius: 24px;
+  border: 1px solid rgba(245, 247, 255, 0.08);
+  background: rgba(6, 1, 27, 0.58);
+  box-shadow: 0 32px 80px rgba(5, 0, 40, 0.35);
+  backdrop-filter: blur(18px);
+}
+
+.kicker {
+  font-size: 0.75rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(223, 230, 255, 0.7);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2.6rem, 5vw, 3.4rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #f7f8ff;
+}
+
+.tagline {
+  margin: 0;
+  font-size: clamp(1.15rem, 3vw, 1.35rem);
   font-weight: 500;
+  color: rgba(223, 230, 255, 0.9);
 }
 
-a.primary {
-  background: var(--text-primary);
-  color: var(--background);
-  gap: 8px;
+.description {
+  margin: 0;
+  max-width: 600px;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: rgba(223, 230, 255, 0.82);
 }
 
-a.secondary {
-  border-color: var(--button-secondary-border);
+.actions {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  justify-content: center;
 }
 
-/* Enable hover only on non-touch devices */
+.primaryAction,
+.secondaryAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.9rem;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.primaryAction {
+  background: linear-gradient(135deg, #57c3ff, #8f9bff);
+  color: #050316;
+  box-shadow: 0 12px 30px rgba(87, 195, 255, 0.35);
+}
+
+.secondaryAction {
+  border: 1px solid rgba(135, 152, 255, 0.45);
+  color: #9fb3ff;
+  background: rgba(15, 11, 46, 0.6);
+}
+
+.primaryAction:focus-visible,
+.secondaryAction:focus-visible,
+.downloadButton:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 3px;
+}
+
 @media (hover: hover) and (pointer: fine) {
-  a.primary:hover {
-    background: var(--button-primary-hover);
-    border-color: transparent;
+  .primaryAction:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px rgba(87, 195, 255, 0.45);
   }
 
-  a.secondary:hover {
-    background: var(--button-secondary-hover);
-    border-color: transparent;
-  }
-}
-
-@media (max-width: 600px) {
-  .main {
-    padding: 48px 24px;
+  .secondaryAction:hover {
+    transform: translateY(-2px);
+    border-color: rgba(163, 176, 255, 0.65);
+    background: rgba(24, 19, 70, 0.72);
   }
 
-  .intro {
-    gap: 16px;
-  }
-
-  .intro h1 {
-    font-size: 32px;
-    line-height: 40px;
-    letter-spacing: -1.92px;
+  .downloadButton:hover {
+    transform: translateY(-2px);
+    border-color: rgba(210, 220, 255, 0.6);
+    background: rgba(15, 11, 46, 0.72);
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .logo {
-    filter: invert();
-  }
+.downloadSection {
+  margin-top: 2.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+  text-align: center;
+}
 
+.downloadTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f7f8ff;
+}
+
+.downloadDescription {
+  margin: 0;
+  max-width: 520px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(223, 230, 255, 0.75);
+}
+
+.downloadButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.downloadButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(245, 247, 255, 0.28);
+  background: rgba(15, 11, 46, 0.6);
+  color: #f5f7ff;
+  text-decoration: none;
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.downloadIcon {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+@media (max-width: 640px) {
   .page {
-    --background: #000;
-    --foreground: #000;
+    padding: 2.5rem 1.25rem;
+  }
 
-    --text-primary: #ededed;
-    --text-secondary: #999;
+  .hero {
+    padding: 2.5rem 1.5rem;
+    gap: 1.25rem;
+  }
 
-    --button-primary-hover: #ccc;
-    --button-secondary-hover: #1a1a1a;
-    --button-secondary-border: #1a1a1a;
+  .actions {
+    flex-direction: column;
+  }
+
+  .primaryAction,
+  .secondaryAction,
+  .downloadButton {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primaryAction,
+  .secondaryAction,
+  .downloadButton {
+    transition: none;
+  }
+
+  .primaryAction:hover,
+  .secondaryAction:hover,
+  .downloadButton:hover {
+    transform: none;
   }
 }

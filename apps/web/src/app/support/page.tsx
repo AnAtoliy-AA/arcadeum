@@ -112,6 +112,7 @@ export default function SupportPage() {
 
   return (
     <SupportContent
+      appName={appConfig.appName}
       title={SUPPORT_TITLE}
       tagline={SUPPORT_TAGLINE}
       description={SUPPORT_DESCRIPTION}

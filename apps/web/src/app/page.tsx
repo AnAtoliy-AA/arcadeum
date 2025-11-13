@@ -3,6 +3,7 @@
 import Link from "next/link";
 import styled from "styled-components";
 
+import { useLanguage, formatMessage } from "@/app/i18n/LanguageProvider";
 import { appConfig } from "@/lib/app-config";
 
 const Page = styled.main`
@@ -231,8 +232,28 @@ const DownloadIcon = styled.span`
 `;
 
 export default function Home() {
-  const { appName, kicker, tagline, description, primaryCta, supportCta, downloads } =
-    appConfig;
+  const {
+    appName,
+    kicker: configKicker,
+    tagline: configTagline,
+    description: configDescription,
+    primaryCta,
+    supportCta,
+    downloads,
+  } = appConfig;
+  const { messages } = useLanguage();
+  const homeCopy = messages.home ?? {};
+
+  const kicker = formatMessage(homeCopy.kicker, { appName }) ?? configKicker;
+  const tagline = formatMessage(homeCopy.tagline, { appName }) ?? configTagline;
+  const description = formatMessage(homeCopy.description, { appName }) ?? configDescription;
+  const primaryLabel = homeCopy.primaryCtaLabel ?? primaryCta.label;
+  const supportLabel = homeCopy.supportCtaLabel ?? supportCta.label;
+  const downloadsTitle = homeCopy.downloadsTitle ?? downloads.title;
+  const downloadsDescription =
+    formatMessage(homeCopy.downloadsDescription, { appName }) ?? downloads.description;
+  const iosLabel = homeCopy.downloadsIosLabel ?? downloads.iosLabel;
+  const androidLabel = homeCopy.downloadsAndroidLabel ?? downloads.androidLabel;
   const hasDownloadLinks = Boolean(downloads.iosHref || downloads.androidHref);
 
   return (
@@ -243,13 +264,13 @@ export default function Home() {
         <Tagline>{tagline}</Tagline>
         <Description>{description}</Description>
         <Actions>
-          <PrimaryAction href={primaryCta.href}>{primaryCta.label}</PrimaryAction>
-          <SecondaryAction href={supportCta.href}>{supportCta.label}</SecondaryAction>
+          <PrimaryAction href={primaryCta.href}>{primaryLabel}</PrimaryAction>
+          <SecondaryAction href={supportCta.href}>{supportLabel}</SecondaryAction>
         </Actions>
         {hasDownloadLinks ? (
           <DownloadSection>
-            <DownloadTitle>{downloads.title}</DownloadTitle>
-            <DownloadDescription>{downloads.description}</DownloadDescription>
+            <DownloadTitle>{downloadsTitle}</DownloadTitle>
+            <DownloadDescription>{downloadsDescription}</DownloadDescription>
             <DownloadButtons>
               {downloads.iosHref ? (
                 <DownloadButton
@@ -258,7 +279,7 @@ export default function Home() {
                   rel="noopener noreferrer"
                 >
                   <DownloadIcon aria-hidden="true">↓</DownloadIcon>
-                  <span>{downloads.iosLabel}</span>
+                  <span>{iosLabel}</span>
                 </DownloadButton>
               ) : null}
               {downloads.androidHref ? (
@@ -268,7 +289,7 @@ export default function Home() {
                   rel="noopener noreferrer"
                 >
                   <DownloadIcon aria-hidden="true">↓</DownloadIcon>
-                  <span>{downloads.androidLabel}</span>
+                  <span>{androidLabel}</span>
                 </DownloadButton>
               ) : null}
             </DownloadButtons>

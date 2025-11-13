@@ -1,12 +1,15 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 import styled, { css } from "styled-components";
 
+import { useLanguage, formatMessage } from "@/app/i18n/LanguageProvider";
 import { CopyActionButton } from "./CopyActionButton";
 import type { SupportAction, SupportTeamMember } from "./types";
 
 export type SupportContentProps = {
+  appName: string;
   title: string;
   tagline: string;
   description: string;
@@ -14,6 +17,9 @@ export type SupportContentProps = {
   teamMembers: SupportTeamMember[];
   actions: SupportAction[];
 };
+
+const TEAM_SECTION_TITLE_FALLBACK = "Meet the core team";
+const ACTIONS_SECTION_TITLE_FALLBACK = "Ways to contribute";
 
 const Page = styled.div`
   min-height: 100vh;
@@ -262,6 +268,7 @@ const Thanks = styled.p`
 `;
 
 export default function SupportContent({
+  appName,
   title,
   tagline,
   description,
@@ -269,19 +276,77 @@ export default function SupportContent({
   teamMembers,
   actions,
 }: SupportContentProps) {
+  const { messages } = useLanguage();
+  const supportCopy = useMemo(() => messages.support ?? {}, [messages.support]);
+
+  const resolvedTitle = supportCopy.title ?? title;
+  const resolvedTagline = formatMessage(supportCopy.tagline, { appName }) ?? tagline;
+  const resolvedDescription = formatMessage(supportCopy.description, { appName }) ?? description;
+  const resolvedThanks = formatMessage(supportCopy.thanks, { appName }) ?? thanks;
+
+  const localizedTeamMembers = useMemo(
+    () =>
+      teamMembers.map((member) => {
+        const overrides = supportCopy.team?.[member.key];
+        return {
+          ...member,
+          role: overrides?.role ?? member.role,
+          bio: formatMessage(overrides?.bio, { appName }) ?? member.bio,
+        };
+      }),
+    [teamMembers, supportCopy, appName],
+  );
+
+  const localizedActions = useMemo(
+    () =>
+      actions.map((action) => {
+        const overrides = supportCopy.actions?.[action.key];
+        if (!overrides) {
+          return action;
+        }
+
+        const context = {
+          appName,
+          iban: action.type === "copy" ? action.value : undefined,
+        } satisfies Record<string, string | undefined>;
+
+        if (action.type === "copy") {
+          return {
+            ...action,
+            title: overrides.title ?? action.title,
+            description: formatMessage(overrides.description, context) ?? action.description,
+            cta: overrides.cta ?? action.cta,
+            successMessage:
+              formatMessage(overrides.successMessage, context) ?? action.successMessage,
+          };
+        }
+
+        return {
+          ...action,
+          title: overrides.title ?? action.title,
+          description: formatMessage(overrides.description, context) ?? action.description,
+          cta: overrides.cta ?? action.cta,
+        };
+      }),
+    [actions, supportCopy, appName],
+  );
+
+  const teamSectionTitle = supportCopy.teamSectionTitle ?? TEAM_SECTION_TITLE_FALLBACK;
+  const actionsSectionTitle = supportCopy.actionsSectionTitle ?? ACTIONS_SECTION_TITLE_FALLBACK;
+
   return (
     <Page>
       <Wrapper>
         <Header>
-          <Title>{title}</Title>
-          <Tagline>{tagline}</Tagline>
-          <Description>{description}</Description>
+          <Title>{resolvedTitle}</Title>
+          <Tagline>{resolvedTagline}</Tagline>
+          <Description>{resolvedDescription}</Description>
         </Header>
 
         <Section aria-labelledby="support-team-heading">
-          <SectionTitle id="support-team-heading">Meet the core team</SectionTitle>
+          <SectionTitle id="support-team-heading">{teamSectionTitle}</SectionTitle>
           <TeamGrid>
-            {teamMembers.map((member) => (
+            {localizedTeamMembers.map((member) => (
               <TeamCard key={member.key}>
                 <TeamIcon aria-hidden="true">{member.icon}</TeamIcon>
                 <div>
@@ -295,9 +360,9 @@ export default function SupportContent({
         </Section>
 
         <Section aria-labelledby="support-actions-heading">
-          <SectionTitle id="support-actions-heading">Ways to contribute</SectionTitle>
+          <SectionTitle id="support-actions-heading">{actionsSectionTitle}</SectionTitle>
           <ActionList>
-            {actions.map((action) => (
+            {localizedActions.map((action) => (
               <ActionCard key={action.key}>
                 <ActionHeader>
                   <TeamIcon aria-hidden="true">{action.icon}</TeamIcon>
@@ -328,7 +393,7 @@ export default function SupportContent({
           </ActionList>
         </Section>
 
-        <Thanks>{thanks}</Thanks>
+        <Thanks>{resolvedThanks}</Thanks>
       </Wrapper>
     </Page>
   );

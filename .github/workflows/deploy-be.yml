@@ -5,7 +5,7 @@ on:
     branches:
       - develop
     paths:
-      - 'be/**'
+      - 'apps/be/**'
 
 jobs:
   deploy:

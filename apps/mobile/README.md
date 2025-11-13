@@ -7,13 +7,13 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 1. Install dependencies
 
    ```bash
-   npm install
+   pnpm install
    ```
 
 2. Start the app
 
    ```bash
-   npx expo start
+   pnpm --filter mobile dev
    ```
 
 In the output, you'll find options to open the app in a
@@ -55,8 +55,8 @@ Note on URL schemes:
 - After changing `.env`, regenerate native config and verify:
 
 ```bash
-npx expo prebuild --platform ios
-npx expo config --type prebuild | grep -A3 CFBundleURLSchemes
+pnpm exec expo prebuild --platform ios
+pnpm exec expo config --type prebuild | grep -A3 CFBundleURLSchemes
 ```
 
 ## Get a fresh project
@@ -64,7 +64,7 @@ npx expo config --type prebuild | grep -A3 CFBundleURLSchemes
 When you're ready, run:
 
 ```bash
-npm run reset-project
+pnpm run reset-project
 ```
 
 This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.

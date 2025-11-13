@@ -62,25 +62,25 @@ Refer to SECURITY.md for more context and roadmap details.
 ## Project setup
 
 ```bash
-$ npm install
+$ pnpm install
 ```
 
 ## Compile and run the project
 
 ```bash
 # development
-$ npm run start
+$ pnpm --filter be start
 
 # watch mode
-$ npm run start:dev
+$ pnpm --filter be start:dev
 
 # production mode
-$ npm run start:prod
+$ pnpm --filter be start:prod
 ```
 
 ## Environment variables
 
-Create a `.env` in `be/` to configure the server. Common variables:
+Create a `.env` in `apps/be/` to configure the server. Common variables:
 
 ```bash
 # MongoDB connection
@@ -92,13 +92,13 @@ NODE_ENV=development
 
 ```bash
 # unit tests
-$ npm run test
+$ pnpm --filter be test
 
 # e2e tests
-$ npm run test:e2e
+$ pnpm --filter be test:e2e
 
 # test coverage
-$ npm run test:cov
+$ pnpm --filter be test:cov
 ```
 
 ## Deployment

@@ -5,7 +5,7 @@ on:
     branches:
       - develop
     paths:
-      - 'fe/**'
+      - 'apps/mobile/**'
   workflow_dispatch:
 
 jobs:

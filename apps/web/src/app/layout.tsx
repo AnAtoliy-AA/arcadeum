@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
-import { appConfig } from "@/lib/app-config";
+import { appConfig } from "@/shared/config/app-config";
 import { LanguageProvider } from "./i18n/LanguageProvider";
 import { StyledComponentsRegistry } from "./StyledComponentsRegistry";
 import "./globals.css";

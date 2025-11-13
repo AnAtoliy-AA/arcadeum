@@ -398,25 +398,25 @@ const darkTokens: ThemeTokens = {
   buttons: {
     primary: {
       gradientStart: "#38bdf8",
-      gradientEnd: "#818cf8",
+      gradientEnd: "#2563eb",
       text: "#0f172a",
-      shadow: "0 12px 30px rgba(59, 130, 246, 0.3)",
-      hoverShadow: "0 16px 36px rgba(59, 130, 246, 0.4)",
+      shadow: "0 12px 30px rgba(56, 189, 248, 0.25)",
+      hoverShadow: "0 16px 36px rgba(56, 189, 248, 0.35)",
     },
     secondary: {
-      background: "rgba(37, 99, 235, 0.15)",
-      hoverBackground: "rgba(59, 130, 246, 0.22)",
-      border: "rgba(96, 165, 250, 0.28)",
-      hoverBorder: "rgba(129, 140, 248, 0.45)",
-      text: "#bfdbfe",
+      background: "rgba(56, 189, 248, 0.12)",
+      hoverBackground: "rgba(56, 189, 248, 0.18)",
+      border: "rgba(56, 189, 248, 0.35)",
+      hoverBorder: "rgba(56, 189, 248, 0.55)",
+      text: "#38bdf8",
     },
   },
   outlines: {
-    focus: "rgba(148, 163, 184, 0.9)",
+    focus: "rgba(56, 189, 248, 0.75)",
   },
   account: {
     cardBackground: "rgba(24, 24, 28, 0.65)",
-    border: "rgba(75, 85, 99, 0.5)",
+    border: "rgba(51, 65, 85, 0.6)",
   },
   copyNotice: "#38bdf8",
 };
@@ -430,6 +430,10 @@ export const themeTokens: Record<ThemeName, ThemeTokens> = {
   neonDark: neonDarkTokens,
 };
 
+export function getThemeTokens(theme: ThemeName): ThemeTokens {
+  return themeTokens[theme];
+}
+
 export function isThemeName(value: unknown): value is ThemeName {
   return value === "light" || value === "dark" || value === "neonLight" || value === "neonDark";
 }
@@ -437,3 +441,5 @@ export function isThemeName(value: unknown): value is ThemeName {
 export function isThemePreference(value: unknown): value is ThemePreference {
   return value === "system" || isThemeName(value);
 }
+
+export const THEME_OPTIONS: ThemePreference[] = ["system", "light", "dark", "neonLight", "neonDark"];

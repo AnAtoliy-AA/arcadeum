@@ -18,7 +18,7 @@ type DownloadConfig = {
   androidHref?: string;
 };
 
-export type SettingsContentProps = {
+export type SettingsPageProps = {
   appName: string;
   downloads: DownloadConfig;
   supportCta: {
@@ -83,12 +83,12 @@ const LANGUAGE_LABELS: Record<Locale, string> = {
   fr: "Français",
 };
 
-export default function SettingsContent({
+export function SettingsPage({
   appName,
   downloads,
   supportCta,
   description,
-}: SettingsContentProps) {
+}: SettingsPageProps) {
   const { themePreference, setThemePreference } = useThemeController();
   const { locale, setLocale, messages } = useLanguage();
   const settingsCopy = messages.settings ?? {};
@@ -528,3 +528,5 @@ const SecondaryButton = styled(Link)`
     }
   }
 `;
+
+export default SettingsPage;

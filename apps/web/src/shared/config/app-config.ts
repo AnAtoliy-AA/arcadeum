@@ -50,32 +50,32 @@ function buildSeoDescription(description: string): string {
 }
 
 function readAppConfig(): WebAppConfig {
-  const appName = trim(process.env.NEXT_PUBLIC_APP_NAME) ?? 'Arcadeum';
-  const kicker = trim(process.env.NEXT_PUBLIC_WEB_KICKER) ?? 'Remote-friendly tabletop arcade';
+  const appName = trim(process.env.NEXT_PUBLIC_APP_NAME) ?? "Arcadeum";
+  const kicker = trim(process.env.NEXT_PUBLIC_WEB_KICKER) ?? "Remote-friendly tabletop arcade";
   const tagline =
     trim(process.env.NEXT_PUBLIC_WEB_TAGLINE) ?? buildTagline(appName);
   const description =
     trim(process.env.NEXT_PUBLIC_WEB_DESCRIPTION) ?? buildDescription(appName);
 
   const primaryCtaHref =
-    trim(process.env.NEXT_PUBLIC_WEB_PRIMARY_CTA_HREF) ?? '/auth';
+    trim(process.env.NEXT_PUBLIC_WEB_PRIMARY_CTA_HREF) ?? "/auth";
   const primaryCtaLabel =
-    trim(process.env.NEXT_PUBLIC_WEB_PRIMARY_CTA_LABEL) ?? 'Get started';
+    trim(process.env.NEXT_PUBLIC_WEB_PRIMARY_CTA_LABEL) ?? "Get started";
 
   const supportCtaHref =
-    trim(process.env.NEXT_PUBLIC_WEB_SUPPORT_CTA_HREF) ?? '/support';
+    trim(process.env.NEXT_PUBLIC_WEB_SUPPORT_CTA_HREF) ?? "/support";
   const supportCtaLabel =
-    trim(process.env.NEXT_PUBLIC_WEB_SUPPORT_CTA_LABEL) ?? 'Support the developers';
+    trim(process.env.NEXT_PUBLIC_WEB_SUPPORT_CTA_LABEL) ?? "Support the developers";
 
   const downloadTitle =
-    trim(process.env.NEXT_PUBLIC_WEB_DOWNLOAD_TITLE) ?? 'Install the mobile builds';
+    trim(process.env.NEXT_PUBLIC_WEB_DOWNLOAD_TITLE) ?? "Install the mobile builds";
   const downloadDescription =
     trim(process.env.NEXT_PUBLIC_WEB_DOWNLOAD_DESCRIPTION) ??
-    'Grab the latest Expo builds for iOS and Android directly from the web app.';
+    "Grab the latest Expo builds for iOS and Android directly from the web app.";
   const downloadIosLabel =
-    trim(process.env.NEXT_PUBLIC_WEB_DOWNLOAD_IOS_LABEL) ?? 'Download for iOS';
+    trim(process.env.NEXT_PUBLIC_WEB_DOWNLOAD_IOS_LABEL) ?? "Download for iOS";
   const downloadAndroidLabel =
-    trim(process.env.NEXT_PUBLIC_WEB_DOWNLOAD_ANDROID_LABEL) ?? 'Download for Android';
+    trim(process.env.NEXT_PUBLIC_WEB_DOWNLOAD_ANDROID_LABEL) ?? "Download for Android";
   const downloadIosHref = trim(process.env.NEXT_PUBLIC_DOWNLOAD_IOS);
   const downloadAndroidHref = trim(process.env.NEXT_PUBLIC_DOWNLOAD_ANDROID);
 

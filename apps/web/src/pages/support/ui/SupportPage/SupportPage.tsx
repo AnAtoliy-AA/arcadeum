@@ -5,10 +5,10 @@ import Link from "next/link";
 import styled, { css } from "styled-components";
 
 import { useLanguage, formatMessage } from "@/app/i18n/LanguageProvider";
-import { CopyActionButton } from "./CopyActionButton";
-import type { SupportAction, SupportTeamMember } from "./types";
+import { CopyActionButton } from "@/features/support/copy-action/ui/CopyActionButton";
+import type { SupportAction, SupportTeamMember } from "@/entities/support/model/types";
 
-export type SupportContentProps = {
+export type SupportPageProps = {
   appName: string;
   title: string;
   tagline: string;
@@ -267,7 +267,7 @@ const Thanks = styled.p`
   color: ${({ theme }) => theme.text.muted};
 `;
 
-export default function SupportContent({
+export function SupportPage({
   appName,
   title,
   tagline,
@@ -275,7 +275,7 @@ export default function SupportContent({
   thanks,
   teamMembers,
   actions,
-}: SupportContentProps) {
+}: SupportPageProps) {
   const { messages } = useLanguage();
   const supportCopy = useMemo(() => messages.support ?? {}, [messages.support]);
 

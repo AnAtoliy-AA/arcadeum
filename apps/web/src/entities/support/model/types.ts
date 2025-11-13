@@ -30,7 +30,4 @@ export type CopySupportAction = BaseSupportAction & {
   successMessage: string;
 };
 
-export type SupportAction =
-  | RouteSupportAction
-  | ExternalSupportAction
-  | CopySupportAction;
+export type SupportAction = RouteSupportAction | ExternalSupportAction | CopySupportAction;

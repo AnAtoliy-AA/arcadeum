@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
-import { appConfig } from "@/lib/app-config";
+import { appConfig } from "@/shared/config/app-config";
 
-import SupportContent from "./SupportContent";
-import type { SupportAction, SupportTeamMember } from "./types";
+import { SupportPage as SupportPageView } from "@/pages/support/ui/SupportPage/SupportPage";
+import type { SupportAction, SupportTeamMember } from "@/entities/support/model/types";
 
 function trim(value?: string | null): string | undefined {
   if (!value) {
@@ -107,11 +107,11 @@ function buildActions(appName: string): SupportAction[] {
   return actions;
 }
 
-export default function SupportPage() {
+export default function SupportRoute() {
   const actions = buildActions(appConfig.appName);
 
   return (
-    <SupportContent
+    <SupportPageView
       appName={appConfig.appName}
       title={SUPPORT_TITLE}
       tagline={SUPPORT_TAGLINE}

@@ -1,5 +1,5 @@
-import type { Locale, TranslationBundle } from "./i18n";
-import { appConfig } from "./app-config";
+import type { Locale, TranslationBundle } from "./types";
+import { appConfig } from "../config/app-config";
 
 function withAppNamePlaceholder(value: string): string {
   const name = appConfig.appName;

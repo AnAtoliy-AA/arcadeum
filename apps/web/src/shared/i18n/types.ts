@@ -1,5 +1,4 @@
-import type { ThemePreference } from "./theme";
-import { translations } from "./translations";
+import type { ThemePreference } from "../config/theme";
 
 export const SUPPORTED_LOCALES = ["en", "es", "fr"] as const;
 
@@ -78,28 +77,3 @@ export type TranslationBundle = {
   settings?: SettingsMessages;
   support?: SupportMessages;
 };
-
-export function getMessages(locale: Locale): TranslationBundle {
-  return translations[locale] ?? {};
-}
-
-export function isLocale(value: unknown): value is Locale {
-  return typeof value === "string" && (SUPPORTED_LOCALES as readonly string[]).includes(value as Locale);
-}
-
-export function formatMessage(
-  template: string | undefined,
-  params: Record<string, string | number | undefined>,
-): string | undefined {
-  if (!template) {
-    return template;
-  }
-
-  return template.replace(/\{(\w+)\}/g, (match, key) => {
-    const replacement = params[key];
-    if (replacement === undefined || replacement === null) {
-      return match;
-    }
-    return String(replacement);
-  });
-}

@@ -11,7 +11,7 @@ import {
 } from "react";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
 
-import { loadStoredSettings, saveStoredSettings } from "@/lib/settings-storage";
+import { loadStoredSettings, saveStoredSettings } from "@/shared/lib/settings-storage";
 import {
   DEFAULT_THEME_NAME,
   ThemeName,
@@ -20,7 +20,7 @@ import {
   isThemePreference,
   isThemeName,
   themeTokens,
-} from "@/lib/theme";
+} from "@/shared/config/theme";
 
 type ThemeContextValue = {
   themePreference: ThemePreference;

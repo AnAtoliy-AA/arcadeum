@@ -1,6 +1,6 @@
 import "styled-components";
 
-import type { ThemeTokens } from "./lib/theme";
+import type { ThemeTokens } from "./shared/config/theme";
 
 declare module "styled-components" {
   export interface DefaultTheme extends ThemeTokens {

@@ -10,7 +10,7 @@ import {
   useState,
 } from "react";
 
-import { loadStoredSettings, saveStoredSettings } from "@/lib/settings-storage";
+import { loadStoredSettings, saveStoredSettings } from "@/shared/lib/settings-storage";
 import {
   DEFAULT_LOCALE,
   Locale,
@@ -18,7 +18,7 @@ import {
   formatMessage,
   getMessages,
   isLocale,
-} from "@/lib/i18n";
+} from "@/shared/i18n";
 
 export type LanguageContextValue = {
   locale: Locale;

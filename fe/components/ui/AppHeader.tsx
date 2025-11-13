@@ -14,6 +14,7 @@ interface AppHeaderProps {
   onBack?: () => void;
   onSettingsPress: () => void;
   settingsDisabled?: boolean;
+  settingsActive?: boolean;
 }
 
 export function AppHeader({
@@ -22,6 +23,7 @@ export function AppHeader({
   onBack,
   onSettingsPress,
   settingsDisabled = false,
+  settingsActive = false,
 }: AppHeaderProps) {
   const insets = useSafeAreaInsets();
   const { colorScheme, isDarkLike } = useColorScheme();
@@ -44,6 +46,12 @@ export function AppHeader({
       onSettingsPress();
     }
   };
+
+  const settingsHint = t(
+    settingsActive
+      ? 'navigation.closeSettingsHint'
+      : 'navigation.openSettingsHint',
+  );
 
   return (
     <View
@@ -87,11 +95,15 @@ export function AppHeader({
         </Text>
 
         <Pressable
-          accessibilityHint={t('navigation.openSettingsHint')}
+          accessibilityHint={settingsHint}
           accessibilityLabel={t('navigation.settingsTitle')}
           accessibilityRole="button"
           disabled={settingsDisabled}
           onPress={handleSettingsPress}
+          accessibilityState={{
+            disabled: settingsDisabled,
+            selected: settingsActive,
+          }}
           style={({ pressed }) => [
             styles.iconButton,
             {
@@ -100,7 +112,11 @@ export function AppHeader({
             },
           ]}
         >
-          <IconSymbol name="gearshape.fill" size={18} color={palette.text} />
+          <IconSymbol
+            name={settingsActive ? 'xmark' : 'gearshape.fill'}
+            size={18}
+            color={palette.text}
+          />
         </Pressable>
       </View>
     </View>

@@ -86,10 +86,6 @@ function NavigationRoot() {
     [appName, t],
   );
 
-  const handleSettingsPress = useCallback(() => {
-    router.push('/settings' as never);
-  }, [router]);
-
   return (
     <ThemeProvider value={isDarkLike ? DarkTheme : DefaultTheme}>
       <>
@@ -101,6 +97,18 @@ function NavigationRoot() {
 
             const canGoBack = navigation.canGoBack();
             const title = getTitleForRoute(route.name);
+            const isSettingsRoute = route.name === 'settings';
+            const handleSettingsToggle = () => {
+              if (isSettingsRoute) {
+                if (canGoBack) {
+                  navigation.goBack();
+                } else {
+                  router.replace('/');
+                }
+                return;
+              }
+              navigation.navigate('settings');
+            };
 
             return {
               header: () => (
@@ -108,8 +116,8 @@ function NavigationRoot() {
                   title={title}
                   canGoBack={canGoBack}
                   onBack={canGoBack ? () => navigation.goBack() : undefined}
-                  onSettingsPress={handleSettingsPress}
-                  settingsDisabled={route.name === 'settings'}
+                  onSettingsPress={handleSettingsToggle}
+                  settingsActive={isSettingsRoute}
                 />
               ),
             };

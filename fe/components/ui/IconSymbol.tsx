@@ -63,6 +63,7 @@ const MAPPING = {
   circle: 'radio-button-unchecked',
   minus: 'remove',
   plus: 'add',
+  xmark: 'close',
 } as IconMapping;
 
 /**

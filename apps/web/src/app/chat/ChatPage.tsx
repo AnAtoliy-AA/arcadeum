@@ -357,7 +357,7 @@ export function ChatPage() {
           <SendButton
             onClick={handleSend}
             disabled={!isConnected || !inputValue.trim()}
-            aria-label={t("chat.send.ariaLabel") || "Send message"}
+            aria-label={t("chat.send") || "Send message"}
           >
             {t("chat.send") || "Send"}
           </SendButton>

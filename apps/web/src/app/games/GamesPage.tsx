@@ -327,25 +327,34 @@ export function GamesPage() {
           <FilterGroup>
             <FilterLabel>{t("games.lounge.filters.statusLabel") || "Status"}</FilterLabel>
             <FilterChips>
-              {["all", "lobby", "in_progress", "completed"].map((value) => (
-                <FilterChip
-                  key={value}
-                  $active={statusFilter === value}
-                  onClick={() => setStatusFilter(value as "all" | "lobby" | "in_progress" | "completed")}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setStatusFilter(value as "all" | "lobby" | "in_progress" | "completed");
-                    }
-                  }}
-                  aria-label={`Filter by status: ${t(`games.lounge.filters.status.${value}`) || value}`}
-                  aria-pressed={statusFilter === value}
-                  role="button"
-                  tabIndex={0}
-                >
-                  {t(`games.lounge.filters.status.${value}`) || value}
-                </FilterChip>
-              ))}
+              {(["all", "lobby", "in_progress", "completed"] as const).map((value) => {
+                const statusKeys = {
+                  all: "games.lounge.filters.status.all",
+                  lobby: "games.lounge.filters.status.lobby",
+                  in_progress: "games.lounge.filters.status.in_progress",
+                  completed: "games.lounge.filters.status.completed",
+                } as const;
+                const label = t(statusKeys[value]);
+                return (
+                  <FilterChip
+                    key={value}
+                    $active={statusFilter === value}
+                    onClick={() => setStatusFilter(value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setStatusFilter(value);
+                      }
+                    }}
+                    aria-label={`Filter by status: ${label || value}`}
+                    aria-pressed={statusFilter === value}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    {label || value}
+                  </FilterChip>
+                );
+              })}
             </FilterChips>
           </FilterGroup>
 
@@ -354,26 +363,35 @@ export function GamesPage() {
               {t("games.lounge.filters.participationLabel") || "Participation"}
             </FilterLabel>
             <FilterChips>
-              {["all", "hosting", "joined", "not_joined"].map((value) => (
-                <FilterChip
-                  key={value}
-                  $active={participationFilter === value}
-                  onClick={() => setParticipationFilter(value as "all" | "hosting" | "joined" | "not_joined")}
-                  onKeyDown={(e) => {
-                    if ((e.key === "Enter" || e.key === " ") && !(value !== "all" && !snapshot.accessToken)) {
-                      e.preventDefault();
-                      setParticipationFilter(value as "all" | "hosting" | "joined" | "not_joined");
-                    }
-                  }}
-                  disabled={value !== "all" && !snapshot.accessToken}
-                  aria-label={`Filter by participation: ${t(`games.lounge.filters.participation.${value}`) || value}`}
-                  aria-pressed={participationFilter === value}
-                  role="button"
-                  tabIndex={value !== "all" && !snapshot.accessToken ? -1 : 0}
-                >
-                  {t(`games.lounge.filters.participation.${value}`) || value}
-                </FilterChip>
-              ))}
+              {(["all", "hosting", "joined", "not_joined"] as const).map((value) => {
+                const participationKeys = {
+                  all: "games.lounge.filters.participation.all",
+                  hosting: "games.lounge.filters.participation.hosting",
+                  joined: "games.lounge.filters.participation.joined",
+                  not_joined: "games.lounge.filters.participation.not_joined",
+                } as const;
+                const label = t(participationKeys[value]);
+                return (
+                  <FilterChip
+                    key={value}
+                    $active={participationFilter === value}
+                    onClick={() => setParticipationFilter(value)}
+                    onKeyDown={(e) => {
+                      if ((e.key === "Enter" || e.key === " ") && !(value !== "all" && !snapshot.accessToken)) {
+                        e.preventDefault();
+                        setParticipationFilter(value);
+                      }
+                    }}
+                    disabled={value !== "all" && !snapshot.accessToken}
+                    aria-label={`Filter by participation: ${label || value}`}
+                    aria-pressed={participationFilter === value}
+                    role="button"
+                    tabIndex={value !== "all" && !snapshot.accessToken ? -1 : 0}
+                  >
+                    {label || value}
+                  </FilterChip>
+                );
+              })}
             </FilterChips>
           </FilterGroup>
         </Filters>

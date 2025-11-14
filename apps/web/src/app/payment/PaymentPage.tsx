@@ -103,7 +103,7 @@ const SubmitButton = styled.button`
   }
 `;
 
-const Error = styled.div`
+const ErrorMessage = styled.div`
   padding: 1rem;
   border-radius: 12px;
   background: ${({ theme }) => theme.surfaces.card.background};
@@ -244,7 +244,7 @@ export function PaymentPage() {
             />
           </FieldGroup>
 
-          {error && <Error>{error}</Error>}
+          {error && <ErrorMessage>{error}</ErrorMessage>}
           {success && (
             <Success>
               {t("payments.status.success") || "Payment session created successfully!"}

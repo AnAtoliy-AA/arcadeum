@@ -101,7 +101,7 @@ const Spinner = styled.div`
   }
 `;
 
-const Error = styled.div`
+const ErrorMessage = styled.div`
   padding: 1.5rem;
   border-radius: 12px;
   background: ${({ theme }) => theme.surfaces.card.background};
@@ -145,7 +145,7 @@ export function GameRoomPage() {
   const router = useRouter();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
-  const roomId = params.id as string;
+  const roomId = params?.id as string;
 
   const [room, setRoom] = useState<GameRoomSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -228,7 +228,7 @@ export function GameRoomPage() {
     return (
       <Page>
         <Container>
-          <Error>{error || "Room not found"}</Error>
+          <ErrorMessage>{error || "Room not found"}</ErrorMessage>
         </Container>
       </Page>
     );

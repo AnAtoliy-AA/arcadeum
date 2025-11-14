@@ -128,10 +128,9 @@ interface GameRoomSummary {
 
 export function GameDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
-  const gameId = params.id as string;
+  const gameId = params?.id as string;
 
   const [rooms, setRooms] = useState<GameRoomSummary[]>([]);
   const [loading, setLoading] = useState(true);

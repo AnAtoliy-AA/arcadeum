@@ -158,10 +158,149 @@ export type CommonMessages = {
   };
 };
 
+export type NavigationMessages = {
+  chatsTab?: string;
+  gamesTab?: string;
+  historyTab?: string;
+  settingsTab?: string;
+};
+
+export type ChatMessages = {
+  notFound?: string;
+  status?: {
+    connected?: string;
+    connecting?: string;
+  };
+  input?: {
+    placeholder?: string;
+    ariaLabel?: string;
+  };
+  send?: string;
+};
+
+export type ChatListMessages = {
+  search?: {
+    placeholder?: string;
+    ariaLabel?: string;
+  };
+  empty?: {
+    noChats?: string;
+    unauthenticated?: string;
+  };
+  messages?: {
+    directChat?: string;
+  };
+};
+
+export type GamesMessages = {
+  lounge?: {
+    activeTitle?: string;
+    emptyTitle?: string;
+    filters?: {
+      statusLabel?: string;
+      participationLabel?: string;
+      status?: {
+        all?: string;
+        lobby?: string;
+        in_progress?: string;
+        completed?: string;
+      };
+      participation?: {
+        all?: string;
+        hosting?: string;
+        joined?: string;
+        not_joined?: string;
+      };
+    };
+  };
+  rooms?: {
+    status?: {
+      lobby?: string;
+      in_progress?: string;
+      completed?: string;
+    };
+    hostedBy?: string;
+    participants?: string;
+  };
+  room?: {
+    gameArea?: string;
+  };
+  detail?: {
+    title?: string;
+    empty?: string;
+  };
+  common?: {
+    createRoom?: string;
+    joinRoom?: string;
+    joining?: string;
+    watchRoom?: string;
+  };
+  create?: {
+    title?: string;
+    sectionGame?: string;
+    sectionDetails?: string;
+    fieldName?: string;
+    namePlaceholder?: string;
+    fieldMaxPlayers?: string;
+    maxPlayersAria?: string;
+    autoPlaceholder?: string;
+    fieldVisibility?: string;
+    fieldNotes?: string;
+    notesPlaceholder?: string;
+    notesAria?: string;
+    submitCreating?: string;
+  };
+};
+
+export type HistoryMessages = {
+  list?: {
+    emptyNoEntries?: string;
+    emptySignedOut?: string;
+  };
+  status?: {
+    lobby?: string;
+    in_progress?: string;
+    completed?: string;
+    waiting?: string;
+    active?: string;
+  };
+};
+
+export type PaymentsMessages = {
+  title?: string;
+  amountLabel?: string;
+  amountPlaceholder?: string;
+  amountAria?: string;
+  currencyLabel?: string;
+  currencyPlaceholder?: string;
+  currencyAria?: string;
+  noteLabel?: string;
+  notePlaceholder?: string;
+  noteAria?: string;
+  submit?: string;
+  submitting?: string;
+  status?: {
+    success?: string;
+  };
+  errors?: {
+    invalidAmount?: string;
+    amountTooLarge?: string;
+    invalidUrl?: string;
+    noUrl?: string;
+    failed?: string;
+  };
+};
+
 export type TranslationBundle = {
   common?: CommonMessages;
   home?: HomeMessages;
   settings?: SettingsMessages;
   support?: SupportMessages;
   auth?: AuthMessages;
+  navigation?: NavigationMessages;
+  chat?: ChatMessages;
+  chatList?: ChatListMessages;
+  games?: GamesMessages;
+  history?: HistoryMessages;
+  payments?: PaymentsMessages;
 };

@@ -1,4 +1,3 @@
-import type { Locale, TranslationBundle } from "./types";
 import { appConfig } from "../config/app-config";
 
 function withAppNamePlaceholder(value: string): string {
@@ -9,7 +8,7 @@ function withAppNamePlaceholder(value: string): string {
   return value.split(name).join("{appName}");
 }
 
-const enTranslations: TranslationBundle = {
+const enTranslations = {
   common: {
     languageNames: {
       en: "English",
@@ -208,9 +207,136 @@ const enTranslations: TranslationBundle = {
       },
     },
   },
+  navigation: {
+    chatsTab: "Chats",
+    gamesTab: "Games",
+    historyTab: "History",
+    settingsTab: "Settings",
+  },
+  chat: {
+    notFound: "Chat not found",
+    status: {
+      connected: "Connected",
+      connecting: "Connecting...",
+    },
+    input: {
+      placeholder: "Type a message...",
+      ariaLabel: "Message input",
+    },
+    send: "Send",
+  },
+  chatList: {
+    search: {
+      placeholder: "Search users...",
+      ariaLabel: "Search for users to chat with",
+    },
+    empty: {
+      noChats: "No chats yet. Start a conversation!",
+      unauthenticated: "Sign in to start chatting",
+    },
+    messages: {
+      directChat: "Direct Chat",
+    },
+  },
+  games: {
+    lounge: {
+      activeTitle: "Game Rooms",
+      emptyTitle: "No rooms found. Create one to get started!",
+      filters: {
+        statusLabel: "Status",
+        participationLabel: "Participation",
+        status: {
+          all: "All",
+          lobby: "Lobby",
+          in_progress: "In Progress",
+          completed: "Completed",
+        },
+        participation: {
+          all: "All",
+          hosting: "Hosting",
+          joined: "Joined",
+          not_joined: "Not Joined",
+        },
+      },
+    },
+    rooms: {
+      status: {
+        lobby: "Lobby",
+        in_progress: "In Progress",
+        completed: "Completed",
+      },
+      hostedBy: "Hosted by {host}",
+      participants: "Participants",
+    },
+    room: {
+      gameArea: "Game area - Real-time game integration coming soon",
+    },
+    detail: {
+      title: "Game Rooms",
+      empty: "No rooms found for this game",
+    },
+    common: {
+      createRoom: "Create Room",
+      joinRoom: "Join Room",
+      joining: "Joining...",
+      watchRoom: "Watch",
+    },
+    create: {
+      title: "Create Game Room",
+      sectionGame: "Select Game",
+      sectionDetails: "Room Details",
+      fieldName: "Room Name",
+      namePlaceholder: "Enter room name",
+      fieldMaxPlayers: "Max Players (optional)",
+      maxPlayersAria: "Maximum number of players",
+      autoPlaceholder: "Auto",
+      fieldVisibility: "Visibility",
+      fieldNotes: "Notes (optional)",
+      notesPlaceholder: "Add notes...",
+      notesAria: "Additional notes for the room",
+      submitCreating: "Creating...",
+    },
+  },
+  history: {
+    list: {
+      emptyNoEntries: "No game history yet",
+      emptySignedOut: "Sign in to view your game history",
+    },
+    status: {
+      lobby: "Lobby",
+      in_progress: "In Progress",
+      completed: "Completed",
+      waiting: "Waiting",
+      active: "Active",
+    },
+  },
+  payments: {
+    title: "Payment",
+    amountLabel: "Amount",
+    amountPlaceholder: "0.00",
+    amountAria: "Payment amount",
+    currencyLabel: "Currency",
+    currencyPlaceholder: "GEL",
+    currencyAria: "Currency code",
+    noteLabel: "Note (optional)",
+    notePlaceholder: "Add a note...",
+    noteAria: "Payment note or description",
+    submit: "Create Payment",
+    submitting: "Processing...",
+    status: {
+      success: "Payment session created successfully!",
+    },
+    errors: {
+      invalidAmount: "Please enter a valid amount",
+      amountTooLarge: "Amount is too large. Maximum is 1,000,000",
+      invalidUrl: "Invalid payment URL received",
+      noUrl: "No payment URL received",
+      failed: "Payment failed",
+    },
+  },
 };
 
-export const translations: Record<Locale, TranslationBundle> = {
+export const translations = {
   en: enTranslations,
   es: {
     common: {
@@ -427,6 +553,133 @@ export const translations: Record<Locale, TranslationBundle> = {
           sessionAccessToken: "Token de acceso de la sesión",
           refreshToken: "Token de actualización",
         },
+      },
+    },
+    navigation: {
+      chatsTab: "Chats",
+      gamesTab: "Juegos",
+      historyTab: "Historial",
+      settingsTab: "Configuración",
+    },
+    chat: {
+      notFound: "Chat no encontrado",
+      status: {
+        connected: "Conectado",
+        connecting: "Conectando...",
+      },
+      input: {
+        placeholder: "Escribe un mensaje...",
+        ariaLabel: "Entrada de mensaje",
+      },
+      send: "Enviar",
+    },
+    chatList: {
+      search: {
+        placeholder: "Buscar usuarios...",
+        ariaLabel: "Buscar usuarios para chatear",
+      },
+      empty: {
+        noChats: "Aún no hay chats. ¡Inicia una conversación!",
+        unauthenticated: "Inicia sesión para chatear",
+      },
+      messages: {
+        directChat: "Chat Directo",
+      },
+    },
+    games: {
+      lounge: {
+        activeTitle: "Salas de Juego",
+        emptyTitle: "No se encontraron salas. ¡Crea una para empezar!",
+        filters: {
+          statusLabel: "Estado",
+          participationLabel: "Participación",
+          status: {
+            all: "Todos",
+            lobby: "Sala de espera",
+            in_progress: "En progreso",
+            completed: "Completado",
+          },
+          participation: {
+            all: "Todos",
+            hosting: "Anfitrión",
+            joined: "Unido",
+            not_joined: "No unido",
+          },
+        },
+      },
+      rooms: {
+        status: {
+          lobby: "Sala de espera",
+          in_progress: "En progreso",
+          completed: "Completado",
+        },
+        hostedBy: "Anfitrión: {host}",
+        participants: "Participantes",
+      },
+      room: {
+        gameArea: "Área de juego - Integración en tiempo real próximamente",
+      },
+      detail: {
+        title: "Salas de Juego",
+        empty: "No se encontraron salas para este juego",
+      },
+      common: {
+        createRoom: "Crear Sala",
+        joinRoom: "Unirse a Sala",
+        joining: "Uniéndose...",
+        watchRoom: "Ver",
+      },
+      create: {
+        title: "Crear Sala de Juego",
+        sectionGame: "Seleccionar Juego",
+        sectionDetails: "Detalles de la Sala",
+        fieldName: "Nombre de la Sala",
+        namePlaceholder: "Ingresa el nombre de la sala",
+        fieldMaxPlayers: "Jugadores Máximos (opcional)",
+        maxPlayersAria: "Número máximo de jugadores",
+        autoPlaceholder: "Automático",
+        fieldVisibility: "Visibilidad",
+        fieldNotes: "Notas (opcional)",
+        notesPlaceholder: "Agregar notas...",
+        notesAria: "Notas adicionales para la sala",
+        submitCreating: "Creando...",
+      },
+    },
+    history: {
+      list: {
+        emptyNoEntries: "Aún no hay historial de juegos",
+        emptySignedOut: "Inicia sesión para ver tu historial de juegos",
+      },
+      status: {
+        lobby: "Sala de espera",
+        in_progress: "En progreso",
+        completed: "Completado",
+        waiting: "Esperando",
+        active: "Activo",
+      },
+    },
+    payments: {
+      title: "Pago",
+      amountLabel: "Cantidad",
+      amountPlaceholder: "0.00",
+      amountAria: "Monto del pago",
+      currencyLabel: "Moneda",
+      currencyPlaceholder: "GEL",
+      currencyAria: "Código de moneda",
+      noteLabel: "Nota (opcional)",
+      notePlaceholder: "Agregar una nota...",
+      noteAria: "Nota o descripción del pago",
+      submit: "Crear Pago",
+      submitting: "Procesando...",
+      status: {
+        success: "¡Sesión de pago creada exitosamente!",
+      },
+      errors: {
+        invalidAmount: "Por favor ingresa una cantidad válida",
+        amountTooLarge: "La cantidad es demasiado grande. El máximo es 1,000,000",
+        invalidUrl: "URL de pago inválida recibida",
+        noUrl: "No se recibió URL de pago",
+        failed: "El pago falló",
       },
     },
   },
@@ -647,6 +900,133 @@ export const translations: Record<Locale, TranslationBundle> = {
           sessionAccessToken: "Jeton d'accès de session",
           refreshToken: "Jeton d'actualisation",
         },
+      },
+    },
+    navigation: {
+      chatsTab: "Discussions",
+      gamesTab: "Jeux",
+      historyTab: "Historique",
+      settingsTab: "Paramètres",
+    },
+    chat: {
+      notFound: "Discussion introuvable",
+      status: {
+        connected: "Connecté",
+        connecting: "Connexion...",
+      },
+      input: {
+        placeholder: "Écrire un message...",
+        ariaLabel: "Saisie de message",
+      },
+      send: "Envoyer",
+    },
+    chatList: {
+      search: {
+        placeholder: "Rechercher des utilisateurs...",
+        ariaLabel: "Rechercher des utilisateurs avec qui discuter",
+      },
+      empty: {
+        noChats: "Aucune discussion pour le moment. Lancez une conversation !",
+        unauthenticated: "Connectez-vous pour discuter",
+      },
+      messages: {
+        directChat: "Discussion Directe",
+      },
+    },
+    games: {
+      lounge: {
+        activeTitle: "Salles de Jeu",
+        emptyTitle: "Aucune salle trouvée. Créez-en une pour commencer !",
+        filters: {
+          statusLabel: "Statut",
+          participationLabel: "Participation",
+          status: {
+            all: "Tous",
+            lobby: "Salon d'attente",
+            in_progress: "En cours",
+            completed: "Terminé",
+          },
+          participation: {
+            all: "Tous",
+            hosting: "Hôte",
+            joined: "Rejoint",
+            not_joined: "Non rejoint",
+          },
+        },
+      },
+      rooms: {
+        status: {
+          lobby: "Salon d'attente",
+          in_progress: "En cours",
+          completed: "Terminé",
+        },
+        hostedBy: "Hébergé par {host}",
+        participants: "Participants",
+      },
+      room: {
+        gameArea: "Zone de jeu - Intégration en temps réel bientôt disponible",
+      },
+      detail: {
+        title: "Salles de Jeu",
+        empty: "Aucune salle trouvée pour ce jeu",
+      },
+      common: {
+        createRoom: "Créer une Salle",
+        joinRoom: "Rejoindre une Salle",
+        joining: "Rejoindre...",
+        watchRoom: "Regarder",
+      },
+      create: {
+        title: "Créer une Salle de Jeu",
+        sectionGame: "Sélectionner un Jeu",
+        sectionDetails: "Détails de la Salle",
+        fieldName: "Nom de la Salle",
+        namePlaceholder: "Entrez le nom de la salle",
+        fieldMaxPlayers: "Joueurs Maximum (optionnel)",
+        maxPlayersAria: "Nombre maximum de joueurs",
+        autoPlaceholder: "Automatique",
+        fieldVisibility: "Visibilité",
+        fieldNotes: "Notes (optionnel)",
+        notesPlaceholder: "Ajouter des notes...",
+        notesAria: "Notes supplémentaires pour la salle",
+        submitCreating: "Création...",
+      },
+    },
+    history: {
+      list: {
+        emptyNoEntries: "Aucun historique de jeu pour le moment",
+        emptySignedOut: "Connectez-vous pour voir votre historique de jeu",
+      },
+      status: {
+        lobby: "Salon d'attente",
+        in_progress: "En cours",
+        completed: "Terminé",
+        waiting: "En attente",
+        active: "Actif",
+      },
+    },
+    payments: {
+      title: "Paiement",
+      amountLabel: "Montant",
+      amountPlaceholder: "0.00",
+      amountAria: "Montant du paiement",
+      currencyLabel: "Devise",
+      currencyPlaceholder: "GEL",
+      currencyAria: "Code de devise",
+      noteLabel: "Note (optionnel)",
+      notePlaceholder: "Ajouter une note...",
+      noteAria: "Note ou description du paiement",
+      submit: "Créer un Paiement",
+      submitting: "Traitement...",
+      status: {
+        success: "Session de paiement créée avec succès !",
+      },
+      errors: {
+        invalidAmount: "Veuillez saisir un montant valide",
+        amountTooLarge: "Le montant est trop élevé. Le maximum est de 1 000 000",
+        invalidUrl: "URL de paiement invalide reçue",
+        noUrl: "Aucune URL de paiement reçue",
+        failed: "Le paiement a échoué",
       },
     },
   },

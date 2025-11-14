@@ -44,6 +44,74 @@ export type SettingsMessages = {
   accountSupportCtaLabel?: string;
 };
 
+export type AuthMessages = {
+  badge?: string;
+  title?: string;
+  description?: string;
+  statusHeadline?: string;
+  statusDescription?: string;
+  primaryCtaLabel?: string;
+  secondaryCtaLabel?: string;
+  downloadsTitle?: string;
+  downloadsDescription?: string;
+  downloadsIosLabel?: string;
+  downloadsAndroidLabel?: string;
+  homeLinkLabel?: string;
+  shortcuts?: {
+    browseGames?: string;
+  };
+  sections?: {
+    local?: string;
+    oauth?: string;
+    status?: string;
+  };
+  providers?: {
+    guest?: string;
+    local?: string;
+    oauth?: string;
+  };
+  statuses?: {
+    processing?: string;
+    redirecting?: string;
+    loadingSession?: string;
+  };
+  local?: {
+    loginTitle?: string;
+    registerTitle?: string;
+    helper?: {
+      allowedCharacters?: string;
+    };
+    errors?: {
+      passwordMismatch?: string;
+      usernameTooShort?: string;
+    };
+  };
+  oauth?: {
+    title?: string;
+    loginButton?: string;
+    logoutButton?: string;
+    accessTokenLabel?: string;
+    authorizationCodeLabel?: string;
+  };
+  statusCard?: {
+    heading?: string;
+    description?: string;
+    sessionActive?: string;
+    signOutLabel?: string;
+    guestDescription?: string;
+    details?: {
+      provider?: string;
+      displayName?: string;
+      userId?: string;
+      accessExpires?: string;
+      refreshExpires?: string;
+      updated?: string;
+      sessionAccessToken?: string;
+      refreshToken?: string;
+    };
+  };
+};
+
 export type TeamMemberMessages = {
   role?: string;
   bio?: string;
@@ -69,6 +137,25 @@ export type SupportMessages = {
 
 export type CommonMessages = {
   languageNames?: Partial<Record<Locale, string>>;
+  labels?: {
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+    username?: string;
+  };
+  actions?: {
+    login?: string;
+    register?: string;
+    logout?: string;
+    openApp?: string;
+  };
+  prompts?: {
+    haveAccount?: string;
+    needAccount?: string;
+  };
+  statuses?: {
+    authenticated?: string;
+  };
 };
 
 export type TranslationBundle = {
@@ -76,4 +163,5 @@ export type TranslationBundle = {
   home?: HomeMessages;
   settings?: SettingsMessages;
   support?: SupportMessages;
+  auth?: AuthMessages;
 };

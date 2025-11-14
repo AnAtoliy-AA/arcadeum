@@ -1,0 +1,111 @@
+import { resolveApiBase } from "@/shared/lib/api-base";
+
+export type AuthUserProfile = {
+  id: string;
+  email: string;
+  username: string;
+  displayName: string;
+};
+
+export type LoginResponse = {
+  accessToken: string;
+  accessTokenExpiresAt?: string | Date | null;
+  refreshToken?: string | null;
+  refreshTokenExpiresAt?: string | Date | null;
+  user: AuthUserProfile;
+};
+
+type TokenExchangeResponse = {
+  accessToken: string;
+  refreshToken?: string;
+  idToken?: string;
+  tokenType?: string;
+  scope?: string;
+  expiresIn?: number;
+};
+
+function api(url: string): string {
+  const base = resolveApiBase();
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+  const separator = url.startsWith("/") ? "" : "/";
+  return `${base}${separator}${url}`;
+}
+
+async function readJson<T>(res: Response): Promise<T> {
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || `Request failed (${res.status})`);
+  }
+  return (await res.json()) as T;
+}
+
+export async function registerLocal(params: {
+  email: string;
+  password: string;
+  username: string;
+}): Promise<AuthUserProfile> {
+  const res = await fetch(api("/auth/register"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(params),
+  });
+  return readJson<AuthUserProfile>(res);
+}
+
+export async function loginLocal(params: {
+  email: string;
+  password: string;
+}): Promise<LoginResponse> {
+  const res = await fetch(api("/auth/login"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(params),
+  });
+  return readJson<LoginResponse>(res);
+}
+
+export async function exchangeOAuthCode(params: {
+  code: string;
+  codeVerifier?: string;
+  redirectUri?: string;
+}): Promise<TokenExchangeResponse> {
+  const res = await fetch(api("/auth/token"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(params),
+  });
+  return readJson<TokenExchangeResponse>(res);
+}
+
+export async function loginOAuthSession(params: {
+  provider: "google";
+  accessToken?: string;
+  idToken?: string;
+}): Promise<LoginResponse> {
+  const res = await fetch(api("/auth/oauth/login"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(params),
+  });
+  return readJson<LoginResponse>(res);
+}
+
+export async function refreshSession(refreshToken: string): Promise<LoginResponse> {
+  const res = await fetch(api("/auth/refresh"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refreshToken }),
+  });
+  return readJson<LoginResponse>(res);
+}
+
+export async function fetchProfile(accessToken: string): Promise<AuthUserProfile> {
+  const res = await fetch(api("/auth/me"), {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  return readJson<AuthUserProfile>(res);
+}

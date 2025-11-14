@@ -60,6 +60,70 @@ interface AuthTokensResponse {
   user: AuthUserProfile;
 }
 
+function sanitize(value?: string | null): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+function normalizeUrl(value: string): string | null {
+  try {
+    return new URL(value).toString();
+  } catch {
+    return null;
+  }
+}
+
+type WebClientConfig = {
+  id: string;
+  secret: string;
+  redirectUris: string[];
+  allowedOrigins: string[];
+};
+
+function parseRedirectList(value?: string | null): string[] {
+  if (!value) {
+    return [];
+  }
+  return value
+    .split(/[\n,]+/)
+    .map((entry) => entry.trim())
+    .filter((entry) => entry.length > 0);
+}
+
+type ParsedRedirectEntry = {
+  exact?: string;
+  origin?: string;
+};
+
+function parseRedirectEntry(raw: string): ParsedRedirectEntry | null {
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const wildcard = trimmed.endsWith('/*');
+  const candidate = wildcard ? trimmed.slice(0, -2) : trimmed;
+
+  const normalized = normalizeUrl(candidate);
+  if (!normalized) {
+    return null;
+  }
+
+  try {
+    const url = new URL(normalized);
+    const origin = url.origin;
+    if (wildcard) {
+      return { origin } satisfies ParsedRedirectEntry;
+    }
+    return { exact: url.toString(), origin } satisfies ParsedRedirectEntry;
+  } catch {
+    return null;
+  }
+}
+
 @Injectable()
 export class AuthService {
   private discovery: OidcDiscoveryDoc | null = null;
@@ -72,6 +136,121 @@ export class AuthService {
     private readonly refreshModel: Model<RefreshTokenDocument>,
     private readonly jwt: JwtService,
   ) {}
+
+  private buildWebClientConfig(opts: {
+    idKey: string;
+    secretKey?: string;
+    fallbackSecret?: string;
+    redirectKey?: string;
+    originKey?: string;
+  }): WebClientConfig | null {
+    const id = sanitize(this.config.get<string>(opts.idKey));
+    if (!id) {
+      return null;
+    }
+
+    let secret: string | undefined;
+    if (opts.secretKey) {
+      secret = sanitize(this.config.get<string>(opts.secretKey));
+    }
+    if (!secret && opts.fallbackSecret) {
+      secret = opts.fallbackSecret;
+    }
+    if (!secret) {
+      return null;
+    }
+
+    const redirectValue =
+      opts.redirectKey !== undefined
+        ? this.config.get<string>(opts.redirectKey)
+        : undefined;
+    const originValue =
+      opts.originKey !== undefined
+        ? this.config.get<string>(opts.originKey)
+        : undefined;
+
+    const redirectUris = new Set<string>();
+    const allowedOrigins = new Set<string>();
+
+    for (const entry of parseRedirectList(redirectValue)) {
+      const parsed = parseRedirectEntry(entry);
+      if (!parsed) continue;
+      if (parsed.exact) {
+        redirectUris.add(parsed.exact);
+      }
+      if (parsed.origin) {
+        allowedOrigins.add(parsed.origin);
+      }
+    }
+
+    for (const entry of parseRedirectList(originValue)) {
+      const parsed = parseRedirectEntry(entry);
+      if (!parsed?.origin) continue;
+      allowedOrigins.add(parsed.origin);
+    }
+
+    return {
+      id,
+      secret,
+      redirectUris: Array.from(redirectUris),
+      allowedOrigins: Array.from(allowedOrigins),
+    } satisfies WebClientConfig;
+  }
+
+  private getWebClientConfigs(): WebClientConfig[] {
+    const fallbackSecret = sanitize(
+      this.config.get<string>('OAUTH_WEB_CLIENT_SECRET'),
+    );
+
+    const configs = [
+      this.buildWebClientConfig({
+        idKey: 'OAUTH_WEB_CLIENT_ID_NEXT',
+        secretKey: 'OAUTH_WEB_CLIENT_SECRET_NEXT',
+        fallbackSecret,
+        redirectKey: 'OAUTH_WEB_REDIRECT_URI_NEXT',
+        originKey: 'OAUTH_WEB_ALLOWED_ORIGINS_NEXT',
+      }),
+      this.buildWebClientConfig({
+        idKey: 'OAUTH_WEB_CLIENT_ID_EXPO',
+        secretKey: 'OAUTH_WEB_CLIENT_SECRET_EXPO',
+        fallbackSecret,
+        redirectKey: 'OAUTH_WEB_REDIRECT_URI_EXPO',
+        originKey: 'OAUTH_WEB_ALLOWED_ORIGINS_EXPO',
+      }),
+      this.buildWebClientConfig({
+        idKey: 'OAUTH_WEB_CLIENT_ID',
+        secretKey: 'OAUTH_WEB_CLIENT_SECRET',
+        redirectKey: 'OAUTH_WEB_REDIRECT_URI',
+        originKey: 'OAUTH_WEB_ALLOWED_ORIGINS',
+      }),
+    ];
+
+    const unique = new Map<string, WebClientConfig>();
+    for (const entry of configs) {
+      if (!entry) continue;
+      if (!unique.has(entry.id)) {
+        unique.set(entry.id, entry);
+        continue;
+      }
+      const current = unique.get(entry.id);
+      if (!current) continue;
+      const merged = new Set<string>([
+        ...current.redirectUris,
+        ...entry.redirectUris,
+      ]);
+      const mergedOrigins = new Set<string>([
+        ...current.allowedOrigins,
+        ...entry.allowedOrigins,
+      ]);
+      unique.set(entry.id, {
+        ...current,
+        redirectUris: Array.from(merged),
+        allowedOrigins: Array.from(mergedOrigins),
+      });
+    }
+
+    return Array.from(unique.values());
+  }
 
   private async getDiscovery(): Promise<OidcDiscoveryDoc> {
     const issuer = this.config.get<string>('OAUTH_ISSUER');
@@ -96,20 +275,48 @@ export class AuthService {
     code: string;
     codeVerifier?: string;
     redirectUri?: string;
+    requestOrigin?: string;
   }): Promise<OAuthTokenResponse> {
-    const clientId = this.config.get<string>('OAUTH_WEB_CLIENT_ID');
-    const clientSecret = this.config.get<string>('OAUTH_WEB_CLIENT_SECRET');
-    const redirectEnv = this.config.get<string>('OAUTH_WEB_REDIRECT_URI');
-    if (!clientId) {
-      throw new InternalServerErrorException('Missing OAUTH_WEB_CLIENT_ID');
+    const webClients = this.getWebClientConfigs();
+    if (webClients.length === 0) {
+      throw new InternalServerErrorException(
+        'Missing OAuth web client configuration',
+      );
     }
-    if (!clientSecret) {
-      throw new InternalServerErrorException('Missing OAUTH_WEB_CLIENT_SECRET');
+
+    let redirectUri = sanitize(params.redirectUri);
+    let client: WebClientConfig | undefined;
+
+    if (redirectUri) {
+      client = this.findClientForRedirect(webClients, redirectUri);
+      if (!client) {
+        throw new InternalServerErrorException('Redirect URI not allowed');
+      }
+    } else {
+      const originMatch = params.requestOrigin
+        ? this.findClientByOrigin(webClients, params.requestOrigin)
+        : undefined;
+      if (originMatch) {
+        client = originMatch.client;
+        redirectUri =
+          originMatch.redirectUri ?? originMatch.client.redirectUris[0];
+      } else {
+        client = this.findDefaultWebClient(webClients);
+        redirectUri = client?.redirectUris[0];
+      }
     }
-    const redirectUri = params.redirectUri || redirectEnv;
+
+    if (!client) {
+      throw new InternalServerErrorException(
+        'Missing OAuth web client configuration',
+      );
+    }
+
     if (!redirectUri) {
       throw new InternalServerErrorException('Missing redirect URI');
     }
+
+    const { id: clientId, secret: clientSecret } = client;
 
     const discovery = await this.getDiscovery();
     const tokenEndpoint = discovery.token_endpoint;
@@ -544,13 +751,105 @@ export class AuthService {
   }
 
   private getAllowedOAuthClientIds(): string[] {
-    const clientIds = [
-      this.config.get<string>('OAUTH_WEB_CLIENT_ID'),
-      this.config.get<string>('OAUTH_ANDROID_CLIENT_ID'),
-      this.config.get<string>('OAUTH_IOS_CLIENT_ID'),
+    const webClientIds = this.getWebClientConfigs().map((client) => client.id);
+    const additional = [
+      sanitize(this.config.get<string>('OAUTH_ANDROID_CLIENT_ID')),
+      sanitize(this.config.get<string>('OAUTH_IOS_CLIENT_ID')),
     ];
+    const uniq = new Set<string>();
+    for (const value of [...webClientIds, ...additional]) {
+      if (value) {
+        uniq.add(value);
+      }
+    }
+    return Array.from(uniq);
+  }
 
-    return clientIds.filter((value): value is string => Boolean(value));
+  private findClientForRedirect(
+    clients: WebClientConfig[],
+    redirectUri: string,
+  ): WebClientConfig | undefined {
+    const trimmed = sanitize(redirectUri);
+    if (!trimmed) {
+      return undefined;
+    }
+
+    const normalizedUrl = normalizeUrl(trimmed);
+    if (!normalizedUrl) {
+      return undefined;
+    }
+
+    const exactMatch = clients.find((client) =>
+      client.redirectUris.includes(normalizedUrl),
+    );
+    if (exactMatch) {
+      return exactMatch;
+    }
+
+    let origin: string | undefined;
+    try {
+      origin = new URL(normalizedUrl).origin;
+    } catch {
+      return undefined;
+    }
+    if (!origin) {
+      return undefined;
+    }
+
+    return clients.find((client) => client.allowedOrigins.includes(origin));
+  }
+
+  private findDefaultWebClient(
+    clients: WebClientConfig[],
+  ): WebClientConfig | undefined {
+    return (
+      clients.find((client) => client.redirectUris.length > 0) ?? clients[0]
+    );
+  }
+
+  private findClientByOrigin(
+    clients: WebClientConfig[],
+    origin: string,
+  ): { client: WebClientConfig; redirectUri?: string } | undefined {
+    const normalized = this.normalizeOrigin(origin);
+    if (!normalized) {
+      return undefined;
+    }
+
+    const matches = clients.filter((client) =>
+      client.allowedOrigins.includes(normalized),
+    );
+    if (matches.length === 0) {
+      return undefined;
+    }
+
+    const pickRedirect = (client: WebClientConfig): string | undefined => {
+      for (const candidate of client.redirectUris) {
+        const candidateOrigin = this.normalizeOrigin(candidate);
+        if (candidateOrigin === normalized) {
+          return candidate;
+        }
+      }
+      return client.redirectUris[0];
+    };
+
+    const preferred = matches.find((client) =>
+      client.redirectUris.some(
+        (candidate) => this.normalizeOrigin(candidate) === normalized,
+      ),
+    );
+
+    const selected = preferred ?? matches[0];
+    const redirectUri = pickRedirect(selected);
+    return { client: selected, redirectUri };
+  }
+
+  private normalizeOrigin(value: string): string | undefined {
+    try {
+      return new URL(value).origin;
+    } catch {
+      return undefined;
+    }
   }
 
   private async fetchGoogleProfile(params: {

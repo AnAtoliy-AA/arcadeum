@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import Link from "next/link";
 import styled, { css } from "styled-components";
 
 import { useLanguage, formatMessage } from "@/app/i18n/LanguageProvider";
 import { useThemeController } from "@/app/theme/ThemeContext";
-import { SUPPORTED_LOCALES, type Locale } from "@/shared/i18n";
+import { DEFAULT_LOCALE, getMessages, SUPPORTED_LOCALES, type Locale } from "@/shared/i18n";
 import type { ThemePreference } from "@/shared/config/theme";
 
 type DownloadConfig = {
@@ -27,61 +27,15 @@ export type SettingsPageProps = {
   };
   description: string;
 };
-const SETTINGS_TITLE_FALLBACK = "Settings";
-const SETTINGS_DESCRIPTION_TEMPLATE =
-  "Manage your appearance, language, and download preferences for the {appName} web experience.";
-const APPEARANCE_TITLE_FALLBACK = "Appearance";
-const APPEARANCE_DESCRIPTION_TEMPLATE =
-  "Choose a theme to use across the {appName} web experience.";
-const LANGUAGE_TITLE_FALLBACK = "Language";
-const LANGUAGE_DESCRIPTION_FALLBACK =
-  "Interface translations are a work in progress. Save your preference for upcoming updates.";
-const DOWNLOADS_TITLE_FALLBACK = "Mobile builds";
-const DOWNLOADS_DESCRIPTION_FALLBACK =
-  "Grab the latest Expo builds to keep the mobile clients in sync with the web release.";
-const ACCOUNT_TITLE_FALLBACK = "Account";
-const ACCOUNT_DESCRIPTION_FALLBACK =
-  "Web sign-in is rolling out soon. In the meantime, manage your subscriptions via the dashboard or continue in the mobile app.";
-const ACCOUNT_STATUS_FALLBACK = "You are browsing as a guest.";
-const ACCOUNT_PRIMARY_CTA_FALLBACK = "Go to sign-in";
-
-const DEFAULT_THEME_OPTIONS: Array<{
-  code: ThemePreference;
-  label: string;
-  description: string;
-}> = [
-  {
-    code: "system",
-    label: "Match system appearance",
-    description: "Follow your operating system preference automatically.",
-  },
-  {
-    code: "light",
-    label: "Light",
-    description: "Bright neutrals with airy surfaces and subtle gradients.",
-  },
-  {
-    code: "dark",
-    label: "Dark",
-    description: "Contemporary midnight palette ideal for low-light play.",
-  },
-  {
-    code: "neonLight",
-    label: "Neon Light",
-    description: "Arcade-inspired glow with luminous panels and neon edges.",
-  },
-  {
-    code: "neonDark",
-    label: "Neon Dark",
-    description: "High-contrast vaporwave styling for dramatic game tables.",
-  },
+const DEFAULT_TRANSLATIONS = getMessages(DEFAULT_LOCALE);
+const DEFAULT_SETTINGS_COPY = DEFAULT_TRANSLATIONS.settings ?? {};
+const THEME_OPTION_ORDER: ThemePreference[] = [
+  "system",
+  "light",
+  "dark",
+  "neonLight",
+  "neonDark",
 ];
-
-const LANGUAGE_LABELS: Record<Locale, string> = {
-  en: "English",
-  es: "Español",
-  fr: "Français",
-};
 
 export function SettingsPage({
   appName,
@@ -92,73 +46,90 @@ export function SettingsPage({
   const { themePreference, setThemePreference } = useThemeController();
   const { locale, setLocale, messages } = useLanguage();
   const settingsCopy = messages.settings ?? {};
+  const defaultSettings = DEFAULT_SETTINGS_COPY;
+  const defaultThemeOptions = defaultSettings.themeOptions ?? {};
+  const defaultLanguageLabels = defaultSettings.languageOptionLabels ?? {};
 
-  const fallbackSettingsDescription =
-    formatMessage(SETTINGS_DESCRIPTION_TEMPLATE, { appName }) ??
-    SETTINGS_DESCRIPTION_TEMPLATE.replace("{appName}", appName);
-  const pageTitle = settingsCopy.title ?? SETTINGS_TITLE_FALLBACK;
+  const pageTitle = settingsCopy.title ?? defaultSettings.title ?? "";
   const pageDescription =
-    formatMessage(settingsCopy.description, { appName }) ?? description ?? fallbackSettingsDescription;
+    formatMessage(settingsCopy.description, { appName }) ??
+    formatMessage(defaultSettings.description, { appName }) ??
+    description;
 
-  const fallbackAppearanceDescription =
-    formatMessage(APPEARANCE_DESCRIPTION_TEMPLATE, { appName }) ??
-    APPEARANCE_DESCRIPTION_TEMPLATE.replace("{appName}", appName);
-  const appearanceTitle = settingsCopy.appearanceTitle ?? APPEARANCE_TITLE_FALLBACK;
+  const appearanceTitle = settingsCopy.appearanceTitle ?? defaultSettings.appearanceTitle ?? "";
   const appearanceDescription =
-    formatMessage(settingsCopy.appearanceDescription, { appName }) ?? fallbackAppearanceDescription;
+    formatMessage(settingsCopy.appearanceDescription, { appName }) ??
+    formatMessage(defaultSettings.appearanceDescription, { appName }) ??
+    "";
 
-  const themeOptions = useMemo(
-    () =>
-      DEFAULT_THEME_OPTIONS.map((option) => {
-        const override = settingsCopy.themeOptions?.[option.code];
-        const descriptionOverride =
-          formatMessage(override?.description, { appName }) ?? option.description;
-        return {
-          ...option,
-          label: override?.label ?? option.label,
-          description: descriptionOverride,
-        };
-      }),
-    [appName, settingsCopy.themeOptions],
-  );
+  const themeOptions = THEME_OPTION_ORDER.map((code) => {
+    const base = defaultThemeOptions[code] ?? {};
+    const override = settingsCopy.themeOptions?.[code];
+    const label = override?.label ?? base.label ?? code;
+    const descriptionText =
+      formatMessage(override?.description, { appName }) ??
+      formatMessage(base.description, { appName }) ??
+      "";
 
-  const languageTitle = settingsCopy.languageTitle ?? LANGUAGE_TITLE_FALLBACK;
-  const languageDescription = settingsCopy.languageDescription ?? LANGUAGE_DESCRIPTION_FALLBACK;
+    return {
+      code,
+      label,
+      description: descriptionText,
+    };
+  });
 
-  const languageOptions = useMemo(
-    () =>
-      SUPPORTED_LOCALES.map((code) => ({
-        code,
-        label: settingsCopy.languageOptionLabels?.[code] ?? LANGUAGE_LABELS[code],
-      })),
-    [settingsCopy.languageOptionLabels],
-  );
+  const languageTitle = settingsCopy.languageTitle ?? defaultSettings.languageTitle ?? "";
+  const languageDescription =
+    formatMessage(settingsCopy.languageDescription, { appName }) ??
+    formatMessage(defaultSettings.languageDescription, { appName }) ??
+    "";
 
-  const downloadsTitle = settingsCopy.downloadsTitle ?? downloads.title ?? DOWNLOADS_TITLE_FALLBACK;
+  const languageOptions = SUPPORTED_LOCALES.map((code) => ({
+    code,
+    label:
+      settingsCopy.languageOptionLabels?.[code] ??
+      defaultLanguageLabels[code] ??
+      code.toUpperCase(),
+  }));
+
+  const downloadsTitle =
+    settingsCopy.downloadsTitle ??
+    defaultSettings.downloadsTitle ??
+    downloads.title;
   const downloadsDescription =
     formatMessage(settingsCopy.downloadsDescription, { appName }) ??
-    downloads.description ??
-    DOWNLOADS_DESCRIPTION_FALLBACK;
+    formatMessage(defaultSettings.downloadsDescription, { appName }) ??
+    downloads.description;
 
-  const downloadButtons = useMemo(() => {
-    const buttons: Array<{ key: string; href: string; label: string }> = [];
-    if (downloads.iosHref) {
-      const label = settingsCopy.downloadsIosLabel ?? downloads.iosLabel;
-      buttons.push({ key: "ios", href: downloads.iosHref, label });
-    }
-    if (downloads.androidHref) {
-      const label = settingsCopy.downloadsAndroidLabel ?? downloads.androidLabel;
-      buttons.push({ key: "android", href: downloads.androidHref, label });
-    }
-    return buttons;
-  }, [downloads.androidHref, downloads.androidLabel, downloads.iosHref, downloads.iosLabel, settingsCopy.downloadsAndroidLabel, settingsCopy.downloadsIosLabel]);
+  const downloadButtons: Array<{ key: string; href: string; label: string }> = [];
+  if (downloads.iosHref) {
+    const label =
+      settingsCopy.downloadsIosLabel ??
+      defaultSettings.downloadsIosLabel ??
+      downloads.iosLabel;
+    downloadButtons.push({ key: "ios", href: downloads.iosHref, label });
+  }
+  if (downloads.androidHref) {
+    const label =
+      settingsCopy.downloadsAndroidLabel ??
+      defaultSettings.downloadsAndroidLabel ??
+      downloads.androidLabel;
+    downloadButtons.push({ key: "android", href: downloads.androidHref, label });
+  }
 
-  const accountTitle = settingsCopy.accountTitle ?? ACCOUNT_TITLE_FALLBACK;
+  const accountTitle = settingsCopy.accountTitle ?? defaultSettings.accountTitle ?? "";
   const accountDescription =
-    formatMessage(settingsCopy.accountDescription, { appName }) ?? ACCOUNT_DESCRIPTION_FALLBACK;
-  const accountStatus = settingsCopy.accountGuestStatus ?? ACCOUNT_STATUS_FALLBACK;
-  const accountPrimaryCta = settingsCopy.accountPrimaryCta ?? ACCOUNT_PRIMARY_CTA_FALLBACK;
-  const accountSupportLabel = settingsCopy.accountSupportCtaLabel ?? supportCta.label;
+    formatMessage(settingsCopy.accountDescription, { appName }) ??
+    formatMessage(defaultSettings.accountDescription, { appName }) ??
+    "";
+  const accountStatus =
+    settingsCopy.accountGuestStatus ?? defaultSettings.accountGuestStatus ?? "";
+  const accountPrimaryCta =
+    settingsCopy.accountPrimaryCta ?? defaultSettings.accountPrimaryCta ?? "";
+  const accountSupportLabel =
+    settingsCopy.accountSupportCtaLabel ??
+    defaultSettings.accountSupportCtaLabel ??
+    supportCta.label;
 
   const handleThemeSelect = useCallback(
     (code: ThemePreference) => {

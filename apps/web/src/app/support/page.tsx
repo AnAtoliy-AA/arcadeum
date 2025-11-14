@@ -1,17 +1,13 @@
-import type { Metadata } from "next";
 
 import { appConfig } from "@/shared/config/app-config";
-
-import { SupportPage as SupportPageView } from "@/pages/support/ui/SupportPage/SupportPage";
+import { SupportPage as SupportPageView } from "@/app/support/SupportPage";
 import type { SupportAction, SupportTeamMember } from "@/entities/support/model/types";
 
-function trim(value?: string | null): string | undefined {
-  if (!value) {
-    return undefined;
-  }
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
-}
+export const metadata = {
+  title: "Support the developers",
+  description: `Keep ${appConfig.appName} iterating quickly and accessible to the tabletop community. Arcade labs, infrastructure, and community events are self-funded today. Your backing keeps the realtime servers online, unlocks more playtest nights, and helps us ship the next wave of prototypes. Every contribution keeps ${appConfig.appName} evolving. Thank you for helping us build the future of remote tabletop play!`,
+};
+
 
 const SUPPORT_TITLE = "Support the developers";
 const SUPPORT_TAGLINE = `Keep ${appConfig.appName} iterating quickly and accessible to the tabletop community.`;
@@ -43,10 +39,14 @@ const TEAM_MEMBERS: SupportTeamMember[] = [
   },
 ];
 
-export const metadata: Metadata = {
-  title: `${SUPPORT_TITLE} · ${appConfig.appName}`,
-  description: SUPPORT_DESCRIPTION,
-};
+function trim(value?: string | null): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
 
 function buildActions(appName: string): SupportAction[] {
   const actions: SupportAction[] = [

@@ -7,6 +7,7 @@ import {
   Req,
   UnauthorizedException,
   Query,
+  Headers,
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { AuthService } from './auth.service';
@@ -23,11 +24,20 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('token')
-  async exchange(@Body() dto: TokenExchangeDto): Promise<any> {
+  async exchange(
+    @Body() dto: TokenExchangeDto,
+    @Headers('origin') originHeader?: string,
+    @Headers('referer') refererHeader?: string,
+  ): Promise<any> {
+    const requestOrigin = this.resolveRequestOrigin(
+      originHeader,
+      refererHeader,
+    );
     return await this.authService.exchangeCode({
       code: dto.code,
       codeVerifier: dto.codeVerifier,
       redirectUri: dto.redirectUri,
+      requestOrigin,
     });
   }
 
@@ -72,5 +82,23 @@ export class AuthController {
       query: query ?? '',
       requestingUserId: user.userId,
     });
+  }
+
+  private resolveRequestOrigin(
+    originHeader?: string,
+    refererHeader?: string,
+  ): string | undefined {
+    const parts = [originHeader, refererHeader];
+    for (const candidate of parts) {
+      const trimmed = candidate?.trim();
+      if (!trimmed) continue;
+      try {
+        const url = new URL(trimmed);
+        return url.origin;
+      } catch {
+        continue;
+      }
+    }
+    return undefined;
   }
 }

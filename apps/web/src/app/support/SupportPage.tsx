@@ -1,12 +1,12 @@
 "use client";
 
-import { useMemo } from "react";
 import Link from "next/link";
 import styled, { css } from "styled-components";
 
 import { useLanguage, formatMessage } from "@/app/i18n/LanguageProvider";
 import { CopyActionButton } from "@/features/support/copy-action/ui/CopyActionButton";
 import type { SupportAction, SupportTeamMember } from "@/entities/support/model/types";
+import { DEFAULT_LOCALE, getMessages } from "@/shared/i18n";
 
 export type SupportPageProps = {
   appName: string;
@@ -17,9 +17,8 @@ export type SupportPageProps = {
   teamMembers: SupportTeamMember[];
   actions: SupportAction[];
 };
-
-const TEAM_SECTION_TITLE_FALLBACK = "Meet the core team";
-const ACTIONS_SECTION_TITLE_FALLBACK = "Ways to contribute";
+const DEFAULT_TRANSLATIONS = getMessages(DEFAULT_LOCALE);
+const DEFAULT_SUPPORT_COPY = DEFAULT_TRANSLATIONS.support ?? {};
 
 const Page = styled.div`
   min-height: 100vh;
@@ -277,62 +276,78 @@ export function SupportPage({
   actions,
 }: SupportPageProps) {
   const { messages } = useLanguage();
-  const supportCopy = useMemo(() => messages.support ?? {}, [messages.support]);
+  const supportCopy = messages.support ?? {};
+  const defaultSupport = DEFAULT_SUPPORT_COPY;
+  const defaultTeam = defaultSupport.team ?? {};
+  const defaultActions = defaultSupport.actions ?? {};
 
-  const resolvedTitle = supportCopy.title ?? title;
-  const resolvedTagline = formatMessage(supportCopy.tagline, { appName }) ?? tagline;
-  const resolvedDescription = formatMessage(supportCopy.description, { appName }) ?? description;
-  const resolvedThanks = formatMessage(supportCopy.thanks, { appName }) ?? thanks;
+  const resolvedTitle = supportCopy.title ?? defaultSupport.title ?? title;
+  const resolvedTagline =
+    formatMessage(supportCopy.tagline, { appName }) ??
+    formatMessage(defaultSupport.tagline, { appName }) ??
+    tagline;
+  const resolvedDescription =
+    formatMessage(supportCopy.description, { appName }) ??
+    formatMessage(defaultSupport.description, { appName }) ??
+    description;
+  const resolvedThanks =
+    formatMessage(supportCopy.thanks, { appName }) ??
+    formatMessage(defaultSupport.thanks, { appName }) ??
+    thanks;
 
-  const localizedTeamMembers = useMemo(
-    () =>
-      teamMembers.map((member) => {
-        const overrides = supportCopy.team?.[member.key];
-        return {
-          ...member,
-          role: overrides?.role ?? member.role,
-          bio: formatMessage(overrides?.bio, { appName }) ?? member.bio,
-        };
-      }),
-    [teamMembers, supportCopy, appName],
-  );
+  const localizedTeamMembers = teamMembers.map((member) => {
+    const overrides = supportCopy.team?.[member.key];
+    const base = defaultTeam[member.key];
+    return {
+      ...member,
+      role: overrides?.role ?? base?.role ?? member.role,
+      bio:
+        formatMessage(overrides?.bio, { appName }) ??
+        formatMessage(base?.bio, { appName }) ??
+        member.bio,
+    };
+  });
 
-  const localizedActions = useMemo(
-    () =>
-      actions.map((action) => {
-        const overrides = supportCopy.actions?.[action.key];
-        if (!overrides) {
-          return action;
-        }
+  const localizedActions = actions.map((action) => {
+    const overrides = supportCopy.actions?.[action.key];
+    const base = defaultActions[action.key];
+    const context = {
+      appName,
+      iban: action.type === "copy" ? action.value : undefined,
+    } satisfies Record<string, string | undefined>;
 
-        const context = {
-          appName,
-          iban: action.type === "copy" ? action.value : undefined,
-        } satisfies Record<string, string | undefined>;
+    const titleCopy = overrides?.title ?? base?.title ?? action.title;
+    const descriptionCopy =
+      formatMessage(overrides?.description, context) ??
+      formatMessage(base?.description, context) ??
+      action.description;
+    const ctaCopy = overrides?.cta ?? base?.cta ?? action.cta;
 
-        if (action.type === "copy") {
-          return {
-            ...action,
-            title: overrides.title ?? action.title,
-            description: formatMessage(overrides.description, context) ?? action.description,
-            cta: overrides.cta ?? action.cta,
-            successMessage:
-              formatMessage(overrides.successMessage, context) ?? action.successMessage,
-          };
-        }
+    if (action.type === "copy") {
+      return {
+        ...action,
+        title: titleCopy,
+        description: descriptionCopy,
+        cta: ctaCopy,
+        successMessage:
+          formatMessage(overrides?.successMessage, context) ??
+          formatMessage(base?.successMessage, context) ??
+          action.successMessage,
+      };
+    }
 
-        return {
-          ...action,
-          title: overrides.title ?? action.title,
-          description: formatMessage(overrides.description, context) ?? action.description,
-          cta: overrides.cta ?? action.cta,
-        };
-      }),
-    [actions, supportCopy, appName],
-  );
+    return {
+      ...action,
+      title: titleCopy,
+      description: descriptionCopy,
+      cta: ctaCopy,
+    };
+  });
 
-  const teamSectionTitle = supportCopy.teamSectionTitle ?? TEAM_SECTION_TITLE_FALLBACK;
-  const actionsSectionTitle = supportCopy.actionsSectionTitle ?? ACTIONS_SECTION_TITLE_FALLBACK;
+  const teamSectionTitle =
+    supportCopy.teamSectionTitle ?? defaultSupport.teamSectionTitle ?? "";
+  const actionsSectionTitle =
+    supportCopy.actionsSectionTitle ?? defaultSupport.actionsSectionTitle ?? "";
 
   return (
     <Page>
@@ -398,3 +413,5 @@ export function SupportPage({
     </Page>
   );
 }
+
+export default SupportPage;

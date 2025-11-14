@@ -2,5 +2,5 @@
 
 set -e
 
-npm run build
+pnpm run build
 

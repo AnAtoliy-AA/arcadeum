@@ -16,10 +16,37 @@ const GameContainer = styled.div`
   flex-direction: column;
   gap: 1.5rem;
   padding: 2rem;
-  border-radius: 16px;
+  border-radius: 24px;
   background: ${({ theme }) => theme.surfaces.card.background};
   border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  min-height: 500px;
+  min-height: 600px;
+  box-shadow: ${({ theme }) => theme.surfaces.card.shadow};
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(
+      90deg,
+      ${({ theme }) => theme.buttons.primary.gradientStart} 0%,
+      ${({ theme }) => theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart} 100%
+    );
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0%, 100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
 `;
 
 const GameHeader = styled.div`
@@ -69,25 +96,88 @@ const StartButton = styled.button`
 `;
 
 const GameBoard = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  animation: fadeIn 0.5s ease-out;
 
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 `;
 
-const LeftPanel = styled.div`
+const GameTable = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 2rem;
+  align-items: center;
+  padding: 2rem;
+  border-radius: 20px;
+  background: ${({ theme }) => theme.surfaces.panel.background};
+  border: 2px solid ${({ theme }) => theme.surfaces.panel.border};
+  position: relative;
+  min-height: 400px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: 20px;
+    padding: 2px;
+    background: linear-gradient(
+      135deg,
+      ${({ theme }) => theme.buttons.primary.gradientStart}20,
+      transparent 50%,
+      ${({ theme }) => theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart}20
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
 `;
 
-const RightPanel = styled.div`
+const PlayersRing = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  width: 100%;
+  max-width: 900px;
+  justify-items: center;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+`;
+
+const CenterTable = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  border-radius: 16px;
+  background: ${({ theme }) => theme.background.base};
+  border: 2px dashed ${({ theme }) => theme.surfaces.card.border};
+  min-width: 300px;
+  position: relative;
+  animation: pulse 2s ease-in-out infinite;
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.02);
+    }
+  }
 `;
 
 const InfoCard = styled.div`
@@ -120,18 +210,130 @@ const PlayersList = styled.div`
   gap: 0.5rem;
 `;
 
-const PlayerItem = styled.div<{ $isCurrentTurn?: boolean; $isAlive?: boolean }>`
-  padding: 0.75rem;
-  border-radius: 8px;
-  background: ${({ $isCurrentTurn, theme }) =>
-    $isCurrentTurn ? theme.buttons.primary.gradientStart : "transparent"};
+const PlayerCard = styled.div<{ $isCurrentTurn?: boolean; $isAlive?: boolean; $isCurrentUser?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1rem;
+  border-radius: 16px;
+  background: ${({ $isCurrentTurn, $isCurrentUser, theme }) =>
+    $isCurrentTurn
+      ? `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}, ${theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart})`
+      : $isCurrentUser
+      ? theme.surfaces.card.background
+      : theme.surfaces.panel.background};
   color: ${({ $isCurrentTurn, theme }) =>
     $isCurrentTurn ? theme.buttons.primary.text : theme.text.primary};
   opacity: ${({ $isAlive }) => ($isAlive ? 1 : 0.5)};
-  border: 1px solid
-    ${({ $isCurrentTurn, theme }) =>
-      $isCurrentTurn ? "transparent" : theme.surfaces.panel.border};
-  font-weight: ${({ $isCurrentTurn }) => ($isCurrentTurn ? "600" : "400")};
+  border: 2px solid
+    ${({ $isCurrentTurn, $isCurrentUser, theme }) =>
+      $isCurrentTurn
+        ? theme.buttons.primary.gradientStart
+        : $isCurrentUser
+        ? theme.buttons.primary.gradientStart
+        : theme.surfaces.panel.border};
+  box-shadow: ${({ $isCurrentTurn, $isCurrentUser }) =>
+    $isCurrentTurn
+      ? "0 8px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.5)"
+      : $isCurrentUser
+      ? "0 4px 12px rgba(0, 0, 0, 0.2)"
+      : "0 2px 8px rgba(0, 0, 0, 0.1)"};
+  transition: all 0.3s ease;
+  position: relative;
+  min-width: 140px;
+
+  ${({ $isCurrentTurn }) =>
+    $isCurrentTurn &&
+    `
+    animation: glow 2s ease-in-out infinite;
+
+    @keyframes glow {
+      0%, 100% {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.5);
+      }
+      50% {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 30px rgba(59, 130, 246, 0.8);
+      }
+    }
+  `}
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: ${({ $isCurrentTurn }) =>
+      $isCurrentTurn
+        ? "0 12px 32px rgba(0, 0, 0, 0.4), 0 0 30px rgba(59, 130, 246, 0.8)"
+        : "0 6px 16px rgba(0, 0, 0, 0.2)"};
+  }
+`;
+
+const PlayerAvatar = styled.div<{ $isCurrentTurn?: boolean; $isAlive?: boolean }>`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: ${({ $isCurrentTurn, theme }) =>
+    $isCurrentTurn
+      ? theme.buttons.primary.text
+      : theme.background.base};
+  border: 3px solid ${({ $isCurrentTurn, theme }) =>
+    $isCurrentTurn ? theme.buttons.primary.text : theme.surfaces.card.border};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  transition: all 0.3s ease;
+  position: relative;
+
+  ${({ $isAlive }) => !$isAlive && `
+    filter: grayscale(100%);
+  `}
+`;
+
+const PlayerName = styled.div<{ $isCurrentTurn?: boolean }>`
+  font-weight: ${({ $isCurrentTurn }) => ($isCurrentTurn ? "700" : "600")};
+  font-size: 0.875rem;
+  text-align: center;
+  word-break: break-word;
+  max-width: 100%;
+`;
+
+const PlayerCardCount = styled.div<{ $isCurrentTurn?: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: ${({ $isCurrentTurn, theme }) =>
+    $isCurrentTurn ? `${theme.buttons.primary.text}20` : theme.background.base};
+  border: 1px solid ${({ $isCurrentTurn, theme }) =>
+    $isCurrentTurn ? theme.buttons.primary.text : theme.surfaces.card.border};
+  font-weight: 600;
+`;
+
+const TurnIndicator = styled.div`
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  border: 2px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  animation: bounce 1s ease-in-out infinite;
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
 `;
 
 const HandContainer = styled.div`
@@ -146,40 +348,71 @@ const CardsGrid = styled.div`
   gap: 0.75rem;
 `;
 
-const Card = styled.div<{ $cardType?: string }>`
+const Card = styled.div<{ $cardType?: string; $index?: number }>`
   aspect-ratio: 2/3;
-  border-radius: 8px;
+  border-radius: 12px;
   background: ${({ $cardType }) => {
-    if ($cardType === "exploding_cat") return "#DC2626";
-    if ($cardType === "defuse") return "#10B981";
-    if ($cardType === "attack") return "#F59E0B";
-    if ($cardType === "skip") return "#3B82F6";
-    return "#8B5CF6";
+    if ($cardType === "exploding_cat") return "linear-gradient(135deg, #DC2626, #991B1B)";
+    if ($cardType === "defuse") return "linear-gradient(135deg, #10B981, #059669)";
+    if ($cardType === "attack") return "linear-gradient(135deg, #F59E0B, #D97706)";
+    if ($cardType === "skip") return "linear-gradient(135deg, #3B82F6, #2563EB)";
+    return "linear-gradient(135deg, #8B5CF6, #7C3AED)";
   }};
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   color: white;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.75rem;
   text-align: center;
-  padding: 0.5rem;
+  padding: 0.75rem 0.5rem;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: ${({ $index }) => `cardFadeIn 0.3s ease-out ${($index || 0) * 0.05}s both`};
+
+  @keyframes cardFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px) rotateZ(-5deg);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) rotateZ(0deg);
+    }
+  }
 
   &:hover {
-    transform: translateY(-4px);
+    transform: translateY(-8px) rotateZ(2deg) scale(1.05);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    z-index: 10;
   }
 
   &::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
     pointer-events: none;
   }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    pointer-events: none;
+  }
+`;
+
+const CardEmoji = styled.div`
+  font-size: 2rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 `;
 
 const ActionButtons = styled.div`
@@ -189,40 +422,72 @@ const ActionButtons = styled.div`
 `;
 
 const ActionButton = styled.button<{ variant?: "primary" | "secondary" | "danger" }>`
-  padding: 0.75rem 1.25rem;
+  padding: 0.875rem 1.5rem;
   border-radius: 12px;
   border: none;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 
   ${({ variant, theme }) => {
     if (variant === "danger") {
       return `
-        background: #DC2626;
+        background: linear-gradient(135deg, #DC2626, #991B1B);
         color: white;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
       `;
     }
     if (variant === "secondary") {
       return `
         background: ${theme.buttons.secondary.background};
         color: ${theme.buttons.secondary.text};
-        border: 1px solid ${theme.buttons.secondary.border};
+        border: 2px solid ${theme.buttons.secondary.border};
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       `;
     }
     return `
-      background: ${theme.buttons.primary.gradientStart};
+      background: linear-gradient(135deg, ${theme.buttons.primary.gradientStart}, ${theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart});
       color: ${theme.buttons.primary.text};
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
     `;
   }}
 
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
   &:hover:not(:disabled) {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: ${({ variant }) =>
+      variant === "danger"
+        ? "0 6px 20px rgba(220, 38, 38, 0.6)"
+        : variant === "secondary"
+        ? "0 4px 16px rgba(0, 0, 0, 0.15)"
+        : "0 6px 20px rgba(59, 130, 246, 0.6)"};
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    filter: grayscale(50%);
   }
 `;
 
@@ -471,65 +736,79 @@ export function ExplodingCatsGame({
       </GameHeader>
 
       <GameBoard>
-        <LeftPanel>
-          <InfoCard>
-            <InfoTitle>
+        <GameTable>
+          <PlayersRing>
+            {snapshot.playerOrder.map((playerId, index) => {
+              const player = snapshot.players.find((p) => p.playerId === playerId);
+              if (!player) return null;
+
+              const isCurrent = index === snapshot.currentTurnIndex;
+              const isCurrentUserCard = playerId === currentUserId;
+              const displayName = resolveDisplayName(
+                playerId,
+                playerId === currentUserId
+                  ? t("games.table.players.you") || "You"
+                  : `Player ${playerId.slice(0, 8)}`
+              );
+
+              return (
+                <PlayerCard
+                  key={playerId}
+                  $isCurrentTurn={isCurrent}
+                  $isAlive={player.alive}
+                  $isCurrentUser={isCurrentUserCard}
+                >
+                  {isCurrent && <TurnIndicator>⭐</TurnIndicator>}
+                  <PlayerAvatar $isCurrentTurn={isCurrent} $isAlive={player.alive}>
+                    {player.alive ? "🎮" : "💀"}
+                  </PlayerAvatar>
+                  <PlayerName $isCurrentTurn={isCurrent}>{displayName}</PlayerName>
+                  {player.alive && (
+                    <PlayerCardCount $isCurrentTurn={isCurrent}>
+                      🃏 {player.hand.length}
+                    </PlayerCardCount>
+                  )}
+                </PlayerCard>
+              );
+            })}
+          </PlayersRing>
+
+          <CenterTable>
+            <InfoTitle style={{ margin: 0 }}>
               {t("games.table.state.deck") || "Game State"}
             </InfoTitle>
-            <InfoContent>
-              <div>
-                {t("games.table.state.deck") || "Deck"}: {snapshot.deck.length}{" "}
-                {t("games.table.state.cards") || "cards"}
+            <div style={{
+              display: "flex",
+              gap: "2rem",
+              alignItems: "center",
+              justifyContent: "center",
+              flexWrap: "wrap",
+              fontSize: "1rem",
+              fontWeight: 600
+            }}>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>🎴</div>
+                <div>{t("games.table.state.deck") || "Deck"}</div>
+                <div style={{ fontSize: "1.5rem", color: "#3B82F6" }}>{snapshot.deck.length}</div>
               </div>
-              <div>
-                {t("games.table.state.discard") || "Discard"}: {snapshot.discardPile.length}{" "}
-                {t("games.table.state.cards") || "cards"}
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>🗑️</div>
+                <div>{t("games.table.state.discard") || "Discard"}</div>
+                <div style={{ fontSize: "1.5rem", color: "#F59E0B" }}>{snapshot.discardPile.length}</div>
               </div>
-              <div>
-                {t("games.table.state.pendingDraws") || "Pending draws"}: {snapshot.pendingDraws}
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>⏳</div>
+                <div>{t("games.table.state.pendingDraws") || "Pending"}</div>
+                <div style={{ fontSize: "1.5rem", color: "#DC2626" }}>{snapshot.pendingDraws}</div>
               </div>
-            </InfoContent>
-          </InfoCard>
-
-          <InfoCard>
-            <InfoTitle>{t("games.rooms.participants") || "Players"}</InfoTitle>
-            <PlayersList>
-              {snapshot.playerOrder.map((playerId, index) => {
-                const player = snapshot.players.find((p) => p.playerId === playerId);
-                if (!player) return null;
-
-                const isCurrent = index === snapshot.currentTurnIndex;
-                const displayName = resolveDisplayName(
-                  playerId,
-                  playerId === currentUserId
-                    ? t("games.table.players.you") || "You"
-                    : `Player ${playerId.slice(0, 8)}`
-                );
-
-                return (
-                  <PlayerItem
-                    key={playerId}
-                    $isCurrentTurn={isCurrent}
-                    $isAlive={player.alive}
-                  >
-                    {displayName} {!player.alive && "💀"}
-                    {player.alive &&
-                      ` (${player.hand.length} ${
-                        player.hand.length === 1
-                          ? t("games.table.state.card") || "card"
-                          : t("games.table.state.cards") || "cards"
-                      })`}
-                  </PlayerItem>
-                );
-              })}
-            </PlayersList>
-          </InfoCard>
+            </div>
+          </CenterTable>
 
           {snapshot.logs && snapshot.logs.length > 0 && (
-            <InfoCard>
+            <InfoCard style={{ maxWidth: "600px" }}>
               <InfoTitle>{t("games.table.log.title") || "Game Log"}</InfoTitle>
               <GameLog>
-                {snapshot.logs.slice(-10).map((log) => {
+                {snapshot.logs.slice(-5).map((log) => {
                   const senderDisplay = resolveDisplayName(
                     log.senderId ?? undefined,
                     log.senderName ?? undefined
@@ -546,32 +825,31 @@ export function ExplodingCatsGame({
               </GameLog>
             </InfoCard>
           )}
-        </LeftPanel>
+        </GameTable>
+        {currentPlayer && currentPlayer.alive && (
+          <HandContainer>
+            <InfoCard>
+              <InfoTitle>
+                {t("games.table.hand.title") || "Your Hand"} ({currentPlayer.hand.length}{" "}
+                {currentPlayer.hand.length === 1
+                  ? t("games.table.state.card") || "card"
+                  : t("games.table.state.cards") || "cards"}
+                )
+              </InfoTitle>
+              <CardsGrid>
+                {currentPlayer.hand.map((card, index) => (
+                  <Card key={`${card}-${index}`} $cardType={card} $index={index}>
+                    <CardEmoji>{getCardEmoji(card)}</CardEmoji>
+                    <div>{t(getCardTranslationKey(card) as any) || card}</div>
+                  </Card>
+                ))}
+              </CardsGrid>
+            </InfoCard>
 
-        <RightPanel>
-          {currentPlayer && currentPlayer.alive && (
-            <HandContainer>
+            {isMyTurn && (
               <InfoCard>
-                <InfoTitle>
-                  {t("games.table.hand.title") || "Your Hand"} ({currentPlayer.hand.length}{" "}
-                  {currentPlayer.hand.length === 1
-                    ? t("games.table.state.card") || "card"
-                    : t("games.table.state.cards") || "cards"}
-                  )
-                </InfoTitle>
-                <CardsGrid>
-                  {currentPlayer.hand.map((card, index) => (
-                    <Card key={`${card}-${index}`} $cardType={card}>
-                      {getCardEmoji(card)} {t(getCardTranslationKey(card) as any) || card}
-                    </Card>
-                  ))}
-                </CardsGrid>
-              </InfoCard>
-
-              {isMyTurn && (
-                <InfoCard>
-                  <InfoTitle>{t("games.table.actions.start") || "Actions"}</InfoTitle>
-                  <ActionButtons>
+                <InfoTitle>{t("games.table.actions.start") || "Actions"}</InfoTitle>
+                <ActionButtons>
                     <ActionButton
                       onClick={onDraw}
                       disabled={!canAct || actionBusy === "draw"}
@@ -605,22 +883,23 @@ export function ExplodingCatsGame({
                   </ActionButtons>
                 </InfoCard>
               )}
-            </HandContainer>
-          )}
+          </HandContainer>
+        )}
 
-          {currentPlayer && !currentPlayer.alive && (
-            <EmptyState>
-              <div style={{ fontSize: "3rem" }}>💀</div>
-              <div>
-                <strong>{t("games.table.eliminated.title") || "You have been eliminated!"}</strong>
-              </div>
-              <div style={{ fontSize: "0.875rem" }}>
-                {t("games.table.eliminated.message") ||
-                  "Watch the remaining players battle it out"}
-              </div>
-            </EmptyState>
-          )}
-        </RightPanel>
+        {currentPlayer && !currentPlayer.alive && (
+          <EmptyState>
+            <div style={{ fontSize: "4rem" }}>💀</div>
+            <div>
+              <strong style={{ fontSize: "1.25rem" }}>
+                {t("games.table.eliminated.title") || "You have been eliminated!"}
+              </strong>
+            </div>
+            <div style={{ fontSize: "1rem" }}>
+              {t("games.table.eliminated.message") ||
+                "Watch the remaining players battle it out"}
+            </div>
+          </EmptyState>
+        )}
       </GameBoard>
     </GameContainer>
   );

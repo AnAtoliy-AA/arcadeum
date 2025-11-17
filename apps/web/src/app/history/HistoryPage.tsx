@@ -402,67 +402,30 @@ export function HistoryPage() {
                 : t("history.list.emptySignedOut")}
             </Empty>
           ) : (
-            <>
-              <ResultsInfo>
-                {t("history.pagination.showing", {
-                  count: String(entries.length),
-                  total: String(totalCount || entries.length),
-                })}
-              </ResultsInfo>
-              <EntriesGrid>
-                {entries.map((entry) => {
-                  const otherParticipants = entry.participants.filter(
-                    (participant) => participant.id !== currentUserId
-                  );
-                  const participantsToShow =
-                    otherParticipants.length > 0 ? otherParticipants : [entry.host];
-
-                  return (
-                    <EntryCard key={entry.roomId} onClick={() => handleSelectEntry(entry)}>
-                      <EntryHeader>
-                        <EntryGameName>{entry.roomName}</EntryGameName>
-                        <EntryStatus>
-                          {t(`history.status.${entry.status}`) || entry.status}
-                        </EntryStatus>
-                      </EntryHeader>
-                      <EntryMeta>
-                        {participantsToShow.map((participant) => {
-                          const displayName = formatParticipantName(participant);
-                          return (
-                            <EntryParticipantPill
-                              key={participant.id}
-                              $isHost={participant.id === entry.host.id}
-                              title={displayName}
-                            >
-                              {displayName}
-                            </EntryParticipantPill>
-                          );
-                        })}
-                      </EntryMeta>
-                      <EntryFooter>
-                        <EntryTimestamp>
-                          {new Date(entry.lastActivityAt).toLocaleString()}
-                        </EntryTimestamp>
-                        <EntryViewDetails>{t("history.actions.viewDetails")} →</EntryViewDetails>
-                      </EntryFooter>
-                    </EntryCard>
-                  );
-                })}
-              </EntriesGrid>
-              {hasMore && (
-                <LoadMoreContainer>
-                  <LoadMoreButton
-                    onClick={loadMore}
-                    disabled={loadingMore}
-                    aria-busy={loadingMore}
-                  >
-                    {loadingMore
-                      ? t("history.pagination.loading")
-                      : t("history.pagination.loadMore")}
-                  </LoadMoreButton>
-                </LoadMoreContainer>
-              )}
-            </>
+            <EntriesGrid>
+              {entries.map((entry) => (
+                <EntryCard key={entry.roomId} onClick={() => handleSelectEntry(entry)}>
+                  <EntryHeader>
+                    <EntryGameName>{entry.roomName}</EntryGameName>
+                    <EntryStatus>
+                      {t(`history.status.${entry.status}`) || entry.status}
+                    </EntryStatus>
+                  </EntryHeader>
+                  <EntryMeta>
+                    {entry.participants
+                      .filter((p) => p.id !== currentUserId)
+                      .map((p) => formatParticipantName(p))
+                      .join(", ") || formatParticipantName(entry.host)}
+                  </EntryMeta>
+                  <EntryFooter>
+                    <EntryTimestamp>
+                      {new Date(entry.lastActivityAt).toLocaleString()}
+                    </EntryTimestamp>
+                    <EntryViewDetails>{t("history.actions.viewDetails")} →</EntryViewDetails>
+                  </EntryFooter>
+                </EntryCard>
+              ))}
+            </EntriesGrid>
           )}
         </Container>
       </Page>

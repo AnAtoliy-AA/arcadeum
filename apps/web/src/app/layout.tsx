@@ -6,6 +6,7 @@ import { LanguageProvider } from "./i18n/LanguageProvider";
 import { StyledComponentsRegistry } from "./StyledComponentsRegistry";
 import "./globals.css";
 import { AppThemeProvider } from "./theme/ThemeContext";
+import { Header } from "@/widgets/header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,10 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <StyledComponentsRegistry>
           <LanguageProvider>
-            <AppThemeProvider>{children}</AppThemeProvider>
+            <AppThemeProvider>
+              <Header />
+              {children}
+            </AppThemeProvider>
           </LanguageProvider>
         </StyledComponentsRegistry>
       </body>

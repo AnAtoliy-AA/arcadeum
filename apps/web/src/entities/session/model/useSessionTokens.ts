@@ -43,6 +43,7 @@ export type SessionTokensValue = {
 };
 
 const STORAGE_KEY = "web_session_tokens_v1";
+const STORAGE_EVENT = "session_tokens_changed";
 
 const defaultSnapshot: SessionTokensSnapshot = {
   provider: null,
@@ -94,6 +95,8 @@ function writeToStorage(snapshot: SessionTokensSnapshot) {
   }
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+    // Dispatch custom event to notify all components
+    window.dispatchEvent(new CustomEvent(STORAGE_EVENT, { detail: snapshot }));
   } catch {
     // ignore persistence errors
   }
@@ -105,6 +108,8 @@ function clearStorage() {
   }
   try {
     window.localStorage.removeItem(STORAGE_KEY);
+    // Dispatch custom event to notify all components
+    window.dispatchEvent(new CustomEvent(STORAGE_EVENT, { detail: defaultSnapshot }));
   } catch {
     // ignore
   }
@@ -165,6 +170,31 @@ export function useSessionTokens(): SessionTokensValue {
     const stored = readFromStorage();
     setSnapshot(stored);
     setHydrated(true);
+
+    // Listen for storage changes from other components or tabs
+    const handleStorageChange = (event: Event) => {
+      const customEvent = event as CustomEvent<SessionTokensSnapshot>;
+      if (customEvent.detail) {
+        setSnapshot(customEvent.detail);
+      }
+    };
+
+    window.addEventListener(STORAGE_EVENT, handleStorageChange);
+
+    // Also listen for storage events from other tabs
+    const handleStorageEvent = (event: StorageEvent) => {
+      if (event.key === STORAGE_KEY) {
+        const stored = readFromStorage();
+        setSnapshot(stored);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageEvent);
+
+    return () => {
+      window.removeEventListener(STORAGE_EVENT, handleStorageChange);
+      window.removeEventListener('storage', handleStorageEvent);
+    };
   }, []);
 
   const reload = useCallback(async () => {

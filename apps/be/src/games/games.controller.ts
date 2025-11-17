@@ -151,16 +151,35 @@ export class GamesController {
 
   @UseGuards(JwtAuthGuard)
   @Get('history')
-  async listHistory(@Req() req: Request): Promise<{
-    entries: Awaited<ReturnType<GamesService['listHistoryForUser']>>;
+  async listHistory(
+    @Req() req: Request,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('search') search?: string,
+    @Query('status') status?: string,
+  ): Promise<{
+    entries: Awaited<ReturnType<GamesService['listHistoryForUser']>>['entries'];
+    total: number;
+    page: number;
+    limit: number;
+    hasMore: boolean;
   }> {
     const user = req.user as AuthenticatedUser | undefined;
     if (!user) {
       throw new UnauthorizedException();
     }
 
-    const entries = await this.gamesService.listHistoryForUser(user.userId);
-    return { entries };
+    const pageNum = page ? parseInt(page, 10) : 1;
+    const limitNum = limit ? parseInt(limit, 10) : 20;
+
+    const result = await this.gamesService.listHistoryForUser(user.userId, {
+      page: pageNum,
+      limit: limitNum,
+      search: search?.trim(),
+      status: status as GameRoomStatus | undefined,
+    });
+
+    return result;
   }
 
   @UseGuards(JwtAuthGuard)

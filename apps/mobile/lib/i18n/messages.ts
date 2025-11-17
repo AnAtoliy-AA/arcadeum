@@ -524,6 +524,21 @@ export const translations = {
         emptyNoEntries:
           'No completed games yet. Play a match to build your history.',
       },
+      search: {
+        label: 'Search history',
+        placeholder: 'Search by room name or participant...',
+        noResults: 'No games match your search',
+      },
+      filter: {
+        label: 'Filter by status',
+        all: 'All Statuses',
+        clear: 'Clear Filters',
+      },
+      pagination: {
+        showing: 'Showing {{count}} of {{total}} games',
+        loadMore: 'Load More',
+        loading: 'Loading...',
+      },
       actions: {
         viewDetails: 'View details',
         refresh: 'Refresh history',

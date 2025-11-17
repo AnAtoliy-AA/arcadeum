@@ -304,6 +304,21 @@ const enTranslations = {
       emptyNoEntries: "No game history yet",
       emptySignedOut: "Sign in to view your game history",
     },
+    search: {
+      label: "Search history",
+      placeholder: "Search by room name or participant...",
+      noResults: "No games match your search",
+    },
+    filter: {
+      label: "Filter by status",
+      all: "All Statuses",
+      clear: "Clear Filters",
+    },
+    pagination: {
+      showing: "Showing {count} of {total} games",
+      loadMore: "Load More",
+      loading: "Loading...",
+    },
     status: {
       lobby: "Lobby",
       in_progress: "In Progress",

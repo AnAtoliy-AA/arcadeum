@@ -16,6 +16,18 @@ export function HistoryPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const pageSize = 20;
+
+  // Filter and search state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+
   // Detail modal state
   const [selectedEntry, setSelectedEntry] = useState<HistorySummary | null>(null);
   const [detail, setDetail] = useState<HistoryDetail | null>(null);
@@ -35,64 +47,87 @@ export function HistoryPage() {
   const currentUserId = snapshot.userId ?? "";
   const isHost = detail?.summary.host.id === currentUserId;
 
-  const fetchHistory = useCallback(async () => {
-    if (!snapshot.accessToken) {
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    try {
-      const url = resolveApiUrl("/games/history");
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${snapshot.accessToken}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch history");
+  const fetchHistory = useCallback(
+    async (page = 1, append = false) => {
+      if (!snapshot.accessToken) {
+        setLoading(false);
+        return;
       }
 
-      const data = await response.json();
-      setEntries(data.entries || []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setLoading(false);
-    }
-  }, [snapshot.accessToken]);
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+      }
+      setError(null);
+
+      try {
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: pageSize.toString(),
+        });
+
+        if (searchQuery.trim()) {
+          params.append("search", searchQuery.trim());
+        }
+
+        if (statusFilter !== "all") {
+          params.append("status", statusFilter);
+        }
+
+        const url = resolveApiUrl(`/games/history?${params.toString()}`);
+        const response = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${snapshot.accessToken}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch history");
+        }
+
+        const data = await response.json();
+        const newEntries = data.entries || [];
+
+        if (append) {
+          setEntries((prev) => [...prev, ...newEntries]);
+        } else {
+          setEntries(newEntries);
+        }
+
+        setTotalCount(data.total || 0);
+        setCurrentPage(page);
+        const nextHasMore =
+          typeof data.hasMore === "boolean"
+            ? data.hasMore
+            : newEntries.length === pageSize;
+        setHasMore(nextHasMore);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : String(err));
+      } finally {
+        if (append) {
+          setLoadingMore(false);
+        } else {
+          setLoading(false);
+        }
+      }
+    },
+    [snapshot.accessToken, pageSize, searchQuery, statusFilter]
+  );
 
   const refresh = useCallback(async () => {
     if (!snapshot.accessToken) {
       return;
     }
     setRefreshing(true);
-    try {
-      const url = resolveApiUrl("/games/history");
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${snapshot.accessToken}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch history");
-      }
-
-      const data = await response.json();
-      setEntries(data.entries || []);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setRefreshing(false);
-    }
-  }, [snapshot.accessToken]);
+    setCurrentPage(1);
+    await fetchHistory(1, false);
+    setRefreshing(false);
+  }, [snapshot.accessToken, fetchHistory]);
 
   useEffect(() => {
-    fetchHistory();
+    setCurrentPage(1);
+    fetchHistory(1, false);
   }, [fetchHistory]);
 
   const handleSelectEntry = useCallback(
@@ -258,6 +293,13 @@ export function HistoryPage() {
     return participant.username || participant.email?.split("@")[0] || participant.id;
   }, []);
 
+  const loadMore = useCallback(async () => {
+    if (!hasMore || loading || refreshing || loadingMore) {
+      return;
+    }
+    await fetchHistory(currentPage + 1, true);
+  }, [hasMore, loading, refreshing, loadingMore, currentPage, fetchHistory]);
+
   return (
     <>
       <Page>
@@ -274,6 +316,33 @@ export function HistoryPage() {
             </RefreshButton>
           </Header>
 
+          <FilterBar>
+            <SearchInput
+              type="text"
+              placeholder={t("history.search.placeholder")}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label={t("history.search.label")}
+            />
+            <FilterSelect
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              aria-label={t("history.filter.label")}
+            >
+              <option value="all">{t("history.filter.all")}</option>
+              <option value="lobby">{t("history.status.lobby")}</option>
+              <option value="in_progress">{t("history.status.inProgress")}</option>
+              <option value="completed">{t("history.status.completed")}</option>
+              <option value="waiting">{t("history.status.waiting")}</option>
+              <option value="active">{t("history.status.active")}</option>
+            </FilterSelect>
+            {(searchQuery || statusFilter !== "all") && (
+              <ClearFiltersButton onClick={() => { setSearchQuery(""); setStatusFilter("all"); }}>
+                {t("history.filter.clear")}
+              </ClearFiltersButton>
+            )}
+          </FilterBar>
+
           {loading ? (
             <Loading>
               <Spinner aria-label={t("history.loading")} />
@@ -282,39 +351,64 @@ export function HistoryPage() {
           ) : error ? (
             <ErrorContainer>
               <ErrorText>{error}</ErrorText>
-              <RetryButton onClick={fetchHistory}>{t("history.actions.retry")}</RetryButton>
+              <RetryButton onClick={() => fetchHistory(1, false)}>
+                {t("history.actions.retry")}
+              </RetryButton>
             </ErrorContainer>
           ) : entries.length === 0 ? (
             <Empty>
               {snapshot.accessToken
-                ? t("history.list.emptyNoEntries")
+                ? (searchQuery || statusFilter !== "all")
+                  ? t("history.search.noResults")
+                  : t("history.list.emptyNoEntries")
                 : t("history.list.emptySignedOut")}
             </Empty>
           ) : (
-            <EntriesGrid>
-              {entries.map((entry) => (
-                <EntryCard key={entry.roomId} onClick={() => handleSelectEntry(entry)}>
-                  <EntryHeader>
-                    <EntryGameName>{entry.roomName}</EntryGameName>
-                    <EntryStatus>
-                      {t(`history.status.${entry.status}`) || entry.status}
-                    </EntryStatus>
-                  </EntryHeader>
-                  <EntryMeta>
-                    {entry.participants
-                      .filter((p) => p.id !== currentUserId)
-                      .map((p) => formatParticipantName(p))
-                      .join(", ") || formatParticipantName(entry.host)}
-                  </EntryMeta>
-                  <EntryFooter>
-                    <EntryTimestamp>
-                      {new Date(entry.lastActivityAt).toLocaleString()}
-                    </EntryTimestamp>
-                    <EntryViewDetails>{t("history.actions.viewDetails")} →</EntryViewDetails>
-                  </EntryFooter>
-                </EntryCard>
-              ))}
-            </EntriesGrid>
+            <>
+              <ResultsInfo>
+                {t("history.pagination.showing", {
+                  count: String(entries.length),
+                  total: String(totalCount || entries.length),
+                })}
+              </ResultsInfo>
+              <EntriesGrid>
+                {entries.map((entry) => (
+                  <EntryCard key={entry.roomId} onClick={() => handleSelectEntry(entry)}>
+                    <EntryHeader>
+                      <EntryGameName>{entry.roomName}</EntryGameName>
+                      <EntryStatus>
+                        {t(`history.status.${entry.status}`) || entry.status}
+                      </EntryStatus>
+                    </EntryHeader>
+                    <EntryMeta>
+                      {entry.participants
+                        .filter((p) => p.id !== currentUserId)
+                        .map((p) => formatParticipantName(p))
+                        .join(", ") || formatParticipantName(entry.host)}
+                    </EntryMeta>
+                    <EntryFooter>
+                      <EntryTimestamp>
+                        {new Date(entry.lastActivityAt).toLocaleString()}
+                      </EntryTimestamp>
+                      <EntryViewDetails>{t("history.actions.viewDetails")} →</EntryViewDetails>
+                    </EntryFooter>
+                  </EntryCard>
+                ))}
+              </EntriesGrid>
+              {hasMore && (
+                <LoadMoreContainer>
+                  <LoadMoreButton
+                    onClick={loadMore}
+                    disabled={loadingMore}
+                    aria-busy={loadingMore}
+                  >
+                    {loadingMore
+                      ? t("history.pagination.loading")
+                      : t("history.pagination.loadMore")}
+                  </LoadMoreButton>
+                </LoadMoreContainer>
+              )}
+            </>
           )}
         </Container>
       </Page>
@@ -521,6 +615,85 @@ const Header = styled.div`
   }
 `;
 
+const FilterBar = styled.div`
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
+
+const SearchInput = styled.input`
+  flex: 1;
+  min-width: 250px;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  background: ${({ theme }) => theme.surfaces.card.background};
+  color: ${({ theme }) => theme.text.primary};
+  font-size: 0.9375rem;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+  }
+
+  &::placeholder {
+    color: ${({ theme }) => theme.text.muted};
+  }
+
+  @media (max-width: 640px) {
+    min-width: 100%;
+  }
+`;
+
+const FilterSelect = styled.select`
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  background: ${({ theme }) => theme.surfaces.card.background};
+  color: ${({ theme }) => theme.text.primary};
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+  }
+
+  @media (max-width: 640px) {
+    width: 100%;
+  }
+`;
+
+const ClearFiltersButton = styled.button`
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  background: transparent;
+  color: ${({ theme }) => theme.text.muted};
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    background: ${({ theme }) => theme.surfaces.card.background};
+    border-color: ${({ theme }) => theme.text.muted};
+  }
+
+  @media (max-width: 640px) {
+    width: 100%;
+  }
+`;
+
 const Title = styled.h1`
   margin: 0;
   font-size: 2rem;
@@ -666,6 +839,40 @@ const Empty = styled.div`
   padding: 3rem;
   text-align: center;
   color: ${({ theme }) => theme.text.muted};
+`;
+
+const ResultsInfo = styled.div`
+  font-size: 0.875rem;
+  color: ${({ theme }) => theme.text.muted};
+  padding: 0.5rem 0;
+`;
+
+const LoadMoreContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+`;
+
+const LoadMoreButton = styled.button`
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  border: 1px solid ${({ theme }) => theme.buttons.primary.gradientStart};
+  background: ${({ theme }) => theme.buttons.primary.gradientStart};
+  color: ${({ theme }) => theme.buttons.primary.text};
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;
 
 const ErrorContainer = styled.div`

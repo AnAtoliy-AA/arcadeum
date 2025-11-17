@@ -1435,11 +1435,30 @@ export class GamesService {
     });
   }
 
-  async listHistoryForUser(userId: string): Promise<GameHistorySummary[]> {
+  async listHistoryForUser(
+    userId: string,
+    options?: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      status?: GameHistoryStatus;
+    },
+  ): Promise<{
+    entries: GameHistorySummary[];
+    total: number;
+    page: number;
+    limit: number;
+    hasMore: boolean;
+  }> {
     const normalizedUserId = userId.trim();
     if (!normalizedUserId) {
       throw new BadRequestException('User ID is required.');
     }
+
+    const page = options?.page && options.page > 0 ? options.page : 1;
+    const limit = options?.limit && options.limit > 0 ? options.limit : 20;
+    const search = options?.search?.trim().toLowerCase();
+    const status = options?.status?.trim() as GameHistoryStatus | undefined;
 
     const rooms = await this.gameRoomModel
       .find({
@@ -1449,7 +1468,7 @@ export class GamesService {
       .exec();
 
     if (!rooms.length) {
-      return [];
+      return { entries: [], total: 0, page, limit, hasMore: false };
     }
 
     const hiddenEntries = await this.historyHiddenModel
@@ -1496,7 +1515,7 @@ export class GamesService {
     }
 
     if (groups.size === 0) {
-      return [];
+      return { entries: [], total: 0, page, limit, hasMore: false };
     }
 
     const roomIds: string[] = [];
@@ -1576,7 +1595,41 @@ export class GamesService {
       return bTime - aTime;
     });
 
-    return summaries;
+    // Apply search filter
+    let filteredSummaries = summaries;
+    if (search) {
+      filteredSummaries = summaries.filter((summary) => {
+        const roomNameMatch = summary.roomName.toLowerCase().includes(search);
+        const participantMatch = summary.participants.some((p) => {
+          const username = p.username?.toLowerCase() || '';
+          const email = p.email?.toLowerCase() || '';
+          return username.includes(search) || email.includes(search);
+        });
+        return roomNameMatch || participantMatch;
+      });
+    }
+
+    // Apply status filter
+    if (status) {
+      filteredSummaries = filteredSummaries.filter(
+        (summary) => summary.status === status,
+      );
+    }
+
+    // Calculate pagination
+    const total = filteredSummaries.length;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const entries = filteredSummaries.slice(startIndex, endIndex);
+    const hasMore = endIndex < total;
+
+    return {
+      entries,
+      total,
+      page,
+      limit,
+      hasMore,
+    };
   }
 
   async getHistoryEntry(

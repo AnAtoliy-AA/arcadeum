@@ -67,6 +67,10 @@ export interface RematchPayload {
 
 interface HistoryListResponse {
   entries?: HistorySummary[];
+  total?: number;
+  page?: number;
+  limit?: number;
+  hasMore?: boolean;
 }
 
 async function authorizedJson<T>(
@@ -128,22 +132,68 @@ async function authorizedJson<T>(
   return response.json() as Promise<T>;
 }
 
+export interface FetchHistoryParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: HistoryStatus;
+}
+
+export interface PaginatedHistoryResponse {
+  entries: HistorySummary[];
+  total: number;
+  page: number;
+  limit: number;
+  hasMore: boolean;
+}
+
 export async function fetchHistory(
   accessToken: string,
+  params?: FetchHistoryParams,
   options?: FetchWithRefreshOptions,
-): Promise<HistorySummary[]> {
+): Promise<PaginatedHistoryResponse> {
   if (!accessToken) {
-    return [];
+    return { entries: [], total: 0, page: 1, limit: 20, hasMore: false };
   }
 
+  const queryParams = new URLSearchParams();
+  if (params?.page) queryParams.append('page', params.page.toString());
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+  if (params?.search) queryParams.append('search', params.search);
+  if (params?.status) queryParams.append('status', params.status);
+
+  const path = `/games/history${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+
   const data = await authorizedJson<HistoryListResponse>(
-    '/games/history',
+    path,
     accessToken,
     undefined,
     options,
   );
 
-  return Array.isArray(data?.entries) ? data.entries : [];
+  const entries = Array.isArray(data?.entries) ? data.entries : [];
+  const total =
+    typeof data?.total === 'number' && Number.isFinite(data.total)
+      ? data.total
+      : entries.length;
+  const page =
+    typeof data?.page === 'number' && data.page > 0
+      ? data.page
+      : params?.page && params.page > 0
+        ? params.page
+        : 1;
+  const limit =
+    typeof data?.limit === 'number' && data.limit > 0
+      ? data.limit
+      : params?.limit && params.limit > 0
+        ? params.limit
+        : 20;
+  const hasMore =
+    typeof data?.hasMore === 'boolean'
+      ? data.hasMore
+      : page * limit < total;
+
+  return { entries, total, page, limit, hasMore };
 }
 
 export async function fetchHistoryDetail(

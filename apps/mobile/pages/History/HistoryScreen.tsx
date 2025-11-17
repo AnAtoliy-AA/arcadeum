@@ -8,6 +8,7 @@ import {
   ScrollView,
   StyleSheet,
   Switch,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -35,6 +36,8 @@ import {
   ApiError,
   type HistoryDetail,
   type HistorySummary,
+  type HistoryStatus,
+  type FetchHistoryParams,
 } from './api/historyApi';
 
 type HistoryHookParams = {
@@ -67,45 +70,89 @@ function resolveGameName(gameId: string): string | undefined {
   return gameNameLookup.get(trimmed);
 }
 
-function useHistoryList(params: HistoryHookParams) {
-  const { accessToken, refreshTokens } = params;
+type UseHistoryListParams = HistoryHookParams & {
+  searchQuery?: string;
+  statusFilter?: HistoryStatus | 'all';
+};
+
+function useHistoryList(params: UseHistoryListParams) {
+  const { accessToken, refreshTokens, searchQuery, statusFilter } = params;
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [entries, setEntries] = useState<HistorySummary[]>([]);
+  const [hasMore, setHasMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   const fetchOptions = useMemo(
     () => (refreshTokens ? { refreshTokens } : undefined),
     [refreshTokens],
   );
 
-  const loadHistory = useCallback(async () => {
-    if (!accessToken) {
-      setEntries([]);
-      setLoading(false);
-      return;
-    }
+  const loadHistory = useCallback(
+    async (page = 1, append = false) => {
+      if (!accessToken) {
+        setEntries([]);
+        setLoading(false);
+        setLoadingMore(false);
+        return;
+      }
 
-    try {
-      setLoading(true);
       setError(null);
-      const data = await fetchHistory(accessToken, fetchOptions);
-      setEntries(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setLoading(false);
-    }
-  }, [accessToken, fetchOptions]);
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+      }
+
+      try {
+        const historyParams: FetchHistoryParams = {
+          page,
+          limit: 20,
+        };
+
+        if (searchQuery && searchQuery.trim()) {
+          historyParams.search = searchQuery.trim();
+        }
+
+        if (statusFilter && statusFilter !== 'all') {
+          historyParams.status = statusFilter;
+        }
+
+        const data = await fetchHistory(accessToken, historyParams, fetchOptions);
+
+        if (append) {
+          setEntries((prev) => [...prev, ...data.entries]);
+        } else {
+          setEntries(data.entries);
+        }
+
+        setHasMore(data.hasMore);
+        setCurrentPage(page);
+        const totalRecords =
+          typeof data.total === 'number' && Number.isFinite(data.total)
+            ? data.total
+            : data.entries.length;
+        setTotalCount(totalRecords);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : String(err));
+      } finally {
+        if (append) {
+          setLoadingMore(false);
+        } else {
+          setLoading(false);
+        }
+      }
+    },
+    [accessToken, fetchOptions, searchQuery, statusFilter],
+  );
 
   useEffect(() => {
-    if (accessToken) {
-      loadHistory();
-    } else {
-      setLoading(false);
-      setEntries([]);
-    }
-  }, [accessToken, loadHistory]);
+    setCurrentPage(1);
+    void loadHistory(1, false);
+  }, [loadHistory]);
 
   const refresh = useCallback(async () => {
     if (!accessToken) {
@@ -113,23 +160,36 @@ function useHistoryList(params: HistoryHookParams) {
     }
     try {
       setRefreshing(true);
-      const data = await fetchHistory(accessToken, fetchOptions);
-      setEntries(data);
+      setCurrentPage(1);
+      await loadHistory(1, false);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setRefreshing(false);
     }
-  }, [accessToken, fetchOptions]);
+  }, [accessToken, loadHistory]);
+
+  const loadMore = useCallback(async () => {
+    if (!hasMore || loadingMore || loading) {
+      return;
+    }
+    await loadHistory(currentPage + 1, true);
+  }, [hasMore, loadingMore, loading, currentPage, loadHistory]);
+
+  const reload = useCallback(() => loadHistory(1, false), [loadHistory]);
 
   return {
     loading,
     refreshing,
+    loadingMore,
     entries,
     error,
     refresh,
-    reload: loadHistory,
+    reload,
+    loadMore,
+    hasMore,
+    totalCount,
     fetchOptions,
   };
 }
@@ -168,8 +228,22 @@ export default function HistoryScreen() {
     blockWhenUnauthenticated: false,
   });
 
-  const { loading, refreshing, entries, error, refresh, reload, fetchOptions } =
-    useHistoryList({ accessToken, refreshTokens });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<HistoryStatus | 'all'>('all');
+
+  const {
+    loading,
+    refreshing,
+    loadingMore,
+    entries,
+    error,
+    refresh,
+    reload,
+    loadMore,
+    hasMore,
+    totalCount,
+    fetchOptions,
+  } = useHistoryList({ accessToken, refreshTokens, searchQuery, statusFilter });
 
   const mutedTextColor = useThemeColor({}, 'icon') as string;
   const tintColor = useThemeColor({}, 'tint') as string;
@@ -383,6 +457,12 @@ export default function HistoryScreen() {
     void reload();
   }, [loading, refreshing, reload]);
 
+  const handleLoadMore = useCallback(() => {
+    if (hasMore && !loadingMore && !loading) {
+      void loadMore();
+    }
+  }, [hasMore, loadingMore, loading, loadMore]);
+
   const renderItem = useCallback(
     ({ item }: { item: HistorySummary }) => {
       const statusLabel = t(STATUS_TRANSLATION_KEYS[item.status]);
@@ -474,14 +554,23 @@ export default function HistoryScreen() {
         </View>
       );
     }
+    if (entries.length === 0) {
+      return (
+        <View style={styles.emptyContainer}>
+          <ThemedText style={styles.placeholderText}>
+            {t('history.list.emptyNoEntries')}
+          </ThemedText>
+        </View>
+      );
+    }
     return (
       <View style={styles.emptyContainer}>
         <ThemedText style={styles.placeholderText}>
-          {t('history.list.emptyNoEntries')}
+          {t('history.search.noResults')}
         </ThemedText>
       </View>
     );
-  }, [loading, error, styles, t, isAuthenticated, reload]);
+  }, [loading, error, entries.length, styles, t, isAuthenticated, reload]);
 
   if (shouldBlock) {
     return (
@@ -508,31 +597,177 @@ export default function HistoryScreen() {
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           contentContainerStyle={styles.listContent}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
           ListHeaderComponent={
-            <View style={styles.listHeader}>
-              <TouchableOpacity
-                style={[
-                  styles.headerRefreshButton,
-                  (loading || refreshing) && styles.headerRefreshButtonDisabled,
-                ]}
-                onPress={handleManualRefresh}
-                disabled={loading || refreshing}
-              >
-                <IconSymbol
-                  name="arrow.clockwise"
-                  size={16}
-                  color={tintColor}
-                />
-                <ThemedText style={styles.headerRefreshLabel}>
-                  {t('history.actions.refresh')}
-                </ThemedText>
-              </TouchableOpacity>
-            </View>
+            <>
+              <View style={styles.filterContainer}>
+                <View style={styles.searchContainer}>
+                  <IconSymbol
+                    name="magnifyingglass"
+                    size={18}
+                    color={mutedTextColor}
+                  />
+                  <TextInput
+                    style={styles.searchInput}
+                    placeholder={t('history.search.placeholder')}
+                    placeholderTextColor={mutedTextColor}
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                  />
+                </View>
+                <View style={styles.filterRow}>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.filterScrollContent}
+                  >
+                    <TouchableOpacity
+                      style={[
+                        styles.filterChip,
+                        statusFilter === 'all' && styles.filterChipActive,
+                      ]}
+                      onPress={() => setStatusFilter('all')}
+                    >
+                      <ThemedText
+                        style={[
+                          styles.filterChipText,
+                          statusFilter === 'all' && styles.filterChipTextActive,
+                        ]}
+                      >
+                        {t('history.filter.all')}
+                      </ThemedText>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.filterChip,
+                        statusFilter === 'lobby' && styles.filterChipActive,
+                      ]}
+                      onPress={() => setStatusFilter('lobby')}
+                    >
+                      <ThemedText
+                        style={[
+                          styles.filterChipText,
+                          statusFilter === 'lobby' && styles.filterChipTextActive,
+                        ]}
+                      >
+                        {t('history.status.lobby')}
+                      </ThemedText>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.filterChip,
+                        statusFilter === 'in_progress' && styles.filterChipActive,
+                      ]}
+                      onPress={() => setStatusFilter('in_progress')}
+                    >
+                      <ThemedText
+                        style={[
+                          styles.filterChipText,
+                          statusFilter === 'in_progress' && styles.filterChipTextActive,
+                        ]}
+                      >
+                        {t('history.status.inProgress')}
+                      </ThemedText>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.filterChip,
+                        statusFilter === 'completed' && styles.filterChipActive,
+                      ]}
+                      onPress={() => setStatusFilter('completed')}
+                    >
+                      <ThemedText
+                        style={[
+                          styles.filterChipText,
+                          statusFilter === 'completed' && styles.filterChipTextActive,
+                        ]}
+                      >
+                        {t('history.status.completed')}
+                      </ThemedText>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.filterChip,
+                        statusFilter === 'waiting' && styles.filterChipActive,
+                      ]}
+                      onPress={() => setStatusFilter('waiting')}
+                    >
+                      <ThemedText
+                        style={[
+                          styles.filterChipText,
+                          statusFilter === 'waiting' && styles.filterChipTextActive,
+                        ]}
+                      >
+                        {t('history.status.waiting')}
+                      </ThemedText>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.filterChip,
+                        statusFilter === 'active' && styles.filterChipActive,
+                      ]}
+                      onPress={() => setStatusFilter('active')}
+                    >
+                      <ThemedText
+                        style={[
+                          styles.filterChipText,
+                          statusFilter === 'active' && styles.filterChipTextActive,
+                        ]}
+                      >
+                        {t('history.status.active')}
+                      </ThemedText>
+                    </TouchableOpacity>
+                  </ScrollView>
+                  <TouchableOpacity
+                    style={[
+                      styles.headerRefreshButton,
+                      (loading || refreshing) && styles.headerRefreshButtonDisabled,
+                    ]}
+                    onPress={handleManualRefresh}
+                    disabled={loading || refreshing}
+                  >
+                    <IconSymbol
+                      name="arrow.clockwise"
+                      size={16}
+                      color={tintColor}
+                    />
+                    <ThemedText style={styles.headerRefreshLabel}>
+                      {t('history.actions.refresh')}
+                    </ThemedText>
+                  </TouchableOpacity>
+                </View>
+                {totalCount > 0 && (
+                  <ThemedText style={styles.resultsInfo}>
+                    {t('history.pagination.showing', {
+                      count: entries.length,
+                      total: totalCount || entries.length,
+                    })}
+                  </ThemedText>
+                )}
+              </View>
+            </>
           }
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }
           ListEmptyComponent={emptyComponent}
+          ListFooterComponent={
+            loadingMore ? (
+              <View style={styles.footerLoading}>
+                <ActivityIndicator size="small" />
+                <ThemedText style={styles.footerLoadingText}>
+                  {t('history.pagination.loading')}
+                </ThemedText>
+              </View>
+            ) : hasMore && entries.length > 0 ? (
+              <TouchableOpacity style={styles.loadMoreButton} onPress={handleLoadMore}>
+                <ThemedText style={styles.loadMoreText}>
+                  {t('history.pagination.loadMore')}
+                </ThemedText>
+              </TouchableOpacity>
+            ) : null
+          }
         />
       </ThemedView>
       <Modal
@@ -823,6 +1058,61 @@ function createStyles(palette: Palette) {
       paddingBottom: 8,
       paddingRight: 8,
     },
+    filterContainer: {
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      gap: 12,
+    },
+    searchContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      backgroundColor: palette.background,
+      borderRadius: 10,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: palette.icon,
+    },
+    searchInput: {
+      flex: 1,
+      fontSize: 15,
+      color: palette.text,
+      padding: 0,
+    },
+    filterRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    filterScrollContent: {
+      gap: 8,
+      paddingRight: 8,
+    },
+    filterChip: {
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 16,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: palette.icon,
+      backgroundColor: palette.background,
+    },
+    filterChipActive: {
+      backgroundColor: palette.tint,
+      borderColor: palette.tint,
+    },
+    filterChipText: {
+      fontSize: 13,
+      fontWeight: '600',
+      color: palette.text,
+    },
+    filterChipTextActive: {
+      color: palette.background,
+    },
+    resultsInfo: {
+      fontSize: 12,
+      color: palette.icon,
+    },
     headerRefreshButton: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -1101,6 +1391,27 @@ function createStyles(palette: Palette) {
     detailTimestamp: {
       fontSize: 13,
       color: palette.icon,
+    },
+    footerLoading: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+      paddingVertical: 16,
+    },
+    footerLoadingText: {
+      fontSize: 13,
+      color: palette.icon,
+    },
+    loadMoreButton: {
+      paddingVertical: 16,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    loadMoreText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: palette.tint,
     },
   });
 }

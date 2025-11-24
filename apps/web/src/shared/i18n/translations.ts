@@ -267,6 +267,14 @@ const enTranslations = {
       },
       hostedBy: "Hosted by {host}",
       participants: "Participants",
+      hostLabel: "Hosted by",
+      playersLabel: "Players",
+      statusLabel: "Status",
+      visibilityLabel: "Visibility",
+      visibility: {
+        public: "Public",
+        private: "Private",
+      },
     },
     room: {
       gameArea: "Game area - Real-time game integration coming soon",
@@ -724,6 +732,14 @@ export const translations = {
         },
         hostedBy: "Anfitrión: {host}",
         participants: "Participantes",
+      hostLabel: "Anfitrión",
+      playersLabel: "Jugadores",
+      statusLabel: "Estado",
+      visibilityLabel: "Visibilidad",
+      visibility: {
+        public: "Pública",
+        private: "Privada",
+      },
       },
       room: {
         gameArea: "Área de juego - Integración en tiempo real próximamente",
@@ -1128,6 +1144,14 @@ export const translations = {
         },
         hostedBy: "Hébergé par {host}",
         participants: "Participants",
+      hostLabel: "Hébergé par",
+      playersLabel: "Joueurs",
+      statusLabel: "Statut",
+      visibilityLabel: "Visibilité",
+      visibility: {
+        public: "Publique",
+        private: "Privée",
+      },
       },
       room: {
         gameArea: "Zone de jeu - Intégration en temps réel bientôt disponible",

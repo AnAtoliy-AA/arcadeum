@@ -358,11 +358,17 @@ export function GamesPage() {
   }, [rooms]);
 
   const formatMemberLabel = useCallback(
-    (member: GameRoomSummary["members"][number]) => {
+    (member: {
+      id: string;
+      displayName: string;
+      username?: string | null;
+      email?: string | null;
+      isHost: boolean;
+    }) => {
       if (member.displayName && member.displayName.trim().length > 0) {
         return member.displayName;
       }
-      return member.username || member.email || member.id;
+      return member.username ?? member.email ?? member.id;
     },
     []
   );

@@ -157,15 +157,59 @@ const StatusBadge = styled.span<{ status: string }>`
 const RoomMeta = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: ${({ theme }) => theme.text.primary};
+`;
+
+const MetaRow = styled.div`
+  display: flex;
+  align-items: center;
   gap: 0.5rem;
-  font-size: 0.875rem;
-  color: ${({ theme }) => theme.text.muted};
+  color: ${({ theme }) => theme.text.primary};
+`;
+
+const MetaIcon = styled.span`
+  font-size: 0.9rem;
+  opacity: 0.85;
+`;
+
+const MetaLabel = styled.span`
+  font-weight: 600;
+  color: ${({ theme }) => theme.text.secondary};
+`;
+
+const MetaValue = styled.span`
+  color: ${({ theme }) => theme.text.primary};
 `;
 
 const RoomActions = styled.div`
   display: flex;
   gap: 0.75rem;
   margin-top: 0.5rem;
+`;
+
+const ParticipantsList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+`;
+
+const ParticipantChip = styled.span<{ $isHost?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.text.primary};
+  background: ${({ $isHost, theme }) =>
+    $isHost ? theme.interactive.pill.activeBackground : theme.interactive.pill.inactiveBackground};
+  border: 1px solid
+    ${({ $isHost, theme }) =>
+      $isHost ? theme.interactive.pill.activeBorder : theme.interactive.pill.border};
+  box-shadow: ${({ $isHost, theme }) => ($isHost ? theme.interactive.pill.activeShadow : "none")};
 `;
 
 const ActionButton = styled(Link)<{ variant?: "primary" | "secondary" }>`
@@ -313,6 +357,16 @@ export function GamesPage() {
     );
   }, [rooms]);
 
+  const formatMemberLabel = useCallback(
+    (member: GameRoomSummary["members"][number]) => {
+      if (member.displayName && member.displayName.trim().length > 0) {
+        return member.displayName;
+      }
+      return member.username || member.email || member.id;
+    },
+    []
+  );
+
   return (
     <Page>
       <Container>
@@ -418,18 +472,56 @@ export function GamesPage() {
                   </StatusBadge>
                 </RoomHeader>
                 <RoomMeta>
-                  <div>
-                    {t("games.rooms.hostedBy", { host: room.host?.displayName || room.hostId }) ||
-                      `Hosted by ${room.host?.displayName || room.hostId}`}
-                  </div>
-                  <div>
-                    {room.maxPlayers
-                      ? `${room.playerCount}/${room.maxPlayers} players`
-                      : `${room.playerCount} players`}
-                  </div>
-                  <div>
-                    {room.visibility === "private" ? "🔒 Private" : "🌐 Public"}
-                  </div>
+                  <MetaRow>
+                    <MetaIcon>👑</MetaIcon>
+                    <MetaLabel>{t("games.rooms.hostLabel") || "Hosted by"}</MetaLabel>
+                    <MetaValue>{room.host?.displayName || room.hostId}</MetaValue>
+                  </MetaRow>
+                  <MetaRow>
+                    <MetaIcon>👥</MetaIcon>
+                    <MetaLabel>{t("games.rooms.playersLabel") || "Players"}</MetaLabel>
+                    <MetaValue>
+                      {room.maxPlayers
+                        ? `${room.playerCount}/${room.maxPlayers}`
+                        : `${room.playerCount}`}
+                    </MetaValue>
+                  </MetaRow>
+                  <MetaRow>
+                    <MetaIcon>⏱️</MetaIcon>
+                    <MetaLabel>{t("games.rooms.statusLabel") || "Status"}</MetaLabel>
+                    <MetaValue>{t(`games.rooms.status.${room.status}`) || room.status}</MetaValue>
+                  </MetaRow>
+                  <MetaRow>
+                    <MetaIcon>{room.visibility === "private" ? "🔒" : "🌐"}</MetaIcon>
+                    <MetaLabel>{t("games.rooms.visibilityLabel") || "Visibility"}</MetaLabel>
+                    <MetaValue>
+                      {room.visibility === "private"
+                        ? t("games.rooms.visibility.private") || "Private"
+                        : t("games.rooms.visibility.public") || "Public"}
+                    </MetaValue>
+                  </MetaRow>
+                  {room.members && room.members.length > 0 && (
+                    <div>
+                      <MetaLabel style={{ display: "block", marginBottom: "0.35rem" }}>
+                        {t("games.rooms.participants") || "Participants"}:
+                      </MetaLabel>
+                      <ParticipantsList>
+                        {room.members.slice(0, 5).map((member) => (
+                          <ParticipantChip
+                            key={member.id}
+                            $isHost={room.host?.id === member.id}
+                          >
+                            {formatMemberLabel(member)}
+                          </ParticipantChip>
+                        ))}
+                        {room.members.length > 5 && (
+                          <ParticipantChip>
+                            +{room.members.length - 5} more
+                          </ParticipantChip>
+                        )}
+                      </ParticipantsList>
+                    </div>
+                  )}
                 </RoomMeta>
                 <RoomActions>
                   <ActionButton

@@ -60,6 +60,43 @@ const RoomMeta = styled.div`
   color: ${({ theme }) => theme.text.muted};
 `;
 
+const ParticipantsSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const ParticipantsTitle = styled.div`
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: ${({ theme }) => theme.text.secondary};
+`;
+
+const ParticipantsList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+`;
+
+const ParticipantBadge = styled.span<{ $isHost?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.text.primary};
+  background: ${({ $isHost, theme }) =>
+    $isHost
+      ? theme.interactive.pill.activeBackground
+      : theme.interactive.pill.inactiveBackground};
+  border: 1px solid
+    ${({ $isHost, theme }) =>
+      $isHost ? theme.interactive.pill.activeBorder : theme.interactive.pill.border};
+  box-shadow: ${({ $isHost, theme }) =>
+    $isHost ? theme.interactive.pill.activeShadow : "none"};
+`;
+
 const Button = styled.button`
   padding: 0.75rem 1.5rem;
   border-radius: 12px;
@@ -422,25 +459,21 @@ export function GameRoomPage() {
           </RoomMeta>
 
           {room.members && room.members.length > 0 && (
-            <div>
-              <div style={{ fontWeight: 600, marginBottom: "0.5rem" }}>
+            <ParticipantsSection>
+              <ParticipantsTitle>
                 {t("games.rooms.participants") || "Participants"}:
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+              </ParticipantsTitle>
+              <ParticipantsList>
                 {room.members.map((member) => (
-                  <span
+                  <ParticipantBadge
                     key={member.id}
-                    style={{
-                      padding: "0.25rem 0.5rem",
-                      background: "#f0f0f0",
-                      borderRadius: "4px",
-                    }}
+                    $isHost={room.host?.id === member.id}
                   >
                     {member.displayName}
-                  </span>
+                  </ParticipantBadge>
                 ))}
-              </div>
-            </div>
+              </ParticipantsList>
+            </ParticipantsSection>
           )}
         </RoomInfo>
 

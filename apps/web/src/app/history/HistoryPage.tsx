@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import { useSessionTokens } from "@/entities/session/model/useSessionTokens";
@@ -293,6 +293,44 @@ export function HistoryPage() {
     return participant.username || participant.email?.split("@")[0] || participant.id;
   }, []);
 
+  const participantReplacements = useMemo(() => {
+    if (!detail) {
+      return [];
+    }
+
+    const unique = new Map<string, string>();
+    const register = (participant?: HistoryParticipant | null) => {
+      if (!participant?.id) {
+        return;
+      }
+      const displayName = formatParticipantName(participant);
+      unique.set(participant.id, displayName);
+    };
+
+    register(detail.summary.host);
+    detail.summary.participants.forEach(register);
+
+    return Array.from(unique.entries()).sort(
+      (a, b) => b[0].length - a[0].length
+    );
+  }, [detail, formatParticipantName]);
+
+  const formatLogMessage = useCallback(
+    (message: string) => {
+      if (!message || participantReplacements.length === 0) {
+        return message;
+      }
+
+      return participantReplacements.reduce((acc, [id, name]) => {
+        if (!id || !name || id === name || !acc.includes(id)) {
+          return acc;
+        }
+        return acc.split(id).join(name);
+      }, message);
+    },
+    [participantReplacements]
+  );
+
   const loadMore = useCallback(async () => {
     if (!hasMore || loading || refreshing || loadingMore) {
       return;
@@ -372,28 +410,44 @@ export function HistoryPage() {
                 })}
               </ResultsInfo>
               <EntriesGrid>
-                {entries.map((entry) => (
-                  <EntryCard key={entry.roomId} onClick={() => handleSelectEntry(entry)}>
-                    <EntryHeader>
-                      <EntryGameName>{entry.roomName}</EntryGameName>
-                      <EntryStatus>
-                        {t(`history.status.${entry.status}`) || entry.status}
-                      </EntryStatus>
-                    </EntryHeader>
-                    <EntryMeta>
-                      {entry.participants
-                        .filter((p) => p.id !== currentUserId)
-                        .map((p) => formatParticipantName(p))
-                        .join(", ") || formatParticipantName(entry.host)}
-                    </EntryMeta>
-                    <EntryFooter>
-                      <EntryTimestamp>
-                        {new Date(entry.lastActivityAt).toLocaleString()}
-                      </EntryTimestamp>
-                      <EntryViewDetails>{t("history.actions.viewDetails")} →</EntryViewDetails>
-                    </EntryFooter>
-                  </EntryCard>
-                ))}
+                {entries.map((entry) => {
+                  const otherParticipants = entry.participants.filter(
+                    (participant) => participant.id !== currentUserId
+                  );
+                  const participantsToShow =
+                    otherParticipants.length > 0 ? otherParticipants : [entry.host];
+
+                  return (
+                    <EntryCard key={entry.roomId} onClick={() => handleSelectEntry(entry)}>
+                      <EntryHeader>
+                        <EntryGameName>{entry.roomName}</EntryGameName>
+                        <EntryStatus>
+                          {t(`history.status.${entry.status}`) || entry.status}
+                        </EntryStatus>
+                      </EntryHeader>
+                      <EntryMeta>
+                        {participantsToShow.map((participant) => {
+                          const displayName = formatParticipantName(participant);
+                          return (
+                            <EntryParticipantPill
+                              key={participant.id}
+                              $isHost={participant.id === entry.host.id}
+                              title={displayName}
+                            >
+                              {displayName}
+                            </EntryParticipantPill>
+                          );
+                        })}
+                      </EntryMeta>
+                      <EntryFooter>
+                        <EntryTimestamp>
+                          {new Date(entry.lastActivityAt).toLocaleString()}
+                        </EntryTimestamp>
+                        <EntryViewDetails>{t("history.actions.viewDetails")} →</EntryViewDetails>
+                      </EntryFooter>
+                    </EntryCard>
+                  );
+                })}
               </EntriesGrid>
               {hasMore && (
                 <LoadMoreContainer>
@@ -507,7 +561,7 @@ export function HistoryPage() {
                             })}
                           </LogSender>
                         )}
-                        <LogMessage>{log.message}</LogMessage>
+                        <LogMessage>{formatLogMessage(log.message)}</LogMessage>
                       </LogItem>
                     ))
                   )}
@@ -787,8 +841,26 @@ const EntryStatus = styled.span`
 `;
 
 const EntryMeta = styled.div`
-  font-size: 0.875rem;
-  color: ${({ theme }) => theme.text.muted};
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+`;
+
+const EntryParticipantPill = styled.span<{ $isHost?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.text.primary};
+  background: ${({ theme, $isHost }) =>
+    $isHost
+      ? `${theme.buttons.primary.gradientStart}22`
+      : theme.surfaces.card.border};
+  border: 1px solid
+    ${({ theme, $isHost }) =>
+      $isHost ? theme.buttons.primary.gradientStart : "transparent"};
 `;
 
 const EntryFooter = styled.div`

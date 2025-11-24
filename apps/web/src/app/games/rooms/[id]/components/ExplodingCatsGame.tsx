@@ -343,6 +343,79 @@ export function ExplodingCatsGame({
     return isMyTurn && !actionBusy && currentPlayer?.alive;
   }, [isMyTurn, actionBusy, currentPlayer]);
 
+  const resolveDisplayName = useCallback(
+    (userId?: string | null, fallback?: string | null) => {
+      if (!userId) {
+        return fallback ?? "";
+      }
+      if (userId === currentUserId) {
+        return t("games.table.players.you") || "You";
+      }
+      if (room.host?.id === userId) {
+        return room.host.displayName || room.host.id;
+      }
+      const member = room.members?.find((candidate) => candidate.id === userId);
+      if (member) {
+        return member.displayName || member.id;
+      }
+      return (
+        fallback ||
+        (userId.length > 8
+          ? `${userId.slice(0, 8)}…`
+          : userId)
+      );
+    },
+    [currentUserId, room.host, room.members, t]
+  );
+
+  const participantReplacements = useMemo(() => {
+    const entries = new Map<string, string>();
+    const register = (userId?: string | null, fallback?: string | null) => {
+      if (!userId) {
+        return;
+      }
+      if (entries.has(userId)) {
+        return;
+      }
+      entries.set(userId, resolveDisplayName(userId, fallback));
+    };
+
+    register(room.host?.id, room.host?.displayName ?? null);
+    room.members?.forEach((member) =>
+      register(
+        member.id,
+        member.displayName ?? null
+      )
+    );
+    snapshot?.players.forEach((player) =>
+      register(
+        player.playerId,
+        player.playerId === currentUserId
+          ? t("games.table.players.you") || "You"
+          : `Player ${player.playerId.slice(0, 8)}`
+      )
+    );
+
+    return Array.from(entries.entries()).sort(
+      (a, b) => b[0].length - a[0].length
+    );
+  }, [currentUserId, resolveDisplayName, room.host, room.members, snapshot?.players, t]);
+
+  const formatLogMessage = useCallback(
+    (message?: string | null) => {
+      if (!message || participantReplacements.length === 0) {
+        return message || "";
+      }
+      return participantReplacements.reduce((acc, [id, name]) => {
+        if (!id || !name || id === name || !acc.includes(id)) {
+          return acc;
+        }
+        return acc.split(id).join(name);
+      }, message);
+    },
+    [participantReplacements]
+  );
+
   // Game not started yet
   if (!snapshot) {
     return (
@@ -426,12 +499,12 @@ export function ExplodingCatsGame({
                 if (!player) return null;
 
                 const isCurrent = index === snapshot.currentTurnIndex;
-                const memberInfo = room.members?.find((m) => m.id === playerId);
-                const displayName =
-                  memberInfo?.displayName ||
-                  (playerId === currentUserId
+                const displayName = resolveDisplayName(
+                  playerId,
+                  playerId === currentUserId
                     ? t("games.table.players.you") || "You"
-                    : `Player ${playerId.slice(0, 8)}`);
+                    : `Player ${playerId.slice(0, 8)}`
+                );
 
                 return (
                   <PlayerItem
@@ -456,11 +529,20 @@ export function ExplodingCatsGame({
             <InfoCard>
               <InfoTitle>{t("games.table.log.title") || "Game Log"}</InfoTitle>
               <GameLog>
-                {snapshot.logs.slice(-10).map((log) => (
-                  <LogEntry key={log.id} $type={log.type}>
-                    {log.message}
-                  </LogEntry>
-                ))}
+                {snapshot.logs.slice(-10).map((log) => {
+                  const senderDisplay = resolveDisplayName(
+                    log.senderId ?? undefined,
+                    log.senderName ?? undefined
+                  );
+                  const renderedMessage = formatLogMessage(log.message);
+
+                  return (
+                    <LogEntry key={log.id} $type={log.type}>
+                      {senderDisplay && <strong>{senderDisplay}: </strong>}
+                      {renderedMessage}
+                    </LogEntry>
+                  );
+                })}
               </GameLog>
             </InfoCard>
           )}

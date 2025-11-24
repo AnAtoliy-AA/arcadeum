@@ -1,12 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import styled from "styled-components";
 import { useSessionTokens } from "@/entities/session/model/useSessionTokens";
 import { resolveApiUrl } from "@/shared/lib/api-base";
 import { useTranslation } from "@/shared/lib/useTranslation";
 import { ERROR_COLOR } from "@/shared/config/payment-config";
+import { gameSocket, connectSockets } from "@/shared/lib/socket";
+import { startGameRoom, getGameRoomSession } from "@/shared/api/gamesApi";
+import type { GameRoomSummary, GameSessionSummary } from "@/shared/types/games";
+import { ExplodingCatsGame } from "./components/ExplodingCatsGame";
 
 const Page = styled.main`
   min-height: 100vh;
@@ -121,25 +125,6 @@ const GameArea = styled.div`
   color: ${({ theme }) => theme.text.muted};
 `;
 
-interface GameRoomSummary {
-  id: string;
-  gameId: string;
-  name: string;
-  hostId: string;
-  visibility: "public" | "private";
-  playerCount: number;
-  maxPlayers: number | null;
-  status: "lobby" | "in_progress" | "completed";
-  host?: {
-    id: string;
-    displayName: string;
-  };
-  members?: Array<{
-    id: string;
-    displayName: string;
-  }>;
-}
-
 export function GameRoomPage() {
   const params = useParams();
   const router = useRouter();
@@ -148,9 +133,24 @@ export function GameRoomPage() {
   const roomId = params?.id as string;
 
   const [room, setRoom] = useState<GameRoomSummary | null>(null);
+  const [session, setSession] = useState<GameSessionSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [joining, setJoining] = useState(false);
+  const [startBusy, setStartBusy] = useState(false);
+  const [actionBusy, setActionBusy] = useState<string | null>(null);
+
+  const isHost = useMemo(() => {
+    return room?.hostId === snapshot.userId;
+  }, [room, snapshot.userId]);
+
+  const gameIntegration = useMemo(() => {
+    const gameId = room?.gameId || session?.gameId || session?.engine;
+    if (gameId === "exploding_cats_v1" || gameId === "exploding-kittens") {
+      return "exploding_cats_v1";
+    }
+    return null;
+  }, [room, session]);
 
   const fetchRoom = useCallback(async () => {
     if (!snapshot.accessToken) {
@@ -174,12 +174,119 @@ export function GameRoomPage() {
 
       const data = await response.json();
       setRoom(data.room);
+
+      // Also fetch session if it exists
+      try {
+        const sessionData = await getGameRoomSession(roomId, snapshot.accessToken);
+        setSession(sessionData.session);
+      } catch {
+        setSession(null);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load room");
     } finally {
       setLoading(false);
     }
   }, [roomId, snapshot.accessToken]);
+
+  // Connect to socket and setup event listeners
+  useEffect(() => {
+    if (!snapshot.accessToken || !roomId) return;
+
+    // Connect socket with auth
+    connectSockets(snapshot.accessToken);
+
+    const handleConnect = () => {
+      // Join the room as participant or watcher
+      const joinEvent = snapshot.userId ? "games.room.join" : "games.room.watch";
+      const joinPayload = snapshot.userId
+        ? { roomId, userId: snapshot.userId }
+        : { roomId };
+      gameSocket.emit(joinEvent, joinPayload);
+    };
+
+    const handleJoined = (payload: {
+      room?: GameRoomSummary;
+      session?: GameSessionSummary | null;
+    }) => {
+      if (payload?.room) {
+        setRoom(payload.room);
+      }
+      if (payload && Object.prototype.hasOwnProperty.call(payload, "session")) {
+        setSession(payload?.session ?? null);
+      }
+    };
+
+    const handleRoomUpdate = (payload: { room?: GameRoomSummary }) => {
+      if (payload?.room && payload.room.id === roomId) {
+        setRoom(payload.room);
+      }
+    };
+
+    const handleSnapshot = (payload: {
+      roomId?: string;
+      session?: GameSessionSummary | null;
+    }) => {
+      if (payload?.roomId && payload.roomId !== roomId) return;
+      if (payload && Object.prototype.hasOwnProperty.call(payload, "session")) {
+        setSession(payload?.session ?? null);
+      }
+      setActionBusy(null);
+    };
+
+    const handleSessionStarted = (payload: {
+      room: GameRoomSummary;
+      session: GameSessionSummary;
+    }) => {
+      if (!payload?.room || payload.room.id !== roomId) return;
+      setRoom(payload.room);
+      setSession(payload.session);
+      setStartBusy(false);
+      setActionBusy(null);
+    };
+
+    const handleException = (payload: unknown) => {
+      setStartBusy(false);
+      setActionBusy(null);
+
+      const detail =
+        payload && typeof payload === "object"
+          ? (payload as Record<string, unknown>)
+          : undefined;
+
+      const message =
+        typeof detail?.message === "string"
+          ? detail.message
+          : typeof payload === "string"
+          ? payload
+          : "An error occurred";
+
+      setError(message);
+      setTimeout(() => setError(null), 5000);
+    };
+
+    gameSocket.on("connect", handleConnect);
+    gameSocket.on("games.room.joined", handleJoined);
+    gameSocket.on("games.room.watching", handleJoined);
+    gameSocket.on("games.room.update", handleRoomUpdate);
+    gameSocket.on("games.session.snapshot", handleSnapshot);
+    gameSocket.on("games.session.started", handleSessionStarted);
+    gameSocket.on("exception", handleException);
+
+    if (gameSocket.connected) {
+      handleConnect();
+    }
+
+    return () => {
+      gameSocket.off("connect", handleConnect);
+      gameSocket.off("games.room.joined", handleJoined);
+      gameSocket.off("games.room.watching", handleJoined);
+      gameSocket.off("games.room.update", handleRoomUpdate);
+      gameSocket.off("games.session.snapshot", handleSnapshot);
+      gameSocket.off("games.session.started", handleSessionStarted);
+      gameSocket.off("exception", handleException);
+    };
+  }, [roomId, snapshot.accessToken, snapshot.userId]);
 
   useEffect(() => {
     fetchRoom();
@@ -211,6 +318,49 @@ export function GameRoomPage() {
     }
   }, [roomId, snapshot.accessToken, room, fetchRoom]);
 
+  const handleStartGame = useCallback(() => {
+    if (!room?.id || !snapshot.accessToken || !isHost || startBusy) return;
+
+    setStartBusy(true);
+    startGameRoom(room.id, "exploding_cats_v1", snapshot.accessToken)
+      .then((response) => {
+        setRoom(response.room);
+        setSession(response.session);
+      })
+      .catch((err) => {
+        const message = err instanceof Error ? err.message : "Failed to start game";
+        setError(message);
+        setTimeout(() => setError(null), 5000);
+      })
+      .finally(() => {
+        setStartBusy(false);
+      });
+  }, [room, snapshot.accessToken, isHost, startBusy]);
+
+  const handleDrawCard = useCallback(() => {
+    if (!room?.id || !snapshot.userId || actionBusy) return;
+
+    setActionBusy("draw");
+    gameSocket.emit("games.session.draw", {
+      roomId: room.id,
+      userId: snapshot.userId,
+    });
+  }, [room, snapshot.userId, actionBusy]);
+
+  const handlePlayCard = useCallback(
+    (card: "skip" | "attack") => {
+      if (!room?.id || !snapshot.userId || actionBusy) return;
+
+      setActionBusy(card);
+      gameSocket.emit("games.session.play_action", {
+        roomId: room.id,
+        userId: snapshot.userId,
+        card,
+      });
+    },
+    [room, snapshot.userId, actionBusy]
+  );
+
   if (loading) {
     return (
       <Page>
@@ -234,7 +384,6 @@ export function GameRoomPage() {
     );
   }
 
-  const isHost = room.hostId === snapshot.userId;
   const canJoin = !isHost && room.status === "lobby";
 
   return (
@@ -250,6 +399,8 @@ export function GameRoomPage() {
             </Button>
           )}
         </Header>
+
+        {error && <ErrorMessage>{error}</ErrorMessage>}
 
         <RoomInfo>
           <RoomMeta>
@@ -277,7 +428,14 @@ export function GameRoomPage() {
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
                 {room.members.map((member) => (
-                  <span key={member.id} style={{ padding: "0.25rem 0.5rem", background: "#f0f0f0", borderRadius: "4px" }}>
+                  <span
+                    key={member.id}
+                    style={{
+                      padding: "0.25rem 0.5rem",
+                      background: "#f0f0f0",
+                      borderRadius: "4px",
+                    }}
+                  >
                     {member.displayName}
                   </span>
                 ))}
@@ -286,9 +444,24 @@ export function GameRoomPage() {
           )}
         </RoomInfo>
 
-        <GameArea>
-          {t("games.room.gameArea") || "Game area - Real-time game integration coming soon"}
-        </GameArea>
+        {gameIntegration === "exploding_cats_v1" ? (
+          <ExplodingCatsGame
+            room={room}
+            session={session}
+            currentUserId={snapshot.userId}
+            isHost={isHost}
+            onStart={handleStartGame}
+            onDraw={handleDrawCard}
+            onPlayCard={handlePlayCard}
+            actionBusy={actionBusy}
+            startBusy={startBusy}
+          />
+        ) : (
+          <GameArea>
+            {t("games.room.gameArea") ||
+              "This game is not yet available in the web version"}
+          </GameArea>
+        )}
       </Container>
     </Page>
   );

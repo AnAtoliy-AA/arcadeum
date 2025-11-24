@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import type {
   GameRoomSummary,
@@ -23,6 +23,7 @@ const GameContainer = styled.div`
   box-shadow: ${({ theme }) => theme.surfaces.card.shadow};
   position: relative;
   overflow: hidden;
+  transition: all 0.3s ease;
 
   &::before {
     content: "";
@@ -46,6 +47,42 @@ const GameContainer = styled.div`
     50% {
       opacity: 1;
     }
+  }
+
+  /* Fullscreen mode styles */
+  &:fullscreen {
+    max-width: 100vw;
+    max-height: 100vh;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+    padding: 1.5rem;
+    overflow-y: auto;
+  }
+
+  /* Firefox fullscreen */
+  &:-moz-full-screen {
+    max-width: 100vw;
+    max-height: 100vh;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+    padding: 1.5rem;
+    overflow-y: auto;
+  }
+
+  /* Webkit fullscreen */
+  &:-webkit-full-screen {
+    max-width: 100vw;
+    max-height: 100vh;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+    padding: 1.5rem;
+    overflow-y: auto;
   }
 `;
 
@@ -92,6 +129,46 @@ const StartButton = styled.button`
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+  }
+`;
+
+const FullscreenButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 2px solid ${({ theme }) => theme.surfaces.card.border};
+  background: ${({ theme }) => theme.surfaces.card.background};
+  color: ${({ theme }) => theme.text.primary};
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.25rem;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, ${({ theme }) => theme.buttons.primary.gradientStart}20, transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 
@@ -583,6 +660,50 @@ export function ExplodingCatsGame({
   startBusy,
 }: ExplodingCatsGameProps) {
   const { t } = useTranslation();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = useCallback(async () => {
+    if (!containerRef.current) return;
+
+    try {
+      if (!document.fullscreenElement) {
+        await containerRef.current.requestFullscreen();
+        setIsFullscreen(true);
+      } else {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    } catch (err) {
+      console.error("Failed to toggle fullscreen:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // F key to toggle fullscreen
+      if (e.key === "f" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const target = e.target as HTMLElement;
+        // Don't trigger if typing in input/textarea
+        if (target.tagName !== "INPUT" && target.tagName !== "TEXTAREA") {
+          e.preventDefault();
+          toggleFullscreen();
+        }
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [toggleFullscreen]);
 
   const snapshot: ExplodingCatsSnapshot | null = useMemo(() => {
     if (!session?.state?.snapshot) return null;
@@ -684,7 +805,7 @@ export function ExplodingCatsGame({
   // Game not started yet
   if (!snapshot) {
     return (
-      <GameContainer>
+      <GameContainer ref={containerRef}>
         <GameHeader>
           <GameInfo>
             <GameTitle>Exploding Cats</GameTitle>
@@ -692,13 +813,30 @@ export function ExplodingCatsGame({
               {room.playerCount} {t("games.table.lobby.playersInLobby") || "players in lobby"}
             </GameStatus>
           </GameInfo>
-          {isHost && (
-            <StartButton onClick={onStart} disabled={startBusy || room.playerCount < 2}>
-              {startBusy
-                ? t("games.table.actions.starting") || "Starting..."
-                : t("games.table.actions.start") || "Start Game"}
-            </StartButton>
-          )}
+          <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+            <FullscreenButton
+              onClick={toggleFullscreen}
+              title={
+                isFullscreen
+                  ? t("games.table.fullscreen.exit") || "Exit fullscreen (Esc)"
+                  : t("games.table.fullscreen.enter") || "Enter fullscreen (F)"
+              }
+              aria-label={
+                isFullscreen
+                  ? t("games.table.fullscreen.exit") || "Exit fullscreen"
+                  : t("games.table.fullscreen.enter") || "Enter fullscreen"
+              }
+            >
+              {isFullscreen ? "⤓" : "⤢"}
+            </FullscreenButton>
+            {isHost && (
+              <StartButton onClick={onStart} disabled={startBusy || room.playerCount < 2}>
+                {startBusy
+                  ? t("games.table.actions.starting") || "Starting..."
+                  : t("games.table.actions.start") || "Start Game"}
+              </StartButton>
+            )}
+          </div>
         </GameHeader>
         <EmptyState>
           <div style={{ fontSize: "3rem" }}>🎮</div>
@@ -719,7 +857,7 @@ export function ExplodingCatsGame({
 
   // Game in progress
   return (
-    <GameContainer>
+    <GameContainer ref={containerRef}>
       <GameHeader>
         <GameInfo>
           <GameTitle>Exploding Cats</GameTitle>
@@ -733,6 +871,21 @@ export function ExplodingCatsGame({
               : "Game in progress"}
           </GameStatus>
         </GameInfo>
+        <FullscreenButton
+          onClick={toggleFullscreen}
+          title={
+            isFullscreen
+              ? t("games.table.fullscreen.exit") || "Exit fullscreen (Esc)"
+              : t("games.table.fullscreen.enter") || "Enter fullscreen (F)"
+          }
+          aria-label={
+            isFullscreen
+              ? t("games.table.fullscreen.exit") || "Exit fullscreen"
+              : t("games.table.fullscreen.enter") || "Enter fullscreen"
+          }
+        >
+          {isFullscreen ? "⤓" : "⤢"}
+        </FullscreenButton>
       </GameHeader>
 
       <GameBoard>

@@ -360,6 +360,11 @@ const enTranslations = {
         title: "You have been eliminated!",
         message: "Watch the remaining players battle it out",
       },
+      fullscreen: {
+        enter: "Enter fullscreen (F)",
+        exit: "Exit fullscreen (Esc)",
+        hint: "Press F to toggle fullscreen",
+      },
     },
   },
   history: {
@@ -825,6 +830,11 @@ export const translations = {
           title: "¡Has sido eliminado!",
           message: "Observa cómo los jugadores restantes batallan",
         },
+        fullscreen: {
+          enter: "Pantalla completa (F)",
+          exit: "Salir de pantalla completa (Esc)",
+          hint: "Presiona F para pantalla completa",
+        },
       },
     },
     history: {
@@ -1236,6 +1246,11 @@ export const translations = {
         eliminated: {
           title: "Vous avez été éliminé !",
           message: "Regardez les joueurs restants se battre",
+        },
+        fullscreen: {
+          enter: "Plein écran (F)",
+          exit: "Quitter le plein écran (Échap)",
+          hint: "Appuyez sur F pour le plein écran",
         },
       },
     },

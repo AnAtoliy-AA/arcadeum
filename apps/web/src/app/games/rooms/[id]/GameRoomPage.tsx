@@ -398,6 +398,42 @@ export function GameRoomPage() {
     [room, snapshot.userId, actionBusy]
   );
 
+  const handlePlayCatCombo = useCallback(
+    (input: {
+      cat: string;
+      mode: "pair" | "trio";
+      targetPlayerId: string;
+      desiredCard?: string;
+    }) => {
+      if (!room?.id || !snapshot.userId || actionBusy) return;
+
+      setActionBusy("cat_combo");
+      gameSocket.emit("games.session.play_cat_combo", {
+        roomId: room.id,
+        userId: snapshot.userId,
+        cat: input.cat,
+        mode: input.mode,
+        targetPlayerId: input.targetPlayerId,
+        desiredCard: input.desiredCard,
+      });
+    },
+    [room, snapshot.userId, actionBusy]
+  );
+
+  const handlePostHistoryNote = useCallback(
+    (message: string, scope: "all" | "players") => {
+      if (!room?.id || !snapshot.userId) return;
+
+      gameSocket.emit("games.session.history_note", {
+        roomId: room.id,
+        userId: snapshot.userId,
+        message,
+        scope,
+      });
+    },
+    [room, snapshot.userId]
+  );
+
   if (loading) {
     return (
       <Page>
@@ -486,6 +522,8 @@ export function GameRoomPage() {
             onStart={handleStartGame}
             onDraw={handleDrawCard}
             onPlayCard={handlePlayCard}
+            onPlayCatCombo={handlePlayCatCombo}
+            onPostHistoryNote={handlePostHistoryNote}
             actionBusy={actionBusy}
             startBusy={startBusy}
           />

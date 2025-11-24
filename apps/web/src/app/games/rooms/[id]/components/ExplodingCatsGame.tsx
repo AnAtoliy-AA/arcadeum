@@ -8,6 +8,7 @@ import type {
   ExplodingCatsSnapshot,
   ExplodingCatsCard,
   ExplodingCatsPlayerState,
+  ExplodingCatsCatCard,
 } from "@/shared/types/games";
 import { useTranslation } from "@/shared/lib/useTranslation";
 
@@ -606,6 +607,139 @@ const EmptyState = styled.div`
   text-align: center;
 `;
 
+const Modal = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-out;
+`;
+
+const ModalContent = styled.div`
+  background: ${({ theme }) => theme.surfaces.card.background};
+  border: 2px solid ${({ theme }) => theme.surfaces.card.border};
+  border-radius: 24px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s ease-out;
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
+const ModalHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid ${({ theme }) => theme.surfaces.card.border};
+`;
+
+const ModalTitle = styled.h2`
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: ${({ theme }) => theme.text.primary};
+`;
+
+const CloseButton = styled.button`
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: ${({ theme }) => theme.surfaces.panel.background};
+  color: ${({ theme }) => theme.text.primary};
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: ${({ theme }) => theme.buttons.primary.gradientStart};
+    color: ${({ theme }) => theme.buttons.primary.text};
+    transform: rotate(90deg);
+  }
+`;
+
+const ModalSection = styled.div`
+  margin-bottom: 1.5rem;
+`;
+
+const SectionLabel = styled.div`
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.text.secondary};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+`;
+
+const OptionGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+`;
+
+const OptionButton = styled.button<{ $selected?: boolean }>`
+  padding: 1rem;
+  border-radius: 12px;
+  border: 2px solid ${({ $selected, theme }) =>
+    $selected ? theme.buttons.primary.gradientStart : theme.surfaces.card.border};
+  background: ${({ $selected, theme }) =>
+    $selected
+      ? `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}20, transparent)`
+      : theme.surfaces.panel.background};
+  color: ${({ theme }) => theme.text.primary};
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const ModalActions = styled.div`
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 2rem;
+`;
+
+const ModalButton = styled(ActionButton)`
+  flex: 1;
+`;
+
 interface ExplodingCatsGameProps {
   room: GameRoomSummary;
   session: GameSessionSummary | null;
@@ -614,6 +748,13 @@ interface ExplodingCatsGameProps {
   onStart: () => void;
   onDraw: () => void;
   onPlayCard: (card: "skip" | "attack") => void;
+  onPlayCatCombo: (input: {
+    cat: ExplodingCatsCatCard;
+    mode: "pair" | "trio";
+    targetPlayerId: string;
+    desiredCard?: ExplodingCatsCard;
+  }) => void;
+  onPostHistoryNote: (message: string, scope: "all" | "players") => void;
   actionBusy: string | null;
   startBusy: boolean;
 }
@@ -656,12 +797,23 @@ export function ExplodingCatsGame({
   onStart,
   onDraw,
   onPlayCard,
+  onPlayCatCombo,
+  onPostHistoryNote,
   actionBusy,
   startBusy,
 }: ExplodingCatsGameProps) {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [catComboModal, setCatComboModal] = useState<{
+    cat: ExplodingCatsCatCard;
+    availableModes: ("pair" | "trio")[];
+  } | null>(null);
+  const [selectedMode, setSelectedMode] = useState<"pair" | "trio" | null>(null);
+  const [selectedTarget, setSelectedTarget] = useState<string | null>(null);
+  const [selectedCard, setSelectedCard] = useState<ExplodingCatsCard | null>(null);
+  const [chatMessage, setChatMessage] = useState("");
+  const [chatScope, setChatScope] = useState<"all" | "players">("all");
 
   const toggleFullscreen = useCallback(async () => {
     if (!containerRef.current) return;
@@ -728,6 +880,79 @@ export function ExplodingCatsGame({
   const canAct = useMemo(() => {
     return isMyTurn && !actionBusy && currentPlayer?.alive;
   }, [isMyTurn, actionBusy, currentPlayer]);
+
+  const catCards: ExplodingCatsCatCard[] = useMemo(() => [
+    "tacocat",
+    "hairy_potato_cat",
+    "rainbow_ralphing_cat",
+    "cattermelon",
+    "bearded_cat",
+  ], []);
+
+  const allGameCards: ExplodingCatsCard[] = useMemo(() => [
+    "exploding_cat",
+    "defuse",
+    "attack",
+    "skip",
+    ...catCards,
+  ], [catCards]);
+
+  const aliveOpponents = useMemo(() => {
+    if (!snapshot || !currentUserId) return [];
+    return snapshot.players.filter(
+      (p) => p.alive && p.playerId !== currentUserId
+    );
+  }, [snapshot, currentUserId]);
+
+  const handleOpenCatCombo = useCallback((cat: ExplodingCatsCatCard) => {
+    if (!currentPlayer) return;
+
+    const count = currentPlayer.hand.filter((c) => c === cat).length;
+    const availableModes: ("pair" | "trio")[] = [];
+
+    if (count >= 2) availableModes.push("pair");
+    if (count >= 3) availableModes.push("trio");
+
+    if (availableModes.length === 0) return;
+
+    setCatComboModal({ cat, availableModes });
+    setSelectedMode(availableModes[0]);
+    setSelectedTarget(null);
+    setSelectedCard(null);
+  }, [currentPlayer]);
+
+  const handleConfirmCatCombo = useCallback(() => {
+    if (!catComboModal || !selectedMode || !selectedTarget) return;
+
+    if (selectedMode === "trio" && !selectedCard) return;
+
+    onPlayCatCombo({
+      cat: catComboModal.cat,
+      mode: selectedMode,
+      targetPlayerId: selectedTarget,
+      desiredCard: selectedMode === "trio" ? selectedCard! : undefined,
+    });
+
+    setCatComboModal(null);
+    setSelectedMode(null);
+    setSelectedTarget(null);
+    setSelectedCard(null);
+  }, [catComboModal, selectedMode, selectedTarget, selectedCard, onPlayCatCombo]);
+
+  const handleCloseCatComboModal = useCallback(() => {
+    setCatComboModal(null);
+    setSelectedMode(null);
+    setSelectedTarget(null);
+    setSelectedCard(null);
+  }, []);
+
+  const handleSendChatMessage = useCallback(() => {
+    const trimmed = chatMessage.trim();
+    if (!trimmed) return;
+
+    onPostHistoryNote(trimmed, chatScope);
+    setChatMessage("");
+  }, [chatMessage, chatScope, onPostHistoryNote]);
 
   const resolveDisplayName = useCallback(
     (userId?: string | null, fallback?: string | null) => {
@@ -990,12 +1215,54 @@ export function ExplodingCatsGame({
                 )
               </InfoTitle>
               <CardsGrid>
-                {currentPlayer.hand.map((card, index) => (
-                  <Card key={`${card}-${index}`} $cardType={card} $index={index}>
-                    <CardEmoji>{getCardEmoji(card)}</CardEmoji>
-                    <div>{t(getCardTranslationKey(card) as any) || card}</div>
-                  </Card>
-                ))}
+                {currentPlayer.hand.map((card, index) => {
+                  const isCatCard = catCards.includes(card as ExplodingCatsCatCard);
+                  const catCount = isCatCard
+                    ? currentPlayer.hand.filter((c) => c === card).length
+                    : 0;
+                  const canPlayCombo = isCatCard && catCount >= 2 && canAct && aliveOpponents.length > 0;
+
+                  return (
+                    <Card
+                      key={`${card}-${index}`}
+                      $cardType={card}
+                      $index={index}
+                      onClick={() => {
+                        if (canPlayCombo) {
+                          handleOpenCatCombo(card as ExplodingCatsCatCard);
+                        }
+                      }}
+                      style={{
+                        cursor: canPlayCombo ? "pointer" : "default",
+                        opacity: canPlayCombo ? 1 : isCatCard && catCount === 1 ? 0.7 : 1,
+                      }}
+                    >
+                      <CardEmoji>{getCardEmoji(card)}</CardEmoji>
+                      <div>{t(getCardTranslationKey(card) as any) || card}</div>
+                      {isCatCard && catCount > 1 && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "0.5rem",
+                            right: "0.5rem",
+                            background: "rgba(0, 0, 0, 0.8)",
+                            color: "white",
+                            borderRadius: "50%",
+                            width: "24px",
+                            height: "24px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "0.75rem",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {catCount}
+                        </div>
+                      )}
+                    </Card>
+                  );
+                })}
               </CardsGrid>
             </InfoCard>
 
@@ -1054,6 +1321,114 @@ export function ExplodingCatsGame({
           </EmptyState>
         )}
       </GameBoard>
+
+      {/* Cat Combo Modal */}
+      {catComboModal && (
+        <Modal onClick={handleCloseCatComboModal}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            <ModalHeader>
+              <ModalTitle>
+                {getCardEmoji(catComboModal.cat)} Play Cat Combo
+              </ModalTitle>
+              <CloseButton onClick={handleCloseCatComboModal}>×</CloseButton>
+            </ModalHeader>
+
+            {/* Mode Selection */}
+            <ModalSection>
+              <SectionLabel>Select Combo Mode</SectionLabel>
+              <OptionGrid>
+                {catComboModal.availableModes.includes("pair") && (
+                  <OptionButton
+                    $selected={selectedMode === "pair"}
+                    onClick={() => setSelectedMode("pair")}
+                  >
+                    <div style={{ fontSize: "1.5rem" }}>🎴🎴</div>
+                    <div>Pair</div>
+                    <div style={{ fontSize: "0.75rem", opacity: 0.7 }}>
+                      Random card from target
+                    </div>
+                  </OptionButton>
+                )}
+                {catComboModal.availableModes.includes("trio") && (
+                  <OptionButton
+                    $selected={selectedMode === "trio"}
+                    onClick={() => setSelectedMode("trio")}
+                  >
+                    <div style={{ fontSize: "1.5rem" }}>🎴🎴🎴</div>
+                    <div>Trio</div>
+                    <div style={{ fontSize: "0.75rem", opacity: 0.7 }}>
+                      Choose specific card
+                    </div>
+                  </OptionButton>
+                )}
+              </OptionGrid>
+            </ModalSection>
+
+            {/* Target Player Selection */}
+            <ModalSection>
+              <SectionLabel>Select Target Player</SectionLabel>
+              <OptionGrid>
+                {aliveOpponents.map((opponent) => {
+                  const displayName = resolveDisplayName(
+                    opponent.playerId,
+                    `Player ${opponent.playerId.slice(0, 8)}`
+                  );
+                  return (
+                    <OptionButton
+                      key={opponent.playerId}
+                      $selected={selectedTarget === opponent.playerId}
+                      onClick={() => setSelectedTarget(opponent.playerId)}
+                    >
+                      <div style={{ fontSize: "1.5rem" }}>🎮</div>
+                      <div>{displayName}</div>
+                      <div style={{ fontSize: "0.75rem", opacity: 0.7 }}>
+                        {opponent.hand.length} cards
+                      </div>
+                    </OptionButton>
+                  );
+                })}
+              </OptionGrid>
+            </ModalSection>
+
+            {/* Desired Card Selection (for trio mode) */}
+            {selectedMode === "trio" && (
+              <ModalSection>
+                <SectionLabel>Select Desired Card</SectionLabel>
+                <OptionGrid>
+                  {allGameCards.map((card) => (
+                    <OptionButton
+                      key={card}
+                      $selected={selectedCard === card}
+                      onClick={() => setSelectedCard(card)}
+                    >
+                      <div style={{ fontSize: "1.5rem" }}>{getCardEmoji(card)}</div>
+                      <div style={{ fontSize: "0.75rem" }}>
+                        {t(getCardTranslationKey(card) as any) || card}
+                      </div>
+                    </OptionButton>
+                  ))}
+                </OptionGrid>
+              </ModalSection>
+            )}
+
+            {/* Confirm/Cancel Actions */}
+            <ModalActions>
+              <ModalButton variant="secondary" onClick={handleCloseCatComboModal}>
+                Cancel
+              </ModalButton>
+              <ModalButton
+                onClick={handleConfirmCatCombo}
+                disabled={
+                  !selectedTarget ||
+                  (selectedMode === "trio" && !selectedCard)
+                }
+              >
+                Play Combo
+              </ModalButton>
+            </ModalActions>
+          </ModalContent>
+        </Modal>
+      )}
     </GameContainer>
   );
 }

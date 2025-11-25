@@ -1215,54 +1215,61 @@ export function ExplodingCatsGame({
                 )
               </InfoTitle>
               <CardsGrid>
-                {currentPlayer.hand.map((card, index) => {
-                  const isCatCard = catCards.includes(card as ExplodingCatsCatCard);
-                  const catCount = isCatCard
-                    ? currentPlayer.hand.filter((c) => c === card).length
-                    : 0;
-                  const canPlayCombo = isCatCard && catCount >= 2 && canAct && aliveOpponents.length > 0;
+                {(() => {
+                  // Get unique cards and their counts
+                  const uniqueCards = Array.from(new Set(currentPlayer.hand));
+                  const cardCounts = new Map<ExplodingCatsCard, number>();
+                  currentPlayer.hand.forEach((card) => {
+                    cardCounts.set(card, (cardCounts.get(card) || 0) + 1);
+                  });
 
-                  return (
-                    <Card
-                      key={`${card}-${index}`}
-                      $cardType={card}
-                      $index={index}
-                      onClick={() => {
-                        if (canPlayCombo) {
-                          handleOpenCatCombo(card as ExplodingCatsCatCard);
-                        }
-                      }}
-                      style={{
-                        cursor: canPlayCombo ? "pointer" : "default",
-                        opacity: canPlayCombo ? 1 : isCatCard && catCount === 1 ? 0.7 : 1,
-                      }}
-                    >
-                      <CardEmoji>{getCardEmoji(card)}</CardEmoji>
-                      <div>{t(getCardTranslationKey(card) as any) || card}</div>
-                      {isCatCard && catCount > 1 && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: "0.5rem",
-                            right: "0.5rem",
-                            background: "rgba(0, 0, 0, 0.8)",
-                            color: "white",
-                            borderRadius: "50%",
-                            width: "24px",
-                            height: "24px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "0.75rem",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {catCount}
-                        </div>
-                      )}
-                    </Card>
-                  );
-                })}
+                  return uniqueCards.map((card) => {
+                    const count = cardCounts.get(card) || 1;
+                    const isCatCard = catCards.includes(card as ExplodingCatsCatCard);
+                    const canPlayCombo = isCatCard && count >= 2 && canAct && aliveOpponents.length > 0;
+
+                    return (
+                      <Card
+                        key={card}
+                        $cardType={card}
+                        $index={0}
+                        onClick={() => {
+                          if (canPlayCombo) {
+                            handleOpenCatCombo(card as ExplodingCatsCatCard);
+                          }
+                        }}
+                        style={{
+                          cursor: canPlayCombo ? "pointer" : "default",
+                          opacity: canPlayCombo ? 1 : isCatCard && count === 1 ? 0.7 : 1,
+                        }}
+                      >
+                        <CardEmoji>{getCardEmoji(card)}</CardEmoji>
+                        <div>{t(getCardTranslationKey(card) as any) || card}</div>
+                        {count > 1 && (
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: "0.5rem",
+                              right: "0.5rem",
+                              background: "rgba(0, 0, 0, 0.8)",
+                              color: "white",
+                              borderRadius: "50%",
+                              width: "24px",
+                              height: "24px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "0.75rem",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {count}
+                          </div>
+                        )}
+                      </Card>
+                    );
+                  });
+                })()}
               </CardsGrid>
             </InfoCard>
 

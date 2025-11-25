@@ -878,7 +878,7 @@ export function ExplodingCatsTable({
   }, [actionBusy, deckPulseScale, effectScale, effectOpacity, effectRotate]);
 
   const renderHandCard = useCallback(
-    (card: ExplodingCatsCard, index: number, mode: 'row' | 'grid' = 'row') => {
+    (card: ExplodingCatsCard, index: number, count: number, mode: 'row' | 'grid' = 'row') => {
       const cardKey = `${card}-${index}`;
       const quickAction = card === 'skip' ? 'skip' : card === 'attack' ? 'attack' : null;
       const isCatCard = CAT_COMBO_CARDS.includes(card as ExplodingCatsCatCard);
@@ -1006,6 +1006,13 @@ export function ExplodingCatsTable({
                     {translateCardDescription(card)}
                   </ThemedText>
                 </View>
+                {count > 1 && (
+                  <View style={styles.handCardCountBadge} {...ACCESSIBILITY_DISABLED_PROPS}>
+                    <ThemedText style={styles.handCardCountText}>
+                      {count}
+                    </ThemedText>
+                  </View>
+                )}
               </View>
               <View
                 style={[
@@ -1430,7 +1437,16 @@ export function ExplodingCatsTable({
                     contentInsetAdjustmentBehavior="never"
                     contentContainerStyle={styles.handScrollContent}
                   >
-                    {selfPlayer.hand.map((card, index) => renderHandCard(card, index))}
+                    {(() => {
+                      const uniqueCards = Array.from(new Set(selfPlayer.hand));
+                      const cardCounts = new Map<ExplodingCatsCard, number>();
+                      selfPlayer.hand.forEach((card) => {
+                        cardCounts.set(card, (cardCounts.get(card) || 0) + 1);
+                      });
+                      return uniqueCards.map((card, index) =>
+                        renderHandCard(card, index, cardCounts.get(card) || 1)
+                      );
+                    })()}
                   </ScrollView>
                 ) : (
                   <View
@@ -1444,9 +1460,16 @@ export function ExplodingCatsTable({
                       );
                     }}
                   >
-                    {selfPlayer.hand.map((card, index) =>
-                      renderHandCard(card, index, 'grid')
-                    )}
+                    {(() => {
+                      const uniqueCards = Array.from(new Set(selfPlayer.hand));
+                      const cardCounts = new Map<ExplodingCatsCard, number>();
+                      selfPlayer.hand.forEach((card) => {
+                        cardCounts.set(card, (cardCounts.get(card) || 0) + 1);
+                      });
+                      return uniqueCards.map((card, index) =>
+                        renderHandCard(card, index, cardCounts.get(card) || 1, 'grid')
+                      );
+                    })()}
                   </View>
                 )
               ) : (
@@ -2608,6 +2631,32 @@ function createStyles(palette: Palette) {
       lineHeight: 18,
       textAlign: 'center',
       ...handCardDescriptionShadow,
+    },
+    handCardCountBadge: {
+      position: 'absolute',
+      top: 8,
+      right: 8,
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      backgroundColor: 'rgba(0, 0, 0, 0.85)',
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 1.5,
+      borderColor: titleText,
+      ...platformShadow({
+        color: '#000',
+        opacity: 0.6,
+        radius: 4,
+        offset: { width: 0, height: 2 },
+        elevation: 3,
+      }),
+    },
+    handCardCountText: {
+      color: '#fff',
+      fontSize: 12,
+      fontWeight: '700',
+      lineHeight: 14,
     },
     handCardMeta: {
       width: '100%',

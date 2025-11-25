@@ -356,6 +356,21 @@ const enTranslations = {
         title: "Game Log",
         empty: "No activity yet",
       },
+      chat: {
+        title: "Table Chat",
+        empty: "No messages yet. Break the ice!",
+        send: "Send",
+        show: "Show Chat",
+        hide: "Hide Chat",
+        placeholderAll: "Send a note to everyone at the table",
+        placeholderPlayers: "Send a note only to active players",
+        hintAll: "Visible to everyone in room",
+        hintPlayers: "Visible to alive players only",
+        scope: {
+          all: "All",
+          players: "Players",
+        },
+      },
       eliminated: {
         title: "You have been eliminated!",
         message: "Watch the remaining players battle it out",
@@ -826,6 +841,21 @@ export const translations = {
           title: "Registro del Juego",
           empty: "Sin actividad aún",
         },
+        chat: {
+          title: "Chat de la Mesa",
+          empty: "Sin mensajes aún. ¡Rompe el hielo!",
+          send: "Enviar",
+        show: "Mostrar chat",
+        hide: "Ocultar chat",
+          placeholderAll: "Envía una nota a todos en la mesa",
+          placeholderPlayers: "Envía una nota solo a los jugadores activos",
+          hintAll: "Visible para todos en la sala",
+          hintPlayers: "Visible solo para jugadores vivos",
+          scope: {
+            all: "Todos",
+            players: "Jugadores",
+          },
+        },
         eliminated: {
           title: "¡Has sido eliminado!",
           message: "Observa cómo los jugadores restantes batallan",
@@ -1242,6 +1272,21 @@ export const translations = {
         log: {
           title: "Journal de la Partie",
           empty: "Aucune activité pour le moment",
+        },
+        chat: {
+          title: "Chat de Table",
+          empty: "Aucun message. Lancez la conversation !",
+          send: "Envoyer",
+        show: "Afficher le chat",
+        hide: "Masquer le chat",
+          placeholderAll: "Envoyez une note à toute la table",
+          placeholderPlayers: "Envoyez une note uniquement aux joueurs actifs",
+          hintAll: "Visible par tout le monde dans la salle",
+          hintPlayers: "Visible uniquement par les joueurs encore en vie",
+          scope: {
+            all: "Tous",
+            players: "Joueurs",
+          },
         },
         eliminated: {
           title: "Vous avez été éliminé !",

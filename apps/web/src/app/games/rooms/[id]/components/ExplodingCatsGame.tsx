@@ -11,6 +11,7 @@ import type {
   ExplodingCatsCatCard,
 } from "@/shared/types/games";
 import { useTranslation } from "@/shared/lib/useTranslation";
+import type { TranslationKey } from "@/shared/lib/useTranslation";
 
 const GameContainer = styled.div`
   display: flex;
@@ -25,6 +26,8 @@ const GameContainer = styled.div`
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
+  height: 100%;
+  min-height: 100%;
 
   &::before {
     content: "";
@@ -85,14 +88,30 @@ const GameContainer = styled.div`
     padding: 1.5rem;
     overflow-y: auto;
   }
+
+  @media (max-width: 768px) {
+    padding: 1.25rem;
+    border-radius: 16px;
+    gap: 1.25rem;
+  }
 `;
 
 const GameHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  flex-wrap: wrap;
+`;
+
+const HeaderActions = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 `;
 
 const GameInfo = styled.div`
@@ -173,10 +192,40 @@ const FullscreenButton = styled.button`
   }
 `;
 
+const ChatToggleButton = styled.button<{ $active?: boolean }>`
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  border: 1px solid
+    ${({ $active, theme }) =>
+      $active ? theme.buttons.primary.gradientStart : theme.surfaces.card.border};
+  background: ${({ $active, theme }) =>
+    $active
+      ? `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}20, transparent)`
+      : theme.surfaces.card.background};
+  color: ${({ theme }) => theme.text.primary};
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+`;
+
 const GameBoard = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  flex: 1;
+  min-height: 0;
   animation: fadeIn 0.5s ease-out;
 
   @keyframes fadeIn {
@@ -191,17 +240,58 @@ const GameBoard = styled.div`
   }
 `;
 
+const TableArea = styled.div<{ $showChat: boolean }>`
+  display: grid;
+  grid-template-columns: ${({ $showChat }) =>
+    $showChat ? "minmax(0, 2fr) minmax(280px, 1fr)" : "minmax(0, 1fr)"};
+  grid-template-rows: ${({ $showChat }) => ($showChat ? "1fr auto" : "1fr auto")};
+  grid-template-areas: ${({ $showChat }) =>
+    $showChat ? `"table chat" "hand chat"` : `"table" "hand"`};
+  gap: 1.5rem;
+  width: 100%;
+  align-items: stretch;
+  min-height: 0;
+  max-height: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: ${({ $showChat }) => ($showChat ? "auto auto 400px" : "auto auto")};
+    grid-template-areas: ${({ $showChat }) =>
+      $showChat ? `"table" "hand" "chat"` : `"table" "hand"`};
+  }
+
+  @media (max-width: 768px) {
+    gap: 1rem;
+  }
+`;
+
+const HandSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  grid-area: hand;
+  min-width: 0;
+`;
+
 const GameTable = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  align-items: center;
+  align-items: stretch;
   padding: 2rem;
   border-radius: 20px;
   background: ${({ theme }) => theme.surfaces.panel.background};
   border: 2px solid ${({ theme }) => theme.surfaces.panel.border};
   position: relative;
-  min-height: 400px;
+  width: 100%;
+  flex: 1;
+  min-height: clamp(420px, 60vh, 900px);
+  max-height: 100%;
+  grid-area: table;
+  overflow: hidden;
 
   &::before {
     content: "";
@@ -216,9 +306,15 @@ const GameTable = styled.div`
       ${({ theme }) => theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart}20
     );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.25rem;
+    min-height: 360px;
   }
 `;
 
@@ -265,6 +361,25 @@ const InfoCard = styled.div`
   border: 1px solid ${({ theme }) => theme.surfaces.panel.border};
 `;
 
+const ChatCard = styled(InfoCard)`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  grid-area: chat;
+  overflow: hidden;
+  align-self: stretch;
+  flex-shrink: 0;
+
+  @media (max-width: 1024px) {
+    height: 400px;
+    max-height: 400px;
+    flex-shrink: 0;
+  }
+`;
+
 const InfoTitle = styled.h3`
   margin: 0 0 0.75rem 0;
   font-size: 0.875rem;
@@ -272,20 +387,6 @@ const InfoTitle = styled.h3`
   color: ${({ theme }) => theme.text.secondary};
   text-transform: uppercase;
   letter-spacing: 0.5px;
-`;
-
-const InfoContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: ${({ theme }) => theme.text.primary};
-`;
-
-const PlayersList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
 `;
 
 const PlayerCard = styled.div<{ $isCurrentTurn?: boolean; $isAlive?: boolean; $isCurrentUser?: boolean }>`
@@ -569,6 +670,11 @@ const ActionButton = styled.button<{ variant?: "primary" | "secondary" | "danger
   }
 `;
 
+const ChatSendButton = styled(ActionButton)`
+  padding: 0.65rem 1.25rem;
+  font-size: 0.75rem;
+`;
+
 const GameLog = styled.div`
   max-height: 300px;
   overflow-y: auto;
@@ -594,6 +700,96 @@ const LogEntry = styled.div<{ $type?: string }>`
       return "transparent";
     }};
   padding-left: 0.75rem;
+`;
+
+const ChatMessages = styled(GameLog)`
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column-reverse;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: ${({ theme }) => theme.buttons.primary.gradientStart} transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.buttons.primary.gradientStart};
+    border-radius: 999px;
+  }
+`;
+
+const ScopeToggle = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+`;
+
+const ScopeOption = styled.button<{ $active?: boolean }>`
+  flex: 1;
+  min-width: 120px;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid
+    ${({ $active, theme }) =>
+      $active ? theme.buttons.primary.gradientStart : theme.surfaces.card.border};
+  background: ${({ $active, theme }) =>
+    $active
+      ? `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}20, transparent)`
+      : theme.surfaces.card.background};
+  color: ${({ theme }) => theme.text.primary};
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+  }
+`;
+
+const ChatInput = styled.textarea`
+  width: 100%;
+  min-height: 90px;
+  border-radius: 12px;
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  background: ${({ theme }) => theme.background.base};
+  color: ${({ theme }) => theme.text.primary};
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  resize: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  }
+`;
+
+const ChatControls = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+`;
+
+const ChatHint = styled.div`
+  font-size: 0.75rem;
+  color: ${({ theme }) => theme.text.secondary};
+  opacity: 0.85;
 `;
 
 const EmptyState = styled.div`
@@ -759,8 +955,8 @@ interface ExplodingCatsGameProps {
   startBusy: boolean;
 }
 
-function getCardTranslationKey(card: ExplodingCatsCard): string {
-  const keys: Record<ExplodingCatsCard, string> = {
+function getCardTranslationKey(card: ExplodingCatsCard): TranslationKey {
+  const keys: Record<ExplodingCatsCard, TranslationKey> = {
     exploding_cat: "games.table.cards.explodingCat",
     defuse: "games.table.cards.defuse",
     attack: "games.table.cards.attack",
@@ -814,6 +1010,8 @@ export function ExplodingCatsGame({
   const [selectedCard, setSelectedCard] = useState<ExplodingCatsCard | null>(null);
   const [chatMessage, setChatMessage] = useState("");
   const [chatScope, setChatScope] = useState<"all" | "players">("all");
+  const [showChat, setShowChat] = useState(true);
+  const chatMessagesRef = useRef<HTMLDivElement | null>(null);
 
   const toggleFullscreen = useCallback(async () => {
     if (!containerRef.current) return;
@@ -861,6 +1059,17 @@ export function ExplodingCatsGame({
     if (!session?.state?.snapshot) return null;
     return session.state.snapshot as ExplodingCatsSnapshot;
   }, [session]);
+  const chatLogCount = snapshot?.logs?.length ?? 0;
+
+  // Auto-scroll chat to newest message
+  useEffect(() => {
+    if (chatMessagesRef.current?.lastElementChild) {
+      chatMessagesRef.current.lastElementChild.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest"
+      });
+    }
+  }, [chatLogCount]);
 
   const currentPlayer: ExplodingCatsPlayerState | null = useMemo(() => {
     if (!snapshot || !currentUserId) return null;
@@ -953,6 +1162,12 @@ export function ExplodingCatsGame({
     onPostHistoryNote(trimmed, chatScope);
     setChatMessage("");
   }, [chatMessage, chatScope, onPostHistoryNote]);
+
+  const trimmedChatMessage = chatMessage.trim();
+  const canSendChatMessage = trimmedChatMessage.length > 0;
+  const handleToggleChat = useCallback(() => {
+    setShowChat((prev) => !prev);
+  }, []);
 
   const resolveDisplayName = useCallback(
     (userId?: string | null, fallback?: string | null) => {
@@ -1096,26 +1311,39 @@ export function ExplodingCatsGame({
               : "Game in progress"}
           </GameStatus>
         </GameInfo>
-        <FullscreenButton
-          onClick={toggleFullscreen}
-          title={
-            isFullscreen
-              ? t("games.table.fullscreen.exit") || "Exit fullscreen (Esc)"
-              : t("games.table.fullscreen.enter") || "Enter fullscreen (F)"
-          }
-          aria-label={
-            isFullscreen
-              ? t("games.table.fullscreen.exit") || "Exit fullscreen"
-              : t("games.table.fullscreen.enter") || "Enter fullscreen"
-          }
-        >
-          {isFullscreen ? "⤓" : "⤢"}
-        </FullscreenButton>
+        <HeaderActions>
+          <ChatToggleButton
+            type="button"
+            onClick={handleToggleChat}
+            $active={showChat}
+            aria-pressed={showChat}
+          >
+            {showChat
+              ? t("games.table.chat.hide") || "Hide Chat"
+              : t("games.table.chat.show") || "Show Chat"}
+          </ChatToggleButton>
+          <FullscreenButton
+            onClick={toggleFullscreen}
+            title={
+              isFullscreen
+                ? t("games.table.fullscreen.exit") || "Exit fullscreen (Esc)"
+                : t("games.table.fullscreen.enter") || "Enter fullscreen (F)"
+            }
+            aria-label={
+              isFullscreen
+                ? t("games.table.fullscreen.exit") || "Exit fullscreen"
+                : t("games.table.fullscreen.enter") || "Enter fullscreen"
+            }
+          >
+            {isFullscreen ? "⤓" : "⤢"}
+          </FullscreenButton>
+        </HeaderActions>
       </GameHeader>
 
       <GameBoard>
-        <GameTable>
-          <PlayersRing>
+        <TableArea $showChat={showChat}>
+          <GameTable>
+            <PlayersRing>
             {snapshot.playerOrder.map((playerId, index) => {
               const player = snapshot.players.find((p) => p.playerId === playerId);
               if (!player) return null;
@@ -1149,134 +1377,46 @@ export function ExplodingCatsGame({
                 </PlayerCard>
               );
             })}
-          </PlayersRing>
+            </PlayersRing>
 
-          <CenterTable>
-            <InfoTitle style={{ margin: 0 }}>
-              {t("games.table.state.deck") || "Game State"}
-            </InfoTitle>
-            <div style={{
-              display: "flex",
-              gap: "2rem",
-              alignItems: "center",
-              justifyContent: "center",
-              flexWrap: "wrap",
-              fontSize: "1rem",
-              fontWeight: 600
-            }}>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>🎴</div>
-                <div>{t("games.table.state.deck") || "Deck"}</div>
-                <div style={{ fontSize: "1.5rem", color: "#3B82F6" }}>{snapshot.deck.length}</div>
-              </div>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>🗑️</div>
-                <div>{t("games.table.state.discard") || "Discard"}</div>
-                <div style={{ fontSize: "1.5rem", color: "#F59E0B" }}>{snapshot.discardPile.length}</div>
-              </div>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>⏳</div>
-                <div>{t("games.table.state.pendingDraws") || "Pending"}</div>
-                <div style={{ fontSize: "1.5rem", color: "#DC2626" }}>{snapshot.pendingDraws}</div>
-              </div>
-            </div>
-          </CenterTable>
-
-          {snapshot.logs && snapshot.logs.length > 0 && (
-            <InfoCard style={{ maxWidth: "600px" }}>
-              <InfoTitle>{t("games.table.log.title") || "Game Log"}</InfoTitle>
-              <GameLog>
-                {snapshot.logs.slice(-5).map((log) => {
-                  const senderDisplay = resolveDisplayName(
-                    log.senderId ?? undefined,
-                    log.senderName ?? undefined
-                  );
-                  const renderedMessage = formatLogMessage(log.message);
-
-                  return (
-                    <LogEntry key={log.id} $type={log.type}>
-                      {senderDisplay && <strong>{senderDisplay}: </strong>}
-                      {renderedMessage}
-                    </LogEntry>
-                  );
-                })}
-              </GameLog>
-            </InfoCard>
-          )}
-        </GameTable>
-        {currentPlayer && currentPlayer.alive && (
-          <HandContainer>
-            <InfoCard>
-              <InfoTitle>
-                {t("games.table.hand.title") || "Your Hand"} ({currentPlayer.hand.length}{" "}
-                {currentPlayer.hand.length === 1
-                  ? t("games.table.state.card") || "card"
-                  : t("games.table.state.cards") || "cards"}
-                )
+            <CenterTable>
+              <InfoTitle style={{ margin: 0 }}>
+                {t("games.table.state.deck") || "Game State"}
               </InfoTitle>
-              <CardsGrid>
-                {(() => {
-                  // Get unique cards and their counts
-                  const uniqueCards = Array.from(new Set(currentPlayer.hand));
-                  const cardCounts = new Map<ExplodingCatsCard, number>();
-                  currentPlayer.hand.forEach((card) => {
-                    cardCounts.set(card, (cardCounts.get(card) || 0) + 1);
-                  });
+              <div style={{
+                display: "flex",
+                gap: "2rem",
+                alignItems: "center",
+                justifyContent: "center",
+                flexWrap: "wrap",
+                fontSize: "1rem",
+                fontWeight: 600
+              }}>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>🎴</div>
+                  <div>{t("games.table.state.deck") || "Deck"}</div>
+                  <div style={{ fontSize: "1.5rem", color: "#3B82F6" }}>{snapshot.deck.length}</div>
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>🗑️</div>
+                  <div>{t("games.table.state.discard") || "Discard"}</div>
+                  <div style={{ fontSize: "1.5rem", color: "#F59E0B" }}>{snapshot.discardPile.length}</div>
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>⏳</div>
+                  <div>{t("games.table.state.pendingDraws") || "Pending"}</div>
+                  <div style={{ fontSize: "1.5rem", color: "#DC2626" }}>{snapshot.pendingDraws}</div>
+                </div>
+              </div>
+            </CenterTable>
+          </GameTable>
 
-                  return uniqueCards.map((card) => {
-                    const count = cardCounts.get(card) || 1;
-                    const isCatCard = catCards.includes(card as ExplodingCatsCatCard);
-                    const canPlayCombo = isCatCard && count >= 2 && canAct && aliveOpponents.length > 0;
-
-                    return (
-                      <Card
-                        key={card}
-                        $cardType={card}
-                        $index={0}
-                        onClick={() => {
-                          if (canPlayCombo) {
-                            handleOpenCatCombo(card as ExplodingCatsCatCard);
-                          }
-                        }}
-                        style={{
-                          cursor: canPlayCombo ? "pointer" : "default",
-                          opacity: canPlayCombo ? 1 : isCatCard && count === 1 ? 0.7 : 1,
-                        }}
-                      >
-                        <CardEmoji>{getCardEmoji(card)}</CardEmoji>
-                        <div>{t(getCardTranslationKey(card) as any) || card}</div>
-                        {count > 1 && (
-                          <div
-                            style={{
-                              position: "absolute",
-                              top: "0.5rem",
-                              right: "0.5rem",
-                              background: "rgba(0, 0, 0, 0.8)",
-                              color: "white",
-                              borderRadius: "50%",
-                              width: "24px",
-                              height: "24px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: "0.75rem",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            {count}
-                          </div>
-                        )}
-                      </Card>
-                    );
-                  });
-                })()}
-              </CardsGrid>
-            </InfoCard>
-
-            {isMyTurn && (
-              <InfoCard>
-                <InfoTitle>{t("games.table.actions.start") || "Actions"}</InfoTitle>
-                <ActionButtons>
+          {currentPlayer && currentPlayer.alive && (
+            <HandSection>
+              {isMyTurn && (
+                <InfoCard>
+                  <InfoTitle>{t("games.table.actions.start") || "Actions"}</InfoTitle>
+                  <ActionButtons>
                     <ActionButton
                       onClick={onDraw}
                       disabled={!canAct || actionBusy === "draw"}
@@ -1310,8 +1450,149 @@ export function ExplodingCatsGame({
                   </ActionButtons>
                 </InfoCard>
               )}
-          </HandContainer>
-        )}
+
+              <HandContainer>
+                <InfoCard>
+                  <InfoTitle>
+                    {t("games.table.hand.title") || "Your Hand"} ({currentPlayer.hand.length}{" "}
+                    {currentPlayer.hand.length === 1
+                      ? t("games.table.state.card") || "card"
+                      : t("games.table.state.cards") || "cards"}
+                    )
+                  </InfoTitle>
+                  <CardsGrid>
+                    {(() => {
+                      // Get unique cards and their counts
+                      const uniqueCards = Array.from(new Set(currentPlayer.hand));
+                      const cardCounts = new Map<ExplodingCatsCard, number>();
+                      currentPlayer.hand.forEach((card) => {
+                        cardCounts.set(card, (cardCounts.get(card) || 0) + 1);
+                      });
+
+                      return uniqueCards.map((card) => {
+                        const count = cardCounts.get(card) || 1;
+                        const isCatCard = catCards.includes(card as ExplodingCatsCatCard);
+                        const canPlayCombo = isCatCard && count >= 2 && canAct && aliveOpponents.length > 0;
+
+                        return (
+                          <Card
+                            key={card}
+                            $cardType={card}
+                            $index={0}
+                            onClick={() => {
+                              if (canPlayCombo) {
+                                handleOpenCatCombo(card as ExplodingCatsCatCard);
+                              }
+                            }}
+                            style={{
+                              cursor: canPlayCombo ? "pointer" : "default",
+                              opacity: canPlayCombo ? 1 : isCatCard && count === 1 ? 0.7 : 1,
+                            }}
+                          >
+                            <CardEmoji>{getCardEmoji(card)}</CardEmoji>
+                            <div>{t(getCardTranslationKey(card)) || card}</div>
+                            {count > 1 && (
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  top: "0.5rem",
+                                  right: "0.5rem",
+                                  background: "rgba(0, 0, 0, 0.8)",
+                                  color: "white",
+                                  borderRadius: "50%",
+                                  width: "24px",
+                                  height: "24px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  fontSize: "0.75rem",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                {count}
+                              </div>
+                            )}
+                          </Card>
+                        );
+                      });
+                    })()}
+                  </CardsGrid>
+                </InfoCard>
+              </HandContainer>
+            </HandSection>
+          )}
+
+          {showChat && (
+            <ChatCard>
+            <InfoTitle>{t("games.table.chat.title") || "Table Chat"}</InfoTitle>
+            {snapshot.logs && snapshot.logs.length > 0 ? (
+              <ChatMessages ref={chatMessagesRef}>
+                {snapshot.logs.map((log) => {
+                  const senderDisplay = resolveDisplayName(
+                    log.senderId ?? undefined,
+                    log.senderName ?? undefined
+                  );
+                  const renderedMessage = formatLogMessage(log.message);
+
+                  return (
+                    <LogEntry key={log.id} $type={log.type}>
+                      {senderDisplay && <strong>{senderDisplay}: </strong>}
+                      {renderedMessage}
+                    </LogEntry>
+                    );
+                  })}
+              </ChatMessages>
+            ) : (
+              <ChatHint>
+                {t("games.table.chat.empty") || "No messages yet. Break the ice!"}
+              </ChatHint>
+            )}
+
+            <ScopeToggle>
+              <ScopeOption
+                type="button"
+                $active={chatScope === "all"}
+                onClick={() => setChatScope("all")}
+              >
+                {t("games.table.chat.scope.all") || "All"}
+              </ScopeOption>
+              <ScopeOption
+                type="button"
+                $active={chatScope === "players"}
+                onClick={() => setChatScope("players")}
+              >
+                {t("games.table.chat.scope.players") || "Players"}
+              </ScopeOption>
+            </ScopeToggle>
+
+            <ChatInput
+              value={chatMessage}
+              onChange={(event) => setChatMessage(event.target.value)}
+              placeholder={
+                chatScope === "all"
+                  ? t("games.table.chat.placeholderAll") || "Send a note to everyone at the table"
+                  : t("games.table.chat.placeholderPlayers") || "Send a note only to active players"
+              }
+              disabled={!currentUserId}
+            />
+
+            <ChatControls>
+              <ChatHint>
+                {chatScope === "all"
+                  ? t("games.table.chat.hintAll") || "Visible to everyone in room"
+                  : t("games.table.chat.hintPlayers") || "Visible to alive players only"}
+              </ChatHint>
+              <ChatSendButton
+                type="button"
+                onClick={handleSendChatMessage}
+                disabled={!currentUserId || !canSendChatMessage}
+              >
+                {t("games.table.chat.send") || "Send"}
+              </ChatSendButton>
+            </ChatControls>
+            </ChatCard>
+          )}
+        </TableArea>
 
         {currentPlayer && !currentPlayer.alive && (
           <EmptyState>
@@ -1410,7 +1691,7 @@ export function ExplodingCatsGame({
                     >
                       <div style={{ fontSize: "1.5rem" }}>{getCardEmoji(card)}</div>
                       <div style={{ fontSize: "0.75rem" }}>
-                        {t(getCardTranslationKey(card) as any) || card}
+                        {t(getCardTranslationKey(card)) || card}
                       </div>
                     </OptionButton>
                   ))}

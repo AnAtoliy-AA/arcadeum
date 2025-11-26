@@ -2,7 +2,7 @@
   "name": "aicoapp-monorepo",
   "version": "0.0.0",
   "private": true,
-  "packageManager": "pnpm@9.12.1",
+  "packageManager": "pnpm@9.15.0",
   "scripts": {
     "prepare": "husky",
     "dev": "turbo run dev --parallel",

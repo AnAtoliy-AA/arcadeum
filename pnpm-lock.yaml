@@ -331,6 +331,9 @@ importers:
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      socket.io-client:
+        specifier: ^4.8.1
+        version: 4.8.1
       styled-components:
         specifier: ^6.1.12
         version: 6.1.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0)

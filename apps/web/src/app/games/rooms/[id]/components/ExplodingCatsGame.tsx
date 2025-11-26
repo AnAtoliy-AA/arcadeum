@@ -17,36 +17,73 @@ const GameContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding: 2rem;
-  border-radius: 24px;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  padding: 2.5rem;
+  border-radius: 32px;
+  background:
+    radial-gradient(ellipse at top, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+    linear-gradient(180deg, ${({ theme }) => theme.background.base} 0%, ${({ theme }) => theme.surfaces.card.background} 100%);
+  border: 2px solid ${({ theme }) => theme.surfaces.card.border};
   min-height: 600px;
-  box-shadow: ${({ theme }) => theme.surfaces.card.shadow};
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
   height: 100%;
   min-height: 100%;
 
+  /* Ambient lighting effect */
   &::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      circle at center,
+      rgba(59, 130, 246, 0.15) 0%,
+      transparent 40%
+    );
+    animation: ambientGlow 8s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  /* Top accent bar */
+  &::after {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
+    height: 3px;
     background: linear-gradient(
       90deg,
-      ${({ theme }) => theme.buttons.primary.gradientStart} 0%,
-      ${({ theme }) => theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart} 100%
+      transparent 0%,
+      ${({ theme }) => theme.buttons.primary.gradientStart} 20%,
+      ${({ theme }) => theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart} 80%,
+      transparent 100%
     );
-    animation: shimmer 3s ease-in-out infinite;
+    box-shadow: 0 0 20px ${({ theme }) => theme.buttons.primary.gradientStart}80;
+    animation: shimmer 4s ease-in-out infinite;
+  }
+
+  @keyframes ambientGlow {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translate(10%, -10%) scale(1.1);
+      opacity: 0.8;
+    }
   }
 
   @keyframes shimmer {
     0%, 100% {
-      opacity: 0.5;
+      opacity: 0.6;
     }
     50% {
       opacity: 1;
@@ -61,8 +98,41 @@ const GameContainer = styled.div`
     height: 100vh;
     border-radius: 0;
     border: none;
-    padding: 1.5rem;
+    padding: 1rem 1rem 2rem 1rem;
+    gap: 1rem;
     overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    scrollbar-width: thin;
+    scrollbar-color: ${({ theme }) => theme.buttons.primary.gradientStart}50 transparent;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: ${({ theme }) => theme.buttons.primary.gradientStart}50;
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: ${({ theme }) => theme.buttons.primary.gradientStart}70;
+    }
+
+    /* Mobile optimizations for fullscreen */
+    @media (max-width: 768px) {
+      padding: 0.5rem 0.5rem 3rem 0.5rem;
+      gap: 0.5rem;
+    }
+
+    /* Disable ambient glow in fullscreen to prevent unwanted scroll */
+    &::before {
+      display: none;
+    }
   }
 
   /* Firefox fullscreen */
@@ -73,8 +143,24 @@ const GameContainer = styled.div`
     height: 100vh;
     border-radius: 0;
     border: none;
-    padding: 1.5rem;
+    padding: 1rem 1rem 2rem 1rem;
+    gap: 1rem;
     overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    scrollbar-width: thin;
+    scrollbar-color: ${({ theme }) => theme.buttons.primary.gradientStart}50 transparent;
+
+    /* Mobile optimizations for fullscreen */
+    @media (max-width: 768px) {
+      padding: 0.5rem 0.5rem 3rem 0.5rem;
+      gap: 0.5rem;
+    }
+
+    /* Disable ambient glow in fullscreen to prevent unwanted scroll */
+    &::before {
+      display: none;
+    }
   }
 
   /* Webkit fullscreen */
@@ -85,14 +171,48 @@ const GameContainer = styled.div`
     height: 100vh;
     border-radius: 0;
     border: none;
-    padding: 1.5rem;
+    padding: 1rem 1rem 2rem 1rem;
+    gap: 1rem;
     overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    scrollbar-width: thin;
+    scrollbar-color: ${({ theme }) => theme.buttons.primary.gradientStart}50 transparent;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: ${({ theme }) => theme.buttons.primary.gradientStart}50;
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: ${({ theme }) => theme.buttons.primary.gradientStart}70;
+    }
+
+    /* Mobile optimizations for fullscreen */
+    @media (max-width: 768px) {
+      padding: 0.5rem 0.5rem 3rem 0.5rem;
+      gap: 0.5rem;
+    }
+
+    /* Disable ambient glow in fullscreen to prevent unwanted scroll */
+    &::before {
+      display: none;
+    }
   }
 
   @media (max-width: 768px) {
-    padding: 1.25rem;
-    border-radius: 16px;
+    padding: 1.5rem;
+    border-radius: 20px;
     gap: 1.25rem;
+    border-width: 1.5px;
   }
 `;
 
@@ -101,9 +221,26 @@ const GameHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  padding: 1.25rem 1.5rem;
+  background:
+    linear-gradient(135deg,
+      ${({ theme }) => theme.surfaces.card.background}dd,
+      ${({ theme }) => theme.surfaces.panel.background}cc
+    );
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    border-radius: 16px;
+  }
 `;
 
 const HeaderActions = styled.div`
@@ -122,9 +259,22 @@ const GameInfo = styled.div`
 
 const GameTitle = styled.h2`
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: ${({ theme }) => theme.text.primary};
+  font-size: 1.75rem;
+  font-weight: 900;
+  background: linear-gradient(
+    135deg,
+    ${({ theme }) => theme.buttons.primary.gradientStart},
+    ${({ theme }) => theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart}
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+  }
 `;
 
 const GameStatus = styled.div`
@@ -251,9 +401,8 @@ const TableArea = styled.div<{ $showChat: boolean }>`
   width: 100%;
   align-items: stretch;
   min-height: 0;
-  max-height: 100%;
-  height: 100%;
-  overflow: hidden;
+  height: auto;
+  max-height: none;
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
@@ -280,54 +429,147 @@ const GameTable = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  align-items: stretch;
-  padding: 2rem;
-  border-radius: 20px;
-  background: ${({ theme }) => theme.surfaces.panel.background};
-  border: 2px solid ${({ theme }) => theme.surfaces.panel.border};
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  border-radius: 32px;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    ),
+    radial-gradient(
+      ellipse at center,
+      ${({ theme }) => theme.surfaces.panel.background}ee,
+      ${({ theme }) => theme.background.base}dd
+    );
+  backdrop-filter: blur(20px);
+  border: 3px solid;
+  border-color: ${({ theme }) => theme.surfaces.panel.border};
   position: relative;
   width: 100%;
   flex: 1;
-  min-height: clamp(420px, 60vh, 900px);
-  max-height: 100%;
+  min-height: clamp(500px, 65vh, 900px);
+  max-height: none;
   grid-area: table;
-  overflow: hidden;
+  overflow: visible;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    inset 0 0 100px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 
+  /* Felt-like texture overlay */
   &::before {
     content: "";
     position: absolute;
-    inset: -1px;
-    border-radius: 20px;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 1px,
+        rgba(0, 0, 0, 0.02) 1px,
+        rgba(0, 0, 0, 0.02) 2px
+      );
+    border-radius: 32px;
+    pointer-events: none;
+  }
+
+  /* Glowing border effect */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: 32px;
     padding: 2px;
     background: linear-gradient(
       135deg,
-      ${({ theme }) => theme.buttons.primary.gradientStart}20,
-      transparent 50%,
-      ${({ theme }) => theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart}20
+      ${({ theme }) => theme.buttons.primary.gradientStart}40,
+      transparent 30%,
+      transparent 70%,
+      ${({ theme }) => theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart}40
     );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
+    opacity: 0.6;
+    animation: borderGlow 3s ease-in-out infinite;
+  }
+
+  @keyframes borderGlow {
+    0%, 100% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 0.8;
+    }
   }
 
   @media (max-width: 768px) {
-    padding: 1.25rem;
-    min-height: 360px;
+    padding: 1.5rem;
+    min-height: 420px;
+    border-radius: 24px;
+    border-width: 2px;
+
+    &::after {
+      border-radius: 24px;
+    }
   }
 `;
 
-const PlayersRing = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1rem;
+const PlayersRing = styled.div<{ $playerCount: number }>`
+  position: relative;
   width: 100%;
-  max-width: 900px;
-  justify-items: center;
+  height: 100%;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
+    min-height: 400px;
+  }
+`;
+
+const PlayerPositionWrapper = styled.div<{ $position: number; $total: number }>`
+  position: absolute;
+  ${({ $position, $total }) => {
+    const angle = ($position / $total) * 2 * Math.PI - Math.PI / 2;
+    const radiusX = 45; // percentage
+    const radiusY = 42; // percentage
+    const x = 50 + radiusX * Math.cos(angle);
+    const y = 50 + radiusY * Math.sin(angle);
+    return `
+      left: ${x}%;
+      top: ${y}%;
+      transform: translate(-50%, -50%);
+    `;
+  }}
+
+  @media (max-width: 768px) {
+    ${({ $position, $total }) => {
+      const angle = ($position / $total) * 2 * Math.PI - Math.PI / 2;
+      const radiusX = 44;
+      const radiusY = 40;
+      const x = 50 + radiusX * Math.cos(angle);
+      const y = 50 + radiusY * Math.sin(angle);
+      return `
+        left: ${x}%;
+        top: ${y}%;
+      `;
+    }}
   }
 `;
 
@@ -336,29 +578,105 @@ const CenterTable = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
-  padding: 2rem;
-  border-radius: 16px;
-  background: ${({ theme }) => theme.background.base};
-  border: 2px dashed ${({ theme }) => theme.surfaces.card.border};
-  min-width: 300px;
+  padding: 2.5rem;
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(
+      circle at center,
+      transparent 0px,
+      transparent 2px,
+      rgba(0, 0, 0, 0.02) 2px,
+      rgba(0, 0, 0, 0.02) 4px
+    ),
+    radial-gradient(
+      circle at 30% 30%,
+      ${({ theme }) => theme.surfaces.card.background}ff,
+      ${({ theme }) => theme.surfaces.card.background}ee 50%,
+      ${({ theme }) => theme.background.base}dd
+    );
+  backdrop-filter: blur(30px);
+  border: 4px solid ${({ theme }) => theme.surfaces.card.border};
+  width: 280px;
+  height: 280px;
   position: relative;
-  animation: pulse 2s ease-in-out infinite;
+  box-shadow:
+    0 12px 48px rgba(0, 0, 0, 0.4),
+    inset 0 0 80px rgba(0, 0, 0, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
 
-  @keyframes pulse {
-    0%, 100% {
-      transform: scale(1);
+  /* Rim lighting effect */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0deg,
+      ${({ theme }) => theme.buttons.primary.gradientStart}60,
+      transparent 90deg,
+      transparent 270deg,
+      ${({ theme }) => theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart}60 360deg
+    );
+    animation: rotate 10s linear infinite;
+    z-index: -1;
+  }
+
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
     }
-    50% {
-      transform: scale(1.02);
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (max-width: 768px) {
+    width: 180px;
+    height: 180px;
+    padding: 1rem;
+    border-width: 3px;
+
+    &::before {
+      inset: -3px;
     }
   }
 `;
 
 const InfoCard = styled.div`
-  padding: 1rem;
-  border-radius: 12px;
-  background: ${({ theme }) => theme.surfaces.panel.background};
-  border: 1px solid ${({ theme }) => theme.surfaces.panel.border};
+  padding: 1.5rem;
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg,
+      ${({ theme }) => theme.surfaces.panel.background}ee,
+      ${({ theme }) => theme.surfaces.card.background}dd
+    );
+  backdrop-filter: blur(20px);
+  border: 2px solid ${({ theme }) => theme.surfaces.panel.border};
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255, 255, 255, 0.02) 10px,
+        rgba(255, 255, 255, 0.02) 20px
+      );
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
 `;
 
 const ChatCard = styled(InfoCard)`
@@ -381,30 +699,94 @@ const ChatCard = styled(InfoCard)`
 `;
 
 const InfoTitle = styled.h3`
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 1rem 0;
   font-size: 0.875rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.text.secondary};
+  font-weight: 800;
+  color: ${({ theme }) => theme.text.primary};
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  position: relative;
+  padding-bottom: 0.75rem;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      ${({ theme }) => theme.buttons.primary.gradientStart},
+      transparent
+    );
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+    margin-bottom: 0.75rem;
+  }
+`;
+
+const TableInfo = styled.div`
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: ${({ theme }) => theme.text.secondary};
+  text-align: center;
+  width: 90%;
+  justify-content: space-around;
+
+  @media (max-width: 768px) {
+    font-size: 0.6rem;
+    gap: 0.4rem;
+    bottom: 0.4rem;
+  }
+`;
+
+const TableStat = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+
+  @media (max-width: 768px) {
+    gap: 0.15rem;
+
+    > div:first-child {
+      font-size: 0.9rem !important;
+    }
+
+    > div:last-child {
+      font-size: 0.75rem !important;
+    }
+  }
 `;
 
 const PlayerCard = styled.div<{ $isCurrentTurn?: boolean; $isAlive?: boolean; $isCurrentUser?: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1.25rem 1rem;
+  gap: 0.5rem;
+  padding: 0.875rem 0.75rem;
   border-radius: 16px;
-  background: ${({ $isCurrentTurn, $isCurrentUser, theme }) =>
-    $isCurrentTurn
-      ? `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}, ${theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart})`
+  background: ${({ $isCurrentTurn, $isCurrentUser, $isAlive, theme }) =>
+    !$isAlive
+      ? `${theme.surfaces.panel.background}80`
+      : $isCurrentTurn
+      ? `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}ee, ${theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart}ee)`
       : $isCurrentUser
-      ? theme.surfaces.card.background
-      : theme.surfaces.panel.background};
+      ? `${theme.surfaces.card.background}dd`
+      : `${theme.surfaces.panel.background}cc`};
+  backdrop-filter: blur(10px);
   color: ${({ $isCurrentTurn, theme }) =>
     $isCurrentTurn ? theme.buttons.primary.text : theme.text.primary};
-  opacity: ${({ $isAlive }) => ($isAlive ? 1 : 0.5)};
+  opacity: ${({ $isAlive }) => ($isAlive ? 1 : 0.6)};
+  filter: ${({ $isAlive }) => ($isAlive ? 'none' : 'grayscale(80%)')};
   border: 2px solid
     ${({ $isCurrentTurn, $isCurrentUser, theme }) =>
       $isCurrentTurn
@@ -414,13 +796,14 @@ const PlayerCard = styled.div<{ $isCurrentTurn?: boolean; $isAlive?: boolean; $i
         : theme.surfaces.panel.border};
   box-shadow: ${({ $isCurrentTurn, $isCurrentUser }) =>
     $isCurrentTurn
-      ? "0 8px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.5)"
+      ? "0 8px 32px rgba(0, 0, 0, 0.4), 0 0 24px rgba(59, 130, 246, 0.6)"
       : $isCurrentUser
-      ? "0 4px 12px rgba(0, 0, 0, 0.2)"
-      : "0 2px 8px rgba(0, 0, 0, 0.1)"};
-  transition: all 0.3s ease;
+      ? "0 4px 16px rgba(0, 0, 0, 0.25)"
+      : "0 2px 12px rgba(0, 0, 0, 0.15)"};
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  min-width: 140px;
+  min-width: 120px;
+  max-width: 140px;
 
   ${({ $isCurrentTurn }) =>
     $isCurrentTurn &&
@@ -429,26 +812,32 @@ const PlayerCard = styled.div<{ $isCurrentTurn?: boolean; $isAlive?: boolean; $i
 
     @keyframes glow {
       0%, 100% {
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.5);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 24px rgba(59, 130, 246, 0.6);
       }
       50% {
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 30px rgba(59, 130, 246, 0.8);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 36px rgba(59, 130, 246, 0.9);
       }
     }
   `}
 
   &:hover {
-    transform: translateY(-4px);
+    transform: scale(1.05) translateY(-4px);
     box-shadow: ${({ $isCurrentTurn }) =>
       $isCurrentTurn
-        ? "0 12px 32px rgba(0, 0, 0, 0.4), 0 0 30px rgba(59, 130, 246, 0.8)"
-        : "0 6px 16px rgba(0, 0, 0, 0.2)"};
+        ? "0 16px 48px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 130, 246, 1)"
+        : "0 8px 24px rgba(0, 0, 0, 0.3)"};
+  }
+
+  @media (max-width: 768px) {
+    min-width: 100px;
+    max-width: 110px;
+    padding: 0.75rem 0.5rem;
   }
 `;
 
 const PlayerAvatar = styled.div<{ $isCurrentTurn?: boolean; $isAlive?: boolean }>`
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: ${({ $isCurrentTurn, theme }) =>
     $isCurrentTurn
@@ -523,19 +912,25 @@ const HandContainer = styled.div`
 
 const CardsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 1rem;
+  position: relative;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+    gap: 0.75rem;
+  }
 `;
 
 const Card = styled.div<{ $cardType?: string; $index?: number }>`
   aspect-ratio: 2/3;
-  border-radius: 12px;
+  border-radius: 16px;
   background: ${({ $cardType }) => {
-    if ($cardType === "exploding_cat") return "linear-gradient(135deg, #DC2626, #991B1B)";
-    if ($cardType === "defuse") return "linear-gradient(135deg, #10B981, #059669)";
-    if ($cardType === "attack") return "linear-gradient(135deg, #F59E0B, #D97706)";
-    if ($cardType === "skip") return "linear-gradient(135deg, #3B82F6, #2563EB)";
-    return "linear-gradient(135deg, #8B5CF6, #7C3AED)";
+    if ($cardType === "exploding_cat") return "linear-gradient(135deg, #DC2626 0%, #991B1B 100%)";
+    if ($cardType === "defuse") return "linear-gradient(135deg, #10B981 0%, #059669 100%)";
+    if ($cardType === "attack") return "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)";
+    if ($cardType === "skip") return "linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)";
+    return "linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)";
   }};
   display: flex;
   flex-direction: column;
@@ -548,50 +943,289 @@ const Card = styled.div<{ $cardType?: string; $index?: number }>`
   text-align: center;
   padding: 0.75rem 0.5rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  animation: ${({ $index }) => `cardFadeIn 0.3s ease-out ${($index || 0) * 0.05}s both`};
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  animation: ${({ $index }) => `cardSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${($index || 0) * 0.08}s both`};
 
-  @keyframes cardFadeIn {
+  @keyframes cardSlideIn {
     from {
       opacity: 0;
-      transform: translateY(20px) rotateZ(-5deg);
+      transform: translateY(40px) rotateZ(-8deg) scale(0.9);
     }
     to {
       opacity: 1;
-      transform: translateY(0) rotateZ(0deg);
+      transform: translateY(0) rotateZ(0deg) scale(1);
     }
   }
 
   &:hover {
-    transform: translateY(-8px) rotateZ(2deg) scale(1.05);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    transform: translateY(-12px) rotateZ(3deg) scale(1.08);
+    box-shadow:
+      0 20px 48px rgba(0, 0, 0, 0.6),
+      inset 0 0 30px rgba(255, 255, 255, 0.15);
     z-index: 10;
   }
 
+  /* Shine overlay */
   &::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5) 0%, transparent 50%),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
     pointer-events: none;
+    border-radius: 16px;
   }
 
+  /* Pattern overlay */
   &::after {
     content: "";
     position: absolute;
-    inset: 0;
+    inset: 6px;
     border-radius: 12px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.03) 10px, rgba(255, 255, 255, 0.03) 20px)";
     pointer-events: none;
   }
 `;
 
+const CardInner = styled.div`
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  height: 100%;
+  padding: 0.5rem;
+`;
+
+const CardFrame = styled.div`
+  position: absolute;
+  inset: 4px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+  z-index: 2;
+
+  &::before,
+  &::after {
+    content: "◆";
+    position: absolute;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.6rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  }
+
+  &::before {
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &::after {
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  @media (max-width: 768px) {
+    inset: 3px;
+    border-width: 1.5px;
+
+    &::before,
+    &::after {
+      font-size: 0.5rem;
+    }
+  }
+`;
+
+const CardCorner = styled.div<{ $position: 'tl' | 'tr' | 'bl' | 'br' }>`
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+  z-index: 2;
+
+  ${({ $position }) => {
+    switch ($position) {
+      case 'tl':
+        return `
+          top: 6px;
+          left: 6px;
+          border-right: none;
+          border-bottom: none;
+          border-top-left-radius: 4px;
+        `;
+      case 'tr':
+        return `
+          top: 6px;
+          right: 6px;
+          border-left: none;
+          border-bottom: none;
+          border-top-right-radius: 4px;
+        `;
+      case 'bl':
+        return `
+          bottom: 6px;
+          left: 6px;
+          border-right: none;
+          border-top: none;
+          border-bottom-left-radius: 4px;
+        `;
+      case 'br':
+        return `
+          bottom: 6px;
+          right: 6px;
+          border-left: none;
+          border-top: none;
+          border-bottom-right-radius: 4px;
+        `;
+    }
+  }}
+
+  @media (max-width: 768px) {
+    width: 12px;
+    height: 12px;
+    border-width: 1.5px;
+
+    ${({ $position }) => {
+      switch ($position) {
+        case 'tl':
+          return `top: 4px; left: 4px;`;
+        case 'tr':
+          return `top: 4px; right: 4px;`;
+        case 'bl':
+          return `bottom: 4px; left: 4px;`;
+        case 'br':
+          return `bottom: 4px; right: 4px;`;
+      }
+    }}
+  }
+`;
+
 const CardEmoji = styled.div`
-  font-size: 2rem;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  font-size: 2.5rem;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
+  transform: scale(1);
+  transition: transform 0.3s ease;
+
+  ${Card}:hover & {
+    transform: scale(1.1) rotate(5deg);
+  }
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+`;
+
+const CardName = styled.div`
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.5),
+    0 0 8px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.8));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  @media (max-width: 768px) {
+    font-size: 0.65rem;
+    letter-spacing: 0.3px;
+  }
+`;
+
+const CardCountBadge = styled.div`
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.85));
+  color: white;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 900;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.6),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  z-index: 10;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+
+  @media (max-width: 768px) {
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+    top: 0.35rem;
+    right: 0.35rem;
+  }
+`;
+
+const LastPlayedCard = styled(Card)<{ $isAnimating?: boolean }>`
+  position: absolute;
+  width: 100px;
+  max-width: 100px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) ${({ $isAnimating }) => $isAnimating ? 'rotateY(180deg) scale(1.1)' : 'rotateY(0deg)'};
+  z-index: 10;
+  animation: ${({ $isAnimating }) => $isAnimating ? 'cardFlip 0.6s ease-out' : 'cardFloat 3s ease-in-out infinite'};
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  cursor: default;
+
+  @keyframes cardFlip {
+    0% {
+      transform: translate(-50%, -50%) rotateY(0deg) scale(1);
+    }
+    50% {
+      transform: translate(-50%, -50%) rotateY(90deg) scale(1.1);
+    }
+    100% {
+      transform: translate(-50%, -50%) rotateY(180deg) scale(1);
+    }
+  }
+
+  @keyframes cardFloat {
+    0%, 100% {
+      transform: translate(-50%, -50%) translateY(0px);
+    }
+    50% {
+      transform: translate(-50%, -50%) translateY(-8px);
+    }
+  }
+
+  &:hover {
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+
+  @media (max-width: 768px) {
+    width: 65px;
+    max-width: 65px;
+    padding: 0.5rem 0.35rem;
+    gap: 0.35rem;
+
+    ${CardEmoji} {
+      font-size: 1.5rem;
+    }
+
+    > div {
+      font-size: 0.55rem;
+    }
+  }
 `;
 
 const ActionButtons = styled.div`
@@ -601,38 +1235,44 @@ const ActionButtons = styled.div`
 `;
 
 const ActionButton = styled.button<{ variant?: "primary" | "secondary" | "danger" }>`
-  padding: 0.875rem 1.5rem;
-  border-radius: 12px;
+  padding: 1rem 1.75rem;
+  border-radius: 16px;
   border: none;
-  font-weight: 700;
-  font-size: 0.875rem;
+  font-weight: 800;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.75px;
 
   ${({ variant, theme }) => {
     if (variant === "danger") {
       return `
-        background: linear-gradient(135deg, #DC2626, #991B1B);
+        background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
         color: white;
-        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+        box-shadow:
+          0 6px 20px rgba(220, 38, 38, 0.5),
+          inset 0 1px 0 rgba(255, 255, 255, 0.2);
       `;
     }
     if (variant === "secondary") {
       return `
-        background: ${theme.buttons.secondary.background};
+        background: linear-gradient(135deg, ${theme.buttons.secondary.background}, ${theme.buttons.secondary.background}dd);
         color: ${theme.buttons.secondary.text};
         border: 2px solid ${theme.buttons.secondary.border};
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        box-shadow:
+          0 4px 16px rgba(0, 0, 0, 0.15),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
       `;
     }
     return `
       background: linear-gradient(135deg, ${theme.buttons.primary.gradientStart}, ${theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart});
       color: ${theme.buttons.primary.text};
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+      box-shadow:
+        0 6px 20px rgba(59, 130, 246, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     `;
   }}
 
@@ -640,19 +1280,29 @@ const ActionButton = styled.button<{ variant?: "primary" | "secondary" | "danger
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent 60%);
     opacity: 0;
     transition: opacity 0.3s ease;
   }
 
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.5s ease;
+  }
+
   &:hover:not(:disabled) {
-    transform: translateY(-2px);
+    transform: translateY(-3px) scale(1.02);
     box-shadow: ${({ variant }) =>
       variant === "danger"
-        ? "0 6px 20px rgba(220, 38, 38, 0.6)"
+        ? "0 10px 32px rgba(220, 38, 38, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3)"
         : variant === "secondary"
-        ? "0 4px 16px rgba(0, 0, 0, 0.15)"
-        : "0 6px 20px rgba(59, 130, 246, 0.6)"};
+        ? "0 8px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2)"
+        : "0 10px 32px rgba(59, 130, 246, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3)"};
 
     &::before {
       opacity: 1;
@@ -660,13 +1310,24 @@ const ActionButton = styled.button<{ variant?: "primary" | "secondary" | "danger
   }
 
   &:active:not(:disabled) {
-    transform: translateY(0);
+    transform: translateY(-1px) scale(0.98);
+
+    &::after {
+      opacity: 0.8;
+      transform: scale(1);
+    }
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    filter: grayscale(50%);
+    filter: grayscale(60%);
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.825rem;
+    border-radius: 14px;
   }
 `;
 
@@ -1343,7 +2004,7 @@ export function ExplodingCatsGame({
       <GameBoard>
         <TableArea $showChat={showChat}>
           <GameTable>
-            <PlayersRing>
+            <PlayersRing $playerCount={snapshot.playerOrder.length}>
             {snapshot.playerOrder.map((playerId, index) => {
               const player = snapshot.players.find((p) => p.playerId === playerId);
               if (!player) return null;
@@ -1358,57 +2019,67 @@ export function ExplodingCatsGame({
               );
 
               return (
-                <PlayerCard
+                <PlayerPositionWrapper
                   key={playerId}
-                  $isCurrentTurn={isCurrent}
-                  $isAlive={player.alive}
-                  $isCurrentUser={isCurrentUserCard}
+                  $position={index}
+                  $total={snapshot.playerOrder.length}
                 >
-                  {isCurrent && <TurnIndicator>⭐</TurnIndicator>}
-                  <PlayerAvatar $isCurrentTurn={isCurrent} $isAlive={player.alive}>
-                    {player.alive ? "🎮" : "💀"}
-                  </PlayerAvatar>
-                  <PlayerName $isCurrentTurn={isCurrent}>{displayName}</PlayerName>
-                  {player.alive && (
-                    <PlayerCardCount $isCurrentTurn={isCurrent}>
-                      🃏 {player.hand.length}
-                    </PlayerCardCount>
-                  )}
-                </PlayerCard>
+                  <PlayerCard
+                    $isCurrentTurn={isCurrent}
+                    $isAlive={player.alive}
+                    $isCurrentUser={isCurrentUserCard}
+                  >
+                    {isCurrent && <TurnIndicator>⭐</TurnIndicator>}
+                    <PlayerAvatar $isCurrentTurn={isCurrent} $isAlive={player.alive}>
+                      {player.alive ? "🎮" : "💀"}
+                    </PlayerAvatar>
+                    <PlayerName $isCurrentTurn={isCurrent}>{displayName}</PlayerName>
+                    {player.alive && (
+                      <PlayerCardCount $isCurrentTurn={isCurrent}>
+                        🃏 {player.hand.length}
+                      </PlayerCardCount>
+                    )}
+                  </PlayerCard>
+                </PlayerPositionWrapper>
               );
             })}
-            </PlayersRing>
 
-            <CenterTable>
-              <InfoTitle style={{ margin: 0 }}>
-                {t("games.table.state.deck") || "Game State"}
-              </InfoTitle>
-              <div style={{
-                display: "flex",
-                gap: "2rem",
-                alignItems: "center",
-                justifyContent: "center",
-                flexWrap: "wrap",
-                fontSize: "1rem",
-                fontWeight: 600
-              }}>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>🎴</div>
-                  <div>{t("games.table.state.deck") || "Deck"}</div>
-                  <div style={{ fontSize: "1.5rem", color: "#3B82F6" }}>{snapshot.deck.length}</div>
-                </div>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>🗑️</div>
-                  <div>{t("games.table.state.discard") || "Discard"}</div>
-                  <div style={{ fontSize: "1.5rem", color: "#F59E0B" }}>{snapshot.discardPile.length}</div>
-                </div>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>⏳</div>
-                  <div>{t("games.table.state.pendingDraws") || "Pending"}</div>
-                  <div style={{ fontSize: "1.5rem", color: "#DC2626" }}>{snapshot.pendingDraws}</div>
-                </div>
-              </div>
-            </CenterTable>
+              <CenterTable>
+                {snapshot.discardPile.length > 0 && (
+                  <LastPlayedCard
+                    $cardType={snapshot.discardPile[snapshot.discardPile.length - 1]}
+                    $isAnimating={false}
+                  >
+                    <CardCorner $position="tl" />
+                    <CardCorner $position="tr" />
+                    <CardCorner $position="bl" />
+                    <CardCorner $position="br" />
+                    <CardFrame />
+                    <CardInner>
+                      <CardEmoji>{getCardEmoji(snapshot.discardPile[snapshot.discardPile.length - 1])}</CardEmoji>
+                      <CardName>
+                        {t(getCardTranslationKey(snapshot.discardPile[snapshot.discardPile.length - 1])) || snapshot.discardPile[snapshot.discardPile.length - 1]}
+                      </CardName>
+                    </CardInner>
+                  </LastPlayedCard>
+                )}
+                <TableInfo>
+                  <TableStat>
+                    <div style={{ fontSize: "1.2rem" }}>🎴</div>
+                    <div style={{ fontSize: "1rem", fontWeight: 700 }}>{snapshot.deck.length}</div>
+                  </TableStat>
+                  <TableStat>
+                    <div style={{ fontSize: "1.2rem" }}>🗑️</div>
+                    <div style={{ fontSize: "1rem", fontWeight: 700 }}>{snapshot.discardPile.length}</div>
+                  </TableStat>
+                  <TableStat>
+                    <div style={{ fontSize: "1.2rem" }}>⏳</div>
+                    <div style={{ fontSize: "1rem", fontWeight: 700, color: "#DC2626" }}>{snapshot.pendingDraws}</div>
+                  </TableStat>
+                </TableInfo>
+              </CenterTable>
+
+            </PlayersRing>
           </GameTable>
 
           {currentPlayer && currentPlayer.alive && (
@@ -1489,28 +2160,19 @@ export function ExplodingCatsGame({
                               opacity: canPlayCombo ? 1 : isCatCard && count === 1 ? 0.7 : 1,
                             }}
                           >
-                            <CardEmoji>{getCardEmoji(card)}</CardEmoji>
-                            <div>{t(getCardTranslationKey(card)) || card}</div>
+                            <CardCorner $position="tl" />
+                            <CardCorner $position="tr" />
+                            <CardCorner $position="bl" />
+                            <CardCorner $position="br" />
+                            <CardFrame />
+                            <CardInner>
+                              <CardEmoji>{getCardEmoji(card)}</CardEmoji>
+                              <CardName>{t(getCardTranslationKey(card)) || card}</CardName>
+                            </CardInner>
                             {count > 1 && (
-                              <div
-                                style={{
-                                  position: "absolute",
-                                  top: "0.5rem",
-                                  right: "0.5rem",
-                                  background: "rgba(0, 0, 0, 0.8)",
-                                  color: "white",
-                                  borderRadius: "50%",
-                                  width: "24px",
-                                  height: "24px",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  fontSize: "0.75rem",
-                                  fontWeight: "bold",
-                                }}
-                              >
+                              <CardCountBadge>
                                 {count}
-                              </div>
+                              </CardCountBadge>
                             )}
                           </Card>
                         );

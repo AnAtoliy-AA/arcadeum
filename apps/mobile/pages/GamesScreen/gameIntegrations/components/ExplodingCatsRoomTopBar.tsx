@@ -6,6 +6,7 @@ import { useTranslation } from '@/lib/i18n';
 import type { TranslationKey } from '@/lib/i18n/messages';
 import type { GameRoomSummary } from '../../api/gamesApi';
 import type { ExplodingCatsRoomStyles } from '../ExplodingCatsRoom';
+import type { TexasHoldemRoomStyles } from '../TexasHoldemRoom';
 
 type Props = {
   variant: 'lobby' | 'table';
@@ -22,7 +23,7 @@ type Props = {
   isHost: boolean;
   room: GameRoomSummary | null;
   gameId?: string;
-  styles: ExplodingCatsRoomStyles;
+  styles: ExplodingCatsRoomStyles | TexasHoldemRoomStyles;
 };
 
 export const ExplodingCatsRoomTopBar = memo(

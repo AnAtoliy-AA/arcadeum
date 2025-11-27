@@ -3,12 +3,13 @@ import { View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import type { ExplodingCatsRoomStyles } from '../ExplodingCatsRoom';
+import type { TexasHoldemRoomStyles } from '../TexasHoldemRoom';
 
 type Props = {
   icon: Parameters<typeof IconSymbol>[0]['name'];
   label: string;
   value: string;
-  styles: ExplodingCatsRoomStyles;
+  styles: ExplodingCatsRoomStyles | TexasHoldemRoomStyles;
 };
 
 export function ExplodingCatsRoomMetaItem({ icon, label, value, styles }: Props) {

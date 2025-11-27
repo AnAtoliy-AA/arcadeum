@@ -40,12 +40,18 @@ import {
   ExplodingCatsRoom,
   type ExplodingCatsRoomHandle,
 } from './gameIntegrations/ExplodingCatsRoom';
+import {
+  TexasHoldemRoom,
+  type TexasHoldemRoomHandle,
+} from './gameIntegrations/TexasHoldemRoom';
 
-type GameIntegrationId = 'exploding_cats_v1';
+type GameIntegrationId = 'exploding_cats_v1' | 'texas_holdem_v1';
 
 const GAME_INTEGRATION_MAP: Record<string, GameIntegrationId> = {
   exploding_cats_v1: 'exploding_cats_v1',
   'exploding-kittens': 'exploding_cats_v1',
+  texas_holdem_v1: 'texas_holdem_v1',
+  'texas-holdem': 'texas_holdem_v1',
 };
 
 function resolveParam(value: string | string[] | undefined): string | undefined {
@@ -76,7 +82,9 @@ function shouldExposeRawWsMessage(message?: string): boolean {
 
 export default function GameRoomScreen() {
   const insets = useSafeAreaInsets();
-  const integrationRef = useRef<ExplodingCatsRoomHandle>(null);
+  const integrationRef = useRef<
+    ExplodingCatsRoomHandle | TexasHoldemRoomHandle | null
+  >(null);
   const params = useLocalSearchParams<{
     id?: string;
     gameId?: string;
@@ -242,7 +250,28 @@ export default function GameRoomScreen() {
       if (payload?.roomId && payload.roomId !== roomId) {
         return;
       }
-      integrationRef.current?.onCatComboPlayed();
+      const ref = integrationRef.current as ExplodingCatsRoomHandle | null;
+      ref?.onCatComboPlayed?.();
+    };
+
+    const handleTexasHoldemStarted = (payload: {
+      room: GameRoomSummary;
+      session: GameSessionSummary;
+    }) => {
+      if (!payload?.room || payload.room.id !== roomId) {
+        return;
+      }
+      setRoom(payload.room);
+      setSession(payload.session);
+      integrationRef.current?.onSessionStarted?.();
+    };
+
+    const handleTexasHoldemActionPerformed = (payload: { roomId?: string }) => {
+      if (payload?.roomId && payload.roomId !== roomId) {
+        return;
+      }
+      const ref = integrationRef.current as TexasHoldemRoomHandle | null;
+      ref?.onHoldemActionPerformed?.();
     };
 
     const handleException = (payload: unknown) => {
@@ -292,6 +321,8 @@ export default function GameRoomScreen() {
     socket.on('games.session.snapshot', handleSnapshot);
     socket.on('games.session.started', handleSessionStarted);
     socket.on('games.session.cat_combo.played', handleCatComboPlayed);
+    socket.on('games.session.holdem_started', handleTexasHoldemStarted);
+    socket.on('games.session.holdem_action.performed', handleTexasHoldemActionPerformed);
     socket.on('exception', handleException);
 
     if (socket.connected) {
@@ -307,6 +338,8 @@ export default function GameRoomScreen() {
       socket.off('games.session.snapshot', handleSnapshot);
       socket.off('games.session.started', handleSessionStarted);
       socket.off('games.session.cat_combo.played', handleCatComboPlayed);
+      socket.off('games.session.holdem_started', handleTexasHoldemStarted);
+      socket.off('games.session.holdem_action.performed', handleTexasHoldemActionPerformed);
       socket.off('exception', handleException);
     };
   }, [deleting, hydrated, roomId, router, t, tokens.userId]);
@@ -456,7 +489,34 @@ export default function GameRoomScreen() {
   if (integrationId === 'exploding_cats_v1') {
     return (
       <ExplodingCatsRoom
-        ref={integrationRef}
+        ref={integrationRef as React.Ref<ExplodingCatsRoomHandle>}
+        room={room}
+        session={session}
+        fallbackName={fallbackName}
+        gameId={displayGameId}
+        tokens={tokens}
+        refreshTokens={refreshTokens}
+        insetsTop={insets.top}
+        fetchRoom={fetchRoom}
+        refreshing={refreshing}
+        loading={loading}
+        error={error}
+        isHost={isHost}
+        deleting={deleting}
+        leaving={leaving}
+        onDeleteRoom={handleDeleteRoom}
+        onLeaveRoom={handleLeaveRoom}
+        onViewGame={handleViewGame}
+        setRoom={setRoom}
+        setSession={setSession}
+      />
+    );
+  }
+
+  if (integrationId === 'texas_holdem_v1') {
+    return (
+      <TexasHoldemRoom
+        ref={integrationRef as React.Ref<TexasHoldemRoomHandle>}
         room={room}
         session={session}
         fallbackName={fallbackName}

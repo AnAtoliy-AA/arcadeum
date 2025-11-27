@@ -3160,7 +3160,7 @@ export class GamesService {
 
     if (room.gameId !== TEXAS_HOLDEM_GAME_ID) {
       throw new BadRequestException(
-        'Texas Hold\'em is not enabled for this room.',
+        "Texas Hold'em is not enabled for this room.",
       );
     }
 
@@ -3184,7 +3184,7 @@ export class GamesService {
 
     if (uniquePlayerIds.length > 10) {
       throw new BadRequestException(
-        'Texas Hold\'em supports a maximum of 10 players.',
+        "Texas Hold'em supports a maximum of 10 players.",
       );
     }
 
@@ -3246,7 +3246,10 @@ export class GamesService {
     );
 
     if (smallBlindPlayer) {
-      const sbAmount = Math.min(TEXAS_HOLDEM_SMALL_BLIND, smallBlindPlayer.chips);
+      const sbAmount = Math.min(
+        TEXAS_HOLDEM_SMALL_BLIND,
+        smallBlindPlayer.chips,
+      );
       smallBlindPlayer.chips -= sbAmount;
       smallBlindPlayer.currentBet = sbAmount;
       smallBlindPlayer.totalBet = sbAmount;
@@ -3311,7 +3314,7 @@ export class GamesService {
 
     const stateData = session.state as any;
     if (stateData?.engine !== 'texas-holdem') {
-      throw new BadRequestException('Not a Texas Hold\'em session.');
+      throw new BadRequestException("Not a Texas Hold'em session.");
     }
 
     const snapshot: TexasHoldemState = stateData.snapshot;
@@ -3324,7 +3327,9 @@ export class GamesService {
       throw new BadRequestException('It is not your turn.');
     }
 
-    const player = snapshot.players.find((p) => p.playerId === normalizedUserId);
+    const player = snapshot.players.find(
+      (p) => p.playerId === normalizedUserId,
+    );
     if (!player) {
       throw new NotFoundException('Player not found in session.');
     }
@@ -3403,7 +3408,8 @@ export class GamesService {
           throw new BadRequestException('Raise amount must be positive.');
         }
 
-        const totalRaiseAmount = snapshot.currentBet - player.currentBet + raiseAmount;
+        const totalRaiseAmount =
+          snapshot.currentBet - player.currentBet + raiseAmount;
         const actualRaiseAmount = Math.min(totalRaiseAmount, player.chips);
 
         player.chips -= actualRaiseAmount;
@@ -3461,6 +3467,9 @@ export class GamesService {
       state: nextState,
     });
 
+    // Broadcast updated snapshot to all clients
+    this.realtime.emitSessionSnapshot(normalizedRoomId, summary);
+
     return summary;
   }
 
@@ -3491,9 +3500,7 @@ export class GamesService {
       return true;
     }
 
-    const activePlayers = snapshot.players.filter(
-      (p) => !p.folded && !p.allIn,
-    );
+    const activePlayers = snapshot.players.filter((p) => !p.folded && !p.allIn);
 
     // If only one player remains, round is complete
     if (activePlayers.length <= 1) {
@@ -3580,7 +3587,8 @@ export class GamesService {
     }
 
     // Set next turn to first player after dealer
-    snapshot.currentTurnIndex = (snapshot.dealerIndex + 1) % snapshot.playerOrder.length;
+    snapshot.currentTurnIndex =
+      (snapshot.dealerIndex + 1) % snapshot.playerOrder.length;
 
     // Find first active player
     for (let i = 0; i < snapshot.playerOrder.length; i++) {
@@ -3681,7 +3689,7 @@ export class GamesService {
 
     const stateData = session.state as any;
     if (stateData?.engine !== 'texas-holdem') {
-      throw new BadRequestException('Not a Texas Hold\'em session.');
+      throw new BadRequestException("Not a Texas Hold'em session.");
     }
 
     const snapshot: TexasHoldemState = stateData.snapshot;
@@ -3689,7 +3697,9 @@ export class GamesService {
       throw new BadRequestException('Invalid session state.');
     }
 
-    const player = snapshot.players.find((p) => p.playerId === normalizedUserId);
+    const player = snapshot.players.find(
+      (p) => p.playerId === normalizedUserId,
+    );
     if (!player) {
       throw new NotFoundException('You are not a player in this session.');
     }

@@ -12,6 +12,7 @@ import type {
 } from "@/shared/types/games";
 import { useTranslation } from "@/shared/lib/useTranslation";
 import type { TranslationKey } from "@/shared/lib/useTranslation";
+import { gameSocket } from "@/shared/lib/socket";
 
 const GameContainer = styled.div`
   display: flex;
@@ -930,6 +931,9 @@ const Card = styled.div<{ $cardType?: string; $index?: number }>`
     if ($cardType === "defuse") return "linear-gradient(135deg, #10B981 0%, #059669 100%)";
     if ($cardType === "attack") return "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)";
     if ($cardType === "skip") return "linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)";
+    if ($cardType === "favor") return "linear-gradient(135deg, #EC4899 0%, #BE185D 100%)";
+    if ($cardType === "shuffle") return "linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)";
+    if ($cardType === "see_the_future") return "linear-gradient(135deg, #A855F7 0%, #7E22CE 100%)";
     return "linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)";
   }};
   display: flex;
@@ -1604,7 +1608,9 @@ interface ExplodingCatsGameProps {
   isHost: boolean;
   onStart: () => void;
   onDraw: () => void;
-  onPlayCard: (card: "skip" | "attack") => void;
+  onPlayCard: (card: "skip" | "attack" | "shuffle") => void;
+  onPlayFavor: (targetPlayerId: string, desiredCard: string) => void;
+  onPlaySeeTheFuture: () => void;
   onPlayCatCombo: (input: {
     cat: ExplodingCatsCatCard;
     mode: "pair" | "trio";
@@ -1622,6 +1628,9 @@ function getCardTranslationKey(card: ExplodingCatsCard): TranslationKey {
     defuse: "games.table.cards.defuse",
     attack: "games.table.cards.attack",
     skip: "games.table.cards.skip",
+    favor: "games.table.cards.favor",
+    shuffle: "games.table.cards.shuffle",
+    see_the_future: "games.table.cards.seeTheFuture",
     tacocat: "games.table.cards.tacocat",
     hairy_potato_cat: "games.table.cards.hairyPotatoCat",
     rainbow_ralphing_cat: "games.table.cards.rainbowRalphingCat",
@@ -1637,6 +1646,9 @@ function getCardEmoji(card: ExplodingCatsCard): string {
     defuse: "🛡️",
     attack: "⚔️",
     skip: "⏭️",
+    favor: "🤝",
+    shuffle: "🔀",
+    see_the_future: "🔮",
     tacocat: "🌮",
     hairy_potato_cat: "🥔",
     rainbow_ralphing_cat: "🌈",
@@ -1654,6 +1666,8 @@ export function ExplodingCatsGame({
   onStart,
   onDraw,
   onPlayCard,
+  onPlayFavor,
+  onPlaySeeTheFuture,
   onPlayCatCombo,
   onPostHistoryNote,
   actionBusy,
@@ -1665,6 +1679,10 @@ export function ExplodingCatsGame({
   const [catComboModal, setCatComboModal] = useState<{
     cat: ExplodingCatsCatCard;
     availableModes: ("pair" | "trio")[];
+  } | null>(null);
+  const [favorModal, setFavorModal] = useState(false);
+  const [seeTheFutureModal, setSeeTheFutureModal] = useState<{
+    cards: ExplodingCatsCard[];
   } | null>(null);
   const [selectedMode, setSelectedMode] = useState<"pair" | "trio" | null>(null);
   const [selectedTarget, setSelectedTarget] = useState<string | null>(null);
@@ -1731,6 +1749,21 @@ export function ExplodingCatsGame({
       });
     }
   }, [chatLogCount]);
+
+  // Listen for See the Future response
+  useEffect(() => {
+    const handleSeeTheFuture = (data: { topCards: string[] }) => {
+      if (data.topCards) {
+        setSeeTheFutureModal({ cards: data.topCards as ExplodingCatsCard[] });
+      }
+    };
+
+    gameSocket.on("games.session.see_the_future.played", handleSeeTheFuture);
+
+    return () => {
+      gameSocket.off("games.session.see_the_future.played", handleSeeTheFuture);
+    };
+  }, []);
 
   const currentPlayer: ExplodingCatsPlayerState | null = useMemo(() => {
     if (!snapshot || !currentUserId) return null;
@@ -2118,6 +2151,39 @@ export function ExplodingCatsGame({
                           : t("games.table.actions.playAttack") || "Play Attack"}
                       </ActionButton>
                     )}
+                    {currentPlayer.hand.includes("shuffle") && (
+                      <ActionButton
+                        variant="secondary"
+                        onClick={() => onPlayCard("shuffle")}
+                        disabled={!canAct || actionBusy === "shuffle"}
+                      >
+                        {actionBusy === "shuffle"
+                          ? "Playing..."
+                          : "🔀 Shuffle"}
+                      </ActionButton>
+                    )}
+                    {currentPlayer.hand.includes("favor") && (
+                      <ActionButton
+                        variant="primary"
+                        onClick={() => setFavorModal(true)}
+                        disabled={!canAct || actionBusy === "favor"}
+                      >
+                        {actionBusy === "favor"
+                          ? "Playing..."
+                          : "🤝 Favor"}
+                      </ActionButton>
+                    )}
+                    {currentPlayer.hand.includes("see_the_future") && (
+                      <ActionButton
+                        variant="primary"
+                        onClick={() => onPlaySeeTheFuture()}
+                        disabled={!canAct || actionBusy === "see_the_future"}
+                      >
+                        {actionBusy === "see_the_future"
+                          ? "Playing..."
+                          : "🔮 See Future"}
+                      </ActionButton>
+                    )}
                   </ActionButtons>
                 </InfoCard>
               )}
@@ -2374,6 +2440,123 @@ export function ExplodingCatsGame({
                 }
               >
                 Play Combo
+              </ModalButton>
+            </ModalActions>
+          </ModalContent>
+        </Modal>
+      )}
+
+      {/* Favor Modal */}
+      {favorModal && (
+        <Modal onClick={() => setFavorModal(false)}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            <ModalHeader>
+              <ModalTitle>🤝 Play Favor Card</ModalTitle>
+              <CloseButton onClick={() => setFavorModal(false)}>×</CloseButton>
+            </ModalHeader>
+
+            <ModalSection>
+              <SectionLabel>Select Target Player</SectionLabel>
+              <OptionGrid>
+                {aliveOpponents.map((opponent) => {
+                  const displayName = resolveDisplayName(
+                    opponent.playerId,
+                    `Player ${opponent.playerId.slice(0, 8)}`
+                  );
+                  return (
+                    <OptionButton
+                      key={opponent.playerId}
+                      $selected={selectedTarget === opponent.playerId}
+                      onClick={() => setSelectedTarget(opponent.playerId)}
+                    >
+                      <div style={{ fontSize: "1.5rem" }}>🎮</div>
+                      <div>{displayName}</div>
+                      <div style={{ fontSize: "0.75rem", opacity: 0.7 }}>
+                        {opponent.hand.length} cards
+                      </div>
+                    </OptionButton>
+                  );
+                })}
+              </OptionGrid>
+            </ModalSection>
+
+            <ModalSection>
+              <SectionLabel>Select Desired Card</SectionLabel>
+              <OptionGrid>
+                {allGameCards.map((card) => (
+                  <OptionButton
+                    key={card}
+                    $selected={selectedCard === card}
+                    onClick={() => setSelectedCard(card)}
+                  >
+                    <div style={{ fontSize: "1.5rem" }}>{getCardEmoji(card)}</div>
+                    <div style={{ fontSize: "0.75rem" }}>
+                      {t(getCardTranslationKey(card)) || card}
+                    </div>
+                  </OptionButton>
+                ))}
+              </OptionGrid>
+            </ModalSection>
+
+            <ModalActions>
+              <ModalButton variant="secondary" onClick={() => {
+                setFavorModal(false);
+                setSelectedTarget(null);
+                setSelectedCard(null);
+              }}>
+                Cancel
+              </ModalButton>
+              <ModalButton
+                onClick={() => {
+                  if (selectedTarget && selectedCard) {
+                    onPlayFavor(selectedTarget, selectedCard);
+                    setFavorModal(false);
+                    setSelectedTarget(null);
+                    setSelectedCard(null);
+                  }
+                }}
+                disabled={!selectedTarget || !selectedCard}
+              >
+                Play Favor
+              </ModalButton>
+            </ModalActions>
+          </ModalContent>
+        </Modal>
+      )}
+
+      {/* See the Future Modal */}
+      {seeTheFutureModal && (
+        <Modal onClick={() => setSeeTheFutureModal(null)}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            <ModalHeader>
+              <ModalTitle>🔮 Top Cards of the Deck</ModalTitle>
+              <CloseButton onClick={() => setSeeTheFutureModal(null)}>×</CloseButton>
+            </ModalHeader>
+
+            <ModalSection>
+              <SectionLabel>
+                Next {seeTheFutureModal.cards.length} card(s) to be drawn:
+              </SectionLabel>
+              <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+                {seeTheFutureModal.cards.map((card, idx) => (
+                  <div key={idx} style={{ textAlign: "center" }}>
+                    <div style={{ fontSize: "3rem", marginBottom: "0.5rem" }}>
+                      {getCardEmoji(card)}
+                    </div>
+                    <div style={{ fontSize: "0.875rem", fontWeight: 600 }}>
+                      {t(getCardTranslationKey(card)) || card}
+                    </div>
+                    <div style={{ fontSize: "0.75rem", opacity: 0.6, marginTop: "0.25rem" }}>
+                      #{idx + 1}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ModalSection>
+
+            <ModalActions>
+              <ModalButton onClick={() => setSeeTheFutureModal(null)}>
+                Close
               </ModalButton>
             </ModalActions>
           </ModalContent>

@@ -880,6 +880,9 @@ export const translations = {
           defuse: 'Defuse',
           attack: 'Attack',
           skip: 'Skip',
+          favor: 'Favor',
+          shuffle: 'Shuffle',
+          seeTheFuture: 'See the Future',
           tacocat: 'Tacocat',
           hairyPotatoCat: 'Hairy Potato Cat',
           rainbowRalphingCat: 'Rainbow-Ralphing Cat',
@@ -889,11 +892,14 @@ export const translations = {
         },
         cardDescriptions: {
           explodingCat:
-            'Draw it without a Defuse and boom—you’re out of the round.',
+            'Draw it without a Defuse and boom—you\'re out of the round.',
           defuse:
             'Cancels an Exploding Cat and lets you tuck it back into the deck.',
           attack: 'End your turn and make the next player draw two cards.',
           skip: 'Finish your turn immediately without drawing.',
+          favor: 'Force another player to give you a card of their choice.',
+          shuffle: 'Shuffle the draw pile to randomize upcoming cards.',
+          seeTheFuture: 'Peek at the top three cards of the deck.',
           tacocat: 'Play two or three copies to steal a card from an opponent.',
           hairyPotatoCat: 'Pairs or trios yank a random or named card.',
           rainbowRalphingCat:
@@ -1532,6 +1538,9 @@ export const translations = {
           defuse: 'Desactivar',
           attack: 'Ataque',
           skip: 'Saltar',
+          favor: 'Favor',
+          shuffle: 'Mezclar',
+          seeTheFuture: 'Ver el futuro',
           tacocat: 'Tacogato',
           hairyPotatoCat: 'Gato patata peluda',
           rainbowRalphingCat: 'Gato arcoíris vomitador',
@@ -1547,6 +1556,9 @@ export const translations = {
           attack:
             'Termina tu turno y obliga al siguiente jugador a robar dos cartas.',
           skip: 'Termina tu turno al instante sin robar carta.',
+          favor: 'Obliga a otro jugador a darte una carta de su elección.',
+          shuffle: 'Mezcla el mazo para aleatorizar las próximas cartas.',
+          seeTheFuture: 'Mira las tres cartas superiores del mazo.',
           tacocat: 'Juega dos o tres copias para quitar cartas a un rival.',
           hairyPotatoCat:
             'Con pareja o trío robas una carta aleatoria o nombrada.',
@@ -2154,6 +2166,9 @@ export const translations = {
           defuse: 'Désamorçage',
           attack: 'Attaque',
           skip: 'Passer',
+          favor: 'Faveur',
+          shuffle: 'Mélanger',
+          seeTheFuture: "Voir l'avenir",
           tacocat: 'Tacochat',
           hairyPotatoCat: 'Chat patate velu',
           rainbowRalphingCat: 'Chat arc-en-ciel vomitif',
@@ -2169,6 +2184,9 @@ export const translations = {
           attack:
             'Terminez votre tour et forcez le joueur suivant à piocher deux cartes.',
           skip: 'Terminez immédiatement votre tour sans piocher.',
+          favor: 'Forcez un autre joueur à vous donner une carte de son choix.',
+          shuffle: 'Mélangez la pioche pour randomiser les prochaines cartes.',
+          seeTheFuture: 'Regardez les trois premières cartes de la pioche.',
           tacocat:
             'Jouez-en deux ou trois pour voler une carte à un adversaire.',
           hairyPotatoCat:

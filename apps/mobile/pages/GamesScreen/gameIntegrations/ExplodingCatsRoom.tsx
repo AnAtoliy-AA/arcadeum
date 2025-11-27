@@ -110,7 +110,7 @@ export const ExplodingCatsRoom = forwardRef<
   const styles = useThemedStyles(createStyles);
   const { t } = useTranslation();
   const [actionBusy, setActionBusy] = useState<
-    'draw' | 'skip' | 'attack' | 'cat_pair' | 'cat_trio' | null
+    'draw' | 'skip' | 'attack' | 'shuffle' | 'favor' | 'see_the_future' | 'cat_pair' | 'cat_trio' | null
   >(null);
   const [startBusy, setStartBusy] = useState(false);
   const [tableFullScreen, setTableFullScreen] = useState(false);
@@ -275,7 +275,7 @@ export const ExplodingCatsRoom = forwardRef<
   }, [actionBusy, room?.id, t, tokens.userId]);
 
   const handlePlayCard = useCallback(
-    (card: 'skip' | 'attack') => {
+    (card: 'skip' | 'attack' | 'shuffle') => {
       if (!room?.id || !tokens.userId) {
         Alert.alert(
           t('games.alerts.signInRequiredTitle'),
@@ -297,6 +297,51 @@ export const ExplodingCatsRoom = forwardRef<
     },
     [actionBusy, room?.id, t, tokens.userId],
   );
+
+  const handlePlayFavor = useCallback(
+    (targetPlayerId: string, desiredCard: string) => {
+      if (!room?.id || !tokens.userId) {
+        Alert.alert(
+          t('games.alerts.signInRequiredTitle'),
+          t('games.alerts.signInPlayCardMessage'),
+        );
+        return;
+      }
+
+      if (actionBusy) {
+        return;
+      }
+
+      setActionBusy('favor');
+      socket.emit('games.session.play_favor', {
+        roomId: room.id,
+        userId: tokens.userId,
+        targetPlayerId,
+        desiredCard,
+      });
+    },
+    [actionBusy, room?.id, t, tokens.userId],
+  );
+
+  const handlePlaySeeTheFuture = useCallback(() => {
+    if (!room?.id || !tokens.userId) {
+      Alert.alert(
+        t('games.alerts.signInRequiredTitle'),
+        t('games.alerts.signInPlayCardMessage'),
+      );
+      return;
+    }
+
+    if (actionBusy) {
+      return;
+    }
+
+    setActionBusy('see_the_future');
+    socket.emit('games.session.play_see_the_future', {
+      roomId: room.id,
+      userId: tokens.userId,
+    });
+  }, [actionBusy, room?.id, t, tokens.userId]);
 
   const handlePlayCatCombo = useCallback(
     (input: ExplodingCatsCatComboInput) => {
@@ -401,6 +446,8 @@ export const ExplodingCatsRoom = forwardRef<
             onStart={handleStartMatch}
             onDraw={handleDrawCard}
             onPlay={handlePlayCard}
+            onPlayFavor={handlePlayFavor}
+            onPlaySeeTheFuture={handlePlaySeeTheFuture}
             onPlayCatCombo={handlePlayCatCombo}
             onPostHistoryNote={handlePostHistoryNote}
             fullScreen
@@ -620,6 +667,8 @@ export const ExplodingCatsRoom = forwardRef<
           onStart={handleStartMatch}
           onDraw={handleDrawCard}
           onPlay={handlePlayCard}
+          onPlayFavor={handlePlayFavor}
+          onPlaySeeTheFuture={handlePlaySeeTheFuture}
           onPlayCatCombo={handlePlayCatCombo}
           onPostHistoryNote={handlePostHistoryNote}
           fullScreen={hasSessionSnapshot}

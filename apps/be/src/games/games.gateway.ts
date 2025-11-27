@@ -23,16 +23,26 @@ const CAT_COMBO_CARD_VALUES = [
   'bearded_cat',
 ] as const satisfies ReadonlyArray<ExplodingCatsCatCard>;
 
+const SIMPLE_ACTION_CARDS = ['skip', 'attack', 'shuffle'] as const;
+type SimpleActionCard = (typeof SIMPLE_ACTION_CARDS)[number];
+
 const ALL_EXPLODING_CATS_CARDS = [
   'exploding_cat',
   'defuse',
   'attack',
   'skip',
+  'favor',
+  'shuffle',
+  'see_the_future',
   ...CAT_COMBO_CARD_VALUES,
 ] as const satisfies ReadonlyArray<ExplodingCatsCard>;
 
 function isCatComboCard(value: string): value is ExplodingCatsCatCard {
   return CAT_COMBO_CARD_VALUES.includes(value as ExplodingCatsCatCard);
+}
+
+function isSimpleActionCard(value: string): value is SimpleActionCard {
+  return SIMPLE_ACTION_CARDS.includes(value as SimpleActionCard);
 }
 
 function toExplodingCatsCard(value?: string): ExplodingCatsCard | undefined {
@@ -41,6 +51,58 @@ function toExplodingCatsCard(value?: string): ExplodingCatsCard | undefined {
   }
   const lower = value.toLowerCase() as ExplodingCatsCard;
   return ALL_EXPLODING_CATS_CARDS.includes(lower) ? lower : undefined;
+}
+
+/**
+ * Validates and extracts string payload field
+ */
+function extractString(
+  payload: Record<string, any>,
+  fieldName: string,
+  options?: { toLowerCase?: boolean },
+): string {
+  const value =
+    typeof payload?.[fieldName] === 'string' ? payload[fieldName].trim() : '';
+
+  if (!value) {
+    throw new WsException(`${fieldName} is required.`);
+  }
+
+  return options?.toLowerCase ? value.toLowerCase() : value;
+}
+
+/**
+ * Validates room and user IDs from payload
+ */
+function extractRoomAndUser(payload: Record<string, any>): {
+  roomId: string;
+  userId: string;
+} {
+  return {
+    roomId: extractString(payload, 'roomId'),
+    userId: extractString(payload, 'userId'),
+  };
+}
+
+/**
+ * Handles common error logging and wrapping
+ */
+function handleError(
+  logger: Logger,
+  error: unknown,
+  context: { action: string; roomId: string; userId: string },
+  defaultMessage: string,
+): never {
+  const message =
+    error instanceof Error && typeof error.message === 'string'
+      ? error.message
+      : defaultMessage;
+
+  logger.warn(
+    `Failed to ${context.action} for room ${context.roomId}, user ${context.userId}: ${message}`,
+  );
+
+  throw new WsException(message);
 }
 
 @WebSocketGateway({
@@ -111,12 +173,7 @@ export class GamesGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: { roomId?: string },
   ): Promise<void> {
-    const roomId =
-      typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
-
-    if (!roomId) {
-      throw new WsException('roomId is required.');
-    }
+    const roomId = extractString(payload, 'roomId');
 
     try {
       const room = await this.gamesService.getRoom(roomId);
@@ -150,11 +207,7 @@ export class GamesGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: { roomId?: string },
   ): Promise<void> {
-    const roomId =
-      typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
-    if (!roomId) {
-      throw new WsException('roomId is required.');
-    }
+    const roomId = extractString(payload, 'roomId');
 
     const channel = this.realtime.roomChannel(roomId);
     if (!client.rooms.has(channel)) {
@@ -174,17 +227,7 @@ export class GamesGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<void> {
-    const roomId =
-      typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
-    const userId =
-      typeof payload?.userId === 'string' ? payload.userId.trim() : '';
-
-    if (!roomId) {
-      throw new WsException('roomId is required.');
-    }
-    if (!userId) {
-      throw new WsException('userId is required.');
-    }
+    const { roomId, userId } = extractRoomAndUser(payload);
 
     try {
       await this.gamesService.drawExplodingCatsCard(userId, roomId);
@@ -193,16 +236,16 @@ export class GamesGateway {
         userId,
       });
     } catch (error) {
-      const message =
-        error instanceof Error && typeof error.message === 'string'
-          ? error.message
-          : 'Unable to draw card.';
-
-      this.logger.warn(
-        `Failed to draw card for room ${roomId}, user ${userId}: ${message}`,
+      handleError(
+        this.logger,
+        error,
+        {
+          action: 'draw card',
+          roomId,
+          userId,
+        },
+        'Unable to draw card.',
       );
-
-      throw new WsException(message);
     }
   }
 
@@ -212,28 +255,12 @@ export class GamesGateway {
     @MessageBody()
     payload: { roomId?: string; userId?: string; card?: string },
   ): Promise<void> {
-    const roomId =
-      typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
-    const userId =
-      typeof payload?.userId === 'string' ? payload.userId.trim() : '';
-    const cardRaw =
-      typeof payload?.card === 'string'
-        ? payload.card.trim().toLowerCase()
-        : '';
+    const { roomId, userId } = extractRoomAndUser(payload);
+    const card = extractString(payload, 'card', { toLowerCase: true });
 
-    if (!roomId) {
-      throw new WsException('roomId is required.');
+    if (!isSimpleActionCard(card)) {
+      throw new WsException('Card is not supported for this action.');
     }
-    if (!userId) {
-      throw new WsException('userId is required.');
-    }
-
-    const isAllowedCard = cardRaw === 'skip' || cardRaw === 'attack';
-    if (!isAllowedCard) {
-      throw new WsException('card is not supported.');
-    }
-
-    const card: 'skip' | 'attack' = cardRaw === 'attack' ? 'attack' : 'skip';
 
     try {
       await this.gamesService.playExplodingCatsAction(userId, roomId, card);
@@ -243,16 +270,16 @@ export class GamesGateway {
         card,
       });
     } catch (error) {
-      const message =
-        error instanceof Error && typeof error.message === 'string'
-          ? error.message
-          : 'Unable to play card.';
-
-      this.logger.warn(
-        `Failed to play ${card} for room ${roomId}, user ${userId}: ${message}`,
+      handleError(
+        this.logger,
+        error,
+        {
+          action: `play ${card}`,
+          roomId,
+          userId,
+        },
+        'Unable to play card.',
       );
-
-      throw new WsException(message);
     }
   }
 
@@ -269,37 +296,14 @@ export class GamesGateway {
       desiredCard?: string;
     },
   ): Promise<void> {
-    const roomId =
-      typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
-    const userId =
-      typeof payload?.userId === 'string' ? payload.userId.trim() : '';
-    const cat =
-      typeof payload?.cat === 'string' ? payload.cat.trim().toLowerCase() : '';
-    const modeRaw =
-      typeof payload?.mode === 'string'
-        ? payload.mode.trim().toLowerCase()
-        : '';
-    const targetPlayerId =
-      typeof payload?.targetPlayerId === 'string'
-        ? payload.targetPlayerId.trim()
-        : '';
+    const { roomId, userId } = extractRoomAndUser(payload);
+    const cat = extractString(payload, 'cat', { toLowerCase: true });
+    const modeRaw = extractString(payload, 'mode', { toLowerCase: true });
+    const targetPlayerId = extractString(payload, 'targetPlayerId');
     const desiredCard =
       typeof payload?.desiredCard === 'string'
         ? payload.desiredCard.trim().toLowerCase()
         : undefined;
-
-    if (!roomId) {
-      throw new WsException('roomId is required.');
-    }
-    if (!userId) {
-      throw new WsException('userId is required.');
-    }
-    if (!cat) {
-      throw new WsException('cat is required.');
-    }
-    if (!targetPlayerId) {
-      throw new WsException('targetPlayerId is required.');
-    }
 
     const mode =
       modeRaw === 'trio' ? 'trio' : modeRaw === 'pair' ? 'pair' : null;
@@ -333,16 +337,102 @@ export class GamesGateway {
         desiredCard: desiredCardValue,
       });
     } catch (error) {
-      const message =
-        error instanceof Error && typeof error.message === 'string'
-          ? error.message
-          : 'Unable to play cat combo.';
+      handleError(
+        this.logger,
+        error,
+        {
+          action: `play ${cat} combo`,
+          roomId,
+          userId,
+        },
+        'Unable to play cat combo.',
+      );
+    }
+  }
 
-      this.logger.warn(
-        `Failed to play ${cat} combo for room ${roomId}, user ${userId}: ${message}`,
+  @SubscribeMessage('games.session.play_favor')
+  async handleSessionPlayFavor(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: {
+      roomId?: string;
+      userId?: string;
+      targetPlayerId?: string;
+      desiredCard?: string;
+    },
+  ): Promise<void> {
+    const { roomId, userId } = extractRoomAndUser(payload);
+    const targetPlayerId = extractString(payload, 'targetPlayerId');
+    const desiredCard = extractString(payload, 'desiredCard', {
+      toLowerCase: true,
+    });
+
+    const desiredCardValue = toExplodingCatsCard(desiredCard);
+    if (!desiredCardValue) {
+      throw new WsException('Invalid desiredCard value.');
+    }
+
+    try {
+      await this.gamesService.playExplodingCatsFavor(
+        userId,
+        roomId,
+        targetPlayerId,
+        desiredCardValue,
       );
 
-      throw new WsException(message);
+      client.emit('games.session.favor.played', {
+        roomId,
+        userId,
+        targetPlayerId,
+        desiredCard: desiredCardValue,
+      });
+    } catch (error) {
+      handleError(
+        this.logger,
+        error,
+        {
+          action: 'play Favor card',
+          roomId,
+          userId,
+        },
+        'Unable to play Favor card.',
+      );
+    }
+  }
+
+  @SubscribeMessage('games.session.play_see_the_future')
+  async handleSessionPlaySeeTheFuture(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: {
+      roomId?: string;
+      userId?: string;
+    },
+  ): Promise<void> {
+    const { roomId, userId } = extractRoomAndUser(payload);
+
+    try {
+      const result = await this.gamesService.playExplodingCatsSeeTheFuture(
+        userId,
+        roomId,
+      );
+
+      client.emit('games.session.see_the_future.played', {
+        roomId,
+        userId,
+        topCards: result.topCards,
+      });
+    } catch (error) {
+      handleError(
+        this.logger,
+        error,
+        {
+          action: 'play See the Future card',
+          roomId,
+          userId,
+        },
+        'Unable to play See the Future card.',
+      );
     }
   }
 
@@ -357,26 +447,12 @@ export class GamesGateway {
       scope?: string;
     },
   ): Promise<void> {
-    const roomId =
-      typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
-    const userId =
-      typeof payload?.userId === 'string' ? payload.userId.trim() : '';
-    const message =
-      typeof payload?.message === 'string' ? payload.message.trim() : '';
+    const { roomId, userId } = extractRoomAndUser(payload);
+    const message = extractString(payload, 'message');
     const scopeRaw =
       typeof payload?.scope === 'string'
         ? payload.scope.trim().toLowerCase()
         : 'all';
-
-    if (!roomId) {
-      throw new WsException('roomId is required.');
-    }
-    if (!userId) {
-      throw new WsException('userId is required.');
-    }
-    if (!message) {
-      throw new WsException('message is required.');
-    }
 
     const scope = scopeRaw === 'players' ? 'players' : 'all';
 
@@ -393,16 +469,16 @@ export class GamesGateway {
         scope,
       });
     } catch (error) {
-      const messageText =
-        error instanceof Error && typeof error.message === 'string'
-          ? error.message
-          : 'Unable to post history note.';
-
-      this.logger.warn(
-        `Failed to post history note for room ${roomId}, user ${userId}: ${messageText}`,
+      handleError(
+        this.logger,
+        error,
+        {
+          action: 'post history note',
+          roomId,
+          userId,
+        },
+        'Unable to post history note.',
       );
-
-      throw new WsException(messageText);
     }
   }
 
@@ -412,19 +488,9 @@ export class GamesGateway {
     @MessageBody()
     payload: { roomId?: string; userId?: string; engine?: string },
   ): Promise<void> {
-    const roomId =
-      typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
-    const userId =
-      typeof payload?.userId === 'string' ? payload.userId.trim() : '';
+    const { roomId, userId } = extractRoomAndUser(payload);
     const engine =
       typeof payload?.engine === 'string' ? payload.engine.trim() : undefined;
-
-    if (!roomId) {
-      throw new WsException('roomId is required.');
-    }
-    if (!userId) {
-      throw new WsException('userId is required.');
-    }
 
     try {
       const result = await this.gamesService.startExplodingCatsSession(
@@ -435,16 +501,16 @@ export class GamesGateway {
 
       client.emit('games.session.started', result);
     } catch (error) {
-      const message =
-        error instanceof Error && typeof error.message === 'string'
-          ? error.message
-          : 'Unable to start session.';
-
-      this.logger.warn(
-        `Failed to start Exploding Cats session for room ${roomId}: ${message}`,
+      handleError(
+        this.logger,
+        error,
+        {
+          action: 'start Exploding Cats session',
+          roomId,
+          userId,
+        },
+        'Unable to start session.',
       );
-
-      throw new WsException(message);
     }
   }
 }

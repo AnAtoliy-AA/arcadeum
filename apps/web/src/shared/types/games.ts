@@ -24,7 +24,7 @@ export interface GameSessionSummary {
   gameId: string;
   engine: string;
   status: "waiting" | "active" | "completed";
-  state: Record<string, any>;
+  state: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
 }
@@ -34,6 +34,9 @@ export type ExplodingCatsCard =
   | "defuse"
   | "attack"
   | "skip"
+  | "favor"
+  | "shuffle"
+  | "see_the_future"
   | "tacocat"
   | "hairy_potato_cat"
   | "rainbow_ralphing_cat"

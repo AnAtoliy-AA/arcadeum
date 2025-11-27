@@ -302,12 +302,26 @@ export function GameRoomPage() {
       setTimeout(() => setError(null), 5000);
     };
 
+    const handleSeeTheFuturePlayed = (data: { topCards: string[] }) => {
+      setActionBusy(null);
+      // Store the top cards to display in modal
+      if (window) {
+        ((window as unknown) as Record<string, unknown>).__seeTheFutureCards = data.topCards;
+      }
+    };
+
+    const handleFavorPlayed = () => {
+      setActionBusy(null);
+    };
+
     gameSocket.on("connect", handleConnect);
     gameSocket.on("games.room.joined", handleJoined);
     gameSocket.on("games.room.watching", handleJoined);
     gameSocket.on("games.room.update", handleRoomUpdate);
     gameSocket.on("games.session.snapshot", handleSnapshot);
     gameSocket.on("games.session.started", handleSessionStarted);
+    gameSocket.on("games.session.see_the_future.played", handleSeeTheFuturePlayed);
+    gameSocket.on("games.session.favor.played", handleFavorPlayed);
     gameSocket.on("exception", handleException);
 
     if (gameSocket.connected) {
@@ -321,6 +335,8 @@ export function GameRoomPage() {
       gameSocket.off("games.room.update", handleRoomUpdate);
       gameSocket.off("games.session.snapshot", handleSnapshot);
       gameSocket.off("games.session.started", handleSessionStarted);
+      gameSocket.off("games.session.see_the_future.played", handleSeeTheFuturePlayed);
+      gameSocket.off("games.session.favor.played", handleFavorPlayed);
       gameSocket.off("exception", handleException);
     };
   }, [roomId, snapshot.accessToken, snapshot.userId]);
@@ -385,7 +401,7 @@ export function GameRoomPage() {
   }, [room, snapshot.userId, actionBusy]);
 
   const handlePlayCard = useCallback(
-    (card: "skip" | "attack") => {
+    (card: "skip" | "attack" | "shuffle") => {
       if (!room?.id || !snapshot.userId || actionBusy) return;
 
       setActionBusy(card);
@@ -397,6 +413,31 @@ export function GameRoomPage() {
     },
     [room, snapshot.userId, actionBusy]
   );
+
+  const handlePlayFavor = useCallback(
+    (targetPlayerId: string, desiredCard: string) => {
+      if (!room?.id || !snapshot.userId || actionBusy) return;
+
+      setActionBusy("favor");
+      gameSocket.emit("games.session.play_favor", {
+        roomId: room.id,
+        userId: snapshot.userId,
+        targetPlayerId,
+        desiredCard,
+      });
+    },
+    [room, snapshot.userId, actionBusy]
+  );
+
+  const handlePlaySeeTheFuture = useCallback(() => {
+    if (!room?.id || !snapshot.userId || actionBusy) return;
+
+    setActionBusy("see_the_future");
+    gameSocket.emit("games.session.play_see_the_future", {
+      roomId: room.id,
+      userId: snapshot.userId,
+    });
+  }, [room, snapshot.userId, actionBusy]);
 
   const handlePlayCatCombo = useCallback(
     (input: {
@@ -522,6 +563,8 @@ export function GameRoomPage() {
             onStart={handleStartGame}
             onDraw={handleDrawCard}
             onPlayCard={handlePlayCard}
+            onPlayFavor={handlePlayFavor}
+            onPlaySeeTheFuture={handlePlaySeeTheFuture}
             onPlayCatCombo={handlePlayCatCombo}
             onPostHistoryNote={handlePostHistoryNote}
             actionBusy={actionBusy}

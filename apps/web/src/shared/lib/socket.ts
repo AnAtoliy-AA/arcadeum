@@ -84,7 +84,7 @@ export const gameSocket: Socket = gamesSocket;
 export const chatSocket: Socket = chatsSocket;
 
 interface SocketEventHandler {
-  (...args: any[]): void;
+  (...args: unknown[]): void;
 }
 
 export function useSocket(event: string, handler: SocketEventHandler): void {

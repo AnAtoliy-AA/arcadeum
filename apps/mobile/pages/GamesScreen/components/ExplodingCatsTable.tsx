@@ -65,6 +65,9 @@ export type ExplodingCatsCard =
   | 'defuse'
   | 'attack'
   | 'skip'
+  | 'favor'
+  | 'shuffle'
+  | 'see_the_future'
   | 'tacocat'
   | 'hairy_potato_cat'
   | 'rainbow_ralphing_cat'
@@ -91,6 +94,9 @@ const DESIRED_CARD_OPTIONS: ExplodingCatsCard[] = [
   'defuse',
   'attack',
   'skip',
+  'favor',
+  'shuffle',
+  'see_the_future',
   ...CAT_COMBO_CARDS,
 ];
 
@@ -104,6 +110,9 @@ const CARD_ART_SETTINGS: Record<
   defuse: { key: 'defuse', variant: 2 },
   attack: { key: 'attack', variant: 1 },
   skip: { key: 'skip', variant: 2 },
+  favor: { key: 'skip', variant: 1 }, // TODO: Add proper SVG artwork
+  shuffle: { key: 'skip', variant: 3 }, // TODO: Add proper SVG artwork
+  see_the_future: { key: 'defuse', variant: 1 }, // TODO: Add proper SVG artwork
   tacocat: { key: 'tacocat', variant: 1 },
   hairy_potato_cat: { key: 'hairy-potato-cat', variant: 2 },
   rainbow_ralphing_cat: { key: 'rainbow-ralphing-cat', variant: 2 },
@@ -178,12 +187,14 @@ interface ExplodingCatsTableProps {
   room: GameRoomSummary | null;
   session: GameSessionSummary | null;
   currentUserId: string | null;
-  actionBusy: 'draw' | 'skip' | 'attack' | 'cat_pair' | 'cat_trio' | null;
+  actionBusy: 'draw' | 'skip' | 'attack' | 'shuffle' | 'favor' | 'see_the_future' | 'cat_pair' | 'cat_trio' | null;
   startBusy: boolean;
   isHost: boolean;
   onStart: () => void;
   onDraw: () => void;
-  onPlay: (card: 'skip' | 'attack') => void;
+  onPlay: (card: 'skip' | 'attack' | 'shuffle') => void;
+  onPlayFavor: (targetPlayerId: string, desiredCard: string) => void;
+  onPlaySeeTheFuture: () => void;
   onPlayCatCombo: (payload: ExplodingCatsCatComboInput) => void;
   onPostHistoryNote?: (
     message: string,
@@ -203,6 +214,12 @@ function getCardTranslationKey(card: ExplodingCatsCard): TranslationKey {
       return 'games.table.cards.attack';
     case 'skip':
       return 'games.table.cards.skip';
+    case 'favor':
+      return 'games.table.cards.favor';
+    case 'shuffle':
+      return 'games.table.cards.shuffle';
+    case 'see_the_future':
+      return 'games.table.cards.seeTheFuture';
     case 'tacocat':
       return 'games.table.cards.tacocat';
     case 'hairy_potato_cat':
@@ -228,6 +245,12 @@ function getCardDescriptionKey(card: ExplodingCatsCard): TranslationKey {
       return 'games.table.cardDescriptions.attack';
     case 'skip':
       return 'games.table.cardDescriptions.skip';
+    case 'favor':
+      return 'games.table.cardDescriptions.favor';
+    case 'shuffle':
+      return 'games.table.cardDescriptions.shuffle';
+    case 'see_the_future':
+      return 'games.table.cardDescriptions.seeTheFuture';
     case 'tacocat':
       return 'games.table.cardDescriptions.tacocat';
     case 'hairy_potato_cat':
@@ -268,6 +291,8 @@ export function ExplodingCatsTable({
   onStart,
   onDraw,
   onPlay,
+  onPlayFavor,
+  onPlaySeeTheFuture,
   onPlayCatCombo,
   onPostHistoryNote,
   fullScreen = false,

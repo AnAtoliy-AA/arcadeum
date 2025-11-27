@@ -101,9 +101,9 @@ type DeepRequired<T> = T extends object
 export type Paths<T> = T extends object
   ? {
       [K in keyof T & string]: T[K] extends object
-        ? NonNullable<T[K]> extends Array<any>
+        ? NonNullable<T[K]> extends Array<unknown>
           ? K // Arrays are leaf nodes
-          : K | `${K}.${Paths<DeepRequired<NonNullable<T[K]>>>}` // Recursive path generation
+        : K | `${K}.${Paths<DeepRequired<NonNullable<T[K]>>>}` // Recursive path generation
         : K; // Primitive values are leaf nodes
     }[keyof T & string]
   : never;

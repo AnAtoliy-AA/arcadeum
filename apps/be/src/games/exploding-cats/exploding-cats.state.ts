@@ -12,6 +12,9 @@ export type ExplodingCatsCard =
   | 'defuse'
   | 'attack'
   | 'skip'
+  | 'favor'
+  | 'shuffle'
+  | 'see_the_future'
   | ExplodingCatsCatCard;
 
 export interface ExplodingCatsPlayerState {
@@ -69,6 +72,9 @@ export function createInitialExplodingCatsState(
   const deck: ExplodingCatsCard[] = [
     ...repeatCard('attack', 4),
     ...repeatCard('skip', 4),
+    ...repeatCard('favor', 4),
+    ...repeatCard('shuffle', 4),
+    ...repeatCard('see_the_future', 5),
     ...repeatCard('tacocat', 4),
     ...repeatCard('hairy_potato_cat', 4),
     ...repeatCard('rainbow_ralphing_cat', 4),

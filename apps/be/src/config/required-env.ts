@@ -45,12 +45,14 @@ function validate(opts: { logOk?: boolean } = {}) {
     },
   );
 
-  const partialWebClients = WEB_CLIENT_OPTIONS.filter(({ idKey, secretKeys, redirectKey }) => {
-    const providedKeys = [idKey, redirectKey, ...secretKeys];
-    const provided = providedKeys.filter((key) => Boolean(process.env[key]));
-    const requiredCount = new Set(providedKeys).size;
-    return provided.length > 0 && provided.length < requiredCount;
-  }).map(({ idKey }) => idKey);
+  const partialWebClients = WEB_CLIENT_OPTIONS.filter(
+    ({ idKey, secretKeys, redirectKey }) => {
+      const providedKeys = [idKey, redirectKey, ...secretKeys];
+      const provided = providedKeys.filter((key) => Boolean(process.env[key]));
+      const requiredCount = new Set(providedKeys).size;
+      return provided.length > 0 && provided.length < requiredCount;
+    },
+  ).map(({ idKey }) => idKey);
 
   const issues: string[] = [];
   if (missingCore.length > 0) {

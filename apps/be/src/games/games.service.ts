@@ -164,7 +164,13 @@ type RoomUserProfile = {
 
 const EXPLODING_CATS_GAME_ID = 'exploding-kittens';
 const EXPLODING_CATS_ENGINE_ID = 'exploding_cats_v1';
-const EXPLODING_CATS_ACTION_CARDS = ['skip', 'attack'] as const;
+const EXPLODING_CATS_ACTION_CARDS = [
+  'skip',
+  'attack',
+  'favor',
+  'shuffle',
+  'see_the_future',
+] as const;
 type ExplodingCatsActionCard = (typeof EXPLODING_CATS_ACTION_CARDS)[number];
 const EXPLODING_CATS_CAT_CARDS = [
   'tacocat',
@@ -1114,7 +1120,13 @@ export class GamesService {
     snapshot.discardPile.push(card);
 
     const nowIso = new Date().toISOString();
-    const capitalizedCard = card === 'attack' ? 'Attack' : 'Skip';
+    let capitalizedCard = 'Unknown';
+    if (card === 'attack') capitalizedCard = 'Attack';
+    else if (card === 'skip') capitalizedCard = 'Skip';
+    else if (card === 'shuffle') capitalizedCard = 'Shuffle';
+    else if (card === 'favor') capitalizedCard = 'Favor';
+    else if (card === 'see_the_future') capitalizedCard = 'See the Future';
+
     const logEntries: ExplodingCatsState['logs'] = [
       {
         id: randomUUID(),
@@ -1134,10 +1146,24 @@ export class GamesService {
         snapshot.pendingDraws = 1;
         this.advanceExplodingCatsTurn(snapshot);
       }
-    } else {
+    } else if (card === 'attack') {
       const nextPending = pendingBefore + 1;
       this.advanceExplodingCatsTurn(snapshot);
       snapshot.pendingDraws = nextPending;
+    } else if (card === 'shuffle') {
+      // Shuffle the deck
+      this.shuffleInPlace(snapshot.deck);
+      logEntries.push({
+        id: randomUUID(),
+        type: 'system',
+        message: 'The draw pile has been shuffled.',
+        createdAt: nowIso,
+        scope: 'all',
+      });
+    } else if (card === 'favor' || card === 'see_the_future') {
+      throw new BadRequestException(
+        `${capitalizedCard} card requires special handling. Use the dedicated endpoint.`,
+      );
     }
 
     snapshot.logs.push(...logEntries);
@@ -1349,6 +1375,279 @@ export class GamesService {
       roomId: normalizedRoomId,
       state: nextState,
     });
+  }
+
+  async playExplodingCatsFavor(
+    userId: string,
+    roomId: string,
+    targetPlayerId: string,
+    desiredCard: ExplodingCatsCard,
+  ): Promise<GameSessionSummary> {
+    const normalizedUserId = userId.trim();
+    if (!normalizedUserId) {
+      throw new BadRequestException('User ID is required.');
+    }
+
+    const normalizedRoomId = roomId.trim();
+    if (!normalizedRoomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    const normalizedTargetId = targetPlayerId.trim();
+    if (!normalizedTargetId) {
+      throw new BadRequestException('Target player ID is required.');
+    }
+
+    if (normalizedUserId === normalizedTargetId) {
+      throw new BadRequestException('You cannot favor yourself.');
+    }
+
+    const room = await this.ensureParticipant(
+      normalizedRoomId,
+      normalizedUserId,
+    );
+    if (room.status !== 'in_progress') {
+      throw new BadRequestException('The game has not started for this room.');
+    }
+
+    const sessionDoc = await this.gameSessionModel
+      .findOne({ roomId: normalizedRoomId })
+      .exec();
+    if (!sessionDoc) {
+      throw new NotFoundException('Game session not found for this room.');
+    }
+
+    if (sessionDoc.engine !== EXPLODING_CATS_ENGINE_ID) {
+      throw new BadRequestException(
+        'Favor is only supported for Exploding Cats sessions.',
+      );
+    }
+
+    const state = sessionDoc.state ?? {};
+    const snapshotRaw = state.snapshot as ExplodingCatsState | undefined;
+    if (!snapshotRaw) {
+      throw new NotFoundException('Exploding Cats snapshot is unavailable.');
+    }
+
+    const snapshot = this.cloneExplodingCatsState(snapshotRaw);
+    const player = this.findExplodingCatsPlayer(snapshot, normalizedUserId);
+    const targetPlayer = this.findExplodingCatsPlayer(
+      snapshot,
+      normalizedTargetId,
+    );
+
+    if (!player) {
+      throw new ForbiddenException('Player is not part of this session.');
+    }
+
+    if (!player.alive) {
+      throw new ForbiddenException('Player has already been eliminated.');
+    }
+
+    if (!targetPlayer) {
+      throw new BadRequestException(
+        'Target player is not part of this session.',
+      );
+    }
+
+    if (!targetPlayer.alive) {
+      throw new BadRequestException('Target player has been eliminated.');
+    }
+
+    const cardIndex = player.hand.findIndex((value) => value === 'favor');
+    if (cardIndex === -1) {
+      throw new BadRequestException('Favor card is not available in hand.');
+    }
+
+    if (!snapshot.playerOrder.length) {
+      throw new BadRequestException(
+        'There are no active players in this session.',
+      );
+    }
+
+    const currentPlayerId =
+      snapshot.playerOrder[snapshot.currentTurnIndex] ?? '';
+    if (currentPlayerId !== normalizedUserId) {
+      throw new ForbiddenException('It is not your turn to play.');
+    }
+
+    // Remove favor card from player's hand
+    player.hand.splice(cardIndex, 1);
+    snapshot.discardPile.push('favor');
+
+    const nowIso = new Date().toISOString();
+    const logEntries: ExplodingCatsState['logs'] = [
+      {
+        id: randomUUID(),
+        type: 'action',
+        message: `${normalizedUserId} played a Favor card on ${normalizedTargetId}.`,
+        createdAt: nowIso,
+        scope: 'all',
+      },
+    ];
+
+    // Check if target has the desired card
+    const targetCardIndex = targetPlayer.hand.findIndex(
+      (value) => value === desiredCard,
+    );
+
+    if (targetCardIndex !== -1) {
+      // Transfer the card
+      targetPlayer.hand.splice(targetCardIndex, 1);
+      player.hand.push(desiredCard);
+
+      logEntries.push({
+        id: randomUUID(),
+        type: 'action',
+        message: `${normalizedTargetId} gave ${desiredCard} to ${normalizedUserId}.`,
+        createdAt: nowIso,
+        scope: 'all',
+      });
+    } else {
+      logEntries.push({
+        id: randomUUID(),
+        type: 'action',
+        message: `${normalizedTargetId} does not have ${desiredCard}.`,
+        createdAt: nowIso,
+        scope: 'all',
+      });
+    }
+
+    snapshot.logs.push(...logEntries);
+
+    const nextState = {
+      ...state,
+      snapshot,
+      lastUpdatedAt: nowIso,
+    };
+
+    return this.upsertSessionState({
+      roomId: normalizedRoomId,
+      state: nextState,
+    });
+  }
+
+  async playExplodingCatsSeeTheFuture(
+    userId: string,
+    roomId: string,
+  ): Promise<{
+    summary: GameSessionSummary;
+    topCards: ExplodingCatsCard[];
+  }> {
+    const normalizedUserId = userId.trim();
+    if (!normalizedUserId) {
+      throw new BadRequestException('User ID is required.');
+    }
+
+    const normalizedRoomId = roomId.trim();
+    if (!normalizedRoomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    const room = await this.ensureParticipant(
+      normalizedRoomId,
+      normalizedUserId,
+    );
+    if (room.status !== 'in_progress') {
+      throw new BadRequestException('The game has not started for this room.');
+    }
+
+    const sessionDoc = await this.gameSessionModel
+      .findOne({ roomId: normalizedRoomId })
+      .exec();
+    if (!sessionDoc) {
+      throw new NotFoundException('Game session not found for this room.');
+    }
+
+    if (sessionDoc.engine !== EXPLODING_CATS_ENGINE_ID) {
+      throw new BadRequestException(
+        'See the Future is only supported for Exploding Cats sessions.',
+      );
+    }
+
+    const state = sessionDoc.state ?? {};
+    const snapshotRaw = state.snapshot as ExplodingCatsState | undefined;
+    if (!snapshotRaw) {
+      throw new NotFoundException('Exploding Cats snapshot is unavailable.');
+    }
+
+    const snapshot = this.cloneExplodingCatsState(snapshotRaw);
+    const player = this.findExplodingCatsPlayer(snapshot, normalizedUserId);
+
+    if (!player) {
+      throw new ForbiddenException('Player is not part of this session.');
+    }
+
+    if (!player.alive) {
+      throw new ForbiddenException('Player has already been eliminated.');
+    }
+
+    const cardIndex = player.hand.findIndex(
+      (value) => value === 'see_the_future',
+    );
+    if (cardIndex === -1) {
+      throw new BadRequestException(
+        'See the Future card is not available in hand.',
+      );
+    }
+
+    if (!snapshot.playerOrder.length) {
+      throw new BadRequestException(
+        'There are no active players in this session.',
+      );
+    }
+
+    const currentPlayerId =
+      snapshot.playerOrder[snapshot.currentTurnIndex] ?? '';
+    if (currentPlayerId !== normalizedUserId) {
+      throw new ForbiddenException('It is not your turn to play.');
+    }
+
+    // Remove see_the_future card from player's hand
+    player.hand.splice(cardIndex, 1);
+    snapshot.discardPile.push('see_the_future');
+
+    const nowIso = new Date().toISOString();
+
+    // Get top 3 cards (or fewer if deck is small)
+    const topCards = snapshot.deck.slice(-3).reverse();
+
+    const logEntries: ExplodingCatsState['logs'] = [
+      {
+        id: randomUUID(),
+        type: 'action',
+        message: `${normalizedUserId} played a See the Future card.`,
+        createdAt: nowIso,
+        scope: 'all',
+      },
+      {
+        id: randomUUID(),
+        type: 'system',
+        message: `${normalizedUserId} saw the top ${topCards.length} card(s) of the deck.`,
+        createdAt: nowIso,
+        scope: 'players',
+        senderId: normalizedUserId,
+        senderName: normalizedUserId,
+      },
+    ];
+
+    snapshot.logs.push(...logEntries);
+
+    const nextState = {
+      ...state,
+      snapshot,
+      lastUpdatedAt: nowIso,
+    };
+
+    const summary = await this.upsertSessionState({
+      roomId: normalizedRoomId,
+      state: nextState,
+    });
+
+    return {
+      summary,
+      topCards,
+    };
   }
 
   async postExplodingCatsHistoryNote(

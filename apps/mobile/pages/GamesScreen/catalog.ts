@@ -170,6 +170,66 @@ export const gamesCatalog: GameCatalogueEntry[] = [
     },
   },
   {
+    id: 'texas-holdem',
+    name: "Texas Hold'em",
+    tagline:
+      'Classic poker showdowns with real-time betting and hand evaluation.',
+    summary:
+      "Build hands, bluff rivals, and claim pots in structured Texas Hold'em rounds.",
+    overview: `Texas Hold'em features a full state machine handling pre-flop betting, flop/turn/river reveals, showdown evaluation, and pot distribution. Each round follows standard rules: post blinds, deal hole cards, bet pre-flop starting UTG, burn+flop (3 cards), bet post-flop, burn+turn, bet, burn+river, bet, showdown. Server evaluates 7-card hands (2 hole + 5 community) for rank (royal flush to high card) and splits pots among ties. UI shows hole cards (private), community (shared), chips, current bet, pot, turn order, action buttons (fold/check/call/raise/all-in), player states. History logs actions, bets, reveals.`,
+    status: 'In prototype',
+    players: '2-10 players',
+    duration: '20-60 min',
+    tags: ['Poker', 'Betting', 'Bluffing'],
+    bestFor: ['Strategy groups', 'Cash game fans', 'Tournament play'],
+    mechanics: ['Betting rounds', 'Hand evaluation', 'Position play'],
+    highlights: [
+      {
+        title: 'Automatic hand evaluator',
+        description: 'Server ranks all possible hands instantly—no disputes.',
+      },
+      {
+        title: 'Real-time betting',
+        description:
+          'Structured turns with position awareness and pot odds display.',
+      },
+      {
+        title: 'Side pot support',
+        description: 'Handles all-ins and uneven stacks cleanly.',
+      },
+    ],
+    howToPlay: [
+      {
+        title: 'Post blinds & deal',
+        detail: 'Small/big blinds posted, 2 hole cards dealt to each player.',
+      },
+      {
+        title: 'Betting rounds',
+        detail:
+          'Pre-flop (UTG first), flop (3 cards), turn (1), river (1), showdown.',
+      },
+      {
+        title: 'Actions',
+        detail: 'Fold, check/call/raise to current bet, all-in anytime.',
+      },
+      {
+        title: 'Showdown',
+        detail: 'Best 5-card hand from 7 cards wins pot (ties split).',
+      },
+    ],
+    comingSoon: [
+      {
+        title: 'Tournament mode',
+        description: 'Multi-table brackets with chip progression.',
+      },
+      {
+        title: 'Hand history replay',
+        description: 'Review past hands with decision trees.',
+      },
+    ],
+    isPlayable: true,
+  },
+  {
     id: 'coup',
     name: 'Coup',
     tagline: 'Bluffs, betrayals, and lightning-fast influence battles.',

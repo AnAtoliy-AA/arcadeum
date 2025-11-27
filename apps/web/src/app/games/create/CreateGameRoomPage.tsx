@@ -191,9 +191,15 @@ const Error = styled.div`
 
 const gamesCatalog = [
   {
-    id: "exploding_cats_v1",
+    id: "exploding-kittens",
     name: "Exploding Cats",
-    summary: "A strategic card game",
+    summary: "A strategic card game where you avoid exploding cats",
+    isPlayable: true,
+  },
+  {
+    id: "texas-holdem",
+    name: "Texas Hold'em",
+    summary: "Classic poker game with community cards",
     isPlayable: true,
   },
 ];

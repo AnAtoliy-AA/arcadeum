@@ -24,6 +24,17 @@ import {
   type ExplodingCatsPlayerState,
   type ExplodingCatsState,
 } from './exploding-cats/exploding-cats.state';
+import {
+  createInitialTexasHoldemState,
+  evaluateHand,
+  type Card,
+  type TexasHoldemLogEntry as TexasHoldemEngineLogEntry,
+  type TexasHoldemLogVisibility,
+  type TexasHoldemPlayerState,
+  type TexasHoldemState,
+  type PlayerAction,
+  type BettingRound,
+} from './texas-holdem/texas-holdem.state';
 import { GamesRealtimeService } from './games.realtime.service';
 import { User } from '../auth/schemas/user.schema';
 
@@ -171,6 +182,11 @@ const EXPLODING_CATS_ACTION_CARDS = [
   'shuffle',
   'see_the_future',
 ] as const;
+
+const TEXAS_HOLDEM_GAME_ID = 'texas-holdem';
+const TEXAS_HOLDEM_ENGINE_ID = 'texas_holdem_v1';
+const TEXAS_HOLDEM_SMALL_BLIND = 10;
+const TEXAS_HOLDEM_BIG_BLIND = 20;
 type ExplodingCatsActionCard = (typeof EXPLODING_CATS_ACTION_CARDS)[number];
 const EXPLODING_CATS_CAT_CARDS = [
   'tacocat',
@@ -3105,5 +3121,601 @@ export class GamesService {
       createdAt,
       updatedAt,
     };
+  }
+
+  // ===========================
+  // Texas Hold'em Methods
+  // ===========================
+
+  async startTexasHoldemSession(
+    hostId: string,
+    roomId: string,
+    engineOverride?: string,
+    startingChips?: number,
+  ): Promise<{ room: GameRoomSummary; session: GameSessionSummary }> {
+    const normalizedHostId = hostId.trim();
+    if (!normalizedHostId) {
+      throw new BadRequestException('Host identifier is required.');
+    }
+
+    const normalizedRoomId = roomId.trim();
+    if (!normalizedRoomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    const room = await this.gameRoomModel.findById(normalizedRoomId).exec();
+    if (!room) {
+      throw new NotFoundException('Game room not found.');
+    }
+
+    if ((room.hostId ?? '').trim() !== normalizedHostId) {
+      throw new ForbiddenException('Only the host can start this game.');
+    }
+
+    if (room.status !== 'lobby') {
+      throw new BadRequestException(
+        'This room is no longer in the lobby phase.',
+      );
+    }
+
+    if (room.gameId !== TEXAS_HOLDEM_GAME_ID) {
+      throw new BadRequestException(
+        'Texas Hold\'em is not enabled for this room.',
+      );
+    }
+
+    const uniquePlayerIds = Array.from(
+      new Set(
+        (Array.isArray(room.playerIds) ? room.playerIds : [])
+          .map((playerId) => playerId.trim())
+          .filter((value) => value.length > 0),
+      ),
+    );
+
+    if (!uniquePlayerIds.includes(normalizedHostId)) {
+      uniquePlayerIds.unshift(normalizedHostId);
+    }
+
+    if (uniquePlayerIds.length < 2) {
+      throw new BadRequestException(
+        'At least two players are required to start.',
+      );
+    }
+
+    if (uniquePlayerIds.length > 10) {
+      throw new BadRequestException(
+        'Texas Hold\'em supports a maximum of 10 players.',
+      );
+    }
+
+    let texasHoldemState: TexasHoldemState;
+    try {
+      texasHoldemState = createInitialTexasHoldemState(
+        uniquePlayerIds,
+        startingChips ?? 1000,
+      );
+
+      // Post blinds
+      this.postBlinds(texasHoldemState);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Unable to start game.';
+      throw new BadRequestException(message);
+    }
+
+    const engineId = engineOverride?.trim?.() || TEXAS_HOLDEM_ENGINE_ID;
+
+    const session = await this.createSession({
+      roomId: normalizedRoomId,
+      gameId: room.gameId,
+      engine: engineId,
+      status: 'active',
+      state: {
+        engine: 'texas-holdem',
+        version: 1,
+        snapshot: texasHoldemState,
+        lastUpdatedAt: new Date().toISOString(),
+      },
+    });
+
+    room.playerIds = uniquePlayerIds;
+    room.status = 'in_progress';
+    const updatedRoom = await room.save();
+    const summary = await this.prepareRoomSummary(updatedRoom);
+
+    this.realtime.emitRoomUpdate(summary);
+    this.realtime.emitSessionSnapshot(normalizedRoomId, session);
+
+    return {
+      room: this.applyViewerContext(summary, updatedRoom, normalizedHostId),
+      session,
+    };
+  }
+
+  private postBlinds(snapshot: TexasHoldemState): void {
+    const { dealerIndex, playerOrder, players } = snapshot;
+
+    const smallBlindIdx = (dealerIndex + 1) % playerOrder.length;
+    const bigBlindIdx = (dealerIndex + 2) % playerOrder.length;
+
+    const smallBlindPlayer = players.find(
+      (p) => p.playerId === playerOrder[smallBlindIdx],
+    );
+    const bigBlindPlayer = players.find(
+      (p) => p.playerId === playerOrder[bigBlindIdx],
+    );
+
+    if (smallBlindPlayer) {
+      const sbAmount = Math.min(TEXAS_HOLDEM_SMALL_BLIND, smallBlindPlayer.chips);
+      smallBlindPlayer.chips -= sbAmount;
+      smallBlindPlayer.currentBet = sbAmount;
+      smallBlindPlayer.totalBet = sbAmount;
+      snapshot.pot += sbAmount;
+
+      snapshot.logs.push({
+        id: randomUUID(),
+        type: 'action',
+        message: `Posted small blind ($${sbAmount})`,
+        createdAt: new Date().toISOString(),
+        scope: 'all',
+        senderId: smallBlindPlayer.playerId,
+      });
+    }
+
+    if (bigBlindPlayer) {
+      const bbAmount = Math.min(TEXAS_HOLDEM_BIG_BLIND, bigBlindPlayer.chips);
+      bigBlindPlayer.chips -= bbAmount;
+      bigBlindPlayer.currentBet = bbAmount;
+      bigBlindPlayer.totalBet = bbAmount;
+      snapshot.pot += bbAmount;
+      snapshot.currentBet = bbAmount;
+
+      snapshot.logs.push({
+        id: randomUUID(),
+        type: 'action',
+        message: `Posted big blind ($${bbAmount})`,
+        createdAt: new Date().toISOString(),
+        scope: 'all',
+        senderId: bigBlindPlayer.playerId,
+      });
+    }
+  }
+
+  async texasHoldemPlayerAction(
+    userId: string,
+    roomId: string,
+    action: PlayerAction,
+    raiseAmount?: number,
+  ): Promise<GameSessionSummary> {
+    const normalizedUserId = userId.trim();
+    if (!normalizedUserId) {
+      throw new BadRequestException('User ID is required.');
+    }
+
+    const normalizedRoomId = roomId.trim();
+    if (!normalizedRoomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    const session = await this.gameSessionModel
+      .findOne({ roomId: normalizedRoomId })
+      .exec();
+
+    if (!session) {
+      throw new NotFoundException('Game session not found.');
+    }
+
+    if (session.status !== 'active') {
+      throw new BadRequestException('Game session is not active.');
+    }
+
+    const stateData = session.state as any;
+    if (stateData?.engine !== 'texas-holdem') {
+      throw new BadRequestException('Not a Texas Hold\'em session.');
+    }
+
+    const snapshot: TexasHoldemState = stateData.snapshot;
+    if (!snapshot) {
+      throw new BadRequestException('Invalid session state.');
+    }
+
+    const currentPlayerId = snapshot.playerOrder[snapshot.currentTurnIndex];
+    if (currentPlayerId !== normalizedUserId) {
+      throw new BadRequestException('It is not your turn.');
+    }
+
+    const player = snapshot.players.find((p) => p.playerId === normalizedUserId);
+    if (!player) {
+      throw new NotFoundException('Player not found in session.');
+    }
+
+    if (player.folded) {
+      throw new BadRequestException('You have already folded.');
+    }
+
+    const nowIso = new Date().toISOString();
+
+    // Handle action
+    switch (action) {
+      case 'fold':
+        player.folded = true;
+        player.lastAction = 'fold';
+        snapshot.logs.push({
+          id: randomUUID(),
+          type: 'action',
+          message: 'Folded',
+          createdAt: nowIso,
+          scope: 'all',
+          senderId: normalizedUserId,
+        });
+        break;
+
+      case 'check':
+        if (player.currentBet < snapshot.currentBet) {
+          throw new BadRequestException('Cannot check, must call or raise.');
+        }
+        player.lastAction = 'check';
+        snapshot.logs.push({
+          id: randomUUID(),
+          type: 'action',
+          message: 'Checked',
+          createdAt: nowIso,
+          scope: 'all',
+          senderId: normalizedUserId,
+        });
+        break;
+
+      case 'call':
+        const callAmount = snapshot.currentBet - player.currentBet;
+        const actualCallAmount = Math.min(callAmount, player.chips);
+
+        player.chips -= actualCallAmount;
+        player.currentBet += actualCallAmount;
+        player.totalBet += actualCallAmount;
+        snapshot.pot += actualCallAmount;
+
+        if (player.chips === 0) {
+          player.allIn = true;
+          player.lastAction = 'all-in';
+          snapshot.logs.push({
+            id: randomUUID(),
+            type: 'action',
+            message: `All-in with $${actualCallAmount}`,
+            createdAt: nowIso,
+            scope: 'all',
+            senderId: normalizedUserId,
+          });
+        } else {
+          player.lastAction = 'call';
+          snapshot.logs.push({
+            id: randomUUID(),
+            type: 'action',
+            message: `Called $${actualCallAmount}`,
+            createdAt: nowIso,
+            scope: 'all',
+            senderId: normalizedUserId,
+          });
+        }
+        break;
+
+      case 'raise':
+        if (!raiseAmount || raiseAmount <= 0) {
+          throw new BadRequestException('Raise amount must be positive.');
+        }
+
+        const totalRaiseAmount = snapshot.currentBet - player.currentBet + raiseAmount;
+        const actualRaiseAmount = Math.min(totalRaiseAmount, player.chips);
+
+        player.chips -= actualRaiseAmount;
+        player.currentBet += actualRaiseAmount;
+        player.totalBet += actualRaiseAmount;
+        snapshot.pot += actualRaiseAmount;
+        snapshot.currentBet = player.currentBet;
+        snapshot.lastToRaise = snapshot.currentTurnIndex;
+
+        if (player.chips === 0) {
+          player.allIn = true;
+          player.lastAction = 'all-in';
+          snapshot.logs.push({
+            id: randomUUID(),
+            type: 'action',
+            message: `All-in raise to $${player.currentBet}`,
+            createdAt: nowIso,
+            scope: 'all',
+            senderId: normalizedUserId,
+          });
+        } else {
+          player.lastAction = 'raise';
+          snapshot.logs.push({
+            id: randomUUID(),
+            type: 'action',
+            message: `Raised to $${player.currentBet}`,
+            createdAt: nowIso,
+            scope: 'all',
+            senderId: normalizedUserId,
+          });
+        }
+        break;
+
+      default:
+        throw new BadRequestException('Invalid action.');
+    }
+
+    // Advance turn
+    this.advanceTexasHoldemTurn(snapshot);
+
+    // Check if betting round is complete
+    if (this.isTexasHoldemRoundComplete(snapshot)) {
+      this.advanceTexasHoldemRound(snapshot);
+    }
+
+    // Update session
+    const nextState = {
+      ...stateData,
+      snapshot,
+      lastUpdatedAt: nowIso,
+    };
+
+    const summary = await this.upsertSessionState({
+      roomId: normalizedRoomId,
+      state: nextState,
+    });
+
+    return summary;
+  }
+
+  private advanceTexasHoldemTurn(snapshot: TexasHoldemState): void {
+    const startIndex = snapshot.currentTurnIndex;
+    let nextIndex = (startIndex + 1) % snapshot.playerOrder.length;
+
+    // Find next active player
+    while (nextIndex !== startIndex) {
+      const nextPlayer = snapshot.players.find(
+        (p) => p.playerId === snapshot.playerOrder[nextIndex],
+      );
+
+      if (nextPlayer && !nextPlayer.folded && !nextPlayer.allIn) {
+        snapshot.currentTurnIndex = nextIndex;
+        return;
+      }
+
+      nextIndex = (nextIndex + 1) % snapshot.playerOrder.length;
+    }
+
+    // No active players found, mark round complete
+    snapshot.roundComplete = true;
+  }
+
+  private isTexasHoldemRoundComplete(snapshot: TexasHoldemState): boolean {
+    if (snapshot.roundComplete) {
+      return true;
+    }
+
+    const activePlayers = snapshot.players.filter(
+      (p) => !p.folded && !p.allIn,
+    );
+
+    // If only one player remains, round is complete
+    if (activePlayers.length <= 1) {
+      return true;
+    }
+
+    // Check if all active players have acted and matched the current bet
+    const allMatched = activePlayers.every(
+      (p) => p.currentBet === snapshot.currentBet && p.lastAction !== undefined,
+    );
+
+    return allMatched;
+  }
+
+  private advanceTexasHoldemRound(snapshot: TexasHoldemState): void {
+    snapshot.roundComplete = false;
+
+    // Reset current bets
+    snapshot.players.forEach((p) => {
+      p.currentBet = 0;
+      p.lastAction = undefined;
+    });
+    snapshot.currentBet = 0;
+    snapshot.lastToRaise = null;
+
+    const nowIso = new Date().toISOString();
+
+    // Advance betting round
+    switch (snapshot.bettingRound) {
+      case 'pre-flop':
+        // Deal flop (3 cards)
+        snapshot.deck.pop(); // Burn card
+        snapshot.communityCards.push(
+          snapshot.deck.pop()!,
+          snapshot.deck.pop()!,
+          snapshot.deck.pop()!,
+        );
+        snapshot.bettingRound = 'flop';
+        snapshot.logs.push({
+          id: randomUUID(),
+          type: 'system',
+          message: 'Flop dealt',
+          createdAt: nowIso,
+          scope: 'all',
+        });
+        break;
+
+      case 'flop':
+        // Deal turn (1 card)
+        snapshot.deck.pop(); // Burn card
+        snapshot.communityCards.push(snapshot.deck.pop()!);
+        snapshot.bettingRound = 'turn';
+        snapshot.logs.push({
+          id: randomUUID(),
+          type: 'system',
+          message: 'Turn dealt',
+          createdAt: nowIso,
+          scope: 'all',
+        });
+        break;
+
+      case 'turn':
+        // Deal river (1 card)
+        snapshot.deck.pop(); // Burn card
+        snapshot.communityCards.push(snapshot.deck.pop()!);
+        snapshot.bettingRound = 'river';
+        snapshot.logs.push({
+          id: randomUUID(),
+          type: 'system',
+          message: 'River dealt',
+          createdAt: nowIso,
+          scope: 'all',
+        });
+        break;
+
+      case 'river':
+        // Showdown
+        snapshot.bettingRound = 'showdown';
+        this.resolveTexasHoldemShowdown(snapshot);
+        return;
+
+      default:
+        break;
+    }
+
+    // Set next turn to first player after dealer
+    snapshot.currentTurnIndex = (snapshot.dealerIndex + 1) % snapshot.playerOrder.length;
+
+    // Find first active player
+    for (let i = 0; i < snapshot.playerOrder.length; i++) {
+      const idx = (snapshot.currentTurnIndex + i) % snapshot.playerOrder.length;
+      const player = snapshot.players.find(
+        (p) => p.playerId === snapshot.playerOrder[idx],
+      );
+
+      if (player && !player.folded && !player.allIn) {
+        snapshot.currentTurnIndex = idx;
+        break;
+      }
+    }
+  }
+
+  private resolveTexasHoldemShowdown(snapshot: TexasHoldemState): void {
+    const activePlayers = snapshot.players.filter((p) => !p.folded);
+
+    if (activePlayers.length === 0) {
+      return;
+    }
+
+    if (activePlayers.length === 1) {
+      // Only one player left, they win
+      const winner = activePlayers[0];
+      winner.chips += snapshot.pot;
+
+      snapshot.logs.push({
+        id: randomUUID(),
+        type: 'system',
+        message: `${winner.playerId} wins $${snapshot.pot}`,
+        createdAt: new Date().toISOString(),
+        scope: 'all',
+      });
+
+      snapshot.pot = 0;
+      return;
+    }
+
+    // Evaluate hands
+    const handEvaluations = activePlayers.map((player) => ({
+      player,
+      hand: evaluateHand(player.hand, snapshot.communityCards),
+    }));
+
+    // Sort by hand value (descending)
+    handEvaluations.sort((a, b) => b.hand.value - a.hand.value);
+
+    // Determine winner(s)
+    const bestValue = handEvaluations[0].hand.value;
+    const winners = handEvaluations.filter((h) => h.hand.value === bestValue);
+
+    const winAmount = Math.floor(snapshot.pot / winners.length);
+
+    winners.forEach((w) => {
+      w.player.chips += winAmount;
+
+      snapshot.logs.push({
+        id: randomUUID(),
+        type: 'system',
+        message: `${w.player.playerId} wins $${winAmount} with ${w.hand.description}`,
+        createdAt: new Date().toISOString(),
+        scope: 'all',
+      });
+    });
+
+    snapshot.pot = 0;
+  }
+
+  async postTexasHoldemHistoryNote(
+    userId: string,
+    roomId: string,
+    message: string,
+    scope: TexasHoldemLogVisibility = 'all',
+  ): Promise<GameSessionSummary> {
+    const normalizedUserId = userId.trim();
+    if (!normalizedUserId) {
+      throw new BadRequestException('User ID is required.');
+    }
+
+    const normalizedRoomId = roomId.trim();
+    if (!normalizedRoomId) {
+      throw new BadRequestException('Room ID is required.');
+    }
+
+    const normalizedMessage = message.trim();
+    if (!normalizedMessage) {
+      throw new BadRequestException('Message cannot be empty.');
+    }
+
+    const session = await this.gameSessionModel
+      .findOne({ roomId: normalizedRoomId })
+      .exec();
+
+    if (!session) {
+      throw new NotFoundException('Game session not found.');
+    }
+
+    const stateData = session.state as any;
+    if (stateData?.engine !== 'texas-holdem') {
+      throw new BadRequestException('Not a Texas Hold\'em session.');
+    }
+
+    const snapshot: TexasHoldemState = stateData.snapshot;
+    if (!snapshot) {
+      throw new BadRequestException('Invalid session state.');
+    }
+
+    const player = snapshot.players.find((p) => p.playerId === normalizedUserId);
+    if (!player) {
+      throw new NotFoundException('You are not a player in this session.');
+    }
+
+    const nowIso = new Date().toISOString();
+
+    snapshot.logs.push({
+      id: randomUUID(),
+      type: 'message',
+      message: normalizedMessage,
+      createdAt: nowIso,
+      scope,
+      senderId: normalizedUserId,
+    });
+
+    const nextState = {
+      ...stateData,
+      snapshot,
+      lastUpdatedAt: nowIso,
+    };
+
+    const summary = await this.upsertSessionState({
+      roomId: normalizedRoomId,
+      state: nextState,
+    });
+
+    return summary;
   }
 }

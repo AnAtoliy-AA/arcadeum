@@ -11,6 +11,7 @@ import { gameSocket, connectSockets } from "@/shared/lib/socket";
 import { startGameRoom, getGameRoomSession } from "@/shared/api/gamesApi";
 import type { GameRoomSummary, GameSessionSummary } from "@/shared/types/games";
 import { ExplodingCatsGame } from "./components/ExplodingCatsGame";
+import TexasHoldemGame from "./components/TexasHoldemGame";
 
 const Page = styled.main`
   min-height: 100vh;
@@ -186,6 +187,9 @@ export function GameRoomPage() {
     if (gameId === "exploding_cats_v1" || gameId === "exploding-kittens") {
       return "exploding_cats_v1";
     }
+    if (gameId === "texas_holdem_v1" || gameId === "texas-holdem") {
+      return "texas_holdem_v1";
+    }
     return null;
   }, [room, session]);
 
@@ -314,6 +318,20 @@ export function GameRoomPage() {
       setActionBusy(null);
     };
 
+    const handleTexasHoldemStarted = (data: {
+      room: GameRoomSummary;
+      session: GameSessionSummary;
+    }) => {
+      setStartBusy(false);
+      setRoom(data.room);
+      setSession(data.session);
+      setActionBusy(null);
+    };
+
+    const handleTexasHoldemAction = () => {
+      setActionBusy(null);
+    };
+
     gameSocket.on("connect", handleConnect);
     gameSocket.on("games.room.joined", handleJoined);
     gameSocket.on("games.room.watching", handleJoined);
@@ -322,6 +340,8 @@ export function GameRoomPage() {
     gameSocket.on("games.session.started", handleSessionStarted);
     gameSocket.on("games.session.see_the_future.played", handleSeeTheFuturePlayed);
     gameSocket.on("games.session.favor.played", handleFavorPlayed);
+    gameSocket.on("games.session.holdem_started", handleTexasHoldemStarted);
+    gameSocket.on("games.session.holdem_action.performed", handleTexasHoldemAction);
     gameSocket.on("exception", handleException);
 
     if (gameSocket.connected) {
@@ -337,6 +357,8 @@ export function GameRoomPage() {
       gameSocket.off("games.session.started", handleSessionStarted);
       gameSocket.off("games.session.see_the_future.played", handleSeeTheFuturePlayed);
       gameSocket.off("games.session.favor.played", handleFavorPlayed);
+      gameSocket.off("games.session.holdem_started", handleTexasHoldemStarted);
+      gameSocket.off("games.session.holdem_action.performed", handleTexasHoldemAction);
       gameSocket.off("exception", handleException);
     };
   }, [roomId, snapshot.accessToken, snapshot.userId]);
@@ -465,14 +487,50 @@ export function GameRoomPage() {
     (message: string, scope: "all" | "players") => {
       if (!room?.id || !snapshot.userId) return;
 
-      gameSocket.emit("games.session.history_note", {
+      const eventName =
+        gameIntegration === "texas_holdem_v1"
+          ? "games.session.holdem_history_note"
+          : "games.session.history_note";
+
+      gameSocket.emit(eventName, {
         roomId: room.id,
         userId: snapshot.userId,
         message,
         scope,
       });
     },
-    [room, snapshot.userId]
+    [room, snapshot.userId, gameIntegration]
+  );
+
+  // Texas Hold'em handlers
+  const handleStartTexasHoldem = useCallback(
+    (startingChips?: number) => {
+      if (!room?.id || !snapshot.userId || !isHost || startBusy) return;
+
+      setStartBusy(true);
+      gameSocket.emit("games.session.start_holdem", {
+        roomId: room.id,
+        userId: snapshot.userId,
+        engine: "texas_holdem_v1",
+        startingChips: startingChips || 1000,
+      });
+    },
+    [room, snapshot.userId, isHost, startBusy]
+  );
+
+  const handleTexasHoldemAction = useCallback(
+    (action: "fold" | "check" | "call" | "raise", raiseAmount?: number) => {
+      if (!room?.id || !snapshot.userId || actionBusy) return;
+
+      setActionBusy(action);
+      gameSocket.emit("games.session.holdem_action", {
+        roomId: room.id,
+        userId: snapshot.userId,
+        action,
+        raiseAmount,
+      });
+    },
+    [room, snapshot.userId, actionBusy]
   );
 
   if (loading) {
@@ -566,6 +624,18 @@ export function GameRoomPage() {
             onPlayFavor={handlePlayFavor}
             onPlaySeeTheFuture={handlePlaySeeTheFuture}
             onPlayCatCombo={handlePlayCatCombo}
+            onPostHistoryNote={handlePostHistoryNote}
+            actionBusy={actionBusy}
+            startBusy={startBusy}
+          />
+        ) : gameIntegration === "texas_holdem_v1" ? (
+          <TexasHoldemGame
+            room={room}
+            session={session}
+            currentUserId={snapshot.userId}
+            isHost={isHost}
+            onStart={handleStartTexasHoldem}
+            onAction={handleTexasHoldemAction}
             onPostHistoryNote={handlePostHistoryNote}
             actionBusy={actionBusy}
             startBusy={startBusy}

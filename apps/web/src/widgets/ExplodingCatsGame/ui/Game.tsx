@@ -2,9 +2,10 @@
 
 import { useMemo, useCallback, useState, useEffect, useRef } from "react";
 import styled from "styled-components";
+import { useSessionTokens } from "@/entities/session/model/useSessionTokens";
+import { useGameSession, useGameActions } from "@/features/games/hooks";
 import type {
   GameRoomSummary,
-  GameSessionSummary,
   ExplodingCatsSnapshot,
   ExplodingCatsCard,
   ExplodingCatsPlayerState,
@@ -278,7 +279,7 @@ const GameTitle = styled.h2`
   }
 `;
 
-const GameStatus = styled.div`
+const TurnStatus = styled.div`
   font-size: 0.875rem;
   color: ${({ theme }) => theme.text.secondary};
 `;
@@ -1602,24 +1603,10 @@ const ModalButton = styled(ActionButton)`
 `;
 
 interface ExplodingCatsGameProps {
+  roomId: string;
   room: GameRoomSummary;
-  session: GameSessionSummary | null;
-  currentUserId: string | null;
   isHost: boolean;
-  onStart: () => void;
-  onDraw: () => void;
-  onPlayCard: (card: "skip" | "attack" | "shuffle") => void;
-  onPlayFavor: (targetPlayerId: string, desiredCard: string) => void;
-  onPlaySeeTheFuture: () => void;
-  onPlayCatCombo: (input: {
-    cat: ExplodingCatsCatCard;
-    mode: "pair" | "trio";
-    targetPlayerId: string;
-    desiredCard?: ExplodingCatsCard;
-  }) => void;
-  onPostHistoryNote: (message: string, scope: "all" | "players") => void;
-  actionBusy: string | null;
-  startBusy: boolean;
+  initialSession?: unknown | null;
 }
 
 function getCardTranslationKey(card: ExplodingCatsCard): TranslationKey {
@@ -1658,22 +1645,25 @@ function getCardEmoji(card: ExplodingCatsCard): string {
   return emojis[card] || "🐱";
 }
 
-export function ExplodingCatsGame({
-  room,
-  session,
-  currentUserId,
-  isHost,
-  onStart,
-  onDraw,
-  onPlayCard,
-  onPlayFavor,
-  onPlaySeeTheFuture,
-  onPlayCatCombo,
-  onPostHistoryNote,
-  actionBusy,
-  startBusy,
-}: ExplodingCatsGameProps) {
+export default function ExplodingCatsGame({ roomId, room, isHost, initialSession }: ExplodingCatsGameProps) {
   const { t } = useTranslation();
+  const { snapshot: userSession } = useSessionTokens();
+
+  // Use hooks to get session and actions
+  const { session, actionBusy, setActionBusy, startBusy } = useGameSession({
+    roomId,
+    enabled: true,
+    initialSession,
+  });
+
+  const actions = useGameActions({
+    roomId,
+    userId: userSession.userId,
+    gameType: "exploding_cats_v1",
+    onActionComplete: () => setActionBusy(null),
+  });
+
+  const currentUserId = userSession.userId;
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [catComboModal, setCatComboModal] = useState<{
@@ -1829,18 +1819,18 @@ export function ExplodingCatsGame({
 
     if (selectedMode === "trio" && !selectedCard) return;
 
-    onPlayCatCombo({
-      cat: catComboModal.cat,
-      mode: selectedMode,
-      targetPlayerId: selectedTarget,
-      desiredCard: selectedMode === "trio" ? selectedCard! : undefined,
-    });
+    actions.playCatCombo(
+      catComboModal.cat,
+      selectedMode,
+      selectedTarget,
+      selectedMode === "trio" ? selectedCard! : undefined,
+    );
 
     setCatComboModal(null);
     setSelectedMode(null);
     setSelectedTarget(null);
     setSelectedCard(null);
-  }, [catComboModal, selectedMode, selectedTarget, selectedCard, onPlayCatCombo]);
+  }, [catComboModal, selectedMode, selectedTarget, selectedCard, actions]);
 
   const handleCloseCatComboModal = useCallback(() => {
     setCatComboModal(null);
@@ -1853,9 +1843,9 @@ export function ExplodingCatsGame({
     const trimmed = chatMessage.trim();
     if (!trimmed) return;
 
-    onPostHistoryNote(trimmed, chatScope);
+    actions.postHistoryNote(trimmed, chatScope);
     setChatMessage("");
-  }, [chatMessage, chatScope, onPostHistoryNote]);
+  }, [chatMessage, chatScope, actions]);
 
   const trimmedChatMessage = chatMessage.trim();
   const canSendChatMessage = trimmedChatMessage.length > 0;
@@ -1943,9 +1933,9 @@ export function ExplodingCatsGame({
         <GameHeader>
           <GameInfo>
             <GameTitle>Exploding Cats</GameTitle>
-            <GameStatus>
+            <TurnStatus>
               {room.playerCount} {t("games.table.lobby.playersInLobby") || "players in lobby"}
-            </GameStatus>
+            </TurnStatus>
           </GameInfo>
           <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
             <FullscreenButton
@@ -1963,8 +1953,8 @@ export function ExplodingCatsGame({
             >
               {isFullscreen ? "⤓" : "⤢"}
             </FullscreenButton>
-            {isHost && (
-              <StartButton onClick={onStart} disabled={startBusy || room.playerCount < 2}>
+            {isHost && room.status === "lobby" && (
+              <StartButton onClick={actions.startExplodingCats} disabled={startBusy || room.playerCount < 2}>
                 {startBusy
                   ? t("games.table.actions.starting") || "Starting..."
                   : t("games.table.actions.start") || "Start Game"}
@@ -1978,7 +1968,9 @@ export function ExplodingCatsGame({
             <strong>{t("games.table.lobby.waitingToStart") || "Waiting for game to start..."}</strong>
           </div>
           <div style={{ fontSize: "0.875rem" }}>
-            {room.playerCount < 2
+            {room.status !== "lobby"
+              ? "Game is loading..."
+              : room.playerCount < 2
               ? t("games.table.lobby.needTwoPlayers") || "Need at least 2 players to start"
               : isHost
               ? t("games.table.lobby.hostCanStart") || "Click 'Start Game' when ready"
@@ -1995,7 +1987,7 @@ export function ExplodingCatsGame({
       <GameHeader>
         <GameInfo>
           <GameTitle>Exploding Cats</GameTitle>
-          <GameStatus>
+          <TurnStatus>
             {currentTurnPlayer
               ? `${
                   currentTurnPlayer.playerId === currentUserId
@@ -2003,7 +1995,7 @@ export function ExplodingCatsGame({
                     : t("games.table.players.waitingFor") || "Waiting for player..."
                 }`
               : "Game in progress"}
-          </GameStatus>
+          </TurnStatus>
         </GameInfo>
         <HeaderActions>
           <ChatToggleButton
@@ -2122,7 +2114,7 @@ export function ExplodingCatsGame({
                   <InfoTitle>{t("games.table.actions.start") || "Actions"}</InfoTitle>
                   <ActionButtons>
                     <ActionButton
-                      onClick={onDraw}
+                      onClick={actions.drawCard}
                       disabled={!canAct || actionBusy === "draw"}
                     >
                       {actionBusy === "draw"
@@ -2132,7 +2124,7 @@ export function ExplodingCatsGame({
                     {currentPlayer.hand.includes("skip") && (
                       <ActionButton
                         variant="secondary"
-                        onClick={() => onPlayCard("skip")}
+                        onClick={() => actions.playActionCard("skip")}
                         disabled={!canAct || actionBusy === "skip"}
                       >
                         {actionBusy === "skip"
@@ -2143,7 +2135,7 @@ export function ExplodingCatsGame({
                     {currentPlayer.hand.includes("attack") && (
                       <ActionButton
                         variant="danger"
-                        onClick={() => onPlayCard("attack")}
+                        onClick={() => actions.playActionCard("attack")}
                         disabled={!canAct || actionBusy === "attack"}
                       >
                         {actionBusy === "attack"
@@ -2154,7 +2146,7 @@ export function ExplodingCatsGame({
                     {currentPlayer.hand.includes("shuffle") && (
                       <ActionButton
                         variant="secondary"
-                        onClick={() => onPlayCard("shuffle")}
+                        onClick={() => actions.playActionCard("shuffle")}
                         disabled={!canAct || actionBusy === "shuffle"}
                       >
                         {actionBusy === "shuffle"
@@ -2176,7 +2168,7 @@ export function ExplodingCatsGame({
                     {currentPlayer.hand.includes("see_the_future") && (
                       <ActionButton
                         variant="primary"
-                        onClick={() => onPlaySeeTheFuture()}
+                        onClick={actions.playSeeTheFuture}
                         disabled={!canAct || actionBusy === "see_the_future"}
                       >
                         {actionBusy === "see_the_future"
@@ -2509,7 +2501,7 @@ export function ExplodingCatsGame({
               <ModalButton
                 onClick={() => {
                   if (selectedTarget && selectedCard) {
-                    onPlayFavor(selectedTarget, selectedCard);
+                    actions.playFavor(selectedTarget, selectedCard);
                     setFavorModal(false);
                     setSelectedTarget(null);
                     setSelectedCard(null);

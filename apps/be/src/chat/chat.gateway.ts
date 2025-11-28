@@ -20,13 +20,8 @@ export class ChatGateway {
 
   @WebSocketServer() server: Server;
 
-  handleConnection(client: Socket) {
-    console.log(`Client connected: ${client.id}`);
-  }
-
-  handleDisconnect(client: Socket) {
-    console.log(`Client disconnected: ${client.id}`);
-  }
+  handleConnection() {}
+  handleDisconnect() {}
 
   @SubscribeMessage('sendMessage')
   async handleMessage(@MessageBody() messageDTO: MessageDTO): Promise<void> {

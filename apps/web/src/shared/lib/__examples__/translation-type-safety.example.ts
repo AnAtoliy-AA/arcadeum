@@ -94,7 +94,6 @@ function ExampleComponent() {
 // ✅ Type-safe helper function
 function translateMultiple(keys: TranslationKey[]): void {
   // All keys are guaranteed to exist in TranslationBundle
-  console.log("Valid keys:", keys);
 }
 
 translateMultiple([

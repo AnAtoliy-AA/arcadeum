@@ -1605,8 +1605,11 @@ const ModalButton = styled(ActionButton)`
 interface ExplodingCatsGameProps {
   roomId: string;
   room: GameRoomSummary;
+  session: unknown | null;
+  currentUserId: string | null;
   isHost: boolean;
-  initialSession?: unknown | null;
+  onPostHistoryNote?: (message: string, scope: "all" | "players") => void;
+  config?: unknown;
 }
 
 function getCardTranslationKey(card: ExplodingCatsCard): TranslationKey {
@@ -1645,9 +1648,8 @@ function getCardEmoji(card: ExplodingCatsCard): string {
   return emojis[card] || "🐱";
 }
 
-export default function ExplodingCatsGame({ roomId, room, isHost, initialSession }: ExplodingCatsGameProps) {
+export default function ExplodingCatsGame({ roomId, room, session: initialSession, currentUserId, isHost }: ExplodingCatsGameProps) {
   const { t } = useTranslation();
-  const { snapshot: userSession } = useSessionTokens();
 
   // Use hooks to get session and actions
   const { session, actionBusy, setActionBusy, startBusy } = useGameSession({
@@ -1658,12 +1660,10 @@ export default function ExplodingCatsGame({ roomId, room, isHost, initialSession
 
   const actions = useGameActions({
     roomId,
-    userId: userSession.userId,
+    userId: currentUserId,
     gameType: "exploding_cats_v1",
     onActionComplete: () => setActionBusy(null),
   });
-
-  const currentUserId = userSession.userId;
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [catComboModal, setCatComboModal] = useState<{
@@ -1725,8 +1725,8 @@ export default function ExplodingCatsGame({ roomId, room, isHost, initialSession
   }, [toggleFullscreen]);
 
   const snapshot: ExplodingCatsSnapshot | null = useMemo(() => {
-    if (!session?.state?.snapshot) return null;
-    return session.state.snapshot as ExplodingCatsSnapshot;
+    if (!session?.state) return null;
+    return session.state as unknown as ExplodingCatsSnapshot;
   }, [session]);
   const chatLogCount = snapshot?.logs?.length ?? 0;
 

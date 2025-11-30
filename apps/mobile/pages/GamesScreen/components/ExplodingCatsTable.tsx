@@ -431,7 +431,7 @@ export function ExplodingCatsTable({
   const gridCardHeight = gridCardDimensions.height;
 
   const snapshot = useMemo<ExplodingCatsSnapshot | null>(() => {
-    const raw = session?.state?.snapshot;
+    const raw = session?.state;
     if (!raw || typeof raw !== 'object') {
       return null;
     }

@@ -11,6 +11,9 @@ import {
 } from '../schemas/game-room.schema';
 
 export class HistoryRematchDto {
+  @IsString()
+  roomId: string;
+
   @IsOptional()
   @IsArray()
   @IsString({ each: true })

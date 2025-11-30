@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, SchemaTypes } from 'mongoose';
+import { Document, SchemaTypes, Types } from 'mongoose';
 
 export const GAME_SESSION_STATUS_VALUES = [
   'waiting',
@@ -10,6 +10,8 @@ export type GameSessionStatus = (typeof GAME_SESSION_STATUS_VALUES)[number];
 
 @Schema({ timestamps: true })
 export class GameSession extends Document {
+  declare _id: Types.ObjectId;
+
   @Prop({ required: true, unique: true })
   roomId: string;
 
@@ -30,8 +32,8 @@ export class GameSession extends Document {
   @Prop({ type: SchemaTypes.Mixed, required: true })
   state: Record<string, any>;
 
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export const GameSessionSchema = SchemaFactory.createForClass(GameSession);

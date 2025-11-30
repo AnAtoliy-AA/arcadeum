@@ -152,8 +152,12 @@ export class GamesGateway {
       throw new WsException('userId is required.');
     }
 
+    this.logger.log(`User ${userId} joining room ${roomId}`);
+
     const room = await this.gamesService.ensureParticipant(roomId, userId);
     const session = await this.gamesService.findSessionByRoom(room.id);
+
+    this.logger.log(`Room ${roomId}: status=${room.status}, session=${session ? session.id : 'null'}`);
 
     const channel = this.realtime.roomChannel(room.id);
     await client.join(channel);
@@ -164,6 +168,7 @@ export class GamesGateway {
     });
 
     if (session) {
+      this.logger.log(`Sending session snapshot to client for session ${session.id}`);
       this.realtime.emitSessionSnapshotToClient(client, room.id, session);
     }
   }
@@ -230,7 +235,13 @@ export class GamesGateway {
     const { roomId, userId } = extractRoomAndUser(payload);
 
     try {
-      await this.gamesService.drawExplodingCatsCard(userId, roomId);
+      // Get session from room
+      const session = await this.gamesService.findSessionByRoom(roomId);
+      if (!session) {
+        throw new WsException('No active session found for this room');
+      }
+
+      await this.gamesService.drawExplodingCatsCard(session.id, userId);
       client.emit('games.session.drawn', {
         roomId,
         userId,
@@ -263,7 +274,7 @@ export class GamesGateway {
     }
 
     try {
-      await this.gamesService.playExplodingCatsAction(userId, roomId, card);
+      await this.gamesService.playExplodingCatsActionByRoom(userId, roomId, card);
       client.emit('games.session.action.played', {
         roomId,
         userId,
@@ -322,7 +333,7 @@ export class GamesGateway {
     }
 
     try {
-      await this.gamesService.playExplodingCatsCatCombo(userId, roomId, cat, {
+      await this.gamesService.playExplodingCatsCatComboByRoom(userId, roomId, cat, {
         mode,
         targetPlayerId,
         desiredCard: desiredCardValue,
@@ -373,7 +384,7 @@ export class GamesGateway {
     }
 
     try {
-      await this.gamesService.playExplodingCatsFavor(
+      await this.gamesService.playExplodingCatsFavorByRoom(
         userId,
         roomId,
         targetPlayerId,
@@ -412,7 +423,7 @@ export class GamesGateway {
     const { roomId, userId } = extractRoomAndUser(payload);
 
     try {
-      const result = await this.gamesService.playExplodingCatsSeeTheFuture(
+      const result = await this.gamesService.playExplodingCatsSeeTheFutureByRoom(
         userId,
         roomId,
       );
@@ -488,7 +499,10 @@ export class GamesGateway {
     @MessageBody()
     payload: { roomId?: string; userId?: string; engine?: string },
   ): Promise<void> {
-    const { roomId, userId } = extractRoomAndUser(payload);
+    const userId = extractString(payload, 'userId');
+    const roomIdRaw =
+      typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
+    const roomId = roomIdRaw || undefined;
     const engine =
       typeof payload?.engine === 'string' ? payload.engine.trim() : undefined;
 
@@ -506,7 +520,7 @@ export class GamesGateway {
         error,
         {
           action: 'start Exploding Cats session',
-          roomId,
+          roomId: roomId || 'unknown',
           userId,
         },
         'Unable to start session.',
@@ -529,7 +543,10 @@ export class GamesGateway {
       startingChips?: number;
     },
   ): Promise<void> {
-    const { roomId, userId } = extractRoomAndUser(payload);
+    const userId = extractString(payload, 'userId');
+    const roomIdRaw =
+      typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
+    const roomId = roomIdRaw || undefined;
     const engine =
       typeof payload?.engine === 'string' ? payload.engine.trim() : undefined;
     const startingChips =
@@ -552,7 +569,7 @@ export class GamesGateway {
         error,
         {
           action: "start Texas Hold'em session",
-          roomId,
+          roomId: roomId || 'unknown',
           userId,
         },
         'Unable to start session.',

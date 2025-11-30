@@ -11,6 +11,13 @@ import {
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GamesGateway } from './games.gateway';
+import { GameEnginesModule } from './engines/engines.module';
+import { GameRoomsService } from './rooms/game-rooms.service';
+import { GameSessionsService } from './sessions/game-sessions.service';
+import { GameHistoryService } from './history/game-history.service';
+import { ExplodingCatsActionsService } from './actions/exploding-cats/exploding-cats-actions.service';
+import { TexasHoldemActionsService } from './actions/texas-holdem/texas-holdem-actions.service';
+import { GameUtilitiesService } from './utilities/game-utilities.service';
 
 @Module({
   imports: [
@@ -20,9 +27,25 @@ import { GamesGateway } from './games.gateway';
       { name: GameHistoryHidden.name, schema: GameHistoryHiddenSchema },
       { name: User.name, schema: UserSchema },
     ]),
+    GameEnginesModule, // Import the game engines module
   ],
   controllers: [GamesController],
-  providers: [GamesService, GamesRealtimeService, GamesGateway],
+  providers: [
+    // Core services
+    GameRoomsService,
+    GameSessionsService,
+    GameHistoryService,
+    GamesRealtimeService,
+    // Game-specific action handlers
+    ExplodingCatsActionsService,
+    TexasHoldemActionsService,
+    // Utilities
+    GameUtilitiesService,
+    // Facade service (main entry point)
+    GamesService,
+    // Gateway
+    GamesGateway,
+  ],
   exports: [GamesService],
 })
 export class GamesModule {}

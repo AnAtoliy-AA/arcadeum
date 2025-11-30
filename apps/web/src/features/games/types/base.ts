@@ -48,6 +48,8 @@ export interface GameMetadata extends GameConfig {
  * Standardized game props interface that all games should implement
  */
 export interface BaseGameProps {
+  /** Room ID */
+  roomId: string;
   /** Current game room */
   room: GameRoomSummary;
   /** Current game session (null if not started) */

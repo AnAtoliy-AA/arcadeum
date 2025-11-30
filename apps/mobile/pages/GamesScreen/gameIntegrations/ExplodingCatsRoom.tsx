@@ -166,7 +166,8 @@ export const ExplodingCatsRoom = forwardRef<
     if (!session?.state || typeof session.state !== 'object') {
       return false;
     }
-    return Boolean((session.state as Record<string, unknown>).snapshot);
+    // Backend returns state directly, not wrapped in snapshot
+    return Boolean(session.state);
   }, [session]);
 
   useEffect(() => {

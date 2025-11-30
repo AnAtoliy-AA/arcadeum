@@ -292,9 +292,8 @@ export default function TexasHoldemGame({ roomId, room, isHost, initialSession }
     );
   }
 
-  // Parse game state
-  const stateData = session.state as Record<string, unknown>;
-  const snapshot = stateData?.snapshot as TexasHoldemSnapshot | undefined;
+  // Parse game state - backend sends state directly, not nested in snapshot
+  const snapshot = session.state as unknown as TexasHoldemSnapshot | undefined;
 
   if (!snapshot) {
     return (

@@ -113,7 +113,7 @@ export const TexasHoldemRoom = forwardRef<
   const [controlsCollapsed, setControlsCollapsed] = useState(false);
 
   const hasSessionSnapshot = useMemo(
-    () => Boolean(session?.state?.snapshot),
+    () => Boolean(session?.state),
     [session],
   );
 

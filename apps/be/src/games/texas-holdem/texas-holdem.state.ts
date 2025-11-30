@@ -34,6 +34,7 @@ export type PlayerAction =
 export interface TexasHoldemPlayerState {
   playerId: string;
   chips: number;
+  stack: number; // Alias for chips for compatibility
   hand: Card[];
   currentBet: number;
   totalBet: number;
@@ -63,11 +64,17 @@ export interface TexasHoldemState {
   dealerIndex: number;
   currentTurnIndex: number;
   bettingRound: BettingRound;
+  round: BettingRound; // Alias for bettingRound for compatibility
   currentBet: number;
   players: TexasHoldemPlayerState[];
   logs: TexasHoldemLogEntry[];
   lastToRaise: number | null;
   roundComplete: boolean;
+  config?: {
+    initialStack?: number;
+    smallBlind?: number;
+    bigBlind?: number;
+  };
 }
 
 const SUITS: Suit[] = ['hearts', 'diamonds', 'clubs', 'spades'];
@@ -108,7 +115,13 @@ function shuffleInPlace<T>(items: T[]): void {
 
 export function createInitialTexasHoldemState(
   playerIds: string[],
-  startingChips: number = 1000,
+  configOrChips?:
+    | number
+    | {
+        initialStack?: number;
+        smallBlind?: number;
+        bigBlind?: number;
+      },
 ): TexasHoldemState {
   if (playerIds.length < 2) {
     throw new Error("Texas Hold'em requires at least two players.");
@@ -117,12 +130,24 @@ export function createInitialTexasHoldemState(
     throw new Error("Texas Hold'em supports a maximum of 10 players.");
   }
 
+  // Handle both old and new signatures
+  let startingChips: number;
+  let config: { initialStack?: number; smallBlind?: number; bigBlind?: number } | undefined;
+
+  if (typeof configOrChips === 'number') {
+    startingChips = configOrChips;
+  } else {
+    startingChips = configOrChips?.initialStack || 1000;
+    config = configOrChips;
+  }
+
   const deck = createDeck();
   shuffleInPlace(deck);
 
   const players: TexasHoldemPlayerState[] = playerIds.map((playerId) => ({
     playerId,
     chips: startingChips,
+    stack: startingChips, // Set both chips and stack
     hand: [],
     currentBet: 0,
     totalBet: 0,
@@ -136,6 +161,7 @@ export function createInitialTexasHoldemState(
   });
 
   const dealerIndex = 0;
+  const bettingRound: BettingRound = 'pre-flop';
 
   return {
     deck,
@@ -145,7 +171,8 @@ export function createInitialTexasHoldemState(
     playerOrder: [...playerIds],
     dealerIndex,
     currentTurnIndex: (dealerIndex + 3) % playerIds.length, // First to act after big blind
-    bettingRound: 'pre-flop',
+    bettingRound,
+    round: bettingRound, // Set both bettingRound and round
     currentBet: 0,
     players,
     logs: [
@@ -159,6 +186,7 @@ export function createInitialTexasHoldemState(
     ],
     lastToRaise: null,
     roundComplete: false,
+    config,
   };
 }
 

@@ -101,6 +101,7 @@ export class GameTestUtils {
     });
 
     return {
+      roomId: room.id,
       room,
       session,
       currentUserId: "player-1",
@@ -122,6 +123,7 @@ export class GameTestUtils {
     });
 
     return {
+      roomId: room.id,
       room,
       session: null,
       currentUserId: hostId,
@@ -143,6 +145,7 @@ export class GameTestUtils {
     });
 
     return {
+      roomId: room.id,
       room,
       session,
       currentUserId,
@@ -163,6 +166,7 @@ export class GameTestUtils {
     });
 
     return {
+      roomId: room.id,
       room,
       session,
       currentUserId: "player-1",
@@ -372,6 +376,7 @@ export const integrationTestHelpers = {
     const config = GameTestUtils.createMockConfig({ slug: gameSlug });
     
     const props = {
+      roomId: room.id,
       room,
       session,
       currentUserId: "test-user",

@@ -133,7 +133,7 @@ const TexasHoldemTable: React.FC<TexasHoldemTableProps> = ({
   const snapshot = useMemo(() => {
     if (!session?.state) return null;
     const stateData = session.state as any;
-    return stateData?.snapshot as TexasHoldemSnapshot | undefined;
+    return stateData as TexasHoldemSnapshot | undefined;
   }, [session]);
 
   const currentPlayer = useMemo(() => {

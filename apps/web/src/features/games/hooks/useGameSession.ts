@@ -28,6 +28,12 @@ export function useGameSession(options: UseGameSessionOptions): UseGameSessionRe
   const [startBusy, setStartBusy] = useState(false);
   const [actionBusy, setActionBusy] = useState<string | null>(null);
 
+  // Update session when initialSession prop changes
+  useEffect(() => {
+    if (initialSession) {
+      setSession(initialSession as GameSessionSummary);
+    }
+  }, [initialSession]);
 
   useEffect(() => {
     if (!enabled) return;

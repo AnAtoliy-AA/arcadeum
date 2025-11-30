@@ -15,12 +15,12 @@ import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { JwtOptionalAuthGuard } from '../auth/jwt/jwt-optional.guard';
 import { type AuthenticatedUser } from '../auth/jwt/jwt.strategy';
+import { GamesService } from './games.service';
 import {
   GAME_ROOM_PARTICIPATION_FILTERS,
-  GamesService,
   type GameRoomParticipationFilter,
   type StartExplodingCatsSessionResult,
-} from './games.service';
+} from './games.types';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { JoinGameRoomDto } from './dtos/join-game-room.dto';
 import { StartGameDto } from './dtos/start-game.dto';
@@ -140,9 +140,9 @@ export class GamesController {
   async getRoomSession(
     @Req() req: Request,
     @Param('roomId') roomId: string,
-  ): Promise<{ session: Awaited<ReturnType<GamesService['getRoomSession']>> }> {
+  ): Promise<{ session: Awaited<ReturnType<GamesService['getRoomSession']>>['session'] }> {
     const user = req.user as AuthenticatedUser | undefined | null;
-    const session = await this.gamesService.getRoomSession(
+    const { session } = await this.gamesService.getRoomSession(
       roomId,
       user?.userId,
     );
@@ -248,14 +248,14 @@ export class GamesController {
   async joinRoom(
     @Req() req: Request,
     @Body() dto: JoinGameRoomDto,
-  ): Promise<{ room: Awaited<ReturnType<GamesService['joinRoom']>> }> {
+  ): Promise<{ room: Awaited<ReturnType<GamesService['joinRoom']>>['room'] }> {
     const user = req.user as AuthenticatedUser | undefined;
     if (!user) {
       throw new UnauthorizedException();
     }
 
-    const room = await this.gamesService.joinRoom(user.userId, dto);
-    return { room };
+    const result = await this.gamesService.joinRoom(dto, user.userId);
+    return { room: result.room };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -287,7 +287,7 @@ export class GamesController {
       throw new UnauthorizedException();
     }
 
-    return this.gamesService.leaveRoom(user.userId, dto.roomId);
+    return this.gamesService.leaveRoom(dto, user.userId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -301,7 +301,7 @@ export class GamesController {
       throw new UnauthorizedException();
     }
 
-    const result = await this.gamesService.deleteRoom(user.userId, dto.roomId);
+    const result = await this.gamesService.deleteRoom(dto, user.userId);
     return result;
   }
 }

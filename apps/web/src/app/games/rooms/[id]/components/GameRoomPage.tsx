@@ -52,6 +52,7 @@ export default function GameRoomPage() {
     if (!roomId || !room) return null;
     // Ensure all required BaseGameProps are provided
     return {
+      roomId: room.id,
       room,
       session: initialSession as GameSessionSummary | null,
       currentUserId: snapshot.userId,

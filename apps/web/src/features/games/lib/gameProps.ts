@@ -20,6 +20,7 @@ export class GamePropsFactory {
     }
   ): BaseGameProps {
     return {
+      roomId: room.id,
       room,
       session,
       currentUserId,
@@ -94,6 +95,7 @@ export class GamePropsFactory {
     config: GameConfig
   ): BaseGameProps {
     return {
+      roomId: room.id,
       room,
       session: null,
       currentUserId,
@@ -113,6 +115,7 @@ export class GamePropsFactory {
   ): BaseGameProps {
     return {
       ...props,
+      roomId: props.room.id,
       session,
       isHost: props.room.hostId === props.currentUserId
     };
@@ -156,6 +159,7 @@ export class GamePropsFactory {
     }
   ): BaseGameProps {
     return {
+      roomId: room.id,
       room,
       session,
       currentUserId: null,
@@ -229,6 +233,7 @@ export class GamePropsFactory {
     };
 
     return {
+      roomId: practiceRoomData.id,
       room: practiceRoomData,
       session: null,
       currentUserId: "practice-user",

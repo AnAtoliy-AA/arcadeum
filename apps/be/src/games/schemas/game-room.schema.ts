@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export const GAME_ROOM_STATUS_VALUES = [
   'lobby',
@@ -11,8 +11,15 @@ export type GameRoomStatus = (typeof GAME_ROOM_STATUS_VALUES)[number];
 export const GAME_ROOM_VISIBILITY_VALUES = ['public', 'private'] as const;
 export type GameRoomVisibility = (typeof GAME_ROOM_VISIBILITY_VALUES)[number];
 
+export interface GameRoomParticipant {
+  userId: string;
+  joinedAt: Date;
+}
+
 @Schema({ timestamps: true })
 export class GameRoom extends Document {
+  declare _id: Types.ObjectId;
+
   @Prop({ required: true, trim: true })
   gameId: string;
 
@@ -24,6 +31,17 @@ export class GameRoom extends Document {
 
   @Prop({ type: [String], default: [] })
   playerIds: string[];
+
+  @Prop({
+    type: [
+      {
+        userId: { type: String, required: true },
+        joinedAt: { type: Date, required: true },
+      },
+    ],
+    default: [],
+  })
+  participants: GameRoomParticipant[];
 
   @Prop({
     required: true,
@@ -59,8 +77,8 @@ export class GameRoom extends Document {
   @Prop({ type: String, trim: true, index: true, default: null })
   rootRoomId?: string | null;
 
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export const GameRoomSchema = SchemaFactory.createForClass(GameRoom);

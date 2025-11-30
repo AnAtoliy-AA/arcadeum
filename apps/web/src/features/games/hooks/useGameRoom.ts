@@ -72,6 +72,16 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
       }
     };
 
+    const handleGameStarted = (payload: {
+      room?: GameRoomSummary;
+      session?: unknown;
+    }) => {
+      if (payload?.room && payload.room.id === roomId) {
+        setRoom(payload.room);
+        setSession(payload.session ?? null);
+      }
+    };
+
     const handleException = (payload: { message?: string }) => {
       const message = payload?.message || "An error occurred";
       setError(message);
@@ -95,10 +105,18 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
       setLoading(false);
     };
 
+    const handlePlayerJoined = (payload: { room?: GameRoomSummary; userId?: string }) => {
+      if (payload?.room && payload.room.id === roomId) {
+        setRoom(payload.room);
+      }
+    };
+
     // Register listeners
     gameSocket.on("games.room.joined", handleJoined);
     gameSocket.on("games.room.watching", handleJoined);
     gameSocket.on("games.room.update", handleRoomUpdate);
+    gameSocket.on("games.player.joined", handlePlayerJoined);
+    gameSocket.on("games.game.started", handleGameStarted);
     gameSocket.on("exception", handleException);
     gameSocket.on("connect", handleConnect);
     gameSocket.on("disconnect", handleDisconnect);
@@ -115,6 +133,8 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
       gameSocket.off("games.room.joined", handleJoined);
       gameSocket.off("games.room.watching", handleJoined);
       gameSocket.off("games.room.update", handleRoomUpdate);
+      gameSocket.off("games.player.joined", handlePlayerJoined);
+      gameSocket.off("games.game.started", handleGameStarted);
       gameSocket.off("exception", handleException);
       gameSocket.off("connect", handleConnect);
       gameSocket.off("disconnect", handleDisconnect);

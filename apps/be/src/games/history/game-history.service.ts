@@ -22,9 +22,10 @@ export interface GameHistorySummary {
   id: string;
   roomId: string;
   gameId: string;
-  gameName: string;
+  roomName: string;
   startedAt: string;
   completedAt: string | null;
+  lastActivityAt: string;
   status: 'completed' | 'abandoned';
   participants: HistoryParticipantSummary[];
   hostId: string;
@@ -115,9 +116,26 @@ export class GameHistoryService {
     roomId: string,
     userId: string,
   ): Promise<{
-    room: any;
-    sessions: any[];
-    participants: HistoryParticipantSummary[];
+    summary: {
+      roomId: string;
+      sessionId: string | null;
+      gameId: string;
+      roomName: string;
+      status: string;
+      startedAt: string |  null;
+      completedAt: string | null;
+      lastActivityAt: string;
+      host: HistoryParticipantSummary;
+      participants: HistoryParticipantSummary[];
+    };
+    logs: Array<{
+      id: string;
+      type: 'system' | 'action' | 'message';
+      message: string;
+      createdAt: string;
+      scope?: 'all' | 'players';
+      sender?: HistoryParticipantSummary;
+    }>;
   }> {
     const room = await this.gameRoomModel.findById(roomId).exec();
 
@@ -166,10 +184,56 @@ export class GameHistoryService {
       },
     );
 
-    return {
-      room,
-      sessions,
+    // Find the latest session for this room
+    const latestSession = sessions[0] || null;
+    
+    // Extract logs from the latest session
+    const logs: Array<{
+      id: string;
+      type: 'system' | 'action' | 'message';
+      message: string;
+      createdAt: string;
+      scope?: 'all' | 'players';
+      sender?: HistoryParticipantSummary;
+    }> = [];
+
+    if (latestSession && latestSession.state?.logs) {
+      const sessionLogs = latestSession.state.logs;
+      for (const log of sessionLogs) {
+        let sender: HistoryParticipantSummary | undefined;
+        if (log.senderId) {
+          sender = participants.find((p) => p.id === log.senderId);
+        }
+
+        logs.push({
+          id: log.id || Math.random().toString(36).substring(7),
+          type: log.type || 'system',
+          message: log.message || '',
+          createdAt: log.createdAt || new Date().toISOString(),
+          scope: log.scope || 'all',
+          sender,
+        });
+      }
+    }
+
+    // Build summary
+    const host = participants.find((p) => p.isHost) || participants[0];
+    const summary = {
+      roomId: room._id.toString(),
+      sessionId: latestSession ? latestSession._id.toString() : null,
+      gameId: room.gameId,
+      roomName: room.name,
+      status: room.status,
+      startedAt: latestSession ? latestSession.createdAt.toISOString() : null,
+      completedAt: latestSession ? latestSession.updatedAt.toISOString() : null,
+      lastActivityAt: room.updatedAt.toISOString(),
+      host,
       participants,
+    };
+
+    return {
+      summary,
+      logs,
     };
   }
 
@@ -334,24 +398,29 @@ export class GameHistoryService {
       const roomId = room._id.toString();
       const roomSessions = sessionsByRoom.get(roomId) || [];
 
-      for (const session of roomSessions) {
+      // Only show the latest session for each room to avoid duplicate entries
+      // The sessions are already sorted by createdAt desc in the query
+      const latestSession = roomSessions[0];
+
+      if (latestSession) {
         const participants = await this.getParticipantSummaries(room);
 
         history.push({
-          id: session._id.toString(),
+          id: latestSession._id.toString(),
           roomId,
           gameId: room.gameId,
-          gameName: room.name,
-          startedAt: session.createdAt.toISOString(),
-          completedAt: session.updatedAt.toISOString(),
-          status: session.status === 'completed' ? 'completed' : 'abandoned',
+          roomName: room.name,
+          startedAt: latestSession.createdAt.toISOString(),
+          completedAt: latestSession.updatedAt.toISOString(),
+          lastActivityAt: latestSession.updatedAt.toISOString(),
+          status: latestSession.status === 'completed' ? 'completed' : 'abandoned',
           participants,
           hostId: room.hostId,
           result:
-            session.status === 'completed'
+            latestSession.status === 'completed'
               ? {
-                  winners: this.extractWinners(session),
-                  finalState: session.state,
+                  winners: this.extractWinners(latestSession),
+                  finalState: latestSession.state,
                 }
               : undefined,
         });

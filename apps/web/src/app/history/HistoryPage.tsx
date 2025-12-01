@@ -89,10 +89,22 @@ export function HistoryPage() {
         const data = await response.json();
         const newEntries = data.entries || [];
 
+        // Deduplicate entries by roomId
+        const deduplicate = (items: HistorySummary[]) => {
+          const seen = new Set<string>();
+          return items.filter((item) => {
+            if (seen.has(item.roomId)) {
+              return false;
+            }
+            seen.add(item.roomId);
+            return true;
+          });
+        };
+
         if (append) {
-          setEntries((prev) => [...prev, ...newEntries]);
+          setEntries((prev) => deduplicate([...prev, ...newEntries]));
         } else {
-          setEntries(newEntries);
+          setEntries(deduplicate(newEntries));
         }
 
         setTotalCount(data.total || 0);
@@ -289,7 +301,10 @@ export function HistoryPage() {
     }
   }, [detail, snapshot.accessToken, t, handleCloseModal, fetchHistory]);
 
-  const formatParticipantName = useCallback((participant: HistoryParticipant) => {
+  const formatParticipantName = useCallback((participant: HistoryParticipant | undefined | null) => {
+    if (!participant) {
+      return "";
+    }
     return participant.username || participant.email?.split("@")[0] || participant.id;
   }, []);
 
@@ -338,6 +353,12 @@ export function HistoryPage() {
     await fetchHistory(currentPage + 1, true);
   }, [hasMore, loading, refreshing, loadingMore, currentPage, fetchHistory]);
 
+  const formatDate = useCallback((dateString: string | null | undefined) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return !isNaN(date.getTime()) ? date.toLocaleString() : "-";
+  }, []);
+
   return (
     <>
       <Page>
@@ -373,6 +394,7 @@ export function HistoryPage() {
               <option value="completed">{t("history.status.completed")}</option>
               <option value="waiting">{t("history.status.waiting")}</option>
               <option value="active">{t("history.status.active")}</option>
+              <option value="abandoned">{t("history.status.abandoned")}</option>
             </FilterSelect>
             {(searchQuery || statusFilter !== "all") && (
               <ClearFiltersButton onClick={() => { setSearchQuery(""); setStatusFilter("all"); }}>
@@ -406,20 +428,33 @@ export function HistoryPage() {
               {entries.map((entry) => (
                 <EntryCard key={entry.roomId} onClick={() => handleSelectEntry(entry)}>
                   <EntryHeader>
-                    <EntryGameName>{entry.roomName}</EntryGameName>
+                    <EntryTitleGroup>
+                      <EntryGameName>{t(`games.${entry.gameId}.name` as any) || entry.gameId}</EntryGameName>
+                      <EntryRoomName>{entry.roomName}</EntryRoomName>
+                    </EntryTitleGroup>
                     <EntryStatus>
                       {t(`history.status.${entry.status}`) || entry.status}
                     </EntryStatus>
                   </EntryHeader>
                   <EntryMeta>
-                    {entry.participants
-                      .filter((p) => p.id !== currentUserId)
-                      .map((p) => formatParticipantName(p))
-                      .join(", ") || formatParticipantName(entry.host)}
+                    {entry.participants?.length ? (
+                      entry.participants.map((p, index) => (
+                        <span key={p.id}>
+                          {formatParticipantName(p)}
+                          {p.isHost && " 👑"}
+                          {index < (entry.participants?.length || 0) - 1 && ", "}
+                        </span>
+                      ))
+                    ) : (
+                      <span>
+                        {formatParticipantName(entry.host)}
+                        {entry.host?.isHost && " 👑"}
+                      </span>
+                    )}
                   </EntryMeta>
                   <EntryFooter>
                     <EntryTimestamp>
-                      {new Date(entry.lastActivityAt).toLocaleString()}
+                      {formatDate(entry.lastActivityAt)}
                     </EntryTimestamp>
                     <EntryViewDetails>{t("history.actions.viewDetails")} →</EntryViewDetails>
                   </EntryFooter>
@@ -453,7 +488,7 @@ export function HistoryPage() {
               <ModalBody>
                 <DetailTimestamp>
                   {t("history.detail.lastActivity", {
-                    timestamp: new Date(detail.summary.lastActivityAt).toLocaleString(),
+                    timestamp: formatDate(detail.summary.lastActivityAt),
                   })}
                 </DetailTimestamp>
 
@@ -509,7 +544,7 @@ export function HistoryPage() {
                       <LogItem key={log.id}>
                         <LogHeader>
                           <LogTimestamp>
-                            {new Date(log.createdAt).toLocaleString()}
+                            {formatDate(log.createdAt)}
                           </LogTimestamp>
                           <LogScope>
                             {log.scope === "players"
@@ -786,12 +821,23 @@ const EntryHeader = styled.div`
   gap: 1rem;
 `;
 
+const EntryTitleGroup = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`;
+
 const EntryGameName = styled.h3`
   margin: 0;
   font-size: 1.125rem;
   font-weight: 600;
   color: ${({ theme }) => theme.text.primary};
-  flex: 1;
+`;
+
+const EntryRoomName = styled.div`
+  font-size: 0.875rem;
+  color: ${({ theme }) => theme.text.muted};
+  margin-top: 0.25rem;
 `;
 
 const EntryStatus = styled.span`

@@ -239,6 +239,11 @@ const enTranslations = {
     },
   },
   games: {
+    'exploding-kittens': { name: 'Exploding Cats' },
+    'exploding-cats': { name: 'Exploding Cats' },
+    'texas-holdem': { name: "Texas Hold'em" },
+    coup: { name: 'Coup' },
+    'pandemic-lite': { name: 'Pandemic: Rapid Response' },
     lounge: {
       activeTitle: "Game Rooms",
       emptyTitle: "No rooms found. Create one to get started!",
@@ -447,6 +452,7 @@ const enTranslations = {
       completed: "Completed",
       waiting: "Waiting",
       active: "Active",
+      abandoned: "Abandoned",
     },
     actions: {
       viewDetails: "View Details",

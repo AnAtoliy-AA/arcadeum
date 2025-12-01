@@ -23,6 +23,9 @@ const API_MESSAGES_EN = {
     unknownError: 'Something went wrong. Please try again.',
     validationError: 'Some fields are invalid. Check and try again.',
   },
+  common: {
+    retry: 'Retry',
+  },
   payments: {
     invalidAmount: 'Payment amount is invalid.',
     missingRedirects: 'Payment redirects are not configured.',
@@ -146,6 +149,9 @@ const API_MESSAGES_ES = {
     validationError:
       'Algunos campos no son válidos. Revísalos e inténtalo otra vez.',
   },
+  common: {
+    retry: 'Reintentar',
+  },
   payments: {
     invalidAmount: 'El monto del pago no es válido.',
     missingRedirects: 'Las redirecciones de pago no están configuradas.',
@@ -267,6 +273,9 @@ const API_MESSAGES_FR = {
   generic: {
     unknownError: 'Une erreur est survenue. Réessayez.',
     validationError: 'Certains champs sont invalides. Vérifiez et réessayez.',
+  },
+  common: {
+    retry: 'Réessayer',
   },
   payments: {
     invalidAmount: 'Le montant du paiement est invalide.',
@@ -636,6 +645,32 @@ export const translations = {
         footerText:
           'Drop requests in #feature-votes or submit your own custom deck idea. Community picks go live every sprint.',
       },
+      texasHoldem: {
+        waitingForStart: 'Waiting for game to start...',
+        start: "Start Texas Hold'em",
+        starting: 'Starting...',
+        waitingForHost: 'Waiting for host to start the game...',
+        loading: 'Loading game state...',
+        waitingForAction: 'Waiting for your action...',
+        waitingForOthers: 'Waiting for other players...',
+        gameOver: 'Game Over!',
+        folded: 'Folded',
+        allIn: 'All-In',
+        chips: 'Chips: ${{amount}}',
+        bet: 'Bet: ${{amount}}',
+        fold: 'Fold',
+        folding: 'Folding...',
+        check: 'Check',
+        checking: 'Checking...',
+        call: 'Call ${{amount}}',
+        calling: 'Calling...',
+        raise: 'Raise',
+        raising: 'Raising...',
+        raiseAmount: 'Raise amount',
+        pot: 'Pot: ${{amount}}',
+        round: 'Round: {{round}}',
+        currentBet: 'Current Bet: ${{amount}}',
+      },
       rooms: {
         status: {
           lobby: 'Lobby open',
@@ -787,6 +822,10 @@ export const translations = {
         heroTagline: 'Match lobby overview',
         controlsTitle: 'Room controls',
         controlsSubtitle: 'Quick actions for hosts and players.',
+        hostLabel: 'Host',
+        gameLabel: 'Game',
+        createdLabel: 'Created',
+        playersLabel: 'Players',
         meta: {
           host: 'Host',
           players: 'Players',
@@ -1320,6 +1359,32 @@ export const translations = {
         footerText:
           'Deja tus solicitudes en #feature-votes o envía tu propia idea de mazo. Las elecciones de la comunidad salen en cada sprint.',
       },
+      texasHoldem: {
+        waitingForStart: 'Esperando a que comience el juego...',
+        start: "Iniciar Texas Hold'em",
+        starting: 'Iniciando...',
+        waitingForHost: 'Esperando a que el anfitrión inicie el juego...',
+        loading: 'Cargando estado del juego...',
+        waitingForAction: 'Esperando tu acción...',
+        waitingForOthers: 'Esperando a otros jugadores...',
+        gameOver: '¡Juego terminado!',
+        folded: 'Retirado',
+        allIn: 'All-In',
+        chips: 'Fichas: ${{amount}}',
+        bet: 'Apuesta: ${{amount}}',
+        fold: 'Retirarse',
+        folding: 'Retirándose...',
+        check: 'Pasar',
+        checking: 'Pasando...',
+        call: 'Igualar ${{amount}}',
+        calling: 'Igualando...',
+        raise: 'Subir',
+        raising: 'Subiendo...',
+        raiseAmount: 'Cantidad a subir',
+        pot: 'Bote: ${{amount}}',
+        round: 'Ronda: {{round}}',
+        currentBet: 'Apuesta actual: ${{amount}}',
+      },
       rooms: {
         status: {
           lobby: 'Lobby abierto',
@@ -1476,6 +1541,10 @@ export const translations = {
         heroTagline: 'Resumen del lobby',
         controlsTitle: 'Controles de la sala',
         controlsSubtitle: 'Acciones rápidas para anfitriones y jugadores.',
+        hostLabel: 'Anfitrión',
+        gameLabel: 'Juego',
+        createdLabel: 'Creada',
+        playersLabel: 'Jugadores',
         meta: {
           host: 'Anfitrión',
           players: 'Jugadores',
@@ -2007,6 +2076,32 @@ export const translations = {
         footerText:
           'Déposez vos demandes dans #feature-votes ou proposez votre propre deck. Les choix de la communauté sortent à chaque sprint.',
       },
+      texasHoldem: {
+        waitingForStart: 'En attente du début de la partie...',
+        start: "Démarrer Texas Hold'em",
+        starting: 'Démarrage...',
+        waitingForHost: "En attente de l'hôte pour démarrer...",
+        loading: 'Chargement de l\'état du jeu...',
+        waitingForAction: 'En attente de votre action...',
+        waitingForOthers: 'En attente des autres joueurs...',
+        gameOver: 'Partie terminée !',
+        folded: 'Couché',
+        allIn: 'Tapis',
+        chips: 'Jetons : ${{amount}}',
+        bet: 'Mise : ${{amount}}',
+        fold: 'Se coucher',
+        folding: 'Se couche...',
+        check: 'Parole',
+        checking: 'Parole...',
+        call: 'Suivre ${{amount}}',
+        calling: 'Suit...',
+        raise: 'Relancer',
+        raising: 'Relance...',
+        raiseAmount: 'Montant de la relance',
+        pot: 'Pot : ${{amount}}',
+        round: 'Tour : {{round}}',
+        currentBet: 'Mise actuelle : ${{amount}}',
+      },
       rooms: {
         status: {
           lobby: 'Lobby ouvert',
@@ -2165,6 +2260,10 @@ export const translations = {
         heroTagline: 'Vue d’ensemble du lobby',
         controlsTitle: 'Contrôles de la salle',
         controlsSubtitle: 'Actions rapides pour hôtes et joueurs.',
+        hostLabel: 'Hôte',
+        gameLabel: 'Jeu',
+        createdLabel: 'Créée',
+        playersLabel: 'Joueurs',
         meta: {
           host: 'Hôte',
           players: 'Joueurs',

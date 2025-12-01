@@ -165,8 +165,8 @@ export const TexasHoldemRoom = forwardRef<
 
     if (!tokens.accessToken) {
       Alert.alert(
-        t('games.alerts.signInRequiredTitle' as any),
-        t('games.alerts.signInStartMatchMessage' as any),
+        t('games.alerts.signInRequiredTitle'),
+        t('games.alerts.signInStartMatchMessage'),
       );
       return;
     }
@@ -269,7 +269,7 @@ export const TexasHoldemRoom = forwardRef<
           <ThemedView style={styles.loadingContainer}>
             <ActivityIndicator size="large" />
             <ThemedText style={styles.loadingText}>
-              {t('games.room.loading') || 'Loading room...'}
+              {t('games.room.loading')}
             </ThemedText>
           </ThemedView>
         )}
@@ -282,7 +282,7 @@ export const TexasHoldemRoom = forwardRef<
               onPress={() => fetchRoom('refresh')}
             >
               <ThemedText style={styles.retryText}>
-                {t('common.retry') || 'Retry'}
+                {t('common.retry')}
               </ThemedText>
             </TouchableOpacity>
           </ThemedView>
@@ -307,25 +307,25 @@ export const TexasHoldemRoom = forwardRef<
               <View style={styles.metaGrid}>
                 <MetaItem
                   icon="person.crop.circle"
-                  label={t('games.room.hostLabel' as any) || 'Host'}
+                  label={t('games.room.hostLabel')}
                   value={formatRoomHost(room.hostId)}
                   styles={styles}
                 />
                 <MetaItem
                   icon="gamecontroller"
-                  label={t('games.room.gameLabel' as any) || 'Game'}
+                  label={t('games.room.gameLabel')}
                   value={formatRoomGame(gameId || room.gameId)}
                   styles={styles}
                 />
                 <MetaItem
                   icon="clock.fill"
-                  label={t('games.room.createdLabel' as any) || 'Created'}
+                  label={t('games.room.createdLabel')}
                   value={formatRoomTimestamp(room.createdAt)}
                   styles={styles}
                 />
                 <MetaItem
                   icon="person.3.fill"
-                  label={t('games.room.playersLabel' as any) || 'Players'}
+                  label={t('games.room.playersLabel')}
                   value={`${room.playerCount}${
                     room.maxPlayers ? `/${room.maxPlayers}` : ''
                   }`}

@@ -13,3 +13,7 @@ export type TranslationLeafPaths<T, Prefix extends string = ''> = {
     ? `${Prefix}${K}`
     : `${Prefix}${K}` | TranslationLeafPaths<T[K], `${Prefix}${K}.`>;
 }[Extract<keyof T, string>];
+
+export type ApiMessagesDictionary = {
+  [key: string]: object | string;
+};

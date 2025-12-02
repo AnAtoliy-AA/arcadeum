@@ -1,0 +1,336 @@
+// Exploding Cats game-specific messages (table UI)
+export const explodingCatsMessages = {
+  en: {
+    headerTitle: 'Exploding Cats table',
+    sessionStatus: {
+      active: 'Active',
+      completed: 'Completed',
+      pending: 'Pending',
+      unknown: 'Status unknown'
+    },
+    messageCompleted: 'Session completed. Start a new match to play again.',
+    info: {
+      inDeck: 'in deck',
+      topDiscard: 'last discarded card',
+      empty: 'Empty',
+      none: 'None',
+      pendingSingular: 'draw pending',
+      pendingPlural: 'draws pending'
+    },
+    seats: {
+      cardsSingular: '{{count}} card',
+      cardsPlural: '{{count}} cards',
+      status: {
+        alive: 'Alive',
+        out: 'Out'
+      }
+    },
+    hand: {
+      title: 'Your cards',
+      cardLabel: 'Card',
+      viewRow: 'Row view',
+      viewGrid: 'Grid view',
+      sizeIncrease: 'Increase card size',
+      sizeDecrease: 'Decrease card size',
+      empty: 'No cards in hand',
+      statusAlive: 'Alive',
+      statusOut: 'Out',
+      eliminatedNote: 'You blew up this round. Hang tight for the next match.'
+    },
+    placeholder: {
+      waiting: 'Waiting for the host to start the interactive tabletop.',
+      hostSuffix: 'Fire it up when everyone is ready.'
+    },
+    actions: {
+      start: 'Start match',
+      draw: 'Draw card',
+      playSkip: 'Play Skip',
+      playAttack: 'Play Attack',
+      playCatCombo: 'Play Cat Combo'
+    },
+    logs: {
+      title: 'History',
+      empty: 'No history yet.',
+      composerPlaceholder: 'Share a quick note with the table...',
+      send: 'Send',
+      checkboxLabelPlayers: 'Only players can see this',
+      checkboxLabelAll: 'Everyone can see this',
+      checkboxHint: 'Tap to change audience',
+      playersOnlyTag: 'Players',
+      you: 'You',
+      unknownSender: 'Unknown player'
+    },
+    cards: {
+      explodingCat: 'Exploding Cat',
+      defuse: 'Defuse',
+      attack: 'Attack',
+      skip: 'Skip',
+      favor: 'Favor',
+      shuffle: 'Shuffle',
+      seeTheFuture: 'See the Future',
+      tacocat: 'Tacocat',
+      hairyPotatoCat: 'Hairy Potato Cat',
+      rainbowRalphingCat: 'Rainbow-Ralphing Cat',
+      cattermelon: 'Cattermelon',
+      beardedCat: 'Bearded Cat',
+      generic: 'Cat'
+    },
+    cardDescriptions: {
+      explodingCat: "Draw it without a Defuse and boom—you're out of the round.",
+      defuse: 'Cancels an Exploding Cat and lets you tuck it back into the deck.',
+      attack: 'End your turn and make the next player draw two cards.',
+      skip: 'Finish your turn immediately without drawing.',
+      favor: 'Force another player to give you a card of their choice.',
+      shuffle: 'Shuffle the draw pile to randomize upcoming cards.',
+      seeTheFuture: 'Peek at the top three cards of the deck.',
+      tacocat: 'Play two or three copies to steal a card from an opponent.',
+      hairyPotatoCat: 'Pairs or trios yank a random or named card.',
+      rainbowRalphingCat: 'Combo copies to snatch cards from another player.',
+      cattermelon: 'Collect duplicates to swipe cards and set up combos.',
+      beardedCat: 'Pairs or trios swipe cards straight from rivals.',
+      generic: 'Cat cards need pairs or trios to trigger their steal effects.'
+    },
+    catCombo: {
+      title: 'Play a combo with {{card}}',
+      description: 'Pick a combo type, choose who to target, and confirm the effect.',
+      modePair: 'Pair (2 cards)',
+      modeTrio: 'Trio (3 cards)',
+      targetLabel: 'Select a target player',
+      noTargets: 'No eligible targets right now.',
+      desiredCardLabel: 'Request a specific card',
+      optionPair: 'Pair ready',
+      optionTrio: 'Trio ready',
+      optionPairOrTrio: 'Pair or trio ready',
+      cancel: 'Cancel',
+      confirm: 'Play combo'
+    }
+  },
+  es: {
+    headerTitle: 'Mesa de Exploding Cats',
+    sessionStatus: {
+      active: 'Activa',
+      completed: 'Completada',
+      pending: 'Pendiente',
+      unknown: 'Estado desconocido',
+    },
+    messageCompleted: 'Partida terminada. Inicia una nueva para volver a jugar.',
+    info: {
+      inDeck: 'en el mazo',
+      topDiscard: 'última carta descartada',
+      empty: 'Vacío',
+      none: 'Ninguno',
+      pendingSingular: 'robo pendiente',
+      pendingPlural: 'robos pendientes',
+    },
+    seats: {
+      cardsSingular: '{{count}} carta',
+      cardsPlural: '{{count}} cartas',
+      status: {
+        alive: 'Activo',
+        out: 'Fuera',
+      },
+    },
+    hand: {
+      title: 'Tus cartas',
+      cardLabel: 'Carta',
+      viewRow: 'Vista en fila',
+      viewGrid: 'Vista en cuadrícula',
+      sizeIncrease: 'Aumentar tamaño de las cartas',
+      sizeDecrease: 'Reducir tamaño de las cartas',
+      empty: 'No tienes cartas',
+      statusAlive: 'Activo',
+      statusOut: 'Fuera',
+      eliminatedNote: 'Explotaste esta ronda. Espera la siguiente partida.',
+    },
+    placeholder: {
+      waiting: 'Esperando a que el anfitrión inicie la mesa interactiva.',
+      hostSuffix: 'Iníciala cuando todos estén listos.',
+    },
+    actions: {
+      start: 'Iniciar partida',
+      draw: 'Robar carta',
+      playSkip: 'Jugar Saltar',
+      playAttack: 'Jugar Ataque',
+      playCatCombo: 'Jugar combo de gatos',
+    },
+    logs: {
+      title: 'Historial',
+      empty: 'Sin historial todavía.',
+      composerPlaceholder: 'Comparte una nota rápida con la mesa...',
+      send: 'Enviar',
+      checkboxLabelPlayers: 'Solo los jugadores pueden verlo',
+      checkboxLabelAll: 'Todos pueden verlo',
+      checkboxHint: 'Toca para cambiar la audiencia',
+      playersOnlyTag: 'Jugadores',
+      you: 'Tú',
+      unknownSender: 'Jugador desconocido',
+    },
+    cards: {
+      explodingCat: 'Gato explosivo',
+      defuse: 'Desactivar',
+      attack: 'Ataque',
+      skip: 'Saltar',
+      favor: 'Favor',
+      shuffle: 'Mezclar',
+      seeTheFuture: 'Ver el futuro',
+      tacocat: 'Tacogato',
+      hairyPotatoCat: 'Gato patata peluda',
+      rainbowRalphingCat: 'Gato arcoíris vomitador',
+      cattermelon: 'Gatomelón',
+      beardedCat: 'Gato barbudo',
+      generic: 'Gato',
+    },
+    cardDescriptions: {
+      explodingCat:
+        'Si la robas sin un Defuse, boom: quedas fuera de la ronda.',
+      defuse:
+        'Anula un Gato explosivo y te deja esconderlo de nuevo en el mazo.',
+      attack:
+        'Termina tu turno y obliga al siguiente jugador a robar dos cartas.',
+      skip: 'Termina tu turno al instante sin robar carta.',
+      favor: 'Obliga a otro jugador a darte una carta de su elección.',
+      shuffle: 'Mezcla el mazo para aleatorizar las próximas cartas.',
+      seeTheFuture: 'Mira las tres cartas superiores del mazo.',
+      tacocat: 'Juega dos o tres copias para quitar cartas a un rival.',
+      hairyPotatoCat:
+        'Con pareja o trío robas una carta aleatoria o nombrada.',
+      rainbowRalphingCat:
+        'Combina copias para arrebatar cartas a otro jugador.',
+      cattermelon: 'Reúne duplicados para robar cartas y preparar combos.',
+      beardedCat:
+        'Quítales cartas a tus rivales cuando lo juegas en pareja o trío.',
+      generic:
+        'Las cartas de gato solo se activan en parejas o tríos para robar.',
+    },
+    catCombo: {
+      title: 'Jugar combo de {{card}}',
+      description:
+        'Elige el tipo de combo, selecciona un objetivo y confirma el efecto.',
+      modePair: 'Pareja (2 cartas)',
+      modeTrio: 'Trío (3 cartas)',
+      targetLabel: 'Selecciona un jugador objetivo',
+      noTargets: 'No hay jugadores disponibles para apuntar.',
+      desiredCardLabel: 'Elige la carta que quieres pedir',
+      optionPair: 'Pareja disponible',
+      optionTrio: 'Trío disponible',
+      optionPairOrTrio: 'Pareja o trío disponible',
+      cancel: 'Cancelar',
+      confirm: 'Confirmar combo',
+    },
+  },
+  fr: {
+    headerTitle: 'Table Exploding Cats',
+    sessionStatus: {
+      active: 'En cours',
+      completed: 'Terminée',
+      pending: 'En attente',
+      unknown: 'Statut inconnu',
+    },
+    messageCompleted: 'Partida terminada. Inicia una nueva para volver a jugar.',
+    info: {
+      inDeck: 'dans la pioche',
+      topDiscard: 'dernière carte défaussée',
+      empty: 'Vide',
+      none: 'Aucun',
+      pendingSingular: 'pioche en attente',
+      pendingPlural: 'pioches en attente',
+    },
+    seats: {
+      cardsSingular: '{{count}} carte',
+      cardsPlural: '{{count}} cartes',
+      status: {
+        alive: 'En jeu',
+        out: 'Éliminé',
+      },
+    },
+    hand: {
+      title: 'Vos cartes',
+      cardLabel: 'Carte',
+      viewRow: 'Vue en ligne',
+      viewGrid: 'Vue en grille',
+      sizeIncrease: 'Augmenter la taille des cartes',
+      sizeDecrease: 'Réduire la taille des cartes',
+      empty: 'Aucune carte en main',
+      statusAlive: 'En jeu',
+      statusOut: 'Éliminé',
+      eliminatedNote:
+        'Vous avez explosé cette manche. Patientez pour la prochaine partie.',
+    },
+    placeholder: {
+      waiting: "En attente du lancement de la table interactive par l'hôte.",
+      hostSuffix: 'Lancez-la quand tout le monde est prêt.',
+    },
+    actions: {
+      start: 'Lancer la partie',
+      draw: 'Piocher une carte',
+      playSkip: 'Jouer Passer',
+      playAttack: 'Jouer Attaque',
+      playCatCombo: 'Jouer un combo de chats',
+    },
+    logs: {
+      title: 'Historique',
+      empty: 'Aucun historique pour le moment.',
+      composerPlaceholder: 'Partagez une note rapide avec la table...',
+      send: 'Envoyer',
+      checkboxLabelPlayers: 'Seuls les joueurs peuvent voir ceci',
+      checkboxLabelAll: 'Tout le monde peut voir ceci',
+      checkboxHint: 'Touchez pour changer le public',
+      playersOnlyTag: 'Joueurs',
+      you: 'Vous',
+      unknownSender: 'Joueur inconnu',
+    },
+    cards: {
+      explodingCat: 'Chat explosif',
+      defuse: 'Désamorçage',
+      attack: 'Attaque',
+      skip: 'Passer',
+      favor: 'Faveur',
+      shuffle: 'Mélanger',
+      seeTheFuture: "Voir l'avenir",
+      tacocat: 'Tacochat',
+      hairyPotatoCat: 'Chat patate velu',
+      rainbowRalphingCat: 'Chat arc-en-ciel vomitif',
+      cattermelon: 'Melonchat',
+      beardedCat: 'Chat barbu',
+      generic: 'Chat',
+    },
+    cardDescriptions: {
+      explodingCat:
+        'Piochez-la sans Defuse et boum : vous quittez la manche.',
+      defuse:
+        'Annule un Chat explosif et permet de le replacer dans la pioche.',
+      attack:
+        'Terminez votre tour et forcez le joueur suivant à piocher deux cartes.',
+      skip: 'Terminez immédiatement votre tour sans piocher.',
+      favor: 'Forcez un autre joueur à vous donner une carte de son choix.',
+      shuffle: 'Mélangez la pioche pour randomiser les prochaines cartes.',
+      seeTheFuture: 'Regardez les trois premières cartes de la pioche.',
+      tacocat:
+        'Jouez-en deux ou trois pour voler une carte à un adversaire.',
+      hairyPotatoCat:
+        'En paire ou trio, vole une carte aléatoire ou nommée.',
+      rainbowRalphingCat:
+        'Combinez plusieurs copies pour subtiliser des cartes.',
+      cattermelon:
+        'Rassemblez des doublons pour voler des cartes et préparer vos combos.',
+      beardedCat: "Vol garanti lorsqu'il est joué en paire ou en trio.",
+      generic:
+        "Les cartes chat s'activent en paire ou trio pour voler des cartes.",
+    },
+    catCombo: {
+      title: 'Jouer un combo avec {{card}}',
+      description:
+        "Choisis un type de combo, désigne une cible et confirme l'action.",
+      modePair: 'Paire (2 cartes)',
+      modeTrio: 'Trio (3 cartes)',
+      targetLabel: 'Choisir un joueur à cibler',
+      noTargets: 'Aucun joueur cible disponible.',
+      desiredCardLabel: 'Demander une carte précise',
+      optionPair: 'Paire disponible',
+      optionTrio: 'Trio disponible',
+      optionPairOrTrio: 'Paire ou trio disponibles',
+      cancel: 'Annuler',
+      confirm: 'Valider le combo',
+    },
+  },
+};

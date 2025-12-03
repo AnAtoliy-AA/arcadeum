@@ -155,7 +155,7 @@ export function InviteCodeDialog({
 }
 
 function createStyles(palette: Palette) {
-  const isLight = palette.background === '#fff';
+  const isLight = palette.isLight;
   const overlayBackground = 'rgba(0, 0, 0, 0.55)';
   const cardBackground = isLight ? '#F6F8FC' : '#1F2228';
   const borderColor = isLight ? '#D8DFEA' : '#33373D';

@@ -59,6 +59,7 @@ type GameRoomPalette = {
 };
 
 export type ThemePalette = {
+  isLight: boolean;
   text: string;
   background: string;
   tint: string;
@@ -78,6 +79,7 @@ export type ThemePalette = {
 
 export const Colors: Record<'light' | 'dark' | 'neonLight' | 'neonDark', ThemePalette> = {
   light: {
+    isLight: true,
     text: '#11181C',
     background: '#fff',
     tint: tintColorLight,
@@ -141,6 +143,7 @@ export const Colors: Record<'light' | 'dark' | 'neonLight' | 'neonDark', ThemePa
     },
   },
   dark: {
+    isLight: false,
     text: '#ECEDEE',
     background: '#151718',
     tint: tintColorDark,
@@ -204,6 +207,7 @@ export const Colors: Record<'light' | 'dark' | 'neonLight' | 'neonDark', ThemePa
     },
   },
   neonLight: {
+    isLight: false,
     text: NeonTheme.light.textPrimary,
     background: NeonTheme.light.background,
     tint: NeonTheme.light.accentPrimary,
@@ -221,6 +225,7 @@ export const Colors: Record<'light' | 'dark' | 'neonLight' | 'neonDark', ThemePa
     gameRoom: NeonTheme.light.gameRoom,
   },
   neonDark: {
+    isLight: false,
     text: NeonTheme.dark.textPrimary,
     background: NeonTheme.dark.background,
     tint: NeonTheme.dark.accentPrimary,

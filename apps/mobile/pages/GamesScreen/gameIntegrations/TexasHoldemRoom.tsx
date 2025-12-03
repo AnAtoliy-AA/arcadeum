@@ -361,7 +361,7 @@ TexasHoldemRoom.displayName = 'TexasHoldemRoom';
 export type TexasHoldemRoomStyles = ReturnType<typeof createStyles>;
 
 function createStyles(palette: Palette) {
-  const isLight = palette.background === '#fff';
+  const isLight = palette.isLight;
   const gameRoom = palette.gameRoom || {};
   const surfaceShadow = gameRoom.surfaceShadow || '#000';
   const topBarSurface = gameRoom.topBarSurface || palette.cardBackground;

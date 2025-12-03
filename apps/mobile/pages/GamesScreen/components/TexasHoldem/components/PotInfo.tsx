@@ -32,8 +32,8 @@ const PotInfo: React.FC<PotInfoProps> = ({ pot, bettingRound, currentBet }) => {
 };
 
 function createStyles(palette: Palette) {
-  const isLight = palette.background === '#fff';
-  
+  const isLight = palette.isLight;
+
   return StyleSheet.create({
     potContainer: {
       backgroundColor: isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)',

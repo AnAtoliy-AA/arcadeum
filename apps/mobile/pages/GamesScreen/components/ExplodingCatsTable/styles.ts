@@ -4,7 +4,7 @@ import { platformShadow } from '@/lib/platformShadow';
 import { TABLE_DIAMETER, PLAYER_SEAT_SIZE } from './constants';
 
 export function createStyles(palette: Palette) {
-  const isLight = palette.background === '#fff';
+  const isLight = palette.isLight;
   const tableTheme = palette.gameTable;
   const { shadow, destructiveBg, destructiveText, playerCurrent, playerIcon } =
     tableTheme;

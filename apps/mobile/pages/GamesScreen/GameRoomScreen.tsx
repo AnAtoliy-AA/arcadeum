@@ -637,7 +637,7 @@ function UnsupportedGameView({
 }
 
 function createFallbackStyles(palette: Palette) {
-  const isLight = palette.background === '#fff';
+  const isLight = palette.isLight;
 
   return StyleSheet.create({
     container: {

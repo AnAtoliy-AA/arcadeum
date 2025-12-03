@@ -65,8 +65,8 @@ const Player: React.FC<PlayerProps> = ({
 };
 
 function createStyles(palette: Palette) {
-  const isLight = palette.background === '#fff';
-  
+  const isLight = palette.isLight;
+
   return StyleSheet.create({
     playerCard: {
       backgroundColor: isLight ? '#4b5563' : palette.cardBackground,

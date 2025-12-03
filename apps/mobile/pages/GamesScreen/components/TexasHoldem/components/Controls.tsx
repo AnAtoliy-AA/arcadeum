@@ -107,8 +107,8 @@ const Controls: React.FC<ControlsProps> = ({
 };
 
 function createStyles(palette: Palette) {
-  const isLight = palette.background === '#fff';
-  
+  const isLight = palette.isLight;
+
   return StyleSheet.create({
     controls: {
       padding: 16,

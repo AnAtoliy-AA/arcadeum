@@ -828,7 +828,7 @@ function MetaChip({
 }
 
 function createStyles(palette: Palette) {
-  const isLight = palette.background === '#fff';
+  const isLight = palette.isLight;
   const cardBackground = isLight ? '#F6F8FC' : '#1F2228';
   const raisedBackground = isLight ? '#E9EEF6' : '#262A31';
   const borderColor = isLight ? '#D8DFEA' : '#33373D';

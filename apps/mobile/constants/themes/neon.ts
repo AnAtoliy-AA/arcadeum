@@ -136,6 +136,12 @@ export const NeonTheme = {
       titleGlow: '#57c3ff',
       titleText: '#f5f7ff',
     },
+    gameDetail: {
+      raisedBackground: 'rgba(28, 11, 66, 0.88)',
+      statusPrototype: 'rgba(87, 195, 255, 0.18)',
+      statusDesign: 'rgba(255, 106, 247, 0.18)',
+      statusRoadmap: 'rgba(30, 218, 163, 0.18)',
+    },
   },
   dark: {
     background: '#040017',
@@ -269,6 +275,12 @@ export const NeonTheme = {
       titleBorder: '#5fd6ff',
       titleGlow: '#57c3ff',
       titleText: '#f5f7ff',
+    },
+    gameDetail: {
+      raisedBackground: 'rgba(28, 11, 66, 0.9)',
+      statusPrototype: 'rgba(87, 195, 255, 0.22)',
+      statusDesign: 'rgba(255, 106, 247, 0.22)',
+      statusRoadmap: 'rgba(30, 218, 163, 0.22)',
     },
   },
 } as const;

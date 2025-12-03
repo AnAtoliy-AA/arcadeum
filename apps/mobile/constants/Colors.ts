@@ -58,6 +58,13 @@ type GameRoomPalette = {
   titleText: string;
 };
 
+type GameDetailPalette = {
+  raisedBackground: string;
+  statusPrototype: string;
+  statusDesign: string;
+  statusRoadmap: string;
+};
+
 export type ThemePalette = {
   isLight: boolean;
   text: string;
@@ -75,6 +82,7 @@ export type ThemePalette = {
   warning: string;
   gameTable: GameTablePalette;
   gameRoom: GameRoomPalette;
+  gameDetail: GameDetailPalette;
 };
 
 export const Colors: Record<'light' | 'dark' | 'neonLight' | 'neonDark', ThemePalette> = {
@@ -141,6 +149,12 @@ export const Colors: Record<'light' | 'dark' | 'neonLight' | 'neonDark', ThemePa
       titleGlow: '#60A5FA',
       titleText: '#1F2937',
     },
+    gameDetail: {
+      raisedBackground: '#E9EEF6',
+      statusPrototype: '#D8F1FF',
+      statusDesign: '#EDE3FF',
+      statusRoadmap: '#E0F6ED',
+    },
   },
   dark: {
     isLight: false,
@@ -205,6 +219,12 @@ export const Colors: Record<'light' | 'dark' | 'neonLight' | 'neonDark', ThemePa
       titleGlow: '#0EA5E9',
       titleText: '#F8FAFC',
     },
+    gameDetail: {
+      raisedBackground: '#262A31',
+      statusPrototype: '#1D3B48',
+      statusDesign: '#2A2542',
+      statusRoadmap: '#1F3A32',
+    },
   },
   neonLight: {
     isLight: false,
@@ -223,6 +243,7 @@ export const Colors: Record<'light' | 'dark' | 'neonLight' | 'neonDark', ThemePa
     warning: NeonTheme.light.status.warning,
     gameTable: NeonTheme.light.gameTable,
     gameRoom: NeonTheme.light.gameRoom,
+    gameDetail: NeonTheme.light.gameDetail,
   },
   neonDark: {
     isLight: false,
@@ -241,6 +262,7 @@ export const Colors: Record<'light' | 'dark' | 'neonLight' | 'neonDark', ThemePa
     warning: NeonTheme.dark.status.warning,
     gameTable: NeonTheme.dark.gameTable,
     gameRoom: NeonTheme.dark.gameRoom,
+    gameDetail: NeonTheme.dark.gameDetail,
   },
 };
 

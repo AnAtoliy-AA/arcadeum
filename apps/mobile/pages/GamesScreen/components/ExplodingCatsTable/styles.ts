@@ -640,13 +640,13 @@ export function createStyles(palette: Palette) {
       width: 24,
       height: 24,
       borderRadius: 12,
-      backgroundColor: 'rgba(0, 0, 0, 0.85)',
+      backgroundColor: `${decorPlay}f0`,
       alignItems: 'center',
       justifyContent: 'center',
       borderWidth: 1.5,
       borderColor: titleText,
       ...platformShadow({
-        color: '#000',
+        color: shadow,
         opacity: 0.6,
         radius: 4,
         offset: { width: 0, height: 2 },
@@ -654,7 +654,7 @@ export function createStyles(palette: Palette) {
       }),
     },
     handCardCountText: {
-      color: '#fff',
+      color: primaryTextColor,
       fontSize: 12,
       fontWeight: '700',
       lineHeight: 14,
@@ -1094,3 +1094,4 @@ export function createStyles(palette: Palette) {
     },
   });
 }
+export type ExplodingCatsTableStyles = ReturnType<typeof createStyles>;

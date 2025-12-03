@@ -8,6 +8,7 @@ import type {
   ExplodingCatsCard,
   ProcessedPlayer,
 } from '../types';
+import type { ExplodingCatsTableStyles } from '../styles';
 import { DESIRED_CARD_OPTIONS } from '../constants';
 
 interface CatComboModalProps {
@@ -21,7 +22,7 @@ interface CatComboModalProps {
   onDesiredCardChange: (card: ExplodingCatsCard) => void;
   onConfirm: () => void;
   translateCardName: (card: ExplodingCatsCard) => string;
-  styles: any;
+  styles: ExplodingCatsTableStyles;
 }
 
 export function CatComboModal({

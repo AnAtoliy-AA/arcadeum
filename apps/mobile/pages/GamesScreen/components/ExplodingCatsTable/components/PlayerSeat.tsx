@@ -3,6 +3,7 @@ import { Platform, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import type { ProcessedPlayer } from '../types';
+import type { ExplodingCatsTableStyles } from '../styles';
 
 const ACCESSIBILITY_DISABLED_PROPS: { accessible?: boolean } =
   Platform.OS === 'web' ? {} : { accessible: false };
@@ -11,7 +12,7 @@ interface PlayerSeatProps {
   player: ProcessedPlayer;
   position: { left: number; top: number };
   isCurrent: boolean;
-  styles: any;
+  styles: ExplodingCatsTableStyles;
 }
 
 export function PlayerSeat({ player, position, isCurrent, styles }: PlayerSeatProps) {

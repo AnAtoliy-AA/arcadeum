@@ -8,6 +8,16 @@ export type ActionEffectType =
   | 'defuse'
   | 'cat_combo';
 
+export type ActionBusyType =
+  | 'draw'
+  | 'skip'
+  | 'attack'
+  | 'shuffle'
+  | 'favor'
+  | 'see_the_future'
+  | 'cat_pair'
+  | 'cat_trio';
+
 export interface SessionPlayerProfile {
   id: string;
   username?: string;

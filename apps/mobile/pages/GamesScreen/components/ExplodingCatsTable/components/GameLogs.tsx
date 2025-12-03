@@ -10,6 +10,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTranslation } from '@/lib/i18n';
 import type { ExplodingCatsLogEntry, LogVisibility } from '../types';
+import type { ExplodingCatsTableStyles } from '../styles';
 
 interface GameLogsProps {
   logs: ExplodingCatsLogEntry[];
@@ -25,7 +26,7 @@ interface GameLogsProps {
   logsScrollRef: React.RefObject<ScrollView | null>;
   currentUserId: string | null;
   playerNameMap: Map<string, string>;
-  styles: any;
+  styles: ExplodingCatsTableStyles;
 }
 
 export function GameLogs({

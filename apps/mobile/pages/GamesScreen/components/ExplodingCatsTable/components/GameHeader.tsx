@@ -3,11 +3,12 @@ import { View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTranslation } from '@/lib/i18n';
+import type { ExplodingCatsTableStyles } from '../styles';
 
 interface GameHeaderProps {
   statusLabel: string;
   isCompleted: boolean;
-  styles: any;
+  styles: ExplodingCatsTableStyles;
 }
 
 export function GameHeader({ statusLabel, isCompleted, styles }: GameHeaderProps) {

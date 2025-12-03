@@ -9,6 +9,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTranslation } from '@/lib/i18n';
 import type { ExplodingCatsCard, ProcessedPlayer } from '../types';
+import type { ExplodingCatsTableStyles } from '../styles';
 import { HandCard } from './HandCard';
 
 interface HandViewProps {
@@ -30,7 +31,7 @@ interface HandViewProps {
   handScrollRef: React.RefObject<ScrollView | null>;
   gridContainerWidth: number;
   onGridContainerLayout: (width: number) => void;
-  styles: any;
+  styles: ExplodingCatsTableStyles;
 }
 
 export function HandView({

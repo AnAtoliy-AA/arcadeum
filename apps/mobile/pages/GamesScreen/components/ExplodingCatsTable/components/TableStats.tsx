@@ -3,13 +3,14 @@ import { Animated, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTranslation } from '@/lib/i18n';
+import type { ExplodingCatsTableStyles } from '../styles';
 
 interface TableStatsProps {
   deckCount: number;
   pendingDraws: number | string;
   pendingDrawsCaption: string;
   deckPulseScale: Animated.Value;
-  styles: any;
+  styles: ExplodingCatsTableStyles;
 }
 
 export function TableStats({

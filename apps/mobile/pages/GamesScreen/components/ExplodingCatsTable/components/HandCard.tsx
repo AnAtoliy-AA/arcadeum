@@ -5,6 +5,7 @@ import {
   ExplodingCatsCard as ExplodingCatsArtwork,
 } from '@/components/cards';
 import type { ExplodingCatsCard, ExplodingCatsCatCard } from '../types';
+import type { ExplodingCatsTableStyles } from '../styles';
 import { CARD_ART_SETTINGS, CAT_COMBO_CARDS } from '../constants';
 
 const AnimatedTouchableOpacity =
@@ -30,7 +31,7 @@ interface HandCardProps {
   translateCardName: (card: ExplodingCatsCard) => string;
   translateCardDescription: (card: ExplodingCatsCard) => string;
   onPress: () => void;
-  styles: any;
+  styles: ExplodingCatsTableStyles;
 }
 
 export function HandCard({

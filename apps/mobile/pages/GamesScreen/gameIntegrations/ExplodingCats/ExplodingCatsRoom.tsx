@@ -19,16 +19,16 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles } from '@/hooks/useThemedStyles';
-import { ExplodingCatsTable } from '../components/ExplodingCatsTable';
+import { ExplodingCatsTable } from '../../components/ExplodingCatsTable';
 import {
   formatRoomGame,
   formatRoomHost,
   formatRoomTimestamp,
   getRoomStatusLabel,
-} from '../roomUtils';
+} from '../../roomUtils';
 import { useTranslation } from '@/lib/i18n';
-import { ExplodingCatsRoomTopBar } from './components/ExplodingCatsRoomTopBar';
-import { ExplodingCatsRoomMetaItem as MetaItem } from './components/ExplodingCatsRoomMetaItem';
+import { ExplodingCatsRoomTopBar } from '../components/ExplodingCatsRoomTopBar';
+import { ExplodingCatsRoomMetaItem as MetaItem } from '../components/ExplodingCatsRoomMetaItem';
 import { HERO_GRADIENT_COORDS } from './ExplodingCatsRoom.constants';
 import { createStyles } from './ExplodingCatsRoom.styles';
 import { useGameActions } from './ExplodingCatsRoom.hooks';

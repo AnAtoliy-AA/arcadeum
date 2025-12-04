@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { gameSocket as socket } from '@/hooks/useSocket';
-import { startGameRoom, type GameRoomSummary, type GameSessionSummary } from '../api/gamesApi';
+import { startGameRoom, type GameRoomSummary, type GameSessionSummary } from '../../api/gamesApi';
 import type { SessionTokensSnapshot } from '@/stores/sessionTokens';
-import type { ExplodingCatsCatComboInput, LogVisibility } from '../components/ExplodingCatsTable';
+import type { ExplodingCatsCatComboInput, LogVisibility } from '../../components/ExplodingCatsTable';
 import type { ActionBusyType } from './ExplodingCatsRoom.types';
 import { useTranslation } from '@/lib/i18n';
 

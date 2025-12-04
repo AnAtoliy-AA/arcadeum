@@ -3,11 +3,11 @@ import React, { useCallback, useRef } from 'react';
 import {
   ExplodingCatsRoom,
   type ExplodingCatsRoomHandle,
-} from './gameIntegrations/ExplodingCatsRoom';
+} from './gameIntegrations/ExplodingCats/ExplodingCatsRoom';
 import {
   TexasHoldemRoom,
   type TexasHoldemRoomHandle,
-} from './gameIntegrations/TexasHoldemRoom';
+} from './gameIntegrations/TexasHoldem/TexasHoldemRoom';
 import { useGameRoom } from './hooks/useGameRoom';
 import { UnsupportedGameView } from './components/GameRoom/UnsupportedGameView';
 

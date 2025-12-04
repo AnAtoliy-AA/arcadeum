@@ -1,14 +1,14 @@
-import type { GameRoomSummary, GameSessionSummary } from '../api/gamesApi';
+import type { GameRoomSummary, GameSessionSummary } from '../../api/gamesApi';
 import type { SessionTokensSnapshot } from '@/stores/sessionTokens';
 
-export interface ExplodingCatsRoomHandle {
+export interface TexasHoldemRoomHandle {
   onSessionSnapshot: () => void;
   onSessionStarted: () => void;
-  onCatComboPlayed: () => void;
+  onHoldemActionPerformed: () => void;
   onException: () => void;
 }
 
-export interface ExplodingCatsRoomProps {
+export interface TexasHoldemRoomProps {
   room: GameRoomSummary | null;
   session: GameSessionSummary | null;
   fallbackName?: string;
@@ -31,12 +31,9 @@ export interface ExplodingCatsRoomProps {
 }
 
 export type ActionBusyType =
-  | 'draw'
-  | 'skip'
-  | 'attack'
-  | 'shuffle'
-  | 'favor'
-  | 'see_the_future'
-  | 'cat_pair'
-  | 'cat_trio'
+  | 'fold'
+  | 'check'
+  | 'call'
+  | 'raise'
+  | 'all-in'
   | null;

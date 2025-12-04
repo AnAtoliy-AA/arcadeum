@@ -5,8 +5,8 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTranslation } from '@/lib/i18n';
 import type { TranslationKey } from '@/lib/i18n/messages';
 import type { GameRoomSummary } from '../../api/gamesApi';
-import type { ExplodingCatsRoomStyles } from '../ExplodingCatsRoom';
-import type { TexasHoldemRoomStyles } from '../TexasHoldemRoom';
+import type { ExplodingCatsRoomStyles } from '../ExplodingCats/ExplodingCatsRoom';
+import type { TexasHoldemRoomStyles } from '../TexasHoldem/TexasHoldemRoom';
 
 type Props = {
   variant: 'lobby' | 'table';

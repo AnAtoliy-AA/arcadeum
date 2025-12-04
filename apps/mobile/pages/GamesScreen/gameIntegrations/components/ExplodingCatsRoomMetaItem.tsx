@@ -2,8 +2,8 @@ import React from 'react';
 import { View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import type { ExplodingCatsRoomStyles } from '../ExplodingCatsRoom';
-import type { TexasHoldemRoomStyles } from '../TexasHoldemRoom';
+import type { ExplodingCatsRoomStyles } from '../ExplodingCats/ExplodingCatsRoom';
+import type { TexasHoldemRoomStyles } from '../TexasHoldem/TexasHoldemRoom';
 
 type Props = {
   icon: Parameters<typeof IconSymbol>[0]['name'];

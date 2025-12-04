@@ -27,10 +27,10 @@ import {
 } from '../api/gamesApi';
 import {
   type ExplodingCatsRoomHandle,
-} from '../gameIntegrations/ExplodingCatsRoom';
+} from '../gameIntegrations/ExplodingCats/ExplodingCatsRoom';
 import {
   type TexasHoldemRoomHandle,
-} from '../gameIntegrations/TexasHoldemRoom';
+} from '../gameIntegrations/TexasHoldem/TexasHoldemRoom';
 
 type GameIntegrationId = 'exploding_cats_v1' | 'texas_holdem_v1';
 

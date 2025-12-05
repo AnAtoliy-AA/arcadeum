@@ -64,18 +64,18 @@ const GameArea = styled.div`
 `;
 
 export function GameContainer({
-  room,
-  session,
-  currentUserId,
-  isHost,
+  room: _room,
+  session: _session,
+  currentUserId: _currentUserId,
+  isHost: _isHost,
   children,
   roomId,
   className,
 }: GameContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [_isFullscreen, setIsFullscreen] = useState(false);
 
-  const handleFullscreenToggle = useCallback(async () => {
+  const _handleFullscreenToggle = useCallback(async () => {
     if (!containerRef.current) return;
     try {
       if (!document.fullscreenElement) {

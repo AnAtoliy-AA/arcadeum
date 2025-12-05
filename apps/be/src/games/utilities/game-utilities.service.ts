@@ -27,7 +27,9 @@ export class GameUtilitiesService {
   /**
    * Fetch user summaries for a list of user IDs
    */
-  async fetchUserSummaries(userIds: string[]): Promise<Map<string, UserSummary>> {
+  async fetchUserSummaries(
+    userIds: string[],
+  ): Promise<Map<string, UserSummary>> {
     const uniqueUserIds = Array.from(new Set(userIds));
 
     const users = await this.userModel

@@ -105,11 +105,7 @@ export class ExplodingCatsActionsService {
       userId,
     });
 
-    this.realtimeService.emitActionExecuted(
-      session,
-      'see_the_future',
-      userId,
-    );
+    this.realtimeService.emitActionExecuted(session, 'see_the_future', userId);
 
     return session;
   }

@@ -126,7 +126,9 @@ describe('GamesGateway', () => {
         userId: ' guest-2 ',
       };
 
-      gamesService.findSessionByRoom.mockResolvedValue({ id: 'session-1' } as any);
+      gamesService.findSessionByRoom.mockResolvedValue({
+        id: 'session-1',
+      } as any);
 
       gamesService.drawExplodingCatsCard.mockResolvedValue({
         id: 'session-1',
@@ -161,7 +163,9 @@ describe('GamesGateway', () => {
     });
 
     it('wraps draw errors in WsException', async () => {
-      gamesService.findSessionByRoom.mockResolvedValue({ id: 'session-1' } as any);
+      gamesService.findSessionByRoom.mockResolvedValue({
+        id: 'session-1',
+      } as any);
       gamesService.drawExplodingCatsCard.mockRejectedValue(
         new BadRequestException('Deck is empty.'),
       );
@@ -188,8 +192,6 @@ describe('GamesGateway', () => {
         userId: ' host-456 ',
         card: ' attack ',
       };
-
-
 
       gamesService.playExplodingCatsActionByRoom.mockResolvedValue({
         id: 'session-1',
@@ -261,8 +263,6 @@ describe('GamesGateway', () => {
         mode: ' pair ',
         targetPlayerId: ' guest-2 ',
       };
-
-
 
       gamesService.playExplodingCatsCatComboByRoom.mockResolvedValue({
         id: 'session-1',

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import { useSessionTokens } from "@/entities/session/model/useSessionTokens";
 import { resolveApiUrl } from "@/shared/lib/api-base";
-import { useTranslation } from "@/shared/lib/useTranslation";
+import { useTranslation, type TranslationKey } from "@/shared/lib/useTranslation";
 
 export function HistoryPage() {
   const router = useRouter();
@@ -24,7 +24,7 @@ export function HistoryPage() {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
+  const [_totalCount, setTotalCount] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
 
@@ -346,7 +346,7 @@ export function HistoryPage() {
     [participantReplacements]
   );
 
-  const loadMore = useCallback(async () => {
+  const _loadMore = useCallback(async () => {
     if (!hasMore || loading || refreshing || loadingMore) {
       return;
     }
@@ -429,7 +429,7 @@ export function HistoryPage() {
                 <EntryCard key={entry.roomId} onClick={() => handleSelectEntry(entry)}>
                   <EntryHeader>
                     <EntryTitleGroup>
-                      <EntryGameName>{t(`games.${entry.gameId}.name` as any) || entry.gameId}</EntryGameName>
+                      <EntryGameName>{t(`games.${entry.gameId}.name` as TranslationKey) || entry.gameId}</EntryGameName>
                       <EntryRoomName>{entry.roomName}</EntryRoomName>
                     </EntryTitleGroup>
                     <EntryStatus>
@@ -855,23 +855,6 @@ const EntryMeta = styled.div`
   flex-wrap: wrap;
 `;
 
-const EntryParticipantPill = styled.span<{ $isHost?: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.text.primary};
-  background: ${({ theme, $isHost }) =>
-    $isHost
-      ? `${theme.buttons.primary.gradientStart}22`
-      : theme.surfaces.card.border};
-  border: 1px solid
-    ${({ theme, $isHost }) =>
-      $isHost ? theme.buttons.primary.gradientStart : "transparent"};
-`;
-
 const EntryFooter = styled.div`
   display: flex;
   justify-content: space-between;
@@ -920,40 +903,6 @@ const Empty = styled.div`
   padding: 3rem;
   text-align: center;
   color: ${({ theme }) => theme.text.muted};
-`;
-
-const ResultsInfo = styled.div`
-  font-size: 0.875rem;
-  color: ${({ theme }) => theme.text.muted};
-  padding: 0.5rem 0;
-`;
-
-const LoadMoreContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  padding: 2rem 0;
-`;
-
-const LoadMoreButton = styled.button`
-  padding: 0.75rem 2rem;
-  border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.buttons.primary.gradientStart};
-  background: ${({ theme }) => theme.buttons.primary.gradientStart};
-  color: ${({ theme }) => theme.buttons.primary.text};
-  font-size: 0.9375rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-1px);
-    opacity: 0.9;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
 `;
 
 const ErrorContainer = styled.div`

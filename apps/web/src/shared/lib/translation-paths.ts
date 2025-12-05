@@ -41,7 +41,7 @@
  * type R = Required<T>; // { a: string; b: number }
  * ```
  */
-type Required<T> = {
+type _Required<T> = {
   [K in keyof T]-?: T[K];
 };
 

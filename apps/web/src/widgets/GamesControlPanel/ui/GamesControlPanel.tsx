@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState, useEffect, useRef } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import { useTranslation } from "@/shared/lib/useTranslation";
 import { gameSocket } from "@/shared/lib/socket";
@@ -85,7 +85,6 @@ const Button = styled.button<{ $variant?: "primary" | "secondary" | "danger" }>`
 
 export function GamesControlPanel({ roomId, className, onMovePlayer, onCenterView, showMoveControls }: GamesControlPanelProps) {
   const router = useRouter();
-  const params = useParams();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
   const [isFullscreen, setIsFullscreen] = useState(false);

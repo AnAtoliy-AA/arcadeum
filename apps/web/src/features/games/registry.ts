@@ -1,4 +1,4 @@
-import type { GameMetadata, BaseGameProps } from "./types";
+import type { GameMetadata } from "./types";
 import type { GameSlug } from "./registry.types";
 
 export { GameSlug };

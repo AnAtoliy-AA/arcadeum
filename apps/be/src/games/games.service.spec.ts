@@ -94,8 +94,14 @@ describe('GamesService', () => {
         { provide: GameSessionsService, useValue: mockSessionsService },
         { provide: GameHistoryService, useValue: mockHistoryService },
         { provide: GamesRealtimeService, useValue: mockRealtimeService },
-        { provide: ExplodingCatsActionsService, useValue: mockExplodingCatsActions },
-        { provide: TexasHoldemActionsService, useValue: mockTexasHoldemActions },
+        {
+          provide: ExplodingCatsActionsService,
+          useValue: mockExplodingCatsActions,
+        },
+        {
+          provide: TexasHoldemActionsService,
+          useValue: mockTexasHoldemActions,
+        },
         { provide: GameUtilitiesService, useValue: mockUtilities },
       ],
     }).compile();
@@ -157,8 +163,14 @@ describe('GamesService', () => {
         playerIds,
         config: { engine: dto.engine },
       });
-      expect(roomsService.updateRoomStatus).toHaveBeenCalledWith(roomId, 'in_progress');
-      expect(realtimeService.emitGameStarted).toHaveBeenCalledWith(room, session);
+      expect(roomsService.updateRoomStatus).toHaveBeenCalledWith(
+        roomId,
+        'in_progress',
+      );
+      expect(realtimeService.emitGameStarted).toHaveBeenCalledWith(
+        room,
+        session,
+      );
       expect(result).toEqual({ room, session });
     });
 
@@ -170,7 +182,9 @@ describe('GamesService', () => {
 
       roomsService.getRoom.mockResolvedValue(room as any);
 
-      await expect(service.startGameSession(dto, userId)).rejects.toThrow('Only the host can start the game');
+      await expect(service.startGameSession(dto, userId)).rejects.toThrow(
+        'Only the host can start the game',
+      );
     });
   });
 
@@ -184,7 +198,10 @@ describe('GamesService', () => {
 
       const response = await service.drawExplodingCatsCard(sessionId, userId);
 
-      expect(explodingCatsActions.drawCard).toHaveBeenCalledWith(sessionId, userId);
+      expect(explodingCatsActions.drawCard).toHaveBeenCalledWith(
+        sessionId,
+        userId,
+      );
       expect(response).toEqual(result);
     });
   });
@@ -198,11 +215,18 @@ describe('GamesService', () => {
 
       explodingCatsActions.playActionCard.mockResolvedValue(result as any);
 
-      const response = await service.playExplodingCatsAction(sessionId, userId, payload);
+      const response = await service.playExplodingCatsAction(
+        sessionId,
+        userId,
+        payload,
+      );
 
-      expect(explodingCatsActions.playActionCard).toHaveBeenCalledWith(sessionId, userId, payload);
+      expect(explodingCatsActions.playActionCard).toHaveBeenCalledWith(
+        sessionId,
+        userId,
+        payload,
+      );
       expect(response).toEqual(result);
     });
   });
 });
-

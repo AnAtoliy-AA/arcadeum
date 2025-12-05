@@ -1,11 +1,6 @@
 import { resolveApiUrl } from "../lib/api-base";
 import type { GameRoomSummary, GameSessionSummary } from "../types/games";
 
-interface ApiResponse<T> {
-  data?: T;
-  error?: string;
-}
-
 export async function startGameRoom(
   roomId: string,
   engine: string,

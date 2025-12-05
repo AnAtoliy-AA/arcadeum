@@ -140,7 +140,9 @@ export class GamesController {
   async getRoomSession(
     @Req() req: Request,
     @Param('roomId') roomId: string,
-  ): Promise<{ session: Awaited<ReturnType<GamesService['getRoomSession']>>['session'] }> {
+  ): Promise<{
+    session: Awaited<ReturnType<GamesService['getRoomSession']>>['session'];
+  }> {
     const user = req.user as AuthenticatedUser | undefined | null;
     const { session } = await this.gamesService.getRoomSession(
       roomId,

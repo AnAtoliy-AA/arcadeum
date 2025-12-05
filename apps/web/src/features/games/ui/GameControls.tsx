@@ -2,7 +2,6 @@
 
 import React from "react";
 import styled from "styled-components";
-import { useTranslation } from "@/shared/lib/useTranslation";
 
 interface GameControlsProps {
   children: React.ReactNode;
@@ -113,8 +112,6 @@ export function GameControls({
   showHelp = false,
   onHelp
 }: GameControlsProps) {
-  const { t } = useTranslation();
-
   return (
     <ControlsContainer 
       className={className} 
@@ -161,17 +158,15 @@ export function GameControls({
 }
 
 // Specific control buttons for common game actions
-export function LeaveButton({ 
-  onClick, 
+export function LeaveButton({
+  onClick,
   className,
   variant = "secondary"
-}: { 
-  onClick?: () => void; 
+}: {
+  onClick?: () => void;
   className?: string;
   variant?: "primary" | "secondary" | "danger";
 }) {
-  const { t } = useTranslation();
-  
   return (
     <ControlButton 
       className={className}
@@ -195,10 +190,8 @@ export function StartButton({
   disabled?: boolean;
   variant?: "primary" | "secondary" | "danger";
 }) {
-  const { t } = useTranslation();
-  
   return (
-    <ControlButton 
+    <ControlButton
       className={className}
       $variant={variant}
       onClick={onClick}
@@ -221,8 +214,6 @@ export function ReadyButton({
   ready?: boolean;
   variant?: "primary" | "secondary" | "success";
 }) {
-  const { t } = useTranslation();
-  
   return (
     <ControlButton 
       className={className}

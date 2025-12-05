@@ -2,7 +2,6 @@
 
 import { useMemo, useCallback, useState, useEffect, useRef } from "react";
 import styled from "styled-components";
-import { useSessionTokens } from "@/entities/session/model/useSessionTokens";
 import { useGameSession, useGameActions } from "@/features/games/hooks";
 import type {
   GameRoomSummary,

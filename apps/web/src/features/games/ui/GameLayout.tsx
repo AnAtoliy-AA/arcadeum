@@ -56,33 +56,13 @@ const GameContent = styled.main`
   flex-direction: column;
 `;
 
-const GameHeader = styled.header`
-  padding: 1.5rem;
-  background: linear-gradient(135deg, 
-    ${({ theme }) => theme.surfaces.panel.background}dd, 
-    ${({ theme }) => theme.surfaces.card.background}cc
-  );
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  position: relative;
-  z-index: 2;
-`;
-
-const GameTitle = styled.h1`
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: ${({ theme }) => theme.text.primary};
-  text-align: center;
-`;
-
-export function GameLayout({ 
-  children, 
-  className, 
-  showControls = true, 
-  onFullscreenToggle, 
-  onLeaveGame,
-  fullscreen 
+export function GameLayout({
+  children,
+  className,
+  showControls = true,
+  onFullscreenToggle: _onFullscreenToggle,
+  onLeaveGame: _onLeaveGame,
+  fullscreen
 }: GameLayoutProps) {
   return (
     <Container className={className} $fullscreen={fullscreen}>

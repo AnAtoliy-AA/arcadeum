@@ -102,7 +102,9 @@ export class GamesRealtimeService {
       return;
     }
 
-    this.logger.log(`Emitting game started events for room ${room.id}, session ${session.id}`);
+    this.logger.log(
+      `Emitting game started events for room ${room.id}, session ${session.id}`,
+    );
 
     // Emit both events for backward compatibility
     this.server.to(this.roomChannel(room.id)).emit('games.game.started', {

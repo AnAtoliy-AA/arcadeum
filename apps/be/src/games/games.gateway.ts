@@ -157,7 +157,9 @@ export class GamesGateway {
     const room = await this.gamesService.ensureParticipant(roomId, userId);
     const session = await this.gamesService.findSessionByRoom(room.id);
 
-    this.logger.log(`Room ${roomId}: status=${room.status}, session=${session ? session.id : 'null'}`);
+    this.logger.log(
+      `Room ${roomId}: status=${room.status}, session=${session ? session.id : 'null'}`,
+    );
 
     const channel = this.realtime.roomChannel(room.id);
     await client.join(channel);
@@ -168,7 +170,9 @@ export class GamesGateway {
     });
 
     if (session) {
-      this.logger.log(`Sending session snapshot to client for session ${session.id}`);
+      this.logger.log(
+        `Sending session snapshot to client for session ${session.id}`,
+      );
       this.realtime.emitSessionSnapshotToClient(client, room.id, session);
     }
   }
@@ -274,7 +278,11 @@ export class GamesGateway {
     }
 
     try {
-      await this.gamesService.playExplodingCatsActionByRoom(userId, roomId, card);
+      await this.gamesService.playExplodingCatsActionByRoom(
+        userId,
+        roomId,
+        card,
+      );
       client.emit('games.session.action.played', {
         roomId,
         userId,
@@ -333,11 +341,16 @@ export class GamesGateway {
     }
 
     try {
-      await this.gamesService.playExplodingCatsCatComboByRoom(userId, roomId, cat, {
-        mode,
-        targetPlayerId,
-        desiredCard: desiredCardValue,
-      });
+      await this.gamesService.playExplodingCatsCatComboByRoom(
+        userId,
+        roomId,
+        cat,
+        {
+          mode,
+          targetPlayerId,
+          desiredCard: desiredCardValue,
+        },
+      );
 
       client.emit('games.session.cat_combo.played', {
         roomId,
@@ -423,10 +436,11 @@ export class GamesGateway {
     const { roomId, userId } = extractRoomAndUser(payload);
 
     try {
-      const result = await this.gamesService.playExplodingCatsSeeTheFutureByRoom(
-        userId,
-        roomId,
-      );
+      const result =
+        await this.gamesService.playExplodingCatsSeeTheFutureByRoom(
+          userId,
+          roomId,
+        );
 
       client.emit('games.session.see_the_future.played', {
         roomId,

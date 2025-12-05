@@ -100,7 +100,7 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
       setLoading(true);
     };
 
-    const handleConnectError = (error: Error) => {
+    const handleConnectError = (_error: Error) => {
       setError("Failed to connect to game server");
       setLoading(false);
     };

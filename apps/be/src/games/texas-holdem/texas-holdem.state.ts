@@ -132,7 +132,9 @@ export function createInitialTexasHoldemState(
 
   // Handle both old and new signatures
   let startingChips: number;
-  let config: { initialStack?: number; smallBlind?: number; bigBlind?: number } | undefined;
+  let config:
+    | { initialStack?: number; smallBlind?: number; bigBlind?: number }
+    | undefined;
 
   if (typeof configOrChips === 'number') {
     startingChips = configOrChips;

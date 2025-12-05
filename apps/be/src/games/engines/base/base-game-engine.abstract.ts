@@ -12,8 +12,9 @@ import {
  * Abstract Base Game Engine
  * Provides common functionality for all game engines
  */
-export abstract class BaseGameEngine<TState extends BaseGameState = BaseGameState>
-  implements IGameEngine<TState>
+export abstract class BaseGameEngine<
+  TState extends BaseGameState = BaseGameState,
+> implements IGameEngine<TState>
 {
   /**
    * Subclasses must implement this to provide game metadata
@@ -143,7 +144,8 @@ export abstract class BaseGameEngine<TState extends BaseGameState = BaseGameStat
     if (state.currentTurnIndex === undefined) {
       return;
     }
-    state.currentTurnIndex = (state.currentTurnIndex + 1) % state.players.length;
+    state.currentTurnIndex =
+      (state.currentTurnIndex + 1) % state.players.length;
   }
 
   /**
@@ -156,7 +158,10 @@ export abstract class BaseGameEngine<TState extends BaseGameState = BaseGameStat
   /**
    * Helper: Create success result
    */
-  protected successResult(state: TState, logs?: GameLogEntry[]): GameActionResult<TState> {
+  protected successResult(
+    state: TState,
+    logs?: GameLogEntry[],
+  ): GameActionResult<TState> {
     return {
       success: true,
       state,

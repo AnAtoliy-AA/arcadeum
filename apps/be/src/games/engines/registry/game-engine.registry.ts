@@ -15,16 +15,16 @@ export class GameEngineRegistry {
    */
   private readonly gameIdMapping: Record<string, string> = {
     // Exploding Cats variants
-    'exploding_cats_v1': 'exploding_cats_v1',
+    exploding_cats_v1: 'exploding_cats_v1',
     'exploding-kittens': 'exploding_cats_v1',
-    'exploding_cats': 'exploding_cats_v1',
-    'exploding_cats_v1_beta': 'exploding_cats_v1',
+    exploding_cats: 'exploding_cats_v1',
+    exploding_cats_v1_beta: 'exploding_cats_v1',
 
     // Texas Holdem variants
-    'texas_holdem_v1': 'texas_holdem_v1',
+    texas_holdem_v1: 'texas_holdem_v1',
     'texas-holdem': 'texas_holdem_v1',
-    'texas_holdem': 'texas_holdem_v1',
-    'texas_holdem_poker': 'texas_holdem_v1',
+    texas_holdem: 'texas_holdem_v1',
+    texas_holdem_poker: 'texas_holdem_v1',
   };
 
   /**

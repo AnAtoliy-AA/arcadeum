@@ -220,7 +220,7 @@ export class GamesService {
     // Search filter
     if (options?.search && !options.grouped) {
       const searchLower = options.search.toLowerCase();
-      const gameHistory = filtered as any[];
+      const gameHistory = filtered;
       const searchFiltered = gameHistory.filter((entry) => {
         return (
           entry.gameName?.toLowerCase().includes(searchLower) ||
@@ -233,8 +233,10 @@ export class GamesService {
 
     // Status filter
     if (options?.status && !options.grouped) {
-      const gameHistory = filtered as any[];
-      const statusFiltered = gameHistory.filter((entry) => entry.status === options.status);
+      const gameHistory = filtered;
+      const statusFiltered = gameHistory.filter(
+        (entry) => entry.status === options.status,
+      );
       filtered.length = 0;
       filtered.push(...statusFiltered);
     }
@@ -507,7 +509,12 @@ export class GamesService {
    * Post a note to Exploding Cats history (backward compatibility)
    * @deprecated Use postHistoryNote instead
    */
-  async postExplodingCatsHistoryNote(userId: string, roomId: string, message: string, scope?: string) {
+  async postExplodingCatsHistoryNote(
+    userId: string,
+    roomId: string,
+    message: string,
+    scope?: string,
+  ) {
     // scope parameter is ignored - keeping for backward compatibility
     return this.postHistoryNote(roomId, userId, message);
   }
@@ -516,7 +523,12 @@ export class GamesService {
    * Start Texas Hold'em session (backward compatibility)
    * @deprecated Use startGameSession instead
    */
-  async startTexasHoldemSession(userId: string, roomId?: string, engine?: string, startingChips?: number) {
+  async startTexasHoldemSession(
+    userId: string,
+    roomId?: string,
+    engine?: string,
+    startingChips?: number,
+  ) {
     // startingChips parameter is handled in the engine config
     return this.startExplodingCatsSession(userId, roomId, engine);
   }
@@ -525,7 +537,12 @@ export class GamesService {
    * Texas Hold'em player action (backward compatibility)
    * @deprecated Use specific action methods instead
    */
-  async texasHoldemPlayerAction(userId: string, roomId: string, action: string, raiseAmount?: number) {
+  async texasHoldemPlayerAction(
+    userId: string,
+    roomId: string,
+    action: string,
+    raiseAmount?: number,
+  ) {
     const session = await this.findSessionByRoom(roomId);
     if (!session) {
       throw new Error('Session not found');
@@ -538,7 +555,12 @@ export class GamesService {
    * Post a note to Texas Hold'em history (backward compatibility)
    * @deprecated Use postHistoryNote instead
    */
-  async postTexasHoldemHistoryNote(userId: string, roomId: string, message: string, scope?: string) {
+  async postTexasHoldemHistoryNote(
+    userId: string,
+    roomId: string,
+    message: string,
+    scope?: string,
+  ) {
     // scope parameter is ignored - keeping for backward compatibility
     return this.postHistoryNote(roomId, userId, message);
   }
@@ -549,7 +571,11 @@ export class GamesService {
   /**
    * Play Exploding Cats action card (gateway wrapper)
    */
-  async playExplodingCatsActionByRoom(userId: string, roomId: string, card: string) {
+  async playExplodingCatsActionByRoom(
+    userId: string,
+    roomId: string,
+    card: string,
+  ) {
     const session = await this.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
     return this.playExplodingCatsAction(session.id, userId, { card });

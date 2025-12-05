@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { gameSocket } from "@/shared/lib/socket";
 import type { GameSessionSummary } from "@/shared/types/games";
 
@@ -22,18 +22,11 @@ interface UseGameSessionReturn {
 export function useGameSession(options: UseGameSessionOptions): UseGameSessionReturn {
   const { roomId, enabled = true, initialSession } = options;
 
-  const [session, setSession] = useState<GameSessionSummary | null>(
+  const [session, setSession] = useState<GameSessionSummary | null>(() =>
     (initialSession as GameSessionSummary) ?? null
   );
   const [startBusy, setStartBusy] = useState(false);
   const [actionBusy, setActionBusy] = useState<string | null>(null);
-
-  // Update session when initialSession prop changes
-  useEffect(() => {
-    if (initialSession) {
-      setSession(initialSession as GameSessionSummary);
-    }
-  }, [initialSession]);
 
   useEffect(() => {
     if (!enabled) return;

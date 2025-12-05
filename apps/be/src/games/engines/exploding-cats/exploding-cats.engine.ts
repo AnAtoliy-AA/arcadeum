@@ -69,7 +69,9 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
         return this.validateFavor(state, context.userId, payload);
 
       case 'defuse':
-        return this.hasCard(player, 'defuse') && payload?.position !== undefined;
+        return (
+          this.hasCard(player, 'defuse') && payload?.position !== undefined
+        );
 
       default:
         return false;
@@ -83,7 +85,11 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
     payload?: any,
   ): GameActionResult<ExplodingCatsState> {
     // Auto-fix legacy state where pendingDraws is 0 at start of turn
-    if (action === 'draw_card' && state.pendingDraws === 0 && this.isPlayerTurn(state, context.userId)) {
+    if (
+      action === 'draw_card' &&
+      state.pendingDraws === 0 &&
+      this.isPlayerTurn(state, context.userId)
+    ) {
       state.pendingDraws = 1;
     }
 
@@ -101,7 +107,12 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
         return this.executePlayCard(newState, context.userId, payload.card);
 
       case 'play_cat_combo':
-        return this.executeCatCombo(newState, context.userId, payload.cards, payload.targetPlayerId);
+        return this.executeCatCombo(
+          newState,
+          context.userId,
+          payload.cards,
+          payload.targetPlayerId,
+        );
 
       case 'see_the_future':
         return this.executeSeeTheFuture(newState, context.userId);
@@ -149,7 +160,9 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
     });
 
     // Partially hide deck (show count only)
-    sanitized.deck = new Array(state.deck.length).fill('hidden' as ExplodingCatsCard);
+    sanitized.deck = new Array(state.deck.length).fill(
+      'hidden' as ExplodingCatsCard,
+    );
 
     return sanitized;
   }
@@ -169,7 +182,8 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
       if (this.hasCard(player, 'attack')) actions.push('play_card:attack');
       if (this.hasCard(player, 'skip')) actions.push('play_card:skip');
       if (this.hasCard(player, 'shuffle')) actions.push('play_card:shuffle');
-      if (this.hasCard(player, 'see_the_future')) actions.push('see_the_future');
+      if (this.hasCard(player, 'see_the_future'))
+        actions.push('see_the_future');
       if (this.hasCard(player, 'favor')) actions.push('favor');
 
       // Can play cat combos
@@ -207,11 +221,18 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
 
   // ========== Private Helper Methods ==========
 
-  private hasCard(player: ExplodingCatsPlayerState, card: ExplodingCatsCard): boolean {
+  private hasCard(
+    player: ExplodingCatsPlayerState,
+    card: ExplodingCatsCard,
+  ): boolean {
     return player.hand.includes(card);
   }
 
-  private validatePlayCard(state: ExplodingCatsState, playerId: string, card: ExplodingCatsCard): boolean {
+  private validatePlayCard(
+    state: ExplodingCatsState,
+    playerId: string,
+    card: ExplodingCatsCard,
+  ): boolean {
     const player = this.findPlayer(state, playerId);
     if (!player) return false;
 
@@ -228,7 +249,11 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
     return false;
   }
 
-  private validateCatCombo(state: ExplodingCatsState, playerId: string, cards: ExplodingCatsCard[]): boolean {
+  private validateCatCombo(
+    state: ExplodingCatsState,
+    playerId: string,
+    cards: ExplodingCatsCard[],
+  ): boolean {
     if (!cards || cards.length < 2) return false;
 
     const player = this.findPlayer(state, playerId);
@@ -236,25 +261,44 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
 
     // All cards must be the same cat card
     const firstCard = cards[0];
-    return cards.every((card) => card === firstCard && this.hasCard(player, card));
+    return cards.every(
+      (card) => card === firstCard && this.hasCard(player, card),
+    );
   }
 
-  private validateFavor(state: ExplodingCatsState, playerId: string, payload: any): boolean {
+  private validateFavor(
+    state: ExplodingCatsState,
+    playerId: string,
+    payload: any,
+  ): boolean {
     const player = this.findPlayer(state, playerId);
     if (!player || !this.hasCard(player, 'favor')) return false;
 
     if (!payload?.targetPlayerId || !payload?.requestedCard) return false;
 
     const target = this.findPlayer(state, payload.targetPlayerId);
-    return target && target.alive && this.hasCard(target, payload.requestedCard);
+    return (
+      target && target.alive && this.hasCard(target, payload.requestedCard)
+    );
   }
 
   private canPlayCatCombo(player: ExplodingCatsPlayerState): boolean {
-    const catCards = ['tacocat', 'hairy_potato_cat', 'rainbow_ralphing_cat', 'cattermelon', 'bearded_cat'];
-    return catCards.some((cat) => player.hand.filter((c) => c === cat).length >= 2);
+    const catCards = [
+      'tacocat',
+      'hairy_potato_cat',
+      'rainbow_ralphing_cat',
+      'cattermelon',
+      'bearded_cat',
+    ];
+    return catCards.some(
+      (cat) => player.hand.filter((c) => c === cat).length >= 2,
+    );
   }
 
-  private executeDrawCard(state: ExplodingCatsState, playerId: string): GameActionResult<ExplodingCatsState> {
+  private executeDrawCard(
+    state: ExplodingCatsState,
+    playerId: string,
+  ): GameActionResult<ExplodingCatsState> {
     const card = state.deck.shift();
 
     if (!card) {
@@ -266,19 +310,30 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
 
     if (card === 'exploding_cat') {
       if (this.hasCard(player, 'defuse')) {
-        this.addLog(state, this.createLogEntry('action', `Drew an Exploding Cat!`, { scope: 'all' }));
+        this.addLog(
+          state,
+          this.createLogEntry('action', `Drew an Exploding Cat!`, {
+            scope: 'all',
+          }),
+        );
         // Player must defuse
         return this.successResult(state);
       } else {
         player.alive = false;
-        this.addLog(state, this.createLogEntry('system', `Player exploded!`, { scope: 'all' }));
+        this.addLog(
+          state,
+          this.createLogEntry('system', `Player exploded!`, { scope: 'all' }),
+        );
         this.advanceTurn(state);
         return this.successResult(state);
       }
     }
 
     player.hand.push(card);
-    this.addLog(state, this.createLogEntry('action', `Drew a card`, { scope: 'all' }));
+    this.addLog(
+      state,
+      this.createLogEntry('action', `Drew a card`, { scope: 'all' }),
+    );
 
     if (state.pendingDraws === 0) {
       this.advanceTurn(state);
@@ -287,7 +342,11 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
     return this.successResult(state);
   }
 
-  private executePlayCard(state: ExplodingCatsState, playerId: string, card: ExplodingCatsCard): GameActionResult<ExplodingCatsState> {
+  private executePlayCard(
+    state: ExplodingCatsState,
+    playerId: string,
+    card: ExplodingCatsCard,
+  ): GameActionResult<ExplodingCatsState> {
     const player = this.findPlayer(state, playerId);
     const cardIndex = player.hand.indexOf(card);
     player.hand.splice(cardIndex, 1);
@@ -297,27 +356,36 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
       case 'attack':
         this.advanceTurn(state);
         state.pendingDraws = 2;
-        this.addLog(state, this.createLogEntry('action', `Played Attack!`, { scope: 'all' }));
+        this.addLog(
+          state,
+          this.createLogEntry('action', `Played Attack!`, { scope: 'all' }),
+        );
         break;
 
       case 'skip':
         this.advanceTurn(state);
-        this.addLog(state, this.createLogEntry('action', `Played Skip`, { scope: 'all' }));
+        this.addLog(
+          state,
+          this.createLogEntry('action', `Played Skip`, { scope: 'all' }),
+        );
         break;
 
       case 'shuffle':
         this.shuffleArray(state.deck);
-        this.addLog(state, this.createLogEntry('action', `Shuffled the deck`, { scope: 'all' }));
+        this.addLog(
+          state,
+          this.createLogEntry('action', `Shuffled the deck`, { scope: 'all' }),
+        );
         break;
     }
 
-  return this.successResult(state);
-}
+    return this.successResult(state);
+  }
 
-protected advanceTurn(state: ExplodingCatsState): void {
-  super.advanceTurn(state);
-  state.pendingDraws = 1;
-}
+  protected advanceTurn(state: ExplodingCatsState): void {
+    super.advanceTurn(state);
+    state.pendingDraws = 1;
+  }
 
   private executeCatCombo(
     state: ExplodingCatsState,
@@ -343,13 +411,20 @@ protected advanceTurn(state: ExplodingCatsState): void {
 
     this.addLog(
       state,
-      this.createLogEntry('action', `Played ${cards.length}x ${cards[0]} combo!`, { scope: 'all' }),
+      this.createLogEntry(
+        'action',
+        `Played ${cards.length}x ${cards[0]} combo!`,
+        { scope: 'all' },
+      ),
     );
 
     return this.successResult(state);
   }
 
-  private executeSeeTheFuture(state: ExplodingCatsState, playerId: string): GameActionResult<ExplodingCatsState> {
+  private executeSeeTheFuture(
+    state: ExplodingCatsState,
+    playerId: string,
+  ): GameActionResult<ExplodingCatsState> {
     const player = this.findPlayer(state, playerId);
     const cardIndex = player.hand.indexOf('see_the_future');
     player.hand.splice(cardIndex, 1);
@@ -411,7 +486,9 @@ protected advanceTurn(state: ExplodingCatsState): void {
 
     this.addLog(
       state,
-      this.createLogEntry('action', `Defused an Exploding Cat!`, { scope: 'all' }),
+      this.createLogEntry('action', `Defused an Exploding Cat!`, {
+        scope: 'all',
+      }),
     );
 
     this.advanceTurn(state);

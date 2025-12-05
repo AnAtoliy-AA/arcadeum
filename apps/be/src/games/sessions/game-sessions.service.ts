@@ -284,7 +284,9 @@ export class GameSessionsService {
     const engine = this.engineRegistry.getEngine(session.gameId);
 
     if (!engine.removePlayer) {
-      throw new BadRequestException('This game does not support removing players');
+      throw new BadRequestException(
+        'This game does not support removing players',
+      );
     }
 
     const result = engine.removePlayer(session.state as any, playerId);

@@ -276,7 +276,7 @@ export class GameTestUtils {
   /**
    * Test utilities for common scenarios
    */
-  static testGameRenders(GameComponent: React.ComponentType<BaseGameProps>, props: BaseGameProps) {
+  static testGameRenders(_GameComponent: React.ComponentType<BaseGameProps>, _props: BaseGameProps) {
     // Basic render test - just check component accepts props
     try {
       return { success: true, element: null };

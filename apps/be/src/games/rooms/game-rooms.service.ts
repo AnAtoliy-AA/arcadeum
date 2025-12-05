@@ -80,7 +80,9 @@ export class GameRoomsService {
     dto: CreateGameRoomDto,
   ): Promise<GameRoomSummary> {
     const inviteCode =
-      dto.visibility === 'private' ? await this.generateInviteCode() : undefined;
+      dto.visibility === 'private'
+        ? await this.generateInviteCode()
+        : undefined;
 
     const room = await this.gameRoomModel.create({
       gameId: dto.gameId,
@@ -170,7 +172,10 @@ export class GameRoomsService {
   /**
    * Join a game room
    */
-  async joinRoom(dto: JoinGameRoomDto, userId: string): Promise<GameRoomSummary> {
+  async joinRoom(
+    dto: JoinGameRoomDto,
+    userId: string,
+  ): Promise<GameRoomSummary> {
     const room = await this.gameRoomModel.findById(dto.roomId).exec();
 
     if (!room) {
@@ -379,10 +384,7 @@ export class GameRoomsService {
     room: GameRoom,
     viewerId?: string,
   ): Promise<GameRoomSummary> {
-    const userIds = [
-      room.hostId,
-      ...room.participants.map((p) => p.userId),
-    ];
+    const userIds = [room.hostId, ...room.participants.map((p) => p.userId)];
     const uniqueUserIds = Array.from(new Set(userIds));
 
     const users = await this.userModel
@@ -390,9 +392,7 @@ export class GameRoomsService {
       .select('username email')
       .exec();
 
-    const userMap = new Map(
-      users.map((u) => [u._id.toString(), u]),
-    );
+    const userMap = new Map(users.map((u) => [u._id.toString(), u]));
 
     const host = userMap.get(room.hostId);
     const members = room.participants.map((p) => {
@@ -437,8 +437,8 @@ export class GameRoomsService {
       summary.viewerRole = summary.viewerIsHost
         ? 'host'
         : summary.viewerHasJoined
-        ? 'participant'
-        : 'none';
+          ? 'participant'
+          : 'none';
     }
 
     return summary;

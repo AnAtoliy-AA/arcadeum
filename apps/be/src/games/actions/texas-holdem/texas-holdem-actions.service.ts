@@ -61,11 +61,7 @@ export class TexasHoldemActionsService {
   /**
    * Raise bet
    */
-  async raise(
-    sessionId: string,
-    userId: string,
-    payload: { amount: number },
-  ) {
+  async raise(sessionId: string, userId: string, payload: { amount: number }) {
     const session = await this.sessionsService.executeAction({
       sessionId,
       action: 'raise',

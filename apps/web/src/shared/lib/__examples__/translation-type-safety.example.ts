@@ -8,7 +8,7 @@
 import type { TranslationKey } from "../useTranslation";
 
 // ✅ VALID KEYS - These will compile successfully
-const validKeys: TranslationKey[] = [
+const _validKeys: TranslationKey[] = [
   // Common
   "common.actions.login",
   "common.actions.register",
@@ -79,7 +79,7 @@ const invalidKeys: TranslationKey[] = [
 */
 
 // ✅ Usage in a component (type-safe)
-function ExampleComponent() {
+function _ExampleComponent() {
   // This would work in a real component with useTranslation()
   // const { t } = useTranslation();
 
@@ -92,7 +92,7 @@ function ExampleComponent() {
 }
 
 // ✅ Type-safe helper function
-function translateMultiple(keys: TranslationKey[]): void {
+function translateMultiple(_keys: TranslationKey[]): void {
   // All keys are guaranteed to exist in TranslationBundle
 }
 

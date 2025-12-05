@@ -117,12 +117,12 @@ const HostBadge = styled.span`
 `;
 
 export function PlayerList({ 
-  session, 
-  currentUserId, 
-  className, 
-  showStatus = true, 
+  session,
+  currentUserId,
+  className,
+  showStatus = true,
   showScore = false,
-  maxPlayers,
+  maxPlayers: _maxPlayers,
   onPlayerAction
 }: PlayerListProps) {
   if (!session) {

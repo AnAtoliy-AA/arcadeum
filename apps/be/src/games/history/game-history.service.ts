@@ -122,7 +122,7 @@ export class GameHistoryService {
       gameId: string;
       roomName: string;
       status: string;
-      startedAt: string |  null;
+      startedAt: string | null;
       completedAt: string | null;
       lastActivityAt: string;
       host: HistoryParticipantSummary;
@@ -159,10 +159,7 @@ export class GameHistoryService {
       .exec();
 
     // Get user details for participants
-    const userIds = [
-      room.hostId,
-      ...room.participants.map((p) => p.userId),
-    ];
+    const userIds = [room.hostId, ...room.participants.map((p) => p.userId)];
     const uniqueUserIds = Array.from(new Set(userIds));
 
     const users = await this.userModel
@@ -186,7 +183,7 @@ export class GameHistoryService {
 
     // Find the latest session for this room
     const latestSession = sessions[0] || null;
-    
+
     // Extract logs from the latest session
     const logs: Array<{
       id: string;
@@ -413,7 +410,8 @@ export class GameHistoryService {
           startedAt: latestSession.createdAt.toISOString(),
           completedAt: latestSession.updatedAt.toISOString(),
           lastActivityAt: latestSession.updatedAt.toISOString(),
-          status: latestSession.status === 'completed' ? 'completed' : 'abandoned',
+          status:
+            latestSession.status === 'completed' ? 'completed' : 'abandoned',
           participants,
           hostId: room.hostId,
           result:
@@ -486,10 +484,7 @@ export class GameHistoryService {
   private async getParticipantSummaries(
     room: GameRoom,
   ): Promise<HistoryParticipantSummary[]> {
-    const userIds = [
-      room.hostId,
-      ...room.participants.map((p) => p.userId),
-    ];
+    const userIds = [room.hostId, ...room.participants.map((p) => p.userId)];
     const uniqueUserIds = Array.from(new Set(userIds));
 
     const users = await this.userModel

@@ -369,7 +369,7 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
     }
     handledCallbackRef.current = true;
     void handleCallback({ code, error, stateParam });
-  }, [handleCallback, paramsKey]);
+  }, [handleCallback, paramsKey, searchParams]);
 
   const value: UseOAuthResult = useMemo(
     () => ({

@@ -122,7 +122,7 @@ const StatusIndicator = styled.div<{ $status: string }>`
   font-weight: 600;
   padding: 0.25rem 0.5rem;
   border-radius: 8px;
-  background: ${({ $status, theme }) => {
+  background: ${({ $status }) => {
     switch ($status) {
       case 'active': return 'rgba(34, 197, 94, 0.1)';
       case 'beta': return 'rgba(59, 130, 246, 0.1)';
@@ -131,7 +131,7 @@ const StatusIndicator = styled.div<{ $status: string }>`
       default: return 'rgba(156, 163, 175, 0.1)';
     }
   }};
-  color: ${({ $status, theme }) => {
+  color: ${({ $status }) => {
     switch ($status) {
       case 'active': return '#22c55e';
       case 'beta': return '#3b82f6';
@@ -140,7 +140,7 @@ const StatusIndicator = styled.div<{ $status: string }>`
       default: return '#9ca3af';
     }
   }};
-  border: 1px solid ${({ $status, theme }) => {
+  border: 1px solid ${({ $status }) => {
     switch ($status) {
       case 'active': return 'rgba(34, 197, 94, 0.3)';
       case 'beta': return 'rgba(59, 130, 246, 0.3)';

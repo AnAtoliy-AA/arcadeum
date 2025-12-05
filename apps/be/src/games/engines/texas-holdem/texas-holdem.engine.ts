@@ -26,7 +26,7 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
       minPlayers: 2,
       maxPlayers: 9,
       version: '1.0.0',
-      description: 'Classic poker game with Texas Hold\'em rules',
+      description: "Classic poker game with Texas Hold'em rules",
       category: 'Card Game',
     };
   }
@@ -52,7 +52,10 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
     context: GameActionContext,
     payload?: any,
   ): boolean {
-    const player = this.findPlayer(state, context.userId) as TexasHoldemPlayerState;
+    const player = this.findPlayer(
+      state,
+      context.userId,
+    ) as TexasHoldemPlayerState;
 
     if (!player || player.folded || player.stack === 0) {
       return false;
@@ -98,7 +101,10 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
     }
 
     const newState = this.cloneState(state);
-    const player = this.findPlayer(newState, context.userId) as TexasHoldemPlayerState;
+    const player = this.findPlayer(
+      newState,
+      context.userId,
+    ) as TexasHoldemPlayerState;
 
     let actionTaken: PlayerAction | null = null;
 
@@ -221,7 +227,12 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
   getAvailableActions(state: TexasHoldemState, playerId: string): string[] {
     const player = this.findPlayer(state, playerId) as TexasHoldemPlayerState;
 
-    if (!player || player.folded || player.stack === 0 || !this.isPlayerTurn(state, playerId)) {
+    if (
+      !player ||
+      player.folded ||
+      player.stack === 0 ||
+      !this.isPlayerTurn(state, playerId)
+    ) {
       return [];
     }
 
@@ -246,7 +257,10 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
     playerId: string,
   ): GameActionResult<TexasHoldemState> {
     const newState = this.cloneState(state);
-    const player = this.findPlayer(newState, playerId) as TexasHoldemPlayerState;
+    const player = this.findPlayer(
+      newState,
+      playerId,
+    ) as TexasHoldemPlayerState;
 
     if (!player) {
       return this.errorResult('Player not found');
@@ -272,7 +286,10 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
   /**
    * Update player's chips/stack (keep both in sync)
    */
-  private updatePlayerStack(player: TexasHoldemPlayerState, newStack: number): void {
+  private updatePlayerStack(
+    player: TexasHoldemPlayerState,
+    newStack: number,
+  ): void {
     player.stack = newStack;
     player.chips = newStack;
   }
@@ -286,7 +303,7 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
       const nextPlayer = state.players[nextIndex];
       if (!nextPlayer.folded && nextPlayer.stack > 0) {
         state.currentTurnIndex = nextIndex;
-        
+
         // After advancing turn, check if the betting round is complete
         this.checkRoundCompletion(state);
         return;
@@ -304,14 +321,19 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
 
     if (activePlayers.length === 1) {
       // Only one player left, they win the pot
-      this.updatePlayerStack(activePlayers[0], activePlayers[0].stack + state.pot);
+      this.updatePlayerStack(
+        activePlayers[0],
+        activePlayers[0].stack + state.pot,
+      );
       state.pot = 0;
       state.roundComplete = true;
       return;
     }
 
     // Check if all active players have acted and bets are equal
-    const allPlayersActed = activePlayers.every((p) => p.lastAction !== undefined);
+    const allPlayersActed = activePlayers.every(
+      (p) => p.lastAction !== undefined,
+    );
     const allBetsEqual = activePlayers.every(
       (p) => p.currentBet === state.currentBet,
     );
@@ -331,19 +353,14 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
     state.currentBet = 0;
 
     // Advance betting round
-    const rounds: BettingRound[] = [
-      'pre-flop',
-      'flop',
-      'turn',
-      'river',
-    ];
+    const rounds: BettingRound[] = ['pre-flop', 'flop', 'turn', 'river'];
     const currentRoundIndex = rounds.indexOf(state.round);
 
     if (currentRoundIndex < rounds.length - 1) {
       const newRound = rounds[currentRoundIndex + 1];
       state.round = newRound;
       state.bettingRound = newRound;
-      
+
       // Deal community cards based on round
       switch (newRound) {
         case 'flop':
@@ -364,7 +381,7 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
           }
           break;
       }
-      
+
       this.addLog(
         state,
         this.createLogEntry('system', `Advancing to ${newRound}`, {
@@ -378,8 +395,10 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
   }
 
   private performShowdown(state: TexasHoldemState): void {
-    const activePlayers = state.players.filter((p) => !p.folded && p.stack >= 0);
-    
+    const activePlayers = state.players.filter(
+      (p) => !p.folded && p.stack >= 0,
+    );
+
     if (activePlayers.length === 0) {
       state.roundComplete = true;
       return;
@@ -388,7 +407,7 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
     // For now, simplified: all active players split the pot equally
     // In a real implementation, you would evaluate poker hands
     const potShare = Math.floor(state.pot / activePlayers.length);
-    
+
     activePlayers.forEach((player) => {
       this.updatePlayerStack(player, player.stack + potShare);
     });
@@ -398,9 +417,13 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
 
     this.addLog(
       state,
-      this.createLogEntry('system', `Showdown! Pot distributed to ${activePlayers.length} player(s).`, {
-        scope: 'all',
-      }),
+      this.createLogEntry(
+        'system',
+        `Showdown! Pot distributed to ${activePlayers.length} player(s).`,
+        {
+          scope: 'all',
+        },
+      ),
     );
   }
 }

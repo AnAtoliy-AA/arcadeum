@@ -1,50 +1,38 @@
 const path = require('path');
 
+const getRelativeFiles = (files, basePath) => {
+  return files
+    .map((file) => path.relative(basePath, file))
+    .map((file) => `"${file}"`)
+    .join(' ');
+};
+
+const lintAndFormat = (app) => (files) => {
+  const basePath = `apps/${app}`;
+  const relativeFiles = getRelativeFiles(files, basePath);
+  if (!relativeFiles) {
+    return [];
+  }
+  return [
+    `cd ${basePath} && pnpm exec eslint --max-warnings=0 --fix ${relativeFiles}`,
+    `cd ${basePath} && pnpm exec prettier --write ${relativeFiles}`,
+  ];
+};
+
+const formatOnly = (app) => (files) => {
+  const basePath = `apps/${app}`;
+  const relativeFiles = getRelativeFiles(files, basePath);
+  if (!relativeFiles) {
+    return [];
+  }
+  return [`cd ${basePath} && pnpm exec prettier --write ${relativeFiles}`];
+};
+
 module.exports = {
-  "apps/mobile/**/*.{ts,tsx,js,jsx}": (files) => {
-    const relativeFiles = files
-      .map((file) => path.relative('apps/mobile', file))
-      .map((file) => `"${file}"`)
-      .join(' ');
-    if (!relativeFiles) {
-      return [];
-    }
-    return [
-      `cd apps/mobile && pnpm exec eslint --max-warnings=0 --fix ${relativeFiles}`,
-      `cd apps/mobile && pnpm exec prettier --write ${relativeFiles}`,
-    ];
-  },
-  "apps/mobile/**/*.{json,md,yml,yaml}": (files) => {
-    const relativeFiles = files
-      .map((file) => path.relative('apps/mobile', file))
-      .map((file) => `"${file}"`)
-      .join(' ');
-    if (!relativeFiles) {
-      return [];
-    }
-    return [`cd apps/mobile && pnpm exec prettier --write ${relativeFiles}`];
-  },
-  "apps/be/**/*.{ts,js}": (files) => {
-    const relativeFiles = files
-      .map((file) => path.relative('apps/be', file))
-      .map((file) => `"${file}"`)
-      .join(' ');
-    if (!relativeFiles) {
-      return [];
-    }
-    return [
-      `cd apps/be && pnpm exec eslint --max-warnings=0 --fix ${relativeFiles}`,
-      `cd apps/be && pnpm exec prettier --write ${relativeFiles}`,
-    ];
-  },
-  "apps/be/**/*.{json,md,yml,yaml}": (files) => {
-    const relativeFiles = files
-      .map((file) => path.relative('apps/be', file))
-      .map((file) => `"${file}"`)
-      .join(' ');
-    if (!relativeFiles) {
-      return [];
-    }
-    return [`cd apps/be && pnpm exec prettier --write ${relativeFiles}`];
-  },
+  'apps/mobile/**/*.{ts,tsx,js,jsx}': lintAndFormat('mobile'),
+  'apps/mobile/**/*.{json,md,yml,yaml}': formatOnly('mobile'),
+  'apps/be/**/*.{ts,js}': lintAndFormat('be'),
+  'apps/be/**/*.{json,md,yml,yaml}': formatOnly('be'),
+  'apps/web/**/*.{ts,tsx,js,jsx}': lintAndFormat('web'),
+  'apps/web/**/*.{json,md,yml,yaml,css}': formatOnly('web'),
 };

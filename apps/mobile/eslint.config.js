@@ -7,4 +7,15 @@ module.exports = defineConfig([
   {
     ignores: ['dist/*'],
   },
+  {
+    rules: {
+      'max-lines': ['error', { max: 500, skipBlankLines: true, skipComments: true }],
+    },
+  },
+  {
+    files: ['**/*.styles.ts', '**/*.styles.tsx'],
+    rules: {
+      'max-lines': 'off',
+    },
+  },
 ]);

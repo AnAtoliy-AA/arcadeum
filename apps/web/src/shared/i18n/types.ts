@@ -193,6 +193,11 @@ export type ChatListMessages = {
 };
 
 export type GamesMessages = {
+  "exploding-kittens"?: { name?: string };
+  "exploding-cats"?: { name?: string };
+  "texas-holdem"?: { name?: string };
+  coup?: { name?: string };
+  "pandemic-lite"?: { name?: string };
   lounge?: {
     activeTitle?: string;
     emptyTitle?: string;
@@ -221,6 +226,14 @@ export type GamesMessages = {
     };
     hostedBy?: string;
     participants?: string;
+    hostLabel?: string;
+    playersLabel?: string;
+    statusLabel?: string;
+    visibilityLabel?: string;
+    visibility?: {
+      public?: string;
+      private?: string;
+    };
   };
   room?: {
     gameArea?: string;
@@ -250,19 +263,185 @@ export type GamesMessages = {
     notesAria?: string;
     submitCreating?: string;
   };
+  roomPage?: {
+    loading?: string;
+    loadingGame?: string;
+    errors?: {
+      notAuthenticated?: string;
+      loginButton?: string;
+      loadingRoom?: string;
+      roomNotFound?: string;
+      unsupportedGame?: string;
+    };
+  };
+  table?: {
+    cards?: {
+      explodingCat?: string;
+      defuse?: string;
+      attack?: string;
+      skip?: string;
+      favor?: string;
+      shuffle?: string;
+      seeTheFuture?: string;
+      tacocat?: string;
+      hairyPotatoCat?: string;
+      rainbowRalphingCat?: string;
+      cattermelon?: string;
+      beardedCat?: string;
+      generic?: string;
+    };
+    actions?: {
+      start?: string;
+      starting?: string;
+      draw?: string;
+      drawing?: string;
+      playSkip?: string;
+      playingSkip?: string;
+      playAttack?: string;
+      playingAttack?: string;
+    };
+    state?: {
+      deck?: string;
+      discard?: string;
+      pendingDraws?: string;
+      cards?: string;
+      card?: string;
+    };
+    players?: {
+      you?: string;
+      alive?: string;
+      eliminated?: string;
+      yourTurn?: string;
+      waitingFor?: string;
+    };
+    lobby?: {
+      waitingToStart?: string;
+      playersInLobby?: string;
+      needTwoPlayers?: string;
+      hostCanStart?: string;
+      waitingForHost?: string;
+    };
+    hand?: {
+      title?: string;
+      empty?: string;
+    };
+    log?: {
+      title?: string;
+      empty?: string;
+    };
+    chat?: {
+      title?: string;
+      empty?: string;
+      send?: string;
+      show?: string;
+      hide?: string;
+      placeholderAll?: string;
+      placeholderPlayers?: string;
+      hintAll?: string;
+      hintPlayers?: string;
+      scope?: {
+        all?: string;
+        players?: string;
+      };
+    };
+    eliminated?: {
+      title?: string;
+      message?: string;
+    };
+    fullscreen?: {
+      enter?: string;
+      exit?: string;
+      hint?: string;
+    };
+    controlPanel?: {
+      fullscreen?: string;
+      exitFullscreen?: string;
+      enterFullscreen?: string;
+      leaveRoom?: string;
+      moveControls?: {
+        moveUp?: string;
+        moveDown?: string;
+        moveLeft?: string;
+        moveRight?: string;
+        centerView?: string;
+        shortcuts?: {
+          up?: string;
+          down?: string;
+          left?: string;
+          right?: string;
+          center?: string;
+          fullscreen?: string;
+          exitFullscreen?: string;
+        };
+      };
+    };
+  };
 };
 
 export type HistoryMessages = {
+  unknownGame?: string;
+  loading?: string;
   list?: {
     emptyNoEntries?: string;
     emptySignedOut?: string;
   };
+  search?: {
+    label?: string;
+    placeholder?: string;
+    noResults?: string;
+  };
+  filter?: {
+    label?: string;
+    all?: string;
+    clear?: string;
+  };
+  pagination?: {
+    showing?: string;
+    loadMore?: string;
+    loading?: string;
+  };
   status?: {
     lobby?: string;
     in_progress?: string;
+    inProgress?: string;
     completed?: string;
     waiting?: string;
     active?: string;
+    abandoned?: string;
+  };
+  actions?: {
+    viewDetails?: string;
+    refresh?: string;
+    retry?: string;
+  };
+  detail?: {
+    backToList?: string;
+    loading?: string;
+    lastActivity?: string;
+    rematchTitle?: string;
+    rematchDescription?: string;
+    rematchAction?: string;
+    rematchCreating?: string;
+    participantsTitle?: string;
+    hostLabel?: string;
+    removeTitle?: string;
+    removeDescription?: string;
+    removeAction?: string;
+    removeConfirm?: string;
+    removeRemoving?: string;
+    removeCancel?: string;
+    logsTitle?: string;
+    noLogs?: string;
+    scopePlayers?: string;
+    scopeAll?: string;
+    sender?: string;
+  };
+  errors?: {
+    authRequired?: string;
+    detailRemoved?: string;
+    detailFailed?: string;
+    rematchMinimum?: string;
+    removeFailed?: string;
   };
 };
 

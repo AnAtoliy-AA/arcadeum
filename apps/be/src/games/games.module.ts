@@ -11,6 +11,8 @@ import {
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GamesGateway } from './games.gateway';
+import { ExplodingCatsGateway } from './exploding-cats.gateway';
+import { TexasHoldemGateway } from './texas-holdem.gateway';
 import { GameEnginesModule } from './engines/engines.module';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
@@ -43,9 +45,10 @@ import { GameUtilitiesService } from './utilities/game-utilities.service';
     GameUtilitiesService,
     // Facade service (main entry point)
     GamesService,
-    // Gateway
+    // Gateways
     GamesGateway,
+    ExplodingCatsGateway,
+    TexasHoldemGateway,
   ],
-  exports: [GamesService],
 })
 export class GamesModule {}

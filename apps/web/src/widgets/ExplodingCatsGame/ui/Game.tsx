@@ -8,6 +8,9 @@ import { CAT_CARDS } from "../types";
 import { getCardEmoji, getCardTranslationKey } from "../lib/cardUtils";
 import { useDisplayNames } from "../lib/displayUtils";
 import { useExplodingCatsState, useFullscreen, useExplodingCatsModals } from "../hooks";
+import { CatComboModal } from "./modals/CatComboModal";
+import { SeeTheFutureModal } from "./modals/SeeTheFutureModal";
+import { FavorModal } from "./modals/FavorModal";
 
 import {
   GameContainer,
@@ -57,17 +60,6 @@ import {
   ChatHint,
   ChatSendButton,
   EmptyState,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
-  CloseButton,
-  ModalSection,
-  SectionLabel,
-  OptionGrid,
-  OptionButton,
-  ModalActions,
-  ModalButton,
 } from "./styles";
 
 export default function ExplodingCatsGame({ 
@@ -403,146 +395,54 @@ export default function ExplodingCatsGame({
       </GameBoard>
 
       {/* Cat Combo Modal */}
-      {catComboModal && (
-        <Modal onClick={handleCloseCatComboModal}>
-          <ModalContent onClick={(e) => e.stopPropagation()}>
-            <ModalHeader>
-              <ModalTitle>{getCardEmoji(catComboModal.cat)} Play Cat Combo</ModalTitle>
-              <CloseButton onClick={handleCloseCatComboModal}>×</CloseButton>
-            </ModalHeader>
-            <ModalSection>
-              <SectionLabel>Select Combo Mode</SectionLabel>
-              <OptionGrid>
-                {catComboModal.availableModes.includes("pair") && (
-                  <OptionButton $selected={selectedMode === "pair"} onClick={() => setSelectedMode("pair")}>
-                    <div style={{ fontSize: "1.5rem" }}>🎴🎴</div>
-                    <div>Pair</div>
-                    <div style={{ fontSize: "0.75rem", opacity: 0.7 }}>Random card from target</div>
-                  </OptionButton>
-                )}
-                {catComboModal.availableModes.includes("trio") && (
-                  <OptionButton $selected={selectedMode === "trio"} onClick={() => setSelectedMode("trio")}>
-                    <div style={{ fontSize: "1.5rem" }}>🎴🎴🎴</div>
-                    <div>Trio</div>
-                    <div style={{ fontSize: "0.75rem", opacity: 0.7 }}>Choose specific card</div>
-                  </OptionButton>
-                )}
-              </OptionGrid>
-            </ModalSection>
-            <ModalSection>
-              <SectionLabel>Select Target Player</SectionLabel>
-              <OptionGrid>
-                {aliveOpponents.map((opponent) => (
-                  <OptionButton key={opponent.playerId} $selected={selectedTarget === opponent.playerId} onClick={() => setSelectedTarget(opponent.playerId)}>
-                    <div style={{ fontSize: "1.5rem" }}>🎮</div>
-                    <div>{resolveDisplayName(opponent.playerId, `Player ${opponent.playerId.slice(0, 8)}`)}</div>
-                    <div style={{ fontSize: "0.75rem", opacity: 0.7 }}>{opponent.hand.length} cards</div>
-                  </OptionButton>
-                ))}
-              </OptionGrid>
-            </ModalSection>
-            {selectedMode === "trio" && (
-              <ModalSection>
-                <SectionLabel>Select Card to Request</SectionLabel>
-                <OptionGrid>
-                  {["defuse", "attack", "skip", "favor", "shuffle", "see_the_future", ...CAT_CARDS].map((card) => (
-                    <OptionButton key={card} $selected={selectedCard === card} onClick={() => setSelectedCard(card as ExplodingCatsCard)}>
-                      <div style={{ fontSize: "1.5rem" }}>{getCardEmoji(card as ExplodingCatsCard)}</div>
-                      <div style={{ fontSize: "0.75rem" }}>{t(getCardTranslationKey(card as ExplodingCatsCard)) || card}</div>
-                    </OptionButton>
-                  ))}
-                </OptionGrid>
-              </ModalSection>
-            )}
-            <ModalActions>
-              <ModalButton variant="secondary" onClick={handleCloseCatComboModal}>Cancel</ModalButton>
-              <ModalButton onClick={handleConfirmCatCombo} disabled={!selectedTarget || (selectedMode === "trio" && !selectedCard)}>
-                Play Combo
-              </ModalButton>
-            </ModalActions>
-          </ModalContent>
-        </Modal>
-      )}
+      <CatComboModal
+        isOpen={!!catComboModal}
+        onClose={handleCloseCatComboModal}
+        catComboModal={catComboModal}
+        selectedMode={selectedMode}
+        selectedTarget={selectedTarget}
+        selectedCard={selectedCard}
+        aliveOpponents={aliveOpponents}
+        onSelectMode={setSelectedMode}
+        onSelectTarget={setSelectedTarget}
+        onSelectCard={setSelectedCard}
+        onConfirm={handleConfirmCatCombo}
+        resolveDisplayName={resolveDisplayName}
+        t={t}
+      />
 
       {/* See the Future Modal */}
-      {seeTheFutureModal && (
-        <Modal onClick={() => setSeeTheFutureModal(null)}>
-          <ModalContent onClick={(e) => e.stopPropagation()}>
-            <ModalHeader>
-              <ModalTitle>🔮 Top 3 Cards</ModalTitle>
-              <CloseButton onClick={() => setSeeTheFutureModal(null)}>×</CloseButton>
-            </ModalHeader>
-            <OptionGrid>
-              {seeTheFutureModal.cards.map((card, index) => (
-                <OptionButton key={`${card}-${index}`} $selected={false}>
-                  <div style={{ fontSize: "0.75rem", opacity: 0.7 }}>#{index + 1}</div>
-                  <div style={{ fontSize: "2rem" }}>{getCardEmoji(card)}</div>
-                  <div style={{ fontSize: "0.75rem" }}>{t(getCardTranslationKey(card)) || card}</div>
-                </OptionButton>
-              ))}
-            </OptionGrid>
-            <ModalActions>
-              <ModalButton onClick={() => setSeeTheFutureModal(null)}>Got it!</ModalButton>
-            </ModalActions>
-          </ModalContent>
-        </Modal>
-      )}
+      <SeeTheFutureModal
+        isOpen={!!seeTheFutureModal}
+        onClose={() => setSeeTheFutureModal(null)}
+        cards={seeTheFutureModal?.cards || []}
+        t={t}
+      />
 
       {/* Favor Modal */}
-      {favorModal && (
-        <Modal onClick={() => setFavorModal(false)}>
-          <ModalContent onClick={(e) => e.stopPropagation()}>
-            <ModalHeader>
-              <ModalTitle>🤝 Request Favor</ModalTitle>
-              <CloseButton onClick={() => setFavorModal(false)}>×</CloseButton>
-            </ModalHeader>
-            <ModalSection>
-              <SectionLabel>Select Player</SectionLabel>
-              <OptionGrid>
-                {aliveOpponents.map((opponent) => (
-                  <OptionButton
-                    key={opponent.playerId}
-                    $selected={selectedTarget === opponent.playerId}
-                    onClick={() => setSelectedTarget(opponent.playerId)}
-                    disabled={opponent.hand.length === 0}
-                  >
-                    <div style={{ fontSize: "1.5rem" }}>🎮</div>
-                    <div>{resolveDisplayName(opponent.playerId, `Player ${opponent.playerId.slice(0, 8)}`)}</div>
-                    <div style={{ fontSize: "0.75rem", opacity: 0.7 }}>{opponent.hand.length} cards</div>
-                  </OptionButton>
-                ))}
-              </OptionGrid>
-            </ModalSection>
-            <ModalSection>
-              <SectionLabel>Select Card to Request</SectionLabel>
-              <OptionGrid>
-                {["defuse", "attack", "skip", "favor", "shuffle", "see_the_future", ...CAT_CARDS].map((card) => (
-                  <OptionButton key={card} $selected={selectedCard === card} onClick={() => setSelectedCard(card as ExplodingCatsCard)}>
-                    <div style={{ fontSize: "1.5rem" }}>{getCardEmoji(card as ExplodingCatsCard)}</div>
-                    <div style={{ fontSize: "0.75rem" }}>{t(getCardTranslationKey(card as ExplodingCatsCard)) || card}</div>
-                  </OptionButton>
-                ))}
-              </OptionGrid>
-            </ModalSection>
-            <ModalActions>
-              <ModalButton variant="secondary" onClick={() => { setFavorModal(false); setSelectedTarget(null); setSelectedCard(null); }}>Cancel</ModalButton>
-              <ModalButton 
-                onClick={() => {
-                  if (selectedTarget && selectedCard) {
-                    actions.playFavor(selectedTarget, selectedCard);
-                    setFavorModal(false);
-                    setSelectedTarget(null);
-                    setSelectedCard(null);
-                  }
-                }} 
-                disabled={!selectedTarget || !selectedCard}
-              >
-                Request Card
-              </ModalButton>
-            </ModalActions>
-          </ModalContent>
-        </Modal>
-      )}
+      <FavorModal
+        isOpen={favorModal}
+        onClose={() => {
+          setFavorModal(false);
+          setSelectedTarget(null);
+          setSelectedCard(null);
+        }}
+        aliveOpponents={aliveOpponents}
+        selectedTarget={selectedTarget}
+        selectedCard={selectedCard}
+        onSelectTarget={setSelectedTarget}
+        onSelectCard={setSelectedCard}
+        onConfirm={() => {
+          if (selectedTarget && selectedCard) {
+            actions.playFavor(selectedTarget, selectedCard);
+            setFavorModal(false);
+            setSelectedTarget(null);
+            setSelectedCard(null);
+          }
+        }}
+        resolveDisplayName={resolveDisplayName}
+        t={t}
+      />
     </GameContainer>
   );
 }

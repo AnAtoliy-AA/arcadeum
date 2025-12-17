@@ -109,6 +109,34 @@ type ExtendedGamesMessages = GamesMessages & {
       exit?: string;
       hint?: string;
     };
+    modals?: {
+      common?: {
+        cancel?: string;
+      };
+      catCombo?: {
+        title?: string;
+        selectMode?: string;
+        pair?: string;
+        pairDesc?: string;
+        trio?: string;
+        trioDesc?: string;
+        selectTarget?: string;
+        selectCard?: string;
+        cardsCount?: string;
+        confirm?: string;
+      };
+      seeTheFuture?: {
+        title?: string;
+        confirm?: string;
+      };
+      favor?: {
+        title?: string;
+        selectPlayer?: string;
+        selectCard?: string;
+        cardsCount?: string;
+        confirm?: string;
+      };
+    };
     controlPanel?: {
       fullscreen?: string;
       exitFullscreen?: string;

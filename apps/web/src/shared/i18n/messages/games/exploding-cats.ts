@@ -83,6 +83,34 @@ export const explodingCatsMessages: Record<Locale, any> = {
         exit: "Exit fullscreen (Esc)",
         hint: "Press F to toggle fullscreen",
       },
+      modals: {
+        common: {
+          cancel: "Cancel",
+        },
+        catCombo: {
+          title: "Play Cat Combo",
+          selectMode: "Select Combo Mode",
+          pair: "Pair",
+          pairDesc: "Random card from target",
+          trio: "Trio",
+          trioDesc: "Choose specific card",
+          selectTarget: "Select Target Player",
+          selectCard: "Select Card to Request",
+          cardsCount: "{count} cards",
+          confirm: "Play Combo",
+        },
+        seeTheFuture: {
+          title: "Top 3 Cards",
+          confirm: "Got it!",
+        },
+        favor: {
+          title: "Request Favor",
+          selectPlayer: "Select Player",
+          selectCard: "Select Card to Request",
+          cardsCount: "{count} cards",
+          confirm: "Request Card",
+        },
+      },
       controlPanel: {
         fullscreen: "Fullscreen",
         exitFullscreen: "Exit fullscreen",

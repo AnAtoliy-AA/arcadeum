@@ -7,7 +7,6 @@ const ROOT_DIR = process.cwd();
 // List of files to ignore (relative to root)
 // These files currently exceed the limit and should be refactored.
 const ALLOW_LIST = new Set([
-    'apps/web/src/shared/i18n/messages/games.ts',
     'apps/web/src/widgets/ExplodingCatsGame/ui/Game.tsx',
     'apps/web/src/widgets/header/ui/Header.tsx',
     'apps/mobile/pages/GamesScreen/gameIntegrations/ExplodingCats/ExplodingCatsRoom.styles.ts',

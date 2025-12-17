@@ -8,7 +8,6 @@ const ROOT_DIR = process.cwd();
 // These files currently exceed the limit and should be refactored.
 const ALLOW_LIST = new Set([
     'apps/web/src/app/games/GamesPage.tsx',
-    'apps/web/src/features/auth/ui/styles.ts',
     'apps/web/src/shared/i18n/messages/games.ts',
     'apps/web/src/widgets/ExplodingCatsGame/ui/Game.tsx',
     'apps/web/src/widgets/header/ui/Header.tsx',

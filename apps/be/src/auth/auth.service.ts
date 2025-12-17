@@ -1,275 +1,46 @@
+/**
+ * Auth service.
+ * Composes sub-services for OAuth, refresh tokens, and user management.
+ */
 import {
   Injectable,
-  InternalServerErrorException,
   ConflictException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from './schemas/user.schema';
-import {
-  RefreshToken,
-  RefreshTokenDocument,
-} from './schemas/refresh-token.schema';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { JwtService } from '@nestjs/jwt';
+import { User, UserDocument } from './schemas/user.schema';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
 import { OAuthLoginDto } from './dtos/oauth-login.dto';
+import { OAuthClientService, RefreshTokenService, GoogleOAuthService } from './services';
+import { escapeRegex } from './lib/utils';
+import type {
+  AuthUserProfile,
+  AuthTokensResponse,
+  OAuthTokenResponse,
+  GoogleUserProfile,
+} from './lib/types';
 
-function escapeRegex(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-interface OidcDiscoveryDoc {
-  token_endpoint?: string;
-}
-
-export interface OAuthTokenResponse {
-  accessToken: string;
-  refreshToken?: string;
-  idToken?: string;
-  tokenType?: string;
-  scope?: string;
-  expiresIn?: number;
-}
-
-export interface AuthUserProfile {
-  id: string;
-  email: string;
-  username: string;
-  displayName: string;
-  createdAt?: Date;
-}
-
-interface GoogleUserProfile {
-  sub: string;
-  email: string;
-  emailVerified: boolean;
-  name?: string;
-  audience?: string;
-}
-
-interface AuthTokensResponse {
-  accessToken: string;
-  accessTokenExpiresAt: Date | null;
-  refreshToken: string;
-  refreshTokenExpiresAt: Date;
-  user: AuthUserProfile;
-}
-
-function sanitize(value?: string | null): string | undefined {
-  if (!value) {
-    return undefined;
-  }
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
-}
-
-function normalizeUrl(value: string): string | null {
-  try {
-    return new URL(value).toString();
-  } catch {
-    return null;
-  }
-}
-
-type WebClientConfig = {
-  id: string;
-  secret: string;
-  redirectUris: string[];
-  allowedOrigins: string[];
-};
-
-function parseRedirectList(value?: string | null): string[] {
-  if (!value) {
-    return [];
-  }
-  return value
-    .split(/[\n,]+/)
-    .map((entry) => entry.trim())
-    .filter((entry) => entry.length > 0);
-}
-
-type ParsedRedirectEntry = {
-  exact?: string;
-  origin?: string;
-};
-
-function parseRedirectEntry(raw: string): ParsedRedirectEntry | null {
-  const trimmed = raw.trim();
-  if (!trimmed) {
-    return null;
-  }
-
-  const wildcard = trimmed.endsWith('/*');
-  const candidate = wildcard ? trimmed.slice(0, -2) : trimmed;
-
-  const normalized = normalizeUrl(candidate);
-  if (!normalized) {
-    return null;
-  }
-
-  try {
-    const url = new URL(normalized);
-    const origin = url.origin;
-    if (wildcard) {
-      return { origin } satisfies ParsedRedirectEntry;
-    }
-    return { exact: url.toString(), origin } satisfies ParsedRedirectEntry;
-  } catch {
-    return null;
-  }
-}
+// Re-export types for backwards compatibility
+export type { OAuthTokenResponse, AuthUserProfile } from './lib/types';
 
 @Injectable()
 export class AuthService {
-  private discovery: OidcDiscoveryDoc | null = null;
-  private fetchedAt = 0;
-
   constructor(
-    private readonly config: ConfigService,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    @InjectModel(RefreshToken.name)
-    private readonly refreshModel: Model<RefreshTokenDocument>,
     private readonly jwt: JwtService,
+    private readonly oauthClient: OAuthClientService,
+    private readonly refreshTokenService: RefreshTokenService,
+    private readonly googleOAuth: GoogleOAuthService,
   ) {}
 
-  private buildWebClientConfig(opts: {
-    idKey: string;
-    secretKey?: string;
-    fallbackSecret?: string;
-    redirectKey?: string;
-    originKey?: string;
-  }): WebClientConfig | null {
-    const id = sanitize(this.config.get<string>(opts.idKey));
-    if (!id) {
-      return null;
-    }
-
-    let secret: string | undefined;
-    if (opts.secretKey) {
-      secret = sanitize(this.config.get<string>(opts.secretKey));
-    }
-    if (!secret && opts.fallbackSecret) {
-      secret = opts.fallbackSecret;
-    }
-    if (!secret) {
-      return null;
-    }
-
-    const redirectValue =
-      opts.redirectKey !== undefined
-        ? this.config.get<string>(opts.redirectKey)
-        : undefined;
-    const originValue =
-      opts.originKey !== undefined
-        ? this.config.get<string>(opts.originKey)
-        : undefined;
-
-    const redirectUris = new Set<string>();
-    const allowedOrigins = new Set<string>();
-
-    for (const entry of parseRedirectList(redirectValue)) {
-      const parsed = parseRedirectEntry(entry);
-      if (!parsed) continue;
-      if (parsed.exact) {
-        redirectUris.add(parsed.exact);
-      }
-      if (parsed.origin) {
-        allowedOrigins.add(parsed.origin);
-      }
-    }
-
-    for (const entry of parseRedirectList(originValue)) {
-      const parsed = parseRedirectEntry(entry);
-      if (!parsed?.origin) continue;
-      allowedOrigins.add(parsed.origin);
-    }
-
-    return {
-      id,
-      secret,
-      redirectUris: Array.from(redirectUris),
-      allowedOrigins: Array.from(allowedOrigins),
-    } satisfies WebClientConfig;
-  }
-
-  private getWebClientConfigs(): WebClientConfig[] {
-    const fallbackSecret = sanitize(
-      this.config.get<string>('OAUTH_WEB_CLIENT_SECRET'),
-    );
-
-    const configs = [
-      this.buildWebClientConfig({
-        idKey: 'OAUTH_WEB_CLIENT_ID_NEXT',
-        secretKey: 'OAUTH_WEB_CLIENT_SECRET_NEXT',
-        fallbackSecret,
-        redirectKey: 'OAUTH_WEB_REDIRECT_URI_NEXT',
-        originKey: 'OAUTH_WEB_ALLOWED_ORIGINS_NEXT',
-      }),
-      this.buildWebClientConfig({
-        idKey: 'OAUTH_WEB_CLIENT_ID_EXPO',
-        secretKey: 'OAUTH_WEB_CLIENT_SECRET_EXPO',
-        fallbackSecret,
-        redirectKey: 'OAUTH_WEB_REDIRECT_URI_EXPO',
-        originKey: 'OAUTH_WEB_ALLOWED_ORIGINS_EXPO',
-      }),
-      this.buildWebClientConfig({
-        idKey: 'OAUTH_WEB_CLIENT_ID',
-        secretKey: 'OAUTH_WEB_CLIENT_SECRET',
-        redirectKey: 'OAUTH_WEB_REDIRECT_URI',
-        originKey: 'OAUTH_WEB_ALLOWED_ORIGINS',
-      }),
-    ];
-
-    const unique = new Map<string, WebClientConfig>();
-    for (const entry of configs) {
-      if (!entry) continue;
-      if (!unique.has(entry.id)) {
-        unique.set(entry.id, entry);
-        continue;
-      }
-      const current = unique.get(entry.id);
-      if (!current) continue;
-      const merged = new Set<string>([
-        ...current.redirectUris,
-        ...entry.redirectUris,
-      ]);
-      const mergedOrigins = new Set<string>([
-        ...current.allowedOrigins,
-        ...entry.allowedOrigins,
-      ]);
-      unique.set(entry.id, {
-        ...current,
-        redirectUris: Array.from(merged),
-        allowedOrigins: Array.from(mergedOrigins),
-      });
-    }
-
-    return Array.from(unique.values());
-  }
-
-  private async getDiscovery(): Promise<OidcDiscoveryDoc> {
-    const issuer = this.config.get<string>('OAUTH_ISSUER');
-    if (!issuer) throw new InternalServerErrorException('Missing OAUTH_ISSUER');
-    const needsRefresh =
-      !this.discovery || Date.now() - this.fetchedAt > 10 * 60 * 1000; // 10 minutes
-    if (!needsRefresh) {
-      return this.discovery as OidcDiscoveryDoc;
-    }
-    const url =
-      issuer.replace(/\/?$/, '/') + '.well-known/openid-configuration';
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new InternalServerErrorException('OIDC discovery failed');
-    }
-    this.discovery = (await res.json()) as OidcDiscoveryDoc;
-    this.fetchedAt = Date.now();
-    return this.discovery;
-  }
+  // ─────────────────────────────────────────────────────────────────────────────
+  // OAuth Code Exchange (delegated to GoogleOAuthService)
+  // ─────────────────────────────────────────────────────────────────────────────
 
   async exchangeCode(params: {
     code: string;
@@ -277,103 +48,13 @@ export class AuthService {
     redirectUri?: string;
     requestOrigin?: string;
   }): Promise<OAuthTokenResponse> {
-    const webClients = this.getWebClientConfigs();
-    if (webClients.length === 0) {
-      throw new InternalServerErrorException(
-        'Missing OAuth web client configuration',
-      );
-    }
-
-    let redirectUri = sanitize(params.redirectUri);
-    let client: WebClientConfig | undefined;
-
-    if (redirectUri) {
-      client = this.findClientForRedirect(webClients, redirectUri);
-      if (!client) {
-        throw new InternalServerErrorException('Redirect URI not allowed');
-      }
-    } else {
-      const originMatch = params.requestOrigin
-        ? this.findClientByOrigin(webClients, params.requestOrigin)
-        : undefined;
-      if (originMatch) {
-        client = originMatch.client;
-        redirectUri =
-          originMatch.redirectUri ?? originMatch.client.redirectUris[0];
-      } else {
-        client = this.findDefaultWebClient(webClients);
-        redirectUri = client?.redirectUris[0];
-      }
-    }
-
-    if (!client) {
-      throw new InternalServerErrorException(
-        'Missing OAuth web client configuration',
-      );
-    }
-
-    if (!redirectUri) {
-      throw new InternalServerErrorException('Missing redirect URI');
-    }
-
-    const { id: clientId, secret: clientSecret } = client;
-
-    const discovery = await this.getDiscovery();
-    const tokenEndpoint = discovery.token_endpoint;
-    if (!tokenEndpoint) {
-      throw new InternalServerErrorException('No token endpoint');
-    }
-
-    const body = new URLSearchParams();
-    body.set('grant_type', 'authorization_code');
-    body.set('code', params.code);
-    body.set('client_id', clientId);
-    body.set('client_secret', clientSecret);
-    body.set('redirect_uri', redirectUri);
-    if (params.codeVerifier) body.set('code_verifier', params.codeVerifier);
-
-    const res = await fetch(tokenEndpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: body.toString(),
-    });
-    type TokenJSON = {
-      access_token?: string;
-      refresh_token?: string;
-      id_token?: string;
-      token_type?: string;
-      scope?: string;
-      expires_in?: number;
-      error?: string;
-    };
-    let json: TokenJSON | null = null;
-    try {
-      json = (await res.json()) as TokenJSON;
-    } catch {
-      throw new InternalServerErrorException('Failed to parse token response');
-    }
-    if (!res.ok || !json) {
-      throw new InternalServerErrorException(
-        `Token exchange failed: ${(json && json.error) || res.status}`,
-      );
-    }
-    const {
-      access_token: accessToken,
-      refresh_token: refreshToken,
-      id_token: idToken,
-      token_type: tokenType,
-      scope,
-      expires_in: expiresIn,
-    } = json;
-    if (!accessToken) {
-      throw new InternalServerErrorException(
-        'Token exchange missing access_token',
-      );
-    }
-    return { accessToken, refreshToken, idToken, tokenType, scope, expiresIn };
+    return this.googleOAuth.exchangeCode(params);
   }
 
-  // Local auth (email/password)
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Local Auth (email/password)
+  // ─────────────────────────────────────────────────────────────────────────────
+
   async register(data: RegisterDto): Promise<AuthUserProfile> {
     const email = data.email.toLowerCase();
     const username = data.username.trim();
@@ -418,9 +99,12 @@ export class AuthService {
       username: user.username,
     };
     const accessToken = await this.jwt.signAsync(payload);
-    const accessTokenExpiresAt = this.deriveAccessTokenExpiration(accessToken);
-    // Also issue refresh token
-    const refresh = await this.issueRefreshToken(String(user.id), null);
+    const accessTokenExpiresAt =
+      this.refreshTokenService.deriveAccessTokenExpiration(accessToken);
+    const refresh = await this.refreshTokenService.issueRefreshToken(
+      String(user.id),
+      null,
+    );
     const authUser = this.buildAuthUserProfile(user);
     return {
       accessToken,
@@ -428,8 +112,12 @@ export class AuthService {
       refreshToken: refresh.token,
       refreshTokenExpiresAt: refresh.expiresAt,
       user: authUser,
-    }; // token is raw value
+    };
   }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // OAuth Login
+  // ─────────────────────────────────────────────────────────────────────────────
 
   async loginWithOAuth(data: OAuthLoginDto): Promise<AuthTokensResponse> {
     if (data.provider !== 'google') {
@@ -440,7 +128,7 @@ export class AuthService {
       throw new UnauthorizedException('Missing OAuth credentials');
     }
 
-    const googleProfile = await this.fetchGoogleProfile({
+    const googleProfile = await this.googleOAuth.fetchGoogleProfile({
       accessToken: data.accessToken,
       idToken: data.idToken,
     });
@@ -458,8 +146,12 @@ export class AuthService {
     };
 
     const accessToken = await this.jwt.signAsync(payload);
-    const accessTokenExpiresAt = this.deriveAccessTokenExpiration(accessToken);
-    const refresh = await this.issueRefreshToken(String(user.id), null);
+    const accessTokenExpiresAt =
+      this.refreshTokenService.deriveAccessTokenExpiration(accessToken);
+    const refresh = await this.refreshTokenService.issueRefreshToken(
+      String(user.id),
+      null,
+    );
     const userProfile = this.buildAuthUserProfile(user);
 
     return {
@@ -471,127 +163,21 @@ export class AuthService {
     };
   }
 
-  // Refresh token issuance (rotation)
-  private async issueRefreshToken(
-    userId: string,
-    parentId: string | null,
-  ): Promise<{ token: string; expiresAt: Date; id: string }> {
-    const raw = crypto.randomUUID() + '.' + crypto.randomUUID();
-    const tokenId = this.extractRefreshTokenId(raw);
-    const hash = await bcrypt.hash(raw, 10);
-    const ttlDays = Number(
-      this.config.get<string>('REFRESH_TOKEN_TTL_DAYS') || '7',
-    );
-    const expiresAt = new Date(Date.now() + ttlDays * 24 * 60 * 60 * 1000);
-    const rotationParentId = parentId || 'root';
-    const doc = await this.refreshModel.create({
-      userId,
-      ...(tokenId ? { tokenId } : {}),
-      tokenHash: hash,
-      expiresAt,
-      rotationParentId,
-    });
-    return { token: raw, expiresAt, id: String(doc.id) };
-  }
-
-  private extractRefreshTokenId(raw: string): string | null {
-    if (!raw) return null;
-    const delimiterIndex = raw.indexOf('.');
-    if (delimiterIndex === -1) {
-      return raw;
-    }
-    const tokenId = raw.slice(0, delimiterIndex);
-    return tokenId || null;
-  }
-
-  private async findRefreshTokenDocument(
-    raw: string,
-  ): Promise<RefreshTokenDocument | null> {
-    const tokenId = this.extractRefreshTokenId(raw);
-    if (tokenId) {
-      const byId = await this.refreshModel.findOne({ tokenId });
-      if (byId) {
-        return byId;
-      }
-    }
-
-    const candidates = await this.refreshModel.find({ revoked: false });
-    for (const candidate of candidates) {
-      if (await bcrypt.compare(raw, candidate.tokenHash)) {
-        return candidate;
-      }
-    }
-
-    return null;
-  }
-
-  private deriveAccessTokenExpiration(token: string): Date | null {
-    const decoded: unknown = this.jwt.decode(token);
-    if (!decoded || typeof decoded !== 'object') {
-      return null;
-    }
-    const payload = decoded as Record<string, unknown>;
-    const expValue = payload['exp'];
-    if (typeof expValue !== 'number') {
-      return null;
-    }
-    return new Date(expValue * 1000);
-  }
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Refresh Token (delegated to RefreshTokenService)
+  // ─────────────────────────────────────────────────────────────────────────────
 
   async refreshToken(rawToken: string): Promise<AuthTokensResponse> {
-    const candidate = rawToken?.trim();
-    if (!candidate) {
-      throw new UnauthorizedException('Missing refresh token');
-    }
-
-    const stored = await this.findRefreshTokenDocument(candidate);
-    if (!stored) {
-      throw new UnauthorizedException('Invalid refresh token');
-    }
-
-    if (stored.revoked) {
-      throw new UnauthorizedException('Refresh token revoked');
-    }
-
-    if (stored.expiresAt.getTime() <= Date.now()) {
-      stored.revoked = true;
-      await stored.save();
-      throw new UnauthorizedException('Refresh token expired');
-    }
-
-    const matches = await bcrypt.compare(candidate, stored.tokenHash);
-    if (!matches) {
-      throw new UnauthorizedException('Invalid refresh token');
-    }
-
-    const userId = String(stored.userId);
-    const userDoc = await this.userModel.findById(userId);
-    if (!userDoc) {
-      stored.revoked = true;
-      await stored.save();
-      throw new UnauthorizedException('User not found for refresh token');
-    }
-
-    const user = await this.ensureUserUsername(userDoc);
-    const accessToken = await this.jwt.signAsync({
-      sub: userId,
-      email: user.email,
-      username: user.username,
-    });
-    const accessTokenExpiresAt = this.deriveAccessTokenExpiration(accessToken);
-
-    const rotated = await this.issueRefreshToken(userId, String(stored.id));
-    stored.revoked = true;
-    await stored.save();
-
-    return {
-      accessToken,
-      accessTokenExpiresAt,
-      refreshToken: rotated.token,
-      refreshTokenExpiresAt: rotated.expiresAt,
-      user: this.buildAuthUserProfile(user),
-    };
+    return this.refreshTokenService.refreshToken(
+      rawToken,
+      (user) => this.buildAuthUserProfile(user),
+      (user) => this.ensureUserUsername(user),
+    );
   }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // User Search & Profile
+  // ─────────────────────────────────────────────────────────────────────────────
 
   async searchUsers(params: {
     query: string;
@@ -628,6 +214,19 @@ export class AuthService {
       displayName: this.resolveDisplayName(user),
     }));
   }
+
+  async getUserProfileById(userId: string): Promise<AuthUserProfile> {
+    const doc = await this.userModel.findById(userId);
+    if (!doc) {
+      throw new UnauthorizedException('User not found');
+    }
+    const ensured = await this.ensureUserUsername(doc);
+    return this.buildAuthUserProfile(ensured);
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Private Helpers
+  // ─────────────────────────────────────────────────────────────────────────────
 
   private sanitizeUsernameCandidate(source: string): string {
     const base = source.replace(/[^a-zA-Z0-9_-]/g, '');
@@ -678,7 +277,8 @@ export class AuthService {
       return ensured;
     }
 
-    const preferredName = profile.name?.trim() || email.split('@')[0] || 'user';
+    const preferredName =
+      profile.name?.trim() || email.split('@')[0] || 'user';
     const base = this.sanitizeUsernameCandidate(preferredName);
     let candidate = base;
     let normalized = candidate.toLowerCase();
@@ -739,214 +339,5 @@ export class AuthService {
     }
 
     return profile;
-  }
-
-  async getUserProfileById(userId: string): Promise<AuthUserProfile> {
-    const doc = await this.userModel.findById(userId);
-    if (!doc) {
-      throw new UnauthorizedException('User not found');
-    }
-    const ensured = await this.ensureUserUsername(doc);
-    return this.buildAuthUserProfile(ensured);
-  }
-
-  private getAllowedOAuthClientIds(): string[] {
-    const webClientIds = this.getWebClientConfigs().map((client) => client.id);
-    const additional = [
-      sanitize(this.config.get<string>('OAUTH_ANDROID_CLIENT_ID')),
-      sanitize(this.config.get<string>('OAUTH_IOS_CLIENT_ID')),
-    ];
-    const uniq = new Set<string>();
-    for (const value of [...webClientIds, ...additional]) {
-      if (value) {
-        uniq.add(value);
-      }
-    }
-    return Array.from(uniq);
-  }
-
-  private findClientForRedirect(
-    clients: WebClientConfig[],
-    redirectUri: string,
-  ): WebClientConfig | undefined {
-    const trimmed = sanitize(redirectUri);
-    if (!trimmed) {
-      return undefined;
-    }
-
-    const normalizedUrl = normalizeUrl(trimmed);
-    if (!normalizedUrl) {
-      return undefined;
-    }
-
-    const exactMatch = clients.find((client) =>
-      client.redirectUris.includes(normalizedUrl),
-    );
-    if (exactMatch) {
-      return exactMatch;
-    }
-
-    let origin: string | undefined;
-    try {
-      origin = new URL(normalizedUrl).origin;
-    } catch {
-      return undefined;
-    }
-    if (!origin) {
-      return undefined;
-    }
-
-    return clients.find((client) => client.allowedOrigins.includes(origin));
-  }
-
-  private findDefaultWebClient(
-    clients: WebClientConfig[],
-  ): WebClientConfig | undefined {
-    return (
-      clients.find((client) => client.redirectUris.length > 0) ?? clients[0]
-    );
-  }
-
-  private findClientByOrigin(
-    clients: WebClientConfig[],
-    origin: string,
-  ): { client: WebClientConfig; redirectUri?: string } | undefined {
-    const normalized = this.normalizeOrigin(origin);
-    if (!normalized) {
-      return undefined;
-    }
-
-    const matches = clients.filter((client) =>
-      client.allowedOrigins.includes(normalized),
-    );
-    if (matches.length === 0) {
-      return undefined;
-    }
-
-    const pickRedirect = (client: WebClientConfig): string | undefined => {
-      for (const candidate of client.redirectUris) {
-        const candidateOrigin = this.normalizeOrigin(candidate);
-        if (candidateOrigin === normalized) {
-          return candidate;
-        }
-      }
-      return client.redirectUris[0];
-    };
-
-    const preferred = matches.find((client) =>
-      client.redirectUris.some(
-        (candidate) => this.normalizeOrigin(candidate) === normalized,
-      ),
-    );
-
-    const selected = preferred ?? matches[0];
-    const redirectUri = pickRedirect(selected);
-    return { client: selected, redirectUri };
-  }
-
-  private normalizeOrigin(value: string): string | undefined {
-    try {
-      return new URL(value).origin;
-    } catch {
-      return undefined;
-    }
-  }
-
-  private async fetchGoogleProfile(params: {
-    accessToken?: string;
-    idToken?: string;
-  }): Promise<GoogleUserProfile> {
-    const allowedAudiences = this.getAllowedOAuthClientIds();
-
-    const attemptFromAccessToken = async () => {
-      if (!params.accessToken) return null;
-      const res = await fetch(
-        'https://openidconnect.googleapis.com/v1/userinfo',
-        {
-          headers: { Authorization: `Bearer ${params.accessToken}` },
-        },
-      );
-      if (!res.ok) {
-        return null;
-      }
-      const json = (await res.json()) as Record<string, unknown>;
-      const email =
-        typeof json.email === 'string' ? json.email.toLowerCase() : '';
-      const sub = typeof json.sub === 'string' ? json.sub : '';
-      const name = typeof json.name === 'string' ? json.name : undefined;
-      const emailVerifiedRaw = json.email_verified;
-      const emailVerified =
-        emailVerifiedRaw === true ||
-        emailVerifiedRaw === 'true' ||
-        emailVerifiedRaw === 1 ||
-        emailVerifiedRaw === '1';
-      const aud = typeof json.aud === 'string' ? json.aud : undefined;
-
-      if (!email || !sub) {
-        return null;
-      }
-
-      if (allowedAudiences.length && aud && !allowedAudiences.includes(aud)) {
-        throw new UnauthorizedException('OAuth client mismatch');
-      }
-
-      return {
-        sub,
-        email,
-        emailVerified,
-        name,
-        audience: aud,
-      } satisfies GoogleUserProfile;
-    };
-
-    const attemptFromIdToken = async () => {
-      if (!params.idToken) return null;
-      const res = await fetch(
-        `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(params.idToken)}`,
-      );
-      if (!res.ok) {
-        return null;
-      }
-      const json = (await res.json()) as Record<string, unknown>;
-      const email =
-        typeof json.email === 'string' ? json.email.toLowerCase() : '';
-      const sub = typeof json.sub === 'string' ? json.sub : '';
-      const name = typeof json.name === 'string' ? json.name : undefined;
-      const emailVerifiedRaw = json.email_verified;
-      const emailVerified =
-        emailVerifiedRaw === true ||
-        emailVerifiedRaw === 'true' ||
-        emailVerifiedRaw === 1 ||
-        emailVerifiedRaw === '1';
-      const aud = typeof json.aud === 'string' ? json.aud : undefined;
-
-      if (!email || !sub) {
-        return null;
-      }
-
-      if (allowedAudiences.length && aud && !allowedAudiences.includes(aud)) {
-        throw new UnauthorizedException('OAuth client mismatch');
-      }
-
-      return {
-        sub,
-        email,
-        emailVerified,
-        name,
-        audience: aud,
-      } satisfies GoogleUserProfile;
-    };
-
-    const fromAccessToken = await attemptFromAccessToken();
-    if (fromAccessToken) {
-      return fromAccessToken;
-    }
-
-    const fromIdToken = await attemptFromIdToken();
-    if (fromIdToken) {
-      return fromIdToken;
-    }
-
-    throw new UnauthorizedException('Unable to validate OAuth tokens');
   }
 }

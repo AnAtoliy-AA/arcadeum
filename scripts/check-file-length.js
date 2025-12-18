@@ -7,7 +7,6 @@ const ROOT_DIR = process.cwd();
 // List of files to ignore (relative to root)
 // These files currently exceed the limit and should be refactored.
 const ALLOW_LIST = new Set([
-    'apps/be/src/chat/chat.service.ts',
     'apps/be/src/games/games.service.ts',
     'apps/be/src/games/history/game-history.service.ts',
 ]);

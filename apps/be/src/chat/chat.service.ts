@@ -6,6 +6,7 @@ import { Chat } from './schemas/chat.schema';
 import { Message } from './schemas/message.schema';
 import { MessageDTO } from './dtos';
 import { User, UserDocument } from '../auth/schemas/user.schema';
+import { ChatHelperService } from './chat-helper.service';
 
 export interface MessageView {
   id: string;
@@ -46,77 +47,13 @@ export class ChatService {
     @InjectModel(Chat.name) private chatModel: Model<Chat>,
     @InjectModel(Message.name) private messageModel: Model<Message>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private chatHelper: ChatHelperService,
   ) {}
-
-  private normalizeUserIds(
-    userIds: Array<string | Types.ObjectId | null | undefined>,
-  ): string[] {
-    const unique = new Set<string>();
-    for (const value of userIds) {
-      if (!value) continue;
-      let parsed: string;
-      if (typeof value === 'string') {
-        parsed = value.trim();
-      } else if (value instanceof Types.ObjectId) {
-        parsed = value.toString();
-      } else {
-        parsed = String(value);
-      }
-      if (parsed) {
-        unique.add(parsed);
-      }
-    }
-    return Array.from(unique);
-  }
-
-  private haveSameMembers(a: string[], b: string[]): boolean {
-    if (a.length !== b.length) {
-      return false;
-    }
-    const set = new Set(a);
-    return b.every((id) => set.has(id));
-  }
-
-  private resolveParticipantDisplayName(
-    source: {
-      displayName?: string | null;
-      username?: string | null;
-      email?: string | null;
-    },
-    fallback?: string,
-  ): string {
-    const preferred = source.displayName?.trim?.();
-    if (preferred) {
-      return preferred;
-    }
-
-    const userName = source.username?.trim?.();
-    if (userName) {
-      return userName;
-    }
-
-    const normalizedEmail = source.email?.trim?.();
-    if (normalizedEmail) {
-      const [localPart] = normalizedEmail.split('@');
-      const local = localPart?.trim?.();
-      if (local) {
-        return local;
-      }
-      return normalizedEmail;
-    }
-
-    const normalizedFallback = fallback?.trim?.();
-    if (normalizedFallback) {
-      return normalizedFallback;
-    }
-
-    return 'Player';
-  }
 
   private async hydrateParticipants(
     participantIds: string[],
   ): Promise<Map<string, ChatParticipantSummary>> {
-    const normalized = this.normalizeUserIds(participantIds);
+    const normalized = this.chatHelper.normalizeUserIds(participantIds);
     const lookup = new Map<string, ChatParticipantSummary>();
     if (!normalized.length) {
       return lookup;
@@ -132,7 +69,7 @@ export class ChatService {
         user._id instanceof Types.ObjectId
           ? user._id.toString()
           : String(user._id);
-      const displayName = this.resolveParticipantDisplayName(
+      const displayName = this.chatHelper.resolveParticipantDisplayName(
         {
           username: user.username,
           email: user.email,
@@ -172,8 +109,8 @@ export class ChatService {
       .exec();
 
     for (const candidate of candidates) {
-      const candidateUsers = this.normalizeUserIds(candidate.users);
-      if (this.haveSameMembers(candidateUsers, userIds)) {
+      const candidateUsers = this.chatHelper.normalizeUserIds(candidate.users);
+      if (this.chatHelper.haveSameMembers(candidateUsers, userIds)) {
         return candidate;
       }
     }
@@ -213,7 +150,7 @@ export class ChatService {
       return lookup;
     }
 
-    const views = await this.toMessageViews(messages);
+    const views = await this.chatHelper.toMessageViews(messages);
     views.forEach((view, index) => {
       lookup.set(order[index], view);
     });
@@ -305,7 +242,7 @@ export class ChatService {
       users: [sanitizedSenderId, ...candidateUserIds],
     });
 
-    const participants = this.normalizeUserIds(chat.users ?? []);
+    const participants = this.chatHelper.normalizeUserIds(chat.users ?? []);
     const receiverIds = participants.filter((id) => id !== sanitizedSenderId);
 
     const sender = (await this.userModel
@@ -317,7 +254,7 @@ export class ChatService {
           _id?: Types.ObjectId | string;
         })
       | null;
-    const senderUsername = this.resolveParticipantDisplayName(
+    const senderUsername = this.chatHelper.resolveParticipantDisplayName(
       {
         username: sender?.username,
         email: sender?.email,
@@ -336,7 +273,7 @@ export class ChatService {
     });
 
     const saved = await message.save();
-    const [view] = await this.toMessageViews([saved]);
+    const [view] = await this.chatHelper.toMessageViews([saved]);
     return view;
   }
 
@@ -345,14 +282,14 @@ export class ChatService {
       .find({ chatId })
       .sort({ timestamp: 1 })
       .exec();
-    return this.toMessageViews(messages);
+    return this.chatHelper.toMessageViews(messages);
   }
 
   async createChatForUsers(
     userIds: string[],
     providedChatId?: string,
   ): Promise<ChatSummary> {
-    const normalized = this.normalizeUserIds(userIds);
+    const normalized = this.chatHelper.normalizeUserIds(userIds);
     if (normalized.length < 2) {
       throw new Error('Chat must include at least two distinct users');
     }
@@ -377,7 +314,7 @@ export class ChatService {
     }
 
     const participantLookup = await this.hydrateParticipants(chat.users ?? []);
-    const participants = this.normalizeUserIds(chat.users ?? []).map(
+    const participants = this.chatHelper.normalizeUserIds(chat.users ?? []).map(
       (id) =>
         participantLookup.get(id) ?? {
           id,
@@ -402,7 +339,7 @@ export class ChatService {
       return [];
     }
 
-    const participantIds = this.normalizeUserIds(
+    const participantIds = this.chatHelper.normalizeUserIds(
       chats.flatMap((chat) => chat.users ?? []),
     );
     const participantLookup = await this.hydrateParticipants(participantIds);
@@ -411,7 +348,7 @@ export class ChatService {
     );
 
     const summaries: ChatSummary[] = chats.map((chat) => {
-      const participantsList: ChatParticipantSummary[] = this.normalizeUserIds(
+      const participantsList: ChatParticipantSummary[] = this.chatHelper.normalizeUserIds(
         chat.users ?? [],
       ).map((participantId) => {
         const participant = participantLookup.get(participantId);
@@ -444,75 +381,5 @@ export class ChatService {
 
     return summaries;
   }
-
-  private async toMessageViews(messageDocs: Message[]): Promise<MessageView[]> {
-    if (!messageDocs.length) {
-      return [];
-    }
-
-    const plainMessages = messageDocs.map((doc) =>
-      doc.toObject<MessageDocumentObject>(),
-    );
-    const missingSenderIds = new Set<string>();
-
-    for (const message of plainMessages) {
-      if (!message.senderUsername && message.senderId) {
-        missingSenderIds.add(message.senderId.toString());
-      }
-    }
-
-    const usernameLookup = new Map<string, string>();
-
-    if (missingSenderIds.size) {
-      const users = (await this.userModel
-        .find({ _id: { $in: Array.from(missingSenderIds) } })
-        .select(['username', 'email', 'displayName'])
-        .exec()) as UserDocument[];
-
-      for (const user of users) {
-        const rawId = user._id;
-        const id =
-          rawId instanceof Types.ObjectId ? rawId.toString() : String(rawId);
-        const displayName = this.resolveParticipantDisplayName(
-          {
-            username: user.username,
-            email: user.email,
-            displayName: user.displayName,
-          },
-          id,
-        );
-        usernameLookup.set(id, displayName);
-      }
-    }
-
-    return plainMessages.map((message) => {
-      const senderId =
-        message.senderId?.toString?.() ?? String(message.senderId ?? '');
-      const timestampValue =
-        message.timestamp instanceof Date
-          ? message.timestamp
-          : new Date(message.timestamp);
-
-      return {
-        id:
-          message._id?.toString?.() ??
-          String(
-            message._id ?? `${message.chatId}-${timestampValue.getTime()}`,
-          ),
-        chatId: message.chatId,
-        senderId,
-        senderUsername:
-          message.senderUsername ?? usernameLookup.get(senderId) ?? senderId,
-        receiverIds: Array.isArray(message.receiverIds)
-          ? message.receiverIds.map((id): string =>
-              typeof id === 'string'
-                ? id
-                : (id?.toString?.() ?? String(id ?? '')),
-            )
-          : [],
-        content: message.content,
-        timestamp: timestampValue.toISOString(),
-      };
-    });
-  }
 }
+

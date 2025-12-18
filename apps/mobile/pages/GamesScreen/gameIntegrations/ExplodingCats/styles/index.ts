@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ViewStyle, TextStyle, ImageStyle } from 'react-native';
 import type { Palette } from '@/hooks/useThemedStyles';
 import { getLayoutStyles } from './layout';
 import { getBackgroundStyles } from './background';
@@ -21,7 +21,7 @@ export function createStyles(palette: Palette) {
     ...getMetaStyles(palette),
     ...getBodyStyles(palette),
     ...getTableStyles(palette),
-  } as any);
+  } as Record<string, ViewStyle | TextStyle | ImageStyle>);
 }
 
 export type ExplodingCatsRoomStyles = ReturnType<typeof createStyles>;

@@ -17,6 +17,8 @@ import {
   toExplodingCatsCard,
 } from './games.gateway.utils';
 
+import { ExplodingCatsService } from './exploding-cats/exploding-cats.service';
+
 @WebSocketGateway({
   namespace: 'games',
   cors: { origin: '*' },
@@ -25,7 +27,10 @@ import {
 export class ExplodingCatsGateway {
   private readonly logger = new Logger(ExplodingCatsGateway.name);
 
-  constructor(private readonly gamesService: GamesService) {}
+  constructor(
+    private readonly gamesService: GamesService,
+    private readonly explodingCatsService: ExplodingCatsService,
+  ) {}
 
   @SubscribeMessage('games.session.draw')
   async handleSessionDraw(
@@ -41,7 +46,7 @@ export class ExplodingCatsGateway {
         throw new WsException('No active session found for this room');
       }
 
-      await this.gamesService.drawExplodingCatsCard(session.id, userId);
+      await this.explodingCatsService.drawCard(session.id, userId);
       client.emit('games.session.drawn', {
         roomId,
         userId,
@@ -74,7 +79,7 @@ export class ExplodingCatsGateway {
     }
 
     try {
-      await this.gamesService.playExplodingCatsActionByRoom(
+      await this.explodingCatsService.playActionByRoom(
         userId,
         roomId,
         card,
@@ -137,7 +142,7 @@ export class ExplodingCatsGateway {
     }
 
     try {
-      await this.gamesService.playExplodingCatsCatComboByRoom(
+      await this.explodingCatsService.playCatComboByRoom(
         userId,
         roomId,
         cat,
@@ -193,7 +198,7 @@ export class ExplodingCatsGateway {
     }
 
     try {
-      await this.gamesService.playExplodingCatsFavorByRoom(
+      await this.explodingCatsService.playFavorByRoom(
         userId,
         roomId,
         targetPlayerId,
@@ -232,11 +237,10 @@ export class ExplodingCatsGateway {
     const { roomId, userId } = extractRoomAndUser(payload);
 
     try {
-      const result =
-        await this.gamesService.playExplodingCatsSeeTheFutureByRoom(
-          userId,
-          roomId,
-        );
+      const result = await this.explodingCatsService.seeTheFutureByRoom(
+        userId,
+        roomId,
+      );
 
       client.emit('games.session.see_the_future.played', {
         roomId,
@@ -278,11 +282,10 @@ export class ExplodingCatsGateway {
     const scope = scopeRaw === 'players' ? 'players' : 'all';
 
     try {
-      await this.gamesService.postExplodingCatsHistoryNote(
+      await this.explodingCatsService.postHistoryNote(
         userId,
         roomId,
         message,
-        scope,
       );
       client.emit('games.session.history_note.ack', {
         roomId,
@@ -317,7 +320,7 @@ export class ExplodingCatsGateway {
       typeof payload?.engine === 'string' ? payload.engine.trim() : undefined;
 
     try {
-      const result = await this.gamesService.startExplodingCatsSession(
+      const result = await this.explodingCatsService.startSession(
         userId,
         roomId,
         engine,

@@ -1,41 +1,37 @@
 import { BadRequestException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import type { Socket } from 'socket.io';
-import { GamesGateway } from './games.gateway';
+import { ExplodingCatsGateway } from './exploding-cats.gateway';
 import type { GamesRealtimeService } from './games.realtime.service';
 import { GamesService } from './games.service';
+import { ExplodingCatsService } from './exploding-cats/exploding-cats.service';
 import { StartExplodingCatsSessionResult } from './games.types';
 
-describe('GamesGateway', () => {
-  let gateway: GamesGateway;
+describe('ExplodingCatsGateway', () => {
+  let gateway: ExplodingCatsGateway;
   let gamesService: jest.Mocked<GamesService>;
-  let realtime: jest.Mocked<Partial<GamesRealtimeService>>;
+  let explodingCatsService: jest.Mocked<ExplodingCatsService>;
   let client: jest.Mocked<Pick<Socket, 'emit'>>;
 
   beforeEach(() => {
     gamesService = {
-      startExplodingCatsSession: jest.fn(),
-      drawExplodingCatsCard: jest.fn(),
-      playExplodingCatsAction: jest.fn(),
-      playExplodingCatsCatCombo: jest.fn(),
-      ensureParticipant: jest.fn(),
       findSessionByRoom: jest.fn(),
-      playExplodingCatsActionByRoom: jest.fn(),
-      playExplodingCatsCatComboByRoom: jest.fn(),
-      playExplodingCatsFavorByRoom: jest.fn(),
-      playExplodingCatsSeeTheFutureByRoom: jest.fn(),
-      postExplodingCatsHistoryNote: jest.fn(),
-      startTexasHoldemSession: jest.fn(),
-      texasHoldemPlayerAction: jest.fn(),
-      postTexasHoldemHistoryNote: jest.fn(),
       getRoom: jest.fn(),
     } as unknown as jest.Mocked<GamesService>;
 
-    realtime = {} as jest.Mocked<Partial<GamesRealtimeService>>;
+    explodingCatsService = {
+      startSession: jest.fn(),
+      drawCard: jest.fn(),
+      playActionByRoom: jest.fn(),
+      playCatComboByRoom: jest.fn(),
+      playFavorByRoom: jest.fn(),
+      seeTheFutureByRoom: jest.fn(),
+      postHistoryNote: jest.fn(),
+    } as unknown as jest.Mocked<ExplodingCatsService>;
 
-    gateway = new GamesGateway(
+    gateway = new ExplodingCatsGateway(
       gamesService as unknown as GamesService,
-      realtime as unknown as GamesRealtimeService,
+      explodingCatsService as unknown as ExplodingCatsService,
     );
 
     client = {
@@ -76,11 +72,11 @@ describe('GamesGateway', () => {
         },
       };
 
-      gamesService.startExplodingCatsSession.mockResolvedValue(result);
+      explodingCatsService.startSession.mockResolvedValue(result);
 
       await gateway.handleSessionStart(client as unknown as Socket, payload);
 
-      expect(gamesService.startExplodingCatsSession).toHaveBeenCalledWith(
+      expect(explodingCatsService.startSession).toHaveBeenCalledWith(
         'host-456',
         'room-123',
         'custom-engine',
@@ -98,7 +94,7 @@ describe('GamesGateway', () => {
     });
 
     it('wraps service errors in WsException', async () => {
-      gamesService.startExplodingCatsSession.mockRejectedValue(
+      explodingCatsService.startSession.mockRejectedValue(
         new BadRequestException('Room is no longer active.'),
       );
 
@@ -130,7 +126,7 @@ describe('GamesGateway', () => {
         id: 'session-1',
       } as any);
 
-      gamesService.drawExplodingCatsCard.mockResolvedValue({
+      explodingCatsService.drawCard.mockResolvedValue({
         id: 'session-1',
         roomId: 'room-123',
         gameId: 'exploding-kittens',
@@ -143,7 +139,7 @@ describe('GamesGateway', () => {
 
       await gateway.handleSessionDraw(client as unknown as Socket, payload);
 
-      expect(gamesService.drawExplodingCatsCard).toHaveBeenCalledWith(
+      expect(explodingCatsService.drawCard).toHaveBeenCalledWith(
         'session-1',
         'guest-2',
       );
@@ -166,7 +162,7 @@ describe('GamesGateway', () => {
       gamesService.findSessionByRoom.mockResolvedValue({
         id: 'session-1',
       } as any);
-      gamesService.drawExplodingCatsCard.mockRejectedValue(
+      explodingCatsService.drawCard.mockRejectedValue(
         new BadRequestException('Deck is empty.'),
       );
 
@@ -193,7 +189,7 @@ describe('GamesGateway', () => {
         card: ' attack ',
       };
 
-      gamesService.playExplodingCatsActionByRoom.mockResolvedValue({
+      explodingCatsService.playActionByRoom.mockResolvedValue({
         id: 'session-1',
         roomId: 'room-123',
         gameId: 'exploding-kittens',
@@ -209,7 +205,7 @@ describe('GamesGateway', () => {
         payload,
       );
 
-      expect(gamesService.playExplodingCatsActionByRoom).toHaveBeenCalledWith(
+      expect(explodingCatsService.playActionByRoom).toHaveBeenCalledWith(
         'host-456',
         'room-123',
         'attack',
@@ -232,7 +228,7 @@ describe('GamesGateway', () => {
     });
 
     it('wraps service errors in WsException', async () => {
-      gamesService.playExplodingCatsActionByRoom.mockRejectedValue(
+      explodingCatsService.playActionByRoom.mockRejectedValue(
         new BadRequestException('Cannot play this card right now.'),
       );
 
@@ -264,7 +260,7 @@ describe('GamesGateway', () => {
         targetPlayerId: ' guest-2 ',
       };
 
-      gamesService.playExplodingCatsCatComboByRoom.mockResolvedValue({
+      explodingCatsService.playCatComboByRoom.mockResolvedValue({
         id: 'session-1',
         roomId: 'room-123',
         gameId: 'exploding-kittens',
@@ -280,7 +276,7 @@ describe('GamesGateway', () => {
         payload,
       );
 
-      expect(gamesService.playExplodingCatsCatComboByRoom).toHaveBeenCalledWith(
+      expect(explodingCatsService.playCatComboByRoom).toHaveBeenCalledWith(
         'host-456',
         'room-123',
         'tacocat',
@@ -315,7 +311,7 @@ describe('GamesGateway', () => {
     });
 
     it('wraps service errors in WsException', async () => {
-      gamesService.playExplodingCatsCatComboByRoom.mockRejectedValue(
+      explodingCatsService.playCatComboByRoom.mockRejectedValue(
         new BadRequestException('Combo not allowed.'),
       );
 

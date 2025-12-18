@@ -34,9 +34,16 @@ import {
   type GameRoomVisibility,
 } from './schemas/game-room.schema';
 
+import { ExplodingCatsService } from './exploding-cats/exploding-cats.service';
+import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
+
 @Controller('games')
 export class GamesController {
-  constructor(private readonly gamesService: GamesService) {}
+  constructor(
+    private readonly gamesService: GamesService,
+    private readonly explodingCatsService: ExplodingCatsService,
+    private readonly texasHoldemService: TexasHoldemService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Post('rooms')
@@ -271,9 +278,28 @@ export class GamesController {
       throw new UnauthorizedException();
     }
 
-    return this.gamesService.startExplodingCatsSession(
+    // If roomId is missing, we need to find it (legacy behavior)
+    let roomId = dto.roomId;
+    let gameId: string | undefined;
+
+    if (roomId) {
+      const room = await this.gamesService.getRoom(roomId, user.userId);
+      gameId = room.gameId;
+    }
+
+    // Route to appropriate service
+    if (gameId === 'texas-holdem') {
+      return this.texasHoldemService.startSession(
+        user.userId,
+        roomId,
+        dto.engine,
+      ) as any;
+    }
+
+    // Default to Exploding Cats (legacy behavior)
+    return this.explodingCatsService.startSession(
       user.userId,
-      dto.roomId,
+      roomId,
       dto.engine,
     );
   }

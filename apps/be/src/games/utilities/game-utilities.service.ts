@@ -177,4 +177,59 @@ export class GameUtilitiesService {
     }
     return chunks;
   }
+
+  /**
+   * Filter and paginate history entries
+   */
+  filterAndPaginateHistory(
+    allHistory: any[],
+    options?: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      status?: string;
+      grouped?: boolean;
+    },
+  ) {
+    // Apply filters
+    const filtered: any[] = [...allHistory];
+
+    // Search filter
+    if (options?.search && !options.grouped) {
+      const searchLower = options.search.toLowerCase();
+      const gameHistory = filtered;
+      const searchFiltered = gameHistory.filter((entry) => {
+        return (
+          entry.gameName?.toLowerCase().includes(searchLower) ||
+          entry.gameId?.toLowerCase().includes(searchLower)
+        );
+      });
+      filtered.length = 0;
+      filtered.push(...searchFiltered);
+    }
+
+    // Status filter
+    if (options?.status && !options.grouped) {
+      const gameHistory = filtered;
+      const statusFiltered = gameHistory.filter(
+        (entry) => entry.status === options.status,
+      );
+      filtered.length = 0;
+      filtered.push(...statusFiltered);
+    }
+
+    // Pagination
+    const page = options?.page || 1;
+    const limit = options?.limit || 20;
+    const offset = (page - 1) * limit;
+    const entries = filtered.slice(offset, offset + limit);
+
+    return {
+      entries,
+      total: filtered.length,
+      page,
+      limit,
+      hasMore: offset + entries.length < filtered.length,
+    };
+  }
 }

@@ -21,6 +21,9 @@ import { ExplodingCatsActionsService } from './actions/exploding-cats/exploding-
 import { TexasHoldemActionsService } from './actions/texas-holdem/texas-holdem-actions.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
 
+import { ExplodingCatsService } from './exploding-cats/exploding-cats.service';
+import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
+
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -41,6 +44,9 @@ import { GameUtilitiesService } from './utilities/game-utilities.service';
     // Game-specific action handlers
     ExplodingCatsActionsService,
     TexasHoldemActionsService,
+    // Game-specific services (New)
+    ExplodingCatsService,
+    TexasHoldemService,
     // Utilities
     GameUtilitiesService,
     // Facade service (main entry point)

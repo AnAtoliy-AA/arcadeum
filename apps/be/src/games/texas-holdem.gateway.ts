@@ -14,6 +14,8 @@ import {
   handleError,
 } from './games.gateway.utils';
 
+import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
+
 @WebSocketGateway({
   namespace: 'games',
   cors: { origin: '*' },
@@ -22,7 +24,10 @@ import {
 export class TexasHoldemGateway {
   private readonly logger = new Logger(TexasHoldemGateway.name);
 
-  constructor(private readonly gamesService: GamesService) {}
+  constructor(
+    private readonly gamesService: GamesService,
+    private readonly texasHoldemService: TexasHoldemService,
+  ) {}
 
   @SubscribeMessage('games.session.start_holdem')
   async handleStartTexasHoldem(
@@ -47,11 +52,10 @@ export class TexasHoldemGateway {
         : 1000;
 
     try {
-      const result = await this.gamesService.startTexasHoldemSession(
+      const result = await this.texasHoldemService.startSession(
         userId,
         roomId,
         engine,
-        startingChips,
       );
 
       client.emit('games.session.holdem_started', result);
@@ -94,7 +98,7 @@ export class TexasHoldemGateway {
         : undefined;
 
     try {
-      await this.gamesService.texasHoldemPlayerAction(
+      await this.texasHoldemService.playerAction(
         userId,
         roomId,
         action as any,
@@ -142,11 +146,10 @@ export class TexasHoldemGateway {
     const scope = scopeRaw === 'players' ? 'players' : 'all';
 
     try {
-      await this.gamesService.postTexasHoldemHistoryNote(
+      await this.texasHoldemService.postHistoryNote(
         userId,
         roomId,
         message,
-        scope,
       );
 
       client.emit('games.session.holdem_history_note.ack', {

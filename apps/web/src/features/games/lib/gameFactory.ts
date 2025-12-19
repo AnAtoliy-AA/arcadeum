@@ -32,7 +32,7 @@ export class GameFactory {
       // Load the game module
       const gameModule = await gameLoaders[slug]();
 
-      const GameComponent = gameModule.default;
+      const GameComponent = gameModule.default as React.ComponentType<BaseGameProps>;
 
       if (!GameComponent) {
         throw new Error(`Game ${slug} has no default export`);

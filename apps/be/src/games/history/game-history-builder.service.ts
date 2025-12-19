@@ -175,11 +175,7 @@ export class GameHistoryBuilderService {
     // For exploding cats, find alive players
     if (session.gameId.includes('exploding')) {
       const state = session.state as unknown as ExplodingCatsState;
-      return (
-        state.players
-          ?.filter((p) => p.alive)
-          .map((p) => p.playerId) || []
-      );
+      return state.players?.filter((p) => p.alive).map((p) => p.playerId) || [];
     }
 
     // For poker, find players with highest stack
@@ -189,12 +185,9 @@ export class GameHistoryBuilderService {
       if (players.length === 0) return [];
 
       const maxStack = Math.max(...players.map((p) => p.stack || 0));
-      return players
-        .filter((p) => p.stack === maxStack)
-        .map((p) => p.playerId);
+      return players.filter((p) => p.stack === maxStack).map((p) => p.playerId);
     }
 
     return [];
   }
 }
-

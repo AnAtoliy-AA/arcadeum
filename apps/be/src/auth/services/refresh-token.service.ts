@@ -14,7 +14,11 @@ import {
   RefreshTokenDocument,
 } from '../schemas/refresh-token.schema';
 import { User, UserDocument } from '../schemas/user.schema';
-import type { AuthTokensResponse, AuthUserProfile, IssuedRefreshToken } from '../lib/types';
+import type {
+  AuthTokensResponse,
+  AuthUserProfile,
+  IssuedRefreshToken,
+} from '../lib/types';
 
 @Injectable()
 export class RefreshTokenService {

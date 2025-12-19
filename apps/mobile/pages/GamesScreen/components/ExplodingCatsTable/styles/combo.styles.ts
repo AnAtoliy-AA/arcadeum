@@ -5,7 +5,10 @@ import type { ShadowPresets } from './shadows';
 /**
  * Combo modal styles.
  */
-export function createComboStyles(ctx: StyleThemeContext, shadows: ShadowPresets) {
+export function createComboStyles(
+  ctx: StyleThemeContext,
+  shadows: ShadowPresets,
+) {
   const {
     surface,
     raised,

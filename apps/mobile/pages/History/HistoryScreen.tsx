@@ -49,7 +49,9 @@ export default function HistoryScreen() {
   });
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<HistoryStatus | 'all'>('all');
+  const [statusFilter, setStatusFilter] = useState<HistoryStatus | 'all'>(
+    'all',
+  );
 
   const {
     loading,

@@ -268,7 +268,6 @@ export class GameHistoryService {
     return newRoom._id.toString();
   }
 
-
   /**
    * Post a note to game history logs
    */
@@ -323,4 +322,3 @@ export class GameHistoryService {
     await session.save();
   }
 }
-

@@ -289,7 +289,10 @@ export default function SupportScreen() {
                   </View>
                   <ThemedText style={styles.actionDescription}>
                     {action.kind === 'copy'
-                      ? t(action.descriptionKey, { iban: action.value, appName })
+                      ? t(action.descriptionKey, {
+                          iban: action.value,
+                          appName,
+                        })
                       : t(action.descriptionKey, { appName })}
                   </ThemedText>
                   <View style={styles.actionCtaRow}>

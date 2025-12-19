@@ -1,7 +1,4 @@
-import React, {
-  useMemo,
-  useState,
-} from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Animated,
   Platform,
@@ -12,9 +9,7 @@ import {
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import {
-  ExplodingCatsCard as ExplodingCatsArtwork,
-} from '@/components/cards';
+import { ExplodingCatsCard as ExplodingCatsArtwork } from '@/components/cards';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles } from '@/hooks/useThemedStyles';
 import {
@@ -24,10 +19,7 @@ import {
 import { useTranslation } from '@/lib/i18n';
 
 // Import local modules
-import type {
-  ExplodingCatsTableProps,
-  LogVisibility,
-} from './types';
+import type { ExplodingCatsTableProps, LogVisibility } from './types';
 import {
   TABLE_DIAMETER,
   CARD_ART_SETTINGS,
@@ -174,11 +166,19 @@ export function ExplodingCatsTable({
     return next;
   };
 
-  const labels = useGameLabels(t as any, session, room ?? undefined, isHost, pendingDraws);
+  const labels = useGameLabels(
+    t as any,
+    session,
+    room ?? undefined,
+    isHost,
+    pendingDraws,
+  );
   const messageHandling = useMessageHandling(
     session?.id,
     isCurrentUserPlayer,
-    onPostHistoryNote as ((message: string, visibility: LogVisibility) => Promise<void>) | undefined,
+    onPostHistoryNote as
+      | ((message: string, visibility: LogVisibility) => Promise<void>)
+      | undefined,
   );
   const catComboHandling = useCatComboHandling(
     catCombo,
@@ -281,12 +281,12 @@ export function ExplodingCatsTable({
                         activeEffect === 'draw'
                           ? styles.effectCircleDraw
                           : activeEffect === 'attack'
-                          ? styles.effectCircleAttack
-                          : activeEffect === 'skip'
-                          ? styles.effectCircleSkip
-                          : activeEffect === 'cat_combo'
-                          ? styles.effectCircleCombo
-                          : styles.effectCircleDefault,
+                            ? styles.effectCircleAttack
+                            : activeEffect === 'skip'
+                              ? styles.effectCircleSkip
+                              : activeEffect === 'cat_combo'
+                                ? styles.effectCircleCombo
+                                : styles.effectCircleDefault,
                       ]}
                     />
                     {activeEffect === 'attack' ? (

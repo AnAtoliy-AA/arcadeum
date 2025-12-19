@@ -51,10 +51,7 @@ export function FilterSection({
                 disabled={selected}
               >
                 <ThemedText
-                  style={[
-                    styles.chipText,
-                    selected && styles.chipTextActive,
-                  ]}
+                  style={[styles.chipText, selected && styles.chipTextActive]}
                 >
                   {option.label}
                 </ThemedText>

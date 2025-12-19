@@ -1,5 +1,10 @@
 import React from 'react';
-import { ActivityIndicator, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import type { ChatParticipant, ChatSummary } from './ChatListScreen.types';

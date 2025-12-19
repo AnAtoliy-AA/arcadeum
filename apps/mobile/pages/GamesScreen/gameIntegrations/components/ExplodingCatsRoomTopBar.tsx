@@ -52,7 +52,9 @@ export const ExplodingCatsRoomTopBar = memo(
     const toggleIcon = controlsCollapsed ? 'chevron.down' : 'chevron.up';
 
     return (
-      <View style={variant === 'table' ? styles.fullscreenTopBar : styles.topBar}>
+      <View
+        style={variant === 'table' ? styles.fullscreenTopBar : styles.topBar}
+      >
         <View
           style={[
             styles.topBarCard,
@@ -82,7 +84,9 @@ export const ExplodingCatsRoomTopBar = memo(
                 size={14}
                 color={styles.controlsToggleIcon.color as string}
               />
-              <ThemedText style={styles.controlsToggleText}>{toggleLabel}</ThemedText>
+              <ThemedText style={styles.controlsToggleText}>
+                {toggleLabel}
+              </ThemedText>
             </TouchableOpacity>
           </View>
           {!controlsCollapsed ? (
@@ -94,7 +98,10 @@ export const ExplodingCatsRoomTopBar = memo(
             <View style={styles.actionGroup}>
               {hasSessionSnapshot ? (
                 <TouchableOpacity
-                  style={[styles.gameButton, tableFullScreen ? styles.buttonDisabled : null]}
+                  style={[
+                    styles.gameButton,
+                    tableFullScreen ? styles.buttonDisabled : null,
+                  ]}
                   onPress={onEnterFullScreen}
                   disabled={tableFullScreen}
                   accessibilityRole="button"
@@ -110,7 +117,11 @@ export const ExplodingCatsRoomTopBar = memo(
                   </ThemedText>
                 </TouchableOpacity>
               ) : null}
-              <TouchableOpacity style={styles.gameButton} onPress={onViewGame} disabled={!room && !gameId}>
+              <TouchableOpacity
+                style={styles.gameButton}
+                onPress={onViewGame}
+                disabled={!room && !gameId}
+              >
                 <IconSymbol
                   name="book"
                   size={16}
@@ -123,12 +134,18 @@ export const ExplodingCatsRoomTopBar = memo(
               {isHost ? (
                 <>
                   <TouchableOpacity
-                    style={[styles.deleteButton, deleting ? styles.deleteButtonDisabled : null]}
+                    style={[
+                      styles.deleteButton,
+                      deleting ? styles.deleteButtonDisabled : null,
+                    ]}
                     onPress={onDeleteRoom}
                     disabled={deleting}
                   >
                     {deleting ? (
-                      <ActivityIndicator size="small" color={styles.deleteSpinner.color as string} />
+                      <ActivityIndicator
+                        size="small"
+                        color={styles.deleteSpinner.color as string}
+                      />
                     ) : (
                       <>
                         <IconSymbol
@@ -143,12 +160,18 @@ export const ExplodingCatsRoomTopBar = memo(
                     )}
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[styles.leaveButton, leaving ? styles.leaveButtonDisabled : null]}
+                    style={[
+                      styles.leaveButton,
+                      leaving ? styles.leaveButtonDisabled : null,
+                    ]}
                     onPress={onLeaveRoom}
                     disabled={leaving}
                   >
                     {leaving ? (
-                      <ActivityIndicator size="small" color={styles.leaveSpinner.color as string} />
+                      <ActivityIndicator
+                        size="small"
+                        color={styles.leaveSpinner.color as string}
+                      />
                     ) : (
                       <>
                         <IconSymbol
@@ -165,12 +188,18 @@ export const ExplodingCatsRoomTopBar = memo(
                 </>
               ) : (
                 <TouchableOpacity
-                  style={[styles.leaveButton, leaving ? styles.leaveButtonDisabled : null]}
+                  style={[
+                    styles.leaveButton,
+                    leaving ? styles.leaveButtonDisabled : null,
+                  ]}
                   onPress={onLeaveRoom}
                   disabled={leaving}
                 >
                   {leaving ? (
-                    <ActivityIndicator size="small" color={styles.leaveSpinner.color as string} />
+                    <ActivityIndicator
+                      size="small"
+                      color={styles.leaveSpinner.color as string}
+                    />
                   ) : (
                     <>
                       <IconSymbol

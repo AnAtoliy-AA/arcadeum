@@ -89,16 +89,14 @@ export const ExplodingCatsCard = memo(
 
     const isAccessibilityDisabled = accessible === false;
     const normalizedAccessible =
-      Platform.OS === 'web' && isAccessibilityDisabled
-        ? undefined
-        : accessible;
+      Platform.OS === 'web' && isAccessibilityDisabled ? undefined : accessible;
 
     const role = isAccessibilityDisabled
       ? undefined
-      : accessibilityRole ?? 'image';
+      : (accessibilityRole ?? 'image');
     const label = isAccessibilityDisabled
       ? undefined
-      : accessibilityLabel ?? `${card} card`;
+      : (accessibilityLabel ?? `${card} card`);
 
     return (
       <Artwork

@@ -9,6 +9,7 @@ module.exports = defineConfig([
   },
   {
     rules: {
+      '@typescript-eslint/no-explicit-any': 'error',
       'max-lines': ['error', { max: 500, skipBlankLines: true, skipComments: true }],
     },
   },

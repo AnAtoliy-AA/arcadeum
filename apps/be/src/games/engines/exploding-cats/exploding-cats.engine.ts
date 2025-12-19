@@ -328,9 +328,7 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
       typedPayload.targetPlayerId,
     ) as ExplodingCatsPlayerState;
     return (
-      target &&
-      target.alive &&
-      this.hasCard(target, typedPayload.requestedCard)
+      target && target.alive && this.hasCard(target, typedPayload.requestedCard)
     );
   }
 

@@ -36,9 +36,7 @@ export function TableStats({
           color={styles.tableStatIcon.color as string}
         />
         <View style={styles.tableStatTextGroup}>
-          <ThemedText style={styles.tableStatTitle}>
-            {deckCount}
-          </ThemedText>
+          <ThemedText style={styles.tableStatTitle}>{deckCount}</ThemedText>
           <ThemedText style={styles.tableStatSubtitle}>
             {t('games.table.info.inDeck')}
           </ThemedText>
@@ -51,9 +49,7 @@ export function TableStats({
           color={styles.tableStatIcon.color as string}
         />
         <View style={styles.tableStatTextGroup}>
-          <ThemedText style={styles.tableStatTitle}>
-            {pendingDraws}
-          </ThemedText>
+          <ThemedText style={styles.tableStatTitle}>{pendingDraws}</ThemedText>
           <ThemedText style={styles.tableStatSubtitle}>
             {pendingDrawsCaption}
           </ThemedText>

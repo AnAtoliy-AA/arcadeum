@@ -1,5 +1,10 @@
 import React from 'react';
-import { ActivityIndicator, Switch, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Switch,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { formatParticipantDisplayName } from '@/utils/historyUtils';

@@ -6,7 +6,10 @@ import { TABLE_DIAMETER, PLAYER_SEAT_SIZE } from '../constants';
 /**
  * Table ring, center, and stats styles.
  */
-export function createTableStyles(ctx: StyleThemeContext, shadows: ShadowPresets) {
+export function createTableStyles(
+  ctx: StyleThemeContext,
+  shadows: ShadowPresets,
+) {
   const {
     surface,
     raised,

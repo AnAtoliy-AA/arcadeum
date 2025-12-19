@@ -33,7 +33,8 @@ export const commonMessages = {
     },
     pendingNotice: {
       title: 'Free hosts are spinning back up...',
-      message: "Our free-tier backend servers snooze when idle, so everything is stretching its legs. Back us on the support page to help keep it running 24/7!",
+      message:
+        'Our free-tier backend servers snooze when idle, so everything is stretching its legs. Back us on the support page to help keep it running 24/7!',
       timer: 'Server wake-up timer: {{seconds}}s ⏳',
     },
     errors: {

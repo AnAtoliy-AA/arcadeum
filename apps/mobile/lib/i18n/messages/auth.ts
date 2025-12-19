@@ -51,7 +51,8 @@ export const authMessages = {
       },
       errors: {
         passwordMismatch: 'Las contraseñas no coinciden',
-        usernameTooShort: 'El nombre de usuario debe tener al menos 3 caracteres',
+        usernameTooShort:
+          'El nombre de usuario debe tener al menos 3 caracteres',
       },
     },
   },
@@ -79,7 +80,8 @@ export const authMessages = {
       },
       errors: {
         passwordMismatch: 'Les mots de passe ne correspondent pas',
-        usernameTooShort: 'Le nom d\'utilisateur doit contenir au moins 3 caractères',
+        usernameTooShort:
+          "Le nom d'utilisateur doit contenir au moins 3 caractères",
       },
     },
   },

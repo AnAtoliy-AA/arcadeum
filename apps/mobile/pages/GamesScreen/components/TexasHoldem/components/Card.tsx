@@ -12,7 +12,7 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({ card, index }) => {
   const styles = useThemedStyles(createStyles);
   const suitColor = getSuitColor(card.suit);
-  
+
   return (
     <View key={`${card.suit}-${card.rank}-${index}`} style={styles.card}>
       <Text style={[styles.cardRank, { color: suitColor }]}>{card.rank}</Text>

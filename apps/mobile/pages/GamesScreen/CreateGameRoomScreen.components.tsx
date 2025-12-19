@@ -328,8 +328,7 @@ export function AlertFallback({
   );
 }
 
-interface ThemedTextInputProps
-  extends React.ComponentProps<typeof TextInput> {
+interface ThemedTextInputProps extends React.ComponentProps<typeof TextInput> {
   styles: CreateGameRoomStyles;
 }
 
@@ -372,4 +371,3 @@ export function MetaChip({
     </View>
   );
 }
-

@@ -64,6 +64,7 @@ export interface BaseGameProps {
   onAction?: (action: string, payload?: Record<string, unknown>) => void;
   /** Game configuration */
   config?: GameConfig;
+  [key: string]: unknown;
 }
 
 /**

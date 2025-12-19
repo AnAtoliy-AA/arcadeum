@@ -56,27 +56,25 @@ export function HistoryListItem({
     resolveGameName(item.gameId) ||
     t('history.unknownGame');
   const others = item.participants
-    .map((participant) =>
-      `${formatParticipantDisplayName(
-        participant.id,
-        participant.username,
-        participant.email,
-      )}${participant.isHost ? ' 👑' : ''}`,
+    .map(
+      (participant) =>
+        `${formatParticipantDisplayName(
+          participant.id,
+          participant.username,
+          participant.email,
+        )}${participant.isHost ? ' 👑' : ''}`,
     )
     .join(', ');
-  
+
   // Parse and validate date
-  const lastActivityDate = item.lastActivityAt ? new Date(item.lastActivityAt) : null;
+  const lastActivityDate = item.lastActivityAt
+    ? new Date(item.lastActivityAt)
+    : null;
   const isValidDate = lastActivityDate && !isNaN(lastActivityDate.getTime());
-  const lastActivity = isValidDate
-    ? lastActivityDate.toLocaleString()
-    : '-';
+  const lastActivity = isValidDate ? lastActivityDate.toLocaleString() : '-';
 
   return (
-    <TouchableOpacity
-      style={styles.entry}
-      onPress={() => onSelect(item)}
-    >
+    <TouchableOpacity style={styles.entry} onPress={() => onSelect(item)}>
       <View style={styles.entryHeader}>
         <ThemedText style={styles.entryGameName} numberOfLines={1}>
           {displayName}
@@ -98,9 +96,7 @@ export function HistoryListItem({
       </ThemedText>
       <View style={styles.entryFooter}>
         <IconSymbol name="clock" size={14} color={mutedTextColor} />
-        <ThemedText style={styles.entryTimestamp}>
-          {lastActivity}
-        </ThemedText>
+        <ThemedText style={styles.entryTimestamp}>{lastActivity}</ThemedText>
       </View>
       <View style={styles.entryCTA}>
         <ThemedText style={styles.entryCTAtext}>

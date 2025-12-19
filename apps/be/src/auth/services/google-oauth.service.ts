@@ -2,7 +2,11 @@
  * Google OAuth provider service.
  * Handles Google-specific OAuth logic including code exchange and profile fetching.
  */
-import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { OAuthClientService } from './oauth-client.service';
 import type { GoogleUserProfile, OAuthTokenResponse } from '../lib/types';
 import { sanitize } from '../lib/utils';
@@ -132,46 +136,47 @@ export class GoogleOAuthService {
   }): Promise<GoogleUserProfile> {
     const allowedAudiences = this.oauthClient.getAllowedOAuthClientIds();
 
-    const attemptFromAccessToken = async (): Promise<GoogleUserProfile | null> => {
-      if (!params.accessToken) return null;
-      const res = await fetch(
-        'https://openidconnect.googleapis.com/v1/userinfo',
-        {
-          headers: { Authorization: `Bearer ${params.accessToken}` },
-        },
-      );
-      if (!res.ok) {
-        return null;
-      }
-      const json = (await res.json()) as Record<string, unknown>;
-      const email =
-        typeof json.email === 'string' ? json.email.toLowerCase() : '';
-      const sub = typeof json.sub === 'string' ? json.sub : '';
-      const name = typeof json.name === 'string' ? json.name : undefined;
-      const emailVerifiedRaw = json.email_verified;
-      const emailVerified =
-        emailVerifiedRaw === true ||
-        emailVerifiedRaw === 'true' ||
-        emailVerifiedRaw === 1 ||
-        emailVerifiedRaw === '1';
-      const aud = typeof json.aud === 'string' ? json.aud : undefined;
+    const attemptFromAccessToken =
+      async (): Promise<GoogleUserProfile | null> => {
+        if (!params.accessToken) return null;
+        const res = await fetch(
+          'https://openidconnect.googleapis.com/v1/userinfo',
+          {
+            headers: { Authorization: `Bearer ${params.accessToken}` },
+          },
+        );
+        if (!res.ok) {
+          return null;
+        }
+        const json = (await res.json()) as Record<string, unknown>;
+        const email =
+          typeof json.email === 'string' ? json.email.toLowerCase() : '';
+        const sub = typeof json.sub === 'string' ? json.sub : '';
+        const name = typeof json.name === 'string' ? json.name : undefined;
+        const emailVerifiedRaw = json.email_verified;
+        const emailVerified =
+          emailVerifiedRaw === true ||
+          emailVerifiedRaw === 'true' ||
+          emailVerifiedRaw === 1 ||
+          emailVerifiedRaw === '1';
+        const aud = typeof json.aud === 'string' ? json.aud : undefined;
 
-      if (!email || !sub) {
-        return null;
-      }
+        if (!email || !sub) {
+          return null;
+        }
 
-      if (allowedAudiences.length && aud && !allowedAudiences.includes(aud)) {
-        throw new UnauthorizedException('OAuth client mismatch');
-      }
+        if (allowedAudiences.length && aud && !allowedAudiences.includes(aud)) {
+          throw new UnauthorizedException('OAuth client mismatch');
+        }
 
-      return {
-        sub,
-        email,
-        emailVerified,
-        name,
-        audience: aud,
-      } satisfies GoogleUserProfile;
-    };
+        return {
+          sub,
+          email,
+          emailVerified,
+          name,
+          audience: aud,
+        } satisfies GoogleUserProfile;
+      };
 
     const attemptFromIdToken = async (): Promise<GoogleUserProfile | null> => {
       if (!params.idToken) return null;

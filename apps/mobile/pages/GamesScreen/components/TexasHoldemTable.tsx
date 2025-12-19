@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
 import type { GameRoomSummary, GameSessionSummary } from '../api/gamesApi';
 import { useTexasHoldemGame } from './TexasHoldem/hooks/useTexasHoldemGame';
 import Player from './TexasHoldem/components/Player';
@@ -12,14 +18,7 @@ interface TexasHoldemTableProps {
   room: GameRoomSummary | null;
   session: GameSessionSummary | null;
   currentUserId: string | null;
-  actionBusy:
-    | 'draw'
-    | 'fold'
-    | 'check'
-    | 'call'
-    | 'raise'
-    | 'all-in'
-    | null;
+  actionBusy: 'draw' | 'fold' | 'check' | 'call' | 'raise' | 'all-in' | null;
   startBusy: boolean;
   isHost: boolean;
   onStart: (startingChips?: number) => void;
@@ -50,7 +49,9 @@ const TexasHoldemTable: React.FC<TexasHoldemTableProps> = ({
     return (
       <View style={styles.container}>
         <View style={styles.pokerTable}>
-          <Text style={styles.potText}>{t('games.texasHoldem.waitingForStart')}</Text>
+          <Text style={styles.potText}>
+            {t('games.texasHoldem.waitingForStart')}
+          </Text>
           {isHost && (
             <TouchableOpacity
               style={[styles.button, styles.primaryButton]}
@@ -58,7 +59,9 @@ const TexasHoldemTable: React.FC<TexasHoldemTableProps> = ({
               disabled={startBusy}
             >
               <Text style={styles.buttonText}>
-                {startBusy ? t('games.texasHoldem.starting') : t('games.texasHoldem.start')}
+                {startBusy
+                  ? t('games.texasHoldem.starting')
+                  : t('games.texasHoldem.start')}
               </Text>
             </TouchableOpacity>
           )}
@@ -134,7 +137,9 @@ const TexasHoldemTable: React.FC<TexasHoldemTableProps> = ({
 
       {session.status === 'completed' && (
         <View style={styles.gameOverContainer}>
-          <Text style={styles.gameOverText}>{t('games.texasHoldem.gameOver')}</Text>
+          <Text style={styles.gameOverText}>
+            {t('games.texasHoldem.gameOver')}
+          </Text>
         </View>
       )}
     </ScrollView>

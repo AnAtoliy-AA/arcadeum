@@ -125,7 +125,10 @@ export function PendingRequestNotice() {
 
     const updateElapsed = () => {
       const now = Date.now();
-      const elapsed = Math.max(0, Math.floor((now - trackerState.since!) / 1000));
+      const elapsed = Math.max(
+        0,
+        Math.floor((now - trackerState.since!) / 1000),
+      );
       setElapsedSeconds(elapsed);
     };
 
@@ -168,7 +171,10 @@ export function PendingRequestNotice() {
   }
 
   return (
-    <View pointerEvents="box-none" style={styles.wrapper as StyleProp<ViewStyle>}>
+    <View
+      pointerEvents="box-none"
+      style={styles.wrapper as StyleProp<ViewStyle>}
+    >
       <Animated.View style={[styles.card, { opacity }] as StyleProp<ViewStyle>}>
         <View style={styles.header}>
           <Animated.View

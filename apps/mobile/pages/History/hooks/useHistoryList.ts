@@ -1,9 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { fetchHistory, type FetchHistoryParams, type HistorySummary } from '../api/historyApi';
+import {
+  fetchHistory,
+  type FetchHistoryParams,
+  type HistorySummary,
+} from '../api/historyApi';
 import { deduplicateHistoryEntries } from '../utils/deduplication';
 import type { UseHistoryListParams, UseHistoryListReturn } from '../types';
 
-export function useHistoryList(params: UseHistoryListParams): UseHistoryListReturn {
+export function useHistoryList(
+  params: UseHistoryListParams,
+): UseHistoryListReturn {
   const { accessToken, refreshTokens, searchQuery, statusFilter } = params;
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -49,10 +55,16 @@ export function useHistoryList(params: UseHistoryListParams): UseHistoryListRetu
           historyParams.status = statusFilter;
         }
 
-        const data = await fetchHistory(accessToken, historyParams, fetchOptions);
+        const data = await fetchHistory(
+          accessToken,
+          historyParams,
+          fetchOptions,
+        );
 
         if (append) {
-          setEntries((prev) => deduplicateHistoryEntries([...prev, ...data.entries]));
+          setEntries((prev) =>
+            deduplicateHistoryEntries([...prev, ...data.entries]),
+          );
         } else {
           setEntries(deduplicateHistoryEntries(data.entries));
         }

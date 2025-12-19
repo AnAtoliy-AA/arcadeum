@@ -1,15 +1,14 @@
 import React from 'react';
 import { Animated, ActivityIndicator, Platform, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
-import {
-  ExplodingCatsCard as ExplodingCatsArtwork,
-} from '@/components/cards';
+import { ExplodingCatsCard as ExplodingCatsArtwork } from '@/components/cards';
 import type { ExplodingCatsCard, ExplodingCatsCatCard } from '../types';
 import type { ExplodingCatsTableStyles } from '../styles';
 import { CARD_ART_SETTINGS, CAT_COMBO_CARDS } from '../constants';
 
-const AnimatedTouchableOpacity =
-  Animated.createAnimatedComponent(require('react-native').TouchableOpacity);
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(
+  require('react-native').TouchableOpacity,
+);
 const ACCESSIBILITY_DISABLED_PROPS: { accessible?: boolean } =
   Platform.OS === 'web' ? {} : { accessible: false };
 
@@ -54,7 +53,8 @@ export function HandCard({
 }: HandCardProps) {
   const cardKey = `${card}-${index}`;
   const cardArt = CARD_ART_SETTINGS[card] ?? CARD_ART_SETTINGS.exploding_cat;
-  const cardVariant = (((cardArt.variant ?? 1) - 1 + index) % 3) + 1 as CardArtworkVariant;
+  const cardVariant = ((((cardArt.variant ?? 1) - 1 + index) % 3) +
+    1) as CardArtworkVariant;
   const isGrid = mode === 'grid';
   const overlayTitleLines = isGrid ? 1 : 2;
   const overlayDescriptionLines = isGrid ? 2 : 3;
@@ -100,8 +100,14 @@ export function HandCard({
               preserveAspectRatio="xMidYMid slice"
               focusable={false}
             />
-            <View style={styles.handCardOverlay} {...ACCESSIBILITY_DISABLED_PROPS}>
-              <ThemedText style={styles.handCardOverlayTitle} numberOfLines={overlayTitleLines}>
+            <View
+              style={styles.handCardOverlay}
+              {...ACCESSIBILITY_DISABLED_PROPS}
+            >
+              <ThemedText
+                style={styles.handCardOverlayTitle}
+                numberOfLines={overlayTitleLines}
+              >
                 {translateCardName(card)}
               </ThemedText>
               <ThemedText
@@ -112,7 +118,10 @@ export function HandCard({
               </ThemedText>
             </View>
             {count > 1 && (
-              <View style={styles.handCardCountBadge} {...ACCESSIBILITY_DISABLED_PROPS}>
+              <View
+                style={styles.handCardCountBadge}
+                {...ACCESSIBILITY_DISABLED_PROPS}
+              >
                 <ThemedText style={styles.handCardCountText}>
                   {count}
                 </ThemedText>

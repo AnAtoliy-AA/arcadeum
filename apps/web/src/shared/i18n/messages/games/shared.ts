@@ -1,6 +1,6 @@
 import type { Locale } from "../../types";
 
-export const sharedMessages: Record<Locale, any> = {
+export const sharedMessages: Record<Locale, Record<string, unknown>> = {
   en: {
     coup: { name: "Coup" },
     "pandemic-lite": { name: "Pandemic: Rapid Response" },

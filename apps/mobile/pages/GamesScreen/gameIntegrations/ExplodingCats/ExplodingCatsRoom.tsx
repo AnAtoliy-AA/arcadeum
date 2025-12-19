@@ -42,7 +42,10 @@ import type {
   ActionBusyType,
 } from './ExplodingCatsRoom.types';
 
-export type { ExplodingCatsRoomHandle, ExplodingCatsRoomProps } from './ExplodingCatsRoom.types';
+export type {
+  ExplodingCatsRoomHandle,
+  ExplodingCatsRoomProps,
+} from './ExplodingCatsRoom.types';
 export type { ExplodingCatsRoomStyles };
 
 export const ExplodingCatsRoom = forwardRef<
@@ -100,9 +103,12 @@ export const ExplodingCatsRoom = forwardRef<
 
   const backgroundGradientColors = useMemo(
     () => [
-      StyleSheet.flatten(styles.backgroundGradientSwatchA).backgroundColor as string,
-      StyleSheet.flatten(styles.backgroundGradientSwatchB).backgroundColor as string,
-      StyleSheet.flatten(styles.backgroundGradientSwatchC).backgroundColor as string,
+      StyleSheet.flatten(styles.backgroundGradientSwatchA)
+        .backgroundColor as string,
+      StyleSheet.flatten(styles.backgroundGradientSwatchB)
+        .backgroundColor as string,
+      StyleSheet.flatten(styles.backgroundGradientSwatchC)
+        .backgroundColor as string,
     ],
     [styles],
   );
@@ -117,7 +123,12 @@ export const ExplodingCatsRoom = forwardRef<
   );
 
   const neonBackdrop = useMemo(
-    () => <NeonBackdrop backgroundGradientColors={backgroundGradientColors} styles={styles} />,
+    () => (
+      <NeonBackdrop
+        backgroundGradientColors={backgroundGradientColors}
+        styles={styles}
+      />
+    ),
     [backgroundGradientColors, styles],
   );
 
@@ -173,7 +184,12 @@ export const ExplodingCatsRoom = forwardRef<
       default:
         return styles.statusLobby;
     }
-  }, [room, styles.statusCompleted, styles.statusInProgress, styles.statusLobby]);
+  }, [
+    room,
+    styles.statusCompleted,
+    styles.statusInProgress,
+    styles.statusLobby,
+  ]);
 
   const isLoading = loading && !refreshing;
 
@@ -189,7 +205,9 @@ export const ExplodingCatsRoom = forwardRef<
     setControlsCollapsed((prev) => !prev);
   }, []);
 
-  const topBarVariant: 'lobby' | 'table' = hasSessionSnapshot ? 'table' : 'lobby';
+  const topBarVariant: 'lobby' | 'table' = hasSessionSnapshot
+    ? 'table'
+    : 'lobby';
   const showLobbyOverview = !hasSessionSnapshot;
   const topBar = (
     <ExplodingCatsRoomTopBar
@@ -271,150 +289,166 @@ export const ExplodingCatsRoom = forwardRef<
 
         {showLobbyOverview ? (
           <ThemedView style={styles.headerCard}>
-          <LinearGradient
-            colors={heroGradientColors}
-            start={HERO_GRADIENT_COORDS.start}
-            end={HERO_GRADIENT_COORDS.end}
-            style={styles.heroGradientLayer}
-            pointerEvents="none"
-          />
-          <View style={styles.heroBackdrop} pointerEvents="none" />
-          <View style={styles.heroGlow} pointerEvents="none" />
-          <View style={styles.heroGlowSecondary} pointerEvents="none" />
-          <View style={styles.heroOrbit} pointerEvents="none" />
-          <View style={styles.heroAccentTop} pointerEvents="none" />
-          <View style={styles.heroAccentBottom} pointerEvents="none" />
-          <View style={styles.headerContent}>
-            <View style={styles.heroHeader}>
-              <View style={styles.heroBadge}>
-                <IconSymbol
-                  name="gamecontroller.fill"
-                  size={16}
-                  color={styles.heroBadgeIcon.color as string}
-                />
-                <ThemedText style={styles.heroBadgeText} numberOfLines={1}>
-                  {displayGame ?? t('games.rooms.unknownGame')}
-                </ThemedText>
+            <LinearGradient
+              colors={heroGradientColors}
+              start={HERO_GRADIENT_COORDS.start}
+              end={HERO_GRADIENT_COORDS.end}
+              style={styles.heroGradientLayer}
+              pointerEvents="none"
+            />
+            <View style={styles.heroBackdrop} pointerEvents="none" />
+            <View style={styles.heroGlow} pointerEvents="none" />
+            <View style={styles.heroGlowSecondary} pointerEvents="none" />
+            <View style={styles.heroOrbit} pointerEvents="none" />
+            <View style={styles.heroAccentTop} pointerEvents="none" />
+            <View style={styles.heroAccentBottom} pointerEvents="none" />
+            <View style={styles.headerContent}>
+              <View style={styles.heroHeader}>
+                <View style={styles.heroBadge}>
+                  <IconSymbol
+                    name="gamecontroller.fill"
+                    size={16}
+                    color={styles.heroBadgeIcon.color as string}
+                  />
+                  <ThemedText style={styles.heroBadgeText} numberOfLines={1}>
+                    {displayGame ?? t('games.rooms.unknownGame')}
+                  </ThemedText>
+                </View>
+                <View style={[styles.statusPill, statusStyle]}>
+                  <ThemedText style={styles.statusText}>
+                    {t(getRoomStatusLabel(room?.status ?? 'lobby'))}
+                  </ThemedText>
+                </View>
               </View>
-              <View style={[styles.statusPill, statusStyle]}>
-                <ThemedText style={styles.statusText}>
-                  {t(getRoomStatusLabel(room?.status ?? 'lobby'))}
+
+              <View style={styles.heroTitleStack}>
+                <ThemedText style={styles.heroTagline} numberOfLines={1}>
+                  {t('games.room.heroTagline')}
                 </ThemedText>
+                <View style={styles.heroTitleFrame}>
+                  <View style={styles.heroTitleGlow} pointerEvents="none" />
+                  <ThemedText
+                    type="title"
+                    style={styles.roomTitle}
+                    numberOfLines={2}
+                  >
+                    {displayName}
+                  </ThemedText>
+                </View>
               </View>
-            </View>
 
-            <View style={styles.heroTitleStack}>
-              <ThemedText style={styles.heroTagline} numberOfLines={1}>
-                {t('games.room.heroTagline')}
-              </ThemedText>
-              <View style={styles.heroTitleFrame}>
-                <View style={styles.heroTitleGlow} pointerEvents="none" />
-                <ThemedText type="title" style={styles.roomTitle} numberOfLines={2}>
-                  {displayName}
-                </ThemedText>
+              {displayGame ? (
+                <ThemedText style={styles.gameLabel}>{displayGame}</ThemedText>
+              ) : null}
+
+              <View style={styles.heroDividerRow}>
+                <View style={styles.heroDividerDot} />
+                <View style={styles.heroDividerLine} />
+                <View style={styles.heroDividerDotSecondary} />
               </View>
-            </View>
 
-            {displayGame ? (
-              <ThemedText style={styles.gameLabel}>{displayGame}</ThemedText>
-            ) : null}
-
-            <View style={styles.heroDividerRow}>
-              <View style={styles.heroDividerDot} />
-              <View style={styles.heroDividerLine} />
-              <View style={styles.heroDividerDotSecondary} />
-            </View>
-
-            {room ? (
-              <View style={styles.metaGrid}>
-                {(() => {
-                  const hostLabelRaw = room.host?.displayName ?? formatRoomHost(room.hostId);
-                  const hostValue =
-                    hostLabelRaw === 'mystery captain'
-                      ? t('games.rooms.mysteryHost')
-                      : hostLabelRaw;
-                  const baseCapacity = room.maxPlayers
-                    ? t('games.rooms.capacityWithMax', {
-                        current: room.playerCount,
-                        max: room.maxPlayers,
-                      })
-                    : t('games.rooms.capacityWithoutMax', {
-                        count: room.playerCount,
-                      });
-                  const playerNames = room.members
-                    ?.map((member) => member.displayName)
-                    .filter(Boolean)
-                    .join(', ');
-                  const playersValue = playerNames
-                    ? `${baseCapacity} • ${playerNames}`
-                    : baseCapacity;
-                  const createdRaw = formatRoomTimestamp(room.createdAt);
-                  const createdValue =
-                    createdRaw === 'Just created' ? t('games.rooms.justCreated') : createdRaw;
-                  const accessValue =
-                    room.visibility === 'private'
-                      ? t('games.rooms.visibility.private')
-                      : t('games.rooms.visibility.public');
-                  return (
-                    <>
-                      <MetaItem
-                        icon="person.crop.circle"
-                        label={t('games.room.meta.host')}
-                        value={hostValue}
-                        styles={styles}
-                      />
-                      <MetaItem
-                        icon="person.3.fill"
-                        label={t('games.room.meta.players')}
-                        value={playersValue}
-                        styles={styles}
-                      />
-                      <MetaItem
-                        icon="clock.fill"
-                        label={t('games.room.meta.created')}
-                        value={t('games.rooms.created', {
-                          timestamp: createdValue,
-                        })}
-                        styles={styles}
-                      />
-                      <MetaItem
-                        icon={room.visibility === 'private' ? 'lock.fill' : 'sparkles'}
-                        label={t('games.room.meta.access')}
-                        value={accessValue}
-                        styles={styles}
-                      />
-                      {room.inviteCode ? (
+              {room ? (
+                <View style={styles.metaGrid}>
+                  {(() => {
+                    const hostLabelRaw =
+                      room.host?.displayName ?? formatRoomHost(room.hostId);
+                    const hostValue =
+                      hostLabelRaw === 'mystery captain'
+                        ? t('games.rooms.mysteryHost')
+                        : hostLabelRaw;
+                    const baseCapacity = room.maxPlayers
+                      ? t('games.rooms.capacityWithMax', {
+                          current: room.playerCount,
+                          max: room.maxPlayers,
+                        })
+                      : t('games.rooms.capacityWithoutMax', {
+                          count: room.playerCount,
+                        });
+                    const playerNames = room.members
+                      ?.map((member) => member.displayName)
+                      .filter(Boolean)
+                      .join(', ');
+                    const playersValue = playerNames
+                      ? `${baseCapacity} • ${playerNames}`
+                      : baseCapacity;
+                    const createdRaw = formatRoomTimestamp(room.createdAt);
+                    const createdValue =
+                      createdRaw === 'Just created'
+                        ? t('games.rooms.justCreated')
+                        : createdRaw;
+                    const accessValue =
+                      room.visibility === 'private'
+                        ? t('games.rooms.visibility.private')
+                        : t('games.rooms.visibility.public');
+                    return (
+                      <>
                         <MetaItem
-                          icon="number"
-                          label={t('games.room.meta.inviteCode')}
-                          value={room.inviteCode}
+                          icon="person.crop.circle"
+                          label={t('games.room.meta.host')}
+                          value={hostValue}
                           styles={styles}
                         />
-                      ) : null}
-                    </>
-                  );
-                })()}
-              </View>
-            ) : null}
+                        <MetaItem
+                          icon="person.3.fill"
+                          label={t('games.room.meta.players')}
+                          value={playersValue}
+                          styles={styles}
+                        />
+                        <MetaItem
+                          icon="clock.fill"
+                          label={t('games.room.meta.created')}
+                          value={t('games.rooms.created', {
+                            timestamp: createdValue,
+                          })}
+                          styles={styles}
+                        />
+                        <MetaItem
+                          icon={
+                            room.visibility === 'private'
+                              ? 'lock.fill'
+                              : 'sparkles'
+                          }
+                          label={t('games.room.meta.access')}
+                          value={accessValue}
+                          styles={styles}
+                        />
+                        {room.inviteCode ? (
+                          <MetaItem
+                            icon="number"
+                            label={t('games.room.meta.inviteCode')}
+                            value={room.inviteCode}
+                            styles={styles}
+                          />
+                        ) : null}
+                      </>
+                    );
+                  })()}
+                </View>
+              ) : null}
 
-            {isLoading ? (
-              <View style={styles.loadingRow}>
-                <ActivityIndicator size="small" color={styles.refreshTint.color as string} />
-                <ThemedText style={styles.loadingText}>{t('games.room.loading')}</ThemedText>
-              </View>
-            ) : null}
+              {isLoading ? (
+                <View style={styles.loadingRow}>
+                  <ActivityIndicator
+                    size="small"
+                    color={styles.refreshTint.color as string}
+                  />
+                  <ThemedText style={styles.loadingText}>
+                    {t('games.room.loading')}
+                  </ThemedText>
+                </View>
+              ) : null}
 
-            {error ? (
-              <View style={styles.errorCard}>
-                <IconSymbol
-                  name="exclamationmark.triangle.fill"
-                  size={18}
-                  color={styles.errorText.color as string}
-                />
-                <ThemedText style={styles.errorText}>{error}</ThemedText>
-              </View>
-            ) : null}
-          </View>
+              {error ? (
+                <View style={styles.errorCard}>
+                  <IconSymbol
+                    name="exclamationmark.triangle.fill"
+                    size={18}
+                    color={styles.errorText.color as string}
+                  />
+                  <ThemedText style={styles.errorText}>{error}</ThemedText>
+                </View>
+              ) : null}
+            </View>
           </ThemedView>
         ) : null}
 
@@ -471,7 +505,7 @@ export const ExplodingCatsRoom = forwardRef<
               </ThemedText>
             </View>
           </ThemedView>
-  ) : null}
+        ) : null}
       </ScrollView>
     </ThemedView>
   );

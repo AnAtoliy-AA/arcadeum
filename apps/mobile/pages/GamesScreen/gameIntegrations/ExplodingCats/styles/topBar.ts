@@ -3,7 +3,17 @@ import type { Palette } from '@/hooks/useThemedStyles';
 import { platformShadow } from '@/lib/platformShadow';
 
 export const getTopBarStyles = (palette: Palette) => {
-  const { isLight, gameRoom: { border: borderColor, topBarSurface, topBarBorder, surfaceShadow, actionBackground, actionBorder } } = palette;
+  const {
+    isLight,
+    gameRoom: {
+      border: borderColor,
+      topBarSurface,
+      topBarBorder,
+      surfaceShadow,
+      actionBackground,
+      actionBorder,
+    },
+  } = palette;
 
   return {
     topBar: {

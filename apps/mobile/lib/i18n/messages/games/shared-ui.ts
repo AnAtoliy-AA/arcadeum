@@ -1,22 +1,30 @@
-// Game-related alert and dialog messages  
+// Game-related alert and dialog messages
 export const gameAlertsMessages = {
   en: {
     inviteRequired: 'This lobby needs an invite code from the host.',
     inviteInvalid: "Invite code didn't work. Double-check and try again.",
     roomFullTitle: 'Room is full',
-    roomFullMessage: 'That lobby has hit its player cap. Try another room or create your own.',
-    roomFullManualMessage: 'That lobby has already reached its player cap. Try another code or create a new room.',
+    roomFullMessage:
+      'That lobby has hit its player cap. Try another room or create your own.',
+    roomFullManualMessage:
+      'That lobby has already reached its player cap. Try another code or create a new room.',
     roomLockedTitle: 'Match already started',
-    roomLockedMessage: 'This lobby is already in progress. Join a different room or check back later.',
-    roomLockedManualMessage: 'The host already kicked off that session. Ask them for a fresh invite code.',
+    roomLockedMessage:
+      'This lobby is already in progress. Join a different room or check back later.',
+    roomLockedManualMessage:
+      'The host already kicked off that session. Ask them for a fresh invite code.',
     genericJoinFailedTitle: "Couldn't join room",
     signInRequiredTitle: 'Sign in required',
-    signInInviteMessage: 'Log in to redeem an invite code and sync your seat with the host.',
-    signInJoinMessage: 'Log in to join a lobby and sync your seat with the host.',
+    signInInviteMessage:
+      'Log in to redeem an invite code and sync your seat with the host.',
+    signInJoinMessage:
+      'Log in to join a lobby and sync your seat with the host.',
     signInDetailMessage: 'Log in to grab a seat in this lobby.',
-    inviteInvalidManual: "We couldn't find a room with that invite code. Double-check the letters and try again.",
+    inviteInvalidManual:
+      "We couldn't find a room with that invite code. Double-check the letters and try again.",
     inviteShareFailedTitle: 'Invite not sent',
-    inviteShareFailedMessage: 'Copy a link or ping friends manually while we add native invites.',
+    inviteShareFailedMessage:
+      'Copy a link or ping friends manually while we add native invites.',
     actionFailedTitle: 'Action failed',
     genericError: 'Something went wrong.',
     couldNotLeaveTitle: 'Could not leave room',
@@ -24,15 +32,17 @@ export const gameAlertsMessages = {
     unableToStartTitle: 'Unable to start match',
     unableToStartMessage: 'Unable to start the match right now.',
     leavePromptTitle: 'Leave this room?',
-    leavePromptMessage: 'You will give up your seat and may need a new invite to return.',
+    leavePromptMessage:
+      'You will give up your seat and may need a new invite to return.',
     deletePromptTitle: 'Delete this room?',
-    deletePromptMessage: 'This will remove the lobby for everyone. Players will be disconnected immediately.',
+    deletePromptMessage:
+      'This will remove the lobby for everyone. Players will be disconnected immediately.',
     signInManageSeatMessage: 'Sign in to manage your seat in this lobby.',
     signInTakeTurnMessage: 'Log in to take turns at the table.',
     signInPlayCardMessage: 'Log in to play action cards.',
     signInStartMatchMessage: 'Sign in to start the match for this lobby.',
     roomDeletedTitle: 'Room deleted',
-    roomDeletedMessage: 'This lobby has been removed by the host.'
+    roomDeletedMessage: 'This lobby has been removed by the host.',
   },
   es: {
     inviteRequired:
@@ -55,8 +65,7 @@ export const gameAlertsMessages = {
       'Inicia sesión para canjear un código de invitación y sincronizar tu asiento con el anfitrión.',
     signInJoinMessage:
       'Inicia sesión para unirte a un lobby y sincronizar tu asiento con el anfitrión.',
-    signInDetailMessage:
-      'Inicia sesión para asegurar tu asiento en esta sala.',
+    signInDetailMessage: 'Inicia sesión para asegurar tu asiento en esta sala.',
     inviteInvalidManual:
       'No encontramos una sala con ese código. Revisa las letras e inténtalo de nuevo.',
     inviteShareFailedTitle: 'Invitación no enviada',
@@ -124,8 +133,7 @@ export const gameAlertsMessages = {
       'Cela supprimera le lobby pour tout le monde. Les joueurs seront déconnectés immédiatement.',
     signInManageSeatMessage:
       'Connectez-vous pour gérer votre place dans ce lobby.',
-    signInTakeTurnMessage:
-      'Connectez-vous pour jouer vos tours à la table.',
+    signInTakeTurnMessage: 'Connectez-vous pour jouer vos tours à la table.',
     signInPlayCardMessage: "Connectez-vous pour jouer des cartes d'action.",
     signInStartMatchMessage:
       'Connectez-vous pour lancer la partie dans ce lobby.',
@@ -138,10 +146,13 @@ export const inviteDialogMessages = {
   en: {
     title: 'Enter invite code',
     placeholder: 'ABC123',
-    manualDescription: 'Got an invite from a host? Enter their six-character code to hop into their lobby instantly.',
-    roomDescriptionWithName: 'This lobby is invite-only. Ask the host for their code to join "{{room}}".',
-    roomDescription: 'This lobby is invite-only. Enter the code from the host to join.',
-    helper: "We'll uppercase automatically—just type the letters you received."
+    manualDescription:
+      'Got an invite from a host? Enter their six-character code to hop into their lobby instantly.',
+    roomDescriptionWithName:
+      'This lobby is invite-only. Ask the host for their code to join "{{room}}".',
+    roomDescription:
+      'This lobby is invite-only. Enter the code from the host to join.',
+    helper: "We'll uppercase automatically—just type the letters you received.",
   },
   es: {
     title: 'Introduce el código de invitación',
@@ -172,7 +183,7 @@ export const inviteDialogMessages = {
 export const gameErrorsMessages = {
   en: {
     loadRooms: 'Unable to load rooms right now.',
-    loadRoomDetails: 'Unable to load room details.'
+    loadRoomDetails: 'Unable to load room details.',
   },
   es: {
     loadRooms: 'No se pudieron cargar las salas en este momento.',
@@ -187,7 +198,8 @@ export const gameErrorsMessages = {
 export const shareMessages = {
   en: {
     title: 'Join me for {{game}}',
-    message: "Jump into {{game}} on {{appName}}. I'll create a room as soon as the prototype opens!"
+    message:
+      "Jump into {{game}} on {{appName}}. I'll create a room as soon as the prototype opens!",
   },
   es: {
     title: 'Únete conmigo a {{game}}',

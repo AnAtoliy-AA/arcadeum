@@ -5,7 +5,10 @@ import type { ShadowPresets } from './shadows';
 /**
  * Card container styles.
  */
-export function createCardStyles(ctx: StyleThemeContext, shadows: ShadowPresets) {
+export function createCardStyles(
+  ctx: StyleThemeContext,
+  shadows: ShadowPresets,
+) {
   const {
     surface,
     cardBorder,

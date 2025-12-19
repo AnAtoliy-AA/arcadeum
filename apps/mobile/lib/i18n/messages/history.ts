@@ -146,7 +146,7 @@ export const historyMessages = {
         'Aucune partie terminée. Jouez pour construire votre historique.',
     },
     search: {
-      label: 'Rechercher dans l\'historique',
+      label: "Rechercher dans l'historique",
       placeholder: 'Chercher par nom de salle ou participant...',
       noResults: 'Aucune partie ne correspond à votre recherche',
     },
@@ -162,16 +162,16 @@ export const historyMessages = {
     },
     actions: {
       viewDetails: 'Voir les détails',
-      refresh: 'Actualiser l\'historique',
+      refresh: "Actualiser l'historique",
     },
     errors: {
-      authRequired: 'Vous devez être connecté pour voir l\'historique.',
+      authRequired: "Vous devez être connecté pour voir l'historique.",
       detailFailed: 'Impossible de charger les détails de la partie.',
       rematchMinimum:
         'Sélectionnez au moins un autre participant pour lancer une revanche.',
-      removeFailed: 'Impossible de retirer la partie de l\'historique.',
+      removeFailed: "Impossible de retirer la partie de l'historique.",
       detailRemoved:
-        'Cette partie n\'est plus disponible. Actualisez votre historique pour mettre à jour la liste.',
+        "Cette partie n'est plus disponible. Actualisez votre historique pour mettre à jour la liste.",
     },
     detail: {
       lastActivity: 'Dernière activité {{timestamp}}',
@@ -185,11 +185,11 @@ export const historyMessages = {
       rematchTitle: 'Revanche',
       rematchDescription: 'Sélectionnez qui est prêt pour un autre tour.',
       rematchAction: 'Créer une revanche',
-      backToList: 'Retour à l\'historique',
-      removeTitle: 'Retirer la partie de l\'historique',
+      backToList: "Retour à l'historique",
+      removeTitle: "Retirer la partie de l'historique",
       removeDescription:
         'Cela masque la partie pour vous et la conserve pour les autres joueurs.',
-      removeAction: 'Retirer de l\'historique',
+      removeAction: "Retirer de l'historique",
       removeConfirm: 'Retirer',
       removeCancel: 'Conserver',
     },

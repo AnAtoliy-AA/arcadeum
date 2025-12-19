@@ -87,7 +87,7 @@ export function SelectField<T extends string | number>({
             ]}
             numberOfLines={1}
           >
-            {selectedOption ? selectedOption.label : placeholder ?? label}
+            {selectedOption ? selectedOption.label : (placeholder ?? label)}
           </ThemedText>
           {selectedOption?.description ? (
             <ThemedText style={styles.triggerDescription} numberOfLines={2}>

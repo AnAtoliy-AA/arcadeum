@@ -35,7 +35,9 @@ export function isSimpleActionCard(value: string): value is SimpleActionCard {
   return SIMPLE_ACTION_CARDS.includes(value as SimpleActionCard);
 }
 
-export function toExplodingCatsCard(value?: string): ExplodingCatsCard | undefined {
+export function toExplodingCatsCard(
+  value?: string,
+): ExplodingCatsCard | undefined {
   if (!value) {
     return undefined;
   }

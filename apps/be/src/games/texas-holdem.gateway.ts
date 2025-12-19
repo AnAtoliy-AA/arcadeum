@@ -146,11 +146,7 @@ export class TexasHoldemGateway {
     const scope = scopeRaw === 'players' ? 'players' : 'all';
 
     try {
-      await this.texasHoldemService.postHistoryNote(
-        userId,
-        roomId,
-        message,
-      );
+      await this.texasHoldemService.postHistoryNote(userId, roomId, message);
 
       client.emit('games.session.holdem_history_note.ack', {
         roomId,

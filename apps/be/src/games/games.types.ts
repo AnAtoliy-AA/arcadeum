@@ -26,11 +26,7 @@ export type {
   ListRoomsFilters,
 };
 
-export type {
-  GameSessionSummary,
-  CreateSessionOptions,
-  ExecuteActionOptions,
-};
+export type { GameSessionSummary, CreateSessionOptions, ExecuteActionOptions };
 
 export type {
   GameHistorySummary,

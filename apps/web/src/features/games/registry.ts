@@ -1,10 +1,9 @@
-import type { GameMetadata } from "./types";
+import type { GameMetadata, BaseGameProps } from "./types";
 import type { GameSlug } from "./registry.types";
 
 export { GameSlug };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const gameLoaders: Record<string, () => Promise<{ default: React.ComponentType<any> }>> = {
+export const gameLoaders: Record<string, () => Promise<{ default: React.ComponentType<BaseGameProps> }>> = {
   exploding_cats_v1: () => import("@/widgets/ExplodingCatsGame"),
   texas_holdem_v1: () => import("@/widgets/TexasHoldemGame"),
   // Future game implementations will be added here

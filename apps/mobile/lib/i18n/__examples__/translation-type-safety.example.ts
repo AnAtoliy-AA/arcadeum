@@ -68,11 +68,9 @@ const invalidKeys: TranslationKey[] = [
 function ExampleComponent() {
   // This would work in a real component with useTranslation()
   // const { t } = useTranslation();
-
   // ✅ These will autocomplete and type-check
   // const loginLabel = t("common.actions.login");
   // const errorMsg = t("api.generic.unknownError");
-
   // ❌ This will show TypeScript error
   // const invalid = t("common.notExisting.key");
 }

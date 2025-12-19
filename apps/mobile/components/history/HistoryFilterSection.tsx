@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, ScrollView, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import {
+  View,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  StyleSheet,
+} from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles } from '@/hooks/useThemedStyles';
@@ -42,11 +48,7 @@ export function HistoryFilterSection({
   return (
     <View style={styles.filterContainer}>
       <View style={styles.searchContainer}>
-        <IconSymbol
-          name="magnifyingglass"
-          size={18}
-          color={mutedTextColor}
-        />
+        <IconSymbol name="magnifyingglass" size={18} color={mutedTextColor} />
         <TextInput
           style={styles.searchInput}
           placeholder={t('history.search.placeholder')}
@@ -62,14 +64,24 @@ export function HistoryFilterSection({
           contentContainerStyle={styles.filterScrollContent}
           style={styles.filterScroll}
         >
-          {['all', 'lobby', 'in_progress', 'completed', 'waiting', 'active', 'abandoned'].map((filter) => {
+          {[
+            'all',
+            'lobby',
+            'in_progress',
+            'completed',
+            'waiting',
+            'active',
+            'abandoned',
+          ].map((filter) => {
             // Map filter value to translation key
             const getTranslationKey = (filterValue: string): TranslationKey => {
               if (filterValue === 'all') {
                 return 'history.filter.all';
               }
               // Convert snake_case to camelCase for status keys
-              const statusKey = filterValue.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+              const statusKey = filterValue.replace(/_([a-z])/g, (_, letter) =>
+                letter.toUpperCase(),
+              );
               return `history.status.${statusKey}` as TranslationKey;
             };
 
@@ -102,11 +114,7 @@ export function HistoryFilterSection({
           onPress={handleManualRefresh}
           disabled={loading || refreshing}
         >
-          <IconSymbol
-            name="arrow.clockwise"
-            size={16}
-            color={tintColor}
-          />
+          <IconSymbol name="arrow.clockwise" size={16} color={tintColor} />
           <ThemedText style={styles.headerRefreshLabel}>
             {t('history.actions.refresh')}
           </ThemedText>

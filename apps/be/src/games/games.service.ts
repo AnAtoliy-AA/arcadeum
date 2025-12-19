@@ -291,5 +291,3 @@ export class GamesService {
     return this.utilities.validateUserIds(userIds);
   }
 }
-
-

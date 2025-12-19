@@ -2,7 +2,8 @@
 export const createRoomMessages = {
   en: {
     title: 'Create a room',
-    subtitle: 'Pick your game, name the lobby, and share the invite with your crew.',
+    subtitle:
+      'Pick your game, name the lobby, and share the invite with your crew.',
     sectionGame: 'Game',
     sectionDetails: 'Room details',
     sectionPreview: 'Preview',
@@ -24,17 +25,20 @@ export const createRoomMessages = {
     alerts: {
       signInMessage: 'Please sign in again to create a game room.',
       nameRequiredTitle: 'Name required',
-      nameRequiredMessage: 'Give your room a fun name to help friends recognize it.',
+      nameRequiredMessage:
+        'Give your room a fun name to help friends recognize it.',
       gameUnavailableTitle: 'Prototype in progress',
-      gameUnavailableMessage: "We're still building this one. Pick Exploding Cats while we finish the next prototypes.",
+      gameUnavailableMessage:
+        "We're still building this one. Pick Exploding Cats while we finish the next prototypes.",
       invalidPlayersTitle: 'Invalid player count',
-      invalidPlayersMessage: 'Max players should be a number greater than or equal to 2.',
+      invalidPlayersMessage:
+        'Max players should be a number greater than or equal to 2.',
       roomCreatedTitle: 'Room created',
       roomCreatedMessage: 'Invite code: {{code}}',
       invitePending: 'pending',
       createFailedTitle: "Couldn't create room",
-      createFailedMessage: 'Failed to create room.'
-    }
+      createFailedMessage: 'Failed to create room.',
+    },
   },
   es: {
     title: 'Crear una sala',

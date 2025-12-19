@@ -65,8 +65,8 @@ export async function loginWithOAuth(): Promise<AuthorizeResult> {
 
   try {
     return await authorize(authConfig);
-  } catch (e: any) {
-    const message = e?.message || String(e);
+  } catch (e: unknown) {
+    const message = (e as Error)?.message || String(e);
     console.error(`[${platform.os}] OAuth authorize failed:`, message);
     throw e;
   }
@@ -95,7 +95,7 @@ export async function logoutOAuth(params: {
 
     // Native (Android/iOS) — revoke access and refresh tokens if present
     if (accessToken) {
-      await revoke(authConfig as any, {
+      await revoke(authConfig, {
         tokenToRevoke: accessToken,
         sendClientId: true,
       });
@@ -106,8 +106,8 @@ export async function logoutOAuth(params: {
         sendClientId: true,
       });
     }
-  } catch (e: any) {
-    const message = e?.message || String(e);
+  } catch (e: unknown) {
+    const message = (e as Error)?.message || String(e);
     console.warn(`[${platform.os}] OAuth revoke failed:`, message);
   }
 }

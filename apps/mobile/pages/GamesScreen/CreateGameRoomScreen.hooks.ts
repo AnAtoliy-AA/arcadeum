@@ -155,7 +155,10 @@ export function useCreateGameRoomController(): UseCreateGameRoomControllerResult
             response.room.inviteCode ?? t('games.create.alerts.invitePending'),
         }),
       );
-      router.replace({ pathname: '/games/[id]', params: { id: formState.gameId } });
+      router.replace({
+        pathname: '/games/[id]',
+        params: { id: formState.gameId },
+      });
     } catch (error) {
       const message =
         error instanceof Error
@@ -190,4 +193,3 @@ export function useCreateGameRoomController(): UseCreateGameRoomControllerResult
     t,
   };
 }
-

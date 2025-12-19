@@ -5,19 +5,19 @@ export const roomsMessages = {
       lobby: 'Lobby open',
       inProgress: 'Match running',
       completed: 'Session wrapped',
-      unknown: 'Unknown status'
+      unknown: 'Unknown status',
     },
     capacityWithMax: '{{current}}/{{max}} players',
     capacityWithoutMax: '{{count}} players',
     hostedBy: 'Hosted by {{host}}',
     visibility: {
       private: 'Invite only',
-      public: 'Open lobby'
+      public: 'Open lobby',
     },
     created: 'Created {{timestamp}}',
     unknownGame: 'Unknown game',
     mysteryHost: 'mystery captain',
-    justCreated: 'Just created'
+    justCreated: 'Just created',
   },
   es: {
     status: {

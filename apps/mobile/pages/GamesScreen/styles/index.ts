@@ -15,7 +15,7 @@ export function createStyles(palette: Palette) {
     ...getSectionsStyles(palette),
   };
 
-  return StyleSheet.create(styles as any) as { [K in keyof typeof styles]: any };
+  return StyleSheet.create(styles as any) as unknown as Record<keyof typeof styles, ViewStyle & TextStyle & ImageStyle>;
 }
 
 export type GameDetailScreenStyles = ReturnType<typeof createStyles>;

@@ -2,11 +2,14 @@
 export const loungeMessages = {
   en: {
     title: 'Tabletop Lounge',
-    subtitle: 'Spin up real-time rooms, invite your friends, and let {{appName}} handle rules, scoring, and moderation.',
+    subtitle:
+      'Spin up real-time rooms, invite your friends, and let {{appName}} handle rules, scoring, and moderation.',
     featuredTitle: 'Featured games',
-    featuredCaption: "Early access titles we're polishing for launch. Tap to explore rules and reserve a playtest slot.",
+    featuredCaption:
+      "Early access titles we're polishing for launch. Tap to explore rules and reserve a playtest slot.",
     activeTitle: 'Active rooms',
-    activeCaption: "Jump into a lobby that's already spinning up or scope what's happening live.",
+    activeCaption:
+      "Jump into a lobby that's already spinning up or scope what's happening live.",
     haveInvite: 'Have an invite code?',
     filters: {
       statusLabel: 'Status',
@@ -15,24 +18,27 @@ export const loungeMessages = {
         all: 'All',
         lobby: 'Lobby',
         inProgress: 'In progress',
-        completed: 'Completed'
+        completed: 'Completed',
       },
       participation: {
         all: 'Everyone',
         hosting: 'Hosting',
         joined: 'Joined',
-        notJoined: 'Open seats'
+        notJoined: 'Open seats',
       },
-      participationSignedOut: 'Sign in to filter by participation.'
+      participationSignedOut: 'Sign in to filter by participation.',
     },
     loadingRooms: 'Fetching rooms...',
     errorTitle: "Can't reach the lounge",
     emptyTitle: 'No rooms yet',
-    emptyDescription: 'Be the trailblazer—kick off the first lobby or tap refresh to check again in a few.',
+    emptyDescription:
+      'Be the trailblazer—kick off the first lobby or tap refresh to check again in a few.',
     filterEmptyTitle: 'No rooms match your filters',
-    filterEmptyDescription: 'Try a different status or participation filter, or clear them to see everything.',
+    filterEmptyDescription:
+      'Try a different status or participation filter, or clear them to see everything.',
     footerTitle: 'Want a specific game?',
-    footerText: 'Drop requests in #feature-votes or submit your own custom deck idea. Community picks go live every sprint.'
+    footerText:
+      'Drop requests in #feature-votes or submit your own custom deck idea. Community picks go live every sprint.',
   },
   es: {
     title: 'Salón de juegos de mesa',
@@ -100,8 +106,7 @@ export const loungeMessages = {
         joined: 'Rejointes',
         notJoined: 'Places libres',
       },
-      participationSignedOut:
-        'Connectez-vous pour filtrer par participation.',
+      participationSignedOut: 'Connectez-vous pour filtrer par participation.',
     },
     loadingRooms: 'Chargement des salles...',
     errorTitle: "Impossible d'atteindre le salon",

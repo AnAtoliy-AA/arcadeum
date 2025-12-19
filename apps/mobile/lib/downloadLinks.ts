@@ -13,7 +13,9 @@ type AppExtra = {
 };
 
 export const getDownloadLinks = (): DownloadLinks => {
-  const extra = (Constants.expoConfig?.extra ?? Constants.manifestExtra) as AppExtra | undefined;
+  const extra = (Constants.expoConfig?.extra ?? Constants.manifestExtra) as
+    | AppExtra
+    | undefined;
 
   return {
     ios: extra?.downloadLinks?.ios ?? undefined,

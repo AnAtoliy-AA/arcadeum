@@ -11,9 +11,13 @@ interface GameHeaderProps {
   styles: ExplodingCatsTableStyles;
 }
 
-export function GameHeader({ statusLabel, isCompleted, styles }: GameHeaderProps) {
+export function GameHeader({
+  statusLabel,
+  isCompleted,
+  styles,
+}: GameHeaderProps) {
   const { t } = useTranslation();
-  
+
   return (
     <>
       <View style={styles.headerRow}>

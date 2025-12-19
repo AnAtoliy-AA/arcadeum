@@ -348,19 +348,19 @@ export class ChatService {
     );
 
     const summaries: ChatSummary[] = chats.map((chat) => {
-      const participantsList: ChatParticipantSummary[] = this.chatHelper.normalizeUserIds(
-        chat.users ?? [],
-      ).map((participantId) => {
-        const participant = participantLookup.get(participantId);
-        return (
-          participant ?? {
-            id: participantId,
-            username: participantId,
-            email: null,
-            displayName: participantId,
-          }
-        );
-      });
+      const participantsList: ChatParticipantSummary[] = this.chatHelper
+        .normalizeUserIds(chat.users ?? [])
+        .map((participantId) => {
+          const participant = participantLookup.get(participantId);
+          return (
+            participant ?? {
+              id: participantId,
+              username: participantId,
+              email: null,
+              displayName: participantId,
+            }
+          );
+        });
 
       return {
         chatId: chat.chatId,
@@ -382,4 +382,3 @@ export class ChatService {
     return summaries;
   }
 }
-

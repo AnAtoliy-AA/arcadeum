@@ -1,5 +1,11 @@
 import React from 'react';
-import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import type { TranslationKey } from '@/lib/i18n/messages';
 
@@ -8,10 +14,10 @@ type HistoryFooterProps = {
   hasMore: boolean;
   entriesLength: number;
   styles: {
-    footerLoading: any;
-    footerLoadingText: any;
-    loadMoreButton: any;
-    loadMoreText: any;
+    footerLoading: ViewStyle;
+    footerLoadingText: TextStyle;
+    loadMoreButton: ViewStyle;
+    loadMoreText: TextStyle;
   };
   t: (key: TranslationKey) => string;
   onLoadMore: () => void;

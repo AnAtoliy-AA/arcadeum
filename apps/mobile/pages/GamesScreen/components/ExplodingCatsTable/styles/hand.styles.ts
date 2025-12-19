@@ -5,7 +5,10 @@ import type { ShadowPresets } from './shadows';
 /**
  * Hand section and hand card styles.
  */
-export function createHandStyles(ctx: StyleThemeContext, shadows: ShadowPresets) {
+export function createHandStyles(
+  ctx: StyleThemeContext,
+  shadows: ShadowPresets,
+) {
   const {
     surface,
     raised,

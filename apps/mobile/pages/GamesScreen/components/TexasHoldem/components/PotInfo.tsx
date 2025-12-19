@@ -36,7 +36,9 @@ function createStyles(palette: Palette) {
 
   return StyleSheet.create({
     potContainer: {
-      backgroundColor: isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)',
+      backgroundColor: isLight
+        ? 'rgba(0, 0, 0, 0.1)'
+        : 'rgba(255, 255, 255, 0.1)',
       paddingVertical: 12,
       paddingHorizontal: 24,
       borderRadius: 12,

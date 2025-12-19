@@ -41,7 +41,9 @@ export function UnsupportedGameView({
   const { t } = useTranslation();
 
   const displayName = fallbackName ?? t('games.room.defaultName');
-  const displayGame = gameId ? formatRoomGame(gameId) : t('games.rooms.unknownGame');
+  const displayGame = gameId
+    ? formatRoomGame(gameId)
+    : t('games.rooms.unknownGame');
   const subtitle = displayGame
     ? `${displayGame} is not available in this version yet.`
     : 'This game is not available in this version yet.';
@@ -49,7 +51,11 @@ export function UnsupportedGameView({
   return (
     <ThemedView style={styles.container}>
       <ThemedView style={styles.card}>
-        <IconSymbol name="questionmark.circle" size={42} color={styles.icon.color as string} />
+        <IconSymbol
+          name="questionmark.circle"
+          size={42}
+          color={styles.icon.color as string}
+        />
         <ThemedText type="title" style={styles.title} numberOfLines={2}>
           {displayName}
         </ThemedText>
@@ -61,26 +67,38 @@ export function UnsupportedGameView({
 
         <ThemedView style={styles.actions}>
           <TouchableOpacity
-            style={[styles.primaryButton, refreshing || loading ? styles.disabled : null]}
+            style={[
+              styles.primaryButton,
+              refreshing || loading ? styles.disabled : null,
+            ]}
             onPress={onRefresh}
             disabled={refreshing || loading}
           >
-            <ThemedText style={styles.primaryButtonText}>{t('common.retry')}</ThemedText>
+            <ThemedText style={styles.primaryButtonText}>
+              {t('common.retry')}
+            </ThemedText>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.secondaryButton, leaving ? styles.disabled : null]}
             onPress={onLeaveRoom}
             disabled={leaving}
           >
-            <ThemedText style={styles.secondaryButtonText}>{t('common.actions.leave')}</ThemedText>
+            <ThemedText style={styles.secondaryButtonText}>
+              {t('common.actions.leave')}
+            </ThemedText>
           </TouchableOpacity>
           {isHost && onDeleteRoom ? (
             <TouchableOpacity
-              style={[styles.destructiveButton, deleting ? styles.disabled : null]}
+              style={[
+                styles.destructiveButton,
+                deleting ? styles.disabled : null,
+              ]}
               onPress={onDeleteRoom}
               disabled={deleting}
             >
-              <ThemedText style={styles.destructiveButtonText}>{t('games.room.buttons.deleteRoom')}</ThemedText>
+              <ThemedText style={styles.destructiveButtonText}>
+                {t('games.room.buttons.deleteRoom')}
+              </ThemedText>
             </TouchableOpacity>
           ) : null}
         </ThemedView>

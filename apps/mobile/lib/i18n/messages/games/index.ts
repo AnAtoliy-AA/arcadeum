@@ -4,7 +4,12 @@ import { commonGameMessages } from './common';
 import { loungeMessages } from './lounge';
 import { texasHoldemMessages } from './texas-holdem';
 import { roomsMessages } from './rooms';
-import { gameAlertsMessages, inviteDialogMessages, gameErrorsMessages, shareMessages } from './shared-ui';
+import {
+  gameAlertsMessages,
+  inviteDialogMessages,
+  gameErrorsMessages,
+  shareMessages,
+} from './shared-ui';
 import { createRoomMessages } from './create-room';
 import { gameDetailMessages, roomDetailMessages } from './detail-pages';
 import { explodingCatsMessages } from './exploding-cats';

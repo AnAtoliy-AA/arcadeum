@@ -107,9 +107,8 @@ export class ExplodingCatsService {
       throw new Error('Only the host can start the game');
     }
 
-    const playerIds = await this.roomsService.getRoomParticipants(
-      effectiveRoomId,
-    );
+    const playerIds =
+      await this.roomsService.getRoomParticipants(effectiveRoomId);
 
     const session = await this.sessionsService.createSession({
       roomId: effectiveRoomId,
@@ -127,11 +126,7 @@ export class ExplodingCatsService {
   /**
    * Post a note to Exploding Cats history
    */
-  async postHistoryNote(
-    userId: string,
-    roomId: string,
-    message: string,
-  ) {
+  async postHistoryNote(userId: string, roomId: string, message: string) {
     await this.historyService.postHistoryNote(roomId, userId, message);
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (session) {
@@ -142,11 +137,7 @@ export class ExplodingCatsService {
   /**
    * Play Exploding Cats action card (gateway wrapper)
    */
-  async playActionByRoom(
-    userId: string,
-    roomId: string,
-    card: string,
-  ) {
+  async playActionByRoom(userId: string, roomId: string, card: string) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
     return this.explodingCatsActions.playActionCard(session.id, userId, {

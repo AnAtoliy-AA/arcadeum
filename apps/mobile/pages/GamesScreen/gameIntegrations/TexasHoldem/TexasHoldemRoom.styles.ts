@@ -14,7 +14,8 @@ export function createStyles(palette: Palette) {
   const leaveDisabledBackground = gameRoom.leaveDisabledBackground || '#9ca3af';
   const leaveTint = gameRoom.leaveTint || '#ffffff';
   const deleteBackground = gameRoom.deleteBackground || '#ef4444';
-  const deleteDisabledBackground = gameRoom.deleteDisabledBackground || '#9ca3af';
+  const deleteDisabledBackground =
+    gameRoom.deleteDisabledBackground || '#9ca3af';
   const deleteTint = gameRoom.deleteTint || '#ffffff';
 
   // Colors for gradients and high-contrast text
@@ -24,7 +25,7 @@ export function createStyles(palette: Palette) {
   const heroGradientStart = isLight ? '#cbd5e1' : '#334155';
   const heroGradientEnd = isLight ? '#94a3b8' : '#475569';
 
-  const styles = {
+  return StyleSheet.create({
     container: {
       flex: 1,
     },
@@ -341,9 +342,7 @@ export function createStyles(palette: Palette) {
     heroGradientEnd: {
       color: heroGradientEnd,
     },
-  };
-
-  return StyleSheet.create(styles as any) as { [K in keyof typeof styles]: any };
+  });
 }
 
 export type TexasHoldemRoomStyles = ReturnType<typeof createStyles>;

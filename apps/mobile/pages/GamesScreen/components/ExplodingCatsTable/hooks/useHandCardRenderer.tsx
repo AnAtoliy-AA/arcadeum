@@ -24,7 +24,7 @@ export function useHandCardRenderer(
   gridCardHeight: number,
   animations: CardAnimationsState,
   catCombo: CatComboState,
-  t: (key: string, replacements?: Record<string, any>) => string,
+  t: (key: string, replacements?: Record<string, string | number>) => string,
   translateCardName: (card: ExplodingCatsCard) => string,
   translateCardDescription: (card: ExplodingCatsCard) => string,
   onPlay: (action: 'skip' | 'attack') => void,

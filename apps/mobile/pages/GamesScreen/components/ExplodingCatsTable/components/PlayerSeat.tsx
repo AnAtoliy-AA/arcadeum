@@ -15,7 +15,12 @@ interface PlayerSeatProps {
   styles: ExplodingCatsTableStyles;
 }
 
-export function PlayerSeat({ player, position, isCurrent, styles }: PlayerSeatProps) {
+export function PlayerSeat({
+  player,
+  position,
+  isCurrent,
+  styles,
+}: PlayerSeatProps) {
   return (
     <View
       style={[
@@ -60,9 +65,7 @@ export function PlayerSeat({ player, position, isCurrent, styles }: PlayerSeatPr
                 key={cardIndex}
                 style={[
                   styles.seatCardBack,
-                  cardIndex > 0
-                    ? styles.seatCardBackStacked
-                    : null,
+                  cardIndex > 0 ? styles.seatCardBackStacked : null,
                 ]}
               />
             ))}

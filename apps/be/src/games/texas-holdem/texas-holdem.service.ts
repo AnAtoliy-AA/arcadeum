@@ -29,11 +29,7 @@ export class TexasHoldemService {
     return this.texasHoldemActions.call(sessionId, userId);
   }
 
-  async raise(
-    sessionId: string,
-    userId: string,
-    payload: { amount: number },
-  ) {
+  async raise(sessionId: string, userId: string, payload: { amount: number }) {
     return this.texasHoldemActions.raise(sessionId, userId, payload);
   }
 
@@ -41,11 +37,7 @@ export class TexasHoldemService {
     return this.texasHoldemActions.allIn(sessionId, userId);
   }
 
-  async bet(
-    sessionId: string,
-    userId: string,
-    payload: { amount: number },
-  ) {
+  async bet(sessionId: string, userId: string, payload: { amount: number }) {
     return this.texasHoldemActions.bet(sessionId, userId, payload);
   }
 
@@ -54,11 +46,7 @@ export class TexasHoldemService {
   /**
    * Start Texas Hold'em session (backward compatibility)
    */
-  async startSession(
-    userId: string,
-    roomId?: string,
-    engine?: string,
-  ) {
+  async startSession(userId: string, roomId?: string, engine?: string) {
     // Reuse the same logic as Exploding Cats for starting a session
     let effectiveRoomId = roomId;
     if (!effectiveRoomId) {
@@ -92,9 +80,8 @@ export class TexasHoldemService {
       throw new Error('Only the host can start the game');
     }
 
-    const playerIds = await this.roomsService.getRoomParticipants(
-      effectiveRoomId,
-    );
+    const playerIds =
+      await this.roomsService.getRoomParticipants(effectiveRoomId);
 
     const session = await this.sessionsService.createSession({
       roomId: effectiveRoomId,
@@ -123,7 +110,7 @@ export class TexasHoldemService {
       throw new Error('Session not found');
     }
     const payload = raiseAmount ? { amount: raiseAmount } : undefined;
-    
+
     const updatedSession = await this.sessionsService.executeAction({
       sessionId: session.id,
       action,
@@ -138,11 +125,7 @@ export class TexasHoldemService {
   /**
    * Post a note to Texas Hold'em history
    */
-  async postHistoryNote(
-    userId: string,
-    roomId: string,
-    message: string,
-  ) {
+  async postHistoryNote(userId: string, roomId: string, message: string) {
     await this.historyService.postHistoryNote(roomId, userId, message);
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (session) {

@@ -3,20 +3,24 @@ export const gameDetailMessages = {
   en: {
     backToLobby: 'Browse games',
     emptyTitle: 'Game coming soon',
-    emptyDescription: "We couldn't find that title. Browse the lounge for active prototypes and upcoming releases.",
+    emptyDescription:
+      "We couldn't find that title. Browse the lounge for active prototypes and upcoming releases.",
     inviteButton: 'Invite friends',
     openRoomsTitle: 'Open rooms',
-    openRoomsCaption: "Jump into a live lobby or create your own session if nothing's open yet.",
+    openRoomsCaption:
+      "Jump into a live lobby or create your own session if nothing's open yet.",
     highlightsTitle: 'Highlights',
     howToPlayTitle: 'How to play',
-    howToPlayCaption: 'Three quick beats so new players can jump in without a rulebook.',
+    howToPlayCaption:
+      'Three quick beats so new players can jump in without a rulebook.',
     comingSoonTitle: "What's next",
-    comingSoonCaption: "We're polishing these systems before the public beta drops.",
+    comingSoonCaption:
+      "We're polishing these systems before the public beta drops.",
     refresh: 'Refresh',
     loadingRooms: 'Loading rooms...',
     errorTitle: "Can't fetch rooms",
     emptyRoomsTitle: 'No rooms open yet',
-    emptyRoomsCaption: 'Check back soon or start the first lobby yourself.'
+    emptyRoomsCaption: 'Check back soon or start the first lobby yourself.',
   },
   es: {
     backToLobby: 'Explorar juegos',
@@ -60,8 +64,7 @@ export const gameDetailMessages = {
     loadingRooms: 'Chargement des salles...',
     errorTitle: 'Impossible de récupérer les salles',
     emptyRoomsTitle: 'Aucune salle ouverte pour le moment',
-    emptyRoomsCaption:
-      'Revenez bientôt ou lancez vous-même le premier lobby.',
+    emptyRoomsCaption: 'Revenez bientôt ou lancez vous-même le premier lobby.',
   },
 };
 
@@ -80,17 +83,19 @@ export const roomDetailMessages = {
       players: 'Players',
       created: 'Created',
       access: 'Access',
-      inviteCode: 'Invite code'
+      inviteCode: 'Invite code',
     },
     loading: 'Syncing room details...',
     preparationTitle: 'Table preparation',
-    preparationCopy: "We'll guide players through setup, turn flow, and scoring once the interactive tabletop is ready. For now, coordinate in chat, review the rules, and gather your crew while we finish the real-time experience.",
+    preparationCopy:
+      "We'll guide players through setup, turn flow, and scoring once the interactive tabletop is ready. For now, coordinate in chat, review the rules, and gather your crew while we finish the real-time experience.",
     waitingTitle: 'Waiting on more players?',
-    waitingCopy: "Keep this screen open—we'll auto-refresh the lobby when teammates join or the host starts the match.",
+    waitingCopy:
+      "Keep this screen open—we'll auto-refresh the lobby when teammates join or the host starts the match.",
     errors: {
       signInRequired: 'Sign in to load room details.',
       notFound: 'Room not found. The invite link may be incomplete.',
-      inactive: 'This room is no longer active or you have left the lobby.'
+      inactive: 'This room is no longer active or you have left the lobby.',
     },
     buttons: {
       viewGame: 'View game',
@@ -98,8 +103,8 @@ export const roomDetailMessages = {
       enterFullscreen: 'Full screen',
       exitFullscreen: 'Exit full screen',
       hideControls: 'Hide controls',
-      showControls: 'Show controls'
-    }
+      showControls: 'Show controls',
+    },
   },
   es: {
     defaultName: 'Sala de juego',
@@ -163,12 +168,10 @@ export const roomDetailMessages = {
     waitingCopy:
       "Gardez cet écran ouvert : nous actualiserons le lobby automatiquement quand des coéquipiers rejoignent ou que l'hôte lance la partie.",
     errors: {
-      signInRequired:
-        'Connectez-vous pour charger les détails de la salle.',
+      signInRequired: 'Connectez-vous pour charger les détails de la salle.',
       notFound:
         "Salle introuvable. Le lien d'invitation est peut-être incomplet.",
-      inactive:
-        "Cette salle n'est plus active ou vous avez quitté le lobby.",
+      inactive: "Cette salle n'est plus active ou vous avez quitté le lobby.",
     },
     buttons: {
       viewGame: 'Voir le jeu',

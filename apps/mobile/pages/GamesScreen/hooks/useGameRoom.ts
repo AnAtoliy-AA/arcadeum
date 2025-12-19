@@ -1,9 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -25,12 +20,8 @@ import {
   type GameRoomSummary,
   type GameSessionSummary,
 } from '../api/gamesApi';
-import {
-  type ExplodingCatsRoomHandle,
-} from '../gameIntegrations/ExplodingCats/ExplodingCatsRoom';
-import {
-  type TexasHoldemRoomHandle,
-} from '../gameIntegrations/TexasHoldem/TexasHoldemRoom';
+import { type ExplodingCatsRoomHandle } from '../gameIntegrations/ExplodingCats/ExplodingCatsRoom';
+import { type TexasHoldemRoomHandle } from '../gameIntegrations/TexasHoldem/TexasHoldemRoom';
 
 type GameIntegrationId = 'exploding_cats_v1' | 'texas_holdem_v1';
 
@@ -41,7 +32,9 @@ const GAME_INTEGRATION_MAP: Record<string, GameIntegrationId> = {
   'texas-holdem': 'texas_holdem_v1',
 };
 
-function resolveParam(value: string | string[] | undefined): string | undefined {
+function resolveParam(
+  value: string | string[] | undefined,
+): string | undefined {
   if (!value) return undefined;
   return Array.isArray(value) ? value[0] : value;
 }
@@ -68,7 +61,9 @@ function shouldExposeRawWsMessage(message?: string): boolean {
 }
 
 export function useGameRoom(
-  integrationRef: React.MutableRefObject<ExplodingCatsRoomHandle | TexasHoldemRoomHandle | null>
+  integrationRef: React.MutableRefObject<
+    ExplodingCatsRoomHandle | TexasHoldemRoomHandle | null
+  >,
 ) {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{
@@ -91,7 +86,8 @@ export function useGameRoom(
   const [session, setSession] = useState<GameSessionSummary | null>(null);
   const [leaving, setLeaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const isHost = room?.hostId && tokens.userId ? room.hostId === tokens.userId : false;
+  const isHost =
+    room?.hostId && tokens.userId ? room.hostId === tokens.userId : false;
 
   const fetchRoom = useCallback(
     async (mode: 'initial' | 'refresh' = 'initial') => {
@@ -160,7 +156,9 @@ export function useGameRoom(
 
     const isParticipant = Boolean(tokens.userId);
     const joinEvent = isParticipant ? 'games.room.join' : 'games.room.watch';
-    const joinPayload = isParticipant ? { roomId, userId: tokens.userId } : { roomId };
+    const joinPayload = isParticipant
+      ? { roomId, userId: tokens.userId }
+      : { roomId };
 
     const handleConnect = () => {
       socket.emit(joinEvent, joinPayload);
@@ -197,14 +195,18 @@ export function useGameRoom(
       setSession(null);
       integrationRef.current?.onException();
 
-      Alert.alert(t('games.alerts.roomDeletedTitle'), t('games.alerts.roomDeletedMessage'), [
-        {
-          text: t('common.actions.ok'),
-          onPress: () => {
-            router.replace('/(tabs)/games');
+      Alert.alert(
+        t('games.alerts.roomDeletedTitle'),
+        t('games.alerts.roomDeletedMessage'),
+        [
+          {
+            text: t('common.actions.ok'),
+            onPress: () => {
+              router.replace('/(tabs)/games');
+            },
           },
-        },
-      ]);
+        ],
+      );
     };
 
     const handleSnapshot = (payload: {
@@ -278,7 +280,8 @@ export function useGameRoom(
       const messageKey =
         typeof detail?.messageKey === 'string' ? detail.messageKey : undefined;
       const messageCode =
-        normalizeWsMessageCode(detail?.messageCode) ?? normalizeWsMessageCode(detail?.code);
+        normalizeWsMessageCode(detail?.messageCode) ??
+        normalizeWsMessageCode(detail?.code);
 
       const descriptor = findApiMessageDescriptor({
         code: messageCode,
@@ -293,7 +296,8 @@ export function useGameRoom(
 
       showGlobalError({
         translationKey:
-          descriptor?.translationKey ?? inferTranslationKeyFromMessageKey(messageKey),
+          descriptor?.translationKey ??
+          inferTranslationKeyFromMessageKey(messageKey),
         fallbackMessage: fallback,
         rawMessage: shouldExposeRawWsMessage(message) ? message : undefined,
       });
@@ -308,7 +312,10 @@ export function useGameRoom(
     socket.on('games.session.started', handleSessionStarted);
     socket.on('games.session.cat_combo.played', handleCatComboPlayed);
     socket.on('games.session.holdem_started', handleTexasHoldemStarted);
-    socket.on('games.session.holdem_action.performed', handleTexasHoldemActionPerformed);
+    socket.on(
+      'games.session.holdem_action.performed',
+      handleTexasHoldemActionPerformed,
+    );
     socket.on('exception', handleException);
 
     if (socket.connected) {
@@ -325,7 +332,10 @@ export function useGameRoom(
       socket.off('games.session.started', handleSessionStarted);
       socket.off('games.session.cat_combo.played', handleCatComboPlayed);
       socket.off('games.session.holdem_started', handleTexasHoldemStarted);
-      socket.off('games.session.holdem_action.performed', handleTexasHoldemActionPerformed);
+      socket.off(
+        'games.session.holdem_action.performed',
+        handleTexasHoldemActionPerformed,
+      );
       socket.off('exception', handleException);
     };
   }, [deleting, hydrated, roomId, router, t, tokens.userId, integrationRef]);
@@ -350,7 +360,9 @@ export function useGameRoom(
       router.replace('/(tabs)/games');
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : t('games.alerts.couldNotLeaveMessage');
+        err instanceof Error
+          ? err.message
+          : t('games.alerts.couldNotLeaveMessage');
       Alert.alert(t('games.alerts.couldNotLeaveTitle'), message);
     } finally {
       setLeaving(false);
@@ -376,7 +388,8 @@ export function useGameRoom(
       integrationRef.current?.onException();
       router.replace('/(tabs)/games');
     } catch (err) {
-      const message = err instanceof Error ? err.message : t('games.alerts.genericError');
+      const message =
+        err instanceof Error ? err.message : t('games.alerts.genericError');
       Alert.alert(t('games.alerts.actionFailedTitle'), message);
     } finally {
       setDeleting(false);
@@ -401,16 +414,20 @@ export function useGameRoom(
       return;
     }
 
-    Alert.alert(t('games.alerts.leavePromptTitle'), t('games.alerts.leavePromptMessage'), [
-      { text: t('common.actions.stay'), style: 'cancel' },
-      {
-        text: t('common.actions.leave'),
-        style: 'destructive',
-        onPress: () => {
-          void performLeave();
+    Alert.alert(
+      t('games.alerts.leavePromptTitle'),
+      t('games.alerts.leavePromptMessage'),
+      [
+        { text: t('common.actions.stay'), style: 'cancel' },
+        {
+          text: t('common.actions.leave'),
+          style: 'destructive',
+          onPress: () => {
+            void performLeave();
+          },
         },
-      },
-    ]);
+      ],
+    );
   }, [leaving, performLeave, roomId, router, t, tokens.accessToken]);
 
   const handleDeleteRoom = useCallback(() => {
@@ -424,13 +441,17 @@ export function useGameRoom(
     }
 
     if (!tokens.accessToken) {
-      Alert.alert(t('games.alerts.signInRequiredTitle'), t('games.alerts.signInManageSeatMessage'), [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('common.signIn'),
-          onPress: () => router.push('/auth' as never),
-        },
-      ]);
+      Alert.alert(
+        t('games.alerts.signInRequiredTitle'),
+        t('games.alerts.signInManageSeatMessage'),
+        [
+          { text: t('common.cancel'), style: 'cancel' },
+          {
+            text: t('common.signIn'),
+            onPress: () => router.push('/auth' as never),
+          },
+        ],
+      );
       return;
     }
 
@@ -438,17 +459,30 @@ export function useGameRoom(
       return;
     }
 
-    Alert.alert(t('games.alerts.deletePromptTitle'), t('games.alerts.deletePromptMessage'), [
-      { text: t('common.actions.stay'), style: 'cancel' },
-      {
-        text: t('games.room.buttons.deleteRoom'),
-        style: 'destructive',
-        onPress: () => {
-          void performDelete();
+    Alert.alert(
+      t('games.alerts.deletePromptTitle'),
+      t('games.alerts.deletePromptMessage'),
+      [
+        { text: t('common.actions.stay'), style: 'cancel' },
+        {
+          text: t('games.room.buttons.deleteRoom'),
+          style: 'destructive',
+          onPress: () => {
+            void performDelete();
+          },
         },
-      },
-    ]);
-  }, [deleting, handleLeaveRoom, isHost, performDelete, roomId, router, t, tokens.accessToken]);
+      ],
+    );
+  }, [
+    deleting,
+    handleLeaveRoom,
+    isHost,
+    performDelete,
+    roomId,
+    router,
+    t,
+    tokens.accessToken,
+  ]);
 
   const handleViewGame = useCallback(() => {
     const targetGameId = room?.gameId ?? gameId;

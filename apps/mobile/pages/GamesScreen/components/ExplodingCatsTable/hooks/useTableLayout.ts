@@ -30,9 +30,10 @@ export function useTableLayout(styles: ReturnType<typeof StyleSheet.create>) {
   );
 
   const handGridSpacing = useMemo(() => {
-    const flattened = StyleSheet.flatten(
-      styles.handGridContainer,
-    ) as Record<string, unknown> | null;
+    const flattened = StyleSheet.flatten(styles.handGridContainer) as Record<
+      string,
+      unknown
+    > | null;
     const horizontalPadding =
       flattened && typeof flattened['paddingHorizontal'] === 'number'
         ? (flattened['paddingHorizontal'] as number)
@@ -115,10 +116,7 @@ export function useGridColumns(
     const safeWidth = Number.isFinite(rawWidth)
       ? rawWidth
       : GRID_CARD_MIN_WIDTH;
-    const width = Math.max(
-      GRID_CARD_MIN_WIDTH,
-      Math.floor(safeWidth),
-    );
+    const width = Math.max(GRID_CARD_MIN_WIDTH, Math.floor(safeWidth));
     const height = Math.round(width * CARD_ASPECT_RATIO);
 
     return { width, height };

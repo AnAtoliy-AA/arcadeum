@@ -21,7 +21,9 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
   const auth = useLocalAuth();
   const { colorScheme, isDarkLike } = useColorScheme();
   const palette = Colors[colorScheme];
-  const styles = useThemedStyles((themePalette) => createStyles(themePalette, isDarkLike));
+  const styles = useThemedStyles((themePalette) =>
+    createStyles(themePalette, isDarkLike),
+  );
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -131,9 +133,7 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
           {t('auth.local.helper.allowedCharacters')}
         </Text>
       )}
-      {auth.error && (
-        <Text style={styles.error}>{auth.error}</Text>
-      )}
+      {auth.error && <Text style={styles.error}>{auth.error}</Text>}
       <View style={styles.buttonRow}>
         <ThemedButton
           title={
@@ -187,7 +187,7 @@ export const LocalAuthForm: React.FC<Props> = ({ onAuthenticated }) => {
 
 const createStyles = (palette: Palette, isDarkLike: boolean) => {
   const inputBackground = isDarkLike
-    ? palette.cardBackground ?? '#1F2123'
+    ? (palette.cardBackground ?? '#1F2123')
     : palette.background;
 
   return StyleSheet.create({

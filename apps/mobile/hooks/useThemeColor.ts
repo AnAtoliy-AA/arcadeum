@@ -3,7 +3,11 @@
  * https://docs.expo.dev/guides/color-schemes/
  */
 
-import { Colors, type AppThemeName, type ThemePalette } from '@/constants/Colors';
+import {
+  Colors,
+  type AppThemeName,
+  type ThemePalette,
+} from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 type PaletteStringKeys = {

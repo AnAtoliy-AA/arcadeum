@@ -52,7 +52,8 @@ export default function GamesScreen() {
 
   const isAuthenticated = Boolean(tokens.accessToken && tokens.userId);
 
-  const { statusOptions, participationOptions } = useFilterOptions(isAuthenticated);
+  const { statusOptions, participationOptions } =
+    useFilterOptions(isAuthenticated);
 
   const filtersActive = useMemo(() => {
     return statusFilter !== 'all' || participationFilter !== 'all';

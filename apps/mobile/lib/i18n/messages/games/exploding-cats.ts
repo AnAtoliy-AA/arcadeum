@@ -6,7 +6,7 @@ export const explodingCatsMessages = {
       active: 'Active',
       completed: 'Completed',
       pending: 'Pending',
-      unknown: 'Status unknown'
+      unknown: 'Status unknown',
     },
     messageCompleted: 'Session completed. Start a new match to play again.',
     info: {
@@ -15,15 +15,15 @@ export const explodingCatsMessages = {
       empty: 'Empty',
       none: 'None',
       pendingSingular: 'draw pending',
-      pendingPlural: 'draws pending'
+      pendingPlural: 'draws pending',
     },
     seats: {
       cardsSingular: '{{count}} card',
       cardsPlural: '{{count}} cards',
       status: {
         alive: 'Alive',
-        out: 'Out'
-      }
+        out: 'Out',
+      },
     },
     hand: {
       title: 'Your cards',
@@ -35,18 +35,18 @@ export const explodingCatsMessages = {
       empty: 'No cards in hand',
       statusAlive: 'Alive',
       statusOut: 'Out',
-      eliminatedNote: 'You blew up this round. Hang tight for the next match.'
+      eliminatedNote: 'You blew up this round. Hang tight for the next match.',
     },
     placeholder: {
       waiting: 'Waiting for the host to start the interactive tabletop.',
-      hostSuffix: 'Fire it up when everyone is ready.'
+      hostSuffix: 'Fire it up when everyone is ready.',
     },
     actions: {
       start: 'Start match',
       draw: 'Draw card',
       playSkip: 'Play Skip',
       playAttack: 'Play Attack',
-      playCatCombo: 'Play Cat Combo'
+      playCatCombo: 'Play Cat Combo',
     },
     logs: {
       title: 'History',
@@ -58,7 +58,7 @@ export const explodingCatsMessages = {
       checkboxHint: 'Tap to change audience',
       playersOnlyTag: 'Players',
       you: 'You',
-      unknownSender: 'Unknown player'
+      unknownSender: 'Unknown player',
     },
     cards: {
       explodingCat: 'Exploding Cat',
@@ -73,11 +73,13 @@ export const explodingCatsMessages = {
       rainbowRalphingCat: 'Rainbow-Ralphing Cat',
       cattermelon: 'Cattermelon',
       beardedCat: 'Bearded Cat',
-      generic: 'Cat'
+      generic: 'Cat',
     },
     cardDescriptions: {
-      explodingCat: "Draw it without a Defuse and boom—you're out of the round.",
-      defuse: 'Cancels an Exploding Cat and lets you tuck it back into the deck.',
+      explodingCat:
+        "Draw it without a Defuse and boom—you're out of the round.",
+      defuse:
+        'Cancels an Exploding Cat and lets you tuck it back into the deck.',
       attack: 'End your turn and make the next player draw two cards.',
       skip: 'Finish your turn immediately without drawing.',
       favor: 'Force another player to give you a card of their choice.',
@@ -88,11 +90,12 @@ export const explodingCatsMessages = {
       rainbowRalphingCat: 'Combo copies to snatch cards from another player.',
       cattermelon: 'Collect duplicates to swipe cards and set up combos.',
       beardedCat: 'Pairs or trios swipe cards straight from rivals.',
-      generic: 'Cat cards need pairs or trios to trigger their steal effects.'
+      generic: 'Cat cards need pairs or trios to trigger their steal effects.',
     },
     catCombo: {
       title: 'Play a combo with {{card}}',
-      description: 'Pick a combo type, choose who to target, and confirm the effect.',
+      description:
+        'Pick a combo type, choose who to target, and confirm the effect.',
       modePair: 'Pair (2 cards)',
       modeTrio: 'Trio (3 cards)',
       targetLabel: 'Select a target player',
@@ -102,8 +105,8 @@ export const explodingCatsMessages = {
       optionTrio: 'Trio ready',
       optionPairOrTrio: 'Pair or trio ready',
       cancel: 'Cancel',
-      confirm: 'Play combo'
-    }
+      confirm: 'Play combo',
+    },
   },
   es: {
     headerTitle: 'Mesa de Exploding Cats',
@@ -113,7 +116,8 @@ export const explodingCatsMessages = {
       pending: 'Pendiente',
       unknown: 'Estado desconocido',
     },
-    messageCompleted: 'Partida terminada. Inicia una nueva para volver a jugar.',
+    messageCompleted:
+      'Partida terminada. Inicia una nueva para volver a jugar.',
     info: {
       inDeck: 'en el mazo',
       topDiscard: 'última carta descartada',
@@ -192,8 +196,7 @@ export const explodingCatsMessages = {
       shuffle: 'Mezcla el mazo para aleatorizar las próximas cartas.',
       seeTheFuture: 'Mira las tres cartas superiores del mazo.',
       tacocat: 'Juega dos o tres copias para quitar cartas a un rival.',
-      hairyPotatoCat:
-        'Con pareja o trío robas una carta aleatoria o nombrada.',
+      hairyPotatoCat: 'Con pareja o trío robas una carta aleatoria o nombrada.',
       rainbowRalphingCat:
         'Combina copias para arrebatar cartas a otro jugador.',
       cattermelon: 'Reúne duplicados para robar cartas y preparar combos.',
@@ -226,7 +229,8 @@ export const explodingCatsMessages = {
       pending: 'En attente',
       unknown: 'Statut inconnu',
     },
-    messageCompleted: 'Partida terminada. Inicia una nueva para volver a jugar.',
+    messageCompleted:
+      'Partida terminada. Inicia una nueva para volver a jugar.',
     info: {
       inDeck: 'dans la pioche',
       topDiscard: 'dernière carte défaussée',
@@ -295,8 +299,7 @@ export const explodingCatsMessages = {
       generic: 'Chat',
     },
     cardDescriptions: {
-      explodingCat:
-        'Piochez-la sans Defuse et boum : vous quittez la manche.',
+      explodingCat: 'Piochez-la sans Defuse et boum : vous quittez la manche.',
       defuse:
         'Annule un Chat explosif et permet de le replacer dans la pioche.',
       attack:
@@ -305,10 +308,8 @@ export const explodingCatsMessages = {
       favor: 'Forcez un autre joueur à vous donner une carte de son choix.',
       shuffle: 'Mélangez la pioche pour randomiser les prochaines cartes.',
       seeTheFuture: 'Regardez les trois premières cartes de la pioche.',
-      tacocat:
-        'Jouez-en deux ou trois pour voler une carte à un adversaire.',
-      hairyPotatoCat:
-        'En paire ou trio, vole une carte aléatoire ou nommée.',
+      tacocat: 'Jouez-en deux ou trois pour voler une carte à un adversaire.',
+      hairyPotatoCat: 'En paire ou trio, vole une carte aléatoire ou nommée.',
       rainbowRalphingCat:
         'Combinez plusieurs copies pour subtiliser des cartes.',
       cattermelon:

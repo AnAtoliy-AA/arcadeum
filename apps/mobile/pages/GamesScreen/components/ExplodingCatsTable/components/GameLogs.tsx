@@ -67,9 +67,7 @@ export function GameLogs({
               value={messageDraft}
               onChangeText={onMessageChange}
               placeholder={t('games.table.logs.composerPlaceholder')}
-              placeholderTextColor={
-                styles.logsInputPlaceholder.color as string
-              }
+              placeholderTextColor={styles.logsInputPlaceholder.color as string}
               multiline
               maxLength={500}
               editable={!historySending}
@@ -175,9 +173,7 @@ export function GameLogs({
 
             return (
               <View key={log.id} style={styles.logRow}>
-                <ThemedText style={styles.logTimestamp}>
-                  {timeLabel}
-                </ThemedText>
+                <ThemedText style={styles.logTimestamp}>{timeLabel}</ThemedText>
                 {isMessage ? (
                   <View style={styles.logMessageColumn}>
                     <View style={styles.logMessageHeader}>

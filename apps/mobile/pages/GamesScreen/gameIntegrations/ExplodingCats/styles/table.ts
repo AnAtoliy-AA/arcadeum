@@ -5,10 +5,7 @@ import { platformShadow } from '@/lib/platformShadow';
 export const getTableStyles = (palette: Palette) => {
   const {
     isLight,
-    gameRoom: {
-      border: borderColor,
-      surfaceShadow,
-    },
+    gameRoom: { border: borderColor, surfaceShadow },
   } = palette;
 
   return {

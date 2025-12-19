@@ -35,7 +35,9 @@ const Player: React.FC<PlayerProps> = ({
         </Text>
         {player.folded && (
           <View style={[styles.badge, styles.foldedBadge]}>
-            <Text style={styles.badgeText}>{t('games.texasHoldem.folded')}</Text>
+            <Text style={styles.badgeText}>
+              {t('games.texasHoldem.folded')}
+            </Text>
           </View>
         )}
         {player.allIn && (

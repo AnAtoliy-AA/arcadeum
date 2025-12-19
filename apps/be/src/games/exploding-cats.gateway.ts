@@ -79,11 +79,7 @@ export class ExplodingCatsGateway {
     }
 
     try {
-      await this.explodingCatsService.playActionByRoom(
-        userId,
-        roomId,
-        card,
-      );
+      await this.explodingCatsService.playActionByRoom(userId, roomId, card);
       client.emit('games.session.action.played', {
         roomId,
         userId,
@@ -142,16 +138,11 @@ export class ExplodingCatsGateway {
     }
 
     try {
-      await this.explodingCatsService.playCatComboByRoom(
-        userId,
-        roomId,
-        cat,
-        {
-          mode,
-          targetPlayerId,
-          desiredCard: desiredCardValue,
-        },
-      );
+      await this.explodingCatsService.playCatComboByRoom(userId, roomId, cat, {
+        mode,
+        targetPlayerId,
+        desiredCard: desiredCardValue,
+      });
 
       client.emit('games.session.cat_combo.played', {
         roomId,
@@ -282,11 +273,7 @@ export class ExplodingCatsGateway {
     const scope = scopeRaw === 'players' ? 'players' : 'all';
 
     try {
-      await this.explodingCatsService.postHistoryNote(
-        userId,
-        roomId,
-        message,
-      );
+      await this.explodingCatsService.postHistoryNote(userId, roomId, message);
       client.emit('games.session.history_note.ack', {
         roomId,
         userId,

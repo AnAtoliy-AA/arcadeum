@@ -94,12 +94,9 @@ export function RoomCard({ room, joiningRoomId, onJoinRoom }: RoomCardProps) {
     createdLabelRaw === 'Just created'
       ? t('games.rooms.justCreated')
       : createdLabelRaw;
-  const hostRaw =
-    room.host?.displayName ?? formatRoomHost(room.hostId);
+  const hostRaw = room.host?.displayName ?? formatRoomHost(room.hostId);
   const hostDisplay =
-    hostRaw === 'mystery captain'
-      ? t('games.rooms.mysteryHost')
-      : hostRaw;
+    hostRaw === 'mystery captain' ? t('games.rooms.mysteryHost') : hostRaw;
   const isJoining = joiningRoomId === room.id;
   const isPrivate = room.visibility === 'private';
 
@@ -110,9 +107,7 @@ export function RoomCard({ room, joiningRoomId, onJoinRoom }: RoomCardProps) {
           {room.name}
         </ThemedText>
         <View style={[styles.roomStatusPill, statusStyle]}>
-          <ThemedText style={styles.roomStatusText}>
-            {statusLabel}
-          </ThemedText>
+          <ThemedText style={styles.roomStatusText}>{statusLabel}</ThemedText>
         </View>
       </View>
       <View style={styles.roomMetaRow}>
@@ -131,9 +126,7 @@ export function RoomCard({ room, joiningRoomId, onJoinRoom }: RoomCardProps) {
           size={16}
           color={styles.roomMetaIcon.color as string}
         />
-        <ThemedText style={styles.roomMetaText}>
-          {capacityDetail}
-        </ThemedText>
+        <ThemedText style={styles.roomMetaText}>{capacityDetail}</ThemedText>
       </View>
       <View style={styles.roomFooter}>
         <View style={styles.roomBadgeRow}>

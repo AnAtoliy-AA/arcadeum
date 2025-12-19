@@ -64,7 +64,10 @@ export interface IGameEngine<TState extends BaseGameState = BaseGameState> {
    * @param playerIds Array of player IDs
    * @param config Optional game configuration
    */
-  initializeState(playerIds: string[], config?: Record<string, unknown>): TState;
+  initializeState(
+    playerIds: string[],
+    config?: Record<string, unknown>,
+  ): TState;
 
   /**
    * Validate a player action

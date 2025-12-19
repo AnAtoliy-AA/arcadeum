@@ -3,7 +3,7 @@ import { apiMessages } from './api';
 import { authMessages } from './auth';
 import { chatMessages, chatListMessages } from './chat';
 import { commonMessages } from './common';
-import { gamesMessages } from './games';  // Now imports from games folder
+import { gamesMessages } from './games'; // Now imports from games folder
 import { historyMessages } from './history';
 import { homeMessages } from './home';
 import { navigationMessages } from './navigation';
@@ -70,4 +70,4 @@ type NestedPaths<T, Prefix extends string = ''> = T extends object
   : never;
 
 // Extract all valid translation keys from the English translations
-export type TranslationKey = NestedPaths<typeof translations['en']>;
+export type TranslationKey = NestedPaths<(typeof translations)['en']>;

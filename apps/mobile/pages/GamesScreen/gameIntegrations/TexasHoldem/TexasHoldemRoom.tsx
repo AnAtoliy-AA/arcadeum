@@ -1,4 +1,9 @@
-import React, { forwardRef, useCallback, useImperativeHandle, useMemo } from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+} from 'react';
 import {
   ActivityIndicator,
   RefreshControl,
@@ -32,9 +37,16 @@ import {
   useTexasHoldemRoomState,
   useTexasHoldemRoomActions,
 } from './TexasHoldemRoom.hooks';
-import { createStyles, type TexasHoldemRoomStyles } from './TexasHoldemRoom.styles';
+import {
+  createStyles,
+  type TexasHoldemRoomStyles,
+} from './TexasHoldemRoom.styles';
 
-export type { TexasHoldemRoomHandle, TexasHoldemRoomProps, TexasHoldemRoomStyles };
+export type {
+  TexasHoldemRoomHandle,
+  TexasHoldemRoomProps,
+  TexasHoldemRoomStyles,
+};
 
 export const TexasHoldemRoom = forwardRef<
   TexasHoldemRoomHandle,
@@ -60,10 +72,7 @@ export const TexasHoldemRoom = forwardRef<
   const { t } = useTranslation();
   const styles = useThemedStyles(createStyles);
 
-  const hasSessionSnapshot = useMemo(
-    () => Boolean(session?.state),
-    [session],
-  );
+  const hasSessionSnapshot = useMemo(() => Boolean(session?.state), [session]);
 
   const {
     startBusy,
@@ -76,19 +85,16 @@ export const TexasHoldemRoom = forwardRef<
     setControlsCollapsed,
   } = useTexasHoldemRoomState({ hasSessionSnapshot });
 
-  const {
-    handleStartMatch,
-    handleTexasHoldemAction,
-    handlePostHistoryNote,
-  } = useTexasHoldemRoomActions({
-    room,
-    tokens,
-    startBusy,
-    actionBusy,
-    setStartBusy,
-    setActionBusy,
-    t: t as (key: string, replacements?: Record<string, unknown>) => string,
-  });
+  const { handleStartMatch, handleTexasHoldemAction, handlePostHistoryNote } =
+    useTexasHoldemRoomActions({
+      room,
+      tokens,
+      startBusy,
+      actionBusy,
+      setStartBusy,
+      setActionBusy,
+      t: t as (key: string, replacements?: Record<string, unknown>) => string,
+    });
 
   const handleEnterFullScreen = useCallback(() => {
     setTableFullScreen(true);
@@ -127,10 +133,17 @@ export const TexasHoldemRoom = forwardRef<
       return styles.statusInProgress;
     }
     return styles.statusLobby;
-  }, [room, styles.statusCompleted, styles.statusInProgress, styles.statusLobby]);
+  }, [
+    room,
+    styles.statusCompleted,
+    styles.statusInProgress,
+    styles.statusLobby,
+  ]);
 
   const isLoading = loading && !refreshing;
-  const topBarVariant: 'lobby' | 'table' = hasSessionSnapshot ? 'table' : 'lobby';
+  const topBarVariant: 'lobby' | 'table' = hasSessionSnapshot
+    ? 'table'
+    : 'lobby';
 
   return (
     <LinearGradient
@@ -162,7 +175,10 @@ export const TexasHoldemRoom = forwardRef<
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={() => fetchRoom('refresh')} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => fetchRoom('refresh')}
+          />
         }
       >
         {isLoading && (

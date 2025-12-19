@@ -16,7 +16,11 @@ import { User, UserDocument } from './schemas/user.schema';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
 import { OAuthLoginDto } from './dtos/oauth-login.dto';
-import { OAuthClientService, RefreshTokenService, GoogleOAuthService } from './services';
+import {
+  OAuthClientService,
+  RefreshTokenService,
+  GoogleOAuthService,
+} from './services';
 import { escapeRegex } from './lib/utils';
 import type {
   AuthUserProfile,
@@ -277,8 +281,7 @@ export class AuthService {
       return ensured;
     }
 
-    const preferredName =
-      profile.name?.trim() || email.split('@')[0] || 'user';
+    const preferredName = profile.name?.trim() || email.split('@')[0] || 'user';
     const base = this.sanitizeUsernameCandidate(preferredName);
     let candidate = base;
     let normalized = candidate.toLowerCase();

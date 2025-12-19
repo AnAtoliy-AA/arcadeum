@@ -1,7 +1,10 @@
 import { useMemo } from 'react';
 import type { GameCatalogueEntry } from './catalog';
 
-type TranslateFn = (key: string, replacements?: Record<string, unknown>) => string;
+type TranslateFn = (
+  key: string,
+  replacements?: Record<string, unknown>,
+) => string;
 
 export function useCreateGameRoomLabels(
   t: TranslateFn,

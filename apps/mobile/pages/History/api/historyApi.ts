@@ -189,9 +189,7 @@ export async function fetchHistory(
         ? params.limit
         : 20;
   const hasMore =
-    typeof data?.hasMore === 'boolean'
-      ? data.hasMore
-      : page * limit < total;
+    typeof data?.hasMore === 'boolean' ? data.hasMore : page * limit < total;
 
   return { entries, total, page, limit, hasMore };
 }

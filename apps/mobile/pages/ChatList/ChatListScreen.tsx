@@ -13,7 +13,11 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/lib/i18n';
 import { createChat } from '@/pages/ChatScreen/api/chatApi';
 import { useChatList, useUserSearch } from './ChatListScreen.hooks';
-import { ChatItem, SearchHeader, EmptyState } from './ChatListScreen.components';
+import {
+  ChatItem,
+  SearchHeader,
+  EmptyState,
+} from './ChatListScreen.components';
 import { createStyles } from './ChatListScreen.styles';
 import type { ChatParticipant, ChatSummary } from './ChatListScreen.types';
 

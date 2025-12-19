@@ -9,7 +9,10 @@ interface NeonBackdropProps {
   styles: ExplodingCatsRoomStyles;
 }
 
-export function NeonBackdrop({ backgroundGradientColors, styles }: NeonBackdropProps) {
+export function NeonBackdrop({
+  backgroundGradientColors,
+  styles,
+}: NeonBackdropProps) {
   return (
     <View style={styles.backgroundDecor} pointerEvents="none">
       <LinearGradient

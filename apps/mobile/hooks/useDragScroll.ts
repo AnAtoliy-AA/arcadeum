@@ -73,9 +73,8 @@ export function useDragScroll<T extends ScrollView>(
       ensureHiddenScrollbarStyle();
       node.setAttribute(SCROLL_DATA_ATTRIBUTE, direction);
       originalScrollbarWidth = node.style.getPropertyValue('scrollbar-width');
-      originalMsOverflowStyle = node.style.getPropertyValue(
-        'ms-overflow-style',
-      );
+      originalMsOverflowStyle =
+        node.style.getPropertyValue('ms-overflow-style');
       node.style.setProperty('scrollbar-width', 'none');
       node.style.setProperty('ms-overflow-style', 'none');
     }
@@ -146,7 +145,10 @@ export function useDragScroll<T extends ScrollView>(
     };
 
     const handlePointerEnd = (event: PointerEvent) => {
-      if (!pointerActive || (pointerId !== null && event.pointerId !== pointerId)) {
+      if (
+        !pointerActive ||
+        (pointerId !== null && event.pointerId !== pointerId)
+      ) {
         return;
       }
 

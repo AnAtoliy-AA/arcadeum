@@ -1,6 +1,9 @@
 import { useMemo, useCallback } from 'react';
 import { getRoomStatusLabel } from '../../../roomUtils';
-import type { GameRoomSummary, GameSessionSummary } from '../../../api/gamesApi';
+import type {
+  GameRoomSummary,
+  GameSessionSummary,
+} from '../../../api/gamesApi';
 import type { ExplodingCatsCard } from '../types';
 import {
   getCardTranslationKey,
@@ -9,7 +12,7 @@ import {
 } from '../utils';
 
 export function useGameLabels(
-  t: (key: string, replacements?: Record<string, any>) => string,
+  t: (key: string, replacements?: Record<string, string | number>) => string,
   session: GameSessionSummary | null,
   room: GameRoomSummary | undefined,
   isHost: boolean,

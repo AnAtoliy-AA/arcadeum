@@ -1,5 +1,10 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -71,15 +76,11 @@ export function RoomCard({
 
   const hostDisplay =
     room.host?.displayName ??
-    (room.hostId
-      ? formatRoomHost(room.hostId)
-      : t('games.rooms.mysteryHost'));
+    (room.hostId ? formatRoomHost(room.hostId) : t('games.rooms.mysteryHost'));
 
   const gameName = formatRoomGame(room.gameId);
   const gameLabel =
-    gameName === 'Unknown game'
-      ? t('games.rooms.unknownGame')
-      : gameName;
+    gameName === 'Unknown game' ? t('games.rooms.unknownGame') : gameName;
 
   return (
     <ThemedView style={styles.card}>
@@ -156,10 +157,7 @@ export function RoomCard({
             </ThemedText>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[
-              styles.joinButton,
-              isJoining && styles.joinButtonDisabled,
-            ]}
+            style={[styles.joinButton, isJoining && styles.joinButtonDisabled]}
             onPress={onJoin}
             disabled={isJoining}
           >

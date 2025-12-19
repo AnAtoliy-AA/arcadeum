@@ -85,7 +85,10 @@ export type ThemePalette = {
   gameDetail: GameDetailPalette;
 };
 
-export const Colors: Record<'light' | 'dark' | 'neonLight' | 'neonDark', ThemePalette> = {
+export const Colors: Record<
+  'light' | 'dark' | 'neonLight' | 'neonDark',
+  ThemePalette
+> = {
   light: {
     isLight: true,
     text: '#11181C',

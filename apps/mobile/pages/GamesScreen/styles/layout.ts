@@ -1,7 +1,9 @@
 import type { Palette } from '@/hooks/useThemedStyles';
 
 export const getLayoutStyles = (palette: Palette) => {
-  const { gameDetail: { raisedBackground } } = palette;
+  const {
+    gameDetail: { raisedBackground },
+  } = palette;
 
   return {
     container: {

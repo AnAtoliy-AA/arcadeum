@@ -5,11 +5,7 @@ import { platformShadow } from '@/lib/platformShadow';
 export const getMetaStyles = (palette: Palette) => {
   const {
     isLight,
-    gameRoom: {
-      actionBackground,
-      actionBorder,
-      surfaceShadow,
-    },
+    gameRoom: { actionBackground, actionBorder, surfaceShadow },
   } = palette;
 
   return {

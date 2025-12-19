@@ -27,7 +27,12 @@ interface HandViewProps {
   onDraw: () => void;
   onPlay: (card: 'skip' | 'attack') => void;
   // Card rendering props
-  renderHandCard: (card: ExplodingCatsCard, index: number, count: number, mode?: 'row' | 'grid') => React.ReactNode;
+  renderHandCard: (
+    card: ExplodingCatsCard,
+    index: number,
+    count: number,
+    mode?: 'row' | 'grid',
+  ) => React.ReactNode;
   handScrollRef: React.RefObject<ScrollView | null>;
   gridContainerWidth: number;
   onGridContainerLayout: (width: number) => void;
@@ -54,7 +59,7 @@ export function HandView({
   styles,
 }: HandViewProps) {
   const { t } = useTranslation();
-  
+
   if (!selfPlayer) {
     return null;
   }
@@ -85,9 +90,7 @@ export function HandView({
           <View
             style={[
               styles.handStatusPill,
-              selfPlayer.alive
-                ? styles.handStatusAlive
-                : styles.handStatusOut,
+              selfPlayer.alive ? styles.handStatusAlive : styles.handStatusOut,
             ]}
           >
             <ThemedText
@@ -206,7 +209,7 @@ export function HandView({
             contentContainerStyle={styles.handScrollContent}
           >
             {uniqueCards.map((card, index) =>
-              renderHandCard(card, index, cardCounts.get(card) || 1)
+              renderHandCard(card, index, cardCounts.get(card) || 1),
             )}
           </ScrollView>
         ) : (
@@ -218,7 +221,7 @@ export function HandView({
             }}
           >
             {uniqueCards.map((card, index) =>
-              renderHandCard(card, index, cardCounts.get(card) || 1, 'grid')
+              renderHandCard(card, index, cardCounts.get(card) || 1, 'grid'),
             )}
           </View>
         )

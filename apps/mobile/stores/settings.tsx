@@ -38,7 +38,10 @@ function resolveThemePreference(value: unknown): ThemePreference {
   if (value === 'system') {
     return 'system';
   }
-  if (typeof value === 'string' && availableThemeCodes.has(value as AppThemeName)) {
+  if (
+    typeof value === 'string' &&
+    availableThemeCodes.has(value as AppThemeName)
+  ) {
     return value as AppThemeName;
   }
   return 'system';

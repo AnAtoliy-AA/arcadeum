@@ -10,14 +10,7 @@ import { useTranslation } from '@/lib/i18n';
 import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
 
 interface ControlsProps {
-  actionBusy:
-    | 'draw'
-    | 'fold'
-    | 'check'
-    | 'call'
-    | 'raise'
-    | 'all-in'
-    | null;
+  actionBusy: 'draw' | 'fold' | 'check' | 'call' | 'raise' | 'all-in' | null;
   callAmount: number;
   onAction: (
     action: 'fold' | 'check' | 'call' | 'raise',
@@ -113,7 +106,9 @@ function createStyles(palette: Palette) {
     controls: {
       padding: 16,
       gap: 12,
-      backgroundColor: isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)',
+      backgroundColor: isLight
+        ? 'rgba(0, 0, 0, 0.05)'
+        : 'rgba(255, 255, 255, 0.05)',
       borderRadius: 12,
       margin: 16,
     },

@@ -5,7 +5,12 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { OidcDiscoveryDoc, WebClientConfig } from '../lib/types';
-import { sanitize, parseRedirectList, parseRedirectEntry, normalizeUrl } from '../lib/utils';
+import {
+  sanitize,
+  parseRedirectList,
+  parseRedirectEntry,
+  normalizeUrl,
+} from '../lib/utils';
 
 @Injectable()
 export class OAuthClientService {

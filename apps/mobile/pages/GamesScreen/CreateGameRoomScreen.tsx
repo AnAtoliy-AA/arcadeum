@@ -39,7 +39,10 @@ export default function CreateGameRoomScreen() {
   if (shouldBlock) {
     return (
       <ThemedView style={styles.loadingContainer}>
-        <AlertFallback message={labels.loadingFallbackMessage} styles={styles} />
+        <AlertFallback
+          message={labels.loadingFallbackMessage}
+          styles={styles}
+        />
       </ThemedView>
     );
   }

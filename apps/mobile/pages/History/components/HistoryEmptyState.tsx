@@ -1,5 +1,12 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import type { TranslationKey } from '@/lib/i18n/messages';
 
@@ -9,11 +16,11 @@ type HistoryEmptyStateProps = {
   isAuthenticated: boolean;
   entriesLength: number;
   styles: {
-    emptyContainer: any;
-    placeholderText: any;
-    errorText: any;
-    retryButton: any;
-    retryText: any;
+    emptyContainer: ViewStyle;
+    placeholderText: TextStyle;
+    errorText: TextStyle;
+    retryButton: ViewStyle;
+    retryText: TextStyle;
   };
   t: (key: TranslationKey) => string;
   onRetry: () => void;
@@ -44,9 +51,7 @@ export function HistoryEmptyState({
       <View style={styles.emptyContainer}>
         <ThemedText style={styles.errorText}>{error}</ThemedText>
         <TouchableOpacity style={styles.retryButton} onPress={onRetry}>
-          <ThemedText style={styles.retryText}>
-            {t('common.retry')}
-          </ThemedText>
+          <ThemedText style={styles.retryText}>{t('common.retry')}</ThemedText>
         </TouchableOpacity>
       </View>
     );

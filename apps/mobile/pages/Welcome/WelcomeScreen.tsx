@@ -30,8 +30,10 @@ export default function WelcomeScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const appName = useAppName();
-  const { ios: iosDownloadUrl, android: androidDownloadUrl } = getDownloadLinks();
-  const showDownloads = platform.isWeb && (iosDownloadUrl || androidDownloadUrl);
+  const { ios: iosDownloadUrl, android: androidDownloadUrl } =
+    getDownloadLinks();
+  const showDownloads =
+    platform.isWeb && (iosDownloadUrl || androidDownloadUrl);
 
   if (shouldBlock) {
     return (
@@ -75,7 +77,9 @@ export default function WelcomeScreen() {
           <ThemedText
             type="title"
             style={styles.title}
-            {...(platform.isWeb ? { accessibilityRole: 'header' as const } : {})}
+            {...(platform.isWeb
+              ? { accessibilityRole: 'header' as const }
+              : {})}
           >
             {appName}
           </ThemedText>

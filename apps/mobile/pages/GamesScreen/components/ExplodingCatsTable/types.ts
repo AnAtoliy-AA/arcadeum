@@ -101,7 +101,16 @@ export interface ExplodingCatsTableProps {
   room: GameRoomSummary | null;
   session: GameSessionSummary | null;
   currentUserId: string | null;
-  actionBusy: 'draw' | 'skip' | 'attack' | 'shuffle' | 'favor' | 'see_the_future' | 'cat_pair' | 'cat_trio' | null;
+  actionBusy:
+    | 'draw'
+    | 'skip'
+    | 'attack'
+    | 'shuffle'
+    | 'favor'
+    | 'see_the_future'
+    | 'cat_pair'
+    | 'cat_trio'
+    | null;
   startBusy: boolean;
   isHost: boolean;
   onStart: () => void;

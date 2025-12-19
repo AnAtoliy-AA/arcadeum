@@ -24,5 +24,7 @@ export type UseHistoryListReturn = {
   loadMore: () => Promise<void>;
   hasMore: boolean;
   totalCount: number;
-  fetchOptions: { refreshTokens: () => Promise<SessionTokensSnapshot> } | undefined;
+  fetchOptions:
+    | { refreshTokens: () => Promise<SessionTokensSnapshot> }
+    | undefined;
 };

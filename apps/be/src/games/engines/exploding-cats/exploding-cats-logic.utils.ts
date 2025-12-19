@@ -1,9 +1,15 @@
-import { 
-  ExplodingCatsState, 
-  ExplodingCatsCard, 
-  ExplodingCatsPlayerState 
+import {
+  ExplodingCatsState,
+  ExplodingCatsCard,
+  ExplodingCatsPlayerState,
 } from '../../exploding-cats/exploding-cats.state';
 import { GameActionResult, GameLogEntry } from '../base/game-engine.interface';
+
+interface LogEntryOptions {
+  scope?: 'all' | 'players' | 'private';
+  senderId?: string | null;
+  senderName?: string | null;
+}
 
 /**
  * Utility class for Exploding Cats game logic
@@ -13,14 +19,22 @@ export class ExplodingCatsLogic {
   /**
    * Helper to find a player in the state
    */
-  static findPlayer(state: ExplodingCatsState, playerId: string): ExplodingCatsPlayerState | undefined {
-    return state.players.find((p) => p.playerId === playerId) as ExplodingCatsPlayerState;
+  static findPlayer(
+    state: ExplodingCatsState,
+    playerId: string,
+  ): ExplodingCatsPlayerState | undefined {
+    return state.players.find(
+      (p) => p.playerId === playerId,
+    ) as ExplodingCatsPlayerState;
   }
 
   /**
    * Helper to check if a player has a card
    */
-  static hasCard(player: ExplodingCatsPlayerState, card: ExplodingCatsCard): boolean {
+  static hasCard(
+    player: ExplodingCatsPlayerState,
+    card: ExplodingCatsCard,
+  ): boolean {
     return player.hand.includes(card);
   }
 
@@ -32,9 +46,13 @@ export class ExplodingCatsLogic {
     playerId: string,
     helpers: {
       addLog: (state: ExplodingCatsState, entry: GameLogEntry) => void;
-      createLogEntry: (type: string, message: string, options?: any) => GameLogEntry;
+      createLogEntry: (
+        type: string,
+        message: string,
+        options?: LogEntryOptions,
+      ) => GameLogEntry;
       advanceTurn: (state: ExplodingCatsState) => void;
-    }
+    },
   ): GameActionResult<ExplodingCatsState> {
     const card = state.deck.shift();
 
@@ -61,7 +79,9 @@ export class ExplodingCatsLogic {
         player.alive = false;
         helpers.addLog(
           state,
-          helpers.createLogEntry('system', `Player exploded!`, { scope: 'all' }),
+          helpers.createLogEntry('system', `Player exploded!`, {
+            scope: 'all',
+          }),
         );
         helpers.advanceTurn(state);
         return { success: true, state };
@@ -90,16 +110,21 @@ export class ExplodingCatsLogic {
     card: ExplodingCatsCard,
     helpers: {
       addLog: (state: ExplodingCatsState, entry: GameLogEntry) => void;
-      createLogEntry: (type: string, message: string, options?: any) => GameLogEntry;
+      createLogEntry: (
+        type: string,
+        message: string,
+        options?: LogEntryOptions,
+      ) => GameLogEntry;
       advanceTurn: (state: ExplodingCatsState) => void;
-      shuffleArray: (array: any[]) => void;
-    }
+      shuffleArray: <T>(array: T[]) => void;
+    },
   ): GameActionResult<ExplodingCatsState> {
     const player = this.findPlayer(state, playerId);
     if (!player) return { success: false, error: 'Player not found' };
 
     const cardIndex = player.hand.indexOf(card);
-    if (cardIndex === -1) return { success: false, error: 'Card not found in hand' };
+    if (cardIndex === -1)
+      return { success: false, error: 'Card not found in hand' };
 
     player.hand.splice(cardIndex, 1);
     state.discardPile.push(card);
@@ -126,7 +151,9 @@ export class ExplodingCatsLogic {
         helpers.shuffleArray(state.deck);
         helpers.addLog(
           state,
-          helpers.createLogEntry('action', `Shuffled the deck`, { scope: 'all' }),
+          helpers.createLogEntry('action', `Shuffled the deck`, {
+            scope: 'all',
+          }),
         );
         break;
     }
@@ -144,8 +171,12 @@ export class ExplodingCatsLogic {
     targetPlayerId: string,
     helpers: {
       addLog: (state: ExplodingCatsState, entry: GameLogEntry) => void;
-      createLogEntry: (type: string, message: string, options?: any) => GameLogEntry;
-    }
+      createLogEntry: (
+        type: string,
+        message: string,
+        options?: LogEntryOptions,
+      ) => GameLogEntry;
+    },
   ): GameActionResult<ExplodingCatsState> {
     const player = this.findPlayer(state, playerId);
     const target = this.findPlayer(state, targetPlayerId);
@@ -184,14 +215,19 @@ export class ExplodingCatsLogic {
     playerId: string,
     helpers: {
       addLog: (state: ExplodingCatsState, entry: GameLogEntry) => void;
-      createLogEntry: (type: string, message: string, options?: any) => GameLogEntry;
-    }
+      createLogEntry: (
+        type: string,
+        message: string,
+        options?: LogEntryOptions,
+      ) => GameLogEntry;
+    },
   ): GameActionResult<ExplodingCatsState> {
     const player = this.findPlayer(state, playerId);
     if (!player) return { success: false, error: 'Player not found' };
 
     const cardIndex = player.hand.indexOf('see_the_future');
-    if (cardIndex === -1) return { success: false, error: 'See The Future card not found' };
+    if (cardIndex === -1)
+      return { success: false, error: 'See The Future card not found' };
 
     player.hand.splice(cardIndex, 1);
     state.discardPile.push('see_the_future');
@@ -200,10 +236,14 @@ export class ExplodingCatsLogic {
 
     helpers.addLog(
       state,
-      helpers.createLogEntry('action', `Saw the future: ${topCards.join(', ')}`, {
-        scope: 'private',
-        senderId: playerId,
-      }),
+      helpers.createLogEntry(
+        'action',
+        `Saw the future: ${topCards.join(', ')}`,
+        {
+          scope: 'private',
+          senderId: playerId,
+        },
+      ),
     );
 
     return { success: true, state };
@@ -218,17 +258,23 @@ export class ExplodingCatsLogic {
     payload: { targetPlayerId: string; requestedCard: ExplodingCatsCard },
     helpers: {
       addLog: (state: ExplodingCatsState, entry: GameLogEntry) => void;
-      createLogEntry: (type: string, message: string, options?: any) => GameLogEntry;
-    }
+      createLogEntry: (
+        type: string,
+        message: string,
+        options?: LogEntryOptions,
+      ) => GameLogEntry;
+    },
   ): GameActionResult<ExplodingCatsState> {
     const player = this.findPlayer(state, playerId);
     const target = this.findPlayer(state, payload.targetPlayerId);
 
-    if (!player || !target) return { success: false, error: 'Player not found' };
+    if (!player || !target)
+      return { success: false, error: 'Player not found' };
 
     // Remove favor card from player
     const favorIndex = player.hand.indexOf('favor');
-    if (favorIndex === -1) return { success: false, error: 'Favor card not found' };
+    if (favorIndex === -1)
+      return { success: false, error: 'Favor card not found' };
 
     player.hand.splice(favorIndex, 1);
     state.discardPile.push('favor');
@@ -257,16 +303,21 @@ export class ExplodingCatsLogic {
     position: number,
     helpers: {
       addLog: (state: ExplodingCatsState, entry: GameLogEntry) => void;
-      createLogEntry: (type: string, message: string, options?: any) => GameLogEntry;
+      createLogEntry: (
+        type: string,
+        message: string,
+        options?: LogEntryOptions,
+      ) => GameLogEntry;
       advanceTurn: (state: ExplodingCatsState) => void;
-    }
+    },
   ): GameActionResult<ExplodingCatsState> {
     const player = this.findPlayer(state, playerId);
     if (!player) return { success: false, error: 'Player not found' };
 
     // Remove defuse card
     const defuseIndex = player.hand.indexOf('defuse');
-    if (defuseIndex === -1) return { success: false, error: 'Defuse card not found' };
+    if (defuseIndex === -1)
+      return { success: false, error: 'Defuse card not found' };
 
     player.hand.splice(defuseIndex, 1);
     state.discardPile.push('defuse');

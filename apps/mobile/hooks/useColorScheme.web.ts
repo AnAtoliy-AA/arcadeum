@@ -4,7 +4,11 @@ import { useColorScheme as useSystemColorScheme } from 'react-native';
 import type { AppThemeName } from '@/constants/Colors';
 import { useSettings } from '@/stores/settings';
 
-const DARK_LIKE_SCHEMES = new Set<AppThemeName>(['dark', 'neonDark', 'neonLight']);
+const DARK_LIKE_SCHEMES = new Set<AppThemeName>([
+  'dark',
+  'neonDark',
+  'neonLight',
+]);
 
 export interface UseColorSchemeResult {
   colorScheme: AppThemeName;

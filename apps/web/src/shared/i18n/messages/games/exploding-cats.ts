@@ -1,6 +1,6 @@
 import type { Locale } from "../../types";
 
-export const explodingCatsMessages: Record<Locale, any> = {
+export const explodingCatsMessages: Record<Locale, Record<string, unknown>> = {
   en: {
     "exploding-kittens": { name: "Exploding Cats" },
     "exploding-cats": { name: "Exploding Cats" },

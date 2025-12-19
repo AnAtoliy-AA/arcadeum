@@ -65,7 +65,9 @@ export function useCardAnimations(actionBusy: string | null) {
     }
 
     // Trigger simple centered effects for actions
-    const mapBusyToEffect = (busy: typeof actionBusy): ActionEffectType | null => {
+    const mapBusyToEffect = (
+      busy: typeof actionBusy,
+    ): ActionEffectType | null => {
       if (!busy) return null;
       if (busy === 'cat_pair' || busy === 'cat_trio') return 'cat_combo';
       if (busy === 'draw' || busy === 'skip' || busy === 'attack') {

@@ -11,7 +11,10 @@ type GamesHeaderProps = {
   onManualInvite: () => void;
 };
 
-export function GamesHeader({ onCreateRoom, onManualInvite }: GamesHeaderProps) {
+export function GamesHeader({
+  onCreateRoom,
+  onManualInvite,
+}: GamesHeaderProps) {
   const styles = useThemedStyles(createStyles);
   const { t } = useTranslation();
 

@@ -5,12 +5,7 @@ import { platformShadow } from '@/lib/platformShadow';
 export const getStatusStyles = (palette: Palette) => {
   const {
     isLight,
-    gameRoom: {
-      surfaceShadow,
-      statusLobby,
-      statusInProgress,
-      statusCompleted,
-    },
+    gameRoom: { surfaceShadow, statusLobby, statusInProgress, statusCompleted },
   } = palette;
 
   return {

@@ -45,12 +45,7 @@ export function CatComboModal({
   }
 
   return (
-    <Modal
-      visible
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.comboModalBackdrop}>
         <ThemedView style={styles.comboModalCard}>
           <ThemedText style={styles.comboModalTitle}>

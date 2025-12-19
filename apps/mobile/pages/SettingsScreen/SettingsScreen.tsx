@@ -41,8 +41,10 @@ export default function SettingsScreen() {
   const router = useRouter();
   const { tokens, clearTokens } = useSessionTokens();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const { ios: iosDownloadUrl, android: androidDownloadUrl } = getDownloadLinks();
-  const showDownloads = platform.isWeb && (iosDownloadUrl || androidDownloadUrl);
+  const { ios: iosDownloadUrl, android: androidDownloadUrl } =
+    getDownloadLinks();
+  const showDownloads =
+    platform.isWeb && (iosDownloadUrl || androidDownloadUrl);
 
   const isAuthenticated = Boolean(tokens.accessToken);
   const accountName =

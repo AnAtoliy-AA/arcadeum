@@ -17,9 +17,7 @@ type MessageDocumentObject = {
 
 @Injectable()
 export class ChatHelperService {
-  constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-  ) {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   normalizeUserIds(
     userIds: Array<string | Types.ObjectId | null | undefined>,

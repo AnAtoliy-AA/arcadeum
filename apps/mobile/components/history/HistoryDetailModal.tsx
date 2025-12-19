@@ -1,6 +1,9 @@
 import React from 'react';
 import { Modal, ScrollView, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { useThemedStyles } from '@/hooks/useThemedStyles';
 import { resolveGameName } from '@/utils/historyUtils';
 import {
@@ -48,24 +51,17 @@ export function HistoryDetailModal({
   const insetStyles = useSafeAreaInsets();
 
   const gameName = selectedSummary
-    ? resolveGameName(selectedSummary.gameId) ?? t('history.unknownGame')
+    ? (resolveGameName(selectedSummary.gameId) ?? t('history.unknownGame'))
     : '';
 
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <SafeAreaView
         style={styles.modalSafeArea}
         edges={['left', 'right', 'bottom']}
       >
         <View
-          style={[
-            styles.modalContainer,
-            { paddingBottom: insetStyles.bottom },
-          ]}
+          style={[styles.modalContainer, { paddingBottom: insetStyles.bottom }]}
         >
           <ModalHeader
             gameName={gameName}

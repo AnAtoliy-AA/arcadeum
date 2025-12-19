@@ -4,7 +4,10 @@ import type { LogVisibility } from '../types';
 export function useMessageHandling(
   sessionId: string | undefined,
   isCurrentUserPlayer: boolean,
-  onPostHistoryNote?: (message: string, visibility: LogVisibility) => Promise<void>,
+  onPostHistoryNote?: (
+    message: string,
+    visibility: LogVisibility,
+  ) => Promise<void>,
 ) {
   const [messageDraft, setMessageDraft] = useState('');
   const [messageVisibility, setMessageVisibility] =

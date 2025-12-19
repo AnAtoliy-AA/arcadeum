@@ -15,6 +15,7 @@ const eslintConfig = defineConfig([
   ]),
   {
     rules: {
+      '@typescript-eslint/no-explicit-any': 'error',
       'max-lines': ['error', { max: 500, skipBlankLines: true, skipComments: true }],
       '@typescript-eslint/no-unused-vars': ['warn', {
         argsIgnorePattern: '^_',

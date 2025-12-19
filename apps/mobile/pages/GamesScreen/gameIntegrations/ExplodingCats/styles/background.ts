@@ -2,7 +2,10 @@ import { StyleSheet } from 'react-native';
 import type { Palette } from '@/hooks/useThemedStyles';
 
 export const getBackgroundStyles = (palette: Palette) => {
-  const { isLight, gameRoom: { backgroundGlow, decorPlay, decorCheck, backgroundGradient } } = palette;
+  const {
+    isLight,
+    gameRoom: { backgroundGlow, decorPlay, decorCheck, backgroundGradient },
+  } = palette;
   const fill = StyleSheet.absoluteFillObject;
 
   return {

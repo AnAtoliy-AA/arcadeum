@@ -6,9 +6,7 @@ const ROOT_DIR = process.cwd();
 
 // List of files to ignore (relative to root)
 // These files currently exceed the limit and should be refactored.
-const ALLOW_LIST = new Set([
-    'apps/be/src/games/history/game-history.service.ts',
-]);
+const ALLOW_LIST = new Set([]);
 
 const IGNORE_DIRS = new Set([
     'node_modules',

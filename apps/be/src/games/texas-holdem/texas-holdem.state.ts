@@ -41,6 +41,7 @@ export interface TexasHoldemPlayerState {
   folded: boolean;
   allIn: boolean;
   lastAction?: PlayerAction;
+  [key: string]: unknown;
 }
 
 export type TexasHoldemLogVisibility = 'all' | 'players';
@@ -75,6 +76,7 @@ export interface TexasHoldemState {
     smallBlind?: number;
     bigBlind?: number;
   };
+  [key: string]: unknown;
 }
 
 const SUITS: Suit[] = ['hearts', 'diamonds', 'clubs', 'spades'];

@@ -6,6 +6,7 @@ import {
   GameActionResult,
   GameActionContext,
   GameLogEntry,
+  GamePlayerState,
 } from './game-engine.interface';
 
 /**
@@ -26,7 +27,7 @@ export abstract class BaseGameEngine<
    */
   abstract initializeState(
     playerIds: string[],
-    config?: Record<string, any>,
+    config?: Record<string, unknown>,
   ): TState;
 
   /**
@@ -36,7 +37,7 @@ export abstract class BaseGameEngine<
     state: TState,
     action: string,
     context: GameActionContext,
-    payload?: any,
+    payload?: unknown,
   ): boolean;
 
   /**
@@ -46,7 +47,7 @@ export abstract class BaseGameEngine<
     state: TState,
     action: string,
     context: GameActionContext,
-    payload?: any,
+    payload?: unknown,
   ): GameActionResult<TState>;
 
   /**
@@ -115,16 +116,19 @@ export abstract class BaseGameEngine<
   /**
    * Helper: Find player in state
    */
-  protected findPlayer(state: TState, playerId: string): any {
+  protected findPlayer(
+    state: TState,
+    playerId: string,
+  ): GamePlayerState | undefined {
     return state.players.find((p) => p.playerId === playerId);
   }
 
   /**
    * Helper: Get current player
    */
-  protected getCurrentPlayer(state: TState): any {
+  protected getCurrentPlayer(state: TState): GamePlayerState | undefined {
     if (state.currentTurnIndex === undefined) {
-      return null;
+      return undefined;
     }
     return state.players[state.currentTurnIndex];
   }
@@ -182,14 +186,14 @@ export abstract class BaseGameEngine<
   /**
    * Default implementation for config validation
    */
-  validateConfig(config: Record<string, any>): boolean {
+  validateConfig(config: Record<string, unknown>): boolean {
     return true;
   }
 
   /**
    * Default implementation for statistics
    */
-  getStatistics(state: TState): Record<string, any> {
+  getStatistics(state: TState): Record<string, unknown> {
     return {
       playerCount: state.players.length,
       logCount: state.logs.length,

@@ -10,47 +10,13 @@ import { GameRoom } from '../schemas/game-room.schema';
 import { GameHistoryHidden } from '../schemas/game-history-hidden.schema';
 import { User } from '../../auth/schemas/user.schema';
 import { HistoryRematchDto } from '../dtos/history-rematch.dto';
-
-export interface HistoryParticipantSummary {
-  id: string;
-  username: string;
-  email: string | null;
-  isHost: boolean;
-}
-
-export interface GameHistorySummary {
-  id: string;
-  roomId: string;
-  gameId: string;
-  roomName: string;
-  startedAt: string;
-  completedAt: string | null;
-  lastActivityAt: string;
-  status: 'completed' | 'abandoned';
-  participants: HistoryParticipantSummary[];
-  hostId: string;
-  result?: {
-    winners: string[];
-    finalState: Record<string, any>;
-  };
-}
-
-export interface GroupedHistorySummary {
-  roomId: string;
-  gameId: string;
-  gameName: string;
-  hostId: string;
-  participants: HistoryParticipantSummary[];
-  sessions: Array<{
-    id: string;
-    startedAt: string;
-    completedAt: string | null;
-    status: string;
-    winners?: string[];
-  }>;
-  totalSessions: number;
-  latestSessionAt: string;
-}
+import {
+  HistoryParticipantSummary,
+  GameHistorySummary,
+  GroupedHistorySummary,
+} from './game-history.types';
+import { GameHistoryBuilderService } from './game-history-builder.service';
+import { BaseGameState } from '../engines/base/game-engine.interface';
 
 /**
  * Game History Service
@@ -67,6 +33,7 @@ export class GameHistoryService {
     private readonly historyHiddenModel: Model<GameHistoryHidden>,
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
+    private readonly builder: GameHistoryBuilderService,
   ) {}
 
   /**
@@ -103,10 +70,10 @@ export class GameHistoryService {
       .exec();
 
     if (grouped) {
-      return this.buildGroupedHistory(rooms, sessions);
+      return this.builder.buildGroupedHistory(rooms, sessions);
     }
 
-    return this.buildHistoryList(rooms, sessions);
+    return this.builder.buildHistoryList(rooms, sessions);
   }
 
   /**
@@ -133,7 +100,7 @@ export class GameHistoryService {
       type: 'system' | 'action' | 'message';
       message: string;
       createdAt: string;
-      scope?: 'all' | 'players';
+      scope?: 'all' | 'players' | 'private';
       sender?: HistoryParticipantSummary;
     }>;
   }> {
@@ -158,28 +125,8 @@ export class GameHistoryService {
       .sort({ createdAt: -1 })
       .exec();
 
-    // Get user details for participants
-    const userIds = [room.hostId, ...room.participants.map((p) => p.userId)];
-    const uniqueUserIds = Array.from(new Set(userIds));
-
-    const users = await this.userModel
-      .find({ _id: { $in: uniqueUserIds } })
-      .select('username email')
-      .exec();
-
-    const userMap = new Map(users.map((u) => [u._id.toString(), u]));
-
-    const participants: HistoryParticipantSummary[] = uniqueUserIds.map(
-      (uid) => {
-        const user = userMap.get(uid);
-        return {
-          id: uid,
-          username: user?.username || 'Unknown',
-          email: user?.email || null,
-          isHost: uid === room.hostId,
-        };
-      },
-    );
+    // Get participant summaries
+    const participants = await this.builder.getParticipantSummaries(room);
 
     // Find the latest session for this room
     const latestSession = sessions[0] || null;
@@ -190,12 +137,13 @@ export class GameHistoryService {
       type: 'system' | 'action' | 'message';
       message: string;
       createdAt: string;
-      scope?: 'all' | 'players';
+      scope?: 'all' | 'players' | 'private';
       sender?: HistoryParticipantSummary;
     }> = [];
 
-    if (latestSession && latestSession.state?.logs) {
-      const sessionLogs = latestSession.state.logs;
+    if (latestSession && latestSession.state) {
+      const state = latestSession.state as unknown as BaseGameState;
+      const sessionLogs = state.logs || [];
       for (const log of sessionLogs) {
         let sender: HistoryParticipantSummary | undefined;
         if (log.senderId) {
@@ -320,6 +268,7 @@ export class GameHistoryService {
     return newRoom._id.toString();
   }
 
+
   /**
    * Post a note to game history logs
    */
@@ -364,173 +313,14 @@ export class GameHistoryService {
       senderName: null,
     };
 
-    if (!session.state.logs) {
-      session.state.logs = [];
+    const state = session.state as unknown as BaseGameState;
+    if (!state.logs) {
+      state.logs = [];
     }
 
-    session.state.logs.push(logEntry);
+    state.logs.push(logEntry);
     session.markModified('state');
     await session.save();
   }
-
-  // ========== Private Helper Methods ==========
-
-  private async buildHistoryList(
-    rooms: GameRoom[],
-    sessions: GameSession[],
-  ): Promise<GameHistorySummary[]> {
-    const sessionsByRoom = new Map<string, GameSession[]>();
-
-    sessions.forEach((session) => {
-      const roomId = session.roomId;
-      if (!sessionsByRoom.has(roomId)) {
-        sessionsByRoom.set(roomId, []);
-      }
-      sessionsByRoom.get(roomId)!.push(session);
-    });
-
-    const history: GameHistorySummary[] = [];
-
-    for (const room of rooms) {
-      const roomId = room._id.toString();
-      const roomSessions = sessionsByRoom.get(roomId) || [];
-
-      // Only show the latest session for each room to avoid duplicate entries
-      // The sessions are already sorted by createdAt desc in the query
-      const latestSession = roomSessions[0];
-
-      if (latestSession) {
-        const participants = await this.getParticipantSummaries(room);
-
-        history.push({
-          id: latestSession._id.toString(),
-          roomId,
-          gameId: room.gameId,
-          roomName: room.name,
-          startedAt: latestSession.createdAt.toISOString(),
-          completedAt: latestSession.updatedAt.toISOString(),
-          lastActivityAt: latestSession.updatedAt.toISOString(),
-          status:
-            latestSession.status === 'completed' ? 'completed' : 'abandoned',
-          participants,
-          hostId: room.hostId,
-          result:
-            latestSession.status === 'completed'
-              ? {
-                  winners: this.extractWinners(latestSession),
-                  finalState: latestSession.state,
-                }
-              : undefined,
-        });
-      }
-    }
-
-    return history.sort(
-      (a, b) =>
-        new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
-    );
-  }
-
-  private async buildGroupedHistory(
-    rooms: GameRoom[],
-    sessions: GameSession[],
-  ): Promise<GroupedHistorySummary[]> {
-    const sessionsByRoom = new Map<string, GameSession[]>();
-
-    sessions.forEach((session) => {
-      const roomId = session.roomId;
-      if (!sessionsByRoom.has(roomId)) {
-        sessionsByRoom.set(roomId, []);
-      }
-      sessionsByRoom.get(roomId)!.push(session);
-    });
-
-    const grouped: GroupedHistorySummary[] = [];
-
-    for (const room of rooms) {
-      const roomId = room._id.toString();
-      const roomSessions = sessionsByRoom.get(roomId) || [];
-
-      if (roomSessions.length === 0) continue;
-
-      const participants = await this.getParticipantSummaries(room);
-
-      grouped.push({
-        roomId,
-        gameId: room.gameId,
-        gameName: room.name,
-        hostId: room.hostId,
-        participants,
-        sessions: roomSessions.map((s) => ({
-          id: s._id.toString(),
-          startedAt: s.createdAt.toISOString(),
-          completedAt: s.updatedAt.toISOString(),
-          status: s.status,
-          winners:
-            s.status === 'completed' ? this.extractWinners(s) : undefined,
-        })),
-        totalSessions: roomSessions.length,
-        latestSessionAt: roomSessions[0].createdAt.toISOString(),
-      });
-    }
-
-    return grouped.sort(
-      (a, b) =>
-        new Date(b.latestSessionAt).getTime() -
-        new Date(a.latestSessionAt).getTime(),
-    );
-  }
-
-  private async getParticipantSummaries(
-    room: GameRoom,
-  ): Promise<HistoryParticipantSummary[]> {
-    const userIds = [room.hostId, ...room.participants.map((p) => p.userId)];
-    const uniqueUserIds = Array.from(new Set(userIds));
-
-    const users = await this.userModel
-      .find({ _id: { $in: uniqueUserIds } })
-      .select('username email')
-      .exec();
-
-    const userMap = new Map(users.map((u) => [u._id.toString(), u]));
-
-    return uniqueUserIds.map((uid) => {
-      const user = userMap.get(uid);
-      return {
-        id: uid,
-        username: user?.username || 'Unknown',
-        email: user?.email || null,
-        isHost: uid === room.hostId,
-      };
-    });
-  }
-
-  private extractWinners(session: GameSession): string[] {
-    // Try to extract winners from state
-    if (session.state.winners) {
-      return session.state.winners;
-    }
-
-    // For exploding cats, find alive players
-    if (session.gameId.includes('exploding')) {
-      return (
-        session.state.players
-          ?.filter((p: any) => p.alive)
-          .map((p: any) => p.playerId) || []
-      );
-    }
-
-    // For poker, find players with highest stack
-    if (session.gameId.includes('holdem')) {
-      const players = session.state.players || [];
-      if (players.length === 0) return [];
-
-      const maxStack = Math.max(...players.map((p: any) => p.stack || 0));
-      return players
-        .filter((p: any) => p.stack === maxStack)
-        .map((p: any) => p.playerId);
-    }
-
-    return [];
-  }
 }
+

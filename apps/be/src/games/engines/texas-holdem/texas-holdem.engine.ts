@@ -33,11 +33,12 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
 
   initializeState(
     playerIds: string[],
-    config?: Record<string, any>,
+    config?: Record<string, unknown>,
   ): TexasHoldemState {
-    const initialStack = config?.initialStack || 1000;
-    const smallBlind = config?.smallBlind || 5;
-    const bigBlind = config?.bigBlind || 10;
+    const typedConfig = config as any;
+    const initialStack = typedConfig?.initialStack || 1000;
+    const smallBlind = typedConfig?.smallBlind || 5;
+    const bigBlind = typedConfig?.bigBlind || 10;
 
     return createInitialTexasHoldemState(playerIds, {
       initialStack,
@@ -50,7 +51,7 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
     state: TexasHoldemState,
     action: string,
     context: GameActionContext,
-    payload?: any,
+    payload?: unknown,
   ): boolean {
     const player = this.findPlayer(
       state,
@@ -65,6 +66,8 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
       return false;
     }
 
+    const typedPayload = payload as any;
+
     switch (action) {
       case 'fold':
         return true;
@@ -77,9 +80,9 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
 
       case 'raise':
         return (
-          payload?.amount !== undefined &&
-          payload.amount >= state.currentBet * 2 &&
-          payload.amount <= player.stack + player.currentBet
+          typedPayload?.amount !== undefined &&
+          typedPayload.amount >= state.currentBet * 2 &&
+          typedPayload.amount <= player.stack + player.currentBet
         );
 
       case 'all-in':
@@ -94,7 +97,7 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
     state: TexasHoldemState,
     action: string,
     context: GameActionContext,
-    payload?: any,
+    payload?: unknown,
   ): GameActionResult<TexasHoldemState> {
     if (!this.validateAction(state, action, context, payload)) {
       return this.errorResult('Invalid action');
@@ -107,6 +110,7 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
     ) as TexasHoldemPlayerState;
 
     let actionTaken: PlayerAction | null = null;
+    const typedPayload = payload as any;
 
     switch (action) {
       case 'fold':
@@ -148,15 +152,15 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
         break;
 
       case 'raise':
-        const raiseAmount = payload.amount - player.currentBet;
+        const raiseAmount = typedPayload.amount - player.currentBet;
         this.updatePlayerStack(player, player.stack - raiseAmount);
-        player.currentBet = payload.amount;
-        newState.currentBet = payload.amount;
+        player.currentBet = typedPayload.amount;
+        newState.currentBet = typedPayload.amount;
         newState.pot += raiseAmount;
         actionTaken = 'raise';
         this.addLog(
           newState,
-          this.createLogEntry('action', `Raised to ${payload.amount}`, {
+          this.createLogEntry('action', `Raised to ${typedPayload.amount}`, {
             scope: 'all',
             senderId: context.userId,
           }),

@@ -43,9 +43,20 @@ export interface GameRoomSummary {
 export interface ListRoomsFilters {
   gameId?: string;
   status?: GameRoomStatus;
-  visibility?: 'public' | 'private' | 'friends';
+  statuses?: GameRoomStatus[];
+  visibility?:
+    | 'public'
+    | 'private'
+    | 'friends'
+    | ('public' | 'private' | 'friends')[];
   userId?: string;
-  participation?: 'host' | 'participant' | 'any';
+  participation?:
+    | 'host'
+    | 'participant'
+    | 'any'
+    | 'hosting'
+    | 'joined'
+    | 'not_joined';
 }
 
 export interface LeaveGameRoomResult {
@@ -120,17 +131,32 @@ export class GameRoomsService {
 
     if (filters.status) {
       query.status = filters.status;
+    } else if (filters.statuses && filters.statuses.length > 0) {
+      query.status = { $in: filters.statuses };
     }
 
     if (filters.visibility) {
-      query.visibility = filters.visibility;
+      if (Array.isArray(filters.visibility)) {
+        query.visibility = { $in: filters.visibility };
+      } else {
+        query.visibility = filters.visibility;
+      }
     }
 
     if (filters.participation && filters.userId) {
-      if (filters.participation === 'host') {
+      if (
+        filters.participation === 'host' ||
+        filters.participation === 'hosting'
+      ) {
         query.hostId = filters.userId;
-      } else if (filters.participation === 'participant') {
+      } else if (
+        filters.participation === 'participant' ||
+        filters.participation === 'joined'
+      ) {
         query['participants.userId'] = filters.userId;
+      } else if (filters.participation === 'not_joined') {
+        query['participants.userId'] = { $ne: filters.userId };
+        query.hostId = { $ne: filters.userId };
       } else if (filters.participation === 'any') {
         query.$or = [
           { hostId: filters.userId },

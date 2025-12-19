@@ -17,6 +17,7 @@ import { GameEnginesModule } from './engines/engines.module';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import { GameHistoryService } from './history/game-history.service';
+import { GameHistoryBuilderService } from './history/game-history-builder.service';
 import { ExplodingCatsActionsService } from './actions/exploding-cats/exploding-cats-actions.service';
 import { TexasHoldemActionsService } from './actions/texas-holdem/texas-holdem-actions.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
@@ -40,6 +41,7 @@ import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
     GameRoomsService,
     GameSessionsService,
     GameHistoryService,
+    GameHistoryBuilderService,
     GamesRealtimeService,
     // Game-specific action handlers
     ExplodingCatsActionsService,

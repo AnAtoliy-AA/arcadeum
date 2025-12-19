@@ -3,8 +3,7 @@
  * These types are used across multiple services and controllers
  */
 
-// Re-export types from services
-export type {
+import type {
   GameRoomSummary,
   GameRoomMemberSummary,
   LeaveGameRoomResult,
@@ -12,22 +11,37 @@ export type {
   ListRoomsFilters,
 } from './rooms/game-rooms.service';
 
-export type {
+import type {
   GameSessionSummary,
   CreateSessionOptions,
   ExecuteActionOptions,
 } from './sessions/game-sessions.service';
 
+// Re-export types from services
+export type {
+  GameRoomSummary,
+  GameRoomMemberSummary,
+  LeaveGameRoomResult,
+  DeleteGameRoomResult,
+  ListRoomsFilters,
+};
+
+export type {
+  GameSessionSummary,
+  CreateSessionOptions,
+  ExecuteActionOptions,
+};
+
 export type {
   GameHistorySummary,
   HistoryParticipantSummary,
   GroupedHistorySummary,
-} from './history/game-history.service';
+} from './history/game-history.types';
 
 // StartGameSessionResult interface
 export interface StartGameSessionResult {
-  room: any;
-  session: any;
+  room: GameRoomSummary;
+  session: GameSessionSummary;
 }
 
 // Backward compatibility type aliases

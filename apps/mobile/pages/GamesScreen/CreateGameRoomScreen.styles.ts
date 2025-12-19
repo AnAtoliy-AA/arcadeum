@@ -11,7 +11,7 @@ export function createStyles(palette: Palette) {
   const surfaceShadow = palette.gameRoom.surfaceShadow;
   const disabledText = palette.icon;
 
-  return StyleSheet.create({
+  const styles = {
     container: {
       flex: 1,
       backgroundColor: palette.background,
@@ -218,7 +218,9 @@ export function createStyles(palette: Palette) {
       fontWeight: '700',
       fontSize: 17,
     },
-  });
+  };
+
+  return StyleSheet.create(styles as any) as { [K in keyof typeof styles]: any };
 }
 
 export type CreateGameRoomStyles = ReturnType<typeof createStyles>;

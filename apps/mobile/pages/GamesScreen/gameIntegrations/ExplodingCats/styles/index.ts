@@ -11,7 +11,7 @@ import { getBodyStyles } from './body';
 import { getTableStyles } from './table';
 
 export function createStyles(palette: Palette) {
-  return StyleSheet.create({
+  const styles = {
     ...getLayoutStyles(palette),
     ...getBackgroundStyles(palette),
     ...getTopBarStyles(palette),
@@ -21,7 +21,9 @@ export function createStyles(palette: Palette) {
     ...getMetaStyles(palette),
     ...getBodyStyles(palette),
     ...getTableStyles(palette),
-  } as Record<string, ViewStyle | TextStyle | ImageStyle>);
+  };
+
+  return StyleSheet.create(styles as any) as { [K in keyof typeof styles]: any };
 }
 
 export type ExplodingCatsRoomStyles = ReturnType<typeof createStyles>;

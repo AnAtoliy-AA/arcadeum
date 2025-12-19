@@ -7,13 +7,15 @@ import { getRoomItemStyles } from './roomItem';
 import { getSectionsStyles } from './sections';
 
 export function createStyles(palette: Palette) {
-  return StyleSheet.create({
+  const styles = {
     ...getLayoutStyles(palette),
     ...getHeroStyles(palette),
     ...getRoomsStyles(palette),
     ...getRoomItemStyles(palette),
     ...getSectionsStyles(palette),
-  } as Record<string, ViewStyle | TextStyle | ImageStyle>);
+  };
+
+  return StyleSheet.create(styles as any) as { [K in keyof typeof styles]: any };
 }
 
 export type GameDetailScreenStyles = ReturnType<typeof createStyles>;

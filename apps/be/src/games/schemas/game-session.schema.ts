@@ -30,7 +30,7 @@ export class GameSession extends Document {
   status: GameSessionStatus;
 
   @Prop({ type: SchemaTypes.Mixed, required: true })
-  state: Record<string, any>;
+  state: Record<string, unknown>;
 
   createdAt: Date;
   updatedAt: Date;

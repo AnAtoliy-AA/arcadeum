@@ -15,7 +15,7 @@ export interface GameMetadata {
 
 export interface GamePlayerState {
   playerId: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface GameLogEntry {
@@ -32,10 +32,10 @@ export interface BaseGameState {
   players: GamePlayerState[];
   logs: GameLogEntry[];
   currentTurnIndex?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
-export interface GameActionResult<TState = any> {
+export interface GameActionResult<TState = unknown> {
   success: boolean;
   state?: TState;
   error?: string;
@@ -64,7 +64,7 @@ export interface IGameEngine<TState extends BaseGameState = BaseGameState> {
    * @param playerIds Array of player IDs
    * @param config Optional game configuration
    */
-  initializeState(playerIds: string[], config?: Record<string, any>): TState;
+  initializeState(playerIds: string[], config?: Record<string, unknown>): TState;
 
   /**
    * Validate a player action
@@ -76,7 +76,7 @@ export interface IGameEngine<TState extends BaseGameState = BaseGameState> {
     state: TState,
     action: string,
     context: GameActionContext,
-    payload?: any,
+    payload?: unknown,
   ): boolean;
 
   /**
@@ -90,7 +90,7 @@ export interface IGameEngine<TState extends BaseGameState = BaseGameState> {
     state: TState,
     action: string,
     context: GameActionContext,
-    payload?: any,
+    payload?: unknown,
   ): GameActionResult<TState>;
 
   /**
@@ -137,11 +137,11 @@ export interface IGameEngine<TState extends BaseGameState = BaseGameState> {
    * Validate game configuration
    * @param config Game configuration
    */
-  validateConfig?(config: Record<string, any>): boolean;
+  validateConfig?(config: Record<string, unknown>): boolean;
 
   /**
    * Get game statistics
    * @param state Current game state
    */
-  getStatistics?(state: TState): Record<string, any>;
+  getStatistics?(state: TState): Record<string, unknown>;
 }

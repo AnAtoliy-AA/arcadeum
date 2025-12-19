@@ -10,7 +10,10 @@ import {
   type GameSessionStatus,
 } from '../schemas/game-session.schema';
 import { GameEngineRegistry } from '../engines/registry/game-engine.registry';
-import { GameActionContext } from '../engines/base/game-engine.interface';
+import {
+  GameActionContext,
+  BaseGameState,
+} from '../engines/base/game-engine.interface';
 
 export interface GameSessionSummary {
   id: string;
@@ -18,7 +21,7 @@ export interface GameSessionSummary {
   gameId: string;
   engine: string;
   status: GameSessionStatus;
-  state: Record<string, any>;
+  state: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
 }
@@ -27,12 +30,12 @@ export interface CreateSessionOptions {
   roomId: string;
   gameId: string;
   playerIds: string[];
-  config?: Record<string, any>;
+  config?: Record<string, unknown>;
 }
 
 export interface UpdateSessionStateOptions {
   sessionId: string;
-  state: Record<string, any>;
+  state: Record<string, unknown>;
   status?: GameSessionStatus;
 }
 
@@ -40,7 +43,7 @@ export interface ExecuteActionOptions {
   sessionId: string;
   action: string;
   userId: string;
-  payload?: any;
+  payload?: unknown;
 }
 
 /**
@@ -74,7 +77,7 @@ export class GameSessionsService {
       roomId,
       gameId,
       engine: gameId, // Engine identifier
-      state: initialState,
+      state: initialState as unknown as Record<string, unknown>,
       status: 'active',
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -164,7 +167,7 @@ export class GameSessionsService {
 
     // Validate the action
     const isValid = engine.validateAction(
-      session.state as any,
+      session.state as unknown as BaseGameState,
       action,
       context,
       payload,
@@ -176,7 +179,7 @@ export class GameSessionsService {
 
     // Execute the action
     const result = engine.executeAction(
-      session.state as any,
+      session.state as unknown as BaseGameState,
       action,
       context,
       payload,
@@ -188,11 +191,11 @@ export class GameSessionsService {
 
     // Update session with new state
     if (result.state) {
-      session.state = result.state as any;
+      session.state = result.state as unknown as Record<string, unknown>;
     }
 
     // Check if game is over
-    if (engine.isGameOver(result.state as any)) {
+    if (engine.isGameOver(result.state as unknown as BaseGameState)) {
       session.status = 'completed';
     }
 
@@ -208,7 +211,7 @@ export class GameSessionsService {
   async getSanitizedStateForPlayer(
     sessionId: string,
     playerId: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     const session = await this.gameSessionModel.findById(sessionId).exec();
 
     if (!session) {
@@ -217,7 +220,10 @@ export class GameSessionsService {
 
     const engine = this.engineRegistry.getEngine(session.gameId);
 
-    return engine.sanitizeStateForPlayer(session.state as any, playerId);
+    return engine.sanitizeStateForPlayer(
+      session.state as unknown as BaseGameState,
+      playerId,
+    );
   }
 
   /**
@@ -235,7 +241,10 @@ export class GameSessionsService {
 
     const engine = this.engineRegistry.getEngine(session.gameId);
 
-    return engine.getAvailableActions(session.state as any, playerId);
+    return engine.getAvailableActions(
+      session.state as unknown as BaseGameState,
+      playerId,
+    );
   }
 
   /**
@@ -250,7 +259,7 @@ export class GameSessionsService {
 
     const engine = this.engineRegistry.getEngine(session.gameId);
 
-    return engine.isGameOver(session.state as any);
+    return engine.isGameOver(session.state as unknown as BaseGameState);
   }
 
   /**
@@ -265,7 +274,7 @@ export class GameSessionsService {
 
     const engine = this.engineRegistry.getEngine(session.gameId);
 
-    return engine.getWinners(session.state as any);
+    return engine.getWinners(session.state as unknown as BaseGameState);
   }
 
   /**
@@ -289,19 +298,22 @@ export class GameSessionsService {
       );
     }
 
-    const result = engine.removePlayer(session.state as any, playerId);
+    const result = engine.removePlayer(
+      session.state as unknown as BaseGameState,
+      playerId,
+    );
 
     if (!result.success) {
       throw new BadRequestException(result.error || 'Failed to remove player');
     }
 
     if (result.state) {
-      session.state = result.state as any;
+      session.state = result.state as unknown as Record<string, unknown>;
     }
     session.updatedAt = new Date();
 
     // Check if game is over after player removal
-    if (engine.isGameOver(result.state as any)) {
+    if (engine.isGameOver(result.state as unknown as BaseGameState)) {
       session.status = 'completed';
     }
 

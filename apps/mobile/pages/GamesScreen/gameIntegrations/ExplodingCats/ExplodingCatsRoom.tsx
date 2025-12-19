@@ -30,7 +30,10 @@ import { useTranslation } from '@/lib/i18n';
 import { ExplodingCatsRoomTopBar } from '../components/ExplodingCatsRoomTopBar';
 import { ExplodingCatsRoomMetaItem as MetaItem } from '../components/ExplodingCatsRoomMetaItem';
 import { HERO_GRADIENT_COORDS } from './ExplodingCatsRoom.constants';
-import { createStyles } from './ExplodingCatsRoom.styles';
+import {
+  createStyles,
+  type ExplodingCatsRoomStyles,
+} from './ExplodingCatsRoom.styles';
 import { useGameActions } from './ExplodingCatsRoom.hooks';
 import { NeonBackdrop } from './ExplodingCatsRoom.components';
 import type {
@@ -40,7 +43,7 @@ import type {
 } from './ExplodingCatsRoom.types';
 
 export type { ExplodingCatsRoomHandle, ExplodingCatsRoomProps } from './ExplodingCatsRoom.types';
-export type { ExplodingCatsRoomStyles } from './ExplodingCatsRoom.styles';
+export type { ExplodingCatsRoomStyles };
 
 export const ExplodingCatsRoom = forwardRef<
   ExplodingCatsRoomHandle,

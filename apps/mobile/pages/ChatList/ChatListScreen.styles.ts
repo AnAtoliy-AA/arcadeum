@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 import type { Palette } from '@/hooks/useThemedStyles';
 
 export function createStyles(palette: Palette) {
-  return StyleSheet.create({
+  const styles = {
     safeArea: {
       flex: 1,
       backgroundColor: palette.background,
@@ -145,7 +145,9 @@ export function createStyles(palette: Palette) {
       fontSize: 14,
       color: palette.icon,
     },
-  });
+  };
+
+  return StyleSheet.create(styles as any) as { [K in keyof typeof styles]: any };
 }
 
 export type ChatListScreenStyles = ReturnType<typeof createStyles>;

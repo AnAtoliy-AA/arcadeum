@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 import type { Palette } from '@/hooks/useThemedStyles';
 
 export function createStyles(palette: Palette) {
-  return StyleSheet.create({
+  const styles = {
     modalSafeArea: {
       flex: 1,
       backgroundColor: palette.background,
@@ -183,7 +183,9 @@ export function createStyles(palette: Palette) {
       fontSize: 14,
       lineHeight: 20,
     },
-  });
+  };
+
+  return StyleSheet.create(styles as any) as { [K in keyof typeof styles]: any };
 }
 
 export type HistoryDetailModalStyles = ReturnType<typeof createStyles>;

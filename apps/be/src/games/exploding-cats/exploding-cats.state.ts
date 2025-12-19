@@ -21,6 +21,7 @@ export interface ExplodingCatsPlayerState {
   playerId: string;
   hand: ExplodingCatsCard[];
   alive: boolean;
+  [key: string]: unknown;
 }
 
 export type ExplodingCatsLogVisibility = 'all' | 'players';
@@ -43,6 +44,7 @@ export interface ExplodingCatsState {
   pendingDraws: number;
   players: ExplodingCatsPlayerState[];
   logs: ExplodingCatsLogEntry[];
+  [key: string]: unknown;
 }
 
 function repeatCard(

@@ -24,7 +24,7 @@ export function createStyles(palette: Palette) {
   const heroGradientStart = isLight ? '#cbd5e1' : '#334155';
   const heroGradientEnd = isLight ? '#94a3b8' : '#475569';
 
-  return StyleSheet.create({
+  const styles = {
     container: {
       flex: 1,
     },
@@ -341,7 +341,9 @@ export function createStyles(palette: Palette) {
     heroGradientEnd: {
       color: heroGradientEnd,
     },
-  });
+  };
+
+  return StyleSheet.create(styles as any) as { [K in keyof typeof styles]: any };
 }
 
 export type TexasHoldemRoomStyles = ReturnType<typeof createStyles>;

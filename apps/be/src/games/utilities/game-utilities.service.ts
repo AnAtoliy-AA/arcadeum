@@ -1,4 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import {
+  GameHistorySummary,
+  GroupedHistorySummary,
+} from '../history/game-history.types';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../../auth/schemas/user.schema';
@@ -182,7 +186,7 @@ export class GameUtilitiesService {
    * Filter and paginate history entries
    */
   filterAndPaginateHistory(
-    allHistory: any[],
+    allHistory: (GameHistorySummary | GroupedHistorySummary)[],
     options?: {
       page?: number;
       limit?: number;
@@ -192,16 +196,22 @@ export class GameUtilitiesService {
     },
   ) {
     // Apply filters
-    const filtered: any[] = [...allHistory];
+    const filtered: (GameHistorySummary | GroupedHistorySummary)[] = [
+      ...allHistory,
+    ];
 
     // Search filter
-    if (options?.search && !options.grouped) {
+    if (options?.search) {
       const searchLower = options.search.toLowerCase();
-      const gameHistory = filtered;
-      const searchFiltered = gameHistory.filter((entry) => {
+      const searchFiltered = filtered.filter((h) => {
+        const gameName = h.gameName?.toLowerCase() || '';
+        const gameId = h.gameId?.toLowerCase() || '';
+        const roomName = (h as any).roomName?.toLowerCase() || '';
+
         return (
-          entry.gameName?.toLowerCase().includes(searchLower) ||
-          entry.gameId?.toLowerCase().includes(searchLower)
+          gameName.includes(searchLower) ||
+          gameId.includes(searchLower) ||
+          roomName.includes(searchLower)
         );
       });
       filtered.length = 0;
@@ -210,8 +220,7 @@ export class GameUtilitiesService {
 
     // Status filter
     if (options?.status && !options.grouped) {
-      const gameHistory = filtered;
-      const statusFiltered = gameHistory.filter(
+      const statusFiltered = (filtered as GameHistorySummary[]).filter(
         (entry) => entry.status === options.status,
       );
       filtered.length = 0;

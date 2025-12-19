@@ -10,7 +10,12 @@ import { LeaveGameRoomDto } from './dtos/leave-game-room.dto';
 import { DeleteGameRoomDto } from './dtos/delete-game-room.dto';
 import { StartGameDto } from './dtos/start-game.dto';
 import { HistoryRematchDto } from './dtos/history-rematch.dto';
-import { StartGameSessionResult } from './games.types';
+import {
+  StartGameSessionResult,
+  ListRoomsFilters,
+  GameRoomSummary,
+  GameSessionSummary,
+} from './games.types';
 
 /**
  * Games Service Facade
@@ -46,7 +51,7 @@ export class GamesService {
   /**
    * List game rooms
    */
-  async listRooms(filters: any = {}, viewerId?: string) {
+  async listRooms(filters: ListRoomsFilters = {}, viewerId?: string) {
     return this.roomsService.listRooms(filters, viewerId);
   }
 
@@ -160,7 +165,7 @@ export class GamesService {
     sessionId: string,
     action: string,
     userId: string,
-    payload?: any,
+    payload?: unknown,
   ) {
     const session = await this.sessionsService.executeAction({
       sessionId,

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useSessionTokens } from "@/entities/session/model/useSessionTokens";
 import { useTranslation } from "@/shared/lib/useTranslation";
 import { appConfig } from "@/shared/config/app-config";
+import { routes } from "@/shared/config/routes";
 
 export function Header() {
   const pathname = usePathname();
@@ -139,6 +140,34 @@ export function Header() {
 
                   <DropdownDivider />
 
+                  <DropdownLink href={routes.terms} onClick={closeProfileMenu}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                      <line x1="16" y1="13" x2="8" y2="13" />
+                      <line x1="16" y1="17" x2="8" y2="17" />
+                    </svg>
+                    {t("legal.nav.terms")}
+                  </DropdownLink>
+
+                  <DropdownLink href={routes.privacy} onClick={closeProfileMenu}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                    {t("legal.nav.privacy")}
+                  </DropdownLink>
+
+                  <DropdownLink href={routes.contact} onClick={closeProfileMenu}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                      <polyline points="22,6 12,13 2,6" />
+                    </svg>
+                    {t("legal.nav.contact")}
+                  </DropdownLink>
+
+                  <DropdownDivider />
+
                   <DropdownItem onClick={handleLogout}>
                     <svg
                       viewBox="0 0 24 24"
@@ -159,9 +188,20 @@ export function Header() {
             )}
 
             {!isAuthenticated && (
-              <AuthButton href="/auth">
-                {t("common.actions.login")}
-              </AuthButton>
+              <>
+                <NavLink href={routes.terms} $active={pathname === routes.terms}>
+                  {t("legal.nav.terms")}
+                </NavLink>
+                <NavLink href={routes.privacy} $active={pathname === routes.privacy}>
+                  {t("legal.nav.privacy")}
+                </NavLink>
+                <NavLink href={routes.contact} $active={pathname === routes.contact}>
+                  {t("legal.nav.contact")}
+                </NavLink>
+                <AuthButton href="/auth">
+                  {t("common.actions.login")}
+                </AuthButton>
+              </>
             )}
 
             <MobileMenuButton
@@ -248,6 +288,18 @@ export function Header() {
             {t("common.actions.login")}
           </AuthButton>
         )}
+
+        <DropdownDivider style={{ marginTop: '1rem' }} />
+
+        <MobileNavLink href={routes.terms} $active={pathname === routes.terms} onClick={closeMobileMenu}>
+          {t("legal.nav.terms")}
+        </MobileNavLink>
+        <MobileNavLink href={routes.privacy} $active={pathname === routes.privacy} onClick={closeMobileMenu}>
+          {t("legal.nav.privacy")}
+        </MobileNavLink>
+        <MobileNavLink href={routes.contact} $active={pathname === routes.contact} onClick={closeMobileMenu}>
+          {t("legal.nav.contact")}
+        </MobileNavLink>
       </MobileNav>
     </>
   );

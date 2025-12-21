@@ -482,4 +482,14 @@ export type TranslationBundle = {
   games?: GamesMessages;
   history?: HistoryMessages;
   payments?: PaymentsMessages;
+  legal?: {
+    nav?: {
+      terms?: string;
+      privacy?: string;
+      contact?: string;
+    };
+    terms?: import("./messages/legal/types").TermsMessages;
+    privacy?: import("./messages/legal/types").PrivacyMessages;
+    contact?: import("./messages/legal/types").ContactMessages;
+  };
 };

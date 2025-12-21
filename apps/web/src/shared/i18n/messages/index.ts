@@ -4,6 +4,7 @@ import { commonMessages } from "./common";
 import { gamesMessages } from "./games";
 import { historyMessages } from "./history";
 import { homeMessages } from "./home";
+import { legalMessages } from "./legal";
 import { navigationMessages } from "./navigation";
 import { paymentsMessages } from "./payments";
 import { settingsMessages } from "./settings";
@@ -24,6 +25,7 @@ export const translations = {
     games: gamesMessages.en,
     history: historyMessages.en,
     payments: paymentsMessages.en,
+    legal: legalMessages.en,
   },
   es: {
     common: commonMessages.es,
@@ -37,6 +39,7 @@ export const translations = {
     games: gamesMessages.es,
     history: historyMessages.es,
     payments: paymentsMessages.es,
+    legal: legalMessages.es,
   },
   fr: {
     common: commonMessages.fr,
@@ -50,5 +53,6 @@ export const translations = {
     games: gamesMessages.fr,
     history: historyMessages.fr,
     payments: paymentsMessages.fr,
+    legal: legalMessages.fr,
   },
 } as const;

@@ -2,7 +2,7 @@ import { type GameRoomSummary, type GameSessionSummary } from '../api/gamesApi';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type GameIntegrationId = 'exploding_cats_v1' | 'texas_holdem_v1';
+export type GameIntegrationId = 'exploding_kittens_v1' | 'texas_holdem_v1';
 
 export interface RoomJoinedPayload {
   room?: GameRoomSummary;
@@ -33,12 +33,14 @@ export interface RoomIdPayload {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-export const GAME_INTEGRATION_MAP: Record<string, GameIntegrationId> = {
-  exploding_cats_v1: 'exploding_cats_v1',
-  'exploding-kittens': 'exploding_cats_v1',
-  texas_holdem_v1: 'texas_holdem_v1',
-  'texas-holdem': 'texas_holdem_v1',
-};
+const VALID_INTEGRATION_IDS: readonly GameIntegrationId[] = [
+  'exploding_kittens_v1',
+  'texas_holdem_v1',
+];
+
+function isValidIntegrationId(id: string): id is GameIntegrationId {
+  return VALID_INTEGRATION_IDS.includes(id as GameIntegrationId);
+}
 
 // ─── Utility Functions ───────────────────────────────────────────────────────
 
@@ -75,14 +77,15 @@ export function resolveIntegrationId(
   roomGameId?: string,
   paramGameId?: string,
 ): GameIntegrationId | undefined {
-  if (sessionEngine && GAME_INTEGRATION_MAP[sessionEngine]) {
-    return GAME_INTEGRATION_MAP[sessionEngine];
+  if (sessionEngine && isValidIntegrationId(sessionEngine)) {
+    return sessionEngine;
   }
-  if (roomGameId && GAME_INTEGRATION_MAP[roomGameId]) {
-    return GAME_INTEGRATION_MAP[roomGameId];
+  if (roomGameId && isValidIntegrationId(roomGameId)) {
+    return roomGameId;
   }
-  if (paramGameId && GAME_INTEGRATION_MAP[paramGameId]) {
-    return GAME_INTEGRATION_MAP[paramGameId];
+  if (paramGameId && isValidIntegrationId(paramGameId)) {
+    return paramGameId;
   }
   return undefined;
 }
+

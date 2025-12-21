@@ -50,7 +50,7 @@ describe('ExplodingCatsGateway', () => {
       const result: StartExplodingCatsSessionResult = {
         room: {
           id: 'room-123',
-          gameId: 'exploding-kittens',
+          gameId: 'exploding_kittens_v1',
           name: 'Test Room',
           hostId: 'host-456',
           visibility: 'public',
@@ -63,7 +63,7 @@ describe('ExplodingCatsGateway', () => {
         session: {
           id: 'session-789',
           roomId: 'room-123',
-          gameId: 'exploding-kittens',
+          gameId: 'exploding_kittens_v1',
           engine: 'custom-engine',
           status: 'active',
           state: { example: true },
@@ -129,8 +129,8 @@ describe('ExplodingCatsGateway', () => {
       explodingCatsService.drawCard.mockResolvedValue({
         id: 'session-1',
         roomId: 'room-123',
-        gameId: 'exploding-kittens',
-        engine: 'exploding_cats_v1',
+        gameId: 'exploding_kittens_v1',
+        engine: 'exploding_kittens_v1',
         status: 'active',
         state: {},
         createdAt: new Date().toISOString(),
@@ -192,8 +192,8 @@ describe('ExplodingCatsGateway', () => {
       explodingCatsService.playActionByRoom.mockResolvedValue({
         id: 'session-1',
         roomId: 'room-123',
-        gameId: 'exploding-kittens',
-        engine: 'exploding_cats_v1',
+        gameId: 'exploding_kittens_v1',
+        engine: 'exploding_kittens_v1',
         status: 'active',
         state: {},
         createdAt: new Date().toISOString(),
@@ -263,8 +263,8 @@ describe('ExplodingCatsGateway', () => {
       explodingCatsService.playCatComboByRoom.mockResolvedValue({
         id: 'session-1',
         roomId: 'room-123',
-        gameId: 'exploding-kittens',
-        engine: 'exploding_cats_v1',
+        gameId: 'exploding_kittens_v1',
+        engine: 'exploding_kittens_v1',
         status: 'active',
         state: {},
         createdAt: new Date().toISOString(),

@@ -16,7 +16,7 @@ export class GameTestUtils {
     return {
       id: "test-room-1",
       name: "Test Room",
-      gameId: "exploding_cats_v1",
+      gameId: "exploding_kittens_v1",
       playerCount: 2,
       maxPlayers: 5,
       status: "in_progress",

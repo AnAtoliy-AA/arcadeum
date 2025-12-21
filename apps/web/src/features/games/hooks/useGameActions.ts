@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { gameSocket } from "@/shared/lib/socket";
 
-export type GameType = "exploding_cats_v1" | "texas_holdem_v1" | null;
+export type GameType = "exploding_kittens_v1" | "texas_holdem_v1" | null;
 
 interface UseGameActionsOptions {
   roomId: string;
@@ -42,7 +42,7 @@ export function useGameActions(options: UseGameActionsOptions): UseGameActionsRe
       onActionComplete?.();
     };
 
-    if (gameType === "exploding_cats_v1") {
+    if (gameType === "exploding_kittens_v1") {
       gameSocket.on("games.session.drawn", handleActionComplete);
       gameSocket.on("games.session.action.played", handleActionComplete);
       gameSocket.on("games.session.see_the_future.played", handleActionComplete);
@@ -54,7 +54,7 @@ export function useGameActions(options: UseGameActionsOptions): UseGameActionsRe
     }
 
     return () => {
-      if (gameType === "exploding_cats_v1") {
+      if (gameType === "exploding_kittens_v1") {
         gameSocket.off("games.session.drawn", handleActionComplete);
         gameSocket.off("games.session.action.played", handleActionComplete);
         gameSocket.off("games.session.see_the_future.played", handleActionComplete);
@@ -73,7 +73,7 @@ export function useGameActions(options: UseGameActionsOptions): UseGameActionsRe
     gameSocket.emit("games.session.start", {
       roomId,
       userId,
-      engine: "exploding_cats_v1",
+      engine: "exploding_kittens_v1",
     });
   }, [roomId, userId]);
 

@@ -11,29 +11,11 @@ export class GameEngineRegistry {
   private readonly engines = new Map<string, IGameEngine>();
 
   /**
-   * Game ID mapping from user-facing IDs to engine IDs
-   */
-  private readonly gameIdMapping: Record<string, string> = {
-    // Exploding Cats variants
-    exploding_cats_v1: 'exploding_cats_v1',
-    'exploding-kittens': 'exploding_cats_v1',
-    exploding_cats: 'exploding_cats_v1',
-    exploding_cats_v1_beta: 'exploding_cats_v1',
-
-    // Texas Holdem variants
-    texas_holdem_v1: 'texas_holdem_v1',
-    'texas-holdem': 'texas_holdem_v1',
-    texas_holdem: 'texas_holdem_v1',
-    texas_holdem_poker: 'texas_holdem_v1',
-  };
-
-  /**
    * Normalize game ID to engine ID
-   * @param gameId User-facing or engine game ID
-   * @returns Engine game ID
+   * Now returns input directly since frontend uses consistent IDs
    */
   private normalizeGameId(gameId: string): string {
-    return this.gameIdMapping[gameId] || gameId;
+    return gameId;
   }
 
   /**

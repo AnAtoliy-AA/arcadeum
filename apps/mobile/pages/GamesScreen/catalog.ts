@@ -49,7 +49,7 @@ export interface GameCatalogueLocalization {
 
 export const gamesCatalog: GameCatalogueEntry[] = [
   {
-    id: 'exploding-kittens',
+    id: 'exploding_kittens_v1',
     name: 'Exploding Cats',
     tagline:
       'Dodge the detonations, weaponize your deck, and stay nine lives ahead.',
@@ -170,7 +170,7 @@ export const gamesCatalog: GameCatalogueEntry[] = [
     },
   },
   {
-    id: 'texas-holdem',
+    id: 'texas_holdem_v1',
     name: "Texas Hold'em",
     tagline:
       'Classic poker showdowns with real-time betting and hand evaluation.',

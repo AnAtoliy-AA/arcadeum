@@ -40,7 +40,7 @@ export default function GameRoomScreen() {
 
   const handleRefresh = useCallback(() => fetchRoom('refresh'), [fetchRoom]);
 
-  if (integrationId === 'exploding_cats_v1') {
+  if (integrationId === 'exploding_kittens_v1') {
     return (
       <ExplodingCatsRoom
         ref={integrationRef as React.Ref<ExplodingCatsRoomHandle>}

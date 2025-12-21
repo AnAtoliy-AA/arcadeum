@@ -22,12 +22,7 @@ const gameNameLookup = new Map(
 );
 
 function resolveGameName(gameId: string): string | undefined {
-  const normalizedId = gameId.trim();
-  // Handle legacy/backend ID mismatch
-  if (normalizedId === 'exploding-cats') {
-    return gameNameLookup.get('exploding-kittens');
-  }
-  return gameNameLookup.get(normalizedId);
+  return gameNameLookup.get(gameId.trim());
 }
 
 type HistoryListItemProps = {

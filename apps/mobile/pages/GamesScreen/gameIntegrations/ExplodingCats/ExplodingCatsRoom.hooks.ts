@@ -60,7 +60,7 @@ export function useGameActions({
 
     setStartBusy(true);
     startGameRoom(
-      { roomId: room.id, engine: 'exploding_cats_v1' },
+      { roomId: room.id, engine: 'exploding_kittens_v1' },
       {
         accessToken: tokens.accessToken,
         refreshTokens,

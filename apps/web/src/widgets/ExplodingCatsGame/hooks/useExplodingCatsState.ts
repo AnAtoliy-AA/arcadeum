@@ -25,7 +25,7 @@ export function useExplodingCatsState({
   const actions = useGameActions({
     roomId,
     userId: currentUserId,
-    gameType: "exploding_cats_v1",
+    gameType: "exploding_kittens_v1",
     onActionComplete: () => setActionBusy(null),
   });
 

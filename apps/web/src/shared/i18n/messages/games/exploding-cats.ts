@@ -2,8 +2,8 @@ import type { Locale } from "../../types";
 
 export const explodingCatsMessages: Record<Locale, Record<string, unknown>> = {
   en: {
-    "exploding-kittens": { name: "Exploding Cats" },
-    "exploding-cats": { name: "Exploding Cats" },
+    exploding_kittens_v1: { name: "Exploding Cats" },
+
     table: {
       cards: {
         explodingCat: "Exploding Cat",

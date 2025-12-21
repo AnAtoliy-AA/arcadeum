@@ -4,7 +4,7 @@ import type { GameSlug } from "./registry.types";
 export { GameSlug };
 
 export const gameLoaders: Record<string, () => Promise<{ default: React.ComponentType<BaseGameProps> }>> = {
-  exploding_cats_v1: () => import("@/widgets/ExplodingCatsGame"),
+  exploding_kittens_v1: () => import("@/widgets/ExplodingCatsGame"),
   texas_holdem_v1: () => import("@/widgets/TexasHoldemGame"),
   // Future game implementations will be added here
   // chess_v1: () => import("@/widgets/ChessGame"),
@@ -14,8 +14,8 @@ export const gameLoaders: Record<string, () => Promise<{ default: React.Componen
 
 // Game metadata registry
 export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
-  exploding_cats_v1: {
-    slug: "exploding_cats_v1",
+  exploding_kittens_v1: {
+    slug: "exploding_kittens_v1",
     name: "Exploding Kittens",
     description: "A kitty-powered version of Russian Roulette",
     category: "Card Game",

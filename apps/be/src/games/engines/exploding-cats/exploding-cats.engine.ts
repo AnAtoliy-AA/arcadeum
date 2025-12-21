@@ -21,7 +21,7 @@ import { ExplodingCatsLogic } from './exploding-cats-logic.utils';
 export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
   getMetadata(): GameMetadata {
     return {
-      gameId: 'exploding_cats_v1',
+      gameId: 'exploding_kittens_v1',
       name: 'Exploding Cats',
       minPlayers: 2,
       maxPlayers: 5,

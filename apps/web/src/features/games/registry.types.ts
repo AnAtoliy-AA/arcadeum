@@ -1,6 +1,6 @@
 // Game slug type definitions for all supported games
 export type GameSlug = 
-  | "exploding_cats_v1"
+  | "exploding_kittens_v1"
   | "texas_holdem_v1"
   | "chess_v1"
   | "checkers_v1"

@@ -288,7 +288,7 @@ export class GamesController {
     }
 
     // Route to appropriate service
-    if (gameId === 'texas-holdem') {
+    if (gameId === 'texas_holdem_v1') {
       return this.texasHoldemService.startSession(
         user.userId,
         roomId,

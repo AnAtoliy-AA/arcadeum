@@ -22,43 +22,12 @@ import {
 } from '../api/gamesApi';
 import { type ExplodingCatsRoomHandle } from '../gameIntegrations/ExplodingCats/ExplodingCatsRoom';
 import { type TexasHoldemRoomHandle } from '../gameIntegrations/TexasHoldem/TexasHoldemRoom';
-
-type GameIntegrationId = 'exploding_cats_v1' | 'texas_holdem_v1';
-
-const GAME_INTEGRATION_MAP: Record<string, GameIntegrationId> = {
-  exploding_cats_v1: 'exploding_cats_v1',
-  'exploding-kittens': 'exploding_cats_v1',
-  texas_holdem_v1: 'texas_holdem_v1',
-  'texas-holdem': 'texas_holdem_v1',
-};
-
-function resolveParam(
-  value: string | string[] | undefined,
-): string | undefined {
-  if (!value) return undefined;
-  return Array.isArray(value) ? value[0] : value;
-}
-
-function normalizeWsMessageCode(raw: unknown): number | undefined {
-  if (typeof raw === 'number' && Number.isFinite(raw)) {
-    return raw;
-  }
-
-  if (typeof raw === 'string') {
-    const parsed = Number.parseInt(raw, 10);
-    return Number.isFinite(parsed) ? parsed : undefined;
-  }
-
-  return undefined;
-}
-
-function shouldExposeRawWsMessage(message?: string): boolean {
-  if (!message) {
-    return false;
-  }
-
-  return /\s/.test(message);
-}
+import {
+  resolveParam,
+  normalizeWsMessageCode,
+  shouldExposeRawWsMessage,
+  resolveIntegrationId,
+} from './useGameRoomUtils';
 
 export function useGameRoom(
   integrationRef: React.MutableRefObject<
@@ -491,19 +460,10 @@ export function useGameRoom(
   }, [gameId, room?.gameId, router]);
 
   const displayGameId = room?.gameId ?? gameId ?? undefined;
-  const integrationId = useMemo(() => {
-    const engineId = session?.engine;
-    if (engineId && GAME_INTEGRATION_MAP[engineId]) {
-      return GAME_INTEGRATION_MAP[engineId];
-    }
-    if (room?.gameId && GAME_INTEGRATION_MAP[room.gameId]) {
-      return GAME_INTEGRATION_MAP[room.gameId];
-    }
-    if (gameId && GAME_INTEGRATION_MAP[gameId]) {
-      return GAME_INTEGRATION_MAP[gameId];
-    }
-    return undefined;
-  }, [gameId, room?.gameId, session?.engine]);
+  const integrationId = useMemo(
+    () => resolveIntegrationId(session?.engine, room?.gameId, gameId),
+    [gameId, room?.gameId, session?.engine],
+  );
 
   return {
     room,

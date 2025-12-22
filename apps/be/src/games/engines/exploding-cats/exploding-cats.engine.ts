@@ -60,7 +60,9 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
 
     switch (action) {
       case 'draw_card':
-        return state.pendingDraws > 0;
+        // Always allow draw when it's player's turn (checked above)
+        // executeAction will auto-fix pendingDraws to 1 if it's 0
+        return true;
 
       case 'play_card':
         return this.validatePlayCard(state, context.userId, typedPayload?.card);

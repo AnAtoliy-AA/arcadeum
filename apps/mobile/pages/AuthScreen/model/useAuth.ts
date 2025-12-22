@@ -9,6 +9,14 @@ import { useSessionTokens } from '@/stores/sessionTokens';
 import type { LoginResponse } from '../api/authApi';
 import { fetchWithRefresh } from '@/lib/fetchWithRefresh';
 
+export type ExtendedAuthorizeResult = AuthorizeResult & {
+  refreshToken?: string;
+  idToken?: string;
+  tokenAdditionalParameters?: {
+    authorizationCode?: string;
+  } & Record<string, string | number | undefined | null>;
+};
+
 export function useAuth() {
   const [authState, setAuthState] = useState<AuthorizeResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -26,11 +34,6 @@ export function useAuth() {
     setTokens: persistTokens,
     clearTokens: clearStoredTokens,
   } = useSessionTokens();
-
-  type ExtendedAuthorizeResult = AuthorizeResult & {
-    refreshToken?: string;
-    idToken?: string;
-  };
 
   interface TokenExchangeResponse {
     accessToken?: string;

@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import type { TFunction } from '@/lib/i18n';
 import type {
   ActionBusyType,
   ExplodingCatsCard,
@@ -24,7 +25,7 @@ export function useHandCardRenderer(
   gridCardHeight: number,
   animations: CardAnimationsState,
   catCombo: CatComboState,
-  t: (key: string, replacements?: Record<string, string | number>) => string,
+  t: TFunction,
   translateCardName: (card: ExplodingCatsCard) => string,
   translateCardDescription: (card: ExplodingCatsCard) => string,
   onPlay: (action: 'skip' | 'attack') => void,

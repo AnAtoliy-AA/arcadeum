@@ -1,4 +1,5 @@
-import { useMemo, useCallback } from 'react';
+import { useCallback } from 'react';
+import type { TFunction } from '@/lib/i18n';
 import { getRoomStatusLabel } from '../../../roomUtils';
 import type {
   GameRoomSummary,
@@ -12,7 +13,7 @@ import {
 } from '../utils';
 
 export function useGameLabels(
-  t: (key: string, replacements?: Record<string, string | number>) => string,
+  t: TFunction,
   session: GameSessionSummary | null,
   room: GameRoomSummary | undefined,
   isHost: boolean,

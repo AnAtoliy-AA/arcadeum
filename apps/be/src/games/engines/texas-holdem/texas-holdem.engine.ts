@@ -13,6 +13,17 @@ import {
   BettingRound,
 } from '../../texas-holdem/texas-holdem.state';
 
+// Config and payload interfaces for type-safe handling
+interface TexasHoldemConfig {
+  initialStack?: number;
+  smallBlind?: number;
+  bigBlind?: number;
+}
+
+interface RaisePayload {
+  amount?: number;
+}
+
 /**
  * Texas Hold'em Poker Game Engine
  * Implements all game logic for Texas Hold'em
@@ -35,7 +46,7 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
     playerIds: string[],
     config?: Record<string, unknown>,
   ): TexasHoldemState {
-    const typedConfig = config as any;
+    const typedConfig = config as TexasHoldemConfig | undefined;
     const initialStack = typedConfig?.initialStack || 1000;
     const smallBlind = typedConfig?.smallBlind || 5;
     const bigBlind = typedConfig?.bigBlind || 10;
@@ -66,7 +77,7 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
       return false;
     }
 
-    const typedPayload = payload as any;
+    const typedPayload = payload as RaisePayload | undefined;
 
     switch (action) {
       case 'fold':
@@ -110,7 +121,7 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
     ) as TexasHoldemPlayerState;
 
     let actionTaken: PlayerAction | null = null;
-    const typedPayload = payload as any;
+    const typedPayload = payload as RaisePayload | undefined;
 
     switch (action) {
       case 'fold':
@@ -136,7 +147,7 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
         );
         break;
 
-      case 'call':
+      case 'call': {
         const callAmount = newState.currentBet - player.currentBet;
         this.updatePlayerStack(player, player.stack - callAmount);
         player.currentBet = newState.currentBet;
@@ -150,24 +161,26 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
           }),
         );
         break;
+      }
 
-      case 'raise':
-        const raiseAmount = typedPayload.amount - player.currentBet;
+      case 'raise': {
+        const raiseAmount = typedPayload!.amount! - player.currentBet;
         this.updatePlayerStack(player, player.stack - raiseAmount);
-        player.currentBet = typedPayload.amount;
-        newState.currentBet = typedPayload.amount;
+        player.currentBet = typedPayload!.amount!;
+        newState.currentBet = typedPayload!.amount!;
         newState.pot += raiseAmount;
         actionTaken = 'raise';
         this.addLog(
           newState,
-          this.createLogEntry('action', `Raised to ${typedPayload.amount}`, {
+          this.createLogEntry('action', `Raised to ${typedPayload!.amount!}`, {
             scope: 'all',
             senderId: context.userId,
           }),
         );
         break;
+      }
 
-      case 'all-in':
+      case 'all-in': {
         const allInAmount = player.stack;
         player.currentBet += allInAmount;
         this.updatePlayerStack(player, 0);
@@ -181,6 +194,7 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
           }),
         );
         break;
+      }
     }
 
     // Record the action
@@ -377,13 +391,14 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
           }
           break;
         case 'turn':
-        case 'river':
+        case 'river': {
           // Deal 1 card for turn and river
           const card = state.deck.shift();
           if (card) {
             state.communityCards.push(card);
           }
           break;
+        }
       }
 
       this.addLog(

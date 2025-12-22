@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
-import Constants from 'expo-constants';
+import { getAppExtra, type AppExpoConfig } from '@/lib/expoConstants';
 import { useRouter } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -58,21 +58,22 @@ type TeamMember = {
   bio: string;
 };
 
-function resolveExtraString(key: string, fallback: string): string {
-  const extra = (Constants as any)?.expoConfig?.extra as
-    | Record<string, unknown>
-    | undefined;
-  if (extra) {
-    const raw = extra[key];
-    if (typeof raw === 'string') {
-      const trimmed = raw.trim();
-      if (trimmed.length > 0) {
-        return trimmed;
-      }
+function resolveExtraString(
+  key: keyof AppExpoConfig,
+  fallback: string,
+): string {
+  const extra = getAppExtra();
+  const raw = extra[key];
+  if (typeof raw === 'string') {
+    const trimmed = raw.trim();
+    if (trimmed.length > 0) {
+      return trimmed;
     }
   }
+
   if (typeof process !== 'undefined' && process.env) {
-    const envRaw = process.env[key] ?? process.env[`EXPO_PUBLIC_${key}`];
+    const k = key as string;
+    const envRaw = process.env[k] ?? process.env[`EXPO_PUBLIC_${k}`];
     if (typeof envRaw === 'string') {
       const trimmed = envRaw.trim();
       if (trimmed.length > 0) {
@@ -83,7 +84,7 @@ function resolveExtraString(key: string, fallback: string): string {
   return fallback;
 }
 
-function resolveExtraUrl(key: string, fallback: string): string {
+function resolveExtraUrl(key: keyof AppExpoConfig, fallback: string): string {
   return resolveExtraString(key, fallback);
 }
 

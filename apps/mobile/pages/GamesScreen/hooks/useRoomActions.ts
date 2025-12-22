@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import type { Router } from 'expo-router';
 import { useTranslation } from '@/lib/i18n';
+import type { SessionTokensSnapshot } from '@/stores/sessionTokens';
 import {
   joinGameRoom,
   listGameRooms,
@@ -17,7 +18,7 @@ import type {
 
 type UseRoomActionsParams = {
   tokens: { accessToken: string | null; userId: string | null };
-  refreshTokens: () => Promise<any>;
+  refreshTokens: () => Promise<SessionTokensSnapshot>;
   statusFilter: StatusFilterValue;
   participationFilter: ParticipationFilterValue;
   setRooms: (rooms: GameRoomSummary[]) => void;
@@ -70,7 +71,7 @@ export function useRoomActions({
         const authOptions = tokens.accessToken
           ? {
               accessToken: tokens.accessToken,
-              refreshTokens: refreshTokens as any,
+              refreshTokens: refreshTokens,
             }
           : undefined;
 

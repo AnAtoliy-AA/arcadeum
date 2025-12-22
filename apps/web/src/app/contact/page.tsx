@@ -1,9 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 
-import { appConfig } from "@/shared/config/app-config";
-import { useLanguage, formatMessage } from "@/app/i18n/LanguageProvider";
+import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import {
   Page,
   Wrapper,
@@ -25,11 +24,12 @@ import {
   TextArea,
   SubmitButton,
   SuccessMessage,
-} from "@/shared/ui/legal-styles";
+} from '@/shared/ui/legal-styles';
 
-const APP_NAME = appConfig.appName;
-const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "arcadeum.care@gmail.com";
-const WORKING_HOURS = process.env.NEXT_PUBLIC_WORKING_HOURS ?? "Mon – Fri, 10:00 – 18:00 (GMT+4)";
+const SUPPORT_EMAIL =
+  process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'arcadeum.care@gmail.com';
+const WORKING_HOURS =
+  process.env.NEXT_PUBLIC_WORKING_HOURS ?? 'Mon – Fri, 10:00 – 18:00 (GMT+4)';
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -146,7 +146,9 @@ export default function ContactPage() {
           <ContactCard>
             <ContactLabel>{s?.faq?.deleteAccount?.question}</ContactLabel>
             <ContactValue>
-              {formatMessage(s?.faq?.deleteAccount?.answer, { email: SUPPORT_EMAIL })}
+              {formatMessage(s?.faq?.deleteAccount?.answer, {
+                email: SUPPORT_EMAIL,
+              })}
             </ContactValue>
           </ContactCard>
         </Section>

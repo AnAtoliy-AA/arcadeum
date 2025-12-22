@@ -46,10 +46,6 @@ export class TexasHoldemGateway {
     const roomId = roomIdRaw || undefined;
     const engine =
       typeof payload?.engine === 'string' ? payload.engine.trim() : undefined;
-    const startingChips =
-      typeof payload?.startingChips === 'number' && payload.startingChips > 0
-        ? payload.startingChips
-        : 1000;
 
     try {
       const result = await this.texasHoldemService.startSession(
@@ -101,7 +97,7 @@ export class TexasHoldemGateway {
       await this.texasHoldemService.playerAction(
         userId,
         roomId,
-        action as any,
+        action,
         raiseAmount,
       );
 

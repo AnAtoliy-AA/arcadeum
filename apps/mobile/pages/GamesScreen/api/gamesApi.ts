@@ -72,7 +72,7 @@ export interface GameSessionSummary {
   gameId: string;
   engine: string;
   status: 'waiting' | 'active' | 'completed';
-  state: Record<string, any>;
+  state: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
 }

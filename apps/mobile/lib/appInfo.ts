@@ -1,15 +1,20 @@
-import Constants from 'expo-constants';
+import {
+  getAppExtra,
+  getExpoConfig,
+  getManifest,
+  getManifest2,
+} from './expoConstants';
 
 function readExtra(): Record<string, unknown> {
-  const expoConfig = (Constants as any)?.expoConfig;
-  if (expoConfig?.extra) {
-    return expoConfig.extra as Record<string, unknown>;
+  const extra = getAppExtra();
+  if (Object.keys(extra).length > 0) {
+    return extra as unknown as Record<string, unknown>;
   }
-  const manifest = (Constants as any)?.manifest;
+  const manifest = getManifest();
   if (manifest?.extra) {
     return manifest.extra as Record<string, unknown>;
   }
-  const manifest2 = (Constants as any)?.manifest2;
+  const manifest2 = getManifest2();
   if (manifest2?.extra) {
     return manifest2.extra as Record<string, unknown>;
   }
@@ -35,7 +40,7 @@ export function getAppName(defaultName = 'Arcadeum'): string {
   const fromExtra = pickNonEmpty(
     typeof extra.APP_NAME === 'string' ? extra.APP_NAME : undefined,
   );
-  const fromExpoConfig = pickNonEmpty((Constants as any)?.expoConfig?.name);
+  const fromExpoConfig = pickNonEmpty(getExpoConfig()?.name);
   let fromEnv: string | undefined;
   if (typeof process !== 'undefined' && process.env) {
     fromEnv = pickNonEmpty(
@@ -43,10 +48,7 @@ export function getAppName(defaultName = 'Arcadeum'): string {
       process.env.APP_NAME,
     );
   }
-  const fromManifest = pickNonEmpty(
-    (Constants as any)?.manifest?.name,
-    (Constants as any)?.manifest2?.name,
-  );
+  const fromManifest = pickNonEmpty(getManifest()?.name, getManifest2()?.name);
 
   return (
     pickNonEmpty(

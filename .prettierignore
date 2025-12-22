@@ -1,0 +1,14 @@
+node_modules
+dist
+.expo
+.next
+pnpm-lock.yaml
+.turbo
+.claude
+.github
+.husky
+coverage
+build
+out
+public/build
+*.min.js

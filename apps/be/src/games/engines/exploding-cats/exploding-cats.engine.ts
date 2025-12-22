@@ -13,6 +13,33 @@ import {
 } from '../../exploding-cats/exploding-cats.state';
 import { ExplodingCatsLogic } from './exploding-cats-logic.utils';
 
+// Payload interfaces for type-safe action handling
+interface PlayCardPayload {
+  card?: ExplodingCatsCard;
+}
+
+interface PlayCatComboPayload {
+  cards?: ExplodingCatsCard[];
+  targetPlayerId?: string;
+}
+
+interface FavorPayload {
+  targetPlayerId?: string;
+  requestedCard?: ExplodingCatsCard;
+}
+
+// Type with required fields for executing favor action
+type FavorExecutePayload = Required<FavorPayload>;
+
+interface DefusePayload {
+  position?: number;
+}
+
+type ExplodingCatsPayload = PlayCardPayload &
+  PlayCatComboPayload &
+  FavorPayload &
+  DefusePayload;
+
 /**
  * Exploding Cats Game Engine
  * Implements all game logic for Exploding Cats
@@ -31,10 +58,7 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
     };
   }
 
-  initializeState(
-    playerIds: string[],
-    config?: Record<string, unknown>,
-  ): ExplodingCatsState {
+  initializeState(playerIds: string[]): ExplodingCatsState {
     return createInitialExplodingCatsState(playerIds);
   }
 
@@ -56,7 +80,7 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
       return false;
     }
 
-    const typedPayload = payload as any; // Temporary cast for property access
+    const typedPayload = payload as ExplodingCatsPayload | undefined;
 
     switch (action) {
       case 'draw_card':
@@ -110,13 +134,19 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
     }
 
     const newState = this.cloneState(state);
-    const typedPayload = payload as any; // Temporary cast for property access
+    const typedPayload = payload as ExplodingCatsPayload | undefined;
 
+    // Use arrow functions instead of bind() to preserve type safety
     const helpers = {
-      addLog: this.addLog.bind(this),
-      createLogEntry: this.createLogEntry.bind(this),
-      advanceTurn: this.advanceTurn.bind(this),
-      shuffleArray: this.shuffleArray.bind(this),
+      addLog: (
+        state: ExplodingCatsState,
+        log: ReturnType<typeof this.createLogEntry>,
+      ) => this.addLog(state, log),
+      createLogEntry: this.createLogEntry.bind(
+        this,
+      ) as typeof this.createLogEntry,
+      advanceTurn: (state: ExplodingCatsState) => this.advanceTurn(state),
+      shuffleArray: <T>(arr: T[]) => this.shuffleArray(arr),
     };
 
     switch (action) {
@@ -131,7 +161,7 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
         return ExplodingCatsLogic.executePlayCard(
           newState,
           context.userId,
-          typedPayload.card,
+          typedPayload!.card!,
           helpers,
         );
 
@@ -139,8 +169,8 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
         return ExplodingCatsLogic.executeCatCombo(
           newState,
           context.userId,
-          typedPayload.cards,
-          typedPayload.targetPlayerId,
+          typedPayload!.cards!,
+          typedPayload!.targetPlayerId!,
           helpers,
         );
 
@@ -155,7 +185,7 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
         return ExplodingCatsLogic.executeFavor(
           newState,
           context.userId,
-          typedPayload,
+          typedPayload as FavorExecutePayload,
           helpers,
         );
 
@@ -163,7 +193,7 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
         return ExplodingCatsLogic.executeDefuse(
           newState,
           context.userId,
-          typedPayload.position,
+          typedPayload!.position!,
           helpers,
         );
 
@@ -204,7 +234,7 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
     });
 
     // Partially hide deck (show count only)
-    sanitized.deck = new Array(state.deck.length).fill(
+    sanitized.deck = new Array<ExplodingCatsCard>(state.deck.length).fill(
       'hidden' as ExplodingCatsCard,
     );
 
@@ -278,8 +308,9 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
   private validatePlayCard(
     state: ExplodingCatsState,
     playerId: string,
-    card: ExplodingCatsCard,
+    card?: ExplodingCatsCard,
   ): boolean {
+    if (!card) return false;
     const player = this.findPlayer(state, playerId) as ExplodingCatsPlayerState;
     if (!player) return false;
 
@@ -299,7 +330,7 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
   private validateCatCombo(
     state: ExplodingCatsState,
     playerId: string,
-    cards: ExplodingCatsCard[],
+    cards?: ExplodingCatsCard[],
   ): boolean {
     if (!cards || cards.length < 2) return false;
 
@@ -318,7 +349,7 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
     playerId: string,
     payload: unknown,
   ): boolean {
-    const typedPayload = payload as any;
+    const typedPayload = payload as FavorPayload | undefined;
     const player = this.findPlayer(state, playerId) as ExplodingCatsPlayerState;
     if (!player || !this.hasCard(player, 'favor')) return false;
 

@@ -1,9 +1,6 @@
-import Constants from 'expo-constants';
+import { getAppExtra } from '@/lib/expoConstants';
 import { Platform } from 'react-native';
 import { platform } from '@/constants/platform';
-const extra = (Constants.expoConfig?.extra ??
-  (Constants.manifest as any)?.extra ??
-  {}) as Record<string, string | undefined>;
 
 const {
   AUTH_ISSUER,
@@ -13,7 +10,7 @@ const {
   AUTH_ANDROID_REDIRECT_SCHEME,
   AUTH_IOS_REDIRECT_SCHEME,
   AUTH_WEB_REDIRECT_URL,
-} = extra;
+} = getAppExtra();
 
 const clientId = Platform.select({
   android: AUTH_ANDROID_CLIENT_ID,

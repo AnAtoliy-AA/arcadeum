@@ -9,7 +9,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useThemedStyles, Palette } from '@/hooks/useThemedStyles';
 import { ThemedView } from '@/components/ThemedView';
-import { useAuth } from '../model/useAuth';
+import { useAuth, type ExtendedAuthorizeResult } from '../model/useAuth';
 import { LocalAuthForm } from './LocalAuthForm';
 import { AuthResult } from './AuthResult';
 import { AuthError } from './AuthError';
@@ -81,7 +81,8 @@ export default function AuthScreen() {
             <AuthResult
               accessToken={authState.accessToken}
               authorizationCode={
-                (authState as any)?.tokenAdditionalParameters?.authorizationCode
+                (authState as ExtendedAuthorizeResult)
+                  ?.tokenAdditionalParameters?.authorizationCode
               }
               onLogout={logout}
             />

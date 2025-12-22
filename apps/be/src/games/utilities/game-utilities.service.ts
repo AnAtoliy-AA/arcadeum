@@ -133,8 +133,14 @@ export class GameUtilitiesService {
     return values
       .map((v) => {
         if (typeof v === 'string') return v;
-        if (v && typeof v === 'object' && 'toString' in v) {
-          return v.toString();
+        // Extract id from objects if available
+        if (
+          v &&
+          typeof v === 'object' &&
+          'id' in v &&
+          typeof v.id === 'string'
+        ) {
+          return v.id;
         }
         return null;
       })
@@ -206,7 +212,11 @@ export class GameUtilitiesService {
       const searchFiltered = filtered.filter((h) => {
         const gameName = h.gameName?.toLowerCase() || '';
         const gameId = h.gameId?.toLowerCase() || '';
-        const roomName = (h as any).roomName?.toLowerCase() || '';
+        // roomName exists on GameHistorySummary but not GroupedHistorySummary
+        const roomName =
+          'roomName' in h && typeof h.roomName === 'string'
+            ? h.roomName.toLowerCase()
+            : '';
 
         return (
           gameName.includes(searchLower) ||

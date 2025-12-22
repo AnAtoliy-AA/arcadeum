@@ -8,8 +8,8 @@ export function useTexasHoldemGame(
 ) {
   const snapshot = useMemo(() => {
     if (!session?.state) return null;
-    const stateData = session.state as any;
-    return stateData as TexasHoldemSnapshot | undefined;
+    const stateData = session.state;
+    return stateData as unknown as TexasHoldemSnapshot | undefined;
   }, [session]);
 
   const currentPlayer = useMemo(() => {

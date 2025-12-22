@@ -5,6 +5,11 @@ import { useSettings, type LanguagePreference } from '@/stores/settings';
 import { translations, type TranslationKey } from './i18n/messages';
 import type { Replacements, TranslationTree } from './i18n/types';
 
+export type TFunction = (
+  key: TranslationKey,
+  replacements?: Replacements,
+) => string;
+
 function resolveKey(
   tree: TranslationTree | string | undefined,
   segments: string[],

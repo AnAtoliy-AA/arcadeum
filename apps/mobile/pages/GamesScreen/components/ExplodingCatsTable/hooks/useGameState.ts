@@ -1,10 +1,6 @@
 import { useMemo } from 'react';
 import type { GameSessionSummary } from '../../../api/gamesApi';
-import type {
-  ExplodingCatsSnapshot,
-  ProcessedPlayer,
-  SessionPlayerProfile,
-} from '../types';
+import { ExplodingCatsSnapshot, SessionPlayerProfile } from '../types';
 import { TABLE_DIAMETER, PLAYER_SEAT_SIZE } from '../constants';
 
 export function useGameState(
@@ -16,7 +12,7 @@ export function useGameState(
     if (!raw || typeof raw !== 'object') {
       return null;
     }
-    return raw as ExplodingCatsSnapshot;
+    return raw as unknown as ExplodingCatsSnapshot;
   }, [session]);
 
   const players = useMemo(() => {
@@ -24,8 +20,8 @@ export function useGameState(
       return [];
     }
 
-    const rawPlayers = Array.isArray((session as any)?.state?.players)
-      ? ((session as any).state.players as SessionPlayerProfile[])
+    const rawPlayers = Array.isArray(session?.state?.players)
+      ? (session.state.players as SessionPlayerProfile[])
       : [];
     const lookup = new Map(rawPlayers.map((player) => [player.id, player]));
 

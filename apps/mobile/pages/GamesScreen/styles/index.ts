@@ -15,7 +15,12 @@ export function createStyles(palette: Palette) {
     ...getSectionsStyles(palette),
   };
 
-  return StyleSheet.create(styles as any) as unknown as Record<keyof typeof styles, ViewStyle & TextStyle & ImageStyle>;
+  return StyleSheet.create(
+    styles as Record<string, ViewStyle | TextStyle | ImageStyle>,
+  ) as unknown as Record<
+    keyof typeof styles,
+    ViewStyle & TextStyle & ImageStyle
+  >;
 }
 
 export type GameDetailScreenStyles = ReturnType<typeof createStyles>;

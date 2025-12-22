@@ -19,12 +19,12 @@ import {
 import { useTranslation } from '@/lib/i18n';
 
 // Import local modules
-import type { ExplodingCatsTableProps, LogVisibility } from './types';
-import {
-  TABLE_DIAMETER,
-  CARD_ART_SETTINGS,
-  PLAYER_SEAT_SIZE,
-} from './constants';
+import type {
+  ExplodingCatsTableProps,
+  LogVisibility,
+  ExplodingCatsLogEntry,
+} from './types';
+import { CARD_ART_SETTINGS } from './constants';
 import {
   useGameState,
   useCardAnimations,
@@ -95,7 +95,6 @@ export function ExplodingCatsTable({
 
   const {
     snapshot,
-    players,
     otherPlayers,
     selfPlayer,
     playerNameMap,
@@ -139,7 +138,8 @@ export function ExplodingCatsTable({
   const logs = useMemo(() => {
     const source = snapshot?.logs ?? [];
     const filtered = source.filter(
-      (entry) => entry.scope !== 'players' || isCurrentUserPlayer,
+      (entry: ExplodingCatsLogEntry) =>
+        entry.scope !== 'players' || isCurrentUserPlayer,
     );
     const ordered = [...filtered].sort((a, b) => {
       const aTime = new Date(a.createdAt).getTime();
@@ -167,7 +167,7 @@ export function ExplodingCatsTable({
   };
 
   const labels = useGameLabels(
-    t as any,
+    t,
     session,
     room ?? undefined,
     isHost,
@@ -201,7 +201,7 @@ export function ExplodingCatsTable({
     gridCardHeight,
     animations,
     catCombo,
-    t as any,
+    t,
     labels.translateCardName,
     labels.translateCardDescription,
     onPlay,
@@ -456,7 +456,11 @@ export function ExplodingCatsTable({
           styles={styles}
         />
         <ScrollView
-          style={layout.cardScrollStyle as any}
+          style={
+            layout.cardScrollStyle as import('react-native').StyleProp<
+              import('react-native').ViewStyle
+            >
+          }
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled
           keyboardShouldPersistTaps="handled"

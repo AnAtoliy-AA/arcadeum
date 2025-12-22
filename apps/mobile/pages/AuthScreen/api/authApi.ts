@@ -101,7 +101,7 @@ export async function logoutOAuth(params: {
       });
     }
     if (refreshToken) {
-      await revoke(authConfig as any, {
+      await revoke(authConfig, {
         tokenToRevoke: refreshToken,
         sendClientId: true,
       });

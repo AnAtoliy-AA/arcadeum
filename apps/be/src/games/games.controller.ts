@@ -279,7 +279,7 @@ export class GamesController {
     }
 
     // If roomId is missing, we need to find it (legacy behavior)
-    let roomId = dto.roomId;
+    const roomId = dto.roomId;
     let gameId: string | undefined;
 
     if (roomId) {
@@ -293,7 +293,7 @@ export class GamesController {
         user.userId,
         roomId,
         dto.engine,
-      ) as any;
+      ) as Promise<StartExplodingCatsSessionResult>;
     }
 
     // Default to Exploding Cats (legacy behavior)

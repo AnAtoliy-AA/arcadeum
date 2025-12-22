@@ -193,7 +193,13 @@ export class ExplodingCatsService {
       userId,
     );
 
-    const topCards = (result.state as any)?.deck?.slice(0, 3) || [];
+    const topCards =
+      result.state &&
+      typeof result.state === 'object' &&
+      'deck' in result.state &&
+      Array.isArray(result.state.deck)
+        ? result.state.deck.slice(0, 3)
+        : [];
     return { ...result, topCards };
   }
 }

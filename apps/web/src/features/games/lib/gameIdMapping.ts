@@ -4,16 +4,16 @@
  */
 
 // Internal game type identifiers used throughout the app
-export type GameType = "exploding_kittens_v1" | "texas_holdem_v1" | null;
+export type GameType = 'exploding_kittens_v1' | 'texas_holdem_v1' | null;
 
 // Valid game IDs for type checking
-const VALID_GAME_IDS = ["exploding_kittens_v1", "texas_holdem_v1"] as const;
+const VALID_GAME_IDS = ['exploding_kittens_v1', 'texas_holdem_v1'] as const;
 
 /**
  * Check if a string is a valid game type
  */
 function isValidGameType(gameId: string): gameId is NonNullable<GameType> {
-  return VALID_GAME_IDS.includes(gameId as any);
+  return (VALID_GAME_IDS as readonly string[]).includes(gameId);
 }
 
 /**

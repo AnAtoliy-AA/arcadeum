@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import { getAppExtra } from './expoConstants';
 import { platform } from '@/constants/platform';
 
 function isLocalHost(host: string): boolean {
@@ -20,15 +21,13 @@ function extractRemoteHost(candidate?: string): string | undefined {
 }
 
 function pickHostOverride(): string | undefined {
-  const extra = (Constants as any)?.expoConfig?.extra as
-    | Record<string, unknown>
-    | undefined;
+  const extra = getAppExtra();
   const envValue = process.env.EXPO_PUBLIC_ANDROID_DEV_HOST as
     | string
     | undefined;
   const extraValue =
-    (extra?.ANDROID_DEV_HOST as string | undefined) ??
-    (extra?.androidDevHost as string | undefined);
+    (extra as import('./expoConstants').AppExpoConfig)?.ANDROID_DEV_HOST ??
+    (extra as import('./expoConstants').AppExpoConfig)?.androidDevHost;
 
   const host = extractRemoteHost(envValue ?? extraValue);
   if (host && !isLocalHost(host)) {
@@ -49,19 +48,36 @@ function extractHostFromCandidates(
   return undefined;
 }
 
+interface ExpoInternalConfig {
+  expoGoConfig?: Record<string, unknown>;
+  manifest?: Record<string, unknown>;
+  manifest2?: {
+    extra?: {
+      expoGo?: {
+        developer?: {
+          host?: string;
+        };
+      };
+    };
+  };
+  expoConfig?: {
+    hostUri?: string;
+  };
+}
+
 function deriveDevServerHost(): string | undefined {
-  const expoConfig = Constants as any;
+  const expoConfig = Constants as unknown as ExpoInternalConfig;
   const expoGo = expoConfig?.expoGoConfig ?? {};
   const manifest = expoConfig?.manifest ?? {};
   const manifest2 = expoConfig?.manifest2 ?? {};
 
   return extractHostFromCandidates([
-    expoGo.debuggerHost,
-    expoGo.hostUri,
-    expoGo.url,
+    expoGo.debuggerHost as string | undefined,
+    expoGo.hostUri as string | undefined,
+    expoGo.url as string | undefined,
     expoConfig?.expoConfig?.hostUri,
-    manifest.debuggerHost,
-    manifest.hostUri,
+    manifest.debuggerHost as string | undefined,
+    manifest.hostUri as string | undefined,
     manifest2?.extra?.expoGo?.developer?.host,
   ]);
 }
@@ -96,11 +112,9 @@ function resolveDeviceAwareBase(urlString: string): string {
 }
 
 export function resolveApiBase(): string {
-  const extra = (Constants as any)?.expoConfig?.extra as
-    | Record<string, any>
-    | undefined;
+  const extra = getAppExtra();
   const raw =
-    (extra?.API_BASE_URL as string | undefined) ||
+    extra.API_BASE_URL ||
     process.env.EXPO_PUBLIC_API_BASE_URL ||
     'http://localhost:4000';
   const normalized = raw.replace(/\/$/, '');

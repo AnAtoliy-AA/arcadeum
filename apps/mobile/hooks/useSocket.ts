@@ -1,15 +1,13 @@
 import { useEffect } from 'react';
 import { io, type Socket } from 'socket.io-client';
-import Constants from 'expo-constants';
+import { getAppExtra } from '@/lib/expoConstants';
 import { resolveApiBase } from '@/lib/apiBase';
 
 function resolveSocketUrl(): string {
-  const extra = (Constants as any)?.expoConfig?.extra as
-    | Record<string, unknown>
-    | undefined;
+  const extra = getAppExtra();
   const rawBase =
     (process.env.EXPO_PUBLIC_WS_BASE_URL as string | undefined) ??
-    (extra?.WS_BASE_URL as string | undefined) ??
+    (extra as import('../lib/expoConstants').AppExpoConfig)?.WS_BASE_URL ??
     resolveApiBase();
 
   try {
@@ -90,29 +88,36 @@ export const gameSocket: Socket = gamesSocket;
 
 export const chatSocket: Socket = chatsSocket;
 
-interface SocketEventHandler {
-  (...args: any[]): void;
-}
-
-export function useSocket(event: string, handler: SocketEventHandler): void {
+export function useSocket<T extends unknown[]>(
+  event: string,
+  handler: (...args: T) => void,
+): void {
   useEffect(() => {
-    gameSocket.on(event, handler);
+    const listener = (...args: unknown[]) => {
+      handler(...(args as T));
+    };
+
+    gameSocket.on(event, listener);
 
     return () => {
-      gameSocket.off(event, handler);
+      gameSocket.off(event, listener);
     };
   }, [event, handler]);
 }
 
-export function useChatSocket(
+export function useChatSocket<T extends unknown[]>(
   event: string,
-  handler: SocketEventHandler,
+  handler: (...args: T) => void,
 ): void {
   useEffect(() => {
-    chatSocket.on(event, handler);
+    const listener = (...args: unknown[]) => {
+      handler(...(args as T));
+    };
+
+    chatSocket.on(event, listener);
 
     return () => {
-      chatSocket.off(event, handler);
+      chatSocket.off(event, listener);
     };
   }, [event, handler]);
 }

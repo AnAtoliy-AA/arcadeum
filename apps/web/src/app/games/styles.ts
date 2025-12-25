@@ -1,5 +1,16 @@
-import styled from "styled-components";
-import Link from "next/link";
+import styled, { keyframes } from 'styled-components';
+import Link from 'next/link';
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
 
 export const Page = styled.main`
   min-height: 100vh;
@@ -14,6 +25,7 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  animation: ${fadeIn} 0.5s ease-out;
 `;
 
 export const Header = styled.div`
@@ -24,46 +36,107 @@ export const Header = styled.div`
   flex-wrap: wrap;
 `;
 
+export const HeaderControls = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
+
+export const ViewToggle = styled.div`
+  display: flex;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+`;
+
+export const ViewToggleButton = styled.button<{ $active?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 0.85rem;
+  border: none;
+  background: ${({ $active, theme }) =>
+    $active ? theme.buttons.primary.gradientStart : 'transparent'};
+  color: ${({ $active, theme }) =>
+    $active ? theme.buttons.primary.text : theme.text.muted};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+
+  &:hover {
+    background: ${({ $active, theme }) =>
+      $active
+        ? theme.buttons.primary.gradientStart
+        : theme.surfaces.card.background};
+    color: ${({ theme }) => theme.text.primary};
+  }
+`;
+
 export const Title = styled.h1`
   margin: 0;
-  font-size: 2rem;
-  font-weight: 700;
-  color: ${({ theme }) => theme.text.primary};
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(
+    135deg,
+    ${({ theme }) => theme.text.primary} 0%,
+    ${({ theme }) => theme.buttons.primary.gradientStart} 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
 `;
 
 export const CreateButton = styled(Link)`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 999px;
-  background: ${({ theme }) => theme.buttons.primary.gradientStart};
+  padding: 0.875rem 1.75rem;
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    ${({ theme }) => theme.buttons.primary.gradientStart} 0%,
+    ${({ theme }) =>
+        theme.buttons.primary.gradientEnd ||
+        theme.buttons.primary.gradientStart}
+      100%
+  );
   color: ${({ theme }) => theme.buttons.primary.text};
   text-decoration: none;
   font-weight: 600;
-  transition: transform 0.2s ease;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 15px ${({ theme }) => theme.buttons.primary.gradientStart}40;
+  transition: all 0.3s ease;
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px
+      ${({ theme }) => theme.buttons.primary.gradientStart}50;
   }
 `;
 
 export const Filters = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  gap: 2rem;
+  flex-wrap: wrap;
+  padding: 1.25rem 1.5rem;
+  background: ${({ theme }) => theme.surfaces.card.background};
+  border-radius: 16px;
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
 `;
 
 export const FilterGroup = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.75rem;
 `;
 
 export const FilterLabel = styled.label`
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: ${({ theme }) => theme.text.secondary};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: ${({ theme }) => theme.text.muted};
 `;
 
 export const FilterChips = styled.div`
@@ -74,18 +147,27 @@ export const FilterChips = styled.div`
 
 export const FilterChip = styled.button<{ $active?: boolean }>`
   padding: 0.5rem 1rem;
-  border-radius: 999px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  border-radius: 10px;
+  border: 1px solid
+    ${({ $active, theme }) =>
+      $active
+        ? theme.buttons.primary.gradientStart
+        : theme.surfaces.card.border};
   background: ${({ $active, theme }) =>
-    $active ? theme.buttons.primary.gradientStart : theme.surfaces.card.background};
+    $active
+      ? `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}, ${theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart})`
+      : 'transparent'};
   color: ${({ $active, theme }) =>
-    $active ? theme.buttons.primary.text : theme.text.primary};
-  font-weight: ${({ $active }) => ($active ? "600" : "500")};
+    $active ? theme.buttons.primary.text : theme.text.secondary};
+  font-weight: 500;
+  font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover:not(:disabled) {
-    transform: translateY(-1px);
+    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+    color: ${({ $active, theme }) =>
+      $active ? theme.buttons.primary.text : theme.text.primary};
   }
 
   &:focus-visible {
@@ -94,30 +176,91 @@ export const FilterChip = styled.button<{ $active?: boolean }>`
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.4;
     cursor: not-allowed;
   }
 `;
 
-export const RoomsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+export const RoomsContainer = styled.div<{ $viewMode?: 'grid' | 'list' }>`
+  display: ${({ $viewMode }) => ($viewMode === 'list' ? 'flex' : 'grid')};
+  flex-direction: ${({ $viewMode }) =>
+    $viewMode === 'list' ? 'column' : 'unset'};
+  grid-template-columns: ${({ $viewMode }) =>
+    $viewMode === 'list' ? 'unset' : 'repeat(auto-fill, minmax(350px, 1fr))'};
+  gap: 1.25rem;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
-export const RoomCard = styled.div`
-  padding: 1.5rem;
-  border-radius: 16px;
+export const RoomCard = styled.div<{ $viewMode?: 'grid' | 'list' }>`
+  padding: ${({ $viewMode }) =>
+    $viewMode === 'list' ? '1rem 1.5rem' : '1.5rem'};
+  border-radius: ${({ $viewMode }) => ($viewMode === 'list' ? '14px' : '20px')};
   border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
+  background: linear-gradient(
+    145deg,
+    ${({ theme }) => theme.surfaces.card.background} 0%,
+    ${({ theme }) => theme.surfaces.panel.background} 100%
+  );
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex-direction: ${({ $viewMode }) =>
+    $viewMode === 'list' ? 'row' : 'column'};
+  align-items: ${({ $viewMode }) =>
+    $viewMode === 'list' ? 'center' : 'stretch'};
+  justify-content: ${({ $viewMode }) =>
+    $viewMode === 'list' ? 'space-between' : 'flex-start'};
+  gap: ${({ $viewMode }) => ($viewMode === 'list' ? '1.5rem' : '1rem')};
+  transition: all 0.3s ease;
+  animation: ${fadeIn} 0.5s ease-out;
+  animation-fill-mode: both;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      ${({ theme }) => theme.buttons.primary.gradientStart},
+      transparent
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: ${({ theme }) => theme.surfaces.card.shadow};
+    transform: translateY(-4px);
+    border-color: ${({ theme }) => theme.buttons.primary.gradientStart}40;
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.3),
+      0 0 20px ${({ theme }) => theme.buttons.primary.gradientStart}20;
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &:nth-child(1) {
+    animation-delay: 0s;
+  }
+  &:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  &:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+  &:nth-child(4) {
+    animation-delay: 0.3s;
+  }
+  &:nth-child(5) {
+    animation-delay: 0.4s;
   }
 `;
 
@@ -130,29 +273,39 @@ export const RoomHeader = styled.div`
 
 export const RoomTitle = styled.h3`
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.15rem;
+  font-weight: 700;
   color: ${({ theme }) => theme.text.primary};
+  letter-spacing: -0.3px;
 `;
 
 export const StatusBadge = styled.span<{ status: string }>`
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  padding: 0.35rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   background: ${({ status }) => {
-    if (status === "lobby") return "#DCFCE7";
-    if (status === "in_progress") return "#FDE68A";
-    return "#E2E8F0";
+    if (status === 'lobby')
+      return 'linear-gradient(135deg, #10B981 0%, #059669 100%)';
+    if (status === 'in_progress')
+      return 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)';
+    return 'linear-gradient(135deg, #6B7280 0%, #4B5563 100%)';
   }};
-  color: ${({ theme }) => theme.text.primary};
+  color: white;
+  box-shadow: ${({ status }) => {
+    if (status === 'lobby') return '0 2px 8px #10B98140';
+    if (status === 'in_progress') return '0 2px 8px #F59E0B40';
+    return '0 2px 8px #6B728040';
+  }};
 `;
 
 export const RoomMeta = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  font-size: 0.9rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  font-size: 0.85rem;
   color: ${({ theme }) => theme.text.primary};
 `;
 
@@ -165,22 +318,28 @@ export const MetaRow = styled.div`
 
 export const MetaIcon = styled.span`
   font-size: 0.9rem;
-  opacity: 0.85;
+  filter: grayscale(30%);
 `;
 
 export const MetaLabel = styled.span`
-  font-weight: 600;
-  color: ${({ theme }) => theme.text.secondary};
+  font-weight: 500;
+  color: ${({ theme }) => theme.text.muted};
+  font-size: 0.8rem;
 `;
 
 export const MetaValue = styled.span`
   color: ${({ theme }) => theme.text.primary};
+  font-weight: 600;
 `;
 
-export const RoomActions = styled.div`
+export const RoomActions = styled.div<{ $viewMode?: 'grid' | 'list' }>`
   display: flex;
   gap: 0.75rem;
-  margin-top: 0.5rem;
+  margin-top: ${({ $viewMode }) => ($viewMode === 'list' ? '0' : '0.5rem')};
+  padding-top: ${({ $viewMode }) => ($viewMode === 'list' ? '0' : '1rem')};
+  border-top: ${({ $viewMode, theme }) =>
+    $viewMode === 'list' ? 'none' : `1px solid ${theme.surfaces.card.border}`};
+  flex-shrink: 0;
 `;
 
 export const ParticipantsList = styled.div`
@@ -188,47 +347,59 @@ export const ParticipantsList = styled.div`
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 0.25rem;
+  grid-column: 1 / -1;
 `;
 
 export const ParticipantChip = styled.span<{ $isHost?: boolean }>`
   display: inline-flex;
   align-items: center;
-  padding: 0.35rem 0.85rem;
-  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 600;
   color: ${({ theme }) => theme.text.primary};
   background: ${({ $isHost, theme }) =>
-    $isHost ? theme.interactive.pill.activeBackground : theme.interactive.pill.inactiveBackground};
+    $isHost
+      ? `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}30, transparent)`
+      : theme.surfaces.panel.background};
   border: 1px solid
     ${({ $isHost, theme }) =>
-      $isHost ? theme.interactive.pill.activeBorder : theme.interactive.pill.border};
-  box-shadow: ${({ $isHost, theme }) => ($isHost ? theme.interactive.pill.activeShadow : "none")};
+      $isHost
+        ? theme.buttons.primary.gradientStart
+        : theme.surfaces.card.border};
 `;
 
-export const ActionButton = styled(Link)<{ variant?: "primary" | "secondary" }>`
+export const ActionButton = styled(Link)<{ variant?: 'primary' | 'secondary' }>`
   padding: 0.75rem 1.25rem;
-  border-radius: 12px;
+  border-radius: 10px;
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.875rem;
-  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  text-align: center;
+  transition: all 0.25s ease;
 
   ${({ variant, theme }) =>
-    variant === "primary"
+    variant === 'primary'
       ? `
-    background: ${theme.buttons.primary.gradientStart};
+    background: linear-gradient(135deg, ${theme.buttons.primary.gradientStart}, ${theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart});
     color: ${theme.buttons.primary.text};
+    box-shadow: 0 2px 10px ${theme.buttons.primary.gradientStart}30;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px ${theme.buttons.primary.gradientStart}50;
+    }
   `
       : `
-    border: 1px solid ${theme.buttons.secondary.border};
-    color: ${theme.buttons.secondary.text};
-    background: ${theme.buttons.secondary.background};
+    border: 1px solid ${theme.surfaces.card.border};
+    color: ${theme.text.secondary};
+    background: transparent;
+    
+    &:hover {
+      border-color: ${theme.text.secondary};
+      color: ${theme.text.primary};
+    }
   `}
-
-  &:hover {
-    transform: translateY(-1px);
-  }
 `;
 
 export const Loading = styled.div`
@@ -236,18 +407,19 @@ export const Loading = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
-  padding: 3rem;
+  gap: 1.5rem;
+  padding: 4rem;
   color: ${({ theme }) => theme.text.muted};
+  font-size: 0.95rem;
 `;
 
 export const Spinner = styled.div`
-  width: 40px;
-  height: 40px;
-  border: 4px solid ${({ theme }) => theme.surfaces.card.border};
+  width: 48px;
+  height: 48px;
+  border: 3px solid ${({ theme }) => theme.surfaces.card.border};
   border-top-color: ${({ theme }) => theme.buttons.primary.gradientStart};
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.8s linear infinite;
 
   @keyframes spin {
     to {
@@ -259,13 +431,18 @@ export const Spinner = styled.div`
 export const Error = styled.div`
   padding: 1.5rem;
   border-radius: 12px;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border: 1px solid #F97316;
-  color: #F97316;
+  background: linear-gradient(135deg, #7f1d1d20, transparent);
+  border: 1px solid #dc2626;
+  color: #ef4444;
+  font-weight: 500;
 `;
 
 export const Empty = styled.div`
-  padding: 3rem;
+  padding: 4rem 2rem;
   text-align: center;
   color: ${({ theme }) => theme.text.muted};
+  font-size: 1.1rem;
+  background: ${({ theme }) => theme.surfaces.card.background};
+  border-radius: 20px;
+  border: 1px dashed ${({ theme }) => theme.surfaces.card.border};
 `;

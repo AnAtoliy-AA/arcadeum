@@ -11,6 +11,7 @@ import type { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { extractString } from './games.gateway.utils';
+import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 
 @WebSocketGateway({
   namespace: 'games',
@@ -71,10 +72,13 @@ export class GamesGateway {
     const channel = this.realtime.roomChannel(room.id);
     await client.join(channel);
 
-    client.emit('games.room.joined', {
-      room,
-      session,
-    });
+    client.emit(
+      'games.room.joined',
+      maybeEncrypt({
+        room,
+        session,
+      }),
+    );
 
     if (session) {
       this.logger.log(
@@ -98,10 +102,13 @@ export class GamesGateway {
       const channel = this.realtime.roomChannel(room.id);
       await client.join(channel);
 
-      client.emit('games.room.watching', {
-        room,
-        session,
-      });
+      client.emit(
+        'games.room.watching',
+        maybeEncrypt({
+          room,
+          session,
+        }),
+      );
 
       if (session) {
         this.realtime.emitSessionSnapshotToClient(client, room.id, session);

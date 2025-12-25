@@ -86,6 +86,7 @@ export function useGameActions({
     room?.id,
     setRoom,
     setSession,
+    setStartBusy,
     startBusy,
     t,
     tokens.accessToken,
@@ -207,6 +208,30 @@ export function useGameActions({
     [actionBusy, room?.id, setActionBusy, t, tokens.userId],
   );
 
+  const handlePlayDefuse = useCallback(
+    (position: number) => {
+      if (!room?.id || !tokens.userId) {
+        Alert.alert(
+          t('games.alerts.signInRequiredTitle'),
+          t('games.alerts.signInPlayCardMessage'),
+        );
+        return;
+      }
+
+      if (actionBusy) {
+        return;
+      }
+
+      setActionBusy('defuse');
+      socket.emit('games.session.play_defuse', {
+        roomId: room.id,
+        userId: tokens.userId,
+        position,
+      });
+    },
+    [actionBusy, room?.id, setActionBusy, t, tokens.userId],
+  );
+
   const handlePostHistoryNote = useCallback(
     (message: string, scope: LogVisibility) => {
       if (!room?.id || !tokens.userId) {
@@ -241,6 +266,7 @@ export function useGameActions({
     handlePlayFavor,
     handlePlaySeeTheFuture,
     handlePlayCatCombo,
+    handlePlayDefuse,
     handlePostHistoryNote,
   };
 }

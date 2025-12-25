@@ -67,13 +67,19 @@ export class ExplodingCatsLogic {
 
     if (card === 'exploding_cat') {
       if (this.hasCard(player, 'defuse')) {
+        // Player must defuse - set pending defuse state
+        state.pendingDefuse = playerId;
         helpers.addLog(
           state,
-          helpers.createLogEntry('action', `Drew an Exploding Cat!`, {
-            scope: 'all',
-          }),
+          helpers.createLogEntry(
+            'action',
+            `Drew an Exploding Cat! Must play Defuse!`,
+            {
+              scope: 'all',
+            },
+          ),
         );
-        // Player must defuse
+        // Player must defuse - don't advance turn until defuse is played
         return { success: true, state };
       } else {
         player.alive = false;
@@ -324,6 +330,9 @@ export class ExplodingCatsLogic {
 
     // Insert exploding cat back into deck at specified position
     state.deck.splice(position, 0, 'exploding_cat');
+
+    // Clear the pending defuse state
+    state.pendingDefuse = null;
 
     helpers.addLog(
       state,

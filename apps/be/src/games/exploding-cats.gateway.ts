@@ -327,4 +327,46 @@ export class ExplodingCatsGateway {
       );
     }
   }
+
+  @SubscribeMessage('games.session.play_defuse')
+  async handleSessionPlayDefuse(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: {
+      roomId?: string;
+      userId?: string;
+      position?: number;
+    },
+  ): Promise<void> {
+    const { roomId, userId } = extractRoomAndUser(payload);
+    const position =
+      typeof payload?.position === 'number' ? payload.position : undefined;
+
+    if (position === undefined || position < 0) {
+      throw new WsException(
+        'position is required and must be a non-negative number.',
+      );
+    }
+
+    try {
+      await this.explodingCatsService.defuseByRoom(userId, roomId, position);
+
+      client.emit('games.session.defuse.played', {
+        roomId,
+        userId,
+        position,
+      });
+    } catch (error) {
+      handleError(
+        this.logger,
+        error,
+        {
+          action: 'play Defuse card',
+          roomId,
+          userId,
+        },
+        'Unable to play Defuse card.',
+      );
+    }
+  }
 }

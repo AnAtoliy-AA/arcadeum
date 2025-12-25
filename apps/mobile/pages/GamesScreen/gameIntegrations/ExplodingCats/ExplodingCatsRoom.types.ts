@@ -39,4 +39,5 @@ export type ActionBusyType =
   | 'see_the_future'
   | 'cat_pair'
   | 'cat_trio'
+  | 'defuse'
   | null;

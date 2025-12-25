@@ -3,14 +3,8 @@ import { Alert } from 'react-native';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { showGlobalError } from '@/components/ui/ErrorToastProvider';
 import { useSessionTokens } from '@/stores/sessionTokens';
 import { useTranslation } from '@/lib/i18n';
-import {
-  findApiMessageDescriptor,
-  inferTranslationKeyFromMessageKey,
-} from '@/lib/apiMessageCatalog';
-import { gameSocket as socket } from '@/hooks/useSocket';
 
 import {
   deleteGameRoom,
@@ -22,12 +16,8 @@ import {
 } from '../api/gamesApi';
 import { type ExplodingCatsRoomHandle } from '../gameIntegrations/ExplodingCats/ExplodingCatsRoom';
 import { type TexasHoldemRoomHandle } from '../gameIntegrations/TexasHoldem/TexasHoldemRoom';
-import {
-  resolveParam,
-  normalizeWsMessageCode,
-  shouldExposeRawWsMessage,
-  resolveIntegrationId,
-} from './useGameRoomUtils';
+import { resolveParam, resolveIntegrationId } from './useGameRoomUtils';
+import { useGameRoomSocket } from './useGameRoomSocket';
 
 export function useGameRoom(
   integrationRef: React.MutableRefObject<
@@ -118,196 +108,18 @@ export function useGameRoom(
     }, [fetchRoom]),
   );
 
-  useEffect(() => {
-    if (!roomId || !hydrated) {
-      return;
-    }
-
-    const isParticipant = Boolean(tokens.userId);
-    const joinEvent = isParticipant ? 'games.room.join' : 'games.room.watch';
-    const joinPayload = isParticipant
-      ? { roomId, userId: tokens.userId }
-      : { roomId };
-
-    const handleConnect = () => {
-      socket.emit(joinEvent, joinPayload);
-    };
-
-    const handleJoined = (payload: {
-      room?: GameRoomSummary;
-      session?: GameSessionSummary | null;
-    }) => {
-      if (payload?.room) {
-        setRoom(payload.room);
-      }
-      if (payload && Object.prototype.hasOwnProperty.call(payload, 'session')) {
-        setSession(payload?.session ?? null);
-      }
-    };
-
-    const handleRoomUpdate = (payload: { room?: GameRoomSummary }) => {
-      if (payload?.room && payload.room.id === roomId) {
-        setRoom(payload.room);
-      }
-    };
-
-    const handleRoomDeleted = (payload: { roomId?: string }) => {
-      if (payload?.roomId && payload.roomId !== roomId) {
-        return;
-      }
-
-      if (deleting) {
-        return;
-      }
-
-      setRoom(null);
-      setSession(null);
-      integrationRef.current?.onException();
-
-      Alert.alert(
-        t('games.alerts.roomDeletedTitle'),
-        t('games.alerts.roomDeletedMessage'),
-        [
-          {
-            text: t('common.actions.ok'),
-            onPress: () => {
-              router.replace('/(tabs)/games');
-            },
-          },
-        ],
-      );
-    };
-
-    const handleSnapshot = (payload: {
-      roomId?: string;
-      session?: GameSessionSummary | null;
-    }) => {
-      if (payload?.roomId && payload.roomId !== roomId) {
-        return;
-      }
-      if (payload && Object.prototype.hasOwnProperty.call(payload, 'session')) {
-        setSession(payload?.session ?? null);
-      }
-      integrationRef.current?.onSessionSnapshot();
-    };
-
-    const handleSessionStarted = (payload: {
-      room: GameRoomSummary;
-      session: GameSessionSummary;
-    }) => {
-      if (!payload?.room || payload.room.id !== roomId) {
-        return;
-      }
-      setRoom(payload.room);
-      setSession(payload.session);
-      integrationRef.current?.onSessionStarted();
-    };
-
-    const handleCatComboPlayed = (payload: { roomId?: string }) => {
-      if (payload?.roomId && payload.roomId !== roomId) {
-        return;
-      }
-      const ref = integrationRef.current as ExplodingCatsRoomHandle | null;
-      ref?.onCatComboPlayed?.();
-    };
-
-    const handleTexasHoldemStarted = (payload: {
-      room: GameRoomSummary;
-      session: GameSessionSummary;
-    }) => {
-      if (!payload?.room || payload.room.id !== roomId) {
-        return;
-      }
-      setRoom(payload.room);
-      setSession(payload.session);
-      integrationRef.current?.onSessionStarted?.();
-    };
-
-    const handleTexasHoldemActionPerformed = (payload: { roomId?: string }) => {
-      if (payload?.roomId && payload.roomId !== roomId) {
-        return;
-      }
-      const ref = integrationRef.current as TexasHoldemRoomHandle | null;
-      ref?.onHoldemActionPerformed?.();
-    };
-
-    const handleException = (payload: unknown) => {
-      integrationRef.current?.onException();
-
-      const detail =
-        payload && typeof payload === 'object'
-          ? (payload as Record<string, unknown>)
-          : undefined;
-
-      const message =
-        typeof detail?.message === 'string'
-          ? detail.message
-          : typeof payload === 'string'
-            ? payload
-            : undefined;
-
-      const messageKey =
-        typeof detail?.messageKey === 'string' ? detail.messageKey : undefined;
-      const messageCode =
-        normalizeWsMessageCode(detail?.messageCode) ??
-        normalizeWsMessageCode(detail?.code);
-
-      const descriptor = findApiMessageDescriptor({
-        code: messageCode,
-        messageKey,
-        message,
-      });
-
-      const fallback =
-        descriptor?.fallbackMessage ??
-        message ??
-        t('games.alerts.genericError');
-
-      showGlobalError({
-        translationKey:
-          descriptor?.translationKey ??
-          inferTranslationKeyFromMessageKey(messageKey),
-        fallbackMessage: fallback,
-        rawMessage: shouldExposeRawWsMessage(message) ? message : undefined,
-      });
-    };
-
-    socket.on('connect', handleConnect);
-    socket.on('games.room.joined', handleJoined);
-    socket.on('games.room.watching', handleJoined);
-    socket.on('games.room.update', handleRoomUpdate);
-    socket.on('games.room.deleted', handleRoomDeleted);
-    socket.on('games.session.snapshot', handleSnapshot);
-    socket.on('games.session.started', handleSessionStarted);
-    socket.on('games.session.cat_combo.played', handleCatComboPlayed);
-    socket.on('games.session.holdem_started', handleTexasHoldemStarted);
-    socket.on(
-      'games.session.holdem_action.performed',
-      handleTexasHoldemActionPerformed,
-    );
-    socket.on('exception', handleException);
-
-    if (socket.connected) {
-      handleConnect();
-    }
-
-    return () => {
-      socket.off('connect', handleConnect);
-      socket.off('games.room.joined', handleJoined);
-      socket.off('games.room.watching', handleJoined);
-      socket.off('games.room.update', handleRoomUpdate);
-      socket.off('games.room.deleted', handleRoomDeleted);
-      socket.off('games.session.snapshot', handleSnapshot);
-      socket.off('games.session.started', handleSessionStarted);
-      socket.off('games.session.cat_combo.played', handleCatComboPlayed);
-      socket.off('games.session.holdem_started', handleTexasHoldemStarted);
-      socket.off(
-        'games.session.holdem_action.performed',
-        handleTexasHoldemActionPerformed,
-      );
-      socket.off('exception', handleException);
-    };
-  }, [deleting, hydrated, roomId, router, t, tokens.userId, integrationRef]);
+  // Socket connection and event handling
+  useGameRoomSocket({
+    roomId,
+    hydrated,
+    userId: tokens.userId ?? undefined,
+    deleting,
+    router,
+    t,
+    setRoom,
+    setSession,
+    integrationRef,
+  });
 
   const performLeave = useCallback(async () => {
     if (!roomId || !tokens.accessToken) {

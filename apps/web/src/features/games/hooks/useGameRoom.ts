@@ -1,12 +1,13 @@
-import { useState, useEffect, useCallback } from "react";
-import { gameSocket } from "@/shared/lib/socket";
-import type { GameRoomSummary } from "@/shared/types/games";
+import { useState, useEffect, useCallback } from 'react';
+import { gameSocket } from '@/shared/lib/socket';
+import { maybeDecrypt } from '@/shared/lib/socket-encryption';
+import type { GameRoomSummary } from '@/shared/types/games';
 
 interface UseGameRoomOptions {
   roomId: string;
   userId: string | null;
   accessToken: string | null;
-  mode?: "play" | "watch";
+  mode?: 'play' | 'watch';
 }
 
 interface UseGameRoomReturn {
@@ -24,7 +25,7 @@ interface UseGameRoomReturn {
  * Handles join/leave, room updates, and provides room data
  */
 export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
-  const { roomId, userId, accessToken, mode = "play" } = options;
+  const { roomId, userId, accessToken, mode = 'play' } = options;
 
   const [room, setRoom] = useState<GameRoomSummary | null>(null);
   const [session, setSession] = useState<unknown | null>(null);
@@ -38,21 +39,20 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
       return;
     }
 
-    const event = mode === "watch" ? "games.room.watch" : "games.room.join";
+    const event = mode === 'watch' ? 'games.room.watch' : 'games.room.join';
     gameSocket.emit(event, { roomId, userId });
   }, [roomId, userId, mode]);
 
   const leaveRoom = useCallback(() => {
     if (!roomId || !userId) return;
 
-    gameSocket.emit("games.room.leave", { roomId, userId });
+    gameSocket.emit('games.room.leave', { roomId, userId });
   }, [roomId, userId]);
 
   useEffect(() => {
     if (!accessToken) {
       return;
     }
-
 
     const handleJoined = (payload: {
       room?: GameRoomSummary;
@@ -83,7 +83,7 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
     };
 
     const handleException = (payload: { message?: string }) => {
-      const message = payload?.message || "An error occurred";
+      const message = payload?.message || 'An error occurred';
       setError(message);
       setLoading(false);
 
@@ -101,26 +101,44 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
     };
 
     const handleConnectError = (_error: Error) => {
-      setError("Failed to connect to game server");
+      setError('Failed to connect to game server');
       setLoading(false);
     };
 
-    const handlePlayerJoined = (payload: { room?: GameRoomSummary; userId?: string }) => {
+    const handlePlayerJoined = (payload: {
+      room?: GameRoomSummary;
+      userId?: string;
+    }) => {
       if (payload?.room && payload.room.id === roomId) {
         setRoom(payload.room);
       }
     };
 
+    // Decrypt wrapper for socket handlers
+    const decryptHandler = <T>(handler: (payload: T) => void) => {
+      return async (raw: unknown) => {
+        const payload = await maybeDecrypt<T>(raw);
+        handler(payload);
+      };
+    };
+
+    // Create wrapped handlers
+    const wrappedHandleJoined = decryptHandler(handleJoined);
+    const wrappedHandleRoomUpdate = decryptHandler(handleRoomUpdate);
+    const wrappedHandlePlayerJoined = decryptHandler(handlePlayerJoined);
+    const wrappedHandleGameStarted = decryptHandler(handleGameStarted);
+    const wrappedHandleException = decryptHandler(handleException);
+
     // Register listeners
-    gameSocket.on("games.room.joined", handleJoined);
-    gameSocket.on("games.room.watching", handleJoined);
-    gameSocket.on("games.room.update", handleRoomUpdate);
-    gameSocket.on("games.player.joined", handlePlayerJoined);
-    gameSocket.on("games.game.started", handleGameStarted);
-    gameSocket.on("exception", handleException);
-    gameSocket.on("connect", handleConnect);
-    gameSocket.on("disconnect", handleDisconnect);
-    gameSocket.on("connect_error", handleConnectError);
+    gameSocket.on('games.room.joined', wrappedHandleJoined);
+    gameSocket.on('games.room.watching', wrappedHandleJoined);
+    gameSocket.on('games.room.update', wrappedHandleRoomUpdate);
+    gameSocket.on('games.player.joined', wrappedHandlePlayerJoined);
+    gameSocket.on('games.game.started', wrappedHandleGameStarted);
+    gameSocket.on('exception', wrappedHandleException);
+    gameSocket.on('connect', handleConnect);
+    gameSocket.on('disconnect', handleDisconnect);
+    gameSocket.on('connect_error', handleConnectError);
 
     // If already connected, join immediately
     if (gameSocket.connected) {
@@ -130,15 +148,15 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
 
     // Cleanup
     return () => {
-      gameSocket.off("games.room.joined", handleJoined);
-      gameSocket.off("games.room.watching", handleJoined);
-      gameSocket.off("games.room.update", handleRoomUpdate);
-      gameSocket.off("games.player.joined", handlePlayerJoined);
-      gameSocket.off("games.game.started", handleGameStarted);
-      gameSocket.off("exception", handleException);
-      gameSocket.off("connect", handleConnect);
-      gameSocket.off("disconnect", handleDisconnect);
-      gameSocket.off("connect_error", handleConnectError);
+      gameSocket.off('games.room.joined', wrappedHandleJoined);
+      gameSocket.off('games.room.watching', wrappedHandleJoined);
+      gameSocket.off('games.room.update', wrappedHandleRoomUpdate);
+      gameSocket.off('games.player.joined', wrappedHandlePlayerJoined);
+      gameSocket.off('games.game.started', wrappedHandleGameStarted);
+      gameSocket.off('exception', wrappedHandleException);
+      gameSocket.off('connect', handleConnect);
+      gameSocket.off('disconnect', handleDisconnect);
+      gameSocket.off('connect_error', handleConnectError);
     };
   }, [roomId, accessToken, joinRoom]);
 

@@ -202,4 +202,13 @@ export class ExplodingCatsService {
         : [];
     return { ...result, topCards };
   }
+
+  /**
+   * Play defuse card (gateway wrapper)
+   */
+  async defuseByRoom(userId: string, roomId: string, position: number) {
+    const session = await this.sessionsService.findSessionByRoom(roomId);
+    if (!session) throw new Error('Session not found');
+    return this.explodingCatsActions.defuse(session.id, userId, { position });
+  }
 }

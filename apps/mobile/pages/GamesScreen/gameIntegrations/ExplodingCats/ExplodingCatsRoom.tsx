@@ -7,29 +7,20 @@ import React, {
   useState,
 } from 'react';
 import {
-  ActivityIndicator,
   RefreshControl,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles } from '@/hooks/useThemedStyles';
 import { ExplodingCatsTable } from '../../components/ExplodingCatsTable';
-import {
-  formatRoomGame,
-  formatRoomHost,
-  formatRoomTimestamp,
-  getRoomStatusLabel,
-} from '../../roomUtils';
+import { formatRoomGame } from '../../roomUtils';
 import { useTranslation } from '@/lib/i18n';
 import { ExplodingCatsRoomTopBar } from '../components/ExplodingCatsRoomTopBar';
-import { ExplodingCatsRoomMetaItem as MetaItem } from '../components/ExplodingCatsRoomMetaItem';
-import { HERO_GRADIENT_COORDS } from './ExplodingCatsRoom.constants';
 import {
   createStyles,
   type ExplodingCatsRoomStyles,
@@ -88,6 +79,7 @@ export const ExplodingCatsRoom = forwardRef<
     handlePlayFavor,
     handlePlaySeeTheFuture,
     handlePlayCatCombo,
+    handlePlayDefuse,
     handlePostHistoryNote,
   } = useGameActions({
     room,
@@ -252,6 +244,7 @@ export const ExplodingCatsRoom = forwardRef<
             onPlayFavor={handlePlayFavor}
             onPlaySeeTheFuture={handlePlaySeeTheFuture}
             onPlayCatCombo={handlePlayCatCombo}
+            onPlayDefuse={handlePlayDefuse}
             onPostHistoryNote={handlePostHistoryNote}
             fullScreen
             tableOnly
@@ -337,6 +330,7 @@ export const ExplodingCatsRoom = forwardRef<
           onPlayFavor={handlePlayFavor}
           onPlaySeeTheFuture={handlePlaySeeTheFuture}
           onPlayCatCombo={handlePlayCatCombo}
+          onPlayDefuse={handlePlayDefuse}
           onPostHistoryNote={handlePostHistoryNote}
           fullScreen={hasSessionSnapshot}
         />

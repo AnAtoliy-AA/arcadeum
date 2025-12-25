@@ -42,6 +42,7 @@ export interface ExplodingCatsState {
   playerOrder: string[];
   currentTurnIndex: number;
   pendingDraws: number;
+  pendingDefuse: string | null; // Player ID who must play defuse, null if none
   players: ExplodingCatsPlayerState[];
   logs: ExplodingCatsLogEntry[];
   [key: string]: unknown;
@@ -129,6 +130,7 @@ export function createInitialExplodingCatsState(
     discardPile: [],
     playerOrder: [...playerIds],
     currentTurnIndex: 0,
+    pendingDefuse: null,
     pendingDraws: 1,
     players,
     logs: [

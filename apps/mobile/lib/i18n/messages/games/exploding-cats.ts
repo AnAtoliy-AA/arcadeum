@@ -107,6 +107,15 @@ export const explodingCatsMessages = {
       cancel: 'Cancel',
       confirm: 'Play combo',
     },
+    defuse: {
+      title: 'Defuse Exploding Cat!',
+      description: 'Choose where to place the Exploding Cat back in the deck:',
+      topOfDeck: 'Top of deck',
+      middleOfDeck: 'Middle of deck',
+      bottomOfDeck: 'Bottom of deck',
+      positionFromTop: 'Position {{position}} from top',
+      confirm: 'Place Card',
+    },
   },
   es: {
     headerTitle: 'Mesa de Exploding Cats',
@@ -220,6 +229,15 @@ export const explodingCatsMessages = {
       cancel: 'Cancelar',
       confirm: 'Confirmar combo',
     },
+    defuse: {
+      title: '¡Desactivar Gato Explosivo!',
+      description: 'Elige dónde colocar el Gato Explosivo en el mazo:',
+      topOfDeck: 'Arriba del mazo',
+      middleOfDeck: 'Medio del mazo',
+      bottomOfDeck: 'Fondo del mazo',
+      positionFromTop: 'Posición {{position}} desde arriba',
+      confirm: 'Colocar Carta',
+    },
   },
   fr: {
     headerTitle: 'Table Exploding Cats',
@@ -332,6 +350,15 @@ export const explodingCatsMessages = {
       optionPairOrTrio: 'Paire ou trio disponibles',
       cancel: 'Annuler',
       confirm: 'Valider le combo',
+    },
+    defuse: {
+      title: 'Désamorcer le Chat Explosif !',
+      description: 'Choisissez où placer le Chat Explosif dans le paquet :',
+      topOfDeck: 'Haut du paquet',
+      middleOfDeck: 'Milieu du paquet',
+      bottomOfDeck: 'Bas du paquet',
+      positionFromTop: 'Position {{position}} depuis le haut',
+      confirm: 'Placer la Carte',
     },
   },
 };

@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { Server, Socket } from 'socket.io';
 import type { GameRoomSummary, GameSessionSummary } from './games.types';
+import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 
 @Injectable()
 export class GamesRealtimeService {
@@ -21,28 +22,37 @@ export class GamesRealtimeService {
     if (!this.server) {
       return;
     }
-    this.server.to(this.roomChannel(room.id)).emit('games.room.update', {
-      room,
-    });
+    this.server.to(this.roomChannel(room.id)).emit(
+      'games.room.update',
+      maybeEncrypt({
+        room,
+      }),
+    );
   }
 
   emitRoomRemoved(roomId: string): void {
     if (!this.server) {
       return;
     }
-    this.server.to(this.roomChannel(roomId)).emit('games.room.deleted', {
-      roomId,
-    });
+    this.server.to(this.roomChannel(roomId)).emit(
+      'games.room.deleted',
+      maybeEncrypt({
+        roomId,
+      }),
+    );
   }
 
   emitSessionSnapshot(roomId: string, session: GameSessionSummary): void {
     if (!this.server) {
       return;
     }
-    this.server.to(this.roomChannel(roomId)).emit('games.session.snapshot', {
-      roomId,
-      session,
-    });
+    this.server.to(this.roomChannel(roomId)).emit(
+      'games.session.snapshot',
+      maybeEncrypt({
+        roomId,
+        session,
+      }),
+    );
   }
 
   emitSessionSnapshotToClient(
@@ -50,27 +60,33 @@ export class GamesRealtimeService {
     roomId: string,
     session: GameSessionSummary,
   ): void {
-    client.emit('games.session.snapshot', {
-      roomId,
-      session,
-    });
+    client.emit(
+      'games.session.snapshot',
+      maybeEncrypt({
+        roomId,
+        session,
+      }),
+    );
   }
 
   emitRoomCreated(room: GameRoomSummary): void {
     if (!this.server) {
       return;
     }
-    this.server.emit('games.room.created', { room });
+    this.server.emit('games.room.created', maybeEncrypt({ room }));
   }
 
   emitPlayerJoined(room: GameRoomSummary, userId: string): void {
     if (!this.server) {
       return;
     }
-    this.server.to(this.roomChannel(room.id)).emit('games.player.joined', {
-      room,
-      userId,
-    });
+    this.server.to(this.roomChannel(room.id)).emit(
+      'games.player.joined',
+      maybeEncrypt({
+        room,
+        userId,
+      }),
+    );
   }
 
   emitPlayerLeft(
@@ -81,20 +97,26 @@ export class GamesRealtimeService {
     if (!this.server || !room) {
       return;
     }
-    this.server.to(this.roomChannel(room.id)).emit('games.player.left', {
-      room,
-      userId,
-      roomDeleted,
-    });
+    this.server.to(this.roomChannel(room.id)).emit(
+      'games.player.left',
+      maybeEncrypt({
+        room,
+        userId,
+        roomDeleted,
+      }),
+    );
   }
 
   emitRoomDeleted(roomId: string): void {
     if (!this.server) {
       return;
     }
-    this.server.to(this.roomChannel(roomId)).emit('games.room.deleted', {
-      roomId,
-    });
+    this.server.to(this.roomChannel(roomId)).emit(
+      'games.room.deleted',
+      maybeEncrypt({
+        roomId,
+      }),
+    );
   }
 
   emitGameStarted(room: GameRoomSummary, session: GameSessionSummary): void {
@@ -107,14 +129,20 @@ export class GamesRealtimeService {
     );
 
     // Emit both events for backward compatibility
-    this.server.to(this.roomChannel(room.id)).emit('games.game.started', {
-      room,
-      session,
-    });
-    this.server.to(this.roomChannel(room.id)).emit('games.session.started', {
-      room,
-      session,
-    });
+    this.server.to(this.roomChannel(room.id)).emit(
+      'games.game.started',
+      maybeEncrypt({
+        room,
+        session,
+      }),
+    );
+    this.server.to(this.roomChannel(room.id)).emit(
+      'games.session.started',
+      maybeEncrypt({
+        room,
+        session,
+      }),
+    );
 
     // Also emit session snapshot
     this.emitSessionSnapshot(room.id, session);
@@ -128,13 +156,14 @@ export class GamesRealtimeService {
     if (!this.server || !session.roomId) {
       return;
     }
-    this.server
-      .to(this.roomChannel(session.roomId))
-      .emit('games.action.executed', {
+    this.server.to(this.roomChannel(session.roomId)).emit(
+      'games.action.executed',
+      maybeEncrypt({
         session,
         action,
         userId,
-      });
+      }),
+    );
 
     // Also emit session snapshot to update all clients
     this.emitSessionSnapshot(session.roomId, session);

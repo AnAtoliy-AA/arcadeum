@@ -80,10 +80,17 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
       return false;
     }
 
+    // If player must defuse, only allow defuse action
+    if (state.pendingDefuse === context.userId && action !== 'defuse') {
+      return false;
+    }
+
     const typedPayload = payload as ExplodingCatsPayload | undefined;
 
     switch (action) {
       case 'draw_card':
+        // Can't draw if must defuse
+        if (state.pendingDefuse) return false;
         // Always allow draw when it's player's turn (checked above)
         // executeAction will auto-fix pendingDraws to 1 if it's 0
         return true;
@@ -105,8 +112,11 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
         return this.validateFavor(state, context.userId, typedPayload);
 
       case 'defuse':
+        // Can only defuse if pendingDefuse is set for this player
         return (
-          this.hasCard(player, 'defuse') && typedPayload?.position !== undefined
+          state.pendingDefuse === context.userId &&
+          this.hasCard(player, 'defuse') &&
+          typedPayload?.position !== undefined
         );
 
       default:
@@ -245,6 +255,11 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
     const player = this.findPlayer(state, playerId) as ExplodingCatsPlayerState;
     if (!player || !player.alive || !this.isPlayerTurn(state, playerId)) {
       return [];
+    }
+
+    // If player must defuse, that's the only available action
+    if (state.pendingDefuse === playerId) {
+      return ['defuse'];
     }
 
     const actions: string[] = [];

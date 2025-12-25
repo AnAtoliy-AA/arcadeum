@@ -1,6 +1,12 @@
-import { useState, useCallback, useEffect, RefObject } from "react";
-import { gameSocket } from "@/shared/lib/socket";
-import type { ExplodingCatsCard, ExplodingCatsCatCard, CatComboModalState, SeeTheFutureModalState } from "../types";
+import { useState, useCallback, useEffect, RefObject } from 'react';
+import { gameSocket } from '@/shared/lib/socket';
+import { maybeDecrypt } from '@/shared/lib/socket-encryption';
+import type {
+  ExplodingCatsCard,
+  ExplodingCatsCatCard,
+  CatComboModalState,
+  SeeTheFutureModalState,
+} from '../types';
 
 interface UseExplodingCatsModalsOptions {
   chatMessagesRef: RefObject<HTMLDivElement | null>;
@@ -14,24 +20,31 @@ export function useExplodingCatsModals({
   chatMessagesRef,
   chatLogCount,
 }: UseExplodingCatsModalsOptions) {
-  const [catComboModal, setCatComboModal] = useState<CatComboModalState | null>(null);
+  const [catComboModal, setCatComboModal] = useState<CatComboModalState | null>(
+    null,
+  );
   const [favorModal, setFavorModal] = useState(false);
-  const [seeTheFutureModal, setSeeTheFutureModal] = useState<SeeTheFutureModalState | null>(null);
-  const [selectedMode, setSelectedMode] = useState<"pair" | "trio" | null>(null);
+  const [seeTheFutureModal, setSeeTheFutureModal] =
+    useState<SeeTheFutureModalState | null>(null);
+  const [selectedMode, setSelectedMode] = useState<'pair' | 'trio' | null>(
+    null,
+  );
   const [selectedTarget, setSelectedTarget] = useState<string | null>(null);
-  const [selectedCard, setSelectedCard] = useState<ExplodingCatsCard | null>(null);
+  const [selectedCard, setSelectedCard] = useState<ExplodingCatsCard | null>(
+    null,
+  );
 
   // Chat state
-  const [chatMessage, setChatMessage] = useState("");
-  const [chatScope, setChatScope] = useState<"all" | "players">("all");
+  const [chatMessage, setChatMessage] = useState('');
+  const [chatScope, setChatScope] = useState<'all' | 'players'>('all');
   const [showChat, setShowChat] = useState(true);
 
   // Auto-scroll chat to newest message
   useEffect(() => {
     if (chatMessagesRef.current?.lastElementChild) {
       chatMessagesRef.current.lastElementChild.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest"
+        behavior: 'smooth',
+        block: 'nearest',
       });
     }
   }, [chatLogCount, chatMessagesRef]);
@@ -44,27 +57,35 @@ export function useExplodingCatsModals({
       }
     };
 
-    gameSocket.on("games.session.see_the_future.played", handleSeeTheFuture);
+    const wrappedHandler = async (raw: unknown) => {
+      const data = await maybeDecrypt<{ topCards: string[] }>(raw);
+      handleSeeTheFuture(data);
+    };
+
+    gameSocket.on('games.session.see_the_future.played', wrappedHandler);
 
     return () => {
-      gameSocket.off("games.session.see_the_future.played", handleSeeTheFuture);
+      gameSocket.off('games.session.see_the_future.played', wrappedHandler);
     };
   }, []);
 
-  const handleOpenCatCombo = useCallback((cat: ExplodingCatsCatCard, handCards: ExplodingCatsCard[]) => {
-    const count = handCards.filter((c) => c === cat).length;
-    const availableModes: ("pair" | "trio")[] = [];
+  const handleOpenCatCombo = useCallback(
+    (cat: ExplodingCatsCatCard, handCards: ExplodingCatsCard[]) => {
+      const count = handCards.filter((c) => c === cat).length;
+      const availableModes: ('pair' | 'trio')[] = [];
 
-    if (count >= 2) availableModes.push("pair");
-    if (count >= 3) availableModes.push("trio");
+      if (count >= 2) availableModes.push('pair');
+      if (count >= 3) availableModes.push('trio');
 
-    if (availableModes.length === 0) return;
+      if (availableModes.length === 0) return;
 
-    setCatComboModal({ cat, availableModes });
-    setSelectedMode(availableModes[0]);
-    setSelectedTarget(null);
-    setSelectedCard(null);
-  }, []);
+      setCatComboModal({ cat, availableModes });
+      setSelectedMode(availableModes[0]);
+      setSelectedTarget(null);
+      setSelectedCard(null);
+    },
+    [],
+  );
 
   const handleCloseCatComboModal = useCallback(() => {
     setCatComboModal(null);
@@ -78,7 +99,7 @@ export function useExplodingCatsModals({
   }, []);
 
   const clearChatMessage = useCallback(() => {
-    setChatMessage("");
+    setChatMessage('');
   }, []);
 
   return {
@@ -92,15 +113,15 @@ export function useExplodingCatsModals({
     setSelectedCard,
     handleOpenCatCombo,
     handleCloseCatComboModal,
-    
+
     // Favor modal
     favorModal,
     setFavorModal,
-    
+
     // See the future modal
     seeTheFutureModal,
     setSeeTheFutureModal,
-    
+
     // Chat
     chatMessage,
     setChatMessage,

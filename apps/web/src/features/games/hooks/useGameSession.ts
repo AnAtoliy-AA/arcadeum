@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
-import { gameSocket } from "@/shared/lib/socket";
-import type { GameSessionSummary } from "@/shared/types/games";
+import { useState, useEffect } from 'react';
+import { gameSocket } from '@/shared/lib/socket';
+import { maybeDecrypt } from '@/shared/lib/socket-encryption';
+import type { GameSessionSummary } from '@/shared/types/games';
 
 interface UseGameSessionOptions {
   roomId: string;
@@ -19,11 +20,13 @@ interface UseGameSessionReturn {
  * Hook for managing game session state
  * Handles session snapshots, updates, and action states
  */
-export function useGameSession(options: UseGameSessionOptions): UseGameSessionReturn {
+export function useGameSession(
+  options: UseGameSessionOptions,
+): UseGameSessionReturn {
   const { roomId, enabled = true, initialSession } = options;
 
-  const [session, setSession] = useState<GameSessionSummary | null>(() =>
-    (initialSession as GameSessionSummary) ?? null
+  const [session, setSession] = useState<GameSessionSummary | null>(
+    () => (initialSession as GameSessionSummary) ?? null,
   );
   const [startBusy, setStartBusy] = useState(false);
   const [actionBusy, setActionBusy] = useState<string | null>(null);
@@ -36,7 +39,7 @@ export function useGameSession(options: UseGameSessionOptions): UseGameSessionRe
       session?: GameSessionSummary | null;
     }) => {
       if (payload?.roomId && payload.roomId !== roomId) return;
-      if (payload && Object.prototype.hasOwnProperty.call(payload, "session")) {
+      if (payload && Object.prototype.hasOwnProperty.call(payload, 'session')) {
         setSession(payload?.session ?? null);
       }
       setActionBusy(null);
@@ -62,16 +65,29 @@ export function useGameSession(options: UseGameSessionOptions): UseGameSessionRe
       }
     };
 
+    // Decrypt wrapper for socket handlers
+    const decryptHandler = <T>(handler: (payload: T) => void) => {
+      return async (raw: unknown) => {
+        const payload = await maybeDecrypt<T>(raw);
+        handler(payload);
+      };
+    };
+
+    // Create wrapped handlers
+    const wrappedHandleSnapshot = decryptHandler(handleSnapshot);
+    const wrappedHandleSessionStarted = decryptHandler(handleSessionStarted);
+    const wrappedHandleRoomJoined = decryptHandler(handleRoomJoined);
+
     // Register listeners
-    gameSocket.on("games.session.snapshot", handleSnapshot);
-    gameSocket.on("games.session.started", handleSessionStarted);
-    gameSocket.on("games.room.joined", handleRoomJoined);
+    gameSocket.on('games.session.snapshot', wrappedHandleSnapshot);
+    gameSocket.on('games.session.started', wrappedHandleSessionStarted);
+    gameSocket.on('games.room.joined', wrappedHandleRoomJoined);
 
     // Cleanup
     return () => {
-      gameSocket.off("games.session.snapshot", handleSnapshot);
-      gameSocket.off("games.session.started", handleSessionStarted);
-      gameSocket.off("games.room.joined", handleRoomJoined);
+      gameSocket.off('games.session.snapshot', wrappedHandleSnapshot);
+      gameSocket.off('games.session.started', wrappedHandleSessionStarted);
+      gameSocket.off('games.room.joined', wrappedHandleRoomJoined);
     };
   }, [roomId, enabled]);
 

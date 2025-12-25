@@ -16,7 +16,8 @@ export type ActionBusyType =
   | 'favor'
   | 'see_the_future'
   | 'cat_pair'
-  | 'cat_trio';
+  | 'cat_trio'
+  | 'defuse';
 
 export interface SessionPlayerProfile {
   id: string;
@@ -82,6 +83,7 @@ export interface ExplodingCatsSnapshot {
   playerOrder: string[];
   currentTurnIndex: number;
   pendingDraws: number;
+  pendingDefuse: string | null;
   players: ExplodingCatsPlayerState[];
   logs: ExplodingCatsLogEntry[];
 }
@@ -101,16 +103,7 @@ export interface ExplodingCatsTableProps {
   room: GameRoomSummary | null;
   session: GameSessionSummary | null;
   currentUserId: string | null;
-  actionBusy:
-    | 'draw'
-    | 'skip'
-    | 'attack'
-    | 'shuffle'
-    | 'favor'
-    | 'see_the_future'
-    | 'cat_pair'
-    | 'cat_trio'
-    | null;
+  actionBusy: ActionBusyType | null;
   startBusy: boolean;
   isHost: boolean;
   onStart: () => void;
@@ -119,6 +112,7 @@ export interface ExplodingCatsTableProps {
   onPlayFavor: (targetPlayerId: string, desiredCard: string) => void;
   onPlaySeeTheFuture: () => void;
   onPlayCatCombo: (payload: ExplodingCatsCatComboInput) => void;
+  onPlayDefuse: (position: number) => void;
   onPostHistoryNote?: (
     message: string,
     scope: LogVisibility,

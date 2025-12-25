@@ -1,16 +1,21 @@
-import { useEffect } from "react";
-import { io, type Socket } from "socket.io-client";
-import { resolveApiUrl } from "./api-base";
+import { useEffect } from 'react';
+import { io, type Socket } from 'socket.io-client';
+import { resolveApiUrl } from './api-base';
+import {
+  maybeDecrypt,
+  maybeEncrypt,
+  isSocketEncryptionEnabled,
+} from './socket-encryption';
 
 function resolveSocketUrl(): string {
-  const apiUrl = resolveApiUrl("");
+  const apiUrl = resolveApiUrl('');
 
   try {
     const url = new URL(apiUrl);
-    url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
-    return url.toString().replace(/\/$/, "");
+    url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
+    return url.toString().replace(/\/$/, '');
   } catch {
-    return apiUrl.replace(/\/$/, "");
+    return apiUrl.replace(/\/$/, '');
   }
 }
 
@@ -21,13 +26,13 @@ type AuthenticatedSocket = Socket & {
 };
 
 const SOCKET_OPTIONS = {
-  transports: ["websocket"],
+  transports: ['websocket'],
   autoConnect: false,
 };
 
 const gamesSocket = io(
   `${SOCKET_BASE_URL}/games`,
-  SOCKET_OPTIONS
+  SOCKET_OPTIONS,
 ) as AuthenticatedSocket;
 
 const chatsSocket = io(SOCKET_BASE_URL, SOCKET_OPTIONS) as AuthenticatedSocket;
@@ -83,29 +88,59 @@ export function disconnectSockets(): void {
 export const gameSocket: Socket = gamesSocket;
 export const chatSocket: Socket = chatsSocket;
 
+/**
+ * Emit a message with optional encryption.
+ */
+export async function emitEncrypted(
+  socket: Socket,
+  event: string,
+  payload: unknown,
+): Promise<void> {
+  const data = await maybeEncrypt(payload);
+  socket.emit(event, data);
+}
+
 interface SocketEventHandler {
   (...args: unknown[]): void;
 }
 
 export function useSocket(event: string, handler: SocketEventHandler): void {
   useEffect(() => {
-    gameSocket.on(event, handler);
+    const listener = async (...args: unknown[]) => {
+      if (args.length > 0 && isSocketEncryptionEnabled()) {
+        const decrypted = await maybeDecrypt(args[0]);
+        handler(decrypted, ...args.slice(1));
+        return;
+      }
+      handler(...args);
+    };
+
+    gameSocket.on(event, listener);
 
     return () => {
-      gameSocket.off(event, handler);
+      gameSocket.off(event, listener);
     };
   }, [event, handler]);
 }
 
 export function useChatSocket(
   event: string,
-  handler: SocketEventHandler
+  handler: SocketEventHandler,
 ): void {
   useEffect(() => {
-    chatSocket.on(event, handler);
+    const listener = async (...args: unknown[]) => {
+      if (args.length > 0 && isSocketEncryptionEnabled()) {
+        const decrypted = await maybeDecrypt(args[0]);
+        handler(decrypted, ...args.slice(1));
+        return;
+      }
+      handler(...args);
+    };
+
+    chatSocket.on(event, listener);
 
     return () => {
-      chatSocket.off(event, handler);
+      chatSocket.off(event, listener);
     };
   }, [event, handler]);
 }

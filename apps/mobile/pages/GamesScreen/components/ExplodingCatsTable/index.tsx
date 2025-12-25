@@ -44,6 +44,7 @@ import {
   GameLogs,
   CatComboModal,
   CardDecor,
+  DefuseModal,
 } from './components';
 import { createStyles } from './styles';
 
@@ -63,6 +64,7 @@ export function ExplodingCatsTable({
   onPlayFavor,
   onPlaySeeTheFuture,
   onPlayCatCombo,
+  onPlayDefuse,
   onPostHistoryNote,
   fullScreen = false,
   tableOnly = false,
@@ -104,6 +106,13 @@ export function ExplodingCatsTable({
     pendingDraws,
     isMyTurn,
   } = gameState;
+
+  const pendingDefuse = snapshot?.pendingDefuse ?? null;
+  const mustDefuse = pendingDefuse === currentUserId;
+
+  const handleDefuseConfirm = (position: number) => {
+    onPlayDefuse(position);
+  };
 
   const gridCardWidth = gridColumns.gridCardDimensions.width;
   const gridCardHeight = gridColumns.gridCardDimensions.height;
@@ -423,6 +432,14 @@ export function ExplodingCatsTable({
     />
   );
 
+  const defuseModal = (
+    <DefuseModal
+      visible={mustDefuse && !actionBusy}
+      deckSize={deckCount}
+      onConfirm={handleDefuseConfirm}
+    />
+  );
+
   if (fullScreen) {
     return (
       <>
@@ -443,6 +460,7 @@ export function ExplodingCatsTable({
           </ScrollView>
         </ThemedView>
         {comboModal}
+        {defuseModal}
       </>
     );
   }
@@ -471,6 +489,7 @@ export function ExplodingCatsTable({
         </ScrollView>
       </ThemedView>
       {comboModal}
+      {defuseModal}
     </>
   );
 }

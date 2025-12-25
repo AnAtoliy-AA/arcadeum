@@ -6,3 +6,4 @@ export * from './HandView';
 export * from './GameLogs';
 export * from './CatComboModal';
 export * from './CardDecor';
+export * from './DefuseModal';

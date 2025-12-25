@@ -2,6 +2,11 @@ import { useEffect } from 'react';
 import { io, type Socket } from 'socket.io-client';
 import { getAppExtra } from '@/lib/expoConstants';
 import { resolveApiBase } from '@/lib/apiBase';
+import {
+  maybeDecrypt,
+  maybeEncrypt,
+  isSocketEncryptionEnabled,
+} from '@/lib/socket-encryption';
 
 function resolveSocketUrl(): string {
   const extra = getAppExtra();
@@ -88,36 +93,56 @@ export const gameSocket: Socket = gamesSocket;
 
 export const chatSocket: Socket = chatsSocket;
 
-export function useSocket<T extends unknown[]>(
+/**
+ * Emit a message with optional encryption.
+ */
+export async function emitEncrypted(
+  socket: Socket,
+  event: string,
+  payload: unknown,
+): Promise<void> {
+  const data = await maybeEncrypt(payload);
+  socket.emit(event, data);
+}
+
+/**
+ * Shared hook for subscribing to socket events with optional decryption.
+ */
+function useSocketListener<T extends unknown[]>(
+  socket: Socket,
   event: string,
   handler: (...args: T) => void,
 ): void {
   useEffect(() => {
-    const listener = (...args: unknown[]) => {
+    const listener = async (...args: unknown[]) => {
+      // Decrypt the first argument if encryption is enabled
+      if (args.length > 0 && isSocketEncryptionEnabled()) {
+        const decrypted = await maybeDecrypt<T[0]>(args[0]);
+        const reconstructed = [decrypted, ...args.slice(1)] as unknown as T;
+        handler(...reconstructed);
+        return;
+      }
       handler(...(args as T));
     };
 
-    gameSocket.on(event, listener);
+    socket.on(event, listener);
 
     return () => {
-      gameSocket.off(event, listener);
+      socket.off(event, listener);
     };
-  }, [event, handler]);
+  }, [socket, event, handler]);
+}
+
+export function useSocket<T extends unknown[]>(
+  event: string,
+  handler: (...args: T) => void,
+): void {
+  useSocketListener(gameSocket, event, handler);
 }
 
 export function useChatSocket<T extends unknown[]>(
   event: string,
   handler: (...args: T) => void,
 ): void {
-  useEffect(() => {
-    const listener = (...args: unknown[]) => {
-      handler(...(args as T));
-    };
-
-    chatSocket.on(event, listener);
-
-    return () => {
-      chatSocket.off(event, listener);
-    };
-  }, [event, handler]);
+  useSocketListener(chatSocket, event, handler);
 }

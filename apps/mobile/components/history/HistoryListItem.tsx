@@ -9,6 +9,28 @@ import { gamesCatalog } from '@/pages/GamesScreen/catalog';
 import { useThemedStyles } from '@/hooks/useThemedStyles';
 import type { Palette } from '@/hooks/useThemedStyles';
 
+// Known game IDs with translation keys
+type KnownGameId =
+  | 'exploding_kittens_v1'
+  | 'texas_holdem_v1'
+  | 'coup'
+  | 'pandemic-lite';
+type GameNameKey = `games.${KnownGameId}.name`;
+
+const GAME_NAME_KEYS: Record<KnownGameId, GameNameKey> = {
+  exploding_kittens_v1: 'games.exploding_kittens_v1.name',
+  texas_holdem_v1: 'games.texas_holdem_v1.name',
+  coup: 'games.coup.name',
+  'pandemic-lite': 'games.pandemic-lite.name',
+};
+
+function getGameNameKey(gameId: string): TranslationKey | null {
+  if (gameId in GAME_NAME_KEYS) {
+    return GAME_NAME_KEYS[gameId as KnownGameId];
+  }
+  return null;
+}
+
 const STATUS_TRANSLATION_KEYS = {
   lobby: 'history.status.lobby',
   in_progress: 'history.status.inProgress',
@@ -45,10 +67,11 @@ export function HistoryListItem({
   const styles = useThemedStyles(createStyles);
   const statusKey = STATUS_TRANSLATION_KEYS[item.status];
   const statusLabel = statusKey ? t(statusKey) : item.status;
+  const gameNameKey = getGameNameKey(item.gameId);
   const displayName =
-    t(`games.${item.gameId}.name` as any) ||
-    item.gameId ||
+    (gameNameKey && t(gameNameKey)) ||
     resolveGameName(item.gameId) ||
+    item.gameId ||
     t('history.unknownGame');
   const others = item.participants
     .map(

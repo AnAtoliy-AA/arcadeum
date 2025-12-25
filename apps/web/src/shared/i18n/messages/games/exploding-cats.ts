@@ -78,6 +78,14 @@ export const explodingCatsMessages: Record<Locale, Record<string, unknown>> = {
         title: 'You have been eliminated!',
         message: 'Watch the remaining players battle it out',
       },
+      victory: {
+        title: 'Victory!',
+        message: 'Congratulations! You survived!',
+      },
+      defeat: {
+        title: 'Game Over',
+        message: 'Better luck next time!',
+      },
       fullscreen: {
         enter: 'Enter fullscreen (F)',
         exit: 'Exit fullscreen (Esc)',
@@ -217,6 +225,14 @@ export const explodingCatsMessages: Record<Locale, Record<string, unknown>> = {
         title: '¡Has sido eliminado!',
         message: 'Observa cómo los jugadores restantes batallan',
       },
+      victory: {
+        title: '¡Victoria!',
+        message: '¡Felicidades! ¡Sobreviviste!',
+      },
+      defeat: {
+        title: 'Fin del Juego',
+        message: '¡Mejor suerte la próxima vez!',
+      },
       fullscreen: {
         enter: 'Pantalla completa (F)',
         exit: 'Salir de pantalla completa (Esc)',
@@ -331,6 +347,14 @@ export const explodingCatsMessages: Record<Locale, Record<string, unknown>> = {
       eliminated: {
         title: 'Vous avez été éliminé !',
         message: 'Regardez les joueurs restants se battre',
+      },
+      victory: {
+        title: 'Victoire !',
+        message: 'Félicitations ! Vous avez survécu !',
+      },
+      defeat: {
+        title: 'Fin de Partie',
+        message: 'Meilleure chance la prochaine fois !',
       },
       fullscreen: {
         enter: 'Plein écran (F)',

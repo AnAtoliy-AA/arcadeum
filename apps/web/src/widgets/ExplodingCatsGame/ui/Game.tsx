@@ -23,6 +23,7 @@ import { DefuseModal } from './modals/DefuseModal';
 import { GameLobby } from './GameLobby';
 import { ActionsSection } from './ActionsSection';
 import { ChatSection } from './ChatSection';
+import { GameStatusMessage } from './GameStatusMessage';
 
 import {
   GameContainer,
@@ -59,7 +60,6 @@ import {
   CardsGrid,
   Card,
   CardCountBadge,
-  EmptyState,
 } from './styles';
 
 export default function ExplodingCatsGame({
@@ -83,6 +83,7 @@ export default function ExplodingCatsGame({
     isMyTurn,
     canAct,
     aliveOpponents,
+    isGameOver,
   } = useExplodingCatsState({ roomId, currentUserId, initialSession });
 
   const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef);
@@ -305,9 +306,9 @@ export default function ExplodingCatsGame({
             </PlayersRing>
           </GameTable>
 
-          {currentPlayer && currentPlayer.alive && (
+          {currentPlayer && currentPlayer.alive && !isGameOver && (
             <HandSection>
-              {isMyTurn && (
+              {isMyTurn && !isGameOver && (
                 <ActionsSection
                   currentPlayer={currentPlayer}
                   canAct={canAct}
@@ -413,20 +414,12 @@ export default function ExplodingCatsGame({
           )}
         </TableArea>
 
-        {currentPlayer && !currentPlayer.alive && (
-          <EmptyState>
-            <div style={{ fontSize: '4rem' }}>💀</div>
-            <div>
-              <strong style={{ fontSize: '1.25rem' }}>
-                {t('games.table.eliminated.title') ||
-                  'You have been eliminated!'}
-              </strong>
-            </div>
-            <div style={{ fontSize: '1rem' }}>
-              {t('games.table.eliminated.message') ||
-                'Watch the remaining players battle it out'}
-            </div>
-          </EmptyState>
+        {currentPlayer && (
+          <GameStatusMessage
+            currentPlayerAlive={currentPlayer.alive}
+            isGameOver={isGameOver}
+            t={t as (key: string) => string}
+          />
         )}
       </GameBoard>
 

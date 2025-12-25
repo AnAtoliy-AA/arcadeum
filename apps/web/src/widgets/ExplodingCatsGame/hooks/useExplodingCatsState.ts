@@ -1,6 +1,6 @@
-import { useMemo } from "react";
-import { useGameSession, useGameActions } from "@/features/games/hooks";
-import type { ExplodingCatsSnapshot, ExplodingCatsPlayerState } from "../types";
+import { useMemo } from 'react';
+import { useGameSession, useGameActions } from '@/features/games/hooks';
+import type { ExplodingCatsSnapshot, ExplodingCatsPlayerState } from '../types';
 
 interface UseExplodingCatsStateOptions {
   roomId: string;
@@ -25,7 +25,7 @@ export function useExplodingCatsState({
   const actions = useGameActions({
     roomId,
     userId: currentUserId,
-    gameType: "exploding_kittens_v1",
+    gameType: 'exploding_kittens_v1',
     onActionComplete: () => setActionBusy(null),
   });
 
@@ -46,8 +46,11 @@ export function useExplodingCatsState({
   }, [snapshot]);
 
   const isMyTurn = useMemo(() => {
-    return currentTurnPlayer?.playerId === currentUserId;
-  }, [currentTurnPlayer, currentUserId]);
+    return (
+      currentTurnPlayer?.playerId === currentUserId &&
+      currentPlayer?.alive === true
+    );
+  }, [currentTurnPlayer, currentUserId, currentPlayer]);
 
   const canAct = useMemo(() => {
     return isMyTurn && !actionBusy && currentPlayer?.alive;
@@ -56,9 +59,11 @@ export function useExplodingCatsState({
   const aliveOpponents = useMemo(() => {
     if (!snapshot || !currentUserId) return [];
     return snapshot.players.filter(
-      (p) => p.alive && p.playerId !== currentUserId
+      (p) => p.alive && p.playerId !== currentUserId,
     );
   }, [snapshot, currentUserId]);
+
+  const isGameOver = session?.status === 'completed';
 
   return {
     session,
@@ -71,5 +76,6 @@ export function useExplodingCatsState({
     isMyTurn,
     canAct,
     aliveOpponents,
+    isGameOver,
   };
 }

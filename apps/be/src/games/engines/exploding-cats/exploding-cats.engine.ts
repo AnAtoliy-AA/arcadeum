@@ -394,7 +394,22 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
   }
 
   protected advanceTurn(state: ExplodingCatsState): void {
-    super.advanceTurn(state);
+    const playerCount = state.playerOrder.length;
+    let nextIndex = (state.currentTurnIndex + 1) % playerCount;
+
+    // Skip eliminated players
+    let attempts = 0;
+    while (attempts < playerCount) {
+      const nextPlayerId = state.playerOrder[nextIndex];
+      const nextPlayer = state.players.find((p) => p.playerId === nextPlayerId);
+      if (nextPlayer?.alive) {
+        break;
+      }
+      nextIndex = (nextIndex + 1) % playerCount;
+      attempts++;
+    }
+
+    state.currentTurnIndex = nextIndex;
     state.pendingDraws = 1;
   }
 }

@@ -11,7 +11,11 @@ import type { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { extractString } from './games.gateway.utils';
-import { maybeEncrypt } from '../common/utils/socket-encryption.util';
+import {
+  maybeEncrypt,
+  isSocketEncryptionEnabled,
+  getEncryptionKeyHex,
+} from '../common/utils/socket-encryption.util';
 
 @WebSocketGateway({
   namespace: 'games',
@@ -36,6 +40,17 @@ export class GamesGateway {
 
   handleConnection(client: Socket): void {
     this.logger.verbose(`Client connected ${client.id}`);
+
+    // Send encryption key to authenticated client if encryption is enabled
+    if (isSocketEncryptionEnabled()) {
+      try {
+        const encryptionKey = getEncryptionKeyHex();
+        client.emit('socket.encryption_key', { key: encryptionKey });
+        this.logger.debug(`Encryption key sent to ${client.id}`);
+      } catch (error) {
+        this.logger.error(`Failed to send encryption key: ${error}`);
+      }
+    }
   }
 
   handleDisconnect(client: Socket): void {

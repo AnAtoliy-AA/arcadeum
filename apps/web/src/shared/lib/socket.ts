@@ -5,6 +5,9 @@ import {
   maybeDecrypt,
   maybeEncrypt,
   isSocketEncryptionEnabled,
+  setEncryptionKey,
+  resetEncryptionKey,
+  hasEncryptionKey,
 } from './socket-encryption';
 
 function resolveSocketUrl(): string {
@@ -38,6 +41,51 @@ const gamesSocket = io(
 const chatsSocket = io(SOCKET_BASE_URL, SOCKET_OPTIONS) as AuthenticatedSocket;
 
 let currentAuthToken: string | null = null;
+
+/**
+ * Message queue for messages waiting on encryption key
+ */
+type QueuedMessage = { event: string; payload: unknown };
+const messageQueue: QueuedMessage[] = [];
+
+/**
+ * Process queued messages after encryption key is received
+ */
+async function flushMessageQueue(): Promise<void> {
+  while (messageQueue.length > 0) {
+    const msg = messageQueue.shift();
+    if (msg) {
+      const data = await maybeEncrypt(msg.payload);
+      gamesSocket.emit(msg.event, data);
+    }
+  }
+}
+
+/**
+ * Set up encryption key handler for a socket
+ */
+function setupEncryptionKeyHandler(socket: AuthenticatedSocket): void {
+  socket.on('socket.encryption_key', async (data: { key?: string }) => {
+    if (!data?.key) {
+      console.warn('[socket] Invalid encryption key data from server');
+      return;
+    }
+
+    const success = await setEncryptionKey(data.key);
+    if (success) {
+      console.debug('[socket] Encryption key received and set');
+      await flushMessageQueue();
+    }
+  });
+
+  socket.on('disconnect', () => {
+    resetEncryptionKey();
+    messageQueue.length = 0;
+  });
+}
+
+// Set up encryption key handler for games socket
+setupEncryptionKeyHandler(gamesSocket);
 
 function applyAuth(socketInstance: AuthenticatedSocket, token: string): void {
   socketInstance.auth = { token };
@@ -83,6 +131,7 @@ export function disconnectSockets(): void {
 
   gamesSocket.auth = {};
   chatsSocket.auth = {};
+  resetEncryptionKey();
 }
 
 export const gameSocket: Socket = gamesSocket;
@@ -107,7 +156,11 @@ interface SocketEventHandler {
 export function useSocket(event: string, handler: SocketEventHandler): void {
   useEffect(() => {
     const listener = async (...args: unknown[]) => {
-      if (args.length > 0 && isSocketEncryptionEnabled()) {
+      if (
+        args.length > 0 &&
+        isSocketEncryptionEnabled() &&
+        hasEncryptionKey()
+      ) {
         const decrypted = await maybeDecrypt(args[0]);
         handler(decrypted, ...args.slice(1));
         return;
@@ -129,7 +182,11 @@ export function useChatSocket(
 ): void {
   useEffect(() => {
     const listener = async (...args: unknown[]) => {
-      if (args.length > 0 && isSocketEncryptionEnabled()) {
+      if (
+        args.length > 0 &&
+        isSocketEncryptionEnabled() &&
+        hasEncryptionKey()
+      ) {
         const decrypted = await maybeDecrypt(args[0]);
         handler(decrypted, ...args.slice(1));
         return;

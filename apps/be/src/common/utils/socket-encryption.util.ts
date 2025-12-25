@@ -27,6 +27,19 @@ function getEncryptionKey(): Buffer {
 }
 
 /**
+ * Get the encryption key as a hex string (for sending to clients).
+ */
+export function getEncryptionKeyHex(): string {
+  const keyHex = process.env.SOCKET_ENCRYPTION_KEY;
+  if (!keyHex || keyHex.length !== 64) {
+    throw new Error(
+      'SOCKET_ENCRYPTION_KEY must be set to a 64-character hex string (32 bytes)',
+    );
+  }
+  return keyHex;
+}
+
+/**
  * Encrypt a payload object using AES-256-GCM.
  * Returns a Base64-encoded string containing IV + ciphertext + auth tag.
  */

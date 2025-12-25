@@ -2,6 +2,13 @@ const ALGORITHM = 'AES-GCM';
 const IV_LENGTH = 12;
 
 /**
+ * Encryption key received from server at runtime.
+ * NOT bundled in client - fetched via socket on connect.
+ */
+let encryptionKeyBytes: Uint8Array | null = null;
+let encryptionKeyImported: CryptoKey | null = null;
+
+/**
  * Check if socket encryption is enabled via environment variable.
  */
 export function isSocketEncryptionEnabled(): boolean {
@@ -10,22 +17,53 @@ export function isSocketEncryptionEnabled(): boolean {
 }
 
 /**
- * Get the encryption key from environment.
- * Key must be 64 hex characters (32 bytes).
+ * Check if encryption key has been received from server.
  */
-function getEncryptionKey(): Uint8Array<ArrayBuffer> {
-  const keyHex = process.env.NEXT_PUBLIC_SOCKET_ENCRYPTION_KEY;
+export function hasEncryptionKey(): boolean {
+  return encryptionKeyBytes !== null;
+}
+
+/**
+ * Set the encryption key received from server.
+ * Key is a 64-character hex string (32 bytes).
+ */
+export async function setEncryptionKey(keyHex: string): Promise<boolean> {
   if (!keyHex || keyHex.length !== 64) {
-    throw new Error(
-      'NEXT_PUBLIC_SOCKET_ENCRYPTION_KEY must be set to a 64-character hex string (32 bytes)',
+    console.error('[socket-encryption] Invalid key format');
+    return false;
+  }
+
+  try {
+    // Convert hex string to bytes
+    const bytes = new Uint8Array(32);
+    for (let i = 0; i < 32; i++) {
+      bytes[i] = parseInt(keyHex.substring(i * 2, i * 2 + 2), 16);
+    }
+    encryptionKeyBytes = bytes;
+
+    // Import for Web Crypto API
+    encryptionKeyImported = await crypto.subtle.importKey(
+      'raw',
+      bytes,
+      { name: ALGORITHM },
+      false,
+      ['encrypt', 'decrypt'],
     );
+
+    console.debug('[socket-encryption] Encryption key set');
+    return true;
+  } catch (error) {
+    console.error('[socket-encryption] Failed to set encryption key:', error);
+    return false;
   }
-  const buffer = new ArrayBuffer(32);
-  const bytes = new Uint8Array(buffer);
-  for (let i = 0; i < 32; i++) {
-    bytes[i] = parseInt(keyHex.substring(i * 2, i * 2 + 2), 16);
-  }
-  return bytes;
+}
+
+/**
+ * Reset encryption key (on disconnect).
+ */
+export function resetEncryptionKey(): void {
+  encryptionKeyBytes = null;
+  encryptionKeyImported = null;
 }
 
 /**
@@ -56,24 +94,18 @@ function base64ToUint8Array(base64: string): Uint8Array {
  * Returns a Base64-encoded string containing IV + ciphertext + auth tag.
  */
 export async function encryptPayload(payload: unknown): Promise<string> {
-  const key = getEncryptionKey();
+  if (!encryptionKeyImported) {
+    throw new Error('Encryption key not available');
+  }
+
   const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
   const jsonString = JSON.stringify(payload);
   const encoder = new TextEncoder();
   const data = encoder.encode(jsonString);
 
-  // Import key for Web Crypto API
-  const cryptoKey = await crypto.subtle.importKey(
-    'raw',
-    key,
-    { name: ALGORITHM },
-    false,
-    ['encrypt'],
-  );
-
   const encrypted = await crypto.subtle.encrypt(
     { name: ALGORITHM, iv },
-    cryptoKey,
+    encryptionKeyImported,
     data,
   );
 
@@ -92,7 +124,10 @@ export async function encryptPayload(payload: unknown): Promise<string> {
 export async function decryptPayload<T = unknown>(
   ciphertext: string,
 ): Promise<T> {
-  const key = getEncryptionKey();
+  if (!encryptionKeyImported) {
+    throw new Error('Encryption key not available');
+  }
+
   const combined = base64ToUint8Array(ciphertext);
 
   if (combined.length < IV_LENGTH + 16) {
@@ -102,18 +137,9 @@ export async function decryptPayload<T = unknown>(
   const iv = combined.slice(0, IV_LENGTH);
   const encrypted = combined.slice(IV_LENGTH);
 
-  // Import key for Web Crypto API
-  const cryptoKey = await crypto.subtle.importKey(
-    'raw',
-    key,
-    { name: ALGORITHM },
-    false,
-    ['decrypt'],
-  );
-
   const decrypted = await crypto.subtle.decrypt(
     { name: ALGORITHM, iv },
-    cryptoKey,
+    encryptionKeyImported,
     encrypted,
   );
 
@@ -123,10 +149,10 @@ export async function decryptPayload<T = unknown>(
 
 /**
  * Conditionally encrypt a payload based on environment settings.
- * Returns the original payload if encryption is disabled.
+ * Returns the original payload if encryption is disabled or key not available.
  */
 export async function maybeEncrypt(payload: unknown): Promise<unknown> {
-  if (!isSocketEncryptionEnabled()) {
+  if (!isSocketEncryptionEnabled() || !hasEncryptionKey()) {
     return payload;
   }
   return { __encrypted: await encryptPayload(payload) };
@@ -137,7 +163,7 @@ export async function maybeEncrypt(payload: unknown): Promise<unknown> {
  * Returns the original payload if encryption is disabled or payload is not encrypted.
  */
 export async function maybeDecrypt<T = unknown>(payload: unknown): Promise<T> {
-  if (!isSocketEncryptionEnabled()) {
+  if (!isSocketEncryptionEnabled() || !hasEncryptionKey()) {
     return payload as T;
   }
 

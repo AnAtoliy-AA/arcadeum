@@ -48,11 +48,16 @@ export function useCreateGameRoomController(): UseCreateGameRoomControllerResult
   const { tokens, refreshTokens } = useSessionTokens();
   const { t } = useTranslation();
 
-  const playableGames = useMemo(
-    () => gamesCatalog.filter((game) => game.isPlayable),
+  const visibleGames = useMemo(
+    () => gamesCatalog.filter((game) => !game.isHidden),
     [],
   );
-  const availableGames = gamesCatalog;
+
+  const playableGames = useMemo(
+    () => visibleGames.filter((game) => game.isPlayable),
+    [visibleGames],
+  );
+  const availableGames = visibleGames;
 
   const initialGameId = useMemo(() => {
     const value = params?.gameId;

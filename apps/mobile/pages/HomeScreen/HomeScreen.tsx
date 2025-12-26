@@ -27,9 +27,14 @@ export default function HomeScreen() {
   const appName = useAppName();
   const router = useRouter();
 
-  const playableGames = useMemo(
-    () => gamesCatalog.filter((game) => game.isPlayable),
+  const visibleGames = useMemo(
+    () => gamesCatalog.filter((game) => !game.isHidden),
     [],
+  );
+
+  const playableGames = useMemo(
+    () => visibleGames.filter((game) => game.isPlayable),
+    [visibleGames],
   );
   const defaultPlayableId = playableGames[0]?.id;
   const canCreateAny = Boolean(defaultPlayableId);
@@ -119,7 +124,7 @@ export default function HomeScreen() {
           </ThemedText>
         </View>
 
-        {gamesCatalog.map((game) => {
+        {visibleGames.map((game) => {
           const statusStyle =
             game.status === 'In prototype'
               ? styles.statusPrototype

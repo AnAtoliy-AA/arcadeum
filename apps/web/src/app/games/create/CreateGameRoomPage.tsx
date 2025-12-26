@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useState, useCallback, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import styled from "styled-components";
-import { useSessionTokens } from "@/entities/session/model/useSessionTokens";
-import { resolveApiUrl } from "@/shared/lib/api-base";
-import { useTranslation } from "@/shared/lib/useTranslation";
-import { ERROR_COLOR } from "@/shared/config/payment-config";
+import { useState, useCallback, useMemo } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import styled from 'styled-components';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { resolveApiUrl } from '@/shared/lib/api-base';
+import { useTranslation } from '@/shared/lib/useTranslation';
+import { ERROR_COLOR } from '@/shared/config/payment-config';
 
 const Page = styled.main`
   min-height: 100vh;
@@ -60,12 +60,14 @@ const GameTile = styled.button<{ $active?: boolean; disabled?: boolean }>`
   border-radius: 12px;
   border: 2px solid
     ${({ $active, theme }) =>
-      $active ? theme.buttons.primary.gradientStart : theme.surfaces.card.border};
+      $active
+        ? theme.buttons.primary.gradientStart
+        : theme.surfaces.card.border};
   background: ${({ $active, theme }) =>
     $active ? theme.surfaces.card.background : theme.background.base};
   color: ${({ theme }) => theme.text.primary};
   text-align: left;
-  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
   transition: all 0.2s ease;
 
@@ -143,9 +145,7 @@ const VisibilityToggle = styled.button<{ $isPublic: boolean }>`
   border-radius: 12px;
   border: 1px solid ${({ theme }) => theme.surfaces.card.border};
   background: ${({ $isPublic }) =>
-    $isPublic
-      ? "rgba(34, 197, 94, 0.1)"
-      : "rgba(191, 90, 242, 0.1)"};
+    $isPublic ? 'rgba(34, 197, 94, 0.1)' : 'rgba(191, 90, 242, 0.1)'};
   color: ${({ theme }) => theme.text.primary};
   font-weight: 600;
   cursor: pointer;
@@ -191,18 +191,22 @@ const Error = styled.div`
 
 const gamesCatalog = [
   {
-    id: "exploding_kittens_v1",
-    name: "Exploding Cats",
-    summary: "A strategic card game where you avoid exploding cats",
+    id: 'exploding_kittens_v1',
+    name: 'Exploding Cats',
+    summary: 'A strategic card game where you avoid exploding cats',
     isPlayable: true,
   },
   {
-    id: "texas_holdem_v1",
+    id: 'texas_holdem_v1',
     name: "Texas Hold'em",
-    summary: "Classic poker game with community cards",
-    isPlayable: true,
+    summary: 'Classic poker game with community cards',
+    isPlayable: false, // Temporarily unavailable
+    isHidden: true, // Temporarily hidden from UI
   },
 ];
+
+// Filter out hidden games for display
+const visibleGames = gamesCatalog.filter((game) => !game.isHidden);
 
 export function CreateGameRoomPage() {
   const router = useRouter();
@@ -211,15 +215,17 @@ export function CreateGameRoomPage() {
   const { t } = useTranslation();
 
   const initialGameId = useMemo(() => {
-    const gameId = searchParams?.get("gameId");
-    return gameId && gamesCatalog.some((g) => g.id === gameId) ? gameId : gamesCatalog[0]?.id || "";
+    const gameId = searchParams?.get('gameId');
+    return gameId && visibleGames.some((g) => g.id === gameId)
+      ? gameId
+      : visibleGames[0]?.id || '';
   }, [searchParams]);
 
   const [gameId, setGameId] = useState(initialGameId);
-  const [name, setName] = useState("");
-  const [visibility, setVisibility] = useState<"public" | "private">("public");
-  const [maxPlayers, setMaxPlayers] = useState("");
-  const [notes, setNotes] = useState("");
+  const [name, setName] = useState('');
+  const [visibility, setVisibility] = useState<'public' | 'private'>('public');
+  const [maxPlayers, setMaxPlayers] = useState('');
+  const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -228,18 +234,21 @@ export function CreateGameRoomPage() {
       e.preventDefault();
 
       if (!snapshot.accessToken) {
-        setError("Please sign in to create a room");
+        setError('Please sign in to create a room');
         return;
       }
 
       if (!name.trim()) {
-        setError("Room name is required");
+        setError('Room name is required');
         return;
       }
 
       const maxPlayersNum = maxPlayers.trim() ? Number(maxPlayers) : undefined;
-      if (maxPlayersNum !== undefined && (isNaN(maxPlayersNum) || maxPlayersNum < 2)) {
-        setError("Max players must be at least 2");
+      if (
+        maxPlayersNum !== undefined &&
+        (isNaN(maxPlayersNum) || maxPlayersNum < 2)
+      ) {
+        setError('Max players must be at least 2');
         return;
       }
 
@@ -247,11 +256,11 @@ export function CreateGameRoomPage() {
       setError(null);
 
       try {
-        const url = resolveApiUrl("/games/rooms");
+        const url = resolveApiUrl('/games/rooms');
         const response = await fetch(url, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${snapshot.accessToken}`,
           },
           body: JSON.stringify({
@@ -264,30 +273,36 @@ export function CreateGameRoomPage() {
         });
 
         if (!response.ok) {
-          throw new globalThis.Error("Failed to create room");
+          throw new globalThis.Error('Failed to create room');
         }
 
         const data = await response.json();
         router.push(`/games/rooms/${data.room.id}`);
       } catch (err) {
-        setError(err instanceof globalThis.Error ? err.message : "Failed to create room");
+        setError(
+          err instanceof globalThis.Error
+            ? err.message
+            : 'Failed to create room',
+        );
       } finally {
         setLoading(false);
       }
     },
-    [gameId, name, visibility, maxPlayers, notes, snapshot.accessToken, router]
+    [gameId, name, visibility, maxPlayers, notes, snapshot.accessToken, router],
   );
 
   return (
     <Page>
       <Container>
-        <Title>{t("games.create.title") || "Create Game Room"}</Title>
+        <Title>{t('games.create.title') || 'Create Game Room'}</Title>
 
         <Form onSubmit={handleSubmit}>
           <Section>
-            <SectionTitle>{t("games.create.sectionGame") || "Select Game"}</SectionTitle>
+            <SectionTitle>
+              {t('games.create.sectionGame') || 'Select Game'}
+            </SectionTitle>
             <GameSelector>
-              {gamesCatalog.map((game) => (
+              {visibleGames.map((game) => (
                 <GameTile
                   key={game.id}
                   $active={gameId === game.id}
@@ -303,13 +318,19 @@ export function CreateGameRoomPage() {
           </Section>
 
           <Section>
-            <SectionTitle>{t("games.create.sectionDetails") || "Room Details"}</SectionTitle>
+            <SectionTitle>
+              {t('games.create.sectionDetails') || 'Room Details'}
+            </SectionTitle>
             <FieldGroup>
-              <Label htmlFor="room-name">{t("games.create.fieldName") || "Room Name"}</Label>
+              <Label htmlFor="room-name">
+                {t('games.create.fieldName') || 'Room Name'}
+              </Label>
               <Input
                 id="room-name"
                 type="text"
-                placeholder={t("games.create.namePlaceholder") || "Enter room name"}
+                placeholder={
+                  t('games.create.namePlaceholder') || 'Enter room name'
+                }
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -319,41 +340,61 @@ export function CreateGameRoomPage() {
 
             <Row>
               <FieldGroup>
-                <Label htmlFor="max-players">{t("games.create.fieldMaxPlayers") || "Max Players (optional)"}</Label>
+                <Label htmlFor="max-players">
+                  {t('games.create.fieldMaxPlayers') ||
+                    'Max Players (optional)'}
+                </Label>
                 <Input
                   id="max-players"
                   type="number"
                   min="2"
-                  placeholder={t("games.create.autoPlaceholder") || "Auto"}
+                  placeholder={t('games.create.autoPlaceholder') || 'Auto'}
                   value={maxPlayers}
                   onChange={(e) => setMaxPlayers(e.target.value)}
-                  aria-label={t("games.create.maxPlayersAria") || "Maximum number of players"}
+                  aria-label={
+                    t('games.create.maxPlayersAria') ||
+                    'Maximum number of players'
+                  }
                 />
               </FieldGroup>
 
               <FieldGroup>
-                <Label htmlFor="visibility">{t("games.create.fieldVisibility") || "Visibility"}</Label>
+                <Label htmlFor="visibility">
+                  {t('games.create.fieldVisibility') || 'Visibility'}
+                </Label>
                 <VisibilityToggle
                   id="visibility"
                   type="button"
-                  $isPublic={visibility === "public"}
-                  onClick={() => setVisibility(visibility === "public" ? "private" : "public")}
-                  aria-pressed={visibility === "public"}
-                  aria-label={visibility === "public" ? "Public room" : "Private room"}
+                  $isPublic={visibility === 'public'}
+                  onClick={() =>
+                    setVisibility(
+                      visibility === 'public' ? 'private' : 'public',
+                    )
+                  }
+                  aria-pressed={visibility === 'public'}
+                  aria-label={
+                    visibility === 'public' ? 'Public room' : 'Private room'
+                  }
                 >
-                  {visibility === "public" ? "🌐 Public" : "🔒 Private"}
+                  {visibility === 'public' ? '🌐 Public' : '🔒 Private'}
                 </VisibilityToggle>
               </FieldGroup>
             </Row>
 
             <FieldGroup>
-              <Label htmlFor="notes">{t("games.create.fieldNotes") || "Notes (optional)"}</Label>
+              <Label htmlFor="notes">
+                {t('games.create.fieldNotes') || 'Notes (optional)'}
+              </Label>
               <TextArea
                 id="notes"
-                placeholder={t("games.create.notesPlaceholder") || "Add notes..."}
+                placeholder={
+                  t('games.create.notesPlaceholder') || 'Add notes...'
+                }
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                aria-label={t("games.create.notesAria") || "Additional notes for the room"}
+                aria-label={
+                  t('games.create.notesAria') || 'Additional notes for the room'
+                }
               />
             </FieldGroup>
           </Section>
@@ -362,12 +403,11 @@ export function CreateGameRoomPage() {
 
           <SubmitButton type="submit" disabled={loading}>
             {loading
-              ? t("games.create.submitCreating") || "Creating..."
-              : t("games.common.createRoom") || "Create Room"}
+              ? t('games.create.submitCreating') || 'Creating...'
+              : t('games.common.createRoom') || 'Create Room'}
           </SubmitButton>
         </Form>
       </Container>
     </Page>
   );
 }
-

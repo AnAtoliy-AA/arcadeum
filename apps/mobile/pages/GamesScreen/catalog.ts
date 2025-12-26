@@ -28,6 +28,7 @@ export interface GameCatalogueEntry {
   howToPlay: GameStep[];
   comingSoon: GameSectionItem[];
   isPlayable?: boolean;
+  isHidden?: boolean;
   localizations?: Partial<
     Record<LanguagePreference, GameCatalogueLocalization>
   >;
@@ -227,7 +228,8 @@ export const gamesCatalog: GameCatalogueEntry[] = [
         description: 'Review past hands with decision trees.',
       },
     ],
-    isPlayable: true,
+    isPlayable: false, // Temporarily unavailable
+    isHidden: true, // Temporarily hidden from UI
   },
   {
     id: 'coup',

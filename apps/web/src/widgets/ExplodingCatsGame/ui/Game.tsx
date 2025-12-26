@@ -475,7 +475,7 @@ export default function ExplodingCatsGame({
 
       {/* Defuse Modal - shows when player must defuse */}
       <DefuseModal
-        isOpen={snapshot?.pendingDefuse === currentUserId}
+        isOpen={!!currentUserId && snapshot?.pendingDefuse === currentUserId}
         onDefuse={(position) => {
           actions.playDefuse(position);
         }}

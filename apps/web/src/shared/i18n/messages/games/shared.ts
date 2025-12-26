@@ -1,6 +1,6 @@
 import type { Locale } from '../../types';
 
-export const sharedMessages: Record<Locale, Record<string, unknown>> = {
+export const sharedMessages = {
   en: {
     coup: { name: 'Coup' },
     'pandemic-lite': { name: 'Pandemic: Rapid Response' },
@@ -80,6 +80,10 @@ export const sharedMessages: Record<Locale, Record<string, unknown>> = {
         loadingRoom: 'Loading room...',
         roomNotFound: 'Room not found',
         unsupportedGame: 'Unsupported game type: {gameId}',
+        privateRoomError: 'This is a private room. Please log in to access it.',
+        roomNotFoundError: 'Room not found',
+        failedToLoadError: 'Failed to load room',
+        failedToCheckAccess: 'Failed to check room access',
       },
     },
   },
@@ -160,6 +164,11 @@ export const sharedMessages: Record<Locale, Record<string, unknown>> = {
         loadingRoom: 'Cargando sala...',
         roomNotFound: 'Sala no encontrada',
         unsupportedGame: 'Tipo de juego no compatible: {gameId}',
+        privateRoomError:
+          'Esta es una sala privada. Por favor inicie sesión para acceder.',
+        roomNotFoundError: 'Sala no encontrada',
+        failedToLoadError: 'Error al cargar la sala',
+        failedToCheckAccess: 'Error al verificar acceso a la sala',
       },
     },
   },
@@ -241,7 +250,15 @@ export const sharedMessages: Record<Locale, Record<string, unknown>> = {
         loadingRoom: 'Chargement de la salle...',
         roomNotFound: 'Salle non trouvée',
         unsupportedGame: 'Type de jeu non pris en charge: {gameId}',
+        privateRoomError:
+          'Ceci est une salle privée. Veuillez vous connecter pour y accéder.',
+        roomNotFoundError: 'Salle non trouvée',
+        failedToLoadError: 'Échec du chargement de la salle',
+        failedToCheckAccess: "Échec de la vérification de l'accès à la salle",
       },
     },
   },
-};
+} satisfies Record<Locale, Record<string, unknown>>;
+
+/** Derived type from the sharedMessages object - English locale structure */
+export type SharedGamesMessages = (typeof sharedMessages)['en'];

@@ -119,6 +119,23 @@ export function connectSockets(token: string | null | undefined): void {
   }
 }
 
+/**
+ * Connect game socket without authentication (for spectating public games)
+ */
+export function connectSocketsAnonymous(): void {
+  // Disconnect if currently authenticated
+  if (currentAuthToken) {
+    disconnectSockets();
+  }
+
+  // Clear any auth
+  gamesSocket.auth = {};
+
+  if (!gamesSocket.connected) {
+    gamesSocket.connect();
+  }
+}
+
 export function disconnectSockets(): void {
   currentAuthToken = null;
 

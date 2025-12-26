@@ -8,6 +8,7 @@ interface UseGameRoomOptions {
   userId: string | null;
   accessToken: string | null;
   mode?: 'play' | 'watch';
+  enabled?: boolean;
 }
 
 interface UseGameRoomReturn {
@@ -25,7 +26,13 @@ interface UseGameRoomReturn {
  * Handles join/leave, room updates, and provides room data
  */
 export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
-  const { roomId, userId, accessToken, mode = 'play' } = options;
+  const {
+    roomId,
+    userId,
+    accessToken,
+    mode = 'play',
+    enabled = true,
+  } = options;
 
   const [room, setRoom] = useState<GameRoomSummary | null>(null);
   const [session, setSession] = useState<unknown | null>(null);
@@ -35,12 +42,19 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
   const isHost = room?.hostId === userId;
 
   const joinRoom = useCallback(() => {
-    if (!roomId || !userId) {
+    if (!roomId) {
       return;
     }
 
-    const event = mode === 'watch' ? 'games.room.watch' : 'games.room.join';
-    gameSocket.emit(event, { roomId, userId });
+    // For watch mode, userId is optional
+    if (mode === 'watch') {
+      gameSocket.emit('games.room.watch', { roomId });
+    } else {
+      if (!userId) {
+        return;
+      }
+      gameSocket.emit('games.room.join', { roomId, userId });
+    }
   }, [roomId, userId, mode]);
 
   const leaveRoom = useCallback(() => {
@@ -50,7 +64,16 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
   }, [roomId, userId]);
 
   useEffect(() => {
-    if (!accessToken) {
+    // Don't run if not enabled
+    if (!enabled) {
+      return;
+    }
+
+    // For watch mode, we can work without authentication
+    const isWatchMode = mode === 'watch';
+
+    // If not watch mode and no access token, don't connect
+    if (!isWatchMode && !accessToken) {
       return;
     }
 
@@ -158,7 +181,7 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
       gameSocket.off('disconnect', handleDisconnect);
       gameSocket.off('connect_error', handleConnectError);
     };
-  }, [roomId, accessToken, joinRoom]);
+  }, [roomId, accessToken, mode, joinRoom, enabled]);
 
   return {
     room,

@@ -1,11 +1,11 @@
-import type { ThemePreference } from "../config/theme";
+import type { ThemePreference } from '../config/theme';
 
-export const SUPPORTED_LOCALES = ["en", "es", "fr"] as const;
+export const SUPPORTED_LOCALES = ['en', 'es', 'fr'] as const;
 
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 export type LanguagePreference = Locale;
 
-export const DEFAULT_LOCALE: Locale = "en";
+export const DEFAULT_LOCALE: Locale = 'en';
 
 export type HomeMessages = {
   kicker?: string;
@@ -193,11 +193,11 @@ export type ChatListMessages = {
 };
 
 export type GamesMessages = {
-  "exploding-kittens"?: { name?: string };
-  "exploding-cats"?: { name?: string };
-  "texas-holdem"?: { name?: string };
+  'exploding-kittens'?: { name?: string };
+  'exploding-cats'?: { name?: string };
+  'texas-holdem'?: { name?: string };
   coup?: { name?: string };
-  "pandemic-lite"?: { name?: string };
+  'pandemic-lite'?: { name?: string };
   lounge?: {
     activeTitle?: string;
     emptyTitle?: string;
@@ -272,6 +272,10 @@ export type GamesMessages = {
       loadingRoom?: string;
       roomNotFound?: string;
       unsupportedGame?: string;
+      privateRoomError?: string;
+      roomNotFoundError?: string;
+      failedToLoadError?: string;
+      failedToCheckAccess?: string;
     };
   };
   table?: {
@@ -488,8 +492,8 @@ export type TranslationBundle = {
       privacy?: string;
       contact?: string;
     };
-    terms?: import("./messages/legal/types").TermsMessages;
-    privacy?: import("./messages/legal/types").PrivacyMessages;
-    contact?: import("./messages/legal/types").ContactMessages;
+    terms?: import('./messages/legal/types').TermsMessages;
+    privacy?: import('./messages/legal/types').PrivacyMessages;
+    contact?: import('./messages/legal/types').ContactMessages;
   };
 };

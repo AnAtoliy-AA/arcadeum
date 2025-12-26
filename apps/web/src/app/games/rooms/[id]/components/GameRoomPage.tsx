@@ -1,18 +1,19 @@
-"use client";
+'use client';
 
-import React, { useMemo, useEffect, Suspense, useState } from "react";
-import { useParams } from "next/navigation";
-import styled from "styled-components";
-import { useSessionTokens } from "@/entities/session/model/useSessionTokens";
-import { connectSockets } from "@/shared/lib/socket";
-import { GamesControlPanel } from "@/widgets/GamesControlPanel";
-import { useGameRoom, type GameType } from "@/features/games/hooks";
-import { useTranslation } from "@/shared/lib/useTranslation";
-import { mapToGameType } from "@/features/games/lib/gameIdMapping";
-import { gameFactory } from "@/features/games/lib/gameFactory";
-import { gameMetadata } from "@/features/games/registry";
-import { BaseGameProps } from "@/features/games";
-import type { GameSessionSummary } from "@/shared/types/games";
+import React, { useMemo, useEffect, Suspense, useState, useRef } from 'react';
+import { useParams } from 'next/navigation';
+import styled from 'styled-components';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { connectSockets, connectSocketsAnonymous } from '@/shared/lib/socket';
+import { resolveApiUrl } from '@/shared/lib/api-base';
+import { GamesControlPanel } from '@/widgets/GamesControlPanel';
+import { useGameRoom, type GameType } from '@/features/games/hooks';
+import { useTranslation } from '@/shared/lib/useTranslation';
+import { mapToGameType } from '@/features/games/lib/gameIdMapping';
+import { gameFactory } from '@/features/games/lib/gameFactory';
+import { gameMetadata } from '@/features/games/registry';
+import { BaseGameProps } from '@/features/games';
+import type { GameSessionSummary } from '@/shared/types/games';
 
 export default function GameRoomPage() {
   const params = useParams();
@@ -20,22 +21,126 @@ export default function GameRoomPage() {
   const { snapshot, hydrated } = useSessionTokens();
   const { t } = useTranslation();
 
+  // State for room visibility check
+  const [roomVisibility, setRoomVisibility] = useState<
+    'public' | 'private' | null
+  >(null);
+  const [visibilityLoading, setVisibilityLoading] = useState(true);
+  const [visibilityError, setVisibilityError] = useState<string | null>(null);
 
-  // Connect sockets on mount
+  const isAuthenticated = !!snapshot.accessToken && !!snapshot.userId;
+
+  // Derive spectator mode from visibility and auth - no state needed
+  const isSpectatorMode = !isAuthenticated && roomVisibility === 'public';
+
+  // Determine mode for useGameRoom based on auth and visibility
+  // Only compute this once visibility is known to prevent mode switching
+  const roomMode = visibilityLoading
+    ? 'play'
+    : isSpectatorMode
+      ? 'watch'
+      : 'play';
+
+  // Use ref for translation function to avoid infinite loop in useEffect
+  const tRef = useRef(t);
   useEffect(() => {
-    if (snapshot.accessToken) {
-      connectSockets(snapshot.accessToken);
-    } else {
-    }
-  }, [snapshot.accessToken]);
+    tRef.current = t;
+  }, [t]);
 
-  // Get room state
-  const { room, session: initialSession, loading: roomLoading, error, isHost } = useGameRoom({
+  // Check room visibility first (before socket connection)
+  useEffect(() => {
+    if (!roomId) return;
+
+    // Use AbortController to cancel fetch on cleanup
+    const abortController = new AbortController();
+
+    const checkRoomVisibility = async () => {
+      setVisibilityLoading(true);
+      try {
+        const url = resolveApiUrl(`/games/rooms/${roomId}`);
+        const headers: HeadersInit = {};
+        if (snapshot.accessToken) {
+          headers.Authorization = `Bearer ${snapshot.accessToken}`;
+        }
+        const response = await fetch(url, {
+          headers,
+          signal: abortController.signal,
+        });
+
+        if (!response.ok) {
+          if (response.status === 403) {
+            setVisibilityError(
+              tRef.current('games.roomPage.errors.privateRoomError'),
+            );
+          } else if (response.status === 404 || response.status === 500) {
+            // 500 can happen for invalid room IDs
+            setVisibilityError(
+              tRef.current('games.roomPage.errors.roomNotFoundError'),
+            );
+          } else {
+            setVisibilityError(
+              tRef.current('games.roomPage.errors.failedToLoadError'),
+            );
+          }
+          setVisibilityLoading(false);
+          return;
+        }
+
+        const data = await response.json();
+        setRoomVisibility(data.room?.visibility || 'public');
+        setVisibilityLoading(false);
+      } catch (err) {
+        // Ignore abort errors
+        if (err instanceof Error && err.name === 'AbortError') {
+          return;
+        }
+        setVisibilityError(
+          tRef.current('games.roomPage.errors.failedToCheckAccess'),
+        );
+        setVisibilityLoading(false);
+      }
+    };
+
+    checkRoomVisibility();
+
+    return () => {
+      abortController.abort();
+    };
+  }, [roomId, snapshot.accessToken]);
+
+  // Connect sockets based on auth status and room visibility
+  useEffect(() => {
+    if (visibilityLoading || visibilityError) return;
+
+    if (isAuthenticated) {
+      connectSockets(snapshot.accessToken);
+    } else if (roomVisibility === 'public') {
+      // Connect anonymously for public rooms
+      connectSocketsAnonymous();
+    }
+  }, [
+    isAuthenticated,
+    snapshot.accessToken,
+    roomVisibility,
+    visibilityLoading,
+    visibilityError,
+  ]);
+
+  // Get room state - use watch mode for spectators
+  // Only enable after visibility check is complete to prevent mode changes
+  const {
+    room,
+    session: initialSession,
+    loading: roomLoading,
+    error,
+    isHost,
+  } = useGameRoom({
     roomId,
     userId: snapshot.userId,
     accessToken: snapshot.accessToken,
+    mode: roomMode,
+    enabled: !visibilityLoading && !visibilityError,
   });
-
 
   // Determine game type from room (must be called before any returns - Rules of Hooks)
   const gameType: GameType = useMemo(() => {
@@ -108,26 +213,63 @@ export default function GameRoomPage() {
   }, [gameType]);
 
   // Wait for session to hydrate before checking authentication
-  if (!hydrated) {
+  if (!hydrated || visibilityLoading) {
     return (
       <Page>
         <Container>
-          <LoadingContainer>{t("games.roomPage.loading")}</LoadingContainer>
+          <LoadingContainer>{t('games.roomPage.loading')}</LoadingContainer>
         </Container>
       </Page>
     );
   }
 
-  // Redirect to login if not authenticated
-  if (!snapshot.accessToken || !snapshot.userId) {
+  // Show error if room visibility check failed
+  if (visibilityError) {
     return (
       <Page>
         <Container>
           <ErrorContainer>
-            {t("games.roomPage.errors.notAuthenticated")}
+            {visibilityError}
+            {visibilityError.includes('private') && (
+              <>
+                <br />
+                <a
+                  href="/auth"
+                  style={{
+                    color: '#3b82f6',
+                    textDecoration: 'underline',
+                    marginTop: '1rem',
+                    display: 'inline-block',
+                  }}
+                >
+                  {t('games.roomPage.errors.loginButton')}
+                </a>
+              </>
+            )}
+          </ErrorContainer>
+        </Container>
+      </Page>
+    );
+  }
+
+  // Require auth for private rooms
+  if (!isAuthenticated && roomVisibility === 'private') {
+    return (
+      <Page>
+        <Container>
+          <ErrorContainer>
+            {t('games.roomPage.errors.notAuthenticated')}
             <br />
-            <a href="/auth" style={{ color: '#3b82f6', textDecoration: 'underline', marginTop: '1rem', display: 'inline-block' }}>
-              {t("games.roomPage.errors.loginButton")}
+            <a
+              href="/auth"
+              style={{
+                color: '#3b82f6',
+                textDecoration: 'underline',
+                marginTop: '1rem',
+                display: 'inline-block',
+              }}
+            >
+              {t('games.roomPage.errors.loginButton')}
             </a>
           </ErrorContainer>
         </Container>
@@ -139,7 +281,9 @@ export default function GameRoomPage() {
     return (
       <Page>
         <Container>
-          <LoadingContainer>{t("games.roomPage.errors.loadingRoom")}</LoadingContainer>
+          <LoadingContainer>
+            {t('games.roomPage.errors.loadingRoom')}
+          </LoadingContainer>
         </Container>
       </Page>
     );
@@ -159,7 +303,9 @@ export default function GameRoomPage() {
     return (
       <Page>
         <Container>
-          <ErrorContainer>{t("games.roomPage.errors.roomNotFound")}</ErrorContainer>
+          <ErrorContainer>
+            {t('games.roomPage.errors.roomNotFound')}
+          </ErrorContainer>
         </Container>
       </Page>
     );
@@ -173,22 +319,29 @@ export default function GameRoomPage() {
         <GamesControlPanel roomId={roomId} />
 
         <GameWrapper>
-          <Suspense fallback={<LoadingContainer>{t("games.roomPage.loadingGame")}</LoadingContainer>}>
+          <Suspense
+            fallback={
+              <LoadingContainer>
+                {t('games.roomPage.loadingGame')}
+              </LoadingContainer>
+            }
+          >
             {gameLoading && (
-              <LoadingContainer>{t("games.roomPage.loadingGame")}</LoadingContainer>
+              <LoadingContainer>
+                {t('games.roomPage.loadingGame')}
+              </LoadingContainer>
             )}
 
             {!gameLoading && !gameType && room && (
               <LoadingContainer>
-                {t("games.roomPage.errors.unsupportedGame", { gameId: room.gameId })}
+                {t('games.roomPage.errors.unsupportedGame', {
+                  gameId: room.gameId,
+                })}
               </LoadingContainer>
             )}
 
             {!gameLoading && isGameReady && gameType && gameProps && (
-              <DynamicGameRenderer
-                gameType={gameType}
-                props={gameProps}
-              />
+              <DynamicGameRenderer gameType={gameType} props={gameProps} />
             )}
           </Suspense>
         </GameWrapper>
@@ -202,8 +355,10 @@ interface DynamicGameRendererProps {
   props: BaseGameProps;
 }
 
-
-const DynamicGameRenderer: React.FC<DynamicGameRendererProps> = ({ gameType, props }) => {
+const DynamicGameRenderer: React.FC<DynamicGameRendererProps> = ({
+  gameType,
+  props,
+}) => {
   if (!gameType) {
     return <div>Game type is missing</div>;
   }

@@ -52,6 +52,10 @@ export const ViewToggle = styled.div`
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 export const ViewToggleButton = styled.button<{ $active?: boolean }>`
@@ -163,6 +167,11 @@ export const RoomsContainer = styled.div<{ $viewMode?: 'grid' | 'list' }>`
     $viewMode === 'list' ? 'unset' : 'repeat(auto-fill, minmax(350px, 1fr))'};
   gap: 1.25rem;
 
+  @media (max-width: 768px) {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
   @media (max-width: 480px) {
     grid-template-columns: 1fr;
   }
@@ -191,6 +200,15 @@ export const RoomCard = styled.div<{ $viewMode?: 'grid' | 'list' }>`
   animation-fill-mode: both;
   position: relative;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    border-radius: 20px;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 1rem;
+  }
 
   &::before {
     content: '';

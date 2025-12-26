@@ -1,16 +1,11 @@
-import styled from "styled-components";
+import styled from 'styled-components';
+import {
+  PageLayout as SharedPageLayout,
+  Container as SharedContainer,
+} from '@/shared/ui';
 
-export const Page = styled.main`
-  min-height: 100vh;
-  padding: 2rem 1.5rem;
-  background: ${({ theme }) => theme.background.base};
-  color: ${({ theme }) => theme.text.primary};
-`;
+export const Page = styled(SharedPageLayout)``;
 
-export const Container = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
+export const Container = styled(SharedContainer).attrs({ size: 'xl' })`
   gap: 1.5rem;
 `;

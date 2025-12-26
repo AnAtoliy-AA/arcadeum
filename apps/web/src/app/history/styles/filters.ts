@@ -1,4 +1,5 @@
-import styled from "styled-components";
+import styled from 'styled-components';
+import { Input, Select } from '@/shared/ui';
 
 export const FilterBar = styled.div`
   display: flex;
@@ -12,45 +13,21 @@ export const FilterBar = styled.div`
   }
 `;
 
-export const SearchInput = styled.input`
+export const SearchInput = styled(Input)`
   flex: 1;
   min-width: 250px;
-  padding: 0.75rem 1rem;
   border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.primary};
   font-size: 0.9375rem;
-  transition: border-color 0.2s ease;
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  }
-
-  &::placeholder {
-    color: ${({ theme }) => theme.text.muted};
-  }
 
   @media (max-width: 640px) {
     min-width: 100%;
+    width: 100%;
   }
 `;
 
-export const FilterSelect = styled.select`
-  padding: 0.75rem 1rem;
+export const FilterSelect = styled(Select)`
   border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.primary};
   font-size: 0.9375rem;
-  cursor: pointer;
-  transition: border-color 0.2s ease;
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  }
 
   @media (max-width: 640px) {
     width: 100%;

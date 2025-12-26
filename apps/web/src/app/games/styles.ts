@@ -1,5 +1,10 @@
 import styled, { keyframes } from 'styled-components';
-import Link from 'next/link';
+import {
+  Spinner as SharedSpinner,
+  Card,
+  LinkButton,
+  PageTitle as SharedPageTitle,
+} from '@/shared/ui';
 
 const fadeIn = keyframes`
   from {
@@ -72,48 +77,17 @@ export const ViewToggleButton = styled.button<{ $active?: boolean }>`
   }
 `;
 
-export const Title = styled.h1`
-  margin: 0;
-  font-size: 2.5rem;
+export const Title = styled(SharedPageTitle).attrs({
+  size: 'xl',
+  gradient: true,
+})`
   font-weight: 800;
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.text.primary} 0%,
-    ${({ theme }) => theme.buttons.primary.gradientStart} 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.5px;
 `;
 
-export const CreateButton = styled(Link)`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1.75rem;
-  border-radius: 14px;
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.buttons.primary.gradientStart} 0%,
-    ${({ theme }) =>
-        theme.buttons.primary.gradientEnd ||
-        theme.buttons.primary.gradientStart}
-      100%
-  );
-  color: ${({ theme }) => theme.buttons.primary.text};
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-  box-shadow: 0 4px 15px ${({ theme }) => theme.buttons.primary.gradientStart}40;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px
-      ${({ theme }) => theme.buttons.primary.gradientStart}50;
-  }
-`;
+export const CreateButton = styled(LinkButton).attrs({
+  variant: 'primary',
+  size: 'lg',
+})``;
 
 export const Filters = styled.div`
   display: flex;
@@ -369,37 +343,11 @@ export const ParticipantChip = styled.span<{ $isHost?: boolean }>`
         : theme.surfaces.card.border};
 `;
 
-export const ActionButton = styled(Link)<{ variant?: 'primary' | 'secondary' }>`
+export const ActionButton = styled(LinkButton)<{
+  variant?: 'primary' | 'secondary';
+}>`
   padding: 0.75rem 1.25rem;
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: 600;
   font-size: 0.85rem;
-  text-align: center;
-  transition: all 0.25s ease;
-
-  ${({ variant, theme }) =>
-    variant === 'primary'
-      ? `
-    background: linear-gradient(135deg, ${theme.buttons.primary.gradientStart}, ${theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart});
-    color: ${theme.buttons.primary.text};
-    box-shadow: 0 2px 10px ${theme.buttons.primary.gradientStart}30;
-    
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px ${theme.buttons.primary.gradientStart}50;
-    }
-  `
-      : `
-    border: 1px solid ${theme.surfaces.card.border};
-    color: ${theme.text.secondary};
-    background: transparent;
-    
-    &:hover {
-      border-color: ${theme.text.secondary};
-      color: ${theme.text.primary};
-    }
-  `}
 `;
 
 export const Loading = styled.div`
@@ -413,26 +361,11 @@ export const Loading = styled.div`
   font-size: 0.95rem;
 `;
 
-export const Spinner = styled.div`
-  width: 48px;
-  height: 48px;
-  border: 3px solid ${({ theme }) => theme.surfaces.card.border};
-  border-top-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+export const Spinner = styled(SharedSpinner).attrs({ size: 'lg' })``;
 
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-`;
-
-export const Error = styled.div`
-  padding: 1.5rem;
-  border-radius: 12px;
+export const Error = styled(Card).attrs({ variant: 'outlined', padding: 'md' })`
   background: linear-gradient(135deg, #7f1d1d20, transparent);
-  border: 1px solid #dc2626;
+  border-color: #dc2626;
   color: #ef4444;
   font-weight: 500;
 `;

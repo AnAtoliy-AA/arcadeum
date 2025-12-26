@@ -1,38 +1,22 @@
-"use client";
+'use client';
 
-import { useState, useCallback } from "react";
-import styled from "styled-components";
-import { useSessionTokens } from "@/entities/session/model/useSessionTokens";
-import { resolveApiUrl } from "@/shared/lib/api-base";
-import { useTranslation } from "@/shared/lib/useTranslation";
+import { useState, useCallback } from 'react';
+import styled from 'styled-components';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { resolveApiUrl } from '@/shared/lib/api-base';
+import { useTranslation } from '@/shared/lib/useTranslation';
+import { isValidPaymentUrl, parseAmount } from '@/shared/config/payment-config';
 import {
-  isValidPaymentUrl,
-  parseAmount,
-  ERROR_COLOR,
-  SUCCESS_COLOR,
-} from "@/shared/config/payment-config";
-
-const Page = styled.main`
-  min-height: 100vh;
-  padding: 2rem 1.5rem;
-  background: ${({ theme }) => theme.background.base};
-  color: ${({ theme }) => theme.text.primary};
-`;
-
-const Container = styled.div`
-  max-width: 600px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-`;
-
-const Title = styled.h1`
-  margin: 0;
-  font-size: 2rem;
-  font-weight: 700;
-  color: ${({ theme }) => theme.text.primary};
-`;
+  PageLayout,
+  Container,
+  PageTitle,
+  Section,
+  Button,
+  Input,
+  TextArea,
+  FormGroup,
+  Card,
+} from '@/shared/ui';
 
 const Form = styled.form`
   display: flex;
@@ -40,91 +24,22 @@ const Form = styled.form`
   gap: 1.5rem;
 `;
 
-const FieldGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+const ErrorCard = styled(Card)`
+  border-color: #dc2626;
+  color: #ef4444;
 `;
 
-const Label = styled.label`
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.text.secondary};
-`;
-
-const Input = styled.input`
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.primary};
-  font-size: 1rem;
-
-  &:focus {
-    outline: 2px solid ${({ theme }) => theme.outlines.focus};
-    outline-offset: 2px;
-  }
-`;
-
-const TextArea = styled.textarea`
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.primary};
-  font-size: 1rem;
-  min-height: 100px;
-  resize: vertical;
-
-  &:focus {
-    outline: 2px solid ${({ theme }) => theme.outlines.focus};
-    outline-offset: 2px;
-  }
-`;
-
-const SubmitButton = styled.button`
-  padding: 1rem;
-  border-radius: 16px;
-  border: none;
-  background: ${({ theme }) => theme.buttons.primary.gradientStart};
-  color: ${({ theme }) => theme.buttons.primary.text};
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-`;
-
-const ErrorMessage = styled.div`
-  padding: 1rem;
-  border-radius: 12px;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border: 1px solid ${ERROR_COLOR};
-  color: ${ERROR_COLOR};
-`;
-
-const Success = styled.div`
-  padding: 1rem;
-  border-radius: 12px;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border: 1px solid ${SUCCESS_COLOR};
-  color: ${SUCCESS_COLOR};
+const SuccessCard = styled(Card)`
+  border-color: #22c55e;
+  color: #22c55e;
 `;
 
 export function PaymentPage() {
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
-  const [amount, setAmount] = useState("");
-  const [currency, setCurrency] = useState("GEL");
-  const [note, setNote] = useState("");
+  const [amount, setAmount] = useState('');
+  const [currency, setCurrency] = useState('GEL');
+  const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -136,15 +51,15 @@ export function PaymentPage() {
       const normalizedAmount = parseAmount(amount);
       if (!Number.isFinite(normalizedAmount) || normalizedAmount <= 0) {
         setError(
-          t("payments.errors.invalidAmount") || "Please enter a valid amount"
+          t('payments.errors.invalidAmount') || 'Please enter a valid amount',
         );
         return;
       }
 
       if (normalizedAmount > 1000000) {
         setError(
-          t("payments.errors.amountTooLarge") ||
-            "Amount is too large. Maximum is 1,000,000"
+          t('payments.errors.amountTooLarge') ||
+            'Amount is too large. Maximum is 1,000,000',
         );
         return;
       }
@@ -154,11 +69,11 @@ export function PaymentPage() {
       setSuccess(false);
 
       try {
-        const url = resolveApiUrl("/payments/session");
+        const url = resolveApiUrl('/payments/session');
         const response = await fetch(url, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             ...(snapshot.accessToken && {
               Authorization: `Bearer ${snapshot.accessToken}`,
             }),
@@ -172,93 +87,122 @@ export function PaymentPage() {
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.message || "Failed to create payment session");
+          throw new Error(
+            errorData.message || 'Failed to create payment session',
+          );
         }
 
         const data = await response.json();
         if (data.paymentUrl) {
           // Validate payment URL before opening
           if (!isValidPaymentUrl(data.paymentUrl)) {
-            throw new Error(t("payments.errors.invalidUrl") || "Invalid payment URL received");
+            throw new Error(
+              t('payments.errors.invalidUrl') || 'Invalid payment URL received',
+            );
           }
-          window.open(data.paymentUrl, "_blank", "noopener,noreferrer");
+          window.open(data.paymentUrl, '_blank', 'noopener,noreferrer');
           setSuccess(true);
-          setAmount("");
-          setNote("");
+          setAmount('');
+          setNote('');
         } else {
-          throw new Error(t("payments.errors.noUrl") || "No payment URL received");
+          throw new Error(
+            t('payments.errors.noUrl') || 'No payment URL received',
+          );
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : (t("payments.errors.failed") || "Payment failed"));
+        setError(
+          err instanceof Error
+            ? err.message
+            : t('payments.errors.failed') || 'Payment failed',
+        );
       } finally {
         setLoading(false);
       }
     },
-    [amount, currency, note, snapshot.accessToken, t]
+    [amount, currency, note, snapshot.accessToken, t],
   );
 
   return (
-    <Page>
-      <Container>
-        <Title>{t("payments.title") || "Payment"}</Title>
+    <PageLayout>
+      <Container size="sm">
+        <PageTitle size="lg">{t('payments.title') || 'Payment'}</PageTitle>
 
-        <Form onSubmit={handleSubmit}>
-          <FieldGroup>
-            <Label htmlFor="payment-amount">{t("payments.amountLabel") || "Amount"}</Label>
-            <Input
-              id="payment-amount"
-              type="number"
-              step="0.01"
-              placeholder={t("payments.amountPlaceholder") || "0.00"}
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+        <Section>
+          <Form onSubmit={handleSubmit}>
+            <FormGroup
+              label={t('payments.amountLabel') || 'Amount'}
+              htmlFor="payment-amount"
               required
-              aria-required="true"
-              aria-label={t("payments.amountAria") || "Payment amount"}
-            />
-          </FieldGroup>
+            >
+              <Input
+                id="payment-amount"
+                type="number"
+                step="0.01"
+                placeholder={t('payments.amountPlaceholder') || '0.00'}
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                required
+                aria-required="true"
+                aria-label={t('payments.amountAria') || 'Payment amount'}
+                fullWidth
+              />
+            </FormGroup>
 
-          <FieldGroup>
-            <Label htmlFor="payment-currency">{t("payments.currencyLabel") || "Currency"}</Label>
-            <Input
-              id="payment-currency"
-              type="text"
-              placeholder={t("payments.currencyPlaceholder") || "GEL"}
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value.toUpperCase())}
-              maxLength={8}
+            <FormGroup
+              label={t('payments.currencyLabel') || 'Currency'}
+              htmlFor="payment-currency"
               required
-              aria-required="true"
-              aria-label={t("payments.currencyAria") || "Currency code"}
-            />
-          </FieldGroup>
+            >
+              <Input
+                id="payment-currency"
+                type="text"
+                placeholder={t('payments.currencyPlaceholder') || 'GEL'}
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value.toUpperCase())}
+                maxLength={8}
+                required
+                aria-required="true"
+                aria-label={t('payments.currencyAria') || 'Currency code'}
+                fullWidth
+              />
+            </FormGroup>
 
-          <FieldGroup>
-            <Label htmlFor="payment-note">{t("payments.noteLabel") || "Note (optional)"}</Label>
-            <TextArea
-              id="payment-note"
-              placeholder={t("payments.notePlaceholder") || "Add a note..."}
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              aria-label={t("payments.noteAria") || "Payment note or description"}
-            />
-          </FieldGroup>
+            <FormGroup
+              label={t('payments.noteLabel') || 'Note (optional)'}
+              htmlFor="payment-note"
+            >
+              <TextArea
+                id="payment-note"
+                placeholder={t('payments.notePlaceholder') || 'Add a note...'}
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                aria-label={
+                  t('payments.noteAria') || 'Payment note or description'
+                }
+                fullWidth
+              />
+            </FormGroup>
 
-          {error && <ErrorMessage>{error}</ErrorMessage>}
-          {success && (
-            <Success>
-              {t("payments.status.success") || "Payment session created successfully!"}
-            </Success>
-          )}
+            {error && (
+              <ErrorCard variant="outlined" padding="sm">
+                {error}
+              </ErrorCard>
+            )}
+            {success && (
+              <SuccessCard variant="outlined" padding="sm">
+                {t('payments.status.success') ||
+                  'Payment session created successfully!'}
+              </SuccessCard>
+            )}
 
-          <SubmitButton type="submit" disabled={loading}>
-            {loading
-              ? t("payments.submitting") || "Processing..."
-              : t("payments.submit") || "Create Payment"}
-          </SubmitButton>
-        </Form>
+            <Button type="submit" disabled={loading} size="lg" fullWidth>
+              {loading
+                ? t('payments.submitting') || 'Processing...'
+                : t('payments.submit') || 'Create Payment'}
+            </Button>
+          </Form>
+        </Section>
       </Container>
-    </Page>
+    </PageLayout>
   );
 }
-

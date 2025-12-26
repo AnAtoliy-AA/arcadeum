@@ -1,4 +1,5 @@
-import styled from "styled-components";
+import styled from 'styled-components';
+import { Card, Badge } from '@/shared/ui';
 
 export const EntriesGrid = styled.div`
   display: grid;
@@ -6,22 +7,16 @@ export const EntriesGrid = styled.div`
   gap: 1rem;
 `;
 
-export const EntryCard = styled.button`
-  padding: 1.5rem;
-  border-radius: 16px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  text-align: left;
+export const EntryCard = styled(Card).attrs({
+  variant: 'default',
+  padding: 'md',
+  interactive: true,
+})`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-align: left;
   cursor: pointer;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: ${({ theme }) => theme.surfaces.card.shadow};
-  }
 `;
 
 export const EntryHeader = styled.div`
@@ -50,13 +45,8 @@ export const EntryRoomName = styled.div`
   margin-top: 0.25rem;
 `;
 
-export const EntryStatus = styled.span`
-  padding: 0.25rem 0.75rem;
+export const EntryStatus = styled(Badge).attrs({ variant: 'info', size: 'sm' })`
   border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  background: ${({ theme }) => theme.buttons.primary.gradientStart};
-  color: ${({ theme }) => theme.buttons.primary.text};
 `;
 
 export const EntryMeta = styled.div`

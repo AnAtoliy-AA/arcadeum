@@ -1,12 +1,13 @@
-"use client";
+'use client';
 
-import { useState, useCallback, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import styled from "styled-components";
-import { useSessionTokens } from "@/entities/session/model/useSessionTokens";
-import { resolveApiUrl } from "@/shared/lib/api-base";
-import { useTranslation } from "@/shared/lib/useTranslation";
+import { useState, useCallback, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import styled from 'styled-components';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { resolveApiUrl } from '@/shared/lib/api-base';
+import { useTranslation } from '@/shared/lib/useTranslation';
+import { Input, Spinner } from '@/shared/ui';
 
 const Page = styled.main`
   min-height: 100vh;
@@ -34,20 +35,6 @@ const SearchContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-`;
-
-const SearchInput = styled.input`
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.primary};
-  font-size: 1rem;
-
-  &:focus {
-    outline: 2px solid ${({ theme }) => theme.outlines.focus};
-    outline-offset: 2px;
-  }
 `;
 
 const SearchResults = styled.div`
@@ -98,7 +85,9 @@ const ChatItem = styled(Link)`
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 
   &:hover {
     transform: translateY(-2px);
@@ -129,7 +118,7 @@ const ChatTimestamp = styled.div`
   color: ${({ theme }) => theme.text.muted};
 `;
 
-const Loading = styled.div`
+const LoadingContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -137,21 +126,6 @@ const Loading = styled.div`
   gap: 1rem;
   padding: 3rem;
   color: ${({ theme }) => theme.text.muted};
-`;
-
-const Spinner = styled.div`
-  width: 40px;
-  height: 40px;
-  border: 4px solid ${({ theme }) => theme.surfaces.card.border};
-  border-top-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
 `;
 
 const Empty = styled.div`
@@ -188,7 +162,7 @@ export function ChatListPage() {
   const { t } = useTranslation();
   const [chats, setChats] = useState<ChatSummary[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<ChatParticipant[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
 
@@ -200,7 +174,7 @@ export function ChatListPage() {
 
     setLoading(true);
     try {
-      const url = resolveApiUrl("/chat");
+      const url = resolveApiUrl('/chat');
       const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${snapshot.accessToken}`,
@@ -208,13 +182,13 @@ export function ChatListPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch chats");
+        throw new Error('Failed to fetch chats');
       }
 
       const data = await response.json();
       setChats(data || []);
     } catch (err) {
-      console.error("Failed to fetch chats:", err);
+      console.error('Failed to fetch chats:', err);
     } finally {
       setLoading(false);
     }
@@ -233,7 +207,9 @@ export function ChatListPage() {
     const timeoutId = setTimeout(async () => {
       setSearchLoading(true);
       try {
-        const url = resolveApiUrl(`/chat/search?q=${encodeURIComponent(searchQuery)}`);
+        const url = resolveApiUrl(
+          `/chat/search?q=${encodeURIComponent(searchQuery)}`,
+        );
         const response = await fetch(url, {
           headers: {
             Authorization: `Bearer ${snapshot.accessToken}`,
@@ -243,13 +219,15 @@ export function ChatListPage() {
         if (response.ok) {
           const data = await response.json();
           setSearchResults(
-            (data || []).filter((p: ChatParticipant) => p.id !== snapshot.userId)
+            (data || []).filter(
+              (p: ChatParticipant) => p.id !== snapshot.userId,
+            ),
           );
         } else {
-          console.error("Search request failed:", response.status);
+          console.error('Search request failed:', response.status);
         }
       } catch (err) {
-        console.error("Search failed:", err);
+        console.error('Search failed:', err);
       } finally {
         setSearchLoading(false);
       }
@@ -263,11 +241,11 @@ export function ChatListPage() {
       if (!snapshot.accessToken || !snapshot.userId) return;
 
       try {
-        const url = resolveApiUrl("/chat");
+        const url = resolveApiUrl('/chat');
         const response = await fetch(url, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${snapshot.accessToken}`,
           },
           body: JSON.stringify({
@@ -277,32 +255,40 @@ export function ChatListPage() {
 
         if (response.ok) {
           const chat = await response.json();
-          router.push(`/chat?chatId=${chat.chatId}&receiverIds=${user.id}&title=${encodeURIComponent(user.displayName || user.username)}`);
+          router.push(
+            `/chat?chatId=${chat.chatId}&receiverIds=${user.id}&title=${encodeURIComponent(user.displayName || user.username)}`,
+          );
         } else {
-          console.error("Failed to create chat:", response.status);
+          console.error('Failed to create chat:', response.status);
         }
       } catch (err) {
-        console.error("Failed to create chat:", err);
+        console.error('Failed to create chat:', err);
       }
     },
-    [snapshot.accessToken, snapshot.userId, router]
+    [snapshot.accessToken, snapshot.userId, router],
   );
 
-  const currentUserId = snapshot.userId ?? "";
+  const currentUserId = snapshot.userId ?? '';
 
   return (
     <Page>
       <Container>
-        <Title>{t("navigation.chatsTab") || "Chats"}</Title>
+        <Title>{t('navigation.chatsTab') || 'Chats'}</Title>
 
         {snapshot.accessToken && (
           <SearchContainer>
-            <SearchInput
+            <Input
               type="text"
-              placeholder={t("chatList.search.placeholder") || "Search users..."}
+              placeholder={
+                t('chatList.search.placeholder') || 'Search users...'
+              }
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              aria-label={t("chatList.search.ariaLabel") || "Search for users to chat with"}
+              aria-label={
+                t('chatList.search.ariaLabel') ||
+                'Search for users to chat with'
+              }
+              fullWidth
             />
             {searchLoading && <div>Searching...</div>}
             {searchQuery.trim() && searchResults.length > 0 && (
@@ -317,7 +303,7 @@ export function ChatListPage() {
                         {result.displayName || result.username}
                       </div>
                       {result.email && (
-                        <div style={{ fontSize: "0.875rem", color: "#666" }}>
+                        <div style={{ fontSize: '0.875rem', color: '#666' }}>
                           {result.email}
                         </div>
                       )}
@@ -330,29 +316,31 @@ export function ChatListPage() {
         )}
 
         {loading ? (
-          <Loading>
-            <Spinner aria-label="Loading" />
+          <LoadingContainer>
+            <Spinner size="lg" aria-label="Loading" />
             <div>Loading chats...</div>
-          </Loading>
+          </LoadingContainer>
         ) : chats.length === 0 ? (
           <Empty>
             {snapshot.accessToken
-              ? t("chatList.empty.noChats") || "No chats yet. Start a conversation!"
-              : t("chatList.empty.unauthenticated") || "Sign in to start chatting"}
+              ? t('chatList.empty.noChats') ||
+                'No chats yet. Start a conversation!'
+              : t('chatList.empty.unauthenticated') ||
+                'Sign in to start chatting'}
           </Empty>
         ) : (
           <ChatList>
             {chats.map((chat) => {
               const otherParticipants = chat.participants.filter(
-                (p) => p.id !== currentUserId
+                (p) => p.id !== currentUserId,
               );
               const title =
                 otherParticipants.length > 0
                   ? otherParticipants
                       .map((p) => p.displayName || p.username)
-                      .join(", ")
-                  : t("chatList.messages.directChat") || "Direct Chat";
-              const receiverIds = otherParticipants.map((p) => p.id).join(",");
+                      .join(', ')
+                  : t('chatList.messages.directChat') || 'Direct Chat';
+              const receiverIds = otherParticipants.map((p) => p.id).join(',');
 
               return (
                 <ChatItem
@@ -363,7 +351,8 @@ export function ChatListPage() {
                     <ChatTitle>{title}</ChatTitle>
                     {chat.lastMessage && (
                       <ChatSubtitle>
-                        {chat.lastMessage.senderUsername}: {chat.lastMessage.content}
+                        {chat.lastMessage.senderUsername}:{' '}
+                        {chat.lastMessage.content}
                       </ChatSubtitle>
                     )}
                   </ChatInfo>
@@ -381,4 +370,3 @@ export function ChatListPage() {
     </Page>
   );
 }
-

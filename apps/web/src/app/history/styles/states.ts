@@ -1,4 +1,5 @@
-import styled from "styled-components";
+import styled from 'styled-components';
+import { Spinner as SharedSpinner, Button } from '@/shared/ui';
 
 export const Loading = styled.div`
   display: flex;
@@ -10,20 +11,7 @@ export const Loading = styled.div`
   color: ${({ theme }) => theme.text.muted};
 `;
 
-export const Spinner = styled.div`
-  width: 40px;
-  height: 40px;
-  border: 4px solid ${({ theme }) => theme.surfaces.card.border};
-  border-top-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-`;
+export const Spinner = SharedSpinner;
 
 export const Empty = styled.div`
   padding: 3rem;
@@ -45,17 +33,14 @@ export const ErrorText = styled.div`
   color: ${({ theme }) => theme.text.muted};
 `;
 
-export const RetryButton = styled.button`
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.buttons.primary.gradientStart};
-  background: transparent;
+export const RetryButton = styled(Button).attrs({
+  variant: 'secondary',
+  size: 'sm',
+})`
+  border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
   color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: ${({ theme }) => theme.buttons.primary.gradientStart};
     color: ${({ theme }) => theme.buttons.primary.text};
   }

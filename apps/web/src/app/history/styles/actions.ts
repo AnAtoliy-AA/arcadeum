@@ -1,37 +1,36 @@
-import styled from "styled-components";
+import styled from 'styled-components';
+import { Button } from '@/shared/ui';
 
-export const ActionButton = styled.button<{ $primary?: boolean; $danger?: boolean }>`
+export const ActionButton = styled(Button)<{
+  $primary?: boolean;
+  $danger?: boolean;
+}>`
   padding: 0.75rem 1.5rem;
-  border-radius: 8px;
   font-size: 0.9375rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid
-    ${({ theme, $primary, $danger }) =>
-      $danger
-        ? theme.text.muted
-        : $primary
-        ? theme.buttons.primary.gradientStart
-        : theme.surfaces.card.border};
-  background: ${({ theme, $primary }) =>
-    $primary ? theme.buttons.primary.gradientStart : "transparent"};
-  color: ${({ theme, $primary, $danger }) =>
-    $danger
-      ? theme.text.muted
-      : $primary
-      ? theme.buttons.primary.text
-      : theme.text.primary};
+  ${({ $danger }) =>
+    $danger &&
+    `
+    border-color: currentColor;
+    opacity: 0.7;
+  `}
+`;
 
-  &:hover:not(:disabled) {
-    transform: translateY(-1px);
-    opacity: 0.9;
-  }
+// Map variants for convenience
+export const PrimaryActionButton = styled(Button).attrs({ variant: 'primary' })`
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9375rem;
+`;
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+export const SecondaryActionButton = styled(Button).attrs({
+  variant: 'secondary',
+})`
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9375rem;
+`;
+
+export const DangerActionButton = styled(Button).attrs({ variant: 'danger' })`
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9375rem;
 `;
 
 export const ConfirmRow = styled.div`

@@ -1,5 +1,6 @@
-import Link from "next/link";
-import styled, { css } from "styled-components";
+import Link from 'next/link';
+import styled, { css } from 'styled-components';
+import { Card as SharedCard } from '@/shared/ui';
 
 export const Page = styled.main`
   min-height: 100vh;
@@ -91,7 +92,10 @@ export const OptionButton = styled.button<{ $active: boolean }>`
   background: ${({ theme }) => theme.interactive.option.background};
   color: ${({ theme }) => theme.text.primary};
   cursor: pointer;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 
   &:focus-visible {
     outline: 2px solid ${({ theme }) => theme.outlines.focus};
@@ -128,13 +132,23 @@ export const PillGroup = styled.div`
 export const PillButton = styled.button<{ $active: boolean }>`
   padding: 0.6rem 1.2rem;
   border-radius: 999px;
-  border: 1px solid ${({ $active, theme }) => ($active ? theme.interactive.pill.activeBorder : theme.interactive.pill.border)};
+  border: 1px solid
+    ${({ $active, theme }) =>
+      $active
+        ? theme.interactive.pill.activeBorder
+        : theme.interactive.pill.border};
   background: ${({ $active, theme }) =>
-    $active ? theme.interactive.pill.activeBackground : theme.interactive.pill.inactiveBackground};
+    $active
+      ? theme.interactive.pill.activeBackground
+      : theme.interactive.pill.inactiveBackground};
   color: ${({ theme }) => theme.text.primary};
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 
   ${(props) =>
     props.$active
@@ -172,7 +186,10 @@ export const DownloadLink = styled.a`
   background: ${({ theme }) => theme.interactive.download.background};
   color: ${({ theme }) => theme.text.primary};
   font-weight: 600;
-  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 
   &:focus-visible {
     outline: 2px solid ${({ theme }) => theme.outlines.focus};
@@ -194,7 +211,7 @@ export const DownloadIcon = styled.span`
   color: ${({ theme }) => theme.text.accent};
 `;
 
-export const AccountCard = styled.div`
+export const AccountCard = styled(SharedCard)`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -224,7 +241,11 @@ const baseActionStyles = css`
   border-radius: 999px;
   font-weight: 600;
   text-decoration: none;
-  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 
   &:focus-visible {
     outline: 2px solid ${({ theme }) => theme.outlines.focus};

@@ -1,11 +1,12 @@
-"use client";
+'use client';
 
-import { useCallback, useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import styled from "styled-components";
-import { useTranslation } from "@/shared/lib/useTranslation";
-import { gameSocket } from "@/shared/lib/socket";
-import { useSessionTokens } from "@/entities/session/model/useSessionTokens";
+import { useCallback, useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import styled from 'styled-components';
+import { useTranslation } from '@/shared/lib/useTranslation';
+import { gameSocket } from '@/shared/lib/socket';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { Button } from '@/shared/ui';
 
 interface GamesControlPanelProps {
   roomId?: string;
@@ -35,55 +36,32 @@ const Panel = styled.div`
   }
 `;
 
-const Button = styled.button<{ $variant?: "primary" | "secondary" | "danger" }>`
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: none;
-  font-weight: 600;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
+const MoveControlsContainer = styled.div`
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  ${({ $variant, theme }) => {
-    if ($variant === "danger") {
-      return `
-        background: linear-gradient(135deg, #dc2626, #b91c1c);
-        color: white;
-      `;
-    }
-    if ($variant === "primary") {
-      return `
-        background: linear-gradient(135deg, ${theme.buttons.primary.gradientStart}, ${theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart});
-        color: ${theme.buttons.primary.text};
-      `;
-    }
-    return `
-      background: ${theme.surfaces.card.background};
-      color: ${theme.text.primary};
-      border: 1px solid ${theme.surfaces.card.border};
-    `;
-  }}
-
-  &:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  @media (max-width: 768px) {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.8rem;
-  }
+  gap: 0.25rem;
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  border-radius: 6px;
+  padding: 0.25rem;
 `;
 
-export function GamesControlPanel({ roomId, className, onMovePlayer, onCenterView, showMoveControls }: GamesControlPanelProps) {
+const DirectionColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`;
+
+const SmallButton = styled(Button)`
+  padding: 0.5rem;
+  min-width: auto;
+`;
+
+export function GamesControlPanel({
+  roomId,
+  className,
+  onMovePlayer,
+  onCenterView,
+  showMoveControls,
+}: GamesControlPanelProps) {
   const router = useRouter();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
@@ -100,15 +78,15 @@ export function GamesControlPanel({ roomId, className, onMovePlayer, onCenterVie
         await document.exitFullscreen();
       }
     } catch (err) {
-      console.error("Fullscreen toggle failed:", err);
+      console.error('Fullscreen toggle failed:', err);
     }
   }, []);
 
   const handleLeaveRoom = useCallback(() => {
     if (roomId && snapshot.userId) {
-      gameSocket.emit("games.room.leave", { roomId, userId: snapshot.userId });
+      gameSocket.emit('games.room.leave', { roomId, userId: snapshot.userId });
     }
-    router.push("/games");
+    router.push('/games');
   }, [roomId, snapshot.userId, router]);
 
   useEffect(() => {
@@ -116,8 +94,9 @@ export function GamesControlPanel({ roomId, className, onMovePlayer, onCenterVie
       setIsFullscreen(!!document.fullscreenElement);
     };
 
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () =>
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
   const handleMove = (direction: 'up' | 'down' | 'left' | 'right') => {
@@ -130,67 +109,70 @@ export function GamesControlPanel({ roomId, className, onMovePlayer, onCenterVie
 
   return (
     <Panel className={className} ref={containerRef}>
-      <Button onClick={handleFullscreenToggle} title={isFullscreen ? t("games.table.controlPanel.exitFullscreen") : t("games.table.controlPanel.enterFullscreen")}>
-        {isFullscreen ? "⤓" : "⤢"} {t("games.table.controlPanel.fullscreen")}
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={handleFullscreenToggle}
+        title={
+          isFullscreen
+            ? t('games.table.controlPanel.exitFullscreen')
+            : t('games.table.controlPanel.enterFullscreen')
+        }
+      >
+        {isFullscreen ? '⤓' : '⤢'} {t('games.table.controlPanel.fullscreen')}
       </Button>
-      
+
       {showMoveControls && (
-        <>
-          <div style={{
-            display: 'flex',
-            gap: '0.25rem',
-            border: '1px solid var(--surfaces-card-border, #e5e7eb)',
-            borderRadius: '6px',
-            padding: '0.25rem'
-          }}>
-            <Button
-              $variant="secondary"
-              onClick={() => handleMove('up')}
-              title={t("games.table.controlPanel.moveControls.shortcuts.up")}
-              style={{ padding: '0.5rem', minWidth: 'auto' }}
+        <MoveControlsContainer>
+          <SmallButton
+            variant="secondary"
+            size="sm"
+            onClick={() => handleMove('up')}
+            title={t('games.table.controlPanel.moveControls.shortcuts.up')}
+          >
+            ↑
+          </SmallButton>
+          <DirectionColumn>
+            <SmallButton
+              variant="secondary"
+              size="sm"
+              onClick={() => handleMove('left')}
+              title={t('games.table.controlPanel.moveControls.shortcuts.left')}
             >
-              ↑
-            </Button>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-              <Button
-                $variant="secondary"
-                onClick={() => handleMove('left')}
-                title={t("games.table.controlPanel.moveControls.shortcuts.left")}
-                style={{ padding: '0.5rem', minWidth: 'auto' }}
-              >
-                ←
-              </Button>
-              <Button
-                $variant="secondary"
-                onClick={() => handleCenterView()}
-                title={t("games.table.controlPanel.moveControls.shortcuts.center")}
-                style={{ padding: '0.5rem', minWidth: 'auto', fontSize: '0.75rem' }}
-              >
-                ⚡
-              </Button>
-              <Button
-                $variant="secondary"
-                onClick={() => handleMove('right')}
-                title={t("games.table.controlPanel.moveControls.shortcuts.right")}
-                style={{ padding: '0.5rem', minWidth: 'auto' }}
-              >
-                →
-              </Button>
-            </div>
-            <Button
-              $variant="secondary"
-              onClick={() => handleMove('down')}
-              title={t("games.table.controlPanel.moveControls.shortcuts.down")}
-              style={{ padding: '0.5rem', minWidth: 'auto' }}
+              ←
+            </SmallButton>
+            <SmallButton
+              variant="secondary"
+              size="sm"
+              onClick={() => handleCenterView()}
+              title={t(
+                'games.table.controlPanel.moveControls.shortcuts.center',
+              )}
             >
-              ↓
-            </Button>
-          </div>
-        </>
+              ⚡
+            </SmallButton>
+            <SmallButton
+              variant="secondary"
+              size="sm"
+              onClick={() => handleMove('right')}
+              title={t('games.table.controlPanel.moveControls.shortcuts.right')}
+            >
+              →
+            </SmallButton>
+          </DirectionColumn>
+          <SmallButton
+            variant="secondary"
+            size="sm"
+            onClick={() => handleMove('down')}
+            title={t('games.table.controlPanel.moveControls.shortcuts.down')}
+          >
+            ↓
+          </SmallButton>
+        </MoveControlsContainer>
       )}
 
-      <Button $variant="danger" onClick={handleLeaveRoom}>
-        🚪 {t("games.table.controlPanel.leaveRoom")}
+      <Button variant="danger" size="sm" onClick={handleLeaveRoom}>
+        🚪 {t('games.table.controlPanel.leaveRoom')}
       </Button>
     </Panel>
   );

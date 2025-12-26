@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import React from "react";
-import styled from "styled-components";
-import { useRouter } from "next/navigation";
-import type { GameMetadata } from "../types";
+import React from 'react';
+import styled from 'styled-components';
+import { useRouter } from 'next/navigation';
+import type { GameMetadata } from '../types';
+import { Card as SharedCard, Badge } from '@/shared/ui';
 
 interface GameCardProps {
   game: GameMetadata;
@@ -13,27 +14,22 @@ interface GameCardProps {
   disabled?: boolean;
 }
 
-const Card = styled.div<{ $disabled?: boolean }>`
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  border-radius: 12px;
-  padding: 1.5rem;
+const Card = styled(SharedCard)<{ $disabled?: boolean }>`
   cursor: pointer;
-  transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
   opacity: ${({ $disabled }) => ($disabled ? 0.6 : 1)};
-  
+
   &:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
   }
-  
+
   &:disabled {
     cursor: not-allowed;
   }
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -41,9 +37,15 @@ const Card = styled.div<{ $disabled?: boolean }>`
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, 
-      ${({ theme, $disabled }) => $disabled ? theme.text.muted : theme.buttons.primary.gradientStart},
-      ${({ theme, $disabled }) => $disabled ? theme.text.muted : theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart}
+    background: linear-gradient(
+      90deg,
+      ${({ theme, $disabled }) =>
+        $disabled ? theme.text.muted : theme.buttons.primary.gradientStart},
+      ${({ theme, $disabled }) =>
+        $disabled
+          ? theme.text.muted
+          : theme.buttons.primary.gradientEnd ||
+            theme.buttons.primary.gradientStart}
     );
   }
 `;
@@ -52,9 +54,10 @@ const GameImage = styled.div<{ $thumbnail?: string }>`
   width: 60px;
   height: 60px;
   border-radius: 8px;
-  background: ${({ $thumbnail, theme }) => 
-    $thumbnail ? `url(${$thumbnail}) center/cover` : theme.surfaces.panel.background
-  };
+  background: ${({ $thumbnail, theme }) =>
+    $thumbnail
+      ? `url(${$thumbnail}) center/cover`
+      : theme.surfaces.panel.background};
   border: 2px solid ${({ theme }) => theme.surfaces.card.border};
   margin-bottom: 0.75rem;
   display: flex;
@@ -114,49 +117,35 @@ const Tag = styled.span`
   border: 1px solid ${({ theme }) => theme.surfaces.card.border};
 `;
 
-const StatusIndicator = styled.div<{ $status: string }>`
+const StatusContainer = styled.div`
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 0.25rem 0.5rem;
-  border-radius: 8px;
-  background: ${({ $status }) => {
-    switch ($status) {
-      case 'active': return 'rgba(34, 197, 94, 0.1)';
-      case 'beta': return 'rgba(59, 130, 246, 0.1)';
-      case 'experimental': return 'rgba(251, 191, 36, 0.1)';
-      case 'deprecated': return 'rgba(239, 68, 68, 0.1)';
-      default: return 'rgba(156, 163, 175, 0.1)';
-    }
-  }};
-  color: ${({ $status }) => {
-    switch ($status) {
-      case 'active': return '#22c55e';
-      case 'beta': return '#3b82f6';
-      case 'experimental': return '#fbbf24';
-      case 'deprecated': return '#ef4444';
-      default: return '#9ca3af';
-    }
-  }};
-  border: 1px solid ${({ $status }) => {
-    switch ($status) {
-      case 'active': return 'rgba(34, 197, 94, 0.3)';
-      case 'beta': return 'rgba(59, 130, 246, 0.3)';
-      case 'experimental': return 'rgba(251, 191, 36, 0.3)';
-      case 'deprecated': return 'rgba(239, 68, 68, 0.3)';
-      default: return 'rgba(156, 163, 175, 0.3)';
-    }
-  }};
 `;
+
+function getStatusVariant(
+  status: string,
+): 'success' | 'info' | 'warning' | 'error' | 'neutral' {
+  switch (status) {
+    case 'active':
+      return 'success';
+    case 'beta':
+      return 'info';
+    case 'experimental':
+      return 'warning';
+    case 'deprecated':
+      return 'error';
+    default:
+      return 'neutral';
+  }
+}
 
 export function GameCard({
   game,
   className,
   onClick,
   showDetails = false,
-  disabled = false
+  disabled = false,
 }: GameCardProps) {
   const router = useRouter();
 
@@ -168,38 +157,34 @@ export function GameCard({
   };
 
   return (
-    <Card 
-      className={className} 
-      onClick={handleClick}
-      $disabled={disabled}
-    >
-      <StatusIndicator $status={game.status}>
-        {game.status}
-      </StatusIndicator>
-      
-      <GameImage $thumbnail={game.thumbnail}>
-        {game.name.charAt(0)}
-      </GameImage>
-      
+    <Card className={className} onClick={handleClick} $disabled={disabled}>
+      <StatusContainer>
+        <Badge variant={getStatusVariant(game.status)} size="sm">
+          {game.status}
+        </Badge>
+      </StatusContainer>
+
+      <GameImage $thumbnail={game.thumbnail}>{game.name.charAt(0)}</GameImage>
+
       <GameName>{game.name}</GameName>
-      
+
       {showDetails && (
         <>
           <GameDescription>{game.description}</GameDescription>
-          
+
           <GameMeta>
-            <MetaTag>👥 {game.minPlayers}-{game.maxPlayers} players</MetaTag>
+            <MetaTag>
+              👥 {game.minPlayers}-{game.maxPlayers} players
+            </MetaTag>
             {game.estimatedDuration && (
               <MetaTag>⏱️ {game.estimatedDuration} min</MetaTag>
             )}
-            {game.complexity && (
-              <MetaTag>🧠 {game.complexity}/5</MetaTag>
-            )}
+            {game.complexity && <MetaTag>🧠 {game.complexity}/5</MetaTag>}
           </GameMeta>
-          
+
           {game.tags && game.tags.length > 0 && (
             <GameTags>
-              {game.tags.map(tag => (
+              {game.tags.map((tag) => (
                 <Tag key={tag}>{tag}</Tag>
               ))}
             </GameTags>
@@ -208,4 +193,4 @@ export function GameCard({
       )}
     </Card>
   );
-};
+}

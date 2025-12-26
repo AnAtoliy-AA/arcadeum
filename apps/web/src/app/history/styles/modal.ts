@@ -1,4 +1,5 @@
-import styled from "styled-components";
+import styled from 'styled-components';
+import { Button } from '@/shared/ui';
 
 export const Modal = styled.div`
   position: fixed;
@@ -33,18 +34,18 @@ export const ModalHeader = styled.div`
   gap: 1rem;
 `;
 
-export const BackButton = styled.button`
-  background: none;
-  border: none;
+export const BackButton = styled(Button).attrs({
+  variant: 'ghost',
+  size: 'sm',
+})`
   color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
   padding: 0;
   text-align: left;
+  justify-content: flex-start;
 
-  &:hover {
+  &:hover:not(:disabled) {
     text-decoration: underline;
+    background: transparent;
   }
 `;
 

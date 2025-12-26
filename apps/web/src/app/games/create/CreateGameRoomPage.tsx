@@ -6,47 +6,22 @@ import styled from 'styled-components';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { resolveApiUrl } from '@/shared/lib/api-base';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { ERROR_COLOR } from '@/shared/config/payment-config';
-
-const Page = styled.main`
-  min-height: 100vh;
-  padding: 2rem 1.5rem;
-  background: ${({ theme }) => theme.background.base};
-  color: ${({ theme }) => theme.text.primary};
-`;
-
-const Container = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-`;
-
-const Title = styled.h1`
-  margin: 0;
-  font-size: 2rem;
-  font-weight: 700;
-  color: ${({ theme }) => theme.text.primary};
-`;
+import {
+  PageLayout,
+  Container,
+  PageTitle,
+  Section,
+  Button,
+  Input,
+  TextArea,
+  FormGroup,
+  Card,
+} from '@/shared/ui';
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-`;
-
-const Section = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const SectionTitle = styled.h2`
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.text.primary};
 `;
 
 const GameSelector = styled.div`
@@ -55,21 +30,15 @@ const GameSelector = styled.div`
   gap: 1rem;
 `;
 
-const GameTile = styled.button<{ $active?: boolean; disabled?: boolean }>`
+const GameTile = styled(Card)<{ $active?: boolean; disabled?: boolean }>`
   padding: 1rem;
-  border-radius: 12px;
   border: 2px solid
     ${({ $active, theme }) =>
       $active
         ? theme.buttons.primary.gradientStart
         : theme.surfaces.card.border};
-  background: ${({ $active, theme }) =>
-    $active ? theme.surfaces.card.background : theme.background.base};
-  color: ${({ theme }) => theme.text.primary};
-  text-align: left;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
-  transition: all 0.2s ease;
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
@@ -88,48 +57,6 @@ const GameTileSummary = styled.div`
   color: ${({ theme }) => theme.text.muted};
 `;
 
-const FieldGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
-
-const Label = styled.label`
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.text.secondary};
-`;
-
-const Input = styled.input`
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.primary};
-  font-size: 1rem;
-
-  &:focus {
-    outline: 2px solid ${({ theme }) => theme.outlines.focus};
-    outline-offset: 2px;
-  }
-`;
-
-const TextArea = styled.textarea`
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.primary};
-  font-size: 1rem;
-  min-height: 100px;
-  resize: vertical;
-
-  &:focus {
-    outline: 2px solid ${({ theme }) => theme.outlines.focus};
-    outline-offset: 2px;
-  }
-`;
-
 const Row = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -140,53 +67,14 @@ const Row = styled.div`
   }
 `;
 
-const VisibilityToggle = styled.button<{ $isPublic: boolean }>`
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+const VisibilityToggle = styled(Button)<{ $isPublic: boolean }>`
   background: ${({ $isPublic }) =>
     $isPublic ? 'rgba(34, 197, 94, 0.1)' : 'rgba(191, 90, 242, 0.1)'};
-  color: ${({ theme }) => theme.text.primary};
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
-
-  &:hover {
-    transform: translateY(-1px);
-  }
 `;
 
-const SubmitButton = styled.button`
-  padding: 1rem;
-  border-radius: 16px;
-  border: none;
-  background: ${({ theme }) => theme.buttons.primary.gradientStart};
-  color: ${({ theme }) => theme.buttons.primary.text};
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-`;
-
-const Error = styled.div`
-  padding: 1rem;
-  border-radius: 12px;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border: 1px solid ${ERROR_COLOR};
-  color: ${ERROR_COLOR};
+const ErrorCard = styled(Card)`
+  border-color: #dc2626;
+  color: #ef4444;
 `;
 
 const gamesCatalog = [
@@ -292,23 +180,23 @@ export function CreateGameRoomPage() {
   );
 
   return (
-    <Page>
-      <Container>
-        <Title>{t('games.create.title') || 'Create Game Room'}</Title>
+    <PageLayout>
+      <Container size="md">
+        <PageTitle size="lg">
+          {t('games.create.title') || 'Create Game Room'}
+        </PageTitle>
 
         <Form onSubmit={handleSubmit}>
-          <Section>
-            <SectionTitle>
-              {t('games.create.sectionGame') || 'Select Game'}
-            </SectionTitle>
+          <Section title={t('games.create.sectionGame') || 'Select Game'}>
             <GameSelector>
               {visibleGames.map((game) => (
                 <GameTile
                   key={game.id}
+                  as="button"
+                  type="button"
                   $active={gameId === game.id}
                   disabled={!game.isPlayable}
                   onClick={() => game.isPlayable && setGameId(game.id)}
-                  type="button"
                 >
                   <GameTileName>{game.name}</GameTileName>
                   <GameTileSummary>{game.summary}</GameTileSummary>
@@ -317,14 +205,12 @@ export function CreateGameRoomPage() {
             </GameSelector>
           </Section>
 
-          <Section>
-            <SectionTitle>
-              {t('games.create.sectionDetails') || 'Room Details'}
-            </SectionTitle>
-            <FieldGroup>
-              <Label htmlFor="room-name">
-                {t('games.create.fieldName') || 'Room Name'}
-              </Label>
+          <Section title={t('games.create.sectionDetails') || 'Room Details'}>
+            <FormGroup
+              label={t('games.create.fieldName') || 'Room Name'}
+              htmlFor="room-name"
+              required
+            >
               <Input
                 id="room-name"
                 type="text"
@@ -335,15 +221,17 @@ export function CreateGameRoomPage() {
                 onChange={(e) => setName(e.target.value)}
                 required
                 aria-required="true"
+                fullWidth
               />
-            </FieldGroup>
+            </FormGroup>
 
             <Row>
-              <FieldGroup>
-                <Label htmlFor="max-players">
-                  {t('games.create.fieldMaxPlayers') ||
-                    'Max Players (optional)'}
-                </Label>
+              <FormGroup
+                label={
+                  t('games.create.fieldMaxPlayers') || 'Max Players (optional)'
+                }
+                htmlFor="max-players"
+              >
                 <Input
                   id="max-players"
                   type="number"
@@ -355,16 +243,18 @@ export function CreateGameRoomPage() {
                     t('games.create.maxPlayersAria') ||
                     'Maximum number of players'
                   }
+                  fullWidth
                 />
-              </FieldGroup>
+              </FormGroup>
 
-              <FieldGroup>
-                <Label htmlFor="visibility">
-                  {t('games.create.fieldVisibility') || 'Visibility'}
-                </Label>
+              <FormGroup
+                label={t('games.create.fieldVisibility') || 'Visibility'}
+                htmlFor="visibility"
+              >
                 <VisibilityToggle
                   id="visibility"
                   type="button"
+                  variant="secondary"
                   $isPublic={visibility === 'public'}
                   onClick={() =>
                     setVisibility(
@@ -375,16 +265,17 @@ export function CreateGameRoomPage() {
                   aria-label={
                     visibility === 'public' ? 'Public room' : 'Private room'
                   }
+                  fullWidth
                 >
                   {visibility === 'public' ? '🌐 Public' : '🔒 Private'}
                 </VisibilityToggle>
-              </FieldGroup>
+              </FormGroup>
             </Row>
 
-            <FieldGroup>
-              <Label htmlFor="notes">
-                {t('games.create.fieldNotes') || 'Notes (optional)'}
-              </Label>
+            <FormGroup
+              label={t('games.create.fieldNotes') || 'Notes (optional)'}
+              htmlFor="notes"
+            >
               <TextArea
                 id="notes"
                 placeholder={
@@ -395,19 +286,24 @@ export function CreateGameRoomPage() {
                 aria-label={
                   t('games.create.notesAria') || 'Additional notes for the room'
                 }
+                fullWidth
               />
-            </FieldGroup>
+            </FormGroup>
           </Section>
 
-          {error && <Error>{error}</Error>}
+          {error && (
+            <ErrorCard variant="outlined" padding="sm">
+              {error}
+            </ErrorCard>
+          )}
 
-          <SubmitButton type="submit" disabled={loading}>
+          <Button type="submit" disabled={loading} size="lg" fullWidth>
             {loading
               ? t('games.create.submitCreating') || 'Creating...'
               : t('games.common.createRoom') || 'Create Room'}
-          </SubmitButton>
+          </Button>
         </Form>
       </Container>
-    </Page>
+    </PageLayout>
   );
 }

@@ -1,5 +1,12 @@
-import styled from "styled-components";
-import Link from "next/link";
+import styled from 'styled-components';
+import Link from 'next/link';
+import {
+  Input as SharedInput,
+  TextArea as SharedTextArea,
+  Button,
+  Card,
+  FormGroup as SharedFormGroup,
+} from './';
 
 // Layout components
 export const Page = styled.div`
@@ -7,16 +14,23 @@ export const Page = styled.div`
   padding: clamp(2.5rem, 6vw, 5rem) clamp(1.5rem, 6vw, 4rem);
   display: flex;
   justify-content: center;
-  background:
-    radial-gradient(circle at top left, ${({ theme }) => theme.background.radialStart}, transparent 55%),
-    radial-gradient(circle at bottom right, ${({ theme }) => theme.background.radialEnd}, transparent 55%),
+  background: radial-gradient(
+      circle at top left,
+      ${({ theme }) => theme.background.radialStart},
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      ${({ theme }) => theme.background.radialEnd},
+      transparent 55%
+    ),
     ${({ theme }) => theme.background.base};
   color: ${({ theme }) => theme.text.primary};
   font-family: var(--font-geist-sans);
 `;
 
 export const Wrapper = styled.div<{ $maxWidth?: string }>`
-  width: min(${({ $maxWidth }) => $maxWidth ?? "800px"}, 100%);
+  width: min(${({ $maxWidth }) => $maxWidth ?? '800px'}, 100%);
   display: flex;
   flex-direction: column;
   gap: clamp(1.5rem, 3vw, 2rem);
@@ -129,14 +143,12 @@ export const ContactGrid = styled.div`
   gap: 1rem;
 `;
 
-export const ContactCard = styled.div`
+export const ContactCard = styled(Card)`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   padding: 1.25rem;
   border-radius: 16px;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
 `;
 
 export const ContactIcon = styled.span`
@@ -163,11 +175,7 @@ export const Form = styled.form`
   gap: 1rem;
 `;
 
-export const FormGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
+export const FormGroup = styled(SharedFormGroup)``;
 
 export const Label = styled.label`
   font-size: 0.9rem;
@@ -175,79 +183,26 @@ export const Label = styled.label`
   color: ${({ theme }) => theme.text.secondary};
 `;
 
-export const Input = styled.input`
+export const Input = styled(SharedInput)`
   padding: 0.875rem 1rem;
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.primary};
-  font-size: 1rem;
-  font-family: inherit;
-  outline: none;
-  transition: border-color 0.2s ease;
-
-  &:focus {
-    border-color: ${({ theme }) => theme.text.secondary};
-  }
-
-  &::placeholder {
-    color: ${({ theme }) => theme.text.muted};
-  }
 `;
 
-export const TextArea = styled.textarea`
-  padding: 0.875rem 1rem;
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.primary};
-  font-size: 1rem;
-  font-family: inherit;
-  outline: none;
-  resize: vertical;
+export const TextArea = styled(SharedTextArea)`
   min-height: 150px;
-  transition: border-color 0.2s ease;
-
-  &:focus {
-    border-color: ${({ theme }) => theme.text.secondary};
-  }
-
-  &::placeholder {
-    color: ${({ theme }) => theme.text.muted};
-  }
 `;
 
-export const SubmitButton = styled.button`
-  padding: 0.875rem 1.5rem;
+export const SubmitButton = styled(Button).attrs({ variant: 'secondary' })`
   border-radius: 999px;
-  border: 1px solid ${({ theme }) => theme.buttons.secondary.border};
-  background: ${({ theme }) => theme.buttons.secondary.background};
-  color: ${({ theme }) => theme.buttons.secondary.text};
-  font-size: 1rem;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  padding: 0.875rem 1.5rem;
   align-self: flex-start;
-
-  &:hover {
-    transform: translateY(-2px);
-    border-color: ${({ theme }) => theme.buttons.secondary.hoverBorder};
-    background: ${({ theme }) => theme.buttons.secondary.hoverBackground};
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-  }
 `;
 
-export const SuccessMessage = styled.div`
-  padding: 1rem;
-  border-radius: 12px;
+export const SuccessMessage = styled(Card).attrs({
+  variant: 'outlined',
+  padding: 'sm',
+})`
   background: rgba(34, 197, 94, 0.1);
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-color: rgba(34, 197, 94, 0.3);
   color: #22c55e;
   text-align: center;
   font-weight: 500;

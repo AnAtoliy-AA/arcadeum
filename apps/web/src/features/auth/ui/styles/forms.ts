@@ -1,4 +1,5 @@
-import styled from "styled-components";
+import styled from 'styled-components';
+import { Input as SharedInput } from '@/shared/ui';
 
 export const AuthForm = styled.form`
   display: flex;
@@ -18,23 +19,9 @@ export const FieldLabel = styled.label`
   color: ${({ theme }) => theme.text.secondary};
 `;
 
-export const Input = styled.input`
+// Use shared Input component with auth-specific styling
+export const Input = styled(SharedInput)`
   width: 100%;
-  padding: 0.75rem 1rem;
   border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.surfaces.panel.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.primary};
   font-size: 0.95rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-  &::placeholder {
-    color: ${({ theme }) => theme.text.muted};
-    opacity: 0.75;
-  }
-
-  &:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.outlines.focus};
-    outline-offset: 3px;
-  }
 `;

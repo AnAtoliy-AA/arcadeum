@@ -1,6 +1,6 @@
-import type { Locale } from "../../types";
+import type { Locale } from '../../types';
 
-export const texasHoldemMessages: Record<Locale, Record<string, Record<string, string>>> = {
+const texasHoldemMessagesDefinition = {
   en: {
     texas_holdem_v1: { name: "Texas Hold'em" },
   },
@@ -10,5 +10,10 @@ export const texasHoldemMessages: Record<Locale, Record<string, Record<string, s
   fr: {
     texas_holdem_v1: { name: "Texas Hold'em" },
   },
-};
+} satisfies Record<Locale, Record<string, unknown>>;
 
+export const texasHoldemMessages = texasHoldemMessagesDefinition;
+
+/** Derived type from the texasHoldemMessages object - English locale structure */
+export type TexasHoldemGamesMessages =
+  (typeof texasHoldemMessagesDefinition)['en'];

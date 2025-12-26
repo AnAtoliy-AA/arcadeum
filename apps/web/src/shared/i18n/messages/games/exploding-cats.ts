@@ -1,6 +1,6 @@
 import type { Locale } from '../../types';
 
-export const explodingCatsMessages: Record<Locale, Record<string, unknown>> = {
+const explodingCatsMessagesDefinition = {
   en: {
     exploding_kittens_v1: { name: 'Exploding Cats' },
 
@@ -396,4 +396,10 @@ export const explodingCatsMessages: Record<Locale, Record<string, unknown>> = {
       },
     },
   },
-};
+} satisfies Record<Locale, Record<string, unknown>>;
+
+export const explodingCatsMessages = explodingCatsMessagesDefinition;
+
+/** Derived type from the explodingCatsMessages object - English locale structure */
+export type ExplodingCatsGamesMessages =
+  (typeof explodingCatsMessagesDefinition)['en'];

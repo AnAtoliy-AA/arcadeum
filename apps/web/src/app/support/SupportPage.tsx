@@ -1,12 +1,19 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import styled, { css } from "styled-components";
+import Link from 'next/link';
+import styled, { css } from 'styled-components';
 
-import { useLanguage, formatMessage } from "@/app/i18n/LanguageProvider";
-import { CopyActionButton } from "@/features/support/copy-action/ui/CopyActionButton";
-import type { SupportAction, SupportTeamMember } from "@/entities/support/model/types";
-import { DEFAULT_LOCALE, getMessages } from "@/shared/i18n";
+import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
+import { CopyActionButton } from '@/features/support/copy-action/ui/CopyActionButton';
+import type {
+  SupportAction,
+  SupportTeamMember,
+} from '@/entities/support/model/types';
+import { DEFAULT_LOCALE, getMessages } from '@/shared/i18n';
+import type {
+  SupportTeamKey,
+  SupportActionKey,
+} from '@/shared/i18n/messages/support';
 
 export type SupportPageProps = {
   appName: string;
@@ -25,9 +32,16 @@ const Page = styled.div`
   padding: clamp(2.5rem, 6vw, 5rem) clamp(1.5rem, 6vw, 4rem);
   display: flex;
   justify-content: center;
-  background:
-    radial-gradient(circle at top left, ${({ theme }) => theme.background.radialStart}, transparent 55%),
-    radial-gradient(circle at bottom right, ${({ theme }) => theme.background.radialEnd}, transparent 55%),
+  background: radial-gradient(
+      circle at top left,
+      ${({ theme }) => theme.background.radialStart},
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      ${({ theme }) => theme.background.radialEnd},
+      transparent 55%
+    ),
     ${({ theme }) => theme.background.base};
   color: ${({ theme }) => theme.text.primary};
   font-family: var(--font-geist-sans);
@@ -200,7 +214,10 @@ const ctaStyles = css`
   border: 1px solid ${({ theme }) => theme.buttons.secondary.border};
   background: ${({ theme }) => theme.buttons.secondary.background};
   color: ${({ theme }) => theme.buttons.secondary.text};
-  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 
   &:focus-visible {
     outline: 2px solid ${({ theme }) => theme.outlines.focus};
@@ -296,8 +313,9 @@ export function SupportPage({
     thanks;
 
   const localizedTeamMembers = teamMembers.map((member) => {
-    const overrides = supportCopy.team?.[member.key];
-    const base = defaultTeam[member.key];
+    const teamKey = member.key as SupportTeamKey;
+    const overrides = supportCopy.team?.[teamKey];
+    const base = defaultTeam[teamKey];
     return {
       ...member,
       role: overrides?.role ?? base?.role ?? member.role,
@@ -309,11 +327,12 @@ export function SupportPage({
   });
 
   const localizedActions = actions.map((action) => {
-    const overrides = supportCopy.actions?.[action.key];
-    const base = defaultActions[action.key];
+    const actionKey = action.key as SupportActionKey;
+    const overrides = supportCopy.actions?.[actionKey];
+    const base = defaultActions[actionKey];
     const context = {
       appName,
-      iban: action.type === "copy" ? action.value : undefined,
+      iban: action.type === 'copy' ? action.value : undefined,
     } satisfies Record<string, string | undefined>;
 
     const titleCopy = overrides?.title ?? base?.title ?? action.title;
@@ -323,15 +342,19 @@ export function SupportPage({
       action.description;
     const ctaCopy = overrides?.cta ?? base?.cta ?? action.cta;
 
-    if (action.type === "copy") {
+    if (action.type === 'copy') {
+      const ibanOverrides = overrides as
+        | { successMessage?: string }
+        | undefined;
+      const ibanBase = base as { successMessage?: string } | undefined;
       return {
         ...action,
         title: titleCopy,
         description: descriptionCopy,
         cta: ctaCopy,
         successMessage:
-          formatMessage(overrides?.successMessage, context) ??
-          formatMessage(base?.successMessage, context) ??
+          formatMessage(ibanOverrides?.successMessage, context) ??
+          formatMessage(ibanBase?.successMessage, context) ??
           action.successMessage,
       };
     }
@@ -345,9 +368,9 @@ export function SupportPage({
   });
 
   const teamSectionTitle =
-    supportCopy.teamSectionTitle ?? defaultSupport.teamSectionTitle ?? "";
+    supportCopy.teamSectionTitle ?? defaultSupport.teamSectionTitle ?? '';
   const actionsSectionTitle =
-    supportCopy.actionsSectionTitle ?? defaultSupport.actionsSectionTitle ?? "";
+    supportCopy.actionsSectionTitle ?? defaultSupport.actionsSectionTitle ?? '';
 
   return (
     <Page>
@@ -359,7 +382,9 @@ export function SupportPage({
         </Header>
 
         <Section aria-labelledby="support-team-heading">
-          <SectionTitle id="support-team-heading">{teamSectionTitle}</SectionTitle>
+          <SectionTitle id="support-team-heading">
+            {teamSectionTitle}
+          </SectionTitle>
           <TeamGrid>
             {localizedTeamMembers.map((member) => (
               <TeamCard key={member.key}>
@@ -375,7 +400,9 @@ export function SupportPage({
         </Section>
 
         <Section aria-labelledby="support-actions-heading">
-          <SectionTitle id="support-actions-heading">{actionsSectionTitle}</SectionTitle>
+          <SectionTitle id="support-actions-heading">
+            {actionsSectionTitle}
+          </SectionTitle>
           <ActionList>
             {localizedActions.map((action) => (
               <ActionCard key={action.key}>
@@ -385,13 +412,17 @@ export function SupportPage({
                 </ActionHeader>
                 <ActionDescription>{action.description}</ActionDescription>
                 <CtaRow>
-                  {action.type === "route" ? (
+                  {action.type === 'route' ? (
                     <CtaLink href={action.href}>
                       <span>{action.cta}</span>
                       <CtaIcon aria-hidden="true">→</CtaIcon>
                     </CtaLink>
-                  ) : action.type === "external" ? (
-                    <ExternalCta href={action.href} target="_blank" rel="noopener noreferrer">
+                  ) : action.type === 'external' ? (
+                    <ExternalCta
+                      href={action.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <span>{action.cta}</span>
                       <CtaIcon aria-hidden="true">↗</CtaIcon>
                     </ExternalCta>

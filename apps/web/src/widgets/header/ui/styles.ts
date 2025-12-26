@@ -44,7 +44,7 @@ export const Nav = styled.nav`
   gap: 0.5rem;
   flex: 1;
 
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
     display: none;
   }
 `;
@@ -77,6 +77,16 @@ export const Actions = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
+`;
+
+export const DesktopOnly = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  @media (max-width: 900px) {
+    display: none;
+  }
 `;
 
 export const ProfileMenuContainer = styled.div`
@@ -198,7 +208,7 @@ export const MobileMenuButton = styled(Button).attrs({
   height: 40px;
   padding: 0;
 
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
     display: flex;
   }
 `;
@@ -221,7 +231,7 @@ export const MobileNav = styled.div<{ $isOpen: boolean }>`
   visibility: ${({ $isOpen }) => ($isOpen ? 'visible' : 'hidden')};
   transition: all 0.3s ease;
 
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
     display: flex;
   }
 `;

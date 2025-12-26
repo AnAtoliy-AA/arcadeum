@@ -215,7 +215,7 @@ export function Header() {
             )}
 
             {!isAuthenticated && (
-              <>
+              <DesktopOnly>
                 <NavLink
                   href={routes.terms}
                   $active={pathname === routes.terms}
@@ -237,7 +237,7 @@ export function Header() {
                 <AuthButton href="/auth">
                   {t('common.actions.login')}
                 </AuthButton>
-              </>
+              </DesktopOnly>
             )}
 
             <MobileMenuButton
@@ -360,6 +360,7 @@ import {
   Nav,
   NavLink,
   Actions,
+  DesktopOnly,
   ProfileMenuContainer,
   UserInfo,
   UserName,

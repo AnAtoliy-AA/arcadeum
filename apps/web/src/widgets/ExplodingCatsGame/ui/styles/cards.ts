@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled, { css } from 'styled-components';
 
 // Card Components
 export const CardsGrid = styled.div`
@@ -17,14 +17,21 @@ export const Card = styled.div<{ $cardType?: string; $index?: number }>`
   aspect-ratio: 2/3;
   border-radius: 16px;
   background: ${({ $cardType }) => {
-    if ($cardType === "exploding_cat") return "linear-gradient(135deg, #DC2626 0%, #991B1B 100%)";
-    if ($cardType === "defuse") return "linear-gradient(135deg, #10B981 0%, #059669 100%)";
-    if ($cardType === "attack") return "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)";
-    if ($cardType === "skip") return "linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)";
-    if ($cardType === "favor") return "linear-gradient(135deg, #EC4899 0%, #BE185D 100%)";
-    if ($cardType === "shuffle") return "linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)";
-    if ($cardType === "see_the_future") return "linear-gradient(135deg, #A855F7 0%, #7E22CE 100%)";
-    return "linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)";
+    if ($cardType === 'exploding_cat')
+      return 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)';
+    if ($cardType === 'defuse')
+      return 'linear-gradient(135deg, #10B981 0%, #059669 100%)';
+    if ($cardType === 'attack')
+      return 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)';
+    if ($cardType === 'skip')
+      return 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)';
+    if ($cardType === 'favor')
+      return 'linear-gradient(135deg, #EC4899 0%, #BE185D 100%)';
+    if ($cardType === 'shuffle')
+      return 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)';
+    if ($cardType === 'see_the_future')
+      return 'linear-gradient(135deg, #A855F7 0%, #7E22CE 100%)';
+    return 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)';
   }};
   display: flex;
   flex-direction: column;
@@ -43,11 +50,18 @@ export const Card = styled.div<{ $cardType?: string; $index?: number }>`
   box-shadow:
     0 8px 24px rgba(0, 0, 0, 0.4),
     inset 0 0 20px rgba(255, 255, 255, 0.1);
-  animation: ${({ $index }) => `cardSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${($index || 0) * 0.08}s both`};
+  animation: ${({ $index }) =>
+    `cardSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${($index || 0) * 0.08}s both`};
 
   @keyframes cardSlideIn {
-    from { opacity: 0; transform: translateY(40px) rotateZ(-8deg) scale(0.9); }
-    to { opacity: 1; transform: translateY(0) rotateZ(0deg) scale(1); }
+    from {
+      opacity: 0;
+      transform: translateY(40px) rotateZ(-8deg) scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) rotateZ(0deg) scale(1);
+    }
   }
 
   &:hover {
@@ -59,22 +73,31 @@ export const Card = styled.div<{ $cardType?: string; $index?: number }>`
   }
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
-    background:
-      radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5) 0%, transparent 50%),
+    background: radial-gradient(
+        circle at 30% 30%,
+        rgba(255, 255, 255, 0.5) 0%,
+        transparent 50%
+      ),
       linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
     pointer-events: none;
     border-radius: 16px;
   }
 
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     inset: 6px;
     border-radius: 12px;
-    background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.03) 10px, rgba(255, 255, 255, 0.03) 20px);
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(255, 255, 255, 0.03) 10px,
+      rgba(255, 255, 255, 0.03) 20px
+    );
     pointer-events: none;
   }
 `;
@@ -100,8 +123,9 @@ export const CardFrame = styled.div`
   pointer-events: none;
   z-index: 2;
 
-  &::before, &::after {
-    content: "◆";
+  &::before,
+  &::after {
+    content: '◆';
     position: absolute;
     color: rgba(255, 255, 255, 0.5);
     font-size: 0.6rem;
@@ -123,7 +147,10 @@ export const CardFrame = styled.div`
   @media (max-width: 768px) {
     inset: 3px;
     border-width: 1.5px;
-    &::before, &::after { font-size: 0.5rem; }
+    &::before,
+    &::after {
+      font-size: 0.5rem;
+    }
   }
 `;
 
@@ -154,10 +181,14 @@ export const CardCorner = styled.div<{ $position: 'tl' | 'tr' | 'bl' | 'br' }>`
     border-width: 1.5px;
     ${({ $position }) => {
       switch ($position) {
-        case 'tl': return `top: 4px; left: 4px;`;
-        case 'tr': return `top: 4px; right: 4px;`;
-        case 'bl': return `bottom: 4px; left: 4px;`;
-        case 'br': return `bottom: 4px; right: 4px;`;
+        case 'tl':
+          return `top: 4px; left: 4px;`;
+        case 'tr':
+          return `top: 4px; right: 4px;`;
+        case 'bl':
+          return `bottom: 4px; left: 4px;`;
+        case 'br':
+          return `bottom: 4px; right: 4px;`;
       }
     }}
   }
@@ -173,7 +204,9 @@ export const CardEmoji = styled.div`
     transform: scale(1.1) rotate(5deg);
   }
 
-  @media (max-width: 768px) { font-size: 2rem; }
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
 `;
 
 export const CardName = styled.div`
@@ -184,7 +217,11 @@ export const CardName = styled.div`
   text-shadow:
     0 2px 4px rgba(0, 0, 0, 0.5),
     0 0 8px rgba(0, 0, 0, 0.3);
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.8));
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 255, 255, 0.8)
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -227,37 +264,59 @@ export const CardCountBadge = styled.div`
 
 export const LastPlayedCard = styled(Card)<{ $isAnimating?: boolean }>`
   position: absolute;
-  width: 100px;
-  max-width: 100px;
+  width: 75px;
+  max-width: 75px;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%) ${({ $isAnimating }) => $isAnimating ? 'rotateY(180deg) scale(1.1)' : 'rotateY(0deg)'};
+  transform: translate(-50%, -50%)
+    ${({ $isAnimating }) =>
+      $isAnimating ? 'rotateY(180deg) scale(1.1)' : 'rotateY(0deg)'};
   z-index: 10;
-  animation: ${({ $isAnimating }) => $isAnimating ? 'cardFlip 0.6s ease-out' : 'cardFloat 3s ease-in-out infinite'};
+  animation: ${({ $isAnimating }) =>
+    $isAnimating
+      ? 'cardFlip 0.6s ease-out'
+      : 'cardFloat 3s ease-in-out infinite'};
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
   cursor: default;
 
   @keyframes cardFlip {
-    0% { transform: translate(-50%, -50%) rotateY(0deg) scale(1); }
-    50% { transform: translate(-50%, -50%) rotateY(90deg) scale(1.1); }
-    100% { transform: translate(-50%, -50%) rotateY(180deg) scale(1); }
+    0% {
+      transform: translate(-50%, -50%) rotateY(0deg) scale(1);
+    }
+    50% {
+      transform: translate(-50%, -50%) rotateY(90deg) scale(1.1);
+    }
+    100% {
+      transform: translate(-50%, -50%) rotateY(180deg) scale(1);
+    }
   }
 
   @keyframes cardFloat {
-    0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
-    50% { transform: translate(-50%, -50%) translateY(-8px); }
+    0%,
+    100% {
+      transform: translate(-50%, -50%) translateY(0px);
+    }
+    50% {
+      transform: translate(-50%, -50%) translateY(-8px);
+    }
   }
 
-  &:hover { transform: translate(-50%, -50%) scale(1.05); }
+  &:hover {
+    transform: translate(-50%, -50%) scale(1.05);
+  }
 
   @media (max-width: 768px) {
-    width: 65px;
-    max-width: 65px;
-    padding: 0.5rem 0.35rem;
-    gap: 0.35rem;
+    width: 55px;
+    max-width: 55px;
+    padding: 0.4rem 0.3rem;
+    gap: 0.3rem;
 
-    ${CardEmoji} { font-size: 1.5rem; }
-    > div { font-size: 0.55rem; }
+    ${CardEmoji} {
+      font-size: 1.25rem;
+    }
+    > div {
+      font-size: 0.5rem;
+    }
   }
 `;
 
@@ -267,7 +326,9 @@ export const ActionButtons = styled.div`
   flex-wrap: wrap;
 `;
 
-export const ActionButton = styled.button<{ variant?: "primary" | "secondary" | "danger" }>`
+export const ActionButton = styled.button<{
+  variant?: 'primary' | 'secondary' | 'danger';
+}>`
   padding: 1rem 1.75rem;
   border-radius: 16px;
   border: none;
@@ -281,40 +342,61 @@ export const ActionButton = styled.button<{ variant?: "primary" | "secondary" | 
   letter-spacing: 0.75px;
 
   ${({ variant, theme }) => {
-    if (variant === "danger") {
+    if (variant === 'danger') {
       return css`
-        background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+        background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
         color: white;
-        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        box-shadow:
+          0 6px 20px rgba(220, 38, 38, 0.5),
+          inset 0 1px 0 rgba(255, 255, 255, 0.2);
       `;
     }
-    if (variant === "secondary") {
+    if (variant === 'secondary') {
       return css`
-        background: linear-gradient(135deg, ${theme.buttons.secondary.background}, ${theme.buttons.secondary.background}dd);
+        background: linear-gradient(
+          135deg,
+          ${theme.buttons.secondary.background},
+          ${theme.buttons.secondary.background}dd
+        );
         color: ${theme.buttons.secondary.text};
         border: 2px solid ${theme.buttons.secondary.border};
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        box-shadow:
+          0 4px 16px rgba(0, 0, 0, 0.15),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
       `;
     }
     return css`
-      background: linear-gradient(135deg, ${theme.buttons.primary.gradientStart}, ${theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart});
+      background: linear-gradient(
+        135deg,
+        ${theme.buttons.primary.gradientStart},
+        ${theme.buttons.primary.gradientEnd ||
+        theme.buttons.primary.gradientStart}
+      );
       color: ${theme.buttons.primary.text};
-      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      box-shadow:
+        0 6px 20px rgba(59, 130, 246, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     `;
   }}
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent 60%);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.3),
+      transparent 60%
+    );
     opacity: 0;
     transition: opacity 0.3s ease;
   }
 
   &:hover:not(:disabled) {
     transform: translateY(-3px) scale(1.02);
-    &::before { opacity: 1; }
+    &::before {
+      opacity: 1;
+    }
   }
 
   &:disabled {

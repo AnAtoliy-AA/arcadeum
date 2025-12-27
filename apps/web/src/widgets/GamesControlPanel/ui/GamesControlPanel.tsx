@@ -35,7 +35,7 @@ const Panel = styled.div`
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   position: sticky;
   top: 1rem;
-  z-index: 100;
+  z-index: 50;
   backdrop-filter: blur(16px);
   position: relative;
 

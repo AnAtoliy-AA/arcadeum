@@ -2,7 +2,6 @@
 
 import { useRef, useCallback } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
-
 import type {
   ExplodingCatsGameProps,
   ExplodingCatsCatCard,
@@ -28,6 +27,7 @@ import { GameLobby } from './GameLobby';
 import { ActionsSection } from './ActionsSection';
 import { ChatSection } from './ChatSection';
 import { GameStatusMessage } from './GameStatusMessage';
+import { ServerLoadingNotice } from './ServerLoadingNotice';
 
 import {
   GameContainer,
@@ -81,6 +81,9 @@ export default function ExplodingCatsGame({
   const {
     snapshot,
     actionBusy,
+    actionLongPending,
+    pendingProgress,
+    pendingElapsedSeconds,
     startBusy,
     actions,
     currentPlayer,
@@ -119,7 +122,7 @@ export default function ExplodingCatsGame({
     chatLogCount: snapshot?.logs?.length ?? 0,
   });
 
-  const youLabel = t('games.table.players.you') || 'You';
+  const youLabel = t('games.table.players.you');
   const { resolveDisplayName, formatLogMessage } = useDisplayNames({
     currentUserId,
     room,
@@ -179,10 +182,16 @@ export default function ExplodingCatsGame({
           <TurnStatus>
             {currentTurnPlayer
               ? currentTurnPlayer.playerId === currentUserId
-                ? t('games.table.players.yourTurn') || 'Your turn'
-                : t('games.table.players.waitingFor') || 'Waiting for player...'
+                ? t('games.table.players.yourTurn')
+                : t('games.table.players.waitingFor')
               : 'Game in progress'}
           </TurnStatus>
+          {actionLongPending && (
+            <ServerLoadingNotice
+              pendingProgress={pendingProgress}
+              pendingElapsedSeconds={pendingElapsedSeconds}
+            />
+          )}
         </GameInfo>
         <HeaderActions>
           <ChatToggleButton
@@ -190,9 +199,7 @@ export default function ExplodingCatsGame({
             onClick={handleToggleChat}
             $active={showChat}
           >
-            {showChat
-              ? t('games.table.chat.hide') || 'Hide Chat'
-              : t('games.table.chat.show') || 'Show Chat'}
+            {showChat ? t('games.table.chat.hide') : t('games.table.chat.show')}
           </ChatToggleButton>
           <FullscreenButton
             onClick={toggleFullscreen}
@@ -329,11 +336,10 @@ export default function ExplodingCatsGame({
               <HandContainer>
                 <InfoCard>
                   <InfoTitle>
-                    {t('games.table.hand.title') || 'Your Hand'} (
-                    {currentPlayer.hand.length}{' '}
+                    {t('games.table.hand.title')} ({currentPlayer.hand.length}{' '}
                     {currentPlayer.hand.length === 1
-                      ? t('games.table.state.card') || 'card'
-                      : t('games.table.state.cards') || 'cards'}
+                      ? t('games.table.state.card')
+                      : t('games.table.state.cards')}
                     )
                   </InfoTitle>
                   <CardsGrid>

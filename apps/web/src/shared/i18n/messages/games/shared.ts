@@ -45,6 +45,12 @@ export const sharedMessages = {
     },
     room: {
       gameArea: 'Game area - Real-time game integration coming soon',
+      loading: 'Server is loading...',
+      pendingNotice: {
+        title: 'Free hosts are spinning back up...',
+        message:
+          'Our free-tier backend servers snooze when idle, so everything is stretching its legs. Back us on the support page to help keep it running 24/7!',
+      },
     },
     detail: {
       title: 'Game Rooms',
@@ -129,6 +135,12 @@ export const sharedMessages = {
     },
     room: {
       gameArea: 'Área de juego - Integración en tiempo real próximamente',
+      loading: 'Cargando servidor...',
+      pendingNotice: {
+        title: 'Los servidores gratuitos están reactivándose...',
+        message:
+          'Nuestros servidores de backend gratuitos se duermen si no hay tráfico, así que ahora mismo están despertando. Visita la página de soporte para ayudarnos a mantenerlos activos.',
+      },
     },
     detail: {
       title: 'Salas de Juego',
@@ -214,6 +226,12 @@ export const sharedMessages = {
     },
     room: {
       gameArea: 'Zone de jeu - Intégration en temps réel bientôt disponible',
+      loading: 'Serveur en cours de chargement...',
+      pendingNotice: {
+        title: 'Les serveurs gratuits se relancent...',
+        message:
+          "Nos serveurs backend gratuits s'endorment quand ils sont inactifs, ils se remettent donc en route. Passe sur la page de soutien pour nous aider \u00e0 les garder \u00e9veill\u00e9s !",
+      },
     },
     detail: {
       title: 'Salles de Jeu',

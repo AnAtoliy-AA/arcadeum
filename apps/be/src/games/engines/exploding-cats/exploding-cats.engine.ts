@@ -232,6 +232,9 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
   ): Partial<ExplodingCatsState> {
     const sanitized = this.cloneState(state);
 
+    // Check if player is an actual game participant
+    const isPlayer = sanitized.players.some((p) => p.playerId === playerId);
+
     // Hide other players' hands
     sanitized.players = sanitized.players.map((p) => {
       if (p.playerId === playerId) {
@@ -241,6 +244,17 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
         ...p,
         hand: p.hand.map(() => 'hidden' as ExplodingCatsCard), // Hide cards
       };
+    });
+
+    // Filter logs based on scope and player status
+    sanitized.logs = sanitized.logs.filter((log) => {
+      // Public messages visible to everyone (players + spectators)
+      if (log.scope === 'all' || log.scope === undefined) return true;
+      // Player-only messages visible only to game participants
+      if (log.scope === 'players' && isPlayer) return true;
+      // Private messages only visible to sender
+      if (log.scope === 'private' && log.senderId === playerId) return true;
+      return false;
     });
 
     // Partially hide deck (show count only)

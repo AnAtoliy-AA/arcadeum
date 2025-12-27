@@ -1,6 +1,6 @@
-import styled from "styled-components";
-import { InfoCard } from "./table";
-import { ActionButton } from "./cards";
+import styled from 'styled-components';
+import { InfoCard } from './table';
+import { ActionButton } from './cards';
 
 // Chat Components
 export const ChatCard = styled(InfoCard)`
@@ -31,21 +31,41 @@ export const GameLog = styled.div`
   font-size: 0.875rem;
 `;
 
-export const LogEntry = styled.div<{ $type?: string }>`
+export const LogEntry = styled.div<{ $type?: string; $scope?: string }>`
   padding: 0.5rem;
   border-radius: 6px;
-  background: ${({ $type, theme }) => {
-    if ($type === "action") return theme.surfaces.panel.background;
-    if ($type === "system") return theme.background.base;
-    return "transparent";
+  background: ${({ $type, $scope, theme }) => {
+    // Player-only messages get a subtle purple/pink tint
+    if ($scope === 'players')
+      return `linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(236, 72, 153, 0.1))`;
+    if ($type === 'action') return theme.surfaces.panel.background;
+    if ($type === 'system') return theme.background.base;
+    return 'transparent';
   }};
   color: ${({ theme }) => theme.text.secondary};
-  border-left: 3px solid ${({ $type }) => {
-    if ($type === "action") return "#3B82F6";
-    if ($type === "system") return "#8B5CF6";
-    return "transparent";
-  }};
+  border-left: 3px solid
+    ${({ $type, $scope }) => {
+      // Player-only messages get pink/purple border
+      if ($scope === 'players') return '#EC4899';
+      if ($type === 'action') return '#3B82F6';
+      if ($type === 'system') return '#8B5CF6';
+      return 'transparent';
+    }};
   padding-left: 0.75rem;
+  ${({ $scope }) =>
+    $scope === 'players' &&
+    `
+    position: relative;
+    &::after {
+      content: '🔒';
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.7rem;
+      opacity: 0.6;
+    }
+  `}
 `;
 
 export const ChatMessages = styled(GameLog)`
@@ -58,10 +78,15 @@ export const ChatMessages = styled(GameLog)`
   overflow-x: hidden;
   padding-right: 0.25rem;
   scrollbar-width: thin;
-  scrollbar-color: ${({ theme }) => theme.buttons.primary.gradientStart} transparent;
+  scrollbar-color: ${({ theme }) => theme.buttons.primary.gradientStart}
+    transparent;
 
-  &::-webkit-scrollbar { width: 6px; }
-  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
   &::-webkit-scrollbar-thumb {
     background: ${({ theme }) => theme.buttons.primary.gradientStart};
     border-radius: 999px;
@@ -79,8 +104,11 @@ export const ScopeOption = styled.button<{ $active?: boolean }>`
   min-width: 120px;
   padding: 0.4rem 0.75rem;
   border-radius: 999px;
-  border: 1px solid ${({ $active, theme }) =>
-    $active ? theme.buttons.primary.gradientStart : theme.surfaces.card.border};
+  border: 1px solid
+    ${({ $active, theme }) =>
+      $active
+        ? theme.buttons.primary.gradientStart
+        : theme.surfaces.card.border};
   background: ${({ $active, theme }) =>
     $active
       ? `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}20, transparent)`
@@ -93,7 +121,9 @@ export const ScopeOption = styled.button<{ $active?: boolean }>`
   cursor: pointer;
   transition: all 0.2s ease;
 
-  &:hover { border-color: ${({ theme }) => theme.buttons.primary.gradientStart}; }
+  &:hover {
+    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+  }
 `;
 
 export const ChatInput = styled.textarea`
@@ -106,7 +136,9 @@ export const ChatInput = styled.textarea`
   padding: 0.75rem;
   font-size: 0.875rem;
   resize: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 
   &:focus {
     outline: none;

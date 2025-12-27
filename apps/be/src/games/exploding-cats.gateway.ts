@@ -273,7 +273,12 @@ export class ExplodingCatsGateway {
     const scope = scopeRaw === 'players' ? 'players' : 'all';
 
     try {
-      await this.explodingCatsService.postHistoryNote(userId, roomId, message);
+      await this.explodingCatsService.postHistoryNote(
+        userId,
+        roomId,
+        message,
+        scope,
+      );
       client.emit('games.session.history_note.ack', {
         roomId,
         userId,

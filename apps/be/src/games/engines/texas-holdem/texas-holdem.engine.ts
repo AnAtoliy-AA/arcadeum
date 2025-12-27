@@ -228,6 +228,9 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
   ): Partial<TexasHoldemState> {
     const sanitized = this.cloneState(state);
 
+    // Check if player is an actual game participant
+    const isPlayer = sanitized.players.some((p) => p.playerId === playerId);
+
     // Hide other players' hole cards
     sanitized.players = sanitized.players.map((p) => {
       if (p.playerId === playerId) {
@@ -237,6 +240,17 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
         ...p,
         holeCards: [], // Hide cards
       };
+    });
+
+    // Filter logs based on scope and player status
+    sanitized.logs = sanitized.logs.filter((log) => {
+      // Public messages visible to everyone (players + spectators)
+      if (log.scope === 'all' || log.scope === undefined) return true;
+      // Player-only messages visible only to game participants
+      if (log.scope === 'players' && isPlayer) return true;
+      // Private messages only visible to sender
+      if (log.scope === 'private' && log.senderId === playerId) return true;
+      return false;
     });
 
     return sanitized;

@@ -275,6 +275,7 @@ export class GameHistoryService {
     roomId: string,
     userId: string,
     message: string,
+    scope: 'all' | 'players' = 'all',
   ): Promise<void> {
     const room = await this.gameRoomModel.findById(roomId).exec();
 
@@ -307,7 +308,7 @@ export class GameHistoryService {
       type: 'message' as const,
       message,
       createdAt: new Date().toISOString(),
-      scope: 'all' as const,
+      scope,
       senderId: userId,
       senderName: null,
     };

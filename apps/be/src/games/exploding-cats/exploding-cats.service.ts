@@ -126,8 +126,13 @@ export class ExplodingCatsService {
   /**
    * Post a note to Exploding Cats history
    */
-  async postHistoryNote(userId: string, roomId: string, message: string) {
-    await this.historyService.postHistoryNote(roomId, userId, message);
+  async postHistoryNote(
+    userId: string,
+    roomId: string,
+    message: string,
+    scope: 'all' | 'players' = 'all',
+  ) {
+    await this.historyService.postHistoryNote(roomId, userId, message, scope);
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (session) {
       this.realtimeService.emitSessionSnapshot(roomId, session);

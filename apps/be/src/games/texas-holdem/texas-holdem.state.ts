@@ -44,7 +44,7 @@ export interface TexasHoldemPlayerState {
   [key: string]: unknown;
 }
 
-export type TexasHoldemLogVisibility = 'all' | 'players';
+export type TexasHoldemLogVisibility = 'all' | 'players' | 'private';
 
 export interface TexasHoldemLogEntry {
   id: string;

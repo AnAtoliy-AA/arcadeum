@@ -57,7 +57,7 @@ export function ChatSection({
       {logs && logs.length > 0 ? (
         <ChatMessages ref={chatMessagesRef}>
           {logs.map((log) => (
-            <LogEntry key={log.id} $type={log.type}>
+            <LogEntry key={log.id} $type={log.type} $scope={log.scope}>
               {resolveDisplayName(
                 log.senderId ?? undefined,
                 log.senderName ?? undefined,

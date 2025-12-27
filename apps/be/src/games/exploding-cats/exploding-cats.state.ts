@@ -24,7 +24,7 @@ export interface ExplodingCatsPlayerState {
   [key: string]: unknown;
 }
 
-export type ExplodingCatsLogVisibility = 'all' | 'players';
+export type ExplodingCatsLogVisibility = 'all' | 'players' | 'private';
 
 export interface ExplodingCatsLogEntry {
   id: string;

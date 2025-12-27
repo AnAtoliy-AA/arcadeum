@@ -114,19 +114,30 @@ export class GamesGateway {
       const room = await this.gamesService.getRoom(roomId);
       const session = await this.gamesService.findSessionByRoom(room.id);
 
-      const channel = this.realtime.roomChannel(room.id);
+      // Spectators join the spectator channel (receives filtered data)
+      const channel = this.realtime.spectatorChannel(room.id);
       await client.join(channel);
+
+      // Filter session for spectators (removes private logs)
+      const filteredSession = session
+        ? this.realtime.filterSessionForSpectators(session)
+        : null;
 
       client.emit(
         'games.room.watching',
         maybeEncrypt({
           room,
-          session,
+          session: filteredSession,
         }),
       );
 
       if (session) {
-        this.realtime.emitSessionSnapshotToClient(client, room.id, session);
+        this.realtime.emitSessionSnapshotToClient(
+          client,
+          room.id,
+          session,
+          true,
+        );
       }
     } catch (error) {
       const message =

@@ -114,11 +114,26 @@ export async function logoutOAuth(params: {
 
 // ----- Local Auth (email/password) API helpers -----
 
+/** Available user roles */
+export const USER_ROLES = [
+  'free',
+  'premium',
+  'vip',
+  'supporter',
+  'moderator',
+  'tester',
+  'developer',
+  'admin',
+] as const;
+
+export type UserRole = (typeof USER_ROLES)[number];
+
 export interface AuthUserProfile {
   id: string;
   email: string;
   username: string;
   displayName: string;
+  role: UserRole;
 }
 
 interface RegisterResponse extends AuthUserProfile {

@@ -17,6 +17,7 @@ export function Header() {
   const isAuthenticated = !!snapshot.accessToken;
   const displayName =
     snapshot.displayName || snapshot.username || snapshot.email;
+  const role = snapshot.role || 'free';
 
   const navItems = useMemo(
     () => [
@@ -109,6 +110,11 @@ export function Header() {
               <ProfileMenuContainer data-profile-menu>
                 <UserInfo onClick={toggleProfileMenu}>
                   <UserName>{displayName}</UserName>
+                  {role !== 'free' && (
+                    <RoleBadge $role={role}>
+                      {t(`common.roles.${role}`)}
+                    </RoleBadge>
+                  )}
                   <ChevronIcon
                     $isOpen={isProfileMenuOpen}
                     viewBox="0 0 20 20"
@@ -290,6 +296,11 @@ export function Header() {
           <>
             <MobileUserInfo>
               <UserName>{displayName}</UserName>
+              {role !== 'free' && (
+                <RoleBadge $role={role} style={{ marginLeft: '0.5rem' }}>
+                  {t(`common.roles.${role}`)}
+                </RoleBadge>
+              )}
             </MobileUserInfo>
             <DropdownItem
               onClick={() => {
@@ -374,4 +385,5 @@ import {
   MobileNav,
   MobileNavLink,
   MobileUserInfo,
+  RoleBadge,
 } from './styles';

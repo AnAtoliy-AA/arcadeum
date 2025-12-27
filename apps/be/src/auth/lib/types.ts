@@ -22,6 +22,22 @@ export interface OAuthTokenResponse {
 }
 
 /**
+ * Available user roles.
+ */
+export const USER_ROLES = [
+  'free',
+  'premium',
+  'vip',
+  'supporter',
+  'moderator',
+  'tester',
+  'developer',
+  'admin',
+] as const;
+
+export type UserRole = (typeof USER_ROLES)[number];
+
+/**
  * Public user profile returned from auth operations.
  */
 export interface AuthUserProfile {
@@ -30,6 +46,7 @@ export interface AuthUserProfile {
   username: string;
   displayName: string;
   createdAt?: Date;
+  role: UserRole;
 }
 
 /**

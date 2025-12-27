@@ -26,6 +26,16 @@ const commonMessagesDefinition = {
     statuses: {
       authenticated: 'You are signed in.',
     },
+    roles: {
+      free: 'Free',
+      premium: 'Premium',
+      vip: 'VIP',
+      supporter: 'Supporter',
+      moderator: 'Mod',
+      tester: 'Tester',
+      developer: 'Dev',
+      admin: 'Admin',
+    },
   },
   es: {
     languageNames: {
@@ -52,6 +62,16 @@ const commonMessagesDefinition = {
     statuses: {
       authenticated: 'Has iniciado sesión.',
     },
+    roles: {
+      free: 'Gratis',
+      premium: 'Premium',
+      vip: 'VIP',
+      supporter: 'Colaborador',
+      moderator: 'Mod',
+      tester: 'Tester',
+      developer: 'Dev',
+      admin: 'Admin',
+    },
   },
   fr: {
     languageNames: {
@@ -77,6 +97,16 @@ const commonMessagesDefinition = {
     },
     statuses: {
       authenticated: 'Vous êtes connecté.',
+    },
+    roles: {
+      free: 'Gratuit',
+      premium: 'Premium',
+      vip: 'VIP',
+      supporter: 'Supporteur',
+      moderator: 'Mod',
+      tester: 'Testeur',
+      developer: 'Dev',
+      admin: 'Admin',
     },
   },
 } satisfies Record<Locale, Record<string, unknown>>;

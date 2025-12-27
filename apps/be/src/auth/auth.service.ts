@@ -27,6 +27,7 @@ import type {
   AuthTokensResponse,
   OAuthTokenResponse,
   GoogleUserProfile,
+  UserRole,
 } from './lib/types';
 
 // Re-export types for backwards compatibility
@@ -188,7 +189,13 @@ export class AuthService {
     requestingUserId: string;
     limit?: number;
   }): Promise<
-    Array<{ id: string; email: string; username: string; displayName: string }>
+    Array<{
+      id: string;
+      email: string;
+      username: string;
+      displayName: string;
+      role: UserRole;
+    }>
   > {
     const trimmed = params.query?.trim();
     if (!trimmed) {
@@ -216,6 +223,7 @@ export class AuthService {
       email: user.email,
       username: user.username,
       displayName: this.resolveDisplayName(user),
+      role: user.role ?? 'free',
     }));
   }
 
@@ -334,6 +342,7 @@ export class AuthService {
       email: user.email,
       username: user.username,
       displayName: this.resolveDisplayName(user),
+      role: user.role ?? 'free',
     };
 
     const createdAt = (user as Partial<{ createdAt: Date }>).createdAt;

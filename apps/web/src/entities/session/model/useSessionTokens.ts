@@ -1,10 +1,14 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { refreshSession, type LoginResponse } from "../api/authApi";
+import {
+  refreshSession,
+  type LoginResponse,
+  type UserRole,
+} from '../api/authApi';
 
-export type SessionProviderId = "oauth" | "local" | null;
+export type SessionProviderId = 'oauth' | 'local' | null;
 
 export type SessionTokensSnapshot = {
   provider: SessionProviderId;
@@ -18,6 +22,7 @@ export type SessionTokensSnapshot = {
   email: string | null;
   username: string | null;
   displayName: string | null;
+  role: UserRole | null;
 };
 
 export type SetSessionTokensInput = {
@@ -31,6 +36,7 @@ export type SetSessionTokensInput = {
   email?: string | null;
   username?: string | null;
   displayName?: string | null;
+  role?: UserRole | null;
 };
 
 export type SessionTokensValue = {
@@ -42,8 +48,8 @@ export type SessionTokensValue = {
   refreshTokens: () => Promise<SessionTokensSnapshot>;
 };
 
-const STORAGE_KEY = "web_session_tokens_v1";
-const STORAGE_EVENT = "session_tokens_changed";
+const STORAGE_KEY = 'web_session_tokens_v1';
+const STORAGE_EVENT = 'session_tokens_changed';
 
 const defaultSnapshot: SessionTokensSnapshot = {
   provider: null,
@@ -57,6 +63,7 @@ const defaultSnapshot: SessionTokensSnapshot = {
   email: null,
   username: null,
   displayName: null,
+  role: null,
 };
 
 function toIso(value?: string | Date | null): string | null {
@@ -70,7 +77,7 @@ function toIso(value?: string | Date | null): string | null {
 }
 
 function readFromStorage(): SessionTokensSnapshot {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return { ...defaultSnapshot };
   }
 
@@ -90,7 +97,7 @@ function readFromStorage(): SessionTokensSnapshot {
 }
 
 function writeToStorage(snapshot: SessionTokensSnapshot) {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return;
   }
   try {
@@ -103,13 +110,15 @@ function writeToStorage(snapshot: SessionTokensSnapshot) {
 }
 
 function clearStorage() {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return;
   }
   try {
     window.localStorage.removeItem(STORAGE_KEY);
     // Dispatch custom event to notify all components
-    window.dispatchEvent(new CustomEvent(STORAGE_EVENT, { detail: defaultSnapshot }));
+    window.dispatchEvent(
+      new CustomEvent(STORAGE_EVENT, { detail: defaultSnapshot }),
+    );
   } catch {
     // ignore
   }
@@ -127,12 +136,15 @@ function buildSnapshot(
     accessTokenExpiresAt:
       toIso(input.accessTokenExpiresAt) ?? current.accessTokenExpiresAt ?? null,
     refreshTokenExpiresAt:
-      toIso(input.refreshTokenExpiresAt) ?? current.refreshTokenExpiresAt ?? null,
+      toIso(input.refreshTokenExpiresAt) ??
+      current.refreshTokenExpiresAt ??
+      null,
     updatedAt: new Date().toISOString(),
     userId: input.userId ?? current.userId ?? null,
     email: input.email ?? current.email ?? null,
     username: input.username ?? current.username ?? null,
     displayName: input.displayName ?? current.displayName ?? null,
+    role: input.role ?? current.role ?? null,
   };
 }
 
@@ -147,7 +159,7 @@ function enrichWithResponse(
     accessTokenExpiresAt: response.accessTokenExpiresAt ?? null,
     refreshToken: response.refreshToken ?? null,
     refreshTokenExpiresAt: response.refreshTokenExpiresAt ?? null,
-    tokenType: "Bearer",
+    tokenType: 'Bearer',
     userId: response.user?.id ?? snapshot.userId ?? null,
     email: response.user?.email ?? snapshot.email ?? null,
     username: response.user?.username ?? snapshot.username ?? null,
@@ -156,6 +168,7 @@ function enrichWithResponse(
       response.user?.username ??
       snapshot.displayName ??
       null,
+    role: response.user?.role ?? snapshot.role ?? null,
   });
 }
 
@@ -226,7 +239,7 @@ export function useSessionTokens(): SessionTokensValue {
     const current = snapshot;
     const refreshToken = current.refreshToken;
     if (!refreshToken) {
-      throw new Error("No refresh token available");
+      throw new Error('No refresh token available');
     }
 
     if (refreshInFlight.current) {
@@ -288,7 +301,14 @@ export function useSessionTokens(): SessionTokensValue {
   }, [snapshot.accessTokenExpiresAt, snapshot.refreshToken, refreshTokens]);
 
   return useMemo(
-    () => ({ snapshot, hydrated, setTokens, clearTokens, reload, refreshTokens }),
+    () => ({
+      snapshot,
+      hydrated,
+      setTokens,
+      clearTokens,
+      reload,
+      refreshTokens,
+    }),
     [snapshot, hydrated, setTokens, clearTokens, reload, refreshTokens],
   );
 }

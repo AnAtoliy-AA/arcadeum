@@ -1,6 +1,20 @@
 import { Schema, SchemaFactory, Prop } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
+/** Available user roles */
+export const USER_ROLES = [
+  'free',
+  'premium',
+  'vip',
+  'supporter',
+  'moderator',
+  'tester',
+  'developer',
+  'admin',
+] as const;
+
+export type UserRole = (typeof USER_ROLES)[number];
+
 @Schema({ timestamps: true })
 export class User {
   @Prop({ required: true, unique: true, index: true })
@@ -17,6 +31,9 @@ export class User {
 
   @Prop({ trim: true })
   displayName?: string;
+
+  @Prop({ type: String, enum: USER_ROLES, default: 'free' })
+  role!: UserRole;
 }
 
 export type UserDocument = User & Document;

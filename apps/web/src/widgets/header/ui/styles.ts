@@ -264,3 +264,56 @@ export const MobileUserInfo = styled.div`
   border-top: 1px solid ${({ theme }) => theme.surfaces.card.border};
   margin-top: 0.5rem;
 `;
+
+/** Role colors mapping */
+const roleColors: Record<string, { bg: string; text: string; glow?: string }> =
+  {
+    free: { bg: 'rgba(148, 163, 184, 0.2)', text: '#94a3b8' },
+    premium: {
+      bg: 'linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(245, 158, 11, 0.25))',
+      text: '#fbbf24',
+      glow: '0 0 8px rgba(251, 191, 36, 0.4)',
+    },
+    vip: {
+      bg: 'linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(219, 39, 119, 0.3))',
+      text: '#e879f9',
+      glow: '0 0 12px rgba(168, 85, 247, 0.5)',
+    },
+    supporter: {
+      bg: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(244, 114, 182, 0.25))',
+      text: '#f472b6',
+      glow: '0 0 8px rgba(236, 72, 153, 0.4)',
+    },
+    moderator: {
+      bg: 'rgba(34, 197, 94, 0.2)',
+      text: '#22c55e',
+    },
+    tester: {
+      bg: 'rgba(59, 130, 246, 0.2)',
+      text: '#3b82f6',
+    },
+    developer: {
+      bg: 'rgba(99, 102, 241, 0.2)',
+      text: '#818cf8',
+    },
+    admin: {
+      bg: 'linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(251, 146, 60, 0.3))',
+      text: '#ef4444',
+      glow: '0 0 10px rgba(239, 68, 68, 0.5)',
+    },
+  };
+
+export const RoleBadge = styled.span<{ $role: string }>`
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+  background: ${({ $role }) => roleColors[$role]?.bg || roleColors.free.bg};
+  color: ${({ $role }) => roleColors[$role]?.text || roleColors.free.text};
+  box-shadow: ${({ $role }) => roleColors[$role]?.glow || 'none'};
+  white-space: nowrap;
+`;

@@ -9,7 +9,11 @@ import type {
   ExplodingCatsCard,
 } from '../types';
 import { CAT_CARDS } from '../types';
-import { getCardEmoji, getCardTranslationKey } from '../lib/cardUtils';
+import {
+  getCardEmoji,
+  getCardTranslationKey,
+  getCardDescriptionKey,
+} from '../lib/cardUtils';
 import { useDisplayNames } from '../lib/displayUtils';
 import {
   useExplodingCatsState,
@@ -53,6 +57,7 @@ import {
   CardInner,
   CardEmoji,
   CardName,
+  CardDescription,
   HandSection,
   InfoCard,
   InfoTitle,
@@ -383,6 +388,9 @@ export default function ExplodingCatsGame({
                               <CardName>
                                 {t(getCardTranslationKey(card)) || card}
                               </CardName>
+                              <CardDescription>
+                                {t(getCardDescriptionKey(card))}
+                              </CardDescription>
                             </CardInner>
                             {count > 1 && (
                               <CardCountBadge>{count}</CardCountBadge>

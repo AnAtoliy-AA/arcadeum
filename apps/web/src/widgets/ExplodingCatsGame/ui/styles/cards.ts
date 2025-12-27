@@ -108,11 +108,11 @@ export const CardInner = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  justify-content: flex-start;
+  gap: 0.25rem;
   width: 100%;
   height: 100%;
-  padding: 0.5rem;
+  padding: 0.5rem 0.35rem;
 `;
 
 export const CardFrame = styled.div`
@@ -210,7 +210,7 @@ export const CardEmoji = styled.div`
 `;
 
 export const CardName = styled.div`
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -225,10 +225,41 @@ export const CardName = styled.div`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  min-height: 1.6rem;
+  display: flex;
+  align-items: center;
+  text-align: center;
 
   @media (max-width: 768px) {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     letter-spacing: 0.3px;
+    min-height: 1.4rem;
+  }
+`;
+
+export const CardDescription = styled.div`
+  font-size: 0.5rem;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.15;
+  opacity: 0.85;
+  text-align: center;
+  width: 100%;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: auto;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  padding: 0 0.15rem;
+  min-height: 1.15rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.45rem;
+    -webkit-line-clamp: 2;
+    min-height: 1rem;
   }
 `;
 

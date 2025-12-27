@@ -5,7 +5,7 @@ export {
   TableArea,
   HandSection,
   HandContainer,
-} from "./layout";
+} from './layout';
 
 // Header Components
 export {
@@ -17,7 +17,7 @@ export {
   StartButton,
   FullscreenButton,
   ChatToggleButton,
-} from "./header";
+} from './header';
 
 // Table Components
 export {
@@ -29,7 +29,7 @@ export {
   InfoTitle,
   TableInfo,
   TableStat,
-} from "./table";
+} from './table';
 
 // Player Components
 export {
@@ -38,7 +38,7 @@ export {
   PlayerName,
   PlayerCardCount,
   TurnIndicator,
-} from "./players";
+} from './players';
 
 // Card Components
 export {
@@ -49,11 +49,12 @@ export {
   CardCorner,
   CardEmoji,
   CardName,
+  CardDescription,
   CardCountBadge,
   LastPlayedCard,
   ActionButtons,
   ActionButton,
-} from "./cards";
+} from './cards';
 
 // Chat Components
 export {
@@ -68,7 +69,7 @@ export {
   ChatHint,
   ChatSendButton,
   EmptyState,
-} from "./chat";
+} from './chat';
 
 // Modal Components
 export {
@@ -83,4 +84,4 @@ export {
   OptionButton,
   ModalActions,
   ModalButton,
-} from "./modals";
+} from './modals';

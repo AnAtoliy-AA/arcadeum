@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, useEffect, useRef } from 'react';
+import { useCallback, useState, useEffect, RefObject } from 'react';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -14,6 +14,7 @@ interface GamesControlPanelProps {
   onMovePlayer?: (direction: 'up' | 'down' | 'left' | 'right') => void;
   onCenterView?: () => void;
   showMoveControls?: boolean;
+  fullscreenContainerRef?: RefObject<HTMLDivElement | null>;
 }
 
 const Panel = styled.div`
@@ -21,18 +22,44 @@ const Panel = styled.div`
   align-items: center;
   gap: 1rem;
   padding: 0.75rem 1.5rem;
-  background: ${({ theme }) => theme.surfaces.panel.background};
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.surfaces.panel.border};
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(
+    135deg,
+    ${({ theme }) => theme.surfaces.panel.background}f5,
+    ${({ theme }) => theme.surfaces.card.background}e8
+  );
+  border-radius: 14px;
+  border: 1px solid ${({ theme }) => theme.surfaces.panel.border}60;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.15),
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
   position: sticky;
   top: 1rem;
-  z-index: 10;
-  backdrop-filter: blur(10px);
+  z-index: 100;
+  backdrop-filter: blur(16px);
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(99, 102, 241, 0.3) 25%,
+      rgba(236, 72, 153, 0.3) 50%,
+      rgba(16, 185, 129, 0.3) 75%,
+      transparent 100%
+    );
+  }
 
   @media (max-width: 768px) {
     padding: 0.5rem 1rem;
     gap: 0.5rem;
+    border-radius: 10px;
   }
 `;
 
@@ -61,26 +88,27 @@ export function GamesControlPanel({
   onMovePlayer,
   onCenterView,
   showMoveControls,
+  fullscreenContainerRef,
 }: GamesControlPanelProps) {
   const router = useRouter();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleFullscreenToggle = useCallback(async () => {
-    if (!containerRef.current) return;
-
     try {
       if (!document.fullscreenElement) {
-        await containerRef.current.requestFullscreen();
+        // Use provided container ref, or fall back to document element
+        const element =
+          fullscreenContainerRef?.current || document.documentElement;
+        await element.requestFullscreen();
       } else {
         await document.exitFullscreen();
       }
     } catch (err) {
       console.error('Fullscreen toggle failed:', err);
     }
-  }, []);
+  }, [fullscreenContainerRef]);
 
   const handleLeaveRoom = useCallback(() => {
     if (roomId && snapshot.userId) {
@@ -108,7 +136,7 @@ export function GamesControlPanel({
   };
 
   return (
-    <Panel className={className} ref={containerRef}>
+    <Panel className={className}>
       <Button
         variant="secondary"
         size="sm"

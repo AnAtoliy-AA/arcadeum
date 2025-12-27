@@ -276,34 +276,34 @@ export default function ExplodingCatsGame({
                     </CardInner>
                   </LastPlayedCard>
                 )}
-                <TableInfo>
-                  <TableStat>
-                    <div style={{ fontSize: '1.2rem' }}>🎴</div>
-                    <div style={{ fontSize: '1rem', fontWeight: 700 }}>
-                      {snapshot.deck.length}
-                    </div>
-                  </TableStat>
-                  <TableStat>
-                    <div style={{ fontSize: '1.2rem' }}>🗑️</div>
-                    <div style={{ fontSize: '1rem', fontWeight: 700 }}>
-                      {snapshot.discardPile.length}
-                    </div>
-                  </TableStat>
-                  <TableStat>
-                    <div style={{ fontSize: '1.2rem' }}>⏳</div>
-                    <div
-                      style={{
-                        fontSize: '1rem',
-                        fontWeight: 700,
-                        color: '#DC2626',
-                      }}
-                    >
-                      {snapshot.pendingDraws}
-                    </div>
-                  </TableStat>
-                </TableInfo>
               </CenterTable>
             </PlayersRing>
+            <TableInfo>
+              <TableStat>
+                <div style={{ fontSize: '1.1rem' }}>🎴</div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 700 }}>
+                  {snapshot.deck.length}
+                </div>
+              </TableStat>
+              <TableStat>
+                <div style={{ fontSize: '1.1rem' }}>🗑️</div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 700 }}>
+                  {snapshot.discardPile.length}
+                </div>
+              </TableStat>
+              <TableStat>
+                <div style={{ fontSize: '1.1rem' }}>⏳</div>
+                <div
+                  style={{
+                    fontSize: '0.9rem',
+                    fontWeight: 700,
+                    color: '#DC2626',
+                  }}
+                >
+                  {snapshot.pendingDraws}
+                </div>
+              </TableStat>
+            </TableInfo>
           </GameTable>
 
           {currentPlayer && currentPlayer.alive && !isGameOver && (

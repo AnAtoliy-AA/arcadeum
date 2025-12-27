@@ -1,130 +1,194 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 // Layout Components
 export const GameContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  padding: 2.5rem;
-  border-radius: 32px;
-  background:
-    radial-gradient(ellipse at top, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-    linear-gradient(180deg, ${({ theme }) => theme.background.base} 0%, ${({ theme }) => theme.surfaces.card.background} 100%);
-  border: 2px solid ${({ theme }) => theme.surfaces.card.border};
+  gap: 1.25rem;
+  padding: 2rem;
+  border-radius: 24px;
+  background: radial-gradient(
+      ellipse at 20% 0%,
+      rgba(99, 102, 241, 0.15) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 80% 100%,
+      rgba(236, 72, 153, 0.12) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 50% 50%,
+      rgba(16, 185, 129, 0.08) 0%,
+      transparent 60%
+    ),
+    linear-gradient(
+      165deg,
+      ${({ theme }) => theme.background.base} 0%,
+      ${({ theme }) => theme.surfaces.card.background} 100%
+    );
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
   min-height: 600px;
   box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 25px 80px rgba(0, 0, 0, 0.4),
+    0 10px 30px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   height: 100%;
+  backdrop-filter: blur(20px);
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle at center, rgba(59, 130, 246, 0.15) 0%, transparent 40%);
-    animation: ambientGlow 8s ease-in-out infinite;
+    top: -60%;
+    left: -60%;
+    width: 220%;
+    height: 220%;
+    background: radial-gradient(
+        circle at 30% 30%,
+        rgba(99, 102, 241, 0.12) 0%,
+        transparent 35%
+      ),
+      radial-gradient(
+        circle at 70% 70%,
+        rgba(236, 72, 153, 0.1) 0%,
+        transparent 35%
+      );
+    animation: ambientGlow 12s ease-in-out infinite;
     pointer-events: none;
   }
 
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
+    height: 2px;
     background: linear-gradient(
       90deg,
       transparent 0%,
-      ${({ theme }) => theme.buttons.primary.gradientStart} 20%,
-      ${({ theme }) => theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart} 80%,
+      rgba(99, 102, 241, 0.8) 15%,
+      rgba(236, 72, 153, 0.8) 50%,
+      rgba(16, 185, 129, 0.8) 85%,
       transparent 100%
     );
-    box-shadow: 0 0 20px ${({ theme }) => theme.buttons.primary.gradientStart}80;
-    animation: shimmer 4s ease-in-out infinite;
+    box-shadow:
+      0 0 30px rgba(99, 102, 241, 0.5),
+      0 0 60px rgba(236, 72, 153, 0.3);
+    animation: shimmer 6s ease-in-out infinite;
   }
 
   @keyframes ambientGlow {
-    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
-    50% { transform: translate(10%, -10%) scale(1.1); opacity: 0.8; }
+    0%,
+    100% {
+      transform: translate(0, 0) rotate(0deg) scale(1);
+      opacity: 0.4;
+    }
+    33% {
+      transform: translate(5%, -5%) rotate(5deg) scale(1.05);
+      opacity: 0.6;
+    }
+    66% {
+      transform: translate(-3%, 3%) rotate(-3deg) scale(1.02);
+      opacity: 0.5;
+    }
   }
 
   @keyframes shimmer {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
+    0%,
+    100% {
+      opacity: 0.7;
+      transform: scaleX(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scaleX(1.02);
+    }
   }
 
-  &:fullscreen, &:-moz-full-screen, &:-webkit-full-screen {
+  &:fullscreen,
+  &:-moz-full-screen,
+  &:-webkit-full-screen {
     max-width: 100vw;
     max-height: 100vh;
     width: 100vw;
     height: 100vh;
     border-radius: 0;
     border: none;
-    padding: 1rem 1rem 2rem 1rem;
-    gap: 1rem;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: thin;
-    scrollbar-color: ${({ theme }) => theme.buttons.primary.gradientStart}50 transparent;
+    padding: 1rem 2rem;
+    gap: 0.75rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 
-    &::before { display: none; }
+    &::before {
+      opacity: 0.3;
+    }
 
     @media (max-width: 768px) {
-      padding: 0.5rem 0.5rem 3rem 0.5rem;
+      padding: 0.5rem 1rem;
       gap: 0.5rem;
     }
   }
 
   @media (max-width: 768px) {
-    padding: 1.5rem;
-    border-radius: 20px;
-    gap: 1.25rem;
-    border-width: 1.5px;
+    padding: 1.25rem;
+    border-radius: 16px;
+    gap: 1rem;
+    border-width: 1px;
   }
 `;
 
 export const GameBoard = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
   flex: 1;
   min-height: 0;
-  animation: fadeIn 0.5s ease-out;
+  overflow: hidden;
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 `;
 
 export const TableArea = styled.div<{ $showChat: boolean }>`
   display: grid;
   grid-template-columns: ${({ $showChat }) =>
-    $showChat ? "minmax(0, 2fr) minmax(280px, 1fr)" : "minmax(0, 1fr)"};
-  grid-template-rows: ${({ $showChat }) => ($showChat ? "1fr auto" : "1fr auto")};
+    $showChat ? 'minmax(0, 2fr) minmax(260px, 1fr)' : 'minmax(0, 1fr)'};
+  grid-template-rows: 1fr auto;
   grid-template-areas: ${({ $showChat }) =>
     $showChat ? `"table chat" "hand chat"` : `"table" "hand"`};
-  gap: 1.5rem;
+  gap: 1rem;
   width: 100%;
   align-items: stretch;
   min-height: 0;
+  flex: 1;
+  overflow: hidden;
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
-    grid-template-rows: ${({ $showChat }) => ($showChat ? "auto auto 400px" : "auto auto")};
+    grid-template-rows: ${({ $showChat }) =>
+      $showChat ? '1fr auto minmax(200px, 300px)' : '1fr auto'};
     grid-template-areas: ${({ $showChat }) =>
       $showChat ? `"table" "hand" "chat"` : `"table" "hand"`};
   }
 
-  @media (max-width: 768px) { gap: 1rem; }
+  @media (max-width: 768px) {
+    gap: 0.75rem;
+  }
 `;
 
 export const HandSection = styled.div`

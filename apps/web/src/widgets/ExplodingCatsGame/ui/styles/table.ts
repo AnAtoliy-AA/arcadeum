@@ -1,75 +1,69 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 // Table Components
 export const GameTable = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   align-items: center;
   justify-content: center;
-  padding: 3rem;
-  border-radius: 32px;
-  background:
-    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.03) 2px, rgba(0, 0, 0, 0.03) 4px),
-    repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 0, 0, 0.03) 2px, rgba(0, 0, 0, 0.03) 4px),
-    radial-gradient(ellipse at center,
-      ${({ theme }) => theme.surfaces.panel.background}ee,
-      ${({ theme }) => theme.background.base}dd
-    );
-  backdrop-filter: blur(20px);
-  border: 3px solid ${({ theme }) => theme.surfaces.panel.border};
+  padding: 3.5rem 2.5rem;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+  border: 1px solid rgba(99, 102, 241, 0.2);
   position: relative;
   width: 100%;
   flex: 1;
-  min-height: clamp(500px, 65vh, 900px);
+  min-height: 420px;
   grid-area: table;
-  overflow: visible;
+  overflow: hidden;
   box-shadow:
-    0 10px 40px rgba(0, 0, 0, 0.4),
-    inset 0 0 100px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
 
+  /* Subtle corner accents */
   &::before {
-    content: "";
+    content: '';
     position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(45deg, transparent, transparent 1px, rgba(0, 0, 0, 0.02) 1px, rgba(0, 0, 0, 0.02) 2px);
-    border-radius: 32px;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(
+      circle at top left,
+      rgba(99, 102, 241, 0.15),
+      transparent 70%
+    );
+    border-radius: 20px 0 0 0;
     pointer-events: none;
   }
 
   &::after {
-    content: "";
+    content: '';
     position: absolute;
-    inset: -2px;
-    border-radius: 32px;
-    padding: 2px;
-    background: linear-gradient(135deg,
-      ${({ theme }) => theme.buttons.primary.gradientStart}40,
-      transparent 30%,
-      transparent 70%,
-      ${({ theme }) => theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart}40
+    bottom: 0;
+    right: 0;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(
+      circle at bottom right,
+      rgba(168, 85, 247, 0.12),
+      transparent 70%
     );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
+    border-radius: 0 0 20px 0;
     pointer-events: none;
-    opacity: 0.6;
-    animation: borderGlow 3s ease-in-out infinite;
-  }
-
-  @keyframes borderGlow {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 0.8; }
   }
 
   @media (max-width: 768px) {
-    padding: 1.5rem;
-    min-height: 420px;
-    border-radius: 24px;
-    border-width: 2px;
-    &::after { border-radius: 24px; }
+    padding: 2.5rem 1.5rem;
+    min-height: 360px;
+    border-radius: 14px;
+    &::before,
+    &::after {
+      width: 100px;
+      height: 100px;
+    }
   }
 `;
 
@@ -77,20 +71,27 @@ export const PlayersRing = styled.div<{ $playerCount: number }>`
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 500px;
+  min-height: 320px;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  @media (max-width: 768px) { min-height: 400px; }
+  @media (max-width: 768px) {
+    min-height: 280px;
+  }
 `;
 
-export const PlayerPositionWrapper = styled.div<{ $position: number; $total: number }>`
+export const PlayerPositionWrapper = styled.div<{
+  $position: number;
+  $total: number;
+}>`
   position: absolute;
+  z-index: 5;
   ${({ $position, $total }) => {
     const angle = ($position / $total) * 2 * Math.PI - Math.PI / 2;
-    const radiusX = 45;
-    const radiusY = 42;
+    // Smaller radius to keep players inside the container
+    const radiusX = 38;
+    const radiusY = 36;
     const x = 50 + radiusX * Math.cos(angle);
     const y = 50 + radiusY * Math.sin(angle);
     return `left: ${x}%; top: ${y}%; transform: translate(-50%, -50%);`;
@@ -99,8 +100,8 @@ export const PlayerPositionWrapper = styled.div<{ $position: number; $total: num
   @media (max-width: 768px) {
     ${({ $position, $total }) => {
       const angle = ($position / $total) * 2 * Math.PI - Math.PI / 2;
-      const radiusX = 44;
-      const radiusY = 40;
+      const radiusX = 36;
+      const radiusY = 34;
       const x = 50 + radiusX * Math.cos(angle);
       const y = 50 + radiusY * Math.sin(angle);
       return `left: ${x}%; top: ${y}%;`;
@@ -112,59 +113,64 @@ export const CenterTable = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
-  padding: 2.5rem;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.25rem;
   border-radius: 50%;
-  background:
-    repeating-radial-gradient(circle at center, transparent 0px, transparent 2px, rgba(0, 0, 0, 0.02) 2px, rgba(0, 0, 0, 0.02) 4px),
-    radial-gradient(circle at 30% 30%,
-      ${({ theme }) => theme.surfaces.card.background}ff,
-      ${({ theme }) => theme.surfaces.card.background}ee 50%,
-      ${({ theme }) => theme.background.base}dd
-    );
-  backdrop-filter: blur(30px);
-  border: 4px solid ${({ theme }) => theme.surfaces.card.border};
-  width: 280px;
-  height: 280px;
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  border: 2px solid rgba(99, 102, 241, 0.3);
+  width: 180px;
+  height: 180px;
   position: relative;
+  z-index: 1;
   box-shadow:
-    0 12px 48px rgba(0, 0, 0, 0.4),
-    inset 0 0 80px rgba(0, 0, 0, 0.2),
-    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.05),
+    inset 0 -2px 8px rgba(0, 0, 0, 0.3);
 
+  /* Rotating glow border */
   &::before {
-    content: "";
+    content: '';
     position: absolute;
-    inset: -4px;
+    inset: -2px;
     border-radius: 50%;
-    background: conic-gradient(from 0deg,
-      ${({ theme }) => theme.buttons.primary.gradientStart}60,
-      transparent 90deg,
-      transparent 270deg,
-      ${({ theme }) => theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart}60 360deg
+    background: conic-gradient(
+      from 0deg,
+      rgba(99, 102, 241, 0.6) 0deg,
+      rgba(168, 85, 247, 0.5) 60deg,
+      rgba(236, 72, 153, 0.4) 120deg,
+      rgba(99, 102, 241, 0.3) 180deg,
+      rgba(16, 185, 129, 0.4) 240deg,
+      rgba(59, 130, 246, 0.5) 300deg,
+      rgba(99, 102, 241, 0.6) 360deg
     );
-    animation: rotate 10s linear infinite;
+    animation: rotate 20s linear infinite;
     z-index: -1;
   }
 
   @keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   @media (max-width: 768px) {
-    width: 180px;
-    height: 180px;
-    padding: 1rem;
-    border-width: 3px;
-    &::before { inset: -3px; }
+    width: 130px;
+    height: 130px;
+    padding: 0.75rem;
+    border-width: 2px;
+    gap: 0.5rem;
   }
 `;
 
 export const InfoCard = styled.div`
   padding: 1.5rem;
   border-radius: 20px;
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     ${({ theme }) => theme.surfaces.panel.background}ee,
     ${({ theme }) => theme.surfaces.card.background}dd
   );
@@ -177,10 +183,16 @@ export const InfoCard = styled.div`
   overflow: hidden;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.02) 10px, rgba(255, 255, 255, 0.02) 20px);
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(255, 255, 255, 0.02) 10px,
+      rgba(255, 255, 255, 0.02) 20px
+    );
     pointer-events: none;
   }
 
@@ -201,13 +213,17 @@ export const InfoTitle = styled.h3`
   padding-bottom: 0.75rem;
 
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     bottom: 0;
     left: 0;
     width: 40px;
     height: 2px;
-    background: linear-gradient(90deg, ${({ theme }) => theme.buttons.primary.gradientStart}, transparent);
+    background: linear-gradient(
+      90deg,
+      ${({ theme }) => theme.buttons.primary.gradientStart},
+      transparent
+    );
   }
 
   @media (max-width: 768px) {
@@ -218,33 +234,122 @@ export const InfoTitle = styled.h3`
 
 export const TableInfo = styled.div`
   position: absolute;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 1rem;
+  right: 1rem;
   display: flex;
-  gap: 1rem;
-  font-size: 0.75rem;
-  color: ${({ theme }) => theme.text.secondary};
-  text-align: center;
-  width: 90%;
-  justify-content: space-around;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  z-index: 5;
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+
+  /* Animated gradient border */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(99, 102, 241, 0.6),
+      rgba(168, 85, 247, 0.4),
+      rgba(236, 72, 153, 0.3),
+      rgba(99, 102, 241, 0.6)
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0%,
+    100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
 
   @media (max-width: 768px) {
-    font-size: 0.6rem;
+    top: 0.5rem;
+    right: 0.5rem;
     gap: 0.4rem;
-    bottom: 0.4rem;
+    padding: 0.75rem;
+    border-radius: 12px;
   }
 `;
 
 export const TableStat = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.75rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 10px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.02)
+  );
+  transition: all 0.25s ease;
+  color: #fff;
+
+  &:hover {
+    background: linear-gradient(
+      135deg,
+      rgba(99, 102, 241, 0.25),
+      rgba(168, 85, 247, 0.15)
+    );
+    transform: translateX(-2px);
+  }
+
+  > div:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: linear-gradient(
+      135deg,
+      rgba(99, 102, 241, 0.3),
+      rgba(168, 85, 247, 0.2)
+    );
+    font-size: 0.9rem;
+  }
+
+  > div:last-child {
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+  }
 
   @media (max-width: 768px) {
-    gap: 0.15rem;
-    > div:first-child { font-size: 0.9rem !important; }
-    > div:last-child { font-size: 0.75rem !important; }
+    gap: 0.5rem;
+    padding: 0.4rem 0.5rem;
+    > div:first-child {
+      width: 24px;
+      height: 24px;
+      font-size: 0.8rem;
+    }
+    > div:last-child {
+      font-size: 0.8rem;
+    }
   }
 `;

@@ -20,6 +20,7 @@ export default function GameRoomPage() {
   const roomId = params?.id as string;
   const { snapshot, hydrated } = useSessionTokens();
   const { t } = useTranslation();
+  const gameContainerRef = useRef<HTMLDivElement>(null);
 
   // State for room visibility check
   const [roomVisibility, setRoomVisibility] = useState<
@@ -315,8 +316,11 @@ export default function GameRoomPage() {
   // Games manage their own session state and actions via hooks
   return (
     <Page>
-      <Container>
-        <GamesControlPanel roomId={roomId} />
+      <Container ref={gameContainerRef}>
+        <GamesControlPanel
+          roomId={roomId}
+          fullscreenContainerRef={gameContainerRef}
+        />
 
         <GameWrapper>
           <Suspense
@@ -394,6 +398,17 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+
+  &:fullscreen,
+  &:-webkit-full-screen,
+  &:-moz-full-screen {
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    background: #0a0a0f;
+    padding: 1rem 2rem;
+    overflow: hidden;
+  }
 `;
 
 const LoadingContainer = styled.div`

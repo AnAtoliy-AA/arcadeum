@@ -6,17 +6,40 @@ export const GameHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  padding: 1rem 1.5rem;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border-bottom: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  margin: -2.5rem -2.5rem 0 -2.5rem;
+  padding: 1rem 1.75rem;
+  background: linear-gradient(
+    135deg,
+    ${({ theme }) => theme.surfaces.card.background}f5,
+    ${({ theme }) => theme.surfaces.panel.background}e8
+  );
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid ${({ theme }) => theme.surfaces.card.border}40;
+  margin: -2rem -2rem 0 -2rem;
   flex-wrap: wrap;
   position: relative;
-  z-index: 1;
+  z-index: 10;
+  flex-shrink: 0;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(99, 102, 241, 0.4) 25%,
+      rgba(236, 72, 153, 0.4) 50%,
+      rgba(16, 185, 129, 0.4) 75%,
+      transparent 100%
+    );
+  }
 
   @media (max-width: 768px) {
     padding: 0.75rem 1rem;
-    margin: -1.5rem -1.5rem 0 -1.5rem;
+    margin: -1.25rem -1.25rem 0 -1.25rem;
   }
 `;
 
@@ -36,22 +59,28 @@ export const GameInfo = styled.div`
 
 export const GameTitle = styled.h2`
   margin: 0;
-  font-size: 1.75rem;
-  font-weight: 900;
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.buttons.primary.gradientStart},
-    ${({ theme }) =>
-      theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart}
-  );
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #6366f1 0%, #ec4899 50%, #10b981 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 6s ease infinite;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  letter-spacing: -0.5px;
-  text-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+  letter-spacing: -0.3px;
+
+  @keyframes gradientShift {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
 
   @media (max-width: 768px) {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 `;
 
@@ -94,17 +123,22 @@ export const FullscreenButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  border: 2px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border}80;
+  background: linear-gradient(
+    135deg,
+    ${({ theme }) => theme.surfaces.card.background}ee,
+    ${({ theme }) => theme.surfaces.panel.background}cc
+  );
   color: ${({ theme }) => theme.text.primary};
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 1.25rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1.1rem;
   position: relative;
   overflow: hidden;
+  backdrop-filter: blur(8px);
 
   &::before {
     content: '';
@@ -112,24 +146,26 @@ export const FullscreenButton = styled.button`
     inset: 0;
     background: linear-gradient(
       135deg,
-      ${({ theme }) => theme.buttons.primary.gradientStart}20,
-      transparent
+      rgba(99, 102, 241, 0.2),
+      rgba(236, 72, 153, 0.1)
     );
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.25s ease;
   }
 
   &:hover {
-    transform: translateY(-2px);
-    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    transform: translateY(-2px) scale(1.05);
+    border-color: rgba(99, 102, 241, 0.6);
+    box-shadow:
+      0 8px 20px rgba(99, 102, 241, 0.25),
+      0 4px 8px rgba(0, 0, 0, 0.1);
     &::before {
       opacity: 1;
     }
   }
 
   &:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.98);
   }
 `;
 

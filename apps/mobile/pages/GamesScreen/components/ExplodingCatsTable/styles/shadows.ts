@@ -32,18 +32,18 @@ export function createShadows(ctx: StyleThemeContext) {
 
   const handCardShadow = platformShadow({
     color: shadow,
-    opacity: isLight ? 0.24 : 0.42,
-    radius: 10,
-    offset: { width: 0, height: 4 },
-    elevation: 3,
+    opacity: isLight ? 0.12 : 0.25,
+    radius: 4,
+    offset: { width: 0, height: 2 },
+    elevation: 2,
   });
 
   const handCardPlayableShadow = platformShadow({
     color: shadow,
-    opacity: isLight ? 0.35 : 0.6,
-    radius: 10,
-    offset: { width: 0, height: 4 },
-    elevation: 3,
+    opacity: isLight ? 0.18 : 0.35,
+    radius: 6,
+    offset: { width: 0, height: 2 },
+    elevation: 2,
   });
 
   const handCardOverlayShadow = platformShadow({

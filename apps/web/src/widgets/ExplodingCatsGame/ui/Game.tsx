@@ -2,17 +2,8 @@
 
 import { useRef, useCallback } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import type {
-  ExplodingCatsGameProps,
-  ExplodingCatsCatCard,
-  ExplodingCatsCard,
-} from '../types';
-import { CAT_CARDS } from '../types';
-import {
-  getCardEmoji,
-  getCardTranslationKey,
-  getCardDescriptionKey,
-} from '../lib/cardUtils';
+import type { ExplodingCatsGameProps } from '../types';
+import { getCardEmoji, getCardTranslationKey } from '../lib/cardUtils';
 import { useDisplayNames } from '../lib/displayUtils';
 import {
   useExplodingCatsState,
@@ -24,10 +15,10 @@ import { SeeTheFutureModal } from './modals/SeeTheFutureModal';
 import { FavorModal } from './modals/FavorModal';
 import { DefuseModal } from './modals/DefuseModal';
 import { GameLobby } from './GameLobby';
-import { ActionsSection } from './ActionsSection';
 import { ChatSection } from './ChatSection';
 import { GameStatusMessage } from './GameStatusMessage';
 import { ServerLoadingNotice } from './ServerLoadingNotice';
+import { PlayerHand } from './PlayerHand';
 
 import {
   GameContainer,
@@ -57,14 +48,6 @@ import {
   CardInner,
   CardEmoji,
   CardName,
-  CardDescription,
-  HandSection,
-  InfoCard,
-  InfoTitle,
-  HandContainer,
-  CardsGrid,
-  Card,
-  CardCountBadge,
 } from './styles';
 
 export default function ExplodingCatsGame({
@@ -319,96 +302,20 @@ export default function ExplodingCatsGame({
           </GameTable>
 
           {currentPlayer && currentPlayer.alive && !isGameOver && (
-            <HandSection>
-              {isMyTurn && !isGameOver && (
-                <ActionsSection
-                  currentPlayer={currentPlayer}
-                  canAct={canAct}
-                  actionBusy={actionBusy}
-                  onDraw={actions.drawCard}
-                  onPlayActionCard={actions.playActionCard}
-                  onOpenFavorModal={() => setFavorModal(true)}
-                  onPlaySeeTheFuture={actions.playSeeTheFuture}
-                  t={t as (key: string) => string}
-                />
-              )}
-
-              <HandContainer>
-                <InfoCard>
-                  <InfoTitle>
-                    {t('games.table.hand.title')} ({currentPlayer.hand.length}{' '}
-                    {currentPlayer.hand.length === 1
-                      ? t('games.table.state.card')
-                      : t('games.table.state.cards')}
-                    )
-                  </InfoTitle>
-                  <CardsGrid>
-                    {(() => {
-                      const uniqueCards = Array.from(
-                        new Set(currentPlayer.hand),
-                      );
-                      const cardCounts = new Map<ExplodingCatsCard, number>();
-                      currentPlayer.hand.forEach((card) =>
-                        cardCounts.set(card, (cardCounts.get(card) || 0) + 1),
-                      );
-
-                      return uniqueCards.map((card) => {
-                        const count = cardCounts.get(card) || 1;
-                        const isCatCard = CAT_CARDS.includes(
-                          card as ExplodingCatsCatCard,
-                        );
-                        const canPlayCombo =
-                          isCatCard &&
-                          count >= 2 &&
-                          canAct &&
-                          aliveOpponents.length > 0;
-
-                        return (
-                          <Card
-                            key={card}
-                            $cardType={card}
-                            $index={0}
-                            onClick={() =>
-                              canPlayCombo &&
-                              handleOpenCatCombo(
-                                card as ExplodingCatsCatCard,
-                                currentPlayer.hand,
-                              )
-                            }
-                            style={{
-                              cursor: canPlayCombo ? 'pointer' : 'default',
-                              opacity: canPlayCombo
-                                ? 1
-                                : isCatCard && count === 1
-                                  ? 0.7
-                                  : 1,
-                            }}
-                          >
-                            <CardCorner $position="tl" />
-                            <CardCorner $position="tr" />
-                            <CardCorner $position="bl" />
-                            <CardCorner $position="br" />
-                            <CardFrame />
-                            <CardInner>
-                              <CardEmoji>{getCardEmoji(card)}</CardEmoji>
-                              <CardName>
-                                {t(getCardTranslationKey(card)) || card}
-                              </CardName>
-                              <CardDescription>
-                                {t(getCardDescriptionKey(card))}
-                              </CardDescription>
-                            </CardInner>
-                            {count > 1 && (
-                              <CardCountBadge>{count}</CardCountBadge>
-                            )}
-                          </Card>
-                        );
-                      });
-                    })()}
-                  </CardsGrid>
-                </InfoCard>
-              </HandContainer>
-            </HandSection>
+            <PlayerHand
+              currentPlayer={currentPlayer}
+              isMyTurn={!!isMyTurn}
+              isGameOver={!!isGameOver}
+              canAct={!!canAct}
+              actionBusy={!!actionBusy}
+              aliveOpponents={aliveOpponents}
+              t={t as (key: string) => string}
+              onDraw={actions.drawCard}
+              onPlayActionCard={actions.playActionCard}
+              onPlaySeeTheFuture={actions.playSeeTheFuture}
+              onOpenFavorModal={() => setFavorModal(true)}
+              onOpenCatCombo={handleOpenCatCombo}
+            />
           )}
 
           {showChat && (

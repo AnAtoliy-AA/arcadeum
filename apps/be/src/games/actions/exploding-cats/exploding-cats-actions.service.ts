@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GameSessionsService } from '../../sessions/game-sessions.service';
 import { GamesRealtimeService } from '../../games.realtime.service';
 
@@ -73,14 +73,13 @@ export class ExplodingCatsActionsService {
   }
 
   /**
-   * Play a favor card
+   * Play a favor card - sets pending favor, target must respond
    */
   async playFavor(
     sessionId: string,
     userId: string,
     payload: {
       targetPlayerId: string;
-      requestedCard: string;
     },
   ) {
     const session = await this.sessionsService.executeAction({
@@ -91,6 +90,28 @@ export class ExplodingCatsActionsService {
     });
 
     this.realtimeService.emitActionExecuted(session, 'favor', userId);
+
+    return session;
+  }
+
+  /**
+   * Give favor card - target player responds to favor by choosing a card
+   */
+  async giveFavorCard(
+    sessionId: string,
+    userId: string,
+    payload: {
+      cardToGive: string;
+    },
+  ) {
+    const session = await this.sessionsService.executeAction({
+      sessionId,
+      action: 'give_favor_card',
+      userId,
+      payload,
+    });
+
+    this.realtimeService.emitActionExecuted(session, 'give_favor_card', userId);
 
     return session;
   }

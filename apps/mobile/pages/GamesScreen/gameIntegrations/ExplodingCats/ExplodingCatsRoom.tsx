@@ -77,6 +77,7 @@ export const ExplodingCatsRoom = forwardRef<
     handleDrawCard,
     handlePlayCard,
     handlePlayFavor,
+    handleGiveFavorCard,
     handlePlaySeeTheFuture,
     handlePlayCatCombo,
     handlePlayDefuse,
@@ -242,6 +243,7 @@ export const ExplodingCatsRoom = forwardRef<
             onDraw={handleDrawCard}
             onPlay={handlePlayCard}
             onPlayFavor={handlePlayFavor}
+            onGiveFavorCard={handleGiveFavorCard}
             onPlaySeeTheFuture={handlePlaySeeTheFuture}
             onPlayCatCombo={handlePlayCatCombo}
             onPlayDefuse={handlePlayDefuse}
@@ -328,6 +330,7 @@ export const ExplodingCatsRoom = forwardRef<
           onDraw={handleDrawCard}
           onPlay={handlePlayCard}
           onPlayFavor={handlePlayFavor}
+          onGiveFavorCard={handleGiveFavorCard}
           onPlaySeeTheFuture={handlePlaySeeTheFuture}
           onPlayCatCombo={handlePlayCatCombo}
           onPlayDefuse={handlePlayDefuse}

@@ -13,6 +13,7 @@ import {
 import { CatComboModal } from './modals/CatComboModal';
 import { SeeTheFutureModal } from './modals/SeeTheFutureModal';
 import { FavorModal } from './modals/FavorModal';
+import { GiveFavorModal } from './modals/GiveFavorModal';
 import { DefuseModal } from './modals/DefuseModal';
 import { GameLobby } from './GameLobby';
 import { ChatSection } from './ChatSection';
@@ -375,19 +376,15 @@ export default function ExplodingCatsGame({
         onClose={() => {
           setFavorModal(false);
           setSelectedTarget(null);
-          setSelectedCard(null);
         }}
         aliveOpponents={aliveOpponents}
         selectedTarget={selectedTarget}
-        selectedCard={selectedCard}
         onSelectTarget={setSelectedTarget}
-        onSelectCard={setSelectedCard}
         onConfirm={() => {
-          if (selectedTarget && selectedCard) {
-            actions.playFavor(selectedTarget, selectedCard);
+          if (selectedTarget) {
+            actions.playFavor(selectedTarget);
             setFavorModal(false);
             setSelectedTarget(null);
-            setSelectedCard(null);
           }
         }}
         resolveDisplayName={resolveDisplayName}
@@ -402,6 +399,25 @@ export default function ExplodingCatsGame({
         }}
         deckSize={snapshot?.deck?.length ?? 0}
         t={t as (key: string) => string}
+      />
+
+      {/* Give Favor Modal - shows when someone requested a favor from current user */}
+      <GiveFavorModal
+        isOpen={
+          !!currentUserId &&
+          !!snapshot?.pendingFavor &&
+          snapshot.pendingFavor.targetId === currentUserId
+        }
+        requesterName={
+          snapshot?.pendingFavor
+            ? resolveDisplayName(snapshot.pendingFavor.requesterId, 'Player')
+            : 'Player'
+        }
+        myHand={currentPlayer?.hand ?? []}
+        onGiveCard={(card) => {
+          actions.giveFavorCard(card);
+        }}
+        t={t}
       />
     </GameContainer>
   );

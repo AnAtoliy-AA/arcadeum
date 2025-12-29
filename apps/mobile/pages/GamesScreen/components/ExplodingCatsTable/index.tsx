@@ -1,7 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import {
-  Animated,
-  Platform,
   ScrollView,
   TouchableOpacity,
   View,
@@ -9,7 +7,6 @@ import {
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import { ExplodingCatsCard as ExplodingCatsArtwork } from '@/components/cards';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles } from '@/hooks/useThemedStyles';
 import {
@@ -38,18 +35,16 @@ import {
 } from './hooks';
 import {
   GameHeader,
-  PlayerSeat,
   TableStats,
   HandView,
   GameLogs,
   CatComboModal,
   CardDecor,
   DefuseModal,
+  GiveFavorModal,
+  TableCenter,
 } from './components';
 import { createStyles } from './styles';
-
-const ACCESSIBILITY_DISABLED_PROPS: { accessible?: boolean } =
-  Platform.OS === 'web' ? {} : { accessible: false };
 
 export function ExplodingCatsTable({
   room,
@@ -62,6 +57,7 @@ export function ExplodingCatsTable({
   onDraw,
   onPlay,
   onPlayFavor,
+  onGiveFavorCard,
   onPlaySeeTheFuture,
   onPlayCatCombo,
   onPlayDefuse,
@@ -125,7 +121,6 @@ export function ExplodingCatsTable({
   const discardArt = discardTop
     ? (CARD_ART_SETTINGS[discardTop] ?? CARD_ART_SETTINGS.exploding_cat)
     : null;
-  const discardArtVariant = discardArt ? discardArt.variant : 1;
 
   const isSessionActive = session?.status === 'active';
   const isSessionCompleted = session?.status === 'completed';
@@ -233,99 +228,18 @@ export function ExplodingCatsTable({
         <>
           <View style={styles.tableSection}>
             <View style={styles.tableRing}>
-              <View style={styles.tableCenter}>
-                <View
-                  style={[
-                    styles.tableInfoCard,
-                    discardTop ? styles.tableInfoCardWithArtwork : null,
-                  ]}
-                >
-                  {discardTop && discardArt ? (
-                    <View style={styles.tableInfoArtwork}>
-                      <ExplodingCatsArtwork
-                        {...ACCESSIBILITY_DISABLED_PROPS}
-                        card={discardArt.key}
-                        variant={discardArtVariant}
-                        width="100%"
-                        height="100%"
-                        preserveAspectRatio="xMidYMid slice"
-                        focusable={false}
-                      />
-                    </View>
-                  ) : (
-                    <IconSymbol
-                      name="arrow.triangle.2.circlepath"
-                      size={18}
-                      color={styles.tableInfoIcon.color as string}
-                    />
-                  )}
-                  <ThemedText style={styles.tableInfoTitle}>
-                    {discardTop
-                      ? labels.translateCardName(discardTop)
-                      : t('games.table.info.empty')}
-                  </ThemedText>
-                </View>
-                {activeEffect ? (
-                  <Animated.View
-                    pointerEvents="none"
-                    style={[
-                      styles.effectOverlay,
-                      {
-                        opacity: animations.effectOpacity,
-                        transform: [
-                          { scale: animations.effectScale },
-                          {
-                            rotate: animations.effectRotate.interpolate({
-                              inputRange: [0, 1],
-                              outputRange: ['0deg', '360deg'],
-                            }),
-                          },
-                        ],
-                      },
-                    ]}
-                  >
-                    <Animated.View
-                      style={[
-                        styles.effectCircle,
-                        activeEffect === 'draw'
-                          ? styles.effectCircleDraw
-                          : activeEffect === 'attack'
-                            ? styles.effectCircleAttack
-                            : activeEffect === 'skip'
-                              ? styles.effectCircleSkip
-                              : activeEffect === 'cat_combo'
-                                ? styles.effectCircleCombo
-                                : styles.effectCircleDefault,
-                      ]}
-                    />
-                    {activeEffect === 'attack' ? (
-                      <Animated.View style={styles.effectIconWrap}>
-                        <IconSymbol
-                          name="bolt.fill"
-                          size={28}
-                          color={styles.effectIcon.color as string}
-                        />
-                      </Animated.View>
-                    ) : null}
-                  </Animated.View>
-                ) : null}
-              </View>
-
-              {tableSeats.map((seat) => {
-                const isCurrent =
-                  seat.player.isCurrentTurn &&
-                  isSessionActive &&
-                  !isSessionCompleted;
-                return (
-                  <PlayerSeat
-                    key={seat.player.playerId}
-                    player={seat.player}
-                    position={seat.position}
-                    isCurrent={isCurrent}
-                    styles={styles}
-                  />
-                );
-              })}
+              <TableCenter
+                discardTop={discardTop}
+                discardArt={discardArt}
+                activeEffect={activeEffect}
+                animations={animations}
+                tableSeats={tableSeats}
+                isSessionActive={isSessionActive}
+                isSessionCompleted={isSessionCompleted}
+                translateCardName={labels.translateCardName}
+                emptyLabel={t('games.table.info.empty')}
+                styles={styles}
+              />
             </View>
             {showStats ? (
               <TableStats
@@ -440,6 +354,20 @@ export function ExplodingCatsTable({
     />
   );
 
+  const pendingFavor = snapshot?.pendingFavor ?? null;
+  const mustGiveFavor = pendingFavor?.targetId === currentUserId;
+  const favorRequesterName = pendingFavor?.requesterId
+    ? (playerNameMap.get(pendingFavor.requesterId) ?? 'Player')
+    : 'Player';
+  const giveFavorModal = (
+    <GiveFavorModal
+      visible={mustGiveFavor && !actionBusy}
+      requesterName={favorRequesterName}
+      myHand={selfPlayer?.hand ?? []}
+      onGiveCard={onGiveFavorCard}
+    />
+  );
+
   if (fullScreen) {
     return (
       <>
@@ -461,6 +389,7 @@ export function ExplodingCatsTable({
         </ThemedView>
         {comboModal}
         {defuseModal}
+        {giveFavorModal}
       </>
     );
   }
@@ -490,6 +419,7 @@ export function ExplodingCatsTable({
       </ThemedView>
       {comboModal}
       {defuseModal}
+      {giveFavorModal}
     </>
   );
 }

@@ -25,11 +25,14 @@ interface PlayCatComboPayload {
 
 interface FavorPayload {
   targetPlayerId?: string;
-  requestedCard?: ExplodingCatsCard;
 }
 
 // Type with required fields for executing favor action
 type FavorExecutePayload = Required<FavorPayload>;
+
+interface GiveFavorCardPayload {
+  cardToGive?: ExplodingCatsCard;
+}
 
 interface DefusePayload {
   position?: number;
@@ -38,6 +41,7 @@ interface DefusePayload {
 type ExplodingCatsPayload = PlayCardPayload &
   PlayCatComboPayload &
   FavorPayload &
+  GiveFavorCardPayload &
   DefusePayload;
 
 /**
@@ -76,7 +80,20 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
       return false;
     }
 
+    // give_favor_card can be done by target player even when not their turn
+    if (action === 'give_favor_card') {
+      const typedPayload = payload as ExplodingCatsPayload | undefined;
+      return this.validateGiveFavorCard(state, context.userId, typedPayload);
+    }
+
+    // All other actions require it to be the player's turn
     if (!this.isPlayerTurn(state, context.userId)) {
+      return false;
+    }
+
+    // If there's a pending favor, block all other actions until it's resolved
+    // The current player must wait for the opponent to give a card
+    if (state.pendingFavor) {
       return false;
     }
 
@@ -110,6 +127,9 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
 
       case 'favor':
         return this.validateFavor(state, context.userId, typedPayload);
+
+      case 'give_favor_card':
+        return this.validateGiveFavorCard(state, context.userId, typedPayload);
 
       case 'defuse':
         // Can only defuse if pendingDefuse is set for this player
@@ -196,6 +216,14 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
           newState,
           context.userId,
           typedPayload as FavorExecutePayload,
+          helpers,
+        );
+
+      case 'give_favor_card':
+        return ExplodingCatsLogic.executeGiveFavorCard(
+          newState,
+          context.userId,
+          { cardToGive: typedPayload!.cardToGive! },
           helpers,
         );
 
@@ -382,16 +410,37 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
     const player = this.findPlayer(state, playerId) as ExplodingCatsPlayerState;
     if (!player || !this.hasCard(player, 'favor')) return false;
 
-    if (!typedPayload?.targetPlayerId || !typedPayload?.requestedCard)
-      return false;
+    // Can't play favor if there's a pending favor waiting
+    if (state.pendingFavor) return false;
+
+    if (!typedPayload?.targetPlayerId) return false;
 
     const target = this.findPlayer(
       state,
       typedPayload.targetPlayerId,
     ) as ExplodingCatsPlayerState;
-    return (
-      target && target.alive && this.hasCard(target, typedPayload.requestedCard)
-    );
+    // Target must be alive and have at least one card
+    return target && target.alive && target.hand.length > 0;
+  }
+
+  private validateGiveFavorCard(
+    state: ExplodingCatsState,
+    playerId: string,
+    payload: unknown,
+  ): boolean {
+    // Must have a pending favor targeting this player
+    if (!state.pendingFavor || state.pendingFavor.targetId !== playerId) {
+      return false;
+    }
+
+    const typedPayload = payload as GiveFavorCardPayload | undefined;
+    if (!typedPayload?.cardToGive) return false;
+
+    const player = this.findPlayer(state, playerId) as ExplodingCatsPlayerState;
+    if (!player || !player.alive) return false;
+
+    // Must have the card to give
+    return player.hand.includes(typedPayload.cardToGive);
   }
 
   private canPlayCatCombo(player: ExplodingCatsPlayerState): boolean {

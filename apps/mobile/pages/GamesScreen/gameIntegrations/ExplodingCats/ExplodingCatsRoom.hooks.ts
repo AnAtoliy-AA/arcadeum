@@ -137,7 +137,7 @@ export function useGameActions({
   );
 
   const handlePlayFavor = useCallback(
-    (targetPlayerId: string, desiredCard: string) => {
+    (targetPlayerId: string) => {
       if (!room?.id || !tokens.userId) {
         Alert.alert(
           t('games.alerts.signInRequiredTitle'),
@@ -155,7 +155,6 @@ export function useGameActions({
         roomId: room.id,
         userId: tokens.userId,
         targetPlayerId,
-        desiredCard,
       });
     },
     [actionBusy, room?.id, setActionBusy, t, tokens.userId],
@@ -259,11 +258,36 @@ export function useGameActions({
     [room?.id, t, tokens.userId],
   );
 
+  const handleGiveFavorCard = useCallback(
+    (cardToGive: string) => {
+      if (!room?.id || !tokens.userId) {
+        Alert.alert(
+          t('games.alerts.signInRequiredTitle'),
+          t('games.alerts.signInPlayCardMessage'),
+        );
+        return;
+      }
+
+      if (actionBusy) {
+        return;
+      }
+
+      setActionBusy('favor');
+      socket.emit('games.session.give_favor_card', {
+        roomId: room.id,
+        userId: tokens.userId,
+        cardToGive,
+      });
+    },
+    [actionBusy, room?.id, setActionBusy, t, tokens.userId],
+  );
+
   return {
     handleStartMatch,
     handleDrawCard,
     handlePlayCard,
     handlePlayFavor,
+    handleGiveFavorCard,
     handlePlaySeeTheFuture,
     handlePlayCatCombo,
     handlePlayDefuse,

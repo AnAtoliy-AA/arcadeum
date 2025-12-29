@@ -2,7 +2,7 @@ import type { Locale } from '../../types';
 import {
   explodingCatsMessages,
   type ExplodingCatsGamesMessages,
-} from './exploding-cats';
+} from './exploding-cats/index';
 import {
   texasHoldemMessages,
   type TexasHoldemGamesMessages,

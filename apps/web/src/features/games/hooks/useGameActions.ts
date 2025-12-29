@@ -15,7 +15,8 @@ interface UseGameActionsReturn {
   startExplodingCats: () => void;
   drawCard: () => void;
   playActionCard: (card: string) => void;
-  playFavor: (targetPlayerId: string, desiredCard: string) => void;
+  playFavor: (targetPlayerId: string) => void;
+  giveFavorCard: (cardToGive: string) => void;
   playSeeTheFuture: () => void;
   playCatCombo: (
     cat: string,
@@ -116,13 +117,24 @@ export function useGameActions(
   );
 
   const playFavor = useCallback(
-    (targetPlayerId: string, desiredCard: string) => {
+    (targetPlayerId: string) => {
       if (!userId) return;
       gameSocket.emit('games.session.play_favor', {
         roomId,
         userId,
         targetPlayerId,
-        desiredCard,
+      });
+    },
+    [roomId, userId],
+  );
+
+  const giveFavorCard = useCallback(
+    (cardToGive: string) => {
+      if (!userId) return;
+      gameSocket.emit('games.session.give_favor_card', {
+        roomId,
+        userId,
+        cardToGive,
       });
     },
     [roomId, userId],
@@ -213,6 +225,7 @@ export function useGameActions(
     drawCard,
     playActionCard,
     playFavor,
+    giveFavorCard,
     playSeeTheFuture,
     playCatCombo,
     playDefuse,

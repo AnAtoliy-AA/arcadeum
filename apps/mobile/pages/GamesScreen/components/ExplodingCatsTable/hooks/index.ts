@@ -6,3 +6,4 @@ export * from './useGameLabels';
 export * from './useMessageHandling';
 export * from './useCatComboHandling';
 export * from './useHandCardRenderer';
+export * from './useActionPermissions';

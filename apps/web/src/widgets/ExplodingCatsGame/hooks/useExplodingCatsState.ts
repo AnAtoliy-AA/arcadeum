@@ -108,8 +108,10 @@ export function useExplodingCatsState({
   }, [currentTurnPlayer, currentUserId, currentPlayer]);
 
   const canAct = useMemo(() => {
-    return isMyTurn && !actionBusy && currentPlayer?.alive;
-  }, [isMyTurn, actionBusy, currentPlayer]);
+    // Can't act if there's a pending favor (waiting for opponent to give a card)
+    const hasPendingFavor = !!snapshot?.pendingFavor;
+    return isMyTurn && !actionBusy && currentPlayer?.alive && !hasPendingFavor;
+  }, [isMyTurn, actionBusy, currentPlayer, snapshot?.pendingFavor]);
 
   const aliveOpponents = useMemo(() => {
     if (!snapshot || !currentUserId) return [];

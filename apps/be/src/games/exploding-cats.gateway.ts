@@ -174,33 +174,23 @@ export class ExplodingCatsGateway {
       roomId?: string;
       userId?: string;
       targetPlayerId?: string;
-      desiredCard?: string;
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const targetPlayerId = extractString(payload, 'targetPlayerId');
-    const desiredCard = extractString(payload, 'desiredCard', {
-      toLowerCase: true,
-    });
-
-    const desiredCardValue = toExplodingCatsCard(desiredCard);
-    if (!desiredCardValue) {
-      throw new WsException('Invalid desiredCard value.');
-    }
 
     try {
       await this.explodingCatsService.playFavorByRoom(
         userId,
         roomId,
         targetPlayerId,
-        desiredCardValue,
       );
 
-      client.emit('games.session.favor.played', {
+      // Notify that favor has been played and target needs to respond
+      client.emit('games.session.favor.pending', {
         roomId,
         userId,
         targetPlayerId,
-        desiredCard: desiredCardValue,
       });
     } catch (error) {
       handleError(
@@ -212,6 +202,52 @@ export class ExplodingCatsGateway {
           userId,
         },
         'Unable to play Favor card.',
+      );
+    }
+  }
+
+  @SubscribeMessage('games.session.give_favor_card')
+  async handleSessionGiveFavorCard(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: {
+      roomId?: string;
+      userId?: string;
+      cardToGive?: string;
+    },
+  ): Promise<void> {
+    const { roomId, userId } = extractRoomAndUser(payload);
+    const cardToGive = extractString(payload, 'cardToGive', {
+      toLowerCase: true,
+    });
+
+    const cardValue = toExplodingCatsCard(cardToGive);
+    if (!cardValue) {
+      throw new WsException('Invalid cardToGive value.');
+    }
+
+    try {
+      await this.explodingCatsService.giveFavorCardByRoom(
+        userId,
+        roomId,
+        cardValue,
+      );
+
+      client.emit('games.session.favor.completed', {
+        roomId,
+        userId,
+        cardGiven: cardValue,
+      });
+    } catch (error) {
+      handleError(
+        this.logger,
+        error,
+        {
+          action: 'give favor card',
+          roomId,
+          userId,
+        },
+        'Unable to give favor card.',
       );
     }
   }

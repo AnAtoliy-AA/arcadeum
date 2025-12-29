@@ -84,6 +84,10 @@ export interface ExplodingCatsSnapshot {
   currentTurnIndex: number;
   pendingDraws: number;
   pendingDefuse: string | null;
+  pendingFavor: {
+    requesterId: string;
+    targetId: string;
+  } | null;
   players: ExplodingCatsPlayerState[];
   logs: ExplodingCatsLogEntry[];
 }
@@ -109,7 +113,8 @@ export interface ExplodingCatsTableProps {
   onStart: () => void;
   onDraw: () => void;
   onPlay: (card: 'skip' | 'attack' | 'shuffle') => void;
-  onPlayFavor: (targetPlayerId: string, desiredCard: string) => void;
+  onPlayFavor: (targetPlayerId: string) => void;
+  onGiveFavorCard: (cardToGive: ExplodingCatsCard) => void;
   onPlaySeeTheFuture: () => void;
   onPlayCatCombo: (payload: ExplodingCatsCatComboInput) => void;
   onPlayDefuse: (position: number) => void;

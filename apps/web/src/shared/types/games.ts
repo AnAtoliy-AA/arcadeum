@@ -73,6 +73,10 @@ export interface ExplodingCatsSnapshot {
   currentTurnIndex: number;
   pendingDraws: number;
   pendingDefuse: string | null; // Player ID who must play defuse, null if none
+  pendingFavor: {
+    requesterId: string;
+    targetId: string;
+  } | null; // Pending favor request, null if none
   players: ExplodingCatsPlayerState[];
   logs: ExplodingCatsLogEntry[];
 }

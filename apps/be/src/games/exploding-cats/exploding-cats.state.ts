@@ -43,6 +43,12 @@ export interface ExplodingCatsState {
   currentTurnIndex: number;
   pendingDraws: number;
   pendingDefuse: string | null; // Player ID who must play defuse, null if none
+  pendingFavor: {
+    // Player who requested the favor (will receive the card)
+    requesterId: string;
+    // Player who must give a card
+    targetId: string;
+  } | null;
   players: ExplodingCatsPlayerState[];
   logs: ExplodingCatsLogEntry[];
   [key: string]: unknown;
@@ -131,6 +137,7 @@ export function createInitialExplodingCatsState(
     playerOrder: [...playerIds],
     currentTurnIndex: 0,
     pendingDefuse: null,
+    pendingFavor: null,
     pendingDraws: 1,
     players,
     logs: [

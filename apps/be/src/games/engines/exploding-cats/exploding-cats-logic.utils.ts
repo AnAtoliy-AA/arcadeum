@@ -256,12 +256,13 @@ export class ExplodingCatsLogic {
   }
 
   /**
-   * Execute Favor
+   * Execute Favor - Step 1: Player plays favor card, target must give a card
+   * Sets pendingFavor state, target player will need to respond with give_favor_card action
    */
   static executeFavor(
     state: ExplodingCatsState,
     playerId: string,
-    payload: { targetPlayerId: string; requestedCard: ExplodingCatsCard },
+    payload: { targetPlayerId: string },
     helpers: {
       addLog: (state: ExplodingCatsState, entry: GameLogEntry) => void;
       createLogEntry: (
@@ -277,6 +278,10 @@ export class ExplodingCatsLogic {
     if (!player || !target)
       return { success: false, error: 'Player not found' };
 
+    // Check target has cards
+    if (target.hand.length === 0)
+      return { success: false, error: 'Target has no cards' };
+
     // Remove favor card from player
     const favorIndex = player.hand.indexOf('favor');
     if (favorIndex === -1)
@@ -285,16 +290,68 @@ export class ExplodingCatsLogic {
     player.hand.splice(favorIndex, 1);
     state.discardPile.push('favor');
 
-    // Transfer requested card
-    const cardIndex = target.hand.indexOf(payload.requestedCard);
-    if (cardIndex !== -1) {
-      target.hand.splice(cardIndex, 1);
-      player.hand.push(payload.requestedCard);
-    }
+    // Set pending favor - target must now choose a card to give
+    state.pendingFavor = {
+      requesterId: playerId,
+      targetId: payload.targetPlayerId,
+    };
 
     helpers.addLog(
       state,
-      helpers.createLogEntry('action', `Requested a favor`, { scope: 'all' }),
+      helpers.createLogEntry(
+        'action',
+        `Requested a favor - waiting for response`,
+        { scope: 'all' },
+      ),
+    );
+
+    return { success: true, state };
+  }
+
+  /**
+   * Execute Give Favor Card - Step 2: Target gives a card of their choice
+   */
+  static executeGiveFavorCard(
+    state: ExplodingCatsState,
+    playerId: string,
+    payload: { cardToGive: ExplodingCatsCard },
+    helpers: {
+      addLog: (state: ExplodingCatsState, entry: GameLogEntry) => void;
+      createLogEntry: (
+        type: string,
+        message: string,
+        options?: LogEntryOptions,
+      ) => GameLogEntry;
+    },
+  ): GameActionResult<ExplodingCatsState> {
+    if (!state.pendingFavor)
+      return { success: false, error: 'No pending favor' };
+
+    if (state.pendingFavor.targetId !== playerId)
+      return { success: false, error: 'Not your favor to give' };
+
+    const target = this.findPlayer(state, playerId);
+    const requester = this.findPlayer(state, state.pendingFavor.requesterId);
+
+    if (!target || !requester)
+      return { success: false, error: 'Player not found' };
+
+    // Check target has the card
+    const cardIndex = target.hand.indexOf(payload.cardToGive);
+    if (cardIndex === -1) return { success: false, error: 'Card not in hand' };
+
+    // Transfer the card
+    target.hand.splice(cardIndex, 1);
+    requester.hand.push(payload.cardToGive);
+
+    // Clear pending favor
+    state.pendingFavor = null;
+
+    helpers.addLog(
+      state,
+      helpers.createLogEntry('action', `Gave a card as favor`, {
+        scope: 'all',
+      }),
     );
 
     return { success: true, state };

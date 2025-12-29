@@ -7,3 +7,5 @@ export * from './GameLogs';
 export * from './CatComboModal';
 export * from './CardDecor';
 export * from './DefuseModal';
+export * from './GiveFavorModal';
+export * from './TableCenter';

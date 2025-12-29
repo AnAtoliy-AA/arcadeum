@@ -116,6 +116,12 @@ export const explodingCatsMessages = {
       positionFromTop: 'Position {{position}} from top',
       confirm: 'Place Card',
     },
+    giveFavor: {
+      title: 'Give a Card',
+      description:
+        '{{player}} has requested a favor. Choose a card to give them.',
+      confirm: 'Give Card',
+    },
   },
   es: {
     headerTitle: 'Mesa de Exploding Cats',
@@ -238,6 +244,11 @@ export const explodingCatsMessages = {
       positionFromTop: 'Posición {{position}} desde arriba',
       confirm: 'Colocar Carta',
     },
+    giveFavor: {
+      title: 'Dar una Carta',
+      description: '{{player}} ha pedido un favor. Elige una carta para darle.',
+      confirm: 'Dar Carta',
+    },
   },
   fr: {
     headerTitle: 'Table Exploding Cats',
@@ -359,6 +370,12 @@ export const explodingCatsMessages = {
       bottomOfDeck: 'Bas du paquet',
       positionFromTop: 'Position {{position}} depuis le haut',
       confirm: 'Placer la Carte',
+    },
+    giveFavor: {
+      title: 'Donner une Carte',
+      description:
+        '{{player}} a demandé une faveur. Choisissez une carte à donner.',
+      confirm: 'Donner la Carte',
     },
   },
 };

@@ -47,7 +47,6 @@ export class ExplodingCatsService {
     userId: string,
     payload: {
       targetPlayerId: string;
-      requestedCard: string;
     },
   ) {
     return this.explodingCatsActions.playFavor(sessionId, userId, payload);
@@ -177,13 +176,26 @@ export class ExplodingCatsService {
     userId: string,
     roomId: string,
     targetPlayerId: string,
-    requestedCard: string,
   ) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
     return this.explodingCatsActions.playFavor(session.id, userId, {
       targetPlayerId,
-      requestedCard,
+    });
+  }
+
+  /**
+   * Give favor card (gateway wrapper) - target player responds to favor
+   */
+  async giveFavorCardByRoom(
+    userId: string,
+    roomId: string,
+    cardToGive: string,
+  ) {
+    const session = await this.sessionsService.findSessionByRoom(roomId);
+    if (!session) throw new Error('Session not found');
+    return this.explodingCatsActions.giveFavorCard(session.id, userId, {
+      cardToGive,
     });
   }
 

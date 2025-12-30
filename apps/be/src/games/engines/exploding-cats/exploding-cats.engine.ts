@@ -11,7 +11,7 @@ import {
   ExplodingCatsPlayerState,
   createInitialExplodingCatsState,
 } from '../../exploding-cats/exploding-cats.state';
-import { ExplodingCatsLogic } from './exploding-cats-logic.utils';
+import { ExplodingCatsLogic, executeNope } from './exploding-cats-logic.utils';
 
 // Payload interfaces for type-safe action handling
 interface PlayCardPayload {
@@ -84,6 +84,14 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
     if (action === 'give_favor_card') {
       const typedPayload = payload as ExplodingCatsPayload | undefined;
       return this.validateGiveFavorCard(state, context.userId, typedPayload);
+    }
+
+    // play_nope can be played by ANY alive player when there's a pending action
+    if (action === 'play_nope') {
+      // Must have a pending action to nope
+      if (!state.pendingAction) return false;
+      // Must have a nope card
+      return this.hasCard(player, 'nope');
     }
 
     // All other actions require it to be the player's turn
@@ -235,6 +243,9 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
           helpers,
         );
 
+      case 'play_nope':
+        return executeNope(newState, context.userId, helpers);
+
       default:
         return this.errorResult('Unknown action');
     }
@@ -376,8 +387,8 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
       return this.hasCard(player, card) && state.pendingDraws > 0;
     }
 
-    // Shuffle can be played anytime during your turn
-    if (card === 'shuffle') {
+    // Shuffle and Nope can be played anytime during your turn
+    if (card === 'shuffle' || card === 'nope') {
       return this.hasCard(player, card);
     }
 

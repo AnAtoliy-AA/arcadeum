@@ -18,6 +18,8 @@ export function getCardTranslationKey(card: ExplodingCatsCard): TranslationKey {
       return 'games.table.cards.shuffle';
     case 'see_the_future':
       return 'games.table.cards.seeTheFuture';
+    case 'nope':
+      return 'games.table.cards.nope';
     case 'tacocat':
       return 'games.table.cards.tacocat';
     case 'hairy_potato_cat':
@@ -49,6 +51,8 @@ export function getCardDescriptionKey(card: ExplodingCatsCard): TranslationKey {
       return 'games.table.cardDescriptions.shuffle';
     case 'see_the_future':
       return 'games.table.cardDescriptions.seeTheFuture';
+    case 'nope':
+      return 'games.table.cardDescriptions.nope';
     case 'tacocat':
       return 'games.table.cardDescriptions.tacocat';
     case 'hairy_potato_cat':

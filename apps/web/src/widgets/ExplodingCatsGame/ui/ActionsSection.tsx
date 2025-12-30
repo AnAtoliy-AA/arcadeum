@@ -10,6 +10,7 @@ export type ActionBusyState =
   | 'shuffle'
   | 'favor'
   | 'see_the_future'
+  | 'nope'
   | 'defuse'
   | null;
 
@@ -19,6 +20,7 @@ interface ActionsSectionProps {
   actionBusy: ActionBusyState | string | null;
   onDraw: () => void;
   onPlayActionCard: (card: ExplodingCatsCard) => void;
+  onPlayNope: () => void;
   onOpenFavorModal: () => void;
   onPlaySeeTheFuture: () => void;
   t: (key: string) => string;
@@ -30,6 +32,7 @@ export function ActionsSection({
   actionBusy,
   onDraw,
   onPlayActionCard,
+  onPlayNope,
   onOpenFavorModal,
   onPlaySeeTheFuture,
   t,
@@ -75,6 +78,17 @@ export function ActionsSection({
             disabled={!canAct || actionBusy === 'shuffle'}
           >
             {actionBusy === 'shuffle' ? 'Playing...' : '🔀 Shuffle'}
+          </ActionButton>
+        )}
+        {currentPlayer.hand.includes('nope') && (
+          <ActionButton
+            variant="secondary"
+            onClick={onPlayNope}
+            disabled={!canAct || actionBusy === 'nope'}
+          >
+            {actionBusy === 'nope'
+              ? 'Playing...'
+              : t('games.table.actions.playNope') || '🚫 Nope'}
           </ActionButton>
         )}
         {currentPlayer.hand.includes('favor') && (

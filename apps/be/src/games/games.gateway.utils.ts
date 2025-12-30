@@ -13,7 +13,12 @@ export const CAT_COMBO_CARD_VALUES = [
   'bearded_cat',
 ] as const satisfies ReadonlyArray<ExplodingCatsCatCard>;
 
-export const SIMPLE_ACTION_CARDS = ['skip', 'attack', 'shuffle'] as const;
+export const SIMPLE_ACTION_CARDS = [
+  'skip',
+  'attack',
+  'shuffle',
+  'nope',
+] as const;
 export type SimpleActionCard = (typeof SIMPLE_ACTION_CARDS)[number];
 
 export const ALL_EXPLODING_CATS_CARDS = [
@@ -24,6 +29,7 @@ export const ALL_EXPLODING_CATS_CARDS = [
   'favor',
   'shuffle',
   'see_the_future',
+  'nope',
   ...CAT_COMBO_CARD_VALUES,
 ] as const satisfies ReadonlyArray<ExplodingCatsCard>;
 
@@ -49,7 +55,7 @@ export function toExplodingCatsCard(
  * Validates and extracts string payload field
  */
 export function extractString(
-  payload: Record<string, any>,
+  payload: Record<string, unknown>,
   fieldName: string,
   options?: { toLowerCase?: boolean },
 ): string {
@@ -66,7 +72,7 @@ export function extractString(
 /**
  * Validates room and user IDs from payload
  */
-export function extractRoomAndUser(payload: Record<string, any>): {
+export function extractRoomAndUser(payload: Record<string, unknown>): {
   roomId: string;
   userId: string;
 } {

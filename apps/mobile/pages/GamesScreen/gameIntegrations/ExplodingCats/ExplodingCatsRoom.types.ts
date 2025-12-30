@@ -36,6 +36,7 @@ export type ActionBusyType =
   | 'attack'
   | 'shuffle'
   | 'favor'
+  | 'nope'
   | 'see_the_future'
   | 'cat_pair'
   | 'cat_trio'

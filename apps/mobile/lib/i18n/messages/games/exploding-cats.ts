@@ -46,6 +46,7 @@ export const explodingCatsMessages = {
       draw: 'Draw card',
       playSkip: 'Play Skip',
       playAttack: 'Play Attack',
+      playNope: 'Play Nope',
       playCatCombo: 'Play Cat Combo',
     },
     logs: {
@@ -68,6 +69,7 @@ export const explodingCatsMessages = {
       favor: 'Favor',
       shuffle: 'Shuffle',
       seeTheFuture: 'See the Future',
+      nope: 'Nope',
       tacocat: 'Tacocat',
       hairyPotatoCat: 'Hairy Potato Cat',
       rainbowRalphingCat: 'Rainbow-Ralphing Cat',
@@ -85,6 +87,7 @@ export const explodingCatsMessages = {
       favor: 'Force another player to give you a card of their choice.',
       shuffle: 'Shuffle the draw pile to randomize upcoming cards.',
       seeTheFuture: 'Peek at the top three cards of the deck.',
+      nope: 'Cancel any action card played by another player.',
       tacocat: 'Play two or three copies to steal a card from an opponent.',
       hairyPotatoCat: 'Pairs or trios yank a random or named card.',
       rainbowRalphingCat: 'Combo copies to snatch cards from another player.',
@@ -170,6 +173,7 @@ export const explodingCatsMessages = {
       draw: 'Robar carta',
       playSkip: 'Jugar Saltar',
       playAttack: 'Jugar Ataque',
+      playNope: 'Jugar No',
       playCatCombo: 'Jugar combo de gatos',
     },
     logs: {
@@ -192,6 +196,7 @@ export const explodingCatsMessages = {
       favor: 'Favor',
       shuffle: 'Mezclar',
       seeTheFuture: 'Ver el futuro',
+      nope: 'No',
       tacocat: 'Tacogato',
       hairyPotatoCat: 'Gato patata peluda',
       rainbowRalphingCat: 'Gato arcoíris vomitador',
@@ -210,6 +215,7 @@ export const explodingCatsMessages = {
       favor: 'Obliga a otro jugador a darte una carta de su elección.',
       shuffle: 'Mezcla el mazo para aleatorizar las próximas cartas.',
       seeTheFuture: 'Mira las tres cartas superiores del mazo.',
+      nope: 'Cancela cualquier carta de acción jugada por otro jugador.',
       tacocat: 'Juega dos o tres copias para quitar cartas a un rival.',
       hairyPotatoCat: 'Con pareja o trío robas una carta aleatoria o nombrada.',
       rainbowRalphingCat:
@@ -298,6 +304,7 @@ export const explodingCatsMessages = {
       draw: 'Piocher une carte',
       playSkip: 'Jouer Passer',
       playAttack: 'Jouer Attaque',
+      playNope: 'Jouer Non',
       playCatCombo: 'Jouer un combo de chats',
     },
     logs: {
@@ -320,6 +327,7 @@ export const explodingCatsMessages = {
       favor: 'Faveur',
       shuffle: 'Mélanger',
       seeTheFuture: "Voir l'avenir",
+      nope: 'Non',
       tacocat: 'Tacochat',
       hairyPotatoCat: 'Chat patate velu',
       rainbowRalphingCat: 'Chat arc-en-ciel vomitif',
@@ -337,6 +345,7 @@ export const explodingCatsMessages = {
       favor: 'Forcez un autre joueur à vous donner une carte de son choix.',
       shuffle: 'Mélangez la pioche pour randomiser les prochaines cartes.',
       seeTheFuture: 'Regardez les trois premières cartes de la pioche.',
+      nope: "Annulez n'importe quelle carte d'action jouée par un autre joueur.",
       tacocat: 'Jouez-en deux ou trois pour voler une carte à un adversaire.',
       hairyPotatoCat: 'En paire ou trio, vole une carte aléatoire ou nommée.',
       rainbowRalphingCat:

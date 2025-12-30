@@ -410,4 +410,36 @@ export class ExplodingCatsGateway {
       );
     }
   }
+
+  @SubscribeMessage('games.session.play_nope')
+  async handleSessionPlayNope(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: {
+      roomId?: string;
+      userId?: string;
+    },
+  ): Promise<void> {
+    const { roomId, userId } = extractRoomAndUser(payload);
+
+    try {
+      await this.explodingCatsService.playNopeByRoom(userId, roomId);
+
+      client.emit('games.session.nope.played', {
+        roomId,
+        userId,
+      });
+    } catch (error) {
+      handleError(
+        this.logger,
+        error,
+        {
+          action: 'play Nope card',
+          roomId,
+          userId,
+        },
+        'Unable to play Nope card.',
+      );
+    }
+  }
 }

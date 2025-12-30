@@ -8,6 +8,7 @@ export const frMessages = {
       favor: 'Faveur',
       shuffle: 'Mélanger',
       seeTheFuture: "Voir l'Avenir",
+      nope: 'Non',
       tacocat: 'Chat Taco',
       hairyPotatoCat: 'Chat Patate Poilu',
       rainbowRalphingCat: 'Chat Arc-en-ciel',
@@ -22,6 +23,7 @@ export const frMessages = {
         favor: 'Forcez un autre joueur à vous donner une carte',
         shuffle: 'Mélangez la pioche',
         seeTheFuture: 'Regardez les 3 premières cartes du paquet',
+        nope: 'Annule toute action sauf Chat Explosif ou Désamorcer',
         tacocat: 'Collectez des chats identiques pour voler des cartes',
         hairyPotatoCat: 'Collectez des chats identiques pour voler des cartes',
         rainbowRalphingCat:
@@ -39,6 +41,8 @@ export const frMessages = {
       playingSkip: 'En cours...',
       playAttack: 'Jouer Attaque',
       playingAttack: 'En cours...',
+      playNope: 'Jouer Non',
+      playingNope: 'En cours...',
     },
     state: {
       deck: 'Paquet',

@@ -20,6 +20,7 @@ export const DESIRED_CARD_OPTIONS: ExplodingCatsCard[] = [
   'favor',
   'shuffle',
   'see_the_future',
+  'nope',
   ...CAT_COMBO_CARDS,
 ];
 
@@ -36,6 +37,7 @@ export const CARD_ART_SETTINGS: Record<
   favor: { key: 'skip', variant: 1 }, // TODO: Add proper SVG artwork
   shuffle: { key: 'skip', variant: 3 }, // TODO: Add proper SVG artwork
   see_the_future: { key: 'defuse', variant: 1 }, // TODO: Add proper SVG artwork
+  nope: { key: 'defuse', variant: 3 }, // TODO: Add proper SVG artwork
   tacocat: { key: 'tacocat', variant: 1 },
   hairy_potato_cat: { key: 'hairy-potato-cat', variant: 2 },
   rainbow_ralphing_cat: { key: 'rainbow-ralphing-cat', variant: 2 },

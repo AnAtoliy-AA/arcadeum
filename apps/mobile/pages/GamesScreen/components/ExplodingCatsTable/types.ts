@@ -14,6 +14,7 @@ export type ActionBusyType =
   | 'attack'
   | 'shuffle'
   | 'favor'
+  | 'nope'
   | 'see_the_future'
   | 'cat_pair'
   | 'cat_trio'
@@ -33,6 +34,7 @@ export type ExplodingCatsCard =
   | 'favor'
   | 'shuffle'
   | 'see_the_future'
+  | 'nope'
   | 'tacocat'
   | 'hairy_potato_cat'
   | 'rainbow_ralphing_cat'
@@ -113,6 +115,7 @@ export interface ExplodingCatsTableProps {
   onStart: () => void;
   onDraw: () => void;
   onPlay: (card: 'skip' | 'attack' | 'shuffle') => void;
+  onPlayNope: () => void;
   onPlayFavor: (targetPlayerId: string) => void;
   onGiveFavorCard: (cardToGive: ExplodingCatsCard) => void;
   onPlaySeeTheFuture: () => void;

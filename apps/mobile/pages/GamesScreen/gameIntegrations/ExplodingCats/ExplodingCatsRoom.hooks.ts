@@ -136,6 +136,26 @@ export function useGameActions({
     [actionBusy, room?.id, setActionBusy, t, tokens.userId],
   );
 
+  const handlePlayNope = useCallback(() => {
+    if (!room?.id || !tokens.userId) {
+      Alert.alert(
+        t('games.alerts.signInRequiredTitle'),
+        t('games.alerts.signInPlayCardMessage'),
+      );
+      return;
+    }
+
+    if (actionBusy) {
+      return;
+    }
+
+    setActionBusy('nope');
+    socket.emit('games.session.play_nope', {
+      roomId: room.id,
+      userId: tokens.userId,
+    });
+  }, [actionBusy, room?.id, setActionBusy, t, tokens.userId]);
+
   const handlePlayFavor = useCallback(
     (targetPlayerId: string) => {
       if (!room?.id || !tokens.userId) {
@@ -286,6 +306,7 @@ export function useGameActions({
     handleStartMatch,
     handleDrawCard,
     handlePlayCard,
+    handlePlayNope,
     handlePlayFavor,
     handleGiveFavorCard,
     handlePlaySeeTheFuture,

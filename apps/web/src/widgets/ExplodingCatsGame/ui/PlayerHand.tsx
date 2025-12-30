@@ -37,6 +37,7 @@ interface PlayerHandProps {
   t: (key: string) => string;
   onDraw: () => void;
   onPlayActionCard: (card: ExplodingCatsCard) => void;
+  onPlayNope: () => void;
   onPlaySeeTheFuture: () => void;
   onOpenFavorModal: () => void;
   onOpenCatCombo: (
@@ -55,6 +56,7 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
   t,
   onDraw,
   onPlayActionCard,
+  onPlayNope,
   onPlaySeeTheFuture,
   onOpenFavorModal,
   onOpenCatCombo,
@@ -77,6 +79,7 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
           actionBusy={typeof actionBusy === 'boolean' ? null : actionBusy}
           onDraw={onDraw}
           onPlayActionCard={onPlayActionCard}
+          onPlayNope={onPlayNope}
           onOpenFavorModal={onOpenFavorModal}
           onPlaySeeTheFuture={onPlaySeeTheFuture}
           t={t}

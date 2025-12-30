@@ -15,6 +15,7 @@ interface UseGameActionsReturn {
   startExplodingCats: () => void;
   drawCard: () => void;
   playActionCard: (card: string) => void;
+  playNope: () => void;
   playFavor: (targetPlayerId: string) => void;
   giveFavorCard: (cardToGive: string) => void;
   playSeeTheFuture: () => void;
@@ -64,6 +65,7 @@ export function useGameActions(
       gameSocket.on('games.session.favor.played', handleActionComplete);
       gameSocket.on('games.session.cat_combo.played', handleActionComplete);
       gameSocket.on('games.session.defuse.played', handleActionComplete);
+      gameSocket.on('games.session.nope.played', handleActionComplete);
     } else if (gameType === 'texas_holdem_v1') {
       gameSocket.on('games.session.holdem_started', handleActionComplete);
       gameSocket.on(
@@ -83,6 +85,7 @@ export function useGameActions(
         gameSocket.off('games.session.favor.played', handleActionComplete);
         gameSocket.off('games.session.cat_combo.played', handleActionComplete);
         gameSocket.off('games.session.defuse.played', handleActionComplete);
+        gameSocket.off('games.session.nope.played', handleActionComplete);
       } else if (gameType === 'texas_holdem_v1') {
         gameSocket.off('games.session.holdem_started', handleActionComplete);
         gameSocket.off(
@@ -177,6 +180,11 @@ export function useGameActions(
     [roomId, userId],
   );
 
+  const playNope = useCallback(() => {
+    if (!userId) return;
+    gameSocket.emit('games.session.play_nope', { roomId, userId });
+  }, [roomId, userId]);
+
   // Texas Hold'em actions
   const startHoldem = useCallback(
     (startingChips: number = 1000) => {
@@ -224,6 +232,7 @@ export function useGameActions(
     startExplodingCats,
     drawCard,
     playActionCard,
+    playNope,
     playFavor,
     giveFavorCard,
     playSeeTheFuture,

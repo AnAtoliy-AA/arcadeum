@@ -322,6 +322,7 @@ export default function ExplodingCatsGame({
               t={t as (key: string) => string}
               onDraw={actions.drawCard}
               onPlayActionCard={actions.playActionCard}
+              onPlayNope={actions.playNope}
               onPlaySeeTheFuture={actions.playSeeTheFuture}
               onOpenFavorModal={() => setFavorModal(true)}
               onOpenCatCombo={handleOpenCatCombo}

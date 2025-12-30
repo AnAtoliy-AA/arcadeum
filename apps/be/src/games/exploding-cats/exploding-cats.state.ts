@@ -15,6 +15,7 @@ export type ExplodingCatsCard =
   | 'favor'
   | 'shuffle'
   | 'see_the_future'
+  | 'nope'
   | ExplodingCatsCatCard;
 
 export interface ExplodingCatsPlayerState {
@@ -48,6 +49,13 @@ export interface ExplodingCatsState {
     requesterId: string;
     // Player who must give a card
     targetId: string;
+  } | null;
+  pendingAction: {
+    // Action that can be noped
+    type: string;
+    playerId: string;
+    payload?: unknown;
+    nopeCount: number; // Odd = canceled, even = active
   } | null;
   players: ExplodingCatsPlayerState[];
   logs: ExplodingCatsLogEntry[];
@@ -84,6 +92,7 @@ export function createInitialExplodingCatsState(
     ...repeatCard('favor', 4),
     ...repeatCard('shuffle', 4),
     ...repeatCard('see_the_future', 5),
+    ...repeatCard('nope', 5),
     ...repeatCard('tacocat', 4),
     ...repeatCard('hairy_potato_cat', 4),
     ...repeatCard('rainbow_ralphing_cat', 4),
@@ -138,6 +147,7 @@ export function createInitialExplodingCatsState(
     currentTurnIndex: 0,
     pendingDefuse: null,
     pendingFavor: null,
+    pendingAction: null,
     pendingDraws: 1,
     players,
     logs: [

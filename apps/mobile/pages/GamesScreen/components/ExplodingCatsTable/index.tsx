@@ -56,6 +56,7 @@ export function ExplodingCatsTable({
   onStart,
   onDraw,
   onPlay,
+  onPlayNope,
   onPlayFavor,
   onGiveFavorCard,
   onPlaySeeTheFuture,
@@ -131,10 +132,15 @@ export function ExplodingCatsTable({
     pendingDraws > 0;
   const hasSkip = (selfPlayer?.hand ?? []).includes('skip');
   const hasAttack = (selfPlayer?.hand ?? []).includes('attack');
+  const hasNope = (selfPlayer?.hand ?? []).includes('nope');
   const canPlaySkip =
     isSessionActive && isMyTurn && hasSkip && (selfPlayer?.alive ?? false);
   const canPlayAttack =
     isSessionActive && isMyTurn && hasAttack && (selfPlayer?.alive ?? false);
+  // Nope can be played anytime when there's a pending action (handled by backend)
+  // For now, show button if player has nope and is in an active session
+  const canPlayNope =
+    isSessionActive && hasNope && (selfPlayer?.alive ?? false);
   const canStart =
     isHost && !isSessionActive && !isSessionCompleted && !snapshot;
   const isCurrentUserPlayer = Boolean(selfPlayer);
@@ -263,9 +269,11 @@ export function ExplodingCatsTable({
             canDraw={canDraw}
             canPlaySkip={canPlaySkip}
             canPlayAttack={canPlayAttack}
+            canPlayNope={canPlayNope}
             actionBusy={actionBusy}
             onDraw={onDraw}
             onPlay={onPlay}
+            onPlayNope={onPlayNope}
             renderHandCard={renderHandCard}
             handScrollRef={handScrollRef}
             gridContainerWidth={layout.gridContainerWidth}

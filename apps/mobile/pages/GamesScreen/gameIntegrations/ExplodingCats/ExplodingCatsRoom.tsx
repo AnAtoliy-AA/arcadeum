@@ -76,6 +76,7 @@ export const ExplodingCatsRoom = forwardRef<
     handleStartMatch,
     handleDrawCard,
     handlePlayCard,
+    handlePlayNope,
     handlePlayFavor,
     handleGiveFavorCard,
     handlePlaySeeTheFuture,
@@ -242,6 +243,7 @@ export const ExplodingCatsRoom = forwardRef<
             onStart={handleStartMatch}
             onDraw={handleDrawCard}
             onPlay={handlePlayCard}
+            onPlayNope={handlePlayNope}
             onPlayFavor={handlePlayFavor}
             onGiveFavorCard={handleGiveFavorCard}
             onPlaySeeTheFuture={handlePlaySeeTheFuture}
@@ -329,6 +331,7 @@ export const ExplodingCatsRoom = forwardRef<
           onStart={handleStartMatch}
           onDraw={handleDrawCard}
           onPlay={handlePlayCard}
+          onPlayNope={handlePlayNope}
           onPlayFavor={handlePlayFavor}
           onGiveFavorCard={handleGiveFavorCard}
           onPlaySeeTheFuture={handlePlaySeeTheFuture}

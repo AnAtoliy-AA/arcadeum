@@ -10,7 +10,6 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTranslation } from '@/lib/i18n';
 import type { ExplodingCatsCard, ProcessedPlayer } from '../types';
 import type { ExplodingCatsTableStyles } from '../styles';
-import { HandCard } from './HandCard';
 
 interface HandViewProps {
   selfPlayer: ProcessedPlayer | null;
@@ -23,9 +22,11 @@ interface HandViewProps {
   canDraw: boolean;
   canPlaySkip: boolean;
   canPlayAttack: boolean;
+  canPlayNope: boolean;
   actionBusy: string | null;
   onDraw: () => void;
   onPlay: (card: 'skip' | 'attack') => void;
+  onPlayNope: () => void;
   // Card rendering props
   renderHandCard: (
     card: ExplodingCatsCard,
@@ -50,9 +51,11 @@ export function HandView({
   canDraw,
   canPlaySkip,
   canPlayAttack,
+  canPlayNope,
   actionBusy,
   onDraw,
   onPlay,
+  onPlayNope,
   renderHandCard,
   handScrollRef,
   onGridContainerLayout,
@@ -321,6 +324,37 @@ export function HandView({
                 />
                 <ThemedText style={styles.destructiveButtonText}>
                   {t('games.table.actions.playAttack')}
+                </ThemedText>
+              </>
+            )}
+          </TouchableOpacity>
+        ) : null}
+
+        {canPlayNope ? (
+          <TouchableOpacity
+            style={[
+              styles.secondaryButton,
+              actionBusy && actionBusy !== 'nope'
+                ? styles.secondaryButtonDisabled
+                : null,
+            ]}
+            onPress={onPlayNope}
+            disabled={actionBusy === 'nope'}
+          >
+            {actionBusy === 'nope' ? (
+              <ActivityIndicator
+                size="small"
+                color={styles.secondaryButtonText.color as string}
+              />
+            ) : (
+              <>
+                <IconSymbol
+                  name="xmark.circle.fill"
+                  size={16}
+                  color={styles.secondaryButtonText.color as string}
+                />
+                <ThemedText style={styles.secondaryButtonText}>
+                  {t('games.table.actions.playNope')}
                 </ThemedText>
               </>
             )}

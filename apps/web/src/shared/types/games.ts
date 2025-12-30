@@ -37,6 +37,7 @@ export type ExplodingCatsCard =
   | 'favor'
   | 'shuffle'
   | 'see_the_future'
+  | 'nope'
   | 'tacocat'
   | 'hairy_potato_cat'
   | 'rainbow_ralphing_cat'

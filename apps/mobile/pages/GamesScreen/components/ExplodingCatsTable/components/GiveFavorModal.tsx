@@ -28,6 +28,7 @@ const CARD_DISPLAY_NAMES: Record<ExplodingCatsCard, string> = {
   favor: 'Favor',
   shuffle: 'Shuffle',
   see_the_future: 'See the Future',
+  nope: 'Nope',
   tacocat: 'Tacocat',
   hairy_potato_cat: 'Hairy Potato Cat',
   rainbow_ralphing_cat: 'Rainbow Cat',

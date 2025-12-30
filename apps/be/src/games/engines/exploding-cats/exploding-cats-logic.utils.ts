@@ -5,7 +5,9 @@ import {
 } from '../../exploding-cats/exploding-cats.state';
 import { GameActionResult, GameLogEntry } from '../base/game-engine.interface';
 
-interface LogEntryOptions {
+export { executeNope } from './exploding-cats-nope.utils';
+
+export interface LogEntryOptions {
   scope?: 'all' | 'players' | 'private';
   senderId?: string | null;
   senderName?: string | null;
@@ -62,6 +64,9 @@ export class ExplodingCatsLogic {
 
     const player = this.findPlayer(state, playerId);
     if (!player) return { success: false, error: 'Player not found' };
+
+    // Clear any pending action - drawing finalizes the turn, no more nopes allowed
+    state.pendingAction = null;
 
     state.pendingDraws--;
 
@@ -135,8 +140,17 @@ export class ExplodingCatsLogic {
     player.hand.splice(cardIndex, 1);
     state.discardPile.push(card);
 
+    // Clear any previous pending action when a new card is played
+    state.pendingAction = null;
+
     switch (card) {
       case 'attack':
+        // Set pending action so it can be noped
+        state.pendingAction = {
+          type: 'attack',
+          playerId,
+          nopeCount: 0,
+        };
         helpers.advanceTurn(state);
         state.pendingDraws = 2;
         helpers.addLog(
@@ -146,6 +160,13 @@ export class ExplodingCatsLogic {
         break;
 
       case 'skip':
+        // Set pending action so it can be noped
+        state.pendingAction = {
+          type: 'skip',
+          playerId,
+          payload: { previousTurnIndex: state.currentTurnIndex },
+          nopeCount: 0,
+        };
         helpers.advanceTurn(state);
         helpers.addLog(
           state,
@@ -154,6 +175,12 @@ export class ExplodingCatsLogic {
         break;
 
       case 'shuffle':
+        // Set pending action so it can be noped
+        state.pendingAction = {
+          type: 'shuffle',
+          playerId,
+          nopeCount: 0,
+        };
         helpers.shuffleArray(state.deck);
         helpers.addLog(
           state,
@@ -294,6 +321,14 @@ export class ExplodingCatsLogic {
     state.pendingFavor = {
       requesterId: playerId,
       targetId: payload.targetPlayerId,
+    };
+
+    // Set pending action so it can be noped
+    state.pendingAction = {
+      type: 'favor',
+      playerId,
+      payload: { targetPlayerId: payload.targetPlayerId },
+      nopeCount: 0,
     };
 
     helpers.addLog(

@@ -152,16 +152,16 @@ export class ExplodingCatsActionsService {
   }
 
   /**
-   * Play a nope card (if implemented)
+   * Play a nope card - cancels the last action played
    */
   async playNope(sessionId: string, userId: string) {
     const session = await this.sessionsService.executeAction({
       sessionId,
-      action: 'nope',
+      action: 'play_nope',
       userId,
     });
 
-    this.realtimeService.emitActionExecuted(session, 'nope', userId);
+    this.realtimeService.emitActionExecuted(session, 'play_nope', userId);
 
     return session;
   }

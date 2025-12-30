@@ -228,4 +228,20 @@ export class ExplodingCatsService {
     if (!session) throw new Error('Session not found');
     return this.explodingCatsActions.defuse(session.id, userId, { position });
   }
+
+  /**
+   * Play nope card - cancels the last action
+   */
+  async playNope(sessionId: string, userId: string) {
+    return this.explodingCatsActions.playNope(sessionId, userId);
+  }
+
+  /**
+   * Play nope card (gateway wrapper)
+   */
+  async playNopeByRoom(userId: string, roomId: string) {
+    const session = await this.sessionsService.findSessionByRoom(roomId);
+    if (!session) throw new Error('Session not found');
+    return this.explodingCatsActions.playNope(session.id, userId);
+  }
 }

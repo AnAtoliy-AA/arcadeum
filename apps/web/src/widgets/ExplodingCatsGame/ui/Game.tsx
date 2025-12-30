@@ -9,6 +9,7 @@ import {
   useExplodingCatsState,
   useFullscreen,
   useExplodingCatsModals,
+  useRematch,
 } from '../hooks';
 import { CatComboModal } from './modals/CatComboModal';
 import { SeeTheFutureModal } from './modals/SeeTheFutureModal';
@@ -79,6 +80,7 @@ export default function ExplodingCatsGame({
   } = useExplodingCatsState({ roomId, currentUserId, initialSession });
 
   const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef);
+  const { rematchLoading, handleRematch } = useRematch({ roomId });
 
   const {
     catComboModal,
@@ -340,6 +342,9 @@ export default function ExplodingCatsGame({
           <GameStatusMessage
             currentPlayerAlive={currentPlayer.alive}
             isGameOver={isGameOver}
+            isHost={isHost}
+            rematchLoading={rematchLoading}
+            onRematch={handleRematch}
             t={t as (key: string) => string}
           />
         )}

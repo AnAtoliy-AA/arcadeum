@@ -104,7 +104,7 @@ export function ExplodingCatsTable({
   } = gameState;
 
   const pendingDefuse = snapshot?.pendingDefuse ?? null;
-  const mustDefuse = pendingDefuse === currentUserId;
+  const mustDefuse = !!currentUserId && pendingDefuse === currentUserId;
 
   const handleDefuseConfirm = (position: number) => {
     onPlayDefuse(position);
@@ -355,7 +355,8 @@ export function ExplodingCatsTable({
   );
 
   const pendingFavor = snapshot?.pendingFavor ?? null;
-  const mustGiveFavor = pendingFavor?.targetId === currentUserId;
+  const mustGiveFavor =
+    !!currentUserId && pendingFavor?.targetId === currentUserId;
   const favorRequesterName = pendingFavor?.requesterId
     ? (playerNameMap.get(pendingFavor.requesterId) ?? 'Player')
     : 'Player';

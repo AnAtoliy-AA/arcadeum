@@ -96,6 +96,7 @@ export const esMessages = {
       title: 'Fin del Juego',
       message: '¡Mejor suerte la próxima vez!',
     },
+    rematch: { button: 'Jugar de Nuevo', loading: 'Creando...' },
     fullscreen: {
       enter: 'Pantalla completa (F)',
       exit: 'Salir de pantalla completa (Esc)',

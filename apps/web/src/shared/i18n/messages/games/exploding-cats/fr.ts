@@ -103,6 +103,7 @@ export const frMessages = {
       title: 'Fin de Partie',
       message: 'Meilleure chance la prochaine fois !',
     },
+    rematch: { button: 'Rejouer', loading: 'Création...' },
     fullscreen: {
       enter: 'Plein écran (F)',
       exit: 'Quitter le plein écran (Échap)',

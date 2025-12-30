@@ -94,6 +94,7 @@ export const enMessages = {
     },
     victory: { title: 'Victory!', message: 'Congratulations! You survived!' },
     defeat: { title: 'Game Over', message: 'Better luck next time!' },
+    rematch: { button: 'Play Again', loading: 'Creating...' },
     fullscreen: {
       enter: 'Enter fullscreen (F)',
       exit: 'Exit fullscreen (Esc)',

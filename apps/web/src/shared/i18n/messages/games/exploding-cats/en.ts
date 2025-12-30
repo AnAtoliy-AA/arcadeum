@@ -94,7 +94,13 @@ export const enMessages = {
     },
     victory: { title: 'Victory!', message: 'Congratulations! You survived!' },
     defeat: { title: 'Game Over', message: 'Better luck next time!' },
-    rematch: { button: 'Play Again', loading: 'Creating...' },
+    rematch: {
+      button: 'Play Again',
+      loading: 'Creating...',
+      modalTitle: 'Start Rematch',
+      modalDescription: 'Select players to invite to the new game:',
+      noPlayers: 'No other players in this game',
+    },
     fullscreen: {
       enter: 'Enter fullscreen (F)',
       exit: 'Exit fullscreen (Esc)',

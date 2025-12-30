@@ -96,7 +96,13 @@ export const esMessages = {
       title: 'Fin del Juego',
       message: '¡Mejor suerte la próxima vez!',
     },
-    rematch: { button: 'Jugar de Nuevo', loading: 'Creando...' },
+    rematch: {
+      button: 'Jugar de Nuevo',
+      loading: 'Creando...',
+      modalTitle: 'Iniciar Revancha',
+      modalDescription: 'Selecciona jugadores para invitar:',
+      noPlayers: 'No hay otros jugadores en este juego',
+    },
     fullscreen: {
       enter: 'Pantalla completa (F)',
       exit: 'Salir de pantalla completa (Esc)',

@@ -16,6 +16,7 @@ import { SeeTheFutureModal } from './modals/SeeTheFutureModal';
 import { FavorModal } from './modals/FavorModal';
 import { GiveFavorModal } from './modals/GiveFavorModal';
 import { DefuseModal } from './modals/DefuseModal';
+import { RematchModal } from './modals/RematchModal';
 import { GameLobby } from './GameLobby';
 import { ChatSection } from './ChatSection';
 import { GameStatusMessage } from './GameStatusMessage';
@@ -80,7 +81,13 @@ export default function ExplodingCatsGame({
   } = useExplodingCatsState({ roomId, currentUserId, initialSession });
 
   const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef);
-  const { rematchLoading, handleRematch } = useRematch({ roomId });
+  const {
+    rematchLoading,
+    showRematchModal,
+    openRematchModal,
+    closeRematchModal,
+    handleRematch,
+  } = useRematch({ roomId });
 
   const {
     catComboModal,
@@ -344,11 +351,31 @@ export default function ExplodingCatsGame({
             isGameOver={isGameOver}
             isHost={isHost}
             rematchLoading={rematchLoading}
-            onRematch={handleRematch}
+            onRematch={openRematchModal}
             t={t as (key: string) => string}
           />
         )}
       </GameBoard>
+
+      {/* Rematch Modal */}
+      <RematchModal
+        isOpen={showRematchModal}
+        players={
+          snapshot?.players.map((p) => ({
+            playerId: p.playerId,
+            displayName: resolveDisplayName(
+              p.playerId,
+              `Player ${p.playerId.slice(0, 8)}`,
+            ),
+            alive: p.alive,
+          })) ?? []
+        }
+        currentUserId={currentUserId}
+        rematchLoading={rematchLoading}
+        onClose={closeRematchModal}
+        onConfirm={handleRematch}
+        t={t as (key: string) => string}
+      />
 
       {/* Cat Combo Modal */}
       <CatComboModal

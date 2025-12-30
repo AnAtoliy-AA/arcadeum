@@ -103,7 +103,13 @@ export const frMessages = {
       title: 'Fin de Partie',
       message: 'Meilleure chance la prochaine fois !',
     },
-    rematch: { button: 'Rejouer', loading: 'Création...' },
+    rematch: {
+      button: 'Rejouer',
+      loading: 'Création...',
+      modalTitle: 'Démarrer la Revanche',
+      modalDescription: 'Sélectionnez les joueurs à inviter:',
+      noPlayers: "Pas d'autres joueurs dans cette partie",
+    },
     fullscreen: {
       enter: 'Plein écran (F)',
       exit: 'Quitter le plein écran (Échap)',

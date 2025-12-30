@@ -225,7 +225,7 @@ export class GameHistoryService {
     dto: HistoryRematchDto,
     userId: string,
   ): Promise<string> {
-    const { roomId: originalRoomId } = dto;
+    const { roomId: originalRoomId, participantIds } = dto;
 
     // Get original room
     const originalRoom = await this.gameRoomModel
@@ -247,6 +247,31 @@ export class GameHistoryService {
       );
     }
 
+    // Determine which participants to invite
+    // If participantIds is provided and not empty, use those
+    // Otherwise, invite all original participants (except the new host)
+    const originalParticipantIds = originalRoom.participants
+      .map((p) => p.userId)
+      .filter((id) => id !== userId);
+
+    const invitedIds =
+      participantIds && participantIds.length > 0
+        ? participantIds.filter((id) => id !== userId) // filter out host
+        : originalParticipantIds;
+
+    // Build participants array: host first, then invited players
+    const now = new Date();
+    const participants = [
+      {
+        userId,
+        joinedAt: now,
+      },
+      ...invitedIds.map((invitedUserId) => ({
+        userId: invitedUserId,
+        joinedAt: now,
+      })),
+    ];
+
     // Create new room with same settings
     const newRoom = await this.gameRoomModel.create({
       gameId: originalRoom.gameId,
@@ -254,15 +279,10 @@ export class GameHistoryService {
       hostId: userId,
       visibility: originalRoom.visibility,
       maxPlayers: originalRoom.maxPlayers,
-      participants: [
-        {
-          userId,
-          joinedAt: new Date(),
-        },
-      ],
+      participants,
       status: 'lobby',
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: now,
+      updatedAt: now,
     });
 
     return newRoom._id.toString();

@@ -167,7 +167,11 @@ export class ExplodingCatsLogic {
           payload: { previousTurnIndex: state.currentTurnIndex },
           nopeCount: 0,
         };
-        helpers.advanceTurn(state);
+        // Skip cancels only one pending draw
+        state.pendingDraws--;
+        if (state.pendingDraws <= 0) {
+          helpers.advanceTurn(state);
+        }
         helpers.addLog(
           state,
           helpers.createLogEntry('action', `Played Skip`, { scope: 'all' }),

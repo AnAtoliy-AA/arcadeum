@@ -272,10 +272,42 @@ export class GameHistoryService {
       })),
     ];
 
+    // Generate rematch name: "someName" -> "someName Rematch 1" -> "someName Rematch 2"
+    // Extract base name (strip existing " Rematch N" suffix if present)
+    const rematchSuffixMatch = originalRoom.name.match(/^(.+?) Rematch \d+$/);
+    const baseName = rematchSuffixMatch
+      ? rematchSuffixMatch[1]
+      : originalRoom.name;
+
+    // Find existing rematch rooms with the same base name
+    const escapedBaseName = baseName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const existingRematches = await this.gameRoomModel
+      .find({
+        name: { $regex: new RegExp(`^${escapedBaseName} Rematch \\d+$`) },
+      })
+      .select('name')
+      .lean()
+      .exec();
+
+    const usedNumbers = new Set(
+      existingRematches
+        .map((r) => {
+          const match = r.name.match(/ Rematch (\d+)$/);
+          return match ? parseInt(match[1], 10) : 0;
+        })
+        .filter((n) => n > 0),
+    );
+
+    let rematchNumber = 1;
+    while (usedNumbers.has(rematchNumber)) {
+      rematchNumber++;
+    }
+    const rematchName = `${baseName} Rematch ${rematchNumber}`;
+
     // Create new room with same settings
     const newRoom = await this.gameRoomModel.create({
       gameId: originalRoom.gameId,
-      name: `${originalRoom.name} (Rematch)`,
+      name: rematchName,
       hostId: userId,
       visibility: originalRoom.visibility,
       maxPlayers: originalRoom.maxPlayers,

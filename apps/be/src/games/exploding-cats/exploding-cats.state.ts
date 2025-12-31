@@ -7,6 +7,22 @@ export type ExplodingCatsCatCard =
   | 'cattermelon'
   | 'bearded_cat';
 
+// Expansion pack identifiers
+export type ExplodingCatsExpansion =
+  | 'attack'
+  | 'future'
+  | 'theft'
+  | 'chaos'
+  | 'deity';
+
+// Attack Pack cards
+export type AttackPackCard =
+  | 'targeted_attack'
+  | 'personal_attack'
+  | 'attack_of_the_dead'
+  | 'super_skip'
+  | 'reverse';
+
 export type ExplodingCatsCard =
   | 'exploding_cat'
   | 'defuse'
@@ -16,7 +32,8 @@ export type ExplodingCatsCard =
   | 'shuffle'
   | 'see_the_future'
   | 'nope'
-  | ExplodingCatsCatCard;
+  | ExplodingCatsCatCard
+  | AttackPackCard;
 
 export interface ExplodingCatsPlayerState {
   playerId: string;
@@ -43,6 +60,8 @@ export interface ExplodingCatsState {
   playerOrder: string[];
   currentTurnIndex: number;
   pendingDraws: number;
+  playDirection: 1 | -1; // 1 = clockwise, -1 = counter-clockwise (for Reverse)
+  expansions: ExplodingCatsExpansion[]; // Active expansion packs
   pendingDefuse: string | null; // Player ID who must play defuse, null if none
   pendingFavor: {
     // Player who requested the favor (will receive the card)
@@ -78,8 +97,20 @@ function shuffleInPlace<T>(items: T[]): void {
   }
 }
 
+// Attack Pack cards to add when expansion is enabled
+function getAttackPackCards(): ExplodingCatsCard[] {
+  return [
+    ...repeatCard('targeted_attack', 3),
+    ...repeatCard('personal_attack', 2),
+    ...repeatCard('attack_of_the_dead', 2),
+    ...repeatCard('super_skip', 2),
+    ...repeatCard('reverse', 4),
+  ];
+}
+
 export function createInitialExplodingCatsState(
   playerIds: string[],
+  expansions: ExplodingCatsExpansion[] = [],
 ): ExplodingCatsState {
   if (playerIds.length < 2) {
     throw new Error('Exploding Cats requires at least two players.');
@@ -100,6 +131,11 @@ export function createInitialExplodingCatsState(
     ...repeatCard('bearded_cat', 4),
     ...repeatCard('defuse', 6),
   ];
+
+  // Add expansion cards based on selected packs
+  if (expansions.includes('attack')) {
+    deck.push(...getAttackPackCards());
+  }
 
   shuffleInPlace(deck);
 
@@ -145,6 +181,8 @@ export function createInitialExplodingCatsState(
     discardPile: [],
     playerOrder: [...playerIds],
     currentTurnIndex: 0,
+    playDirection: 1,
+    expansions,
     pendingDefuse: null,
     pendingFavor: null,
     pendingAction: null,

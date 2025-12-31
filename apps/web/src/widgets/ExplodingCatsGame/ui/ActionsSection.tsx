@@ -109,6 +109,58 @@ export function ActionsSection({
             {actionBusy === 'see_the_future' ? 'Playing...' : '🔮 See Future'}
           </ActionButton>
         )}
+        {/* Attack Pack Cards */}
+        {currentPlayer.hand.includes('reverse') && (
+          <ActionButton
+            variant="secondary"
+            onClick={() => onPlayActionCard('reverse')}
+            disabled={!canAct || actionBusy === 'reverse'}
+          >
+            {actionBusy === 'reverse' ? 'Playing...' : '🔄 Reverse'}
+          </ActionButton>
+        )}
+        {currentPlayer.hand.includes('super_skip') && (
+          <ActionButton
+            variant="primary"
+            onClick={() => onPlayActionCard('super_skip')}
+            disabled={!canAct || actionBusy === 'super_skip'}
+          >
+            {actionBusy === 'super_skip' ? 'Playing...' : '🦸 Super Skip'}
+          </ActionButton>
+        )}
+        {currentPlayer.hand.includes('targeted_attack') && (
+          <ActionButton
+            variant="danger"
+            onClick={() => onPlayActionCard('targeted_attack')}
+            disabled={!canAct || actionBusy === 'targeted_attack'}
+          >
+            {actionBusy === 'targeted_attack'
+              ? 'Playing...'
+              : '🎯 Targeted Attack'}
+          </ActionButton>
+        )}
+        {currentPlayer.hand.includes('personal_attack') && (
+          <ActionButton
+            variant="danger"
+            onClick={() => onPlayActionCard('personal_attack')}
+            disabled={!canAct || actionBusy === 'personal_attack'}
+          >
+            {actionBusy === 'personal_attack'
+              ? 'Playing...'
+              : '💜 Personal Attack'}
+          </ActionButton>
+        )}
+        {currentPlayer.hand.includes('attack_of_the_dead') && (
+          <ActionButton
+            variant="danger"
+            onClick={() => onPlayActionCard('attack_of_the_dead')}
+            disabled={!canAct || actionBusy === 'attack_of_the_dead'}
+          >
+            {actionBusy === 'attack_of_the_dead'
+              ? 'Playing...'
+              : '🧟 Attack of Dead'}
+          </ActionButton>
+        )}
       </ActionButtons>
     </InfoCard>
   );

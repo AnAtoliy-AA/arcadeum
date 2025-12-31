@@ -113,7 +113,7 @@ export class ExplodingCatsService {
       roomId: effectiveRoomId,
       gameId: room.gameId,
       playerIds,
-      config: { engine },
+      config: { engine, ...room.gameOptions },
     });
 
     await this.roomsService.updateRoomStatus(effectiveRoomId, 'in_progress');

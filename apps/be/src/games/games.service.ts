@@ -10,12 +10,7 @@ import { LeaveGameRoomDto } from './dtos/leave-game-room.dto';
 import { DeleteGameRoomDto } from './dtos/delete-game-room.dto';
 import { StartGameDto } from './dtos/start-game.dto';
 import { HistoryRematchDto } from './dtos/history-rematch.dto';
-import {
-  StartGameSessionResult,
-  ListRoomsFilters,
-  GameRoomSummary,
-  GameSessionSummary,
-} from './games.types';
+import { StartGameSessionResult, ListRoomsFilters } from './games.types';
 
 /**
  * Games Service Facade
@@ -146,7 +141,7 @@ export class GamesService {
       roomId,
       gameId: room.gameId,
       playerIds,
-      config: { engine: dto.engine },
+      config: { engine: dto.engine, ...room.gameOptions },
     });
 
     // Update room status

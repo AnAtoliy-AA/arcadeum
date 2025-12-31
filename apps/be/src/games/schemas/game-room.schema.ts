@@ -77,6 +77,9 @@ export class GameRoom extends Document {
   @Prop({ type: String, trim: true, index: true, default: null })
   rootRoomId?: string | null;
 
+  @Prop({ type: Object, default: {} })
+  gameOptions?: Record<string, unknown>;
+
   createdAt: Date;
   updatedAt: Date;
 }

@@ -4,6 +4,12 @@ import {
   ExplodingCatsPlayerState,
 } from '../../exploding-cats/exploding-cats.state';
 import { GameActionResult, GameLogEntry } from '../base/game-engine.interface';
+import {
+  executePersonalAttack,
+  executeAttackOfTheDead,
+  executeSuperSkip,
+  executeReverse,
+} from './exploding-cats-attack.utils';
 
 export { executeNope } from './exploding-cats-nope.utils';
 
@@ -193,6 +199,34 @@ export class ExplodingCatsLogic {
           }),
         );
         break;
+
+      // Attack Pack cards - delegate to their executors
+      case 'reverse':
+        // Put card back in hand (executeReverse will remove it)
+        player.hand.push(card);
+        state.discardPile.pop();
+        return executeReverse(state, playerId, helpers);
+
+      case 'super_skip':
+        player.hand.push(card);
+        state.discardPile.pop();
+        return executeSuperSkip(state, playerId, helpers);
+
+      case 'personal_attack':
+        player.hand.push(card);
+        state.discardPile.pop();
+        return executePersonalAttack(state, playerId, helpers);
+
+      case 'attack_of_the_dead':
+        player.hand.push(card);
+        state.discardPile.pop();
+        return executeAttackOfTheDead(state, playerId, helpers);
+
+      default:
+        // For unsupported cards, put them back and return error
+        player.hand.push(card);
+        state.discardPile.pop();
+        return { success: false, error: `Card '${card}' is not playable` };
     }
 
     return { success: true, state };

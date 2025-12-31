@@ -76,6 +76,12 @@ export const explodingCatsMessages = {
       cattermelon: 'Cattermelon',
       beardedCat: 'Bearded Cat',
       generic: 'Cat',
+      // Attack Pack cards
+      targetedAttack: 'Targeted Attack',
+      personalAttack: 'Personal Attack',
+      attackOfTheDead: 'Attack of the Dead',
+      superSkip: 'Super Skip',
+      reverse: 'Reverse',
     },
     cardDescriptions: {
       explodingCat:
@@ -94,6 +100,12 @@ export const explodingCatsMessages = {
       cattermelon: 'Collect duplicates to swipe cards and set up combos.',
       beardedCat: 'Pairs or trios swipe cards straight from rivals.',
       generic: 'Cat cards need pairs or trios to trigger their steal effects.',
+      // Attack Pack descriptions
+      targetedAttack: 'Choose a player to take 2 turns instead of next player.',
+      personalAttack: 'You must take 3 turns in a row.',
+      attackOfTheDead: 'Next player takes 3 turns per dead player.',
+      superSkip: 'End ALL your remaining turns without drawing.',
+      reverse: 'Reverse the direction of play.',
     },
     catCombo: {
       title: 'Play a combo with {{card}}',
@@ -203,6 +215,12 @@ export const explodingCatsMessages = {
       cattermelon: 'Gatomelón',
       beardedCat: 'Gato barbudo',
       generic: 'Gato',
+      // Attack Pack cards
+      targetedAttack: 'Ataque Dirigido',
+      personalAttack: 'Ataque Personal',
+      attackOfTheDead: 'Ataque de los Muertos',
+      superSkip: 'Super Saltar',
+      reverse: 'Invertir',
     },
     cardDescriptions: {
       explodingCat:
@@ -225,6 +243,12 @@ export const explodingCatsMessages = {
         'Quítales cartas a tus rivales cuando lo juegas en pareja o trío.',
       generic:
         'Las cartas de gato solo se activan en parejas o tríos para robar.',
+      // Attack Pack descriptions
+      targetedAttack: 'Elige un jugador para que tome 2 turnos.',
+      personalAttack: 'Debes tomar 3 turnos seguidos.',
+      attackOfTheDead: 'Siguiente jugador toma 3 turnos por jugador muerto.',
+      superSkip: 'Termina TODOS tus turnos restantes sin robar.',
+      reverse: 'Invierte la dirección del juego.',
     },
     catCombo: {
       title: 'Jugar combo de {{card}}',
@@ -334,6 +358,12 @@ export const explodingCatsMessages = {
       cattermelon: 'Melonchat',
       beardedCat: 'Chat barbu',
       generic: 'Chat',
+      // Attack Pack cards
+      targetedAttack: 'Attaque Ciblée',
+      personalAttack: 'Attaque Personnelle',
+      attackOfTheDead: 'Attaque des Morts',
+      superSkip: 'Super Passer',
+      reverse: 'Inverser',
     },
     cardDescriptions: {
       explodingCat: 'Piochez-la sans Defuse et boum : vous quittez la manche.',
@@ -355,6 +385,12 @@ export const explodingCatsMessages = {
       beardedCat: "Vol garanti lorsqu'il est joué en paire ou en trio.",
       generic:
         "Les cartes chat s'activent en paire ou trio pour voler des cartes.",
+      // Attack Pack descriptions
+      targetedAttack: 'Choisissez un joueur pour prendre 2 tours.',
+      personalAttack: 'Vous devez prendre 3 tours de suite.',
+      attackOfTheDead: 'Joueur suivant prend 3 tours par joueur mort.',
+      superSkip: 'Terminez TOUS vos tours restants sans piocher.',
+      reverse: 'Inversez le sens du jeu.',
     },
     catCombo: {
       title: 'Jouer un combo avec {{card}}',

@@ -32,15 +32,15 @@ These cards are part of the core game and always included:
 
 ### 📦 EXPANSION PACKS (Optional - Selected via Checkboxes)
 
-#### Expansion 1: Attack Pack
+#### Expansion 1: Attack Pack ✅
 
 | Card               | Status  | Complexity | Notes                     |
 | ------------------ | ------- | ---------- | ------------------------- |
-| Targeted Attack    | ❌ TODO | Low        | Choose target for 2 turns |
-| Personal Attack    | ❌ TODO | Low        | Self takes 3 turns        |
-| Attack of the Dead | ❌ TODO | Low        | 3 turns × dead players    |
-| Super Skip         | ❌ TODO | Low        | End ALL turns             |
-| Reverse            | ❌ TODO | Medium     | Reverse play direction    |
+| Targeted Attack    | ✅ Done | Low        | Choose target for 2 turns |
+| Personal Attack    | ✅ Done | Low        | Self takes 3 turns        |
+| Attack of the Dead | ✅ Done | Low        | 3 turns × dead players    |
+| Super Skip         | ✅ Done | Low        | End ALL turns             |
+| Reverse            | ✅ Done | Medium     | Reverse play direction    |
 
 #### Expansion 2: Future Pack
 
@@ -90,12 +90,12 @@ These cards are part of the core game and always included:
 | Category            | Count  | Status           |
 | ------------------- | ------ | ---------------- |
 | Basic Deck          | 13     | ✅ Implemented   |
-| Expansion 1: Attack | 5      | ❌ TODO          |
+| Expansion 1: Attack | 5      | ✅ Implemented   |
 | Expansion 2: Future | 8      | ❌ TODO          |
 | Expansion 3: Theft  | 4      | ❌ TODO          |
 | Expansion 4: Chaos  | 5      | ❌ TODO          |
 | Expansion 5: Deity  | 4      | ❌ TODO          |
-| **Total**           | **39** | 13 done, 26 TODO |
+| **Total**           | **39** | 18 done, 21 TODO |
 
 ---
 

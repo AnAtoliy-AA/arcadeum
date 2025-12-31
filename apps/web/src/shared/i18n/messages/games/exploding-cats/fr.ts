@@ -15,6 +15,12 @@ export const frMessages = {
       cattermelon: 'Chat Pastèque',
       beardedCat: 'Chat Barbu',
       generic: 'Chat',
+      // Attack Pack cards
+      targetedAttack: 'Attaque Ciblée',
+      personalAttack: 'Attaque Personnelle',
+      attackOfTheDead: 'Attaque des Morts',
+      superSkip: 'Super Passer',
+      reverse: 'Inverser',
       descriptions: {
         explodingCat: 'Vous devez le désamorcer ou vous explosez !',
         defuse: 'Utilisez pour désamorcer un Chat Explosif',
@@ -30,6 +36,12 @@ export const frMessages = {
           'Collectez des chats identiques pour voler des cartes',
         cattermelon: 'Collectez des chats identiques pour voler des cartes',
         beardedCat: 'Collectez des chats identiques pour voler des cartes',
+        // Attack Pack descriptions
+        targetedAttack: 'Choisissez un joueur pour prendre 2 tours',
+        personalAttack: 'Vous devez prendre 3 tours de suite',
+        attackOfTheDead: 'Joueur suivant prend 3 tours par joueur mort',
+        superSkip: 'Terminez TOUS vos tours restants sans piocher',
+        reverse: 'Inversez le sens du jeu',
       },
     },
     actions: {

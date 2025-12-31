@@ -16,6 +16,12 @@ export const enMessages = {
       cattermelon: 'Cattermelon',
       beardedCat: 'Bearded Cat',
       generic: 'Cat',
+      // Attack Pack cards
+      targetedAttack: 'Targeted Attack',
+      personalAttack: 'Personal Attack',
+      attackOfTheDead: 'Attack of the Dead',
+      superSkip: 'Super Skip',
+      reverse: 'Reverse',
       descriptions: {
         explodingCat: 'You must defuse this or you explode!',
         defuse: 'Use to defuse an Exploding Cat',
@@ -30,6 +36,13 @@ export const enMessages = {
         rainbowRalphingCat: 'Collect matching cats to steal cards',
         cattermelon: 'Collect matching cats to steal cards',
         beardedCat: 'Collect matching cats to steal cards',
+        // Attack Pack descriptions
+        targetedAttack:
+          'Choose a player to take 2 turns instead of next player',
+        personalAttack: 'You must take 3 turns in a row',
+        attackOfTheDead: 'Next player takes 3 turns per dead player',
+        superSkip: 'End ALL your remaining turns without drawing',
+        reverse: 'Reverse the direction of play',
       },
     },
     actions: {

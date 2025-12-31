@@ -7,6 +7,7 @@ interface UseGameActionsOptions {
   roomId: string;
   userId: string | null;
   gameType: GameType;
+  setActionBusy?: (action: string | null) => void;
   onActionComplete?: () => void;
 }
 
@@ -45,7 +46,7 @@ interface UseGameActionsReturn {
 export function useGameActions(
   options: UseGameActionsOptions,
 ): UseGameActionsReturn {
-  const { roomId, userId, gameType, onActionComplete } = options;
+  const { roomId, userId, gameType, setActionBusy, onActionComplete } = options;
 
   // Setup game-specific listeners
   useEffect(() => {
@@ -108,27 +109,30 @@ export function useGameActions(
 
   const drawCard = useCallback(() => {
     if (!userId) return;
+    setActionBusy?.('draw');
     gameSocket.emit('games.session.draw', { roomId, userId });
-  }, [roomId, userId]);
+  }, [roomId, userId, setActionBusy]);
 
   const playActionCard = useCallback(
     (card: string) => {
       if (!userId) return;
+      setActionBusy?.(card);
       gameSocket.emit('games.session.play_action', { roomId, userId, card });
     },
-    [roomId, userId],
+    [roomId, userId, setActionBusy],
   );
 
   const playFavor = useCallback(
     (targetPlayerId: string) => {
       if (!userId) return;
+      setActionBusy?.('favor');
       gameSocket.emit('games.session.play_favor', {
         roomId,
         userId,
         targetPlayerId,
       });
     },
-    [roomId, userId],
+    [roomId, userId, setActionBusy],
   );
 
   const giveFavorCard = useCallback(
@@ -145,8 +149,9 @@ export function useGameActions(
 
   const playSeeTheFuture = useCallback(() => {
     if (!userId) return;
+    setActionBusy?.('see_the_future');
     gameSocket.emit('games.session.play_see_the_future', { roomId, userId });
-  }, [roomId, userId]);
+  }, [roomId, userId, setActionBusy]);
 
   const playCatCombo = useCallback(
     (
@@ -156,6 +161,7 @@ export function useGameActions(
       desiredCard?: string,
     ) => {
       if (!userId) return;
+      setActionBusy?.('cat_combo');
       gameSocket.emit('games.session.play_cat_combo', {
         roomId,
         userId,
@@ -165,25 +171,27 @@ export function useGameActions(
         desiredCard,
       });
     },
-    [roomId, userId],
+    [roomId, userId, setActionBusy],
   );
 
   const playDefuse = useCallback(
     (position: number) => {
       if (!userId) return;
+      setActionBusy?.('defuse');
       gameSocket.emit('games.session.play_defuse', {
         roomId,
         userId,
         position,
       });
     },
-    [roomId, userId],
+    [roomId, userId, setActionBusy],
   );
 
   const playNope = useCallback(() => {
     if (!userId) return;
+    setActionBusy?.('nope');
     gameSocket.emit('games.session.play_nope', { roomId, userId });
-  }, [roomId, userId]);
+  }, [roomId, userId, setActionBusy]);
 
   // Texas Hold'em actions
   const startHoldem = useCallback(

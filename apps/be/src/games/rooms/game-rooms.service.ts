@@ -33,6 +33,7 @@ export interface GameRoomSummary {
   createdAt: string;
   status: GameRoomStatus;
   inviteCode?: string;
+  gameOptions?: Record<string, unknown>;
   host?: GameRoomMemberSummary;
   members?: GameRoomMemberSummary[];
   viewerRole?: 'host' | 'participant' | 'none';
@@ -109,6 +110,7 @@ export class GameRoomsService {
         },
       ],
       status: 'lobby',
+      gameOptions: dto.gameOptions || {},
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -443,6 +445,7 @@ export class GameRoomsService {
       createdAt: room.createdAt.toISOString(),
       status: room.status,
       inviteCode: room.inviteCode,
+      gameOptions: room.gameOptions,
       host: host
         ? {
             id: room.hostId,

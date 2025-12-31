@@ -9,9 +9,25 @@ import {
   ExplodingCatsState,
   ExplodingCatsCard,
   ExplodingCatsPlayerState,
+  ExplodingCatsExpansion,
   createInitialExplodingCatsState,
 } from '../../exploding-cats/exploding-cats.state';
 import { ExplodingCatsLogic, executeNope } from './exploding-cats-logic.utils';
+import {
+  executeTargetedAttack,
+  executePersonalAttack,
+  executeAttackOfTheDead,
+  executeSuperSkip,
+  executeReverse,
+} from './exploding-cats-attack.utils';
+import {
+  hasCard,
+  validatePlayCard,
+  validateCatCombo,
+  validateFavor,
+  validateGiveFavorCard,
+  canPlayCatCombo,
+} from './exploding-cats-validation.utils';
 
 // Payload interfaces for type-safe action handling
 interface PlayCardPayload {
@@ -62,8 +78,13 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
     };
   }
 
-  initializeState(playerIds: string[]): ExplodingCatsState {
-    return createInitialExplodingCatsState(playerIds);
+  initializeState(
+    playerIds: string[],
+    config?: Record<string, unknown>,
+  ): ExplodingCatsState {
+    const expansions =
+      (config?.expansions as ExplodingCatsExpansion[] | undefined) ?? [];
+    return createInitialExplodingCatsState(playerIds, expansions);
   }
 
   validateAction(
@@ -76,6 +97,7 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
       state,
       context.userId,
     ) as ExplodingCatsPlayerState;
+
     if (!player || !player.alive) {
       return false;
     }
@@ -83,7 +105,7 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
     // give_favor_card can be done by target player even when not their turn
     if (action === 'give_favor_card') {
       const typedPayload = payload as ExplodingCatsPayload | undefined;
-      return this.validateGiveFavorCard(state, context.userId, typedPayload);
+      return validateGiveFavorCard(state, context.userId, player, typedPayload);
     }
 
     // play_nope can be played by ANY alive player when there's a pending action
@@ -91,7 +113,7 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
       // Must have a pending action to nope
       if (!state.pendingAction) return false;
       // Must have a nope card
-      return this.hasCard(player, 'nope');
+      return hasCard(player, 'nope');
     }
 
     // All other actions require it to be the player's turn
@@ -121,31 +143,59 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
         return true;
 
       case 'play_card':
-        return this.validatePlayCard(state, context.userId, typedPayload?.card);
+        return validatePlayCard(state, player, typedPayload?.card);
 
       case 'play_cat_combo':
-        return this.validateCatCombo(
-          state,
-          context.userId,
-          typedPayload?.cards,
-        );
+        return validateCatCombo(player, typedPayload?.cards);
 
       case 'see_the_future':
-        return this.hasCard(player, 'see_the_future');
+        return hasCard(player, 'see_the_future');
 
-      case 'favor':
-        return this.validateFavor(state, context.userId, typedPayload);
+      case 'favor': {
+        const target = typedPayload?.targetPlayerId
+          ? (this.findPlayer(
+              state,
+              typedPayload.targetPlayerId,
+            ) as ExplodingCatsPlayerState)
+          : null;
+        return validateFavor(state, player, target, typedPayload);
+      }
 
       case 'give_favor_card':
-        return this.validateGiveFavorCard(state, context.userId, typedPayload);
+        return validateGiveFavorCard(
+          state,
+          context.userId,
+          player,
+          typedPayload,
+        );
 
       case 'defuse':
         // Can only defuse if pendingDefuse is set for this player
         return (
           state.pendingDefuse === context.userId &&
-          this.hasCard(player, 'defuse') &&
+          hasCard(player, 'defuse') &&
           typedPayload?.position !== undefined
         );
+
+      // Attack Pack cards
+      case 'targeted_attack':
+        return (
+          hasCard(player, 'targeted_attack') &&
+          state.pendingDraws > 0 &&
+          !!typedPayload?.targetPlayerId
+        );
+
+      case 'personal_attack':
+        return hasCard(player, 'personal_attack') && state.pendingDraws > 0;
+
+      case 'attack_of_the_dead':
+        return hasCard(player, 'attack_of_the_dead') && state.pendingDraws > 0;
+
+      case 'super_skip':
+        return hasCard(player, 'super_skip') && state.pendingDraws > 0;
+
+      case 'reverse':
+        return hasCard(player, 'reverse') && state.pendingDraws > 0;
 
       default:
         return false;
@@ -246,6 +296,27 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
       case 'play_nope':
         return executeNope(newState, context.userId, helpers);
 
+      // Attack Pack cards
+      case 'targeted_attack':
+        return executeTargetedAttack(
+          newState,
+          context.userId,
+          typedPayload!.targetPlayerId!,
+          helpers,
+        );
+
+      case 'personal_attack':
+        return executePersonalAttack(newState, context.userId, helpers);
+
+      case 'attack_of_the_dead':
+        return executeAttackOfTheDead(newState, context.userId, helpers);
+
+      case 'super_skip':
+        return executeSuperSkip(newState, context.userId, helpers);
+
+      case 'reverse':
+        return executeReverse(newState, context.userId, helpers);
+
       default:
         return this.errorResult('Unknown action');
     }
@@ -321,15 +392,14 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
       actions.push('draw_card');
     } else {
       // Can play action cards
-      if (this.hasCard(player, 'attack')) actions.push('play_card:attack');
-      if (this.hasCard(player, 'skip')) actions.push('play_card:skip');
-      if (this.hasCard(player, 'shuffle')) actions.push('play_card:shuffle');
-      if (this.hasCard(player, 'see_the_future'))
-        actions.push('see_the_future');
-      if (this.hasCard(player, 'favor')) actions.push('favor');
+      if (hasCard(player, 'attack')) actions.push('play_card:attack');
+      if (hasCard(player, 'skip')) actions.push('play_card:skip');
+      if (hasCard(player, 'shuffle')) actions.push('play_card:shuffle');
+      if (hasCard(player, 'see_the_future')) actions.push('see_the_future');
+      if (hasCard(player, 'favor')) actions.push('favor');
 
       // Can play cat combos
-      if (this.canPlayCatCombo(player)) actions.push('play_cat_combo');
+      if (canPlayCatCombo(player)) actions.push('play_cat_combo');
     }
 
     return actions;
@@ -364,112 +434,13 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
     return this.successResult(newState);
   }
 
-  // ========== Private Helper Methods ==========
-
-  private hasCard(
-    player: ExplodingCatsPlayerState,
-    card: ExplodingCatsCard,
-  ): boolean {
-    return player.hand.includes(card);
-  }
-
-  private validatePlayCard(
-    state: ExplodingCatsState,
-    playerId: string,
-    card?: ExplodingCatsCard,
-  ): boolean {
-    if (!card) return false;
-    const player = this.findPlayer(state, playerId) as ExplodingCatsPlayerState;
-    if (!player) return false;
-
-    // Skip and Attack can only be played when you have pending draws (instead of drawing)
-    if (card === 'skip' || card === 'attack') {
-      return this.hasCard(player, card) && state.pendingDraws > 0;
-    }
-
-    // Shuffle and Nope can be played anytime during your turn
-    if (card === 'shuffle' || card === 'nope') {
-      return this.hasCard(player, card);
-    }
-
-    return false;
-  }
-
-  private validateCatCombo(
-    state: ExplodingCatsState,
-    playerId: string,
-    cards?: ExplodingCatsCard[],
-  ): boolean {
-    if (!cards || cards.length < 2) return false;
-
-    const player = this.findPlayer(state, playerId) as ExplodingCatsPlayerState;
-    if (!player) return false;
-
-    // All cards must be the same cat card
-    const firstCard = cards[0];
-    return cards.every(
-      (card) => card === firstCard && this.hasCard(player, card),
-    );
-  }
-
-  private validateFavor(
-    state: ExplodingCatsState,
-    playerId: string,
-    payload: unknown,
-  ): boolean {
-    const typedPayload = payload as FavorPayload | undefined;
-    const player = this.findPlayer(state, playerId) as ExplodingCatsPlayerState;
-    if (!player || !this.hasCard(player, 'favor')) return false;
-
-    // Can't play favor if there's a pending favor waiting
-    if (state.pendingFavor) return false;
-
-    if (!typedPayload?.targetPlayerId) return false;
-
-    const target = this.findPlayer(
-      state,
-      typedPayload.targetPlayerId,
-    ) as ExplodingCatsPlayerState;
-    // Target must be alive and have at least one card
-    return target && target.alive && target.hand.length > 0;
-  }
-
-  private validateGiveFavorCard(
-    state: ExplodingCatsState,
-    playerId: string,
-    payload: unknown,
-  ): boolean {
-    // Must have a pending favor targeting this player
-    if (!state.pendingFavor || state.pendingFavor.targetId !== playerId) {
-      return false;
-    }
-
-    const typedPayload = payload as GiveFavorCardPayload | undefined;
-    if (!typedPayload?.cardToGive) return false;
-
-    const player = this.findPlayer(state, playerId) as ExplodingCatsPlayerState;
-    if (!player || !player.alive) return false;
-
-    // Must have the card to give
-    return player.hand.includes(typedPayload.cardToGive);
-  }
-
-  private canPlayCatCombo(player: ExplodingCatsPlayerState): boolean {
-    const catCards = [
-      'tacocat',
-      'hairy_potato_cat',
-      'rainbow_ralphing_cat',
-      'cattermelon',
-      'bearded_cat',
-    ];
-    return catCards.some(
-      (cat) => player.hand.filter((c) => c === cat).length >= 2,
-    );
-  }
-
   protected advanceTurn(state: ExplodingCatsState): void {
     const playerCount = state.playerOrder.length;
-    let nextIndex = (state.currentTurnIndex + 1) % playerCount;
+    const direction = state.playDirection ?? 1;
+
+    // Calculate next index respecting play direction
+    let nextIndex =
+      (state.currentTurnIndex + direction + playerCount) % playerCount;
 
     // Skip eliminated players
     let attempts = 0;
@@ -479,7 +450,7 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
       if (nextPlayer?.alive) {
         break;
       }
-      nextIndex = (nextIndex + 1) % playerCount;
+      nextIndex = (nextIndex + direction + playerCount) % playerCount;
       attempts++;
     }
 

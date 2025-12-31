@@ -15,6 +15,12 @@ export const esMessages = {
       cattermelon: 'Gato Sandía',
       beardedCat: 'Gato Barbudo',
       generic: 'Gato',
+      // Attack Pack cards
+      targetedAttack: 'Ataque Dirigido',
+      personalAttack: 'Ataque Personal',
+      attackOfTheDead: 'Ataque de los Muertos',
+      superSkip: 'Super Saltar',
+      reverse: 'Invertir',
       descriptions: {
         explodingCat: '¡Debes desactivarlo o explotas!',
         defuse: 'Usa para desactivar un Gato Explosivo',
@@ -29,6 +35,12 @@ export const esMessages = {
         rainbowRalphingCat: 'Junta gatos iguales para robar cartas',
         cattermelon: 'Junta gatos iguales para robar cartas',
         beardedCat: 'Junta gatos iguales para robar cartas',
+        // Attack Pack descriptions
+        targetedAttack: 'Elige un jugador para que tome 2 turnos',
+        personalAttack: 'Debes tomar 3 turnos seguidos',
+        attackOfTheDead: 'Siguiente jugador toma 3 turnos por jugador muerto',
+        superSkip: 'Termina TODOS tus turnos restantes sin robar',
+        reverse: 'Invierte la dirección del juego',
       },
     },
     actions: {

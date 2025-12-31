@@ -3,6 +3,7 @@ import { WsException } from '@nestjs/websockets';
 import type {
   ExplodingCatsCard,
   ExplodingCatsCatCard,
+  AttackPackCard,
 } from './exploding-cats/exploding-cats.state';
 
 export const CAT_COMBO_CARD_VALUES = [
@@ -12,6 +13,14 @@ export const CAT_COMBO_CARD_VALUES = [
   'cattermelon',
   'bearded_cat',
 ] as const satisfies ReadonlyArray<ExplodingCatsCatCard>;
+
+export const ATTACK_PACK_CARDS = [
+  'targeted_attack',
+  'personal_attack',
+  'attack_of_the_dead',
+  'super_skip',
+  'reverse',
+] as const satisfies ReadonlyArray<AttackPackCard>;
 
 export const SIMPLE_ACTION_CARDS = [
   'skip',
@@ -31,6 +40,7 @@ export const ALL_EXPLODING_CATS_CARDS = [
   'see_the_future',
   'nope',
   ...CAT_COMBO_CARD_VALUES,
+  ...ATTACK_PACK_CARDS,
 ] as const satisfies ReadonlyArray<ExplodingCatsCard>;
 
 export function isCatComboCard(value: string): value is ExplodingCatsCatCard {

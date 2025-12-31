@@ -38,6 +38,12 @@ import Cattermelon3 from '@/assets/cards/cattermelon-3.svg';
 import BeardedCat1 from '@/assets/cards/bearded-cat-1.svg';
 import BeardedCat2 from '@/assets/cards/bearded-cat-2.svg';
 import BeardedCat3 from '@/assets/cards/bearded-cat-3.svg';
+// Attack Pack cards
+import TargetedAttack1 from '@/assets/cards/targeted-attack-1.svg';
+import PersonalAttack1 from '@/assets/cards/personal-attack-1.svg';
+import AttackOfTheDead1 from '@/assets/cards/attack-of-the-dead-1.svg';
+import SuperSkip1 from '@/assets/cards/super-skip-1.svg';
+import Reverse1 from '@/assets/cards/reverse-1.svg';
 
 const CARD_ARTWORK = {
   'exploding-cat': [ExplodingCat1, ExplodingCat2, ExplodingCat3],
@@ -64,6 +70,12 @@ const CARD_ARTWORK = {
   ],
   cattermelon: [Cattermelon1, Cattermelon2, Cattermelon3],
   'bearded-cat': [BeardedCat1, BeardedCat2, BeardedCat3],
+  // Attack Pack cards
+  'targeted-attack': [TargetedAttack1, TargetedAttack1, TargetedAttack1],
+  'personal-attack': [PersonalAttack1, PersonalAttack1, PersonalAttack1],
+  'attack-of-the-dead': [AttackOfTheDead1, AttackOfTheDead1, AttackOfTheDead1],
+  'super-skip': [SuperSkip1, SuperSkip1, SuperSkip1],
+  reverse: [Reverse1, Reverse1, Reverse1],
 } as const;
 
 export type CardKey = keyof typeof CARD_ARTWORK;

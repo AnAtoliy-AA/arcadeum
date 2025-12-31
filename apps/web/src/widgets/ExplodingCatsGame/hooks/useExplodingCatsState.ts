@@ -81,6 +81,7 @@ export function useExplodingCatsState({
     roomId,
     userId: currentUserId,
     gameType: 'exploding_kittens_v1',
+    setActionBusy,
     onActionComplete: () => setActionBusy(null),
   });
 

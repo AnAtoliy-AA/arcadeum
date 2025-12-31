@@ -65,6 +65,7 @@ export const sharedMessages = {
     create: {
       title: 'Create Game Room',
       sectionGame: 'Select Game',
+      sectionExpansions: 'Expansion Packs',
       sectionDetails: 'Room Details',
       fieldName: 'Room Name',
       namePlaceholder: 'Enter room name',
@@ -76,6 +77,7 @@ export const sharedMessages = {
       notesPlaceholder: 'Add notes...',
       notesAria: 'Additional notes for the room',
       submitCreating: 'Creating...',
+      comingSoon: 'Soon',
     },
     roomPage: {
       loading: 'Loading...',
@@ -155,6 +157,7 @@ export const sharedMessages = {
     create: {
       title: 'Crear Sala de Juego',
       sectionGame: 'Seleccionar Juego',
+      sectionExpansions: 'Paquetes de Expansión',
       sectionDetails: 'Detalles de la Sala',
       fieldName: 'Nombre de la Sala',
       namePlaceholder: 'Ingresa el nombre de la sala',
@@ -166,6 +169,7 @@ export const sharedMessages = {
       notesPlaceholder: 'Agregar notas...',
       notesAria: 'Notas adicionales para la sala',
       submitCreating: 'Creando...',
+      comingSoon: 'Pronto',
     },
     roomPage: {
       loading: 'Cargando...',
@@ -246,6 +250,7 @@ export const sharedMessages = {
     create: {
       title: 'Créer une Salle de Jeu',
       sectionGame: 'Sélectionner un Jeu',
+      sectionExpansions: "Packs d'Extension",
       sectionDetails: 'Détails de la Salle',
       fieldName: 'Nom de la Salle',
       namePlaceholder: 'Entrez le nom de la salle',
@@ -257,6 +262,7 @@ export const sharedMessages = {
       notesPlaceholder: 'Ajouter des notes...',
       notesAria: 'Notes supplémentaires pour la salle',
       submitCreating: 'Création...',
+      comingSoon: 'Bientôt',
     },
     roomPage: {
       loading: 'Chargement...',

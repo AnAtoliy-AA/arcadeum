@@ -18,6 +18,21 @@ import {
   Card,
 } from '@/shared/ui';
 
+type ExpansionId = 'attack' | 'future' | 'theft' | 'chaos' | 'deity';
+
+const EXPANSION_PACKS: {
+  id: ExpansionId;
+  name: string;
+  cardCount: number;
+  available: boolean;
+}[] = [
+  { id: 'attack', name: 'Attack Pack', cardCount: 5, available: true },
+  { id: 'future', name: 'Future Pack', cardCount: 8, available: false },
+  { id: 'theft', name: 'Theft Pack', cardCount: 4, available: false },
+  { id: 'chaos', name: 'Chaos Pack', cardCount: 5, available: false },
+  { id: 'deity', name: 'Deity Pack', cardCount: 4, available: false },
+];
+
 const Form = styled.form`
   display: flex;
   flex-direction: column;
@@ -77,6 +92,49 @@ const ErrorCard = styled(Card)`
   color: #ef4444;
 `;
 
+const ExpansionGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+`;
+
+const ExpansionCheckbox = styled.label<{ $disabled?: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: ${({ theme }) => theme.surfaces.card.background};
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
+  transition: all 0.2s ease;
+
+  &:hover:not([data-disabled='true']) {
+    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+  }
+
+  input {
+    width: 18px;
+    height: 18px;
+    accent-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+  }
+`;
+
+const ExpansionLabel = styled.span`
+  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 500;
+`;
+
+const ExpansionBadge = styled.span`
+  font-size: 0.75rem;
+  color: ${({ theme }) => theme.text.muted};
+  background: ${({ theme }) => theme.surfaces.panel.background};
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+`;
+
 const gamesCatalog = [
   {
     id: 'exploding_kittens_v1',
@@ -114,8 +172,15 @@ export function CreateGameRoomPage() {
   const [visibility, setVisibility] = useState<'public' | 'private'>('public');
   const [maxPlayers, setMaxPlayers] = useState('');
   const [notes, setNotes] = useState('');
+  const [expansions, setExpansions] = useState<ExpansionId[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const toggleExpansion = useCallback((id: ExpansionId) => {
+    setExpansions((prev) =>
+      prev.includes(id) ? prev.filter((e) => e !== id) : [...prev, id],
+    );
+  }, []);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -157,6 +222,10 @@ export function CreateGameRoomPage() {
             visibility,
             maxPlayers: maxPlayersNum,
             notes: notes.trim() || undefined,
+            gameOptions:
+              gameId === 'exploding_kittens_v1' && expansions.length > 0
+                ? { expansions }
+                : undefined,
           }),
         });
 
@@ -176,7 +245,16 @@ export function CreateGameRoomPage() {
         setLoading(false);
       }
     },
-    [gameId, name, visibility, maxPlayers, notes, snapshot.accessToken, router],
+    [
+      gameId,
+      name,
+      visibility,
+      maxPlayers,
+      notes,
+      expansions,
+      snapshot.accessToken,
+      router,
+    ],
   );
 
   return (
@@ -204,6 +282,38 @@ export function CreateGameRoomPage() {
               ))}
             </GameSelector>
           </Section>
+
+          {gameId === 'exploding_kittens_v1' && (
+            <Section
+              title={t('games.create.sectionExpansions') || 'Expansion Packs'}
+            >
+              <ExpansionGrid>
+                {EXPANSION_PACKS.map((pack) => (
+                  <ExpansionCheckbox
+                    key={pack.id}
+                    $disabled={!pack.available}
+                    data-disabled={!pack.available}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={expansions.includes(pack.id)}
+                      onChange={() =>
+                        pack.available && toggleExpansion(pack.id)
+                      }
+                      disabled={!pack.available}
+                    />
+                    <ExpansionLabel>{pack.name}</ExpansionLabel>
+                    <ExpansionBadge>
+                      +{pack.cardCount}{' '}
+                      {pack.available
+                        ? ''
+                        : t('games.create.comingSoon') || 'Soon'}
+                    </ExpansionBadge>
+                  </ExpansionCheckbox>
+                ))}
+              </ExpansionGrid>
+            </Section>
+          )}
 
           <Section title={t('games.create.sectionDetails') || 'Room Details'}>
             <FormGroup

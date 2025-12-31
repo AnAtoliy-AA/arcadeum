@@ -5,7 +5,7 @@ import type { TranslationKey } from '@/shared/lib/useTranslation';
  * Get translation key for a card
  */
 export function getCardTranslationKey(card: ExplodingCatsCard): TranslationKey {
-  const keys: Record<ExplodingCatsCard, TranslationKey> = {
+  const keys: Record<string, TranslationKey> = {
     exploding_cat: 'games.table.cards.explodingCat',
     defuse: 'games.table.cards.defuse',
     attack: 'games.table.cards.attack',
@@ -19,6 +19,12 @@ export function getCardTranslationKey(card: ExplodingCatsCard): TranslationKey {
     rainbow_ralphing_cat: 'games.table.cards.rainbowRalphingCat',
     cattermelon: 'games.table.cards.cattermelon',
     bearded_cat: 'games.table.cards.beardedCat',
+    // Attack Pack
+    targeted_attack: 'games.table.cards.targetedAttack',
+    personal_attack: 'games.table.cards.personalAttack',
+    attack_of_the_dead: 'games.table.cards.attackOfTheDead',
+    super_skip: 'games.table.cards.superSkip',
+    reverse: 'games.table.cards.reverse',
   };
   return keys[card] || 'games.table.cards.generic';
 }
@@ -27,7 +33,7 @@ export function getCardTranslationKey(card: ExplodingCatsCard): TranslationKey {
  * Get emoji for a card type
  */
 export function getCardEmoji(card: ExplodingCatsCard): string {
-  const emojis: Record<ExplodingCatsCard, string> = {
+  const emojis: Record<string, string> = {
     exploding_cat: '💣',
     defuse: '🛡️',
     attack: '⚔️',
@@ -41,6 +47,12 @@ export function getCardEmoji(card: ExplodingCatsCard): string {
     rainbow_ralphing_cat: '🌈',
     cattermelon: '🍉',
     bearded_cat: '🧔',
+    // Attack Pack
+    targeted_attack: '🎯',
+    personal_attack: '💜',
+    attack_of_the_dead: '🧟',
+    super_skip: '🦸',
+    reverse: '🔄',
   };
   return emojis[card] || '🐱';
 }
@@ -49,7 +61,7 @@ export function getCardEmoji(card: ExplodingCatsCard): string {
  * Get translation key for a card description
  */
 export function getCardDescriptionKey(card: ExplodingCatsCard): TranslationKey {
-  const keys: Record<ExplodingCatsCard, TranslationKey> = {
+  const keys: Record<string, TranslationKey> = {
     exploding_cat: 'games.table.cards.descriptions.explodingCat',
     defuse: 'games.table.cards.descriptions.defuse',
     attack: 'games.table.cards.descriptions.attack',
@@ -63,6 +75,12 @@ export function getCardDescriptionKey(card: ExplodingCatsCard): TranslationKey {
     rainbow_ralphing_cat: 'games.table.cards.descriptions.rainbowRalphingCat',
     cattermelon: 'games.table.cards.descriptions.cattermelon',
     bearded_cat: 'games.table.cards.descriptions.beardedCat',
+    // Attack Pack
+    targeted_attack: 'games.table.cards.descriptions.targetedAttack',
+    personal_attack: 'games.table.cards.descriptions.personalAttack',
+    attack_of_the_dead: 'games.table.cards.descriptions.attackOfTheDead',
+    super_skip: 'games.table.cards.descriptions.superSkip',
+    reverse: 'games.table.cards.descriptions.reverse',
   };
   return keys[card] || 'games.table.cards.descriptions.tacocat';
 }

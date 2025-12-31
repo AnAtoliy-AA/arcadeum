@@ -42,7 +42,13 @@ export type ExplodingCatsCard =
   | 'hairy_potato_cat'
   | 'rainbow_ralphing_cat'
   | 'cattermelon'
-  | 'bearded_cat';
+  | 'bearded_cat'
+  // Attack Pack
+  | 'targeted_attack'
+  | 'personal_attack'
+  | 'attack_of_the_dead'
+  | 'super_skip'
+  | 'reverse';
 
 export type ExplodingCatsCatCard =
   | 'tacocat'

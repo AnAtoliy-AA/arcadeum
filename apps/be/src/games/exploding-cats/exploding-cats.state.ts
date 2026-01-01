@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 
+// ===== CAT CARDS (for combos) =====
 export type ExplodingCatsCatCard =
   | 'tacocat'
   | 'hairy_potato_cat'
@@ -7,7 +8,35 @@ export type ExplodingCatsCatCard =
   | 'cattermelon'
   | 'bearded_cat';
 
-// Expansion pack identifiers
+export const CAT_CARDS: ExplodingCatsCatCard[] = [
+  'tacocat',
+  'hairy_potato_cat',
+  'rainbow_ralphing_cat',
+  'cattermelon',
+  'bearded_cat',
+];
+
+// ===== BASE GAME CARDS =====
+export type BaseActionCard =
+  | 'attack'
+  | 'skip'
+  | 'favor'
+  | 'shuffle'
+  | 'see_the_future'
+  | 'nope';
+
+export const BASE_ACTION_CARDS: BaseActionCard[] = [
+  'attack',
+  'skip',
+  'favor',
+  'shuffle',
+  'see_the_future',
+  'nope',
+];
+
+export const BASE_SPECIAL_CARDS = ['exploding_cat', 'defuse'] as const;
+
+// ===== EXPANSION PACK IDENTIFIERS =====
 export type ExplodingCatsExpansion =
   | 'attack'
   | 'future'
@@ -15,7 +44,7 @@ export type ExplodingCatsExpansion =
   | 'chaos'
   | 'deity';
 
-// Attack Pack cards
+// ===== ATTACK PACK EXPANSION CARDS =====
 export type AttackPackCard =
   | 'targeted_attack'
   | 'personal_attack'
@@ -23,15 +52,19 @@ export type AttackPackCard =
   | 'super_skip'
   | 'reverse';
 
+export const ATTACK_PACK_CARDS: AttackPackCard[] = [
+  'targeted_attack',
+  'personal_attack',
+  'attack_of_the_dead',
+  'super_skip',
+  'reverse',
+];
+
+// ===== COMBINED CARD TYPE =====
 export type ExplodingCatsCard =
   | 'exploding_cat'
   | 'defuse'
-  | 'attack'
-  | 'skip'
-  | 'favor'
-  | 'shuffle'
-  | 'see_the_future'
-  | 'nope'
+  | BaseActionCard
   | ExplodingCatsCatCard
   | AttackPackCard;
 

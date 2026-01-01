@@ -150,6 +150,7 @@ export class ExplodingCatsLogic {
     state.pendingAction = null;
 
     switch (card) {
+      // ===== BASE GAME CARDS =====
       case 'attack':
         // Set pending action so it can be noped
         state.pendingAction = {
@@ -200,7 +201,7 @@ export class ExplodingCatsLogic {
         );
         break;
 
-      // Attack Pack cards - delegate to their executors
+      // ===== ATTACK PACK EXPANSION CARDS =====
       case 'reverse':
         // Put card back in hand (executeReverse will remove it)
         player.hand.push(card);

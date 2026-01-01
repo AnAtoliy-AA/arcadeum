@@ -19,7 +19,7 @@ export function getCardTranslationKey(card: ExplodingCatsCard): TranslationKey {
     rainbow_ralphing_cat: 'games.table.cards.rainbowRalphingCat',
     cattermelon: 'games.table.cards.cattermelon',
     bearded_cat: 'games.table.cards.beardedCat',
-    // Attack Pack
+    // ===== ATTACK PACK EXPANSION CARDS =====
     targeted_attack: 'games.table.cards.targetedAttack',
     personal_attack: 'games.table.cards.personalAttack',
     attack_of_the_dead: 'games.table.cards.attackOfTheDead',
@@ -47,7 +47,7 @@ export function getCardEmoji(card: ExplodingCatsCard): string {
     rainbow_ralphing_cat: '🌈',
     cattermelon: '🍉',
     bearded_cat: '🧔',
-    // Attack Pack
+    // ===== ATTACK PACK EXPANSION CARDS =====
     targeted_attack: '🎯',
     personal_attack: '💜',
     attack_of_the_dead: '🧟',
@@ -75,7 +75,7 @@ export function getCardDescriptionKey(card: ExplodingCatsCard): TranslationKey {
     rainbow_ralphing_cat: 'games.table.cards.descriptions.rainbowRalphingCat',
     cattermelon: 'games.table.cards.descriptions.cattermelon',
     bearded_cat: 'games.table.cards.descriptions.beardedCat',
-    // Attack Pack
+    // ===== ATTACK PACK EXPANSION CARDS =====
     targeted_attack: 'games.table.cards.descriptions.targetedAttack',
     personal_attack: 'games.table.cards.descriptions.personalAttack',
     attack_of_the_dead: 'games.table.cards.descriptions.attackOfTheDead',

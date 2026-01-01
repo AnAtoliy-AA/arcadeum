@@ -296,7 +296,7 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
       case 'play_nope':
         return executeNope(newState, context.userId, helpers);
 
-      // Attack Pack cards
+      // ===== ATTACK PACK EXPANSION CARDS =====
       case 'targeted_attack':
         return executeTargetedAttack(
           newState,

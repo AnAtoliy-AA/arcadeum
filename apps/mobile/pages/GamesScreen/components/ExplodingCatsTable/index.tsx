@@ -16,12 +16,13 @@ import {
 import { useTranslation } from '@/lib/i18n';
 
 // Import local modules
+import { CARD_ART_SETTINGS } from './constants';
 import type {
   ExplodingCatsTableProps,
-  LogVisibility,
+  ChatScope,
   ExplodingCatsLogEntry,
+  ExplodingCatsCard,
 } from './types';
-import { CARD_ART_SETTINGS } from './constants';
 import {
   useGameState,
   useCardAnimations,
@@ -133,10 +134,19 @@ export function ExplodingCatsTable({
   const hasSkip = (selfPlayer?.hand ?? []).includes('skip');
   const hasAttack = (selfPlayer?.hand ?? []).includes('attack');
   const hasNope = (selfPlayer?.hand ?? []).includes('nope');
+  const hasSeeTheFuture = (selfPlayer?.hand ?? []).includes('see_the_future');
+  const hasShuffle = (selfPlayer?.hand ?? []).includes('shuffle');
   const canPlaySkip =
     isSessionActive && isMyTurn && hasSkip && (selfPlayer?.alive ?? false);
   const canPlayAttack =
     isSessionActive && isMyTurn && hasAttack && (selfPlayer?.alive ?? false);
+  const canPlaySeeTheFuture =
+    isSessionActive &&
+    isMyTurn &&
+    hasSeeTheFuture &&
+    (selfPlayer?.alive ?? false);
+  const canPlayShuffle =
+    isSessionActive && isMyTurn && hasShuffle && (selfPlayer?.alive ?? false);
   // Nope can be played anytime when there's a pending action (handled by backend)
   // For now, show button if player has nope and is in an active session
   const canPlayNope =
@@ -163,11 +173,36 @@ export function ExplodingCatsTable({
     dependencyKey: logs.length,
   });
 
+  const labels = useGameLabels(
+    t,
+    session,
+    room ?? undefined,
+    isHost,
+    pendingDraws,
+  );
+
   const formatLogMessage = (message: string) => {
     if (!message) {
       return message;
     }
     let next = message;
+
+    // Handle seeTheFuture.reveal:cards:card1,cards:card2,cards:card3 format
+    if (next.startsWith('seeTheFuture.reveal:')) {
+      const cardKeysStr = next.slice('seeTheFuture.reveal:'.length);
+      const cardKeys = cardKeysStr.split(',');
+      const translatedCards = cardKeys.map((key) => {
+        // key format is "cards:card_type"
+        if (key.startsWith('cards:')) {
+          const cardType = key.slice('cards:'.length);
+          return labels.translateCardName(cardType as ExplodingCatsCard);
+        }
+        return key;
+      });
+      return `${t('games.table.cards.seeTheFuture')} 🔮: ${translatedCards.join(', ')}`;
+    }
+
+    // Replace player IDs with display names
     playerNameMap.forEach((displayName, playerId) => {
       if (playerId && displayName && playerId !== displayName) {
         next = next.split(playerId).join(displayName);
@@ -176,18 +211,11 @@ export function ExplodingCatsTable({
     return next;
   };
 
-  const labels = useGameLabels(
-    t,
-    session,
-    room ?? undefined,
-    isHost,
-    pendingDraws,
-  );
   const messageHandling = useMessageHandling(
     session?.id,
     isCurrentUserPlayer,
     onPostHistoryNote as
-      | ((message: string, visibility: LogVisibility) => Promise<void>)
+      | ((message: string, visibility: ChatScope) => Promise<void>)
       | undefined,
   );
   const catComboHandling = useCatComboHandling(
@@ -206,6 +234,8 @@ export function ExplodingCatsTable({
     selfPlayer?.alive ?? false,
     canPlaySkip,
     canPlayAttack,
+    canPlaySeeTheFuture,
+    canPlayShuffle,
     actionBusy,
     gridCardWidth,
     gridCardHeight,
@@ -215,6 +245,7 @@ export function ExplodingCatsTable({
     labels.translateCardName,
     labels.translateCardDescription,
     onPlay,
+    onPlaySeeTheFuture,
     styles,
   );
 
@@ -270,10 +301,12 @@ export function ExplodingCatsTable({
             canPlaySkip={canPlaySkip}
             canPlayAttack={canPlayAttack}
             canPlayNope={canPlayNope}
+            canPlaySeeTheFuture={canPlaySeeTheFuture}
             actionBusy={actionBusy}
             onDraw={onDraw}
             onPlay={onPlay}
             onPlayNope={onPlayNope}
+            onPlaySeeTheFuture={onPlaySeeTheFuture}
             renderHandCard={renderHandCard}
             handScrollRef={handScrollRef}
             gridContainerWidth={layout.gridContainerWidth}
@@ -432,3 +465,5 @@ export function ExplodingCatsTable({
     </>
   );
 }
+
+export type { ChatScope };

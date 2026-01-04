@@ -2,7 +2,7 @@
 
 import { useRef, useCallback } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import type { ExplodingCatsGameProps } from '../types';
+import type { ExplodingCatsGameProps, ExplodingCatsCard } from '../types';
 import { getCardEmoji, getCardTranslationKey } from '../lib/cardUtils';
 import { useDisplayNames } from '../lib/displayUtils';
 import {
@@ -116,11 +116,18 @@ export default function ExplodingCatsGame({
   });
 
   const youLabel = t('games.table.players.you');
+  const seeTheFutureLabel = t('games.table.cards.seeTheFuture');
+  const translateCardType = useCallback(
+    (cardType: ExplodingCatsCard) => t(getCardTranslationKey(cardType)),
+    [t],
+  );
   const { resolveDisplayName, formatLogMessage } = useDisplayNames({
     currentUserId,
     room,
     snapshot,
     youLabel,
+    translateCardType,
+    seeTheFutureLabel,
   });
 
   const handleConfirmCatCombo = useCallback(() => {

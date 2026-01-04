@@ -18,6 +18,7 @@ import {
 } from './games.gateway.utils';
 
 import { ExplodingCatsService } from './exploding-cats/exploding-cats.service';
+import { ChatScope } from './engines';
 
 @WebSocketGateway({
   namespace: 'games',
@@ -289,15 +290,15 @@ export class ExplodingCatsGateway {
   }
 
   @SubscribeMessage('games.session.history_note')
-  async handleSessionHistoryNote(
-    @ConnectedSocket() client: Socket,
+  async handleHistoryNote(
     @MessageBody()
     payload: {
-      roomId?: string;
-      userId?: string;
-      message?: string;
-      scope?: string;
+      roomId: string;
+      userId: string;
+      message: string;
+      scope: ChatScope;
     },
+    @ConnectedSocket() client: Socket,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const message = extractString(payload, 'message');
@@ -306,14 +307,14 @@ export class ExplodingCatsGateway {
         ? payload.scope.trim().toLowerCase()
         : 'all';
 
-    const scope = scopeRaw === 'players' ? 'players' : 'all';
+    const scope = ['players', 'private'].includes(scopeRaw) ? scopeRaw : 'all';
 
     try {
       await this.explodingCatsService.postHistoryNote(
         userId,
         roomId,
         message,
-        scope,
+        scope as ChatScope,
       );
       client.emit('games.session.history_note.ack', {
         roomId,

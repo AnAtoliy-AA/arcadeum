@@ -35,6 +35,9 @@ export const LogEntry = styled.div<{ $type?: string; $scope?: string }>`
   padding: 0.5rem;
   border-radius: 6px;
   background: ${({ $type, $scope, theme }) => {
+    // Private messages get a subtle teal/green tint
+    if ($scope === 'private')
+      return `linear-gradient(135deg, rgba(20, 184, 166, 0.15), rgba(16, 185, 129, 0.1))`;
     // Player-only messages get a subtle purple/pink tint
     if ($scope === 'players')
       return `linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(236, 72, 153, 0.1))`;
@@ -45,6 +48,8 @@ export const LogEntry = styled.div<{ $type?: string; $scope?: string }>`
   color: ${({ theme }) => theme.text.secondary};
   border-left: 3px solid
     ${({ $type, $scope }) => {
+      // Private messages get teal border
+      if ($scope === 'private') return '#14B8A6';
       // Player-only messages get pink/purple border
       if ($scope === 'players') return '#EC4899';
       if ($type === 'action') return '#3B82F6';
@@ -52,6 +57,20 @@ export const LogEntry = styled.div<{ $type?: string; $scope?: string }>`
       return 'transparent';
     }};
   padding-left: 0.75rem;
+  ${({ $scope }) =>
+    $scope === 'private' &&
+    `
+    position: relative;
+    &::after {
+      content: '👁️';
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.7rem;
+      opacity: 0.6;
+    }
+  `}
   ${({ $scope }) =>
     $scope === 'players' &&
     `

@@ -5,6 +5,7 @@ import { GameHistoryService } from '../history/game-history.service';
 import { GamesRealtimeService } from '../games.realtime.service';
 import { ExplodingCatsActionsService } from '../actions/exploding-cats/exploding-cats-actions.service';
 import { StartGameSessionResult } from '../games.types';
+import { ChatScope } from '../engines/base/game-engine.interface';
 
 @Injectable()
 export class ExplodingCatsService {
@@ -117,7 +118,20 @@ export class ExplodingCatsService {
     });
 
     await this.roomsService.updateRoomStatus(effectiveRoomId, 'in_progress');
-    this.realtimeService.emitGameStarted(room, session);
+    await this.realtimeService.emitGameStarted(
+      room,
+      session,
+      async (s, pId) => {
+        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
+          s.id,
+          pId,
+        );
+        if (sanitized && typeof sanitized === 'object') {
+          return { ...s, state: sanitized as Record<string, unknown> };
+        }
+        return s;
+      },
+    );
 
     return { room, session };
   }
@@ -129,12 +143,23 @@ export class ExplodingCatsService {
     userId: string,
     roomId: string,
     message: string,
-    scope: 'all' | 'players' = 'all',
+    scope: ChatScope,
   ) {
     await this.historyService.postHistoryNote(roomId, userId, message, scope);
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (session) {
-      this.realtimeService.emitSessionSnapshot(roomId, session);
+      await this.realtimeService.emitSessionSnapshot(
+        roomId,
+        session,
+        async (s, pId) => {
+          const sanitized =
+            await this.sessionsService.getSanitizedStateForPlayer(s.id, pId);
+          if (sanitized && typeof sanitized === 'object') {
+            return { ...s, state: sanitized as Record<string, unknown> };
+          }
+          return s;
+        },
+      );
     }
   }
 

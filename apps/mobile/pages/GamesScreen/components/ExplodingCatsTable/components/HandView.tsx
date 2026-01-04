@@ -23,10 +23,12 @@ interface HandViewProps {
   canPlaySkip: boolean;
   canPlayAttack: boolean;
   canPlayNope: boolean;
+  canPlaySeeTheFuture: boolean;
   actionBusy: string | null;
   onDraw: () => void;
   onPlay: (card: 'skip' | 'attack') => void;
   onPlayNope: () => void;
+  onPlaySeeTheFuture: () => void;
   // Card rendering props
   renderHandCard: (
     card: ExplodingCatsCard,
@@ -52,10 +54,12 @@ export function HandView({
   canPlaySkip,
   canPlayAttack,
   canPlayNope,
+  canPlaySeeTheFuture,
   actionBusy,
   onDraw,
   onPlay,
   onPlayNope,
+  onPlaySeeTheFuture,
   renderHandCard,
   handScrollRef,
   onGridContainerLayout,
@@ -355,6 +359,37 @@ export function HandView({
                 />
                 <ThemedText style={styles.secondaryButtonText}>
                   {t('games.table.actions.playNope')}
+                </ThemedText>
+              </>
+            )}
+          </TouchableOpacity>
+        ) : null}
+
+        {canPlaySeeTheFuture ? (
+          <TouchableOpacity
+            style={[
+              styles.secondaryButton,
+              actionBusy && actionBusy !== 'see_the_future'
+                ? styles.secondaryButtonDisabled
+                : null,
+            ]}
+            onPress={onPlaySeeTheFuture}
+            disabled={actionBusy === 'see_the_future'}
+          >
+            {actionBusy === 'see_the_future' ? (
+              <ActivityIndicator
+                size="small"
+                color={styles.secondaryButtonText.color as string}
+              />
+            ) : (
+              <>
+                <IconSymbol
+                  name="eye.fill"
+                  size={16}
+                  color={styles.secondaryButtonText.color as string}
+                />
+                <ThemedText style={styles.secondaryButtonText}>
+                  {t('games.table.cards.seeTheFuture')}
                 </ThemedText>
               </>
             )}

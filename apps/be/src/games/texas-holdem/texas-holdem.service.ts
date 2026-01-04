@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ChatScope } from '../engines/base/game-engine.interface';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import { GameSessionsService } from '../sessions/game-sessions.service';
 import { GameHistoryService } from '../history/game-history.service';
@@ -91,7 +92,20 @@ export class TexasHoldemService {
     });
 
     await this.roomsService.updateRoomStatus(effectiveRoomId, 'in_progress');
-    this.realtimeService.emitGameStarted(room, session);
+    await this.realtimeService.emitGameStarted(
+      room,
+      session,
+      async (s, pId) => {
+        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
+          s.id,
+          pId,
+        );
+        if (sanitized && typeof sanitized === 'object') {
+          return { ...s, state: sanitized as Record<string, unknown> };
+        }
+        return s;
+      },
+    );
 
     return { room, session };
   }
@@ -118,18 +132,48 @@ export class TexasHoldemService {
       payload,
     });
 
-    this.realtimeService.emitActionExecuted(updatedSession, action, userId);
+    await this.realtimeService.emitActionExecuted(
+      updatedSession,
+      action,
+      userId,
+      async (s, pId) => {
+        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
+          s.id,
+          pId,
+        );
+        if (sanitized && typeof sanitized === 'object') {
+          return { ...s, state: sanitized as Record<string, unknown> };
+        }
+        return s;
+      },
+    );
     return updatedSession;
   }
 
   /**
    * Post a note to Texas Hold'em history
    */
-  async postHistoryNote(userId: string, roomId: string, message: string) {
-    await this.historyService.postHistoryNote(roomId, userId, message);
+  async postHistoryNote(
+    userId: string,
+    roomId: string,
+    message: string,
+    scope: ChatScope = 'all',
+  ) {
+    await this.historyService.postHistoryNote(roomId, userId, message, scope);
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (session) {
-      this.realtimeService.emitSessionSnapshot(roomId, session);
+      await this.realtimeService.emitSessionSnapshot(
+        roomId,
+        session,
+        async (s, pId) => {
+          const sanitized =
+            await this.sessionsService.getSanitizedStateForPlayer(s.id, pId);
+          if (sanitized && typeof sanitized === 'object') {
+            return { ...s, state: sanitized as Record<string, unknown> };
+          }
+          return s;
+        },
+      );
     }
   }
 }

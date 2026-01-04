@@ -3,7 +3,11 @@ import {
   ExplodingCatsCard,
   ExplodingCatsPlayerState,
 } from '../../exploding-cats/exploding-cats.state';
-import { GameActionResult, GameLogEntry } from '../base/game-engine.interface';
+import {
+  GameActionResult,
+  GameLogEntry,
+  ChatScope,
+} from '../base/game-engine.interface';
 import {
   executePersonalAttack,
   executeAttackOfTheDead,
@@ -14,7 +18,7 @@ import {
 export { executeNope } from './exploding-cats-nope.utils';
 
 export interface LogEntryOptions {
-  scope?: 'all' | 'players' | 'private';
+  scope?: ChatScope;
   senderId?: string | null;
   senderName?: string | null;
 }
@@ -306,11 +310,23 @@ export class ExplodingCatsLogic {
 
     const topCards = state.deck.slice(0, 3);
 
+    // Public log - just says player used the card (no card reveal)
+    helpers.addLog(
+      state,
+      helpers.createLogEntry('action', `Used See the Future 🔮`, {
+        scope: 'all',
+        senderId: playerId,
+      }),
+    );
+
+    // Private log - shows actual cards only to the player who used it
+    // Use format "cards:card_type" so frontend can translate
+    const cardKeys = topCards.map((card) => `cards:${card}`);
     helpers.addLog(
       state,
       helpers.createLogEntry(
         'action',
-        `Saw the future: ${topCards.join(', ')}`,
+        `seeTheFuture.reveal:${cardKeys.join(',')}`,
         {
           scope: 'private',
           senderId: playerId,

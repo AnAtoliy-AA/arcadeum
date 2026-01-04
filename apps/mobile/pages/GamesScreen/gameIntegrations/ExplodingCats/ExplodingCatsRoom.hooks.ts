@@ -9,7 +9,7 @@ import {
 import type { SessionTokensSnapshot } from '@/stores/sessionTokens';
 import type {
   ExplodingCatsCatComboInput,
-  LogVisibility,
+  ChatScope,
 } from '../../components/ExplodingCatsTable';
 import type { ActionBusyType } from './ExplodingCatsRoom.types';
 import { useTranslation } from '@/lib/i18n';
@@ -252,7 +252,7 @@ export function useGameActions({
   );
 
   const handlePostHistoryNote = useCallback(
-    (message: string, scope: LogVisibility) => {
+    (message: string, scope: ChatScope) => {
       if (!room?.id || !tokens.userId) {
         Alert.alert(
           t('games.alerts.signInRequiredTitle'),

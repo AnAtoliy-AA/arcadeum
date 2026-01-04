@@ -4,7 +4,8 @@ import type {
   ExplodingCatsCard,
   ExplodingCatsPlayerState,
   ExplodingCatsCatCard,
-} from "@/shared/types/games";
+  ChatScope,
+} from '@/shared/types/games';
 
 /**
  * Props for the ExplodingCatsGame component
@@ -15,7 +16,7 @@ export interface ExplodingCatsGameProps {
   session: unknown | null;
   currentUserId: string | null;
   isHost: boolean;
-  onPostHistoryNote?: (message: string, scope: "all" | "players") => void;
+  onPostHistoryNote?: (message: string, scope: 'all' | 'players') => void;
   config?: unknown;
 }
 
@@ -24,7 +25,7 @@ export interface ExplodingCatsGameProps {
  */
 export interface CatComboModalState {
   cat: ExplodingCatsCatCard;
-  availableModes: ("pair" | "trio")[];
+  availableModes: ('pair' | 'trio')[];
 }
 
 /**
@@ -41,26 +42,27 @@ export type {
   ExplodingCatsCard,
   ExplodingCatsPlayerState,
   ExplodingCatsCatCard,
+  ChatScope,
 };
 
 /**
  * List of all cat cards
  */
 export const CAT_CARDS: ExplodingCatsCatCard[] = [
-  "tacocat",
-  "hairy_potato_cat",
-  "rainbow_ralphing_cat",
-  "cattermelon",
-  "bearded_cat",
+  'tacocat',
+  'hairy_potato_cat',
+  'rainbow_ralphing_cat',
+  'cattermelon',
+  'bearded_cat',
 ];
 
 /**
  * List of all game cards
  */
 export const ALL_GAME_CARDS: ExplodingCatsCard[] = [
-  "exploding_cat",
-  "defuse",
-  "attack",
-  "skip",
+  'exploding_cat',
+  'defuse',
+  'attack',
+  'skip',
   ...CAT_CARDS,
 ];

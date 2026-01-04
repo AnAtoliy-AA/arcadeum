@@ -1,7 +1,7 @@
 'use client';
 
 import type { RefObject } from 'react';
-import type { ExplodingCatsSnapshot } from '../types';
+import type { ExplodingCatsSnapshot, ChatScope } from '../types';
 import {
   ChatCard,
   ChatMessages,
@@ -14,8 +14,6 @@ import {
   ChatSendButton,
   InfoTitle,
 } from './styles';
-
-export type ChatScope = 'all' | 'players';
 
 type GameLog = NonNullable<ExplodingCatsSnapshot['logs']>[number];
 
@@ -94,6 +92,13 @@ export function ChatSection({
         >
           {t('games.table.chat.scope.players') || 'Players'}
         </ScopeOption>
+        <ScopeOption
+          type="button"
+          $active={chatScope === 'private'}
+          onClick={() => onChatScopeChange('private')}
+        >
+          {t('games.table.chat.scope.private') || 'Private'}
+        </ScopeOption>
       </ScopeToggle>
       <ChatInput
         value={chatMessage}
@@ -103,8 +108,11 @@ export function ChatSection({
         placeholder={
           chatScope === 'all'
             ? t('games.table.chat.placeholderAll') || 'Send a note to everyone'
-            : t('games.table.chat.placeholderPlayers') ||
-              'Send a note to players'
+            : chatScope === 'players'
+              ? t('games.table.chat.placeholderPlayers') ||
+                'Send a note to players'
+              : t('games.table.chat.placeholderPrivate') ||
+                'Send a private note to yourself'
         }
         disabled={!currentUserId}
       />
@@ -112,7 +120,9 @@ export function ChatSection({
         <ChatHint>
           {chatScope === 'all'
             ? t('games.table.chat.hintAll') || 'Visible to everyone'
-            : t('games.table.chat.hintPlayers') || 'Visible to players only'}
+            : chatScope === 'players'
+              ? t('games.table.chat.hintPlayers') || 'Visible to players only'
+              : t('games.table.chat.hintPrivate') || 'Only you can see this'}
         </ChatHint>
         <ChatSendButton
           type="button"

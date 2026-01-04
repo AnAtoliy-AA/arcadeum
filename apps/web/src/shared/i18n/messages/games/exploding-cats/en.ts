@@ -101,9 +101,11 @@ export const enMessages = {
       hide: 'Hide Chat',
       placeholderAll: 'Send a note to everyone at the table',
       placeholderPlayers: 'Send a note only to active players',
+      placeholderPrivate: 'Write a private note for yourself',
       hintAll: 'Visible to everyone in room',
       hintPlayers: 'Visible to alive players only',
-      scope: { all: 'All', players: 'Players' },
+      hintPrivate: 'Only you can see this',
+      scope: { all: 'All', players: 'Players', private: 'Private' },
     },
     eliminated: {
       title: 'You have been eliminated!',

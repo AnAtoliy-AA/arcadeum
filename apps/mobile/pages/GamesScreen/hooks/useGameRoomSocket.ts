@@ -135,6 +135,14 @@ export function useGameRoomSocket({
       ref?.onCatComboPlayed?.();
     };
 
+    // Generic handler for action completion events (draw, action.played, etc.)
+    const handleActionCompleted = (payload: { roomId?: string }) => {
+      if (payload?.roomId && payload.roomId !== roomId) {
+        return;
+      }
+      integrationRef.current?.onSessionSnapshot();
+    };
+
     const handleTexasHoldemStarted = (payload: {
       room: GameRoomSummary;
       session: GameSessionSummary;
@@ -211,6 +219,7 @@ export function useGameRoomSocket({
     const wrappedHandleSnapshot = decryptHandler(handleSnapshot);
     const wrappedHandleSessionStarted = decryptHandler(handleSessionStarted);
     const wrappedHandleCatComboPlayed = decryptHandler(handleCatComboPlayed);
+    const wrappedHandleActionCompleted = decryptHandler(handleActionCompleted);
     const wrappedHandleTexasHoldemStarted = decryptHandler(
       handleTexasHoldemStarted,
     );
@@ -227,6 +236,16 @@ export function useGameRoomSocket({
     socket.on('games.session.snapshot', wrappedHandleSnapshot);
     socket.on('games.session.started', wrappedHandleSessionStarted);
     socket.on('games.session.cat_combo.played', wrappedHandleCatComboPlayed);
+    // Exploding Cats action completion events
+    socket.on('games.session.drawn', wrappedHandleActionCompleted);
+    socket.on('games.session.action.played', wrappedHandleActionCompleted);
+    socket.on(
+      'games.session.see_the_future.played',
+      wrappedHandleActionCompleted,
+    );
+    socket.on('games.session.favor.played', wrappedHandleActionCompleted);
+    socket.on('games.session.defuse.played', wrappedHandleActionCompleted);
+    socket.on('games.session.nope.played', wrappedHandleActionCompleted);
     socket.on('games.session.holdem_started', wrappedHandleTexasHoldemStarted);
     socket.on(
       'games.session.holdem_action.performed',
@@ -247,6 +266,16 @@ export function useGameRoomSocket({
       socket.off('games.session.snapshot', wrappedHandleSnapshot);
       socket.off('games.session.started', wrappedHandleSessionStarted);
       socket.off('games.session.cat_combo.played', wrappedHandleCatComboPlayed);
+      // Exploding Cats action completion events
+      socket.off('games.session.drawn', wrappedHandleActionCompleted);
+      socket.off('games.session.action.played', wrappedHandleActionCompleted);
+      socket.off(
+        'games.session.see_the_future.played',
+        wrappedHandleActionCompleted,
+      );
+      socket.off('games.session.favor.played', wrappedHandleActionCompleted);
+      socket.off('games.session.defuse.played', wrappedHandleActionCompleted);
+      socket.off('games.session.nope.played', wrappedHandleActionCompleted);
       socket.off(
         'games.session.holdem_started',
         wrappedHandleTexasHoldemStarted,

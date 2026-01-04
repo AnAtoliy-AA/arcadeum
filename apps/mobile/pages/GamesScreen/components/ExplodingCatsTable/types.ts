@@ -67,7 +67,7 @@ export interface ExplodingCatsPlayerState {
   alive: boolean;
 }
 
-export type LogVisibility = 'all' | 'players';
+export type ChatScope = 'all' | 'players' | 'private';
 
 export interface ExplodingCatsLogEntry {
   id: string;
@@ -76,7 +76,7 @@ export interface ExplodingCatsLogEntry {
   createdAt: string;
   senderId?: string | null;
   senderName?: string | null;
-  scope?: LogVisibility;
+  scope?: ChatScope;
 }
 
 export interface ExplodingCatsSnapshot {
@@ -123,7 +123,7 @@ export interface ExplodingCatsTableProps {
   onPlayDefuse: (position: number) => void;
   onPostHistoryNote?: (
     message: string,
-    scope: LogVisibility,
+    scope: ChatScope,
   ) => Promise<void> | void;
   fullScreen?: boolean;
   tableOnly?: boolean;

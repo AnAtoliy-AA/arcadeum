@@ -8,5 +8,5 @@ export type {
   ExplodingCatsPlayerState,
   ExplodingCatsLogEntry,
   ExplodingCatsSnapshot,
-  LogVisibility,
+  ChatScope,
 } from './ExplodingCatsTable/types';

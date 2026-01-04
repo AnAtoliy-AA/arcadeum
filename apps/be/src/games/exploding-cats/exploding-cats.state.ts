@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import { ChatScope } from '../engines/base/game-engine.interface';
 
 // ===== CAT CARDS (for combos) =====
 export type ExplodingCatsCatCard =
@@ -75,14 +76,12 @@ export interface ExplodingCatsPlayerState {
   [key: string]: unknown;
 }
 
-export type ExplodingCatsLogVisibility = 'all' | 'players' | 'private';
-
 export interface ExplodingCatsLogEntry {
   id: string;
   type: 'system' | 'action' | 'message';
   message: string;
   createdAt: string;
-  scope?: ExplodingCatsLogVisibility;
+  scope?: ChatScope;
   senderId?: string | null;
   senderName?: string | null;
 }

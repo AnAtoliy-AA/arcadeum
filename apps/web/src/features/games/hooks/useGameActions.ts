@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { gameSocket } from '@/shared/lib/socket';
+import type { ChatScope } from '@/shared/types/games';
 
 export type GameType = 'exploding_kittens_v1' | 'texas_holdem_v1' | null;
 
@@ -36,7 +37,7 @@ interface UseGameActionsReturn {
   ) => void;
 
   // Common actions
-  postHistoryNote: (message: string, scope: 'all' | 'players') => void;
+  postHistoryNote: (message: string, scope: ChatScope) => void;
 }
 
 /**
@@ -222,7 +223,7 @@ export function useGameActions(
 
   // Common actions
   const postHistoryNote = useCallback(
-    (message: string, scope: 'all' | 'players') => {
+    (message: string, scope: ChatScope) => {
       if (!userId) return;
 
       const event =

@@ -1,17 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { LogVisibility } from '../types';
+import type { ChatScope } from '../types';
 
 export function useMessageHandling(
   sessionId: string | undefined,
   isCurrentUserPlayer: boolean,
-  onPostHistoryNote?: (
-    message: string,
-    visibility: LogVisibility,
-  ) => Promise<void>,
+  onPostHistoryNote?: (message: string, visibility: ChatScope) => Promise<void>,
 ) {
   const [messageDraft, setMessageDraft] = useState('');
-  const [messageVisibility, setMessageVisibility] =
-    useState<LogVisibility>('all');
+  const [messageVisibility, setMessageVisibility] = useState<ChatScope>('all');
   const [historySending, setHistorySending] = useState(false);
 
   const trimmedMessage = messageDraft.trim();
@@ -50,7 +46,11 @@ export function useMessageHandling(
   ]);
 
   const toggleMessageVisibility = useCallback(() => {
-    setMessageVisibility((prev) => (prev === 'all' ? 'players' : 'all'));
+    setMessageVisibility((prev: ChatScope) => {
+      if (prev === 'all') return 'players';
+      if (prev === 'players') return 'private';
+      return 'all';
+    });
   }, []);
 
   return {

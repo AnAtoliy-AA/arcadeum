@@ -18,12 +18,14 @@ export interface GamePlayerState {
   [key: string]: unknown;
 }
 
+export type ChatScope = 'all' | 'players' | 'private';
+
 export interface GameLogEntry {
   id: string;
   type: 'system' | 'action' | 'message';
   message: string;
   createdAt: string;
-  scope?: 'all' | 'players' | 'private';
+  scope?: ChatScope;
   senderId?: string | null;
   senderName?: string | null;
 }

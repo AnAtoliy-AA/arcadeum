@@ -6,6 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { GameSession } from '../schemas/game-session.schema';
+import { ChatScope } from '../engines/base/game-engine.interface';
 import { GameRoom } from '../schemas/game-room.schema';
 import { GameHistoryHidden } from '../schemas/game-history-hidden.schema';
 import { User } from '../../auth/schemas/user.schema';
@@ -100,7 +101,7 @@ export class GameHistoryService {
       type: 'system' | 'action' | 'message';
       message: string;
       createdAt: string;
-      scope?: 'all' | 'players' | 'private';
+      scope?: ChatScope;
       sender?: HistoryParticipantSummary;
     }>;
   }> {
@@ -137,7 +138,7 @@ export class GameHistoryService {
       type: 'system' | 'action' | 'message';
       message: string;
       createdAt: string;
-      scope?: 'all' | 'players' | 'private';
+      scope?: ChatScope;
       sender?: HistoryParticipantSummary;
     }> = [];
 
@@ -145,6 +146,11 @@ export class GameHistoryService {
       const state = latestSession.state as unknown as BaseGameState;
       const sessionLogs = state.logs || [];
       for (const log of sessionLogs) {
+        // Filter private messages meant for others
+        if (log.scope === 'private' && log.senderId !== userId) {
+          continue;
+        }
+
         let sender: HistoryParticipantSummary | undefined;
         if (log.senderId) {
           sender = participants.find((p) => p.id === log.senderId);
@@ -327,7 +333,7 @@ export class GameHistoryService {
     roomId: string,
     userId: string,
     message: string,
-    scope: 'all' | 'players' = 'all',
+    scope: ChatScope,
   ): Promise<void> {
     const room = await this.gameRoomModel.findById(roomId).exec();
 

@@ -99,9 +99,11 @@ export const esMessages = {
       hide: 'Ocultar chat',
       placeholderAll: 'Envía una nota a todos en la mesa',
       placeholderPlayers: 'Envía una nota solo a los jugadores activos',
+      placeholderPrivate: 'Escribe una nota privada para ti',
       hintAll: 'Visible para todos en la sala',
       hintPlayers: 'Visible solo para jugadores vivos',
-      scope: { all: 'Todos', players: 'Jugadores' },
+      hintPrivate: 'Solo tú puedes ver esto',
+      scope: { all: 'Todos', players: 'Jugadores', private: 'Privado' },
     },
     eliminated: {
       title: '¡Has sido eliminado!',

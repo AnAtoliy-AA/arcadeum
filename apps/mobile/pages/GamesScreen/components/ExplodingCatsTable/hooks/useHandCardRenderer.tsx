@@ -20,6 +20,8 @@ export function useHandCardRenderer(
   selfPlayerAlive: boolean,
   canPlaySkip: boolean,
   canPlayAttack: boolean,
+  canPlaySeeTheFuture: boolean,
+  canPlayShuffle: boolean,
   actionBusy: ActionBusyType | null,
   gridCardWidth: number,
   gridCardHeight: number,
@@ -28,7 +30,8 @@ export function useHandCardRenderer(
   t: TFunction,
   translateCardName: (card: ExplodingCatsCard) => string,
   translateCardDescription: (card: ExplodingCatsCard) => string,
-  onPlay: (action: 'skip' | 'attack') => void,
+  onPlay: (action: 'skip' | 'attack' | 'shuffle') => void,
+  onPlaySeeTheFuture: () => void,
   styles: ExplodingCatsTableStyles,
 ) {
   const catComboBusy = actionBusy === 'cat_pair' || actionBusy === 'cat_trio';
@@ -41,8 +44,17 @@ export function useHandCardRenderer(
       mode: 'row' | 'grid' = 'row',
     ) => {
       const cardKey = `${card}-${index}`;
+      // Determine if this is an action card that can be played directly
       const quickAction =
-        card === 'skip' ? 'skip' : card === 'attack' ? 'attack' : null;
+        card === 'skip'
+          ? 'skip'
+          : card === 'attack'
+            ? 'attack'
+            : card === 'shuffle'
+              ? 'shuffle'
+              : card === 'see_the_future'
+                ? 'see_the_future'
+                : null;
       const isCatCard = CAT_COMBO_CARDS.includes(card as ExplodingCatsCatCard);
       const comboAvailability = isCatCard
         ? catCombo.catComboAvailability[card as ExplodingCatsCatCard]
@@ -61,14 +73,22 @@ export function useHandCardRenderer(
           ? canPlaySkip
           : quickAction === 'attack'
             ? canPlayAttack
-            : comboPlayable;
+            : quickAction === 'see_the_future'
+              ? canPlaySeeTheFuture
+              : quickAction === 'shuffle'
+                ? canPlayShuffle
+                : comboPlayable;
 
       const isBusy =
         quickAction === 'skip'
           ? actionBusy === 'skip'
           : quickAction === 'attack'
             ? actionBusy === 'attack'
-            : isCatCard && catComboBusy;
+            : quickAction === 'see_the_future'
+              ? actionBusy === 'see_the_future'
+              : quickAction === 'shuffle'
+                ? actionBusy === 'shuffle'
+                : isCatCard && catComboBusy;
 
       const isAnimating = animations.animatingCardKey === cardKey;
       const isGrid = mode === 'grid';
@@ -80,9 +100,13 @@ export function useHandCardRenderer(
           ? t('games.table.actions.playSkip')
           : quickAction === 'attack'
             ? t('games.table.actions.playAttack')
-            : comboPlayable
-              ? t('games.table.actions.playCatCombo')
-              : undefined;
+            : quickAction === 'see_the_future'
+              ? t('games.table.cards.seeTheFuture')
+              : quickAction === 'shuffle'
+                ? t('games.table.cards.shuffle')
+                : comboPlayable
+                  ? t('games.table.actions.playCatCombo')
+                  : undefined;
 
       const comboHint =
         comboPlayable && comboAvailability
@@ -99,7 +123,15 @@ export function useHandCardRenderer(
         }
 
         const execute = () => {
-          if (quickAction) {
+          if (quickAction === 'see_the_future') {
+            onPlaySeeTheFuture();
+            return;
+          }
+          if (
+            quickAction === 'skip' ||
+            quickAction === 'attack' ||
+            quickAction === 'shuffle'
+          ) {
             onPlay(quickAction);
             return;
           }
@@ -138,6 +170,8 @@ export function useHandCardRenderer(
       actionBusy,
       animations,
       canPlayAttack,
+      canPlaySeeTheFuture,
+      canPlayShuffle,
       canPlaySkip,
       catCombo,
       catComboBusy,
@@ -146,6 +180,7 @@ export function useHandCardRenderer(
       isMyTurn,
       isSessionActive,
       onPlay,
+      onPlaySeeTheFuture,
       selfPlayerAlive,
       t,
       translateCardDescription,

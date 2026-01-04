@@ -103,9 +103,11 @@ export const frMessages = {
       hide: 'Masquer le chat',
       placeholderAll: 'Envoyez une note à toute la table',
       placeholderPlayers: 'Envoyez une note uniquement aux joueurs actifs',
+      placeholderPrivate: 'Écrivez une note privée pour vous-même',
       hintAll: 'Visible par tout le monde dans la salle',
       hintPlayers: 'Visible uniquement par les joueurs encore en vie',
-      scope: { all: 'Tous', players: 'Joueurs' },
+      hintPrivate: 'Vous seul pouvez voir ceci',
+      scope: { all: 'Tous', players: 'Joueurs', private: 'Privé' },
     },
     eliminated: {
       title: 'Vous avez été éliminé !',

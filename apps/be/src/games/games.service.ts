@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ChatScope } from './engines/base/game-engine.interface';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import { GameHistoryService } from './history/game-history.service';
@@ -62,7 +63,23 @@ export class GamesService {
    */
   async getRoomSession(roomId: string, userId?: string) {
     const room = await this.roomsService.getRoom(roomId, userId);
-    const session = await this.sessionsService.findSessionByRoom(roomId);
+    let session = await this.sessionsService.findSessionByRoom(roomId);
+
+    if (session && userId) {
+      try {
+        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
+          session.id,
+          userId,
+        );
+        if (sanitized && typeof sanitized === 'object') {
+          session = { ...session, state: sanitized as Record<string, unknown> };
+        }
+      } catch {
+        // If sanitization fails, return null session or handle appropriately
+        // For now, we'll log logs if we had a logger, but safely continue
+        // typically we might want to return a filtered "spectator" view if we could
+      }
+    }
 
     return { room, session };
   }
@@ -148,7 +165,21 @@ export class GamesService {
     await this.roomsService.updateRoomStatus(roomId, 'in_progress');
 
     // Emit real-time event
-    this.realtimeService.emitGameStarted(room, session);
+    await this.realtimeService.emitGameStarted(
+      room,
+      session,
+      async (s, pId) => {
+        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
+          s.id,
+          pId,
+        );
+        // Ensure we return a GameSessionSummary structure
+        if (sanitized && typeof sanitized === 'object') {
+          return { ...s, state: sanitized as Record<string, unknown> };
+        }
+        return s;
+      },
+    );
 
     return { room, session };
   }
@@ -170,7 +201,22 @@ export class GamesService {
     });
 
     // Emit real-time event
-    this.realtimeService.emitActionExecuted(session, action, userId);
+    // Emit real-time event
+    await this.realtimeService.emitActionExecuted(
+      session,
+      action,
+      userId,
+      async (s, pId) => {
+        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
+          s.id,
+          pId,
+        );
+        if (sanitized && typeof sanitized === 'object') {
+          return { ...s, state: sanitized as Record<string, unknown> };
+        }
+        return s;
+      },
+    );
 
     return session;
   }
@@ -252,13 +298,29 @@ export class GamesService {
   /**
    * Post a note to game history
    */
-  async postHistoryNote(roomId: string, userId: string, message: string) {
-    await this.historyService.postHistoryNote(roomId, userId, message);
+  async postHistoryNote(
+    roomId: string,
+    userId: string,
+    message: string,
+    scope: ChatScope = 'all',
+  ) {
+    await this.historyService.postHistoryNote(roomId, userId, message, scope);
 
     // Broadcast the updated session to all clients
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (session) {
-      this.realtimeService.emitSessionSnapshot(roomId, session);
+      await this.realtimeService.emitSessionSnapshot(
+        roomId,
+        session,
+        async (s, pId) => {
+          const sanitized =
+            await this.sessionsService.getSanitizedStateForPlayer(s.id, pId);
+          if (sanitized && typeof sanitized === 'object') {
+            return { ...s, state: sanitized as Record<string, unknown> };
+          }
+          return s;
+        },
+      );
     }
   }
 

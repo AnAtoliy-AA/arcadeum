@@ -6,6 +6,7 @@ import type {
   ExplodingCatsCatCard,
   CatComboModalState,
   SeeTheFutureModalState,
+  ChatScope,
 } from '../types';
 
 interface UseExplodingCatsModalsOptions {
@@ -36,7 +37,7 @@ export function useExplodingCatsModals({
 
   // Chat state
   const [chatMessage, setChatMessage] = useState('');
-  const [chatScope, setChatScope] = useState<'all' | 'players'>('all');
+  const [chatScope, setChatScope] = useState<ChatScope>('all');
   const [showChat, setShowChat] = useState(true);
 
   // Auto-scroll chat to newest message

@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { useGameSession, useGameActions } from '@/features/games/hooks';
+import { gameSocket } from '@/shared/lib/socket';
 import type { ExplodingCatsSnapshot, ExplodingCatsPlayerState } from '../types';
 
 interface UseExplodingCatsStateOptions {
@@ -76,6 +77,19 @@ export function useExplodingCatsState({
     99,
     Math.round((pendingElapsedSeconds / ESTIMATED_WAKE_TIME_SECONDS) * 100),
   );
+
+  // Clear actionBusy when an exception is received from the server
+  useEffect(() => {
+    const handleException = () => {
+      setActionBusy(null);
+    };
+
+    gameSocket.on('exception', handleException);
+
+    return () => {
+      gameSocket.off('exception', handleException);
+    };
+  }, [setActionBusy]);
 
   const actions = useGameActions({
     roomId,

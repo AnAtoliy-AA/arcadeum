@@ -9,7 +9,7 @@ import {
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTranslation } from '@/lib/i18n';
-import type { ExplodingCatsLogEntry, LogVisibility } from '../types';
+import type { ExplodingCatsLogEntry, ChatScope } from '../types';
 import type { ExplodingCatsTableStyles } from '../styles';
 
 interface GameLogsProps {
@@ -17,7 +17,7 @@ interface GameLogsProps {
   isCurrentUserPlayer: boolean;
   messageDraft: string;
   onMessageChange: (text: string) => void;
-  messageVisibility: LogVisibility;
+  messageVisibility: ChatScope;
   onVisibilityToggle: () => void;
   historySending: boolean;
   canSendHistoryMessage: boolean;
@@ -66,7 +66,13 @@ export function GameLogs({
               style={styles.logsInput}
               value={messageDraft}
               onChangeText={onMessageChange}
-              placeholder={t('games.table.logs.composerPlaceholder')}
+              placeholder={t(
+                messageVisibility === 'players'
+                  ? 'games.table.logs.composerPlaceholderPlayers'
+                  : messageVisibility === 'private'
+                    ? 'games.table.logs.composerPlaceholderPrivate'
+                    : 'games.table.logs.composerPlaceholderAll',
+              )}
               placeholderTextColor={styles.logsInputPlaceholder.color as string}
               multiline
               maxLength={500}
@@ -109,14 +115,14 @@ export function GameLogs({
             <View
               style={[
                 styles.checkboxBox,
-                messageVisibility === 'players'
-                  ? styles.checkboxBoxChecked
-                  : null,
+                messageVisibility !== 'all' ? styles.checkboxBoxChecked : null,
               ]}
             >
-              {messageVisibility === 'players' ? (
+              {messageVisibility !== 'all' ? (
                 <IconSymbol
-                  name="checkmark"
+                  name={
+                    messageVisibility === 'private' ? 'lock.fill' : 'checkmark'
+                  }
                   size={12}
                   color={styles.checkboxCheck.color as string}
                 />
@@ -127,7 +133,9 @@ export function GameLogs({
                 {t(
                   messageVisibility === 'players'
                     ? 'games.table.logs.checkboxLabelPlayers'
-                    : 'games.table.logs.checkboxLabelAll',
+                    : messageVisibility === 'private'
+                      ? 'games.table.logs.checkboxLabelPrivate'
+                      : 'games.table.logs.checkboxLabelAll',
                 )}
               </ThemedText>
               <ThemedText style={styles.checkboxHint}>
@@ -192,7 +200,7 @@ export function GameLogs({
                       ) : null}
                     </View>
                     <ThemedText style={styles.logMessageText}>
-                      {log.message}
+                      {formatLogMessage(log.message)}
                     </ThemedText>
                   </View>
                 ) : (

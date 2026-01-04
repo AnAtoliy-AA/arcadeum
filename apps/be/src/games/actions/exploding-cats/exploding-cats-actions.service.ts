@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { GameSessionsService } from '../../sessions/game-sessions.service';
 import { GamesRealtimeService } from '../../games.realtime.service';
+import { GameSessionSummary } from '../../../games/sessions/game-sessions.service';
 
 /**
  * Exploding Cats Actions Service
@@ -14,6 +15,22 @@ export class ExplodingCatsActionsService {
   ) {}
 
   /**
+   * Create a sanitizer callback for player-specific state filtering
+   */
+  private createSanitizer() {
+    return async (s: GameSessionSummary, pId: string) => {
+      const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
+        s.id,
+        pId,
+      );
+      if (sanitized && typeof sanitized === 'object') {
+        return { ...s, state: sanitized as Record<string, unknown> };
+      }
+      return s;
+    };
+  }
+
+  /**
    * Draw a card in Exploding Cats
    */
   async drawCard(sessionId: string, userId: string) {
@@ -23,7 +40,12 @@ export class ExplodingCatsActionsService {
       userId,
     });
 
-    this.realtimeService.emitActionExecuted(session, 'draw_card', userId);
+    await this.realtimeService.emitActionExecuted(
+      session,
+      'draw_card',
+      userId,
+      this.createSanitizer(),
+    );
 
     return session;
   }
@@ -43,7 +65,12 @@ export class ExplodingCatsActionsService {
       payload,
     });
 
-    this.realtimeService.emitActionExecuted(session, 'play_card', userId);
+    await this.realtimeService.emitActionExecuted(
+      session,
+      'play_card',
+      userId,
+      this.createSanitizer(),
+    );
 
     return session;
   }
@@ -67,7 +94,12 @@ export class ExplodingCatsActionsService {
       payload,
     });
 
-    this.realtimeService.emitActionExecuted(session, 'play_cat_combo', userId);
+    await this.realtimeService.emitActionExecuted(
+      session,
+      'play_cat_combo',
+      userId,
+      this.createSanitizer(),
+    );
 
     return session;
   }
@@ -89,7 +121,12 @@ export class ExplodingCatsActionsService {
       payload,
     });
 
-    this.realtimeService.emitActionExecuted(session, 'favor', userId);
+    await this.realtimeService.emitActionExecuted(
+      session,
+      'favor',
+      userId,
+      this.createSanitizer(),
+    );
 
     return session;
   }
@@ -111,7 +148,12 @@ export class ExplodingCatsActionsService {
       payload,
     });
 
-    this.realtimeService.emitActionExecuted(session, 'give_favor_card', userId);
+    await this.realtimeService.emitActionExecuted(
+      session,
+      'give_favor_card',
+      userId,
+      this.createSanitizer(),
+    );
 
     return session;
   }
@@ -126,7 +168,12 @@ export class ExplodingCatsActionsService {
       userId,
     });
 
-    this.realtimeService.emitActionExecuted(session, 'see_the_future', userId);
+    await this.realtimeService.emitActionExecuted(
+      session,
+      'see_the_future',
+      userId,
+      this.createSanitizer(),
+    );
 
     return session;
   }
@@ -146,7 +193,12 @@ export class ExplodingCatsActionsService {
       payload,
     });
 
-    this.realtimeService.emitActionExecuted(session, 'defuse', userId);
+    await this.realtimeService.emitActionExecuted(
+      session,
+      'defuse',
+      userId,
+      this.createSanitizer(),
+    );
 
     return session;
   }
@@ -161,7 +213,12 @@ export class ExplodingCatsActionsService {
       userId,
     });
 
-    this.realtimeService.emitActionExecuted(session, 'play_nope', userId);
+    await this.realtimeService.emitActionExecuted(
+      session,
+      'play_nope',
+      userId,
+      this.createSanitizer(),
+    );
 
     return session;
   }
@@ -177,7 +234,12 @@ export class ExplodingCatsActionsService {
       payload: { card: 'attack' },
     });
 
-    this.realtimeService.emitActionExecuted(session, 'attack', userId);
+    await this.realtimeService.emitActionExecuted(
+      session,
+      'attack',
+      userId,
+      this.createSanitizer(),
+    );
 
     return session;
   }
@@ -193,7 +255,12 @@ export class ExplodingCatsActionsService {
       payload: { card: 'skip' },
     });
 
-    this.realtimeService.emitActionExecuted(session, 'skip', userId);
+    await this.realtimeService.emitActionExecuted(
+      session,
+      'skip',
+      userId,
+      this.createSanitizer(),
+    );
 
     return session;
   }
@@ -209,7 +276,12 @@ export class ExplodingCatsActionsService {
       payload: { card: 'shuffle' },
     });
 
-    this.realtimeService.emitActionExecuted(session, 'shuffle', userId);
+    await this.realtimeService.emitActionExecuted(
+      session,
+      'shuffle',
+      userId,
+      this.createSanitizer(),
+    );
 
     return session;
   }

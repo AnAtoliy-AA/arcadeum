@@ -7,6 +7,7 @@ import {
   GameActionContext,
   GameLogEntry,
   GamePlayerState,
+  ChatScope,
 } from './game-engine.interface';
 
 /**
@@ -79,20 +80,20 @@ export abstract class BaseGameEngine<
   protected createLogEntry(
     type: 'system' | 'action' | 'message',
     message: string,
-    options: {
-      scope?: 'all' | 'players' | 'private';
+    options?: {
+      scope?: ChatScope;
       senderId?: string;
       senderName?: string;
-    } = {},
+    },
   ): GameLogEntry {
     return {
       id: randomUUID(),
       type,
       message,
       createdAt: new Date().toISOString(),
-      scope: options.scope || 'all',
-      senderId: options.senderId || null,
-      senderName: options.senderName || null,
+      scope: options?.scope || 'all',
+      senderId: options?.senderId || null,
+      senderName: options?.senderName || null,
     };
   }
 
@@ -100,7 +101,7 @@ export abstract class BaseGameEngine<
    * Helper: Clone state deeply
    */
   protected cloneState(state: TState): TState {
-    return JSON.parse(JSON.stringify(state));
+    return structuredClone(state);
   }
 
   /**
@@ -181,13 +182,6 @@ export abstract class BaseGameEngine<
       success: false,
       error,
     };
-  }
-
-  /**
-   * Default implementation for config validation
-   */
-  validateConfig(config: Record<string, unknown>): boolean {
-    return true;
   }
 
   /**

@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import { GameLogEntry, ChatScope } from '../engines/base/game-engine.interface';
 
 export type Suit = 'hearts' | 'diamonds' | 'clubs' | 'spades';
 export type Rank =
@@ -44,14 +45,12 @@ export interface TexasHoldemPlayerState {
   [key: string]: unknown;
 }
 
-export type TexasHoldemLogVisibility = 'all' | 'players' | 'private';
-
-export interface TexasHoldemLogEntry {
+export interface TexasHoldemLogEntry extends GameLogEntry {
   id: string;
   type: 'system' | 'action' | 'message';
   message: string;
   createdAt: string;
-  scope?: TexasHoldemLogVisibility;
+  scope?: ChatScope;
   senderId?: string | null;
   senderName?: string | null;
 }

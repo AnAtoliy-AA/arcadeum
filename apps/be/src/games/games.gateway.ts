@@ -87,19 +87,46 @@ export class GamesGateway {
     const channel = this.realtime.roomChannel(room.id);
     await client.join(channel);
 
+    // Store userId on socket for per-player log filtering
+    if (!client.data) {
+      client.data = {};
+    }
+    (client.data as Record<string, unknown>).userId = userId;
+
+    // Sanitize initial session state for the joining player
+    let diffSession = session;
+    if (session) {
+      try {
+        const sanitizedState = await this.gamesService.getSanitizedState(
+          session.id,
+          userId,
+        );
+        if (sanitizedState && typeof sanitizedState === 'object') {
+          diffSession = {
+            ...session,
+            state: sanitizedState as Record<string, unknown>,
+          };
+        }
+      } catch (error) {
+        this.logger.error(
+          `Failed to get sanitized state for user ${userId}: ${error}`,
+        );
+      }
+    }
+
     client.emit(
       'games.room.joined',
       maybeEncrypt({
         room,
-        session,
+        session: diffSession,
       }),
     );
 
-    if (session) {
+    if (diffSession) {
       this.logger.log(
-        `Sending session snapshot to client for session ${session.id}`,
+        `Sending session snapshot to client for session ${diffSession.id}`,
       );
-      this.realtime.emitSessionSnapshotToClient(client, room.id, session);
+      this.realtime.emitSessionSnapshotToClient(client, room.id, diffSession);
     }
   }
 
@@ -168,6 +195,30 @@ export class GamesGateway {
       return;
     }
 
-    this.realtime.emitSessionSnapshotToClient(client, roomId, session);
+    const userId = (client.data as Record<string, unknown>)?.userId as
+      | string
+      | undefined;
+    let diffSession = session;
+
+    if (userId) {
+      try {
+        const sanitizedState = await this.gamesService.getSanitizedState(
+          session.id,
+          userId,
+        );
+        if (sanitizedState && typeof sanitizedState === 'object') {
+          diffSession = {
+            ...session,
+            state: sanitizedState as Record<string, unknown>,
+          };
+        }
+      } catch (error) {
+        this.logger.error(
+          `Failed to get sanitized state for user ${userId}: ${error}`,
+        );
+      }
+    }
+
+    this.realtime.emitSessionSnapshotToClient(client, roomId, diffSession);
   }
 }

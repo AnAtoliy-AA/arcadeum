@@ -85,6 +85,9 @@ export interface ExplodingCatsPlayerState {
   alive: boolean;
 }
 
+// ===== SHARED TYPES =====
+export type ChatScope = 'all' | 'players' | 'private';
+
 export interface ExplodingCatsLogEntry {
   id: string;
   type: 'system' | 'action' | 'message';
@@ -92,7 +95,7 @@ export interface ExplodingCatsLogEntry {
   createdAt: string;
   senderId?: string | null;
   senderName?: string | null;
-  scope?: 'all' | 'players';
+  scope?: ChatScope;
 }
 
 export interface ExplodingCatsSnapshot {
@@ -160,7 +163,7 @@ export interface TexasHoldemLogEntry {
   createdAt: string;
   senderId?: string | null;
   senderName?: string | null;
-  scope?: 'all' | 'players';
+  scope?: ChatScope;
 }
 
 export interface TexasHoldemSnapshot {

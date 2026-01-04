@@ -1,5 +1,22 @@
 'use client';
 
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import type { GameRoomSummary } from '@/shared/types/games';
 import {
   GameContainer,
@@ -41,6 +58,7 @@ import {
   RoomNameBadge,
   RoomNameIcon,
   RoomNameText,
+  // ReorderButton, // No longer used
 } from './styles/lobby';
 
 // Avatar colors
@@ -61,7 +79,123 @@ interface GameLobbyProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
   onToggleFullscreen: () => void;
   onStartGame: () => void;
+  onReorderPlayers?: (newOrder: string[]) => void;
   t: (key: string) => string;
+}
+
+function SortablePlayerItem({
+  member,
+  isHost,
+  isRoomHost,
+  index,
+  totalCount,
+  onMoveUp,
+  onMoveDown,
+}: {
+  member: NonNullable<GameRoomSummary['members']>[0];
+  isHost: boolean;
+  isRoomHost: boolean;
+  roomHostId: string;
+  index: number;
+  totalCount: number;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: member.id,
+    disabled: !isHost, // Only host can drag
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 1 : 0,
+    opacity: isDragging ? 0.5 : 1,
+    cursor: isHost ? (isDragging ? 'grabbing' : 'grab') : 'default',
+  };
+
+  const getInitials = (name: string) => name.slice(0, 2).toUpperCase();
+  const colorIndex = member.displayName.length % AVATAR_COLORS.length;
+
+  return (
+    <PlayerItem ref={setNodeRef} style={style} $isHost={isRoomHost}>
+      <div
+        style={{ display: 'flex', alignItems: 'center', flex: 1 }}
+        {...attributes}
+        {...listeners}
+      >
+        <LobbyPlayerAvatar $color={AVATAR_COLORS[colorIndex]}>
+          {getInitials(member.displayName)}
+        </LobbyPlayerAvatar>
+        <PlayerInfo>
+          <LobbyPlayerName>{member.displayName}</LobbyPlayerName>
+        </PlayerInfo>
+      </div>
+
+      {isRoomHost && <PlayerBadge>HOST</PlayerBadge>}
+
+      {isHost && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            marginLeft: 'auto',
+            paddingLeft: '8px',
+          }}
+        >
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onMoveUp();
+            }}
+            disabled={index === 0}
+            style={{
+              opacity: index === 0 ? 0.3 : 1,
+              background: 'none',
+              border: 'none',
+              cursor: index === 0 ? 'default' : 'pointer',
+              color: 'inherit',
+              padding: '2px',
+            }}
+          >
+            ↑
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onMoveDown();
+            }}
+            disabled={index === totalCount - 1}
+            style={{
+              opacity: index === totalCount - 1 ? 0.3 : 1,
+              background: 'none',
+              border: 'none',
+              cursor: index === totalCount - 1 ? 'default' : 'pointer',
+              color: 'inherit',
+              padding: '2px',
+            }}
+          >
+            ↓
+          </button>
+          <div
+            style={{ opacity: 0.5, cursor: 'grab' }}
+            {...attributes}
+            {...listeners}
+          >
+            ⋮⋮
+          </div>
+        </div>
+      )}
+    </PlayerItem>
+  );
 }
 
 export function GameLobby({
@@ -72,11 +206,39 @@ export function GameLobby({
   containerRef,
   onToggleFullscreen,
   onStartGame,
+  onReorderPlayers,
   t,
 }: GameLobbyProps) {
   const members = room.members ?? [];
   const maxPlayers = room.maxPlayers ?? 5;
   const progress = Math.round((room.playerCount / maxPlayers) * 100);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const oldIndex = members.findIndex((m) => m.id === active.id);
+      const newIndex = members.findIndex((m) => m.id === over?.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newOrder = arrayMove(members, oldIndex, newIndex).map(
+          (m) => m.id,
+        );
+        onReorderPlayers?.(newOrder);
+      }
+    }
+  };
 
   const getSubtitleText = () => {
     if (room.status !== 'lobby') return t('games.table.lobby.gameLoading');
@@ -84,8 +246,6 @@ export function GameLobby({
     if (isHost) return t('games.table.lobby.hostCanStart');
     return t('games.table.lobby.waitingForHost');
   };
-
-  const getInitials = (name: string) => name.slice(0, 2).toUpperCase();
 
   return (
     <GameContainer ref={containerRef}>
@@ -156,21 +316,44 @@ export function GameLobby({
               {t('games.table.lobby.players')} ({room.playerCount}/{maxPlayers})
             </CardTitle>
             <PlayerList>
-              {members.map((member, i) => (
-                <PlayerItem key={member.id} $isHost={member.id === room.hostId}>
-                  <LobbyPlayerAvatar
-                    $color={AVATAR_COLORS[i % AVATAR_COLORS.length]}
-                  >
-                    {getInitials(member.displayName)}
-                  </LobbyPlayerAvatar>
-                  <PlayerInfo>
-                    <LobbyPlayerName>{member.displayName}</LobbyPlayerName>
-                  </PlayerInfo>
-                  {member.id === room.hostId && (
-                    <PlayerBadge>{t('games.table.lobby.host')}</PlayerBadge>
-                  )}
-                </PlayerItem>
-              ))}
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={members.map((m) => m.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {members.map((member, index) => (
+                    <SortablePlayerItem
+                      key={member.id}
+                      member={member}
+                      isHost={isHost}
+                      isRoomHost={member.id === room.hostId}
+                      roomHostId={room.hostId}
+                      index={index}
+                      totalCount={members.length}
+                      onMoveUp={() => {
+                        const newOrder = arrayMove(
+                          members,
+                          index,
+                          index - 1,
+                        ).map((m) => m.id);
+                        onReorderPlayers?.(newOrder);
+                      }}
+                      onMoveDown={() => {
+                        const newOrder = arrayMove(
+                          members,
+                          index,
+                          index + 1,
+                        ).map((m) => m.id);
+                        onReorderPlayers?.(newOrder);
+                      }}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
               {Array.from({ length: Math.max(0, 2 - members.length) }).map(
                 (_, i) => (
                   <EmptySlot key={`empty-${i}`}>

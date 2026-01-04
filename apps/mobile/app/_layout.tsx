@@ -18,6 +18,8 @@ import { ErrorToastProvider } from '@/components/ui/ErrorToastProvider';
 import { useTranslation } from '@/lib/i18n';
 import { PendingRequestNotice } from '@/components/ui/PendingRequestNotice';
 
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -29,13 +31,15 @@ export default function RootLayout() {
   }
 
   return (
-    <SessionTokensProvider>
-      <SettingsProvider>
-        <ErrorToastProvider>
-          <NavigationRoot />
-        </ErrorToastProvider>
-      </SettingsProvider>
-    </SessionTokensProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SessionTokensProvider>
+        <SettingsProvider>
+          <ErrorToastProvider>
+            <NavigationRoot />
+          </ErrorToastProvider>
+        </SettingsProvider>
+      </SessionTokensProvider>
+    </GestureHandlerRootView>
   );
 }
 

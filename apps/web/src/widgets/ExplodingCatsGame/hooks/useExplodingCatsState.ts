@@ -1,12 +1,14 @@
-import { useMemo, useState, useEffect, useRef } from 'react';
+import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import { useGameSession, useGameActions } from '@/features/games/hooks';
 import { gameSocket } from '@/shared/lib/socket';
 import type { ExplodingCatsSnapshot, ExplodingCatsPlayerState } from '../types';
+import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 
 interface UseExplodingCatsStateOptions {
   roomId: string;
   currentUserId: string | null;
   initialSession: unknown | null;
+  accessToken?: string | null;
 }
 
 /** Threshold in ms after which actionBusy is considered "long pending" */
@@ -19,6 +21,7 @@ export function useExplodingCatsState({
   roomId,
   currentUserId,
   initialSession,
+  accessToken,
 }: UseExplodingCatsStateOptions) {
   const { session, actionBusy, setActionBusy, startBusy } = useGameSession({
     roomId,
@@ -99,6 +102,19 @@ export function useExplodingCatsState({
     onActionComplete: () => setActionBusy(null),
   });
 
+  const reorderParticipants = useCallback(
+    async (newOrder: string[]) => {
+      if (!accessToken || !roomId) return;
+
+      try {
+        await reorderRoomParticipants(roomId, newOrder, accessToken);
+      } catch (error) {
+        console.error('Failed to reorder participants:', error);
+      }
+    },
+    [roomId, accessToken],
+  );
+
   const snapshot: ExplodingCatsSnapshot | null = useMemo(() => {
     if (!session?.state) return null;
     return session.state as unknown as ExplodingCatsSnapshot;
@@ -146,6 +162,7 @@ export function useExplodingCatsState({
     pendingElapsedSeconds,
     startBusy,
     actions,
+    reorderParticipants,
     currentPlayer,
     currentTurnPlayer,
     isMyTurn,

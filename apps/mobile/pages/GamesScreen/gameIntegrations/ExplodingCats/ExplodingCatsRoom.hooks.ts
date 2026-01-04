@@ -5,6 +5,7 @@ import {
   startGameRoom,
   type GameRoomSummary,
   type GameSessionSummary,
+  reorderRoomParticipants,
 } from '../../api/gamesApi';
 import type { SessionTokensSnapshot } from '@/stores/sessionTokens';
 import type {
@@ -302,6 +303,31 @@ export function useGameActions({
     [actionBusy, room?.id, setActionBusy, t, tokens.userId],
   );
 
+  const handleReorderParticipants = useCallback(
+    (userIds: string[]) => {
+      if (!room?.id || !tokens.accessToken) return;
+
+      reorderRoomParticipants(
+        { roomId: room.id, userIds },
+        {
+          accessToken: tokens.accessToken,
+          refreshTokens,
+        },
+      )
+        .then((response) => {
+          setRoom(response.room);
+        })
+        .catch((err) => {
+          const message =
+            err instanceof Error
+              ? err.message
+              : t('common.errors.genericApiError');
+          Alert.alert(t('games.alerts.unableToStartTitle'), message);
+        });
+    },
+    [room?.id, tokens.accessToken, refreshTokens, setRoom, t],
+  );
+
   return {
     handleStartMatch,
     handleDrawCard,
@@ -313,5 +339,6 @@ export function useGameActions({
     handlePlayCatCombo,
     handlePlayDefuse,
     handlePostHistoryNote,
+    handleReorderParticipants,
   };
 }

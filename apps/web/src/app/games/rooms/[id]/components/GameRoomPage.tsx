@@ -173,8 +173,16 @@ export default function GameRoomPage() {
         maxPlayers: 5,
         version: '1.0.0',
       },
+      accessToken: snapshot.accessToken,
     };
-  }, [roomId, room, isHost, initialSession, snapshot.userId]);
+  }, [
+    roomId,
+    room,
+    isHost,
+    initialSession,
+    snapshot.userId,
+    snapshot.accessToken,
+  ]);
 
   // Preload game component using GameFactory
   useEffect(() => {

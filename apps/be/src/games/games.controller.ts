@@ -10,6 +10,7 @@ import {
   Req,
   UnauthorizedException,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
@@ -331,5 +332,33 @@ export class GamesController {
 
     const result = await this.gamesService.deleteRoom(dto, user.userId);
     return result;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  @Post('rooms/:roomId/participants') // Using POST over PATCH for easier implementation
+  async reorderParticipants(
+    @Req() req: Request,
+    @Param('roomId') roomId: string,
+    @Body() body: { userIds: string[] },
+  ): Promise<{
+    room: Awaited<ReturnType<GamesService['reorderParticipants']>>;
+  }> {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const { userIds } = body;
+    if (!Array.isArray(userIds)) {
+      throw new BadRequestException('userIds must be an array');
+    }
+
+    const room = await this.gamesService.reorderParticipants(
+      roomId,
+      user.userId,
+      userIds,
+    );
+    return { room };
   }
 }

@@ -47,5 +47,20 @@ export const getMetaStyles = (palette: Palette) => {
       color: palette.text,
       fontWeight: '600',
     },
+    metaLabel: {
+      fontSize: 14,
+      color: palette.text, // Using palette.text for now or textSecondary if available. Palette usually has textSecondary?
+      // checking Palette type in index.ts -> import { Palette } from '@/hooks/useThemedStyles';
+      // I'll assume palette has what I need or stick to safe ones.
+      // metaItemLabel uses palette.icon.
+      // Let's use palette.text and lighter opacity maybe?
+      opacity: 0.7,
+      fontWeight: '600',
+    },
+    metaValue: {
+      fontSize: 14,
+      color: palette.text,
+      fontWeight: '500',
+    },
   };
 };

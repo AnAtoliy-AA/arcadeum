@@ -18,6 +18,7 @@ export interface ExplodingCatsGameProps {
   isHost: boolean;
   onPostHistoryNote?: (message: string, scope: 'all' | 'players') => void;
   config?: unknown;
+  accessToken?: string | null;
 }
 
 /**

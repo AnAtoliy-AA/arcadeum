@@ -8,11 +8,11 @@ import React, {
 } from 'react';
 import {
   RefreshControl,
-  ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { NestableScrollContainer } from 'react-native-draggable-flatlist';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -83,6 +83,7 @@ export const ExplodingCatsRoom = forwardRef<
     handlePlayCatCombo,
     handlePlayDefuse,
     handlePostHistoryNote,
+    handleReorderParticipants,
   } = useGameActions({
     room,
     tokens,
@@ -277,7 +278,7 @@ export const ExplodingCatsRoom = forwardRef<
   return (
     <ThemedView style={styles.container}>
       {neonBackdrop}
-      <ScrollView
+      <NestableScrollContainer
         contentContainerStyle={styles.content}
         contentInsetAdjustmentBehavior="automatic"
         refreshControl={
@@ -300,6 +301,8 @@ export const ExplodingCatsRoom = forwardRef<
             isLoading={isLoading}
             error={error}
             styles={styles}
+            onReorderParticipants={handleReorderParticipants}
+            isHost={isHost}
           />
         ) : null}
 
@@ -361,7 +364,7 @@ export const ExplodingCatsRoom = forwardRef<
             </View>
           </ThemedView>
         ) : null}
-      </ScrollView>
+      </NestableScrollContainer>
     </ThemedView>
   );
 });

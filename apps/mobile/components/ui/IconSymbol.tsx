@@ -64,6 +64,9 @@ const MAPPING = {
   minus: 'remove',
   plus: 'add',
   xmark: 'close',
+  'arrow.up': 'arrow-upward',
+  'arrow.down': 'arrow-downward',
+  'line.3.horizontal': 'drag-handle',
 } as IconMapping;
 
 /**

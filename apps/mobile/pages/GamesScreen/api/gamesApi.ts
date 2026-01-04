@@ -273,3 +273,27 @@ export async function deleteGameRoom(
   }
   return response.json() as Promise<DeleteGameRoomResponse>;
 }
+
+export interface ReorderRoomParticipantsParams {
+  roomId: string;
+  userIds: string[];
+}
+
+export async function reorderRoomParticipants(
+  params: ReorderRoomParticipantsParams,
+  options?: FetchWithRefreshOptions,
+): Promise<{ room: GameRoomSummary }> {
+  const response = await fetchWithRefresh(
+    `${apiBase()}/games/rooms/${encodeURIComponent(params.roomId)}/participants`,
+    buildInit({
+      method: 'POST',
+      body: JSON.stringify({ userIds: params.userIds }),
+    }),
+    options,
+  );
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Failed to reorder participants');
+  }
+  return response.json() as Promise<{ room: GameRoomSummary }>;
+}

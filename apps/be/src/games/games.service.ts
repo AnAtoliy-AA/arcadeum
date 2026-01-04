@@ -11,7 +11,8 @@ import { LeaveGameRoomDto } from './dtos/leave-game-room.dto';
 import { DeleteGameRoomDto } from './dtos/delete-game-room.dto';
 import { StartGameDto } from './dtos/start-game.dto';
 import { HistoryRematchDto } from './dtos/history-rematch.dto';
-import { StartGameSessionResult, ListRoomsFilters } from './games.types';
+import { StartGameSessionResult } from './games.types';
+import { ListRoomsFilters } from './rooms/game-rooms.types';
 
 /**
  * Games Service Facade
@@ -346,5 +347,25 @@ export class GamesService {
    */
   async validateUserIds(userIds: string[]) {
     return this.utilities.validateUserIds(userIds);
+  }
+
+  /**
+   * Reorder participants in a room
+   */
+  async reorderParticipants(
+    roomId: string,
+    userId: string,
+    newOrder: string[],
+  ) {
+    const room = await this.roomsService.reorderParticipants(
+      roomId,
+      userId,
+      newOrder,
+    );
+
+    // Emit real-time event
+    this.realtimeService.emitRoomUpdate(room);
+
+    return room;
   }
 }

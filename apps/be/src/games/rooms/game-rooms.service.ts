@@ -14,62 +14,12 @@ import { JoinGameRoomDto } from '../dtos/join-game-room.dto';
 import { LeaveGameRoomDto } from '../dtos/leave-game-room.dto';
 import { DeleteGameRoomDto } from '../dtos/delete-game-room.dto';
 
-export interface GameRoomMemberSummary {
-  id: string;
-  displayName: string;
-  username?: string | null;
-  email?: string | null;
-  isHost: boolean;
-}
-
-export interface GameRoomSummary {
-  id: string;
-  gameId: string;
-  name: string;
-  hostId: string;
-  visibility: GameRoom['visibility'];
-  playerCount: number;
-  maxPlayers: number | null;
-  createdAt: string;
-  status: GameRoomStatus;
-  inviteCode?: string;
-  gameOptions?: Record<string, unknown>;
-  host?: GameRoomMemberSummary;
-  members?: GameRoomMemberSummary[];
-  viewerRole?: 'host' | 'participant' | 'none';
-  viewerHasJoined?: boolean;
-  viewerIsHost?: boolean;
-}
-
-export interface ListRoomsFilters {
-  gameId?: string;
-  status?: GameRoomStatus;
-  statuses?: GameRoomStatus[];
-  visibility?:
-    | 'public'
-    | 'private'
-    | 'friends'
-    | ('public' | 'private' | 'friends')[];
-  userId?: string;
-  participation?:
-    | 'host'
-    | 'participant'
-    | 'any'
-    | 'hosting'
-    | 'joined'
-    | 'not_joined';
-}
-
-export interface LeaveGameRoomResult {
-  room: GameRoomSummary | null;
-  deleted: boolean;
-  removedPlayerId: string;
-}
-
-export interface DeleteGameRoomResult {
-  roomId: string;
-  deleted: boolean;
-}
+import {
+  GameRoomSummary,
+  ListRoomsFilters,
+  LeaveGameRoomResult,
+  DeleteGameRoomResult,
+} from './game-rooms.types';
 
 /**
  * Game Rooms Service
@@ -366,6 +316,46 @@ export class GameRoomsService {
     }
 
     return room.participants.map((p) => p.userId);
+  }
+
+  /**
+   * Reorder participants (host only)
+   */
+  async reorderParticipants(
+    roomId: string,
+    userId: string,
+    newOrder: string[],
+  ): Promise<GameRoomSummary> {
+    const room = await this.gameRoomModel.findById(roomId).exec();
+
+    if (!room) {
+      throw new NotFoundException(`Room not found: ${roomId}`);
+    }
+
+    if (room.hostId !== userId) {
+      throw new ForbiddenException('Only the host can reorder participants');
+    }
+
+    // Verify all participants are present in newOrder
+    const currentParticipantIds = room.participants.map((p) => p.userId);
+    const isValidOrder =
+      newOrder.length === currentParticipantIds.length &&
+      newOrder.every((id) => currentParticipantIds.includes(id));
+
+    if (!isValidOrder) {
+      throw new BadRequestException('Invalid participant order');
+    }
+
+    // Create a map for quick access
+    const participantMap = new Map(room.participants.map((p) => [p.userId, p]));
+
+    // Reconstruct participants array in new order
+    room.participants = newOrder.map((id) => participantMap.get(id)!);
+    room.updatedAt = new Date();
+
+    await room.save();
+
+    return this.prepareRoomSummary(room, userId);
   }
 
   // ========== Private Helper Methods ==========

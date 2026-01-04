@@ -9,7 +9,7 @@ import type {
   LeaveGameRoomResult,
   DeleteGameRoomResult,
   ListRoomsFilters,
-} from './rooms/game-rooms.service';
+} from './rooms/game-rooms.types';
 
 import type {
   GameSessionSummary,

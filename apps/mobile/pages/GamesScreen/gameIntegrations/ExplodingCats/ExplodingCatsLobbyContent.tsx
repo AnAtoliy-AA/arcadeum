@@ -1,15 +1,16 @@
 import React from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, View, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useTranslation } from '@/lib/i18n';
 import {
-  formatRoomHost,
-  formatRoomTimestamp,
-  getRoomStatusLabel,
-} from '../../roomUtils';
+  NestableDraggableFlatList,
+  ScaleDecorator,
+  RenderItemParams,
+} from 'react-native-draggable-flatlist';
+import { useTranslation } from '@/lib/i18n';
+import { formatRoomHost, getRoomStatusLabel } from '../../roomUtils';
 import { ExplodingCatsRoomMetaItem as MetaItem } from '../components/ExplodingCatsRoomMetaItem';
 import { HERO_GRADIENT_COORDS } from './ExplodingCatsRoom.constants';
 import type { ExplodingCatsRoomStyles } from './ExplodingCatsRoom.styles';
@@ -24,6 +25,8 @@ interface ExplodingCatsLobbyContentProps {
   isLoading: boolean;
   error: string | null;
   styles: ExplodingCatsRoomStyles;
+  onReorderParticipants?: (userIds: string[]) => void;
+  isHost: boolean;
 }
 
 export function ExplodingCatsLobbyContent({
@@ -35,8 +38,32 @@ export function ExplodingCatsLobbyContent({
   isLoading,
   error,
   styles,
+  onReorderParticipants,
+  isHost,
 }: ExplodingCatsLobbyContentProps) {
   const { t } = useTranslation();
+
+  const handleMovePlayer = (index: number, direction: 'up' | 'down') => {
+    if (!room?.members || !onReorderParticipants) return;
+    const currentOrder = room.members.map((m) => m.id);
+    const newOrder = [...currentOrder];
+
+    if (direction === 'up' && index > 0) {
+      [newOrder[index], newOrder[index - 1]] = [
+        newOrder[index - 1],
+        newOrder[index],
+      ];
+    } else if (direction === 'down' && index < newOrder.length - 1) {
+      [newOrder[index], newOrder[index + 1]] = [
+        newOrder[index + 1],
+        newOrder[index],
+      ];
+    } else {
+      return;
+    }
+
+    onReorderParticipants(newOrder);
+  };
 
   return (
     <ThemedView style={styles.headerCard}>
@@ -78,11 +105,7 @@ export function ExplodingCatsLobbyContent({
           </ThemedText>
           <View style={styles.heroTitleFrame}>
             <View style={styles.heroTitleGlow} pointerEvents="none" />
-            <ThemedText
-              type="title"
-              style={styles.roomTitle}
-              numberOfLines={2}
-            >
+            <ThemedText type="title" style={styles.roomTitle} numberOfLines={2}>
               {displayName}
             </ThemedText>
           </View>
@@ -107,26 +130,6 @@ export function ExplodingCatsLobbyContent({
                 hostLabelRaw === 'mystery captain'
                   ? t('games.rooms.mysteryHost')
                   : hostLabelRaw;
-              const baseCapacity = room.maxPlayers
-                ? t('games.rooms.capacityWithMax', {
-                    current: room.playerCount,
-                    max: room.maxPlayers,
-                  })
-                : t('games.rooms.capacityWithoutMax', {
-                    count: room.playerCount,
-                  });
-              const playerNames = room.members
-                ?.map((member) => member.displayName)
-                .filter(Boolean)
-                .join(', ');
-              const playersValue = playerNames
-                ? `${baseCapacity} • ${playerNames}`
-                : baseCapacity;
-              const createdRaw = formatRoomTimestamp(room.createdAt);
-              const createdValue =
-                createdRaw === 'Just created'
-                  ? t('games.rooms.justCreated')
-                  : createdRaw;
               const accessValue =
                 room.visibility === 'private'
                   ? t('games.rooms.visibility.private')
@@ -140,24 +143,8 @@ export function ExplodingCatsLobbyContent({
                     styles={styles}
                   />
                   <MetaItem
-                    icon="person.3.fill"
-                    label={t('games.room.meta.players')}
-                    value={playersValue}
-                    styles={styles}
-                  />
-                  <MetaItem
-                    icon="clock.fill"
-                    label={t('games.room.meta.created')}
-                    value={t('games.rooms.created', {
-                      timestamp: createdValue,
-                    })}
-                    styles={styles}
-                  />
-                  <MetaItem
                     icon={
-                      room.visibility === 'private'
-                        ? 'lock.fill'
-                        : 'sparkles'
+                      room.visibility === 'private' ? 'lock.fill' : 'sparkles'
                     }
                     label={t('games.room.meta.access')}
                     value={accessValue}
@@ -176,6 +163,136 @@ export function ExplodingCatsLobbyContent({
             })()}
           </View>
         ) : null}
+
+        {room?.members && room.members.length > 0 && (
+          <View style={{ marginTop: 16 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: 8,
+              }}
+            >
+              <IconSymbol
+                name="person.3.fill"
+                size={14}
+                color={styles.metaLabel.color as string}
+              />
+              <ThemedText style={[styles.metaLabel, { marginLeft: 6 }]}>
+                {t('games.room.meta.players')} ({room.members.length}/
+                {room.maxPlayers || '∞'})
+              </ThemedText>
+            </View>
+
+            <NestableDraggableFlatList
+              data={room.members}
+              keyExtractor={(item) => item.id}
+              onDragEnd={({ data }) => {
+                if (onReorderParticipants) {
+                  onReorderParticipants(data.map((m) => m.id));
+                }
+              }}
+              renderItem={({
+                item,
+                drag,
+                isActive,
+                getIndex,
+              }: RenderItemParams<
+                NonNullable<GameRoomSummary['members']>[0]
+              >) => {
+                const index = getIndex();
+                return (
+                  <ScaleDecorator>
+                    <TouchableOpacity
+                      onLongPress={isHost ? drag : undefined}
+                      disabled={!isHost}
+                      activeOpacity={1}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        paddingVertical: 12,
+                        paddingHorizontal: 12,
+                        backgroundColor: isActive
+                          ? 'rgba(255,255,255,0.1)'
+                          : 'rgba(0,0,0,0.2)',
+                        marginBottom: 4,
+                        borderRadius: 8,
+                      }}
+                    >
+                      <ThemedText
+                        style={{
+                          flex: 1,
+                          color: styles.metaValue.color as string,
+                          fontSize: 14,
+                        }}
+                      >
+                        {item.displayName} {item.isHost ? '👑' : ''}
+                      </ThemedText>
+                      {isHost && (
+                        <View
+                          style={{ flexDirection: 'row', alignItems: 'center' }}
+                        >
+                          <TouchableOpacity
+                            onPress={() =>
+                              index !== undefined &&
+                              handleMovePlayer(index, 'up')
+                            }
+                            disabled={index === 0}
+                            style={{ paddingHorizontal: 8 }}
+                          >
+                            <IconSymbol
+                              name="arrow.up"
+                              size={20}
+                              color={styles.metaValue.color as string}
+                              style={{ opacity: index === 0 ? 0.3 : 1 }}
+                            />
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                            onPress={() =>
+                              index !== undefined &&
+                              handleMovePlayer(index, 'down')
+                            }
+                            disabled={index === (room.members?.length ?? 0) - 1}
+                            style={{ paddingHorizontal: 8, marginRight: 4 }}
+                          >
+                            <IconSymbol
+                              name="arrow.down"
+                              size={20}
+                              color={styles.metaValue.color as string}
+                              style={{
+                                opacity:
+                                  index === (room.members?.length ?? 0) - 1
+                                    ? 0.3
+                                    : 1,
+                              }}
+                            />
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                            onPressIn={drag}
+                            hitSlop={{
+                              top: 10,
+                              bottom: 10,
+                              left: 10,
+                              right: 10,
+                            }}
+                          >
+                            <IconSymbol
+                              name="line.3.horizontal"
+                              size={20}
+                              color={(styles.metaValue.color as string) + '80'}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  </ScaleDecorator>
+                );
+              }}
+            />
+          </View>
+        )}
 
         {isLoading ? (
           <View style={styles.loadingRow}>

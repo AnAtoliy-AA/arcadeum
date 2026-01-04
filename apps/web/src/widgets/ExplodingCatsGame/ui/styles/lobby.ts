@@ -262,6 +262,29 @@ export const PlayerBadge = styled.span`
   font-weight: 600;
 `;
 
+export const ReorderButton = styled.button`
+  background: transparent;
+  border: none;
+  color: ${({ theme }) => theme.text.secondary};
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: ${({ theme }) => theme.text.primary};
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+`;
+
 export const EmptySlot = styled.div`
   display: flex;
   align-items: center;

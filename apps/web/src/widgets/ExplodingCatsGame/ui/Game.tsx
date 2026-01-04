@@ -61,6 +61,7 @@ export default function ExplodingCatsGame({
   session: initialSession,
   currentUserId,
   isHost,
+  accessToken,
 }: ExplodingCatsGameProps) {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -74,13 +75,19 @@ export default function ExplodingCatsGame({
     pendingElapsedSeconds,
     startBusy,
     actions,
+    reorderParticipants,
     currentPlayer,
     currentTurnPlayer,
     isMyTurn,
     canAct,
     aliveOpponents,
     isGameOver,
-  } = useExplodingCatsState({ roomId, currentUserId, initialSession });
+  } = useExplodingCatsState({
+    roomId,
+    currentUserId,
+    initialSession,
+    accessToken,
+  });
 
   const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef);
   const {
@@ -170,6 +177,7 @@ export default function ExplodingCatsGame({
         containerRef={containerRef}
         onToggleFullscreen={toggleFullscreen}
         onStartGame={actions.startExplodingCats}
+        onReorderPlayers={reorderParticipants}
         t={t as (key: string) => string}
       />
     );

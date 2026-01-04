@@ -252,6 +252,7 @@ export const ExplodingCatsRoom = forwardRef<
             onPostHistoryNote={handlePostHistoryNote}
             fullScreen
             tableOnly
+            roomName={displayName}
           />
         </View>
         <TouchableOpacity
@@ -339,6 +340,7 @@ export const ExplodingCatsRoom = forwardRef<
           onPlayDefuse={handlePlayDefuse}
           onPostHistoryNote={handlePostHistoryNote}
           fullScreen={hasSessionSnapshot}
+          roomName={displayName}
         />
 
         {showLobbyOverview ? (

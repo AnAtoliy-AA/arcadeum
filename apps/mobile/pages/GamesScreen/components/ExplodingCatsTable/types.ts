@@ -127,6 +127,7 @@ export interface ExplodingCatsTableProps {
   ) => Promise<void> | void;
   fullScreen?: boolean;
   tableOnly?: boolean;
+  roomName?: string;
 }
 
 export interface ProcessedPlayer {

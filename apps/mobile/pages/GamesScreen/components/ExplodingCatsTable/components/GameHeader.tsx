@@ -9,12 +9,14 @@ interface GameHeaderProps {
   statusLabel: string;
   isCompleted: boolean;
   styles: ExplodingCatsTableStyles;
+  roomName?: string;
 }
 
 export function GameHeader({
   statusLabel,
   isCompleted,
   styles,
+  roomName,
 }: GameHeaderProps) {
   const { t } = useTranslation();
 
@@ -28,7 +30,7 @@ export function GameHeader({
             color={styles.headerIcon.color as string}
           />
           <ThemedText style={styles.headerText}>
-            {t('games.table.headerTitle')}
+            {roomName || t('games.table.headerTitle')}
           </ThemedText>
         </View>
         <View style={styles.statusBadge}>

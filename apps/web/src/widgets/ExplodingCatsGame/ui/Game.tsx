@@ -53,6 +53,8 @@ import {
   CardName,
 } from './styles';
 
+import { RoomNameBadge, RoomNameIcon, RoomNameText } from './styles/lobby';
+
 export default function ExplodingCatsGame({
   roomId,
   room,
@@ -178,7 +180,11 @@ export default function ExplodingCatsGame({
     <GameContainer ref={containerRef}>
       <GameHeader>
         <GameInfo>
-          <GameTitle>Exploding Cats</GameTitle>
+          <GameTitle>{t('games.exploding_kittens_v1.name')}</GameTitle>
+          <RoomNameBadge>
+            <RoomNameIcon>🎲</RoomNameIcon>
+            <RoomNameText>{room.name}</RoomNameText>
+          </RoomNameBadge>
           <TurnStatus>
             {currentTurnPlayer
               ? currentTurnPlayer.playerId === currentUserId

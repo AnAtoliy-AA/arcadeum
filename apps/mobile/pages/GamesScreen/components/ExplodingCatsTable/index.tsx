@@ -66,6 +66,7 @@ export function ExplodingCatsTable({
   onPostHistoryNote,
   fullScreen = false,
   tableOnly = false,
+  roomName,
 }: ExplodingCatsTableProps) {
   const styles = useThemedStyles(createStyles);
   const { t } = useTranslation();
@@ -258,6 +259,7 @@ export function ExplodingCatsTable({
           statusLabel={labels.statusLabel}
           isCompleted={isSessionCompleted}
           styles={styles}
+          roomName={roomName}
         />
       ) : null}
 

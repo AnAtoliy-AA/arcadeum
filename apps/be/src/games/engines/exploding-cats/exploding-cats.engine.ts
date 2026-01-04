@@ -28,6 +28,10 @@ import {
   validateGiveFavorCard,
   canPlayCatCombo,
 } from './exploding-cats-validation.utils';
+import {
+  executeFavor,
+  executeGiveFavorCard,
+} from './exploding-cats-favor.utils';
 
 // Payload interfaces for type-safe action handling
 interface PlayCardPayload {
@@ -113,6 +117,13 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
       // Must have a pending action to nope
       if (!state.pendingAction) return false;
       // Must have a nope card
+      return hasCard(player, 'nope');
+    }
+
+    // Exception: play_card with 'nope' acts like play_nope
+    const checkPayload = payload as ExplodingCatsPayload | undefined;
+    if (action === 'play_card' && checkPayload?.card === 'nope') {
+      if (!state.pendingAction) return false;
       return hasCard(player, 'nope');
     }
 
@@ -270,7 +281,7 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
         );
 
       case 'favor':
-        return ExplodingCatsLogic.executeFavor(
+        return executeFavor(
           newState,
           context.userId,
           typedPayload as FavorExecutePayload,
@@ -278,7 +289,7 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
         );
 
       case 'give_favor_card':
-        return ExplodingCatsLogic.executeGiveFavorCard(
+        return executeGiveFavorCard(
           newState,
           context.userId,
           { cardToGive: typedPayload!.cardToGive! },

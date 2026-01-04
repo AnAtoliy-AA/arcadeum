@@ -46,26 +46,37 @@ export function executeTargetedAttack(
   player.hand.splice(cardIndex, 1);
   state.discardPile.push('targeted_attack');
 
+  // Capture current pending draws before advancing turn
+  const currentPendingDraws = state.pendingDraws;
+
   // Set pending action for nope
   state.pendingAction = {
     type: 'targeted_attack',
     playerId,
-    payload: { targetPlayerId },
+    payload: { targetPlayerId, previousPendingDraws: currentPendingDraws },
     nopeCount: 0,
   };
 
-  // Set turn to target player with 2 pending draws
+  // Set turn to target player
   const targetIndex = state.playerOrder.indexOf(targetPlayerId);
   if (targetIndex !== -1) {
     state.currentTurnIndex = targetIndex;
-    state.pendingDraws = 2;
+
+    // Stacking logic: If player had multiple turns (was under attack),
+    // pass them + 2 to the target player.
+    const extraTurns = state.pendingDraws > 1 ? state.pendingDraws : 0;
+    state.pendingDraws = extraTurns + 2;
   }
 
   helpers.addLog(
     state,
-    helpers.createLogEntry('action', `Played Targeted Attack!`, {
-      scope: 'all',
-    }),
+    helpers.createLogEntry(
+      'action',
+      `Played Targeted Attack! Target must take ${state.pendingDraws} turns!`,
+      {
+        scope: 'all',
+      },
+    ),
   );
 
   return { success: true, state };

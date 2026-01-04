@@ -49,14 +49,35 @@ export function executeNope(
     // Cancel the action - reverse effects
     switch (state.pendingAction.type) {
       case 'attack': {
-        // Attack was: advance turn, set pendingDraws to 2
-        // Reverse: go back to attacker's turn, reset pendingDraws to 1
+        // Attack was: advance turn, set pendingDraws = turns + 2
+        // Reverse: go back to attacker's turn, restore pendingDraws
         const attackerIndex = state.playerOrder.findIndex(
           (id) => id === state.pendingAction!.playerId,
         );
         if (attackerIndex !== -1) {
           state.currentTurnIndex = attackerIndex;
-          state.pendingDraws = 1;
+          const payload = state.pendingAction.payload as {
+            previousPendingDraws?: number;
+          };
+          state.pendingDraws = payload?.previousPendingDraws ?? 1;
+        }
+        break;
+      }
+      case 'targeted_attack': {
+        // Targeted Attack was: move turn to target, set pendingDraws = turns + 2
+        // Reverse: go back to attacker's turn, restore pendingDraws
+        const attackerIndex = state.playerOrder.findIndex(
+          (id) => id === state.pendingAction!.playerId,
+        );
+        if (attackerIndex !== -1) {
+          state.currentTurnIndex = attackerIndex;
+          const payload = state.pendingAction.payload as {
+            previousPendingDraws?: number;
+          };
+          // For Targeted Attack, the attacker (now active again) likely had 1 draw (normal turn)
+          // or more (if they were under attack but played targeted attack to pass it).
+          // We restore whatever valid draws they had.
+          state.pendingDraws = payload?.previousPendingDraws ?? 1;
         }
         break;
       }
@@ -84,10 +105,30 @@ export function executeNope(
   } else {
     // Un-cancel the action - re-apply effects
     switch (state.pendingAction.type) {
-      case 'attack':
+      case 'attack': {
         helpers.advanceTurn(state);
-        state.pendingDraws = 2;
+        const payload = state.pendingAction.payload as {
+          previousPendingDraws?: number;
+        };
+        const previousDraws = payload?.previousPendingDraws ?? 1;
+        const extraTurns = previousDraws > 1 ? previousDraws : 0;
+        state.pendingDraws = extraTurns + 2;
         break;
+      }
+      case 'targeted_attack': {
+        const payload = state.pendingAction.payload as {
+          previousPendingDraws?: number;
+          targetPlayerId: string;
+        };
+        const targetIndex = state.playerOrder.indexOf(payload.targetPlayerId);
+        if (targetIndex !== -1) {
+          state.currentTurnIndex = targetIndex;
+          const previousDraws = payload?.previousPendingDraws ?? 1;
+          const extraTurns = previousDraws > 1 ? previousDraws : 0;
+          state.pendingDraws = extraTurns + 2;
+        }
+        break;
+      }
       case 'skip':
         helpers.advanceTurn(state);
         break;

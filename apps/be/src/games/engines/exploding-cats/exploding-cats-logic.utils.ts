@@ -15,7 +15,8 @@ import {
   executeReverse,
 } from './exploding-cats-attack.utils';
 
-export { executeNope } from './exploding-cats-nope.utils';
+import { executeNope } from './exploding-cats-nope.utils';
+export { executeNope };
 
 export interface LogEntryOptions {
   scope?: ChatScope;
@@ -151,24 +152,43 @@ export class ExplodingCatsLogic {
     state.discardPile.push(card);
 
     // Clear any previous pending action when a new card is played
-    state.pendingAction = null;
+    // BUT maintain it if playing 'nope', as nope targets the pending action
+    if (card !== 'nope') {
+      state.pendingAction = null;
+    }
 
     switch (card) {
       // ===== BASE GAME CARDS =====
-      case 'attack':
+      case 'attack': {
+        // Capture current pending draws before advancing turn
+        const currentPendingDraws = state.pendingDraws;
+
         // Set pending action so it can be noped
         state.pendingAction = {
           type: 'attack',
           playerId,
+          payload: { previousPendingDraws: currentPendingDraws },
           nopeCount: 0,
         };
+
         helpers.advanceTurn(state);
-        state.pendingDraws = 2;
+
+        // Stacking logic: If player had multiple turns (was under attack),
+        // pass them + 2 to the next player.
+        // If it was a normal turn (1 pending draw), just give 2 turns.
+        const extraTurns = currentPendingDraws > 1 ? currentPendingDraws : 0;
+        state.pendingDraws = extraTurns + 2;
+
         helpers.addLog(
           state,
-          helpers.createLogEntry('action', `Played Attack!`, { scope: 'all' }),
+          helpers.createLogEntry(
+            'action',
+            `Played Attack! Next player must take ${state.pendingDraws} turns!`,
+            { scope: 'all' },
+          ),
         );
         break;
+      }
 
       case 'skip':
         // Set pending action so it can be noped
@@ -204,6 +224,12 @@ export class ExplodingCatsLogic {
           }),
         );
         break;
+
+      case 'nope':
+        // Put card back in hand because executeNope handles removal
+        player.hand.push('nope');
+        state.discardPile.pop(); // Remove from discard
+        return executeNope(state, playerId, helpers);
 
       // ===== ATTACK PACK EXPANSION CARDS =====
       case 'reverse':
@@ -337,115 +363,7 @@ export class ExplodingCatsLogic {
     return { success: true, state };
   }
 
-  /**
-   * Execute Favor - Step 1: Player plays favor card, target must give a card
-   * Sets pendingFavor state, target player will need to respond with give_favor_card action
-   */
-  static executeFavor(
-    state: ExplodingCatsState,
-    playerId: string,
-    payload: { targetPlayerId: string },
-    helpers: {
-      addLog: (state: ExplodingCatsState, entry: GameLogEntry) => void;
-      createLogEntry: (
-        type: string,
-        message: string,
-        options?: LogEntryOptions,
-      ) => GameLogEntry;
-    },
-  ): GameActionResult<ExplodingCatsState> {
-    const player = this.findPlayer(state, playerId);
-    const target = this.findPlayer(state, payload.targetPlayerId);
-
-    if (!player || !target)
-      return { success: false, error: 'Player not found' };
-
-    // Check target has cards
-    if (target.hand.length === 0)
-      return { success: false, error: 'Target has no cards' };
-
-    // Remove favor card from player
-    const favorIndex = player.hand.indexOf('favor');
-    if (favorIndex === -1)
-      return { success: false, error: 'Favor card not found' };
-
-    player.hand.splice(favorIndex, 1);
-    state.discardPile.push('favor');
-
-    // Set pending favor - target must now choose a card to give
-    state.pendingFavor = {
-      requesterId: playerId,
-      targetId: payload.targetPlayerId,
-    };
-
-    // Set pending action so it can be noped
-    state.pendingAction = {
-      type: 'favor',
-      playerId,
-      payload: { targetPlayerId: payload.targetPlayerId },
-      nopeCount: 0,
-    };
-
-    helpers.addLog(
-      state,
-      helpers.createLogEntry(
-        'action',
-        `Requested a favor - waiting for response`,
-        { scope: 'all' },
-      ),
-    );
-
-    return { success: true, state };
-  }
-
-  /**
-   * Execute Give Favor Card - Step 2: Target gives a card of their choice
-   */
-  static executeGiveFavorCard(
-    state: ExplodingCatsState,
-    playerId: string,
-    payload: { cardToGive: ExplodingCatsCard },
-    helpers: {
-      addLog: (state: ExplodingCatsState, entry: GameLogEntry) => void;
-      createLogEntry: (
-        type: string,
-        message: string,
-        options?: LogEntryOptions,
-      ) => GameLogEntry;
-    },
-  ): GameActionResult<ExplodingCatsState> {
-    if (!state.pendingFavor)
-      return { success: false, error: 'No pending favor' };
-
-    if (state.pendingFavor.targetId !== playerId)
-      return { success: false, error: 'Not your favor to give' };
-
-    const target = this.findPlayer(state, playerId);
-    const requester = this.findPlayer(state, state.pendingFavor.requesterId);
-
-    if (!target || !requester)
-      return { success: false, error: 'Player not found' };
-
-    // Check target has the card
-    const cardIndex = target.hand.indexOf(payload.cardToGive);
-    if (cardIndex === -1) return { success: false, error: 'Card not in hand' };
-
-    // Transfer the card
-    target.hand.splice(cardIndex, 1);
-    requester.hand.push(payload.cardToGive);
-
-    // Clear pending favor
-    state.pendingFavor = null;
-
-    helpers.addLog(
-      state,
-      helpers.createLogEntry('action', `Gave a card as favor`, {
-        scope: 'all',
-      }),
-    );
-
-    return { success: true, state };
-  }
+  // executeFavor and executeGiveFavorCard have been extracted to exploding-cats-favor.utils.ts
 
   /**
    * Execute Defuse

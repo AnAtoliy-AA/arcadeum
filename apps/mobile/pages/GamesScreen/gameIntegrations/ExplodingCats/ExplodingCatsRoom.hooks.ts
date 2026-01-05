@@ -223,6 +223,7 @@ export function useGameActions({
         mode: input.mode,
         targetPlayerId: input.targetPlayerId,
         desiredCard: input.mode === 'trio' ? input.desiredCard : undefined,
+        selectedIndex: input.mode === 'pair' ? input.selectedIndex : undefined,
       });
     },
     [actionBusy, room?.id, setActionBusy, t, tokens.userId],

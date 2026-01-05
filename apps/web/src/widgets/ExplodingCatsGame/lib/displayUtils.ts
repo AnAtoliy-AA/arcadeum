@@ -102,15 +102,63 @@ export function useDisplayNames({
         return `${label} 🔮: ${translatedCards.join(', ')}`;
       }
 
-      if (participantReplacements.length === 0) {
-        return message;
+      // Handle stolenCard:cards:cardType format (pair combo private feedback)
+      if (message.startsWith('stolenCard:cards:')) {
+        const cardType = message.slice(
+          'stolenCard:cards:'.length,
+        ) as ExplodingCatsCard;
+        const translatedCard = translateCardType
+          ? translateCardType(cardType)
+          : cardType;
+        return `You stole: ${translatedCard} 🎴`;
       }
-      return participantReplacements.reduce((acc, [id, name]) => {
-        if (!id || !name || id === name || !acc.includes(id)) {
-          return acc;
+
+      // Apply participant replacements first
+      let result = message;
+      if (participantReplacements.length > 0) {
+        result = participantReplacements.reduce((acc, [id, name]) => {
+          if (!id || !name || id === name || !acc.includes(id)) {
+            return acc;
+          }
+          return acc.split(id).join(name);
+        }, result);
+      }
+
+      // Replace raw card identifiers with translated names
+      if (translateCardType) {
+        const allCardTypes: ExplodingCatsCard[] = [
+          'exploding_cat',
+          'defuse',
+          'attack',
+          'skip',
+          'favor',
+          'shuffle',
+          'see_the_future',
+          'nope',
+          'tacocat',
+          'hairy_potato_cat',
+          'rainbow_ralphing_cat',
+          'cattermelon',
+          'bearded_cat',
+          'targeted_attack',
+          'personal_attack',
+          'attack_of_the_dead',
+          'super_skip',
+          'reverse',
+        ];
+        // Sort by length (longest first) to avoid partial matches
+        const sortedCardTypes = [...allCardTypes].sort(
+          (a, b) => b.length - a.length,
+        );
+        for (const cardType of sortedCardTypes) {
+          if (result.includes(cardType)) {
+            const translatedName = translateCardType(cardType);
+            result = result.split(cardType).join(translatedName);
+          }
         }
-        return acc.split(id).join(name);
-      }, message);
+      }
+
+      return result;
     },
     [participantReplacements, translateCardType, seeTheFutureLabel],
   );

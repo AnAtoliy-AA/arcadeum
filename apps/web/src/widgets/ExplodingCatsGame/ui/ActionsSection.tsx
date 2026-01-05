@@ -1,6 +1,12 @@
 'use client';
 
-import type { ExplodingCatsPlayerState, ExplodingCatsCard } from '../types';
+import { useMemo } from 'react';
+import type {
+  ExplodingCatsPlayerState,
+  ExplodingCatsCard,
+  ExplodingCatsCatCard,
+} from '../types';
+import { CAT_CARDS } from '../types';
 import { InfoCard, InfoTitle, ActionButtons, ActionButton } from './styles';
 
 export type ActionBusyState =
@@ -12,17 +18,20 @@ export type ActionBusyState =
   | 'see_the_future'
   | 'nope'
   | 'defuse'
+  | 'cat_combo'
   | null;
 
 interface ActionsSectionProps {
   currentPlayer: ExplodingCatsPlayerState;
   canAct: boolean | undefined;
   actionBusy: ActionBusyState | string | null;
+  hasOpponents: boolean;
   onDraw: () => void;
   onPlayActionCard: (card: ExplodingCatsCard) => void;
   onPlayNope: () => void;
   onOpenFavorModal: () => void;
   onPlaySeeTheFuture: () => void;
+  onOpenCatCombo: (cats: ExplodingCatsCatCard[]) => void;
   t: (key: string) => string;
 }
 
@@ -30,13 +39,26 @@ export function ActionsSection({
   currentPlayer,
   canAct,
   actionBusy,
+  hasOpponents,
   onDraw,
   onPlayActionCard,
   onPlayNope,
   onOpenFavorModal,
   onPlaySeeTheFuture,
+  onOpenCatCombo,
   t,
 }: ActionsSectionProps) {
+  // Find all cat cards with 2+ copies (combos available)
+  const availableCombos = useMemo(() => {
+    const cardCounts = new Map<ExplodingCatsCard, number>();
+    currentPlayer.hand.forEach((card) =>
+      cardCounts.set(card, (cardCounts.get(card) || 0) + 1),
+    );
+
+    return CAT_CARDS.filter((cat) => (cardCounts.get(cat) || 0) >= 2);
+  }, [currentPlayer.hand]);
+
+  const canPlayCombo = availableCombos.length > 0 && hasOpponents && canAct;
   return (
     <InfoCard>
       <InfoTitle>{t('games.table.actions.start') || 'Actions'}</InfoTitle>
@@ -107,6 +129,17 @@ export function ActionsSection({
             disabled={!canAct || actionBusy === 'see_the_future'}
           >
             {actionBusy === 'see_the_future' ? 'Playing...' : '🔮 See Future'}
+          </ActionButton>
+        )}
+        {canPlayCombo && (
+          <ActionButton
+            variant="primary"
+            onClick={() => onOpenCatCombo(availableCombos)}
+            disabled={actionBusy === 'cat_combo'}
+          >
+            {actionBusy === 'cat_combo'
+              ? 'Playing...'
+              : `🐱 ${t('games.table.modals.catCombo.title')}`}
           </ActionButton>
         )}
         {/* Attack Pack Cards */}

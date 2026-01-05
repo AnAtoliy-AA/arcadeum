@@ -85,6 +85,7 @@ export class ExplodingCatsActionsService {
       cards: string[];
       targetPlayerId: string;
       requestedCard?: string;
+      selectedIndex?: number;
     },
   ) {
     const session = await this.sessionsService.executeAction({

@@ -111,6 +111,7 @@ export class ExplodingCatsGateway {
       mode?: string;
       targetPlayerId?: string;
       desiredCard?: string;
+      selectedIndex?: number;
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
@@ -120,6 +121,10 @@ export class ExplodingCatsGateway {
     const desiredCard =
       typeof payload?.desiredCard === 'string'
         ? payload.desiredCard.trim().toLowerCase()
+        : undefined;
+    const selectedIndex =
+      typeof payload?.selectedIndex === 'number'
+        ? payload.selectedIndex
         : undefined;
 
     const mode =
@@ -138,11 +143,16 @@ export class ExplodingCatsGateway {
       throw new WsException('desiredCard is required for trio combos.');
     }
 
+    if (mode === 'pair' && selectedIndex === undefined) {
+      throw new WsException('selectedIndex is required for pair combos.');
+    }
+
     try {
       await this.explodingCatsService.playCatComboByRoom(userId, roomId, cat, {
         mode,
         targetPlayerId,
         desiredCard: desiredCardValue,
+        selectedIndex,
       });
 
       client.emit('games.session.cat_combo.played', {
@@ -152,6 +162,7 @@ export class ExplodingCatsGateway {
         mode,
         targetPlayerId,
         desiredCard: desiredCardValue,
+        selectedIndex,
       });
     } catch (error) {
       handleError(

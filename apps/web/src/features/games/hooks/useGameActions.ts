@@ -26,6 +26,7 @@ interface UseGameActionsReturn {
     mode: string,
     targetPlayerId?: string,
     desiredCard?: string,
+    selectedIndex?: number,
   ) => void;
   playDefuse: (position: number) => void;
 
@@ -160,6 +161,7 @@ export function useGameActions(
       mode: string,
       targetPlayerId?: string,
       desiredCard?: string,
+      selectedIndex?: number,
     ) => {
       if (!userId) return;
       setActionBusy?.('cat_combo');
@@ -170,6 +172,7 @@ export function useGameActions(
         mode,
         targetPlayerId,
         desiredCard,
+        selectedIndex,
       });
     },
     [roomId, userId, setActionBusy],

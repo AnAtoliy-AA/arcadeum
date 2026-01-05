@@ -53,6 +53,7 @@ export type ExplodingCatsCatComboInput =
       cat: ExplodingCatsCatCard;
       mode: 'pair';
       targetPlayerId: string;
+      selectedIndex: number;
     }
   | {
       cat: ExplodingCatsCatCard;
@@ -99,6 +100,7 @@ export interface CatComboPromptState {
   mode: 'pair' | 'trio' | null;
   targetPlayerId: string | null;
   desiredCard: ExplodingCatsCard | null;
+  selectedIndex: number | null;
   available: {
     pair: boolean;
     trio: boolean;

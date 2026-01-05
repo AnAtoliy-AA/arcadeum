@@ -181,7 +181,12 @@ export class ExplodingCatsService {
     userId: string,
     roomId: string,
     cat: string,
-    payload: { mode: string; targetPlayerId: string; desiredCard?: string },
+    payload: {
+      mode: string;
+      targetPlayerId: string;
+      desiredCard?: string;
+      selectedIndex?: number;
+    },
   ) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
@@ -191,6 +196,7 @@ export class ExplodingCatsService {
       cards,
       targetPlayerId: payload.targetPlayerId,
       requestedCard: payload.desiredCard,
+      selectedIndex: payload.selectedIndex,
     });
   }
 

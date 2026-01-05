@@ -82,6 +82,7 @@ export function useCatCombo(
         mode: preferredMode,
         targetPlayerId: defaultTarget,
         desiredCard: preferredMode === 'trio' ? defaultDesired : null,
+        selectedIndex: preferredMode === 'pair' ? 0 : null,
         available: availability,
       });
     },
@@ -98,11 +99,13 @@ export function useCatCombo(
           prev.targetPlayerId ?? aliveOpponents[0]?.playerId ?? null;
         const nextDesired =
           mode === 'trio' ? (prev.desiredCard ?? 'defuse') : null;
+        const nextSelectedIndex = mode === 'pair' ? 0 : null;
         return {
           ...prev,
           mode,
           targetPlayerId: nextTarget,
           desiredCard: nextDesired,
+          selectedIndex: nextSelectedIndex,
         };
       });
     },
@@ -136,6 +139,18 @@ export function useCatCombo(
     [],
   );
 
+  const handleCatComboSelectedIndexChange = useCallback((index: number) => {
+    setCatComboPrompt((prev) => {
+      if (!prev) {
+        return prev;
+      }
+      return {
+        ...prev,
+        selectedIndex: index,
+      };
+    });
+  }, []);
+
   return {
     catCardCounts,
     catComboAvailability,
@@ -145,5 +160,6 @@ export function useCatCombo(
     handleCatComboModeChange,
     handleCatComboTargetChange,
     handleCatComboDesiredCardChange,
+    handleCatComboSelectedIndexChange,
   };
 }

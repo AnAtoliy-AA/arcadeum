@@ -265,6 +265,8 @@ export class ExplodingCatsLogic {
 
   /**
    * Execute cat combo
+   * - Pair (2 cards): Blind pick a card from target's hand by position
+   * - Trio (3 cards): Name a card and steal it if target has it
    */
   static executeCatCombo(
     state: ExplodingCatsState,
@@ -279,6 +281,8 @@ export class ExplodingCatsLogic {
         options?: LogEntryOptions,
       ) => GameLogEntry;
     },
+    selectedIndex?: number,
+    requestedCard?: ExplodingCatsCard,
   ): GameActionResult<ExplodingCatsState> {
     const player = this.findPlayer(state, playerId);
     const target = this.findPlayer(state, targetPlayerId);
@@ -286,6 +290,27 @@ export class ExplodingCatsLogic {
     if (!player) return { success: false, error: 'Player not found' };
     if (!target || !target.alive) {
       return { success: false, error: 'Invalid target' };
+    }
+
+    // Check target has cards to steal
+    if (target.hand.length === 0) {
+      return { success: false, error: 'Target has no cards to steal' };
+    }
+
+    // For pair, selectedIndex must be specified
+    if (cards.length === 2 && selectedIndex === undefined) {
+      return {
+        success: false,
+        error: 'Must select a card position for pair combo',
+      };
+    }
+
+    // For trio, requestedCard must be specified
+    if (cards.length >= 3 && !requestedCard) {
+      return {
+        success: false,
+        error: 'Must specify a card to request for trio combo',
+      };
     }
 
     // Remove played cards from hand
@@ -297,14 +322,63 @@ export class ExplodingCatsLogic {
       }
     });
 
-    helpers.addLog(
-      state,
-      helpers.createLogEntry(
-        'action',
-        `Played ${cards.length}x ${cards[0]} combo!`,
-        { scope: 'all' },
-      ),
-    );
+    let stolenCard: ExplodingCatsCard | null = null;
+
+    if (cards.length === 2 && selectedIndex !== undefined) {
+      // Pair: Blind pick a card from target's hand by position
+      const clampedIndex = Math.max(
+        0,
+        Math.min(selectedIndex, target.hand.length - 1),
+      );
+      stolenCard = target.hand[clampedIndex];
+      target.hand.splice(clampedIndex, 1);
+      player.hand.push(stolenCard);
+
+      // Public log - everyone sees the steal happened
+      helpers.addLog(
+        state,
+        helpers.createLogEntry(
+          'action',
+          `Played ${cards.length}x ${cards[0]} combo and stole a card!`,
+          { scope: 'all' },
+        ),
+      );
+
+      // Private log - only the stealing player sees what card they got
+      helpers.addLog(
+        state,
+        helpers.createLogEntry('action', `stolenCard:cards:${stolenCard}`, {
+          scope: 'private',
+          senderId: playerId,
+        }),
+      );
+    } else if (cards.length >= 3 && requestedCard) {
+      // Trio: Steal the named card if target has it
+      const cardIndex = target.hand.indexOf(requestedCard);
+      if (cardIndex !== -1) {
+        stolenCard = target.hand[cardIndex];
+        target.hand.splice(cardIndex, 1);
+        player.hand.push(stolenCard);
+
+        helpers.addLog(
+          state,
+          helpers.createLogEntry(
+            'action',
+            `Played ${cards.length}x ${cards[0]} combo and stole a ${requestedCard}!`,
+            { scope: 'all' },
+          ),
+        );
+      } else {
+        helpers.addLog(
+          state,
+          helpers.createLogEntry(
+            'action',
+            `Played ${cards.length}x ${cards[0]} combo but target didn't have the requested card!`,
+            { scope: 'all' },
+          ),
+        );
+      }
+    }
 
     return { success: true, state };
   }

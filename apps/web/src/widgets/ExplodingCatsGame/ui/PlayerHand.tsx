@@ -41,7 +41,7 @@ interface PlayerHandProps {
   onPlaySeeTheFuture: () => void;
   onOpenFavorModal: () => void;
   onOpenCatCombo: (
-    card: ExplodingCatsCatCard,
+    cats: ExplodingCatsCatCard[],
     hand: ExplodingCatsCard[],
   ) => void;
 }
@@ -77,11 +77,13 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
           currentPlayer={currentPlayer}
           canAct={canAct}
           actionBusy={typeof actionBusy === 'boolean' ? null : actionBusy}
+          hasOpponents={aliveOpponents.length > 0}
           onDraw={onDraw}
           onPlayActionCard={onPlayActionCard}
           onPlayNope={onPlayNope}
           onOpenFavorModal={onOpenFavorModal}
           onPlaySeeTheFuture={onPlaySeeTheFuture}
+          onOpenCatCombo={(cats) => onOpenCatCombo(cats, currentPlayer.hand)}
           t={t}
         />
       )}
@@ -112,7 +114,7 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
                   onClick={() =>
                     canPlayCombo &&
                     onOpenCatCombo(
-                      card as ExplodingCatsCatCard,
+                      [card as ExplodingCatsCatCard],
                       currentPlayer.hand,
                     )
                   }

@@ -25,8 +25,11 @@ export interface ExplodingCatsGameProps {
  * Cat combo modal state
  */
 export interface CatComboModalState {
-  cat: ExplodingCatsCatCard;
-  availableModes: ('pair' | 'trio')[];
+  availableCats: Array<{
+    cat: ExplodingCatsCatCard;
+    availableModes: ('pair' | 'trio')[];
+  }>;
+  selectedCat: ExplodingCatsCatCard | null;
 }
 
 /**

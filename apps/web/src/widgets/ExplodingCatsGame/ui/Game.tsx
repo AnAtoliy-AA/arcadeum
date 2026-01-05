@@ -103,11 +103,14 @@ export default function ExplodingCatsGame({
     selectedMode,
     selectedTarget,
     selectedCard,
+    selectedIndex,
     setSelectedMode,
     setSelectedTarget,
     setSelectedCard,
+    setSelectedIndex,
     handleOpenCatCombo,
     handleCloseCatComboModal,
+    handleSelectCat,
     favorModal,
     setFavorModal,
     seeTheFutureModal,
@@ -140,14 +143,16 @@ export default function ExplodingCatsGame({
   });
 
   const handleConfirmCatCombo = useCallback(() => {
-    if (!catComboModal || !selectedMode || !selectedTarget) return;
+    if (!catComboModal?.selectedCat || !selectedMode || !selectedTarget) return;
     if (selectedMode === 'trio' && !selectedCard) return;
+    if (selectedMode === 'pair' && selectedIndex === null) return;
 
     actions.playCatCombo(
-      catComboModal.cat,
+      catComboModal.selectedCat,
       selectedMode,
       selectedTarget,
       selectedMode === 'trio' ? selectedCard! : undefined,
+      selectedMode === 'pair' ? selectedIndex! : undefined,
     );
     handleCloseCatComboModal();
   }, [
@@ -155,6 +160,7 @@ export default function ExplodingCatsGame({
     selectedMode,
     selectedTarget,
     selectedCard,
+    selectedIndex,
     actions,
     handleCloseCatComboModal,
   ]);
@@ -407,10 +413,13 @@ export default function ExplodingCatsGame({
         selectedMode={selectedMode}
         selectedTarget={selectedTarget}
         selectedCard={selectedCard}
+        selectedIndex={selectedIndex}
         aliveOpponents={aliveOpponents}
+        onSelectCat={handleSelectCat}
         onSelectMode={setSelectedMode}
         onSelectTarget={setSelectedTarget}
         onSelectCard={setSelectedCard}
+        onSelectIndex={setSelectedIndex}
         onConfirm={handleConfirmCatCombo}
         resolveDisplayName={resolveDisplayName}
         t={t}

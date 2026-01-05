@@ -12,6 +12,7 @@ export function useCatComboHandling(
     mode: 'pair' | 'trio';
     targetPlayerId: string;
     desiredCard?: string;
+    selectedIndex?: number;
   }) => void,
 ) {
   const catComboBusy = actionBusy === 'cat_pair' || actionBusy === 'cat_trio';
@@ -26,10 +27,14 @@ export function useCatComboHandling(
     }
 
     if (catCombo.catComboPrompt.mode === 'pair') {
+      if (catCombo.catComboPrompt.selectedIndex === null) {
+        return;
+      }
       onPlayCatCombo({
         cat: catCombo.catComboPrompt.cat,
         mode: 'pair',
         targetPlayerId: catCombo.catComboPrompt.targetPlayerId,
+        selectedIndex: catCombo.catComboPrompt.selectedIndex,
       });
       catCombo.closeCatComboPrompt();
       return;
@@ -53,6 +58,8 @@ export function useCatComboHandling(
     : catComboBusy ||
       !catCombo.catComboPrompt.mode ||
       !catCombo.catComboPrompt.targetPlayerId ||
+      (catCombo.catComboPrompt.mode === 'pair' &&
+        catCombo.catComboPrompt.selectedIndex === null) ||
       (catCombo.catComboPrompt.mode === 'trio' &&
         !catCombo.catComboPrompt.desiredCard);
 

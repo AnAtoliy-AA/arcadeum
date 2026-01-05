@@ -34,7 +34,7 @@ export function useExplodingCatsModals({
   const [selectedCard, setSelectedCard] = useState<ExplodingCatsCard | null>(
     null,
   );
-
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   // Chat state
   const [chatMessage, setChatMessage] = useState('');
   const [chatScope, setChatScope] = useState<ChatScope>('all');
@@ -71,19 +71,31 @@ export function useExplodingCatsModals({
   }, []);
 
   const handleOpenCatCombo = useCallback(
-    (cat: ExplodingCatsCatCard, handCards: ExplodingCatsCard[]) => {
-      const count = handCards.filter((c) => c === cat).length;
-      const availableModes: ('pair' | 'trio')[] = [];
+    (cats: ExplodingCatsCatCard[], handCards: ExplodingCatsCard[]) => {
+      const availableCats = cats
+        .map((cat) => {
+          const count = handCards.filter((c) => c === cat).length;
+          const availableModes: ('pair' | 'trio')[] = [];
+          if (count >= 2) availableModes.push('pair');
+          if (count >= 3) availableModes.push('trio');
+          return { cat, availableModes };
+        })
+        .filter((item) => item.availableModes.length > 0);
 
-      if (count >= 2) availableModes.push('pair');
-      if (count >= 3) availableModes.push('trio');
+      if (availableCats.length === 0) return;
 
-      if (availableModes.length === 0) return;
+      // Auto-select if only one cat available
+      const selectedCat =
+        availableCats.length === 1 ? availableCats[0].cat : null;
+      const defaultMode = selectedCat
+        ? availableCats[0].availableModes[0]
+        : null;
 
-      setCatComboModal({ cat, availableModes });
-      setSelectedMode(availableModes[0]);
+      setCatComboModal({ availableCats, selectedCat });
+      setSelectedMode(defaultMode);
       setSelectedTarget(null);
       setSelectedCard(null);
+      setSelectedIndex(defaultMode === 'pair' ? 0 : null);
     },
     [],
   );
@@ -91,6 +103,22 @@ export function useExplodingCatsModals({
   const handleCloseCatComboModal = useCallback(() => {
     setCatComboModal(null);
     setSelectedMode(null);
+    setSelectedTarget(null);
+    setSelectedCard(null);
+    setSelectedIndex(null);
+  }, []);
+
+  const handleSelectCat = useCallback((cat: ExplodingCatsCatCard) => {
+    setCatComboModal((prev) => {
+      if (!prev) return prev;
+      const catData = prev.availableCats.find((c) => c.cat === cat);
+      if (catData) {
+        const defaultMode = catData.availableModes[0];
+        setSelectedMode(defaultMode);
+        setSelectedIndex(defaultMode === 'pair' ? 0 : null);
+      }
+      return { ...prev, selectedCat: cat };
+    });
     setSelectedTarget(null);
     setSelectedCard(null);
   }, []);
@@ -109,11 +137,14 @@ export function useExplodingCatsModals({
     selectedMode,
     selectedTarget,
     selectedCard,
+    selectedIndex,
     setSelectedMode,
     setSelectedTarget,
     setSelectedCard,
+    setSelectedIndex,
     handleOpenCatCombo,
     handleCloseCatComboModal,
+    handleSelectCat,
 
     // Favor modal
     favorModal,

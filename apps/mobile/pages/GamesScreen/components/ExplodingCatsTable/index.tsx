@@ -203,6 +203,15 @@ export function ExplodingCatsTable({
       return `${t('games.table.cards.seeTheFuture')} 🔮: ${translatedCards.join(', ')}`;
     }
 
+    // Handle stolenCard:cards:cardType format (pair combo private feedback)
+    if (next.startsWith('stolenCard:cards:')) {
+      const cardType = next.slice('stolenCard:cards:'.length);
+      const translatedCard = labels.translateCardName(
+        cardType as ExplodingCatsCard,
+      );
+      return `You stole: ${translatedCard} 🎴`;
+    }
+
     // Replace player IDs with display names
     playerNameMap.forEach((displayName, playerId) => {
       if (playerId && displayName && playerId !== displayName) {

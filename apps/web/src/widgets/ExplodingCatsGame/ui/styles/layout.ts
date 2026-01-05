@@ -141,6 +141,17 @@ export const GameContainer = styled.div`
     gap: 1rem;
     border-width: 1px;
   }
+
+  @media (max-height: 600px) {
+    min-height: auto;
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  @media (max-height: 500px) {
+    padding: 0.5rem;
+    gap: 0.25rem;
+  }
 `;
 
 export const GameBoard = styled.div`
@@ -181,13 +192,17 @@ export const TableArea = styled.div<{ $showChat: boolean }>`
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
     grid-template-rows: ${({ $showChat }) =>
-      $showChat ? '1fr auto minmax(200px, 300px)' : '1fr auto'};
+      $showChat ? '1fr auto 1fr' : '1fr auto'};
     grid-template-areas: ${({ $showChat }) =>
       $showChat ? `"table" "hand" "chat"` : `"table" "hand"`};
   }
 
   @media (max-width: 768px) {
     gap: 0.75rem;
+  }
+
+  @media (max-height: 600px) {
+    gap: 0.5rem;
   }
 `;
 

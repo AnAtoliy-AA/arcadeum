@@ -200,6 +200,14 @@ export const InfoCard = styled.div`
     padding: 1.25rem;
     border-radius: 16px;
   }
+
+  @media (max-height: 600px) {
+    padding: 1rem;
+  }
+
+  @media (max-height: 500px) {
+    padding: 0.75rem;
+  }
 `;
 
 export const InfoTitle = styled.h3`

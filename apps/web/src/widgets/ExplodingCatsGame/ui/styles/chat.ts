@@ -16,9 +16,19 @@ export const ChatCard = styled(InfoCard)`
   flex-shrink: 0;
 
   @media (max-width: 1024px) {
-    height: 400px;
+    height: auto;
+    min-height: 250px;
     max-height: 400px;
     flex-shrink: 0;
+  }
+
+  @media (max-height: 700px) {
+    max-height: calc(100vh - 200px);
+    gap: 0.5rem;
+  }
+
+  @media (max-height: 500px) {
+    gap: 0.35rem;
   }
 `;
 
@@ -91,8 +101,8 @@ export const ChatMessages = styled(GameLog)`
   flex: 1 1 0;
   display: flex;
   flex-direction: column-reverse;
-  min-height: 0;
-  max-height: 100%;
+  min-height: 60px;
+  max-height: none;
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 0.25rem;
@@ -109,6 +119,28 @@ export const ChatMessages = styled(GameLog)`
   &::-webkit-scrollbar-thumb {
     background: ${({ theme }) => theme.buttons.primary.gradientStart};
     border-radius: 999px;
+  }
+
+  /* Constrain on narrow widths (tablet/mobile) */
+  @media (max-width: 1024px) {
+    max-height: 15vh;
+    min-height: 60px;
+  }
+
+  @media (max-width: 768px) {
+    max-height: 12vh;
+    min-height: 40px;
+  }
+
+  /* Constrain on short heights */
+  @media (max-height: 700px) {
+    max-height: 120px;
+    min-height: 40px;
+  }
+
+  @media (max-height: 500px) {
+    max-height: 60px;
+    min-height: 30px;
   }
 `;
 
@@ -139,9 +171,16 @@ export const ScopeOption = styled.button<{ $active?: boolean }>`
   letter-spacing: 0.5px;
   cursor: pointer;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 
   &:hover {
     border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+  }
+
+  @media (max-height: 500px) {
+    padding: 0.25rem 0.5rem;
+    min-width: 80px;
+    font-size: 0.65rem;
   }
 `;
 
@@ -155,6 +194,7 @@ export const ChatInput = styled.textarea`
   padding: 0.75rem;
   font-size: 0.875rem;
   resize: none;
+  flex-shrink: 0;
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
@@ -164,6 +204,17 @@ export const ChatInput = styled.textarea`
     border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
   }
+
+  @media (max-height: 700px) {
+    min-height: 60px;
+    padding: 0.5rem;
+  }
+
+  @media (max-height: 500px) {
+    min-height: 40px;
+    padding: 0.4rem;
+    font-size: 0.8rem;
+  }
 `;
 
 export const ChatControls = styled.div`
@@ -172,6 +223,7 @@ export const ChatControls = styled.div`
   align-items: center;
   gap: 0.75rem;
   flex-wrap: wrap;
+  flex-shrink: 0;
 `;
 
 export const ChatHint = styled.div`

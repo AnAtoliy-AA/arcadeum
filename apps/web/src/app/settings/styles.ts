@@ -290,3 +290,72 @@ export const SecondaryButton = styled(Link)`
     }
   }
 `;
+
+export const ToggleRow = styled.label`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: ${({ theme }) => theme.interactive.option.background};
+  border: 1px solid ${({ theme }) => theme.interactive.option.border};
+  border-radius: 18px;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-2px);
+      border-color: ${({ theme }) => theme.interactive.option.hoverBorder};
+    }
+  }
+`;
+
+export const ToggleLabel = styled.span`
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.text.secondary};
+`;
+
+export const ToggleInput = styled.input.attrs({ type: 'checkbox' })`
+  appearance: none;
+  width: 3rem;
+  height: 1.6rem;
+  background: ${({ theme }) => theme.interactive.pill.inactiveBackground};
+  border-radius: 999px;
+  position: relative;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid ${({ theme }) => theme.interactive.pill.border};
+  margin: 0;
+
+  &:checked {
+    background: ${({ theme }) => theme.interactive.pill.activeBackground};
+    border-color: ${({ theme }) => theme.interactive.pill.activeBorder};
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: calc(1.6rem - 6px);
+    height: calc(1.6rem - 6px);
+    background: ${({ theme }) => theme.text.primary};
+    border-radius: 50%;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  &:checked::after {
+    transform: translateX(1.4rem);
+    background: white;
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${({ theme }) => theme.outlines.focus};
+    outline-offset: 2px;
+  }
+`;

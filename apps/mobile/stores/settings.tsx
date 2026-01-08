@@ -15,12 +15,14 @@ export type LanguagePreference = 'en' | 'es' | 'fr';
 export interface SettingsSnapshot {
   themePreference: ThemePreference;
   language: LanguagePreference;
+  hapticsEnabled: boolean;
 }
 
 export interface SettingsContextValue extends SettingsSnapshot {
   hydrated: boolean;
   setThemePreference: (preference: ThemePreference) => void;
   setLanguage: (language: LanguagePreference) => void;
+  setHapticsEnabled: (enabled: boolean) => void;
 }
 
 const STORAGE_KEY = 'app_settings_v1';
@@ -28,6 +30,7 @@ const STORAGE_KEY = 'app_settings_v1';
 const defaultSettings: SettingsSnapshot = {
   themePreference: 'system',
   language: 'en',
+  hapticsEnabled: false,
 };
 
 const availableThemeCodes = new Set<AppThemeName>(
@@ -65,6 +68,7 @@ async function readSettingsFromStorage(): Promise<SettingsSnapshot> {
         parsed.language === 'es' || parsed.language === 'fr'
           ? parsed.language
           : 'en',
+      hapticsEnabled: parsed.hapticsEnabled ?? false,
     };
   } catch {
     return { ...defaultSettings };
@@ -126,14 +130,27 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     setHydrated(true);
   }, []);
 
+  const setHapticsEnabled = useCallback((enabled: boolean) => {
+    setSettings((current) => {
+      if (current.hapticsEnabled === enabled) {
+        return current;
+      }
+      const next: SettingsSnapshot = { ...current, hapticsEnabled: enabled };
+      void persistSettingsSnapshot(next);
+      return next;
+    });
+    setHydrated(true);
+  }, []);
+
   const value = useMemo<SettingsContextValue>(
     () => ({
       ...settings,
       hydrated,
       setThemePreference,
       setLanguage,
+      setHapticsEnabled,
     }),
-    [settings, hydrated, setThemePreference, setLanguage],
+    [settings, hydrated, setThemePreference, setLanguage, setHapticsEnabled],
   );
 
   return (

@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  Switch,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 
@@ -33,6 +34,8 @@ export default function SettingsScreen() {
     language,
     setThemePreference,
     setLanguage,
+    hapticsEnabled,
+    setHapticsEnabled,
     hydrated,
   } = useSettings();
   const { colorScheme } = useColorScheme();
@@ -145,6 +148,28 @@ export default function SettingsScreen() {
               options={languageOptions}
               onSelect={handleLanguageSelect}
             />
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <ThemedText style={styles.sectionTitle}>
+            {t('settings.gameplayTitle')}
+          </ThemedText>
+          <ThemedText style={styles.sectionDescription}>
+            {t('settings.gameplayDescription')}
+          </ThemedText>
+          <View style={styles.fieldGroup}>
+            <View style={styles.switchRow}>
+              <ThemedText style={styles.switchLabel}>
+                {t('settings.hapticsLabel')}
+              </ThemedText>
+              <Switch
+                value={hapticsEnabled}
+                onValueChange={setHapticsEnabled}
+                trackColor={{ false: palette.icon, true: palette.tint }}
+                thumbColor={palette.background}
+              />
+            </View>
           </View>
         </View>
 
@@ -352,6 +377,22 @@ function createStyles(palette: Palette) {
     },
     buttonSpinner: {
       marginRight: 8,
+    },
+    switchRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 18,
+      paddingVertical: 12,
+      borderRadius: 14,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: palette.icon,
+      backgroundColor: palette.cardBackground,
+    },
+    switchLabel: {
+      fontSize: 16,
+      color: palette.text,
+      fontWeight: '500',
     },
   });
 }

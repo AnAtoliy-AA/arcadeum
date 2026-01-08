@@ -39,6 +39,9 @@ export const settingsMessages = {
     },
     activeSelection: 'Active selection',
     tapToSwitch: 'Tap to switch',
+    gameplayTitle: 'Gameplay',
+    gameplayDescription: 'Customize your in-game experience.',
+    hapticsLabel: 'Haptic Feedback',
     accountTitle: 'Account',
     accountDescription:
       'Manage your sign-in status and session tokens for this device.',
@@ -86,6 +89,9 @@ export const settingsMessages = {
     },
     activeSelection: 'Selección activa',
     tapToSwitch: 'Toca para cambiar',
+    gameplayTitle: 'Juego',
+    gameplayDescription: 'Personaliza tu experiencia de juego.',
+    hapticsLabel: 'Respuesta háptica',
     accountTitle: 'Cuenta',
     accountDescription:
       'Administra tu estado de inicio de sesión y los tokens guardados en este dispositivo.',
@@ -134,6 +140,9 @@ export const settingsMessages = {
     },
     activeSelection: 'Sélection active',
     tapToSwitch: 'Touchez pour changer',
+    gameplayTitle: 'Jeu',
+    gameplayDescription: 'Personnalisez votre expérience de jeu.',
+    hapticsLabel: 'Retour haptique',
     accountTitle: 'Compte',
     accountDescription:
       'Gérez votre état de connexion et les jetons enregistrés sur cet appareil.',

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import {
   ScrollView,
   TouchableOpacity,
@@ -14,14 +14,13 @@ import {
   useVerticalDragScroll,
 } from '@/hooks/useDragScroll';
 import { useTranslation } from '@/lib/i18n';
+import { useSettings } from '@/stores/settings';
 
 // Import local modules
 import { CARD_ART_SETTINGS } from './constants';
 import type {
   ExplodingCatsTableProps,
   ChatScope,
-  ExplodingCatsLogEntry,
-  ExplodingCatsCard,
   ExplodingCatsCatComboInput,
 } from './types';
 import {
@@ -34,6 +33,9 @@ import {
   useMessageHandling,
   useCatComboHandling,
   useHandCardRenderer,
+  useGameHaptics,
+  useActionPermissions,
+  useGameLogs,
 } from './hooks';
 import {
   GameHeader,
@@ -79,6 +81,7 @@ export function ExplodingCatsTable({
   const showLogs = true;
 
   // State management
+  const { hapticsEnabled } = useSettings();
   const [handViewMode, setHandViewMode] = useState<'row' | 'grid'>('row');
 
   // Custom hooks
@@ -108,6 +111,9 @@ export function ExplodingCatsTable({
     isMyTurn,
   } = gameState;
 
+  // Haptic feedback for turn
+  useGameHaptics({ isMyTurn, enabled: hapticsEnabled });
+
   const pendingDefuse = snapshot?.pendingDefuse ?? null;
   const mustDefuse = !!currentUserId && pendingDefuse === currentUserId;
 
@@ -127,53 +133,24 @@ export function ExplodingCatsTable({
     ? (CARD_ART_SETTINGS[discardTop] ?? CARD_ART_SETTINGS.exploding_cat)
     : null;
 
-  const isSessionActive = session?.status === 'active';
-  const isSessionCompleted = session?.status === 'completed';
-  const canDraw =
-    isSessionActive &&
-    isMyTurn &&
-    (selfPlayer?.alive ?? false) &&
-    pendingDraws > 0;
-  const hasSkip = (selfPlayer?.hand ?? []).includes('skip');
-  const hasAttack = (selfPlayer?.hand ?? []).includes('attack');
-  const hasNope = (selfPlayer?.hand ?? []).includes('nope');
-  const hasSeeTheFuture = (selfPlayer?.hand ?? []).includes('see_the_future');
-  const hasShuffle = (selfPlayer?.hand ?? []).includes('shuffle');
-  const canPlaySkip =
-    isSessionActive && isMyTurn && hasSkip && (selfPlayer?.alive ?? false);
-  const canPlayAttack =
-    isSessionActive && isMyTurn && hasAttack && (selfPlayer?.alive ?? false);
-  const canPlaySeeTheFuture =
-    isSessionActive &&
-    isMyTurn &&
-    hasSeeTheFuture &&
-    (selfPlayer?.alive ?? false);
-  const canPlayShuffle =
-    isSessionActive && isMyTurn && hasShuffle && (selfPlayer?.alive ?? false);
-  // Nope can be played anytime when there's a pending action (handled by backend)
-  // For now, show button if player has nope and is in an active session
-  const canPlayNope =
-    isSessionActive && hasNope && (selfPlayer?.alive ?? false);
-  const canStart =
-    isHost && !isSessionActive && !isSessionCompleted && !snapshot;
-  const isCurrentUserPlayer = Boolean(selfPlayer);
-
-  const logs = useMemo(() => {
-    const source = snapshot?.logs ?? [];
-    const filtered = source.filter(
-      (entry: ExplodingCatsLogEntry) =>
-        entry.scope !== 'players' || isCurrentUserPlayer,
-    );
-    const ordered = [...filtered].sort((a, b) => {
-      const aTime = new Date(a.createdAt).getTime();
-      const bTime = new Date(b.createdAt).getTime();
-      return aTime - bTime;
-    });
-    return ordered.slice(-20).reverse();
-  }, [snapshot, isCurrentUserPlayer]);
-
-  const logsScrollRef = useVerticalDragScroll<ScrollView>({
-    dependencyKey: logs.length,
+  const {
+    isSessionActive,
+    isSessionCompleted,
+    canDraw,
+    canPlaySkip,
+    canPlayAttack,
+    canPlaySeeTheFuture,
+    canPlayShuffle,
+    canPlayNope,
+    canStart,
+    isCurrentUserPlayer,
+  } = useActionPermissions({
+    session,
+    snapshot,
+    selfPlayer: selfPlayer ?? undefined,
+    isMyTurn,
+    isHost,
+    pendingDraws,
   });
 
   const labels = useGameLabels(
@@ -184,44 +161,17 @@ export function ExplodingCatsTable({
     pendingDraws,
   );
 
-  const formatLogMessage = (message: string) => {
-    if (!message) {
-      return message;
-    }
-    let next = message;
+  const { logs, formatLogMessage } = useGameLogs({
+    snapshot,
+    isCurrentUserPlayer,
+    playerNameMap,
+    t: t as (key: string) => string,
+    translateCardName: labels.translateCardName,
+  });
 
-    // Handle seeTheFuture.reveal:cards:card1,cards:card2,cards:card3 format
-    if (next.startsWith('seeTheFuture.reveal:')) {
-      const cardKeysStr = next.slice('seeTheFuture.reveal:'.length);
-      const cardKeys = cardKeysStr.split(',');
-      const translatedCards = cardKeys.map((key) => {
-        // key format is "cards:card_type"
-        if (key.startsWith('cards:')) {
-          const cardType = key.slice('cards:'.length);
-          return labels.translateCardName(cardType as ExplodingCatsCard);
-        }
-        return key;
-      });
-      return `${t('games.table.cards.seeTheFuture')} 🔮: ${translatedCards.join(', ')}`;
-    }
-
-    // Handle stolenCard:cards:cardType format (pair combo private feedback)
-    if (next.startsWith('stolenCard:cards:')) {
-      const cardType = next.slice('stolenCard:cards:'.length);
-      const translatedCard = labels.translateCardName(
-        cardType as ExplodingCatsCard,
-      );
-      return `You stole: ${translatedCard} 🎴`;
-    }
-
-    // Replace player IDs with display names
-    playerNameMap.forEach((displayName, playerId) => {
-      if (playerId && displayName && playerId !== displayName) {
-        next = next.split(playerId).join(displayName);
-      }
-    });
-    return next;
-  };
+  const logsScrollRef = useVerticalDragScroll<ScrollView>({
+    dependencyKey: logs.length,
+  });
 
   const messageHandling = useMessageHandling(
     session?.id,

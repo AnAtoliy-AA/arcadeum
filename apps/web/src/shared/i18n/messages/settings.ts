@@ -14,6 +14,9 @@ const settingsMessagesDefinition = {
     title: 'Settings',
     description:
       'Manage your appearance, language, and download preferences for the {appName} web experience.',
+    gameplayTitle: 'Gameplay',
+    gameplayDescription: 'Customize your in-game experience.',
+    hapticsLabel: 'Haptic Feedback',
     appearanceTitle: 'Appearance',
     appearanceDescription:
       'Choose a theme to use across the {appName} web experience.',
@@ -66,6 +69,9 @@ const settingsMessagesDefinition = {
     title: 'Configuración',
     description:
       'Administra la apariencia, el idioma y las descargas para la experiencia web de {appName}.',
+    gameplayTitle: 'Juego',
+    gameplayDescription: 'Personaliza tu experiencia de juego.',
+    hapticsLabel: 'Respuesta háptica',
     appearanceTitle: 'Apariencia',
     appearanceDescription:
       'Elige un tema para usar en toda la experiencia web de {appName}.',
@@ -120,6 +126,9 @@ const settingsMessagesDefinition = {
     title: 'Paramètres',
     description:
       "Gérez l'apparence, la langue et les téléchargements pour l'expérience web de {appName}.",
+    gameplayTitle: 'Jeu',
+    gameplayDescription: 'Personnalisez votre expérience de jeu.',
+    hapticsLabel: 'Retour haptique',
     appearanceTitle: 'Apparence',
     appearanceDescription:
       "Choisissez un thème à utiliser sur l'ensemble de l'expérience web de {appName}.",

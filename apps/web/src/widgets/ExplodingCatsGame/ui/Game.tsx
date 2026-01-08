@@ -10,6 +10,7 @@ import {
   useFullscreen,
   useExplodingCatsModals,
   useRematch,
+  useWebGameHaptics,
 } from '../hooks';
 import { useGameHandlers } from '../hooks/useGameHandlers';
 import { CatComboModal } from './modals/CatComboModal';
@@ -84,6 +85,8 @@ export default function ExplodingCatsGame({
     initialSession,
     accessToken,
   });
+
+  useWebGameHaptics(isMyTurn);
 
   const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef);
   const {

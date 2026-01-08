@@ -8,3 +8,5 @@ export * from './useCatComboHandling';
 export * from './useHandCardRenderer';
 export * from './useActionPermissions';
 export * from './useAutoplay';
+export * from './useGameHaptics';
+export * from './useGameLogs';

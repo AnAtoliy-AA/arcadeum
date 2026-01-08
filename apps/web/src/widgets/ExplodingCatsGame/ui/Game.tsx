@@ -81,6 +81,7 @@ export default function ExplodingCatsGame({
     currentTurnPlayer,
     isMyTurn,
     canAct,
+    canPlayNope,
     aliveOpponents,
     isGameOver,
   } = useExplodingCatsState({
@@ -338,6 +339,7 @@ export default function ExplodingCatsGame({
               isMyTurn={!!isMyTurn}
               isGameOver={!!isGameOver}
               canAct={!!canAct}
+              canPlayNope={!!canPlayNope}
               actionBusy={!!actionBusy}
               aliveOpponents={aliveOpponents}
               discardPileLength={snapshot?.discardPile?.length ?? 0}

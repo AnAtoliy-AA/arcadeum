@@ -25,6 +25,7 @@ import {
   CardName,
   CardDescription,
   CardCountBadge,
+  ActionButton,
 } from './styles';
 
 interface PlayerHandProps {
@@ -32,6 +33,7 @@ interface PlayerHandProps {
   isMyTurn: boolean;
   isGameOver: boolean;
   canAct: boolean;
+  canPlayNope: boolean;
   actionBusy: boolean | string | null;
   aliveOpponents: ExplodingCatsPlayerState[];
   discardPileLength: number;
@@ -53,6 +55,7 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
   isMyTurn,
   isGameOver,
   canAct,
+  canPlayNope,
   actionBusy,
   aliveOpponents,
   discardPileLength,
@@ -92,6 +95,22 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
           onOpenFiverCombo={onOpenFiverCombo}
           t={t}
         />
+      )}
+
+      {/* Show Nope button on other turns when there's a pending action */}
+      {!isMyTurn && !isGameOver && canPlayNope && (
+        <InfoCard>
+          <InfoTitle>{t('games.table.actions.start') || 'Actions'}</InfoTitle>
+          <ActionButton
+            variant="secondary"
+            onClick={onPlayNope}
+            disabled={typeof actionBusy === 'string' && actionBusy === 'nope'}
+          >
+            {typeof actionBusy === 'string' && actionBusy === 'nope'
+              ? 'Playing...'
+              : t('games.table.actions.playNope') || '🚫 Nope'}
+          </ActionButton>
+        </InfoCard>
       )}
 
       <HandContainer>

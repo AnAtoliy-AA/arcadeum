@@ -50,7 +50,7 @@ export function CatComboModal({
         <ThemedView style={styles.comboModalCard}>
           <ThemedText style={styles.comboModalTitle}>
             {t('games.table.catCombo.title', {
-              card: translateCardName(catComboPrompt.cat),
+              card: translateCardName(catComboPrompt.cat ?? 'exploding_cat'),
             })}
           </ThemedText>
           <ThemedText style={styles.comboModalDescription}>

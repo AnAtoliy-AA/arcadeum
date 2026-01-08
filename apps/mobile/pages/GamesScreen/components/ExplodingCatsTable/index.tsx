@@ -22,6 +22,7 @@ import type {
   ChatScope,
   ExplodingCatsLogEntry,
   ExplodingCatsCard,
+  ExplodingCatsCatComboInput,
 } from './types';
 import {
   useGameState,
@@ -231,12 +232,7 @@ export function ExplodingCatsTable({
   const catComboHandling = useCatComboHandling(
     catCombo,
     actionBusy,
-    onPlayCatCombo as (params: {
-      cat: string;
-      mode: 'pair' | 'trio';
-      targetPlayerId: string;
-      desiredCard?: string;
-    }) => void,
+    onPlayCatCombo as (params: ExplodingCatsCatComboInput) => void,
   );
   const renderHandCard = useHandCardRenderer(
     isSessionActive,

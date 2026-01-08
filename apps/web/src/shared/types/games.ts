@@ -109,6 +109,12 @@ export interface ExplodingCatsSnapshot {
     requesterId: string;
     targetId: string;
   } | null; // Pending favor request, null if none
+  pendingAction: {
+    type: string;
+    playerId: string;
+    payload?: unknown;
+    nopeCount: number;
+  } | null; // Action that can be noped
   players: ExplodingCatsPlayerState[];
   logs: ExplodingCatsLogEntry[];
 }

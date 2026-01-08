@@ -151,6 +151,13 @@ export function useExplodingCatsState({
     );
   }, [snapshot, currentUserId]);
 
+  // Nope can be played anytime when there's a pending action (handled by backend)
+  // Show button if player has nope and is alive - backend validates actual nope-ability
+  const canPlayNope = useMemo(() => {
+    const hasNopeCard = currentPlayer?.hand.includes('nope');
+    return hasNopeCard && currentPlayer?.alive && !actionBusy;
+  }, [currentPlayer, actionBusy]);
+
   const isGameOver = session?.status === 'completed';
 
   return {
@@ -167,6 +174,7 @@ export function useExplodingCatsState({
     currentTurnPlayer,
     isMyTurn,
     canAct,
+    canPlayNope,
     aliveOpponents,
     isGameOver,
   };

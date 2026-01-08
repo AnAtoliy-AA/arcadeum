@@ -185,7 +185,7 @@ export default function ExplodingCatsGame({
 
   // Game in progress
   return (
-    <GameContainer ref={containerRef}>
+    <GameContainer ref={containerRef} $isMyTurn={!!isMyTurn}>
       <GameHeader>
         <GameInfo>
           <GameTitle>{t('games.exploding_kittens_v1.name')}</GameTitle>

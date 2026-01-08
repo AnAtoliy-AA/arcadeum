@@ -1,7 +1,23 @@
-import styled from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
+
+// Animation for the turn border glow
+const turnBorderPulse = keyframes`
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(34, 197, 94, 0.4),
+      0 0 40px rgba(34, 197, 94, 0.2),
+      inset 0 0 20px rgba(34, 197, 94, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(34, 197, 94, 0.6),
+      0 0 60px rgba(34, 197, 94, 0.3),
+      inset 0 0 30px rgba(34, 197, 94, 0.15);
+  }
+`;
 
 // Layout Components
-export const GameContainer = styled.div`
+export const GameContainer = styled.div<{ $isMyTurn?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -27,18 +43,31 @@ export const GameContainer = styled.div`
       ${({ theme }) => theme.background.base} 0%,
       ${({ theme }) => theme.surfaces.card.background} 100%
     );
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  border: ${({ $isMyTurn, theme }) =>
+    $isMyTurn
+      ? '3px solid rgba(34, 197, 94, 0.8)'
+      : `1px solid ${theme.surfaces.card.border}`};
   min-height: 600px;
-  box-shadow:
-    0 25px 80px rgba(0, 0, 0, 0.4),
-    0 10px 30px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: ${({ $isMyTurn }) =>
+    $isMyTurn
+      ? `0 0 20px rgba(34, 197, 94, 0.4),
+         0 0 40px rgba(34, 197, 94, 0.2),
+         inset 0 0 20px rgba(34, 197, 94, 0.1)`
+      : `0 25px 80px rgba(0, 0, 0, 0.4),
+         0 10px 30px rgba(0, 0, 0, 0.2),
+         inset 0 1px 0 rgba(255, 255, 255, 0.08),
+         inset 0 -1px 0 rgba(0, 0, 0, 0.1)`};
   position: relative;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   height: 100%;
   backdrop-filter: blur(20px);
+
+  ${({ $isMyTurn }) =>
+    $isMyTurn &&
+    css`
+      animation: ${turnBorderPulse} 2s ease-in-out infinite;
+    `}
 
   &::before {
     content: '';

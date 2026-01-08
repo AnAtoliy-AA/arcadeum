@@ -3,6 +3,7 @@ import {
   ExplodingCatsPlayerState,
   ExplodingCatsCard,
   ExplodingCatsCatCard,
+  ExplodingCatsLogEntry,
   CAT_CARDS,
 } from '../types';
 import {
@@ -11,6 +12,7 @@ import {
   getCardDescriptionKey,
 } from '../lib/cardUtils';
 import { ActionsSection } from './ActionsSection';
+import { AutoplayControls } from './AutoplayControls';
 import {
   HandSection,
   HandContainer,
@@ -28,6 +30,18 @@ import {
   ActionButton,
 } from './styles';
 
+interface PendingAction {
+  type: string;
+  playerId: string;
+  payload?: unknown;
+  nopeCount: number;
+}
+
+interface PendingFavor {
+  requesterId: string;
+  targetId: string;
+}
+
 interface PlayerHandProps {
   currentPlayer: ExplodingCatsPlayerState;
   isMyTurn: boolean;
@@ -37,12 +51,21 @@ interface PlayerHandProps {
   actionBusy: boolean | string | null;
   aliveOpponents: ExplodingCatsPlayerState[];
   discardPileLength: number;
+  logs: ExplodingCatsLogEntry[];
+  pendingAction: PendingAction | null;
+  pendingFavor: PendingFavor | null;
+  pendingDefuse: string | null;
+  deckSize: number;
+  playerOrder: string[];
+  currentUserId: string | null;
   t: (key: string) => string;
   onDraw: () => void;
   onPlayActionCard: (card: ExplodingCatsCard) => void;
   onPlayNope: () => void;
   onPlaySeeTheFuture: () => void;
   onOpenFavorModal: () => void;
+  onGiveFavorCard: (card: ExplodingCatsCard) => void;
+  onPlayDefuse: (position: number) => void;
   onOpenCatCombo: (
     cats: ExplodingCatsCatCard[],
     hand: ExplodingCatsCard[],
@@ -59,12 +82,21 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
   actionBusy,
   aliveOpponents,
   discardPileLength,
+  logs,
+  pendingAction,
+  pendingFavor,
+  pendingDefuse,
+  deckSize,
+  playerOrder,
+  currentUserId,
   t,
   onDraw,
   onPlayActionCard,
   onPlayNope,
   onPlaySeeTheFuture,
   onOpenFavorModal,
+  onGiveFavorCard,
+  onPlayDefuse,
   onOpenCatCombo,
   onOpenFiverCombo,
 }) => {
@@ -79,6 +111,29 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
 
   return (
     <HandSection>
+      {/* Autoplay Controls */}
+      {!isGameOver && (
+        <AutoplayControls
+          isMyTurn={isMyTurn}
+          canAct={canAct}
+          canPlayNope={canPlayNope}
+          hand={currentPlayer.hand}
+          logs={logs}
+          pendingAction={pendingAction}
+          pendingFavor={pendingFavor}
+          pendingDefuse={pendingDefuse}
+          deckSize={deckSize}
+          playerOrder={playerOrder}
+          currentUserId={currentUserId}
+          t={t}
+          onDraw={onDraw}
+          onPlayActionCard={onPlayActionCard}
+          onPlayNope={onPlayNope}
+          onGiveFavorCard={onGiveFavorCard}
+          onPlayDefuse={onPlayDefuse}
+        />
+      )}
+
       {isMyTurn && !isGameOver && (
         <ActionsSection
           currentPlayer={currentPlayer}

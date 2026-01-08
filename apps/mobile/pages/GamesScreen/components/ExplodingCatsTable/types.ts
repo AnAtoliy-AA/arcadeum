@@ -78,11 +78,24 @@ export type ChatScope = 'all' | 'players' | 'private';
 export interface ExplodingCatsLogEntry {
   id: string;
   type: 'system' | 'action' | 'message';
+  action?: string; // For defuse detection
   message: string;
   createdAt: string;
   senderId?: string | null;
   senderName?: string | null;
   scope?: ChatScope;
+}
+
+export interface PendingAction {
+  type: string;
+  playerId: string;
+  payload?: unknown;
+  nopeCount: number;
+}
+
+export interface PendingFavor {
+  requesterId: string;
+  targetId: string;
 }
 
 export interface ExplodingCatsSnapshot {
@@ -92,10 +105,8 @@ export interface ExplodingCatsSnapshot {
   currentTurnIndex: number;
   pendingDraws: number;
   pendingDefuse: string | null;
-  pendingFavor: {
-    requesterId: string;
-    targetId: string;
-  } | null;
+  pendingAction: PendingAction | null;
+  pendingFavor: PendingFavor | null;
   players: ExplodingCatsPlayerState[];
   logs: ExplodingCatsLogEntry[];
 }

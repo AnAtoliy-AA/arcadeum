@@ -57,6 +57,16 @@ export const enMessages = {
       playNope: 'Play Nope',
       playingNope: 'Playing...',
     },
+    autoplay: {
+      title: '⚡ Autoplay',
+      autoPlay: '🎮 Auto play',
+      autoDraw: '🤖 Auto-draw',
+      autoSkip: '⏭️ Auto-play Skip',
+      autoShuffle: '🔀 Auto-shuffle after Defuse',
+      autoNopeAttack: '🚫 Auto-nope Attack',
+      autoGiveFavor: '🤲 Auto-give Favor (cat→action→defuse)',
+      autoDefuse: '🛡️ Auto-defuse (random position)',
+    },
     state: {
       deck: 'Deck',
       discard: 'Discard',

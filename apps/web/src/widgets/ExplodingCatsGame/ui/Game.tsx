@@ -3,7 +3,7 @@
 import { useRef, useCallback } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { ExplodingCatsGameProps, ExplodingCatsCard } from '../types';
-import { getCardEmoji, getCardTranslationKey } from '../lib/cardUtils';
+import { getCardTranslationKey } from '../lib/cardUtils';
 import { useDisplayNames } from '../lib/displayUtils';
 import {
   useExplodingCatsState,
@@ -23,6 +23,8 @@ import { ChatSection } from './ChatSection';
 import { GameStatusMessage } from './GameStatusMessage';
 import { ServerLoadingNotice } from './ServerLoadingNotice';
 import { PlayerHand } from './PlayerHand';
+import { TableStats } from './TableStats';
+import { LastPlayedCardDisplay } from './LastPlayedCardDisplay';
 
 import {
   GameContainer,
@@ -44,14 +46,6 @@ import {
   PlayerCardCount,
   TurnIndicator,
   CenterTable,
-  TableInfo,
-  TableStat,
-  LastPlayedCard,
-  CardCorner,
-  CardFrame,
-  CardInner,
-  CardEmoji,
-  CardName,
 } from './styles';
 
 import { RoomNameBadge, RoomNameIcon, RoomNameText } from './styles/lobby';
@@ -273,64 +267,21 @@ export default function ExplodingCatsGame({
               })}
 
               <CenterTable>
-                {snapshot.discardPile.length > 0 && (
-                  <LastPlayedCard
-                    $cardType={
-                      snapshot.discardPile[snapshot.discardPile.length - 1]
-                    }
-                    $isAnimating={false}
-                  >
-                    <CardCorner $position="tl" />
-                    <CardCorner $position="tr" />
-                    <CardCorner $position="bl" />
-                    <CardCorner $position="br" />
-                    <CardFrame />
-                    <CardInner>
-                      <CardEmoji>
-                        {getCardEmoji(
-                          snapshot.discardPile[snapshot.discardPile.length - 1],
-                        )}
-                      </CardEmoji>
-                      <CardName>
-                        {t(
-                          getCardTranslationKey(
-                            snapshot.discardPile[
-                              snapshot.discardPile.length - 1
-                            ],
-                          ),
-                        )}
-                      </CardName>
-                    </CardInner>
-                  </LastPlayedCard>
+                {snapshot && (
+                  <LastPlayedCardDisplay
+                    discardPile={snapshot.discardPile}
+                    t={t as (key: string) => string}
+                  />
                 )}
               </CenterTable>
             </PlayersRing>
-            <TableInfo>
-              <TableStat>
-                <div style={{ fontSize: '1.1rem' }}>🎴</div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700 }}>
-                  {snapshot.deck.length}
-                </div>
-              </TableStat>
-              <TableStat>
-                <div style={{ fontSize: '1.1rem' }}>🗑️</div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700 }}>
-                  {snapshot.discardPile.length}
-                </div>
-              </TableStat>
-              <TableStat>
-                <div style={{ fontSize: '1.1rem' }}>⏳</div>
-                <div
-                  style={{
-                    fontSize: '0.9rem',
-                    fontWeight: 700,
-                    color: '#DC2626',
-                  }}
-                >
-                  {snapshot.pendingDraws}
-                </div>
-              </TableStat>
-            </TableInfo>
+            {snapshot && (
+              <TableStats
+                deckCount={snapshot.deck.length}
+                discardPileCount={snapshot.discardPile.length}
+                pendingDraws={snapshot.pendingDraws}
+              />
+            )}
           </GameTable>
 
           {currentPlayer && currentPlayer.alive && !isGameOver && (
@@ -343,12 +294,21 @@ export default function ExplodingCatsGame({
               actionBusy={!!actionBusy}
               aliveOpponents={aliveOpponents}
               discardPileLength={snapshot?.discardPile?.length ?? 0}
+              logs={snapshot?.logs ?? []}
+              pendingAction={snapshot?.pendingAction ?? null}
+              pendingFavor={snapshot?.pendingFavor ?? null}
+              pendingDefuse={snapshot?.pendingDefuse ?? null}
+              deckSize={snapshot?.deck?.length ?? 0}
+              playerOrder={snapshot?.playerOrder ?? []}
+              currentUserId={currentUserId}
               t={t as (key: string) => string}
               onDraw={actions.drawCard}
               onPlayActionCard={actions.playActionCard}
               onPlayNope={actions.playNope}
               onPlaySeeTheFuture={actions.playSeeTheFuture}
               onOpenFavorModal={() => setFavorModal(true)}
+              onGiveFavorCard={actions.giveFavorCard}
+              onPlayDefuse={actions.playDefuse}
               onOpenCatCombo={handleOpenCatCombo}
               onOpenFiverCombo={handleOpenFiverCombo}
             />

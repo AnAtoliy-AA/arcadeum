@@ -141,6 +141,16 @@ export const explodingCatsMessages = {
         '{{player}} has requested a favor. Choose a card to give them.',
       confirm: 'Give Card',
     },
+    autoplay: {
+      title: '⚡ Autoplay',
+      autoPlay: '🎮 Auto play',
+      autoDraw: '🤖 Auto-draw',
+      autoSkip: '⏭️ Auto-play Skip',
+      autoShuffle: '🔀 Auto-shuffle after Defuse',
+      autoNopeAttack: '🚫 Auto-nope Attack',
+      autoGiveFavor: '🤲 Auto-give Favor (cat→action→defuse)',
+      autoDefuse: '🛡️ Auto-defuse (random position)',
+    },
   },
   es: {
     headerTitle: 'Mesa de Exploding Cats',
@@ -286,6 +296,16 @@ export const explodingCatsMessages = {
       title: 'Dar una Carta',
       description: '{{player}} ha pedido un favor. Elige una carta para darle.',
       confirm: 'Dar Carta',
+    },
+    autoplay: {
+      title: '⚡ Juego Automático',
+      autoPlay: '🎮 Jugar automático',
+      autoDraw: '🤖 Robar automático',
+      autoSkip: '⏭️ Auto-saltar turno',
+      autoShuffle: '🔀 Auto-barajar tras Desactivar',
+      autoNopeAttack: '🚫 Auto-nope Ataque',
+      autoGiveFavor: '🤲 Auto-dar Favor (gato→acción→desactivar)',
+      autoDefuse: '🛡️ Auto-desactivar (posición aleatoria)',
     },
   },
   fr: {
@@ -433,6 +453,16 @@ export const explodingCatsMessages = {
       description:
         '{{player}} a demandé une faveur. Choisissez une carte à donner.',
       confirm: 'Donner la Carte',
+    },
+    autoplay: {
+      title: '⚡ Jeu Automatique',
+      autoPlay: '🎮 Jouer automatique',
+      autoDraw: '🤖 Piocher automatique',
+      autoSkip: '⏭️ Auto-passer le tour',
+      autoShuffle: '🔀 Auto-mélanger après Désamorçage',
+      autoNopeAttack: '🚫 Auto-nope Attaque',
+      autoGiveFavor: '🤲 Auto-donner Faveur (chat→action→désamorcer)',
+      autoDefuse: '🛡️ Auto-désamorcer (position aléatoire)',
     },
   },
 };

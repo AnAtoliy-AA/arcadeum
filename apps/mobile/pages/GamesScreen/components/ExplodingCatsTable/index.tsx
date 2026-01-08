@@ -45,6 +45,7 @@ import {
   DefuseModal,
   GiveFavorModal,
   TableCenter,
+  AutoplayControls,
 } from './components';
 import { createStyles } from './styles';
 
@@ -320,6 +321,28 @@ export function ExplodingCatsTable({
             onGridContainerLayout={layout.setGridContainerWidth}
             styles={styles}
           />
+
+          {selfPlayer?.alive && (
+            <AutoplayControls
+              isMyTurn={isMyTurn}
+              canAct={canDraw}
+              canPlayNope={canPlayNope}
+              hand={selfPlayer.hand}
+              logs={snapshot?.logs ?? []}
+              pendingAction={snapshot?.pendingAction ?? null}
+              pendingFavor={snapshot?.pendingFavor ?? null}
+              pendingDefuse={pendingDefuse}
+              deckSize={deckCount}
+              playerOrder={snapshot?.playerOrder ?? []}
+              currentUserId={currentUserId}
+              t={t as (key: string) => string}
+              onDraw={onDraw}
+              onPlayActionCard={onPlay}
+              onPlayNope={onPlayNope}
+              onGiveFavorCard={onGiveFavorCard}
+              onPlayDefuse={onPlayDefuse}
+            />
+          )}
         </>
       ) : (
         <View style={styles.placeholder}>

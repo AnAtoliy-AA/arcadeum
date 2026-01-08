@@ -55,6 +55,16 @@ export const esMessages = {
       playNope: 'Jugar No',
       playingNope: 'Jugando...',
     },
+    autoplay: {
+      title: '⚡ Juego Automático',
+      autoPlay: '🎮 Jugar automático',
+      autoDraw: '🤖 Robar automático',
+      autoSkip: '⏭️ Auto-saltar turno',
+      autoShuffle: '🔀 Auto-barajar tras Desactivar',
+      autoNopeAttack: '🚫 Auto-nope Ataque',
+      autoGiveFavor: '🤲 Auto-dar Favor (gato→acción→desactivar)',
+      autoDefuse: '🛡️ Auto-desactivar (posición aleatoria)',
+    },
     state: {
       deck: 'Mazo',
       discard: 'Descarte',

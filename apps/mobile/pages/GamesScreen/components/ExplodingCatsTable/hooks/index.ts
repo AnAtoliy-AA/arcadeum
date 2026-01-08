@@ -7,3 +7,4 @@ export * from './useMessageHandling';
 export * from './useCatComboHandling';
 export * from './useHandCardRenderer';
 export * from './useActionPermissions';
+export * from './useAutoplay';

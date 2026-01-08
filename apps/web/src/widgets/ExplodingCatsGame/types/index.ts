@@ -4,6 +4,7 @@ import type {
   ExplodingCatsCard,
   ExplodingCatsPlayerState,
   ExplodingCatsCatCard,
+  ExplodingCatsLogEntry,
   ChatScope,
 } from '@/shared/types/games';
 
@@ -50,6 +51,7 @@ export type {
   ExplodingCatsCard,
   ExplodingCatsPlayerState,
   ExplodingCatsCatCard,
+  ExplodingCatsLogEntry,
   ChatScope,
 };
 

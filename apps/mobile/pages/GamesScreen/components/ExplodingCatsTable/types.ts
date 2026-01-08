@@ -18,6 +18,7 @@ export type ActionBusyType =
   | 'see_the_future'
   | 'cat_pair'
   | 'cat_trio'
+  | 'cat_fiver'
   | 'defuse';
 
 export interface SessionPlayerProfile {
@@ -60,6 +61,10 @@ export type ExplodingCatsCatComboInput =
       mode: 'trio';
       targetPlayerId: string;
       desiredCard: ExplodingCatsCard;
+    }
+  | {
+      mode: 'fiver';
+      requestedDiscardCard: ExplodingCatsCard;
     };
 
 export interface ExplodingCatsPlayerState {
@@ -96,14 +101,16 @@ export interface ExplodingCatsSnapshot {
 }
 
 export interface CatComboPromptState {
-  cat: ExplodingCatsCatCard;
-  mode: 'pair' | 'trio' | null;
+  cat: ExplodingCatsCatCard | null;
+  mode: 'pair' | 'trio' | 'fiver' | null;
   targetPlayerId: string | null;
   desiredCard: ExplodingCatsCard | null;
   selectedIndex: number | null;
+  requestedDiscardCard: ExplodingCatsCard | null;
   available: {
     pair: boolean;
     trio: boolean;
+    fiver: boolean;
   };
 }
 

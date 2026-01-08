@@ -8,6 +8,7 @@ import type {
   SeeTheFutureModalState,
   ChatScope,
 } from '../types';
+import { FIVER_COMBO_SIZE } from '../types';
 
 interface UseExplodingCatsModalsOptions {
   chatMessagesRef: RefObject<HTMLDivElement | null>;
@@ -27,14 +28,19 @@ export function useExplodingCatsModals({
   const [favorModal, setFavorModal] = useState(false);
   const [seeTheFutureModal, setSeeTheFutureModal] =
     useState<SeeTheFutureModalState | null>(null);
-  const [selectedMode, setSelectedMode] = useState<'pair' | 'trio' | null>(
-    null,
-  );
+  const [selectedMode, setSelectedMode] = useState<
+    'pair' | 'trio' | 'fiver' | null
+  >(null);
   const [selectedTarget, setSelectedTarget] = useState<string | null>(null);
   const [selectedCard, setSelectedCard] = useState<ExplodingCatsCard | null>(
     null,
   );
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [selectedDiscardCard, setSelectedDiscardCard] =
+    useState<ExplodingCatsCard | null>(null);
+  const [selectedFiverCards, setSelectedFiverCards] = useState<
+    ExplodingCatsCard[]
+  >([]);
   // Chat state
   const [chatMessage, setChatMessage] = useState('');
   const [chatScope, setChatScope] = useState<ChatScope>('all');
@@ -82,7 +88,12 @@ export function useExplodingCatsModals({
         })
         .filter((item) => item.availableModes.length > 0);
 
-      if (availableCats.length === 0) return;
+      // Check if fiver combo is available (has at least one of each cat card)
+      const fiverAvailable = cats.every((cat) =>
+        handCards.some((c) => c === cat),
+      );
+
+      if (availableCats.length === 0 && !fiverAvailable) return;
 
       // Auto-select if only one cat available
       const selectedCat =
@@ -91,11 +102,12 @@ export function useExplodingCatsModals({
         ? availableCats[0].availableModes[0]
         : null;
 
-      setCatComboModal({ availableCats, selectedCat });
+      setCatComboModal({ availableCats, selectedCat, fiverAvailable });
       setSelectedMode(defaultMode);
       setSelectedTarget(null);
       setSelectedCard(null);
       setSelectedIndex(defaultMode === 'pair' ? 0 : null);
+      setSelectedDiscardCard(null);
     },
     [],
   );
@@ -106,6 +118,8 @@ export function useExplodingCatsModals({
     setSelectedTarget(null);
     setSelectedCard(null);
     setSelectedIndex(null);
+    setSelectedDiscardCard(null);
+    setSelectedFiverCards([]);
   }, []);
 
   const handleSelectCat = useCallback((cat: ExplodingCatsCatCard) => {
@@ -121,6 +135,18 @@ export function useExplodingCatsModals({
     });
     setSelectedTarget(null);
     setSelectedCard(null);
+  }, []);
+
+  const handleToggleFiverCard = useCallback((card: ExplodingCatsCard) => {
+    setSelectedFiverCards((prev) => {
+      if (prev.includes(card)) {
+        return prev.filter((c) => c !== card);
+      }
+      if (prev.length >= FIVER_COMBO_SIZE) {
+        return prev;
+      }
+      return [...prev, card];
+    });
   }, []);
 
   const handleToggleChat = useCallback(() => {
@@ -145,6 +171,13 @@ export function useExplodingCatsModals({
     handleOpenCatCombo,
     handleCloseCatComboModal,
     handleSelectCat,
+
+    // Fiver mode state
+    selectedDiscardCard,
+    setSelectedDiscardCard,
+    selectedFiverCards,
+    setSelectedFiverCards,
+    handleToggleFiverCard,
 
     // Favor modal
     favorModal,

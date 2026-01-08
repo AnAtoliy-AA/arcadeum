@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import type { ActionBusyType } from '../types';
+import type { ActionBusyType, ExplodingCatsCatComboInput } from '../types';
 import type { useCatCombo } from './useCatCombo';
 
 type CatComboState = ReturnType<typeof useCatCombo>;
@@ -7,22 +7,38 @@ type CatComboState = ReturnType<typeof useCatCombo>;
 export function useCatComboHandling(
   catCombo: CatComboState,
   actionBusy: ActionBusyType | null,
-  onPlayCatCombo: (params: {
-    cat: string;
-    mode: 'pair' | 'trio';
-    targetPlayerId: string;
-    desiredCard?: string;
-    selectedIndex?: number;
-  }) => void,
+  onPlayCatCombo: (params: ExplodingCatsCatComboInput) => void,
 ) {
-  const catComboBusy = actionBusy === 'cat_pair' || actionBusy === 'cat_trio';
+  const catComboBusy =
+    actionBusy === 'cat_pair' ||
+    actionBusy === 'cat_trio' ||
+    actionBusy === 'cat_fiver';
 
   const handleConfirmCatCombo = useCallback(() => {
     if (!catCombo.catComboPrompt || !catCombo.catComboPrompt.mode) {
       return;
     }
 
+    // Fiver mode: uses 5 different cat cards to pick from discard pile
+    if (catCombo.catComboPrompt.mode === 'fiver') {
+      if (!catCombo.catComboPrompt.requestedDiscardCard) {
+        return;
+      }
+      onPlayCatCombo({
+        mode: 'fiver',
+        requestedDiscardCard: catCombo.catComboPrompt.requestedDiscardCard,
+      });
+      catCombo.closeCatComboPrompt();
+      return;
+    }
+
+    // Pair and Trio require targetPlayerId
     if (!catCombo.catComboPrompt.targetPlayerId) {
+      return;
+    }
+
+    // Pair and Trio require cat selection
+    if (!catCombo.catComboPrompt.cat) {
       return;
     }
 
@@ -57,9 +73,17 @@ export function useCatComboHandling(
     ? true
     : catComboBusy ||
       !catCombo.catComboPrompt.mode ||
-      !catCombo.catComboPrompt.targetPlayerId ||
+      // Fiver mode: requires requestedDiscardCard
+      (catCombo.catComboPrompt.mode === 'fiver' &&
+        !catCombo.catComboPrompt.requestedDiscardCard) ||
+      // Pair/Trio: requires targetPlayerId and cat
+      (catCombo.catComboPrompt.mode !== 'fiver' &&
+        (!catCombo.catComboPrompt.targetPlayerId ||
+          !catCombo.catComboPrompt.cat)) ||
+      // Pair: requires selectedIndex
       (catCombo.catComboPrompt.mode === 'pair' &&
         catCombo.catComboPrompt.selectedIndex === null) ||
+      // Trio: requires desiredCard
       (catCombo.catComboPrompt.mode === 'trio' &&
         !catCombo.catComboPrompt.desiredCard);
 

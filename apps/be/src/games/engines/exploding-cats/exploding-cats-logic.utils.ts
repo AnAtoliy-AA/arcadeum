@@ -14,6 +14,7 @@ import {
   executeSuperSkip,
   executeReverse,
 } from './exploding-cats-attack.utils';
+import { executeCatCombo as executeCatComboHelper } from './exploding-cats-combo.utils';
 
 import { executeNope } from './exploding-cats-nope.utils';
 export { executeNope };
@@ -24,14 +25,9 @@ export interface LogEntryOptions {
   senderName?: string | null;
 }
 
-/**
- * Utility class for Exploding Cats game logic
- * Extracted from ExplodingCatsEngine to reduce file size
- */
+/** Utility class for Exploding Cats game logic */
 export class ExplodingCatsLogic {
-  /**
-   * Helper to find a player in the state
-   */
+  /** Helper to find a player in the state */
   static findPlayer(
     state: ExplodingCatsState,
     playerId: string,
@@ -40,10 +36,7 @@ export class ExplodingCatsLogic {
       (p) => p.playerId === playerId,
     ) as ExplodingCatsPlayerState;
   }
-
-  /**
-   * Helper to check if a player has a card
-   */
+  /** Helper to check if a player has a card */
   static hasCard(
     player: ExplodingCatsPlayerState,
     card: ExplodingCatsCard,
@@ -51,9 +44,7 @@ export class ExplodingCatsLogic {
     return player.hand.includes(card);
   }
 
-  /**
-   * Execute drawing a card
-   */
+  /** Execute drawing a card */
   static executeDrawCard(
     state: ExplodingCatsState,
     playerId: string,
@@ -68,11 +59,7 @@ export class ExplodingCatsLogic {
     },
   ): GameActionResult<ExplodingCatsState> {
     const card = state.deck.shift();
-
-    if (!card) {
-      return { success: false, error: 'Deck is empty' };
-    }
-
+    if (!card) return { success: false, error: 'Deck is empty' };
     const player = this.findPlayer(state, playerId);
     if (!player) return { success: false, error: 'Player not found' };
 
@@ -123,9 +110,7 @@ export class ExplodingCatsLogic {
     return { success: true, state };
   }
 
-  /**
-   * Execute playing a card
-   */
+  /** Execute playing a card */
   static executePlayCard(
     state: ExplodingCatsState,
     playerId: string,
@@ -143,7 +128,6 @@ export class ExplodingCatsLogic {
   ): GameActionResult<ExplodingCatsState> {
     const player = this.findPlayer(state, playerId);
     if (!player) return { success: false, error: 'Player not found' };
-
     const cardIndex = player.hand.indexOf(card);
     if (cardIndex === -1)
       return { success: false, error: 'Card not found in hand' };
@@ -263,16 +247,12 @@ export class ExplodingCatsLogic {
     return { success: true, state };
   }
 
-  /**
-   * Execute cat combo
-   * - Pair (2 cards): Blind pick a card from target's hand by position
-   * - Trio (3 cards): Name a card and steal it if target has it
-   */
+  /** Execute cat combo - delegates to separate utils file */
   static executeCatCombo(
     state: ExplodingCatsState,
     playerId: string,
     cards: ExplodingCatsCard[],
-    targetPlayerId: string,
+    targetPlayerId: string | null,
     helpers: {
       addLog: (state: ExplodingCatsState, entry: GameLogEntry) => void;
       createLogEntry: (
@@ -283,104 +263,21 @@ export class ExplodingCatsLogic {
     },
     selectedIndex?: number,
     requestedCard?: ExplodingCatsCard,
+    requestedDiscardCard?: ExplodingCatsCard,
   ): GameActionResult<ExplodingCatsState> {
-    const player = this.findPlayer(state, playerId);
-    const target = this.findPlayer(state, targetPlayerId);
-
-    if (!player) return { success: false, error: 'Player not found' };
-    if (!target || !target.alive) {
-      return { success: false, error: 'Invalid target' };
-    }
-
-    // Check target has cards to steal
-    if (target.hand.length === 0) {
-      return { success: false, error: 'Target has no cards to steal' };
-    }
-
-    // For pair, selectedIndex must be specified
-    if (cards.length === 2 && selectedIndex === undefined) {
-      return {
-        success: false,
-        error: 'Must select a card position for pair combo',
-      };
-    }
-
-    // For trio, requestedCard must be specified
-    if (cards.length >= 3 && !requestedCard) {
-      return {
-        success: false,
-        error: 'Must specify a card to request for trio combo',
-      };
-    }
-
-    // Remove played cards from hand
-    cards.forEach((card) => {
-      const index = player.hand.indexOf(card);
-      if (index !== -1) {
-        player.hand.splice(index, 1);
-        state.discardPile.push(card);
-      }
-    });
-
-    let stolenCard: ExplodingCatsCard | null = null;
-
-    if (cards.length === 2 && selectedIndex !== undefined) {
-      // Pair: Blind pick a card from target's hand by position
-      const clampedIndex = Math.max(
-        0,
-        Math.min(selectedIndex, target.hand.length - 1),
-      );
-      stolenCard = target.hand[clampedIndex];
-      target.hand.splice(clampedIndex, 1);
-      player.hand.push(stolenCard);
-
-      // Public log - everyone sees the steal happened
-      helpers.addLog(
-        state,
-        helpers.createLogEntry(
-          'action',
-          `Played ${cards.length}x ${cards[0]} combo and stole a card!`,
-          { scope: 'all' },
-        ),
-      );
-
-      // Private log - only the stealing player sees what card they got
-      helpers.addLog(
-        state,
-        helpers.createLogEntry('action', `stolenCard:cards:${stolenCard}`, {
-          scope: 'private',
-          senderId: playerId,
-        }),
-      );
-    } else if (cards.length >= 3 && requestedCard) {
-      // Trio: Steal the named card if target has it
-      const cardIndex = target.hand.indexOf(requestedCard);
-      if (cardIndex !== -1) {
-        stolenCard = target.hand[cardIndex];
-        target.hand.splice(cardIndex, 1);
-        player.hand.push(stolenCard);
-
-        helpers.addLog(
-          state,
-          helpers.createLogEntry(
-            'action',
-            `Played ${cards.length}x ${cards[0]} combo and stole a ${requestedCard}!`,
-            { scope: 'all' },
-          ),
-        );
-      } else {
-        helpers.addLog(
-          state,
-          helpers.createLogEntry(
-            'action',
-            `Played ${cards.length}x ${cards[0]} combo but target didn't have the requested card!`,
-            { scope: 'all' },
-          ),
-        );
-      }
-    }
-
-    return { success: true, state };
+    return executeCatComboHelper(
+      state,
+      playerId,
+      cards,
+      targetPlayerId,
+      {
+        ...helpers,
+        findPlayer: (s, pid) => this.findPlayer(s, pid),
+      },
+      selectedIndex,
+      requestedCard,
+      requestedDiscardCard,
+    );
   }
 
   /**

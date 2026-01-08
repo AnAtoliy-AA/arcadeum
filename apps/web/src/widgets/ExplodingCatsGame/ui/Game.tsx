@@ -11,6 +11,7 @@ import {
   useExplodingCatsModals,
   useRematch,
 } from '../hooks';
+import { useGameHandlers } from '../hooks/useGameHandlers';
 import { CatComboModal } from './modals/CatComboModal';
 import { SeeTheFutureModal } from './modals/SeeTheFutureModal';
 import { FavorModal } from './modals/FavorModal';
@@ -104,13 +105,17 @@ export default function ExplodingCatsGame({
     selectedTarget,
     selectedCard,
     selectedIndex,
+    selectedDiscardCard,
+    selectedFiverCards,
     setSelectedMode,
     setSelectedTarget,
     setSelectedCard,
     setSelectedIndex,
+    setSelectedDiscardCard,
     handleOpenCatCombo,
     handleCloseCatComboModal,
     handleSelectCat,
+    handleToggleFiverCard,
     favorModal,
     setFavorModal,
     seeTheFutureModal,
@@ -142,35 +147,24 @@ export default function ExplodingCatsGame({
     seeTheFutureLabel,
   });
 
-  const handleConfirmCatCombo = useCallback(() => {
-    if (!catComboModal?.selectedCat || !selectedMode || !selectedTarget) return;
-    if (selectedMode === 'trio' && !selectedCard) return;
-    if (selectedMode === 'pair' && selectedIndex === null) return;
-
-    actions.playCatCombo(
-      catComboModal.selectedCat,
+  const { handleConfirmCatCombo, handleSendChatMessage, handleOpenFiverCombo } =
+    useGameHandlers({
       selectedMode,
       selectedTarget,
-      selectedMode === 'trio' ? selectedCard! : undefined,
-      selectedMode === 'pair' ? selectedIndex! : undefined,
-    );
-    handleCloseCatComboModal();
-  }, [
-    catComboModal,
-    selectedMode,
-    selectedTarget,
-    selectedCard,
-    selectedIndex,
-    actions,
-    handleCloseCatComboModal,
-  ]);
-
-  const handleSendChatMessage = useCallback(() => {
-    const trimmed = chatMessage.trim();
-    if (!trimmed) return;
-    actions.postHistoryNote(trimmed, chatScope);
-    clearChatMessage();
-  }, [chatMessage, chatScope, actions, clearChatMessage]);
+      selectedCard,
+      selectedIndex,
+      selectedFiverCards,
+      selectedDiscardCard,
+      catComboModal,
+      chatMessage,
+      chatScope,
+      currentPlayerHand: currentPlayer?.hand ?? [],
+      actions,
+      handleCloseCatComboModal,
+      handleOpenCatCombo,
+      setSelectedMode,
+      clearChatMessage,
+    });
 
   // Game not started yet
   if (!snapshot) {
@@ -346,6 +340,7 @@ export default function ExplodingCatsGame({
               canAct={!!canAct}
               actionBusy={!!actionBusy}
               aliveOpponents={aliveOpponents}
+              discardPileLength={snapshot?.discardPile?.length ?? 0}
               t={t as (key: string) => string}
               onDraw={actions.drawCard}
               onPlayActionCard={actions.playActionCard}
@@ -353,6 +348,7 @@ export default function ExplodingCatsGame({
               onPlaySeeTheFuture={actions.playSeeTheFuture}
               onOpenFavorModal={() => setFavorModal(true)}
               onOpenCatCombo={handleOpenCatCombo}
+              onOpenFiverCombo={handleOpenFiverCombo}
             />
           )}
 
@@ -414,12 +410,18 @@ export default function ExplodingCatsGame({
         selectedTarget={selectedTarget}
         selectedCard={selectedCard}
         selectedIndex={selectedIndex}
+        selectedDiscardCard={selectedDiscardCard}
+        selectedFiverCards={selectedFiverCards}
         aliveOpponents={aliveOpponents}
+        selfHand={currentPlayer?.hand ?? []}
+        discardPile={snapshot?.discardPile ?? []}
         onSelectCat={handleSelectCat}
         onSelectMode={setSelectedMode}
         onSelectTarget={setSelectedTarget}
         onSelectCard={setSelectedCard}
         onSelectIndex={setSelectedIndex}
+        onSelectDiscardCard={setSelectedDiscardCard}
+        onToggleFiverCard={handleToggleFiverCard}
         onConfirm={handleConfirmCatCombo}
         resolveDisplayName={resolveDisplayName}
         t={t}

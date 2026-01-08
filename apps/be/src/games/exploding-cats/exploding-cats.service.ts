@@ -183,20 +183,34 @@ export class ExplodingCatsService {
     cat: string,
     payload: {
       mode: string;
-      targetPlayerId: string;
+      targetPlayerId?: string;
       desiredCard?: string;
       selectedIndex?: number;
+      requestedDiscardCard?: string;
+      cards?: string[];
     },
   ) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
 
-    const cards = payload.mode === 'trio' ? [cat, cat, cat] : [cat, cat];
+    // Build cards array based on mode
+    let cards: string[];
+    if (payload.mode === 'fiver') {
+      // Fiver mode: cards should be provided by the client (any 5 different cards)
+      // For now, the client will need to select and send the 5 cards
+      cards = payload.cards ?? [];
+    } else if (payload.mode === 'trio') {
+      cards = [cat, cat, cat];
+    } else {
+      cards = [cat, cat];
+    }
+
     return this.explodingCatsActions.playCatCombo(session.id, userId, {
       cards,
       targetPlayerId: payload.targetPlayerId,
       requestedCard: payload.desiredCard,
       selectedIndex: payload.selectedIndex,
+      requestedDiscardCard: payload.requestedDiscardCard,
     });
   }
 

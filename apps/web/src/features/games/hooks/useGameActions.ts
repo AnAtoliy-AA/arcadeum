@@ -22,11 +22,13 @@ interface UseGameActionsReturn {
   giveFavorCard: (cardToGive: string) => void;
   playSeeTheFuture: () => void;
   playCatCombo: (
-    cat: string,
+    cat: string | null,
     mode: string,
     targetPlayerId?: string,
     desiredCard?: string,
     selectedIndex?: number,
+    requestedDiscardCard?: string,
+    cards?: string[],
   ) => void;
   playDefuse: (position: number) => void;
 
@@ -157,11 +159,13 @@ export function useGameActions(
 
   const playCatCombo = useCallback(
     (
-      cat: string,
+      cat: string | null,
       mode: string,
       targetPlayerId?: string,
       desiredCard?: string,
       selectedIndex?: number,
+      requestedDiscardCard?: string,
+      cards?: string[],
     ) => {
       if (!userId) return;
       setActionBusy?.('cat_combo');
@@ -173,6 +177,8 @@ export function useGameActions(
         targetPlayerId,
         desiredCard,
         selectedIndex,
+        requestedDiscardCard,
+        cards,
       });
     },
     [roomId, userId, setActionBusy],

@@ -77,15 +77,19 @@ export class ExplodingCatsActionsService {
 
   /**
    * Play a cat combo (2 or more matching cat cards)
+   * - Pair: 2 matching cards to blind-pick from target's hand
+   * - Trio: 3 matching cards to request a specific card from target
+   * - Fiver: 5 different cat cards to pick any card from discard pile
    */
   async playCatCombo(
     sessionId: string,
     userId: string,
     payload: {
       cards: string[];
-      targetPlayerId: string;
+      targetPlayerId?: string;
       requestedCard?: string;
       selectedIndex?: number;
+      requestedDiscardCard?: string;
     },
   ) {
     const session = await this.sessionsService.executeAction({

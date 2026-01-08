@@ -6,7 +6,7 @@ import type {
   ExplodingCatsCard,
   ExplodingCatsCatCard,
 } from '../types';
-import { CAT_CARDS } from '../types';
+import { CAT_CARDS, FIVER_COMBO_SIZE } from '../types';
 import { InfoCard, InfoTitle, ActionButtons, ActionButton } from './styles';
 
 export type ActionBusyState =
@@ -26,12 +26,14 @@ interface ActionsSectionProps {
   canAct: boolean | undefined;
   actionBusy: ActionBusyState | string | null;
   hasOpponents: boolean;
+  discardPileLength: number;
   onDraw: () => void;
   onPlayActionCard: (card: ExplodingCatsCard) => void;
   onPlayNope: () => void;
   onOpenFavorModal: () => void;
   onPlaySeeTheFuture: () => void;
   onOpenCatCombo: (cats: ExplodingCatsCatCard[]) => void;
+  onOpenFiverCombo: () => void;
   t: (key: string) => string;
 }
 
@@ -40,12 +42,14 @@ export function ActionsSection({
   canAct,
   actionBusy,
   hasOpponents,
+  discardPileLength,
   onDraw,
   onPlayActionCard,
   onPlayNope,
   onOpenFavorModal,
   onPlaySeeTheFuture,
   onOpenCatCombo,
+  onOpenFiverCombo,
   t,
 }: ActionsSectionProps) {
   // Find all cat cards with 2+ copies (combos available)
@@ -57,6 +61,12 @@ export function ActionsSection({
 
     return CAT_CARDS.filter((cat) => (cardCounts.get(cat) || 0) >= 2);
   }, [currentPlayer.hand]);
+
+  // Check if fiver combo is available (FIVER_COMBO_SIZE+ unique cards and non-empty discard pile)
+  const fiverAvailable = useMemo(() => {
+    const uniqueCards = new Set(currentPlayer.hand);
+    return uniqueCards.size >= FIVER_COMBO_SIZE && discardPileLength > 0;
+  }, [currentPlayer.hand, discardPileLength]);
 
   const canPlayCombo = availableCombos.length > 0 && hasOpponents && canAct;
   return (
@@ -140,6 +150,15 @@ export function ActionsSection({
             {actionBusy === 'cat_combo'
               ? 'Playing...'
               : `🐱 ${t('games.table.modals.catCombo.title')}`}
+          </ActionButton>
+        )}
+        {fiverAvailable && canAct && (
+          <ActionButton
+            variant="primary"
+            onClick={onOpenFiverCombo}
+            disabled={actionBusy === 'cat_combo'}
+          >
+            {actionBusy === 'cat_combo' ? 'Playing...' : '🃏 Fiver (5 Cards)'}
           </ActionButton>
         )}
         {/* Attack Pack Cards */}

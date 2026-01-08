@@ -8,6 +8,9 @@ import {
  * Validation utilities for Exploding Cats game actions
  */
 
+/** Number of different cards required for the fiver combo */
+export const FIVER_COMBO_SIZE = 5;
+
 interface FavorPayload {
   targetPlayerId?: string;
 }
@@ -49,7 +52,17 @@ export function validateCatCombo(
 ): boolean {
   if (!cards || cards.length < 2 || !player) return false;
 
-  // All cards must be the same cat card
+  // Fiver combo: any FIVER_COMBO_SIZE different cards
+  if (cards.length === FIVER_COMBO_SIZE) {
+    const uniqueCards = new Set(cards);
+    // All cards must be different, and player must have them
+    return (
+      uniqueCards.size === FIVER_COMBO_SIZE &&
+      cards.every((c) => hasCard(player, c))
+    );
+  }
+
+  // Pair/Trio: All cards must be the same cat card
   const firstCard = cards[0];
   return cards.every((card) => card === firstCard && hasCard(player, card));
 }
@@ -102,4 +115,10 @@ export function canPlayCatCombo(player: ExplodingCatsPlayerState): boolean {
   return catCards.some(
     (cat) => player.hand.filter((c) => c === cat).length >= 2,
   );
+}
+
+export function canPlayFiverCombo(player: ExplodingCatsPlayerState): boolean {
+  // Check if player has at least FIVER_COMBO_SIZE different cards
+  const uniqueCards = new Set(player.hand);
+  return uniqueCards.size >= FIVER_COMBO_SIZE;
 }

@@ -34,6 +34,7 @@ interface PlayerHandProps {
   canAct: boolean;
   actionBusy: boolean | string | null;
   aliveOpponents: ExplodingCatsPlayerState[];
+  discardPileLength: number;
   t: (key: string) => string;
   onDraw: () => void;
   onPlayActionCard: (card: ExplodingCatsCard) => void;
@@ -44,6 +45,7 @@ interface PlayerHandProps {
     cats: ExplodingCatsCatCard[],
     hand: ExplodingCatsCard[],
   ) => void;
+  onOpenFiverCombo: () => void;
 }
 
 export const PlayerHand: React.FC<PlayerHandProps> = ({
@@ -53,6 +55,7 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
   canAct,
   actionBusy,
   aliveOpponents,
+  discardPileLength,
   t,
   onDraw,
   onPlayActionCard,
@@ -60,6 +63,7 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
   onPlaySeeTheFuture,
   onOpenFavorModal,
   onOpenCatCombo,
+  onOpenFiverCombo,
 }) => {
   const { uniqueCards, cardCounts } = useMemo(() => {
     const unique = Array.from(new Set(currentPlayer.hand));
@@ -78,12 +82,14 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
           canAct={canAct}
           actionBusy={typeof actionBusy === 'boolean' ? null : actionBusy}
           hasOpponents={aliveOpponents.length > 0}
+          discardPileLength={discardPileLength}
           onDraw={onDraw}
           onPlayActionCard={onPlayActionCard}
           onPlayNope={onPlayNope}
           onOpenFavorModal={onOpenFavorModal}
           onPlaySeeTheFuture={onPlaySeeTheFuture}
           onOpenCatCombo={(cats) => onOpenCatCombo(cats, currentPlayer.hand)}
+          onOpenFiverCombo={onOpenFiverCombo}
           t={t}
         />
       )}

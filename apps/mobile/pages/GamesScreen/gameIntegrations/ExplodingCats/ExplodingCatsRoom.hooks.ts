@@ -215,16 +215,35 @@ export function useGameActions({
         return;
       }
 
-      setActionBusy(input.mode === 'pair' ? 'cat_pair' : 'cat_trio');
-      socket.emit('games.session.play_cat_combo', {
-        roomId: room.id,
-        userId: tokens.userId,
-        cat: input.cat,
-        mode: input.mode,
-        targetPlayerId: input.targetPlayerId,
-        desiredCard: input.mode === 'trio' ? input.desiredCard : undefined,
-        selectedIndex: input.mode === 'pair' ? input.selectedIndex : undefined,
-      });
+      // Set action busy based on mode
+      const busyType =
+        input.mode === 'fiver'
+          ? 'cat_fiver'
+          : input.mode === 'pair'
+            ? 'cat_pair'
+            : 'cat_trio';
+      setActionBusy(busyType);
+
+      // Emit socket event with mode-specific parameters
+      if (input.mode === 'fiver') {
+        socket.emit('games.session.play_cat_combo', {
+          roomId: room.id,
+          userId: tokens.userId,
+          mode: 'fiver',
+          requestedDiscardCard: input.requestedDiscardCard,
+        });
+      } else {
+        socket.emit('games.session.play_cat_combo', {
+          roomId: room.id,
+          userId: tokens.userId,
+          cat: input.cat,
+          mode: input.mode,
+          targetPlayerId: input.targetPlayerId,
+          desiredCard: input.mode === 'trio' ? input.desiredCard : undefined,
+          selectedIndex:
+            input.mode === 'pair' ? input.selectedIndex : undefined,
+        });
+      }
     },
     [actionBusy, room?.id, setActionBusy, t, tokens.userId],
   );

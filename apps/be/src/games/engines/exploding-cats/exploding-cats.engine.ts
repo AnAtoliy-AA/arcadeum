@@ -43,6 +43,7 @@ interface PlayCatComboPayload {
   targetPlayerId?: string;
   selectedIndex?: number; // For pair combos - blind pick a card position
   requestedCard?: ExplodingCatsCard; // For trio combos - name a card to steal
+  requestedDiscardCard?: ExplodingCatsCard; // For fiver combos - pick from discard pile
 }
 
 interface FavorPayload {
@@ -271,10 +272,11 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
           newState,
           context.userId,
           typedPayload!.cards!,
-          typedPayload!.targetPlayerId!,
+          typedPayload?.targetPlayerId ?? null,
           helpers,
           typedPayload?.selectedIndex,
           typedPayload?.requestedCard,
+          typedPayload?.requestedDiscardCard,
         );
 
       case 'see_the_future':

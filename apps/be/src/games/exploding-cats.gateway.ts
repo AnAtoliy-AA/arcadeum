@@ -112,12 +112,20 @@ export class ExplodingCatsGateway {
       targetPlayerId?: string;
       desiredCard?: string;
       selectedIndex?: number;
+      requestedDiscardCard?: string;
+      cards?: string[];
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
-    const cat = extractString(payload, 'cat', { toLowerCase: true });
     const modeRaw = extractString(payload, 'mode', { toLowerCase: true });
-    const targetPlayerId = extractString(payload, 'targetPlayerId');
+
+    // Cat and targetPlayerId are optional for fiver mode
+    const cat =
+      typeof payload?.cat === 'string' ? payload.cat.trim().toLowerCase() : '';
+    const targetPlayerId =
+      typeof payload?.targetPlayerId === 'string'
+        ? payload.targetPlayerId.trim()
+        : undefined;
     const desiredCard =
       typeof payload?.desiredCard === 'string'
         ? payload.desiredCard.trim().toLowerCase()
@@ -126,18 +134,27 @@ export class ExplodingCatsGateway {
       typeof payload?.selectedIndex === 'number'
         ? payload.selectedIndex
         : undefined;
+    const requestedDiscardCard =
+      typeof payload?.requestedDiscardCard === 'string'
+        ? payload.requestedDiscardCard.trim().toLowerCase()
+        : undefined;
+    const cards = Array.isArray(payload?.cards)
+      ? payload.cards.map((c) => String(c).trim().toLowerCase())
+      : undefined;
 
-    const mode =
-      modeRaw === 'trio' ? 'trio' : modeRaw === 'pair' ? 'pair' : null;
-    if (!mode) {
+    const validModes = ['pair', 'trio', 'fiver'] as const;
+    if (!validModes.includes(modeRaw as (typeof validModes)[number])) {
       throw new WsException('mode is required.');
     }
+    const mode = modeRaw as 'pair' | 'trio' | 'fiver';
 
-    if (!isCatComboCard(cat)) {
+    // Fiver mode doesn't require a cat card selection - it uses any 5 different cards
+    if (mode !== 'fiver' && !isCatComboCard(cat)) {
       throw new WsException('cat is not supported.');
     }
 
     const desiredCardValue = toExplodingCatsCard(desiredCard);
+    const requestedDiscardCardValue = toExplodingCatsCard(requestedDiscardCard);
 
     if (mode === 'trio' && !desiredCardValue) {
       throw new WsException('desiredCard is required for trio combos.');
@@ -147,12 +164,20 @@ export class ExplodingCatsGateway {
       throw new WsException('selectedIndex is required for pair combos.');
     }
 
+    if (mode === 'fiver' && !requestedDiscardCardValue) {
+      throw new WsException(
+        'requestedDiscardCard is required for fiver combos.',
+      );
+    }
+
     try {
       await this.explodingCatsService.playCatComboByRoom(userId, roomId, cat, {
         mode,
-        targetPlayerId,
+        targetPlayerId: mode === 'fiver' ? undefined : targetPlayerId,
         desiredCard: desiredCardValue,
         selectedIndex,
+        requestedDiscardCard: requestedDiscardCardValue,
+        cards,
       });
 
       client.emit('games.session.cat_combo.played', {
@@ -163,6 +188,7 @@ export class ExplodingCatsGateway {
         targetPlayerId,
         desiredCard: desiredCardValue,
         selectedIndex,
+        requestedDiscardCard: requestedDiscardCardValue,
       });
     } catch (error) {
       handleError(

@@ -7,6 +7,9 @@ import type {
   ChatScope,
 } from '@/shared/types/games';
 
+/** Number of different cards required for the fiver combo */
+export const FIVER_COMBO_SIZE = 5;
+
 /**
  * Props for the ExplodingCatsGame component
  */
@@ -30,6 +33,7 @@ export interface CatComboModalState {
     availableModes: ('pair' | 'trio')[];
   }>;
   selectedCat: ExplodingCatsCatCard | null;
+  fiverAvailable: boolean;
 }
 
 /**

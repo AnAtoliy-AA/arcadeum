@@ -55,6 +55,15 @@ export function useCatCombo(
     return availability;
   }, [catCardCounts, aliveOpponents]);
 
+  // Check if fiver combo is available (has at least FIVER_COMBO_SIZE different cards)
+  const FIVER_COMBO_SIZE = 5;
+  const fiverAvailable = useMemo(() => {
+    if (!selfPlayerHand || selfPlayerHand.length < FIVER_COMBO_SIZE)
+      return false;
+    const uniqueCards = new Set(selfPlayerHand);
+    return uniqueCards.size >= FIVER_COMBO_SIZE;
+  }, [selfPlayerHand]);
+
   const [catComboPrompt, setCatComboPrompt] =
     useState<CatComboPromptState | null>(null);
 
@@ -83,10 +92,31 @@ export function useCatCombo(
         targetPlayerId: defaultTarget,
         desiredCard: preferredMode === 'trio' ? defaultDesired : null,
         selectedIndex: preferredMode === 'pair' ? 0 : null,
-        available: availability,
+        requestedDiscardCard: null,
+        available: { ...availability, fiver: false },
       });
     },
     [aliveOpponents, catComboAvailability],
+  );
+
+  // Open fiver combo prompt (uses all 5 different cat cards)
+  const openFiverComboPrompt = useCallback(
+    (discardPile: ExplodingCatsCard[]) => {
+      if (!fiverAvailable || discardPile.length === 0) {
+        return;
+      }
+
+      setCatComboPrompt({
+        cat: null,
+        mode: 'fiver',
+        targetPlayerId: null,
+        desiredCard: null,
+        selectedIndex: null,
+        requestedDiscardCard: discardPile[0] ?? null,
+        available: { pair: false, trio: false, fiver: true },
+      });
+    },
+    [fiverAvailable],
   );
 
   const handleCatComboModeChange = useCallback(
@@ -151,15 +181,33 @@ export function useCatCombo(
     });
   }, []);
 
+  const handleRequestedDiscardCardChange = useCallback(
+    (card: ExplodingCatsCard) => {
+      setCatComboPrompt((prev) => {
+        if (!prev) {
+          return prev;
+        }
+        return {
+          ...prev,
+          requestedDiscardCard: card,
+        };
+      });
+    },
+    [],
+  );
+
   return {
     catCardCounts,
     catComboAvailability,
+    fiverAvailable,
     catComboPrompt,
     closeCatComboPrompt,
     openCatComboPrompt,
+    openFiverComboPrompt,
     handleCatComboModeChange,
     handleCatComboTargetChange,
     handleCatComboDesiredCardChange,
     handleCatComboSelectedIndexChange,
+    handleRequestedDiscardCardChange,
   };
 }

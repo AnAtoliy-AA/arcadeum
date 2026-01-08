@@ -1,4 +1,4 @@
-import type {
+import {
   GameRoomSummary,
   ExplodingCatsSnapshot,
   ExplodingCatsCard,
@@ -6,6 +6,8 @@ import type {
   ExplodingCatsCatCard,
   ExplodingCatsLogEntry,
   ChatScope,
+  ATTACK_PACK_CARDS,
+  BASE_ACTION_CARDS,
 } from '@/shared/types/games';
 
 /** Number of different cards required for the fiver combo */
@@ -55,6 +57,8 @@ export type {
   ChatScope,
 };
 
+export { ATTACK_PACK_CARDS, BASE_ACTION_CARDS };
+
 /**
  * List of all cat cards
  */
@@ -72,7 +76,7 @@ export const CAT_CARDS: ExplodingCatsCatCard[] = [
 export const ALL_GAME_CARDS: ExplodingCatsCard[] = [
   'exploding_cat',
   'defuse',
-  'attack',
-  'skip',
+  ...BASE_ACTION_CARDS,
   ...CAT_CARDS,
+  ...ATTACK_PACK_CARDS,
 ];

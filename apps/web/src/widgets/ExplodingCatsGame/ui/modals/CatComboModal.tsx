@@ -13,7 +13,7 @@ import {
   ModalButton,
 } from '../styles';
 import { getCardEmoji, getCardTranslationKey } from '../../lib/cardUtils';
-import { CAT_CARDS, FIVER_COMBO_SIZE } from '../../types';
+import { FIVER_COMBO_SIZE, ALL_GAME_CARDS } from '../../types';
 import type {
   ExplodingCatsCard,
   ExplodingCatsCatCard,
@@ -310,29 +310,23 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
               {t('games.table.modals.catCombo.selectCard')}
             </SectionLabel>
             <OptionGrid>
-              {[
-                'defuse',
-                'attack',
-                'skip',
-                'favor',
-                'shuffle',
-                'see_the_future',
-                ...CAT_CARDS,
-              ].map((card) => (
-                <OptionButton
-                  key={card}
-                  $selected={selectedCard === card}
-                  onClick={() => onSelectCard(card as ExplodingCatsCard)}
-                >
-                  <div style={{ fontSize: '1.5rem' }}>
-                    {getCardEmoji(card as ExplodingCatsCard)}
-                  </div>
-                  <div style={{ fontSize: '0.75rem' }}>
-                    {t(getCardTranslationKey(card as ExplodingCatsCard)) ||
-                      card}
-                  </div>
-                </OptionButton>
-              ))}
+              {ALL_GAME_CARDS.filter((c) => c !== 'exploding_cat').map(
+                (card) => (
+                  <OptionButton
+                    key={card}
+                    $selected={selectedCard === card}
+                    onClick={() => onSelectCard(card as ExplodingCatsCard)}
+                  >
+                    <div style={{ fontSize: '1.5rem' }}>
+                      {getCardEmoji(card as ExplodingCatsCard)}
+                    </div>
+                    <div style={{ fontSize: '0.75rem' }}>
+                      {t(getCardTranslationKey(card as ExplodingCatsCard)) ||
+                        card}
+                    </div>
+                  </OptionButton>
+                ),
+              )}
             </OptionGrid>
           </ModalSection>
         )}

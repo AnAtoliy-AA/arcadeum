@@ -303,6 +303,44 @@ const roleColors: Record<string, { bg: string; text: string; glow?: string }> =
     },
   };
 
+export const MobileLoginIndicator = styled(Link)<{ $isAuthenticated: boolean }>`
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  text-decoration: none;
+  background: ${({ theme, $isAuthenticated }) =>
+    $isAuthenticated
+      ? `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}, ${theme.buttons.primary.gradientEnd})`
+      : theme.surfaces.card.background};
+  border: 2px solid
+    ${({ theme, $isAuthenticated }) =>
+      $isAuthenticated ? 'transparent' : theme.surfaces.card.border};
+  color: ${({ theme, $isAuthenticated }) =>
+    $isAuthenticated ? '#fff' : theme.text.muted};
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  @media (max-width: 640px) {
+    display: flex;
+  }
+`;
+
 export const RoleBadge = styled.span<{ $role: string }>`
   display: inline-flex;
   align-items: center;

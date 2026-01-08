@@ -21,10 +21,10 @@ export function Header() {
 
   const navItems = useMemo(
     () => [
-      { href: '/games', label: t('navigation.gamesTab') },
-      { href: '/chats', label: t('navigation.chatsTab') },
-      { href: '/history', label: t('navigation.historyTab') },
-      { href: '/settings', label: t('navigation.settingsTab') },
+      { href: routes.games, label: t('navigation.gamesTab') },
+      { href: routes.chats, label: t('navigation.chatsTab') },
+      { href: routes.history, label: t('navigation.historyTab') },
+      { href: routes.settings, label: t('navigation.settingsTab') },
     ],
     [t],
   );
@@ -246,6 +246,33 @@ export function Header() {
               </DesktopOnly>
             )}
 
+            <MobileLoginIndicator
+              href={isAuthenticated ? routes.settings : routes.auth}
+              $isAuthenticated={isAuthenticated}
+              title={
+                isAuthenticated ? displayName || 'Logged in' : 'Not logged in'
+              }
+            >
+              {isAuthenticated ? (
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                </svg>
+              ) : (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                  <polyline points="10 17 15 12 10 7" />
+                  <line x1="15" y1="12" x2="3" y2="12" />
+                </svg>
+              )}
+            </MobileLoginIndicator>
+
             <MobileMenuButton
               onClick={toggleMobileMenu}
               aria-label="Toggle menu"
@@ -386,4 +413,5 @@ import {
   MobileNavLink,
   MobileUserInfo,
   RoleBadge,
+  MobileLoginIndicator,
 } from './styles';

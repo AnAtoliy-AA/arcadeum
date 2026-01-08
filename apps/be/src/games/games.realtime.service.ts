@@ -239,6 +239,19 @@ export class GamesRealtimeService {
     );
   }
 
+  emitRematchStarted(oldRoomId: string, newRoomId: string): void {
+    if (!this.server) {
+      return;
+    }
+    this.server.to(this.roomChannel(oldRoomId)).emit(
+      'games.rematch.started',
+      maybeEncrypt({
+        oldRoomId,
+        newRoomId,
+      }),
+    );
+  }
+
   async emitGameStarted(
     room: GameRoomSummary,
     session: GameSessionSummary,

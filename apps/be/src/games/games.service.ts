@@ -293,7 +293,15 @@ export class GamesService {
       participantIds,
       ...options,
     };
-    return this.historyService.createRematchFromHistory(dto, userId);
+    const newRoomId = await this.historyService.createRematchFromHistory(
+      dto,
+      userId,
+    );
+
+    // Emit real-time event to the old room
+    this.realtimeService.emitRematchStarted(roomId, newRoomId);
+
+    return newRoomId;
   }
 
   /**

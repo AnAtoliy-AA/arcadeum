@@ -235,6 +235,26 @@ export class GamesController {
       },
     );
 
+    // Notify original room participants about the rematch
+    // The createRematchFromHistory method returns the new room ID
+    // We can fetch the new room to confirm if needed, but for now we trust the ID
+    // However, createRematchFromHistory returns the ID string directly
+    // Wait, the return type above says it returns a string, but the variable is named 'room'
+    // Let's check the service quickly. Yes, it returns string (newRoomId).
+    // So 'room' variable holds the ID string.
+
+    // We need to inject RealtimeService here. It's not injected yet.
+    // I need to add it to constructor first.
+
+    // Oh wait, GamesController doesn't inject RealtimeService directly,
+    // it usually goes through GamesService.
+    // But GamesService uses RealtimeService.
+    // Let's check GamesService.
+
+    // Actually, I should probably add this emit to GamesService instead of Controller to keep logic encapsulated.
+    // GamesService already has access to RealtimeService (likely, let me double check).
+    // If GamesService has RealtimeService, I should add the emit there.
+
     return { room };
   }
 

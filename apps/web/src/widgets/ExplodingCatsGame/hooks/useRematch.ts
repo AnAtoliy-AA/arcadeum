@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { resolveApiUrl } from '@/shared/lib/api-base';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { useSocket } from '@/shared/lib/socket';
 
 interface UseRematchOptions {
   roomId: string;
@@ -22,6 +23,21 @@ export function useRematch({ roomId }: UseRematchOptions): UseRematchResult {
   const [rematchLoading, setRematchLoading] = useState(false);
   const [rematchError, setRematchError] = useState<string | null>(null);
   const [showRematchModal, setShowRematchModal] = useState(false);
+
+  // Listen for rematch events
+  const handleRematchStarted = useCallback(
+    (payload: unknown) => {
+      const data = payload as { oldRoomId: string; newRoomId: string };
+      // If we are in the old room, redirect to the new room
+      if (data?.oldRoomId === roomId && data?.newRoomId) {
+        setShowRematchModal(false);
+        router.push(`/games/rooms/${data.newRoomId}`);
+      }
+    },
+    [roomId, router],
+  );
+
+  useSocket('games.rematch.started', handleRematchStarted);
 
   const openRematchModal = useCallback(() => {
     setShowRematchModal(true);
@@ -67,6 +83,11 @@ export function useRematch({ roomId }: UseRematchOptions): UseRematchResult {
         if (!newRoomId) {
           throw new Error('Invalid response: missing room ID');
         }
+
+        // We don't need to manually redirect here anymore because the socket event
+        // will handle it for everyone, including the host.
+        // However, keeping it as a fallback is safer for the host UX.
+        // And we MUST reset loading state in finally block to avoid getting stuck.
         setShowRematchModal(false);
         router.push(`/games/rooms/${newRoomId}`);
       } catch (err) {

@@ -17,6 +17,8 @@ const settingsMessagesDefinition = {
     gameplayTitle: 'Gameplay',
     gameplayDescription: 'Customize your in-game experience.',
     hapticsLabel: 'Haptic Feedback',
+    hapticsDescription:
+      "Vibrate when it's your turn to play (mobile devices only).",
     appearanceTitle: 'Appearance',
     appearanceDescription:
       'Choose a theme to use across the {appName} web experience.',
@@ -72,6 +74,8 @@ const settingsMessagesDefinition = {
     gameplayTitle: 'Juego',
     gameplayDescription: 'Personaliza tu experiencia de juego.',
     hapticsLabel: 'Respuesta háptica',
+    hapticsDescription:
+      'Vibrar cuando sea tu turno de jugar (solo dispositivos móviles).',
     appearanceTitle: 'Apariencia',
     appearanceDescription:
       'Elige un tema para usar en toda la experiencia web de {appName}.',
@@ -129,6 +133,8 @@ const settingsMessagesDefinition = {
     gameplayTitle: 'Jeu',
     gameplayDescription: 'Personnalisez votre expérience de jeu.',
     hapticsLabel: 'Retour haptique',
+    hapticsDescription:
+      "Vibrer quand c'est à votre tour de jouer (appareils mobiles uniquement).",
     appearanceTitle: 'Apparence',
     appearanceDescription:
       "Choisissez un thème à utiliser sur l'ensemble de l'expérience web de {appName}.",

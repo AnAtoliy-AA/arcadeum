@@ -313,10 +313,21 @@ export const ToggleRow = styled.label`
   }
 `;
 
+export const ToggleLabelWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`;
+
 export const ToggleLabel = styled.span`
   font-size: 1.05rem;
   font-weight: 600;
   color: ${({ theme }) => theme.text.secondary};
+`;
+
+export const ToggleDescription = styled.span`
+  font-size: 0.85rem;
+  color: ${({ theme }) => theme.text.muted};
 `;
 
 export const ToggleInput = styled.input.attrs({ type: 'checkbox' })`

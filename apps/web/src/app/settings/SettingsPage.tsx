@@ -1,11 +1,17 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
+import { useCallback } from 'react';
 
-import { useLanguage, formatMessage } from "@/app/i18n/LanguageProvider";
-import { useThemeController } from "@/app/theme/ThemeContext";
-import { DEFAULT_LOCALE, getMessages, SUPPORTED_LOCALES, type Locale } from "@/shared/i18n";
-import type { ThemePreference } from "@/shared/config/theme";
+import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
+import { useThemeController } from '@/app/theme/ThemeContext';
+import { useHapticsSetting } from '@/shared/hooks/useHapticsSetting';
+import {
+  DEFAULT_LOCALE,
+  getMessages,
+  SUPPORTED_LOCALES,
+  type Locale,
+} from '@/shared/i18n';
+import type { ThemePreference } from '@/shared/config/theme';
 
 type DownloadConfig = {
   title: string;
@@ -28,11 +34,11 @@ export type SettingsPageProps = {
 const DEFAULT_TRANSLATIONS = getMessages(DEFAULT_LOCALE);
 const DEFAULT_SETTINGS_COPY = DEFAULT_TRANSLATIONS.settings ?? {};
 const THEME_OPTION_ORDER: ThemePreference[] = [
-  "system",
-  "light",
-  "dark",
-  "neonLight",
-  "neonDark",
+  'system',
+  'light',
+  'dark',
+  'neonLight',
+  'neonDark',
 ];
 
 export function SettingsPage({
@@ -42,23 +48,25 @@ export function SettingsPage({
   description,
 }: SettingsPageProps) {
   const { themePreference, setThemePreference } = useThemeController();
+  const { hapticsEnabled, setHapticsEnabled } = useHapticsSetting();
   const { locale, setLocale, messages } = useLanguage();
   const settingsCopy = messages.settings ?? {};
   const defaultSettings = DEFAULT_SETTINGS_COPY;
   const defaultThemeOptions = defaultSettings.themeOptions ?? {};
   const defaultLanguageLabels = defaultSettings.languageOptionLabels ?? {};
 
-  const pageTitle = settingsCopy.title ?? defaultSettings.title ?? "";
+  const pageTitle = settingsCopy.title ?? defaultSettings.title ?? '';
   const pageDescription =
     formatMessage(settingsCopy.description, { appName }) ??
     formatMessage(defaultSettings.description, { appName }) ??
     description;
 
-  const appearanceTitle = settingsCopy.appearanceTitle ?? defaultSettings.appearanceTitle ?? "";
+  const appearanceTitle =
+    settingsCopy.appearanceTitle ?? defaultSettings.appearanceTitle ?? '';
   const appearanceDescription =
     formatMessage(settingsCopy.appearanceDescription, { appName }) ??
     formatMessage(defaultSettings.appearanceDescription, { appName }) ??
-    "";
+    '';
 
   const themeOptions = THEME_OPTION_ORDER.map((code) => {
     const base = defaultThemeOptions[code] ?? {};
@@ -67,7 +75,7 @@ export function SettingsPage({
     const descriptionText =
       formatMessage(override?.description, { appName }) ??
       formatMessage(base.description, { appName }) ??
-      "";
+      '';
 
     return {
       code,
@@ -76,11 +84,12 @@ export function SettingsPage({
     };
   });
 
-  const languageTitle = settingsCopy.languageTitle ?? defaultSettings.languageTitle ?? "";
+  const languageTitle =
+    settingsCopy.languageTitle ?? defaultSettings.languageTitle ?? '';
   const languageDescription =
     formatMessage(settingsCopy.languageDescription, { appName }) ??
     formatMessage(defaultSettings.languageDescription, { appName }) ??
-    "";
+    '';
 
   const languageOptions = SUPPORTED_LOCALES.map((code) => ({
     code,
@@ -99,31 +108,37 @@ export function SettingsPage({
     formatMessage(defaultSettings.downloadsDescription, { appName }) ??
     downloads.description;
 
-  const downloadButtons: Array<{ key: string; href: string; label: string }> = [];
+  const downloadButtons: Array<{ key: string; href: string; label: string }> =
+    [];
   if (downloads.iosHref) {
     const label =
       settingsCopy.downloadsIosLabel ??
       defaultSettings.downloadsIosLabel ??
       downloads.iosLabel;
-    downloadButtons.push({ key: "ios", href: downloads.iosHref, label });
+    downloadButtons.push({ key: 'ios', href: downloads.iosHref, label });
   }
   if (downloads.androidHref) {
     const label =
       settingsCopy.downloadsAndroidLabel ??
       defaultSettings.downloadsAndroidLabel ??
       downloads.androidLabel;
-    downloadButtons.push({ key: "android", href: downloads.androidHref, label });
+    downloadButtons.push({
+      key: 'android',
+      href: downloads.androidHref,
+      label,
+    });
   }
 
-  const accountTitle = settingsCopy.accountTitle ?? defaultSettings.accountTitle ?? "";
+  const accountTitle =
+    settingsCopy.accountTitle ?? defaultSettings.accountTitle ?? '';
   const accountDescription =
     formatMessage(settingsCopy.accountDescription, { appName }) ??
     formatMessage(defaultSettings.accountDescription, { appName }) ??
-    "";
+    '';
   const accountStatus =
-    settingsCopy.accountGuestStatus ?? defaultSettings.accountGuestStatus ?? "";
+    settingsCopy.accountGuestStatus ?? defaultSettings.accountGuestStatus ?? '';
   const accountPrimaryCta =
-    settingsCopy.accountPrimaryCta ?? defaultSettings.accountPrimaryCta ?? "";
+    settingsCopy.accountPrimaryCta ?? defaultSettings.accountPrimaryCta ?? '';
   const accountSupportLabel =
     settingsCopy.accountSupportCtaLabel ??
     defaultSettings.accountSupportCtaLabel ??
@@ -193,6 +208,39 @@ export function SettingsPage({
           </PillGroup>
         </Section>
 
+        <Section>
+          <SectionTitle>
+            {settingsCopy.gameplayTitle ??
+              defaultSettings.gameplayTitle ??
+              'Gameplay'}
+          </SectionTitle>
+          <SectionDescription>
+            {settingsCopy.gameplayDescription ??
+              defaultSettings.gameplayDescription ??
+              'Customize your in-game experience.'}
+          </SectionDescription>
+          <OptionList>
+            <ToggleRow>
+              <ToggleLabelWrapper>
+                <ToggleLabel>
+                  {settingsCopy.hapticsLabel ??
+                    defaultSettings.hapticsLabel ??
+                    'Haptic Feedback'}
+                </ToggleLabel>
+                <ToggleDescription>
+                  {settingsCopy.hapticsDescription ??
+                    defaultSettings.hapticsDescription ??
+                    "Vibrate when it's your turn to play (mobile devices only)."}
+                </ToggleDescription>
+              </ToggleLabelWrapper>
+              <ToggleInput
+                checked={hapticsEnabled}
+                onChange={(e) => setHapticsEnabled(e.target.checked)}
+              />
+            </ToggleRow>
+          </OptionList>
+        </Section>
+
         {downloadButtons.length > 0 ? (
           <Section>
             <SectionTitle>{downloadsTitle}</SectionTitle>
@@ -220,7 +268,9 @@ export function SettingsPage({
             <AccountStatus role="status">{accountStatus}</AccountStatus>
             <AccountActions>
               <ActionButton href="/auth">{accountPrimaryCta}</ActionButton>
-              <SecondaryButton href={supportCta.href}>{accountSupportLabel}</SecondaryButton>
+              <SecondaryButton href={supportCta.href}>
+                {accountSupportLabel}
+              </SecondaryButton>
             </AccountActions>
           </AccountCard>
         </Section>
@@ -252,6 +302,11 @@ import {
   AccountActions,
   ActionButton,
   SecondaryButton,
-} from "./styles";
+  ToggleRow,
+  ToggleLabelWrapper,
+  ToggleLabel,
+  ToggleDescription,
+  ToggleInput,
+} from './styles';
 
 export default SettingsPage;

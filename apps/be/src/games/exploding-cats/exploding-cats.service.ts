@@ -6,6 +6,7 @@ import { GamesRealtimeService } from '../games.realtime.service';
 import { ExplodingCatsActionsService } from '../actions/exploding-cats/exploding-cats-actions.service';
 import { StartGameSessionResult } from '../games.types';
 import { ChatScope } from '../engines/base/game-engine.interface';
+import { GameSessionSummary } from '../sessions/game-sessions.service';
 
 @Injectable()
 export class ExplodingCatsService {
@@ -19,8 +20,20 @@ export class ExplodingCatsService {
 
   // ========== Core Actions ==========
 
+  // ========== Private Helper ==========
+
+  private async checkAndSyncRoomStatus(session: GameSessionSummary) {
+    if (session.status === 'completed') {
+      await this.roomsService.updateRoomStatus(session.roomId, 'completed');
+    }
+    return session;
+  }
+
+  // ========== Core Actions ==========
+
   async drawCard(sessionId: string, userId: string) {
-    return this.explodingCatsActions.drawCard(sessionId, userId);
+    const session = await this.explodingCatsActions.drawCard(sessionId, userId);
+    return this.checkAndSyncRoomStatus(session);
   }
 
   async playActionCard(
@@ -28,7 +41,12 @@ export class ExplodingCatsService {
     userId: string,
     payload: { card: string },
   ) {
-    return this.explodingCatsActions.playActionCard(sessionId, userId, payload);
+    const session = await this.explodingCatsActions.playActionCard(
+      sessionId,
+      userId,
+      payload,
+    );
+    return this.checkAndSyncRoomStatus(session);
   }
 
   async playCatCombo(
@@ -40,7 +58,12 @@ export class ExplodingCatsService {
       requestedCard?: string;
     },
   ) {
-    return this.explodingCatsActions.playCatCombo(sessionId, userId, payload);
+    const session = await this.explodingCatsActions.playCatCombo(
+      sessionId,
+      userId,
+      payload,
+    );
+    return this.checkAndSyncRoomStatus(session);
   }
 
   async playFavor(
@@ -50,11 +73,20 @@ export class ExplodingCatsService {
       targetPlayerId: string;
     },
   ) {
-    return this.explodingCatsActions.playFavor(sessionId, userId, payload);
+    const session = await this.explodingCatsActions.playFavor(
+      sessionId,
+      userId,
+      payload,
+    );
+    return this.checkAndSyncRoomStatus(session);
   }
 
   async seeFuture(sessionId: string, userId: string) {
-    return this.explodingCatsActions.seeFuture(sessionId, userId);
+    const session = await this.explodingCatsActions.seeFuture(
+      sessionId,
+      userId,
+    );
+    return this.checkAndSyncRoomStatus(session);
   }
 
   async defuse(
@@ -62,7 +94,12 @@ export class ExplodingCatsService {
     userId: string,
     payload: { position: number },
   ) {
-    return this.explodingCatsActions.defuse(sessionId, userId, payload);
+    const session = await this.explodingCatsActions.defuse(
+      sessionId,
+      userId,
+      payload,
+    );
+    return this.checkAndSyncRoomStatus(session);
   }
 
   // ========== Legacy / Compatibility Wrappers ==========
@@ -169,9 +206,14 @@ export class ExplodingCatsService {
   async playActionByRoom(userId: string, roomId: string, card: string) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
-    return this.explodingCatsActions.playActionCard(session.id, userId, {
-      card,
-    });
+    const updatedSession = await this.explodingCatsActions.playActionCard(
+      session.id,
+      userId,
+      {
+        card,
+      },
+    );
+    return this.checkAndSyncRoomStatus(updatedSession);
   }
 
   /**
@@ -205,13 +247,18 @@ export class ExplodingCatsService {
       cards = [cat, cat];
     }
 
-    return this.explodingCatsActions.playCatCombo(session.id, userId, {
-      cards,
-      targetPlayerId: payload.targetPlayerId,
-      requestedCard: payload.desiredCard,
-      selectedIndex: payload.selectedIndex,
-      requestedDiscardCard: payload.requestedDiscardCard,
-    });
+    const updatedSession = await this.explodingCatsActions.playCatCombo(
+      session.id,
+      userId,
+      {
+        cards,
+        targetPlayerId: payload.targetPlayerId,
+        requestedCard: payload.desiredCard,
+        selectedIndex: payload.selectedIndex,
+        requestedDiscardCard: payload.requestedDiscardCard,
+      },
+    );
+    return this.checkAndSyncRoomStatus(updatedSession);
   }
 
   /**
@@ -224,9 +271,14 @@ export class ExplodingCatsService {
   ) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
-    return this.explodingCatsActions.playFavor(session.id, userId, {
-      targetPlayerId,
-    });
+    const updatedSession = await this.explodingCatsActions.playFavor(
+      session.id,
+      userId,
+      {
+        targetPlayerId,
+      },
+    );
+    return this.checkAndSyncRoomStatus(updatedSession);
   }
 
   /**
@@ -239,9 +291,14 @@ export class ExplodingCatsService {
   ) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
-    return this.explodingCatsActions.giveFavorCard(session.id, userId, {
-      cardToGive,
-    });
+    const updatedSession = await this.explodingCatsActions.giveFavorCard(
+      session.id,
+      userId,
+      {
+        cardToGive,
+      },
+    );
+    return this.checkAndSyncRoomStatus(updatedSession);
   }
 
   /**
@@ -254,6 +311,7 @@ export class ExplodingCatsService {
       session.id,
       userId,
     );
+    await this.checkAndSyncRoomStatus(result);
 
     const topCards =
       result.state &&
@@ -271,14 +329,20 @@ export class ExplodingCatsService {
   async defuseByRoom(userId: string, roomId: string, position: number) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
-    return this.explodingCatsActions.defuse(session.id, userId, { position });
+    const updatedSession = await this.explodingCatsActions.defuse(
+      session.id,
+      userId,
+      { position },
+    );
+    return this.checkAndSyncRoomStatus(updatedSession);
   }
 
   /**
    * Play nope card - cancels the last action
    */
   async playNope(sessionId: string, userId: string) {
-    return this.explodingCatsActions.playNope(sessionId, userId);
+    const session = await this.explodingCatsActions.playNope(sessionId, userId);
+    return this.checkAndSyncRoomStatus(session);
   }
 
   /**
@@ -287,6 +351,10 @@ export class ExplodingCatsService {
   async playNopeByRoom(userId: string, roomId: string) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
-    return this.explodingCatsActions.playNope(session.id, userId);
+    const updatedSession = await this.explodingCatsActions.playNope(
+      session.id,
+      userId,
+    );
+    return this.checkAndSyncRoomStatus(updatedSession);
   }
 }

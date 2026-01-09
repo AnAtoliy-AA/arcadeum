@@ -110,7 +110,14 @@ export class GamesService {
     if (!result.deleted) {
       const session = await this.sessionsService.findSessionByRoom(dto.roomId);
       if (session) {
-        await this.sessionsService.removePlayer(session.id, userId);
+        const updatedSession = await this.sessionsService.removePlayer(
+          session.id,
+          userId,
+        );
+        // Sync status if game completed via leave/forfeit
+        if (updatedSession.status === 'completed') {
+          await this.roomsService.updateRoomStatus(dto.roomId, 'completed');
+        }
       }
     }
 
@@ -218,6 +225,11 @@ export class GamesService {
         return s;
       },
     );
+
+    // Sync room status if game completed
+    if (session.status === 'completed') {
+      await this.roomsService.updateRoomStatus(session.roomId, 'completed');
+    }
 
     return session;
   }

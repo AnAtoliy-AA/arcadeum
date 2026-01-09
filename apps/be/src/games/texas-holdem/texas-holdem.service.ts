@@ -5,6 +5,7 @@ import { GameSessionsService } from '../sessions/game-sessions.service';
 import { GameHistoryService } from '../history/game-history.service';
 import { GamesRealtimeService } from '../games.realtime.service';
 import { TexasHoldemActionsService } from '../actions/texas-holdem/texas-holdem-actions.service';
+import { GameSessionSummary } from '../sessions/game-sessions.service';
 
 @Injectable()
 export class TexasHoldemService {
@@ -18,28 +19,53 @@ export class TexasHoldemService {
 
   // ========== Core Actions ==========
 
+  // ========== Private Helper ==========
+
+  private async checkAndSyncRoomStatus(session: GameSessionSummary) {
+    if (session.status === 'completed') {
+      await this.roomsService.updateRoomStatus(session.roomId, 'completed');
+    }
+    return session;
+  }
+
+  // ========== Core Actions ==========
+
   async fold(sessionId: string, userId: string) {
-    return this.texasHoldemActions.fold(sessionId, userId);
+    const session = await this.texasHoldemActions.fold(sessionId, userId);
+    return this.checkAndSyncRoomStatus(session);
   }
 
   async check(sessionId: string, userId: string) {
-    return this.texasHoldemActions.check(sessionId, userId);
+    const session = await this.texasHoldemActions.check(sessionId, userId);
+    return this.checkAndSyncRoomStatus(session);
   }
 
   async call(sessionId: string, userId: string) {
-    return this.texasHoldemActions.call(sessionId, userId);
+    const session = await this.texasHoldemActions.call(sessionId, userId);
+    return this.checkAndSyncRoomStatus(session);
   }
 
   async raise(sessionId: string, userId: string, payload: { amount: number }) {
-    return this.texasHoldemActions.raise(sessionId, userId, payload);
+    const session = await this.texasHoldemActions.raise(
+      sessionId,
+      userId,
+      payload,
+    );
+    return this.checkAndSyncRoomStatus(session);
   }
 
   async allIn(sessionId: string, userId: string) {
-    return this.texasHoldemActions.allIn(sessionId, userId);
+    const session = await this.texasHoldemActions.allIn(sessionId, userId);
+    return this.checkAndSyncRoomStatus(session);
   }
 
   async bet(sessionId: string, userId: string, payload: { amount: number }) {
-    return this.texasHoldemActions.bet(sessionId, userId, payload);
+    const session = await this.texasHoldemActions.bet(
+      sessionId,
+      userId,
+      payload,
+    );
+    return this.checkAndSyncRoomStatus(session);
   }
 
   // ========== Legacy / Compatibility Wrappers ==========
@@ -147,7 +173,7 @@ export class TexasHoldemService {
         return s;
       },
     );
-    return updatedSession;
+    return this.checkAndSyncRoomStatus(updatedSession);
   }
 
   /**

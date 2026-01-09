@@ -63,6 +63,7 @@ export const enMessages = {
       autoDraw: '🤖 Auto-draw',
       autoSkip: '⏭️ Auto-play Skip',
       autoShuffle: '🔀 Auto-shuffle after Defuse',
+      autoDrawSkipAfterShuffle: '↪️ Draw/Skip after Shuffle',
       autoNopeAttack: '🚫 Auto-nope Attack',
       autoGiveFavor: '🤲 Auto-give Favor (cat→action→defuse)',
       autoDefuse: '🛡️ Auto-defuse (random position)',

@@ -55,6 +55,7 @@ export function AutoplayControls({
     autoDrawEnabled,
     autoSkipEnabled,
     autoShuffleAfterDefuseEnabled,
+    autoDrawSkipAfterShuffleEnabled,
     autoNopeAttackEnabled,
     autoGiveFavorEnabled,
     autoDefuseEnabled,
@@ -62,6 +63,7 @@ export function AutoplayControls({
     setAutoDrawEnabled,
     setAutoSkipEnabled,
     setAutoShuffleAfterDefuseEnabled,
+    setAutoDrawSkipAfterShuffleEnabled,
     setAutoNopeAttackEnabled,
     setAutoGiveFavorEnabled,
     setAutoDefuseEnabled,
@@ -138,6 +140,12 @@ export function AutoplayControls({
             autoShuffleAfterDefuseEnabled,
             setAutoShuffleAfterDefuseEnabled,
             t('games.table.autoplay.autoShuffle'),
+            true,
+          )}
+          {renderCheckbox(
+            autoDrawSkipAfterShuffleEnabled,
+            setAutoDrawSkipAfterShuffleEnabled,
+            t('games.table.autoplay.autoDrawSkipAfterShuffle'),
             true,
           )}
           {renderCheckbox(

@@ -30,6 +30,7 @@ interface UseAutoplayReturn {
   autoDrawEnabled: boolean;
   autoSkipEnabled: boolean;
   autoShuffleAfterDefuseEnabled: boolean;
+  autoDrawSkipAfterShuffleEnabled: boolean;
   autoNopeAttackEnabled: boolean;
   autoGiveFavorEnabled: boolean;
   autoDefuseEnabled: boolean;
@@ -37,6 +38,7 @@ interface UseAutoplayReturn {
   setAutoDrawEnabled: (enabled: boolean) => void;
   setAutoSkipEnabled: (enabled: boolean) => void;
   setAutoShuffleAfterDefuseEnabled: (enabled: boolean) => void;
+  setAutoDrawSkipAfterShuffleEnabled: (enabled: boolean) => void;
   setAutoNopeAttackEnabled: (enabled: boolean) => void;
   setAutoGiveFavorEnabled: (enabled: boolean) => void;
   setAutoDefuseEnabled: (enabled: boolean) => void;
@@ -171,6 +173,8 @@ export function useAutoplay({
   const [autoSkipEnabled, setAutoSkipEnabled] = useState(false);
   const [autoShuffleAfterDefuseEnabled, setAutoShuffleAfterDefuseEnabled] =
     useState(false);
+  const [autoDrawSkipAfterShuffleEnabled, setAutoDrawSkipAfterShuffleEnabled] =
+    useState(false);
   const [autoNopeAttackEnabled, setAutoNopeAttackEnabled] = useState(false);
   const [autoGiveFavorEnabled, setAutoGiveFavorEnabled] = useState(false);
   const [autoDefuseEnabled, setAutoDefuseEnabled] = useState(false);
@@ -178,6 +182,7 @@ export function useAutoplay({
   const hasNopedRef = useRef<string | null>(null);
   const hasGivenFavorRef = useRef<string | null>(null);
   const hasDefusedRef = useRef<boolean>(false);
+  const hasShuffledThisTurnRef = useRef<boolean>(false);
 
   const defusePlayedRecently = useMemo(
     () => wasDefusePlayedRecently(logs, currentUserId),
@@ -206,6 +211,7 @@ export function useAutoplay({
     } else if (!isMyTurn) {
       turnIdRef.current = null;
       lastActedTurnRef.current = null;
+      hasShuffledThisTurnRef.current = false;
     }
   }, [isMyTurn, canAct]);
 
@@ -302,11 +308,24 @@ export function useAutoplay({
     }
 
     // Auto-shuffle after opponent defuse (shuffle doesn't end turn)
-    if (autoShuffleAfterDefuseEnabled && defusePlayedRecently) {
+    // Only shuffle once per turn, tracked by hasShuffledThisTurnRef
+    if (
+      autoShuffleAfterDefuseEnabled &&
+      defusePlayedRecently &&
+      !hasShuffledThisTurnRef.current
+    ) {
       if (hand.includes('shuffle')) {
+        hasShuffledThisTurnRef.current = true;
         onPlayActionCard('shuffle');
-        // Don't return - shuffle doesn't end turn, continue to draw/skip
+        // Always return after shuffle - it's async
+        // Next effect run will handle draw/skip if enabled
+        return;
       }
+    }
+
+    // If autoDrawSkipAfterShuffleEnabled is disabled and we just shuffled, stop here
+    if (hasShuffledThisTurnRef.current && !autoDrawSkipAfterShuffleEnabled) {
+      return;
     }
 
     if (autoSkipEnabled && hand.includes('skip')) {
@@ -325,6 +344,7 @@ export function useAutoplay({
     autoDrawEnabled,
     autoSkipEnabled,
     autoShuffleAfterDefuseEnabled,
+    autoDrawSkipAfterShuffleEnabled,
     autoNopeAttackEnabled,
     attackFromPrevPlayer,
     defusePlayedRecently,
@@ -341,6 +361,7 @@ export function useAutoplay({
     setAutoDrawEnabled(enabled);
     setAutoSkipEnabled(enabled);
     setAutoShuffleAfterDefuseEnabled(enabled);
+    setAutoDrawSkipAfterShuffleEnabled(enabled);
     setAutoNopeAttackEnabled(enabled);
     setAutoGiveFavorEnabled(enabled);
     setAutoDefuseEnabled(enabled);
@@ -350,6 +371,7 @@ export function useAutoplay({
     autoDrawEnabled &&
     autoSkipEnabled &&
     autoShuffleAfterDefuseEnabled &&
+    autoDrawSkipAfterShuffleEnabled &&
     autoNopeAttackEnabled &&
     autoGiveFavorEnabled &&
     autoDefuseEnabled;
@@ -359,6 +381,7 @@ export function useAutoplay({
     autoDrawEnabled,
     autoSkipEnabled,
     autoShuffleAfterDefuseEnabled,
+    autoDrawSkipAfterShuffleEnabled,
     autoNopeAttackEnabled,
     autoGiveFavorEnabled,
     autoDefuseEnabled,
@@ -366,6 +389,7 @@ export function useAutoplay({
     setAutoDrawEnabled: handleSetAutoDrawEnabled,
     setAutoSkipEnabled,
     setAutoShuffleAfterDefuseEnabled,
+    setAutoDrawSkipAfterShuffleEnabled,
     setAutoNopeAttackEnabled,
     setAutoGiveFavorEnabled,
     setAutoDefuseEnabled,

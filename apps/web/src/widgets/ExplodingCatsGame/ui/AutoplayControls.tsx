@@ -61,6 +61,7 @@ export const AutoplayControls: React.FC<AutoplayControlsProps> = ({
     autoDrawEnabled,
     autoSkipEnabled,
     autoShuffleAfterDefuseEnabled,
+    autoDrawSkipAfterShuffleEnabled,
     autoNopeAttackEnabled,
     autoGiveFavorEnabled,
     autoDefuseEnabled,
@@ -68,6 +69,7 @@ export const AutoplayControls: React.FC<AutoplayControlsProps> = ({
     setAutoDrawEnabled,
     setAutoSkipEnabled,
     setAutoShuffleAfterDefuseEnabled,
+    setAutoDrawSkipAfterShuffleEnabled,
     setAutoNopeAttackEnabled,
     setAutoGiveFavorEnabled,
     setAutoDefuseEnabled,
@@ -131,6 +133,21 @@ export const AutoplayControls: React.FC<AutoplayControlsProps> = ({
               }
             />
             <Text>{t('games.table.autoplay.autoShuffle')}</Text>
+          </Label>
+          <Label $secondary>
+            <Checkbox
+              type="checkbox"
+              checked={autoDrawSkipAfterShuffleEnabled}
+              disabled={!autoShuffleAfterDefuseEnabled}
+              style={{
+                opacity: autoShuffleAfterDefuseEnabled ? 1 : 0.5,
+                marginLeft: '1rem',
+              }}
+              onChange={(e) =>
+                setAutoDrawSkipAfterShuffleEnabled(e.target.checked)
+              }
+            />
+            <Text>{t('games.table.autoplay.autoDrawSkipAfterShuffle')}</Text>
           </Label>
           <Label $secondary>
             <Checkbox

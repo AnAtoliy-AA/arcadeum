@@ -48,6 +48,8 @@ export const explodingCatsMessages = {
       playAttack: 'Play Attack',
       playNope: 'Play Nope',
       playCatCombo: 'Play Cat Combo',
+      playCard: 'Play Card',
+      selectTargetDescription: 'Choose a player to target with this card.',
     },
     logs: {
       title: 'History',
@@ -207,6 +209,8 @@ export const explodingCatsMessages = {
       playAttack: 'Jugar Ataque',
       playNope: 'Jugar No',
       playCatCombo: 'Jugar combo de gatos',
+      playCard: 'Jugar Carta',
+      selectTargetDescription: 'Elige un jugador para apuntar con esta carta.',
     },
     logs: {
       title: 'Historial',
@@ -370,6 +374,8 @@ export const explodingCatsMessages = {
       playAttack: 'Jouer Attaque',
       playNope: 'Jouer Non',
       playCatCombo: 'Jouer un combo de chats',
+      playCard: 'Jouer la carte',
+      selectTargetDescription: 'Choisissez un joueur à cibler.',
     },
     logs: {
       title: 'Historique',

@@ -34,6 +34,11 @@ const CARD_DISPLAY_NAMES: Record<ExplodingCatsCard, string> = {
   rainbow_ralphing_cat: 'Rainbow Cat',
   cattermelon: 'Cattermelon',
   bearded_cat: 'Bearded Cat',
+  targeted_attack: 'Targeted Attack',
+  personal_attack: 'Personal Attack',
+  attack_of_the_dead: 'Attack of the Dead',
+  super_skip: 'Super Skip',
+  reverse: 'Reverse',
 };
 
 export function GiveFavorModal({

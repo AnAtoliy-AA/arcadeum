@@ -14,6 +14,7 @@ import {
   handleError,
   isSimpleActionCard,
   toExplodingCatsCard,
+  extractCatComboPayload,
 } from './games.gateway.utils';
 
 import { ExplodingCatsService } from './exploding-cats/exploding-cats.service';
@@ -69,21 +70,37 @@ export class ExplodingCatsGateway {
   async handleSessionPlayAction(
     @ConnectedSocket() client: Socket,
     @MessageBody()
-    payload: { roomId?: string; userId?: string; card?: string },
+    payload: {
+      roomId?: string;
+      userId?: string;
+      card?: string;
+      targetPlayerId?: string;
+    },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const card = extractString(payload, 'card', { toLowerCase: true });
+    const targetPlayerId =
+      typeof payload?.targetPlayerId === 'string'
+        ? payload.targetPlayerId.trim()
+        : undefined;
+
+    this.logger.log(
+      `handleSessionPlayAction: card=${card}, targetPlayerId=${targetPlayerId}`,
+    );
 
     if (!isSimpleActionCard(card)) {
       throw new WsException('Card is not supported for this action.');
     }
 
     try {
-      await this.explodingCatsService.playActionByRoom(userId, roomId, card);
+      await this.explodingCatsService.playActionByRoom(userId, roomId, card, {
+        targetPlayerId,
+      });
       client.emit('games.session.action.played', {
         roomId,
         userId,
         card,
+        targetPlayerId,
       });
     } catch (error) {
       handleError(
@@ -116,70 +133,23 @@ export class ExplodingCatsGateway {
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
-    const modeRaw = extractString(payload, 'mode', { toLowerCase: true });
-
-    // Cat and targetPlayerId are optional for fiver mode
-    const cat =
-      typeof payload?.cat === 'string' ? payload.cat.trim().toLowerCase() : '';
-    const targetPlayerId =
-      typeof payload?.targetPlayerId === 'string'
-        ? payload.targetPlayerId.trim()
-        : undefined;
-    const desiredCard =
-      typeof payload?.desiredCard === 'string'
-        ? payload.desiredCard.trim().toLowerCase()
-        : undefined;
-    const selectedIndex =
-      typeof payload?.selectedIndex === 'number'
-        ? payload.selectedIndex
-        : undefined;
-    const requestedDiscardCard =
-      typeof payload?.requestedDiscardCard === 'string'
-        ? payload.requestedDiscardCard.trim().toLowerCase()
-        : undefined;
-    const cards = Array.isArray(payload?.cards)
-      ? payload.cards.map((c) => String(c).trim().toLowerCase())
-      : undefined;
-
-    const validModes = ['pair', 'trio', 'fiver'] as const;
-    if (!validModes.includes(modeRaw as (typeof validModes)[number])) {
-      throw new WsException('mode is required.');
-    }
-    const mode = modeRaw as 'pair' | 'trio' | 'fiver';
-
-    // Fiver mode doesn't require a cat card selection - it uses any 5 different cards
-    if (mode !== 'fiver') {
-      const catCardValue = toExplodingCatsCard(cat);
-      if (!catCardValue) {
-        throw new WsException('cat is not supported.');
-      }
-    }
-
-    const desiredCardValue = toExplodingCatsCard(desiredCard);
-    const requestedDiscardCardValue = toExplodingCatsCard(requestedDiscardCard);
-
-    if (mode === 'trio' && !desiredCardValue) {
-      throw new WsException('desiredCard is required for trio combos.');
-    }
-
-    if (mode === 'pair' && selectedIndex === undefined) {
-      throw new WsException('selectedIndex is required for pair combos.');
-    }
-
-    if (mode === 'fiver' && !requestedDiscardCardValue) {
-      throw new WsException(
-        'requestedDiscardCard is required for fiver combos.',
-      );
-    }
+    const {
+      cat,
+      mode,
+      targetPlayerId,
+      desiredCard,
+      selectedIndex,
+      requestedDiscardCard,
+    } = extractCatComboPayload(payload as unknown as Record<string, unknown>);
 
     try {
       await this.explodingCatsService.playCatComboByRoom(userId, roomId, cat, {
         mode,
         targetPlayerId: mode === 'fiver' ? undefined : targetPlayerId,
-        desiredCard: desiredCardValue,
+        desiredCard,
         selectedIndex,
-        requestedDiscardCard: requestedDiscardCardValue,
-        cards,
+        requestedDiscardCard,
+        cards: payload.cards?.map((c) => String(c).trim().toLowerCase()),
       });
 
       client.emit('games.session.cat_combo.played', {
@@ -188,9 +158,9 @@ export class ExplodingCatsGateway {
         cat,
         mode,
         targetPlayerId,
-        desiredCard: desiredCardValue,
+        desiredCard,
         selectedIndex,
-        requestedDiscardCard: requestedDiscardCardValue,
+        requestedDiscardCard,
       });
     } catch (error) {
       handleError(

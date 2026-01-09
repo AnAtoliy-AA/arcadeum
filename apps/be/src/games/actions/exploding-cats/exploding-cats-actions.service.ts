@@ -56,8 +56,30 @@ export class ExplodingCatsActionsService {
   async playActionCard(
     sessionId: string,
     userId: string,
-    payload: { card: string },
+    payload: { card: string; targetPlayerId?: string },
   ) {
+    console.log(
+      `playActionCard: card=${payload.card}, targetPlayerId=${payload.targetPlayerId}`,
+    );
+    // Special handling for Targeted Attack which is a separate action in the engine
+    if (payload.card === 'targeted_attack' && payload.targetPlayerId) {
+      const session = await this.sessionsService.executeAction({
+        sessionId,
+        action: 'targeted_attack',
+        userId,
+        payload: { targetPlayerId: payload.targetPlayerId },
+      });
+
+      await this.realtimeService.emitActionExecuted(
+        session,
+        'play_card', // Emit as play_card so clients treat it uniformly
+        userId,
+        this.createSanitizer(),
+      );
+
+      return session;
+    }
+
     const session = await this.sessionsService.executeAction({
       sessionId,
       action: 'play_card',

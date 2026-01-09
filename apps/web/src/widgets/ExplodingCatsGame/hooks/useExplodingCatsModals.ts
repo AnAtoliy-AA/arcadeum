@@ -26,6 +26,7 @@ export function useExplodingCatsModals({
     null,
   );
   const [favorModal, setFavorModal] = useState(false);
+  const [targetedAttackModal, setTargetedAttackModal] = useState(false);
   const [seeTheFutureModal, setSeeTheFutureModal] =
     useState<SeeTheFutureModalState | null>(null);
   const [selectedMode, setSelectedMode] = useState<
@@ -182,6 +183,10 @@ export function useExplodingCatsModals({
     // Favor modal
     favorModal,
     setFavorModal,
+
+    // Targeted Attack modal
+    targetedAttackModal,
+    setTargetedAttackModal,
 
     // See the future modal
     seeTheFutureModal,

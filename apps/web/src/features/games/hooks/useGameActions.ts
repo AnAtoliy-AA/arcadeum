@@ -16,7 +16,7 @@ interface UseGameActionsReturn {
   // Exploding Cats actions
   startExplodingCats: () => void;
   drawCard: () => void;
-  playActionCard: (card: string) => void;
+  playActionCard: (card: string, payload?: Record<string, unknown>) => void;
   playNope: () => void;
   playFavor: (targetPlayerId: string) => void;
   giveFavorCard: (cardToGive: string) => void;
@@ -118,10 +118,15 @@ export function useGameActions(
   }, [roomId, userId, setActionBusy]);
 
   const playActionCard = useCallback(
-    (card: string) => {
+    (card: string, payload?: Record<string, unknown>) => {
       if (!userId) return;
       setActionBusy?.(card);
-      gameSocket.emit('games.session.play_action', { roomId, userId, card });
+      gameSocket.emit('games.session.play_action', {
+        roomId,
+        userId,
+        card,
+        ...payload,
+      });
     },
     [roomId, userId, setActionBusy],
   );

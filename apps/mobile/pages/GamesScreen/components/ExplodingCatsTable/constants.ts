@@ -43,6 +43,11 @@ export const CARD_ART_SETTINGS: Record<
   rainbow_ralphing_cat: { key: 'rainbow-ralphing-cat', variant: 2 },
   cattermelon: { key: 'cattermelon', variant: 1 },
   bearded_cat: { key: 'bearded-cat', variant: 3 },
+  targeted_attack: { key: 'attack', variant: 2 }, // TODO: Add proper SVG artwork
+  personal_attack: { key: 'attack', variant: 3 }, // TODO: Add proper SVG artwork
+  attack_of_the_dead: { key: 'attack', variant: 1 }, // TODO: Add proper SVG artwork
+  super_skip: { key: 'skip', variant: 3 }, // TODO: Add proper SVG artwork
+  reverse: { key: 'skip', variant: 1 }, // TODO: Add proper SVG artwork
 };
 
 export const CARD_GRADIENT_COORDS = {

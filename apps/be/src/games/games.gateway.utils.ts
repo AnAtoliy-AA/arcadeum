@@ -27,6 +27,7 @@ export const SIMPLE_ACTION_CARDS = [
   'attack',
   'shuffle',
   'nope',
+  ...ATTACK_PACK_CARDS,
 ] as const;
 export type SimpleActionCard = (typeof SIMPLE_ACTION_CARDS)[number];
 
@@ -111,4 +112,83 @@ export function handleError(
   );
 
   throw new WsException(message);
+}
+
+export function extractCatComboPayload(payload: Record<string, unknown>): {
+  cat: string;
+  mode: 'pair' | 'trio' | 'fiver';
+  targetPlayerId?: string;
+  desiredCard?: ExplodingCatsCard;
+  selectedIndex?: number;
+  requestedDiscardCard?: ExplodingCatsCard;
+  cards?: string[];
+} {
+  const modeRaw = extractString(payload, 'mode', { toLowerCase: true });
+
+  const catRaw = payload?.cat;
+  const cat = typeof catRaw === 'string' ? catRaw.trim().toLowerCase() : '';
+
+  const targetIdRaw = payload?.targetPlayerId;
+  const targetPlayerId =
+    typeof targetIdRaw === 'string' ? targetIdRaw.trim() : undefined;
+
+  const desiredCardRaw = payload?.desiredCard;
+  const desiredCard =
+    typeof desiredCardRaw === 'string'
+      ? desiredCardRaw.trim().toLowerCase()
+      : undefined;
+
+  const selectedIndexRaw = payload?.selectedIndex;
+  const selectedIndex =
+    typeof selectedIndexRaw === 'number' ? selectedIndexRaw : undefined;
+
+  const requestedDiscardCardRaw = payload?.requestedDiscardCard;
+  const requestedDiscardCard =
+    typeof requestedDiscardCardRaw === 'string'
+      ? requestedDiscardCardRaw.trim().toLowerCase()
+      : undefined;
+
+  const cardsRaw = payload?.cards;
+  const cards = Array.isArray(cardsRaw)
+    ? cardsRaw.map((c: unknown) => String(c).trim().toLowerCase())
+    : undefined;
+
+  const validModes = ['pair', 'trio', 'fiver'] as const;
+  if (!validModes.includes(modeRaw as (typeof validModes)[number])) {
+    throw new WsException('mode is required.');
+  }
+  const mode = modeRaw as 'pair' | 'trio' | 'fiver';
+
+  // Fiver mode doesn't require a cat card selection - it uses any 5 different cards
+  if (mode !== 'fiver') {
+    const catCardValue = toExplodingCatsCard(cat);
+    if (!catCardValue) {
+      throw new WsException('cat is not supported.');
+    }
+  }
+
+  const desiredCardValue = toExplodingCatsCard(desiredCard);
+  const requestedDiscardCardValue = toExplodingCatsCard(requestedDiscardCard);
+
+  if (mode === 'trio' && !desiredCardValue) {
+    throw new WsException('desiredCard is required for trio combos.');
+  }
+
+  if (mode === 'pair' && selectedIndex === undefined) {
+    throw new WsException('selectedIndex is required for pair combos.');
+  }
+
+  if (mode === 'fiver' && !requestedDiscardCardValue) {
+    throw new WsException('requestedDiscardCard is required for fiver combos.');
+  }
+
+  return {
+    cat,
+    mode,
+    targetPlayerId,
+    desiredCard: desiredCardValue,
+    selectedIndex,
+    requestedDiscardCard: requestedDiscardCardValue,
+    cards,
+  };
 }

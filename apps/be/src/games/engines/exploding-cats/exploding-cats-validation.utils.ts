@@ -36,7 +36,15 @@ export function validatePlayCard(
   if (!card || !player) return false;
 
   // Skip and Attack can only be played when you have pending draws
-  if (card === 'skip' || card === 'attack') {
+  if (
+    card === 'skip' ||
+    card === 'attack' ||
+    card === 'targeted_attack' ||
+    card === 'attack_of_the_dead' ||
+    card === 'personal_attack' ||
+    card === 'super_skip' ||
+    card === 'reverse'
+  ) {
     return hasCard(player, card) && state.pendingDraws > 0;
   }
 

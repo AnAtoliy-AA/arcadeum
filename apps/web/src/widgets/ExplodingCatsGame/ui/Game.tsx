@@ -16,6 +16,7 @@ import { useGameHandlers } from '../hooks/useGameHandlers';
 import { CatComboModal } from './modals/CatComboModal';
 import { SeeTheFutureModal } from './modals/SeeTheFutureModal';
 import { FavorModal } from './modals/FavorModal';
+import { TargetedAttackModal } from './modals/TargetedAttackModal';
 import { GiveFavorModal } from './modals/GiveFavorModal';
 import { DefuseModal } from './modals/DefuseModal';
 import { RematchModal } from './modals/RematchModal';
@@ -116,6 +117,8 @@ export default function ExplodingCatsGame({
     handleToggleFiverCard,
     favorModal,
     setFavorModal,
+    targetedAttackModal,
+    setTargetedAttackModal,
     seeTheFutureModal,
     setSeeTheFutureModal,
     chatMessage,
@@ -163,6 +166,32 @@ export default function ExplodingCatsGame({
       setSelectedMode,
       clearChatMessage,
     });
+
+  const handlePlayActionCard = useCallback(
+    (card: ExplodingCatsCard) => {
+      if (card === 'targeted_attack') {
+        setTargetedAttackModal(true);
+      } else {
+        actions.playActionCard(card);
+      }
+    },
+    [actions, setTargetedAttackModal],
+  );
+
+  const handleCloseTargetedAttackModal = useCallback(() => {
+    setTargetedAttackModal(false);
+    setSelectedTarget(null);
+  }, [setTargetedAttackModal, setSelectedTarget]);
+
+  const handleConfirmTargetedAttack = useCallback(() => {
+    if (selectedTarget) {
+      actions.playActionCard('targeted_attack', {
+        targetPlayerId: selectedTarget,
+      });
+      setTargetedAttackModal(false);
+      setSelectedTarget(null);
+    }
+  }, [selectedTarget, actions, setTargetedAttackModal, setSelectedTarget]);
 
   // Game not started yet
   if (!snapshot) {
@@ -307,7 +336,7 @@ export default function ExplodingCatsGame({
               allowActionCardCombos={snapshot?.allowActionCardCombos ?? false}
               t={t as (key: string) => string}
               onDraw={actions.drawCard}
-              onPlayActionCard={actions.playActionCard}
+              onPlayActionCard={handlePlayActionCard}
               onPlayNope={actions.playNope}
               onPlaySeeTheFuture={actions.playSeeTheFuture}
               onOpenFavorModal={() => setFavorModal(true)}
@@ -398,6 +427,18 @@ export default function ExplodingCatsGame({
         isOpen={!!seeTheFutureModal}
         onClose={() => setSeeTheFutureModal(null)}
         cards={seeTheFutureModal?.cards || []}
+        t={t}
+      />
+
+      {/* Targeted Attack Modal */}
+      <TargetedAttackModal
+        isOpen={targetedAttackModal}
+        onClose={handleCloseTargetedAttackModal}
+        aliveOpponents={aliveOpponents}
+        selectedTarget={selectedTarget}
+        onSelectTarget={setSelectedTarget}
+        onConfirm={handleConfirmTargetedAttack}
+        resolveDisplayName={resolveDisplayName}
         t={t}
       />
 

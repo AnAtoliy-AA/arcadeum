@@ -42,4 +42,9 @@ export type ActionBusyType =
   | 'cat_trio'
   | 'cat_fiver'
   | 'defuse'
+  | 'targeted_attack'
+  | 'personal_attack'
+  | 'attack_of_the_dead'
+  | 'super_skip'
+  | 'reverse'
   | null;

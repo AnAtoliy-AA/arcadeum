@@ -111,7 +111,7 @@ export function useCatCombo(
   );
 
   const handleCatComboModeChange = useCallback(
-    (mode: 'pair' | 'trio') => {
+    (mode: 'pair' | 'trio' | 'fiver') => {
       setCatComboPrompt((prev) => {
         if (!prev || !prev.available[mode]) {
           return prev;

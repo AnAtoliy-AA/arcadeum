@@ -237,6 +237,14 @@ export class ExplodingCatsLogic {
         state.discardPile.pop();
         return executeAttackOfTheDead(state, playerId, helpers);
 
+      case 'targeted_attack':
+        player.hand.push(card);
+        state.discardPile.pop();
+        return {
+          success: false,
+          error: 'Targeted Attack requires a target player',
+        };
+
       default:
         // For unsupported cards, put them back and return error
         player.hand.push(card);

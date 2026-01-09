@@ -425,6 +425,16 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
       if (hasCard(player, 'see_the_future')) actions.push('see_the_future');
       if (hasCard(player, 'favor')) actions.push('favor');
 
+      // Attack Pack
+      if (hasCard(player, 'targeted_attack'))
+        actions.push('play_card:targeted_attack');
+      if (hasCard(player, 'personal_attack'))
+        actions.push('play_card:personal_attack');
+      if (hasCard(player, 'attack_of_the_dead'))
+        actions.push('play_card:attack_of_the_dead');
+      if (hasCard(player, 'super_skip')) actions.push('play_card:super_skip');
+      if (hasCard(player, 'reverse')) actions.push('play_card:reverse');
+
       // Can play cat combos
       if (canPlayCatCombo(player, state.allowActionCardCombos))
         actions.push('play_cat_combo');

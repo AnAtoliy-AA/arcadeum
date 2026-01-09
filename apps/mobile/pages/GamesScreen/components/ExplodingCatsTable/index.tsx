@@ -42,12 +42,10 @@ import {
   TableStats,
   HandView,
   GameLogs,
-  CatComboModal,
   CardDecor,
-  DefuseModal,
-  GiveFavorModal,
   TableCenter,
   AutoplayControls,
+  ExplodingCatsModals,
 } from './components';
 import { createStyles } from './styles';
 
@@ -83,6 +81,9 @@ export function ExplodingCatsTable({
   // State management
   const { hapticsEnabled } = useSettings();
   const [handViewMode, setHandViewMode] = useState<'row' | 'grid'>('row');
+  const [targetedActionPrompt, setTargetedActionPrompt] = useState<{
+    card: import('./types').ExplodingCatsCard;
+  } | null>(null);
 
   // Custom hooks
   const gameState = useGameState(session, currentUserId);
@@ -188,6 +189,22 @@ export function ExplodingCatsTable({
     actionBusy,
     onPlayCatCombo as (params: ExplodingCatsCatComboInput) => void,
   );
+
+  const handlePlayTargetedAction = (
+    card: import('./types').ExplodingCatsCard,
+  ) => {
+    setTargetedActionPrompt({ card });
+  };
+
+  const handleConfirmTargetedAction = (targetPlayerId: string) => {
+    if (targetedActionPrompt) {
+      onPlay(targetedActionPrompt.card as 'targeted_attack', {
+        targetPlayerId,
+      });
+      setTargetedActionPrompt(null);
+    }
+  };
+
   const renderHandCard = useHandCardRenderer(
     isSessionActive,
     isMyTurn,
@@ -206,6 +223,7 @@ export function ExplodingCatsTable({
     labels.translateCardDescription,
     onPlay,
     onPlaySeeTheFuture,
+    handlePlayTargetedAction,
     styles,
   );
 
@@ -354,42 +372,38 @@ export function ExplodingCatsTable({
     </>
   );
 
-  const comboModal = (
-    <CatComboModal
-      catComboPrompt={catCombo.catComboPrompt}
-      aliveOpponents={otherPlayers.filter((p) => p.alive)}
-      catComboBusy={catComboHandling.catComboBusy}
-      comboConfirmDisabled={catComboHandling.comboConfirmDisabled}
-      onClose={catCombo.closeCatComboPrompt}
-      onModeChange={catCombo.handleCatComboModeChange}
-      onTargetChange={catCombo.handleCatComboTargetChange}
-      onDesiredCardChange={catCombo.handleCatComboDesiredCardChange}
-      onConfirm={catComboHandling.handleConfirmCatCombo}
-      translateCardName={labels.translateCardName}
-      styles={styles}
-    />
-  );
-
-  const defuseModal = (
-    <DefuseModal
-      visible={mustDefuse && !actionBusy}
-      deckSize={deckCount}
-      onConfirm={handleDefuseConfirm}
-    />
-  );
-
   const pendingFavor = snapshot?.pendingFavor ?? null;
   const mustGiveFavor =
     !!currentUserId && pendingFavor?.targetId === currentUserId;
   const favorRequesterName = pendingFavor?.requesterId
     ? (playerNameMap.get(pendingFavor.requesterId) ?? 'Player')
     : 'Player';
-  const giveFavorModal = (
-    <GiveFavorModal
-      visible={mustGiveFavor && !actionBusy}
-      requesterName={favorRequesterName}
+
+  const modals = (
+    <ExplodingCatsModals
+      catComboPrompt={catCombo.catComboPrompt}
+      aliveOpponents={otherPlayers.filter((p) => p.alive)}
+      catComboBusy={catComboHandling.catComboBusy}
+      comboConfirmDisabled={catComboHandling.comboConfirmDisabled}
+      onCloseCatCombo={catCombo.closeCatComboPrompt}
+      onModeChange={catCombo.handleCatComboModeChange}
+      onTargetChange={catCombo.handleCatComboTargetChange}
+      onDesiredCardChange={catCombo.handleCatComboDesiredCardChange}
+      onConfirmCatCombo={catComboHandling.handleConfirmCatCombo}
+      translateCardName={labels.translateCardName}
+      styles={styles}
+      mustDefuse={mustDefuse}
+      actionBusy={actionBusy}
+      deckCount={deckCount}
+      onConfirmDefuse={handleDefuseConfirm}
+      mustGiveFavor={mustGiveFavor}
+      favorRequesterName={favorRequesterName}
       myHand={selfPlayer?.hand ?? []}
-      onGiveCard={onGiveFavorCard}
+      onGiveFavorCard={onGiveFavorCard}
+      targetedActionPrompt={targetedActionPrompt}
+      otherPlayers={otherPlayers}
+      onCloseTargetedAction={() => setTargetedActionPrompt(null)}
+      onConfirmTargetedAction={handleConfirmTargetedAction}
     />
   );
 
@@ -412,9 +426,7 @@ export function ExplodingCatsTable({
             <View style={styles.fullScreenInner}>{tableContent}</View>
           </ScrollView>
         </ThemedView>
-        {comboModal}
-        {defuseModal}
-        {giveFavorModal}
+        {modals}
       </>
     );
   }
@@ -442,9 +454,7 @@ export function ExplodingCatsTable({
           <View style={styles.fullScreenInner}>{tableContent}</View>
         </ScrollView>
       </ThemedView>
-      {comboModal}
-      {defuseModal}
-      {giveFavorModal}
+      {modals}
     </>
   );
 }

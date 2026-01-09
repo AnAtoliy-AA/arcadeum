@@ -19,7 +19,12 @@ export type ActionBusyType =
   | 'cat_pair'
   | 'cat_trio'
   | 'cat_fiver'
-  | 'defuse';
+  | 'defuse'
+  | 'targeted_attack'
+  | 'personal_attack'
+  | 'attack_of_the_dead'
+  | 'super_skip'
+  | 'reverse';
 
 export interface SessionPlayerProfile {
   id: string;
@@ -40,7 +45,12 @@ export type ExplodingCatsCard =
   | 'hairy_potato_cat'
   | 'rainbow_ralphing_cat'
   | 'cattermelon'
-  | 'bearded_cat';
+  | 'bearded_cat'
+  | 'targeted_attack'
+  | 'personal_attack'
+  | 'attack_of_the_dead'
+  | 'super_skip'
+  | 'reverse';
 
 // ===== CAT CARDS Constants =====
 export const CAT_CARDS = [
@@ -142,7 +152,18 @@ export interface ExplodingCatsTableProps {
   isHost: boolean;
   onStart: () => void;
   onDraw: () => void;
-  onPlay: (card: 'skip' | 'attack' | 'shuffle') => void;
+  onPlay: (
+    card:
+      | 'skip'
+      | 'attack'
+      | 'shuffle'
+      | 'personal_attack'
+      | 'attack_of_the_dead'
+      | 'super_skip'
+      | 'reverse'
+      | 'targeted_attack',
+    payload?: Record<string, unknown>,
+  ) => void;
   onPlayNope: () => void;
   onPlayFavor: (targetPlayerId: string) => void;
   onGiveFavorCard: (cardToGive: ExplodingCatsCard) => void;

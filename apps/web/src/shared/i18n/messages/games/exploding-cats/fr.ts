@@ -144,7 +144,13 @@ export const frMessages = {
       hint: 'Appuyez sur F pour le plein écran',
     },
     modals: {
-      common: { cancel: 'Annuler' },
+      common: { cancel: 'Annuler', confirm: 'Confirmer' },
+      targetedAttack: {
+        title: 'Attaque Ciblée',
+        selectPlayer: 'Sélectionner un Joueur',
+        description:
+          'Choisissez un joueur pour prendre 2 tours à la place du joueur suivant.',
+      },
       favor: {
         title: 'Demander une Faveur',
         selectPlayer: 'Sélectionner un Joueur',

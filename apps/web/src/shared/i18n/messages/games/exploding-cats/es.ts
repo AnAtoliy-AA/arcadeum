@@ -137,7 +137,13 @@ export const esMessages = {
       hint: 'Presiona F para pantalla completa',
     },
     modals: {
-      common: { cancel: 'Cancelar' },
+      common: { cancel: 'Cancelar', confirm: 'Confirmar' },
+      targetedAttack: {
+        title: 'Ataque Dirigido',
+        selectPlayer: 'Seleccionar Jugador',
+        description:
+          'Elige un jugador para que tome 2 turnos en lugar del siguiente jugador.',
+      },
       favor: {
         title: 'Solicitar Favor',
         selectPlayer: 'Seleccionar Jugador',

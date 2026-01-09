@@ -203,7 +203,12 @@ export class ExplodingCatsService {
   /**
    * Play Exploding Cats action card (gateway wrapper)
    */
-  async playActionByRoom(userId: string, roomId: string, card: string) {
+  async playActionByRoom(
+    userId: string,
+    roomId: string,
+    card: string,
+    options?: { targetPlayerId?: string },
+  ) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
     const updatedSession = await this.explodingCatsActions.playActionCard(
@@ -211,6 +216,7 @@ export class ExplodingCatsService {
       userId,
       {
         card,
+        targetPlayerId: options?.targetPlayerId,
       },
     );
     return this.checkAndSyncRoomStatus(updatedSession);

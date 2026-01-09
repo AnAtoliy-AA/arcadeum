@@ -137,7 +137,13 @@ export const enMessages = {
       hint: 'Press F to toggle fullscreen',
     },
     modals: {
-      common: { cancel: 'Cancel' },
+      common: { cancel: 'Cancel', confirm: 'Confirm' },
+      targetedAttack: {
+        title: 'Targeted Attack',
+        selectPlayer: 'Select Target Player',
+        description:
+          'Choose a player to take 2 turns instead of the next player.',
+      },
       catCombo: {
         title: 'Play Cat Combo',
         selectMode: 'Select Combo Mode',

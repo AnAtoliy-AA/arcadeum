@@ -49,3 +49,6 @@ if [ -n "$STAGED_TS_FILES" ]; then
   
   echo "✅ TypeScript files passed ESLint checks"
 fi
+
+echo "Running build..."
+npm run build

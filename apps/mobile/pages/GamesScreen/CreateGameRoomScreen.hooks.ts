@@ -17,6 +17,7 @@ export interface CreateGameRoomState {
   visibility: CreateGameRoomParams['visibility'];
   maxPlayers: string;
   notes: string;
+  allowActionCardCombos: boolean;
   loading: boolean;
 }
 
@@ -32,6 +33,7 @@ export interface UseCreateGameRoomControllerResult {
   formState: CreateGameRoomState;
   handleChange: CreateGameRoomFieldChangeHandler;
   handleToggleVisibility: () => void;
+  handleToggleActionCardCombos: () => void;
   handleSelectGame: (gameId: string) => void;
   handleSubmit: () => Promise<void>;
   t: ReturnType<typeof useTranslation>['t'];
@@ -74,6 +76,7 @@ export function useCreateGameRoomController(): UseCreateGameRoomControllerResult
     visibility: 'public',
     maxPlayers: '',
     notes: '',
+    allowActionCardCombos: false,
     loading: false,
   });
 
@@ -95,6 +98,13 @@ export function useCreateGameRoomController(): UseCreateGameRoomControllerResult
     setFormState((prev) => ({
       ...prev,
       visibility: prev.visibility === 'public' ? 'private' : 'public',
+    }));
+  }, []);
+
+  const handleToggleActionCardCombos = useCallback(() => {
+    setFormState((prev) => ({
+      ...prev,
+      allowActionCardCombos: !prev.allowActionCardCombos,
     }));
   }, []);
 
@@ -148,6 +158,12 @@ export function useCreateGameRoomController(): UseCreateGameRoomControllerResult
         visibility: formState.visibility,
         maxPlayers,
         notes: formState.notes.trim() || undefined,
+        gameOptions:
+          formState.gameId === 'exploding_kittens_v1'
+            ? {
+                allowActionCardCombos: formState.allowActionCardCombos,
+              }
+            : undefined,
       };
       const response = await createGameRoom(payload, {
         accessToken: tokens.accessToken,
@@ -179,6 +195,7 @@ export function useCreateGameRoomController(): UseCreateGameRoomControllerResult
     formState.name,
     formState.notes,
     formState.visibility,
+    formState.allowActionCardCombos,
     refreshTokens,
     router,
     t,
@@ -193,6 +210,7 @@ export function useCreateGameRoomController(): UseCreateGameRoomControllerResult
     formState,
     handleChange,
     handleToggleVisibility,
+    handleToggleActionCardCombos,
     handleSelectGame,
     handleSubmit,
     t,

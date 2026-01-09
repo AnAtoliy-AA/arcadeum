@@ -37,6 +37,17 @@ export type ExplodingCatsCatCard =
   | 'cattermelon'
   | 'bearded_cat';
 
+export const CAT_CARDS: ExplodingCatsCatCard[] = [
+  'tacocat',
+  'hairy_potato_cat',
+  'rainbow_ralphing_cat',
+  'cattermelon',
+  'bearded_cat',
+];
+
+// ===== SPECIAL CARDS (cannot be used in combos) =====
+export const SPECIAL_CARDS = ['exploding_cat', 'defuse'] as const;
+
 // ===== BASE GAME CARDS =====
 export type BaseActionCard =
   | 'attack'
@@ -117,6 +128,7 @@ export interface ExplodingCatsSnapshot {
   } | null; // Action that can be noped
   players: ExplodingCatsPlayerState[];
   logs: ExplodingCatsLogEntry[];
+  allowActionCardCombos: boolean; // House rule: allow any matching cards for combos
 }
 
 // Texas Hold'em types

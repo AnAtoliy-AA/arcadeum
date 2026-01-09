@@ -6,47 +6,38 @@ import type {
   ProcessedPlayer,
 } from '../types';
 import { CAT_COMBO_CARDS } from '../constants';
+import { SPECIAL_CARDS } from '../types';
 
 export function useCatCombo(
   selfPlayerHand: ExplodingCatsCard[] | undefined,
   aliveOpponents: ProcessedPlayer[],
+  allowActionCardCombos = false,
 ) {
   const catCardCounts = useMemo(() => {
-    const counts: Record<ExplodingCatsCatCard, number> = {
-      tacocat: 0,
-      hairy_potato_cat: 0,
-      rainbow_ralphing_cat: 0,
-      cattermelon: 0,
-      bearded_cat: 0,
-    };
+    const counts: Record<string, number> = {};
 
     if (selfPlayerHand?.length) {
       selfPlayerHand.forEach((card) => {
         if (CAT_COMBO_CARDS.includes(card as ExplodingCatsCatCard)) {
-          const catCard = card as ExplodingCatsCatCard;
-          counts[catCard] = (counts[catCard] ?? 0) + 1;
+          counts[card] = (counts[card] ?? 0) + 1;
+        } else if (
+          allowActionCardCombos &&
+          !(SPECIAL_CARDS as readonly ExplodingCatsCard[]).includes(card)
+        ) {
+          counts[card] = (counts[card] ?? 0) + 1;
         }
       });
     }
 
     return counts;
-  }, [selfPlayerHand]);
+  }, [selfPlayerHand, allowActionCardCombos]);
 
   const catComboAvailability = useMemo(() => {
-    const availability: Record<
-      ExplodingCatsCatCard,
-      { pair: boolean; trio: boolean }
-    > = {
-      tacocat: { pair: false, trio: false },
-      hairy_potato_cat: { pair: false, trio: false },
-      rainbow_ralphing_cat: { pair: false, trio: false },
-      cattermelon: { pair: false, trio: false },
-      bearded_cat: { pair: false, trio: false },
-    };
+    const availability: Record<string, { pair: boolean; trio: boolean }> = {};
 
-    CAT_COMBO_CARDS.forEach((cat) => {
-      const count = catCardCounts[cat] ?? 0;
-      availability[cat] = {
+    Object.keys(catCardCounts).forEach((card) => {
+      const count = catCardCounts[card] ?? 0;
+      availability[card] = {
         pair: count >= 2 && aliveOpponents.length > 0,
         trio: count >= 3 && aliveOpponents.length > 0,
       };
@@ -72,7 +63,7 @@ export function useCatCombo(
   }, []);
 
   const openCatComboPrompt = useCallback(
-    (cat: ExplodingCatsCatCard) => {
+    (cat: ExplodingCatsCard) => {
       const availability = catComboAvailability[cat];
       if (!availability || (!availability.pair && !availability.trio)) {
         return;

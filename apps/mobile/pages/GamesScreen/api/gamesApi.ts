@@ -10,6 +10,7 @@ export interface CreateGameRoomParams {
   visibility: 'public' | 'private';
   maxPlayers?: number;
   notes?: string;
+  gameOptions?: Record<string, unknown>;
 }
 
 export interface GameRoomMemberSummary {

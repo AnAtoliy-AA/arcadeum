@@ -6,7 +6,7 @@ import type {
   ExplodingCatsCard,
   ExplodingCatsCatCard,
 } from '../types';
-import { CAT_CARDS, FIVER_COMBO_SIZE } from '../types';
+import { CAT_CARDS, FIVER_COMBO_SIZE, SPECIAL_CARDS } from '../types';
 import { InfoCard, InfoTitle, ActionButtons, ActionButton } from './styles';
 
 export type ActionBusyState =
@@ -27,6 +27,7 @@ interface ActionsSectionProps {
   actionBusy: ActionBusyState | string | null;
   hasOpponents: boolean;
   discardPileLength: number;
+  allowActionCardCombos: boolean;
   onDraw: () => void;
   onPlayActionCard: (card: ExplodingCatsCard) => void;
   onPlayNope: () => void;
@@ -43,6 +44,7 @@ export function ActionsSection({
   actionBusy,
   hasOpponents,
   discardPileLength,
+  allowActionCardCombos,
   onDraw,
   onPlayActionCard,
   onPlayNope,
@@ -52,15 +54,26 @@ export function ActionsSection({
   onOpenFiverCombo,
   t,
 }: ActionsSectionProps) {
-  // Find all cat cards with 2+ copies (combos available)
+  // Find all cards with 2+ copies (combos available)
   const availableCombos = useMemo(() => {
     const cardCounts = new Map<ExplodingCatsCard, number>();
     currentPlayer.hand.forEach((card) =>
       cardCounts.set(card, (cardCounts.get(card) || 0) + 1),
     );
 
+    // When allowActionCardCombos is enabled, include any cards with 2+ copies (except special cards)
+    if (allowActionCardCombos) {
+      return Array.from(cardCounts.entries())
+        .filter(
+          ([card, count]) =>
+            count >= 2 &&
+            !SPECIAL_CARDS.includes(card as (typeof SPECIAL_CARDS)[number]),
+        )
+        .map(([card]) => card as ExplodingCatsCatCard);
+    }
+
     return CAT_CARDS.filter((cat) => (cardCounts.get(cat) || 0) >= 2);
-  }, [currentPlayer.hand]);
+  }, [currentPlayer.hand, allowActionCardCombos]);
 
   // Check if fiver combo is available (FIVER_COMBO_SIZE+ unique cards and non-empty discard pile)
   const fiverAvailable = useMemo(() => {

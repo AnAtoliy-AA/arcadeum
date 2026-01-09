@@ -91,7 +91,13 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
   ): ExplodingCatsState {
     const expansions =
       (config?.expansions as ExplodingCatsExpansion[] | undefined) ?? [];
-    return createInitialExplodingCatsState(playerIds, expansions);
+    const allowActionCardCombos =
+      (config?.allowActionCardCombos as boolean | undefined) ?? false;
+    return createInitialExplodingCatsState(
+      playerIds,
+      expansions,
+      allowActionCardCombos,
+    );
   }
 
   validateAction(
@@ -160,7 +166,11 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
         return validatePlayCard(state, player, typedPayload?.card);
 
       case 'play_cat_combo':
-        return validateCatCombo(player, typedPayload?.cards);
+        return validateCatCombo(
+          player,
+          typedPayload?.cards,
+          state.allowActionCardCombos,
+        );
 
       case 'see_the_future':
         return hasCard(player, 'see_the_future');
@@ -416,7 +426,8 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
       if (hasCard(player, 'favor')) actions.push('favor');
 
       // Can play cat combos
-      if (canPlayCatCombo(player)) actions.push('play_cat_combo');
+      if (canPlayCatCombo(player, state.allowActionCardCombos))
+        actions.push('play_cat_combo');
     }
 
     return actions;

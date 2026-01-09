@@ -144,6 +144,26 @@ export function createStyles(palette: Palette) {
       color: palette.icon,
       fontWeight: '600',
     },
+    inputHint: {
+      color: palette.icon,
+      fontSize: 12,
+    },
+    checkbox: {
+      width: 24,
+      height: 24,
+      borderRadius: 6,
+      borderWidth: 2,
+      borderColor: palette.icon,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    checkboxActive: {
+      backgroundColor: palette.tint,
+      borderColor: palette.tint,
+    },
+    checkboxIcon: {
+      color: palette.background,
+    },
     textInput: {
       borderWidth: StyleSheet.hairlineWidth,
       borderColor,

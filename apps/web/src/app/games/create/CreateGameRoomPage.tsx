@@ -173,6 +173,7 @@ export function CreateGameRoomPage() {
   const [maxPlayers, setMaxPlayers] = useState('');
   const [notes, setNotes] = useState('');
   const [expansions, setExpansions] = useState<ExpansionId[]>([]);
+  const [allowActionCardCombos, setAllowActionCardCombos] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -223,8 +224,11 @@ export function CreateGameRoomPage() {
             maxPlayers: maxPlayersNum,
             notes: notes.trim() || undefined,
             gameOptions:
-              gameId === 'exploding_kittens_v1' && expansions.length > 0
-                ? { expansions }
+              gameId === 'exploding_kittens_v1'
+                ? {
+                    ...(expansions.length > 0 ? { expansions } : {}),
+                    allowActionCardCombos,
+                  }
                 : undefined,
           }),
         });
@@ -252,6 +256,7 @@ export function CreateGameRoomPage() {
       maxPlayers,
       notes,
       expansions,
+      allowActionCardCombos,
       snapshot.accessToken,
       router,
     ],
@@ -311,6 +316,28 @@ export function CreateGameRoomPage() {
                     </ExpansionBadge>
                   </ExpansionCheckbox>
                 ))}
+              </ExpansionGrid>
+            </Section>
+          )}
+
+          {gameId === 'exploding_kittens_v1' && (
+            <Section title={t('games.create.sectionHouseRules')}>
+              <ExpansionGrid>
+                <ExpansionCheckbox>
+                  <input
+                    type="checkbox"
+                    checked={allowActionCardCombos}
+                    onChange={() =>
+                      setAllowActionCardCombos(!allowActionCardCombos)
+                    }
+                  />
+                  <ExpansionLabel>
+                    {t('games.create.houseRuleActionCardCombos')}
+                  </ExpansionLabel>
+                  <ExpansionBadge>
+                    {t('games.create.houseRuleActionCardCombosHint')}
+                  </ExpansionBadge>
+                </ExpansionCheckbox>
               </ExpansionGrid>
             </Section>
           )}

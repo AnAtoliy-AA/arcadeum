@@ -42,22 +42,29 @@ export type ExplodingCatsCard =
   | 'cattermelon'
   | 'bearded_cat';
 
-export type ExplodingCatsCatCard =
-  | 'tacocat'
-  | 'hairy_potato_cat'
-  | 'rainbow_ralphing_cat'
-  | 'cattermelon'
-  | 'bearded_cat';
+// ===== CAT CARDS Constants =====
+export const CAT_CARDS = [
+  'tacocat',
+  'hairy_potato_cat',
+  'rainbow_ralphing_cat',
+  'cattermelon',
+  'bearded_cat',
+] as const;
+
+// ===== SPECIAL CARDS Constants =====
+export const SPECIAL_CARDS = ['exploding_cat', 'defuse'] as const;
+
+export type ExplodingCatsCatCard = (typeof CAT_CARDS)[number];
 
 export type ExplodingCatsCatComboInput =
   | {
-      cat: ExplodingCatsCatCard;
+      cat: ExplodingCatsCard;
       mode: 'pair';
       targetPlayerId: string;
       selectedIndex: number;
     }
   | {
-      cat: ExplodingCatsCatCard;
+      cat: ExplodingCatsCard;
       mode: 'trio';
       targetPlayerId: string;
       desiredCard: ExplodingCatsCard;
@@ -109,10 +116,11 @@ export interface ExplodingCatsSnapshot {
   pendingFavor: PendingFavor | null;
   players: ExplodingCatsPlayerState[];
   logs: ExplodingCatsLogEntry[];
+  allowActionCardCombos: boolean; // House rule
 }
 
 export interface CatComboPromptState {
-  cat: ExplodingCatsCatCard | null;
+  cat: ExplodingCatsCard | null;
   mode: 'pair' | 'trio' | 'fiver' | null;
   targetPlayerId: string | null;
   desiredCard: ExplodingCatsCard | null;

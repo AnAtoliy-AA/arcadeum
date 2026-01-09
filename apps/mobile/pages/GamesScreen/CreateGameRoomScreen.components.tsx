@@ -232,6 +232,59 @@ export function DetailsFormSection({
   );
 }
 
+interface HouseRulesSectionProps {
+  sectionTitle: string;
+  allowActionCardCombos: boolean;
+  actionCardCombosLabel: string;
+  actionCardCombosHint: string;
+  onToggleActionCardCombos: () => void;
+  styles: CreateGameRoomStyles;
+}
+
+export function HouseRulesSection({
+  sectionTitle,
+  allowActionCardCombos,
+  actionCardCombosLabel,
+  actionCardCombosHint,
+  onToggleActionCardCombos,
+  styles,
+}: HouseRulesSectionProps): React.JSX.Element {
+  return (
+    <View style={styles.section}>
+      <ThemedText type="subtitle">{sectionTitle}</ThemedText>
+      <View style={styles.formGroup}>
+        <View style={styles.formFieldRow}>
+          <View style={styles.formField}>
+            <ThemedText style={styles.inputLabel}>
+              {actionCardCombosLabel}
+            </ThemedText>
+            <ThemedText style={styles.inputHint}>
+              {actionCardCombosHint}
+            </ThemedText>
+          </View>
+          <TouchableOpacity
+            style={[
+              styles.checkbox,
+              allowActionCardCombos && styles.checkboxActive,
+            ]}
+            onPress={onToggleActionCardCombos}
+            accessibilityRole="switch"
+            accessibilityState={{ checked: allowActionCardCombos }}
+          >
+            {allowActionCardCombos && (
+              <IconSymbol
+                name="checkmark"
+                size={16}
+                color={styles.checkboxIcon.color as string}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 interface PreviewSectionProps {
   sectionTitle: string;
   selectedGame?: GameCatalogueEntry;

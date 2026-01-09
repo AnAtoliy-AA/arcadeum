@@ -87,18 +87,6 @@ export function ExplodingCatsTable({
   // Custom hooks
   const gameState = useGameState(session, currentUserId);
   const animations = useCardAnimations(actionBusy);
-  const catCombo = useCatCombo(
-    gameState.selfPlayer?.hand,
-    gameState.otherPlayers.filter((p) => p.alive),
-  );
-
-  const layout = useTableLayout(styles);
-  const gridColumns = useGridColumns(
-    layout.maxColumnsByWidth,
-    layout.gridContainerWidth,
-    layout.handGridSpacing,
-  );
-
   const {
     snapshot,
     otherPlayers,
@@ -110,6 +98,21 @@ export function ExplodingCatsTable({
     pendingDraws,
     isMyTurn,
   } = gameState;
+
+  const allowActionCardCombos = snapshot?.allowActionCardCombos ?? false;
+
+  const catCombo = useCatCombo(
+    gameState.selfPlayer?.hand,
+    gameState.otherPlayers.filter((p) => p.alive),
+    allowActionCardCombos,
+  );
+
+  const layout = useTableLayout(styles);
+  const gridColumns = useGridColumns(
+    layout.maxColumnsByWidth,
+    layout.gridContainerWidth,
+    layout.handGridSpacing,
+  );
 
   // Haptic feedback for turn
   useGameHaptics({ isMyTurn, enabled: hapticsEnabled });

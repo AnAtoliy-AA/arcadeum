@@ -304,6 +304,7 @@ export default function ExplodingCatsGame({
               deckSize={snapshot?.deck?.length ?? 0}
               playerOrder={snapshot?.playerOrder ?? []}
               currentUserId={currentUserId}
+              allowActionCardCombos={snapshot?.allowActionCardCombos ?? false}
               t={t as (key: string) => string}
               onDraw={actions.drawCard}
               onPlayActionCard={actions.playActionCard}

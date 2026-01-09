@@ -152,6 +152,11 @@ export const explodingCatsMessages = {
       autoGiveFavor: '🤲 Auto-give Favor (cat→action→defuse)',
       autoDefuse: '🛡️ Auto-defuse (random position)',
     },
+    houseRules: {
+      title: 'House Rules',
+      actionCardCombos: 'Action Card Combos',
+      actionCardCombosHint: 'Any pairs',
+    },
   },
   es: {
     headerTitle: 'Mesa de Exploding Cats',
@@ -308,6 +313,11 @@ export const explodingCatsMessages = {
       autoNopeAttack: '🚫 Auto-nope Ataque',
       autoGiveFavor: '🤲 Auto-dar Favor (gato→acción→desactivar)',
       autoDefuse: '🛡️ Auto-desactivar (posición aleatoria)',
+    },
+    houseRules: {
+      title: 'Reglas de la Casa',
+      actionCardCombos: 'Combos con Cartas de Acción',
+      actionCardCombosHint: 'Cualquier par',
     },
   },
   fr: {
@@ -466,6 +476,11 @@ export const explodingCatsMessages = {
       autoNopeAttack: '🚫 Auto-nope Attaque',
       autoGiveFavor: '🤲 Auto-donner Faveur (chat→action→désamorcer)',
       autoDefuse: '🛡️ Auto-désamorcer (position aléatoire)',
+    },
+    houseRules: {
+      title: 'Règles maison',
+      actionCardCombos: "Combos de cartes d'action",
+      actionCardCombosHint: 'Toutes paires',
     },
   },
 };

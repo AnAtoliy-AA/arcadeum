@@ -334,6 +334,7 @@ export const ToggleInput = styled.input.attrs({ type: 'checkbox' })`
   appearance: none;
   width: 3rem;
   height: 1.6rem;
+  flex-shrink: 0;
   background: ${({ theme }) => theme.interactive.pill.inactiveBackground};
   border-radius: 999px;
   position: relative;

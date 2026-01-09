@@ -8,6 +8,7 @@ import {
   AlertFallback,
   DetailsFormSection,
   GameSelectionSection,
+  HouseRulesSection,
   IntroSection,
   PreviewSection,
   SubmitButton,
@@ -26,6 +27,7 @@ export default function CreateGameRoomScreen() {
     formState,
     handleChange,
     handleToggleVisibility,
+    handleToggleActionCardCombos,
     handleSelectGame,
     handleSubmit,
     t,
@@ -70,6 +72,16 @@ export default function CreateGameRoomScreen() {
             onSelectGame={handleSelectGame}
             styles={styles}
           />
+          {selectedGame?.id === 'exploding_kittens_v1' && (
+            <HouseRulesSection
+              sectionTitle={labels.sectionHouseRules}
+              allowActionCardCombos={formState.allowActionCardCombos}
+              actionCardCombosLabel={labels.actionCardCombosLabel}
+              actionCardCombosHint={labels.actionCardCombosHint}
+              onToggleActionCardCombos={handleToggleActionCardCombos}
+              styles={styles}
+            />
+          )}
           <DetailsFormSection
             sectionTitle={labels.sectionDetails}
             labels={labels.detailLabels}

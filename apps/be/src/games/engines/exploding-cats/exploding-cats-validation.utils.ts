@@ -2,6 +2,8 @@ import {
   ExplodingCatsState,
   ExplodingCatsCard,
   ExplodingCatsPlayerState,
+  CAT_CARDS,
+  BASE_SPECIAL_CARDS,
 } from '../../exploding-cats/exploding-cats.state';
 
 /**
@@ -49,6 +51,7 @@ export function validatePlayCard(
 export function validateCatCombo(
   player: ExplodingCatsPlayerState | null,
   cards?: ExplodingCatsCard[],
+  allowActionCardCombos = false,
 ): boolean {
   if (!cards || cards.length < 2 || !player) return false;
 
@@ -62,9 +65,23 @@ export function validateCatCombo(
     );
   }
 
-  // Pair/Trio: All cards must be the same cat card
+  // Pair/Trio: All cards must be the same card
   const firstCard = cards[0];
-  return cards.every((card) => card === firstCard && hasCard(player, card));
+  const allSame = cards.every(
+    (card) => card === firstCard && hasCard(player, card),
+  );
+
+  if (!allSame) return false;
+
+  // If action card combos are allowed, we just need to ensure it's not a special card (like exploding_cat)
+  if (allowActionCardCombos) {
+    return !BASE_SPECIAL_CARDS.includes(
+      firstCard as (typeof BASE_SPECIAL_CARDS)[number],
+    );
+  }
+
+  // Otherwise, strictly require it to be a CAT_CASE
+  return CAT_CARDS.includes(firstCard as (typeof CAT_CARDS)[number]);
 }
 
 export function validateFavor(
@@ -104,17 +121,32 @@ export function validateGiveFavorCard(
   return player.hand.includes(typedPayload.cardToGive);
 }
 
-export function canPlayCatCombo(player: ExplodingCatsPlayerState): boolean {
-  const catCards = [
-    'tacocat',
-    'hairy_potato_cat',
-    'rainbow_ralphing_cat',
-    'cattermelon',
-    'bearded_cat',
-  ];
-  return catCards.some(
+export function canPlayCatCombo(
+  player: ExplodingCatsPlayerState,
+  allowActionCardCombos = false,
+): boolean {
+  // Check cat cards for combo availability
+  const hasCatCombo = CAT_CARDS.some(
     (cat) => player.hand.filter((c) => c === cat).length >= 2,
   );
+
+  if (hasCatCombo) return true;
+
+  // If action card combos are enabled, check for any matching pairs
+  if (allowActionCardCombos) {
+    // Cards that can be used for combos (exclude special cards like exploding_cat and defuse)
+    const comboableCards = player.hand.filter(
+      (c) =>
+        !BASE_SPECIAL_CARDS.includes(c as (typeof BASE_SPECIAL_CARDS)[number]),
+    );
+    const cardCounts = new Map<string, number>();
+    comboableCards.forEach((c) =>
+      cardCounts.set(c, (cardCounts.get(c) || 0) + 1),
+    );
+    return Array.from(cardCounts.values()).some((count) => count >= 2);
+  }
+
+  return false;
 }
 
 export function canPlayFiverCombo(player: ExplodingCatsPlayerState): boolean {

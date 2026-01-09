@@ -5,6 +5,7 @@ import {
   ExplodingCatsCatCard,
   ExplodingCatsLogEntry,
   CAT_CARDS,
+  SPECIAL_CARDS,
 } from '../types';
 import {
   getCardEmoji,
@@ -58,6 +59,7 @@ interface PlayerHandProps {
   deckSize: number;
   playerOrder: string[];
   currentUserId: string | null;
+  allowActionCardCombos: boolean;
   t: (key: string) => string;
   onDraw: () => void;
   onPlayActionCard: (card: ExplodingCatsCard) => void;
@@ -89,6 +91,7 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
   deckSize,
   playerOrder,
   currentUserId,
+  allowActionCardCombos,
   t,
   onDraw,
   onPlayActionCard,
@@ -141,6 +144,7 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
           actionBusy={typeof actionBusy === 'boolean' ? null : actionBusy}
           hasOpponents={aliveOpponents.length > 0}
           discardPileLength={discardPileLength}
+          allowActionCardCombos={allowActionCardCombos}
           onDraw={onDraw}
           onPlayActionCard={onPlayActionCard}
           onPlayNope={onPlayNope}
@@ -183,8 +187,17 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
               const isCatCard = CAT_CARDS.includes(
                 card as ExplodingCatsCatCard,
               );
+              // When allowActionCardCombos is enabled, any card except special cards can be used for combos
+              const isComboableCard = allowActionCardCombos
+                ? !SPECIAL_CARDS.includes(
+                    card as (typeof SPECIAL_CARDS)[number],
+                  )
+                : isCatCard;
               const canPlayCombo =
-                isCatCard && count >= 2 && canAct && aliveOpponents.length > 0;
+                isComboableCard &&
+                count >= 2 &&
+                canAct &&
+                aliveOpponents.length > 0;
 
               return (
                 <Card

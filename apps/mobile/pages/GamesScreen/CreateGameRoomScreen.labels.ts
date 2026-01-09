@@ -59,6 +59,11 @@ export function useCreateGameRoomLabels(
     sectionGame,
     sectionDetails,
     sectionPreview,
+    sectionHouseRules: t('games.explodingCats.houseRules.title'),
+    actionCardCombosLabel: t('games.explodingCats.houseRules.actionCardCombos'),
+    actionCardCombosHint: t(
+      'games.explodingCats.houseRules.actionCardCombosHint',
+    ),
     comingSoonLabel,
     disabledAlertTitle,
     disabledAlertMessage,

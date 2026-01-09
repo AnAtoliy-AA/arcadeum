@@ -8,6 +8,8 @@ import {
   ChatScope,
   ATTACK_PACK_CARDS,
   BASE_ACTION_CARDS,
+  CAT_CARDS,
+  SPECIAL_CARDS,
 } from '@/shared/types/games';
 
 /** Number of different cards required for the fiver combo */
@@ -57,25 +59,13 @@ export type {
   ChatScope,
 };
 
-export { ATTACK_PACK_CARDS, BASE_ACTION_CARDS };
-
-/**
- * List of all cat cards
- */
-export const CAT_CARDS: ExplodingCatsCatCard[] = [
-  'tacocat',
-  'hairy_potato_cat',
-  'rainbow_ralphing_cat',
-  'cattermelon',
-  'bearded_cat',
-];
+export { ATTACK_PACK_CARDS, BASE_ACTION_CARDS, CAT_CARDS, SPECIAL_CARDS };
 
 /**
  * List of all game cards
  */
 export const ALL_GAME_CARDS: ExplodingCatsCard[] = [
-  'exploding_cat',
-  'defuse',
+  ...SPECIAL_CARDS,
   ...BASE_ACTION_CARDS,
   ...CAT_CARDS,
   ...ATTACK_PACK_CARDS,

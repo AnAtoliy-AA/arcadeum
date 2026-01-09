@@ -110,6 +110,7 @@ export interface ExplodingCatsState {
   } | null;
   players: ExplodingCatsPlayerState[];
   logs: ExplodingCatsLogEntry[];
+  allowActionCardCombos: boolean; // House rule: allow any matching cards for combos
   [key: string]: unknown;
 }
 
@@ -143,6 +144,7 @@ function getAttackPackCards(): ExplodingCatsCard[] {
 export function createInitialExplodingCatsState(
   playerIds: string[],
   expansions: ExplodingCatsExpansion[] = [],
+  allowActionCardCombos = false,
 ): ExplodingCatsState {
   if (playerIds.length < 2) {
     throw new Error('Exploding Cats requires at least two players.');
@@ -215,6 +217,7 @@ export function createInitialExplodingCatsState(
     currentTurnIndex: 0,
     playDirection: 1,
     expansions,
+    allowActionCardCombos,
     pendingDefuse: null,
     pendingFavor: null,
     pendingAction: null,

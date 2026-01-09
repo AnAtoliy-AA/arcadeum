@@ -78,6 +78,9 @@ export const sharedMessages = {
       notesAria: 'Additional notes for the room',
       submitCreating: 'Creating...',
       comingSoon: 'Soon',
+      sectionHouseRules: 'House Rules',
+      houseRuleActionCardCombos: 'Action Card Combos',
+      houseRuleActionCardCombosHint: 'Any pairs',
     },
     roomPage: {
       loading: 'Loading...',
@@ -170,6 +173,9 @@ export const sharedMessages = {
       notesAria: 'Notas adicionales para la sala',
       submitCreating: 'Creando...',
       comingSoon: 'Pronto',
+      sectionHouseRules: 'Reglas de la Casa',
+      houseRuleActionCardCombos: 'Combos de Cartas de Acción',
+      houseRuleActionCardCombosHint: 'Cualquier par',
     },
     roomPage: {
       loading: 'Cargando...',
@@ -263,6 +269,9 @@ export const sharedMessages = {
       notesAria: 'Notes supplémentaires pour la salle',
       submitCreating: 'Création...',
       comingSoon: 'Bientôt',
+      sectionHouseRules: 'Règles Maison',
+      houseRuleActionCardCombos: "Combos de Cartes d'Action",
+      houseRuleActionCardCombosHint: 'Toute paire',
     },
     roomPage: {
       loading: 'Chargement...',

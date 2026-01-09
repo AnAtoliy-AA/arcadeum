@@ -12,7 +12,6 @@ import {
   extractRoomAndUser,
   extractString,
   handleError,
-  isCatComboCard,
   isSimpleActionCard,
   toExplodingCatsCard,
 } from './games.gateway.utils';
@@ -149,8 +148,11 @@ export class ExplodingCatsGateway {
     const mode = modeRaw as 'pair' | 'trio' | 'fiver';
 
     // Fiver mode doesn't require a cat card selection - it uses any 5 different cards
-    if (mode !== 'fiver' && !isCatComboCard(cat)) {
-      throw new WsException('cat is not supported.');
+    if (mode !== 'fiver') {
+      const catCardValue = toExplodingCatsCard(cat);
+      if (!catCardValue) {
+        throw new WsException('cat is not supported.');
+      }
     }
 
     const desiredCardValue = toExplodingCatsCard(desiredCard);

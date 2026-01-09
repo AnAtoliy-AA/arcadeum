@@ -182,7 +182,7 @@ export default function SettingsScreen() {
               {t('settings.downloadsDescription')}
             </ThemedText>
             <View style={styles.downloadButtons}>
-              {iosDownloadUrl ? (
+              {iosDownloadUrl && !platform.isAndroidWeb ? (
                 <TouchableOpacity
                   style={styles.downloadButton}
                   accessibilityRole="link"
@@ -201,7 +201,7 @@ export default function SettingsScreen() {
                   </ThemedText>
                 </TouchableOpacity>
               ) : null}
-              {androidDownloadUrl ? (
+              {androidDownloadUrl && !platform.isIosWeb ? (
                 <TouchableOpacity
                   style={styles.downloadButton}
                   accessibilityRole="link"

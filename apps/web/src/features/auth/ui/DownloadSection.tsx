@@ -5,7 +5,8 @@ import {
   DownloadButtons,
   DownloadButton,
   DownloadIcon,
-} from "./styles";
+} from './styles';
+import { usePlatform } from '@/shared/hooks/usePlatform';
 
 interface DownloadSectionProps {
   title: string;
@@ -25,6 +26,7 @@ export function DownloadSection({
   androidHref,
 }: DownloadSectionProps) {
   const hasLinks = Boolean(iosHref || androidHref);
+  const { isIos, isAndroid } = usePlatform();
 
   if (!hasLinks) {
     return null;
@@ -35,7 +37,7 @@ export function DownloadSection({
       <DownloadTitle>{title}</DownloadTitle>
       <DownloadDescription>{description}</DownloadDescription>
       <DownloadButtons>
-        {iosHref ? (
+        {iosHref && !isAndroid ? (
           <DownloadButton
             href={iosHref}
             target="_blank"
@@ -45,7 +47,7 @@ export function DownloadSection({
             <span>{iosLabel}</span>
           </DownloadButton>
         ) : null}
-        {androidHref ? (
+        {androidHref && !isIos ? (
           <DownloadButton
             href={androidHref}
             target="_blank"

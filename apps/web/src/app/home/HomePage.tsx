@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import { appConfig } from '@/shared/config/app-config';
 import { PageTitle, LinkButton } from '@/shared/ui';
+import { usePlatform } from '@/shared/hooks/usePlatform';
 
 const Page = styled.main`
   min-height: 100vh;
@@ -170,6 +171,7 @@ export function HomePage() {
     downloads,
   } = appConfig;
   const { messages } = useLanguage();
+  const { isIos, isAndroid } = usePlatform();
   const homeCopy = messages.home ?? {};
 
   const kicker = formatMessage(homeCopy.kicker, { appName }) ?? configKicker;
@@ -206,12 +208,12 @@ export function HomePage() {
             <DownloadTitle>{downloadsTitle}</DownloadTitle>
             <DownloadDescription>{downloadsDescription}</DownloadDescription>
             <DownloadButtons>
-              {downloads.iosHref ? (
+              {downloads.iosHref && !isAndroid ? (
                 <DownloadButton href={downloads.iosHref}>
                   ↓ {iosLabel}
                 </DownloadButton>
               ) : null}
-              {downloads.androidHref ? (
+              {downloads.androidHref && !isIos ? (
                 <DownloadButton href={downloads.androidHref}>
                   ↓ {androidLabel}
                 </DownloadButton>

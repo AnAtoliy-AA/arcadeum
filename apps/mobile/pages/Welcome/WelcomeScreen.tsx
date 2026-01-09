@@ -153,7 +153,7 @@ export default function WelcomeScreen() {
                 {t('welcome.downloadDescription')}
               </Text>
               <View style={styles.downloadButtons}>
-                {iosDownloadUrl ? (
+                {iosDownloadUrl && !platform.isAndroidWeb ? (
                   <TouchableOpacity
                     style={styles.downloadButton}
                     onPress={() => {
@@ -172,7 +172,7 @@ export default function WelcomeScreen() {
                     </ThemedText>
                   </TouchableOpacity>
                 ) : null}
-                {androidDownloadUrl ? (
+                {androidDownloadUrl && !platform.isIosWeb ? (
                   <TouchableOpacity
                     style={styles.downloadButton}
                     onPress={() => {

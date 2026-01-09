@@ -11,12 +11,21 @@ type PlatformHelper = {
   readonly isWindows: boolean;
   readonly isNative: boolean;
   readonly isDesktop: boolean;
+  readonly isIosWeb: boolean;
+  readonly isAndroidWeb: boolean;
   matches: (...targets: PlatformOSType[]) => boolean;
 };
 
+const isWeb = os === 'web';
+const userAgent =
+  isWeb && typeof window !== 'undefined' ? window.navigator.userAgent : '';
+
+const isIosWeb = isWeb && /iPhone|iPad|iPod/i.test(userAgent);
+const isAndroidWeb = isWeb && /Android/i.test(userAgent);
+
 export const platform: PlatformHelper = {
   os,
-  isWeb: os === 'web',
+  isWeb,
   isIos: os === 'ios',
   isAndroid: os === 'android',
   isMacOs: os === 'macos',
@@ -24,4 +33,6 @@ export const platform: PlatformHelper = {
   isNative: os === 'ios' || os === 'android',
   isDesktop: os === 'macos' || os === 'windows',
   matches: (...targets: PlatformOSType[]) => targets.includes(os),
+  isIosWeb,
+  isAndroidWeb,
 };

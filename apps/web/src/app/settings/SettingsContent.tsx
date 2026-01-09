@@ -5,6 +5,7 @@ import { useCallback, useMemo } from 'react';
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import { useThemeController } from '@/app/theme/ThemeContext';
 import { useHapticsSetting } from '@/shared/hooks/useHapticsSetting';
+import { usePlatform } from '@/shared/hooks/usePlatform';
 import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
 import type { ThemePreference } from '@/shared/config/theme';
 
@@ -148,13 +149,14 @@ export default function SettingsContent({
     downloads.description ??
     DOWNLOADS_DESCRIPTION_FALLBACK;
 
+  const { isIos, isAndroid } = usePlatform();
   const downloadButtons = useMemo(() => {
     const buttons: Array<{ key: string; href: string; label: string }> = [];
-    if (downloads.iosHref) {
+    if (downloads.iosHref && !isAndroid) {
       const label = settingsCopy.downloadsIosLabel ?? downloads.iosLabel;
       buttons.push({ key: 'ios', href: downloads.iosHref, label });
     }
-    if (downloads.androidHref) {
+    if (downloads.androidHref && !isIos) {
       const label =
         settingsCopy.downloadsAndroidLabel ?? downloads.androidLabel;
       buttons.push({ key: 'android', href: downloads.androidHref, label });
@@ -167,6 +169,8 @@ export default function SettingsContent({
     downloads.iosLabel,
     settingsCopy.downloadsAndroidLabel,
     settingsCopy.downloadsIosLabel,
+    isIos,
+    isAndroid,
   ]);
 
   const accountTitle = settingsCopy.accountTitle ?? ACCOUNT_TITLE_FALLBACK;

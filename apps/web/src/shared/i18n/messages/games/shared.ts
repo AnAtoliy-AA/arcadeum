@@ -42,6 +42,7 @@ export const sharedMessages = {
         public: 'Public',
         private: 'Private',
       },
+      fastRoom: 'Fast Room',
     },
     room: {
       gameArea: 'Game area - Real-time game integration coming soon',
@@ -81,6 +82,8 @@ export const sharedMessages = {
       sectionHouseRules: 'House Rules',
       houseRuleActionCardCombos: 'Action Card Combos',
       houseRuleActionCardCombosHint: 'Any pairs',
+      houseRuleIdleTimer: 'Idle Timer Autoplay',
+      houseRuleIdleTimerHint: 'Automated play after {{seconds}}s',
     },
     roomPage: {
       loading: 'Loading...',
@@ -137,6 +140,7 @@ export const sharedMessages = {
         public: 'Pública',
         private: 'Privada',
       },
+      fastRoom: 'Partida rápida',
     },
     room: {
       gameArea: 'Área de juego - Integración en tiempo real próximamente',
@@ -176,6 +180,8 @@ export const sharedMessages = {
       sectionHouseRules: 'Reglas de la Casa',
       houseRuleActionCardCombos: 'Combos de Cartas de Acción',
       houseRuleActionCardCombosHint: 'Cualquier par',
+      houseRuleIdleTimer: 'Autoplay con Temporizador',
+      houseRuleIdleTimerHint: 'Se activa tras {{seconds}}s de inactividad',
     },
     roomPage: {
       loading: 'Cargando...',
@@ -233,6 +239,7 @@ export const sharedMessages = {
         public: 'Publique',
         private: 'Privée',
       },
+      fastRoom: 'Partie rapide',
     },
     room: {
       gameArea: 'Zone de jeu - Intégration en temps réel bientôt disponible',
@@ -272,6 +279,8 @@ export const sharedMessages = {
       sectionHouseRules: 'Règles Maison',
       houseRuleActionCardCombos: "Combos de Cartes d'Action",
       houseRuleActionCardCombosHint: 'Toute paire',
+      houseRuleIdleTimer: 'Autoplay avec minuterie',
+      houseRuleIdleTimerHint: "Se déclenche après {{seconds}}s d'inactivité",
     },
     roomPage: {
       loading: 'Chargement...',

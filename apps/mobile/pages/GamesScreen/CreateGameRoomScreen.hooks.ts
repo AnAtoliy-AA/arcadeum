@@ -18,6 +18,7 @@ export interface CreateGameRoomState {
   maxPlayers: string;
   notes: string;
   allowActionCardCombos: boolean;
+  idleTimerEnabled: boolean;
   loading: boolean;
 }
 
@@ -34,6 +35,7 @@ export interface UseCreateGameRoomControllerResult {
   handleChange: CreateGameRoomFieldChangeHandler;
   handleToggleVisibility: () => void;
   handleToggleActionCardCombos: () => void;
+  handleToggleIdleTimer: () => void;
   handleSelectGame: (gameId: string) => void;
   handleSubmit: () => Promise<void>;
   t: ReturnType<typeof useTranslation>['t'];
@@ -77,6 +79,7 @@ export function useCreateGameRoomController(): UseCreateGameRoomControllerResult
     maxPlayers: '',
     notes: '',
     allowActionCardCombos: false,
+    idleTimerEnabled: false,
     loading: false,
   });
 
@@ -105,6 +108,13 @@ export function useCreateGameRoomController(): UseCreateGameRoomControllerResult
     setFormState((prev) => ({
       ...prev,
       allowActionCardCombos: !prev.allowActionCardCombos,
+    }));
+  }, []);
+
+  const handleToggleIdleTimer = useCallback(() => {
+    setFormState((prev) => ({
+      ...prev,
+      idleTimerEnabled: !prev.idleTimerEnabled,
     }));
   }, []);
 
@@ -162,6 +172,7 @@ export function useCreateGameRoomController(): UseCreateGameRoomControllerResult
           formState.gameId === 'exploding_kittens_v1'
             ? {
                 allowActionCardCombos: formState.allowActionCardCombos,
+                idleTimerEnabled: formState.idleTimerEnabled,
               }
             : undefined,
       };
@@ -196,6 +207,7 @@ export function useCreateGameRoomController(): UseCreateGameRoomControllerResult
     formState.notes,
     formState.visibility,
     formState.allowActionCardCombos,
+    formState.idleTimerEnabled,
     refreshTokens,
     router,
     t,
@@ -211,6 +223,7 @@ export function useCreateGameRoomController(): UseCreateGameRoomControllerResult
     handleChange,
     handleToggleVisibility,
     handleToggleActionCardCombos,
+    handleToggleIdleTimer,
     handleSelectGame,
     handleSubmit,
     t,

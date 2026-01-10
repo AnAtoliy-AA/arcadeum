@@ -12,3 +12,5 @@ export * from './PlayerSelectionModal';
 export * from './TableCenter';
 export * from './AutoplayControls';
 export * from './PlayerSeat';
+export * from './IdleTimerDisplay';
+export * from './GamePlaceholder';

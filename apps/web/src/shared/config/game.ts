@@ -1,0 +1,1 @@
+export const IDLE_TIMER_DURATION_SEC = 15;

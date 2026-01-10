@@ -65,6 +65,14 @@ export const esMessages = {
       autoGiveFavor: '🤲 Auto-dar Favor (gato→acción→desactivar)',
       autoDefuse: '🛡️ Auto-desactivar (posición aleatoria)',
     },
+    idleTimer: {
+      enableLabel: 'Activar autoplay con temporizador',
+      enableHint:
+        'El autoplay comienza después de {{seconds}} segundos de inactividad',
+      countdown: 'Autoplay en {{seconds}}s',
+      active: 'Autoplay Activo',
+      stop: 'Detener',
+    },
     state: {
       deck: 'Mazo',
       discard: 'Descarte',

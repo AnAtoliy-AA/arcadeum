@@ -10,7 +10,7 @@ export interface CreateGameRoomParams {
   visibility: 'public' | 'private';
   maxPlayers?: number;
   notes?: string;
-  gameOptions?: Record<string, unknown>;
+  gameOptions?: GameOptions;
 }
 
 export interface GameRoomMemberSummary {
@@ -19,6 +19,11 @@ export interface GameRoomMemberSummary {
   username?: string | null;
   email?: string | null;
   isHost: boolean;
+}
+
+export interface GameOptions {
+  allowActionCardCombos?: boolean;
+  idleTimerEnabled?: boolean;
 }
 
 export interface GameRoomSummary {
@@ -37,6 +42,7 @@ export interface GameRoomSummary {
   viewerRole?: 'host' | 'participant' | 'none';
   viewerHasJoined?: boolean;
   viewerIsHost?: boolean;
+  gameOptions?: GameOptions;
 }
 
 export interface CreateGameRoomResponse {

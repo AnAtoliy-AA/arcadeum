@@ -298,6 +298,7 @@ export class GamesService {
       gameId?: string;
       name?: string;
       visibility?: 'public' | 'private';
+      gameOptions?: Record<string, unknown>;
     },
   ) {
     const dto: HistoryRematchDto = {

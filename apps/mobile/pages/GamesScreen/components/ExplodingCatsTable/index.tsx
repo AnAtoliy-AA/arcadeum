@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
-import {
-  ScrollView,
-  TouchableOpacity,
-  View,
-  ActivityIndicator,
-} from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
-import { ThemedText } from '@/components/ThemedText';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles } from '@/hooks/useThemedStyles';
 import {
   useHorizontalDragScroll,
@@ -36,6 +29,7 @@ import {
   useGameHaptics,
   useActionPermissions,
   useGameLogs,
+  useIdleTimer,
 } from './hooks';
 import {
   GameHeader,
@@ -46,6 +40,8 @@ import {
   TableCenter,
   AutoplayControls,
   ExplodingCatsModals,
+  IdleTimerDisplay,
+  GamePlaceholder,
 } from './components';
 import { createStyles } from './styles';
 
@@ -69,6 +65,7 @@ export function ExplodingCatsTable({
   fullScreen = false,
   tableOnly = false,
   roomName,
+  idleTimerEnabled = false,
 }: ExplodingCatsTableProps) {
   const styles = useThemedStyles(createStyles);
   const { t } = useTranslation();
@@ -84,6 +81,7 @@ export function ExplodingCatsTable({
   const [targetedActionPrompt, setTargetedActionPrompt] = useState<{
     card: import('./types').ExplodingCatsCard;
   } | null>(null);
+  const [idleTimerTriggered, setIdleTimerTriggered] = useState(false);
 
   // Custom hooks
   const gameState = useGameState(session, currentUserId);
@@ -117,6 +115,21 @@ export function ExplodingCatsTable({
 
   // Haptic feedback for turn
   useGameHaptics({ isMyTurn, enabled: hapticsEnabled });
+
+  // Idle timer for auto-enabling autoplay
+  const handleIdleTimeout = React.useCallback(() => {
+    setIdleTimerTriggered(true);
+  }, []);
+
+  const handleStopAutoplay = React.useCallback(() => {
+    setIdleTimerTriggered(false);
+  }, []);
+
+  const handleAutoplayEnabledChange = React.useCallback((enabled: boolean) => {
+    if (!enabled) {
+      setIdleTimerTriggered(false);
+    }
+  }, []);
 
   const pendingDefuse = snapshot?.pendingDefuse ?? null;
   const mustDefuse = !!currentUserId && pendingDefuse === currentUserId;
@@ -155,6 +168,14 @@ export function ExplodingCatsTable({
     isMyTurn,
     isHost,
     pendingDraws,
+  });
+
+  // Idle timer hook (after canDraw is defined)
+  const idleTimer = useIdleTimer({
+    enabled: idleTimerEnabled,
+    isMyTurn,
+    canAct: canDraw,
+    onTimeout: handleIdleTimeout,
   });
 
   const labels = useGameLabels(
@@ -229,14 +250,22 @@ export function ExplodingCatsTable({
 
   const activeEffect = animations.activeEffect;
 
+  const pendingFavor = snapshot?.pendingFavor ?? null;
+  const mustGiveFavor =
+    !!currentUserId && pendingFavor?.targetId === currentUserId;
+  const favorRequesterName = pendingFavor?.requesterId
+    ? (playerNameMap.get(pendingFavor.requesterId) ?? 'Player')
+    : 'Player';
+
   const tableContent = (
     <>
       {showHeader ? (
         <GameHeader
           statusLabel={labels.statusLabel}
-          isCompleted={isSessionCompleted}
+          isCompleted={session?.status === 'completed'}
           styles={styles}
           roomName={roomName}
+          idleTimerEnabled={idleTimerEnabled}
         />
       ) : null}
 
@@ -293,6 +322,16 @@ export function ExplodingCatsTable({
             styles={styles}
           />
 
+          {idleTimerEnabled && selfPlayer?.alive && (
+            <IdleTimerDisplay
+              secondsRemaining={idleTimer.secondsRemaining}
+              isActive={idleTimer.isActive}
+              autoplayTriggered={idleTimerTriggered}
+              onStop={handleStopAutoplay}
+              t={t as (key: string, params?: Record<string, unknown>) => string}
+            />
+          )}
+
           {selfPlayer?.alive && (
             <AutoplayControls
               isMyTurn={isMyTurn}
@@ -312,43 +351,20 @@ export function ExplodingCatsTable({
               onPlayNope={onPlayNope}
               onGiveFavorCard={onGiveFavorCard}
               onPlayDefuse={onPlayDefuse}
+              forceEnableAutoplay={idleTimerTriggered}
+              onAutoplayEnabledChange={handleAutoplayEnabledChange}
             />
           )}
         </>
       ) : (
-        <View style={styles.placeholder}>
-          <ThemedText style={styles.placeholderText}>
-            {labels.placeholderText}
-          </ThemedText>
-          {canStart ? (
-            <TouchableOpacity
-              style={[
-                styles.primaryButton,
-                startBusy ? styles.primaryButtonDisabled : null,
-              ]}
-              onPress={onStart}
-              disabled={startBusy}
-            >
-              {startBusy ? (
-                <ActivityIndicator
-                  size="small"
-                  color={styles.primaryButtonText.color as string}
-                />
-              ) : (
-                <>
-                  <IconSymbol
-                    name="play.fill"
-                    size={16}
-                    color={styles.primaryButtonText.color as string}
-                  />
-                  <ThemedText style={styles.primaryButtonText}>
-                    {t('games.table.actions.start')}
-                  </ThemedText>
-                </>
-              )}
-            </TouchableOpacity>
-          ) : null}
-        </View>
+        <GamePlaceholder
+          placeholderText={labels.placeholderText}
+          canStart={canStart}
+          startBusy={startBusy}
+          onStart={onStart}
+          t={t as (key: string) => string}
+          styles={styles}
+        />
       )}
 
       {showLogs ? (
@@ -371,13 +387,6 @@ export function ExplodingCatsTable({
       ) : null}
     </>
   );
-
-  const pendingFavor = snapshot?.pendingFavor ?? null;
-  const mustGiveFavor =
-    !!currentUserId && pendingFavor?.targetId === currentUserId;
-  const favorRequesterName = pendingFavor?.requesterId
-    ? (playerNameMap.get(pendingFavor.requesterId) ?? 'Player')
-    : 'Player';
 
   const modals = (
     <ExplodingCatsModals

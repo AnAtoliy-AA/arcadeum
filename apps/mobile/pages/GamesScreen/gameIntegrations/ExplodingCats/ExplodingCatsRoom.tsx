@@ -71,6 +71,7 @@ export const ExplodingCatsRoom = forwardRef<
   const [startBusy, setStartBusy] = useState(false);
   const [tableFullScreen, setTableFullScreen] = useState(false);
   const [controlsCollapsed, setControlsCollapsed] = useState(false);
+  const idleTimerEnabled = room?.gameOptions?.idleTimerEnabled ?? false;
 
   const {
     handleStartMatch,
@@ -254,6 +255,7 @@ export const ExplodingCatsRoom = forwardRef<
             fullScreen
             tableOnly
             roomName={displayName}
+            idleTimerEnabled={idleTimerEnabled}
           />
         </View>
         <TouchableOpacity
@@ -344,6 +346,7 @@ export const ExplodingCatsRoom = forwardRef<
           onPostHistoryNote={handlePostHistoryNote}
           fullScreen={hasSessionSnapshot}
           roomName={displayName}
+          idleTimerEnabled={idleTimerEnabled}
         />
 
         {showLobbyOverview ? (

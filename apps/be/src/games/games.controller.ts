@@ -232,6 +232,7 @@ export class GamesController {
         gameId: dto.gameId,
         name: dto.name,
         visibility: dto.visibility,
+        gameOptions: dto.gameOptions,
       },
     );
 

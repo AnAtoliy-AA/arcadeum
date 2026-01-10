@@ -10,6 +10,7 @@ interface GameHeaderProps {
   isCompleted: boolean;
   styles: ExplodingCatsTableStyles;
   roomName?: string;
+  idleTimerEnabled?: boolean;
 }
 
 export function GameHeader({
@@ -17,6 +18,7 @@ export function GameHeader({
   isCompleted,
   styles,
   roomName,
+  idleTimerEnabled,
 }: GameHeaderProps) {
   const { t } = useTranslation();
 
@@ -33,8 +35,35 @@ export function GameHeader({
             {roomName || t('games.table.headerTitle')}
           </ThemedText>
         </View>
-        <View style={styles.statusBadge}>
-          <ThemedText style={styles.statusText}>{statusLabel}</ThemedText>
+
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          {idleTimerEnabled && (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 4,
+                paddingVertical: 4,
+                paddingHorizontal: 8,
+                borderRadius: 999,
+                backgroundColor: '#eab30833',
+              }}
+            >
+              <IconSymbol name="bolt.fill" size={14} color="#eab308" />
+              <ThemedText
+                style={{
+                  color: '#eab308',
+                  fontSize: 10,
+                  fontWeight: '700',
+                }}
+              >
+                {t('games.rooms.fastRoom')}
+              </ThemedText>
+            </View>
+          )}
+          <View style={styles.statusBadge}>
+            <ThemedText style={styles.statusText}>{statusLabel}</ThemedText>
+          </View>
         </View>
       </View>
       {isCompleted ? (

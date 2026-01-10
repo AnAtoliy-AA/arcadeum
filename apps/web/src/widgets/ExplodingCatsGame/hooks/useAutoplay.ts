@@ -34,7 +34,7 @@ interface UseAutoplayOptions {
   onPlayDefuse: (position: number) => void;
 }
 
-interface UseAutoplayReturn {
+export interface UseAutoplayReturn {
   allEnabled: boolean;
   autoDrawEnabled: boolean;
   autoSkipEnabled: boolean;

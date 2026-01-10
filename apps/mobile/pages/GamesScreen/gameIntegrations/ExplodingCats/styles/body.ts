@@ -111,5 +111,28 @@ export const getBodyStyles = (palette: Palette) => {
       color: palette.icon,
       lineHeight: 19,
     },
+    ruleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingVertical: 12,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      // Using generic border color since gameRoom.border is available in scope
+      borderBottomColor: borderColor,
+    },
+    ruleInfo: {
+      flex: 1,
+      gap: 4,
+    },
+    ruleTitle: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: palette.text,
+    },
+    ruleDescription: {
+      fontSize: 13,
+      color: palette.icon,
+      lineHeight: 18,
+    },
   };
 };

@@ -1,10 +1,7 @@
-import React from 'react';
-import {
-  CatComboModal,
-  DefuseModal,
-  GiveFavorModal,
-  PlayerSelectionModal,
-} from './index';
+import { CatComboModal } from './CatComboModal';
+import { DefuseModal } from './DefuseModal';
+import { GiveFavorModal } from './GiveFavorModal';
+import { PlayerSelectionModal } from './PlayerSelectionModal';
 
 import type {
   ExplodingCatsCard,

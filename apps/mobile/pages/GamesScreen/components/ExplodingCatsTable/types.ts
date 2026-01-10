@@ -177,6 +177,7 @@ export interface ExplodingCatsTableProps {
   fullScreen?: boolean;
   tableOnly?: boolean;
   roomName?: string;
+  idleTimerEnabled?: boolean;
 }
 
 export interface ProcessedPlayer {

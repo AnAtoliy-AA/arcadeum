@@ -68,6 +68,13 @@ export const enMessages = {
       autoGiveFavor: '🤲 Auto-give Favor (cat→action→defuse)',
       autoDefuse: '🛡️ Auto-defuse (random position)',
     },
+    idleTimer: {
+      enableLabel: 'Enable idle timer autoplay',
+      enableHint: 'Autoplay starts after {{seconds}} seconds of inactivity',
+      countdown: 'Autoplay in {{seconds}}s',
+      active: 'Autoplay Active',
+      stop: 'Stop',
+    },
     state: {
       deck: 'Deck',
       discard: 'Discard',

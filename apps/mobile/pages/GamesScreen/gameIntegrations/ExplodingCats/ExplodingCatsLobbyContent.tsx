@@ -10,6 +10,7 @@ import { ExplodingCatsRoomMetaItem as MetaItem } from '../components/ExplodingCa
 import { HERO_GRADIENT_COORDS } from './ExplodingCatsRoom.constants';
 import type { ExplodingCatsRoomStyles } from './ExplodingCatsRoom.styles';
 import type { GameRoomSummary } from '../../api/gamesApi';
+import { IDLE_TIMER_DURATION_SEC } from '../../../../constants/game';
 
 interface ExplodingCatsLobbyContentProps {
   room: GameRoomSummary | null;
@@ -87,6 +88,31 @@ export function ExplodingCatsLobbyContent({
               {displayGame ?? t('games.rooms.unknownGame')}
             </ThemedText>
           </View>
+          {room?.gameOptions?.idleTimerEnabled && (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 6,
+                paddingVertical: 4,
+                paddingHorizontal: 10,
+                borderRadius: 999,
+                backgroundColor: '#eab30833',
+                marginRight: 8,
+              }}
+            >
+              <IconSymbol name="bolt.fill" size={14} color="#eab308" />
+              <ThemedText
+                style={{
+                  color: '#eab308',
+                  fontSize: 12,
+                  fontWeight: '600',
+                }}
+              >
+                {t('games.rooms.fastRoom')}
+              </ThemedText>
+            </View>
+          )}
           <View style={[styles.statusPill, statusStyle]}>
             <ThemedText style={styles.statusText}>
               {t(getRoomStatusLabel(room?.status ?? 'lobby'))}
@@ -243,8 +269,10 @@ export function ExplodingCatsLobbyContent({
               size="small"
               color={styles.refreshTint.color as string}
             />
-            <ThemedText style={styles.loadingText}>
-              {t('games.room.loading')}
+            <ThemedText style={styles.ruleDescription}>
+              {t('games.table.idleTimer.enableHint', {
+                seconds: IDLE_TIMER_DURATION_SEC,
+              })}
             </ThemedText>
           </View>
         ) : null}

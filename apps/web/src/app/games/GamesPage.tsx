@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { resolveApiUrl } from '@/shared/lib/api-base';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import type { GameRoomSummary } from '@/shared/types/games';
 
 import {
   Page,
@@ -36,34 +37,8 @@ import {
   Spinner,
   Error,
   Empty,
+  FastBadge,
 } from './styles';
-
-interface GameRoomSummary {
-  id: string;
-  gameId: string;
-  name: string;
-  hostId: string;
-  visibility: 'public' | 'private';
-  playerCount: number;
-  maxPlayers: number | null;
-  createdAt: string;
-  status: 'lobby' | 'in_progress' | 'completed';
-  inviteCode?: string;
-  host?: {
-    id: string;
-    displayName: string;
-    username?: string | null;
-    email?: string | null;
-    isHost: boolean;
-  };
-  members?: Array<{
-    id: string;
-    displayName: string;
-    username?: string | null;
-    email?: string | null;
-    isHost: boolean;
-  }>;
-}
 
 export function GamesPage() {
   const { snapshot } = useSessionTokens();
@@ -281,6 +256,12 @@ export function GamesPage() {
                   }}
                 >
                   <RoomTitle>{room.name}</RoomTitle>
+                  {room.gameOptions?.idleTimerEnabled && (
+                    <FastBadge>
+                      <span style={{ marginRight: '4px' }}>⚡</span>
+                      {t('games.rooms.fastRoom')}
+                    </FastBadge>
+                  )}
                   <StatusBadge status={room.status}>
                     {t(`games.rooms.status.${room.status}`) || room.status}
                   </StatusBadge>

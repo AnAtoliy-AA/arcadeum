@@ -66,6 +66,13 @@ export const frMessages = {
       autoGiveFavor: '🤲 Auto-donner Faveur (chat→action→désamorcer)',
       autoDefuse: '🛡️ Auto-désamorcer (position aléatoire)',
     },
+    idleTimer: {
+      enableLabel: "Activer l'autoplay avec minuterie",
+      enableHint: "L'autoplay démarre après {{seconds}} secondes d'inactivité",
+      countdown: 'Autoplay dans {{seconds}}s',
+      active: 'Autoplay Actif',
+      stop: 'Arrêter',
+    },
     state: {
       deck: 'Paquet',
       discard: 'Défausse',

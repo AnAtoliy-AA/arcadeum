@@ -28,6 +28,7 @@ export default function CreateGameRoomScreen() {
     handleChange,
     handleToggleVisibility,
     handleToggleActionCardCombos,
+    handleToggleIdleTimer,
     handleSelectGame,
     handleSubmit,
     t,
@@ -79,6 +80,10 @@ export default function CreateGameRoomScreen() {
               actionCardCombosLabel={labels.actionCardCombosLabel}
               actionCardCombosHint={labels.actionCardCombosHint}
               onToggleActionCardCombos={handleToggleActionCardCombos}
+              idleTimerEnabled={formState.idleTimerEnabled}
+              idleTimerLabel={labels.idleTimerLabel}
+              idleTimerHint={labels.idleTimerHint}
+              onToggleIdleTimer={handleToggleIdleTimer}
               styles={styles}
             />
           )}

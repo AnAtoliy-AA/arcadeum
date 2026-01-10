@@ -73,6 +73,7 @@ export function RoomCard({
       : createdLabel;
 
   const isPrivate = room.visibility === 'private';
+  const isFastRoom = room.gameOptions?.idleTimerEnabled ?? false;
 
   const hostDisplay =
     room.host?.displayName ??
@@ -88,8 +89,13 @@ export function RoomCard({
         <ThemedText type="defaultSemiBold" style={styles.title}>
           {room.name}
         </ThemedText>
-        <View style={[styles.statusPill, statusStyle]}>
-          <ThemedText style={styles.statusText}>{statusLabel}</ThemedText>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          {isFastRoom && (
+            <IconSymbol name="bolt.fill" size={16} color="#eab308" />
+          )}
+          <View style={[styles.statusPill, statusStyle]}>
+            <ThemedText style={styles.statusText}>{statusLabel}</ThemedText>
+          </View>
         </View>
       </View>
       <ThemedText style={styles.gameLabel}>{gameLabel}</ThemedText>
@@ -327,6 +333,23 @@ function createStyles(palette: Palette) {
       color: palette.background,
       fontWeight: '700',
       fontSize: 13,
+    },
+    fastRoomChip: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      paddingVertical: 6,
+      paddingHorizontal: 10,
+      borderRadius: 999,
+      backgroundColor: '#eab30833',
+    },
+    fastRoomChipIcon: {
+      color: '#eab308',
+    },
+    fastRoomChipText: {
+      color: '#eab308',
+      fontSize: 12,
+      fontWeight: '600',
     },
   });
 }

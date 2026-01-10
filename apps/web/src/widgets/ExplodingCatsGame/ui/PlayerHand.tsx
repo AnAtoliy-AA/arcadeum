@@ -13,7 +13,7 @@ import {
   getCardDescriptionKey,
 } from '../lib/cardUtils';
 import { ActionsSection } from './ActionsSection';
-import { AutoplayControls } from './AutoplayControls';
+
 import {
   HandSection,
   HandContainer,
@@ -73,6 +73,8 @@ interface PlayerHandProps {
     hand: ExplodingCatsCard[],
   ) => void;
   onOpenFiverCombo: () => void;
+  forceEnableAutoplay?: boolean;
+  onAutoplayEnabledChange?: (enabled: boolean) => void;
 }
 
 export const PlayerHand: React.FC<PlayerHandProps> = ({
@@ -84,13 +86,13 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
   actionBusy,
   aliveOpponents,
   discardPileLength,
-  logs,
-  pendingAction,
-  pendingFavor,
-  pendingDefuse,
-  deckSize,
-  playerOrder,
-  currentUserId,
+  logs: _logs,
+  pendingAction: _pendingAction,
+  pendingFavor: _pendingFavor,
+  pendingDefuse: _pendingDefuse,
+  deckSize: _deckSize,
+  playerOrder: _playerOrder,
+  currentUserId: _currentUserId,
   allowActionCardCombos,
   t,
   onDraw,
@@ -98,10 +100,12 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
   onPlayNope,
   onPlaySeeTheFuture,
   onOpenFavorModal,
-  onGiveFavorCard,
-  onPlayDefuse,
+  onGiveFavorCard: _onGiveFavorCard,
+  onPlayDefuse: _onPlayDefuse,
   onOpenCatCombo,
   onOpenFiverCombo,
+  forceEnableAutoplay: _forceEnableAutoplay,
+  onAutoplayEnabledChange: _onAutoplayEnabledChange,
 }) => {
   const { uniqueCards, cardCounts } = useMemo(() => {
     const unique = Array.from(new Set(currentPlayer.hand));
@@ -114,29 +118,6 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
 
   return (
     <HandSection>
-      {/* Autoplay Controls */}
-      {!isGameOver && (
-        <AutoplayControls
-          isMyTurn={isMyTurn}
-          canAct={canAct}
-          canPlayNope={canPlayNope}
-          hand={currentPlayer.hand}
-          logs={logs}
-          pendingAction={pendingAction}
-          pendingFavor={pendingFavor}
-          pendingDefuse={pendingDefuse}
-          deckSize={deckSize}
-          playerOrder={playerOrder}
-          currentUserId={currentUserId}
-          t={t}
-          onDraw={onDraw}
-          onPlayActionCard={onPlayActionCard}
-          onPlayNope={onPlayNope}
-          onGiveFavorCard={onGiveFavorCard}
-          onPlayDefuse={onPlayDefuse}
-        />
-      )}
-
       {isMyTurn && !isGameOver && (
         <ActionsSection
           currentPlayer={currentPlayer}

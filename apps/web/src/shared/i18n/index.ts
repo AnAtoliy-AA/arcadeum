@@ -1,4 +1,4 @@
-import { translations } from "./translations";
+import { translations } from './translations';
 import {
   DEFAULT_LOCALE,
   SUPPORTED_LOCALES,
@@ -12,12 +12,9 @@ import {
   type SupportMessages,
   type ThemeOptionMessages,
   type TranslationBundle,
-} from "./types";
+} from './types';
 
-export {
-  DEFAULT_LOCALE,
-  SUPPORTED_LOCALES,
-};
+export { DEFAULT_LOCALE, SUPPORTED_LOCALES };
 
 export type {
   ActionMessages,
@@ -37,7 +34,10 @@ export function getMessages(locale: Locale): TranslationBundle {
 }
 
 export function isLocale(value: unknown): value is Locale {
-  return typeof value === "string" && (SUPPORTED_LOCALES as readonly string[]).includes(value as Locale);
+  return (
+    typeof value === 'string' &&
+    (SUPPORTED_LOCALES as readonly string[]).includes(value as Locale)
+  );
 }
 
 export function formatMessage(
@@ -48,7 +48,7 @@ export function formatMessage(
     return template;
   }
 
-  return template.replace(/\{(\w+)\}/g, (match, key) => {
+  return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
     const replacement = params[key];
     if (replacement === undefined || replacement === null) {
       return match;

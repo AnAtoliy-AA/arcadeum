@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import type {
@@ -27,6 +27,8 @@ interface AutoplayControlsProps {
   onPlayNope: () => void;
   onGiveFavorCard: (card: ExplodingCatsCard) => void;
   onPlayDefuse: (position: number) => void;
+  forceEnableAutoplay?: boolean;
+  onAutoplayEnabledChange?: (enabled: boolean) => void;
 }
 
 export function AutoplayControls({
@@ -47,6 +49,8 @@ export function AutoplayControls({
   onPlayNope,
   onGiveFavorCard,
   onPlayDefuse,
+  forceEnableAutoplay,
+  onAutoplayEnabledChange,
 }: AutoplayControlsProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -85,6 +89,18 @@ export function AutoplayControls({
     onGiveFavorCard,
     onPlayDefuse,
   });
+
+  // Handle external force enable from idle timer
+  useEffect(() => {
+    if (forceEnableAutoplay && !allEnabled) {
+      setAllEnabled(true);
+    }
+  }, [forceEnableAutoplay, allEnabled, setAllEnabled]);
+
+  // Notify parent when autoplay state changes
+  useEffect(() => {
+    onAutoplayEnabledChange?.(allEnabled);
+  }, [allEnabled, onAutoplayEnabledChange]);
 
   const renderCheckbox = (
     checked: boolean,

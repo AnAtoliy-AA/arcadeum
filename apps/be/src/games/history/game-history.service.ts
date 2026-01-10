@@ -90,6 +90,9 @@ export class GameHistoryService {
       gameId: string;
       roomName: string;
       status: string;
+      name?: string;
+      visibility?: 'public' | 'private';
+      gameOptions?: Record<string, unknown>;
       startedAt: string | null;
       completedAt: string | null;
       lastActivityAt: string;
@@ -321,6 +324,7 @@ export class GameHistoryService {
       status: 'lobby',
       createdAt: now,
       updatedAt: now,
+      gameOptions: dto.gameOptions || originalRoom.gameOptions,
     });
 
     return newRoom._id.toString();

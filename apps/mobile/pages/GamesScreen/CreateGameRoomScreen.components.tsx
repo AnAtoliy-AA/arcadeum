@@ -238,6 +238,10 @@ interface HouseRulesSectionProps {
   actionCardCombosLabel: string;
   actionCardCombosHint: string;
   onToggleActionCardCombos: () => void;
+  idleTimerEnabled: boolean;
+  idleTimerLabel: string;
+  idleTimerHint: string;
+  onToggleIdleTimer: () => void;
   styles: CreateGameRoomStyles;
 }
 
@@ -247,6 +251,10 @@ export function HouseRulesSection({
   actionCardCombosLabel,
   actionCardCombosHint,
   onToggleActionCardCombos,
+  idleTimerEnabled,
+  idleTimerLabel,
+  idleTimerHint,
+  onToggleIdleTimer,
   styles,
 }: HouseRulesSectionProps): React.JSX.Element {
   return (
@@ -272,6 +280,26 @@ export function HouseRulesSection({
             accessibilityState={{ checked: allowActionCardCombos }}
           >
             {allowActionCardCombos && (
+              <IconSymbol
+                name="checkmark"
+                size={16}
+                color={styles.checkboxIcon.color as string}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
+        <View style={styles.formFieldRow}>
+          <View style={styles.formField}>
+            <ThemedText style={styles.inputLabel}>{idleTimerLabel}</ThemedText>
+            <ThemedText style={styles.inputHint}>{idleTimerHint}</ThemedText>
+          </View>
+          <TouchableOpacity
+            style={[styles.checkbox, idleTimerEnabled && styles.checkboxActive]}
+            onPress={onToggleIdleTimer}
+            accessibilityRole="switch"
+            accessibilityState={{ checked: idleTimerEnabled }}
+          >
+            {idleTimerEnabled && (
               <IconSymbol
                 name="checkmark"
                 size={16}

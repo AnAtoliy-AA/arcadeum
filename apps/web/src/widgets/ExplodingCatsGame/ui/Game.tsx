@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { ExplodingCatsGameProps, ExplodingCatsCard } from '../types';
 import { getCardTranslationKey } from '../lib/cardUtils';
@@ -11,22 +11,19 @@ import {
   useExplodingCatsModals,
   useRematch,
   useWebGameHaptics,
+  useIdleTimer,
 } from '../hooks';
+import { useAutoplay } from '../hooks/useAutoplay';
 import { useGameHandlers } from '../hooks/useGameHandlers';
-import { CatComboModal } from './modals/CatComboModal';
-import { SeeTheFutureModal } from './modals/SeeTheFutureModal';
-import { FavorModal } from './modals/FavorModal';
-import { TargetedAttackModal } from './modals/TargetedAttackModal';
-import { GiveFavorModal } from './modals/GiveFavorModal';
-import { DefuseModal } from './modals/DefuseModal';
-import { RematchModal } from './modals/RematchModal';
+import { IdleTimerDisplay } from './IdleTimerDisplay';
+import { AutoplayControls } from './AutoplayControls';
+import { GameModals } from './GameModals';
 import { GameLobby } from './GameLobby';
 import { ChatSection } from './ChatSection';
 import { GameStatusMessage } from './GameStatusMessage';
 import { ServerLoadingNotice } from './ServerLoadingNotice';
 import { PlayerHand } from './PlayerHand';
-import { TableStats } from './TableStats';
-import { LastPlayedCardDisplay } from './LastPlayedCardDisplay';
+import { GameTableSection } from './GameTableSection';
 
 import {
   GameContainer,
@@ -39,18 +36,14 @@ import {
   ChatToggleButton,
   GameBoard,
   TableArea,
-  GameTable,
-  PlayersRing,
-  PlayerPositionWrapper,
-  PlayerCard,
-  PlayerAvatar,
-  PlayerName,
-  PlayerCardCount,
-  TurnIndicator,
-  CenterTable,
 } from './styles';
 
-import { RoomNameBadge, RoomNameIcon, RoomNameText } from './styles/lobby';
+import {
+  RoomNameBadge,
+  RoomNameIcon,
+  RoomNameText,
+  FastBadge,
+} from './styles/lobby';
 
 export default function ExplodingCatsGame({
   roomId,
@@ -96,7 +89,7 @@ export default function ExplodingCatsGame({
     openRematchModal,
     closeRematchModal,
     handleRematch,
-  } = useRematch({ roomId });
+  } = useRematch({ roomId, gameOptions: room.gameOptions });
 
   const {
     catComboModal,
@@ -193,6 +186,54 @@ export default function ExplodingCatsGame({
     }
   }, [selectedTarget, actions, setTargetedAttackModal, setSelectedTarget]);
 
+  // Autoplay hook
+  const autoplayState = useAutoplay({
+    isMyTurn: !!isMyTurn,
+    canAct: !!canAct,
+    canPlayNope: !!canPlayNope,
+    hand: currentPlayer?.hand ?? [],
+    logs: snapshot?.logs ?? [],
+    pendingAction: snapshot?.pendingAction ?? null,
+    pendingFavor: snapshot?.pendingFavor ?? null,
+    pendingDefuse: snapshot?.pendingDefuse ?? null,
+    deckSize: snapshot?.deck?.length ?? 0,
+    playerOrder: snapshot?.playerOrder ?? [],
+    currentUserId,
+    onDraw: actions.drawCard,
+    onPlayActionCard: handlePlayActionCard,
+    onPlayNope: actions.playNope,
+    onGiveFavorCard: actions.giveFavorCard,
+    onPlayDefuse: actions.playDefuse,
+  });
+
+  const { setAllEnabled } = autoplayState;
+
+  // Idle timer autoplay
+  const idleTimerEnabled = room.gameOptions?.idleTimerEnabled ?? false;
+  const [idleTimerTriggered, setIdleTimerTriggered] = useState(false);
+
+  const handleIdleTimeout = useCallback(() => {
+    setIdleTimerTriggered(true);
+    setAllEnabled(true);
+  }, [setAllEnabled]);
+
+  const idleTimer = useIdleTimer({
+    enabled: idleTimerEnabled,
+    isMyTurn: !!isMyTurn,
+    canAct: !!canAct,
+    onTimeout: handleIdleTimeout,
+  });
+
+  const handleStopAutoplay = useCallback(() => {
+    setIdleTimerTriggered(false);
+    setAllEnabled(false);
+    idleTimer.reset();
+  }, [idleTimer, setAllEnabled]);
+
+  // Note: idleTimerTriggered is reset when allEnabled becomes false
+  // This is derived behavior - we use a ref to track the triggered state
+  // and reset it when conditions change
+
   // Game not started yet
   if (!snapshot) {
     return (
@@ -220,6 +261,12 @@ export default function ExplodingCatsGame({
             <RoomNameIcon>🎲</RoomNameIcon>
             <RoomNameText>{room.name}</RoomNameText>
           </RoomNameBadge>
+          {idleTimerEnabled && (
+            <FastBadge>
+              <span>⚡</span>
+              <span>{t('games.rooms.fastRoom')}</span>
+            </FastBadge>
+          )}
           <TurnStatus>
             {currentTurnPlayer
               ? currentTurnPlayer.playerId === currentUserId
@@ -235,6 +282,31 @@ export default function ExplodingCatsGame({
           )}
         </GameInfo>
         <HeaderActions>
+          {!isGameOver && currentPlayer && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                zIndex: 10,
+              }}
+            >
+              <IdleTimerDisplay
+                secondsRemaining={idleTimer.secondsRemaining}
+                isActive={idleTimer.isActive && !autoplayState.allEnabled}
+                isRunning={idleTimer.isRunning}
+                autoplayTriggered={idleTimerTriggered}
+                onStop={handleStopAutoplay}
+                t={
+                  t as (key: string, params?: Record<string, unknown>) => string
+                }
+              />
+              <AutoplayControls
+                autoplayState={autoplayState}
+                t={t as (key: string) => string}
+              />
+            </div>
+          )}
           <ChatToggleButton
             type="button"
             onClick={handleToggleChat}
@@ -253,68 +325,18 @@ export default function ExplodingCatsGame({
 
       <GameBoard>
         <TableArea $showChat={showChat}>
-          <GameTable>
-            <PlayersRing $playerCount={snapshot.playerOrder.length}>
-              {snapshot.playerOrder.map((playerId, index) => {
-                const player = snapshot.players.find(
-                  (p) => p.playerId === playerId,
-                );
-                if (!player) return null;
-                const isCurrent = index === snapshot.currentTurnIndex;
-                const isCurrentUserCard = playerId === currentUserId;
-                const displayName = resolveDisplayName(
-                  playerId,
-                  `Player ${playerId.slice(0, 8)}`,
-                );
-
-                return (
-                  <PlayerPositionWrapper
-                    key={playerId}
-                    $position={index}
-                    $total={snapshot.playerOrder.length}
-                  >
-                    <PlayerCard
-                      $isCurrentTurn={isCurrent}
-                      $isAlive={player.alive}
-                      $isCurrentUser={isCurrentUserCard}
-                    >
-                      {isCurrent && <TurnIndicator>⭐</TurnIndicator>}
-                      <PlayerAvatar
-                        $isCurrentTurn={isCurrent}
-                        $isAlive={player.alive}
-                      >
-                        {player.alive ? '🎮' : '💀'}
-                      </PlayerAvatar>
-                      <PlayerName $isCurrentTurn={isCurrent}>
-                        {displayName}
-                      </PlayerName>
-                      {player.alive && (
-                        <PlayerCardCount $isCurrentTurn={isCurrent}>
-                          🃏 {player.hand.length}
-                        </PlayerCardCount>
-                      )}
-                    </PlayerCard>
-                  </PlayerPositionWrapper>
-                );
-              })}
-
-              <CenterTable>
-                {snapshot && (
-                  <LastPlayedCardDisplay
-                    discardPile={snapshot.discardPile}
-                    t={t as (key: string) => string}
-                  />
-                )}
-              </CenterTable>
-            </PlayersRing>
-            {snapshot && (
-              <TableStats
-                deckCount={snapshot.deck.length}
-                discardPileCount={snapshot.discardPile.length}
-                pendingDraws={snapshot.pendingDraws}
-              />
-            )}
-          </GameTable>
+          <GameTableSection
+            players={snapshot.players}
+            playerOrder={snapshot.playerOrder}
+            currentTurnIndex={snapshot.currentTurnIndex}
+            currentUserId={currentUserId}
+            deckLength={snapshot.deck.length}
+            discardPileLength={snapshot.discardPile.length}
+            pendingDraws={snapshot.pendingDraws}
+            discardPile={snapshot.discardPile}
+            resolveDisplayName={resolveDisplayName}
+            t={t as (key: string) => string}
+          />
 
           {currentPlayer && currentPlayer.alive && !isGameOver && (
             <PlayerHand
@@ -344,6 +366,8 @@ export default function ExplodingCatsGame({
               onPlayDefuse={actions.playDefuse}
               onOpenCatCombo={handleOpenCatCombo}
               onOpenFiverCombo={handleOpenFiverCombo}
+              forceEnableAutoplay={idleTimerTriggered}
+              onAutoplayEnabledChange={autoplayState.setAllEnabled}
             />
           )}
 
@@ -376,9 +400,9 @@ export default function ExplodingCatsGame({
         )}
       </GameBoard>
 
-      {/* Rematch Modal */}
-      <RematchModal
-        isOpen={showRematchModal}
+      <GameModals
+        // Rematch Modal
+        showRematchModal={showRematchModal}
         players={
           snapshot?.players.map((p) => ({
             playerId: p.playerId,
@@ -391,16 +415,11 @@ export default function ExplodingCatsGame({
         }
         currentUserId={currentUserId}
         rematchLoading={rematchLoading}
-        onClose={closeRematchModal}
-        onConfirm={handleRematch}
-        t={t as (key: string) => string}
-      />
-
-      {/* Cat Combo Modal */}
-      <CatComboModal
-        isOpen={!!catComboModal}
-        onClose={handleCloseCatComboModal}
+        onCloseRematchModal={closeRematchModal}
+        onConfirmRematch={handleRematch}
+        // Cat Combo Modal
         catComboModal={catComboModal}
+        onCloseCatComboModal={handleCloseCatComboModal}
         selectedMode={selectedMode}
         selectedTarget={selectedTarget}
         selectedCard={selectedCard}
@@ -417,79 +436,38 @@ export default function ExplodingCatsGame({
         onSelectIndex={setSelectedIndex}
         onSelectDiscardCard={setSelectedDiscardCard}
         onToggleFiverCard={handleToggleFiverCard}
-        onConfirm={handleConfirmCatCombo}
-        resolveDisplayName={resolveDisplayName}
-        t={t}
-      />
-
-      {/* See the Future Modal */}
-      <SeeTheFutureModal
-        isOpen={!!seeTheFutureModal}
-        onClose={() => setSeeTheFutureModal(null)}
-        cards={seeTheFutureModal?.cards || []}
-        t={t}
-      />
-
-      {/* Targeted Attack Modal */}
-      <TargetedAttackModal
-        isOpen={targetedAttackModal}
-        onClose={handleCloseTargetedAttackModal}
-        aliveOpponents={aliveOpponents}
-        selectedTarget={selectedTarget}
-        onSelectTarget={setSelectedTarget}
-        onConfirm={handleConfirmTargetedAttack}
-        resolveDisplayName={resolveDisplayName}
-        t={t}
-      />
-
-      {/* Favor Modal */}
-      <FavorModal
-        isOpen={favorModal}
-        onClose={() => {
+        onConfirmCatCombo={handleConfirmCatCombo}
+        // See the Future Modal
+        seeTheFutureModal={seeTheFutureModal}
+        onCloseSeeTheFutureModal={() => setSeeTheFutureModal(null)}
+        // Targeted Attack Modal
+        targetedAttackModal={targetedAttackModal}
+        onCloseTargetedAttackModal={handleCloseTargetedAttackModal}
+        onConfirmTargetedAttack={handleConfirmTargetedAttack}
+        // Favor Modal
+        favorModal={favorModal}
+        onCloseFavorModal={() => {
           setFavorModal(false);
           setSelectedTarget(null);
         }}
-        aliveOpponents={aliveOpponents}
-        selectedTarget={selectedTarget}
-        onSelectTarget={setSelectedTarget}
-        onConfirm={() => {
+        onConfirmFavor={() => {
           if (selectedTarget) {
             actions.playFavor(selectedTarget);
             setFavorModal(false);
             setSelectedTarget(null);
           }
         }}
-        resolveDisplayName={resolveDisplayName}
-        t={t}
-      />
-
-      {/* Defuse Modal - shows when player must defuse */}
-      <DefuseModal
-        isOpen={!!currentUserId && snapshot?.pendingDefuse === currentUserId}
-        onDefuse={(position) => {
-          actions.playDefuse(position);
-        }}
+        // Defuse Modal
+        pendingDefuse={snapshot?.pendingDefuse ?? null}
+        onPlayDefuse={actions.playDefuse}
         deckSize={snapshot?.deck?.length ?? 0}
-        t={t as (key: string) => string}
-      />
-
-      {/* Give Favor Modal - shows when someone requested a favor from current user */}
-      <GiveFavorModal
-        isOpen={
-          !!currentUserId &&
-          !!snapshot?.pendingFavor &&
-          snapshot.pendingFavor.targetId === currentUserId
-        }
-        requesterName={
-          snapshot?.pendingFavor
-            ? resolveDisplayName(snapshot.pendingFavor.requesterId, 'Player')
-            : 'Player'
-        }
+        // Give Favor Modal
+        pendingFavor={snapshot?.pendingFavor ?? null}
         myHand={currentPlayer?.hand ?? []}
-        onGiveCard={(card) => {
-          actions.giveFavorCard(card);
-        }}
-        t={t}
+        onGiveFavorCard={actions.giveFavorCard}
+        // Shared
+        resolveDisplayName={resolveDisplayName}
+        t={t as (key: string, params?: Record<string, unknown>) => string}
       />
     </GameContainer>
   );

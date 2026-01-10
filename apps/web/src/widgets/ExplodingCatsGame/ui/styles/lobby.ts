@@ -341,6 +341,18 @@ export const StatusBadge = styled.span<{ $status: string }>`
   color: ${({ $status }) => ($status === 'lobby' ? '#10b981' : '#6366f1')};
 `;
 
+export const FastBadge = styled.span`
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 8px;
+  font-weight: 500;
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+`;
+
 // Waiting Animation
 export const WaitingDots = styled.div`
   display: flex;

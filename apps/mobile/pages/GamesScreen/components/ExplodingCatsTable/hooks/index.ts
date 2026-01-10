@@ -10,3 +10,4 @@ export * from './useActionPermissions';
 export * from './useAutoplay';
 export * from './useGameHaptics';
 export * from './useGameLogs';
+export * from './useIdleTimer';

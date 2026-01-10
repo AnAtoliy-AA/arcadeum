@@ -18,6 +18,7 @@ export const roomsMessages = {
     unknownGame: 'Unknown game',
     mysteryHost: 'mystery captain',
     justCreated: 'Just created',
+    fastRoom: 'Fast room',
   },
   es: {
     status: {
@@ -37,6 +38,7 @@ export const roomsMessages = {
     unknownGame: 'Juego desconocido',
     mysteryHost: 'anfitrión misterioso',
     justCreated: 'Recién creada',
+    fastRoom: 'Partida rápida',
   },
   fr: {
     status: {
@@ -57,5 +59,6 @@ export const roomsMessages = {
     unknownHost: 'Hôte inconnu',
     mysteryHost: 'capitaine mystère',
     justCreated: 'Tout juste créée',
+    fastRoom: 'Partie rapide',
   },
 };

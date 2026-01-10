@@ -3,9 +3,11 @@ import { useRouter } from 'next/navigation';
 import { resolveApiUrl } from '@/shared/lib/api-base';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useSocket } from '@/shared/lib/socket';
+import type { GameOptions } from '@/shared/types/games';
 
 interface UseRematchOptions {
   roomId: string;
+  gameOptions?: GameOptions;
 }
 
 interface UseRematchResult {
@@ -17,7 +19,10 @@ interface UseRematchResult {
   handleRematch: (participantIds: string[]) => Promise<void>;
 }
 
-export function useRematch({ roomId }: UseRematchOptions): UseRematchResult {
+export function useRematch({
+  roomId,
+  gameOptions,
+}: UseRematchOptions): UseRematchResult {
   const router = useRouter();
   const { snapshot } = useSessionTokens();
   const [rematchLoading, setRematchLoading] = useState(false);
@@ -68,7 +73,7 @@ export function useRematch({ roomId }: UseRematchOptions): UseRematchResult {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${snapshot.accessToken}`,
           },
-          body: JSON.stringify({ participantIds }),
+          body: JSON.stringify({ participantIds, gameOptions }),
         });
 
         if (!response.ok) {
@@ -96,7 +101,7 @@ export function useRematch({ roomId }: UseRematchOptions): UseRematchResult {
         setRematchLoading(false);
       }
     },
-    [roomId, snapshot.accessToken, router],
+    [roomId, snapshot.accessToken, router, gameOptions],
   );
 
   return {

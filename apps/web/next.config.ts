@@ -1,10 +1,25 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
-const nextConfig: NextConfig = {
+// Extend the NextConfig type to include the experimental turbopack property
+// which is missing from the current Next.js type definitions
+type NextConfigWithTurbopack = NextConfig & {
+  experimental?: {
+    turbopack?: {
+      root?: string;
+    };
+  };
+};
+
+const nextConfig: NextConfigWithTurbopack = {
   compiler: {
     styledComponents: true,
   },
   typedRoutes: false,
+  experimental: {
+    turbopack: {
+      root: '../..',
+    },
+  },
 };
 
 export default nextConfig;

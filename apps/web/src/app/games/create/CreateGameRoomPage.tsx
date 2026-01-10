@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styled from 'styled-components';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { IDLE_TIMER_DURATION_SEC } from '@/shared/config/game';
 import { resolveApiUrl } from '@/shared/lib/api-base';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
@@ -174,6 +175,7 @@ export function CreateGameRoomPage() {
   const [notes, setNotes] = useState('');
   const [expansions, setExpansions] = useState<ExpansionId[]>([]);
   const [allowActionCardCombos, setAllowActionCardCombos] = useState(false);
+  const [idleTimerEnabled, setIdleTimerEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -228,6 +230,7 @@ export function CreateGameRoomPage() {
                 ? {
                     ...(expansions.length > 0 ? { expansions } : {}),
                     allowActionCardCombos,
+                    idleTimerEnabled,
                   }
                 : undefined,
           }),
@@ -257,6 +260,7 @@ export function CreateGameRoomPage() {
       notes,
       expansions,
       allowActionCardCombos,
+      idleTimerEnabled,
       snapshot.accessToken,
       router,
     ],
@@ -336,6 +340,23 @@ export function CreateGameRoomPage() {
                   </ExpansionLabel>
                   <ExpansionBadge>
                     {t('games.create.houseRuleActionCardCombosHint')}
+                  </ExpansionBadge>
+                </ExpansionCheckbox>
+
+                <ExpansionCheckbox>
+                  <input
+                    type="checkbox"
+                    checked={idleTimerEnabled}
+                    onChange={() => setIdleTimerEnabled(!idleTimerEnabled)}
+                  />
+                  <ExpansionLabel>
+                    {t('games.create.houseRuleIdleTimer') ||
+                      'Idle Timer Autoplay'}
+                  </ExpansionLabel>
+                  <ExpansionBadge>
+                    {t('games.create.houseRuleIdleTimerHint', {
+                      seconds: String(IDLE_TIMER_DURATION_SEC),
+                    }) || 'Automated play after 15s'}
                   </ExpansionBadge>
                 </ExpansionCheckbox>
               </ExpansionGrid>

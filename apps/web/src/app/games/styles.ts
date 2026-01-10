@@ -293,6 +293,18 @@ export const StatusBadge = styled.span<{ status: string }>`
   }};
 `;
 
+export const FastBadge = styled.span`
+  padding: 0.35rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+  color: white;
+  box-shadow: 0 2px 8px #eab30840;
+`;
+
 export const RoomMeta = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;

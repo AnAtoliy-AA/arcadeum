@@ -1,6 +1,14 @@
 export interface GameRoomMemberSummary {
   id: string;
   displayName: string;
+  username?: string | null;
+  email?: string | null;
+  isHost: boolean;
+}
+
+export interface GameOptions {
+  allowActionCardCombos?: boolean;
+  idleTimerEnabled?: boolean;
 }
 
 export interface GameRoomSummary {
@@ -16,6 +24,7 @@ export interface GameRoomSummary {
   inviteCode?: string;
   host?: GameRoomMemberSummary;
   members?: GameRoomMemberSummary[];
+  gameOptions?: GameOptions;
 }
 
 export interface GameSessionSummary {

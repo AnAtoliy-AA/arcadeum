@@ -31,4 +31,7 @@ export class HistoryRematchDto {
   @IsOptional()
   @IsEnum(GAME_ROOM_VISIBILITY_VALUES)
   visibility?: GameRoomVisibility;
+
+  @IsOptional()
+  gameOptions?: Record<string, unknown>;
 }

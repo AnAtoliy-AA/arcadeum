@@ -58,6 +58,7 @@ import {
   RoomNameBadge,
   RoomNameIcon,
   RoomNameText,
+  FastBadge,
   // ReorderButton, // No longer used
 } from './styles/lobby';
 
@@ -256,6 +257,12 @@ export function GameLobby({
             <RoomNameIcon>🎲</RoomNameIcon>
             <RoomNameText>{room.name}</RoomNameText>
           </RoomNameBadge>
+          {room.gameOptions?.idleTimerEnabled && (
+            <FastBadge>
+              <span>⚡</span>
+              <span>{t('games.rooms.fastRoom')}</span>
+            </FastBadge>
+          )}
         </GameInfo>
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
           <FullscreenButton
@@ -377,6 +384,12 @@ export function GameLobby({
                   : t('games.table.lobby.statusActive')}
               </StatusBadge>
             </InfoRow>
+            {room.gameOptions?.idleTimerEnabled && (
+              <InfoRow>
+                <InfoLabel>{t('games.rooms.fastRoom')}</InfoLabel>
+                <FastBadge>⚡ {t('games.rooms.fastRoom')}</FastBadge>
+              </InfoRow>
+            )}
             <InfoRow>
               <InfoLabel>{t('games.table.lobby.visibility')}</InfoLabel>
               <InfoValue>

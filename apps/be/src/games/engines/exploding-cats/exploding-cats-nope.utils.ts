@@ -156,7 +156,7 @@ export function executeNope(
     helpers.createLogEntry(
       'action',
       `Played Nope! ${state.pendingAction.type} is now ${actionStatus}!`,
-      { scope: 'all' },
+      { scope: 'all', senderId: playerId },
     ),
   );
 

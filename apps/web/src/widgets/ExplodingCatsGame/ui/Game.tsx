@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useCallback, useState } from 'react';
+import { useRef, useCallback, useState, useMemo } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { ExplodingCatsGameProps, ExplodingCatsCard } from '../types';
 import { getCardTranslationKey } from '../lib/cardUtils';
@@ -29,6 +29,7 @@ import {
   GameContainer,
   GameHeader,
   HeaderActions,
+  TimerControlsWrapper,
   GameInfo,
   GameTitle,
   TurnStatus,
@@ -234,6 +235,28 @@ export default function ExplodingCatsGame({
   // This is derived behavior - we use a ref to track the triggered state
   // and reset it when conditions change
 
+  // Compute turn status display
+  const turnStatusVariant = useMemo(():
+    | 'completed'
+    | 'yourTurn'
+    | 'waiting'
+    | 'default' => {
+    if (isGameOver) return 'completed';
+    if (!currentTurnPlayer) return 'default';
+    return currentTurnPlayer.playerId === currentUserId
+      ? 'yourTurn'
+      : 'waiting';
+  }, [isGameOver, currentTurnPlayer, currentUserId]);
+
+  const turnStatusText = useMemo((): string => {
+    if (isGameOver) return t('games.table.status.gameCompleted');
+    if (!currentTurnPlayer) return 'Game in progress';
+    if (currentTurnPlayer.playerId === currentUserId) {
+      return t('games.table.players.yourTurn');
+    }
+    return `${t('games.table.players.waitingFor')}: ${resolveDisplayName(currentTurnPlayer.playerId, 'Player')}`;
+  }, [isGameOver, currentTurnPlayer, currentUserId, t, resolveDisplayName]);
+
   // Game not started yet
   if (!snapshot) {
     return (
@@ -267,13 +290,7 @@ export default function ExplodingCatsGame({
               <span>{t('games.rooms.fastRoom')}</span>
             </FastBadge>
           )}
-          <TurnStatus>
-            {currentTurnPlayer
-              ? currentTurnPlayer.playerId === currentUserId
-                ? t('games.table.players.yourTurn')
-                : t('games.table.players.waitingFor')
-              : 'Game in progress'}
-          </TurnStatus>
+          <TurnStatus $variant={turnStatusVariant}>{turnStatusText}</TurnStatus>
           {actionLongPending && (
             <ServerLoadingNotice
               pendingProgress={pendingProgress}
@@ -283,14 +300,7 @@ export default function ExplodingCatsGame({
         </GameInfo>
         <HeaderActions>
           {!isGameOver && currentPlayer && (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                zIndex: 10,
-              }}
-            >
+            <TimerControlsWrapper>
               <IdleTimerDisplay
                 secondsRemaining={idleTimer.secondsRemaining}
                 isActive={idleTimer.isActive && !autoplayState.allEnabled}
@@ -305,7 +315,7 @@ export default function ExplodingCatsGame({
                 autoplayState={autoplayState}
                 t={t as (key: string) => string}
               />
-            </div>
+            </TimerControlsWrapper>
           )}
           <ChatToggleButton
             type="button"
@@ -381,6 +391,7 @@ export default function ExplodingCatsGame({
               onChatScopeChange={setChatScope}
               onSendMessage={handleSendChatMessage}
               currentUserId={currentUserId}
+              turnStatus={turnStatusText}
               resolveDisplayName={resolveDisplayName}
               formatLogMessage={formatLogMessage}
               t={t as (key: string) => string}

@@ -79,6 +79,7 @@ export class ExplodingCatsLogic {
             `Drew an Exploding Cat! Must play Defuse!`,
             {
               scope: 'all',
+              senderId: playerId,
             },
           ),
         );
@@ -90,6 +91,7 @@ export class ExplodingCatsLogic {
           state,
           helpers.createLogEntry('system', `Player exploded!`, {
             scope: 'all',
+            senderId: playerId,
           }),
         );
         helpers.advanceTurn(state);
@@ -100,7 +102,10 @@ export class ExplodingCatsLogic {
     player.hand.push(card);
     helpers.addLog(
       state,
-      helpers.createLogEntry('action', `Drew a card`, { scope: 'all' }),
+      helpers.createLogEntry('action', `Drew a card`, {
+        scope: 'all',
+        senderId: playerId,
+      }),
     );
 
     if (state.pendingDraws === 0) {
@@ -168,7 +173,7 @@ export class ExplodingCatsLogic {
           helpers.createLogEntry(
             'action',
             `Played Attack! Next player must take ${state.pendingDraws} turns!`,
-            { scope: 'all' },
+            { scope: 'all', senderId: playerId },
           ),
         );
         break;
@@ -189,7 +194,10 @@ export class ExplodingCatsLogic {
         }
         helpers.addLog(
           state,
-          helpers.createLogEntry('action', `Played Skip`, { scope: 'all' }),
+          helpers.createLogEntry('action', `Played Skip`, {
+            scope: 'all',
+            senderId: playerId,
+          }),
         );
         break;
 
@@ -205,6 +213,7 @@ export class ExplodingCatsLogic {
           state,
           helpers.createLogEntry('action', `Shuffled the deck`, {
             scope: 'all',
+            senderId: playerId,
           }),
         );
         break;
@@ -382,6 +391,7 @@ export class ExplodingCatsLogic {
       state,
       helpers.createLogEntry('action', `Defused an Exploding Cat!`, {
         scope: 'all',
+        senderId: playerId,
       }),
     );
 

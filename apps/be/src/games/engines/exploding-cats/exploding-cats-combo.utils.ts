@@ -70,7 +70,7 @@ export function executeCatCombo(
       helpers.createLogEntry(
         'action',
         `Played 5 different cards combo and took a ${requestedDiscardCard} from the discard pile!`,
-        { scope: 'all' },
+        { scope: 'all', senderId: playerId },
       ),
     );
     return { success: true, state };
@@ -121,7 +121,7 @@ export function executeCatCombo(
       helpers.createLogEntry(
         'action',
         `Played ${cards.length}x ${cards[0]} combo and stole a card!`,
-        { scope: 'all' },
+        { scope: 'all', senderId: playerId },
       ),
     );
     helpers.addLog(
@@ -142,7 +142,7 @@ export function executeCatCombo(
         helpers.createLogEntry(
           'action',
           `Played ${cards.length}x ${cards[0]} combo and stole a ${requestedCard}!`,
-          { scope: 'all' },
+          { scope: 'all', senderId: playerId },
         ),
       );
     } else {
@@ -151,7 +151,7 @@ export function executeCatCombo(
         helpers.createLogEntry(
           'action',
           `Played ${cards.length}x ${cards[0]} combo but target didn't have the requested card!`,
-          { scope: 'all' },
+          { scope: 'all', senderId: playerId },
         ),
       );
     }

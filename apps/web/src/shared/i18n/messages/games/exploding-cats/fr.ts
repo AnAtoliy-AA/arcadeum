@@ -87,6 +87,9 @@ export const frMessages = {
       yourTurn: 'Votre tour',
       waitingFor: "En attente d'un joueur...",
     },
+    status: {
+      gameCompleted: 'Partie Terminée',
+    },
     lobby: {
       waitingToStart: 'En attente du début de la partie...',
       playersInLobby: 'Joueurs dans le Salon',

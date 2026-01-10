@@ -11,6 +11,7 @@ import {
   ChatInput,
   ChatControls,
   ChatHint,
+  ChatTurnStatus,
   ChatSendButton,
   InfoTitle,
 } from './styles';
@@ -26,6 +27,7 @@ interface ChatSectionProps {
   onChatScopeChange: (scope: ChatScope) => void;
   onSendMessage: () => void;
   currentUserId: string | null;
+  turnStatus: string;
   resolveDisplayName: (
     playerId?: string,
     fallbackName?: string,
@@ -33,6 +35,26 @@ interface ChatSectionProps {
   formatLogMessage: (message: string) => string;
   t: (key: string) => string;
 }
+
+const getUserColor = (userId: string) => {
+  const colors = [
+    '#EF4444', // red
+    '#F97316', // orange
+    '#F59E0B', // amber
+    '#84CC16', // lime
+    '#10B981', // emerald
+    '#06B6D4', // cyan
+    '#3B82F6', // blue
+    '#6366F1', // indigo
+    '#8B5CF6', // violet
+    '#EC4899', // pink
+  ];
+  let hash = 0;
+  for (let i = 0; i < userId.length; i++) {
+    hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
+};
 
 export function ChatSection({
   logs,
@@ -43,6 +65,7 @@ export function ChatSection({
   onChatScopeChange,
   onSendMessage,
   currentUserId,
+  turnStatus,
   resolveDisplayName,
   formatLogMessage,
   t,
@@ -52,6 +75,7 @@ export function ChatSection({
   return (
     <ChatCard>
       <InfoTitle>{t('games.table.chat.title') || 'Table Chat'}</InfoTitle>
+      <ChatTurnStatus>{turnStatus}</ChatTurnStatus>
       {logs && logs.length > 0 ? (
         <ChatMessages ref={chatMessagesRef}>
           {logs.map((log) => (
@@ -60,7 +84,11 @@ export function ChatSection({
                 log.senderId ?? undefined,
                 log.senderName ?? undefined,
               ) && (
-                <strong>
+                <strong
+                  style={{
+                    color: getUserColor(log.senderId || log.senderName || ''),
+                  }}
+                >
                   {resolveDisplayName(
                     log.senderId ?? undefined,
                     log.senderName ?? undefined,

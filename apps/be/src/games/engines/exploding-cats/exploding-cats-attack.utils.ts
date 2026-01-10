@@ -75,6 +75,7 @@ export function executeTargetedAttack(
       `Played Targeted Attack! Target must take ${state.pendingDraws} turns!`,
       {
         scope: 'all',
+        senderId: playerId,
       },
     ),
   );
@@ -117,6 +118,7 @@ export function executePersonalAttack(
       `Played Personal Attack - must take 3 turns!`,
       {
         scope: 'all',
+        senderId: playerId,
       },
     ),
   );
@@ -161,7 +163,7 @@ export function executeAttackOfTheDead(
     helpers.createLogEntry(
       'action',
       `Played Attack of the Dead! Next player takes ${turnsToTake} turns!`,
-      { scope: 'all' },
+      { scope: 'all', senderId: playerId },
     ),
   );
 
@@ -202,6 +204,7 @@ export function executeSuperSkip(
     state,
     helpers.createLogEntry('action', `Played Super Skip - skipped all turns!`, {
       scope: 'all',
+      senderId: playerId,
     }),
   );
 
@@ -244,6 +247,7 @@ export function executeReverse(
     state,
     helpers.createLogEntry('action', `Played Reverse - direction changed!`, {
       scope: 'all',
+      senderId: playerId,
     }),
   );
 

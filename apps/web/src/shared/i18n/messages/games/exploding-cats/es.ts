@@ -87,6 +87,9 @@ export const esMessages = {
       yourTurn: 'Tu turno',
       waitingFor: 'Esperando jugador...',
     },
+    status: {
+      gameCompleted: 'Juego Completado',
+    },
     lobby: {
       waitingToStart: 'Esperando que comience el juego...',
       playersInLobby: 'Jugadores en la Sala',

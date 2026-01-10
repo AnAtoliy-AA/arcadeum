@@ -11,6 +11,7 @@ export {
 export {
   GameHeader,
   HeaderActions,
+  TimerControlsWrapper,
   GameInfo,
   GameTitle,
   TurnStatus,
@@ -76,6 +77,7 @@ export {
   ChatInput,
   ChatControls,
   ChatHint,
+  ChatTurnStatus,
   ChatSendButton,
   EmptyState,
 } from './chat';

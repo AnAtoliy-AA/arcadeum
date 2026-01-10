@@ -232,6 +232,21 @@ export const ChatHint = styled.div`
   opacity: 0.85;
 `;
 
+export const ChatTurnStatus = styled.div`
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.text.primary};
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(
+    135deg,
+    ${({ theme }) => theme.surfaces.panel.background},
+    ${({ theme }) => theme.background.base}
+  );
+  border-radius: 8px;
+  border-left: 3px solid #8b5cf6;
+  margin-bottom: 0.25rem;
+`;
+
 export const ChatSendButton = styled(ActionButton)`
   padding: 0.65rem 1.25rem;
   font-size: 0.75rem;

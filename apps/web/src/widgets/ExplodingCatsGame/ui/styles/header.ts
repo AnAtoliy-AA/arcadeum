@@ -51,6 +51,13 @@ export const HeaderActions = styled.div`
   justify-content: flex-end;
 `;
 
+export const TimerControlsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+`;
+
 export const GameInfo = styled.div`
   display: flex;
   flex-direction: column;
@@ -84,9 +91,23 @@ export const GameTitle = styled.h2`
   }
 `;
 
-export const TurnStatus = styled.div`
+export const TurnStatus = styled.div<{
+  $variant?: 'yourTurn' | 'waiting' | 'completed' | 'default';
+}>`
   font-size: 0.875rem;
-  color: ${({ theme }) => theme.text.secondary};
+  font-weight: 600;
+  color: ${({ $variant, theme }) => {
+    switch ($variant) {
+      case 'yourTurn':
+        return '#10b981';
+      case 'waiting':
+        return '#f59e0b';
+      case 'completed':
+        return '#8b5cf6';
+      default:
+        return theme.text.secondary;
+    }
+  }};
 `;
 
 const spinAnimation = keyframes`

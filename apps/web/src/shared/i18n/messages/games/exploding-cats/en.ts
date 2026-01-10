@@ -89,6 +89,9 @@ export const enMessages = {
       yourTurn: 'Your turn',
       waitingFor: 'Waiting for player...',
     },
+    status: {
+      gameCompleted: 'Game Completed',
+    },
     lobby: {
       waitingToStart: 'Waiting for game to start...',
       playersInLobby: 'Players in Lobby',

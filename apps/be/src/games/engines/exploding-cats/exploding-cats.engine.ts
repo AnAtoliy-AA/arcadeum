@@ -462,6 +462,7 @@ export class ExplodingCatsEngine extends BaseGameEngine<ExplodingCatsState> {
       newState,
       this.createLogEntry('system', `Player left the game`, {
         scope: 'all',
+        senderId: playerId,
       }),
     );
 

@@ -131,7 +131,10 @@ export const FilterChips = styled.div`
   gap: 0.5rem;
 `;
 
-export const FilterChip = styled.button<{ $active?: boolean }>`
+export const FilterChip = styled.button<{
+  $active?: boolean;
+  $disabled?: boolean;
+}>`
   padding: 0.5rem 1rem;
   border-radius: 10px;
   border: 1px solid
@@ -147,23 +150,24 @@ export const FilterChip = styled.button<{ $active?: boolean }>`
     $active ? theme.buttons.primary.text : theme.text.secondary};
   font-weight: 500;
   font-size: 0.85rem;
-  cursor: pointer;
+  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
   transition: all 0.2s ease;
+  opacity: ${({ $disabled }) => ($disabled ? 0.4 : 1)};
 
   &:hover:not(:disabled) {
-    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-    color: ${({ $active, theme }) =>
-      $active ? theme.buttons.primary.text : theme.text.primary};
+    border-color: ${({ theme, $disabled }) =>
+      $disabled ? 'inherit' : theme.buttons.primary.gradientStart};
+    color: ${({ $active, theme, $disabled }) =>
+      $disabled
+        ? 'inherit'
+        : $active
+          ? theme.buttons.primary.text
+          : theme.text.primary};
   }
 
   &:focus-visible {
     outline: 2px solid ${({ theme }) => theme.outlines.focus};
     outline-offset: 2px;
-  }
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
   }
 `;
 
@@ -264,11 +268,19 @@ export const RoomCard = styled.div<{ $viewMode?: 'grid' | 'list' }>`
   }
 `;
 
-export const RoomHeader = styled.div`
+const LIST_VIEW_MIN_WIDTH = '200px';
+
+export const RoomHeader = styled.div<{ $viewMode?: 'grid' | 'list' }>`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
+  flex-direction: ${({ $viewMode }) =>
+    $viewMode === 'list' ? 'column' : 'row'};
+  justify-content: ${({ $viewMode }) =>
+    $viewMode === 'list' ? 'flex-start' : 'space-between'};
+  align-items: ${({ $viewMode }) =>
+    $viewMode === 'list' ? 'flex-start' : 'center'};
+  gap: ${({ $viewMode }) => ($viewMode === 'list' ? '0.5rem' : '1rem')};
+  min-width: ${({ $viewMode }) =>
+    $viewMode === 'list' ? LIST_VIEW_MIN_WIDTH : 'auto'};
 `;
 
 export const RoomTitle = styled.h3`
@@ -313,6 +325,10 @@ export const FastBadge = styled.span`
   box-shadow: 0 2px 8px #eab30840;
 `;
 
+export const BadgeIcon = styled.span`
+  margin-right: 4px;
+`;
+
 export const RoomMeta = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -342,6 +358,19 @@ export const MetaLabel = styled.span`
 export const MetaValue = styled.span`
   color: ${({ theme }) => theme.text.primary};
   font-weight: 600;
+`;
+
+export const ParticipantsLabel = styled(MetaLabel)`
+  display: block;
+  margin-bottom: 0.35rem;
+`;
+
+export const MetaListContainer = styled.div`
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex: 1;
+  flex-wrap: wrap;
 `;
 
 export const RoomActions = styled.div<{ $viewMode?: 'grid' | 'list' }>`

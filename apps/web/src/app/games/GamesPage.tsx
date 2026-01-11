@@ -22,32 +22,18 @@ import {
   FilterChips,
   FilterChip,
   RoomsContainer,
-  RoomCard,
-  RoomTitle,
-  StatusBadge,
-  RoomMeta,
-  MetaRow,
-  MetaIcon,
-  MetaLabel,
-  MetaValue,
-  RoomActions,
-  ParticipantsList,
-  ParticipantChip,
-  ActionButton,
   Loading,
   Spinner,
   Error,
   Empty,
-  FastBadge,
   PaginationContainer,
   PaginationButton,
   PaginationInfo,
 } from './styles';
+import { RoomCardComponent } from './RoomCardComponent';
 
 const PAGE_SIZE = 12;
 const INITIAL_PAGE = 1;
-const MAX_VISIBLE_PARTICIPANTS = 5;
-const LIST_VIEW_MIN_WIDTH = '200px';
 
 export function GamesPage() {
   const { snapshot } = useSessionTokens();
@@ -76,7 +62,7 @@ export function GamesPage() {
     try {
       const params = new URLSearchParams();
       if (statusFilter !== 'all') {
-        params.append('statuses', statusFilter);
+        params.append('status', statusFilter);
       }
       if (participationFilter !== 'all') {
         params.append('participation', participationFilter);
@@ -141,22 +127,6 @@ export function GamesPage() {
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
   }, [rooms]);
-
-  const formatMemberLabel = useCallback(
-    (member: {
-      id: string;
-      displayName: string;
-      username?: string | null;
-      email?: string | null;
-      isHost: boolean;
-    }) => {
-      if (member.displayName && member.displayName.trim().length > 0) {
-        return member.displayName;
-      }
-      return member.username ?? member.email ?? member.id;
-    },
-    [],
-  );
 
   const totalPages = Math.ceil(total / limit);
 
@@ -251,17 +221,23 @@ export function GamesPage() {
                     <FilterChip
                       key={value}
                       $active={participationFilter === value}
-                      onClick={() => setParticipationFilter(value)}
+                      onClick={() => {
+                        if (value !== 'all' && !snapshot.accessToken) {
+                          // Optionally show a login prompt or ignore
+                          return;
+                        }
+                        setParticipationFilter(value);
+                      }}
                       onKeyDown={(e) => {
-                        if (
-                          (e.key === 'Enter' || e.key === ' ') &&
-                          !(value !== 'all' && !snapshot.accessToken)
-                        ) {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          if (value !== 'all' && !snapshot.accessToken) {
+                            return;
+                          }
                           e.preventDefault();
                           setParticipationFilter(value);
                         }
                       }}
-                      disabled={value !== 'all' && !snapshot.accessToken}
+                      $disabled={value !== 'all' && !snapshot.accessToken}
                       aria-label={`Filter by participation: ${label || value}`}
                       aria-pressed={participationFilter === value}
                       role="button"
@@ -293,171 +269,11 @@ export function GamesPage() {
           ) : (
             <>
               {sortedRooms.map((room: GameRoomSummary) => (
-                <RoomCard key={room.id} $viewMode={viewMode}>
-                  {/* Header: Name and Status - column in list, row in grid */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: viewMode === 'list' ? 'column' : 'row',
-                      justifyContent:
-                        viewMode === 'list' ? 'flex-start' : 'space-between',
-                      alignItems: viewMode === 'list' ? 'flex-start' : 'center',
-                      gap: viewMode === 'list' ? '0.5rem' : '1rem',
-                      minWidth:
-                        viewMode === 'list' ? LIST_VIEW_MIN_WIDTH : 'auto',
-                    }}
-                  >
-                    <RoomTitle>{room.name}</RoomTitle>
-                    {room.gameOptions?.idleTimerEnabled && (
-                      <FastBadge>
-                        <span style={{ marginRight: '4px' }}>⚡</span>
-                        {t('games.rooms.fastRoom')}
-                      </FastBadge>
-                    )}
-                    <StatusBadge status={room.status}>
-                      {t(`games.rooms.status.${room.status}`) || room.status}
-                    </StatusBadge>
-                  </div>
-
-                  {/* Meta Info */}
-                  {viewMode === 'grid' ? (
-                    <RoomMeta>
-                      <MetaRow>
-                        <MetaIcon>👑</MetaIcon>
-                        <MetaLabel>{t('games.rooms.hostLabel')}</MetaLabel>
-                        <MetaValue>
-                          {room.host?.displayName || room.hostId}
-                        </MetaValue>
-                      </MetaRow>
-                      <MetaRow>
-                        <MetaIcon>👥</MetaIcon>
-                        <MetaLabel>{t('games.rooms.playersLabel')}</MetaLabel>
-                        <MetaValue>
-                          {room.maxPlayers
-                            ? `${room.playerCount}/${room.maxPlayers}`
-                            : `${room.playerCount}`}
-                        </MetaValue>
-                      </MetaRow>
-                      <MetaRow>
-                        <MetaIcon>⏱️</MetaIcon>
-                        <MetaLabel>{t('games.rooms.statusLabel')}</MetaLabel>
-                        <MetaValue>
-                          {t(`games.rooms.status.${room.status}`) ||
-                            room.status}
-                        </MetaValue>
-                      </MetaRow>
-                      <MetaRow>
-                        <MetaIcon>
-                          {room.visibility === 'private' ? '🔒' : '🌐'}
-                        </MetaIcon>
-                        <MetaLabel>
-                          {t('games.rooms.visibilityLabel')}
-                        </MetaLabel>
-                        <MetaValue>
-                          {room.visibility === 'private'
-                            ? t('games.rooms.visibility.private')
-                            : t('games.rooms.visibility.public')}
-                        </MetaValue>
-                      </MetaRow>
-                      {room.members && room.members.length > 0 && (
-                        <div>
-                          <MetaLabel
-                            style={{
-                              display: 'block',
-                              marginBottom: '0.35rem',
-                            }}
-                          >
-                            {t('games.rooms.participants')}:
-                          </MetaLabel>
-                          <ParticipantsList>
-                            {room.members
-                              .slice(0, MAX_VISIBLE_PARTICIPANTS)
-                              .map((member) => (
-                                <ParticipantChip
-                                  key={member.id}
-                                  $isHost={room.host?.id === member.id}
-                                >
-                                  {formatMemberLabel(member)}
-                                </ParticipantChip>
-                              ))}
-                            {room.members.length > MAX_VISIBLE_PARTICIPANTS && (
-                              <ParticipantChip>
-                                +
-                                {room.members.length - MAX_VISIBLE_PARTICIPANTS}{' '}
-                                more
-                              </ParticipantChip>
-                            )}
-                          </ParticipantsList>
-                        </div>
-                      )}
-                    </RoomMeta>
-                  ) : (
-                    <div
-                      style={{
-                        display: 'flex',
-                        gap: '1.5rem',
-                        alignItems: 'center',
-                        flex: 1,
-                        flexWrap: 'wrap',
-                      }}
-                    >
-                      <MetaRow>
-                        <MetaIcon>👑</MetaIcon>
-                        <MetaValue>
-                          {room.host?.displayName || room.hostId}
-                        </MetaValue>
-                      </MetaRow>
-                      <MetaRow>
-                        <MetaIcon>👥</MetaIcon>
-                        <MetaValue>
-                          {room.maxPlayers
-                            ? `${room.playerCount}/${room.maxPlayers}`
-                            : room.playerCount}
-                        </MetaValue>
-                      </MetaRow>
-                      <MetaRow>
-                        <MetaIcon>
-                          {room.visibility === 'private' ? '🔒' : '🌐'}
-                        </MetaIcon>
-                        <MetaValue>
-                          {room.visibility === 'private'
-                            ? t('games.rooms.visibility.private')
-                            : t('games.rooms.visibility.public')}
-                        </MetaValue>
-                      </MetaRow>
-                      {room.members && room.members.length > 0 && (
-                        <MetaRow>
-                          <MetaIcon>👤</MetaIcon>
-                          <MetaValue>
-                            {(
-                              t as (
-                                k: string,
-                                r?: Record<string, unknown>,
-                              ) => string
-                            )('games.lounge.participantsCount', {
-                              count: room.members.length,
-                            })}
-                          </MetaValue>
-                        </MetaRow>
-                      )}
-                    </div>
-                  )}
-
-                  <RoomActions $viewMode={viewMode}>
-                    <ActionButton
-                      href={`/games/rooms/${room.id}`}
-                      variant="primary"
-                    >
-                      {t('games.common.joinRoom')}
-                    </ActionButton>
-                    <ActionButton
-                      href={`/games/rooms/${room.id}`}
-                      variant="secondary"
-                    >
-                      {t('games.common.watchRoom')}
-                    </ActionButton>
-                  </RoomActions>
-                </RoomCard>
+                <RoomCardComponent
+                  key={room.id}
+                  room={room}
+                  viewMode={viewMode}
+                />
               ))}
 
               {totalPages > 1 && (

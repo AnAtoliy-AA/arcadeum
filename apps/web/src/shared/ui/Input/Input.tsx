@@ -16,7 +16,7 @@ const StyledInput = styled.input<StyledInputProps>`
   border-radius: 14px;
   border: 1px solid
     ${({ theme, $error }) => ($error ? '#dc2626' : theme.surfaces.card.border)};
-  background: ${({ theme }) => theme.surfaces.card.background}90;
+  background: ${({ theme }) => theme.surfaces.panel.background};
   color: ${({ theme }) => theme.text.primary};
   font-size: 0.95rem;
   font-family: inherit;

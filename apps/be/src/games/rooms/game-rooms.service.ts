@@ -118,6 +118,7 @@ export class GameRoomsService {
         filters.participation === 'joined'
       ) {
         query['participants.userId'] = filters.userId;
+        query.hostId = { $ne: filters.userId };
       } else if (filters.participation === 'not_joined') {
         query['participants.userId'] = { $ne: filters.userId };
         query.hostId = { $ne: filters.userId };

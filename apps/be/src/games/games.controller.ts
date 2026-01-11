@@ -69,6 +69,7 @@ export class GamesController {
     @Query('status') statusParam?: string,
     @Query('visibility') visibilityParam?: string,
     @Query('participation') participationParam?: string,
+    @Query('search') search?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ): Promise<Awaited<ReturnType<GamesService['listRooms']>>> {
@@ -130,6 +131,7 @@ export class GamesController {
     return this.gamesService.listRooms({
       userId: user?.userId,
       gameId,
+      search: search?.trim(),
       statuses: statusFilters.length ? statusFilters : undefined,
       visibility: visibilityFilters.length ? visibilityFilters : undefined,
       participation: participationFilter,

@@ -103,6 +103,14 @@ export const Filters = styled.div`
   border: 1px solid ${({ theme }) => theme.surfaces.card.border};
 `;
 
+export const SearchContainer = styled.div`
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+  display: flex;
+  gap: 0.5rem;
+`;
+
 export const FilterGroup = styled.div`
   display: flex;
   align-items: center;

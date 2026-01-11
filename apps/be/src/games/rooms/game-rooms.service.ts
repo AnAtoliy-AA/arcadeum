@@ -89,6 +89,10 @@ export class GameRoomsService {
       query.gameId = filters.gameId;
     }
 
+    if (filters.search) {
+      query.name = { $regex: filters.search, $options: 'i' };
+    }
+
     if (filters.status) {
       query.status = filters.status;
     } else if (filters.statuses && filters.statuses.length > 0) {

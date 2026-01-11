@@ -8,6 +8,8 @@ export const sharedMessages = {
       activeTitle: 'Game Rooms',
       emptyTitle: 'No rooms found. Create one to get started!',
       loadingRooms: 'Loading rooms...',
+      searchPlaceholder: 'Search games...',
+      searchButton: 'Search',
       participantsCount: '{{count}} participants',
       paginationInfo: 'Page {{page}} of {{totalPages}}',
       filters: {
@@ -107,6 +109,8 @@ export const sharedMessages = {
       activeTitle: 'Salas de Juego',
       emptyTitle: 'No se encontraron salas. ¡Crea una para empezar!',
       loadingRooms: 'Cargando salas...',
+      searchPlaceholder: 'Buscar juegos...',
+      searchButton: 'Buscar',
       participantsCount: '{{count}} participantes',
       paginationInfo: 'Página {{page}} de {{totalPages}}',
       filters: {
@@ -207,6 +211,8 @@ export const sharedMessages = {
       activeTitle: 'Salles de Jeu',
       emptyTitle: 'Aucune salle trouvée. Créez-en une pour commencer !',
       loadingRooms: 'Chargement des salles...',
+      searchPlaceholder: 'Rechercher des jeux...',
+      searchButton: 'Rechercher',
       participantsCount: '{{count}} participants',
       paginationInfo: 'Page {{page}} sur {{totalPages}}',
       filters: {

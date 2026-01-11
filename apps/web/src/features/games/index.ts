@@ -10,62 +10,41 @@ export type {
   GameEvent,
   GameStatistics,
   GameAchievement,
-  GameAnalytics
-} from "./types";
+  GameAnalytics,
+} from './types';
 
 // Registry
-export {
-  gameLoaders,
-  gameMetadata,
-  type GameSlug
-} from "./registry";
+export { gameLoaders, gameMetadata, type GameSlug } from './registry';
 
 // UI Components
-export {
-  GameContainer
-} from "./ui/GameContainer";
+export { GameContainer } from './ui/GameContainer';
 
-export {
-  GameLayout
-} from "./ui/GameLayout";
+export { GameLayout } from './ui/GameLayout';
 
-export {
-  GameCard
-} from "./ui/GameCard";
+export { GameCard } from './ui/GameCard';
 
-export {
-  GameGrid
-} from "./ui/GameGrid";
+export { GameGrid } from './ui/GameGrid';
 
-export {
-  GameStatus
-} from "./ui/GameStatus";
+export { GameStatus } from './ui/GameStatus';
 
 export {
   GameControls,
   LeaveButton,
   StartButton,
-  ReadyButton
-} from "./ui/GameControls";
+  ReadyButton,
+} from './ui/GameControls';
 
-export {
-  PlayerList
-} from "./ui/PlayerList";
+export { PlayerList } from './ui/PlayerList';
+
+export { GamesSearch } from './GamesSearch/GamesSearch';
 
 // Libraries
-export {
-  GameFactory,
-  gameFactory,
-  useGameFactory
-} from "./lib/gameFactory";
+export { GameFactory, gameFactory, useGameFactory } from './lib/gameFactory';
 
 export {
   GameConfigManager,
   gameConfigManager,
-  useGameConfig
-} from "./lib/gameConfig";
+  useGameConfig,
+} from './lib/gameConfig';
 
-export {
-  GamePropsFactory,
-  GamePropsGuards
-} from "./lib/gameProps";
+export { GamePropsFactory, GamePropsGuards } from './lib/gameProps';

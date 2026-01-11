@@ -1,5 +1,6 @@
 'use client';
 
+import { GamesSearch } from '@/features/games';
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { resolveApiUrl } from '@/shared/lib/api-base';
@@ -60,6 +61,7 @@ export function GamesPage() {
   const [participationFilter, setParticipationFilter] = useState<
     'all' | 'hosting' | 'joined' | 'not_joined'
   >('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Pagination state
@@ -78,6 +80,9 @@ export function GamesPage() {
       }
       if (participationFilter !== 'all') {
         params.append('participation', participationFilter);
+      }
+      if (searchQuery) {
+        params.append('search', searchQuery);
       }
       params.append('page', page.toString());
       params.append('limit', limit.toString());
@@ -112,7 +117,14 @@ export function GamesPage() {
     } finally {
       setLoading(false);
     }
-  }, [statusFilter, participationFilter, snapshot.accessToken, page, limit]);
+  }, [
+    statusFilter,
+    participationFilter,
+    searchQuery,
+    snapshot.accessToken,
+    page,
+    limit,
+  ]);
 
   useEffect(() => {
     fetchRooms();
@@ -121,7 +133,7 @@ export function GamesPage() {
   // Reset page when filters change
   useEffect(() => {
     setPage(INITIAL_PAGE);
-  }, [statusFilter, participationFilter]);
+  }, [statusFilter, participationFilter, searchQuery]);
 
   const sortedRooms = useMemo(() => {
     return [...rooms].sort(
@@ -177,6 +189,14 @@ export function GamesPage() {
         </Header>
 
         <Filters>
+          <GamesSearch
+            onSearch={setSearchQuery}
+            initialValue={searchQuery}
+            placeholder={
+              t('games.lounge.searchPlaceholder') || 'Search games...'
+            }
+            buttonLabel={t('games.lounge.searchButton') || 'Search'}
+          />
           <FilterGroup>
             <FilterLabel>{t('games.lounge.filters.statusLabel')}</FilterLabel>
             <FilterChips>

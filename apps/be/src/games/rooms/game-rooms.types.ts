@@ -32,6 +32,7 @@ export interface GameRoomSummary {
 
 export interface ListRoomsFilters {
   gameId?: string;
+  search?: string;
   status?: GameRoomStatus;
   statuses?: GameRoomStatus[];
   visibility?:

@@ -6,7 +6,7 @@ function withAppNamePlaceholder(value: string): string {
   if (!value || !name || !value.includes(name)) {
     return value;
   }
-  return value.split(name).join('{appName}');
+  return value.split(name).join('{{appName}}');
 }
 
 const homeMessagesDefinition = {
@@ -26,9 +26,9 @@ const homeMessagesDefinition = {
   es: {
     kicker: 'Arcade remoto para juegos de mesa',
     tagline:
-      '{appName} es tu arcade remoto para pruebas rápidas de juegos de mesa.',
+      '{{appName}} es tu arcade remoto para pruebas rápidas de juegos de mesa.',
     description:
-      'Crea salas en tiempo real, reúne a tu equipo de pruebas y deja que {appName} automatice reglas, puntuaciones y moderación para que te concentres en la diversión.',
+      'Crea salas en tiempo real, reúne a tu equipo de pruebas y deja que {{appName}} automatice reglas, puntuaciones y moderación para que te concentres en la diversión.',
     primaryCtaLabel: 'Comenzar',
     supportCtaLabel: 'Apoyar a los desarrolladores',
     downloadsTitle: 'Instala las apps móviles',
@@ -40,9 +40,9 @@ const homeMessagesDefinition = {
   fr: {
     kicker: 'Arcade à distance pour les jeux de société',
     tagline:
-      '{appName} est votre arcade à distance pour des playtests rapides de jeux de société.',
+      '{{appName}} est votre arcade à distance pour des playtests rapides de jeux de société.',
     description:
-      'Créez des salons en temps réel, rassemblez votre équipe de test et laissez {appName} automatiser règles, scores et modération pour que vous puissiez vous concentrer sur le plaisir.',
+      'Créez des salons en temps réel, rassemblez votre équipe de test et laissez {{appName}} automatiser règles, scores et modération pour que vous puissiez vous concentrer sur le plaisir.',
     primaryCtaLabel: 'Commencer',
     supportCtaLabel: 'Soutenir les développeurs',
     downloadsTitle: 'Installer les applications mobiles',

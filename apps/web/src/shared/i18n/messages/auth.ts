@@ -6,15 +6,15 @@ function withAppNamePlaceholder(value: string): string {
   if (!value || !name || !value.includes(name)) {
     return value;
   }
-  return value.split(name).join('{appName}');
+  return value.split(name).join('{{appName}}');
 }
 
 const authMessagesDefinition = {
   en: {
     badge: 'Early access',
-    title: 'Sign in to {appName}',
+    title: 'Sign in to {{appName}}',
     description:
-      "We're inviting creators in waves while we finish rolling out secure sign-in for {appName}.",
+      "We're inviting creators in waves while we finish rolling out secure sign-in for {{appName}}.",
     statusHeadline: 'Web sign-in is rolling out soon.',
     statusDescription:
       "Request early access and we'll notify you when your account is ready, or continue on mobile today.",
@@ -67,11 +67,11 @@ const authMessagesDefinition = {
     statusCard: {
       heading: 'Current session',
       description:
-        "Manage your {appName} web session, review the linked identity, and disconnect when you're done.",
+        "Manage your {{appName}} web session, review the linked identity, and disconnect when you're done.",
       sessionActive: 'You are signed in on the web.',
       signOutLabel: 'Sign out',
       guestDescription:
-        'Your {appName} web session details will appear here once you sign in.',
+        'Your {{appName}} web session details will appear here once you sign in.',
       details: {
         provider: 'Provider',
         displayName: 'Display name',
@@ -86,9 +86,9 @@ const authMessagesDefinition = {
   },
   es: {
     badge: 'Acceso anticipado',
-    title: 'Inicia sesión en {appName}',
+    title: 'Inicia sesión en {{appName}}',
     description:
-      'Estamos invitando a creadores por etapas mientras finalizamos el lanzamiento del inicio de sesión seguro de {appName}.',
+      'Estamos invitando a creadores por etapas mientras finalizamos el lanzamiento del inicio de sesión seguro de {{appName}}.',
     statusHeadline: 'El inicio de sesión web llegará pronto.',
     statusDescription:
       'Solicita acceso temprano y te avisaremos cuando tu cuenta esté lista, o continúa en móvil hoy mismo.',
@@ -141,11 +141,11 @@ const authMessagesDefinition = {
     statusCard: {
       heading: 'Sesión actual',
       description:
-        'Administra tu sesión web de {appName}, revisa la identidad vinculada y desconéctate cuando termines.',
+        'Administra tu sesión web de {{appName}}, revisa la identidad vinculada y desconéctate cuando termines.',
       sessionActive: 'Has iniciado sesión en la web.',
       signOutLabel: 'Cerrar sesión',
       guestDescription:
-        'Los detalles de tu sesión web de {appName} aparecerán aquí cuando inicies sesión.',
+        'Los detalles de tu sesión web de {{appName}} aparecerán aquí cuando inicies sesión.',
       details: {
         provider: 'Proveedor',
         displayName: 'Nombre visible',
@@ -160,9 +160,9 @@ const authMessagesDefinition = {
   },
   fr: {
     badge: 'Accès anticipé',
-    title: 'Connectez-vous à {appName}',
+    title: 'Connectez-vous à {{appName}}',
     description:
-      "Nous ouvrons progressivement l'accès aux créateurs pendant que nous finalisons le déploiement de la connexion sécurisée pour {appName}.",
+      "Nous ouvrons progressivement l'accès aux créateurs pendant que nous finalisons le déploiement de la connexion sécurisée pour {{appName}}.",
     statusHeadline: 'La connexion web arrive bientôt.',
     statusDescription:
       "Demandez un accès anticipé et nous vous préviendrons quand votre compte sera prêt, ou continuez sur mobile dès aujourd'hui.",
@@ -215,11 +215,11 @@ const authMessagesDefinition = {
     statusCard: {
       heading: 'Session actuelle',
       description:
-        "Gérez votre session web {appName}, vérifiez l'identité associée et déconnectez-vous quand vous avez terminé.",
+        "Gérez votre session web {{appName}}, vérifiez l'identité associée et déconnectez-vous quand vous avez terminé.",
       sessionActive: 'Vous êtes connecté sur le web.',
       signOutLabel: 'Se déconnecter',
       guestDescription:
-        'Les détails de votre session web {appName} apparaîtront ici une fois connecté.',
+        'Les détails de votre session web {{appName}} apparaîtreont ici une fois connecté.',
       details: {
         provider: 'Fournisseur',
         displayName: 'Nom affiché',

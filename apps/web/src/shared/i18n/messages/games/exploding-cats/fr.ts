@@ -179,7 +179,7 @@ export const frMessages = {
         selectPlayer: 'Sélectionner un Joueur',
         description:
           'Le joueur sélectionné vous donnera une carte aléatoire de sa main.',
-        cardsCount: '{count} cartes',
+        cardsCount: '{{count}} cartes',
         confirm: 'Prendre Carte Aléatoire',
       },
       defuse: {

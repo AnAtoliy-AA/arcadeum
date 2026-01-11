@@ -6,14 +6,14 @@ function withAppNamePlaceholder(value: string): string {
   if (!value || !name || !value.includes(name)) {
     return value;
   }
-  return value.split(name).join('{appName}');
+  return value.split(name).join('{{appName}}');
 }
 
 const settingsMessagesDefinition = {
   en: {
     title: 'Settings',
     description:
-      'Manage your appearance, language, and download preferences for the {appName} web experience.',
+      'Manage your appearance, language, and download preferences for the {{appName}} web experience.',
     gameplayTitle: 'Gameplay',
     gameplayDescription: 'Customize your in-game experience.',
     hapticsLabel: 'Haptic Feedback',
@@ -21,7 +21,7 @@ const settingsMessagesDefinition = {
       "Vibrate when it's your turn to play (mobile devices only).",
     appearanceTitle: 'Appearance',
     appearanceDescription:
-      'Choose a theme to use across the {appName} web experience.',
+      'Choose a theme to use across the {{appName}} web experience.',
     themeOptions: {
       system: {
         label: 'Match system appearance',
@@ -76,7 +76,7 @@ const settingsMessagesDefinition = {
   es: {
     title: 'Configuración',
     description:
-      'Administra la apariencia, el idioma y las descargas para la experiencia web de {appName}.',
+      'Administra la apariencia, el idioma y las descargas para la experiencia web de {{appName}}.',
     gameplayTitle: 'Juego',
     gameplayDescription: 'Personaliza tu experiencia de juego.',
     hapticsLabel: 'Respuesta háptica',
@@ -84,7 +84,7 @@ const settingsMessagesDefinition = {
       'Vibrar cuando sea tu turno de jugar (solo dispositivos móviles).',
     appearanceTitle: 'Apariencia',
     appearanceDescription:
-      'Elige un tema para usar en toda la experiencia web de {appName}.',
+      'Elige un tema para usar en toda la experiencia web de {{appName}}.',
     themeOptions: {
       system: {
         label: 'Coincidir con el sistema',
@@ -141,7 +141,7 @@ const settingsMessagesDefinition = {
   fr: {
     title: 'Paramètres',
     description:
-      "Gérez l'apparence, la langue et les téléchargements pour l'expérience web de {appName}.",
+      "Gérez l'apparence, la langue et les téléchargements pour l'expérience web de {{appName}}.",
     gameplayTitle: 'Jeu',
     gameplayDescription: 'Personnalisez votre expérience de jeu.',
     hapticsLabel: 'Retour haptique',
@@ -149,7 +149,7 @@ const settingsMessagesDefinition = {
       "Vibrer quand c'est à votre tour de jouer (appareils mobiles uniquement).",
     appearanceTitle: 'Apparence',
     appearanceDescription:
-      "Choisissez un thème à utiliser sur l'ensemble de l'expérience web de {appName}.",
+      "Choisissez un thème à utiliser sur l'ensemble de l'expérience web de {{appName}}.",
     themeOptions: {
       system: {
         label: 'Suivre le système',

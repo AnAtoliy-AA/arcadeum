@@ -4,11 +4,11 @@ const supportMessagesDefinition = {
   en: {
     title: 'Support the developers',
     tagline:
-      'Keep {appName} iterating quickly and accessible to the tabletop community.',
+      'Keep {{appName}} iterating quickly and accessible to the tabletop community.',
     description:
       'Arcade labs, infrastructure, and community events are self-funded today. Your backing keeps the realtime servers online, unlocks more playtest nights, and helps us ship the next wave of prototypes.',
     thanks:
-      'Every contribution keeps {appName} evolving. Thank you for helping us build the future of remote tabletop play!',
+      'Every contribution keeps {{appName}} evolving. Thank you for helping us build the future of remote tabletop play!',
     teamSectionTitle: 'Meet the core team',
     actionsSectionTitle: 'Ways to contribute',
     team: {
@@ -47,20 +47,20 @@ const supportMessagesDefinition = {
       iban: {
         title: 'Bank transfer',
         description:
-          'Need to pay by card through your bank? Enter the IBAN {iban} to send funds directly to {appName}.',
+          'Need to pay by card through your bank? Enter the IBAN {{iban}} to send funds directly to {{appName}}.',
         cta: 'Copy IBAN details',
-        successMessage: 'IBAN copied to clipboard: {iban}',
+        successMessage: 'IBAN copied to clipboard: {{iban}}',
       },
     },
   },
   es: {
     title: 'Apoya a los desarrolladores',
     tagline:
-      'Mantén {appName} iterando rápidamente y accesible para la comunidad de juegos de mesa.',
+      'Mantén {{appName}} iterando rápidamente y accesible para la comunidad de juegos de mesa.',
     description:
       'Los laboratorios, la infraestructura y los eventos comunitarios de Arcade actualmente se financian a sí mismos. Tu aporte mantiene en línea los servidores en tiempo real, desbloquea más noches de pruebas y nos ayuda a lanzar la próxima ola de prototipos.',
     thanks:
-      'Cada contribución mantiene a {appName} evolucionando. ¡Gracias por ayudarnos a construir el futuro de las pruebas de juegos de mesa a distancia!',
+      'Cada contribución mantiene a {{appName}} evolucionando. ¡Gracias por ayudarnos a construir el futuro de las pruebas de juegos de mesa a distancia!',
     teamSectionTitle: 'Conoce al equipo',
     actionsSectionTitle: 'Cómo contribuir',
     team: {
@@ -99,20 +99,20 @@ const supportMessagesDefinition = {
       iban: {
         title: 'Transferencia bancaria',
         description:
-          '¿Necesitas pagar desde tu banco? Introduce el IBAN {iban} para enviar fondos directamente a {appName}.',
+          '¿Necesitas pagar desde tu banco? Introduce el IBAN {{iban}} para enviar fondos directamente a {{appName}}.',
         cta: 'Copiar datos de IBAN',
-        successMessage: 'IBAN copiado al portapapeles: {iban}',
+        successMessage: 'IBAN copiado al portapapeles: {{iban}}',
       },
     },
   },
   fr: {
     title: 'Soutenir les développeurs',
     tagline:
-      'Aidez {appName} à itérer rapidement et à rester accessible à la communauté des jeux de société.',
+      'Aidez {{appName}} à itérer rapidement et à rester accessible à la communauté des jeux de société.',
     description:
       "Les laboratoires, l'infrastructure et les événements communautaires d'Arcade sont aujourd'hui autofinancés. Votre soutien maintient les serveurs temps réel en ligne, débloque davantage de soirées de playtest et nous aide à sortir la prochaine vague de prototypes.",
     thanks:
-      "Chaque contribution permet à {appName} de progresser. Merci de nous aider à bâtir l'avenir du jeu de société à distance !",
+      "Chaque contribution permet à {{appName}} de progresser. Merci de nous aider à bâtir l'avenir du jeu de société à distance !",
     teamSectionTitle: "Rencontrez l'équipe",
     actionsSectionTitle: 'Comment contribuer',
     team: {
@@ -151,9 +151,9 @@ const supportMessagesDefinition = {
       iban: {
         title: 'Virement bancaire',
         description:
-          "Besoin de payer par carte via votre banque ? Saisissez l'IBAN {iban} pour envoyer des fonds directement à {appName}.",
+          "Besoin de payer par carte via votre banque ? Saisissez l'IBAN {{iban}} pour envoyer des fonds directement à {{appName}}.",
         cta: "Copier l'IBAN",
-        successMessage: 'IBAN copié dans le presse-papiers : {iban}',
+        successMessage: 'IBAN copié dans le presse-papiers : {{iban}}',
       },
     },
   },

@@ -19,7 +19,7 @@ const historyMessagesDefinition = {
       clear: 'Clear Filters',
     },
     pagination: {
-      showing: 'Showing {count} of {total} games',
+      showing: 'Showing {{count}} of {{total}} games',
       loadMore: 'Load More',
       loading: 'Loading...',
     },
@@ -38,7 +38,7 @@ const historyMessagesDefinition = {
     detail: {
       backToList: 'Back',
       loading: 'Loading details...',
-      lastActivity: 'Last activity: {timestamp}',
+      lastActivity: 'Last activity: {{timestamp}}',
       rematchTitle: 'Start a Rematch',
       rematchDescription: 'Select participants to invite to a new game.',
       rematchAction: 'Start Rematch',
@@ -56,7 +56,7 @@ const historyMessagesDefinition = {
       noLogs: 'No activity logged.',
       scopePlayers: 'Players',
       scopeAll: 'All',
-      sender: 'From {name}',
+      sender: 'From {{name}}',
     },
     errors: {
       authRequired: 'Authentication required',

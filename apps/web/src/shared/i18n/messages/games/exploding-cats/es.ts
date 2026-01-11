@@ -173,7 +173,7 @@ export const esMessages = {
         selectPlayer: 'Seleccionar Jugador',
         description:
           'El jugador seleccionado te dará una carta aleatoria de su mano.',
-        cardsCount: '{count} cartas',
+        cardsCount: '{{count}} cartas',
         confirm: 'Tomar Carta Aleatoria',
       },
       defuse: {

@@ -176,7 +176,7 @@ export const enMessages = {
         trioDesc: 'Choose specific card',
         selectTarget: 'Select Target Player',
         selectCard: 'Select Card to Request',
-        cardsCount: '{count} cards',
+        cardsCount: '{{count}} cards',
         confirm: 'Play Combo',
       },
       seeTheFuture: { title: 'Top 3 Cards', confirm: 'Got it!' },
@@ -185,13 +185,13 @@ export const enMessages = {
         selectPlayer: 'Select Player',
         description:
           'Select a player - they will choose which card to give you.',
-        cardsCount: '{count} cards',
+        cardsCount: '{{count}} cards',
         confirm: 'Request Favor',
       },
       giveFavor: {
         title: 'Give a Card',
         description:
-          '{player} has requested a favor. Choose a card to give them.',
+          '{{player}} has requested a favor. Choose a card to give them.',
         confirm: 'Give Card',
       },
       defuse: {

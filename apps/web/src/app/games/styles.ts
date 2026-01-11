@@ -409,3 +409,44 @@ export const Empty = styled.div`
   border-radius: 20px;
   border: 1px dashed ${({ theme }) => theme.surfaces.card.border};
 `;
+
+export const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  grid-column: 1 / -1;
+`;
+
+export const PaginationButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  background: ${({ theme }) => theme.surfaces.card.background};
+  color: ${({ theme }) => theme.text.primary};
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: ${({ theme }) => theme.buttons.primary.gradientStart};
+    color: ${({ theme }) => theme.buttons.primary.text};
+    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+export const PaginationInfo = styled.span`
+  color: ${({ theme }) => theme.text.muted};
+  font-size: 0.95rem;
+  font-weight: 500;
+`;

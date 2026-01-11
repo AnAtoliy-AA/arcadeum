@@ -8,7 +8,8 @@ export const sharedMessages = {
       activeTitle: 'Game Rooms',
       emptyTitle: 'No rooms found. Create one to get started!',
       loadingRooms: 'Loading rooms...',
-      participantsCount: '{count} participants',
+      participantsCount: '{{count}} participants',
+      paginationInfo: 'Page {{page}} of {{totalPages}}',
       filters: {
         statusLabel: 'Status',
         participationLabel: 'Participation',
@@ -106,7 +107,8 @@ export const sharedMessages = {
       activeTitle: 'Salas de Juego',
       emptyTitle: 'No se encontraron salas. ¡Crea una para empezar!',
       loadingRooms: 'Cargando salas...',
-      participantsCount: '{count} participantes',
+      participantsCount: '{{count}} participantes',
+      paginationInfo: 'Página {{page}} de {{totalPages}}',
       filters: {
         statusLabel: 'Estado',
         participationLabel: 'Participación',
@@ -205,7 +207,8 @@ export const sharedMessages = {
       activeTitle: 'Salles de Jeu',
       emptyTitle: 'Aucune salle trouvée. Créez-en une pour commencer !',
       loadingRooms: 'Chargement des salles...',
-      participantsCount: '{count} participants',
+      participantsCount: '{{count}} participants',
+      paginationInfo: 'Page {{page}} sur {{totalPages}}',
       filters: {
         statusLabel: 'Statut',
         participationLabel: 'Participation',

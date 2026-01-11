@@ -69,7 +69,9 @@ export class GamesController {
     @Query('status') statusParam?: string,
     @Query('visibility') visibilityParam?: string,
     @Query('participation') participationParam?: string,
-  ): Promise<{ rooms: Awaited<ReturnType<GamesService['listRooms']>> }> {
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ): Promise<Awaited<ReturnType<GamesService['listRooms']>>> {
     const user = req.user as AuthenticatedUser | undefined | null;
     const parseList = (value?: string): string[] => {
       if (!value) {
@@ -122,14 +124,18 @@ export class GamesController {
       participationFilter = undefined;
     }
 
-    const rooms = await this.gamesService.listRooms({
+    const pageNum = page ? parseInt(page, 10) : 1;
+    const limitNum = limit ? parseInt(limit, 10) : 10;
+
+    return this.gamesService.listRooms({
       userId: user?.userId,
       gameId,
       statuses: statusFilters.length ? statusFilters : undefined,
       visibility: visibilityFilters.length ? visibilityFilters : undefined,
       participation: participationFilter,
+      page: pageNum,
+      limit: limitNum,
     });
-    return { rooms };
   }
 
   @UseGuards(JwtOptionalAuthGuard)

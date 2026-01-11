@@ -47,6 +47,15 @@ export interface ListRoomsFilters {
     | 'hosting'
     | 'joined'
     | 'not_joined';
+  page?: number;
+  limit?: number;
+}
+
+export interface ListRoomsResult {
+  rooms: GameRoomSummary[];
+  total: number;
+  page: number;
+  limit: number;
 }
 
 export interface LeaveGameRoomResult {

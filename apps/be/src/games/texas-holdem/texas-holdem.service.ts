@@ -77,7 +77,7 @@ export class TexasHoldemService {
     // Reuse the same logic as Exploding Cats for starting a session
     let effectiveRoomId = roomId;
     if (!effectiveRoomId) {
-      const userRooms = await this.roomsService.listRooms(
+      const { rooms: userRooms } = await this.roomsService.listRooms(
         {
           userId,
           participation: 'any',
@@ -99,6 +99,10 @@ export class TexasHoldemService {
       }
 
       effectiveRoomId = userRooms[0].id;
+    }
+
+    if (!effectiveRoomId) {
+      throw new Error('Room ID is required');
     }
 
     const room = await this.roomsService.getRoom(effectiveRoomId, userId);

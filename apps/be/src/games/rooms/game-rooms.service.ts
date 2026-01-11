@@ -17,6 +17,7 @@ import { DeleteGameRoomDto } from '../dtos/delete-game-room.dto';
 import {
   GameRoomSummary,
   ListRoomsFilters,
+  ListRoomsResult,
   LeaveGameRoomResult,
   DeleteGameRoomResult,
 } from './game-rooms.types';
@@ -78,8 +79,11 @@ export class GameRoomsService {
   async listRooms(
     filters: ListRoomsFilters = {},
     viewerId?: string,
-  ): Promise<GameRoomSummary[]> {
+  ): Promise<ListRoomsResult> {
     const query: FilterQuery<GameRoom> = {};
+    const page = filters.page || 1;
+    const limit = filters.limit || 10;
+    const skip = (page - 1) * limit;
 
     if (filters.gameId) {
       query.gameId = filters.gameId;
@@ -121,11 +125,15 @@ export class GameRoomsService {
       }
     }
 
-    const rooms = await this.gameRoomModel
-      .find(query)
-      .sort({ createdAt: -1 })
-      .limit(100)
-      .exec();
+    const [rooms, total] = await Promise.all([
+      this.gameRoomModel
+        .find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec(),
+      this.gameRoomModel.countDocuments(query).exec(),
+    ]);
 
     const summaries = await Promise.all(
       rooms.map((room) =>
@@ -133,7 +141,12 @@ export class GameRoomsService {
       ),
     );
 
-    return summaries;
+    return {
+      rooms: summaries,
+      total,
+      page,
+      limit,
+    };
   }
 
   /**

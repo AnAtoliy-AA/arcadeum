@@ -114,7 +114,7 @@ export class ExplodingCatsService {
   ): Promise<StartGameSessionResult> {
     let effectiveRoomId = roomId;
     if (!effectiveRoomId) {
-      const userRooms = await this.roomsService.listRooms(
+      const { rooms: userRooms } = await this.roomsService.listRooms(
         {
           userId,
           participation: 'any',

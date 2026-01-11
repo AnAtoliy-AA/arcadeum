@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { GamesController } from './games.controller';
 import { GamesService } from './games.service';
@@ -15,6 +15,8 @@ import { ExplodingCatsGateway } from './exploding-cats.gateway';
 import { TexasHoldemGateway } from './texas-holdem.gateway';
 import { GameEnginesModule } from './engines/engines.module';
 import { GameRoomsService } from './rooms/game-rooms.service';
+import { GameRoomsMapper } from './rooms/game-rooms.mapper';
+import { GameRoomsRematchService } from './rooms/game-rooms.rematch.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import { GameHistoryService } from './history/game-history.service';
 import { GameHistoryBuilderService } from './history/game-history-builder.service';
@@ -24,6 +26,7 @@ import { GameUtilitiesService } from './utilities/game-utilities.service';
 
 import { ExplodingCatsService } from './exploding-cats/exploding-cats.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -34,11 +37,14 @@ import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
       { name: User.name, schema: UserSchema },
     ]),
     GameEnginesModule, // Import the game engines module
+    forwardRef(() => AuthModule), // Import AuthModule for AuthService
   ],
   controllers: [GamesController],
   providers: [
     // Core services
     GameRoomsService,
+    GameRoomsMapper,
+    GameRoomsRematchService,
     GameSessionsService,
     GameHistoryService,
     GameHistoryBuilderService,

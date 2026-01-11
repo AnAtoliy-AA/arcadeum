@@ -20,6 +20,8 @@ import {
   LeaveGameRoomResult,
   DeleteGameRoomResult,
 } from './game-rooms.types';
+import { GameRoomsMapper } from './game-rooms.mapper';
+import { GameRoomsRematchService } from './game-rooms.rematch.service';
 
 /**
  * Game Rooms Service
@@ -32,6 +34,8 @@ export class GameRoomsService {
     private readonly gameRoomModel: Model<GameRoom>,
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
+    private readonly gameRoomsMapper: GameRoomsMapper,
+    private readonly gameRoomsRematchService: GameRoomsRematchService,
   ) {}
 
   /**
@@ -65,7 +69,7 @@ export class GameRoomsService {
       updatedAt: new Date(),
     });
 
-    return this.prepareRoomSummary(room, userId);
+    return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
 
   /**
@@ -124,7 +128,9 @@ export class GameRoomsService {
       .exec();
 
     const summaries = await Promise.all(
-      rooms.map((room) => this.prepareRoomSummary(room, viewerId)),
+      rooms.map((room) =>
+        this.gameRoomsMapper.prepareRoomSummary(room, viewerId),
+      ),
     );
 
     return summaries;
@@ -144,7 +150,7 @@ export class GameRoomsService {
       throw new ForbiddenException('Cannot view this room');
     }
 
-    return this.prepareRoomSummary(room, userId);
+    return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
 
   /**
@@ -164,7 +170,7 @@ export class GameRoomsService {
     const isParticipant = room.participants.some((p) => p.userId === userId);
 
     if (isParticipant) {
-      return this.prepareRoomSummary(room, userId);
+      return this.gameRoomsMapper.prepareRoomSummary(room, userId);
     }
 
     // New players can only join if game hasn't started yet
@@ -191,13 +197,13 @@ export class GameRoomsService {
 
     await room.save();
 
-    return this.prepareRoomSummary(room, userId);
+    return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
 
   /**
    * Ensure user is a participant (join if not already)
    */
-  async ensureParticipant(roomId: string, userId: string): Promise<void> {
+  async ensureParticipant(roomId: string, userId: string): Promise<boolean> {
     const room = await this.gameRoomModel.findById(roomId).exec();
 
     if (!room) {
@@ -213,7 +219,9 @@ export class GameRoomsService {
       });
       room.updatedAt = new Date();
       await room.save();
+      return true;
     }
+    return false;
   }
 
   /**
@@ -251,7 +259,7 @@ export class GameRoomsService {
     room.updatedAt = new Date();
     await room.save();
 
-    const summary = await this.prepareRoomSummary(room, userId);
+    const summary = await this.gameRoomsMapper.prepareRoomSummary(room, userId);
 
     return {
       room: summary,
@@ -355,7 +363,7 @@ export class GameRoomsService {
 
     await room.save();
 
-    return this.prepareRoomSummary(room, userId);
+    return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
 
   // ========== Private Helper Methods ==========
@@ -383,6 +391,47 @@ export class GameRoomsService {
     return false;
   }
 
+  /**
+   * Decline a rematch invitation
+   */
+  /**
+   * Decline a rematch invitation
+   */
+  async declineRematchInvitation(
+    roomId: string,
+    userId: string,
+  ): Promise<GameRoomSummary> {
+    return this.gameRoomsRematchService.declineRematchInvitation(
+      roomId,
+      userId,
+    );
+  }
+
+  /**
+   * Block re-invites for a specific rematch room
+   */
+  async blockRematchRoom(
+    roomId: string,
+    userId: string,
+  ): Promise<GameRoomSummary> {
+    return this.gameRoomsRematchService.blockRematchRoom(roomId, userId);
+  }
+
+  /**
+   * Re-invite players to a rematch
+   */
+  async reinviteRematchPlayers(
+    roomId: string,
+    hostId: string,
+    userIds: string[],
+  ): Promise<GameRoomSummary> {
+    return this.gameRoomsRematchService.reinviteRematchPlayers(
+      roomId,
+      hostId,
+      userIds,
+    );
+  }
+
   private async generateInviteCode(): Promise<string> {
     let code: string;
     let exists = true;
@@ -396,70 +445,5 @@ export class GameRoomsService {
     }
 
     return code!;
-  }
-
-  private async prepareRoomSummary(
-    room: GameRoom,
-    viewerId?: string,
-  ): Promise<GameRoomSummary> {
-    const userIds = [room.hostId, ...room.participants.map((p) => p.userId)];
-    const uniqueUserIds = Array.from(new Set(userIds));
-
-    const users = await this.userModel
-      .find({ _id: { $in: uniqueUserIds } })
-      .select('username email')
-      .exec();
-
-    const userMap = new Map(users.map((u) => [u._id.toString(), u]));
-
-    const host = userMap.get(room.hostId);
-    const members = room.participants.map((p) => {
-      const user = userMap.get(p.userId);
-      return {
-        id: p.userId,
-        displayName: user?.username || user?.email || 'Unknown',
-        username: user?.username || null,
-        email: user?.email || null,
-        isHost: p.userId === room.hostId,
-      };
-    });
-
-    const summary: GameRoomSummary = {
-      id: room._id.toString(),
-      gameId: room.gameId,
-      name: room.name,
-      hostId: room.hostId,
-      visibility: room.visibility,
-      playerCount: room.participants.length,
-      maxPlayers: room.maxPlayers ?? null,
-      createdAt: room.createdAt.toISOString(),
-      status: room.status,
-      inviteCode: room.inviteCode,
-      gameOptions: room.gameOptions,
-      host: host
-        ? {
-            id: room.hostId,
-            displayName: host.username || host.email || 'Unknown',
-            username: host.username || null,
-            email: host.email || null,
-            isHost: true,
-          }
-        : undefined,
-      members,
-    };
-
-    if (viewerId) {
-      summary.viewerIsHost = room.hostId === viewerId;
-      summary.viewerHasJoined = room.participants.some(
-        (p) => p.userId === viewerId,
-      );
-      summary.viewerRole = summary.viewerIsHost
-        ? 'host'
-        : summary.viewerHasJoined
-          ? 'participant'
-          : 'none';
-    }
-
-    return summary;
   }
 }

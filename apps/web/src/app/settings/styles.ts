@@ -371,3 +371,45 @@ export const ToggleInput = styled.input.attrs({ type: 'checkbox' })`
     outline-offset: 2px;
   }
 `;
+
+export const BlockedUserRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: ${({ theme }) => theme.interactive.option.background};
+  border: 1px solid ${({ theme }) => theme.interactive.option.border};
+  border-radius: 18px;
+  gap: 1rem;
+`;
+
+export const BlockedUserInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  flex: 1;
+`;
+
+export const UnblockButton = styled.button`
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid ${({ theme }) => theme.buttons.secondary.border};
+  background: ${({ theme }) => theme.buttons.secondary.background};
+  color: ${({ theme }) => theme.buttons.secondary.text};
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${({ theme }) => theme.outlines.focus};
+    outline-offset: 2px;
+  }
+`;

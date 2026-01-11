@@ -233,30 +233,69 @@ export class GamesController {
         name: dto.name,
         visibility: dto.visibility,
         gameOptions: dto.gameOptions,
+        message: dto.message,
       },
     );
 
-    // Notify original room participants about the rematch
-    // The createRematchFromHistory method returns the new room ID
-    // We can fetch the new room to confirm if needed, but for now we trust the ID
-    // However, createRematchFromHistory returns the ID string directly
-    // Wait, the return type above says it returns a string, but the variable is named 'room'
-    // Let's check the service quickly. Yes, it returns string (newRoomId).
-    // So 'room' variable holds the ID string.
+    // Note: GamesService handles socket emission internally for rematch
+    // So we just return the new room ID
+    const newRoomId = room;
 
-    // We need to inject RealtimeService here. It's not injected yet.
-    // I need to add it to constructor first.
+    return { room: newRoomId };
+  }
 
-    // Oh wait, GamesController doesn't inject RealtimeService directly,
-    // it usually goes through GamesService.
-    // But GamesService uses RealtimeService.
-    // Let's check GamesService.
+  @UseGuards(JwtAuthGuard)
+  @Post('rooms/:roomId/invitation/decline')
+  @HttpCode(204)
+  async declineInvitation(
+    @Req() req: Request,
+    @Param('roomId') roomId: string,
+  ): Promise<void> {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
 
-    // Actually, I should probably add this emit to GamesService instead of Controller to keep logic encapsulated.
-    // GamesService already has access to RealtimeService (likely, let me double check).
-    // If GamesService has RealtimeService, I should add the emit there.
+    await this.gamesService.declineInvitation(roomId, user.userId);
+  }
 
-    return { room };
+  @UseGuards(JwtAuthGuard)
+  @Post('rooms/:roomId/invitation/block')
+  @HttpCode(204)
+  async blockRematchRoom(
+    @Req() req: Request,
+    @Param('roomId') roomId: string,
+  ): Promise<void> {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    await this.gamesService.blockRematchRoom(roomId, user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('rooms/:roomId/invitation/invite')
+  @HttpCode(204)
+  async invitePlayers(
+    @Req() req: Request,
+    @Param('roomId') roomId: string,
+    @Body() dto: { userIds: string[] },
+  ): Promise<void> {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    if (
+      !dto.userIds ||
+      !Array.isArray(dto.userIds) ||
+      dto.userIds.length === 0
+    ) {
+      throw new BadRequestException('userIds array is required');
+    }
+
+    await this.gamesService.reinvitePlayers(roomId, user.userId, dto.userIds);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -20,6 +20,9 @@ export interface GameRoomSummary {
   status: GameRoomStatus;
   inviteCode?: string;
   gameOptions?: Record<string, unknown>;
+  rematchInvitedUsers?: GameRoomMemberSummary[]; // Re-using member summary or partial
+  rematchDeclinedUsers?: GameRoomMemberSummary[];
+  invitationTimeout?: number;
   host?: GameRoomMemberSummary;
   members?: GameRoomMemberSummary[];
   viewerRole?: 'host' | 'participant' | 'none';

@@ -5,6 +5,7 @@ import { GameSessionsService } from './sessions/game-sessions.service';
 import { GameHistoryService } from './history/game-history.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
+import { AuthService } from '../auth/auth.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { JoinGameRoomDto } from './dtos/join-game-room.dto';
 import { LeaveGameRoomDto } from './dtos/leave-game-room.dto';
@@ -29,6 +30,7 @@ export class GamesService {
     private readonly historyService: GameHistoryService,
     private readonly realtimeService: GamesRealtimeService,
     private readonly utilities: GameUtilitiesService,
+    private readonly authService: AuthService,
   ) {}
 
   // ========== Room Operations ==========
@@ -299,6 +301,7 @@ export class GamesService {
       name?: string;
       visibility?: 'public' | 'private';
       gameOptions?: Record<string, unknown>;
+      message?: string;
     },
   ) {
     const dto: HistoryRematchDto = {
@@ -306,15 +309,107 @@ export class GamesService {
       participantIds,
       ...options,
     };
-    const newRoomId = await this.historyService.createRematchFromHistory(
-      dto,
+    const { id: newRoomId, invitedIds } =
+      await this.historyService.createRematchFromHistory(dto, userId);
+
+    // Fetch new room to get host details
+    const newRoom = await this.roomsService.getRoom(newRoomId, userId);
+
+    // Filter out users who have blocked the host
+    const filteredInvitedIds = await this.filterBlockedUsers(
       userId,
+      invitedIds,
     );
 
-    // Emit real-time event to the old room
-    this.realtimeService.emitRematchStarted(roomId, newRoomId);
+    // Emit real-time event to the old room (only to non-blocking users)
+    if (filteredInvitedIds.length > 0) {
+      this.realtimeService.emitRematchInvited(
+        roomId,
+        newRoomId,
+        userId,
+        newRoom.host?.displayName || 'Unknown Host',
+        filteredInvitedIds,
+        options?.message,
+      );
+    }
 
     return newRoomId;
+  }
+
+  /**
+   * Decline a rematch invitation
+   */
+  async declineInvitation(roomId: string, userId: string): Promise<void> {
+    const room = await this.roomsService.declineRematchInvitation(
+      roomId,
+      userId,
+    );
+    this.realtimeService.emitPlayerDeclined(room, userId);
+  }
+
+  /**
+   * Block re-invites for a specific rematch room
+   */
+  async blockRematchRoom(roomId: string, userId: string): Promise<void> {
+    const room = await this.roomsService.blockRematchRoom(roomId, userId);
+    this.realtimeService.emitPlayerDeclined(room, userId);
+  }
+
+  /**
+   * Re-invite players to a rematch
+   */
+  async reinvitePlayers(
+    roomId: string,
+    hostId: string,
+    userIds: string[],
+  ): Promise<void> {
+    const room = await this.roomsService.reinviteRematchPlayers(
+      roomId,
+      hostId,
+      userIds,
+    );
+
+    // Get host name from room
+    const hostName = room.host?.displayName || 'Unknown Host';
+
+    // Get previous room ID from game options to broadcast invite to
+    const gameOptions = room.gameOptions || {};
+    const previousRoomId = gameOptions.rematchPreviousRoomId as string;
+
+    if (previousRoomId) {
+      // Filter out users who have blocked the host
+      const filteredUserIds = await this.filterBlockedUsers(hostId, userIds);
+
+      if (filteredUserIds.length > 0) {
+        this.realtimeService.emitRematchInvited(
+          previousRoomId,
+          room.id,
+          hostId,
+          hostName,
+          filteredUserIds,
+          gameOptions.rematchMessage as string | undefined,
+        );
+      }
+    }
+
+    // Also broadcast update to the current room so host sees updated status
+    this.realtimeService.emitRoomUpdated(room);
+  }
+
+  /**
+   * Filter out user IDs where the user has blocked the host
+   */
+  private async filterBlockedUsers(
+    hostId: string,
+    userIds: string[],
+  ): Promise<string[]> {
+    const results = await Promise.all(
+      userIds.map(async (userId) => {
+        const isBlocked = await this.authService.isUserBlocked(userId, hostId);
+        return isBlocked ? null : userId;
+      }),
+    );
+    return results.filter((id): id is string => id !== null);
   }
 
   /**
@@ -359,8 +454,15 @@ export class GamesService {
    * Ensure user is a participant in a room
    */
   async ensureParticipant(roomId: string, userId: string) {
-    await this.roomsService.ensureParticipant(roomId, userId);
-    return this.roomsService.getRoom(roomId, userId);
+    const added = await this.roomsService.ensureParticipant(roomId, userId);
+    const room = await this.roomsService.getRoom(roomId, userId);
+
+    if (added) {
+      // If user was added (not just rejoining), broadcast to room
+      this.realtimeService.emitPlayerJoined(room, userId);
+    }
+
+    return room;
   }
 
   /**

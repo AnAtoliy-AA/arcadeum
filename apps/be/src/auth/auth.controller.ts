@@ -3,14 +3,21 @@ import {
   Controller,
   Post,
   Get,
+  Delete,
+  Param,
   UseGuards,
   Req,
   UnauthorizedException,
   Query,
   Headers,
+  HttpCode,
 } from '@nestjs/common';
 import type { Request } from 'express';
-import { AuthService } from './auth.service';
+import {
+  AuthService,
+  AuthTokensResponse,
+  OAuthTokenResponse,
+} from './auth.service';
 import { TokenExchangeDto } from './dtos/token-exchange.dto';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
@@ -28,7 +35,7 @@ export class AuthController {
     @Body() dto: TokenExchangeDto,
     @Headers('origin') originHeader?: string,
     @Headers('referer') refererHeader?: string,
-  ): Promise<any> {
+  ): Promise<OAuthTokenResponse> {
     const requestOrigin = this.resolveRequestOrigin(
       originHeader,
       refererHeader,
@@ -47,17 +54,17 @@ export class AuthController {
   }
 
   @Post('login')
-  login(@Body() dto: LoginDto): Promise<any> {
+  login(@Body() dto: LoginDto): Promise<AuthTokensResponse> {
     return this.authService.login(dto);
   }
 
   @Post('oauth/login')
-  oauthLogin(@Body() dto: OAuthLoginDto): Promise<any> {
+  oauthLogin(@Body() dto: OAuthLoginDto): Promise<AuthTokensResponse> {
     return this.authService.loginWithOAuth(dto);
   }
 
   @Post('refresh')
-  refresh(@Body() dto: RefreshTokenRequestDto): Promise<any> {
+  refresh(@Body() dto: RefreshTokenRequestDto): Promise<AuthTokensResponse> {
     return this.authService.refreshToken(dto.refreshToken);
   }
 
@@ -82,6 +89,44 @@ export class AuthController {
       query: query ?? '',
       requestingUserId: user.userId,
     });
+  }
+
+  @Post('block/:userId')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(204)
+  async blockUser(
+    @Req() req: Request,
+    @Param('userId') blockedUserId: string,
+  ): Promise<void> {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    await this.authService.blockUser(user.userId, blockedUserId);
+  }
+
+  @Get('blocked')
+  @UseGuards(JwtAuthGuard)
+  async getBlockedUsers(@Req() req: Request) {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return this.authService.getBlockedUsersWithDetails(user.userId);
+  }
+
+  @Delete('block/:userId')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(204)
+  async unblockUser(
+    @Req() req: Request,
+    @Param('userId') blockedUserId: string,
+  ): Promise<void> {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    await this.authService.unblockUser(user.userId, blockedUserId);
   }
 
   private resolveRequestOrigin(

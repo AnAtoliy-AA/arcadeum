@@ -34,6 +34,9 @@ export class User {
 
   @Prop({ type: String, enum: USER_ROLES, default: 'free' })
   role!: UserRole;
+
+  @Prop({ type: [String], default: [] })
+  blockedUsers!: string[];
 }
 
 export type UserDocument = User & Document;

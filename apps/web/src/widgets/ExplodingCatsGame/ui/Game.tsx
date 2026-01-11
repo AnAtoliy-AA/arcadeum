@@ -12,43 +12,24 @@ import {
   useRematch,
   useWebGameHaptics,
   useIdleTimer,
+  useGameRoom,
 } from '../hooks';
 import { useAutoplay } from '../hooks/useAutoplay';
 import { useGameHandlers } from '../hooks/useGameHandlers';
-import { IdleTimerDisplay } from './IdleTimerDisplay';
-import { AutoplayControls } from './AutoplayControls';
 import { GameModals } from './GameModals';
 import { GameLobby } from './GameLobby';
 import { ChatSection } from './ChatSection';
 import { GameStatusMessage } from './GameStatusMessage';
-import { ServerLoadingNotice } from './ServerLoadingNotice';
 import { PlayerHand } from './PlayerHand';
 import { GameTableSection } from './GameTableSection';
 
-import {
-  GameContainer,
-  GameHeader,
-  HeaderActions,
-  TimerControlsWrapper,
-  GameInfo,
-  GameTitle,
-  TurnStatus,
-  FullscreenButton,
-  ChatToggleButton,
-  GameBoard,
-  TableArea,
-} from './styles';
+import { GameContainer, GameBoard, TableArea } from './styles';
 
-import {
-  RoomNameBadge,
-  RoomNameIcon,
-  RoomNameText,
-  FastBadge,
-} from './styles/lobby';
+import { ExplodingCatsGameHeader } from './ExplodingCatsGameHeader';
 
 export default function ExplodingCatsGame({
   roomId,
-  room,
+  room: initialRoom,
   session: initialSession,
   currentUserId,
   isHost,
@@ -57,6 +38,9 @@ export default function ExplodingCatsGame({
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const chatMessagesRef = useRef<HTMLDivElement | null>(null);
+
+  // Use dynamic room state
+  const room = useGameRoom(initialRoom);
 
   const {
     snapshot,
@@ -90,6 +74,14 @@ export default function ExplodingCatsGame({
     openRematchModal,
     closeRematchModal,
     handleRematch,
+    invitation,
+    invitationTimeLeft,
+    handleAcceptInvitation,
+    handleDeclineInvitation,
+    isAcceptingInvitation,
+    handleReinvite,
+    handleBlockRematch,
+    handleBlockUser,
   } = useRematch({ roomId, gameOptions: room.gameOptions });
 
   const {
@@ -269,6 +261,7 @@ export default function ExplodingCatsGame({
         onToggleFullscreen={toggleFullscreen}
         onStartGame={actions.startExplodingCats}
         onReorderPlayers={reorderParticipants}
+        onReinvite={handleReinvite}
         t={t as (key: string) => string}
       />
     );
@@ -277,61 +270,26 @@ export default function ExplodingCatsGame({
   // Game in progress
   return (
     <GameContainer ref={containerRef} $isMyTurn={!!isMyTurn}>
-      <GameHeader>
-        <GameInfo>
-          <GameTitle>{t('games.exploding_kittens_v1.name')}</GameTitle>
-          <RoomNameBadge>
-            <RoomNameIcon>🎲</RoomNameIcon>
-            <RoomNameText>{room.name}</RoomNameText>
-          </RoomNameBadge>
-          {idleTimerEnabled && (
-            <FastBadge>
-              <span>⚡</span>
-              <span>{t('games.rooms.fastRoom')}</span>
-            </FastBadge>
-          )}
-          <TurnStatus $variant={turnStatusVariant}>{turnStatusText}</TurnStatus>
-          {actionLongPending && (
-            <ServerLoadingNotice
-              pendingProgress={pendingProgress}
-              pendingElapsedSeconds={pendingElapsedSeconds}
-            />
-          )}
-        </GameInfo>
-        <HeaderActions>
-          {!isGameOver && currentPlayer && (
-            <TimerControlsWrapper>
-              <IdleTimerDisplay
-                secondsRemaining={idleTimer.secondsRemaining}
-                isActive={idleTimer.isActive && !autoplayState.allEnabled}
-                isRunning={idleTimer.isRunning}
-                autoplayTriggered={idleTimerTriggered}
-                onStop={handleStopAutoplay}
-                t={
-                  t as (key: string, params?: Record<string, unknown>) => string
-                }
-              />
-              <AutoplayControls
-                autoplayState={autoplayState}
-                t={t as (key: string) => string}
-              />
-            </TimerControlsWrapper>
-          )}
-          <ChatToggleButton
-            type="button"
-            onClick={handleToggleChat}
-            $active={showChat}
-          >
-            {showChat ? t('games.table.chat.hide') : t('games.table.chat.show')}
-          </ChatToggleButton>
-          <FullscreenButton
-            onClick={toggleFullscreen}
-            title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-          >
-            {isFullscreen ? '⤓' : '⤢'}
-          </FullscreenButton>
-        </HeaderActions>
-      </GameHeader>
+      <ExplodingCatsGameHeader
+        room={room}
+        t={t as (key: string, params?: Record<string, unknown>) => string}
+        idleTimerEnabled={idleTimerEnabled}
+        turnStatusVariant={turnStatusVariant}
+        turnStatusText={turnStatusText}
+        actionLongPending={actionLongPending}
+        pendingProgress={pendingProgress}
+        pendingElapsedSeconds={pendingElapsedSeconds}
+        isGameOver={isGameOver}
+        currentPlayer={currentPlayer ?? undefined}
+        idleTimer={idleTimer}
+        autoplayState={autoplayState}
+        idleTimerTriggered={idleTimerTriggered}
+        handleStopAutoplay={handleStopAutoplay}
+        showChat={showChat}
+        handleToggleChat={handleToggleChat}
+        isFullscreen={isFullscreen}
+        toggleFullscreen={toggleFullscreen}
+      />
 
       <GameBoard>
         <TableArea $showChat={showChat}>
@@ -428,6 +386,14 @@ export default function ExplodingCatsGame({
         rematchLoading={rematchLoading}
         onCloseRematchModal={closeRematchModal}
         onConfirmRematch={handleRematch}
+        // Rematch Invitation
+        invitation={invitation}
+        invitationTimeLeft={invitationTimeLeft}
+        onAcceptInvitation={handleAcceptInvitation}
+        onDeclineInvitation={handleDeclineInvitation}
+        onBlockRematch={handleBlockRematch}
+        onBlockUser={handleBlockUser}
+        isAcceptingInvitation={isAcceptingInvitation}
         // Cat Combo Modal
         catComboModal={catComboModal}
         onCloseCatComboModal={handleCloseCatComboModal}

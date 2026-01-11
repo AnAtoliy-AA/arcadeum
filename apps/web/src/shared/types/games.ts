@@ -9,6 +9,13 @@ export interface GameRoomMemberSummary {
 export interface GameOptions {
   allowActionCardCombos?: boolean;
   idleTimerEnabled?: boolean;
+  rematchInvitedUsers?: { id: string; displayName: string }[];
+  rematchDeclinedUsers?: { id: string; displayName: string }[];
+  rematchInvitedIds?: string[];
+  rematchDeclinedIds?: string[];
+  rematchPreviousRoomId?: string;
+  rematchMessage?: string;
+  [key: string]: unknown;
 }
 
 export interface GameRoomSummary {
@@ -22,9 +29,11 @@ export interface GameRoomSummary {
   createdAt: string;
   status: 'lobby' | 'in_progress' | 'completed';
   inviteCode?: string;
+  gameOptions?: GameOptions;
+  rematchInvitedUsers?: GameRoomMemberSummary[];
+  rematchDeclinedUsers?: GameRoomMemberSummary[];
   host?: GameRoomMemberSummary;
   members?: GameRoomMemberSummary[];
-  gameOptions?: GameOptions;
 }
 
 export interface GameSessionSummary {

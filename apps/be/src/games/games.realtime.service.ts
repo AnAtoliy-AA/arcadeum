@@ -3,6 +3,8 @@ import type { Server, Socket } from 'socket.io';
 import type { GameRoomSummary, GameSessionSummary } from './games.types';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 
+const REMATCH_INVITATION_TIMEOUT_SECONDS = 30;
+
 @Injectable()
 export class GamesRealtimeService {
   private readonly logger = new Logger(GamesRealtimeService.name);
@@ -248,6 +250,56 @@ export class GamesRealtimeService {
       maybeEncrypt({
         oldRoomId,
         newRoomId,
+      }),
+    );
+  }
+
+  emitRematchInvited(
+    oldRoomId: string,
+    newRoomId: string,
+    hostId: string,
+    hostName: string,
+    invitedUserIds: string[],
+    message?: string,
+  ): void {
+    if (!this.server) {
+      return;
+    }
+    this.server.to(this.roomChannel(oldRoomId)).emit(
+      'games.rematch.invited',
+      maybeEncrypt({
+        oldRoomId,
+        newRoomId,
+        hostId,
+        hostName,
+        invitedUserIds,
+        message,
+        timeout: REMATCH_INVITATION_TIMEOUT_SECONDS, // 30 seconds default
+      }),
+    );
+  }
+
+  emitPlayerDeclined(room: GameRoomSummary, userId: string): void {
+    if (!this.server) {
+      return;
+    }
+    this.server.to(this.roomChannel(room.id)).emit(
+      'games.rematch.declined',
+      maybeEncrypt({
+        room,
+        userId,
+      }),
+    );
+  }
+
+  emitRoomUpdated(room: GameRoomSummary): void {
+    if (!this.server) {
+      return;
+    }
+    this.server.to(this.roomChannel(room.id)).emit(
+      'games.room.updated',
+      maybeEncrypt({
+        room,
       }),
     );
   }

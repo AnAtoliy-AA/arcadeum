@@ -233,7 +233,7 @@ export class GameHistoryService {
   async createRematchFromHistory(
     dto: HistoryRematchDto,
     userId: string,
-  ): Promise<string> {
+  ): Promise<{ id: string; invitedIds: string[] }> {
     const { roomId: originalRoomId, participantIds } = dto;
 
     // Get original room
@@ -268,17 +268,13 @@ export class GameHistoryService {
         ? participantIds.filter((id) => id !== userId) // filter out host
         : originalParticipantIds;
 
-    // Build participants array: host first, then invited players
+    // Build participants array: host ONLY
     const now = new Date();
     const participants = [
       {
         userId,
         joinedAt: now,
       },
-      ...invitedIds.map((invitedUserId) => ({
-        userId: invitedUserId,
-        joinedAt: now,
-      })),
     ];
 
     // Generate rematch name: "someName" -> "someName Rematch 1" -> "someName Rematch 2"
@@ -324,10 +320,15 @@ export class GameHistoryService {
       status: 'lobby',
       createdAt: now,
       updatedAt: now,
-      gameOptions: dto.gameOptions || originalRoom.gameOptions,
+      gameOptions: {
+        ...(dto.gameOptions || originalRoom.gameOptions || {}),
+        rematchInvitedIds: invitedIds,
+        rematchMessage: dto.message,
+        rematchPreviousRoomId: originalRoomId,
+      },
     });
 
-    return newRoom._id.toString();
+    return { id: newRoom._id.toString(), invitedIds };
   }
 
   /**

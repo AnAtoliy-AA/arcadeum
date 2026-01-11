@@ -5,6 +5,7 @@ import { TargetedAttackModal } from './modals/TargetedAttackModal';
 import { GiveFavorModal } from './modals/GiveFavorModal';
 import { DefuseModal } from './modals/DefuseModal';
 import { RematchModal } from './modals/RematchModal';
+import { RematchInvitationModal } from './modals/RematchInvitationModal';
 import type {
   ExplodingCatsCard,
   CatComboModalState,
@@ -23,7 +24,25 @@ export interface GameModalsProps {
   currentUserId: string | null;
   rematchLoading: boolean;
   onCloseRematchModal: () => void;
-  onConfirmRematch: (participantIds: string[]) => Promise<void>;
+  onConfirmRematch: (
+    participantIds: string[],
+    message?: string,
+  ) => Promise<void>;
+
+  // Rematch Invitation
+  invitation: {
+    newRoomId: string;
+    hostId: string;
+    hostName: string;
+    message?: string;
+    timeout: number;
+  } | null;
+  invitationTimeLeft: number;
+  onAcceptInvitation: () => void;
+  onDeclineInvitation: () => void;
+  onBlockRematch?: (roomId: string) => void;
+  onBlockUser?: (userId: string) => void;
+  isAcceptingInvitation: boolean;
 
   // Cat Combo Modal
   catComboModal: CatComboModalState | null;
@@ -84,6 +103,15 @@ export function GameModals({
   onCloseRematchModal,
   onConfirmRematch,
 
+  // Rematch Invitation
+  invitation,
+  invitationTimeLeft,
+  onAcceptInvitation,
+  onDeclineInvitation,
+  onBlockRematch,
+  onBlockUser,
+  isAcceptingInvitation,
+
   // Cat Combo Modal
   catComboModal,
   onCloseCatComboModal,
@@ -143,6 +171,22 @@ export function GameModals({
         rematchLoading={rematchLoading}
         onClose={onCloseRematchModal}
         onConfirm={onConfirmRematch}
+        t={t as (key: string) => string}
+      />
+
+      {/* Rematch Invitation Modal */}
+      <RematchInvitationModal
+        isOpen={!!invitation}
+        hostId={invitation?.hostId}
+        roomId={invitation?.newRoomId}
+        hostName={invitation?.hostName || ''}
+        message={invitation?.message}
+        timeLeft={invitationTimeLeft}
+        onAccept={onAcceptInvitation}
+        onDecline={onDeclineInvitation}
+        onBlockRematch={onBlockRematch}
+        onBlockUser={onBlockUser}
+        accepting={isAcceptingInvitation}
         t={t as (key: string) => string}
       />
 

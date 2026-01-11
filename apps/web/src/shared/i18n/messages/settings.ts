@@ -66,6 +66,12 @@ const settingsMessagesDefinition = {
     accountGuestStatus: 'You are browsing as a guest.',
     accountPrimaryCta: 'Go to sign-in',
     accountSupportCtaLabel: appConfig.supportCta.label,
+    blockedUsersTitle: 'Blocked Users',
+    blockedUsersDescription:
+      'Users you have blocked will not be able to send you game invitations.',
+    blockedUsersLoading: 'Loading...',
+    blockedUsersEmpty: 'No blocked users',
+    blockedUsersUnblock: 'Unblock',
   },
   es: {
     title: 'Configuración',
@@ -125,6 +131,12 @@ const settingsMessagesDefinition = {
     accountGuestStatus: 'Estás navegando como invitado.',
     accountPrimaryCta: 'Ir a iniciar sesión',
     accountSupportCtaLabel: 'Apoyar a los desarrolladores',
+    blockedUsersTitle: 'Usuarios bloqueados',
+    blockedUsersDescription:
+      'Los usuarios que hayas bloqueado no podrán enviarte invitaciones de juego.',
+    blockedUsersLoading: 'Cargando...',
+    blockedUsersEmpty: 'No hay usuarios bloqueados',
+    blockedUsersUnblock: 'Desbloquear',
   },
   fr: {
     title: 'Paramètres',
@@ -183,6 +195,12 @@ const settingsMessagesDefinition = {
     accountGuestStatus: "Vous naviguez en tant qu'invité.",
     accountPrimaryCta: 'Aller à la connexion',
     accountSupportCtaLabel: 'Soutenir les développeurs',
+    blockedUsersTitle: 'Utilisateurs bloqués',
+    blockedUsersDescription:
+      "Les utilisateurs que vous avez bloqués ne pourront pas vous envoyer d'invitations à jouer.",
+    blockedUsersLoading: 'Chargement...',
+    blockedUsersEmpty: 'Aucun utilisateur bloqué',
+    blockedUsersUnblock: 'Débloquer',
   },
 } satisfies Record<Locale, Record<string, unknown>>;
 

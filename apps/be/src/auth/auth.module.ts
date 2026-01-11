@@ -49,5 +49,6 @@ import {
     RefreshTokenService,
     GoogleOAuthService,
   ],
+  exports: [AuthService],
 })
 export class AuthModule {}

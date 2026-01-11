@@ -22,6 +22,10 @@ export class HistoryRematchDto {
 
   @IsOptional()
   @IsString()
+  message?: string;
+
+  @IsOptional()
+  @IsString()
   gameId?: string;
 
   @IsOptional()

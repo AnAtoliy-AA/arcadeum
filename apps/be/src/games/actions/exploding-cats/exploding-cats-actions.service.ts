@@ -58,9 +58,6 @@ export class ExplodingCatsActionsService {
     userId: string,
     payload: { card: string; targetPlayerId?: string },
   ) {
-    console.log(
-      `playActionCard: card=${payload.card}, targetPlayerId=${payload.targetPlayerId}`,
-    );
     // Special handling for Targeted Attack which is a separate action in the engine
     if (payload.card === 'targeted_attack' && payload.targetPlayerId) {
       const session = await this.sessionsService.executeAction({

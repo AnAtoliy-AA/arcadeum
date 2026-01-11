@@ -12,6 +12,7 @@ import {
   type Locale,
 } from '@/shared/i18n';
 import type { ThemePreference } from '@/shared/config/theme';
+import { BlockedUsersSection } from './BlockedUsersSection';
 
 type DownloadConfig = {
   title: string;
@@ -260,6 +261,8 @@ export function SettingsPage({
             </DownloadGrid>
           </Section>
         ) : null}
+
+        <BlockedUsersSection />
 
         <Section>
           <SectionTitle>{accountTitle}</SectionTitle>

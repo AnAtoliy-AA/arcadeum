@@ -15,7 +15,7 @@ interface RematchModalProps {
   currentUserId: string | null;
   rematchLoading: boolean;
   onClose: () => void;
-  onConfirm: (selectedPlayerIds: string[]) => void;
+  onConfirm: (selectedPlayerIds: string[], message?: string) => void;
   t: (key: string) => string;
 }
 
@@ -63,8 +63,11 @@ export function RematchModal({
     });
   }, []);
 
+  // Add message state
+  const [message, setMessage] = useState('');
+
   const handleConfirm = () => {
-    onConfirm(Array.from(selectedPlayers));
+    onConfirm(Array.from(selectedPlayers), message);
   };
 
   if (!isOpen) return null;
@@ -100,6 +103,15 @@ export function RematchModal({
           )}
         </PlayerList>
 
+        <MessageInput
+          placeholder={
+            t('games.table.rematch.messagePlaceholder') || 'Enter a message...'
+          }
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          disabled={rematchLoading}
+        />
+
         <ButtonRow>
           <CancelButton onClick={onClose} disabled={rematchLoading}>
             {t('games.table.modals.common.cancel')}
@@ -114,6 +126,30 @@ export function RematchModal({
     </Overlay>
   );
 }
+
+const MessageInput = styled.textarea`
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  color: #fff;
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+  font-size: 0.9rem;
+
+  &:focus {
+    outline: none;
+    border-color: #6366f1;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+`;
 
 const Overlay = styled.div`
   position: fixed;

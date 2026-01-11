@@ -14,10 +14,9 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
-  useSortable,
 } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import type { GameRoomSummary } from '@/shared/types/games';
+import { SortablePlayerItem } from './LobbyPlayerItem';
 import {
   GameContainer,
   GameHeader,
@@ -48,7 +47,6 @@ import {
   LobbyPlayerAvatar,
   PlayerInfo,
   LobbyPlayerName,
-  PlayerBadge,
   EmptySlot,
   EmptyAvatar,
   InfoRow,
@@ -81,122 +79,8 @@ interface GameLobbyProps {
   onToggleFullscreen: () => void;
   onStartGame: () => void;
   onReorderPlayers?: (newOrder: string[]) => void;
+  onReinvite?: (userIds: string[]) => void;
   t: (key: string) => string;
-}
-
-function SortablePlayerItem({
-  member,
-  isHost,
-  isRoomHost,
-  index,
-  totalCount,
-  onMoveUp,
-  onMoveDown,
-}: {
-  member: NonNullable<GameRoomSummary['members']>[0];
-  isHost: boolean;
-  isRoomHost: boolean;
-  roomHostId: string;
-  index: number;
-  totalCount: number;
-  onMoveUp: () => void;
-  onMoveDown: () => void;
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: member.id,
-    disabled: !isHost, // Only host can drag
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    zIndex: isDragging ? 1 : 0,
-    opacity: isDragging ? 0.5 : 1,
-    cursor: isHost ? (isDragging ? 'grabbing' : 'grab') : 'default',
-  };
-
-  const getInitials = (name: string) => name.slice(0, 2).toUpperCase();
-  const colorIndex = member.displayName.length % AVATAR_COLORS.length;
-
-  return (
-    <PlayerItem ref={setNodeRef} style={style} $isHost={isRoomHost}>
-      <div
-        style={{ display: 'flex', alignItems: 'center', flex: 1 }}
-        {...attributes}
-        {...listeners}
-      >
-        <LobbyPlayerAvatar $color={AVATAR_COLORS[colorIndex]}>
-          {getInitials(member.displayName)}
-        </LobbyPlayerAvatar>
-        <PlayerInfo>
-          <LobbyPlayerName>{member.displayName}</LobbyPlayerName>
-        </PlayerInfo>
-      </div>
-
-      {isRoomHost && <PlayerBadge>HOST</PlayerBadge>}
-
-      {isHost && (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            marginLeft: 'auto',
-            paddingLeft: '8px',
-          }}
-        >
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onMoveUp();
-            }}
-            disabled={index === 0}
-            style={{
-              opacity: index === 0 ? 0.3 : 1,
-              background: 'none',
-              border: 'none',
-              cursor: index === 0 ? 'default' : 'pointer',
-              color: 'inherit',
-              padding: '2px',
-            }}
-          >
-            ↑
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onMoveDown();
-            }}
-            disabled={index === totalCount - 1}
-            style={{
-              opacity: index === totalCount - 1 ? 0.3 : 1,
-              background: 'none',
-              border: 'none',
-              cursor: index === totalCount - 1 ? 'default' : 'pointer',
-              color: 'inherit',
-              padding: '2px',
-            }}
-          >
-            ↓
-          </button>
-          <div
-            style={{ opacity: 0.5, cursor: 'grab' }}
-            {...attributes}
-            {...listeners}
-          >
-            ⋮⋮
-          </div>
-        </div>
-      )}
-    </PlayerItem>
-  );
 }
 
 export function GameLobby({
@@ -208,11 +92,43 @@ export function GameLobby({
   onToggleFullscreen,
   onStartGame,
   onReorderPlayers,
+  onReinvite,
   t,
 }: GameLobbyProps) {
   const members = room.members ?? [];
   const maxPlayers = room.maxPlayers ?? 5;
   const progress = Math.round((room.playerCount / maxPlayers) * 100);
+
+  // Extract invited and declined users from room root (fallback to gameOptions)
+  const invitedUsers =
+    room.rematchInvitedUsers ||
+    (room.gameOptions?.rematchInvitedUsers as Array<{
+      id: string;
+      displayName: string;
+    }>) ||
+    [];
+  const declinedUsers =
+    room.rematchDeclinedUsers ||
+    (room.gameOptions?.rematchDeclinedUsers as Array<{
+      id: string;
+      displayName: string;
+    }>) ||
+    [];
+
+  // Filter out users who have already joined
+  // Filter out users who have already joined
+  const joinedIds = new Set(members.map((m) => m.id));
+  const pendingInvited = invitedUsers.filter((u) => !joinedIds.has(u.id));
+  const pendingDeclined = declinedUsers.filter((u) => !joinedIds.has(u.id));
+
+  console.log('DEBUG: GameLobby rematch info:', {
+    options: room.gameOptions,
+    invitedUsers,
+    declinedUsers,
+    pendingInvited,
+    pendingDeclined,
+    joinedIds: Array.from(joinedIds),
+  });
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -247,6 +163,8 @@ export function GameLobby({
     if (isHost) return t('games.table.lobby.hostCanStart');
     return t('games.table.lobby.waitingForHost');
   };
+
+  const getInitials = (name: string) => name.slice(0, 2).toUpperCase();
 
   return (
     <GameContainer ref={containerRef}>
@@ -373,6 +291,78 @@ export function GameLobby({
               )}
             </PlayerList>
           </LobbyCard>
+
+          {/* Invited / Declined Section */}
+          {(pendingInvited.length > 0 || pendingDeclined.length > 0) && (
+            <LobbyCard>
+              <CardTitle>{t('games.table.lobby.invitedPlayers')}</CardTitle>
+              <PlayerList>
+                {pendingInvited.map((u) => (
+                  <PlayerItem key={u.id} style={{ opacity: 0.7 }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <LobbyPlayerAvatar
+                        $color={
+                          AVATAR_COLORS[
+                            u.displayName.length % AVATAR_COLORS.length
+                          ]
+                        }
+                        style={{ filter: 'grayscale(1)' }}
+                      >
+                        {getInitials(u.displayName)}
+                      </LobbyPlayerAvatar>
+                      <PlayerInfo>
+                        <LobbyPlayerName>{u.displayName}</LobbyPlayerName>
+                        <InfoLabel>
+                          {t('games.table.lobby.statusWaiting')}
+                        </InfoLabel>
+                      </PlayerInfo>
+                    </div>
+                  </PlayerItem>
+                ))}
+                {pendingDeclined.map((u) => (
+                  <PlayerItem key={u.id} style={{ opacity: 0.5 }}>
+                    <div
+                      style={{ display: 'flex', alignItems: 'center', flex: 1 }}
+                    >
+                      <LobbyPlayerAvatar
+                        $color="#ccc"
+                        style={{ filter: 'grayscale(1)' }}
+                      >
+                        {getInitials(u.displayName)}
+                      </LobbyPlayerAvatar>
+                      <PlayerInfo>
+                        <LobbyPlayerName
+                          style={{ textDecoration: 'line-through' }}
+                        >
+                          {u.displayName}
+                        </LobbyPlayerName>
+                        <InfoLabel style={{ color: '#ef4444' }}>
+                          {t('games.table.lobby.statusDeclined')}
+                        </InfoLabel>
+                      </PlayerInfo>
+                    </div>
+                    {isHost && onReinvite && (
+                      <button
+                        onClick={() => onReinvite([u.id])}
+                        style={{
+                          background: 'none',
+                          border: '1px solid currentColor',
+                          borderRadius: '4px',
+                          padding: '2px 6px',
+                          cursor: 'pointer',
+                          fontSize: '0.75rem',
+                          marginLeft: '8px',
+                          color: 'inherit',
+                        }}
+                      >
+                        {t('games.table.lobby.reinvite')}
+                      </button>
+                    )}
+                  </PlayerItem>
+                ))}
+              </PlayerList>
+            </LobbyCard>
+          )}
 
           <LobbyCard>
             <CardTitle>{t('games.table.lobby.roomInfo')}</CardTitle>

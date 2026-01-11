@@ -8,7 +8,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
@@ -31,7 +31,11 @@ import type {
 } from './lib/types';
 
 // Re-export types for backwards compatibility
-export type { OAuthTokenResponse, AuthUserProfile } from './lib/types';
+export type {
+  OAuthTokenResponse,
+  AuthUserProfile,
+  AuthTokensResponse,
+} from './lib/types';
 
 @Injectable()
 export class AuthService {
@@ -234,6 +238,71 @@ export class AuthService {
     }
     const ensured = await this.ensureUserUsername(doc);
     return this.buildAuthUserProfile(ensured);
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Block User Management
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  async blockUser(userId: string, blockedUserId: string): Promise<void> {
+    await this.userModel.updateOne(
+      { _id: userId },
+      { $addToSet: { blockedUsers: blockedUserId } },
+    );
+  }
+
+  async unblockUser(userId: string, blockedUserId: string): Promise<void> {
+    await this.userModel.updateOne(
+      { _id: userId },
+      { $pull: { blockedUsers: blockedUserId } },
+    );
+  }
+
+  async isUserBlocked(
+    userId: string,
+    potentiallyBlockedUserId: string,
+  ): Promise<boolean> {
+    const user = await this.userModel
+      .findById(userId)
+      .select('blockedUsers')
+      .lean();
+    if (!user) return false;
+    return (user.blockedUsers || []).includes(potentiallyBlockedUserId);
+  }
+
+  async getBlockedUsers(userId: string): Promise<string[]> {
+    const user = await this.userModel
+      .findById(userId)
+      .select('blockedUsers')
+      .lean();
+    if (!user) return [];
+    return user.blockedUsers || [];
+  }
+
+  async getBlockedUsersWithDetails(userId: string): Promise<
+    Array<{
+      id: string;
+      displayName: string;
+      username: string;
+    }>
+  > {
+    const user = await this.userModel
+      .findById(userId)
+      .select('blockedUsers')
+      .lean();
+    if (!user || !user.blockedUsers || user.blockedUsers.length === 0)
+      return [];
+
+    const blockedUsersDetails = await this.userModel
+      .find({ _id: { $in: user.blockedUsers } })
+      .select('displayName username email')
+      .lean();
+
+    return blockedUsersDetails.map((u) => ({
+      id: (u._id as Types.ObjectId).toString(),
+      displayName: u.displayName || u.username || u.email || 'Unknown',
+      username: u.username || '',
+    }));
   }
 
   // ─────────────────────────────────────────────────────────────────────────────

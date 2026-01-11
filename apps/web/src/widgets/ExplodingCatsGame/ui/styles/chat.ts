@@ -67,6 +67,9 @@ export const LogEntry = styled.div<{ $type?: string; $scope?: string }>`
       return 'transparent';
     }};
   padding-left: 0.75rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
   ${({ $scope }) =>
     $scope === 'private' &&
     `
@@ -101,6 +104,7 @@ export const ChatMessages = styled(GameLog)`
   flex: 1 1 0;
   display: flex;
   flex-direction: column-reverse;
+  position: relative;
   min-height: 60px;
   max-height: none;
   overflow-y: auto;
@@ -261,4 +265,197 @@ export const EmptyState = styled.div`
   padding: 3rem;
   color: ${({ theme }) => theme.text.muted};
   text-align: center;
+`;
+
+export const ChatBubbleContainer = styled.div<{
+  $visible: boolean;
+  $position?: 'top' | 'bottom' | 'left' | 'right';
+}>`
+  position: absolute;
+  /* Default to top behavior if undefined */
+  ${({ $position }) => {
+    switch ($position) {
+      case 'bottom':
+        return `
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          margin-top: 12px;
+        `;
+      case 'left':
+        return `
+          top: 50%;
+          right: 100%;
+          transform: translateY(-50%);
+          margin-right: 12px;
+        `;
+      case 'right':
+        return `
+          top: 50%;
+          left: 100%;
+          transform: translateY(-50%);
+          margin-left: 12px;
+        `;
+      case 'top':
+      default:
+        return `
+          bottom: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          margin-bottom: 12px;
+        `;
+    }
+  }}
+
+  background: ${({ theme }) => theme.background.base};
+  color: ${({ theme }) => theme.text.primary};
+  padding: 0.5rem 0.85rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 180px;
+  width: max-content;
+
+  /* Line clamping */
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  z-index: 100;
+  pointer-events: auto; /* Enable pointer events for hover */
+  pointer-events: auto; /* Enable pointer events for hover */
+  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+  cursor: help;
+
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    max-width 0.3s ease;
+
+  &:hover {
+    -webkit-line-clamp: unset;
+    max-width: 280px;
+    z-index: 110;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Transform animations based on position */
+  transform: ${({ $visible, $position }) => {
+    switch ($position) {
+      case 'bottom':
+        return $visible
+          ? 'translateX(-50%) scale(1) translateY(0)'
+          : 'translateX(-50%) scale(0.9) translateY(-10px)';
+      case 'left':
+        return $visible
+          ? 'translateY(-50%) scale(1) translateX(0)'
+          : 'translateY(-50%) scale(0.9) translateX(10px)';
+      case 'right':
+        return $visible
+          ? 'translateY(-50%) scale(1) translateX(0)'
+          : 'translateY(-50%) scale(0.9) translateX(-10px)';
+      case 'top':
+      default:
+        return $visible
+          ? 'translateX(-50%) scale(1) translateY(0)'
+          : 'translateX(-50%) scale(0.9) translateY(10px)';
+    }
+  }};
+
+  /* Arrow styles */
+  &::after,
+  &::before {
+    content: '';
+    position: absolute;
+    border-style: solid;
+  }
+
+  /* Inner arrow (background color) */
+  &::after {
+    ${({ $position, theme }) => {
+      switch ($position) {
+        case 'bottom':
+          return `
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 6px 6px 6px;
+            border-color: transparent transparent ${theme.background.base} transparent;
+          `;
+        case 'left':
+          return `
+            top: 50%;
+            right: -6px;
+            transform: translateY(-50%);
+            border-width: 6px 0 6px 6px;
+            border-color: transparent transparent transparent ${theme.background.base};
+          `;
+        case 'right':
+          return `
+            top: 50%;
+            left: -6px;
+            transform: translateY(-50%);
+            border-width: 6px 6px 6px 0;
+            border-color: transparent ${theme.background.base} transparent transparent;
+          `;
+        case 'top':
+        default:
+          return `
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px 6px 0 6px;
+            border-color: ${theme.background.base} transparent transparent transparent;
+          `;
+      }
+    }}
+  }
+
+  /* Outer arrow (border color) */
+  &::before {
+    z-index: -1;
+    ${({ $position, theme }) => {
+      switch ($position) {
+        case 'bottom':
+          return `
+            top: -7px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 7px 7px 7px;
+            border-color: transparent transparent ${theme.surfaces.card.border} transparent;
+          `;
+        case 'left':
+          return `
+            top: 50%;
+            right: -7px;
+            transform: translateY(-50%);
+            border-width: 7px 0 7px 7px;
+            border-color: transparent transparent transparent ${theme.surfaces.card.border};
+          `;
+        case 'right':
+          return `
+            top: 50%;
+            left: -7px;
+            transform: translateY(-50%);
+            border-width: 7px 7px 7px 0;
+            border-color: transparent ${theme.surfaces.card.border} transparent transparent;
+          `;
+        case 'top':
+        default:
+          return `
+            bottom: -7px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 7px 7px 0 7px;
+            border-color: ${theme.surfaces.card.border} transparent transparent transparent;
+          `;
+      }
+    }}
+  }
 `;

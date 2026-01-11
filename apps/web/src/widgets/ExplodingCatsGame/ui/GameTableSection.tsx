@@ -1,19 +1,10 @@
 import { TableStats } from './TableStats';
 import { LastPlayedCardDisplay } from './LastPlayedCardDisplay';
 
-import {
-  GameTable,
-  PlayersRing,
-  PlayerPositionWrapper,
-  PlayerCard,
-  PlayerAvatar,
-  PlayerName,
-  PlayerCardCount,
-  TurnIndicator,
-  CenterTable,
-} from './styles';
+import { GameTable, TableBackground, PlayersRing, CenterTable } from './styles';
 
-import type { ExplodingCatsCard } from '../types';
+import type { ExplodingCatsCard, ExplodingCatsLogEntry } from '../types';
+import { TablePlayer } from './TablePlayer';
 
 interface PlayerState {
   playerId: string;
@@ -30,6 +21,7 @@ interface GameTableSectionProps {
   discardPileLength: number;
   pendingDraws: number;
   discardPile: ExplodingCatsCard[];
+  logs?: ExplodingCatsLogEntry[];
   resolveDisplayName: (playerId: string, fallback: string) => string;
   t: (key: string) => string;
 }
@@ -43,50 +35,29 @@ export function GameTableSection({
   discardPileLength,
   pendingDraws,
   discardPile,
+  logs = [],
   resolveDisplayName,
   t,
 }: GameTableSectionProps) {
   return (
     <GameTable>
+      <TableBackground />
       <PlayersRing $playerCount={playerOrder.length}>
         {playerOrder.map((playerId, index) => {
           const player = players.find((p) => p.playerId === playerId);
           if (!player) return null;
-          const isCurrent = index === currentTurnIndex;
-          const isCurrentUserCard = playerId === currentUserId;
-          const displayName = resolveDisplayName(
-            playerId,
-            `Player ${playerId.slice(0, 8)}`,
-          );
 
           return (
-            <PlayerPositionWrapper
+            <TablePlayer
               key={playerId}
-              $position={index}
-              $total={playerOrder.length}
-            >
-              <PlayerCard
-                $isCurrentTurn={isCurrent}
-                $isAlive={player.alive}
-                $isCurrentUser={isCurrentUserCard}
-              >
-                {isCurrent && <TurnIndicator>⭐</TurnIndicator>}
-                <PlayerAvatar
-                  $isCurrentTurn={isCurrent}
-                  $isAlive={player.alive}
-                >
-                  {player.alive ? '🎮' : '💀'}
-                </PlayerAvatar>
-                <PlayerName $isCurrentTurn={isCurrent}>
-                  {displayName}
-                </PlayerName>
-                {player.alive && (
-                  <PlayerCardCount $isCurrentTurn={isCurrent}>
-                    🃏 {player.hand.length}
-                  </PlayerCardCount>
-                )}
-              </PlayerCard>
-            </PlayerPositionWrapper>
+              player={player}
+              index={index}
+              totalPlayers={playerOrder.length}
+              currentTurnIndex={currentTurnIndex}
+              currentUserId={currentUserId}
+              logs={logs}
+              resolveDisplayName={resolveDisplayName}
+            />
           );
         })}
 

@@ -49,10 +49,16 @@ export function useExplodingCatsModals({
 
   // Auto-scroll chat to newest message
   useEffect(() => {
+    // Scroll to the last message (newest) without scrolling the whole page
     if (chatMessagesRef.current?.lastElementChild) {
-      chatMessagesRef.current.lastElementChild.scrollIntoView({
+      const container = chatMessagesRef.current;
+      const lastElement = container.lastElementChild as HTMLElement;
+
+      // With position: relative on the container, offsetTop gives us the precise
+      // local position of the element.
+      container.scrollTo({
+        top: lastElement.offsetTop,
         behavior: 'smooth',
-        block: 'nearest',
       });
     }
   }, [chatLogCount, chatMessagesRef]);

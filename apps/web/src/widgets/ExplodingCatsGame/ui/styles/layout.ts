@@ -188,9 +188,12 @@ export const GameBoard = styled.div`
   flex-direction: column;
   gap: 1rem;
   flex: 1;
+  flex: 1;
   min-height: 0;
-  overflow: hidden;
+  // overflow: hidden; Removed to allow bubbles to overflow
   animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 20;
 
   @keyframes fadeIn {
     from {
@@ -214,9 +217,10 @@ export const TableArea = styled.div<{ $showChat: boolean }>`
   gap: 1rem;
   width: 100%;
   align-items: stretch;
+  align-items: stretch;
   min-height: 0;
   flex: 1;
-  overflow: hidden;
+  // overflow: hidden; Removed to allow bubbles to overflow
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;

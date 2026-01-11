@@ -302,6 +302,7 @@ export default function ExplodingCatsGame({
             discardPileLength={snapshot.discardPile.length}
             pendingDraws={snapshot.pendingDraws}
             discardPile={snapshot.discardPile}
+            logs={snapshot.logs ?? []}
             resolveDisplayName={resolveDisplayName}
             t={t as (key: string) => string}
           />

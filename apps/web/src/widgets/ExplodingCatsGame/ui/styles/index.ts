@@ -32,6 +32,7 @@ export {
 // Table Components
 export {
   GameTable,
+  TableBackground,
   PlayersRing,
   PlayerPositionWrapper,
   CenterTable,
@@ -80,6 +81,7 @@ export {
   ChatTurnStatus,
   ChatSendButton,
   EmptyState,
+  ChatBubbleContainer,
 } from './chat';
 
 // Modal Components

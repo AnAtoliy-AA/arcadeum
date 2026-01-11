@@ -8,15 +8,27 @@ export const GameTable = styled.div`
   align-items: center;
   justify-content: center;
   padding: 3.5rem 2.5rem;
-  border-radius: 20px;
-  background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-  border: 1px solid rgba(99, 102, 241, 0.2);
   position: relative;
   width: 100%;
   flex: 1;
   min-height: 420px;
   grid-area: table;
+  // Previously overflow: hidden; Removed to allow bubbles to overflow
+
+  @media (max-width: 768px) {
+    padding: 2.5rem 1.5rem;
+    min-height: 360px;
+  }
+`;
+
+export const TableBackground = styled.div`
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+  border: 1px solid rgba(99, 102, 241, 0.2);
   overflow: hidden;
+  z-index: 0;
   box-shadow:
     0 20px 60px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.05),
@@ -56,8 +68,6 @@ export const GameTable = styled.div`
   }
 
   @media (max-width: 768px) {
-    padding: 2.5rem 1.5rem;
-    min-height: 360px;
     border-radius: 14px;
     &::before,
     &::after {

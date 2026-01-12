@@ -14,14 +14,14 @@ import {
   type GameRoomSummary,
   type GameSessionSummary,
 } from '../api/gamesApi';
-import { type ExplodingCatsRoomHandle } from '../gameIntegrations/ExplodingCats/ExplodingCatsRoom';
+import { type CriticalRoomHandle } from '../gameIntegrations/Critical/CriticalRoom';
 import { type TexasHoldemRoomHandle } from '../gameIntegrations/TexasHoldem/TexasHoldemRoom';
 import { resolveParam, resolveIntegrationId } from './useGameRoomUtils';
 import { useGameRoomSocket } from './useGameRoomSocket';
 
 export function useGameRoom(
   integrationRef: React.MutableRefObject<
-    ExplodingCatsRoomHandle | TexasHoldemRoomHandle | null
+    CriticalRoomHandle | TexasHoldemRoomHandle | null
   >,
 ) {
   const insets = useSafeAreaInsets();

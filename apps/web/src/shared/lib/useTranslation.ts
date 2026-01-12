@@ -33,7 +33,7 @@ function warnMissingTranslation(key: TranslationKey, locale: string): void {
  */
 function interpolateParams(
   template: string,
-  params: Record<string, string>,
+  params: Record<string, string | number>,
 ): string {
   let result = template;
   const usedParams = new Set<string>();
@@ -43,7 +43,7 @@ function interpolateParams(
     const placeholder = `{{${key}}}`;
     if (result.includes(placeholder)) {
       // Replace all occurrences (global replace)
-      result = result.split(placeholder).join(value);
+      result = result.split(placeholder).join(String(value));
       usedParams.add(key);
     }
   }
@@ -86,7 +86,10 @@ export function useTranslation() {
    * @param params - Optional parameters for string interpolation
    * @returns Translated string or key if not found
    */
-  const t = (key: TranslationKey, params?: Record<string, string>): string => {
+  const t = (
+    key: TranslationKey,
+    params?: Record<string, string | number>,
+  ): string => {
     const keys = key.split('.');
     let value: unknown = messages;
 

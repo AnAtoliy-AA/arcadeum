@@ -51,7 +51,7 @@ export enum MessageCode {
   GamesCatCombosExplodingOnly = 3041,
   GamesDesiredCardRequired = 3042,
   GamesDrawActionExplodingOnly = 3043,
-  GamesExplodingCatsDisabled = 3044,
+  GamesCriticalDisabled = 3044,
   GamesHistoryNotesExplodingOnly = 3045,
   GamesOriginalHostOnlyRematch = 3046,
   GamesPlayActionExplodingOnly = 3047,
@@ -179,8 +179,7 @@ const STRING_CODE_MAP: Record<string, MessageCode> = {
   'games.notParticipant': MessageCode.GamesNotParticipant,
   'You are not a participant of this room.': MessageCode.GamesNotParticipant,
   'games.snapshotUnavailable': MessageCode.GamesSnapshotUnavailable,
-  'Exploding Cats snapshot is unavailable.':
-    MessageCode.GamesSnapshotUnavailable,
+  'Critical snapshot is unavailable.': MessageCode.GamesSnapshotUnavailable,
   'games.roomInactive': MessageCode.GamesRoomInactive,
   'Room is no longer active.': MessageCode.GamesRoomInactive,
   'games.comboNotAllowed': MessageCode.GamesComboNotAllowed,
@@ -201,25 +200,24 @@ const STRING_CODE_MAP: Record<string, MessageCode> = {
   'At least two players are required to start.':
     MessageCode.GamesStartRequiresTwoPlayers,
   'games.catCombosExplodingOnly': MessageCode.GamesCatCombosExplodingOnly,
-  'Cat combos are only supported for Exploding Cats sessions.':
+  'Cat combos are only supported for Critical sessions.':
     MessageCode.GamesCatCombosExplodingOnly,
   'games.desiredCardRequired': MessageCode.GamesDesiredCardRequired,
   'Desired card is required for trio combo.':
     MessageCode.GamesDesiredCardRequired,
   'games.drawActionExplodingOnly': MessageCode.GamesDrawActionExplodingOnly,
-  'Draw action is only supported for Exploding Cats sessions.':
+  'Draw action is only supported for Critical sessions.':
     MessageCode.GamesDrawActionExplodingOnly,
-  'games.explodingCatsDisabled': MessageCode.GamesExplodingCatsDisabled,
-  'Exploding Cats is not enabled for this room.':
-    MessageCode.GamesExplodingCatsDisabled,
+  'games.criticalDisabled': MessageCode.GamesCriticalDisabled,
+  'Critical is not enabled for this room.': MessageCode.GamesCriticalDisabled,
   'games.historyNotesExplodingOnly': MessageCode.GamesHistoryNotesExplodingOnly,
-  'History notes are only supported for Exploding Cats sessions.':
+  'History notes are only supported for Critical sessions.':
     MessageCode.GamesHistoryNotesExplodingOnly,
   'games.originalHostOnlyRematch': MessageCode.GamesOriginalHostOnlyRematch,
   'Only the original host may initiate a rematch.':
     MessageCode.GamesOriginalHostOnlyRematch,
   'games.playActionExplodingOnly': MessageCode.GamesPlayActionExplodingOnly,
-  'Play action is only supported for Exploding Cats sessions.':
+  'Play action is only supported for Critical sessions.':
     MessageCode.GamesPlayActionExplodingOnly,
   'games.targetMustDiffer': MessageCode.GamesTargetMustDiffer,
   'Target player must be different from actor.':

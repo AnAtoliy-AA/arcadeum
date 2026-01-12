@@ -20,7 +20,7 @@ games/
 ├── engines/                   # 🎯 Game engine implementations
 │   ├── base/                  # Core abstractions
 │   ├── registry/              # Engine registry
-│   ├── exploding-cats/        # Exploding Cats engine
+│   ├── critical/        # Critical engine
 │   ├── texas-holdem/          # Texas Hold'em engine
 │   └── engines.module.ts      # Auto-registration module
 ├── schemas/                   # MongoDB schemas (rooms, sessions)
@@ -65,7 +65,7 @@ export class MyGameEngine extends BaseGameEngine<MyGameState> {
 
   initializeState(playerIds: string[]) {
     return {
-      players: playerIds.map(id => ({ playerId: id, score: 0 })),
+      players: playerIds.map((id) => ({ playerId: id, score: 0 })),
       currentRound: 1,
       logs: [],
     };
@@ -154,27 +154,30 @@ class GameEngineRegistry {
 
 ## 📊 Current Games
 
-| Game | Game ID | Status | Players |
-|------|---------|--------|---------|
-| Exploding Cats | `exploding_cats_v1` | ✅ Active | 2-5 |
-| Texas Hold'em | `texas_holdem_v1` | ✅ Active | 2-9 |
+| Game          | Game ID           | Status    | Players |
+| ------------- | ----------------- | --------- | ------- |
+| Critical      | `critical_v1`     | ✅ Active | 2-5     |
+| Texas Hold'em | `texas_holdem_v1` | ✅ Active | 2-9     |
 
 ## 🔄 Migration Status
 
 ### ✅ Completed
+
 - Base game engine interface and abstract class
 - Game engine registry system
-- Exploding Cats engine extraction
+- Critical engine extraction
 - Texas Hold'em engine extraction
 - Engine auto-registration module
 - Comprehensive documentation
 
 ### ⏳ In Progress
+
 - Update `GamesService` to delegate to engines
 - Update `GamesGateway` to use engine actions
 - Remove game-specific methods from service
 
 ### 📋 Future
+
 - Add more games (Chess, Checkers, Tic-Tac-Toe)
 - Game versioning support
 - AI opponent framework
@@ -211,7 +214,7 @@ describe('MyGameEngine', () => {
 ## 📚 Documentation
 
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Detailed architecture documentation
-- **[Example: Exploding Cats Engine](./engines/exploding-cats/exploding-cats.engine.ts)** - Complete example
+- **[Example: Critical Engine](./engines/critical/critical.engine.ts)** - Complete example
 - **[Example: Texas Hold'em Engine](./engines/texas-holdem/texas-holdem.engine.ts)** - Another example
 
 ## 🤝 Contributing
@@ -219,7 +222,7 @@ describe('MyGameEngine', () => {
 When adding a new game:
 
 1. Read the [Architecture Guide](./ARCHITECTURE.md)
-2. Study existing engines (`exploding-cats`, `texas-holdem`)
+2. Study existing engines (`critical`, `texas-holdem`)
 3. Create your game state types
 4. Implement the `IGameEngine` interface
 5. Extend `BaseGameEngine` for utilities
@@ -230,12 +233,14 @@ When adding a new game:
 ## 🎯 Benefits
 
 ### For Developers
+
 - **Consistency**: Same patterns across all games
 - **Productivity**: Base class provides common utilities
 - **Safety**: Type-safe game-specific actions
 - **Testing**: Easy to test in isolation
 
 ### For the Project
+
 - **Scalability**: Easy to add 200+ games
 - **Maintainability**: Game logic is isolated
 - **Performance**: Only load engines you need
@@ -244,6 +249,7 @@ When adding a new game:
 ## 📞 Support
 
 Questions about the architecture? Check:
+
 1. [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed docs
 2. Existing engine implementations for examples
 3. Ask the team for help!

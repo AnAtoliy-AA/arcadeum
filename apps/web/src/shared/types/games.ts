@@ -48,14 +48,14 @@ export interface GameSessionSummary {
 }
 
 // ===== CAT CARDS (for combos) =====
-export type ExplodingCatsCatCard =
+export type CriticalCatCard =
   | 'tacocat'
   | 'hairy_potato_cat'
   | 'rainbow_ralphing_cat'
   | 'cattermelon'
   | 'bearded_cat';
 
-export const CAT_CARDS: ExplodingCatsCatCard[] = [
+export const CAT_CARDS: CriticalCatCard[] = [
   'tacocat',
   'hairy_potato_cat',
   'rainbow_ralphing_cat',
@@ -101,23 +101,23 @@ export const ATTACK_PACK_CARDS: AttackPackCard[] = [
 ];
 
 // ===== COMBINED CARD TYPE =====
-export type ExplodingCatsCard =
+export type CriticalCard =
   | 'exploding_cat'
   | 'defuse'
   | BaseActionCard
-  | ExplodingCatsCatCard
+  | CriticalCatCard
   | AttackPackCard;
 
-export interface ExplodingCatsPlayerState {
+export interface CriticalPlayerState {
   playerId: string;
-  hand: ExplodingCatsCard[];
+  hand: CriticalCard[];
   alive: boolean;
 }
 
 // ===== SHARED TYPES =====
 export type ChatScope = 'all' | 'players' | 'private';
 
-export interface ExplodingCatsLogEntry {
+export interface CriticalLogEntry {
   id: string;
   type: 'system' | 'action' | 'message';
   message: string;
@@ -127,9 +127,9 @@ export interface ExplodingCatsLogEntry {
   scope?: ChatScope;
 }
 
-export interface ExplodingCatsSnapshot {
-  deck: ExplodingCatsCard[];
-  discardPile: ExplodingCatsCard[];
+export interface CriticalSnapshot {
+  deck: CriticalCard[];
+  discardPile: CriticalCard[];
   playerOrder: string[];
   currentTurnIndex: number;
   pendingDraws: number;
@@ -144,8 +144,8 @@ export interface ExplodingCatsSnapshot {
     payload?: unknown;
     nopeCount: number;
   } | null; // Action that can be noped
-  players: ExplodingCatsPlayerState[];
-  logs: ExplodingCatsLogEntry[];
+  players: CriticalPlayerState[];
+  logs: CriticalLogEntry[];
   allowActionCardCombos: boolean; // House rule: allow any matching cards for combos
 }
 

@@ -1,8 +1,5 @@
 import type { Locale } from '../../types';
-import {
-  explodingCatsMessages,
-  type ExplodingCatsGamesMessages,
-} from './exploding-cats/index';
+import { criticalMessages, type CriticalGamesMessages } from './critical/index';
 import {
   texasHoldemMessages,
   type TexasHoldemGamesMessages,
@@ -11,23 +8,23 @@ import { sharedMessages, type SharedGamesMessages } from './shared';
 
 /** Combined games messages type derived from actual message objects */
 export type GamesMessagesBundle = SharedGamesMessages &
-  ExplodingCatsGamesMessages &
+  CriticalGamesMessages &
   TexasHoldemGamesMessages;
 
 export const gamesMessages: Record<Locale, GamesMessagesBundle> = {
   en: {
     ...sharedMessages.en,
-    ...explodingCatsMessages.en,
+    ...criticalMessages.en,
     ...texasHoldemMessages.en,
   },
   es: {
     ...sharedMessages.es,
-    ...explodingCatsMessages.es,
+    ...criticalMessages.es,
     ...texasHoldemMessages.es,
   },
   fr: {
     ...sharedMessages.fr,
-    ...explodingCatsMessages.fr,
+    ...criticalMessages.fr,
     ...texasHoldemMessages.fr,
   },
 } as Record<Locale, GamesMessagesBundle>;

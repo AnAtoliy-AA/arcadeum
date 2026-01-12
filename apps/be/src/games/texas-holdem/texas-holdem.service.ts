@@ -74,7 +74,7 @@ export class TexasHoldemService {
    * Start Texas Hold'em session (backward compatibility)
    */
   async startSession(userId: string, roomId?: string, engine?: string) {
-    // Reuse the same logic as Exploding Cats for starting a session
+    // Reuse the same logic as Critical for starting a session
     let effectiveRoomId = roomId;
     if (!effectiveRoomId) {
       const { rooms: userRooms } = await this.roomsService.listRooms(

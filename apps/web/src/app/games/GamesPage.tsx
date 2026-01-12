@@ -258,9 +258,7 @@ export function GamesPage() {
           {loading ? (
             <Loading>
               <Spinner aria-label="Loading" />
-              <div>
-                {(t as (k: string) => string)('games.lounge.loadingRooms')}
-              </div>
+              <div>{t('games.lounge.loadingRooms')}</div>
             </Loading>
           ) : error ? (
             <Error>{error}</Error>
@@ -287,13 +285,10 @@ export function GamesPage() {
                     ←
                   </PaginationButton>
                   <PaginationInfo>
-                    {(t as (k: string, r?: Record<string, unknown>) => string)(
-                      'games.lounge.paginationInfo',
-                      {
-                        page: page.toString(),
-                        totalPages: totalPages.toString(),
-                      },
-                    )}
+                    {t('games.lounge.paginationInfo', {
+                      page,
+                      totalPages,
+                    })}
                   </PaginationInfo>
                   <PaginationButton
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}

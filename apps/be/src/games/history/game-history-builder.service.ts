@@ -9,7 +9,7 @@ import {
   GameHistorySummary,
   GroupedHistorySummary,
 } from './game-history.types';
-import { ExplodingCatsState } from '../exploding-cats/exploding-cats.state';
+import { CriticalState } from '../critical/critical.state';
 import { TexasHoldemState } from '../texas-holdem/texas-holdem.state';
 
 import { BaseGameState } from '../engines/base/game-engine.interface';
@@ -174,7 +174,7 @@ export class GameHistoryBuilderService {
 
     // For exploding cats, find alive players
     if (session.gameId.includes('exploding')) {
-      const state = session.state as unknown as ExplodingCatsState;
+      const state = session.state as unknown as CriticalState;
       return state.players?.filter((p) => p.alive).map((p) => p.playerId) || [];
     }
 

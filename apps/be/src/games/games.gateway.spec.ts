@@ -1,18 +1,18 @@
 import { BadRequestException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import type { Socket } from 'socket.io';
-import { ExplodingCatsGateway } from './exploding-cats.gateway';
+import { CriticalGateway } from './critical.gateway';
 import { GamesService } from './games.service';
-import { ExplodingCatsService } from './exploding-cats/exploding-cats.service';
+import { CriticalService } from './critical/critical.service';
 import type {
-  StartExplodingCatsSessionResult,
+  StartCriticalSessionResult,
   GameSessionSummary,
 } from './games.types';
 
-describe('ExplodingCatsGateway', () => {
-  let gateway: ExplodingCatsGateway;
+describe('CriticalGateway', () => {
+  let gateway: CriticalGateway;
   let gamesService: jest.Mocked<GamesService>;
-  let explodingCatsService: jest.Mocked<ExplodingCatsService>;
+  let criticalService: jest.Mocked<CriticalService>;
   let client: jest.Mocked<Pick<Socket, 'emit'>>;
 
   // Standalone mock functions to avoid unbound-method ESLint errors
@@ -36,7 +36,7 @@ describe('ExplodingCatsGateway', () => {
       getRoom: jest.fn(),
     } as unknown as jest.Mocked<GamesService>;
 
-    explodingCatsService = {
+    criticalService = {
       startSession: mockStartSession,
       drawCard: mockDrawCard,
       playActionByRoom: mockPlayActionByRoom,
@@ -44,11 +44,11 @@ describe('ExplodingCatsGateway', () => {
       playFavorByRoom: jest.fn(),
       seeTheFutureByRoom: jest.fn(),
       postHistoryNote: jest.fn(),
-    } as unknown as jest.Mocked<ExplodingCatsService>;
+    } as unknown as jest.Mocked<CriticalService>;
 
-    gateway = new ExplodingCatsGateway(
+    gateway = new CriticalGateway(
       gamesService as unknown as GamesService,
-      explodingCatsService as unknown as ExplodingCatsService,
+      criticalService as unknown as CriticalService,
     );
 
     client = {
@@ -64,10 +64,10 @@ describe('ExplodingCatsGateway', () => {
         engine: ' custom-engine ',
       };
 
-      const result: StartExplodingCatsSessionResult = {
+      const result: StartCriticalSessionResult = {
         room: {
           id: 'room-123',
-          gameId: 'exploding_kittens_v1',
+          gameId: 'critical_v1',
           name: 'Test Room',
           hostId: 'host-456',
           visibility: 'public',
@@ -80,7 +80,7 @@ describe('ExplodingCatsGateway', () => {
         session: {
           id: 'session-789',
           roomId: 'room-123',
-          gameId: 'exploding_kittens_v1',
+          gameId: 'critical_v1',
           engine: 'custom-engine',
           status: 'active',
           state: { example: true },
@@ -146,8 +146,8 @@ describe('ExplodingCatsGateway', () => {
       mockDrawCard.mockResolvedValue({
         id: 'session-1',
         roomId: 'room-123',
-        gameId: 'exploding_kittens_v1',
-        engine: 'exploding_kittens_v1',
+        gameId: 'critical_v1',
+        engine: 'critical_v1',
         status: 'active',
         state: {},
         createdAt: new Date().toISOString(),
@@ -204,8 +204,8 @@ describe('ExplodingCatsGateway', () => {
       mockPlayActionByRoom.mockResolvedValue({
         id: 'session-1',
         roomId: 'room-123',
-        gameId: 'exploding_kittens_v1',
-        engine: 'exploding_kittens_v1',
+        gameId: 'critical_v1',
+        engine: 'critical_v1',
         status: 'active',
         state: {},
         createdAt: new Date().toISOString(),
@@ -276,8 +276,8 @@ describe('ExplodingCatsGateway', () => {
       mockPlayCatComboByRoom.mockResolvedValue({
         id: 'session-1',
         roomId: 'room-123',
-        gameId: 'exploding_kittens_v1',
-        engine: 'exploding_kittens_v1',
+        gameId: 'critical_v1',
+        engine: 'critical_v1',
         status: 'active',
         state: {},
         createdAt: new Date().toISOString(),

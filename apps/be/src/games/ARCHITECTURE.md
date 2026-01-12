@@ -23,8 +23,8 @@ src/games/
 │   ├── registry/                 # Engine registry
 │   │   ├── game-engine.registry.ts
 │   │   └── index.ts
-│   ├── exploding-cats/           # Exploding Cats engine
-│   │   └── exploding-cats.engine.ts
+│   ├── critical/           # Critical engine
+│   │   └── critical.engine.ts
 │   ├── texas-holdem/             # Texas Hold'em engine
 │   │   └── texas-holdem.engine.ts
 │   ├── engines.module.ts         # Module that registers all engines
@@ -52,10 +52,20 @@ interface IGameEngine<TState extends BaseGameState> {
   initializeState(playerIds: string[], config?: any): TState;
 
   // Validate if an action is allowed
-  validateAction(state: TState, action: string, context: GameActionContext, payload?: any): boolean;
+  validateAction(
+    state: TState,
+    action: string,
+    context: GameActionContext,
+    payload?: any,
+  ): boolean;
 
   // Execute an action and return new state
-  executeAction(state: TState, action: string, context: GameActionContext, payload?: any): GameActionResult<TState>;
+  executeAction(
+    state: TState,
+    action: string,
+    context: GameActionContext,
+    payload?: any,
+  ): GameActionResult<TState>;
 
   // Check if game is over
   isGameOver(state: TState): boolean;
@@ -124,7 +134,7 @@ export interface MyGameState extends BaseGameState {
 
 export function createInitialMyGameState(playerIds: string[]): MyGameState {
   return {
-    players: playerIds.map(id => ({ playerId: id, score: 0 })),
+    players: playerIds.map((id) => ({ playerId: id, score: 0 })),
     logs: [],
     currentTurnIndex: 0,
     // ... initialize other state
@@ -160,7 +170,12 @@ export class MyGameEngine extends BaseGameEngine<MyGameState> {
     return createInitialMyGameState(playerIds);
   }
 
-  validateAction(state: MyGameState, action: string, context: GameActionContext, payload?: any): boolean {
+  validateAction(
+    state: MyGameState,
+    action: string,
+    context: GameActionContext,
+    payload?: any,
+  ): boolean {
     // Implement validation logic
     switch (action) {
       case 'my_action':
@@ -170,7 +185,12 @@ export class MyGameEngine extends BaseGameEngine<MyGameState> {
     }
   }
 
-  executeAction(state: MyGameState, action: string, context: GameActionContext, payload?: any): GameActionResult<MyGameState> {
+  executeAction(
+    state: MyGameState,
+    action: string,
+    context: GameActionContext,
+    payload?: any,
+  ): GameActionResult<MyGameState> {
     if (!this.validateAction(state, action, context, payload)) {
       return this.errorResult('Invalid action');
     }
@@ -189,18 +209,21 @@ export class MyGameEngine extends BaseGameEngine<MyGameState> {
 
   isGameOver(state: MyGameState): boolean {
     // Implement game over logic
-    return state.players.some(p => p.score >= 100);
+    return state.players.some((p) => p.score >= 100);
   }
 
   getWinners(state: MyGameState): string[] {
     // Implement winner determination
-    const maxScore = Math.max(...state.players.map(p => p.score));
+    const maxScore = Math.max(...state.players.map((p) => p.score));
     return state.players
-      .filter(p => p.score === maxScore)
-      .map(p => p.playerId);
+      .filter((p) => p.score === maxScore)
+      .map((p) => p.playerId);
   }
 
-  sanitizeStateForPlayer(state: MyGameState, playerId: string): Partial<MyGameState> {
+  sanitizeStateForPlayer(
+    state: MyGameState,
+    playerId: string,
+  ): Partial<MyGameState> {
     // Hide private information
     return this.cloneState(state);
   }
@@ -222,7 +245,7 @@ import { MyGameEngine } from './my-game/my-game.engine';
 @Module({
   providers: [
     GameEngineRegistry,
-    ExplodingCatsEngine,
+    CriticalEngine,
     TexasHoldemEngine,
     MyGameEngine, // Add here
   ],
@@ -231,13 +254,13 @@ import { MyGameEngine } from './my-game/my-game.engine';
 export class GameEnginesModule implements OnModuleInit {
   constructor(
     private readonly registry: GameEngineRegistry,
-    private readonly explodingCatsEngine: ExplodingCatsEngine,
+    private readonly criticalEngine: CriticalEngine,
     private readonly texasHoldemEngine: TexasHoldemEngine,
     private readonly myGameEngine: MyGameEngine, // Inject here
   ) {}
 
   onModuleInit() {
-    this.registry.register(this.explodingCatsEngine);
+    this.registry.register(this.criticalEngine);
     this.registry.register(this.texasHoldemEngine);
     this.registry.register(this.myGameEngine); // Register here
   }
@@ -257,26 +280,31 @@ const result = engine.executeAction(state, action, context, payload);
 ## Benefits of This Architecture
 
 ### ✅ Scalability
+
 - Each game is completely independent
 - No modification of core service needed for new games
 - Easy to maintain 200+ games
 
 ### ✅ Testability
+
 - Each game engine can be unit tested in isolation
 - Mock engines for integration tests
 - No coupling between games
 
 ### ✅ Reusability
+
 - Base engine provides common utilities
 - Consistent patterns across all games
 - Shared infrastructure (rooms, sessions, WebSockets)
 
 ### ✅ Type Safety
+
 - Full TypeScript type safety
 - Game-specific state types
 - Compile-time checks for actions
 
 ### ✅ Maintainability
+
 - Clear separation of concerns
 - Easy to find and fix game-specific bugs
 - Simple to add/remove/update games
@@ -285,7 +313,7 @@ const result = engine.executeAction(state, action, context, payload);
 
 1. ✅ Create base abstractions (interfaces, base class)
 2. ✅ Create game engine registry
-3. ✅ Extract Exploding Cats logic into engine
+3. ✅ Extract Critical logic into engine
 4. ✅ Extract Texas Hold'em logic into engine
 5. ⏳ Refactor `GamesService` to use engines
 6. ⏳ Update `GamesGateway` to delegate to engines
@@ -305,13 +333,17 @@ export interface TicTacToeState extends BaseGameState {
 @Injectable()
 export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
   getMetadata() {
-    return { gameId: 'tic_tac_toe_v1', name: 'Tic Tac Toe', /* ... */ };
+    return { gameId: 'tic_tac_toe_v1', name: 'Tic Tac Toe' /* ... */ };
   }
 
   initializeState(playerIds: string[]) {
     return {
-      board: [[null, null, null], [null, null, null], [null, null, null]],
-      players: playerIds.map(id => ({ playerId: id })),
+      board: [
+        [null, null, null],
+        [null, null, null],
+        [null, null, null],
+      ],
+      players: playerIds.map((id) => ({ playerId: id })),
       currentSymbol: 'X',
       logs: [],
       currentTurnIndex: 0,
@@ -347,4 +379,4 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
 
 ## Questions?
 
-See the example engines in `engines/exploding-cats/` and `engines/texas-holdem/` for complete implementations.
+See the example engines in `engines/critical/` and `engines/texas-holdem/` for complete implementations.

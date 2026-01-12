@@ -1,10 +1,10 @@
 import { Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import type {
-  ExplodingCatsCard,
-  ExplodingCatsCatCard,
+  CriticalCard,
+  CriticalCatCard,
   AttackPackCard,
-} from './exploding-cats/exploding-cats.state';
+} from './critical/critical.state';
 
 export const CAT_COMBO_CARD_VALUES = [
   'tacocat',
@@ -12,7 +12,7 @@ export const CAT_COMBO_CARD_VALUES = [
   'rainbow_ralphing_cat',
   'cattermelon',
   'bearded_cat',
-] as const satisfies ReadonlyArray<ExplodingCatsCatCard>;
+] as const satisfies ReadonlyArray<CriticalCatCard>;
 
 export const ATTACK_PACK_CARDS = [
   'targeted_attack',
@@ -31,7 +31,7 @@ export const SIMPLE_ACTION_CARDS = [
 ] as const;
 export type SimpleActionCard = (typeof SIMPLE_ACTION_CARDS)[number];
 
-export const ALL_EXPLODING_CATS_CARDS = [
+export const ALL_CRITICAL_CARDS = [
   'exploding_cat',
   'defuse',
   'attack',
@@ -42,24 +42,22 @@ export const ALL_EXPLODING_CATS_CARDS = [
   'nope',
   ...CAT_COMBO_CARD_VALUES,
   ...ATTACK_PACK_CARDS,
-] as const satisfies ReadonlyArray<ExplodingCatsCard>;
+] as const satisfies ReadonlyArray<CriticalCard>;
 
-export function isCatComboCard(value: string): value is ExplodingCatsCatCard {
-  return CAT_COMBO_CARD_VALUES.includes(value as ExplodingCatsCatCard);
+export function isCatComboCard(value: string): value is CriticalCatCard {
+  return CAT_COMBO_CARD_VALUES.includes(value as CriticalCatCard);
 }
 
 export function isSimpleActionCard(value: string): value is SimpleActionCard {
   return SIMPLE_ACTION_CARDS.includes(value as SimpleActionCard);
 }
 
-export function toExplodingCatsCard(
-  value?: string,
-): ExplodingCatsCard | undefined {
+export function toCriticalCard(value?: string): CriticalCard | undefined {
   if (!value) {
     return undefined;
   }
-  const lower = value.toLowerCase() as ExplodingCatsCard;
-  return ALL_EXPLODING_CATS_CARDS.includes(lower) ? lower : undefined;
+  const lower = value.toLowerCase() as CriticalCard;
+  return ALL_CRITICAL_CARDS.includes(lower) ? lower : undefined;
 }
 
 /**
@@ -118,9 +116,9 @@ export function extractCatComboPayload(payload: Record<string, unknown>): {
   cat: string;
   mode: 'pair' | 'trio' | 'fiver';
   targetPlayerId?: string;
-  desiredCard?: ExplodingCatsCard;
+  desiredCard?: CriticalCard;
   selectedIndex?: number;
-  requestedDiscardCard?: ExplodingCatsCard;
+  requestedDiscardCard?: CriticalCard;
   cards?: string[];
 } {
   const modeRaw = extractString(payload, 'mode', { toLowerCase: true });
@@ -161,14 +159,14 @@ export function extractCatComboPayload(payload: Record<string, unknown>): {
 
   // Fiver mode doesn't require a cat card selection - it uses any 5 different cards
   if (mode !== 'fiver') {
-    const catCardValue = toExplodingCatsCard(cat);
+    const catCardValue = toCriticalCard(cat);
     if (!catCardValue) {
       throw new WsException('cat is not supported.');
     }
   }
 
-  const desiredCardValue = toExplodingCatsCard(desiredCard);
-  const requestedDiscardCardValue = toExplodingCatsCard(requestedDiscardCard);
+  const desiredCardValue = toCriticalCard(desiredCard);
+  const requestedDiscardCardValue = toCriticalCard(requestedDiscardCard);
 
   if (mode === 'trio' && !desiredCardValue) {
     throw new WsException('desiredCard is required for trio combos.');

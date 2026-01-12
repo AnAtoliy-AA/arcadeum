@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { gameMetadata } from '@/features/games/registry';
 import type { GameRoomSummary } from '@/shared/types/games';
 import {
   RoomCard,
@@ -32,6 +33,11 @@ interface RoomCardComponentProps {
 
 export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
   const { t } = useTranslation();
+
+  const gameId =
+    room.gameId === 'exploding_kittens_v1' ? 'critical_v1' : room.gameId;
+  const gameName =
+    gameMetadata[gameId as keyof typeof gameMetadata]?.name ?? room.gameId;
 
   const formatMemberLabel = useCallback(
     (member: {
@@ -68,6 +74,11 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
       {/* Meta Info */}
       {viewMode === 'grid' ? (
         <RoomMeta>
+          <MetaRow>
+            <MetaIcon>🎮</MetaIcon>
+            <MetaLabel>{t('games.rooms.gameLabel') || 'Game'}</MetaLabel>
+            <MetaValue>{gameName}</MetaValue>
+          </MetaRow>
           <MetaRow>
             <MetaIcon>👑</MetaIcon>
             <MetaLabel>{t('games.rooms.hostLabel')}</MetaLabel>
@@ -125,6 +136,10 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
         </RoomMeta>
       ) : (
         <MetaListContainer>
+          <MetaRow title={t('games.rooms.gameLabel') || 'Game'}>
+            <MetaIcon>🎮</MetaIcon>
+            <MetaValue>{gameName}</MetaValue>
+          </MetaRow>
           <MetaRow>
             <MetaIcon>👑</MetaIcon>
             <MetaValue>{room.host?.displayName || room.hostId}</MetaValue>
@@ -149,12 +164,9 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
             <MetaRow>
               <MetaIcon>👤</MetaIcon>
               <MetaValue>
-                {(t as (k: string, r?: Record<string, unknown>) => string)(
-                  'games.lounge.participantsCount',
-                  {
-                    count: room.members.length,
-                  },
-                )}
+                {t('games.lounge.participantsCount', {
+                  count: room.members.length,
+                })}
               </MetaValue>
             </MetaRow>
           )}

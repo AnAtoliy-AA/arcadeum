@@ -7,6 +7,7 @@ The games module has been refactored from a **monolithic 3700+ line service** in
 ## 📊 Before & After
 
 ### Before
+
 ```
 games/
 ├── games.service.ts        # 3731 lines - everything in one file
@@ -16,12 +17,13 @@ games/
 ```
 
 ### After
+
 ```
 games/
 ├── engines/               # 🆕 Game engine implementations
 │   ├── base/             # Core abstractions
 │   ├── registry/         # Engine registry
-│   ├── exploding-cats/   # Exploding Cats engine
+│   ├── critical/   # Critical engine
 │   └── texas-holdem/     # Texas Hold'em engine
 ├── rooms/                # 🆕 Room management
 │   └── game-rooms.service.ts      # 350 lines
@@ -38,6 +40,7 @@ games/
 ## 🏗️ New Architecture
 
 ### 1. **Game Engines** (`engines/`)
+
 - **Purpose**: Isolated game logic for each game
 - **Responsibility**: Game rules, state management, action validation
 - **Benefits**:
@@ -46,6 +49,7 @@ games/
   - No coupling between games
 
 ### 2. **Room Management** (`rooms/game-rooms.service.ts`)
+
 - **Purpose**: Game room CRUD operations
 - **Responsibility**:
   - Creating/listing/deleting rooms
@@ -61,6 +65,7 @@ games/
   - `deleteRoom()`
 
 ### 3. **Session Management** (`sessions/game-sessions.service.ts`)
+
 - **Purpose**: Game session lifecycle and state
 - **Responsibility**:
   - Creating game sessions
@@ -77,6 +82,7 @@ games/
   - `removePlayer()`
 
 ### 4. **History Management** (`history/game-history.service.ts`)
+
 - **Purpose**: Game history and replay
 - **Responsibility**:
   - Listing game history
@@ -91,6 +97,7 @@ games/
   - `postHistoryNote()`
 
 ### 5. **Facade Service** (`games.service.facade.ts`)
+
 - **Purpose**: Unified API for controllers/gateways
 - **Responsibility**:
   - Coordinating between specialized services
@@ -106,6 +113,7 @@ games/
 ### For Controllers/Gateways
 
 **Before:**
+
 ```typescript
 @Injectable()
 export class GamesGateway {
@@ -113,16 +121,17 @@ export class GamesGateway {
 
   handleStartGame() {
     // Directly called massive service method
-    await this.gamesService.startExplodingCatsSession();
+    await this.gamesService.startCriticalSession();
   }
 }
 ```
 
 **After:**
+
 ```typescript
 @Injectable()
 export class GamesGateway {
-  constructor(private gamesService: GamesService) {}  // Still same!
+  constructor(private gamesService: GamesService) {} // Still same!
 
   handleStartGame() {
     // Facade delegates to appropriate services
@@ -136,6 +145,7 @@ export class GamesGateway {
 ### For Adding New Games
 
 **Before:**
+
 ```typescript
 // Add 500+ lines to games.service.ts
 async startChessSession() { /* ... */ }
@@ -144,13 +154,20 @@ async playChessMove() { /* ... */ }
 ```
 
 **After:**
+
 ```typescript
 // 1. Create engine (100 lines)
 @Injectable()
 export class ChessEngine extends BaseGameEngine<ChessState> {
-  getMetadata() { /* ... */ }
-  initializeState() { /* ... */ }
-  executeAction() { /* ... */ }
+  getMetadata() {
+    /* ... */
+  }
+  initializeState() {
+    /* ... */
+  }
+  executeAction() {
+    /* ... */
+  }
   // ... implement interface
 }
 
@@ -163,48 +180,54 @@ this.registry.register(this.chessEngine);
 ## 🎯 Benefits
 
 ### 1. **Scalability**
+
 - **Before**: Adding a game = +500 lines to one file
 - **After**: Adding a game = new 100-line engine file
 - **Impact**: Can easily support 200+ games
 
 ### 2. **Maintainability**
+
 - **Before**: Hard to find bugs in 3700-line file
 - **After**: Clear location for each concern
 - **Impact**: Faster debugging and feature development
 
 ### 3. **Testability**
+
 - **Before**: Hard to test one game without affecting others
 - **After**: Each service/engine tested in isolation
 - **Impact**: Better test coverage, fewer regressions
 
 ### 4. **Team Collaboration**
+
 - **Before**: Merge conflicts on one huge file
 - **After**: Teams work on different services/engines
 - **Impact**: Parallel development without conflicts
 
 ### 5. **Performance**
+
 - **Before**: Large service loaded entirely
 - **After**: Lazy-load engines as needed
 - **Impact**: Lower memory footprint
 
 ## 📋 Service Responsibilities
 
-| Service | Lines | Responsibility | Depends On |
-|---------|-------|----------------|------------|
-| **GameRoomsService** | ~350 | Room CRUD, joining, leaving | Mongoose, User model |
-| **GameSessionsService** | ~280 | Session lifecycle, action execution | Mongoose, GameEngineRegistry |
-| **GameHistoryService** | ~350 | History viewing, rematch | Mongoose, User model |
-| **GamesService** (Facade) | ~200 | Coordination, real-time events | All above services |
-| **GameEngine** (each) | ~100-200 | Game-specific logic | None (isolated) |
+| Service                   | Lines    | Responsibility                      | Depends On                   |
+| ------------------------- | -------- | ----------------------------------- | ---------------------------- |
+| **GameRoomsService**      | ~350     | Room CRUD, joining, leaving         | Mongoose, User model         |
+| **GameSessionsService**   | ~280     | Session lifecycle, action execution | Mongoose, GameEngineRegistry |
+| **GameHistoryService**    | ~350     | History viewing, rematch            | Mongoose, User model         |
+| **GamesService** (Facade) | ~200     | Coordination, real-time events      | All above services           |
+| **GameEngine** (each)     | ~100-200 | Game-specific logic                 | None (isolated)              |
 
 **Total**: ~1,400 lines (was 3,700) + engines are isolated
 
 ## 🚀 Usage Examples
 
 ### Creating a Room
+
 ```typescript
 const room = await gamesService.createRoom(userId, {
-  gameId: 'exploding_cats_v1',
+  gameId: 'critical_v1',
   name: 'My Game',
   visibility: 'public',
   maxPlayers: 4,
@@ -212,23 +235,31 @@ const room = await gamesService.createRoom(userId, {
 ```
 
 ### Starting a Game
+
 ```typescript
-const { room, session } = await gamesService.startGameSession({
-  roomId: 'room123',
-}, userId);
+const { room, session } = await gamesService.startGameSession(
+  {
+    roomId: 'room123',
+  },
+  userId,
+);
 ```
 
 ### Executing an Action
+
 ```typescript
 const updatedSession = await gamesService.executeAction(
   sessionId,
   'draw_card',
   userId,
-  { /* payload */ }
+  {
+    /* payload */
+  },
 );
 ```
 
 ### Getting History
+
 ```typescript
 const history = await gamesService.listHistoryForUser(userId, true);
 ```
@@ -238,6 +269,7 @@ const history = await gamesService.listHistoryForUser(userId, true);
 The facade service maintains the same public API as the old monolithic service, so **no changes are needed** in existing controllers or gateways.
 
 Old code continues to work:
+
 ```typescript
 // Still works!
 await gamesService.createRoom(userId, dto);
@@ -248,6 +280,7 @@ await gamesService.startGameSession(dto, userId);
 ## 📦 What's Next?
 
 ### Optional Improvements
+
 1. **Remove Old Service**: Delete old `games.service.ts` (3700 lines)
 2. **Add Tests**: Unit tests for each service
 3. **Add More Games**: Chess, Checkers, Tic-Tac-Toe
@@ -255,6 +288,7 @@ await gamesService.startGameSession(dto, userId);
 5. **Observability**: Add metrics and logging
 
 ### Recommended Order
+
 1. ✅ Use new facade in development
 2. ✅ Verify all features work
 3. ⏳ Add unit tests
@@ -264,19 +298,22 @@ await gamesService.startGameSession(dto, userId);
 ## 🆘 Troubleshooting
 
 ### Issue: Old service still being used
+
 **Solution**: Rename `games.service.ts` to `games.service.old.ts` and rename `games.service.facade.ts` to `games.service.ts`
 
 ### Issue: Missing methods
+
 **Solution**: Add missing methods to appropriate service (rooms/sessions/history) and expose through facade
 
 ### Issue: Tests failing
+
 **Solution**: Update test mocks to inject specialized services instead of monolithic service
 
 ## 📚 Additional Documentation
 
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Game engine architecture
 - **[README.md](./README.md)** - Quick start guide
-- **[Engine Examples](./engines/)** - See exploding-cats and texas-holdem engines
+- **[Engine Examples](./engines/)** - See critical and texas-holdem engines
 
 ---
 

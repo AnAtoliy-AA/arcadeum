@@ -41,7 +41,7 @@ export interface StartGameSessionResult {
 }
 
 // Backward compatibility type aliases
-export type StartExplodingCatsSessionResult = StartGameSessionResult;
+export type StartCriticalSessionResult = StartGameSessionResult;
 
 // Game room participation filters for the API
 export const GAME_ROOM_PARTICIPATION_FILTERS = [

@@ -138,8 +138,8 @@ const ExpansionBadge = styled.span`
 
 const gamesCatalog = [
   {
-    id: 'exploding_kittens_v1',
-    name: 'Exploding Cats',
+    id: 'critical_v1',
+    name: 'Critical',
     summary: 'A strategic card game where you avoid exploding cats',
     isPlayable: true,
   },
@@ -226,7 +226,7 @@ export function CreateGameRoomPage() {
             maxPlayers: maxPlayersNum,
             notes: notes.trim() || undefined,
             gameOptions:
-              gameId === 'exploding_kittens_v1'
+              gameId === 'critical_v1'
                 ? {
                     ...(expansions.length > 0 ? { expansions } : {}),
                     allowActionCardCombos,
@@ -292,7 +292,7 @@ export function CreateGameRoomPage() {
             </GameSelector>
           </Section>
 
-          {gameId === 'exploding_kittens_v1' && (
+          {gameId === 'critical_v1' && (
             <Section
               title={t('games.create.sectionExpansions') || 'Expansion Packs'}
             >
@@ -324,7 +324,7 @@ export function CreateGameRoomPage() {
             </Section>
           )}
 
-          {gameId === 'exploding_kittens_v1' && (
+          {gameId === 'critical_v1' && (
             <Section title={t('games.create.sectionHouseRules')}>
               <ExpansionGrid>
                 <ExpansionCheckbox>

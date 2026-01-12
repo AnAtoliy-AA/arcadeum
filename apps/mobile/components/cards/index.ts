@@ -1,1 +1,1 @@
-export * from './ExplodingCatsCard';
+export * from './CriticalCard';

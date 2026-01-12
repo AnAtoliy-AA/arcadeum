@@ -1,6 +1,6 @@
 import { Module, OnModuleInit, Logger } from '@nestjs/common';
 import { GameEngineRegistry } from './registry/game-engine.registry';
-import { ExplodingCatsEngine } from './exploding-cats/exploding-cats.engine';
+import { CriticalEngine } from './critical/critical.engine';
 import { TexasHoldemEngine } from './texas-holdem/texas-holdem.engine';
 
 /**
@@ -10,7 +10,7 @@ import { TexasHoldemEngine } from './texas-holdem/texas-holdem.engine';
 @Module({
   providers: [
     GameEngineRegistry,
-    ExplodingCatsEngine,
+    CriticalEngine,
     TexasHoldemEngine,
     // Add more game engines here as they're implemented
   ],
@@ -21,7 +21,7 @@ export class GameEnginesModule implements OnModuleInit {
 
   constructor(
     private readonly registry: GameEngineRegistry,
-    private readonly explodingCatsEngine: ExplodingCatsEngine,
+    private readonly criticalEngine: CriticalEngine,
     private readonly texasHoldemEngine: TexasHoldemEngine,
     // Inject more engines here
   ) {}
@@ -33,7 +33,7 @@ export class GameEnginesModule implements OnModuleInit {
     this.logger.log('Initializing game engines...');
 
     // Register all engines
-    this.registry.register(this.explodingCatsEngine);
+    this.registry.register(this.criticalEngine);
     this.registry.register(this.texasHoldemEngine);
     // Register more engines here
 

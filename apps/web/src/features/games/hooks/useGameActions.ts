@@ -2,7 +2,7 @@ import { useCallback, useEffect } from 'react';
 import { gameSocket } from '@/shared/lib/socket';
 import type { ChatScope } from '@/shared/types/games';
 
-export type GameType = 'exploding_kittens_v1' | 'texas_holdem_v1' | null;
+export type GameType = 'critical_v1' | 'texas_holdem_v1' | null;
 
 interface UseGameActionsOptions {
   roomId: string;
@@ -13,8 +13,8 @@ interface UseGameActionsOptions {
 }
 
 interface UseGameActionsReturn {
-  // Exploding Cats actions
-  startExplodingCats: () => void;
+  // Critical actions
+  startCritical: () => void;
   drawCard: () => void;
   playActionCard: (card: string, payload?: Record<string, unknown>) => void;
   playNope: () => void;
@@ -60,7 +60,7 @@ export function useGameActions(
       onActionComplete?.();
     };
 
-    if (gameType === 'exploding_kittens_v1') {
+    if (gameType === 'critical_v1') {
       gameSocket.on('games.session.drawn', handleActionComplete);
       gameSocket.on('games.session.action.played', handleActionComplete);
       gameSocket.on(
@@ -80,7 +80,7 @@ export function useGameActions(
     }
 
     return () => {
-      if (gameType === 'exploding_kittens_v1') {
+      if (gameType === 'critical_v1') {
         gameSocket.off('games.session.drawn', handleActionComplete);
         gameSocket.off('games.session.action.played', handleActionComplete);
         gameSocket.off(
@@ -101,13 +101,13 @@ export function useGameActions(
     };
   }, [gameType, onActionComplete]);
 
-  // Exploding Cats actions
-  const startExplodingCats = useCallback(() => {
+  // Critical actions
+  const startCritical = useCallback(() => {
     if (!userId) return;
     gameSocket.emit('games.session.start', {
       roomId,
       userId,
-      engine: 'exploding_kittens_v1',
+      engine: 'critical_v1',
     });
   }, [roomId, userId]);
 
@@ -251,8 +251,8 @@ export function useGameActions(
   );
 
   return {
-    // Exploding Cats
-    startExplodingCats,
+    // Critical
+    startCritical,
     drawCard,
     playActionCard,
     playNope,

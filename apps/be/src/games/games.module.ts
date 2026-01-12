@@ -11,7 +11,7 @@ import {
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GamesGateway } from './games.gateway';
-import { ExplodingCatsGateway } from './exploding-cats.gateway';
+import { CriticalGateway } from './critical.gateway';
 import { TexasHoldemGateway } from './texas-holdem.gateway';
 import { GameEnginesModule } from './engines/engines.module';
 import { GameRoomsService } from './rooms/game-rooms.service';
@@ -20,11 +20,11 @@ import { GameRoomsRematchService } from './rooms/game-rooms.rematch.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import { GameHistoryService } from './history/game-history.service';
 import { GameHistoryBuilderService } from './history/game-history-builder.service';
-import { ExplodingCatsActionsService } from './actions/exploding-cats/exploding-cats-actions.service';
+import { CriticalActionsService } from './actions/critical/critical-actions.service';
 import { TexasHoldemActionsService } from './actions/texas-holdem/texas-holdem-actions.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
 
-import { ExplodingCatsService } from './exploding-cats/exploding-cats.service';
+import { CriticalService } from './critical/critical.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 import { AuthModule } from '../auth/auth.module';
 
@@ -50,10 +50,10 @@ import { AuthModule } from '../auth/auth.module';
     GameHistoryBuilderService,
     GamesRealtimeService,
     // Game-specific action handlers
-    ExplodingCatsActionsService,
+    CriticalActionsService,
     TexasHoldemActionsService,
     // Game-specific services (New)
-    ExplodingCatsService,
+    CriticalService,
     TexasHoldemService,
     // Utilities
     GameUtilitiesService,
@@ -61,7 +61,7 @@ import { AuthModule } from '../auth/auth.module';
     GamesService,
     // Gateways
     GamesGateway,
-    ExplodingCatsGateway,
+    CriticalGateway,
     TexasHoldemGateway,
   ],
 })

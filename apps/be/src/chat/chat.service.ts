@@ -31,16 +31,6 @@ export interface ChatSummary {
   lastMessage: MessageView | null;
 }
 
-type MessageDocumentObject = {
-  _id: Types.ObjectId;
-  chatId: string;
-  senderId: string | Types.ObjectId;
-  senderUsername?: string;
-  receiverIds: Array<string | Types.ObjectId>;
-  content: string;
-  timestamp: Date | string | number;
-};
-
 @Injectable()
 export class ChatService {
   constructor(

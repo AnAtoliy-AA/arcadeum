@@ -1,9 +1,9 @@
 import React, { useCallback, useRef } from 'react';
 
 import {
-  ExplodingCatsRoom,
-  type ExplodingCatsRoomHandle,
-} from './gameIntegrations/ExplodingCats/ExplodingCatsRoom';
+  CriticalRoom,
+  type CriticalRoomHandle,
+} from './gameIntegrations/Critical/CriticalRoom';
 import {
   TexasHoldemRoom,
   type TexasHoldemRoomHandle,
@@ -13,7 +13,7 @@ import { UnsupportedGameView } from './components/GameRoom/UnsupportedGameView';
 
 export default function GameRoomScreen() {
   const integrationRef = useRef<
-    ExplodingCatsRoomHandle | TexasHoldemRoomHandle | null
+    CriticalRoomHandle | TexasHoldemRoomHandle | null
   >(null);
   const {
     room,
@@ -42,8 +42,8 @@ export default function GameRoomScreen() {
 
   if (integrationId === 'exploding_kittens_v1') {
     return (
-      <ExplodingCatsRoom
-        ref={integrationRef as React.Ref<ExplodingCatsRoomHandle>}
+      <CriticalRoom
+        ref={integrationRef as React.Ref<CriticalRoomHandle>}
         room={room}
         session={session}
         fallbackName={fallbackName}

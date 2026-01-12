@@ -46,6 +46,7 @@ export const sharedMessages = {
         private: 'Private',
       },
       fastRoom: 'Fast Room',
+      gameLabel: 'Game',
     },
     room: {
       gameArea: 'Game area - Real-time game integration coming soon',
@@ -147,6 +148,7 @@ export const sharedMessages = {
         private: 'Privada',
       },
       fastRoom: 'Partida rápida',
+      gameLabel: 'Juego',
     },
     room: {
       gameArea: 'Área de juego - Integración en tiempo real próximamente',
@@ -249,6 +251,7 @@ export const sharedMessages = {
         private: 'Privée',
       },
       fastRoom: 'Partie rapide',
+      gameLabel: 'Jeu',
     },
     room: {
       gameArea: 'Zone de jeu - Intégration en temps réel bientôt disponible',

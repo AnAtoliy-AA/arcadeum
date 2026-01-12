@@ -1,0 +1,124 @@
+import { memo } from 'react';
+import { Platform } from 'react-native';
+import type { SvgProps } from 'react-native-svg';
+
+import Critical1 from '@/assets/cards/critical-1.svg';
+import Critical2 from '@/assets/cards/critical-2.svg';
+import Critical3 from '@/assets/cards/critical-3.svg';
+import Defuse1 from '@/assets/cards/defuse-1.svg';
+import Defuse2 from '@/assets/cards/defuse-2.svg';
+import Defuse3 from '@/assets/cards/defuse-3.svg';
+import Attack1 from '@/assets/cards/attack-1.svg';
+import Attack2 from '@/assets/cards/attack-2.svg';
+import Attack3 from '@/assets/cards/attack-3.svg';
+import Skip1 from '@/assets/cards/skip-1.svg';
+import Skip2 from '@/assets/cards/skip-2.svg';
+import Skip3 from '@/assets/cards/skip-3.svg';
+import HairballRedirect1 from '@/assets/cards/hairball-redirect-1.svg';
+import HairballRedirect2 from '@/assets/cards/hairball-redirect-2.svg';
+import HairballRedirect3 from '@/assets/cards/hairball-redirect-3.svg';
+import CatnipFirewall1 from '@/assets/cards/catnip-firewall-1.svg';
+import CatnipFirewall2 from '@/assets/cards/catnip-firewall-2.svg';
+import CatnipFirewall3 from '@/assets/cards/catnip-firewall-3.svg';
+import TemporalLaserPointer1 from '@/assets/cards/temporal-laser-pointer-1.svg';
+import TemporalLaserPointer2 from '@/assets/cards/temporal-laser-pointer-2.svg';
+import TemporalLaserPointer3 from '@/assets/cards/temporal-laser-pointer-3.svg';
+import Tacocat1 from '@/assets/cards/tacocat-1.svg';
+import Tacocat2 from '@/assets/cards/tacocat-2.svg';
+import Tacocat3 from '@/assets/cards/tacocat-3.svg';
+import HairyPotatoCat1 from '@/assets/cards/hairy-potato-cat-1.svg';
+import HairyPotatoCat2 from '@/assets/cards/hairy-potato-cat-2.svg';
+import HairyPotatoCat3 from '@/assets/cards/hairy-potato-cat-3.svg';
+import RainbowRalphingCat1 from '@/assets/cards/rainbow-ralphing-cat-1.svg';
+import RainbowRalphingCat2 from '@/assets/cards/rainbow-ralphing-cat-2.svg';
+import RainbowRalphingCat3 from '@/assets/cards/rainbow-ralphing-cat-3.svg';
+import Cattermelon1 from '@/assets/cards/cattermelon-1.svg';
+import Cattermelon2 from '@/assets/cards/cattermelon-2.svg';
+import Cattermelon3 from '@/assets/cards/cattermelon-3.svg';
+import BeardedCat1 from '@/assets/cards/bearded-cat-1.svg';
+import BeardedCat2 from '@/assets/cards/bearded-cat-2.svg';
+import BeardedCat3 from '@/assets/cards/bearded-cat-3.svg';
+// Attack Pack cards
+import TargetedAttack1 from '@/assets/cards/targeted-attack-1.svg';
+import PersonalAttack1 from '@/assets/cards/personal-attack-1.svg';
+import AttackOfTheDead1 from '@/assets/cards/attack-of-the-dead-1.svg';
+import SuperSkip1 from '@/assets/cards/super-skip-1.svg';
+import Reverse1 from '@/assets/cards/reverse-1.svg';
+
+const CARD_ARTWORK = {
+  critical: [Critical1, Critical2, Critical3],
+  defuse: [Defuse1, Defuse2, Defuse3],
+  attack: [Attack1, Attack2, Attack3],
+  skip: [Skip1, Skip2, Skip3],
+  'hairball-redirect': [
+    HairballRedirect1,
+    HairballRedirect2,
+    HairballRedirect3,
+  ],
+  'temporal-laser-pointer': [
+    TemporalLaserPointer1,
+    TemporalLaserPointer2,
+    TemporalLaserPointer3,
+  ],
+  'catnip-firewall': [CatnipFirewall1, CatnipFirewall2, CatnipFirewall3],
+  tacocat: [Tacocat1, Tacocat2, Tacocat3],
+  'hairy-potato-cat': [HairyPotatoCat1, HairyPotatoCat2, HairyPotatoCat3],
+  'rainbow-ralphing-cat': [
+    RainbowRalphingCat1,
+    RainbowRalphingCat2,
+    RainbowRalphingCat3,
+  ],
+  cattermelon: [Cattermelon1, Cattermelon2, Cattermelon3],
+  'bearded-cat': [BeardedCat1, BeardedCat2, BeardedCat3],
+  // Attack Pack cards
+  'targeted-attack': [TargetedAttack1, TargetedAttack1, TargetedAttack1],
+  'personal-attack': [PersonalAttack1, PersonalAttack1, PersonalAttack1],
+  'attack-of-the-dead': [AttackOfTheDead1, AttackOfTheDead1, AttackOfTheDead1],
+  'super-skip': [SuperSkip1, SuperSkip1, SuperSkip1],
+  reverse: [Reverse1, Reverse1, Reverse1],
+} as const;
+
+export type CardKey = keyof typeof CARD_ARTWORK;
+
+type CriticalCardProps = SvgProps & {
+  card: CardKey;
+  variant?: 1 | 2 | 3;
+  accessibilityLabel?: string;
+};
+
+export const CriticalCard = memo(
+  ({
+    card,
+    variant = 1,
+    accessibilityLabel,
+    accessibilityRole,
+    accessible,
+    ...svgProps
+  }: CriticalCardProps) => {
+    const variants = CARD_ARTWORK[card];
+    const index = Math.min(Math.max(variant, 1), variants.length) - 1;
+    const Artwork = variants[index];
+
+    const isAccessibilityDisabled = accessible === false;
+    const normalizedAccessible =
+      Platform.OS === 'web' && isAccessibilityDisabled ? undefined : accessible;
+
+    const role = isAccessibilityDisabled
+      ? undefined
+      : (accessibilityRole ?? 'image');
+    const label = isAccessibilityDisabled
+      ? undefined
+      : (accessibilityLabel ?? `${card} card`);
+
+    return (
+      <Artwork
+        accessible={normalizedAccessible}
+        accessibilityRole={role}
+        accessibilityLabel={label}
+        {...svgProps}
+      />
+    );
+  },
+);
+
+CriticalCard.displayName = 'CriticalCard';

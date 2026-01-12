@@ -12,7 +12,7 @@ import {
 } from './shared-ui';
 import { createRoomMessages } from './create-room';
 import { gameDetailMessages, roomDetailMessages } from './detail-pages';
-import { explodingCatsMessages } from './exploding-cats';
+import { criticalMessages } from './critical';
 
 export const gamesMessages = {
   en: {
@@ -28,7 +28,7 @@ export const gamesMessages = {
     create: createRoomMessages.en,
     detail: gameDetailMessages.en,
     room: roomDetailMessages.en,
-    table: explodingCatsMessages.en,
+    table: criticalMessages.en,
   },
   es: {
     ...gameNamesMessages.es,
@@ -43,7 +43,7 @@ export const gamesMessages = {
     create: createRoomMessages.es,
     detail: gameDetailMessages.es,
     room: roomDetailMessages.es,
-    table: explodingCatsMessages.es,
+    table: criticalMessages.es,
   },
   fr: {
     ...gameNamesMessages.fr,
@@ -58,6 +58,6 @@ export const gamesMessages = {
     create: createRoomMessages.fr,
     detail: gameDetailMessages.fr,
     room: roomDetailMessages.fr,
-    table: explodingCatsMessages.fr,
+    table: criticalMessages.fr,
   },
 };

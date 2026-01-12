@@ -78,7 +78,7 @@ export const GameSelect: Story = {
   render: (args) => (
     <Select {...args}>
       <option value="">Choose a game...</option>
-      <option value="exploding_kittens">Exploding Kittens</option>
+      <option value="critical">Critical</option>
       <option value="texas_holdem">Texas Hold&apos;em</option>
       <option value="chess">Chess</option>
     </Select>

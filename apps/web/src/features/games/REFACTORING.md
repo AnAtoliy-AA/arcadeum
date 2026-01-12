@@ -7,12 +7,14 @@ This document explains the refactored game architecture designed to scale from 2
 ## Architecture Summary
 
 ### Before Refactoring
+
 - **GameRoomPage.tsx**: 771 lines of monolithic code
 - Socket logic mixed with UI logic
 - Game-specific code duplicated
 - Hard to test and maintain
 
 ### After Refactoring
+
 - **GameRoomPage.tsx**: 172 lines (77.7% reduction!)
 - Clean separation of concerns
 - Reusable hooks for socket management
@@ -25,9 +27,11 @@ This document explains the refactored game architecture designed to scale from 2
 ### 1. Custom Hooks (`/features/games/hooks/`)
 
 #### `useGameRoom()`
+
 **Purpose**: Manages game room connection and state
 
 **Returns**:
+
 - `room`: Current room data
 - `loading`: Loading state
 - `error`: Error messages
@@ -36,16 +40,18 @@ This document explains the refactored game architecture designed to scale from 2
 - `leaveRoom()`: Leave room function
 
 **Usage**:
+
 ```typescript
 const { room, loading, error, isHost } = useGameRoom({
   roomId,
   userId: snapshot.userId,
   accessToken: snapshot.accessToken,
-  mode: "play", // or "watch"
+  mode: 'play', // or "watch"
 });
 ```
 
 **What it handles**:
+
 - Socket connection to room
 - Room join/leave events
 - Room state updates
@@ -54,15 +60,18 @@ const { room, loading, error, isHost } = useGameRoom({
 ---
 
 #### `useGameSession()`
+
 **Purpose**: Manages game session state and action states
 
 **Returns**:
+
 - `session`: Current session data
 - `startBusy`: Whether game is starting
 - `actionBusy`: Current action in progress
 - `setActionBusy()`: Update action state
 
 **Usage**:
+
 ```typescript
 const { session, actionBusy, setActionBusy } = useGameSession({
   roomId,
@@ -71,6 +80,7 @@ const { session, actionBusy, setActionBusy } = useGameSession({
 ```
 
 **What it handles**:
+
 - Session snapshot updates
 - Session started events
 - Action busy states
@@ -79,12 +89,14 @@ const { session, actionBusy, setActionBusy } = useGameSession({
 ---
 
 #### `useGameActions()`
+
 **Purpose**: Provides game-specific action emitters
 
 **Returns**:
+
 ```typescript
 {
-  // Exploding Cats actions
+  // Critical actions
   drawCard: () => void;
   playActionCard: (card: string) => void;
   playFavor: (targetPlayerId: string, desiredCard: string) => void;
@@ -101,20 +113,22 @@ const { session, actionBusy, setActionBusy } = useGameSession({
 ```
 
 **Usage**:
+
 ```typescript
 const actions = useGameActions({
   roomId,
   userId: snapshot.userId,
-  gameType: "texas_holdem_v1",
+  gameType: 'texas_holdem_v1',
   onActionComplete: () => setActionBusy(null),
 });
 
 // Use actions
-actions.holdemAction("raise", 50);
-actions.postHistoryNote("Good hand!", "all");
+actions.holdemAction('raise', 50);
+actions.postHistoryNote('Good hand!', 'all');
 ```
 
 **What it handles**:
+
 - All socket event emissions
 - Game-specific action listeners
 - Action completion callbacks
@@ -127,6 +141,7 @@ actions.postHistoryNote("Good hand!", "all");
 **Location**: `/features/games/ui/ControlPanel.tsx`
 
 **Features**:
+
 - ✅ Fullscreen mode toggle
 - ✅ Leave room button
 - ✅ Optional move controls (for spatial games)
@@ -134,6 +149,7 @@ actions.postHistoryNote("Good hand!", "all");
 - ✅ Keyboard shortcuts
 
 **Usage**:
+
 ```typescript
 <ControlPanel
   roomId={roomId}
@@ -157,7 +173,7 @@ export default function GameRoomPage() {
 
   // 3. Determine game type
   const gameType = useMemo(() => {
-    if (room?.gameId === "exploding_cats_v1") return "exploding_cats_v1";
+    if (room?.gameId === "critical_v1") return "critical_v1";
     if (room?.gameId === "texas_holdem_v1") return "texas_holdem_v1";
     return null;
   }, [room]);
@@ -167,8 +183,8 @@ export default function GameRoomPage() {
     <Page>
       <ControlPanel roomId={roomId} />
 
-      {gameType === "exploding_cats_v1" && (
-        <ExplodingCatsGame {...props} />
+      {gameType === "critical_v1" && (
+        <CriticalGame {...props} />
       )}
 
       {gameType === "texas_holdem_v1" && (
@@ -180,6 +196,7 @@ export default function GameRoomPage() {
 ```
 
 **Benefits**:
+
 - Single responsibility principle
 - Easy to test each hook independently
 - Game components are self-contained
@@ -221,9 +238,9 @@ export default function YourGame(props: YourGameProps) {
 
 ```typescript
 export type GameType =
-  | "exploding_cats_v1"
-  | "texas_holdem_v1"
-  | "your_game_v1"  // Add here
+  | 'critical_v1'
+  | 'texas_holdem_v1'
+  | 'your_game_v1' // Add here
   | null;
 ```
 
@@ -231,19 +248,22 @@ export type GameType =
 
 ```typescript
 // Add your game's socket listeners
-if (gameType === "your_game_v1") {
-  gameSocket.on("games.session.your_action", handleActionComplete);
+if (gameType === 'your_game_v1') {
+  gameSocket.on('games.session.your_action', handleActionComplete);
 }
 
 // Add action functions
-const yourGameAction = useCallback((params) => {
-  if (!userId) return;
-  gameSocket.emit("games.session.your_action", {
-    roomId,
-    userId,
-    ...params,
-  });
-}, [roomId, userId]);
+const yourGameAction = useCallback(
+  (params) => {
+    if (!userId) return;
+    gameSocket.emit('games.session.your_action', {
+      roomId,
+      userId,
+      ...params,
+    });
+  },
+  [roomId, userId],
+);
 
 return {
   // ... existing actions
@@ -256,31 +276,34 @@ return {
 **Location**: `/features/games/registry.ts`
 
 ```typescript
-export const gameLoaders: Record<string, () => Promise<{ default: React.ComponentType<any> }>> = {
-  exploding_cats_v1: () => import("./implementations/exploding-cats/Game"),
-  texas_holdem_v1: () => import("./implementations/texas-holdem/Game"),
-  your_game_v1: () => import("./implementations/your-game/Game"), // Add this
+export const gameLoaders: Record<
+  string,
+  () => Promise<{ default: React.ComponentType<any> }>
+> = {
+  critical_v1: () => import('./implementations/critical/Game'),
+  texas_holdem_v1: () => import('./implementations/texas-holdem/Game'),
+  your_game_v1: () => import('./implementations/your-game/Game'), // Add this
 } as const;
 
 export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
   // ... existing games
   your_game_v1: {
-    slug: "your_game_v1",
-    name: "Your Game Name",
-    description: "Your game description",
-    category: "Card Game", // or "Board Game", etc.
+    slug: 'your_game_v1',
+    name: 'Your Game Name',
+    description: 'Your game description',
+    category: 'Card Game', // or "Board Game", etc.
     minPlayers: 2,
     maxPlayers: 4,
     estimatedDuration: 30,
     complexity: 3,
-    ageRating: "PG",
-    thumbnail: "/games/your-game.jpg",
-    version: "1.0.0",
+    ageRating: 'PG',
+    thumbnail: '/games/your-game.jpg',
+    version: '1.0.0',
     supportsAI: true,
-    tags: ["strategy", "fun"],
-    implementationPath: "./implementations/your-game/Game",
-    lastUpdated: "2024-01-01",
-    status: "active"
+    tags: ['strategy', 'fun'],
+    implementationPath: './implementations/your-game/Game',
+    lastUpdated: '2024-01-01',
+    status: 'active',
   },
 };
 ```
@@ -320,6 +343,7 @@ const gameType: GameType = useMemo(() => {
 ### 6. Done!
 
 That's it! Your game is now integrated with:
+
 - ✅ Room management
 - ✅ Session state
 - ✅ Socket communication
@@ -334,15 +358,17 @@ That's it! Your game is now integrated with:
 ### Unit Tests for Hooks
 
 ```typescript
-import { renderHook } from "@testing-library/react-hooks";
-import { useGameRoom } from "./useGameRoom";
+import { renderHook } from '@testing-library/react-hooks';
+import { useGameRoom } from './useGameRoom';
 
-test("useGameRoom joins room on mount", () => {
-  const { result } = renderHook(() => useGameRoom({
-    roomId: "test-room",
-    userId: "user-1",
-    accessToken: "token",
-  }));
+test('useGameRoom joins room on mount', () => {
+  const { result } = renderHook(() =>
+    useGameRoom({
+      roomId: 'test-room',
+      userId: 'user-1',
+      accessToken: 'token',
+    }),
+  );
 
   expect(result.current.loading).toBe(true);
   // Assert socket emit was called
@@ -371,18 +397,23 @@ test("GameRoomPage renders correct game component", () => {
 ## Performance Optimizations
 
 ### 1. Hook Memoization
+
 All callbacks use `useCallback` to prevent unnecessary re-renders
 
 ### 2. Conditional Socket Listeners
+
 Listeners only registered when game type is known
 
 ### 3. Lazy Loading
+
 Game components can be lazy-loaded:
+
 ```typescript
-const TexasHoldemGame = lazy(() => import("./components/TexasHoldemGame"));
+const TexasHoldemGame = lazy(() => import('./components/TexasHoldemGame'));
 ```
 
 ### 4. Socket Cleanup
+
 All listeners properly cleaned up on unmount
 
 ---
@@ -409,8 +440,8 @@ When refactoring an existing game:
 apps/web/src/
 ├── widgets/games/
 │   └── implementations/          # ✨ All game implementations
-│       ├── exploding-cats/
-│       │   └── Game.tsx         # Exploding Cats game (default export)
+│       ├── critical/
+│       │   └── Game.tsx         # Critical game (default export)
 │       └── texas-holdem/
 │           └── Game.tsx         # Texas Hold'em game (default export)
 ├── features/games/
@@ -447,13 +478,13 @@ apps/web/src/
 
 ## Metrics
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| GameRoomPage.tsx | 771 lines | 172 lines | **77.7% reduction** |
-| Socket logic | Scattered | Centralized in hooks | **Better organization** |
-| Reusability | Low | High | **Easy to extend** |
-| Testability | Hard | Easy | **Unit testable** |
-| New game setup | ~200 lines | ~50 lines | **75% faster** |
+| Metric           | Before     | After                | Improvement             |
+| ---------------- | ---------- | -------------------- | ----------------------- |
+| GameRoomPage.tsx | 771 lines  | 172 lines            | **77.7% reduction**     |
+| Socket logic     | Scattered  | Centralized in hooks | **Better organization** |
+| Reusability      | Low        | High                 | **Easy to extend**      |
+| Testability      | Hard       | Easy                 | **Unit testable**       |
+| New game setup   | ~200 lines | ~50 lines            | **75% faster**          |
 
 ---
 
@@ -471,6 +502,7 @@ apps/web/src/
 ## Future Enhancements
 
 ### Planned Features
+
 - [ ] Game state persistence (reconnect recovery)
 - [ ] Spectator mode improvements
 - [ ] Tournament mode support
@@ -479,6 +511,7 @@ apps/web/src/
 - [ ] Performance monitoring
 
 ### Possible Optimizations
+
 - [ ] WebSocket message compression
 - [ ] State caching with React Query
 - [ ] Virtual scrolling for large player lists
@@ -500,6 +533,7 @@ For questions or issues with the refactored architecture:
 ## Changelog
 
 ### 2025-11-28 - Game Structure Migration
+
 - ✅ Migrated game implementations to `/widgets/games/implementations/`
 - ✅ Updated GameRoomPage to use lazy loading from widgets
 - ✅ All games now load from centralized registry
@@ -509,6 +543,7 @@ For questions or issues with the refactored architecture:
 - ✅ Games now properly isolated in widgets directory (FSD architecture)
 
 ### 2025-01-XX - Initial Refactoring
+
 - Created `useGameRoom`, `useGameSession`, `useGameActions` hooks
 - Refactored GameRoomPage from 771 to 188 lines
 - Enhanced ControlPanel with fullscreen support

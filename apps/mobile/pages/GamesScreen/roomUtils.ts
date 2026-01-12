@@ -3,8 +3,11 @@ import type { GameRoomSummary } from './api/gamesApi';
 import type { TranslationKey } from '@/lib/i18n/messages';
 
 export function formatRoomGame(gameId: string): string {
+  const normalizedId =
+    gameId === 'exploding_kittens_v1' ? 'critical_v1' : gameId;
   return (
-    gamesCatalog.find((game) => game.id === gameId)?.name ?? 'Unknown game'
+    gamesCatalog.find((game) => game.id === normalizedId)?.name ??
+    'Unknown game'
   );
 }
 

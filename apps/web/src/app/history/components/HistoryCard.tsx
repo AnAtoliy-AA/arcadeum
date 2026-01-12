@@ -1,7 +1,10 @@
-"use client";
+'use client';
 
-import { useTranslation, type TranslationKey } from "@/shared/lib/useTranslation";
-import type { HistorySummary, HistoryParticipant } from "../types";
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
+import type { HistorySummary, HistoryParticipant } from '../types';
 import {
   EntryCard,
   EntryHeader,
@@ -13,12 +16,14 @@ import {
   EntryFooter,
   EntryTimestamp,
   EntryViewDetails,
-} from "../styles";
+} from '../styles';
 
 interface HistoryCardProps {
   entry: HistorySummary;
   onSelect: (entry: HistorySummary) => void;
-  formatParticipantName: (participant: HistoryParticipant | undefined | null) => string;
+  formatParticipantName: (
+    participant: HistoryParticipant | undefined | null,
+  ) => string;
   formatDate: (dateString: string | null | undefined) => string;
 }
 
@@ -35,7 +40,9 @@ export function HistoryCard({
       <EntryHeader>
         <EntryTitleGroup>
           <EntryGameName>
-            {t(`games.${entry.gameId}.name` as TranslationKey) || entry.gameId}
+            {t(
+              `games.${entry.gameId === 'exploding_kittens_v1' ? 'critical_v1' : entry.gameId}.name` as TranslationKey,
+            ) || entry.gameId}
           </EntryGameName>
           <EntryRoomName>{entry.roomName}</EntryRoomName>
         </EntryTitleGroup>
@@ -48,22 +55,22 @@ export function HistoryCard({
           entry.participants.map((p, index) => (
             <span key={p.id}>
               {formatParticipantName(p)}
-              {p.isHost && " 👑"}
-              {index < (entry.participants?.length || 0) - 1 && ", "}
+              {p.isHost && ' 👑'}
+              {index < (entry.participants?.length || 0) - 1 && ', '}
             </span>
           ))
         ) : (
           <span>
             {formatParticipantName(entry.host)}
-            {entry.host?.isHost && " 👑"}
+            {entry.host?.isHost && ' 👑'}
           </span>
         )}
       </EntryMeta>
       <EntryFooter>
-        <EntryTimestamp>
-          {formatDate(entry.lastActivityAt)}
-        </EntryTimestamp>
-        <EntryViewDetails>{t("history.actions.viewDetails")} →</EntryViewDetails>
+        <EntryTimestamp>{formatDate(entry.lastActivityAt)}</EntryTimestamp>
+        <EntryViewDetails>
+          {t('history.actions.viewDetails')} →
+        </EntryViewDetails>
       </EntryFooter>
     </EntryCard>
   );

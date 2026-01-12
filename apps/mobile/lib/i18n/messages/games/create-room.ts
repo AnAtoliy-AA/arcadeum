@@ -29,7 +29,7 @@ export const createRoomMessages = {
         'Give your room a fun name to help friends recognize it.',
       gameUnavailableTitle: 'Prototype in progress',
       gameUnavailableMessage:
-        "We're still building this one. Pick Exploding Cats while we finish the next prototypes.",
+        "We're still building this one. Pick Critical while we finish the next prototypes.",
       invalidPlayersTitle: 'Invalid player count',
       invalidPlayersMessage:
         'Max players should be a number greater than or equal to 2.',
@@ -69,7 +69,7 @@ export const createRoomMessages = {
         'Ponle un nombre a tu sala para que tus amigos la reconozcan.',
       gameUnavailableTitle: 'Prototipo en progreso',
       gameUnavailableMessage:
-        'Aún estamos construyendo esta experiencia. Elige Exploding Cats mientras terminamos los próximos prototipos.',
+        'Aún estamos construyendo esta experiencia. Elige Critical mientras terminamos los próximos prototipos.',
       invalidPlayersTitle: 'Número de jugadores no válido',
       invalidPlayersMessage:
         'El máximo de jugadores debe ser un número mayor o igual a 2.',
@@ -109,7 +109,7 @@ export const createRoomMessages = {
         'Donnez un nom à votre salle pour que vos amis la reconnaissent.',
       gameUnavailableTitle: 'Prototype en cours',
       gameUnavailableMessage:
-        'Nous finalisons encore cette expérience. Choisissez Exploding Cats pendant que nous préparons les prochains prototypes.',
+        'Nous finalisons encore cette expérience. Choisissez Critical pendant que nous préparons les prochains prototypes.',
       invalidPlayersTitle: 'Nombre de joueurs invalide',
       invalidPlayersMessage:
         'Le maximum de joueurs doit être un nombre supérieur ou égal à 2.',

@@ -12,9 +12,11 @@ export class GameEngineRegistry {
 
   /**
    * Normalize game ID to engine ID
-   * Now returns input directly since frontend uses consistent IDs
    */
   private normalizeGameId(gameId: string): string {
+    if (gameId === 'exploding_kittens_v1') {
+      return 'critical_v1';
+    }
     return gameId;
   }
 

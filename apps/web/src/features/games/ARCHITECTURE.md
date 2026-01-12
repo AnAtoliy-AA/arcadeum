@@ -16,7 +16,7 @@
 ├─────────────────────────────────────────────────────────────┤
 │                   Game Implementation Layer                 │
 ├─────────────────────────────────────────────────────────────┤
-│ ExplodingCats │ TexasHoldem │ Chess │ Checkers │ ...200+... │
+│ Critical │ TexasHoldem │ Chess │ Checkers │ ...200+... │
 ├─────────────────────────────────────────────────────────────┤
 │                    Data Layer                               │
 ├─────────────────────────────────────────────────────────────┤
@@ -27,21 +27,25 @@
 ### Core Design Patterns
 
 #### 1. Factory Pattern
+
 - **Purpose**: Centralized game creation and management
 - **Implementation**: `GameFactory` class
 - **Benefits**: Lazy loading, caching, dependency injection
 
 #### 2. Registry Pattern
+
 - **Purpose**: Central game metadata and configuration
 - **Implementation**: `registry.ts` with type-safe slugs
 - **Benefits**: Discoverability, validation, type safety
 
 #### 3. Component Composition
+
 - **Purpose**: Reusable UI components
 - **Implementation**: Modular React components
 - **Benefits**: Consistency, maintainability, scalability
 
 #### 4. Strategy Pattern
+
 - **Purpose**: Different game implementations
 - **Implementation**: Each game implements `BaseGameProps`
 - **Benefits**: Swappable implementations, polymorphism
@@ -57,7 +61,7 @@ interface BaseGameProps {
   currentUserId: string | null;
   isHost: boolean;
   config: GameConfig;
-  onPostHistoryNote: (message: string, scope: "all" | "players") => void;
+  onPostHistoryNote: (message: string, scope: 'all' | 'players') => void;
   onAction?: (action: string, payload?: Record<string, unknown>) => void;
 }
 
@@ -91,9 +95,12 @@ interface GameConfig {
 
 ```typescript
 // Dynamic imports with code splitting
-const gameLoaders: Record<string, () => Promise<{ default: React.ComponentType<BaseGameProps> }>> = {
-  exploding_cats_v1: () => import("./implementations/exploding-cats/Game"),
-  texas_holdem_v1: () => import("./implementations/texas-holdem/Game"),
+const gameLoaders: Record<
+  string,
+  () => Promise<{ default: React.ComponentType<BaseGameProps> }>
+> = {
+  critical_v1: () => import('./implementations/critical/Game'),
+  texas_holdem_v1: () => import('./implementations/texas-holdem/Game'),
   // Each game loads only when needed
 };
 ```
@@ -102,13 +109,16 @@ const gameLoaders: Record<string, () => Promise<{ default: React.ComponentType<B
 
 ```typescript
 class GameFactory {
-  private loadedGames: Map<string, React.ComponentType<BaseGameProps>> = new Map();
-  
-  public async loadGame(slug: string): Promise<React.ComponentType<BaseGameProps>> {
+  private loadedGames: Map<string, React.ComponentType<BaseGameProps>> =
+    new Map();
+
+  public async loadGame(
+    slug: string,
+  ): Promise<React.ComponentType<BaseGameProps>> {
     if (this.loadedGames.has(slug)) {
       return this.loadedGames.get(slug)!; // Return cached component
     }
-    
+
     const gameModule = await gameLoaders[slug]();
     this.loadedGames.set(slug, gameModule.default);
     return gameModule.default;
@@ -142,17 +152,20 @@ User Action → onAction Callback → Game Logic → State Update → Re-render
 
 ```typescript
 // Example state update pattern
-const handleGameAction = useCallback((action: string, payload?: any) => {
-  // Validate action
-  if (!currentUserId) return;
-  
-  // Dispatch to game logic
-  onAction?.(action, {
-    ...payload,
-    playerId: currentUserId,
-    timestamp: Date.now()
-  });
-}, [currentUserId, onAction]);
+const handleGameAction = useCallback(
+  (action: string, payload?: any) => {
+    // Validate action
+    if (!currentUserId) return;
+
+    // Dispatch to game logic
+    onAction?.(action, {
+      ...payload,
+      playerId: currentUserId,
+      timestamp: Date.now(),
+    });
+  },
+  [currentUserId, onAction],
+);
 ```
 
 ## Component Architecture
@@ -174,16 +187,19 @@ GameLayout
 ### Component Reusability
 
 #### High Reusability
+
 - `GameCard`: Display game in lists
 - `GameGrid`: Layout multiple games
 - `GameStatus`: Show game state
 - `PlayerList`: Display players
 
 #### Medium Reusability
+
 - `GameControls`: Standard game actions
 - `ControlPanel`: Common controls
 
 #### Low Reusability
+
 - Game-specific components
 - Game logic components
 
@@ -217,18 +233,18 @@ class GameErrorBoundary extends React.Component {
 
 ```typescript
 // Example game component test
-describe('ExplodingCatsGame', () => {
+describe('CriticalGame', () => {
   it('should render game lobby', () => {
     const props = createMockProps({ session: null });
-    const { getByText } = render(<ExplodingCatsGame {...props} />);
-    expect(getByText('Exploding Kittens')).toBeInTheDocument();
+    const { getByText } = render(<CriticalGame {...props} />);
+    expect(getByText('Critical')).toBeInTheDocument();
   });
 
   it('should handle game actions', () => {
     const onAction = jest.fn();
     const props = createMockProps({ onAction });
-    const { getByText } = render(<ExplodingCatsGame {...props} />);
-    
+    const { getByText } = render(<CriticalGame {...props} />);
+
     fireEvent.click(getByText('Play Card'));
     expect(onAction).toHaveBeenCalledWith('playCard');
   });
@@ -248,7 +264,7 @@ describe('ExplodingCatsGame', () => {
 // Example E2E test
 describe('Game Flow', () => {
   it('should complete full game cycle', () => {
-    cy.visit('/games/exploding-cats');
+    cy.visit('/games/critical');
     cy.get('[data-testid="start-button"]').click();
     cy.get('[data-testid="game-board"]').should('be.visible');
     cy.get('[data-testid="player-hand"]').should('have.length.at.least', 2);
@@ -264,12 +280,12 @@ describe('Game Flow', () => {
 // Props validation
 const validateProps = (props: BaseGameProps) => {
   const errors: string[] = [];
-  
+
   if (!props.room?.id) errors.push('Room ID required');
   if (props.room.playerCount < props.config.minPlayers) {
     errors.push(`Minimum players: ${props.config.minPlayers}`);
   }
-  
+
   return { isValid: errors.length === 0, errors };
 };
 ```
@@ -288,11 +304,11 @@ const validateProps = (props: BaseGameProps) => {
 ```typescript
 // Example accessible component
 const AccessibleGameButton = styled.button`
-  &[aria-pressed="true"] {
+  &[aria-pressed='true'] {
     background: var(--color-primary);
     color: white;
   }
-  
+
   &:focus {
     outline: 2px solid var(--color-focus);
     outline-offset: 2px;
@@ -315,23 +331,23 @@ const AccessibleGameButton = styled.button`
 // Translation keys structure
 const translations = {
   games: {
-    explodingKittens: {
-      title: "Exploding Kittens",
+    critical: {
+      title: 'Critical',
       cards: {
-        explodingCat: "Exploding Cat",
-        defuse: "Defuse",
-        attack: "Attack"
-      }
+        explodingCat: 'Exploding Cat',
+        defuse: 'Defuse',
+        attack: 'Attack',
+      },
     },
     texasHoldem: {
       title: "Texas Hold'em",
       actions: {
-        fold: "Fold",
-        call: "Call",
-        raise: "Raise"
-      }
-    }
-  }
+        fold: 'Fold',
+        call: 'Call',
+        raise: 'Raise',
+      },
+    },
+  },
 };
 ```
 
@@ -357,19 +373,19 @@ const loadGameTranslations = async (gameSlug: string) => {
 // Performance monitoring
 const measureGamePerformance = () => {
   const startTime = performance.now();
-  
+
   return {
     end: () => {
       const endTime = performance.now();
       const loadTime = endTime - startTime;
-      
+
       // Send to analytics
       analytics.track('game_load_time', {
         game: currentGame,
         loadTime,
-        userAgent: navigator.userAgent
+        userAgent: navigator.userAgent,
       });
-    }
+    },
   };
 };
 ```

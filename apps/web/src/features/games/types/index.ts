@@ -1,12 +1,12 @@
 // Re-export all types for easier importing
-export * from "./base";
+export * from './base';
 
 // Import and re-export game-specific types
-export type { 
-  GameRoomSummary, 
+export type {
+  GameRoomSummary,
   GameSessionSummary,
-  ExplodingCatsSnapshot,
-  ExplodingCatsPlayerState,
-  ExplodingCatsCard,
-  TexasHoldemSnapshot
-} from "@/shared/types/games";
+  CriticalSnapshot,
+  CriticalPlayerState,
+  CriticalCard,
+  TexasHoldemSnapshot,
+} from '@/shared/types/games';

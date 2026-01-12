@@ -11,7 +11,7 @@ import { gameSocket as socket } from '@/hooks/useSocket';
 import { maybeDecrypt } from '@/lib/socket-encryption';
 
 import { type GameRoomSummary, type GameSessionSummary } from '../api/gamesApi';
-import { type ExplodingCatsRoomHandle } from '../gameIntegrations/ExplodingCats/ExplodingCatsRoom';
+import { type CriticalRoomHandle } from '../gameIntegrations/Critical/CriticalRoom';
 import { type TexasHoldemRoomHandle } from '../gameIntegrations/TexasHoldem/TexasHoldemRoom';
 import {
   normalizeWsMessageCode,
@@ -29,7 +29,7 @@ interface UseGameRoomSocketParams {
   setRoom: React.Dispatch<React.SetStateAction<GameRoomSummary | null>>;
   setSession: React.Dispatch<React.SetStateAction<GameSessionSummary | null>>;
   integrationRef: React.MutableRefObject<
-    ExplodingCatsRoomHandle | TexasHoldemRoomHandle | null
+    CriticalRoomHandle | TexasHoldemRoomHandle | null
   >;
 }
 
@@ -131,7 +131,7 @@ export function useGameRoomSocket({
       if (payload?.roomId && payload.roomId !== roomId) {
         return;
       }
-      const ref = integrationRef.current as ExplodingCatsRoomHandle | null;
+      const ref = integrationRef.current as CriticalRoomHandle | null;
       ref?.onCatComboPlayed?.();
     };
 
@@ -236,7 +236,7 @@ export function useGameRoomSocket({
     socket.on('games.session.snapshot', wrappedHandleSnapshot);
     socket.on('games.session.started', wrappedHandleSessionStarted);
     socket.on('games.session.cat_combo.played', wrappedHandleCatComboPlayed);
-    // Exploding Cats action completion events
+    // Critical action completion events
     socket.on('games.session.drawn', wrappedHandleActionCompleted);
     socket.on('games.session.action.played', wrappedHandleActionCompleted);
     socket.on(
@@ -266,7 +266,7 @@ export function useGameRoomSocket({
       socket.off('games.session.snapshot', wrappedHandleSnapshot);
       socket.off('games.session.started', wrappedHandleSessionStarted);
       socket.off('games.session.cat_combo.played', wrappedHandleCatComboPlayed);
-      // Exploding Cats action completion events
+      // Critical action completion events
       socket.off('games.session.drawn', wrappedHandleActionCompleted);
       socket.off('games.session.action.played', wrappedHandleActionCompleted);
       socket.off(

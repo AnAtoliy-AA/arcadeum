@@ -143,7 +143,7 @@ export function createStyles(palette: Palette) {
     gameContainer: {
       flex: 1,
     },
-    // ExplodingCatsRoomTopBar styles
+    // CriticalRoomTopBar styles
     topBar: {
       width: '100%',
       paddingHorizontal: 24,

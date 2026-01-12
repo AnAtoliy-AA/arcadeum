@@ -9,25 +9,27 @@ The games module has been completely refactored from **one massive 3,731-line se
 ## 📊 Before & After Comparison
 
 ### Before (Monolithic)
+
 ```
 games/
 └── games.service.ts                    # 3,731 lines - EVERYTHING
     ├── Room management
     ├── Session management
     ├── History management
-    ├── Exploding Cats logic
+    ├── Critical logic
     ├── Texas Hold'em logic
     ├── User utilities
     └── Everything else...
 ```
 
 ### After (Modular)
+
 ```
 games/
 ├── engines/                            # Game engine implementations
 │   ├── base/                           # Core abstractions (~150 lines)
 │   ├── registry/                       # Engine registry (~100 lines)
-│   ├── exploding-cats/                 # Exploding Cats engine (~400 lines)
+│   ├── critical/                 # Critical engine (~400 lines)
 │   └── texas-holdem/                   # Texas Hold'em engine (~350 lines)
 ├── rooms/                              # Room management
 │   └── game-rooms.service.ts           # ~350 lines
@@ -36,8 +38,8 @@ games/
 ├── history/                            # History management
 │   └── game-history.service.ts         # ~350 lines
 ├── actions/                            # Game-specific actions
-│   ├── exploding-cats/
-│   │   └── exploding-cats-actions.service.ts  # ~150 lines
+│   ├── critical/
+│   │   └── critical-actions.service.ts  # ~150 lines
 │   └── texas-holdem/
 │       └── texas-holdem-actions.service.ts    # ~100 lines
 ├── utilities/                          # Shared utilities
@@ -55,14 +57,15 @@ games/
 
 **Purpose**: Isolated, pluggable game logic
 
-| Engine | Lines | Responsibility |
-|--------|-------|----------------|
-| `BaseGameEngine` | ~150 | Common utilities for all games |
-| `GameEngineRegistry` | ~100 | Engine registration & discovery |
-| `ExplodingCatsEngine` | ~400 | Exploding Cats game rules |
-| `TexasHoldemEngine` | ~350 | Texas Hold'em game rules |
+| Engine               | Lines | Responsibility                  |
+| -------------------- | ----- | ------------------------------- |
+| `BaseGameEngine`     | ~150  | Common utilities for all games  |
+| `GameEngineRegistry` | ~100  | Engine registration & discovery |
+| `CriticalEngine`     | ~400  | Critical game rules             |
+| `TexasHoldemEngine`  | ~350  | Texas Hold'em game rules        |
 
 **Benefits**:
+
 - ✅ Each game is completely independent
 - ✅ Easy to add new games (just implement interface)
 - ✅ Testable in isolation
@@ -74,13 +77,14 @@ games/
 
 **Purpose**: Infrastructure and lifecycle management
 
-| Service | Lines | Responsibility |
-|---------|-------|----------------|
-| **GameRoomsService** | ~350 | Room CRUD, joining, leaving, invite codes |
-| **GameSessionsService** | ~280 | Session lifecycle, action delegation to engines |
-| **GameHistoryService** | ~350 | History viewing, hiding, rematch creation |
+| Service                 | Lines | Responsibility                                  |
+| ----------------------- | ----- | ----------------------------------------------- |
+| **GameRoomsService**    | ~350  | Room CRUD, joining, leaving, invite codes       |
+| **GameSessionsService** | ~280  | Session lifecycle, action delegation to engines |
+| **GameHistoryService**  | ~350  | History viewing, hiding, rematch creation       |
 
 **Benefits**:
+
 - ✅ Clear separation of concerns
 - ✅ Each service has single responsibility
 - ✅ Easy to test and maintain
@@ -92,16 +96,18 @@ games/
 
 **Purpose**: Game-specific action orchestration
 
-| Service | Lines | Responsibility |
-|---------|-------|----------------|
-| **ExplodingCatsActionsService** | ~150 | Exploding Cats specific actions |
-| **TexasHoldemActionsService** | ~100 | Texas Hold'em specific actions |
+| Service                       | Lines | Responsibility                 |
+| ----------------------------- | ----- | ------------------------------ |
+| **CriticalActionsService**    | ~150  | Critical specific actions      |
+| **TexasHoldemActionsService** | ~100  | Texas Hold'em specific actions |
 
 **Methods**:
-- Exploding Cats: `drawCard()`, `playActionCard()`, `playCatCombo()`, `playFavor()`, etc.
+
+- Critical: `drawCard()`, `playActionCard()`, `playCatCombo()`, `playFavor()`, etc.
 - Texas Hold'em: `fold()`, `check()`, `call()`, `raise()`, `allIn()`, etc.
 
 **Benefits**:
+
 - ✅ Game-specific logic isolated
 - ✅ Easy to add actions for new games
 - ✅ Clean separation from core infrastructure
@@ -112,11 +118,12 @@ games/
 
 **Purpose**: Shared utility functions
 
-| Service | Lines | Responsibility |
-|---------|-------|----------------|
-| **GameUtilitiesService** | ~150 | User lookups, validation, random generators |
+| Service                  | Lines | Responsibility                              |
+| ------------------------ | ----- | ------------------------------------------- |
+| **GameUtilitiesService** | ~150  | User lookups, validation, random generators |
 
 **Methods**:
+
 - `fetchUserSummaries()` - Get user details
 - `getUserDisplayName()` - Get display names
 - `validateUserIds()` - Validate user IDs exist
@@ -124,6 +131,7 @@ games/
 - `generateRandomCode()` - Generate codes
 
 **Benefits**:
+
 - ✅ DRY (Don't Repeat Yourself)
 - ✅ Reusable across all services
 - ✅ Easy to test
@@ -134,19 +142,21 @@ games/
 
 **Purpose**: Unified API for controllers and gateways
 
-| Facade | Lines | Responsibility |
-|--------|-------|----------------|
-| **GamesService** | ~390 | Coordinates all services, provides simple API |
+| Facade           | Lines | Responsibility                                |
+| ---------------- | ----- | --------------------------------------------- |
+| **GamesService** | ~390  | Coordinates all services, provides simple API |
 
 **API Categories**:
+
 1. **Room Operations**: `createRoom()`, `listRooms()`, `joinRoom()`, `leaveRoom()`
 2. **Session Operations**: `startGameSession()`, `executeAction()`, `getSanitizedState()`
 3. **History Operations**: `listHistoryForUser()`, `createRematchFromHistory()`
-4. **Exploding Cats Actions**: `drawExplodingCatsCard()`, `playExplodingCatsAction()`, etc.
+4. **Critical Actions**: `drawCriticalCard()`, `playCriticalAction()`, etc.
 5. **Texas Hold'em Actions**: `texasHoldemFold()`, `texasHoldemCall()`, etc.
 6. **Utilities**: `fetchUserSummaries()`, `getUserDisplayName()`
 
 **Benefits**:
+
 - ✅ Single entry point for all operations
 - ✅ Backward compatible with old API
 - ✅ Easy to add cross-cutting concerns
@@ -158,21 +168,21 @@ games/
 
 ### Code Organization
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| **Largest File** | 3,731 lines | 400 lines | 📉 89% reduction |
-| **Number of Services** | 1 monolith | 10 specialized | 🎯 10x more modular |
-| **Average Service Size** | 3,731 lines | 237 lines | 📉 94% smaller |
-| **Game Coupling** | Tightly coupled | Zero coupling | ✅ Fully isolated |
+| Metric                   | Before          | After          | Improvement         |
+| ------------------------ | --------------- | -------------- | ------------------- |
+| **Largest File**         | 3,731 lines     | 400 lines      | 📉 89% reduction    |
+| **Number of Services**   | 1 monolith      | 10 specialized | 🎯 10x more modular |
+| **Average Service Size** | 3,731 lines     | 237 lines      | 📉 94% smaller      |
+| **Game Coupling**        | Tightly coupled | Zero coupling  | ✅ Fully isolated   |
 
 ### Scalability
 
-| Capability | Before | After |
-|------------|--------|-------|
-| **Adding a new game** | +500 lines in monolith | +100 line engine file |
-| **Testing a game** | Mock entire service | Test engine in isolation |
-| **Team collaboration** | Merge conflicts | Parallel development |
-| **Maximum games** | ~10 realistically | 200+ easily |
+| Capability             | Before                 | After                    |
+| ---------------------- | ---------------------- | ------------------------ |
+| **Adding a new game**  | +500 lines in monolith | +100 line engine file    |
+| **Testing a game**     | Mock entire service    | Test engine in isolation |
+| **Team collaboration** | Merge conflicts        | Parallel development     |
+| **Maximum games**      | ~10 realistically      | 200+ easily              |
 
 ---
 
@@ -188,8 +198,8 @@ apps/be/src/games/
 │   ├── registry/
 │   │   ├── game-engine.registry.ts
 │   │   └── index.ts
-│   ├── exploding-cats/
-│   │   └── exploding-cats.engine.ts
+│   ├── critical/
+│   │   └── critical.engine.ts
 │   ├── texas-holdem/
 │   │   └── texas-holdem.engine.ts
 │   ├── engines.module.ts
@@ -204,8 +214,8 @@ apps/be/src/games/
 │   ├── game-history.service.ts
 │   └── index.ts
 ├── actions/                                    # Action handlers (~250 lines)
-│   ├── exploding-cats/
-│   │   ├── exploding-cats-actions.service.ts
+│   ├── critical/
+│   │   ├── critical-actions.service.ts
 │   │   └── index.ts
 │   └── texas-holdem/
 │       ├── texas-holdem-actions.service.ts
@@ -239,7 +249,7 @@ apps/be/src/games/
 ```typescript
 // Create a room
 const room = await gamesService.createRoom(userId, {
-  gameId: 'exploding_cats_v1',
+  gameId: 'critical_v1',
   name: 'Epic Game',
   visibility: 'public',
   maxPlayers: 4,
@@ -255,7 +265,7 @@ const { session } = await gamesService.startGameSession(
 );
 
 // Play an action
-await gamesService.drawExplodingCatsCard(session.id, userId);
+await gamesService.drawCriticalCard(session.id, userId);
 ```
 
 ### Example 2: Adding a New Game (Chess)
@@ -277,7 +287,7 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
   initializeState(playerIds: string[]) {
     return {
       board: createInitialChessBoard(),
-      players: playerIds.map(id => ({ playerId: id })),
+      players: playerIds.map((id) => ({ playerId: id })),
       currentTurn: 0,
       logs: [],
     };
@@ -316,31 +326,37 @@ export class ChessActionsService {
 ## ✅ Benefits Achieved
 
 ### 1. **Maintainability** ⭐⭐⭐⭐⭐
+
 - Files are now digestible (150-400 lines each)
 - Easy to find and fix bugs
 - Clear ownership of code sections
 
 ### 2. **Scalability** ⭐⭐⭐⭐⭐
+
 - Can support 200+ games
 - Adding a game takes minutes, not hours
 - No modification of core services needed
 
 ### 3. **Testability** ⭐⭐⭐⭐⭐
+
 - Each service tested in isolation
 - Mock only what you need
 - Engine tests don't affect infrastructure
 
 ### 4. **Team Collaboration** ⭐⭐⭐⭐⭐
+
 - No merge conflicts on monolithic file
 - Teams work on different services/games
 - Parallel development possible
 
 ### 5. **Performance** ⭐⭐⭐⭐
+
 - Lazy-load engines as needed
 - Smaller service instances
 - Better memory management
 
 ### 6. **Developer Experience** ⭐⭐⭐⭐⭐
+
 - Clear API through facade
 - Consistent patterns
 - Excellent documentation
@@ -350,9 +366,10 @@ export class ChessActionsService {
 ## 🔄 Migration Path
 
 ### Phase 1: ✅ COMPLETE
+
 - [x] Create base game engine abstractions
 - [x] Create engine registry
-- [x] Extract Exploding Cats engine
+- [x] Extract Critical engine
 - [x] Extract Texas Hold'em engine
 - [x] Create specialized services (rooms, sessions, history)
 - [x] Create action handler services
@@ -361,6 +378,7 @@ export class ChessActionsService {
 - [x] Update games.module.ts
 
 ### Phase 2: 🔜 NEXT STEPS
+
 - [ ] Rename `games.service.facade.ts` → `games.service.ts`
 - [ ] Archive old `games.service.ts` → `games.service.old.ts`
 - [ ] Add unit tests for all services
@@ -368,6 +386,7 @@ export class ChessActionsService {
 - [ ] Update documentation
 
 ### Phase 3: 🎯 FUTURE
+
 - [ ] Add more games (Chess, Checkers, Tic-Tac-Toe)
 - [ ] Add caching where beneficial
 - [ ] Add metrics and monitoring
@@ -404,5 +423,5 @@ The architecture is now **scalable**, **maintainable**, and **developer-friendly
 **Status**: ✅ Production Ready
 **Total Services**: 10
 **Total Lines**: ~2,370 (was 3,731)
-**Games Supported**: 2 (Exploding Cats, Texas Hold'em)
+**Games Supported**: 2 (Critical, Texas Hold'em)
 **Maximum Capacity**: 200+ games

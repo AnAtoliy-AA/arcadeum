@@ -120,7 +120,7 @@ export const GameStatuses: Story = {
 export const InlineWithText: Story = {
   render: () => (
     <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-      Exploding Kittens <Badge variant="success">LOBBY</Badge> • 3/4 players
+      Critical <Badge variant="success">LOBBY</Badge> • 3/4 players
     </p>
   ),
 };

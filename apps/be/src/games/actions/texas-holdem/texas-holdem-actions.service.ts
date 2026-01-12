@@ -23,7 +23,7 @@ export class TexasHoldemActionsService {
       userId,
     });
 
-    this.realtimeService.emitActionExecuted(session, 'fold', userId);
+    await this.realtimeService.emitActionExecuted(session, 'fold', userId);
 
     return session;
   }
@@ -38,7 +38,7 @@ export class TexasHoldemActionsService {
       userId,
     });
 
-    this.realtimeService.emitActionExecuted(session, 'check', userId);
+    await this.realtimeService.emitActionExecuted(session, 'check', userId);
 
     return session;
   }
@@ -53,7 +53,7 @@ export class TexasHoldemActionsService {
       userId,
     });
 
-    this.realtimeService.emitActionExecuted(session, 'call', userId);
+    await this.realtimeService.emitActionExecuted(session, 'call', userId);
 
     return session;
   }
@@ -69,7 +69,7 @@ export class TexasHoldemActionsService {
       payload,
     });
 
-    this.realtimeService.emitActionExecuted(session, 'raise', userId);
+    await this.realtimeService.emitActionExecuted(session, 'raise', userId);
 
     return session;
   }
@@ -84,7 +84,7 @@ export class TexasHoldemActionsService {
       userId,
     });
 
-    this.realtimeService.emitActionExecuted(session, 'all_in', userId);
+    await this.realtimeService.emitActionExecuted(session, 'all_in', userId);
 
     return session;
   }
@@ -100,7 +100,7 @@ export class TexasHoldemActionsService {
       payload,
     });
 
-    this.realtimeService.emitActionExecuted(session, 'bet', userId);
+    await this.realtimeService.emitActionExecuted(session, 'bet', userId);
 
     return session;
   }

@@ -49,7 +49,7 @@ const API_MESSAGES_EN = {
     notYourTurnDraw: 'It is not your turn to draw.',
     notYourTurnPlay: 'It is not your turn to play.',
     notParticipant: 'You are not a participant of this room.',
-    snapshotUnavailable: 'Exploding Cats snapshot is unavailable.',
+    snapshotUnavailable: 'Critical snapshot is unavailable.',
     roomInactive: 'Room is no longer active.',
     comboNotAllowed: 'Combo not allowed.',
     cannotPlayCardNow: 'Cannot play this card right now.',
@@ -59,16 +59,16 @@ const API_MESSAGES_EN = {
       'At least one consenting participant is required for a rematch.',
     startRequiresTwoPlayers: 'At least two players are required to start.',
     catCombosExplodingOnly:
-      'Cat combos are only supported for Exploding Cats sessions.',
+      'Cat combos are only supported for Critical sessions.',
     desiredCardRequired: 'Desired card is required for trio combo.',
     drawActionExplodingOnly:
-      'Draw action is only supported for Exploding Cats sessions.',
-    explodingCatsDisabled: 'Exploding Cats is not enabled for this room.',
+      'Draw action is only supported for Critical sessions.',
+    criticalDisabled: 'Critical is not enabled for this room.',
     historyNotesExplodingOnly:
-      'History notes are only supported for Exploding Cats sessions.',
+      'History notes are only supported for Critical sessions.',
     originalHostOnlyRematch: 'Only the original host may initiate a rematch.',
     playActionExplodingOnly:
-      'Play action is only supported for Exploding Cats sessions.',
+      'Play action is only supported for Critical sessions.',
     targetMustDiffer: 'Target player must be different from actor.',
     noActivePlayers: 'There are no active players in this session.',
     notInLobbyPhase: 'This room is no longer in the lobby phase.',
@@ -169,7 +169,7 @@ const API_MESSAGES_ES = {
     notYourTurnDraw: 'No es tu turno para robar.',
     notYourTurnPlay: 'No es tu turno para jugar.',
     notParticipant: 'No eres participante de esta sala.',
-    snapshotUnavailable: 'La instantánea de Exploding Cats no está disponible.',
+    snapshotUnavailable: 'La instantánea de Critical no está disponible.',
     roomInactive: 'La sala ya no está activa.',
     comboNotAllowed: 'Combinación no permitida.',
     cannotPlayCardNow: 'No puedes jugar esta carta ahora.',
@@ -180,18 +180,18 @@ const API_MESSAGES_ES = {
     startRequiresTwoPlayers:
       'Se necesitan al menos dos jugadores para iniciar.',
     catCombosExplodingOnly:
-      'Las combinaciones de gatos solo están disponibles para Exploding Cats.',
+      'Las combinaciones de gatos solo están disponibles para Critical.',
     desiredCardRequired:
       'Se requiere la carta deseada para la combinación de trío.',
     drawActionExplodingOnly:
-      'La acción de robar solo está disponible para Exploding Cats.',
-    explodingCatsDisabled: 'Exploding Cats no está habilitado en esta sala.',
+      'La acción de robar solo está disponible para Critical.',
+    criticalDisabled: 'Critical no está habilitado en esta sala.',
     historyNotesExplodingOnly:
-      'Las notas de historial solo están disponibles para Exploding Cats.',
+      'Las notas de historial solo están disponibles para Critical.',
     originalHostOnlyRematch:
       'Solo el anfitrión original puede iniciar una revancha.',
     playActionExplodingOnly:
-      'La acción de jugar solo está disponible para Exploding Cats.',
+      'La acción de jugar solo está disponible para Critical.',
     targetMustDiffer: 'El jugador objetivo debe ser diferente al actor.',
     noActivePlayers: 'No hay jugadores activos en esta sesión.',
     notInLobbyPhase: 'Esta sala ya no está en la fase de lobby.',
@@ -295,7 +295,7 @@ const API_MESSAGES_FR = {
     notYourTurnDraw: "Ce n'est pas votre tour de piocher.",
     notYourTurnPlay: "Ce n'est pas votre tour de jouer.",
     notParticipant: 'Vous ne participez pas à cette salle.',
-    snapshotUnavailable: 'La capture Exploding Cats est indisponible.',
+    snapshotUnavailable: 'La capture Critical est indisponible.',
     roomInactive: "La salle n'est plus active.",
     comboNotAllowed: 'Combinaison non autorisée.',
     cannotPlayCardNow: 'Impossible de jouer cette carte maintenant.',
@@ -306,17 +306,17 @@ const API_MESSAGES_FR = {
     startRequiresTwoPlayers:
       'Au moins deux joueurs sont nécessaires pour démarrer.',
     catCombosExplodingOnly:
-      'Les combos de chats sont réservés aux sessions Exploding Cats.',
+      'Les combos de chats sont réservés aux sessions Critical.',
     desiredCardRequired:
       'La carte souhaitée est requise pour une combinaison trio.',
     drawActionExplodingOnly:
-      "L'action piocher est réservée aux sessions Exploding Cats.",
-    explodingCatsDisabled: "Exploding Cats n'est pas activé pour cette salle.",
+      "L'action piocher est réservée aux sessions Critical.",
+    criticalDisabled: "Critical n'est pas activé pour cette salle.",
     historyNotesExplodingOnly:
-      "Les notes d'historique sont réservées aux sessions Exploding Cats.",
+      "Les notes d'historique sont réservées aux sessions Critical.",
     originalHostOnlyRematch: "Seul l'hôte d'origine peut lancer une revanche.",
     playActionExplodingOnly:
-      "L'action jouer est réservée aux sessions Exploding Cats.",
+      "L'action jouer est réservée aux sessions Critical.",
     targetMustDiffer: "Le joueur cible doit être différent de l'acteur.",
     noActivePlayers: "Il n'y a aucun joueur actif dans cette session.",
     notInLobbyPhase: "Cette salle n'est plus en phase de lobby.",

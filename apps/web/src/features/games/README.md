@@ -35,7 +35,7 @@ apps/web/src/features/games/
 │   ├── gameProps.ts         # Props factory and validation
 │   └── index.ts             # Library exports
 ├── implementations/         # Game implementations
-│   ├── exploding-cats/     # Exploding Kittens game
+│   ├── critical/     # Critical game
 │   │   └── Game.tsx
 │   ├── texas-holdem/       # Texas Hold'em game
 │   │   └── Game.tsx
@@ -80,20 +80,26 @@ Singleton factory for game management:
 ### 4. UI Components
 
 #### GameLayout
+
 Standardized layout with:
+
 - Fullscreen support
 - Control panel integration
 - Responsive design
 
 #### GameControls
+
 Reusable control components:
+
 - Start buttons
 - Ready buttons
 - Leave buttons
 - Custom actions
 
 #### GameCard
+
 Display component for:
+
 - Game thumbnails
 - Metadata display
 - Status indicators
@@ -111,7 +117,7 @@ export default function GameName({
   isHost,
   onPostHistoryNote,
   config,
-  onAction
+  onAction,
 }: BaseGameProps) {
   // Game implementation
 }
@@ -127,30 +133,30 @@ Update `registry.ts`:
 // Add to gameLoaders
 export const gameLoaders = {
   ...existingGames,
-  new_game_v1: () => import("./implementations/new-game/Game"),
+  new_game_v1: () => import('./implementations/new-game/Game'),
 };
 
 // Add to gameMetadata
 export const gameMetadata = {
   ...existingMetadata,
   new_game_v1: {
-    slug: "new_game_v1",
-    name: "New Game",
-    description: "A fun new game",
-    category: "Board Game",
+    slug: 'new_game_v1',
+    name: 'New Game',
+    description: 'A fun new game',
+    category: 'Board Game',
     minPlayers: 2,
     maxPlayers: 4,
     estimatedDuration: 30,
     complexity: 3,
-    ageRating: "G",
-    thumbnail: "/games/new-game.jpg",
-    version: "1.0.0",
+    ageRating: 'G',
+    thumbnail: '/games/new-game.jpg',
+    version: '1.0.0',
     supportsAI: true,
-    tags: ["board", "strategy"],
-    implementationPath: "./implementations/new-game/Game",
-    lastUpdated: "2024-01-01",
-    status: "beta"
-  }
+    tags: ['board', 'strategy'],
+    implementationPath: './implementations/new-game/Game',
+    lastUpdated: '2024-01-01',
+    status: 'beta',
+  },
 };
 ```
 
@@ -159,9 +165,9 @@ export const gameMetadata = {
 Create `implementations/new-game/Game.tsx`:
 
 ```tsx
-"use client";
+'use client';
 
-import { BaseGameProps } from "@/features/games/types";
+import { BaseGameProps } from '@/features/games/types';
 
 export default function NewGame({
   room,
@@ -170,14 +176,10 @@ export default function NewGame({
   isHost,
   onPostHistoryNote,
   config,
-  onAction
+  onAction,
 }: BaseGameProps) {
   // Use GameLayout for consistent styling
-  return (
-    <GameLayout>
-      {/* Your game implementation */}
-    </GameLayout>
-  );
+  return <GameLayout>{/* Your game implementation */}</GameLayout>;
 }
 ```
 
@@ -186,11 +188,8 @@ export default function NewGame({
 Update `registry.types.ts`:
 
 ```typescript
-export type GameSlug = 
-  | "exploding_cats_v1"
-  | "texas_holdem_v1"
-  | "new_game_v1"  // Add your game
-  // ... rest of games
+export type GameSlug = 'critical_v1' | 'texas_holdem_v1' | 'new_game_v1'; // Add your game
+// ... rest of games
 ```
 
 ## Best Practices
@@ -236,6 +235,7 @@ export type GameSlug =
 ### Example Migration
 
 **Before:**
+
 ```tsx
 // Old implementation
 const OldGame = ({ room, session, userId, isHost }) => {
@@ -244,6 +244,7 @@ const OldGame = ({ room, session, userId, isHost }) => {
 ```
 
 **After:**
+
 ```tsx
 // New implementation
 export default function NewGame({
@@ -253,13 +254,9 @@ export default function NewGame({
   isHost,
   onPostHistoryNote,
   config,
-  onAction
+  onAction,
 }: BaseGameProps) {
-  return (
-    <GameLayout>
-      {/* Game implementation */}
-    </GameLayout>
-  );
+  return <GameLayout>{/* Game implementation */}</GameLayout>;
 }
 ```
 
@@ -268,6 +265,7 @@ export default function NewGame({
 ### Unit Tests
 
 Each game should have:
+
 - Component tests
 - Logic tests
 - Integration tests
@@ -275,6 +273,7 @@ Each game should have:
 ### E2E Tests
 
 Test scenarios:
+
 - Game loading
 - Player interactions
 - State management
@@ -290,7 +289,9 @@ Test scenarios:
 ## Performance Considerations
 
 ### Lazy Loading
+
 Games are loaded on-demand using dynamic imports:
+
 ```typescript
 gameLoaders: {
   game_slug: () => import("./implementations/game/Game"),
@@ -298,12 +299,15 @@ gameLoaders: {
 ```
 
 ### Caching
+
 GameFactory caches loaded components:
+
 ```typescript
-const gameComponent = await gameFactory.loadGame("game_slug");
+const gameComponent = await gameFactory.loadGame('game_slug');
 ```
 
 ### Bundle Splitting
+
 Each game is in a separate bundle for optimal loading.
 
 ## Future Enhancements
@@ -326,6 +330,7 @@ Each game is in a separate bundle for optimal loading.
 ## Support
 
 For questions or issues:
+
 - Check this documentation
 - Review existing game implementations
 - Create an issue with detailed description

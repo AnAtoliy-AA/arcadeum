@@ -99,7 +99,7 @@ export const WithSelect: Story = {
     <FormGroup {...args}>
       <Select id="gametype" fullWidth>
         <option value="">Select a game...</option>
-        <option value="exploding_kittens">Exploding Kittens</option>
+        <option value="critical">Critical</option>
         <option value="texas_holdem">Texas Hold&apos;em</option>
       </Select>
     </FormGroup>
@@ -135,7 +135,7 @@ export const CompleteForm: Story = {
       <FormGroup label="Game" htmlFor="game" required>
         <Select id="game" fullWidth>
           <option value="">Select a game...</option>
-          <option value="exploding_kittens">Exploding Kittens</option>
+          <option value="critical">Critical</option>
         </Select>
       </FormGroup>
       <FormGroup

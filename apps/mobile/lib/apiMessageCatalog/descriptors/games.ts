@@ -238,11 +238,8 @@ export const gamesDescriptors: ApiMessageDescriptor[] = [
   {
     code: 3033,
     translationKey: 'api.games.snapshotUnavailable',
-    fallbackMessage: 'Exploding Cats snapshot is unavailable.',
-    aliases: [
-      'games.snapshotUnavailable',
-      'Exploding Cats snapshot is unavailable.',
-    ],
+    fallbackMessage: 'Critical snapshot is unavailable.',
+    aliases: ['games.snapshotUnavailable', 'Critical snapshot is unavailable.'],
   },
   {
     code: 3034,
@@ -302,11 +299,10 @@ export const gamesDescriptors: ApiMessageDescriptor[] = [
   {
     code: 3041,
     translationKey: 'api.games.catCombosExplodingOnly',
-    fallbackMessage:
-      'Cat combos are only supported for Exploding Cats sessions.',
+    fallbackMessage: 'Cat combos are only supported for Critical sessions.',
     aliases: [
       'games.catCombosExplodingOnly',
-      'Cat combos are only supported for Exploding Cats sessions.',
+      'Cat combos are only supported for Critical sessions.',
     ],
   },
   {
@@ -321,30 +317,28 @@ export const gamesDescriptors: ApiMessageDescriptor[] = [
   {
     code: 3043,
     translationKey: 'api.games.drawActionExplodingOnly',
-    fallbackMessage:
-      'Draw action is only supported for Exploding Cats sessions.',
+    fallbackMessage: 'Draw action is only supported for Critical sessions.',
     aliases: [
       'games.drawActionExplodingOnly',
-      'Draw action is only supported for Exploding Cats sessions.',
+      'Draw action is only supported for Critical sessions.',
     ],
   },
   {
     code: 3044,
-    translationKey: 'api.games.explodingCatsDisabled',
-    fallbackMessage: 'Exploding Cats is not enabled for this room.',
+    translationKey: 'api.games.criticalDisabled',
+    fallbackMessage: 'Critical is not enabled for this room.',
     aliases: [
-      'games.explodingCatsDisabled',
-      'Exploding Cats is not enabled for this room.',
+      'games.criticalDisabled',
+      'Critical is not enabled for this room.',
     ],
   },
   {
     code: 3045,
     translationKey: 'api.games.historyNotesExplodingOnly',
-    fallbackMessage:
-      'History notes are only supported for Exploding Cats sessions.',
+    fallbackMessage: 'History notes are only supported for Critical sessions.',
     aliases: [
       'games.historyNotesExplodingOnly',
-      'History notes are only supported for Exploding Cats sessions.',
+      'History notes are only supported for Critical sessions.',
     ],
   },
   {
@@ -359,11 +353,10 @@ export const gamesDescriptors: ApiMessageDescriptor[] = [
   {
     code: 3047,
     translationKey: 'api.games.playActionExplodingOnly',
-    fallbackMessage:
-      'Play action is only supported for Exploding Cats sessions.',
+    fallbackMessage: 'Play action is only supported for Critical sessions.',
     aliases: [
       'games.playActionExplodingOnly',
-      'Play action is only supported for Exploding Cats sessions.',
+      'Play action is only supported for Critical sessions.',
     ],
   },
   {

@@ -20,7 +20,7 @@ import { GamesService } from './games.service';
 import {
   GAME_ROOM_PARTICIPATION_FILTERS,
   type GameRoomParticipationFilter,
-  type StartExplodingCatsSessionResult,
+  type StartCriticalSessionResult,
 } from './games.types';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { JoinGameRoomDto } from './dtos/join-game-room.dto';
@@ -35,14 +35,14 @@ import {
   type GameRoomVisibility,
 } from './schemas/game-room.schema';
 
-import { ExplodingCatsService } from './exploding-cats/exploding-cats.service';
+import { CriticalService } from './critical/critical.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 
 @Controller('games')
 export class GamesController {
   constructor(
     private readonly gamesService: GamesService,
-    private readonly explodingCatsService: ExplodingCatsService,
+    private readonly criticalService: CriticalService,
     private readonly texasHoldemService: TexasHoldemService,
   ) {}
 
@@ -341,7 +341,7 @@ export class GamesController {
   async startRoom(
     @Req() req: Request,
     @Body() dto: StartGameDto,
-  ): Promise<StartExplodingCatsSessionResult> {
+  ): Promise<StartCriticalSessionResult> {
     const user = req.user as AuthenticatedUser | undefined;
     if (!user) {
       throw new UnauthorizedException();
@@ -362,15 +362,11 @@ export class GamesController {
         user.userId,
         roomId,
         dto.engine,
-      ) as Promise<StartExplodingCatsSessionResult>;
+      ) as Promise<StartCriticalSessionResult>;
     }
 
-    // Default to Exploding Cats (legacy behavior)
-    return this.explodingCatsService.startSession(
-      user.userId,
-      roomId,
-      dto.engine,
-    );
+    // Default to Critical (legacy behavior)
+    return this.criticalService.startSession(user.userId, roomId, dto.engine);
   }
 
   @UseGuards(JwtAuthGuard)

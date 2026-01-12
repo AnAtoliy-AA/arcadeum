@@ -10,23 +10,20 @@ import { useThemedStyles } from '@/hooks/useThemedStyles';
 import type { Palette } from '@/hooks/useThemedStyles';
 
 // Known game IDs with translation keys
-type KnownGameId =
-  | 'exploding_kittens_v1'
-  | 'texas_holdem_v1'
-  | 'coup'
-  | 'pandemic-lite';
+type KnownGameId = 'critical_v1' | 'texas_holdem_v1' | 'coup' | 'pandemic-lite';
 type GameNameKey = `games.${KnownGameId}.name`;
 
 const GAME_NAME_KEYS: Record<KnownGameId, GameNameKey> = {
-  exploding_kittens_v1: 'games.exploding_kittens_v1.name',
+  critical_v1: 'games.critical_v1.name',
   texas_holdem_v1: 'games.texas_holdem_v1.name',
   coup: 'games.coup.name',
   'pandemic-lite': 'games.pandemic-lite.name',
 };
 
 function getGameNameKey(gameId: string): TranslationKey | null {
-  if (gameId in GAME_NAME_KEYS) {
-    return GAME_NAME_KEYS[gameId as KnownGameId];
+  const id = gameId === 'exploding_kittens_v1' ? 'critical_v1' : gameId;
+  if (id in GAME_NAME_KEYS) {
+    return GAME_NAME_KEYS[id as KnownGameId];
   }
   return null;
 }
@@ -44,7 +41,10 @@ const gameNameLookup = new Map(
 );
 
 function resolveGameName(gameId: string): string | undefined {
-  return gameNameLookup.get(gameId.trim());
+  const id = (
+    gameId === 'exploding_kittens_v1' ? 'critical_v1' : gameId
+  ).trim();
+  return gameNameLookup.get(id);
 }
 
 type HistoryListItemProps = {

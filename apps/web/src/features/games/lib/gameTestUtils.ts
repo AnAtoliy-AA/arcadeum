@@ -1,9 +1,9 @@
-import type { 
-  GameRoomSummary, 
-  GameSessionSummary, 
-  BaseGameProps, 
-  GameConfig 
-} from "../types";
+import type {
+  GameRoomSummary,
+  GameSessionSummary,
+  BaseGameProps,
+  GameConfig,
+} from '../types';
 
 /**
  * Test utilities for games feature
@@ -12,18 +12,20 @@ export class GameTestUtils {
   /**
    * Create mock game room
    */
-  static createMockRoom(overrides: Partial<GameRoomSummary> = {}): GameRoomSummary {
+  static createMockRoom(
+    overrides: Partial<GameRoomSummary> = {},
+  ): GameRoomSummary {
     return {
-      id: "test-room-1",
-      name: "Test Room",
-      gameId: "exploding_kittens_v1",
+      id: 'test-room-1',
+      name: 'Test Room',
+      gameId: 'critical_v1',
       playerCount: 2,
       maxPlayers: 5,
-      status: "in_progress",
-      visibility: "public",
-      createdAt: new Date("2024-01-01").toISOString(),
-      hostId: "player-1",
-      ...overrides
+      status: 'in_progress',
+      visibility: 'public',
+      createdAt: new Date('2024-01-01').toISOString(),
+      hostId: 'player-1',
+      ...overrides,
     };
   }
 
@@ -32,39 +34,39 @@ export class GameTestUtils {
    */
   static createMockSession(
     room: GameRoomSummary,
-    overrides: Partial<GameSessionSummary> = {}
+    overrides: Partial<GameSessionSummary> = {},
   ): GameSessionSummary {
     return {
-      id: "test-session-1",
+      id: 'test-session-1',
       roomId: room.id,
       gameId: room.gameId,
       engine: room.gameId,
-      status: "active",
+      status: 'active',
       state: {
         snapshot: {
           players: [
             {
-              playerId: "player-1",
-              hand: ["defuse", "attack"],
+              playerId: 'player-1',
+              hand: ['defuse', 'attack'],
               alive: true,
-              order: 0
+              order: 0,
             },
             {
-              playerId: "player-2",
-              hand: ["skip", "favor"],
+              playerId: 'player-2',
+              hand: ['skip', 'favor'],
               alive: true,
-              order: 1
-            }
+              order: 1,
+            },
           ],
-          playerOrder: ["player-1", "player-2"],
+          playerOrder: ['player-1', 'player-2'],
           currentTurnIndex: 0,
           deckSize: 30,
-          playedCards: []
-        }
+          playedCards: [],
+        },
       },
-      createdAt: new Date("2024-01-01T10:00:00Z").toISOString(),
-      updatedAt: new Date("2024-01-01T10:00:00Z").toISOString(),
-      ...overrides
+      createdAt: new Date('2024-01-01T10:00:00Z').toISOString(),
+      updatedAt: new Date('2024-01-01T10:00:00Z').toISOString(),
+      ...overrides,
     };
   }
 
@@ -73,53 +75,55 @@ export class GameTestUtils {
    */
   static createMockConfig(overrides: Partial<GameConfig> = {}): GameConfig {
     return {
-      slug: "test-game_v1",
-      name: "Test Game",
-      description: "A test game for testing",
-      category: "Test Game",
+      slug: 'test-game_v1',
+      name: 'Test Game',
+      description: 'A test game for testing',
+      category: 'Test Game',
       minPlayers: 2,
       maxPlayers: 4,
       estimatedDuration: 30,
       complexity: 2,
-      ageRating: "G",
-      thumbnail: "/test-game.jpg",
-      version: "1.0.0",
+      ageRating: 'G',
+      thumbnail: '/test-game.jpg',
+      version: '1.0.0',
       supportsAI: false,
-      tags: ["test", "game"],
-      ...overrides
+      tags: ['test', 'game'],
+      ...overrides,
     };
   }
 
   /**
    * Create mock base game props
    */
-  static createMockProps(overrides: Partial<BaseGameProps> = {}): BaseGameProps {
+  static createMockProps(
+    overrides: Partial<BaseGameProps> = {},
+  ): BaseGameProps {
     const room = this.createMockRoom();
     const session = this.createMockSession(room);
     const config = this.createMockConfig({
-      slug: room.gameId
+      slug: room.gameId,
     });
 
     return {
       roomId: room.id,
       room,
       session,
-      currentUserId: "player-1",
+      currentUserId: 'player-1',
       isHost: true,
       config,
       onPostHistoryNote: () => {},
       onAction: () => {},
-      ...overrides
+      ...overrides,
     };
   }
 
   /**
    * Create mock props for different scenarios
    */
-  static createPropsForLobby(hostId: string = "player-1"): BaseGameProps {
+  static createPropsForLobby(hostId: string = 'player-1'): BaseGameProps {
     const room = this.createMockRoom({ hostId });
     const config = this.createMockConfig({
-      slug: room.gameId
+      slug: room.gameId,
     });
 
     return {
@@ -130,18 +134,18 @@ export class GameTestUtils {
       isHost: hostId === room.hostId,
       config,
       onPostHistoryNote: () => {},
-      onAction: () => {}
+      onAction: () => {},
     };
   }
 
   static createPropsForActiveGame(
-    currentUserId: string = "player-1",
-    isHost: boolean = false
+    currentUserId: string = 'player-1',
+    isHost: boolean = false,
   ): BaseGameProps {
     const room = this.createMockRoom();
     const session = this.createMockSession(room);
     const config = this.createMockConfig({
-      slug: room.gameId
+      slug: room.gameId,
     });
 
     return {
@@ -152,28 +156,28 @@ export class GameTestUtils {
       isHost,
       config,
       onPostHistoryNote: () => {},
-      onAction: () => {}
+      onAction: () => {},
     };
   }
 
   static createPropsForCompletedGame(): BaseGameProps {
     const room = this.createMockRoom();
     const session = this.createMockSession(room, {
-      status: "completed"
+      status: 'completed',
     });
     const config = this.createMockConfig({
-      slug: room.gameId
+      slug: room.gameId,
     });
 
     return {
       roomId: room.id,
       room,
       session,
-      currentUserId: "player-1",
+      currentUserId: 'player-1',
       isHost: false,
       config,
       onPostHistoryNote: () => {},
-      onAction: () => {}
+      onAction: () => {},
     };
   }
 
@@ -182,101 +186,110 @@ export class GameTestUtils {
    */
   static createMockTexasHoldemSession(
     room: GameRoomSummary,
-    overrides: Partial<GameSessionSummary> = {}
+    overrides: Partial<GameSessionSummary> = {},
   ): GameSessionSummary {
     return {
-      id: "test-texas-session-1",
+      id: 'test-texas-session-1',
       roomId: room.id,
       gameId: room.gameId,
       engine: room.gameId,
-      status: "active",
+      status: 'active',
       state: {
         snapshot: {
           players: [
             {
-              playerId: "player-1",
-              hand: [{ rank: "A", suit: "hearts" }, { rank: "K", suit: "spades" }],
+              playerId: 'player-1',
+              hand: [
+                { rank: 'A', suit: 'hearts' },
+                { rank: 'K', suit: 'spades' },
+              ],
               chips: 1000,
               currentBet: 20,
               folded: false,
               allIn: false,
-              order: 0
+              order: 0,
             },
             {
-              playerId: "player-2",
-              hand: [{ rank: "Q", suit: "diamonds" }, { rank: "J", suit: "clubs" }],
+              playerId: 'player-2',
+              hand: [
+                { rank: 'Q', suit: 'diamonds' },
+                { rank: 'J', suit: 'clubs' },
+              ],
               chips: 800,
               currentBet: 20,
               folded: false,
               allIn: false,
-              order: 1
-            }
+              order: 1,
+            },
           ],
-          playerOrder: ["player-1", "player-2"],
+          playerOrder: ['player-1', 'player-2'],
           currentTurnIndex: 0,
           dealerIndex: 0,
           communityCards: [
-            { rank: "10", suit: "hearts" },
-            { rank: "9", suit: "diamonds" },
-            { rank: "8", suit: "clubs" }
+            { rank: '10', suit: 'hearts' },
+            { rank: '9', suit: 'diamonds' },
+            { rank: '8', suit: 'clubs' },
           ],
           pot: 40,
           currentBet: 20,
-          bettingRound: "flop"
-        }
+          bettingRound: 'flop',
+        },
       },
-      createdAt: new Date("2024-01-01T10:00:00Z").toISOString(),
-      updatedAt: new Date("2024-01-01T10:00:00Z").toISOString(),
-      ...overrides
+      createdAt: new Date('2024-01-01T10:00:00Z').toISOString(),
+      updatedAt: new Date('2024-01-01T10:00:00Z').toISOString(),
+      ...overrides,
     };
   }
 
   /**
-   * Create mock Exploding Kittens session
+   * Create mock Critical session
    */
-  static createMockExplodingKittensSession(
+  static createMockCriticalSession(
     room: GameRoomSummary,
-    overrides: Partial<GameSessionSummary> = {}
+    overrides: Partial<GameSessionSummary> = {},
   ): GameSessionSummary {
     return {
-      id: "test-exploding-session-1",
+      id: 'test-exploding-session-1',
       roomId: room.id,
       gameId: room.gameId,
       engine: room.gameId,
-      status: "active",
+      status: 'active',
       state: {
         snapshot: {
           players: [
             {
-              playerId: "player-1",
-              hand: ["defuse", "attack", "skip"],
+              playerId: 'player-1',
+              hand: ['defuse', 'attack', 'skip'],
               alive: true,
-              order: 0
+              order: 0,
             },
             {
-              playerId: "player-2",
-              hand: ["tacocat", "hairy_potato_cat", "rainbow_ralphing_cat"],
+              playerId: 'player-2',
+              hand: ['tacocat', 'hairy_potato_cat', 'rainbow_ralphing_cat'],
               alive: true,
-              order: 1
-            }
+              order: 1,
+            },
           ],
-          playerOrder: ["player-1", "player-2"],
+          playerOrder: ['player-1', 'player-2'],
           currentTurnIndex: 0,
           deckSize: 25,
           playedCards: [],
-          explodingCatsInDeck: 3
-        }
+          criticalInDeck: 3,
+        },
       },
-      createdAt: new Date("2024-01-01T10:00:00Z").toISOString(),
-      updatedAt: new Date("2024-01-01T10:00:00Z").toISOString(),
-      ...overrides
+      createdAt: new Date('2024-01-01T10:00:00Z').toISOString(),
+      updatedAt: new Date('2024-01-01T10:00:00Z').toISOString(),
+      ...overrides,
     };
   }
 
   /**
    * Test utilities for common scenarios
    */
-  static testGameRenders(_GameComponent: React.ComponentType<BaseGameProps>, _props: BaseGameProps) {
+  static testGameRenders(
+    _GameComponent: React.ComponentType<BaseGameProps>,
+    _props: BaseGameProps,
+  ) {
     // Basic render test - just check component accepts props
     try {
       return { success: true, element: null };
@@ -287,14 +300,14 @@ export class GameTestUtils {
 
   static testGamePropsValidation(props: BaseGameProps) {
     const errors: string[] = [];
-    
-    if (!props.room) errors.push("Room is required");
-    if (!props.currentUserId) errors.push("Current user ID is required");
-    if (!props.config) errors.push("Game config is required");
-    
+
+    if (!props.room) errors.push('Room is required');
+    if (!props.currentUserId) errors.push('Current user ID is required');
+    if (!props.config) errors.push('Game config is required');
+
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -303,9 +316,9 @@ export class GameTestUtils {
     const scenarios = {
       mobile: { ...props, isMobile: true },
       desktop: { ...props, isMobile: false },
-      fullscreen: { ...props, fullscreen: true }
+      fullscreen: { ...props, fullscreen: true },
     };
-    
+
     return scenarios;
   }
 }
@@ -319,7 +332,7 @@ export const mockGameActions = {
   fold: () => {},
   call: () => {},
   raise: () => {},
-  check: () => {}
+  check: () => {},
 };
 
 // Test data factories
@@ -329,13 +342,13 @@ export const testDataFactory = {
     name: `Player ${id}`,
     isHost: false,
     ready: false,
-    ...overrides
+    ...overrides,
   }),
 
   card: (rank: string, suit = 'hearts') => ({
     rank,
-    suit
-  })
+    suit,
+  }),
 };
 
 // Integration test helpers
@@ -374,19 +387,19 @@ export const integrationTestHelpers = {
     const room = GameTestUtils.createMockRoom({ gameId: gameSlug });
     const session = GameTestUtils.createMockSession(room);
     const config = GameTestUtils.createMockConfig({ slug: gameSlug });
-    
+
     const props = {
       roomId: room.id,
       room,
       session,
-      currentUserId: "test-user",
+      currentUserId: 'test-user',
       isHost: true,
       config,
       onPostHistoryNote: () => {},
-      onAction: () => {}
+      onAction: () => {},
     };
-    
+
     const validation = GameTestUtils.testGamePropsValidation(props);
     return { props, validation };
-  }
+  },
 };

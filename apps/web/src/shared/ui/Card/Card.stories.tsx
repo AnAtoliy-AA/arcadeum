@@ -164,7 +164,7 @@ export const GameRoomCards: Story = {
               </span>
             </div>
             <span style={{ fontSize: '0.85rem', opacity: 0.7 }}>
-              Exploding Kittens • {i + 1}/4
+              Critical • {i + 1}/4
             </span>
           </div>
         </Card>

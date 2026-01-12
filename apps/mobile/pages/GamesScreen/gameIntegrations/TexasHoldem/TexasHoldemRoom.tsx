@@ -23,8 +23,8 @@ import {
   getRoomStatusLabel,
 } from '../../roomUtils';
 import { useTranslation } from '@/lib/i18n';
-import { ExplodingCatsRoomTopBar } from '../components/ExplodingCatsRoomTopBar';
-import { ExplodingCatsRoomMetaItem as MetaItem } from '../components/ExplodingCatsRoomMetaItem';
+import { CriticalRoomTopBar } from '../components/CriticalRoomTopBar';
+import { CriticalRoomMetaItem as MetaItem } from '../components/CriticalRoomMetaItem';
 import {
   BACKGROUND_GRADIENT_COORDS,
   HERO_GRADIENT_COORDS,
@@ -154,7 +154,7 @@ export const TexasHoldemRoom = forwardRef<
       {...BACKGROUND_GRADIENT_COORDS}
       style={styles.container}
     >
-      <ExplodingCatsRoomTopBar
+      <CriticalRoomTopBar
         variant={topBarVariant}
         controlsCollapsed={controlsCollapsed}
         onToggleControls={handleToggleControls}

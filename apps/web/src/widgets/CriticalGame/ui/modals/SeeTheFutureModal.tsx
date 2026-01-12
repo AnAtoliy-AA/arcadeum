@@ -19,6 +19,7 @@ interface SeeTheFutureModalProps {
   onClose: () => void;
   cards: CriticalCard[];
   t: (key: TranslationKey) => string;
+  cardVariant?: string;
 }
 
 export const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
@@ -26,6 +27,7 @@ export const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
   onClose,
   cards,
   t,
+  cardVariant,
 }) => {
   if (!isOpen) return null;
 
@@ -46,7 +48,7 @@ export const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
               </div>
               <div style={{ fontSize: '2rem' }}>{getCardEmoji(card)}</div>
               <div style={{ fontSize: '0.75rem' }}>
-                {t(getCardTranslationKey(card)) || card}
+                {t(getCardTranslationKey(card, cardVariant)) || card}
               </div>
             </OptionButton>
           ))}

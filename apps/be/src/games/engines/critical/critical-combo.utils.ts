@@ -16,8 +16,8 @@ export interface LogEntryOptions {
   senderName?: string | null;
 }
 
-/** Execute cat combo - Pair, Trio, or Fiver */
-export function executeCatCombo(
+/** Execute collection combo - Pair, Trio, or Fiver */
+export function executeCollectionCombo(
   state: CriticalState,
   playerId: string,
   cards: CriticalCard[],

@@ -71,6 +71,7 @@ export const sharedMessages = {
       title: 'Create Game Room',
       sectionGame: 'Select Game',
       sectionExpansions: 'Expansion Packs',
+      sectionVariant: 'Game Theme',
       sectionDetails: 'Room Details',
       fieldName: 'Room Name',
       namePlaceholder: 'Enter room name',
@@ -106,6 +107,8 @@ export const sharedMessages = {
     },
   },
   es: {
+    coup: { name: 'Coup' },
+    'pandemic-lite': { name: 'Pandemic: Rapid Response' },
     lounge: {
       activeTitle: 'Salas de Juego',
       emptyTitle: 'No se encontraron salas. ¡Crea una para empezar!',
@@ -173,6 +176,7 @@ export const sharedMessages = {
       title: 'Crear Sala de Juego',
       sectionGame: 'Seleccionar Juego',
       sectionExpansions: 'Paquetes de Expansión',
+      sectionVariant: 'Tema del Juego',
       sectionDetails: 'Detalles de la Sala',
       fieldName: 'Nombre de la Sala',
       namePlaceholder: 'Ingresa el nombre de la sala',
@@ -209,6 +213,8 @@ export const sharedMessages = {
     },
   },
   fr: {
+    coup: { name: 'Coup' },
+    'pandemic-lite': { name: 'Pandemic: Rapid Response' },
     lounge: {
       activeTitle: 'Salles de Jeu',
       emptyTitle: 'Aucune salle trouvée. Créez-en une pour commencer !',
@@ -276,6 +282,7 @@ export const sharedMessages = {
       title: 'Créer une Salle de Jeu',
       sectionGame: 'Sélectionner un Jeu',
       sectionExpansions: "Packs d'Extension",
+      sectionVariant: 'Thème du Jeu',
       sectionDetails: 'Détails de la Salle',
       fieldName: 'Nom de la Salle',
       namePlaceholder: 'Entrez le nom de la salle',

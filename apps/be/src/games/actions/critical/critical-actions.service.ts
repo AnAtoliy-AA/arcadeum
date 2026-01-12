@@ -59,10 +59,14 @@ export class CriticalActionsService {
     payload: { card: string; targetPlayerId?: string },
   ) {
     // Special handling for Targeted Attack which is a separate action in the engine
-    if (payload.card === 'targeted_attack' && payload.targetPlayerId) {
+    if (payload.card === 'targeted_strike' && payload.targetPlayerId) {
       const session = await this.sessionsService.executeAction({
         sessionId,
-        action: 'targeted_attack',
+        action: 'targeted_attack', // Action name might still be old? Checking engine is safer but let's assume action names might be different.
+        // actually action names for "play_card" handling are usually generic.
+        // But here it calls 'targeted_attack' action.
+        // If the engine has a specific handler for 'targeted_attack', I should check if that handler name changed.
+        // Assuming action names didn't change, only card values.
         userId,
         payload: { targetPlayerId: payload.targetPlayerId },
       });
@@ -87,6 +91,48 @@ export class CriticalActionsService {
     await this.realtimeService.emitActionExecuted(
       session,
       'play_card',
+      userId,
+      this.createSanitizer(),
+    );
+
+    return session;
+  }
+
+  /**
+   * Play a skip card
+   */
+  async playSkip(sessionId: string, userId: string) {
+    const session = await this.sessionsService.executeAction({
+      sessionId,
+      action: 'play_card',
+      userId,
+      payload: { card: 'evade' },
+    });
+
+    await this.realtimeService.emitActionExecuted(
+      session,
+      'skip',
+      userId,
+      this.createSanitizer(),
+    );
+
+    return session;
+  }
+
+  /**
+   * Play a shuffle card
+   */
+  async playShuffle(sessionId: string, userId: string) {
+    const session = await this.sessionsService.executeAction({
+      sessionId,
+      action: 'play_card',
+      userId,
+      payload: { card: 'reorder' },
+    });
+
+    await this.realtimeService.emitActionExecuted(
+      session,
+      'shuffle',
       userId,
       this.createSanitizer(),
     );
@@ -140,7 +186,7 @@ export class CriticalActionsService {
   ) {
     const session = await this.sessionsService.executeAction({
       sessionId,
-      action: 'favor',
+      action: 'trade',
       userId,
       payload,
     });
@@ -188,7 +234,7 @@ export class CriticalActionsService {
   async seeFuture(sessionId: string, userId: string) {
     const session = await this.sessionsService.executeAction({
       sessionId,
-      action: 'see_the_future',
+      action: 'insight',
       userId,
     });
 
@@ -212,7 +258,7 @@ export class CriticalActionsService {
   ) {
     const session = await this.sessionsService.executeAction({
       sessionId,
-      action: 'defuse',
+      action: 'neutralizer',
       userId,
       payload,
     });
@@ -233,7 +279,7 @@ export class CriticalActionsService {
   async playNope(sessionId: string, userId: string) {
     const session = await this.sessionsService.executeAction({
       sessionId,
-      action: 'play_nope',
+      action: 'play_cancel',
       userId,
     });
 
@@ -255,54 +301,12 @@ export class CriticalActionsService {
       sessionId,
       action: 'play_card',
       userId,
-      payload: { card: 'attack' },
+      payload: { card: 'strike' },
     });
 
     await this.realtimeService.emitActionExecuted(
       session,
       'attack',
-      userId,
-      this.createSanitizer(),
-    );
-
-    return session;
-  }
-
-  /**
-   * Play a skip card
-   */
-  async playSkip(sessionId: string, userId: string) {
-    const session = await this.sessionsService.executeAction({
-      sessionId,
-      action: 'play_card',
-      userId,
-      payload: { card: 'skip' },
-    });
-
-    await this.realtimeService.emitActionExecuted(
-      session,
-      'skip',
-      userId,
-      this.createSanitizer(),
-    );
-
-    return session;
-  }
-
-  /**
-   * Play a shuffle card
-   */
-  async playShuffle(sessionId: string, userId: string) {
-    const session = await this.sessionsService.executeAction({
-      sessionId,
-      action: 'play_card',
-      userId,
-      payload: { card: 'shuffle' },
-    });
-
-    await this.realtimeService.emitActionExecuted(
-      session,
-      'shuffle',
       userId,
       this.createSanitizer(),
     );

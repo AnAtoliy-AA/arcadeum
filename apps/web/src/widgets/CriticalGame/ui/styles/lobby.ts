@@ -367,3 +367,10 @@ export const Dot = styled.div<{ $delay: number }>`
   animation: ${pulse} 1.4s ease-in-out infinite;
   animation-delay: ${({ $delay }) => $delay}s;
 `;
+
+export const VariantSelectorWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: 0.5rem;
+`;

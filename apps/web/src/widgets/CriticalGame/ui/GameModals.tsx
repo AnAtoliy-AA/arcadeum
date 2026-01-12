@@ -92,6 +92,7 @@ export interface GameModalsProps {
   // Shared
   resolveDisplayName: (playerId?: string, fallback?: string) => string;
   t: (key: string, params?: Record<string, unknown>) => string;
+  cardVariant?: string;
 }
 
 export function GameModals({
@@ -160,6 +161,7 @@ export function GameModals({
   // Shared
   resolveDisplayName,
   t,
+  cardVariant,
 }: GameModalsProps) {
   return (
     <>
@@ -214,6 +216,7 @@ export function GameModals({
         onConfirm={onConfirmCatCombo}
         resolveDisplayName={resolveDisplayName}
         t={t}
+        cardVariant={cardVariant}
       />
 
       {/* See the Future Modal */}
@@ -222,6 +225,7 @@ export function GameModals({
         onClose={onCloseSeeTheFutureModal}
         cards={seeTheFutureModal?.cards || []}
         t={t}
+        cardVariant={cardVariant}
       />
 
       {/* Targeted Attack Modal */}
@@ -271,6 +275,7 @@ export function GameModals({
         myHand={myHand}
         onGiveCard={onGiveFavorCard}
         t={t}
+        cardVariant={cardVariant}
       />
     </>
   );

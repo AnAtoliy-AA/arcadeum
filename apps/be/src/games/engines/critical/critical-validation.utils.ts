@@ -2,8 +2,10 @@ import {
   CriticalState,
   CriticalCard,
   CriticalPlayerState,
-  CAT_CARDS,
+  COLLECTION_CARDS,
   BASE_SPECIAL_CARDS,
+  CARDS_REQUIRING_DRAWS,
+  ANYTIME_ACTION_CARDS,
 } from '../../critical/critical.state';
 
 /**
@@ -35,28 +37,20 @@ export function validatePlayCard(
 ): boolean {
   if (!card || !player) return false;
 
-  // Skip and Attack can only be played when you have pending draws
-  if (
-    card === 'skip' ||
-    card === 'attack' ||
-    card === 'targeted_attack' ||
-    card === 'attack_of_the_dead' ||
-    card === 'personal_attack' ||
-    card === 'super_skip' ||
-    card === 'reverse'
-  ) {
+  // Check cards that require pending draws (Skip, Attack, Shuffle, etc.)
+  if (CARDS_REQUIRING_DRAWS.includes(card)) {
     return hasCard(player, card) && state.pendingDraws > 0;
   }
 
-  // Shuffle and Nope can be played anytime during your turn
-  if (card === 'shuffle' || card === 'nope') {
+  // Cancel can be played anytime (if valid context)
+  if (ANYTIME_ACTION_CARDS.includes(card)) {
     return hasCard(player, card);
   }
 
   return false;
 }
 
-export function validateCatCombo(
+export function validateCollectionCombo(
   player: CriticalPlayerState | null,
   cards?: CriticalCard[],
   allowActionCardCombos = false,
@@ -81,15 +75,17 @@ export function validateCatCombo(
 
   if (!allSame) return false;
 
-  // If action card combos are allowed, we just need to ensure it's not a special card (like exploding_cat)
+  // If action card combos are allowed, we just need to ensure it's not a special card (like critical_event)
   if (allowActionCardCombos) {
     return !BASE_SPECIAL_CARDS.includes(
       firstCard as (typeof BASE_SPECIAL_CARDS)[number],
     );
   }
 
-  // Otherwise, strictly require it to be a CAT_CASE
-  return CAT_CARDS.includes(firstCard as (typeof CAT_CARDS)[number]);
+  // Otherwise, strictly require it to be a COLLECTION_CASE
+  return COLLECTION_CARDS.includes(
+    firstCard as (typeof COLLECTION_CARDS)[number],
+  );
 }
 
 export function validateFavor(
@@ -99,7 +95,7 @@ export function validateFavor(
   payload: unknown,
 ): boolean {
   const typedPayload = payload as FavorPayload | undefined;
-  if (!player || !hasCard(player, 'favor')) return false;
+  if (!player || !hasCard(player, 'trade')) return false;
 
   // Can't play favor if there's a pending favor waiting
   if (state.pendingFavor) return false;
@@ -129,20 +125,20 @@ export function validateGiveFavorCard(
   return player.hand.includes(typedPayload.cardToGive);
 }
 
-export function canPlayCatCombo(
+export function canPlayCollectionCombo(
   player: CriticalPlayerState,
   allowActionCardCombos = false,
 ): boolean {
-  // Check cat cards for combo availability
-  const hasCatCombo = CAT_CARDS.some(
+  // Check collection cards for combo availability
+  const hasCollectionCombo = COLLECTION_CARDS.some(
     (cat) => player.hand.filter((c) => c === cat).length >= 2,
   );
 
-  if (hasCatCombo) return true;
+  if (hasCollectionCombo) return true;
 
   // If action card combos are enabled, check for any matching pairs
   if (allowActionCardCombos) {
-    // Cards that can be used for combos (exclude special cards like exploding_cat and defuse)
+    // Cards that can be used for combos (exclude special cards like critical_event and neutralizer)
     const comboableCards = player.hand.filter(
       (c) =>
         !BASE_SPECIAL_CARDS.includes(c as (typeof BASE_SPECIAL_CARDS)[number]),

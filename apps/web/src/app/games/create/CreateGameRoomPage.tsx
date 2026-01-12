@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import styled from 'styled-components';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { IDLE_TIMER_DURATION_SEC } from '@/shared/config/game';
 import { resolveApiUrl } from '@/shared/lib/api-base';
@@ -16,141 +15,31 @@ import {
   Input,
   TextArea,
   FormGroup,
-  Card,
 } from '@/shared/ui';
 
-type ExpansionId = 'attack' | 'future' | 'theft' | 'chaos' | 'deity';
+import {
+  ExpansionId,
+  EXPANSION_PACKS,
+  CARD_VARIANTS,
+  gamesCatalog,
+} from './constants';
 
-const EXPANSION_PACKS: {
-  id: ExpansionId;
-  name: string;
-  cardCount: number;
-  available: boolean;
-}[] = [
-  { id: 'attack', name: 'Attack Pack', cardCount: 5, available: true },
-  { id: 'future', name: 'Future Pack', cardCount: 8, available: false },
-  { id: 'theft', name: 'Theft Pack', cardCount: 4, available: false },
-  { id: 'chaos', name: 'Chaos Pack', cardCount: 5, available: false },
-  { id: 'deity', name: 'Deity Pack', cardCount: 4, available: false },
-];
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-`;
-
-const GameSelector = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-`;
-
-const GameTile = styled(Card)<{ $active?: boolean; disabled?: boolean }>`
-  padding: 1rem;
-  border: 2px solid
-    ${({ $active, theme }) =>
-      $active
-        ? theme.buttons.primary.gradientStart
-        : theme.surfaces.card.border};
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: ${({ theme }) => theme.surfaces.card.shadow};
-  }
-`;
-
-const GameTileName = styled.div`
-  font-weight: 600;
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-`;
-
-const GameTileSummary = styled.div`
-  font-size: 0.875rem;
-  color: ${({ theme }) => theme.text.muted};
-`;
-
-const Row = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const VisibilityToggle = styled(Button)<{ $isPublic: boolean }>`
-  background: ${({ $isPublic }) =>
-    $isPublic ? 'rgba(34, 197, 94, 0.1)' : 'rgba(191, 90, 242, 0.1)'};
-`;
-
-const ErrorCard = styled(Card)`
-  border-color: #dc2626;
-  color: #ef4444;
-`;
-
-const ExpansionGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 0.75rem;
-`;
-
-const ExpansionCheckbox = styled.label<{ $disabled?: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
-  opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
-  transition: all 0.2s ease;
-
-  &:hover:not([data-disabled='true']) {
-    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  }
-
-  input {
-    width: 18px;
-    height: 18px;
-    accent-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  }
-`;
-
-const ExpansionLabel = styled.span`
-  flex: 1;
-  font-size: 0.875rem;
-  font-weight: 500;
-`;
-
-const ExpansionBadge = styled.span`
-  font-size: 0.75rem;
-  color: ${({ theme }) => theme.text.muted};
-  background: ${({ theme }) => theme.surfaces.panel.background};
-  padding: 0.125rem 0.5rem;
-  border-radius: 12px;
-`;
-
-const gamesCatalog = [
-  {
-    id: 'critical_v1',
-    name: 'Critical',
-    summary: 'A strategic card game where you avoid exploding cats',
-    isPlayable: true,
-  },
-  {
-    id: 'texas_holdem_v1',
-    name: "Texas Hold'em",
-    summary: 'Classic poker game with community cards',
-    isPlayable: false, // Temporarily unavailable
-    isHidden: true, // Temporarily hidden from UI
-  },
-];
+import {
+  Form,
+  GameSelector,
+  GameTile,
+  GameTileName,
+  GameTileSummary,
+  SelectionIndicator,
+  GameTileIcon,
+  ExpansionGrid,
+  ExpansionCheckbox,
+  ExpansionLabel,
+  ExpansionBadge,
+  Row,
+  VisibilityToggle,
+  ErrorCard,
+} from './styles';
 
 // Filter out hidden games for display
 const visibleGames = gamesCatalog.filter((game) => !game.isHidden);
@@ -174,6 +63,7 @@ export function CreateGameRoomPage() {
   const [maxPlayers, setMaxPlayers] = useState('');
   const [notes, setNotes] = useState('');
   const [expansions, setExpansions] = useState<ExpansionId[]>([]);
+  const [cardVariant, setCardVariant] = useState<string>('cyberpunk');
   const [allowActionCardCombos, setAllowActionCardCombos] = useState(false);
   const [idleTimerEnabled, setIdleTimerEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -229,6 +119,7 @@ export function CreateGameRoomPage() {
               gameId === 'critical_v1'
                 ? {
                     ...(expansions.length > 0 ? { expansions } : {}),
+                    cardVariant,
                     allowActionCardCombos,
                     idleTimerEnabled,
                   }
@@ -259,6 +150,7 @@ export function CreateGameRoomPage() {
       maxPlayers,
       notes,
       expansions,
+      cardVariant,
       allowActionCardCombos,
       idleTimerEnabled,
       snapshot.accessToken,
@@ -321,6 +213,29 @@ export function CreateGameRoomPage() {
                   </ExpansionCheckbox>
                 ))}
               </ExpansionGrid>
+            </Section>
+          )}
+
+          {gameId === 'critical_v1' && (
+            <Section title={t('games.create.sectionVariant') || 'Game Theme'}>
+              <GameSelector>
+                {CARD_VARIANTS.map((variant) => (
+                  <GameTile
+                    key={variant.id}
+                    as="button"
+                    type="button"
+                    $active={cardVariant === variant.id}
+                    onClick={() => setCardVariant(variant.id)}
+                  >
+                    <SelectionIndicator />
+                    <GameTileIcon $gradient={variant.gradient}>
+                      {variant.emoji}
+                    </GameTileIcon>
+                    <GameTileName>{variant.name}</GameTileName>
+                    <GameTileSummary>{variant.description}</GameTileSummary>
+                  </GameTile>
+                ))}
+              </GameSelector>
             </Section>
           )}
 

@@ -25,7 +25,7 @@ describe('CriticalEngine', () => {
     const state = engine.initializeState(playerIds);
 
     // Ensure deck has safe cards
-    state.deck = ['skip', 'skip', 'skip', 'skip'];
+    state.deck = ['evade', 'evade', 'evade', 'evade'];
 
     // Player 1 draws a card
     const result = engine.executeAction(
@@ -50,19 +50,19 @@ describe('CriticalEngine', () => {
     expect(result2.success).toBe(true);
   });
 
-  it('should set pendingDraws to 2 when Attack is played', () => {
+  it('should set pendingDraws to 2 when Strike is played', () => {
     const playerIds = ['p1', 'p2'];
     const state = engine.initializeState(playerIds);
 
-    // Give Player 1 an Attack card
-    state.players[0].hand.push('attack');
+    // Give Player 1 a Strike card
+    state.players[0].hand.push('strike');
 
-    // Player 1 plays Attack
+    // Player 1 plays Strike
     const result = engine.executeAction(
       state,
       'play_card',
       createMockContext('p1'),
-      { card: 'attack' },
+      { card: 'strike' },
     );
     expect(result.success).toBe(true);
 
@@ -73,19 +73,19 @@ describe('CriticalEngine', () => {
     expect(result.state!.pendingDraws).toBe(2);
   });
 
-  it('should decrement pendingDraws to 0 and advance turn when Skip is played', () => {
+  it('should decrement pendingDraws to 0 and advance turn when Evade is played', () => {
     const playerIds = ['p1', 'p2'];
     const state = engine.initializeState(playerIds);
 
-    // Give Player 1 a Skip card
-    state.players[0].hand.push('skip');
+    // Give Player 1 an Evade card
+    state.players[0].hand.push('evade');
 
-    // Player 1 plays Skip (has 1 pending draw by default)
+    // Player 1 plays Evade (has 1 pending draw by default)
     const result = engine.executeAction(
       state,
       'play_card',
       createMockContext('p1'),
-      { card: 'skip' },
+      { card: 'evade' },
     );
     expect(result.success).toBe(true);
 
@@ -96,33 +96,33 @@ describe('CriticalEngine', () => {
     expect(result.state!.pendingDraws).toBe(1);
   });
 
-  it('should only cancel one pending draw when Skip is played after Attack', () => {
+  it('should only cancel one pending draw when Evade is played after Strike', () => {
     const playerIds = ['p1', 'p2'];
     const state = engine.initializeState(playerIds);
 
-    // Give Player 1 an Attack card
-    state.players[0].hand.push('attack');
+    // Give Player 1 a Strike card
+    state.players[0].hand.push('strike');
 
-    // Player 1 plays Attack
+    // Player 1 plays Strike
     const attackResult = engine.executeAction(
       state,
       'play_card',
       createMockContext('p1'),
-      { card: 'attack' },
+      { card: 'strike' },
     );
     expect(attackResult.success).toBe(true);
     expect(attackResult.state!.currentTurnIndex).toBe(1); // Player 2's turn
     expect(attackResult.state!.pendingDraws).toBe(2); // Player 2 has 2 pending draws
 
-    // Give Player 2 a Skip card
-    attackResult.state!.players[1].hand.push('skip');
+    // Give Player 2 an Evade card
+    attackResult.state!.players[1].hand.push('evade');
 
-    // Player 2 plays Skip (should only cancel 1 draw)
+    // Player 2 plays Evade (should only cancel 1 draw)
     const skipResult = engine.executeAction(
       attackResult.state!,
       'play_card',
       createMockContext('p2'),
-      { card: 'skip' },
+      { card: 'evade' },
     );
     expect(skipResult.success).toBe(true);
 

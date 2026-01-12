@@ -57,8 +57,11 @@ import {
   RoomNameIcon,
   RoomNameText,
   FastBadge,
+  VariantSelectorWrapper,
   // ReorderButton, // No longer used
 } from './styles/lobby';
+import { CARD_VARIANTS, RANDOM_VARIANT } from '../lib/constants';
+import { VariantSelector } from './VariantSelector';
 
 // Avatar colors
 const AVATAR_COLORS = [
@@ -69,7 +72,6 @@ const AVATAR_COLORS = [
   '#f59e0b',
   '#ef4444',
 ];
-
 interface GameLobbyProps {
   room: GameRoomSummary;
   isHost: boolean;
@@ -121,15 +123,6 @@ export function GameLobby({
   const pendingInvited = invitedUsers.filter((u) => !joinedIds.has(u.id));
   const pendingDeclined = declinedUsers.filter((u) => !joinedIds.has(u.id));
 
-  console.log('DEBUG: GameLobby rematch info:', {
-    options: room.gameOptions,
-    invitedUsers,
-    declinedUsers,
-    pendingInvited,
-    pendingDeclined,
-    joinedIds: Array.from(joinedIds),
-  });
-
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -170,9 +163,32 @@ export function GameLobby({
     <GameContainer ref={containerRef}>
       <GameHeader>
         <GameInfo>
-          <GameTitle>Critical</GameTitle>
+          <GameTitle>
+            Critical
+            <span
+              style={{
+                background: 'linear-gradient(135deg, #FF0080 0%, #7928CA 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontSize: '0.8em',
+              }}
+            >
+              :{' '}
+              {room.gameOptions?.cardVariant === 'random'
+                ? RANDOM_VARIANT.name
+                : CARD_VARIANTS.find(
+                    (v) => v.id === room.gameOptions?.cardVariant,
+                  )?.name || 'Classic'}
+            </span>
+          </GameTitle>
           <RoomNameBadge>
-            <RoomNameIcon>🎲</RoomNameIcon>
+            <RoomNameIcon>
+              {room.gameOptions?.cardVariant === 'random'
+                ? RANDOM_VARIANT.emoji
+                : CARD_VARIANTS.find(
+                    (v) => v.id === room.gameOptions?.cardVariant,
+                  )?.emoji || '🎲'}
+            </RoomNameIcon>
             <RoomNameText>{room.name}</RoomNameText>
           </RoomNameBadge>
           {room.gameOptions?.idleTimerEnabled && (
@@ -180,6 +196,15 @@ export function GameLobby({
               <span>⚡</span>
               <span>{t('games.rooms.fastRoom')}</span>
             </FastBadge>
+          )}
+
+          {isHost && room.status === 'lobby' && (
+            <VariantSelectorWrapper>
+              <VariantSelector
+                roomId={room.id}
+                currentVariant={room.gameOptions?.cardVariant || 'cyberpunk'}
+              />
+            </VariantSelectorWrapper>
           )}
         </GameInfo>
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>

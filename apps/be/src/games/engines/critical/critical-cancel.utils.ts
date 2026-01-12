@@ -6,9 +6,9 @@ import type {
 import { CriticalLogic, LogEntryOptions } from './critical-logic.utils';
 
 /**
- * Execute Nope - cancels/toggles the pending action
+ * Execute Cancel - cancels/toggles the pending action
  */
-export function executeNope(
+export function executeCancel(
   state: CriticalState,
   playerId: string,
   helpers: {
@@ -26,17 +26,18 @@ export function executeNope(
   if (!player) return { success: false, error: 'Player not found' };
 
   if (!state.pendingAction) {
-    return { success: false, error: 'No action to nope' };
+    return { success: false, error: 'No action to cancel' };
   }
 
-  // Remove nope card from hand
-  const nopeIndex = player.hand.indexOf('nope');
-  if (nopeIndex === -1) return { success: false, error: 'Nope card not found' };
+  // Remove cancel card from hand
+  const cancelIndex = player.hand.indexOf('cancel');
+  if (cancelIndex === -1)
+    return { success: false, error: 'Cancel card not found' };
 
-  player.hand.splice(nopeIndex, 1);
-  state.discardPile.push('nope');
+  player.hand.splice(cancelIndex, 1);
+  state.discardPile.push('cancel');
 
-  // Increment nope count
+  // Increment cancel count (formerly nopeCount)
   state.pendingAction.nopeCount++;
 
   const isCanceled = state.pendingAction.nopeCount % 2 === 1;
@@ -45,7 +46,7 @@ export function executeNope(
   if (isCanceled) {
     // Cancel the action - reverse effects
     switch (state.pendingAction.type) {
-      case 'attack': {
+      case 'strike': {
         // Attack was: advance turn, set pendingDraws = turns + 2
         // Reverse: go back to attacker's turn, restore pendingDraws
         const attackerIndex = state.playerOrder.findIndex(
@@ -60,7 +61,7 @@ export function executeNope(
         }
         break;
       }
-      case 'targeted_attack': {
+      case 'targeted_strike': {
         // Targeted Attack was: move turn to target, set pendingDraws = turns + 2
         // Reverse: go back to attacker's turn, restore pendingDraws
         const attackerIndex = state.playerOrder.findIndex(
@@ -78,7 +79,7 @@ export function executeNope(
         }
         break;
       }
-      case 'skip': {
+      case 'evade': {
         // Skip was: advance turn
         // Reverse: go back to skipper's turn
         const skipperIndex = state.playerOrder.findIndex(
@@ -90,11 +91,11 @@ export function executeNope(
         }
         break;
       }
-      case 'shuffle':
+      case 'reorder':
         // Shuffle can't really be undone, but we can re-shuffle
         helpers.shuffleArray(state.deck);
         break;
-      case 'favor':
+      case 'trade':
         // Cancel pending favor request
         state.pendingFavor = null;
         break;
@@ -102,7 +103,7 @@ export function executeNope(
   } else {
     // Un-cancel the action - re-apply effects
     switch (state.pendingAction.type) {
-      case 'attack': {
+      case 'strike': {
         helpers.advanceTurn(state);
         const payload = state.pendingAction.payload as {
           previousPendingDraws?: number;
@@ -112,7 +113,7 @@ export function executeNope(
         state.pendingDraws = extraTurns + 2;
         break;
       }
-      case 'targeted_attack': {
+      case 'targeted_strike': {
         const payload = state.pendingAction.payload as {
           previousPendingDraws?: number;
           targetPlayerId: string;
@@ -126,13 +127,13 @@ export function executeNope(
         }
         break;
       }
-      case 'skip':
+      case 'evade':
         helpers.advanceTurn(state);
         break;
-      case 'shuffle':
+      case 'reorder':
         helpers.shuffleArray(state.deck);
         break;
-      case 'favor': {
+      case 'trade': {
         // Restore pending favor request
         const favorPayload = state.pendingAction.payload as {
           targetPlayerId: string;
@@ -152,7 +153,7 @@ export function executeNope(
     state,
     helpers.createLogEntry(
       'action',
-      `Played Nope! ${state.pendingAction.type} is now ${actionStatus}!`,
+      `Played Cancel! ${state.pendingAction.type} is now ${actionStatus}!`,
       { scope: 'all', senderId: playerId },
     ),
   );

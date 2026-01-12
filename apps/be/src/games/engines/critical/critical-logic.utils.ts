@@ -14,10 +14,10 @@ import {
   executeSuperSkip,
   executeReverse,
 } from './critical-attack.utils';
-import { executeCatCombo as executeCatComboHelper } from './critical-combo.utils';
+import { executeCollectionCombo as executeCollectionComboHelper } from './critical-combo.utils';
 
-import { executeNope } from './critical-nope.utils';
-export { executeNope };
+import { executeCancel } from './critical-cancel.utils';
+export { executeCancel };
 
 export interface LogEntryOptions {
   scope?: ChatScope;
@@ -65,8 +65,8 @@ export class CriticalLogic {
 
     state.pendingDraws--;
 
-    if (card === 'exploding_cat') {
-      if (this.hasCard(player, 'defuse')) {
+    if (card === 'critical_event') {
+      if (this.hasCard(player, 'neutralizer')) {
         // Player must defuse - set pending defuse state
         state.pendingDefuse = playerId;
         helpers.addLog(
@@ -138,20 +138,20 @@ export class CriticalLogic {
     state.discardPile.push(card);
 
     // Clear any previous pending action when a new card is played
-    // BUT maintain it if playing 'nope', as nope targets the pending action
-    if (card !== 'nope') {
+    // BUT maintain it if playing 'cancel', as cancel targets the pending action
+    if (card !== 'cancel') {
       state.pendingAction = null;
     }
 
     switch (card) {
       // ===== BASE GAME CARDS =====
-      case 'attack': {
+      case 'strike': {
         // Capture current pending draws before advancing turn
         const currentPendingDraws = state.pendingDraws;
 
         // Set pending action so it can be noped
         state.pendingAction = {
-          type: 'attack',
+          type: 'strike',
           playerId,
           payload: { previousPendingDraws: currentPendingDraws },
           nopeCount: 0,
@@ -176,10 +176,10 @@ export class CriticalLogic {
         break;
       }
 
-      case 'skip':
+      case 'evade':
         // Set pending action so it can be noped
         state.pendingAction = {
-          type: 'skip',
+          type: 'evade',
           playerId,
           payload: { previousTurnIndex: state.currentTurnIndex },
           nopeCount: 0,
@@ -198,10 +198,10 @@ export class CriticalLogic {
         );
         break;
 
-      case 'shuffle':
+      case 'reorder':
         // Set pending action so it can be noped
         state.pendingAction = {
-          type: 'shuffle',
+          type: 'reorder',
           playerId,
           nopeCount: 0,
         };
@@ -215,35 +215,35 @@ export class CriticalLogic {
         );
         break;
 
-      case 'nope':
-        // Put card back in hand because executeNope handles removal
-        player.hand.push('nope');
+      case 'cancel':
+        // Put card back in hand because executeCancel handles removal
+        player.hand.push('cancel');
         state.discardPile.pop(); // Remove from discard
-        return executeNope(state, playerId, helpers);
+        return executeCancel(state, playerId, helpers);
 
       // ===== ATTACK PACK EXPANSION CARDS =====
-      case 'reverse':
+      case 'invert':
         // Put card back in hand (executeReverse will remove it)
         player.hand.push(card);
         state.discardPile.pop();
         return executeReverse(state, playerId, helpers);
 
-      case 'super_skip':
+      case 'mega_evade':
         player.hand.push(card);
         state.discardPile.pop();
         return executeSuperSkip(state, playerId, helpers);
 
-      case 'personal_attack':
+      case 'private_strike':
         player.hand.push(card);
         state.discardPile.pop();
         return executePersonalAttack(state, playerId, helpers);
 
-      case 'attack_of_the_dead':
+      case 'recursive_strike':
         player.hand.push(card);
         state.discardPile.pop();
         return executeAttackOfTheDead(state, playerId, helpers);
 
-      case 'targeted_attack':
+      case 'targeted_strike':
         player.hand.push(card);
         state.discardPile.pop();
         return {
@@ -261,8 +261,8 @@ export class CriticalLogic {
     return { success: true, state };
   }
 
-  /** Execute cat combo - delegates to separate utils file */
-  static executeCatCombo(
+  /** Execute collection combo - delegates to separate utils file */
+  static executeCollectionCombo(
     state: CriticalState,
     playerId: string,
     cards: CriticalCard[],
@@ -279,7 +279,7 @@ export class CriticalLogic {
     requestedCard?: CriticalCard,
     requestedDiscardCard?: CriticalCard,
   ): GameActionResult<CriticalState> {
-    return executeCatComboHelper(
+    return executeCollectionComboHelper(
       state,
       playerId,
       cards,
@@ -294,6 +294,9 @@ export class CriticalLogic {
     );
   }
 
+  /**
+   * Execute See The Future
+   */
   /**
    * Execute See The Future
    */
@@ -312,12 +315,12 @@ export class CriticalLogic {
     const player = this.findPlayer(state, playerId);
     if (!player) return { success: false, error: 'Player not found' };
 
-    const cardIndex = player.hand.indexOf('see_the_future');
+    const cardIndex = player.hand.indexOf('insight');
     if (cardIndex === -1)
       return { success: false, error: 'See The Future card not found' };
 
     player.hand.splice(cardIndex, 1);
-    state.discardPile.push('see_the_future');
+    state.discardPile.push('insight');
 
     const topCards = state.deck.slice(0, 3);
 
@@ -371,15 +374,15 @@ export class CriticalLogic {
     if (!player) return { success: false, error: 'Player not found' };
 
     // Remove defuse card
-    const defuseIndex = player.hand.indexOf('defuse');
+    const defuseIndex = player.hand.indexOf('neutralizer');
     if (defuseIndex === -1)
       return { success: false, error: 'Defuse card not found' };
 
     player.hand.splice(defuseIndex, 1);
-    state.discardPile.push('defuse');
+    state.discardPile.push('neutralizer');
 
     // Insert exploding cat back into deck at specified position
-    state.deck.splice(position, 0, 'exploding_cat');
+    state.deck.splice(position, 0, 'critical_event');
 
     // Clear the pending defuse state
     state.pendingDefuse = null;

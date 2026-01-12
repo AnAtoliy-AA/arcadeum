@@ -23,6 +23,7 @@ import { GameHistoryBuilderService } from './history/game-history-builder.servic
 import { CriticalActionsService } from './actions/critical/critical-actions.service';
 import { TexasHoldemActionsService } from './actions/texas-holdem/texas-holdem-actions.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
+import { GamesRematchService } from './games.rematch.service';
 
 import { CriticalService } from './critical/critical.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
@@ -59,6 +60,7 @@ import { AuthModule } from '../auth/auth.module';
     GameUtilitiesService,
     // Facade service (main entry point)
     GamesService,
+    GamesRematchService,
     // Gateways
     GamesGateway,
     CriticalGateway,

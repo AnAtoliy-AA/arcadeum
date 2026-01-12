@@ -14,7 +14,7 @@ import {
   handleError,
   isSimpleActionCard,
   toCriticalCard,
-  extractCatComboPayload,
+  extractCollectionComboPayload,
 } from './games.gateway.utils';
 
 import { CriticalService } from './critical/critical.service';
@@ -140,7 +140,9 @@ export class CriticalGateway {
       desiredCard,
       selectedIndex,
       requestedDiscardCard,
-    } = extractCatComboPayload(payload as unknown as Record<string, unknown>);
+    } = extractCollectionComboPayload(
+      payload as unknown as Record<string, unknown>,
+    );
 
     try {
       await this.criticalService.playCatComboByRoom(userId, roomId, cat, {

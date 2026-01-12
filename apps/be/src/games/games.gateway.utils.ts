@@ -1,51 +1,38 @@
 import { Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
-import type {
+import {
   CriticalCard,
-  CriticalCatCard,
-  AttackPackCard,
+  CriticalCollectionCard,
+  COLLECTION_CARDS,
+  ATTACK_PACK_CARDS,
 } from './critical/critical.state';
 
-export const CAT_COMBO_CARD_VALUES = [
-  'tacocat',
-  'hairy_potato_cat',
-  'rainbow_ralphing_cat',
-  'cattermelon',
-  'bearded_cat',
-] as const satisfies ReadonlyArray<CriticalCatCard>;
-
-export const ATTACK_PACK_CARDS = [
-  'targeted_attack',
-  'personal_attack',
-  'attack_of_the_dead',
-  'super_skip',
-  'reverse',
-] as const satisfies ReadonlyArray<AttackPackCard>;
-
 export const SIMPLE_ACTION_CARDS = [
-  'skip',
-  'attack',
-  'shuffle',
-  'nope',
+  'evade',
+  'strike',
+  'reorder',
+  'cancel',
   ...ATTACK_PACK_CARDS,
 ] as const;
 export type SimpleActionCard = (typeof SIMPLE_ACTION_CARDS)[number];
 
 export const ALL_CRITICAL_CARDS = [
-  'exploding_cat',
-  'defuse',
-  'attack',
-  'skip',
-  'favor',
-  'shuffle',
-  'see_the_future',
-  'nope',
-  ...CAT_COMBO_CARD_VALUES,
+  'critical_event',
+  'neutralizer',
+  'strike',
+  'evade',
+  'trade',
+  'reorder',
+  'insight',
+  'cancel',
+  ...COLLECTION_CARDS,
   ...ATTACK_PACK_CARDS,
 ] as const satisfies ReadonlyArray<CriticalCard>;
 
-export function isCatComboCard(value: string): value is CriticalCatCard {
-  return CAT_COMBO_CARD_VALUES.includes(value as CriticalCatCard);
+export function isCollectionComboCard(
+  value: string,
+): value is CriticalCollectionCard {
+  return COLLECTION_CARDS.includes(value as CriticalCollectionCard);
 }
 
 export function isSimpleActionCard(value: string): value is SimpleActionCard {
@@ -112,7 +99,9 @@ export function handleError(
   throw new WsException(message);
 }
 
-export function extractCatComboPayload(payload: Record<string, unknown>): {
+export function extractCollectionComboPayload(
+  payload: Record<string, unknown>,
+): {
   cat: string;
   mode: 'pair' | 'trio' | 'fiver';
   targetPlayerId?: string;

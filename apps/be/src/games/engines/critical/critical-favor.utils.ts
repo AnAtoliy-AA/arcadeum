@@ -45,12 +45,12 @@ export function executeFavor(
     return { success: false, error: 'Target has no cards' };
 
   // Remove favor card from player
-  const favorIndex = player.hand.indexOf('favor');
+  const favorIndex = player.hand.indexOf('trade');
   if (favorIndex === -1)
     return { success: false, error: 'Favor card not found' };
 
   player.hand.splice(favorIndex, 1);
-  state.discardPile.push('favor');
+  state.discardPile.push('trade');
 
   // Set pending favor - target must now choose a card to give
   state.pendingFavor = {
@@ -60,7 +60,7 @@ export function executeFavor(
 
   // Set pending action so it can be noped
   state.pendingAction = {
-    type: 'favor',
+    type: 'trade',
     playerId,
     payload: { targetPlayerId: payload.targetPlayerId },
     nopeCount: 0,

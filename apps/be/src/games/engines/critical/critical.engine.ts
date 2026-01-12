@@ -12,7 +12,7 @@ import {
   CriticalExpansion,
   createInitialCriticalState,
 } from '../../critical/critical.state';
-import { CriticalLogic, executeNope } from './critical-logic.utils';
+import { CriticalLogic, executeCancel } from './critical-logic.utils';
 import {
   executeTargetedAttack,
   executePersonalAttack,
@@ -23,10 +23,10 @@ import {
 import {
   hasCard,
   validatePlayCard,
-  validateCatCombo,
+  validateCollectionCombo,
   validateFavor,
   validateGiveFavorCard,
-  canPlayCatCombo,
+  canPlayCollectionCombo,
 } from './critical-validation.utils';
 import { executeFavor, executeGiveFavorCard } from './critical-favor.utils';
 
@@ -35,7 +35,7 @@ interface PlayCardPayload {
   card?: CriticalCard;
 }
 
-interface PlayCatComboPayload {
+interface PlayCollectionComboPayload {
   cards?: CriticalCard[];
   targetPlayerId?: string;
   selectedIndex?: number; // For pair combos - blind pick a card position
@@ -59,7 +59,7 @@ interface DefusePayload {
 }
 
 type CriticalPayload = PlayCardPayload &
-  PlayCatComboPayload &
+  PlayCollectionComboPayload &
   FavorPayload &
   GiveFavorCardPayload &
   DefusePayload;
@@ -118,19 +118,19 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
       return validateGiveFavorCard(state, context.userId, player, typedPayload);
     }
 
-    // play_nope can be played by ANY alive player when there's a pending action
-    if (action === 'play_nope') {
-      // Must have a pending action to nope
+    // play_cancel can be played by ANY alive player when there's a pending action
+    if (action === 'play_cancel') {
+      // Must have a pending action to cancel
       if (!state.pendingAction) return false;
-      // Must have a nope card
-      return hasCard(player, 'nope');
+      // Must have a cancel card
+      return hasCard(player, 'cancel');
     }
 
-    // Exception: play_card with 'nope' acts like play_nope
+    // Exception: play_card with 'cancel' acts like play_cancel
     const checkPayload = payload as CriticalPayload | undefined;
-    if (action === 'play_card' && checkPayload?.card === 'nope') {
+    if (action === 'play_card' && checkPayload?.card === 'cancel') {
       if (!state.pendingAction) return false;
-      return hasCard(player, 'nope');
+      return hasCard(player, 'cancel');
     }
 
     // All other actions require it to be the player's turn
@@ -144,8 +144,8 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
       return false;
     }
 
-    // If player must defuse, only allow defuse action
-    if (state.pendingDefuse === context.userId && action !== 'defuse') {
+    // If player must defuse, only allow neutralizer action
+    if (state.pendingDefuse === context.userId && action !== 'neutralizer') {
       return false;
     }
 
@@ -163,16 +163,16 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
         return validatePlayCard(state, player, typedPayload?.card);
 
       case 'play_cat_combo':
-        return validateCatCombo(
+        return validateCollectionCombo(
           player,
           typedPayload?.cards,
           state.allowActionCardCombos,
         );
 
-      case 'see_the_future':
-        return hasCard(player, 'see_the_future');
+      case 'insight':
+        return hasCard(player, 'insight');
 
-      case 'favor': {
+      case 'trade': {
         const target = typedPayload?.targetPlayerId
           ? (this.findPlayer(
               state,
@@ -190,33 +190,33 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
           typedPayload,
         );
 
-      case 'defuse':
+      case 'neutralizer':
         // Can only defuse if pendingDefuse is set for this player
         return (
           state.pendingDefuse === context.userId &&
-          hasCard(player, 'defuse') &&
+          hasCard(player, 'neutralizer') &&
           typedPayload?.position !== undefined
         );
 
       // Attack Pack cards
-      case 'targeted_attack':
+      case 'targeted_strike':
         return (
-          hasCard(player, 'targeted_attack') &&
+          hasCard(player, 'targeted_strike') &&
           state.pendingDraws > 0 &&
           !!typedPayload?.targetPlayerId
         );
 
-      case 'personal_attack':
-        return hasCard(player, 'personal_attack') && state.pendingDraws > 0;
+      case 'private_strike':
+        return hasCard(player, 'private_strike') && state.pendingDraws > 0;
 
-      case 'attack_of_the_dead':
-        return hasCard(player, 'attack_of_the_dead') && state.pendingDraws > 0;
+      case 'recursive_strike':
+        return hasCard(player, 'recursive_strike') && state.pendingDraws > 0;
 
-      case 'super_skip':
-        return hasCard(player, 'super_skip') && state.pendingDraws > 0;
+      case 'mega_evade':
+        return hasCard(player, 'mega_evade') && state.pendingDraws > 0;
 
-      case 'reverse':
-        return hasCard(player, 'reverse') && state.pendingDraws > 0;
+      case 'invert':
+        return hasCard(player, 'invert') && state.pendingDraws > 0;
 
       default:
         return false;
@@ -271,7 +271,7 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
         );
 
       case 'play_cat_combo':
-        return CriticalLogic.executeCatCombo(
+        return CriticalLogic.executeCollectionCombo(
           newState,
           context.userId,
           typedPayload!.cards!,
@@ -282,14 +282,14 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
           typedPayload?.requestedDiscardCard,
         );
 
-      case 'see_the_future':
+      case 'insight':
         return CriticalLogic.executeSeeTheFuture(
           newState,
           context.userId,
           helpers,
         );
 
-      case 'favor':
+      case 'trade':
         return executeFavor(
           newState,
           context.userId,
@@ -305,7 +305,7 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
           helpers,
         );
 
-      case 'defuse':
+      case 'neutralizer':
         return CriticalLogic.executeDefuse(
           newState,
           context.userId,
@@ -313,11 +313,11 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
           helpers,
         );
 
-      case 'play_nope':
-        return executeNope(newState, context.userId, helpers);
+      case 'play_cancel':
+        return executeCancel(newState, context.userId, helpers);
 
       // ===== ATTACK PACK EXPANSION CARDS =====
-      case 'targeted_attack':
+      case 'targeted_strike':
         return executeTargetedAttack(
           newState,
           context.userId,
@@ -325,16 +325,16 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
           helpers,
         );
 
-      case 'personal_attack':
+      case 'private_strike':
         return executePersonalAttack(newState, context.userId, helpers);
 
-      case 'attack_of_the_dead':
+      case 'recursive_strike':
         return executeAttackOfTheDead(newState, context.userId, helpers);
 
-      case 'super_skip':
+      case 'mega_evade':
         return executeSuperSkip(newState, context.userId, helpers);
 
-      case 'reverse':
+      case 'invert':
         return executeReverse(newState, context.userId, helpers);
 
       default:
@@ -403,7 +403,7 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
 
     // If player must defuse, that's the only available action
     if (state.pendingDefuse === playerId) {
-      return ['defuse'];
+      return ['neutralizer'];
     }
 
     const actions: string[] = [];
@@ -412,24 +412,24 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
       actions.push('draw_card');
     } else {
       // Can play action cards
-      if (hasCard(player, 'attack')) actions.push('play_card:attack');
-      if (hasCard(player, 'skip')) actions.push('play_card:skip');
-      if (hasCard(player, 'shuffle')) actions.push('play_card:shuffle');
-      if (hasCard(player, 'see_the_future')) actions.push('see_the_future');
-      if (hasCard(player, 'favor')) actions.push('favor');
+      if (hasCard(player, 'strike')) actions.push('play_card:strike');
+      if (hasCard(player, 'evade')) actions.push('play_card:evade');
+      if (hasCard(player, 'reorder')) actions.push('play_card:reorder');
+      if (hasCard(player, 'insight')) actions.push('insight');
+      if (hasCard(player, 'trade')) actions.push('trade');
 
       // Attack Pack
-      if (hasCard(player, 'targeted_attack'))
-        actions.push('play_card:targeted_attack');
-      if (hasCard(player, 'personal_attack'))
-        actions.push('play_card:personal_attack');
-      if (hasCard(player, 'attack_of_the_dead'))
-        actions.push('play_card:attack_of_the_dead');
-      if (hasCard(player, 'super_skip')) actions.push('play_card:super_skip');
-      if (hasCard(player, 'reverse')) actions.push('play_card:reverse');
+      if (hasCard(player, 'targeted_strike'))
+        actions.push('play_card:targeted_strike');
+      if (hasCard(player, 'private_strike'))
+        actions.push('play_card:private_strike');
+      if (hasCard(player, 'recursive_strike'))
+        actions.push('play_card:recursive_strike');
+      if (hasCard(player, 'mega_evade')) actions.push('play_card:mega_evade');
+      if (hasCard(player, 'invert')) actions.push('play_card:invert');
 
-      // Can play cat combos
-      if (canPlayCatCombo(player, state.allowActionCardCombos))
+      // Can play collection combos
+      if (canPlayCollectionCombo(player, state.allowActionCardCombos))
         actions.push('play_cat_combo');
     }
 

@@ -1,4 +1,9 @@
-import { CriticalState, CriticalCard } from '../../critical/critical.state';
+import {
+  CriticalState,
+  CriticalCard,
+  ATTACK_PACK_CARDS,
+  AttackPackCard,
+} from '../../critical/critical.state';
 import { GameActionResult, GameLogEntry } from '../base/game-engine.interface';
 import { CriticalLogic, LogEntryOptions } from './critical-logic.utils';
 
@@ -33,19 +38,19 @@ export function executeTargetedAttack(
   if (!target || !target.alive)
     return { success: false, error: 'Invalid target' };
 
-  const cardIndex = player.hand.indexOf('targeted_attack');
+  const cardIndex = player.hand.indexOf('targeted_strike');
   if (cardIndex === -1)
     return { success: false, error: 'Card not found in hand' };
 
   player.hand.splice(cardIndex, 1);
-  state.discardPile.push('targeted_attack');
+  state.discardPile.push('targeted_strike');
 
   // Capture current pending draws before advancing turn
   const currentPendingDraws = state.pendingDraws;
 
   // Set pending action for nope
   state.pendingAction = {
-    type: 'targeted_attack',
+    type: 'targeted_strike',
     playerId,
     payload: { targetPlayerId, previousPendingDraws: currentPendingDraws },
     nopeCount: 0,
@@ -88,16 +93,16 @@ export function executePersonalAttack(
   const player = CriticalLogic.findPlayer(state, playerId);
   if (!player) return { success: false, error: 'Player not found' };
 
-  const cardIndex = player.hand.indexOf('personal_attack');
+  const cardIndex = player.hand.indexOf('private_strike');
   if (cardIndex === -1)
     return { success: false, error: 'Card not found in hand' };
 
   player.hand.splice(cardIndex, 1);
-  state.discardPile.push('personal_attack');
+  state.discardPile.push('private_strike');
 
   // Set pending action for nope
   state.pendingAction = {
-    type: 'personal_attack',
+    type: 'private_strike',
     playerId,
     nopeCount: 0,
   };
@@ -131,19 +136,19 @@ export function executeAttackOfTheDead(
   const player = CriticalLogic.findPlayer(state, playerId);
   if (!player) return { success: false, error: 'Player not found' };
 
-  const cardIndex = player.hand.indexOf('attack_of_the_dead');
+  const cardIndex = player.hand.indexOf('recursive_strike');
   if (cardIndex === -1)
     return { success: false, error: 'Card not found in hand' };
 
   player.hand.splice(cardIndex, 1);
-  state.discardPile.push('attack_of_the_dead');
+  state.discardPile.push('recursive_strike');
 
   const deadPlayers = state.players.filter((p) => !p.alive).length;
   const turnsToTake = Math.max(deadPlayers * 3, 1); // Minimum 1 if no dead players
 
   // Set pending action for nope
   state.pendingAction = {
-    type: 'attack_of_the_dead',
+    type: 'recursive_strike',
     playerId,
     payload: { turnsToTake },
     nopeCount: 0,
@@ -175,16 +180,16 @@ export function executeSuperSkip(
   const player = CriticalLogic.findPlayer(state, playerId);
   if (!player) return { success: false, error: 'Player not found' };
 
-  const cardIndex = player.hand.indexOf('super_skip');
+  const cardIndex = player.hand.indexOf('mega_evade');
   if (cardIndex === -1)
     return { success: false, error: 'Card not found in hand' };
 
   player.hand.splice(cardIndex, 1);
-  state.discardPile.push('super_skip');
+  state.discardPile.push('mega_evade');
 
   // Set pending action for nope
   state.pendingAction = {
-    type: 'super_skip',
+    type: 'mega_evade',
     playerId,
     payload: { previousPendingDraws: state.pendingDraws },
     nopeCount: 0,
@@ -216,16 +221,16 @@ export function executeReverse(
   const player = CriticalLogic.findPlayer(state, playerId);
   if (!player) return { success: false, error: 'Player not found' };
 
-  const cardIndex = player.hand.indexOf('reverse');
+  const cardIndex = player.hand.indexOf('invert');
   if (cardIndex === -1)
     return { success: false, error: 'Card not found in hand' };
 
   player.hand.splice(cardIndex, 1);
-  state.discardPile.push('reverse');
+  state.discardPile.push('invert');
 
   // Set pending action for nope
   state.pendingAction = {
-    type: 'reverse',
+    type: 'invert',
     playerId,
     payload: { previousDirection: state.playDirection },
     nopeCount: 0,
@@ -250,11 +255,5 @@ export function executeReverse(
 
 // Check if a card is an Attack Pack card
 export function isAttackPackCard(card: CriticalCard): boolean {
-  return [
-    'targeted_attack',
-    'personal_attack',
-    'attack_of_the_dead',
-    'super_skip',
-    'reverse',
-  ].includes(card);
+  return ATTACK_PACK_CARDS.includes(card as AttackPackCard);
 }

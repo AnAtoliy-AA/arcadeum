@@ -72,6 +72,7 @@ interface PlayerHandProps {
   onOpenFiverCombo: () => void;
   forceEnableAutoplay?: boolean;
   onAutoplayEnabledChange?: (enabled: boolean) => void;
+  cardVariant?: string;
 }
 
 export const PlayerHand: React.FC<PlayerHandProps> = ({
@@ -103,7 +104,8 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
   onOpenFiverCombo,
   forceEnableAutoplay: _forceEnableAutoplay,
   onAutoplayEnabledChange: _onAutoplayEnabledChange,
-}) => {
+  cardVariant,
+}: PlayerHandProps) => {
   const { uniqueCards, cardCounts } = useMemo(() => {
     const unique = Array.from(new Set(currentPlayer.hand));
     const counts = new Map<CriticalCard, number>();
@@ -131,6 +133,7 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
           onOpenCatCombo={(cats) => onOpenCatCombo(cats, currentPlayer.hand)}
           onOpenFiverCombo={onOpenFiverCombo}
           t={t}
+          cardVariant={cardVariant}
         />
       )}
 
@@ -141,9 +144,9 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
           <ActionButton
             variant="secondary"
             onClick={onPlayNope}
-            disabled={typeof actionBusy === 'string' && actionBusy === 'nope'}
+            disabled={typeof actionBusy === 'string' && actionBusy === 'cancel'}
           >
-            {typeof actionBusy === 'string' && actionBusy === 'nope'
+            {typeof actionBusy === 'string' && actionBusy === 'cancel'
               ? 'Playing...'
               : t('games.table.actions.playNope') || '🚫 Nope'}
           </ActionButton>
@@ -204,7 +207,7 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
                   <CardInner>
                     <CardEmoji>{getCardEmoji(card)}</CardEmoji>
                     <CardName>
-                      {t(getCardTranslationKey(card)) || card}
+                      {t(getCardTranslationKey(card, cardVariant)) || card}
                     </CardName>
                     <CardDescription>
                       {t(getCardDescriptionKey(card))}

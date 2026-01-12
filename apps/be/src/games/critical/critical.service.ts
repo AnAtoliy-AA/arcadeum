@@ -141,6 +141,29 @@ export class CriticalService {
       throw new Error('Only the host can start the game');
     }
 
+    // Resolve Random Variant
+    // If cardVariant is 'random', pick one from the available list (excluding 'random')
+    // We hardcode the list here to avoid circular dependency with shared/frontend constants
+    if (room.gameOptions?.cardVariant === 'random') {
+      const variants = [
+        'cyberpunk',
+        'underwater',
+        'crime',
+        'horror',
+        'adventure',
+      ];
+      const randomVariant =
+        variants[Math.floor(Math.random() * variants.length)];
+
+      // Update the room options with the resolved variant so all players see it
+      await this.roomsService.updateRoomOptions(effectiveRoomId, userId, {
+        cardVariant: randomVariant,
+      });
+
+      // Update local room object for session creation
+      room.gameOptions.cardVariant = randomVariant;
+    }
+
     const playerIds =
       await this.roomsService.getRoomParticipants(effectiveRoomId);
 

@@ -19,6 +19,7 @@ import { AutoplayControls } from './AutoplayControls';
 import { ServerLoadingNotice } from './ServerLoadingNotice';
 import type { GameRoomSummary, CriticalSnapshot } from '@/shared/types/games';
 import { UseAutoplayReturn } from '../hooks/useAutoplay';
+import { CARD_VARIANTS } from '../lib/constants';
 
 interface CriticalGameHeaderProps {
   room: GameRoomSummary;
@@ -69,9 +70,26 @@ export function CriticalGameHeader({
   return (
     <GameHeader>
       <GameInfo>
-        <GameTitle>{t('games.critical_v1.name')}</GameTitle>
+        <GameTitle>
+          {t('games.critical_v1.name')}
+          <span
+            style={{
+              background: 'linear-gradient(135deg, #FF0080 0%, #7928CA 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              fontSize: '0.8em',
+            }}
+          >
+            :{' '}
+            {CARD_VARIANTS.find((v) => v.id === room.gameOptions?.cardVariant)
+              ?.name || 'Classic'}
+          </span>
+        </GameTitle>
         <RoomNameBadge>
-          <RoomNameIcon>🎲</RoomNameIcon>
+          <RoomNameIcon>
+            {CARD_VARIANTS.find((v) => v.id === room.gameOptions?.cardVariant)
+              ?.emoji || '🎲'}
+          </RoomNameIcon>
           <RoomNameText>{room.name}</RoomNameText>
         </RoomNameBadge>
         {idleTimerEnabled && (

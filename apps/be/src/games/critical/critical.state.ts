@@ -1,41 +1,41 @@
 import { randomUUID } from 'crypto';
 import { ChatScope } from '../engines/base/game-engine.interface';
 
-// ===== CAT CARDS (for combos) =====
-export type CriticalCatCard =
-  | 'tacocat'
-  | 'hairy_potato_cat'
-  | 'rainbow_ralphing_cat'
-  | 'cattermelon'
-  | 'bearded_cat';
+// ===== COLLECTION CARDS (for combos) =====
+export type CriticalCollectionCard =
+  | 'collection_alpha'
+  | 'collection_beta'
+  | 'collection_gamma'
+  | 'collection_delta'
+  | 'collection_epsilon';
 
-export const CAT_CARDS: CriticalCatCard[] = [
-  'tacocat',
-  'hairy_potato_cat',
-  'rainbow_ralphing_cat',
-  'cattermelon',
-  'bearded_cat',
+export const COLLECTION_CARDS: CriticalCollectionCard[] = [
+  'collection_alpha',
+  'collection_beta',
+  'collection_gamma',
+  'collection_delta',
+  'collection_epsilon',
 ];
 
 // ===== BASE GAME CARDS =====
 export type BaseActionCard =
-  | 'attack'
-  | 'skip'
-  | 'favor'
-  | 'shuffle'
-  | 'see_the_future'
-  | 'nope';
+  | 'strike'
+  | 'evade'
+  | 'trade'
+  | 'reorder'
+  | 'insight'
+  | 'cancel';
 
 export const BASE_ACTION_CARDS: BaseActionCard[] = [
-  'attack',
-  'skip',
-  'favor',
-  'shuffle',
-  'see_the_future',
-  'nope',
+  'strike',
+  'evade',
+  'trade',
+  'reorder',
+  'insight',
+  'cancel',
 ];
 
-export const BASE_SPECIAL_CARDS = ['exploding_cat', 'defuse'] as const;
+export const BASE_SPECIAL_CARDS = ['critical_event', 'neutralizer'] as const;
 
 // ===== EXPANSION PACK IDENTIFIERS =====
 export type CriticalExpansion =
@@ -47,26 +47,35 @@ export type CriticalExpansion =
 
 // ===== ATTACK PACK EXPANSION CARDS =====
 export type AttackPackCard =
-  | 'targeted_attack'
-  | 'personal_attack'
-  | 'attack_of_the_dead'
-  | 'super_skip'
-  | 'reverse';
+  | 'targeted_strike'
+  | 'private_strike'
+  | 'recursive_strike'
+  | 'mega_evade'
+  | 'invert';
 
 export const ATTACK_PACK_CARDS: AttackPackCard[] = [
-  'targeted_attack',
-  'personal_attack',
-  'attack_of_the_dead',
-  'super_skip',
-  'reverse',
+  'targeted_strike',
+  'private_strike',
+  'recursive_strike',
+  'mega_evade',
+  'invert',
 ];
+
+export const CARDS_REQUIRING_DRAWS: CriticalCard[] = [
+  'strike',
+  'evade',
+  'reorder',
+  ...ATTACK_PACK_CARDS,
+];
+
+export const ANYTIME_ACTION_CARDS: CriticalCard[] = ['cancel'];
 
 // ===== COMBINED CARD TYPE =====
 export type CriticalCard =
-  | 'exploding_cat'
-  | 'defuse'
+  | 'critical_event'
+  | 'neutralizer'
   | BaseActionCard
-  | CriticalCatCard
+  | CriticalCollectionCard
   | AttackPackCard;
 
 export interface CriticalPlayerState {
@@ -130,11 +139,11 @@ function shuffleInPlace<T>(items: T[]): void {
 // Attack Pack cards to add when expansion is enabled
 function getAttackPackCards(): CriticalCard[] {
   return [
-    ...repeatCard('targeted_attack', 3),
-    ...repeatCard('personal_attack', 2),
-    ...repeatCard('attack_of_the_dead', 2),
-    ...repeatCard('super_skip', 2),
-    ...repeatCard('reverse', 4),
+    ...repeatCard('targeted_strike', 3),
+    ...repeatCard('private_strike', 2),
+    ...repeatCard('recursive_strike', 2),
+    ...repeatCard('mega_evade', 2),
+    ...repeatCard('invert', 4),
   ];
 }
 
@@ -149,18 +158,18 @@ export function createInitialCriticalState(
 
   // Base deck with enough neutral/action cards for initial deal
   const deck: CriticalCard[] = [
-    ...repeatCard('attack', 4),
-    ...repeatCard('skip', 4),
-    ...repeatCard('favor', 4),
-    ...repeatCard('shuffle', 4),
-    ...repeatCard('see_the_future', 5),
-    ...repeatCard('nope', 5),
-    ...repeatCard('tacocat', 4),
-    ...repeatCard('hairy_potato_cat', 4),
-    ...repeatCard('rainbow_ralphing_cat', 4),
-    ...repeatCard('cattermelon', 4),
-    ...repeatCard('bearded_cat', 4),
-    ...repeatCard('defuse', 6),
+    ...repeatCard('strike', 4),
+    ...repeatCard('evade', 4),
+    ...repeatCard('trade', 4),
+    ...repeatCard('reorder', 4),
+    ...repeatCard('insight', 5),
+    ...repeatCard('cancel', 5),
+    ...repeatCard('collection_alpha', 4),
+    ...repeatCard('collection_beta', 4),
+    ...repeatCard('collection_gamma', 4),
+    ...repeatCard('collection_delta', 4),
+    ...repeatCard('collection_epsilon', 4),
+    ...repeatCard('neutralizer', 6),
   ];
 
   // Add expansion cards based on selected packs
@@ -187,11 +196,11 @@ export function createInitialCriticalState(
       drawn.push(card);
     }
 
-    const defuseIndex = deck.findIndex((card) => card === 'defuse');
+    const defuseIndex = deck.findIndex((card) => card === 'neutralizer');
     const guaranteedDefuse =
       defuseIndex !== -1
-        ? (deck.splice(defuseIndex, 1)[0] ?? 'defuse')
-        : 'defuse';
+        ? (deck.splice(defuseIndex, 1)[0] ?? 'neutralizer')
+        : 'neutralizer';
 
     player.hand = [guaranteedDefuse, ...drawn];
   });
@@ -199,11 +208,11 @@ export function createInitialCriticalState(
   // Insert exploding cats into the deck (players minus one)
   const bombsToAdd = Math.max(playerIds.length - 1, 1);
   for (let i = 0; i < bombsToAdd; i += 1) {
-    deck.push('exploding_cat');
+    deck.push('critical_event');
   }
 
   // Add an extra defuse for late saves
-  deck.push('defuse');
+  deck.push('neutralizer');
 
   shuffleInPlace(deck);
 

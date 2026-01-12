@@ -399,6 +399,33 @@ export class GamesController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('rooms/:roomId/options') // Using POST/PATCH interchangeably preference
+  async updateRoomOptions(
+    @Req() req: Request,
+    @Param('roomId') roomId: string,
+    @Body() body: { options: Record<string, unknown> },
+  ): Promise<{
+    room: Awaited<ReturnType<GamesService['updateRoomOptions']>>;
+  }> {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const { options } = body;
+    if (!options || typeof options !== 'object') {
+      throw new BadRequestException('Options object is required');
+    }
+
+    const room = await this.gamesService.updateRoomOptions(
+      roomId,
+      user.userId,
+      options,
+    );
+    return { room };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   @Post('rooms/:roomId/participants') // Using POST over PATCH for easier implementation
   async reorderParticipants(

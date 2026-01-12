@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { GameRoom, type GameRoomStatus } from '../schemas/game-room.schema';
 import { User } from '../../auth/schemas/user.schema';
 import { CreateGameRoomDto } from '../dtos/create-game-room.dto';
@@ -23,6 +23,7 @@ import {
 } from './game-rooms.types';
 import { GameRoomsMapper } from './game-rooms.mapper';
 import { GameRoomsRematchService } from './game-rooms.rematch.service';
+import { GameRoomsQueryBuilder } from './game-rooms.query';
 
 /**
  * Game Rooms Service
@@ -80,55 +81,11 @@ export class GameRoomsService {
     filters: ListRoomsFilters = {},
     viewerId?: string,
   ): Promise<ListRoomsResult> {
-    const query: FilterQuery<GameRoom> = {};
     const page = filters.page || 1;
     const limit = filters.limit || 10;
     const skip = (page - 1) * limit;
 
-    if (filters.gameId) {
-      query.gameId = filters.gameId;
-    }
-
-    if (filters.search) {
-      query.name = { $regex: filters.search, $options: 'i' };
-    }
-
-    if (filters.status) {
-      query.status = filters.status;
-    } else if (filters.statuses && filters.statuses.length > 0) {
-      query.status = { $in: filters.statuses };
-    }
-
-    if (filters.visibility) {
-      if (Array.isArray(filters.visibility)) {
-        query.visibility = { $in: filters.visibility };
-      } else {
-        query.visibility = filters.visibility;
-      }
-    }
-
-    if (filters.participation && filters.userId) {
-      if (
-        filters.participation === 'host' ||
-        filters.participation === 'hosting'
-      ) {
-        query.hostId = filters.userId;
-      } else if (
-        filters.participation === 'participant' ||
-        filters.participation === 'joined'
-      ) {
-        query['participants.userId'] = filters.userId;
-        query.hostId = { $ne: filters.userId };
-      } else if (filters.participation === 'not_joined') {
-        query['participants.userId'] = { $ne: filters.userId };
-        query.hostId = { $ne: filters.userId };
-      } else if (filters.participation === 'any') {
-        query.$or = [
-          { hostId: filters.userId },
-          { 'participants.userId': filters.userId },
-        ];
-      }
-    }
+    const query = GameRoomsQueryBuilder.buildListQuery(filters);
 
     const [rooms, total] = await Promise.all([
       this.gameRoomModel
@@ -342,6 +299,41 @@ export class GameRoomsService {
     }
 
     return room.participants.map((p) => p.userId);
+  }
+
+  /**
+   * Update room options (host only, lobby only)
+   */
+  async updateRoomOptions(
+    roomId: string,
+    userId: string,
+    options: Record<string, unknown>,
+  ): Promise<GameRoomSummary> {
+    const room = await this.gameRoomModel.findById(roomId).exec();
+
+    if (!room) {
+      throw new NotFoundException(`Room not found: ${roomId}`);
+    }
+
+    if (room.hostId !== userId) {
+      throw new ForbiddenException('Only the host can update room options');
+    }
+
+    if (room.status !== 'lobby') {
+      throw new BadRequestException(
+        'Cannot update options after game has started',
+      );
+    }
+
+    room.gameOptions = {
+      ...room.gameOptions,
+      ...options,
+    };
+    room.updatedAt = new Date();
+
+    await room.save();
+
+    return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
 
   /**

@@ -24,6 +24,7 @@ interface GameTableSectionProps {
   logs?: CriticalLogEntry[];
   resolveDisplayName: (playerId: string, fallback: string) => string;
   t: (key: string) => string;
+  cardVariant?: string;
 }
 
 export function GameTableSection({
@@ -38,6 +39,7 @@ export function GameTableSection({
   logs = [],
   resolveDisplayName,
   t,
+  cardVariant,
 }: GameTableSectionProps) {
   return (
     <GameTable>
@@ -62,7 +64,11 @@ export function GameTableSection({
         })}
 
         <CenterTable>
-          <LastPlayedCardDisplay discardPile={discardPile} t={t} />
+          <LastPlayedCardDisplay
+            discardPile={discardPile}
+            t={t}
+            cardVariant={cardVariant}
+          />
         </CenterTable>
       </PlayersRing>
       <TableStats

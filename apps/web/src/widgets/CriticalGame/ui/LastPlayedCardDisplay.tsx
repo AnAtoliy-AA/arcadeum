@@ -13,11 +13,13 @@ import {
 interface LastPlayedCardDisplayProps {
   discardPile: CriticalCard[];
   t: (key: string) => string;
+  cardVariant?: string;
 }
 
 export const LastPlayedCardDisplay: React.FC<LastPlayedCardDisplayProps> = ({
   discardPile,
   t,
+  cardVariant,
 }) => {
   if (discardPile.length === 0) {
     return null;
@@ -34,7 +36,7 @@ export const LastPlayedCardDisplay: React.FC<LastPlayedCardDisplayProps> = ({
       <CardFrame />
       <CardInner>
         <CardEmoji>{getCardEmoji(lastCard)}</CardEmoji>
-        <CardName>{t(getCardTranslationKey(lastCard))}</CardName>
+        <CardName>{t(getCardTranslationKey(lastCard, cardVariant))}</CardName>
       </CardInner>
     </LastPlayedCard>
   );

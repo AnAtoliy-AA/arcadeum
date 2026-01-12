@@ -10,17 +10,20 @@ import {
   OptionButton,
   ModalActions,
   ModalButton,
+  CardEmoji,
+  CardName,
+  CardDescription,
 } from '../styles';
 import { getCardEmoji, getCardTranslationKey } from '../../lib/cardUtils';
 import type { CriticalCard } from '../../types';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
 
 interface GiveFavorModalProps {
   isOpen: boolean;
   requesterName: string;
   myHand: CriticalCard[];
   onGiveCard: (card: CriticalCard) => void;
-  t: (key: TranslationKey) => string;
+  t: (key: string, params?: Record<string, unknown>) => string;
+  cardVariant?: string;
 }
 
 export const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
@@ -29,6 +32,7 @@ export const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
   myHand,
   onGiveCard,
   t,
+  cardVariant,
 }) => {
   const [selectedCard, setSelectedCard] = useState<CriticalCard | null>(null);
 
@@ -61,10 +65,11 @@ export const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
                 $selected={selectedCard === card}
                 onClick={() => setSelectedCard(card)}
               >
-                <div style={{ fontSize: '1.5rem' }}>{getCardEmoji(card)}</div>
-                <div style={{ fontSize: '0.75rem' }}>
-                  {t(getCardTranslationKey(card)) || card}
-                </div>
+                <CardEmoji>{getCardEmoji(card)}</CardEmoji>
+                <CardName>
+                  {t(getCardTranslationKey(card, cardVariant)) || card}
+                </CardName>
+                <CardDescription></CardDescription>
               </OptionButton>
             ))}
           </OptionGrid>

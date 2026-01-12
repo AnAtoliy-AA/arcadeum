@@ -6,9 +6,11 @@ export interface GameRoomMemberSummary {
   isHost: boolean;
 }
 
+// Game Options Interface
 export interface GameOptions {
   allowActionCardCombos?: boolean;
   idleTimerEnabled?: boolean;
+  cardVariant?: string; // e.g. 'cyberpunk', 'underwater', 'crime', 'horror', 'adventure'
   rematchInvitedUsers?: { id: string; displayName: string }[];
   rematchDeclinedUsers?: { id: string; displayName: string }[];
   rematchInvitedIds?: string[];
@@ -49,61 +51,61 @@ export interface GameSessionSummary {
 
 // ===== CAT CARDS (for combos) =====
 export type CriticalCatCard =
-  | 'tacocat'
-  | 'hairy_potato_cat'
-  | 'rainbow_ralphing_cat'
-  | 'cattermelon'
-  | 'bearded_cat';
+  | 'collection_alpha'
+  | 'collection_beta'
+  | 'collection_gamma'
+  | 'collection_delta'
+  | 'collection_epsilon';
 
 export const CAT_CARDS: CriticalCatCard[] = [
-  'tacocat',
-  'hairy_potato_cat',
-  'rainbow_ralphing_cat',
-  'cattermelon',
-  'bearded_cat',
+  'collection_alpha',
+  'collection_beta',
+  'collection_gamma',
+  'collection_delta',
+  'collection_epsilon',
 ];
 
 // ===== SPECIAL CARDS (cannot be used in combos) =====
-export const SPECIAL_CARDS = ['exploding_cat', 'defuse'] as const;
+export const SPECIAL_CARDS = ['critical_event', 'neutralizer'] as const;
 
 // ===== BASE GAME CARDS =====
 export type BaseActionCard =
-  | 'attack'
-  | 'skip'
-  | 'favor'
-  | 'shuffle'
-  | 'see_the_future'
-  | 'nope';
+  | 'strike'
+  | 'evade'
+  | 'trade'
+  | 'reorder'
+  | 'insight'
+  | 'cancel';
 
 export const BASE_ACTION_CARDS: BaseActionCard[] = [
-  'attack',
-  'skip',
-  'favor',
-  'shuffle',
-  'see_the_future',
-  'nope',
+  'strike',
+  'evade',
+  'trade',
+  'reorder',
+  'insight',
+  'cancel',
 ];
 
 // ===== ATTACK PACK EXPANSION CARDS =====
 export type AttackPackCard =
-  | 'targeted_attack'
-  | 'personal_attack'
-  | 'attack_of_the_dead'
-  | 'super_skip'
-  | 'reverse';
+  | 'targeted_strike'
+  | 'private_strike'
+  | 'recursive_strike'
+  | 'mega_evade'
+  | 'invert';
 
 export const ATTACK_PACK_CARDS: AttackPackCard[] = [
-  'targeted_attack',
-  'personal_attack',
-  'attack_of_the_dead',
-  'super_skip',
-  'reverse',
+  'targeted_strike',
+  'private_strike',
+  'recursive_strike',
+  'mega_evade',
+  'invert',
 ];
 
 // ===== COMBINED CARD TYPE =====
 export type CriticalCard =
-  | 'exploding_cat'
-  | 'defuse'
+  | 'critical_event'
+  | 'neutralizer'
   | BaseActionCard
   | CriticalCatCard
   | AttackPackCard;

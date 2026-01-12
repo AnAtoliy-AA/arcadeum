@@ -19,7 +19,6 @@ import type {
   CriticalCatCard,
   CatComboModalState,
 } from '../../types';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
 
 interface CatComboModalProps {
   isOpen: boolean;
@@ -46,7 +45,8 @@ interface CatComboModalProps {
   onToggleFiverCard: (card: CriticalCard) => void;
   onConfirm: () => void;
   resolveDisplayName: (playerId?: string, fallback?: string) => string;
-  t: (key: TranslationKey) => string;
+  t: (key: string, params?: Record<string, unknown>) => string;
+  cardVariant?: string;
 }
 
 export const CatComboModal: React.FC<CatComboModalProps> = ({
@@ -72,6 +72,7 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
   onConfirm,
   resolveDisplayName,
   t,
+  cardVariant,
 }) => {
   if (!isOpen || !catComboModal) return null;
 
@@ -148,7 +149,7 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
                   onClick={() => onSelectCat(cat)}
                 >
                   <div style={{ fontSize: '1.5rem' }}>{getCardEmoji(cat)}</div>
-                  <div>{t(getCardTranslationKey(cat))}</div>
+                  <div>{t(getCardTranslationKey(cat, cardVariant))}</div>
                   <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
                     {availableModes.includes('trio') ? '2-3 cards' : '2 cards'}
                   </div>
@@ -216,7 +217,7 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
                       {getCardEmoji(card)}
                     </div>
                     <div style={{ fontSize: '0.75rem' }}>
-                      {t(getCardTranslationKey(card)) || card}
+                      {t(getCardTranslationKey(card, cardVariant)) || card}
                     </div>
                   </OptionButton>
                 );
@@ -242,7 +243,7 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
                       {getCardEmoji(card)}
                     </div>
                     <div style={{ fontSize: '0.75rem' }}>
-                      {t(getCardTranslationKey(card)) || card}
+                      {t(getCardTranslationKey(card, cardVariant)) || card}
                     </div>
                   </OptionButton>
                 ))}
@@ -310,7 +311,7 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
               {t('games.table.modals.catCombo.selectCard')}
             </SectionLabel>
             <OptionGrid>
-              {ALL_GAME_CARDS.filter((c) => c !== 'exploding_cat').map(
+              {ALL_GAME_CARDS.filter((c) => c !== 'critical_event').map(
                 (card) => (
                   <OptionButton
                     key={card}
@@ -321,7 +322,12 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
                       {getCardEmoji(card as CriticalCard)}
                     </div>
                     <div style={{ fontSize: '0.75rem' }}>
-                      {t(getCardTranslationKey(card as CriticalCard)) || card}
+                      {t(
+                        getCardTranslationKey(
+                          card as CriticalCard,
+                          cardVariant,
+                        ),
+                      ) || card}
                     </div>
                   </OptionButton>
                 ),

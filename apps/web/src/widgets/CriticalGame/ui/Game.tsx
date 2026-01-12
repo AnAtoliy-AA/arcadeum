@@ -41,6 +41,7 @@ export default function CriticalGame({
 
   // Use dynamic room state
   const room = useGameRoom(initialRoom);
+  const cardVariant = room.gameOptions?.cardVariant;
 
   const {
     snapshot,
@@ -120,10 +121,10 @@ export default function CriticalGame({
   });
 
   const youLabel = t('games.table.players.you');
-  const seeTheFutureLabel = t('games.table.cards.seeTheFuture');
+  const seeTheFutureLabel = t('games.table.cards.insight');
   const translateCardType = useCallback(
-    (cardType: CriticalCard) => t(getCardTranslationKey(cardType)),
-    [t],
+    (cardType: CriticalCard) => t(getCardTranslationKey(cardType, cardVariant)),
+    [t, cardVariant],
   );
   const { resolveDisplayName, formatLogMessage } = useDisplayNames({
     currentUserId,
@@ -155,7 +156,7 @@ export default function CriticalGame({
 
   const handlePlayActionCard = useCallback(
     (card: CriticalCard) => {
-      if (card === 'targeted_attack') {
+      if (card === 'targeted_strike') {
         setTargetedAttackModal(true);
       } else {
         actions.playActionCard(card);
@@ -171,7 +172,7 @@ export default function CriticalGame({
 
   const handleConfirmTargetedAttack = useCallback(() => {
     if (selectedTarget) {
-      actions.playActionCard('targeted_attack', {
+      actions.playActionCard('targeted_strike', {
         targetPlayerId: selectedTarget,
       });
       setTargetedAttackModal(false);
@@ -305,6 +306,7 @@ export default function CriticalGame({
             logs={snapshot.logs ?? []}
             resolveDisplayName={resolveDisplayName}
             t={t as (key: string) => string}
+            cardVariant={cardVariant}
           />
 
           {currentPlayer && currentPlayer.alive && !isGameOver && (
@@ -337,6 +339,7 @@ export default function CriticalGame({
               onOpenFiverCombo={handleOpenFiverCombo}
               forceEnableAutoplay={idleTimerTriggered}
               onAutoplayEnabledChange={autoplayState.setAllEnabled}
+              cardVariant={cardVariant}
             />
           )}
 
@@ -446,6 +449,7 @@ export default function CriticalGame({
         // Shared
         resolveDisplayName={resolveDisplayName}
         t={t as (key: string, params?: Record<string, unknown>) => string}
+        cardVariant={cardVariant}
       />
     </GameContainer>
   );

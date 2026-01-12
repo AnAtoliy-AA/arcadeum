@@ -17,19 +17,19 @@ export const Card = styled.div<{ $cardType?: string; $index?: number }>`
   aspect-ratio: 2/3;
   border-radius: 16px;
   background: ${({ $cardType }) => {
-    if ($cardType === 'exploding_cat')
+    if ($cardType === 'critical_event')
       return 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)';
-    if ($cardType === 'defuse')
+    if ($cardType === 'neutralizer')
       return 'linear-gradient(135deg, #10B981 0%, #059669 100%)';
-    if ($cardType === 'attack')
+    if ($cardType === 'strike')
       return 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)';
-    if ($cardType === 'skip')
+    if ($cardType === 'evade')
       return 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)';
-    if ($cardType === 'favor')
+    if ($cardType === 'trade')
       return 'linear-gradient(135deg, #EC4899 0%, #BE185D 100%)';
-    if ($cardType === 'shuffle')
+    if ($cardType === 'reorder')
       return 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)';
-    if ($cardType === 'see_the_future')
+    if ($cardType === 'insight')
       return 'linear-gradient(135deg, #A855F7 0%, #7E22CE 100%)';
     return 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)';
   }};

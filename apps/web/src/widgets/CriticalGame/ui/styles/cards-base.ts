@@ -28,6 +28,17 @@ export const Card = styled.div<{ $cardType?: string; $index?: number }>`
       return 'linear-gradient(135deg, #22D3EE 0%, #0891B2 100%)'; // Cyan
     if ($cardType === 'stash')
       return 'linear-gradient(135deg, #6366F1 0%, #4338CA 100%)'; // Indigo
+    if ($cardType === 'stash')
+      return 'linear-gradient(135deg, #6366F1 0%, #4338CA 100%)'; // Indigo
+    // Deity Pack cards
+    if ($cardType === 'omniscience')
+      return 'linear-gradient(135deg, #FDE68A 0%, #D97706 100%)'; // Gold
+    if ($cardType === 'miracle')
+      return 'linear-gradient(135deg, #A5F3FC 0%, #0891B2 100%)'; // Cyan-Blue Light
+    if ($cardType === 'smite')
+      return 'linear-gradient(135deg, #DC2626 0%, #7F1D1D 100%)'; // Deep Red
+    if ($cardType === 'rapture')
+      return 'linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%)'; // Amber/Divine
     return 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)';
   }};
   display: flex;

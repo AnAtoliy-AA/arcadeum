@@ -38,6 +38,7 @@ interface UseGameHandlersOptions {
   setMarkModal: (isOpen: boolean) => void;
   setStealDrawModal: (isOpen: boolean) => void;
   setTargetedAttackModal: (isOpen: boolean) => void;
+  setSmiteModal: (isOpen: boolean) => void;
   clearChatMessage: () => void;
 }
 
@@ -62,6 +63,7 @@ export function useGameHandlers(options: UseGameHandlersOptions) {
     setMarkModal,
     setStealDrawModal,
     setTargetedAttackModal,
+    setSmiteModal,
     clearChatMessage,
   } = options;
 
@@ -162,6 +164,8 @@ export function useGameHandlers(options: UseGameHandlersOptions) {
         setStealDrawModal(true);
       } else if (card === 'stash') {
         setStashModal(true);
+      } else if (card === 'smite') {
+        setSmiteModal(true);
       } else {
         actions.playActionCard(card);
       }
@@ -172,6 +176,7 @@ export function useGameHandlers(options: UseGameHandlersOptions) {
       setMarkModal,
       setStealDrawModal,
       setStashModal,
+      setSmiteModal,
     ],
   );
 
@@ -207,6 +212,21 @@ export function useGameHandlers(options: UseGameHandlersOptions) {
     [actions],
   );
 
+  const handleCloseSmiteModal = useCallback(() => {
+    setSmiteModal(false);
+    setSelectedTarget(null);
+  }, [setSmiteModal, setSelectedTarget]);
+
+  const handleConfirmSmite = useCallback(() => {
+    if (selectedTarget) {
+      actions.playActionCard('smite', {
+        targetPlayerId: selectedTarget,
+      });
+      setSmiteModal(false);
+      setSelectedTarget(null);
+    }
+  }, [selectedTarget, actions, setSmiteModal, setSelectedTarget]);
+
   return {
     handleConfirmCatCombo,
     handleSendChatMessage,
@@ -221,5 +241,7 @@ export function useGameHandlers(options: UseGameHandlersOptions) {
     handleCloseStealDrawModal,
     handleConfirmTargetedAttack,
     handleConfirmAlterFuture,
+    handleCloseSmiteModal,
+    handleConfirmSmite,
   };
 }

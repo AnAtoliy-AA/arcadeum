@@ -42,6 +42,16 @@ export type CriticalExpansion =
   | 'chaos'
   | 'deity';
 
+// ===== DEITY PACK EXPANSION CARDS =====
+export type DeityPackCard = 'omniscience' | 'miracle' | 'smite' | 'rapture';
+
+export const DEITY_PACK_CARDS: DeityPackCard[] = [
+  'omniscience',
+  'miracle',
+  'smite',
+  'rapture',
+];
+
 // ===== ATTACK PACK EXPANSION CARDS =====
 export type AttackPackCard =
   | 'targeted_strike'
@@ -119,6 +129,7 @@ export const CARDS_REQUIRING_DRAWS: CriticalCard[] = [
   'stash',
   ...ATTACK_PACK_CARDS,
   ...FUTURE_PACK_CARDS,
+  ...DEITY_PACK_CARDS,
 ];
 
 export const ANYTIME_ACTION_CARDS: CriticalCard[] = ['cancel'];
@@ -132,4 +143,5 @@ export type CriticalCard =
   | AttackPackCard
   | FuturePackCard
   | TheftPackCard
-  | ChaosPackCard;
+  | ChaosPackCard
+  | DeityPackCard;

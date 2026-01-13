@@ -39,6 +39,11 @@ export const variants = {
     fission: 'Defrag',
     tribute: 'Data Tax',
     blackout: 'Glitch',
+    // Deity Pack
+    omniscience: 'God Mode',
+    miracle: 'System Restore',
+    smite: 'Neural Shock',
+    rapture: 'Network Crash',
   },
   underwater: {
     critical_event: 'Hull Breach',
@@ -80,6 +85,11 @@ export const variants = {
     fission: 'Maelstrom',
     tribute: 'Jettison Cargo',
     blackout: 'Ink Cloud',
+    // Deity Pack
+    omniscience: 'Sonar Grid',
+    miracle: 'Resurface',
+    smite: 'Electric Eel',
+    rapture: 'Tidal Pull',
   },
   crime: {
     critical_event: 'Police Raid',
@@ -121,6 +131,11 @@ export const variants = {
     fission: 'Shredding Party',
     tribute: 'Protection Money',
     blackout: 'Power Cut',
+    // Deity Pack
+    omniscience: 'Surveillance Net',
+    miracle: 'Bail Money',
+    smite: 'Racketeering',
+    rapture: 'Asset Seizure',
   },
   horror: {
     critical_event: 'Possession',
@@ -162,6 +177,11 @@ export const variants = {
     fission: 'Hellfire',
     tribute: 'Blood Sacrifice',
     blackout: 'Eternal Darkness',
+    // Deity Pack
+    omniscience: 'Mind Read',
+    miracle: 'Resurrection',
+    smite: 'Haunting',
+    rapture: 'Mass Hysteria',
   },
   adventure: {
     critical_event: 'Temple Collapse',
@@ -203,5 +223,10 @@ export const variants = {
     fission: 'Aftershock',
     tribute: 'Ration Sharing',
     blackout: 'Whiteout',
+    // Deity Pack
+    omniscience: 'Summit View',
+    miracle: 'Rescue Chopper',
+    smite: 'Landslide',
+    rapture: 'Sandstorm',
   },
 };

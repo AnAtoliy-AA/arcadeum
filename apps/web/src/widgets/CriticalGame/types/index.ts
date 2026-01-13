@@ -13,6 +13,7 @@ import {
   FUTURE_PACK_CARDS,
   THEFT_PACK_CARDS,
   MarkedCardInfo,
+  DEITY_PACK_CARDS,
 } from '@/shared/types/games';
 
 /** Number of different cards required for the fiver combo */
@@ -60,6 +61,16 @@ export interface AlterTheFutureModalState {
   isShare: boolean;
 }
 
+/**
+ * Omniscience modal state
+ */
+export interface OmniscienceModalState {
+  hands: Array<{
+    playerId: string;
+    cards: CriticalCard[];
+  }>;
+}
+
 // Re-export shared types for convenience
 export type {
   GameRoomSummary,
@@ -79,6 +90,7 @@ export {
   SPECIAL_CARDS,
   FUTURE_PACK_CARDS,
   THEFT_PACK_CARDS,
+  DEITY_PACK_CARDS,
 };
 
 /**
@@ -91,4 +103,5 @@ export const ALL_GAME_CARDS: CriticalCard[] = [
   ...ATTACK_PACK_CARDS,
   ...FUTURE_PACK_CARDS,
   ...THEFT_PACK_CARDS,
+  ...DEITY_PACK_CARDS,
 ];

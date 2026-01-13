@@ -8,6 +8,7 @@ import {
   FUTURE_PACK_CARDS,
   THEFT_PACK_CARDS,
   CHAOS_PACK_CARDS,
+  DEITY_PACK_CARDS,
 } from './critical/critical.state';
 
 export const SIMPLE_ACTION_CARDS = [
@@ -18,6 +19,7 @@ export const SIMPLE_ACTION_CARDS = [
   ...ATTACK_PACK_CARDS,
   ...FUTURE_PACK_CARDS,
   ...THEFT_PACK_CARDS,
+  ...DEITY_PACK_CARDS,
   'fission',
   'tribute',
   'blackout',
@@ -39,6 +41,7 @@ export const ALL_CRITICAL_CARDS = [
   ...FUTURE_PACK_CARDS,
   ...THEFT_PACK_CARDS,
   ...CHAOS_PACK_CARDS,
+  ...DEITY_PACK_CARDS,
 ] as const satisfies ReadonlyArray<CriticalCard>;
 
 export function isCollectionComboCard(

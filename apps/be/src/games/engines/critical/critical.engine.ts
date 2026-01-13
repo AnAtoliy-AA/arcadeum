@@ -35,6 +35,7 @@ import {
 } from './critical-future.utils';
 import { dispatchTheftPackAction } from './critical-theft.utils';
 import { dispatchChaosPackAction } from './critical-chaos.utils';
+import { dispatchDeityPackAction } from './critical-deity.utils';
 
 /**
  * Critical Game Engine
@@ -167,6 +168,18 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
           );
           if (chaosPackResult) {
             return chaosPackResult;
+          }
+
+          // Try Deity Pack
+          const deityPackResult = dispatchDeityPackAction(
+            newState,
+            context.userId,
+            card,
+            typedPayload?.targetPlayerId,
+            helpers,
+          );
+          if (deityPackResult) {
+            return deityPackResult;
           }
         }
 

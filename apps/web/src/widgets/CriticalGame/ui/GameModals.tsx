@@ -8,11 +8,13 @@ import { GiveFavorModal } from './modals/GiveFavorModal';
 import { DefuseModal } from './modals/DefuseModal';
 import { RematchModal } from './modals/RematchModal';
 import { RematchInvitationModal } from './modals/RematchInvitationModal';
+import { OmniscienceModal } from './OmniscienceModal';
 import type {
   CriticalCard,
   CatComboModalState,
   CriticalCatCard,
   CriticalPlayerState,
+  OmniscienceModalState,
 } from '../types';
 
 type SeeTheFutureModalState = {
@@ -108,6 +110,11 @@ export interface GameModalsProps {
   stealDrawModal: boolean;
   onCloseStealDrawModal: () => void;
   onConfirmStealDraw: () => void;
+  smiteModal: boolean;
+  onCloseSmiteModal: () => void;
+  onConfirmSmite: () => void;
+  omniscienceModal: OmniscienceModalState | null;
+  onCloseOmniscienceModal: () => void;
 }
 
 export function GameModals({
@@ -188,7 +195,12 @@ export function GameModals({
   stealDrawModal,
   onCloseStealDrawModal,
   onConfirmStealDraw,
+  smiteModal,
+  onCloseSmiteModal,
+  onConfirmSmite,
   onSelectTarget,
+  omniscienceModal,
+  onCloseOmniscienceModal,
 }: GameModalsProps) {
   return (
     <>
@@ -357,6 +369,30 @@ export function GameModals({
         titleKey="games.table.modals.stealDraw.title"
         descriptionKey="games.table.modals.stealDraw.description"
         emoji="🤏"
+      />
+
+      {/* Smite Modal (Target Selection) */}
+      <TargetedAttackModal
+        isOpen={smiteModal}
+        onClose={onCloseSmiteModal}
+        aliveOpponents={aliveOpponents}
+        selectedTarget={selectedTarget}
+        onSelectTarget={onSelectTarget}
+        onConfirm={onConfirmSmite}
+        resolveDisplayName={resolveDisplayName}
+        t={t}
+        titleKey="games.table.cards.smite"
+        descriptionKey="games.table.cards.descriptions.smite"
+        emoji="⚡"
+      />
+
+      {/* Omniscience Modal */}
+      <OmniscienceModal
+        omniscienceModal={omniscienceModal}
+        onClose={onCloseOmniscienceModal}
+        resolveDisplayName={resolveDisplayName}
+        t={t}
+        cardVariant={cardVariant}
       />
     </>
   );

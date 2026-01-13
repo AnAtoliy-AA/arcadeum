@@ -214,6 +214,26 @@ function getChaosPackCards(customCards?: CustomCardConfig): CriticalCard[] {
   ];
 }
 
+// Deity Pack cards to add when expansion is enabled
+function getDeityPackCards(customCards?: CustomCardConfig): CriticalCard[] {
+  const defaults: Record<string, number> = {
+    omniscience: 2,
+    miracle: 2,
+    smite: 3,
+    rapture: 2,
+  };
+
+  return [
+    ...repeatCard(
+      'omniscience',
+      Number(customCards?.omniscience ?? defaults.omniscience),
+    ),
+    ...repeatCard('miracle', Number(customCards?.miracle ?? defaults.miracle)),
+    ...repeatCard('smite', Number(customCards?.smite ?? defaults.smite)),
+    ...repeatCard('rapture', Number(customCards?.rapture ?? defaults.rapture)),
+  ];
+}
+
 export function createInitialCriticalState(
   playerIds: string[],
   expansions: CriticalExpansion[] = [],
@@ -258,6 +278,10 @@ export function createInitialCriticalState(
 
   if (activeExpansions.includes('chaos')) {
     deck.push(...getChaosPackCards(customCards));
+  }
+
+  if (activeExpansions.includes('deity')) {
+    deck.push(...getDeityPackCards(customCards));
   }
 
   shuffleInPlace(deck);

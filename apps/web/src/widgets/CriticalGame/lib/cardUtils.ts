@@ -56,6 +56,11 @@ export function getCardTranslationKey(
     fission: 'games.table.cards.fission',
     tribute: 'games.table.cards.tribute',
     blackout: 'games.table.cards.blackout',
+    // ===== DEITY PACK EXPANSION CARDS =====
+    omniscience: 'games.table.cards.omniscience',
+    miracle: 'games.table.cards.miracle',
+    smite: 'games.table.cards.smite',
+    rapture: 'games.table.cards.rapture',
   };
   return keys[card] || 'games.table.cards.generic';
 }
@@ -104,6 +109,11 @@ export function getCardEmoji(card: CriticalCard): string {
     fission: '⚛️',
     tribute: '🤲',
     blackout: '🕶️',
+    // ===== DEITY PACK EXPANSION CARDS =====
+    omniscience: '👁️',
+    miracle: '✨',
+    smite: '⚡',
+    rapture: '🎺',
   };
   return emojis[card] || '🐱';
 }
@@ -149,6 +159,11 @@ export function getCardDescriptionKey(card: CriticalCard): TranslationKey {
     fission: 'games.table.cards.descriptions.fission',
     tribute: 'games.table.cards.descriptions.tribute',
     blackout: 'games.table.cards.descriptions.blackout',
+    // ===== DEITY PACK EXPANSION CARDS =====
+    omniscience: 'games.table.cards.descriptions.omniscience',
+    miracle: 'games.table.cards.descriptions.miracle',
+    smite: 'games.table.cards.descriptions.smite',
+    rapture: 'games.table.cards.descriptions.rapture',
   };
   return keys[card] || 'games.table.cards.descriptions.collectionAlpha';
 }

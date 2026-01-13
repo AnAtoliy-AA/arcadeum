@@ -45,6 +45,11 @@ export const enMessages = {
       fission: 'Fission',
       tribute: 'Tribute',
       blackout: 'Blackout',
+      // Deity Pack cards
+      omniscience: 'Omniscience',
+      miracle: 'Miracle',
+      smite: 'Smite',
+      rapture: 'The Rapture',
       descriptions: {
         criticalEvent: 'You must defuse this or you explode!',
         neutralizer: 'Use to defuse a Critical card',
@@ -92,6 +97,11 @@ export const enMessages = {
           'You must place a card from your hand on the Draw Pile. All other players must also place a card on the Draw Pile.',
         blackout:
           'Target player plays their next turn blind (cards face down).',
+        // Deity Pack descriptions
+        omniscience: 'Reveal all other players hands to you privately.',
+        miracle: 'Gain a Defuse card from outside the game.',
+        smite: 'Choose a player. They must take 3 turns immediately.',
+        rapture: 'All other players must give you one card from their hand.',
       },
       variants,
     },
@@ -210,7 +220,12 @@ export const enMessages = {
       hint: 'Press F to toggle fullscreen',
     },
     modals: {
-      common: { cancel: 'Cancel', confirm: 'Confirm' },
+      common: { cancel: 'Cancel', confirm: 'Confirm', close: 'Close' },
+      omniscience: {
+        title: 'Omniscience',
+        subtitle: 'You see all cards in play!',
+        emptyHand: 'No cards in hand.',
+      },
       targetedAttack: {
         title: 'Targeted Attack',
         selectPlayer: 'Select Target Player',

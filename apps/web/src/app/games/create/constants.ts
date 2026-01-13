@@ -129,8 +129,18 @@ export const EXPANSION_PACK_DETAILS: ExpansionPackDetails[] = [
   {
     id: 'deity',
     name: 'Deity Pack',
-    available: false,
-    cards: [],
+    available: true,
+    cards: [
+      {
+        id: 'omniscience',
+        name: 'Omniscience',
+        defaultCount: 2,
+        maxCount: 4,
+      },
+      { id: 'miracle', name: 'Miracle', defaultCount: 2, maxCount: 5 },
+      { id: 'smite', name: 'Smite', defaultCount: 3, maxCount: 5 },
+      { id: 'rapture', name: 'The Rapture', defaultCount: 2, maxCount: 4 },
+    ],
   },
 ];
 

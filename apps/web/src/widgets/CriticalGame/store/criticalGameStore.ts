@@ -5,6 +5,7 @@ import type {
   CatComboModalState,
   SeeTheFutureModalState,
   AlterTheFutureModalState,
+  OmniscienceModalState,
   ChatScope,
 } from '../types';
 import { FIVER_COMBO_SIZE } from '../types';
@@ -19,6 +20,8 @@ interface CriticalGameState {
   stashModal: boolean;
   markModal: boolean;
   stealDrawModal: boolean;
+  smiteModal: boolean;
+  omniscienceModal: OmniscienceModalState | null;
 
   // Selection
   selectedMode: 'pair' | 'trio' | 'fiver' | null;
@@ -42,6 +45,8 @@ interface CriticalGameState {
   setStashModal: (isOpen: boolean) => void;
   setMarkModal: (isOpen: boolean) => void;
   setStealDrawModal: (isOpen: boolean) => void;
+  setSmiteModal: (isOpen: boolean) => void;
+  setOmniscienceModal: (state: OmniscienceModalState | null) => void;
 
   setSelectedMode: (mode: 'pair' | 'trio' | 'fiver' | null) => void;
   setSelectedTarget: (target: string | null) => void;
@@ -73,6 +78,8 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
   stashModal: false,
   markModal: false,
   stealDrawModal: false,
+  smiteModal: false,
+  omniscienceModal: null,
 
   selectedMode: null,
   selectedTarget: null,
@@ -93,6 +100,8 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
   setStashModal: (isOpen) => set({ stashModal: isOpen }),
   setMarkModal: (isOpen) => set({ markModal: isOpen }),
   setStealDrawModal: (isOpen) => set({ stealDrawModal: isOpen }),
+  setSmiteModal: (isOpen) => set({ smiteModal: isOpen }),
+  setOmniscienceModal: (state) => set({ omniscienceModal: state }),
 
   setSelectedMode: (mode) => set({ selectedMode: mode }),
   setSelectedTarget: (target) => set({ selectedTarget: target }),
@@ -203,6 +212,8 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
       stashModal: false,
       markModal: false,
       stealDrawModal: false,
+      smiteModal: false,
+      omniscienceModal: null,
       chatMessage: '',
       // Don't reset chatScope or showChat perhaps? Or do we want to reset UI prefs?
       // Keeping scope and showChat might be annoying if reset on every game end if user prefers hidden.

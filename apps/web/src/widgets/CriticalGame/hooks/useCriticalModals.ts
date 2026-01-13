@@ -100,6 +100,10 @@ export function useCriticalModals({
     setMarkModal: store.setMarkModal,
     stealDrawModal: store.stealDrawModal,
     setStealDrawModal: store.setStealDrawModal,
+    smiteModal: store.smiteModal,
+    setSmiteModal: store.setSmiteModal,
+    omniscienceModal: store.omniscienceModal,
+    setOmniscienceModal: store.setOmniscienceModal,
 
     // Chat
     chatMessage: store.chatMessage,

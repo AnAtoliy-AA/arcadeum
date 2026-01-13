@@ -1,5 +1,10 @@
 import { useCallback, useMemo } from 'react';
-import type { GameRoomSummary, CriticalSnapshot, CriticalCard } from '../types';
+import {
+  GameRoomSummary,
+  CriticalSnapshot,
+  CriticalCard,
+  ALL_GAME_CARDS,
+} from '../types';
 
 interface DisplayNameResolverOptions {
   currentUserId: string | null;
@@ -109,6 +114,34 @@ export function useDisplayNames({
         return `You stole: ${translatedCard} 🎴`;
       }
 
+      // Handle Omniscience reveal
+      if (message.startsWith('omniscience.reveal:')) {
+        const content = message.slice('omniscience.reveal:'.length);
+        const sections = content.split('|');
+        const formattedSections = sections.map((section) => {
+          // section format: "playerId:card1,card2"
+          const firstColon = section.indexOf(':');
+          if (firstColon === -1) return section;
+
+          const playerId = section.slice(0, firstColon);
+          const cardStr = section.slice(firstColon + 1);
+
+          const playerName = resolveDisplayName(playerId, 'Player');
+
+          const cardNames = cardStr
+            .split(',')
+            .map((c) => {
+              const cardType = c.trim() as CriticalCard;
+              return translateCardType ? translateCardType(cardType) : cardType;
+            })
+            .join(', ');
+
+          return `${playerName}: ${cardNames}`;
+        });
+
+        return `Omniscience Reveal 👁️: ${formattedSections.join(' | ')}`;
+      }
+
       // Apply participant replacements first
       let result = message;
       if (participantReplacements.length > 0) {
@@ -122,28 +155,8 @@ export function useDisplayNames({
 
       // Replace raw card identifiers with translated names
       if (translateCardType) {
-        const allCardTypes: CriticalCard[] = [
-          'critical_event',
-          'neutralizer',
-          'strike',
-          'evade',
-          'trade',
-          'reorder',
-          'insight',
-          'cancel',
-          'collection_alpha',
-          'collection_beta',
-          'collection_gamma',
-          'collection_delta',
-          'collection_epsilon',
-          'targeted_strike',
-          'private_strike',
-          'recursive_strike',
-          'mega_evade',
-          'invert',
-        ];
         // Sort by length (longest first) to avoid partial matches
-        const sortedCardTypes = [...allCardTypes].sort(
+        const sortedCardTypes = [...ALL_GAME_CARDS].sort(
           (a, b) => b.length - a.length,
         );
         for (const cardType of sortedCardTypes) {
@@ -156,7 +169,12 @@ export function useDisplayNames({
 
       return result;
     },
-    [participantReplacements, translateCardType, seeTheFutureLabel],
+    [
+      participantReplacements,
+      translateCardType,
+      seeTheFutureLabel,
+      resolveDisplayName,
+    ],
   );
 
   return {

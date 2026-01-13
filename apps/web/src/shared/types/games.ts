@@ -138,6 +138,16 @@ export const THEFT_PACK_CARDS: TheftPackCard[] = [
   'stash',
 ];
 
+// ===== DEITY PACK EXPANSION CARDS =====
+export type DeityPackCard = 'omniscience' | 'miracle' | 'smite' | 'rapture';
+
+export const DEITY_PACK_CARDS: DeityPackCard[] = [
+  'omniscience',
+  'miracle',
+  'smite',
+  'rapture',
+];
+
 // ===== COMBINED CARD TYPE =====
 export type CriticalCard =
   | 'critical_event'
@@ -146,7 +156,8 @@ export type CriticalCard =
   | CriticalCatCard
   | AttackPackCard
   | FuturePackCard
-  | TheftPackCard;
+  | TheftPackCard
+  | DeityPackCard;
 
 // Marked card info for theft mechanics
 export interface MarkedCardInfo {

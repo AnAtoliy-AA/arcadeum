@@ -14,6 +14,7 @@ import {
   useIdleTimer,
   useGameRoom,
   useSeeTheFutureFromLogs,
+  useOmniscienceFromLogs,
 } from '../hooks';
 import { useAutoplay } from '../hooks/useAutoplay';
 import { useGameHandlers } from '../hooks/useGameHandlers';
@@ -123,16 +124,25 @@ export default function CriticalGame({
     setMarkModal,
     stealDrawModal,
     setStealDrawModal,
+    smiteModal,
+    setSmiteModal,
+    omniscienceModal,
+    setOmniscienceModal,
   } = useCriticalModals({
     chatMessagesRef,
     chatLogCount: snapshot?.logs?.length ?? 0,
   });
 
-  // Monitor logs for seeTheFuture.reveal entries (for future pack cards) and open modal
+  // Monitor logs for seeTheFuture.reveal and omniscience.reveal entries
   useSeeTheFutureFromLogs({
     logs: snapshot?.logs,
     currentUserId,
     setSeeTheFutureModal,
+  });
+  useOmniscienceFromLogs({
+    logs: snapshot?.logs,
+    currentUserId,
+    setOmniscienceModal,
   });
 
   const youLabel = t('games.table.players.you');
@@ -169,6 +179,7 @@ export default function CriticalGame({
     setStashModal,
     setMarkModal,
     setStealDrawModal,
+    setSmiteModal,
     clearChatMessage,
     setTargetedAttackModal,
   });
@@ -187,6 +198,8 @@ export default function CriticalGame({
     handleCloseStealDrawModal,
     handleConfirmTargetedAttack,
     handleConfirmAlterFuture,
+    handleCloseSmiteModal,
+    handleConfirmSmite,
   } = gameHandlers;
 
   // Autoplay hook
@@ -473,6 +486,12 @@ export default function CriticalGame({
         stealDrawModal={stealDrawModal}
         onCloseStealDrawModal={handleCloseStealDrawModal}
         onConfirmStealDraw={handleConfirmStealDraw}
+        smiteModal={smiteModal}
+        onCloseSmiteModal={handleCloseSmiteModal}
+        onConfirmSmite={handleConfirmSmite}
+        // Omniscience Modal
+        omniscienceModal={omniscienceModal}
+        onCloseOmniscienceModal={() => setOmniscienceModal(null)}
       />
     </GameContainer>
   );

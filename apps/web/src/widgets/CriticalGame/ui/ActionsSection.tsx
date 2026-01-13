@@ -31,6 +31,10 @@ export type ActionBusyState =
   | 'mark'
   | 'steal_draw'
   | 'stash'
+  | 'omniscience'
+  | 'miracle'
+  | 'smite'
+  | 'rapture'
   | null;
 
 interface ActionsSectionProps {
@@ -384,6 +388,51 @@ export function ActionsSection({
               {actionBusy === 'stash'
                 ? 'Playing...'
                 : `🏰 ${t(getCardTranslationKey('stash', cardVariant))}`}
+            </ActionButton>
+          )}
+          {/* Deity Pack Cards */}
+          {currentPlayer.hand.includes('omniscience') && (
+            <ActionButton
+              variant="primary"
+              onClick={() => onPlayActionCard('omniscience')}
+              disabled={!canAct || actionBusy === 'omniscience'}
+            >
+              {actionBusy === 'omniscience'
+                ? 'Playing...'
+                : `👁️ ${t(getCardTranslationKey('omniscience', cardVariant))}`}
+            </ActionButton>
+          )}
+          {currentPlayer.hand.includes('miracle') && (
+            <ActionButton
+              variant="primary"
+              onClick={() => onPlayActionCard('miracle')}
+              disabled={!canAct || actionBusy === 'miracle'}
+            >
+              {actionBusy === 'miracle'
+                ? 'Playing...'
+                : `✨ ${t(getCardTranslationKey('miracle', cardVariant))}`}
+            </ActionButton>
+          )}
+          {currentPlayer.hand.includes('smite') && (
+            <ActionButton
+              variant="danger"
+              onClick={() => onPlayActionCard('smite')}
+              disabled={!canAct || actionBusy === 'smite'}
+            >
+              {actionBusy === 'smite'
+                ? 'Playing...'
+                : `⚡ ${t(getCardTranslationKey('smite', cardVariant))}`}
+            </ActionButton>
+          )}
+          {currentPlayer.hand.includes('rapture') && (
+            <ActionButton
+              variant="danger"
+              onClick={() => onPlayActionCard('rapture')}
+              disabled={!canAct || actionBusy === 'rapture'}
+            >
+              {actionBusy === 'rapture'
+                ? 'Playing...'
+                : `🎺 ${t(getCardTranslationKey('rapture', cardVariant))}`}
             </ActionButton>
           )}
         </ActionButtons>

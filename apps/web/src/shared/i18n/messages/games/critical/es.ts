@@ -44,6 +44,11 @@ export const esMessages = {
       fission: 'Fisión',
       tribute: 'Tributo',
       blackout: 'Apagón',
+      // Deity Pack cards
+      omniscience: 'Omnisciencia',
+      miracle: 'Milagro',
+      smite: 'Castigo Divino',
+      rapture: 'El Rapto',
       descriptions: {
         criticalEvent: '¡Debes desactivarlo o explotas!',
         neutralizer: 'Usa para desactivar un Gato Explosivo',
@@ -91,6 +96,11 @@ export const esMessages = {
         tribute:
           'Todos los jugadores (incluido tú) deben poner una carta de su mano en el mazo',
         blackout: 'Elige un jugador. Jugaran su próximo turno a ciegas',
+        // Deity Pack descriptions
+        omniscience: 'Revela las manos de todos los otros jugadores en privado',
+        miracle: 'Gana una carta de Desactivación desde fuera del juego',
+        smite: 'Elige un jugador. Debe tomar 3 turnos inmediatamente',
+        rapture: 'Todos los otros jugadores deben darte una carta de su mano',
       },
       variants,
     },
@@ -213,6 +223,12 @@ export const esMessages = {
       hint: 'Presiona F para pantalla completa',
     },
     modals: {
+      common: { cancel: 'Cancelar', confirm: 'Confirmar', close: 'Cerrar' },
+      omniscience: {
+        title: 'Omnisciencia',
+        subtitle: '¡Ves todas las cartas en juego!',
+        emptyHand: 'Sin cartas en mano.',
+      },
       alterTheFuture: {
         title: 'Alterar el Futuro',
         description:

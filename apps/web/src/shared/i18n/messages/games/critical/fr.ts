@@ -44,6 +44,11 @@ export const frMessages = {
       fission: 'Fission',
       tribute: 'Tribut',
       blackout: 'Blackout',
+      // Deity Pack cards
+      omniscience: 'Omniscience',
+      miracle: 'Miracle',
+      smite: 'Châtiment',
+      rapture: 'Le Ravissement',
       descriptions: {
         criticalEvent: 'Vous devez le désamorcer ou vous explosez !',
         neutralizer: 'Utilisez pour désamorcer un Chat Explosif',
@@ -92,6 +97,12 @@ export const frMessages = {
         tribute:
           'Tous les joueurs (vous inclus) mettent une carte de leur main sur le paquet',
         blackout: "Cible un joueur. Il jouera son prochain tour à l'aveugle",
+        // Deity Pack descriptions
+        omniscience:
+          'Révèle les mains de tous les autres joueurs à vous en privé',
+        miracle: 'Gagnez une carte Désamorcer hors du jeu',
+        smite: 'Choisissez un joueur. Il doit prendre 3 tours immédiatement',
+        rapture: 'Tous les autres joueurs doivent vous donner une carte',
       },
       variants,
     },
@@ -219,7 +230,12 @@ export const frMessages = {
       hint: 'Appuyez sur F pour le plein écran',
     },
     modals: {
-      common: { cancel: 'Annuler', confirm: 'Confirmer' },
+      common: { cancel: 'Annuler', confirm: 'Confirmer', close: 'Fermer' },
+      omniscience: {
+        title: 'Omniscience',
+        subtitle: 'Vous voyez toutes les cartes en jeu !',
+        emptyHand: 'Pas de cartes en main.',
+      },
       alterTheFuture: {
         title: "Altérer l'Avenir",
         description:

@@ -160,12 +160,25 @@ export function useCriticalState({
     );
   }, [snapshot, currentUserId]);
 
-  // Nope can be played anytime when there's a pending action (handled by backend)
-  // Show button if player has nope and is alive - backend validates actual nope-ability
+  // Nope can be played when there's a pending action that:
+  // 1) Exists
+  // 2) Is not a draw action
+  // 3) Was not played by the current user (can't nope own actions)
   const canPlayNope = useMemo(() => {
     const hasNopeCard = currentPlayer?.hand.includes('cancel');
-    return hasNopeCard && currentPlayer?.alive && !actionBusy;
-  }, [currentPlayer, actionBusy]);
+    if (!hasNopeCard || !currentPlayer?.alive || actionBusy) return false;
+
+    const pending = snapshot?.pendingAction;
+    if (!pending) return false;
+
+    // Can't nope draw actions
+    if (pending.type === 'draw') return false;
+
+    // Can't nope your own actions
+    if (pending.playerId === currentUserId) return false;
+
+    return true;
+  }, [currentPlayer, actionBusy, snapshot?.pendingAction, currentUserId]);
 
   const isGameOver = session?.status === 'completed';
 

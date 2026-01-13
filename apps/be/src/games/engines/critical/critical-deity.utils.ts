@@ -102,6 +102,13 @@ export function executeMiracle(
 
   player.hand.push('neutralizer');
 
+  // Set pending action for nope
+  state.pendingAction = {
+    type: 'miracle',
+    playerId,
+    nopeCount: 0,
+  };
+
   helpers.addLog(
     state,
     helpers.createLogEntry(
@@ -126,11 +133,6 @@ export function executeSmite(
   targetPlayerId: string,
   helpers: EngineHelpers,
 ): GameActionResult<CriticalState> {
-  // We can reuse executeTargetedAttack but we need to make it apply 3x turns
-  // The base executeTargetedAttack applies pendingDraws = 2 and advances turn.
-  // We want to make it even worse.
-
-  // Custom logic for Smite:
   // 1. Check target validity
   const target = state.players.find((p) => p.playerId === targetPlayerId);
   if (!target || !target.alive)
@@ -139,10 +141,9 @@ export function executeSmite(
   if (targetPlayerId === playerId)
     return { success: false, error: 'Cannot smite yourself' };
 
-  // 2. Set turns. Targeted Attack sets '2'. Smite sets '3' or '4'. Let's go with 3.
-  // We need to manually set the state because executeTargetedAttack hardcodes 2 probably.
-  // Actually, executeTargetedAttack might not be exported or easily modifiable 'amount'.
-  // Let's implement custom logic here to be safe.
+  // Capture the previous state for nope reversal
+  const previousTurnIndex = state.currentTurnIndex;
+  const previousPendingDraws = state.pendingDraws;
 
   // End current turn (no draw for current player)
   state.pendingDraws = 0;
@@ -153,6 +154,14 @@ export function executeSmite(
 
   // Set their pending draws
   state.pendingDraws = 3;
+
+  // Set pending action for nope
+  state.pendingAction = {
+    type: 'smite',
+    playerId,
+    payload: { targetPlayerId, previousTurnIndex, previousPendingDraws },
+    nopeCount: 0,
+  };
 
   helpers.addLog(
     state,
@@ -199,11 +208,15 @@ export function executeRapture(
     return { success: true, state };
   }
 
+  // Track stolen cards for potential reversal
+  const stolenCards: { victimId: string; card: CriticalCard }[] = [];
+
   // Take 1 random card from each victim
   victims.forEach((victim) => {
     const randomIndex = Math.floor(Math.random() * victim.hand.length);
     const stolenCard = victim.hand.splice(randomIndex, 1)[0];
     player.hand.push(stolenCard);
+    stolenCards.push({ victimId: victim.playerId, card: stolenCard });
 
     helpers.addLog(
       state,
@@ -213,6 +226,14 @@ export function executeRapture(
       }),
     );
   });
+
+  // Set pending action for nope
+  state.pendingAction = {
+    type: 'rapture',
+    playerId,
+    payload: { stolenCards },
+    nopeCount: 0,
+  };
 
   helpers.addLog(
     state,

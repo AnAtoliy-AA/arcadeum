@@ -1,4 +1,7 @@
-import type { CriticalState } from '../../critical/critical.state';
+import type {
+  CriticalState,
+  CriticalCard,
+} from '../../critical/critical.state';
 import type {
   GameLogEntry,
   GameActionResult,
@@ -99,6 +102,83 @@ export function executeCancel(
         // Cancel pending favor request
         state.pendingFavor = null;
         break;
+      case 'smite': {
+        // Smite was: move turn to target, set pendingDraws = 3
+        // Reverse: go back to attacker's turn, restore pendingDraws
+        const payload = state.pendingAction.payload as {
+          previousTurnIndex: number;
+          previousPendingDraws?: number;
+        };
+        state.currentTurnIndex = payload.previousTurnIndex;
+        state.pendingDraws = payload?.previousPendingDraws ?? 1;
+        break;
+      }
+      case 'miracle': {
+        // Miracle adds a neutralizer to hand - remove it
+        const miraclePlayer = state.players.find(
+          (p) => p.playerId === state.pendingAction!.playerId,
+        );
+        if (miraclePlayer) {
+          const idx = miraclePlayer.hand.lastIndexOf('neutralizer');
+          if (idx > -1) miraclePlayer.hand.splice(idx, 1);
+        }
+        break;
+      }
+      case 'rapture': {
+        // Rapture stole cards - return them
+        const rapturePayload = state.pendingAction.payload as {
+          stolenCards: { victimId: string; card: string }[];
+        };
+        const rapturePlayer = state.players.find(
+          (p) => p.playerId === state.pendingAction!.playerId,
+        );
+        if (rapturePlayer && rapturePayload?.stolenCards) {
+          for (const stolen of rapturePayload.stolenCards) {
+            const idx = rapturePlayer.hand.indexOf(stolen.card as CriticalCard);
+            if (idx > -1) {
+              rapturePlayer.hand.splice(idx, 1);
+              const victim = state.players.find(
+                (p) => p.playerId === stolen.victimId,
+              );
+              if (victim) victim.hand.push(stolen.card as CriticalCard);
+            }
+          }
+        }
+        break;
+      }
+      case 'mark': {
+        // Mark was: add a mark to target's card - remove the mark
+        const markPayload = state.pendingAction.payload as {
+          targetPlayerId: string;
+          cardIndex: number;
+        };
+        const markTarget = state.players.find(
+          (p) => p.playerId === markPayload.targetPlayerId,
+        );
+        if (markTarget?.markedCards) {
+          markTarget.markedCards = markTarget.markedCards.filter(
+            (m) =>
+              !(
+                m.cardIndex === markPayload.cardIndex &&
+                m.markedBy === state.pendingAction!.playerId
+              ),
+          );
+        }
+        break;
+      }
+      case 'steal_draw': {
+        // Steal draw was: set pendingStealDraw on target - clear it
+        const stealPayload = state.pendingAction.payload as {
+          targetPlayerId: string;
+        };
+        const stealTarget = state.players.find(
+          (p) => p.playerId === stealPayload.targetPlayerId,
+        );
+        if (stealTarget) {
+          stealTarget.pendingStealDraw = undefined;
+        }
+        break;
+      }
     }
   } else {
     // Un-cancel the action - re-apply effects
@@ -142,6 +222,85 @@ export function executeCancel(
           requesterId: state.pendingAction.playerId,
           targetId: favorPayload.targetPlayerId,
         };
+        break;
+      }
+      case 'smite': {
+        // Re-apply smite: move turn to target, set pendingDraws = 3
+        const smitePayload = state.pendingAction.payload as {
+          targetPlayerId: string;
+        };
+        const smiteTargetIndex = state.playerOrder.indexOf(
+          smitePayload.targetPlayerId,
+        );
+        if (smiteTargetIndex !== -1) {
+          state.currentTurnIndex = smiteTargetIndex;
+          state.pendingDraws = 3;
+        }
+        break;
+      }
+      case 'miracle': {
+        // Re-apply miracle: add neutralizer back
+        const miraclePlayer = state.players.find(
+          (p) => p.playerId === state.pendingAction!.playerId,
+        );
+        if (miraclePlayer) {
+          miraclePlayer.hand.push('neutralizer');
+        }
+        break;
+      }
+      case 'rapture': {
+        // Re-apply rapture: steal cards again
+        const rapturePayload = state.pendingAction.payload as {
+          stolenCards: { victimId: string; card: string }[];
+        };
+        const rapturePlayer = state.players.find(
+          (p) => p.playerId === state.pendingAction!.playerId,
+        );
+        if (rapturePlayer && rapturePayload?.stolenCards) {
+          for (const stolen of rapturePayload.stolenCards) {
+            const victim = state.players.find(
+              (p) => p.playerId === stolen.victimId,
+            );
+            if (victim) {
+              const idx = victim.hand.indexOf(stolen.card as CriticalCard);
+              if (idx > -1) {
+                victim.hand.splice(idx, 1);
+                rapturePlayer.hand.push(stolen.card as CriticalCard);
+              }
+            }
+          }
+        }
+        break;
+      }
+      case 'mark': {
+        // Re-apply mark: add the mark back
+        const markPayload = state.pendingAction.payload as {
+          targetPlayerId: string;
+          cardIndex: number;
+        };
+        const markTarget = state.players.find(
+          (p) => p.playerId === markPayload.targetPlayerId,
+        );
+        if (markTarget) {
+          if (!markTarget.markedCards) markTarget.markedCards = [];
+          markTarget.markedCards.push({
+            cardIndex: markPayload.cardIndex,
+            markedBy: state.pendingAction.playerId,
+          });
+        }
+        break;
+      }
+      case 'steal_draw': {
+        // Re-apply steal draw: set pendingStealDraw on target
+        const stealPayload = state.pendingAction.payload as {
+          targetPlayerId: string;
+        };
+        const stealTarget = state.players.find(
+          (p) => p.playerId === stealPayload.targetPlayerId,
+        );
+        if (stealTarget) {
+          stealTarget.pendingStealDraw = state.pendingAction.playerId;
+        }
         break;
       }
     }

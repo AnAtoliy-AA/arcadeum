@@ -190,6 +190,14 @@ export function executeMark(
     ),
   );
 
+  // Set pending action for nope
+  state.pendingAction = {
+    type: 'mark',
+    playerId,
+    payload: { targetPlayerId, cardIndex: randomIndex },
+    nopeCount: 0,
+  };
+
   return { success: true, state };
 }
 
@@ -221,6 +229,14 @@ export function executeStealDraw(
       },
     ),
   );
+
+  // Set pending action for nope
+  state.pendingAction = {
+    type: 'steal_draw',
+    playerId,
+    payload: { targetPlayerId },
+    nopeCount: 0,
+  };
 
   return { success: true, state };
 }

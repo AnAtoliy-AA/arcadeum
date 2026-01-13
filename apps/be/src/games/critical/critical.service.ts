@@ -380,4 +380,21 @@ export class CriticalService {
     );
     return this.checkAndSyncRoomStatus(updatedSession);
   }
+  /**
+   * Commit Alter the Future (gateway wrapper)
+   */
+  async commitAlterFutureByRoom(
+    userId: string,
+    roomId: string,
+    newOrder: string[],
+  ) {
+    const session = await this.sessionsService.findSessionByRoom(roomId);
+    if (!session) throw new Error('Session not found');
+    const updatedSession = await this.criticalActions.commitAlterFuture(
+      session.id,
+      userId,
+      { newOrder },
+    );
+    return this.checkAndSyncRoomStatus(updatedSession);
+  }
 }

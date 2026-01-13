@@ -102,13 +102,36 @@ export const ATTACK_PACK_CARDS: AttackPackCard[] = [
   'invert',
 ];
 
+// ===== FUTURE PACK EXPANSION CARDS =====
+export type FuturePackCard =
+  | 'see_future_5x'
+  | 'alter_future_3x'
+  | 'alter_future_5x'
+  | 'reveal_future_3x'
+  | 'share_future_3x'
+  | 'draw_bottom'
+  | 'swap_top_bottom'
+  | 'bury';
+
+export const FUTURE_PACK_CARDS: FuturePackCard[] = [
+  'see_future_5x',
+  'alter_future_3x',
+  'alter_future_5x',
+  'reveal_future_3x',
+  'share_future_3x',
+  'draw_bottom',
+  'swap_top_bottom',
+  'bury',
+];
+
 // ===== COMBINED CARD TYPE =====
 export type CriticalCard =
   | 'critical_event'
   | 'neutralizer'
   | BaseActionCard
   | CriticalCatCard
-  | AttackPackCard;
+  | AttackPackCard
+  | FuturePackCard;
 
 export interface CriticalPlayerState {
   playerId: string;
@@ -140,6 +163,11 @@ export interface CriticalSnapshot {
     requesterId: string;
     targetId: string;
   } | null; // Pending favor request, null if none
+  pendingAlter: {
+    playerId: string;
+    count: number; // 3 or 5
+    isShare?: boolean; // if true, it's Share the Future
+  } | null; // Pending alter future action
   pendingAction: {
     type: string;
     playerId: string;

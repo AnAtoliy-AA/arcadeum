@@ -48,6 +48,15 @@ export interface SeeTheFutureModalState {
   cards: CriticalCard[];
 }
 
+/**
+ * Alter the future modal state
+ */
+export interface AlterTheFutureModalState {
+  cards: CriticalCard[];
+  count: number;
+  isShare: boolean;
+}
+
 // Re-export shared types for convenience
 export type {
   GameRoomSummary,

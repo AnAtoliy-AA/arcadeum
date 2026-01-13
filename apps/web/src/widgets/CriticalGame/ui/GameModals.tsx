@@ -1,5 +1,6 @@
 import { CatComboModal } from './modals/CatComboModal';
 import { SeeTheFutureModal } from './modals/SeeTheFutureModal';
+import { AlterTheFutureModal } from './modals/AlterTheFutureModal';
 import { FavorModal } from './modals/FavorModal';
 import { TargetedAttackModal } from './modals/TargetedAttackModal';
 import { GiveFavorModal } from './modals/GiveFavorModal';
@@ -68,6 +69,9 @@ export interface GameModalsProps {
   // See the Future Modal
   seeTheFutureModal: SeeTheFutureModalState;
   onCloseSeeTheFutureModal: () => void;
+  // Alter the Future
+  pendingAlter: { playerId: string; count: number; isShare?: boolean } | null;
+  onConfirmAlterFuture: (cards: CriticalCard[]) => void;
 
   // Targeted Attack Modal
   targetedAttackModal: boolean;
@@ -82,7 +86,7 @@ export interface GameModalsProps {
   // Defuse Modal
   pendingDefuse: string | null;
   onPlayDefuse: (position: number) => void;
-  deckSize: number;
+  deck: CriticalCard[]; // Changed from deckSize to deck
 
   // Give Favor Modal
   pendingFavor: { targetId: string; requesterId: string } | null;
@@ -137,7 +141,9 @@ export function GameModals({
   // See the Future Modal
   seeTheFutureModal,
   onCloseSeeTheFutureModal,
-
+  // Alter the Future
+  pendingAlter,
+  onConfirmAlterFuture,
   // Targeted Attack Modal
   targetedAttackModal,
   onCloseTargetedAttackModal,
@@ -151,7 +157,7 @@ export function GameModals({
   // Defuse Modal
   pendingDefuse,
   onPlayDefuse,
-  deckSize,
+  deck,
 
   // Give Favor Modal
   pendingFavor,
@@ -228,6 +234,20 @@ export function GameModals({
         cardVariant={cardVariant}
       />
 
+      {/* Alter the Future Modal */}
+      {!!currentUserId &&
+        !!pendingAlter &&
+        pendingAlter.playerId === currentUserId && (
+          <AlterTheFutureModal
+            isOpen={true}
+            onClose={() => {}}
+            cards={deck.slice(0, pendingAlter?.count || 0)}
+            onConfirm={onConfirmAlterFuture}
+            isShare={pendingAlter?.isShare}
+            cardVariant={cardVariant}
+          />
+        )}
+
       {/* Targeted Attack Modal */}
       <TargetedAttackModal
         isOpen={targetedAttackModal}
@@ -256,7 +276,7 @@ export function GameModals({
       <DefuseModal
         isOpen={!!currentUserId && pendingDefuse === currentUserId}
         onDefuse={onPlayDefuse}
-        deckSize={deckSize}
+        deckSize={deck.length}
         t={t as (key: string) => string}
       />
 

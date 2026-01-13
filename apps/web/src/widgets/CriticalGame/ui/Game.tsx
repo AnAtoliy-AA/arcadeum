@@ -180,6 +180,13 @@ export default function CriticalGame({
     }
   }, [selectedTarget, actions, setTargetedAttackModal, setSelectedTarget]);
 
+  const handleConfirmAlterFuture = useCallback(
+    (orderedCards: CriticalCard[]) => {
+      actions.commitAlterFuture(orderedCards);
+    },
+    [actions],
+  );
+
   // Autoplay hook
   const autoplayState = useAutoplay({
     isMyTurn: !!isMyTurn,
@@ -421,6 +428,9 @@ export default function CriticalGame({
         // See the Future Modal
         seeTheFutureModal={seeTheFutureModal}
         onCloseSeeTheFutureModal={() => setSeeTheFutureModal(null)}
+        // Alter the Future
+        pendingAlter={snapshot?.pendingAlter ?? null}
+        onConfirmAlterFuture={handleConfirmAlterFuture}
         // Targeted Attack Modal
         targetedAttackModal={targetedAttackModal}
         onCloseTargetedAttackModal={handleCloseTargetedAttackModal}
@@ -441,7 +451,7 @@ export default function CriticalGame({
         // Defuse Modal
         pendingDefuse={snapshot?.pendingDefuse ?? null}
         onPlayDefuse={actions.playDefuse}
-        deckSize={snapshot?.deck?.length ?? 0}
+        deck={snapshot?.deck ?? []}
         // Give Favor Modal
         pendingFavor={snapshot?.pendingFavor ?? null}
         myHand={currentPlayer?.hand ?? []}

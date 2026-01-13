@@ -31,6 +31,7 @@ interface UseGameActionsReturn {
     cards?: string[],
   ) => void;
   playDefuse: (position: number) => void;
+  commitAlterFuture: (newOrder: string[]) => void;
 
   // Texas Hold'em actions
   startHoldem: (startingChips?: number) => void;
@@ -208,6 +209,19 @@ export function useGameActions(
     gameSocket.emit('games.session.play_nope', { roomId, userId });
   }, [roomId, userId, setActionBusy]);
 
+  const commitAlterFuture = useCallback(
+    (newOrder: string[]) => {
+      if (!userId) return;
+      setActionBusy?.('commit_alter_future');
+      gameSocket.emit('games.session.commit_alter_future', {
+        roomId,
+        userId,
+        newOrder,
+      });
+    },
+    [roomId, userId, setActionBusy],
+  );
+
   // Texas Hold'em actions
   const startHoldem = useCallback(
     (startingChips: number = 1000) => {
@@ -261,6 +275,7 @@ export function useGameActions(
     playSeeTheFuture,
     playCatCombo,
     playDefuse,
+    commitAlterFuture,
 
     // Texas Hold'em
     startHoldem,

@@ -450,4 +450,42 @@ export class CriticalGateway {
       );
     }
   }
+  @SubscribeMessage('games.session.commit_alter_future')
+  async handleSessionCommitAlterFuture(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: {
+      roomId?: string;
+      userId?: string;
+      newOrder?: string[];
+    },
+  ): Promise<void> {
+    const { roomId, userId } = extractRoomAndUser(payload);
+    const newOrder = Array.isArray(payload.newOrder) ? payload.newOrder : [];
+
+    try {
+      await this.criticalService.commitAlterFutureByRoom(
+        userId,
+        roomId,
+        newOrder,
+      );
+
+      client.emit('games.session.action.played', {
+        roomId,
+        userId,
+        action: 'commit_alter_future',
+      });
+    } catch (error) {
+      handleError(
+        this.logger,
+        error,
+        {
+          action: 'commit alter future',
+          roomId,
+          userId,
+        },
+        'Unable to commit alter future.',
+      );
+    }
+  }
 }

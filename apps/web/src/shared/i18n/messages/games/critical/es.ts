@@ -16,6 +16,15 @@ export const esMessages = {
       collectionDelta: 'Gato Sandía',
       collectionEpsilon: 'Gato Barbudo',
       generic: 'Gato',
+      // Future Pack cards
+      seeFuture5x: 'Ver el Futuro (5x)',
+      alterFuture3x: 'Alterar el Futuro (3x)',
+      alterFuture5x: 'Alterar el Futuro (5x)',
+      revealFuture3x: 'Revelar el Futuro (3x)',
+      shareFuture3x: 'Compartir el Futuro (3x)',
+      drawBottom: 'Robar del Fondo',
+      swapTopBottom: 'Intercambiar Tope y Fondo',
+      bury: 'Enterrar',
       // Attack Pack cards
       targetedStrike: 'Ataque Dirigido',
       privateStrike: 'Ataque Personal',
@@ -36,6 +45,16 @@ export const esMessages = {
         collectionGamma: 'Junta gatos iguales para robar cartas',
         collectionDelta: 'Junta gatos iguales para robar cartas',
         collectionEpsilon: 'Junta gatos iguales para robar cartas',
+        // Future Pack descriptions
+        seeFuture5x: 'Mira las 5 cartas superiores del mazo',
+        alterFuture3x: 'Reorganiza las 3 cartas superiores',
+        alterFuture5x: 'Reorganiza las 5 cartas superiores',
+        revealFuture3x: 'Revela las 3 cartas superiores a todos',
+        shareFuture3x:
+          'Reorganiza las 3 cartas superiores, luego muéstralas al siguiente jugador',
+        drawBottom: 'Roba desde el fondo del mazo',
+        swapTopBottom: 'Intercambia la carta superior e inferior del mazo',
+        bury: 'Roba la carta superior, luego entiérrala de nuevo en el mazo',
         // Attack Pack descriptions
         targetedStrike: 'Elige un jugador para que tome 2 turnos',
         privateStrike: 'Debes tomar 3 turnos seguidos',
@@ -63,6 +82,15 @@ export const esMessages = {
           recursive_strike: 'Botnet',
           mega_evade: 'Modo Fantasma',
           invert: 'Bucle',
+          // Future Pack
+          see_future_5x: 'Escaneo Profundo',
+          alter_future_3x: 'Reescribir',
+          alter_future_5x: 'Anular Sistema',
+          reveal_future_3x: 'Transmisión',
+          share_future_3x: 'Sincronización P2P',
+          draw_bottom: 'Acceso Trasero',
+          swap_top_bottom: 'Cambio de Kernel',
+          bury: 'Descompilar',
         },
         underwater: {
           critical_event: 'Brecha en el Casco',
@@ -83,6 +111,15 @@ export const esMessages = {
           recursive_strike: 'Presión',
           mega_evade: 'Inmersión Profunda',
           invert: 'Resaca',
+          // Future Pack
+          see_future_5x: 'Sonar de Largo Alcance',
+          alter_future_3x: 'Cambio de Corriente',
+          alter_future_5x: 'Maremoto',
+          reveal_future_3x: 'Bengala',
+          share_future_3x: 'Boya de Comunicación',
+          draw_bottom: 'Dragar',
+          swap_top_bottom: 'Volcar',
+          bury: 'Desecho',
         },
         crime: {
           critical_event: 'Redada Policial',
@@ -103,6 +140,15 @@ export const esMessages = {
           recursive_strike: 'Caso RICO',
           mega_evade: 'Escondite',
           invert: 'Giro en U',
+          // Future Pack
+          see_future_5x: 'Vigilancia',
+          alter_future_3x: 'Maquillar Libros',
+          alter_future_5x: 'Lavado',
+          reveal_future_3x: 'Filtración',
+          share_future_3x: 'Micrófono Oculto',
+          draw_bottom: 'Caso Frío',
+          swap_top_bottom: 'Trabajo Interno',
+          bury: 'Destruir Evidencia',
         },
         horror: {
           critical_event: 'Posesión',
@@ -123,6 +169,15 @@ export const esMessages = {
           recursive_strike: 'Epidemia',
           mega_evade: 'Santuario',
           invert: 'Regreso',
+          // Future Pack
+          see_future_5x: 'Profecía',
+          alter_future_3x: 'Ritual',
+          alter_future_5x: 'Gran Ritual',
+          reveal_future_3x: 'Augurio',
+          share_future_3x: 'Sesión',
+          draw_bottom: 'Exhumar',
+          swap_top_bottom: 'Reencarnar',
+          bury: 'Exorcizar',
         },
         adventure: {
           critical_event: 'Colapso del Templo',
@@ -143,6 +198,15 @@ export const esMessages = {
           recursive_strike: 'Derrumbe',
           mega_evade: 'Campamento Base',
           invert: 'Retroceder',
+          // Future Pack
+          see_future_5x: 'Vista Panorámica',
+          alter_future_3x: 'Explorador',
+          alter_future_5x: 'Encuesta',
+          reveal_future_3x: 'Fuego de Señal',
+          share_future_3x: 'Compartir Suministros',
+          draw_bottom: 'Excavar',
+          swap_top_bottom: 'Trampilla',
+          bury: 'Escondite',
         },
       },
     },
@@ -265,7 +329,15 @@ export const esMessages = {
       hint: 'Presiona F para pantalla completa',
     },
     modals: {
-      common: { cancel: 'Cancelar', confirm: 'Confirmar' },
+      alterTheFuture: {
+        title: 'Alterar el Futuro',
+        description:
+          'Reorganiza las cartas superiores del mazo. La carta superior (#1) será robada a continuación.',
+        confirm: 'Confirmar Orden',
+      },
+      shareTheFuture: {
+        title: 'Compartir el Futuro',
+      },
       targetedAttack: {
         title: 'Ataque Dirigido',
         selectPlayer: 'Seleccionar Jugador',

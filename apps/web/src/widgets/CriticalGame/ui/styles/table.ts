@@ -250,6 +250,45 @@ export const InfoTitle = styled.h3`
   }
 `;
 
+export const ActionsHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+  padding-bottom: 0.5rem;
+
+  ${InfoTitle} {
+    margin: 0;
+    padding: 0;
+    border: none;
+
+    &::after {
+      display: none;
+    }
+  }
+`;
+
+export const ActionsToggleButton = styled.button`
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    color 0.2s,
+    transform 0.2s;
+
+  &:hover {
+    color: ${({ theme }) => theme.buttons.primary?.gradientStart || '#ffffff'};
+    transform: scale(1.1);
+  }
+`;
+
 export const TableInfo = styled.div`
   position: absolute;
   top: 1rem;

@@ -11,6 +11,7 @@ import {
   CriticalPlayerState,
   CriticalExpansion,
   createInitialCriticalState,
+  sanitizeCriticalStateForPlayer,
 } from '../../critical/critical.state';
 import { CriticalLogic, executeCancel } from './critical-logic.utils';
 import {
@@ -26,9 +27,13 @@ import {
   validateCollectionCombo,
   validateFavor,
   validateGiveFavorCard,
-  canPlayCollectionCombo,
+  getAvailableActionsForPlayer,
 } from './critical-validation.utils';
 import { executeFavor, executeGiveFavorCard } from './critical-favor.utils';
+import {
+  executeCommitAlterFuture,
+  dispatchFuturePackAction,
+} from './critical-future.utils';
 
 // Payload interfaces for type-safe action handling
 interface PlayCardPayload {
@@ -58,11 +63,16 @@ interface DefusePayload {
   position?: number;
 }
 
+interface CommitAlterFuturePayload {
+  newOrder?: CriticalCard[];
+}
+
 type CriticalPayload = PlayCardPayload &
   PlayCollectionComboPayload &
   FavorPayload &
   GiveFavorCardPayload &
-  DefusePayload;
+  DefusePayload &
+  CommitAlterFuturePayload;
 
 /**
  * Critical Game Engine
@@ -144,6 +154,12 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
       return false;
     }
 
+    // If pending Alter the Future, block substantially everything except commit
+    // commit_alter_future is handled below separately/explicitly if needed, or we just check here.
+    if (state.pendingAlter && action !== 'commit_alter_future') {
+      return false;
+    }
+
     // If player must defuse, only allow neutralizer action
     if (state.pendingDefuse === context.userId && action !== 'neutralizer') {
       return false;
@@ -218,6 +234,14 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
       case 'invert':
         return hasCard(player, 'invert') && state.pendingDraws > 0;
 
+      // Future Pack
+      case 'commit_alter_future':
+        return (
+          !!state.pendingAlter &&
+          state.pendingAlter?.playerId === context.userId &&
+          !!typedPayload?.newOrder
+        );
+
       default:
         return false;
     }
@@ -256,19 +280,37 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
       ) as typeof this.createLogEntry,
       advanceTurn: (state: CriticalState) => this.advanceTurn(state),
       shuffleArray: <T>(arr: T[]) => this.shuffleArray(arr),
+      findPlayer: (state: CriticalState, pid: string) =>
+        this.findPlayer(state, pid) as CriticalPlayerState,
     };
 
     switch (action) {
       case 'draw_card':
         return CriticalLogic.executeDrawCard(newState, context.userId, helpers);
 
-      case 'play_card':
+      case 'play_card': {
+        // Intercept Future Pack cards that are played via 'play_card'
+        const card = typedPayload?.card;
+
+        if (card) {
+          const futurePackResult = dispatchFuturePackAction(
+            newState,
+            context.userId,
+            card,
+            helpers,
+          );
+          if (futurePackResult) {
+            return futurePackResult;
+          }
+        }
+
         return CriticalLogic.executePlayCard(
           newState,
           context.userId,
           typedPayload!.card!,
           helpers,
         );
+      }
 
       case 'play_cat_combo':
         return CriticalLogic.executeCollectionCombo(
@@ -337,6 +379,14 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
       case 'invert':
         return executeReverse(newState, context.userId, helpers);
 
+      case 'commit_alter_future':
+        return executeCommitAlterFuture(
+          newState,
+          context.userId,
+          typedPayload!.newOrder!,
+          helpers,
+        );
+
       default:
         return this.errorResult('Unknown action');
     }
@@ -360,80 +410,15 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
     state: CriticalState,
     playerId: string,
   ): Partial<CriticalState> {
-    const sanitized = this.cloneState(state);
-
-    // Check if player is an actual game participant
-    const isPlayer = sanitized.players.some((p) => p.playerId === playerId);
-
-    // Hide other players' hands
-    sanitized.players = sanitized.players.map((p) => {
-      if (p.playerId === playerId) {
-        return p; // Show full hand to the player
-      }
-      return {
-        ...p,
-        hand: p.hand.map(() => 'hidden' as CriticalCard), // Hide cards
-      };
-    });
-
-    // Filter logs based on scope and player status
-    sanitized.logs = sanitized.logs.filter((log) => {
-      // Public messages visible to everyone (players + spectators)
-      if (log.scope === 'all' || log.scope === undefined) return true;
-      // Player-only messages visible only to game participants
-      if (log.scope === 'players' && isPlayer) return true;
-      // Private messages only visible to sender
-      if (log.scope === 'private' && log.senderId === playerId) return true;
-      return false;
-    });
-
-    // Partially hide deck (show count only)
-    sanitized.deck = new Array<CriticalCard>(state.deck.length).fill(
-      'hidden' as CriticalCard,
-    );
-
-    return sanitized;
+    return sanitizeCriticalStateForPlayer(state, playerId);
   }
 
   getAvailableActions(state: CriticalState, playerId: string): string[] {
-    const player = this.findPlayer(state, playerId) as CriticalPlayerState;
-    if (!player || !player.alive || !this.isPlayerTurn(state, playerId)) {
-      return [];
-    }
-
-    // If player must defuse, that's the only available action
-    if (state.pendingDefuse === playerId) {
-      return ['neutralizer'];
-    }
-
-    const actions: string[] = [];
-
-    if (state.pendingDraws > 0) {
-      actions.push('draw_card');
-    } else {
-      // Can play action cards
-      if (hasCard(player, 'strike')) actions.push('play_card:strike');
-      if (hasCard(player, 'evade')) actions.push('play_card:evade');
-      if (hasCard(player, 'reorder')) actions.push('play_card:reorder');
-      if (hasCard(player, 'insight')) actions.push('insight');
-      if (hasCard(player, 'trade')) actions.push('trade');
-
-      // Attack Pack
-      if (hasCard(player, 'targeted_strike'))
-        actions.push('play_card:targeted_strike');
-      if (hasCard(player, 'private_strike'))
-        actions.push('play_card:private_strike');
-      if (hasCard(player, 'recursive_strike'))
-        actions.push('play_card:recursive_strike');
-      if (hasCard(player, 'mega_evade')) actions.push('play_card:mega_evade');
-      if (hasCard(player, 'invert')) actions.push('play_card:invert');
-
-      // Can play collection combos
-      if (canPlayCollectionCombo(player, state.allowActionCardCombos))
-        actions.push('play_cat_combo');
-    }
-
-    return actions;
+    return getAvailableActionsForPlayer(
+      state,
+      playerId,
+      this.isPlayerTurn(state, playerId),
+    );
   }
 
   removePlayer(

@@ -16,6 +16,15 @@ export const frMessages = {
       collectionDelta: 'Chat Pastèque',
       collectionEpsilon: 'Chat Barbu',
       generic: 'Chat',
+      // Future Pack cards
+      seeFuture5x: "Voir l'Avenir (5x)",
+      alterFuture3x: "Altérer l'Avenir (3x)",
+      alterFuture5x: "Altérer l'Avenir (5x)",
+      revealFuture3x: "Révéler l'Avenir (3x)",
+      shareFuture3x: "Partager l'Avenir (3x)",
+      drawBottom: 'Piocher du Fond',
+      swapTopBottom: 'Échanger Haut & Fond',
+      bury: 'Enterrer',
       // Attack Pack cards
       targetedStrike: 'Attaque Ciblée',
       privateStrike: 'Attaque Personnelle',
@@ -37,6 +46,16 @@ export const frMessages = {
         collectionDelta: 'Collectez des chats identiques pour voler des cartes',
         collectionEpsilon:
           'Collectez des chats identiques pour voler des cartes',
+        // Future Pack descriptions
+        seeFuture5x: 'Regardez les 5 premières cartes du paquet',
+        alterFuture3x: 'Réorganisez les 3 premières cartes',
+        alterFuture5x: 'Réorganisez les 5 premières cartes',
+        revealFuture3x: 'Révélez les 3 premières cartes à tout le monde',
+        shareFuture3x:
+          'Réorganisez les 3 premières cartes, puis montrez-les au joueur suivant',
+        drawBottom: 'Piochez la carte du fond du paquet',
+        swapTopBottom: 'Échangez la carte du dessus et du dessous du paquet',
+        bury: 'Piochez la carte du dessus, puis enterrez-la dans le paquet',
         // Attack Pack descriptions
         targetedStrike: 'Choisissez un joueur pour prendre 2 tours',
         privateStrike: 'Vous devez prendre 3 tours de suite',
@@ -64,6 +83,15 @@ export const frMessages = {
           recursive_strike: 'Botnet',
           mega_evade: 'Mode Fantôme',
           invert: 'Bouclage',
+          // Future Pack
+          see_future_5x: 'Scan Profond',
+          alter_future_3x: 'Réécrire',
+          alter_future_5x: 'Surcharge Système',
+          reveal_future_3x: 'Diffusion',
+          share_future_3x: 'Sync P2P',
+          draw_bottom: 'Accès Dérobé',
+          swap_top_bottom: 'Swap Noyau',
+          bury: 'Décompiler',
         },
         underwater: {
           critical_event: 'Brèche de Coque',
@@ -84,6 +112,15 @@ export const frMessages = {
           recursive_strike: 'Pression',
           mega_evade: 'Plongée Profonde',
           invert: 'Ressac',
+          // Future Pack
+          see_future_5x: 'Sonar Longue Portée',
+          alter_future_3x: 'Changement de Courant',
+          alter_future_5x: 'Raz-de-marée',
+          reveal_future_3x: 'Fusée Éclairante',
+          share_future_3x: 'Bouée de Comms',
+          draw_bottom: 'Draguer',
+          swap_top_bottom: 'Retourner',
+          bury: 'Rebut',
         },
         crime: {
           critical_event: 'Raid de Police',
@@ -104,6 +141,15 @@ export const frMessages = {
           recursive_strike: 'Affaire RICO',
           mega_evade: 'Planque',
           invert: 'Demi-tour',
+          // Future Pack
+          see_future_5x: 'Surveillance',
+          alter_future_3x: 'Comptabilité Fausse',
+          alter_future_5x: 'Blanchiment',
+          reveal_future_3x: 'Fuite',
+          share_future_3x: 'Mouchard',
+          draw_bottom: 'Affaire Non Classée',
+          swap_top_bottom: 'Complicité Interne',
+          bury: 'Détruire Preuve',
         },
         horror: {
           critical_event: 'Possession',
@@ -124,6 +170,15 @@ export const frMessages = {
           recursive_strike: 'Épidémie',
           mega_evade: 'Sanctuaire',
           invert: 'Retour',
+          // Future Pack
+          see_future_5x: 'Prophétie',
+          alter_future_3x: 'Rituel',
+          alter_future_5x: 'Grand Rituel',
+          reveal_future_3x: 'Présage',
+          share_future_3x: 'Séance',
+          draw_bottom: 'Déterrer',
+          swap_top_bottom: 'Réincarnation',
+          bury: 'Exorciser',
         },
         adventure: {
           critical_event: 'Effondrement',
@@ -144,6 +199,15 @@ export const frMessages = {
           recursive_strike: 'Éboulement',
           mega_evade: 'Camp de Base',
           invert: 'Rebrousser Chemin',
+          // Future Pack
+          see_future_5x: 'Panorama',
+          alter_future_3x: 'Éclaireur',
+          alter_future_5x: 'Arpentage',
+          reveal_future_3x: 'Feu de Signal',
+          share_future_3x: 'Partager Vivres',
+          draw_bottom: 'Fouiller',
+          swap_top_bottom: 'Trappe',
+          bury: 'Cacher',
         },
       },
     },
@@ -272,6 +336,15 @@ export const frMessages = {
     },
     modals: {
       common: { cancel: 'Annuler', confirm: 'Confirmer' },
+      alterTheFuture: {
+        title: "Altérer l'Avenir",
+        description:
+          'Réorganisez les cartes du dessus du paquet. La carte du dessus (#1) sera piochée ensuite.',
+        confirm: 'Confirmer',
+      },
+      shareTheFuture: {
+        title: "Partager l'Avenir",
+      },
       targetedAttack: {
         title: 'Attaque Ciblée',
         selectPlayer: 'Sélectionner un Joueur',

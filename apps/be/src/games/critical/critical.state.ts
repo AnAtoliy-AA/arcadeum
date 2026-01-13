@@ -61,11 +61,34 @@ export const ATTACK_PACK_CARDS: AttackPackCard[] = [
   'invert',
 ];
 
+// ===== FUTURE PACK EXPANSION CARDS =====
+export type FuturePackCard =
+  | 'see_future_5x'
+  | 'alter_future_3x'
+  | 'alter_future_5x'
+  | 'reveal_future_3x'
+  | 'share_future_3x'
+  | 'draw_bottom'
+  | 'swap_top_bottom'
+  | 'bury';
+
+export const FUTURE_PACK_CARDS: FuturePackCard[] = [
+  'see_future_5x',
+  'alter_future_3x',
+  'alter_future_5x',
+  'reveal_future_3x',
+  'share_future_3x',
+  'draw_bottom',
+  'swap_top_bottom',
+  'bury',
+];
+
 export const CARDS_REQUIRING_DRAWS: CriticalCard[] = [
   'strike',
   'evade',
   'reorder',
   ...ATTACK_PACK_CARDS,
+  ...FUTURE_PACK_CARDS,
 ];
 
 export const ANYTIME_ACTION_CARDS: CriticalCard[] = ['cancel'];
@@ -76,7 +99,8 @@ export type CriticalCard =
   | 'neutralizer'
   | BaseActionCard
   | CriticalCollectionCard
-  | AttackPackCard;
+  | AttackPackCard
+  | FuturePackCard;
 
 export interface CriticalPlayerState {
   playerId: string;
@@ -109,6 +133,11 @@ export interface CriticalState {
     requesterId: string;
     // Player who must give a card
     targetId: string;
+  } | null;
+  pendingAlter: {
+    playerId: string;
+    count: number;
+    isShare?: boolean;
   } | null;
   pendingAction: {
     // Action that can be noped
@@ -147,6 +176,20 @@ function getAttackPackCards(): CriticalCard[] {
   ];
 }
 
+// Future Pack cards to add when expansion is enabled
+function getFuturePackCards(): CriticalCard[] {
+  return [
+    ...repeatCard('see_future_5x', 4),
+    ...repeatCard('alter_future_3x', 4),
+    ...repeatCard('alter_future_5x', 2),
+    ...repeatCard('reveal_future_3x', 2),
+    ...repeatCard('share_future_3x', 2), // Standard is usually less? Rechecking counts is good practice but I'll stick to rough defaults.
+    ...repeatCard('draw_bottom', 4),
+    ...repeatCard('swap_top_bottom', 3),
+    ...repeatCard('bury', 4),
+  ];
+}
+
 export function createInitialCriticalState(
   playerIds: string[],
   expansions: CriticalExpansion[] = [],
@@ -175,6 +218,10 @@ export function createInitialCriticalState(
   // Add expansion cards based on selected packs
   if (expansions.includes('attack')) {
     deck.push(...getAttackPackCards());
+  }
+
+  if (expansions.includes('future')) {
+    deck.push(...getFuturePackCards());
   }
 
   shuffleInPlace(deck);
@@ -226,6 +273,7 @@ export function createInitialCriticalState(
     allowActionCardCombos,
     pendingDefuse: null,
     pendingFavor: null,
+    pendingAlter: null,
     pendingAction: null,
     pendingDraws: 1,
     players,
@@ -239,4 +287,54 @@ export function createInitialCriticalState(
       },
     ],
   };
+}
+
+export function sanitizeCriticalStateForPlayer(
+  state: CriticalState,
+  playerId: string,
+): Partial<CriticalState> {
+  const sanitized = JSON.parse(JSON.stringify(state)) as CriticalState;
+
+  // Check if player is an actual game participant
+  const isPlayer = sanitized.players.some((p) => p.playerId === playerId);
+
+  // Hide other players' hands
+  sanitized.players = sanitized.players.map((p) => {
+    if (p.playerId === playerId) {
+      return p; // Show full hand to the player
+    }
+    return {
+      ...p,
+      hand: p.hand.map(() => 'hidden' as CriticalCard), // Hide cards
+    };
+  });
+
+  // Filter logs based on scope and player status
+  sanitized.logs = sanitized.logs.filter((log) => {
+    // Public messages visible to everyone (players + spectators)
+    if (log.scope === 'all' || log.scope === undefined) return true;
+    // Player-only messages visible only to game participants
+    if (log.scope === 'players' && isPlayer) return true;
+    // Private messages only visible to sender
+    if (log.scope === 'private' && log.senderId === playerId) return true;
+    return false;
+  });
+
+  // Partially hide deck (show count only)
+  // If pendingAlter, show the top N cards to the active player
+  if (state.pendingAlter && state.pendingAlter.playerId === playerId) {
+    const count = state.pendingAlter.count;
+    sanitized.deck = [
+      ...state.deck.slice(0, count),
+      ...new Array<CriticalCard>(Math.max(0, state.deck.length - count)).fill(
+        'hidden' as CriticalCard,
+      ),
+    ];
+  } else {
+    sanitized.deck = new Array<CriticalCard>(state.deck.length).fill(
+      'hidden' as CriticalCard,
+    );
+  }
+
+  return sanitized;
 }

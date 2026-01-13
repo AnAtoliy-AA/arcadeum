@@ -36,6 +36,15 @@ export function getCardTranslationKey(
     recursive_strike: 'games.table.cards.recursiveStrike',
     mega_evade: 'games.table.cards.megaEvade',
     invert: 'games.table.cards.invert',
+    // ===== FUTURE PACK EXPANSION CARDS =====
+    see_future_5x: 'games.table.cards.seeFuture5x',
+    alter_future_3x: 'games.table.cards.alterFuture3x',
+    alter_future_5x: 'games.table.cards.alterFuture5x',
+    reveal_future_3x: 'games.table.cards.revealFuture3x',
+    share_future_3x: 'games.table.cards.shareFuture3x',
+    draw_bottom: 'games.table.cards.drawBottom',
+    swap_top_bottom: 'games.table.cards.swapTopBottom',
+    bury: 'games.table.cards.bury',
   };
   return keys[card] || 'games.table.cards.generic';
 }
@@ -64,6 +73,15 @@ export function getCardEmoji(card: CriticalCard): string {
     recursive_strike: '🧟',
     mega_evade: '🦸',
     invert: '🔄',
+    // ===== FUTURE PACK EXPANSION CARDS =====
+    see_future_5x: '👀',
+    alter_future_3x: '🪄',
+    alter_future_5x: '🌀',
+    reveal_future_3x: '📢',
+    share_future_3x: '🤲',
+    draw_bottom: '🔽',
+    swap_top_bottom: '🔃',
+    bury: '⚰️',
   };
   return emojis[card] || '🐱';
 }
@@ -89,6 +107,15 @@ export function getCardDescriptionKey(card: CriticalCard): TranslationKey {
     recursive_strike: 'games.table.cards.descriptions.recursiveStrike',
     mega_evade: 'games.table.cards.descriptions.megaEvade',
     invert: 'games.table.cards.descriptions.invert',
+    // ===== FUTURE PACK EXPANSION CARDS =====
+    see_future_5x: 'games.table.cards.descriptions.seeFuture5x',
+    alter_future_3x: 'games.table.cards.descriptions.alterFuture3x',
+    alter_future_5x: 'games.table.cards.descriptions.alterFuture5x',
+    reveal_future_3x: 'games.table.cards.descriptions.revealFuture3x',
+    share_future_3x: 'games.table.cards.descriptions.shareFuture3x',
+    draw_bottom: 'games.table.cards.descriptions.drawBottom',
+    swap_top_bottom: 'games.table.cards.descriptions.swapTopBottom',
+    bury: 'games.table.cards.descriptions.bury',
   };
   return keys[card] || 'games.table.cards.descriptions.collectionAlpha';
 }

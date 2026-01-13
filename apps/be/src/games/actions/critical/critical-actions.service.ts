@@ -313,4 +313,28 @@ export class CriticalActionsService {
 
     return session;
   }
+  /**
+   * Commit Alter the Future (reorder top cards)
+   */
+  async commitAlterFuture(
+    sessionId: string,
+    userId: string,
+    payload: { newOrder: string[] },
+  ) {
+    const session = await this.sessionsService.executeAction({
+      sessionId,
+      action: 'commit_alter_future',
+      userId,
+      payload,
+    });
+
+    await this.realtimeService.emitActionExecuted(
+      session,
+      'commit_alter_future',
+      userId,
+      this.createSanitizer(),
+    );
+
+    return session;
+  }
 }

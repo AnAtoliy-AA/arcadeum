@@ -7,7 +7,7 @@ export const EXPANSION_PACKS: {
   available: boolean;
 }[] = [
   { id: 'attack', name: 'Attack Pack', cardCount: 5, available: true },
-  { id: 'future', name: 'Future Pack', cardCount: 8, available: false },
+  { id: 'future', name: 'Future Pack', cardCount: 8, available: true },
   { id: 'theft', name: 'Theft Pack', cardCount: 4, available: false },
   { id: 'chaos', name: 'Chaos Pack', cardCount: 5, available: false },
   { id: 'deity', name: 'Deity Pack', cardCount: 4, available: false },

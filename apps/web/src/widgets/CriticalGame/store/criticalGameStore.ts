@@ -4,6 +4,7 @@ import type {
   CriticalCatCard,
   CatComboModalState,
   SeeTheFutureModalState,
+  AlterTheFutureModalState,
   ChatScope,
 } from '../types';
 import { FIVER_COMBO_SIZE } from '../types';
@@ -14,6 +15,7 @@ interface CriticalGameState {
   favorModal: boolean;
   targetedAttackModal: boolean;
   seeTheFutureModal: SeeTheFutureModalState | null;
+  alterTheFutureModal: AlterTheFutureModalState | null;
 
   // Selection
   selectedMode: 'pair' | 'trio' | 'fiver' | null;
@@ -33,6 +35,7 @@ interface CriticalGameState {
   setFavorModal: (isOpen: boolean) => void;
   setTargetedAttackModal: (isOpen: boolean) => void;
   setSeeTheFutureModal: (state: SeeTheFutureModalState | null) => void;
+  setAlterTheFutureModal: (state: AlterTheFutureModalState | null) => void;
 
   setSelectedMode: (mode: 'pair' | 'trio' | 'fiver' | null) => void;
   setSelectedTarget: (target: string | null) => void;
@@ -60,6 +63,7 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
   favorModal: false,
   targetedAttackModal: false,
   seeTheFutureModal: null,
+  alterTheFutureModal: null,
 
   selectedMode: null,
   selectedTarget: null,
@@ -76,6 +80,7 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
   setFavorModal: (isOpen) => set({ favorModal: isOpen }),
   setTargetedAttackModal: (isOpen) => set({ targetedAttackModal: isOpen }),
   setSeeTheFutureModal: (state) => set({ seeTheFutureModal: state }),
+  setAlterTheFutureModal: (state) => set({ alterTheFutureModal: state }),
 
   setSelectedMode: (mode) => set({ selectedMode: mode }),
   setSelectedTarget: (target) => set({ selectedTarget: target }),
@@ -176,6 +181,7 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
       favorModal: false,
       targetedAttackModal: false,
       seeTheFutureModal: null,
+      alterTheFutureModal: null,
       selectedMode: null,
       selectedTarget: null,
       selectedCard: null,

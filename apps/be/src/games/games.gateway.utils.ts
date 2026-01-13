@@ -5,6 +5,7 @@ import {
   CriticalCollectionCard,
   COLLECTION_CARDS,
   ATTACK_PACK_CARDS,
+  FUTURE_PACK_CARDS,
 } from './critical/critical.state';
 
 export const SIMPLE_ACTION_CARDS = [
@@ -13,6 +14,7 @@ export const SIMPLE_ACTION_CARDS = [
   'reorder',
   'cancel',
   ...ATTACK_PACK_CARDS,
+  ...FUTURE_PACK_CARDS,
 ] as const;
 export type SimpleActionCard = (typeof SIMPLE_ACTION_CARDS)[number];
 
@@ -27,6 +29,7 @@ export const ALL_CRITICAL_CARDS = [
   'cancel',
   ...COLLECTION_CARDS,
   ...ATTACK_PACK_CARDS,
+  ...FUTURE_PACK_CARDS,
 ] as const satisfies ReadonlyArray<CriticalCard>;
 
 export function isCollectionComboCard(

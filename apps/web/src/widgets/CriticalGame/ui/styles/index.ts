@@ -38,6 +38,8 @@ export {
   CenterTable,
   InfoCard,
   InfoTitle,
+  ActionsHeader,
+  ActionsToggleButton,
   TableInfo,
   TableStat,
 } from './table';

@@ -16,7 +16,17 @@ export const enMessages = {
       collectionDelta: 'Delta Node',
       collectionEpsilon: 'Epsilon Node',
       generic: 'Collection Card',
+      // Future Pack cards
+      seeFuture5x: 'See the Future (5x)',
+      alterFuture3x: 'Alter the Future (3x)',
+      alterFuture5x: 'Alter the Future (5x)',
+      revealFuture3x: 'Reveal the Future (3x)',
+      shareFuture3x: 'Share the Future (3x)',
+      drawBottom: 'Draw from Bottom',
+      swapTopBottom: 'Swap Top & Bottom',
+      bury: 'Bury',
       // Attack Pack cards
+
       targetedStrike: 'Targeted Attack',
       privateStrike: 'Personal Attack',
       recursiveStrike: 'Attack of the Dead',
@@ -36,6 +46,15 @@ export const enMessages = {
         collectionGamma: 'Collect matching nodes to steal cards',
         collectionDelta: 'Collect matching nodes to steal cards',
         collectionEpsilon: 'Collect matching nodes to steal cards',
+        // Future Pack descriptions
+        seeFuture5x: 'Peek at the top 5 cards of the deck',
+        alterFuture3x: 'Rearrange the top 3 cards',
+        alterFuture5x: 'Rearrange the top 5 cards',
+        revealFuture3x: 'Reveal the top 3 cards to everyone',
+        shareFuture3x: 'Rearrange top 3 cards, then show them to next player',
+        drawBottom: 'Draw from the bottom of the deck',
+        swapTopBottom: 'Swap the top and bottom cards of the deck',
+        bury: 'Draw top card, then bury it back into the deck',
         // Attack Pack descriptions
         targetedStrike:
           'Choose a player to take 2 turns instead of next player',
@@ -65,6 +84,15 @@ export const enMessages = {
           recursive_strike: 'Botnet',
           mega_evade: 'Ghost Mode',
           invert: 'Loopback',
+          // Future Pack
+          see_future_5x: 'Deep Scan',
+          alter_future_3x: 'Rewrite',
+          alter_future_5x: 'System Override',
+          reveal_future_3x: 'Broadcast',
+          share_future_3x: 'Peer Sync',
+          draw_bottom: 'Backdoor Access',
+          swap_top_bottom: 'Kernel Swap',
+          bury: 'Decompile',
         },
         underwater: {
           critical_event: 'Hull Breach',
@@ -86,6 +114,15 @@ export const enMessages = {
           recursive_strike: 'Pressure',
           mega_evade: 'Deep Dive',
           invert: 'Backwash',
+          // Future Pack
+          see_future_5x: 'Long Range Sonar',
+          alter_future_3x: 'Current Shift',
+          alter_future_5x: 'Tidal Wave',
+          reveal_future_3x: 'Flare',
+          share_future_3x: 'Comms Buoy',
+          draw_bottom: 'Dredge',
+          swap_top_bottom: 'Turn Over',
+          bury: 'Sullage',
         },
         crime: {
           critical_event: 'Police Raid',
@@ -107,6 +144,15 @@ export const enMessages = {
           recursive_strike: 'RICO Case',
           mega_evade: 'Safehouse',
           invert: 'U-Turn',
+          // Future Pack
+          see_future_5x: 'Surveillance',
+          alter_future_3x: 'Cook the Books',
+          alter_future_5x: 'Launder',
+          reveal_future_3x: 'Leak',
+          share_future_3x: 'Wiretap',
+          draw_bottom: 'Cold Case',
+          swap_top_bottom: 'Inside Job',
+          bury: 'Destroy Evidence',
         },
         horror: {
           critical_event: 'Possession',
@@ -128,6 +174,15 @@ export const enMessages = {
           recursive_strike: 'Epidemic',
           mega_evade: 'Sanctuary',
           invert: 'Turn Back',
+          // Future Pack
+          see_future_5x: 'Prophecy',
+          alter_future_3x: 'Ritual',
+          alter_future_5x: 'Grand Ritual',
+          reveal_future_3x: 'Omen',
+          share_future_3x: 'Seance',
+          draw_bottom: 'Gravedig',
+          swap_top_bottom: 'Reincarnate',
+          bury: 'Excorcise',
         },
         adventure: {
           critical_event: 'Temple Collapse',
@@ -149,6 +204,15 @@ export const enMessages = {
           recursive_strike: 'Rockfall',
           mega_evade: 'Base Camp',
           invert: 'Retrace',
+          // Future Pack
+          see_future_5x: 'Vista',
+          alter_future_3x: 'Scout',
+          alter_future_5x: 'Survey',
+          reveal_future_3x: 'Signal Fire',
+          share_future_3x: 'Share Supplies',
+          draw_bottom: 'Excavate',
+          swap_top_bottom: 'Trapdoor',
+          bury: 'Cache',
         },
       },
     },
@@ -286,7 +350,16 @@ export const enMessages = {
         cardsCount: '{{count}} cards',
         confirm: 'Play Combo',
       },
-      seeTheFuture: { title: 'Top 3 Cards', confirm: 'Got it!' },
+      seeTheFuture: { title: 'Top Cards', confirm: 'Got it!' },
+      alterTheFuture: {
+        title: 'Alter the Future',
+        description:
+          'Rearrange the top cards of the deck. The top card (#1) will be drawn next.',
+        confirm: 'Commit Order',
+      },
+      shareTheFuture: {
+        title: 'Share the Future',
+      },
       favor: {
         title: 'Request Favor',
         selectPlayer: 'Select Player',

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   CriticalPlayerState,
   CriticalCard,
@@ -6,12 +6,22 @@ import {
   CriticalLogEntry,
   CAT_CARDS,
   SPECIAL_CARDS,
+  BASE_ACTION_CARDS,
+  ATTACK_PACK_CARDS,
+  FUTURE_PACK_CARDS,
 } from '../types';
 import {
   getCardEmoji,
   getCardTranslationKey,
   getCardDescriptionKey,
 } from '../lib/cardUtils';
+
+// All playable action cards (single click to play)
+const PLAYABLE_ACTION_CARDS: CriticalCard[] = [
+  ...BASE_ACTION_CARDS.filter((c) => c !== 'cancel'), // cancel handled separately via onPlayNope
+  ...ATTACK_PACK_CARDS,
+  ...FUTURE_PACK_CARDS,
+];
 import { ActionsSection } from './ActionsSection';
 
 import {
@@ -115,6 +125,90 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
     return { uniqueCards: unique, cardCounts: counts };
   }, [currentPlayer.hand]);
 
+  // Handle clicking on a card in hand
+  const handleCardClick = useCallback(
+    (card: CriticalCard, count: number) => {
+      // Check if it's the player's turn and they can act
+      if (!isMyTurn || isGameOver || !canAct) return;
+
+      // Special handling for certain cards
+      if (card === 'insight') {
+        onPlaySeeTheFuture();
+        return;
+      }
+      if (card === 'trade') {
+        onOpenFavorModal();
+        return;
+      }
+      if (card === 'cancel') {
+        onPlayNope();
+        return;
+      }
+
+      // Check if card can be played as a combo (2+ copies)
+      const isCatCard = CAT_CARDS.includes(card as CriticalCatCard);
+      const isComboableCard = allowActionCardCombos
+        ? !SPECIAL_CARDS.includes(card as (typeof SPECIAL_CARDS)[number])
+        : isCatCard;
+
+      if (isComboableCard && count >= 2 && aliveOpponents.length > 0) {
+        onOpenCatCombo([card as CriticalCatCard], currentPlayer.hand);
+        return;
+      }
+
+      // Check if it's a playable action card
+      if (PLAYABLE_ACTION_CARDS.includes(card)) {
+        onPlayActionCard(card);
+        return;
+      }
+    },
+    [
+      isMyTurn,
+      isGameOver,
+      canAct,
+      allowActionCardCombos,
+      aliveOpponents.length,
+      currentPlayer.hand,
+      onPlaySeeTheFuture,
+      onOpenFavorModal,
+      onPlayNope,
+      onOpenCatCombo,
+      onPlayActionCard,
+    ],
+  );
+
+  // Determine if a card is clickable
+  const isCardClickable = useCallback(
+    (card: CriticalCard, count: number): boolean => {
+      if (!isMyTurn || isGameOver || !canAct) return false;
+
+      // Special cards have specific handlers
+      if (card === 'insight' || card === 'trade' || card === 'cancel')
+        return true;
+
+      // Combo cards with 2+ copies
+      const isCatCard = CAT_CARDS.includes(card as CriticalCatCard);
+      const isComboableCard = allowActionCardCombos
+        ? !SPECIAL_CARDS.includes(card as (typeof SPECIAL_CARDS)[number])
+        : isCatCard;
+
+      if (isComboableCard && count >= 2 && aliveOpponents.length > 0)
+        return true;
+
+      // Action cards
+      if (PLAYABLE_ACTION_CARDS.includes(card)) return true;
+
+      return false;
+    },
+    [
+      isMyTurn,
+      isGameOver,
+      canAct,
+      allowActionCardCombos,
+      aliveOpponents.length,
+    ],
+  );
+
   return (
     <HandSection>
       {isMyTurn && !isGameOver && (
@@ -166,37 +260,17 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
             {uniqueCards.map((card) => {
               const count = cardCounts.get(card) || 1;
               const isCatCard = CAT_CARDS.includes(card as CriticalCatCard);
-              // When allowActionCardCombos is enabled, any card except special cards can be used for combos
-              const isComboableCard = allowActionCardCombos
-                ? !SPECIAL_CARDS.includes(
-                    card as (typeof SPECIAL_CARDS)[number],
-                  )
-                : isCatCard;
-              const canPlayCombo =
-                isComboableCard &&
-                count >= 2 &&
-                canAct &&
-                aliveOpponents.length > 0;
+              const clickable = isCardClickable(card, count);
 
               return (
                 <Card
                   key={card}
                   $cardType={card}
                   $index={0}
-                  onClick={() =>
-                    canPlayCombo &&
-                    onOpenCatCombo(
-                      [card as CriticalCatCard],
-                      currentPlayer.hand,
-                    )
-                  }
+                  onClick={() => handleCardClick(card, count)}
                   style={{
-                    cursor: canPlayCombo ? 'pointer' : 'default',
-                    opacity: canPlayCombo
-                      ? 1
-                      : isCatCard && count === 1
-                        ? 0.7
-                        : 1,
+                    cursor: clickable ? 'pointer' : 'default',
+                    opacity: clickable ? 1 : isCatCard && count === 1 ? 0.7 : 1,
                   }}
                 >
                   <CardCorner $position="tl" />

@@ -10,6 +10,7 @@ import {
   BASE_ACTION_CARDS,
   CAT_CARDS,
   SPECIAL_CARDS,
+  FUTURE_PACK_CARDS,
 } from '@/shared/types/games';
 
 /** Number of different cards required for the fiver combo */
@@ -68,7 +69,13 @@ export type {
   ChatScope,
 };
 
-export { ATTACK_PACK_CARDS, BASE_ACTION_CARDS, CAT_CARDS, SPECIAL_CARDS };
+export {
+  ATTACK_PACK_CARDS,
+  BASE_ACTION_CARDS,
+  CAT_CARDS,
+  SPECIAL_CARDS,
+  FUTURE_PACK_CARDS,
+};
 
 /**
  * List of all game cards
@@ -78,4 +85,5 @@ export const ALL_GAME_CARDS: CriticalCard[] = [
   ...BASE_ACTION_CARDS,
   ...CAT_CARDS,
   ...ATTACK_PACK_CARDS,
+  ...FUTURE_PACK_CARDS,
 ];

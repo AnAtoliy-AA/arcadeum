@@ -6,3 +6,4 @@ export { useAutoplay } from './useAutoplay';
 export { useWebGameHaptics } from './useWebGameHaptics';
 export { useIdleTimer } from './useIdleTimer';
 export { useGameRoom } from './useGameRoom';
+export { useSeeTheFutureFromLogs } from './useSeeTheFutureFromLogs';

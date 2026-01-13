@@ -13,6 +13,7 @@ import {
   useWebGameHaptics,
   useIdleTimer,
   useGameRoom,
+  useSeeTheFutureFromLogs,
 } from '../hooks';
 import { useAutoplay } from '../hooks/useAutoplay';
 import { useGameHandlers } from '../hooks/useGameHandlers';
@@ -118,6 +119,13 @@ export default function CriticalGame({
   } = useCriticalModals({
     chatMessagesRef,
     chatLogCount: snapshot?.logs?.length ?? 0,
+  });
+
+  // Monitor logs for seeTheFuture.reveal entries (for future pack cards) and open modal
+  useSeeTheFutureFromLogs({
+    logs: snapshot?.logs,
+    currentUserId,
+    setSeeTheFutureModal,
   });
 
   const youLabel = t('games.table.players.you');

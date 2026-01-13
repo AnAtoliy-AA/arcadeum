@@ -146,6 +146,7 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
                 <OptionButton
                   key={cat}
                   $selected={selectedCat === cat}
+                  $variant={cardVariant}
                   onClick={() => onSelectCat(cat)}
                 >
                   <div style={{ fontSize: '1.5rem' }}>{getCardEmoji(cat)}</div>
@@ -169,6 +170,7 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
               {currentCatData.availableModes.includes('pair') && (
                 <OptionButton
                   $selected={selectedMode === 'pair'}
+                  $variant={cardVariant}
                   onClick={() => onSelectMode('pair')}
                 >
                   <div style={{ fontSize: '1.5rem' }}>🎴🎴</div>
@@ -181,6 +183,7 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
               {currentCatData.availableModes.includes('trio') && (
                 <OptionButton
                   $selected={selectedMode === 'trio'}
+                  $variant={cardVariant}
                   onClick={() => onSelectMode('trio')}
                 >
                   <div style={{ fontSize: '1.5rem' }}>🎴🎴🎴</div>
@@ -210,6 +213,7 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
                   <OptionButton
                     key={`${card}-${idx}`}
                     $selected={isSelected}
+                    $variant={cardVariant}
                     onClick={() => canSelect && onToggleFiverCard(card)}
                     style={{ opacity: canSelect ? 1 : 0.5 }}
                   >
@@ -237,6 +241,7 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
                   <OptionButton
                     key={`discard-${card}-${idx}`}
                     $selected={selectedDiscardCard === card}
+                    $variant={cardVariant}
                     onClick={() => onSelectDiscardCard(card)}
                   >
                     <div style={{ fontSize: '1.5rem' }}>
@@ -316,6 +321,7 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
                   <OptionButton
                     key={card}
                     $selected={selectedCard === card}
+                    $variant={cardVariant}
                     onClick={() => onSelectCard(card as CriticalCard)}
                   >
                     <div style={{ fontSize: '1.5rem' }}>

@@ -28,7 +28,11 @@ export const LastPlayedCardDisplay: React.FC<LastPlayedCardDisplayProps> = ({
   const lastCard = discardPile[discardPile.length - 1];
 
   return (
-    <LastPlayedCard $cardType={lastCard} $isAnimating={false}>
+    <LastPlayedCard
+      $cardType={lastCard}
+      $isAnimating={false}
+      $variant={cardVariant}
+    >
       <CardCorner $position="tl" />
       <CardCorner $position="tr" />
       <CardCorner $position="bl" />

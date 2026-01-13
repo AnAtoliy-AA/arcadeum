@@ -82,6 +82,7 @@ export const StashModal: React.FC<StashModalProps> = ({
                 key={`${card}-${index}`}
                 $cardType={card}
                 $index={0}
+                $variant={cardVariant}
                 onClick={() => toggleCard(index)}
                 style={{
                   cursor: 'pointer',

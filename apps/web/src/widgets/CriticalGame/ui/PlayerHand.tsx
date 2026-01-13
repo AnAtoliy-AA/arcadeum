@@ -286,13 +286,14 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
             )
           </InfoTitle>
           <CardsGrid>
-            {displayItems.map(({ card, type, count, id }) => {
+            {displayItems.map(({ card, type, count, id }, idx) => {
               if (type === 'stash') {
                 return (
                   <StashedCard
                     key={id}
                     $cardType={card}
-                    $index={0}
+                    $index={idx + 10}
+                    $variant={cardVariant}
                     onClick={() => onUnstashCard?.(card)}
                     title="Stashed card - Click to return to hand"
                   >
@@ -324,7 +325,8 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
                 <Card
                   key={id}
                   $cardType={card}
-                  $index={0}
+                  $index={idx}
+                  $variant={cardVariant}
                   onClick={() => handleCardClick(card, count)}
                   style={{
                     cursor: clickable ? 'pointer' : 'default',

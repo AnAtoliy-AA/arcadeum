@@ -62,6 +62,7 @@ export function OmniscienceModal({
                   <OptionButton
                     key={`${hand.playerId}-${idx}`}
                     $selected={false}
+                    $variant={cardVariant}
                   >
                     <div style={{ fontSize: '2rem' }}>{getCardEmoji(card)}</div>
                     <div style={{ fontSize: '0.75rem' }}>

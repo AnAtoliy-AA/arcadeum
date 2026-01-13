@@ -42,7 +42,11 @@ export const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
         </ModalHeader>
         <OptionGrid>
           {cards.map((card, index) => (
-            <OptionButton key={`${card}-${index}`} $selected={false}>
+            <OptionButton
+              key={`${card}-${index}`}
+              $selected={false}
+              $variant={cardVariant}
+            >
               <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
                 #{index + 1}
               </div>

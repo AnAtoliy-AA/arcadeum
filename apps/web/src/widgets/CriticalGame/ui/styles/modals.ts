@@ -95,7 +95,10 @@ export const OptionGrid = styled.div`
   gap: 0.75rem;
 `;
 
-export const OptionButton = styled.button<{ $selected?: boolean }>`
+export const OptionButton = styled.button<{
+  $selected?: boolean;
+  $variant?: string;
+}>`
   padding: 1rem;
   border-radius: 12px;
   border: 2px solid
@@ -103,10 +106,22 @@ export const OptionButton = styled.button<{ $selected?: boolean }>`
       $selected
         ? theme.buttons.primary.gradientStart
         : theme.surfaces.card.border};
-  background: ${({ $selected, theme }) =>
-    $selected
-      ? `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}20, transparent)`
-      : theme.surfaces.panel.background};
+  background: ${({ $selected, $variant, theme }) => {
+    if ($selected) {
+      return `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}20, transparent)`;
+    }
+    if ($variant === 'cyberpunk')
+      return 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)';
+    if ($variant === 'underwater')
+      return 'linear-gradient(135deg, #083344 0%, #164e63 100%)';
+    if ($variant === 'crime')
+      return 'linear-gradient(135deg, #18181b 0%, #27272a 100%)';
+    if ($variant === 'horror')
+      return 'linear-gradient(135deg, #020617 0%, #0f172a 100%)';
+    if ($variant === 'adventure')
+      return 'linear-gradient(135deg, #451a03 0%, #78350f 100%)';
+    return theme.surfaces.panel.background;
+  }};
   color: ${({ theme }) => theme.text.primary};
   font-weight: 600;
   cursor: pointer;

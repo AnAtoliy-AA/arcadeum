@@ -63,6 +63,7 @@ export const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
               <OptionButton
                 key={`${card}-${index}`}
                 $selected={selectedCard === card}
+                $variant={cardVariant}
                 onClick={() => setSelectedCard(card)}
               >
                 <CardEmoji>{getCardEmoji(card)}</CardEmoji>

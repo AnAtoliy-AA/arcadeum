@@ -34,6 +34,7 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
       <LastPlayedCard
         as="div"
         $isAnimating={false}
+        $variant={cardVariant}
         style={{
           position: 'relative',
           transform: 'none',
@@ -56,5 +57,5 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
   }
 
   // Show Face Down Deck
-  return <DeckCard />;
+  return <DeckCard $variant={cardVariant} />;
 };

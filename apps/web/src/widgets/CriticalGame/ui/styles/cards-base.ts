@@ -1,46 +1,15 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import { CriticalCard } from '@/shared/types/games';
+import { CARD_SPRITE_MAP } from './card-sprites';
 
 // Base Card component for reuse in selectors
-export const Card = styled.div<{ $cardType?: string; $index?: number }>`
+export const Card = styled.div<{
+  $cardType?: CriticalCard;
+  $index?: number;
+  $variant?: string;
+}>`
   aspect-ratio: 2/3;
   border-radius: 16px;
-  background: ${({ $cardType }) => {
-    if ($cardType === 'critical_event')
-      return 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)';
-    if ($cardType === 'neutralizer')
-      return 'linear-gradient(135deg, #10B981 0%, #059669 100%)';
-    if ($cardType === 'strike')
-      return 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)';
-    if ($cardType === 'evade')
-      return 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)';
-    if ($cardType === 'trade')
-      return 'linear-gradient(135deg, #EC4899 0%, #BE185D 100%)';
-    if ($cardType === 'reorder')
-      return 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)';
-    if ($cardType === 'insight')
-      return 'linear-gradient(135deg, #A855F7 0%, #7E22CE 100%)';
-    // Theft Pack cards
-    if ($cardType === 'wildcard')
-      return 'linear-gradient(135deg, #F472B6 0%, #9333EA 100%)'; // Pink to purple
-    if ($cardType === 'mark')
-      return 'linear-gradient(135deg, #FBBF24 0%, #EA580C 100%)'; // Yellow to orange
-    if ($cardType === 'steal_draw')
-      return 'linear-gradient(135deg, #22D3EE 0%, #0891B2 100%)'; // Cyan
-    if ($cardType === 'stash')
-      return 'linear-gradient(135deg, #6366F1 0%, #4338CA 100%)'; // Indigo
-    if ($cardType === 'stash')
-      return 'linear-gradient(135deg, #6366F1 0%, #4338CA 100%)'; // Indigo
-    // Deity Pack cards
-    if ($cardType === 'omniscience')
-      return 'linear-gradient(135deg, #FDE68A 0%, #D97706 100%)'; // Gold
-    if ($cardType === 'miracle')
-      return 'linear-gradient(135deg, #A5F3FC 0%, #0891B2 100%)'; // Cyan-Blue Light
-    if ($cardType === 'smite')
-      return 'linear-gradient(135deg, #DC2626 0%, #7F1D1D 100%)'; // Deep Red
-    if ($cardType === 'rapture')
-      return 'linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%)'; // Amber/Divine
-    return 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)';
-  }};
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -58,6 +27,62 @@ export const Card = styled.div<{ $cardType?: string; $index?: number }>`
   box-shadow:
     0 8px 24px rgba(0, 0, 0, 0.4),
     inset 0 0 20px rgba(255, 255, 255, 0.1);
+
+  ${({ $cardType, $variant }) => {
+    const spriteIndex = $cardType ? (CARD_SPRITE_MAP[$cardType] ?? 0) : 0;
+    const x = (spriteIndex % 6) * 20;
+    const y = Math.floor(spriteIndex / 6) * 20;
+
+    let spriteUrl = '';
+    if ($variant === 'cyberpunk')
+      spriteUrl = '/images/cards/cyberpunk_sprites.png';
+    else if ($variant === 'underwater')
+      spriteUrl = '/images/cards/underwater_sprites.png';
+    else if ($variant === 'crime')
+      spriteUrl = '/images/cards/crime_sprites.png';
+    else if ($variant === 'horror')
+      spriteUrl = '/images/cards/horror_sprites.png';
+    else if ($variant === 'adventure')
+      spriteUrl = '/images/cards/adventure_sprites.png';
+
+    if (spriteUrl) {
+      return css`
+        background: url(${spriteUrl});
+        background-size: 600% 600%;
+        background-position: ${x}% ${y}%;
+      `;
+    }
+
+    // Default fallback styling (Gradient-based)
+    let background = 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)';
+    if ($cardType === 'critical_event')
+      background = 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)';
+    else if ($cardType === 'neutralizer')
+      background = 'linear-gradient(135deg, #10B981 0%, #059669 100%)';
+    else if ($cardType === 'strike')
+      background = 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)';
+    else if ($cardType === 'evade')
+      background = 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)';
+    else if ($cardType === 'trade')
+      background = 'linear-gradient(135deg, #EC4899 0%, #BE185D 100%)';
+    else if ($cardType === 'reorder')
+      background = 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)';
+    else if ($cardType === 'insight')
+      background = 'linear-gradient(135deg, #A855F7 0%, #7E22CE 100%)';
+    else if (
+      $cardType === 'wildcard' ||
+      $cardType?.includes('mark') ||
+      $cardType?.includes('steal') ||
+      $cardType === 'stash'
+    ) {
+      background = 'linear-gradient(135deg, #6366F1 0%, #4338CA 100%)';
+    }
+
+    return css`
+      background: ${background};
+    `;
+  }};
+
   animation: ${({ $index }) =>
     `cardSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${($index || 0) * 0.08}s both`};
 
@@ -92,14 +117,13 @@ export const Card = styled.div<{ $cardType?: string; $index?: number }>`
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(
-        circle at 30% 30%,
-        rgba(255, 255, 255, 0.5) 0%,
-        transparent 50%
-      ),
-      linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+    background: ${({ $variant }) =>
+      $variant
+        ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 60%)'
+        : 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5) 0%, transparent 50%), linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 60%)'};
     pointer-events: none;
     border-radius: 16px;
+    z-index: 5;
   }
 
   &::after {
@@ -115,6 +139,7 @@ export const Card = styled.div<{ $cardType?: string; $index?: number }>`
       rgba(255, 255, 255, 0.03) 20px
     );
     pointer-events: none;
+    z-index: 6;
   }
 `;
 
@@ -158,12 +183,32 @@ export const StashIcon = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.3);
 `;
 
-export const DeckCard = styled.div`
+export const DeckCard = styled.div<{ $variant?: string }>`
   width: 75px;
   height: 112px; // aspect ratio 2/3 roughly
   border-radius: 12px;
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  border: 2px solid rgba(99, 102, 241, 0.5);
+  background: ${({ $variant }) => {
+    if ($variant === 'cyberpunk')
+      return 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)';
+    if ($variant === 'underwater')
+      return 'linear-gradient(135deg, #083344 0%, #164e63 100%)';
+    if ($variant === 'crime')
+      return 'linear-gradient(135deg, #18181b 0%, #27272a 100%)';
+    if ($variant === 'horror')
+      return 'linear-gradient(135deg, #020617 0%, #0f172a 100%)';
+    if ($variant === 'adventure')
+      return 'linear-gradient(135deg, #451a03 0%, #78350f 100%)';
+    return 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)';
+  }};
+  border: 2px solid
+    ${({ $variant }) => {
+      if ($variant === 'cyberpunk') return '#c026d3';
+      if ($variant === 'underwater') return '#22d3ee';
+      if ($variant === 'crime') return '#dc2626';
+      if ($variant === 'horror') return '#10b981';
+      if ($variant === 'adventure') return '#f59e0b';
+      return 'rgba(99, 102, 241, 0.5)';
+    }};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -193,7 +238,8 @@ export const DeckCard = styled.div`
     box-shadow:
       0 10px 15px -3px rgba(0, 0, 0, 0.1),
       0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    border-color: rgba(99, 102, 241, 0.8);
+    border-color: ${({ $variant }) =>
+      $variant ? 'white' : 'rgba(99, 102, 241, 0.8)'};
   }
 
   @media (max-width: 768px) {
@@ -221,18 +267,14 @@ export const CardEmoji = styled.div`
 `;
 
 export const CardName = styled.div`
-  font-size: 0.7rem;
-  font-weight: 800;
+  font-size: 0.85rem;
+  font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   text-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.5),
-    0 0 8px rgba(0, 0, 0, 0.3);
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.95),
-    rgba(255, 255, 255, 0.8)
-  );
+    0 2px 4px rgba(0, 0, 0, 0.8),
+    0 0 12px rgba(0, 0, 0, 0.6);
+  background: white;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -240,6 +282,7 @@ export const CardName = styled.div`
   display: flex;
   align-items: center;
   text-align: center;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
 
   @media (max-width: 768px) {
     font-size: 0.6rem;
@@ -249,28 +292,30 @@ export const CardName = styled.div`
 `;
 
 export const CardDescription = styled.div`
-  font-size: 0.5rem;
-  font-weight: 500;
+  font-size: 0.65rem;
+  font-weight: 700;
   text-transform: none;
   letter-spacing: 0;
-  line-height: 1.15;
-  opacity: 0.85;
+  line-height: 1.2;
   text-align: center;
   width: 100%;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  color: white;
   margin-top: auto;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
-  padding: 0 0.15rem;
-  min-height: 1.15rem;
+  padding: 0.25rem 0.35rem;
+  min-height: 2rem;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
 
   @media (max-width: 768px) {
-    font-size: 0.45rem;
+    font-size: 0.55rem;
     -webkit-line-clamp: 2;
-    min-height: 1rem;
+    min-height: 1.5rem;
+    padding: 0.15rem 0.25rem;
   }
 `;
 
@@ -306,7 +351,7 @@ export const CardCountBadge = styled.div`
 
 export const CardInner = styled.div`
   position: relative;
-  z-index: 1;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -315,6 +360,7 @@ export const CardInner = styled.div`
   width: 100%;
   height: 100%;
   padding: 0.5rem 0.35rem;
+  border-radius: 12px;
 `;
 
 export const CardFrame = styled.div`

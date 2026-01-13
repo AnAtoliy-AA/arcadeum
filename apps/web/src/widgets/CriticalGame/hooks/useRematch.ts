@@ -1,8 +1,9 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { resolveApiUrl } from '@/shared/lib/api-base';
+import { useMutation } from '@tanstack/react-query';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useSocket } from '@/shared/lib/socket';
+import { rematchApi } from '@/features/rematch/api';
 import type { GameOptions } from '@/shared/types/games';
 
 interface UseRematchOptions {
@@ -30,9 +31,9 @@ interface UseRematchResult {
   handleAcceptInvitation: () => void;
   handleDeclineInvitation: () => void;
   isAcceptingInvitation: boolean;
-  handleReinvite: (userIds: string[]) => Promise<void>;
-  handleBlockRematch: (roomId: string) => Promise<void>;
-  handleBlockUser: (userId: string) => Promise<void>;
+  handleReinvite: (userIds: string[]) => void;
+  handleBlockRematch: (roomId: string) => void;
+  handleBlockUser: (userId: string) => void;
 }
 
 export function useRematch({
@@ -41,7 +42,6 @@ export function useRematch({
 }: UseRematchOptions): UseRematchResult {
   const router = useRouter();
   const { snapshot } = useSessionTokens();
-  const [rematchLoading, setRematchLoading] = useState(false);
   const [rematchError, setRematchError] = useState<string | null>(null);
   const [showRematchModal, setShowRematchModal] = useState(false);
 
@@ -50,13 +50,13 @@ export function useRematch({
   const [invitationTimeLeft, setInvitationTimeLeft] = useState(0);
   const [isAcceptingInvitation, setIsAcceptingInvitation] = useState(false);
 
-  // Listen for rematch started (host redirects)
-  // Guests should NOT redirect automatically anymore on "started" if they are invited.
-  // Ideally, backend shouldn't emit "started" to guests if using specific invites.
-  // But if it does, we can ignore it if we are not the host or if we haven't accepted.
-  // However, Host logic is manual redirect below.
-  // Guests: Wait for "invited".
+  // Use ref to track current invitation for timer callback
+  const invitationRef = useRef(invitation);
+  useEffect(() => {
+    invitationRef.current = invitation;
+  }, [invitation]);
 
+  // Socket handler for rematch invitations
   const handleRematchInvited = useCallback(
     (payload: unknown) => {
       const data = payload as {
@@ -70,24 +70,6 @@ export function useRematch({
       };
 
       if (data?.oldRoomId === roomId) {
-        // Check if I am invited (userId is in invitedUserIds)
-        // We need currentUserId. We don't have it in props?
-        // useSessionTokens has userId?
-        // snapshot.userId is not available. snapshot is tokens.
-        // We can get userId from token decoding or pass it in.
-        // But the socket is receiving this.
-        // We can just show it. If we are not invited, it doesn't matter?
-        // But we should filter if possible.
-        // Assuming the socket event is broadcast to room, everyone gets it.
-        // If I am not in the list, I shouldn't see it.
-        // I need my userId.
-        // Let's assume the component will pass userId or we check invitation list against our ID if we had it.
-        // Since we don't have userId easily here without decoding token, and I don't want to enforce jwt-decode here:
-        // Ideally we pass currentUserId to useRematch.
-        // But for now, let's just show it if we receive it. The backend SHOULD filter if emitting to specific users,
-        // but backend emits to ROOM.
-        // Wait, `Game.tsx` HAS `currentUserId`. I should pass it to `useRematch`.
-        // I'll update `UseRematchOptions`.
         setInvitation({
           newRoomId: data.newRoomId,
           hostId: data.hostId,
@@ -103,7 +85,91 @@ export function useRematch({
 
   useSocket('games.rematch.invited', handleRematchInvited);
 
-  // Timer logic
+  // Mutation for creating a rematch
+  const { mutateAsync: createRematchMutate, isPending: rematchLoading } =
+    useMutation({
+      mutationFn: async (params: {
+        participantIds: string[];
+        message?: string;
+      }) => {
+        return rematchApi.createRematch(
+          roomId,
+          {
+            participantIds: params.participantIds,
+            gameOptions,
+            message: params.message,
+          },
+          { token: snapshot.accessToken || undefined },
+        );
+      },
+      onSuccess: (data) => {
+        const newRoomId =
+          typeof data.room === 'string' ? data.room : data.room?.id;
+        if (newRoomId) {
+          setShowRematchModal(false);
+          router.push(`/games/rooms/${newRoomId}`);
+        }
+      },
+      onError: (err) => {
+        setRematchError(err instanceof Error ? err.message : String(err));
+      },
+    });
+
+  // Mutation for declining invitation
+  const { mutate: declineInvitationMutate } = useMutation({
+    mutationFn: async (targetRoomId: string) => {
+      return rematchApi.declineInvitation(targetRoomId, {
+        token: snapshot.accessToken || undefined,
+      });
+    },
+    onError: (err) => {
+      console.error('Failed to decline invitation', err);
+    },
+  });
+
+  // Mutation for reinviting users
+  const { mutate: reinviteMutate } = useMutation({
+    mutationFn: async (userIds: string[]) => {
+      return rematchApi.reinvite(roomId, userIds, {
+        token: snapshot.accessToken || undefined,
+      });
+    },
+    onError: (err) => {
+      console.error('Failed to reinvite', err);
+    },
+  });
+
+  // Mutation for blocking rematch
+  const { mutate: blockRematchMutate } = useMutation({
+    mutationFn: async (targetRoomId: string) => {
+      return rematchApi.blockRematch(targetRoomId, {
+        token: snapshot.accessToken || undefined,
+      });
+    },
+    onSuccess: () => {
+      setInvitation(null);
+    },
+    onError: (err) => {
+      console.error('Failed to block rematch', err);
+    },
+  });
+
+  // Mutation for blocking user
+  const { mutate: blockUserMutate } = useMutation({
+    mutationFn: async (userId: string) => {
+      return rematchApi.blockUser(userId, {
+        token: snapshot.accessToken || undefined,
+      });
+    },
+    onSuccess: () => {
+      setInvitation(null);
+    },
+    onError: (err) => {
+      console.error('Failed to block user', err);
+    },
+  });
+
+  // Timer logic - auto-decline when time expires
   useEffect(() => {
     if (!invitation || invitationTimeLeft <= 0) return;
 
@@ -111,7 +177,12 @@ export function useRematch({
       setInvitationTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          setInvitation(null); // Auto-decline
+          const currentInvitation = invitationRef.current;
+          setInvitation(null);
+
+          if (snapshot.accessToken && currentInvitation?.newRoomId) {
+            declineInvitationMutate(currentInvitation.newRoomId);
+          }
           return 0;
         }
         return prev - 1;
@@ -119,7 +190,12 @@ export function useRematch({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [invitation, invitationTimeLeft]);
+  }, [
+    invitation,
+    invitationTimeLeft,
+    snapshot.accessToken,
+    declineInvitationMutate,
+  ]);
 
   const openRematchModal = useCallback(() => {
     setShowRematchModal(true);
@@ -136,145 +212,55 @@ export function useRematch({
         setRematchError('Authentication required');
         return;
       }
-
-      try {
-        setRematchLoading(true);
-        setRematchError(null);
-
-        const url = resolveApiUrl(
-          `/games/history/${encodeURIComponent(roomId)}/rematch`,
-        );
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${snapshot.accessToken}`,
-          },
-          body: JSON.stringify({ participantIds, gameOptions, message }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.message || 'Failed to create rematch');
-        }
-
-        const data = await response.json();
-        const newRoomId =
-          typeof data.room === 'string' ? data.room : data.room?.id;
-        if (!newRoomId) {
-          throw new Error('Invalid response: missing room ID');
-        }
-
-        setShowRematchModal(false);
-        router.push(`/games/rooms/${newRoomId}`);
-      } catch (err) {
-        setRematchError(err instanceof Error ? err.message : String(err));
-      } finally {
-        setRematchLoading(false);
-      }
+      setRematchError(null);
+      await createRematchMutate({ participantIds, message });
     },
-    [roomId, snapshot.accessToken, router, gameOptions],
+    [snapshot.accessToken, createRematchMutate],
   );
 
   const handleAcceptInvitation = useCallback(() => {
     if (invitation) {
       setIsAcceptingInvitation(true);
       router.push(`/games/rooms/${invitation.newRoomId}`);
-      // Don't clear invitation immediately to show "Joining..." state
     }
   }, [invitation, router]);
 
-  const handleDeclineInvitation = useCallback(async () => {
+  const handleDeclineInvitation = useCallback(() => {
     if (!invitation?.newRoomId) return;
 
-    // Optimistically close modal
+    const targetRoomId = invitation.newRoomId;
     setInvitation(null);
 
-    if (!snapshot.accessToken) return;
-
-    try {
-      const url = resolveApiUrl(
-        `/games/rooms/${encodeURIComponent(invitation.newRoomId)}/invitation/decline`,
-      );
-
-      await fetch(url, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${snapshot.accessToken}`,
-        },
-      });
-    } catch (err) {
-      console.error('Failed to decline invitation', err);
+    if (snapshot.accessToken) {
+      declineInvitationMutate(targetRoomId);
     }
-  }, [invitation, snapshot.accessToken]);
+  }, [invitation, snapshot.accessToken, declineInvitationMutate]);
 
   const handleReinvite = useCallback(
-    async (userIds: string[]) => {
-      if (!snapshot.accessToken) return;
-      try {
-        const url = resolveApiUrl(
-          `/games/rooms/${encodeURIComponent(roomId)}/invitation/invite`,
-        );
-
-        await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${snapshot.accessToken}`,
-          },
-          body: JSON.stringify({ userIds }),
-        });
-      } catch (err) {
-        console.error('Failed to reinvite', err);
+    (userIds: string[]) => {
+      if (snapshot.accessToken) {
+        reinviteMutate(userIds);
       }
     },
-    [roomId, snapshot.accessToken],
+    [snapshot.accessToken, reinviteMutate],
   );
 
   const handleBlockUser = useCallback(
-    async (userId: string) => {
-      if (!snapshot.accessToken) return;
-      try {
-        const url = resolveApiUrl(`/auth/block/${encodeURIComponent(userId)}`);
-
-        await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${snapshot.accessToken}`,
-          },
-        });
-        // Also decline the invitation after blocking
-        setInvitation(null);
-      } catch (err) {
-        console.error('Failed to block user', err);
+    (userId: string) => {
+      if (snapshot.accessToken) {
+        blockUserMutate(userId);
       }
     },
-    [snapshot.accessToken],
+    [snapshot.accessToken, blockUserMutate],
   );
 
   const handleBlockRematch = useCallback(
-    async (targetRoomId: string) => {
-      if (!snapshot.accessToken) return;
-      try {
-        const url = resolveApiUrl(
-          `/games/rooms/${encodeURIComponent(targetRoomId)}/invitation/block`,
-        );
-
-        await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${snapshot.accessToken}`,
-          },
-        });
-        // Also dismiss the invitation after blocking
-        setInvitation(null);
-      } catch (err) {
-        console.error('Failed to block rematch', err);
+    (targetRoomId: string) => {
+      if (snapshot.accessToken) {
+        blockRematchMutate(targetRoomId);
       }
     },
-    [snapshot.accessToken],
+    [snapshot.accessToken, blockRematchMutate],
   );
 
   return {

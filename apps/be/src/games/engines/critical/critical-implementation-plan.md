@@ -64,15 +64,15 @@ These cards are part of the core game and always included:
 | I'll Take That | ❌ TODO | Medium     | Steal next drawn card |
 | Tower of Power | ❌ TODO | High       | Stash protection      |
 
-#### Expansion 4: Chaos Pack
+#### Expansion 4: Chaos Pack ✅
 
-| Card              | Status  | Complexity | Notes                      |
-| ----------------- | ------- | ---------- | -------------------------- |
-| Imploding Kitten  | ❌ TODO | High       | Face-down/face-up mechanic |
-| Streaking Kitten  | ❌ TODO | Medium     | Hold bomb safely           |
-| Catomic Bomb      | ❌ TODO | High       | Reset exploding cats       |
-| Potluck           | ❌ TODO | Medium     | All players contribute     |
-| Curse of Cat Butt | ❌ TODO | Medium     | Blind player               |
+| Card               | Status  | Complexity | Notes                     |
+| ------------------ | ------- | ---------- | ------------------------- |
+| Critical Implosion | ✅ Done | High       | Implemented in draw logic |
+| Containment Field  | ✅ Done | Medium     | Implemented in draw logic |
+| Fission            | ✅ Done | High       | Logic implemented         |
+| Tribute            | ✅ Done | Medium     | Logic implemented         |
+| Blackout           | ✅ Done | Medium     | Logic implemented         |
 
 #### Expansion 5: Deity Pack
 

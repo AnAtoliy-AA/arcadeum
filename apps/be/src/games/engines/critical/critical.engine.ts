@@ -34,6 +34,7 @@ import {
   dispatchFuturePackAction,
 } from './critical-future.utils';
 import { dispatchTheftPackAction } from './critical-theft.utils';
+import { dispatchChaosPackAction } from './critical-chaos.utils';
 
 /**
  * Critical Game Engine
@@ -154,6 +155,18 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
           );
           if (theftPackResult) {
             return theftPackResult;
+          }
+
+          // Try Chaos Pack
+          const chaosPackResult = dispatchChaosPackAction(
+            newState,
+            context.userId,
+            card,
+            typedPayload?.targetPlayerId, // Chaos actions like blackout might need target
+            helpers,
+          );
+          if (chaosPackResult) {
+            return chaosPackResult;
           }
         }
 

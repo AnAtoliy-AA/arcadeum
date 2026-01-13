@@ -119,17 +119,32 @@ export const PlayerPositionWrapper = styled.div<{
   }
 `;
 
-export const CenterTable = styled.div`
+export const CardSlot = styled.div`
+  width: 75px;
+  height: 112px;
+  position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  z-index: 2;
+
+  @media (max-width: 768px) {
+    width: 55px;
+    height: 82px;
+  }
+`;
+
+export const CenterTable = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
   padding: 1.25rem;
-  border-radius: 50%;
+  border-radius: 90px; // Pill shape
   background: linear-gradient(145deg, #1e293b, #0f172a);
   border: 2px solid rgba(99, 102, 241, 0.3);
-  width: 180px;
+  width: 250px;
   height: 180px;
   position: relative;
   z-index: 1;

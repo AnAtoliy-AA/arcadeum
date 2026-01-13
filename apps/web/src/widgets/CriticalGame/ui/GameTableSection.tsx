@@ -1,7 +1,13 @@
 import { TableStats } from './TableStats';
 import { LastPlayedCardDisplay } from './LastPlayedCardDisplay';
-
-import { GameTable, TableBackground, PlayersRing, CenterTable } from './styles';
+import { DeckDisplay } from './DeckDisplay';
+import {
+  GameTable,
+  TableBackground,
+  PlayersRing,
+  CenterTable,
+  CardSlot,
+} from './styles';
 
 import type { CriticalCard, CriticalLogEntry, MarkedCardInfo } from '../types';
 import { TablePlayer } from './TablePlayer';
@@ -19,7 +25,7 @@ interface GameTableSectionProps {
   playerOrder: string[];
   currentTurnIndex: number;
   currentUserId: string | null;
-  deckLength: number;
+  deck: CriticalCard[];
   discardPileLength: number;
   pendingDraws: number;
   discardPile: CriticalCard[];
@@ -34,7 +40,7 @@ export function GameTableSection({
   playerOrder,
   currentTurnIndex,
   currentUserId,
-  deckLength,
+  deck,
   discardPileLength,
   pendingDraws,
   discardPile,
@@ -66,15 +72,20 @@ export function GameTableSection({
         })}
 
         <CenterTable>
-          <LastPlayedCardDisplay
-            discardPile={discardPile}
-            t={t}
-            cardVariant={cardVariant}
-          />
+          <CardSlot>
+            <LastPlayedCardDisplay
+              discardPile={discardPile}
+              t={t}
+              cardVariant={cardVariant}
+            />
+          </CardSlot>
+          <CardSlot>
+            <DeckDisplay deck={deck} t={t} cardVariant={cardVariant} />
+          </CardSlot>
         </CenterTable>
       </PlayersRing>
       <TableStats
-        deckCount={deckLength}
+        deckCount={deck.length}
         discardPileCount={discardPileLength}
         pendingDraws={pendingDraws}
       />

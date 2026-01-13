@@ -107,8 +107,24 @@ export const EXPANSION_PACK_DETAILS: ExpansionPackDetails[] = [
   {
     id: 'chaos',
     name: 'Chaos Pack',
-    available: false,
-    cards: [],
+    available: true,
+    cards: [
+      {
+        id: 'critical_implosion',
+        name: 'Critical Implosion',
+        defaultCount: 1,
+        maxCount: 2,
+      },
+      {
+        id: 'containment_field',
+        name: 'Containment Field',
+        defaultCount: 1,
+        maxCount: 2,
+      },
+      { id: 'fission', name: 'Fission', defaultCount: 1, maxCount: 2 },
+      { id: 'tribute', name: 'Tribute', defaultCount: 2, maxCount: 4 },
+      { id: 'blackout', name: 'Blackout', defaultCount: 2, maxCount: 4 },
+    ],
   },
   {
     id: 'deity',

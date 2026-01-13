@@ -76,6 +76,13 @@ export function validatePlayCard(
 
   // Check cards that require pending draws (Skip, Attack, Shuffle, etc.)
   if (CARDS_REQUIRING_DRAWS.includes(card)) {
+    // CRITICAL FIX: Ensure critical_event from Containment Field cannot be played
+    if (
+      card === 'critical_implosion' ||
+      (card as string) === 'critical_event'
+    ) {
+      return false;
+    }
     return hasCard(player, card) && state.pendingDraws > 0;
   }
 

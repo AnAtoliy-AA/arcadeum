@@ -66,7 +66,22 @@ export class CriticalLogic {
     state.pendingDraws--;
 
     if (card === 'critical_event') {
-      if (this.hasCard(player, 'neutralizer')) {
+      // Check for Containment Field (Chaos Pack)
+      if (this.hasCard(player, 'containment_field')) {
+        player.hand.push(card);
+        helpers.addLog(
+          state,
+          helpers.createLogEntry(
+            'action',
+            `Drew an Exploding Cat but safely held it using Containment Field! 📦`,
+            {
+              scope: 'all',
+              senderId: playerId,
+            },
+          ),
+        );
+        // Continue turn standard logic
+      } else if (this.hasCard(player, 'neutralizer')) {
         // Player must defuse - set pending defuse state
         state.pendingDefuse = playerId;
         helpers.addLog(
@@ -92,6 +107,55 @@ export class CriticalLogic {
           }),
         );
         helpers.advanceTurn(state);
+        return { success: true, state };
+      }
+    } else if (card === 'critical_implosion') {
+      // Logic for Critical Implosion (Chaos Pack)
+      const isFaceUp = state.implosionState?.isFaceUp ?? false;
+
+      if (isFaceUp) {
+        // Explode immediately, no defuse allowed
+        player.alive = false;
+        helpers.addLog(
+          state,
+          helpers.createLogEntry(
+            'system',
+            `Drew Critical Implosion (Open)! IMPLOSION! Player eliminated! 🤯`,
+            {
+              scope: 'all',
+              senderId: playerId,
+            },
+          ),
+        );
+        // Remove Implosion card from game? Or putting it in discard pile.
+        // Usually it's gone when player dies.
+        state.discardPile.push(card);
+        helpers.advanceTurn(state);
+        return { success: true, state };
+      } else {
+        // First time drawn: Goes back in deck Face Up
+        state.implosionState = { isFaceUp: true };
+
+        // Put back in deck at random location
+        const randomIdx = Math.floor(Math.random() * (state.deck.length + 1));
+        state.deck.splice(randomIdx, 0, card);
+
+        helpers.addLog(
+          state,
+          helpers.createLogEntry(
+            'action',
+            `Drew Critical Implosion (First time). It goes back in the deck FACE UP! 😰`,
+            {
+              scope: 'all',
+              senderId: playerId,
+            },
+          ),
+        );
+
+        if (state.pendingDraws === 0) {
+          helpers.advanceTurn(state);
+        }
+
         return { success: true, state };
       }
     }

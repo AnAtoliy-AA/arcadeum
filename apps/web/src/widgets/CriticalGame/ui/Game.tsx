@@ -308,7 +308,7 @@ export default function CriticalGame({
             playerOrder={snapshot.playerOrder}
             currentTurnIndex={snapshot.currentTurnIndex}
             currentUserId={currentUserId}
-            deckLength={snapshot.deck.length}
+            deck={snapshot.deck}
             discardPileLength={snapshot.discardPile.length}
             pendingDraws={snapshot.pendingDraws}
             discardPile={snapshot.discardPile}

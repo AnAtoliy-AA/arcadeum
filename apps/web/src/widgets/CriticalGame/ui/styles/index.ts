@@ -42,6 +42,7 @@ export {
   ActionsToggleButton,
   TableInfo,
   TableStat,
+  CardSlot,
 } from './table';
 
 // Player Components
@@ -65,6 +66,7 @@ export {
   CardDescription,
   CardCountBadge,
   LastPlayedCard,
+  DeckCard,
   ActionButtons,
   ActionButton,
   StashedCard,

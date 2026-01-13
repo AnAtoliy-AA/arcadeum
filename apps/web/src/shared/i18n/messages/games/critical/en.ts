@@ -1,3 +1,5 @@
+import { variants } from './en-variants';
+
 export const enMessages = {
   critical_v1: { name: 'Critical' },
   table: {
@@ -37,6 +39,12 @@ export const enMessages = {
       mark: 'Mark',
       stealDraw: "I'll Take That",
       stash: 'Tower of Power',
+      // Chaos Pack cards
+      criticalImplosion: 'Critical Implosion',
+      containmentField: 'Containment Field',
+      fission: 'Fission',
+      tribute: 'Tribute',
+      blackout: 'Blackout',
       descriptions: {
         criticalEvent: 'You must defuse this or you explode!',
         neutralizer: 'Use to defuse a Critical card',
@@ -73,184 +81,19 @@ export const enMessages = {
         stealDraw: 'The next card this player draws goes to your hand instead',
         stash:
           "Move up to 2 cards to your protected stash. Stashed cards can't be stolen or traded",
+        // Chaos Pack descriptions
+        criticalImplosion:
+          'When drawn, this card goes back in the deck face up. The next time it is drawn, it explodes immediately!',
+        containmentField:
+          'Allows you to hold a Critical card in your hand without exploding.',
+        fission:
+          'Remove all Critical cards from the Deck. Shuffle the Deck, then place the Critical cards back on top.',
+        tribute:
+          'You must place a card from your hand on the Draw Pile. All other players must also place a card on the Draw Pile.',
+        blackout:
+          'Target player plays their next turn blind (cards face down).',
       },
-      variants: {
-        cyberpunk: {
-          critical_event: 'System Overload',
-          neutralizer: 'Firewall',
-          strike: 'DDoS',
-          evade: 'Proxy',
-          trade: 'Hack',
-          reorder: 'Re-hash',
-          insight: 'Ping',
-          cancel: '404 Error', // Or something thematic
-          targeted_strike: 'Targeted Malware', // Inferred
-          collection_alpha: 'Data Chip',
-          collection_beta: 'Bio-Implant',
-          collection_gamma: 'Neon Katana',
-          collection_delta: 'Holo-Disk',
-          collection_epsilon: 'Cyber-Skull',
-          // Attack Pack
-          private_strike: 'Self-Destruct',
-          recursive_strike: 'Botnet',
-          mega_evade: 'Ghost Mode',
-          invert: 'Loopback',
-          // Future Pack
-          see_future_5x: 'Deep Scan',
-          alter_future_3x: 'Rewrite',
-          alter_future_5x: 'System Override',
-          reveal_future_3x: 'Broadcast',
-          share_future_3x: 'Peer Sync',
-          draw_bottom: 'Backdoor Access',
-          swap_top_bottom: 'Kernel Swap',
-          bury: 'Decompile',
-          // Theft Pack
-          wildcard: 'Rogue AI',
-          mark: 'Tracker',
-          steal_draw: 'Intercept',
-          stash: 'Encrypted Vault',
-        },
-        underwater: {
-          critical_event: 'Hull Breach',
-          neutralizer: 'Patch Kit',
-          strike: 'Torpedo',
-          evade: 'Surface',
-          trade: 'Salvage',
-          reorder: 'Turbulence',
-          insight: 'Sonar',
-          cancel: 'Airlock', // Inferred
-          targeted_strike: 'Harpoon', // Inferred
-          collection_alpha: 'Jellyfish',
-          collection_beta: 'Coral',
-          collection_gamma: 'Pearl',
-          collection_delta: 'Sea Urchin',
-          collection_epsilon: 'Starfish',
-          // Attack Pack
-          private_strike: 'Bends',
-          recursive_strike: 'Pressure',
-          mega_evade: 'Deep Dive',
-          invert: 'Backwash',
-          // Future Pack
-          see_future_5x: 'Long Range Sonar',
-          alter_future_3x: 'Current Shift',
-          alter_future_5x: 'Tidal Wave',
-          reveal_future_3x: 'Flare',
-          share_future_3x: 'Comms Buoy',
-          draw_bottom: 'Dredge',
-          swap_top_bottom: 'Turn Over',
-          bury: 'Sullage',
-          // Theft Pack
-          wildcard: 'Shapeshifter',
-          mark: 'Tracer Dye',
-          steal_draw: 'Net Snag',
-          stash: 'Pressure Safe',
-        },
-        crime: {
-          critical_event: 'Police Raid',
-          neutralizer: 'Getaway Driver',
-          strike: 'Setup',
-          evade: 'Bribe',
-          trade: 'Pickpocket',
-          reorder: 'Scramble',
-          insight: 'Informant',
-          cancel: 'Alibi',
-          targeted_strike: 'Hitman', // Inferred
-          collection_alpha: 'Diamonds',
-          collection_beta: 'Gold Bars',
-          collection_gamma: 'Counterfeit Cash',
-          collection_delta: 'Fingerprints',
-          collection_epsilon: 'Evidence',
-          // Attack Pack
-          private_strike: 'Solitary',
-          recursive_strike: 'RICO Case',
-          mega_evade: 'Safehouse',
-          invert: 'U-Turn',
-          // Future Pack
-          see_future_5x: 'Surveillance',
-          alter_future_3x: 'Cook the Books',
-          alter_future_5x: 'Launder',
-          reveal_future_3x: 'Leak',
-          share_future_3x: 'Wiretap',
-          draw_bottom: 'Cold Case',
-          swap_top_bottom: 'Inside Job',
-          bury: 'Destroy Evidence',
-          // Theft Pack
-          wildcard: 'Forger',
-          mark: 'Tail',
-          steal_draw: 'Heist',
-          stash: 'Swiss Account',
-        },
-        horror: {
-          critical_event: 'Possession',
-          neutralizer: 'Salt Circle',
-          strike: 'Scream',
-          evade: 'Silence',
-          trade: 'Channeled Spirit',
-          reorder: 'Poltergeist',
-          insight: 'Whisper',
-          cancel: 'Banish', // Inferred
-          targeted_strike: 'Curse', // Inferred
-          collection_alpha: 'Voodoo Doll',
-          collection_beta: 'Skull',
-          collection_gamma: 'Potion',
-          collection_delta: 'Spellbook',
-          collection_epsilon: 'Eyeball',
-          // Attack Pack
-          private_strike: 'Curse of Pain',
-          recursive_strike: 'Epidemic',
-          mega_evade: 'Sanctuary',
-          invert: 'Turn Back',
-          // Future Pack
-          see_future_5x: 'Prophecy',
-          alter_future_3x: 'Ritual',
-          alter_future_5x: 'Grand Ritual',
-          reveal_future_3x: 'Omen',
-          share_future_3x: 'Seance',
-          draw_bottom: 'Gravedig',
-          swap_top_bottom: 'Reincarnate',
-          bury: 'Excorcise',
-          // Theft Pack
-          wildcard: 'Doppelgänger',
-          mark: 'Hex',
-          steal_draw: 'Soul Snatch',
-          stash: 'Cursed Chest',
-        },
-        adventure: {
-          critical_event: 'Temple Collapse',
-          neutralizer: "Idol's Blessing",
-          strike: 'Tripwire',
-          evade: 'Camouflage',
-          trade: 'Loot',
-          reorder: 'Earthquake',
-          insight: 'Binoculars',
-          cancel: 'Dodge', // Inferred
-          targeted_strike: 'Booby Trap', // Inferred
-          collection_alpha: 'Ancient Coin',
-          collection_beta: 'Golden Idol',
-          collection_gamma: 'Treasure Map',
-          collection_delta: 'Compass',
-          collection_epsilon: 'Backpack',
-          // Attack Pack
-          private_strike: 'Frostbite',
-          recursive_strike: 'Rockfall',
-          mega_evade: 'Base Camp',
-          invert: 'Retrace',
-          // Future Pack
-          see_future_5x: 'Vista',
-          alter_future_3x: 'Scout',
-          alter_future_5x: 'Survey',
-          reveal_future_3x: 'Signal Fire',
-          share_future_3x: 'Share Supplies',
-          draw_bottom: 'Excavate',
-          swap_top_bottom: 'Trapdoor',
-          bury: 'Cache',
-          // Theft Pack
-          wildcard: 'Chameleon',
-          mark: 'Tracking Device',
-          steal_draw: 'Ambush',
-          stash: 'Hidden Bunker',
-        },
-      },
+      variants,
     },
     actions: {
       start: 'Start Game',

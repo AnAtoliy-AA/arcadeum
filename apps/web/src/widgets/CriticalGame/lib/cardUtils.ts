@@ -50,6 +50,12 @@ export function getCardTranslationKey(
     mark: 'games.table.cards.mark',
     steal_draw: 'games.table.cards.stealDraw',
     stash: 'games.table.cards.stash',
+    // ===== CHAOS PACK EXPANSION CARDS =====
+    critical_implosion: 'games.table.cards.criticalImplosion',
+    containment_field: 'games.table.cards.containmentField',
+    fission: 'games.table.cards.fission',
+    tribute: 'games.table.cards.tribute',
+    blackout: 'games.table.cards.blackout',
   };
   return keys[card] || 'games.table.cards.generic';
 }
@@ -92,6 +98,12 @@ export function getCardEmoji(card: CriticalCard): string {
     mark: '🏷️',
     steal_draw: '🤏',
     stash: '🏰',
+    // ===== CHAOS PACK EXPANSION CARDS =====
+    critical_implosion: '🤯',
+    containment_field: '📦',
+    fission: '⚛️',
+    tribute: '🤲',
+    blackout: '🕶️',
   };
   return emojis[card] || '🐱';
 }
@@ -131,6 +143,12 @@ export function getCardDescriptionKey(card: CriticalCard): TranslationKey {
     mark: 'games.table.cards.descriptions.mark',
     steal_draw: 'games.table.cards.descriptions.stealDraw',
     stash: 'games.table.cards.descriptions.stash',
+    // ===== CHAOS PACK EXPANSION CARDS =====
+    critical_implosion: 'games.table.cards.descriptions.criticalImplosion',
+    containment_field: 'games.table.cards.descriptions.containmentField',
+    fission: 'games.table.cards.descriptions.fission',
+    tribute: 'games.table.cards.descriptions.tribute',
+    blackout: 'games.table.cards.descriptions.blackout',
   };
   return keys[card] || 'games.table.cards.descriptions.collectionAlpha';
 }

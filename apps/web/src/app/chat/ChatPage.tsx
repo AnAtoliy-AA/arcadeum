@@ -3,10 +3,12 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import styled from 'styled-components';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { resolveApiUrl } from '@/shared/lib/api-base';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { PageLayout, Container, Button, Input } from '@/shared/ui';
+import { chatApi, ChatMessage } from '@/features/chat/api';
 
 const ChatContainer = styled(Container)`
   height: 100vh;
@@ -105,30 +107,32 @@ const EmptyMessage = styled.div`
   color: ${({ theme }) => theme.text.muted};
 `;
 
-interface ChatMessage {
-  id: string;
-  chatId: string;
-  senderId: string;
-  senderUsername: string;
-  receiverIds: string[];
-  content: string;
-  timestamp: string;
-}
-
 export function ChatPage() {
   const searchParams = useSearchParams();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const chatId = searchParams?.get('chatId') || null;
   const receiverIds = searchParams?.get('receiverIds') || '';
   const title = searchParams?.get('title') || 'Chat';
 
-  const [messagesList, setMessagesList] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isAuthenticatedRef = useRef(false);
+
+  // Use Query for messages
+  const { data: messages = [] } = useQuery({
+    queryKey: ['chat', chatId, 'messages'],
+    queryFn: async () => {
+      if (!chatId) return [];
+      return chatApi.getMessages(chatId, {
+        token: snapshot.accessToken || undefined,
+      });
+    },
+    enabled: !!chatId && !!snapshot.accessToken,
+  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -136,31 +140,10 @@ export function ChatPage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messagesList]);
+  }, [messages]);
 
   useEffect(() => {
     if (!chatId || !snapshot.accessToken) return;
-
-    // Fetch existing messages
-    const fetchMessages = async () => {
-      try {
-        const url = resolveApiUrl(`/chat/${chatId}/messages`);
-        const response = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${snapshot.accessToken}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setMessagesList(data || []);
-        }
-      } catch (err) {
-        console.error('Failed to fetch messages:', err);
-      }
-    };
-
-    fetchMessages();
 
     // Connect to WebSocket
     const wsUrl = resolveApiUrl('/').replace('http', 'ws');
@@ -194,9 +177,27 @@ export function ChatPage() {
             }),
           );
         } else if (data.type === 'message') {
-          setMessagesList((prev) => [...prev, data.message]);
+          // Update query cache with new message
+          queryClient.setQueryData(
+            ['chat', chatId, 'messages'],
+            (old: ChatMessage[] = []) => {
+              // Deduplicate just in case
+              if (old.some((m) => m.id === data.message.id)) return old;
+              return [...old, data.message];
+            },
+          );
         } else if (data.type === 'chatMessages') {
-          setMessagesList(data.messages || []);
+          // Initial load from socket (optional if we prioritize useQuery)
+          // But sometimes socket sends history too.
+          // If useQuery handles history, we might ignore this OR use it to update cache?
+          // Usually we trust useQuery more for initial load.
+          // If this event sends ALL messages, we could update cache.
+          if (data.messages && Array.isArray(data.messages)) {
+            queryClient.setQueryData(
+              ['chat', chatId, 'messages'],
+              data.messages,
+            );
+          }
         } else if (data.type === 'error') {
           console.error('WebSocket error:', data.message);
           setIsConnected(false);
@@ -227,7 +228,7 @@ export function ChatPage() {
       }
       socketRef.current = null;
     };
-  }, [chatId, snapshot.accessToken, snapshot.userId, receiverIds]);
+  }, [chatId, snapshot.accessToken, snapshot.userId, receiverIds, queryClient]);
 
   const handleSend = useCallback(async () => {
     if (
@@ -260,12 +261,18 @@ export function ChatPage() {
         }),
       );
 
-      setMessagesList((prev) => [...prev, message]);
+      // Optimistically update cache
+      queryClient.setQueryData(
+        ['chat', chatId, 'messages'],
+        (old: ChatMessage[] = []) => {
+          return [...old, message];
+        },
+      );
       setInputValue('');
     } catch (err) {
       console.error('Failed to send message:', err);
     }
-  }, [inputValue, chatId, snapshot, receiverIds]);
+  }, [inputValue, chatId, snapshot, receiverIds, queryClient]);
 
   if (!chatId) {
     return (
@@ -298,7 +305,7 @@ export function ChatPage() {
         </Header>
 
         <MessagesContainer>
-          {messagesList.map((msg) => {
+          {messages.map((msg) => {
             const isOwn = msg.senderId === snapshot.userId;
             return (
               <Message key={msg.id} isOwn={isOwn}>

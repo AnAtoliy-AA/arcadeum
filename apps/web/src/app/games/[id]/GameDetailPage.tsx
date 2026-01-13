@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import styled from 'styled-components';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { resolveApiUrl } from '@/shared/lib/api-base';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { gamesApi } from '@/features/games/api';
 import {
   PageLayout,
   Container,
@@ -50,22 +50,6 @@ const HeaderActions = styled.div`
   gap: 1rem;
 `;
 
-interface GameRoomSummary {
-  id: string;
-  gameId: string;
-  name: string;
-  hostId: string;
-  visibility: 'public' | 'private';
-  playerCount: number;
-  maxPlayers: number | null;
-  createdAt: string;
-  status: 'lobby' | 'in_progress' | 'completed';
-  host?: {
-    id: string;
-    displayName: string;
-  };
-}
-
 function getStatusVariant(
   status: string,
 ): 'success' | 'warning' | 'info' | 'neutral' {
@@ -80,37 +64,18 @@ export function GameDetailPage() {
   const { t } = useTranslation();
   const gameId = params?.id as string;
 
-  const [rooms, setRooms] = useState<GameRoomSummary[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchRooms = useCallback(async () => {
-    setLoading(true);
-    try {
-      const url = resolveApiUrl(`/games/rooms?gameId=${gameId}`);
-      const headers: HeadersInit = {};
-
-      if (snapshot.accessToken) {
-        headers.Authorization = `Bearer ${snapshot.accessToken}`;
-      }
-
-      const response = await fetch(url, { headers });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch rooms');
-      }
-
-      const data = await response.json();
-      setRooms(data.rooms || []);
-    } catch (err) {
-      console.error('Failed to fetch rooms:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [gameId, snapshot.accessToken]);
-
-  useEffect(() => {
-    fetchRooms();
-  }, [fetchRooms]);
+  const { data: rooms, isLoading: loading } = useQuery({
+    queryKey: ['games', 'rooms', gameId],
+    queryFn: async () => {
+      const response = await gamesApi.getRooms(
+        { gameId },
+        { token: snapshot.accessToken || undefined },
+      );
+      return response.rooms;
+    },
+    enabled: !!gameId,
+    initialData: [],
+  });
 
   return (
     <PageLayout>

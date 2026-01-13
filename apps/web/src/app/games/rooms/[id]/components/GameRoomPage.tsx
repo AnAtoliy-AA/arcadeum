@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useMemo, useEffect, Suspense, useState, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import styled from 'styled-components';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { connectSockets, connectSocketsAnonymous } from '@/shared/lib/socket';
-import { resolveApiUrl } from '@/shared/lib/api-base';
 import { GamesControlPanel } from '@/widgets/GamesControlPanel';
+import { gamesApi } from '@/features/games/api';
 import { useGameRoom, type GameType } from '@/features/games/hooks';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { mapToGameType } from '@/features/games/lib/gameIdMapping';
@@ -23,13 +24,36 @@ export default function GameRoomPage() {
   const gameContainerRef = useRef<HTMLDivElement>(null);
 
   // State for room visibility check
-  const [roomVisibility, setRoomVisibility] = useState<
-    'public' | 'private' | null
-  >(null);
-  const [visibilityLoading, setVisibilityLoading] = useState(true);
-  const [visibilityError, setVisibilityError] = useState<string | null>(null);
 
   const isAuthenticated = !!snapshot.accessToken && !!snapshot.userId;
+
+  // Check room visibility with useQuery
+  const {
+    data: roomVisibility = null,
+    isLoading: visibilityLoading,
+    error: queryError,
+  } = useQuery({
+    queryKey: ['games', 'room-visibility', roomId],
+    queryFn: async () => {
+      if (!roomId) return null;
+      return await gamesApi.getRoomVisibility(roomId, {
+        token: snapshot.accessToken || undefined,
+      });
+    },
+    enabled: !!roomId,
+    retry: false, // Don't retry on 404/403
+  });
+
+  // Map query error to UI error message
+  const visibilityError = useMemo(() => {
+    if (!queryError) return null;
+    const msg = queryError.message;
+    if (msg === 'private_room_error')
+      return t('games.roomPage.errors.privateRoomError');
+    if (msg === 'room_not_found_error')
+      return t('games.roomPage.errors.roomNotFoundError');
+    return t('games.roomPage.errors.failedToLoadError');
+  }, [queryError, t]);
 
   // Derive spectator mode from visibility and auth - no state needed
   const isSpectatorMode = !isAuthenticated && roomVisibility === 'public';
@@ -41,73 +65,6 @@ export default function GameRoomPage() {
     : isSpectatorMode
       ? 'watch'
       : 'play';
-
-  // Use ref for translation function to avoid infinite loop in useEffect
-  const tRef = useRef(t);
-  useEffect(() => {
-    tRef.current = t;
-  }, [t]);
-
-  // Check room visibility first (before socket connection)
-  useEffect(() => {
-    if (!roomId) return;
-
-    // Use AbortController to cancel fetch on cleanup
-    const abortController = new AbortController();
-
-    const checkRoomVisibility = async () => {
-      setVisibilityLoading(true);
-      try {
-        const url = resolveApiUrl(`/games/rooms/${roomId}`);
-        const headers: HeadersInit = {};
-        if (snapshot.accessToken) {
-          headers.Authorization = `Bearer ${snapshot.accessToken}`;
-        }
-        const response = await fetch(url, {
-          headers,
-          signal: abortController.signal,
-        });
-
-        if (!response.ok) {
-          if (response.status === 403) {
-            setVisibilityError(
-              tRef.current('games.roomPage.errors.privateRoomError'),
-            );
-          } else if (response.status === 404 || response.status === 500) {
-            // 500 can happen for invalid room IDs
-            setVisibilityError(
-              tRef.current('games.roomPage.errors.roomNotFoundError'),
-            );
-          } else {
-            setVisibilityError(
-              tRef.current('games.roomPage.errors.failedToLoadError'),
-            );
-          }
-          setVisibilityLoading(false);
-          return;
-        }
-
-        const data = await response.json();
-        setRoomVisibility(data.room?.visibility || 'public');
-        setVisibilityLoading(false);
-      } catch (err) {
-        // Ignore abort errors
-        if (err instanceof Error && err.name === 'AbortError') {
-          return;
-        }
-        setVisibilityError(
-          tRef.current('games.roomPage.errors.failedToCheckAccess'),
-        );
-        setVisibilityLoading(false);
-      }
-    };
-
-    checkRoomVisibility();
-
-    return () => {
-      abortController.abort();
-    };
-  }, [roomId, snapshot.accessToken]);
 
   // Connect sockets based on auth status and room visibility
   useEffect(() => {

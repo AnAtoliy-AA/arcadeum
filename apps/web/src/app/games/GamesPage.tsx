@@ -1,11 +1,12 @@
 'use client';
 
 import { GamesSearch } from '@/features/games';
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { resolveApiUrl } from '@/shared/lib/api-base';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { GameRoomSummary } from '@/shared/types/games';
+import { gamesApi } from '@/features/games/api';
 
 import {
   Page,
@@ -38,9 +39,7 @@ const INITIAL_PAGE = 1;
 export function GamesPage() {
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
-  const [rooms, setRooms] = useState<GameRoomSummary[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
   const [statusFilter, setStatusFilter] = useState<
     'all' | 'lobby' | 'in_progress' | 'completed'
   >('all');
@@ -53,73 +52,64 @@ export function GamesPage() {
   // Pagination state
   const [page, setPage] = useState(INITIAL_PAGE);
   const [limit] = useState(PAGE_SIZE);
-  const [total, setTotal] = useState(0);
 
-  const fetchRooms = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const params = new URLSearchParams();
-      if (statusFilter !== 'all') {
-        params.append('status', statusFilter);
-      }
-      if (participationFilter !== 'all') {
-        params.append('participation', participationFilter);
-      }
-      if (searchQuery) {
-        params.append('search', searchQuery);
-      }
-      params.append('page', page.toString());
-      params.append('limit', limit.toString());
-
-      const url = resolveApiUrl(`/games/rooms?${params.toString()}`);
-      const headers: HeadersInit = {};
-
-      if (snapshot.accessToken) {
-        headers.Authorization = `Bearer ${snapshot.accessToken}`;
-      }
-
-      const response = await fetch(url, { headers });
-
-      if (!response.ok) {
-        throw new globalThis.Error(`Failed to fetch rooms: ${response.status}`);
-      }
-
-      const data = await response.json();
-      // Handle both legacy and new response format
-      if (Array.isArray(data.rooms)) {
-        setRooms(data.rooms);
-        setTotal(data.total || data.rooms.length);
-      } else {
-        // Fallback or error if needed? For now assume it works as new format
-        setRooms(data.rooms || []);
-        setTotal(data.total || 0);
-      }
-    } catch (err) {
-      setError(
-        err instanceof globalThis.Error ? err.message : 'Failed to load rooms',
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [
-    statusFilter,
-    participationFilter,
-    searchQuery,
-    snapshot.accessToken,
-    page,
-    limit,
-  ]);
-
-  useEffect(() => {
-    fetchRooms();
-  }, [fetchRooms]);
-
-  // Reset page when filters change
-  useEffect(() => {
+  const handleStatusChange = (status: typeof statusFilter) => {
+    setStatusFilter(status);
     setPage(INITIAL_PAGE);
-  }, [statusFilter, participationFilter, searchQuery]);
+  };
+
+  const handleParticipationChange = (
+    participation: typeof participationFilter,
+  ) => {
+    setParticipationFilter(participation);
+    setPage(INITIAL_PAGE);
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    setPage(INITIAL_PAGE);
+  };
+
+  const {
+    data: roomsData,
+    isLoading,
+    error: queryError,
+  } = useQuery({
+    queryKey: [
+      'games',
+      'list',
+      statusFilter,
+      participationFilter,
+      searchQuery,
+      page,
+      limit,
+    ],
+    queryFn: async () => {
+      return gamesApi.getRooms(
+        {
+          status: statusFilter,
+          participation: participationFilter,
+          search: searchQuery || undefined,
+          page,
+          limit,
+        },
+        { token: snapshot.accessToken || undefined },
+      );
+    },
+    // Keep previous data while fetching new data for smoother pagination
+    placeholderData: (previousData) => previousData,
+  });
+
+  const roomsRaw = roomsData?.rooms;
+  const rooms = useMemo(() => roomsRaw || [], [roomsRaw]);
+  const total = roomsData?.total || 0;
+  const loading = isLoading;
+  const error =
+    queryError instanceof globalThis.Error
+      ? queryError.message
+      : queryError
+        ? 'Failed to load rooms'
+        : null;
 
   const sortedRooms = useMemo(() => {
     return [...rooms].sort(
@@ -160,7 +150,7 @@ export function GamesPage() {
 
         <Filters>
           <GamesSearch
-            onSearch={setSearchQuery}
+            onSearch={handleSearch}
             initialValue={searchQuery}
             placeholder={
               t('games.lounge.searchPlaceholder') || 'Search games...'
@@ -183,11 +173,11 @@ export function GamesPage() {
                     <FilterChip
                       key={value}
                       $active={statusFilter === value}
-                      onClick={() => setStatusFilter(value)}
+                      onClick={() => handleStatusChange(value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                           e.preventDefault();
-                          setStatusFilter(value);
+                          handleStatusChange(value);
                         }
                       }}
                       aria-label={`Filter by status: ${label || value}`}
@@ -226,7 +216,7 @@ export function GamesPage() {
                           // Optionally show a login prompt or ignore
                           return;
                         }
-                        setParticipationFilter(value);
+                        handleParticipationChange(value);
                       }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
@@ -234,7 +224,7 @@ export function GamesPage() {
                             return;
                           }
                           e.preventDefault();
-                          setParticipationFilter(value);
+                          handleParticipationChange(value);
                         }
                       }}
                       $disabled={value !== 'all' && !snapshot.accessToken}

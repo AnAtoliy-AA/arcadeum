@@ -1,21 +1,22 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 
 import {
   fetchProfile,
   loginLocal,
   registerLocal,
   type LoginResponse,
-} from "@/entities/session/api/authApi";
+} from '@/entities/session/api/authApi';
 import {
   type SessionTokensValue,
   type SessionTokensSnapshot,
-} from "@/entities/session/model/useSessionTokens";
+} from '@/entities/session/model/useSessionTokens';
 
-const EMAIL_STORAGE_KEY = "web_auth_email";
+const EMAIL_STORAGE_KEY = 'web_auth_email';
 
-type LocalAuthMode = "login" | "register";
+type LocalAuthMode = 'login' | 'register';
 
 type LocalAuthState = {
   mode: LocalAuthMode;
@@ -28,7 +29,11 @@ type LocalAuthState = {
 };
 
 export type UseLocalAuthResult = LocalAuthState & {
-  register: (params: { email: string; password: string; username: string }) => Promise<void>;
+  register: (params: {
+    email: string;
+    password: string;
+    username: string;
+  }) => Promise<void>;
   login: (params: { email: string; password: string }) => Promise<void>;
   toggleMode: () => void;
   logout: () => Promise<void>;
@@ -37,7 +42,7 @@ export type UseLocalAuthResult = LocalAuthState & {
 };
 
 function readStoredEmail(): string | null {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return null;
   }
   try {
@@ -49,7 +54,7 @@ function readStoredEmail(): string | null {
 }
 
 function persistEmail(value: string | null) {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return;
   }
   try {
@@ -66,7 +71,7 @@ function persistEmail(value: string | null) {
 function mergeSnapshot(
   session: SessionTokensValue,
   response: LoginResponse,
-  provider: "local" | "oauth",
+  provider: 'local' | 'oauth',
   fallbackEmail?: string | null,
 ): Promise<SessionTokensSnapshot> {
   return session.setTokens({
@@ -75,7 +80,7 @@ function mergeSnapshot(
     accessTokenExpiresAt: response.accessTokenExpiresAt ?? null,
     refreshToken: response.refreshToken ?? null,
     refreshTokenExpiresAt: response.refreshTokenExpiresAt ?? null,
-    tokenType: "Bearer",
+    tokenType: 'Bearer',
     userId: response.user?.id ?? null,
     email: response.user?.email ?? fallbackEmail ?? null,
     username: response.user?.username ?? null,
@@ -89,11 +94,11 @@ function mergeSnapshot(
 
 export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
   const [state, setState] = useState<LocalAuthState>(() => ({
-    mode: "login",
+    mode: 'login',
     loading: false,
     error: null,
     accessToken: null,
-    email: typeof window === "undefined" ? null : readStoredEmail(),
+    email: typeof window === 'undefined' ? null : readStoredEmail(),
     username: null,
     displayName: null,
   }));
@@ -110,31 +115,47 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
   const toggleMode = useCallback(() => {
     setState((current) => ({
       ...current,
-      mode: current.mode === "login" ? "register" : "login",
+      mode: current.mode === 'login' ? 'register' : 'login',
       error: null,
     }));
   }, []);
 
-  const applySnapshot = useCallback(
-    (snapshot: SessionTokensSnapshot) => {
-      setState((current) => ({
-        ...current,
-        loading: false,
-        error: null,
-        accessToken: snapshot.accessToken,
-        email: snapshot.email ?? current.email,
-        username: snapshot.username,
-        displayName: snapshot.displayName,
-      }));
-    },
-    [],
-  );
+  const applySnapshot = useCallback((snapshot: SessionTokensSnapshot) => {
+    setState((current) => ({
+      ...current,
+      loading: false,
+      error: null,
+      accessToken: snapshot.accessToken,
+      email: snapshot.email ?? current.email,
+      username: snapshot.username,
+      displayName: snapshot.displayName,
+    }));
+  }, []);
+
+  const { mutateAsync: registerMutation } = useMutation({
+    mutationFn: registerLocal,
+  });
+
+  const { mutateAsync: loginMutation } = useMutation({
+    mutationFn: loginLocal,
+  });
 
   const register = useCallback(
-    async ({ email, password, username }: { email: string; password: string; username: string }) => {
+    async ({
+      email,
+      password,
+      username,
+    }: {
+      email: string;
+      password: string;
+      username: string;
+    }) => {
+      // Manual state management is replaced by query, but we need to update our local composite state
+      // or we can rely on query state.
+      // However, the original hook maintains comprehensive state including mode.
       setState((current) => ({ ...current, loading: true, error: null }));
       try {
-        await registerLocal({
+        await registerMutation({
           email: email.trim(),
           password,
           username: username.trim(),
@@ -143,18 +164,20 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
         setState((current) => ({
           ...current,
           loading: false,
-          mode: "login",
+          mode: 'login',
           error: null,
         }));
       } catch (error) {
+        // Error is handled by mutation state primarily, but we updating local state to keep contract
+        const message = error instanceof Error ? error.message : String(error);
         setState((current) => ({
           ...current,
           loading: false,
-          error: error instanceof Error ? error.message : String(error),
+          error: message,
         }));
       }
     },
-    [],
+    [registerMutation],
   );
 
   const login = useCallback(
@@ -162,8 +185,13 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
       const trimmedEmail = email.trim();
       setState((current) => ({ ...current, loading: true, error: null }));
       try {
-        const response = await loginLocal({ email: trimmedEmail, password });
-        const snapshot = await mergeSnapshot(session, response, "local", trimmedEmail);
+        const response = await loginMutation({ email: trimmedEmail, password });
+        const snapshot = await mergeSnapshot(
+          session,
+          response,
+          'local',
+          trimmedEmail,
+        );
         persistEmail(trimmedEmail);
         applySnapshot(snapshot);
       } catch (error) {
@@ -175,7 +203,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
         }));
       }
     },
-    [applySnapshot, session],
+    [applySnapshot, session, loginMutation],
   );
 
   const logout = useCallback(async () => {
@@ -195,7 +223,9 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
     setState((current) => ({ ...current, loading: true, error: null }));
     const storedEmail = readStoredEmail();
     try {
-      const baseSnapshot = session.hydrated ? session.snapshot : await session.reload();
+      const baseSnapshot = session.hydrated
+        ? session.snapshot
+        : await session.reload();
       if (!baseSnapshot.accessToken) {
         setState((current) => ({
           ...current,
@@ -260,7 +290,10 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
             email: storedEmail,
             username: null,
             displayName: null,
-            error: retryError instanceof Error ? retryError.message : String(retryError),
+            error:
+              retryError instanceof Error
+                ? retryError.message
+                : String(retryError),
           }));
         }
       }
@@ -311,4 +344,3 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
 
   return value;
 }
-

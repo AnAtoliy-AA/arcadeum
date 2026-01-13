@@ -128,3 +128,37 @@ export async function fetchProfile(
   });
   return readJson<AuthUserProfile>(res);
 }
+
+export interface DiscoveryDocument {
+  authorization_endpoint?: string;
+  token_endpoint?: string;
+  revocation_endpoint?: string;
+}
+
+export async function fetchDiscovery(
+  issuer: string,
+): Promise<DiscoveryDocument> {
+  const url = `${issuer.replace(/\/?$/, '/')}.well-known/openid-configuration`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error('Failed to fetch OAuth discovery document');
+  }
+  return res.json();
+}
+
+export async function revokeProviderToken(
+  endpoint: string,
+  token: string,
+  clientId?: string,
+): Promise<void> {
+  const params = new URLSearchParams();
+  params.set('token', token);
+  if (clientId) {
+    params.set('client_id', clientId);
+  }
+  await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: params.toString(),
+  });
+}

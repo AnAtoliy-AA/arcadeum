@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { IDLE_TIMER_DURATION_SEC } from '@/shared/config/game';
-import { resolveApiUrl } from '@/shared/lib/api-base';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { gamesApi } from '@/features/games/api';
 import {
   PageLayout,
   Container,
@@ -66,8 +67,46 @@ export function CreateGameRoomPage() {
   const [cardVariant, setCardVariant] = useState<string>('cyberpunk');
   const [allowActionCardCombos, setAllowActionCardCombos] = useState(false);
   const [idleTimerEnabled, setIdleTimerEnabled] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  const {
+    mutate: createRoom,
+    isPending: loading,
+    error: mutationError,
+  } = useMutation({
+    mutationFn: async () => {
+      const maxPlayersNum = maxPlayers.trim() ? Number(maxPlayers) : undefined;
+
+      return gamesApi.createRoom(
+        {
+          gameId,
+          name: name.trim(),
+          visibility,
+          maxPlayers: maxPlayersNum,
+          notes: notes.trim() || undefined,
+          gameOptions:
+            gameId === 'critical_v1'
+              ? {
+                  ...(expansions.length > 0 ? { expansions } : {}),
+                  cardVariant,
+                  allowActionCardCombos,
+                  idleTimerEnabled,
+                }
+              : undefined,
+        },
+        { token: snapshot.accessToken || undefined },
+      );
+    },
+    onSuccess: (data) => {
+      router.push(`/games/rooms/${data.room.id}`);
+    },
+  });
+
+  const error =
+    mutationError instanceof Error
+      ? mutationError.message
+      : mutationError
+        ? 'Failed to create room'
+        : null;
 
   const toggleExpansion = useCallback((id: ExpansionId) => {
     setExpansions((prev) =>
@@ -76,16 +115,14 @@ export function CreateGameRoomPage() {
   }, []);
 
   const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
+    (e: React.FormEvent) => {
       e.preventDefault();
 
       if (!snapshot.accessToken) {
-        setError('Please sign in to create a room');
         return;
       }
 
       if (!name.trim()) {
-        setError('Room name is required');
         return;
       }
 
@@ -94,68 +131,12 @@ export function CreateGameRoomPage() {
         maxPlayersNum !== undefined &&
         (isNaN(maxPlayersNum) || maxPlayersNum < 2)
       ) {
-        setError('Max players must be at least 2');
         return;
       }
 
-      setLoading(true);
-      setError(null);
-
-      try {
-        const url = resolveApiUrl('/games/rooms');
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${snapshot.accessToken}`,
-          },
-          body: JSON.stringify({
-            gameId,
-            name: name.trim(),
-            visibility,
-            maxPlayers: maxPlayersNum,
-            notes: notes.trim() || undefined,
-            gameOptions:
-              gameId === 'critical_v1'
-                ? {
-                    ...(expansions.length > 0 ? { expansions } : {}),
-                    cardVariant,
-                    allowActionCardCombos,
-                    idleTimerEnabled,
-                  }
-                : undefined,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new globalThis.Error('Failed to create room');
-        }
-
-        const data = await response.json();
-        router.push(`/games/rooms/${data.room.id}`);
-      } catch (err) {
-        setError(
-          err instanceof globalThis.Error
-            ? err.message
-            : 'Failed to create room',
-        );
-      } finally {
-        setLoading(false);
-      }
+      createRoom();
     },
-    [
-      gameId,
-      name,
-      visibility,
-      maxPlayers,
-      notes,
-      expansions,
-      cardVariant,
-      allowActionCardCombos,
-      idleTimerEnabled,
-      snapshot.accessToken,
-      router,
-    ],
+    [snapshot.accessToken, name, maxPlayers, createRoom],
   );
 
   return (

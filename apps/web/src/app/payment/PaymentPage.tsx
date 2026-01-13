@@ -2,10 +2,11 @@
 
 import { useState, useCallback } from 'react';
 import styled from 'styled-components';
+import { useMutation } from '@tanstack/react-query';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { resolveApiUrl } from '@/shared/lib/api-base';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { isValidPaymentUrl, parseAmount } from '@/shared/config/payment-config';
+import { paymentApi } from '@/features/payment/api';
 import {
   PageLayout,
   Container,
@@ -40,9 +41,44 @@ export function PaymentPage() {
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState('GEL');
   const [note, setNote] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  const { mutate: createSession, isPending: loading } = useMutation({
+    mutationFn: async (params: {
+      amount: number;
+      currency: string;
+      description?: string;
+    }) => {
+      return paymentApi.createSession(params, {
+        token: snapshot.accessToken || undefined,
+      });
+    },
+    onSuccess: (data) => {
+      if (data.paymentUrl) {
+        if (!isValidPaymentUrl(data.paymentUrl)) {
+          throw new Error(
+            t('payments.errors.invalidUrl') || 'Invalid payment URL received',
+          );
+        }
+        window.open(data.paymentUrl, '_blank', 'noopener,noreferrer');
+        setSuccess(true);
+        setAmount('');
+        setNote('');
+      } else {
+        throw new Error(
+          t('payments.errors.noUrl') || 'No payment URL received',
+        );
+      }
+    },
+    onError: (err) => {
+      setError(
+        err instanceof Error
+          ? err.message
+          : t('payments.errors.failed') || 'Payment failed',
+      );
+    },
+  });
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -64,62 +100,16 @@ export function PaymentPage() {
         return;
       }
 
-      setLoading(true);
       setError(null);
       setSuccess(false);
 
-      try {
-        const url = resolveApiUrl('/payments/session');
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(snapshot.accessToken && {
-              Authorization: `Bearer ${snapshot.accessToken}`,
-            }),
-          },
-          body: JSON.stringify({
-            amount: normalizedAmount,
-            currency: currency.trim().toUpperCase(),
-            description: note.trim() || undefined,
-          }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(
-            errorData.message || 'Failed to create payment session',
-          );
-        }
-
-        const data = await response.json();
-        if (data.paymentUrl) {
-          // Validate payment URL before opening
-          if (!isValidPaymentUrl(data.paymentUrl)) {
-            throw new Error(
-              t('payments.errors.invalidUrl') || 'Invalid payment URL received',
-            );
-          }
-          window.open(data.paymentUrl, '_blank', 'noopener,noreferrer');
-          setSuccess(true);
-          setAmount('');
-          setNote('');
-        } else {
-          throw new Error(
-            t('payments.errors.noUrl') || 'No payment URL received',
-          );
-        }
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : t('payments.errors.failed') || 'Payment failed',
-        );
-      } finally {
-        setLoading(false);
-      }
+      createSession({
+        amount: normalizedAmount,
+        currency: currency.trim().toUpperCase(),
+        description: note.trim() || undefined,
+      });
     },
-    [amount, currency, note, snapshot.accessToken, t],
+    [amount, currency, note, t, createSession],
   );
 
   return (

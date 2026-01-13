@@ -1,21 +1,22 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
 
-import { appConfig } from "@/shared/config/app-config";
-import { LanguageProvider } from "./i18n/LanguageProvider";
-import { StyledComponentsRegistry } from "./StyledComponentsRegistry";
-import "./globals.css";
-import { AppThemeProvider } from "./theme/ThemeContext";
-import { Header } from "@/widgets/header";
+import { appConfig } from '@/shared/config/app-config';
+import { QueryProvider } from './providers/QueryProvider';
+import { LanguageProvider } from './i18n/LanguageProvider';
+import { StyledComponentsRegistry } from './StyledComponentsRegistry';
+import './globals.css';
+import { AppThemeProvider } from './theme/ThemeContext';
+import { Header } from '@/widgets/header';
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
@@ -34,8 +35,10 @@ export default function RootLayout({
         <StyledComponentsRegistry>
           <LanguageProvider>
             <AppThemeProvider>
-              <Header />
-              {children}
+              <QueryProvider>
+                <Header />
+                {children}
+              </QueryProvider>
             </AppThemeProvider>
           </LanguageProvider>
         </StyledComponentsRegistry>

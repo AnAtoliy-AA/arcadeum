@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { resolveApiUrl } from '@/shared/lib/api-base';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useDebounce } from '@/shared/hooks/useDebounce';
 import { Input, Spinner } from '@/shared/ui';
+import { chatApi, ChatParticipant } from '@/features/chat/api';
 
 const Page = styled.main`
   min-height: 100vh;
@@ -134,133 +136,54 @@ const Empty = styled.div`
   color: ${({ theme }) => theme.text.muted};
 `;
 
-interface ChatSummary {
-  chatId: string;
-  participants: Array<{
-    id: string;
-    username: string;
-    displayName?: string;
-    email?: string;
-  }>;
-  lastMessage?: {
-    senderUsername: string;
-    content: string;
-    timestamp: string;
-  };
-}
-
-interface ChatParticipant {
-  id: string;
-  username: string;
-  displayName?: string;
-  email?: string;
-}
+import { QUERY_CONFIG, DEBOUNCE } from '@/shared/config/constants';
 
 export function ChatListPage() {
   const router = useRouter();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
-  const [chats, setChats] = useState<ChatSummary[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<ChatParticipant[]>([]);
-  const [searchLoading, setSearchLoading] = useState(false);
+  const debouncedSearchQuery = useDebounce(searchQuery, DEBOUNCE.SEARCH_DELAY);
 
-  const fetchChats = useCallback(async () => {
-    if (!snapshot.accessToken) {
-      setLoading(false);
-      return;
-    }
+  const { data: queryChats, isLoading: chatsLoading } = useQuery({
+    queryKey: ['chats'],
+    queryFn: async () => {
+      return chatApi.getChats({ token: snapshot.accessToken || undefined });
+    },
+    enabled: !!snapshot.accessToken,
+    staleTime: QUERY_CONFIG.STALE_TIME.SHORT,
+  });
 
-    setLoading(true);
-    try {
-      const url = resolveApiUrl('/chat');
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${snapshot.accessToken}`,
-        },
+  const { data: querySearchResults, isLoading: searchLoading } = useQuery({
+    queryKey: ['chat', 'search', debouncedSearchQuery],
+    queryFn: async () => {
+      if (!debouncedSearchQuery.trim()) return [];
+
+      const results = await chatApi.searchUsers(debouncedSearchQuery, {
+        token: snapshot.accessToken || undefined,
       });
+      return results.filter((p) => p.id !== snapshot.userId);
+    },
+    enabled: !!snapshot.accessToken && !!debouncedSearchQuery.trim(),
+  });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch chats');
-      }
-
-      const data = await response.json();
-      setChats(data || []);
-    } catch (err) {
-      console.error('Failed to fetch chats:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [snapshot.accessToken]);
-
-  useEffect(() => {
-    fetchChats();
-  }, [fetchChats]);
-
-  useEffect(() => {
-    if (!searchQuery.trim() || !snapshot.accessToken) {
-      setSearchResults([]);
-      return;
-    }
-
-    const timeoutId = setTimeout(async () => {
-      setSearchLoading(true);
-      try {
-        const url = resolveApiUrl(
-          `/chat/search?q=${encodeURIComponent(searchQuery)}`,
-        );
-        const response = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${snapshot.accessToken}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setSearchResults(
-            (data || []).filter(
-              (p: ChatParticipant) => p.id !== snapshot.userId,
-            ),
-          );
-        } else {
-          console.error('Search request failed:', response.status);
-        }
-      } catch (err) {
-        console.error('Search failed:', err);
-      } finally {
-        setSearchLoading(false);
-      }
-    }, 400);
-
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery, snapshot.accessToken, snapshot.userId]);
+  const displayChats = queryChats || [];
+  const displaySearchResults = querySearchResults || [];
+  const loading = chatsLoading;
 
   const handleSelectUser = useCallback(
     async (user: ChatParticipant) => {
       if (!snapshot.accessToken || !snapshot.userId) return;
 
       try {
-        const url = resolveApiUrl('/chat');
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${snapshot.accessToken}`,
-          },
-          body: JSON.stringify({
-            users: [snapshot.userId, user.id],
-          }),
-        });
+        const response = await chatApi.createChat(
+          { users: [snapshot.userId, user.id] },
+          { token: snapshot.accessToken },
+        );
 
-        if (response.ok) {
-          const chat = await response.json();
-          router.push(
-            `/chat?chatId=${chat.chatId}&receiverIds=${user.id}&title=${encodeURIComponent(user.displayName || user.username)}`,
-          );
-        } else {
-          console.error('Failed to create chat:', response.status);
-        }
+        router.push(
+          `/chat?chatId=${response.chatId}&receiverIds=${user.id}&title=${encodeURIComponent(user.displayName || user.username)}`,
+        );
       } catch (err) {
         console.error('Failed to create chat:', err);
       }
@@ -291,9 +214,9 @@ export function ChatListPage() {
               fullWidth
             />
             {searchLoading && <div>Searching...</div>}
-            {searchQuery.trim() && searchResults.length > 0 && (
+            {searchQuery.trim() && displaySearchResults.length > 0 && (
               <SearchResults>
-                {searchResults.map((result) => (
+                {displaySearchResults.map((result) => (
                   <SearchResultItem
                     key={result.id}
                     onClick={() => handleSelectUser(result)}
@@ -320,7 +243,7 @@ export function ChatListPage() {
             <Spinner size="lg" aria-label="Loading" />
             <div>Loading chats...</div>
           </LoadingContainer>
-        ) : chats.length === 0 ? (
+        ) : displayChats.length === 0 ? (
           <Empty>
             {snapshot.accessToken
               ? t('chatList.empty.noChats') ||
@@ -330,7 +253,7 @@ export function ChatListPage() {
           </Empty>
         ) : (
           <ChatList>
-            {chats.map((chat) => {
+            {displayChats.map((chat) => {
               const otherParticipants = chat.participants.filter(
                 (p) => p.id !== currentUserId,
               );

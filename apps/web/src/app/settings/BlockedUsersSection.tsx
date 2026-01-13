@@ -1,11 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { useLanguage } from '@/app/i18n/LanguageProvider';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { getMessages, DEFAULT_LOCALE } from '@/shared/i18n';
-import { resolveApiUrl } from '@/shared/lib/api-base';
+import { authApi } from '@/features/auth/api';
 import {
   Section,
   SectionTitle,
@@ -18,12 +19,6 @@ import {
   UnblockButton,
 } from './styles';
 
-interface BlockedUser {
-  id: string;
-  displayName: string;
-  username: string;
-}
-
 export function BlockedUsersSection() {
   const { messages } = useLanguage();
   const defaultMessages = getMessages(DEFAULT_LOCALE);
@@ -31,50 +26,34 @@ export function BlockedUsersSection() {
   const d = defaultMessages.settings ?? {};
 
   const { snapshot, hydrated } = useSessionTokens();
-  const [blockedUsers, setBlockedUsers] = useState<BlockedUser[]>([]);
-  const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  const fetchBlockedUsers = useCallback(async () => {
-    if (!snapshot.accessToken) return;
-    setLoading(true);
-    try {
-      const res = await fetch(resolveApiUrl('/auth/blocked'), {
-        headers: { Authorization: `Bearer ${snapshot.accessToken}` },
+  const { data: blockedUsers = [], isLoading: loading } = useQuery({
+    queryKey: ['auth', 'blocked'],
+    queryFn: async () => {
+      return authApi.getBlockedUsers({
+        token: snapshot.accessToken || undefined,
       });
-      if (res.ok) {
-        const data = await res.json();
-        setBlockedUsers(data);
-      }
-    } catch {
-      // silently handle errors
-    } finally {
-      setLoading(false);
-    }
-  }, [snapshot.accessToken]);
+    },
+    enabled: !!hydrated && !!snapshot.accessToken,
+  });
 
-  useEffect(() => {
-    if (hydrated && snapshot.accessToken) {
-      fetchBlockedUsers();
-    }
-  }, [hydrated, snapshot.accessToken, fetchBlockedUsers]);
+  const { mutate: unblock } = useMutation({
+    mutationFn: async (userId: string) => {
+      return authApi.unblockUser(userId, {
+        token: snapshot.accessToken || undefined,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['auth', 'blocked'] });
+    },
+  });
 
   const handleUnblock = useCallback(
-    async (userId: string) => {
-      if (!snapshot.accessToken) return;
-      try {
-        await fetch(
-          resolveApiUrl(`/auth/block/${encodeURIComponent(userId)}`),
-          {
-            method: 'DELETE',
-            headers: { Authorization: `Bearer ${snapshot.accessToken}` },
-          },
-        );
-        setBlockedUsers((prev) => prev.filter((u) => u.id !== userId));
-      } catch {
-        // silently handle errors
-      }
+    (userId: string) => {
+      unblock(userId);
     },
-    [snapshot.accessToken],
+    [unblock],
   );
 
   // Don't render if not authenticated

@@ -91,8 +91,18 @@ export const EXPANSION_PACK_DETAILS: ExpansionPackDetails[] = [
   {
     id: 'theft',
     name: 'Theft Pack',
-    available: false,
-    cards: [],
+    available: true,
+    cards: [
+      { id: 'wildcard', name: 'Wildcard', defaultCount: 4, maxCount: 6 },
+      { id: 'mark', name: 'Mark', defaultCount: 3, maxCount: 5 },
+      {
+        id: 'steal_draw',
+        name: "I'll Take That",
+        defaultCount: 3,
+        maxCount: 5,
+      },
+      { id: 'stash', name: 'Tower of Power', defaultCount: 2, maxCount: 4 },
+    ],
   },
   {
     id: 'chaos',

@@ -32,6 +32,11 @@ export const enMessages = {
       recursiveStrike: 'Attack of the Dead',
       megaEvade: 'Super Skip',
       invert: 'Reverse',
+      // Theft Pack cards
+      wildcard: 'Wildcard',
+      mark: 'Mark',
+      stealDraw: "I'll Take That",
+      stash: 'Tower of Power',
       descriptions: {
         criticalEvent: 'You must defuse this or you explode!',
         neutralizer: 'Use to defuse a Critical card',
@@ -62,6 +67,12 @@ export const enMessages = {
         recursiveStrike: 'Next player takes 3 turns per dead player',
         megaEvade: 'End ALL your remaining turns without drawing',
         invert: 'Reverse the direction of play',
+        // Theft Pack descriptions
+        wildcard: 'Wildcard - can substitute for any collection card in combos',
+        mark: "Mark a random card in another player's hand. If they play or discard it, you steal it!",
+        stealDraw: 'The next card this player draws goes to your hand instead',
+        stash:
+          "Move up to 2 cards to your protected stash. Stashed cards can't be stolen or traded",
       },
       variants: {
         cyberpunk: {
@@ -93,6 +104,11 @@ export const enMessages = {
           draw_bottom: 'Backdoor Access',
           swap_top_bottom: 'Kernel Swap',
           bury: 'Decompile',
+          // Theft Pack
+          wildcard: 'Rogue AI',
+          mark: 'Tracker',
+          steal_draw: 'Intercept',
+          stash: 'Encrypted Vault',
         },
         underwater: {
           critical_event: 'Hull Breach',
@@ -123,6 +139,11 @@ export const enMessages = {
           draw_bottom: 'Dredge',
           swap_top_bottom: 'Turn Over',
           bury: 'Sullage',
+          // Theft Pack
+          wildcard: 'Shapeshifter',
+          mark: 'Tracer Dye',
+          steal_draw: 'Net Snag',
+          stash: 'Pressure Safe',
         },
         crime: {
           critical_event: 'Police Raid',
@@ -153,6 +174,11 @@ export const enMessages = {
           draw_bottom: 'Cold Case',
           swap_top_bottom: 'Inside Job',
           bury: 'Destroy Evidence',
+          // Theft Pack
+          wildcard: 'Forger',
+          mark: 'Tail',
+          steal_draw: 'Heist',
+          stash: 'Swiss Account',
         },
         horror: {
           critical_event: 'Possession',
@@ -183,6 +209,11 @@ export const enMessages = {
           draw_bottom: 'Gravedig',
           swap_top_bottom: 'Reincarnate',
           bury: 'Excorcise',
+          // Theft Pack
+          wildcard: 'Doppelgänger',
+          mark: 'Hex',
+          steal_draw: 'Soul Snatch',
+          stash: 'Cursed Chest',
         },
         adventure: {
           critical_event: 'Temple Collapse',
@@ -213,6 +244,11 @@ export const enMessages = {
           draw_bottom: 'Excavate',
           swap_top_bottom: 'Trapdoor',
           bury: 'Cache',
+          // Theft Pack
+          wildcard: 'Chameleon',
+          mark: 'Tracking Device',
+          steal_draw: 'Ambush',
+          stash: 'Hidden Bunker',
         },
       },
     },
@@ -379,6 +415,24 @@ export const enMessages = {
         description: 'Choose where to place the Critical back in the deck',
         positionLabel: 'Position in deck:',
         confirm: 'Place Card',
+      },
+      stash: {
+        title: 'Tower of Power',
+        description:
+          "Select up to 3 cards to protect in your protected stash. Stashed cards can't be stolen or traded.",
+        confirm: 'Stash Cards',
+      },
+      mark: {
+        title: 'Mark Player',
+        description:
+          'Choose a player to mark. A random card in their hand will be marked. If they play or discard it, you steal it!',
+        confirm: 'Mark Player',
+      },
+      stealDraw: {
+        title: "I'll Take That",
+        description:
+          'Choose a player. The next card they draw will be stolen and added to your hand instead!',
+        confirm: 'Confirm Theft',
       },
     },
     controlPanel: {

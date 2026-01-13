@@ -11,6 +11,8 @@ import {
   CAT_CARDS,
   SPECIAL_CARDS,
   FUTURE_PACK_CARDS,
+  THEFT_PACK_CARDS,
+  MarkedCardInfo,
 } from '@/shared/types/games';
 
 /** Number of different cards required for the fiver combo */
@@ -67,6 +69,7 @@ export type {
   CriticalCatCard,
   CriticalLogEntry,
   ChatScope,
+  MarkedCardInfo,
 };
 
 export {
@@ -75,6 +78,7 @@ export {
   CAT_CARDS,
   SPECIAL_CARDS,
   FUTURE_PACK_CARDS,
+  THEFT_PACK_CARDS,
 };
 
 /**
@@ -86,4 +90,5 @@ export const ALL_GAME_CARDS: CriticalCard[] = [
   ...CAT_CARDS,
   ...ATTACK_PACK_CARDS,
   ...FUTURE_PACK_CARDS,
+  ...THEFT_PACK_CARDS,
 ];

@@ -16,6 +16,9 @@ interface CriticalGameState {
   targetedAttackModal: boolean;
   seeTheFutureModal: SeeTheFutureModalState | null;
   alterTheFutureModal: AlterTheFutureModalState | null;
+  stashModal: boolean;
+  markModal: boolean;
+  stealDrawModal: boolean;
 
   // Selection
   selectedMode: 'pair' | 'trio' | 'fiver' | null;
@@ -36,6 +39,9 @@ interface CriticalGameState {
   setTargetedAttackModal: (isOpen: boolean) => void;
   setSeeTheFutureModal: (state: SeeTheFutureModalState | null) => void;
   setAlterTheFutureModal: (state: AlterTheFutureModalState | null) => void;
+  setStashModal: (isOpen: boolean) => void;
+  setMarkModal: (isOpen: boolean) => void;
+  setStealDrawModal: (isOpen: boolean) => void;
 
   setSelectedMode: (mode: 'pair' | 'trio' | 'fiver' | null) => void;
   setSelectedTarget: (target: string | null) => void;
@@ -64,6 +70,9 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
   targetedAttackModal: false,
   seeTheFutureModal: null,
   alterTheFutureModal: null,
+  stashModal: false,
+  markModal: false,
+  stealDrawModal: false,
 
   selectedMode: null,
   selectedTarget: null,
@@ -81,6 +90,9 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
   setTargetedAttackModal: (isOpen) => set({ targetedAttackModal: isOpen }),
   setSeeTheFutureModal: (state) => set({ seeTheFutureModal: state }),
   setAlterTheFutureModal: (state) => set({ alterTheFutureModal: state }),
+  setStashModal: (isOpen) => set({ stashModal: isOpen }),
+  setMarkModal: (isOpen) => set({ markModal: isOpen }),
+  setStealDrawModal: (isOpen) => set({ stealDrawModal: isOpen }),
 
   setSelectedMode: (mode) => set({ selectedMode: mode }),
   setSelectedTarget: (target) => set({ selectedTarget: target }),
@@ -188,6 +200,9 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
       selectedIndex: null,
       selectedDiscardCard: null,
       selectedFiverCards: [],
+      stashModal: false,
+      markModal: false,
+      stealDrawModal: false,
       chatMessage: '',
       // Don't reset chatScope or showChat perhaps? Or do we want to reset UI prefs?
       // Keeping scope and showChat might be annoying if reset on every game end if user prefers hidden.

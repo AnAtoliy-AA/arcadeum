@@ -83,10 +83,27 @@ export const FUTURE_PACK_CARDS: FuturePackCard[] = [
   'bury',
 ];
 
+// ===== THEFT PACK EXPANSION CARDS =====
+export type TheftPackCard =
+  | 'wildcard' // Wildcard for combos (substitute any collection card)
+  | 'mark' // Tag a card in target's hand to steal later
+  | 'steal_draw' // Steal the next card a player draws
+  | 'stash'; // Protected storage for cards
+
+export const THEFT_PACK_CARDS: TheftPackCard[] = [
+  'wildcard',
+  'mark',
+  'steal_draw',
+  'stash',
+];
+
 export const CARDS_REQUIRING_DRAWS: CriticalCard[] = [
   'strike',
   'evade',
   'reorder',
+  'mark',
+  'steal_draw',
+  'stash',
   ...ATTACK_PACK_CARDS,
   ...FUTURE_PACK_CARDS,
 ];
@@ -100,12 +117,22 @@ export type CriticalCard =
   | BaseActionCard
   | CriticalCollectionCard
   | AttackPackCard
-  | FuturePackCard;
+  | FuturePackCard
+  | TheftPackCard;
+
+// Marked card info for theft mechanics
+export interface MarkedCardInfo {
+  cardIndex: number;
+  markedBy: string; // Player ID who marked the card
+}
 
 export interface CriticalPlayerState {
   playerId: string;
   hand: CriticalCard[];
   alive: boolean;
+  stash: CriticalCard[]; // Protected cards (Tower of Power)
+  markedCards: MarkedCardInfo[]; // Cards marked for stealing
+  pendingStealDraw?: string; // Player ID who will steal next draw
   [key: string]: unknown;
 }
 
@@ -183,18 +210,21 @@ function getAttackPackCards(customCards?: CustomCardConfig): CriticalCard[] {
   return [
     ...repeatCard(
       'targeted_strike',
-      customCards?.targeted_strike ?? defaults.targeted_strike,
+      Number(customCards?.targeted_strike ?? defaults.targeted_strike),
     ),
     ...repeatCard(
       'private_strike',
-      customCards?.private_strike ?? defaults.private_strike,
+      Number(customCards?.private_strike ?? defaults.private_strike),
     ),
     ...repeatCard(
       'recursive_strike',
-      customCards?.recursive_strike ?? defaults.recursive_strike,
+      Number(customCards?.recursive_strike ?? defaults.recursive_strike),
     ),
-    ...repeatCard('mega_evade', customCards?.mega_evade ?? defaults.mega_evade),
-    ...repeatCard('invert', customCards?.invert ?? defaults.invert),
+    ...repeatCard(
+      'mega_evade',
+      Number(customCards?.mega_evade ?? defaults.mega_evade),
+    ),
+    ...repeatCard('invert', Number(customCards?.invert ?? defaults.invert)),
   ];
 }
 
@@ -214,33 +244,56 @@ function getFuturePackCards(customCards?: CustomCardConfig): CriticalCard[] {
   return [
     ...repeatCard(
       'see_future_5x',
-      customCards?.see_future_5x ?? defaults.see_future_5x,
+      Number(customCards?.see_future_5x ?? defaults.see_future_5x),
     ),
     ...repeatCard(
       'alter_future_3x',
-      customCards?.alter_future_3x ?? defaults.alter_future_3x,
+      Number(customCards?.alter_future_3x ?? defaults.alter_future_3x),
     ),
     ...repeatCard(
       'alter_future_5x',
-      customCards?.alter_future_5x ?? defaults.alter_future_5x,
+      Number(customCards?.alter_future_5x ?? defaults.alter_future_5x),
     ),
     ...repeatCard(
       'reveal_future_3x',
-      customCards?.reveal_future_3x ?? defaults.reveal_future_3x,
+      Number(customCards?.reveal_future_3x ?? defaults.reveal_future_3x),
     ),
     ...repeatCard(
       'share_future_3x',
-      customCards?.share_future_3x ?? defaults.share_future_3x,
+      Number(customCards?.share_future_3x ?? defaults.share_future_3x),
     ),
     ...repeatCard(
       'draw_bottom',
-      customCards?.draw_bottom ?? defaults.draw_bottom,
+      Number(customCards?.draw_bottom ?? defaults.draw_bottom),
     ),
     ...repeatCard(
       'swap_top_bottom',
-      customCards?.swap_top_bottom ?? defaults.swap_top_bottom,
+      Number(customCards?.swap_top_bottom ?? defaults.swap_top_bottom),
     ),
-    ...repeatCard('bury', customCards?.bury ?? defaults.bury),
+    ...repeatCard('bury', Number(customCards?.bury ?? defaults.bury)),
+  ];
+}
+
+// Theft Pack cards to add when expansion is enabled
+function getTheftPackCards(customCards?: CustomCardConfig): CriticalCard[] {
+  const defaults: Record<string, number> = {
+    wildcard: 4, // 4 wildcards for combos
+    mark: 3, // 3 mark cards
+    steal_draw: 3, // 3 steal draw cards
+    stash: 2, // 2 stash cards
+  };
+
+  return [
+    ...repeatCard(
+      'wildcard',
+      Number(customCards?.wildcard ?? defaults.wildcard),
+    ),
+    ...repeatCard('mark', Number(customCards?.mark ?? defaults.mark)),
+    ...repeatCard(
+      'steal_draw',
+      Number(customCards?.steal_draw ?? defaults.steal_draw),
+    ),
+    ...repeatCard('stash', Number(customCards?.stash ?? defaults.stash)),
   ];
 }
 
@@ -253,6 +306,9 @@ export function createInitialCriticalState(
   if (playerIds.length < 2) {
     throw new Error('Critical requires at least two players.');
   }
+
+  // Ensure expansions is an array (robustness for Mongoose/API edge cases)
+  const activeExpansions = Array.isArray(expansions) ? expansions : [];
 
   // Base deck with enough neutral/action cards for initial deal
   const deck: CriticalCard[] = [
@@ -271,12 +327,16 @@ export function createInitialCriticalState(
   ];
 
   // Add expansion cards based on selected packs
-  if (expansions.includes('attack')) {
+  if (activeExpansions.includes('attack')) {
     deck.push(...getAttackPackCards(customCards));
   }
 
-  if (expansions.includes('future')) {
+  if (activeExpansions.includes('future')) {
     deck.push(...getFuturePackCards(customCards));
+  }
+
+  if (activeExpansions.includes('theft')) {
+    deck.push(...getTheftPackCards(customCards));
   }
 
   shuffleInPlace(deck);
@@ -285,6 +345,8 @@ export function createInitialCriticalState(
     playerId,
     hand: [],
     alive: true,
+    stash: [],
+    markedCards: [],
   }));
 
   // Deal four cards plus one guaranteed defuse to each player
@@ -360,7 +422,8 @@ export function sanitizeCriticalStateForPlayer(
     }
     return {
       ...p,
-      hand: p.hand.map(() => 'hidden' as CriticalCard), // Hide cards
+      hand: p.hand.map(() => 'hidden' as CriticalCard), // Hide hand cards
+      stash: p.stash.map(() => 'hidden' as CriticalCard), // Hide stashed cards
     };
   });
 

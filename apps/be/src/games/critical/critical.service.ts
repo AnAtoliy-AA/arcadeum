@@ -227,7 +227,11 @@ export class CriticalService {
     userId: string,
     roomId: string,
     card: string,
-    options?: { targetPlayerId?: string },
+    options?: {
+      targetPlayerId?: string;
+      cardsToStash?: string[];
+      cardsToUnstash?: string[];
+    },
   ) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
@@ -237,6 +241,8 @@ export class CriticalService {
       {
         card,
         targetPlayerId: options?.targetPlayerId,
+        cardsToStash: options?.cardsToStash,
+        cardsToUnstash: options?.cardsToUnstash,
       },
     );
     return this.checkAndSyncRoomStatus(updatedSession);

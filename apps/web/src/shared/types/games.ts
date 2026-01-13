@@ -124,6 +124,20 @@ export const FUTURE_PACK_CARDS: FuturePackCard[] = [
   'bury',
 ];
 
+// ===== THEFT PACK EXPANSION CARDS =====
+export type TheftPackCard =
+  | 'wildcard' // Wildcard for combos
+  | 'mark' // Tag a card to steal later
+  | 'steal_draw' // Steal next drawn card
+  | 'stash'; // Protected storage
+
+export const THEFT_PACK_CARDS: TheftPackCard[] = [
+  'wildcard',
+  'mark',
+  'steal_draw',
+  'stash',
+];
+
 // ===== COMBINED CARD TYPE =====
 export type CriticalCard =
   | 'critical_event'
@@ -131,12 +145,22 @@ export type CriticalCard =
   | BaseActionCard
   | CriticalCatCard
   | AttackPackCard
-  | FuturePackCard;
+  | FuturePackCard
+  | TheftPackCard;
+
+// Marked card info for theft mechanics
+export interface MarkedCardInfo {
+  cardIndex: number;
+  markedBy: string; // Player ID who marked the card
+}
 
 export interface CriticalPlayerState {
   playerId: string;
   hand: CriticalCard[];
   alive: boolean;
+  stash?: CriticalCard[]; // Protected cards (Tower of Power)
+  markedCards?: MarkedCardInfo[]; // Cards marked for stealing
+  pendingStealDraw?: string; // Player ID who will steal next draw
 }
 
 // ===== SHARED TYPES =====

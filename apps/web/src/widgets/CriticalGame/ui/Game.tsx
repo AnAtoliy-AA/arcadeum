@@ -116,6 +116,13 @@ export default function CriticalGame({
     showChat,
     handleToggleChat,
     clearChatMessage,
+    // Theft Pack
+    stashModal,
+    setStashModal,
+    markModal,
+    setMarkModal,
+    stealDrawModal,
+    setStealDrawModal,
   } = useCriticalModals({
     chatMessagesRef,
     chatLogCount: snapshot?.logs?.length ?? 0,
@@ -143,57 +150,44 @@ export default function CriticalGame({
     seeTheFutureLabel,
   });
 
-  const { handleConfirmCatCombo, handleSendChatMessage, handleOpenFiverCombo } =
-    useGameHandlers({
-      selectedMode,
-      selectedTarget,
-      selectedCard,
-      selectedIndex,
-      selectedFiverCards,
-      selectedDiscardCard,
-      catComboModal,
-      chatMessage,
-      chatScope,
-      currentPlayerHand: currentPlayer?.hand ?? [],
-      actions,
-      handleCloseCatComboModal,
-      handleOpenCatCombo,
-      setSelectedMode,
-      clearChatMessage,
-    });
+  const gameHandlers = useGameHandlers({
+    selectedMode,
+    selectedTarget,
+    selectedCard,
+    selectedIndex,
+    selectedFiverCards,
+    selectedDiscardCard,
+    catComboModal,
+    chatMessage,
+    chatScope,
+    currentPlayerHand: currentPlayer?.hand ?? [],
+    actions,
+    handleCloseCatComboModal,
+    handleOpenCatCombo,
+    setSelectedMode,
+    setSelectedTarget,
+    setStashModal,
+    setMarkModal,
+    setStealDrawModal,
+    clearChatMessage,
+    setTargetedAttackModal,
+  });
 
-  const handlePlayActionCard = useCallback(
-    (card: CriticalCard) => {
-      if (card === 'targeted_strike') {
-        setTargetedAttackModal(true);
-      } else {
-        actions.playActionCard(card);
-      }
-    },
-    [actions, setTargetedAttackModal],
-  );
-
-  const handleCloseTargetedAttackModal = useCallback(() => {
-    setTargetedAttackModal(false);
-    setSelectedTarget(null);
-  }, [setTargetedAttackModal, setSelectedTarget]);
-
-  const handleConfirmTargetedAttack = useCallback(() => {
-    if (selectedTarget) {
-      actions.playActionCard('targeted_strike', {
-        targetPlayerId: selectedTarget,
-      });
-      setTargetedAttackModal(false);
-      setSelectedTarget(null);
-    }
-  }, [selectedTarget, actions, setTargetedAttackModal, setSelectedTarget]);
-
-  const handleConfirmAlterFuture = useCallback(
-    (orderedCards: CriticalCard[]) => {
-      actions.commitAlterFuture(orderedCards);
-    },
-    [actions],
-  );
+  const {
+    handleConfirmCatCombo,
+    handleSendChatMessage,
+    handleOpenFiverCombo,
+    handleConfirmStash,
+    handleConfirmMark,
+    handleConfirmStealDraw,
+    handleUnstash,
+    handlePlayActionCard,
+    handleCloseTargetedAttackModal,
+    handleCloseMarkModal,
+    handleCloseStealDrawModal,
+    handleConfirmTargetedAttack,
+    handleConfirmAlterFuture,
+  } = gameHandlers;
 
   // Autoplay hook
   const autoplayState = useAutoplay({
@@ -327,6 +321,7 @@ export default function CriticalGame({
           {currentPlayer && currentPlayer.alive && !isGameOver && (
             <PlayerHand
               currentPlayer={currentPlayer}
+              onUnstashCard={handleUnstash}
               isMyTurn={!!isMyTurn}
               isGameOver={!!isGameOver}
               canAct={!!canAct}
@@ -468,6 +463,16 @@ export default function CriticalGame({
         resolveDisplayName={resolveDisplayName}
         t={t as (key: string, params?: Record<string, unknown>) => string}
         cardVariant={cardVariant}
+        // Theft Pack
+        stashModal={stashModal}
+        onCloseStashModal={() => setStashModal(false)}
+        onConfirmStash={handleConfirmStash}
+        markModal={markModal}
+        onCloseMarkModal={handleCloseMarkModal}
+        onConfirmMark={handleConfirmMark}
+        stealDrawModal={stealDrawModal}
+        onCloseStealDrawModal={handleCloseStealDrawModal}
+        onConfirmStealDraw={handleConfirmStealDraw}
       />
     </GameContainer>
   );

@@ -9,6 +9,7 @@ import {
   BASE_ACTION_CARDS,
   ATTACK_PACK_CARDS,
   FUTURE_PACK_CARDS,
+  THEFT_PACK_CARDS,
 } from '../types';
 import {
   getCardEmoji,
@@ -17,10 +18,12 @@ import {
 } from '../lib/cardUtils';
 
 // All playable action cards (single click to play)
+// Note: 'wildcard' is excluded as it's used in combos, not played directly
 const PLAYABLE_ACTION_CARDS: CriticalCard[] = [
   ...BASE_ACTION_CARDS.filter((c) => c !== 'cancel'), // cancel handled separately via onPlayNope
   ...ATTACK_PACK_CARDS,
   ...FUTURE_PACK_CARDS,
+  ...THEFT_PACK_CARDS.filter((c) => c !== 'wildcard'), // wildcard used in combos
 ];
 import { ActionsSection } from './ActionsSection';
 
@@ -39,6 +42,8 @@ import {
   CardDescription,
   CardCountBadge,
   ActionButton,
+  StashedCard,
+  StashIcon,
 } from './styles';
 
 interface PendingAction {
@@ -55,6 +60,7 @@ interface PendingFavor {
 
 interface PlayerHandProps {
   currentPlayer: CriticalPlayerState;
+  onUnstashCard?: (card: CriticalCard) => void;
   isMyTurn: boolean;
   isGameOver: boolean;
   canAct: boolean;
@@ -87,6 +93,7 @@ interface PlayerHandProps {
 
 export const PlayerHand: React.FC<PlayerHandProps> = ({
   currentPlayer,
+  onUnstashCard,
   isMyTurn,
   isGameOver,
   canAct,
@@ -116,14 +123,34 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
   onAutoplayEnabledChange: _onAutoplayEnabledChange,
   cardVariant,
 }: PlayerHandProps) => {
-  const { uniqueCards, cardCounts } = useMemo(() => {
-    const unique = Array.from(new Set(currentPlayer.hand));
-    const counts = new Map<CriticalCard, number>();
+  const displayItems = useMemo(() => {
+    const items: {
+      card: CriticalCard;
+      type: 'hand' | 'stash';
+      count: number;
+      id: string;
+    }[] = [];
+
+    // Process Hand
+    const handCounts = new Map<CriticalCard, number>();
     currentPlayer.hand.forEach((card) =>
-      counts.set(card, (counts.get(card) || 0) + 1),
+      handCounts.set(card, (handCounts.get(card) || 0) + 1),
     );
-    return { uniqueCards: unique, cardCounts: counts };
-  }, [currentPlayer.hand]);
+    Array.from(handCounts.entries()).forEach(([card, count]) => {
+      items.push({ card, type: 'hand', count, id: `hand-${card}` });
+    });
+
+    // Process Stash
+    const stashCounts = new Map<CriticalCard, number>();
+    (currentPlayer.stash || []).forEach((card) =>
+      stashCounts.set(card, (stashCounts.get(card) || 0) + 1),
+    );
+    Array.from(stashCounts.entries()).forEach(([card, count]) => {
+      items.push({ card, type: 'stash', count, id: `stash-${card}` });
+    });
+
+    return items;
+  }, [currentPlayer.hand, currentPlayer.stash]);
 
   // Handle clicking on a card in hand
   const handleCardClick = useCallback(
@@ -257,14 +284,43 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
             )
           </InfoTitle>
           <CardsGrid>
-            {uniqueCards.map((card) => {
-              const count = cardCounts.get(card) || 1;
+            {displayItems.map(({ card, type, count, id }) => {
+              if (type === 'stash') {
+                return (
+                  <StashedCard
+                    key={id}
+                    $cardType={card}
+                    $index={0}
+                    onClick={() => onUnstashCard?.(card)}
+                    title="Stashed card - Click to return to hand"
+                  >
+                    <StashIcon>🏰</StashIcon>
+                    <CardCorner $position="tl" />
+                    <CardCorner $position="tr" />
+                    <CardCorner $position="bl" />
+                    <CardCorner $position="br" />
+                    <CardFrame />
+                    <CardInner>
+                      <CardEmoji>{getCardEmoji(card)}</CardEmoji>
+                      <CardName>
+                        {t(getCardTranslationKey(card, cardVariant)) || card}
+                      </CardName>
+                      <CardDescription>
+                        {t(getCardDescriptionKey(card))}
+                      </CardDescription>
+                    </CardInner>
+                    {count > 1 && <CardCountBadge>{count}</CardCountBadge>}
+                  </StashedCard>
+                );
+              }
+
+              // Normal Hand Card Logic
               const isCatCard = CAT_CARDS.includes(card as CriticalCatCard);
               const clickable = isCardClickable(card, count);
 
               return (
                 <Card
-                  key={card}
+                  key={id}
                   $cardType={card}
                   $index={0}
                   onClick={() => handleCardClick(card, count)}

@@ -7,13 +7,15 @@ import {
   TurnIndicator,
 } from './styles';
 import { ChatBubble } from './ChatBubble';
-import type { CriticalCard, CriticalLogEntry } from '../types';
+import type { CriticalCard, CriticalLogEntry, MarkedCardInfo } from '../types';
 
 export interface TablePlayerProps {
   player: {
     playerId: string;
     alive: boolean;
     hand: CriticalCard[];
+    stash?: CriticalCard[];
+    markedCards?: MarkedCardInfo[];
   };
   index: number;
   totalPlayers: number;
@@ -32,7 +34,7 @@ export function TablePlayer({
   logs = [],
   resolveDisplayName,
 }: TablePlayerProps) {
-  const { playerId } = player;
+  const { playerId, stash = [], markedCards = [] } = player;
   const isCurrent = index === currentTurnIndex;
   const isCurrentUserCard = playerId === currentUserId;
   const displayName = resolveDisplayName(
@@ -96,9 +98,42 @@ export function TablePlayer({
         </PlayerAvatar>
         <PlayerName $isCurrentTurn={isCurrent}>{displayName}</PlayerName>
         {player.alive && (
-          <PlayerCardCount $isCurrentTurn={isCurrent}>
-            🃏 {player.hand.length}
-          </PlayerCardCount>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.25rem',
+              alignItems: 'center',
+            }}
+          >
+            <PlayerCardCount $isCurrentTurn={isCurrent}>
+              🃏 {player.hand.length}
+            </PlayerCardCount>
+            {stash.length > 0 && (
+              <PlayerCardCount
+                $isCurrentTurn={isCurrent}
+                style={{
+                  backgroundColor: 'rgba(255, 215, 0, 0.2)',
+                  color: '#FFD700',
+                  border: '1px solid rgba(255, 215, 0, 0.3)',
+                }}
+              >
+                🏰 {stash.length}
+              </PlayerCardCount>
+            )}
+            {markedCards.length > 0 && (
+              <PlayerCardCount
+                $isCurrentTurn={isCurrent}
+                style={{
+                  backgroundColor: 'rgba(255, 0, 0, 0.2)',
+                  color: '#FF4444',
+                  border: '1px solid rgba(255, 0, 0, 0.3)',
+                }}
+              >
+                🏷️ {markedCards.length}
+              </PlayerCardCount>
+            )}
+          </div>
         )}
       </PlayerCard>
     </PlayerPositionWrapper>

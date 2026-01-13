@@ -1,4 +1,5 @@
 import { CatComboModal } from './modals/CatComboModal';
+import { StashModal } from './modals/StashModal';
 import { SeeTheFutureModal } from './modals/SeeTheFutureModal';
 import { AlterTheFutureModal } from './modals/AlterTheFutureModal';
 import { FavorModal } from './modals/FavorModal';
@@ -97,6 +98,16 @@ export interface GameModalsProps {
   resolveDisplayName: (playerId?: string, fallback?: string) => string;
   t: (key: string, params?: Record<string, unknown>) => string;
   cardVariant?: string;
+  // Theft Pack Modals
+  stashModal: boolean;
+  onCloseStashModal: () => void;
+  onConfirmStash: (cards: CriticalCard[]) => void;
+  markModal: boolean;
+  onCloseMarkModal: () => void;
+  onConfirmMark: () => void;
+  stealDrawModal: boolean;
+  onCloseStealDrawModal: () => void;
+  onConfirmStealDraw: () => void;
 }
 
 export function GameModals({
@@ -131,7 +142,6 @@ export function GameModals({
   discardPile,
   onSelectCat,
   onSelectMode,
-  onSelectTarget,
   onSelectCard,
   onSelectIndex,
   onSelectDiscardCard,
@@ -168,6 +178,17 @@ export function GameModals({
   resolveDisplayName,
   t,
   cardVariant,
+  // Theft Pack
+  stashModal,
+  onCloseStashModal,
+  onConfirmStash,
+  markModal,
+  onCloseMarkModal,
+  onConfirmMark,
+  stealDrawModal,
+  onCloseStealDrawModal,
+  onConfirmStealDraw,
+  onSelectTarget,
 }: GameModalsProps) {
   return (
     <>
@@ -296,6 +317,46 @@ export function GameModals({
         onGiveCard={onGiveFavorCard}
         t={t}
         cardVariant={cardVariant}
+      />
+
+      {/* Stash Modal */}
+      <StashModal
+        isOpen={stashModal}
+        onClose={onCloseStashModal}
+        hand={selfHand}
+        onConfirm={onConfirmStash}
+        t={t}
+        cardVariant={cardVariant}
+      />
+
+      {/* Mark Modal (Target Selection) */}
+      <TargetedAttackModal
+        isOpen={markModal}
+        onClose={onCloseMarkModal}
+        aliveOpponents={aliveOpponents}
+        selectedTarget={selectedTarget}
+        onSelectTarget={onSelectTarget}
+        onConfirm={onConfirmMark}
+        resolveDisplayName={resolveDisplayName}
+        t={t}
+        titleKey="games.table.modals.mark.title"
+        descriptionKey="games.table.modals.mark.description"
+        emoji="🏷️"
+      />
+
+      {/* Steal Draw Modal (Target Selection) */}
+      <TargetedAttackModal
+        isOpen={stealDrawModal}
+        onClose={onCloseStealDrawModal}
+        aliveOpponents={aliveOpponents}
+        selectedTarget={selectedTarget}
+        onSelectTarget={onSelectTarget}
+        onConfirm={onConfirmStealDraw}
+        resolveDisplayName={resolveDisplayName}
+        t={t}
+        titleKey="games.table.modals.stealDraw.title"
+        descriptionKey="games.table.modals.stealDraw.description"
+        emoji="🤏"
       />
     </>
   );

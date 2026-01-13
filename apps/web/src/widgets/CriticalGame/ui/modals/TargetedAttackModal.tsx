@@ -26,7 +26,11 @@ interface TargetedAttackModalProps {
   onSelectTarget: (target: string) => void;
   onConfirm: () => void;
   resolveDisplayName: (playerId?: string, fallback?: string) => string;
-  t: (key: TranslationKey) => string;
+  t: (key: TranslationKey, params?: Record<string, unknown>) => string;
+  titleKey?: TranslationKey;
+  selectPlayerKey?: TranslationKey;
+  descriptionKey?: TranslationKey;
+  emoji?: string;
 }
 
 export const TargetedAttackModal: React.FC<TargetedAttackModalProps> = ({
@@ -38,6 +42,10 @@ export const TargetedAttackModal: React.FC<TargetedAttackModalProps> = ({
   onConfirm,
   resolveDisplayName,
   t,
+  titleKey = 'games.table.modals.targetedAttack.title',
+  selectPlayerKey = 'games.table.modals.targetedAttack.selectPlayer',
+  descriptionKey = 'games.table.modals.targetedAttack.description',
+  emoji = '🎯',
 }) => {
   if (!isOpen) return null;
 
@@ -46,19 +54,14 @@ export const TargetedAttackModal: React.FC<TargetedAttackModalProps> = ({
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <ModalHeader>
           <ModalTitle>
-            🎯{' '}
-            {t('games.table.modals.targetedAttack.title') || 'Targeted Attack'}
+            {emoji} {t(titleKey)}
           </ModalTitle>
           <CloseButton onClick={onClose}>×</CloseButton>
         </ModalHeader>
         <ModalSection>
-          <SectionLabel>
-            {t('games.table.modals.targetedAttack.selectPlayer') ||
-              'Select Target Player'}
-          </SectionLabel>
+          <SectionLabel>{t(selectPlayerKey)}</SectionLabel>
           <p style={{ fontSize: '0.9rem', opacity: 0.8, marginBottom: '1rem' }}>
-            {t('games.table.modals.targetedAttack.description') ||
-              'Choose a player to attack. They will take your remaining turns plus 2 more.'}
+            {t(descriptionKey)}
           </p>
           <OptionGrid>
             {aliveOpponents.map((opponent) => (

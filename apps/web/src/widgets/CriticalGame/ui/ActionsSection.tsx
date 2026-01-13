@@ -28,6 +28,9 @@ export type ActionBusyState =
   | 'neutralizer'
   | 'cat_combo'
   | 'cat_combo_fiver'
+  | 'mark'
+  | 'steal_draw'
+  | 'stash'
   | null;
 
 interface ActionsSectionProps {
@@ -347,6 +350,40 @@ export function ActionsSection({
               {actionBusy === 'bury'
                 ? 'Playing...'
                 : `⚰️ ${t(getCardTranslationKey('bury', cardVariant))}`}
+            </ActionButton>
+          )}
+          {/* Theft Pack Cards */}
+          {currentPlayer.hand.includes('mark') && (
+            <ActionButton
+              variant="primary"
+              onClick={() => onPlayActionCard('mark')}
+              disabled={!canAct || actionBusy === 'mark'}
+            >
+              {actionBusy === 'mark'
+                ? 'Playing...'
+                : `🏷️ ${t(getCardTranslationKey('mark', cardVariant))}`}
+            </ActionButton>
+          )}
+          {currentPlayer.hand.includes('steal_draw') && (
+            <ActionButton
+              variant="primary"
+              onClick={() => onPlayActionCard('steal_draw')}
+              disabled={!canAct || actionBusy === 'steal_draw'}
+            >
+              {actionBusy === 'steal_draw'
+                ? 'Playing...'
+                : `🤏 ${t(getCardTranslationKey('steal_draw', cardVariant))}`}
+            </ActionButton>
+          )}
+          {currentPlayer.hand.includes('stash') && (
+            <ActionButton
+              variant="primary"
+              onClick={() => onPlayActionCard('stash')}
+              disabled={!canAct || actionBusy === 'stash'}
+            >
+              {actionBusy === 'stash'
+                ? 'Playing...'
+                : `🏰 ${t(getCardTranslationKey('stash', cardVariant))}`}
             </ActionButton>
           )}
         </ActionButtons>

@@ -15,6 +15,7 @@ import {
   isSimpleActionCard,
   toCriticalCard,
   extractCollectionComboPayload,
+  extractPlayActionPayload,
 } from './games.gateway.utils';
 
 import { CriticalService } from './critical/critical.service';
@@ -78,23 +79,22 @@ export class CriticalGateway {
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
-    const card = extractString(payload, 'card', { toLowerCase: true });
-    const targetPlayerId =
-      typeof payload?.targetPlayerId === 'string'
-        ? payload.targetPlayerId.trim()
-        : undefined;
+    const { card, targetPlayerId, cardsToStash, cardsToUnstash } =
+      extractPlayActionPayload(payload as unknown as Record<string, unknown>);
 
     this.logger.log(
       `handleSessionPlayAction: card=${card}, targetPlayerId=${targetPlayerId}`,
     );
 
-    if (!isSimpleActionCard(card)) {
+    if (!isSimpleActionCard(card) && card !== 'unstash') {
       throw new WsException('Card is not supported for this action.');
     }
 
     try {
       await this.criticalService.playActionByRoom(userId, roomId, card, {
         targetPlayerId,
+        cardsToStash,
+        cardsToUnstash,
       });
       client.emit('games.session.action.played', {
         roomId,

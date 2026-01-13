@@ -3,13 +3,15 @@ import { LastPlayedCardDisplay } from './LastPlayedCardDisplay';
 
 import { GameTable, TableBackground, PlayersRing, CenterTable } from './styles';
 
-import type { CriticalCard, CriticalLogEntry } from '../types';
+import type { CriticalCard, CriticalLogEntry, MarkedCardInfo } from '../types';
 import { TablePlayer } from './TablePlayer';
 
 interface PlayerState {
   playerId: string;
   alive: boolean;
   hand: CriticalCard[];
+  stash?: CriticalCard[];
+  markedCards?: MarkedCardInfo[];
 }
 
 interface GameTableSectionProps {

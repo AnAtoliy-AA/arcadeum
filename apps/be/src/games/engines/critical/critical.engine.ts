@@ -7,7 +7,6 @@ import {
 } from '../base/game-engine.interface';
 import {
   CriticalState,
-  CriticalCard,
   CriticalPlayerState,
   CriticalExpansion,
   CustomCardConfig,
@@ -23,57 +22,18 @@ import {
   executeReverse,
 } from './critical-attack.utils';
 import {
-  hasCard,
-  validatePlayCard,
-  validateCollectionCombo,
-  validateFavor,
-  validateGiveFavorCard,
   getAvailableActionsForPlayer,
+  validateCriticalAction,
+  CriticalPayload,
+  FavorExecutePayload,
+  TheftPackPayload,
 } from './critical-validation.utils';
 import { executeFavor, executeGiveFavorCard } from './critical-favor.utils';
 import {
   executeCommitAlterFuture,
   dispatchFuturePackAction,
 } from './critical-future.utils';
-
-// Payload interfaces for type-safe action handling
-interface PlayCardPayload {
-  card?: CriticalCard;
-}
-
-interface PlayCollectionComboPayload {
-  cards?: CriticalCard[];
-  targetPlayerId?: string;
-  selectedIndex?: number; // For pair combos - blind pick a card position
-  requestedCard?: CriticalCard; // For trio combos - name a card to steal
-  requestedDiscardCard?: CriticalCard; // For fiver combos - pick from discard pile
-}
-
-interface FavorPayload {
-  targetPlayerId?: string;
-}
-
-// Type with required fields for executing favor action
-type FavorExecutePayload = Required<FavorPayload>;
-
-interface GiveFavorCardPayload {
-  cardToGive?: CriticalCard;
-}
-
-interface DefusePayload {
-  position?: number;
-}
-
-interface CommitAlterFuturePayload {
-  newOrder?: CriticalCard[];
-}
-
-type CriticalPayload = PlayCardPayload &
-  PlayCollectionComboPayload &
-  FavorPayload &
-  GiveFavorCardPayload &
-  DefusePayload &
-  CommitAlterFuturePayload;
+import { dispatchTheftPackAction } from './critical-theft.utils';
 
 /**
  * Critical Game Engine
@@ -117,138 +77,7 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
     context: GameActionContext,
     payload?: unknown,
   ): boolean {
-    const player = this.findPlayer(
-      state,
-      context.userId,
-    ) as CriticalPlayerState;
-
-    if (!player || !player.alive) {
-      return false;
-    }
-
-    // give_favor_card can be done by target player even when not their turn
-    if (action === 'give_favor_card') {
-      const typedPayload = payload as CriticalPayload | undefined;
-      return validateGiveFavorCard(state, context.userId, player, typedPayload);
-    }
-
-    // play_cancel can be played by ANY alive player when there's a pending action
-    if (action === 'play_cancel') {
-      // Must have a pending action to cancel
-      if (!state.pendingAction) return false;
-      // Must have a cancel card
-      return hasCard(player, 'cancel');
-    }
-
-    // Exception: play_card with 'cancel' acts like play_cancel
-    const checkPayload = payload as CriticalPayload | undefined;
-    if (action === 'play_card' && checkPayload?.card === 'cancel') {
-      if (!state.pendingAction) return false;
-      return hasCard(player, 'cancel');
-    }
-
-    // All other actions require it to be the player's turn
-    if (!this.isPlayerTurn(state, context.userId)) {
-      return false;
-    }
-
-    // If there's a pending favor, block all other actions until it's resolved
-    // The current player must wait for the opponent to give a card
-    if (state.pendingFavor) {
-      return false;
-    }
-
-    // If pending Alter the Future, block substantially everything except commit
-    // commit_alter_future is handled below separately/explicitly if needed, or we just check here.
-    if (state.pendingAlter && action !== 'commit_alter_future') {
-      return false;
-    }
-
-    // If player must defuse, only allow neutralizer action
-    if (state.pendingDefuse === context.userId && action !== 'neutralizer') {
-      return false;
-    }
-
-    const typedPayload = payload as CriticalPayload | undefined;
-
-    switch (action) {
-      case 'draw_card':
-        // Can't draw if must defuse
-        if (state.pendingDefuse) return false;
-        // Always allow draw when it's player's turn (checked above)
-        // executeAction will auto-fix pendingDraws to 1 if it's 0
-        return true;
-
-      case 'play_card':
-        return validatePlayCard(state, player, typedPayload?.card);
-
-      case 'play_cat_combo':
-        return validateCollectionCombo(
-          player,
-          typedPayload?.cards,
-          state.allowActionCardCombos,
-        );
-
-      case 'insight':
-        return hasCard(player, 'insight');
-
-      case 'trade': {
-        const target = typedPayload?.targetPlayerId
-          ? (this.findPlayer(
-              state,
-              typedPayload.targetPlayerId,
-            ) as CriticalPlayerState)
-          : null;
-        return validateFavor(state, player, target, typedPayload);
-      }
-
-      case 'give_favor_card':
-        return validateGiveFavorCard(
-          state,
-          context.userId,
-          player,
-          typedPayload,
-        );
-
-      case 'neutralizer':
-        // Can only defuse if pendingDefuse is set for this player
-        return (
-          state.pendingDefuse === context.userId &&
-          hasCard(player, 'neutralizer') &&
-          typedPayload?.position !== undefined
-        );
-
-      // Attack Pack cards
-      case 'targeted_strike':
-        return (
-          hasCard(player, 'targeted_strike') &&
-          state.pendingDraws > 0 &&
-          !!typedPayload?.targetPlayerId
-        );
-
-      case 'private_strike':
-        return hasCard(player, 'private_strike') && state.pendingDraws > 0;
-
-      case 'recursive_strike':
-        return hasCard(player, 'recursive_strike') && state.pendingDraws > 0;
-
-      case 'mega_evade':
-        return hasCard(player, 'mega_evade') && state.pendingDraws > 0;
-
-      case 'invert':
-        return hasCard(player, 'invert') && state.pendingDraws > 0;
-
-      // Future Pack
-      case 'commit_alter_future':
-        return (
-          !!state.pendingAlter &&
-          state.pendingAlter?.playerId === context.userId &&
-          !!typedPayload?.newOrder
-        );
-
-      default:
-        return false;
-    }
+    return validateCriticalAction(state, action, context, payload);
   }
 
   executeAction(
@@ -297,6 +126,7 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
         const card = typedPayload?.card;
 
         if (card) {
+          // Try Future Pack first
           const futurePackResult = dispatchFuturePackAction(
             newState,
             context.userId,
@@ -305,6 +135,25 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
           );
           if (futurePackResult) {
             return futurePackResult;
+          }
+
+          // Try Theft Pack
+          const theftPackResult = dispatchTheftPackAction(
+            newState,
+            context.userId,
+            card,
+            typedPayload?.targetPlayerId,
+            helpers,
+            {
+              partnerCard: undefined,
+              selectedIndex: typedPayload?.selectedIndex,
+              requestedCard: typedPayload?.requestedCard,
+              cardsToStash: typedPayload?.cardsToStash,
+              cardsToUnstash: typedPayload?.cardsToUnstash,
+            } as TheftPackPayload,
+          );
+          if (theftPackResult) {
+            return theftPackResult;
           }
         }
 

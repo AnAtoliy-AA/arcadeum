@@ -31,6 +31,11 @@ export const frMessages = {
       recursiveStrike: 'Attaque des Morts',
       megaEvade: 'Super Passer',
       invert: 'Inverser',
+      // Theft Pack cards
+      wildcard: 'Joker',
+      mark: 'Marquer',
+      stealDraw: 'Je Prends Ça',
+      stash: 'Tour de Pouvoir',
       descriptions: {
         criticalEvent: 'Vous devez le désamorcer ou vous explosez !',
         neutralizer: 'Utilisez pour désamorcer un Chat Explosif',
@@ -62,6 +67,13 @@ export const frMessages = {
         recursiveStrike: 'Joueur suivant prend 3 tours par joueur mort',
         megaEvade: 'Terminez TOUS vos tours restants sans piocher',
         invert: 'Inversez le sens du jeu',
+        // Theft Pack descriptions
+        wildcard:
+          "Joker - peut remplacer n'importe quelle carte de collection dans les combos",
+        mark: "Marquez une carte au hasard dans la main d'un autre joueur. Si il la joue ou la défausse, vous la volez !",
+        stealDraw: 'La prochaine carte que ce joueur pioche va dans votre main',
+        stash:
+          "Déplacez jusqu'à 2 cartes dans votre réserve protégée. Les cartes cachées ne peuvent pas être volées",
       },
       variants: {
         cyberpunk: {
@@ -92,6 +104,11 @@ export const frMessages = {
           draw_bottom: 'Accès Dérobé',
           swap_top_bottom: 'Swap Noyau',
           bury: 'Décompiler',
+          // Theft Pack
+          wildcard: 'IA Rebelle',
+          mark: 'Traceur',
+          steal_draw: 'Interception',
+          stash: 'Coffre Chiffré',
         },
         underwater: {
           critical_event: 'Brèche de Coque',
@@ -121,6 +138,11 @@ export const frMessages = {
           draw_bottom: 'Draguer',
           swap_top_bottom: 'Retourner',
           bury: 'Rebut',
+          // Theft Pack
+          wildcard: 'Métamorphe',
+          mark: 'Colorant Traçeur',
+          steal_draw: 'Coup de Filet',
+          stash: 'Coffre Sous Pression',
         },
         crime: {
           critical_event: 'Raid de Police',
@@ -150,6 +172,11 @@ export const frMessages = {
           draw_bottom: 'Affaire Non Classée',
           swap_top_bottom: 'Complicité Interne',
           bury: 'Détruire Preuve',
+          // Theft Pack
+          wildcard: 'Faussaire',
+          mark: 'Filature',
+          steal_draw: 'Braquage',
+          stash: 'Compte Suisse',
         },
         horror: {
           critical_event: 'Possession',
@@ -179,6 +206,11 @@ export const frMessages = {
           draw_bottom: 'Déterrer',
           swap_top_bottom: 'Réincarnation',
           bury: 'Exorciser',
+          // Theft Pack
+          wildcard: 'Doppelgänger',
+          mark: 'Maléfice',
+          steal_draw: "Vol d'Âme",
+          stash: 'Coffre Maudit',
         },
         adventure: {
           critical_event: 'Effondrement',
@@ -208,6 +240,11 @@ export const frMessages = {
           draw_bottom: 'Fouiller',
           swap_top_bottom: 'Trappe',
           bury: 'Cacher',
+          // Theft Pack
+          wildcard: 'Caméléon',
+          mark: 'Balise GPS',
+          steal_draw: 'Embuscade',
+          stash: 'Bunker Secret',
         },
       },
     },
@@ -364,6 +401,24 @@ export const frMessages = {
         description: 'Choisissez où placer le Chat Explosif dans le paquet',
         positionLabel: 'Position dans le paquet :',
         confirm: 'Placer la Carte',
+      },
+      stash: {
+        title: 'Tour de Pouvoir',
+        description:
+          "Sélectionnez jusqu'à 3 cartes à protéger dans votre réserve. Les cartes cachées ne peuvent pas être volées ou données.",
+        confirm: 'Réserver Cartes',
+      },
+      mark: {
+        title: 'Marquer Joueur',
+        description:
+          "Choisissez un joueur à marquer. Une carte aléatoire de sa main sera marquée. S'il la joue ou la défausse, vous la volez !",
+        confirm: 'Marquer Joueur',
+      },
+      stealDraw: {
+        title: 'Je Prends Ça',
+        description:
+          "Choisissez un joueur. La prochaine carte qu'il piochera sera volée et ajoutée à votre main à la place !",
+        confirm: 'Confirmer le Vol',
       },
     },
     controlPanel: {

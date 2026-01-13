@@ -31,6 +31,11 @@ export const esMessages = {
       recursiveStrike: 'Ataque de los Muertos',
       megaEvade: 'Super Saltar',
       invert: 'Invertir',
+      // Theft Pack cards
+      wildcard: 'Comodín',
+      mark: 'Marcar',
+      stealDraw: 'Me Lo Quedo',
+      stash: 'Torre de Poder',
       descriptions: {
         criticalEvent: '¡Debes desactivarlo o explotas!',
         neutralizer: 'Usa para desactivar un Gato Explosivo',
@@ -61,6 +66,13 @@ export const esMessages = {
         recursiveStrike: 'Siguiente jugador toma 3 turnos por jugador muerto',
         megaEvade: 'Termina TODOS tus turnos restantes sin robar',
         invert: 'Invierte la dirección del juego',
+        // Theft Pack descriptions
+        wildcard:
+          'Comodín - puede sustituir cualquier carta de colección en combos',
+        mark: 'Marca una carta al azar en la mano de otro jugador. ¡Si la juegan o descartan, la robas!',
+        stealDraw: 'La próxima carta que este jugador robe va a tu mano',
+        stash:
+          'Mueve hasta 2 cartas a tu reserva protegida. Las cartas guardadas no pueden ser robadas',
       },
       variants: {
         cyberpunk: {
@@ -91,6 +103,11 @@ export const esMessages = {
           draw_bottom: 'Acceso Trasero',
           swap_top_bottom: 'Cambio de Kernel',
           bury: 'Descompilar',
+          // Theft Pack
+          wildcard: 'IA Rebelde',
+          mark: 'Rastreador',
+          steal_draw: 'Interceptar',
+          stash: 'Bóveda Cifrada',
         },
         underwater: {
           critical_event: 'Brecha en el Casco',
@@ -120,6 +137,11 @@ export const esMessages = {
           draw_bottom: 'Dragar',
           swap_top_bottom: 'Volcar',
           bury: 'Desecho',
+          // Theft Pack
+          wildcard: 'Cambiante',
+          mark: 'Tinte Rastreador',
+          steal_draw: 'Red de Pesca',
+          stash: 'Caja de Presión',
         },
         crime: {
           critical_event: 'Redada Policial',
@@ -149,6 +171,11 @@ export const esMessages = {
           draw_bottom: 'Caso Frío',
           swap_top_bottom: 'Trabajo Interno',
           bury: 'Destruir Evidencia',
+          // Theft Pack
+          wildcard: 'Falsificador',
+          mark: 'Vigilar',
+          steal_draw: 'Atraco',
+          stash: 'Cuenta Suiza',
         },
         horror: {
           critical_event: 'Posesión',
@@ -178,6 +205,11 @@ export const esMessages = {
           draw_bottom: 'Exhumar',
           swap_top_bottom: 'Reencarnar',
           bury: 'Exorcizar',
+          // Theft Pack
+          wildcard: 'Doppelgänger',
+          mark: 'Hechizo',
+          steal_draw: 'Robar Alma',
+          stash: 'Cofre Maldito',
         },
         adventure: {
           critical_event: 'Colapso del Templo',
@@ -207,6 +239,11 @@ export const esMessages = {
           draw_bottom: 'Excavar',
           swap_top_bottom: 'Trampilla',
           bury: 'Escondite',
+          // Theft Pack
+          wildcard: 'Camaleón',
+          mark: 'Dispositivo de Rastreo',
+          steal_draw: 'Emboscada',
+          stash: 'Búnker Oculto',
         },
       },
     },

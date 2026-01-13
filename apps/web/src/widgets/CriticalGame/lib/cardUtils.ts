@@ -45,6 +45,11 @@ export function getCardTranslationKey(
     draw_bottom: 'games.table.cards.drawBottom',
     swap_top_bottom: 'games.table.cards.swapTopBottom',
     bury: 'games.table.cards.bury',
+    // ===== THEFT PACK EXPANSION CARDS =====
+    wildcard: 'games.table.cards.wildcard',
+    mark: 'games.table.cards.mark',
+    steal_draw: 'games.table.cards.stealDraw',
+    stash: 'games.table.cards.stash',
   };
   return keys[card] || 'games.table.cards.generic';
 }
@@ -82,6 +87,11 @@ export function getCardEmoji(card: CriticalCard): string {
     draw_bottom: '🔽',
     swap_top_bottom: '🔃',
     bury: '⚰️',
+    // ===== THEFT PACK EXPANSION CARDS =====
+    wildcard: '🃏',
+    mark: '🏷️',
+    steal_draw: '🤏',
+    stash: '🏰',
   };
   return emojis[card] || '🐱';
 }
@@ -116,6 +126,11 @@ export function getCardDescriptionKey(card: CriticalCard): TranslationKey {
     draw_bottom: 'games.table.cards.descriptions.drawBottom',
     swap_top_bottom: 'games.table.cards.descriptions.swapTopBottom',
     bury: 'games.table.cards.descriptions.bury',
+    // ===== THEFT PACK EXPANSION CARDS =====
+    wildcard: 'games.table.cards.descriptions.wildcard',
+    mark: 'games.table.cards.descriptions.mark',
+    steal_draw: 'games.table.cards.descriptions.stealDraw',
+    stash: 'games.table.cards.descriptions.stash',
   };
   return keys[card] || 'games.table.cards.descriptions.collectionAlpha';
 }

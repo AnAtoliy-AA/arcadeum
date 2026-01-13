@@ -93,6 +93,13 @@ export function useCriticalModals({
     // See the future modal
     seeTheFutureModal: store.seeTheFutureModal,
     setSeeTheFutureModal: store.setSeeTheFutureModal,
+    // Theft Pack modals
+    stashModal: store.stashModal,
+    setStashModal: store.setStashModal,
+    markModal: store.markModal,
+    setMarkModal: store.setMarkModal,
+    stealDrawModal: store.stealDrawModal,
+    setStealDrawModal: store.setStealDrawModal,
 
     // Chat
     chatMessage: store.chatMessage,

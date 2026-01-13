@@ -31,6 +31,15 @@ export const Card = styled.div<{ $cardType?: string; $index?: number }>`
       return 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)';
     if ($cardType === 'insight')
       return 'linear-gradient(135deg, #A855F7 0%, #7E22CE 100%)';
+    // Theft Pack cards
+    if ($cardType === 'wildcard')
+      return 'linear-gradient(135deg, #F472B6 0%, #9333EA 100%)'; // Pink to purple
+    if ($cardType === 'mark')
+      return 'linear-gradient(135deg, #FBBF24 0%, #EA580C 100%)'; // Yellow to orange
+    if ($cardType === 'steal_draw')
+      return 'linear-gradient(135deg, #22D3EE 0%, #0891B2 100%)'; // Cyan
+    if ($cardType === 'stash')
+      return 'linear-gradient(135deg, #6366F1 0%, #4338CA 100%)'; // Indigo
     return 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)';
   }};
   display: flex;
@@ -108,6 +117,34 @@ export const Card = styled.div<{ $cardType?: string; $index?: number }>`
     );
     pointer-events: none;
   }
+`;
+
+export const StashedCard = styled(Card)`
+  cursor: pointer;
+  border: 2px dashed rgba(255, 255, 255, 0.8);
+  transform: scale(0.95);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+
+  &:hover {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  }
+`;
+
+export const StashIcon = styled.div`
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 1.2rem;
+  background: #1a1b26;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 `;
 
 export const CardInner = styled.div`

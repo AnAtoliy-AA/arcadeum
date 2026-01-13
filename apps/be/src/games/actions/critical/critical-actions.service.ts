@@ -56,7 +56,12 @@ export class CriticalActionsService {
   async playActionCard(
     sessionId: string,
     userId: string,
-    payload: { card: string; targetPlayerId?: string },
+    payload: {
+      card: string;
+      targetPlayerId?: string;
+      cardsToStash?: string[];
+      cardsToUnstash?: string[];
+    },
   ) {
     // Special handling for Targeted Attack which is a separate action in the engine
     if (payload.card === 'targeted_strike' && payload.targetPlayerId) {

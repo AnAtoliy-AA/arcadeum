@@ -6,6 +6,7 @@ import {
   COLLECTION_CARDS,
   ATTACK_PACK_CARDS,
   FUTURE_PACK_CARDS,
+  THEFT_PACK_CARDS,
 } from './critical/critical.state';
 
 export const SIMPLE_ACTION_CARDS = [
@@ -15,6 +16,8 @@ export const SIMPLE_ACTION_CARDS = [
   'cancel',
   ...ATTACK_PACK_CARDS,
   ...FUTURE_PACK_CARDS,
+  ...THEFT_PACK_CARDS,
+  'unstash',
 ] as const;
 export type SimpleActionCard = (typeof SIMPLE_ACTION_CARDS)[number];
 
@@ -30,6 +33,7 @@ export const ALL_CRITICAL_CARDS = [
   ...COLLECTION_CARDS,
   ...ATTACK_PACK_CARDS,
   ...FUTURE_PACK_CARDS,
+  ...THEFT_PACK_CARDS,
 ] as const satisfies ReadonlyArray<CriticalCard>;
 
 export function isCollectionComboCard(
@@ -180,5 +184,35 @@ export function extractCollectionComboPayload(
     selectedIndex,
     requestedDiscardCard: requestedDiscardCardValue,
     cards,
+  };
+}
+
+export function extractPlayActionPayload(payload: Record<string, unknown>): {
+  card: string;
+  targetPlayerId?: string;
+  cardsToStash?: string[];
+  cardsToUnstash?: string[];
+} {
+  const card = extractString(payload, 'card', { toLowerCase: true });
+  const targetPlayerId =
+    typeof payload?.targetPlayerId === 'string'
+      ? payload.targetPlayerId.trim()
+      : undefined;
+
+  const cardsToStashRaw = payload?.cardsToStash;
+  const cardsToStash = Array.isArray(cardsToStashRaw)
+    ? cardsToStashRaw.map((c: unknown) => String(c).trim().toLowerCase())
+    : undefined;
+
+  const cardsToUnstashRaw = payload?.cardsToUnstash;
+  const cardsToUnstash = Array.isArray(cardsToUnstashRaw)
+    ? cardsToUnstashRaw.map((c: unknown) => String(c).trim().toLowerCase())
+    : undefined;
+
+  return {
+    card,
+    targetPlayerId,
+    cardsToStash,
+    cardsToUnstash,
   };
 }

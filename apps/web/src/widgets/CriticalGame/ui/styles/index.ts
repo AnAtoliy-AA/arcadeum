@@ -67,6 +67,8 @@ export {
   LastPlayedCard,
   ActionButtons,
   ActionButton,
+  StashedCard,
+  StashIcon,
 } from './cards';
 
 // Chat Components

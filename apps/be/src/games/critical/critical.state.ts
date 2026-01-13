@@ -152,6 +152,11 @@ export interface CriticalState {
   [key: string]: unknown;
 }
 
+// Custom card configuration for partial pack selection
+export interface CustomCardConfig {
+  [cardId: string]: number; // card ID -> quantity
+}
+
 function repeatCard(card: CriticalCard, count: number): CriticalCard[] {
   return Array.from({ length: count }, () => card);
 }
@@ -166,27 +171,76 @@ function shuffleInPlace<T>(items: T[]): void {
 }
 
 // Attack Pack cards to add when expansion is enabled
-function getAttackPackCards(): CriticalCard[] {
+function getAttackPackCards(customCards?: CustomCardConfig): CriticalCard[] {
+  const defaults: Record<string, number> = {
+    targeted_strike: 3,
+    private_strike: 2,
+    recursive_strike: 2,
+    mega_evade: 2,
+    invert: 4,
+  };
+
   return [
-    ...repeatCard('targeted_strike', 3),
-    ...repeatCard('private_strike', 2),
-    ...repeatCard('recursive_strike', 2),
-    ...repeatCard('mega_evade', 2),
-    ...repeatCard('invert', 4),
+    ...repeatCard(
+      'targeted_strike',
+      customCards?.targeted_strike ?? defaults.targeted_strike,
+    ),
+    ...repeatCard(
+      'private_strike',
+      customCards?.private_strike ?? defaults.private_strike,
+    ),
+    ...repeatCard(
+      'recursive_strike',
+      customCards?.recursive_strike ?? defaults.recursive_strike,
+    ),
+    ...repeatCard('mega_evade', customCards?.mega_evade ?? defaults.mega_evade),
+    ...repeatCard('invert', customCards?.invert ?? defaults.invert),
   ];
 }
 
 // Future Pack cards to add when expansion is enabled
-function getFuturePackCards(): CriticalCard[] {
+function getFuturePackCards(customCards?: CustomCardConfig): CriticalCard[] {
+  const defaults: Record<string, number> = {
+    see_future_5x: 4,
+    alter_future_3x: 4,
+    alter_future_5x: 2,
+    reveal_future_3x: 2,
+    share_future_3x: 2,
+    draw_bottom: 4,
+    swap_top_bottom: 3,
+    bury: 4,
+  };
+
   return [
-    ...repeatCard('see_future_5x', 4),
-    ...repeatCard('alter_future_3x', 4),
-    ...repeatCard('alter_future_5x', 2),
-    ...repeatCard('reveal_future_3x', 2),
-    ...repeatCard('share_future_3x', 2), // Standard is usually less? Rechecking counts is good practice but I'll stick to rough defaults.
-    ...repeatCard('draw_bottom', 4),
-    ...repeatCard('swap_top_bottom', 3),
-    ...repeatCard('bury', 4),
+    ...repeatCard(
+      'see_future_5x',
+      customCards?.see_future_5x ?? defaults.see_future_5x,
+    ),
+    ...repeatCard(
+      'alter_future_3x',
+      customCards?.alter_future_3x ?? defaults.alter_future_3x,
+    ),
+    ...repeatCard(
+      'alter_future_5x',
+      customCards?.alter_future_5x ?? defaults.alter_future_5x,
+    ),
+    ...repeatCard(
+      'reveal_future_3x',
+      customCards?.reveal_future_3x ?? defaults.reveal_future_3x,
+    ),
+    ...repeatCard(
+      'share_future_3x',
+      customCards?.share_future_3x ?? defaults.share_future_3x,
+    ),
+    ...repeatCard(
+      'draw_bottom',
+      customCards?.draw_bottom ?? defaults.draw_bottom,
+    ),
+    ...repeatCard(
+      'swap_top_bottom',
+      customCards?.swap_top_bottom ?? defaults.swap_top_bottom,
+    ),
+    ...repeatCard('bury', customCards?.bury ?? defaults.bury),
   ];
 }
 
@@ -194,6 +248,7 @@ export function createInitialCriticalState(
   playerIds: string[],
   expansions: CriticalExpansion[] = [],
   allowActionCardCombos = false,
+  customCards?: CustomCardConfig,
 ): CriticalState {
   if (playerIds.length < 2) {
     throw new Error('Critical requires at least two players.');
@@ -217,11 +272,11 @@ export function createInitialCriticalState(
 
   // Add expansion cards based on selected packs
   if (expansions.includes('attack')) {
-    deck.push(...getAttackPackCards());
+    deck.push(...getAttackPackCards(customCards));
   }
 
   if (expansions.includes('future')) {
-    deck.push(...getFuturePackCards());
+    deck.push(...getFuturePackCards(customCards));
   }
 
   shuffleInPlace(deck);

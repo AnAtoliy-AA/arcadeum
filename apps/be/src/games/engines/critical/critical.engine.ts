@@ -10,6 +10,7 @@ import {
   CriticalCard,
   CriticalPlayerState,
   CriticalExpansion,
+  CustomCardConfig,
   createInitialCriticalState,
   sanitizeCriticalStateForPlayer,
 } from '../../critical/critical.state';
@@ -100,10 +101,13 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
       (config?.expansions as CriticalExpansion[] | undefined) ?? [];
     const allowActionCardCombos =
       (config?.allowActionCardCombos as boolean | undefined) ?? false;
+    const customCards =
+      (config?.customCards as CustomCardConfig | undefined) ?? undefined;
     return createInitialCriticalState(
       playerIds,
       expansions,
       allowActionCardCombos,
+      customCards,
     );
   }
 

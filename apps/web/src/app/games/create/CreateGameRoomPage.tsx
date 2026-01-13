@@ -18,12 +18,9 @@ import {
   FormGroup,
 } from '@/shared/ui';
 
-import {
-  ExpansionId,
-  EXPANSION_PACKS,
-  CARD_VARIANTS,
-  gamesCatalog,
-} from './constants';
+import { ExpansionId, CARD_VARIANTS, gamesCatalog } from './constants';
+
+import { ExpansionPacksSection } from './ExpansionPacksSection';
 
 import {
   Form,
@@ -64,6 +61,7 @@ export function CreateGameRoomPage() {
   const [maxPlayers, setMaxPlayers] = useState('');
   const [notes, setNotes] = useState('');
   const [expansions, setExpansions] = useState<ExpansionId[]>([]);
+  const [customCards, setCustomCards] = useState<Record<string, number>>({});
   const [cardVariant, setCardVariant] = useState<string>('cyberpunk');
   const [allowActionCardCombos, setAllowActionCardCombos] = useState(false);
   const [idleTimerEnabled, setIdleTimerEnabled] = useState(false);
@@ -87,6 +85,9 @@ export function CreateGameRoomPage() {
             gameId === 'critical_v1'
               ? {
                   ...(expansions.length > 0 ? { expansions } : {}),
+                  ...(Object.keys(customCards).length > 0
+                    ? { customCards }
+                    : {}),
                   cardVariant,
                   allowActionCardCombos,
                   idleTimerEnabled,
@@ -107,12 +108,6 @@ export function CreateGameRoomPage() {
       : mutationError
         ? 'Failed to create room'
         : null;
-
-  const toggleExpansion = useCallback((id: ExpansionId) => {
-    setExpansions((prev) =>
-      prev.includes(id) ? prev.filter((e) => e !== id) : [...prev, id],
-    );
-  }, []);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -166,35 +161,12 @@ export function CreateGameRoomPage() {
           </Section>
 
           {gameId === 'critical_v1' && (
-            <Section
-              title={t('games.create.sectionExpansions') || 'Expansion Packs'}
-            >
-              <ExpansionGrid>
-                {EXPANSION_PACKS.map((pack) => (
-                  <ExpansionCheckbox
-                    key={pack.id}
-                    $disabled={!pack.available}
-                    data-disabled={!pack.available}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={expansions.includes(pack.id)}
-                      onChange={() =>
-                        pack.available && toggleExpansion(pack.id)
-                      }
-                      disabled={!pack.available}
-                    />
-                    <ExpansionLabel>{pack.name}</ExpansionLabel>
-                    <ExpansionBadge>
-                      +{pack.cardCount}{' '}
-                      {pack.available
-                        ? ''
-                        : t('games.create.comingSoon') || 'Soon'}
-                    </ExpansionBadge>
-                  </ExpansionCheckbox>
-                ))}
-              </ExpansionGrid>
-            </Section>
+            <ExpansionPacksSection
+              expansions={expansions}
+              customCards={customCards}
+              onExpansionsChange={setExpansions}
+              onCustomCardsChange={setCustomCards}
+            />
           )}
 
           {gameId === 'critical_v1' && (

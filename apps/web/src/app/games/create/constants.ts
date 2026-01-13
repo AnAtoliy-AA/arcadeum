@@ -1,17 +1,125 @@
 export type ExpansionId = 'attack' | 'future' | 'theft' | 'chaos' | 'deity';
 
+export interface PackCard {
+  id: string;
+  name: string;
+  defaultCount: number;
+  maxCount: number;
+}
+
+export interface ExpansionPackDetails {
+  id: ExpansionId;
+  name: string;
+  available: boolean;
+  cards: PackCard[];
+}
+
+// Detailed pack info for partial selection
+export const EXPANSION_PACK_DETAILS: ExpansionPackDetails[] = [
+  {
+    id: 'attack',
+    name: 'Attack Pack',
+    available: true,
+    cards: [
+      {
+        id: 'targeted_strike',
+        name: 'Targeted Strike',
+        defaultCount: 3,
+        maxCount: 6,
+      },
+      {
+        id: 'private_strike',
+        name: 'Private Strike',
+        defaultCount: 2,
+        maxCount: 4,
+      },
+      {
+        id: 'recursive_strike',
+        name: 'Recursive Strike',
+        defaultCount: 2,
+        maxCount: 4,
+      },
+      { id: 'mega_evade', name: 'Mega Evade', defaultCount: 2, maxCount: 4 },
+      { id: 'invert', name: 'Invert', defaultCount: 4, maxCount: 6 },
+    ],
+  },
+  {
+    id: 'future',
+    name: 'Future Pack',
+    available: true,
+    cards: [
+      {
+        id: 'see_future_5x',
+        name: 'See Future 5x',
+        defaultCount: 4,
+        maxCount: 6,
+      },
+      {
+        id: 'alter_future_3x',
+        name: 'Alter Future 3x',
+        defaultCount: 4,
+        maxCount: 6,
+      },
+      {
+        id: 'alter_future_5x',
+        name: 'Alter Future 5x',
+        defaultCount: 2,
+        maxCount: 4,
+      },
+      {
+        id: 'reveal_future_3x',
+        name: 'Reveal Future 3x',
+        defaultCount: 2,
+        maxCount: 4,
+      },
+      {
+        id: 'share_future_3x',
+        name: 'Share Future 3x',
+        defaultCount: 2,
+        maxCount: 4,
+      },
+      { id: 'draw_bottom', name: 'Draw Bottom', defaultCount: 4, maxCount: 6 },
+      {
+        id: 'swap_top_bottom',
+        name: 'Swap Top Bottom',
+        defaultCount: 3,
+        maxCount: 5,
+      },
+      { id: 'bury', name: 'Bury', defaultCount: 4, maxCount: 6 },
+    ],
+  },
+  {
+    id: 'theft',
+    name: 'Theft Pack',
+    available: false,
+    cards: [],
+  },
+  {
+    id: 'chaos',
+    name: 'Chaos Pack',
+    available: false,
+    cards: [],
+  },
+  {
+    id: 'deity',
+    name: 'Deity Pack',
+    available: false,
+    cards: [],
+  },
+];
+
+// Legacy format for backward compatibility
 export const EXPANSION_PACKS: {
   id: ExpansionId;
   name: string;
   cardCount: number;
   available: boolean;
-}[] = [
-  { id: 'attack', name: 'Attack Pack', cardCount: 5, available: true },
-  { id: 'future', name: 'Future Pack', cardCount: 8, available: true },
-  { id: 'theft', name: 'Theft Pack', cardCount: 4, available: false },
-  { id: 'chaos', name: 'Chaos Pack', cardCount: 5, available: false },
-  { id: 'deity', name: 'Deity Pack', cardCount: 4, available: false },
-];
+}[] = EXPANSION_PACK_DETAILS.map((pack) => ({
+  id: pack.id,
+  name: pack.name,
+  cardCount: pack.cards.reduce((sum, card) => sum + card.defaultCount, 0),
+  available: pack.available,
+}));
 
 export const CARD_VARIANTS: {
   id: string;

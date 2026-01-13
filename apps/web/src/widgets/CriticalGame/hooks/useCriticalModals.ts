@@ -1,14 +1,8 @@
-import { useState, useCallback, useEffect, RefObject } from 'react';
+import { useEffect, RefObject } from 'react';
 import { gameSocket } from '@/shared/lib/socket';
 import { maybeDecrypt } from '@/shared/lib/socket-encryption';
-import type {
-  CriticalCard,
-  CriticalCatCard,
-  CatComboModalState,
-  SeeTheFutureModalState,
-  ChatScope,
-} from '../types';
-import { FIVER_COMBO_SIZE } from '../types';
+import { useCriticalGameStore } from '../store/criticalGameStore';
+import type { CriticalCard } from '../types';
 
 interface UseCriticalModalsOptions {
   chatMessagesRef: RefObject<HTMLDivElement | null>;
@@ -22,28 +16,11 @@ export function useCriticalModals({
   chatMessagesRef,
   chatLogCount,
 }: UseCriticalModalsOptions) {
-  const [catComboModal, setCatComboModal] = useState<CatComboModalState | null>(
-    null,
-  );
-  const [favorModal, setFavorModal] = useState(false);
-  const [targetedAttackModal, setTargetedAttackModal] = useState(false);
-  const [seeTheFutureModal, setSeeTheFutureModal] =
-    useState<SeeTheFutureModalState | null>(null);
-  const [selectedMode, setSelectedMode] = useState<
-    'pair' | 'trio' | 'fiver' | null
-  >(null);
-  const [selectedTarget, setSelectedTarget] = useState<string | null>(null);
-  const [selectedCard, setSelectedCard] = useState<CriticalCard | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [selectedDiscardCard, setSelectedDiscardCard] =
-    useState<CriticalCard | null>(null);
-  const [selectedFiverCards, setSelectedFiverCards] = useState<CriticalCard[]>(
-    [],
-  );
-  // Chat state
-  const [chatMessage, setChatMessage] = useState('');
-  const [chatScope, setChatScope] = useState<ChatScope>('all');
-  const [showChat, setShowChat] = useState(true);
+  const store = useCriticalGameStore();
+
+  // Destructure for easier usage, but keep store prefix or similar if needed?
+  // Actually, returning 'store' directly or checking differences.
+  // The original hook returns a flat object. We can mimic that.
 
   // Auto-scroll chat to newest message
   useEffect(() => {
@@ -62,10 +39,12 @@ export function useCriticalModals({
   }, [chatLogCount, chatMessagesRef]);
 
   // Listen for See the Future response
+  // This logic ties socket events to store updates.
+  // Ideally this should be in the store or a "SocketController", but keeping it here for now is fine since it's a hook used in the Game component.
   useEffect(() => {
     const handleSeeTheFuture = (data: { topCards: string[] }) => {
       if (data.topCards) {
-        setSeeTheFutureModal({ cards: data.topCards as CriticalCard[] });
+        store.setSeeTheFutureModal({ cards: data.topCards as CriticalCard[] });
       }
     };
 
@@ -79,130 +58,49 @@ export function useCriticalModals({
     return () => {
       gameSocket.off('games.session.see_the_future.played', wrappedHandler);
     };
-  }, []);
-
-  const handleOpenCatCombo = useCallback(
-    (cats: CriticalCatCard[], handCards: CriticalCard[]) => {
-      const availableCats = cats
-        .map((cat) => {
-          const count = handCards.filter((c) => c === cat).length;
-          const availableModes: ('pair' | 'trio')[] = [];
-          if (count >= 2) availableModes.push('pair');
-          if (count >= 3) availableModes.push('trio');
-          return { cat, availableModes };
-        })
-        .filter((item) => item.availableModes.length > 0);
-
-      // Check if fiver combo is available (has at least one of each cat card)
-      const fiverAvailable = cats.every((cat) =>
-        handCards.some((c) => c === cat),
-      );
-
-      if (availableCats.length === 0 && !fiverAvailable) return;
-
-      // Auto-select if only one cat available
-      const selectedCat =
-        availableCats.length === 1 ? availableCats[0].cat : null;
-      const defaultMode = selectedCat
-        ? availableCats[0].availableModes[0]
-        : null;
-
-      setCatComboModal({ availableCats, selectedCat, fiverAvailable });
-      setSelectedMode(defaultMode);
-      setSelectedTarget(null);
-      setSelectedCard(null);
-      setSelectedIndex(defaultMode === 'pair' ? 0 : null);
-      setSelectedDiscardCard(null);
-    },
-    [],
-  );
-
-  const handleCloseCatComboModal = useCallback(() => {
-    setCatComboModal(null);
-    setSelectedMode(null);
-    setSelectedTarget(null);
-    setSelectedCard(null);
-    setSelectedIndex(null);
-    setSelectedDiscardCard(null);
-    setSelectedFiverCards([]);
-  }, []);
-
-  const handleSelectCat = useCallback((cat: CriticalCatCard) => {
-    setCatComboModal((prev) => {
-      if (!prev) return prev;
-      const catData = prev.availableCats.find((c) => c.cat === cat);
-      if (catData) {
-        const defaultMode = catData.availableModes[0];
-        setSelectedMode(defaultMode);
-        setSelectedIndex(defaultMode === 'pair' ? 0 : null);
-      }
-      return { ...prev, selectedCat: cat };
-    });
-    setSelectedTarget(null);
-    setSelectedCard(null);
-  }, []);
-
-  const handleToggleFiverCard = useCallback((card: CriticalCard) => {
-    setSelectedFiverCards((prev) => {
-      if (prev.includes(card)) {
-        return prev.filter((c) => c !== card);
-      }
-      if (prev.length >= FIVER_COMBO_SIZE) {
-        return prev;
-      }
-      return [...prev, card];
-    });
-  }, []);
-
-  const handleToggleChat = useCallback(() => {
-    setShowChat((prev) => !prev);
-  }, []);
-
-  const clearChatMessage = useCallback(() => {
-    setChatMessage('');
-  }, []);
+  }, [store.setSeeTheFutureModal, store]);
 
   return {
     // Cat combo modal
-    catComboModal,
-    selectedMode,
-    selectedTarget,
-    selectedCard,
-    selectedIndex,
-    setSelectedMode,
-    setSelectedTarget,
-    setSelectedCard,
-    setSelectedIndex,
-    handleOpenCatCombo,
-    handleCloseCatComboModal,
-    handleSelectCat,
+    catComboModal: store.catComboModal,
+    selectedMode: store.selectedMode,
+    selectedTarget: store.selectedTarget,
+    selectedCard: store.selectedCard,
+    selectedIndex: store.selectedIndex,
+    setSelectedMode: store.setSelectedMode,
+    setSelectedTarget: store.setSelectedTarget,
+    setSelectedCard: store.setSelectedCard,
+    setSelectedIndex: store.setSelectedIndex,
+    handleOpenCatCombo: store.openCatCombo,
+    handleCloseCatComboModal: store.closeCatComboModal,
+    handleSelectCat: store.selectCat,
 
     // Fiver mode state
-    selectedDiscardCard,
-    setSelectedDiscardCard,
-    selectedFiverCards,
-    setSelectedFiverCards,
-    handleToggleFiverCard,
+    selectedDiscardCard: store.selectedDiscardCard,
+    setSelectedDiscardCard: store.setSelectedDiscardCard,
+    selectedFiverCards: store.selectedFiverCards,
+    setSelectedFiverCards: store.setSelectedFiverCards,
+    handleToggleFiverCard: store.toggleFiverCard,
 
     // Favor modal
-    favorModal,
-    setFavorModal,
+    favorModal: store.favorModal,
+    setFavorModal: store.setFavorModal,
 
     // Targeted Attack modal
-    targetedAttackModal,
-    setTargetedAttackModal,
+    targetedAttackModal: store.targetedAttackModal,
+    setTargetedAttackModal: store.setTargetedAttackModal,
 
     // See the future modal
-    seeTheFutureModal,
-    setSeeTheFutureModal,
+    seeTheFutureModal: store.seeTheFutureModal,
+    setSeeTheFutureModal: store.setSeeTheFutureModal,
 
     // Chat
-    chatMessage,
-    setChatMessage,
-    chatScope,
-    setChatScope,
-    showChat,
-    handleToggleChat,
-    clearChatMessage,
+    chatMessage: store.chatMessage,
+    setChatMessage: store.setChatMessage,
+    chatScope: store.chatScope,
+    setChatScope: store.setChatScope,
+    showChat: store.showChat,
+    handleToggleChat: () => store.setShowChat((prev) => !prev),
+    clearChatMessage: () => store.setChatMessage(''),
   };
 }

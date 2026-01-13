@@ -1,8 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { historyApi } from '@/features/history/api';
+import { useHistoryStore } from '../store/historyStore';
 import type { HistoryDetail } from '../types';
 
 interface UseHistoryActionsOptions {
@@ -45,10 +46,8 @@ export function useHistoryActions({
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
-  // Participant selection
-  const [participantSelection, setParticipantSelection] = useState<
-    Record<string, boolean>
-  >({});
+  const { participantSelection, toggleParticipant, setParticipantSelection } =
+    useHistoryStore();
 
   // Rematch state
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
@@ -58,6 +57,21 @@ export function useHistoryActions({
   const [manualRemoveError, setManualRemoveError] = useState<string | null>(
     null,
   );
+
+  // Sync participant selection when detail changes
+  useEffect(() => {
+    if (detail) {
+      const nextSelection: Record<string, boolean> = {};
+      detail.summary.participants.forEach((participant) => {
+        if (participant.id !== currentUserId) {
+          nextSelection[participant.id] = true;
+        }
+      });
+      setParticipantSelection(nextSelection);
+    } else {
+      setParticipantSelection({});
+    }
+  }, [detail, currentUserId, setParticipantSelection]);
 
   const {
     mutateAsync: rematch,
@@ -104,31 +118,6 @@ export function useHistoryActions({
     setShowRemoveConfirm(false);
   }, []);
 
-  // Calculate derived state for participant selection (sync with props)
-  // Calculate derived state for participant selection (sync with props)
-  const [prevDetailId, setPrevDetailId] = useState<string | null>(null);
-
-  const currentId = detail?.summary.roomId || null;
-  if (currentId !== prevDetailId) {
-    setPrevDetailId(currentId);
-
-    if (detail) {
-      const nextSelection: Record<string, boolean> = {};
-      detail.summary.participants.forEach((participant) => {
-        if (participant.id !== currentUserId) {
-          nextSelection[participant.id] = true;
-        }
-      });
-      setParticipantSelection(nextSelection);
-    } else {
-      setParticipantSelection({});
-    }
-  }
-
-  const handleToggleParticipant = useCallback((id: string, value: boolean) => {
-    setParticipantSelection((prev) => ({ ...prev, [id]: value }));
-  }, []);
-
   const handleStartRematch = useCallback(async () => {
     setManualRematchError(null);
     if (!detail || !accessToken) {
@@ -151,11 +140,7 @@ export function useHistoryActions({
         participantIds: consenting,
       });
     } catch (_err) {
-      // Error handled by query state, but we might want to log it or handle specific cases?
-      // For now, let useMutation state handle it.
-      // But we are using mutateAsync so it throws. We need to catch it to prevent unhandled rejection if we don't want to crash.
-      // However, useMutation sets 'error' state, so we just need to consume that.
-      // But with mutateAsync we MUST catch.
+      // Error handled by query state
     }
   }, [detail, accessToken, participantSelection, t, rematch]);
 
@@ -175,7 +160,7 @@ export function useHistoryActions({
 
   return {
     participantSelection,
-    handleToggleParticipant,
+    handleToggleParticipant: toggleParticipant,
     rematchLoading,
     rematchError,
     handleStartRematch,

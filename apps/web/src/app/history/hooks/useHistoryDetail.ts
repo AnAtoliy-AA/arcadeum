@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { historyApi } from '@/features/history/api';
+import { useHistoryStore } from '../store/historyStore';
 import type {
   HistorySummary,
   HistoryDetail,
@@ -31,13 +32,9 @@ export function useHistoryDetail({
   accessToken,
 }: UseHistoryDetailOptions): UseHistoryDetailResult {
   const { t } = useTranslation();
-  const [selectedEntry, setSelectedEntry] = useState<HistorySummary | null>(
-    null,
-  );
+  const { selectedEntry, selectEntry } = useHistoryStore();
 
   // UI-specific error state if we want to manually set errors (e.g. auth check)
-  // But useQuery handles most errors. We might need to combine them or just use query error.
-  // The original hook had setDetailError used in handleSelectEntry for auth check.
   const [manualError, setManualError] = useState<string | null>(null);
 
   const {
@@ -78,19 +75,16 @@ export function useHistoryDetail({
       setManualError(null);
       if (!accessToken) {
         setManualError(t('history.errors.authRequired'));
-        // We still set selectedEntry so the modal opens?
-        // Original code set selectedEntry then checked auth.
-        // But if we return early, detail fetch won't start (enabled check involves accessToken).
       }
-      setSelectedEntry(entry);
+      selectEntry(entry);
     },
-    [accessToken, t],
+    [accessToken, t, selectEntry],
   );
 
   const handleCloseModal = useCallback(() => {
-    setSelectedEntry(null);
+    selectEntry(null);
     setManualError(null);
-  }, []);
+  }, [selectEntry]);
 
   // Close modal on Escape key
   useEffect(() => {

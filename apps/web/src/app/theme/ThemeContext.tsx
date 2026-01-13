@@ -1,26 +1,22 @@
-"use client";
+'use client';
 
 import {
   ReactNode,
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
-} from "react";
-import { ThemeProvider as StyledThemeProvider } from "styled-components";
+} from 'react';
+import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 
-import { loadStoredSettings, saveStoredSettings } from "@/shared/lib/settings-storage";
+import { useThemeStore } from './store/themeStore';
 import {
-  DEFAULT_THEME_NAME,
   ThemeName,
   ThemePreference,
   ThemeTokens,
-  isThemePreference,
-  isThemeName,
   themeTokens,
-} from "@/shared/config/theme";
+} from '@/shared/config/theme';
 
 type ThemeContextValue = {
   themePreference: ThemePreference;
@@ -28,35 +24,26 @@ type ThemeContextValue = {
   setThemePreference: (preference: ThemePreference) => void;
 };
 
-type SystemThemeName = Extract<ThemeName, "light" | "dark">;
+type SystemThemeName = Extract<ThemeName, 'light' | 'dark'>;
 
-const SYSTEM_THEME_FALLBACK: SystemThemeName = "dark";
+const SYSTEM_THEME_FALLBACK: SystemThemeName = 'dark';
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
-function resolveStoredThemePreference(): ThemePreference {
-  const stored = loadStoredSettings();
-  if (stored.themePreference && isThemePreference(stored.themePreference)) {
-    return stored.themePreference;
-  }
-  if (stored.themePreference && isThemeName(stored.themePreference)) {
-    return stored.themePreference;
-  }
-  return DEFAULT_THEME_NAME;
-}
-
 function useSystemTheme(): SystemThemeName {
-  const [systemTheme, setSystemTheme] = useState<SystemThemeName>(SYSTEM_THEME_FALLBACK);
+  const [systemTheme, setSystemTheme] = useState<SystemThemeName>(
+    SYSTEM_THEME_FALLBACK,
+  );
 
   useEffect(() => {
-    if (typeof window === "undefined") {
+    if (typeof window === 'undefined') {
       return;
     }
 
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
 
     const apply = (matches: boolean) => {
-      setSystemTheme(matches ? "dark" : "light");
+      setSystemTheme(matches ? 'dark' : 'light');
     };
 
     apply(media.matches);
@@ -65,9 +52,9 @@ function useSystemTheme(): SystemThemeName {
       apply(event.matches);
     };
 
-    if (typeof media.addEventListener === "function") {
-      media.addEventListener("change", listener);
-      return () => media.removeEventListener("change", listener);
+    if (typeof media.addEventListener === 'function') {
+      media.addEventListener('change', listener);
+      return () => media.removeEventListener('change', listener);
     }
 
     // Safari < 14 fallback
@@ -79,48 +66,38 @@ function useSystemTheme(): SystemThemeName {
 }
 
 export function AppThemeProvider({ children }: { children: ReactNode }) {
-  const [themePreference, setThemePreferenceState] = useState<ThemePreference>(
-    DEFAULT_THEME_NAME,
-  );
+  const { themePreference, setThemePreference } = useThemeStore();
   const systemTheme = useSystemTheme();
 
-  useEffect(() => {
-    const storedPreference = resolveStoredThemePreference();
-    if (storedPreference !== DEFAULT_THEME_NAME) {
-      const apply = () => {
-        setThemePreferenceState(storedPreference);
-      };
-      if (typeof queueMicrotask === "function") {
-        queueMicrotask(apply);
-      } else {
-        Promise.resolve().then(apply);
-      }
-    }
-  }, []);
-
   const resolvedTheme: ThemeName = useMemo(() => {
-    if (themePreference === "system") {
+    if (themePreference === 'system') {
       return systemTheme;
     }
     return themePreference;
   }, [systemTheme, themePreference]);
 
-  const theme: ThemeTokens = useMemo(() => themeTokens[resolvedTheme], [resolvedTheme]);
+  const theme: ThemeTokens = useMemo(
+    () => themeTokens[resolvedTheme],
+    [resolvedTheme],
+  );
 
   useEffect(() => {
-    if (typeof document === "undefined") {
+    if (typeof document === 'undefined') {
       return;
     }
 
     const root = document.documentElement;
-    root.setAttribute("data-theme", resolvedTheme);
-    root.setAttribute("data-theme-preference", themePreference);
-    root.style.setProperty("--background", theme.background.base);
-    root.style.setProperty("--foreground", theme.text.primary);
-    root.style.setProperty("--muted-foreground", theme.text.muted);
-    root.style.setProperty("--card-background", theme.surfaces.card.background);
-    root.style.setProperty("--card-border", theme.surfaces.card.border);
-    root.style.setProperty("--surface-background", theme.surfaces.panel.background);
+    root.setAttribute('data-theme', resolvedTheme);
+    root.setAttribute('data-theme-preference', themePreference);
+    root.style.setProperty('--background', theme.background.base);
+    root.style.setProperty('--foreground', theme.text.primary);
+    root.style.setProperty('--muted-foreground', theme.text.muted);
+    root.style.setProperty('--card-background', theme.surfaces.card.background);
+    root.style.setProperty('--card-border', theme.surfaces.card.border);
+    root.style.setProperty(
+      '--surface-background',
+      theme.surfaces.panel.background,
+    );
 
     if (document.body) {
       document.body.style.backgroundColor = theme.background.base;
@@ -128,15 +105,8 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
     }
   }, [resolvedTheme, theme, themePreference]);
 
-  const setThemePreference = useCallback((preference: ThemePreference) => {
-    setThemePreferenceState((current) => {
-      if (current === preference) {
-        return current;
-      }
-      saveStoredSettings({ themePreference: preference });
-      return preference;
-    });
-  }, []);
+  // Sync legacy storage if needed, or just rely on store persistence.
+  // The store handles persistence now.
 
   const contextValue = useMemo<ThemeContextValue>(
     () => ({ themePreference, resolvedTheme, setThemePreference }),
@@ -151,10 +121,18 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
 }
 
 export function useThemeController(): ThemeContextValue {
+  // We can return store values directly or keep context.
+  // Keeping context allows us to avoid refactoring all call sites that might expect a Provider content,
+  // although Zustand can be used anywhere.
+  // For now, let's keep the Provider wrapping but feed it from the store,
+  // so consumers of useThemeController get the store values.
+  // Actually, to fully migrate, we should eventually remove the Context,
+  // but to be safe and incremental, feeding the context from the store is a good step.
+  // However, pure Zustand usage would be: const { ... } = useThemeStore()
   const context = useContext(ThemeContext);
 
   if (!context) {
-    throw new Error("useThemeController must be used within AppThemeProvider");
+    throw new Error('useThemeController must be used within AppThemeProvider');
   }
 
   return context;

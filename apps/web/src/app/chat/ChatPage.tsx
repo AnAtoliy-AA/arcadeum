@@ -3,12 +3,12 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import styled from 'styled-components';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { resolveApiUrl } from '@/shared/lib/api-base';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { PageLayout, Container, Button, Input } from '@/shared/ui';
 import { chatApi, ChatMessage } from '@/features/chat/api';
+import { useChatStore } from '@/features/chat/store/chatStore';
 
 const ChatContainer = styled(Container)`
   height: 100vh;
@@ -111,28 +111,40 @@ export function ChatPage() {
   const searchParams = useSearchParams();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
   const chatId = searchParams?.get('chatId') || null;
   const receiverIds = searchParams?.get('receiverIds') || '';
   const title = searchParams?.get('title') || 'Chat';
 
   const [inputValue, setInputValue] = useState('');
-  const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isAuthenticatedRef = useRef(false);
 
-  // Use Query for messages
-  const { data: messages = [] } = useQuery({
-    queryKey: ['chat', chatId, 'messages'],
-    queryFn: async () => {
-      if (!chatId) return [];
-      return chatApi.getMessages(chatId, {
-        token: snapshot.accessToken || undefined,
-      });
-    },
-    enabled: !!chatId && !!snapshot.accessToken,
-  });
+  // Store
+  const {
+    messages,
+    isConnected,
+    setMessages,
+    addMessage,
+    setConnected,
+    setAuthenticated,
+    reset,
+  } = useChatStore();
+
+  // Initial fetch
+  useEffect(() => {
+    if (!chatId || !snapshot.accessToken) return;
+
+    chatApi
+      .getMessages(chatId, { token: snapshot.accessToken })
+      .then(setMessages)
+      .catch((err) => console.error(err));
+
+    // Cleanup on unmount (optional, but good if we want fresh state on next visit)
+    return () => {
+      reset();
+    };
+  }, [chatId, snapshot.accessToken, setMessages, reset]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -166,7 +178,8 @@ export function ChatPage() {
 
         if (data.type === 'authenticated') {
           isAuthenticatedRef.current = true;
-          setIsConnected(true);
+          setConnected(true);
+          setAuthenticated(true);
           // Join chat after authentication
           ws.send(
             JSON.stringify({
@@ -177,30 +190,15 @@ export function ChatPage() {
             }),
           );
         } else if (data.type === 'message') {
-          // Update query cache with new message
-          queryClient.setQueryData(
-            ['chat', chatId, 'messages'],
-            (old: ChatMessage[] = []) => {
-              // Deduplicate just in case
-              if (old.some((m) => m.id === data.message.id)) return old;
-              return [...old, data.message];
-            },
-          );
+          addMessage(data.message);
         } else if (data.type === 'chatMessages') {
-          // Initial load from socket (optional if we prioritize useQuery)
-          // But sometimes socket sends history too.
-          // If useQuery handles history, we might ignore this OR use it to update cache?
-          // Usually we trust useQuery more for initial load.
-          // If this event sends ALL messages, we could update cache.
           if (data.messages && Array.isArray(data.messages)) {
-            queryClient.setQueryData(
-              ['chat', chatId, 'messages'],
-              data.messages,
-            );
+            setMessages(data.messages);
           }
         } else if (data.type === 'error') {
           console.error('WebSocket error:', data.message);
-          setIsConnected(false);
+          setConnected(false);
+          setAuthenticated(false);
         }
       } catch (err) {
         console.error('Failed to parse message:', err);
@@ -209,11 +207,13 @@ export function ChatPage() {
 
     ws.onerror = (error) => {
       console.error('WebSocket connection error:', error);
-      setIsConnected(false);
+      setConnected(false);
+      setAuthenticated(false);
     };
 
     ws.onclose = () => {
-      setIsConnected(false);
+      setConnected(false);
+      setAuthenticated(false);
       isAuthenticatedRef.current = false;
     };
 
@@ -227,8 +227,18 @@ export function ChatPage() {
         ws.close();
       }
       socketRef.current = null;
+      setConnected(false);
     };
-  }, [chatId, snapshot.accessToken, snapshot.userId, receiverIds, queryClient]);
+  }, [
+    chatId,
+    snapshot.accessToken,
+    snapshot.userId,
+    receiverIds,
+    setConnected,
+    setAuthenticated,
+    addMessage,
+    setMessages,
+  ]);
 
   const handleSend = useCallback(async () => {
     if (
@@ -261,18 +271,13 @@ export function ChatPage() {
         }),
       );
 
-      // Optimistically update cache
-      queryClient.setQueryData(
-        ['chat', chatId, 'messages'],
-        (old: ChatMessage[] = []) => {
-          return [...old, message];
-        },
-      );
+      // Optimistically update
+      addMessage(message);
       setInputValue('');
     } catch (err) {
       console.error('Failed to send message:', err);
     }
-  }, [inputValue, chatId, snapshot, receiverIds, queryClient]);
+  }, [inputValue, chatId, snapshot, receiverIds, addMessage]);
 
   if (!chatId) {
     return (

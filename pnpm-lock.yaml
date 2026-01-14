@@ -349,9 +349,12 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.2
         version: 3.2.2(react@19.2.0)
+      '@tanstack/react-query':
+        specifier: ^5.90.16
+        version: 5.90.17(react@19.2.0)
       next:
         specifier: 16.1.0
-        version: 16.1.0(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 16.1.0(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
@@ -364,6 +367,9 @@ importers:
       styled-components:
         specifier: ^6.1.12
         version: 6.1.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      zustand:
+        specifier: ^5.0.10
+        version: 5.0.10(@types/react@19.2.4)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0))
     devDependencies:
       '@chromatic-com/storybook':
         specifier: ^3.2.2
@@ -382,7 +388,7 @@ importers:
         version: 10.1.11(@vitest/browser-playwright@4.0.16)(@vitest/browser@4.0.16(vite@7.3.0(@types/node@20.19.25)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(vitest@4.0.16))(@vitest/runner@4.0.16)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(storybook@8.6.15(prettier@3.6.2))(vitest@4.0.16)
       '@storybook/nextjs-vite':
         specifier: ^10.1.11
-        version: 10.1.11(@babel/core@7.28.5)(esbuild@0.25.12)(next@16.1.0(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rollup@4.54.0)(storybook@8.6.15(prettier@3.6.2))(typescript@5.9.3)(vite@7.3.0(@types/node@20.19.25)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(webpack@5.100.2(esbuild@0.25.12))
+        version: 10.1.11(esbuild@0.25.12)(next@16.1.0(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rollup@4.54.0)(storybook@8.6.15(prettier@3.6.2))(typescript@5.9.3)(vite@7.3.0(@types/node@20.19.25)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(webpack@5.100.2(esbuild@0.25.12))
       '@storybook/react':
         specifier: ^8.6.0
         version: 8.6.15(@storybook/test@8.6.15(storybook@8.6.15(prettier@3.6.2)))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(storybook@8.6.15(prettier@3.6.2))(typescript@5.9.3)
@@ -3179,6 +3185,14 @@ packages:
 
   '@swc/helpers@0.5.15':
     resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
+
+  '@tanstack/query-core@5.90.17':
+    resolution: {integrity: sha512-hDww+RyyYhjhUfoYQ4es6pbgxY7LNiPWxt4l1nJqhByjndxJ7HIjDxTBtfvMr5HwjYavMrd+ids5g4Rfev3lVQ==}
+
+  '@tanstack/react-query@5.90.17':
+    resolution: {integrity: sha512-PGc2u9KLwohDUSchjW9MZqeDQJfJDON7y4W7REdNBgiFKxQy+Pf7eGjiFWEj5xPqKzAeHYdAb62IWI1a9UJyGQ==}
+    peerDependencies:
+      react: ^18 || ^19
 
   '@testing-library/dom@10.4.0':
     resolution: {integrity: sha512-pemlzrSESWbdAloYml3bAJMEfNh1Z7EduzqPKprCH5S341frlpYnUEW0H72dLxa6IsYr+mPno20GiSm+h9dEdQ==}
@@ -9737,6 +9751,24 @@ packages:
   zod@4.2.1:
     resolution: {integrity: sha512-0wZ1IRqGGhMP76gLqz8EyfBXKk0J2qo2+H3fi4mcUP/KtTocoX08nmIAHl1Z2kJIZbZee8KOpBCSNPRgauucjw==}
 
+  zustand@5.0.10:
+    resolution: {integrity: sha512-U1AiltS1O9hSy3rul+Ub82ut2fqIAefiSuwECWt6jlMVUGejvf+5omLcRBSzqbRagSM3hQZbtzdeRc6QVScXTg==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
+
 snapshots:
 
   '@0no-co/graphql.web@1.2.0(graphql@16.8.1)':
@@ -12977,18 +13009,18 @@ snapshots:
     dependencies:
       storybook: 8.6.15(prettier@3.6.2)
 
-  '@storybook/nextjs-vite@10.1.11(@babel/core@7.28.5)(esbuild@0.25.12)(next@16.1.0(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rollup@4.54.0)(storybook@8.6.15(prettier@3.6.2))(typescript@5.9.3)(vite@7.3.0(@types/node@20.19.25)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(webpack@5.100.2(esbuild@0.25.12))':
+  '@storybook/nextjs-vite@10.1.11(esbuild@0.25.12)(next@16.1.0(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rollup@4.54.0)(storybook@8.6.15(prettier@3.6.2))(typescript@5.9.3)(vite@7.3.0(@types/node@20.19.25)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(webpack@5.100.2(esbuild@0.25.12))':
     dependencies:
       '@storybook/builder-vite': 10.1.11(esbuild@0.25.12)(rollup@4.54.0)(storybook@8.6.15(prettier@3.6.2))(vite@7.3.0(@types/node@20.19.25)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(webpack@5.100.2(esbuild@0.25.12))
       '@storybook/react': 10.1.11(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(storybook@8.6.15(prettier@3.6.2))(typescript@5.9.3)
       '@storybook/react-vite': 10.1.11(esbuild@0.25.12)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rollup@4.54.0)(storybook@8.6.15(prettier@3.6.2))(typescript@5.9.3)(vite@7.3.0(@types/node@20.19.25)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(webpack@5.100.2(esbuild@0.25.12))
-      next: 16.1.0(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      next: 16.1.0(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
       storybook: 8.6.15(prettier@3.6.2)
-      styled-jsx: 5.1.6(@babel/core@7.28.5)(react@19.2.0)
+      styled-jsx: 5.1.6(react@19.2.0)
       vite: 7.3.0(@types/node@20.19.25)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1)
-      vite-plugin-storybook-nextjs: 3.1.8(next@16.1.0(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(storybook@8.6.15(prettier@3.6.2))(typescript@5.9.3)(vite@7.3.0(@types/node@20.19.25)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))
+      vite-plugin-storybook-nextjs: 3.1.8(next@16.1.0(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(storybook@8.6.15(prettier@3.6.2))(typescript@5.9.3)(vite@7.3.0(@types/node@20.19.25)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))
     optionalDependencies:
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -13164,6 +13196,13 @@ snapshots:
   '@swc/helpers@0.5.15':
     dependencies:
       tslib: 2.8.1
+
+  '@tanstack/query-core@5.90.17': {}
+
+  '@tanstack/react-query@5.90.17(react@19.2.0)':
+    dependencies:
+      '@tanstack/query-core': 5.90.17
+      react: 19.2.0
 
   '@testing-library/dom@10.4.0':
     dependencies:
@@ -18625,7 +18664,7 @@ snapshots:
 
   nested-error-stacks@2.0.1: {}
 
-  next@16.1.0(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  next@16.1.0(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
       '@next/env': 16.1.0
       '@swc/helpers': 0.5.15
@@ -18634,7 +18673,7 @@ snapshots:
       postcss: 8.4.31
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
-      styled-jsx: 5.1.6(@babel/core@7.28.5)(react@19.2.0)
+      styled-jsx: 5.1.6(react@19.2.0)
     optionalDependencies:
       '@next/swc-darwin-arm64': 16.1.0
       '@next/swc-darwin-x64': 16.1.0
@@ -20270,12 +20309,10 @@ snapshots:
       stylis: 4.3.2
       tslib: 2.6.2
 
-  styled-jsx@5.1.6(@babel/core@7.28.5)(react@19.2.0):
+  styled-jsx@5.1.6(react@19.2.0):
     dependencies:
       client-only: 0.0.1
       react: 19.2.0
-    optionalDependencies:
-      '@babel/core': 7.28.5
 
   styleq@0.1.3: {}
 
@@ -20845,6 +20882,11 @@ snapshots:
     dependencies:
       react: 19.1.0
 
+  use-sync-external-store@1.6.0(react@19.2.0):
+    dependencies:
+      react: 19.2.0
+    optional: true
+
   util-deprecate@1.0.2: {}
 
   util@0.12.5:
@@ -20886,13 +20928,13 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
 
-  vite-plugin-storybook-nextjs@3.1.8(next@16.1.0(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(storybook@8.6.15(prettier@3.6.2))(typescript@5.9.3)(vite@7.3.0(@types/node@20.19.25)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1)):
+  vite-plugin-storybook-nextjs@3.1.8(next@16.1.0(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(storybook@8.6.15(prettier@3.6.2))(typescript@5.9.3)(vite@7.3.0(@types/node@20.19.25)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1)):
     dependencies:
       '@next/env': 16.0.0
       image-size: 2.0.2
       magic-string: 0.30.21
       module-alias: 2.2.3
-      next: 16.1.0(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      next: 16.1.0(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       storybook: 8.6.15(prettier@3.6.2)
       ts-dedent: 2.2.0
       vite: 7.3.0(@types/node@20.19.25)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1)
@@ -21312,3 +21354,9 @@ snapshots:
   zod@4.1.12: {}
 
   zod@4.2.1: {}
+
+  zustand@5.0.10(@types/react@19.2.4)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0)):
+    optionalDependencies:
+      '@types/react': 19.2.4
+      react: 19.2.0
+      use-sync-external-store: 1.6.0(react@19.2.0)

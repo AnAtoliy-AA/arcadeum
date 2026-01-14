@@ -89,6 +89,9 @@ export const sharedMessages = {
       houseRuleActionCardCombosHint: 'Any pairs',
       houseRuleIdleTimer: 'Idle Timer Autoplay',
       houseRuleIdleTimerHint: 'Automated play after {{seconds}}s',
+      selectAllPacks: 'Select All Packs',
+      showPacks: 'Show',
+      hidePacks: 'Hide',
     },
     roomPage: {
       loading: 'Loading...',
@@ -194,6 +197,9 @@ export const sharedMessages = {
       houseRuleActionCardCombosHint: 'Cualquier par',
       houseRuleIdleTimer: 'Autoplay con Temporizador',
       houseRuleIdleTimerHint: 'Se activa tras {{seconds}}s de inactividad',
+      selectAllPacks: 'Seleccionar Todos',
+      showPacks: 'Mostrar',
+      hidePacks: 'Ocultar',
     },
     roomPage: {
       loading: 'Cargando...',
@@ -300,6 +306,9 @@ export const sharedMessages = {
       houseRuleActionCardCombosHint: 'Toute paire',
       houseRuleIdleTimer: 'Autoplay avec minuterie',
       houseRuleIdleTimerHint: "Se déclenche après {{seconds}}s d'inactivité",
+      selectAllPacks: 'Tout Sélectionner',
+      showPacks: 'Afficher',
+      hidePacks: 'Masquer',
     },
     roomPage: {
       loading: 'Chargement...',

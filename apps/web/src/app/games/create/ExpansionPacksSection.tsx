@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { Section } from '@/shared/ui';
+import { CollapsibleSection } from '@/shared/ui';
 
 import { ExpansionId, EXPANSION_PACK_DETAILS } from './constants';
 
@@ -19,6 +19,7 @@ import {
   QuantityControl,
   QuantityButton,
   QuantityValue,
+  SelectAllRow,
 } from './styles';
 
 interface ExpansionPacksSectionProps {
@@ -103,8 +104,64 @@ export function ExpansionPacksSection({
     [customCards, onCustomCardsChange],
   );
 
+  // Calculate available packs and whether all are selected
+  const allAvailablePacks = useMemo(
+    () => EXPANSION_PACK_DETAILS.filter((pack) => pack.available),
+    [],
+  );
+
+  const allSelected = useMemo(
+    () =>
+      allAvailablePacks.length > 0 &&
+      allAvailablePacks.every((pack) => expansions.includes(pack.id)),
+    [allAvailablePacks, expansions],
+  );
+
+  const toggleSelectAll = useCallback(() => {
+    if (allSelected) {
+      // Deselect all packs and clear their cards
+      const updated = { ...customCards };
+      allAvailablePacks.forEach((pack) => {
+        pack.cards.forEach((card) => delete updated[card.id]);
+      });
+      onCustomCardsChange(updated);
+      onExpansionsChange([]);
+    } else {
+      // Select all available packs with default card quantities
+      const updated = { ...customCards };
+      allAvailablePacks.forEach((pack) => {
+        pack.cards.forEach((card) => {
+          updated[card.id] = card.defaultCount;
+        });
+      });
+      onCustomCardsChange(updated);
+      onExpansionsChange(allAvailablePacks.map((pack) => pack.id));
+    }
+  }, [
+    allSelected,
+    allAvailablePacks,
+    customCards,
+    onCustomCardsChange,
+    onExpansionsChange,
+  ]);
+
   return (
-    <Section title={t('games.create.sectionExpansions') || 'Expansion Packs'}>
+    <CollapsibleSection
+      title={t('games.create.sectionExpansions') || 'Expansion Packs'}
+      defaultExpanded={false}
+      showLabel={t('games.create.showPacks') || 'Show'}
+      hideLabel={t('games.create.hidePacks') || 'Hide'}
+      headerContent={
+        <SelectAllRow>
+          <input
+            type="checkbox"
+            checked={allSelected}
+            onChange={toggleSelectAll}
+          />
+          <span>{t('games.create.selectAllPacks') || 'Select All Packs'}</span>
+        </SelectAllRow>
+      }
+    >
       <ExpansionGrid>
         {EXPANSION_PACK_DETAILS.map((pack) => (
           <ExpandablePackContainer key={pack.id}>
@@ -183,6 +240,6 @@ export function ExpansionPacksSection({
           </ExpandablePackContainer>
         ))}
       </ExpansionGrid>
-    </Section>
+    </CollapsibleSection>
   );
 }

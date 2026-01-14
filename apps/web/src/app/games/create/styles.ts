@@ -280,3 +280,32 @@ export const QuantityValue = styled.span`
   font-weight: 600;
   color: ${({ theme }) => theme.text.primary};
 `;
+
+export const SelectAllRow = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  background: ${({ theme }) => theme.surfaces.panel.background};
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+  }
+
+  input[type='checkbox'] {
+    width: 18px;
+    height: 18px;
+    accent-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+  }
+
+  span {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: ${({ theme }) => theme.text.primary};
+  }
+`;

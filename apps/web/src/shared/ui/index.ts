@@ -94,3 +94,7 @@ export type {
 // Divider
 export { Divider } from './Divider';
 export type { DividerProps } from './Divider';
+
+// CollapsibleSection
+export { CollapsibleSection } from './CollapsibleSection';
+export type { CollapsibleSectionProps } from './CollapsibleSection';

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   CriticalPlayerState,
   CriticalCard,
@@ -35,7 +35,6 @@ import {
   InfoCard,
   InfoTitle,
   CardsGrid,
-  Card,
   CardCorner,
   CardFrame,
   CardInner,
@@ -46,6 +45,11 @@ import {
   ActionButton,
   StashedCard,
   StashIcon,
+  HandHeader,
+  HandTitle,
+  HandControls,
+  HandToggleButton,
+  HandCard,
 } from './styles';
 
 interface PendingAction {
@@ -125,6 +129,9 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
   onAutoplayEnabledChange: _onAutoplayEnabledChange,
   cardVariant,
 }: PlayerHandProps) => {
+  const [showNames, setShowNames] = useState(true);
+  const [showDescriptions, setShowDescriptions] = useState(true);
+
   const displayItems = useMemo(() => {
     const items: {
       card: CriticalCard;
@@ -278,13 +285,37 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
 
       <HandContainer>
         <InfoCard>
-          <InfoTitle>
-            {t('games.table.hand.title')} ({currentPlayer.hand.length}{' '}
-            {currentPlayer.hand.length === 1
-              ? t('games.table.state.card')
-              : t('games.table.state.cards')}
-            )
-          </InfoTitle>
+          <HandHeader>
+            <HandTitle>
+              {t('games.table.hand.title')} ({currentPlayer.hand.length}{' '}
+              {currentPlayer.hand.length === 1
+                ? t('games.table.state.card')
+                : t('games.table.state.cards')}
+              )
+            </HandTitle>
+            <HandControls>
+              <HandToggleButton
+                $variant={cardVariant}
+                variant="secondary"
+                onClick={() => setShowNames(!showNames)}
+              >
+                {showNames
+                  ? t('games.table.hand.hideNames') || 'Hide Names'
+                  : t('games.table.hand.showNames') || 'Show Names'}
+              </HandToggleButton>
+              <HandToggleButton
+                $variant={cardVariant}
+                variant="secondary"
+                onClick={() => setShowDescriptions(!showDescriptions)}
+              >
+                {showDescriptions
+                  ? t('games.table.hand.hideDescriptions') ||
+                    'Hide Descriptions'
+                  : t('games.table.hand.showDescriptions') ||
+                    'Show Descriptions'}
+              </HandToggleButton>
+            </HandControls>
+          </HandHeader>
           <CardsGrid>
             {displayItems.map(({ card, type, count, id }, idx) => {
               if (type === 'stash') {
@@ -305,12 +336,16 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
                     <CardFrame />
                     <CardInner>
                       <CardEmoji>{getCardEmoji(card)}</CardEmoji>
-                      <CardName>
-                        {t(getCardTranslationKey(card, cardVariant)) || card}
-                      </CardName>
-                      <CardDescription>
-                        {t(getCardDescriptionKey(card))}
-                      </CardDescription>
+                      {showNames && (
+                        <CardName $variant={cardVariant}>
+                          {t(getCardTranslationKey(card, cardVariant)) || card}
+                        </CardName>
+                      )}
+                      {showDescriptions && (
+                        <CardDescription $variant={cardVariant}>
+                          {t(getCardDescriptionKey(card))}
+                        </CardDescription>
+                      )}
                     </CardInner>
                     {count > 1 && <CardCountBadge>{count}</CardCountBadge>}
                   </StashedCard>
@@ -322,16 +357,14 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
               const clickable = isCardClickable(card, count);
 
               return (
-                <Card
+                <HandCard
                   key={id}
                   $cardType={card}
                   $index={idx}
                   $variant={cardVariant}
                   onClick={() => handleCardClick(card, count)}
-                  style={{
-                    cursor: clickable ? 'pointer' : 'default',
-                    opacity: clickable ? 1 : isCatCard && count === 1 ? 0.7 : 1,
-                  }}
+                  $clickable={clickable}
+                  $dimmed={isCatCard && count === 1}
                 >
                   <CardCorner $position="tl" />
                   <CardCorner $position="tr" />
@@ -340,15 +373,19 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
                   <CardFrame />
                   <CardInner>
                     <CardEmoji>{getCardEmoji(card)}</CardEmoji>
-                    <CardName>
-                      {t(getCardTranslationKey(card, cardVariant)) || card}
-                    </CardName>
-                    <CardDescription>
-                      {t(getCardDescriptionKey(card))}
-                    </CardDescription>
+                    {showNames && (
+                      <CardName $variant={cardVariant}>
+                        {t(getCardTranslationKey(card, cardVariant)) || card}
+                      </CardName>
+                    )}
+                    {showDescriptions && (
+                      <CardDescription $variant={cardVariant}>
+                        {t(getCardDescriptionKey(card))}
+                      </CardDescription>
+                    )}
                   </CardInner>
                   {count > 1 && <CardCountBadge>{count}</CardCountBadge>}
-                </Card>
+                </HandCard>
               );
             })}
           </CardsGrid>

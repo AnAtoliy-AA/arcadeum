@@ -259,6 +259,12 @@ export const frMessages = {
         cardsCount: '{{count}} cartes',
         confirm: 'Prendre Carte Aléatoire',
       },
+      giveFavor: {
+        title: 'Donner une Carte',
+        description:
+          '{{player}} a demandé une faveur. Choisissez une carte à lui donner.',
+        confirm: 'Donner Carte',
+      },
       defuse: {
         title: 'Désamorcer le Chat Explosif !',
         description: 'Choisissez où placer le Chat Explosif dans le paquet',

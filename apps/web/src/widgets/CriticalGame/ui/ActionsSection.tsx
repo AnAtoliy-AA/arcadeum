@@ -104,10 +104,11 @@ export function ActionsSection({
   const [showActions, setShowActions] = useState(true);
 
   return (
-    <InfoCard>
-      <ActionsHeader>
+    <InfoCard $variant={cardVariant}>
+      <ActionsHeader $variant={cardVariant}>
         <InfoTitle>{t('games.table.actions.start') || 'Actions'}</InfoTitle>
         <ActionsToggleButton
+          $variant={cardVariant}
           onClick={() => setShowActions(!showActions)}
           title={showActions ? 'Hide Actions' : 'Show Actions'}
         >
@@ -116,8 +117,9 @@ export function ActionsSection({
       </ActionsHeader>
 
       {showActions && (
-        <ActionButtons>
+        <ActionButtons $variant={cardVariant}>
           <ActionButton
+            $variant={cardVariant}
             onClick={onDraw}
             disabled={!canAct || actionBusy === 'draw'}
           >
@@ -127,6 +129,7 @@ export function ActionsSection({
           </ActionButton>
           {currentPlayer.hand.includes('evade') && (
             <ActionButton
+              $variant={cardVariant}
               variant="secondary"
               onClick={() => onPlayActionCard('evade')}
               disabled={!canAct || actionBusy === 'evade'}
@@ -138,6 +141,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('strike') && (
             <ActionButton
+              $variant={cardVariant}
               variant="danger"
               onClick={() => onPlayActionCard('strike')}
               disabled={!canAct || actionBusy === 'strike'}
@@ -149,6 +153,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('reorder') && (
             <ActionButton
+              $variant={cardVariant}
               variant="secondary"
               onClick={() => onPlayActionCard('reorder')}
               disabled={!canAct || actionBusy === 'reorder'}
@@ -160,6 +165,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('cancel') && (
             <ActionButton
+              $variant={cardVariant}
               variant="secondary"
               onClick={onPlayNope}
               disabled={!canAct || actionBusy === 'cancel'}
@@ -171,6 +177,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('trade') && (
             <ActionButton
+              $variant={cardVariant}
               variant="primary"
               onClick={onOpenFavorModal}
               disabled={!canAct || actionBusy === 'trade'}
@@ -182,6 +189,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('insight') && (
             <ActionButton
+              $variant={cardVariant}
               variant="primary"
               onClick={onPlaySeeTheFuture}
               disabled={!canAct || actionBusy === 'insight'}
@@ -193,6 +201,7 @@ export function ActionsSection({
           )}
           {canPlayCombo && (
             <ActionButton
+              $variant={cardVariant}
               variant="primary"
               onClick={() => onOpenCatCombo(availableCombos)}
               disabled={actionBusy === 'cat_combo'}
@@ -204,6 +213,7 @@ export function ActionsSection({
           )}
           {fiverAvailable && canAct && (
             <ActionButton
+              $variant={cardVariant}
               variant="primary"
               onClick={onOpenFiverCombo}
               disabled={actionBusy === 'cat_combo'}
@@ -214,6 +224,7 @@ export function ActionsSection({
           {/* Attack Pack Cards */}
           {currentPlayer.hand.includes('invert') && (
             <ActionButton
+              $variant={cardVariant}
               variant="secondary"
               onClick={() => onPlayActionCard('invert')}
               disabled={!canAct || actionBusy === 'invert'}
@@ -225,6 +236,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('mega_evade') && (
             <ActionButton
+              $variant={cardVariant}
               variant="primary"
               onClick={() => onPlayActionCard('mega_evade')}
               disabled={!canAct || actionBusy === 'mega_evade'}
@@ -236,6 +248,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('targeted_strike') && (
             <ActionButton
+              $variant={cardVariant}
               variant="danger"
               onClick={() => onPlayActionCard('targeted_strike')}
               disabled={!canAct || actionBusy === 'targeted_strike'}
@@ -247,6 +260,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('private_strike') && (
             <ActionButton
+              $variant={cardVariant}
               variant="danger"
               onClick={() => onPlayActionCard('private_strike')}
               disabled={!canAct || actionBusy === 'private_strike'}
@@ -258,6 +272,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('recursive_strike') && (
             <ActionButton
+              $variant={cardVariant}
               variant="danger"
               onClick={() => onPlayActionCard('recursive_strike')}
               disabled={!canAct || actionBusy === 'recursive_strike'}
@@ -270,6 +285,7 @@ export function ActionsSection({
           {/* Future Pack Cards */}
           {currentPlayer.hand.includes('see_future_5x') && (
             <ActionButton
+              $variant={cardVariant}
               variant="primary"
               onClick={() => onPlayActionCard('see_future_5x')}
               disabled={!canAct || actionBusy === 'see_future_5x'}
@@ -281,6 +297,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('alter_future_3x') && (
             <ActionButton
+              $variant={cardVariant}
               variant="primary"
               onClick={() => onPlayActionCard('alter_future_3x')}
               disabled={!canAct || actionBusy === 'alter_future_3x'}
@@ -292,6 +309,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('alter_future_5x') && (
             <ActionButton
+              $variant={cardVariant}
               variant="primary"
               onClick={() => onPlayActionCard('alter_future_5x')}
               disabled={!canAct || actionBusy === 'alter_future_5x'}
@@ -303,6 +321,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('reveal_future_3x') && (
             <ActionButton
+              $variant={cardVariant}
               variant="primary"
               onClick={() => onPlayActionCard('reveal_future_3x')}
               disabled={!canAct || actionBusy === 'reveal_future_3x'}
@@ -314,6 +333,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('share_future_3x') && (
             <ActionButton
+              $variant={cardVariant}
               variant="primary"
               onClick={() => onPlayActionCard('share_future_3x')}
               disabled={!canAct || actionBusy === 'share_future_3x'}
@@ -325,6 +345,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('draw_bottom') && (
             <ActionButton
+              $variant={cardVariant}
               variant="secondary"
               onClick={() => onPlayActionCard('draw_bottom')}
               disabled={!canAct || actionBusy === 'draw_bottom'}
@@ -336,6 +357,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('swap_top_bottom') && (
             <ActionButton
+              $variant={cardVariant}
               variant="secondary"
               onClick={() => onPlayActionCard('swap_top_bottom')}
               disabled={!canAct || actionBusy === 'swap_top_bottom'}
@@ -347,6 +369,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('bury') && (
             <ActionButton
+              $variant={cardVariant}
               variant="secondary"
               onClick={() => onPlayActionCard('bury')}
               disabled={!canAct || actionBusy === 'bury'}
@@ -359,6 +382,7 @@ export function ActionsSection({
           {/* Theft Pack Cards */}
           {currentPlayer.hand.includes('mark') && (
             <ActionButton
+              $variant={cardVariant}
               variant="primary"
               onClick={() => onPlayActionCard('mark')}
               disabled={!canAct || actionBusy === 'mark'}
@@ -370,6 +394,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('steal_draw') && (
             <ActionButton
+              $variant={cardVariant}
               variant="primary"
               onClick={() => onPlayActionCard('steal_draw')}
               disabled={!canAct || actionBusy === 'steal_draw'}
@@ -381,6 +406,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('stash') && (
             <ActionButton
+              $variant={cardVariant}
               variant="primary"
               onClick={() => onPlayActionCard('stash')}
               disabled={!canAct || actionBusy === 'stash'}
@@ -393,6 +419,7 @@ export function ActionsSection({
           {/* Deity Pack Cards */}
           {currentPlayer.hand.includes('omniscience') && (
             <ActionButton
+              $variant={cardVariant}
               variant="primary"
               onClick={() => onPlayActionCard('omniscience')}
               disabled={!canAct || actionBusy === 'omniscience'}
@@ -404,6 +431,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('miracle') && (
             <ActionButton
+              $variant={cardVariant}
               variant="primary"
               onClick={() => onPlayActionCard('miracle')}
               disabled={!canAct || actionBusy === 'miracle'}
@@ -415,6 +443,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('smite') && (
             <ActionButton
+              $variant={cardVariant}
               variant="danger"
               onClick={() => onPlayActionCard('smite')}
               disabled={!canAct || actionBusy === 'smite'}
@@ -426,6 +455,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('rapture') && (
             <ActionButton
+              $variant={cardVariant}
               variant="danger"
               onClick={() => onPlayActionCard('rapture')}
               disabled={!canAct || actionBusy === 'rapture'}

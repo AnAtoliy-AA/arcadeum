@@ -2,6 +2,13 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import styled from 'styled-components';
+import {
+  Modal,
+  ModalContent,
+  ModalTitle,
+  ModalActions,
+  ModalButton,
+} from '../styles';
 
 interface PlayerInfo {
   playerId: string;
@@ -17,6 +24,7 @@ interface RematchModalProps {
   onClose: () => void;
   onConfirm: (selectedPlayerIds: string[], message?: string) => void;
   t: (key: string) => string;
+  cardVariant?: string;
 }
 
 export function RematchModal({
@@ -27,6 +35,7 @@ export function RematchModal({
   onClose,
   onConfirm,
   t,
+  cardVariant,
 }: RematchModalProps) {
   // Filter to other players (not current user)
   const otherPlayers = useMemo(
@@ -73,9 +82,11 @@ export function RematchModal({
   if (!isOpen) return null;
 
   return (
-    <Overlay onClick={onClose}>
-      <Modal onClick={(e) => e.stopPropagation()}>
-        <ModalTitle>{t('games.table.rematch.modalTitle')}</ModalTitle>
+    <Modal onClick={onClose}>
+      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
+        <ModalTitle $variant={cardVariant}>
+          {t('games.table.rematch.modalTitle')}
+        </ModalTitle>
         <ModalDescription>
           {t('games.table.rematch.modalDescription')}
         </ModalDescription>
@@ -102,7 +113,6 @@ export function RematchModal({
             <EmptyMessage>{t('games.table.rematch.noPlayers')}</EmptyMessage>
           )}
         </PlayerList>
-
         <MessageInput
           placeholder={
             t('games.table.rematch.messagePlaceholder') || 'Enter a message...'
@@ -112,18 +122,22 @@ export function RematchModal({
           disabled={rematchLoading}
         />
 
-        <ButtonRow>
-          <CancelButton onClick={onClose} disabled={rematchLoading}>
+        <ModalActions>
+          <ModalButton
+            variant="secondary"
+            onClick={onClose}
+            disabled={rematchLoading}
+          >
             {t('games.table.modals.common.cancel')}
-          </CancelButton>
-          <ConfirmButton onClick={handleConfirm} disabled={rematchLoading}>
+          </ModalButton>
+          <ModalButton onClick={handleConfirm} disabled={rematchLoading}>
             {rematchLoading
               ? t('games.table.rematch.loading')
               : t('games.table.rematch.button')}
-          </ConfirmButton>
-        </ButtonRow>
-      </Modal>
-    </Overlay>
+          </ModalButton>
+        </ModalActions>
+      </ModalContent>
+    </Modal>
   );
 }
 
@@ -134,7 +148,7 @@ const MessageInput = styled.textarea`
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.5rem;
-  color: #fff;
+  color: ${({ theme }) => theme.text.primary};
   resize: vertical;
   min-height: 80px;
   font-family: inherit;
@@ -151,38 +165,10 @@ const MessageInput = styled.textarea`
   }
 `;
 
-const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-`;
-
-const Modal = styled.div`
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  min-width: 320px;
-  max-width: 90vw;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-`;
-
-const ModalTitle = styled.h3`
-  margin: 0 0 0.5rem;
-  font-size: 1.25rem;
-  color: #fff;
-`;
-
 const ModalDescription = styled.p`
   margin: 0 0 1rem;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: ${({ theme }) => theme.text.secondary};
 `;
 
 const PlayerList = styled.div`
@@ -219,7 +205,7 @@ const Checkbox = styled.input`
 `;
 
 const PlayerName = styled.span`
-  color: #fff;
+  color: ${({ theme }) => theme.text.primary};
   font-size: 0.95rem;
   display: flex;
   align-items: center;
@@ -233,53 +219,5 @@ const EliminatedBadge = styled.span`
 const EmptyMessage = styled.div`
   padding: 1rem;
   text-align: center;
-  color: rgba(255, 255, 255, 0.5);
-`;
-
-const ButtonRow = styled.div`
-  display: flex;
-  gap: 0.75rem;
-  justify-content: flex-end;
-`;
-
-const CancelButton = styled.button`
-  padding: 0.6rem 1.25rem;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.15);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
-
-const ConfirmButton = styled.button`
-  padding: 0.6rem 1.25rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+  color: ${({ theme }) => theme.text.secondary};
 `;

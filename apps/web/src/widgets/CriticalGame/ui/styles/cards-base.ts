@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { CriticalCard } from '@/shared/types/games';
-import { CARD_SPRITE_MAP } from './card-sprites';
+import { CARD_SPRITE_MAP, SPRITE_GRID_SIZE } from './card-sprites';
 
 // Base Card component for reuse in selectors
 export const Card = styled.div<{
@@ -30,8 +30,16 @@ export const Card = styled.div<{
 
   ${({ $cardType, $variant }) => {
     const spriteIndex = $cardType ? (CARD_SPRITE_MAP[$cardType] ?? 0) : 0;
-    const x = (spriteIndex % 6) * 20;
-    const y = Math.floor(spriteIndex / 6) * 20;
+
+    // Calculate position based on grid size
+    // We use (GRID - 1) for the percentage calculation because background-position works that way:
+    // 0% is left edge, 100% is right edge.
+    // If we have 7 items, they are at 0/6, 1/6, 2/6, ... 6/6 (which is 0%, ~16.6%, ... 100%)
+    const col = spriteIndex % SPRITE_GRID_SIZE;
+    const row = Math.floor(spriteIndex / SPRITE_GRID_SIZE);
+
+    const x = col * (100 / (SPRITE_GRID_SIZE - 1));
+    const y = row * (100 / (SPRITE_GRID_SIZE - 1));
 
     let spriteUrl = '';
     if ($variant === 'cyberpunk')
@@ -48,7 +56,7 @@ export const Card = styled.div<{
     if (spriteUrl) {
       return css`
         background: url(${spriteUrl});
-        background-size: 600% 600%;
+        background-size: ${SPRITE_GRID_SIZE * 100}% ${SPRITE_GRID_SIZE * 100}%;
         background-position: ${x}% ${y}%;
       `;
     }
@@ -168,19 +176,27 @@ export const StashedCard = styled(Card)`
 `;
 
 export const StashIcon = styled.div`
+  /* Center Overlay Position */
   position: absolute;
-  top: -5px;
-  right: -5px;
-  font-size: 1.2rem;
-  background: #1a1b26;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  padding: 0.2rem 0.5rem;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  border-radius: 4px;
+  border: none;
+  box-shadow: none; /* Reduce visual noise in center */
+  text-shadow:
+    0 2px 4px black,
+    0 0 8px black; /* Strong shadow to separate from neon */
+  z-index: 20;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-align: center;
 `;
 
 export const DeckCard = styled.div<{ $variant?: string }>`
@@ -189,7 +205,7 @@ export const DeckCard = styled.div<{ $variant?: string }>`
   border-radius: 12px;
   background: ${({ $variant }) => {
     if ($variant === 'cyberpunk')
-      return 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)';
+      return "url('/images/cards/cyberpunk_card_back.png') center/cover no-repeat";
     if ($variant === 'underwater')
       return 'linear-gradient(135deg, #083344 0%, #164e63 100%)';
     if ($variant === 'crime')
@@ -225,12 +241,14 @@ export const DeckCard = styled.div<{ $variant?: string }>`
     inset: 4px;
     border: 2px dashed rgba(255, 255, 255, 0.1);
     border-radius: 8px;
+    display: ${({ $variant }) => ($variant === 'cyberpunk' ? 'none' : 'block')};
   }
 
   &::after {
     content: '🎴';
     font-size: 2rem;
     opacity: 0.5;
+    display: ${({ $variant }) => ($variant === 'cyberpunk' ? 'none' : 'block')};
   }
 
   &:hover {
@@ -256,6 +274,7 @@ export const CardEmoji = styled.div`
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
   transform: scale(1);
   transition: transform 0.3s ease;
+  display: none; /* Hidden as per new design */
 
   ${Card}:hover & {
     transform: scale(1.1) rotate(5deg);
@@ -263,181 +282,5 @@ export const CardEmoji = styled.div`
 
   @media (max-width: 768px) {
     font-size: 2rem;
-  }
-`;
-
-export const CardName = styled.div`
-  font-size: 0.85rem;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  text-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.8),
-    0 0 12px rgba(0, 0, 0, 0.6);
-  background: white;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  min-height: 1.6rem;
-  display: flex;
-  align-items: center;
-  text-align: center;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
-
-  @media (max-width: 768px) {
-    font-size: 0.6rem;
-    letter-spacing: 0.3px;
-    min-height: 1.4rem;
-  }
-`;
-
-export const CardDescription = styled.div`
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: none;
-  letter-spacing: 0;
-  line-height: 1.2;
-  text-align: center;
-  width: 100%;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
-  color: white;
-  margin-top: auto;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  padding: 0.25rem 0.35rem;
-  min-height: 2rem;
-  background: rgba(0, 0, 0, 0.25);
-  border-radius: 8px;
-
-  @media (max-width: 768px) {
-    font-size: 0.55rem;
-    -webkit-line-clamp: 2;
-    min-height: 1.5rem;
-    padding: 0.15rem 0.25rem;
-  }
-`;
-
-export const CardCountBadge = styled.div`
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.85));
-  color: white;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.875rem;
-  font-weight: 900;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.6),
-    inset 0 1px 2px rgba(255, 255, 255, 0.2);
-  z-index: 10;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-
-  @media (max-width: 768px) {
-    width: 24px;
-    height: 24px;
-    font-size: 0.75rem;
-    top: 0.35rem;
-    right: 0.35rem;
-  }
-`;
-
-export const CardInner = styled.div`
-  position: relative;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.25rem;
-  width: 100%;
-  height: 100%;
-  padding: 0.5rem 0.35rem;
-  border-radius: 12px;
-`;
-
-export const CardFrame = styled.div`
-  position: absolute;
-  inset: 4px;
-  border-radius: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  pointer-events: none;
-  z-index: 2;
-
-  &::before,
-  &::after {
-    content: '◆';
-    position: absolute;
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 0.6rem;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-  }
-
-  &::before {
-    top: -4px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  &::after {
-    bottom: -4px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  @media (max-width: 768px) {
-    inset: 3px;
-    border-width: 1.5px;
-    &::before,
-    &::after {
-      font-size: 0.5rem;
-    }
-  }
-`;
-
-export const CardCorner = styled.div<{ $position: 'tl' | 'tr' | 'bl' | 'br' }>`
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  pointer-events: none;
-  z-index: 2;
-
-  ${({ $position }) => {
-    switch ($position) {
-      case 'tl':
-        return `top: 6px; left: 6px; border-right: none; border-bottom: none; border-top-left-radius: 4px;`;
-      case 'tr':
-        return `top: 6px; right: 6px; border-left: none; border-bottom: none; border-top-right-radius: 4px;`;
-      case 'bl':
-        return `bottom: 6px; left: 6px; border-right: none; border-top: none; border-bottom-left-radius: 4px;`;
-      case 'br':
-        return `bottom: 6px; right: 6px; border-left: none; border-top: none; border-bottom-right-radius: 4px;`;
-    }
-  }}
-
-  @media (max-width: 768px) {
-    width: 12px;
-    height: 12px;
-    border-width: 1.5px;
-    ${({ $position }) => {
-      switch ($position) {
-        case 'tl':
-          return `top: 4px; left: 4px;`;
-        case 'tr':
-          return `top: 4px; right: 4px;`;
-        case 'bl':
-          return `bottom: 4px; left: 4px;`;
-        case 'br':
-          return `bottom: 4px; right: 4px;`;
-      }
-    }}
   }
 `;

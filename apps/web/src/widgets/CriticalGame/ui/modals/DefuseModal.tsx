@@ -14,6 +14,7 @@ interface DefuseModalProps {
   onDefuse: (position: number) => void;
   deckSize: number;
   t: (key: string) => string;
+  cardVariant?: string;
 }
 
 export const DefuseModal: React.FC<DefuseModalProps> = ({
@@ -21,6 +22,7 @@ export const DefuseModal: React.FC<DefuseModalProps> = ({
   onDefuse,
   deckSize,
   t,
+  cardVariant,
 }) => {
   const [selectedPosition, setSelectedPosition] = useState<number>(0);
 
@@ -32,9 +34,11 @@ export const DefuseModal: React.FC<DefuseModalProps> = ({
 
   return (
     <Modal>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <ModalHeader>
-          <ModalTitle>🛡️ {t('games.table.modals.defuse.title')}</ModalTitle>
+      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
+        <ModalHeader $variant={cardVariant}>
+          <ModalTitle $variant={cardVariant}>
+            🛡️ {t('games.table.modals.defuse.title')}
+          </ModalTitle>
         </ModalHeader>
         <Description>{t('games.table.modals.defuse.description')}</Description>
         <PositionSelector>

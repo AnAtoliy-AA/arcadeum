@@ -180,9 +180,9 @@ export function AlterTheFutureModal({
 
   return (
     <Overlay>
-      <ModalContainer>
-        <ModalHeader>
-          <ModalTitle>
+      <ModalContainer $variant={cardVariant}>
+        <ModalHeader $variant={cardVariant}>
+          <ModalTitle $variant={cardVariant}>
             {isShare
               ? t('games.table.modals.shareTheFuture.title')
               : t('games.table.modals.alterTheFuture.title')}

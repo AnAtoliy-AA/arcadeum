@@ -5,6 +5,7 @@ import {
   PlayerName,
   PlayerCardCount,
   TurnIndicator,
+  PlayerStatsContainer,
 } from './styles';
 import { ChatBubble } from './ChatBubble';
 import type { CriticalCard, CriticalLogEntry, MarkedCardInfo } from '../types';
@@ -23,6 +24,7 @@ export interface TablePlayerProps {
   currentUserId: string | null;
   logs?: CriticalLogEntry[];
   resolveDisplayName: (playerId: string, fallback: string) => string;
+  cardVariant?: string;
 }
 
 export function TablePlayer({
@@ -33,6 +35,7 @@ export function TablePlayer({
   currentUserId,
   logs = [],
   resolveDisplayName,
+  cardVariant,
 }: TablePlayerProps) {
   const { playerId, stash = [], markedCards = [] } = player;
   const isCurrent = index === currentTurnIndex;
@@ -91,32 +94,27 @@ export function TablePlayer({
         $isCurrentTurn={isCurrent}
         $isAlive={player.alive}
         $isCurrentUser={isCurrentUserCard}
+        $variant={cardVariant}
       >
-        {isCurrent && <TurnIndicator>⭐</TurnIndicator>}
-        <PlayerAvatar $isCurrentTurn={isCurrent} $isAlive={player.alive}>
+        {isCurrent && <TurnIndicator $variant={cardVariant}>⭐</TurnIndicator>}
+        <PlayerAvatar
+          $isCurrentTurn={isCurrent}
+          $isAlive={player.alive}
+          $variant={cardVariant}
+        >
           {player.alive ? '🎮' : '💀'}
         </PlayerAvatar>
         <PlayerName $isCurrentTurn={isCurrent}>{displayName}</PlayerName>
         {player.alive && (
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.25rem',
-              alignItems: 'center',
-            }}
-          >
-            <PlayerCardCount $isCurrentTurn={isCurrent}>
+          <PlayerStatsContainer>
+            <PlayerCardCount $isCurrentTurn={isCurrent} $variant={cardVariant}>
               🃏 {player.hand.length}
             </PlayerCardCount>
             {stash.length > 0 && (
               <PlayerCardCount
                 $isCurrentTurn={isCurrent}
-                style={{
-                  backgroundColor: 'rgba(255, 215, 0, 0.2)',
-                  color: '#FFD700',
-                  border: '1px solid rgba(255, 215, 0, 0.3)',
-                }}
+                $variant={cardVariant}
+                $type="stash"
               >
                 🏰 {stash.length}
               </PlayerCardCount>
@@ -124,16 +122,13 @@ export function TablePlayer({
             {markedCards.length > 0 && (
               <PlayerCardCount
                 $isCurrentTurn={isCurrent}
-                style={{
-                  backgroundColor: 'rgba(255, 0, 0, 0.2)',
-                  color: '#FF4444',
-                  border: '1px solid rgba(255, 0, 0, 0.3)',
-                }}
+                $variant={cardVariant}
+                $type="marked"
               >
                 🏷️ {markedCards.length}
               </PlayerCardCount>
             )}
-          </div>
+          </PlayerStatsContainer>
         )}
       </PlayerCard>
     </PlayerPositionWrapper>

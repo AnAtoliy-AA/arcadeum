@@ -27,6 +27,7 @@ interface FavorModalProps {
   onConfirm: () => void;
   resolveDisplayName: (playerId?: string, fallback?: string) => string;
   t: (key: TranslationKey) => string;
+  cardVariant?: string;
 }
 
 export const FavorModal: React.FC<FavorModalProps> = ({
@@ -38,15 +39,20 @@ export const FavorModal: React.FC<FavorModalProps> = ({
   onConfirm,
   resolveDisplayName,
   t,
+  cardVariant,
 }) => {
   if (!isOpen) return null;
 
   return (
     <Modal onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <ModalHeader>
-          <ModalTitle>🤝 {t('games.table.modals.favor.title')}</ModalTitle>
-          <CloseButton onClick={onClose}>×</CloseButton>
+      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
+        <ModalHeader $variant={cardVariant}>
+          <ModalTitle $variant={cardVariant}>
+            🤝 {t('games.table.modals.favor.title')}
+          </ModalTitle>
+          <CloseButton onClick={onClose} $variant={cardVariant}>
+            ×
+          </CloseButton>
         </ModalHeader>
         <ModalSection>
           <SectionLabel>

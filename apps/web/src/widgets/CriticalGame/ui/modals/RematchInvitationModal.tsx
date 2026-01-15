@@ -1,6 +1,13 @@
 'use client';
 
 import styled from 'styled-components';
+import {
+  Modal,
+  ModalContent,
+  ModalTitle,
+  ModalActions,
+  ModalButton,
+} from '../styles';
 
 interface RematchInvitationModalProps {
   isOpen: boolean;
@@ -15,6 +22,7 @@ interface RematchInvitationModalProps {
   onBlockUser?: (hostId: string) => void;
   accepting: boolean;
   t: (key: string) => string;
+  cardVariant?: string;
 }
 
 export function RematchInvitationModal({
@@ -30,13 +38,16 @@ export function RematchInvitationModal({
   onBlockUser,
   accepting,
   t,
+  cardVariant,
 }: RematchInvitationModalProps) {
   if (!isOpen) return null;
 
   return (
-    <Overlay>
-      <Modal onClick={(e) => e.stopPropagation()}>
-        <ModalTitle>{t('games.table.rematch.invitationTitle')}</ModalTitle>
+    <Modal onClick={onDecline}>
+      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
+        <ModalTitle $variant={cardVariant}>
+          {t('games.table.rematch.invitationTitle')}
+        </ModalTitle>
         <ModalDescription>
           {hostName} {t('games.table.rematch.invitationDescription')}
         </ModalDescription>
@@ -53,16 +64,20 @@ export function RematchInvitationModal({
           <TimerLabel>{t('games.table.rematch.toDecide')}</TimerLabel>
         </TimerContainer>
 
-        <ButtonRow>
-          <DeclineButton onClick={onDecline} disabled={accepting}>
+        <ModalActions>
+          <ModalButton
+            variant="secondary"
+            onClick={onDecline}
+            disabled={accepting}
+          >
             {t('games.table.rematch.decline')}
-          </DeclineButton>
-          <AcceptButton onClick={onAccept} disabled={accepting}>
+          </ModalButton>
+          <ModalButton onClick={onAccept} disabled={accepting}>
             {accepting
               ? t('games.table.rematch.joining')
               : t('games.table.rematch.accept')}
-          </AcceptButton>
-        </ButtonRow>
+          </ModalButton>
+        </ModalActions>
 
         <BlockOptions>
           {onBlockRematch && roomId && (
@@ -79,42 +94,15 @@ export function RematchInvitationModal({
             </BlockLink>
           )}
         </BlockOptions>
-      </Modal>
-    </Overlay>
+      </ModalContent>
+    </Modal>
   );
 }
-
-const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-`;
-
-const Modal = styled.div`
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  padding: 2rem;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-  text-align: center;
-`;
-
-const ModalTitle = styled.h3`
-  margin: 0 0 0.5rem;
-  font-size: 1.5rem;
-  color: #fff;
-`;
 
 const ModalDescription = styled.p`
   margin: 0 0 1.5rem;
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: ${({ theme }) => theme.text.secondary};
 `;
 
 const MessageBlock = styled.div`
@@ -127,7 +115,7 @@ const MessageBlock = styled.div`
 
 const MessageLabel = styled.div`
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: ${({ theme }) => theme.text.secondary};
   margin-bottom: 0.25rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -135,7 +123,7 @@ const MessageLabel = styled.div`
 
 const MessageText = styled.div`
   font-size: 1rem;
-  color: #fff;
+  color: ${({ theme }) => theme.text.primary};
   white-space: pre-wrap;
   font-style: italic;
 `;
@@ -157,56 +145,7 @@ const TimerValue = styled.div<{ $low: boolean }>`
 
 const TimerLabel = styled.div`
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
-`;
-
-const ButtonRow = styled.div`
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-`;
-
-const DeclineButton = styled.button`
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
-
-const AcceptButton = styled.button`
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+  color: ${({ theme }) => theme.text.secondary};
 `;
 
 const BlockOptions = styled.div`
@@ -221,7 +160,7 @@ const BlockLink = styled.button`
   margin-top: 1rem;
   padding: 0.5rem;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: ${({ theme }) => theme.text.secondary};
   background: transparent;
   border: none;
   cursor: pointer;

@@ -38,17 +38,19 @@ export function OmniscienceModal({
 
   return (
     <Modal onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <ModalHeader>
-          <ModalTitle>
+      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
+        <ModalHeader $variant={cardVariant}>
+          <ModalTitle $variant={cardVariant}>
             👁️ {t('games.table.cards.omniscience') || 'Omniscience'}
           </ModalTitle>
-          <CloseButton onClick={onClose}>×</CloseButton>
+          <CloseButton onClick={onClose} $variant={cardVariant}>
+            ×
+          </CloseButton>
         </ModalHeader>
 
         {omniscienceModal.hands.map((hand) => (
           <ModalSection key={hand.playerId}>
-            <SectionLabel>
+            <SectionLabel $variant={cardVariant}>
               {resolveDisplayName(hand.playerId, 'Player')}
             </SectionLabel>
             {hand.cards.length === 0 ? (

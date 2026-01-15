@@ -175,7 +175,14 @@ export const enMessages = {
       statusDeclined: 'Declined',
       reinvite: 'Re-invite',
     },
-    hand: { title: 'Your Hand', empty: 'No cards' },
+    hand: {
+      title: 'Your Hand',
+      empty: 'No cards',
+      showNames: 'Show Names',
+      hideNames: 'Hide Names',
+      showDescriptions: 'Show Descriptions',
+      hideDescriptions: 'Hide Descriptions',
+    },
     log: { title: 'Game Log', empty: 'No activity yet' },
     chat: {
       title: 'Table Chat',

@@ -213,6 +213,7 @@ export function GameModals({
         onClose={onCloseRematchModal}
         onConfirm={onConfirmRematch}
         t={t as (key: string) => string}
+        cardVariant={cardVariant}
       />
 
       {/* Rematch Invitation Modal */}
@@ -229,6 +230,7 @@ export function GameModals({
         onBlockUser={onBlockUser}
         accepting={isAcceptingInvitation}
         t={t as (key: string) => string}
+        cardVariant={cardVariant}
       />
 
       {/* Cat Combo Modal */}
@@ -291,6 +293,7 @@ export function GameModals({
         onConfirm={onConfirmTargetedAttack}
         resolveDisplayName={resolveDisplayName}
         t={t}
+        cardVariant={cardVariant}
       />
 
       {/* Favor Modal */}
@@ -303,6 +306,7 @@ export function GameModals({
         onConfirm={onConfirmFavor}
         resolveDisplayName={resolveDisplayName}
         t={t}
+        cardVariant={cardVariant}
       />
 
       {/* Defuse Modal - shows when player must defuse */}
@@ -311,6 +315,7 @@ export function GameModals({
         onDefuse={onPlayDefuse}
         deckSize={deck.length}
         t={t as (key: string) => string}
+        cardVariant={cardVariant}
       />
 
       {/* Give Favor Modal - shows when someone requested a favor from current user */}
@@ -354,6 +359,7 @@ export function GameModals({
         titleKey="games.table.modals.mark.title"
         descriptionKey="games.table.modals.mark.description"
         emoji="🏷️"
+        cardVariant={cardVariant}
       />
 
       {/* Steal Draw Modal (Target Selection) */}
@@ -369,6 +375,7 @@ export function GameModals({
         titleKey="games.table.modals.stealDraw.title"
         descriptionKey="games.table.modals.stealDraw.description"
         emoji="🤏"
+        cardVariant={cardVariant}
       />
 
       {/* Smite Modal (Target Selection) */}
@@ -384,6 +391,7 @@ export function GameModals({
         titleKey="games.table.cards.smite"
         descriptionKey="games.table.cards.descriptions.smite"
         emoji="⚡"
+        cardVariant={cardVariant}
       />
 
       {/* Omniscience Modal */}

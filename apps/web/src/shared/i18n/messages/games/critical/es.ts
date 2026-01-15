@@ -252,6 +252,12 @@ export const esMessages = {
         cardsCount: '{{count}} cartas',
         confirm: 'Tomar Carta Aleatoria',
       },
+      giveFavor: {
+        title: 'Dar una Carta',
+        description:
+          '{{player}} ha solicitado un favor. Elige una carta para darle.',
+        confirm: 'Dar Carta',
+      },
       defuse: {
         title: '¡Desactivar Gato Explosivo!',
         description: 'Elige dónde colocar el Gato Explosivo en el mazo',

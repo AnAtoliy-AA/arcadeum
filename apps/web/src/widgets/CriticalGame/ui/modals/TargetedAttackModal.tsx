@@ -31,6 +31,7 @@ interface TargetedAttackModalProps {
   selectPlayerKey?: TranslationKey;
   descriptionKey?: TranslationKey;
   emoji?: string;
+  cardVariant?: string;
 }
 
 export const TargetedAttackModal: React.FC<TargetedAttackModalProps> = ({
@@ -46,17 +47,20 @@ export const TargetedAttackModal: React.FC<TargetedAttackModalProps> = ({
   selectPlayerKey = 'games.table.modals.targetedAttack.selectPlayer',
   descriptionKey = 'games.table.modals.targetedAttack.description',
   emoji = '🎯',
+  cardVariant,
 }) => {
   if (!isOpen) return null;
 
   return (
     <Modal onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <ModalHeader>
-          <ModalTitle>
+      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
+        <ModalHeader $variant={cardVariant}>
+          <ModalTitle $variant={cardVariant}>
             {emoji} {t(titleKey)}
           </ModalTitle>
-          <CloseButton onClick={onClose}>×</CloseButton>
+          <CloseButton onClick={onClose} $variant={cardVariant}>
+            ×
+          </CloseButton>
         </ModalHeader>
         <ModalSection>
           <SectionLabel>{t(selectPlayerKey)}</SectionLabel>

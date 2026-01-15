@@ -67,8 +67,10 @@ export function CriticalGameHeader({
   isFullscreen,
   toggleFullscreen,
 }: CriticalGameHeaderProps) {
+  const cardVariant = room.gameOptions?.cardVariant;
+
   return (
-    <GameHeader>
+    <GameHeader $variant={cardVariant}>
       <GameInfo>
         <GameTitle>
           {t('games.critical_v1.name')}

@@ -65,13 +65,17 @@ export const StashModal: React.FC<StashModalProps> = ({
 
   return (
     <Modal onClick={handleClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <ModalHeader>
-          <ModalTitle>🏰 {t('games.table.modals.stash.title')}</ModalTitle>
-          <CloseButton onClick={handleClose}>×</CloseButton>
+      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
+        <ModalHeader $variant={cardVariant}>
+          <ModalTitle $variant={cardVariant}>
+            🏰 {t('games.table.modals.stash.title')}
+          </ModalTitle>
+          <CloseButton onClick={handleClose} $variant={cardVariant}>
+            ×
+          </CloseButton>
         </ModalHeader>
         <ModalSection>
-          <SectionLabel>
+          <SectionLabel $variant={cardVariant}>
             {t('games.table.modals.stash.description')}
           </SectionLabel>
           <CardsGrid

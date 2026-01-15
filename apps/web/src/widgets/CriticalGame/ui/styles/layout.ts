@@ -17,13 +17,38 @@ const turnBorderPulse = keyframes`
 `;
 
 // Layout Components
-export const GameContainer = styled.div<{ $isMyTurn?: boolean }>`
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  padding: 2rem;
-  border-radius: 24px;
-  background: radial-gradient(
+// Helper function to get variant-specific room background
+const getVariantRoomBackground = (
+  variant: string | undefined,
+  themeBase: string,
+  themeCardBg: string,
+) => {
+  if (variant === 'cyberpunk') {
+    return `
+      radial-gradient(
+        ellipse at 20% 0%,
+        rgba(192, 38, 211, 0.2) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        ellipse at 80% 100%,
+        rgba(6, 182, 212, 0.15) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        ellipse at 50% 50%,
+        rgba(168, 85, 247, 0.1) 0%,
+        transparent 60%
+      ),
+      linear-gradient(
+        165deg,
+        #0a0a0f 0%,
+        #1a0a20 100%
+      )
+    `;
+  }
+  return `
+    radial-gradient(
       ellipse at 20% 0%,
       rgba(99, 102, 241, 0.15) 0%,
       transparent 50%
@@ -40,104 +65,204 @@ export const GameContainer = styled.div<{ $isMyTurn?: boolean }>`
     ),
     linear-gradient(
       165deg,
-      ${({ theme }) => theme.background.base} 0%,
-      ${({ theme }) => theme.surfaces.card.background} 100%
-    );
-  border: ${({ $isMyTurn, theme }) =>
-    $isMyTurn
-      ? '3px solid rgba(34, 197, 94, 0.8)'
-      : `1px solid ${theme.surfaces.card.border}`};
-  min-height: 600px;
-  box-shadow: ${({ $isMyTurn }) =>
-    $isMyTurn
-      ? `0 0 20px rgba(34, 197, 94, 0.4),
+      ${themeBase} 0%,
+      ${themeCardBg} 100%
+    )
+  `;
+};
+
+// Helper function to get variant-specific border
+const getVariantRoomBorder = (
+  variant: string | undefined,
+  isMyTurn: boolean,
+  themeBorder: string,
+) => {
+  if (isMyTurn) {
+    return variant === 'cyberpunk'
+      ? '3px solid rgba(192, 38, 211, 0.8)'
+      : '3px solid rgba(34, 197, 94, 0.8)';
+  }
+  return variant === 'cyberpunk'
+    ? '1px solid rgba(192, 38, 211, 0.3)'
+    : `1px solid ${themeBorder}`;
+};
+
+// Helper function to get variant-specific box shadow
+const getVariantRoomShadow = (
+  variant: string | undefined,
+  isMyTurn: boolean,
+) => {
+  if (isMyTurn) {
+    return variant === 'cyberpunk'
+      ? `0 0 20px rgba(192, 38, 211, 0.5),
+         0 0 40px rgba(6, 182, 212, 0.3),
+         inset 0 0 20px rgba(192, 38, 211, 0.15)`
+      : `0 0 20px rgba(34, 197, 94, 0.4),
          0 0 40px rgba(34, 197, 94, 0.2),
-         inset 0 0 20px rgba(34, 197, 94, 0.1)`
-      : `0 25px 80px rgba(0, 0, 0, 0.4),
-         0 10px 30px rgba(0, 0, 0, 0.2),
-         inset 0 1px 0 rgba(255, 255, 255, 0.08),
-         inset 0 -1px 0 rgba(0, 0, 0, 0.1)`};
+         inset 0 0 20px rgba(34, 197, 94, 0.1)`;
+  }
+  return variant === 'cyberpunk'
+    ? `0 25px 80px rgba(0, 0, 0, 0.6),
+       0 10px 30px rgba(192, 38, 211, 0.15),
+       inset 0 1px 0 rgba(192, 38, 211, 0.1),
+       inset 0 -1px 0 rgba(0, 0, 0, 0.2)`
+    : `0 25px 80px rgba(0, 0, 0, 0.4),
+       0 10px 30px rgba(0, 0, 0, 0.2),
+       inset 0 1px 0 rgba(255, 255, 255, 0.08),
+       inset 0 -1px 0 rgba(0, 0, 0, 0.1)`;
+};
+
+// Cyberpunk-specific turn border pulse
+const cyberpunkTurnBorderPulse = keyframes`
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(192, 38, 211, 0.5),
+      0 0 40px rgba(6, 182, 212, 0.3),
+      inset 0 0 20px rgba(192, 38, 211, 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 35px rgba(192, 38, 211, 0.7),
+      0 0 70px rgba(6, 182, 212, 0.4),
+      inset 0 0 35px rgba(192, 38, 211, 0.2);
+  }
+`;
+
+export const GameContainer = styled.div<{
+  $isMyTurn?: boolean;
+  $variant?: string;
+}>`
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 2rem;
+  border-radius: 24px;
+  background: ${({ $variant, theme }) =>
+    getVariantRoomBackground(
+      $variant,
+      theme.background.base,
+      theme.surfaces.card.background,
+    )};
+  border: ${({ $isMyTurn, $variant, theme }) =>
+    getVariantRoomBorder($variant, !!$isMyTurn, theme.surfaces.card.border)};
+  min-height: 600px;
+  box-shadow: ${({ $isMyTurn, $variant }) =>
+    getVariantRoomShadow($variant, !!$isMyTurn)};
   position: relative;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   height: 100%;
   backdrop-filter: blur(20px);
 
-  ${({ $isMyTurn }) =>
+  /* Background Effects */
+  ${({ $variant }) =>
+    $variant === 'cyberpunk'
+      ? css`
+          perspective: 1000px;
+          &::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                transparent 0%,
+                rgba(192, 38, 211, 0.2) 2%,
+                transparent 3%
+              ),
+              linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(6, 182, 212, 0.2) 2%,
+                transparent 3%
+              );
+            background-size: 100px 100px;
+            transform: rotateX(60deg);
+            animation: gridMove 20s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+          }
+
+          /* CRT Scanline Effect */
+          &::after {
+            content: ' ';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(
+              rgba(18, 16, 16, 0) 50%,
+              rgba(0, 0, 0, 0.1) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 2;
+            pointer-events: none;
+          }
+        `
+      : css`
+          &::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            left: -60%;
+            width: 220%;
+            height: 220%;
+            background: radial-gradient(
+                circle at 30% 30%,
+                rgba(99, 102, 241, 0.12) 0%,
+                transparent 35%
+              ),
+              radial-gradient(
+                circle at 70% 70%,
+                rgba(236, 72, 153, 0.1) 0%,
+                transparent 35%
+              );
+            animation: ambientGlow 12s ease-in-out infinite;
+            pointer-events: none;
+          }
+
+          &::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(
+              90deg,
+              transparent 0%,
+              rgba(99, 102, 241, 0.8) 15%,
+              rgba(236, 72, 153, 0.8) 50%,
+              rgba(16, 185, 129, 0.8) 85%,
+              transparent 100%
+            );
+            box-shadow:
+              0 0 30px rgba(99, 102, 241, 0.5),
+              0 0 60px rgba(236, 72, 153, 0.3);
+            animation: shimmer 6s ease-in-out infinite;
+          }
+        `}
+
+  @keyframes gridMove {
+    0% {
+      transform: rotateX(60deg) translateY(0);
+    }
+    100% {
+      transform: rotateX(60deg) translateY(100px);
+    }
+  }
+
+  ${({ $isMyTurn, $variant }) =>
     $isMyTurn &&
     css`
-      animation: ${turnBorderPulse} 2s ease-in-out infinite;
+      animation: ${$variant === 'cyberpunk'
+          ? cyberpunkTurnBorderPulse
+          : turnBorderPulse}
+        2s ease-in-out infinite;
     `}
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -60%;
-    left: -60%;
-    width: 220%;
-    height: 220%;
-    background: radial-gradient(
-        circle at 30% 30%,
-        rgba(99, 102, 241, 0.12) 0%,
-        transparent 35%
-      ),
-      radial-gradient(
-        circle at 70% 70%,
-        rgba(236, 72, 153, 0.1) 0%,
-        transparent 35%
-      );
-    animation: ambientGlow 12s ease-in-out infinite;
-    pointer-events: none;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(99, 102, 241, 0.8) 15%,
-      rgba(236, 72, 153, 0.8) 50%,
-      rgba(16, 185, 129, 0.8) 85%,
-      transparent 100%
-    );
-    box-shadow:
-      0 0 30px rgba(99, 102, 241, 0.5),
-      0 0 60px rgba(236, 72, 153, 0.3);
-    animation: shimmer 6s ease-in-out infinite;
-  }
-
-  @keyframes ambientGlow {
-    0%,
-    100% {
-      transform: translate(0, 0) rotate(0deg) scale(1);
-      opacity: 0.4;
-    }
-    33% {
-      transform: translate(5%, -5%) rotate(5deg) scale(1.05);
-      opacity: 0.6;
-    }
-    66% {
-      transform: translate(-3%, 3%) rotate(-3deg) scale(1.02);
-      opacity: 0.5;
-    }
-  }
-
-  @keyframes shimmer {
-    0%,
-    100% {
-      opacity: 0.7;
-      transform: scaleX(1);
-    }
-    50% {
-      opacity: 1;
-      transform: scaleX(1.02);
-    }
-  }
 
   &:fullscreen,
   &:-moz-full-screen,

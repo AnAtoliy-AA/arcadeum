@@ -34,6 +34,7 @@ interface ChatSectionProps {
   ) => string | undefined;
   formatLogMessage: (message: string) => string;
   t: (key: string) => string;
+  cardVariant?: string;
 }
 
 const getUserColor = (userId: string) => {
@@ -69,17 +70,23 @@ export function ChatSection({
   resolveDisplayName,
   formatLogMessage,
   t,
+  cardVariant,
 }: ChatSectionProps) {
   const canSendChatMessage = chatMessage.trim().length > 0;
 
   return (
-    <ChatCard>
+    <ChatCard $variant={cardVariant}>
       <InfoTitle>{t('games.table.chat.title') || 'Table Chat'}</InfoTitle>
-      <ChatTurnStatus>{turnStatus}</ChatTurnStatus>
+      <ChatTurnStatus $variant={cardVariant}>{turnStatus}</ChatTurnStatus>
       {logs && logs.length > 0 ? (
         <ChatMessages ref={chatMessagesRef}>
           {logs.map((log) => (
-            <LogEntry key={log.id} $type={log.type} $scope={log.scope}>
+            <LogEntry
+              key={log.id}
+              $type={log.type}
+              $scope={log.scope}
+              $variant={cardVariant}
+            >
               {resolveDisplayName(
                 log.senderId ?? undefined,
                 log.senderName ?? undefined,
@@ -110,6 +117,7 @@ export function ChatSection({
           type="button"
           $active={chatScope === 'all'}
           onClick={() => onChatScopeChange('all')}
+          $variant={cardVariant}
         >
           {t('games.table.chat.scope.all') || 'All'}
         </ScopeOption>
@@ -117,6 +125,7 @@ export function ChatSection({
           type="button"
           $active={chatScope === 'players'}
           onClick={() => onChatScopeChange('players')}
+          $variant={cardVariant}
         >
           {t('games.table.chat.scope.players') || 'Players'}
         </ScopeOption>
@@ -124,6 +133,7 @@ export function ChatSection({
           type="button"
           $active={chatScope === 'private'}
           onClick={() => onChatScopeChange('private')}
+          $variant={cardVariant}
         >
           {t('games.table.chat.scope.private') || 'Private'}
         </ScopeOption>
@@ -143,6 +153,7 @@ export function ChatSection({
                 'Send a private note to yourself'
         }
         disabled={!currentUserId}
+        $variant={cardVariant}
       />
       <ChatControls>
         <ChatHint>
@@ -156,6 +167,7 @@ export function ChatSection({
           type="button"
           onClick={onSendMessage}
           disabled={!currentUserId || !canSendChatMessage}
+          $variant={cardVariant}
         >
           {t('games.table.chat.send') || 'Send'}
         </ChatSendButton>

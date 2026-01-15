@@ -15,6 +15,12 @@ export {
   GameInfo,
   GameTitle,
   TurnStatus,
+  StartButton,
+  FullscreenButton,
+  ChatToggleButton,
+} from './header';
+
+export {
   ServerLoadingMessage,
   ServerLoadingHeader,
   ServerLoadingSpinner,
@@ -24,10 +30,7 @@ export {
   ServerLoadingFooter,
   ServerLoadingPercentage,
   ServerLoadingTimer,
-  StartButton,
-  FullscreenButton,
-  ChatToggleButton,
-} from './header';
+} from './header-loading';
 
 // Table Components
 export {
@@ -36,35 +39,44 @@ export {
   PlayersRing,
   PlayerPositionWrapper,
   CenterTable,
+} from './table';
+
+export {
+  TableInfo,
+  TableStat,
+  StatIcon,
+  StatValue,
   InfoCard,
   InfoTitle,
   ActionsHeader,
   ActionsToggleButton,
-  TableInfo,
-  TableStat,
-  CardSlot,
-} from './table';
+} from './table-widgets';
+
+export { CardSlot } from './table';
 
 // Player Components
 export {
   PlayerCard,
   PlayerAvatar,
   PlayerName,
-  PlayerCardCount,
-  TurnIndicator,
+  HandHeader,
+  HandTitle,
+  HandControls,
+  HandToggleButton,
+  HandCard,
 } from './players';
+
+export {
+  PlayerCardCount,
+  PlayerStatsContainer,
+  TurnIndicator,
+} from './player-widgets';
 
 // Card Components
 export {
   CardsGrid,
   Card,
-  CardInner,
-  CardFrame,
-  CardCorner,
   CardEmoji,
-  CardName,
-  CardDescription,
-  CardCountBadge,
   LastPlayedCard,
   DeckCard,
   ActionButtons,
@@ -73,12 +85,19 @@ export {
   StashIcon,
 } from './cards';
 
-// Chat Components
 export {
-  ChatCard,
-  GameLog,
-  LogEntry,
-  ChatMessages,
+  CardName,
+  CardDescription,
+  CardCountBadge,
+  CardInner,
+  CardFrame,
+  CardCorner,
+} from './card-decorations';
+
+// Chat Components
+export { ChatCard, GameLog, LogEntry, ChatMessages } from './chat';
+
+export {
   ScopeToggle,
   ScopeOption,
   ChatInput,
@@ -88,7 +107,7 @@ export {
   ChatSendButton,
   EmptyState,
   ChatBubbleContainer,
-} from './chat';
+} from './chat-widgets';
 
 // Modal Components
 export {
@@ -103,4 +122,6 @@ export {
   OptionButton,
   ModalActions,
   ModalButton,
+  ScrollableCardsGrid,
+  SelectableCard,
 } from './modals';

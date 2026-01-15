@@ -33,12 +33,14 @@ export const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
 
   return (
     <Modal onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <ModalHeader>
-          <ModalTitle>
+      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
+        <ModalHeader $variant={cardVariant}>
+          <ModalTitle $variant={cardVariant}>
             🔮 {t('games.table.modals.seeTheFuture.title')}
           </ModalTitle>
-          <CloseButton onClick={onClose}>×</CloseButton>
+          <CloseButton onClick={onClose} $variant={cardVariant}>
+            ×
+          </CloseButton>
         </ModalHeader>
         <OptionGrid>
           {cards.map((card, index) => (

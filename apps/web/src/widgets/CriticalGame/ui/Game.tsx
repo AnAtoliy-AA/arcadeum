@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useCallback, useState, useMemo } from 'react';
+import { useRef, useCallback, useMemo } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalGameProps, CriticalCard } from '../types';
 import { getCardTranslationKey } from '../lib/cardUtils';
@@ -11,12 +11,11 @@ import {
   useCriticalModals,
   useRematch,
   useWebGameHaptics,
-  useIdleTimer,
   useGameRoom,
   useSeeTheFutureFromLogs,
   useOmniscienceFromLogs,
+  useGameAutoplayIntegration,
 } from '../hooks';
-import { useAutoplay } from '../hooks/useAutoplay';
 import { useGameHandlers } from '../hooks/useGameHandlers';
 import { GameModals } from './GameModals';
 import { GameLobby } from './GameLobby';
@@ -202,53 +201,24 @@ export default function CriticalGame({
     handleConfirmSmite,
   } = gameHandlers;
 
-  // Autoplay hook
-  const autoplayState = useAutoplay({
+  // Autoplay hook integration
+  const {
+    autoplayState,
+    idleTimer,
+    idleTimerTriggered,
+    handleStopAutoplay,
+    idleTimerEnabled,
+  } = useGameAutoplayIntegration({
+    room,
     isMyTurn: !!isMyTurn,
     canAct: !!canAct,
     canPlayNope: !!canPlayNope,
-    hand: currentPlayer?.hand ?? [],
-    logs: snapshot?.logs ?? [],
-    pendingAction: snapshot?.pendingAction ?? null,
-    pendingFavor: snapshot?.pendingFavor ?? null,
-    pendingDefuse: snapshot?.pendingDefuse ?? null,
-    deckSize: snapshot?.deck?.length ?? 0,
-    playerOrder: snapshot?.playerOrder ?? [],
+    currentPlayer,
+    snapshot,
     currentUserId,
-    onDraw: actions.drawCard,
-    onPlayActionCard: handlePlayActionCard,
-    onPlayNope: actions.playNope,
-    onGiveFavorCard: actions.giveFavorCard,
-    onPlayDefuse: actions.playDefuse,
+    actions,
+    handlePlayActionCard,
   });
-
-  const { setAllEnabled } = autoplayState;
-
-  // Idle timer autoplay
-  const idleTimerEnabled = room.gameOptions?.idleTimerEnabled ?? false;
-  const [idleTimerTriggered, setIdleTimerTriggered] = useState(false);
-
-  const handleIdleTimeout = useCallback(() => {
-    setIdleTimerTriggered(true);
-    setAllEnabled(true);
-  }, [setAllEnabled]);
-
-  const idleTimer = useIdleTimer({
-    enabled: idleTimerEnabled,
-    isMyTurn: !!isMyTurn,
-    canAct: !!canAct,
-    onTimeout: handleIdleTimeout,
-  });
-
-  const handleStopAutoplay = useCallback(() => {
-    setIdleTimerTriggered(false);
-    setAllEnabled(false);
-    idleTimer.reset();
-  }, [idleTimer, setAllEnabled]);
-
-  // Note: idleTimerTriggered is reset when allEnabled becomes false
-  // This is derived behavior - we use a ref to track the triggered state
-  // and reset it when conditions change
 
   // Compute turn status display
   const turnStatusVariant = useMemo(():
@@ -292,7 +262,11 @@ export default function CriticalGame({
 
   // Game in progress
   return (
-    <GameContainer ref={containerRef} $isMyTurn={!!isMyTurn}>
+    <GameContainer
+      ref={containerRef}
+      $isMyTurn={!!isMyTurn}
+      $variant={cardVariant}
+    >
       <CriticalGameHeader
         room={room}
         t={t as (key: string, params?: Record<string, unknown>) => string}
@@ -380,6 +354,7 @@ export default function CriticalGame({
               resolveDisplayName={resolveDisplayName}
               formatLogMessage={formatLogMessage}
               t={t as (key: string) => string}
+              cardVariant={cardVariant}
             />
           )}
         </TableArea>

@@ -6,15 +6,22 @@ import {
   ModalTitle,
   ModalSection,
   SectionLabel,
-  OptionGrid,
-  OptionButton,
-  ModalActions,
-  ModalButton,
+  CardCorner,
+  CardFrame,
+  CardInner,
   CardEmoji,
   CardName,
   CardDescription,
+  ModalActions,
+  ModalButton,
+  ScrollableCardsGrid, // New component
+  SelectableCard, // New component
 } from '../styles';
-import { getCardEmoji, getCardTranslationKey } from '../../lib/cardUtils';
+import {
+  getCardEmoji,
+  getCardTranslationKey,
+  getCardDescriptionKey,
+} from '../../lib/cardUtils';
 import type { CriticalCard } from '../../types';
 
 interface GiveFavorModalProps {
@@ -22,7 +29,8 @@ interface GiveFavorModalProps {
   requesterName: string;
   myHand: CriticalCard[];
   onGiveCard: (card: CriticalCard) => void;
-  t: (key: string, params?: Record<string, unknown>) => string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t: (key: string, params?: Record<string, any>) => string;
   cardVariant?: string;
 }
 
@@ -47,33 +55,46 @@ export const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
 
   return (
     <Modal>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <ModalHeader>
-          <ModalTitle>🤲 {t('games.table.modals.giveFavor.title')}</ModalTitle>
+      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
+        <ModalHeader $variant={cardVariant}>
+          <ModalTitle $variant={cardVariant}>
+            🤲 {t('games.table.modals.giveFavor.title')}
+          </ModalTitle>
         </ModalHeader>
         <ModalSection>
-          <SectionLabel>
-            {t('games.table.modals.giveFavor.description').replace(
-              '{player}',
-              requesterName,
-            )}
+          <SectionLabel $variant={cardVariant}>
+            {t('games.table.modals.giveFavor.description', {
+              player: requesterName,
+            })}
           </SectionLabel>
-          <OptionGrid>
+          <ScrollableCardsGrid>
             {myHand.map((card, index) => (
-              <OptionButton
+              <SelectableCard
                 key={`${card}-${index}`}
-                $selected={selectedCard === card}
+                $cardType={card}
+                $index={0}
                 $variant={cardVariant}
                 onClick={() => setSelectedCard(card)}
+                $selected={selectedCard === card}
               >
-                <CardEmoji>{getCardEmoji(card)}</CardEmoji>
-                <CardName>
-                  {t(getCardTranslationKey(card, cardVariant)) || card}
-                </CardName>
-                <CardDescription></CardDescription>
-              </OptionButton>
+                <CardCorner $position="tl" />
+                <CardCorner $position="tr" />
+                <CardCorner $position="bl" />
+                <CardCorner $position="br" />
+                <CardFrame />
+                <CardInner>
+                  {/* Emoji hidden by default in styles, but good to have for accessibility/fallback if styles change */}
+                  <CardEmoji>{getCardEmoji(card)}</CardEmoji>
+                  <CardName $variant={cardVariant}>
+                    {t(getCardTranslationKey(card, cardVariant)) || card}
+                  </CardName>
+                  <CardDescription $variant={cardVariant}>
+                    {t(getCardDescriptionKey(card))}
+                  </CardDescription>
+                </CardInner>
+              </SelectableCard>
             ))}
-          </OptionGrid>
+          </ScrollableCardsGrid>
         </ModalSection>
         <ModalActions>
           <ModalButton onClick={handleConfirm} disabled={!selectedCard}>

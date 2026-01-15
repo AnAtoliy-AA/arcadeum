@@ -51,7 +51,7 @@ export function GameTableSection({
 }: GameTableSectionProps) {
   return (
     <GameTable>
-      <TableBackground />
+      <TableBackground $variant={cardVariant} />
       <PlayersRing $playerCount={playerOrder.length}>
         {playerOrder.map((playerId, index) => {
           const player = players.find((p) => p.playerId === playerId);
@@ -67,11 +67,12 @@ export function GameTableSection({
               currentUserId={currentUserId}
               logs={logs}
               resolveDisplayName={resolveDisplayName}
+              cardVariant={cardVariant}
             />
           );
         })}
 
-        <CenterTable>
+        <CenterTable $variant={cardVariant}>
           <CardSlot>
             <LastPlayedCardDisplay
               discardPile={discardPile}

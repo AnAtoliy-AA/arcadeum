@@ -1,40 +1,32 @@
 import React from 'react';
-import { TableInfo, TableStat } from './styles';
+import { TableInfo, TableStat, StatIcon, StatValue } from './styles';
 
 interface TableStatsProps {
   deckCount: number;
   discardPileCount: number;
   pendingDraws: number;
+  cardVariant?: string;
 }
 
 export const TableStats: React.FC<TableStatsProps> = ({
   deckCount,
   discardPileCount,
   pendingDraws,
+  cardVariant,
 }) => {
   return (
-    <TableInfo>
-      <TableStat>
-        <div style={{ fontSize: '1.1rem' }}>🎴</div>
-        <div style={{ fontSize: '0.9rem', fontWeight: 700 }}>{deckCount}</div>
+    <TableInfo $variant={cardVariant}>
+      <TableStat $variant={cardVariant}>
+        <StatIcon>🎴</StatIcon>
+        <StatValue>{deckCount}</StatValue>
       </TableStat>
-      <TableStat>
-        <div style={{ fontSize: '1.1rem' }}>🗑️</div>
-        <div style={{ fontSize: '0.9rem', fontWeight: 700 }}>
-          {discardPileCount}
-        </div>
+      <TableStat $variant={cardVariant}>
+        <StatIcon>🗑️</StatIcon>
+        <StatValue>{discardPileCount}</StatValue>
       </TableStat>
-      <TableStat>
-        <div style={{ fontSize: '1.1rem' }}>⏳</div>
-        <div
-          style={{
-            fontSize: '0.9rem',
-            fontWeight: 700,
-            color: '#DC2626',
-          }}
-        >
-          {pendingDraws}
-        </div>
+      <TableStat $variant={cardVariant}>
+        <StatIcon>⏳</StatIcon>
+        <StatValue $isWarning={true}>{pendingDraws}</StatValue>
       </TableStat>
     </TableInfo>
   );

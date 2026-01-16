@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import { GAME_VARIANT } from '../../lib/constants';
 
 export const CardName = styled.div<{ $variant?: string }>`
   font-size: 0.75rem;
@@ -25,7 +26,7 @@ export const CardName = styled.div<{ $variant?: string }>`
   z-index: 20;
 
   ${({ $variant }) =>
-    $variant === 'cyberpunk' &&
+    $variant === GAME_VARIANT.CYBERPUNK &&
     css`
       font-family: 'Courier New', monospace;
       letter-spacing: 1px;
@@ -67,6 +68,34 @@ export const CardName = styled.div<{ $variant?: string }>`
       }
     `}
 
+  ${({ $variant }) =>
+    $variant === GAME_VARIANT.UNDERWATER &&
+    css`
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.5px;
+      background: rgba(8, 51, 68, 0.85); /* cyan-950 */
+      border: 1px solid #22d3ee; /* cyan-400 */
+      border-radius: 8px; /* Slightly more rounded */
+      color: #a5f3fc; /* cyan-200 */
+      text-shadow: 0 0 5px rgba(34, 211, 238, 0.6);
+      padding: 0.3rem 0.6rem;
+      box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+
+      /* Glow effect */
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: 10px;
+        background: radial-gradient(
+          circle at center,
+          transparent 30%,
+          rgba(34, 211, 238, 0.3) 100%
+        );
+        z-index: -1;
+      }
+    `}
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,12 +121,22 @@ export const CardDescription = styled.div<{ $variant?: string }>`
 
   /* Cyberpunk Font */
   ${({ $variant }) =>
-    $variant === 'cyberpunk' &&
+    $variant === GAME_VARIANT.CYBERPUNK &&
     css`
       font-family: 'Courier New', monospace;
       font-size: 0.6rem;
       letter-spacing: 0.5px;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 1);
+    `}
+
+  /* Underwater Font */
+  ${({ $variant }) =>
+    $variant === GAME_VARIANT.UNDERWATER &&
+    css`
+      font-family: 'Courier New', monospace;
+      font-size: 0.65rem;
+      color: #ecfeff; /* cyan-50 */
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
     `}
 
   /* Bottom Overlay Position */

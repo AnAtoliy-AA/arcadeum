@@ -10,7 +10,8 @@ export const VARIANT_COLORS = {
   underwater: {
     primary: '#22d3ee',
     secondary: '#164e63',
-    background: '#083344',
+    accent: '#ec4899', // Pink accent from image
+    background: '#040b15', // Darker background
   },
   crime: {
     primary: '#dc2626',

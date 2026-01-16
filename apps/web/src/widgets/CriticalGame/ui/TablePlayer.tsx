@@ -104,7 +104,9 @@ export function TablePlayer({
         >
           {player.alive ? '🎮' : '💀'}
         </PlayerAvatar>
-        <PlayerName $isCurrentTurn={isCurrent}>{displayName}</PlayerName>
+        <PlayerName $isCurrentTurn={isCurrent} $variant={cardVariant}>
+          {displayName}
+        </PlayerName>
         {player.alive && (
           <PlayerStatsContainer>
             <PlayerCardCount $isCurrentTurn={isCurrent} $variant={cardVariant}>

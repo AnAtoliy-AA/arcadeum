@@ -2,6 +2,20 @@ import styled, { css } from 'styled-components';
 import { Card, CardEmoji } from './cards-base';
 import { SPRITE_GRID_SIZE } from './card-sprites';
 import { VARIANT_COLORS } from './variant-palette';
+import { GAME_VARIANT } from '../../lib/constants';
+const getDeckCardHoverBorder = ($variant: string | undefined) => {
+  if ($variant === GAME_VARIANT.UNDERWATER) return '#67e8f9';
+  if ($variant) return 'white';
+  return 'rgba(99, 102, 241, 0.8)';
+};
+
+const getActionButtonCornerColor = (
+  variant: 'primary' | 'secondary' | 'danger' | undefined,
+) => {
+  if (variant === 'danger') return VARIANT_COLORS.cyberpunk.danger;
+  if (variant === 'secondary') return VARIANT_COLORS.cyberpunk.secondary;
+  return VARIANT_COLORS.cyberpunk.primary;
+};
 
 export * from './cards-base';
 
@@ -68,30 +82,38 @@ export const DeckCard = styled.div<{ $variant?: string }>`
   height: 112px; // aspect ratio 2/3 roughly
   border-radius: 12px;
   background: ${({ $variant }) => {
-    if ($variant === 'cyberpunk') {
+    if ($variant === GAME_VARIANT.CYBERPUNK) {
       // Index 0 is the card back in the grid
       const x = (0 % SPRITE_GRID_SIZE) * (100 / (SPRITE_GRID_SIZE - 1));
       const y =
         Math.floor(0 / SPRITE_GRID_SIZE) * (100 / (SPRITE_GRID_SIZE - 1));
       return `url('/images/cards/cyberpunk_sprites.png') ${x}% ${y}% / ${SPRITE_GRID_SIZE * 100}% ${SPRITE_GRID_SIZE * 100}%`;
     }
-    if ($variant === 'underwater')
-      return `linear-gradient(135deg, ${VARIANT_COLORS.underwater.background} 0%, #164e63 100%)`;
-    if ($variant === 'crime')
+    if ($variant === GAME_VARIANT.UNDERWATER) {
+      const x = (0 % SPRITE_GRID_SIZE) * (100 / (SPRITE_GRID_SIZE - 1));
+      const y =
+        Math.floor(0 / SPRITE_GRID_SIZE) * (100 / (SPRITE_GRID_SIZE - 1));
+      return `url('/images/cards/underwater_sprites.png') ${x}% ${y}% / ${SPRITE_GRID_SIZE * 100}% ${SPRITE_GRID_SIZE * 100}%`;
+    }
+    if ($variant === GAME_VARIANT.CRIME)
       return `linear-gradient(135deg, ${VARIANT_COLORS.crime.background} 0%, #27272a 100%)`;
-    if ($variant === 'horror')
+    if ($variant === GAME_VARIANT.HORROR)
       return `linear-gradient(135deg, ${VARIANT_COLORS.horror.background} 0%, #0f172a 100%)`;
-    if ($variant === 'adventure')
+    if ($variant === GAME_VARIANT.ADVENTURE)
       return `linear-gradient(135deg, ${VARIANT_COLORS.adventure.background} 0%, #78350f 100%)`;
     return 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)';
   }};
   border: 2px solid
     ${({ $variant }) => {
-      if ($variant === 'cyberpunk') return VARIANT_COLORS.cyberpunk.secondary;
-      if ($variant === 'underwater') return VARIANT_COLORS.underwater.primary;
-      if ($variant === 'crime') return VARIANT_COLORS.crime.primary;
-      if ($variant === 'horror') return VARIANT_COLORS.horror.primary;
-      if ($variant === 'adventure') return VARIANT_COLORS.adventure.primary;
+      if ($variant === GAME_VARIANT.CYBERPUNK)
+        return VARIANT_COLORS.cyberpunk.secondary;
+      if ($variant === GAME_VARIANT.UNDERWATER)
+        return VARIANT_COLORS.underwater.primary;
+      if ($variant === GAME_VARIANT.CRIME) return VARIANT_COLORS.crime.primary;
+      if ($variant === GAME_VARIANT.HORROR)
+        return VARIANT_COLORS.horror.primary;
+      if ($variant === GAME_VARIANT.ADVENTURE)
+        return VARIANT_COLORS.adventure.primary;
       return 'rgba(99, 102, 241, 0.5)';
     }};
   display: flex;
@@ -110,14 +132,22 @@ export const DeckCard = styled.div<{ $variant?: string }>`
     inset: 4px;
     border: 2px dashed rgba(255, 255, 255, 0.1);
     border-radius: 8px;
-    display: ${({ $variant }) => ($variant === 'cyberpunk' ? 'none' : 'block')};
+    display: ${({ $variant }) =>
+      $variant === GAME_VARIANT.CYBERPUNK ||
+      $variant === GAME_VARIANT.UNDERWATER
+        ? 'none'
+        : 'block'};
   }
 
   &::after {
     content: '🎴';
     font-size: 2rem;
     opacity: 0.5;
-    display: ${({ $variant }) => ($variant === 'cyberpunk' ? 'none' : 'block')};
+    display: ${({ $variant }) =>
+      $variant === GAME_VARIANT.CYBERPUNK ||
+      $variant === GAME_VARIANT.UNDERWATER
+        ? 'none'
+        : 'block'};
   }
 
   &:hover {
@@ -125,8 +155,11 @@ export const DeckCard = styled.div<{ $variant?: string }>`
     box-shadow:
       0 10px 15px -3px rgba(0, 0, 0, 0.1),
       0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    border-color: ${({ $variant }) =>
-      $variant ? 'white' : 'rgba(99, 102, 241, 0.8)'};
+    border-color: ${({ $variant }) => getDeckCardHoverBorder($variant)};
+    box-shadow: ${({ $variant }) =>
+      $variant === GAME_VARIANT.UNDERWATER
+        ? '0 0 15px rgba(34, 211, 238, 0.5)'
+        : 'none'};
   }
 
   @media (max-width: 768px) {
@@ -143,9 +176,16 @@ export const ActionButtons = styled.div<{ $variant?: string }>`
   flex-wrap: wrap;
 
   ${({ $variant }) =>
-    $variant === 'cyberpunk' &&
+    $variant === GAME_VARIANT.CYBERPUNK &&
     css`
       gap: 0.6rem;
+    `}
+
+  ${({ $variant }) =>
+    $variant === GAME_VARIANT.UNDERWATER &&
+    css`
+      gap: 0.75rem;
+      padding: 0.25rem 1rem 1rem 1rem;
     `}
 `;
 
@@ -168,7 +208,11 @@ export const ActionButton = styled.button<{
 
   /* Default Styles (Original) */
   ${({ variant, $variant }) => {
-    if ($variant === 'cyberpunk') return ''; // Handle separately below
+    if (
+      $variant === GAME_VARIANT.CYBERPUNK ||
+      $variant === GAME_VARIANT.UNDERWATER
+    )
+      return ''; // Handle separately below
     if (variant === 'danger') {
       return css`
         background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
@@ -207,7 +251,7 @@ export const ActionButton = styled.button<{
 
   /* Cyberpunk Variant Styles */
   ${({ $variant, variant }) =>
-    $variant === 'cyberpunk' &&
+    $variant === GAME_VARIANT.CYBERPUNK &&
     css`
       border-radius: 4px;
       font-family: 'Courier New', monospace;
@@ -277,14 +321,72 @@ export const ActionButton = styled.button<{
         background: linear-gradient(
           135deg,
           transparent 50%,
-          ${variant === 'danger'
-              ? VARIANT_COLORS.cyberpunk.danger
-              : variant === 'secondary'
-                ? VARIANT_COLORS.cyberpunk.secondary
-                : VARIANT_COLORS.cyberpunk.primary}
-            50%
+          ${getActionButtonCornerColor(variant)} 50%
         );
       }
+    `}
+
+  /* Underwater Variant Styles */
+  ${({ $variant, variant }) =>
+    $variant === GAME_VARIANT.UNDERWATER &&
+    css`
+      border-radius: 999px; /* Pill shape */
+      padding: 0.6rem 1.75rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.75px;
+      background: rgba(4, 11, 21, 0.6);
+      border: 1px solid rgba(34, 211, 238, 0.4);
+      color: #22d3ee;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &:hover:not(:disabled) {
+        border-color: #22d3ee;
+        box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
+        transform: translateY(-1px);
+      }
+
+      /* Primary Underwater Action (DRAW CARD) */
+      ${(variant === 'primary' || !variant) &&
+      css`
+        background: #22d3ee;
+        border: 1px solid #22d3ee;
+        color: #040b15;
+        font-weight: 800;
+        box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+
+        &:hover:not(:disabled) {
+          background: #67e8f9;
+          box-shadow: 0 0 20px rgba(34, 211, 238, 0.5);
+        }
+      `}
+
+      /* Secondary Underwater Action */
+      ${variant === 'secondary' &&
+      css`
+        background: rgba(22, 78, 99, 0.2);
+        border: 1px solid rgba(165, 243, 252, 0.4);
+        color: #a5f3fc;
+
+        &:hover:not(:disabled) {
+          background: rgba(22, 78, 99, 0.4);
+          border-color: #a5f3fc;
+        }
+      `}
+
+      /* Danger Underwater Action */
+      ${variant === 'danger' &&
+      css`
+        background: rgba(127, 29, 29, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        color: #fca5a5;
+
+        &:hover:not(:disabled) {
+          background: rgba(127, 29, 29, 0.3);
+          border-color: #f87171;
+        }
+      `}
     `}
 
   &::before {

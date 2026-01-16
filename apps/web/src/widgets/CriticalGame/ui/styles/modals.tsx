@@ -1,7 +1,114 @@
-import styled, { css } from 'styled-components';
+import styled, { css, DefaultTheme } from 'styled-components';
 import React from 'react';
 import { ActionButton, CardsGrid, Card } from './cards';
 import { VARIANT_COLORS } from './variant-palette';
+import { GAME_VARIANT } from '../../lib/constants';
+
+const getModalFrameBackground = (
+  $variant: string | undefined,
+  theme: DefaultTheme,
+) => {
+  if ($variant === GAME_VARIANT.CYBERPUNK)
+    return VARIANT_COLORS.cyberpunk.background;
+  if ($variant === GAME_VARIANT.UNDERWATER) return 'rgba(8, 51, 68, 0.85)';
+  return theme.surfaces.card.background;
+};
+
+const getModalFrameBorder = (
+  $variant: string | undefined,
+  theme: DefaultTheme,
+) => {
+  if ($variant === GAME_VARIANT.CYBERPUNK) return 'rgba(192, 38, 211, 0.6)';
+  if ($variant === GAME_VARIANT.UNDERWATER) return 'rgba(34, 211, 238, 0.5)';
+  return theme.surfaces.card.border;
+};
+
+const getModalFrameShadow = ($variant: string | undefined) => {
+  if ($variant === GAME_VARIANT.CYBERPUNK) {
+    return '0 0 30px rgba(192, 38, 211, 0.2), inset 0 0 20px rgba(192, 38, 211, 0.1)';
+  }
+  if ($variant === GAME_VARIANT.UNDERWATER) {
+    return '0 0 30px rgba(34, 211, 238, 0.2), inset 0 0 20px rgba(34, 211, 238, 0.1)';
+  }
+  return '0 20px 60px rgba(0, 0, 0, 0.5)';
+};
+
+const getModalHeaderBorder = (
+  $variant: string | undefined,
+  theme: DefaultTheme,
+) => {
+  if ($variant === GAME_VARIANT.CYBERPUNK) return 'rgba(6, 182, 212, 0.3)';
+  return theme.surfaces.card.border;
+};
+
+const getModalTitleColor = (
+  $variant: string | undefined,
+  theme: DefaultTheme,
+) => {
+  if ($variant === GAME_VARIANT.CYBERPUNK)
+    return VARIANT_COLORS.cyberpunk.accent;
+  return theme.text.primary;
+};
+
+const getCloseButtonBackground = (
+  $variant: string | undefined,
+  theme: DefaultTheme,
+  isHover: boolean = false,
+) => {
+  if (isHover) {
+    if ($variant === GAME_VARIANT.CYBERPUNK) return 'rgba(239, 68, 68, 0.2)';
+    return theme.buttons.primary.gradientStart;
+  }
+  if ($variant === GAME_VARIANT.CYBERPUNK) return 'rgba(255, 255, 255, 0.1)';
+  return theme.surfaces.panel.background;
+};
+
+const getCloseButtonColor = (
+  $variant: string | undefined,
+  theme: DefaultTheme,
+  isHover: boolean = false,
+) => {
+  if (isHover) {
+    if ($variant === GAME_VARIANT.CYBERPUNK)
+      return VARIANT_COLORS.cyberpunk.danger;
+    return theme.buttons.primary.text;
+  }
+  if ($variant === GAME_VARIANT.CYBERPUNK) return '#fff';
+  return theme.text.primary;
+};
+
+const getSectionLabelColor = (
+  $variant: string | undefined,
+  theme: DefaultTheme,
+) => {
+  if ($variant === GAME_VARIANT.CYBERPUNK)
+    return VARIANT_COLORS.cyberpunk.primary;
+  return theme.text.secondary;
+};
+
+const getOptionButtonBackground = (
+  $selected: boolean,
+  $variant: string | undefined,
+  theme: DefaultTheme,
+) => {
+  if ($selected) {
+    return `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}20, transparent)`;
+  }
+  switch ($variant) {
+    case GAME_VARIANT.CYBERPUNK:
+      return `linear-gradient(135deg, ${VARIANT_COLORS.cyberpunk.background} 0%, #1e1b4b 100%)`;
+    case GAME_VARIANT.UNDERWATER:
+      return `linear-gradient(135deg, ${VARIANT_COLORS.underwater.background} 0%, #164e63 100%)`;
+    case GAME_VARIANT.CRIME:
+      return `linear-gradient(135deg, ${VARIANT_COLORS.crime.background} 0%, #27272a 100%)`;
+    case GAME_VARIANT.HORROR:
+      return `linear-gradient(135deg, ${VARIANT_COLORS.horror.background} 0%, #0f172a 100%)`;
+    case GAME_VARIANT.ADVENTURE:
+      return `linear-gradient(135deg, ${VARIANT_COLORS.adventure.background} 0%, #78350f 100%)`;
+    default:
+      return theme.surfaces.panel.background;
+  }
+};
 
 // Modal Components
 export const Modal = styled.div`
@@ -19,31 +126,23 @@ export const Modal = styled.div`
 
 const StyledModalFrame = styled.div<{ $variant?: string }>`
   background: ${({ theme, $variant }) =>
-    $variant === 'cyberpunk'
-      ? VARIANT_COLORS.cyberpunk.background
-      : theme.surfaces.card.background};
+    getModalFrameBackground($variant, theme)};
   border: 2px solid
-    ${({ theme, $variant }) =>
-      $variant === 'cyberpunk'
-        ? 'rgba(192, 38, 211, 0.6)'
-        : theme.surfaces.card.border};
+    ${({ theme, $variant }) => getModalFrameBorder($variant, theme)};
   border-radius: ${({ $variant }) =>
-    $variant === 'cyberpunk' ? '4px' : '24px'};
+    $variant === GAME_VARIANT.CYBERPUNK ? '4px' : '24px'};
   max-width: 600px;
   width: 100%;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
   position: relative;
-  box-shadow: ${({ $variant }) =>
-    $variant === 'cyberpunk'
-      ? '0 0 30px rgba(192, 38, 211, 0.2), inset 0 0 20px rgba(192, 38, 211, 0.1)'
-      : '0 20px 60px rgba(0, 0, 0, 0.5)'};
+  box-shadow: ${({ $variant }) => getModalFrameShadow($variant)};
   animation: slideUp 0.3s ease-out;
 
   /* Cyberpunk Tech Corners */
   ${({ $variant }) =>
-    $variant === 'cyberpunk' &&
+    $variant === GAME_VARIANT.CYBERPUNK &&
     css`
       &::before {
         content: '';
@@ -69,16 +168,19 @@ const StyledModalFrame = styled.div<{ $variant?: string }>`
       }
     `}
 
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+  ${({ $variant }) =>
+    $variant === GAME_VARIANT.UNDERWATER &&
+    css`
+      /* Underwater specific Modal Content adds */
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 4px;
+        border: 1px solid rgba(34, 211, 238, 0.2);
+        border-radius: 20px;
+        pointer-events: none;
+      }
+    `}
 `;
 
 const StyledScrollArea = styled.div`
@@ -118,28 +220,31 @@ export const ModalHeader = styled.div<{ $variant?: string }>`
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 2px solid
-    ${({ theme, $variant }) =>
-      $variant === 'cyberpunk'
-        ? 'rgba(6, 182, 212, 0.3)'
-        : theme.surfaces.card.border};
+    ${({ theme, $variant }) => getModalHeaderBorder($variant, theme)};
 `;
 
 export const ModalTitle = styled.h2<{ $variant?: string }>`
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
-  color: ${({ theme, $variant }) =>
-    $variant === 'cyberpunk'
-      ? VARIANT_COLORS.cyberpunk.accent
-      : theme.text.primary};
+  color: ${({ theme, $variant }) => getModalTitleColor($variant, theme)};
 
   ${({ $variant }) =>
-    $variant === 'cyberpunk' &&
+    $variant === GAME_VARIANT.CYBERPUNK &&
     css`
       font-family: 'Courier New', monospace;
       text-transform: uppercase;
       letter-spacing: 2px;
       text-shadow: 0 0 10px rgba(232, 121, 249, 0.5);
+    `}
+
+  ${({ $variant }) =>
+    $variant === GAME_VARIANT.UNDERWATER &&
+    css`
+      font-family: 'Courier New', monospace;
+      letter-spacing: 1px;
+      color: #22d3ee;
+      text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
     `}
 `;
 
@@ -149,11 +254,8 @@ export const CloseButton = styled.button<{ $variant?: string }>`
   border-radius: 50%;
   border: none;
   background: ${({ theme, $variant }) =>
-    $variant === 'cyberpunk'
-      ? 'rgba(255, 255, 255, 0.1)'
-      : theme.surfaces.panel.background};
-  color: ${({ theme, $variant }) =>
-    $variant === 'cyberpunk' ? '#fff' : theme.text.primary};
+    getCloseButtonBackground($variant, theme)};
+  color: ${({ theme, $variant }) => getCloseButtonColor($variant, theme)};
   font-size: 1.25rem;
   cursor: pointer;
   display: flex;
@@ -163,13 +265,9 @@ export const CloseButton = styled.button<{ $variant?: string }>`
 
   &:hover {
     background: ${({ theme, $variant }) =>
-      $variant === 'cyberpunk'
-        ? 'rgba(239, 68, 68, 0.2)'
-        : theme.buttons.primary.gradientStart};
+      getCloseButtonBackground($variant, theme, true)};
     color: ${({ theme, $variant }) =>
-      $variant === 'cyberpunk'
-        ? VARIANT_COLORS.cyberpunk.danger
-        : theme.buttons.primary.text};
+      getCloseButtonColor($variant, theme, true)};
     transform: rotate(90deg);
   }
 `;
@@ -181,19 +279,24 @@ export const ModalSection = styled.div`
 export const SectionLabel = styled.div<{ $variant?: string }>`
   font-size: 0.875rem;
   font-weight: 600;
-  color: ${({ theme, $variant }) =>
-    $variant === 'cyberpunk'
-      ? VARIANT_COLORS.cyberpunk.primary
-      : theme.text.secondary};
+  color: ${({ theme, $variant }) => getSectionLabelColor($variant, theme)};
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 0.75rem;
 
   ${({ $variant }) =>
-    $variant === 'cyberpunk' &&
+    $variant === GAME_VARIANT.CYBERPUNK &&
     css`
       font-family: 'Courier New', monospace;
       text-shadow: 0 0 5px rgba(6, 182, 212, 0.5);
+    `}
+
+  ${({ $variant }) =>
+    $variant === GAME_VARIANT.UNDERWATER &&
+    css`
+      font-family: 'Courier New', monospace;
+      text-shadow: 0 0 5px rgba(34, 211, 238, 0.5);
+      color: #22d3ee;
     `}
 `;
 
@@ -214,22 +317,8 @@ export const OptionButton = styled.button<{
       $selected
         ? theme.buttons.primary.gradientStart
         : theme.surfaces.card.border};
-  background: ${({ $selected, $variant, theme }) => {
-    if ($selected) {
-      return `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}20, transparent)`;
-    }
-    if ($variant === 'cyberpunk')
-      return `linear-gradient(135deg, ${VARIANT_COLORS.cyberpunk.background} 0%, #1e1b4b 100%)`;
-    if ($variant === 'underwater')
-      return `linear-gradient(135deg, ${VARIANT_COLORS.underwater.background} 0%, #164e63 100%)`;
-    if ($variant === 'crime')
-      return `linear-gradient(135deg, ${VARIANT_COLORS.crime.background} 0%, #27272a 100%)`;
-    if ($variant === 'horror')
-      return `linear-gradient(135deg, ${VARIANT_COLORS.horror.background} 0%, #0f172a 100%)`;
-    if ($variant === 'adventure')
-      return `linear-gradient(135deg, ${VARIANT_COLORS.adventure.background} 0%, #78350f 100%)`;
-    return theme.surfaces.panel.background;
-  }};
+  background: ${({ $selected, $variant, theme }) =>
+    getOptionButtonBackground(!!$selected, $variant, theme)};
   color: ${({ theme }) => theme.text.primary};
   font-weight: 600;
   cursor: pointer;

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Select } from '@/shared/ui/Select/Select';
-import { CARD_VARIANTS, RANDOM_VARIANT } from '../lib/constants';
+import { CARD_VARIANTS, RANDOM_VARIANT, GAME_VARIANT } from '../lib/constants';
 import { resolveApiUrl } from '@/shared/lib/api-base';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 
@@ -44,7 +44,7 @@ export function VariantSelector({
 
   return (
     <Select
-      value={currentVariant || 'cyberpunk'}
+      value={currentVariant || GAME_VARIANT.CYBERPUNK}
       onChange={handleVariantChange}
       disabled={disabled || loading}
       style={{ minWidth: '200px' }}

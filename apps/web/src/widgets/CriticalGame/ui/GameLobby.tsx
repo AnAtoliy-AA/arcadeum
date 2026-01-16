@@ -60,7 +60,7 @@ import {
   VariantSelectorWrapper,
   // ReorderButton, // No longer used
 } from './styles/lobby';
-import { CARD_VARIANTS, RANDOM_VARIANT } from '../lib/constants';
+import { CARD_VARIANTS, RANDOM_VARIANT, GAME_VARIANT } from '../lib/constants';
 import { VariantSelector } from './VariantSelector';
 
 // Avatar colors
@@ -202,7 +202,9 @@ export function GameLobby({
             <VariantSelectorWrapper>
               <VariantSelector
                 roomId={room.id}
-                currentVariant={room.gameOptions?.cardVariant || 'cyberpunk'}
+                currentVariant={
+                  room.gameOptions?.cardVariant || GAME_VARIANT.CYBERPUNK
+                }
               />
             </VariantSelectorWrapper>
           )}

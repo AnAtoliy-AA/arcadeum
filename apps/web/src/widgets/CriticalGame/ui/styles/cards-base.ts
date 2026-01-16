@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components';
 import { CriticalCard } from '@/shared/types/games';
 import { CARD_SPRITE_MAP, SPRITE_GRID_SIZE } from './card-sprites';
+import { GAME_VARIANT } from '../../lib/constants';
 
 // Base Card component for reuse in selectors
 export const Card = styled.div<{
@@ -42,15 +43,15 @@ export const Card = styled.div<{
     const y = row * (100 / (SPRITE_GRID_SIZE - 1));
 
     let spriteUrl = '';
-    if ($variant === 'cyberpunk')
+    if ($variant === GAME_VARIANT.CYBERPUNK)
       spriteUrl = '/images/cards/cyberpunk_sprites.png';
-    else if ($variant === 'underwater')
+    else if ($variant === GAME_VARIANT.UNDERWATER)
       spriteUrl = '/images/cards/underwater_sprites.png';
-    else if ($variant === 'crime')
+    else if ($variant === GAME_VARIANT.CRIME)
       spriteUrl = '/images/cards/crime_sprites.png';
-    else if ($variant === 'horror')
+    else if ($variant === GAME_VARIANT.HORROR)
       spriteUrl = '/images/cards/horror_sprites.png';
-    else if ($variant === 'adventure')
+    else if ($variant === GAME_VARIANT.ADVENTURE)
       spriteUrl = '/images/cards/adventure_sprites.png';
 
     if (spriteUrl) {
@@ -121,18 +122,41 @@ export const Card = styled.div<{
     transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: ${({ $variant }) =>
-      $variant
-        ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 60%)'
-        : 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5) 0%, transparent 50%), linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 60%)'};
-    pointer-events: none;
-    border-radius: 16px;
     z-index: 5;
   }
+
+  /* Holographic Shine for Underwater */
+  ${({ $variant }) =>
+    $variant === GAME_VARIANT.UNDERWATER &&
+    css`
+      &::before {
+        background: linear-gradient(
+          135deg,
+          rgba(236, 72, 153, 0.4) 0%,
+          rgba(34, 211, 238, 0.4) 50%,
+          rgba(236, 72, 153, 0.4) 100%
+        );
+        background-size: 200% 200%;
+        animation: holoShine 4s linear infinite;
+        opacity: 0.5;
+        z-index: 5;
+      }
+
+      @keyframes holoShine {
+        0% {
+          background-position: 0% 0%;
+        }
+        100% {
+          background-position: 200% 200%;
+        }
+      }
+
+      border: 1px solid rgba(34, 211, 238, 0.5);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.5),
+        0 0 15px rgba(34, 211, 238, 0.3),
+        inset 0 0 20px rgba(34, 211, 238, 0.1);
+    `}
 
   &::after {
     content: '';
@@ -204,25 +228,34 @@ export const DeckCard = styled.div<{ $variant?: string }>`
   height: 112px; // aspect ratio 2/3 roughly
   border-radius: 12px;
   background: ${({ $variant }) => {
-    if ($variant === 'cyberpunk')
+    if ($variant === GAME_VARIANT.CYBERPUNK)
       return "url('/images/cards/cyberpunk_card_back.png') center/cover no-repeat";
-    if ($variant === 'underwater')
-      return 'linear-gradient(135deg, #083344 0%, #164e63 100%)';
-    if ($variant === 'crime')
+
+    if ($variant === GAME_VARIANT.UNDERWATER) {
+      const spriteIndex = 0; // Card back
+      const col = spriteIndex % SPRITE_GRID_SIZE;
+      const row = Math.floor(spriteIndex / SPRITE_GRID_SIZE);
+      const x = col * (100 / (SPRITE_GRID_SIZE - 1));
+      const y = row * (100 / (SPRITE_GRID_SIZE - 1));
+      const size = SPRITE_GRID_SIZE * 100;
+      return `url('/images/cards/underwater_sprites.png') ${x}% ${y}% / ${size}% ${size}% no-repeat`;
+    }
+
+    if ($variant === GAME_VARIANT.CRIME)
       return 'linear-gradient(135deg, #18181b 0%, #27272a 100%)';
-    if ($variant === 'horror')
+    if ($variant === GAME_VARIANT.HORROR)
       return 'linear-gradient(135deg, #020617 0%, #0f172a 100%)';
-    if ($variant === 'adventure')
+    if ($variant === GAME_VARIANT.ADVENTURE)
       return 'linear-gradient(135deg, #451a03 0%, #78350f 100%)';
     return 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)';
   }};
   border: 2px solid
     ${({ $variant }) => {
-      if ($variant === 'cyberpunk') return '#c026d3';
-      if ($variant === 'underwater') return '#22d3ee';
-      if ($variant === 'crime') return '#dc2626';
-      if ($variant === 'horror') return '#10b981';
-      if ($variant === 'adventure') return '#f59e0b';
+      if ($variant === GAME_VARIANT.CYBERPUNK) return '#c026d3';
+      if ($variant === GAME_VARIANT.UNDERWATER) return '#22d3ee';
+      if ($variant === GAME_VARIANT.CRIME) return '#dc2626';
+      if ($variant === GAME_VARIANT.HORROR) return '#10b981';
+      if ($variant === GAME_VARIANT.ADVENTURE) return '#f59e0b';
       return 'rgba(99, 102, 241, 0.5)';
     }};
   display: flex;
@@ -241,14 +274,16 @@ export const DeckCard = styled.div<{ $variant?: string }>`
     inset: 4px;
     border: 2px dashed rgba(255, 255, 255, 0.1);
     border-radius: 8px;
-    display: ${({ $variant }) => ($variant === 'cyberpunk' ? 'none' : 'block')};
+    display: ${({ $variant }) =>
+      $variant === GAME_VARIANT.CYBERPUNK ? 'none' : 'block'};
   }
 
   &::after {
     content: '🎴';
     font-size: 2rem;
     opacity: 0.5;
-    display: ${({ $variant }) => ($variant === 'cyberpunk' ? 'none' : 'block')};
+    display: ${({ $variant }) =>
+      $variant === GAME_VARIANT.CYBERPUNK ? 'none' : 'block'};
   }
 
   &:hover {

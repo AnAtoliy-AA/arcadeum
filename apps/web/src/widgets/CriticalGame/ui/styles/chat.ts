@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components';
-import { InfoCard } from './table-widgets';
+import { InfoCard } from './table-info';
+import { GAME_VARIANT } from '../../lib/constants';
 
 // Chat Components
 export const ChatCard = styled(InfoCard)`
@@ -29,6 +30,51 @@ export const ChatCard = styled(InfoCard)`
   @media (max-height: 500px) {
     gap: 0.35rem;
   }
+
+  /* Variant styling for nested InfoTitle */
+  ${({ $variant }) =>
+    $variant === GAME_VARIANT.CYBERPUNK &&
+    css`
+      & > h3 {
+        color: #c026d3;
+        text-shadow: 0 0 5px rgba(192, 38, 211, 0.5);
+        font-family: 'Courier New', monospace;
+        border-bottom: 1px solid rgba(192, 38, 211, 0.3);
+        &::after {
+          display: none;
+        }
+      }
+    `}
+
+  ${({ $variant }) =>
+    $variant === GAME_VARIANT.UNDERWATER &&
+    css`
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      background: rgba(4, 11, 21, 0.6) !important;
+      position: relative;
+      padding-top: 2rem;
+
+      & > h3 {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2rem;
+        background: rgba(22, 78, 99, 0.4);
+        margin: 0;
+        padding: 0 1rem;
+        display: flex;
+        align-items: center;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #22d3ee;
+        border-bottom: 1px solid rgba(34, 211, 238, 0.3);
+        &::after {
+          display: none;
+        }
+      }
+    `}
 `;
 
 export const GameLog = styled.div`
@@ -103,7 +149,7 @@ export const LogEntry = styled.div<{
   `}
 
   ${({ $variant, $type }) =>
-    $variant === 'cyberpunk' &&
+    $variant === GAME_VARIANT.CYBERPUNK &&
     css`
       font-family: 'Courier New', monospace;
       font-size: 0.8rem;
@@ -134,6 +180,38 @@ export const LogEntry = styled.div<{
           ? 'inset 2px 0 8px -2px rgba(192, 38, 211, 0.3)'
           : 'none'};
     `}
+
+  ${({ $variant, $type }) =>
+    $variant === GAME_VARIANT.UNDERWATER &&
+    css`
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem; /* slightly larger for readability */
+      border-left-width: 3px;
+      margin-bottom: 3px;
+      border-radius: 4px;
+
+      border-left-color: ${$type === 'action'
+        ? '#22d3ee' /* cyan-400 */
+        : $type === 'system'
+          ? '#67e8f9' /* cyan-300 */
+          : 'rgba(165, 243, 252, 0.5)'};
+
+      background: linear-gradient(
+        90deg,
+        ${$type === 'action'
+            ? 'rgba(22, 78, 99, 0.4)'
+            : $type === 'system'
+              ? 'rgba(8, 51, 68, 0.4)'
+              : 'rgba(22, 78, 99, 0.1)'}
+          0%,
+        transparent 100%
+      );
+
+      box-shadow: ${$type === 'action'
+        ? 'inset 2px 0 8px -2px rgba(34, 211, 238, 0.2)'
+        : 'none'};
+      color: #ecfeff; /* cyan-50 */
+    `}
 `;
 
 export const ChatMessages = styled(GameLog)`
@@ -159,9 +237,11 @@ export const ChatMessages = styled(GameLog)`
   /* Cyberpunk Scrollbar */
   ${({ theme }) => css`
     &::-webkit-scrollbar-thumb {
-      background: ${String(theme.name) === 'cyberpunk'
+      background: ${String(theme.name) === GAME_VARIANT.CYBERPUNK
         ? '#c026d3'
-        : theme.buttons.primary.gradientStart};
+        : String(theme.name) === GAME_VARIANT.UNDERWATER
+          ? '#22d3ee'
+          : theme.buttons.primary.gradientStart};
     }
   `}
 

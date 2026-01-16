@@ -7,96 +7,120 @@ const path = require('path');
 
 const Jimp = require('jimp');
 
-const ARTIFACTS_DIR =
-  '/Users/anatoliyaliaksandrau/.gemini/antigravity/brain/c75d39d9-5428-49de-a84a-bedc852a5761';
-const OUTPUT_PATH =
-  '/Users/anatoliyaliaksandrau/js/aicoapp/apps/web/public/images/cards/cyberpunk_sprites.png';
+const CONSTANTS_PATH = path.resolve(
+  __dirname,
+  '../apps/web/src/widgets/CriticalGame/lib/constants.ts',
+);
+
+// Basic parsing to "import" constants from TS file
+function getGameVariants() {
+  try {
+    const content = fs.readFileSync(CONSTANTS_PATH, 'utf8');
+    const match = content.match(
+      /export const GAME_VARIANT = ({[\s\S]*?}) as const;/,
+    );
+    if (match) {
+      // Very basic translation from TS object literal to JS object
+      // This works for simple key-value pairs
+      const objectStr = match[1]
+        .replace(/\b([A-Z_]+):/g, '"$1":') // Quote keys
+        .replace(/'/g, '"') // Use double quotes
+        .replace(/,(\s*})/g, '$1'); // Remove trailing comma
+      return JSON.parse(objectStr);
+    }
+  } catch (err) {
+    console.warn('Could not parse constants file, using fallback');
+  }
+  return { UNDERWATER: 'underwater' };
+}
+
+const GAME_VARIANT = getGameVariants();
+const SELECTED_VARIANT = GAME_VARIANT.UNDERWATER;
+
+const ARTIFACTS_DIR = path.resolve(
+  __dirname,
+  '../../.gemini/antigravity/brain/44d3364a-e853-4aa9-9692-188c78ddebc7',
+);
+const OUTPUT_PATH = path.resolve(
+  __dirname,
+  `../apps/web/public/images/cards/${SELECTED_VARIANT}_sprites.png`,
+);
 
 // 7x7 grid, 49 cards capacity
 const TILE_SIZE = 171;
 const GRID_SIZE = 7;
 const TOTAL_SIZE = TILE_SIZE * GRID_SIZE; // 1197
 
-// Mapping from Index (0-35) to Filename suffix (e.g. 'system_overload' -> 'cyberpunk_system_overload.png')
-// Based on styles/card-sprites.ts
-// Mapping from Index (0-39) to Filename suffix
-// Based on styles/card-sprites.ts
+// Mapping for UNDERWATER theme
+// keys must match the index in CARD_SPRITE_MAP (implicit in styles/card-sprites.ts which usually follows a specific order)
 const SPRITE_MAP = {
   // EXTRA (Card Back)
-  0: 'cyberpunk_card_back',
+  0: `${SELECTED_VARIANT}_card_back`,
 
   // SPECIAL
-  1: 'cyberpunk_system_overload', // critical_event
-  2: 'cyberpunk_firewall', // neutralizer
+  1: `${SELECTED_VARIANT}_system_overload`, // critical_event (Defuse / Hull Repair)
+  2: `${SELECTED_VARIANT}_firewall`, // neutralizer (Nope / Hatch Seal)
 
   // CORE
-  3: 'cyberpunk_ddos', // strike
-  4: 'cyberpunk_proxy', // evade
-  5: 'cyberpunk_hack', // trade
-  6: 'cyberpunk_rehash', // reorder
-  7: 'cyberpunk_ping', // insight
-  8: 'cyberpunk_404_error', // cancel
+  3: `${SELECTED_VARIANT}_ddos`, // strike (Attack / Torpedo)
+  4: `${SELECTED_VARIANT}_proxy`, // evade (Skip / Sonar)
+  5: `${SELECTED_VARIANT}_hack`, // trade (Favor / Salvage)
+  6: `${SELECTED_VARIANT}_rehash`, // reorder (Shuffle / Current)
+  7: `${SELECTED_VARIANT}_ping`, // insight (See Future / Periscope)
+  8: `${SELECTED_VARIANT}_404_error`, // cancel (Reverse / Backwash - mapped same as firewall usually? or separate)
 
-  // COLLECTION
-  9: 'cyberpunk_data_chip', // collection_alpha (Data Chip)
-  10: 'cyberpunk_bio_implant', // collection_beta
-  11: 'cyberpunk_neon_katana', // collection_gamma
-  12: 'cyberpunk_holo_disk', // collection_delta
-  13: 'cyberpunk_cyberskull', // collection_epsilon (Cyberskull)
+  // COLLECTION (e.g. Treasures)
+  9: `${SELECTED_VARIANT}_data_chip`,
+  10: `${SELECTED_VARIANT}_bio_implant`,
+  11: `${SELECTED_VARIANT}_neon_katana`,
+  12: `${SELECTED_VARIANT}_holo_disk`,
+  13: `${SELECTED_VARIANT}_cyberskull`,
 
   // ATTACK PACK
-  14: 'cyberpunk_targeted_malware', // targeted_strike
-  15: 'cyberpunk_self_destruct', // private_strike
-  16: 'cyberpunk_botnet', // recursive_strike
-  17: 'cyberpunk_ghost_mode', // mega_evade
-  18: 'cyberpunk_loopback', // invert
+  14: `${SELECTED_VARIANT}_targeted_malware`,
+  15: `${SELECTED_VARIANT}_self_destruct`,
+  16: `${SELECTED_VARIANT}_botnet`,
+  17: `${SELECTED_VARIANT}_ghost_mode`,
+  18: `${SELECTED_VARIANT}_loopback`,
 
   // FUTURE PACK
-  19: 'cyberpunk_deep_scan', // see_future_5x
-  20: 'cyberpunk_rewrite', // alter_future_3x
-  21: 'cyberpunk_system_override', // alter_future_5x
-  22: 'cyberpunk_broadcast', // reveal_future_3x
-  23: 'cyberpunk_peer_sync', // share_future_3x
-  24: 'cyberpunk_backdoor_access', // draw_bottom
-  25: 'cyberpunk_kernel_swap', // swap_top_bottom
-  26: 'cyberpunk_decompile', // bury
+  19: `${SELECTED_VARIANT}_deep_scan`,
+  20: `${SELECTED_VARIANT}_rewrite`,
+  21: `${SELECTED_VARIANT}_system_override`,
+  22: `${SELECTED_VARIANT}_broadcast`,
+  23: `${SELECTED_VARIANT}_peer_sync`,
+  24: `${SELECTED_VARIANT}_backdoor_access`,
+  25: `${SELECTED_VARIANT}_kernel_swap`,
+  26: `${SELECTED_VARIANT}_decompile`,
 
   // THEFT PACK
-  27: 'cyberpunk_rogue_ai', // wildcard
-  28: 'cyberpunk_tracker', // mark
-  29: 'cyberpunk_intercept', // steal_draw
-  30: 'cyberpunk_encrypted_vault', // stash
+  27: `${SELECTED_VARIANT}_rogue_ai`, // wildcard
+  28: `${SELECTED_VARIANT}_tracker`, // mark
+  29: `${SELECTED_VARIANT}_intercept`, // steal
+  30: `${SELECTED_VARIANT}_encrypted_vault`, // stash
 
   // DEITY PACK
-  31: 'cyberpunk_god_mode', // omniscience
-  32: 'cyberpunk_system_restore', // miracle
-  33: 'cyberpunk_neural_shock', // smite
-  34: 'cyberpunk_network_crash', // rapture
+  31: `${SELECTED_VARIANT}_god_mode`,
+  32: `${SELECTED_VARIANT}_system_restore`,
+  33: `${SELECTED_VARIANT}_neural_shock`,
+  34: `${SELECTED_VARIANT}_network_crash`,
 
-  // CHAOS PACK (Planned/Extra)
-  35: 'cyberpunk_core_meltdown', // critical_implosion
-  36: 'cyberpunk_sandbox_env', // containment_field
-  37: 'cyberpunk_fission', // fission
-  38: 'cyberpunk_tribute', // tribute
-  39: 'cyberpunk_blackout', // blackout
+  // CHAOS PACK
+  35: `${SELECTED_VARIANT}_core_meltdown`,
+  36: `${SELECTED_VARIANT}_sandbox_env`,
+  37: `${SELECTED_VARIANT}_fission`,
+  38: `${SELECTED_VARIANT}_tribute`,
+  39: `${SELECTED_VARIANT}_blackout`,
 };
 
 async function generate() {
-  console.log('Loading original sprite sheet for fallback...');
-  let originalSheet;
-  try {
-    originalSheet = await Jimp.read(OUTPUT_PATH);
-    console.log('Original sheet loaded.');
-  } catch (e) {
-    console.warn('Could not load original sheet. Fallback will be empty.');
-  }
-
-  console.log('Creating new sprite sheet...');
+  console.log(`Creating new sprite sheet for ${SELECTED_VARIANT}...`);
   const background = new Jimp(TOTAL_SIZE, TOTAL_SIZE, 0x00000000); // Transparent
 
   // Loop up to 49 (7x7)
   const MAX_INDEX = GRID_SIZE * GRID_SIZE;
 
+  let count = 0;
   for (let i = 0; i < MAX_INDEX; i++) {
     const filenameBase = SPRITE_MAP[i];
 
@@ -107,39 +131,12 @@ async function generate() {
       : null;
 
     if (fileNode) {
-      console.log(`[${i}] Found new asset: ${fileNode}`);
+      console.log(`[${i}] Found asset: ${fileNode}`);
       img = await Jimp.read(path.join(ARTIFACTS_DIR, fileNode));
-    } else if ((i === 36 || i === 37 || i === 38) && originalSheet) {
-      // Fallback for Fission (36), Tribute (37), Blackout (38) using legacy indices 0, 1, 2
-      // These cards share indices with others in the old system, and we want to preserve that legacy look
-      // instead of using the new "System Overload" text sprites which would be incorrect.
-      const legacyMap = { 36: 0, 37: 1, 38: 2 };
-      const origIdx = legacyMap[i];
-
-      console.log(
-        `[${i}] Using legacy original asset at index ${origIdx} (fallback)...`,
-      );
-      const ORIG_GRID = 6;
-      const ORIG_TILE = 1024 / ORIG_GRID; // approx 170.66
-
-      const col = origIdx % ORIG_GRID;
-      const row = Math.floor(origIdx / ORIG_GRID);
-
-      img = originalSheet
-        .clone()
-        .crop(col * ORIG_TILE, row * ORIG_TILE, ORIG_TILE, ORIG_TILE);
-    } else if (i < 36 && originalSheet) {
-      // Fallback to original sheet (which was 6x6)
-      // console.log(`[${i}] Using original asset (fallback)...`);
-      const ORIG_GRID = 6;
-      const ORIG_TILE = 1024 / ORIG_GRID; // approx 170.66
-
-      const col = i % ORIG_GRID;
-      const row = Math.floor(i / ORIG_GRID);
-
-      img = originalSheet
-        .clone()
-        .crop(col * ORIG_TILE, row * ORIG_TILE, ORIG_TILE, ORIG_TILE);
+    } else {
+      if (filenameBase) {
+        // console.warn(`[${i}] No asset for ${filenameBase}`);
+      }
     }
 
     if (img) {
@@ -147,22 +144,27 @@ async function generate() {
       const col = i % GRID_SIZE;
       const row = Math.floor(i / GRID_SIZE);
       background.blit(img, col * TILE_SIZE, row * TILE_SIZE);
-    } else {
-      if (filenameBase)
-        console.warn(`[${i}] No asset for ${filenameBase} (and no backup)`);
+      count++;
     }
   }
 
-  console.log(`Writing to ${OUTPUT_PATH}...`);
+  console.log(`Writing ${count} sprites to ${OUTPUT_PATH}...`);
   await background.writeAsync(OUTPUT_PATH);
   console.log('Done!');
 }
 
 function findFileByPrefix(dir, prefix) {
-  const files = fs.readdirSync(dir);
-  // Match "prefix_timestamp.png" or just "prefix.png"
-  const match = files.find((f) => f.startsWith(prefix) && f.endsWith('.png'));
-  return match;
+  try {
+    const files = fs.readdirSync(dir);
+    // Match "prefix_timestamp.png" or just "prefix.png"
+    // We prioritize the most recent timestamp if multiple exist?
+    // For now just finding one.
+    const match = files.find((f) => f.startsWith(prefix) && f.endsWith('.png'));
+    return match;
+  } catch (err) {
+    console.error('Error reading artifact dir:', err);
+    return null;
+  }
 }
 
 generate().catch(console.error);

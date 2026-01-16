@@ -1,4 +1,54 @@
-import styled, { keyframes, css } from 'styled-components';
+import styled, { keyframes, css, DefaultTheme } from 'styled-components';
+import { GAME_VARIANT } from '../../lib/constants';
+
+// Helper functions for variant-specific styles
+const getHeaderBackground = (
+  variant: string | undefined,
+  theme: DefaultTheme,
+) => {
+  if (variant === GAME_VARIANT.CYBERPUNK) {
+    return 'linear-gradient(135deg, rgba(20, 10, 35, 0.95), rgba(45, 10, 60, 0.9))';
+  }
+  if (variant === GAME_VARIANT.UNDERWATER) {
+    return 'linear-gradient(135deg, rgba(8, 51, 68, 0.95), rgba(22, 78, 99, 0.9))';
+  }
+  return `linear-gradient(135deg, ${theme.surfaces.card.background}f5, ${theme.surfaces.panel.background}e8)`;
+};
+
+const getHeaderBorder = (variant: string | undefined, theme: DefaultTheme) => {
+  if (variant === GAME_VARIANT.CYBERPUNK) return 'rgba(192, 38, 211, 0.3)';
+  return `${theme.surfaces.card.border}40`;
+};
+
+const getHeaderLineBackground = (variant: string | undefined) => {
+  if (variant === GAME_VARIANT.CYBERPUNK) {
+    return `linear-gradient(90deg, transparent 0%, rgba(192, 38, 211, 0.6) 25%, rgba(6, 182, 212, 0.6) 50%, rgba(192, 38, 211, 0.6) 75%, transparent 100%)`;
+  }
+  if (variant === GAME_VARIANT.UNDERWATER) {
+    return `linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.6) 25%, rgba(8, 51, 68, 0.6) 50%, rgba(34, 211, 238, 0.6) 75%, transparent 100%)`;
+  }
+  return `linear-gradient(90deg, transparent 0%, rgba(99, 102, 241, 0.4) 25%, rgba(236, 72, 153, 0.4) 50%, rgba(16, 185, 129, 0.4) 75%, transparent 100%)`;
+};
+
+const getHeaderLineShadow = (variant: string | undefined) => {
+  if (variant === GAME_VARIANT.CYBERPUNK) {
+    return '0 0 10px rgba(192, 38, 211, 0.5), 0 0 20px rgba(6, 182, 212, 0.3)';
+  }
+  if (variant === GAME_VARIANT.UNDERWATER) {
+    return '0 0 10px rgba(34, 211, 238, 0.5), 0 0 20px rgba(22, 78, 99, 0.3)';
+  }
+  return 'none';
+};
+
+const getTitleBackground = (variant: string | undefined) => {
+  if (variant === GAME_VARIANT.CYBERPUNK) {
+    return 'linear-gradient(135deg, #c026d3 0%, #06b6d4 50%, #7c3aed 100%)';
+  }
+  if (variant === GAME_VARIANT.UNDERWATER) {
+    return 'linear-gradient(135deg, #22d3ee 0%, #0891b2 50%, #164e63 100%)';
+  }
+  return 'linear-gradient(135deg, #6366f1 0%, #ec4899 50%, #10b981 100%)';
+};
 
 // Header Components
 export const GameHeader = styled.div<{ $variant?: string }>`
@@ -7,16 +57,10 @@ export const GameHeader = styled.div<{ $variant?: string }>`
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.75rem;
-  background: ${({ $variant, theme }) =>
-    $variant === 'cyberpunk'
-      ? 'linear-gradient(135deg, rgba(20, 10, 35, 0.95), rgba(45, 10, 60, 0.9))'
-      : `linear-gradient(135deg, ${theme.surfaces.card.background}f5, ${theme.surfaces.panel.background}e8)`};
+  background: ${({ $variant, theme }) => getHeaderBackground($variant, theme)};
   backdrop-filter: blur(16px);
   border-bottom: 1px solid
-    ${({ $variant, theme }) =>
-      $variant === 'cyberpunk'
-        ? 'rgba(192, 38, 211, 0.3)'
-        : `${theme.surfaces.card.border}40`};
+    ${({ $variant, theme }) => getHeaderBorder($variant, theme)};
   margin: -2rem -2rem 0 -2rem;
   flex-wrap: wrap;
   position: relative;
@@ -30,28 +74,8 @@ export const GameHeader = styled.div<{ $variant?: string }>`
     left: 0;
     right: 0;
     height: 1px;
-    background: ${({ $variant }) =>
-      $variant === 'cyberpunk'
-        ? `linear-gradient(
-            90deg,
-            transparent 0%,
-            rgba(192, 38, 211, 0.6) 25%,
-            rgba(6, 182, 212, 0.6) 50%,
-            rgba(192, 38, 211, 0.6) 75%,
-            transparent 100%
-          )`
-        : `linear-gradient(
-            90deg,
-            transparent 0%,
-            rgba(99, 102, 241, 0.4) 25%,
-            rgba(236, 72, 153, 0.4) 50%,
-            rgba(16, 185, 129, 0.4) 75%,
-            transparent 100%
-          )`};
-    box-shadow: ${({ $variant }) =>
-      $variant === 'cyberpunk'
-        ? '0 0 10px rgba(192, 38, 211, 0.5), 0 0 20px rgba(6, 182, 212, 0.3)'
-        : 'none'};
+    background: ${({ $variant }) => getHeaderLineBackground($variant)};
+    box-shadow: ${({ $variant }) => getHeaderLineShadow($variant)};
   }
 
   @media (max-width: 768px) {
@@ -85,10 +109,7 @@ export const GameTitle = styled.h2<{ $variant?: string }>`
   margin: 0;
   font-size: 1.5rem;
   font-weight: 800;
-  background: ${({ $variant }) =>
-    $variant === 'cyberpunk'
-      ? 'linear-gradient(135deg, #c026d3 0%, #06b6d4 50%, #7c3aed 100%)'
-      : 'linear-gradient(135deg, #6366f1 0%, #ec4899 50%, #10b981 100%)'};
+  background: ${({ $variant }) => getTitleBackground($variant)};
   background-size: 200% 200%;
   animation: gradientShift 6s ease infinite;
   -webkit-background-clip: text;
@@ -98,7 +119,7 @@ export const GameTitle = styled.h2<{ $variant?: string }>`
   position: relative;
 
   ${({ $variant }) =>
-    $variant === 'cyberpunk' &&
+    $variant === GAME_VARIANT.CYBERPUNK &&
     css`
       &::before,
       &::after {
@@ -124,6 +145,28 @@ export const GameTitle = styled.h2<{ $variant?: string }>`
       }
     `}
 
+  ${({ $variant }) =>
+    $variant === GAME_VARIANT.UNDERWATER &&
+    css`
+      text-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          transparent 0%,
+          rgba(34, 211, 238, 0.1) 50%,
+          transparent 100%
+        );
+        background-size: 100% 200%;
+        animation: waterReflect 3s infinite linear;
+        pointer-events: none;
+      }
+    `}
+
   @keyframes gradientShift {
     0%,
     100% {
@@ -134,57 +177,10 @@ export const GameTitle = styled.h2<{ $variant?: string }>`
     }
   }
 
-  /* Glitch Keyframes */
-  @keyframes glitch {
-    2%,
-    64% {
-      transform: translate(2px, 0) skew(0deg);
-    }
-    4%,
-    60% {
-      transform: translate(-2px, 0) skew(0deg);
-    }
-    62% {
-      transform: translate(0, 0) skew(5deg);
-    }
-  }
-
-  @keyframes glitchTop {
-    2%,
-    64% {
-      transform: translate(2px, -2px);
-    }
-    4%,
-    60% {
-      transform: translate(-2px, 2px);
-    }
-    62% {
-      transform: translate(13px, -1px) skew(-13deg);
-    }
-  }
-
-  @keyframes glitchBottom {
-    2%,
-    64% {
-      transform: translate(-2px, 0);
-    }
-    4%,
-    60% {
-      transform: translate(-2px, 0);
-    }
-    62% {
-      transform: translate(-22px, 5px) skew(21deg);
-    }
-  }
-
   @media (max-width: 768px) {
     font-size: 1.25rem;
   }
 `;
-
-// Extending GameTitle to accept $variant locally or we can modify the component definition
-// But let's look at how GameTitle is defined. It is a styled.h2.
-// I will modify the definition below to accept $variant.
 
 export const TurnStatus = styled.div<{
   $variant?: 'yourTurn' | 'waiting' | 'completed' | 'default';

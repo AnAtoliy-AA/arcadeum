@@ -39,6 +39,7 @@ export {
   PlayersRing,
   PlayerPositionWrapper,
   CenterTable,
+  CardSlot,
 } from './table';
 
 export {
@@ -47,24 +48,29 @@ export {
   StatIcon,
   StatValue,
   InfoCard,
-  InfoTitle,
-  ActionsHeader,
-  ActionsToggleButton,
-} from './table-widgets';
+} from './table-info';
 
-export { CardSlot } from './table';
+export {
+  SonarSweep,
+  FloatingDots,
+  CircuitLines,
+  SonarRadar,
+  Bubble,
+  FishSilhouette,
+} from './table-decorations';
+
+export { InfoTitle, ActionsHeader, ActionsToggleButton } from './table-widgets';
 
 // Player Components
+export { PlayerCard, PlayerAvatar, PlayerName } from './players';
+
 export {
-  PlayerCard,
-  PlayerAvatar,
-  PlayerName,
   HandHeader,
   HandTitle,
   HandControls,
   HandToggleButton,
   HandCard,
-} from './players';
+} from './players-hand';
 
 export {
   PlayerCardCount,

@@ -7,10 +7,14 @@ import {
   PlayersRing,
   CenterTable,
   CardSlot,
+  SonarSweep,
+  FloatingDots,
+  CircuitLines,
 } from './styles';
 
 import type { CriticalCard, CriticalLogEntry, MarkedCardInfo } from '../types';
 import { TablePlayer } from './TablePlayer';
+import { GAME_VARIANT } from '../lib/constants';
 
 interface PlayerState {
   playerId: string;
@@ -52,6 +56,13 @@ export function GameTableSection({
   return (
     <GameTable>
       <TableBackground $variant={cardVariant} />
+      {cardVariant === GAME_VARIANT.UNDERWATER && (
+        <>
+          <SonarSweep />
+          <FloatingDots />
+          <CircuitLines />
+        </>
+      )}
       <PlayersRing $playerCount={playerOrder.length}>
         {playerOrder.map((playerId, index) => {
           const player = players.find((p) => p.playerId === playerId);
@@ -89,6 +100,7 @@ export function GameTableSection({
         deckCount={deck.length}
         discardPileCount={discardPileLength}
         pendingDraws={pendingDraws}
+        cardVariant={cardVariant}
       />
     </GameTable>
   );

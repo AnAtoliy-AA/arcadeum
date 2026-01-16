@@ -291,6 +291,20 @@ export class GamesService {
   }
 
   /**
+   * Get player statistics
+   */
+  async getPlayerStats(userId: string) {
+    return this.historyService.getPlayerStats(userId);
+  }
+
+  /**
+   * Get leaderboard of top players
+   */
+  async getLeaderboard(limit?: number, offset?: number, gameId?: string) {
+    return this.historyService.getLeaderboard(limit, offset, gameId);
+  }
+
+  /**
    * Create a rematch
    */
   async createRematchFromHistory(

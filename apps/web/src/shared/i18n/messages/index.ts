@@ -1,14 +1,15 @@
-import { authMessages } from "./auth";
-import { chatMessages, chatListMessages } from "./chat";
-import { commonMessages } from "./common";
-import { gamesMessages } from "./games";
-import { historyMessages } from "./history";
-import { homeMessages } from "./home";
-import { legalMessages } from "./legal";
-import { navigationMessages } from "./navigation";
-import { paymentsMessages } from "./payments";
-import { settingsMessages } from "./settings";
-import { supportMessages } from "./support";
+import { authMessages } from './auth';
+import { chatMessages, chatListMessages } from './chat';
+import { commonMessages } from './common';
+import { gamesMessages } from './games';
+import { historyMessages } from './history';
+import { homeMessages } from './home';
+import { legalMessages } from './legal';
+import { navigationMessages } from './navigation';
+import { paymentsMessages } from './payments';
+import { settingsMessages } from './settings';
+import { statsMessages } from './stats';
+import { supportMessages } from './support';
 
 // Build translations with concrete types for proper type inference
 // This approach preserves the full structure for StringPaths type generation
@@ -26,6 +27,7 @@ export const translations = {
     history: historyMessages.en,
     payments: paymentsMessages.en,
     legal: legalMessages.en,
+    stats: statsMessages.en,
   },
   es: {
     common: commonMessages.es,
@@ -40,6 +42,7 @@ export const translations = {
     history: historyMessages.es,
     payments: paymentsMessages.es,
     legal: legalMessages.es,
+    stats: statsMessages.es,
   },
   fr: {
     common: commonMessages.fr,
@@ -54,5 +57,6 @@ export const translations = {
     history: historyMessages.fr,
     payments: paymentsMessages.fr,
     legal: legalMessages.fr,
+    stats: statsMessages.fr,
   },
 } as const;

@@ -1,0 +1,85 @@
+import React from 'react';
+import styled from 'styled-components';
+import { useTranslation } from '@/shared/lib/useTranslation';
+
+interface StatsHeaderProps {
+  loading: boolean;
+  refreshing: boolean;
+  onRefresh: () => void;
+}
+
+export function StatsHeader({
+  loading,
+  refreshing,
+  onRefresh,
+}: StatsHeaderProps) {
+  const { t } = useTranslation();
+
+  return (
+    <Header>
+      <Title>{t('navigation.statsTab')}</Title>
+      <RefreshButton
+        onClick={onRefresh}
+        disabled={loading || refreshing}
+        $isRefreshing={refreshing}
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
+          <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
+        </svg>
+      </RefreshButton>
+    </Header>
+  );
+}
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+`;
+
+const Title = styled.h1`
+  font-size: 2rem;
+  font-weight: 700;
+  color: ${({ theme }) => theme.text.primary};
+  margin: 0;
+`;
+
+const RefreshButton = styled.button<{ $isRefreshing: boolean }>`
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: ${({ theme }) => theme.text.secondary};
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: ${({ theme }) => theme.buttons.primary.gradientStart};
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    animation: ${({ $isRefreshing }) =>
+      $isRefreshing ? 'spin 1s linear infinite' : 'none'};
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;

@@ -23,6 +23,37 @@ interface RematchResponse {
   };
 }
 
+export interface GameTypeStats {
+  gameId: string;
+  totalGames: number;
+  wins: number;
+  winRate: number;
+}
+
+export interface PlayerStats {
+  totalGames: number;
+  wins: number;
+  losses: number;
+  winRate: number;
+  byGameType: GameTypeStats[];
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  playerId: string;
+  username: string;
+  totalGames: number;
+  wins: number;
+  losses: number;
+  winRate: number;
+}
+
+export interface LeaderboardResponse {
+  entries: LeaderboardEntry[];
+  hasMore: boolean;
+  total: number;
+}
+
 export const historyApi = {
   getHistory: async (
     params: GetHistoryParams = {},
@@ -50,6 +81,25 @@ export const historyApi = {
     return apiClient.get<GetHistoryResponse>(
       `/games/history?${queryParams.toString()}`,
       options,
+    );
+  },
+
+  getStats: async (options?: ApiClientOptions): Promise<PlayerStats> => {
+    return apiClient.get<PlayerStats>('/games/stats', options);
+  },
+
+  getLeaderboard: async (
+    limit?: number,
+    offset?: number,
+    gameId?: string,
+  ): Promise<LeaderboardResponse> => {
+    const params = new URLSearchParams();
+    if (limit) params.append('limit', String(limit));
+    if (offset) params.append('offset', String(offset));
+    if (gameId) params.append('gameId', gameId);
+    const queryString = params.toString() ? `?${params.toString()}` : '';
+    return apiClient.get<LeaderboardResponse>(
+      `/games/leaderboard${queryString}`,
     );
   },
 

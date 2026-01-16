@@ -39,3 +39,28 @@ export interface GroupedHistorySummary {
   totalSessions: number;
   latestSessionAt: string;
 }
+
+export interface GameTypeStats {
+  gameId: string;
+  totalGames: number;
+  wins: number;
+  winRate: number;
+}
+
+export interface PlayerStats {
+  totalGames: number;
+  wins: number;
+  losses: number;
+  winRate: number;
+  byGameType: GameTypeStats[];
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  playerId: string;
+  username: string;
+  totalGames: number;
+  wins: number;
+  losses: number;
+  winRate: number;
+}

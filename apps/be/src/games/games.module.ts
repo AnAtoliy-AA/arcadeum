@@ -20,6 +20,7 @@ import { GameRoomsRematchService } from './rooms/game-rooms.rematch.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import { GameHistoryService } from './history/game-history.service';
 import { GameHistoryBuilderService } from './history/game-history-builder.service';
+import { GameHistoryStatsService } from './history/game-history-stats.service';
 import { CriticalActionsService } from './actions/critical/critical-actions.service';
 import { TexasHoldemActionsService } from './actions/texas-holdem/texas-holdem-actions.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
@@ -49,6 +50,7 @@ import { AuthModule } from '../auth/auth.module';
     GameSessionsService,
     GameHistoryService,
     GameHistoryBuilderService,
+    GameHistoryStatsService,
     GamesRealtimeService,
     // Game-specific action handlers
     CriticalActionsService,

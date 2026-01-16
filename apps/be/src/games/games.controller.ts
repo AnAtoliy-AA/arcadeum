@@ -201,6 +201,32 @@ export class GamesController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('stats')
+  async listStats(@Req() req: Request) {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return this.gamesService.getPlayerStats(user.userId);
+  }
+
+  @Get('leaderboard')
+  async getLeaderboard(
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+    @Query('gameId') gameId?: string,
+  ) {
+    const limitNum = limit ? parseInt(limit, 10) : 20;
+    const offsetNum = offset ? parseInt(offset, 10) : 0;
+    return this.gamesService.getLeaderboard(
+      limitNum,
+      offsetNum,
+      gameId || undefined,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('history/:roomId')
   async getHistoryEntry(
     @Req() req: Request,

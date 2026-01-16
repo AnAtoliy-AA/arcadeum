@@ -6,18 +6,21 @@ const navigationMessagesDefinition = {
     gamesTab: 'Games',
     historyTab: 'History',
     settingsTab: 'Settings',
+    statsTab: 'Statistics',
   },
   es: {
     chatsTab: 'Chats',
     gamesTab: 'Juegos',
     historyTab: 'Historial',
     settingsTab: 'Configuración',
+    statsTab: 'Estadísticas',
   },
   fr: {
     chatsTab: 'Discussions',
     gamesTab: 'Jeux',
     historyTab: 'Historique',
     settingsTab: 'Paramètres',
+    statsTab: 'Statistiques',
   },
 } satisfies Record<Locale, Record<string, unknown>>;
 

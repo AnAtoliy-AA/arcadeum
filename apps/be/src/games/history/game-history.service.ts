@@ -15,8 +15,11 @@ import {
   HistoryParticipantSummary,
   GameHistorySummary,
   GroupedHistorySummary,
+  PlayerStats,
+  LeaderboardEntry,
 } from './game-history.types';
 import { GameHistoryBuilderService } from './game-history-builder.service';
+import { GameHistoryStatsService } from './game-history-stats.service';
 import { BaseGameState } from '../engines/base/game-engine.interface';
 
 /**
@@ -35,6 +38,7 @@ export class GameHistoryService {
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
     private readonly builder: GameHistoryBuilderService,
+    private readonly statsService: GameHistoryStatsService,
   ) {}
 
   /**
@@ -384,5 +388,23 @@ export class GameHistoryService {
     state.logs.push(logEntry);
     session.markModified('state');
     await session.save();
+  }
+
+  /**
+   * Get player statistics (delegated to stats service)
+   */
+  async getPlayerStats(userId: string): Promise<PlayerStats> {
+    return this.statsService.getPlayerStats(userId);
+  }
+
+  /**
+   * Get leaderboard (delegated to stats service)
+   */
+  async getLeaderboard(
+    limit: number = 20,
+    offset: number = 0,
+    gameId?: string,
+  ): Promise<{ entries: LeaderboardEntry[]; hasMore: boolean; total: number }> {
+    return this.statsService.getLeaderboard(limit, offset, gameId);
   }
 }

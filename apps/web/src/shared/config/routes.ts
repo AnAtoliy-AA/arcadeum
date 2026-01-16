@@ -5,32 +5,33 @@
 
 export const routes = {
   // Main pages
-  home: "/",
-  auth: "/auth",
-  authCallback: "/auth/callback",
-  
+  home: '/',
+  auth: '/auth',
+  authCallback: '/auth/callback',
+
   // Games
-  games: "/games",
+  games: '/games',
   gameDetail: (id: string) => `/games/${id}`,
-  gameCreate: "/games/create",
+  gameCreate: '/games/create',
   gameRoom: (id: string) => `/games/rooms/${id}`,
-  
+
   // Chat
-  chats: "/chats",
+  chats: '/chats',
   chat: (id: string) => `/chat/${id}`,
-  
+
   // User
-  settings: "/settings",
-  history: "/history",
-  
+  settings: '/settings',
+  history: '/history',
+  stats: '/stats',
+
   // Support & Payments
-  support: "/support",
-  payment: "/payment",
-  
+  support: '/support',
+  payment: '/payment',
+
   // Legal
-  terms: "/terms",
-  privacy: "/privacy",
-  contact: "/contact",
+  terms: '/terms',
+  privacy: '/privacy',
+  contact: '/contact',
 } as const;
 
-export type RoutePath = typeof routes[keyof typeof routes];
+export type RoutePath = (typeof routes)[keyof typeof routes];

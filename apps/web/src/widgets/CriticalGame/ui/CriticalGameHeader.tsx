@@ -16,7 +16,7 @@ import {
 } from './styles/lobby';
 import { IdleTimerDisplay } from './IdleTimerDisplay';
 import { AutoplayControls } from './AutoplayControls';
-import { ServerLoadingNotice } from './ServerLoadingNotice';
+import { ServerLoadingNotice } from '@/shared/ui/ServerLoadingNotice';
 import type { GameRoomSummary, CriticalSnapshot } from '@/shared/types/games';
 import { UseAutoplayReturn } from '../hooks/useAutoplay';
 import { CARD_VARIANTS } from '../lib/constants';

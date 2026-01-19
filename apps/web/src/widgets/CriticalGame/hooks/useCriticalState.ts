@@ -1,8 +1,9 @@
-import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
+import { useMemo, useEffect, useCallback } from 'react';
 import { useGameSession, useGameActions } from '@/features/games/hooks';
 import { gameSocket } from '@/shared/lib/socket';
 import type { CriticalSnapshot, CriticalPlayerState } from '../types';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
+import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 
 interface UseCriticalStateOptions {
   roomId: string;
@@ -10,9 +11,6 @@ interface UseCriticalStateOptions {
   initialSession: unknown | null;
   accessToken?: string | null;
 }
-
-/** Threshold in ms after which actionBusy is considered "long pending" */
-const LONG_PENDING_THRESHOLD_MS = 2000;
 
 /**
  * Hook for managing Critical game state
@@ -29,57 +27,12 @@ export function useCriticalState({
     initialSession,
   });
 
-  // Track pending action state (updated by interval callback only)
-  const [pendingElapsedSecondsInternal, setPendingElapsedSecondsInternal] =
-    useState(0);
-  const [actionLongPendingInternal, setActionLongPendingInternal] =
-    useState(false);
-  const startTimeRef = useRef<number | null>(null);
-
-  // Estimated server wake-up time in seconds (used for percentage calculation)
-  const ESTIMATED_WAKE_TIME_SECONDS = 30;
-
-  // Effect manages timer/interval for pending action tracking
-  useEffect(() => {
-    if (!actionBusy) {
-      startTimeRef.current = null;
-      return;
-    }
-
-    // Set start time when action begins
-    startTimeRef.current = Date.now();
-    // Reset values when new action starts (using setTimeout to avoid sync setState in effect)
-    const resetTimeout = setTimeout(() => {
-      setPendingElapsedSecondsInternal(0);
-      setActionLongPendingInternal(false);
-    }, 0);
-
-    // Update state every second based on elapsed time
-    const interval = setInterval(() => {
-      if (startTimeRef.current === null) return;
-      const now = Date.now();
-      const elapsed = Math.floor((now - startTimeRef.current) / 1000);
-      setPendingElapsedSecondsInternal(elapsed);
-      setActionLongPendingInternal(
-        now - startTimeRef.current >= LONG_PENDING_THRESHOLD_MS,
-      );
-    }, 1000);
-
-    return () => {
-      clearTimeout(resetTimeout);
-      clearInterval(interval);
-    };
-  }, [actionBusy]);
-
-  // Exported values: if not busy, always show reset state
-  const actionLongPending = actionBusy ? actionLongPendingInternal : false;
-  const pendingElapsedSeconds = actionBusy ? pendingElapsedSecondsInternal : 0;
-
-  // Calculate progress percentage (caps at 99% until server responds)
-  const pendingProgress = Math.min(
-    99,
-    Math.round((pendingElapsedSeconds / ESTIMATED_WAKE_TIME_SECONDS) * 100),
-  );
+  // Track pending action state using shared hook
+  const {
+    isLongPending: actionLongPending,
+    progress: pendingProgress,
+    elapsedSeconds: pendingElapsedSeconds,
+  } = useServerWakeUpProgress(Boolean(actionBusy));
 
   // Clear actionBusy when an exception is received from the server
   useEffect(() => {

@@ -18,6 +18,7 @@ const commonMessagesDefinition = {
       register: 'Create account',
       logout: 'Sign out',
       openApp: 'Open app',
+      supportTeam: 'Support Team',
     },
     prompts: {
       haveAccount: 'Already have an account?',
@@ -54,6 +55,7 @@ const commonMessagesDefinition = {
       register: 'Crear cuenta',
       logout: 'Cerrar sesión',
       openApp: 'Abrir app',
+      supportTeam: 'Equipo de soporte',
     },
     prompts: {
       haveAccount: '¿Ya tienes una cuenta?',
@@ -90,6 +92,7 @@ const commonMessagesDefinition = {
       register: "S'inscrire",
       logout: 'Se déconnecter',
       openApp: "Ouvrir l'application",
+      supportTeam: 'Équipe de support',
     },
     prompts: {
       haveAccount: 'Vous avez déjà un compte ?',

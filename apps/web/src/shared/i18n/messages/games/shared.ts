@@ -52,9 +52,9 @@ export const sharedMessages = {
       gameArea: 'Game area - Real-time game integration coming soon',
       loading: 'Server is loading...',
       pendingNotice: {
-        title: 'Free hosts are spinning back up...',
+        title: 'Server is waking up...',
         message:
-          'Our free-tier backend servers snooze when idle, so everything is stretching its legs. Back us on the support page to help keep it running 24/7!',
+          'Our free-tier servers sleep when idle. Please wait while they wake up. Support us to keep them running 24/7!',
       },
     },
     detail: {

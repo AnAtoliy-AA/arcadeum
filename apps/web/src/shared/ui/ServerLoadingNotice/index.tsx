@@ -1,6 +1,8 @@
 'use client';
 
+import { LinkButton } from '@/shared/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { routes } from '@/shared/config/routes';
 import {
   ServerLoadingMessage,
   ServerLoadingHeader,
@@ -11,6 +13,7 @@ import {
   ServerLoadingFooter,
   ServerLoadingPercentage,
   ServerLoadingTimer,
+  ServerLoadingActions,
 } from './styles';
 
 interface ServerLoadingNoticeProps {
@@ -40,6 +43,11 @@ export function ServerLoadingNotice({
         <ServerLoadingPercentage>{pendingProgress}%</ServerLoadingPercentage>
         <ServerLoadingTimer>{pendingElapsedSeconds}s</ServerLoadingTimer>
       </ServerLoadingFooter>
+      <ServerLoadingActions>
+        <LinkButton href={routes.support} variant="secondary" size="sm">
+          {t('common.actions.supportTeam')}
+        </LinkButton>
+      </ServerLoadingActions>
     </ServerLoadingMessage>
   );
 }

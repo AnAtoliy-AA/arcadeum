@@ -22,7 +22,7 @@ import {
   BadgeIcon,
   ParticipantsLabel,
   MetaListContainer,
-} from './styles';
+} from './room-card.styles';
 
 const MAX_VISIBLE_PARTICIPANTS = 5;
 

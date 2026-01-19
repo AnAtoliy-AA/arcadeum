@@ -15,6 +15,8 @@ import { gameFactory } from '@/features/games/lib/gameFactory';
 import { gameMetadata } from '@/features/games/registry';
 import { BaseGameProps } from '@/features/games';
 import type { GameSessionSummary } from '@/shared/types/games';
+import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
+import { ServerLoadingNotice } from '@/shared/ui/ServerLoadingNotice';
 
 export default function GameRoomPage() {
   const params = useParams();
@@ -141,6 +143,13 @@ export default function GameRoomPage() {
     snapshot.accessToken,
   ]);
 
+  // Track room loading progress for server wake-up message
+  const {
+    isLongPending: isRoomLoadingLongPending,
+    progress: roomLoadingProgress,
+    elapsedSeconds: roomLoadingElapsedSeconds,
+  } = useServerWakeUpProgress(roomLoading);
+
   // Preload game component using GameFactory
   useEffect(() => {
     // Ensure game metadata is registered in factory
@@ -248,7 +257,14 @@ export default function GameRoomPage() {
       <Page>
         <Container>
           <LoadingContainer>
-            {t('games.roomPage.errors.loadingRoom')}
+            {isRoomLoadingLongPending ? (
+              <ServerLoadingNotice
+                pendingProgress={roomLoadingProgress}
+                pendingElapsedSeconds={roomLoadingElapsedSeconds}
+              />
+            ) : (
+              t('games.roomPage.errors.loadingRoom')
+            )}
           </LoadingContainer>
         </Container>
       </Page>

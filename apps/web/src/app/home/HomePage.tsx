@@ -6,6 +6,7 @@ import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import { appConfig } from '@/shared/config/app-config';
 import { PageTitle, LinkButton } from '@/shared/ui';
 import { usePlatform } from '@/shared/hooks/usePlatform';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 
 const Page = styled.main`
   min-height: 100vh;
@@ -172,6 +173,7 @@ export function HomePage() {
   } = appConfig;
   const { messages } = useLanguage();
   const { isIos, isAndroid } = usePlatform();
+  const { snapshot, hydrated } = useSessionTokens();
   const homeCopy = messages.home ?? {};
 
   const kicker = formatMessage(homeCopy.kicker, { appName }) ?? configKicker;
@@ -188,6 +190,9 @@ export function HomePage() {
   const androidLabel = homeCopy.downloadsAndroidLabel ?? downloads.androidLabel;
   const hasDownloadLinks = Boolean(downloads.iosHref || downloads.androidHref);
 
+  const isAuthenticated = hydrated && !!snapshot.accessToken;
+  const primaryHref = isAuthenticated ? '/games' : primaryCta.href;
+
   return (
     <Page>
       <Hero aria-labelledby="hero-heading">
@@ -198,7 +203,7 @@ export function HomePage() {
         <Tagline>{tagline}</Tagline>
         <Description>{description}</Description>
         <Actions>
-          <PrimaryAction href={primaryCta.href}>{primaryLabel}</PrimaryAction>
+          <PrimaryAction href={primaryHref}>{primaryLabel}</PrimaryAction>
           <SecondaryAction href={supportCta.href}>
             {supportLabel}
           </SecondaryAction>

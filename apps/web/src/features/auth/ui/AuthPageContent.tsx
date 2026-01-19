@@ -1,23 +1,33 @@
-"use client";
+'use client';
 
-import { appConfig } from "@/shared/config/app-config";
-import type { SessionDetailItem } from "../types";
-import { formatDateTime } from "../lib/utils";
-import { resolveProviderLabel } from "../lib/labels";
-import { useAuthLabels } from "../hooks/useAuthLabels";
-import { useAuthForm } from "../hooks/useAuthForm";
-import { Page, Wrapper, PanelsSection } from "./styles";
-import { HeroSection } from "./HeroSection";
-import { LocalAuthPanel } from "./LocalAuthPanel";
-import { OAuthPanel } from "./OAuthPanel";
-import { SessionStatusPanel } from "./SessionStatusPanel";
-import { DownloadSection } from "./DownloadSection";
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { appConfig } from '@/shared/config/app-config';
+import { routes } from '@/shared/config/routes';
+import type { SessionDetailItem } from '../types';
+import { formatDateTime } from '../lib/utils';
+import { resolveProviderLabel } from '../lib/labels';
+import { useAuthLabels } from '../hooks/useAuthLabels';
+import { useAuthForm } from '../hooks/useAuthForm';
+import { Page, Wrapper, PanelsSection } from './styles';
+import { HeroSection } from './HeroSection';
+import { LocalAuthPanel } from './LocalAuthPanel';
+import { OAuthPanel } from './OAuthPanel';
+import { SessionStatusPanel } from './SessionStatusPanel';
+import { DownloadSection } from './DownloadSection';
 
 export function AuthPageContent() {
+  const router = useRouter();
   const { primaryCta, supportCta, downloads } = appConfig;
 
   const form = useAuthForm();
   const labels = useAuthLabels(form.isRegisterMode);
+
+  useEffect(() => {
+    if (form.hasSession) {
+      router.push(routes.games);
+    }
+  }, [form.hasSession, router]);
 
   const providerLabel = resolveProviderLabel(
     form.sessionSnapshot.provider,
@@ -26,27 +36,43 @@ export function AuthPageContent() {
   );
 
   const sessionDetails: SessionDetailItem[] = [
-    { key: "provider", term: labels.sessionDetailLabels.provider, value: providerLabel },
-    { key: "email", term: labels.emailLabel, value: form.sessionSnapshot.email },
-    { key: "username", term: labels.usernameLabel, value: form.sessionSnapshot.username },
     {
-      key: "displayName",
+      key: 'provider',
+      term: labels.sessionDetailLabels.provider,
+      value: providerLabel,
+    },
+    {
+      key: 'email',
+      term: labels.emailLabel,
+      value: form.sessionSnapshot.email,
+    },
+    {
+      key: 'username',
+      term: labels.usernameLabel,
+      value: form.sessionSnapshot.username,
+    },
+    {
+      key: 'displayName',
       term: labels.sessionDetailLabels.displayName,
       value: form.sessionSnapshot.displayName,
     },
-    { key: "userId", term: labels.sessionDetailLabels.userId, value: form.sessionSnapshot.userId },
     {
-      key: "accessExpires",
+      key: 'userId',
+      term: labels.sessionDetailLabels.userId,
+      value: form.sessionSnapshot.userId,
+    },
+    {
+      key: 'accessExpires',
       term: labels.sessionDetailLabels.accessExpires,
       value: formatDateTime(form.sessionSnapshot.accessTokenExpiresAt),
     },
     {
-      key: "refreshExpires",
+      key: 'refreshExpires',
       term: labels.sessionDetailLabels.refreshExpires,
       value: formatDateTime(form.sessionSnapshot.refreshTokenExpiresAt),
     },
     {
-      key: "updated",
+      key: 'updated',
       term: labels.sessionDetailLabels.updated,
       value: formatDateTime(form.sessionSnapshot.updatedAt),
     },
@@ -128,7 +154,7 @@ export function AuthPageContent() {
             authorizationCode={form.authorizationCode}
             providerAccessToken={form.providerAccessToken}
             sessionAccessToken={form.sessionSnapshot.accessToken}
-            isOAuthProvider={form.sessionSnapshot.provider === "oauth"}
+            isOAuthProvider={form.sessionSnapshot.provider === 'oauth'}
             onStartOAuth={form.handleStartOAuth}
             onLogout={() => void form.handleOAuthLogout()}
           />
@@ -145,7 +171,7 @@ export function AuthPageContent() {
             sessionDetailLabels={labels.sessionDetailLabels}
             isHydrating={form.isSessionHydrating}
             hasSession={form.hasSession}
-            isOAuthProvider={form.sessionSnapshot.provider === "oauth"}
+            isOAuthProvider={form.sessionSnapshot.provider === 'oauth'}
             sessionAccessToken={form.sessionSnapshot.accessToken}
             sessionRefreshToken={form.sessionSnapshot.refreshToken}
             sessionDetails={sessionDetails}

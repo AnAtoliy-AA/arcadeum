@@ -70,6 +70,10 @@ export {
   HandControls,
   HandToggleButton,
   HandCard,
+  DropdownContainer,
+  DropdownTrigger,
+  DropdownList,
+  DropdownItem,
 } from './players-hand';
 
 export {

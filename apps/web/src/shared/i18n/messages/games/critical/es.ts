@@ -175,7 +175,15 @@ export const esMessages = {
       statusDeclined: 'Rechazado',
       reinvite: 'Reinvitar',
     },
-    hand: { title: 'Tu Mano', empty: 'Sin cartas' },
+    hand: {
+      title: 'Tu Mano',
+      empty: 'Sin cartas',
+      showNames: 'Mostrar Nombres',
+      hideNames: 'Ocultar Nombres',
+      showDescriptions: 'Mostrar Descripciones',
+      hideDescriptions: 'Ocultar Descripciones',
+      layout: { grid: 'Cuadrícula', scroll: 'Lista' },
+    },
     log: { title: 'Registro del Juego', empty: 'Sin actividad aún' },
     chat: {
       title: 'Chat de la Mesa',

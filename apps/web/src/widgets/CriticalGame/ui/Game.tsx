@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useCallback, useMemo } from 'react';
+import { useRef, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalGameProps, CriticalCard } from '../types';
 import { getCardTranslationKey } from '../lib/cardUtils';
@@ -21,7 +21,7 @@ import { GameModals } from './GameModals';
 import { GameLobby } from './GameLobby';
 import { ChatSection } from './ChatSection';
 import { GameStatusMessage } from './GameStatusMessage';
-import { PlayerHand } from './PlayerHand';
+import { PlayerHand, HandLayoutMode } from './PlayerHand';
 import { GameTableSection } from './GameTableSection';
 
 import { GameContainer, GameBoard, TableArea } from './styles';
@@ -39,6 +39,9 @@ export default function CriticalGame({
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const chatMessagesRef = useRef<HTMLDivElement | null>(null);
+
+  // Layout State
+  const [handLayout, setHandLayout] = useState<HandLayoutMode>('grid');
 
   // Use dynamic room state
   const room = useGameRoom(initialRoom);
@@ -337,6 +340,8 @@ export default function CriticalGame({
               forceEnableAutoplay={idleTimerTriggered}
               onAutoplayEnabledChange={autoplayState.setAllEnabled}
               cardVariant={cardVariant}
+              handLayout={handLayout}
+              setHandLayout={setHandLayout}
             />
           )}
 

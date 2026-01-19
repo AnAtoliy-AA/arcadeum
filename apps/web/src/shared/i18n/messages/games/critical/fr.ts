@@ -176,7 +176,15 @@ export const frMessages = {
       statusDeclined: 'Refusé',
       reinvite: 'Réinviter',
     },
-    hand: { title: 'Votre Main', empty: 'Aucune carte' },
+    hand: {
+      title: 'Votre Main',
+      empty: 'Aucune carte',
+      showNames: 'Afficher les Noms',
+      hideNames: 'Masquer les Noms',
+      showDescriptions: 'Afficher les Descriptions',
+      hideDescriptions: 'Masquer les Descriptions',
+      layout: { grid: 'Grille', scroll: 'Défilement' },
+    },
     log: {
       title: 'Journal de la Partie',
       empty: 'Aucune activité pour le moment',

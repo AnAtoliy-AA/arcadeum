@@ -83,7 +83,6 @@ export const DeckCard = styled.div<{ $variant?: string }>`
   border-radius: 12px;
   background: ${({ $variant }) => {
     if ($variant === GAME_VARIANT.CYBERPUNK) {
-      // Index 0 is the card back in the grid
       const x = (0 % SPRITE_GRID_SIZE) * (100 / (SPRITE_GRID_SIZE - 1));
       const y =
         Math.floor(0 / SPRITE_GRID_SIZE) * (100 / (SPRITE_GRID_SIZE - 1));

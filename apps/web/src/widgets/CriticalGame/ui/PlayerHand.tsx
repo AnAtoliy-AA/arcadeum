@@ -32,6 +32,11 @@ import { ActionsSection } from './ActionsSection';
 import {
   HandSection,
   HandContainer,
+  HandCard,
+  DropdownContainer,
+  DropdownTrigger,
+  DropdownList,
+  DropdownItem,
   InfoCard,
   InfoTitle,
   CardsGrid,
@@ -49,8 +54,9 @@ import {
   HandTitle,
   HandControls,
   HandToggleButton,
-  HandCard,
 } from './styles';
+
+export type HandLayoutMode = 'grid' | 'linear';
 
 interface PendingAction {
   type: string;
@@ -95,7 +101,65 @@ interface PlayerHandProps {
   forceEnableAutoplay?: boolean;
   onAutoplayEnabledChange?: (enabled: boolean) => void;
   cardVariant?: string;
+  handLayout?: HandLayoutMode;
+  setHandLayout?: (layout: HandLayoutMode) => void;
 }
+
+const HandLayoutDropdown: React.FC<{
+  layout: HandLayoutMode;
+  onChange: (layout: HandLayoutMode) => void;
+  variant?: string;
+  t: (key: string) => string;
+}> = ({ layout, onChange, variant, t }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Close on outside click is handled by a backdrop or just simple onBlur
+  // Here we'll use a simple backdrop for simplicity if open
+
+  return (
+    <DropdownContainer>
+      {isOpen && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 99 }}
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+      <DropdownTrigger
+        $variant={variant}
+        $isOpen={isOpen}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {layout === 'grid'
+          ? t('games.table.hand.layout.grid') || 'Grid'
+          : t('games.table.hand.layout.scroll') || 'Scroll'}
+      </DropdownTrigger>
+      {isOpen && (
+        <DropdownList $variant={variant}>
+          <DropdownItem
+            $variant={variant}
+            $isActive={layout === 'grid'}
+            onClick={() => {
+              onChange('grid');
+              setIsOpen(false);
+            }}
+          >
+            {t('games.table.hand.layout.grid') || 'Grid'}
+          </DropdownItem>
+          <DropdownItem
+            $variant={variant}
+            $isActive={layout === 'linear'}
+            onClick={() => {
+              onChange('linear');
+              setIsOpen(false);
+            }}
+          >
+            {t('games.table.hand.layout.scroll') || 'Scroll'}
+          </DropdownItem>
+        </DropdownList>
+      )}
+    </DropdownContainer>
+  );
+};
 
 export const PlayerHand: React.FC<PlayerHandProps> = ({
   currentPlayer,
@@ -128,38 +192,53 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
   forceEnableAutoplay: _forceEnableAutoplay,
   onAutoplayEnabledChange: _onAutoplayEnabledChange,
   cardVariant,
-}: PlayerHandProps) => {
+  handLayout = 'grid',
+  setHandLayout,
+}) => {
   const [showNames, setShowNames] = useState(true);
   const [showDescriptions, setShowDescriptions] = useState(true);
 
-  const displayItems = useMemo(() => {
+  // Group current hand by card type/count for rendering logic
+  const groupedHand = useMemo(() => {
     const items: {
       card: CriticalCard;
-      type: 'hand' | 'stash';
       count: number;
       id: string;
     }[] = [];
 
-    // Process Hand
     const handCounts = new Map<CriticalCard, number>();
     currentPlayer.hand.forEach((card) =>
       handCounts.set(card, (handCounts.get(card) || 0) + 1),
     );
-    Array.from(handCounts.entries()).forEach(([card, count]) => {
-      items.push({ card, type: 'hand', count, id: `hand-${card}` });
+
+    const distinctCards = Array.from(handCounts.keys());
+
+    distinctCards.forEach((card) => {
+      items.push({
+        card,
+        count: handCounts.get(card) || 0,
+        id: card,
+      });
     });
 
-    // Process Stash
+    return items;
+  }, [currentPlayer.hand]);
+
+  const stashItems = useMemo(() => {
+    const items: {
+      card: CriticalCard;
+      count: number;
+      id: string;
+    }[] = [];
     const stashCounts = new Map<CriticalCard, number>();
     (currentPlayer.stash || []).forEach((card) =>
       stashCounts.set(card, (stashCounts.get(card) || 0) + 1),
     );
     Array.from(stashCounts.entries()).forEach(([card, count]) => {
-      items.push({ card, type: 'stash', count, id: `stash-${card}` });
+      items.push({ card, count, id: `stash-${card}` });
     });
-
     return items;
-  }, [currentPlayer.hand, currentPlayer.stash]);
+  }, [currentPlayer.stash]);
 
   // Handle clicking on a card in hand
   const handleCardClick = useCallback(
@@ -314,47 +393,55 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
                   : t('games.table.hand.showDescriptions') ||
                     'Show Descriptions'}
               </HandToggleButton>
+              {setHandLayout && (
+                <HandLayoutDropdown
+                  layout={handLayout}
+                  onChange={setHandLayout}
+                  variant={cardVariant}
+                  t={t}
+                />
+              )}
             </HandControls>
           </HandHeader>
-          <CardsGrid>
-            {displayItems.map(({ card, type, count, id }, idx) => {
-              if (type === 'stash') {
-                return (
-                  <StashedCard
-                    key={id}
-                    $cardType={card}
-                    $index={idx + 10}
-                    $variant={cardVariant}
-                    onClick={() => onUnstashCard?.(card)}
-                    title="Stashed card - Click to return to hand"
-                  >
-                    <StashIcon>🏰</StashIcon>
-                    <CardCorner $position="tl" />
-                    <CardCorner $position="tr" />
-                    <CardCorner $position="bl" />
-                    <CardCorner $position="br" />
-                    <CardFrame />
-                    <CardInner>
-                      <CardEmoji>{getCardEmoji(card)}</CardEmoji>
-                      {showNames && (
-                        <CardName $variant={cardVariant}>
-                          {t(getCardTranslationKey(card, cardVariant)) || card}
-                        </CardName>
-                      )}
-                      {showDescriptions && (
-                        <CardDescription $variant={cardVariant}>
-                          {t(getCardDescriptionKey(card))}
-                        </CardDescription>
-                      )}
-                    </CardInner>
-                    {count > 1 && <CardCountBadge>{count}</CardCountBadge>}
-                  </StashedCard>
-                );
-              }
 
-              // Normal Hand Card Logic
+          <CardsGrid $layout={handLayout}>
+            {/* Render Stash first if any */}
+            {stashItems.map(({ card, count, id }, idx) => (
+              <StashedCard
+                key={id}
+                $cardType={card}
+                $index={idx + 10}
+                $variant={cardVariant}
+                onClick={() => onUnstashCard?.(card)}
+                title="Stashed card - Click to return to hand"
+              >
+                <StashIcon>🏰</StashIcon>
+                <CardCorner $position="tl" />
+                <CardCorner $position="tr" />
+                <CardCorner $position="bl" />
+                <CardCorner $position="br" />
+                <CardFrame />
+                <CardInner>
+                  <CardEmoji>{getCardEmoji(card)}</CardEmoji>
+                  {showNames && (
+                    <CardName $variant={cardVariant}>
+                      {t(getCardTranslationKey(card, cardVariant)) || card}
+                    </CardName>
+                  )}
+                  {showDescriptions && (
+                    <CardDescription $variant={cardVariant}>
+                      {t(getCardDescriptionKey(card))}
+                    </CardDescription>
+                  )}
+                </CardInner>
+                {count > 1 && <CardCountBadge>{count}</CardCountBadge>}
+              </StashedCard>
+            ))}
+
+            {groupedHand.map(({ card, count, id }, idx) => {
               const isCatCard = CAT_CARDS.includes(card as CriticalCatCard);
               const clickable = isCardClickable(card, count);
+              const dimmed = isCatCard && count === 1;
 
               return (
                 <HandCard
@@ -362,9 +449,9 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
                   $cardType={card}
                   $index={idx}
                   $variant={cardVariant}
-                  onClick={() => handleCardClick(card, count)}
                   $clickable={clickable}
-                  $dimmed={isCatCard && count === 1}
+                  $dimmed={dimmed}
+                  onClick={() => handleCardClick(card, count)}
                 >
                   <CardCorner $position="tl" />
                   <CardCorner $position="tr" />

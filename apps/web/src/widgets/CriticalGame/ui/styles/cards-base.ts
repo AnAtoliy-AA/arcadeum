@@ -172,16 +172,55 @@ export const Card = styled.div<{
   }
 `;
 
-export const CardsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 1rem;
+export const CardsGrid = styled.div<{ $layout?: 'grid' | 'linear' }>`
   position: relative;
+  gap: 1rem;
 
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
-    gap: 0.75rem;
-  }
+  ${({ $layout }) =>
+    $layout === 'linear'
+      ? css`
+          display: flex;
+          overflow-x: auto;
+          flex-wrap: nowrap;
+          padding-bottom: 0.5rem;
+          align-items: center;
+
+          & > div {
+            flex-shrink: 0;
+            width: 110px; /* Fixed width for linear items */
+          }
+
+          /* Scrollbar Styling */
+          &::-webkit-scrollbar {
+            height: 6px;
+          }
+          &::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+          }
+          &::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            &:hover {
+              background: rgba(255, 255, 255, 0.5);
+            }
+          }
+
+          @media (max-width: 768px) {
+            & > div {
+              width: 95px;
+            }
+          }
+        `
+      : css`
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+
+          @media (max-width: 768px) {
+            grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+            gap: 0.75rem;
+          }
+        `}
 `;
 
 export const StashedCard = styled(Card)`

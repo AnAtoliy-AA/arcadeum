@@ -182,6 +182,10 @@ export const enMessages = {
       hideNames: 'Hide Names',
       showDescriptions: 'Show Descriptions',
       hideDescriptions: 'Hide Descriptions',
+      layout: {
+        grid: 'Grid',
+        scroll: 'Scroll',
+      },
     },
     log: { title: 'Game Log', empty: 'No activity yet' },
     chat: {

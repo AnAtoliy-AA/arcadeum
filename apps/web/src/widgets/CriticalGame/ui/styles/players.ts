@@ -27,6 +27,7 @@ export const PlayerCard = styled.div<{
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: ${({ $variant }) => getPlayerCardGap($variant)};
   padding: ${({ $variant }) => getPlayerCardPadding($variant)};
   border-radius: ${({ $variant }) => getPlayerCardBorderRadius($variant)};

@@ -122,9 +122,6 @@ export const Card = styled.div<{
     transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-    z-index: 5;
-  }
-
   /* Holographic Shine for Underwater */
   ${({ $variant }) =>
     $variant === GAME_VARIANT.UNDERWATER &&

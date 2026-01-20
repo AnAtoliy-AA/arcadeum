@@ -14,6 +14,7 @@ import {
   ChatTurnStatus,
   ChatSendButton,
   InfoTitle,
+  ChatCloseButton,
 } from './styles';
 
 type GameLog = NonNullable<CriticalSnapshot['logs']>[number];
@@ -35,6 +36,7 @@ interface ChatSectionProps {
   formatLogMessage: (message: string) => string;
   t: (key: string) => string;
   cardVariant?: string;
+  onClose?: () => void;
 }
 
 const getUserColor = (userId: string) => {
@@ -71,12 +73,18 @@ export function ChatSection({
   formatLogMessage,
   t,
   cardVariant,
+  onClose,
 }: ChatSectionProps) {
   const canSendChatMessage = chatMessage.trim().length > 0;
 
   return (
     <ChatCard $variant={cardVariant}>
       <InfoTitle>{t('games.table.chat.title') || 'Table Chat'}</InfoTitle>
+      {onClose && (
+        <ChatCloseButton onClick={onClose} aria-label="Close Chat">
+          ✕
+        </ChatCloseButton>
+      )}
       <ChatTurnStatus $variant={cardVariant}>{turnStatus}</ChatTurnStatus>
       {logs && logs.length > 0 ? (
         <ChatMessages ref={chatMessagesRef}>

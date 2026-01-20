@@ -238,46 +238,26 @@ export const FullscreenButton = styled.button`
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border}80;
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.surfaces.card.background}ee,
-    ${({ theme }) => theme.surfaces.panel.background}cc
-  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
   color: ${({ theme }) => theme.text.primary};
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 1.1rem;
   position: relative;
   overflow: hidden;
   backdrop-filter: blur(8px);
 
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      135deg,
-      rgba(99, 102, 241, 0.2),
-      rgba(236, 72, 153, 0.1)
-    );
-    opacity: 0;
-    transition: opacity 0.25s ease;
-  }
-
   &:hover {
-    transform: translateY(-2px) scale(1.05);
-    border-color: rgba(99, 102, 241, 0.6);
-    box-shadow:
-      0 8px 20px rgba(99, 102, 241, 0.25),
-      0 4px 8px rgba(0, 0, 0, 0.1);
-    &::before {
-      opacity: 1;
-    }
+    transform: translateY(-2px);
+    background: ${({ theme }) => theme.surfaces.card.background};
+    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    color: ${({ theme }) => theme.buttons.primary.gradientStart};
   }
 
   &:active {
-    transform: translateY(0) scale(0.98);
+    transform: translateY(0);
   }
 `;
 

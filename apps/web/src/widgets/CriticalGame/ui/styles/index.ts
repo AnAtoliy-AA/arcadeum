@@ -105,7 +105,13 @@ export {
 } from './card-decorations';
 
 // Chat Components
-export { ChatCard, GameLog, LogEntry, ChatMessages } from './chat';
+export {
+  ChatCard,
+  GameLog,
+  LogEntry,
+  ChatMessages,
+  ChatCloseButton,
+} from './chat';
 
 export {
   ScopeToggle,

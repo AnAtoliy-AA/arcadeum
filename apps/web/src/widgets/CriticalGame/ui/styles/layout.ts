@@ -51,29 +51,6 @@ const getVariantBackgroundEffects = ($variant: string | undefined) => {
   }
   if ($variant === GAME_VARIANT.UNDERWATER) {
     return css`
-      &::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(
-            circle at 30% 30%,
-            rgba(255, 255, 255, 0.05) 0%,
-            transparent 2%
-          ),
-          radial-gradient(
-            circle at 70% 70%,
-            rgba(255, 255, 255, 0.03) 0%,
-            transparent 1%
-          );
-        background-size: 60px 60px;
-        opacity: 0.6;
-        animation: ambientDrift 20s linear infinite;
-        pointer-events: none;
-      }
-
       /* Sunbeams / Caustics imitation */
       &::after {
         content: '';
@@ -153,7 +130,7 @@ const getTableAreaGridStyles = ($showChat: boolean) => {
 
     @media (max-width: 1024px) {
       grid-template-columns: 1fr;
-      grid-template-rows: ${$showChat ? '1fr auto 1fr' : '1fr auto'};
+      grid-template-rows: ${$showChat ? '1fr auto 2fr' : '1fr auto'};
       grid-template-areas: ${$showChat
         ? '"table" "hand" "chat"'
         : '"table" "hand"'};
@@ -379,6 +356,14 @@ export const GameContainer = styled.div<{
     display: flex;
     flex-direction: column;
 
+    @media (max-width: 768px) {
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 0.5rem 1rem;
+      gap: 0.5rem;
+    }
+
     &::before {
       opacity: 0.3;
     }
@@ -394,6 +379,9 @@ export const GameContainer = styled.div<{
     border-radius: 16px;
     gap: 1rem;
     border-width: 1px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 
   @media (max-height: 600px) {
@@ -434,6 +422,7 @@ export const GameBoard = styled.div`
 
 export const TableArea = styled.div<{ $showChat: boolean }>`
   display: grid;
+  flex: 1;
   ${({ $showChat }) => getTableAreaGridStyles($showChat)}
   grid-template-rows: 1fr auto;
   gap: 1rem;

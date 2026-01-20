@@ -82,6 +82,28 @@ const SmallButton = styled(Button)`
   min-width: auto;
 `;
 
+const StyledFullscreenButton = styled(Button)`
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: ${({ theme }) => theme.text.primary};
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(8px);
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    background: ${({ theme }) => theme.surfaces.card.background};
+    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    color: ${({ theme }) => theme.buttons.primary.gradientStart};
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
 export function GamesControlPanel({
   roomId,
   className,
@@ -137,7 +159,7 @@ export function GamesControlPanel({
 
   return (
     <Panel className={className}>
-      <Button
+      <StyledFullscreenButton
         variant="secondary"
         size="sm"
         onClick={handleFullscreenToggle}
@@ -148,7 +170,7 @@ export function GamesControlPanel({
         }
       >
         {isFullscreen ? '⤓' : '⤢'} {t('games.table.controlPanel.fullscreen')}
-      </Button>
+      </StyledFullscreenButton>
 
       {showMoveControls && (
         <MoveControlsContainer>

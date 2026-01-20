@@ -104,6 +104,22 @@ export const UserInfo = styled(Button).attrs({
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  color: ${({ theme }) => theme.text.primary};
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background: ${({ theme }) => theme.surfaces.card.background};
+    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 
   @media (max-width: 640px) {
     display: none;

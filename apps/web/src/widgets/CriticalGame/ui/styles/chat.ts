@@ -16,9 +16,9 @@ export const ChatCard = styled(InfoCard)`
   flex-shrink: 0;
 
   @media (max-width: 1024px) {
-    height: auto;
+    height: 100%;
     min-height: 250px;
-    max-height: 400px;
+    max-height: none;
     flex-shrink: 0;
   }
 
@@ -246,23 +246,56 @@ export const ChatMessages = styled(GameLog)`
   `}
 
   @media (max-width: 1024px) {
-    max-height: 15vh;
     min-height: 60px;
   }
 
   @media (max-width: 768px) {
-    max-height: 12vh;
     min-height: 40px;
   }
 
   /* Constrain on short heights */
   @media (max-height: 700px) {
-    max-height: 120px;
     min-height: 40px;
   }
 
   @media (max-height: 500px) {
-    max-height: 60px;
     min-height: 30px;
+  }
+`;
+
+export const ChatCloseButton = styled.button`
+  display: none;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+  color: ${({ theme }) => theme.text.secondary};
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #ef4444;
+  }
+
+  @media (max-width: 1024px) {
+    display: flex;
+  }
+
+  @media (max-height: 700px) {
+    display: flex;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
   }
 `;

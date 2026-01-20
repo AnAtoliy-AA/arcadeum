@@ -360,6 +360,7 @@ export default function CriticalGame({
               formatLogMessage={formatLogMessage}
               t={t as (key: string) => string}
               cardVariant={cardVariant}
+              onClose={handleToggleChat}
             />
           )}
         </TableArea>

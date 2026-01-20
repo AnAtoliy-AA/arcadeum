@@ -221,47 +221,6 @@ export const Empty = styled.div`
   grid-column: 1 / -1;
 `;
 
-export const PaginationContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 2rem;
-  grid-column: 1 / -1;
-`;
-
-export const PaginationButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.primary};
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover:not(:disabled) {
-    background: ${({ theme }) => theme.buttons.primary.gradientStart};
-    color: ${({ theme }) => theme.buttons.primary.text};
-    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
-
-export const PaginationInfo = styled.span`
-  color: ${({ theme }) => theme.text.muted};
-  font-size: 0.95rem;
-  font-weight: 500;
-`;
-
 export const ServerWakeUpContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -270,4 +229,21 @@ export const ServerWakeUpContainer = styled.div`
   min-height: 50vh;
   flex: 1;
   grid-column: 1 / -1;
+`;
+
+export const ScrollSentinel = styled.div`
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  width: 100%;
+`;
+
+export const EndOfListText = styled.div`
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem;
+  color: ${({ theme }) => theme.text.muted};
+  font-size: 0.95rem;
+  font-weight: 500;
 `;

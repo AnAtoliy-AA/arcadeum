@@ -11,7 +11,7 @@ interface GetRoomsParams {
   gameId?: string;
 }
 
-interface GetRoomsResponse {
+export interface GetRoomsResponse {
   rooms: GameRoomSummary[];
   total: number;
 }

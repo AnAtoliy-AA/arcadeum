@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { gamesApi } from '@/features/games/api';
+import { gamesApi, GetRoomsResponse } from '@/features/games/api';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 import { GamesEmpty } from './components/GamesEmpty';
 import { GamesError } from './components/GamesError';
@@ -19,7 +19,6 @@ import type {
 } from './types';
 
 const PAGE_SIZE = 12;
-const INITIAL_PAGE = 1;
 
 export function GamesPage() {
   const { snapshot } = useSessionTokens();
@@ -31,54 +30,56 @@ export function GamesPage() {
   const [viewMode, setViewMode] = useState<GamesViewMode>('grid');
 
   // Pagination state
-  const [page, setPage] = useState(INITIAL_PAGE);
   const [limit] = useState(PAGE_SIZE);
 
   const handleStatusChange = (status: typeof statusFilter) => {
     setStatusFilter(status);
-    setPage(INITIAL_PAGE);
   };
 
   const handleParticipationChange = (
     participation: typeof participationFilter,
   ) => {
     setParticipationFilter(participation);
-    setPage(INITIAL_PAGE);
   };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    setPage(INITIAL_PAGE);
   };
 
   const {
-    data: roomsData,
+    data,
     isLoading,
     error: queryError,
-  } = useQuery({
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery<GetRoomsResponse>({
     queryKey: [
       'games',
       'list',
       statusFilter,
       participationFilter,
       searchQuery,
-      page,
       limit,
     ],
-    queryFn: async () => {
+    queryFn: async ({ pageParam = 1 }) => {
       return gamesApi.getRooms(
         {
           status: statusFilter,
           participation: participationFilter,
           search: searchQuery || undefined,
-          page,
+          page: pageParam as number,
           limit,
         },
         { token: snapshot.accessToken || undefined },
       );
     },
-    // Keep previous data while fetching new data for smoother pagination
-    placeholderData: (previousData) => previousData,
+    getNextPageParam: (lastPage, allPages) => {
+      const totalPages = Math.ceil(lastPage.total / limit);
+      const nextPage = allPages.length + 1;
+      return nextPage <= totalPages ? nextPage : undefined;
+    },
+    initialPageParam: 1,
   });
 
   // Track loading progress for server wake-up message
@@ -88,9 +89,10 @@ export function GamesPage() {
     elapsedSeconds: loadingElapsedSeconds,
   } = useServerWakeUpProgress(isLoading);
 
-  const roomsRaw = roomsData?.rooms;
-  const rooms = useMemo(() => roomsRaw || [], [roomsRaw]);
-  const total = roomsData?.total || 0;
+  const rooms = useMemo(() => {
+    return data?.pages.flatMap((page) => page.rooms) || [];
+  }, [data]);
+
   const loading = isLoading;
   const error =
     queryError instanceof globalThis.Error
@@ -105,8 +107,6 @@ export function GamesPage() {
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
   }, [rooms]);
-
-  const totalPages = Math.ceil(total / limit);
 
   const renderContent = () => {
     if (loading) {
@@ -131,9 +131,9 @@ export function GamesPage() {
       <GamesList
         rooms={sortedRooms}
         viewMode={viewMode}
-        page={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        fetchNextPage={fetchNextPage}
       />
     );
   };

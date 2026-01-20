@@ -1,31 +1,47 @@
+import { useEffect, useRef } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { RoomCardComponent } from '../RoomCardComponent';
-import {
-  PaginationButton,
-  PaginationContainer,
-  PaginationInfo,
-} from '../styles';
+import { Spinner, EndOfListText, ScrollSentinel } from '../styles';
 import type { GamesViewMode } from '../types';
 
 interface GamesListProps {
   rooms: GameRoomSummary[];
   viewMode: GamesViewMode;
-  page: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+  fetchNextPage: () => void | Promise<unknown>;
 }
-
-const INITIAL_PAGE = 1;
 
 export function GamesList({
   rooms,
   viewMode,
-  page,
-  totalPages,
-  onPageChange,
+  hasNextPage,
+  isFetchingNextPage,
+  fetchNextPage,
 }: GamesListProps) {
   const { t } = useTranslation();
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const element = observerTarget.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    observer.observe(element);
+
+    return () => {
+      observer.unobserve(element);
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
     <>
@@ -33,27 +49,12 @@ export function GamesList({
         <RoomCardComponent key={room.id} room={room} viewMode={viewMode} />
       ))}
 
-      {totalPages > 1 && (
-        <PaginationContainer>
-          <PaginationButton
-            onClick={() => onPageChange(Math.max(INITIAL_PAGE, page - 1))}
-            disabled={page === INITIAL_PAGE}
-          >
-            ←
-          </PaginationButton>
-          <PaginationInfo>
-            {t('games.lounge.paginationInfo', {
-              page,
-              totalPages,
-            })}
-          </PaginationInfo>
-          <PaginationButton
-            onClick={() => onPageChange(Math.min(totalPages, page + 1))}
-            disabled={page === totalPages}
-          >
-            →
-          </PaginationButton>
-        </PaginationContainer>
+      {hasNextPage || isFetchingNextPage ? (
+        <ScrollSentinel ref={observerTarget}>
+          {isFetchingNextPage && <Spinner />}
+        </ScrollSentinel>
+      ) : (
+        <EndOfListText>{t('games.lounge.noMoreRooms')}</EndOfListText>
       )}
     </>
   );

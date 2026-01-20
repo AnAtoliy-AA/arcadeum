@@ -12,6 +12,7 @@ export const sharedMessages = {
       searchButton: 'Search',
       participantsCount: '{{count}} participants',
       paginationInfo: 'Page {{page}} of {{totalPages}}',
+      noMoreRooms: 'You have reached the end of the list',
       filters: {
         statusLabel: 'Status',
         participationLabel: 'Participation',
@@ -120,6 +121,7 @@ export const sharedMessages = {
       searchButton: 'Buscar',
       participantsCount: '{{count}} participantes',
       paginationInfo: 'Página {{page}} de {{totalPages}}',
+      noMoreRooms: 'Has llegado al final de la lista',
       filters: {
         statusLabel: 'Estado',
         participationLabel: 'Participación',
@@ -229,6 +231,7 @@ export const sharedMessages = {
       searchButton: 'Rechercher',
       participantsCount: '{{count}} participants',
       paginationInfo: 'Page {{page}} sur {{totalPages}}',
+      noMoreRooms: 'Vous avez atteint la fin de la liste',
       filters: {
         statusLabel: 'Statut',
         participationLabel: 'Participation',

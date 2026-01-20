@@ -210,7 +210,7 @@ export const gamesCatalog = [
   },
   {
     id: 'texas_holdem_v1',
-    name: "Texas Hold'em",
+    name: "Texas Hold'em Poker",
     summary: 'Classic poker game with community cards',
     isPlayable: false, // Temporarily unavailable
     isHidden: true, // Temporarily hidden from UI

@@ -24,6 +24,7 @@ export const RoomCard = styled.div<{ $viewMode?: 'grid' | 'list' }>`
     ${({ theme }) => theme.surfaces.card.background} 0%,
     ${({ theme }) => theme.surfaces.panel.background} 100%
   );
+
   display: flex;
   flex-direction: ${({ $viewMode }) =>
     $viewMode === 'list' ? 'row' : 'column'};
@@ -106,21 +107,57 @@ export const RoomHeader = styled.div<{ $viewMode?: 'grid' | 'list' }>`
     $viewMode === 'list' ? LIST_VIEW_MIN_WIDTH : 'auto'};
 `;
 
+const gradientFlow = keyframes`
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+`;
+
 export const RoomTitle = styled.h3`
   margin: 0;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: ${({ theme }) => theme.text.primary};
-  letter-spacing: -0.3px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+
+  background: linear-gradient(
+    -45deg,
+    ${({ theme }) => theme.text.primary},
+    ${({ theme }) => theme.buttons.primary.gradientStart},
+    ${({ theme }) => theme.buttons.primary.gradientEnd},
+    ${({ theme }) => theme.text.primary}
+  );
+  background-size: 300%;
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+
+  animation: ${gradientFlow} 5s ease infinite;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
 `;
 
 export const StatusBadge = styled.span<{ status: string }>`
-  padding: 0.35rem 0.85rem;
-  border-radius: 8px;
-  font-size: 0.7rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  flex-shrink: 0;
   background: ${({ status }) => {
     if (status === 'lobby')
       return 'linear-gradient(135deg, #10B981 0%, #059669 100%)';
@@ -146,6 +183,8 @@ export const FastBadge = styled.span`
   background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
   color: white;
   box-shadow: 0 2px 8px #eab30840;
+  flex-shrink: 0;
+  white-space: nowrap;
 `;
 
 export const BadgeIcon = styled.span`
@@ -238,4 +277,16 @@ export const ActionButton = styled(LinkButton)<{
 }>`
   padding: 0.75rem 1.25rem;
   font-size: 0.85rem;
+`;
+
+export const GameNameValue = styled(MetaValue)<{ $gradient?: string }>`
+  ${({ $gradient }) =>
+    $gradient &&
+    `
+    background: ${$gradient};
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+  `}
 `;

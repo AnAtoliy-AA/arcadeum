@@ -4,6 +4,7 @@ import { useCallback } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { gameMetadata } from '@/features/games/registry';
 import type { GameRoomSummary } from '@/shared/types/games';
+import { CARD_VARIANTS } from './create/constants';
 import {
   RoomCard,
   RoomTitle,
@@ -22,6 +23,7 @@ import {
   BadgeIcon,
   ParticipantsLabel,
   MetaListContainer,
+  GameNameValue,
 } from './room-card.styles';
 
 const MAX_VISIBLE_PARTICIPANTS = 5;
@@ -36,8 +38,26 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
 
   const gameId =
     room.gameId === 'exploding_kittens_v1' ? 'critical_v1' : room.gameId;
-  const gameName =
+
+  let gameName =
     gameMetadata[gameId as keyof typeof gameMetadata]?.name ?? room.gameId;
+
+  let variantGradient: string | undefined;
+
+  // Append variant name if available (specifically for Critical)
+  if (
+    gameId === 'critical_v1' &&
+    room.gameOptions?.cardVariant &&
+    room.gameOptions.cardVariant !== 'random'
+  ) {
+    const variant = CARD_VARIANTS.find(
+      (v) => v.id === room.gameOptions?.cardVariant,
+    );
+    if (variant) {
+      gameName = `${gameName}: ${variant.name}`;
+      variantGradient = variant.gradient;
+    }
+  }
 
   const formatMemberLabel = useCallback(
     (member: {
@@ -59,16 +79,18 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
     <RoomCard key={room.id} $viewMode={viewMode}>
       {/* Header: Name and Status - column in list, row in grid */}
       <RoomHeader $viewMode={viewMode}>
-        <RoomTitle>{room.name}</RoomTitle>
+        <RoomTitle title={room.name}>{room.name}</RoomTitle>
         {room.gameOptions?.idleTimerEnabled && (
           <FastBadge>
             <BadgeIcon>⚡</BadgeIcon>
             {t('games.rooms.fastRoom')}
           </FastBadge>
         )}
-        <StatusBadge status={room.status}>
-          {t(`games.rooms.status.${room.status}`) || room.status}
-        </StatusBadge>
+        {viewMode === 'list' && (
+          <StatusBadge status={room.status}>
+            {t(`games.rooms.status.${room.status}`) || room.status}
+          </StatusBadge>
+        )}
       </RoomHeader>
 
       {/* Meta Info */}
@@ -77,7 +99,9 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
           <MetaRow>
             <MetaIcon>🎮</MetaIcon>
             <MetaLabel>{t('games.rooms.gameLabel') || 'Game'}</MetaLabel>
-            <MetaValue>{gameName}</MetaValue>
+            <GameNameValue $gradient={variantGradient}>
+              {gameName}
+            </GameNameValue>
           </MetaRow>
           <MetaRow>
             <MetaIcon>👑</MetaIcon>
@@ -96,9 +120,9 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
           <MetaRow>
             <MetaIcon>⏱️</MetaIcon>
             <MetaLabel>{t('games.rooms.statusLabel')}</MetaLabel>
-            <MetaValue>
+            <StatusBadge status={room.status}>
               {t(`games.rooms.status.${room.status}`) || room.status}
-            </MetaValue>
+            </StatusBadge>
           </MetaRow>
           <MetaRow>
             <MetaIcon>{room.visibility === 'private' ? '🔒' : '🌐'}</MetaIcon>
@@ -138,7 +162,9 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
         <MetaListContainer>
           <MetaRow title={t('games.rooms.gameLabel') || 'Game'}>
             <MetaIcon>🎮</MetaIcon>
-            <MetaValue>{gameName}</MetaValue>
+            <GameNameValue $gradient={variantGradient}>
+              {gameName}
+            </GameNameValue>
           </MetaRow>
           <MetaRow>
             <MetaIcon>👑</MetaIcon>

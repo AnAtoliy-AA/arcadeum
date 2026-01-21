@@ -40,7 +40,7 @@ export const supportMessages = {
       coffeeCta: 'Buy the team a coffee',
       paymentTitle: 'Card payment',
       paymentDescription:
-        "Enter an amount and we'll open UniPAY's secure checkout in your browser.",
+        "Enter an amount and we'll open PayPal's secure checkout in your browser.",
       paymentCta: 'Enter amount',
       ibanTitle: 'Bank transfer',
       ibanDescription:
@@ -92,7 +92,7 @@ export const supportMessages = {
       coffeeCta: 'Invitar un café',
       paymentTitle: 'Pago con tarjeta',
       paymentDescription:
-        'Ingresa un monto y abriremos el checkout seguro de UniPAY en tu navegador.',
+        'Ingresa un monto y abriremos el checkout seguro de PayPal en tu navegador.',
       paymentCta: 'Ingresar monto',
       ibanTitle: 'Transferencia bancaria',
       ibanDescription:
@@ -145,7 +145,7 @@ export const supportMessages = {
       coffeeCta: 'Offrir un café',
       paymentTitle: 'Paiement par carte',
       paymentDescription:
-        'Indique un montant et nous ouvrons le checkout sécurisé de UniPAY dans ton navigateur.',
+        'Indique un montant et nous ouvrons le checkout sécurisé de PayPal dans ton navigateur.',
       paymentCta: 'Saisir le montant',
       ibanTitle: 'Virement bancaire',
       ibanDescription:

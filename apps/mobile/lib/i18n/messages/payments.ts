@@ -4,18 +4,18 @@ export const paymentsMessages = {
   en: {
     title: 'Secure card payment',
     intro:
-      "Enter an amount and complete your contribution in UniPAY's secure checkout.",
+      "Enter an amount and complete your contribution in PayPal's secure checkout.",
     amountLabel: 'Amount',
     amountPlaceholder: 'e.g. 25',
     currencyLabel: 'Currency',
-    currencyPlaceholder: 'e.g. GEL',
+    currencyPlaceholder: 'e.g. USD',
     noteLabel: 'Optional note',
     notePlaceholder: 'Add a note for the team',
     submit: 'Continue to payment',
     status: {
-      pending: 'Opening UniPAY checkout...',
+      pending: 'Opening PayPal checkout...',
       success:
-        'UniPAY checkout opened in your browser. Complete the payment there.',
+        'PayPal checkout opened in your browser. Complete the payment there.',
       cancelled: 'Checkout closed before starting. You can try again.',
     },
     errors: {
@@ -26,18 +26,18 @@ export const paymentsMessages = {
   es: {
     title: 'Pago seguro con tarjeta',
     intro:
-      'Ingresa un monto y completa tu contribución en el checkout seguro de UniPAY.',
+      'Ingresa un monto y completa tu contribución en el checkout seguro de PayPal.',
     amountLabel: 'Importe',
     amountPlaceholder: 'p. ej. 25',
     currencyLabel: 'Moneda',
-    currencyPlaceholder: 'p. ej. GEL',
+    currencyPlaceholder: 'p. ej. USD',
     noteLabel: 'Nota opcional',
     notePlaceholder: 'Deja un mensaje para el equipo',
     submit: 'Continuar con el pago',
     status: {
-      pending: 'Abriendo el checkout de UniPAY...',
+      pending: 'Abriendo el checkout de PayPal...',
       success:
-        'Checkout de UniPAY abierto en tu navegador. Completa el pago allí.',
+        'Checkout de PayPal abierto en tu navegador. Completa el pago allí.',
       cancelled:
         'Checkout cerrado antes de iniciar. Puedes intentarlo de nuevo.',
     },
@@ -50,18 +50,18 @@ export const paymentsMessages = {
   fr: {
     title: 'Paiement sécurisé par carte',
     intro:
-      'Indique un montant et finalise ta contribution dans le checkout sécurisé de UniPAY.',
+      'Indique un montant et finalise ta contribution dans le checkout sécurisé de PayPal.',
     amountLabel: 'Montant',
     amountPlaceholder: 'ex. 25',
     currencyLabel: 'Devise',
-    currencyPlaceholder: 'ex. GEL',
+    currencyPlaceholder: 'ex. USD',
     noteLabel: 'Note optionnelle',
     notePlaceholder: "Ajoute un message pour l'équipe",
     submit: 'Continuer vers le paiement',
     status: {
-      pending: 'Ouverture du checkout UniPAY...',
+      pending: 'Ouverture du checkout PayPal...',
       success:
-        'Checkout UniPAY ouvert dans ton navigateur. Termine le paiement là-bas.',
+        'Checkout PayPal ouvert dans ton navigateur. Termine le paiement là-bas.',
       cancelled: 'Checkout fermé avant de démarrer. Tu peux réessayer.',
     },
     errors: {

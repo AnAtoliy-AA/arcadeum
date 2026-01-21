@@ -24,6 +24,27 @@ const paymentsMessagesDefinition = {
       noUrl: 'No payment URL received',
       failed: 'Payment failed',
     },
+    presets: {
+      coffee: '☕️ Coffee',
+      lunch: '🍕 Lunch',
+      gift: '🎁 Gift',
+      boost: '🚀 Boost',
+    },
+    successPage: {
+      title: 'Payment Successful!',
+      message:
+        'Thank you for your generous support! Your contribution helps us keep the servers running, the coffee brewing, and the updates coming.',
+      referenceLabel: 'Transaction Reference',
+      returnHome: 'Return Home',
+      supportAgain: 'Support Again',
+    },
+    cancelPage: {
+      title: 'Payment Cancelled',
+      message:
+        "No worries! No charges were made to your account. You can always try again when you're ready—we'll be here.",
+      tryAgain: 'Try Again',
+      returnHome: 'Return Home',
+    },
   },
   es: {
     title: 'Pago',
@@ -48,6 +69,27 @@ const paymentsMessagesDefinition = {
       noUrl: 'No se recibió URL de pago',
       failed: 'El pago falló',
     },
+    presets: {
+      coffee: '☕️ Café',
+      lunch: '🍕 Almuerzo',
+      gift: '🎁 Regalo',
+      boost: '🚀 Impulso',
+    },
+    successPage: {
+      title: '¡Pago Exitoso!',
+      message:
+        '¡Gracias por tu generoso apoyo! Tu contribución nos ayuda a mantener los servidores funcionando y las actualizaciones llegando.',
+      referenceLabel: 'Referencia de Transacción',
+      returnHome: 'Volver al Inicio',
+      supportAgain: 'Apoyar de Nuevo',
+    },
+    cancelPage: {
+      title: 'Pago Cancelado',
+      message:
+        '¡No te preocupes! No se realizaron cargos a tu cuenta. Siempre puedes intentarlo de nuevo cuando estés listo.',
+      tryAgain: 'Intentar de Nuevo',
+      returnHome: 'Volver al Inicio',
+    },
   },
   fr: {
     title: 'Paiement',
@@ -71,6 +113,27 @@ const paymentsMessagesDefinition = {
       invalidUrl: 'URL de paiement invalide reçue',
       noUrl: 'Aucune URL de paiement reçue',
       failed: 'Le paiement a échoué',
+    },
+    presets: {
+      coffee: '☕️ Café',
+      lunch: '🍕 Déjeuner',
+      gift: '🎁 Cadeau',
+      boost: '🚀 Boost',
+    },
+    successPage: {
+      title: 'Paiement Réussi !',
+      message:
+        'Merci pour votre généreux soutien ! Votre contribution nous aide à maintenir les serveurs en marche et les mises à jour à venir.',
+      referenceLabel: 'Référence de Transaction',
+      returnHome: "Retour à l'Accueil",
+      supportAgain: 'Soutenir à Nouveau',
+    },
+    cancelPage: {
+      title: 'Paiement Annulé',
+      message:
+        "Pas de soucis ! Aucun frais n'a été débité de votre compte. Vous pouvez toujours réessayer quand vous serez prêt.",
+      tryAgain: 'Réessayer',
+      returnHome: "Retour à l'Accueil",
     },
   },
 } satisfies Record<Locale, Record<string, unknown>>;

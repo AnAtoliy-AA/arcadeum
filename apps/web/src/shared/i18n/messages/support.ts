@@ -29,7 +29,7 @@ const supportMessagesDefinition = {
       payment: {
         title: 'Card payment',
         description:
-          "Enter an amount and we'll open UniPAY's secure checkout in your browser.",
+          "Enter an amount and we'll open PayPal's secure checkout in your browser.",
         cta: 'Enter amount',
       },
       sponsor: {
@@ -81,7 +81,7 @@ const supportMessagesDefinition = {
       payment: {
         title: 'Pago con tarjeta',
         description:
-          'Ingresa un importe y abriremos en tu navegador el checkout seguro de UniPAY.',
+          'Ingresa un importe y abriremos en tu navegador el checkout seguro de PayPal.',
         cta: 'Ingresar importe',
       },
       sponsor: {
@@ -133,7 +133,7 @@ const supportMessagesDefinition = {
       payment: {
         title: 'Paiement par carte',
         description:
-          'Saisissez un montant et nous ouvrirons le paiement sécurisé UniPAY dans votre navigateur.',
+          'Saisissez un montant et nous ouvrirons le paiement sécurisé PayPal dans votre navigateur.',
         cta: 'Entrer un montant',
       },
       sponsor: {

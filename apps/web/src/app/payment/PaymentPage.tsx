@@ -22,27 +22,84 @@ import {
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
+`;
+
+const ChipContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+`;
+
+const Chip = styled.button<{ $active?: boolean }>`
+  background: ${(props) =>
+    props.$active
+      ? 'var(--primary-color, #3b82f6)'
+      : 'rgba(255, 255, 255, 0.05)'};
+  color: ${(props) => (props.$active ? '#ffffff' : 'inherit')};
+  border: 1px solid
+    ${(props) => (props.$active ? 'transparent' : 'rgba(255, 255, 255, 0.1)')};
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &:hover {
+    background: ${(props) =>
+      props.$active
+        ? 'var(--primary-color, #3b82f6)'
+        : 'rgba(255, 255, 255, 0.1)'};
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+const CurrencyBadge = styled.span`
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+  font-size: 0.875rem;
+  pointer-events: none;
+`;
+
+const InputWrapper = styled.div`
+  position: relative;
 `;
 
 const ErrorCard = styled(Card)`
   border-color: #dc2626;
   color: #ef4444;
+  background: rgba(220, 38, 38, 0.05);
 `;
 
 const SuccessCard = styled(Card)`
   border-color: #22c55e;
   color: #22c55e;
+  background: rgba(34, 197, 94, 0.05);
 `;
 
 export function PaymentPage() {
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
   const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState('GEL');
   const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  // Currency is strictly USD now, no interaction needed
+  const currency = 'USD';
 
   const { mutate: createSession, isPending: loading } = useMutation({
     mutationFn: async (params: {
@@ -105,7 +162,7 @@ export function PaymentPage() {
 
       createSession({
         amount: normalizedAmount,
-        currency: currency.trim().toUpperCase(),
+        currency,
         description: note.trim() || undefined,
       });
     },
@@ -124,37 +181,52 @@ export function PaymentPage() {
               htmlFor="payment-amount"
               required
             >
-              <Input
-                id="payment-amount"
-                type="number"
-                step="0.01"
-                placeholder={t('payments.amountPlaceholder') || '0.00'}
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                required
-                aria-required="true"
-                aria-label={t('payments.amountAria') || 'Payment amount'}
-                fullWidth
-              />
-            </FormGroup>
+              <InputWrapper>
+                <Input
+                  id="payment-amount"
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  required
+                  aria-required="true"
+                  aria-label={t('payments.amountAria') || 'Payment amount'}
+                  fullWidth
+                  style={{ paddingRight: '3rem' }}
+                />
+                <CurrencyBadge>USD</CurrencyBadge>
+              </InputWrapper>
 
-            <FormGroup
-              label={t('payments.currencyLabel') || 'Currency'}
-              htmlFor="payment-currency"
-              required
-            >
-              <Input
-                id="payment-currency"
-                type="text"
-                placeholder={t('payments.currencyPlaceholder') || 'GEL'}
-                value={currency}
-                onChange={(e) => setCurrency(e.target.value.toUpperCase())}
-                maxLength={8}
-                required
-                aria-required="true"
-                aria-label={t('payments.currencyAria') || 'Currency code'}
-                fullWidth
-              />
+              <ChipContainer>
+                {[
+                  {
+                    value: '5',
+                    label: t('payments.presets.coffee') || '☕️ Coffee',
+                  },
+                  {
+                    value: '10',
+                    label: t('payments.presets.lunch') || '🍕 Lunch',
+                  },
+                  {
+                    value: '25',
+                    label: t('payments.presets.gift') || '🎁 Gift',
+                  },
+                  {
+                    value: '50',
+                    label: t('payments.presets.boost') || '🚀 Boost',
+                  },
+                ].map((preset) => (
+                  <Chip
+                    key={preset.value}
+                    type="button"
+                    $active={amount === preset.value}
+                    onClick={() => setAmount(preset.value)}
+                  >
+                    {preset.label} <span>${preset.value}</span>
+                  </Chip>
+                ))}
+              </ChipContainer>
             </FormGroup>
 
             <FormGroup
@@ -170,6 +242,7 @@ export function PaymentPage() {
                   t('payments.noteAria') || 'Payment note or description'
                 }
                 fullWidth
+                rows={3}
               />
             </FormGroup>
 

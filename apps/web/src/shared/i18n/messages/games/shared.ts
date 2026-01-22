@@ -93,6 +93,8 @@ export const sharedMessages = {
       selectAllPacks: 'Select All Packs',
       showPacks: 'Show',
       hidePacks: 'Hide',
+      loginRequired: 'You need to be logged in to create a room.',
+      loginButton: 'Login',
     },
     roomPage: {
       loading: 'Loading...',
@@ -202,6 +204,8 @@ export const sharedMessages = {
       selectAllPacks: 'Seleccionar Todos',
       showPacks: 'Mostrar',
       hidePacks: 'Ocultar',
+      loginRequired: 'Necesitas iniciar sesión para crear una sala.',
+      loginButton: 'Iniciar sesión',
     },
     roomPage: {
       loading: 'Cargando...',
@@ -312,6 +316,8 @@ export const sharedMessages = {
       selectAllPacks: 'Tout Sélectionner',
       showPacks: 'Afficher',
       hidePacks: 'Masquer',
+      loginRequired: 'Vous devez être connecté pour créer une salle.',
+      loginButton: 'Se connecter',
     },
     roomPage: {
       loading: 'Chargement...',

@@ -332,7 +332,38 @@ export function CreateGameRoomPage() {
             </ErrorCard>
           )}
 
-          <Button type="submit" disabled={loading} size="lg" fullWidth>
+          {!snapshot.accessToken && (
+            <ErrorCard
+              variant="outlined"
+              padding="sm"
+              style={{
+                marginBottom: '1rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.5rem',
+              }}
+            >
+              <div>
+                {t('games.create.loginRequired') ||
+                  'You need to be logged in to create a room.'}
+              </div>
+              <Button
+                type="button"
+                onClick={() => router.push('/auth')}
+                size="sm"
+              >
+                {t('games.create.loginButton') || 'Login'}
+              </Button>
+            </ErrorCard>
+          )}
+
+          <Button
+            type="submit"
+            disabled={loading || !snapshot.accessToken}
+            size="lg"
+            fullWidth
+          >
             {loading
               ? t('games.create.submitCreating') || 'Creating...'
               : t('games.common.createRoom') || 'Create Room'}

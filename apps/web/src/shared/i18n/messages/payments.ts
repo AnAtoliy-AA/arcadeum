@@ -3,6 +3,10 @@ import type { Locale } from '../types';
 const paymentsMessagesDefinition = {
   en: {
     title: 'Payment',
+    subtitle: 'Secure and fast payments powered by PayPal',
+    description:
+      'Your contribution directly supports the development of new games, UI improvements, bug fixes, and performance optimizations. Thank you for making this possible!',
+    secureInfo: 'Payments are 256-bit encrypted and secure.',
     amountLabel: 'Amount',
     amountPlaceholder: '0.00',
     amountAria: 'Payment amount',
@@ -48,6 +52,10 @@ const paymentsMessagesDefinition = {
   },
   es: {
     title: 'Pago',
+    subtitle: 'Pagos seguros y rápidos impulsados por PayPal',
+    description:
+      'Tu contribución apoya directamente el desarrollo de nuevos juegos, mejoras de interfaz, corrección de errores y optimizaciones de rendimiento. ¡Gracias por hacerlo posible!',
+    secureInfo: 'Los pagos están cifrados con 256 bits y son seguros.',
     amountLabel: 'Cantidad',
     amountPlaceholder: '0.00',
     amountAria: 'Monto del pago',
@@ -93,6 +101,10 @@ const paymentsMessagesDefinition = {
   },
   fr: {
     title: 'Paiement',
+    subtitle: 'Paiements sécurisés et rapides propulsés par PayPal',
+    description:
+      "Votre contribution soutient directement le développement de nouveaux jeux, les améliorations de l'interface, les corrections de bugs et les optimisations de performances. Merci de rendre cela possible !",
+    secureInfo: 'Les paiements sont cryptés en 256 bits et sécurisés.',
     amountLabel: 'Montant',
     amountPlaceholder: '0.00',
     amountAria: 'Montant du paiement',

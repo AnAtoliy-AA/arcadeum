@@ -47,6 +47,9 @@ export type { SpinnerProps, SpinnerSize } from './Spinner';
 export { Card } from './Card';
 export type { CardProps, CardVariant, CardPadding } from './Card';
 
+// GlassCard
+export { GlassCard } from './GlassCard';
+
 // Badge
 export { Badge } from './Badge';
 export type { BadgeProps, BadgeVariant, BadgeSize } from './Badge';

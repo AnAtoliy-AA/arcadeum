@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { useMutation } from '@tanstack/react-query';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -10,85 +10,170 @@ import { paymentApi } from '@/features/payment/api';
 import {
   PageLayout,
   Container,
-  PageTitle,
   Section,
   Button,
-  Input,
   TextArea,
   FormGroup,
-  Card,
+  GlassCard,
 } from '@/shared/ui';
+import { PaymentHeader, PaymentPresets, AmountDisplay } from './ui';
 
-const Form = styled.form`
+// --- Animations ---
+const float = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0px); }
+`;
+
+// --- Styled Components ---
+
+const BackgroundWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  z-index: -1;
+  background: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #000000 100%);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -10%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(
+      circle,
+      rgba(59, 130, 246, 0.15) 0%,
+      transparent 70%
+    );
+    filter: blur(60px);
+    animation: ${float} 10s ease-in-out infinite;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -10%;
+    right: -10%;
+    width: 50%;
+    height: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(147, 51, 234, 0.15) 0%,
+      transparent 70%
+    );
+    filter: blur(60px);
+    animation: ${float} 8s ease-in-out infinite reverse;
+  }
+`;
+
+const StyledForm = styled.form`
   display: flex;
   flex-direction: column;
   gap: 2rem;
 `;
 
-const ChipContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
+const StyledTextArea = styled(TextArea)`
+  background: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 16px !important;
+  padding: 1rem !important;
+  font-size: 1rem !important;
+
+  &:focus {
+    border-color: rgba(59, 130, 246, 0.5) !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+  }
 `;
 
-const Chip = styled.button<{ $active?: boolean }>`
+const GradientButton = styled(Button)`
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: none;
+  height: 3.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  border-radius: 16px;
+  box-shadow:
+    0 4px 6px -1px rgba(59, 130, 246, 0.3),
+    0 2px 4px -1px rgba(59, 130, 246, 0.2);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(255, 255, 255, 0.2), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow:
+      0 10px 15px -3px rgba(59, 130, 246, 0.4),
+      0 4px 6px -2px rgba(59, 130, 246, 0.3);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  }
+`;
+
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+const StatusMessage = styled.div<{ $type: 'error' | 'success' }>`
+  padding: 1rem;
+  border-radius: 12px;
   background: ${(props) =>
-    props.$active
-      ? 'var(--primary-color, #3b82f6)'
-      : 'rgba(255, 255, 255, 0.05)'};
-  color: ${(props) => (props.$active ? '#ffffff' : 'inherit')};
+    props.$type === 'error'
+      ? 'rgba(239, 68, 68, 0.1)'
+      : 'rgba(34, 197, 94, 0.1)'};
   border: 1px solid
-    ${(props) => (props.$active ? 'transparent' : 'rgba(255, 255, 255, 0.1)')};
-  border-radius: 9999px;
-  padding: 0.5rem 1rem;
+    ${(props) =>
+      props.$type === 'error'
+        ? 'rgba(239, 68, 68, 0.2)'
+        : 'rgba(34, 197, 94, 0.2)'};
+  color: ${(props) => (props.$type === 'error' ? '#fca5a5' : '#86efac')};
   font-size: 0.9375rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-
-  &:hover {
-    background: ${(props) =>
-      props.$active
-        ? 'var(--primary-color, #3b82f6)'
-        : 'rgba(255, 255, 255, 0.1)'};
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
+  animation: ${fadeIn} 0.3s ease-out;
 `;
 
-const CurrencyBadge = styled.span`
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: rgba(255, 255, 255, 0.4);
-  font-weight: 600;
+const SecureInfoWrapper = styled.div`
+  text-align: center;
+  margin-top: 2rem;
+  opacity: 0.5;
   font-size: 0.875rem;
-  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 `;
 
-const InputWrapper = styled.div`
-  position: relative;
-`;
-
-const ErrorCard = styled(Card)`
-  border-color: #dc2626;
-  color: #ef4444;
-  background: rgba(220, 38, 38, 0.05);
-`;
-
-const SuccessCard = styled(Card)`
-  border-color: #22c55e;
-  color: #22c55e;
-  background: rgba(34, 197, 94, 0.05);
-`;
+// --- Main Component ---
 
 export function PaymentPage() {
   const { snapshot } = useSessionTokens();
@@ -98,7 +183,7 @@ export function PaymentPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  // Currency is strictly USD now, no interaction needed
+  // Currency is strictly USD now
   const currency = 'USD';
 
   const { mutate: createSession, isPending: loading } = useMutation({
@@ -171,99 +256,79 @@ export function PaymentPage() {
 
   return (
     <PageLayout>
+      <BackgroundWrapper />
       <Container size="sm">
-        <PageTitle size="lg">{t('payments.title') || 'Payment'}</PageTitle>
-
         <Section>
-          <Form onSubmit={handleSubmit}>
-            <FormGroup
-              label={t('payments.amountLabel') || 'Amount'}
-              htmlFor="payment-amount"
-              required
-            >
-              <InputWrapper>
-                <Input
-                  id="payment-amount"
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  required
-                  aria-required="true"
-                  aria-label={t('payments.amountAria') || 'Payment amount'}
+          <PaymentHeader />
+
+          <GlassCard>
+            <StyledForm onSubmit={handleSubmit}>
+              <FormGroup
+                label={t('payments.amountLabel') || 'Select Amount'}
+                htmlFor="payment-amount"
+                required
+              >
+                <PaymentPresets amount={amount} onSelect={setAmount} />
+                <AmountDisplay amount={amount} onChange={setAmount} />
+              </FormGroup>
+
+              <FormGroup
+                label={t('payments.noteLabel') || 'Leave a message (optional)'}
+                htmlFor="payment-note"
+              >
+                <StyledTextArea
+                  id="payment-note"
+                  placeholder={
+                    t('payments.notePlaceholder') || 'Say something nice...'
+                  }
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  aria-label={
+                    t('payments.noteAria') || 'Payment note or description'
+                  }
                   fullWidth
-                  style={{ paddingRight: '3rem' }}
+                  rows={3}
                 />
-                <CurrencyBadge>USD</CurrencyBadge>
-              </InputWrapper>
+              </FormGroup>
 
-              <ChipContainer>
-                {[
-                  {
-                    value: '5',
-                    label: t('payments.presets.coffee') || '☕️ Coffee',
-                  },
-                  {
-                    value: '10',
-                    label: t('payments.presets.lunch') || '🍕 Lunch',
-                  },
-                  {
-                    value: '25',
-                    label: t('payments.presets.gift') || '🎁 Gift',
-                  },
-                  {
-                    value: '50',
-                    label: t('payments.presets.boost') || '🚀 Boost',
-                  },
-                ].map((preset) => (
-                  <Chip
-                    key={preset.value}
-                    type="button"
-                    $active={amount === preset.value}
-                    onClick={() => setAmount(preset.value)}
-                  >
-                    {preset.label} <span>${preset.value}</span>
-                  </Chip>
-                ))}
-              </ChipContainer>
-            </FormGroup>
+              {error && (
+                <StatusMessage $type="error">
+                  <span role="img" aria-label="error">
+                    ⚠️
+                  </span>{' '}
+                  {error}
+                </StatusMessage>
+              )}
+              {success && (
+                <StatusMessage $type="success">
+                  <span role="img" aria-label="success">
+                    ✅
+                  </span>
+                  {t('payments.status.success') ||
+                    'Payment session created successfully!'}
+                </StatusMessage>
+              )}
 
-            <FormGroup
-              label={t('payments.noteLabel') || 'Note (optional)'}
-              htmlFor="payment-note"
-            >
-              <TextArea
-                id="payment-note"
-                placeholder={t('payments.notePlaceholder') || 'Add a note...'}
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                aria-label={
-                  t('payments.noteAria') || 'Payment note or description'
-                }
+              <GradientButton
+                type="submit"
+                disabled={loading}
+                size="lg"
                 fullWidth
-                rows={3}
-              />
-            </FormGroup>
+              >
+                {loading
+                  ? t('payments.submitting') || 'Processing...'
+                  : t('payments.submit') || 'Continue to Checkout'}
+              </GradientButton>
+            </StyledForm>
+          </GlassCard>
 
-            {error && (
-              <ErrorCard variant="outlined" padding="sm">
-                {error}
-              </ErrorCard>
-            )}
-            {success && (
-              <SuccessCard variant="outlined" padding="sm">
-                {t('payments.status.success') ||
-                  'Payment session created successfully!'}
-              </SuccessCard>
-            )}
-
-            <Button type="submit" disabled={loading} size="lg" fullWidth>
-              {loading
-                ? t('payments.submitting') || 'Processing...'
-                : t('payments.submit') || 'Create Payment'}
-            </Button>
-          </Form>
+          <SecureInfoWrapper>
+            <span role="img" aria-label="secure">
+              🔒
+            </span>
+            {t('payments.secureInfo') ||
+              'Payments are 256-bit encrypted and secure.'}
+          </SecureInfoWrapper>
         </Section>
       </Container>
     </PageLayout>

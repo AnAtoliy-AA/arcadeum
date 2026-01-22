@@ -103,6 +103,20 @@ export const GameTileSummary = styled.div`
   line-height: 1.4;
 `;
 
+export const ComingSoonBadge = styled.div`
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: ${({ theme }) => theme.surfaces.panel.background};
+  color: ${({ theme }) => theme.text.muted};
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+`;
+
 export const Row = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;

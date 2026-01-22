@@ -37,6 +37,7 @@ import {
   Row,
   VisibilityToggle,
   ErrorCard,
+  ComingSoonBadge,
 } from './styles';
 
 // Filter out hidden games for display
@@ -178,9 +179,17 @@ export function CreateGameRoomPage() {
                     as="button"
                     type="button"
                     $active={cardVariant === variant.id}
-                    onClick={() => setCardVariant(variant.id)}
+                    disabled={variant.disabled}
+                    onClick={() =>
+                      !variant.disabled && setCardVariant(variant.id)
+                    }
                   >
-                    <SelectionIndicator />
+                    {!variant.disabled && <SelectionIndicator />}
+                    {variant.disabled && (
+                      <ComingSoonBadge>
+                        {t('games.create.comingSoon') || 'Coming Soon'}
+                      </ComingSoonBadge>
+                    )}
                     <GameTileIcon $gradient={variant.gradient}>
                       {variant.emoji}
                     </GameTileIcon>

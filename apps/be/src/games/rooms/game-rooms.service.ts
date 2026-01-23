@@ -219,8 +219,8 @@ export class GameRoomsService {
       throw new BadRequestException('Not a member of this room');
     }
 
-    // If host leaves or room becomes empty, delete the room
-    if (isHost || room.participants.length === 1) {
+    // If it's the last player, delete the room
+    if (room.participants.length === 1) {
       await this.gameRoomModel.findByIdAndDelete(dto.roomId).exec();
       return {
         room: null,
@@ -231,6 +231,13 @@ export class GameRoomsService {
 
     // Remove participant
     room.participants = room.participants.filter((p) => p.userId !== userId);
+
+    // If host left, assign new host (next player in list)
+    if (isHost) {
+      // Participants are ordered by join time usually, so [0] is the next oldest
+      room.hostId = room.participants[0].userId;
+    }
+
     room.updatedAt = new Date();
     await room.save();
 

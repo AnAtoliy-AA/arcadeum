@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../../auth/schemas/user.schema';
 import { GameRoom } from '../schemas/game-room.schema';
-import { GameRoomSummary } from './game-rooms.types';
+import { GameRoomSummary, GameRoomMemberSummary } from './game-rooms.types';
 
 @Injectable()
 export class GameRoomsMapper {
@@ -24,9 +24,18 @@ export class GameRoomsMapper {
     );
 
     const host = userMap.get(room.hostId);
-    const members = room.participants.map((p) =>
-      this.mapUserToMember(p.userId, userMap, room.hostId),
-    );
+
+    // Deduplicate participants to ensure unique members list
+    const uniqueMemberIds = new Set<string>();
+    const members: GameRoomMemberSummary[] = [];
+
+    for (const p of room.participants) {
+      const pUserId = String(p.userId);
+      if (!uniqueMemberIds.has(pUserId)) {
+        uniqueMemberIds.add(pUserId);
+        members.push(this.mapUserToMember(pUserId, userMap, room.hostId));
+      }
+    }
 
     const rematchInvitedUsers = invitedIds.map((id) =>
       this.mapRematchUser(id, userMap),
@@ -42,7 +51,7 @@ export class GameRoomsMapper {
       name: room.name,
       hostId: room.hostId,
       visibility: room.visibility,
-      playerCount: room.participants.length,
+      playerCount: members.length, // Use unique count
       maxPlayers: room.maxPlayers ?? null,
       createdAt: room.createdAt.toISOString(),
       status: room.status,

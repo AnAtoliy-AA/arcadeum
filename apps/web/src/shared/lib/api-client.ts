@@ -35,6 +35,7 @@ export const apiClient = {
     const config: RequestInit = {
       ...fetchOptions,
       headers,
+      cache: 'no-store', // Disable caching to ensure fresh data
     };
 
     if (data) {

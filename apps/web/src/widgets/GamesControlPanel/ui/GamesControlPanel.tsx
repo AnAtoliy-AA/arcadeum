@@ -6,7 +6,15 @@ import styled from 'styled-components';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { gameSocket } from '@/shared/lib/socket';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { Button } from '@/shared/ui';
+import {
+  Button,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalBody,
+  ModalFooter,
+} from '@/shared/ui';
 
 interface GamesControlPanelProps {
   roomId?: string;
@@ -119,6 +127,7 @@ export function GamesControlPanel({
   const { t } = useTranslation();
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
   const handleFullscreenToggle = useCallback(async () => {
     try {
@@ -135,12 +144,31 @@ export function GamesControlPanel({
     }
   }, [fullscreenContainerRef]);
 
-  const handleLeaveRoom = useCallback(() => {
+  const handleLeaveGame = useCallback(() => {
+    setShowLeaveConfirm(true);
+  }, []);
+
+  const handleConfirmLeave = useCallback(() => {
     if (roomId && snapshot.userId) {
-      gameSocket.emit('games.room.leave', { roomId, userId: snapshot.userId });
+      // Use socket acknowledgement to ensure server processing before navigation
+      gameSocket.emit(
+        'games.room.leave',
+        { roomId, userId: snapshot.userId },
+        () => {
+          // Callback received from server (after DB update)
+          router.push('/games');
+        },
+      );
+    } else {
+      // Fallback if no socket/user (shouldn't happen)
+      router.push('/games');
     }
-    router.push('/games');
+    setShowLeaveConfirm(false);
   }, [roomId, snapshot.userId, router]);
+
+  const handleExitRoom = useCallback(() => {
+    router.push('/games');
+  }, [router]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -245,9 +273,54 @@ export function GamesControlPanel({
         {isCopied ? '✅ Copied' : '🔗 Link'}
       </Button>
 
-      <Button variant="danger" size="sm" onClick={handleLeaveRoom}>
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={handleExitRoom}
+        title={
+          t('games.table.controlPanel.exitRoomTooltip') ||
+          'Go back to lobby but stay in the game'
+        }
+      >
+        🏃 {t('games.table.controlPanel.exitRoom') || 'Exit'}
+      </Button>
+
+      <Button
+        variant="danger"
+        size="sm"
+        onClick={handleLeaveGame}
+        title={
+          t('games.table.controlPanel.leaveGameTooltip') ||
+          'Remove yourself from the game and return to lobby'
+        }
+      >
         🚪 {t('games.table.controlPanel.leaveRoom')}
       </Button>
+
+      <Modal open={showLeaveConfirm} onClose={() => setShowLeaveConfirm(false)}>
+        <ModalContent maxWidth="400px">
+          <ModalHeader onClose={() => setShowLeaveConfirm(false)}>
+            <ModalTitle>{t('games.table.controlPanel.leaveRoom')}</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p>
+              {t('games.table.controlPanel.leaveConfirmMessage') ||
+                'Are you sure you want to leave the game? You will be removed from the participants list.'}
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              variant="secondary"
+              onClick={() => setShowLeaveConfirm(false)}
+            >
+              {t('games.common.cancel') || 'Cancel'}
+            </Button>
+            <Button variant="danger" onClick={handleConfirmLeave}>
+              {t('games.table.controlPanel.leaveRoom')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Panel>
   );
 }

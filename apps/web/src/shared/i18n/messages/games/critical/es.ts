@@ -278,6 +278,11 @@ export const esMessages = {
       exitFullscreen: 'Salir de pantalla completa',
       enterFullscreen: 'Entrar en pantalla completa',
       leaveRoom: 'Salir',
+      leaveConfirmMessage:
+        '¿Estás seguro de que quieres salir del juego? Serás eliminado de la lista de participantes.',
+      exitRoom: 'Salir',
+      exitRoomTooltip: 'Regresa al lobby pero mantente en el juego',
+      leaveGameTooltip: 'Elimínate del juego y regresa al lobby',
       moveControls: {
         moveUp: 'Mover arriba',
         moveDown: 'Mover abajo',

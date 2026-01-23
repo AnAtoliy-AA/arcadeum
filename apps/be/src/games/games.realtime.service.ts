@@ -43,17 +43,12 @@ export class GamesRealtimeService {
     );
   }
 
-  emitRoomRemoved(roomId: string): void {
+  emitRoomDeleted(roomId: string): void {
     if (!this.server) {
       return;
     }
-    this.server.to(this.roomChannel(roomId)).emit(
-      'games.room.deleted',
-      maybeEncrypt({
-        roomId,
-      }),
-    );
-    this.server.to(this.spectatorChannel(roomId)).emit(
+    // Broadcast globally so the lobby list updates
+    this.server.emit(
       'games.room.deleted',
       maybeEncrypt({
         roomId,
@@ -203,6 +198,8 @@ export class GamesRealtimeService {
         userId,
       }),
     );
+    // Also broadcast global update for lobbies
+    this.server.emit('games.room.updated', maybeEncrypt({ room }));
   }
 
   emitPlayerLeft(
@@ -221,24 +218,8 @@ export class GamesRealtimeService {
         roomDeleted,
       }),
     );
-  }
-
-  emitRoomDeleted(roomId: string): void {
-    if (!this.server) {
-      return;
-    }
-    this.server.to(this.roomChannel(roomId)).emit(
-      'games.room.deleted',
-      maybeEncrypt({
-        roomId,
-      }),
-    );
-    this.server.to(this.spectatorChannel(roomId)).emit(
-      'games.room.deleted',
-      maybeEncrypt({
-        roomId,
-      }),
-    );
+    // Also broadcast global update for lobbies
+    this.server.emit('games.room.updated', maybeEncrypt({ room }));
   }
 
   emitRematchStarted(oldRoomId: string, newRoomId: string): void {

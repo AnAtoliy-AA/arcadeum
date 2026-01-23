@@ -303,6 +303,11 @@ export const frMessages = {
       exitFullscreen: 'Quitter le plein écran',
       enterFullscreen: 'Entrer en plein écran',
       leaveRoom: 'Quitter',
+      leaveConfirmMessage:
+        'Êtes-vous sûr de vouloir quitter la partie ? Vous serez retiré de la liste des participants.',
+      exitRoom: 'Sortir',
+      exitRoomTooltip: 'Retourner au lobby mais rester dans la partie',
+      leaveGameTooltip: 'Se retirer de la partie et retourner au lobby',
       moveControls: {
         moveUp: 'Déplacer vers le haut',
         moveDown: 'Déplacer vers le bas',

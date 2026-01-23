@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useState, useMemo, useEffect } from 'react';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi, GetRoomsResponse } from '@/features/games/api';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
+import { gameSocket, connectSockets } from '@/shared/lib/socket';
 import { GamesEmpty } from './components/GamesEmpty';
 import { GamesError } from './components/GamesError';
 import { GamesFilters } from './components/GamesFilters';
@@ -45,6 +46,31 @@ export function GamesPage() {
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    connectSockets(snapshot.accessToken || undefined);
+  }, [snapshot.accessToken]);
+
+  useEffect(() => {
+    const handleRoomUpdate = () => {
+      // Invalidate the list query to trigger a refetch
+      queryClient.invalidateQueries({ queryKey: ['games', 'list'] });
+    };
+
+    // Listen for room updates (create, update, delete)
+    // Note: 'games.room.updated' is now broadcast globally for lobby updates
+    gameSocket.on('games.room.created', handleRoomUpdate);
+    gameSocket.on('games.room.updated', handleRoomUpdate);
+    gameSocket.on('games.room.deleted', handleRoomUpdate);
+
+    return () => {
+      gameSocket.off('games.room.created', handleRoomUpdate);
+      gameSocket.off('games.room.updated', handleRoomUpdate);
+      gameSocket.off('games.room.deleted', handleRoomUpdate);
+    };
+  }, [queryClient]);
 
   const {
     data,

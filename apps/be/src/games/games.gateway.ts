@@ -146,6 +146,50 @@ export class GamesGateway {
     }
   }
 
+  @SubscribeMessage('games.room.leave')
+  async handleLeaveRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { roomId?: string; userId?: string },
+  ): Promise<{ success: boolean }> {
+    const roomId = extractString(payload, 'roomId');
+    const userId = extractString(payload, 'userId');
+
+    if (!roomId) throw new WsException('roomId is required.');
+    if (!userId) throw new WsException('userId is required.');
+
+    this.logger.log(`User ${userId} leaving room ${roomId}`);
+
+    try {
+      const result = await this.gamesService.leaveRoom({ roomId }, userId);
+
+      const channel = this.realtime.roomChannel(roomId);
+      await client.leave(channel);
+
+      // Also leave spec channel if they were there (unlikely but safe)
+      const specChannel = this.realtime.spectatorChannel(roomId);
+      await client.leave(specChannel);
+
+      if (result.deleted) {
+        this.realtime.emitRoomDeleted(roomId);
+      } else {
+        // Emit player left event (which also triggers global games.room.updated)
+        // Pass the updated room summary to ensure clients see new host/participants
+        this.realtime.emitPlayerLeft(result.room, userId, false);
+      }
+
+      client.emit('games.room.left', { roomId });
+      return { success: true };
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to leave room';
+      this.logger.error(`Failed to leave room ${roomId}: ${message}`);
+      // Return success false so client knows? Or throw?
+      // If we throw, the client ack might get an error depending on setup.
+      // Safest is to return success: false
+      return { success: false };
+    }
+  }
+
   @SubscribeMessage('games.room.watch')
   async handleWatchRoom(
     @ConnectedSocket() client: Socket,

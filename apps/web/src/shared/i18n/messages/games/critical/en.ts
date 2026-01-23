@@ -309,6 +309,11 @@ export const enMessages = {
       exitFullscreen: 'Exit fullscreen',
       enterFullscreen: 'Enter fullscreen',
       leaveRoom: 'Leave',
+      leaveConfirmMessage:
+        'Are you sure you want to leave the game? You will be removed from the participants list.',
+      exitRoom: 'Exit',
+      exitRoomTooltip: 'Go back to lobby but stay in the game',
+      leaveGameTooltip: 'Remove yourself from the game and return to lobby',
       moveControls: {
         moveUp: 'Move Up',
         moveDown: 'Move Down',

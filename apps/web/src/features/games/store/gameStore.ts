@@ -93,6 +93,19 @@ export const useGameStore = create<GameState>((set, get) => ({
       }
     };
 
+    const handlePlayerLeft = (payload: {
+      room?: GameRoomSummary;
+      userId?: string;
+      roomDeleted?: boolean;
+    }) => {
+      // If the room was deleted, or if this room update belongs to our current room
+      if (payload?.roomDeleted && payload.room?.id === roomId) {
+        set({ room: null, session: null, error: 'Room was deleted' });
+      } else if (payload?.room && payload.room.id === roomId) {
+        set({ room: payload.room });
+      }
+    };
+
     // Decrypt wrapper
     const decryptHandler = <T>(handler: (payload: T) => void) => {
       return async (raw: unknown) => {
@@ -104,6 +117,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     const wrappedHandleJoined = decryptHandler(handleJoined);
     const wrappedHandleRoomUpdate = decryptHandler(handleRoomUpdate);
     const wrappedHandlePlayerJoined = decryptHandler(handlePlayerJoined);
+    const wrappedHandlePlayerLeft = decryptHandler(handlePlayerLeft);
     const wrappedHandleGameStarted = decryptHandler(handleGameStarted);
     const wrappedHandleException = decryptHandler(handleException);
 
@@ -112,6 +126,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     gameSocket.on('games.room.watching', wrappedHandleJoined);
     gameSocket.on('games.room.update', wrappedHandleRoomUpdate);
     gameSocket.on('games.player.joined', wrappedHandlePlayerJoined);
+    gameSocket.on('games.player.left', wrappedHandlePlayerLeft);
     gameSocket.on('games.game.started', wrappedHandleGameStarted);
     gameSocket.on('exception', wrappedHandleException);
     gameSocket.on('connect', handleConnect);

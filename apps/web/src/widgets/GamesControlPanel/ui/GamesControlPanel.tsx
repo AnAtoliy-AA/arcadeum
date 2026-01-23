@@ -10,6 +10,7 @@ import { Button } from '@/shared/ui';
 
 interface GamesControlPanelProps {
   roomId?: string;
+  inviteCode?: string;
   className?: string;
   onMovePlayer?: (direction: 'up' | 'down' | 'left' | 'right') => void;
   onCenterView?: () => void;
@@ -106,6 +107,7 @@ const StyledFullscreenButton = styled(Button)`
 
 export function GamesControlPanel({
   roomId,
+  inviteCode,
   className,
   onMovePlayer,
   onCenterView,
@@ -116,6 +118,7 @@ export function GamesControlPanel({
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const handleFullscreenToggle = useCallback(async () => {
     try {
@@ -155,6 +158,18 @@ export function GamesControlPanel({
 
   const handleCenterView = () => {
     onCenterView?.();
+  };
+
+  const handleCopyInviteLink = async () => {
+    if (!roomId) return;
+    const origin = window.location.origin;
+    const url = `${origin}/games/rooms/${roomId}${inviteCode ? `?inviteCode=${inviteCode}` : ''}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setIsCopied(true);
+    } catch (err) {
+      console.error('Failed to copy link', err);
+    }
   };
 
   return (
@@ -220,6 +235,15 @@ export function GamesControlPanel({
           </SmallButton>
         </MoveControlsContainer>
       )}
+
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={handleCopyInviteLink}
+        title={t('games.common.copyInviteLink') || 'Copy Invite Link'}
+      >
+        {isCopied ? '✅ Copied' : '🔗 Link'}
+      </Button>
 
       <Button variant="danger" size="sm" onClick={handleLeaveRoom}>
         🚪 {t('games.table.controlPanel.leaveRoom')}

@@ -2,8 +2,7 @@
 
 import React, { useMemo, useEffect, Suspense, useState, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'next/navigation';
-import styled from 'styled-components';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { connectSockets, connectSocketsAnonymous } from '@/shared/lib/socket';
 import { GamesControlPanel } from '@/widgets/GamesControlPanel';
@@ -13,17 +12,29 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { mapToGameType } from '@/features/games/lib/gameIdMapping';
 import { gameFactory } from '@/features/games/lib/gameFactory';
 import { gameMetadata } from '@/features/games/registry';
-import { BaseGameProps } from '@/features/games';
+
 import type { GameSessionSummary } from '@/shared/types/games';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
-import { ServerLoadingNotice } from '@/shared/ui/ServerLoadingNotice';
+
+// Extracted Components
+import { Page, Container, LoadingContainer, GameWrapper } from './styles';
+import { GameRoomLoading } from './GameRoomLoading';
+import { GameRoomError } from './GameRoomError';
+import { PrivateRoomForm } from './PrivateRoomForm';
+import { DynamicGameRenderer } from './DynamicGameRenderer';
 
 export default function GameRoomPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const roomId = params?.id as string;
+  const urlInviteCode = searchParams?.get('inviteCode');
   const { snapshot, hydrated } = useSessionTokens();
   const { t } = useTranslation();
   const gameContainerRef = useRef<HTMLDivElement>(null);
+  // Track if we've attempted auto-join with URL invite code
+  const [autoJoinAttempted, setAutoJoinAttempted] = useState(false);
+  // Track if user manually submitted invite code
+  const [manualSubmitPending, setManualSubmitPending] = useState(false);
 
   // State for room visibility check
 
@@ -31,7 +42,7 @@ export default function GameRoomPage() {
 
   // Check room visibility with useQuery
   const {
-    data: roomVisibility = null,
+    data: fetchedRoomVisibility = null,
     isLoading: visibilityLoading,
     error: queryError,
   } = useQuery({
@@ -46,12 +57,18 @@ export default function GameRoomPage() {
     retry: false, // Don't retry on 404/403
   });
 
+  // Handle private rooms by treating the 403 error as a valid 'private' state
+  // This allows the join flow to proceed for authenticated users
+  const roomVisibility = useMemo(() => {
+    if (queryError?.message === 'private_room_error') return 'private';
+    return fetchedRoomVisibility;
+  }, [fetchedRoomVisibility, queryError]);
+
   // Map query error to UI error message
   const visibilityError = useMemo(() => {
     if (!queryError) return null;
     const msg = queryError.message;
-    if (msg === 'private_room_error')
-      return t('games.roomPage.errors.privateRoomError');
+    if (msg === 'private_room_error') return null;
     if (msg === 'room_not_found_error')
       return t('games.roomPage.errors.roomNotFoundError');
     return t('games.roomPage.errors.failedToLoadError');
@@ -94,13 +111,54 @@ export default function GameRoomPage() {
     loading: roomLoading,
     error,
     isHost,
+    joinRoom,
   } = useGameRoom({
     roomId,
     userId: snapshot.userId,
     accessToken: snapshot.accessToken,
     mode: roomMode,
+    inviteCode: urlInviteCode || undefined,
     enabled: !visibilityLoading && !visibilityError,
   });
+
+  // Auto-join effect for URL invite codes - use queueMicrotask to avoid sync setState
+  useEffect(() => {
+    if (
+      !room &&
+      roomVisibility === 'private' &&
+      urlInviteCode &&
+      !autoJoinAttempted &&
+      !error
+    ) {
+      // Use queueMicrotask to schedule state update after render
+      queueMicrotask(() => {
+        setAutoJoinAttempted(true);
+      });
+    }
+  }, [room, roomVisibility, urlInviteCode, autoJoinAttempted, error]);
+
+  // Reset manual submit pending when room loads or error occurs
+  useEffect(() => {
+    if ((error || room) && manualSubmitPending) {
+      queueMicrotask(() => {
+        setManualSubmitPending(false);
+      });
+    }
+  }, [error, room, manualSubmitPending]);
+
+  // Derive invite code error from hook's error when auto-joining
+  const inviteCodeError = autoJoinAttempted ? error : null;
+
+  const handleInviteCodeSubmit = (code: string) => {
+    setManualSubmitPending(true);
+    joinRoom(code);
+  };
+
+  // Derive isAutoJoining for clear render logic
+  const isAutoJoining = autoJoinAttempted && !!urlInviteCode && !room && !error;
+
+  // Derive isManualSubmitting for form state
+  const isManualSubmitting = manualSubmitPending && !room && !error;
 
   // Determine game type from room (must be called before any returns - Rules of Hooks)
   const gameType: GameType = useMemo(() => {
@@ -192,7 +250,7 @@ export default function GameRoomPage() {
     return (
       <Page>
         <Container>
-          <LoadingContainer>{t('games.roomPage.loading')}</LoadingContainer>
+          <GameRoomLoading />
         </Container>
       </Page>
     );
@@ -203,69 +261,59 @@ export default function GameRoomPage() {
     return (
       <Page>
         <Container>
-          <ErrorContainer>
-            {visibilityError}
-            {visibilityError.includes('private') && (
-              <>
-                <br />
-                <a
-                  href="/auth"
-                  style={{
-                    color: '#3b82f6',
-                    textDecoration: 'underline',
-                    marginTop: '1rem',
-                    display: 'inline-block',
-                  }}
-                >
-                  {t('games.roomPage.errors.loginButton')}
-                </a>
-              </>
-            )}
-          </ErrorContainer>
+          <GameRoomError
+            error={visibilityError}
+            isPrivateRoomError={visibilityError === 'private_room_error'} // Wait, visibilityError is mapped string, checking extraction logic
+          />
         </Container>
       </Page>
     );
   }
 
-  // Require auth for private rooms
+  // Require auth for private rooms but show inv code form if not joined
   if (!isAuthenticated && roomVisibility === 'private') {
     return (
       <Page>
         <Container>
-          <ErrorContainer>
-            {t('games.roomPage.errors.notAuthenticated')}
-            <br />
-            <a
-              href="/auth"
-              style={{
-                color: '#3b82f6',
-                textDecoration: 'underline',
-                marginTop: '1rem',
-                display: 'inline-block',
-              }}
-            >
-              {t('games.roomPage.errors.loginButton')}
-            </a>
-          </ErrorContainer>
+          <GameRoomError error={t('games.roomPage.errors.notAuthenticated')} />
         </Container>
       </Page>
     );
   }
 
-  if (roomLoading) {
+  // If we are auto-joining or loading generally (and not manually submitting), show loading
+  if (isAutoJoining || (roomLoading && !manualSubmitPending)) {
     return (
       <Page>
         <Container>
-          <LoadingContainer>
-            {isRoomLoadingLongPending ? (
-              <ServerLoadingNotice
-                pendingProgress={roomLoadingProgress}
-                pendingElapsedSeconds={roomLoadingElapsedSeconds}
-              />
-            ) : (
-              t('games.roomPage.errors.loadingRoom')
-            )}
-          </LoadingContainer>
+          <GameRoomLoading
+            isLongPending={isRoomLoadingLongPending}
+            progress={roomLoadingProgress}
+            elapsedSeconds={roomLoadingElapsedSeconds}
+            message={
+              isAutoJoining
+                ? t('games.inviteCode.joining') || 'Joining...'
+                : t('games.roomPage.errors.loadingRoom')
+            }
+          />
+        </Container>
+      </Page>
+    );
+  }
+
+  // If we have an error or are submitting code for a private room, show the invite code form
+  if (roomVisibility === 'private' && !room) {
+    return (
+      <Page>
+        <Container>
+          <PrivateRoomForm
+            onJoin={handleInviteCodeSubmit}
+            isLoading={isManualSubmitting}
+            isLongPending={isRoomLoadingLongPending}
+            error={
+              inviteCodeError || (error !== inviteCodeError ? error : null)
+            }
+          />
         </Container>
       </Page>
     );
@@ -275,7 +323,7 @@ export default function GameRoomPage() {
     return (
       <Page>
         <Container>
-          <ErrorContainer>{error}</ErrorContainer>
+          <GameRoomError error={error} />
         </Container>
       </Page>
     );
@@ -285,21 +333,18 @@ export default function GameRoomPage() {
     return (
       <Page>
         <Container>
-          <ErrorContainer>
-            {t('games.roomPage.errors.roomNotFound')}
-          </ErrorContainer>
+          <GameRoomError error={t('games.roomPage.errors.roomNotFound')} />
         </Container>
       </Page>
     );
   }
 
-  // Render appropriate game with Suspense for lazy loading
-  // Games manage their own session state and actions via hooks
   return (
     <Page>
       <Container ref={gameContainerRef}>
         <GamesControlPanel
           roomId={roomId}
+          inviteCode={room?.inviteCode}
           fullscreenContainerRef={gameContainerRef}
         />
 
@@ -334,81 +379,3 @@ export default function GameRoomPage() {
     </Page>
   );
 }
-
-interface DynamicGameRendererProps {
-  gameType: GameType;
-  props: BaseGameProps;
-}
-
-const DynamicGameRenderer: React.FC<DynamicGameRendererProps> = ({
-  gameType,
-  props,
-}) => {
-  if (!gameType) {
-    return <div>Game type is missing</div>;
-  }
-
-  if (!props || !props.room) {
-    return <div>Game data is incomplete</div>;
-  }
-
-  // Simple direct rendering without caching for now
-  const LoadedGame = gameFactory.getLoadedGame(gameType);
-  if (!LoadedGame) {
-    return <div>Game component not found</div>;
-  }
-
-  return React.createElement(LoadedGame, props);
-};
-
-/* ==========================================================================
-   Styled Components
-   ========================================================================== */
-
-const Page = styled.main`
-  min-height: 100vh;
-  background: ${({ theme }) => theme.background.base};
-  color: ${({ theme }) => theme.text.primary};
-  position: relative;
-`;
-
-const Container = styled.div`
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-
-  &:fullscreen,
-  &:-webkit-full-screen,
-  &:-moz-full-screen {
-    max-width: 100%;
-    width: 100%;
-    height: 100%;
-    background: #0a0a0f;
-    padding: 1rem 2rem;
-    overflow: hidden;
-  }
-`;
-
-const LoadingContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 50vh;
-  font-size: 1.125rem;
-  color: ${({ theme }) => theme.text.secondary};
-`;
-
-const ErrorContainer = styled.div`
-  padding: 2rem;
-  text-align: center;
-  color: #dc2626;
-`;
-
-const GameWrapper = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-`;

@@ -11,7 +11,8 @@ export class GameRoomsQueryBuilder {
     }
 
     if (filters.search) {
-      query.name = { $regex: filters.search, $options: 'i' };
+      const searchRegex = { $regex: filters.search, $options: 'i' };
+      query.$or = [{ name: searchRegex }, { inviteCode: filters.search }];
     }
 
     if (filters.status) {

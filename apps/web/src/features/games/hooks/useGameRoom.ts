@@ -7,6 +7,7 @@ interface UseGameRoomOptions {
   userId: string | null;
   accessToken: string | null;
   mode?: 'play' | 'watch';
+  inviteCode?: string;
   enabled?: boolean;
 }
 
@@ -16,7 +17,7 @@ interface UseGameRoomReturn {
   loading: boolean;
   error: string | null;
   isHost: boolean;
-  joinRoom: () => void;
+  joinRoom: (code?: string) => void;
   leaveRoom: () => void;
 }
 
@@ -30,6 +31,7 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
     userId,
     accessToken,
     mode = 'play',
+    inviteCode,
     enabled = true,
   } = options;
 
@@ -55,23 +57,35 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
       return;
     }
 
-    connect(roomId, userId, accessToken, mode);
+    connect(roomId, userId, accessToken, mode, inviteCode);
 
     return () => {
       disconnect();
     };
-  }, [roomId, userId, accessToken, mode, enabled, connect, disconnect]);
+  }, [
+    roomId,
+    userId,
+    accessToken,
+    mode,
+    inviteCode,
+    enabled,
+    connect,
+    disconnect,
+  ]);
 
-  const handleJoinRoom = useCallback(() => {
-    joinRoom(roomId, userId, mode);
-  }, [roomId, userId, mode, joinRoom]);
+  const handleJoinRoom = useCallback(
+    (code?: string) => {
+      joinRoom(roomId, userId, mode, code || inviteCode);
+    },
+    [roomId, userId, mode, inviteCode, joinRoom],
+  );
 
   const handleLeaveRoom = useCallback(() => {
     storeLeaveRoom(roomId, userId);
   }, [roomId, userId, storeLeaveRoom]);
 
   return {
-    room,
+    room: room?.id === roomId ? room : null,
     session,
     loading,
     error,

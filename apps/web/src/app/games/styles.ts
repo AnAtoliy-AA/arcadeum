@@ -93,6 +93,27 @@ export const CreateButton = styled(LinkButton).attrs({
   size: 'lg',
 })``;
 
+export const JoinByCodeButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  background: ${({ theme }) => theme.surfaces.card.background};
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  color: ${({ theme }) => theme.text.primary};
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+
+  &:hover {
+    border-color: ${({ theme }) =>
+      theme.buttons?.primary?.gradientStart || '#3b82f6'};
+    background: ${({ theme }) => theme.surfaces.panel.background};
+  }
+`;
+
 export const Filters = styled.div`
   display: flex;
   gap: 2rem;

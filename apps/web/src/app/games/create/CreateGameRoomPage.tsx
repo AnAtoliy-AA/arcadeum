@@ -99,7 +99,11 @@ export function CreateGameRoomPage() {
       );
     },
     onSuccess: (data) => {
-      router.push(`/games/rooms/${data.room.id}`);
+      // For private rooms, include invite code so creator auto-joins
+      const roomUrl = data.room.inviteCode
+        ? `/games/rooms/${data.room.id}?inviteCode=${encodeURIComponent(data.room.inviteCode)}`
+        : `/games/rooms/${data.room.id}`;
+      router.push(roomUrl);
     },
   });
 

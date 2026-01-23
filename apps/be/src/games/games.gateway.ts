@@ -61,7 +61,7 @@ export class GamesGateway {
   async handleJoinRoom(
     @ConnectedSocket() client: Socket,
     @MessageBody()
-    payload: { roomId?: string; userId?: string },
+    payload: { roomId?: string; userId?: string; inviteCode?: string },
   ): Promise<void> {
     const roomId =
       typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
@@ -75,58 +75,74 @@ export class GamesGateway {
       throw new WsException('userId is required.');
     }
 
+    const inviteCode =
+      typeof payload?.inviteCode === 'string'
+        ? payload.inviteCode.trim()
+        : undefined;
+
     this.logger.log(`User ${userId} joining room ${roomId}`);
 
-    const room = await this.gamesService.ensureParticipant(roomId, userId);
-    const session = await this.gamesService.findSessionByRoom(room.id);
-
-    this.logger.log(
-      `Room ${roomId}: status=${room.status}, session=${session ? session.id : 'null'}`,
-    );
-
-    const channel = this.realtime.roomChannel(room.id);
-    await client.join(channel);
-
-    // Store userId on socket for per-player log filtering
-    if (!client.data) {
-      client.data = {};
-    }
-    (client.data as Record<string, unknown>).userId = userId;
-
-    // Sanitize initial session state for the joining player
-    let diffSession = session;
-    if (session) {
-      try {
-        const sanitizedState = await this.gamesService.getSanitizedState(
-          session.id,
-          userId,
-        );
-        if (sanitizedState && typeof sanitizedState === 'object') {
-          diffSession = {
-            ...session,
-            state: sanitizedState as Record<string, unknown>,
-          };
-        }
-      } catch (error) {
-        this.logger.error(
-          `Failed to get sanitized state for user ${userId}: ${error}`,
-        );
-      }
-    }
-
-    client.emit(
-      'games.room.joined',
-      maybeEncrypt({
-        room,
-        session: diffSession,
-      }),
-    );
-
-    if (diffSession) {
-      this.logger.log(
-        `Sending session snapshot to client for session ${diffSession.id}`,
+    try {
+      const { room, session } = await this.gamesService.joinRoom(
+        { roomId, inviteCode },
+        userId,
       );
-      this.realtime.emitSessionSnapshotToClient(client, room.id, diffSession);
+
+      this.logger.log(
+        `Room ${roomId}: status=${room.status}, session=${
+          session ? session.id : 'null'
+        }`,
+      );
+
+      const channel = this.realtime.roomChannel(room.id);
+      await client.join(channel);
+
+      // Store userId on socket for per-player log filtering
+      if (!client.data) {
+        client.data = {};
+      }
+      (client.data as Record<string, unknown>).userId = userId;
+
+      // Sanitize initial session state for the joining player
+      let diffSession = session;
+      if (session) {
+        try {
+          const sanitizedState = await this.gamesService.getSanitizedState(
+            session.id,
+            userId,
+          );
+          if (sanitizedState && typeof sanitizedState === 'object') {
+            diffSession = {
+              ...session,
+              state: sanitizedState as Record<string, unknown>,
+            };
+          }
+        } catch (error) {
+          this.logger.error(
+            `Failed to get sanitized state for user ${userId}: ${error}`,
+          );
+        }
+      }
+
+      client.emit(
+        'games.room.joined',
+        maybeEncrypt({
+          room,
+          session: diffSession,
+        }),
+      );
+
+      if (diffSession) {
+        this.logger.log(
+          `Sending session snapshot to client for session ${diffSession.id}`,
+        );
+        this.realtime.emitSessionSnapshotToClient(client, room.id, diffSession);
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to join room';
+      this.logger.error(`Failed to join room ${roomId}: ${message}`);
+      throw new WsException(message);
     }
   }
 

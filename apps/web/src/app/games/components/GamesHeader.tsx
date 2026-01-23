@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   CreateButton,
@@ -6,7 +7,9 @@ import {
   Title,
   ViewToggle,
   ViewToggleButton,
+  JoinByCodeButton,
 } from '../styles';
+import { InviteCodeModal } from './InviteCodeModal';
 import type { GamesViewMode } from '../types';
 
 interface GamesHeaderProps {
@@ -16,6 +19,7 @@ interface GamesHeaderProps {
 
 export function GamesHeader({ viewMode, onViewModeChange }: GamesHeaderProps) {
   const { t } = useTranslation();
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   return (
     <Header>
@@ -37,10 +41,18 @@ export function GamesHeader({ viewMode, onViewModeChange }: GamesHeaderProps) {
             ☰
           </ViewToggleButton>
         </ViewToggle>
+        <JoinByCodeButton onClick={() => setIsInviteModalOpen(true)}>
+          {t('games.common.joinByCode') || 'Join by Code'}
+        </JoinByCodeButton>
         <CreateButton href="/games/create">
           {t('games.common.createRoom')}
         </CreateButton>
       </HeaderControls>
+
+      <InviteCodeModal
+        open={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+      />
     </Header>
   );
 }

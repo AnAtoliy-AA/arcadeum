@@ -112,15 +112,17 @@ export const gamesApi = {
       return data.room?.visibility || 'public';
     } catch (err: unknown) {
       // Re-throw specific errors for the UI
-      if (err && typeof err === 'object' && 'status' in err) {
-        const status = (err as { status: number }).status;
-        if (status === HttpStatus.FORBIDDEN)
+      if (err instanceof Error || (typeof err === 'object' && err !== null)) {
+        const error = err as { status?: number; message?: string };
+        if (error.status === HttpStatus.FORBIDDEN) {
           throw new Error('private_room_error');
+        }
         if (
-          status === HttpStatus.NOT_FOUND ||
-          status === HttpStatus.INTERNAL_SERVER_ERROR
-        )
+          error.status === HttpStatus.NOT_FOUND ||
+          error.status === HttpStatus.INTERNAL_SERVER_ERROR
+        ) {
           throw new Error('room_not_found_error');
+        }
       }
       throw new Error('failed_to_load_error');
     }

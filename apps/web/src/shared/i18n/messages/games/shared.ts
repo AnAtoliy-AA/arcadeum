@@ -67,6 +67,9 @@ export const sharedMessages = {
       joinRoom: 'Join Room',
       joining: 'Joining...',
       watchRoom: 'Watch',
+      joinByCode: 'Join by Code',
+      cancel: 'Cancel',
+      copyInviteLink: 'Copy Invite Link',
     },
     create: {
       title: 'Create Game Room',
@@ -109,6 +112,27 @@ export const sharedMessages = {
         roomNotFoundError: 'Room not found',
         failedToLoadError: 'Failed to load room',
         failedToCheckAccess: 'Failed to check room access',
+        gameTypeMissing: 'Game type is missing',
+        gameDataIncomplete: 'Game data is incomplete',
+        gameComponentNotFound: 'Game component not found',
+      },
+      privateRoom: {
+        title: 'Private Room',
+        description:
+          'This room is private. Please enter an invite code to join.',
+        placeholder: 'Enter invite code',
+        joinButton: 'Join Room',
+      },
+    },
+    inviteCode: {
+      title: 'Join by Invite Code',
+      label: 'Enter Invite Code',
+      placeholder: 'e.g. A1B2C3',
+      join: 'Join',
+      joining: 'Joining...',
+      errors: {
+        notFound: 'Room not found or invite code invalid',
+        searchFailed: 'Failed to search for room',
       },
     },
   },
@@ -178,6 +202,9 @@ export const sharedMessages = {
       joinRoom: 'Unirse a Sala',
       joining: 'Uniéndose...',
       watchRoom: 'Ver',
+      joinByCode: 'Unirse con código',
+      cancel: 'Cancelar',
+      copyInviteLink: 'Copiar enlace de invitación',
     },
     create: {
       title: 'Crear Sala de Juego',
@@ -221,6 +248,24 @@ export const sharedMessages = {
         roomNotFoundError: 'Sala no encontrada',
         failedToLoadError: 'Error al cargar la sala',
         failedToCheckAccess: 'Error al verificar acceso a la sala',
+      },
+      privateRoom: {
+        title: 'Sala Privada',
+        description:
+          'Esta sala es privada. Ingresa un código de invitación para unirte.',
+        placeholder: 'Código de invitación',
+        joinButton: 'Unirse',
+      },
+    },
+    inviteCode: {
+      title: 'Unirse con Código de Invitación',
+      label: 'Ingresa Código',
+      placeholder: 'ej. A1B2C3',
+      join: 'Unirse',
+      joining: 'Uniéndose...',
+      errors: {
+        notFound: 'Sala no encontrada o código inválido',
+        searchFailed: 'Error al buscar la sala',
       },
     },
   },
@@ -290,6 +335,9 @@ export const sharedMessages = {
       joinRoom: 'Rejoindre une Salle',
       joining: 'Rejoindre...',
       watchRoom: 'Regarder',
+      joinByCode: 'Rejoindre par code',
+      cancel: 'Annuler',
+      copyInviteLink: "Copier le lien d'invitation",
     },
     create: {
       title: 'Créer une Salle de Jeu',
@@ -334,6 +382,24 @@ export const sharedMessages = {
         roomNotFoundError: 'Salle non trouvée',
         failedToLoadError: 'Échec du chargement de la salle',
         failedToCheckAccess: "Échec de la vérification de l'accès à la salle",
+      },
+      privateRoom: {
+        title: 'Salle Privée',
+        description:
+          "Cette salle est privée. Veuillez entrer un code d'invitation.",
+        placeholder: "Code d'invitation",
+        joinButton: 'Rejoindre',
+      },
+    },
+    inviteCode: {
+      title: "Rejoindre par Code d'Invitation",
+      label: "Code d'invitation",
+      placeholder: 'ex. A1B2C3',
+      join: 'Rejoindre',
+      joining: 'Rejoindre...',
+      errors: {
+        notFound: 'Salle non trouvée ou code invalide',
+        searchFailed: 'Échec de la recherche de salle',
       },
     },
   },

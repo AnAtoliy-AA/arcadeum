@@ -22,6 +22,8 @@ import { ExpansionId, CARD_VARIANTS, gamesCatalog } from './constants';
 
 import { ExpansionPacksSection } from './ExpansionPacksSection';
 
+import { RulesModal } from '@/widgets/CriticalGame/ui/RulesModal';
+
 import {
   Form,
   GameSelector,
@@ -38,6 +40,8 @@ import {
   VisibilityToggle,
   ErrorCard,
   ComingSoonBadge,
+  RulesTrigger,
+  ThemeHeader,
 } from './styles';
 
 // Filter out hidden games for display
@@ -66,6 +70,7 @@ export function CreateGameRoomPage() {
   const [cardVariant, setCardVariant] = useState<string>('cyberpunk');
   const [allowActionCardCombos, setAllowActionCardCombos] = useState(false);
   const [idleTimerEnabled, setIdleTimerEnabled] = useState(false);
+  const [showRules, setShowRules] = useState(false);
 
   const {
     mutate: createRoom,
@@ -176,6 +181,11 @@ export function CreateGameRoomPage() {
 
           {gameId === 'critical_v1' && (
             <Section title={t('games.create.sectionVariant') || 'Game Theme'}>
+              <ThemeHeader>
+                <RulesTrigger type="button" onClick={() => setShowRules(true)}>
+                  📖 {t('games.rules.button') || 'View Game Rules'}
+                </RulesTrigger>
+              </ThemeHeader>
               <GameSelector>
                 {CARD_VARIANTS.map((variant) => (
                   <GameTile
@@ -374,6 +384,14 @@ export function CreateGameRoomPage() {
           </Button>
         </Form>
       </Container>
+      <RulesModal
+        isOpen={showRules}
+        onClose={() => setShowRules(false)}
+        currentVariant={cardVariant}
+        isFastMode={idleTimerEnabled}
+        isPrivate={visibility === 'private'}
+        t={t}
+      />
     </PageLayout>
   );
 }

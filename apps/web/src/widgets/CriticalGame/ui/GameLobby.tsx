@@ -62,6 +62,8 @@ import {
 } from './styles/lobby';
 import { CARD_VARIANTS, RANDOM_VARIANT, GAME_VARIANT } from '../lib/constants';
 import { VariantSelector } from './VariantSelector';
+import React from 'react';
+import { RulesModal } from './RulesModal';
 
 // Avatar colors
 const AVATAR_COLORS = [
@@ -159,8 +161,18 @@ export function GameLobby({
 
   const getInitials = (name: string) => name.slice(0, 2).toUpperCase();
 
+  const [showRules, setShowRules] = React.useState(false);
+
   return (
     <GameContainer ref={containerRef}>
+      <RulesModal
+        isOpen={showRules}
+        onClose={() => setShowRules(false)}
+        currentVariant={room.gameOptions?.cardVariant || GAME_VARIANT.CYBERPUNK}
+        isFastMode={room.gameOptions?.idleTimerEnabled}
+        isPrivate={room.visibility === 'private'}
+        t={t}
+      />
       <GameHeader>
         <GameInfo>
           <GameTitle>
@@ -210,6 +222,13 @@ export function GameLobby({
           )}
         </GameInfo>
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <FullscreenButton
+            onClick={() => setShowRules(true)}
+            title="Game Rules"
+            style={{ fontSize: '1.2rem' }}
+          >
+            📖
+          </FullscreenButton>
           <FullscreenButton
             onClick={onToggleFullscreen}
             title={

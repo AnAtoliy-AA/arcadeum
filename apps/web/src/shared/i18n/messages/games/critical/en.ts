@@ -1,7 +1,42 @@
 import { variants } from './en-variants';
 
 export const enMessages = {
-  critical_v1: { name: 'Critical' },
+  critical_v1: {
+    name: 'Critical',
+    rules: {
+      title: 'Game Rules',
+      headers: {
+        objective: 'Objective',
+        gameplay: 'Gameplay',
+        combos: 'Combos',
+        fastGame: 'Fast Game ⚡',
+        privateRoom: 'Private Room 🔒',
+        chat: 'Chat & Communication',
+      },
+      cardGroups: {
+        core: 'Core Cards',
+        attack: 'Attack Pack',
+        future: 'Future Pack',
+        theft: 'Theft Pack',
+        chaos: 'Chaos Pack',
+        deity: 'Deity Pack',
+        collection: 'Collection Cards',
+      },
+      objective:
+        "Don't explode. The last player alive wins. If you draw a {{criticalEvent}}, you must play a {{neutralizer}} or you are eliminated.",
+      gameplay:
+        'On your turn, play as many Action Cards as you like, or none at all. To end your turn, draw a card from the Draw Pile.',
+      combos:
+        'Combos allow you to steal from other players! \n• Two of a Kind: Play 2 matching cards to steal a random card from another player. \n• Three of a Kind: Play 3 matching cards to name a card and force another player to give it to you. \n• 5 Different Cards: Play 5 cards with different titles to pick a card from the Discard Pile.',
+      fastGame:
+        '⚡ Fast Game: This room has a turn timer! If you take too long, the game will automatically play for you. Keep it moving!',
+      privateRoom:
+        '🔒 Private Room: This room is invite-only. Share the invite code or link to play with friends!',
+      chat: '💬 Table Chat: \n• All: Visible to everyone (spectators too). \n• Players: Only for players currently alive. \n• Private: Notes for yourself (only you can see).',
+      setup:
+        'Each player starts with a Defuse card and a hand of random cards. The deck contains some Exploding cards... beware!',
+    },
+  },
   table: {
     cards: {
       criticalEvent: 'Critical',

@@ -1,7 +1,42 @@
 import { variants } from './es-variants';
 
 export const esMessages = {
-  critical_v1: { name: 'Crítico' },
+  critical_v1: {
+    name: 'Crítico',
+    rules: {
+      title: 'Reglas del Juego',
+      headers: {
+        objective: 'Objetivo',
+        gameplay: 'Jugabilidad',
+        combos: 'Combos',
+        fastGame: 'Partida Rápida ⚡',
+        privateRoom: 'Sala Privada 🔒',
+        chat: 'Chat y Comunicación',
+      },
+      cardGroups: {
+        core: 'Cartas Principales',
+        attack: 'Paquete de Ataque',
+        future: 'Paquete Futuro',
+        theft: 'Paquete de Robo',
+        chaos: 'Paquete Caos',
+        deity: 'Paquete Deidad',
+        collection: 'Cartas de Colección',
+      },
+      objective:
+        'No explotes. El último jugador vivo gana. Si robas un {{criticalEvent}}, debes jugar un {{neutralizer}} o serás eliminado.',
+      gameplay:
+        'En tu turno, juega tantas Cartas de Acción como quieras, o ninguna. Para terminar tu turno, roba una carta del Mazo de Robo.',
+      combos:
+        '¡Los combos te permiten robar a otros jugadores! \n• Dos iguales: Juega 2 cartas iguales para robar una carta al azar de otro jugador. \n• Tres iguales: Juega 3 cartas iguales para nombrar una carta y obligar a otro jugador a dártela. \n• 5 Cartas Diferentes: Juega 5 cartas con títulos diferentes para elegir una carta del Mazo de Descartes.',
+      fastGame:
+        '⚡ Partida Rápida: ¡Esta sala tiene temporizador de turno! Si tardas demasiado, el juego jugará automáticamente por ti. ¡Mantén el ritmo!',
+      privateRoom:
+        '🔒 Sala Privada: Esta sala es solo por invitación. ¡Comparte el código de invitación o el enlace para jugar con amigos!',
+      chat: '💬 Chat de Mesa: \n• Todos: Visible para todos (incluidos espectadores). \n• Jugadores: Solo para jugadores vivos. \n• Privado: Notas para ti mismo (solo tú puedes verlas).',
+      setup:
+        'Cada jugador comienza con una carta de Desactivación y una mano de cartas aleatorias. El mazo contiene algunas cartas Explosivas... ¡ten cuidado!',
+    },
+  },
   table: {
     cards: {
       criticalEvent: 'Gato Explosivo',

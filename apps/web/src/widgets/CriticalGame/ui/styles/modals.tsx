@@ -117,11 +117,15 @@ export const Modal = styled.div`
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(8px);
   display: flex;
+  flex-direction: column; /* Ensure column layout for safe centering */
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 1rem;
   animation: fadeIn 0.2s ease-out;
+
+  /* Safe handling for small screens/overflow */
+  overflow-y: auto;
 `;
 
 const StyledModalFrame = styled.div<{ $variant?: string }>`
@@ -133,12 +137,13 @@ const StyledModalFrame = styled.div<{ $variant?: string }>`
     $variant === GAME_VARIANT.CYBERPUNK ? '4px' : '24px'};
   max-width: 600px;
   width: 100%;
-  max-height: 90vh;
+  max-height: calc(100vh - 40px); /* 20px padding top/bottom effectively */
   display: flex;
   flex-direction: column;
   position: relative;
   box-shadow: ${({ $variant }) => getModalFrameShadow($variant)};
   animation: slideUp 0.3s ease-out;
+  margin: auto; /* Uses flexbox safe centering behavior if overflow */
 
   /* Cyberpunk Tech Corners */
   ${({ $variant }) =>
@@ -386,4 +391,14 @@ export const SelectableCard = styled(Card)<{ $selected?: boolean }>`
   &:hover {
     transform: scale(1.05);
   }
+`;
+
+export const RulesText = styled.p`
+  line-height: 1.5;
+  opacity: 0.9;
+  margin: 0;
+`;
+
+export const RulesTextPre = styled(RulesText)`
+  white-space: pre-line;
 `;

@@ -20,6 +20,8 @@ import { ServerLoadingNotice } from '@/shared/ui/ServerLoadingNotice';
 import type { GameRoomSummary, CriticalSnapshot } from '@/shared/types/games';
 import { UseAutoplayReturn } from '../hooks/useAutoplay';
 import { CARD_VARIANTS } from '../lib/constants';
+import { RulesModal } from './RulesModal';
+import React from 'react';
 
 interface CriticalGameHeaderProps {
   room: GameRoomSummary;
@@ -68,9 +70,18 @@ export function CriticalGameHeader({
   toggleFullscreen,
 }: CriticalGameHeaderProps) {
   const cardVariant = room.gameOptions?.cardVariant;
+  const [showRules, setShowRules] = React.useState(false);
 
   return (
     <GameHeader $variant={cardVariant}>
+      <RulesModal
+        isOpen={showRules}
+        onClose={() => setShowRules(false)}
+        currentVariant={cardVariant || 'default'}
+        isFastMode={idleTimerEnabled}
+        isPrivate={room.visibility === 'private'}
+        t={t}
+      />
       <GameInfo>
         <GameTitle>
           {t('games.critical_v1.name')}
@@ -109,6 +120,13 @@ export function CriticalGameHeader({
         )}
       </GameInfo>
       <HeaderActions>
+        <FullscreenButton
+          onClick={() => setShowRules(true)}
+          title="Game Rules"
+          style={{ fontSize: '1.2rem', marginRight: '0.5rem' }}
+        >
+          📖
+        </FullscreenButton>
         {!isGameOver && currentPlayer && (
           <TimerControlsWrapper>
             <IdleTimerDisplay

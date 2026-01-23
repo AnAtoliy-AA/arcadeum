@@ -51,3 +51,118 @@ export const RANDOM_VARIANT = {
   emoji: '🎲',
   gradient: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
 };
+
+export type CardTypeKey =
+  | 'critical_event'
+  | 'neutralizer'
+  | 'strike'
+  | 'evade'
+  | 'trade'
+  | 'reorder'
+  | 'insight'
+  | 'cancel'
+  | 'collection_alpha'
+  | 'collection_beta'
+  | 'collection_gamma'
+  | 'collection_delta'
+  | 'collection_epsilon'
+  | 'targeted_strike'
+  | 'private_strike'
+  | 'recursive_strike'
+  | 'mega_evade'
+  | 'invert'
+  | 'see_future_5x'
+  | 'alter_future_3x'
+  | 'alter_future_5x'
+  | 'reveal_future_3x'
+  | 'share_future_3x'
+  | 'draw_bottom'
+  | 'swap_top_bottom'
+  | 'bury'
+  | 'wildcard'
+  | 'mark'
+  | 'steal_draw'
+  | 'stash'
+  | 'critical_implosion'
+  | 'containment_field'
+  | 'fission'
+  | 'tribute'
+  | 'blackout'
+  | 'omniscience'
+  | 'miracle'
+  | 'smite'
+  | 'rapture';
+
+export const CARD_GROUPS = [
+  {
+    id: 'core',
+    title: 'Core Cards',
+    cards: [
+      'critical_event',
+      'neutralizer',
+      'strike',
+      'evade',
+      'trade',
+      'reorder',
+      'insight',
+      'cancel',
+    ] as CardTypeKey[],
+  },
+  {
+    id: 'attack',
+    title: 'Attack Pack',
+    cards: [
+      'targeted_strike',
+      'private_strike',
+      'recursive_strike',
+      'mega_evade',
+      'invert',
+    ] as CardTypeKey[],
+  },
+  {
+    id: 'future',
+    title: 'Future Pack',
+    cards: [
+      'see_future_5x',
+      'alter_future_3x',
+      'alter_future_5x',
+      'reveal_future_3x',
+      'share_future_3x',
+      'draw_bottom',
+      'swap_top_bottom',
+      'bury',
+    ] as CardTypeKey[],
+  },
+  {
+    id: 'theft',
+    title: 'Theft Pack',
+    cards: ['wildcard', 'mark', 'steal_draw', 'stash'] as CardTypeKey[],
+  },
+  {
+    id: 'chaos',
+    title: 'Chaos Pack',
+    cards: [
+      'critical_implosion',
+      'containment_field',
+      'fission',
+      'tribute',
+      'blackout',
+    ] as CardTypeKey[],
+  },
+  {
+    id: 'deity',
+    title: 'Deity Pack',
+    cards: ['omniscience', 'miracle', 'smite', 'rapture'] as CardTypeKey[],
+  },
+  {
+    id: 'collection',
+    title: 'Collection Cards',
+    cards: [
+      'collection_alpha',
+      'collection_beta',
+      'collection_gamma',
+      'collection_delta',
+      'collection_epsilon',
+    ] as CardTypeKey[],
+  },
+];

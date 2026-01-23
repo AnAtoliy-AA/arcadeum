@@ -135,6 +135,9 @@ export const sharedMessages = {
         searchFailed: 'Failed to search for room',
       },
     },
+    rules: {
+      button: 'Game Rules',
+    },
   },
   es: {
     coup: { name: 'Coup' },
@@ -267,6 +270,9 @@ export const sharedMessages = {
         notFound: 'Sala no encontrada o código inválido',
         searchFailed: 'Error al buscar la sala',
       },
+    },
+    rules: {
+      button: 'Reglas del Juego',
     },
   },
   fr: {
@@ -401,6 +407,9 @@ export const sharedMessages = {
         notFound: 'Salle non trouvée ou code invalide',
         searchFailed: 'Échec de la recherche de salle',
       },
+    },
+    rules: {
+      button: 'Règles du Jeu',
     },
   },
 } satisfies Record<Locale, Record<string, unknown>>;

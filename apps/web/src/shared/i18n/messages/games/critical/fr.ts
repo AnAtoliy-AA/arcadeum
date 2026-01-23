@@ -1,7 +1,42 @@
 import { variants } from './fr-variants';
 
 export const frMessages = {
-  critical_v1: { name: 'Critique' },
+  critical_v1: {
+    name: 'Critique',
+    rules: {
+      title: 'Règles du Jeu',
+      headers: {
+        objective: 'Objectif',
+        gameplay: 'Gameplay',
+        combos: 'Combos',
+        fastGame: 'Partie Rapide ⚡',
+        privateRoom: 'Salle Privée 🔒',
+        chat: 'Chat & Communication',
+      },
+      cardGroups: {
+        core: 'Cartes Principales',
+        attack: 'Pack Attaque',
+        future: 'Pack Futur',
+        theft: 'Pack Vol',
+        chaos: 'Pack Chaos',
+        deity: 'Pack Divinité',
+        collection: 'Cartes de Collection',
+      },
+      objective:
+        "N'explosez pas. Le dernier joueur en vie gagne. Si vous piochez un {{criticalEvent}}, vous devez jouer un {{neutralizer}} ou vous êtes éliminé.",
+      gameplay:
+        'À votre tour, jouez autant de Cartes Action que vous le souhaitez, ou aucune. Pour terminer votre tour, piochez une carte de la Pile de Pioche.',
+      combos:
+        "Les combos vous permettent de voler d'autres joueurs ! \n• Deux identiques : Jouez 2 cartes identiques pour voler une carte au hasard à un autre joueur. \n• Trois identiques : Jouez 3 cartes identiques pour nommer une carte et forcer un autre joueur à vous la donner. \n• 5 Cartes Différentes : Jouez 5 cartes avec des titres différents pour choisir une carte de la Pile de Défausse.",
+      fastGame:
+        '⚡ Partie Rapide : Cette salle a un minuteur de tour ! Si vous prenez trop de temps, le jeu jouera automatiquement pour vous. Ne traînez pas !',
+      privateRoom:
+        "🔒 Salle Privée : Cette salle est sur invitation uniquement. Partagez le code ou le lien d'invitation pour jouer avec des amis !",
+      chat: '💬 Chat de Table : \n• Tous : Visible par tous (y compris les spectateurs). \n• Joueurs : Uniquement pour les joueurs en vie. \n• Privé : Notes pour vous-même (vous seul pouvez les voir).',
+      setup:
+        'Chaque joueur commence avec une carte Désamorçage et une main de cartes aléatoires. Le paquet contient des cartes Explosives... attention !',
+    },
+  },
   table: {
     cards: {
       criticalEvent: 'Chat Explosif',

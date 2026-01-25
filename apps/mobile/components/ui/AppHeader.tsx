@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Focusable } from '@/components/ui/Focusable';
 import { Colors, type ThemePalette } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useTranslation } from '@/lib/i18n';
@@ -68,7 +69,7 @@ export function AppHeader({
     >
       <View style={styles.content}>
         {canGoBack ? (
-          <Pressable
+          <Focusable
             accessibilityHint={t('navigation.backButtonHint')}
             accessibilityLabel={t('common.back')}
             accessibilityRole="button"
@@ -82,7 +83,7 @@ export function AppHeader({
             ]}
           >
             <IconSymbol name="chevron.left" size={18} color={palette.text} />
-          </Pressable>
+          </Focusable>
         ) : (
           <View style={styles.iconPlaceholder} />
         )}

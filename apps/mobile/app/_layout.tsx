@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   DarkTheme,
   DefaultTheme,
@@ -19,6 +19,8 @@ import { useTranslation } from '@/lib/i18n';
 import { PendingRequestNotice } from '@/components/ui/PendingRequestNotice';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useIsTV } from '@/hooks/useTVFocus';
+
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -48,6 +50,13 @@ function NavigationRoot() {
   const { t } = useTranslation();
   const router = useRouter();
   const appName = useAppName();
+  const isTV = useIsTV();
+
+  useEffect(() => {
+    if (isTV) {
+      router.replace('/(tv)/home');
+    }
+  }, [isTV, router]);
 
   const getTitleForRoute = useCallback(
     (routeName: string): string => {
@@ -95,7 +104,7 @@ function NavigationRoot() {
       <>
         <Stack
           screenOptions={({ route, navigation }) => {
-            if (route.name === '(tabs)') {
+            if (route.name === '(tabs)' || route.name === '(tv)') {
               return { headerShown: false };
             }
 
@@ -131,6 +140,7 @@ function NavigationRoot() {
           <Stack.Screen name="auth" />
           <Stack.Screen name="auth/callback" />
           <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(tv)" />
           <Stack.Screen name="chat" />
           <Stack.Screen name="games/create" />
           <Stack.Screen name="games/[id]" />

@@ -1,11 +1,11 @@
 {
   "expo": {
-  "name": "Arcadeum",
-  "slug": "arcadeum",
+    "name": "Arcadeum",
+    "slug": "arcadeum",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/icon.png",
-  "scheme": "mobile",
+    "scheme": "mobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

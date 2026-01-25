@@ -1,3 +1,5 @@
+import { routes } from './routes';
+
 type CtaConfig = {
   href: string;
   label: string;
@@ -6,22 +8,24 @@ type CtaConfig = {
 type DownloadSectionConfig = {
   title: string;
   description: string;
-  iosLabel: string;
-  androidLabel: string;
   iosHref?: string;
+  iosLabel: string;
   androidHref?: string;
+  androidLabel: string;
 };
 
 export type WebAppConfig = {
   appName: string;
-  kicker: string;
-  tagline: string;
-  description: string;
+  seoTitle: string;
+  seoDescription: string;
   primaryCta: CtaConfig;
   supportCta: CtaConfig;
   downloads: DownloadSectionConfig;
-  seoTitle: string;
-  seoDescription: string;
+  social: {
+    instagram?: string;
+    facebook?: string;
+    youtube?: string;
+  };
 };
 
 function trim(value?: string | null): string | undefined {
@@ -33,81 +37,43 @@ function trim(value?: string | null): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
-function buildTagline(appName: string): string {
-  return `${appName} is your remote-friendly arcade for fast tabletop playtests.`;
-}
-
-function buildDescription(appName: string): string {
-  return `Spin up real-time rooms, rally your playtest crew, and let ${appName} automate rules, scoring, and moderation so you can focus on the fun.`;
-}
-
-function buildSeoTitle(appName: string): string {
-  return `${appName} · Remote-friendly arcade for tabletop playtests`;
-}
-
-function buildSeoDescription(description: string): string {
-  return description;
-}
-
 function readAppConfig(): WebAppConfig {
-  const appName = trim(process.env.NEXT_PUBLIC_APP_NAME) ?? "Arcadeum";
-  const kicker = trim(process.env.NEXT_PUBLIC_WEB_KICKER) ?? "Remote-friendly tabletop arcade";
-  const tagline =
-    trim(process.env.NEXT_PUBLIC_WEB_TAGLINE) ?? buildTagline(appName);
-  const description =
-    trim(process.env.NEXT_PUBLIC_WEB_DESCRIPTION) ?? buildDescription(appName);
+  const appName = trim(process.env.NEXT_PUBLIC_APP_NAME) ?? 'Arcadeum';
 
   const primaryCtaHref =
-    trim(process.env.NEXT_PUBLIC_WEB_PRIMARY_CTA_HREF) ?? "/auth";
-  const primaryCtaLabel =
-    trim(process.env.NEXT_PUBLIC_WEB_PRIMARY_CTA_LABEL) ?? "Get started";
+    trim(process.env.NEXT_PUBLIC_WEB_PRIMARY_CTA_HREF) ?? routes.auth;
 
   const supportCtaHref =
-    trim(process.env.NEXT_PUBLIC_WEB_SUPPORT_CTA_HREF) ?? "/support";
-  const supportCtaLabel =
-    trim(process.env.NEXT_PUBLIC_WEB_SUPPORT_CTA_LABEL) ?? "Support the developers";
+    trim(process.env.NEXT_PUBLIC_WEB_SUPPORT_CTA_HREF) ?? routes.support;
 
-  const downloadTitle =
-    trim(process.env.NEXT_PUBLIC_WEB_DOWNLOAD_TITLE) ?? "Install the mobile builds";
-  const downloadDescription =
-    trim(process.env.NEXT_PUBLIC_WEB_DOWNLOAD_DESCRIPTION) ??
-    "Grab the latest Expo builds for iOS and Android directly from the web app.";
-  const downloadIosLabel =
-    trim(process.env.NEXT_PUBLIC_WEB_DOWNLOAD_IOS_LABEL) ?? "Download for iOS";
-  const downloadAndroidLabel =
-    trim(process.env.NEXT_PUBLIC_WEB_DOWNLOAD_ANDROID_LABEL) ?? "Download for Android";
   const downloadIosHref = trim(process.env.NEXT_PUBLIC_DOWNLOAD_IOS);
   const downloadAndroidHref = trim(process.env.NEXT_PUBLIC_DOWNLOAD_ANDROID);
 
-  const seoTitle =
-    trim(process.env.NEXT_PUBLIC_WEB_SEO_TITLE) ?? buildSeoTitle(appName);
-  const seoDescription =
-    trim(process.env.NEXT_PUBLIC_WEB_SEO_DESCRIPTION) ??
-    buildSeoDescription(description);
-
   return {
     appName,
-    kicker,
-    tagline,
-    description,
+    seoTitle: `${appName} - Online Board Game Platform`,
+    seoDescription: `${appName} is your online platform to play board games with friends.`,
     primaryCta: {
       href: primaryCtaHref,
-      label: primaryCtaLabel,
+      label: 'Get started',
     },
     supportCta: {
       href: supportCtaHref,
-      label: supportCtaLabel,
+      label: 'Support Arcadeum',
     },
     downloads: {
-      title: downloadTitle,
-      description: downloadDescription,
-      iosLabel: downloadIosLabel,
-      androidLabel: downloadAndroidLabel,
+      title: 'Install the mobile builds',
+      description: 'Grab the latest builds directly from the web app.',
       iosHref: downloadIosHref,
+      iosLabel: 'Download for iOS',
       androidHref: downloadAndroidHref,
+      androidLabel: 'Download for Android',
     },
-    seoTitle,
-    seoDescription,
+    social: {
+      instagram: trim(process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM),
+      facebook: trim(process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK),
+      youtube: trim(process.env.NEXT_PUBLIC_SOCIAL_YOUTUBE),
+    },
   };
 }
 

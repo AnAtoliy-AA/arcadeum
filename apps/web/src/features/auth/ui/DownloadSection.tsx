@@ -21,12 +21,11 @@ export function DownloadSection({
   title,
   description,
   iosLabel,
-  androidLabel,
   iosHref,
   androidHref,
 }: DownloadSectionProps) {
   const hasLinks = Boolean(iosHref || androidHref);
-  const { isIos, isAndroid } = usePlatform();
+  const { isIos: _isIos, isAndroid } = usePlatform();
 
   if (!hasLinks) {
     return null;
@@ -47,7 +46,7 @@ export function DownloadSection({
             <span>{iosLabel}</span>
           </DownloadButton>
         ) : null}
-        {androidHref && !isIos ? (
+        {/* {androidHref && !isIos ? (
           <DownloadButton
             href={androidHref}
             target="_blank"
@@ -56,7 +55,7 @@ export function DownloadSection({
             <DownloadIcon aria-hidden="true">↓</DownloadIcon>
             <span>{androidLabel}</span>
           </DownloadButton>
-        ) : null}
+        ) : null} */}
       </DownloadButtons>
     </DownloadSectionWrapper>
   );

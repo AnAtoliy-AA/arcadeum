@@ -118,17 +118,17 @@ export function SettingsPage({
       downloads.iosLabel;
     downloadButtons.push({ key: 'ios', href: downloads.iosHref, label });
   }
-  if (downloads.androidHref) {
-    const label =
-      settingsCopy.downloadsAndroidLabel ??
-      defaultSettings.downloadsAndroidLabel ??
-      downloads.androidLabel;
-    downloadButtons.push({
-      key: 'android',
-      href: downloads.androidHref,
-      label,
-    });
-  }
+  // if (downloads.androidHref) {
+  //   const label =
+  //     settingsCopy.downloadsAndroidLabel ??
+  //     defaultSettings.downloadsAndroidLabel ??
+  //     downloads.androidLabel;
+  //   downloadButtons.push({
+  //     key: 'android',
+  //     href: downloads.androidHref,
+  //     label,
+  //   });
+  // }
 
   const accountTitle =
     settingsCopy.accountTitle ?? defaultSettings.accountTitle ?? '';

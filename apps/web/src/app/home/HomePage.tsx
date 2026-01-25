@@ -172,7 +172,7 @@ export function HomePage() {
     downloads,
   } = appConfig;
   const { messages } = useLanguage();
-  const { isIos, isAndroid } = usePlatform();
+  const { isIos: _isIos, isAndroid } = usePlatform();
   const { snapshot, hydrated } = useSessionTokens();
   const homeCopy = messages.home ?? {};
 
@@ -187,7 +187,8 @@ export function HomePage() {
     formatMessage(homeCopy.downloadsDescription, { appName }) ??
     downloads.description;
   const iosLabel = homeCopy.downloadsIosLabel ?? downloads.iosLabel;
-  const androidLabel = homeCopy.downloadsAndroidLabel ?? downloads.androidLabel;
+  const _androidLabel =
+    homeCopy.downloadsAndroidLabel ?? downloads.androidLabel;
   const hasDownloadLinks = Boolean(downloads.iosHref || downloads.androidHref);
 
   const isAuthenticated = hydrated && !!snapshot.accessToken;
@@ -218,11 +219,11 @@ export function HomePage() {
                   ↓ {iosLabel}
                 </DownloadButton>
               ) : null}
-              {downloads.androidHref && !isIos ? (
+              {/* {downloads.androidHref && !isIos ? (
                 <DownloadButton href={downloads.androidHref}>
                   ↓ {androidLabel}
                 </DownloadButton>
-              ) : null}
+              ) : null} */}
             </DownloadButtons>
           </DownloadSection>
         ) : null}

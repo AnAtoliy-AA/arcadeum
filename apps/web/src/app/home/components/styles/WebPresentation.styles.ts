@@ -1,6 +1,6 @@
 'use client';
 
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { fadeIn } from './Animations.styles';
 
 export const PresentationContainer = styled.div`
@@ -14,6 +14,7 @@ export const PresentationContainer = styled.div`
   display: flex;
   flex-direction: column;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  group: 'presentation-container';
 
   &:fullscreen {
     border-radius: 0;
@@ -29,102 +30,165 @@ export const SlideContent = styled.div<{ $isActive: boolean }>`
   width: 100%;
   height: 100%;
   padding: 0;
-  animation: ${fadeIn} 0.5s ease-out;
+  animation: ${fadeIn} 0.6s cubic-bezier(0.22, 1, 0.36, 1); // Smooth cubic-bezier
   position: relative;
+
+  // Slight scale effect for premium feel
+  & > img {
+    animation: ${({ $isActive }) =>
+      $isActive ? css`scaleIn 0.6s cubic-bezier(0.22, 1, 0.36, 1)` : 'none'};
+  }
+
+  @keyframes scaleIn {
+    from {
+      transform: scale(1.02);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
 `;
 
 export const SlideImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: contain;
-  display: block; // Removes potential font-size gaps
+  display: block;
 `;
 
-export const Controls = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background: rgba(
-    0,
-    0,
-    0,
-    0.5
-  ); // Slightly darker for better contrast over images
-  backdrop-filter: blur(10px);
+// --- New Modern Controls ---
+
+export const ControlsOverlay = styled.div`
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  inset: 0;
+  pointer-events: none; // Let clicks pass through to drag areas
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   z-index: 10;
-  transition: opacity 0.3s ease;
+`;
 
-  // Auto-hide controls when checking visual experience?
-  // For now keep them visible or show on hover could be better UX,
-  // but let's stick to persistent for usability first.
+export const TopBar = styled.div`
+  padding: 1rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.6) 0%,
+    transparent 100%
+  );
+  pointer-events: auto;
+`;
 
-  @media (max-width: 768px) {
-    padding: 0.75rem 1rem;
+export const ProgressBar = styled.div`
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  max-width: 600px;
+  height: 4px;
+  align-items: center;
+`;
+
+export const ProgressSegment = styled.div<{
+  $isActive: boolean;
+  $isViewed: boolean;
+}>`
+  flex: 1;
+  height: 100%;
+  border-radius: 2px;
+  background: ${({ theme, $isActive, $isViewed }) =>
+    $isActive
+      ? theme.text.accent
+      : $isViewed
+        ? 'rgba(255, 255, 255, 0.5)'
+        : 'rgba(255, 255, 255, 0.2)'};
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-shadow: ${({ $isActive }) =>
+    $isActive ? '0 0 8px rgba(255, 255, 255, 0.4)' : 'none'};
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.8);
   }
 `;
 
-export const ControlButton = styled.button`
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: ${({ theme }) => theme.text.primary};
-  cursor: pointer;
-  padding: 0.6rem;
+export const BottomBar = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
+  pointer-events: auto;
+`;
+
+export const SlideCounter = styled.div`
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  font-feature-settings: 'tnum'; // Tabular numbers prevent jumping
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+`;
+
+export const NavButton = styled.button<{ $position: 'left' | 'right' }>`
+  position: absolute;
+  top: 50%;
+  ${({ $position }) => $position}: 1rem;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+  opacity: 0; // Hidden by default
+  pointer-events: auto;
+
+  ${PresentationContainer}:hover & {
+    opacity: 1;
+  }
+
+  &:hover {
+    background: #ffffff;
+    color: #000000;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  @media (max-width: 768px) {
+    display: none; // Hides explicit arrows on mobile, rely on swipe
+  }
+`;
+
+export const FullscreenButton = styled.button`
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover {
     background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.05);
-    color: ${({ theme }) => theme.text.accent};
   }
-
-  &:active {
-    transform: scale(0.95);
-  }
-
-  &:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-    transform: none;
-  }
-`;
-
-export const Pagination = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-`;
-
-export const PageDot = styled.button<{ $isActive: boolean }>`
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  background: ${({ theme, $isActive }) =>
-    $isActive ? theme.text.accent : theme.text.muted};
-  opacity: ${({ $isActive }) => ($isActive ? 1 : 0.5)};
-  transition: all 0.3s ease;
-  transform: ${({ $isActive }) => ($isActive ? 'scale(1.2)' : 'scale(1)')};
-
-  &:hover {
-    opacity: 1;
-    background: ${({ theme }) => theme.text.accent};
-  }
-`;
-
-export const FullscreenButton = styled(ControlButton)`
-  margin-left: 1rem;
 `;

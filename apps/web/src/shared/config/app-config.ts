@@ -25,6 +25,7 @@ export type WebAppConfig = {
     instagram?: string;
     facebook?: string;
     youtube?: string;
+    linkedin?: string;
   };
 };
 
@@ -73,6 +74,7 @@ function readAppConfig(): WebAppConfig {
       instagram: trim(process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM),
       facebook: trim(process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK),
       youtube: trim(process.env.NEXT_PUBLIC_SOCIAL_YOUTUBE),
+      linkedin: trim(process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN),
     },
   };
 }

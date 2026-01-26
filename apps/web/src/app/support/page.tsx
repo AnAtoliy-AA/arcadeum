@@ -23,6 +23,7 @@ const TEAM_MEMBERS: SupportTeamMember[] = [
     name: 'Anatoliy Aliaksandrau',
     role: 'Product & realtime systems',
     bio: 'Keeps prototypes organized, roadmaps realistic, and the realtime engine humming for every playtest night.',
+    linkedin: appConfig.social.linkedin,
   },
   {
     key: 'designer',
@@ -30,6 +31,7 @@ const TEAM_MEMBERS: SupportTeamMember[] = [
     name: 'Anatoliy Aliaksandrau',
     role: 'Game designer & UX',
     bio: 'Turns raw playtest feedback into balanced mechanics, polished flows, and welcoming onboarding experiences.',
+    linkedin: appConfig.social.linkedin,
   },
   {
     key: 'engineer',
@@ -37,6 +39,7 @@ const TEAM_MEMBERS: SupportTeamMember[] = [
     name: 'Anatoliy Aliaksandrau',
     role: 'Full-stack engineer',
     bio: 'Builds cross-platform features, maintains the component toolkit, and keeps performance snappy across devices.',
+    linkedin: appConfig.social.linkedin,
   },
 ];
 

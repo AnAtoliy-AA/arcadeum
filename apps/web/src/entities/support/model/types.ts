@@ -4,10 +4,11 @@ export type SupportTeamMember = {
   name: string;
   role: string;
   bio: string;
+  linkedin?: string;
 };
 
 export type BaseSupportAction = {
-  key: "payment" | "sponsor" | "coffee" | "iban";
+  key: 'payment' | 'sponsor' | 'coffee' | 'iban';
   icon: string;
   title: string;
   description: string;
@@ -15,19 +16,22 @@ export type BaseSupportAction = {
 };
 
 export type RouteSupportAction = BaseSupportAction & {
-  type: "route";
+  type: 'route';
   href: string;
 };
 
 export type ExternalSupportAction = BaseSupportAction & {
-  type: "external";
+  type: 'external';
   href: string;
 };
 
 export type CopySupportAction = BaseSupportAction & {
-  type: "copy";
+  type: 'copy';
   value: string;
   successMessage: string;
 };
 
-export type SupportAction = RouteSupportAction | ExternalSupportAction | CopySupportAction;
+export type SupportAction =
+  | RouteSupportAction
+  | ExternalSupportAction
+  | CopySupportAction;

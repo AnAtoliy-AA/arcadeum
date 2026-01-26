@@ -51,6 +51,11 @@ const supportMessagesDefinition = {
         cta: 'Copy IBAN details',
         successMessage: 'IBAN copied to clipboard: {{iban}}',
       },
+      linkedin: {
+        title: 'Connect on LinkedIn',
+        description: 'Follow {{appName}} updates and professional news.',
+        cta: 'Connect',
+      },
     },
   },
   es: {

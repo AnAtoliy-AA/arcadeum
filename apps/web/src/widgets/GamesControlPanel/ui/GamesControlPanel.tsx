@@ -91,7 +91,7 @@ const SmallButton = styled(Button)`
   min-width: auto;
 `;
 
-const StyledFullscreenButton = styled(Button)`
+const StyledPanelButton = styled(Button)`
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: ${({ theme }) => theme.text.primary};
@@ -202,7 +202,7 @@ export function GamesControlPanel({
 
   return (
     <Panel className={className}>
-      <StyledFullscreenButton
+      <StyledPanelButton
         variant="secondary"
         size="sm"
         onClick={handleFullscreenToggle}
@@ -213,7 +213,7 @@ export function GamesControlPanel({
         }
       >
         {isFullscreen ? '⤓' : '⤢'} {t('games.table.controlPanel.fullscreen')}
-      </StyledFullscreenButton>
+      </StyledPanelButton>
 
       {showMoveControls && (
         <MoveControlsContainer>
@@ -264,16 +264,16 @@ export function GamesControlPanel({
         </MoveControlsContainer>
       )}
 
-      <Button
+      <StyledPanelButton
         variant="secondary"
         size="sm"
         onClick={handleCopyInviteLink}
         title={t('games.common.copyInviteLink') || 'Copy Invite Link'}
       >
         {isCopied ? '✅ Copied' : '🔗 Link'}
-      </Button>
+      </StyledPanelButton>
 
-      <Button
+      <StyledPanelButton
         variant="secondary"
         size="sm"
         onClick={handleExitRoom}
@@ -283,19 +283,21 @@ export function GamesControlPanel({
         }
       >
         🏃 {t('games.table.controlPanel.exitRoom') || 'Exit'}
-      </Button>
+      </StyledPanelButton>
 
-      <Button
-        variant="danger"
-        size="sm"
-        onClick={handleLeaveGame}
-        title={
-          t('games.table.controlPanel.leaveGameTooltip') ||
-          'Remove yourself from the game and return to lobby'
-        }
-      >
-        🚪 {t('games.table.controlPanel.leaveRoom')}
-      </Button>
+      {snapshot.userId && (
+        <Button
+          variant="danger"
+          size="sm"
+          onClick={handleLeaveGame}
+          title={
+            t('games.table.controlPanel.leaveGameTooltip') ||
+            'Remove yourself from the game and return to lobby'
+          }
+        >
+          🚪 {t('games.table.controlPanel.leaveRoom')}
+        </Button>
+      )}
 
       <Modal open={showLeaveConfirm} onClose={() => setShowLeaveConfirm(false)}>
         <ModalContent maxWidth="400px">

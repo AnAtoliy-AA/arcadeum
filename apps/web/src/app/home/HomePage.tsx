@@ -3,6 +3,7 @@
 import { HomeHero } from './components/HomeHero';
 import { HomeGames } from './components/HomeGames';
 import { HomePresentation } from './components/HomePresentation';
+import { HomePitchDeck } from './components/HomePitchDeck';
 import { HomeFeatures } from './components/HomeFeatures';
 import { HomeHowItWorks } from './components/HomeHowItWorks';
 import { HomeDownloadCta } from './components/HomeDownloadCta';
@@ -14,6 +15,7 @@ export function HomePage() {
     <PageWrapper>
       <HomeHero />
       <HomePresentation />
+      <HomePitchDeck />
       <HomeGames />
       <HomeFeatures />
       <HomeHowItWorks />

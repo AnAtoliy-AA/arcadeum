@@ -32,3 +32,8 @@ export const pulse = keyframes`
   0%, 100% { opacity: 0.4; }
   50% { opacity: 0.8; }
 `;
+
+export const glow = keyframes`
+  from { filter: drop-shadow(0 0 4px currentColor); }
+  to { filter: drop-shadow(0 0 12px currentColor); }
+`;

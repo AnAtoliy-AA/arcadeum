@@ -16,6 +16,7 @@ type DownloadSectionConfig = {
 
 export type WebAppConfig = {
   appName: string;
+  presentationVideoId?: string;
   seoTitle: string;
   seoDescription: string;
   primaryCta: CtaConfig;
@@ -38,8 +39,32 @@ function trim(value?: string | null): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
+function parseYouTubeVideoId(input?: string): string | undefined {
+  if (!input) return undefined;
+  const trimmed = input.trim();
+  if (!trimmed) return undefined;
+
+  // Handle full URLs like https://www.youtube.com/watch?v=VIDEO_ID
+  const urlMatch = trimmed.match(
+    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/,
+  );
+  if (urlMatch && urlMatch[1]) {
+    return urlMatch[1];
+  }
+
+  // Handle bare video ID (assuming ~11 chars)
+  if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
+    return trimmed;
+  }
+
+  return trimmed; // Return as-is if fallback
+}
+
 function readAppConfig(): WebAppConfig {
   const appName = trim(process.env.NEXT_PUBLIC_APP_NAME) ?? 'Arcadeum';
+  const presentationVideoId = parseYouTubeVideoId(
+    process.env.NEXT_PUBLIC_PRESENTATION_VIDEO_ID,
+  );
 
   const primaryCtaHref =
     trim(process.env.NEXT_PUBLIC_WEB_PRIMARY_CTA_HREF) ?? routes.auth;
@@ -52,6 +77,7 @@ function readAppConfig(): WebAppConfig {
 
   return {
     appName,
+    presentationVideoId,
     seoTitle: `${appName} - Online Board Game Platform`,
     seoDescription: `${appName} is your online platform to play board games with friends.`,
     primaryCta: {

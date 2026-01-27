@@ -218,7 +218,6 @@ export const LogEntry = styled.div<{
 export const ChatMessages = styled(GameLog)`
   flex: 1 1 0;
   display: flex;
-  flex-direction: column-reverse;
   position: relative;
   min-height: 60px;
   max-height: none;

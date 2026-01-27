@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import styled from 'styled-components';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { resolveApiUrl } from '@/shared/lib/api-base';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { PageLayout, Container, Button, Input } from '@/shared/ui';
-import { chatApi, ChatMessage } from '@/features/chat/api';
+import { chatApi } from '@/features/chat/api';
 import { useChatStore } from '@/features/chat/store/chatStore';
+import { useChatSocket } from '@/features/chat/hooks/useChatSocket';
 
 const ChatContainer = styled(Container)`
   height: 100vh;
@@ -36,11 +36,11 @@ const Status = styled.div`
   margin-top: 0.25rem;
 `;
 
-const StatusDot = styled.span<{ connected: boolean }>`
+const StatusDot = styled.span<{ $connected: boolean }>`
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: ${({ connected }) => (connected ? '#22c55e' : '#f59e0b')};
+  background: ${({ $connected }) => ($connected ? '#22c55e' : '#f59e0b')};
 `;
 
 const MessagesContainer = styled.div`
@@ -52,25 +52,25 @@ const MessagesContainer = styled.div`
   gap: 1rem;
 `;
 
-const Message = styled.div<{ isOwn: boolean }>`
+const Message = styled.div<{ $isOwn: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  align-self: ${({ isOwn }) => (isOwn ? 'flex-end' : 'flex-start')};
+  align-self: ${({ $isOwn }) => ($isOwn ? 'flex-end' : 'flex-start')};
   max-width: 70%;
 `;
 
-const MessageBubble = styled.div<{ isOwn: boolean }>`
+const MessageBubble = styled.div<{ $isOwn: boolean }>`
   padding: 0.75rem 1rem;
   border-radius: 16px;
-  background: ${({ isOwn, theme }) =>
-    isOwn
+  background: ${({ $isOwn, theme }) =>
+    $isOwn
       ? theme.buttons.primary.gradientStart
       : theme.surfaces.card.background};
-  color: ${({ isOwn, theme }) =>
-    isOwn ? theme.buttons.primary.text : theme.text.primary};
-  border: ${({ isOwn, theme }) =>
-    isOwn ? 'none' : `1px solid ${theme.surfaces.card.border}`};
+  color: ${({ $isOwn, theme }) =>
+    $isOwn ? theme.buttons.primary.text : theme.text.primary};
+  border: ${({ $isOwn, theme }) =>
+    $isOwn ? 'none' : `1px solid ${theme.surfaces.card.border}`};
 `;
 
 const MessageSender = styled.div`
@@ -116,20 +116,13 @@ export function ChatPage() {
   const title = searchParams?.get('title') || 'Chat';
 
   const [inputValue, setInputValue] = useState('');
-  const socketRef = useRef<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const isAuthenticatedRef = useRef(false);
 
   // Store
-  const {
-    messages,
-    isConnected,
-    setMessages,
-    addMessage,
-    setConnected,
-    setAuthenticated,
-    reset,
-  } = useChatStore();
+  const { messages, isConnected, setMessages, reset } = useChatStore();
+
+  // Socket Hook
+  const { sendMessage } = useChatSocket({ chatId, receiverIds });
 
   // Initial fetch
   useEffect(() => {
@@ -154,130 +147,11 @@ export function ChatPage() {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    if (!chatId || !snapshot.accessToken) return;
-
-    // Connect to WebSocket
-    const wsUrl = resolveApiUrl('/').replace('http', 'ws');
-    const ws = new WebSocket(wsUrl);
-    isAuthenticatedRef.current = false;
-
-    ws.onopen = () => {
-      // Send authentication message after connection
-      ws.send(
-        JSON.stringify({
-          type: 'authenticate',
-          token: snapshot.accessToken,
-        }),
-      );
-    };
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-
-        if (data.type === 'authenticated') {
-          isAuthenticatedRef.current = true;
-          setConnected(true);
-          setAuthenticated(true);
-          // Join chat after authentication
-          ws.send(
-            JSON.stringify({
-              type: 'joinChat',
-              chatId,
-              currentUserId: snapshot.userId,
-              users: [snapshot.userId, ...receiverIds.split(',')],
-            }),
-          );
-        } else if (data.type === 'message') {
-          addMessage(data.message);
-        } else if (data.type === 'chatMessages') {
-          if (data.messages && Array.isArray(data.messages)) {
-            setMessages(data.messages);
-          }
-        } else if (data.type === 'error') {
-          console.error('WebSocket error:', data.message);
-          setConnected(false);
-          setAuthenticated(false);
-        }
-      } catch (err) {
-        console.error('Failed to parse message:', err);
-      }
-    };
-
-    ws.onerror = (error) => {
-      console.error('WebSocket connection error:', error);
-      setConnected(false);
-      setAuthenticated(false);
-    };
-
-    ws.onclose = () => {
-      setConnected(false);
-      setAuthenticated(false);
-      isAuthenticatedRef.current = false;
-    };
-
-    socketRef.current = ws;
-
-    return () => {
-      if (
-        ws.readyState === WebSocket.OPEN ||
-        ws.readyState === WebSocket.CONNECTING
-      ) {
-        ws.close();
-      }
-      socketRef.current = null;
-      setConnected(false);
-    };
-  }, [
-    chatId,
-    snapshot.accessToken,
-    snapshot.userId,
-    receiverIds,
-    setConnected,
-    setAuthenticated,
-    addMessage,
-    setMessages,
-  ]);
-
-  const handleSend = useCallback(async () => {
-    if (
-      !inputValue.trim() ||
-      !chatId ||
-      !snapshot.accessToken ||
-      !socketRef.current
-    )
-      return;
-
-    const message: ChatMessage = {
-      id: Date.now().toString(),
-      chatId,
-      senderId: snapshot.userId || '',
-      senderUsername: snapshot.displayName || snapshot.username || 'You',
-      receiverIds: receiverIds.split(',').filter(Boolean),
-      content: inputValue.trim(),
-      timestamp: new Date().toISOString(),
-    };
-
-    try {
-      socketRef.current.send(
-        JSON.stringify({
-          type: 'message',
-          chatId,
-          senderId: message.senderId,
-          senderUsername: message.senderUsername,
-          receiverIds: message.receiverIds,
-          content: message.content,
-        }),
-      );
-
-      // Optimistically update
-      addMessage(message);
-      setInputValue('');
-    } catch (err) {
-      console.error('Failed to send message:', err);
-    }
-  }, [inputValue, chatId, snapshot, receiverIds, addMessage]);
+  const handleSend = () => {
+    if (!inputValue.trim()) return;
+    sendMessage(inputValue);
+    setInputValue('');
+  };
 
   if (!chatId) {
     return (
@@ -296,7 +170,7 @@ export function ChatPage() {
           <Title>{title}</Title>
           <Status>
             <StatusDot
-              connected={isConnected}
+              $connected={isConnected}
               aria-label={
                 isConnected
                   ? t('chat.status.connected') || 'Connected'
@@ -313,9 +187,9 @@ export function ChatPage() {
           {messages.map((msg) => {
             const isOwn = msg.senderId === snapshot.userId;
             return (
-              <Message key={msg.id} isOwn={isOwn}>
+              <Message key={msg.id} $isOwn={isOwn}>
                 {!isOwn && <MessageSender>{msg.senderUsername}</MessageSender>}
-                <MessageBubble isOwn={isOwn}>
+                <MessageBubble $isOwn={isOwn}>
                   <MessageContent>{msg.content}</MessageContent>
                 </MessageBubble>
                 <MessageTime>

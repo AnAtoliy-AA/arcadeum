@@ -7,10 +7,11 @@ import {
   Req,
   UnauthorizedException,
   UseGuards,
+  Param,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
-import { ChatService, ChatSummary } from './chat.service';
+import { ChatService, ChatSummary, MessageView } from './chat.service';
 import { CreateChatDto } from './dtos';
 
 export type AuthenticatedRequest = Request & {
@@ -31,6 +32,15 @@ export class ChatController {
       throw new UnauthorizedException('User context missing');
     }
     return this.chatService.listChatsForUser(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':chatId/messages')
+  async getMessages(@Param('chatId') chatId: string): Promise<MessageView[]> {
+    if (!chatId) {
+      throw new BadRequestException('Chat ID is required');
+    }
+    return this.chatService.getMessagesByChatId(chatId);
   }
 
   @UseGuards(JwtAuthGuard)

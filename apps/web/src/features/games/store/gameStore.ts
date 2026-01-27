@@ -3,6 +3,12 @@ import { gameSocket } from '@/shared/lib/socket';
 import { maybeDecrypt } from '@/shared/lib/socket-encryption';
 import type { GameRoomSummary } from '@/shared/types/games';
 
+/**
+ * Cleanup function to remove all registered socket listeners.
+ * Stored at module level to persist across store calls.
+ */
+let cleanupListeners: (() => void) | null = null;
+
 interface GameState {
   room: GameRoomSummary | null;
   session: unknown | null;
@@ -36,8 +42,11 @@ export const useGameStore = create<GameState>((set, get) => ({
   error: null,
 
   connect: (roomId, userId, accessToken, mode = 'play', inviteCode) => {
-    // This action sets up the listeners and connection logic.
-    // It's similar to the useEffect in useGameRoom
+    // Clean up previous listeners before registering new ones
+    if (cleanupListeners) {
+      cleanupListeners();
+      cleanupListeners = null;
+    }
 
     if (mode !== 'watch' && !accessToken) return;
 
@@ -132,6 +141,19 @@ export const useGameStore = create<GameState>((set, get) => ({
     gameSocket.on('connect', handleConnect);
     gameSocket.on('disconnect', handleDisconnect);
 
+    // Store cleanup function to properly remove listeners later
+    cleanupListeners = () => {
+      gameSocket.off('games.room.joined', wrappedHandleJoined);
+      gameSocket.off('games.room.watching', wrappedHandleJoined);
+      gameSocket.off('games.room.update', wrappedHandleRoomUpdate);
+      gameSocket.off('games.player.joined', wrappedHandlePlayerJoined);
+      gameSocket.off('games.player.left', wrappedHandlePlayerLeft);
+      gameSocket.off('games.game.started', wrappedHandleGameStarted);
+      gameSocket.off('exception', wrappedHandleException);
+      gameSocket.off('connect', handleConnect);
+      gameSocket.off('disconnect', handleDisconnect);
+    };
+
     // If already connected
     if (gameSocket.connected) {
       handleConnect();
@@ -139,9 +161,11 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   disconnect: () => {
-    // Note: We're not removing listeners because they are bound to anonymous functions created inside 'connect'.
-    // Instead, we just reset the state to disconnected.
-    // In a future refactor, we should move socket logic to a hook or class.
+    // Clean up all registered listeners
+    if (cleanupListeners) {
+      cleanupListeners();
+      cleanupListeners = null;
+    }
     gameSocket.disconnect();
     set({
       isConnected: false,

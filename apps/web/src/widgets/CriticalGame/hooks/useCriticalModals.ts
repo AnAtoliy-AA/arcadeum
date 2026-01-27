@@ -50,7 +50,9 @@ export function useCriticalModals({
 
     const wrappedHandler = async (raw: unknown) => {
       const data = await maybeDecrypt<{ topCards: string[] }>(raw);
-      handleSeeTheFuture(data);
+      if (data) {
+        handleSeeTheFuture(data);
+      }
     };
 
     gameSocket.on('games.session.see_the_future.played', wrappedHandler);

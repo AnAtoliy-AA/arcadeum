@@ -23,4 +23,8 @@ export class MessageDTO {
   @IsString()
   @IsNotEmpty({ message: 'Content must not be empty' })
   readonly content: string;
+
+  @IsString()
+  @IsOptional()
+  readonly tempId?: string;
 }

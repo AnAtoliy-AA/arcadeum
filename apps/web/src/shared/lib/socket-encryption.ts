@@ -162,18 +162,34 @@ export async function maybeEncrypt(payload: unknown): Promise<unknown> {
  * Conditionally decrypt a payload based on environment settings.
  * Returns the original payload if encryption is disabled or payload is not encrypted.
  */
-export async function maybeDecrypt<T = unknown>(payload: unknown): Promise<T> {
-  if (!isSocketEncryptionEnabled() || !hasEncryptionKey()) {
-    return payload as T;
-  }
-
-  if (
+export async function maybeDecrypt<T = unknown>(
+  payload: unknown,
+): Promise<T | null> {
+  const isEncrypted =
     typeof payload === 'object' &&
     payload !== null &&
     '__encrypted' in payload &&
-    typeof (payload as Record<string, unknown>).__encrypted === 'string'
-  ) {
-    return decryptPayload<T>((payload as Record<string, string>).__encrypted);
+    typeof (payload as Record<string, unknown>).__encrypted === 'string';
+
+  if (!isSocketEncryptionEnabled() || !hasEncryptionKey()) {
+    if (isEncrypted) {
+      console.warn(
+        '[socket-encryption] Received encrypted payload but encryption is disabled or key missing',
+      );
+      return null;
+    }
+    return payload as T;
+  }
+
+  if (isEncrypted) {
+    try {
+      return await decryptPayload<T>(
+        (payload as Record<string, string>).__encrypted,
+      );
+    } catch (error) {
+      console.error('[socket-encryption] Decryption failed:', error);
+      return null;
+    }
   }
 
   return payload as T;

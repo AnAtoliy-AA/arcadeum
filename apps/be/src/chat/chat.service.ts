@@ -16,6 +16,7 @@ export interface MessageView {
   receiverIds: string[];
   content: string;
   timestamp: string;
+  tempId?: string;
 }
 
 export interface ChatParticipantSummary {
@@ -264,7 +265,7 @@ export class ChatService {
 
     const saved = await message.save();
     const [view] = await this.chatHelper.toMessageViews([saved]);
-    return view;
+    return { ...view, tempId: messageDTO.tempId };
   }
 
   async getMessagesByChatId(chatId: string) {

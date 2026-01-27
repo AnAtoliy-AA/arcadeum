@@ -10,6 +10,7 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import { Input, Spinner, Button } from '@/shared/ui';
 import { chatApi, ChatParticipant } from '@/features/chat/api';
+import { formatSafeDate } from '@/shared/lib/date';
 
 const Page = styled.main`
   min-height: 100vh;
@@ -282,7 +283,7 @@ export function ChatListPage() {
                   </ChatInfo>
                   {chat.lastMessage && (
                     <ChatTimestamp>
-                      {new Date(chat.lastMessage.timestamp).toLocaleString()}
+                      {formatSafeDate(chat.lastMessage.timestamp)}
                     </ChatTimestamp>
                   )}
                 </ChatItem>

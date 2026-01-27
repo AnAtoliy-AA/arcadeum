@@ -25,10 +25,24 @@ export const useChatStore = create<ChatState>((set) => ({
   setMessages: (messages) => set({ messages }),
   addMessage: (message) =>
     set((state) => {
-      // Avoid duplicates
+      // 1. If it has a tempId, try to find and replace the optimistic message
+      if (message.tempId) {
+        const optimisticIndex = state.messages.findIndex(
+          (m) => m.tempId === message.tempId || m.id === message.tempId,
+        );
+
+        if (optimisticIndex !== -1) {
+          const newMessages = [...state.messages];
+          newMessages[optimisticIndex] = message;
+          return { messages: newMessages };
+        }
+      }
+
+      // 2. Avoid duplicates by ID
       if (state.messages.some((m) => m.id === message.id)) {
         return state;
       }
+
       return { messages: [...state.messages, message] };
     }),
   setConnected: (isConnected) => set({ isConnected }),

@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { ChatService } from './chat.service'; // Import the chat service
 import {
   SubscribeMessage,
@@ -9,6 +10,12 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatDTO, MessageDTO } from './dtos';
+import {
+  maybeEncrypt,
+  maybeDecrypt,
+  isSocketEncryptionEnabled,
+  getEncryptionKeyHex,
+} from '../common/utils/socket-encryption.util';
 
 @WebSocketGateway({
   cors: {
@@ -18,22 +25,43 @@ import { ChatDTO, MessageDTO } from './dtos';
 export class ChatGateway {
   constructor(private chatService: ChatService) {}
 
+  private readonly logger = new Logger(ChatGateway.name);
+
   @WebSocketServer() server: Server;
 
-  handleConnection() {}
-  handleDisconnect() {}
+  handleConnection(client: Socket) {
+    this.logger.verbose(`Client connected ${client.id}`);
+
+    // Send encryption key to authenticated client if encryption is enabled
+    if (isSocketEncryptionEnabled()) {
+      try {
+        const encryptionKey = getEncryptionKeyHex();
+        client.emit('socket.encryption_key', { key: encryptionKey });
+        this.logger.debug(`Encryption key sent to ${client.id}`);
+      } catch (error) {
+        this.logger.error(`Failed to send encryption key: ${error}`);
+      }
+    }
+  }
+
+  handleDisconnect(client: Socket) {
+    this.logger.verbose(`Client disconnected ${client.id}`);
+  }
 
   @SubscribeMessage('sendMessage')
-  async handleMessage(@MessageBody() messageDTO: MessageDTO): Promise<void> {
+  async handleMessage(@MessageBody() payload: unknown): Promise<void> {
+    const messageDTO = maybeDecrypt<MessageDTO>(payload);
     const message = await this.chatService.saveMessage(messageDTO);
+
+    const outgoingMessage = maybeEncrypt(message);
 
     if (Array.isArray(message.receiverIds)) {
       for (const receiverId of message.receiverIds) {
-        this.server.to(receiverId).emit('message', message);
+        this.server.to(receiverId).emit('message', outgoingMessage);
       }
     }
 
-    this.server.to(message.senderId).emit('message', message);
+    this.server.to(message.senderId).emit('message', outgoingMessage);
   }
 
   @SubscribeMessage('joinChat')
@@ -81,6 +109,6 @@ export class ChatGateway {
 
     const messages = await this.chatService.getMessagesByChatId(chat.chatId);
 
-    client.emit('chatMessages', messages);
+    client.emit('chatMessages', maybeEncrypt(messages));
   }
 }

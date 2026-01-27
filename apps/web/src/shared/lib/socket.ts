@@ -179,7 +179,9 @@ export function useSocket(event: string, handler: SocketEventHandler): void {
         hasEncryptionKey()
       ) {
         const decrypted = await maybeDecrypt(args[0]);
-        handler(decrypted, ...args.slice(1));
+        if (decrypted !== null) {
+          handler(decrypted, ...args.slice(1));
+        }
         return;
       }
       handler(...args);
@@ -205,7 +207,9 @@ export function useChatSocket(
         hasEncryptionKey()
       ) {
         const decrypted = await maybeDecrypt(args[0]);
-        handler(decrypted, ...args.slice(1));
+        if (decrypted !== null) {
+          handler(decrypted, ...args.slice(1));
+        }
         return;
       }
       handler(...args);

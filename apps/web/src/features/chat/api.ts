@@ -25,6 +25,7 @@ export interface ChatMessage {
   receiverIds: string[];
   content: string;
   timestamp: string;
+  tempId?: string;
 }
 
 export interface CreateChatPayload {

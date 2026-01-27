@@ -119,7 +119,9 @@ export const useGameStore = create<GameState>((set, get) => ({
     const decryptHandler = <T>(handler: (payload: T) => void) => {
       return async (raw: unknown) => {
         const payload = await maybeDecrypt<T>(raw);
-        handler(payload);
+        if (payload !== null) {
+          handler(payload);
+        }
       };
     };
 

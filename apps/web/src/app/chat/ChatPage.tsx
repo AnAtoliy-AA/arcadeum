@@ -9,6 +9,7 @@ import { PageLayout, Container, Button, Input } from '@/shared/ui';
 import { chatApi } from '@/features/chat/api';
 import { useChatStore } from '@/features/chat/store/chatStore';
 import { useChatSocket } from '@/features/chat/hooks/useChatSocket';
+import { formatSafeTime } from '@/shared/lib/date';
 
 const ChatContainer = styled(Container)`
   height: 100vh;
@@ -185,16 +186,24 @@ export function ChatPage() {
 
         <MessagesContainer>
           {messages.map((msg) => {
+            const isEncrypted = !msg.content && '__encrypted' in msg;
+            if (!msg || (!msg.content && !isEncrypted)) return null;
+
             const isOwn = msg.senderId === snapshot.userId;
+
             return (
               <Message key={msg.id} $isOwn={isOwn}>
-                {!isOwn && <MessageSender>{msg.senderUsername}</MessageSender>}
+                {!isOwn && (
+                  <MessageSender>
+                    {msg.senderUsername || 'Unknown'}
+                  </MessageSender>
+                )}
                 <MessageBubble $isOwn={isOwn}>
-                  <MessageContent>{msg.content}</MessageContent>
+                  <MessageContent>
+                    {isEncrypted ? '[Encrypted Message]' : msg.content || ''}
+                  </MessageContent>
                 </MessageBubble>
-                <MessageTime>
-                  {new Date(msg.timestamp).toLocaleTimeString()}
-                </MessageTime>
+                <MessageTime>{formatSafeTime(msg.timestamp)}</MessageTime>
               </Message>
             );
           })}

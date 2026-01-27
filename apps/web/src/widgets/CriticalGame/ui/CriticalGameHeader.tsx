@@ -21,7 +21,7 @@ import type { GameRoomSummary, CriticalSnapshot } from '@/shared/types/games';
 import { UseAutoplayReturn } from '../hooks/useAutoplay';
 import { CARD_VARIANTS } from '../lib/constants';
 import { RulesModal } from './RulesModal';
-import React from 'react';
+import React, { useState } from 'react';
 
 interface CriticalGameHeaderProps {
   room: GameRoomSummary;
@@ -70,7 +70,7 @@ export function CriticalGameHeader({
   toggleFullscreen,
 }: CriticalGameHeaderProps) {
   const cardVariant = room.gameOptions?.cardVariant;
-  const [showRules, setShowRules] = React.useState(false);
+  const [showRules, setShowRules] = useState(true);
 
   return (
     <GameHeader $variant={cardVariant}>

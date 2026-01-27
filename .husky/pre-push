@@ -4,3 +4,12 @@ set -e
 
 pnpm run build
 
+# Run web e2e tests before pushing
+echo "Running e2e tests..."
+cd apps/web
+pnpm run test:e2e --project=chromium || {
+  echo "❌ E2E tests failed. Please fix them before pushing."
+  exit 1
+}
+cd ../..
+echo "✅ E2E tests passed"

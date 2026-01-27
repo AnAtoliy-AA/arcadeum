@@ -10,7 +10,10 @@
     "lint": "eslint",
     "type-check": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -26,6 +29,7 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3.2.2",
+    "@playwright/test": "^1.58.0",
     "@storybook/addon-a11y": "^8.6.0",
     "@storybook/addon-docs": "^8.6.0",
     "@storybook/addon-onboarding": "^8.6.0",
@@ -42,7 +46,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.0",
     "eslint-plugin-storybook": "^0.11.0",
-    "playwright": "^1.57.0",
+    "playwright": "^1.58.0",
     "storybook": "^8.6.0",
     "typescript": "^5",
     "vite": "^7.3.0",

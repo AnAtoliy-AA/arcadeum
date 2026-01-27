@@ -1,7 +1,7 @@
 'use client';
 
-import styled from 'styled-components';
 import { LinkButton } from '@/shared/ui';
+import styled from 'styled-components';
 import { fadeInUp } from './Animations.styles';
 import { SectionContainer } from './Common.styles';
 
@@ -19,7 +19,7 @@ export const GameGroup = styled.div`
 `;
 
 // Base Components
-export const GameCard = styled(LinkButton)<{ $gradient?: string }>`
+export const GameCard = styled.div<{ $gradient?: string }>`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -32,7 +32,6 @@ export const GameCard = styled(LinkButton)<{ $gradient?: string }>`
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   height: 100%;
-  text-decoration: none;
   animation: ${fadeInUp} 0.6s ease-out both;
 
   &::before {
@@ -246,21 +245,7 @@ export const GameTag = styled.span`
   border: 1px solid transparent;
 `;
 
-export const PlayButton = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 1.5rem;
-  border-radius: 999px;
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.buttons.primary.gradientStart},
-    ${({ theme }) => theme.buttons.primary.gradientEnd}
-  );
-  color: ${({ theme }) => theme.buttons.primary.text};
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
+export const PlayButton = styled(LinkButton)`
   align-self: flex-start;
   position: relative;
   z-index: 1;

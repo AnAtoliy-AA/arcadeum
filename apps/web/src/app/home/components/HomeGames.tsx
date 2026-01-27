@@ -75,7 +75,7 @@ export function HomeGames() {
 
       <GameGroup>
         {/* Main Game Showcase */}
-        <MainGameCard href={routes.games} $gradient={mainGame.gradient}>
+        <MainGameCard $gradient={mainGame.gradient}>
           <MainGameInfo>
             <div
               style={{
@@ -147,7 +147,7 @@ export function HomeGames() {
             </div>
 
             <PlayButton
-              as="span"
+              href={routes.games}
               style={{
                 marginTop: '1rem',
                 alignSelf: 'center',

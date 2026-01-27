@@ -14,6 +14,8 @@ import {
   ModalTitle,
   ModalBody,
   ModalFooter,
+  MaximizeIcon,
+  MinimizeIcon,
 } from '@/shared/ui';
 
 interface GamesControlPanelProps {
@@ -196,7 +198,8 @@ export function GamesControlPanel({
             : t('games.table.controlPanel.enterFullscreen')
         }
       >
-        {isFullscreen ? '⤓' : '⤢'} {t('games.table.controlPanel.fullscreen')}
+        {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}{' '}
+        {t('games.table.controlPanel.fullscreen')}
       </StyledPanelButton>
 
       {showMoveControls && (

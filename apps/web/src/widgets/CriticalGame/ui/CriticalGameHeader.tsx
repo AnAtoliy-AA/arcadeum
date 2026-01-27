@@ -22,6 +22,7 @@ import { UseAutoplayReturn } from '../hooks/useAutoplay';
 import { CARD_VARIANTS } from '../lib/constants';
 import { RulesModal } from './RulesModal';
 import React, { useState } from 'react';
+import { MaximizeIcon, MinimizeIcon } from '@/shared/ui';
 
 interface CriticalGameHeaderProps {
   room: GameRoomSummary;
@@ -154,7 +155,7 @@ export function CriticalGameHeader({
           onClick={toggleFullscreen}
           title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
         >
-          {isFullscreen ? '⤓' : '⤢'}
+          {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
         </FullscreenButton>
       </HeaderActions>
     </GameHeader>

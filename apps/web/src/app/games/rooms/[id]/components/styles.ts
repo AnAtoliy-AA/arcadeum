@@ -24,7 +24,8 @@ export const Container = styled.div`
     height: 100%;
     background: ${({ theme }) => theme.background.base};
     padding: 1rem 2rem;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 `;
 

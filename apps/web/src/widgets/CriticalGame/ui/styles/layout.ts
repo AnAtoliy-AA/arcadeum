@@ -352,7 +352,8 @@ export const GameContainer = styled.div<{
     border: none;
     padding: 1rem 2rem;
     gap: 0.75rem;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
 

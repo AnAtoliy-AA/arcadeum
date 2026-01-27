@@ -1,6 +1,7 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { Button } from '@/shared/ui';
 
 interface StatsHeaderProps {
   loading: boolean;
@@ -18,20 +19,22 @@ export function StatsHeader({
   return (
     <Header>
       <Title>{t('navigation.statsTab')}</Title>
-      <RefreshButton
+      <Button
+        variant="icon"
+        size="sm"
         onClick={onRefresh}
         disabled={loading || refreshing}
-        $isRefreshing={refreshing}
       >
-        <svg
+        <StyledRefreshIcon
+          $isRefreshing={refreshing}
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
         >
           <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
-        </svg>
-      </RefreshButton>
+        </StyledRefreshIcon>
+      </Button>
     </Header>
   );
 }
@@ -50,36 +53,18 @@ const Title = styled.h1`
   margin: 0;
 `;
 
-const RefreshButton = styled.button<{ $isRefreshing: boolean }>`
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: ${({ theme }) => theme.text.secondary};
-  padding: 0.5rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.05);
-    color: ${({ theme }) => theme.buttons.primary.gradientStart};
+const spin = keyframes`
+  from {
+    transform: rotate(0deg);
   }
-
-  svg {
-    width: 20px;
-    height: 20px;
-    animation: ${({ $isRefreshing }) =>
-      $isRefreshing ? 'spin 1s linear infinite' : 'none'};
+  to {
+    transform: rotate(360deg);
   }
+`;
 
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
+const StyledRefreshIcon = styled.svg<{ $isRefreshing: boolean }>`
+  width: 20px;
+  height: 20px;
+  animation: ${({ $isRefreshing }) => ($isRefreshing ? spin : 'none')} 1s linear
+    infinite;
 `;

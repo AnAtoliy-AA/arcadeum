@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useDebounce } from '@/shared/hooks/useDebounce';
-import { Input, Spinner } from '@/shared/ui';
+import { Input, Spinner, Button } from '@/shared/ui';
 import { chatApi, ChatParticipant } from '@/features/chat/api';
 
 const Page = styled.main`
@@ -47,20 +47,21 @@ const SearchResults = styled.div`
   overflow: hidden;
 `;
 
-const SearchResultItem = styled.button`
+const SearchResultItem = styled(Button).attrs({
+  variant: 'ghost',
+  size: 'md',
+})`
   padding: 1rem;
-  border: none;
+  width: 100%;
+  justify-content: flex-start;
+  border-radius: 0;
   border-bottom: 1px solid ${({ theme }) => theme.surfaces.card.border};
   background: ${({ theme }) => theme.surfaces.card.background};
   color: ${({ theme }) => theme.text.primary};
   text-align: left;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
   gap: 1rem;
-  transition: background 0.2s ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: ${({ theme }) => theme.surfaces.card.background};
     opacity: 0.9;
   }

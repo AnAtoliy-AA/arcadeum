@@ -127,10 +127,12 @@ export const Row = styled.div`
   }
 `;
 
-export const VisibilityToggle = styled(Button)<{ $isPublic: boolean }>`
-  background: ${({ $isPublic }) =>
-    $isPublic ? 'rgba(34, 197, 94, 0.1)' : 'rgba(191, 90, 242, 0.1)'};
-`;
+export const VisibilityToggle = styled(Button).attrs<{ $isPublic: boolean }>(
+  ({ $isPublic }) => ({
+    variant: 'chip',
+    $active: $isPublic,
+  }),
+)<{ $isPublic: boolean }>``;
 
 export const ErrorCard = styled(Card)`
   border-color: #dc2626;
@@ -261,31 +263,10 @@ export const QuantityControl = styled.div`
   gap: 0.25rem;
 `;
 
-export const QuantityButton = styled.button`
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  border-radius: 4px;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.secondary};
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s ease;
-
-  &:hover:not(:disabled) {
-    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-    color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  }
-
-  &:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
-`;
+export const QuantityButton = styled(Button).attrs({
+  variant: 'icon',
+  size: 'sm',
+})``;
 
 export const QuantityValue = styled.span`
   min-width: 24px;
@@ -331,21 +312,9 @@ export const ThemeHeader = styled.div`
   margin-bottom: 1rem;
 `;
 
-export const RulesTrigger = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: none;
-  border: none;
-  color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0;
+export const RulesTrigger = styled(Button).attrs({
+  variant: 'link',
+  size: 'sm',
+})`
   margin-bottom: 1rem;
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 0.8;
-  }
 `;

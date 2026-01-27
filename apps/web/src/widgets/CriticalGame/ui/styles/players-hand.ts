@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import { Button, GameVariant } from '@/shared/ui';
 import { Card, ActionButton } from './cards';
 
 // Hand Components
@@ -42,20 +43,15 @@ export const DropdownContainer = styled.div`
   display: inline-block;
 `;
 
-export const DropdownTrigger = styled.button<{
+export const DropdownTrigger = styled(Button).attrs({
+  variant: 'chip',
+  size: 'sm',
+})<{
   $variant?: string;
   $isOpen?: boolean;
 }>`
-  appearance: none;
-  border-radius: 8px;
-  padding: 0.4rem 2rem 0.4rem 0.8rem;
-  font-size: 0.75rem;
-  font-weight: 800;
-  cursor: pointer;
-  outline: none;
   min-width: 120px;
-  text-align: left;
-  position: relative;
+  justify-content: flex-start;
 
   /* Custom arrow */
   &::after {
@@ -73,30 +69,14 @@ export const DropdownTrigger = styled.button<{
     transition: transform 0.2s ease;
   }
 
-  /* Default / Basic style */
-  background-color: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-
   /* Cyberpunk Variant */
   ${({ $variant }) =>
     $variant === 'cyberpunk' &&
     css`
       border-radius: 4px;
       font-family: 'Courier New', monospace;
-      letter-spacing: 1px;
-      background-color: rgba(6, 182, 212, 0.1);
-      border: 1px solid #06b6d4; /* Cyan */
-      color: #06b6d4;
-      text-transform: uppercase;
-
       &::after {
         border-top-color: #06b6d4;
-      }
-
-      &:hover {
-        background-color: rgba(6, 182, 212, 0.2);
-        box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
       }
     `}
 
@@ -104,19 +84,9 @@ export const DropdownTrigger = styled.button<{
   ${({ $variant }) =>
     $variant === 'underwater' &&
     css`
-      border-radius: 999px;
       font-family: 'Courier New', monospace;
-      background-color: rgba(4, 11, 21, 0.6);
-      border: 1px solid rgba(34, 211, 238, 0.4);
-      color: #22d3ee; /* Cyan-400 */
-
       &::after {
         border-top-color: #22d3ee;
-      }
-
-      &:hover {
-        border-color: #22d3ee;
-        box-shadow: 0 0 10px rgba(34, 211, 238, 0.2);
       }
     `}
 `;
@@ -158,70 +128,18 @@ export const DropdownList = styled.div<{ $variant?: string }>`
     `}
 `;
 
-export const DropdownItem = styled.button<{
+export const DropdownItem = styled(Button).attrs<{
+  $isActive?: boolean;
+  $variant?: string;
+}>(({ $isActive, $variant }) => ({
+  variant: 'listItem',
+  size: 'sm',
+  $active: $isActive,
+  gameVariant: $variant as GameVariant,
+}))<{
   $variant?: string;
   $isActive?: boolean;
-}>`
-  appearance: none;
-  background: transparent;
-  border: none;
-  text-align: left;
-  padding: 0.5rem 1rem;
-  font-size: 0.75rem;
-  cursor: pointer;
-  color: white;
-  width: 100%;
-  white-space: nowrap;
-
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-
-  ${({ $isActive }) =>
-    $isActive &&
-    css`
-      background-color: rgba(255, 255, 255, 0.15);
-      font-weight: bold;
-    `}
-
-  /* Cyberpunk Variant */
-  ${({ $variant, $isActive }) =>
-    $variant === 'cyberpunk' &&
-    css`
-      font-family: 'Courier New', monospace;
-      color: #06b6d4;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-
-      &:hover {
-        background-color: rgba(6, 182, 212, 0.2);
-        color: #fff;
-      }
-
-      ${$isActive &&
-      css`
-        background-color: rgba(6, 182, 212, 0.3);
-        color: #fff;
-      `}
-    `}
-
-  /* Underwater Variant */
-  ${({ $variant, $isActive }) =>
-    $variant === 'underwater' &&
-    css`
-      font-family: 'Courier New', monospace;
-      color: #22d3ee;
-
-      &:hover {
-        background-color: rgba(34, 211, 238, 0.2);
-      }
-
-      ${$isActive &&
-      css`
-        background-color: rgba(34, 211, 238, 0.3);
-      `}
-    `}
-`;
+}>``;
 
 export const HandCard = styled(Card)<{
   $clickable?: boolean;

@@ -36,12 +36,4 @@ export const ErrorText = styled.div`
 export const RetryButton = styled(Button).attrs({
   variant: 'secondary',
   size: 'sm',
-})`
-  border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  color: ${({ theme }) => theme.buttons.primary.gradientStart};
-
-  &:hover:not(:disabled) {
-    background: ${({ theme }) => theme.buttons.primary.gradientStart};
-    color: ${({ theme }) => theme.buttons.primary.text};
-  }
-`;
+})``;

@@ -98,28 +98,10 @@ export const ProfileMenuContainer = styled.div`
 `;
 
 export const UserInfo = styled(Button).attrs({
-  variant: 'secondary',
+  variant: 'chip',
   size: 'sm',
 })`
-  display: flex;
-  align-items: center;
   gap: 0.75rem;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
-  color: ${({ theme }) => theme.text.primary};
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    background: ${({ theme }) => theme.surfaces.card.background};
-    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
 
   @media (max-width: 640px) {
     display: none;
@@ -158,20 +140,9 @@ export const ProfileDropdown = styled.div<{ $isOpen: boolean }>`
   overflow: hidden;
 `;
 
-export const DropdownItem = styled(Button).attrs({ variant: 'ghost' })`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: 0;
-  font-size: 0.875rem;
-  justify-content: flex-start;
-
-  &:hover:not(:disabled) {
-    background: ${({ theme }) => theme.background.base};
-  }
-
+export const DropdownItem = styled(Button).attrs({
+  variant: 'listItem',
+})`
   svg {
     width: 18px;
     height: 18px;
@@ -214,15 +185,10 @@ export const AuthButton = styled(LinkButton).attrs({
 `;
 
 export const MobileMenuButton = styled(Button).attrs({
-  variant: 'ghost',
+  variant: 'icon',
   size: 'sm',
 })`
   display: none;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
 
   @media (max-width: 900px) {
     display: flex;

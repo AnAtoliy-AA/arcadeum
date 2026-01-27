@@ -1,6 +1,7 @@
 'use client';
 
 import styled, { css } from 'styled-components';
+import { Button } from '@/shared/ui';
 import { fadeIn } from './Animations.styles';
 
 export const PresentationContainer = styled.div`
@@ -135,56 +136,37 @@ export const SlideCounter = styled.div`
   backdrop-filter: blur(4px);
 `;
 
-export const NavButton = styled.button<{ $position: 'left' | 'right' }>`
+export const NavButton = styled(Button).attrs({
+  variant: 'glass',
+  size: 'md',
+})<{ $position: 'left' | 'right' }>`
   position: absolute;
   top: 50%;
   ${({ $position }) => $position}: 1rem;
   transform: translateY(-50%);
   width: 48px;
   height: 48px;
+  padding: 0;
+  min-width: auto;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-  transition: all 0.2s ease;
-  opacity: 0; // Hidden by default
+  opacity: 0;
   pointer-events: auto;
 
   ${PresentationContainer}:hover & {
     opacity: 1;
   }
 
-  &:hover {
-    background: #ffffff;
-    color: #000000;
+  &:hover:not(:disabled) {
     transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-
-  &:active {
-    transform: translateY(-50%) scale(0.95);
   }
 `;
 
-export const FullscreenButton = styled.button`
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  border-radius: 8px;
+export const FullscreenButton = styled(Button).attrs({
+  variant: 'glass',
+  size: 'sm',
+})`
   width: 32px;
   height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
+  padding: 0;
+  min-width: auto;
 `;

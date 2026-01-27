@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import { Button, GameVariant } from '@/shared/ui';
 import { Card, CardEmoji } from './cards-base';
 import { SPRITE_GRID_SIZE } from './card-sprites';
 import { VARIANT_COLORS } from './variant-palette';
@@ -7,14 +8,6 @@ const getDeckCardHoverBorder = ($variant: string | undefined) => {
   if ($variant === GAME_VARIANT.UNDERWATER) return '#67e8f9';
   if ($variant) return 'white';
   return 'rgba(99, 102, 241, 0.8)';
-};
-
-const getActionButtonCornerColor = (
-  variant: 'primary' | 'secondary' | 'danger' | undefined,
-) => {
-  if (variant === 'danger') return VARIANT_COLORS.cyberpunk.danger;
-  if (variant === 'secondary') return VARIANT_COLORS.cyberpunk.secondary;
-  return VARIANT_COLORS.cyberpunk.primary;
 };
 
 export * from './cards-base';
@@ -188,235 +181,16 @@ export const ActionButtons = styled.div<{ $variant?: string }>`
     `}
 `;
 
-export const ActionButton = styled.button<{
+export const ActionButton = styled(Button).attrs<{
+  variant?: string;
+  $variant?: string;
+}>(({ variant, $variant }) => ({
+  variant:
+    (variant as 'primary' | 'secondary' | 'danger' | undefined) || 'primary',
+  size: 'md',
+  uppercase: true,
+  gameVariant: $variant as GameVariant | undefined,
+}))<{
   variant?: 'primary' | 'secondary' | 'danger';
   $variant?: string;
-}>`
-  padding: 1rem 1.75rem;
-  border-radius: 16px;
-  border: none;
-  font-weight: 800;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-  text-transform: uppercase;
-  letter-spacing: 0.75px;
-  color: #fff; /* Ensure text is white by default for variants */
-
-  /* Default Styles (Original) */
-  ${({ variant, $variant }) => {
-    if (
-      $variant === GAME_VARIANT.CYBERPUNK ||
-      $variant === GAME_VARIANT.UNDERWATER
-    )
-      return ''; // Handle separately below
-    if (variant === 'danger') {
-      return css`
-        background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
-        box-shadow:
-          0 6px 20px rgba(220, 38, 38, 0.5),
-          inset 0 1px 0 rgba(255, 255, 255, 0.2);
-      `;
-    }
-    if (variant === 'secondary') {
-      return css`
-        background: linear-gradient(
-          135deg,
-          \${theme.buttons.secondary.background},
-          \${theme.buttons.secondary.background}dd
-        );
-        color: \${theme.buttons.secondary.text};
-        border: 2px solid \${theme.buttons.secondary.border};
-        box-shadow:
-          0 4px 16px rgba(0, 0, 0, 0.15),
-          inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      `;
-    }
-    return css`
-      background: linear-gradient(
-        135deg,
-        \${theme.buttons.primary.gradientStart},
-        \${theme.buttons.primary.gradientEnd ||
-      theme.buttons.primary.gradientStart}
-      );
-      color: \${theme.buttons.primary.text};
-      box-shadow:
-        0 6px 20px rgba(59, 130, 246, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    `;
-  }}
-
-  /* Cyberpunk Variant Styles */
-  ${({ $variant, variant }) =>
-    $variant === GAME_VARIANT.CYBERPUNK &&
-    css`
-      border-radius: 4px;
-      font-family: 'Courier New', monospace;
-      letter-spacing: 1px;
-      background: transparent;
-      border: 1px solid;
-      box-shadow: none;
-      clip-path: polygon(
-        10px 0,
-        100% 0,
-        100% calc(100% - 10px),
-        calc(100% - 10px) 100%,
-        0 100%,
-        0 10px
-      );
-
-      /* Primary Cyberpunk Action */
-      ${(variant === 'primary' || !variant) &&
-      css`
-        border-color: ${VARIANT_COLORS.cyberpunk.primary}; /* Cyan */
-        color: ${VARIANT_COLORS.cyberpunk.primary};
-        background: rgba(6, 182, 212, 0.1);
-
-        &:hover:not(:disabled) {
-          background: rgba(6, 182, 212, 0.2);
-          box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
-          text-shadow: 0 0 5px rgba(6, 182, 212, 0.8);
-        }
-      `}
-
-      /* Secondary Cyberpunk Action */
-      ${variant === 'secondary' &&
-      css`
-        border-color: ${VARIANT_COLORS.cyberpunk.secondary}; /* Magenta */
-        color: ${VARIANT_COLORS.cyberpunk.secondary};
-        background: rgba(192, 38, 211, 0.1);
-
-        &:hover:not(:disabled) {
-          background: rgba(192, 38, 211, 0.2);
-          box-shadow: 0 0 15px rgba(192, 38, 211, 0.4);
-          text-shadow: 0 0 5px rgba(192, 38, 211, 0.8);
-        }
-      `}
-
-      /* Danger Cyberpunk Action */
-      ${variant === 'danger' &&
-      css`
-        border-color: ${VARIANT_COLORS.cyberpunk.danger}; /* Red */
-        color: ${VARIANT_COLORS.cyberpunk.danger};
-        background: rgba(239, 68, 68, 0.1);
-
-        &:hover:not(:disabled) {
-          background: rgba(239, 68, 68, 0.2);
-          box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
-          text-shadow: 0 0 5px rgba(239, 68, 68, 0.8);
-        }
-      `}
-      
-      /* Corner accent for tech feel */
-      &::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 10px;
-        height: 10px;
-        background: linear-gradient(
-          135deg,
-          transparent 50%,
-          ${getActionButtonCornerColor(variant)} 50%
-        );
-      }
-    `}
-
-  /* Underwater Variant Styles */
-  ${({ $variant, variant }) =>
-    $variant === GAME_VARIANT.UNDERWATER &&
-    css`
-      border-radius: 999px; /* Pill shape */
-      padding: 0.6rem 1.75rem;
-      font-family: 'Courier New', monospace;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.75px;
-      background: rgba(4, 11, 21, 0.6);
-      border: 1px solid rgba(34, 211, 238, 0.4);
-      color: #22d3ee;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-
-      &:hover:not(:disabled) {
-        border-color: #22d3ee;
-        box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
-        transform: translateY(-1px);
-      }
-
-      /* Primary Underwater Action (DRAW CARD) */
-      ${(variant === 'primary' || !variant) &&
-      css`
-        background: #22d3ee;
-        border: 1px solid #22d3ee;
-        color: #040b15;
-        font-weight: 800;
-        box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
-
-        &:hover:not(:disabled) {
-          background: #67e8f9;
-          box-shadow: 0 0 20px rgba(34, 211, 238, 0.5);
-        }
-      `}
-
-      /* Secondary Underwater Action */
-      ${variant === 'secondary' &&
-      css`
-        background: rgba(22, 78, 99, 0.2);
-        border: 1px solid rgba(165, 243, 252, 0.4);
-        color: #a5f3fc;
-
-        &:hover:not(:disabled) {
-          background: rgba(22, 78, 99, 0.4);
-          border-color: #a5f3fc;
-        }
-      `}
-
-      /* Danger Underwater Action */
-      ${variant === 'danger' &&
-      css`
-        background: rgba(127, 29, 29, 0.15);
-        border: 1px solid rgba(239, 68, 68, 0.4);
-        color: #fca5a5;
-
-        &:hover:not(:disabled) {
-          background: rgba(127, 29, 29, 0.3);
-          border-color: #f87171;
-        }
-      `}
-    `}
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.3),
-      transparent 60%
-    );
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  &:hover:not(:disabled) {
-    transform: translateY(-3px) scale(1.02);
-    &::before {
-      opacity: 1;
-    }
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    filter: grayscale(60%);
-  }
-
-  @media (max-width: 768px) {
-    padding: 0.875rem 1.5rem;
-    font-size: 0.825rem;
-    border-radius: 14px;
-  }
-`;
+}>``;

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Button as SharedButton } from '@/shared/ui';
 
 export const Page = styled.main`
   min-height: 100vh;
@@ -128,25 +129,11 @@ export const Input = styled.input`
   }
 `;
 
-export const Button = styled.button`
-  background: ${({ theme }) =>
-    theme.buttons?.primary?.gradientStart || '#3b82f6'};
-  color: white;
-  border: none;
+export const Button = styled(SharedButton).attrs({
+  variant: 'primary',
+  size: 'md',
+})`
   padding: 0 1.5rem;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover:not(:disabled) {
-    opacity: 0.9;
-    transform: translateY(-1px);
-  }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
-  }
 `;
 
 export const LoginLink = styled.a`

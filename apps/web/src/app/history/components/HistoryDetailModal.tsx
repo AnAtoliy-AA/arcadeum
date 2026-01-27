@@ -1,7 +1,11 @@
-"use client";
+'use client';
 
-import { useTranslation } from "@/shared/lib/useTranslation";
-import type { HistorySummary, HistoryDetail, HistoryParticipant } from "../types";
+import { useTranslation } from '@/shared/lib/useTranslation';
+import type {
+  HistorySummary,
+  HistoryDetail,
+  HistoryParticipant,
+} from '../types';
 import {
   Modal,
   ModalContent,
@@ -29,10 +33,12 @@ import {
   LogScope,
   LogSender,
   LogMessage,
-  ActionButton,
+  PrimaryActionButton,
+  SecondaryActionButton,
+  DangerActionButton,
   ConfirmRow,
   Empty,
-} from "../styles";
+} from '../styles';
 
 interface HistoryDetailModalProps {
   selectedEntry: HistorySummary;
@@ -52,7 +58,9 @@ interface HistoryDetailModalProps {
   onStartRematch: () => void;
   onRemove: () => void;
   onSetShowRemoveConfirm: (show: boolean) => void;
-  formatParticipantName: (participant: HistoryParticipant | undefined | null) => string;
+  formatParticipantName: (
+    participant: HistoryParticipant | undefined | null,
+  ) => string;
   formatLogMessage: (message: string) => string;
   formatDate: (dateString: string | null | undefined) => string;
 }
@@ -86,7 +94,7 @@ export function HistoryDetailModal({
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <ModalHeader>
           <BackButton onClick={onClose}>
-            ← {t("history.detail.backToList")}
+            ← {t('history.detail.backToList')}
           </BackButton>
           <ModalTitle>{selectedEntry.roomName}</ModalTitle>
         </ModalHeader>
@@ -94,7 +102,7 @@ export function HistoryDetailModal({
         {detailLoading ? (
           <ModalLoading>
             <Spinner />
-            <div>{t("history.detail.loading")}</div>
+            <div>{t('history.detail.loading')}</div>
           </ModalLoading>
         ) : detailError ? (
           <ModalError>
@@ -103,39 +111,44 @@ export function HistoryDetailModal({
         ) : detail ? (
           <ModalBody>
             <DetailTimestamp>
-              {t("history.detail.lastActivity", {
+              {t('history.detail.lastActivity', {
                 timestamp: formatDate(detail.summary.lastActivityAt),
               })}
             </DetailTimestamp>
 
             {isHost && (
               <Section>
-                <SectionTitle>{t("history.detail.rematchTitle")}</SectionTitle>
+                <SectionTitle>{t('history.detail.rematchTitle')}</SectionTitle>
                 <SectionDescription>
-                  {t("history.detail.rematchDescription")}
+                  {t('history.detail.rematchDescription')}
                 </SectionDescription>
                 {rematchError && <ErrorText>{rematchError}</ErrorText>}
-                <ActionButton
+                <PrimaryActionButton
                   onClick={onStartRematch}
                   disabled={rematchLoading}
-                  $primary
                 >
-                  {rematchLoading ? t("history.detail.rematchCreating") : t("history.detail.rematchAction")}
-                </ActionButton>
+                  {rematchLoading
+                    ? t('history.detail.rematchCreating')
+                    : t('history.detail.rematchAction')}
+                </PrimaryActionButton>
               </Section>
             )}
 
             <Section>
-              <SectionTitle>{t("history.detail.participantsTitle")}</SectionTitle>
+              <SectionTitle>
+                {t('history.detail.participantsTitle')}
+              </SectionTitle>
               {detail.summary.participants.map((participant) => (
                 <ParticipantRow key={participant.id}>
                   <ParticipantInfo>
                     <ParticipantIcon $isHost={participant.isHost}>
-                      {participant.isHost ? "👑" : "👤"}
+                      {participant.isHost ? '👑' : '👤'}
                     </ParticipantIcon>
-                    <ParticipantName>{formatParticipantName(participant)}</ParticipantName>
+                    <ParticipantName>
+                      {formatParticipantName(participant)}
+                    </ParticipantName>
                     {participant.isHost && (
-                      <HostBadge>{t("history.detail.hostLabel")}</HostBadge>
+                      <HostBadge>{t('history.detail.hostLabel')}</HostBadge>
                     )}
                   </ParticipantInfo>
                   {isHost && participant.id !== currentUserId && (
@@ -152,25 +165,23 @@ export function HistoryDetailModal({
             </Section>
 
             <Section>
-              <SectionTitle>{t("history.detail.logsTitle")}</SectionTitle>
+              <SectionTitle>{t('history.detail.logsTitle')}</SectionTitle>
               {detail.logs.length === 0 ? (
-                <Empty>{t("history.detail.noLogs")}</Empty>
+                <Empty>{t('history.detail.noLogs')}</Empty>
               ) : (
                 detail.logs.map((log) => (
                   <LogItem key={log.id}>
                     <LogHeader>
-                      <LogTimestamp>
-                        {formatDate(log.createdAt)}
-                      </LogTimestamp>
+                      <LogTimestamp>{formatDate(log.createdAt)}</LogTimestamp>
                       <LogScope>
-                        {log.scope === "players"
-                          ? t("history.detail.scopePlayers")
-                          : t("history.detail.scopeAll")}
+                        {log.scope === 'players'
+                          ? t('history.detail.scopePlayers')
+                          : t('history.detail.scopeAll')}
                       </LogScope>
                     </LogHeader>
                     {log.sender && (
                       <LogSender>
-                        {t("history.detail.sender", {
+                        {t('history.detail.sender', {
                           name: formatParticipantName(log.sender),
                         })}
                       </LogSender>
@@ -182,31 +193,33 @@ export function HistoryDetailModal({
             </Section>
 
             <Section>
-              <SectionTitle>{t("history.detail.removeTitle")}</SectionTitle>
+              <SectionTitle>{t('history.detail.removeTitle')}</SectionTitle>
               <SectionDescription>
-                {t("history.detail.removeDescription")}
+                {t('history.detail.removeDescription')}
               </SectionDescription>
               {removeError && <ErrorText>{removeError}</ErrorText>}
               {showRemoveConfirm ? (
                 <ConfirmRow>
-                  <ActionButton onClick={() => onSetShowRemoveConfirm(false)}>
-                    {t("history.detail.removeCancel")}
-                  </ActionButton>
-                  <ActionButton
+                  <SecondaryActionButton
+                    onClick={() => onSetShowRemoveConfirm(false)}
+                  >
+                    {t('history.detail.removeCancel')}
+                  </SecondaryActionButton>
+                  <DangerActionButton
                     onClick={onRemove}
                     disabled={removeLoading}
-                    $danger
                   >
-                    {removeLoading ? t("history.detail.removeRemoving") : t("history.detail.removeConfirm")}
-                  </ActionButton>
+                    {removeLoading
+                      ? t('history.detail.removeRemoving')
+                      : t('history.detail.removeConfirm')}
+                  </DangerActionButton>
                 </ConfirmRow>
               ) : (
-                <ActionButton
+                <DangerActionButton
                   onClick={() => onSetShowRemoveConfirm(true)}
-                  $danger
                 >
-                  {t("history.detail.removeAction")}
-                </ActionButton>
+                  {t('history.detail.removeAction')}
+                </DangerActionButton>
               )}
             </Section>
           </ModalBody>

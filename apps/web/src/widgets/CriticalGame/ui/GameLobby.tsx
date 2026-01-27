@@ -16,6 +16,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import type { GameRoomSummary } from '@/shared/types/games';
+import { Button } from '@/shared/ui';
 import { SortablePlayerItem } from './LobbyPlayerItem';
 import {
   GameContainer,
@@ -388,21 +389,14 @@ export function GameLobby({
                       </PlayerInfo>
                     </div>
                     {isHost && onReinvite && (
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => onReinvite([u.id])}
-                        style={{
-                          background: 'none',
-                          border: '1px solid currentColor',
-                          borderRadius: '4px',
-                          padding: '2px 6px',
-                          cursor: 'pointer',
-                          fontSize: '0.75rem',
-                          marginLeft: '8px',
-                          color: 'inherit',
-                        }}
+                        style={{ marginLeft: '8px' }}
                       >
                         {t('games.table.lobby.reinvite')}
-                      </button>
+                      </Button>
                     )}
                   </PlayerItem>
                 ))}

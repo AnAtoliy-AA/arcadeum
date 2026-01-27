@@ -1,4 +1,5 @@
-import styled, { keyframes, css, DefaultTheme } from 'styled-components';
+import styled, { css, DefaultTheme } from 'styled-components';
+import { Button } from '@/shared/ui';
 import { GAME_VARIANT } from '../../lib/constants';
 
 // Helper functions for variant-specific styles
@@ -201,92 +202,21 @@ export const TurnStatus = styled.div<{
   }};
 `;
 
-const buttonPulse = keyframes`
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-`;
+export const StartButton = styled(Button).attrs({
+  variant: 'primary',
+  size: 'md',
+  pulse: true,
+})``;
 
-export const StartButton = styled.button`
-  padding: 0.75rem 1.5rem;
-  border-radius: 12px;
-  border: none;
-  background: ${({ theme }) => theme.buttons.primary.gradientStart};
-  color: ${({ theme }) => theme.buttons.primary.text};
-  font-weight: 600;
-  cursor: pointer;
-  animation: ${buttonPulse} 2s ease-in-out infinite;
+export const FullscreenButton = styled(Button).attrs({
+  variant: 'icon',
+  size: 'sm',
+})``;
 
-  &:hover:not(:disabled) {
-    transform: scale(1.08);
-    animation: none;
-  }
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    animation: none;
-  }
-`;
-
-export const FullscreenButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(0, 0, 0, 0.2);
-  color: ${({ theme }) => theme.text.primary};
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 1.1rem;
-  position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(8px);
-
-  &:hover {
-    transform: translateY(-2px);
-    background: ${({ theme }) => theme.surfaces.card.background};
-    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-    color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-`;
-
-export const ChatToggleButton = styled.button<{ $active?: boolean }>`
-  padding: 0.65rem 1rem;
-  border-radius: 10px;
-  border: 1px solid
-    ${({ $active, theme }) =>
-      $active
-        ? theme.buttons.primary.gradientStart
-        : theme.surfaces.card.border};
-  background: ${({ $active, theme }) =>
-    $active
-      ? `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}20, transparent)`
-      : theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.primary};
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
-  }
-
-  &:active {
-    transform: translateY(1px);
-  }
-`;
+export const ChatToggleButton = styled(Button).attrs<{ $active?: boolean }>(
+  ({ $active }) => ({
+    variant: 'chip',
+    size: 'sm',
+    $active,
+  }),
+)<{ $active?: boolean }>``;

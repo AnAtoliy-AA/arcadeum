@@ -1,17 +1,18 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import styled from "styled-components";
-import { useSessionTokens } from "@/entities/session/model/useSessionTokens";
-import { GameStatus } from "@/features/games/ui/GameStatus";
-import { StartButton } from "@/features/games/ui/GameControls";
-import { useGameSession, useGameActions } from "@/features/games/hooks";
+import { useState } from 'react';
+import styled from 'styled-components';
+import { Button } from '@/shared/ui';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { GameStatus } from '@/features/games/ui/GameStatus';
+import { StartButton } from '@/features/games/ui/GameControls';
+import { useGameSession, useGameActions } from '@/features/games/hooks';
 import type {
   TexasHoldemSnapshot,
   Card,
   Suit,
   GameRoomSummary,
-} from "@/shared/types/games";
+} from '@/shared/types/games';
 
 interface TexasHoldemGameProps {
   roomId: string;
@@ -63,11 +64,11 @@ const CardElement = styled.div<{ $suit?: Suit }>`
   font-size: 2rem;
   font-weight: bold;
   color: ${({ $suit }) =>
-    $suit === "hearts" || $suit === "diamonds" ? "#dc2626" : "#1f2937"};
+    $suit === 'hearts' || $suit === 'diamonds' ? '#dc2626' : '#1f2937'};
   position: relative;
 
   &::before {
-    content: '${({ $suit }) => getSuitSymbol($suit || "spades")}';
+    content: '${({ $suit }) => getSuitSymbol($suit || 'spades')}';
     position: absolute;
     top: 0.5rem;
     left: 0.5rem;
@@ -92,16 +93,22 @@ const PlayersContainer = styled.div`
   width: 100%;
 `;
 
-const PlayerCard = styled.div<{ $isCurrentTurn?: boolean; $isCurrentUser?: boolean }>`
+const PlayerCard = styled.div<{
+  $isCurrentTurn?: boolean;
+  $isCurrentUser?: boolean;
+}>`
   background: ${({ $isCurrentUser, theme }) =>
     $isCurrentUser
-      ? "linear-gradient(135deg, #3b82f620, #1d4ed820)"
+      ? 'linear-gradient(135deg, #3b82f620, #1d4ed820)'
       : theme.surfaces.card.background};
-  border: 2px solid ${({ $isCurrentTurn }) => ($isCurrentTurn ? "#fbbf24" : "transparent")};
+  border: 2px solid
+    ${({ $isCurrentTurn }) => ($isCurrentTurn ? '#fbbf24' : 'transparent')};
   border-radius: 12px;
   padding: 1rem;
   box-shadow: ${({ $isCurrentTurn }) =>
-    $isCurrentTurn ? "0 0 20px rgba(251, 191, 36, 0.3)" : "0 2px 8px rgba(0, 0, 0, 0.1)"};
+    $isCurrentTurn
+      ? '0 0 20px rgba(251, 191, 36, 0.3)'
+      : '0 2px 8px rgba(0, 0, 0, 0.1)'};
   transition: all 0.3s ease;
 `;
 
@@ -145,7 +152,7 @@ const MiniCard = styled.div<{ $suit?: Suit }>`
   font-size: 1.25rem;
   font-weight: bold;
   color: ${({ $suit }) =>
-    $suit === "hearts" || $suit === "diamonds" ? "#dc2626" : "#1f2937"};
+    $suit === 'hearts' || $suit === 'diamonds' ? '#dc2626' : '#1f2937'};
 `;
 
 const ActionControls = styled.div`
@@ -158,40 +165,7 @@ const ActionControls = styled.div`
   border: 1px solid ${({ theme }) => theme.surfaces.card.border};
 `;
 
-const ActionButton = styled.button<{ $variant?: "fold" | "check" | "call" | "raise" }>`
-  padding: 0.75rem 1.25rem;
-  border-radius: 8px;
-  border: none;
-  font-weight: 600;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background: ${({ $variant }) => {
-    switch ($variant) {
-      case "fold":
-        return "#dc2626";
-      case "check":
-        return "#6b7280";
-      case "call":
-        return "#10b981";
-      case "raise":
-        return "#3b82f6";
-      default:
-        return "#6b7280";
-    }
-  }};
-  color: white;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
+const ActionButton = styled(Button)``;
 
 const RaiseInput = styled.input`
   padding: 0.75rem;
@@ -223,12 +197,12 @@ const LobbyContainer = styled.div`
 // Helper functions
 function getSuitSymbol(suit: Suit): string {
   const symbols: Record<Suit, string> = {
-    hearts: "♥",
-    diamonds: "♦",
-    clubs: "♣",
-    spades: "♠",
+    hearts: '♥',
+    diamonds: '♦',
+    clubs: '♣',
+    spades: '♠',
   };
-  return symbols[suit] || "♠";
+  return symbols[suit] || '♠';
 }
 
 function renderCard(card: Card): React.ReactNode {
@@ -247,7 +221,12 @@ function renderMiniCard(card: Card): React.ReactNode {
   );
 }
 
-export default function TexasHoldemGame({ roomId, room, isHost, initialSession }: TexasHoldemGameProps) {
+export default function TexasHoldemGame({
+  roomId,
+  room,
+  isHost,
+  initialSession,
+}: TexasHoldemGameProps) {
   const [raiseAmount, setRaiseAmount] = useState<number>(20);
   const { snapshot: userSession } = useSessionTokens();
 
@@ -261,14 +240,14 @@ export default function TexasHoldemGame({ roomId, room, isHost, initialSession }
   const actions = useGameActions({
     roomId,
     userId: userSession.userId,
-    gameType: "texas_holdem_v1",
+    gameType: 'texas_holdem_v1',
     onActionComplete: () => setActionBusy(null),
   });
 
   const currentUserId = userSession.userId;
 
   // Lobby state - waiting for game to start
-  if (!session || session.status === "waiting") {
+  if (!session || session.status === 'waiting') {
     return (
       <Container>
         <GameStatus room={room} session={session} />
@@ -277,14 +256,17 @@ export default function TexasHoldemGame({ roomId, room, isHost, initialSession }
           <LobbyContainer>
             <PotInfo>🃏 Texas Holdem Poker</PotInfo>
             <InfoText>
-              {room.status !== "lobby"
+              {room.status !== 'lobby'
                 ? `Loading game state... (Room: ${room.status}, Session: ${session?.status || 'none'})`
                 : isHost
-                ? "You're the host. Start the game when ready!"
-                : "Waiting for host to start the game..."}
+                  ? "You're the host. Start the game when ready!"
+                  : 'Waiting for host to start the game...'}
             </InfoText>
-            {isHost && room.status === "lobby" && (
-              <StartButton onClick={() => actions.startHoldem(1000)} disabled={startBusy} />
+            {isHost && room.status === 'lobby' && (
+              <StartButton
+                onClick={() => actions.startHoldem(1000)}
+                disabled={startBusy}
+              />
             )}
           </LobbyContainer>
         </PokerTable>
@@ -303,7 +285,8 @@ export default function TexasHoldemGame({ roomId, room, isHost, initialSession }
             Loading game state...
             <br />
             <small style={{ fontSize: '0.75rem', opacity: 0.7 }}>
-              Session: {session.status}, Has state: {session.state ? 'yes' : 'no'}
+              Session: {session.status}, Has state:{' '}
+              {session.state ? 'yes' : 'no'}
             </small>
           </PotInfo>
         </PokerTable>
@@ -312,12 +295,21 @@ export default function TexasHoldemGame({ roomId, room, isHost, initialSession }
   }
 
   // Game state
-  const currentPlayer = snapshot.players.find((p) => p.playerId === currentUserId);
+  const currentPlayer = snapshot.players.find(
+    (p) => p.playerId === currentUserId,
+  );
   const isCurrentTurn =
-    currentUserId && snapshot.playerOrder[snapshot.currentTurnIndex] === currentUserId;
-  const canAct = isCurrentTurn && currentPlayer && !currentPlayer.folded && !currentPlayer.allIn;
+    currentUserId &&
+    snapshot.playerOrder[snapshot.currentTurnIndex] === currentUserId;
+  const canAct =
+    isCurrentTurn &&
+    currentPlayer &&
+    !currentPlayer.folded &&
+    !currentPlayer.allIn;
 
-  const callAmount = currentPlayer ? snapshot.currentBet - currentPlayer.currentBet : 0;
+  const callAmount = currentPlayer
+    ? snapshot.currentBet - currentPlayer.currentBet
+    : 0;
 
   return (
     <Container>
@@ -339,37 +331,51 @@ export default function TexasHoldemGame({ roomId, room, isHost, initialSession }
 
         {/* Community Cards */}
         {snapshot.communityCards.length > 0 && (
-          <CommunityCards>{snapshot.communityCards.map((card) => renderCard(card))}</CommunityCards>
+          <CommunityCards>
+            {snapshot.communityCards.map((card) => renderCard(card))}
+          </CommunityCards>
         )}
 
         {/* Current Bet */}
-        {snapshot.currentBet > 0 && <InfoText>Current Bet: ${snapshot.currentBet}</InfoText>}
+        {snapshot.currentBet > 0 && (
+          <InfoText>Current Bet: ${snapshot.currentBet}</InfoText>
+        )}
       </PokerTable>
 
       {/* Players */}
       <PlayersContainer>
         {snapshot.players.map((player, idx) => {
           const isCurrent = player.playerId === currentUserId;
-          const isTurn = snapshot.playerOrder[snapshot.currentTurnIndex] === player.playerId;
-          const isDealer = snapshot.playerOrder[snapshot.dealerIndex] === player.playerId;
+          const isTurn =
+            snapshot.playerOrder[snapshot.currentTurnIndex] === player.playerId;
+          const isDealer =
+            snapshot.playerOrder[snapshot.dealerIndex] === player.playerId;
 
           return (
-            <PlayerCard key={player.playerId} $isCurrentTurn={isTurn} $isCurrentUser={isCurrent}>
+            <PlayerCard
+              key={player.playerId}
+              $isCurrentTurn={isTurn}
+              $isCurrentUser={isCurrent}
+            >
               <PlayerName>
-                {isCurrent ? "You" : `Player ${idx + 1}`}
-                {isDealer && " 🔘 (Dealer)"}
-                {isTurn && " ⏳ TURN"}
+                {isCurrent ? 'You' : `Player ${idx + 1} `}
+                {isDealer && ' 🔘 (Dealer)'}
+                {isTurn && ' ⏳ TURN'}
               </PlayerName>
               <PlayerChips>
                 💵 Chips: ${player.chips}
-                {player.allIn && " (ALL-IN)"}
+                {player.allIn && ' (ALL-IN)'}
               </PlayerChips>
               <PlayerBet>Current Bet: ${player.currentBet}</PlayerBet>
-              {player.folded && <InfoText style={{ color: "#dc2626" }}>Folded</InfoText>}
+              {player.folded && (
+                <InfoText style={{ color: '#dc2626' }}>Folded</InfoText>
+              )}
 
               {/* Show player's own hand */}
               {isCurrent && player.hand && player.hand.length > 0 && (
-                <PlayerHand>{player.hand.map((card) => renderMiniCard(card))}</PlayerHand>
+                <PlayerHand>
+                  {player.hand.map((card) => renderMiniCard(card))}
+                </PlayerHand>
               )}
             </PlayerCard>
           );
@@ -379,18 +385,30 @@ export default function TexasHoldemGame({ roomId, room, isHost, initialSession }
       {/* Action Controls */}
       {canAct && (
         <ActionControls>
-          <ActionButton $variant="fold" onClick={() => actions.holdemAction("fold")} disabled={!!actionBusy}>
+          <ActionButton
+            onClick={() => actions.holdemAction('fold')}
+            disabled={!!actionBusy}
+            variant="danger"
+          >
             Fold
           </ActionButton>
 
           {callAmount === 0 && (
-            <ActionButton $variant="check" onClick={() => actions.holdemAction("check")} disabled={!!actionBusy}>
+            <ActionButton
+              onClick={() => actions.holdemAction('check')}
+              disabled={!!actionBusy}
+              variant="neutral"
+            >
               Check
             </ActionButton>
           )}
 
           {callAmount > 0 && (
-            <ActionButton $variant="call" onClick={() => actions.holdemAction("call")} disabled={!!actionBusy}>
+            <ActionButton
+              onClick={() => actions.holdemAction('call')}
+              disabled={!!actionBusy}
+              variant="success"
+            >
               Call ${callAmount}
             </ActionButton>
           )}
@@ -404,9 +422,11 @@ export default function TexasHoldemGame({ roomId, room, isHost, initialSession }
           />
 
           <ActionButton
-            $variant="raise"
-            onClick={() => actions.holdemAction("raise", raiseAmount)}
-            disabled={!!actionBusy || raiseAmount < (snapshot.currentBet || 0) + 10}
+            variant="info"
+            onClick={() => actions.holdemAction('raise', raiseAmount)}
+            disabled={
+              !!actionBusy || raiseAmount < (snapshot.currentBet || 0) + 10
+            }
           >
             Raise to ${raiseAmount}
           </ActionButton>
@@ -418,7 +438,8 @@ export default function TexasHoldemGame({ roomId, room, isHost, initialSession }
           ⏳ Waiting for other player to act...
           <br />
           <small style={{ fontSize: '0.75rem', opacity: 0.7 }}>
-            Current turn: Player {snapshot.currentTurnIndex + 1} of {snapshot.playerOrder.length}
+            Current turn: Player {snapshot.currentTurnIndex + 1} of{' '}
+            {snapshot.playerOrder.length}
           </small>
         </InfoText>
       )}

@@ -1,5 +1,6 @@
 import styled, { css, DefaultTheme } from 'styled-components';
 import React from 'react';
+import { Button, GameVariant } from '@/shared/ui';
 import { ActionButton, CardsGrid, Card } from './cards';
 import { VARIANT_COLORS } from './variant-palette';
 import { GAME_VARIANT } from '../../lib/constants';
@@ -50,32 +51,7 @@ const getModalTitleColor = (
   return theme.text.primary;
 };
 
-const getCloseButtonBackground = (
-  $variant: string | undefined,
-  theme: DefaultTheme,
-  isHover: boolean = false,
-) => {
-  if (isHover) {
-    if ($variant === GAME_VARIANT.CYBERPUNK) return 'rgba(239, 68, 68, 0.2)';
-    return theme.buttons.primary.gradientStart;
-  }
-  if ($variant === GAME_VARIANT.CYBERPUNK) return 'rgba(255, 255, 255, 0.1)';
-  return theme.surfaces.panel.background;
-};
-
-const getCloseButtonColor = (
-  $variant: string | undefined,
-  theme: DefaultTheme,
-  isHover: boolean = false,
-) => {
-  if (isHover) {
-    if ($variant === GAME_VARIANT.CYBERPUNK)
-      return VARIANT_COLORS.cyberpunk.danger;
-    return theme.buttons.primary.text;
-  }
-  if ($variant === GAME_VARIANT.CYBERPUNK) return '#fff';
-  return theme.text.primary;
-};
+// unused variables removed
 
 const getSectionLabelColor = (
   $variant: string | undefined,
@@ -84,30 +60,6 @@ const getSectionLabelColor = (
   if ($variant === GAME_VARIANT.CYBERPUNK)
     return VARIANT_COLORS.cyberpunk.primary;
   return theme.text.secondary;
-};
-
-const getOptionButtonBackground = (
-  $selected: boolean,
-  $variant: string | undefined,
-  theme: DefaultTheme,
-) => {
-  if ($selected) {
-    return `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}20, transparent)`;
-  }
-  switch ($variant) {
-    case GAME_VARIANT.CYBERPUNK:
-      return `linear-gradient(135deg, ${VARIANT_COLORS.cyberpunk.background} 0%, #1e1b4b 100%)`;
-    case GAME_VARIANT.UNDERWATER:
-      return `linear-gradient(135deg, ${VARIANT_COLORS.underwater.background} 0%, #164e63 100%)`;
-    case GAME_VARIANT.CRIME:
-      return `linear-gradient(135deg, ${VARIANT_COLORS.crime.background} 0%, #27272a 100%)`;
-    case GAME_VARIANT.HORROR:
-      return `linear-gradient(135deg, ${VARIANT_COLORS.horror.background} 0%, #0f172a 100%)`;
-    case GAME_VARIANT.ADVENTURE:
-      return `linear-gradient(135deg, ${VARIANT_COLORS.adventure.background} 0%, #78350f 100%)`;
-    default:
-      return theme.surfaces.panel.background;
-  }
 };
 
 // Modal Components
@@ -253,26 +205,11 @@ export const ModalTitle = styled.h2<{ $variant?: string }>`
     `}
 `;
 
-export const CloseButton = styled.button<{ $variant?: string }>`
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: ${({ theme, $variant }) =>
-    getCloseButtonBackground($variant, theme)};
-  color: ${({ theme, $variant }) => getCloseButtonColor($variant, theme)};
-  font-size: 1.25rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: ${({ theme, $variant }) =>
-      getCloseButtonBackground($variant, theme, true)};
-    color: ${({ theme, $variant }) =>
-      getCloseButtonColor($variant, theme, true)};
+export const CloseButton = styled(Button).attrs({
+  variant: 'icon',
+  size: 'sm',
+})<{ $variant?: string }>`
+  &:hover:not(:disabled) {
     transform: rotate(90deg);
   }
 `;
@@ -311,38 +248,21 @@ export const OptionGrid = styled.div`
   gap: 0.75rem;
 `;
 
-export const OptionButton = styled.button<{
+export const OptionButton = styled(Button).attrs<{
+  $selected?: boolean;
+  $variant?: string;
+}>(({ $selected, $variant }) => ({
+  variant: 'chip',
+  size: 'md',
+  active: $selected,
+  gameVariant: $variant as GameVariant,
+}))<{
   $selected?: boolean;
   $variant?: string;
 }>`
   padding: 1rem;
-  border-radius: 12px;
-  border: 2px solid
-    ${({ $selected, theme }) =>
-      $selected
-        ? theme.buttons.primary.gradientStart
-        : theme.surfaces.card.border};
-  background: ${({ $selected, $variant, theme }) =>
-    getOptionButtonBackground(!!$selected, $variant, theme)};
-  color: ${({ theme }) => theme.text.primary};
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 0.5rem;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
 `;
 
 export const ModalActions = styled.div`

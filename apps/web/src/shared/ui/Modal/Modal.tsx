@@ -1,6 +1,7 @@
 import styled, { keyframes } from 'styled-components';
 import { ReactNode, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { Button } from '@/shared/ui/Button';
 
 export interface ModalProps {
   open: boolean;
@@ -91,31 +92,6 @@ const Title = styled.h2`
   letter-spacing: -0.3px;
 `;
 
-const CloseButton = styled.button`
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: transparent;
-  color: ${({ theme }) => theme.text.secondary};
-  font-size: 1.25rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-
-  &:hover {
-    border-color: ${({ theme }) => theme.text.secondary};
-    color: ${({ theme }) => theme.text.primary};
-  }
-
-  &:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.outlines.focus};
-    outline-offset: 2px;
-  }
-`;
-
 const Body = styled.div`
   padding: 1.5rem;
 `;
@@ -179,9 +155,14 @@ export function ModalHeader({ children, onClose }: ModalHeaderProps) {
     <Header>
       {children}
       {onClose && (
-        <CloseButton onClick={onClose} aria-label="Close modal">
+        <Button
+          variant="icon"
+          size="sm"
+          onClick={onClose}
+          aria-label="Close modal"
+        >
           ×
-        </CloseButton>
+        </Button>
       )}
     </Header>
   );

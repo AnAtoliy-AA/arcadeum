@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import styled, { css } from 'styled-components';
-import { Card as SharedCard } from '@/shared/ui';
+import { Card as SharedCard, Button } from '@/shared/ui';
 
 export const Page = styled.main`
   min-height: 100vh;
@@ -75,41 +75,19 @@ export const OptionList = styled.div`
   gap: 0.75rem;
 `;
 
-const activeOptionStyles = css`
-  border-color: ${({ theme }) => theme.interactive.option.activeBorder};
-  background: ${({ theme }) => theme.interactive.option.activeBackground};
-  box-shadow: ${({ theme }) => theme.interactive.option.activeShadow};
-`;
-
-export const OptionButton = styled.button<{ $active: boolean }>`
+export const OptionButton = styled(Button).attrs<{ $active: boolean }>(
+  ({ $active }) => ({
+    variant: 'chip',
+    size: 'md',
+    active: $active,
+  }),
+)<{ $active: boolean }>`
   text-align: left;
-  display: flex;
+  justify-content: flex-start;
   flex-direction: column;
   gap: 0.35rem;
   padding: 1.1rem 1.25rem;
   border-radius: 18px;
-  border: 1px solid ${({ theme }) => theme.interactive.option.border};
-  background: ${({ theme }) => theme.interactive.option.background};
-  color: ${({ theme }) => theme.text.primary};
-  cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-
-  &:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.outlines.focus};
-    outline-offset: 3px;
-  }
-
-  ${(props) => (props.$active ? activeOptionStyles : null)}
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      transform: translateY(-2px);
-      border-color: ${({ theme }) => theme.interactive.option.hoverBorder};
-    }
-  }
 `;
 
 export const OptionLabel = styled.span`
@@ -129,46 +107,13 @@ export const PillGroup = styled.div`
   gap: 0.75rem;
 `;
 
-export const PillButton = styled.button<{ $active: boolean }>`
-  padding: 0.6rem 1.2rem;
-  border-radius: 999px;
-  border: 1px solid
-    ${({ $active, theme }) =>
-      $active
-        ? theme.interactive.pill.activeBorder
-        : theme.interactive.pill.border};
-  background: ${({ $active, theme }) =>
-    $active
-      ? theme.interactive.pill.activeBackground
-      : theme.interactive.pill.inactiveBackground};
-  color: ${({ theme }) => theme.text.primary};
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    border-color 0.2s ease,
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
-
-  ${(props) =>
-    props.$active
-      ? css`
-          box-shadow: ${props.theme.interactive.pill.activeShadow};
-        `
-      : null}
-
-  &:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.outlines.focus};
-    outline-offset: 3px;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      transform: translateY(-1px);
-      border-color: ${({ theme }) => theme.interactive.pill.hoverBorder};
-    }
-  }
-`;
+export const PillButton = styled(Button).attrs<{ $active: boolean }>(
+  ({ $active }) => ({
+    variant: 'chip',
+    size: 'sm',
+    active: $active,
+  }),
+)<{ $active: boolean }>``;
 
 export const DownloadGrid = styled.div`
   display: flex;
@@ -391,25 +336,15 @@ export const BlockedUserInfo = styled.div`
   flex: 1;
 `;
 
-export const UnblockButton = styled.button`
-  padding: 0.5rem 1rem;
+export const UnblockButton = styled(Button).attrs({
+  variant: 'secondary',
+  size: 'sm',
+})`
   border-radius: 999px;
-  border: 1px solid ${({ theme }) => theme.buttons.secondary.border};
-  background: ${({ theme }) => theme.buttons.secondary.background};
-  color: ${({ theme }) => theme.buttons.secondary.text};
-  font-weight: 600;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
   white-space: nowrap;
 
   &:hover {
     border-color: #ef4444;
     color: #ef4444;
-  }
-
-  &:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.outlines.focus};
-    outline-offset: 2px;
   }
 `;

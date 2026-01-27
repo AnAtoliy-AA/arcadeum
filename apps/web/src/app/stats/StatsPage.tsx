@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import styled from 'styled-components';
+import { Button } from '@/shared/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useStats } from './hooks/useStats';
@@ -138,22 +139,11 @@ const TabContainer = styled.div`
   padding-bottom: 0.5rem;
 `;
 
-const Tab = styled.button<{ $active: boolean }>`
-  padding: 0.75rem 1.5rem;
-  border: none;
-  background: ${({ $active, theme }) =>
-    $active ? theme.buttons.primary.gradientStart + '20' : 'transparent'};
-  color: ${({ $active, theme }) =>
-    $active ? theme.buttons.primary.gradientStart : theme.text.secondary};
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    background: ${({ theme }) => theme.buttons.primary.gradientStart}15;
-  }
-`;
+const Tab = styled(Button).attrs<{ $active: boolean }>(({ $active }) => ({
+  variant: 'chip',
+  size: 'md',
+  $active,
+}))<{ $active: boolean }>``;
 
 const FilterContainer = styled.div`
   display: flex;

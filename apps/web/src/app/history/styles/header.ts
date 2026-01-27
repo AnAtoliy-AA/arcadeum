@@ -18,15 +18,7 @@ export const Title = styled(PageTitle).attrs({ size: 'lg' })``;
 export const RefreshButton = styled(Button).attrs({
   variant: 'secondary',
   size: 'sm',
-})`
-  border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  color: ${({ theme }) => theme.buttons.primary.gradientStart};
-
-  &:hover:not(:disabled) {
-    background: ${({ theme }) => theme.buttons.primary.gradientStart};
-    color: ${({ theme }) => theme.buttons.primary.text};
-  }
-`;
+})``;
 
 export const RefreshIcon = styled.span<{ $spinning: boolean }>`
   display: inline-block;

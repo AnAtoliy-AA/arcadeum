@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import { Button, GameVariant } from '@/shared/ui';
 import { ActionButton } from './cards';
 import { GAME_VARIANT } from '../../lib/constants';
 
@@ -8,73 +9,20 @@ export const ScopeToggle = styled.div`
   flex-wrap: wrap;
 `;
 
-export const ScopeOption = styled.button<{
+export const ScopeOption = styled(Button).attrs<{
+  $active?: boolean;
+  $variant?: string;
+}>(({ $active, $variant }) => ({
+  variant: 'chip',
+  size: 'sm',
+  active: $active,
+  gameVariant: $variant as GameVariant,
+}))<{
   $active?: boolean;
   $variant?: string;
 }>`
   flex: 1;
   min-width: 120px;
-  padding: 0.4rem 0.75rem;
-  border-radius: 999px;
-  border: 1px solid
-    ${({ $active, theme }) =>
-      $active
-        ? theme.buttons.primary.gradientStart
-        : theme.surfaces.card.border};
-  background: ${({ $active, theme }) =>
-    $active
-      ? `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}20, transparent)`
-      : theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.primary};
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-
-  ${({ $variant, $active }) =>
-    $variant === GAME_VARIANT.CYBERPUNK &&
-    css`
-      border-radius: 4px;
-      font-family: 'Courier New', monospace;
-      background: ${$active ? 'rgba(192, 38, 211, 0.2)' : 'transparent'};
-      border: 1px solid ${$active ? '#c026d3' : 'rgba(192, 38, 211, 0.4)'};
-      color: ${$active ? '#e879f9' : 'rgba(255, 255, 255, 0.7)'};
-      box-shadow: ${$active ? '0 0 10px rgba(192, 38, 211, 0.3)' : 'none'};
-
-      &:hover {
-        border-color: #c026d3;
-        color: #e879f9;
-        background: rgba(192, 38, 211, 0.1);
-      }
-    `}
-
-  ${({ $variant, $active }) =>
-    $variant === GAME_VARIANT.UNDERWATER &&
-    css`
-      border-radius: 12px;
-      font-family: 'Courier New', monospace;
-      font-weight: 700;
-      background: ${$active
-        ? 'linear-gradient(135deg, rgba(34, 211, 238, 0.3), rgba(8, 51, 68, 0.3))'
-        : 'transparent'};
-      border: 1px solid ${$active ? '#22d3ee' : 'rgba(34, 211, 238, 0.3)'};
-      color: ${$active ? '#e0f2fe' : 'rgba(165, 243, 252, 0.7)'};
-      box-shadow: ${$active ? '0 0 10px rgba(34, 211, 238, 0.25)' : 'none'};
-      backdrop-filter: blur(2px);
-
-      &:hover {
-        border-color: #67e8f9;
-        color: #ecfeff;
-        background: rgba(22, 78, 99, 0.4);
-      }
-    `}
-
-  &:hover {
-    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  }
 
   @media (max-height: 500px) {
     padding: 0.25rem 0.5rem;

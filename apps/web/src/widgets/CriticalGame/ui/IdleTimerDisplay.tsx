@@ -1,6 +1,7 @@
 'use client';
 
 import styled, { keyframes } from 'styled-components';
+import { Button } from '@/shared/ui';
 
 interface IdleTimerDisplayProps {
   secondsRemaining: number;
@@ -71,20 +72,11 @@ const ActiveText = styled.span`
   color: rgb(34, 197, 94);
 `;
 
-const StopButton = styled.button`
-  background: rgba(239, 68, 68, 0.8);
-  border: none;
-  border-radius: 6px;
+const StopButton = styled(Button).attrs({
+  variant: 'danger',
+  size: 'sm',
+})`
   padding: 0.375rem 0.75rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.2s;
-
-  &:hover {
-    background: rgba(239, 68, 68, 1);
-  }
 `;
 
 /**

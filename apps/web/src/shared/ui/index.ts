@@ -3,7 +3,8 @@
 
 // Button
 export { Button } from './Button';
-export type { ButtonProps, ButtonVariant, ButtonSize } from './Button';
+export type { ButtonProps } from './Button';
+export type { ButtonVariant, ButtonSize, GameVariant } from './Button/types';
 
 // Input
 export { Input } from './Input';

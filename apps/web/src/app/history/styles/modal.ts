@@ -35,18 +35,12 @@ export const ModalHeader = styled.div`
 `;
 
 export const BackButton = styled(Button).attrs({
-  variant: 'ghost',
+  variant: 'link',
   size: 'sm',
 })`
-  color: ${({ theme }) => theme.buttons.primary.gradientStart};
   padding: 0;
   text-align: left;
   justify-content: flex-start;
-
-  &:hover:not(:disabled) {
-    text-decoration: underline;
-    background: transparent;
-  }
 `;
 
 export const ModalTitle = styled.h2`

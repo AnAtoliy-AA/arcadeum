@@ -3,6 +3,7 @@ import {
   Spinner as SharedSpinner,
   Card,
   LinkButton,
+  Button,
   PageTitle as SharedPageTitle,
 } from '@/shared/ui';
 
@@ -58,27 +59,14 @@ export const ViewToggle = styled.div`
   }
 `;
 
-export const ViewToggleButton = styled.button<{ $active?: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.65rem 0.85rem;
-  border: none;
-  background: ${({ $active, theme }) =>
-    $active ? theme.buttons.primary.gradientStart : 'transparent'};
-  color: ${({ $active, theme }) =>
-    $active ? theme.buttons.primary.text : theme.text.muted};
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 1rem;
-
-  &:hover {
-    background: ${({ $active, theme }) =>
-      $active
-        ? theme.buttons.primary.gradientStart
-        : theme.surfaces.card.background};
-    color: ${({ theme }) => theme.text.primary};
-  }
+export const ViewToggleButton = styled(Button).attrs<{ $active?: boolean }>(
+  ({ $active }) => ({
+    variant: 'chip',
+    size: 'sm',
+    active: $active,
+  }),
+)<{ $active?: boolean }>`
+  border-radius: 0;
 `;
 
 export const Title = styled(SharedPageTitle).attrs({
@@ -93,26 +81,10 @@ export const CreateButton = styled(LinkButton).attrs({
   size: 'lg',
 })``;
 
-export const JoinByCodeButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  border-radius: 12px;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  color: ${({ theme }) => theme.text.primary};
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.95rem;
-
-  &:hover {
-    border-color: ${({ theme }) =>
-      theme.buttons?.primary?.gradientStart || '#3b82f6'};
-    background: ${({ theme }) => theme.surfaces.panel.background};
-  }
-`;
+export const JoinByCodeButton = styled(Button).attrs({
+  variant: 'secondary',
+  size: 'md',
+})``;
 
 export const Filters = styled.div`
   display: flex;
@@ -152,44 +124,18 @@ export const FilterChips = styled.div`
   gap: 0.5rem;
 `;
 
-export const FilterChip = styled.button<{
+export const FilterChip = styled(Button).attrs<{ $active?: boolean }>(
+  ({ $active }) => ({
+    variant: 'chip',
+    size: 'sm',
+    active: $active,
+  }),
+)<{
   $active?: boolean;
   $disabled?: boolean;
 }>`
-  padding: 0.5rem 1rem;
-  border-radius: 10px;
-  border: 1px solid
-    ${({ $active, theme }) =>
-      $active
-        ? theme.buttons.primary.gradientStart
-        : theme.surfaces.card.border};
-  background: ${({ $active, theme }) =>
-    $active
-      ? `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}, ${theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart})`
-      : 'transparent'};
-  color: ${({ $active, theme }) =>
-    $active ? theme.buttons.primary.text : theme.text.secondary};
-  font-weight: 500;
-  font-size: 0.85rem;
-  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
-  transition: all 0.2s ease;
   opacity: ${({ $disabled }) => ($disabled ? 0.4 : 1)};
-
-  &:hover:not(:disabled) {
-    border-color: ${({ theme, $disabled }) =>
-      $disabled ? 'inherit' : theme.buttons.primary.gradientStart};
-    color: ${({ $active, theme, $disabled }) =>
-      $disabled
-        ? 'inherit'
-        : $active
-          ? theme.buttons.primary.text
-          : theme.text.primary};
-  }
-
-  &:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.outlines.focus};
-    outline-offset: 2px;
-  }
+  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
 `;
 
 export const RoomsContainer = styled.div<{ $viewMode?: 'grid' | 'list' }>`

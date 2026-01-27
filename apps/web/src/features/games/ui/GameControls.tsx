@@ -52,15 +52,7 @@ const ControlsContainer = styled(Card)<{
   }
 `;
 
-const ControlButton = styled(Button)<{ $variant?: string }>`
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-
-  @media (max-width: 768px) {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.8rem;
-  }
-`;
+const ControlButton = styled(Button)``;
 
 const ControlDivider = styled(Divider)`
   width: 1px;

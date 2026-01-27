@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Button } from '@/shared/ui/Button';
 
 export const StyledSection = styled.section`
   display: flex;
@@ -41,26 +42,10 @@ export const HeaderLeft = styled.div`
   min-width: 0;
 `;
 
-export const ToggleButton = styled.button<{ $expanded?: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  color: ${({ theme }) => theme.text.secondary};
-  font-size: 0.8125rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-
-  &:hover {
-    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-    color: ${({ theme }) => theme.text.primary};
-  }
-
+export const ToggleButton = styled(Button).attrs({
+  variant: 'chip',
+  size: 'sm',
+})<{ $expanded?: boolean }>`
   span {
     transition: transform 0.2s ease;
     transform: rotate(${({ $expanded }) => ($expanded ? '180deg' : '0deg')});

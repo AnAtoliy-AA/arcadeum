@@ -1,6 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
+import { Button } from '@/shared/ui';
 import {
   Modal,
   ModalContent,
@@ -156,23 +157,16 @@ const BlockOptions = styled.div`
   margin-top: 1rem;
 `;
 
-const BlockLink = styled.button`
+const BlockLink = styled(Button).attrs({
+  variant: 'ghost',
+  size: 'sm',
+})`
   margin-top: 1rem;
   padding: 0.5rem;
-  font-size: 0.85rem;
   color: ${({ theme }) => theme.text.secondary};
-  background: transparent;
-  border: none;
-  cursor: pointer;
   text-decoration: underline;
-  transition: color 0.2s ease;
 
   &:hover:not(:disabled) {
     color: #ef4444;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
   }
 `;

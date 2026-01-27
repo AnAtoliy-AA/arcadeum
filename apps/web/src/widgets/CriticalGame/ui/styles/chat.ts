@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import { Button } from '@/shared/ui';
 import { InfoCard } from './table-info';
 import { GAME_VARIANT } from '../../lib/constants';
 
@@ -263,28 +264,15 @@ export const ChatMessages = styled(GameLog)`
   }
 `;
 
-export const ChatCloseButton = styled.button`
+export const ChatCloseButton = styled(Button).attrs({
+  variant: 'icon',
+  size: 'sm',
+})`
   display: none;
   position: absolute;
   top: 1rem;
   right: 1rem;
-  width: 28px;
-  height: 28px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(0, 0, 0, 0.3);
-  color: ${({ theme }) => theme.text.secondary};
-  cursor: pointer;
   z-index: 10;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: rgba(239, 68, 68, 0.2);
-    border-color: rgba(239, 68, 68, 0.5);
-    color: #ef4444;
-  }
 
   @media (max-width: 1024px) {
     display: flex;
@@ -294,8 +282,5 @@ export const ChatCloseButton = styled.button`
     display: flex;
     top: 0.5rem;
     right: 0.5rem;
-    width: 24px;
-    height: 24px;
-    font-size: 0.8rem;
   }
 `;

@@ -1,21 +1,7 @@
-import styled, { css, DefaultTheme } from 'styled-components';
+import styled, { css } from 'styled-components';
+import { Button } from '@/shared/ui';
 import { VARIANT_COLORS } from './variant-palette';
 import { GAME_VARIANT } from '../../lib/constants';
-
-const getActionsButtonColor = ($variant: string | undefined) => {
-  if ($variant === GAME_VARIANT.CYBERPUNK)
-    return VARIANT_COLORS.cyberpunk.secondary;
-  return 'rgba(255, 255, 255, 0.7)';
-};
-
-const getActionsButtonHoverColor = (
-  $variant: string | undefined,
-  theme: DefaultTheme,
-) => {
-  if ($variant === GAME_VARIANT.CYBERPUNK)
-    return VARIANT_COLORS.cyberpunk.accent;
-  return theme.buttons.primary?.gradientStart || '#ffffff';
-};
 
 /* TableInfo, TableStat, StatIcon, StatValue, and InfoCard have been moved to table-info.ts */
 
@@ -104,20 +90,10 @@ export const ActionsHeader = styled.div<{ $variant?: string }>`
   }
 `;
 
-export const ActionsToggleButton = styled.button<{ $variant?: string }>`
-  background: none;
-  border: none;
-  color: ${({ $variant }) => getActionsButtonColor($variant)};
-  cursor: pointer;
-  font-size: 1.2rem;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    color 0.2s,
-    transform 0.2s;
-
+export const ActionsToggleButton = styled(Button).attrs({
+  variant: 'icon',
+  size: 'sm',
+})<{ $variant?: string }>`
   ${({ $variant }) =>
     $variant === GAME_VARIANT.CYBERPUNK &&
     css`
@@ -125,26 +101,11 @@ export const ActionsToggleButton = styled.button<{ $variant?: string }>`
       text-shadow: 0 0 5px ${VARIANT_COLORS.cyberpunk.secondary}80;
       border: 1px solid ${VARIANT_COLORS.cyberpunk.secondary}66;
       border-radius: 4px;
-      width: 24px;
-      height: 24px;
-      &:hover {
-        background: ${VARIANT_COLORS.cyberpunk.secondary}26;
-      }
     `}
 
   ${({ $variant }) =>
     $variant === GAME_VARIANT.UNDERWATER &&
     css`
       color: #22d3ee;
-      &:hover {
-        color: #a5f3fc;
-        text-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
-      }
     `}
-
-  &:hover {
-    color: ${({ theme, $variant }) =>
-      getActionsButtonHoverColor($variant, theme)};
-    transform: scale(1.1);
-  }
 `;

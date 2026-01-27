@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Button } from '@/shared/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 const PresetGrid = styled.div`
@@ -11,7 +12,10 @@ const PresetGrid = styled.div`
   }
 `;
 
-const PresetCard = styled.button<{ $active?: boolean }>`
+const PresetCard = styled(Button).attrs({
+  variant: 'secondary',
+  size: 'md',
+})<{ $active?: boolean }>`
   background: ${(props) =>
     props.$active
       ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2))'
@@ -21,17 +25,10 @@ const PresetCard = styled.button<{ $active?: boolean }>`
       props.$active ? 'rgba(59, 130, 246, 0.5)' : 'rgba(255, 255, 255, 0.08)'};
   border-radius: 16px;
   padding: 1rem;
-  display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: 0.5rem;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
 
-  &:hover {
+  &:hover:not(:disabled) {
     transform: translateY(-2px);
     background: ${(props) =>
       props.$active
@@ -40,10 +37,6 @@ const PresetCard = styled.button<{ $active?: boolean }>`
     border-color: ${(props) =>
       props.$active ? 'rgba(59, 130, 246, 0.6)' : 'rgba(255, 255, 255, 0.2)'};
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-
-  &:active {
-    transform: translateY(0);
   }
 `;
 

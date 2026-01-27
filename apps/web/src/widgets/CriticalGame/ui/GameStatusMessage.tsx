@@ -1,6 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
+import { Button } from '@/shared/ui';
 
 interface GameStatusMessageProps {
   currentPlayerAlive: boolean;
@@ -39,7 +40,12 @@ export function GameStatusMessage({
             : t('games.table.defeat.message')}
         </div>
         {isHost && onRematch && (
-          <RematchButton onClick={onRematch} disabled={rematchLoading}>
+          <RematchButton
+            variant="primary"
+            size="md"
+            onClick={onRematch}
+            disabled={rematchLoading}
+          >
             {rematchLoading
               ? t('games.table.rematch.loading')
               : t('games.table.rematch.button')}
@@ -82,25 +88,6 @@ const EmptyState = styled.div`
   margin-top: 1rem;
 `;
 
-const RematchButton = styled.button`
+const RematchButton = styled(Button)`
   margin-top: 1rem;
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
 `;

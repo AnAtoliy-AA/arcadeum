@@ -86,32 +86,16 @@ const DirectionColumn = styled.div`
   gap: 0.25rem;
 `;
 
-const SmallButton = styled(Button)`
+const SmallButton = styled(Button).attrs({
+  variant: 'glass',
+})`
   padding: 0.5rem;
   min-width: auto;
 `;
 
-const StyledPanelButton = styled(Button)`
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: ${({ theme }) => theme.text.primary};
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(8px);
-  position: relative;
-  overflow: hidden;
-
-  &:hover {
-    background: ${({ theme }) => theme.surfaces.card.background};
-    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-    color: ${({ theme }) => theme.buttons.primary.gradientStart};
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-`;
+const StyledPanelButton = styled(Button).attrs({
+  variant: 'glass',
+})``;
 
 export function GamesControlPanel({
   roomId,

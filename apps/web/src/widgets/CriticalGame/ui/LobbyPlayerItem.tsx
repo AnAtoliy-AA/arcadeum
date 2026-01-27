@@ -1,6 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { GameRoomSummary } from '@/shared/types/games';
+import { Button } from '@/shared/ui';
 import {
   PlayerItem,
   LobbyPlayerAvatar,
@@ -89,40 +90,30 @@ export function SortablePlayerItem({
             paddingLeft: '8px',
           }}
         >
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={(e) => {
               e.stopPropagation();
               onMoveUp();
             }}
             disabled={index === 0}
-            style={{
-              opacity: index === 0 ? 0.3 : 1,
-              background: 'none',
-              border: 'none',
-              cursor: index === 0 ? 'default' : 'pointer',
-              color: 'inherit',
-              padding: '2px',
-            }}
+            style={{ padding: '0.25rem 0.5rem', minWidth: 'auto' }}
           >
             ↑
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={(e) => {
               e.stopPropagation();
               onMoveDown();
             }}
             disabled={index === totalCount - 1}
-            style={{
-              opacity: index === totalCount - 1 ? 0.3 : 1,
-              background: 'none',
-              border: 'none',
-              cursor: index === totalCount - 1 ? 'default' : 'pointer',
-              color: 'inherit',
-              padding: '2px',
-            }}
+            style={{ padding: '0.25rem 0.5rem', minWidth: 'auto' }}
           >
             ↓
-          </button>
+          </Button>
           <div
             style={{ opacity: 0.5, cursor: 'grab' }}
             {...attributes}

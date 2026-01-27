@@ -89,54 +89,6 @@ const StyledTextArea = styled(TextArea)`
   }
 `;
 
-const GradientButton = styled(Button)`
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  border: none;
-  height: 3.5rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-  border-radius: 16px;
-  box-shadow:
-    0 4px 6px -1px rgba(59, 130, 246, 0.3),
-    0 2px 4px -1px rgba(59, 130, 246, 0.2);
-  transition: all 0.3s ease;
-  overflow: hidden;
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(rgba(255, 255, 255, 0.2), transparent);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow:
-      0 10px 15px -3px rgba(59, 130, 246, 0.4),
-      0 4px 6px -2px rgba(59, 130, 246, 0.3);
-
-    &::before {
-      opacity: 1;
-    }
-  }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
-  }
-
-  &:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  }
-`;
-
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -309,7 +261,8 @@ export function PaymentPage() {
                 </StatusMessage>
               )}
 
-              <GradientButton
+              <Button
+                variant="primary"
                 type="submit"
                 disabled={loading}
                 size="lg"
@@ -318,7 +271,7 @@ export function PaymentPage() {
                 {loading
                   ? t('payments.submitting') || 'Processing...'
                   : t('payments.submit') || 'Continue to Checkout'}
-              </GradientButton>
+              </Button>
             </StyledForm>
           </GlassCard>
 

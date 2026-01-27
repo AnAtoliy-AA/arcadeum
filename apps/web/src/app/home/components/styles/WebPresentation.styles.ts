@@ -169,10 +169,6 @@ export const NavButton = styled.button<{ $position: 'left' | 'right' }>`
   &:active {
     transform: translateY(-50%) scale(0.95);
   }
-
-  @media (max-width: 768px) {
-    display: none; // Hides explicit arrows on mobile, rely on swipe
-  }
 `;
 
 export const FullscreenButton = styled.button`

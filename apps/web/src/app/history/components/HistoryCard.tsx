@@ -1,10 +1,8 @@
 'use client';
 
-import {
-  useTranslation,
-  type TranslationKey,
-} from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import type { HistorySummary, HistoryParticipant } from '../types';
+import { getGameDisplayName } from '../utils';
 import {
   EntryCard,
   EntryHeader,
@@ -39,12 +37,12 @@ export function HistoryCard({
     <EntryCard onClick={() => onSelect(entry)} data-testid="history-card">
       <EntryHeader>
         <EntryTitleGroup>
-          <EntryGameName>
-            {t(
-              `games.${entry.gameId === 'exploding_kittens_v1' ? 'critical_v1' : entry.gameId}.name` as TranslationKey,
-            ) || entry.gameId}
+          <EntryGameName
+            title={getGameDisplayName(entry.gameId, t, entry.gameOptions)}
+          >
+            {getGameDisplayName(entry.gameId, t, entry.gameOptions)}
           </EntryGameName>
-          <EntryRoomName>{entry.roomName}</EntryRoomName>
+          <EntryRoomName title={entry.roomName}>{entry.roomName}</EntryRoomName>
         </EntryTitleGroup>
         <EntryStatus data-testid="history-status">
           {t(`history.status.${entry.status}`) || entry.status}

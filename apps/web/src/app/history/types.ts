@@ -12,20 +12,23 @@ export interface HistorySummary {
   sessionId: string | null;
   gameId: string;
   roomName: string;
-  status: "lobby" | "in_progress" | "completed" | "waiting" | "active";
+  status: 'lobby' | 'in_progress' | 'completed' | 'waiting' | 'active';
   startedAt: string | null;
   completedAt: string | null;
   lastActivityAt: string;
   host: HistoryParticipant;
   participants: HistoryParticipant[];
+  gameOptions?: {
+    cardVariant?: string;
+  };
 }
 
 export interface HistoryLogEntry {
   id: string;
-  type: "system" | "action" | "message";
+  type: 'system' | 'action' | 'message';
   message: string;
   createdAt: string;
-  scope?: "all" | "players";
+  scope?: 'all' | 'players';
   sender?: HistoryParticipant;
 }
 

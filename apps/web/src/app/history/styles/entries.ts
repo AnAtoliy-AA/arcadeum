@@ -30,6 +30,7 @@ export const EntryTitleGroup = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 `;
 
 export const EntryGameName = styled.h3`
@@ -37,12 +38,20 @@ export const EntryGameName = styled.h3`
   font-size: 1.125rem;
   font-weight: 600;
   color: ${({ theme }) => theme.text.primary};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 `;
 
 export const EntryRoomName = styled.div`
   font-size: 0.875rem;
   color: ${({ theme }) => theme.text.muted};
   margin-top: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 `;
 
 export const EntryStatus = styled(Badge).attrs({ variant: 'info', size: 'sm' })`

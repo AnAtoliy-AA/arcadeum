@@ -1,3 +1,9 @@
+export type GameHistoryStatus =
+  | 'active'
+  | 'completed'
+  | 'abandoned'
+  | 'waiting';
+
 export interface HistoryParticipantSummary {
   id: string;
   username: string;
@@ -14,13 +20,14 @@ export interface GameHistorySummary {
   startedAt: string;
   completedAt: string | null;
   lastActivityAt: string;
-  status: 'active' | 'completed' | 'abandoned' | 'waiting';
+  status: GameHistoryStatus;
   participants: HistoryParticipantSummary[];
   hostId: string;
   result?: {
     winners: string[];
     finalState: Record<string, unknown>;
   };
+  gameOptions?: Record<string, unknown>;
 }
 
 export interface GroupedHistorySummary {
@@ -33,7 +40,7 @@ export interface GroupedHistorySummary {
     id: string;
     startedAt: string;
     completedAt: string | null;
-    status: 'active' | 'completed' | 'abandoned' | 'waiting';
+    status: GameHistoryStatus;
     winners?: string[];
   }>;
   totalSessions: number;

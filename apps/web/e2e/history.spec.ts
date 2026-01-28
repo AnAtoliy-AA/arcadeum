@@ -32,6 +32,9 @@ test.describe('Game History', () => {
           { id: 'user-1', username: 'testuser', isHost: true },
           { id: 'user-2', username: 'otheruser', isHost: false },
         ],
+        gameOptions: {
+          cardVariant: 'cyberpunk',
+        },
       },
     ];
 

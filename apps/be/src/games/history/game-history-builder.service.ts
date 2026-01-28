@@ -8,6 +8,7 @@ import {
   HistoryParticipantSummary,
   GameHistorySummary,
   GroupedHistorySummary,
+  GameHistoryStatus,
 } from './game-history.types';
 import { CriticalState } from '../critical/critical.state';
 import { TexasHoldemState } from '../texas-holdem/texas-holdem.state';
@@ -56,16 +57,10 @@ export class GameHistoryBuilderService {
           startedAt: latestSession.createdAt.toISOString(),
           completedAt: latestSession.updatedAt.toISOString(),
           lastActivityAt: latestSession.updatedAt.toISOString(),
-          status:
-            latestSession.status === 'completed'
-              ? 'completed'
-              : latestSession.status === 'active'
-                ? 'active'
-                : latestSession.status === 'waiting'
-                  ? 'waiting'
-                  : 'abandoned',
+          status: this.mapSessionStatus(latestSession.status),
           participants,
           hostId: room.hostId,
+          gameOptions: room.gameOptions,
           result:
             latestSession.status === 'completed'
               ? {
@@ -117,14 +112,7 @@ export class GameHistoryBuilderService {
           id: s._id.toString(),
           startedAt: s.createdAt.toISOString(),
           completedAt: s.updatedAt.toISOString(),
-          status:
-            s.status === 'completed'
-              ? 'completed'
-              : s.status === 'active'
-                ? 'active'
-                : s.status === 'waiting'
-                  ? 'waiting'
-                  : 'abandoned',
+          status: this.mapSessionStatus(s.status),
           winners:
             s.status === 'completed' ? this.extractWinners(s) : undefined,
         })),
@@ -189,5 +177,12 @@ export class GameHistoryBuilderService {
     }
 
     return [];
+  }
+
+  private mapSessionStatus(status: string): GameHistoryStatus {
+    const validStatuses = ['active', 'completed', 'waiting'];
+    return (
+      validStatuses.includes(status) ? status : 'abandoned'
+    ) as GameHistoryStatus;
   }
 }

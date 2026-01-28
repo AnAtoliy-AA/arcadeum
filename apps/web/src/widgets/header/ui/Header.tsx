@@ -110,7 +110,9 @@ export function Header() {
             {isAuthenticated && displayName && (
               <ProfileMenuContainer data-profile-menu>
                 <UserInfo onClick={toggleProfileMenu}>
-                  <UserName>{displayName}</UserName>
+                  <UserName data-testid="header-username">
+                    {displayName}
+                  </UserName>
                   {role !== 'free' && (
                     <RoleBadge $role={role}>
                       {t(`common.roles.${role}`)}
@@ -295,6 +297,7 @@ export function Header() {
               aria-label="Toggle menu"
               aria-expanded={isMobileMenuOpen}
               data-mobile-menu-button
+              data-testid="mobile-menu-button"
             >
               <svg
                 width="24"
@@ -324,7 +327,11 @@ export function Header() {
         </HeaderInner>
       </HeaderContainer>
 
-      <MobileNav $isOpen={isMobileMenuOpen} data-mobile-menu>
+      <MobileNav
+        $isOpen={isMobileMenuOpen}
+        data-mobile-menu
+        data-testid="mobile-nav"
+      >
         {navItems.map((item) => (
           <MobileNavLink
             key={item.href}

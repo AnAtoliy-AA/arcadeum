@@ -8,7 +8,7 @@ import { expect, type Page } from '@playwright/test';
  * Wait for page to be fully loaded (no network activity)
  */
 export async function waitForPageLoad(page: Page): Promise<void> {
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('load');
 }
 
 /**
@@ -68,4 +68,34 @@ export async function getPageLinks(
   }
 
   return results;
+}
+/**
+ * Mock a logged-in session in localStorage
+ */
+export async function mockSession(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const mockSnapshot = {
+      state: {
+        snapshot: {
+          provider: 'local',
+          accessToken: 'mock-access-token',
+          refreshToken: 'mock-refresh-token',
+          tokenType: 'Bearer',
+          accessTokenExpiresAt: new Date(Date.now() + 3600000).toISOString(),
+          refreshTokenExpiresAt: new Date(Date.now() + 86400000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          userId: 'user-1',
+          email: 'test@example.com',
+          username: 'testuser',
+          displayName: 'Test User',
+          role: 'user',
+        },
+      },
+      version: 0,
+    };
+    window.localStorage.setItem(
+      'web_session_tokens_v1',
+      JSON.stringify(mockSnapshot),
+    );
+  });
 }

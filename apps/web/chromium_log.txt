@@ -1,0 +1,267 @@
+
+Running 84 tests using 6 workers
+
+[1A[2K[1/84] [chromium] › e2e/accessibility.spec.ts:14:9 › Accessibility › should support keyboard navigation (Tab)
+[1A[2K[2/84] [chromium] › e2e/accessibility.spec.ts:29:9 › Accessibility › should have alt text on images
+[1A[2K[3/84] [chromium] › e2e/accessibility.spec.ts:23:9 › Accessibility › should have lang attribute on html
+[1A[2K[4/84] [chromium] › e2e/accessibility.spec.ts:5:9 › Accessibility › should have aria-labels on navigation buttons
+[1A[2K[5/84] [chromium] › e2e/auth-extended.spec.ts:5:9 › Auth Extended › should validate registration fields
+[1A[2K[6/84] [chromium] › e2e/auth-extended.spec.ts:25:9 › Auth Extended › should show error on password mismatch
+[1A[2K[7/84] [chromium] › e2e/auth-extended.spec.ts:47:9 › Auth Extended › should persist session after manual reload
+[1A[2K[8/84] [chromium] › e2e/auth-extended.spec.ts:60:9 › Auth Extended › should handle logout
+[1A[2K[9/84] [chromium] › e2e/auth.spec.ts:9:7 › Auth Page › should load auth page
+[1A[2K[10/84] [chromium] › e2e/auth.spec.ts:13:7 › Auth Page › should display auth content
+[1A[2K[11/84] [chromium] › e2e/auth.spec.ts:18:7 › Auth Page › should display OAuth provider buttons
+[1A[2K[12/84] [chromium] › e2e/auth.spec.ts:30:7 › Auth Page › should have sign in heading or text
+[1A[2K[13/84] [chromium] › e2e/auth.spec.ts:37:7 › Auth Page › should display branding
+[1A[2K[14/84] [chromium] › e2e/chat-interactions.spec.ts:9:9 › Chat Interactions › should prevent sending empty messages
+[1A[2K[15/84] [chromium] › e2e/chat-interactions.spec.ts:21:9 › Chat Interactions › should handle long messages correctly
+[1A[2K[16/84] [chromium] › e2e/chat-interactions.spec.ts:33:9 › Chat Interactions › should show sender names in messages
+[1A[2K[17/84] [chromium] › e2e/chat-interactions.spec.ts:48:9 › Chat Interactions › should auto-scroll to bottom on new message
+[1A[2K[18/84] [chromium] › e2e/chat.spec.ts:74:9 › Chat Functionality › should load chat list and search users
+[1A[2K[19/84] [chromium] › e2e/chat.spec.ts:91:9 › Chat Functionality › should navigate to chat and display messages
+[1A[2K[20/84] [chromium] › e2e/chat.spec.ts:107:9 › Chat Functionality › should enter a message
+[1A[2K[21/84] [chromium] › e2e/contact.spec.ts:5:9 › Contact Form › should validate required fields
+[1A[2K[22/84] [chromium] › e2e/contact.spec.ts:15:9 › Contact Form › should validate email format
+[1A[2K[23/84] [chromium] › e2e/contact.spec.ts:30:9 › Contact Form › should show success message on valid submission
+[1A[2K[24/84] [chromium] › e2e/contact.spec.ts:46:9 › Contact Form › should have working external links
+[1A[2K[25/84] [chromium] › e2e/footer-links.spec.ts:5:9 › Footer Links › should have working legal links in footer
+[1A[2K[26/84] [chromium] › e2e/footer-links.spec.ts:16:9 › Footer Links › should navigate to terms from footer
+[1A[2K[27/84] [chromium] › e2e/footer-links.spec.ts:25:9 › Footer Links › should have contact link in footer
+[1A[2K[28/84] [chromium] › e2e/footer-links.spec.ts:31:9 › Footer Links › should show copyright information
+[1A[2K[29/84] [chromium] › e2e/game-create.spec.ts:62:9 › Game Room Creation › should load creation page with correct game selected
+[1A[2K[30/84] [chromium] › e2e/game-create.spec.ts:74:9 › Game Room Creation › should fill the form and create a room
+[1A[2K[31/84] [chromium] › e2e/game-create.spec.ts:99:9 › Game Room Creation › should show validation error for empty name
+[1A[2K[32/84] [chromium] › e2e/game-room.spec.ts:44:9 › Game Room Detail › should load game detail page
+[1A[2K[33/84] [chromium] › e2e/game-room.spec.ts:57:9 › Game Room Detail › should display empty state if no rooms
+[1A[2K[34/84] [chromium] › e2e/game-room.spec.ts:65:9 › Game Room Detail › should navigate to create room page
+[1A[2K[35/84] [chromium] › e2e/game-rules.spec.ts:5:9 › Game Rules › should display rules for Critical game
+[1A[2K[36/84] [chromium] › e2e/game-rules.spec.ts:22:9 › Game Rules › should show objective in rules modal
+[1A[2K[37/84] [chromium] › e2e/game-rules.spec.ts:35:9 › Game Rules › should close rules modal
+[1A[2K[38/84] [chromium] › e2e/games-list.spec.ts:22:7 › Games List Page › should load games page
+[1A[2K[39/84] [chromium] › e2e/games-list.spec.ts:28:7 › Games List Page › should display filters and search
+[1A[2K[40/84] [chromium] › e2e/games-list.spec.ts:40:7 › Games List Page › should handle navigation to create room
+[1A[2K[41/84] [chromium] › e2e/games-list.spec.ts:49:7 › Games List Page › should display game cards or empty state
+[1A[2K[42/84] [chromium] › e2e/games-list.spec.ts:61:7 › Games List Page › should support infinite scroll
+[1A[2K[43/84] [chromium] › e2e/games-list.spec.ts:123:7 › Games List Page › should handle search with no results
+[1A[2K[44/84] [chromium] › e2e/games-list.spec.ts:158:7 › Games List Page › should clear search and restore list
+[1A[2K  1) [chromium] › e2e/game-create.spec.ts:62:9 › Game Room Creation › should load creation page with correct game selected 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('h1, h2, [class*="Title"]').first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('h1, h2, [class*="Title"]').first()[22m
+
+
+      61 |
+      62 |     test('should load creation page with correct game selected', async ({ page }) => {
+    > 63 |         await expect(page.locator('h1, h2, [class*="Title"]').first()).toBeVisible();
+         |                                                                        ^
+      64 |         await expect(page.locator('body')).toContainText(/create game room/i);
+      65 |
+      66 |         // Verify Critical game tile is active (based on styling in CreateGameRoomPage)
+        at /Users/anatoliyaliaksandrau/js/aicoapp/apps/web/e2e/game-create.spec.ts:63:72
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/game-create-Game-Room-Crea-90d7b--with-correct-game-selected-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/game-create-Game-Room-Crea-90d7b--with-correct-game-selected-chromium/error-context.md
+
+
+[1A[2K[45/84] [chromium] › e2e/history.spec.ts:111:9 › Game History › should open detail modal
+[1A[2K[46/84] [chromium] › e2e/history.spec.ts:98:9 › Game History › should display history list
+[1A[2K[47/84] [chromium] › e2e/history.spec.ts:122:9 › Game History › should handle rematch action
+[1A[2K[48/84] [chromium] › e2e/history.spec.ts:148:9 › Game History › should handle delete from history
+[1A[2K[49/84] [chromium] › e2e/homepage.spec.ts:9:7 › Home Page › should load successfully
+[1A[2K[50/84] [chromium] › e2e/homepage.spec.ts:13:7 › Home Page › should render hero section
+[1A[2K[51/84] [chromium] › e2e/homepage.spec.ts:18:7 › Home Page › should have navigation header
+[1A[2K[52/84] [chromium] › e2e/homepage.spec.ts:23:7 › Home Page › should render footer
+[1A[2K[53/84] [chromium] › e2e/homepage.spec.ts:28:7 › Home Page › should have games link in navigation
+[1A[2K[54/84] [chromium] › e2e/homepage.spec.ts:33:7 › Home Page › should navigate to games page
+[1A[2K[55/84] [chromium] › e2e/language-switching.spec.ts:5:9 › Language Switching › should change language and persist across pages
+[1A[2K[56/84] [chromium] › e2e/legal.spec.ts:5:9 › Legal and Contact Smoke Tests › should load Terms of Service
+[1A[2K  2) [chromium] › e2e/games-list.spec.ts:61:7 › Games List Page › should support infinite scroll ───
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByText('Room 11', { exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for getByText('Room 11', { exact: true })[22m
+
+
+      118 |
+      119 |     // Check second page items
+    > 120 |     await expect(page.getByText('Room 11', { exact: true })).toBeVisible({ timeout: 15000 });
+          |                                                              ^
+      121 |   });
+      122 |
+      123 |   test('should handle search with no results', async ({ page }) => {
+        at /Users/anatoliyaliaksandrau/js/aicoapp/apps/web/e2e/games-list.spec.ts:120:62
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/games-list-Games-List-Page-should-support-infinite-scroll-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/games-list-Games-List-Page-should-support-infinite-scroll-chromium/error-context.md
+
+
+[1A[2K[57/84] [chromium] › e2e/legal.spec.ts:17:9 › Legal and Contact Smoke Tests › should load Contact page
+[1A[2K[58/84] [chromium] › e2e/legal.spec.ts:11:9 › Legal and Contact Smoke Tests › should load Privacy Policy
+[1A[2K[59/84] [chromium] › e2e/navigation.spec.ts:9:7 › Navigation › should display header with logo
+[1A[2K[60/84] [chromium] › e2e/navigation.spec.ts:14:7 › Navigation › should have navigation links
+[1A[2K  3) [chromium] › e2e/history.spec.ts:148:9 › Game History › should handle delete from history ─────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByTestId('remove-button-init')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for getByTestId('remove-button-init')[22m
+
+
+      162 |         // Wait for removal button which indicates data loaded
+      163 |         const deleteBtn = page.getByTestId('remove-button-init');
+    > 164 |         await expect(deleteBtn).toBeVisible({ timeout: 15000 });
+          |                                 ^
+      165 |
+      166 |         await page.waitForTimeout(500); // Wait for modal animation
+      167 |
+        at /Users/anatoliyaliaksandrau/js/aicoapp/apps/web/e2e/history.spec.ts:164:33
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/history-Game-History-should-handle-delete-from-history-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/history-Game-History-should-handle-delete-from-history-chromium/error-context.md
+
+
+[1A[2K[61/84] [chromium] › e2e/navigation.spec.ts:19:7 › Navigation › should navigate to home from any page
+[1A[2K[62/84] [chromium] › e2e/navigation.spec.ts:29:7 › Navigation › should navigate to games page
+[1A[2K[63/84] [chromium] › e2e/navigation.spec.ts:35:7 › Navigation › should navigate to auth page
+[1A[2K  4) [chromium] › e2e/games-list.spec.ts:123:7 › Games List Page › should handle search with no results 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByText(/no games match|ничего не найдено/i)
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for getByText(/no games match|ничего не найдено/i)[22m
+
+
+      153 |
+      154 |     await expect(page.getByTestId('games-empty')).toBeVisible({ timeout: 15000 });
+    > 155 |     await expect(page.getByText(/no games match|ничего не найдено/i)).toBeVisible({ timeout: 15000 });
+          |                                                                       ^
+      156 |   });
+      157 |
+      158 |   test('should clear search and restore list', async ({ page }) => {
+        at /Users/anatoliyaliaksandrau/js/aicoapp/apps/web/e2e/games-list.spec.ts:155:71
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/games-list-Games-List-Page-42a6f-ndle-search-with-no-results-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/games-list-Games-List-Page-42a6f-ndle-search-with-no-results-chromium/error-context.md
+
+
+[1A[2K[64/84] [chromium] › e2e/payment.spec.ts:23:9 › Payment Flow › should display payment page with presets
+[1A[2K[65/84] [chromium] › e2e/payment.spec.ts:33:9 › Payment Flow › should allow entering custom amount
+[1A[2K[66/84] [chromium] › e2e/payment.spec.ts:43:9 › Payment Flow › should show error for invalid amount
+[1A[2K[67/84] [chromium] › e2e/payment.spec.ts:52:9 › Payment Flow › should initiate checkout session
+[1A[2K[68/84] [chromium] › e2e/profile-settings.spec.ts:9:9 › Profile and Settings › should display user profile information
+[1A[2K[69/84] [chromium] › e2e/profile-settings.spec.ts:16:9 › Profile and Settings › should allow toggling sound settings
+[1A[2K[70/84] [chromium] › e2e/profile-settings.spec.ts:26:9 › Profile and Settings › should allow toggling notification settings
+[1A[2K[71/84] [chromium] › e2e/responsive.spec.ts:7:9 › Responsive Layout › should show mobile-friendly navigation on small screens
+[1A[2K[72/84] [chromium] › e2e/responsive.spec.ts:22:9 › Responsive Layout › should adjust grid layout on mobile
+[1A[2K[73/84] [chromium] › e2e/responsive.spec.ts:39:9 › Responsive Layout › should hide desktop-only elements
+[1A[2K[74/84] [chromium] › e2e/settings.spec.ts:25:9 › Settings Page › should load settings page
+[1A[2K[75/84] [chromium] › e2e/settings.spec.ts:30:9 › Settings Page › should switch themes
+[1A[2K[76/84] [chromium] › e2e/settings.spec.ts:42:9 › Settings Page › should switch languages
+[1A[2K[77/84] [chromium] › e2e/settings.spec.ts:57:9 › Settings Page › should toggle haptic feedback
+[1A[2K[78/84] [chromium] › e2e/settings.spec.ts:71:9 › Settings Page › should have working navigation links
+[1A[2K[79/84] [chromium] › e2e/stats.spec.ts:68:9 › Player Stats › should display overview stats
+[1A[2K[80/84] [chromium] › e2e/stats.spec.ts:77:9 › Player Stats › should switch to leaderboard and display entries
+[1A[2K[81/84] [chromium] › e2e/support.spec.ts:9:9 › Support Page › should load support page
+[1A[2K[82/84] [chromium] › e2e/support.spec.ts:15:9 › Support Page › should display team members
+[1A[2K[83/84] [chromium] › e2e/support.spec.ts:21:9 › Support Page › should display contribution actions
+[1A[2K[84/84] [chromium] › e2e/support.spec.ts:28:9 › Support Page › should have working external links
+[1A[2K  5) [chromium] › e2e/game-create.spec.ts:74:9 › Game Room Creation › should fill the form and create a room 
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input#room-name')[22m
+
+
+      75 |         // Find room name input
+      76 |         const nameInput = page.locator('input#room-name');
+    > 77 |         await nameInput.fill('E2E Test Room');
+         |                         ^
+      78 |
+      79 |         // Optional: change visibility
+      80 |         const visibilityBtn = page.locator('button#visibility');
+        at /Users/anatoliyaliaksandrau/js/aicoapp/apps/web/e2e/game-create.spec.ts:77:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/game-create-Game-Room-Crea-6cda2--the-form-and-create-a-room-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/game-create-Game-Room-Crea-6cda2--the-form-and-create-a-room-chromium/error-context.md
+
+
+[1A[2K  6) [chromium] › e2e/game-create.spec.ts:99:9 › Game Room Creation › should show validation error for empty name 
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+    [2m  - waiting for getByRole('button', { name: /create room/i })[22m
+
+
+      102 |         // Try to submit with empty name (it has 'required' attribute, so browser might block)
+      103 |         // But we want to check if our logic handles it or if browser validation is present
+    > 104 |         await submitBtn.click();
+          |                         ^
+      105 |
+      106 |         // If it's HTML5 validation, the URL won't change
+      107 |         await expect(page).toHaveURL(/\/games\/create/);
+        at /Users/anatoliyaliaksandrau/js/aicoapp/apps/web/e2e/game-create.spec.ts:104:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/game-create-Game-Room-Crea-f35f8-dation-error-for-empty-name-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/game-create-Game-Room-Crea-f35f8-dation-error-for-empty-name-chromium/error-context.md
+
+
+[1A[2K  6 failed
+    [chromium] › e2e/game-create.spec.ts:62:9 › Game Room Creation › should load creation page with correct game selected 
+    [chromium] › e2e/game-create.spec.ts:74:9 › Game Room Creation › should fill the form and create a room 
+    [chromium] › e2e/game-create.spec.ts:99:9 › Game Room Creation › should show validation error for empty name 
+    [chromium] › e2e/games-list.spec.ts:61:7 › Games List Page › should support infinite scroll ────
+    [chromium] › e2e/games-list.spec.ts:123:7 › Games List Page › should handle search with no results 
+    [chromium] › e2e/history.spec.ts:148:9 › Game History › should handle delete from history ──────
+  78 passed (38.5s)
+
+[36m  Serving HTML report at http://localhost:58195. Press Ctrl+C to quit.[39m

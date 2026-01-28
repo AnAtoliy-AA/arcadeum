@@ -84,9 +84,9 @@ export function useHistoryActions({
       });
     },
     onSuccess: (data) => {
+      router.push(`/games/rooms/${data.room.id}`);
       onClose();
       onRefresh(); // Refresh history list just in case
-      router.push(`/games/rooms/${data.room.id}`);
     },
   });
 

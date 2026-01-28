@@ -5,5 +5,5 @@ interface GamesErrorProps {
 }
 
 export function GamesError({ error }: GamesErrorProps) {
-  return <Error>{error}</Error>;
+  return <Error data-testid="games-error">{error}</Error>;
 }

@@ -7,7 +7,7 @@ pnpm run build
 # Run web e2e tests before pushing
 echo "Running e2e tests..."
 cd apps/web
-pnpm run test:e2e --project=chromium || {
+pnpm run test:e2e || {
   echo "❌ E2E tests failed. Please fix them before pushing."
   exit 1
 }

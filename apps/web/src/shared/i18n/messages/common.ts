@@ -21,6 +21,8 @@ const commonMessagesDefinition = {
       logout: 'Sign out',
       openApp: 'Open app',
       supportTeam: 'Support Team',
+      loggedInAs: 'Logged in as',
+      changeAccount: 'Change account',
     },
     prompts: {
       haveAccount: 'Already have an account?',
@@ -60,6 +62,8 @@ const commonMessagesDefinition = {
       logout: 'Cerrar sesión',
       openApp: 'Abrir app',
       supportTeam: 'Equipo de soporte',
+      loggedInAs: 'Sesión iniciada como',
+      changeAccount: 'Cambiar cuenta',
     },
     prompts: {
       haveAccount: '¿Ya tienes una cuenta?',
@@ -99,6 +103,8 @@ const commonMessagesDefinition = {
       logout: 'Se déconnecter',
       openApp: "Ouvrir l'application",
       supportTeam: 'Équipe de support',
+      loggedInAs: 'Connecté en tant que',
+      changeAccount: 'Changer de compte',
     },
     prompts: {
       haveAccount: 'Vous avez déjà un compte ?',
@@ -138,6 +144,8 @@ const commonMessagesDefinition = {
       logout: 'Выйти',
       openApp: 'Открыть приложение',
       supportTeam: 'Служба поддержки',
+      loggedInAs: 'Вы вошли как',
+      changeAccount: 'Сменить аккаунт',
     },
     prompts: {
       haveAccount: 'Уже есть аккаунт?',
@@ -177,6 +185,8 @@ const commonMessagesDefinition = {
       logout: 'Выйсці',
       openApp: 'Адкрыць прыкладанне',
       supportTeam: 'Служба падтрымкі',
+      loggedInAs: 'Вы ўвайшлі як',
+      changeAccount: 'Змяніць акаўнт',
     },
     prompts: {
       haveAccount: 'Ужо ёсць акаўнт?',

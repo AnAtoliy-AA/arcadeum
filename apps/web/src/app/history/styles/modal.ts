@@ -13,6 +13,8 @@ export const Modal = styled.div`
   align-items: center;
   z-index: 1000;
   padding: 1rem;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 `;
 
 export const ModalContent = styled.div`

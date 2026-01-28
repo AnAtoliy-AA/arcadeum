@@ -52,3 +52,14 @@ fi
 
 echo "Running build..."
 npm run build
+
+# Run web e2e tests before commiting
+echo "Running e2e tests..."
+cd apps/web
+pnpm run test:e2e || {
+  echo "❌ E2E tests failed. Please fix them before commiting."
+  exit 1
+}
+cd ../..
+echo "✅ E2E tests passed"
+

@@ -3,5 +3,7 @@ import { Empty } from '../styles';
 
 export function GamesEmpty() {
   const { t } = useTranslation();
-  return <Empty>{t('games.lounge.emptyTitle')}</Empty>;
+  return (
+    <Empty data-testid="games-empty">{t('games.lounge.emptyTitle')}</Empty>
+  );
 }

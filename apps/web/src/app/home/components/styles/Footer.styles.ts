@@ -95,5 +95,23 @@ export const Copyright = styled.div`
   font-size: 0.85rem;
   color: ${({ theme }) => theme.text.muted};
   text-align: center;
+`;
+
+export const LegalLinks = styled.div`
+  display: flex;
+  gap: 1.5rem;
   margin-top: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+
+export const LegalLink = styled.a`
+  font-size: 0.85rem;
+  color: ${({ theme }) => theme.text.muted};
+  text-decoration: none;
+  transition: color 0.2s;
+
+  &:hover {
+    color: ${({ theme }) => theme.text.primary};
+  }
 `;

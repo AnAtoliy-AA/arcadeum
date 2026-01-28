@@ -126,6 +126,7 @@ export function HistoryDetailModal({
                 <PrimaryActionButton
                   onClick={onStartRematch}
                   disabled={rematchLoading}
+                  data-testid="rematch-button"
                 >
                   {rematchLoading
                     ? t('history.detail.rematchCreating')
@@ -208,6 +209,7 @@ export function HistoryDetailModal({
                   <DangerActionButton
                     onClick={onRemove}
                     disabled={removeLoading}
+                    data-testid="remove-button-confirm"
                   >
                     {removeLoading
                       ? t('history.detail.removeRemoving')
@@ -217,6 +219,7 @@ export function HistoryDetailModal({
               ) : (
                 <DangerActionButton
                   onClick={() => onSetShowRemoveConfirm(true)}
+                  data-testid="remove-button-init"
                 >
                   {t('history.detail.removeAction')}
                 </DangerActionButton>

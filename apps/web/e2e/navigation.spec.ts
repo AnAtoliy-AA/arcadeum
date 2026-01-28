@@ -17,27 +17,23 @@ test.describe('Navigation', () => {
   });
 
   test('should navigate to home from any page', async ({ page }) => {
-    // Navigate to games first
     await page.goto('/games');
 
-    // Click logo or home link to return
-    const homeLink = page.getByRole('link', { name: /home|aico/i }).first();
-    if (await homeLink.isVisible()) {
-      await homeLink.click();
-      await expect(page).toHaveURL('/');
-    }
+    // Use a more robust selector for the home link/logo
+    const homeLink = page.locator('header a[href="/"]').first();
+    await expect(homeLink).toBeVisible();
+    await homeLink.click();
+    await expect(page).toHaveURL('/');
   });
 
   test('should navigate to games page', async ({ page }) => {
-    const gamesLink = page.getByRole('link', { name: /games/i }).first();
+    const gamesLink = page.getByRole('link', { name: /games|игры/i }).first();
     await gamesLink.click();
     await expect(page).toHaveURL(/\/games/);
   });
 
   test('should navigate to auth page', async ({ page }) => {
-    const signInLink = page
-      .getByRole('link', { name: /sign in|login/i })
-      .first();
+    const signInLink = page.locator('a[href="/auth"]').first();
     if (await signInLink.isVisible()) {
       await signInLink.click();
       await expect(page).toHaveURL(/\/auth/);

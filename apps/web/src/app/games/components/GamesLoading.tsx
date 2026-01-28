@@ -17,7 +17,7 @@ export function GamesLoading({
 
   if (isLoadingLongPending) {
     return (
-      <ServerWakeUpContainer>
+      <ServerWakeUpContainer data-testid="games-loading-wakeup">
         <ServerLoadingNotice
           pendingProgress={loadingProgress}
           pendingElapsedSeconds={loadingElapsedSeconds}
@@ -27,7 +27,7 @@ export function GamesLoading({
   }
 
   return (
-    <ServerWakeUpContainer>
+    <ServerWakeUpContainer data-testid="games-loading">
       <Loading>
         <Spinner aria-label="Loading" />
         <div>{t('games.lounge.loadingRooms')}</div>

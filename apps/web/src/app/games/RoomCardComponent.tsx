@@ -76,7 +76,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
   );
 
   return (
-    <RoomCard key={room.id} $viewMode={viewMode}>
+    <RoomCard key={room.id} $viewMode={viewMode} data-testid="room-card">
       {/* Header: Name and Status - column in list, row in grid */}
       <RoomHeader $viewMode={viewMode}>
         <RoomTitle title={room.name}>{room.name}</RoomTitle>

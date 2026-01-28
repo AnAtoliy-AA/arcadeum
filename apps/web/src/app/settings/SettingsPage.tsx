@@ -3,7 +3,9 @@
 import { useCallback } from 'react';
 
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import { useThemeController } from '@/app/theme/ThemeContext';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useHapticsSetting } from '@/shared/hooks/useHapticsSetting';
 import {
   DEFAULT_LOCALE,
@@ -50,6 +52,9 @@ export function SettingsPage({
 }: SettingsPageProps) {
   const { themePreference, setThemePreference } = useThemeController();
   const { hapticsEnabled, setHapticsEnabled } = useHapticsSetting();
+  const { snapshot } = useSessionTokens();
+  const isAuthenticated = !!snapshot.accessToken;
+  const { t } = useTranslation();
   const { locale, setLocale, messages } = useLanguage();
   const settingsCopy = messages.settings ?? {};
   const defaultSettings = DEFAULT_SETTINGS_COPY;
@@ -268,9 +273,31 @@ export function SettingsPage({
           <SectionTitle>{accountTitle}</SectionTitle>
           <SectionDescription>{accountDescription}</SectionDescription>
           <AccountCard>
-            <AccountStatus role="status">{accountStatus}</AccountStatus>
+            <AccountStatus role="status">
+              {isAuthenticated ? (
+                <>
+                  {t('common.actions.loggedInAs') || 'Logged in as'}:{' '}
+                  <strong data-testid="settings-username">
+                    {snapshot.username || snapshot.displayName}
+                  </strong>
+                  <br />
+                  <span
+                    data-testid="settings-email"
+                    style={{ opacity: 0.7, fontSize: '0.9em' }}
+                  >
+                    {snapshot.email}
+                  </span>
+                </>
+              ) : (
+                accountStatus
+              )}
+            </AccountStatus>
             <AccountActions>
-              <ActionButton href="/auth">{accountPrimaryCta}</ActionButton>
+              <ActionButton href="/auth">
+                {isAuthenticated
+                  ? t('common.actions.changeAccount') || 'Change Account'
+                  : accountPrimaryCta}
+              </ActionButton>
               <SecondaryButton href={supportCta.href}>
                 {accountSupportLabel}
               </SecondaryButton>

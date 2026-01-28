@@ -36,7 +36,7 @@ export function HistoryCard({
   const { t } = useTranslation();
 
   return (
-    <EntryCard onClick={() => onSelect(entry)}>
+    <EntryCard onClick={() => onSelect(entry)} data-testid="history-card">
       <EntryHeader>
         <EntryTitleGroup>
           <EntryGameName>
@@ -46,7 +46,7 @@ export function HistoryCard({
           </EntryGameName>
           <EntryRoomName>{entry.roomName}</EntryRoomName>
         </EntryTitleGroup>
-        <EntryStatus>
+        <EntryStatus data-testid="history-status">
           {t(`history.status.${entry.status}`) || entry.status}
         </EntryStatus>
       </EntryHeader>

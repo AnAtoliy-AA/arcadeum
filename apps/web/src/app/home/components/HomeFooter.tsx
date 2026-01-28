@@ -10,6 +10,8 @@ import {
   SocialLinks,
   SocialIcon,
   Copyright,
+  LegalLinks,
+  LegalLink,
 } from './styles/Footer.styles';
 
 const SOCIAL_ICONS = [
@@ -80,6 +82,18 @@ export function HomeFooter() {
             appName,
           }) ?? `© ${currentYear} ${appName}. All rights reserved.`}
         </Copyright>
+
+        <LegalLinks>
+          <LegalLink href="/terms">
+            {messages.legal?.nav?.terms ?? 'Terms'}
+          </LegalLink>
+          <LegalLink href="/privacy">
+            {messages.legal?.nav?.privacy ?? 'Privacy'}
+          </LegalLink>
+          <LegalLink href="/contact">
+            {messages.legal?.nav?.contact ?? 'Contact'}
+          </LegalLink>
+        </LegalLinks>
       </FooterContent>
     </FooterSection>
   );

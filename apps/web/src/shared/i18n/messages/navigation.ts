@@ -22,6 +22,20 @@ const navigationMessagesDefinition = {
     settingsTab: 'Paramètres',
     statsTab: 'Statistiques',
   },
+  ru: {
+    chatsTab: 'Чаты',
+    gamesTab: 'Игры',
+    historyTab: 'История',
+    settingsTab: 'Настройки',
+    statsTab: 'Статистика',
+  },
+  be: {
+    chatsTab: 'Чаты',
+    gamesTab: 'Гульні',
+    historyTab: 'Гісторыя',
+    settingsTab: 'Налады',
+    statsTab: 'Статыстыка',
+  },
 } satisfies Record<Locale, Record<string, unknown>>;
 
 export const navigationMessages = navigationMessagesDefinition;

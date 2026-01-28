@@ -38,6 +38,11 @@ export const variants = {
     fission: 'Fusion',
     tribute: 'Taxe de Données',
     blackout: 'Coupure Réseau',
+    // Deity Pack
+    omniscience: 'Omniscience',
+    miracle: 'Miracle',
+    smite: 'Châtiment',
+    rapture: 'Rapt',
   },
   underwater: {
     critical_event: 'Brèche de Coque',
@@ -78,6 +83,11 @@ export const variants = {
     fission: 'Éruption',
     tribute: 'Offrande',
     blackout: 'Encre de Seiche',
+    // Deity Pack
+    omniscience: 'Omniscience',
+    miracle: 'Miracle',
+    smite: 'Châtiment',
+    rapture: 'Rapt',
   },
   crime: {
     critical_event: 'Raid de Police',
@@ -118,6 +128,11 @@ export const variants = {
     fission: 'Dispersion',
     tribute: 'Pot-de-vin',
     blackout: 'Témoin Aveugle',
+    // Deity Pack
+    omniscience: 'Omniscience',
+    miracle: 'Miracle',
+    smite: 'Châtiment',
+    rapture: 'Rapt',
   },
   horror: {
     critical_event: 'Possession',
@@ -158,6 +173,11 @@ export const variants = {
     fission: 'Pandémonium',
     tribute: 'Sacrifice',
     blackout: 'Ténèbres',
+    // Deity Pack
+    omniscience: 'Omniscience',
+    miracle: 'Miracle',
+    smite: 'Châtiment',
+    rapture: 'Rapt',
   },
   adventure: {
     critical_event: 'Effondrement',
@@ -198,5 +218,10 @@ export const variants = {
     fission: 'Panique',
     tribute: 'Dîme',
     blackout: 'Tempête de Sable',
+    // Deity Pack
+    omniscience: 'Omniscience',
+    miracle: 'Miracle',
+    smite: 'Châtiment',
+    rapture: 'Rapt',
   },
 };

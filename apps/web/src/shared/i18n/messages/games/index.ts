@@ -4,7 +4,7 @@ import {
   texasHoldemMessages,
   type TexasHoldemGamesMessages,
 } from './texas-holdem';
-import { sharedMessages, type SharedGamesMessages } from './shared';
+import { sharedMessages, type SharedGamesMessages } from './shared/index';
 
 /** Combined games messages type derived from actual message objects */
 export type GamesMessagesBundle = SharedGamesMessages &
@@ -26,5 +26,15 @@ export const gamesMessages: Record<Locale, GamesMessagesBundle> = {
     ...sharedMessages.fr,
     ...criticalMessages.fr,
     ...texasHoldemMessages.fr,
+  },
+  ru: {
+    ...sharedMessages.ru,
+    ...criticalMessages.ru,
+    ...texasHoldemMessages.ru,
+  },
+  be: {
+    ...sharedMessages.be,
+    ...criticalMessages.be,
+    ...texasHoldemMessages.be,
   },
 } as Record<Locale, GamesMessagesBundle>;

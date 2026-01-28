@@ -191,6 +191,136 @@ const homeMessagesDefinition = {
     mobileComingSoonDescription:
       "Les applications natives iOS et Android pour {{appName}} sont en développement. Restez à l'écoute !",
   },
+  ru: {
+    kicker: 'Будущее настольных игр',
+    tagline:
+      '{{appName}} — ваша онлайн-платформа для игры в настолки с друзьями.',
+    description:
+      'Создавайте игровые комнаты в реальном времени, приглашайте друзей, а {{appName}} возьмет на себя правила, подсчет очков и очередность ходов, чтобы вы могли сосредоточиться на веселье.',
+    primaryCtaLabel: 'Начать',
+    supportCtaLabel: 'Поддержать разработчиков',
+    downloadsTitle: 'Установите мобильные сборки',
+    downloadsDescription:
+      'Загрузите последние сборки Expo для iOS и Android прямо из веб-приложения.',
+    downloadsIosLabel: 'Скачать для iOS',
+    downloadsAndroidLabel: 'Скачать для Android',
+    // Games section
+    gamesTitle: 'Популярные игры',
+    gamesSubtitle: 'Исследуйте нашу растущую библиотеку настольных развлечений',
+    gamePlayButton: 'Играть сейчас',
+    gameComingSoon: 'Скоро',
+    gameIncludesPacks: 'Включает 5 наборов карт:',
+    gameThemedDecks: 'Тематические колоды:',
+    gameAvailableNow: 'Доступно сейчас',
+
+    // Features section
+    featuresTitle: 'Почему {{appName}}?',
+    featuresSubtitle: 'Все, что нужно для игры в настолки онлайн с друзьями',
+    featureRoomsTitle: 'Комнаты в реальном времени',
+    featureRoomsDescription:
+      'Создавайте игровые комнаты мгновенно и начинайте играть с друзьями за секунды. Загрузка не требуется.',
+    featureRulesTitle: 'Автоматизированные правила',
+    featureRulesDescription:
+      'Пусть приложение берет на себя правила, очки и управление ходами, пока вы наслаждаетесь игрой.',
+    featureCrossplatformTitle: 'Кроссплатформенность',
+    featureCrossplatformDescription:
+      'Играйте мгновенно в браузере на ПК и мобильных устройствах. Нативные приложения для iOS и Android скоро появятся.',
+    featureInviteTitle: 'Приватные комнаты и чат',
+    featureInviteDescription:
+      'Создавайте защищенные комнаты для своей группы со встроенным чатом для общения во время игры.',
+    featureSpectatorTitle: 'Режим зрителя',
+    featureSpectatorDescription:
+      'Смотрите, как друзья играют в прямом эфире на вебе. Поддержка ТВ скоро появится.',
+    featureStatsTitle: 'Статистика игры',
+    featureStatsDescription:
+      'Отслеживайте процент побед, историю и достижения во всех играх.',
+    featureTournamentsTitle: 'Турниры',
+    featureTournamentsDescription:
+      'Участвуйте в рейтинговых событиях и докажите свое мастерство против лучших игроков.',
+    // How it works section
+    howItWorksTitle: 'Как это работает',
+    howItWorksSubtitle: 'Начните за три простых шага',
+    stepCreateTitle: 'Создайте или войдите в комнату',
+    stepCreateDescription:
+      'Начните новую игровую комнату или введите код приглашения, чтобы присоединиться к существующей сессии.',
+    stepInviteTitle: 'Пригласите друзей',
+    stepInviteDescription:
+      'Поделитесь ссылкой на комнату или кодом с друзьями. Они могут присоединиться с любого устройства мгновенно.',
+    stepPlayTitle: 'Играйте вместе',
+    stepPlayDescription:
+      'Наслаждайтесь настольными играми, пока {{appName}} автоматически управляет правилами, ходами и очками.',
+    // Coming soon labels
+    comingSoon: 'Скоро',
+    // Footer
+    footerFollowUs: 'Подпишитесь на нас',
+    footerCommunity: 'Присоединяйтесь к сообществу',
+    footerRights: '© {{year}} {{appName}}. Все права защищены.',
+  },
+  be: {
+    kicker: 'Будучыня настольных гульняў',
+    tagline:
+      '{{appName}} — ваша онлайн-платформа для гульні ў настолкі з сябрамі.',
+    description:
+      'Стварайце гульнявыя пакоі ў рэальным часе, запрашайце сяброў, а {{appName}} возьме на сябе правілы, падлік ачкоў і чарговасць хадоў, каб вы маглі засяродзіцца на весялосці.',
+    primaryCtaLabel: 'Пачаць',
+    supportCtaLabel: 'Падрымаць распрацоўшчыкаў',
+    downloadsTitle: 'Усталюйце мабільныя зборкі',
+    downloadsDescription:
+      'Загрузіце апошнія зборкі Expo для iOS і Android прама з вэб-прыкладання.',
+    downloadsIosLabel: 'Спампаваць для iOS',
+    downloadsAndroidLabel: 'Спампаваць для Android',
+    // Games section
+    gamesTitle: 'Папулярныя гульні',
+    gamesSubtitle: 'Даследуйце нашу бібліятэку настольных забаў, якая расце',
+    gamePlayButton: 'Гуляць зараз',
+    gameComingSoon: 'Хутка',
+    gameIncludesPacks: 'Уключае 5 набораў карт:',
+    gameThemedDecks: 'Тэматычныя калоды:',
+    gameAvailableNow: 'Даступна зараз',
+
+    // Features section
+    featuresTitle: 'Чаму {{appName}}?',
+    featuresSubtitle: 'Усё, што трэба для гульні ў настолкі онлайн з сябрамі',
+    featureRoomsTitle: 'Пакоі ў рэальным часе',
+    featureRoomsDescription:
+      'Стварайце гульнявыя пакоі імгненна і пачынайце гуляць з сябрамі за секунды. Загрузка не патрабуецца.',
+    featureRulesTitle: 'Аўтаматызаваныя правілы',
+    featureRulesDescription:
+      'Няхай прыкладанне бярэ на сябе правілы, ачкі і кіраванне хадамі, пакуль вы атрымліваеце асалоду ад гульні.',
+    featureCrossplatformTitle: 'Кроссплатформавасць',
+    featureCrossplatformDescription:
+      'Гуляйце імгненна ў браўзеры на ПК і мабільных прыладах. Натыўныя прыкладанні для iOS і Android хутка з’явяцца.',
+    featureInviteTitle: 'Прыватныя пакоі і чат',
+    featureInviteDescription:
+      'Стварайце абароненыя пакоі для сваёй групы з убудаваным чатам для камунікацыі падчас гульні.',
+    featureSpectatorTitle: 'Рэжым гледача',
+    featureSpectatorDescription:
+      'Глядзіце, як сябры гуляюць у прамым эфіры на вэбе. Падтрымка ТБ хутка з’явіцца.',
+    featureStatsTitle: 'Статыстыка гульні',
+    featureStatsDescription:
+      'Сачыце за працэнтам перамог, гісторыяй і дасягненнямі ва ўсіх гульнях.',
+    featureTournamentsTitle: 'Турніры',
+    featureTournamentsDescription:
+      'Удзельнічайце ў рэйтынгавых падзеях і дакажыце сваё майстэрства супраць лепшых гульцоў.',
+    // How it works section
+    howItWorksTitle: 'Як гэта працуе',
+    howItWorksSubtitle: 'Пачніце за тры простыя крокі',
+    stepCreateTitle: 'Стварыце або ўвайдзіце ў пакой',
+    stepCreateDescription:
+      'Пачніце новы гульнявы пакой або ўвядзіце код запрашэння, каб далучыцца да існуючай сесіі.',
+    stepInviteTitle: 'Запрасіце сяброў',
+    stepInviteDescription:
+      'Падзяліцеся спасылкай на пакой або кодам з сябрамі. Яны могуць далучыцца з любой прылады імгненна.',
+    stepPlayTitle: 'Гуляйце разам',
+    stepPlayDescription:
+      'Атрымлівайце асалоду ад настольных гульняў, пакуль {{appName}} аўтаматычна кіруе правіламі, хадамі і ачкамі.',
+    // Coming soon labels
+    comingSoon: 'Хутка',
+    // Footer
+    footerFollowUs: 'Падпішыцеся на нас',
+    footerCommunity: 'Далучайцеся да супольнасці',
+    footerRights: '© {{year}} {{appName}}. Усе правы абаронены.',
+  },
 } satisfies Record<Locale, Record<string, unknown>>;
 
 export const homeMessages = homeMessagesDefinition;

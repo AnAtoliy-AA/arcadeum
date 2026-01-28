@@ -37,6 +37,30 @@ const chatMessagesDefinition = {
     },
     send: 'Envoyer',
   },
+  ru: {
+    notFound: 'Чат не найден',
+    status: {
+      connected: 'Подключено',
+      connecting: 'Подключение...',
+    },
+    input: {
+      placeholder: 'Введите сообщение...',
+      ariaLabel: 'Ввод сообщения',
+    },
+    send: 'Отправить',
+  },
+  be: {
+    notFound: 'Чат не знойдзены',
+    status: {
+      connected: 'Падключана',
+      connecting: 'Падключэнне...',
+    },
+    input: {
+      placeholder: 'Увядзіце паведамленне...',
+      ariaLabel: 'Увод паведамлення',
+    },
+    send: 'Адправіць',
+  },
 } satisfies Record<Locale, Record<string, unknown>>;
 
 export const chatMessages = chatMessagesDefinition;
@@ -82,6 +106,32 @@ const chatListMessagesDefinition = {
     },
     messages: {
       directChat: 'Discussion Directe',
+    },
+  },
+  ru: {
+    search: {
+      placeholder: 'Поиск пользователей...',
+      ariaLabel: 'Поиск пользователей для чата',
+    },
+    empty: {
+      noChats: 'Чатов пока нет. Начните общение!',
+      unauthenticated: 'Войдите, чтобы начать общаться',
+    },
+    messages: {
+      directChat: 'Личный чат',
+    },
+  },
+  be: {
+    search: {
+      placeholder: 'Пошук карыстальнікаў...',
+      ariaLabel: 'Пошук карыстальнікаў для чата',
+    },
+    empty: {
+      noChats: 'Чатаў пакуль няма. Пачніце зносіны!',
+      unauthenticated: 'Увайдзіце, каб пачаць камунікаваць',
+    },
+    messages: {
+      directChat: 'Асабісты чат',
     },
   },
 } satisfies Record<Locale, Record<string, unknown>>;

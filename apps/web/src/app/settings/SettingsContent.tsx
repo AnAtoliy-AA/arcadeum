@@ -81,6 +81,8 @@ const LANGUAGE_LABELS: Record<Locale, string> = {
   en: 'English',
   es: 'Español',
   fr: 'Français',
+  ru: 'Русский',
+  be: 'Беларуская',
 };
 
 export default function SettingsContent({

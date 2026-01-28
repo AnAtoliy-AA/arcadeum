@@ -288,6 +288,19 @@ export const frMessages = {
       shareTheFuture: {
         title: "Partager l'Avenir",
       },
+      catCombo: {
+        title: 'Jouer un Combo',
+        selectMode: 'Sélectionner le mode de Combo',
+        pair: 'Paire',
+        pairDesc: 'Carte aléatoire de la cible',
+        trio: 'Trio',
+        trioDesc: 'Choisir une carte spécifique',
+        selectTarget: 'Sélectionner le Joueur Cible',
+        selectCard: 'Sélectionner la Carte à Demander',
+        cardsCount: '{{count}} cartes',
+        confirm: 'Jouer le Combo',
+      },
+      seeTheFuture: { title: 'Cartes du Dessus', confirm: 'Compris !' },
       targetedAttack: {
         title: 'Attaque Ciblée',
         selectPlayer: 'Sélectionner un Joueur',

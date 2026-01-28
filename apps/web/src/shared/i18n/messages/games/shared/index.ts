@@ -5,7 +5,7 @@ import { frMessages } from './fr';
 import { ruMessages } from './ru';
 import { beMessages } from './be';
 
-const criticalMessagesDefinition = {
+export const sharedMessages = {
   en: enMessages,
   es: esMessages,
   fr: frMessages,
@@ -13,7 +13,6 @@ const criticalMessagesDefinition = {
   be: beMessages,
 } satisfies Record<Locale, Record<string, unknown>>;
 
-export const criticalMessages = criticalMessagesDefinition;
-
-/** Derived type from the criticalMessages object - English locale structure */
-export type CriticalGamesMessages = (typeof criticalMessagesDefinition)['en'];
+/** Derived type from the sharedMessages object - English locale structure */
+export type SharedGamesMessages = (typeof sharedMessages)['en'];
+export type { SharedGamesMessages as SharedGamesMessagesType };

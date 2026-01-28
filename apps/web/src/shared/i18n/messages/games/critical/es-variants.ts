@@ -38,6 +38,11 @@ export const variants = {
     fission: 'Fusión del Núcleo',
     tribute: 'Impuesto de Datos',
     blackout: 'Apagón de Red',
+    // Deity Pack
+    omniscience: 'Omnisciencia',
+    miracle: 'Milagro',
+    smite: 'Castigo',
+    rapture: 'Arrebato',
   },
   underwater: {
     critical_event: 'Brecha en el Casco',
@@ -78,6 +83,11 @@ export const variants = {
     fission: 'Erupción Volcánica',
     tribute: 'Ofrenda al Mar',
     blackout: 'Tinta de Calamar',
+    // Deity Pack
+    omniscience: 'Omnisciencia',
+    miracle: 'Milagro',
+    smite: 'Castigo',
+    rapture: 'Arrebato',
   },
   crime: {
     critical_event: 'Redada Policial',
@@ -118,6 +128,11 @@ export const variants = {
     fission: 'Dispersión',
     tribute: 'Soborno Colectivo',
     blackout: 'Testigo Ciego',
+    // Deity Pack
+    omniscience: 'Omnisciencia',
+    miracle: 'Milagro',
+    smite: 'Castigo',
+    rapture: 'Arrebato',
   },
   horror: {
     critical_event: 'Posesión',
@@ -158,6 +173,11 @@ export const variants = {
     fission: 'Pandemónium',
     tribute: 'Sacrificio',
     blackout: 'Oscuridad Total',
+    // Deity Pack
+    omniscience: 'Omnisciencia',
+    miracle: 'Milagro',
+    smite: 'Castigo',
+    rapture: 'Arrebato',
   },
   adventure: {
     critical_event: 'Colapso del Templo',
@@ -198,5 +218,10 @@ export const variants = {
     fission: 'Estampida',
     tribute: 'Ofrenda',
     blackout: 'Tormenta de Arena',
+    // Deity Pack
+    omniscience: 'Omnisciencia',
+    miracle: 'Milagro',
+    smite: 'Castigo',
+    rapture: 'Arrebato',
   },
 };

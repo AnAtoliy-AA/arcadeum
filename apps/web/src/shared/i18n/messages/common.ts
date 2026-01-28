@@ -6,6 +6,8 @@ const commonMessagesDefinition = {
       en: 'English',
       es: 'Spanish',
       fr: 'French',
+      ru: 'Russian',
+      be: 'Belarusian',
     },
     labels: {
       email: 'Email',
@@ -43,6 +45,8 @@ const commonMessagesDefinition = {
       en: 'Inglés',
       es: 'Español',
       fr: 'Francés',
+      ru: 'Ruso',
+      be: 'Bielorruso',
     },
     labels: {
       email: 'Correo electrónico',
@@ -80,6 +84,8 @@ const commonMessagesDefinition = {
       en: 'Anglais',
       es: 'Espagnol',
       fr: 'Français',
+      ru: 'Russe',
+      be: 'Biélorusse',
     },
     labels: {
       email: 'E-mail',
@@ -110,6 +116,84 @@ const commonMessagesDefinition = {
       tester: 'Testeur',
       developer: 'Dev',
       admin: 'Admin',
+    },
+  },
+  ru: {
+    languageNames: {
+      en: 'Английский',
+      es: 'Испанский',
+      fr: 'Французский',
+      ru: 'Русский',
+      be: 'Белорусский',
+    },
+    labels: {
+      email: 'Email',
+      password: 'Пароль',
+      confirmPassword: 'Подтвердите пароль',
+      username: 'Имя пользователя',
+    },
+    actions: {
+      login: 'Войти',
+      register: 'Создать аккаунт',
+      logout: 'Выйти',
+      openApp: 'Открыть приложение',
+      supportTeam: 'Служба поддержки',
+    },
+    prompts: {
+      haveAccount: 'Уже есть аккаунт?',
+      needAccount: 'Нужен аккаунт?',
+    },
+    statuses: {
+      authenticated: 'Вы вошли в систему.',
+    },
+    roles: {
+      free: 'Бесплатный',
+      premium: 'Премиум',
+      vip: 'VIP',
+      supporter: 'Поддержка',
+      moderator: 'Мод',
+      tester: 'Тестер',
+      developer: 'Разработчик',
+      admin: 'Админ',
+    },
+  },
+  be: {
+    languageNames: {
+      en: 'Англійская',
+      es: 'Іспанская',
+      fr: 'Французская',
+      ru: 'Руская',
+      be: 'Беларуская',
+    },
+    labels: {
+      email: 'Email',
+      password: 'Пароль',
+      confirmPassword: 'Пацвердзіце пароль',
+      username: 'Імя карыстальніка',
+    },
+    actions: {
+      login: 'Увайсці',
+      register: 'Стварыць акаўнт',
+      logout: 'Выйсці',
+      openApp: 'Адкрыць прыкладанне',
+      supportTeam: 'Служба падтрымкі',
+    },
+    prompts: {
+      haveAccount: 'Ужо ёсць акаўнт?',
+      needAccount: 'Патрэбен акаўнт?',
+    },
+    statuses: {
+      authenticated: 'Вы ўвайшлі ў сістэму.',
+    },
+    roles: {
+      free: 'Бясплатны',
+      premium: 'Прэміум',
+      vip: 'VIP',
+      supporter: 'Падтрымка',
+      moderator: 'Мод',
+      tester: 'Тэстар',
+      developer: 'Распрацоўшчык',
+      admin: 'Адмін',
     },
   },
 } satisfies Record<Locale, Record<string, unknown>>;

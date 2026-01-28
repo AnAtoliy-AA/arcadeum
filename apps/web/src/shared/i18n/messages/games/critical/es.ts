@@ -281,6 +281,19 @@ export const esMessages = {
       shareTheFuture: {
         title: 'Compartir el Futuro',
       },
+      catCombo: {
+        title: 'Jugar Combo',
+        selectMode: 'Seleccionar Modo de Combo',
+        pair: 'Pareja',
+        pairDesc: 'Carta aleatoria del objetivo',
+        trio: 'Trío',
+        trioDesc: 'Elegir carta específica',
+        selectTarget: 'Seleccionar Jugador Objetivo',
+        selectCard: 'Seleccionar Carta a Solicitar',
+        cardsCount: '{{count}} cartas',
+        confirm: 'Jugar Combo',
+      },
+      seeTheFuture: { title: 'Cartas Superiores', confirm: '¡Entendido!' },
       targetedAttack: {
         title: 'Ataque Dirigido',
         selectPlayer: 'Seleccionar Jugador',
@@ -306,6 +319,24 @@ export const esMessages = {
         description: 'Elige dónde colocar el Gato Explosivo en el mazo',
         positionLabel: 'Posición en el mazo:',
         confirm: 'Colocar Carta',
+      },
+      stash: {
+        title: 'Torre de Poder',
+        description:
+          'Selecciona hasta 3 cartas para proteger en tu reserva protegida. Las cartas guardadas no pueden ser robadas ni intercambiadas.',
+        confirm: 'Guardar Cartas',
+      },
+      mark: {
+        title: 'Marcar Jugador',
+        description:
+          'Elige un jugador para marcar. Se marcará una carta al azar en su mano. ¡Si la juegan o descartan, la robas!',
+        confirm: 'Marcar Jugador',
+      },
+      stealDraw: {
+        title: 'Me Lo Quedo',
+        description:
+          'Elige un jugador. ¡La próxima carta que robe será robada y añadida a tu mano en su lugar!',
+        confirm: 'Confirmar Robo',
       },
     },
     controlPanel: {

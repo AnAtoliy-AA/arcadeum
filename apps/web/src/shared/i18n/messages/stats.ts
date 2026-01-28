@@ -79,6 +79,58 @@ const statsMessagesDefinition = {
     endOfLeaderboard: 'Vous avez atteint la fin du classement',
     noPlayersFound: 'Aucun joueur trouvé pour le classement.',
   },
+  ru: {
+    pageTitle: 'Статистика',
+    myStatsTab: 'Моя статистика',
+    leaderboardTab: 'Таблица лидеров',
+    loginRequired: 'Пожалуйста, войдите, чтобы просмотреть статистику.',
+    errorLoading: 'Ошибка загрузки статистики',
+    // Overview cards
+    totalGames: 'Всего игр',
+    wins: 'Победы',
+    losses: 'Поражения',
+    winRate: 'Процент побед',
+    // Game breakdown
+    gameBreakdownTitle: 'Детализация по играм',
+    game: 'Игра',
+    total: 'Всего',
+    // Leaderboard
+    filterByGame: 'Фильтр по играм',
+    allGames: 'Все игры',
+    rank: 'Ранг',
+    player: 'Игрок',
+    games: 'Игры',
+    you: 'Вы',
+    loadingMore: 'Загрузка игроков...',
+    endOfLeaderboard: 'Вы достигли конца таблицы лидеров',
+    noPlayersFound: 'Игроки для таблицы лидеров пока не найдены.',
+  },
+  be: {
+    pageTitle: 'Статыстыка',
+    myStatsTab: 'Мая статыстыка',
+    leaderboardTab: 'Табліца лідэраў',
+    loginRequired: 'Калі ласка, увайдзіце, каб праглядзець статыстыку.',
+    errorLoading: 'Памылка загрузкі статыстыкі',
+    // Overview cards
+    totalGames: 'Усяго гульняў',
+    wins: 'Перамогі',
+    losses: 'Паражэнні',
+    winRate: 'Працэнт перамог',
+    // Game breakdown
+    gameBreakdownTitle: 'Дэталізацыя па гульнях',
+    game: 'Гульня',
+    total: 'Усяго',
+    // Leaderboard
+    filterByGame: 'Фільтр па гульнях',
+    allGames: 'Усе гульні',
+    rank: 'Ранг',
+    player: 'Гулец',
+    games: 'Гульні',
+    you: 'Вы',
+    loadingMore: 'Загрузка гульцоў...',
+    endOfLeaderboard: 'Вы дасягнулі канца табліцы лідэраў',
+    noPlayersFound: 'Гульцы для табліцы лідэраў пакуль не знойдзены.',
+  },
 } satisfies Record<Locale, Record<string, unknown>>;
 
 export const statsMessages = statsMessagesDefinition;

@@ -53,6 +53,8 @@ const settingsMessagesDefinition = {
       en: 'English',
       es: 'Español',
       fr: 'Français',
+      ru: 'Русский',
+      be: 'Беларуская',
     },
     downloadsTitle: appConfig.downloads.title,
     downloadsDescription: withAppNamePlaceholder(
@@ -119,6 +121,8 @@ const settingsMessagesDefinition = {
       en: 'Inglés',
       es: 'Español',
       fr: 'Francés',
+      ru: 'Русский',
+      be: 'Беларуская',
     },
     downloadsTitle: 'Compilaciones móviles',
     downloadsDescription:
@@ -183,6 +187,8 @@ const settingsMessagesDefinition = {
       en: 'Anglais',
       es: 'Espagnol',
       fr: 'Français',
+      ru: 'Русский',
+      be: 'Беларуская',
     },
     downloadsTitle: 'Versions mobiles',
     downloadsDescription:
@@ -201,6 +207,138 @@ const settingsMessagesDefinition = {
     blockedUsersLoading: 'Chargement...',
     blockedUsersEmpty: 'Aucun utilisateur bloqué',
     blockedUsersUnblock: 'Débloquer',
+  },
+  ru: {
+    title: 'Настройки',
+    description:
+      'Управляйте внешним видом, языком и загрузками для веб-версии {{appName}}.',
+    gameplayTitle: 'Геймплей',
+    gameplayDescription: 'Настройте ваш игровой опыт.',
+    hapticsLabel: 'Тактильная отдача',
+    hapticsDescription:
+      'Вибрировать, когда наступает ваш ход (только для мобильных устройств).',
+    appearanceTitle: 'Внешний вид',
+    appearanceDescription:
+      'Выберите тему оформления для веб-версии {{appName}}.',
+    themeOptions: {
+      system: {
+        label: 'Как в системе',
+        description:
+          'Автоматически следовать настройкам вашей операционной системы.',
+      },
+      light: {
+        label: 'Светлая',
+        description: 'Яркие нейтральные тона с легкими градиентами.',
+      },
+      dark: {
+        label: 'Темная',
+        description:
+          'Современная ночная палитра, идеальная для игры при слабом освещении.',
+      },
+      neonLight: {
+        label: 'Неоновая светлая',
+        description: 'Свечение в стиле аркад с люминесцентными панелями.',
+      },
+      neonDark: {
+        label: 'Неоновая темная',
+        description:
+          'Высококонтрастный стиль vaporwave для эффектных игровых столов.',
+      },
+    },
+    languageTitle: 'Язык',
+    languageDescription:
+      'Переводы интерфейса находятся в процессе разработки. Сохраните ваш выбор для будущих обновлений.',
+    languageOptionLabels: {
+      en: 'English',
+      es: 'Español',
+      fr: 'Français',
+      ru: 'Русский',
+      be: 'Беларуская',
+    },
+    downloadsTitle: appConfig.downloads.title,
+    downloadsDescription: withAppNamePlaceholder(
+      appConfig.downloads.description,
+    ),
+    downloadsIosLabel: appConfig.downloads.iosLabel,
+    downloadsAndroidLabel: appConfig.downloads.androidLabel,
+    accountTitle: 'Аккаунт',
+    accountDescription:
+      'Веб-вход скоро появится. Пока что вы можете управлять подписками через панель управления или в мобильном приложении.',
+    accountGuestStatus: 'Вы просматриваете как гость.',
+    accountPrimaryCta: 'Перейти ко входу',
+    accountSupportCtaLabel: appConfig.supportCta.label,
+    blockedUsersTitle: 'Заблокированные пользователи',
+    blockedUsersDescription:
+      'Заблокированные пользователи не смогут присылать вам приглашения в игру.',
+    blockedUsersLoading: 'Загрузка...',
+    blockedUsersEmpty: 'Нет заблокированных пользователей',
+    blockedUsersUnblock: 'Разблокировать',
+  },
+  be: {
+    title: 'Налады',
+    description:
+      'Кіруйце знешнім выглядам, мовай і загрузкамі для вэб-версіі {{appName}}.',
+    gameplayTitle: 'Геймплэй',
+    gameplayDescription: 'Наладзьце ваш гульнявы вопыт.',
+    hapticsLabel: 'Тактыльная аддача',
+    hapticsDescription:
+      'Вібраваць, калі наступае ваш ход (толькі для мабільных прылад).',
+    appearanceTitle: 'Знешні выгляд',
+    appearanceDescription:
+      'Выберыце тэму афармлення для вэб-версіі {{appName}}.',
+    themeOptions: {
+      system: {
+        label: 'Як у сістэме',
+        description:
+          'Аўтаматычна прытрымлівацца налад вашай аперацыйнай сістэмы.',
+      },
+      light: {
+        label: 'Светлая',
+        description: 'Яркія нейтральныя тоны з лёгкімі градыентамі.',
+      },
+      dark: {
+        label: 'Цёмная',
+        description:
+          'Сучасная начная палітра, ідэальная для гульні пры слабым асвятленні.',
+      },
+      neonLight: {
+        label: 'Неонавая светлая',
+        description: 'Свячэнне ў стылі аркад з люмінесцэнтнымі панэлямі.',
+      },
+      neonDark: {
+        label: 'Неонавая цёмная',
+        description:
+          'Высакакантрастны стыль vaporwave для эфектных гульнявых сталоў.',
+      },
+    },
+    languageTitle: 'Мова',
+    languageDescription:
+      'Пераклады інтэрфейсу знаходзяцца ў працэсе распрацоўкі. Захавайце ваш выбар для будучых абнаўленняў.',
+    languageOptionLabels: {
+      en: 'English',
+      es: 'Español',
+      fr: 'Français',
+      ru: 'Русский',
+      be: 'Беларуская',
+    },
+    downloadsTitle: appConfig.downloads.title,
+    downloadsDescription: withAppNamePlaceholder(
+      appConfig.downloads.description,
+    ),
+    downloadsIosLabel: appConfig.downloads.iosLabel,
+    downloadsAndroidLabel: appConfig.downloads.androidLabel,
+    accountTitle: 'Акаўнт',
+    accountDescription:
+      'Вэб-ўваход хутка з’явіцца. Пакуль што вы можаце кіраваць падпіскамі праз панэль кіравання або ў мабільным прыкладанні.',
+    accountGuestStatus: 'Вы праглядаеце як госць.',
+    accountPrimaryCta: 'Перайсці да ўваходу',
+    accountSupportCtaLabel: appConfig.supportCta.label,
+    blockedUsersTitle: 'Заблакаваныя карыстальнікі',
+    blockedUsersDescription:
+      'Заблакаваныя карыстальнікі не змогуць дасылаць вам запрашэнні ў гульню.',
+    blockedUsersLoading: 'Загрузка...',
+    blockedUsersEmpty: 'Няма заблакаваных карыстальнікаў',
+    blockedUsersUnblock: 'Разблакаваць',
   },
 } satisfies Record<Locale, Record<string, unknown>>;
 

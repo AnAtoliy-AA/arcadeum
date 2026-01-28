@@ -232,6 +232,153 @@ const authMessagesDefinition = {
       },
     },
   },
+  ru: {
+    badge: 'Ранний доступ',
+    title: 'Войдите в {{appName}}',
+    description:
+      'Мы приглашаем создателей волнами, пока завершаем внедрение безопасного входа в {{appName}}.',
+    statusHeadline: 'Веб-вход скоро появится.',
+    statusDescription:
+      'Запросите ранний доступ, и мы сообщим вам, когда ваш аккаунт будет готов, или продолжайте в мобильном приложении сегодня.',
+    primaryCtaLabel: 'Связаться с командой',
+    secondaryCtaLabel: appConfig.primaryCta.label,
+    downloadsTitle: 'Мобильные сборки',
+    downloadsDescription:
+      'Загрузите последние сборки Expo, чтобы синхронизировать мобильные клиенты с веб-версией.',
+    downloadsIosLabel: 'Скачать для iOS',
+    downloadsAndroidLabel: 'Скачать для Android',
+    homeLinkLabel: 'Вернуться на главную',
+    shortcuts: {
+      browseGames: 'Просмотр игр без входа',
+    },
+    sections: {
+      local: 'Вход по почте',
+      oauth: 'Вход через Google',
+      status: 'Статус сессии',
+    },
+    providers: {
+      guest: 'Гость',
+      local: 'Email',
+      oauth: 'Google',
+    },
+    statuses: {
+      processing: 'Обработка...',
+      redirecting: 'Перенаправление...',
+      loadingSession: 'Загрузка сессии...',
+    },
+    local: {
+      loginTitle: 'Войти через email',
+      registerTitle: 'Создать аккаунт через email',
+      helper: {
+        allowedCharacters:
+          'Имя пользователя может содержать буквы, цифры, подчеркивания и дефисы.',
+      },
+      errors: {
+        passwordMismatch: 'Пароли не совпадают.',
+        usernameTooShort: 'Имя пользователя должно быть не менее 3 символов.',
+      },
+    },
+    oauth: {
+      title: 'Продолжить с Google',
+      loginButton: 'Продолжить с Google',
+      logoutButton: 'Отключить Google',
+      accessTokenLabel: 'Google access token',
+      authorizationCodeLabel: 'Код авторизации',
+    },
+    statusCard: {
+      heading: 'Текущая сессия',
+      description:
+        'Управляйте вашей веб-сессией {{appName}}, проверяйте связанный профиль и выходите, когда закончите.',
+      sessionActive: 'Вы вошли в систему через веб.',
+      signOutLabel: 'Выйти',
+      guestDescription:
+        'Детали вашей веб-сессии {{appName}} появятся здесь после входа.',
+      details: {
+        provider: 'Провайдер',
+        displayName: 'Отображаемое имя',
+        userId: 'ID пользователя',
+        accessExpires: 'Доступ истекает',
+        refreshExpires: 'Обновление истекает',
+        updated: 'Обновлено',
+        sessionAccessToken: 'AccessToken сессии',
+        refreshToken: 'RefreshToken',
+      },
+    },
+  },
+  be: {
+    badge: 'Ранні доступ',
+    title: 'Увайдзіце ў {{appName}}',
+    description:
+      'Мы запрашаем стваральнікаў хвалямі, пакуль завяршаем укараненне бяспечнага ўваходу ў {{appName}}.',
+    statusHeadline: 'Вэб-ўваход хутка з’явіцца.',
+    statusDescription:
+      'Запытайце ранні доступ, і мы паведамім вам, калі ваш акаўнт будзе гатовы, ці працягвайце ў мабільным прыкладанні сёння.',
+    primaryCtaLabel: 'Звязацца з камандай',
+    secondaryCtaLabel: appConfig.primaryCta.label,
+    downloadsTitle: 'Мабільныя зборкі',
+    downloadsDescription:
+      'Загрузіце апошнія зборкі Expo, каб сінхранізаваць мабільныя кліенты з вэб-версіяй.',
+    downloadsIosLabel: 'Спампаваць для iOS',
+    downloadsAndroidLabel: 'Спампаваць для Android',
+    homeLinkLabel: 'Вярнуцца на галоўную',
+    shortcuts: {
+      browseGames: 'Прагляд гульняў без уваходу',
+    },
+    sections: {
+      local: 'Уваход праз пошту',
+      oauth: 'Уваход праз Google',
+      status: 'Статус сесіі',
+    },
+    providers: {
+      guest: 'Госць',
+      local: 'Email',
+      oauth: 'Google',
+    },
+    statuses: {
+      processing: 'Апрацоўка...',
+      redirecting: 'Перанакіраванне...',
+      loadingSession: 'Загрузка сесіі...',
+    },
+    local: {
+      loginTitle: 'Увайсці праз email',
+      registerTitle: 'Стварыць акаўнт праз email',
+      helper: {
+        allowedCharacters:
+          'Імя карыстальніка можа ўтрымліваць літары, лічбы, падкрэсліванні і дэфісы.',
+      },
+      errors: {
+        passwordMismatch: 'Паролі не супадаюць.',
+        usernameTooShort:
+          'Імя карыстальніка павінна быць не менш за 3 сімвалы.',
+      },
+    },
+    oauth: {
+      title: 'Працягнуць з Google',
+      loginButton: 'Працягнуць з Google',
+      logoutButton: 'Адключыць Google',
+      accessTokenLabel: 'Google access token',
+      authorizationCodeLabel: 'Код аўтарызацыі',
+    },
+    statusCard: {
+      heading: 'Бягучая сесія',
+      description:
+        'Кіруйце вашай вэб-сесіяй {{appName}}, правярайце звязаны профіль і выходзьце, калі скончыце.',
+      sessionActive: 'Вы ўвайшлі ў сістэму праз вэб.',
+      signOutLabel: 'Выйсці',
+      guestDescription:
+        'Дэталі вашай вэб-сесіі {{appName}} з’явяцца тут пасля ўваходу.',
+      details: {
+        provider: 'Правайдэр',
+        displayName: 'Імя, якое адлюстроўваецца',
+        userId: 'ID карыстальніка',
+        accessExpires: 'Доступ заканчваецца',
+        refreshExpires: 'Абнаўленне заканчваецца',
+        updated: 'Абноўлена',
+        sessionAccessToken: 'AccessToken сесіі',
+        refreshToken: 'RefreshToken',
+      },
+    },
+  },
 } satisfies Record<Locale, Record<string, unknown>>;
 
 export const authMessages = authMessagesDefinition;

@@ -10,6 +10,12 @@ const texasHoldemMessagesDefinition = {
   fr: {
     texas_holdem_v1: { name: "Texas Hold'em Poker" },
   },
+  ru: {
+    texas_holdem_v1: { name: 'Техасский Холдем' },
+  },
+  be: {
+    texas_holdem_v1: { name: 'Тэхаскі Холдэн' },
+  },
 } satisfies Record<Locale, Record<string, unknown>>;
 
 export const texasHoldemMessages = texasHoldemMessagesDefinition;

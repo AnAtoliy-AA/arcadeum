@@ -21,15 +21,12 @@ import {
 import { CARD_VARIANTS } from '@/app/games/create/constants';
 
 // Define fixed cards for the hero visual to ensure consistency and avoid hydration/purity issues
-const HERO_CARDS = [...CARD_VARIANTS]
-  .sort(() => 0.5 - Math.random())
-  .slice(0, 3)
-  .map((v) => ({
-    name: v.name,
-    icon: v.emoji,
-    // Extract the first color from the gradient string for the glow effect
-    color: v.gradient.match(/#[0-9A-Fa-f]{6}/)?.[0] ?? '#FF4D4D',
-  }));
+const HERO_CARDS = [...CARD_VARIANTS].slice(0, 3).map((v) => ({
+  name: v.name,
+  icon: v.emoji,
+  // Extract the first color from the gradient string for the glow effect
+  color: v.gradient.match(/#[0-9A-Fa-f]{6}/)?.[0] ?? '#FF4D4D',
+}));
 
 export function HomeHero() {
   const { messages } = useLanguage();

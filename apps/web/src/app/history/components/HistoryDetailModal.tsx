@@ -1,6 +1,9 @@
 'use client';
 
 import { useTranslation } from '@/shared/lib/useTranslation';
+import styled from 'styled-components';
+import { Button } from '@/shared/ui/Button';
+import { ArrowLeftIcon } from '@/shared/ui/Icons';
 import type {
   HistorySummary,
   HistoryDetail,
@@ -10,7 +13,6 @@ import {
   Modal,
   ModalContent,
   ModalHeader,
-  BackButton,
   ModalTitle,
   ModalLoading,
   ModalError,
@@ -39,6 +41,11 @@ import {
   ConfirmRow,
   Empty,
 } from '../styles';
+
+const StyledBackButton = styled(Button)`
+  padding: 0.5rem;
+  min-width: auto;
+`;
 
 interface HistoryDetailModalProps {
   selectedEntry: HistorySummary;
@@ -93,9 +100,16 @@ export function HistoryDetailModal({
     <Modal onClick={onClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <ModalHeader>
-          <BackButton onClick={onClose}>
-            ← {t('history.detail.backToList')}
-          </BackButton>
+          <StyledBackButton
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            aria-label={t('history.detail.backToList')}
+            data-testid="back-button"
+          >
+            <ArrowLeftIcon size={20} />
+            {t('history.detail.backToList')}
+          </StyledBackButton>
           <ModalTitle>{selectedEntry.roomName}</ModalTitle>
         </ModalHeader>
 

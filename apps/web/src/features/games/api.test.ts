@@ -116,7 +116,17 @@ describe('gamesApi', () => {
       expect(result).toEqual(mockData);
     });
 
-    it('throws mapped errors on failure', async () => {
+    it('throws private_room_error on 403 with statusCode', async () => {
+      vi.mocked(apiClient.get).mockRejectedValueOnce({
+        statusCode: 403,
+        message: 'Cannot view this room',
+      });
+      await expect(gamesApi.getRoomInfo('r1')).rejects.toThrow(
+        'private_room_error',
+      );
+    });
+
+    it('throws private_room_error on generic 403 status', async () => {
       vi.mocked(apiClient.get).mockRejectedValueOnce({
         status: HttpStatus.FORBIDDEN,
       });

@@ -37,13 +37,10 @@ test.describe('Payment Flow', () => {
   test('should allow entering custom amount', async ({ page }) => {
     await navigateTo(page, '/payment');
 
-    const input = page.locator(
-      'input[type="number"], input[id="payment-amount"]',
-    );
-    if (await input.isVisible()) {
-      await input.fill('123');
-      await expect(input).toHaveValue('123');
-    }
+    const input = page.locator('#payment-amount');
+    await expect(input).toBeVisible();
+    await input.fill('123');
+    await expect(input).toHaveValue('123');
   });
 
   test('should show error for invalid amount', async ({ page }) => {

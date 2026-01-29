@@ -2,7 +2,6 @@
 
 import styled, { css } from 'styled-components';
 import { Button } from '@/shared/ui';
-import { fadeIn } from './Animations.styles';
 
 export const PresentationContainer = styled.div`
   width: 100%;
@@ -26,13 +25,16 @@ export const PresentationContainer = styled.div`
 `;
 
 export const SlideContent = styled.div<{ $isActive: boolean }>`
-  flex: 1;
-  display: ${({ $isActive }) => ($isActive ? 'block' : 'none')};
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  inset: 0;
+  display: block;
+  opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
+  visibility: ${({ $isActive }) => ($isActive ? 'visible' : 'hidden')};
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0.6s;
   padding: 0;
-  animation: ${fadeIn} 0.6s cubic-bezier(0.22, 1, 0.36, 1); // Smooth cubic-bezier
-  position: relative;
+  z-index: ${({ $isActive }) => ($isActive ? 1 : 0)};
 
   // Slight scale effect for premium feel
   & > img {
@@ -55,7 +57,7 @@ export const SlideContent = styled.div<{ $isActive: boolean }>`
 export const SlideImage = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
 `;
 

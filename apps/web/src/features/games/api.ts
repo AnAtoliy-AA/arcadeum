@@ -113,13 +113,22 @@ export const gamesApi = {
     } catch (err: unknown) {
       // Re-throw specific errors for the UI
       if (err instanceof Error || (typeof err === 'object' && err !== null)) {
-        const error = err as { status?: number; message?: string };
-        if (error.status === HttpStatus.FORBIDDEN) {
+        const error = err as {
+          status?: number;
+          statusCode?: number;
+          message?: string;
+        };
+        const status = error.status || error.statusCode;
+
+        if (
+          status === HttpStatus.FORBIDDEN ||
+          error.message === 'Cannot view this room'
+        ) {
           throw new Error('private_room_error');
         }
         if (
-          error.status === HttpStatus.NOT_FOUND ||
-          error.status === HttpStatus.INTERNAL_SERVER_ERROR
+          status === HttpStatus.NOT_FOUND ||
+          status === HttpStatus.INTERNAL_SERVER_ERROR
         ) {
           throw new Error('room_not_found_error');
         }
@@ -141,13 +150,22 @@ export const gamesApi = {
     } catch (err: unknown) {
       // Re-throw specific errors for the UI
       if (err instanceof Error || (typeof err === 'object' && err !== null)) {
-        const error = err as { status?: number; message?: string };
-        if (error.status === HttpStatus.FORBIDDEN) {
+        const error = err as {
+          status?: number;
+          statusCode?: number;
+          message?: string;
+        };
+        const status = error.status || error.statusCode;
+
+        if (
+          status === HttpStatus.FORBIDDEN ||
+          error.message === 'Cannot view this room'
+        ) {
           throw new Error('private_room_error');
         }
         if (
-          error.status === HttpStatus.NOT_FOUND ||
-          error.status === HttpStatus.INTERNAL_SERVER_ERROR
+          status === HttpStatus.NOT_FOUND ||
+          status === HttpStatus.INTERNAL_SERVER_ERROR
         ) {
           throw new Error('room_not_found_error');
         }

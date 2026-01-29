@@ -12,7 +12,7 @@ const AmountInputWrapper = styled.div`
 const CurrencySymbol = styled.span`
   font-size: 2.5rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.4);
+  color: ${({ theme }) => theme.text.muted};
   margin-right: 0.5rem;
   position: absolute;
   left: 2rem;
@@ -21,10 +21,10 @@ const CurrencySymbol = styled.span`
 
 const LargeAmountInput = styled.input`
   width: 100%;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: ${({ theme }) => theme.surfaces.panel.background};
+  border: 1px solid ${({ theme }) => theme.surfaces.panel.border};
   border-radius: 20px;
-  color: #fff;
+  color: ${({ theme }) => theme.text.primary};
   font-size: 3rem;
   font-weight: 700;
   text-align: center;
@@ -35,13 +35,14 @@ const LargeAmountInput = styled.input`
   font-variant-numeric: tabular-nums;
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.1);
+    color: ${({ theme }) => theme.text.muted};
+    opacity: 0.3;
   }
 
   &:focus {
-    border-color: rgba(59, 130, 246, 0.5);
-    background: rgba(0, 0, 0, 0.3);
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    border-color: ${({ theme }) => theme.text.accent};
+    background: ${({ theme }) => theme.surfaces.panel.background};
+    box-shadow: 0 0 0 4px ${({ theme }) => theme.text.accent}20;
   }
 
   /* Remove arrows from number input */

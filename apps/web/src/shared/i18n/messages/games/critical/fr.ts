@@ -218,7 +218,14 @@ export const frMessages = {
       hideNames: 'Masquer les Noms',
       showDescriptions: 'Afficher les Descriptions',
       hideDescriptions: 'Masquer les Descriptions',
-      layout: { grid: 'Grille', scroll: 'Défilement' },
+      layout: {
+        grid: 'Grille',
+        grid3: 'Grille 3x',
+        grid4: 'Grille 4x',
+        grid5: 'Grille 5x',
+        grid6: 'Grille 6x',
+        scroll: 'Défilement',
+      },
     },
     log: {
       title: 'Journal de la Partie',

@@ -172,7 +172,22 @@ export const Card = styled.div<{
   }
 `;
 
-export const CardsGrid = styled.div<{ $layout?: 'grid' | 'linear' }>`
+const getGridTemplateColumns = (
+  $layout: string | undefined,
+  isMobile = false,
+) => {
+  const match = $layout?.match(/^grid-(\d+)$/);
+  if (match) {
+    return `repeat(${match[1]}, 1fr)`;
+  }
+  return isMobile
+    ? 'repeat(auto-fill, minmax(70px, 1fr))'
+    : 'repeat(auto-fill, minmax(85px, 1fr))';
+};
+
+export const CardsGrid = styled.div<{
+  $layout?: 'grid' | 'grid-3' | 'grid-4' | 'grid-5' | 'grid-6' | 'linear';
+}>`
   position: relative;
   gap: 1rem;
 
@@ -214,10 +229,11 @@ export const CardsGrid = styled.div<{ $layout?: 'grid' | 'linear' }>`
         `
       : css`
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+          /* Default auto-fill or specific column count */
+          grid-template-columns: ${getGridTemplateColumns($layout)};
 
           @media (max-width: 768px) {
-            grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+            grid-template-columns: ${getGridTemplateColumns($layout, true)};
             gap: 0.75rem;
           }
         `}

@@ -2,7 +2,7 @@
 
 import { useRef, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import type { CriticalGameProps, CriticalCard } from '../types';
+import type { CriticalGameProps, CriticalCard, HandLayoutMode } from '../types';
 import { getCardTranslationKey } from '../lib/cardUtils';
 import { useDisplayNames } from '../lib/displayUtils';
 import {
@@ -21,7 +21,7 @@ import { GameModals } from './GameModals';
 import { GameLobby } from './GameLobby';
 import { ChatSection } from './ChatSection';
 import { GameStatusMessage } from './GameStatusMessage';
-import { PlayerHand, HandLayoutMode } from './PlayerHand';
+import { PlayerHand } from './PlayerHand';
 import { GameTableSection } from './GameTableSection';
 
 import { GameContainer, GameBoard, TableArea } from './styles';

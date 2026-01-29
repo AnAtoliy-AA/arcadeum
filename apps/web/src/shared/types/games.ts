@@ -49,6 +49,11 @@ export interface GameSessionSummary {
   updatedAt: string;
 }
 
+export interface GameInitialData {
+  room?: GameRoomSummary;
+  session?: unknown;
+}
+
 // ===== CAT CARDS (for combos) =====
 export type CriticalCatCard =
   | 'collection_alpha'

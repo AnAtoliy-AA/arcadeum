@@ -166,3 +166,33 @@ export const CARD_GROUPS = [
     ] as CardTypeKey[],
   },
 ];
+
+import {
+  BASE_ACTION_CARDS,
+  ATTACK_PACK_CARDS,
+  FUTURE_PACK_CARDS,
+  THEFT_PACK_CARDS,
+  DEITY_PACK_CARDS,
+  CriticalCard,
+} from '@/shared/types/games';
+
+import { HandLayoutMode } from '../types';
+
+// All playable action cards (single click to play)
+// Note: 'wildcard' is excluded as it's used in combos, not played directly
+export const PLAYABLE_ACTION_CARDS: CriticalCard[] = [
+  ...BASE_ACTION_CARDS.filter((c) => c !== 'cancel'), // cancel handled separately via onPlayNope
+  ...ATTACK_PACK_CARDS,
+  ...FUTURE_PACK_CARDS,
+  ...THEFT_PACK_CARDS.filter((c) => c !== 'wildcard'), // wildcard used in combos
+  ...DEITY_PACK_CARDS,
+];
+
+export const HAND_LAYOUT_OPTIONS: HandLayoutMode[] = [
+  'grid',
+  'grid-3',
+  'grid-4',
+  'grid-5',
+  'grid-6',
+  'linear',
+];

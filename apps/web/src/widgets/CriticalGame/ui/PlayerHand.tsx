@@ -6,37 +6,23 @@ import {
   CriticalLogEntry,
   CAT_CARDS,
   SPECIAL_CARDS,
-  BASE_ACTION_CARDS,
-  ATTACK_PACK_CARDS,
-  FUTURE_PACK_CARDS,
-  THEFT_PACK_CARDS,
-  DEITY_PACK_CARDS,
+  HandLayoutMode,
+  PendingAction,
+  PendingFavor,
 } from '../types';
+import { PLAYABLE_ACTION_CARDS } from '../lib/constants';
 import {
   getCardEmoji,
   getCardTranslationKey,
   getCardDescriptionKey,
 } from '../lib/cardUtils';
-
-// All playable action cards (single click to play)
-// Note: 'wildcard' is excluded as it's used in combos, not played directly
-const PLAYABLE_ACTION_CARDS: CriticalCard[] = [
-  ...BASE_ACTION_CARDS.filter((c) => c !== 'cancel'), // cancel handled separately via onPlayNope
-  ...ATTACK_PACK_CARDS,
-  ...FUTURE_PACK_CARDS,
-  ...THEFT_PACK_CARDS.filter((c) => c !== 'wildcard'), // wildcard used in combos
-  ...DEITY_PACK_CARDS,
-];
 import { ActionsSection } from './ActionsSection';
+import { HandLayoutDropdown } from './HandLayoutDropdown';
 
 import {
   HandSection,
   HandContainer,
   HandCard,
-  DropdownContainer,
-  DropdownTrigger,
-  DropdownList,
-  DropdownItem,
   InfoCard,
   InfoTitle,
   CardsGrid,
@@ -55,20 +41,6 @@ import {
   HandControls,
   HandToggleButton,
 } from './styles';
-
-export type HandLayoutMode = 'grid' | 'linear';
-
-interface PendingAction {
-  type: string;
-  playerId: string;
-  payload?: unknown;
-  nopeCount: number;
-}
-
-interface PendingFavor {
-  requesterId: string;
-  targetId: string;
-}
 
 interface PlayerHandProps {
   currentPlayer: CriticalPlayerState;
@@ -104,62 +76,6 @@ interface PlayerHandProps {
   handLayout?: HandLayoutMode;
   setHandLayout?: (layout: HandLayoutMode) => void;
 }
-
-const HandLayoutDropdown: React.FC<{
-  layout: HandLayoutMode;
-  onChange: (layout: HandLayoutMode) => void;
-  variant?: string;
-  t: (key: string) => string;
-}> = ({ layout, onChange, variant, t }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  // Close on outside click is handled by a backdrop or just simple onBlur
-  // Here we'll use a simple backdrop for simplicity if open
-
-  return (
-    <DropdownContainer>
-      {isOpen && (
-        <div
-          style={{ position: 'fixed', inset: 0, zIndex: 99 }}
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-      <DropdownTrigger
-        $variant={variant}
-        $isOpen={isOpen}
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {layout === 'grid'
-          ? t('games.table.hand.layout.grid') || 'Grid'
-          : t('games.table.hand.layout.scroll') || 'Scroll'}
-      </DropdownTrigger>
-      {isOpen && (
-        <DropdownList $variant={variant}>
-          <DropdownItem
-            $variant={variant}
-            $isActive={layout === 'grid'}
-            onClick={() => {
-              onChange('grid');
-              setIsOpen(false);
-            }}
-          >
-            {t('games.table.hand.layout.grid') || 'Grid'}
-          </DropdownItem>
-          <DropdownItem
-            $variant={variant}
-            $isActive={layout === 'linear'}
-            onClick={() => {
-              onChange('linear');
-              setIsOpen(false);
-            }}
-          >
-            {t('games.table.hand.layout.scroll') || 'Scroll'}
-          </DropdownItem>
-        </DropdownList>
-      )}
-    </DropdownContainer>
-  );
-};
 
 export const PlayerHand: React.FC<PlayerHandProps> = ({
   currentPlayer,
@@ -404,7 +320,7 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
             </HandControls>
           </HandHeader>
 
-          <CardsGrid $layout={handLayout}>
+          <CardsGrid data-testid="hand-grid" $layout={handLayout}>
             {/* Render Stash first if any */}
             {stashItems.map(({ card, count, id }, idx) => (
               <StashedCard

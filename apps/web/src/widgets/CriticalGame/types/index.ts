@@ -105,3 +105,23 @@ export const ALL_GAME_CARDS: CriticalCard[] = [
   ...THEFT_PACK_CARDS,
   ...DEITY_PACK_CARDS,
 ];
+
+export type HandLayoutMode =
+  | 'grid'
+  | 'grid-3'
+  | 'grid-4'
+  | 'grid-5'
+  | 'grid-6'
+  | 'linear';
+
+export interface PendingAction {
+  type: string;
+  playerId: string;
+  payload?: unknown;
+  nopeCount: number;
+}
+
+export interface PendingFavor {
+  requesterId: string;
+  targetId: string;
+}

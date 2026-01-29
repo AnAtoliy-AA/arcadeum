@@ -217,7 +217,14 @@ export const esMessages = {
       hideNames: 'Ocultar Nombres',
       showDescriptions: 'Mostrar Descripciones',
       hideDescriptions: 'Ocultar Descripciones',
-      layout: { grid: 'Cuadrícula', scroll: 'Lista' },
+      layout: {
+        grid: 'Cuadrícula',
+        grid3: 'Cuadrícula 3x',
+        grid4: 'Cuadrícula 4x',
+        grid5: 'Cuadrícula 5x',
+        grid6: 'Cuadrícula 6x',
+        scroll: 'Lista',
+      },
     },
     log: { title: 'Registro del Juego', empty: 'Sin actividad aún' },
     chat: {

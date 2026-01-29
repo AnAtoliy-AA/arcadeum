@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react';
-import type { GameRoomSummary } from '@/shared/types/games';
+import type { GameRoomSummary, GameInitialData } from '@/shared/types/games';
 import { useGameStore } from '../store/gameStore';
 
 interface UseGameRoomOptions {
@@ -9,6 +9,7 @@ interface UseGameRoomOptions {
   mode?: 'play' | 'watch';
   inviteCode?: string;
   enabled?: boolean;
+  initialData?: GameInitialData;
 }
 
 interface UseGameRoomReturn {
@@ -33,6 +34,7 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
     mode = 'play',
     inviteCode,
     enabled = true,
+    initialData,
   } = options;
 
   const {
@@ -57,7 +59,7 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
       return;
     }
 
-    connect(roomId, userId, accessToken, mode, inviteCode);
+    connect(roomId, userId, accessToken, mode, inviteCode, initialData);
 
     return () => {
       disconnect();
@@ -71,6 +73,7 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
     enabled,
     connect,
     disconnect,
+    initialData,
   ]);
 
   const handleJoinRoom = useCallback(

@@ -223,6 +223,10 @@ export const ruMessages = {
       hideDescriptions: 'Скрыть описания',
       layout: {
         grid: 'Сетка',
+        grid3: 'Сетка 3x',
+        grid4: 'Сетка 4x',
+        grid5: 'Сетка 5x',
+        grid6: 'Сетка 6x',
         scroll: 'Прокрутка',
       },
     },

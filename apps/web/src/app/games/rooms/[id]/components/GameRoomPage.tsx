@@ -12,6 +12,7 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { mapToGameType } from '@/features/games/lib/gameIdMapping';
 import { gameFactory } from '@/features/games/lib/gameFactory';
 import { gameMetadata } from '@/features/games/registry';
+import type { GameInitialData } from '@/shared/types/games';
 
 import type { GameSessionSummary } from '@/shared/types/games';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
@@ -42,7 +43,7 @@ export default function GameRoomPage() {
 
   // Fetch full room info to determine mode (Play vs Watch)
   const {
-    data: roomInfo = null,
+    data: roomData = null,
     isLoading: roomInfoLoading,
     error: queryError,
   } = useQuery({
@@ -56,6 +57,9 @@ export default function GameRoomPage() {
     enabled: !!roomId,
     retry: false, // Don't retry on 404/403
   });
+
+  const roomInfo = roomData?.room;
+  const initialSessionData = roomData?.session;
 
   // Handle private rooms by treating the 403 error as a valid 'private' result
   const roomVisibility = useMemo(() => {
@@ -118,6 +122,12 @@ export default function GameRoomPage() {
     visibilityError,
   ]);
 
+  // Memoize initialData to prevent unnecessary re-renders/looping in useGameRoom
+  const initialData: GameInitialData = useMemo(
+    () => ({ room: roomInfo, session: initialSessionData }),
+    [roomInfo, initialSessionData],
+  );
+
   // Get room state - use watch mode for spectators
   // Only enable after visibility check is complete to prevent mode changes
   const {
@@ -134,6 +144,7 @@ export default function GameRoomPage() {
     mode: roomMode,
     inviteCode: urlInviteCode || undefined,
     enabled: !roomInfoLoading && !visibilityError,
+    initialData,
   });
 
   // Auto-join effect for URL invite codes - use queueMicrotask to avoid sync setState
@@ -334,7 +345,7 @@ export default function GameRoomPage() {
     );
   }
 
-  if (error) {
+  if (error && !room) {
     return (
       <Page>
         <Container>

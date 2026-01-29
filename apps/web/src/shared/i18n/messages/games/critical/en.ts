@@ -219,6 +219,10 @@ export const enMessages = {
       hideDescriptions: 'Hide Descriptions',
       layout: {
         grid: 'Grid',
+        grid3: 'Grid 3x',
+        grid4: 'Grid 4x',
+        grid5: 'Grid 5x',
+        grid6: 'Grid 6x',
         scroll: 'Scroll',
       },
     },

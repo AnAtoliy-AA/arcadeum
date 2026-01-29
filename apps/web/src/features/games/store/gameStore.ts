@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { gameSocket } from '@/shared/lib/socket';
 import { maybeDecrypt } from '@/shared/lib/socket-encryption';
-import type { GameRoomSummary } from '@/shared/types/games';
+import type { GameRoomSummary, GameInitialData } from '@/shared/types/games';
 
 /**
  * Cleanup function to remove all registered socket listeners.
@@ -22,6 +22,7 @@ interface GameState {
     accessToken: string | null,
     mode?: 'play' | 'watch',
     inviteCode?: string,
+    initialData?: GameInitialData,
   ) => void;
   disconnect: () => void;
   joinRoom: (
@@ -41,7 +42,14 @@ export const useGameStore = create<GameState>((set, get) => ({
   loading: false,
   error: null,
 
-  connect: (roomId, userId, accessToken, mode = 'play', inviteCode) => {
+  connect: (
+    roomId,
+    userId,
+    accessToken,
+    mode = 'play',
+    inviteCode,
+    initialData,
+  ) => {
     // Clean up previous listeners before registering new ones
     if (cleanupListeners) {
       cleanupListeners();
@@ -50,7 +58,12 @@ export const useGameStore = create<GameState>((set, get) => ({
 
     if (mode !== 'watch' && !accessToken) return;
 
-    set({ loading: true, error: null });
+    set({
+      loading: !initialData?.room, // Don't load if we have data
+      error: null,
+      room: initialData?.room || null,
+      session: initialData?.session || null,
+    });
 
     // Define handlers
     const handleJoined = (payload: {

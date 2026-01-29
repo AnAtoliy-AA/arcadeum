@@ -1,6 +1,6 @@
 import { apiClient, ApiClientOptions } from '@/shared/lib/api-client';
 import { HttpStatus } from '@/shared/lib/http-status';
-import type { GameRoomSummary } from '@/shared/types/games';
+import type { GameInitialData, GameRoomSummary } from '@/shared/types/games';
 
 interface GetRoomsParams {
   status?: string;
@@ -131,13 +131,13 @@ export const gamesApi = {
   getRoomInfo: async (
     roomId: string,
     options?: ApiClientOptions,
-  ): Promise<GameRoomSummary> => {
+  ): Promise<GameInitialData> => {
     try {
-      const data = await apiClient.get<{ room: GameRoomSummary }>(
+      const data = await apiClient.get<GameInitialData>(
         `/games/rooms/${roomId}`,
         options,
       );
-      return data.room;
+      return data;
     } catch (err: unknown) {
       // Re-throw specific errors for the UI
       if (err instanceof Error || (typeof err === 'object' && err !== null)) {

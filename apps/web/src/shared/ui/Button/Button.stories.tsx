@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Button } from './Button';
 
 const meta: Meta<typeof Button> = {
@@ -98,8 +98,10 @@ export const Glass: Story = {
     variant: 'glass',
     children: 'Glass Button',
   },
-  parameters: {
-    backgrounds: { default: 'dark' },
+  globals: {
+    backgrounds: {
+      value: 'dark',
+    },
   },
 };
 
@@ -174,8 +176,10 @@ export const GameCyberpunk: Story = {
     children: 'Cyberpunk Action',
     uppercase: true,
   },
-  parameters: {
-    backgrounds: { default: 'dark' },
+  globals: {
+    backgrounds: {
+      value: 'dark',
+    },
   },
 };
 
@@ -185,8 +189,10 @@ export const GameUnderwater: Story = {
     children: 'Underwater Action',
     uppercase: true,
   },
-  parameters: {
-    backgrounds: { default: 'dark' },
+  globals: {
+    backgrounds: {
+      value: 'dark',
+    },
   },
 };
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, Types, isValidObjectId } from 'mongoose';
 import { randomUUID } from 'crypto';
 import { Chat } from './schemas/chat.schema';
 import { Message } from './schemas/message.schema';
@@ -212,6 +212,9 @@ export class ChatService {
 
     if (!sanitizedSenderId) {
       throw new Error('Sender identifier is required.');
+    }
+    if (!isValidObjectId(sanitizedSenderId)) {
+      throw new Error(`Invalid sender identifier: ${sanitizedSenderId}`);
     }
     if (!sanitizedChatId) {
       throw new Error('Chat identifier is required.');

@@ -12,16 +12,10 @@ test.describe('Auth Extended', () => {
       await registerToggle.click();
     }
 
-    const submitBtn = page.locator('button[type="submit"]').first();
-    if (await submitBtn.isVisible()) {
-      await submitBtn.click({ force: true });
-    } else {
-      // Fallback
-      await page
-        .getByRole('button', { name: /register|sign up|создать|аккаунт/i })
-        .last()
-        .click({ force: true });
-    }
+    const submitBtn = page.locator('button[type="submit"]');
+    // Wait for the button to appear - default timeout is usually enough but we want to be sure
+    await expect(submitBtn).toBeVisible({ timeout: 10000 });
+    await submitBtn.click({ force: true });
 
     // Wait for potential validation messages
     await expect(page.locator('form')).toBeVisible();

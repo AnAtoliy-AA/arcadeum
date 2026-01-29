@@ -40,16 +40,16 @@ export default function GameRoomPage() {
 
   const isAuthenticated = !!snapshot.accessToken && !!snapshot.userId;
 
-  // Check room visibility with useQuery
+  // Fetch full room info to determine mode (Play vs Watch)
   const {
-    data: fetchedRoomVisibility = null,
-    isLoading: visibilityLoading,
+    data: roomInfo = null,
+    isLoading: roomInfoLoading,
     error: queryError,
   } = useQuery({
-    queryKey: ['games', 'room-visibility', roomId],
+    queryKey: ['games', 'room-info', roomId],
     queryFn: async () => {
       if (!roomId) return null;
-      return await gamesApi.getRoomVisibility(roomId, {
+      return await gamesApi.getRoomInfo(roomId, {
         token: snapshot.accessToken || undefined,
       });
     },
@@ -57,12 +57,12 @@ export default function GameRoomPage() {
     retry: false, // Don't retry on 404/403
   });
 
-  // Handle private rooms by treating the 403 error as a valid 'private' state
-  // This allows the join flow to proceed for authenticated users
+  // Handle private rooms by treating the 403 error as a valid 'private' result
   const roomVisibility = useMemo(() => {
+    if (roomInfo) return roomInfo.visibility;
     if (queryError?.message === 'private_room_error') return 'private';
-    return fetchedRoomVisibility;
-  }, [fetchedRoomVisibility, queryError]);
+    return null;
+  }, [roomInfo, queryError]);
 
   // Map query error to UI error message
   const visibilityError = useMemo(() => {
@@ -74,24 +74,38 @@ export default function GameRoomPage() {
     return t('games.roomPage.errors.failedToLoadError');
   }, [queryError, t]);
 
-  // Derive spectator mode from visibility and auth - no state needed
-  const isSpectatorMode = !isAuthenticated && roomVisibility === 'public';
+  // Determine mode for useGameRoom based on auth, visibility, and game status
+  const roomMode = useMemo(() => {
+    if (roomInfoLoading || !roomInfo) return 'play'; // Default to play while loading (won't connect yet)
 
-  // Determine mode for useGameRoom based on auth and visibility
-  // Only compute this once visibility is known to prevent mode switching
-  const roomMode = visibilityLoading
-    ? 'play'
-    : isSpectatorMode
-      ? 'watch'
-      : 'play';
+    // If user is a participant, they always re-join as PLAY
+    const isParticipant = roomInfo.members?.some(
+      (p: { id: string }) => p.id === snapshot.userId,
+    );
+    if (isParticipant) return 'play';
+
+    // If game has started and we are not a participant -> WATCH
+    if (roomInfo.status !== 'lobby') return 'watch';
+
+    // If not authenticated -> WATCH (if public)
+    if (!isAuthenticated && roomInfo.visibility === 'public') return 'watch';
+
+    return 'play';
+  }, [roomInfoLoading, roomInfo, snapshot.userId, isAuthenticated]);
 
   // Connect sockets based on auth status and room visibility
   useEffect(() => {
-    if (visibilityLoading || visibilityError) return;
+    if (roomInfoLoading || visibilityError) return;
+
+    // Only connect if we have visibility info (either from roomInfo or error)
+    if (!roomInfo && roomVisibility !== 'private') return;
 
     if (isAuthenticated) {
       connectSockets(snapshot.accessToken);
-    } else if (roomVisibility === 'public') {
+    } else if (
+      roomVisibility === 'public' ||
+      roomInfo?.visibility === 'public'
+    ) {
       // Connect anonymously for public rooms
       connectSocketsAnonymous();
     }
@@ -99,7 +113,8 @@ export default function GameRoomPage() {
     isAuthenticated,
     snapshot.accessToken,
     roomVisibility,
-    visibilityLoading,
+    roomInfo,
+    roomInfoLoading,
     visibilityError,
   ]);
 
@@ -118,7 +133,7 @@ export default function GameRoomPage() {
     accessToken: snapshot.accessToken,
     mode: roomMode,
     inviteCode: urlInviteCode || undefined,
-    enabled: !visibilityLoading && !visibilityError,
+    enabled: !roomInfoLoading && !visibilityError,
   });
 
   // Auto-join effect for URL invite codes - use queueMicrotask to avoid sync setState
@@ -246,7 +261,7 @@ export default function GameRoomPage() {
   }, [gameType]);
 
   // Wait for session to hydrate before checking authentication
-  if (!hydrated || visibilityLoading) {
+  if (!hydrated || roomInfoLoading) {
     return (
       <Page>
         <Container>

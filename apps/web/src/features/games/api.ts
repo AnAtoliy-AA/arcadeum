@@ -128,6 +128,34 @@ export const gamesApi = {
     }
   },
 
+  getRoomInfo: async (
+    roomId: string,
+    options?: ApiClientOptions,
+  ): Promise<GameRoomSummary> => {
+    try {
+      const data = await apiClient.get<{ room: GameRoomSummary }>(
+        `/games/rooms/${roomId}`,
+        options,
+      );
+      return data.room;
+    } catch (err: unknown) {
+      // Re-throw specific errors for the UI
+      if (err instanceof Error || (typeof err === 'object' && err !== null)) {
+        const error = err as { status?: number; message?: string };
+        if (error.status === HttpStatus.FORBIDDEN) {
+          throw new Error('private_room_error');
+        }
+        if (
+          error.status === HttpStatus.NOT_FOUND ||
+          error.status === HttpStatus.INTERNAL_SERVER_ERROR
+        ) {
+          throw new Error('room_not_found_error');
+        }
+      }
+      throw new Error('failed_to_load_error');
+    }
+  },
+
   createRoom: async (
     payload: CreateRoomPayload,
     options?: ApiClientOptions,

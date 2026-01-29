@@ -27,7 +27,7 @@ test.describe('Game Rules', () => {
     await navigateTo(page, '/games/create?gameId=critical_v1');
     const rulesBtn = page.getByRole('button', { name: /rules|правила/i });
     if (await rulesBtn.isVisible()) {
-      await rulesBtn.scrollIntoViewIfNeeded();
+      // await rulesBtn.scrollIntoViewIfNeeded();
       await rulesBtn.click({ force: true });
       // Wait for header to ensure modal is open
       const modalHeader = page.getByRole('heading', {

@@ -1,4 +1,4 @@
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import { ReactNode, HTMLAttributes } from 'react';
 
 export type PageTitleSize = 'sm' | 'md' | 'lg' | 'xl';
@@ -68,7 +68,13 @@ const StyledTitle = styled.h1<StyledTitleProps>`
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    ${$animated ? `animation: ${fadeSlideIn} 0.5s ease-out, ${gradientShift} 6s ease-in-out infinite;` : ''}
+    ${({ $animated }: StyledTitleProps) =>
+      $animated &&
+      css`
+        animation:
+          ${fadeSlideIn} 0.5s ease-out,
+          ${gradientShift} 6s ease-in-out infinite;
+      `}
   `}
 
   @media (max-width: 768px) {

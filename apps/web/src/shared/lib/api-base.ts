@@ -1,4 +1,4 @@
-const DEFAULT_API_BASE = "http://localhost:4000";
+const DEFAULT_API_BASE = 'http://localhost:4000';
 
 function normalizeBase(value?: string | null): string {
   if (!value) {
@@ -10,12 +10,13 @@ function normalizeBase(value?: string | null): string {
     return DEFAULT_API_BASE;
   }
 
-  return trimmed.replace(/\/?$/, "");
+  return trimmed.replace(/\/?$/, '');
 }
 
 export function resolveApiBase(): string {
   const fromEnv =
-    process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.NEXT_PUBLIC_WEB_API_BASE_URL;
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    process.env.NEXT_PUBLIC_WEB_API_BASE_URL;
   return normalizeBase(fromEnv);
 }
 
@@ -25,10 +26,10 @@ export function resolveApiUrl(path: string): string {
     return base;
   }
 
-  if (path.startsWith("http://") || path.startsWith("https://")) {
+  if (path.startsWith('http://') || path.startsWith('https://')) {
     return path;
   }
 
-  const separator = path.startsWith("/") ? "" : "/";
+  const separator = path.startsWith('/') ? '' : '/';
   return `${base}${separator}${path}`;
 }

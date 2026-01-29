@@ -22,13 +22,11 @@ test.describe('Game Over Screen', () => {
     // Override the room/session mock to simulate victory
     await page.route(
       (url) => {
-        const isMatch =
-          url.toString().includes(roomId) && !url.toString().includes('_next');
-        if (isMatch) console.log('INTERCEPTED VICTORY:', url.toString());
-        return isMatch;
+        return (
+          url.toString().includes(roomId) && !url.toString().includes('_next')
+        );
       },
       async (route) => {
-        console.log('HANDLING VICTORY ROUTE:', route.request().url());
         const request = route.request();
 
         // Allow page navigation document requests to pass through to Next.js server
@@ -90,29 +88,23 @@ test.describe('Game Over Screen', () => {
 
     await navigateTo(page, `/games/rooms/${roomId}`);
 
-    try {
-      // Find modal by Emoji
-      const modal = page.locator('div').filter({ hasText: '🏆' }).last();
-      await expect(modal).toBeVisible({ timeout: 10000 });
+    // Find modal by Emoji
+    const modal = page.locator('div').filter({ hasText: '🏆' }).last();
+    await expect(modal).toBeVisible({ timeout: 10000 });
 
-      // Expect Victory Title
-      const victoryTitle = modal.locator('h1');
-      await expect(victoryTitle).toBeVisible();
+    // Expect Victory Title
+    const victoryTitle = modal.locator('h1');
+    await expect(victoryTitle).toBeVisible();
 
-      // Check Rematch button (scoped to modal)
-      const rematchBtn = modal.getByRole('button', {
-        name: /Play Again|games\.table\.rematch\.button/i,
-      });
-      await expect(rematchBtn).toBeVisible();
+    // Check Rematch button (scoped to modal)
+    const rematchBtn = modal.getByRole('button', {
+      name: /Play Again|games\.table\.rematch\.button/i,
+    });
+    await expect(rematchBtn).toBeVisible();
 
-      // Check Back to Home button (scoped to modal)
-      const homeBtn = modal.locator('a[href="/"]');
-      await expect(homeBtn).toBeVisible();
-    } catch (e) {
-      console.log('Test failed. Current page HTML:');
-      console.log(await page.content());
-      throw e;
-    }
+    // Check Back to Home button (scoped to modal)
+    const homeBtn = modal.locator('a[href="/"]');
+    await expect(homeBtn).toBeVisible();
   });
 
   test('should display defeat modal when player loses', async ({ page }) => {
@@ -130,13 +122,11 @@ test.describe('Game Over Screen', () => {
     // Override to simulate defeat
     await page.route(
       (url) => {
-        const isMatch =
-          url.toString().includes(roomId) && !url.toString().includes('_next');
-        if (isMatch) console.log('INTERCEPTED DEFEAT:', url.toString());
-        return isMatch;
+        return (
+          url.toString().includes(roomId) && !url.toString().includes('_next')
+        );
       },
       async (route) => {
-        console.log('HANDLING DEFEAT ROUTE:', route.request().url());
         const request = route.request();
         if (request.resourceType() === 'document') {
           return route.continue();
@@ -195,28 +185,22 @@ test.describe('Game Over Screen', () => {
 
     await navigateTo(page, `/games/rooms/${roomId}`);
 
-    try {
-      // Find modal by Emoji
-      const modal = page.locator('div').filter({ hasText: '💀' }).last();
-      await expect(modal).toBeVisible({ timeout: 10000 });
+    // Find modal by Emoji
+    const modal = page.locator('div').filter({ hasText: '💀' }).last();
+    await expect(modal).toBeVisible({ timeout: 10000 });
 
-      // Expect Defeat Title
-      const defeatTitle = modal.locator('h1');
-      await expect(defeatTitle).toBeVisible();
+    // Expect Defeat Title
+    const defeatTitle = modal.locator('h1');
+    await expect(defeatTitle).toBeVisible();
 
-      // Check Back to Home button (scoped to modal)
-      const homeBtn = modal.locator('a[href="/"]');
-      await expect(homeBtn).toBeVisible();
+    // Check Back to Home button (scoped to modal)
+    const homeBtn = modal.locator('a[href="/"]');
+    await expect(homeBtn).toBeVisible();
 
-      // Rematch button logic: if not host, button not shown
-      // Check broadly in the page or modal
-      await expect(
-        page.getByRole('button', { name: /Play Again/i }),
-      ).not.toBeVisible();
-    } catch (e) {
-      console.log('Test failed. Current page HTML:');
-      console.log(await page.content());
-      throw e;
-    }
+    // Rematch button logic: if not host, button not shown
+    // Check broadly in the page or modal
+    await expect(
+      page.getByRole('button', { name: /Play Again/i }),
+    ).not.toBeVisible();
   });
 });

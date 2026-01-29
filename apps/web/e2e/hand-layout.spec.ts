@@ -6,9 +6,6 @@ test.describe('Hand Layout', () => {
 
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
-    page.on('console', (msg) => {
-      console.log(`BROWSER [${msg.type()}]: ${msg.text()}`);
-    });
 
     // Intercept API calls for the room
     await page.route(
@@ -19,7 +16,6 @@ test.describe('Hand Layout', () => {
           return route.continue();
         }
 
-        console.log(`Fulfilling mock data for ${request.url()}`);
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -77,39 +73,27 @@ test.describe('Hand Layout', () => {
     await navigateTo(page, `/games/rooms/${roomId}`);
 
     // Wait for game to load
-    try {
-      console.log('Waiting for "Your turn"...');
+    // Wait for game to load
 
-      // Wait for some text that definitely comes from the game/header
-      await page.waitForSelector('text=Arcadeum', { timeout: 15000 });
+    // Wait for some text that definitely comes from the game/header
+    await page.waitForSelector('text=Arcadeum', { timeout: 15000 });
 
-      // Close RulesModal
-      console.log('Closing RulesModal...');
-      const modal = page.locator('text=OBJECTIVE');
-      await expect(modal).toBeVisible({ timeout: 10000 });
+    // Close RulesModal
+    const modal = page.locator('text=OBJECTIVE');
+    await expect(modal).toBeVisible({ timeout: 10000 });
 
-      await page.keyboard.press('Escape');
-      const closeBtn = page.getByRole('button', { name: '×' });
-      if (await closeBtn.isVisible()) {
-        await closeBtn.click();
-      }
-
-      // Wait for modal to be gone
-      await expect(modal).not.toBeVisible({ timeout: 10000 });
-      console.log('Modal is closed.');
-
-      // Wait for "Your turn"
-      const turnText = page.getByText('Your turn', { exact: true }).first();
-      await expect(turnText).toBeVisible({ timeout: 15000 });
-      console.log('"Your turn" is visible.');
-    } catch (e) {
-      console.log('Test failed. Current page state:');
-      const content = await page.content();
-      console.log(`Content length: ${content.length}`);
-      console.log('--- BODY INNER TEXT ---');
-      console.log(await page.evaluate(() => document.body.innerText));
-      throw e;
+    await page.keyboard.press('Escape');
+    const closeBtn = page.getByRole('button', { name: '×' });
+    if (await closeBtn.isVisible()) {
+      await closeBtn.click();
     }
+
+    // Wait for modal to be gone
+    await expect(modal).not.toBeVisible({ timeout: 10000 });
+
+    // Wait for "Your turn"
+    const turnText = page.getByText('Your turn', { exact: true }).first();
+    await expect(turnText).toBeVisible({ timeout: 15000 });
 
     // Locate the layout trigger
     const layoutTrigger = page.getByTestId('layout-trigger');

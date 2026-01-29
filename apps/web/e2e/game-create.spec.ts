@@ -4,11 +4,6 @@ import { navigateTo, mockSession } from './fixtures/test-utils';
 test.describe('Game Room Creation', () => {
   test.beforeEach(async ({ page }) => {
     // Debugging
-    page.on('console', (msg) => {
-      if (msg.type() === 'error' || msg.text().includes('games')) {
-        console.log(`PAGE LOG: ${msg.text()}`);
-      }
-    });
 
     // Mock the session
     await mockSession(page);

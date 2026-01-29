@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { DEFAULT_LOCALE, Locale } from '@/shared/i18n';
 
-interface LanguageState {
+export interface LanguageState {
   locale: Locale;
   setLocale: (locale: Locale) => void;
 }

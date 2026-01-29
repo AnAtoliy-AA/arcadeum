@@ -30,7 +30,7 @@ export type WebAppConfig = {
   };
 };
 
-function trim(value?: string | null): string | undefined {
+export function trim(value?: string | null): string | undefined {
   if (!value) {
     return undefined;
   }
@@ -39,7 +39,7 @@ function trim(value?: string | null): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
-function parseYouTubeVideoId(input?: string): string | undefined {
+export function parseYouTubeVideoId(input?: string): string | undefined {
   if (!input) return undefined;
   const trimmed = input.trim();
   if (!trimmed) return undefined;

@@ -33,11 +33,7 @@ test.describe('Accessibility', () => {
     const imagesWithoutAlt = page.locator('img:not([alt])');
     // This is a strict test, but good for accessibility
     // If there are many, we might just check if some have alt
-    const count = await imagesWithoutAlt.count();
-    // Since we might have some decorative images, let's just ensure critical ones have them
+    expect(await imagesWithoutAlt.count()).toBe(0);
     // or just log it for now
-    if (count > 0) {
-      console.log(`Warning: Found ${count} images without alt text`);
-    }
   });
 });

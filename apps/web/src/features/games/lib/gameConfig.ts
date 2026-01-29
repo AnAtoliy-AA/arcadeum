@@ -1,5 +1,5 @@
-import type { GameMetadata, GameConfig } from "../types";
-import { gameMetadata } from "../registry";
+import type { GameMetadata, GameConfig } from '../types';
+import { gameMetadata } from '../registry';
 
 /**
  * Game configuration manager for managing game settings and metadata
@@ -40,26 +40,38 @@ export class GameConfigManager {
    * Get games by category
    */
   public getGamesByCategory(category: string): GameConfig[] {
-    return this.getAllConfigs().filter(config => config.category === category);
+    return this.getAllConfigs().filter(
+      (config) => config.category === category,
+    );
   }
 
   /**
    * Get games by complexity range
    */
   public getGamesByComplexity(min: number, max: number): GameConfig[] {
-    return this.getAllConfigs().filter(config => 
-      config.complexity && config.complexity >= min && config.complexity <= max
+    return this.getAllConfigs().filter(
+      (config) =>
+        config.complexity &&
+        config.complexity >= min &&
+        config.complexity <= max,
     );
   }
 
   /**
    * Get games by player count
    */
-  public getGamesByPlayerCount(minPlayers: number, maxPlayers?: number): GameConfig[] {
-    return this.getAllConfigs().filter(config => 
-      config.minPlayers <= minPlayers && 
-      (!maxPlayers || config.maxPlayers >= maxPlayers)
-    );
+  public getGamesByPlayerCount(
+    minPlayers: number,
+    maxPlayers?: number,
+  ): GameConfig[] {
+    return this.getAllConfigs().filter((config) => {
+      const canFitMin =
+        config.minPlayers <= minPlayers && config.maxPlayers >= minPlayers;
+      if (!maxPlayers) return canFitMin;
+      const canFitMax =
+        config.minPlayers <= maxPlayers && config.maxPlayers >= maxPlayers;
+      return canFitMin && canFitMax;
+    });
   }
 
   /**
@@ -67,10 +79,11 @@ export class GameConfigManager {
    */
   public searchGames(query: string): GameConfig[] {
     const lowerQuery = query.toLowerCase();
-    return this.getAllConfigs().filter(config =>
-      config.name.toLowerCase().includes(lowerQuery) ||
-      config.description.toLowerCase().includes(lowerQuery) ||
-      config.tags?.some(tag => tag.toLowerCase().includes(lowerQuery))
+    return this.getAllConfigs().filter(
+      (config) =>
+        config.name.toLowerCase().includes(lowerQuery) ||
+        config.description.toLowerCase().includes(lowerQuery) ||
+        config.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery)),
     );
   }
 
@@ -86,26 +99,28 @@ export class GameConfigManager {
     let games = this.getAllConfigs();
 
     if (preferences.category) {
-      games = games.filter(game => game.category === preferences.category);
+      games = games.filter((game) => game.category === preferences.category);
     }
 
     if (preferences.complexity) {
-      games = games.filter(game => 
-        game.complexity && 
-        Math.abs(game.complexity - preferences.complexity!) <= 1
+      games = games.filter(
+        (game) =>
+          game.complexity &&
+          Math.abs(game.complexity - preferences.complexity!) <= 1,
       );
     }
 
     if (preferences.playerCount) {
-      games = games.filter(game => 
-        game.minPlayers <= preferences.playerCount! && 
-        game.maxPlayers >= preferences.playerCount!
+      games = games.filter(
+        (game) =>
+          game.minPlayers <= preferences.playerCount! &&
+          game.maxPlayers >= preferences.playerCount!,
       );
     }
 
     if (preferences.tags && preferences.tags.length > 0) {
-      games = games.filter(game => 
-        game.tags?.some(tag => preferences.tags!.includes(tag))
+      games = games.filter((game) =>
+        game.tags?.some((tag) => preferences.tags!.includes(tag)),
       );
     }
 
@@ -133,9 +148,9 @@ export class GameConfigManager {
    */
   public isValidPlayerCount(slug: string, playerCount: number): boolean {
     const config = this.getConfig(slug);
-    return config ? 
-      playerCount >= config.minPlayers && playerCount <= config.maxPlayers : 
-      false;
+    return config
+      ? playerCount >= config.minPlayers && playerCount <= config.maxPlayers
+      : false;
   }
 
   /**
@@ -166,7 +181,7 @@ export class GameConfigManager {
     simplestGame: GameConfig | null;
   } {
     const configs = this.getAllConfigs();
-    
+
     const gamesByCategory: Record<string, number> = {};
     let totalComplexity = 0;
     let complexityCount = 0;
@@ -175,17 +190,18 @@ export class GameConfigManager {
 
     for (const config of configs) {
       // Count by category
-      gamesByCategory[config.category] = (gamesByCategory[config.category] || 0) + 1;
+      gamesByCategory[config.category] =
+        (gamesByCategory[config.category] || 0) + 1;
 
       // Track complexity
       if (config.complexity) {
         totalComplexity += config.complexity;
         complexityCount++;
-        
+
         if (!mostComplex || config.complexity > mostComplex.complexity!) {
           mostComplex = config;
         }
-        
+
         if (!simplest || config.complexity < simplest.complexity!) {
           simplest = config;
         }
@@ -195,9 +211,10 @@ export class GameConfigManager {
     return {
       totalGames: configs.length,
       gamesByCategory,
-      averageComplexity: complexityCount > 0 ? totalComplexity / complexityCount : 0,
+      averageComplexity:
+        complexityCount > 0 ? totalComplexity / complexityCount : 0,
       mostComplexGame: mostComplex,
-      simplestGame: simplest
+      simplestGame: simplest,
     };
   }
 }

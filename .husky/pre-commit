@@ -53,6 +53,16 @@ fi
 echo "Running build..."
 npm run build
 
+# Run web unit tests before commiting
+echo "Running web unit tests..."
+cd apps/web
+pnpm run test || {
+  echo "❌ Web unit tests failed. Please fix them before commiting."
+  exit 1
+}
+cd ../..
+echo "✅ Web unit tests passed"
+
 # Run web e2e tests before commiting
 echo "Running e2e tests..."
 cd apps/web
@@ -62,4 +72,3 @@ pnpm run test:e2e || {
 }
 cd ../..
 echo "✅ E2E tests passed"
-

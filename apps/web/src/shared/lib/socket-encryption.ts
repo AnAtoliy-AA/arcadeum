@@ -37,7 +37,11 @@ export async function setEncryptionKey(keyHex: string): Promise<boolean> {
     // Convert hex string to bytes
     const bytes = new Uint8Array(32);
     for (let i = 0; i < 32; i++) {
-      bytes[i] = parseInt(keyHex.substring(i * 2, i * 2 + 2), 16);
+      const val = parseInt(keyHex.substring(i * 2, i * 2 + 2), 16);
+      if (isNaN(val)) {
+        throw new Error('Invalid hex character');
+      }
+      bytes[i] = val;
     }
     encryptionKeyBytes = bytes;
 

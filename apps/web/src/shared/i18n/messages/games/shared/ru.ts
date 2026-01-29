@@ -67,6 +67,9 @@ export const ruMessages = {
     joinByCode: 'Войти по коду',
     cancel: 'Отмена',
     copyInviteLink: 'Копировать ссылку',
+    actions: {
+      backToHome: 'На главную',
+    },
   },
   create: {
     title: 'Создать игровой зал',

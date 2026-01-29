@@ -67,6 +67,9 @@ export const beMessages = {
     joinByCode: 'Увайсці па кодзе',
     cancel: 'Адмена',
     copyInviteLink: 'Капіяваць спасылку',
+    actions: {
+      backToHome: 'На галоўную',
+    },
   },
   create: {
     title: 'Стварыць гульнявы зал',

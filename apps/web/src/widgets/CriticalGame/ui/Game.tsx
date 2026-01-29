@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useCallback, useMemo, useState } from 'react';
+import { useRef, useCallback, useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalGameProps, CriticalCard, HandLayoutMode } from '../types';
 import { getCardTranslationKey } from '../lib/cardUtils';
@@ -15,9 +15,11 @@ import {
   useSeeTheFutureFromLogs,
   useOmniscienceFromLogs,
   useGameAutoplayIntegration,
+  useTurnStatus,
 } from '../hooks';
 import { useGameHandlers } from '../hooks/useGameHandlers';
 import { GameModals } from './GameModals';
+import { GameResultModal } from './GameResultModal';
 import { GameLobby } from './GameLobby';
 import { ChatSection } from './ChatSection';
 import { GameStatusMessage } from './GameStatusMessage';
@@ -69,6 +71,17 @@ export default function CriticalGame({
     initialSession,
     accessToken,
   });
+
+  // Sync modal dismissal state with game over state
+  const [modalDismissed, setModalDismissed] = useState(false);
+  const [lastGameOver, setLastGameOver] = useState(false);
+
+  if (!!isGameOver !== lastGameOver) {
+    setLastGameOver(!!isGameOver);
+    setModalDismissed(false);
+  }
+
+  const showResultModal = isGameOver && !modalDismissed;
 
   useWebGameHaptics(isMyTurn);
 
@@ -223,27 +236,13 @@ export default function CriticalGame({
     handlePlayActionCard,
   });
 
-  // Compute turn status display
-  const turnStatusVariant = useMemo(():
-    | 'completed'
-    | 'yourTurn'
-    | 'waiting'
-    | 'default' => {
-    if (isGameOver) return 'completed';
-    if (!currentTurnPlayer) return 'default';
-    return currentTurnPlayer.playerId === currentUserId
-      ? 'yourTurn'
-      : 'waiting';
-  }, [isGameOver, currentTurnPlayer, currentUserId]);
-
-  const turnStatusText = useMemo((): string => {
-    if (isGameOver) return t('games.table.status.gameCompleted');
-    if (!currentTurnPlayer) return 'Game in progress';
-    if (currentTurnPlayer.playerId === currentUserId) {
-      return t('games.table.players.yourTurn');
-    }
-    return `${t('games.table.players.waitingFor')}: ${resolveDisplayName(currentTurnPlayer.playerId, 'Player')}`;
-  }, [isGameOver, currentTurnPlayer, currentUserId, t, resolveDisplayName]);
+  const { turnStatusVariant, turnStatusText } = useTurnStatus({
+    isGameOver: !!isGameOver,
+    currentTurnPlayer: currentTurnPlayer ?? undefined,
+    currentUserId: currentUserId || '',
+    resolveDisplayName,
+    t: t as (key: string) => string,
+  });
 
   // Game not started yet
   if (!snapshot) {
@@ -368,10 +367,7 @@ export default function CriticalGame({
         {currentPlayer && (
           <GameStatusMessage
             currentPlayerAlive={currentPlayer.alive}
-            isGameOver={isGameOver}
-            isHost={isHost}
-            rematchLoading={rematchLoading}
-            onRematch={openRematchModal}
+            isGameOver={!!isGameOver}
             t={t as (key: string) => string}
           />
         )}
@@ -473,6 +469,15 @@ export default function CriticalGame({
         // Omniscience Modal
         omniscienceModal={omniscienceModal}
         onCloseOmniscienceModal={() => setOmniscienceModal(null)}
+      />
+
+      <GameResultModal
+        isOpen={!!showResultModal}
+        result={currentPlayer?.alive ? 'victory' : 'defeat'}
+        onRematch={isHost ? openRematchModal : undefined}
+        onClose={() => setModalDismissed(true)}
+        rematchLoading={rematchLoading}
+        t={t as (key: string) => string}
       />
     </GameContainer>
   );

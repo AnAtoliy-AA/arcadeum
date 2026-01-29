@@ -9,3 +9,4 @@ export { useGameRoom } from './useGameRoom';
 export { useSeeTheFutureFromLogs } from './useSeeTheFutureFromLogs';
 export { useOmniscienceFromLogs } from './useOmniscienceFromLogs';
 export * from './useGameAutoplayIntegration';
+export { useTurnStatus } from './useTurnStatus';

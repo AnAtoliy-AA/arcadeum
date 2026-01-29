@@ -67,6 +67,9 @@ export const enMessages = {
     joinByCode: 'Join by Code',
     cancel: 'Cancel',
     copyInviteLink: 'Copy Invite Link',
+    actions: {
+      backToHome: 'Back to Home',
+    },
   },
   create: {
     title: 'Create Game Room',

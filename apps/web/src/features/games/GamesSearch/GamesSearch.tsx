@@ -29,7 +29,6 @@ export function GamesSearch({
   initialValue = '',
   placeholder = 'Search...',
   buttonLabel = 'Search',
-  debounceDelay = 3000,
   className,
 }: GamesSearchProps) {
   const [searchText, setSearchText] = useState(initialValue);
@@ -39,17 +38,14 @@ export function GamesSearch({
     setSearchText(initialValue);
   }, [initialValue]);
 
-  // Debounce logic
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onSearch(searchText);
-    }, debounceDelay);
-
-    return () => clearTimeout(timer);
-  }, [searchText, debounceDelay, onSearch]);
-
   const handleSearchClick = () => {
     onSearch(searchText);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchText(value);
+    onSearch(value);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -63,7 +59,7 @@ export function GamesSearch({
       <Input
         placeholder={placeholder}
         value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
+        onChange={handleChange}
         onKeyDown={handleKeyDown}
         fullWidth
       />

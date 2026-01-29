@@ -1,6 +1,12 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import {
+  useState,
+  useMemo,
+  useEffect,
+  useCallback,
+  useDeferredValue,
+} from 'react';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi, GetRoomsResponse } from '@/features/games/api';
@@ -28,24 +34,26 @@ export function GamesPage() {
   const [participationFilter, setParticipationFilter] =
     useState<GamesParticipationFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const deferredSearchQuery = useDeferredValue(searchQuery);
   const [viewMode, setViewMode] = useState<GamesViewMode>('grid');
 
   // Pagination state
   const [limit] = useState(PAGE_SIZE);
 
-  const handleStatusChange = (status: typeof statusFilter) => {
+  const handleStatusChange = useCallback((status: typeof statusFilter) => {
     setStatusFilter(status);
-  };
+  }, []);
 
-  const handleParticipationChange = (
-    participation: typeof participationFilter,
-  ) => {
-    setParticipationFilter(participation);
-  };
+  const handleParticipationChange = useCallback(
+    (participation: typeof participationFilter) => {
+      setParticipationFilter(participation);
+    },
+    [],
+  );
 
-  const handleSearch = (query: string) => {
+  const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
-  };
+  }, []);
 
   const queryClient = useQueryClient();
 
@@ -56,6 +64,7 @@ export function GamesPage() {
   useEffect(() => {
     const handleRoomUpdate = () => {
       // Invalidate the list query to trigger a refetch
+      // React Query handles deduplication of concurrent invalidations
       queryClient.invalidateQueries({ queryKey: ['games', 'list'] });
     };
 
@@ -85,15 +94,16 @@ export function GamesPage() {
       'list',
       statusFilter,
       participationFilter,
-      searchQuery,
+      deferredSearchQuery,
       limit,
+      snapshot.accessToken,
     ],
     queryFn: async ({ pageParam = 1 }) => {
       return gamesApi.getRooms(
         {
           status: statusFilter,
           participation: participationFilter,
-          search: searchQuery || undefined,
+          search: deferredSearchQuery || undefined,
           page: pageParam as number,
           limit,
         },

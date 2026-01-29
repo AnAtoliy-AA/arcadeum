@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import type { Meta, StoryObj } from '@storybook/react';
 import { ErrorState } from './ErrorState';
 
 const meta: Meta<typeof ErrorState> = {

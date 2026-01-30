@@ -1,6 +1,10 @@
-import { PaymentPage } from "./PaymentPage";
+import { Suspense } from 'react';
+import { PaymentPage } from './PaymentPage';
 
 export default function PaymentRoute() {
-  return <PaymentPage />;
+  return (
+    <Suspense fallback={null}>
+      <PaymentPage />
+    </Suspense>
+  );
 }
-

@@ -1,6 +1,7 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
+import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { PaymentSession } from './interfaces/payment-session.interface';
 
 @Controller('payments')
@@ -11,5 +12,13 @@ export class PaymentsController {
   @HttpCode(HttpStatus.CREATED)
   createSession(@Body() dto: CreatePaymentDto): Promise<PaymentSession> {
     return this.paymentsService.createSession(dto);
+  }
+
+  @Post('subscription')
+  @HttpCode(HttpStatus.CREATED)
+  createSubscription(
+    @Body() dto: CreateSubscriptionDto,
+  ): Promise<PaymentSession> {
+    return this.paymentsService.createSubscription(dto);
   }
 }

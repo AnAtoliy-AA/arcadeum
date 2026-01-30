@@ -51,31 +51,30 @@ const StyledTitle = styled.h1<StyledTitleProps>`
   font-size: ${({ $size }) => sizeMap[$size].fontSize};
   line-height: ${({ $size }) => sizeMap[$size].lineHeight};
   font-weight: 800;
-  color: ${({ theme }) => theme.text.primary};
+  color: var(--foreground);
   letter-spacing: -0.03em;
   animation: ${fadeSlideIn} 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  ${({ $gradient, $animated, theme }) =>
+  ${({ $gradient, $animated }) =>
     $gradient &&
-    `
-    background: linear-gradient(
-      135deg,
-      ${theme.text.primary} 0%,
-      ${theme.buttons.primary.gradientStart} 50%,
-      ${theme.text.primary} 100%
-    );
-    background-size: ${$animated ? '200% 100%' : '100% 100%'};
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    ${({ $animated }: StyledTitleProps) =>
-      $animated &&
+    css`
+      background: linear-gradient(
+        135deg,
+        var(--foreground) 0%,
+        var(--primary-gradient-start, #8b5cf6) 50%,
+        var(--foreground) 100%
+      );
+      background-size: ${$animated ? '200% 100%' : '100% 100%'};
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      ${$animated &&
       css`
         animation:
           ${fadeSlideIn} 0.5s ease-out,
           ${gradientShift} 6s ease-in-out infinite;
       `}
-  `}
+    `}
 
   @media (max-width: 768px) {
     font-size: calc(${({ $size }) => sizeMap[$size].fontSize} * 0.75);

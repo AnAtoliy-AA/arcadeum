@@ -38,4 +38,13 @@ test.describe('Support Page', () => {
     const externalLinks = page.locator('a[target="_blank"]');
     expect(await externalLinks.count()).toBeGreaterThan(0);
   });
+
+  test('should link to recurring sponsorship', async ({ page }) => {
+    const sponsorLink = page.getByText(
+      /sponsor development|patrocinar|soutenir|спонсор|become a sponsor/i,
+    );
+    // It should be a route link now, so check if it redirects within the app
+    await sponsorLink.click();
+    await expect(page).toHaveURL(/payment\?mode=subscription/);
+  });
 });

@@ -3,7 +3,10 @@ import path from 'path';
 
 const nextConfig: NextConfig = {
   compiler: {
-    styledComponents: true,
+    styledComponents: {
+      ssr: true,
+      displayName: true,
+    },
   },
   typedRoutes: false,
   turbopack: {

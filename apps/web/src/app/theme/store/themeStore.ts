@@ -14,7 +14,6 @@ export const useThemeStore = create<ThemeState>()(
       setThemePreference: (preference) => set({ themePreference: preference }),
     }),
     {
-      // Let's stick to a clean new key for the store to avoid JSON parsing issues with legacy format if it differs.
       name: 'app-theme-storage',
     },
   ),

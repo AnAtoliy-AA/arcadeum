@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useMutation } from '@tanstack/react-query';
+import { useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { isValidPaymentUrl, parseAmount } from '@/shared/config/payment-config';
@@ -129,11 +130,22 @@ const SecureInfoWrapper = styled.div`
 
 export function PaymentPage() {
   const { snapshot } = useSessionTokens();
+  const searchParams = useSearchParams();
   const { t } = useTranslation();
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  const queryMode = searchParams?.get('mode');
+  const initialMode = queryMode === 'subscription' ? 'subscription' : 'payment';
+  const [localMode, setLocalMode] = useState<'payment' | 'subscription' | null>(
+    null,
+  );
+  const mode = localMode ?? initialMode;
+  const [interval, setInterval] = useState<'MONTHLY' | 'YEARLY'>('MONTHLY');
+
+  // No effect needed for sync, we use derived state above
 
   // Currency is strictly USD now
   const currency = 'USD';
@@ -144,6 +156,21 @@ export function PaymentPage() {
       currency: string;
       description?: string;
     }) => {
+      if (mode === 'subscription') {
+        return paymentApi.createSubscription(
+          {
+            amount: params.amount,
+            currency: params.currency,
+            interval: interval,
+            description: params.description,
+            returnUrl: undefined, // Let backend handle env default
+            cancelUrl: undefined,
+          },
+          {
+            token: snapshot.accessToken || undefined,
+          },
+        );
+      }
       return paymentApi.createSession(params, {
         token: snapshot.accessToken || undefined,
       });
@@ -206,6 +233,15 @@ export function PaymentPage() {
     [amount, currency, note, t, createSession],
   );
 
+  const handleAmountChange = useCallback((val: string) => {
+    // Basic sanitization: only numbers and one dot
+    const cleaned = val.replace(/[^0-9.]/g, '');
+    const parts = cleaned.split('.');
+    if (parts.length <= 2) {
+      setAmount(cleaned);
+    }
+  }, []);
+
   return (
     <PageLayout>
       <BackgroundWrapper />
@@ -213,15 +249,68 @@ export function PaymentPage() {
         <Section>
           <PaymentHeader />
 
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginBottom: '1.5rem',
+              gap: '1rem',
+            }}
+          >
+            <Button
+              variant={mode === 'payment' ? 'primary' : 'secondary'}
+              onClick={() => setLocalMode('payment')}
+            >
+              {t('payments.modes.oneTime') || 'One-time'}
+            </Button>
+            <Button
+              variant={mode === 'subscription' ? 'primary' : 'secondary'}
+              onClick={() => setLocalMode('subscription')}
+            >
+              {t('payments.modes.recurring') || 'Recurring'}
+            </Button>
+          </div>
+
           <GlassCard>
             <StyledForm onSubmit={handleSubmit}>
+              {mode === 'subscription' && (
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginBottom: '1rem',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <Button
+                    variant={interval === 'MONTHLY' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setInterval('MONTHLY');
+                    }}
+                  >
+                    {t('payments.intervals.monthly') || 'Monthly'}
+                  </Button>
+                  <Button
+                    variant={interval === 'YEARLY' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setInterval('YEARLY');
+                    }}
+                  >
+                    {t('payments.intervals.yearly') || 'Yearly'}
+                  </Button>
+                </div>
+              )}
               <FormGroup
                 label={t('payments.amountLabel') || 'Select Amount'}
                 htmlFor="payment-amount"
                 required
               >
                 <PaymentPresets amount={amount} onSelect={setAmount} />
-                <AmountDisplay amount={amount} onChange={setAmount} />
+                <AmountDisplay amount={amount} onChange={handleAmountChange} />
               </FormGroup>
 
               <FormGroup

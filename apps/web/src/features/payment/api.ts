@@ -22,4 +22,22 @@ export const paymentApi = {
       options,
     );
   },
+
+  createSubscription: async (
+    params: {
+      amount: number;
+      currency: string;
+      interval: 'MONTHLY' | 'YEARLY';
+      description?: string;
+      returnUrl?: string;
+      cancelUrl?: string;
+    },
+    options?: ApiClientOptions,
+  ): Promise<CreatePaymentSessionResponse> => {
+    return apiClient.post<CreatePaymentSessionResponse>(
+      '/payments/subscription',
+      params,
+      options,
+    );
+  },
 };

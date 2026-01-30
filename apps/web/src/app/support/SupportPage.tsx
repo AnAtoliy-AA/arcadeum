@@ -144,101 +144,99 @@ export function SupportPage({
 
   return (
     <PageLayout>
-      <PageLayout>
-        <Page>
-          <BackgroundBlob />
-          <ContentWrapper>
-            <Header>
-              <PageTitle size="xl" gradient>
-                {resolvedTitle}
-              </PageTitle>
-              <Tagline>{resolvedTagline}</Tagline>
-              <HeaderDescription>{resolvedDescription}</HeaderDescription>
-            </Header>
+      <Page>
+        <BackgroundBlob />
+        <ContentWrapper>
+          <Header>
+            <PageTitle size="xl" gradient>
+              {resolvedTitle}
+            </PageTitle>
+            <Tagline>{resolvedTagline}</Tagline>
+            <HeaderDescription>{resolvedDescription}</HeaderDescription>
+          </Header>
 
-            <section aria-labelledby="support-team-heading">
-              <SectionTitle id="support-team-heading">
-                {teamSectionTitle}
-              </SectionTitle>
-              <TeamGrid>
-                {localizedTeamMembers.map((member, index) => (
-                  <AnimatedGlassCard
-                    key={member.key}
-                    $delay={`${index * 0.1 + 0.2}s`}
-                  >
-                    <TeamCardInner $hasLinkedin={!!member.linkedin}>
-                      <TeamHeader>
-                        <TeamIcon aria-hidden="true">{member.icon}</TeamIcon>
-                        {member.linkedin && (
-                          <LinkedInButton
-                            href={member.linkedin}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            as="a"
-                            aria-label={`LinkedIn for ${member.name}`}
-                          >
-                            <span>in</span>
-                          </LinkedInButton>
-                        )}
-                      </TeamHeader>
-                      <div>
-                        <TeamName>{member.name}</TeamName>
-                        <TeamRole>{member.role}</TeamRole>
-                      </div>
-                      <TeamBio>{member.bio}</TeamBio>
-                    </TeamCardInner>
-                  </AnimatedGlassCard>
-                ))}
-              </TeamGrid>
-            </section>
-
-            <section aria-labelledby="support-actions-heading">
-              <SectionTitle id="support-actions-heading">
-                {actionsSectionTitle}
-              </SectionTitle>
-              <ActionList>
-                {localizedActions.map((action, index) => (
-                  <AnimatedGlassCard
-                    key={action.key}
-                    $delay={`${index * 0.1 + 0.5}s`}
-                  >
-                    <ActionHeader>
-                      <TeamIcon aria-hidden="true">{action.icon}</TeamIcon>
-                      <ActionTitle>{action.title}</ActionTitle>
-                    </ActionHeader>
-                    <ActionDescription>{action.description}</ActionDescription>
-                    <CtaRow>
-                      {action.type === 'route' ? (
-                        <CtaLink href={action.href}>
-                          <span>{action.cta}</span>
-                          <CtaIcon aria-hidden="true">→</CtaIcon>
-                        </CtaLink>
-                      ) : action.type === 'external' ? (
-                        <ExternalCta
-                          href={action.href}
+          <section aria-labelledby="support-team-heading">
+            <SectionTitle id="support-team-heading">
+              {teamSectionTitle}
+            </SectionTitle>
+            <TeamGrid>
+              {localizedTeamMembers.map((member, index) => (
+                <AnimatedGlassCard
+                  key={member.key}
+                  $delay={`${index * 0.1 + 0.2}s`}
+                >
+                  <TeamCardInner $hasLinkedin={!!member.linkedin}>
+                    <TeamHeader>
+                      <TeamIcon aria-hidden="true">{member.icon}</TeamIcon>
+                      {member.linkedin && (
+                        <LinkedInButton
+                          href={member.linkedin}
                           target="_blank"
                           rel="noopener noreferrer"
+                          as="a"
+                          aria-label={`LinkedIn for ${member.name}`}
                         >
-                          <span>{action.cta}</span>
-                          <CtaIcon aria-hidden="true">↗</CtaIcon>
-                        </ExternalCta>
-                      ) : (
-                        <CopyActionWrapper
-                          value={action.value}
-                          label={action.cta}
-                          successMessage={action.successMessage}
-                        />
+                          <span>in</span>
+                        </LinkedInButton>
                       )}
-                    </CtaRow>
-                  </AnimatedGlassCard>
-                ))}
-              </ActionList>
-            </section>
+                    </TeamHeader>
+                    <div>
+                      <TeamName>{member.name}</TeamName>
+                      <TeamRole>{member.role}</TeamRole>
+                    </div>
+                    <TeamBio>{member.bio}</TeamBio>
+                  </TeamCardInner>
+                </AnimatedGlassCard>
+              ))}
+            </TeamGrid>
+          </section>
 
-            <Thanks>{resolvedThanks}</Thanks>
-          </ContentWrapper>
-        </Page>
-      </PageLayout>
+          <section aria-labelledby="support-actions-heading">
+            <SectionTitle id="support-actions-heading">
+              {actionsSectionTitle}
+            </SectionTitle>
+            <ActionList>
+              {localizedActions.map((action, index) => (
+                <AnimatedGlassCard
+                  key={action.key}
+                  $delay={`${index * 0.1 + 0.5}s`}
+                >
+                  <ActionHeader>
+                    <TeamIcon aria-hidden="true">{action.icon}</TeamIcon>
+                    <ActionTitle>{action.title}</ActionTitle>
+                  </ActionHeader>
+                  <ActionDescription>{action.description}</ActionDescription>
+                  <CtaRow>
+                    {action.type === 'route' ? (
+                      <CtaLink href={action.href}>
+                        <span>{action.cta}</span>
+                        <CtaIcon aria-hidden="true">→</CtaIcon>
+                      </CtaLink>
+                    ) : action.type === 'external' ? (
+                      <ExternalCta
+                        href={action.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <span>{action.cta}</span>
+                        <CtaIcon aria-hidden="true">↗</CtaIcon>
+                      </ExternalCta>
+                    ) : (
+                      <CopyActionWrapper
+                        value={action.value}
+                        label={action.cta}
+                        successMessage={action.successMessage}
+                      />
+                    )}
+                  </CtaRow>
+                </AnimatedGlassCard>
+              ))}
+            </ActionList>
+          </section>
+
+          <Thanks>{resolvedThanks}</Thanks>
+        </ContentWrapper>
+      </Page>
     </PageLayout>
   );
 }

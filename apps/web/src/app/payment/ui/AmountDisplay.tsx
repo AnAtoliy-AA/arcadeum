@@ -67,8 +67,8 @@ export function AmountDisplay({ amount, onChange }: AmountDisplayProps) {
       <CurrencySymbol>$</CurrencySymbol>
       <LargeAmountInput
         id="payment-amount"
-        type="number"
-        step="0.01"
+        type="text"
+        inputMode="decimal"
         placeholder="0.00"
         value={amount}
         onChange={(e) => onChange(e.target.value)}

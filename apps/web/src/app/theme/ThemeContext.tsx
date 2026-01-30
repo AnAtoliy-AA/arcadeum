@@ -98,6 +98,10 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
       '--surface-background',
       theme.surfaces.panel.background,
     );
+    root.style.setProperty(
+      '--primary-gradient-start',
+      theme.buttons.primary.gradientStart,
+    );
 
     if (document.body) {
       document.body.style.backgroundColor = theme.background.base;

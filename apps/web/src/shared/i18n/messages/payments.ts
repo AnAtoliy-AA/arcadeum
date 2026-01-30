@@ -49,6 +49,14 @@ const paymentsMessagesDefinition = {
       tryAgain: 'Try Again',
       returnHome: 'Return Home',
     },
+    modes: {
+      oneTime: 'One-time',
+      recurring: 'Recurring',
+    },
+    intervals: {
+      monthly: 'Monthly',
+      yearly: 'Yearly',
+    },
   },
   es: {
     title: 'Pago',
@@ -97,6 +105,14 @@ const paymentsMessagesDefinition = {
         '¡No te preocupes! No se realizaron cargos a tu cuenta. Siempre puedes intentarlo de nuevo cuando estés listo.',
       tryAgain: 'Intentar de Nuevo',
       returnHome: 'Volver al Inicio',
+    },
+    modes: {
+      oneTime: 'Pago único',
+      recurring: 'Recurrente',
+    },
+    intervals: {
+      monthly: 'Mensual',
+      yearly: 'Anual',
     },
   },
   fr: {
@@ -147,6 +163,14 @@ const paymentsMessagesDefinition = {
       tryAgain: 'Réessayer',
       returnHome: "Retour à l'Accueil",
     },
+    modes: {
+      oneTime: 'Ponctuel',
+      recurring: 'Récurrent',
+    },
+    intervals: {
+      monthly: 'Mensuel',
+      yearly: 'Annuel',
+    },
   },
   ru: {
     title: 'Оплата',
@@ -196,6 +220,14 @@ const paymentsMessagesDefinition = {
       tryAgain: 'Попробовать еще раз',
       returnHome: 'На главную',
     },
+    modes: {
+      oneTime: 'Разовый',
+      recurring: 'Регулярный',
+    },
+    intervals: {
+      monthly: 'Ежемесячно',
+      yearly: 'Ежегодно',
+    },
   },
   be: {
     title: 'Аплата',
@@ -244,6 +276,14 @@ const paymentsMessagesDefinition = {
         'Не хвалюйцеся! З вашага рахунку не было спісана ніякіх сродкаў. Вы заўсёды можаце паспрабаваць яшчэ раз, калі будзеце гатовыя.',
       tryAgain: 'Паспрабаваць яшчэ раз',
       returnHome: 'На галоўную',
+    },
+    modes: {
+      oneTime: 'Разавы',
+      recurring: 'Рэгулярны',
+    },
+    intervals: {
+      monthly: 'Штомесяц',
+      yearly: 'Штогод',
     },
   },
 } satisfies Record<Locale, Record<string, unknown>>;

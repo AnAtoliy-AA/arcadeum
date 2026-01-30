@@ -421,7 +421,7 @@ const darkTokens: ThemeTokens = {
   copyNotice: '#38bdf8',
 };
 
-export const DEFAULT_THEME_NAME: ThemeName = 'neonDark';
+export const DEFAULT_THEME_NAME: ThemeName = 'dark';
 
 export const themeTokens: Record<ThemeName, ThemeTokens> = {
   light: lightTokens,

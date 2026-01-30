@@ -39,7 +39,8 @@ test.describe('Payment Flow', () => {
 
     const input = page.locator('#payment-amount');
     await expect(input).toBeVisible();
-    await input.fill('123');
+    await input.click();
+    await input.pressSequentially('123', { delay: 50 });
     await expect(input).toHaveValue('123');
   });
 
@@ -90,5 +91,49 @@ test.describe('Payment Flow', () => {
     await expect(page).toHaveURL(/checkout\.stripe\.com/);
     // We mocked the body, so we can check for our mock content
     await expect(page.getByText('Stripe Checkout')).toBeVisible();
+  });
+
+  test('should allow selecting recurring subscription', async ({ page }) => {
+    // Mock subscription API
+    await page.route('**/subscription', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          paymentUrl: 'https://www.sandbox.paypal.com/mock-subscription',
+        }),
+      });
+    });
+
+    // Mock window.open to handle redirect
+    await page.addInitScript(() => {
+      window.open = (url) => {
+        window.location.href = url as string;
+        return null;
+      };
+    });
+
+    // Navigate with query param
+    await navigateTo(page, '/payment?mode=subscription');
+
+    // Check that recurring is active (primary variant usually implies active visual state)
+    // We can just verify the Recurring button is visible and we can select interval
+    await expect(page.getByRole('button', { name: /monthly/i })).toBeVisible();
+
+    // Fill amount
+    const input = page.locator('#payment-amount');
+    await input.click();
+    await input.pressSequentially('25', { delay: 50 });
+    await expect(input).toHaveValue('25');
+
+    // Submit
+    const submitBtn = page.getByRole('button', {
+      name: /checkout|pay|continue/i,
+    });
+    await expect(submitBtn).toBeEnabled();
+    await submitBtn.click();
+
+    // Verify redirection
+    await expect(page).toHaveURL(/mock-subscription/i, { timeout: 15000 });
   });
 });

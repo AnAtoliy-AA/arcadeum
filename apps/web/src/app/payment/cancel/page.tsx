@@ -1,8 +1,7 @@
 'use client';
 
 import styled, { keyframes } from 'styled-components';
-import Link from 'next/link';
-import { PageLayout, Container, PageTitle, Button } from '@/shared/ui';
+import { PageLayout, Container, PageTitle, LinkButton } from '@/shared/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 const fadeIn = keyframes`
@@ -74,16 +73,12 @@ export default function PaymentCancelPage() {
         </div>
 
         <ButtonGroup>
-          <Link href="/payment" passHref legacyBehavior>
-            <Button size="lg" variant="primary">
-              {t('payments.cancelPage.tryAgain') || 'Try Again'}
-            </Button>
-          </Link>
-          <Link href="/" passHref legacyBehavior>
-            <Button size="lg" variant="ghost">
-              {t('payments.cancelPage.returnHome') || 'Return Home'}
-            </Button>
-          </Link>
+          <LinkButton href="/payment" size="lg" variant="primary">
+            {t('payments.cancelPage.tryAgain') || 'Try Again'}
+          </LinkButton>
+          <LinkButton href="/" size="lg" variant="ghost">
+            {t('payments.cancelPage.returnHome') || 'Return Home'}
+          </LinkButton>
         </ButtonGroup>
       </CancelContainer>
     </PageLayout>

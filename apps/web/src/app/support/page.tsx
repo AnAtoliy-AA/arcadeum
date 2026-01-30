@@ -43,14 +43,6 @@ const TEAM_MEMBERS: SupportTeamMember[] = [
   },
 ];
 
-function trim(value?: string | null): string | undefined {
-  if (!value) {
-    return undefined;
-  }
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
-}
-
 function buildActions(): SupportAction[] {
   const actions: SupportAction[] = [
     {
@@ -65,20 +57,16 @@ function buildActions(): SupportAction[] {
     },
   ];
 
-  const sponsorUrl = trim(process.env.NEXT_PUBLIC_SUPPORT_URL);
-
-  if (sponsorUrl) {
-    actions.push({
-      key: 'sponsor',
-      icon: '⭐️',
-      type: 'external',
-      href: sponsorUrl,
-      title: 'Recurring sponsorship',
-      description:
-        'Set up a monthly or annual contribution to underwrite hosting, QA sessions, and new game prototypes.',
-      cta: 'Sponsor development',
-    });
-  }
+  actions.push({
+    key: 'sponsor',
+    icon: '⭐️',
+    type: 'route',
+    href: '/payment?mode=subscription',
+    title: 'Recurring sponsorship',
+    description:
+      'Set up a monthly or annual contribution to underwrite hosting, QA sessions, and new game prototypes.',
+    cta: 'Sponsor development',
+  });
 
   return actions;
 }

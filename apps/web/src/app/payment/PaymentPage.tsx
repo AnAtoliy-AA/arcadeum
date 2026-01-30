@@ -126,6 +126,35 @@ const SecureInfoWrapper = styled.div`
   gap: 0.5rem;
 `;
 
+const CheckboxWrapper = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
+`;
+
+const StyledCheckbox = styled.input`
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: #3b82f6;
+  cursor: pointer;
+`;
+
+const CheckboxLabel = styled.span`
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.8));
+`;
+
 // --- Main Component ---
 
 export function PaymentPage() {
@@ -134,6 +163,7 @@ export function PaymentPage() {
   const { t } = useTranslation();
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
+  const [showName, setShowName] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
@@ -180,6 +210,22 @@ export function PaymentPage() {
         if (!isValidPaymentUrl(data.paymentUrl)) {
           throw new Error(
             t('payments.errors.invalidUrl') || 'Invalid payment URL received',
+          );
+        }
+        // Store note data for the success page to save
+        // Using localStorage (not sessionStorage) because PayPal opens in a new tab
+        // Store displayName directly since success page may load before session
+        const normalizedAmount = parseAmount(amount);
+        if (note.trim()) {
+          localStorage.setItem(
+            'pending_payment_note',
+            JSON.stringify({
+              note: note.trim(),
+              amount: normalizedAmount,
+              currency: currency,
+              displayName:
+                snapshot.userId && showName ? snapshot.displayName : null,
+            }),
           );
         }
         window.open(data.paymentUrl, '_blank', 'noopener,noreferrer');
@@ -331,6 +377,21 @@ export function PaymentPage() {
                   rows={3}
                 />
               </FormGroup>
+
+              {snapshot.userId && note.trim() && (
+                <CheckboxWrapper>
+                  <StyledCheckbox
+                    type="checkbox"
+                    id="show-name"
+                    checked={showName}
+                    onChange={(e) => setShowName(e.target.checked)}
+                  />
+                  <CheckboxLabel>
+                    {t('payments.showNameLabel') ||
+                      'Show my name with this note'}
+                  </CheckboxLabel>
+                </CheckboxWrapper>
+              )}
 
               {error && (
                 <StatusMessage $type="error">

@@ -57,6 +57,16 @@ const paymentsMessagesDefinition = {
       monthly: 'Monthly',
       yearly: 'Yearly',
     },
+    notes: {
+      title: 'Supporter Notes',
+      subtitle:
+        'Messages of support from our amazing community. Thank you for keeping us going!',
+      emptyMessage: 'No notes yet. Be the first to leave a supportive message!',
+      anonymous: 'Anonymous Supporter',
+      loading: 'Loading...',
+      loadMore: 'Load More',
+    },
+    showNameLabel: 'Show my name with this note',
   },
   es: {
     title: 'Pago',
@@ -114,6 +124,17 @@ const paymentsMessagesDefinition = {
       monthly: 'Mensual',
       yearly: 'Anual',
     },
+    notes: {
+      title: 'Notas de Apoyo',
+      subtitle:
+        'Mensajes de apoyo de nuestra increíble comunidad. ¡Gracias por mantenernos adelante!',
+      emptyMessage:
+        'Aún no hay notas. ¡Sé el primero en dejar un mensaje de apoyo!',
+      anonymous: 'Apoyo Anónimo',
+      loading: 'Cargando...',
+      loadMore: 'Cargar Más',
+    },
+    showNameLabel: 'Mostrar mi nombre con esta nota',
   },
   fr: {
     title: 'Paiement',
@@ -171,6 +192,17 @@ const paymentsMessagesDefinition = {
       monthly: 'Mensuel',
       yearly: 'Annuel',
     },
+    notes: {
+      title: 'Notes de Soutien',
+      subtitle:
+        'Messages de soutien de notre incroyable communauté. Merci de nous faire avancer!',
+      emptyMessage:
+        'Pas encore de notes. Soyez le premier à laisser un message de soutien!',
+      anonymous: 'Supporter Anonyme',
+      loading: 'Chargement...',
+      loadMore: 'Charger Plus',
+    },
+    showNameLabel: 'Afficher mon nom avec cette note',
   },
   ru: {
     title: 'Оплата',
@@ -228,6 +260,17 @@ const paymentsMessagesDefinition = {
       monthly: 'Ежемесячно',
       yearly: 'Ежегодно',
     },
+    notes: {
+      title: 'Записки поддержки',
+      subtitle:
+        'Сообщения поддержки от нашего удивительного сообщества. Спасибо, что поддерживаете нас!',
+      emptyMessage:
+        'Пока нет записок. Будь первым, кто оставит поддерживающее сообщение!',
+      anonymous: 'Анонимный Поддержатель',
+      loading: 'Загрузка...',
+      loadMore: 'Загрузить Ещё',
+    },
+    showNameLabel: 'Показать моё имя в этой записке',
   },
   be: {
     title: 'Аплата',
@@ -285,6 +328,17 @@ const paymentsMessagesDefinition = {
       monthly: 'Штомесяц',
       yearly: 'Штогод',
     },
+    notes: {
+      title: 'Запіскі падтрымкі',
+      subtitle:
+        'Паведамленні падтрымкі ад нашай дзіўнай супольнасці. Дзякуй, што падтрымліваеце нас!',
+      emptyMessage:
+        'Пакуль няма запісак. Будзь першым, хто пакіне паведамленне падтрымкі!',
+      anonymous: 'Ананімны Падтрымальнік',
+      loading: 'Загрузка...',
+      loadMore: 'Загрузіць Яшчэ',
+    },
+    showNameLabel: 'Паказаць маё імя ў гэтай запісцы',
   },
 } satisfies Record<Locale, Record<string, unknown>>;
 

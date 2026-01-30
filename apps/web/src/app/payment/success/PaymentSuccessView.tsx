@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useSearchParams } from 'next/navigation';
 
@@ -12,6 +12,8 @@ import {
   LinkButton,
 } from '@/shared/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { paymentApi } from '@/features/payment/api';
 import { particles } from './confetti-particles';
 
 const fadeIn = keyframes`
@@ -155,11 +157,54 @@ const ButtonGroup = styled.div`
   animation: ${fadeIn} 0.6s ease-out 0.4s backwards;
 `;
 
+interface PendingNote {
+  note: string;
+  amount: number;
+  currency: string;
+  displayName?: string | null;
+}
+
 function SuccessContent() {
   const { t } = useTranslation();
+  const { snapshot } = useSessionTokens();
   const searchParams = useSearchParams();
   const paymentId = searchParams?.get('paymentId');
   const token = searchParams?.get('token');
+  const hasSavedNoteRef = useRef(false);
+
+  // Save pending note on mount
+  useEffect(() => {
+    if (hasSavedNoteRef.current) return;
+
+    const transactionId = paymentId || token;
+    if (!transactionId) return;
+
+    const pendingNoteStr = localStorage.getItem('pending_payment_note');
+    if (!pendingNoteStr) return;
+
+    hasSavedNoteRef.current = true;
+    localStorage.removeItem('pending_payment_note');
+
+    try {
+      const pendingNote: PendingNote = JSON.parse(pendingNoteStr);
+      paymentApi
+        .createNote(
+          {
+            note: pendingNote.note,
+            amount: pendingNote.amount,
+            currency: pendingNote.currency,
+            transactionId,
+            displayName: pendingNote.displayName || undefined,
+          },
+          { token: snapshot.accessToken || undefined },
+        )
+        .catch(() => {
+          // Silently fail - the payment still succeeded
+        });
+    } catch {
+      // Invalid JSON in localStorage, ignore
+    }
+  }, [paymentId, token, snapshot.accessToken]);
 
   return (
     <>

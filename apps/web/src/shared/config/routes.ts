@@ -27,6 +27,7 @@ export const routes = {
   // Support & Payments
   support: '/support',
   payment: '/payment',
+  notes: '/notes',
 
   // Legal
   terms: '/terms',

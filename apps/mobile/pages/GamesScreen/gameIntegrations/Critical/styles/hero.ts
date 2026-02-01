@@ -1,0 +1,212 @@
+import { StyleSheet } from 'react-native';
+import type { Palette } from '@/hooks/useThemedStyles';
+import { platformShadow } from '@/lib/platformShadow';
+
+export const getHeroStyles = (palette: Palette) => {
+  const {
+    isLight,
+    gameRoom: {
+      heroBackground,
+      border: borderColor,
+      surfaceShadow,
+      heroGlowPrimary,
+      heroGlowSecondary,
+      decorCheck,
+      decorPlay,
+      decorAlert,
+      heroBadgeBackground,
+      heroBadgeBorder,
+      heroBadgeIcon: heroBadgeIconColor,
+      heroBadgeText: heroBadgeTextColor,
+      titleBackground,
+      titleBorder,
+      titleGlow,
+      titleText,
+    },
+  } = palette;
+  const fill = StyleSheet.absoluteFillObject;
+
+  return {
+    headerCard: {
+      padding: 22,
+      borderRadius: 28,
+      backgroundColor: heroBackground,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor,
+      overflow: 'hidden',
+      position: 'relative',
+      ...platformShadow({
+        color: surfaceShadow,
+        opacity: isLight ? 0.9 : 0.65,
+        radius: 20,
+        offset: { width: 0, height: 8 },
+        elevation: 4,
+      }),
+    },
+    heroGradientLayer: {
+      ...fill,
+      opacity: 0.85,
+    },
+    heroBackdrop: {
+      ...fill,
+      backgroundColor: heroBackground,
+      opacity: isLight ? 0.92 : 0.88,
+    },
+    heroGlow: {
+      position: 'absolute',
+      width: 240,
+      height: 240,
+      borderRadius: 180,
+      backgroundColor: `${heroGlowPrimary}33`,
+      top: -100,
+      right: -80,
+    },
+    heroGlowSecondary: {
+      position: 'absolute',
+      width: 230,
+      height: 230,
+      borderRadius: 150,
+      backgroundColor: `${heroGlowSecondary}2b`,
+      bottom: -90,
+      left: -70,
+    },
+    heroOrbit: {
+      position: 'absolute',
+      top: 40,
+      right: -30,
+      width: 160,
+      height: 160,
+      borderRadius: 120,
+      borderWidth: 1.2,
+      borderColor: `${decorCheck}66`,
+      opacity: 0.6,
+      transform: [{ rotate: '14deg' }],
+    },
+    heroAccentTop: {
+      position: 'absolute',
+      top: -36,
+      left: -40,
+      width: 140,
+      height: 140,
+      borderRadius: 120,
+      backgroundColor: `${decorPlay}24`,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: `${decorPlay}66`,
+      transform: [{ rotate: '-18deg' }],
+    },
+    heroAccentBottom: {
+      position: 'absolute',
+      bottom: -46,
+      right: -20,
+      width: 170,
+      height: 170,
+      borderRadius: 150,
+      backgroundColor: `${decorAlert}1a`,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: `${decorAlert}5c`,
+      transform: [{ rotate: '12deg' }],
+    },
+    heroGradientSwatchA: {
+      backgroundColor: `${heroGlowSecondary}29`,
+    },
+    heroGradientSwatchB: {
+      backgroundColor: heroBackground,
+    },
+    heroGradientSwatchC: {
+      backgroundColor: `${heroGlowPrimary}2f`,
+    },
+    headerContent: {
+      gap: 18,
+    },
+    heroHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 12,
+    },
+    heroBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      paddingHorizontal: 14,
+      paddingVertical: 8,
+      borderRadius: 999,
+      backgroundColor: heroBadgeBackground,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: heroBadgeBorder,
+    },
+    heroBadgeIcon: {
+      color: heroBadgeIconColor,
+    },
+    heroBadgeText: {
+      color: heroBadgeTextColor,
+      fontWeight: '700',
+      fontSize: 13,
+    },
+    heroTitleStack: {
+      gap: 12,
+    },
+    heroTagline: {
+      color: decorCheck,
+      textTransform: 'uppercase',
+      fontSize: 12,
+      letterSpacing: 1.6,
+      fontWeight: '700',
+    },
+    heroTitleFrame: {
+      position: 'relative',
+      paddingHorizontal: 20,
+      paddingVertical: 12,
+      borderRadius: 24,
+      backgroundColor: titleBackground,
+      borderWidth: 1.2,
+      borderColor: titleBorder,
+      overflow: 'hidden',
+      ...platformShadow({
+        color: titleGlow,
+        opacity: isLight ? 0.5 : 0.7,
+        radius: 20,
+        offset: { width: 0, height: 8 },
+        elevation: 4,
+      }),
+    },
+    heroTitleGlow: {
+      ...fill,
+      backgroundColor: `${titleGlow}1f`,
+      opacity: isLight ? 0.9 : 0.75,
+    },
+    roomTitle: {
+      color: titleText,
+      fontSize: 28,
+      fontWeight: '800',
+      lineHeight: 32,
+    },
+    gameLabel: {
+      color: heroBadgeTextColor,
+      fontSize: 13,
+      fontWeight: '600',
+    },
+    heroDividerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+    },
+    heroDividerLine: {
+      flex: 1,
+      height: 1,
+      backgroundColor: `${heroBadgeBorder}66`,
+    },
+    heroDividerDot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: decorPlay,
+    },
+    heroDividerDotSecondary: {
+      width: 6,
+      height: 6,
+      borderRadius: 3,
+      backgroundColor: decorAlert,
+    },
+  };
+};

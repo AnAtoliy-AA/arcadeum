@@ -1,0 +1,211 @@
+import { create } from 'zustand';
+import { gameSocket } from '@/shared/lib/socket';
+import { maybeDecrypt } from '@/shared/lib/socket-encryption';
+import type { GameRoomSummary, GameInitialData } from '@/shared/types/games';
+
+/**
+ * Cleanup function to remove all registered socket listeners.
+ * Stored at module level to persist across store calls.
+ */
+let cleanupListeners: (() => void) | null = null;
+
+interface GameState {
+  room: GameRoomSummary | null;
+  session: unknown | null;
+  isConnected: boolean;
+  loading: boolean;
+  error: string | null;
+
+  connect: (
+    roomId: string,
+    userId: string | null,
+    accessToken: string | null,
+    mode?: 'play' | 'watch',
+    inviteCode?: string,
+    initialData?: GameInitialData,
+  ) => void;
+  disconnect: () => void;
+  joinRoom: (
+    roomId: string,
+    userId: string | null,
+    mode: 'play' | 'watch',
+    inviteCode?: string,
+  ) => void;
+  leaveRoom: (roomId: string, userId: string | null) => void;
+  reset: () => void;
+}
+
+export const useGameStore = create<GameState>((set, get) => ({
+  room: null,
+  session: null,
+  isConnected: false,
+  loading: false,
+  error: null,
+
+  connect: (
+    roomId,
+    userId,
+    accessToken,
+    mode = 'play',
+    inviteCode,
+    initialData,
+  ) => {
+    // Clean up previous listeners before registering new ones
+    if (cleanupListeners) {
+      cleanupListeners();
+      cleanupListeners = null;
+    }
+
+    if (mode !== 'watch' && !accessToken) return;
+
+    set({
+      loading: !initialData?.room, // Don't load if we have data
+      error: null,
+      room: initialData?.room || null,
+      session: initialData?.session || null,
+    });
+
+    // Define handlers
+    const handleJoined = (payload: {
+      room?: GameRoomSummary;
+      session?: unknown;
+    }) => {
+      if (payload?.room && payload.room.id === roomId) {
+        set({
+          room: payload.room,
+          session: payload.session ?? null,
+          loading: false,
+          error: null,
+        });
+      }
+    };
+
+    const handleRoomUpdate = (payload: { room?: GameRoomSummary }) => {
+      if (payload?.room && payload.room.id === roomId) {
+        set({ room: payload.room });
+      }
+    };
+
+    const handleGameStarted = (payload: {
+      room?: GameRoomSummary;
+      session?: unknown;
+    }) => {
+      if (payload?.room && payload.room.id === roomId) {
+        set({ room: payload.room, session: payload.session ?? null });
+      }
+    };
+
+    const handleException = (payload: { message?: string }) => {
+      const message = payload?.message || 'An error occurred';
+      set({ error: message, loading: false });
+    };
+
+    const handleConnect = () => {
+      set({ isConnected: true });
+      get().joinRoom(roomId, userId, mode, inviteCode);
+    };
+
+    const handleDisconnect = () => {
+      set({ isConnected: false, loading: true });
+    };
+
+    const handlePlayerJoined = (payload: { room?: GameRoomSummary }) => {
+      if (payload?.room && payload.room.id === roomId) {
+        set({ room: payload.room });
+      }
+    };
+
+    const handlePlayerLeft = (payload: {
+      room?: GameRoomSummary;
+      userId?: string;
+      roomDeleted?: boolean;
+    }) => {
+      // If the room was deleted, or if this room update belongs to our current room
+      if (payload?.roomDeleted && payload.room?.id === roomId) {
+        set({ room: null, session: null, error: 'Room was deleted' });
+      } else if (payload?.room && payload.room.id === roomId) {
+        set({ room: payload.room });
+      }
+    };
+
+    // Decrypt wrapper
+    const decryptHandler = <T>(handler: (payload: T) => void) => {
+      return async (raw: unknown) => {
+        const payload = await maybeDecrypt<T>(raw);
+        if (payload !== null) {
+          handler(payload);
+        }
+      };
+    };
+
+    const wrappedHandleJoined = decryptHandler(handleJoined);
+    const wrappedHandleRoomUpdate = decryptHandler(handleRoomUpdate);
+    const wrappedHandlePlayerJoined = decryptHandler(handlePlayerJoined);
+    const wrappedHandlePlayerLeft = decryptHandler(handlePlayerLeft);
+    const wrappedHandleGameStarted = decryptHandler(handleGameStarted);
+    const wrappedHandleException = decryptHandler(handleException);
+
+    // Register
+    gameSocket.on('games.room.joined', wrappedHandleJoined);
+    gameSocket.on('games.room.watching', wrappedHandleJoined);
+    gameSocket.on('games.room.update', wrappedHandleRoomUpdate);
+    gameSocket.on('games.player.joined', wrappedHandlePlayerJoined);
+    gameSocket.on('games.player.left', wrappedHandlePlayerLeft);
+    gameSocket.on('games.game.started', wrappedHandleGameStarted);
+    gameSocket.on('exception', wrappedHandleException);
+    gameSocket.on('connect', handleConnect);
+    gameSocket.on('disconnect', handleDisconnect);
+
+    // Store cleanup function to properly remove listeners later
+    cleanupListeners = () => {
+      gameSocket.off('games.room.joined', wrappedHandleJoined);
+      gameSocket.off('games.room.watching', wrappedHandleJoined);
+      gameSocket.off('games.room.update', wrappedHandleRoomUpdate);
+      gameSocket.off('games.player.joined', wrappedHandlePlayerJoined);
+      gameSocket.off('games.player.left', wrappedHandlePlayerLeft);
+      gameSocket.off('games.game.started', wrappedHandleGameStarted);
+      gameSocket.off('exception', wrappedHandleException);
+      gameSocket.off('connect', handleConnect);
+      gameSocket.off('disconnect', handleDisconnect);
+    };
+
+    // If already connected
+    if (gameSocket.connected) {
+      handleConnect();
+    }
+  },
+
+  disconnect: () => {
+    // Clean up all registered listeners
+    if (cleanupListeners) {
+      cleanupListeners();
+      cleanupListeners = null;
+    }
+    gameSocket.disconnect();
+    set({
+      isConnected: false,
+      room: null,
+      session: null,
+      error: null,
+      loading: false,
+    });
+  },
+
+  joinRoom: (roomId, userId, mode, inviteCode) => {
+    set({ loading: true, error: null });
+    if (mode === 'watch') {
+      gameSocket.emit('games.room.watch', { roomId, inviteCode });
+    } else if (userId) {
+      gameSocket.emit('games.room.join', { roomId, userId, inviteCode });
+    }
+  },
+
+  leaveRoom: (roomId, userId) => {
+    if (roomId && userId) {
+      gameSocket.emit('games.room.leave', { roomId, userId });
+    }
+    set({ room: null, session: null, error: null });
+  },
+
+  reset: () => set({ room: null, session: null, error: null, loading: false }),
+}));

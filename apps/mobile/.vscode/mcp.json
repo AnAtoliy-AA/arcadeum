@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "Sentry": {
+      "url": "https://mcp.sentry.dev/mcp/aicoapp/aicoapp-fe",
+      "type": "http"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 1050" width="750" height="1050" role="img" aria-labelledby="title desc">
+<title id="title">Critical card</title>
+<desc id="desc">Stylised cartoon card illustration.</desc>
+
+  <defs>
+    <linearGradient id="bg-gradient" gradientTransform="rotate(202.11)">
+      <stop offset="0%" stop-color="#7F1D1D" />
+      <stop offset="100%" stop-color="#FBCFE8" />
+    </linearGradient>
+    <radialGradient id="flare-gradient" cx="50%" cy="45%" r="65%">
+      <stop offset="0.00%" stop-color="#FB7185" stop-opacity="0.90" /><stop offset="20.00%" stop-color="#FB7185" stop-opacity="0.75" /><stop offset="40.00%" stop-color="#FB7185" stop-opacity="0.60" /><stop offset="60.00%" stop-color="#FB7185" stop-opacity="0.14" /><stop offset="80.00%" stop-color="#FB7185" stop-opacity="0.08" /><stop offset="100.00%" stop-color="#FB7185" stop-opacity="0.05" />
+    </radialGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#bg-gradient)" />
+  <circle cx="375" cy="441" r="345" fill="url(#flare-gradient)" />
+  
+  <g transform="translate(400.71, 465.9) rotate(1.08)">
+    <ellipse cx="0" cy="176.4" rx="120.75" ry="308.7" fill="#7F1D1D" />
+    <circle cx="0" cy="0" r="105.00000000000001" fill="#7F1D1D" />
+    <path d="M -63.00000000000001 -21.000000000000004 L -115.50000000000003 -136.50000000000003 L -21.000000000000004 -84.00000000000001 Z" fill="#7F1D1D" />
+    <path d="M 63.00000000000001 -21.000000000000004 L 115.50000000000003 -136.50000000000003 L 21.000000000000004 -84.00000000000001 Z" fill="#7F1D1D" />
+    <circle cx="-47.25000000000001" cy="-10.500000000000002" r="18.900000000000002" fill="#FBCFE8" />
+    <circle cx="47.25000000000001" cy="-10.500000000000002" r="18.900000000000002" fill="#FBCFE8" />
+    <path d="M -28.350000000000005 31.500000000000004 Q 0 56.13303096860364 28.350000000000005 31.500000000000004" stroke="#FBCFE8" stroke-width="8.400000000000002" fill="none" stroke-linecap="round" />
+    <path d="M 73.5 264.59999999999997 Q 136.50000000000003 132.29999999999998 168.00000000000003 352.8" stroke="#7F1D1D" stroke-width="26.250000000000004" fill="none" stroke-linecap="round" />
+    <circle cx="168.00000000000003" cy="352.8" r="26.250000000000004" fill="#FBCFE8" />
+  </g>
+  </svg>

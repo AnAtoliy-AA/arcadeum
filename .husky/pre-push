@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+
+set -e
+
+pnpm run build
+
+# Run web unit tests before pushing
+echo "Running web unit tests..."
+cd apps/web
+pnpm run test || {
+  echo "❌ Web unit tests failed. Please fix them before pushing."
+  exit 1
+}
+cd ../..
+echo "✅ Web unit tests passed"
+
+# Run web e2e tests before pushing
+echo "Running e2e tests..."
+cd apps/web
+pnpm run test:e2e || {
+  echo "❌ E2E tests failed. Please fix them before pushing."
+  exit 1
+}
+cd ../..
+echo "✅ E2E tests passed"

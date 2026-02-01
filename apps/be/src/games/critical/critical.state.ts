@@ -1,0 +1,412 @@
+import { randomUUID } from 'crypto';
+import { ChatScope } from '../engines/base/game-engine.interface';
+import { CriticalCard, CriticalExpansion } from './critical.constants';
+
+export * from './critical.constants';
+
+// Marked card info for theft mechanics
+export interface MarkedCardInfo {
+  cardIndex: number;
+  markedBy: string; // Player ID who marked the card
+}
+
+export interface CriticalPlayerState {
+  playerId: string;
+  hand: CriticalCard[];
+  alive: boolean;
+  stash: CriticalCard[]; // Protected cards (Tower of Power)
+  markedCards: MarkedCardInfo[]; // Cards marked for stealing
+  pendingStealDraw?: string; // Player ID who will steal next draw
+  isBlind?: boolean; // Chaos: blackout/blinded state
+  [key: string]: unknown;
+}
+
+export interface CriticalLogEntry {
+  id: string;
+  type: 'system' | 'action' | 'message';
+  message: string;
+  createdAt: string;
+  scope?: ChatScope;
+  senderId?: string | null;
+  senderName?: string | null;
+}
+
+export interface CriticalState {
+  deck: CriticalCard[];
+  discardPile: CriticalCard[];
+  playerOrder: string[];
+  currentTurnIndex: number;
+  pendingDraws: number;
+  playDirection: 1 | -1; // 1 = clockwise, -1 = counter-clockwise (for Reverse)
+  expansions: CriticalExpansion[]; // Active expansion packs
+  pendingDefuse: string | null; // Player ID who must play defuse, null if none
+  pendingFavor: {
+    // Player who requested the favor (will receive the card)
+    requesterId: string;
+    // Player who must give a card
+    targetId: string;
+  } | null;
+  pendingAlter: {
+    playerId: string;
+    count: number;
+    isShare?: boolean;
+  } | null;
+  pendingAction: {
+    // Action that can be noped
+    type: string;
+    playerId: string;
+    payload?: unknown;
+    nopeCount: number; // Odd = canceled, even = active
+  } | null;
+  // Chaos: Implosion state
+  implosionState?: {
+    isFaceUp: boolean; // if true, next draw explodes immediately
+  };
+  players: CriticalPlayerState[];
+  logs: CriticalLogEntry[];
+  allowActionCardCombos: boolean; // House rule: allow any matching cards for combos
+  [key: string]: unknown;
+}
+
+// Custom card configuration for partial pack selection
+export interface CustomCardConfig {
+  [cardId: string]: number; // card ID -> quantity
+}
+
+function repeatCard(card: CriticalCard, count: number): CriticalCard[] {
+  return Array.from({ length: count }, () => card);
+}
+
+function shuffleInPlace<T>(items: T[]): void {
+  for (let i = items.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = items[i];
+    items[i] = items[j];
+    items[j] = tmp;
+  }
+}
+
+// Attack Pack cards to add when expansion is enabled
+function getAttackPackCards(customCards?: CustomCardConfig): CriticalCard[] {
+  const defaults: Record<string, number> = {
+    targeted_strike: 3,
+    private_strike: 2,
+    recursive_strike: 2,
+    mega_evade: 2,
+    invert: 4,
+  };
+
+  return [
+    ...repeatCard(
+      'targeted_strike',
+      Number(customCards?.targeted_strike ?? defaults.targeted_strike),
+    ),
+    ...repeatCard(
+      'private_strike',
+      Number(customCards?.private_strike ?? defaults.private_strike),
+    ),
+    ...repeatCard(
+      'recursive_strike',
+      Number(customCards?.recursive_strike ?? defaults.recursive_strike),
+    ),
+    ...repeatCard(
+      'mega_evade',
+      Number(customCards?.mega_evade ?? defaults.mega_evade),
+    ),
+    ...repeatCard('invert', Number(customCards?.invert ?? defaults.invert)),
+  ];
+}
+
+// Future Pack cards to add when expansion is enabled
+function getFuturePackCards(customCards?: CustomCardConfig): CriticalCard[] {
+  const defaults: Record<string, number> = {
+    see_future_5x: 4,
+    alter_future_3x: 4,
+    alter_future_5x: 2,
+    reveal_future_3x: 2,
+    share_future_3x: 2,
+    draw_bottom: 4,
+    swap_top_bottom: 3,
+    bury: 4,
+  };
+
+  return [
+    ...repeatCard(
+      'see_future_5x',
+      Number(customCards?.see_future_5x ?? defaults.see_future_5x),
+    ),
+    ...repeatCard(
+      'alter_future_3x',
+      Number(customCards?.alter_future_3x ?? defaults.alter_future_3x),
+    ),
+    ...repeatCard(
+      'alter_future_5x',
+      Number(customCards?.alter_future_5x ?? defaults.alter_future_5x),
+    ),
+    ...repeatCard(
+      'reveal_future_3x',
+      Number(customCards?.reveal_future_3x ?? defaults.reveal_future_3x),
+    ),
+    ...repeatCard(
+      'share_future_3x',
+      Number(customCards?.share_future_3x ?? defaults.share_future_3x),
+    ),
+    ...repeatCard(
+      'draw_bottom',
+      Number(customCards?.draw_bottom ?? defaults.draw_bottom),
+    ),
+    ...repeatCard(
+      'swap_top_bottom',
+      Number(customCards?.swap_top_bottom ?? defaults.swap_top_bottom),
+    ),
+    ...repeatCard('bury', Number(customCards?.bury ?? defaults.bury)),
+  ];
+}
+
+// Theft Pack cards to add when expansion is enabled
+function getTheftPackCards(customCards?: CustomCardConfig): CriticalCard[] {
+  const defaults: Record<string, number> = {
+    wildcard: 4, // 4 wildcards for combos
+    mark: 3, // 3 mark cards
+    steal_draw: 3, // 3 steal draw cards
+    stash: 2, // 2 stash cards
+  };
+
+  return [
+    ...repeatCard(
+      'wildcard',
+      Number(customCards?.wildcard ?? defaults.wildcard),
+    ),
+    ...repeatCard('mark', Number(customCards?.mark ?? defaults.mark)),
+    ...repeatCard(
+      'steal_draw',
+      Number(customCards?.steal_draw ?? defaults.steal_draw),
+    ),
+    ...repeatCard('stash', Number(customCards?.stash ?? defaults.stash)),
+  ];
+}
+
+// Chaos Pack cards to add when expansion is enabled
+function getChaosPackCards(customCards?: CustomCardConfig): CriticalCard[] {
+  const defaults: Record<string, number> = {
+    critical_implosion: 1,
+    containment_field: 1,
+    fission: 1,
+    tribute: 2,
+    blackout: 2,
+  };
+
+  return [
+    ...repeatCard(
+      'critical_implosion',
+      Number(customCards?.critical_implosion ?? defaults.critical_implosion),
+    ),
+    ...repeatCard(
+      'containment_field',
+      Number(customCards?.containment_field ?? defaults.containment_field),
+    ),
+    ...repeatCard('fission', Number(customCards?.fission ?? defaults.fission)),
+    ...repeatCard('tribute', Number(customCards?.tribute ?? defaults.tribute)),
+    ...repeatCard(
+      'blackout',
+      Number(customCards?.blackout ?? defaults.blackout),
+    ),
+  ];
+}
+
+// Deity Pack cards to add when expansion is enabled
+function getDeityPackCards(customCards?: CustomCardConfig): CriticalCard[] {
+  const defaults: Record<string, number> = {
+    omniscience: 2,
+    miracle: 2,
+    smite: 3,
+    rapture: 2,
+  };
+
+  return [
+    ...repeatCard(
+      'omniscience',
+      Number(customCards?.omniscience ?? defaults.omniscience),
+    ),
+    ...repeatCard('miracle', Number(customCards?.miracle ?? defaults.miracle)),
+    ...repeatCard('smite', Number(customCards?.smite ?? defaults.smite)),
+    ...repeatCard('rapture', Number(customCards?.rapture ?? defaults.rapture)),
+  ];
+}
+
+export function createInitialCriticalState(
+  playerIds: string[],
+  expansions: CriticalExpansion[] = [],
+  allowActionCardCombos = false,
+  customCards?: CustomCardConfig,
+): CriticalState {
+  if (playerIds.length < 2) {
+    throw new Error('Critical requires at least two players.');
+  }
+
+  // Ensure expansions is an array (robustness for Mongoose/API edge cases)
+  const activeExpansions = Array.isArray(expansions) ? expansions : [];
+
+  // Base deck with enough neutral/action cards for initial deal
+  const deck: CriticalCard[] = [
+    ...repeatCard('strike', 4),
+    ...repeatCard('evade', 4),
+    ...repeatCard('trade', 4),
+    ...repeatCard('reorder', 4),
+    ...repeatCard('insight', 5),
+    ...repeatCard('cancel', 5),
+    ...repeatCard('collection_alpha', 4),
+    ...repeatCard('collection_beta', 4),
+    ...repeatCard('collection_gamma', 4),
+    ...repeatCard('collection_delta', 4),
+    ...repeatCard('collection_epsilon', 4),
+    ...repeatCard('neutralizer', 6),
+  ];
+
+  // Add expansion cards based on selected packs
+  if (activeExpansions.includes('attack')) {
+    deck.push(...getAttackPackCards(customCards));
+  }
+
+  if (activeExpansions.includes('future')) {
+    deck.push(...getFuturePackCards(customCards));
+  }
+
+  if (activeExpansions.includes('theft')) {
+    deck.push(...getTheftPackCards(customCards));
+  }
+
+  if (activeExpansions.includes('chaos')) {
+    deck.push(...getChaosPackCards(customCards));
+  }
+
+  if (activeExpansions.includes('deity')) {
+    deck.push(...getDeityPackCards(customCards));
+  }
+
+  shuffleInPlace(deck);
+
+  const players: CriticalPlayerState[] = playerIds.map((playerId) => ({
+    playerId,
+    hand: [],
+    alive: true,
+    stash: [],
+    markedCards: [],
+  }));
+
+  // Deal four cards plus one guaranteed defuse to each player
+  players.forEach((player) => {
+    const drawn: CriticalCard[] = [];
+    for (let i = 0; i < 4; i += 1) {
+      const card = deck.pop();
+      if (!card) {
+        break;
+      }
+      drawn.push(card);
+    }
+
+    const defuseIndex = deck.findIndex((card) => card === 'neutralizer');
+    const guaranteedDefuse =
+      defuseIndex !== -1
+        ? (deck.splice(defuseIndex, 1)[0] ?? 'neutralizer')
+        : 'neutralizer';
+
+    player.hand = [guaranteedDefuse, ...drawn];
+  });
+
+  // Insert exploding cats into the deck (players minus one)
+  const bombsToAdd = Math.max(playerIds.length - 1, 1);
+  for (let i = 0; i < bombsToAdd; i += 1) {
+    deck.push('critical_event');
+  }
+
+  // Add an extra defuse for late saves
+  deck.push('neutralizer');
+
+  shuffleInPlace(deck);
+
+  return {
+    deck,
+    discardPile: [],
+    playerOrder: [...playerIds],
+    currentTurnIndex: 0,
+    playDirection: 1,
+    expansions,
+    allowActionCardCombos,
+    pendingDefuse: null,
+    pendingFavor: null,
+    pendingAlter: null,
+    pendingAction: null,
+    pendingDraws: 1,
+    players,
+    logs: [
+      {
+        id: randomUUID(),
+        type: 'system',
+        message: `Game started with ${playerIds.length} players`,
+        createdAt: new Date().toISOString(),
+        scope: 'all',
+      },
+    ],
+  };
+}
+
+export function sanitizeCriticalStateForPlayer(
+  state: CriticalState,
+  playerId: string,
+): Partial<CriticalState> {
+  const sanitized = JSON.parse(JSON.stringify(state)) as CriticalState;
+
+  // Check if player is an actual game participant
+  const isPlayer = sanitized.players.some((p) => p.playerId === playerId);
+
+  // Hide other players' hands OR hide own hand if blind (Blackout)
+  sanitized.players = sanitized.players.map((p) => {
+    if (p.playerId === playerId && !p.isBlind) {
+      return p; // Show full hand to the player
+    }
+    return {
+      ...p,
+      hand: p.hand.map(() => 'hidden' as CriticalCard), // Hide hand cards
+      stash: p.stash.map(() => 'hidden' as CriticalCard), // Hide stashed cards
+    };
+  });
+
+  // Filter logs based on scope and player status
+  sanitized.logs = sanitized.logs.filter((log) => {
+    // Public messages visible to everyone (players + spectators)
+    if (log.scope === 'all' || log.scope === undefined) return true;
+    // Player-only messages visible only to game participants
+    if (log.scope === 'players' && isPlayer) return true;
+    // Private messages only visible to sender
+    if (log.scope === 'private' && log.senderId === playerId) return true;
+    return false;
+  });
+
+  // Partially hide deck (show count only)
+  // If pendingAlter, show the top N cards to the active player
+  if (state.pendingAlter && state.pendingAlter.playerId === playerId) {
+    const count = state.pendingAlter.count;
+    sanitized.deck = [
+      ...state.deck.slice(0, count),
+      ...new Array<CriticalCard>(Math.max(0, state.deck.length - count)).fill(
+        'hidden' as CriticalCard,
+      ),
+    ];
+  } else {
+    sanitized.deck = new Array<CriticalCard>(state.deck.length).fill(
+      'hidden' as CriticalCard,
+    );
+
+    // If Critical Implosion is face up, reveal its position in the deck
+    if (state.implosionState?.isFaceUp) {
+      state.deck.forEach((card, index) => {
+        if (card === 'critical_implosion' && index < sanitized.deck.length) {
+          sanitized.deck[index] = 'critical_implosion';
+        }
+      });
+    }
+  }
+
+  return sanitized;
+}

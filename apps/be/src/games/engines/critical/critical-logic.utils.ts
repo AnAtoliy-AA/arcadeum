@@ -1,0 +1,466 @@
+import {
+  CriticalState,
+  CriticalCard,
+  CriticalPlayerState,
+} from '../../critical/critical.state';
+import {
+  GameActionResult,
+  GameLogEntry,
+  ChatScope,
+} from '../base/game-engine.interface';
+import {
+  executePersonalAttack,
+  executeAttackOfTheDead,
+  executeSuperSkip,
+  executeReverse,
+} from './critical-attack.utils';
+import { executeCollectionCombo as executeCollectionComboHelper } from './critical-combo.utils';
+
+import { executeCancel } from './critical-cancel.utils';
+export { executeCancel };
+
+export interface LogEntryOptions {
+  scope?: ChatScope;
+  senderId?: string | null;
+  senderName?: string | null;
+}
+
+/** Utility class for Critical game logic */
+export class CriticalLogic {
+  /** Helper to find a player in the state */
+  static findPlayer(
+    state: CriticalState,
+    playerId: string,
+  ): CriticalPlayerState | undefined {
+    return state.players.find(
+      (p) => p.playerId === playerId,
+    ) as CriticalPlayerState;
+  }
+  /** Helper to check if a player has a card */
+  static hasCard(player: CriticalPlayerState, card: CriticalCard): boolean {
+    return player.hand.includes(card);
+  }
+
+  /** Execute drawing a card */
+  static executeDrawCard(
+    state: CriticalState,
+    playerId: string,
+    helpers: {
+      addLog: (state: CriticalState, entry: GameLogEntry) => void;
+      createLogEntry: (
+        type: string,
+        message: string,
+        options?: LogEntryOptions,
+      ) => GameLogEntry;
+      advanceTurn: (state: CriticalState) => void;
+    },
+  ): GameActionResult<CriticalState> {
+    const card = state.deck.shift();
+    if (!card) return { success: false, error: 'Deck is empty' };
+    const player = this.findPlayer(state, playerId);
+    if (!player) return { success: false, error: 'Player not found' };
+
+    // Clear any pending action - drawing finalizes the turn, no more nopes allowed
+    state.pendingAction = null;
+
+    state.pendingDraws--;
+
+    if (card === 'critical_event') {
+      // Check for Containment Field (Chaos Pack)
+      if (this.hasCard(player, 'containment_field')) {
+        player.hand.push(card);
+        helpers.addLog(
+          state,
+          helpers.createLogEntry(
+            'action',
+            `Drew an Exploding Cat but safely held it using Containment Field! 📦`,
+            {
+              scope: 'all',
+              senderId: playerId,
+            },
+          ),
+        );
+        // Continue turn standard logic
+      } else if (this.hasCard(player, 'neutralizer')) {
+        // Player must defuse - set pending defuse state
+        state.pendingDefuse = playerId;
+        helpers.addLog(
+          state,
+          helpers.createLogEntry(
+            'action',
+            `Drew an Exploding Cat! Must play Defuse!`,
+            {
+              scope: 'all',
+              senderId: playerId,
+            },
+          ),
+        );
+        // Player must defuse - don't advance turn until defuse is played
+        return { success: true, state };
+      } else {
+        player.alive = false;
+        helpers.addLog(
+          state,
+          helpers.createLogEntry('system', `Player exploded!`, {
+            scope: 'all',
+            senderId: playerId,
+          }),
+        );
+        helpers.advanceTurn(state);
+        return { success: true, state };
+      }
+    } else if (card === 'critical_implosion') {
+      // Logic for Critical Implosion (Chaos Pack)
+      const isFaceUp = state.implosionState?.isFaceUp ?? false;
+
+      if (isFaceUp) {
+        // Explode immediately, no defuse allowed
+        player.alive = false;
+        helpers.addLog(
+          state,
+          helpers.createLogEntry(
+            'system',
+            `Drew Critical Implosion (Open)! IMPLOSION! Player eliminated! 🤯`,
+            {
+              scope: 'all',
+              senderId: playerId,
+            },
+          ),
+        );
+        // Remove Implosion card from game? Or putting it in discard pile.
+        // Usually it's gone when player dies.
+        state.discardPile.push(card);
+        helpers.advanceTurn(state);
+        return { success: true, state };
+      } else {
+        // First time drawn: Goes back in deck Face Up
+        state.implosionState = { isFaceUp: true };
+
+        // Put back in deck at random location
+        const randomIdx = Math.floor(Math.random() * (state.deck.length + 1));
+        state.deck.splice(randomIdx, 0, card);
+
+        helpers.addLog(
+          state,
+          helpers.createLogEntry(
+            'action',
+            `Drew Critical Implosion (First time). It goes back in the deck FACE UP! 😰`,
+            {
+              scope: 'all',
+              senderId: playerId,
+            },
+          ),
+        );
+
+        if (state.pendingDraws === 0) {
+          helpers.advanceTurn(state);
+        }
+
+        return { success: true, state };
+      }
+    }
+
+    player.hand.push(card);
+    helpers.addLog(
+      state,
+      helpers.createLogEntry('action', `Drew a card`, {
+        scope: 'all',
+        senderId: playerId,
+      }),
+    );
+
+    if (state.pendingDraws === 0) {
+      helpers.advanceTurn(state);
+    }
+
+    return { success: true, state };
+  }
+
+  /** Execute playing a card */
+  static executePlayCard(
+    state: CriticalState,
+    playerId: string,
+    card: CriticalCard,
+    helpers: {
+      addLog: (state: CriticalState, entry: GameLogEntry) => void;
+      createLogEntry: (
+        type: string,
+        message: string,
+        options?: LogEntryOptions,
+      ) => GameLogEntry;
+      advanceTurn: (state: CriticalState) => void;
+      shuffleArray: <T>(array: T[]) => void;
+    },
+  ): GameActionResult<CriticalState> {
+    const player = this.findPlayer(state, playerId);
+    if (!player) return { success: false, error: 'Player not found' };
+    const cardIndex = player.hand.indexOf(card);
+    if (cardIndex === -1)
+      return { success: false, error: 'Card not found in hand' };
+
+    player.hand.splice(cardIndex, 1);
+    state.discardPile.push(card);
+
+    // Clear any previous pending action when a new card is played
+    // BUT maintain it if playing 'cancel', as cancel targets the pending action
+    if (card !== 'cancel') {
+      state.pendingAction = null;
+    }
+
+    switch (card) {
+      // ===== BASE GAME CARDS =====
+      case 'strike': {
+        // Capture current pending draws before advancing turn
+        const currentPendingDraws = state.pendingDraws;
+
+        // Set pending action so it can be noped
+        state.pendingAction = {
+          type: 'strike',
+          playerId,
+          payload: { previousPendingDraws: currentPendingDraws },
+          nopeCount: 0,
+        };
+
+        helpers.advanceTurn(state);
+
+        // Stacking logic: If player had multiple turns (was under attack),
+        // pass them + 2 to the next player.
+        // If it was a normal turn (1 pending draw), just give 2 turns.
+        const extraTurns = currentPendingDraws > 1 ? currentPendingDraws : 0;
+        state.pendingDraws = extraTurns + 2;
+
+        helpers.addLog(
+          state,
+          helpers.createLogEntry(
+            'action',
+            `Played Attack! Next player must take ${state.pendingDraws} turns!`,
+            { scope: 'all', senderId: playerId },
+          ),
+        );
+        break;
+      }
+
+      case 'evade':
+        // Set pending action so it can be noped
+        state.pendingAction = {
+          type: 'evade',
+          playerId,
+          payload: { previousTurnIndex: state.currentTurnIndex },
+          nopeCount: 0,
+        };
+        // Skip cancels only one pending draw
+        state.pendingDraws--;
+        if (state.pendingDraws <= 0) {
+          helpers.advanceTurn(state);
+        }
+        helpers.addLog(
+          state,
+          helpers.createLogEntry('action', `Played Skip`, {
+            scope: 'all',
+            senderId: playerId,
+          }),
+        );
+        break;
+
+      case 'reorder':
+        // Set pending action so it can be noped
+        state.pendingAction = {
+          type: 'reorder',
+          playerId,
+          nopeCount: 0,
+        };
+        helpers.shuffleArray(state.deck);
+        helpers.addLog(
+          state,
+          helpers.createLogEntry('action', `Shuffled the deck`, {
+            scope: 'all',
+            senderId: playerId,
+          }),
+        );
+        break;
+
+      case 'cancel':
+        // Put card back in hand because executeCancel handles removal
+        player.hand.push('cancel');
+        state.discardPile.pop(); // Remove from discard
+        return executeCancel(state, playerId, helpers);
+
+      // ===== ATTACK PACK EXPANSION CARDS =====
+      case 'invert':
+        // Put card back in hand (executeReverse will remove it)
+        player.hand.push(card);
+        state.discardPile.pop();
+        return executeReverse(state, playerId, helpers);
+
+      case 'mega_evade':
+        player.hand.push(card);
+        state.discardPile.pop();
+        return executeSuperSkip(state, playerId, helpers);
+
+      case 'private_strike':
+        player.hand.push(card);
+        state.discardPile.pop();
+        return executePersonalAttack(state, playerId, helpers);
+
+      case 'recursive_strike':
+        player.hand.push(card);
+        state.discardPile.pop();
+        return executeAttackOfTheDead(state, playerId, helpers);
+
+      case 'targeted_strike':
+        player.hand.push(card);
+        state.discardPile.pop();
+        return {
+          success: false,
+          error: 'Targeted Attack requires a target player',
+        };
+
+      default:
+        // For unsupported cards, put them back and return error
+        player.hand.push(card);
+        state.discardPile.pop();
+        return { success: false, error: `Card '${card}' is not playable` };
+    }
+
+    return { success: true, state };
+  }
+
+  /** Execute collection combo - delegates to separate utils file */
+  static executeCollectionCombo(
+    state: CriticalState,
+    playerId: string,
+    cards: CriticalCard[],
+    targetPlayerId: string | null,
+    helpers: {
+      addLog: (state: CriticalState, entry: GameLogEntry) => void;
+      createLogEntry: (
+        type: string,
+        message: string,
+        options?: LogEntryOptions,
+      ) => GameLogEntry;
+    },
+    selectedIndex?: number,
+    requestedCard?: CriticalCard,
+    requestedDiscardCard?: CriticalCard,
+  ): GameActionResult<CriticalState> {
+    return executeCollectionComboHelper(
+      state,
+      playerId,
+      cards,
+      targetPlayerId,
+      {
+        ...helpers,
+        findPlayer: (s, pid) => this.findPlayer(s, pid),
+      },
+      selectedIndex,
+      requestedCard,
+      requestedDiscardCard,
+    );
+  }
+
+  /**
+   * Execute See The Future
+   */
+  /**
+   * Execute See The Future
+   */
+  static executeSeeTheFuture(
+    state: CriticalState,
+    playerId: string,
+    helpers: {
+      addLog: (state: CriticalState, entry: GameLogEntry) => void;
+      createLogEntry: (
+        type: string,
+        message: string,
+        options?: LogEntryOptions,
+      ) => GameLogEntry;
+    },
+  ): GameActionResult<CriticalState> {
+    const player = this.findPlayer(state, playerId);
+    if (!player) return { success: false, error: 'Player not found' };
+
+    const cardIndex = player.hand.indexOf('insight');
+    if (cardIndex === -1)
+      return { success: false, error: 'See The Future card not found' };
+
+    player.hand.splice(cardIndex, 1);
+    state.discardPile.push('insight');
+
+    const topCards = state.deck.slice(0, 3);
+
+    // Public log - just says player used the card (no card reveal)
+    helpers.addLog(
+      state,
+      helpers.createLogEntry('action', `Used See the Future 🔮`, {
+        scope: 'all',
+        senderId: playerId,
+      }),
+    );
+
+    // Private log - shows actual cards only to the player who used it
+    // Use format "cards:card_type" so frontend can translate
+    const cardKeys = topCards.map((card) => `cards:${card}`);
+    helpers.addLog(
+      state,
+      helpers.createLogEntry(
+        'action',
+        `seeTheFuture.reveal:${cardKeys.join(',')}`,
+        {
+          scope: 'private',
+          senderId: playerId,
+        },
+      ),
+    );
+
+    return { success: true, state };
+  }
+
+  // executeFavor and executeGiveFavorCard have been extracted to critical-favor.utils.ts
+
+  /**
+   * Execute Defuse
+   */
+  static executeDefuse(
+    state: CriticalState,
+    playerId: string,
+    position: number,
+    helpers: {
+      addLog: (state: CriticalState, entry: GameLogEntry) => void;
+      createLogEntry: (
+        type: string,
+        message: string,
+        options?: LogEntryOptions,
+      ) => GameLogEntry;
+      advanceTurn: (state: CriticalState) => void;
+    },
+  ): GameActionResult<CriticalState> {
+    const player = this.findPlayer(state, playerId);
+    if (!player) return { success: false, error: 'Player not found' };
+
+    // Remove defuse card
+    const defuseIndex = player.hand.indexOf('neutralizer');
+    if (defuseIndex === -1)
+      return { success: false, error: 'Defuse card not found' };
+
+    player.hand.splice(defuseIndex, 1);
+    state.discardPile.push('neutralizer');
+
+    // Insert exploding cat back into deck at specified position
+    state.deck.splice(position, 0, 'critical_event');
+
+    // Clear the pending defuse state
+    state.pendingDefuse = null;
+
+    helpers.addLog(
+      state,
+      helpers.createLogEntry('action', `Defused an Exploding Cat!`, {
+        scope: 'all',
+        senderId: playerId,
+      }),
+    );
+
+    helpers.advanceTurn(state);
+
+    return { success: true, state };
+  }
+}

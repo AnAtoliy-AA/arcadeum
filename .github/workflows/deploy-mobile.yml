@@ -1,0 +1,90 @@
+name: Deploy Android Preview
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/mobile/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: EAS Build Android Preview
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check for EXPO_TOKEN
+        run: |
+          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+            echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. https://expo.dev/settings/access-tokens"
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Build Android Preview
+        working-directory: ./apps/mobile
+        id: eas-build
+        run: |
+          eas build --profile preview --platform android --non-interactive --json > build-output.json
+          cat build-output.json
+          echo "android_build_id=$(jq -r 'if type=="array" then .[0].id else .id end' build-output.json)" >> $GITHUB_ENV
+          BUILD_URL=$(jq -r 'if type=="array" then .[0].artifacts.buildUrl else .artifacts.buildUrl end' build-output.json)
+          if [ -z "$BUILD_URL" ] || [ "$BUILD_URL" == "null" ]; then
+            echo "Error: Could not find buildUrl in eas output"
+            exit 1
+          fi
+          echo "android_build_url=$BUILD_URL" >> $GITHUB_ENV
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Download APK
+        run: |
+          echo "Downloading from: ${{ env.android_build_url }}"
+          curl -L -o app-release.apk "${{ env.android_build_url }}"
+
+      - name: Create 'latest' Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: latest
+          name: Latest Preview Build
+          body: "Latest automated build from `main` branch. Build ID: ${{ env.android_build_id }}"
+          files: app-release.apk
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,19 @@
+name: Deploy Backend to Render
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/be/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deploy
+        run: |
+          curl -X POST \
+          -H "Accept: application/json" \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+          https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys

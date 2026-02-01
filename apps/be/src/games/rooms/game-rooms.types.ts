@@ -1,0 +1,71 @@
+import { GameRoom, type GameRoomStatus } from '../schemas/game-room.schema';
+
+export interface GameRoomMemberSummary {
+  id: string;
+  displayName: string;
+  username?: string | null;
+  email?: string | null;
+  isHost: boolean;
+}
+
+export interface GameRoomSummary {
+  id: string;
+  gameId: string;
+  name: string;
+  hostId: string;
+  visibility: GameRoom['visibility'];
+  playerCount: number;
+  maxPlayers: number | null;
+  createdAt: string;
+  status: GameRoomStatus;
+  inviteCode?: string;
+  gameOptions?: Record<string, unknown>;
+  rematchInvitedUsers?: GameRoomMemberSummary[]; // Re-using member summary or partial
+  rematchDeclinedUsers?: GameRoomMemberSummary[];
+  invitationTimeout?: number;
+  host?: GameRoomMemberSummary;
+  members?: GameRoomMemberSummary[];
+  viewerRole?: 'host' | 'participant' | 'none';
+  viewerHasJoined?: boolean;
+  viewerIsHost?: boolean;
+}
+
+export interface ListRoomsFilters {
+  gameId?: string;
+  search?: string;
+  status?: GameRoomStatus;
+  statuses?: GameRoomStatus[];
+  visibility?:
+    | 'public'
+    | 'private'
+    | 'friends'
+    | ('public' | 'private' | 'friends')[];
+  userId?: string;
+  participation?:
+    | 'host'
+    | 'participant'
+    | 'any'
+    | 'hosting'
+    | 'joined'
+    | 'not_joined';
+  page?: number;
+  limit?: number;
+}
+
+export interface ListRoomsResult {
+  rooms: GameRoomSummary[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface LeaveGameRoomResult {
+  room: GameRoomSummary | null;
+  deleted: boolean;
+  removedPlayerId: string;
+}
+
+export interface DeleteGameRoomResult {
+  roomId: string;
+  deleted: boolean;
+}

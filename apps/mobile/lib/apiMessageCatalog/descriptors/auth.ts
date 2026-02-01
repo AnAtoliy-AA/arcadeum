@@ -1,0 +1,130 @@
+import type { ApiMessageDescriptor } from '../types';
+
+export const authDescriptors: ApiMessageDescriptor[] = [
+  {
+    code: 4000,
+    translationKey: 'api.auth.missingOauthIssuer',
+    fallbackMessage: 'Missing OAUTH_ISSUER',
+    aliases: ['Missing OAUTH_ISSUER'],
+  },
+  {
+    code: 4001,
+    translationKey: 'api.auth.oidcDiscoveryFailed',
+    fallbackMessage: 'OIDC discovery failed',
+    aliases: ['OIDC discovery failed'],
+  },
+  {
+    code: 4002,
+    translationKey: 'api.auth.missingWebClientId',
+    fallbackMessage: 'Missing OAUTH_WEB_CLIENT_ID',
+    aliases: ['Missing OAUTH_WEB_CLIENT_ID'],
+  },
+  {
+    code: 4003,
+    translationKey: 'api.auth.missingWebClientSecret',
+    fallbackMessage: 'Missing OAUTH_WEB_CLIENT_SECRET',
+    aliases: ['Missing OAUTH_WEB_CLIENT_SECRET'],
+  },
+  {
+    code: 4004,
+    translationKey: 'api.auth.missingRedirectUri',
+    fallbackMessage: 'Missing redirect URI',
+    aliases: ['Missing redirect URI'],
+  },
+  {
+    code: 4005,
+    translationKey: 'api.auth.noTokenEndpoint',
+    fallbackMessage: 'No token endpoint',
+    aliases: ['No token endpoint'],
+  },
+  {
+    code: 4006,
+    translationKey: 'api.auth.failedToParseTokenResponse',
+    fallbackMessage: 'Failed to parse token response',
+    aliases: ['Failed to parse token response'],
+  },
+  {
+    code: 4007,
+    translationKey: 'api.auth.emailAlreadyRegistered',
+    fallbackMessage: 'Email already registered',
+    aliases: ['Email already registered'],
+  },
+  {
+    code: 4008,
+    translationKey: 'api.auth.usernameTaken',
+    fallbackMessage: 'Username already taken',
+    aliases: ['Username already taken'],
+  },
+  {
+    code: 4009,
+    translationKey: 'api.auth.invalidCredentials',
+    fallbackMessage: 'Invalid credentials',
+    aliases: ['Invalid credentials'],
+  },
+  {
+    code: 4010,
+    translationKey: 'api.auth.unsupportedOauthProvider',
+    fallbackMessage: 'Unsupported OAuth provider',
+    aliases: ['Unsupported OAuth provider'],
+  },
+  {
+    code: 4011,
+    translationKey: 'api.auth.missingOauthCredentials',
+    fallbackMessage: 'Missing OAuth credentials',
+    aliases: ['Missing OAuth credentials'],
+  },
+  {
+    code: 4012,
+    translationKey: 'api.auth.googleEmailNotVerified',
+    fallbackMessage: 'Google account email not verified',
+    aliases: ['Google account email not verified'],
+  },
+  {
+    code: 4013,
+    translationKey: 'api.auth.missingRefreshToken',
+    fallbackMessage: 'Missing refresh token',
+    aliases: ['Missing refresh token'],
+  },
+  {
+    code: 4014,
+    translationKey: 'api.auth.invalidRefreshToken',
+    fallbackMessage: 'Invalid refresh token',
+    aliases: ['Invalid refresh token'],
+  },
+  {
+    code: 4015,
+    translationKey: 'api.auth.refreshTokenRevoked',
+    fallbackMessage: 'Refresh token revoked',
+    aliases: ['Refresh token revoked'],
+  },
+  {
+    code: 4016,
+    translationKey: 'api.auth.refreshTokenExpired',
+    fallbackMessage: 'Refresh token expired',
+    aliases: ['Refresh token expired'],
+  },
+  {
+    code: 4017,
+    translationKey: 'api.auth.userNotFoundForRefreshToken',
+    fallbackMessage: 'User not found for refresh token',
+    aliases: ['User not found for refresh token'],
+  },
+  {
+    code: 4018,
+    translationKey: 'api.auth.oauthClientMismatch',
+    fallbackMessage: 'OAuth client mismatch',
+    aliases: ['OAuth client mismatch'],
+  },
+  {
+    code: 4019,
+    translationKey: 'api.auth.unableToValidateOauthTokens',
+    fallbackMessage: 'Unable to validate OAuth tokens',
+    aliases: ['Unable to validate OAuth tokens'],
+  },
+  {
+    code: 4020,
+    translationKey: 'api.auth.tokenExchangeMissingAccessToken',
+    fallbackMessage: 'Token exchange missing access_token',
+    aliases: ['Token exchange missing access_token'],
+  },
+];

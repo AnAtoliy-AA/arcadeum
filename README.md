@@ -1,20 +1,59 @@
-# aicoapp
+# Arcadeum
 
-Turborepo workspace managed with pnpm and containing:
+A monorepo for the Arcadeum gaming platform, featuring a mobile app, web application, and backend API.
 
-- `apps/mobile`: Expo React Native app (mobile)
-- `apps/web`: Next.js web app (in progress)
-- `apps/be`: NestJS API server (backend)
+**Live Demo:** [https://arcadeum.vercel.app/](https://arcadeum.vercel.app/)
 
-Refer to the individual app READMEs for setup instructions:
+## Project Structure
 
-- Mobile: `apps/mobile/README.md`
-- Web: `apps/web/README.md`
-- Backend: `apps/be/README.md`
+This Turborepo workspace is managed with `pnpm` and contains:
 
-Install dependencies and run tasks via pnpm:
+- **`apps/mobile`**: Expo React Native app (iOS/Android)
+- **`apps/web`**: Next.js web application
+- **`apps/be`**: NestJS API server
 
-```
-pnpm install
-pnpm dev
-```
+## Prerequisites
+
+- **Node.js**: v18+ recommended
+- **pnpm**: v9+ (Corepack enabled or installed globally)
+
+## Quick Start
+
+1.  **Install dependencies**:
+
+    ```bash
+    pnpm install
+    ```
+
+2.  **Run development servers**:
+
+    ```bash
+    pnpm dev
+    ```
+
+    This will start all applications in parallel.
+
+3.  **Specific App Development**:
+    To run a specific app individually:
+    ```bash
+    pnpm --filter mobile dev
+    pnpm --filter web dev
+    pnpm --filter be start:dev
+    ```
+
+## Documentation
+
+Refer to the individual app READMEs for detailed setup and configuration instructions:
+
+- [Mobile App README](apps/mobile/README.md)
+- [Web App README](apps/web/README.md)
+- [Backend API README](apps/be/README.md)
+
+## Common Commands
+
+| Command       | Description                    |
+| :------------ | :----------------------------- |
+| `pnpm build`  | Build all applications         |
+| `pnpm lint`   | Lint all applications          |
+| `pnpm test`   | Run tests across the workspace |
+| `pnpm format` | Format code using Prettier     |

@@ -3,7 +3,7 @@ name: Deploy Frontend to Render
 on:
   push:
     branches:
-      - develop
+      - main
     paths:
       - 'apps/mobile/**'
   workflow_dispatch:

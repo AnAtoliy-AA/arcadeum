@@ -3,7 +3,7 @@ name: Deploy Web to Vercel
 on:
   push:
     branches:
-      - develop
+      - main
     paths:
       - 'apps/web/**'
   workflow_dispatch:

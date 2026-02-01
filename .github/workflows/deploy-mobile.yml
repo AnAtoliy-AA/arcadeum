@@ -3,7 +3,7 @@ name: Deploy Android Preview
 on:
   push:
     branches:
-      - develop
+      - main
     paths:
       - 'apps/mobile/**'
       - 'package.json'
@@ -83,7 +83,7 @@ jobs:
         with:
           tag_name: latest
           name: Latest Preview Build
-          body: "Latest automated build from `develop` branch. Build ID: ${{ env.android_build_id }}"
+          body: "Latest automated build from `main` branch. Build ID: ${{ env.android_build_id }}"
           files: app-release.apk
           prerelease: true
         env:

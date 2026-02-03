@@ -211,6 +211,7 @@ export const gamesCatalog = [
     name: 'Critical',
     summary: 'A strategic card game where you avoid exploding cats',
     isPlayable: true,
+    maxPlayers: 6,
   },
   {
     id: 'texas_holdem_v1',
@@ -222,7 +223,8 @@ export const gamesCatalog = [
   {
     id: 'sea_battle_v1',
     name: 'Sea Battle',
-    summary: 'Classic naval combat game for up to 4 players',
+    summary: 'Classic naval combat game for up to 6 players',
     isPlayable: true,
+    maxPlayers: 6,
   },
 ];

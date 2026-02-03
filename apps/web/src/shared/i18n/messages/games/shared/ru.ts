@@ -82,6 +82,7 @@ export const ruMessages = {
     fieldMaxPlayers: 'Макс. игроков (опционально)',
     maxPlayersAria: 'Максимальное количество игроков',
     autoPlaceholder: 'Авто',
+    autoButton: 'Авто',
     fieldVisibility: 'Доступ',
     fieldNotes: 'Заметки (опционально)',
     notesPlaceholder: 'Добавьте заметки...',

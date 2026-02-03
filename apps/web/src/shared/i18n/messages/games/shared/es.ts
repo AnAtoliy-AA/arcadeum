@@ -79,6 +79,7 @@ export const esMessages = {
     fieldMaxPlayers: 'Jugadores Máximos (opcional)',
     maxPlayersAria: 'Número máximo de jugadores',
     autoPlaceholder: 'Automático',
+    autoButton: 'Auto',
     fieldVisibility: 'Visibilidad',
     fieldNotes: 'Notas (opcional)',
     notesPlaceholder: 'Agregar notas...',

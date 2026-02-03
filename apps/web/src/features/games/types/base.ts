@@ -1,4 +1,8 @@
-import type { GameRoomSummary, GameSessionSummary } from "@/shared/types/games";
+import type {
+  GameRoomSummary,
+  GameSessionSummary,
+  ChatScope,
+} from '@/shared/types/games';
 
 /**
  * Base game configuration interface
@@ -41,7 +45,7 @@ export interface GameMetadata extends GameConfig {
   /** Last updated timestamp */
   lastUpdated: string;
   /** Game status */
-  status: "active" | "beta" | "experimental" | "deprecated";
+  status: 'active' | 'beta' | 'experimental' | 'deprecated';
 }
 
 /**
@@ -59,7 +63,7 @@ export interface BaseGameProps {
   /** Whether current user is the host */
   isHost: boolean;
   /** Callback to post history note */
-  onPostHistoryNote: (message: string, scope: "all" | "players") => void;
+  onPostHistoryNote: (message: string, scope: ChatScope) => void;
   /** Optional callback for custom actions */
   onAction?: (action: string, payload?: Record<string, unknown>) => void;
   /** Game configuration */
@@ -108,7 +112,13 @@ export interface GameAction {
  */
 export interface GameEvent {
   /** Event type */
-  type: "game_started" | "game_ended" | "player_joined" | "player_left" | "action_performed" | "custom";
+  type:
+    | 'game_started'
+    | 'game_ended'
+    | 'player_joined'
+    | 'player_left'
+    | 'action_performed'
+    | 'custom';
   /** Event data */
   data: Record<string, unknown>;
   /** Timestamp */
@@ -153,12 +163,12 @@ export interface GameAchievement {
   /** Achievement icon */
   icon: string;
   /** Achievement rarity */
-  rarity: "common" | "uncommon" | "rare" | "epic" | "legendary";
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
   /** Achievement points */
   points: number;
   /** Unlock conditions */
   conditions: {
-    type: "games_won" | "actions_performed" | "score_reached" | "time_played";
+    type: 'games_won' | 'actions_performed' | 'score_reached' | 'time_played';
     value: number;
   };
 }

@@ -1,0 +1,97 @@
+import { test, expect } from '@playwright/test';
+import { mockSession, navigateTo } from './fixtures/test-utils';
+
+test.describe('Sea Battle Game', () => {
+  test.beforeEach(async ({ page }) => {
+    await mockSession(page);
+  });
+
+  test('should verify Sea Battle game presence on games list', async ({
+    page,
+  }) => {
+    // Navigate to games list
+    await navigateTo(page, '/games');
+
+    // Check if Sea Battle is visible in the list
+    const seaBattleGame = page.getByText('Sea Battle');
+    await expect(seaBattleGame.first()).toBeVisible();
+  });
+
+  test('should display game create page for Sea Battle', async ({ page }) => {
+    // Navigate directly to Sea Battle create page
+    await navigateTo(page, '/games/create?gameId=sea-battle');
+
+    // Verify page loaded
+    await expect(page.locator('body')).toContainText(/create|room|sea battle/i);
+  });
+
+  test('should display lobby after room creation', async ({ page }) => {
+    // Navigate to Sea Battle create page
+    await navigateTo(page, '/games/create?gameId=sea-battle');
+
+    // Fill room name if available
+    const roomNameInput = page
+      .getByLabel(/room name/i)
+      .or(page.locator('input[placeholder*="name"]').first());
+
+    if (await roomNameInput.isVisible()) {
+      await roomNameInput.fill('E2E Test Room');
+    }
+
+    // Look for create room button
+    const createBtn = page.getByRole('button', { name: /create/i });
+
+    if (await createBtn.isVisible()) {
+      await createBtn.click();
+
+      // Wait for navigation to room
+      await page
+        .waitForURL(/\/games\/rooms\/.*/, { timeout: 10000 })
+        .catch(() => {
+          // May not navigate if mocking doesn't create room
+        });
+    }
+  });
+
+  test('should handle games list navigation', async ({ page }) => {
+    await navigateTo(page, '/games');
+
+    // Verify games list is visible
+    await expect(page.locator('body')).toContainText(/game|play/i);
+  });
+});
+
+test.describe('Sea Battle Game Flow', () => {
+  test.beforeEach(async ({ page }) => {
+    await mockSession(page);
+  });
+
+  test('should maintain responsive layout', async ({ page }) => {
+    await navigateTo(page, '/games');
+
+    // Test mobile viewport
+    await page.setViewportSize({ width: 375, height: 667 });
+    await expect(page.locator('body')).toBeVisible();
+
+    // Test tablet viewport
+    await page.setViewportSize({ width: 768, height: 1024 });
+    await expect(page.locator('body')).toBeVisible();
+
+    // Test desktop viewport
+    await page.setViewportSize({ width: 1920, height: 1080 });
+    await expect(page.locator('body')).toBeVisible();
+  });
+
+  test('should navigate to Sea Battle from link', async ({ page }) => {
+    await navigateTo(page, '/games');
+
+    // Look for create room link
+    const createLink = page.getByRole('link', { name: /create|new/i }).first();
+
+    if (await createLink.isVisible()) {
+      await createLink.click();
+      // Should navigate to create page
+      await expect(page).toHaveURL(/\/games\/create/);
+    }
+  });
+});

@@ -13,6 +13,7 @@ import { GamesRealtimeService } from './games.realtime.service';
 import { GamesGateway } from './games.gateway';
 import { CriticalGateway } from './critical.gateway';
 import { TexasHoldemGateway } from './texas-holdem.gateway';
+import { SeaBattleGateway } from './sea-battle.gateway';
 import { GameEnginesModule } from './engines/engines.module';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameRoomsMapper } from './rooms/game-rooms.mapper';
@@ -28,6 +29,7 @@ import { GamesRematchService } from './games.rematch.service';
 
 import { CriticalService } from './critical/critical.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
+import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
@@ -58,6 +60,7 @@ import { AuthModule } from '../auth/auth.module';
     // Game-specific services (New)
     CriticalService,
     TexasHoldemService,
+    SeaBattleService,
     // Utilities
     GameUtilitiesService,
     // Facade service (main entry point)
@@ -67,6 +70,7 @@ import { AuthModule } from '../auth/auth.module';
     GamesGateway,
     CriticalGateway,
     TexasHoldemGateway,
+    SeaBattleGateway,
   ],
 })
 export class GamesModule {}

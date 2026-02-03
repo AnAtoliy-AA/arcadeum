@@ -16,6 +16,7 @@ import {
   Label,
   TurnIndicator,
 } from './styles';
+import { getTheme } from '../lib/theme';
 
 interface AttackBoardProps {
   players: SeaBattlePlayerState[];
@@ -35,7 +36,9 @@ export function AttackBoard({
   onAttack,
   resolveDisplayName,
   disabled = false,
-}: AttackBoardProps) {
+  variant = 'classic',
+}: AttackBoardProps & { variant?: string }) {
+  const theme = getTheme(variant);
   const currentPlayer = useMemo(() => {
     return players.find((p) => p.playerId === currentUserId) || null;
   }, [players, currentUserId]);
@@ -63,7 +66,7 @@ export function AttackBoard({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <TurnIndicator $isYourTurn={isMyTurn}>
+      <TurnIndicator $isYourTurn={isMyTurn} $theme={theme}>
         {isMyTurn
           ? '🎯 Your Turn - Attack an opponent!'
           : `Waiting for ${resolveDisplayName(currentTurnPlayerId || '', 'opponent')}...`}
@@ -72,32 +75,37 @@ export function AttackBoard({
       <GridsContainer>
         {/* Own board - view only */}
         {currentPlayer && (
-          <PlayerSection $isMe $isActive={false}>
-            <PlayerName>
+          <PlayerSection $isMe $isActive={false} $theme={theme}>
+            <PlayerName $theme={theme}>
               {resolveDisplayName(currentPlayer.playerId, 'You')} (Your Fleet)
             </PlayerName>
-            <PlayerStats>
+            <PlayerStats $theme={theme}>
               Ships Remaining: {currentPlayer.shipsRemaining}
             </PlayerStats>
             <BoardWithLabels>
               <div />
               <ColLabels>
                 {COL_LABELS.map((label) => (
-                  <Label key={label}>{label}</Label>
+                  <Label key={label} $theme={theme}>
+                    {label}
+                  </Label>
                 ))}
               </ColLabels>
               <RowLabels>
                 {ROW_LABELS.map((label) => (
-                  <Label key={label}>{label}</Label>
+                  <Label key={label} $theme={theme}>
+                    {label}
+                  </Label>
                 ))}
               </RowLabels>
-              <BoardGrid>
+              <BoardGrid $theme={theme}>
                 {currentPlayer.board.map((row, rIndex) =>
                   row.map((cellState, cIndex) => (
                     <BoardCell
                       key={`own-${rIndex}-${cIndex}`}
                       $state={cellState}
                       $isClickable={false}
+                      $theme={theme}
                     />
                   )),
                 )}
@@ -112,26 +120,31 @@ export function AttackBoard({
             key={opponent.playerId}
             $isMe={false}
             $isActive={currentTurnPlayerId === currentUserId}
+            $theme={theme}
           >
-            <PlayerName>
+            <PlayerName $theme={theme}>
               {resolveDisplayName(opponent.playerId, 'Opponent')}
             </PlayerName>
-            <PlayerStats>
+            <PlayerStats $theme={theme}>
               Ships Remaining: {opponent.shipsRemaining}
             </PlayerStats>
             <BoardWithLabels>
               <div />
               <ColLabels>
                 {COL_LABELS.map((label) => (
-                  <Label key={label}>{label}</Label>
+                  <Label key={label} $theme={theme}>
+                    {label}
+                  </Label>
                 ))}
               </ColLabels>
               <RowLabels>
                 {ROW_LABELS.map((label) => (
-                  <Label key={label}>{label}</Label>
+                  <Label key={label} $theme={theme}>
+                    {label}
+                  </Label>
                 ))}
               </RowLabels>
-              <BoardGrid>
+              <BoardGrid $theme={theme}>
                 {opponent.board.map((row, rIndex) =>
                   row.map((cellState, cIndex) => {
                     // Only show hits and misses, hide ships
@@ -150,6 +163,7 @@ export function AttackBoard({
                         key={`${opponent.playerId}-${rIndex}-${cIndex}`}
                         $state={displayState}
                         $isClickable={canAttack}
+                        $theme={theme}
                         onClick={() =>
                           canAttack &&
                           handleCellClick(opponent.playerId, rIndex, cIndex)

@@ -6,10 +6,30 @@ export const SEA_BATTLE_VARIANTS = [
     id: 'classic',
     name: 'Classic',
     description: 'Traditional battleship theme',
+    emoji: '🚢',
+    gradient: 'linear-gradient(135deg, #3498db 0%, #2980b9 50%, #1abc9c 100%)',
   },
-  { id: 'modern', name: 'Modern', description: 'Modern naval warfare' },
-  { id: 'pixel', name: 'Pixel Art', description: 'Retro pixel art style' },
-  { id: 'cartoon', name: 'Cartoon', description: 'Fun cartoon characters' },
+  {
+    id: 'modern',
+    name: 'Modern II',
+    description: 'Modern naval warfare',
+    emoji: '🚁',
+    gradient: 'linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%)',
+  },
+  {
+    id: 'pixel',
+    name: 'Pixel Art',
+    description: 'Retro pixel art style',
+    emoji: '👾',
+    gradient: 'linear-gradient(135deg, #ff00cc 0%, #333399 100%)',
+  },
+  {
+    id: 'cartoon',
+    name: 'Cartoon',
+    description: 'Fun cartoon characters',
+    emoji: '🐙',
+    gradient: 'linear-gradient(135deg, #ff9966 0%, #ff5e62 100%)',
+  },
 ] as const;
 
 export type SeaBattleVariant = (typeof SEA_BATTLE_VARIANTS)[number]['id'];

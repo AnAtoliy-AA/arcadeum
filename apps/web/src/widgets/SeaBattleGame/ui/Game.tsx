@@ -23,6 +23,7 @@ import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { ChatSection } from '@/widgets/CriticalGame/ui/ChatSection';
 import { ChatScope } from '@/shared/types/games';
 import { GameLayout } from '@/features/games/ui/GameLayout';
+import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 
 const Header = styled.div`
   height: 60px;
@@ -159,7 +160,8 @@ export default function SeaBattleGame({
     seeTheFutureLabel: '',
   });
 
-  const cardVariant = room.gameOptions?.cardVariant as string | undefined;
+  const cardVariant = (room.gameOptions?.variant ||
+    room.gameOptions?.cardVariant) as string | undefined;
 
   // Compute turn status text
   const getTurnStatusText = () => {
@@ -174,6 +176,9 @@ export default function SeaBattleGame({
     }
     return `Waiting for ${resolveDisplayName(currentTurnPlayer.playerId, 'opponent')}`;
   };
+
+  const currentVariant = SEA_BATTLE_VARIANTS.find((v) => v.id === cardVariant);
+  const variantLabel = currentVariant ? `(${currentVariant.name})` : '';
 
   return (
     <GameLayout
@@ -194,7 +199,9 @@ export default function SeaBattleGame({
       header={
         <Header>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <h2>Sea Battle - {room.name}</h2>
+            <h2>
+              Sea Battle {variantLabel} - {room.name}
+            </h2>
             <div
               style={{
                 padding: '4px 12px',
@@ -260,6 +267,7 @@ export default function SeaBattleGame({
           onConfirmPlacement={confirmPlacement}
           onResetPlacement={resetPlacement}
           isPlacementComplete={isPlacementComplete}
+          variant={cardVariant}
         />
       )}
       {snapshot && isBattlePhase && (
@@ -270,6 +278,7 @@ export default function SeaBattleGame({
           isMyTurn={isMyTurn}
           onAttack={attack}
           resolveDisplayName={resolveDisplayName}
+          variant={cardVariant}
         />
       )}
       <GameResultModal

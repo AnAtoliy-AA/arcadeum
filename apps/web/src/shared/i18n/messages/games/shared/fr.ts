@@ -79,6 +79,7 @@ export const frMessages = {
     fieldMaxPlayers: 'Joueurs Maximum (optionnel)',
     maxPlayersAria: 'Nombre maximum de joueurs',
     autoPlaceholder: 'Automatique',
+    autoButton: 'Auto',
     fieldVisibility: 'Visibilité',
     fieldNotes: 'Notes (optionnel)',
     notesPlaceholder: 'Ajouter des notes...',

@@ -48,9 +48,9 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
       gameId: 'critical_v1',
       name: 'Critical',
       minPlayers: 2,
-      maxPlayers: 5,
+      maxPlayers: 6,
       version: '1.0.0',
-      description: 'A kitty-powered version of Russian Roulette',
+      description: 'A powered version of Russian Roulette',
       category: 'Card Game',
     };
   }

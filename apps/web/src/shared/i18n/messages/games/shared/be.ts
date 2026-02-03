@@ -82,6 +82,7 @@ export const beMessages = {
     fieldMaxPlayers: 'Макс. гульцоў (опцыя)',
     maxPlayersAria: 'Максімальная колькасць гульцоў',
     autoPlaceholder: 'Аўта',
+    autoButton: 'Аўта',
     fieldVisibility: 'Доступ',
     fieldNotes: 'Заўвагі (опцыя)',
     notesPlaceholder: 'Дадайце заўвагі...',

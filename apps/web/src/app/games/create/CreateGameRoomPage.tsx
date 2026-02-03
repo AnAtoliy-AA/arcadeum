@@ -122,16 +122,20 @@ export function CreateGameRoomPage() {
       }
 
       const maxPlayersNum = maxPlayers.trim() ? Number(maxPlayers) : undefined;
+      const gameLimit = visibleGames.find((g) => g.id === gameId)?.maxPlayers;
+
       if (
         maxPlayersNum !== undefined &&
-        (isNaN(maxPlayersNum) || maxPlayersNum < 2)
+        (isNaN(maxPlayersNum) ||
+          maxPlayersNum < 2 ||
+          (gameLimit && maxPlayersNum > gameLimit))
       ) {
         return;
       }
 
       createRoom();
     },
-    [snapshot.accessToken, name, maxPlayers, createRoom],
+    [snapshot.accessToken, name, maxPlayers, gameId, createRoom],
   );
 
   const GameConfigComponent = GAME_CONFIGS[gameId];
@@ -196,19 +200,54 @@ export function CreateGameRoomPage() {
                 }
                 htmlFor="max-players"
               >
-                <Input
-                  id="max-players"
-                  type="number"
-                  min="2"
-                  placeholder={t('games.create.autoPlaceholder') || 'Auto'}
-                  value={maxPlayers}
-                  onChange={(e) => setMaxPlayers(e.target.value)}
-                  aria-label={
-                    t('games.create.maxPlayersAria') ||
-                    'Maximum number of players'
-                  }
-                  fullWidth
-                />
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '0.5rem',
+                    alignItems: 'flex-start',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexShrink: 0,
+                      width: '80px',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {maxPlayers ? (
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => setMaxPlayers('')}
+                        size="md"
+                        aria-label="Set to Auto"
+                        style={{ height: '42px', width: '100%' }}
+                      >
+                        {t('games.create.autoButton') || 'Auto'}
+                      </Button>
+                    ) : null}
+                  </div>
+                  <Input
+                    key="max-players-input"
+                    id="max-players"
+                    type="number"
+                    min="2"
+                    max={
+                      visibleGames.find((g) => g.id === gameId)?.maxPlayers ||
+                      undefined
+                    }
+                    placeholder={t('games.create.autoPlaceholder') || 'Auto'}
+                    value={maxPlayers}
+                    onChange={(e) => setMaxPlayers(e.target.value)}
+                    aria-label={
+                      t('games.create.maxPlayersAria') ||
+                      'Maximum number of players'
+                    }
+                    style={{ flex: 1 }}
+                    fullWidth
+                  />
+                </div>
               </FormGroup>
 
               <FormGroup

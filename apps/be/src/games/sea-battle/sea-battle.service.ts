@@ -175,6 +175,25 @@ export class SeaBattleService {
   }
 
   /**
+   * Auto place ships for a player
+   */
+  async autoPlaceShipsByRoom(userId: string, roomId: string) {
+    const session = await this.sessionsService.findSessionByRoom(roomId);
+    if (!session) throw new Error('Session not found');
+
+    const updatedSession = await this.sessionsService.executeAction({
+      sessionId: session.id,
+      userId,
+      action: 'autoPlace',
+      payload: {},
+    });
+
+    await this.checkAndSyncRoomStatus(updatedSession);
+    await this.emitSessionUpdate(updatedSession);
+    return updatedSession;
+  }
+
+  /**
    * Post a note to Sea Battle history
    */
   async postHistoryNote(

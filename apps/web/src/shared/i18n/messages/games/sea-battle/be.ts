@@ -51,6 +51,10 @@ export const beMessages = {
         confirmPlacement: 'Пацвердзіць',
         rotate: 'Павярнуць',
         fire: 'Агонь!',
+        autoPlace: 'Аўтаразмяшчэнне',
+        randomize: 'Перамяшаць',
+        resetPlacement: 'Скінуць',
+        waitingForOthers: 'Чаканне іншых...',
       },
       attack: {
         hit: 'Трапіў!',

@@ -6,10 +6,7 @@ const ROOT_DIR = process.cwd();
 
 // List of files to ignore (relative to root)
 // These files currently exceed the limit and should be refactored.
-const ALLOW_LIST = new Set([
-  'apps\\mobile\\pages\\GamesScreen\\gameIntegrations\\ExplodingCats\\ExplodingCatsRoom.tsx',
-  'apps\\mobile\\pages\\GamesScreen\\hooks\\useGameRoom.ts',
-]);
+const ALLOW_LIST = new Set([]);
 
 const IGNORE_DIRS = new Set([
   'node_modules',

@@ -26,12 +26,18 @@ import {
 } from './sea-battle.types';
 import {
   createEmptyBoard,
-  areCellsValid,
-  areCellsConnected,
-  markSurroundingCellsAsMiss,
   sanitizeSeaBattleState,
   getSeaBattleAvailableActions,
+  randomlyPlaceShips,
+  markSurroundingCellsAsMiss,
 } from './sea-battle.utils';
+import {
+  validatePlaceShip,
+  validateAutoPlace,
+  validateConfirmPlacement,
+  validateResetPlacement,
+  validateAttack,
+} from './sea-battle.validators';
 
 @Injectable()
 export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
@@ -81,135 +87,21 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
 
     switch (action) {
       case 'placeShip':
-        return this.validatePlaceShip(
-          state,
-          player,
-          payload as PlaceShipPayload,
-        );
+        return validatePlaceShip(state, player, payload as PlaceShipPayload);
+      case 'autoPlace':
+        return validateAutoPlace(state);
       case 'confirmPlacement':
-        return this.validateConfirmPlacement(state, player);
+        return validateConfirmPlacement(state, player);
       case 'attack':
-        return this.validateAttack(state, player, payload as AttackPayload);
+        return validateAttack(state, player, payload as AttackPayload);
 
       case 'resetPlacement':
-        return this.validateResetPlacement(state, player);
+        return validateResetPlacement(state, player);
       case 'chat':
         return true;
       default:
         return false;
     }
-  }
-
-  private validatePlaceShip(
-    state: SeaBattleState,
-    player: SeaBattlePlayer,
-    payload: PlaceShipPayload,
-  ): boolean {
-    if (state.phase !== GAME_PHASE.PLACEMENT) return false;
-    if (player.placementComplete) return false;
-    if (!payload?.shipId || !payload?.cells) return false;
-
-    const shipConfig = SHIPS.find((s) => s.id === payload.shipId);
-    if (!shipConfig) return false;
-    if (payload.cells.length !== shipConfig.size) return false;
-
-    // Check if ship already placed
-    if (player.ships.some((s) => s.id === payload.shipId)) return false;
-
-    // Check cells are valid and connected
-    if (!areCellsValid(payload.cells)) return false;
-    if (!areCellsConnected(payload.cells)) return false;
-
-    // Check cells don't overlap with existing ships AND are not adjacent
-    for (const cell of payload.cells) {
-      if (player.board[cell.row][cell.col] !== CELL_STATE.EMPTY) {
-        return false;
-      }
-
-      // Check surrounding cells
-      const directions = [
-        [-1, -1],
-        [-1, 0],
-        [-1, 1],
-        [0, -1],
-        [0, 1],
-        [1, -1],
-        [1, 0],
-        [1, 1],
-      ];
-
-      for (const [dr, dc] of directions) {
-        const r = cell.row + dr;
-        const c = cell.col + dc;
-        if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
-          if (player.board[r][c] === CELL_STATE.SHIP) {
-            return false;
-          }
-        }
-      }
-    }
-
-    return true;
-  }
-
-  private validateConfirmPlacement(
-    state: SeaBattleState,
-    player: SeaBattlePlayer,
-  ): boolean {
-    if (state.phase !== GAME_PHASE.PLACEMENT) return false;
-    if (player.placementComplete) return false;
-    return player.ships.length === SHIPS.length;
-  }
-
-  private validateResetPlacement(
-    state: SeaBattleState,
-    player: SeaBattlePlayer,
-  ): boolean {
-    if (state.phase !== GAME_PHASE.PLACEMENT) return false;
-    if (player.placementComplete) return false;
-    return true;
-  }
-
-  private validateAttack(
-    state: SeaBattleState,
-    player: SeaBattlePlayer,
-    payload: AttackPayload,
-  ): boolean {
-    if (state.phase !== GAME_PHASE.BATTLE) return false;
-
-    const currentPlayerId = state.playerOrder[state.currentTurnIndex];
-    if (player.playerId !== currentPlayerId) return false;
-
-    if (
-      !payload?.targetPlayerId ||
-      payload.row === undefined ||
-      payload.col === undefined
-    ) {
-      return false;
-    }
-
-    if (payload.targetPlayerId === player.playerId) return false;
-
-    const target = state.players.find(
-      (p) => p.playerId === payload.targetPlayerId,
-    );
-    if (!target || !target.alive) return false;
-
-    if (
-      payload.row < 0 ||
-      payload.row >= BOARD_SIZE ||
-      payload.col < 0 ||
-      payload.col >= BOARD_SIZE
-    ) {
-      return false;
-    }
-
-    const cellState = target.board[payload.row][payload.col];
-    if (cellState === CELL_STATE.HIT || cellState === CELL_STATE.MISS) {
-      return false;
-    }
-
-    return true;
   }
 
   executeAction(
@@ -232,6 +124,8 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
           player,
           payload as PlaceShipPayload,
         );
+      case 'autoPlace':
+        return this.executeAutoPlace(newState, player);
       case 'confirmPlacement':
         return this.executeConfirmPlacement(newState, player);
       case 'attack':
@@ -270,6 +164,61 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
 
     state.logs.push(
       this.createLogEntry('action', `Placed ${ship.name}`, {
+        scope: 'private',
+        senderId: player.playerId,
+      }),
+    );
+
+    return this.successResult(state);
+  }
+
+  private executeAutoPlace(
+    state: SeaBattleState,
+    player: SeaBattlePlayer,
+  ): GameActionResult<SeaBattleState> {
+    // 1. Reset board
+    for (let r = 0; r < BOARD_SIZE; r++) {
+      for (let c = 0; c < BOARD_SIZE; c++) {
+        if (player.board[r][c] === CELL_STATE.SHIP) {
+          player.board[r][c] = CELL_STATE.EMPTY;
+        }
+      }
+    }
+    player.ships = [];
+    player.placementComplete = false;
+
+    // 2. Generate placements
+    const placements = randomlyPlaceShips();
+    if (Object.keys(placements).length === 0) {
+      // Should not happen with standard board, but handle gracefully
+      return this.errorResult('Failed to generate ship placement');
+    }
+
+    // 3. Place ships
+    // We already have utilities but to keep it self-contained and reusing types:
+    // We'll iterate the generated placements and apply them.
+    for (const shipId of Object.keys(placements)) {
+      const cells = placements[shipId];
+      const shipConfig = SHIPS.find((s) => s.id === shipId);
+      if (shipConfig) {
+        const ship: Ship = {
+          id: shipId,
+          name: shipConfig.name,
+          size: shipConfig.size,
+          cells: cells,
+          hits: 0,
+          sunk: false,
+        };
+        player.ships.push(ship);
+
+        for (const cell of cells) {
+          player.board[cell.row][cell.col] = CELL_STATE.SHIP;
+        }
+      }
+    }
+
+    state.logs.push(
+      this.createLogEntry('action', 'Auto-placed ships', {
         scope: 'private',
         senderId: player.playerId,
       }),

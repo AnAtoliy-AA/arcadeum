@@ -51,6 +51,10 @@ export const enMessages = {
         confirmPlacement: 'Confirm Placement',
         rotate: 'Rotate',
         fire: 'Fire!',
+        autoPlace: 'Auto Place Ships',
+        randomize: 'Randomize Ships',
+        resetPlacement: 'Reset Placement',
+        waitingForOthers: 'Waiting for others...',
       },
       attack: {
         hit: 'Hit!',

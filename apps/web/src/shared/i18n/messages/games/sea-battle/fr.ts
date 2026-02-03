@@ -51,6 +51,10 @@ export const frMessages = {
         confirmPlacement: 'Confirmer Placement',
         rotate: 'Pivoter',
         fire: 'Feu !',
+        autoPlace: 'Placement Auto',
+        randomize: 'Aléatoire',
+        resetPlacement: 'Réinitialiser',
+        waitingForOthers: 'En attente des autres...',
       },
       attack: {
         hit: 'Touché !',

@@ -51,6 +51,10 @@ export const esMessages = {
         confirmPlacement: 'Confirmar Colocación',
         rotate: 'Rotar',
         fire: '¡Fuego!',
+        autoPlace: 'Auto Colocar',
+        randomize: 'Aleatorio',
+        resetPlacement: 'Reiniciar',
+        waitingForOthers: 'Esperando a otros...',
       },
       attack: {
         hit: '¡Impacto!',

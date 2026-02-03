@@ -50,6 +50,10 @@ export const ruMessages = {
         confirmPlacement: 'Подтвердить расстановку',
         rotate: 'Повернуть',
         fire: 'Огонь!',
+        autoPlace: 'Авторасстановка',
+        randomize: 'Перемешать',
+        resetPlacement: 'Сбросить',
+        waitingForOthers: 'Ожидание других...',
       },
       attack: {
         hit: 'Попал!',

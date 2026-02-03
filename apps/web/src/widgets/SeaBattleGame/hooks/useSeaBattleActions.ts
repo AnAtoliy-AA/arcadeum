@@ -52,6 +52,15 @@ export function useSeaBattleActions(options: UseSeaBattleActionsOptions) {
     });
   }, [roomId, userId, onActionStart]);
 
+  const autoPlace = useCallback(() => {
+    if (!userId) return;
+    onActionStart?.('autoPlace');
+    gameSocket.emit('seaBattle.session.auto_place', {
+      roomId,
+      userId,
+    });
+  }, [roomId, userId, onActionStart]);
+
   const attack = useCallback(
     (targetPlayerId: string, row: number, col: number) => {
       if (!userId) return;
@@ -87,5 +96,6 @@ export function useSeaBattleActions(options: UseSeaBattleActionsOptions) {
     attack,
     postHistoryNote,
     resetPlacement,
+    autoPlace,
   };
 }

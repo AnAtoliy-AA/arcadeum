@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo } from 'react';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import type {
   ShipCell,
   ShipConfig,
@@ -41,6 +42,7 @@ interface ShipPlacementBoardProps {
   onConfirmPlacement: () => void;
   onResetPlacement: () => void;
   isPlacementComplete: boolean;
+  onAutoPlace?: () => void;
 }
 
 export function ShipPlacementBoard({
@@ -49,11 +51,13 @@ export function ShipPlacementBoard({
   onConfirmPlacement,
   onResetPlacement,
   isPlacementComplete,
+  onAutoPlace,
   variant = 'classic',
 }: ShipPlacementBoardProps & { variant?: string }) {
   const [selectedShipId, setSelectedShipId] = useState<string | null>(null);
   const [isVertical, setIsVertical] = useState(false);
   const [hoveredCells, setHoveredCells] = useState<ShipCell[]>([]);
+  const { t } = useTranslation();
   const theme = getTheme(variant);
 
   const placedShipIds = useMemo(() => {
@@ -258,7 +262,9 @@ export function ShipPlacementBoard({
           onClick={onConfirmPlacement}
           style={{ marginTop: '16px' }}
         >
-          {isPlacementComplete ? 'Waiting for others...' : 'Confirm Placement'}
+          {isPlacementComplete
+            ? t('games.seaBattle.table.actions.waitingForOthers')
+            : t('games.seaBattle.table.actions.confirmPlacement')}
         </ActionButton>
         {placedShipIds.size > 0 && !isPlacementComplete && (
           <ActionButton
@@ -267,7 +273,19 @@ export function ShipPlacementBoard({
             onClick={onResetPlacement}
             style={{ marginTop: '8px' }}
           >
-            Reset Placement
+            {t('games.seaBattle.table.actions.resetPlacement')}
+          </ActionButton>
+        )}
+        {!isPlacementComplete && onAutoPlace && (
+          <ActionButton
+            $variant="secondary"
+            $theme={theme}
+            onClick={onAutoPlace}
+            style={{ marginTop: '8px' }}
+          >
+            {placedShipIds.size > 0
+              ? t('games.seaBattle.table.actions.randomize')
+              : t('games.seaBattle.table.actions.autoPlace')}
           </ActionButton>
         )}
       </ShipPalette>

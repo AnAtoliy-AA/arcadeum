@@ -63,10 +63,16 @@ export default function SeaBattleGame({
     attack,
     resetPlacement,
     postHistoryNote: postHistoryNoteAction,
+    autoPlace,
   } = useSeaBattleActions({
     roomId,
     userId: currentUserId,
   });
+
+  const handleAutoPlace = useCallback(() => {
+    // Just trigger the backend action
+    autoPlace();
+  }, [autoPlace]);
 
   const handleToggleChat = useCallback(() => {
     setShowChat((prev) => !prev);
@@ -267,6 +273,7 @@ export default function SeaBattleGame({
           onConfirmPlacement={confirmPlacement}
           onResetPlacement={resetPlacement}
           isPlacementComplete={isPlacementComplete}
+          onAutoPlace={handleAutoPlace}
           variant={cardVariant}
         />
       )}

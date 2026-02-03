@@ -147,6 +147,33 @@ export class SeaBattleGateway {
     }
   }
 
+  @SubscribeMessage('seaBattle.session.auto_place')
+  async handleAutoPlace(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { roomId?: string; userId?: string },
+  ): Promise<void> {
+    const { roomId, userId } = extractRoomAndUser(payload);
+
+    try {
+      await this.seaBattleService.autoPlaceShipsByRoom(userId, roomId);
+      client.emit('seaBattle.session.ships_auto_placed', {
+        roomId,
+        userId,
+      });
+    } catch (error) {
+      handleError(
+        this.logger,
+        error,
+        {
+          action: 'auto place ships',
+          roomId,
+          userId,
+        },
+        'Unable to auto place ships.',
+      );
+    }
+  }
+
   @SubscribeMessage('seaBattle.session.attack')
   async handleAttack(
     @ConnectedSocket() client: Socket,

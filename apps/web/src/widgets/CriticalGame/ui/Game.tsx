@@ -20,7 +20,7 @@ import {
 import { useGameHandlers } from '../hooks/useGameHandlers';
 import { GameModals } from './GameModals';
 import { GameResultModal } from './GameResultModal';
-import { GameLobby } from './GameLobby';
+import { CriticalLobby } from './CriticalLobby';
 import { ChatSection } from './ChatSection';
 import { GameStatusMessage } from './GameStatusMessage';
 import { PlayerHand } from './PlayerHand';
@@ -247,7 +247,7 @@ export default function CriticalGame({
   // Game not started yet
   if (!snapshot) {
     return (
-      <GameLobby
+      <CriticalLobby
         room={room}
         isHost={isHost}
         startBusy={startBusy}

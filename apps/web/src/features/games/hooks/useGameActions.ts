@@ -2,7 +2,11 @@ import { useCallback, useEffect } from 'react';
 import { gameSocket } from '@/shared/lib/socket';
 import type { ChatScope } from '@/shared/types/games';
 
-export type GameType = 'critical_v1' | 'texas_holdem_v1' | null;
+export type GameType =
+  | 'critical_v1'
+  | 'texas_holdem_v1'
+  | 'sea_battle_v1'
+  | null;
 
 interface UseGameActionsOptions {
   roomId: string;

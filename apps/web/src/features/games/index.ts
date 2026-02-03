@@ -36,6 +36,22 @@ export {
 
 export { PlayerList } from './ui/PlayerList';
 
+export {
+  ReusableGameLobby,
+  type ReusableGameLobbyProps,
+  type GameLobbyTheme,
+  // Styled components for extension
+  GameContainer as LobbyGameContainer,
+  GameHeader as LobbyGameHeader,
+  IconButton,
+  StartButton as LobbyStartButton,
+} from './ui/ReusableGameLobby';
+
+export { AVATAR_COLORS } from './ui/SortablePlayerItem';
+
+// Re-export lobby styles
+export * from './ui/lobbyStyles';
+
 export { GamesSearch } from './GamesSearch/GamesSearch';
 
 // Libraries

@@ -219,4 +219,10 @@ export const gamesCatalog = [
     isPlayable: false, // Temporarily unavailable
     isHidden: true, // Temporarily hidden from UI
   },
+  {
+    id: 'sea_battle_v1',
+    name: 'Sea Battle',
+    summary: 'Classic naval combat game for up to 4 players',
+    isPlayable: true,
+  },
 ];

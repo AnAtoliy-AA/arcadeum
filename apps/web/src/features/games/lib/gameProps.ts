@@ -1,5 +1,9 @@
-import type { BaseGameProps, GameConfig } from "../types";
-import type { GameRoomSummary, GameSessionSummary } from "@/shared/types/games";
+import type { BaseGameProps, GameConfig } from '../types';
+import type {
+  GameRoomSummary,
+  GameSessionSummary,
+  ChatScope,
+} from '@/shared/types/games';
 
 /**
  * Standardized game props factory for creating consistent game component props
@@ -15,9 +19,9 @@ export class GamePropsFactory {
     isHost: boolean,
     config: GameConfig,
     callbacks: {
-      onPostHistoryNote: (message: string, scope: "all" | "players") => void;
+      onPostHistoryNote: (message: string, scope: ChatScope) => void;
       onAction?: (action: string, payload?: Record<string, unknown>) => void;
-    }
+    },
   ): BaseGameProps {
     return {
       roomId: room.id,
@@ -42,47 +46,51 @@ export class GamePropsFactory {
 
     // Validate required fields
     if (!props.room) {
-      errors.push("Room is required");
+      errors.push('Room is required');
     }
 
     if (!props.currentUserId) {
-      errors.push("Current user ID is required");
+      errors.push('Current user ID is required');
     }
 
     if (!props.config) {
-      errors.push("Game config is required");
+      errors.push('Game config is required');
     }
 
     // Validate room
     if (props.room) {
       if (!props.room.id) {
-        errors.push("Room ID is required");
+        errors.push('Room ID is required');
       }
 
       if (props.room.playerCount < (props.config?.minPlayers || 2)) {
-        errors.push(`Minimum players required: ${props.config?.minPlayers || 2}`);
+        errors.push(
+          `Minimum players required: ${props.config?.minPlayers || 2}`,
+        );
       }
 
       if (props.room.playerCount > (props.config?.maxPlayers || 10)) {
-        errors.push(`Maximum players allowed: ${props.config?.maxPlayers || 10}`);
+        errors.push(
+          `Maximum players allowed: ${props.config?.maxPlayers || 10}`,
+        );
       }
     }
 
     // Validate session if present
     if (props.session) {
-      if (props.session.status === "active" && !props.session.state) {
-        errors.push("Active session must have state");
+      if (props.session.status === 'active' && !props.session.state) {
+        errors.push('Active session must have state');
       }
     }
 
     // Validate callbacks
-    if (typeof props.onPostHistoryNote !== "function") {
-      errors.push("onPostHistoryNote callback is required");
+    if (typeof props.onPostHistoryNote !== 'function') {
+      errors.push('onPostHistoryNote callback is required');
     }
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -92,7 +100,7 @@ export class GamePropsFactory {
   public static createMinimalProps(
     room: GameRoomSummary,
     currentUserId: string | null,
-    config: GameConfig
+    config: GameConfig,
   ): BaseGameProps {
     return {
       roomId: room.id,
@@ -111,13 +119,13 @@ export class GamePropsFactory {
    */
   public static updatePropsWithSession(
     props: BaseGameProps,
-    session: GameSessionSummary | null
+    session: GameSessionSummary | null,
   ): BaseGameProps {
     return {
       ...props,
       roomId: props.room.id,
       session,
-      isHost: props.room.hostId === props.currentUserId
+      isHost: props.room.hostId === props.currentUserId,
     };
   }
 
@@ -128,22 +136,22 @@ export class GamePropsFactory {
     room: GameRoomSummary,
     session: GameSessionSummary | null,
     config: GameConfig,
-    difficulty: "easy" | "medium" | "hard" = "medium",
+    difficulty: 'easy' | 'medium' | 'hard' = 'medium',
     callbacks: {
-      onPostHistoryNote: (message: string, scope: "all" | "players") => void;
+      onPostHistoryNote: (message: string, scope: ChatScope) => void;
       onAction?: (action: string, payload?: Record<string, unknown>) => void;
-    }
+    },
   ): BaseGameProps {
     if (!config.supportsAI) {
       throw new Error(`Game ${config.slug} does not support AI players`);
     }
 
     return {
-      ...this.createProps(room, session, "ai-player", false, config, callbacks),
+      ...this.createProps(room, session, 'ai-player', false, config, callbacks),
       config: {
         ...config,
-        ...(difficulty && { aiDifficulty: difficulty })
-      }
+        ...(difficulty && { aiDifficulty: difficulty }),
+      },
     };
   }
 
@@ -155,8 +163,8 @@ export class GamePropsFactory {
     session: GameSessionSummary | null,
     config: GameConfig,
     callbacks: {
-      onPostHistoryNote: (message: string, scope: "all" | "players") => void;
-    }
+      onPostHistoryNote: (message: string, scope: ChatScope) => void;
+    },
   ): BaseGameProps {
     return {
       roomId: room.id,
@@ -175,11 +183,11 @@ export class GamePropsFactory {
    */
   public static extractGameSpecificProps<T extends Record<string, unknown>>(
     baseProps: BaseGameProps,
-    additionalProps: T
+    additionalProps: T,
   ): BaseGameProps & T {
     return {
       ...baseProps,
-      ...additionalProps
+      ...additionalProps,
     };
   }
 
@@ -198,13 +206,20 @@ export class GamePropsFactory {
       bracket: string;
     },
     callbacks: {
-      onPostHistoryNote: (message: string, scope: "all" | "players") => void;
+      onPostHistoryNote: (message: string, scope: ChatScope) => void;
       onAction?: (action: string, payload?: Record<string, unknown>) => void;
-    }
+    },
   ): BaseGameProps & { tournamentData: typeof tournamentData } {
     return {
-      ...this.createProps(room, session, currentUserId, false, config, callbacks),
-      tournamentData
+      ...this.createProps(
+        room,
+        session,
+        currentUserId,
+        false,
+        config,
+        callbacks,
+      ),
+      tournamentData,
     };
   }
 
@@ -214,29 +229,29 @@ export class GamePropsFactory {
   public static createPracticeProps(
     config: GameConfig,
     callbacks: {
-      onPostHistoryNote: (message: string, scope: "all" | "players") => void;
+      onPostHistoryNote: (message: string, scope: ChatScope) => void;
       onAction?: (action: string, payload?: Record<string, unknown>) => void;
-    }
+    },
   ): BaseGameProps {
     // Create minimal practice room data
     const practiceRoomData = {
-      id: "practice-room",
-      name: "Practice Room",
+      id: 'practice-room',
+      name: 'Practice Room',
       gameId: config.slug,
       playerCount: 1,
       maxPlayers: 1,
-      status: "in_progress" as const,
-      visibility: "private" as const,
+      status: 'in_progress' as const,
+      visibility: 'private' as const,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      hostId: "practice-user"
+      hostId: 'practice-user',
     };
 
     return {
       roomId: practiceRoomData.id,
       room: practiceRoomData,
       session: null,
-      currentUserId: "practice-user",
+      currentUserId: 'practice-user',
       isHost: true,
       config,
       onPostHistoryNote: callbacks.onPostHistoryNote,
@@ -252,28 +267,43 @@ export const GamePropsGuards = {
   /**
    * Check if props are for an AI game
    */
-  isAIProps: (props: BaseGameProps): props is BaseGameProps & { config: GameConfig & { aiDifficulty?: string } } => {
-    return !!(props.config?.supportsAI && (props.config as GameConfig & { aiDifficulty?: string }).aiDifficulty);
+  isAIProps: (
+    props: BaseGameProps,
+  ): props is BaseGameProps & {
+    config: GameConfig & { aiDifficulty?: string };
+  } => {
+    return !!(
+      props.config?.supportsAI &&
+      (props.config as GameConfig & { aiDifficulty?: string }).aiDifficulty
+    );
   },
 
   /**
    * Check if props are for a spectator
    */
-  isSpectatorProps: (props: BaseGameProps): props is BaseGameProps & { currentUserId: null } => {
+  isSpectatorProps: (
+    props: BaseGameProps,
+  ): props is BaseGameProps & { currentUserId: null } => {
     return props.currentUserId === null;
   },
 
   /**
    * Check if props are for a tournament
    */
-  isTournamentProps: (props: BaseGameProps): props is BaseGameProps & { tournamentData: Record<string, unknown> } => {
-    return !!(props as BaseGameProps & { tournamentData: Record<string, unknown> }).tournamentData;
+  isTournamentProps: (
+    props: BaseGameProps,
+  ): props is BaseGameProps & { tournamentData: Record<string, unknown> } => {
+    return !!(
+      props as BaseGameProps & { tournamentData: Record<string, unknown> }
+    ).tournamentData;
   },
 
   /**
    * Check if props are for practice mode
    */
-  isPracticeProps: (props: BaseGameProps): props is BaseGameProps & { room: { id: "practice-room" } } => {
-    return props.room.id === "practice-room";
-  }
+  isPracticeProps: (
+    props: BaseGameProps,
+  ): props is BaseGameProps & { room: { id: 'practice-room' } } => {
+    return props.room.id === 'practice-room';
+  },
 };

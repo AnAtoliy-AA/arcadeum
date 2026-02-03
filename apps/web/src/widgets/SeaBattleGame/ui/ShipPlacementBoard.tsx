@@ -33,6 +33,7 @@ import {
   PlayerSection,
   PlayerName,
 } from './styles';
+import { getTheme } from '../lib/theme';
 
 interface ShipPlacementBoardProps {
   currentPlayer: SeaBattlePlayerState | null;
@@ -48,10 +49,12 @@ export function ShipPlacementBoard({
   onConfirmPlacement,
   onResetPlacement,
   isPlacementComplete,
-}: ShipPlacementBoardProps) {
+  variant = 'classic',
+}: ShipPlacementBoardProps & { variant?: string }) {
   const [selectedShipId, setSelectedShipId] = useState<string | null>(null);
   const [isVertical, setIsVertical] = useState(false);
   const [hoveredCells, setHoveredCells] = useState<ShipCell[]>([]);
+  const theme = getTheme(variant);
 
   const placedShipIds = useMemo(() => {
     return new Set(currentPlayer?.ships.map((s) => s.id) || []);
@@ -159,31 +162,39 @@ export function ShipPlacementBoard({
     <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
       <div>
         <PlacementHeader>
-          <h2 style={{ margin: 0, color: 'var(--color-text)' }}>
+          <h2 style={{ margin: 0, color: theme.textColor }}>
             Place Your Ships
           </h2>
           <PlacementControls>
-            <RotateButton onClick={handleRotate} disabled={!selectedShip}>
+            <RotateButton
+              $theme={theme}
+              onClick={handleRotate}
+              disabled={!selectedShip}
+            >
               Rotate ({isVertical ? 'Vertical' : 'Horizontal'})
             </RotateButton>
           </PlacementControls>
         </PlacementHeader>
 
-        <PlayerSection $isMe $isActive={false}>
-          <PlayerName>Your Board</PlayerName>
+        <PlayerSection $isMe $isActive={false} $theme={theme}>
+          <PlayerName $theme={theme}>Your Board</PlayerName>
           <BoardWithLabels>
             <div /> {/* Empty corner */}
             <ColLabels>
               {COL_LABELS.map((label) => (
-                <Label key={label}>{label}</Label>
+                <Label key={label} $theme={theme}>
+                  {label}
+                </Label>
               ))}
             </ColLabels>
             <RowLabels>
               {ROW_LABELS.map((label) => (
-                <Label key={label}>{label}</Label>
+                <Label key={label} $theme={theme}>
+                  {label}
+                </Label>
               ))}
             </RowLabels>
-            <BoardGrid onMouseLeave={() => setHoveredCells([])}>
+            <BoardGrid $theme={theme} onMouseLeave={() => setHoveredCells([])}>
               {board.map((row, rIndex) =>
                 row.map((cellState, cIndex) => {
                   const isHovered = hoveredCells.some(
@@ -195,6 +206,7 @@ export function ShipPlacementBoard({
                       $state={cellState}
                       $isClickable={!!selectedShip}
                       $isHighlighted={isHovered}
+                      $theme={theme}
                       onMouseEnter={() => handleCellHover(rIndex, cIndex)}
                       onClick={() => handleCellClick(rIndex, cIndex)}
                     />
@@ -206,8 +218,8 @@ export function ShipPlacementBoard({
         </PlayerSection>
       </div>
 
-      <ShipPalette>
-        <h3 style={{ margin: '0 0 12px', color: 'var(--color-text)' }}>
+      <ShipPalette $theme={theme}>
+        <h3 style={{ margin: '0 0 12px', color: theme.textColor }}>
           Ships to Place
         </h3>
         {SHIPS.map((ship) => {
@@ -220,6 +232,7 @@ export function ShipPlacementBoard({
               $size={ship.size}
               $isPlaced={isPlaced}
               $isSelected={isSelected}
+              $theme={theme}
               onClick={() =>
                 !isPlaced && setSelectedShipId(isSelected ? null : ship.id)
               }
@@ -228,10 +241,10 @@ export function ShipPlacementBoard({
                 {Array(ship.size)
                   .fill(null)
                   .map((_, i) => (
-                    <ShipCellStyled key={i} />
+                    <ShipCellStyled key={i} $theme={theme} />
                   ))}
               </ShipPreview>
-              <ShipName>
+              <ShipName $theme={theme}>
                 {ship.name} ({ship.size}){isPlaced && ' ✓'}
               </ShipName>
             </ShipItem>
@@ -240,6 +253,7 @@ export function ShipPlacementBoard({
 
         <ActionButton
           $variant="primary"
+          $theme={theme}
           disabled={!isAllShipsPlaced || isPlacementComplete}
           onClick={onConfirmPlacement}
           style={{ marginTop: '16px' }}
@@ -249,6 +263,7 @@ export function ShipPlacementBoard({
         {placedShipIds.size > 0 && !isPlacementComplete && (
           <ActionButton
             $variant="secondary"
+            $theme={theme}
             onClick={onResetPlacement}
             style={{ marginTop: '8px' }}
           >

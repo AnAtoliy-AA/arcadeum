@@ -180,4 +180,16 @@ export const gamesApi = {
   ): Promise<CreateRoomResponse> => {
     return apiClient.post<CreateRoomResponse>('/games/rooms', payload, options);
   },
+
+  updateRoomOptions: async (
+    roomId: string,
+    optionsPayload: Record<string, unknown>,
+    options?: ApiClientOptions,
+  ): Promise<void> => {
+    return apiClient.post<void>(
+      `/games/rooms/${roomId}/options`,
+      { options: optionsPayload },
+      options,
+    );
+  },
 };

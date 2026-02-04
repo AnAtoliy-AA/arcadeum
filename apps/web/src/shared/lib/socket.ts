@@ -29,7 +29,7 @@ type AuthenticatedSocket = Socket & {
 };
 
 const SOCKET_OPTIONS = {
-  transports: ['websocket'],
+  transports: ['polling', 'websocket'],
   autoConnect: false,
 };
 

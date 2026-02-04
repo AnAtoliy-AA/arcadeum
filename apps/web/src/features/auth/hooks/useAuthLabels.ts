@@ -1,12 +1,14 @@
-import { useLanguage, formatMessage } from "@/app/i18n/LanguageProvider";
-import { appConfig } from "@/shared/config/app-config";
-import { DEFAULT_LOCALE, getMessages } from "@/shared/i18n";
-import type { AuthMessages, CommonMessages } from "@/shared/i18n/types";
-import type { SessionDetailLabels } from "../types";
+import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
+import { appConfig } from '@/shared/config/app-config';
+import { DEFAULT_LOCALE, getMessages } from '@/shared/i18n';
+import type { AuthMessages, CommonMessages } from '@/shared/i18n/types';
+import type { SessionDetailLabels } from '../types';
 
 const DEFAULT_TRANSLATIONS = getMessages(DEFAULT_LOCALE);
-const DEFAULT_AUTH_COPY: Partial<AuthMessages> = DEFAULT_TRANSLATIONS.auth ?? {};
-const DEFAULT_COMMON_COPY: Partial<CommonMessages> = DEFAULT_TRANSLATIONS.common ?? {};
+const DEFAULT_AUTH_COPY: Partial<AuthMessages> =
+  DEFAULT_TRANSLATIONS.auth ?? {};
+const DEFAULT_COMMON_COPY: Partial<CommonMessages> =
+  DEFAULT_TRANSLATIONS.common ?? {};
 
 interface AuthLabels {
   // Hero section
@@ -37,6 +39,7 @@ interface AuthLabels {
   helperText: string;
   passwordMismatchMessage: string;
   usernameTooShortMessage: string;
+  invalidEmailMessage: string;
   submitLabel: string;
   toggleLabel: string;
   logoutLabel: string;
@@ -97,7 +100,7 @@ export function useAuthLabels(isRegisterMode: boolean): AuthLabels {
   const defaultStatusCard = defaultAuth.statusCard ?? {};
   const defaultStatusDetails = defaultStatusCard.details ?? {};
 
-  const logoutLabel = commonActions.logout ?? defaultCommonActions.logout ?? "";
+  const logoutLabel = commonActions.logout ?? defaultCommonActions.logout ?? '';
 
   return {
     // Hero
@@ -108,20 +111,25 @@ export function useAuthLabels(isRegisterMode: boolean): AuthLabels {
     heroDescription:
       formatMessage(authCopy.description, { appName }) ??
       formatMessage(defaultAuth.description, { appName }) ??
-      "",
-    heroStatusHeadline: authCopy.statusHeadline ?? defaultAuth.statusHeadline ?? "",
+      '',
+    heroStatusHeadline:
+      authCopy.statusHeadline ?? defaultAuth.statusHeadline ?? '',
     heroStatusDescription:
       formatMessage(authCopy.statusDescription, { appName }) ??
       formatMessage(defaultAuth.statusDescription, { appName }) ??
-      "",
-    badgeLabel: authCopy.badge ?? defaultAuth.badge ?? "",
+      '',
+    badgeLabel: authCopy.badge ?? defaultAuth.badge ?? '',
     primaryActionLabel:
-      authCopy.primaryCtaLabel ?? defaultAuth.primaryCtaLabel ?? supportCta.label,
+      authCopy.primaryCtaLabel ??
+      defaultAuth.primaryCtaLabel ??
+      supportCta.label,
     secondaryActionLabel:
-      authCopy.secondaryCtaLabel ?? defaultAuth.secondaryCtaLabel ?? primaryCta.label,
-    homeLinkLabel: authCopy.homeLinkLabel ?? defaultAuth.homeLinkLabel ?? "",
+      authCopy.secondaryCtaLabel ??
+      defaultAuth.secondaryCtaLabel ??
+      primaryCta.label,
+    homeLinkLabel: authCopy.homeLinkLabel ?? defaultAuth.homeLinkLabel ?? '',
     browseGamesLabel:
-      authCopy.shortcuts?.browseGames ?? defaultAuthShortcuts.browseGames ?? "",
+      authCopy.shortcuts?.browseGames ?? defaultAuthShortcuts.browseGames ?? '',
 
     // Downloads
     downloadsTitle:
@@ -131,110 +139,142 @@ export function useAuthLabels(isRegisterMode: boolean): AuthLabels {
       formatMessage(defaultAuth.downloadsDescription, { appName }) ??
       downloads.description,
     downloadsIosLabel:
-      authCopy.downloadsIosLabel ?? defaultAuth.downloadsIosLabel ?? downloads.iosLabel,
+      authCopy.downloadsIosLabel ??
+      defaultAuth.downloadsIosLabel ??
+      downloads.iosLabel,
     downloadsAndroidLabel:
-      authCopy.downloadsAndroidLabel ?? defaultAuth.downloadsAndroidLabel ?? downloads.androidLabel,
+      authCopy.downloadsAndroidLabel ??
+      defaultAuth.downloadsAndroidLabel ??
+      downloads.androidLabel,
 
     // Panel badges
-    localBadge: authCopy.sections?.local ?? defaultAuthSections.local ?? "",
-    oauthBadge: authCopy.sections?.oauth ?? defaultAuthSections.oauth ?? "",
-    statusBadge: authCopy.sections?.status ?? defaultAuthSections.status ?? "",
+    localBadge: authCopy.sections?.local ?? defaultAuthSections.local ?? '',
+    oauthBadge: authCopy.sections?.oauth ?? defaultAuthSections.oauth ?? '',
+    statusBadge: authCopy.sections?.status ?? defaultAuthSections.status ?? '',
 
     // Local auth
     localHeading: isRegisterMode
-      ? authCopy.local?.registerTitle ?? defaultAuthLocal.registerTitle ?? ""
-      : authCopy.local?.loginTitle ?? defaultAuthLocal.loginTitle ?? "",
+      ? (authCopy.local?.registerTitle ?? defaultAuthLocal.registerTitle ?? '')
+      : (authCopy.local?.loginTitle ?? defaultAuthLocal.loginTitle ?? ''),
     localSubtitle: isRegisterMode
-      ? commonPrompts.haveAccount ?? defaultCommonPrompts.haveAccount ?? ""
-      : commonPrompts.needAccount ?? defaultCommonPrompts.needAccount ?? "",
+      ? (commonPrompts.haveAccount ?? defaultCommonPrompts.haveAccount ?? '')
+      : (commonPrompts.needAccount ?? defaultCommonPrompts.needAccount ?? ''),
     helperText:
       authCopy.local?.helper?.allowedCharacters ??
       defaultAuthLocalHelper.allowedCharacters ??
-      "",
+      '',
     passwordMismatchMessage:
-      authCopy.local?.errors?.passwordMismatch ?? defaultAuthLocalErrors.passwordMismatch ?? "",
+      authCopy.local?.errors?.passwordMismatch ??
+      defaultAuthLocalErrors.passwordMismatch ??
+      '',
     usernameTooShortMessage:
-      authCopy.local?.errors?.usernameTooShort ?? defaultAuthLocalErrors.usernameTooShort ?? "",
+      authCopy.local?.errors?.usernameTooShort ??
+      defaultAuthLocalErrors.usernameTooShort ??
+      '',
+    invalidEmailMessage:
+      authCopy.local?.errors?.invalidEmail ??
+      defaultAuthLocalErrors.invalidEmail ??
+      '',
     submitLabel: isRegisterMode
-      ? commonActions.register ?? defaultCommonActions.register ?? ""
-      : commonActions.login ?? defaultCommonActions.login ?? "",
+      ? (commonActions.register ?? defaultCommonActions.register ?? '')
+      : (commonActions.login ?? defaultCommonActions.login ?? ''),
     toggleLabel: isRegisterMode
-      ? commonPrompts.haveAccount ?? defaultCommonPrompts.haveAccount ?? ""
-      : commonPrompts.needAccount ?? defaultCommonPrompts.needAccount ?? "",
+      ? (commonPrompts.haveAccount ?? defaultCommonPrompts.haveAccount ?? '')
+      : (commonPrompts.needAccount ?? defaultCommonPrompts.needAccount ?? ''),
     logoutLabel,
 
     // OAuth
-    oauthTitle: authCopy.oauth?.title ?? defaultAuthOauth.title ?? "",
-    oauthButtonLabel: authCopy.oauth?.loginButton ?? defaultAuthOauth.loginButton ?? "",
+    oauthTitle: authCopy.oauth?.title ?? defaultAuthOauth.title ?? '',
+    oauthButtonLabel:
+      authCopy.oauth?.loginButton ?? defaultAuthOauth.loginButton ?? '',
     oauthLogoutLabel:
-      authCopy.oauth?.logoutButton ?? defaultAuthOauth.logoutButton ?? logoutLabel,
+      authCopy.oauth?.logoutButton ??
+      defaultAuthOauth.logoutButton ??
+      logoutLabel,
     oauthAccessTokenLabel:
-      authCopy.oauth?.accessTokenLabel ?? defaultAuthOauth.accessTokenLabel ?? "",
+      authCopy.oauth?.accessTokenLabel ??
+      defaultAuthOauth.accessTokenLabel ??
+      '',
     oauthAuthorizationCodeLabel:
-      authCopy.oauth?.authorizationCodeLabel ?? defaultAuthOauth.authorizationCodeLabel ?? "",
+      authCopy.oauth?.authorizationCodeLabel ??
+      defaultAuthOauth.authorizationCodeLabel ??
+      '',
 
     // Status
-    statusHeading: authCopy.statusCard?.heading ?? defaultStatusCard.heading ?? "",
+    statusHeading:
+      authCopy.statusCard?.heading ?? defaultStatusCard.heading ?? '',
     statusDescription:
       formatMessage(authCopy.statusCard?.description, { appName }) ??
       formatMessage(defaultStatusCard.description, { appName }) ??
-      "",
+      '',
     statusActiveMessage:
       authCopy.statusCard?.sessionActive ??
       commonStatuses.authenticated ??
       defaultStatusCard.sessionActive ??
       defaultCommonStatuses.authenticated ??
-      "",
+      '',
     signOutLabel:
-      authCopy.statusCard?.signOutLabel ?? defaultStatusCard.signOutLabel ?? logoutLabel,
+      authCopy.statusCard?.signOutLabel ??
+      defaultStatusCard.signOutLabel ??
+      logoutLabel,
     guestDescription:
       formatMessage(authCopy.statusCard?.guestDescription, { appName }) ??
       formatMessage(defaultStatusCard.guestDescription, { appName }) ??
-      (formatMessage(authCopy.statusCard?.description, { appName }) ??
-        formatMessage(defaultStatusCard.description, { appName }) ??
-        ""),
+      formatMessage(authCopy.statusCard?.description, { appName }) ??
+      formatMessage(defaultStatusCard.description, { appName }) ??
+      '',
 
     // Processing
     processingStatusLabel:
-      authCopy.statuses?.processing ?? defaultAuthStatuses.processing ?? "",
+      authCopy.statuses?.processing ?? defaultAuthStatuses.processing ?? '',
     redirectingStatusLabel:
-      authCopy.statuses?.redirecting ?? defaultAuthStatuses.redirecting ?? "",
+      authCopy.statuses?.redirecting ?? defaultAuthStatuses.redirecting ?? '',
     loadingStatusLabel:
-      authCopy.statuses?.loadingSession ?? defaultAuthStatuses.loadingSession ?? "",
+      authCopy.statuses?.loadingSession ??
+      defaultAuthStatuses.loadingSession ??
+      '',
 
     // Common
-    emailLabel: commonLabels.email ?? defaultCommonLabels.email ?? "",
-    passwordLabel: commonLabels.password ?? defaultCommonLabels.password ?? "",
+    emailLabel: commonLabels.email ?? defaultCommonLabels.email ?? '',
+    passwordLabel: commonLabels.password ?? defaultCommonLabels.password ?? '',
     confirmPasswordLabel:
-      commonLabels.confirmPassword ?? defaultCommonLabels.confirmPassword ?? "",
-    usernameLabel: commonLabels.username ?? defaultCommonLabels.username ?? "",
+      commonLabels.confirmPassword ?? defaultCommonLabels.confirmPassword ?? '',
+    usernameLabel: commonLabels.username ?? defaultCommonLabels.username ?? '',
 
     // Session details
     sessionDetailLabels: {
-      provider: authCopy.statusCard?.details?.provider ?? defaultStatusDetails.provider ?? "provider",
+      provider:
+        authCopy.statusCard?.details?.provider ??
+        defaultStatusDetails.provider ??
+        'provider',
       displayName:
         authCopy.statusCard?.details?.displayName ??
         defaultStatusDetails.displayName ??
-        "displayName",
-      userId: authCopy.statusCard?.details?.userId ?? defaultStatusDetails.userId ?? "userId",
+        'displayName',
+      userId:
+        authCopy.statusCard?.details?.userId ??
+        defaultStatusDetails.userId ??
+        'userId',
       accessExpires:
         authCopy.statusCard?.details?.accessExpires ??
         defaultStatusDetails.accessExpires ??
-        "accessExpires",
+        'accessExpires',
       refreshExpires:
         authCopy.statusCard?.details?.refreshExpires ??
         defaultStatusDetails.refreshExpires ??
-        "refreshExpires",
+        'refreshExpires',
       updated:
-        authCopy.statusCard?.details?.updated ?? defaultStatusDetails.updated ?? "updated",
+        authCopy.statusCard?.details?.updated ??
+        defaultStatusDetails.updated ??
+        'updated',
       sessionAccessToken:
         authCopy.statusCard?.details?.sessionAccessToken ??
         defaultStatusDetails.sessionAccessToken ??
-        "sessionAccessToken",
+        'sessionAccessToken',
       refreshToken:
         authCopy.statusCard?.details?.refreshToken ??
         defaultStatusDetails.refreshToken ??
-        "refreshToken",
+        'refreshToken',
     },
   };
 }

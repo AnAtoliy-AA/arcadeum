@@ -123,6 +123,8 @@ export function AuthPageContent() {
             usernameTooShortMessage={labels.usernameTooShortMessage}
             showPasswordMismatch={form.showPasswordMismatch}
             showUsernameTooShort={form.showUsernameTooShort}
+            showInvalidEmail={form.showInvalidEmail}
+            invalidEmailMessage={labels.invalidEmailMessage}
             processingStatusLabel={labels.processingStatusLabel}
             statusActiveMessage={labels.statusActiveMessage}
             displayNameLabel={labels.sessionDetailLabels.displayName}

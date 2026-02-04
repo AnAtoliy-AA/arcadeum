@@ -1,4 +1,4 @@
-import type { ChangeEvent, FormEvent } from "react";
+import type { ChangeEvent, FormEvent } from 'react';
 import {
   PanelCard,
   PanelHeader,
@@ -18,7 +18,7 @@ import {
   SessionCallout,
   CalloutHeading,
   CalloutDetail,
-} from "./styles";
+} from './styles';
 
 interface LocalAuthPanelProps {
   badge: string;
@@ -51,6 +51,8 @@ interface LocalAuthPanelProps {
   processingStatusLabel: string;
   statusActiveMessage: string;
   displayNameLabel: string;
+  showInvalidEmail: boolean;
+  invalidEmailMessage: string;
   accessToken: string | null;
   storedEmail: string | null;
   storedUsername: string | null;
@@ -95,6 +97,8 @@ export function LocalAuthPanel({
   processingStatusLabel,
   statusActiveMessage,
   displayNameLabel,
+  showInvalidEmail,
+  invalidEmailMessage,
   accessToken,
   storedEmail,
   storedUsername,
@@ -129,12 +133,13 @@ export function LocalAuthPanel({
             disabled={loading}
           />
         </Field>
+        {showInvalidEmail ? <ErrorText>{invalidEmailMessage}</ErrorText> : null}
         <Field>
           <FieldLabel htmlFor={passwordFieldId}>{passwordLabel}</FieldLabel>
           <Input
             id={passwordFieldId}
             type="password"
-            autoComplete={isRegisterMode ? "new-password" : "current-password"}
+            autoComplete={isRegisterMode ? 'new-password' : 'current-password'}
             value={password}
             onChange={onPasswordChange}
             placeholder={passwordLabel}
@@ -145,7 +150,9 @@ export function LocalAuthPanel({
         {isRegisterMode ? (
           <>
             <Field>
-              <FieldLabel htmlFor={confirmFieldId}>{confirmPasswordLabel}</FieldLabel>
+              <FieldLabel htmlFor={confirmFieldId}>
+                {confirmPasswordLabel}
+              </FieldLabel>
               <Input
                 id={confirmFieldId}
                 type="password"
@@ -171,8 +178,12 @@ export function LocalAuthPanel({
             <HelperText>{helperText}</HelperText>
           </>
         ) : null}
-        {showPasswordMismatch ? <ErrorText>{passwordMismatchMessage}</ErrorText> : null}
-        {showUsernameTooShort ? <ErrorText>{usernameTooShortMessage}</ErrorText> : null}
+        {showPasswordMismatch ? (
+          <ErrorText>{passwordMismatchMessage}</ErrorText>
+        ) : null}
+        {showUsernameTooShort ? (
+          <ErrorText>{usernameTooShortMessage}</ErrorText>
+        ) : null}
         {error ? <ErrorText>{error}</ErrorText> : null}
         <ButtonRow>
           <PrimaryButton type="submit" disabled={submitDisabled}>

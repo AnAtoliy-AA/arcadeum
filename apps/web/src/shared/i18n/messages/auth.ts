@@ -55,6 +55,7 @@ const authMessagesDefinition = {
       errors: {
         passwordMismatch: 'Passwords do not match.',
         usernameTooShort: 'Username must be at least 3 characters.',
+        invalidEmail: 'Please enter a valid email address.',
       },
     },
     oauth: {
@@ -129,6 +130,7 @@ const authMessagesDefinition = {
         passwordMismatch: 'Las contraseñas no coinciden.',
         usernameTooShort:
           'El nombre de usuario debe tener al menos 3 caracteres.',
+        invalidEmail: 'Por favor, introduce una dirección de correo válida.',
       },
     },
     oauth: {
@@ -203,6 +205,7 @@ const authMessagesDefinition = {
         passwordMismatch: 'Les mots de passe ne correspondent pas.',
         usernameTooShort:
           "Le nom d'utilisateur doit comporter au moins 3 caractères.",
+        invalidEmail: 'Veuillez saisir une adresse e-mail valide.',
       },
     },
     oauth: {
@@ -276,6 +279,7 @@ const authMessagesDefinition = {
       errors: {
         passwordMismatch: 'Пароли не совпадают.',
         usernameTooShort: 'Имя пользователя должно быть не менее 3 символов.',
+        invalidEmail: 'Пожалуйста, введите корректный адрес электронной почты.',
       },
     },
     oauth: {
@@ -350,6 +354,7 @@ const authMessagesDefinition = {
         passwordMismatch: 'Паролі не супадаюць.',
         usernameTooShort:
           'Імя карыстальніка павінна быць не менш за 3 сімвалы.',
+        invalidEmail: 'Калі ласка, увядзіце карэктны адрас электроннай пошты.',
       },
     },
     oauth: {

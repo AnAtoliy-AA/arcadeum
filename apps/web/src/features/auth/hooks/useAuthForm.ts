@@ -1,8 +1,17 @@
-import { ChangeEvent, FormEvent, useCallback, useEffect, useId, useState } from "react";
-import { useSessionTokens } from "@/entities/session/model/useSessionTokens";
-import { useLocalAuth } from "@/entities/session/model/useLocalAuth";
-import { useOAuth } from "@/entities/session/model/useOAuth";
-import { sanitizeUsername, scheduleStateUpdate } from "../lib/utils";
+import {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useId,
+  useState,
+} from 'react';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { useLocalAuth } from '@/entities/session/model/useLocalAuth';
+import { useOAuth } from '@/entities/session/model/useOAuth';
+import { sanitizeUsername, scheduleStateUpdate } from '../lib/utils';
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function useAuthForm() {
   const session = useSessionTokens();
@@ -37,12 +46,12 @@ export function useAuthForm() {
   const confirmFieldId = useId();
   const usernameFieldId = useId();
 
-  const [email, setEmail] = useState(storedEmail ?? "");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [username, setUsername] = useState(storedUsername ?? "");
+  const [email, setEmail] = useState(storedEmail ?? '');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [username, setUsername] = useState(storedUsername ?? '');
 
-  const isRegisterMode = mode === "register";
+  const isRegisterMode = mode === 'register';
 
   // Sync stored values
   useEffect(() => {
@@ -57,14 +66,16 @@ export function useAuthForm() {
 
   useEffect(() => {
     if (isRegisterMode) return;
-    scheduleStateUpdate(() => setConfirmPassword(""));
-    scheduleStateUpdate(() => setUsername(storedUsername ? sanitizeUsername(storedUsername) : ""));
+    scheduleStateUpdate(() => setConfirmPassword(''));
+    scheduleStateUpdate(() =>
+      setUsername(storedUsername ? sanitizeUsername(storedUsername) : ''),
+    );
   }, [isRegisterMode, storedUsername]);
 
   useEffect(() => {
     if (!localAccessToken) return;
-    scheduleStateUpdate(() => setPassword(""));
-    scheduleStateUpdate(() => setConfirmPassword(""));
+    scheduleStateUpdate(() => setPassword(''));
+    scheduleStateUpdate(() => setConfirmPassword(''));
   }, [localAccessToken]);
 
   // Handlers
@@ -72,36 +83,50 @@ export function useAuthForm() {
     setEmail(e.target.value);
   }, []);
 
-  const handlePasswordChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  }, []);
+  const handlePasswordChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setPassword(e.target.value);
+    },
+    [],
+  );
 
-  const handleConfirmChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setConfirmPassword(e.target.value);
-  }, []);
+  const handleConfirmChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setConfirmPassword(e.target.value);
+    },
+    [],
+  );
 
-  const handleUsernameChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setUsername(sanitizeUsername(e.target.value));
-  }, []);
+  const handleUsernameChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setUsername(sanitizeUsername(e.target.value));
+    },
+    [],
+  );
 
   const handleToggleMode = useCallback(() => {
     toggleMode();
-    setPassword("");
-    setConfirmPassword("");
-    setUsername(storedUsername ? sanitizeUsername(storedUsername) : "");
+    setPassword('');
+    setConfirmPassword('');
+    setUsername(storedUsername ? sanitizeUsername(storedUsername) : '');
   }, [toggleMode, storedUsername]);
 
   // Validation
   const trimmedEmail = email.trim();
   const trimmedUsername = username.trim();
+  const isEmailValid = EMAIL_REGEX.test(trimmedEmail);
+  const showInvalidEmail = trimmedEmail.length > 0 && !isEmailValid;
   const showPasswordMismatch =
-    isRegisterMode && confirmPassword.length > 0 && password !== confirmPassword;
+    isRegisterMode &&
+    confirmPassword.length > 0 &&
+    password !== confirmPassword;
   const showUsernameTooShort =
     isRegisterMode && trimmedUsername.length > 0 && trimmedUsername.length < 3;
 
   const localSubmitDisabled =
     localLoading ||
     !trimmedEmail ||
+    !isEmailValid ||
     !password ||
     (isRegisterMode && (!trimmedUsername || !confirmPassword)) ||
     showPasswordMismatch ||
@@ -112,12 +137,24 @@ export function useAuthForm() {
       event.preventDefault();
       if (localSubmitDisabled) return;
       if (isRegisterMode) {
-        await registerLocal({ email: trimmedEmail, password, username: trimmedUsername });
+        await registerLocal({
+          email: trimmedEmail,
+          password,
+          username: trimmedUsername,
+        });
         return;
       }
       await loginLocal({ email: trimmedEmail, password });
     },
-    [isRegisterMode, localSubmitDisabled, registerLocal, loginLocal, trimmedEmail, password, trimmedUsername],
+    [
+      isRegisterMode,
+      localSubmitDisabled,
+      registerLocal,
+      loginLocal,
+      trimmedEmail,
+      password,
+      trimmedUsername,
+    ],
   );
 
   const handleStartOAuth = useCallback(() => {
@@ -131,12 +168,12 @@ export function useAuthForm() {
 
   const handleSignOut = useCallback(async () => {
     const provider = sessionSnapshot.provider;
-    if (provider === "oauth") {
+    if (provider === 'oauth') {
       await logoutOAuth();
       await logoutLocal();
       return;
     }
-    if (provider === "local") {
+    if (provider === 'local') {
       await logoutLocal();
       return;
     }
@@ -175,6 +212,8 @@ export function useAuthForm() {
     localSubmitDisabled,
     showPasswordMismatch,
     showUsernameTooShort,
+    showInvalidEmail,
+    isEmailValid,
 
     // OAuth state
     oauthLoading,

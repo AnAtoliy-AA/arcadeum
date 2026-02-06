@@ -7,10 +7,8 @@ import { useLanguage } from '@/app/i18n/LanguageProvider';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { getMessages, DEFAULT_LOCALE } from '@/shared/i18n';
 import { authApi } from '@/features/auth/api';
+import { Section } from '@/shared/ui';
 import {
-  Section,
-  SectionTitle,
-  SectionDescription,
   OptionList,
   OptionLabel,
   OptionDescription,
@@ -61,16 +59,14 @@ export function BlockedUsersSection() {
     return null;
   }
 
+  const title = t.blockedUsersTitle ?? d.blockedUsersTitle ?? 'Blocked Users';
+  const description =
+    t.blockedUsersDescription ??
+    d.blockedUsersDescription ??
+    'Users you have blocked will not be able to send you game invitations.';
+
   return (
-    <Section>
-      <SectionTitle>
-        {t.blockedUsersTitle ?? d.blockedUsersTitle ?? 'Blocked Users'}
-      </SectionTitle>
-      <SectionDescription>
-        {t.blockedUsersDescription ??
-          d.blockedUsersDescription ??
-          'Users you have blocked will not be able to send you game invitations.'}
-      </SectionDescription>
+    <Section title={title} description={description}>
       <OptionList>
         {loading ? (
           <OptionDescription>

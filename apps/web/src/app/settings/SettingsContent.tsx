@@ -6,8 +6,34 @@ import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import { useThemeController } from '@/app/theme/ThemeContext';
 import { useHapticsSetting } from '@/shared/hooks/useHapticsSetting';
 import { usePlatform } from '@/shared/hooks/usePlatform';
+import { usePWAOptional } from '@/features/pwa';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
 import type { ThemePreference } from '@/shared/config/theme';
+import { PageLayout, PageTitle, Section, Card } from '@/shared/ui';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+
+import {
+  Container,
+  OptionList,
+  OptionButton,
+  OptionLabel,
+  OptionDescription,
+  PillGroup,
+  PillButton,
+  DownloadGrid,
+  DownloadLink,
+  DownloadIcon,
+  AccountStatus,
+  AccountActions,
+  ActionButton,
+  SecondaryButton,
+  ToggleRow,
+  ToggleLabel,
+  ToggleInput,
+} from './styles';
+
+import { BlockedUsersSection } from './BlockedUsersSection';
 
 type DownloadConfig = {
   title: string;
@@ -28,8 +54,6 @@ export type SettingsContentProps = {
   description: string;
 };
 const SETTINGS_TITLE_FALLBACK = 'Settings';
-const SETTINGS_DESCRIPTION_TEMPLATE =
-  'Manage your appearance, language, and download preferences for the {appName} web experience.';
 const APPEARANCE_TITLE_FALLBACK = 'Appearance';
 const APPEARANCE_DESCRIPTION_TEMPLATE =
   'Choose a theme to use across the {appName} web experience.';
@@ -89,21 +113,17 @@ export default function SettingsContent({
   appName,
   downloads,
   supportCta,
-  description,
+  description: _description,
 }: SettingsContentProps) {
   const { themePreference, setThemePreference } = useThemeController();
   const { hapticsEnabled, setHapticsEnabled } = useHapticsSetting();
   const { locale, setLocale, messages } = useLanguage();
+  const pwa = usePWAOptional();
+  const { t } = useTranslation();
   const settingsCopy = messages.settings ?? {};
+  const { snapshot, hydrated } = useSessionTokens();
 
-  const fallbackSettingsDescription =
-    formatMessage(SETTINGS_DESCRIPTION_TEMPLATE, { appName }) ??
-    SETTINGS_DESCRIPTION_TEMPLATE.replace('{appName}', appName);
   const pageTitle = settingsCopy.title ?? SETTINGS_TITLE_FALLBACK;
-  const pageDescription =
-    formatMessage(settingsCopy.description, { appName }) ??
-    description ??
-    fallbackSettingsDescription;
 
   const fallbackAppearanceDescription =
     formatMessage(APPEARANCE_DESCRIPTION_TEMPLATE, { appName }) ??
@@ -151,27 +171,23 @@ export default function SettingsContent({
     downloads.description ??
     DOWNLOADS_DESCRIPTION_FALLBACK;
 
-  const { isIos, isAndroid } = usePlatform();
+  const { isAndroid } = usePlatform();
   const downloadButtons = useMemo(() => {
     const buttons: Array<{ key: string; href: string; label: string }> = [];
     if (downloads.iosHref && !isAndroid) {
       const label = settingsCopy.downloadsIosLabel ?? downloads.iosLabel;
       buttons.push({ key: 'ios', href: downloads.iosHref, label });
     }
-    if (downloads.androidHref && !isIos) {
-      const label =
-        settingsCopy.downloadsAndroidLabel ?? downloads.androidLabel;
-      buttons.push({ key: 'android', href: downloads.androidHref, label });
-    }
+    // if (downloads.androidHref && !isIos) {
+    //   const label =
+    //     settingsCopy.downloadsAndroidLabel ?? downloads.androidLabel;
+    //   buttons.push({ key: 'android', href: downloads.androidHref, label });
+    // }
     return buttons;
   }, [
-    downloads.androidHref,
-    downloads.androidLabel,
     downloads.iosHref,
     downloads.iosLabel,
-    settingsCopy.downloadsAndroidLabel,
     settingsCopy.downloadsIosLabel,
-    isIos,
     isAndroid,
   ]);
 
@@ -211,21 +227,17 @@ export default function SettingsContent({
   const languageGroupLabel = languageTitle;
 
   return (
-    <Page>
-      <Wrapper>
-        <Header>
-          <Title>{pageTitle}</Title>
-          <Description>{pageDescription}</Description>
-        </Header>
+    <PageLayout>
+      <Container>
+        <PageTitle size="xl" gradient>
+          {pageTitle}
+        </PageTitle>
 
-        <Section>
-          <SectionTitle>{appearanceTitle}</SectionTitle>
-          <SectionDescription>{appearanceDescription}</SectionDescription>
+        <Section title={appearanceTitle} description={appearanceDescription}>
           <OptionList>
             {themeOptions.map((option) => (
               <OptionButton
                 key={option.code}
-                type="button"
                 $active={themePreference === option.code}
                 onClick={() => handleThemeSelect(option.code)}
                 aria-pressed={themePreference === option.code}
@@ -237,14 +249,11 @@ export default function SettingsContent({
           </OptionList>
         </Section>
 
-        <Section>
-          <SectionTitle>{languageTitle}</SectionTitle>
-          <SectionDescription>{languageDescription}</SectionDescription>
+        <Section title={languageTitle} description={languageDescription}>
           <PillGroup role="group" aria-label={languageGroupLabel}>
             {languageOptions.map((option) => (
               <PillButton
                 key={option.code}
-                type="button"
                 $active={locale === option.code}
                 onClick={() => handleLanguageSelect(option.code)}
                 aria-pressed={locale === option.code}
@@ -255,25 +264,30 @@ export default function SettingsContent({
           </PillGroup>
         </Section>
 
-        <Section>
-          <SectionTitle>{gameplayTitle}</SectionTitle>
-          <SectionDescription>{gameplayDescription}</SectionDescription>
-          <OptionList>
-            <ToggleRow>
-              <ToggleLabel>{hapticsLabel}</ToggleLabel>
-              <ToggleInput
-                checked={hapticsEnabled}
-                onChange={(e) => setHapticsEnabled(e.target.checked)}
-              />
-            </ToggleRow>
-          </OptionList>
+        <Section title={gameplayTitle} description={gameplayDescription}>
+          <ToggleRow>
+            <ToggleLabel>{hapticsLabel}</ToggleLabel>
+            <ToggleInput
+              checked={hapticsEnabled}
+              onChange={(e) => setHapticsEnabled(e.target.checked)}
+            />
+          </ToggleRow>
         </Section>
 
-        {downloadButtons.length > 0 ? (
-          <Section>
-            <SectionTitle>{downloadsTitle}</SectionTitle>
-            <SectionDescription>{downloadsDescription}</SectionDescription>
+        {downloadButtons.length > 0 || pwa?.canInstall ? (
+          <Section title={downloadsTitle} description={downloadsDescription}>
             <DownloadGrid>
+              {pwa?.canInstall && (
+                <DownloadLink
+                  as="button"
+                  onClick={pwa.openModal}
+                  style={{ cursor: 'pointer' }}
+                  data-testid="settings-install-pwa"
+                >
+                  <DownloadIcon aria-hidden="true">📲</DownloadIcon>
+                  <span>{t('pwa.install.button') || 'Install App'}</span>
+                </DownloadLink>
+              )}
               {downloadButtons.map((button) => (
                 <DownloadLink
                   key={button.key}
@@ -289,48 +303,49 @@ export default function SettingsContent({
           </Section>
         ) : null}
 
-        <Section>
-          <SectionTitle>{accountTitle}</SectionTitle>
-          <SectionDescription>{accountDescription}</SectionDescription>
-          <AccountCard>
-            <AccountStatus role="status">{accountStatus}</AccountStatus>
-            <AccountActions>
-              <ActionButton href="/auth">{accountPrimaryCta}</ActionButton>
-              <SecondaryButton href={supportCta.href}>
-                {accountSupportLabel}
-              </SecondaryButton>
-            </AccountActions>
-          </AccountCard>
+        <BlockedUsersSection />
+
+        <Section title={accountTitle} description={accountDescription}>
+          <Card variant="elevated" padding="md">
+            {hydrated && snapshot.accessToken ? (
+              <>
+                <AccountStatus as="div" role="status">
+                  <div style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>
+                    {snapshot.displayName || snapshot.username || 'User'}
+                  </div>
+                  {snapshot.username &&
+                    snapshot.username !== snapshot.displayName && (
+                      <div style={{ fontSize: '0.9rem', opacity: 0.8 }}>
+                        @{snapshot.username}
+                      </div>
+                    )}
+                  {snapshot.email && (
+                    <div style={{ fontSize: '0.9rem', opacity: 0.8 }}>
+                      {snapshot.email}
+                    </div>
+                  )}
+                </AccountStatus>
+
+                <AccountActions>
+                  <SecondaryButton href={supportCta.href}>
+                    {accountSupportLabel}
+                  </SecondaryButton>
+                </AccountActions>
+              </>
+            ) : (
+              <>
+                <AccountStatus role="status">{accountStatus}</AccountStatus>
+                <AccountActions>
+                  <ActionButton href="/auth">{accountPrimaryCta}</ActionButton>
+                  <SecondaryButton href={supportCta.href}>
+                    {accountSupportLabel}
+                  </SecondaryButton>
+                </AccountActions>
+              </>
+            )}
+          </Card>
         </Section>
-      </Wrapper>
-    </Page>
+      </Container>
+    </PageLayout>
   );
 }
-
-import {
-  Page,
-  Wrapper,
-  Header,
-  Title,
-  Description,
-  Section,
-  SectionTitle,
-  SectionDescription,
-  OptionList,
-  OptionButton,
-  OptionLabel,
-  OptionDescription,
-  PillGroup,
-  PillButton,
-  DownloadGrid,
-  DownloadLink,
-  DownloadIcon,
-  AccountCard,
-  AccountStatus,
-  AccountActions,
-  ActionButton,
-  SecondaryButton,
-  ToggleRow,
-  ToggleLabel,
-  ToggleInput,
-} from './styles';

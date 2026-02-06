@@ -1,104 +1,63 @@
 import Link from 'next/link';
 import styled, { css } from 'styled-components';
-import { Card as SharedCard, Button } from '@/shared/ui';
+import { Button } from '@/shared/ui';
 
-export const Page = styled.main`
-  min-height: 100vh;
-  padding: clamp(2.5rem, 6vw, 5rem) clamp(1.5rem, 6vw, 4rem);
-  display: flex;
-  justify-content: center;
-  background-color: ${({ theme }) => theme.background.base};
-  color: ${({ theme }) => theme.text.primary};
-`;
-
-export const Wrapper = styled.div`
-  width: min(960px, 100%);
+export const Container = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: clamp(2rem, 4vw, 3rem);
-`;
-
-export const Header = styled.header`
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  background: ${({ theme }) => theme.surfaces.hero.background};
-  border: 1px solid ${({ theme }) => theme.surfaces.hero.border};
-  border-radius: 24px;
-  padding: clamp(2rem, 5vw, 3.5rem);
-  box-shadow: ${({ theme }) => theme.surfaces.hero.shadow};
-  backdrop-filter: blur(18px);
-`;
-
-export const Title = styled.h1`
-  margin: 0;
-  font-size: clamp(2.2rem, 5vw, 2.8rem);
-  font-weight: 700;
-  color: ${({ theme }) => theme.text.secondary};
-`;
-
-export const Description = styled.p`
-  margin: 0;
-  font-size: 1rem;
-  line-height: 1.7;
-  color: ${({ theme }) => theme.text.muted};
-`;
-
-export const Section = styled.section`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  background: ${({ theme }) => theme.surfaces.panel.background};
-  border: 1px solid ${({ theme }) => theme.surfaces.panel.border};
-  border-radius: 24px;
-  padding: clamp(1.75rem, 4vw, 2.5rem);
-  box-shadow: ${({ theme }) => theme.surfaces.panel.shadow};
-  backdrop-filter: blur(14px);
-`;
-
-export const SectionTitle = styled.h2`
-  margin: 0;
-  font-size: 1.35rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.text.secondary};
-`;
-
-export const SectionDescription = styled.p`
-  margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: ${({ theme }) => theme.text.muted};
+  gap: 2rem;
 `;
 
 export const OptionList = styled.div`
   display: grid;
   gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
 `;
 
 export const OptionButton = styled(Button).attrs<{ $active: boolean }>(
   ({ $active }) => ({
-    variant: 'chip',
-    size: 'md',
+    variant: $active ? 'primary' : 'secondary',
+    size: 'lg',
     active: $active,
   }),
 )<{ $active: boolean }>`
-  text-align: left;
   justify-content: flex-start;
   flex-direction: column;
-  gap: 0.35rem;
-  padding: 1.1rem 1.25rem;
-  border-radius: 18px;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  height: auto;
+  min-height: 100px;
+  text-align: left;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+
+  ${({ $active, theme }) =>
+    !$active &&
+    css`
+      background: ${theme.interactive.option.background};
+      border-color: ${theme.interactive.option.border};
+
+      &:hover {
+        background: ${theme.interactive.option.activeBackground};
+        border-color: ${theme.interactive.option.hoverBorder};
+      }
+    `}
 `;
 
 export const OptionLabel = styled.span`
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  color: ${({ theme }) => theme.text.secondary};
+  color: inherit;
 `;
 
 export const OptionDescription = styled.span`
   font-size: 0.9rem;
-  color: ${({ theme }) => theme.text.muted};
+  opacity: 0.8;
+  line-height: 1.5;
+  font-weight: 400;
 `;
 
 export const PillGroup = styled.div`
@@ -109,73 +68,67 @@ export const PillGroup = styled.div`
 
 export const PillButton = styled(Button).attrs<{ $active: boolean }>(
   ({ $active }) => ({
-    variant: 'chip',
-    size: 'sm',
+    variant: $active ? 'primary' : 'chip',
+    size: 'md',
     active: $active,
   }),
-)<{ $active: boolean }>``;
+)<{ $active: boolean }>`
+  min-width: 80px;
+  justify-content: center;
+`;
 
 export const DownloadGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
 `;
 
 export const DownloadLink = styled.a`
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 14px;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-radius: 16px;
   border: 1px solid ${({ theme }) => theme.interactive.download.border};
   background: ${({ theme }) => theme.interactive.download.background};
   color: ${({ theme }) => theme.text.primary};
   font-weight: 600;
-  transition:
-    transform 0.2s ease,
-    border-color 0.2s ease,
-    background-color 0.2s ease;
+  transition: all 0.2s ease;
+  text-decoration: none;
 
-  &:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.outlines.focus};
-    outline-offset: 3px;
+  &:hover {
+    transform: translateY(-2px);
+    border-color: ${({ theme }) => theme.interactive.download.hoverBorder};
+    background: ${({ theme }) => theme.interactive.download.hoverBackground};
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      transform: translateY(-2px);
-      border-color: ${({ theme }) => theme.interactive.download.hoverBorder};
-      background: ${({ theme }) => theme.interactive.download.hoverBackground};
-    }
+  &:active {
+    transform: translateY(0);
   }
 `;
 
 export const DownloadIcon = styled.span`
-  font-size: 0.9rem;
-  line-height: 1;
-  color: ${({ theme }) => theme.text.accent};
-`;
-
-export const AccountCard = styled(SharedCard)`
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  background: ${({ theme }) => theme.account.cardBackground};
-  border-radius: 18px;
-  border: 1px solid ${({ theme }) => theme.account.border};
-  padding: 1.5rem;
+  font-size: 1.25rem;
 `;
 
 export const AccountStatus = styled.p`
   margin: 0;
-  font-size: 0.95rem;
-  color: ${({ theme }) => theme.text.muted};
+  font-size: 1.1rem;
+  color: ${({ theme }) => theme.text.secondary};
+  background: ${({ theme }) => theme.surfaces.card.background};
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  padding: 1.5rem;
+  border-radius: 16px;
+  text-align: center;
 `;
 
 export const AccountActions = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 1rem;
+  margin-top: 0.5rem;
 `;
 
 const baseActionStyles = css`
@@ -186,39 +139,36 @@ const baseActionStyles = css`
   border-radius: 999px;
   font-weight: 600;
   text-decoration: none;
-  transition:
-    transform 0.2s ease,
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: all 0.2s ease;
+  flex: 1;
+  min-width: 140px;
 
-  &:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.outlines.focus};
-    outline-offset: 3px;
+  &:hover {
+    transform: translateY(-2px);
   }
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      transform: translateY(-2px);
-    }
+  &:active {
+    transform: translateY(0);
   }
 `;
 
 export const ActionButton = styled(Link)`
   ${baseActionStyles}
+  background: ${({ theme }) => theme.buttons.primary.gradientStart};
+  color: ${({ theme }) => theme.buttons.primary.text};
+  box-shadow: ${({ theme }) => theme.buttons.primary.shadow};
+
+  /* Handle gradient if background is not explicitly just a color */
   background: linear-gradient(
     135deg,
     ${({ theme }) => theme.buttons.primary.gradientStart},
     ${({ theme }) => theme.buttons.primary.gradientEnd}
   );
-  color: ${({ theme }) => theme.buttons.primary.text};
-  border: 1px solid transparent;
-  box-shadow: ${({ theme }) => theme.buttons.primary.shadow};
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      box-shadow: ${({ theme }) => theme.buttons.primary.hoverShadow};
-    }
+  &:hover {
+    box-shadow: ${({ theme }) => theme.buttons.primary.hoverShadow};
+    // background: hover handling for gradient is done via opacity or specialized tokens usually, but just keep gradient or slight shift
+    opacity: 0.9;
   }
 `;
 
@@ -228,11 +178,9 @@ export const SecondaryButton = styled(Link)`
   background: ${({ theme }) => theme.buttons.secondary.background};
   color: ${({ theme }) => theme.buttons.secondary.text};
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      border-color: ${({ theme }) => theme.buttons.secondary.hoverBorder};
-      background: ${({ theme }) => theme.buttons.secondary.hoverBackground};
-    }
+  &:hover {
+    border-color: ${({ theme }) => theme.buttons.secondary.hoverBorder};
+    background: ${({ theme }) => theme.buttons.secondary.hoverBackground};
   }
 `;
 
@@ -240,57 +188,39 @@ export const ToggleRow = styled.label`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.25rem;
+  padding: 1.25rem;
   background: ${({ theme }) => theme.interactive.option.background};
   border: 1px solid ${({ theme }) => theme.interactive.option.border};
-  border-radius: 18px;
+  border-radius: 16px;
   cursor: pointer;
-  user-select: none;
-  transition:
-    transform 0.2s ease,
-    border-color 0.2s ease;
+  transition: all 0.2s ease;
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      transform: translateY(-2px);
-      border-color: ${({ theme }) => theme.interactive.option.hoverBorder};
-    }
+  &:hover {
+    border-color: ${({ theme }) => theme.interactive.option.hoverBorder};
+    background: ${({ theme }) => theme.interactive.option.activeBackground};
   }
 `;
 
-export const ToggleLabelWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-`;
-
 export const ToggleLabel = styled.span`
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  color: ${({ theme }) => theme.text.secondary};
-`;
-
-export const ToggleDescription = styled.span`
-  font-size: 0.85rem;
-  color: ${({ theme }) => theme.text.muted};
+  color: ${({ theme }) => theme.text.primary};
 `;
 
 export const ToggleInput = styled.input.attrs({ type: 'checkbox' })`
   appearance: none;
-  width: 3rem;
-  height: 1.6rem;
-  flex-shrink: 0;
+  width: 3.25rem;
+  height: 1.75rem;
   background: ${({ theme }) => theme.interactive.pill.inactiveBackground};
   border-radius: 999px;
   position: relative;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   cursor: pointer;
-  border: 1px solid ${({ theme }) => theme.interactive.pill.border};
-  margin: 0;
+  border: 2px solid ${({ theme }) => theme.interactive.pill.border};
 
   &:checked {
-    background: ${({ theme }) => theme.interactive.pill.activeBackground};
-    border-color: ${({ theme }) => theme.interactive.pill.activeBorder};
+    background: ${({ theme }) => theme.text.accent};
+    border-color: ${({ theme }) => theme.text.accent};
   }
 
   &::after {
@@ -298,17 +228,16 @@ export const ToggleInput = styled.input.attrs({ type: 'checkbox' })`
     position: absolute;
     top: 2px;
     left: 2px;
-    width: calc(1.6rem - 6px);
-    height: calc(1.6rem - 6px);
-    background: ${({ theme }) => theme.text.primary};
+    width: calc(1.75rem - 8px);
+    height: calc(1.75rem - 8px);
+    background: white;
     border-radius: 50%;
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 
   &:checked::after {
-    transform: translateX(1.4rem);
-    background: white;
+    transform: translateX(1.5rem);
   }
 
   &:focus-visible {
@@ -322,9 +251,9 @@ export const BlockedUserRow = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem;
-  background: ${({ theme }) => theme.interactive.option.background};
-  border: 1px solid ${({ theme }) => theme.interactive.option.border};
-  border-radius: 18px;
+  background: ${({ theme }) => theme.surfaces.card.background};
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  border-radius: 16px;
   gap: 1rem;
 `;
 
@@ -346,5 +275,6 @@ export const UnblockButton = styled(Button).attrs({
   &:hover {
     border-color: #ef4444;
     color: #ef4444;
+    background: #ef444410;
   }
 `;

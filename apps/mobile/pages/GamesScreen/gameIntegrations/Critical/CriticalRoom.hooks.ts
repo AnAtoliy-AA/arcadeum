@@ -11,7 +11,8 @@ import type { SessionTokensSnapshot } from '@/stores/sessionTokens';
 import type {
   CriticalCatComboInput,
   ChatScope,
-} from '../../components/CriticalTable';
+  CriticalActionCard,
+} from '../../components/CriticalTable/types';
 import type { ActionBusyType } from './CriticalRoom.types';
 import { useTranslation } from '@/lib/i18n';
 
@@ -114,18 +115,7 @@ export function useGameActions({
   }, [actionBusy, room?.id, setActionBusy, t, tokens.userId]);
 
   const handlePlayCard = useCallback(
-    (
-      card:
-        | 'skip'
-        | 'attack'
-        | 'shuffle'
-        | 'personal_attack'
-        | 'attack_of_the_dead'
-        | 'super_skip'
-        | 'reverse'
-        | 'targeted_attack',
-      payload?: Record<string, unknown>,
-    ) => {
+    (card: CriticalActionCard, payload?: Record<string, unknown>) => {
       if (!room?.id || !tokens.userId) {
         Alert.alert(
           t('games.alerts.signInRequiredTitle'),
@@ -138,7 +128,7 @@ export function useGameActions({
         return;
       }
 
-      if (card === 'targeted_attack') {
+      if (card === 'targeted_strike') {
         Alert.alert(
           'Debug',
           `Playing Targeted Attack. Payload: ${JSON.stringify(payload)}`,

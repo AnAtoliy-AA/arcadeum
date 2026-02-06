@@ -67,6 +67,8 @@ export const CriticalRoom = forwardRef<CriticalRoomHandle, CriticalRoomProps>(
     const [tableFullScreen, setTableFullScreen] = useState(false);
     const [controlsCollapsed, setControlsCollapsed] = useState(false);
     const idleTimerEnabled = room?.gameOptions?.idleTimerEnabled ?? false;
+    const cardVariant = (room?.gameOptions as Record<string, unknown>)
+      ?.cardVariant as string | undefined;
 
     const {
       handleStartMatch,
@@ -252,6 +254,7 @@ export const CriticalRoom = forwardRef<CriticalRoomHandle, CriticalRoomProps>(
               tableOnly
               roomName={displayName}
               idleTimerEnabled={idleTimerEnabled}
+              cardVariant={cardVariant}
             />
           </View>
           <TouchableOpacity
@@ -343,6 +346,7 @@ export const CriticalRoom = forwardRef<CriticalRoomHandle, CriticalRoomProps>(
             fullScreen={hasSessionSnapshot}
             roomName={displayName}
             idleTimerEnabled={idleTimerEnabled}
+            cardVariant={cardVariant}
           />
 
           {showLobbyOverview ? (

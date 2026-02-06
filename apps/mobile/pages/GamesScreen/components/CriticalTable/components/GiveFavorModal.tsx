@@ -21,24 +21,49 @@ interface GiveFavorModalProps {
 }
 
 const CARD_DISPLAY_NAMES: Record<CriticalCard, string> = {
-  exploding_cat: 'Exploding Cat',
-  defuse: 'Defuse',
-  attack: 'Attack',
-  skip: 'Skip',
-  favor: 'Favor',
-  shuffle: 'Shuffle',
-  see_the_future: 'See the Future',
-  nope: 'Nope',
-  tacocat: 'Tacocat',
-  hairy_potato_cat: 'Hairy Potato Cat',
-  rainbow_ralphing_cat: 'Rainbow Cat',
-  cattermelon: 'Cattermelon',
-  bearded_cat: 'Bearded Cat',
-  targeted_attack: 'Targeted Attack',
-  personal_attack: 'Personal Attack',
-  attack_of_the_dead: 'Attack of the Dead',
-  super_skip: 'Super Skip',
-  reverse: 'Reverse',
+  critical_event: 'Exploding Cat',
+  neutralizer: 'Defuse',
+  strike: 'Attack',
+  evade: 'Skip',
+  trade: 'Favor',
+  reorder: 'Shuffle',
+  insight: 'See the Future',
+  cancel: 'Nope',
+  collection_alpha: 'Alpha Node',
+  collection_beta: 'Beta Node',
+  collection_gamma: 'Gamma Node',
+  collection_delta: 'Delta Node',
+  collection_epsilon: 'Epsilon Node',
+  targeted_strike: 'Targeted Attack',
+  private_strike: 'Personal Attack',
+  recursive_strike: 'Attack of the Dead',
+  mega_evade: 'Super Skip',
+  invert: 'Reverse',
+  // Future Pack
+  see_future_5x: 'See Future 5x',
+  alter_future_3x: 'Alter Future 3x',
+  alter_future_5x: 'Alter Future 5x',
+  reveal_future_3x: 'Reveal Future 3x',
+  share_future_3x: 'Share Future 3x',
+  draw_bottom: 'Draw Bottom',
+  swap_top_bottom: 'Swap Top/Bottom',
+  bury: 'Bury',
+  // Theft Pack
+  wildcard: 'Wildcard',
+  mark: 'Mark',
+  steal_draw: 'Steal & Draw',
+  stash: 'Stash',
+  // Deity Pack
+  omniscience: 'Omniscience',
+  miracle: 'Miracle',
+  smite: 'Smite',
+  rapture: 'Rapture',
+  // Chaos Pack
+  critical_implosion: 'Critical Implosion',
+  containment_field: 'Containment Field',
+  fission: 'Fission',
+  tribute: 'Tribute',
+  blackout: 'Blackout',
 };
 
 export function GiveFavorModal({
@@ -81,7 +106,7 @@ export function GiveFavorModal({
           >
             {myHand.map((card, index) => {
               const cardArt =
-                CARD_ART_SETTINGS[card] ?? CARD_ART_SETTINGS.exploding_cat;
+                CARD_ART_SETTINGS[card] ?? CARD_ART_SETTINGS.critical_event;
               return (
                 <TouchableOpacity
                   key={`${card}-${index}`}

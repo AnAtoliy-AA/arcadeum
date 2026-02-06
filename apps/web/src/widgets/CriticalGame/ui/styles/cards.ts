@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { Button, GameVariant } from '@/shared/ui';
-import { Card, CardEmoji } from './cards-base';
+import { Card } from './cards-base';
 import { SPRITE_GRID_SIZE } from './card-sprites';
 import { VARIANT_COLORS } from './variant-palette';
 import { GAME_VARIANT } from '../../lib/constants';
@@ -55,19 +55,7 @@ export const LastPlayedCard = styled(Card)<{ $isAnimating?: boolean }>`
     transform: translate(-50%, -50%) scale(1.05);
   }
 
-  @media (max-width: 768px) {
-    width: 55px;
-    max-width: 55px;
-    padding: 0.4rem 0.3rem;
-    gap: 0.3rem;
-
-    ${CardEmoji} {
-      font-size: 1.25rem;
-    }
-    > div {
-      font-size: 0.5rem;
-    }
-  }
+  /* Media query removed to keep consistent size */
 `;
 
 export const DeckCard = styled.div<{ $variant?: string }>`
@@ -154,13 +142,7 @@ export const DeckCard = styled.div<{ $variant?: string }>`
         : 'none'};
   }
 
-  @media (max-width: 768px) {
-    width: 55px;
-    height: 82px;
-    &::after {
-      font-size: 1.5rem;
-    }
-  }
+  /* Media query removed to keep consistent size */
 `;
 export const ActionButtons = styled.div<{ $variant?: string }>`
   display: flex;

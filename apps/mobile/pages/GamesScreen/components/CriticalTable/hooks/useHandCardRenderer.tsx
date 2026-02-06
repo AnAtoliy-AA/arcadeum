@@ -1,7 +1,12 @@
 import React, { useCallback } from 'react';
 import type { TFunction } from '@/lib/i18n';
-import type { ActionBusyType, CriticalCard, CriticalCatCard } from '../types';
-import { CAT_COMBO_CARDS } from '../constants';
+import type {
+  ActionBusyType,
+  CriticalCard,
+  CriticalCatCard,
+  CriticalActionCard,
+} from '../types';
+import { CAT_COMBO_CARDS, QUICK_ACTION_CARDS } from '../constants';
 import { HandCard } from '../components/HandCard';
 import type { useCardAnimations } from './useCardAnimations';
 import type { useCatCombo } from './useCatCombo';
@@ -26,19 +31,11 @@ export function useHandCardRenderer(
   t: TFunction,
   translateCardName: (card: CriticalCard) => string,
   translateCardDescription: (card: CriticalCard) => string,
-  onPlay: (
-    action:
-      | 'skip'
-      | 'attack'
-      | 'shuffle'
-      | 'personal_attack'
-      | 'attack_of_the_dead'
-      | 'super_skip'
-      | 'reverse',
-  ) => void,
+  onPlay: (action: CriticalActionCard) => void,
   onPlaySeeTheFuture: () => void,
   onPlayTargetedAction: (card: CriticalCard) => void,
   styles: CriticalTableStyles,
+  cardVariant?: string,
 ) {
   const catComboBusy = actionBusy === 'cat_pair' || actionBusy === 'cat_trio';
 
@@ -51,26 +48,11 @@ export function useHandCardRenderer(
     ) => {
       const cardKey = `${card}-${index}`;
       // Determine if this is an action card that can be played directly
-      const quickAction =
-        card === 'skip'
-          ? 'skip'
-          : card === 'attack'
-            ? 'attack'
-            : card === 'shuffle'
-              ? 'shuffle'
-              : card === 'see_the_future'
-                ? 'see_the_future'
-                : card === 'targeted_attack'
-                  ? 'targeted_attack'
-                  : card === 'personal_attack'
-                    ? 'personal_attack'
-                    : card === 'attack_of_the_dead'
-                      ? 'attack_of_the_dead'
-                      : card === 'super_skip'
-                        ? 'super_skip'
-                        : card === 'reverse'
-                          ? 'reverse'
-                          : null;
+      const quickAction = (QUICK_ACTION_CARDS as readonly string[]).includes(
+        card,
+      )
+        ? (card as (typeof QUICK_ACTION_CARDS)[number])
+        : null;
       const isCatCard = CAT_COMBO_CARDS.includes(card as CriticalCatCard);
       const comboAvailability = isCatCard
         ? catCombo.catComboAvailability[card as CriticalCatCard]
@@ -84,56 +66,80 @@ export function useHandCardRenderer(
           selfPlayerAlive,
       );
 
-      const isPlayable =
-        quickAction === 'skip'
-          ? canPlaySkip
-          : quickAction === 'attack' ||
-              quickAction === 'targeted_attack' ||
-              quickAction === 'personal_attack' ||
-              quickAction === 'attack_of_the_dead' ||
-              quickAction === 'super_skip' ||
-              quickAction === 'reverse'
-            ? canPlayAttack
-            : quickAction === 'see_the_future'
-              ? canPlaySeeTheFuture
-              : quickAction === 'shuffle'
-                ? canPlayShuffle
-                : comboPlayable;
-
-      const isBusy =
-        quickAction === 'skip'
-          ? actionBusy === 'skip'
-          : quickAction === 'attack'
-            ? actionBusy === 'attack'
-            : quickAction === 'see_the_future'
-              ? actionBusy === 'see_the_future'
-              : quickAction === 'shuffle'
-                ? actionBusy === 'shuffle'
-                : isCatCard && catComboBusy;
-
       const isAnimating = animations.animatingCardKey === cardKey;
       const isGrid = mode === 'grid';
       const cardWidth = isGrid ? gridCardWidth : 148;
       const cardHeight = isGrid ? gridCardHeight : 228;
 
-      const actionHint =
-        quickAction === 'skip'
-          ? t('games.table.actions.playSkip')
-          : quickAction === 'attack'
-            ? t('games.table.actions.playAttack')
-            : quickAction === 'see_the_future'
-              ? t('games.table.cards.seeTheFuture')
-              : quickAction === 'shuffle'
-                ? t('games.table.cards.shuffle')
-                : quickAction === 'targeted_attack' ||
-                    quickAction === 'personal_attack' ||
-                    quickAction === 'attack_of_the_dead' ||
-                    quickAction === 'super_skip' ||
-                    quickAction === 'reverse'
-                  ? t('games.table.actions.playCard')
-                  : comboPlayable
-                    ? t('games.table.actions.playCatCombo')
-                    : undefined;
+      const checkIsPlayable = () => {
+        if (!quickAction) return comboPlayable;
+
+        switch (quickAction) {
+          case 'evade':
+            return canPlaySkip;
+          case 'strike':
+          case 'targeted_strike':
+          case 'private_strike':
+          case 'recursive_strike':
+          case 'mega_evade':
+          case 'invert':
+            return canPlayAttack;
+          case 'insight':
+            return canPlaySeeTheFuture;
+          case 'reorder':
+            return canPlayShuffle;
+          default:
+            return comboPlayable;
+        }
+      };
+
+      const checkIsBusy = () => {
+        if (!quickAction) return isCatCard && catComboBusy;
+
+        switch (quickAction) {
+          case 'evade':
+            return actionBusy === 'evade';
+          case 'strike':
+            return actionBusy === 'strike';
+          case 'insight':
+            return actionBusy === 'see_the_future';
+          case 'reorder':
+            return actionBusy === 'reorder';
+          default:
+            return false;
+        }
+      };
+
+      const getActionHint = () => {
+        if (!quickAction) {
+          return comboPlayable
+            ? t('games.table.actions.playCatCombo')
+            : undefined;
+        }
+
+        switch (quickAction) {
+          case 'evade':
+            return t('games.table.actions.playSkip');
+          case 'strike':
+            return t('games.table.actions.playAttack');
+          case 'insight':
+            return t('games.table.cards.seeTheFuture');
+          case 'reorder':
+            return t('games.table.cards.shuffle');
+          case 'targeted_strike':
+          case 'private_strike':
+          case 'recursive_strike':
+          case 'mega_evade':
+          case 'invert':
+            return t('games.table.actions.playCard');
+          default:
+            return undefined;
+        }
+      };
+
+      const isPlayable = checkIsPlayable();
+      const isBusy = checkIsBusy();
+      const actionHint = getActionHint();
 
       const comboHint =
         comboPlayable && comboAvailability
@@ -150,30 +156,33 @@ export function useHandCardRenderer(
         }
 
         const execute = () => {
-          if (quickAction === 'see_the_future') {
+          if (!quickAction) {
+            if (isCatCard) {
+              catCombo.openCatComboPrompt(card as CriticalCatCard);
+            }
+            return;
+          }
+
+          if (quickAction === 'insight') {
             onPlaySeeTheFuture();
             return;
           }
-          if (quickAction === 'targeted_attack') {
+          if (quickAction === 'targeted_strike') {
             onPlayTargetedAction(card);
             return;
           }
 
           if (
-            quickAction === 'skip' ||
-            quickAction === 'attack' ||
-            quickAction === 'shuffle' ||
-            quickAction === 'personal_attack' ||
-            quickAction === 'attack_of_the_dead' ||
-            quickAction === 'super_skip' ||
-            quickAction === 'reverse'
+            quickAction === 'evade' ||
+            quickAction === 'strike' ||
+            quickAction === 'reorder' ||
+            quickAction === 'private_strike' ||
+            quickAction === 'recursive_strike' ||
+            quickAction === 'mega_evade' ||
+            quickAction === 'invert'
           ) {
             onPlay(quickAction);
             return;
-          }
-
-          if (isCatCard) {
-            catCombo.openCatComboPrompt(card as CriticalCatCard);
           }
         };
 
@@ -199,6 +208,7 @@ export function useHandCardRenderer(
           translateCardDescription={translateCardDescription}
           onPress={handlePress}
           styles={styles}
+          gameVariant={cardVariant}
         />
       );
     },
@@ -223,6 +233,7 @@ export function useHandCardRenderer(
       translateCardDescription,
       translateCardName,
       styles,
+      cardVariant,
     ],
   );
 

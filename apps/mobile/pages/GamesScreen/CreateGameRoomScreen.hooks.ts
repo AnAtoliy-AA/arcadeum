@@ -169,7 +169,7 @@ export function useCreateGameRoomController(): UseCreateGameRoomControllerResult
         maxPlayers,
         notes: formState.notes.trim() || undefined,
         gameOptions:
-          formState.gameId === 'exploding_kittens_v1'
+          formState.gameId === 'critical_v1'
             ? {
                 allowActionCardCombos: formState.allowActionCardCombos,
                 idleTimerEnabled: formState.idleTimerEnabled,
@@ -189,7 +189,7 @@ export function useCreateGameRoomController(): UseCreateGameRoomControllerResult
       );
       router.replace({
         pathname: '/games/[id]',
-        params: { id: formState.gameId },
+        params: { id: response.room.id },
       });
     } catch (error) {
       const message =

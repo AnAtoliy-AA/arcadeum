@@ -8,7 +8,11 @@ import {
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTranslation } from '@/lib/i18n';
-import type { CriticalCard, ProcessedPlayer } from '../types';
+import type {
+  CriticalCard,
+  ProcessedPlayer,
+  CriticalActionCard,
+} from '../types';
 import type { CriticalTableStyles } from '../styles';
 
 interface HandViewProps {
@@ -26,7 +30,7 @@ interface HandViewProps {
   canPlaySeeTheFuture: boolean;
   actionBusy: string | null;
   onDraw: () => void;
-  onPlay: (card: 'skip' | 'attack') => void;
+  onPlay: (card: CriticalActionCard, payload?: Record<string, unknown>) => void;
   onPlayNope: () => void;
   onPlaySeeTheFuture: () => void;
   // Card rendering props
@@ -276,14 +280,14 @@ export function HandView({
           <TouchableOpacity
             style={[
               styles.secondaryButton,
-              actionBusy && actionBusy !== 'skip'
+              actionBusy && actionBusy !== 'evade'
                 ? styles.secondaryButtonDisabled
                 : null,
             ]}
-            onPress={() => onPlay('skip')}
-            disabled={actionBusy === 'skip'}
+            onPress={() => onPlay('evade')}
+            disabled={actionBusy === 'evade'}
           >
-            {actionBusy === 'skip' ? (
+            {actionBusy === 'evade' ? (
               <ActivityIndicator
                 size="small"
                 color={styles.secondaryButtonText.color as string}
@@ -307,14 +311,14 @@ export function HandView({
           <TouchableOpacity
             style={[
               styles.destructiveButton,
-              actionBusy && actionBusy !== 'attack'
+              actionBusy && actionBusy !== 'strike'
                 ? styles.destructiveButtonDisabled
                 : null,
             ]}
-            onPress={() => onPlay('attack')}
-            disabled={actionBusy === 'attack'}
+            onPress={() => onPlay('strike')}
+            disabled={actionBusy === 'strike'}
           >
-            {actionBusy === 'attack' ? (
+            {actionBusy === 'strike' ? (
               <ActivityIndicator
                 size="small"
                 color={styles.destructiveButtonText.color as string}

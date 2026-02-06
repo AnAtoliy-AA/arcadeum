@@ -220,22 +220,11 @@ export const CardsGrid = styled.div<{
               background: rgba(255, 255, 255, 0.5);
             }
           }
-
-          @media (max-width: 768px) {
-            & > div {
-              width: 95px;
-            }
-          }
         `
       : css`
           display: grid;
           /* Default auto-fill or specific column count */
           grid-template-columns: ${getGridTemplateColumns($layout)};
-
-          @media (max-width: 768px) {
-            grid-template-columns: ${getGridTemplateColumns($layout, true)};
-            gap: 0.75rem;
-          }
         `}
 `;
 
@@ -347,13 +336,7 @@ export const DeckCard = styled.div<{ $variant?: string }>`
       $variant ? 'white' : 'rgba(99, 102, 241, 0.8)'};
   }
 
-  @media (max-width: 768px) {
-    width: 55px;
-    height: 82px;
-    &::after {
-      font-size: 1.5rem;
-    }
-  }
+  /* Media query removed to keep consistent size */
 `;
 
 export const CardEmoji = styled.div`
@@ -367,7 +350,5 @@ export const CardEmoji = styled.div`
     transform: scale(1.1) rotate(5deg);
   }
 
-  @media (max-width: 768px) {
-    font-size: 2rem;
-  }
+  /* Media query removed to keep consistent size */
 `;

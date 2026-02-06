@@ -37,11 +37,11 @@ export function useActionPermissions({
     const isSessionCompleted = session?.status === 'completed';
     const hasPendingFavor = !!snapshot?.pendingFavor;
     const isAlive = selfPlayer?.alive ?? false;
-    const hasSkip = (selfPlayer?.hand ?? []).includes('skip');
-    const hasAttack = (selfPlayer?.hand ?? []).includes('attack');
-    const hasNope = (selfPlayer?.hand ?? []).includes('nope');
-    const hasSeeTheFuture = (selfPlayer?.hand ?? []).includes('see_the_future');
-    const hasShuffle = (selfPlayer?.hand ?? []).includes('shuffle');
+    const hasSkip = (selfPlayer?.hand ?? []).includes('evade');
+    const hasAttack = (selfPlayer?.hand ?? []).includes('strike');
+    const hasNope = (selfPlayer?.hand ?? []).includes('cancel');
+    const hasSeeTheFuture = (selfPlayer?.hand ?? []).includes('insight');
+    const hasShuffle = (selfPlayer?.hand ?? []).includes('reorder');
 
     return {
       isSessionActive,

@@ -228,8 +228,8 @@ export const gamesCatalog: GameCatalogueEntry[] = [
         description: 'Review past hands with decision trees.',
       },
     ],
-    isPlayable: false, // Temporarily unavailable
-    isHidden: true, // Temporarily hidden from UI
+    isPlayable: true,
+    isHidden: false, // Visible as unavailable
   },
   {
     id: 'coup',

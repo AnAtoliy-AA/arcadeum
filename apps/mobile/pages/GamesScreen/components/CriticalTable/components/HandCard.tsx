@@ -1,14 +1,18 @@
-import React from 'react';
-import { Animated, ActivityIndicator, Platform, View } from 'react-native';
+import {
+  Animated,
+  ActivityIndicator,
+  Platform,
+  View,
+  TouchableOpacity,
+} from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { CriticalCard as CriticalArtwork } from '@/components/cards';
-import type { CriticalCard, CriticalCatCard } from '../types';
+import type { CriticalCard } from '../types';
 import type { CriticalTableStyles } from '../styles';
-import { CARD_ART_SETTINGS, CAT_COMBO_CARDS } from '../constants';
+import { CARD_ART_SETTINGS } from '../constants';
 
-const AnimatedTouchableOpacity = Animated.createAnimatedComponent(
-  require('react-native').TouchableOpacity,
-);
+const AnimatedTouchableOpacity =
+  Animated.createAnimatedComponent(TouchableOpacity);
 const ACCESSIBILITY_DISABLED_PROPS: { accessible?: boolean } =
   Platform.OS === 'web' ? {} : { accessible: false };
 
@@ -31,6 +35,7 @@ interface HandCardProps {
   translateCardDescription: (card: CriticalCard) => string;
   onPress: () => void;
   styles: CriticalTableStyles;
+  gameVariant?: string;
 }
 
 export function HandCard({
@@ -50,9 +55,10 @@ export function HandCard({
   translateCardDescription,
   onPress,
   styles,
+  gameVariant,
 }: HandCardProps) {
   const cardKey = `${card}-${index}`;
-  const cardArt = CARD_ART_SETTINGS[card] ?? CARD_ART_SETTINGS.exploding_cat;
+  const cardArt = CARD_ART_SETTINGS[card] ?? CARD_ART_SETTINGS.critical_event;
   const cardVariant = ((((cardArt.variant ?? 1) - 1 + index) % 3) +
     1) as CardArtworkVariant;
   const isGrid = mode === 'grid';
@@ -97,6 +103,7 @@ export function HandCard({
               variant={cardVariant}
               width="100%"
               height="100%"
+              gameVariant={gameVariant}
               preserveAspectRatio="xMidYMid slice"
               focusable={false}
             />

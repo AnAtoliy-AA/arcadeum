@@ -6,6 +6,7 @@ import type {
   CriticalLogEntry,
   PendingAction,
   PendingFavor,
+  CriticalActionCard,
 } from '../types';
 import { useAutoplay } from '../hooks/useAutoplay';
 
@@ -23,7 +24,7 @@ interface AutoplayControlsProps {
   currentUserId: string | null;
   t: (key: string) => string;
   onDraw: () => void;
-  onPlayActionCard: (card: 'skip' | 'attack' | 'shuffle') => void;
+  onPlayActionCard: (card: CriticalActionCard) => void;
   onPlayNope: () => void;
   onGiveFavorCard: (card: CriticalCard) => void;
   onPlayDefuse: (position: number) => void;

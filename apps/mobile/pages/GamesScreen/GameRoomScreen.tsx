@@ -40,7 +40,10 @@ export default function GameRoomScreen() {
 
   const handleRefresh = useCallback(() => fetchRoom('refresh'), [fetchRoom]);
 
-  if (integrationId === 'exploding_kittens_v1') {
+  if (
+    integrationId === 'critical_v1' ||
+    integrationId === 'exploding_kittens_v1'
+  ) {
     return (
       <CriticalRoom
         ref={integrationRef as React.Ref<CriticalRoomHandle>}

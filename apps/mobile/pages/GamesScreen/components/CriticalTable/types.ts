@@ -10,9 +10,9 @@ export type ActionEffectType =
 
 export type ActionBusyType =
   | 'draw'
-  | 'skip'
-  | 'attack'
-  | 'shuffle'
+  | 'evade'
+  | 'strike'
+  | 'reorder'
   | 'favor'
   | 'nope'
   | 'see_the_future'
@@ -20,11 +20,11 @@ export type ActionBusyType =
   | 'cat_trio'
   | 'cat_fiver'
   | 'defuse'
-  | 'targeted_attack'
-  | 'personal_attack'
-  | 'attack_of_the_dead'
-  | 'super_skip'
-  | 'reverse';
+  | 'targeted_strike'
+  | 'private_strike'
+  | 'recursive_strike'
+  | 'mega_evade'
+  | 'invert';
 
 export interface SessionPlayerProfile {
   id: string;
@@ -33,36 +33,67 @@ export interface SessionPlayerProfile {
 }
 
 export type CriticalCard =
-  | 'exploding_cat'
-  | 'defuse'
-  | 'attack'
-  | 'skip'
-  | 'favor'
-  | 'shuffle'
-  | 'see_the_future'
-  | 'nope'
-  | 'tacocat'
-  | 'hairy_potato_cat'
-  | 'rainbow_ralphing_cat'
-  | 'cattermelon'
-  | 'bearded_cat'
-  | 'targeted_attack'
-  | 'personal_attack'
-  | 'attack_of_the_dead'
-  | 'super_skip'
-  | 'reverse';
+  | 'critical_event'
+  | 'neutralizer'
+  | 'strike'
+  | 'evade'
+  | 'trade'
+  | 'reorder'
+  | 'insight'
+  | 'cancel'
+  | 'collection_alpha'
+  | 'collection_beta'
+  | 'collection_gamma'
+  | 'collection_delta'
+  | 'collection_epsilon'
+  | 'targeted_strike'
+  | 'private_strike'
+  | 'recursive_strike'
+  | 'mega_evade'
+  | 'invert'
+  | 'see_future_5x'
+  | 'alter_future_3x'
+  | 'alter_future_5x'
+  | 'reveal_future_3x'
+  | 'share_future_3x'
+  | 'draw_bottom'
+  | 'swap_top_bottom'
+  | 'bury'
+  | 'wildcard'
+  | 'mark'
+  | 'steal_draw'
+  | 'stash'
+  | 'omniscience'
+  | 'miracle'
+  | 'smite'
+  | 'rapture'
+  | 'critical_implosion'
+  | 'containment_field'
+  | 'fission'
+  | 'tribute'
+  | 'blackout';
+
+export type CriticalActionCard =
+  | 'evade'
+  | 'strike'
+  | 'reorder'
+  | 'private_strike'
+  | 'recursive_strike'
+  | 'mega_evade'
+  | 'invert'
+  | 'targeted_strike';
 
 // ===== CAT CARDS Constants =====
 export const CAT_CARDS = [
-  'tacocat',
-  'hairy_potato_cat',
-  'rainbow_ralphing_cat',
-  'cattermelon',
-  'bearded_cat',
+  'collection_alpha',
+  'collection_beta',
+  'collection_gamma',
+  'collection_delta',
+  'collection_epsilon',
 ] as const;
 
 // ===== SPECIAL CARDS Constants =====
-export const SPECIAL_CARDS = ['exploding_cat', 'defuse'] as const;
+export const SPECIAL_CARDS = ['critical_event', 'neutralizer'] as const;
 
 export type CriticalCatCard = (typeof CAT_CARDS)[number];
 
@@ -152,18 +183,7 @@ export interface CriticalTableProps {
   isHost: boolean;
   onStart: () => void;
   onDraw: () => void;
-  onPlay: (
-    card:
-      | 'skip'
-      | 'attack'
-      | 'shuffle'
-      | 'personal_attack'
-      | 'attack_of_the_dead'
-      | 'super_skip'
-      | 'reverse'
-      | 'targeted_attack',
-    payload?: Record<string, unknown>,
-  ) => void;
+  onPlay: (card: CriticalActionCard, payload?: Record<string, unknown>) => void;
   onPlayNope: () => void;
   onPlayFavor: (targetPlayerId: string) => void;
   onGiveFavorCard: (cardToGive: CriticalCard) => void;
@@ -178,6 +198,7 @@ export interface CriticalTableProps {
   tableOnly?: boolean;
   roomName?: string;
   idleTimerEnabled?: boolean;
+  cardVariant?: string;
 }
 
 export interface ProcessedPlayer {

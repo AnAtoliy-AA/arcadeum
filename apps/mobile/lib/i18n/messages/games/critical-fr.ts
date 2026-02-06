@@ -68,7 +68,7 @@ export const criticalMessagesFr = {
     unknownSender: 'Joueur inconnu',
   },
   cards: {
-    explodingCat: 'Chat explosif',
+    explodingCat: 'Critical',
     defuse: 'Désamorçage',
     attack: 'Attaque',
     skip: 'Passer',
@@ -76,11 +76,11 @@ export const criticalMessagesFr = {
     shuffle: 'Mélanger',
     seeTheFuture: "Voir l'avenir",
     nope: 'Non',
-    tacocat: 'Tacochat',
-    hairyPotatoCat: 'Chat patate velu',
-    rainbowRalphingCat: 'Chat arc-en-ciel vomitif',
-    cattermelon: 'Melonchat',
-    beardedCat: 'Chat barbu',
+    collectionAlpha: 'Nœud Alpha',
+    collectionBeta: 'Nœud Bêta',
+    collectionGamma: 'Nœud Gamma',
+    collectionDelta: 'Nœud Delta',
+    collectionEpsilon: 'Nœud Epsilon',
     generic: 'Chat',
     // Attack Pack cards
     targetedAttack: 'Attaque Ciblée',
@@ -88,6 +88,31 @@ export const criticalMessagesFr = {
     attackOfTheDead: 'Attaque des Morts',
     superSkip: 'Super Passer',
     reverse: 'Inverser',
+    // Future Pack
+    seeFuture_5x: 'Voir Futur 5x',
+    alterFuture_3x: 'Altérer Futur 3x',
+    alterFuture_5x: 'Altérer Futur 5x',
+    revealFuture_3x: 'Révéler Futur 3x',
+    shareFuture_3x: 'Partager Futur 3x',
+    drawBottom: 'Piocher du Fond',
+    swapTopBottom: 'Échanger Haut/Bas',
+    bury: 'Enterrer',
+    // Theft Pack
+    wildcard: 'Joker',
+    mark: 'Marquer',
+    stealDraw: 'Voler & Piocher',
+    stash: 'Réserve',
+    // Deity Pack
+    omniscience: 'Omniscience',
+    miracle: 'Miracle',
+    smite: 'Châtiment',
+    rapture: 'Ravissement',
+    // Chaos Pack
+    criticalImplosion: 'Implosion Critique',
+    containmentField: 'Champ de Confinement',
+    fission: 'Fission',
+    tribute: 'Tribut',
+    blackout: 'Blackout',
   },
   cardDescriptions: {
     explodingCat: 'Piochez-la sans Defuse et boum : vous quittez la manche.',
@@ -99,12 +124,15 @@ export const criticalMessagesFr = {
     shuffle: 'Mélangez la pioche pour randomiser les prochaines cartes.',
     seeTheFuture: 'Regardez les trois premières cartes de la pioche.',
     nope: "Annulez n'importe quelle carte d'action jouée par un autre joueur.",
-    tacocat: 'Jouez-en deux ou trois pour voler une carte à un adversaire.',
-    hairyPotatoCat: 'En paire ou trio, vole une carte aléatoire ou nommée.',
-    rainbowRalphingCat: 'Combinez plusieurs copies pour subtiliser des cartes.',
-    cattermelon:
-      'Rassemblez des doublons pour voler des cartes et préparer vos combos.',
-    beardedCat: "Vol garanti lorsqu'il est joué en paire ou en trio.",
+    collectionAlpha:
+      'Collectez des nœuds correspondants pour voler des cartes.',
+    collectionBeta: 'Collectez des nœuds correspondants pour voler des cartes.',
+    collectionGamma:
+      'Collectez des nœuds correspondants pour voler des cartes.',
+    collectionDelta:
+      'Collectez des nœuds correspondants pour voler des cartes.',
+    collectionEpsilon:
+      'Collectez des nœuds correspondants pour voler des cartes.',
     generic:
       "Les cartes chat s'activent en paire ou trio pour voler des cartes.",
     // Attack Pack descriptions
@@ -113,6 +141,31 @@ export const criticalMessagesFr = {
     attackOfTheDead: 'Joueur suivant prend 3 tours par joueur mort.',
     superSkip: 'Terminez TOUS vos tours restants sans piocher.',
     reverse: 'Inversez le sens du jeu.',
+    // Future Pack
+    seeFuture_5x: 'Regardez les 5 premières cartes.',
+    alterFuture_3x: 'Regardez et réarrangez les 3 premières cartes.',
+    alterFuture_5x: 'Regardez et réarrangez les 5 premières cartes.',
+    revealFuture_3x: 'Révélez les 3 premières cartes à tout le monde.',
+    shareFuture_3x: 'Montrez et réarrangez les 3 premières cartes.',
+    drawBottom: 'Piochez du bas du paquet.',
+    swapTopBottom: 'Échangez la carte du haut et celle du bas paquet.',
+    bury: 'Piochez une carte, jouez-la, puis remettez-la.',
+    // Theft Pack
+    wildcard: 'Utilisez comme n’importe quelle carte chat dans un combo.',
+    mark: 'Choisissez un joueur. Sa carte vous est maintenant visible.',
+    stealDraw: 'Volez une carte, puis piochez une carte.',
+    stash: 'Piochez 3 cartes, mais elles sont inactives pour un tour.',
+    // Deity Pack
+    omniscience: 'Voyez la carte du haut du paquet pour le reste du jeu.',
+    miracle: 'Tout le monde pioche une carte.',
+    smite: 'Forcez un joueur à jouer 2 cartes ou perdre 2 cartes.',
+    rapture: 'Tous les joueurs défaussent leur main sauf 1 carte.',
+    // Chaos Pack
+    criticalImplosion: 'Comme Critical, mais ne peut pas être Désamorcé.',
+    containmentField: 'Protégez-vous des attaques pour un tour.',
+    fission: 'Piochez 2 cartes, remettez-en 1.',
+    tribute: 'Tout le monde vous donne une carte.',
+    blackout: 'Personne ne peut voir la pioche/défausse.',
   },
   catCombo: {
     title: 'Jouer un combo avec {{card}}',

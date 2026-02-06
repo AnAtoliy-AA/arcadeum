@@ -6,6 +6,7 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
+import { InstallPWAButton } from '@/features/pwa';
 
 export function Header() {
   const pathname = usePathname();
@@ -107,6 +108,7 @@ export function Header() {
           </Nav>
 
           <Actions>
+            <InstallPWAButton />
             {isAuthenticated && displayName && (
               <ProfileMenuContainer data-profile-menu>
                 <UserInfo onClick={toggleProfileMenu}>

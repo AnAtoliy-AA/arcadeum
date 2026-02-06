@@ -12,9 +12,11 @@ test.describe('Sea Battle Game', () => {
     // Navigate to games list
     await navigateTo(page, '/games');
 
-    // Check if Sea Battle is visible in the list
-    const seaBattleGame = page.getByText('Sea Battle');
-    await expect(seaBattleGame.first()).toBeVisible();
+    // Check if Sea Battle or Naval Battle is visible in the list (translation aware)
+    const seaBattleGame = page.getByText(
+      /sea battle|морской бой|bataille navale|batalla naval/i,
+    );
+    await expect(seaBattleGame.first()).toBeVisible({ timeout: 10000 });
   });
 
   test('should display game create page for Sea Battle', async ({ page }) => {

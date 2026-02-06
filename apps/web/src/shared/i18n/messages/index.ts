@@ -7,6 +7,7 @@ import { homeMessages } from './home';
 import { legalMessages } from './legal';
 import { navigationMessages } from './navigation';
 import { paymentsMessages } from './payments';
+import { pwaMessages } from './pwa';
 import { settingsMessages } from './settings';
 import { statsMessages } from './stats';
 import { supportMessages } from './support';
@@ -28,6 +29,7 @@ export const translations = {
     payments: paymentsMessages.en,
     legal: legalMessages.en,
     stats: statsMessages.en,
+    pwa: pwaMessages.en,
   },
   es: {
     common: commonMessages.es,
@@ -43,6 +45,7 @@ export const translations = {
     payments: paymentsMessages.es,
     legal: legalMessages.es,
     stats: statsMessages.es,
+    pwa: pwaMessages.es,
   },
   fr: {
     common: commonMessages.fr,
@@ -58,6 +61,7 @@ export const translations = {
     payments: paymentsMessages.fr,
     legal: legalMessages.fr,
     stats: statsMessages.fr,
+    pwa: pwaMessages.fr,
   },
   ru: {
     common: commonMessages.ru,
@@ -73,6 +77,7 @@ export const translations = {
     payments: paymentsMessages.ru,
     legal: legalMessages.ru,
     stats: statsMessages.ru,
+    pwa: pwaMessages.ru,
   },
   be: {
     common: commonMessages.be,
@@ -88,5 +93,6 @@ export const translations = {
     payments: paymentsMessages.be,
     legal: legalMessages.be,
     stats: statsMessages.be,
+    pwa: pwaMessages.be,
   },
 } as const;

@@ -15,6 +15,7 @@ import {
 } from '@/shared/i18n';
 import type { ThemePreference } from '@/shared/config/theme';
 import { BlockedUsersSection } from './BlockedUsersSection';
+import { usePWAOptional } from '@/features/pwa';
 
 type DownloadConfig = {
   title: string;
@@ -56,6 +57,7 @@ export function SettingsPage({
   const isAuthenticated = !!snapshot.accessToken;
   const { t } = useTranslation();
   const { locale, setLocale, messages } = useLanguage();
+  const pwa = usePWAOptional();
   const settingsCopy = messages.settings ?? {};
   const defaultSettings = DEFAULT_SETTINGS_COPY;
   const defaultThemeOptions = defaultSettings.themeOptions ?? {};
@@ -247,11 +249,22 @@ export function SettingsPage({
           </OptionList>
         </Section>
 
-        {downloadButtons.length > 0 ? (
+        {downloadButtons.length > 0 || pwa?.canInstall ? (
           <Section>
             <SectionTitle>{downloadsTitle}</SectionTitle>
             <SectionDescription>{downloadsDescription}</SectionDescription>
             <DownloadGrid>
+              {pwa?.canInstall && (
+                <DownloadLink
+                  as="button"
+                  onClick={pwa.openModal}
+                  style={{ cursor: 'pointer' }}
+                  data-testid="settings-install-pwa"
+                >
+                  <DownloadIcon aria-hidden="true">📲</DownloadIcon>
+                  <span>{t('pwa.install.button')}</span>
+                </DownloadLink>
+              )}
               {downloadButtons.map((button) => (
                 <DownloadLink
                   key={button.key}

@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import { appConfig } from '@/shared/config/app-config';
@@ -8,6 +8,7 @@ import { StyledComponentsRegistry } from './StyledComponentsRegistry';
 import './globals.css';
 import { AppThemeProvider } from './theme/ThemeContext';
 import { Header } from '@/widgets/header';
+import { PWAProvider, InstallPWAModal } from '@/features/pwa';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -22,6 +23,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: appConfig.seoTitle,
   description: appConfig.seoDescription,
+  manifest: '/manifest.json',
+};
+
+export const viewport: Viewport = {
+  themeColor: '#151718',
 };
 
 export default function RootLayout({
@@ -36,8 +42,11 @@ export default function RootLayout({
           <LanguageProvider>
             <AppThemeProvider>
               <QueryProvider>
-                <Header />
-                {children}
+                <PWAProvider>
+                  <Header />
+                  {children}
+                  <InstallPWAModal />
+                </PWAProvider>
               </QueryProvider>
             </AppThemeProvider>
           </LanguageProvider>

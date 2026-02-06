@@ -2,6 +2,26 @@
 
 set -e
 
+# Check if package.json changed but lockfile didn't
+STAGED_PKG_JSON=$(git diff --cached --name-only | grep 'package.json' || true)
+STAGED_LOCKFILE=$(git diff --cached --name-only | grep 'pnpm-lock.yaml' || true)
+
+if [ -n "$STAGED_PKG_JSON" ] && [ -z "$STAGED_LOCKFILE" ]; then
+  echo "⚠️  Warning: package.json changed but pnpm-lock.yaml wasn't updated."
+  echo "   This may cause deployment failures with frozen-lockfile."
+  echo ""
+  echo "   If you added/removed dependencies, run:"
+  echo "     pnpm install"
+  echo "     git add pnpm-lock.yaml"
+  echo ""
+  echo "   If this is intentional (e.g., only scripts changed), you can continue."
+  read -p "   Continue anyway? [y/N] " answer
+  if [ "$answer" != "y" ] && [ "$answer" != "Y" ]; then
+    echo "❌ Commit aborted. Please update the lockfile."
+    exit 1
+  fi
+fi
+
 npm run check-file-length
 
 pnpm exec lint-staged

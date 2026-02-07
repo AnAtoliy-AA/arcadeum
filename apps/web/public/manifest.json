@@ -3,6 +3,7 @@
   "short_name": "Arcadeum",
   "description": "Arcadeum is your online platform to play board games with friends.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#151718",
   "theme_color": "#151718",

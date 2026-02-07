@@ -14,7 +14,107 @@ const withPWA = withPWAInit({
   },
 });
 
+const cspConnectSrc = [
+  'https://arcadeum.vercel.app',
+  'wss://arcadeum.vercel.app',
+  'https://arcadeum-dev.vercel.app',
+  'wss://arcadeum-dev.vercel.app',
+  'https://arcadeum-be-dev.onrender.com',
+  'wss://arcadeum-be-dev.onrender.com',
+  'https://arcadeum-be.onrender.com',
+  'wss://arcadeum-be.onrender.com',
+];
+
+const cspScriptSrc = "'unsafe-inline'";
+
+const cspStyleSrc = "'self' 'unsafe-inline'";
+
+const cspImgSrc = "'self' blob: data: https:";
+
+const cspFontSrc = "'self' data:";
+
+const cspFrameSrc = "'self' https://www.youtube.com https://youtube.com";
+
 const nextConfig: NextConfig = {
+  headers: async () => {
+    const isDev = process.env.NODE_ENV === 'development';
+
+    const connectSrc = [
+      "'self'",
+      ...(isDev ? ['http://localhost:*', 'ws://localhost:*'] : []),
+      ...cspConnectSrc,
+    ]
+      .filter(Boolean)
+      .join(' ');
+
+    const csp = [
+      "default-src 'self';",
+      `script-src 'self' 'unsafe-eval' ${cspScriptSrc};`,
+      `style-src ${cspStyleSrc};`,
+      `img-src ${cspImgSrc};`,
+      `font-src ${cspFontSrc};`,
+      "object-src 'none';",
+      "base-uri 'self';",
+      "form-action 'self';",
+      "frame-ancestors 'none';",
+      `frame-src ${cspFrameSrc};`,
+      `connect-src ${connectSrc};`,
+      ...(isDev ? [] : ['upgrade-insecure-requests;']),
+    ]
+      .join(' ')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: csp,
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value:
+              'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+          },
+        ],
+      },
+      {
+        source: '/sw.js',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/javascript; charset=utf-8',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self'",
+          },
+        ],
+      },
+    ];
+  },
   compiler: {
     styledComponents: {
       ssr: true,

@@ -1,15 +1,22 @@
-"use client";
+'use client';
 
-import { useSessionTokens } from "@/entities/session/model/useSessionTokens";
-import { useHistoryFetch, useHistoryDetail, useHistoryActions } from "./hooks";
-import { HistoryHeader, HistoryFilters, HistoryList, HistoryDetailModal } from "./components";
-import { Page, Container } from "./styles";
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { useTranslation } from '@/shared/lib/useTranslation';
+import { Section } from '@/shared/ui';
+import { useHistoryFetch, useHistoryDetail, useHistoryActions } from './hooks';
+import {
+  HistoryHeader,
+  HistoryFilters,
+  HistoryList,
+  HistoryDetailModal,
+} from './components';
+import { Page, Container } from './styles';
 
 export function HistoryPage() {
   const { snapshot } = useSessionTokens();
-  const currentUserId = snapshot.userId ?? "";
+  const { t } = useTranslation();
+  const currentUserId = snapshot.userId ?? '';
 
-  // Data fetching
   const {
     entries,
     loading,
@@ -25,7 +32,6 @@ export function HistoryPage() {
     accessToken: snapshot.accessToken,
   });
 
-  // Detail modal
   const {
     selectedEntry,
     detail,
@@ -40,7 +46,6 @@ export function HistoryPage() {
     accessToken: snapshot.accessToken,
   });
 
-  // Actions (rematch, remove)
   const {
     participantSelection,
     handleToggleParticipant,
@@ -61,7 +66,7 @@ export function HistoryPage() {
   });
 
   const isHost = detail?.summary.host.id === currentUserId;
-  const hasFilters = Boolean(searchQuery || statusFilter !== "all");
+  const hasFilters = Boolean(searchQuery || statusFilter !== 'all');
 
   return (
     <>
@@ -73,12 +78,17 @@ export function HistoryPage() {
             onRefresh={refresh}
           />
 
-          <HistoryFilters
-            searchQuery={searchQuery}
-            statusFilter={statusFilter}
-            onSearchChange={setSearchQuery}
-            onStatusChange={setStatusFilter}
-          />
+          <Section
+            title={t('history.filters.title')}
+            description={t('history.filters.description')}
+          >
+            <HistoryFilters
+              searchQuery={searchQuery}
+              statusFilter={statusFilter}
+              onSearchChange={setSearchQuery}
+              onStatusChange={setStatusFilter}
+            />
+          </Section>
 
           <HistoryList
             entries={entries}

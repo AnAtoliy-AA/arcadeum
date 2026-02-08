@@ -18,6 +18,10 @@ const historyMessagesDefinition = {
       all: 'All Statuses',
       clear: 'Clear Filters',
     },
+    filters: {
+      title: 'Search & Filter',
+      description: 'Find games by name, participant, or status',
+    },
     pagination: {
       showing: 'Showing {{count}} of {{total}} games',
       loadMore: 'Load More',
@@ -71,6 +75,10 @@ const historyMessagesDefinition = {
       emptyNoEntries: 'Aún no hay historial de juegos',
       emptySignedOut: 'Inicia sesión para ver tu historial de juegos',
     },
+    filters: {
+      title: 'Buscar y Filtrar',
+      description: 'Encuentra juegos por nombre, participante o estado',
+    },
     status: {
       lobby: 'Sala de espera',
       in_progress: 'En progreso',
@@ -83,6 +91,10 @@ const historyMessagesDefinition = {
     list: {
       emptyNoEntries: 'Aucun historique de jeu pour le moment',
       emptySignedOut: 'Connectez-vous pour voir votre historique de jeu',
+    },
+    filters: {
+      title: 'Rechercher et Filtrer',
+      description: 'Trouvez des jeux par nom, participant ou statut',
     },
     status: {
       lobby: "Salon d'attente",
@@ -108,6 +120,10 @@ const historyMessagesDefinition = {
       label: 'Фильтр по статусу',
       all: 'Все статусы',
       clear: 'Очистить фильтры',
+    },
+    filters: {
+      title: 'Поиск и фильтрация',
+      description: 'Найдите игры по названию, участнику или статусу',
     },
     pagination: {
       showing: 'Показано {{count}} из {{total}} игр',
@@ -173,6 +189,10 @@ const historyMessagesDefinition = {
       label: 'Фільтр па статусе',
       all: 'Усе статусы',
       clear: 'Ачысціць фільтры',
+    },
+    filters: {
+      title: 'Пошук і фільтрацыя',
+      description: 'Знайдзіце гульні па назве, удзельніку або статусе',
     },
     pagination: {
       showing: 'Паказана {{count}} з {{total}} гульняў',

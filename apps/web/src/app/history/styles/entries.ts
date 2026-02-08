@@ -4,11 +4,11 @@ import { Card, Badge } from '@/shared/ui';
 export const EntriesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1rem;
+  gap: 1.25rem;
 `;
 
 export const EntryCard = styled(Card).attrs({
-  variant: 'default',
+  variant: 'elevated',
   padding: 'md',
   interactive: true,
 })`
@@ -56,12 +56,15 @@ export const EntryRoomName = styled.div`
 
 export const EntryStatus = styled(Badge).attrs({ variant: 'info', size: 'sm' })`
   border-radius: 999px;
+  flex-shrink: 0;
 `;
 
 export const EntryMeta = styled.div`
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+  font-size: 0.875rem;
+  color: ${({ theme }) => theme.text.secondary};
 `;
 
 export const EntryFooter = styled.div`
@@ -69,7 +72,9 @@ export const EntryFooter = styled.div`
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  margin-top: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid ${({ theme }) => theme.surfaces.card.border}40;
 `;
 
 export const EntryTimestamp = styled.div`
@@ -81,4 +86,9 @@ export const EntryViewDetails = styled.div`
   font-size: 0.875rem;
   font-weight: 600;
   color: ${({ theme }) => theme.buttons.primary.gradientStart};
+  transition: opacity 0.2s ease;
+
+  ${EntryCard}:hover & {
+    opacity: 0.8;
+  }
 `;

@@ -56,6 +56,14 @@ const authMessagesDefinition = {
         passwordMismatch: 'Passwords do not match.',
         usernameTooShort: 'Username must be at least 3 characters.',
         invalidEmail: 'Please enter a valid email address.',
+        usernameTaken: 'This username is already taken.',
+        emailTaken: 'This email is already registered.',
+        invalidCredentials: 'Invalid email or password.',
+        unknownError: 'An error occurred. Please try again.',
+      },
+      availability: {
+        checking: 'Checking...',
+        available: 'Available',
       },
     },
     oauth: {
@@ -131,6 +139,14 @@ const authMessagesDefinition = {
         usernameTooShort:
           'El nombre de usuario debe tener al menos 3 caracteres.',
         invalidEmail: 'Por favor, introduce una dirección de correo válida.',
+        usernameTaken: 'Este nombre de usuario ya está en uso.',
+        emailTaken: 'Este correo electrónico ya está registrado.',
+        invalidCredentials: 'Correo electrónico o contraseña inválidos.',
+        unknownError: 'Ocurrió un error. Por favor, inténtalo de nuevo.',
+      },
+      availability: {
+        checking: 'Comprobando...',
+        available: 'Disponible',
       },
     },
     oauth: {
@@ -206,6 +222,14 @@ const authMessagesDefinition = {
         usernameTooShort:
           "Le nom d'utilisateur doit comporter au moins 3 caractères.",
         invalidEmail: 'Veuillez saisir une adresse e-mail valide.',
+        usernameTaken: "Ce nom d'utilisateur est déjà pris.",
+        emailTaken: 'Cet e-mail est déjà enregistré.',
+        invalidCredentials: 'E-mail ou mot de passe invalide.',
+        unknownError: 'Une erreur est survenue. Veuillez réessayer.',
+      },
+      availability: {
+        checking: 'Vérification...',
+        available: 'Disponible',
       },
     },
     oauth: {
@@ -280,6 +304,14 @@ const authMessagesDefinition = {
         passwordMismatch: 'Пароли не совпадают.',
         usernameTooShort: 'Имя пользователя должно быть не менее 3 символов.',
         invalidEmail: 'Пожалуйста, введите корректный адрес электронной почты.',
+        usernameTaken: 'Это имя пользователя уже занято.',
+        emailTaken: 'Этот email уже зарегистрирован.',
+        invalidCredentials: 'Неверный email или пароль.',
+        unknownError: 'Произошла ошибка. Пожалуйста, попробуйте снова.',
+      },
+      availability: {
+        checking: 'Проверка...',
+        available: 'Доступно',
       },
     },
     oauth: {
@@ -355,6 +387,14 @@ const authMessagesDefinition = {
         usernameTooShort:
           'Імя карыстальніка павінна быць не менш за 3 сімвалы.',
         invalidEmail: 'Калі ласка, увядзіце карэктны адрас электроннай пошты.',
+        usernameTaken: 'Гэтае імя карыстальніка ўжо занята.',
+        emailTaken: 'Гэты email ўжо зарэгістраваны.',
+        invalidCredentials: 'Няправільны email ці пароль.',
+        unknownError: 'Адбылася памылка. Калі ласка, паспрабуйце яшчэ раз.',
+      },
+      availability: {
+        checking: 'Праверка...',
+        available: 'Даступна',
       },
     },
     oauth: {

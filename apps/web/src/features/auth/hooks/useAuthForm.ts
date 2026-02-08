@@ -4,11 +4,16 @@ import {
   useCallback,
   useEffect,
   useId,
+  useRef,
   useState,
 } from 'react';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useLocalAuth } from '@/entities/session/model/useLocalAuth';
 import { useOAuth } from '@/entities/session/model/useOAuth';
+import {
+  checkUsernameAvailable,
+  checkEmailAvailable,
+} from '@/entities/session/api/authApi';
 import { sanitizeUsername, scheduleStateUpdate } from '../lib/utils';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -51,6 +56,16 @@ export function useAuthForm() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [username, setUsername] = useState(storedUsername ?? '');
 
+  const [usernameAvailability, setUsernameAvailability] = useState<
+    'idle' | 'checking' | 'available' | 'taken'
+  >('idle');
+  const [emailAvailability, setEmailAvailability] = useState<
+    'idle' | 'checking' | 'available' | 'taken'
+  >('idle');
+
+  const usernameCheckRef = useRef<number>(0);
+  const emailCheckRef = useRef<number>(0);
+
   const isRegisterMode = mode === 'register';
 
   // Sync stored values
@@ -81,6 +96,7 @@ export function useAuthForm() {
   // Handlers
   const handleEmailChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
+    setEmailAvailability('idle');
   }, []);
 
   const handlePasswordChange = useCallback(
@@ -100,9 +116,44 @@ export function useAuthForm() {
   const handleUsernameChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setUsername(sanitizeUsername(e.target.value));
+      setUsernameAvailability('idle');
     },
     [],
   );
+
+  const handleUsernameBlur = useCallback(async () => {
+    const trimmed = username.trim();
+    if (!isRegisterMode || trimmed.length < 3) return;
+
+    const checkId = ++usernameCheckRef.current;
+    setUsernameAvailability('checking');
+
+    try {
+      const result = await checkUsernameAvailable(trimmed);
+      if (checkId !== usernameCheckRef.current) return;
+      setUsernameAvailability(result.available ? 'available' : 'taken');
+    } catch {
+      if (checkId !== usernameCheckRef.current) return;
+      setUsernameAvailability('idle');
+    }
+  }, [username, isRegisterMode]);
+
+  const handleEmailBlur = useCallback(async () => {
+    const trimmed = email.trim();
+    if (!isRegisterMode || !EMAIL_REGEX.test(trimmed)) return;
+
+    const checkId = ++emailCheckRef.current;
+    setEmailAvailability('checking');
+
+    try {
+      const result = await checkEmailAvailable(trimmed);
+      if (checkId !== emailCheckRef.current) return;
+      setEmailAvailability(result.available ? 'available' : 'taken');
+    } catch {
+      if (checkId !== emailCheckRef.current) return;
+      setEmailAvailability('idle');
+    }
+  }, [email, isRegisterMode]);
 
   const handleToggleMode = useCallback(() => {
     toggleMode();
@@ -130,7 +181,9 @@ export function useAuthForm() {
     !password ||
     (isRegisterMode && (!trimmedUsername || !confirmPassword)) ||
     showPasswordMismatch ||
-    showUsernameTooShort;
+    showUsernameTooShort ||
+    (isRegisterMode && usernameAvailability === 'taken') ||
+    (isRegisterMode && emailAvailability === 'taken');
 
   const handleLocalSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
@@ -214,6 +267,8 @@ export function useAuthForm() {
     showUsernameTooShort,
     showInvalidEmail,
     isEmailValid,
+    usernameAvailability,
+    emailAvailability,
 
     // OAuth state
     oauthLoading,
@@ -227,6 +282,8 @@ export function useAuthForm() {
     handlePasswordChange,
     handleConfirmChange,
     handleUsernameChange,
+    handleUsernameBlur,
+    handleEmailBlur,
     handleToggleMode,
     handleLocalSubmit,
     handleStartOAuth,

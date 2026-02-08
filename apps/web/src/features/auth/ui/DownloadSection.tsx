@@ -8,22 +8,28 @@ import {
 } from './styles';
 import { usePlatform } from '@/shared/hooks/usePlatform';
 
-interface DownloadSectionProps {
-  title: string;
-  description: string;
-  iosLabel: string;
-  androidLabel: string;
+export interface DownloadSectionLabels {
+  downloadsTitle: string;
+  downloadsDescription: string;
+  downloadsIosLabel: string;
+  downloadsAndroidLabel: string;
+}
+
+export interface DownloadSectionConfig {
   iosHref: string | null | undefined;
   androidHref: string | null | undefined;
 }
 
-export function DownloadSection({
-  title,
-  description,
-  iosLabel,
-  iosHref,
-  androidHref,
-}: DownloadSectionProps) {
+interface DownloadSectionProps {
+  labels: DownloadSectionLabels;
+  config: DownloadSectionConfig;
+}
+
+export function DownloadSection({ labels, config }: DownloadSectionProps) {
+  const { downloadsTitle, downloadsDescription, downloadsIosLabel } = labels;
+
+  const { iosHref, androidHref } = config;
+
   const hasLinks = Boolean(iosHref || androidHref);
   const { isIos: _isIos, isAndroid } = usePlatform();
 
@@ -33,8 +39,8 @@ export function DownloadSection({
 
   return (
     <DownloadSectionWrapper>
-      <DownloadTitle>{title}</DownloadTitle>
-      <DownloadDescription>{description}</DownloadDescription>
+      <DownloadTitle>{downloadsTitle}</DownloadTitle>
+      <DownloadDescription>{downloadsDescription}</DownloadDescription>
       <DownloadButtons>
         {iosHref && !isAndroid ? (
           <DownloadButton
@@ -43,19 +49,9 @@ export function DownloadSection({
             rel="noopener noreferrer"
           >
             <DownloadIcon aria-hidden="true">↓</DownloadIcon>
-            <span>{iosLabel}</span>
+            <span>{downloadsIosLabel}</span>
           </DownloadButton>
         ) : null}
-        {/* {androidHref && !isIos ? (
-          <DownloadButton
-            href={androidHref}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DownloadIcon aria-hidden="true">↓</DownloadIcon>
-            <span>{androidLabel}</span>
-          </DownloadButton>
-        ) : null} */}
       </DownloadButtons>
     </DownloadSectionWrapper>
   );

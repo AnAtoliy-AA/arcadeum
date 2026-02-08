@@ -74,6 +74,9 @@ const settingsMessagesDefinition = {
     blockedUsersLoading: 'Loading...',
     blockedUsersEmpty: 'No blocked users',
     blockedUsersUnblock: 'Unblock',
+    aboutTitle: 'About',
+    aboutDescription: 'Application information and version details.',
+    versionLabel: 'Version',
   },
   es: {
     title: 'Configuración',
@@ -141,6 +144,9 @@ const settingsMessagesDefinition = {
     blockedUsersLoading: 'Cargando...',
     blockedUsersEmpty: 'No hay usuarios bloqueados',
     blockedUsersUnblock: 'Desbloquear',
+    aboutTitle: 'Acerca de',
+    aboutDescription: 'Información de la aplicación y detalles de la versión.',
+    versionLabel: 'Versión',
   },
   fr: {
     title: 'Paramètres',
@@ -207,6 +213,9 @@ const settingsMessagesDefinition = {
     blockedUsersLoading: 'Chargement...',
     blockedUsersEmpty: 'Aucun utilisateur bloqué',
     blockedUsersUnblock: 'Débloquer',
+    aboutTitle: 'À propos',
+    aboutDescription: "Informations sur l'application et détails de la version.",
+    versionLabel: 'Version',
   },
   ru: {
     title: 'Настройки',
@@ -273,6 +282,9 @@ const settingsMessagesDefinition = {
     blockedUsersLoading: 'Загрузка...',
     blockedUsersEmpty: 'Нет заблокированных пользователей',
     blockedUsersUnblock: 'Разблокировать',
+    aboutTitle: 'О приложении',
+    aboutDescription: 'Информация о приложении и версии.',
+    versionLabel: 'Версия',
   },
   be: {
     title: 'Налады',
@@ -339,6 +351,9 @@ const settingsMessagesDefinition = {
     blockedUsersLoading: 'Загрузка...',
     blockedUsersEmpty: 'Няма заблакаваных карыстальнікаў',
     blockedUsersUnblock: 'Разблакаваць',
+    aboutTitle: 'Пра праграму',
+    aboutDescription: 'Інфармацыя пра праграму і версію.',
+    versionLabel: 'Версія',
   },
 } satisfies Record<Locale, Record<string, unknown>>;
 

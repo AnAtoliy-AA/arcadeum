@@ -12,6 +12,7 @@ import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
 import type { ThemePreference } from '@/shared/config/theme';
 import { PageLayout, PageTitle, Section, Card } from '@/shared/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { appConfig } from '@/shared/config/app-config';
 
 import {
   Container,
@@ -31,6 +32,7 @@ import {
   ToggleRow,
   ToggleLabel,
   ToggleInput,
+  VersionText,
 } from './styles';
 
 import { BlockedUsersSection } from './BlockedUsersSection';
@@ -74,32 +76,32 @@ const DEFAULT_THEME_OPTIONS: Array<{
   label: string;
   description: string;
 }> = [
-  {
-    code: 'system',
-    label: 'Match system appearance',
-    description: 'Follow your operating system preference automatically.',
-  },
-  {
-    code: 'light',
-    label: 'Light',
-    description: 'Bright neutrals with airy surfaces and subtle gradients.',
-  },
-  {
-    code: 'dark',
-    label: 'Dark',
-    description: 'Contemporary midnight palette ideal for low-light play.',
-  },
-  {
-    code: 'neonLight',
-    label: 'Neon Light',
-    description: 'Arcade-inspired glow with luminous panels and neon edges.',
-  },
-  {
-    code: 'neonDark',
-    label: 'Neon Dark',
-    description: 'High-contrast vaporwave styling for dramatic game tables.',
-  },
-];
+    {
+      code: 'system',
+      label: 'Match system appearance',
+      description: 'Follow your operating system preference automatically.',
+    },
+    {
+      code: 'light',
+      label: 'Light',
+      description: 'Bright neutrals with airy surfaces and subtle gradients.',
+    },
+    {
+      code: 'dark',
+      label: 'Dark',
+      description: 'Contemporary midnight palette ideal for low-light play.',
+    },
+    {
+      code: 'neonLight',
+      label: 'Neon Light',
+      description: 'Arcade-inspired glow with luminous panels and neon edges.',
+    },
+    {
+      code: 'neonDark',
+      label: 'Neon Dark',
+      description: 'High-contrast vaporwave styling for dramatic game tables.',
+    },
+  ];
 
 const LANGUAGE_LABELS: Record<Locale, string> = {
   en: 'English',
@@ -122,6 +124,7 @@ export default function SettingsContent({
   const { t } = useTranslation();
   const settingsCopy = messages.settings ?? {};
   const { snapshot, hydrated } = useSessionTokens();
+  const { appVersion } = appConfig;
 
   const pageTitle = settingsCopy.title ?? SETTINGS_TITLE_FALLBACK;
 
@@ -206,6 +209,11 @@ export default function SettingsContent({
   const gameplayDescription =
     settingsCopy.gameplayDescription ?? 'Customize your in-game experience.';
   const hapticsLabel = settingsCopy.hapticsLabel ?? 'Haptic Feedback';
+
+  const aboutTitle = settingsCopy.aboutTitle ?? 'About';
+  const aboutDescription =
+    settingsCopy.aboutDescription ?? 'Application information and version details.';
+  const versionLabel = settingsCopy.versionLabel ?? 'Version';
 
   const handleThemeSelect = useCallback(
     (code: ThemePreference) => {
@@ -343,6 +351,14 @@ export default function SettingsContent({
                 </AccountActions>
               </>
             )}
+          </Card>
+        </Section>
+
+        <Section title={aboutTitle} description={aboutDescription}>
+          <Card variant="elevated" padding="md">
+            <AccountStatus as="div" role="status" data-testid="app-version">
+              {versionLabel}: <VersionText>v{appVersion}</VersionText>
+            </AccountStatus>
           </Card>
         </Section>
       </Container>

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { GameSession } from '../schemas/game-session.schema';
@@ -10,16 +10,17 @@ import {
   GroupedHistorySummary,
   GameHistoryStatus,
 } from './game-history.types';
-import { CriticalState } from '../critical/critical.state';
-import { TexasHoldemState } from '../texas-holdem/texas-holdem.state';
-
 import { BaseGameState } from '../engines/base/game-engine.interface';
+import { GameEngineRegistry } from '../engines/registry/game-engine.registry';
 
 @Injectable()
 export class GameHistoryBuilderService {
+  private readonly logger = new Logger(GameHistoryBuilderService.name);
+
   constructor(
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
+    private readonly engineRegistry: GameEngineRegistry,
   ) {}
 
   async buildHistoryList(
@@ -155,28 +156,28 @@ export class GameHistoryBuilderService {
   extractWinners(session: GameSession): string[] {
     const baseState = session.state as unknown as BaseGameState;
 
-    // Try to extract winners from state
+    // 1. Try to extract winners from persisted state (fastest/safest)
     if (baseState.winners && Array.isArray(baseState.winners)) {
       return baseState.winners as string[];
     }
 
-    // For exploding cats, find alive players
-    if (session.gameId.includes('exploding')) {
-      const state = session.state as unknown as CriticalState;
-      return state.players?.filter((p) => p.alive).map((p) => p.playerId) || [];
+    // Check for singular winnerId (common pattern for Sea Battle, etc.)
+    if (typeof baseState.winnerId === 'string') {
+      return [baseState.winnerId];
     }
 
-    // For poker, find players with highest stack
-    if (session.gameId.includes('holdem')) {
-      const state = session.state as unknown as TexasHoldemState;
-      const players = state.players || [];
-      if (players.length === 0) return [];
-
-      const maxStack = Math.max(...players.map((p) => p.stack || 0));
-      return players.filter((p) => p.stack === maxStack).map((p) => p.playerId);
+    // 2. Delegate to game engine logic if persisted state is insufficient
+    try {
+      const engine = this.engineRegistry.getEngine(session.gameId);
+      return engine.getWinners(baseState);
+    } catch (e: unknown) {
+      // If engine not found (e.g. removed game, version mismatch), log warning
+      const errorMessage = e instanceof Error ? e.message : String(e);
+      this.logger.warn(
+        `Could not extract winners for game ${session.gameId}: ${errorMessage}`,
+      );
+      return [];
     }
-
-    return [];
   }
 
   private mapSessionStatus(status: string): GameHistoryStatus {

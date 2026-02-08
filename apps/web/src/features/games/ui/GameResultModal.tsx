@@ -4,6 +4,8 @@ import styled, { keyframes, css } from 'styled-components';
 import { Button } from '@/shared/ui';
 import { useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
+import { TranslationKey } from '@/shared/lib/useTranslation';
+import { Modal, CloseButton, ModalButton } from './SharedModalStyles';
 
 // --- Types ---
 
@@ -13,7 +15,7 @@ interface GameResultModalProps {
   onRematch?: () => void;
   onClose?: () => void;
   rematchLoading?: boolean;
-  t: (key: string) => string;
+  t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
 
 // --- Component ---
@@ -37,7 +39,7 @@ export function GameResultModal({
   const isVictory = result === 'victory';
 
   return createPortal(
-    <Overlay $isOpen={isOpen}>
+    <Modal style={{ background: 'transparent' }}>
       <Backdrop $isVictory={isVictory} />
 
       <ContentContainer $show={isOpen}>
@@ -48,16 +50,14 @@ export function GameResultModal({
         )}
         <ResultTitle $isVictory={isVictory}>
           <span className="emoji">{isVictory ? '🏆' : '💀'}</span>
-          <span className="text">{t(`games.table.${result}.title`)}</span>
+          <span className="text">
+            {t(`games.table.${result}.title` as TranslationKey)}
+          </span>
         </ResultTitle>
-        <div
-          data-testid="debug-info"
-          style={{ fontSize: '10px', opacity: 0.5 }}
-        >
-          onRematch: {onRematch ? 'YES' : 'NO'} | Loading:{' '}
-          {rematchLoading ? 'YES' : 'NO'}
-        </div>
-        <ResultMessage>{t(`games.table.${result}.message`)}</ResultMessage>
+
+        <ResultMessage>
+          {t(`games.table.${result}.message` as TranslationKey)}
+        </ResultMessage>
 
         <Actions>
           {onRematch && (
@@ -79,15 +79,15 @@ export function GameResultModal({
           </HomeButton>
 
           {onClose && (
-            <CloseButton onClick={onClose}>
-              {t('games.table.modals.common.close')}
-            </CloseButton>
+            <ModalButton variant="ghost" onClick={onClose}>
+              {t('games.table.modals.common.close' as TranslationKey)}
+            </ModalButton>
           )}
         </Actions>
       </ContentContainer>
 
       {isVictory && <ConfettiContainer />}
-    </Overlay>,
+    </Modal>,
     document.body,
   );
 }
@@ -107,21 +107,6 @@ const float = keyframes`
 `;
 
 // --- Styled Components ---
-
-const Overlay = styled.div<{ $isOpen: boolean }>`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: ${(props) => (props.$isOpen ? 1 : 0)};
-  pointer-events: ${(props) => (props.$isOpen ? 'all' : 'none')};
-  transition: opacity 0.5s ease-in-out;
-`;
 
 const Backdrop = styled.div<{ $isVictory: boolean }>`
   position: absolute;
@@ -230,15 +215,6 @@ const HomeButton = styled.a`
 
   &:hover {
     color: rgba(255, 255, 255, 0.9);
-  }
-`;
-
-const CloseButton = styled(Button).attrs({
-  variant: 'icon',
-  size: 'sm',
-})`
-  &:hover:not(:disabled) {
-    transform: rotate(90deg);
   }
 `;
 

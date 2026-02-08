@@ -149,7 +149,7 @@ export default function SeaBattleGame({
     }
   }, [isGameOver, isHost]);
 
-  const { isWinner: _isWinner } = useSeaBattleState({
+  const { isWinner } = useSeaBattleState({
     roomId,
     currentUserId,
     initialSession,
@@ -185,6 +185,12 @@ export default function SeaBattleGame({
 
   const currentVariant = SEA_BATTLE_VARIANTS.find((v) => v.id === cardVariant);
   const variantLabel = currentVariant ? `(${currentVariant.name})` : '';
+
+  const gameResult = React.useMemo(() => {
+    if (!isGameOver) return null;
+    if (isWinner || snapshot?.winnerId === currentUserId) return 'victory';
+    return 'defeat';
+  }, [isGameOver, isWinner, snapshot?.winnerId, currentUserId]);
 
   return (
     <GameLayout
@@ -254,12 +260,7 @@ export default function SeaBattleGame({
             turnStatus={isMyTurn ? 'Your Turn' : 'Standard'}
             resolveDisplayName={resolveDisplayName}
             formatLogMessage={formatLogMessage}
-            t={
-              t as unknown as (
-                key: string,
-                params?: Record<string, string | number>,
-              ) => string
-            }
+            t={t}
             cardVariant={cardVariant}
             onClose={handleToggleChat}
           />
@@ -290,22 +291,11 @@ export default function SeaBattleGame({
       )}
       <GameResultModal
         isOpen={showResultModal && !!(isGameOver || snapshot?.winnerId)}
-        result={
-          isGameOver
-            ? snapshot?.winnerId === currentUserId
-              ? 'victory'
-              : 'defeat'
-            : null
-        }
+        result={gameResult}
         onRematch={isHost ? openRematchModal : undefined}
         onClose={() => setShowResultModal(false)}
         rematchLoading={rematchLoading}
-        t={
-          t as unknown as (
-            key: string,
-            params?: Record<string, string | number>,
-          ) => string
-        }
+        t={t}
       />
 
       <RematchModal
@@ -324,12 +314,7 @@ export default function SeaBattleGame({
         rematchLoading={rematchLoading}
         onClose={closeRematchModal}
         onConfirm={handleRematch}
-        t={
-          t as unknown as (
-            key: string,
-            params?: Record<string, string | number>,
-          ) => string
-        }
+        t={t}
         cardVariant={cardVariant}
       />
 
@@ -345,12 +330,7 @@ export default function SeaBattleGame({
         onBlockRematch={handleBlockRematch}
         onBlockUser={handleBlockUser}
         accepting={isAcceptingInvitation}
-        t={
-          t as unknown as (
-            key: string,
-            params?: Record<string, string | number>,
-          ) => string
-        }
+        t={t}
         cardVariant={cardVariant}
       />
     </GameLayout>

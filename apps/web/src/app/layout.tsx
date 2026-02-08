@@ -24,6 +24,9 @@ export const metadata: Metadata = {
   title: appConfig.seoTitle,
   description: appConfig.seoDescription,
   manifest: '/manifest.json',
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 export const viewport: Viewport = {

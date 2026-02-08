@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useMemo } from 'react';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -92,6 +93,13 @@ export function Header() {
       <HeaderContainer>
         <HeaderInner>
           <Logo href="/" onClick={closeMobileMenu}>
+            <Image
+              src="/logo.png"
+              alt={appConfig.appName}
+              width={32}
+              height={32}
+              priority
+            />
             {appConfig.appName}
           </Logo>
 

@@ -2,7 +2,14 @@
 
 import React, { useState, useMemo } from 'react';
 import styled from 'styled-components';
-import { Button } from '@/shared/ui';
+import {
+  Button,
+  PageLayout,
+  Container as SharedContainer,
+  Select,
+  ErrorState,
+  EmptyState,
+} from '@/shared/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useStats } from './hooks/useStats';
@@ -13,12 +20,10 @@ import {
   GameBreakdown,
   Leaderboard,
 } from './components';
-import { Page, Container } from './styles';
 import { getAllSupportedGameIds } from '@/features/games/lib/gameIdMapping';
 
 type TabType = 'my-stats' | 'leaderboard';
 
-// Display names for game IDs
 const GAME_DISPLAY_NAMES: Record<string, string> = {
   critical_v1: 'Critical',
 };
@@ -40,7 +45,6 @@ export function StatsPage() {
     refresh: refreshLeaderboard,
   } = useLeaderboard(selectedGame || undefined);
 
-  // Build game options dynamically from supported games
   const gameOptions = useMemo(() => {
     const supportedGames = getAllSupportedGameIds();
     return [
@@ -61,7 +65,7 @@ export function StatsPage() {
   };
 
   return (
-    <Page>
+    <PageLayout>
       <Container>
         <StatsHeader
           loading={activeTab === 'my-stats' ? loading : leaderboardLoading}
@@ -69,25 +73,29 @@ export function StatsPage() {
           onRefresh={handleRefresh}
         />
 
-        <TabContainer>
-          <Tab
+        <TabGroup role="group" aria-label={t('stats.myStatsTab')}>
+          <TabButton
             $active={activeTab === 'my-stats'}
             onClick={() => setActiveTab('my-stats')}
+            aria-pressed={activeTab === 'my-stats'}
           >
             {t('stats.myStatsTab')}
-          </Tab>
-          <Tab
+          </TabButton>
+          <TabButton
             $active={activeTab === 'leaderboard'}
             onClick={() => setActiveTab('leaderboard')}
+            aria-pressed={activeTab === 'leaderboard'}
           >
             {t('stats.leaderboardTab')}
-          </Tab>
-        </TabContainer>
+          </TabButton>
+        </TabGroup>
 
         {error && (
-          <div style={{ color: '#ef4444', marginBottom: '1rem' }}>
-            {t('stats.errorLoading')}: {error}
-          </div>
+          <ErrorState
+            title={t('stats.errorLoading')}
+            message={error}
+            onRetry={handleRefresh}
+          />
         )}
 
         {activeTab === 'my-stats' ? (
@@ -97,15 +105,13 @@ export function StatsPage() {
               <GameBreakdown stats={stats} loading={loading} />
             </>
           ) : (
-            <div style={{ textAlign: 'center', marginTop: '4rem' }}>
-              <h2>{t('stats.loginRequired')}</h2>
-            </div>
+            <EmptyState icon="🔒" message={t('stats.loginRequired')} />
           )
         ) : (
           <>
             <FilterContainer>
               <FilterLabel>{t('stats.filterByGame')}</FilterLabel>
-              <GameSelect
+              <Select
                 value={selectedGame}
                 onChange={(e) => setSelectedGame(e.target.value)}
               >
@@ -114,7 +120,7 @@ export function StatsPage() {
                     {option.label}
                   </option>
                 ))}
-              </GameSelect>
+              </Select>
             </FilterContainer>
             <Leaderboard
               leaderboard={leaderboard}
@@ -127,48 +133,44 @@ export function StatsPage() {
           </>
         )}
       </Container>
-    </Page>
+    </PageLayout>
   );
 }
 
-const TabContainer = styled.div`
+const Container = styled(SharedContainer)`
+  max-width: 1200px;
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-  border-bottom: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  padding-bottom: 0.5rem;
+  flex-direction: column;
+  gap: 1.5rem;
 `;
 
-const Tab = styled(Button).attrs<{ $active: boolean }>(({ $active }) => ({
-  variant: 'chip',
+const TabGroup = styled.div`
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+`;
+
+const TabButton = styled(Button).attrs<{ $active: boolean }>(({ $active }) => ({
+  variant: $active ? 'primary' : 'chip',
   size: 'md',
-  $active,
-}))<{ $active: boolean }>``;
+  active: $active,
+}))<{ $active: boolean }>`
+  min-width: 120px;
+  justify-content: center;
+`;
 
 const FilterContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  padding: 1rem 1.5rem;
+  background: ${({ theme }) => theme.surfaces.panel.background};
+  border: 1px solid ${({ theme }) => theme.surfaces.panel.border};
+  border-radius: 16px;
+  backdrop-filter: blur(14px);
 `;
 
 const FilterLabel = styled.label`
   font-weight: 500;
   color: ${({ theme }) => theme.text.secondary};
-`;
-
-const GameSelect = styled.select`
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.primary};
-  font-size: 0.95rem;
-  cursor: pointer;
-  min-width: 180px;
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  }
 `;

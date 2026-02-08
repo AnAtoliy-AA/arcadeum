@@ -1,7 +1,9 @@
+'use client';
+
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { Button } from '@/shared/ui';
+import { PageTitle, Button } from '@/shared/ui';
 
 interface StatsHeaderProps {
   loading: boolean;
@@ -18,7 +20,9 @@ export function StatsHeader({
 
   return (
     <Header>
-      <Title>{t('navigation.statsTab')}</Title>
+      <PageTitle size="xl" gradient>
+        {t('stats.pageTitle')}
+      </PageTitle>
       <Button
         variant="icon"
         size="sm"
@@ -44,13 +48,6 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
-`;
-
-const Title = styled.h1`
-  font-size: 2rem;
-  font-weight: 700;
-  color: ${({ theme }) => theme.text.primary};
-  margin: 0;
 `;
 
 const spin = keyframes`

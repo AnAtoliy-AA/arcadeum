@@ -10,6 +10,8 @@ import {
   ModalButton,
 } from './SharedModalStyles';
 
+import { TranslationKey } from '@/shared/lib/useTranslation';
+
 interface RematchInvitationModalProps {
   isOpen: boolean;
   hostName: string;
@@ -22,7 +24,7 @@ interface RematchInvitationModalProps {
   onBlockRematch?: (roomId: string) => void;
   onBlockUser?: (hostId: string) => void;
   accepting: boolean;
-  t: (key: string) => string;
+  t: (key: TranslationKey, params?: Record<string, string | number>) => string;
   cardVariant?: string;
 }
 

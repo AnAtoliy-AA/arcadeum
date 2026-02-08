@@ -324,6 +324,8 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         state.logs.push(
           this.createLogEntry('system', 'A player has been eliminated!'),
         );
+
+        this.checkAndSetWinner(state);
       }
     } else {
       target.board[row][col] = CELL_STATE.MISS;
@@ -427,8 +429,19 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       newState.logs.push(
         this.createLogEntry('system', 'A player has left the game'),
       );
+      this.checkAndSetWinner(newState);
     }
 
     return this.successResult(newState);
+  }
+
+  private checkAndSetWinner(state: SeaBattleState): void {
+    const alivePlayers = state.players.filter((p) => p.alive);
+    if (alivePlayers.length === 1) {
+      state.winnerId = alivePlayers[0].playerId;
+      state.logs.push(
+        this.createLogEntry('system', 'Game Over! We have a winner!'),
+      );
+    }
   }
 }

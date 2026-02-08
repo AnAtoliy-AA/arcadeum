@@ -10,6 +10,8 @@ import {
   ModalButton,
 } from './SharedModalStyles';
 
+import { TranslationKey } from '@/shared/lib/useTranslation';
+
 interface PlayerInfo {
   playerId: string;
   displayName: string;
@@ -23,7 +25,7 @@ interface RematchModalProps {
   rematchLoading: boolean;
   onClose: () => void;
   onConfirm: (selectedPlayerIds: string[], message?: string) => void;
-  t: (key: string) => string;
+  t: (key: TranslationKey, params?: Record<string, string | number>) => string;
   cardVariant?: string;
 }
 

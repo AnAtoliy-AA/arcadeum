@@ -20,22 +20,10 @@ import {
   CalloutDetail,
 } from './styles';
 
-interface LocalAuthPanelProps {
-  badge: string;
-  title: string;
-  subtitle: string;
-  isRegisterMode: boolean;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  username: string;
-  loading: boolean;
-  error: string | null;
-  submitDisabled: boolean;
-  emailFieldId: string;
-  passwordFieldId: string;
-  confirmFieldId: string;
-  usernameFieldId: string;
+export interface LocalAuthPanelLabels {
+  localBadge: string;
+  localHeading: string;
+  localSubtitle: string;
   emailLabel: string;
   passwordLabel: string;
   confirmPasswordLabel: string;
@@ -46,79 +34,126 @@ interface LocalAuthPanelProps {
   logoutLabel: string;
   passwordMismatchMessage: string;
   usernameTooShortMessage: string;
-  showPasswordMismatch: boolean;
-  showUsernameTooShort: boolean;
+  invalidEmailMessage: string;
   processingStatusLabel: string;
   statusActiveMessage: string;
-  displayNameLabel: string;
+  sessionDetailLabels: {
+    displayName: string;
+  };
+  usernameAvailabilityMessages: {
+    checking: string;
+    available: string;
+    taken: string;
+  };
+  emailAvailabilityMessages: {
+    checking: string;
+    available: string;
+    taken: string;
+  };
+}
+
+export interface LocalAuthPanelForm {
+  isRegisterMode: boolean;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  username: string;
+  localLoading: boolean;
+  localError: string | null;
+  localSubmitDisabled: boolean;
+  emailFieldId: string;
+  passwordFieldId: string;
+  confirmFieldId: string;
+  usernameFieldId: string;
+  showPasswordMismatch: boolean;
+  showUsernameTooShort: boolean;
   showInvalidEmail: boolean;
-  invalidEmailMessage: string;
-  accessToken: string | null;
+  usernameAvailability: 'idle' | 'checking' | 'available' | 'taken';
+  emailAvailability: 'idle' | 'checking' | 'available' | 'taken';
+  localAccessToken: string | null;
   storedEmail: string | null;
   storedUsername: string | null;
   storedDisplayName: string | null;
-  onEmailChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onPasswordChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onConfirmChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onUsernameChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
-  onToggleMode: () => void;
-  onLogout: () => void;
+  handleEmailChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handlePasswordChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleConfirmChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleUsernameChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleUsernameBlur: () => void;
+  handleEmailBlur: () => void;
+  handleLocalSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  handleToggleMode: () => void;
+  logoutLocal: () => void;
 }
 
-export function LocalAuthPanel({
-  badge,
-  title,
-  subtitle,
-  isRegisterMode,
-  email,
-  password,
-  confirmPassword,
-  username,
-  loading,
-  error,
-  submitDisabled,
-  emailFieldId,
-  passwordFieldId,
-  confirmFieldId,
-  usernameFieldId,
-  emailLabel,
-  passwordLabel,
-  confirmPasswordLabel,
-  usernameLabel,
-  helperText,
-  submitLabel,
-  toggleLabel,
-  logoutLabel,
-  passwordMismatchMessage,
-  usernameTooShortMessage,
-  showPasswordMismatch,
-  showUsernameTooShort,
-  processingStatusLabel,
-  statusActiveMessage,
-  displayNameLabel,
-  showInvalidEmail,
-  invalidEmailMessage,
-  accessToken,
-  storedEmail,
-  storedUsername,
-  storedDisplayName,
-  onEmailChange,
-  onPasswordChange,
-  onConfirmChange,
-  onUsernameChange,
-  onSubmit,
-  onToggleMode,
-  onLogout,
-}: LocalAuthPanelProps) {
+interface LocalAuthPanelProps {
+  labels: LocalAuthPanelLabels;
+  form: LocalAuthPanelForm;
+}
+
+export function LocalAuthPanel({ labels, form }: LocalAuthPanelProps) {
+  const {
+    localBadge,
+    localHeading,
+    localSubtitle,
+    emailLabel,
+    passwordLabel,
+    confirmPasswordLabel,
+    usernameLabel,
+    helperText,
+    submitLabel,
+    toggleLabel,
+    logoutLabel,
+    passwordMismatchMessage,
+    usernameTooShortMessage,
+    invalidEmailMessage,
+    processingStatusLabel,
+    statusActiveMessage,
+    sessionDetailLabels,
+    usernameAvailabilityMessages,
+    emailAvailabilityMessages,
+  } = labels;
+
+  const {
+    isRegisterMode,
+    email,
+    password,
+    confirmPassword,
+    username,
+    localLoading,
+    localError,
+    localSubmitDisabled,
+    emailFieldId,
+    passwordFieldId,
+    confirmFieldId,
+    usernameFieldId,
+    showPasswordMismatch,
+    showUsernameTooShort,
+    showInvalidEmail,
+    usernameAvailability,
+    emailAvailability,
+    localAccessToken,
+    storedEmail,
+    storedUsername,
+    storedDisplayName,
+    handleEmailChange,
+    handlePasswordChange,
+    handleConfirmChange,
+    handleUsernameChange,
+    handleUsernameBlur,
+    handleEmailBlur,
+    handleLocalSubmit,
+    handleToggleMode,
+    logoutLocal,
+  } = form;
+
   return (
     <PanelCard>
       <PanelHeader>
-        <PanelBadge>{badge}</PanelBadge>
-        <PanelTitle>{title}</PanelTitle>
-        <PanelSubtitle>{subtitle}</PanelSubtitle>
+        <PanelBadge>{localBadge}</PanelBadge>
+        <PanelTitle>{localHeading}</PanelTitle>
+        <PanelSubtitle>{localSubtitle}</PanelSubtitle>
       </PanelHeader>
-      <AuthForm onSubmit={onSubmit} noValidate>
+      <AuthForm onSubmit={handleLocalSubmit} noValidate>
         <Field>
           <FieldLabel htmlFor={emailFieldId}>{emailLabel}</FieldLabel>
           <Input
@@ -127,13 +162,23 @@ export function LocalAuthPanel({
             inputMode="email"
             autoComplete="email"
             value={email}
-            onChange={onEmailChange}
+            onChange={handleEmailChange}
+            onBlur={handleEmailBlur}
             placeholder={emailLabel}
             required
-            disabled={loading}
+            disabled={localLoading}
           />
         </Field>
         {showInvalidEmail ? <ErrorText>{invalidEmailMessage}</ErrorText> : null}
+        {isRegisterMode && emailAvailability === 'checking' ? (
+          <HelperText>{emailAvailabilityMessages.checking}</HelperText>
+        ) : null}
+        {isRegisterMode && emailAvailability === 'available' ? (
+          <HelperText>{emailAvailabilityMessages.available}</HelperText>
+        ) : null}
+        {isRegisterMode && emailAvailability === 'taken' ? (
+          <ErrorText>{emailAvailabilityMessages.taken}</ErrorText>
+        ) : null}
         <Field>
           <FieldLabel htmlFor={passwordFieldId}>{passwordLabel}</FieldLabel>
           <Input
@@ -141,10 +186,10 @@ export function LocalAuthPanel({
             type="password"
             autoComplete={isRegisterMode ? 'new-password' : 'current-password'}
             value={password}
-            onChange={onPasswordChange}
+            onChange={handlePasswordChange}
             placeholder={passwordLabel}
             required
-            disabled={loading}
+            disabled={localLoading}
           />
         </Field>
         {isRegisterMode ? (
@@ -158,10 +203,10 @@ export function LocalAuthPanel({
                 type="password"
                 autoComplete="new-password"
                 value={confirmPassword}
-                onChange={onConfirmChange}
+                onChange={handleConfirmChange}
                 placeholder={confirmPasswordLabel}
                 required
-                disabled={loading}
+                disabled={localLoading}
               />
             </Field>
             <Field>
@@ -170,11 +215,21 @@ export function LocalAuthPanel({
                 id={usernameFieldId}
                 type="text"
                 value={username}
-                onChange={onUsernameChange}
+                onChange={handleUsernameChange}
+                onBlur={handleUsernameBlur}
                 placeholder={usernameLabel}
-                disabled={loading}
+                disabled={localLoading}
               />
             </Field>
+            {usernameAvailability === 'checking' ? (
+              <HelperText>{usernameAvailabilityMessages.checking}</HelperText>
+            ) : null}
+            {usernameAvailability === 'available' ? (
+              <HelperText>{usernameAvailabilityMessages.available}</HelperText>
+            ) : null}
+            {usernameAvailability === 'taken' ? (
+              <ErrorText>{usernameAvailabilityMessages.taken}</ErrorText>
+            ) : null}
             <HelperText>{helperText}</HelperText>
           </>
         ) : null}
@@ -184,24 +239,24 @@ export function LocalAuthPanel({
         {showUsernameTooShort ? (
           <ErrorText>{usernameTooShortMessage}</ErrorText>
         ) : null}
-        {error ? <ErrorText>{error}</ErrorText> : null}
+        {localError ? <ErrorText>{localError}</ErrorText> : null}
         <ButtonRow>
-          <PrimaryButton type="submit" disabled={submitDisabled}>
+          <PrimaryButton type="submit" disabled={localSubmitDisabled}>
             {submitLabel}
           </PrimaryButton>
           <SecondaryButton
             type="button"
-            onClick={onToggleMode}
-            disabled={loading}
+            onClick={handleToggleMode}
+            disabled={localLoading}
           >
             {toggleLabel}
           </SecondaryButton>
         </ButtonRow>
       </AuthForm>
-      {loading && processingStatusLabel ? (
+      {localLoading && processingStatusLabel ? (
         <StatusText>{processingStatusLabel}</StatusText>
       ) : null}
-      {accessToken ? (
+      {localAccessToken ? (
         <SessionCallout>
           <CalloutHeading>{statusActiveMessage}</CalloutHeading>
           {storedEmail ? (
@@ -216,11 +271,11 @@ export function LocalAuthPanel({
           ) : null}
           {storedDisplayName ? (
             <CalloutDetail>
-              {displayNameLabel}: {storedDisplayName}
+              {sessionDetailLabels.displayName}: {storedDisplayName}
             </CalloutDetail>
           ) : null}
           <ButtonRow>
-            <SecondaryButton type="button" onClick={onLogout}>
+            <SecondaryButton type="button" onClick={() => void logoutLocal()}>
               {logoutLabel}
             </SecondaryButton>
           </ButtonRow>

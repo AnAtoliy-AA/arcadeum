@@ -92,6 +92,28 @@ export class AuthService {
     return this.buildAuthUserProfile(created);
   }
 
+  async checkUsernameAvailable(
+    username: string,
+  ): Promise<{ available: boolean }> {
+    const normalized = username.trim().toLowerCase();
+    if (!normalized || normalized.length < 3) {
+      return { available: false };
+    }
+    const exists = await this.userModel.exists({
+      usernameNormalized: normalized,
+    });
+    return { available: !exists };
+  }
+
+  async checkEmailAvailable(email: string): Promise<{ available: boolean }> {
+    const normalized = email.trim().toLowerCase();
+    if (!normalized) {
+      return { available: false };
+    }
+    const exists = await this.userModel.exists({ email: normalized });
+    return { available: !exists };
+  }
+
   async login(data: LoginDto): Promise<AuthTokensResponse> {
     const email = data.email.toLowerCase();
     const userDoc = await this.userModel.findOne({ email });

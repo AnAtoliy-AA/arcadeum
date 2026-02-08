@@ -53,6 +53,18 @@ export class AuthController {
     return this.authService.register(dto);
   }
 
+  @Get('check/username/:username')
+  checkUsername(
+    @Param('username') username: string,
+  ): Promise<{ available: boolean }> {
+    return this.authService.checkUsernameAvailable(username);
+  }
+
+  @Get('check/email/:email')
+  checkEmail(@Param('email') email: string): Promise<{ available: boolean }> {
+    return this.authService.checkEmailAvailable(email);
+  }
+
   @Post('login')
   login(@Body() dto: LoginDto): Promise<AuthTokensResponse> {
     return this.authService.login(dto);

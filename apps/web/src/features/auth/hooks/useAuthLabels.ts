@@ -71,6 +71,18 @@ interface AuthLabels {
 
   // Session details
   sessionDetailLabels: SessionDetailLabels;
+
+  // Availability
+  usernameAvailabilityMessages: {
+    checking: string;
+    available: string;
+    taken: string;
+  };
+  emailAvailabilityMessages: {
+    checking: string;
+    available: string;
+    taken: string;
+  };
 }
 
 export function useAuthLabels(isRegisterMode: boolean): AuthLabels {
@@ -99,6 +111,7 @@ export function useAuthLabels(isRegisterMode: boolean): AuthLabels {
   const defaultAuthOauth = defaultAuth.oauth ?? {};
   const defaultStatusCard = defaultAuth.statusCard ?? {};
   const defaultStatusDetails = defaultStatusCard.details ?? {};
+  const defaultAuthLocalAvailability = defaultAuthLocal.availability ?? {};
 
   const logoutLabel = commonActions.logout ?? defaultCommonActions.logout ?? '';
 
@@ -275,6 +288,35 @@ export function useAuthLabels(isRegisterMode: boolean): AuthLabels {
         authCopy.statusCard?.details?.refreshToken ??
         defaultStatusDetails.refreshToken ??
         'refreshToken',
+    },
+
+    usernameAvailabilityMessages: {
+      checking:
+        authCopy.local?.availability?.checking ??
+        defaultAuthLocalAvailability.checking ??
+        'Checking...',
+      available:
+        authCopy.local?.availability?.available ??
+        defaultAuthLocalAvailability.available ??
+        'Available',
+      taken:
+        authCopy.local?.errors?.usernameTaken ??
+        defaultAuthLocalErrors.usernameTaken ??
+        'This username is already taken.',
+    },
+    emailAvailabilityMessages: {
+      checking:
+        authCopy.local?.availability?.checking ??
+        defaultAuthLocalAvailability.checking ??
+        'Checking...',
+      available:
+        authCopy.local?.availability?.available ??
+        defaultAuthLocalAvailability.available ??
+        'Available',
+      taken:
+        authCopy.local?.errors?.emailTaken ??
+        defaultAuthLocalErrors.emailTaken ??
+        'This email is already registered.',
     },
   };
 }

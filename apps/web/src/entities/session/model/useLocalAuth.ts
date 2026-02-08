@@ -9,6 +9,7 @@ import {
   registerLocal,
   type LoginResponse,
 } from '@/entities/session/api/authApi';
+import { parseApiError } from '@/entities/session/lib/parseApiError';
 import {
   type SessionTokensValue,
   type SessionTokensSnapshot,
@@ -168,8 +169,9 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
           error: null,
         }));
       } catch (error) {
-        // Error is handled by mutation state primarily, but we updating local state to keep contract
-        const message = error instanceof Error ? error.message : String(error);
+        const rawMessage =
+          error instanceof Error ? error.message : String(error);
+        const { message } = parseApiError(rawMessage);
         setState((current) => ({
           ...current,
           loading: false,
@@ -195,7 +197,9 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
         persistEmail(trimmedEmail);
         applySnapshot(snapshot);
       } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
+        const rawMessage =
+          error instanceof Error ? error.message : String(error);
+        const { message } = parseApiError(rawMessage);
         setState((current) => ({
           ...current,
           loading: false,

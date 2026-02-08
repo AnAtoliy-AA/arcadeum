@@ -13,92 +13,105 @@ import {
   TokenRow,
   TokenLabel,
   TokenValue,
-} from "./styles";
+} from './styles';
 
-interface OAuthPanelProps {
-  badge: string;
-  title: string;
-  subtitle: string;
-  buttonLabel: string;
-  logoutLabel: string;
+export interface OAuthPanelLabels {
+  oauthBadge: string;
+  oauthTitle: string;
+  heroStatusDescription: string;
+  oauthButtonLabel: string;
+  oauthLogoutLabel: string;
   processingStatusLabel: string;
   redirectingStatusLabel: string;
-  authorizationCodeLabel: string;
-  accessTokenLabel: string;
-  loading: boolean;
-  isRedirecting: boolean;
-  error: string | null;
-  authorizationCode: string | null;
-  providerAccessToken: string | null;
-  sessionAccessToken: string | null;
-  isOAuthProvider: boolean;
-  onStartOAuth: () => void;
-  onLogout: () => void;
+  oauthAuthorizationCodeLabel: string;
+  oauthAccessTokenLabel: string;
 }
 
-export function OAuthPanel({
-  badge,
-  title,
-  subtitle,
-  buttonLabel,
-  logoutLabel,
-  processingStatusLabel,
-  redirectingStatusLabel,
-  authorizationCodeLabel,
-  accessTokenLabel,
-  loading,
-  isRedirecting,
-  error,
-  authorizationCode,
-  providerAccessToken,
-  sessionAccessToken,
-  isOAuthProvider,
-  onStartOAuth,
-  onLogout,
-}: OAuthPanelProps) {
-  const busy = loading || isRedirecting;
+export interface OAuthPanelForm {
+  oauthLoading: boolean;
+  isRedirecting: boolean;
+  oauthError: string | null;
+  authorizationCode: string | null;
+  providerAccessToken: string | null;
+  sessionSnapshot: {
+    accessToken: string | null;
+    provider: string | null;
+  };
+  handleStartOAuth: () => void;
+  handleOAuthLogout: () => Promise<void>;
+}
+
+interface OAuthPanelProps {
+  labels: OAuthPanelLabels;
+  form: OAuthPanelForm;
+}
+
+export function OAuthPanel({ labels, form }: OAuthPanelProps) {
+  const {
+    oauthBadge,
+    oauthTitle,
+    heroStatusDescription,
+    oauthButtonLabel,
+    oauthLogoutLabel,
+    processingStatusLabel,
+    redirectingStatusLabel,
+    oauthAuthorizationCodeLabel,
+    oauthAccessTokenLabel,
+  } = labels;
+
+  const {
+    oauthLoading,
+    isRedirecting,
+    oauthError,
+    authorizationCode,
+    providerAccessToken,
+    sessionSnapshot,
+    handleStartOAuth,
+    handleOAuthLogout,
+  } = form;
+
+  const busy = oauthLoading || isRedirecting;
   const showTokens = Boolean(authorizationCode || providerAccessToken);
+  const isOAuthProvider = sessionSnapshot.provider === 'oauth';
 
   return (
     <PanelCard>
       <PanelHeader>
-        <PanelBadge>{badge}</PanelBadge>
-        <PanelTitle>{title}</PanelTitle>
-        <PanelSubtitle>{subtitle}</PanelSubtitle>
+        <PanelBadge>{oauthBadge}</PanelBadge>
+        <PanelTitle>{oauthTitle}</PanelTitle>
+        <PanelSubtitle>{heroStatusDescription}</PanelSubtitle>
       </PanelHeader>
       <ButtonRow>
-        <PrimaryButton
-          type="button"
-          onClick={onStartOAuth}
-          disabled={busy}
-        >
-          {busy && processingStatusLabel ? processingStatusLabel : buttonLabel}
+        <PrimaryButton type="button" onClick={handleStartOAuth} disabled={busy}>
+          {busy && processingStatusLabel
+            ? processingStatusLabel
+            : oauthButtonLabel}
         </PrimaryButton>
-        {sessionAccessToken && isOAuthProvider ? (
+        {sessionSnapshot.accessToken && isOAuthProvider ? (
           <SecondaryButton
             type="button"
-            onClick={onLogout}
-            disabled={loading}
+            onClick={() => void handleOAuthLogout()}
+            disabled={oauthLoading}
           >
-            {logoutLabel}
+            {oauthLogoutLabel}
           </SecondaryButton>
         ) : null}
       </ButtonRow>
       {isRedirecting && redirectingStatusLabel ? (
         <StatusText>{redirectingStatusLabel}</StatusText>
       ) : null}
-      {error ? <ErrorText>{error}</ErrorText> : null}
+      {oauthError ? <ErrorText>{oauthError}</ErrorText> : null}
       {showTokens ? (
         <TokenList>
           {authorizationCode ? (
             <TokenRow>
-              <TokenLabel>{authorizationCodeLabel}</TokenLabel>
+              <TokenLabel>{oauthAuthorizationCodeLabel}</TokenLabel>
               <TokenValue>{authorizationCode}</TokenValue>
             </TokenRow>
           ) : null}
           {providerAccessToken ? (
             <TokenRow>
-              <TokenLabel>{accessTokenLabel}</TokenLabel>
+              <TokenLabel>{oauthAccessTokenLabel}</TokenLabel>
               <TokenValue>{providerAccessToken}</TokenValue>
             </TokenRow>
           ) : null}

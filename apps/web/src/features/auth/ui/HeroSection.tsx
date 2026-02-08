@@ -14,46 +14,60 @@ import {
   ShortcutsList,
   ShortcutLink,
   ShortcutIcon,
-} from "./styles";
+} from './styles';
 
-interface HeroSectionProps {
+export interface HeroSectionLabels {
   badgeLabel: string;
-  title: string;
-  description: string;
-  statusHeadline: string;
-  statusDescription: string;
+  heroTitle: string;
+  heroDescription: string;
+  heroStatusHeadline: string;
+  heroStatusDescription: string;
   primaryActionLabel: string;
-  primaryActionHref: string;
   secondaryActionLabel: string;
-  secondaryActionHref: string;
   homeLinkLabel: string;
   browseGamesLabel: string;
 }
 
-export function HeroSection({
-  badgeLabel,
-  title,
-  description,
-  statusHeadline,
-  statusDescription,
-  primaryActionLabel,
-  primaryActionHref,
-  secondaryActionLabel,
-  secondaryActionHref,
-  homeLinkLabel,
-  browseGamesLabel,
-}: HeroSectionProps) {
+export interface HeroSectionConfig {
+  primaryActionHref: string;
+  secondaryActionHref: string;
+}
+
+interface HeroSectionProps {
+  labels: HeroSectionLabels;
+  config: HeroSectionConfig;
+}
+
+export function HeroSection({ labels, config }: HeroSectionProps) {
+  const {
+    badgeLabel,
+    heroTitle,
+    heroDescription,
+    heroStatusHeadline,
+    heroStatusDescription,
+    primaryActionLabel,
+    secondaryActionLabel,
+    homeLinkLabel,
+    browseGamesLabel,
+  } = labels;
+
+  const { primaryActionHref, secondaryActionHref } = config;
+
   return (
     <HeroCard>
       <Badge>{badgeLabel}</Badge>
-      <Title>{title}</Title>
-      <Description>{description}</Description>
+      <Title>{heroTitle}</Title>
+      <Description>{heroDescription}</Description>
       <Status>
-        <StatusHeadline>{statusHeadline}</StatusHeadline>
-        <StatusDescription>{statusDescription}</StatusDescription>
+        <StatusHeadline>{heroStatusHeadline}</StatusHeadline>
+        <StatusDescription>{heroStatusDescription}</StatusDescription>
         <Actions>
-          <PrimaryAction href={primaryActionHref}>{primaryActionLabel}</PrimaryAction>
-          <SecondaryAction href={secondaryActionHref}>{secondaryActionLabel}</SecondaryAction>
+          <PrimaryAction href={primaryActionHref}>
+            {primaryActionLabel}
+          </PrimaryAction>
+          <SecondaryAction href={secondaryActionHref}>
+            {secondaryActionLabel}
+          </SecondaryAction>
         </Actions>
       </Status>
       <HomeLink href="/">

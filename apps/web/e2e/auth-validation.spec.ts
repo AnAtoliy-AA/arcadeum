@@ -9,6 +9,8 @@ test.describe('Auth Validation', () => {
   test('should validate email format in registration mode', async ({
     page,
   }) => {
+    const uniqueId = Date.now().toString(36);
+
     // 1. Switch to Register mode
     const registerToggle = page.getByRole('button', {
       name: /need an account|регистрация|account/i,
@@ -41,7 +43,7 @@ test.describe('Auth Validation', () => {
 
     // Check if username input is visible (it should be in register mode)
     if (await usernameInput.isVisible()) {
-      await usernameInput.fill('testuser');
+      await usernameInput.fill(`user${uniqueId}`);
     }
 
     // 6. Button should still be disabled for invalid email
@@ -55,8 +57,8 @@ test.describe('Auth Validation', () => {
     const errorMsg = page.getByText(/valid email address|корректный адрес/i);
     await expect(errorMsg).toBeVisible();
 
-    // 9. Correct the email
-    await emailInput.fill('test@example.com');
+    // 9. Correct the email with a unique value
+    await emailInput.fill(`test${uniqueId}@example.com`);
 
     // 10. Error should disappear (we hide it on change in useAuthForm)
     await expect(errorMsg).not.toBeVisible();

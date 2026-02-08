@@ -22,7 +22,7 @@ export const OptionButton = styled(Button).attrs<{ $active: boolean }>(
     size: 'lg',
     active: $active,
   }),
-)<{ $active: boolean }>`
+) <{ $active: boolean }>`
   justify-content: flex-start;
   flex-direction: column;
   align-items: flex-start;
@@ -72,7 +72,7 @@ export const PillButton = styled(Button).attrs<{ $active: boolean }>(
     size: 'md',
     active: $active,
   }),
-)<{ $active: boolean }>`
+) <{ $active: boolean }>`
   min-width: 80px;
   justify-content: center;
 `;
@@ -277,4 +277,11 @@ export const UnblockButton = styled(Button).attrs({
     color: #ef4444;
     background: #ef444410;
   }
+`;
+
+export const VersionText = styled.span`
+  font-size: 0.95rem;
+  color: ${({ theme }) => theme.text.secondary};
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  letter-spacing: 0.05em;
 `;

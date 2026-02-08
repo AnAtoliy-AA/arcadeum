@@ -90,4 +90,11 @@ test.describe('Settings Page', () => {
     await supportLink.click();
     await expect(page).toHaveURL(/\/support/);
   });
+
+  test('should display app version', async ({ page }) => {
+    const versionElement = page.getByTestId('app-version');
+    await expect(versionElement).toBeVisible();
+    await expect(versionElement).toContainText(/version|versión|версия/i);
+    await expect(versionElement).toContainText(/v\d+\.\d+\.\d+/);
+  });
 });

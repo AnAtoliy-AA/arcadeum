@@ -1,0 +1,52 @@
+name: Version Bump
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump patch version (develop)
+        if: github.ref == 'refs/heads/develop'
+        run: |
+          cd apps/web && npm version patch --no-git-tag-version
+          cd ../be && npm version patch --no-git-tag-version
+          cd ../..
+          npm version patch --no-git-tag-version
+
+      - name: Bump minor version (main)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          cd apps/web && npm version minor --no-git-tag-version
+          cd ../be && npm version minor --no-git-tag-version
+          cd ../..
+          npm version minor --no-git-tag-version
+
+      - name: Commit and push version bump
+        run: |
+          git add .
+          VERSION=$(node -p "require('./apps/web/package.json').version")
+          git commit -m "chore: bump version to v${VERSION} [skip ci]" || echo "No changes to commit"
+          git push

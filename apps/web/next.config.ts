@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 import path from 'path';
 import withPWAInit from '@ducanh2912/next-pwa';
+import packageJson from './package.json';
 
 const withPWA = withPWAInit({
   dest: 'public',
@@ -124,6 +125,9 @@ const nextConfig: NextConfig = {
   typedRoutes: false,
   turbopack: {
     root: path.resolve(process.cwd(), '../..'),
+  },
+  env: {
+    NEXT_PUBLIC_APP_VERSION: packageJson.version,
   },
 };
 

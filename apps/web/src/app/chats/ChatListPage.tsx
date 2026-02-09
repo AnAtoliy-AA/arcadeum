@@ -8,45 +8,21 @@ import styled from 'styled-components';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useDebounce } from '@/shared/hooks/useDebounce';
-import { Input, Spinner, Button } from '@/shared/ui';
+import {
+  PageLayout,
+  Container,
+  PageTitle,
+  GlassCard,
+  Card,
+  Avatar,
+  Input,
+  Spinner,
+  Button,
+  EmptyState,
+} from '@/shared/ui';
 import { chatApi, ChatParticipant } from '@/features/chat/api';
 import { formatSafeDate } from '@/shared/lib/date';
-
-const Page = styled.main`
-  min-height: 100vh;
-  padding: 2rem 1.5rem;
-  background: ${({ theme }) => theme.background.base};
-  color: ${({ theme }) => theme.text.primary};
-`;
-
-const Container = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-`;
-
-const Title = styled.h1`
-  margin: 0;
-  font-size: 2rem;
-  font-weight: 700;
-  color: ${({ theme }) => theme.text.primary};
-`;
-
-const SearchContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-`;
-
-const SearchResults = styled.div`
-  display: flex;
-  flex-direction: column;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  border-radius: 12px;
-  overflow: hidden;
-`;
+import { QUERY_CONFIG, DEBOUNCE } from '@/shared/config/constants';
 
 const SearchResultItem = styled(Button).attrs({
   variant: 'ghost',
@@ -72,31 +48,26 @@ const SearchResultItem = styled(Button).attrs({
   }
 `;
 
+const SearchResults = styled.div`
+  display: flex;
+  flex-direction: column;
+  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+`;
+
 const ChatList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1rem;
 `;
 
-const ChatItem = styled(Link)`
-  padding: 1rem;
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  text-decoration: none;
-  color: ${({ theme }) => theme.text.primary};
+const ChatItemContent = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: ${({ theme }) => theme.surfaces.card.shadow};
-  }
+  width: 100%;
 `;
 
 const ChatInfo = styled.div`
@@ -104,22 +75,37 @@ const ChatInfo = styled.div`
   flex-direction: column;
   gap: 0.25rem;
   flex: 1;
+  min-width: 0; /* meaningful for text truncation */
 `;
 
-const ChatTitle = styled.div`
+const ChatHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+const ChatTitleText = styled.div`
   font-weight: 600;
   font-size: 1rem;
   color: ${({ theme }) => theme.text.primary};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const ChatSubtitle = styled.div`
   font-size: 0.875rem;
   color: ${({ theme }) => theme.text.muted};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const ChatTimestamp = styled.div`
   font-size: 0.75rem;
   color: ${({ theme }) => theme.text.muted};
+  white-space: nowrap;
 `;
 
 const LoadingContainer = styled.div`
@@ -132,13 +118,11 @@ const LoadingContainer = styled.div`
   color: ${({ theme }) => theme.text.muted};
 `;
 
-const Empty = styled.div`
-  padding: 3rem;
-  text-align: center;
-  color: ${({ theme }) => theme.text.muted};
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: inherit;
+  display: block;
 `;
-
-import { QUERY_CONFIG, DEBOUNCE } from '@/shared/config/constants';
 
 export function ChatListPage() {
   const router = useRouter();
@@ -196,12 +180,14 @@ export function ChatListPage() {
   const currentUserId = snapshot.userId ?? '';
 
   return (
-    <Page>
+    <PageLayout>
       <Container>
-        <Title>{t('navigation.chatsTab') || 'Chats'}</Title>
+        <PageTitle size="xl" gradient>
+          {t('navigation.chatsTab') || 'Chats'}
+        </PageTitle>
 
         {snapshot.accessToken && (
-          <SearchContainer>
+          <GlassCard style={{ padding: '1.5rem' }}>
             <Input
               type="text"
               placeholder={
@@ -215,7 +201,17 @@ export function ChatListPage() {
               }
               fullWidth
             />
-            {searchLoading && <div>Searching...</div>}
+            {searchLoading && (
+              <div
+                style={{
+                  padding: '1rem',
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              >
+                <Spinner size="sm" />
+              </div>
+            )}
             {searchQuery.trim() && displaySearchResults.length > 0 && (
               <SearchResults>
                 {displaySearchResults.map((result) => (
@@ -223,6 +219,10 @@ export function ChatListPage() {
                     key={result.id}
                     onClick={() => handleSelectUser(result)}
                   >
+                    <Avatar
+                      name={result.displayName || result.username}
+                      size="sm"
+                    />
                     <div>
                       <div style={{ fontWeight: 600 }}>
                         {result.displayName || result.username}
@@ -237,7 +237,7 @@ export function ChatListPage() {
                 ))}
               </SearchResults>
             )}
-          </SearchContainer>
+          </GlassCard>
         )}
 
         {loading ? (
@@ -246,13 +246,17 @@ export function ChatListPage() {
             <div>Loading chats...</div>
           </LoadingContainer>
         ) : displayChats.length === 0 ? (
-          <Empty>
-            {snapshot.accessToken
-              ? t('chatList.empty.noChats') ||
-                'No chats yet. Start a conversation!'
-              : t('chatList.empty.unauthenticated') ||
-                'Sign in to start chatting'}
-          </Empty>
+          <EmptyState
+            message={
+              snapshot.accessToken
+                ? (t('chatList.empty.noChats') || 'No chats yet') +
+                  '\n' +
+                  'Start a conversation by searching for a user above!'
+                : (t('chatList.empty.unauthenticated') || 'Sign in to chat') +
+                  '\n' +
+                  'Please sign in to access your chats.'
+            }
+          />
         ) : (
           <ChatList>
             {displayChats.map((chat) => {
@@ -268,30 +272,39 @@ export function ChatListPage() {
               const receiverIds = otherParticipants.map((p) => p.id).join(',');
 
               return (
-                <ChatItem
+                <StyledLink
                   key={chat.chatId}
                   href={`/chat?chatId=${chat.chatId}&receiverIds=${receiverIds}&title=${encodeURIComponent(title)}`}
                 >
-                  <ChatInfo>
-                    <ChatTitle>{title}</ChatTitle>
-                    {chat.lastMessage && (
-                      <ChatSubtitle>
-                        {chat.lastMessage.senderUsername}:{' '}
-                        {chat.lastMessage.content}
-                      </ChatSubtitle>
-                    )}
-                  </ChatInfo>
-                  {chat.lastMessage && (
-                    <ChatTimestamp>
-                      {formatSafeDate(chat.lastMessage.timestamp)}
-                    </ChatTimestamp>
-                  )}
-                </ChatItem>
+                  <Card interactive padding="md" variant="elevated">
+                    <ChatItemContent>
+                      <Avatar name={title} size="md" />
+                      <ChatInfo>
+                        <ChatHeader>
+                          <ChatTitleText>{title}</ChatTitleText>
+                          {chat.lastMessage && (
+                            <ChatTimestamp>
+                              {formatSafeDate(chat.lastMessage.timestamp)}
+                            </ChatTimestamp>
+                          )}
+                        </ChatHeader>
+                        {chat.lastMessage && (
+                          <ChatSubtitle>
+                            <span style={{ fontWeight: 600 }}>
+                              {chat.lastMessage.senderUsername}:
+                            </span>{' '}
+                            {chat.lastMessage.content}
+                          </ChatSubtitle>
+                        )}
+                      </ChatInfo>
+                    </ChatItemContent>
+                  </Card>
+                </StyledLink>
               );
             })}
           </ChatList>
         )}
       </Container>
-    </Page>
+    </PageLayout>
   );
 }

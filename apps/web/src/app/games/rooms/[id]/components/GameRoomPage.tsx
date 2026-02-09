@@ -113,6 +113,13 @@ export default function GameRoomPage() {
       // Connect anonymously for public rooms
       connectSocketsAnonymous();
     }
+
+    return () => {
+      // Disconnect sockets when leaving the game room
+      import('@/shared/lib/socket').then(({ disconnectSockets }) => {
+        disconnectSockets();
+      });
+    };
   }, [
     isAuthenticated,
     snapshot.accessToken,

@@ -36,15 +36,29 @@ jobs:
           cd ../..
           npm version patch --no-git-tag-version
 
-      - name: Bump minor version (main)
+      - name: Release Logic (Sync Develop)
         if: github.ref == 'refs/heads/main'
         run: |
+          # Fetch and checkout develop
+          git fetch origin develop
+          git checkout develop
+          
+          # Merge main into develop to ensure we're up to date
+          git merge main
+          
+          # Bump minor on develop (1.1.4 -> 1.2.0)
           cd apps/web && npm version minor --no-git-tag-version
           cd ../be && npm version minor --no-git-tag-version
           cd ../..
           npm version minor --no-git-tag-version
+          
+          git add .
+          VERSION=$(node -p "require('./apps/web/package.json').version")
+          git commit -m "chore: start next minor version v${VERSION} [skip ci]"
+          git push origin develop
 
-      - name: Commit and push version bump
+      - name: Commit and push patch bump (develop)
+        if: github.ref == 'refs/heads/develop'
         run: |
           git add .
           VERSION=$(node -p "require('./apps/web/package.json').version")

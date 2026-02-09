@@ -93,13 +93,7 @@ export function Header() {
       <HeaderContainer>
         <HeaderInner>
           <Logo href="/" onClick={closeMobileMenu}>
-            <Image
-              src="/logo.png"
-              alt={appConfig.appName}
-              width={32}
-              height={32}
-              priority
-            />
+            <Image src="/logo.png" alt="" width={32} height={32} priority />
             <LogoText>{appConfig.appName}</LogoText>
           </Logo>
 

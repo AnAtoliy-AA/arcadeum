@@ -222,6 +222,7 @@ export function ChatListPage() {
                     <Avatar
                       name={result.displayName || result.username}
                       size="sm"
+                      alt=""
                     />
                     <div>
                       <div style={{ fontWeight: 600 }}>
@@ -278,7 +279,7 @@ export function ChatListPage() {
                 >
                   <Card interactive padding="md" variant="elevated">
                     <ChatItemContent>
-                      <Avatar name={title} size="md" />
+                      <Avatar name={title} size="md" alt="" />
                       <ChatInfo>
                         <ChatHeader>
                           <ChatTitleText>{title}</ChatTitleText>

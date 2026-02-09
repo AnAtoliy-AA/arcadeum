@@ -47,7 +47,7 @@ export function parseYouTubeVideoId(input?: string): string | undefined {
 
   // Handle full URLs like https://www.youtube.com/watch?v=VIDEO_ID
   const urlMatch = trimmed.match(
-    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/,
+    /(?:youtube(?:-nocookie)?\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/,
   );
   if (urlMatch && urlMatch[1]) {
     return urlMatch[1];

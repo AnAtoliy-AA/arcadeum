@@ -139,10 +139,10 @@ export function connectSocketsAnonymous(): void {
 export function disconnectSockets(): void {
   currentAuthToken = null;
 
-  if (gamesSocket.connected) {
+  if (gamesSocket) {
     gamesSocket.disconnect();
   }
-  if (chatsSocket.connected) {
+  if (chatsSocket) {
     chatsSocket.disconnect();
   }
 

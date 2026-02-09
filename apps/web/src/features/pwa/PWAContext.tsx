@@ -8,6 +8,7 @@ import {
   useCallback,
   ReactNode,
 } from 'react';
+import { InstallPWAModal } from './InstallPWA';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -113,5 +114,10 @@ export function PWAProvider({ children }: PWAProviderProps) {
     install,
   };
 
-  return <PWAContext.Provider value={value}>{children}</PWAContext.Provider>;
+  return (
+    <PWAContext.Provider value={value}>
+      {children}
+      <InstallPWAModal />
+    </PWAContext.Provider>
+  );
 }

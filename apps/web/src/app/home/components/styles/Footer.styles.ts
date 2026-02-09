@@ -26,7 +26,7 @@ export const SocialContainer = styled.div`
   gap: 1.5rem;
 `;
 
-export const SocialTitle = styled.h4`
+export const SocialTitle = styled.h3`
   font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: 0.05em;

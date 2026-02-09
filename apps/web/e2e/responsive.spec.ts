@@ -15,10 +15,17 @@ test.describe('Responsive Layout', () => {
     // Check for hamburger menu
     const menuButton = page.getByTestId('mobile-menu-button');
     await expect(menuButton).toBeVisible();
+    await expect(menuButton).toBeEnabled();
 
     // Open menu
     await menuButton.click();
-    await expect(page.getByTestId('mobile-nav')).toBeVisible();
+
+    // Wait for transition to complete (especially for WebKit)
+    await page.waitForTimeout(500);
+
+    await expect(page.getByTestId('mobile-nav')).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test('should adjust grid layout on mobile', async ({ page }) => {

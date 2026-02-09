@@ -8,7 +8,7 @@ import { StyledComponentsRegistry } from './StyledComponentsRegistry';
 import './globals.css';
 import { AppThemeProvider } from './theme/ThemeContext';
 import { Header } from '@/widgets/header';
-import { PWAProvider, InstallPWAModal } from '@/features/pwa';
+import { PWAProvider } from '@/features/pwa';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -48,7 +48,6 @@ export default function RootLayout({
                 <PWAProvider>
                   <Header />
                   {children}
-                  <InstallPWAModal />
                 </PWAProvider>
               </QueryProvider>
             </AppThemeProvider>

@@ -236,7 +236,7 @@ export function ChatPage() {
                 <MessageGroup key={msg.id} $isOwn={isOwn}>
                   {!isOwn && (
                     <MessageMeta>
-                      <Avatar name={msg.senderUsername} size="sm" />
+                      <Avatar name={msg.senderUsername} size="sm" alt="" />
                       <SenderName>{msg.senderUsername || 'Unknown'}</SenderName>
                     </MessageMeta>
                   )}

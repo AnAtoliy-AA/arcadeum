@@ -152,6 +152,7 @@ export function HistoryDetailModal({
                       <Avatar
                         name={formatParticipantName(participant)}
                         size="sm"
+                        alt=""
                       />
                       <ParticipantName>
                         {formatParticipantName(participant)}

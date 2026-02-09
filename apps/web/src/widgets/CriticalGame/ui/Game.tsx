@@ -19,7 +19,7 @@ import {
 } from '../hooks';
 import { useGameHandlers } from '../hooks/useGameHandlers';
 import { GameModals } from './GameModals';
-import { GameResultModal } from './GameResultModal';
+import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { CriticalLobby } from './CriticalLobby';
 import { ChatSection } from './ChatSection';
 import { GameStatusMessage } from './GameStatusMessage';
@@ -477,7 +477,7 @@ export default function CriticalGame({
         onRematch={isHost ? openRematchModal : undefined}
         onClose={() => setModalDismissed(true)}
         rematchLoading={rematchLoading}
-        t={t as (key: string) => string}
+        t={t}
       />
     </GameContainer>
   );

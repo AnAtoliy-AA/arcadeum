@@ -11,16 +11,6 @@ export class GameEngineRegistry {
   private readonly engines = new Map<string, IGameEngine>();
 
   /**
-   * Normalize game ID to engine ID
-   */
-  private normalizeGameId(gameId: string): string {
-    if (gameId === 'exploding_kittens_v1') {
-      return 'critical_v1';
-    }
-    return gameId;
-  }
-
-  /**
    * Register a game engine
    * @param engine Game engine to register
    */
@@ -45,12 +35,11 @@ export class GameEngineRegistry {
    * @throws NotFoundException if engine not found
    */
   getEngine(gameId: string): IGameEngine {
-    const normalizedId = this.normalizeGameId(gameId);
-    const engine = this.engines.get(normalizedId);
+    const engine = this.engines.get(gameId);
 
     if (!engine) {
       throw new NotFoundException(
-        `Game engine not found for game ID: ${gameId} (normalized: ${normalizedId})`,
+        `Game engine not found for game ID: ${gameId}`,
       );
     }
 

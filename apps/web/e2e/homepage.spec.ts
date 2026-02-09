@@ -35,4 +35,12 @@ test.describe('Home Page', () => {
     await gamesLink.click();
     await expect(page).toHaveURL(/\/games/);
   });
+
+  test('should render logo with correct link', async ({ page }) => {
+    const logoLink = page.locator('header a[href="/"]').first();
+    await expect(logoLink).toBeVisible();
+    await expect(logoLink).toHaveAttribute('href', '/');
+    // Check for app name text presence, case insensitive
+    await expect(logoLink).toHaveText(/Arcadeum/i);
+  });
 });

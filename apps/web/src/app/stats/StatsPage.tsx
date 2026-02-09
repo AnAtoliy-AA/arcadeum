@@ -11,7 +11,10 @@ import {
   EmptyState,
 } from '@/shared/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import { useStats } from './hooks/useStats';
 import { useLeaderboard } from './hooks/useLeaderboard';
 import {
@@ -23,10 +26,6 @@ import {
 import { getAllSupportedGameIds } from '@/features/games/lib/gameIdMapping';
 
 type TabType = 'my-stats' | 'leaderboard';
-
-const GAME_DISPLAY_NAMES: Record<string, string> = {
-  critical_v1: 'Critical',
-};
 
 export function StatsPage() {
   const { t } = useTranslation();
@@ -51,7 +50,7 @@ export function StatsPage() {
       { value: '', label: t('stats.allGames') },
       ...supportedGames.map((gameId) => ({
         value: gameId,
-        label: GAME_DISPLAY_NAMES[gameId] || gameId,
+        label: t(`games.${gameId}.name` as TranslationKey),
       })),
     ];
   }, [t]);

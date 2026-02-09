@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import { GameSessionsService } from '../sessions/game-sessions.service';
 import { GameHistoryService } from '../history/game-history.service';
@@ -7,6 +7,7 @@ import { CriticalActionsService } from '../actions/critical/critical-actions.ser
 import { StartGameSessionResult } from '../games.types';
 import { ChatScope } from '../engines/base/game-engine.interface';
 import { GameSessionSummary } from '../sessions/game-sessions.service';
+import { CriticalBotService } from './critical-bot.service';
 
 @Injectable()
 export class CriticalService {
@@ -16,6 +17,8 @@ export class CriticalService {
     private readonly historyService: GameHistoryService,
     private readonly realtimeService: GamesRealtimeService,
     private readonly criticalActions: CriticalActionsService,
+    @Inject(forwardRef(() => CriticalBotService))
+    private readonly botService: CriticalBotService,
   ) {}
 
   // ========== Core Actions ==========
@@ -25,6 +28,11 @@ export class CriticalService {
   private async checkAndSyncRoomStatus(session: GameSessionSummary) {
     if (session.status === 'completed') {
       await this.roomsService.updateRoomStatus(session.roomId, 'completed');
+    } else {
+      // Trigger bot logic asynchronously
+      this.botService.checkAndPlay(session).catch((err) => {
+        console.error('Error in bot turn:', err);
+      });
     }
     return session;
   }
@@ -108,6 +116,7 @@ export class CriticalService {
     userId: string,
     roomId?: string,
     engine?: string,
+    withBots?: boolean,
   ): Promise<StartGameSessionResult> {
     let effectiveRoomId = roomId;
     if (!effectiveRoomId) {
@@ -141,6 +150,11 @@ export class CriticalService {
       throw new Error('Only the host can start the game');
     }
 
+    // Check minimum players unless withBots is true
+    if (room.playerCount < 2 && !withBots) {
+      throw new Error('Need at least 2 players to start the game');
+    }
+
     // Resolve Random Variant
     // If cardVariant is 'random', pick one from the available list (excluding 'random')
     // We hardcode the list here to avoid circular dependency with shared/frontend constants
@@ -166,6 +180,15 @@ export class CriticalService {
 
     const playerIds =
       await this.roomsService.getRoomParticipants(effectiveRoomId);
+
+    if (withBots) {
+      const needed = Math.max(2, 4) - playerIds.length;
+      if (needed > 0) {
+        for (let i = 0; i < needed; i++) {
+          playerIds.push(`bot-${Math.random().toString(36).substr(2, 9)}`);
+        }
+      }
+    }
 
     const session = await this.sessionsService.createSession({
       roomId: effectiveRoomId,

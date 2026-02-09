@@ -2,7 +2,12 @@
 
 import { useRef, useCallback, useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import type { CriticalGameProps, CriticalCard, HandLayoutMode } from '../types';
+import type {
+  CriticalGameProps,
+  CriticalCard,
+  HandLayoutMode,
+  CriticalPlayerState,
+} from '../types';
 import { getCardTranslationKey } from '../lib/cardUtils';
 import { useDisplayNames } from '../lib/displayUtils';
 import {
@@ -315,7 +320,7 @@ export default function CriticalGame({
               isGameOver={!!isGameOver}
               canAct={!!canAct}
               canPlayNope={!!canPlayNope}
-              actionBusy={!!actionBusy}
+              actionBusy={actionBusy}
               aliveOpponents={aliveOpponents}
               discardPileLength={snapshot?.discardPile?.length ?? 0}
               logs={snapshot?.logs ?? []}
@@ -377,7 +382,7 @@ export default function CriticalGame({
         // Rematch Modal
         showRematchModal={showRematchModal}
         players={
-          snapshot?.players.map((p) => ({
+          snapshot?.players.map((p: CriticalPlayerState) => ({
             playerId: p.playerId,
             displayName: resolveDisplayName(
               p.playerId,

@@ -14,11 +14,18 @@ interface UseSeaBattleActionsOptions {
 export function useSeaBattleActions(options: UseSeaBattleActionsOptions) {
   const { roomId, userId, onActionStart } = options;
 
-  const startSession = useCallback(() => {
-    if (!userId) return;
-    onActionStart?.('start');
-    gameSocket.emit('seaBattle.session.start', { roomId, userId });
-  }, [roomId, userId, onActionStart]);
+  const startSession = useCallback(
+    (options?: { withBots?: boolean }) => {
+      if (!userId) return;
+      onActionStart?.('start');
+      gameSocket.emit('seaBattle.session.start', {
+        roomId,
+        userId,
+        withBots: options?.withBots,
+      });
+    },
+    [roomId, userId, onActionStart],
+  );
 
   const placeShip = useCallback(
     (shipId: string, cells: ShipCell[]) => {

@@ -101,12 +101,18 @@ export default function SeaBattleGame({
     room,
   });
 
-  const handleStartGame = useCallback(() => {
-    const memberCount = room.members?.length || 0;
-    if (memberCount >= MIN_PLAYERS) {
-      startSession();
-    }
-  }, [room.members, startSession]);
+  const handleStartGame = useCallback(
+    (options?: { withBots?: boolean }) => {
+      const memberCount = room.members?.length || 0;
+      if (
+        memberCount >= MIN_PLAYERS ||
+        (options?.withBots && memberCount >= 1)
+      ) {
+        startSession(options);
+      }
+    },
+    [room.members, startSession],
+  );
 
   const handleReorderPlayers = useCallback(
     async (newOrder: string[]) => {

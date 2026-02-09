@@ -346,7 +346,12 @@ export class CriticalGateway {
   async handleSessionStart(
     @ConnectedSocket() client: Socket,
     @MessageBody()
-    payload: { roomId?: string; userId?: string; engine?: string },
+    payload: {
+      roomId?: string;
+      userId?: string;
+      engine?: string;
+      withBots?: boolean;
+    },
   ): Promise<void> {
     const userId = extractString(payload, 'userId');
     const roomIdRaw =
@@ -354,12 +359,14 @@ export class CriticalGateway {
     const roomId = roomIdRaw || undefined;
     const engine =
       typeof payload?.engine === 'string' ? payload.engine.trim() : undefined;
+    const withBots = !!payload?.withBots;
 
     try {
       const result = await this.criticalService.startSession(
         userId,
         roomId,
         engine,
+        withBots,
       );
 
       client.emit('games.session.started', result);

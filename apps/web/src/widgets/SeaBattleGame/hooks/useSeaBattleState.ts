@@ -6,12 +6,12 @@ import type { SeaBattleSnapshot, SeaBattlePlayerState } from '../types';
 // But check imports again.
 // The lint said: 7:3 warning 'GAME_PHASE' is defined but never used.
 // So removal IS correct.
-import { GameRoomSummary } from '@/shared/types/games';
+import { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
 interface UseSeaBattleStateOptions {
   roomId: string;
   currentUserId: string | null;
-  initialSession: unknown | null;
+  initialSession: GameSessionSummary | null;
   accessToken?: string | null;
   room?: GameRoomSummary;
 }

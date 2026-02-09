@@ -154,6 +154,13 @@ export function disconnectSockets(): void {
 export const gameSocket: Socket = gamesSocket;
 export const chatSocket: Socket = chatsSocket;
 
+// Expose sockets to window for E2E testing
+if (typeof window !== 'undefined') {
+  const win = window as unknown as Record<string, unknown>;
+  win.gameSocket = gameSocket;
+  win.chatSocket = chatSocket;
+}
+
 /**
  * Emit a message with optional encryption.
  */

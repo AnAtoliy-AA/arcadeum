@@ -15,13 +15,6 @@ test.describe('Accessibility', () => {
     page,
     browserName,
   }) => {
-    // WebKit headless has persistent issues with Tab navigation focus events
-    // Focus tends to get stuck on the first element or lost to body despite valid events
-    test.skip(
-      browserName === 'webkit',
-      'Keyboard navigation is flaky in headless WebKit',
-    );
-
     await navigateTo(page, '/');
     await page.waitForLoadState('networkidle');
 
@@ -72,31 +65,42 @@ test.describe('Accessibility', () => {
     });
 
     // 3. Simple Tab Press (with robustness for other browsers)
-    // We expect focus to move.
-    await first.press('Tab', { delay: 100 });
+    // We use page.keyboard.press for better cross-browser focus movement
+    // NOTE: WebKit (Safari) often requires Alt+Tab to navigate through links
+    if (browserName === 'webkit') {
+      await page.keyboard.press('Alt+Tab', { delay: 100 });
+    } else {
+      await page.keyboard.press('Tab', { delay: 100 });
+    }
 
     await expect
       .poll(
         async () => {
-          const current = await page.evaluate(() => {
+          const info = await page.evaluate(() => {
             const el = document.activeElement;
             return {
               tag: el?.tagName,
               text: el?.textContent?.trim()?.substring(0, 20),
               role: el?.getAttribute('role') || undefined,
+              id: el?.id || undefined,
+              isBody: el === document.body,
             };
           });
+
+          if (!info || info.isBody) return false;
 
           // Must be interactive
           const validTags = ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'];
           const isInteractive =
-            validTags.includes(current.tag || '') ||
-            current.role === 'button' ||
-            current.role === 'link';
+            validTags.includes(info.tag || '') ||
+            info.role === 'button' ||
+            info.role === 'link';
 
           // Must be DIFFERENT from the start
           const isSame =
-            current.tag === firstInfo.tag && current.text === firstInfo.text;
+            info.tag === firstInfo.tag &&
+            info.text === firstInfo.text &&
+            info.role === firstInfo.role;
 
           return isInteractive && !isSame;
         },

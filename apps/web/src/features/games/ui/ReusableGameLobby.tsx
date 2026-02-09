@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { GameRoomSummary } from '@/shared/types/games';
 import {
   LobbyContent,
@@ -50,7 +50,7 @@ export interface ReusableGameLobbyProps {
   isFullscreen?: boolean;
   containerRef?: React.RefObject<HTMLDivElement | null>;
   onToggleFullscreen?: () => void;
-  onStartGame: () => void;
+  onStartGame: (options?: { withBots?: boolean }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
 
@@ -102,6 +102,7 @@ export interface ReusableGameLobbyProps {
   showFullscreenButton?: boolean;
   showReorderControls?: boolean;
   showInvitedPlayers?: boolean;
+  enableBots?: boolean;
 }
 
 // ============ Component ============
@@ -149,20 +150,29 @@ export function ReusableGameLobby({
   showFullscreenButton = true,
   showReorderControls = true,
   showInvitedPlayers = true,
+  enableBots = false,
 }: ReusableGameLobbyProps) {
   const members = room.members ?? [];
   const maxPlayers = room.maxPlayers ?? 5;
   const progress = Math.round((room.playerCount / maxPlayers) * 100);
-  const canStart = room.playerCount >= minPlayers;
+  const canStart =
+    room.playerCount >= minPlayers || (enableBots && room.playerCount === 1);
 
-  const defaultSubtitle =
-    room.status !== 'lobby'
-      ? 'Loading...'
-      : room.playerCount < minPlayers
-        ? `Need at least ${minPlayers} players`
-        : isHost
-          ? "Click 'Start Game' when ready"
-          : 'Waiting for host to start...';
+  const defaultSubtitle = useMemo(() => {
+    if (room.status !== 'lobby') {
+      return 'Loading...';
+    }
+    if (enableBots && room.playerCount === 1) {
+      return 'Single player mode available';
+    }
+    if (room.playerCount < minPlayers) {
+      return `Need at least ${minPlayers} players`;
+    }
+    if (isHost) {
+      return "Click 'Start Game' when ready";
+    }
+    return 'Waiting for host to start...';
+  }, [room.status, enableBots, room.playerCount, minPlayers, isHost]);
 
   return (
     <GameContainer ref={containerRef}>
@@ -234,11 +244,21 @@ export function ReusableGameLobby({
             <HostControls>
               <HostLabel>{hostControlsLabel}</HostLabel>
               <StartButton
-                onClick={onStartGame}
+                onClick={() => {
+                  if (enableBots && room.playerCount === 1) {
+                    onStartGame({ withBots: true });
+                  } else {
+                    onStartGame();
+                  }
+                }}
                 disabled={startBusy || !canStart}
                 $gradient={theme.buttonGradient}
               >
-                {startBusy ? startingLabel : startLabel}
+                {startBusy
+                  ? startingLabel
+                  : enableBots && room.playerCount === 1
+                    ? 'Start with 🤖'
+                    : startLabel}
               </StartButton>
             </HostControls>
           )}

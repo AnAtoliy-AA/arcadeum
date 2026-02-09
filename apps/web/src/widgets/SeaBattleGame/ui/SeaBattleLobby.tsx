@@ -40,7 +40,7 @@ interface SeaBattleLobbyProps {
   room: GameRoomSummary;
   isHost: boolean;
   startBusy: boolean;
-  onStartGame: () => void;
+  onStartGame: (options?: { withBots?: boolean }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
 }
 
@@ -85,6 +85,7 @@ export function SeaBattleLobby({
       showReorderControls={true}
       showInvitedPlayers={false}
       optionsSlot={optionsSlot}
+      enableBots={true}
     />
   );
 }

@@ -100,7 +100,7 @@ export function Header() {
               height={32}
               priority
             />
-            {appConfig.appName}
+            <LogoText>{appConfig.appName}</LogoText>
           </Logo>
 
           <Nav>
@@ -429,6 +429,7 @@ import {
   HeaderContainer,
   HeaderInner,
   Logo,
+  LogoText,
   Nav,
   NavLink,
   Actions,

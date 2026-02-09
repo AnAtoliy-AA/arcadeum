@@ -148,9 +148,9 @@ export class CriticalService {
       const variants = [
         'cyberpunk',
         'underwater',
-        'crime',
-        'horror',
-        'adventure',
+        // 'crime', // Disabled
+        // 'horror', // Disabled
+        // 'adventure', // Disabled
       ];
       const randomVariant =
         variants[Math.floor(Math.random() * variants.length)];

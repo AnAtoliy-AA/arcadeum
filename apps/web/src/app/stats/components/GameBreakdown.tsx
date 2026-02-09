@@ -1,7 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import type { PlayerStats } from '@/features/history/api';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import { SkeletonCircle, SkeletonText } from '@/shared/ui/Skeleton';
 import { ProgressBar } from '@/shared/ui/Progress';
 import { Section } from '@/shared/ui';
@@ -42,13 +45,6 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
 
   if (!stats?.byGameType?.length) return null;
 
-  const formatGameName = (gameId: string) => {
-    if (gameId.includes('exploding')) return 'Exploding Cats';
-    if (gameId.includes('holdem')) return "Texas Hold'em";
-    if (gameId.includes('critical')) return 'Critical';
-    return gameId;
-  };
-
   return (
     <Section title={t('stats.gameBreakdownTitle')}>
       <Table>
@@ -61,10 +57,10 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
         {stats.byGameType.map((game) => (
           <TableRow key={game.gameId}>
             <GameInfo>
-              <GameIcon>
-                {game.gameId.includes('holdem') ? '♠️' : '🎯'}
-              </GameIcon>
-              <GameName>{formatGameName(game.gameId)}</GameName>
+              <GameIcon>🎯</GameIcon>
+              <GameName>
+                {t(`games.${game.gameId}.name` as TranslationKey)}
+              </GameName>
             </GameInfo>
             <StatCell>{game.totalGames}</StatCell>
             <StatCell>{game.wins}</StatCell>

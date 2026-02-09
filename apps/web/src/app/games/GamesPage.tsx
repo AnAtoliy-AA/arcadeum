@@ -59,6 +59,12 @@ export function GamesPage() {
 
   useEffect(() => {
     connectSockets(snapshot.accessToken || undefined);
+    return () => {
+      // Disconnect sockets when leaving the games page to allow bfcache
+      import('@/shared/lib/socket').then(({ disconnectSockets }) => {
+        disconnectSockets();
+      });
+    };
   }, [snapshot.accessToken]);
 
   useEffect(() => {

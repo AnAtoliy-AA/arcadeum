@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { GameRoom, type GameRoomStatus } from '../schemas/game-room.schema';
 import { User } from '../../auth/schemas/user.schema';
 import { CreateGameRoomDto } from '../dtos/create-game-room.dto';
@@ -115,6 +115,9 @@ export class GameRoomsService {
    * Get a specific room by ID
    */
   async getRoom(roomId: string, userId?: string): Promise<GameRoomSummary> {
+    if (!Types.ObjectId.isValid(roomId)) {
+      throw new NotFoundException(`Invalid room ID format: ${roomId}`);
+    }
     const room = await this.gameRoomModel.findById(roomId).exec();
 
     if (!room) {

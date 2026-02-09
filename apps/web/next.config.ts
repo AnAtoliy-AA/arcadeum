@@ -35,7 +35,7 @@ const cspImgSrc = "'self' blob: data: https:";
 
 const cspFontSrc = "'self' data:";
 
-const cspFrameSrc = "'self' https://www.youtube.com https://youtube.com";
+const cspFrameSrc = "'self' https://www.youtube-nocookie.com";
 
 const nextConfig: NextConfig = {
   headers: async () => {
@@ -130,6 +130,7 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_APP_VERSION: packageJson.version,
   },
+  productionBrowserSourceMaps: true,
 };
 
 export default withPWA(nextConfig);

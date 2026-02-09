@@ -115,7 +115,7 @@ export function Leaderboard({
           >
             <RankDisplay rank={entry.rank} />
             <PlayerInfo>
-              <Avatar name={entry.username} size="lg" />
+              <Avatar name={entry.username} size="lg" alt="" />
               <PlayerName>
                 {entry.username}
                 {entry.playerId === currentUserId && (

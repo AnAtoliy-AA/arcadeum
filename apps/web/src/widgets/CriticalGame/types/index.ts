@@ -14,6 +14,7 @@ import {
   THEFT_PACK_CARDS,
   MarkedCardInfo,
   DEITY_PACK_CARDS,
+  GameSessionSummary,
 } from '@/shared/types/games';
 
 /** Number of different cards required for the fiver combo */
@@ -25,7 +26,7 @@ export const FIVER_COMBO_SIZE = 5;
 export interface CriticalGameProps {
   roomId: string;
   room: GameRoomSummary;
-  session: unknown | null;
+  session: GameSessionSummary | null;
   currentUserId: string | null;
   isHost: boolean;
   onPostHistoryNote?: (message: string, scope: 'all' | 'players') => void;

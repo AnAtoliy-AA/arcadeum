@@ -29,12 +29,18 @@ export class SeaBattleGateway {
   @SubscribeMessage('seaBattle.session.start')
   async handleSessionStart(
     @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { roomId?: string; userId?: string },
+    @MessageBody()
+    payload: { roomId?: string; userId?: string; withBots?: boolean },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    const withBots = !!payload?.withBots;
 
     try {
-      const result = await this.seaBattleService.startSession(userId, roomId);
+      const result = await this.seaBattleService.startSession(
+        userId,
+        roomId,
+        withBots,
+      );
       client.emit('seaBattle.session.started', result);
     } catch (error) {
       handleError(

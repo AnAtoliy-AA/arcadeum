@@ -18,7 +18,7 @@ interface UseGameActionsOptions {
 
 interface UseGameActionsReturn {
   // Critical actions
-  startCritical: () => void;
+  startCritical: (options?: { withBots?: boolean }) => void;
   drawCard: () => void;
   playActionCard: (card: string, payload?: Record<string, unknown>) => void;
   playNope: () => void;
@@ -107,14 +107,18 @@ export function useGameActions(
   }, [gameType, onActionComplete]);
 
   // Critical actions
-  const startCritical = useCallback(() => {
-    if (!userId) return;
-    gameSocket.emit('games.session.start', {
-      roomId,
-      userId,
-      engine: 'critical_v1',
-    });
-  }, [roomId, userId]);
+  const startCritical = useCallback(
+    (options?: { withBots?: boolean }) => {
+      if (!userId) return;
+      gameSocket.emit('games.session.start', {
+        roomId,
+        userId,
+        engine: 'critical_v1',
+        withBots: options?.withBots,
+      });
+    },
+    [roomId, userId],
+  );
 
   const drawCard = useCallback(() => {
     if (!userId) return;

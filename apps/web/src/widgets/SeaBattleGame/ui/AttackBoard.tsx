@@ -164,6 +164,8 @@ export function AttackBoard({
                         $state={displayState}
                         $isClickable={canAttack}
                         $theme={theme}
+                        data-row={rIndex}
+                        data-col={cIndex}
                         onClick={() =>
                           canAttack &&
                           handleCellClick(opponent.playerId, rIndex, cIndex)

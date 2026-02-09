@@ -28,8 +28,10 @@ import { GameUtilitiesService } from './utilities/game-utilities.service';
 import { GamesRematchService } from './games.rematch.service';
 
 import { CriticalService } from './critical/critical.service';
+import { CriticalBotService } from './critical/critical-bot.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 import { SeaBattleService } from './sea-battle/sea-battle.service';
+import { SeaBattleBotService } from './sea-battle/sea-battle-bot.service';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
@@ -59,8 +61,10 @@ import { AuthModule } from '../auth/auth.module';
     TexasHoldemActionsService,
     // Game-specific services (New)
     CriticalService,
+    CriticalBotService,
     TexasHoldemService,
     SeaBattleService,
+    SeaBattleBotService,
     // Utilities
     GameUtilitiesService,
     // Facade service (main entry point)

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import {
   GameSessionsService,
@@ -8,6 +8,7 @@ import { GameHistoryService } from '../history/game-history.service';
 import { GamesRealtimeService } from '../games.realtime.service';
 import { StartGameSessionResult } from '../games.types';
 import { ChatScope } from '../engines/base/game-engine.interface';
+import { SeaBattleBotService } from './sea-battle-bot.service';
 
 interface PlaceShipPayload {
   shipId: string;
@@ -27,11 +28,17 @@ export class SeaBattleService {
     private readonly sessionsService: GameSessionsService,
     private readonly historyService: GameHistoryService,
     private readonly realtimeService: GamesRealtimeService,
+    @Inject(forwardRef(() => SeaBattleBotService))
+    private readonly botService: SeaBattleBotService,
   ) {}
 
   private async checkAndSyncRoomStatus(session: GameSessionSummary) {
     if (session.status === 'completed') {
       await this.roomsService.updateRoomStatus(session.roomId, 'completed');
+    } else {
+      this.botService.checkAndPlay(session).catch((err) => {
+        console.error('Error in bot turn:', err);
+      });
     }
     return session;
   }
@@ -55,18 +62,51 @@ export class SeaBattleService {
 
   /**
    * Start a Sea Battle session
+   * (Verified fix for single player bot mode)
    */
   async startSession(
     userId: string,
     roomId: string,
+    withBots?: boolean,
   ): Promise<StartGameSessionResult> {
+    console.log(
+      `[SeaBattle] startSession requested by ${userId} for room ${roomId}, withBots=${withBots}`,
+    );
     const room = await this.roomsService.getRoom(roomId, userId);
 
     if (room.hostId !== userId) {
       throw new Error('Only the host can start the game');
     }
 
-    const playerIds = await this.roomsService.getRoomParticipants(roomId);
+    const participants = await this.roomsService.getRoomParticipants(roomId);
+    const playerIds = [...participants];
+
+    console.log(
+      `[SeaBattle] Room has participants: ${JSON.stringify(playerIds)}`,
+    );
+
+    // If only one player, automatically add a bot to meet minimum requirements (2 players)
+    // This handles both explicit bot mode and fallback for single users
+    if (playerIds.length === 1) {
+      console.log(`[SeaBattle] Auto-adding bot for single player session`);
+      const botId = `bot-${Math.random().toString(36).substr(2, 9)}`;
+      playerIds.push(botId);
+    } else if (withBots) {
+      const needed = 2 - playerIds.length;
+      if (needed > 0) {
+        for (let i = 0; i < needed; i++) {
+          playerIds.push(`bot-${Math.random().toString(36).substr(2, 9)}`);
+        }
+      }
+    }
+
+    if (playerIds.length < 2) {
+      throw new Error('Not enough players to start Sea Battle (minimum 2)');
+    }
+
+    console.log(
+      `[SeaBattle] Starting session with players: ${JSON.stringify(playerIds)}`,
+    );
 
     const session = await this.sessionsService.createSession({
       roomId,

@@ -211,6 +211,8 @@ export function ShipPlacementBoard({
                       $isClickable={!!selectedShip}
                       $isHighlighted={isHovered}
                       $theme={theme}
+                      data-row={rIndex}
+                      data-col={cIndex}
                       onMouseEnter={() => handleCellHover(rIndex, cIndex)}
                       onClick={() => handleCellClick(rIndex, cIndex)}
                     />

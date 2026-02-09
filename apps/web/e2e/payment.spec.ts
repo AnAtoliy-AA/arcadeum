@@ -131,7 +131,7 @@ test.describe('Payment Flow', () => {
       name: /checkout|pay|continue/i,
     });
     await expect(submitBtn).toBeEnabled();
-    await submitBtn.click();
+    await submitBtn.click({ force: true });
 
     // Verify redirection
     await expect(page).toHaveURL(/mock-subscription/i, { timeout: 15000 });

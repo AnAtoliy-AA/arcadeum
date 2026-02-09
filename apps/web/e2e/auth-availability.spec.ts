@@ -4,6 +4,7 @@ import { navigateTo } from './fixtures/test-utils';
 test.describe('Auth Availability Checking', () => {
   test.beforeEach(async ({ page }) => {
     await navigateTo(page, '/auth');
+    await page.waitForLoadState('networkidle');
   });
 
   test('should show availability status for username field in register mode', async ({

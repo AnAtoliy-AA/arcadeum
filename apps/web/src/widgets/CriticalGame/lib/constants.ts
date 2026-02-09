@@ -27,6 +27,7 @@ export const CARD_VARIANTS = [
     description: 'Crime noir theme with police raids and getaways',
     emoji: '🕵️‍♀️',
     gradient: 'linear-gradient(135deg, #F5A623 0%, #F8E71C 100%)',
+    disabled: true,
   },
   {
     id: GAME_VARIANT.HORROR,
@@ -34,6 +35,7 @@ export const CARD_VARIANTS = [
     description: 'Social horror theme at a dark sorcerer party',
     emoji: '👻',
     gradient: 'linear-gradient(135deg, #7928CA 0%, #FF0080 100%)',
+    disabled: true,
   },
   {
     id: GAME_VARIANT.ADVENTURE,
@@ -41,6 +43,7 @@ export const CARD_VARIANTS = [
     description: 'Survival adventure escaping an avalanche',
     emoji: '🏔️',
     gradient: 'linear-gradient(135deg, #4F566B 0%, #FF4D4D 100%)',
+    disabled: true,
   },
 ] as const;
 

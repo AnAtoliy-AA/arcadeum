@@ -68,7 +68,10 @@ export const beMessages = {
         needTwoPlayers: 'Патрэбна мінімум 2 гульцы',
         maxFourPlayers: 'Максімум 4 гульцы',
         hostCanStart: "Націсніце 'Пачаць гульню', калі гатовыя",
-        waitingForHost: 'Чаканне пачатку гульні хостам',
+        waitingForHost: 'Чакане пачатку гульні хостам',
+        hostControls: 'Упраўленне хоста',
+        roomInfo: 'Інфармацыя аб пакоі',
+        host: 'Хост',
       },
       victory: {
         title: 'Перамога!',

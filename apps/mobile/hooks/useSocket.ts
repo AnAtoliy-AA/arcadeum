@@ -77,7 +77,6 @@ function setupEncryptionKeyHandler(socket: AuthenticatedSocket): void {
 
     const success = setEncryptionKey(data.key);
     if (success) {
-      console.debug('[socket] Encryption key received and set');
       await flushMessageQueue();
     }
   });

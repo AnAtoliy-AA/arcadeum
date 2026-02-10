@@ -40,6 +40,7 @@ const commonMessagesDefinition = {
       tester: 'Tester',
       developer: 'Dev',
       admin: 'Admin',
+      user: 'User',
     },
   },
   es: {
@@ -81,6 +82,7 @@ const commonMessagesDefinition = {
       tester: 'Tester',
       developer: 'Dev',
       admin: 'Admin',
+      user: 'Usuario',
     },
   },
   fr: {
@@ -122,6 +124,7 @@ const commonMessagesDefinition = {
       tester: 'Testeur',
       developer: 'Dev',
       admin: 'Admin',
+      user: 'Utilisateur',
     },
   },
   ru: {
@@ -163,6 +166,7 @@ const commonMessagesDefinition = {
       tester: 'Тестер',
       developer: 'Разработчик',
       admin: 'Админ',
+      user: 'Пользователь',
     },
   },
   be: {
@@ -204,6 +208,7 @@ const commonMessagesDefinition = {
       tester: 'Тэстар',
       developer: 'Распрацоўшчык',
       admin: 'Адмін',
+      user: 'Карыстальнік',
     },
   },
 } satisfies Record<Locale, Record<string, unknown>>;

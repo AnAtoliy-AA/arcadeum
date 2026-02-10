@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { mockSession, navigateTo } from './fixtures/test-utils';
+import {
+  mockSession,
+  navigateTo,
+  closeRulesModal,
+} from './fixtures/test-utils';
 
 test.describe('Sea Battle Ships Left', () => {
   test.beforeEach(async ({ page }) => {
@@ -43,6 +47,7 @@ test.describe('Sea Battle Ships Left', () => {
     });
 
     await navigateTo(page, `/games/rooms/${roomId}`);
+    await closeRulesModal(page);
 
     // Mock socket/game state
     await page.evaluate(

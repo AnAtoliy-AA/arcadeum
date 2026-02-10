@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { mockSession, navigateTo } from './fixtures/test-utils';
+import {
+  mockSession,
+  navigateTo,
+  closeRulesModal,
+} from './fixtures/test-utils';
 
 test.describe('Sea Battle Bot Count Selection', () => {
   test.beforeEach(async ({ page }) => {
@@ -36,6 +40,7 @@ test.describe('Sea Battle Bot Count Selection', () => {
     });
 
     await navigateTo(page, `/games/rooms/${roomId}`);
+    await closeRulesModal(page);
 
     // Mock socket to handle join and start
     await page.evaluate(
@@ -104,6 +109,7 @@ test.describe('Sea Battle Bot Count Selection', () => {
     const startBtn = page.getByRole('button', { name: /Start with 4 🤖/i });
     await expect(startBtn).toBeVisible();
     await startBtn.click();
+    await closeRulesModal(page);
 
     // Verify payload
     const lastPayload = await page.evaluate(

@@ -69,6 +69,9 @@ export const enMessages = {
         maxFourPlayers: 'Maximum 4 players',
         hostCanStart: "Click 'Start Game' when ready",
         waitingForHost: 'Waiting for host to start the game',
+        hostControls: 'Host Controls',
+        roomInfo: 'Room Info',
+        host: 'Host',
       },
       victory: {
         title: 'Victory!',

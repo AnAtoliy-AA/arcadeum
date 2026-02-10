@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import React from 'react';
 import { SeaBattlePlayerState } from '../types';
+import { ShipsLeft } from './ShipsLeft';
 
 const TableContainer = styled.div`
   display: flex;
@@ -129,7 +130,7 @@ export function SeaBattleTable({
                   )),
                 )}
               </Grid>
-              <div>Ships: {player.shipsRemaining}</div>
+              <ShipsLeft ships={player.ships} isMe={isMe} />
             </PlayerSection>
           );
         })}

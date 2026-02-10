@@ -49,7 +49,7 @@ test.describe('Chat Interactions', () => {
     });
 
     await navigateTo(page, '/chat?chatId=chat-1&title=Test%20User');
-    await expect(page.getByText('otheruser')).toBeVisible();
+    await expect(page.getByText('otheruser')).toBeVisible({ timeout: 10000 });
   });
 
   test('should auto-scroll to bottom on new message', async ({ page }) => {

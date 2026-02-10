@@ -11,18 +11,18 @@ export const PresentationSection = styled(SectionContainer)`
 `;
 
 const pulse = keyframes`
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.1); opacity: 0.8; }
-  100% { transform: scale(1); opacity: 1; }
+  0% { transform: scale(1); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 0.5; }
+  100% { transform: scale(1.4); opacity: 0; }
 `;
 
 export const VideoContainer = styled.div`
   width: 100%;
   max-width: 1000px;
   position: relative;
-  border-radius: 20px;
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
   border: 1px solid ${({ theme }) => theme.surfaces.card.border};
   background: #000;
 
@@ -53,22 +53,20 @@ export const VideoPlaceholder = styled.div`
   align-items: center;
   justify-content: center;
   background: #000;
-
-  &:hover button {
-    background: #ff0000;
-    transform: scale(1.1);
-  }
 `;
 
 export const ThumbnailImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.7;
-  transition: opacity 0.3s ease;
+  opacity: 0.85;
+  transition:
+    opacity 0.5s ease,
+    transform 1.2s cubic-bezier(0.2, 0, 0, 1);
 
   ${VideoPlaceholder}:hover & {
-    opacity: 0.5;
+    opacity: 0.65;
+    transform: scale(1.08);
   }
 `;
 
@@ -79,70 +77,81 @@ export const PlaceholderOverlay = styled.div`
   align-items: center;
   justify-content: center;
   overflow: hidden;
-
-  .placeholder-bg {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        45deg,
-        rgba(255, 77, 77, 0.1) 0%,
-        rgba(249, 203, 40, 0.1) 50%,
-        rgba(77, 77, 255, 0.1) 100%
-      ),
-      url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZmlsdGVyIGlkPSJuIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC42IiBudW1PY3RhdmVzPSIzIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI24pIiBvcGFjaXR5PSIwLjA1Ii8+PC9zdmc+');
-    background-size: cover;
-    opacity: 0.6;
-    transition: transform 0.8s cubic-bezier(0.2, 0, 0, 1);
-  }
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  z-index: 1;
 
   &::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(
-      circle at center,
+    background: linear-gradient(
+      180deg,
       transparent 0%,
       rgba(0, 0, 0, 0.4) 100%
     );
-    z-index: 1;
-  }
-
-  ${VideoPlaceholder}:hover .placeholder-bg {
-    transform: scale(1.05);
-    opacity: 0.8;
   }
 `;
 
 export const PlayButton = styled.button`
   position: absolute;
-  width: 80px;
-  height: 80px;
-  background: rgba(255, 0, 0, 0.9);
-  border: none;
+  width: 90px;
+  height: 90px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(255, 255, 255, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
   z-index: 2;
 
   svg {
-    width: 32px;
-    height: 32px;
-    fill: #white;
-    margin-left: 4px;
-    filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
+    width: 38px;
+    height: 38px;
+    fill: white;
+    margin-left: 6px;
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
   }
 
   &::after {
     content: '';
     position: absolute;
-    width: 100%;
-    height: 100%;
+    inset: -3px;
     border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    animation: ${pulse} 2s infinite;
+    border: 2.5px solid rgba(255, 255, 255, 0.5);
+    animation: ${pulse} 3s infinite;
+  }
+
+  &:hover {
+    transform: scale(1.15);
+    background: linear-gradient(
+      135deg,
+      ${({ theme }) => theme.buttons.primary.gradientStart},
+      ${({ theme }) => theme.buttons.primary.gradientEnd}
+    );
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow:
+      0 12px 48px rgba(0, 0, 0, 0.4),
+      0 0 20px rgba(87, 195, 255, 0.3);
+
+    svg {
+      transform: scale(1.1);
+    }
+  }
+
+  &:active {
+    transform: scale(0.95);
   }
 `;

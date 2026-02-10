@@ -137,4 +137,10 @@ export const esMessages = {
   rules: {
     button: 'Reglas del Juego',
   },
+  lobby: {
+    botCountLabel: 'Número de bots',
+    startWithBots: 'Comenzar con {{count}} 🤖',
+    playWithBotsNotice:
+      'Empieza con bots inmediatamente o espera a otros jugadores',
+  },
 };

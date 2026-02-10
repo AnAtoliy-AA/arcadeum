@@ -138,4 +138,9 @@ export const enMessages = {
   rules: {
     button: 'Game Rules',
   },
+  lobby: {
+    botCountLabel: 'Number of bots',
+    startWithBots: 'Start with {{count}} 🤖',
+    playWithBotsNotice: 'Start with bots immediately or wait for other players',
+  },
 };

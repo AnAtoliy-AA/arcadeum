@@ -1,27 +1,6 @@
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { Button } from '@/shared/ui';
-
-// Animations
-export const slideIn = keyframes`
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-`;
-
-export const float = keyframes`
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-8px) rotate(3deg); }
-  75% { transform: translateY(-4px) rotate(-3deg); }
-`;
-
-export const shimmer = keyframes`
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-`;
-
-export const pulse = keyframes`
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.05); }
-`;
+import { slideIn, float, shimmer, pulse, diceRoll } from './lobbyAnimations';
 
 // Layout
 export const LobbyContent = styled.div`
@@ -90,12 +69,7 @@ export const RoomNameBadge = styled.div`
   backdrop-filter: blur(4px);
 `;
 
-const diceRoll = keyframes`
-  0%, 100% { transform: rotate(0deg) scale(1); }
-  25% { transform: rotate(-15deg) scale(1.1); }
-  50% { transform: rotate(15deg) scale(1); }
-  75% { transform: rotate(-5deg) scale(1.05); }
-`;
+// diceRoll imported from lobbyAnimations
 
 export const RoomNameIcon = styled.span`
   font-size: 1rem;
@@ -452,5 +426,52 @@ export const StartButton = styled.button<{ $gradient?: string }>`
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
+  }
+`;
+
+export const BotCountSelector = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+`;
+
+export const BotCountLabel = styled.div`
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: ${({ theme }) => theme.text.secondary};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+export const BotCountButtons = styled.div`
+  display: flex;
+  gap: 0.5rem;
+`;
+
+export const BotCountButton = styled.button<{ $active?: boolean }>`
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: ${({ $active }) =>
+    $active ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.05)'};
+  border: 1px solid
+    ${({ $active }) =>
+      $active ? 'rgba(99, 102, 241, 0.5)' : 'rgba(255, 255, 255, 0.1)'};
+  color: ${({ $active, theme }) => ($active ? '#6366f1' : theme.text.primary)};
+
+  &:hover:not(:disabled) {
+    background: ${({ $active }) =>
+      $active ? 'rgba(99, 102, 241, 0.25)' : 'rgba(255, 255, 255, 0.1)'};
+    border-color: ${({ $active }) =>
+      $active ? 'rgba(99, 102, 241, 0.6)' : 'rgba(255, 255, 255, 0.2)'};
   }
 `;

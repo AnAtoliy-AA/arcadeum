@@ -104,12 +104,8 @@ export class CriticalBotService {
       if (hostileActions.includes(actionType) && actionSender !== botId) {
         // High chance to Nope an attack (80%)
         if (Math.random() < 0.8) {
-          this.logger.debug(
-            `Bot ${botId} attempting to Nope action ${actionType} from ${actionSender}`,
-          );
           try {
             await this.criticalService.playNopeByRoom(botId, session.roomId);
-            this.logger.debug(`Bot ${botId} successfully Noped!`);
             return; // Turn ends/updates after Nope
           } catch (error) {
             this.logger.error(`Bot ${botId} failed to Nope: ${error}`);
@@ -154,10 +150,6 @@ export class CriticalBotService {
         playableCards[Math.floor(Math.random() * playableCards.length)];
       const target = this.getRandomOpponent(state, botId);
 
-      this.logger.debug(
-        `Bot ${botId} attempting to play card: ${card} targeting ${target}`,
-      );
-
       try {
         // Play action
         // We always pass a random target just in case the card needs it (ignored if not needed)
@@ -169,7 +161,6 @@ export class CriticalBotService {
             targetPlayerId: target,
           },
         );
-        this.logger.debug(`Bot ${botId} successfully played ${card}`);
       } catch (error) {
         this.logger.error(`Bot ${botId} failed to play card ${card}: ${error}`);
         // Fallback to draw card if action failed
@@ -189,7 +180,6 @@ export class CriticalBotService {
 
     // Default: Draw card
     try {
-      this.logger.debug(`Bot ${botId} drawing card`);
       await this.criticalService.drawCard(session.id, botId);
     } catch (error) {
       this.logger.error(`Bot ${botId} failed to draw card: ${error}`);
@@ -226,10 +216,6 @@ export class CriticalBotService {
 
       // Random position between 0 (top) and deckSize (bottom)
       const position = Math.floor(Math.random() * (deckSize + 1));
-
-      this.logger.debug(
-        `Bot ${botId} defusing. Deck size: ${deckSize}. Placing at: ${position}`,
-      );
 
       await this.criticalService.defuseByRoom(botId, session.roomId, position);
     } catch (error) {

@@ -1,4 +1,11 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+  forwardRef,
+} from '@nestjs/common';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import {
   GameSessionsService,
@@ -9,6 +16,7 @@ import { GamesRealtimeService } from '../games.realtime.service';
 import { StartGameSessionResult } from '../games.types';
 import { ChatScope } from '../engines/base/game-engine.interface';
 import { SeaBattleBotService } from './sea-battle-bot.service';
+import { MAX_PLAYERS } from '../engines/sea-battle/sea-battle.constants';
 
 interface PlaceShipPayload {
   shipId: string;
@@ -22,7 +30,10 @@ interface AttackPayload {
 }
 
 @Injectable()
-export class SeaBattleService {
+export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
+  private readonly logger = new Logger(SeaBattleService.name);
+  private watchdogInterval: NodeJS.Timeout | null = null;
+
   constructor(
     private readonly roomsService: GameRoomsService,
     private readonly sessionsService: GameSessionsService,
@@ -32,12 +43,74 @@ export class SeaBattleService {
     private readonly botService: SeaBattleBotService,
   ) {}
 
+  onModuleInit() {
+    this.startWatchdog();
+  }
+
+  onModuleDestroy() {
+    this.stopWatchdog();
+  }
+
+  private stopWatchdog() {
+    if (this.watchdogInterval) {
+      clearInterval(this.watchdogInterval);
+      this.watchdogInterval = null;
+    }
+  }
+
+  private startWatchdog() {
+    // Every 10 seconds, check active Sea Battle sessions that haven't moved for 20 seconds
+    this.watchdogInterval = setInterval(() => {
+      void (async () => {
+        try {
+          const staleSessions =
+            await this.sessionsService.findStaleActiveSessions(
+              'sea_battle_v1',
+              20000, // 20 seconds stale threshold
+              100, // Limit to 100 per cycle for safety
+            );
+
+          if (staleSessions.length > 0) {
+            for (const session of staleSessions) {
+              this.botService
+                .checkAndPlay(session)
+                .catch((err) =>
+                  this.logger.error(
+                    `Watchdog trigger failed for room ${session.roomId}: ${err}`,
+                  ),
+                );
+            }
+          }
+        } catch (error) {
+          this.logger.error(`Watchdog failed: ${error}`);
+        }
+      })();
+    }, 10000);
+  }
+
+  /**
+   * Find a session by room ID
+   */
+  async findSessionByRoom(roomId: string) {
+    const session = await this.sessionsService.findSessionByRoom(roomId);
+    if (session) {
+      return this.checkAndSyncRoomStatus(session);
+    }
+    return null;
+  }
+
   private async checkAndSyncRoomStatus(session: GameSessionSummary) {
     if (session.status === 'completed') {
       await this.roomsService.updateRoomStatus(session.roomId, 'completed');
     } else {
-      this.botService.checkAndPlay(session).catch((err) => {
-        console.error('Error in bot turn:', err);
+      // Trigger bot logic asynchronously
+      this.botService.checkAndPlay(session).catch((err: unknown) => {
+        const message = err instanceof Error ? err.message : String(err);
+        const stack = err instanceof Error ? err.stack : undefined;
+        this.logger.error(
+          `Error in bot turn for room ${session.roomId}: ${message}`,
+          stack,
+        );
       });
     }
     return session;
@@ -68,10 +141,8 @@ export class SeaBattleService {
     userId: string,
     roomId: string,
     withBots?: boolean,
+    botCount?: number,
   ): Promise<StartGameSessionResult> {
-    console.log(
-      `[SeaBattle] startSession requested by ${userId} for room ${roomId}, withBots=${withBots}`,
-    );
     const room = await this.roomsService.getRoom(roomId, userId);
 
     if (room.hostId !== userId) {
@@ -81,22 +152,22 @@ export class SeaBattleService {
     const participants = await this.roomsService.getRoomParticipants(roomId);
     const playerIds = [...participants];
 
-    console.log(
-      `[SeaBattle] Room has participants: ${JSON.stringify(playerIds)}`,
-    );
-
     // If only one player, automatically add a bot to meet minimum requirements (2 players)
     // This handles both explicit bot mode and fallback for single users
     if (playerIds.length === 1) {
-      console.log(`[SeaBattle] Auto-adding bot for single player session`);
-      const botId = `bot-${Math.random().toString(36).substr(2, 9)}`;
-      playerIds.push(botId);
+      const targetBotCount = botCount !== undefined ? botCount : 1;
+      const needed = Math.min(MAX_PLAYERS - 1, targetBotCount);
+      for (let i = 0; i < needed; i++) {
+        playerIds.push(`bot-${Math.random().toString(36).substr(2, 9)}`);
+      }
     } else if (withBots) {
-      const needed = 2 - playerIds.length;
-      if (needed > 0) {
-        for (let i = 0; i < needed; i++) {
-          playerIds.push(`bot-${Math.random().toString(36).substr(2, 9)}`);
-        }
+      const targetTotalPlayers = playerIds.length + (botCount || 1);
+      const needed = Math.min(
+        MAX_PLAYERS - playerIds.length,
+        Math.max(0, targetTotalPlayers - playerIds.length),
+      );
+      for (let i = 0; i < needed; i++) {
+        playerIds.push(`bot-${Math.random().toString(36).substr(2, 9)}`);
       }
     }
 
@@ -104,9 +175,11 @@ export class SeaBattleService {
       throw new Error('Not enough players to start Sea Battle (minimum 2)');
     }
 
-    console.log(
-      `[SeaBattle] Starting session with players: ${JSON.stringify(playerIds)}`,
-    );
+    if (playerIds.length > MAX_PLAYERS) {
+      throw new Error(
+        `Too many players to start Sea Battle (maximum ${MAX_PLAYERS})`,
+      );
+    }
 
     const session = await this.sessionsService.createSession({
       roomId,
@@ -131,7 +204,8 @@ export class SeaBattleService {
       },
     );
 
-    return { room, session };
+    const updatedSession = await this.checkAndSyncRoomStatus(session);
+    return { room, session: updatedSession };
   }
 
   /**

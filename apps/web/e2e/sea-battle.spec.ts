@@ -88,13 +88,13 @@ test.describe('Sea Battle Game Flow', () => {
     await navigateTo(page, '/games');
 
     // Look for create room link
-    const createLink = page.getByRole('link', { name: /create|new/i }).first();
+    const createLink = page.getByRole('link', { name: 'Create Room' });
+    await expect(createLink).toBeVisible();
+    await expect(createLink).toHaveAttribute('href', '/games/create');
 
-    if (await createLink.isVisible()) {
-      await createLink.click();
-      // Should navigate to create page
-      await expect(page).toHaveURL(/\/games\/create/);
-    }
+    await createLink.click();
+    // Should navigate to create page
+    await expect(page).toHaveURL(/.*\/games\/create/);
   });
 
   // New test for Auto Placement UI

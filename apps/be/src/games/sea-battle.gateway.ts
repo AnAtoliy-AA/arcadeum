@@ -30,7 +30,12 @@ export class SeaBattleGateway {
   async handleSessionStart(
     @ConnectedSocket() client: Socket,
     @MessageBody()
-    payload: { roomId?: string; userId?: string; withBots?: boolean },
+    payload: {
+      roomId?: string;
+      userId?: string;
+      withBots?: boolean;
+      botCount?: number;
+    },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const withBots = !!payload?.withBots;
@@ -40,6 +45,7 @@ export class SeaBattleGateway {
         userId,
         roomId,
         withBots,
+        payload?.botCount,
       );
       client.emit('seaBattle.session.started', result);
     } catch (error) {

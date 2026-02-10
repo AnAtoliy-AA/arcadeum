@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { BaseGameEngine } from '../base/base-game-engine.abstract';
 import {
   GameMetadata,
@@ -41,12 +41,14 @@ import {
 
 @Injectable()
 export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
+  private readonly logger = new Logger(SeaBattleEngine.name);
+
   getMetadata(): GameMetadata {
     return {
       gameId: 'sea_battle_v1',
       name: 'Sea Battle',
       minPlayers: 2,
-      maxPlayers: 4,
+      maxPlayers: 6,
       version: '1.0.0',
       description: 'Classic naval combat game',
       category: 'Strategy',
@@ -90,8 +92,15 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         return validatePlaceShip(state, player, payload as PlaceShipPayload);
       case 'autoPlace':
         return validateAutoPlace(state);
-      case 'confirmPlacement':
-        return validateConfirmPlacement(state, player);
+      case 'confirmPlacement': {
+        const isValid = validateConfirmPlacement(state, player);
+        if (!isValid) {
+          this.logger.error(
+            `[SeaBattleEngine] confirmPlacement validation failed for ${userId}. Phase: ${state.phase}, Ships: ${player.ships.length}/${SHIPS.length}, Ready: ${player.placementComplete}`,
+          );
+        }
+        return isValid;
+      }
       case 'attack':
         return validateAttack(state, player, payload as AttackPayload);
 
@@ -242,6 +251,13 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       state.phase = GAME_PHASE.BATTLE;
       state.logs.push(
         this.createLogEntry('system', 'All ships placed! Battle begins!'),
+      );
+    } else {
+      const readyCount = state.players.filter(
+        (p) => p.placementComplete,
+      ).length;
+      this.logger.debug(
+        `Player ${player.playerId} confirmed. Ready: ${readyCount}/${state.players.length}`,
       );
     }
 

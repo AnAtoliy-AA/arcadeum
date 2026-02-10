@@ -15,6 +15,8 @@ import {
 @Injectable()
 export class SeaBattleBotService {
   private readonly logger = new Logger(SeaBattleBotService.name);
+  private readonly processing = new Map<string, number>(); // lockKey -> timestamp
+  private readonly LOCK_TIMEOUT_MS = 30000; // 30 seconds
 
   constructor(
     @Inject(forwardRef(() => SeaBattleService))
@@ -26,25 +28,56 @@ export class SeaBattleBotService {
    */
   async checkAndPlay(session: GameSessionSummary) {
     try {
-      if (session.status !== 'active') return;
+      await Promise.resolve(); // Satisfy async requirement
+      if (session.status !== 'active') {
+        return;
+      }
 
       const state = session.state as unknown as SeaBattleState;
-      if (!state) return;
+      if (!state) {
+        this.logger.warn(
+          `checkAndPlay skipped: no state for session ${session.roomId}`,
+        );
+        return;
+      }
 
       const bots = state.players.filter((p: SeaBattlePlayer) =>
         this.isBot(p.playerId),
       );
 
+      const currentPlayerId = state.playerOrder[state.currentTurnIndex];
+
       for (const bot of bots) {
-        if (state.phase === GAME_PHASE.PLACEMENT) {
-          if (!bot.placementComplete) {
-            await this.handlePlacement(session, bot.playerId);
+        const lockKey = `${session.roomId}:${bot.playerId}`;
+        const isMyTurn =
+          state.phase === GAME_PHASE.BATTLE && currentPlayerId === bot.playerId;
+        const needsPlacement =
+          state.phase === GAME_PHASE.PLACEMENT && !bot.placementComplete;
+
+        if (!isMyTurn && !needsPlacement) {
+          continue;
+        }
+
+        const lockTime = this.processing.get(lockKey);
+        if (lockTime) {
+          const age = Date.now() - lockTime;
+          if (age < this.LOCK_TIMEOUT_MS) {
+            continue;
+          } else {
+            this.logger.warn(
+              `Bot ${bot.playerId} lock EXPIRED (age ${age}ms). Overriding.`,
+            );
           }
-        } else if (state.phase === GAME_PHASE.BATTLE) {
-          const currentPlayerId = state.playerOrder[state.currentTurnIndex];
-          if (currentPlayerId === bot.playerId) {
-            await this.playTurn(session, bot.playerId);
-          }
+        }
+
+        if (needsPlacement) {
+          this.handlePlacement(session, bot.playerId).catch((err) =>
+            this.logger.error(`Placement failed for ${bot.playerId}: ${err}`),
+          );
+        } else if (isMyTurn) {
+          this.playTurn(session, bot.playerId).catch((err) =>
+            this.logger.error(`Turn failed for ${bot.playerId}: ${err}`),
+          );
         }
       }
     } catch (error) {
@@ -61,124 +94,169 @@ export class SeaBattleBotService {
   }
 
   private async handlePlacement(session: GameSessionSummary, botId: string) {
-    await this.sleep(1000 + Math.random() * 2000);
+    const lockKey = `${session.roomId}:${botId}`;
+    this.processing.set(lockKey, Date.now());
 
-    // Auto place ships
-    await this.seaBattleService.autoPlaceShipsByRoom(botId, session.roomId);
+    try {
+      await this.sleep(1000 + Math.random() * 2000);
 
-    await this.sleep(500 + Math.random() * 1000);
+      // Check current state before auto-placing
+      let currentSession = await this.seaBattleService.findSessionByRoom(
+        session.roomId,
+      );
+      if (!currentSession) {
+        this.logger.warn(`Bot ${botId} handlePlacement: session not found`);
+        return;
+      }
+      let state = currentSession.state as unknown as SeaBattleState;
+      let botPlayer = state.players.find((p) => p.playerId === botId);
 
-    // Confirm placement
-    await this.seaBattleService.confirmPlacementByRoom(botId, session.roomId);
-  }
-
-  private async playTurn(session: GameSessionSummary, botId: string) {
-    await this.sleep(1000 + Math.random() * 1500);
-
-    const state = session.state as unknown as SeaBattleState;
-    const botPlayer = state.players.find(
-      (p: SeaBattlePlayer) => p.playerId === botId,
-    );
-    if (!botPlayer || !botPlayer.alive) return;
-
-    // Pick a target
-    const opponents = state.players.filter(
-      (p: SeaBattlePlayer) => p.playerId !== botId && p.alive,
-    );
-    if (opponents.length === 0) return;
-
-    const target = opponents[Math.floor(Math.random() * opponents.length)];
-
-    // Smart Target Logic: Finish off damaged ships
-    let choice: { r: number; c: number } | null = this.getSmartTarget(target);
-
-    if (!choice) {
-      // Use Hunt Mode (Random)
-      const validCells: { r: number; c: number }[] = [];
-      for (let r = 0; r < BOARD_SIZE; r++) {
-        for (let c = 0; c < BOARD_SIZE; c++) {
-          const cell = target.board[r][c];
-          if (cell !== CELL_STATE.HIT && cell !== CELL_STATE.MISS) {
-            validCells.push({ r, c });
-          }
-        }
+      if (
+        state.phase !== GAME_PHASE.PLACEMENT ||
+        botPlayer?.placementComplete
+      ) {
+        return;
       }
 
-      if (validCells.length === 0) return;
-      choice = validCells[Math.floor(Math.random() * validCells.length)];
-    }
+      // Auto place ships
+      await this.seaBattleService.autoPlaceShipsByRoom(botId, session.roomId);
 
-    await this.seaBattleService.attackByRoom(botId, session.roomId, {
-      targetPlayerId: target.playerId,
-      row: choice.r,
-      col: choice.c,
-    });
+      await this.sleep(500 + Math.random() * 1000);
+
+      // Check current state again before confirming
+      currentSession = await this.seaBattleService.findSessionByRoom(
+        session.roomId,
+      );
+      if (!currentSession) return;
+      state = currentSession.state as unknown as SeaBattleState;
+      botPlayer = state.players.find((p) => p.playerId === botId);
+
+      if (
+        state.phase !== GAME_PHASE.PLACEMENT ||
+        botPlayer?.placementComplete
+      ) {
+        return;
+      }
+
+      // Confirm placement
+      await this.seaBattleService.confirmPlacementByRoom(botId, session.roomId);
+    } finally {
+      this.processing.delete(lockKey);
+      // Re-trigger check in case battle phase started while we were locked
+      const latestSession = await this.seaBattleService.findSessionByRoom(
+        session.roomId,
+      );
+      if (latestSession) {
+        this.checkAndPlay(latestSession).catch((err) =>
+          this.logger.error(`Re-trigger failed for ${botId}: ${err}`),
+        );
+      }
+    }
+  }
+
+  private async playTurn(sessionSnapshot: GameSessionSummary, botId: string) {
+    const lockKey = `${sessionSnapshot.roomId}:${botId}`;
+    this.processing.set(lockKey, Date.now());
+
+    try {
+      let isStillMyTurn = true;
+      let currentSession = sessionSnapshot;
+
+      while (isStillMyTurn) {
+        await this.sleep(1000 + Math.random() * 1500);
+
+        const state = currentSession.state as unknown as SeaBattleState;
+        const botPlayer = state.players.find(
+          (p: SeaBattlePlayer) => p.playerId === botId,
+        );
+        if (!botPlayer || !botPlayer.alive) {
+          this.logger.warn(
+            `Bot ${botId} playTurn: bot not found or dead (alive=${botPlayer?.alive})`,
+          );
+          break;
+        }
+
+        // Verify it is still our turn (in case of double triggers or phase changes)
+        const currentPlayerId = state.playerOrder[state.currentTurnIndex];
+        if (currentPlayerId !== botId || state.phase !== GAME_PHASE.BATTLE) {
+          break;
+        }
+
+        // Pick a target: prioritize opponents with damaged ships (Locked-on strategy)
+        const activeOpponents = state.players.filter(
+          (p: SeaBattlePlayer) => p.playerId !== botId && p.alive,
+        );
+        if (activeOpponents.length === 0) {
+          this.logger.warn(`Bot ${botId} playTurn: NO ACTIVE OPPONENTS FOUND!`);
+          break;
+        }
+
+        const damagedOpponent = activeOpponents.find((p) =>
+          p.ships.some((s: Ship) => s.hits > 0 && !s.sunk),
+        );
+
+        const target =
+          damagedOpponent ||
+          activeOpponents[Math.floor(Math.random() * activeOpponents.length)];
+
+        // Smart Target Logic: Finish off damaged ships
+        let choice: { r: number; c: number } | null =
+          this.getSmartTarget(target);
+
+        if (!choice) {
+          // Use Hunt Mode (Random)
+          const validCells: { r: number; c: number }[] = [];
+          for (let r = 0; r < BOARD_SIZE; r++) {
+            for (let c = 0; c < BOARD_SIZE; c++) {
+              const cell = target.board[r][c];
+              if (cell !== CELL_STATE.HIT && cell !== CELL_STATE.MISS) {
+                validCells.push({ r, c });
+              }
+            }
+          }
+
+          if (validCells.length === 0) {
+            break;
+          }
+          choice = validCells[Math.floor(Math.random() * validCells.length)];
+        }
+
+        // Execute attack and update currentSession
+        currentSession = await this.seaBattleService.attackByRoom(
+          botId,
+          currentSession.roomId,
+          {
+            targetPlayerId: target.playerId,
+            row: choice.r,
+            col: choice.c,
+          },
+        );
+
+        // Check if it's still our turn after the attack (hit = true, miss = false)
+        const newState = currentSession.state as unknown as SeaBattleState;
+        const nextPlayerId = newState.playerOrder[newState.currentTurnIndex];
+        isStillMyTurn =
+          nextPlayerId === botId && newState.phase === GAME_PHASE.BATTLE;
+      }
+    } finally {
+      this.processing.delete(lockKey);
+    }
   }
 
   private getSmartTarget(
     target: SeaBattlePlayer,
   ): { r: number; c: number } | null {
     // Find a damaged but not sunk ship
-    const damagedShip = target.ships.find(
-      (s: Ship) => s.hits > 0 && s.hits < s.size,
-    );
+    const damagedShip = target.ships.find((s: Ship) => s.hits > 0 && !s.sunk);
 
     if (damagedShip) {
-      // Find valid neighbors for the damaged ship
-      const hitCells = damagedShip.cells.filter(
-        (c: { row: number; col: number }) =>
-          target.board[c.row][c.col] === CELL_STATE.HIT,
+      // Pick the first cell of this ship that isn't hit yet
+      const nextCell = damagedShip.cells.find(
+        (c) => target.board[c.row][c.col] !== CELL_STATE.HIT,
       );
 
-      const candidates: { r: number; c: number }[] = [];
-
-      if (hitCells.length > 1) {
-        // Determine direction
-        const sorted = [...hitCells].sort(
-          (a, b) => a.row - b.row || a.col - b.col,
-        );
-        const first = sorted[0];
-        const last = sorted[sorted.length - 1];
-
-        if (first && last) {
-          const isVertical = first.col === last.col;
-
-          if (isVertical) {
-            candidates.push({ r: first.row - 1, c: first.col });
-            candidates.push({ r: last.row + 1, c: last.col });
-          } else {
-            candidates.push({ r: first.row, c: first.col - 1 });
-            candidates.push({ r: first.row, c: first.col + 1 });
-          }
-        }
-      } else if (hitCells.length === 1) {
-        // Try all 4 neighbors
-        const hit = hitCells[0];
-        if (hit) {
-          candidates.push({ r: hit.row - 1, c: hit.col });
-          candidates.push({ r: hit.row + 1, c: hit.col });
-          candidates.push({ r: hit.row, c: hit.col - 1 });
-          candidates.push({ r: hit.row, c: hit.col + 1 });
-        }
-      }
-
-      // Filter valid candidates
-      const validCandidates = candidates.filter((pos) => {
-        if (
-          pos.r < 0 ||
-          pos.r >= BOARD_SIZE ||
-          pos.c < 0 ||
-          pos.c >= BOARD_SIZE
-        )
-          return false;
-        const cell = target.board[pos.r][pos.c];
-        return cell !== CELL_STATE.HIT && cell !== CELL_STATE.MISS;
-      });
-
-      if (validCandidates.length > 0) {
-        return validCandidates[
-          Math.floor(Math.random() * validCandidates.length)
-        ];
+      if (nextCell) {
+        return { r: nextCell.row, c: nextCell.col };
       }
     }
 

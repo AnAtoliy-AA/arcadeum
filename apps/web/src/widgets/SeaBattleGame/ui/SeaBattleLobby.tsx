@@ -10,6 +10,7 @@ import { MIN_PLAYERS } from '../types';
 import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { VariantSelector } from './VariantSelector';
 import styled from 'styled-components';
+import { TranslationKey } from '@/shared/lib/useTranslation';
 
 const VariantSelectorWrapper = styled.div`
   margin-left: 1rem;
@@ -40,8 +41,9 @@ interface SeaBattleLobbyProps {
   room: GameRoomSummary;
   isHost: boolean;
   startBusy: boolean;
-  onStartGame: (options?: { withBots?: boolean }) => void;
+  onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
+  t: (key: TranslationKey) => string;
 }
 
 export function SeaBattleLobby({
@@ -50,10 +52,20 @@ export function SeaBattleLobby({
   startBusy,
   onStartGame,
   onReorderPlayers,
+  t,
 }: SeaBattleLobbyProps) {
   const currentVariant = (room.gameOptions?.variant as string) || 'classic';
   const theme = getSeaBattleTheme(currentVariant);
   const variantInfo = getVariantInfo(currentVariant);
+
+  const getSubtitleText = () => {
+    if (room.status !== 'lobby') return t('games.roomPage.errors.loadingRoom'); // Fallback to a valid key or similar
+    if (room.playerCount === 1) return t('games.lobby.playWithBotsNotice');
+    if (room.playerCount < MIN_PLAYERS)
+      return t('games.table.lobby.needTwoPlayers');
+    if (isHost) return t('games.table.lobby.hostCanStart');
+    return t('games.table.lobby.waitingForHost');
+  };
 
   const optionsSlot =
     isHost && room.status === 'lobby' ? (
@@ -74,13 +86,16 @@ export function SeaBattleLobby({
       roomIcon={variantInfo.emoji || '⚓'}
       variantName={variantInfo.name}
       minPlayers={MIN_PLAYERS}
-      waitingLabel="Waiting for sailors..."
-      playersLabel="Sailors"
-      hostControlsLabel="Captain's Orders"
-      startLabel="Launch Battle!"
-      startingLabel="Launching..."
-      roomInfoLabel="Ship Info"
-      fastRoomLabel="Speed Mode"
+      waitingLabel={t('games.seaBattle.table.lobby.waitingToStart')}
+      subtitleText={getSubtitleText()}
+      playersLabel={t('games.rooms.playersLabel')}
+      hostControlsLabel={t('games.table.lobby.hostControls')}
+      startLabel={t('games.seaBattle.table.actions.start')}
+      startingLabel={t('games.seaBattle.table.actions.starting')}
+      roomInfoLabel={t('games.table.lobby.roomInfo')}
+      fastRoomLabel={t('games.rooms.fastRoom')}
+      botCountLabel={t('games.lobby.botCountLabel')}
+      startWithBotsLabel={t('games.lobby.startWithBots')}
       theme={theme}
       showReorderControls={true}
       showInvitedPlayers={false}

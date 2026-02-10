@@ -14,6 +14,9 @@ import { StartGameDto } from './dtos/start-game.dto';
 import { StartGameSessionResult } from './games.types';
 import { ListRoomsFilters } from './rooms/game-rooms.types';
 import { GamesRematchService } from './games.rematch.service';
+import { SeaBattleService } from './sea-battle/sea-battle.service';
+import { CriticalService } from './critical/critical.service';
+import { Inject, forwardRef } from '@nestjs/common';
 
 /**
  * Games Service Facade
@@ -32,6 +35,10 @@ export class GamesService {
     private readonly utilities: GameUtilitiesService,
     private readonly authService: AuthService,
     private readonly rematchService: GamesRematchService,
+    @Inject(forwardRef(() => SeaBattleService))
+    private readonly seaBattleService: SeaBattleService,
+    @Inject(forwardRef(() => CriticalService))
+    private readonly criticalService: CriticalService,
   ) {}
 
   // ========== Room Operations ==========
@@ -97,8 +104,14 @@ export class GamesService {
       ? await this.sessionsService.findSessionByRoom(dto.roomId)
       : null;
 
-    // Emit real-time event
-    this.realtimeService.emitPlayerJoined(room, userId);
+    // Trigger bot if exists
+    if (session) {
+      if (room.gameId === 'sea_battle_v1') {
+        await this.seaBattleService.findSessionByRoom(room.id);
+      } else if (room.gameId === 'critical_v1') {
+        await this.criticalService.findSessionByRoom(room.id);
+      }
+    }
 
     return { room, session };
   }
@@ -387,7 +400,15 @@ export class GamesService {
    * Find session by room ID
    */
   async findSessionByRoom(roomId: string) {
-    return this.sessionsService.findSessionByRoom(roomId);
+    const session = await this.sessionsService.findSessionByRoom(roomId);
+    if (session) {
+      if (session.gameId === 'sea_battle_v1') {
+        await this.seaBattleService.findSessionByRoom(roomId);
+      } else if (session.gameId === 'critical_v1') {
+        await this.criticalService.findSessionByRoom(roomId);
+      }
+    }
+    return session;
   }
 
   /**

@@ -46,7 +46,7 @@ export interface CriticalLobbyProps {
   isFullscreen: boolean;
   containerRef: React.RefObject<HTMLDivElement | null>;
   onToggleFullscreen: () => void;
-  onStartGame: (options?: { withBots?: boolean }) => void;
+  onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
   t: (key: string) => string;
@@ -75,7 +75,7 @@ export function CriticalLobby({
   const getSubtitleText = () => {
     if (room.status !== 'lobby') return t('games.table.lobby.gameLoading');
     // If 1 player, we can start with bots
-    if (room.playerCount === 1) return 'Play with bots or invite friends';
+    if (room.playerCount === 1) return t('games.lobby.playWithBotsNotice'); // I'll add this one too
     // If < 2 players (0?), shouldn't happen but fallback
     if (room.playerCount < 2) return t('games.table.lobby.needTwoPlayers');
     if (isHost) return t('games.table.lobby.hostCanStart');
@@ -150,6 +150,8 @@ export function CriticalLobby({
       declinedLabel={t('games.table.lobby.statusDeclined')}
       reinviteLabel={t('games.table.lobby.reinvite')}
       fastRoomLabel={t('games.rooms.fastRoom')}
+      botCountLabel={t('games.lobby.botCountLabel')}
+      startWithBotsLabel={t('games.lobby.startWithBots')}
       // Theme
       theme={theme}
       isFastMode={isFastMode}

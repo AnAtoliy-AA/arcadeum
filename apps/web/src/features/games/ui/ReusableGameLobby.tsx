@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import type { GameRoomSummary } from '@/shared/types/games';
 import {
   LobbyContent,
@@ -28,6 +28,10 @@ import {
   HeaderActions,
   IconButton,
   StartButton,
+  BotCountSelector,
+  BotCountLabel,
+  BotCountButtons,
+  BotCountButton,
 } from './lobbyStyles';
 import { LobbySidebar } from './LobbySidebar';
 
@@ -50,7 +54,7 @@ export interface ReusableGameLobbyProps {
   isFullscreen?: boolean;
   containerRef?: React.RefObject<HTMLDivElement | null>;
   onToggleFullscreen?: () => void;
-  onStartGame: (options?: { withBots?: boolean }) => void;
+  onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
 
@@ -83,7 +87,8 @@ export interface ReusableGameLobbyProps {
   declinedLabel?: string;
   reinviteLabel?: string;
   fastRoomLabel?: string;
-
+  botCountLabel?: string;
+  startWithBotsLabel?: string;
   // Theme
   theme?: GameLobbyTheme;
 
@@ -139,8 +144,10 @@ export function ReusableGameLobby({
   waitingForPlayerLabel = 'Waiting for player...',
   invitedPlayersLabel = 'Invited Players',
   declinedLabel = 'Declined',
-  reinviteLabel = 'Reinvite',
-  fastRoomLabel = 'Fast Mode',
+  reinviteLabel = 'Re-invite',
+  fastRoomLabel = 'Fast Room',
+  botCountLabel = 'Number of bots',
+  startWithBotsLabel = 'Start with {{count}} 🤖',
   theme = {},
   isFastMode,
   optionsSlot,
@@ -152,11 +159,10 @@ export function ReusableGameLobby({
   showInvitedPlayers = true,
   enableBots = false,
 }: ReusableGameLobbyProps) {
+  const [botCount, setBotCount] = useState(1);
   const members = room.members ?? [];
-  const maxPlayers = room.maxPlayers ?? 5;
+  const maxPlayers = room.maxPlayers ?? 6;
   const progress = Math.round((room.playerCount / maxPlayers) * 100);
-  const canStart =
-    room.playerCount >= minPlayers || (enableBots && room.playerCount === 1);
 
   const defaultSubtitle = useMemo(() => {
     if (room.status !== 'lobby') {
@@ -243,21 +249,47 @@ export function ReusableGameLobby({
           {isHost && room.status === 'lobby' && (
             <HostControls>
               <HostLabel>{hostControlsLabel}</HostLabel>
+              {enableBots && room.playerCount === 1 && (
+                <BotCountSelector>
+                  <BotCountLabel>{botCountLabel}</BotCountLabel>
+                  <BotCountButtons>
+                    {Array.from(
+                      { length: maxPlayers - 1 },
+                      (_, i) => i + 1,
+                    ).map((count) => (
+                      <BotCountButton
+                        key={count}
+                        $active={botCount === count}
+                        onClick={() => setBotCount(count)}
+                      >
+                        {count}
+                      </BotCountButton>
+                    ))}
+                  </BotCountButtons>
+                </BotCountSelector>
+              )}
               <StartButton
                 onClick={() => {
                   if (enableBots && room.playerCount === 1) {
-                    onStartGame({ withBots: true });
+                    onStartGame({ withBots: true, botCount });
                   } else {
                     onStartGame();
                   }
                 }}
-                disabled={startBusy || !canStart}
-                $gradient={theme.buttonGradient}
+                disabled={
+                  startBusy ||
+                  (room.playerCount < (minPlayers || 2) &&
+                    !(enableBots && room.playerCount === 1))
+                }
+                $gradient={theme?.buttonGradient}
               >
                 {startBusy
                   ? startingLabel
                   : enableBots && room.playerCount === 1
-                    ? 'Start with 🤖'
+                    ? startWithBotsLabel.replace(
+                        '{{count}}',
+                        botCount.toString(),
+                      )
                     : startLabel}
               </StartButton>
             </HostControls>

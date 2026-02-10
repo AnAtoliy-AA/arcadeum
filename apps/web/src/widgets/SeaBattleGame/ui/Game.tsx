@@ -102,7 +102,7 @@ export default function SeaBattleGame({
   });
 
   const handleStartGame = useCallback(
-    (options?: { withBots?: boolean }) => {
+    (options?: { withBots?: boolean; botCount?: number }) => {
       const memberCount = room.members?.length || 0;
       if (
         memberCount >= MIN_PLAYERS ||
@@ -211,6 +211,7 @@ export default function SeaBattleGame({
             startBusy={!!startBusy}
             onStartGame={handleStartGame}
             onReorderPlayers={handleReorderPlayers}
+            t={t}
           />
         ) : undefined
       }

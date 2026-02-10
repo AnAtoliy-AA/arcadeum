@@ -122,23 +122,7 @@ export class GamesRealtimeService {
           diffSession = this.filterSessionForSpectators(session);
         }
 
-        // Trace logging for private messages
-        if (session.state && typeof session.state === 'object') {
-          const stateObj = session.state;
-          const diffStateObj = diffSession.state;
-          const originalLogs = Array.isArray(stateObj.logs)
-            ? stateObj.logs
-            : [];
-          const finalLogs = Array.isArray(diffStateObj.logs)
-            ? diffStateObj.logs
-            : [];
-          if (originalLogs.length > finalLogs.length) {
-            this.logger.debug(
-              `[Security] Filtered ${originalLogs.length - finalLogs.length} logs for user ${userId || 'anonymous'}`,
-            );
-          }
-        }
-
+        // Send snapshot
         socket.emit(
           'games.session.snapshot',
           maybeEncrypt({

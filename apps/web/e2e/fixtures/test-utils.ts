@@ -99,3 +99,18 @@ export async function mockSession(page: Page): Promise<void> {
     );
   });
 }
+
+/**
+ * Close Sea Battle rules modal if it's visible.
+ * This is useful to clear the screen for interaction in E2E tests.
+ */
+export async function closeRulesModal(page: Page): Promise<void> {
+  const closeButton = page.getByRole('button', { name: '×' });
+  try {
+    await closeButton.waitFor({ state: 'visible', timeout: 3000 });
+    await closeButton.click({ force: true });
+    await closeButton.waitFor({ state: 'hidden', timeout: 3000 });
+  } catch {
+    // Modal might not have appeared or already closed
+  }
+}

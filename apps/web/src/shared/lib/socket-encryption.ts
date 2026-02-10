@@ -29,7 +29,6 @@ export function hasEncryptionKey(): boolean {
  */
 export async function setEncryptionKey(keyHex: string): Promise<boolean> {
   if (!keyHex || keyHex.length !== 64) {
-    console.error('[socket-encryption] Invalid key format');
     return false;
   }
 
@@ -54,10 +53,8 @@ export async function setEncryptionKey(keyHex: string): Promise<boolean> {
       ['encrypt', 'decrypt'],
     );
 
-    console.debug('[socket-encryption] Encryption key set');
     return true;
-  } catch (error) {
-    console.error('[socket-encryption] Failed to set encryption key:', error);
+  } catch {
     return false;
   }
 }
@@ -177,9 +174,6 @@ export async function maybeDecrypt<T = unknown>(
 
   if (!isSocketEncryptionEnabled() || !hasEncryptionKey()) {
     if (isEncrypted) {
-      console.warn(
-        '[socket-encryption] Received encrypted payload but encryption is disabled or key missing',
-      );
       return null;
     }
     return payload as T;
@@ -190,8 +184,7 @@ export async function maybeDecrypt<T = unknown>(
       return await decryptPayload<T>(
         (payload as Record<string, string>).__encrypted,
       );
-    } catch (error) {
-      console.error('[socket-encryption] Decryption failed:', error);
+    } catch {
       return null;
     }
   }

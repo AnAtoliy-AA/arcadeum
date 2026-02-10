@@ -69,6 +69,9 @@ export const esMessages = {
         maxFourPlayers: 'Máximo 4 jugadores',
         hostCanStart: "Haz clic en 'Iniciar Juego' cuando estés listo",
         waitingForHost: 'Esperando al anfitrión',
+        hostControls: 'Controles del Anfitrión',
+        roomInfo: 'Información de la Sala',
+        host: 'Anfitrión',
       },
       victory: {
         title: '¡Victoria!',

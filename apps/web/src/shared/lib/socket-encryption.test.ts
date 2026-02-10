@@ -81,25 +81,19 @@ describe('socket-encryption', () => {
     expect(await maybeEncrypt(payload)).toBe(payload); // No key yet
   });
 
-  it('maybeDecrypt returns null and warns if received encrypted when disabled', async () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  it('maybeDecrypt returns null if received encrypted when disabled', async () => {
     const payload = { __encrypted: 'some-data' };
     vi.stubEnv('NEXT_PUBLIC_SOCKET_ENCRYPTION_ENABLED', 'false');
 
     const result = await maybeDecrypt(payload);
     expect(result).toBeNull();
-    expect(warnSpy).toHaveBeenCalled();
-    warnSpy.mockRestore();
   });
 
   it('maybeDecrypt returns null on decryption error', async () => {
-    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     await setEncryptionKey(VALID_KEY_HEX);
     const result = await maybeDecrypt({
       __encrypted: 'invalid-base-64-content!!',
     });
     expect(result).toBeNull();
-    expect(errorSpy).toHaveBeenCalled();
-    errorSpy.mockRestore();
   });
 });

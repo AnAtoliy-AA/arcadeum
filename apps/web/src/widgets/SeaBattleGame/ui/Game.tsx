@@ -25,6 +25,9 @@ import { ChatScope } from '@/shared/types/games';
 import { GameLayout } from '@/features/games/ui/GameLayout';
 import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 
+import { RulesModal } from './RulesModal';
+import { FullscreenButton } from '@/widgets/CriticalGame/ui/styles';
+
 const Header = styled.div`
   height: 60px;
   background: rgba(0, 0, 0, 0.3);
@@ -51,6 +54,7 @@ export default function SeaBattleGame({
 
   // Chat State
   const [showChat, setShowChat] = useState(true);
+  const [showRules, setShowRules] = useState(true);
   const [chatMessage, setChatMessage] = useState('');
   const [chatScope, setChatScope] = useState<ChatScope>('all');
   // Result Modal State
@@ -211,6 +215,7 @@ export default function SeaBattleGame({
             startBusy={!!startBusy}
             onStartGame={handleStartGame}
             onReorderPlayers={handleReorderPlayers}
+            onShowRules={setShowRules}
             t={t}
           />
         ) : undefined
@@ -235,21 +240,30 @@ export default function SeaBattleGame({
               {getTurnStatusText()}
             </div>
           </div>
-          {snapshot && (
-            <button
-              onClick={handleToggleChat}
-              style={{
-                background: 'rgba(255,255,255,0.1)',
-                border: '1px solid rgba(255,255,255,0.2)',
-                color: 'white',
-                padding: '8px 16px',
-                borderRadius: '8px',
-                cursor: 'pointer',
-              }}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <FullscreenButton
+              onClick={() => setShowRules(true)}
+              title="Game Rules"
+              style={{ fontSize: '1.2rem' }}
             >
-              {showChat ? 'Hide Chat' : 'Chat'}
-            </button>
-          )}
+              📖
+            </FullscreenButton>
+            {snapshot && (
+              <button
+                onClick={handleToggleChat}
+                style={{
+                  background: 'rgba(255,255,255,0.1)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  color: 'white',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                }}
+              >
+                {showChat ? 'Hide Chat' : 'Chat'}
+              </button>
+            )}
+          </div>
         </Header>
       }
       showChat={showChat}
@@ -272,6 +286,59 @@ export default function SeaBattleGame({
             onClose={handleToggleChat}
           />
         ) : undefined
+      }
+      modals={
+        <>
+          <RulesModal
+            isOpen={showRules}
+            onClose={() => setShowRules(false)}
+            t={t}
+          />
+          <GameResultModal
+            isOpen={showResultModal && !!(isGameOver || snapshot?.winnerId)}
+            result={gameResult}
+            onRematch={isHost ? openRematchModal : undefined}
+            onClose={() => setShowResultModal(false)}
+            rematchLoading={rematchLoading}
+            t={t}
+          />
+
+          <RematchModal
+            isOpen={showRematchModal}
+            players={
+              snapshot?.players.map((p) => ({
+                playerId: p.playerId,
+                displayName: resolveDisplayName(
+                  p.playerId,
+                  `Player ${p.playerId.slice(0, 4)}`,
+                ),
+                alive: p.alive,
+              })) || []
+            }
+            currentUserId={currentUserId}
+            rematchLoading={rematchLoading}
+            onClose={closeRematchModal}
+            onConfirm={handleRematch}
+            t={t}
+            cardVariant={cardVariant}
+          />
+
+          <RematchInvitationModal
+            isOpen={!!invitation}
+            hostName={invitation?.hostName || ''}
+            hostId={invitation?.hostId}
+            roomId={invitation?.newRoomId}
+            message={invitation?.message}
+            timeLeft={invitationTimeLeft}
+            onAccept={handleAcceptInvitation}
+            onDecline={handleDeclineInvitation}
+            onBlockRematch={handleBlockRematch}
+            onBlockUser={handleBlockUser}
+            accepting={isAcceptingInvitation}
+            t={t}
+            cardVariant={cardVariant}
+          />
+        </>
       }
     >
       {snapshot && isPlacementPhase && (
@@ -296,50 +363,6 @@ export default function SeaBattleGame({
           variant={cardVariant}
         />
       )}
-      <GameResultModal
-        isOpen={showResultModal && !!(isGameOver || snapshot?.winnerId)}
-        result={gameResult}
-        onRematch={isHost ? openRematchModal : undefined}
-        onClose={() => setShowResultModal(false)}
-        rematchLoading={rematchLoading}
-        t={t}
-      />
-
-      <RematchModal
-        isOpen={showRematchModal}
-        players={
-          snapshot?.players.map((p) => ({
-            playerId: p.playerId,
-            displayName: resolveDisplayName(
-              p.playerId,
-              `Player ${p.playerId.slice(0, 4)}`,
-            ),
-            alive: p.alive,
-          })) || []
-        }
-        currentUserId={currentUserId}
-        rematchLoading={rematchLoading}
-        onClose={closeRematchModal}
-        onConfirm={handleRematch}
-        t={t}
-        cardVariant={cardVariant}
-      />
-
-      <RematchInvitationModal
-        isOpen={!!invitation}
-        hostName={invitation?.hostName || ''}
-        hostId={invitation?.hostId}
-        roomId={invitation?.newRoomId}
-        message={invitation?.message}
-        timeLeft={invitationTimeLeft}
-        onAccept={handleAcceptInvitation}
-        onDecline={handleDeclineInvitation}
-        onBlockRematch={handleBlockRematch}
-        onBlockUser={handleBlockUser}
-        accepting={isAcceptingInvitation}
-        t={t}
-        cardVariant={cardVariant}
-      />
     </GameLayout>
   );
 }

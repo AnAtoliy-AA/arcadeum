@@ -11,6 +11,8 @@ import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { VariantSelector } from './VariantSelector';
 import styled from 'styled-components';
 import { TranslationKey } from '@/shared/lib/useTranslation';
+import { IconButton } from '@/features/games/ui/ReusableGameLobby';
+// RulesModal is handled by the parent Game component via GameLayout.modals
 
 const VariantSelectorWrapper = styled.div`
   margin-left: 1rem;
@@ -43,7 +45,8 @@ interface SeaBattleLobbyProps {
   startBusy: boolean;
   onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
-  t: (key: TranslationKey) => string;
+  onShowRules: (show: boolean) => void;
+  t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
 
 export function SeaBattleLobby({
@@ -52,6 +55,7 @@ export function SeaBattleLobby({
   startBusy,
   onStartGame,
   onReorderPlayers,
+  onShowRules,
   t,
 }: SeaBattleLobbyProps) {
   const currentVariant = (room.gameOptions?.variant as string) || 'classic';
@@ -59,7 +63,7 @@ export function SeaBattleLobby({
   const variantInfo = getVariantInfo(currentVariant);
 
   const getSubtitleText = () => {
-    if (room.status !== 'lobby') return t('games.roomPage.errors.loadingRoom'); // Fallback to a valid key or similar
+    if (room.status !== 'lobby') return t('games.roomPage.errors.loadingRoom');
     if (room.playerCount === 1) return t('games.lobby.playWithBotsNotice');
     if (room.playerCount < MIN_PLAYERS)
       return t('games.table.lobby.needTwoPlayers');
@@ -73,6 +77,16 @@ export function SeaBattleLobby({
         <VariantSelector roomId={room.id} currentVariant={currentVariant} />
       </VariantSelectorWrapper>
     ) : null;
+
+  const headerActionsSlot = (
+    <IconButton
+      onClick={() => onShowRules(true)}
+      title="Game Rules"
+      style={{ fontSize: '1.2rem' }}
+    >
+      📖
+    </IconButton>
+  );
 
   return (
     <ReusableGameLobby
@@ -89,10 +103,10 @@ export function SeaBattleLobby({
       waitingLabel={t('games.seaBattle.table.lobby.waitingToStart')}
       subtitleText={getSubtitleText()}
       playersLabel={t('games.rooms.playersLabel')}
-      hostControlsLabel={t('games.table.lobby.hostControls')}
+      hostControlsLabel={t('games.seaBattle.table.lobby.hostControls')}
       startLabel={t('games.seaBattle.table.actions.start')}
       startingLabel={t('games.seaBattle.table.actions.starting')}
-      roomInfoLabel={t('games.table.lobby.roomInfo')}
+      roomInfoLabel={t('games.seaBattle.table.lobby.roomInfo')}
       fastRoomLabel={t('games.rooms.fastRoom')}
       botCountLabel={t('games.lobby.botCountLabel')}
       startWithBotsLabel={t('games.lobby.startWithBots')}
@@ -100,6 +114,7 @@ export function SeaBattleLobby({
       showReorderControls={true}
       showInvitedPlayers={false}
       optionsSlot={optionsSlot}
+      headerActionsSlot={headerActionsSlot}
       enableBots={true}
     />
   );

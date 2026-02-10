@@ -69,6 +69,9 @@ export const frMessages = {
         maxFourPlayers: 'Maximum 4 joueurs',
         hostCanStart: "Cliquez sur 'Démarrer' quand vous êtes prêt",
         waitingForHost: "En attente de l'hôte",
+        hostControls: "Contrôles de l'Hôte",
+        roomInfo: 'Infos du Salon',
+        host: 'Hôte',
       },
       victory: {
         title: 'Victoire !',

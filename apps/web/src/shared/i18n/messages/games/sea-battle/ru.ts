@@ -68,6 +68,9 @@ export const ruMessages = {
         maxFourPlayers: 'Максимум 4 игрока',
         hostCanStart: "Нажмите 'Начать игру', когда готовы",
         waitingForHost: 'Ожидание начала игры хостом',
+        hostControls: 'Управление хоста',
+        roomInfo: 'Информация о комнате',
+        host: 'Хост',
       },
       victory: {
         title: 'Победа!',

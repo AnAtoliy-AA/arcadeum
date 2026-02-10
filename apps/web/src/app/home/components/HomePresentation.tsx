@@ -7,6 +7,7 @@ import {
   PresentationSection,
   VideoContainer,
   VideoPlaceholder,
+  ThumbnailImage,
   PlaceholderOverlay,
   PlayButton,
 } from './styles/Presentation.styles';
@@ -38,7 +39,7 @@ export function HomePresentation() {
   // from img.youtube.com before the user clicks play.
 
   return (
-    <PresentationSection>
+    <PresentationSection data-testid="presentation-section">
       <SectionHeader>
         <SectionTitle>{sectionTitle}</SectionTitle>
         <SectionSubtitle>{sectionSubtitle}</SectionSubtitle>
@@ -54,11 +55,22 @@ export function HomePresentation() {
             sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
           />
         ) : (
-          <VideoPlaceholder onClick={() => setIsPlaying(true)}>
-            <PlaceholderOverlay>
-              <div className="placeholder-bg" />
-            </PlaceholderOverlay>
-            <PlayButton aria-label="Play video">
+          <VideoPlaceholder
+            onClick={() => setIsPlaying(true)}
+            data-testid="video-placeholder"
+          >
+            <ThumbnailImage
+              src="/images/home/video-cover.png"
+              alt="Arcadeum Trailer Illustration"
+              loading="lazy"
+              data-testid="video-thumbnail"
+            />
+            <PlaceholderOverlay />
+            <PlayButton
+              onClick={() => setIsPlaying(true)}
+              aria-label="Play video"
+              data-testid="play-btn"
+            >
               <svg viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z" />
               </svg>

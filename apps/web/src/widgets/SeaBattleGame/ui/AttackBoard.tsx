@@ -3,6 +3,7 @@
 import React, { useCallback, useMemo } from 'react';
 import type { SeaBattlePlayerState } from '../types';
 import { CELL_STATE, ROW_LABELS, COL_LABELS } from '../types';
+import { ShipsLeft } from './ShipsLeft';
 import {
   GridsContainer,
   PlayerSection,
@@ -80,7 +81,7 @@ export function AttackBoard({
               {resolveDisplayName(currentPlayer.playerId, 'You')} (Your Fleet)
             </PlayerName>
             <PlayerStats $theme={theme}>
-              Ships Remaining: {currentPlayer.shipsRemaining}
+              <ShipsLeft ships={currentPlayer.ships} isMe={true} />
             </PlayerStats>
             <BoardWithLabels>
               <div />
@@ -126,7 +127,7 @@ export function AttackBoard({
               {resolveDisplayName(opponent.playerId, 'Opponent')}
             </PlayerName>
             <PlayerStats $theme={theme}>
-              Ships Remaining: {opponent.shipsRemaining}
+              <ShipsLeft ships={opponent.ships} isMe={false} />
             </PlayerStats>
             <BoardWithLabels>
               <div />

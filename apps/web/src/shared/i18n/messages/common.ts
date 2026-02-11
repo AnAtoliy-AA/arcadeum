@@ -20,6 +20,7 @@ const commonMessagesDefinition = {
       register: 'Create account',
       logout: 'Sign out',
       openApp: 'Open app',
+      support: 'Support',
       supportTeam: 'Support Team',
       loggedInAs: 'Logged in as',
       changeAccount: 'Change account',

@@ -115,6 +115,22 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      ...[
+        '/',
+        '/games/:path*',
+        '/chats/:path*',
+        '/history/:path*',
+        '/stats/:path*',
+        '/settings/:path*',
+      ].map((source) => ({
+        source,
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'private, no-cache, no-transform',
+          },
+        ],
+      })),
     ];
   },
   compiler: {

@@ -51,7 +51,6 @@ export function HomePresentation() {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             title="Arcadeum Trailer"
-            loading="lazy"
             sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
           />
         ) : (

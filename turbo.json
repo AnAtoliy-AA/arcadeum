@@ -1,5 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalEnv": ["ENABLE_EXPERIMENTAL_COREPACK"],
   "tasks": {
     "dev": {
       "cache": false,

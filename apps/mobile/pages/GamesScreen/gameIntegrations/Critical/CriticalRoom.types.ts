@@ -32,9 +32,9 @@ export interface CriticalRoomProps {
 
 export type ActionBusyType =
   | 'draw'
-  | 'skip'
-  | 'attack'
-  | 'shuffle'
+  | 'evade'
+  | 'strike'
+  | 'reorder'
   | 'favor'
   | 'nope'
   | 'see_the_future'
@@ -42,9 +42,9 @@ export type ActionBusyType =
   | 'cat_trio'
   | 'cat_fiver'
   | 'defuse'
-  | 'targeted_attack'
-  | 'personal_attack'
-  | 'attack_of_the_dead'
-  | 'super_skip'
-  | 'reverse'
+  | 'targeted_strike'
+  | 'private_strike'
+  | 'recursive_strike'
+  | 'mega_evade'
+  | 'invert'
   | null;

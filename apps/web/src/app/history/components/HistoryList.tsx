@@ -1,17 +1,10 @@
-"use client";
+'use client';
 
-import { useTranslation } from "@/shared/lib/useTranslation";
-import type { HistorySummary, HistoryParticipant } from "../types";
-import { HistoryCard } from "./HistoryCard";
-import {
-  Loading,
-  Spinner,
-  Empty,
-  ErrorContainer,
-  ErrorText,
-  RetryButton,
-  EntriesGrid,
-} from "../styles";
+import { useTranslation } from '@/shared/lib/useTranslation';
+import { LoadingState, EmptyState, ErrorState } from '@/shared/ui';
+import type { HistorySummary, HistoryParticipant } from '../types';
+import { HistoryCard } from './HistoryCard';
+import { EntriesGrid } from '../styles';
 
 interface HistoryListProps {
   entries: HistorySummary[];
@@ -21,7 +14,9 @@ interface HistoryListProps {
   hasFilters: boolean;
   onRetry: () => void;
   onSelectEntry: (entry: HistorySummary) => void;
-  formatParticipantName: (participant: HistoryParticipant | undefined | null) => string;
+  formatParticipantName: (
+    participant: HistoryParticipant | undefined | null,
+  ) => string;
   formatDate: (dateString: string | null | undefined) => string;
 }
 
@@ -39,35 +34,27 @@ export function HistoryList({
   const { t } = useTranslation();
 
   if (loading) {
-    return (
-      <Loading>
-        <Spinner aria-label={t("history.loading")} />
-        <div>{t("history.loading")}</div>
-      </Loading>
-    );
+    return <LoadingState message={t('history.loading')} />;
   }
 
   if (error) {
     return (
-      <ErrorContainer>
-        <ErrorText>{error}</ErrorText>
-        <RetryButton onClick={onRetry}>
-          {t("history.actions.retry")}
-        </RetryButton>
-      </ErrorContainer>
+      <ErrorState
+        message={error}
+        onRetry={onRetry}
+        retryLabel={t('history.actions.retry')}
+      />
     );
   }
 
   if (entries.length === 0) {
-    return (
-      <Empty>
-        {isAuthenticated
-          ? hasFilters
-            ? t("history.search.noResults")
-            : t("history.list.emptyNoEntries")
-          : t("history.list.emptySignedOut")}
-      </Empty>
-    );
+    const message = isAuthenticated
+      ? hasFilters
+        ? t('history.search.noResults')
+        : t('history.list.emptyNoEntries')
+      : t('history.list.emptySignedOut');
+
+    return <EmptyState message={message} icon="📋" />;
   }
 
   return (

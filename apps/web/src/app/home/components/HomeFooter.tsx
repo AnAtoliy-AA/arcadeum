@@ -1,7 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import { appConfig } from '@/shared/config/app-config';
+import { routes } from '@/shared/config/routes';
 import {
   FooterSection,
   FooterContent,
@@ -10,8 +12,6 @@ import {
   SocialLinks,
   SocialIcon,
   Copyright,
-  LegalLinks,
-  LegalLink,
 } from './styles/Footer.styles';
 
 const SOCIAL_ICONS = [
@@ -42,6 +42,24 @@ const SOCIAL_ICONS = [
       </svg>
     ),
   },
+  {
+    id: 'support' as const,
+    label: 'Support',
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+      </svg>
+    ),
+  },
 ];
 
 export function HomeFooter() {
@@ -58,7 +76,20 @@ export function HomeFooter() {
           <SocialTitle>{homeCopy.footerFollowUs ?? 'Follow Us'}</SocialTitle>
           <SocialLinks>
             {SOCIAL_ICONS.map((item) => {
-              const href = social[item.id];
+              if (item.id === 'support') {
+                return (
+                  <SocialIcon
+                    key={item.id}
+                    as={Link}
+                    href={routes.support}
+                    aria-label={item.label}
+                  >
+                    {item.icon}
+                  </SocialIcon>
+                );
+              }
+
+              const href = social[item.id as keyof typeof social];
               if (!href) return null;
 
               return (
@@ -82,18 +113,6 @@ export function HomeFooter() {
             appName,
           }) ?? `© ${currentYear} ${appName}. All rights reserved.`}
         </Copyright>
-
-        <LegalLinks>
-          <LegalLink href="/terms">
-            {messages.legal?.nav?.terms ?? 'Terms'}
-          </LegalLink>
-          <LegalLink href="/privacy">
-            {messages.legal?.nav?.privacy ?? 'Privacy'}
-          </LegalLink>
-          <LegalLink href="/contact">
-            {messages.legal?.nav?.contact ?? 'Contact'}
-          </LegalLink>
-        </LegalLinks>
       </FooterContent>
     </FooterSection>
   );

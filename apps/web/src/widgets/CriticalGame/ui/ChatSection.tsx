@@ -2,6 +2,7 @@
 
 import type { RefObject } from 'react';
 import type { CriticalSnapshot, ChatScope } from '../types';
+import { TranslationKey } from '@/shared/lib/useTranslation';
 import {
   ChatCard,
   ChatMessages,
@@ -34,7 +35,7 @@ interface ChatSectionProps {
     fallbackName?: string,
   ) => string | undefined;
   formatLogMessage: (message: string) => string;
-  t: (key: string) => string;
+  t: (key: TranslationKey, params?: Record<string, string | number>) => string;
   cardVariant?: string;
   onClose?: () => void;
 }

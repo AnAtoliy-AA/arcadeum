@@ -29,7 +29,7 @@ type AuthenticatedSocket = Socket & {
 };
 
 const SOCKET_OPTIONS = {
-  transports: ['websocket'],
+  transports: ['polling', 'websocket'],
   autoConnect: false,
 };
 
@@ -73,7 +73,6 @@ function setupEncryptionKeyHandler(socket: AuthenticatedSocket): void {
 
     const success = await setEncryptionKey(data.key);
     if (success) {
-      console.debug('[socket] Encryption key received and set');
       await flushMessageQueue();
     }
   });
@@ -139,10 +138,10 @@ export function connectSocketsAnonymous(): void {
 export function disconnectSockets(): void {
   currentAuthToken = null;
 
-  if (gamesSocket.connected) {
+  if (gamesSocket) {
     gamesSocket.disconnect();
   }
-  if (chatsSocket.connected) {
+  if (chatsSocket) {
     chatsSocket.disconnect();
   }
 
@@ -153,6 +152,13 @@ export function disconnectSockets(): void {
 
 export const gameSocket: Socket = gamesSocket;
 export const chatSocket: Socket = chatsSocket;
+
+// Expose sockets to window for E2E testing
+if (typeof window !== 'undefined') {
+  const win = window as unknown as Record<string, unknown>;
+  win.gameSocket = gameSocket;
+  win.chatSocket = chatSocket;
+}
 
 /**
  * Emit a message with optional encryption.

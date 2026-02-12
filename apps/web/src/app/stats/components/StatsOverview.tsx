@@ -2,15 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 import type { PlayerStats } from '@/features/history/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import {
-  Grid,
-  Card,
-  StatValue,
-  StatLabel,
-  Skeleton,
-  SkeletonText,
-} from '../styles';
-import { ProgressCircle } from '@/shared/ui/Progress';
+import { Card } from '@/shared/ui';
+import { SkeletonText } from '@/shared/ui/Skeleton';
+import { ProgressCircle, PROGRESS_COLORS } from '@/shared/ui/Progress';
 
 interface StatsOverviewProps {
   stats: PlayerStats | null;
@@ -24,14 +18,9 @@ export function StatsOverview({ stats, loading }: StatsOverviewProps) {
     return (
       <Grid>
         {[1, 2, 3, 4].map((i) => (
-          <Card key={i}>
-            <SkeletonText
-              $width="60%"
-              $height="14px"
-              style={{ marginBottom: '0.5rem' }}
-            />
-            <SkeletonValue />
-            <SkeletonBar $delay={i * 0.1} />
+          <Card key={i} variant="glass" padding="md">
+            <SkeletonText width="60%" height="14px" delay={i * 0.1} />
+            <SkeletonValue delay={i * 0.1 + 0.05} />
           </Card>
         ))}
       </Grid>
@@ -42,19 +31,19 @@ export function StatsOverview({ stats, loading }: StatsOverviewProps) {
 
   return (
     <Grid>
-      <Card>
+      <StatCard variant="glass" padding="md" interactive>
         <StatLabel>{t('stats.totalGames')}</StatLabel>
         <StatValue>{stats.totalGames}</StatValue>
-      </Card>
-      <Card>
+      </StatCard>
+      <StatCard variant="glass" padding="md" interactive>
         <StatLabel>{t('stats.wins')}</StatLabel>
-        <StatValue style={{ color: '#10b981' }}>{stats.wins}</StatValue>
-      </Card>
-      <Card>
+        <StatValue $color={PROGRESS_COLORS.success}>{stats.wins}</StatValue>
+      </StatCard>
+      <StatCard variant="glass" padding="md" interactive>
         <StatLabel>{t('stats.losses')}</StatLabel>
-        <StatValue style={{ color: '#ef4444' }}>{stats.losses}</StatValue>
-      </Card>
-      <WinRateCard>
+        <StatValue $color={PROGRESS_COLORS.danger}>{stats.losses}</StatValue>
+      </StatCard>
+      <WinRateCard variant="glass" padding="md" interactive>
         <StatLabel>{t('stats.winRate')}</StatLabel>
         <ProgressCircle
           value={stats.winRate}
@@ -67,24 +56,61 @@ export function StatsOverview({ stats, loading }: StatsOverviewProps) {
   );
 }
 
-const SkeletonValue = styled(Skeleton)`
-  width: 80px;
-  height: 40px;
-  margin-bottom: 0.5rem;
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.25rem;
 `;
 
-const SkeletonBar = styled(Skeleton)<{ $delay?: number }>`
-  width: 100%;
-  height: 6px;
-  border-radius: 3px;
-  margin-top: auto;
-  animation-delay: ${({ $delay }) => $delay || 0}s;
-`;
-
-const WinRateCard = styled(Card)`
+const StatCard = styled(Card)`
   display: flex;
   flex-direction: column;
+  gap: 0.75rem;
+`;
+
+const StatLabel = styled.div`
+  font-size: 0.85rem;
+  color: ${({ theme }) => theme.text.muted};
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+`;
+
+const StatValue = styled.div<{ $color?: string }>`
+  font-size: 2.75rem;
+  font-weight: 800;
+  color: ${({ $color, theme }) =>
+    $color || theme.buttons.primary.gradientStart};
+  line-height: 1;
+  letter-spacing: -0.02em;
+`;
+
+const SkeletonValue = styled.div<{ delay?: number }>`
+  width: 80px;
+  height: 44px;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    ${({ theme }) => theme.surfaces.card.border} 0%,
+    ${({ theme }) => theme.surfaces.card.background} 50%,
+    ${({ theme }) => theme.surfaces.card.border} 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  animation-delay: ${({ delay }) => delay || 0}s;
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+`;
+
+const WinRateCard = styled(StatCard)`
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 1rem;
 `;

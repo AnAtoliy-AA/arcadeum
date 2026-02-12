@@ -66,6 +66,7 @@ export function CriticalTable({
   tableOnly = false,
   roomName,
   idleTimerEnabled = false,
+  cardVariant,
 }: CriticalTableProps) {
   const styles = useThemedStyles(createStyles);
   const { t } = useTranslation();
@@ -147,7 +148,7 @@ export function CriticalTable({
   });
 
   const discardArt = discardTop
-    ? (CARD_ART_SETTINGS[discardTop] ?? CARD_ART_SETTINGS.exploding_cat)
+    ? (CARD_ART_SETTINGS[discardTop] ?? CARD_ART_SETTINGS.critical_event)
     : null;
 
   const {
@@ -217,7 +218,7 @@ export function CriticalTable({
 
   const handleConfirmTargetedAction = (targetPlayerId: string) => {
     if (targetedActionPrompt) {
-      onPlay(targetedActionPrompt.card as 'targeted_attack', {
+      onPlay(targetedActionPrompt.card as 'targeted_strike', {
         targetPlayerId,
       });
       setTargetedActionPrompt(null);
@@ -244,6 +245,7 @@ export function CriticalTable({
     onPlaySeeTheFuture,
     handlePlayTargetedAction,
     styles,
+    cardVariant,
   );
 
   const activeEffect = animations.activeEffect;
@@ -467,3 +469,4 @@ export function CriticalTable({
 }
 
 export type { ChatScope };
+export type { CriticalActionCard } from './types';

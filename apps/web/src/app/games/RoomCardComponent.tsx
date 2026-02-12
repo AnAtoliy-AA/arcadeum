@@ -2,9 +2,8 @@
 
 import { useCallback } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { gameMetadata } from '@/features/games/registry';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { CARD_VARIANTS } from './create/constants';
+import { resolveGameDisplayInfo } from '@/features/games/lib/variantRegistry';
 import {
   RoomCard,
   RoomTitle,
@@ -36,28 +35,8 @@ interface RoomCardComponentProps {
 export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
   const { t } = useTranslation();
 
-  const gameId =
-    room.gameId === 'exploding_kittens_v1' ? 'critical_v1' : room.gameId;
-
-  let gameName =
-    gameMetadata[gameId as keyof typeof gameMetadata]?.name ?? room.gameId;
-
-  let variantGradient: string | undefined;
-
-  // Append variant name if available (specifically for Critical)
-  if (
-    gameId === 'critical_v1' &&
-    room.gameOptions?.cardVariant &&
-    room.gameOptions.cardVariant !== 'random'
-  ) {
-    const variant = CARD_VARIANTS.find(
-      (v) => v.id === room.gameOptions?.cardVariant,
-    );
-    if (variant) {
-      gameName = `${gameName}: ${variant.name}`;
-      variantGradient = variant.gradient;
-    }
-  }
+  const { displayName: gameName, gradient: variantGradient } =
+    resolveGameDisplayInfo(room.gameId, room.gameOptions);
 
   const formatMemberLabel = useCallback(
     (member: {

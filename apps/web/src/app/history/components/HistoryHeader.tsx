@@ -1,7 +1,9 @@
-"use client";
+'use client';
 
-import { useTranslation } from "@/shared/lib/useTranslation";
-import { Header, Title, RefreshButton, RefreshIcon } from "../styles";
+import React from 'react';
+import styled, { keyframes } from 'styled-components';
+import { useTranslation } from '@/shared/lib/useTranslation';
+import { PageTitle, Button } from '@/shared/ui';
 
 interface HistoryHeaderProps {
   loading: boolean;
@@ -9,20 +11,58 @@ interface HistoryHeaderProps {
   onRefresh: () => void;
 }
 
-export function HistoryHeader({ loading, refreshing, onRefresh }: HistoryHeaderProps) {
+export function HistoryHeader({
+  loading,
+  refreshing,
+  onRefresh,
+}: HistoryHeaderProps) {
   const { t } = useTranslation();
 
   return (
     <Header>
-      <Title>{t("navigation.historyTab")}</Title>
-      <RefreshButton
+      <PageTitle size="xl" gradient>
+        {t('navigation.historyTab')}
+      </PageTitle>
+      <Button
+        variant="icon"
+        size="sm"
         onClick={onRefresh}
         disabled={loading || refreshing}
-        aria-label={t("history.actions.refresh")}
+        aria-label={t('history.actions.refresh')}
       >
-        <RefreshIcon $spinning={refreshing}>↻</RefreshIcon>
-        {t("history.actions.refresh")}
-      </RefreshButton>
+        <StyledRefreshIcon
+          $isRefreshing={refreshing}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
+          <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
+        </StyledRefreshIcon>
+      </Button>
     </Header>
   );
 }
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+`;
+
+const spin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+const StyledRefreshIcon = styled.svg<{ $isRefreshing: boolean }>`
+  width: 20px;
+  height: 20px;
+  animation: ${({ $isRefreshing }) => ($isRefreshing ? spin : 'none')} 1s linear
+    infinite;
+`;

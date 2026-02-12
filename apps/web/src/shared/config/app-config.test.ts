@@ -19,6 +19,9 @@ describe('app-config helpers', () => {
     expect(parseYouTubeVideoId('https://youtu.be/dQw4w9WgXcQ')).toBe(
       'dQw4w9WgXcQ',
     );
+    expect(
+      parseYouTubeVideoId('https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ'),
+    ).toBe('dQw4w9WgXcQ');
     expect(parseYouTubeVideoId('dQw4w9WgXcQ')).toBe('dQw4w9WgXcQ');
     expect(parseYouTubeVideoId('too-short')).toBe('too-short'); // fallback
   });

@@ -5,10 +5,12 @@ import type { CriticalSnapshot, CriticalPlayerState } from '../types';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 
+import type { GameSessionSummary } from '@/shared/types/games';
+
 interface UseCriticalStateOptions {
   roomId: string;
   currentUserId: string | null;
-  initialSession: unknown | null;
+  initialSession: GameSessionSummary | null;
   accessToken?: string | null;
 }
 

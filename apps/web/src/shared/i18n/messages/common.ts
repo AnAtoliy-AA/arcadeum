@@ -20,6 +20,7 @@ const commonMessagesDefinition = {
       register: 'Create account',
       logout: 'Sign out',
       openApp: 'Open app',
+      support: 'Support',
       supportTeam: 'Support Team',
       loggedInAs: 'Logged in as',
       changeAccount: 'Change account',
@@ -40,6 +41,7 @@ const commonMessagesDefinition = {
       tester: 'Tester',
       developer: 'Dev',
       admin: 'Admin',
+      user: 'User',
     },
   },
   es: {
@@ -81,6 +83,7 @@ const commonMessagesDefinition = {
       tester: 'Tester',
       developer: 'Dev',
       admin: 'Admin',
+      user: 'Usuario',
     },
   },
   fr: {
@@ -122,6 +125,7 @@ const commonMessagesDefinition = {
       tester: 'Testeur',
       developer: 'Dev',
       admin: 'Admin',
+      user: 'Utilisateur',
     },
   },
   ru: {
@@ -163,6 +167,7 @@ const commonMessagesDefinition = {
       tester: 'Тестер',
       developer: 'Разработчик',
       admin: 'Админ',
+      user: 'Пользователь',
     },
   },
   be: {
@@ -204,6 +209,7 @@ const commonMessagesDefinition = {
       tester: 'Тэстар',
       developer: 'Распрацоўшчык',
       admin: 'Адмін',
+      user: 'Карыстальнік',
     },
   },
 } satisfies Record<Locale, Record<string, unknown>>;

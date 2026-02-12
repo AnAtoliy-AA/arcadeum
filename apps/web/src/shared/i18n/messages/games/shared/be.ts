@@ -82,6 +82,7 @@ export const beMessages = {
     fieldMaxPlayers: 'Макс. гульцоў (опцыя)',
     maxPlayersAria: 'Максімальная колькасць гульцоў',
     autoPlaceholder: 'Аўта',
+    autoButton: 'Аўта',
     fieldVisibility: 'Доступ',
     fieldNotes: 'Заўвагі (опцыя)',
     notesPlaceholder: 'Дадайце заўвагі...',
@@ -136,5 +137,10 @@ export const beMessages = {
   },
   rules: {
     button: 'Правілы гульні',
+  },
+  lobby: {
+    botCountLabel: 'Колькасць ботаў',
+    startWithBots: 'Пачаць з {{count}} 🤖',
+    playWithBotsNotice: 'Пачніце з ботамі адразу або дачакайцеся іншых гульцоў',
   },
 };

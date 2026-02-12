@@ -49,7 +49,7 @@ interface PlayerHandProps {
   isGameOver: boolean;
   canAct: boolean;
   canPlayNope: boolean;
-  actionBusy: boolean | string | null;
+  actionBusy: string | null;
   aliveOpponents: CriticalPlayerState[];
   discardPileLength: number;
   logs: CriticalLogEntry[];
@@ -123,7 +123,7 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
     }[] = [];
 
     const handCounts = new Map<CriticalCard, number>();
-    currentPlayer.hand.forEach((card) =>
+    currentPlayer.hand.forEach((card: CriticalCard) =>
       handCounts.set(card, (handCounts.get(card) || 0) + 1),
     );
 
@@ -147,7 +147,7 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
       id: string;
     }[] = [];
     const stashCounts = new Map<CriticalCard, number>();
-    (currentPlayer.stash || []).forEach((card) =>
+    (currentPlayer.stash || []).forEach((card: CriticalCard) =>
       stashCounts.set(card, (stashCounts.get(card) || 0) + 1),
     );
     Array.from(stashCounts.entries()).forEach(([card, count]) => {
@@ -246,7 +246,7 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
         <ActionsSection
           currentPlayer={currentPlayer}
           canAct={canAct}
-          actionBusy={typeof actionBusy === 'boolean' ? null : actionBusy}
+          actionBusy={actionBusy}
           hasOpponents={aliveOpponents.length > 0}
           discardPileLength={discardPileLength}
           allowActionCardCombos={allowActionCardCombos}

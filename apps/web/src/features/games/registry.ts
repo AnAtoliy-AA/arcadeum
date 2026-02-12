@@ -8,7 +8,7 @@ export const gameLoaders: Record<
   () => Promise<{ default: React.ComponentType<BaseGameProps> }>
 > = {
   critical_v1: () => import('@/widgets/CriticalGame'),
-  texas_holdem_v1: () => import('@/widgets/TexasHoldemGame'),
+  sea_battle_v1: () => import('@/widgets/SeaBattleGame'),
   // Future game implementations will be added here
   // chess_v1: () => import("@/widgets/ChessGame"),
   // checkers_v1: () => import("@/widgets/CheckersGame"),
@@ -52,6 +52,24 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     implementationPath: '@/widgets/TexasHoldemGame',
     lastUpdated: '2024-01-01',
     status: 'active',
+  },
+  sea_battle_v1: {
+    slug: 'sea_battle_v1',
+    name: 'Sea Battle',
+    description: 'Classic naval combat game for up to 4 players',
+    category: 'Strategy',
+    minPlayers: 2,
+    maxPlayers: 4,
+    estimatedDuration: 20,
+    complexity: 2,
+    ageRating: 'PG',
+    thumbnail: '/games/sea-battle.jpg',
+    version: '1.0.0',
+    supportsAI: true,
+    tags: ['strategy', 'classic', 'naval'],
+    implementationPath: '@/widgets/SeaBattleGame',
+    lastUpdated: '2024-01-30',
+    status: 'beta',
   },
   // Sample metadata for other games (can be expanded)
   chess_v1: {

@@ -4,7 +4,6 @@ import { useState, useCallback, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { IDLE_TIMER_DURATION_SEC } from '@/shared/config/game';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { gamesApi } from '@/features/games/api';
 import {
@@ -17,12 +16,10 @@ import {
   TextArea,
   FormGroup,
 } from '@/shared/ui';
-
-import { ExpansionId, CARD_VARIANTS, gamesCatalog } from './constants';
-
-import { ExpansionPacksSection } from './ExpansionPacksSection';
-
-import { RulesModal } from '@/widgets/CriticalGame/ui/RulesModal';
+import { gamesCatalog } from './constants';
+import { CriticalCreationConfig } from '@/widgets/CriticalGame/ui/CreationConfig';
+import { SeaBattleCreationConfig } from '@/widgets/SeaBattleGame/ui/CreationConfig';
+import { GameCreationConfigProps } from '@/features/games/types';
 
 import {
   Form,
@@ -30,22 +27,25 @@ import {
   GameTile,
   GameTileName,
   GameTileSummary,
-  SelectionIndicator,
-  GameTileIcon,
-  ExpansionGrid,
-  ExpansionCheckbox,
-  ExpansionLabel,
-  ExpansionBadge,
+  ErrorCard,
   Row,
   VisibilityToggle,
-  ErrorCard,
-  ComingSoonBadge,
-  RulesTrigger,
-  ThemeHeader,
 } from './styles';
 
 // Filter out hidden games for display
 const visibleGames = gamesCatalog.filter((game) => !game.isHidden);
+
+const GAME_CONFIGS: Record<
+  string,
+  React.ComponentType<GameCreationConfigProps<Record<string, unknown>>>
+> = {
+  critical_v1: CriticalCreationConfig as unknown as React.ComponentType<
+    GameCreationConfigProps<Record<string, unknown>>
+  >,
+  sea_battle_v1: SeaBattleCreationConfig as unknown as React.ComponentType<
+    GameCreationConfigProps<Record<string, unknown>>
+  >,
+};
 
 export function CreateGameRoomPage() {
   const router = useRouter();
@@ -65,12 +65,13 @@ export function CreateGameRoomPage() {
   const [visibility, setVisibility] = useState<'public' | 'private'>('public');
   const [maxPlayers, setMaxPlayers] = useState('');
   const [notes, setNotes] = useState('');
-  const [expansions, setExpansions] = useState<ExpansionId[]>([]);
-  const [customCards, setCustomCards] = useState<Record<string, number>>({});
-  const [cardVariant, setCardVariant] = useState<string>('cyberpunk');
-  const [allowActionCardCombos, setAllowActionCardCombos] = useState(false);
-  const [idleTimerEnabled, setIdleTimerEnabled] = useState(false);
-  const [showRules, setShowRules] = useState(false);
+  const [gameOptions, setGameOptions] = useState<Record<string, unknown>>({});
+
+  // Reset options when game changes
+  const handleGameChange = (newGameId: string) => {
+    setGameId(newGameId);
+    setGameOptions({});
+  };
 
   const {
     mutate: createRoom,
@@ -87,18 +88,7 @@ export function CreateGameRoomPage() {
           visibility,
           maxPlayers: maxPlayersNum,
           notes: notes.trim() || undefined,
-          gameOptions:
-            gameId === 'critical_v1'
-              ? {
-                  ...(expansions.length > 0 ? { expansions } : {}),
-                  ...(Object.keys(customCards).length > 0
-                    ? { customCards }
-                    : {}),
-                  cardVariant,
-                  allowActionCardCombos,
-                  idleTimerEnabled,
-                }
-              : undefined,
+          gameOptions,
         },
         { token: snapshot.accessToken || undefined },
       );
@@ -132,17 +122,23 @@ export function CreateGameRoomPage() {
       }
 
       const maxPlayersNum = maxPlayers.trim() ? Number(maxPlayers) : undefined;
+      const gameLimit = visibleGames.find((g) => g.id === gameId)?.maxPlayers;
+
       if (
         maxPlayersNum !== undefined &&
-        (isNaN(maxPlayersNum) || maxPlayersNum < 2)
+        (isNaN(maxPlayersNum) ||
+          maxPlayersNum < 2 ||
+          (gameLimit && maxPlayersNum > gameLimit))
       ) {
         return;
       }
 
       createRoom();
     },
-    [snapshot.accessToken, name, maxPlayers, createRoom],
+    [snapshot.accessToken, name, maxPlayers, gameId, createRoom],
   );
+
+  const GameConfigComponent = GAME_CONFIGS[gameId];
 
   return (
     <PageLayout>
@@ -161,7 +157,7 @@ export function CreateGameRoomPage() {
                   type="button"
                   $active={gameId === game.id}
                   disabled={!game.isPlayable}
-                  onClick={() => game.isPlayable && setGameId(game.id)}
+                  onClick={() => game.isPlayable && handleGameChange(game.id)}
                 >
                   <GameTileName>{game.name}</GameTileName>
                   <GameTileSummary>{game.summary}</GameTileSummary>
@@ -170,88 +166,11 @@ export function CreateGameRoomPage() {
             </GameSelector>
           </Section>
 
-          {gameId === 'critical_v1' && (
-            <ExpansionPacksSection
-              expansions={expansions}
-              customCards={customCards}
-              onExpansionsChange={setExpansions}
-              onCustomCardsChange={setCustomCards}
+          {GameConfigComponent && (
+            <GameConfigComponent
+              options={gameOptions}
+              onChange={setGameOptions}
             />
-          )}
-
-          {gameId === 'critical_v1' && (
-            <Section title={t('games.create.sectionVariant') || 'Game Theme'}>
-              <ThemeHeader>
-                <RulesTrigger type="button" onClick={() => setShowRules(true)}>
-                  📖 {t('games.rules.button') || 'View Game Rules'}
-                </RulesTrigger>
-              </ThemeHeader>
-              <GameSelector>
-                {CARD_VARIANTS.map((variant) => (
-                  <GameTile
-                    key={variant.id}
-                    as="button"
-                    type="button"
-                    $active={cardVariant === variant.id}
-                    disabled={variant.disabled}
-                    onClick={() =>
-                      !variant.disabled && setCardVariant(variant.id)
-                    }
-                  >
-                    {!variant.disabled && <SelectionIndicator />}
-                    {variant.disabled && (
-                      <ComingSoonBadge>
-                        {t('games.create.comingSoon') || 'Coming Soon'}
-                      </ComingSoonBadge>
-                    )}
-                    <GameTileIcon $gradient={variant.gradient}>
-                      {variant.emoji}
-                    </GameTileIcon>
-                    <GameTileName>{variant.name}</GameTileName>
-                    <GameTileSummary>{variant.description}</GameTileSummary>
-                  </GameTile>
-                ))}
-              </GameSelector>
-            </Section>
-          )}
-
-          {gameId === 'critical_v1' && (
-            <Section title={t('games.create.sectionHouseRules')}>
-              <ExpansionGrid>
-                <ExpansionCheckbox>
-                  <input
-                    type="checkbox"
-                    checked={allowActionCardCombos}
-                    onChange={() =>
-                      setAllowActionCardCombos(!allowActionCardCombos)
-                    }
-                  />
-                  <ExpansionLabel>
-                    {t('games.create.houseRuleActionCardCombos')}
-                  </ExpansionLabel>
-                  <ExpansionBadge>
-                    {t('games.create.houseRuleActionCardCombosHint')}
-                  </ExpansionBadge>
-                </ExpansionCheckbox>
-
-                <ExpansionCheckbox>
-                  <input
-                    type="checkbox"
-                    checked={idleTimerEnabled}
-                    onChange={() => setIdleTimerEnabled(!idleTimerEnabled)}
-                  />
-                  <ExpansionLabel>
-                    {t('games.create.houseRuleIdleTimer') ||
-                      'Idle Timer Autoplay'}
-                  </ExpansionLabel>
-                  <ExpansionBadge>
-                    {t('games.create.houseRuleIdleTimerHint', {
-                      seconds: String(IDLE_TIMER_DURATION_SEC),
-                    }) || 'Automated play after 15s'}
-                  </ExpansionBadge>
-                </ExpansionCheckbox>
-              </ExpansionGrid>
-            </Section>
           )}
 
           <Section title={t('games.create.sectionDetails') || 'Room Details'}>
@@ -281,19 +200,54 @@ export function CreateGameRoomPage() {
                 }
                 htmlFor="max-players"
               >
-                <Input
-                  id="max-players"
-                  type="number"
-                  min="2"
-                  placeholder={t('games.create.autoPlaceholder') || 'Auto'}
-                  value={maxPlayers}
-                  onChange={(e) => setMaxPlayers(e.target.value)}
-                  aria-label={
-                    t('games.create.maxPlayersAria') ||
-                    'Maximum number of players'
-                  }
-                  fullWidth
-                />
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '0.5rem',
+                    alignItems: 'flex-start',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexShrink: 0,
+                      width: '80px',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {maxPlayers ? (
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => setMaxPlayers('')}
+                        size="md"
+                        aria-label="Set to Auto"
+                        style={{ height: '42px', width: '100%' }}
+                      >
+                        {t('games.create.autoButton') || 'Auto'}
+                      </Button>
+                    ) : null}
+                  </div>
+                  <Input
+                    key="max-players-input"
+                    id="max-players"
+                    type="number"
+                    min="2"
+                    max={
+                      visibleGames.find((g) => g.id === gameId)?.maxPlayers ||
+                      undefined
+                    }
+                    placeholder={t('games.create.autoPlaceholder') || 'Auto'}
+                    value={maxPlayers}
+                    onChange={(e) => setMaxPlayers(e.target.value)}
+                    aria-label={
+                      t('games.create.maxPlayersAria') ||
+                      'Maximum number of players'
+                    }
+                    style={{ flex: 1 }}
+                    fullWidth
+                  />
+                </div>
               </FormGroup>
 
               <FormGroup
@@ -384,14 +338,6 @@ export function CreateGameRoomPage() {
           </Button>
         </Form>
       </Container>
-      <RulesModal
-        isOpen={showRules}
-        onClose={() => setShowRules(false)}
-        currentVariant={cardVariant}
-        isFastMode={idleTimerEnabled}
-        isPrivate={visibility === 'private'}
-        t={t}
-      />
     </PageLayout>
   );
 }

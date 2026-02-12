@@ -1,4 +1,4 @@
-import type { SessionDetailItem, SessionDetailLabels } from "../types";
+import type { SessionDetailItem, SessionDetailLabels } from '../types';
 import {
   PanelCard,
   PanelHeader,
@@ -20,56 +20,72 @@ import {
   SessionDetailTerm,
   SessionDetailValue,
   EmptyState,
-} from "./styles";
+} from './styles';
 
-interface SessionStatusPanelProps {
-  badge: string;
-  heading: string;
-  description: string;
+export interface SessionStatusPanelLabels {
+  statusBadge: string;
+  statusHeading: string;
+  statusDescription: string;
   statusActiveMessage: string;
   heroStatusHeadline: string;
   guestDescription: string;
   signOutLabel: string;
   loadingStatusLabel: string;
-  accessTokenLabel: string;
+  oauthAccessTokenLabel: string;
   sessionDetailLabels: SessionDetailLabels;
-  isHydrating: boolean;
+}
+
+export interface SessionStatusPanelForm {
+  isSessionHydrating: boolean;
   hasSession: boolean;
-  isOAuthProvider: boolean;
-  sessionAccessToken: string | null;
-  sessionRefreshToken: string | null;
+  sessionSnapshot: {
+    provider: string | null;
+    accessToken: string | null;
+    refreshToken: string | null;
+  };
+  handleSignOut: () => Promise<void>;
+}
+
+interface SessionStatusPanelProps {
+  labels: SessionStatusPanelLabels;
+  form: SessionStatusPanelForm;
   sessionDetails: SessionDetailItem[];
-  onSignOut: () => void;
 }
 
 export function SessionStatusPanel({
-  badge,
-  heading,
-  description,
-  statusActiveMessage,
-  heroStatusHeadline,
-  guestDescription,
-  signOutLabel,
-  loadingStatusLabel,
-  accessTokenLabel,
-  sessionDetailLabels,
-  isHydrating,
-  hasSession,
-  isOAuthProvider,
-  sessionAccessToken,
-  sessionRefreshToken,
+  labels,
+  form,
   sessionDetails,
-  onSignOut,
 }: SessionStatusPanelProps) {
+  const {
+    statusBadge,
+    statusHeading,
+    statusDescription,
+    statusActiveMessage,
+    heroStatusHeadline,
+    guestDescription,
+    signOutLabel,
+    loadingStatusLabel,
+    oauthAccessTokenLabel,
+    sessionDetailLabels,
+  } = labels;
+
+  const { isSessionHydrating, hasSession, sessionSnapshot, handleSignOut } =
+    form;
+
+  const isOAuthProvider = sessionSnapshot.provider === 'oauth';
+
   return (
     <PanelCard>
       <PanelHeader>
-        <PanelBadge>{badge}</PanelBadge>
-        <PanelTitle>{heading}</PanelTitle>
-        <PanelSubtitle>{description}</PanelSubtitle>
+        <PanelBadge>{statusBadge}</PanelBadge>
+        <PanelTitle>{statusHeading}</PanelTitle>
+        <PanelSubtitle>{statusDescription}</PanelSubtitle>
       </PanelHeader>
-      {isHydrating ? (
-        loadingStatusLabel ? <StatusText>{loadingStatusLabel}</StatusText> : null
+      {isSessionHydrating ? (
+        loadingStatusLabel ? (
+          <StatusText>{loadingStatusLabel}</StatusText>
+        ) : null
       ) : (
         <>
           <SessionCallout>
@@ -77,11 +93,14 @@ export function SessionStatusPanel({
               {hasSession ? statusActiveMessage : heroStatusHeadline}
             </CalloutHeading>
             <CalloutDetail>
-              {hasSession ? description : guestDescription}
+              {hasSession ? statusDescription : guestDescription}
             </CalloutDetail>
             {hasSession ? (
               <ButtonRow>
-                <SecondaryButton type="button" onClick={onSignOut}>
+                <SecondaryButton
+                  type="button"
+                  onClick={() => void handleSignOut()}
+                >
                   {signOutLabel}
                 </SecondaryButton>
               </ButtonRow>
@@ -90,20 +109,20 @@ export function SessionStatusPanel({
           {hasSession ? (
             <>
               <TokenList>
-                {sessionAccessToken ? (
+                {sessionSnapshot.accessToken ? (
                   <TokenRow>
                     <TokenLabel>
                       {isOAuthProvider
-                        ? accessTokenLabel
+                        ? oauthAccessTokenLabel
                         : sessionDetailLabels.sessionAccessToken}
                     </TokenLabel>
-                    <TokenValue>{sessionAccessToken}</TokenValue>
+                    <TokenValue>{sessionSnapshot.accessToken}</TokenValue>
                   </TokenRow>
                 ) : null}
-                {sessionRefreshToken ? (
+                {sessionSnapshot.refreshToken ? (
                   <TokenRow>
                     <TokenLabel>{sessionDetailLabels.refreshToken}</TokenLabel>
-                    <TokenValue>{sessionRefreshToken}</TokenValue>
+                    <TokenValue>{sessionSnapshot.refreshToken}</TokenValue>
                   </TokenRow>
                 ) : null}
               </TokenList>

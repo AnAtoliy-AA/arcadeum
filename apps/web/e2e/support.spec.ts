@@ -47,4 +47,13 @@ test.describe('Support Page', () => {
     await sponsorLink.click();
     await expect(page).toHaveURL(/payment\?mode=subscription/);
   });
+
+  test('should satisfy accessibility requirements', async ({ page }) => {
+    // Check for standard landmarks like banner (header)
+    await expect(page.getByRole('banner')).toBeVisible();
+
+    // Scroll to bottom to ensure footer is visible
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await expect(page.getByRole('contentinfo')).toBeVisible();
+  });
 });

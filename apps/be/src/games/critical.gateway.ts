@@ -34,6 +34,22 @@ export class CriticalGateway {
     private readonly criticalService: CriticalService,
   ) {}
 
+  private handleException(params: {
+    error: unknown;
+    action: string;
+    roomId?: string;
+    userId?: string;
+    userMessage: string;
+  }) {
+    const { error, action, roomId, userId, userMessage } = params;
+    handleError(
+      this.logger,
+      error,
+      { action, roomId: roomId || '', userId: userId || '' },
+      userMessage,
+    );
+  }
+
   @SubscribeMessage('games.session.draw')
   async handleSessionDraw(
     @ConnectedSocket() client: Socket,
@@ -43,7 +59,7 @@ export class CriticalGateway {
 
     try {
       // Get session from room
-      const session = await this.gamesService.findSessionByRoom(roomId);
+      const session = await this.criticalService.findSessionByRoom(roomId);
       if (!session) {
         throw new WsException('No active session found for this room');
       }
@@ -54,16 +70,13 @@ export class CriticalGateway {
         userId,
       });
     } catch (error) {
-      handleError(
-        this.logger,
+      this.handleException({
         error,
-        {
-          action: 'draw card',
-          roomId,
-          userId,
-        },
-        'Unable to draw card.',
-      );
+        action: 'draw card',
+        roomId,
+        userId,
+        userMessage: 'Unable to draw card.',
+      });
     }
   }
 
@@ -103,16 +116,13 @@ export class CriticalGateway {
         targetPlayerId,
       });
     } catch (error) {
-      handleError(
-        this.logger,
+      this.handleException({
         error,
-        {
-          action: `play ${card}`,
-          roomId,
-          userId,
-        },
-        'Unable to play card.',
-      );
+        action: `play ${card}`,
+        roomId,
+        userId,
+        userMessage: 'Unable to play card.',
+      });
     }
   }
 
@@ -165,16 +175,13 @@ export class CriticalGateway {
         requestedDiscardCard,
       });
     } catch (error) {
-      handleError(
-        this.logger,
+      this.handleException({
         error,
-        {
-          action: `play ${cat} combo`,
-          roomId,
-          userId,
-        },
-        'Unable to play cat combo.',
-      );
+        action: `play ${cat} combo`,
+        roomId,
+        userId,
+        userMessage: 'Unable to play cat combo.',
+      });
     }
   }
 
@@ -205,16 +212,13 @@ export class CriticalGateway {
         targetPlayerId,
       });
     } catch (error) {
-      handleError(
-        this.logger,
+      this.handleException({
         error,
-        {
-          action: 'play Favor card',
-          roomId,
-          userId,
-        },
-        'Unable to play Favor card.',
-      );
+        action: 'play Favor card',
+        roomId,
+        userId,
+        userMessage: 'Unable to play Favor card.',
+      });
     }
   }
 
@@ -247,16 +251,13 @@ export class CriticalGateway {
         cardGiven: cardValue,
       });
     } catch (error) {
-      handleError(
-        this.logger,
+      this.handleException({
         error,
-        {
-          action: 'give favor card',
-          roomId,
-          userId,
-        },
-        'Unable to give favor card.',
-      );
+        action: 'give favor card',
+        roomId,
+        userId,
+        userMessage: 'Unable to give favor card.',
+      });
     }
   }
 
@@ -283,16 +284,13 @@ export class CriticalGateway {
         topCards: result.topCards,
       });
     } catch (error) {
-      handleError(
-        this.logger,
+      this.handleException({
         error,
-        {
-          action: 'play See the Future card',
-          roomId,
-          userId,
-        },
-        'Unable to play See the Future card.',
-      );
+        action: 'play See the Future card',
+        roomId,
+        userId,
+        userMessage: 'Unable to play See the Future card.',
+      });
     }
   }
 
@@ -329,16 +327,13 @@ export class CriticalGateway {
         scope,
       });
     } catch (error) {
-      handleError(
-        this.logger,
+      this.handleException({
         error,
-        {
-          action: 'post history note',
-          roomId,
-          userId,
-        },
-        'Unable to post history note.',
-      );
+        action: 'post history note',
+        roomId,
+        userId,
+        userMessage: 'Unable to post history note.',
+      });
     }
   }
 
@@ -346,7 +341,13 @@ export class CriticalGateway {
   async handleSessionStart(
     @ConnectedSocket() client: Socket,
     @MessageBody()
-    payload: { roomId?: string; userId?: string; engine?: string },
+    payload: {
+      roomId?: string;
+      userId?: string;
+      engine?: string;
+      withBots?: boolean;
+      botCount?: number;
+    },
   ): Promise<void> {
     const userId = extractString(payload, 'userId');
     const roomIdRaw =
@@ -354,26 +355,26 @@ export class CriticalGateway {
     const roomId = roomIdRaw || undefined;
     const engine =
       typeof payload?.engine === 'string' ? payload.engine.trim() : undefined;
+    const withBots = !!payload?.withBots;
 
     try {
       const result = await this.criticalService.startSession(
         userId,
         roomId,
         engine,
+        withBots,
+        payload?.botCount,
       );
 
       client.emit('games.session.started', result);
     } catch (error) {
-      handleError(
-        this.logger,
+      this.handleException({
         error,
-        {
-          action: 'start Critical session',
-          roomId: roomId || 'unknown',
-          userId,
-        },
-        'Unable to start session.',
-      );
+        action: 'start Critical session',
+        roomId: roomId || 'unknown',
+        userId,
+        userMessage: 'Unable to start session.',
+      });
     }
   }
 
@@ -406,16 +407,13 @@ export class CriticalGateway {
         position,
       });
     } catch (error) {
-      handleError(
-        this.logger,
+      this.handleException({
         error,
-        {
-          action: 'play Defuse card',
-          roomId,
-          userId,
-        },
-        'Unable to play Defuse card.',
-      );
+        action: 'play Defuse card',
+        roomId,
+        userId,
+        userMessage: 'Unable to play Defuse card.',
+      });
     }
   }
 
@@ -438,16 +436,13 @@ export class CriticalGateway {
         userId,
       });
     } catch (error) {
-      handleError(
-        this.logger,
+      this.handleException({
         error,
-        {
-          action: 'play Nope card',
-          roomId,
-          userId,
-        },
-        'Unable to play Nope card.',
-      );
+        action: 'play Nope card',
+        roomId,
+        userId,
+        userMessage: 'Unable to play Nope card.',
+      });
     }
   }
   @SubscribeMessage('games.session.commit_alter_future')
@@ -476,16 +471,13 @@ export class CriticalGateway {
         action: 'commit_alter_future',
       });
     } catch (error) {
-      handleError(
-        this.logger,
+      this.handleException({
         error,
-        {
-          action: 'commit alter future',
-          roomId,
-          userId,
-        },
-        'Unable to commit alter future.',
-      );
+        action: 'commit alter future',
+        roomId,
+        userId,
+        userMessage: 'Unable to commit alter future.',
+      });
     }
   }
 }

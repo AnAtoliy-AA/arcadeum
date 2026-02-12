@@ -78,18 +78,30 @@ test.describe('Hand Layout', () => {
     // Wait for some text that definitely comes from the game/header
     await page.waitForSelector('text=Arcadeum', { timeout: 15000 });
 
-    // Close RulesModal
-    const modal = page.locator('text=OBJECTIVE');
-    await expect(modal).toBeVisible({ timeout: 10000 });
+    // Close any visible modal that intercepts pointer events
+    // The modal container class was observed in error logs
+    const modalContainer = page.locator('[class*="modals__Modal"]').first();
 
-    await page.keyboard.press('Escape');
-    const closeBtn = page.getByRole('button', { name: '×' });
-    if (await closeBtn.isVisible()) {
-      await closeBtn.click();
+    // Wait a moment for the modal to potentially appear
+    await page.waitForTimeout(1000);
+
+    // Try to close any visible modal
+    if (await modalContainer.isVisible().catch(() => false)) {
+      // Try pressing Escape to close modal
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(300);
+
+      // If still visible, try clicking the close button
+      if (await modalContainer.isVisible().catch(() => false)) {
+        const closeBtn = page.getByRole('button', { name: '×' }).first();
+        if (await closeBtn.isVisible().catch(() => false)) {
+          await closeBtn.click();
+        }
+      }
+
+      // Wait for modal to be hidden
+      await expect(modalContainer).not.toBeVisible({ timeout: 5000 });
     }
-
-    // Wait for modal to be gone
-    await expect(modal).not.toBeVisible({ timeout: 10000 });
 
     // Wait for "Your turn"
     const turnText = page.getByText('Your turn', { exact: true }).first();

@@ -99,6 +99,27 @@ export class GameSessionsService {
   }
 
   /**
+   * Find active sessions for a specific game that haven't been updated for a while
+   */
+  async findStaleActiveSessions(
+    gameId: string,
+    staleThresholdMs: number,
+    limit: number = 100,
+  ): Promise<GameSessionSummary[]> {
+    const thresholdDate = new Date(Date.now() - staleThresholdMs);
+    const sessions = await this.gameSessionModel
+      .find({
+        gameId,
+        status: 'active',
+        updatedAt: { $lt: thresholdDate },
+      })
+      .limit(limit)
+      .exec();
+
+    return sessions.map((s) => this.toSessionSummary(s));
+  }
+
+  /**
    * Get session by ID
    */
   async getSession(sessionId: string): Promise<GameSessionSummary> {

@@ -24,18 +24,29 @@ export const HeaderInner = styled.div`
 `;
 
 export const Logo = styled(Link)`
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: ${({ theme }) => theme.text.primary};
   text-decoration: none;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
   transition: opacity 0.2s ease;
 
   &:hover {
-    opacity: 0.8;
+    opacity: 0.9;
+    transform: scale(1.01);
   }
+`;
+
+export const LogoText = styled.span`
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: ${({ theme }) =>
+    `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}, ${theme.buttons.primary.gradientEnd})`};
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  /* Fallback for browsers that don't support background-clip: text */
+  color: ${({ theme }) => theme.text.primary};
 `;
 
 export const Nav = styled.nav`

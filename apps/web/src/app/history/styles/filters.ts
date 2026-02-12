@@ -16,8 +16,6 @@ export const FilterBar = styled.div`
 export const SearchInput = styled(Input)`
   flex: 1;
   min-width: 250px;
-  border-radius: 8px;
-  font-size: 0.9375rem;
 
   @media (max-width: 640px) {
     min-width: 100%;
@@ -26,8 +24,7 @@ export const SearchInput = styled(Input)`
 `;
 
 export const FilterSelect = styled(Select)`
-  border-radius: 8px;
-  font-size: 0.9375rem;
+  min-width: 180px;
 
   @media (max-width: 640px) {
     width: 100%;

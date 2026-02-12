@@ -63,26 +63,53 @@ export class CriticalActionsService {
       cardsToUnstash?: string[];
     },
   ) {
-    // Special handling for Targeted Attack which is a separate action in the engine
+    // Special handling for Targeted Attack
     if (payload.card === 'targeted_strike' && payload.targetPlayerId) {
       const session = await this.sessionsService.executeAction({
         sessionId,
-        action: 'targeted_attack', // Action name might still be old? Checking engine is safer but let's assume action names might be different.
-        // actually action names for "play_card" handling are usually generic.
-        // But here it calls 'targeted_attack' action.
-        // If the engine has a specific handler for 'targeted_attack', I should check if that handler name changed.
-        // Assuming action names didn't change, only card values.
+        action: 'targeted_strike',
         userId,
         payload: { targetPlayerId: payload.targetPlayerId },
       });
-
       await this.realtimeService.emitActionExecuted(
         session,
-        'play_card', // Emit as play_card so clients treat it uniformly
+        'play_card',
         userId,
         this.createSanitizer(),
       );
+      return session;
+    }
 
+    // Special handling for Favor (trade)
+    if (payload.card === 'trade' && payload.targetPlayerId) {
+      const session = await this.sessionsService.executeAction({
+        sessionId,
+        action: 'trade',
+        userId,
+        payload: { targetPlayerId: payload.targetPlayerId },
+      });
+      await this.realtimeService.emitActionExecuted(
+        session,
+        'play_card',
+        userId,
+        this.createSanitizer(),
+      );
+      return session;
+    }
+
+    // Special handling for See The Future (insight)
+    if (payload.card === 'insight') {
+      const session = await this.sessionsService.executeAction({
+        sessionId,
+        action: 'insight',
+        userId,
+      });
+      await this.realtimeService.emitActionExecuted(
+        session,
+        'play_card',
+        userId,
+        this.createSanitizer(),
+      );
       return session;
     }
 

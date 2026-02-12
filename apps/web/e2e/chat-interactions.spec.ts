@@ -13,7 +13,8 @@ test.describe('Chat Interactions', () => {
     const input = page.getByPlaceholder(/message|сообщение/i);
 
     await input.scrollIntoViewIfNeeded();
-    await input.click({ force: true });
+    await expect(input).toBeEnabled({ timeout: 10000 });
+    await input.click();
     await input.fill('');
     await expect(sendBtn).toBeDisabled();
   });
@@ -24,6 +25,7 @@ test.describe('Chat Interactions', () => {
     const longMessage = 'A'.repeat(500);
     const input = page.getByPlaceholder(/message|сообщение/i);
     await input.scrollIntoViewIfNeeded();
+    await expect(input).toBeEnabled({ timeout: 10000 });
     await input.fill(longMessage);
 
     const sendBtn = page.getByRole('button', { name: /send|отправить/i });
@@ -47,15 +49,13 @@ test.describe('Chat Interactions', () => {
     });
 
     await navigateTo(page, '/chat?chatId=chat-1&title=Test%20User');
-    await expect(page.getByText('otheruser')).toBeVisible();
+    await expect(page.getByText('otheruser')).toBeVisible({ timeout: 10000 });
   });
 
   test('should auto-scroll to bottom on new message', async ({ page }) => {
     await navigateTo(page, '/chat?chatId=chat-1&title=Test%20User');
-    // This is hard to test purely with Playwright without complex height checks,
-    // but we can check if the last message is in viewport
     const input = page.getByPlaceholder(/message|сообщение/i);
+    await expect(input).toBeEnabled({ timeout: 10000 });
     await input.fill('test scroll');
-    // ...
   });
 });

@@ -1,4 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+  forwardRef,
+} from '@nestjs/common';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import { GameSessionsService } from '../sessions/game-sessions.service';
 import { GameHistoryService } from '../history/game-history.service';
@@ -7,16 +14,78 @@ import { CriticalActionsService } from '../actions/critical/critical-actions.ser
 import { StartGameSessionResult } from '../games.types';
 import { ChatScope } from '../engines/base/game-engine.interface';
 import { GameSessionSummary } from '../sessions/game-sessions.service';
+import { CriticalBotService } from './critical-bot.service';
 
 @Injectable()
-export class CriticalService {
+export class CriticalService implements OnModuleInit, OnModuleDestroy {
+  private readonly logger = new Logger(CriticalService.name);
+  private watchdogInterval: NodeJS.Timeout | null = null;
+
   constructor(
     private readonly roomsService: GameRoomsService,
     private readonly sessionsService: GameSessionsService,
     private readonly historyService: GameHistoryService,
     private readonly realtimeService: GamesRealtimeService,
     private readonly criticalActions: CriticalActionsService,
+    @Inject(forwardRef(() => CriticalBotService))
+    private readonly botService: CriticalBotService,
   ) {}
+
+  onModuleInit() {
+    this.startWatchdog();
+  }
+
+  onModuleDestroy() {
+    this.stopWatchdog();
+  }
+
+  private startWatchdog() {
+    // Every 10 seconds, check active Critical sessions that haven't moved for 20 seconds
+    this.watchdogInterval = setInterval(() => {
+      void (async () => {
+        try {
+          const staleSessions =
+            await this.sessionsService.findStaleActiveSessions(
+              'critical_v1',
+              20000,
+              100,
+            );
+
+          if (staleSessions.length > 0) {
+            for (const session of staleSessions) {
+              this.botService
+                .checkAndPlay(session)
+                .catch((err) =>
+                  this.logger.error(
+                    `Watchdog trigger failed for room ${session.roomId}: ${err}`,
+                  ),
+                );
+            }
+          }
+        } catch (error) {
+          this.logger.error(`Watchdog failed: ${error}`);
+        }
+      })();
+    }, 10000);
+  }
+
+  private stopWatchdog() {
+    if (this.watchdogInterval) {
+      clearInterval(this.watchdogInterval);
+      this.watchdogInterval = null;
+    }
+  }
+
+  /**
+   * Find session by room ID and trigger bot logic if needed
+   */
+  async findSessionByRoom(roomId: string) {
+    const session = await this.sessionsService.findSessionByRoom(roomId);
+    if (session) {
+      return this.checkAndSyncRoomStatus(session);
+    }
+    return null;
+  }
 
   // ========== Core Actions ==========
 
@@ -25,6 +94,16 @@ export class CriticalService {
   private async checkAndSyncRoomStatus(session: GameSessionSummary) {
     if (session.status === 'completed') {
       await this.roomsService.updateRoomStatus(session.roomId, 'completed');
+    } else {
+      // Trigger bot logic asynchronously
+      this.botService.checkAndPlay(session).catch((err: unknown) => {
+        const message = err instanceof Error ? err.message : String(err);
+        const stack = err instanceof Error ? err.stack : undefined;
+        this.logger.error(
+          `Error in bot turn for room ${session.roomId}: ${message}`,
+          stack,
+        );
+      });
     }
     return session;
   }
@@ -108,6 +187,8 @@ export class CriticalService {
     userId: string,
     roomId?: string,
     engine?: string,
+    withBots?: boolean,
+    botCount?: number,
   ): Promise<StartGameSessionResult> {
     let effectiveRoomId = roomId;
     if (!effectiveRoomId) {
@@ -141,17 +222,16 @@ export class CriticalService {
       throw new Error('Only the host can start the game');
     }
 
+    // Check minimum players unless withBots is true
+    if (room.playerCount < 2 && !withBots) {
+      throw new Error('Need at least 2 players to start the game');
+    }
+
     // Resolve Random Variant
     // If cardVariant is 'random', pick one from the available list (excluding 'random')
     // We hardcode the list here to avoid circular dependency with shared/frontend constants
     if (room.gameOptions?.cardVariant === 'random') {
-      const variants = [
-        'cyberpunk',
-        'underwater',
-        'crime',
-        'horror',
-        'adventure',
-      ];
+      const variants = ['cyberpunk', 'underwater'];
       const randomVariant =
         variants[Math.floor(Math.random() * variants.length)];
 
@@ -166,6 +246,15 @@ export class CriticalService {
 
     const playerIds =
       await this.roomsService.getRoomParticipants(effectiveRoomId);
+
+    if (withBots) {
+      // Actually, if botCount is provided, we add exactly that many bots.
+      // If not, we default to 4 total players (3 bots for 1 human) for Critical.
+      const targetBotCount = botCount !== undefined ? botCount : 3;
+      for (let i = 0; i < targetBotCount; i++) {
+        playerIds.push(`bot-${Math.random().toString(36).substr(2, 9)}`);
+      }
+    }
 
     const session = await this.sessionsService.createSession({
       roomId: effectiveRoomId,

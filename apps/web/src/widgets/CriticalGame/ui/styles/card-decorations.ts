@@ -102,12 +102,7 @@ export const CardName = styled.div<{ $variant?: string }>`
   text-align: center;
   min-height: 1.4rem;
 
-  @media (max-width: 768px) {
-    font-size: 0.6rem;
-    min-height: 1.2rem;
-    padding: 0.15rem 0.4rem;
-    top: 0.35rem;
-  }
+  /* Media query removed to keep consistent size */
 `;
 
 export const CardDescription = styled.div<{ $variant?: string }>`
@@ -166,12 +161,7 @@ export const CardDescription = styled.div<{ $variant?: string }>`
   justify-content: center;
   padding-bottom: 0.5rem;
 
-  @media (max-width: 768px) {
-    font-size: 0.55rem;
-    -webkit-line-clamp: 2;
-    min-height: 2rem;
-    padding: 0.4rem 0.25rem 0.3rem;
-  }
+  /* Media query removed to keep consistent size */
 `;
 
 export const CardCountBadge = styled.div`
@@ -195,13 +185,7 @@ export const CardCountBadge = styled.div`
   z-index: 10;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 
-  @media (max-width: 768px) {
-    width: 24px;
-    height: 24px;
-    font-size: 0.75rem;
-    top: 0.35rem;
-    right: 0.35rem;
-  }
+  /* Media query removed to keep consistent size */
 `;
 
 export const CardInner = styled.div`
@@ -247,14 +231,7 @@ export const CardFrame = styled.div`
     transform: translateX(-50%);
   }
 
-  @media (max-width: 768px) {
-    inset: 3px;
-    border-width: 1.5px;
-    &::before,
-    &::after {
-      font-size: 0.5rem;
-    }
-  }
+  /* Media query removed to keep consistent size */
 `;
 
 export const CardCorner = styled.div<{ $position: 'tl' | 'tr' | 'bl' | 'br' }>`
@@ -276,23 +253,5 @@ export const CardCorner = styled.div<{ $position: 'tl' | 'tr' | 'bl' | 'br' }>`
       case 'br':
         return `bottom: 6px; right: 6px; border-left: none; border-top: none; border-bottom-right-radius: 4px;`;
     }
-  }}
-
-  @media (max-width: 768px) {
-    width: 12px;
-    height: 12px;
-    border-width: 1.5px;
-    ${({ $position }) => {
-      switch ($position) {
-        case 'tl':
-          return `top: 4px; left: 4px;`;
-        case 'tr':
-          return `top: 4px; right: 4px;`;
-        case 'bl':
-          return `bottom: 4px; left: 4px;`;
-        case 'br':
-          return `bottom: 4px; right: 4px;`;
-      }
-    }}
-  }
+  }}/* Media query removed to keep consistent size */
 `;

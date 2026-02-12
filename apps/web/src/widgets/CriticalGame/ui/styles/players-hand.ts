@@ -21,9 +21,7 @@ export const HandTitle = styled.h3`
   text-transform: uppercase;
   letter-spacing: 1px;
 
-  @media (max-width: 768px) {
-    font-size: 0.8rem;
-  }
+  /* Media query removed to keep consistent size */
 `;
 
 export const HandControls = styled.div`

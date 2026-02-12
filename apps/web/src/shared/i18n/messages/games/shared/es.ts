@@ -79,6 +79,7 @@ export const esMessages = {
     fieldMaxPlayers: 'Jugadores Máximos (opcional)',
     maxPlayersAria: 'Número máximo de jugadores',
     autoPlaceholder: 'Automático',
+    autoButton: 'Auto',
     fieldVisibility: 'Visibilidad',
     fieldNotes: 'Notas (opcional)',
     notesPlaceholder: 'Agregar notas...',
@@ -135,5 +136,11 @@ export const esMessages = {
   },
   rules: {
     button: 'Reglas del Juego',
+  },
+  lobby: {
+    botCountLabel: 'Número de bots',
+    startWithBots: 'Comenzar con {{count}} 🤖',
+    playWithBotsNotice:
+      'Empieza con bots inmediatamente o espera a otros jugadores',
   },
 };

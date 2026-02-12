@@ -12,13 +12,14 @@ import type {
   Card,
   Suit,
   GameRoomSummary,
+  GameSessionSummary,
 } from '@/shared/types/games';
 
 interface TexasHoldemGameProps {
   roomId: string;
   room: GameRoomSummary;
   isHost: boolean;
-  initialSession?: unknown | null;
+  initialSession?: GameSessionSummary | null;
 }
 
 // Poker Table Components

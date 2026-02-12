@@ -4,6 +4,7 @@ import type {
   CriticalLogEntry,
   PendingAction,
   PendingFavor,
+  CriticalActionCard,
 } from '../types';
 
 interface UseAutoplayOptions {
@@ -19,7 +20,7 @@ interface UseAutoplayOptions {
   playerOrder: string[];
   currentUserId: string | null;
   onDraw: () => void;
-  onPlayActionCard: (card: 'skip' | 'attack' | 'shuffle') => void;
+  onPlayActionCard: (card: CriticalActionCard) => void;
   onPlayNope: () => void;
   onGiveFavorCard: (card: CriticalCard) => void;
   onPlayDefuse: (position: number) => void;
@@ -47,27 +48,27 @@ interface UseAutoplayReturn {
 // Card selection priority for auto-give favor (lower = give first)
 const CARD_PRIORITY: Record<string, number> = {
   // Cat cards - give first (least valuable solo)
-  tacocat: 1,
-  hairy_potato_cat: 1,
-  rainbow_ralphing_cat: 1,
-  cattermelon: 1,
-  bearded_cat: 1,
+  collection_alpha: 1,
+  collection_beta: 1,
+  collection_gamma: 1,
+  collection_delta: 1,
+  collection_epsilon: 1,
   // Action cards - give second
-  shuffle: 2,
-  skip: 2,
-  attack: 2,
-  favor: 2,
-  see_the_future: 2,
-  nope: 3, // Nope is more valuable action
-  reverse: 2,
-  super_skip: 2,
-  targeted_attack: 2,
-  personal_attack: 2,
-  attack_of_the_dead: 2,
+  reorder: 2,
+  evade: 2,
+  strike: 2,
+  trade: 2,
+  insight: 2,
+  cancel: 3, // Nope is more valuable action
+  invert: 2,
+  mega_evade: 2,
+  targeted_strike: 2,
+  private_strike: 2,
+  recursive_strike: 2,
   // Defuse - give last (most valuable)
-  defuse: 10,
+  neutralizer: 10,
   // Exploding cat - should never be in hand normally
-  exploding_cat: 100,
+  critical_event: 100,
 };
 
 /**
@@ -136,10 +137,10 @@ function isAttackPending(
   if (!pendingAction || !currentUserId) return false;
 
   const attackTypes = [
-    'attack',
-    'targeted_attack',
-    'personal_attack',
-    'attack_of_the_dead',
+    'strike',
+    'targeted_strike',
+    'private_strike',
+    'recursive_strike',
   ];
 
   if (!attackTypes.includes(pendingAction.type)) return false;
@@ -274,7 +275,7 @@ export function useAutoplay({
       return;
     }
 
-    if (hand.includes('nope')) {
+    if (hand.includes('cancel')) {
       hasNopedRef.current = actionId;
       onPlayNope();
     }
@@ -302,7 +303,7 @@ export function useAutoplay({
     if (
       autoNopeAttackEnabled &&
       attackFromPrevPlayer &&
-      hand.includes('nope')
+      hand.includes('cancel')
     ) {
       return;
     }
@@ -314,9 +315,9 @@ export function useAutoplay({
       defusePlayedRecently &&
       !hasShuffledThisTurnRef.current
     ) {
-      if (hand.includes('shuffle')) {
+      if (hand.includes('reorder')) {
         hasShuffledThisTurnRef.current = true;
-        onPlayActionCard('shuffle');
+        onPlayActionCard('reorder');
         // Always return after shuffle - it's async
         // Next effect run will handle draw/skip if enabled
         return;
@@ -328,9 +329,9 @@ export function useAutoplay({
       return;
     }
 
-    if (autoSkipEnabled && hand.includes('skip')) {
+    if (autoSkipEnabled && hand.includes('evade')) {
       lastActedTurnRef.current = turnIdRef.current;
-      onPlayActionCard('skip');
+      onPlayActionCard('evade');
       return;
     }
 

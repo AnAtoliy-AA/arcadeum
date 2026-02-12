@@ -4,10 +4,10 @@
  */
 
 // Internal game type identifiers used throughout the app
-export type GameType = 'critical_v1' | null;
+export type GameType = 'critical_v1' | 'sea_battle_v1' | null;
 
 // Valid game IDs for type checking
-const VALID_GAME_IDS = ['critical_v1'] as const;
+const VALID_GAME_IDS = ['critical_v1', 'sea_battle_v1'] as const;
 
 /**
  * Check if a string is a valid game type

@@ -2,7 +2,11 @@ import { useCallback, useEffect } from 'react';
 import { gameSocket } from '@/shared/lib/socket';
 import type { ChatScope } from '@/shared/types/games';
 
-export type GameType = 'critical_v1' | 'texas_holdem_v1' | null;
+export type GameType =
+  | 'critical_v1'
+  | 'texas_holdem_v1'
+  | 'sea_battle_v1'
+  | null;
 
 interface UseGameActionsOptions {
   roomId: string;
@@ -14,7 +18,7 @@ interface UseGameActionsOptions {
 
 interface UseGameActionsReturn {
   // Critical actions
-  startCritical: () => void;
+  startCritical: (options?: { withBots?: boolean; botCount?: number }) => void;
   drawCard: () => void;
   playActionCard: (card: string, payload?: Record<string, unknown>) => void;
   playNope: () => void;
@@ -103,14 +107,19 @@ export function useGameActions(
   }, [gameType, onActionComplete]);
 
   // Critical actions
-  const startCritical = useCallback(() => {
-    if (!userId) return;
-    gameSocket.emit('games.session.start', {
-      roomId,
-      userId,
-      engine: 'critical_v1',
-    });
-  }, [roomId, userId]);
+  const startCritical = useCallback(
+    (options?: { withBots?: boolean; botCount?: number }) => {
+      if (!userId) return;
+      gameSocket.emit('games.session.start', {
+        roomId,
+        userId,
+        engine: 'critical_v1',
+        withBots: options?.withBots,
+        botCount: options?.botCount,
+      });
+    },
+    [roomId, userId],
+  );
 
   const drawCard = useCallback(() => {
     if (!userId) return;

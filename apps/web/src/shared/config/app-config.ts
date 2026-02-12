@@ -16,6 +16,7 @@ type DownloadSectionConfig = {
 
 export type WebAppConfig = {
   appName: string;
+  appVersion: string;
   presentationVideoId?: string;
   seoTitle: string;
   seoDescription: string;
@@ -46,7 +47,7 @@ export function parseYouTubeVideoId(input?: string): string | undefined {
 
   // Handle full URLs like https://www.youtube.com/watch?v=VIDEO_ID
   const urlMatch = trimmed.match(
-    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/,
+    /(?:youtube(?:-nocookie)?\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/,
   );
   if (urlMatch && urlMatch[1]) {
     return urlMatch[1];
@@ -62,6 +63,7 @@ export function parseYouTubeVideoId(input?: string): string | undefined {
 
 function readAppConfig(): WebAppConfig {
   const appName = trim(process.env.NEXT_PUBLIC_APP_NAME) ?? 'Arcadeum';
+  const appVersion = trim(process.env.NEXT_PUBLIC_APP_VERSION) ?? '0.0.0';
   const presentationVideoId = parseYouTubeVideoId(
     process.env.NEXT_PUBLIC_PRESENTATION_VIDEO_ID,
   );
@@ -77,6 +79,7 @@ function readAppConfig(): WebAppConfig {
 
   return {
     appName,
+    appVersion,
     presentationVideoId,
     seoTitle: `${appName} - Online Board Game Platform`,
     seoDescription: `${appName} is your online platform to play board games with friends.`,

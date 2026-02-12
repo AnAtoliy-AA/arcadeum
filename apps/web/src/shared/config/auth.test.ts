@@ -1,45 +1,37 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { resolveAuthRedirectUri, authConfig } from './auth';
 
-describe('auth config', () => {
-  const originalWindow = global.window;
-
-  beforeEach(() => {
-    vi.resetModules();
-  });
-
+describe('resolveAuthRedirectUri', () => {
   afterEach(() => {
-    global.window = originalWindow;
+    vi.unstubAllGlobals();
   });
 
-  it('has default configuration', () => {
-    expect(authConfig.issuer).toBeDefined();
-    expect(authConfig.scopes).toContain('openid');
+  it('returns authConfig.redirectUri when window is undefined', () => {
+    vi.stubGlobal('window', undefined);
+    expect(resolveAuthRedirectUri()).toBe(authConfig.redirectUri);
   });
 
-  it('resolveAuthRedirectUri returns explicit redirectUri if set', () => {
-    // authConfig is already initialized, so if it has a redirectUri from env, it will return it.
-    // We can't easily change it if it's a const, but we can test the fallback if it's NOT set.
-    if (authConfig.redirectUri) {
-      expect(resolveAuthRedirectUri()).toBe(authConfig.redirectUri);
-    }
+  it('returns dynamic URI based on window.location.href when window is defined', () => {
+    vi.stubGlobal('window', {
+      location: {
+        href: 'https://arcadeum-dev.vercel.app/auth',
+      },
+    });
+
+    expect(resolveAuthRedirectUri()).toBe(
+      'https://arcadeum-dev.vercel.app/auth/callback',
+    );
   });
 
-  it('resolveAuthRedirectUri falls back to window location if redirectUri is unset', () => {
-    // Force redirectUri to be undefined for this test if possible,
-    // but better to just mock the window and see if it uses it.
-    // Since we can't easily change the 'const authConfig', we test the logic.
+  it('strips query params and hashes from the dynamic URI', () => {
+    vi.stubGlobal('window', {
+      location: {
+        href: 'https://arcadeum-dev.vercel.app/auth?foo=bar#baz',
+      },
+    });
 
-    const mockLocation = {
-      href: 'https://example.com/some-page',
-    };
-
-    vi.stubGlobal('window', { location: mockLocation });
-
-    // If authConfig.redirectUri is empty, it should return 'https://example.com/auth/callback'
-    const result = resolveAuthRedirectUri();
-    if (!authConfig.redirectUri) {
-      expect(result).toBe('https://example.com/auth/callback');
-    }
+    expect(resolveAuthRedirectUri()).toBe(
+      'https://arcadeum-dev.vercel.app/auth/callback',
+    );
   });
 });

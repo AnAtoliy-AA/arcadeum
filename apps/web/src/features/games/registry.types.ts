@@ -1,6 +1,7 @@
 // Game slug type definitions for all supported games
 export type GameSlug =
   | 'critical_v1'
+  | 'sea_battle_v1'
   | 'texas_holdem_v1'
   | 'chess_v1'
   | 'checkers_v1'

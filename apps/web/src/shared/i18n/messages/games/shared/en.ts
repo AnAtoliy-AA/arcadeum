@@ -82,6 +82,7 @@ export const enMessages = {
     fieldMaxPlayers: 'Max Players (optional)',
     maxPlayersAria: 'Maximum number of players',
     autoPlaceholder: 'Auto',
+    autoButton: 'Auto',
     fieldVisibility: 'Visibility',
     fieldNotes: 'Notes (optional)',
     notesPlaceholder: 'Add notes...',
@@ -136,5 +137,10 @@ export const enMessages = {
   },
   rules: {
     button: 'Game Rules',
+  },
+  lobby: {
+    botCountLabel: 'Number of bots',
+    startWithBots: 'Start with {{count}} 🤖',
+    playWithBotsNotice: 'Start with bots immediately or wait for other players',
   },
 };

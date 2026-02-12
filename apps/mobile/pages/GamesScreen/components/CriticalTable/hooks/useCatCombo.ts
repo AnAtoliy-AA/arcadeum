@@ -71,7 +71,7 @@ export function useCatCombo(
 
       const preferredMode = availability.pair ? 'pair' : 'trio';
       const defaultTarget = aliveOpponents[0]?.playerId ?? null;
-      const defaultDesired = availability.trio ? 'defuse' : null;
+      const defaultDesired = availability.trio ? 'neutralizer' : null;
 
       if (!defaultTarget) {
         return;
@@ -119,7 +119,7 @@ export function useCatCombo(
         const nextTarget =
           prev.targetPlayerId ?? aliveOpponents[0]?.playerId ?? null;
         const nextDesired =
-          mode === 'trio' ? (prev.desiredCard ?? 'defuse') : null;
+          mode === 'trio' ? (prev.desiredCard ?? 'neutralizer') : null;
         const nextSelectedIndex = mode === 'pair' ? 0 : null;
         return {
           ...prev,

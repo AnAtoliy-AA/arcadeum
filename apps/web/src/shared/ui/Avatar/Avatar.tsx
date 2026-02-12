@@ -5,6 +5,7 @@ export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl';
 
 export interface AvatarProps extends HTMLAttributes<HTMLDivElement> {
   name?: string;
+  alt?: string;
   src?: string;
   size?: AvatarSize;
 }
@@ -66,13 +67,18 @@ function getInitials(name: string): string {
 
 export function Avatar({
   name = '?',
+  alt,
   src,
   size = 'md',
   ...props
 }: AvatarProps) {
   return (
     <StyledAvatar $size={size} {...props}>
-      {src ? <AvatarImage src={src} alt={name} /> : getInitials(name)}
+      {src ? (
+        <AvatarImage src={src} alt={alt !== undefined ? alt : name} />
+      ) : (
+        getInitials(name)
+      )}
     </StyledAvatar>
   );
 }

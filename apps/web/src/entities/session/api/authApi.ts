@@ -69,6 +69,24 @@ export async function registerLocal(params: {
   return readJson<AuthUserProfile>(res);
 }
 
+export async function checkUsernameAvailable(
+  username: string,
+): Promise<{ available: boolean }> {
+  const res = await fetch(
+    api(`/auth/check/username/${encodeURIComponent(username)}`),
+  );
+  return readJson<{ available: boolean }>(res);
+}
+
+export async function checkEmailAvailable(
+  email: string,
+): Promise<{ available: boolean }> {
+  const res = await fetch(
+    api(`/auth/check/email/${encodeURIComponent(email)}`),
+  );
+  return readJson<{ available: boolean }>(res);
+}
+
 export async function loginLocal(params: {
   email: string;
   password: string;

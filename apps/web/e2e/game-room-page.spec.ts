@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { mockSession, navigateTo } from './fixtures/test-utils';
+import { mockSession, navigateTo, mockRoomInfo } from './fixtures/test-utils';
 
 test.describe('Game Room Logic', () => {
   const roomId = 'room-1';
@@ -11,23 +11,13 @@ test.describe('Game Room Logic', () => {
 
   test('should join as player when game is in lobby', async ({ page }) => {
     // Mock room info: Lobby, Not a participant
-    await page.route(`**/games/rooms/${roomId}`, async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          room: {
-            id: roomId,
-            gameId: 'critical_v1',
-            status: 'lobby',
-            visibility: 'public',
-            participants: [], // Not a participant
-            members: [],
-            players: [],
-            gameOptions: {},
-          },
-        }),
-      });
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        status: 'lobby',
+        visibility: 'public',
+        members: [],
+      },
     });
 
     // Mock socket connection (optional, but good to avoid connection errors in console)
@@ -49,23 +39,12 @@ test.describe('Game Room Logic', () => {
     page,
   }) => {
     // Mock room info: In Progress, Not a participant
-    await page.route(`**/games/rooms/${roomId}`, async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          room: {
-            id: roomId,
-            gameId: 'critical_v1',
-            status: 'in_progress',
-            visibility: 'public',
-            participants: [{ userId: 'other-user' }],
-            members: [{ id: 'other-user', displayName: 'Other', isHost: true }],
-            players: [],
-            gameOptions: {},
-          },
-        }),
-      });
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        status: 'in_progress',
+        members: [{ id: 'other-user', displayName: 'Other', isHost: true }],
+      },
     });
 
     await navigateTo(page, `/games/rooms/${roomId}`);
@@ -84,23 +63,12 @@ test.describe('Game Room Logic', () => {
     page,
   }) => {
     // Mock room info: In Progress, IS a participant
-    await page.route(`**/games/rooms/${roomId}`, async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          room: {
-            id: roomId,
-            gameId: 'critical_v1',
-            status: 'in_progress',
-            visibility: 'public',
-            participants: [{ userId: 'user-1' }], // IS participant
-            members: [{ id: 'user-1', displayName: 'Me', isHost: false }],
-            players: [],
-            gameOptions: {},
-          },
-        }),
-      });
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        status: 'in_progress',
+        members: [{ id: 'user-1', displayName: 'Me', isHost: false }],
+      },
     });
 
     await navigateTo(page, `/games/rooms/${roomId}`);

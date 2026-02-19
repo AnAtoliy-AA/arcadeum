@@ -35,9 +35,26 @@ export class JwtOptionalAuthGuard extends AuthGuard('jwt') {
           : 'Authentication failed for this request.',
       );
     }
-    if (!user) {
-      return null as TUser;
+    if (user) {
+      return user as TUser;
     }
-    return user as TUser;
+
+    // Check for anonymous ID header
+    const req = context
+      .switchToHttp()
+      .getRequest<{ headers: Record<string, string | undefined> }>();
+    const anonId = req.headers['x-anonymous-id'];
+
+    if (anonId && typeof anonId === 'string' && anonId.startsWith('anon_')) {
+      return {
+        userId: anonId,
+        email: 'anonymous@example.com',
+        username: 'Anonymous',
+        displayName: 'Anonymous',
+        role: 'user', // Basic role
+      } as unknown as TUser;
+    }
+
+    return null as TUser;
   }
 }

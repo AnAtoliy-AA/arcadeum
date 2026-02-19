@@ -3,6 +3,7 @@ import {
   mockSession,
   navigateTo,
   closeRulesModal,
+  mockRoomInfo,
 } from './fixtures/test-utils';
 
 test.describe('Sea Battle Bot Count Selection', () => {
@@ -16,27 +17,17 @@ test.describe('Sea Battle Bot Count Selection', () => {
     const roomId = '507f191e810c19729de860ea';
     const userId = 'user-1';
 
-    await page.route(`**/games/rooms/${roomId}`, async (route) => {
-      if (route.request().resourceType() === 'document')
-        return route.continue();
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          room: {
-            id: roomId,
-            name: 'Sea Battle Bot Test',
-            gameId: 'sea_battle_v1',
-            status: 'lobby',
-            playerCount: 1,
-            maxPlayers: 5,
-            hostId: userId,
-            members: [
-              { id: userId, userId, displayName: 'Test User', isHost: true },
-            ],
-          },
-        }),
-      });
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        name: 'Sea Battle Bot Test',
+        gameId: 'sea_battle_v1',
+        maxPlayers: 5,
+        hostId: userId,
+        members: [
+          { id: userId, userId, displayName: 'Test User', isHost: true },
+        ],
+      },
     });
 
     await navigateTo(page, `/games/rooms/${roomId}`);

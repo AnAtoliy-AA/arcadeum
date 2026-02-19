@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { mockSession, navigateTo } from './fixtures/test-utils';
+import { mockSession, navigateTo, mockRoomInfo } from './fixtures/test-utils';
 
 test.describe('Sea Battle Rules Modal', () => {
   test.beforeEach(async ({ page }) => {
@@ -10,28 +10,14 @@ test.describe('Sea Battle Rules Modal', () => {
     page,
   }) => {
     const roomId = 'sea-battle-rules-room';
-    const userId = 'user-1';
 
-    const mockRoom = {
-      id: roomId,
-      name: 'Rules Test Room',
-      gameId: 'sea_battle_v1',
-      status: 'lobby',
-      playerCount: 1,
-      maxPlayers: 4,
-      hostId: userId,
-      members: [{ id: userId, userId, displayName: 'Test User', isHost: true }],
-      gameOptions: { variant: 'classic' },
-    };
-
-    await page.route(`**/games/rooms/${roomId}`, async (route) => {
-      if (route.request().resourceType() === 'document')
-        return route.continue();
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ room: mockRoom, session: null }),
-      });
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        name: 'Rules Test Room',
+        gameId: 'sea_battle_v1',
+        gameOptions: { variant: 'classic' },
+      },
     });
 
     await navigateTo(page, `/games/rooms/${roomId}`);
@@ -51,28 +37,14 @@ test.describe('Sea Battle Rules Modal', () => {
 
   test('should be able to close and reopen rules modal', async ({ page }) => {
     const roomId = 'sea-battle-rules-toggle-room';
-    const userId = 'user-1';
 
-    const mockRoom = {
-      id: roomId,
-      name: 'Rules Toggle Room',
-      gameId: 'sea_battle_v1',
-      status: 'lobby',
-      playerCount: 1,
-      maxPlayers: 4,
-      hostId: userId,
-      members: [{ id: userId, userId, displayName: 'Test User', isHost: true }],
-      gameOptions: { variant: 'classic' },
-    };
-
-    await page.route(`**/games/rooms/${roomId}`, async (route) => {
-      if (route.request().resourceType() === 'document')
-        return route.continue();
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ room: mockRoom, session: null }),
-      });
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        name: 'Rules Toggle Room',
+        gameId: 'sea_battle_v1',
+        gameOptions: { variant: 'classic' },
+      },
     });
 
     await navigateTo(page, `/games/rooms/${roomId}`);

@@ -1,21 +1,15 @@
-import { test, expect, type Page } from '@playwright/test';
-import { mockSession, navigateTo } from './fixtures/test-utils';
+import { test, expect } from '@playwright/test';
+import {
+  mockSession,
+  navigateTo,
+  mockRoomInfo,
+  closeRulesModal,
+} from './fixtures/test-utils';
 
 test.describe('Critical Single Player Mode', () => {
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
   });
-
-  async function closeRulesModalIfshown(page: Page) {
-    const closeBtn = page.getByRole('button', { name: '×' });
-    try {
-      await closeBtn.waitFor({ state: 'visible', timeout: 3000 });
-      await closeBtn.click({ force: true });
-      await closeBtn.waitFor({ state: 'hidden', timeout: 3000 });
-    } catch (_e) {
-      // Modal might not have appeared
-    }
-  }
 
   test('should allow starting single player game with bots', async ({
     page,
@@ -47,27 +41,15 @@ test.describe('Critical Single Player Mode', () => {
       pendingAction: null,
     };
 
-    await page.route(`**/games/rooms/${roomId}`, async (route) => {
-      if (route.request().resourceType() === 'document')
-        return route.continue();
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          room: {
-            id: roomId,
-            name: 'Single Player Test',
-            gameId: 'critical_v1',
-            status: 'lobby',
-            playerCount: 1,
-            maxPlayers: 4,
-            hostId: userId,
-            members: [
-              { id: userId, userId, displayName: 'Test User', isHost: true },
-            ],
-          },
-        }),
-      });
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        name: 'Single Player Test',
+        hostId: userId,
+        members: [
+          { id: userId, userId, displayName: 'Test User', isHost: true },
+        ],
+      },
     });
 
     await navigateTo(page, `/games/rooms/${roomId}`);
@@ -149,7 +131,7 @@ test.describe('Critical Single Player Mode', () => {
     await expect(startBtn).toBeEnabled();
     await startBtn.click();
 
-    await closeRulesModalIfshown(page);
+    await closeRulesModal(page);
     await expect(page.getByText(/your hand/i)).toBeVisible({ timeout: 15000 });
   });
 
@@ -183,26 +165,16 @@ test.describe('Critical Single Player Mode', () => {
       pendingAction: null,
     };
 
-    await page.route(`**/games/rooms/${roomId}`, async (route) => {
-      if (route.request().resourceType() === 'document')
-        return route.continue();
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          room: {
-            id: roomId,
-            gameId: 'critical_v1',
-            status: 'active',
-            playerCount: 1,
-            hostId: userId,
-            members: [
-              { id: userId, userId, displayName: 'Test User', isHost: true },
-            ],
-          },
-          session: { id: 'session-1', status: 'active', state: mockState },
-        }),
-      });
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        status: 'active',
+        hostId: userId,
+        members: [
+          { id: userId, userId, displayName: 'Test User', isHost: true },
+        ],
+      },
+      session: { id: 'session-1', status: 'active', state: mockState },
     });
 
     await navigateTo(page, `/games/rooms/${roomId}`);
@@ -272,7 +244,7 @@ test.describe('Critical Single Player Mode', () => {
       { roomId, userId, mockState },
     );
 
-    await closeRulesModalIfshown(page);
+    await closeRulesModal(page);
     await expect(page.locator('body')).toContainText(/your turn/i);
 
     const drawBtn = page.getByRole('button', { name: /draw/i }).first();

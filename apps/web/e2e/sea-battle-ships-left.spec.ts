@@ -3,6 +3,7 @@ import {
   mockSession,
   navigateTo,
   closeRulesModal,
+  mockRoomInfo,
 } from './fixtures/test-utils';
 
 test.describe('Sea Battle Ships Left', () => {
@@ -17,33 +18,25 @@ test.describe('Sea Battle Ships Left', () => {
     const userId = 'user-1';
     const opponentId = 'user-2';
 
-    await page.route(`**/games/rooms/${roomId}`, async (route) => {
-      if (route.request().resourceType() === 'document')
-        return route.continue();
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          room: {
-            id: roomId,
-            name: 'Ships Left Test',
-            gameId: 'sea_battle_v1',
-            status: 'active',
-            playerCount: 2,
-            maxPlayers: 2,
-            hostId: userId,
-            members: [
-              { id: userId, userId, displayName: 'Me', isHost: true },
-              {
-                id: opponentId,
-                userId: opponentId,
-                displayName: 'Opponent',
-                isHost: false,
-              },
-            ],
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        name: 'Ships Left Test',
+        gameId: 'sea_battle_v1',
+        status: 'active',
+        playerCount: 2,
+        maxPlayers: 2,
+        hostId: userId,
+        members: [
+          { id: userId, userId, displayName: 'Me', isHost: true },
+          {
+            id: opponentId,
+            userId: opponentId,
+            displayName: 'Opponent',
+            isHost: false,
           },
-        }),
-      });
+        ],
+      },
     });
 
     await navigateTo(page, `/games/rooms/${roomId}`);

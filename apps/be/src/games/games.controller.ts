@@ -46,7 +46,7 @@ export class GamesController {
     private readonly texasHoldemService: TexasHoldemService,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms')
   async createRoom(
     @Req() req: Request,
@@ -141,11 +141,12 @@ export class GamesController {
   }
 
   @UseGuards(JwtOptionalAuthGuard)
-  @Get('rooms/:roomId')
-  async getRoom(
+  @Post('room-info')
+  async getRoomInfoBody(
     @Req() req: Request,
-    @Param('roomId') roomId: string,
+    @Body() body: { roomId: string },
   ): Promise<{ room: Awaited<ReturnType<GamesService['getRoom']>> }> {
+    const { roomId } = body;
     const user = req.user as AuthenticatedUser | undefined | null;
     const room = await this.gamesService.getRoom(roomId, user?.userId);
     return { room };
@@ -347,7 +348,7 @@ export class GamesController {
     await this.gamesService.hideHistoryEntry(user.userId, roomId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms/join')
   async joinRoom(
     @Req() req: Request,
@@ -362,7 +363,7 @@ export class GamesController {
     return { room: result.room };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms/start')
   async startRoom(
     @Req() req: Request,
@@ -395,7 +396,7 @@ export class GamesController {
     return this.criticalService.startSession(user.userId, roomId, dto.engine);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms/leave')
   leaveRoom(
     @Req() req: Request,
@@ -409,7 +410,7 @@ export class GamesController {
     return this.gamesService.leaveRoom(dto, user.userId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms/delete')
   async deleteRoom(
     @Req() req: Request,
@@ -424,7 +425,7 @@ export class GamesController {
     return result;
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms/:roomId/options') // Using POST/PATCH interchangeably preference
   async updateRoomOptions(
     @Req() req: Request,

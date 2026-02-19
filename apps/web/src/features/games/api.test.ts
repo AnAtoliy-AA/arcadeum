@@ -110,14 +110,22 @@ describe('gamesApi', () => {
 
   describe('getRoomInfo', () => {
     it('returns full room data', async () => {
-      const mockData = { id: 'r1', name: 'Test Room' };
-      vi.mocked(apiClient.get).mockResolvedValueOnce(mockData);
+      const mockData = {
+        room: { id: 'r1', name: 'Test Room' },
+        session: null,
+      };
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockData);
       const result = await gamesApi.getRoomInfo('r1');
       expect(result).toEqual(mockData);
+      expect(apiClient.post).toHaveBeenCalledWith(
+        '/games/room-info',
+        { roomId: 'r1' },
+        undefined,
+      );
     });
 
     it('throws private_room_error on 403 with statusCode', async () => {
-      vi.mocked(apiClient.get).mockRejectedValueOnce({
+      vi.mocked(apiClient.post).mockRejectedValueOnce({
         statusCode: 403,
         message: 'Cannot view this room',
       });
@@ -127,7 +135,7 @@ describe('gamesApi', () => {
     });
 
     it('throws private_room_error on generic 403 status', async () => {
-      vi.mocked(apiClient.get).mockRejectedValueOnce({
+      vi.mocked(apiClient.post).mockRejectedValueOnce({
         status: HttpStatus.FORBIDDEN,
       });
       await expect(gamesApi.getRoomInfo('r1')).rejects.toThrow(
@@ -136,14 +144,14 @@ describe('gamesApi', () => {
     });
 
     it('throws room_not_found_error on 500', async () => {
-      vi.mocked(apiClient.get).mockRejectedValueOnce({ status: 500 });
+      vi.mocked(apiClient.post).mockRejectedValueOnce({ status: 500 });
       await expect(gamesApi.getRoomInfo('r1')).rejects.toThrow(
         'room_not_found_error',
       );
     });
 
     it('throws failed_to_load_error on other errors', async () => {
-      vi.mocked(apiClient.get).mockRejectedValueOnce(new Error('raw'));
+      vi.mocked(apiClient.post).mockRejectedValueOnce(new Error('raw'));
       await expect(gamesApi.getRoomInfo('r1')).rejects.toThrow(
         'failed_to_load_error',
       );

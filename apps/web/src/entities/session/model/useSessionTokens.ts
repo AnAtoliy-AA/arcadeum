@@ -101,15 +101,32 @@ export function useSessionTokens(): SessionTokensValue {
     storeRefreshTokens,
   ]);
 
+  const getEffectiveUserId = useCallback(() => {
+    if (snapshot.userId) return snapshot.userId;
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('aico_anon_id');
+  }, [snapshot.userId]);
+
   return useMemo(
     () => ({
-      snapshot,
+      snapshot: {
+        ...snapshot,
+        userId: getEffectiveUserId(),
+      },
       hydrated,
       setTokens,
       clearTokens,
       reload,
       refreshTokens: storeRefreshTokens,
     }),
-    [snapshot, hydrated, setTokens, clearTokens, reload, storeRefreshTokens],
+    [
+      snapshot,
+      hydrated,
+      setTokens,
+      clearTokens,
+      reload,
+      storeRefreshTokens,
+      getEffectiveUserId,
+    ],
   );
 }

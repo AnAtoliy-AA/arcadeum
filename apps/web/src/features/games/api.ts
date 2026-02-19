@@ -1,6 +1,10 @@
 import { apiClient, ApiClientOptions } from '@/shared/lib/api-client';
 import { HttpStatus } from '@/shared/lib/http-status';
-import type { GameInitialData, GameRoomSummary } from '@/shared/types/games';
+import type {
+  GameInitialData,
+  GameRoomSummary,
+  GameSessionSummary,
+} from '@/shared/types/games';
 
 interface GetRoomsParams {
   status?: string;
@@ -142,10 +146,10 @@ export const gamesApi = {
     options?: ApiClientOptions,
   ): Promise<GameInitialData> => {
     try {
-      const data = await apiClient.get<GameInitialData>(
-        `/games/rooms/${roomId}`,
-        options,
-      );
+      const data = await apiClient.post<{
+        room: GameRoomSummary;
+        session: GameSessionSummary | null;
+      }>('/games/room-info', { roomId }, options);
       return data;
     } catch (err: unknown) {
       // Re-throw specific errors for the UI

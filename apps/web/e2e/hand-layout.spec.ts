@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { mockSession, navigateTo } from './fixtures/test-utils';
+import { mockSession, navigateTo, mockRoomInfo } from './fixtures/test-utils';
 
 test.describe('Hand Layout', () => {
   const roomId = '507f1f77bcf86cd799439011';
@@ -7,66 +7,47 @@ test.describe('Hand Layout', () => {
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
 
-    // Intercept API calls for the room
-    await page.route(
-      (url) => url.toString().includes(`/games/rooms/${roomId}`),
-      async (route) => {
-        const request = route.request();
-        if (request.resourceType() === 'document') {
-          return route.continue();
-        }
-
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            room: {
-              id: roomId,
-              gameId: 'critical_v1',
-              status: 'in_progress',
-              visibility: 'public',
-              participants: [{ userId: 'user-1' }],
-              members: [{ id: 'user-1', displayName: 'Me', isHost: false }],
-              players: [],
-              gameOptions: {
-                cardVariant: 'default',
-              },
-            },
-            session: {
-              sessionId: 'sess-1',
-              roomId: roomId,
-              userId: 'user-1',
-              state: {
-                players: [
-                  {
-                    playerId: 'user-1',
-                    alive: true,
-                    hand: [
-                      'strike',
-                      'cancel',
-                      'evade',
-                      'reorder',
-                      'trade',
-                      'neutralizer',
-                      'collection_alpha',
-                      'collection_beta',
-                      'collection_gamma',
-                      'collection_delta',
-                    ],
-                    stash: [],
-                  },
-                ],
-                playerOrder: ['user-1'],
-                currentTurnIndex: 0,
-                deck: [],
-                discardPile: [],
-                logs: [],
-              },
-            },
-          }),
-        });
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        status: 'in_progress',
+        members: [{ id: 'user-1', displayName: 'Me', isHost: false }],
+        gameOptions: {
+          cardVariant: 'default',
+        },
       },
-    );
+      session: {
+        sessionId: 'sess-1',
+        roomId: roomId,
+        userId: 'user-1',
+        state: {
+          players: [
+            {
+              playerId: 'user-1',
+              alive: true,
+              hand: [
+                'strike',
+                'cancel',
+                'evade',
+                'reorder',
+                'trade',
+                'neutralizer',
+                'collection_alpha',
+                'collection_beta',
+                'collection_gamma',
+                'collection_delta',
+              ],
+              stash: [],
+            },
+          ],
+          playerOrder: ['user-1'],
+          currentTurnIndex: 0,
+          deck: [],
+          discardPile: [],
+          logs: [],
+        },
+      },
+    });
   });
 
   test('should allow switching grid layouts', async ({ page }) => {

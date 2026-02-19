@@ -55,7 +55,8 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
       return;
     }
 
-    if (mode === 'play' && !accessToken) {
+    // Allow play mode without access token if we have a userId (anonymous play)
+    if (mode === 'play' && !accessToken && !userId) {
       return;
     }
 

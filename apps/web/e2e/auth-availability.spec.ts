@@ -3,6 +3,26 @@ import { navigateTo } from './fixtures/test-utils';
 
 test.describe('Auth Availability Checking', () => {
   test.beforeEach(async ({ page }) => {
+    // Mock availability checks to make tests hermetic
+    await page.route('**/auth/check/username/**', async (route) => {
+      const url = new URL(route.request().url());
+      const username = url.pathname.split('/').pop();
+      const available = username !== 'testexisting';
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ available }),
+      });
+    });
+
+    await page.route('**/auth/check/email/**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ available: true }),
+      });
+    });
+
     await navigateTo(page, '/auth');
     await page.waitForLoadState('networkidle');
   });

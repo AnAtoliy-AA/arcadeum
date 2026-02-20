@@ -69,3 +69,8 @@ export interface DeleteGameRoomResult {
   roomId: string;
   deleted: boolean;
 }
+
+export interface JoinGameRoomResult {
+  room: GameRoomSummary;
+  added: boolean;
+}

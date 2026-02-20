@@ -46,12 +46,13 @@ export class JwtOptionalAuthGuard extends AuthGuard('jwt') {
     const anonId = req.headers['x-anonymous-id'];
 
     if (anonId && typeof anonId === 'string' && anonId.startsWith('anon_')) {
+      const suffix = anonId.replace('anon_', '').slice(0, 4);
       return {
         userId: anonId,
         email: 'anonymous@example.com',
-        username: 'Anonymous',
-        displayName: 'Anonymous',
-        role: 'user', // Basic role
+        username: `Anonymous #${suffix}`,
+        displayName: `Anonymous #${suffix}`,
+        role: 'user',
       } as unknown as TUser;
     }
 

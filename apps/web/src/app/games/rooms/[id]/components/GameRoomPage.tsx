@@ -297,19 +297,8 @@ export default function GameRoomPage() {
         <Container>
           <GameRoomError
             error={visibilityError}
-            isPrivateRoomError={visibilityError === 'private_room_error'} // Wait, visibilityError is mapped string, checking extraction logic
+            isPrivateRoomError={visibilityError === 'private_room_error'}
           />
-        </Container>
-      </Page>
-    );
-  }
-
-  // Require auth for private rooms but show inv code form if not joined
-  if (!isAuthenticated && roomVisibility === 'private') {
-    return (
-      <Page>
-        <Container>
-          <GameRoomError error={t('games.roomPage.errors.notAuthenticated')} />
         </Container>
       </Page>
     );

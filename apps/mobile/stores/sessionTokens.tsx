@@ -9,7 +9,12 @@ import React, {
 } from 'react';
 import { SecureStoreShim } from '@/lib/secureStore';
 import { refreshSession } from '@/pages/AuthScreen/api/authApi';
-import { connectSockets, disconnectSockets } from '@/hooks/useSocket';
+import {
+  connectSockets,
+  connectSocketsAnonymous,
+  disconnectSockets,
+} from '@/hooks/useSocket';
+import { getAnonymousId } from '@/lib/anonymousId';
 
 type SessionProviderId = 'oauth' | 'local';
 
@@ -140,6 +145,7 @@ export function SessionTokensProvider({
     ...defaultSnapshot,
   });
   const [hydrated, setHydrated] = useState(false);
+  const [anonId, setAnonId] = useState<string | null>(null);
   const refreshInFlight = useRef<Promise<SessionTokensSnapshot> | null>(null);
 
   const reload = useCallback(async () => {
@@ -150,7 +156,12 @@ export function SessionTokensProvider({
   }, []);
 
   useEffect(() => {
-    reload();
+    const init = async () => {
+      await reload();
+      const nextAnonId = await getAnonymousId();
+      setAnonId(nextAnonId);
+    };
+    init();
   }, [reload]);
 
   const setTokens = useCallback(
@@ -261,8 +272,18 @@ export function SessionTokensProvider({
   ]);
 
   const value = useMemo<SessionTokensContextValue>(
-    () => ({ tokens, hydrated, setTokens, clearTokens, reload, refreshTokens }),
-    [tokens, hydrated, setTokens, clearTokens, reload, refreshTokens],
+    () => ({
+      tokens: {
+        ...tokens,
+        userId: tokens.userId || anonId,
+      },
+      hydrated,
+      setTokens,
+      clearTokens,
+      reload,
+      refreshTokens,
+    }),
+    [tokens, hydrated, setTokens, clearTokens, reload, refreshTokens, anonId],
   );
 
   useEffect(() => {
@@ -273,7 +294,7 @@ export function SessionTokensProvider({
     if (tokens.accessToken) {
       connectSockets(tokens.accessToken);
     } else {
-      disconnectSockets();
+      connectSocketsAnonymous();
     }
   }, [hydrated, tokens.accessToken]);
 

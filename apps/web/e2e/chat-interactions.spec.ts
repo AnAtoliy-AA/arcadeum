@@ -33,6 +33,10 @@ test.describe('Chat Interactions', () => {
   });
 
   test('should show sender names in messages', async ({ page }) => {
+    // Block socket.io WebSocket connections to prevent the real backend from sending an empty
+    // 'chatMessages' event which would overwrite our mocked HTTP messages below.
+    await page.routeWebSocket('**/socket.io/**', (ws) => ws.close());
+
     await page.route(
       (url) =>
         url.pathname.includes('/chat/') && url.pathname.endsWith('/messages'),

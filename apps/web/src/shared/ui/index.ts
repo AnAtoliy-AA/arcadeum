@@ -103,5 +103,9 @@ export type { DividerProps } from './Divider';
 export { CollapsibleSection } from './CollapsibleSection';
 export type { CollapsibleSectionProps } from './CollapsibleSection';
 
+// CosmeticBadge
+export { CosmeticBadge } from './CosmeticBadge/CosmeticBadge';
+export type { CosmeticBadgeProps } from './CosmeticBadge/CosmeticBadge';
+
 // Icons
 export * from './Icons';

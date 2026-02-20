@@ -4,6 +4,7 @@ import {
   MinLength,
   Matches,
   IsString,
+  IsOptional,
 } from 'class-validator';
 
 export class RegisterDto {
@@ -22,4 +23,8 @@ export class RegisterDto {
       'Username may contain letters, numbers, underscores, and hyphens only',
   })
   username!: string;
+
+  @IsOptional()
+  @IsString()
+  referralCode?: string;
 }

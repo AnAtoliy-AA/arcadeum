@@ -8,6 +8,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { PaymentsModule } from './payments/payments.module';
+import { ReferralModule } from './referrals/referral.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { MessageCodeInterceptor } from './common/interceptors/message-code.interceptor';
 
@@ -20,6 +21,7 @@ import { MessageCodeInterceptor } from './common/interceptors/message-code.inter
     AuthModule,
     GamesModule,
     PaymentsModule,
+    ReferralModule,
     MongooseModule.forRoot(process.env.MONGODB_URI || ''),
   ],
   controllers: [AppController],

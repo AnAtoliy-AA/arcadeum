@@ -117,4 +117,6 @@ export type GameSlug =
   | 'wheel_of_fortune_v1'
   | 'price_is_right_v1'
   | 'deals_or_no_deals_v1'
-  | 'who_wants_to_be_a_millionaire_v1';
+  | 'who_wants_to_be_a_millionaire_v1'
+  | 'the_heist_v1'
+  | 'the_cursed_banquet_v1';

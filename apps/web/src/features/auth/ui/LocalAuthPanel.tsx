@@ -28,6 +28,7 @@ export interface LocalAuthPanelLabels {
   passwordLabel: string;
   confirmPasswordLabel: string;
   usernameLabel: string;
+  referralCodeLabel: string;
   helperText: string;
   submitLabel: string;
   toggleLabel: string;
@@ -58,6 +59,7 @@ export interface LocalAuthPanelForm {
   password: string;
   confirmPassword: string;
   username: string;
+  referralCode: string;
   localLoading: boolean;
   localError: string | null;
   localSubmitDisabled: boolean;
@@ -65,6 +67,7 @@ export interface LocalAuthPanelForm {
   passwordFieldId: string;
   confirmFieldId: string;
   usernameFieldId: string;
+  referralCodeFieldId: string;
   showPasswordMismatch: boolean;
   showUsernameTooShort: boolean;
   showInvalidEmail: boolean;
@@ -78,6 +81,7 @@ export interface LocalAuthPanelForm {
   handlePasswordChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleConfirmChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleUsernameChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleReferralCodeChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleUsernameBlur: () => void;
   handleEmailBlur: () => void;
   handleLocalSubmit: (e: FormEvent<HTMLFormElement>) => void;
@@ -99,6 +103,7 @@ export function LocalAuthPanel({ labels, form }: LocalAuthPanelProps) {
     passwordLabel,
     confirmPasswordLabel,
     usernameLabel,
+    referralCodeLabel,
     helperText,
     submitLabel,
     toggleLabel,
@@ -119,6 +124,7 @@ export function LocalAuthPanel({ labels, form }: LocalAuthPanelProps) {
     password,
     confirmPassword,
     username,
+    referralCode,
     localLoading,
     localError,
     localSubmitDisabled,
@@ -126,6 +132,7 @@ export function LocalAuthPanel({ labels, form }: LocalAuthPanelProps) {
     passwordFieldId,
     confirmFieldId,
     usernameFieldId,
+    referralCodeFieldId,
     showPasswordMismatch,
     showUsernameTooShort,
     showInvalidEmail,
@@ -139,6 +146,7 @@ export function LocalAuthPanel({ labels, form }: LocalAuthPanelProps) {
     handlePasswordChange,
     handleConfirmChange,
     handleUsernameChange,
+    handleReferralCodeChange,
     handleUsernameBlur,
     handleEmailBlur,
     handleLocalSubmit,
@@ -230,6 +238,19 @@ export function LocalAuthPanel({ labels, form }: LocalAuthPanelProps) {
             {usernameAvailability === 'taken' ? (
               <ErrorText>{usernameAvailabilityMessages.taken}</ErrorText>
             ) : null}
+            <Field>
+              <FieldLabel htmlFor={referralCodeFieldId}>
+                {referralCodeLabel}
+              </FieldLabel>
+              <Input
+                id={referralCodeFieldId}
+                type="text"
+                value={referralCode}
+                onChange={handleReferralCodeChange}
+                placeholder={referralCodeLabel}
+                disabled={localLoading}
+              />
+            </Field>
             <HelperText>{helperText}</HelperText>
           </>
         ) : null}

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { GameSession } from '../schemas/game-session.schema';
 import { GameRoom } from '../schemas/game-room.schema';
 import { User } from '../../auth/schemas/user.schema';
@@ -135,8 +135,13 @@ export class GameHistoryBuilderService {
     const userIds = [room.hostId, ...room.participants.map((p) => p.userId)];
     const uniqueUserIds = Array.from(new Set(userIds));
 
+    // Filter out invalid ObjectIds like 'anon_...' or 'bot_...'
+    const validUserIds = uniqueUserIds.filter((id) =>
+      Types.ObjectId.isValid(id),
+    );
+
     const users = await this.userModel
-      .find({ _id: { $in: uniqueUserIds } })
+      .find({ _id: { $in: validUserIds } })
       .select('username email')
       .exec();
 

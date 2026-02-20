@@ -31,7 +31,16 @@ export class GameHistoryStatsService {
    * Get player statistics
    */
   async getPlayerStats(userId: string): Promise<PlayerStats> {
-    // 1. Get all rooms where user participated
+    if (userId.startsWith('anon_')) {
+      return {
+        totalGames: 0,
+        wins: 0,
+        losses: 0,
+        winRate: 0,
+        byGameType: [],
+      };
+    }
+
     const rooms = await this.gameRoomModel
       .find({
         $or: [{ hostId: userId }, { 'participants.userId': userId }],
@@ -107,10 +116,9 @@ export class GameHistoryStatsService {
       const room = await this.gameRoomModel.findById(session.roomId).exec();
       if (!room) continue;
 
-      // Deduplicate player IDs (host may also be in participants)
       const playerIds = [
         ...new Set([room.hostId, ...room.participants.map((p) => p.userId)]),
-      ];
+      ].filter((id) => !id.startsWith('anon_'));
 
       for (const playerId of playerIds) {
         if (!playerStats[playerId]) {

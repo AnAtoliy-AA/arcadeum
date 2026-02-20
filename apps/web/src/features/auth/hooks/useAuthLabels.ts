@@ -68,6 +68,7 @@ interface AuthLabels {
   passwordLabel: string;
   confirmPasswordLabel: string;
   usernameLabel: string;
+  referralCodeLabel: string;
 
   // Session details
   sessionDetailLabels: SessionDetailLabels;
@@ -253,6 +254,10 @@ export function useAuthLabels(isRegisterMode: boolean): AuthLabels {
     confirmPasswordLabel:
       commonLabels.confirmPassword ?? defaultCommonLabels.confirmPassword ?? '',
     usernameLabel: commonLabels.username ?? defaultCommonLabels.username ?? '',
+    referralCodeLabel:
+      (commonLabels as Record<string, string>).referralCode ??
+      (defaultCommonLabels as Record<string, string>).referralCode ??
+      'Referral Code (Optional)',
 
     // Session details
     sessionDetailLabels: {

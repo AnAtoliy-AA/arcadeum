@@ -1,11 +1,9 @@
-/**
- * Auth service.
- * Composes sub-services for OAuth, refresh tokens, and user management.
- */
 import {
   Injectable,
   ConflictException,
   UnauthorizedException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -29,8 +27,8 @@ import type {
   GoogleUserProfile,
   UserRole,
 } from './lib/types';
+import { ReferralService } from '../referrals/referral.service';
 
-// Re-export types for backwards compatibility
 export type {
   OAuthTokenResponse,
   AuthUserProfile,
@@ -45,6 +43,8 @@ export class AuthService {
     private readonly oauthClient: OAuthClientService,
     private readonly refreshTokenService: RefreshTokenService,
     private readonly googleOAuth: GoogleOAuthService,
+    @Inject(forwardRef(() => ReferralService))
+    private readonly referralService: ReferralService,
   ) {}
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -89,6 +89,18 @@ export class AuthService {
       username,
       usernameNormalized,
     });
+
+    if (data.referralCode) {
+      try {
+        await this.referralService.trackReferral(
+          data.referralCode,
+          (created as UserDocument).id as string,
+        );
+      } catch {
+        // Non-critical — don't fail registration if referral tracking fails
+      }
+    }
+
     return this.buildAuthUserProfile(created);
   }
 

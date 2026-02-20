@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useLocalAuth } from '@/entities/session/model/useLocalAuth';
 import { useOAuth } from '@/entities/session/model/useOAuth';
@@ -46,15 +47,21 @@ export function useAuthForm() {
     logout: logoutOAuth,
   } = useOAuth(session);
 
+  const searchParams = useSearchParams();
+  const referralParam =
+    searchParams?.get('ref') || searchParams?.get('referral');
+
   const emailFieldId = useId();
   const passwordFieldId = useId();
   const confirmFieldId = useId();
   const usernameFieldId = useId();
+  const referralCodeFieldId = useId();
 
   const [email, setEmail] = useState(storedEmail ?? '');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [username, setUsername] = useState(storedUsername ?? '');
+  const [referralCode, setReferralCode] = useState(referralParam ?? '');
 
   const [usernameAvailability, setUsernameAvailability] = useState<
     'idle' | 'checking' | 'available' | 'taken'
@@ -67,6 +74,17 @@ export function useAuthForm() {
   const emailCheckRef = useRef<number>(0);
 
   const isRegisterMode = mode === 'register';
+
+  // Extract referral from URL and auto-toggle to register mode if needed
+  useEffect(() => {
+    if (referralParam) {
+      scheduleStateUpdate(() => setReferralCode(referralParam));
+      // Try to force register mode if not currently
+      if (mode !== 'register') {
+        scheduleStateUpdate(() => toggleMode());
+      }
+    }
+  }, [referralParam, mode, toggleMode]);
 
   // Sync stored values
   useEffect(() => {
@@ -117,6 +135,13 @@ export function useAuthForm() {
     (e: ChangeEvent<HTMLInputElement>) => {
       setUsername(sanitizeUsername(e.target.value));
       setUsernameAvailability('idle');
+    },
+    [],
+  );
+
+  const handleReferralCodeChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setReferralCode(e.target.value);
     },
     [],
   );
@@ -194,6 +219,7 @@ export function useAuthForm() {
           email: trimmedEmail,
           password,
           username: trimmedUsername,
+          referralCode: referralCode.trim() || undefined,
         });
         return;
       }
@@ -207,6 +233,7 @@ export function useAuthForm() {
       trimmedEmail,
       password,
       trimmedUsername,
+      referralCode,
     ],
   );
 
@@ -248,12 +275,14 @@ export function useAuthForm() {
     password,
     confirmPassword,
     username,
+    referralCode,
 
     // Field IDs
     emailFieldId,
     passwordFieldId,
     confirmFieldId,
     usernameFieldId,
+    referralCodeFieldId,
 
     // Local auth state
     localLoading,
@@ -282,6 +311,7 @@ export function useAuthForm() {
     handlePasswordChange,
     handleConfirmChange,
     handleUsernameChange,
+    handleReferralCodeChange,
     handleUsernameBlur,
     handleEmailBlur,
     handleToggleMode,

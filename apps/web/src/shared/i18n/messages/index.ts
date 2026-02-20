@@ -9,6 +9,7 @@ import { navigationMessages } from './navigation';
 import { paymentsMessages } from './payments';
 import { pwaMessages } from './pwa';
 import { settingsMessages } from './settings';
+import { referralsMessages } from './referrals';
 import { statsMessages } from './stats';
 import { supportMessages } from './support';
 
@@ -30,6 +31,7 @@ export const translations = {
     legal: legalMessages.en,
     stats: statsMessages.en,
     pwa: pwaMessages.en,
+    referrals: referralsMessages.en,
   },
   es: {
     common: commonMessages.es,
@@ -46,6 +48,7 @@ export const translations = {
     legal: legalMessages.es,
     stats: statsMessages.es,
     pwa: pwaMessages.es,
+    referrals: referralsMessages.es,
   },
   fr: {
     common: commonMessages.fr,
@@ -62,6 +65,7 @@ export const translations = {
     legal: legalMessages.fr,
     stats: statsMessages.fr,
     pwa: pwaMessages.fr,
+    referrals: referralsMessages.fr,
   },
   ru: {
     common: commonMessages.ru,
@@ -78,6 +82,7 @@ export const translations = {
     legal: legalMessages.ru,
     stats: statsMessages.ru,
     pwa: pwaMessages.ru,
+    referrals: referralsMessages.ru,
   },
   be: {
     common: commonMessages.be,
@@ -94,5 +99,6 @@ export const translations = {
     legal: legalMessages.be,
     stats: statsMessages.be,
     pwa: pwaMessages.be,
+    referrals: referralsMessages.be,
   },
 } as const;

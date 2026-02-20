@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schemas/user.schema';
+import { ReferralModule } from '../referrals/referral.module';
 import {
   RefreshToken,
   RefreshTokenSchema,
@@ -19,6 +20,7 @@ import {
 
 @Module({
   imports: [
+    forwardRef(() => ReferralModule),
     ConfigModule,
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },

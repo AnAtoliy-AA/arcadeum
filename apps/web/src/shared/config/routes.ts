@@ -23,6 +23,7 @@ export const routes = {
   settings: '/settings',
   history: '/history',
   stats: '/stats',
+  referrals: '/referrals',
 
   // Support & Payments
   support: '/support',

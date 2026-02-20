@@ -99,7 +99,14 @@ export class GamesService {
    * Join a game room
    */
   async joinRoom(dto: JoinGameRoomDto, userId: string) {
-    const room = await this.roomsService.joinRoom(dto, userId);
+    const result = await this.roomsService.joinRoom(dto, userId);
+    const room = result.room;
+
+    // Broadcast join event if new player
+    if (result.added) {
+      this.realtimeService.emitPlayerJoined(room, userId);
+    }
+
     const session = dto.roomId
       ? await this.sessionsService.findSessionByRoom(dto.roomId)
       : null;

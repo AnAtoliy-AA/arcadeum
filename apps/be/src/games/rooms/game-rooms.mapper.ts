@@ -118,8 +118,13 @@ export class GameRoomsMapper {
   ) {
     const user = userMap.get(userId);
     const isAnonymous = userId.startsWith('anon_');
+    const anonSuffix = isAnonymous
+      ? userId.replace('anon_', '').slice(0, 4)
+      : '';
     const displayName =
-      user?.username || user?.email || (isAnonymous ? 'Anonymous' : 'Unknown');
+      user?.username ||
+      user?.email ||
+      (isAnonymous ? `Anonymous #${anonSuffix}` : 'Unknown');
 
     return {
       id: userId,

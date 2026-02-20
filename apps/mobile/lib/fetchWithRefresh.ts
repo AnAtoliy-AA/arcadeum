@@ -8,6 +8,7 @@ import {
   type GlobalErrorPayload,
 } from '@/lib/globalErrorHandler';
 import { beginPendingRequest } from '@/lib/pendingRequestTracker';
+import { getAnonymousId } from './anonymousId';
 
 export interface FetchWithRefreshOptions {
   accessToken?: string | null;
@@ -24,6 +25,12 @@ async function performFetch(
   if (accessToken) {
     headers.set('Authorization', `Bearer ${accessToken}`);
   }
+
+  const anonId = await getAnonymousId();
+  if (anonId) {
+    headers.set('x-anonymous-id', anonId);
+  }
+
   return fetch(url, { ...init, headers });
 }
 

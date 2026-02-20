@@ -41,8 +41,10 @@ export function HomeHero() {
     `${appName} is your online platform to play board games with friends.`;
   const description =
     formatMessage(homeCopy.description, { appName }) ??
-    `Create real-time game rooms, invite your friends, and let ${appName} handle rules, scoring, and turns so you can focus on the fun.`;
+    `Create real-time game rooms, invite your friends, or play with bots instantly without registration. Let ${appName} handle rules, scoring, and turns so you can focus on the fun.`;
   const primaryLabel = homeCopy.primaryCtaLabel ?? 'Get started';
+  const playWithBotsLabel = homeCopy.playWithBotsLabel ?? 'Play with Bots';
+  const heroCardBrand = homeCopy.heroCardBrand ?? 'CRITICAL';
   const supportLabel = homeCopy.supportCtaLabel ?? 'Support the developers';
 
   const isAuthenticated = hydrated && !!snapshot.accessToken;
@@ -61,6 +63,9 @@ export function HomeHero() {
         <HeroDescription>{description}</HeroDescription>
         <HeroActions>
           <PrimaryAction href={primaryHref}>{primaryLabel}</PrimaryAction>
+          <SecondaryAction href="/games/create?mode=bot">
+            {playWithBotsLabel}
+          </SecondaryAction>
           <SecondaryAction href={supportCta.href}>
             {supportLabel}
           </SecondaryAction>
@@ -77,7 +82,7 @@ export function HomeHero() {
               </div>
               <div className="card-center">{card.icon}</div>
               <div className="card-bottom">
-                <span>CRITICAL</span>
+                <span>{heroCardBrand}</span>
               </div>
             </HeroCard>
           ))}

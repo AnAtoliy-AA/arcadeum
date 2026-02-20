@@ -60,6 +60,7 @@ export async function registerLocal(params: {
   email: string;
   password: string;
   username: string;
+  referralCode?: string;
 }): Promise<AuthUserProfile> {
   const res = await fetch(api('/auth/register'), {
     method: 'POST',

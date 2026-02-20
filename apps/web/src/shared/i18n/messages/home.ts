@@ -8,6 +8,9 @@ const homeMessagesDefinition = {
     description:
       'Create real-time game rooms, invite your friends, and let {{appName}} handle rules, scoring, and turns so you can focus on the fun.',
     primaryCtaLabel: 'Get started',
+    playWithBotsLabel: 'Play with Bots',
+    defaultRoomName: "{{name}}'s game",
+    heroCardBrand: 'CRITICAL',
     supportCtaLabel: 'Support the developers',
     downloadsTitle: 'Install the mobile builds',
     downloadsDescription:
@@ -74,6 +77,9 @@ const homeMessagesDefinition = {
     description:
       'Crea salas en tiempo real, reúne a tus amigos y deja que {{appName}} automatice reglas, puntuaciones y turnos para que te concentres en la diversión.',
     primaryCtaLabel: 'Comenzar',
+    playWithBotsLabel: 'Jugar con Bots',
+    defaultRoomName: 'Partida de {{name}}',
+    heroCardBrand: 'CRITICAL',
     supportCtaLabel: 'Apoyar a los desarrolladores',
     downloadsTitle: 'Instala las apps móviles',
     downloadsDescription:
@@ -133,6 +139,9 @@ const homeMessagesDefinition = {
     description:
       'Créez des salons en temps réel, rassemblez vos amis et laissez {{appName}} automatiser règles, scores et tours pour que vous puissiez vous concentrer sur le plaisir.',
     primaryCtaLabel: 'Commencer',
+    playWithBotsLabel: 'Jouer avec des Bots',
+    defaultRoomName: 'Partie de {{name}}',
+    heroCardBrand: 'CRITICAL',
     supportCtaLabel: 'Soutenir les développeurs',
     downloadsTitle: 'Installer les applications mobiles',
     downloadsDescription:
@@ -198,6 +207,9 @@ const homeMessagesDefinition = {
     description:
       'Создавайте игровые комнаты в реальном времени, приглашайте друзей, а {{appName}} возьмет на себя правила, подсчет очков и очередность ходов, чтобы вы могли сосредоточиться на веселье.',
     primaryCtaLabel: 'Начать',
+    playWithBotsLabel: 'Играть с ботами',
+    defaultRoomName: 'Игра {{name}}',
+    heroCardBrand: 'CRITICAL',
     supportCtaLabel: 'Поддержать разработчиков',
     downloadsTitle: 'Установите мобильные сборки',
     downloadsDescription:
@@ -263,6 +275,9 @@ const homeMessagesDefinition = {
     description:
       'Стварайце гульнявыя пакоі ў рэальным часе, запрашайце сяброў, а {{appName}} возьме на сябе правілы, падлік ачкоў і чарговасць хадоў, каб вы маглі засяродзіцца на весялосці.',
     primaryCtaLabel: 'Пачаць',
+    playWithBotsLabel: 'Гуляць з ботамі',
+    defaultRoomName: 'Гульня {{name}}',
+    heroCardBrand: 'CRITICAL',
     supportCtaLabel: 'Падрымаць распрацоўшчыкаў',
     downloadsTitle: 'Усталюйце мабільныя зборкі',
     downloadsDescription:

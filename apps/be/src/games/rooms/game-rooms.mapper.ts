@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { User } from '../../auth/schemas/user.schema';
 import { GameRoom } from '../schemas/game-room.schema';
 import { GameRoomSummary, GameRoomMemberSummary } from './game-rooms.types';
@@ -99,8 +99,12 @@ export class GameRoomsMapper {
     ];
     const uniqueUserIds = Array.from(new Set(userIds));
 
+    const validUserIds = uniqueUserIds.filter((id) =>
+      Types.ObjectId.isValid(id),
+    );
+
     const users = await this.userModel
-      .find({ _id: { $in: uniqueUserIds } })
+      .find({ _id: { $in: validUserIds } })
       .select('username email')
       .exec();
 
@@ -113,9 +117,18 @@ export class GameRoomsMapper {
     roomHostId: string,
   ) {
     const user = userMap.get(userId);
+    const isAnonymous = userId.startsWith('anon_');
+    const anonSuffix = isAnonymous
+      ? userId.replace('anon_', '').slice(0, 4)
+      : '';
+    const displayName =
+      user?.username ||
+      user?.email ||
+      (isAnonymous ? `Anonymous #${anonSuffix}` : 'Unknown');
+
     return {
       id: userId,
-      displayName: user?.username || user?.email || 'Unknown',
+      displayName,
       username: user?.username || null,
       email: user?.email || null,
       isHost: userId === roomHostId,

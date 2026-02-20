@@ -1,6 +1,15 @@
 import { resolveApiUrl } from './api-base';
 import { HttpStatus } from './http-status';
 
+export function getAnonymousId() {
+  if (typeof window === 'undefined') return null;
+  let id = localStorage.getItem('aico_anon_id');
+  if (!id) {
+    id = `anon_${Math.random().toString(36).substring(2, 10)}`;
+    localStorage.setItem('aico_anon_id', id);
+  }
+  return id;
+}
 export interface ApiClientOptions extends RequestInit {
   token?: string;
   data?: unknown;
@@ -30,6 +39,11 @@ export const apiClient = {
 
     if (token) {
       (headers as Record<string, string>).Authorization = `Bearer ${token}`;
+    }
+
+    const anonId = getAnonymousId();
+    if (anonId) {
+      (headers as Record<string, string>)['x-anonymous-id'] = anonId;
     }
 
     const config: RequestInit = {

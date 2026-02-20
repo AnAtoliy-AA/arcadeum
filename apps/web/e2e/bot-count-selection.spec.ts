@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { mockSession, navigateTo } from './fixtures/test-utils';
+import { mockSession, navigateTo, mockRoomInfo } from './fixtures/test-utils';
 
 test.describe('Bot Count Selection', () => {
   test.beforeEach(async ({ page }) => {
@@ -12,27 +12,16 @@ test.describe('Bot Count Selection', () => {
     const roomId = '507f191e810c19729de860ea';
     const userId = 'user-1';
 
-    await page.route(`**/games/rooms/${roomId}`, async (route) => {
-      if (route.request().resourceType() === 'document')
-        return route.continue();
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          room: {
-            id: roomId,
-            name: 'Bot Count Test',
-            gameId: 'critical_v1',
-            status: 'lobby',
-            playerCount: 1,
-            maxPlayers: 5,
-            hostId: userId,
-            members: [
-              { id: userId, userId, displayName: 'Test User', isHost: true },
-            ],
-          },
-        }),
-      });
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        name: 'Bot Count Test',
+        maxPlayers: 5,
+        hostId: userId,
+        members: [
+          { id: userId, userId, displayName: 'Test User', isHost: true },
+        ],
+      },
     });
 
     await navigateTo(page, `/games/rooms/${roomId}`);

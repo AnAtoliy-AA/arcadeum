@@ -214,21 +214,6 @@ export function useRoomActions({
 
   const joinRoomByInviteCode = useCallback(
     async (code: string) => {
-      if (!tokens.accessToken) {
-        Alert.alert(
-          t('games.alerts.signInRequiredTitle'),
-          t('games.alerts.signInInviteMessage'),
-          [
-            { text: t('common.cancel'), style: 'cancel' },
-            {
-              text: t('common.signIn'),
-              onPress: () => router.push('/auth' as never),
-            },
-          ],
-        );
-        return;
-      }
-
       setInvitePrompt({
         visible: true,
         room: null,
@@ -311,7 +296,6 @@ export function useRoomActions({
       fetchRooms,
       navigateToRoomScreen,
       refreshTokens,
-      router,
       setInvitePrompt,
       t,
       tokens.accessToken,
@@ -321,26 +305,9 @@ export function useRoomActions({
 
   const handleJoinRoom = useCallback(
     (room: GameRoomSummary) => {
-      if (!tokens.accessToken) {
-        Alert.alert(
-          t('games.alerts.signInRequiredTitle'),
-          t('games.alerts.signInJoinMessage'),
-          [
-            { text: t('common.cancel'), style: 'cancel' },
-            {
-              text: t('common.signIn'),
-              onPress: () => {
-                router.push('/auth' as never);
-              },
-            },
-          ],
-        );
-        return;
-      }
-
       void joinRoom(room);
     },
-    [joinRoom, router, t, tokens.accessToken],
+    [joinRoom],
   );
 
   const handleWatchRoom = useCallback(

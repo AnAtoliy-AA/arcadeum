@@ -34,6 +34,7 @@ export type UseLocalAuthResult = LocalAuthState & {
     email: string;
     password: string;
     username: string;
+    referralCode?: string;
   }) => Promise<void>;
   login: (params: { email: string; password: string }) => Promise<void>;
   toggleMode: () => void;
@@ -146,10 +147,12 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
       email,
       password,
       username,
+      referralCode,
     }: {
       email: string;
       password: string;
       username: string;
+      referralCode?: string;
     }) => {
       // Manual state management is replaced by query, but we need to update our local composite state
       // or we can rely on query state.
@@ -160,6 +163,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
           email: email.trim(),
           password,
           username: username.trim(),
+          referralCode,
         });
         persistEmail(email.trim());
         setState((current) => ({

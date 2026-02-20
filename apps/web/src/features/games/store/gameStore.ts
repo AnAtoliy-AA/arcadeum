@@ -56,7 +56,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       cleanupListeners = null;
     }
 
-    if (mode !== 'watch' && !accessToken) return;
+    if (mode !== 'watch' && !accessToken && !userId) return;
 
     set({
       loading: !initialData?.room, // Don't load if we have data

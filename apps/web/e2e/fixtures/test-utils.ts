@@ -114,3 +114,47 @@ export async function closeRulesModal(page: Page): Promise<void> {
     // Modal might not have appeared or already closed
   }
 }
+
+/**
+ * Mock room info response for POST /games/room-info
+ */
+export async function mockRoomInfo(
+  page: Page,
+  overrides: {
+    room?: Record<string, unknown>;
+    session?: Record<string, unknown> | null;
+  } = {},
+): Promise<void> {
+  const { room: roomOverrides = {}, session = null } = overrides;
+
+  const defaultRoom = {
+    id: 'test-room',
+    name: 'Test Room',
+    gameId: 'critical_v1',
+    status: 'lobby',
+    playerCount: 1,
+    maxPlayers: 4,
+    hostId: 'user-1',
+    members: [
+      {
+        id: 'user-1',
+        userId: 'user-1',
+        displayName: 'Test User',
+        isHost: true,
+      },
+    ],
+  };
+
+  const room = { ...defaultRoom, ...roomOverrides };
+
+  await page.route('**/games/room-info', async (route) => {
+    if (route.request().method() !== 'POST') {
+      return route.continue();
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ room, session }),
+    });
+  });
+}

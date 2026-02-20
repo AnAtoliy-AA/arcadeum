@@ -94,4 +94,38 @@ test.describe('Player Stats', () => {
     await expect(page.getByText('proplayer')).toBeVisible();
     await expect(page.getByText('60.0%')).toBeVisible();
   });
+
+  test('should not display anonymous users in leaderboard', async ({
+    page,
+  }) => {
+    await page.route('**/games/leaderboard*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          entries: [
+            {
+              rank: 1,
+              playerId: 'user-1',
+              username: 'testuser',
+              totalGames: 10,
+              wins: 7,
+              losses: 3,
+              winRate: 70,
+            },
+          ],
+          hasMore: false,
+          total: 1,
+        }),
+      });
+    });
+
+    await navigateTo(page, '/stats');
+
+    const leaderboardTab = page.getByRole('button', { name: /leaderboard/i });
+    await leaderboardTab.click();
+
+    await expect(page.getByText('testuser')).toBeVisible();
+    await expect(page.getByText(/anonymous/i)).not.toBeVisible();
+  });
 });

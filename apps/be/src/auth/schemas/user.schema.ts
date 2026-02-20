@@ -37,6 +37,12 @@ export class User {
 
   @Prop({ type: [String], default: [] })
   blockedUsers!: string[];
+
+  @Prop({ unique: true, sparse: true, trim: true, index: true })
+  referralCode?: string;
+
+  @Prop({ type: String, default: null })
+  referredBy?: string | null;
 }
 
 export type UserDocument = User & Document;

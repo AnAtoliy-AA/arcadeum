@@ -33,20 +33,35 @@ test.describe('Chat Interactions', () => {
   });
 
   test('should show sender names in messages', async ({ page }) => {
-    await page.route('**/chat/*/messages', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([
-          {
-            id: '1',
-            content: 'Hi',
-            senderUsername: 'otheruser',
-            timestamp: new Date().toISOString(),
-          },
-        ]),
-      });
-    });
+    // Block socket.io WebSocket connections to prevent the real backend from sending an empty
+    // 'chatMessages' event which would overwrite our mocked HTTP messages below.
+    await page.routeWebSocket('**/socket.io/**', (ws) => ws.close());
+
+    await page.route(
+      (url) =>
+        url.pathname.includes('/chat/') && url.pathname.endsWith('/messages'),
+      async (route) => {
+        if (route.request().method() !== 'GET') {
+          return route.continue();
+        }
+
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify([
+            {
+              id: '1',
+              chatId: 'chat-1',
+              senderId: 'user-2',
+              content: 'Hi',
+              senderUsername: 'otheruser',
+              receiverIds: ['user-1'],
+              timestamp: new Date().toISOString(),
+            },
+          ]),
+        });
+      },
+    );
 
     await navigateTo(page, '/chat?chatId=chat-1&title=Test%20User');
     await expect(page.getByText('otheruser')).toBeVisible({ timeout: 10000 });

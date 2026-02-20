@@ -55,7 +55,7 @@ export default function GameRoomPage() {
       });
     },
     enabled: !!roomId,
-    retry: false, // Don't retry on 404/403
+    retry: 1,
   });
 
   const roomInfo = roomData?.room;
@@ -88,11 +88,16 @@ export default function GameRoomPage() {
     );
     if (isParticipant) return 'play';
 
-    // If game has started and we are not a participant -> WATCH
+    if (roomInfo.hostId === snapshot.userId) return 'play';
+
     if (roomInfo.status !== 'lobby') return 'watch';
 
-    // If not authenticated -> WATCH (if public)
-    if (!isAuthenticated && roomInfo.visibility === 'public') return 'watch';
+    if (
+      !isAuthenticated &&
+      !snapshot.userId &&
+      roomInfo.visibility === 'public'
+    )
+      return 'watch';
 
     return 'play';
   }, [roomInfoLoading, roomInfo, snapshot.userId, isAuthenticated]);
@@ -101,16 +106,11 @@ export default function GameRoomPage() {
   useEffect(() => {
     if (roomInfoLoading || visibilityError) return;
 
-    // Only connect if we have visibility info (either from roomInfo or error)
     if (!roomInfo && roomVisibility !== 'private') return;
 
     if (isAuthenticated) {
       connectSockets(snapshot.accessToken);
-    } else if (
-      roomVisibility === 'public' ||
-      roomInfo?.visibility === 'public'
-    ) {
-      // Connect anonymously for public rooms
+    } else if (snapshot.userId || roomVisibility === 'public') {
       connectSocketsAnonymous();
     }
 
@@ -123,6 +123,7 @@ export default function GameRoomPage() {
   }, [
     isAuthenticated,
     snapshot.accessToken,
+    snapshot.userId,
     roomVisibility,
     roomInfo,
     roomInfoLoading,
@@ -296,19 +297,8 @@ export default function GameRoomPage() {
         <Container>
           <GameRoomError
             error={visibilityError}
-            isPrivateRoomError={visibilityError === 'private_room_error'} // Wait, visibilityError is mapped string, checking extraction logic
+            isPrivateRoomError={visibilityError === 'private_room_error'}
           />
-        </Container>
-      </Page>
-    );
-  }
-
-  // Require auth for private rooms but show inv code form if not joined
-  if (!isAuthenticated && roomVisibility === 'private') {
-    return (
-      <Page>
-        <Container>
-          <GameRoomError error={t('games.roomPage.errors.notAuthenticated')} />
         </Container>
       </Page>
     );

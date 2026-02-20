@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import { gamesApi } from '@/features/games/api';
 import {
   PageLayout,
@@ -60,8 +61,19 @@ export function CreateGameRoomPage() {
       : visibleGames[0]?.id || '';
   }, [searchParams]);
 
+  const { messages } = useLanguage();
+  const homeCopy = messages.home ?? {};
+
+  const defaultRoomName = useMemo(() => {
+    const playerName = snapshot.displayName || snapshot.username || 'Anonymous';
+    const template = homeCopy.defaultRoomName ?? "{{name}}'s game";
+    return (
+      formatMessage(template, { name: playerName }) ?? `${playerName}'s game`
+    );
+  }, [snapshot.displayName, snapshot.username, homeCopy.defaultRoomName]);
+
   const [gameId, setGameId] = useState(initialGameId);
-  const [name, setName] = useState('');
+  const [name, setName] = useState(defaultRoomName);
   const [visibility, setVisibility] = useState<'public' | 'private'>('public');
   const [maxPlayers, setMaxPlayers] = useState('');
   const [notes, setNotes] = useState('');
@@ -94,7 +106,6 @@ export function CreateGameRoomPage() {
       );
     },
     onSuccess: (data) => {
-      // For private rooms, include invite code so creator auto-joins
       const roomUrl = data.room.inviteCode
         ? `/games/rooms/${data.room.id}?inviteCode=${encodeURIComponent(data.room.inviteCode)}`
         : `/games/rooms/${data.room.id}`;
@@ -112,10 +123,6 @@ export function CreateGameRoomPage() {
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-
-      if (!snapshot.accessToken) {
-        return;
-      }
 
       if (!name.trim()) {
         return;
@@ -135,7 +142,7 @@ export function CreateGameRoomPage() {
 
       createRoom();
     },
-    [snapshot.accessToken, name, maxPlayers, gameId, createRoom],
+    [name, maxPlayers, gameId, createRoom],
   );
 
   const GameConfigComponent = GAME_CONFIGS[gameId];
@@ -300,38 +307,7 @@ export function CreateGameRoomPage() {
             </ErrorCard>
           )}
 
-          {!snapshot.accessToken && (
-            <ErrorCard
-              variant="outlined"
-              padding="sm"
-              style={{
-                marginBottom: '1rem',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '0.5rem',
-              }}
-            >
-              <div>
-                {t('games.create.loginRequired') ||
-                  'You need to be logged in to create a room.'}
-              </div>
-              <Button
-                type="button"
-                onClick={() => router.push('/auth')}
-                size="sm"
-              >
-                {t('games.create.loginButton') || 'Login'}
-              </Button>
-            </ErrorCard>
-          )}
-
-          <Button
-            type="submit"
-            disabled={loading || !snapshot.accessToken}
-            size="lg"
-            fullWidth
-          >
+          <Button type="submit" disabled={loading} size="lg" fullWidth>
             {loading
               ? t('games.create.submitCreating') || 'Creating...'
               : t('games.common.createRoom') || 'Create Room'}

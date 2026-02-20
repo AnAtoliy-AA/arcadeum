@@ -18,6 +18,7 @@ import {
   GameRoomSummary,
   ListRoomsFilters,
   ListRoomsResult,
+  JoinGameRoomResult,
   LeaveGameRoomResult,
   DeleteGameRoomResult,
 } from './game-rooms.types';
@@ -137,7 +138,7 @@ export class GameRoomsService {
   async joinRoom(
     dto: JoinGameRoomDto,
     userId: string,
-  ): Promise<GameRoomSummary> {
+  ): Promise<JoinGameRoomResult> {
     const room = await this.gameRoomModel.findById(dto.roomId).exec();
 
     if (!room) {
@@ -148,7 +149,10 @@ export class GameRoomsService {
     const isParticipant = room.participants.some((p) => p.userId === userId);
 
     if (isParticipant) {
-      return this.gameRoomsMapper.prepareRoomSummary(room, userId);
+      return {
+        room: await this.gameRoomsMapper.prepareRoomSummary(room, userId),
+        added: false,
+      };
     }
 
     // New players can only join if game hasn't started yet
@@ -175,7 +179,10 @@ export class GameRoomsService {
 
     await room.save();
 
-    return this.gameRoomsMapper.prepareRoomSummary(room, userId);
+    return {
+      room: await this.gameRoomsMapper.prepareRoomSummary(room, userId),
+      added: true,
+    };
   }
 
   /**

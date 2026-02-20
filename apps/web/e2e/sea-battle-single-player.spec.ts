@@ -3,6 +3,7 @@ import {
   mockSession,
   navigateTo,
   closeRulesModal,
+  mockRoomInfo,
 } from './fixtures/test-utils';
 
 interface MockSocket {
@@ -20,18 +21,6 @@ test.describe('Sea Battle Single Player Mode', () => {
   }) => {
     const roomId = '507f191e810c19729de860ea';
     const userId = 'user-1';
-
-    const mockLobbyRoom = {
-      id: roomId,
-      name: 'Sea Battle Test',
-      gameId: 'sea_battle_v1',
-      status: 'lobby',
-      playerCount: 1,
-      maxPlayers: 4,
-      hostId: userId,
-      members: [{ id: userId, userId, displayName: 'Test User', isHost: true }],
-      gameOptions: { variant: 'classic' },
-    };
 
     const generateBoard = () =>
       Array(10)
@@ -73,14 +62,13 @@ test.describe('Sea Battle Single Player Mode', () => {
       })),
     };
 
-    await page.route(`**/games/rooms/${roomId}`, async (route) => {
-      if (route.request().resourceType() === 'document')
-        return route.continue();
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ room: mockLobbyRoom, session: null }),
-      });
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        name: 'Sea Battle Test',
+        gameId: 'sea_battle_v1',
+        gameOptions: { variant: 'classic' },
+      },
     });
 
     await page.addInitScript(
@@ -268,30 +256,17 @@ test.describe('Sea Battle Single Player Mode', () => {
       logs: [],
     };
 
-    await page.route(`**/games/rooms/${roomId}`, async (route) => {
-      if (route.request().resourceType() === 'document')
-        return route.continue();
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          room: {
-            id: roomId,
-            gameId: 'sea_battle_v1',
-            status: 'active',
-            playerCount: 1,
-            hostId: userId,
-            members: [
-              { id: userId, userId, displayName: 'Test User', isHost: true },
-            ],
-          },
-          session: {
-            id: 'session-1',
-            status: 'active',
-            state: mockBattleState,
-          },
-        }),
-      });
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        gameId: 'sea_battle_v1',
+        status: 'active',
+      },
+      session: {
+        id: 'session-1',
+        status: 'active',
+        state: mockBattleState,
+      },
     });
 
     await page.addInitScript(

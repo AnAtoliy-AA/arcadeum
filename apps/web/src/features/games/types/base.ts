@@ -45,7 +45,7 @@ export interface GameMetadata extends GameConfig {
   /** Last updated timestamp */
   lastUpdated: string;
   /** Game status */
-  status: 'active' | 'beta' | 'experimental' | 'deprecated';
+  status: 'active' | 'beta' | 'experimental' | 'deprecated' | 'coming_soon';
 }
 
 /**

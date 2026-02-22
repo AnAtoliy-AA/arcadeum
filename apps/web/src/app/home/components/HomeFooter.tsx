@@ -12,6 +12,7 @@ import {
   SocialLinks,
   SocialIcon,
   Copyright,
+  VersionText,
 } from './styles/Footer.styles';
 
 const SOCIAL_ICONS = [
@@ -112,6 +113,7 @@ export function HomeFooter() {
             year: currentYear,
             appName,
           }) ?? `© ${currentYear} ${appName}. All rights reserved.`}
+          <VersionText>v{appConfig.appVersion}</VersionText>
         </Copyright>
       </FooterContent>
     </FooterSection>

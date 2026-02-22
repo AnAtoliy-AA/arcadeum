@@ -7,6 +7,7 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { useCosmeticBadges } from '@/features/referrals/hooks/useCosmeticBadges';
 import { CosmeticBadge } from '@/shared/ui';
 import { routes } from '@/shared/config/routes';
+import { appConfig } from '@/shared/config/app-config';
 import {
   MobileNav,
   MobileNavLink,
@@ -16,6 +17,7 @@ import {
   DropdownItem,
   AuthButton,
   DropdownDivider,
+  MobileVersionText,
 } from './styles';
 
 interface MobileMenuProps {
@@ -145,6 +147,8 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
           {t('common.actions.support')}
         </span>
       </MobileNavLink>
+
+      <MobileVersionText>v{appConfig.appVersion}</MobileVersionText>
     </MobileNav>
   );
 }

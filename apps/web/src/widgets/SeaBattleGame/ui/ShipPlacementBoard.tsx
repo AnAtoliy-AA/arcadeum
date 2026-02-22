@@ -29,12 +29,12 @@ import {
   ShipName,
   ActionButton,
   PlacementHeader,
-  PlacementControls,
   RotateButton,
   PlayerSection,
   PlayerName,
   GameBoardWrapper,
   BoardContainer,
+  PlacementActions,
 } from './styles';
 import { getTheme } from '../lib/theme';
 
@@ -174,15 +174,6 @@ export function ShipPlacementBoard({
           >
             {t('games.seaBattle.table.players.placeShips')}
           </h2>
-          <PlacementControls>
-            <RotateButton
-              $theme={theme}
-              onClick={handleRotate}
-              disabled={!selectedShip}
-            >
-              Rotate ({isVertical ? 'Vertical' : 'Horizontal'})
-            </RotateButton>
-          </PlacementControls>
         </PlacementHeader>
 
         <PlayerSection $isMe $isActive={false} $theme={theme}>
@@ -264,13 +255,22 @@ export function ShipPlacementBoard({
             </ShipItem>
           );
         })}
+      </ShipPalette>
 
+      <PlacementActions>
+        <RotateButton
+          $theme={theme}
+          onClick={handleRotate}
+          disabled={!selectedShip}
+        >
+          {t('games.seaBattle.table.actions.rotate')} (
+          {isVertical ? 'Vertical' : 'Horizontal'})
+        </RotateButton>
         <ActionButton
           $variant="primary"
           $theme={theme}
           disabled={!isAllShipsPlaced || isPlacementComplete}
           onClick={onConfirmPlacement}
-          style={{ marginTop: '16px' }}
         >
           {isPlacementComplete
             ? t('games.seaBattle.table.actions.waitingForOthers')
@@ -281,7 +281,6 @@ export function ShipPlacementBoard({
             $variant="secondary"
             $theme={theme}
             onClick={onResetPlacement}
-            style={{ marginTop: '8px' }}
           >
             {t('games.seaBattle.table.actions.resetPlacement')}
           </ActionButton>
@@ -291,14 +290,13 @@ export function ShipPlacementBoard({
             $variant="secondary"
             $theme={theme}
             onClick={onAutoPlace}
-            style={{ marginTop: '8px' }}
           >
             {placedShipIds.size > 0
               ? t('games.seaBattle.table.actions.randomize')
               : t('games.seaBattle.table.actions.autoPlace')}
           </ActionButton>
         )}
-      </ShipPalette>
+      </PlacementActions>
     </GameBoardWrapper>
   );
 }

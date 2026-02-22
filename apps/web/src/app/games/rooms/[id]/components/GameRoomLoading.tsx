@@ -5,26 +5,21 @@ import { LoadingContainer } from './styles';
 
 interface GameRoomLoadingProps {
   isLongPending?: boolean;
-  progress?: number;
-  elapsedSeconds?: number;
   message?: string;
+  actionBusy?: string | null;
 }
 
 export function GameRoomLoading({
   isLongPending = false,
-  progress = 0,
-  elapsedSeconds = 0,
   message,
+  actionBusy = 'loading_room',
 }: GameRoomLoadingProps) {
   const { t } = useTranslation();
 
   return (
     <LoadingContainer>
       {isLongPending ? (
-        <ServerLoadingNotice
-          pendingProgress={progress}
-          pendingElapsedSeconds={elapsedSeconds}
-        />
+        <ServerLoadingNotice actionBusy={actionBusy} />
       ) : (
         message || t('games.roomPage.loading')
       )}

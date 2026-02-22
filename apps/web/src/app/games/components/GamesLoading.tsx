@@ -4,24 +4,15 @@ import { Loading, ServerWakeUpContainer, Spinner } from '../styles';
 
 interface GamesLoadingProps {
   isLoadingLongPending: boolean;
-  loadingProgress: number;
-  loadingElapsedSeconds: number;
 }
 
-export function GamesLoading({
-  isLoadingLongPending,
-  loadingProgress,
-  loadingElapsedSeconds,
-}: GamesLoadingProps) {
+export function GamesLoading({ isLoadingLongPending }: GamesLoadingProps) {
   const { t } = useTranslation();
 
   if (isLoadingLongPending) {
     return (
       <ServerWakeUpContainer data-testid="games-loading-wakeup">
-        <ServerLoadingNotice
-          pendingProgress={loadingProgress}
-          pendingElapsedSeconds={loadingElapsedSeconds}
-        />
+        <ServerLoadingNotice actionBusy="loading_games" />
       </ServerWakeUpContainer>
     );
   }

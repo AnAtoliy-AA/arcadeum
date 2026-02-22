@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import { useAutoplay } from './useAutoplay';
-import { useIdleTimer } from './useIdleTimer';
 import type {
   CriticalSnapshot,
   CriticalPlayerState,
@@ -69,25 +68,17 @@ export function useGameAutoplayIntegration({
     setAllEnabled(true);
   }, [setAllEnabled]);
 
-  const idleTimer = useIdleTimer({
-    enabled: idleTimerEnabled,
-    isMyTurn: !!isMyTurn,
-    canAct: !!canAct,
-    onTimeout: handleIdleTimeout,
-  });
-
   const handleStopAutoplay = useCallback(() => {
     setIdleTimerTriggered(false);
     setAllEnabled(false);
-    idleTimer.reset();
-  }, [idleTimer, setAllEnabled]);
+  }, [setAllEnabled]);
 
   return {
     autoplayState,
-    idleTimer,
     idleTimerTriggered,
     handleStopAutoplay,
     setAllEnabled,
     idleTimerEnabled,
+    handleIdleTimeout,
   };
 }

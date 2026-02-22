@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useEffect, useRef, useCallback, useMemo, useReducer } from 'react';
 import type { CriticalCard, CriticalLogEntry } from '../types';
 
 interface PendingAction {
@@ -51,6 +51,16 @@ export interface UseAutoplayReturn {
   setAutoNopeAttackEnabled: (enabled: boolean) => void;
   setAutoGiveFavorEnabled: (enabled: boolean) => void;
   setAutoDefuseEnabled: (enabled: boolean) => void;
+}
+
+interface AutoplayToggles {
+  autoDrawEnabled: boolean;
+  autoSkipEnabled: boolean;
+  autoShuffleAfterDefuseEnabled: boolean;
+  autoDrawSkipAfterShuffleEnabled: boolean;
+  autoNopeAttackEnabled: boolean;
+  autoGiveFavorEnabled: boolean;
+  autoDefuseEnabled: boolean;
 }
 
 // Card selection priority for auto-give favor (lower = give first)
@@ -185,15 +195,31 @@ export function useAutoplay({
   onGiveFavorCard,
   onPlayDefuse,
 }: UseAutoplayOptions): UseAutoplayReturn {
-  const [autoDrawEnabled, setAutoDrawEnabled] = useState(false);
-  const [autoSkipEnabled, setAutoSkipEnabled] = useState(false);
-  const [autoShuffleAfterDefuseEnabled, setAutoShuffleAfterDefuseEnabled] =
-    useState(false);
-  const [autoDrawSkipAfterShuffleEnabled, setAutoDrawSkipAfterShuffleEnabled] =
-    useState(false);
-  const [autoNopeAttackEnabled, setAutoNopeAttackEnabled] = useState(false);
-  const [autoGiveFavorEnabled, setAutoGiveFavorEnabled] = useState(false);
-  const [autoDefuseEnabled, setAutoDefuseEnabled] = useState(false);
+  const [toggles, dispatchToggle] = useReducer(
+    (state: AutoplayToggles, action: Partial<AutoplayToggles>) => ({
+      ...state,
+      ...action,
+    }),
+    {
+      autoDrawEnabled: false,
+      autoSkipEnabled: false,
+      autoShuffleAfterDefuseEnabled: false,
+      autoDrawSkipAfterShuffleEnabled: false,
+      autoNopeAttackEnabled: false,
+      autoGiveFavorEnabled: false,
+      autoDefuseEnabled: false,
+    },
+  );
+
+  const {
+    autoDrawEnabled,
+    autoSkipEnabled,
+    autoShuffleAfterDefuseEnabled,
+    autoDrawSkipAfterShuffleEnabled,
+    autoNopeAttackEnabled,
+    autoGiveFavorEnabled,
+    autoDefuseEnabled,
+  } = toggles;
 
   const hasNopedRef = useRef<string | null>(null);
   const hasGivenFavorRef = useRef<string | null>(null);
@@ -378,17 +404,19 @@ export function useAutoplay({
   ]);
 
   const handleSetAutoDrawEnabled = useCallback((enabled: boolean) => {
-    setAutoDrawEnabled(enabled);
+    dispatchToggle({ autoDrawEnabled: enabled });
   }, []);
 
   const handleSetAllEnabled = useCallback((enabled: boolean) => {
-    setAutoDrawEnabled(enabled);
-    setAutoSkipEnabled(enabled);
-    setAutoShuffleAfterDefuseEnabled(enabled);
-    setAutoDrawSkipAfterShuffleEnabled(enabled);
-    setAutoNopeAttackEnabled(enabled);
-    setAutoGiveFavorEnabled(enabled);
-    setAutoDefuseEnabled(enabled);
+    dispatchToggle({
+      autoDrawEnabled: enabled,
+      autoSkipEnabled: enabled,
+      autoShuffleAfterDefuseEnabled: enabled,
+      autoDrawSkipAfterShuffleEnabled: enabled,
+      autoNopeAttackEnabled: enabled,
+      autoGiveFavorEnabled: enabled,
+      autoDefuseEnabled: enabled,
+    });
   }, []);
 
   const allEnabled =
@@ -411,11 +439,17 @@ export function useAutoplay({
     autoDefuseEnabled,
     setAllEnabled: handleSetAllEnabled,
     setAutoDrawEnabled: handleSetAutoDrawEnabled,
-    setAutoSkipEnabled,
-    setAutoShuffleAfterDefuseEnabled,
-    setAutoDrawSkipAfterShuffleEnabled,
-    setAutoNopeAttackEnabled,
-    setAutoGiveFavorEnabled,
-    setAutoDefuseEnabled,
+    setAutoSkipEnabled: (enabled: boolean) =>
+      dispatchToggle({ autoSkipEnabled: enabled }),
+    setAutoShuffleAfterDefuseEnabled: (enabled: boolean) =>
+      dispatchToggle({ autoShuffleAfterDefuseEnabled: enabled }),
+    setAutoDrawSkipAfterShuffleEnabled: (enabled: boolean) =>
+      dispatchToggle({ autoDrawSkipAfterShuffleEnabled: enabled }),
+    setAutoNopeAttackEnabled: (enabled: boolean) =>
+      dispatchToggle({ autoNopeAttackEnabled: enabled }),
+    setAutoGiveFavorEnabled: (enabled: boolean) =>
+      dispatchToggle({ autoGiveFavorEnabled: enabled }),
+    setAutoDefuseEnabled: (enabled: boolean) =>
+      dispatchToggle({ autoDefuseEnabled: enabled }),
   };
 }

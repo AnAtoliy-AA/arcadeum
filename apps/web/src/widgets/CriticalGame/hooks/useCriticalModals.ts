@@ -1,4 +1,4 @@
-import { useEffect, RefObject } from 'react';
+import { useEffect, useCallback, RefObject } from 'react';
 import { gameSocket } from '@/shared/lib/socket';
 import { maybeDecrypt } from '@/shared/lib/socket-encryption';
 import { useCriticalGameStore } from '../store/criticalGameStore';
@@ -113,7 +113,10 @@ export function useCriticalModals({
     chatScope: store.chatScope,
     setChatScope: store.setChatScope,
     showChat: store.showChat,
-    handleToggleChat: () => store.setShowChat((prev) => !prev),
-    clearChatMessage: () => store.setChatMessage(''),
+    handleToggleChat: useCallback(
+      () => store.setShowChat((prev: boolean) => !prev),
+      [store],
+    ),
+    clearChatMessage: useCallback(() => store.setChatMessage(''), [store]),
   };
 }

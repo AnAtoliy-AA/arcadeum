@@ -140,6 +140,7 @@ const nextConfig: NextConfig = {
       })),
     ];
   },
+  reactCompiler: true,
   compiler: {
     styledComponents: {
       ssr: true,

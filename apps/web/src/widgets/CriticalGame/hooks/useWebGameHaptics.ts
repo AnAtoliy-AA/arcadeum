@@ -3,14 +3,17 @@ import { loadStoredSettings } from '@/shared/lib/settings-storage';
 
 export function useWebGameHaptics(isMyTurn: boolean) {
   const prevIsMyTurn = useRef(isMyTurn);
+  const hapticsEnabledRef = useRef<boolean | null>(null);
+
+  useEffect(() => {
+    const settings = loadStoredSettings();
+    hapticsEnabledRef.current = settings.hapticsEnabled === true;
+  }, []);
 
   useEffect(() => {
     if (isMyTurn && !prevIsMyTurn.current) {
-      const settings = loadStoredSettings();
-      // Default to false if undefined
-      if (settings.hapticsEnabled === true) {
+      if (hapticsEnabledRef.current) {
         if (typeof navigator !== 'undefined' && navigator.vibrate) {
-          // Vibrate for 200ms
           navigator.vibrate(200);
         }
       }

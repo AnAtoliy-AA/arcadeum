@@ -236,11 +236,8 @@ export default function GameRoomPage() {
   ]);
 
   // Track room loading progress for server wake-up message
-  const {
-    isLongPending: isRoomLoadingLongPending,
-    progress: roomLoadingProgress,
-    elapsedSeconds: roomLoadingElapsedSeconds,
-  } = useServerWakeUpProgress(roomLoading);
+  const { isLongPending: isRoomLoadingLongPending } =
+    useServerWakeUpProgress(roomLoading);
 
   // Preload game component using GameFactory
   useEffect(() => {
@@ -311,8 +308,7 @@ export default function GameRoomPage() {
         <Container>
           <GameRoomLoading
             isLongPending={isRoomLoadingLongPending}
-            progress={roomLoadingProgress}
-            elapsedSeconds={roomLoadingElapsedSeconds}
+            actionBusy={roomLoading ? 'joining_room' : null}
             message={
               isAutoJoining
                 ? t('games.inviteCode.joining') || 'Joining...'

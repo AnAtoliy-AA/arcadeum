@@ -1,14 +1,54 @@
-import { CatComboModal } from './modals/CatComboModal';
-import { StashModal } from './modals/StashModal';
-import { SeeTheFutureModal } from './modals/SeeTheFutureModal';
-import { AlterTheFutureModal } from './modals/AlterTheFutureModal';
-import { FavorModal } from './modals/FavorModal';
-import { TargetedAttackModal } from './modals/TargetedAttackModal';
-import { GiveFavorModal } from './modals/GiveFavorModal';
-import { DefuseModal } from './modals/DefuseModal';
-import { RematchModal } from './modals/RematchModal';
-import { RematchInvitationModal } from './modals/RematchInvitationModal';
-import { OmniscienceModal } from './OmniscienceModal';
+import dynamic from 'next/dynamic';
+
+const CatComboModal = dynamic(
+  () => import('./modals/CatComboModal').then((m) => m.CatComboModal),
+  { ssr: false },
+);
+const StashModal = dynamic(
+  () => import('./modals/StashModal').then((m) => m.StashModal),
+  { ssr: false },
+);
+const SeeTheFutureModal = dynamic(
+  () => import('./modals/SeeTheFutureModal').then((m) => m.SeeTheFutureModal),
+  { ssr: false },
+);
+const AlterTheFutureModal = dynamic(
+  () =>
+    import('./modals/AlterTheFutureModal').then((m) => m.AlterTheFutureModal),
+  { ssr: false },
+);
+const FavorModal = dynamic(
+  () => import('./modals/FavorModal').then((m) => m.FavorModal),
+  { ssr: false },
+);
+const TargetedAttackModal = dynamic(
+  () =>
+    import('./modals/TargetedAttackModal').then((m) => m.TargetedAttackModal),
+  { ssr: false },
+);
+const GiveFavorModal = dynamic(
+  () => import('./modals/GiveFavorModal').then((m) => m.GiveFavorModal),
+  { ssr: false },
+);
+const DefuseModal = dynamic(
+  () => import('./modals/DefuseModal').then((m) => m.DefuseModal),
+  { ssr: false },
+);
+const RematchModal = dynamic(
+  () => import('./modals/RematchModal').then((m) => m.RematchModal),
+  { ssr: false },
+);
+const RematchInvitationModal = dynamic(
+  () =>
+    import('./modals/RematchInvitationModal').then(
+      (m) => m.RematchInvitationModal,
+    ),
+  { ssr: false },
+);
+const OmniscienceModal = dynamic(
+  () => import('./OmniscienceModal').then((m) => m.OmniscienceModal),
+  { ssr: false },
+);
 import type {
   CriticalCard,
   CatComboModalState,
@@ -275,7 +315,6 @@ export function GameModals({
         pendingAlter.playerId === currentUserId && (
           <AlterTheFutureModal
             isOpen={true}
-            onClose={() => {}}
             cards={deck.slice(0, pendingAlter?.count || 0)}
             onConfirm={onConfirmAlterFuture}
             isShare={pendingAlter?.isShare}

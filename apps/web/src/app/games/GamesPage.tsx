@@ -125,11 +125,8 @@ export function GamesPage() {
   });
 
   // Track loading progress for server wake-up message
-  const {
-    isLongPending: isLoadingLongPending,
-    progress: loadingProgress,
-    elapsedSeconds: loadingElapsedSeconds,
-  } = useServerWakeUpProgress(isLoading);
+  const { isLongPending: isLoadingLongPending } =
+    useServerWakeUpProgress(isLoading);
 
   const rooms = useMemo(() => {
     return data?.pages.flatMap((page) => page.rooms) || [];
@@ -152,13 +149,7 @@ export function GamesPage() {
 
   const renderContent = () => {
     if (loading) {
-      return (
-        <GamesLoading
-          isLoadingLongPending={isLoadingLongPending}
-          loadingProgress={loadingProgress}
-          loadingElapsedSeconds={loadingElapsedSeconds}
-        />
-      );
+      return <GamesLoading isLoadingLongPending={isLoadingLongPending} />;
     }
 
     if (error) {

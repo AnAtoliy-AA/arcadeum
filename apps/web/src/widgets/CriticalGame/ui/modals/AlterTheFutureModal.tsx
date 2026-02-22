@@ -128,7 +128,7 @@ interface AlterTheFutureModalProps {
   isShare?: boolean; // If true, "Share the Future" mode (cards are revealed)
   onConfirm: (newOrder: CriticalCard[]) => void;
   cardVariant?: string;
-  onClose: () => void; // Added back to match usage in GameModals (though we ignore it/ pass empty fn)
+  onClose?: () => void;
 }
 
 export function AlterTheFutureModal({

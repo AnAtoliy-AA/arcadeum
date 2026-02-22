@@ -95,4 +95,33 @@ test.describe('Games List Page', () => {
 
     await expect(page.getByTestId('games-empty')).toBeVisible();
   });
+  test('should not display anonymous games in the list', async ({ page }) => {
+    await page.route('**/games/rooms*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          rooms: [
+            {
+              id: 'room-1',
+              gameId: 'critical_v1',
+              name: 'Normal Room',
+              hostId: 'user-123',
+              visibility: 'public',
+              playerCount: 2,
+              maxPlayers: 4,
+              status: 'lobby',
+              createdAt: new Date().toISOString(),
+            },
+          ],
+          total: 1,
+        }),
+      });
+    });
+
+    await navigateTo(page, '/games');
+
+    await expect(page.getByText('Normal Room')).toBeVisible();
+    await expect(page.getByText('Anonymous Bot Game')).not.toBeVisible();
+  });
 });

@@ -9,11 +9,17 @@ test.describe('Auth Referral Code Registration', () => {
     await navigateTo(page, '/auth');
 
     // 1. Switch to Register mode
-    const registerToggle = page.getByRole('button', {
+    const toggleBtn = page.getByRole('button', {
       name: /need an account|регистрация|account/i,
     });
-    if (await registerToggle.isVisible()) {
-      await registerToggle.click();
+    await toggleBtn
+      .waitFor({ state: 'visible', timeout: 5000 })
+      .catch(() => {});
+    if (await toggleBtn.isVisible()) {
+      const text = (await toggleBtn.textContent()) || '';
+      if (!/already|уже/i.test(text)) {
+        await toggleBtn.click();
+      }
     }
 
     // 2. Locate fields

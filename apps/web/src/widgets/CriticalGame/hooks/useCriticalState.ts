@@ -30,11 +30,7 @@ export function useCriticalState({
   });
 
   // Track pending action state using shared hook
-  const {
-    isLongPending: actionLongPending,
-    progress: pendingProgress,
-    elapsedSeconds: pendingElapsedSeconds,
-  } = useServerWakeUpProgress(Boolean(actionBusy));
+  useServerWakeUpProgress(Boolean(actionBusy));
 
   // Clear actionBusy when an exception is received from the server
   useEffect(() => {
@@ -141,9 +137,6 @@ export function useCriticalState({
     session,
     snapshot,
     actionBusy,
-    actionLongPending,
-    pendingProgress,
-    pendingElapsedSeconds,
     startBusy,
     actions,
     reorderParticipants,

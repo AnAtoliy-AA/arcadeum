@@ -3,6 +3,7 @@
 import { LinkButton } from '@/shared/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { routes } from '@/shared/config/routes';
+import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 import {
   ServerLoadingMessage,
   ServerLoadingHeader,
@@ -17,15 +18,22 @@ import {
 } from './styles';
 
 interface ServerLoadingNoticeProps {
-  pendingProgress: number;
-  pendingElapsedSeconds: number;
+  actionBusy?: string | null;
+  pendingProgress?: number;
+  pendingElapsedSeconds?: number;
 }
 
 export function ServerLoadingNotice({
-  pendingProgress,
-  pendingElapsedSeconds,
+  actionBusy,
+  pendingProgress: propProgress,
+  pendingElapsedSeconds: propElapsedSeconds,
 }: ServerLoadingNoticeProps) {
   const { t } = useTranslation();
+  const { progress: hookProgress, elapsedSeconds: hookElapsedSeconds } =
+    useServerWakeUpProgress(Boolean(actionBusy));
+
+  const pendingProgress = propProgress ?? hookProgress;
+  const pendingElapsedSeconds = propElapsedSeconds ?? hookElapsedSeconds;
 
   return (
     <ServerLoadingMessage>

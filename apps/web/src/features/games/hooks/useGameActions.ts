@@ -16,7 +16,7 @@ interface UseGameActionsOptions {
   onActionComplete?: () => void;
 }
 
-interface UseGameActionsReturn {
+export interface UseGameActionsReturn {
   // Critical actions
   startCritical: (options?: { withBots?: boolean; botCount?: number }) => void;
   drawCard: () => void;

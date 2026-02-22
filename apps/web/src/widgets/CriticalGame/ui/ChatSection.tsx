@@ -1,6 +1,6 @@
 'use client';
 
-import type { RefObject } from 'react';
+import { type RefObject } from 'react';
 import type { CriticalSnapshot, ChatScope } from '../types';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import {

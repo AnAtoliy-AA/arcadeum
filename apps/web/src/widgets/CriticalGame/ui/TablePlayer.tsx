@@ -27,6 +27,12 @@ export interface TablePlayerProps {
   cardVariant?: string;
 }
 
+function findLastMessage(logs: CriticalLogEntry[], playerId: string) {
+  return logs.findLast(
+    (log) => log.type === 'message' && log.senderId === playerId,
+  );
+}
+
 export function TablePlayer({
   player,
   index,
@@ -45,21 +51,7 @@ export function TablePlayer({
     `Player ${playerId.slice(0, 8)}`,
   );
 
-  const now = new Date().getTime();
-
-  // Find latest message for this player
-  const latestMessage = logs
-    .filter(
-      (log) =>
-        log.type === 'message' &&
-        log.senderId === playerId &&
-        // Only show messages from the last 15 seconds
-        new Date(log.createdAt).getTime() > now - 15000,
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    )[0];
+  const latestMessage = findLastMessage(logs, playerId);
 
   // Determine bubble position based on player position index
   let bubblePosition: 'top' | 'bottom' | 'left' | 'right' = 'top';

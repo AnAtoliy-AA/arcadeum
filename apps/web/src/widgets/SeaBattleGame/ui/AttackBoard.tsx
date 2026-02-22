@@ -15,7 +15,7 @@ import {
   RowLabels,
   ColLabels,
   Label,
-  TurnIndicator,
+  MainGameArea,
 } from './styles';
 import { getTheme } from '../lib/theme';
 
@@ -66,13 +66,7 @@ export function AttackBoard({
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <TurnIndicator $isYourTurn={isMyTurn} $theme={theme}>
-        {isMyTurn
-          ? '🎯 Your Turn - Attack an opponent!'
-          : `Waiting for ${resolveDisplayName(currentTurnPlayerId || '', 'opponent')}...`}
-      </TurnIndicator>
-
+    <MainGameArea>
       <GridsContainer>
         {/* Own board - view only */}
         {currentPlayer && (
@@ -180,6 +174,6 @@ export function AttackBoard({
           </PlayerSection>
         ))}
       </GridsContainer>
-    </div>
+    </MainGameArea>
   );
 }

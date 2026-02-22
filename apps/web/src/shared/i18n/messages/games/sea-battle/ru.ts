@@ -36,6 +36,8 @@ export const ruMessages = {
         alive: 'В игре',
         eliminated: 'Выбыл',
         yourTurn: 'Ваш ход',
+        yourTurnAttack: '🎯 Ваш ход - Атакуйте противника!',
+        placeShips: 'Расставьте свои корабли',
         waitingFor: 'Ждем {{player}}...',
       },
       phase: {

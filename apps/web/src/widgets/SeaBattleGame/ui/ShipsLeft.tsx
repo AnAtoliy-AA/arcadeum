@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import styled from 'styled-components';
 import { Ship, SHIPS } from '../types';
 
@@ -14,12 +15,26 @@ const Container = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.05);
 `;
 
+const TitleContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+`;
+
 const Title = styled.div`
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.6);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+`;
+
+const ShipCount = styled.div`
+  font-size: 0.85rem;
+  color: #10b981;
+  font-weight: 800;
+  font-family: monospace;
 `;
 
 const FleetGrid = styled.div`
@@ -78,12 +93,22 @@ interface ShipsLeftProps {
 }
 
 export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
+  const { t } = useTranslation();
   // Sort ships for consistent display: 4, 3, 3, 2, 2, 2, 1, 1, 1, 1
   const sortedConfig = [...SHIPS].sort((a, b) => b.size - a.size);
 
+  const totalShips = sortedConfig.length;
+  const sunkCount = ships.filter((s) => s.sunk).length;
+  const aliveCount = totalShips - sunkCount;
+
   return (
     <Container>
-      <Title>Ships Left</Title>
+      <TitleContainer>
+        <Title>{t('games.seaBattle.table.state.shipsRemaining')}</Title>
+        <ShipCount>
+          {aliveCount}/{totalShips}
+        </ShipCount>
+      </TitleContainer>
       <FleetGrid>
         {sortedConfig.map((config) => {
           const shipState = ships.find((s) => s.id === config.id);

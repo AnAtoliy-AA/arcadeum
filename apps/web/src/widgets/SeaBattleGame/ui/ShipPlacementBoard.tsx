@@ -33,6 +33,8 @@ import {
   RotateButton,
   PlayerSection,
   PlayerName,
+  GameBoardWrapper,
+  BoardContainer,
 } from './styles';
 import { getTheme } from '../lib/theme';
 
@@ -163,11 +165,14 @@ export function ShipPlacementBoard({
   const isAllShipsPlaced = unplacedShips.length === 0;
 
   return (
-    <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-      <div>
-        <PlacementHeader>
-          <h2 style={{ margin: 0, color: theme.textColor }}>
-            Place Your Ships
+    <GameBoardWrapper>
+      <BoardContainer>
+        <PlacementHeader className="placement-header">
+          <h2
+            style={{ margin: 0, color: theme.textColor, fontSize: 'inherit' }}
+            className="placement-title"
+          >
+            {t('games.seaBattle.table.players.placeShips')}
           </h2>
           <PlacementControls>
             <RotateButton
@@ -183,7 +188,7 @@ export function ShipPlacementBoard({
         <PlayerSection $isMe $isActive={false} $theme={theme}>
           <PlayerName $theme={theme}>Your Board</PlayerName>
           <BoardWithLabels>
-            <div /> {/* Empty corner */}
+            <div />
             <ColLabels>
               {COL_LABELS.map((label) => (
                 <Label key={label} $theme={theme}>
@@ -222,10 +227,13 @@ export function ShipPlacementBoard({
             </BoardGrid>
           </BoardWithLabels>
         </PlayerSection>
-      </div>
+      </BoardContainer>
 
       <ShipPalette $theme={theme}>
-        <h3 style={{ margin: '0 0 12px', color: theme.textColor }}>
+        <h3
+          className="ship-palette-title"
+          style={{ margin: '0 0 12px', color: theme.textColor }}
+        >
           Ships to Place
         </h3>
         {SHIPS.map((ship) => {
@@ -291,7 +299,7 @@ export function ShipPlacementBoard({
           </ActionButton>
         )}
       </ShipPalette>
-    </div>
+    </GameBoardWrapper>
   );
 }
 

@@ -161,7 +161,7 @@ test.describe('Sea Battle Ships Left', () => {
     );
 
     // Wait for game to load
-    await expect(page.getByText(/ships left/i).first()).toBeVisible({
+    await expect(page.getByText(/ships remaining/i).first()).toBeVisible({
       timeout: 10000,
     });
 
@@ -172,7 +172,7 @@ test.describe('Sea Battle Ships Left', () => {
     await expect(page.locator('body')).toContainText('Opponent');
 
     // We expect Ships Left to be present in both
-    const shipsLeftSections = page.getByText(/ships left/i);
+    const shipsLeftSections = page.getByText(/ships remaining/i);
 
     // Asserting count 2
     await expect(shipsLeftSections).toHaveCount(2);
@@ -186,7 +186,7 @@ test.describe('Sea Battle Ships Left', () => {
       .locator('div')
       .filter({ has: page.getByText(/^Opponent$/) })
       .filter({ hasNot: page.getByText('Your Fleet') })
-      .filter({ has: page.getByText(/ships left/i) }) // Ensure it's the section with ships
+      .filter({ has: page.getByText(/ships remaining/i) }) // Ensure it's the section with ships
       .first();
 
     await expect(opponentSection).toBeVisible();

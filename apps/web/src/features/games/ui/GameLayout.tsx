@@ -24,13 +24,13 @@ const LayoutContainer = styled.div<{ $variant?: string; $isMyTurn?: boolean }>`
   min-height: 600px;
   position: relative;
   overflow: hidden;
-  height: 100vh;
+  height: 100dvh;
   width: 100%;
   box-sizing: border-box;
 
   /* Basic responsive styles */
   @media (max-width: 768px) {
-    padding: 1rem;
+    padding: 0;
     border-radius: 0;
   }
 `;
@@ -71,11 +71,11 @@ const ChatArea = styled.div<{ $showChat: boolean }>`
   @media (max-width: 1024px) {
     width: 100%;
     min-width: 0;
-    height: 300px; /* Fixed height on mobile if stacked */
+    flex: 1; /* Allow it to flex naturally instead of fixed 300px */
+    min-height: 250px;
     border-left: none;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-left: 0;
-    padding-top: 1rem;
   }
 `;
 

@@ -37,6 +37,8 @@ export const esMessages = {
         alive: 'Vivo',
         eliminated: 'Eliminado',
         yourTurn: 'Tu turno',
+        yourTurnAttack: '🎯 ¡Tu turno! - ¡Ataca a un oponente!',
+        placeShips: 'Coloca tus barcos',
         waitingFor: 'Esperando a {{player}}...',
       },
       phase: {

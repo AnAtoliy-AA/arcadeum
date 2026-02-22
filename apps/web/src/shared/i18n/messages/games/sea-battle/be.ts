@@ -37,6 +37,8 @@ export const beMessages = {
         alive: 'У гульні',
         eliminated: 'Выбыў',
         yourTurn: 'Ваш ход',
+        yourTurnAttack: '🎯 Ваш ход - Атакуйце праціўніка!',
+        placeShips: 'Расстаўце свае караблі',
         waitingFor: 'Чакаем {{player}}...',
       },
       phase: {

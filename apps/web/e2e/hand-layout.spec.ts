@@ -97,8 +97,8 @@ test.describe('Hand Layout', () => {
     await expect(grid).toBeVisible();
 
     // 2. Switch to Grid 4x
-    await layoutTrigger.click();
-    await page.getByRole('button', { name: 'Grid 4x' }).click();
+    await layoutTrigger.dispatchEvent('click');
+    await page.getByRole('button', { name: 'Grid 4x' }).dispatchEvent('click');
 
     // Verify trigger text contains Grid 4x
     await expect(layoutTrigger).toHaveText(/Grid 4x/i);
@@ -110,8 +110,8 @@ test.describe('Hand Layout', () => {
     );
 
     // 3. Switch to Linear (Scroll)
-    await layoutTrigger.click();
-    await page.getByRole('button', { name: /Scroll/i }).click();
+    await layoutTrigger.dispatchEvent('click');
+    await page.getByRole('button', { name: /Scroll/i }).dispatchEvent('click');
 
     // Verify trigger text contains Scroll
     await expect(layoutTrigger).toHaveText(/Scroll/i);

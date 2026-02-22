@@ -21,6 +21,11 @@ export const HeaderInner = styled.div`
   justify-content: space-between;
   height: 64px;
   gap: 2rem;
+
+  @media (max-width: 640px) {
+    padding: 0 1rem;
+    gap: 0.5rem;
+  }
 `;
 
 export const Logo = styled(Link)`
@@ -47,6 +52,10 @@ export const LogoText = styled.span`
   background-clip: text;
   /* Fallback for browsers that don't support background-clip: text */
   color: ${({ theme }) => theme.text.primary};
+
+  @media (max-width: 640px) {
+    display: none;
+  }
 `;
 
 export const Nav = styled.nav`
@@ -88,6 +97,10 @@ export const Actions = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
+
+  @media (max-width: 640px) {
+    gap: 0.375rem;
+  }
 `;
 
 export const DesktopOnly = styled.div`

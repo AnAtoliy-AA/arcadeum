@@ -97,6 +97,12 @@ export const Copyright = styled.div`
   text-align: center;
 `;
 
+export const VersionText = styled.span`
+  opacity: 0.5;
+  margin-left: 0.5rem;
+  font-variant-numeric: tabular-nums;
+`;
+
 export const LegalLinks = styled.div`
   display: flex;
   gap: 1.5rem;

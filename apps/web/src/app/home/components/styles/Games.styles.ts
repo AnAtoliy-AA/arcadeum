@@ -277,3 +277,49 @@ export const ComingSoonOverlay = styled.div`
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 `;
+
+export const GameHeaderWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+`;
+
+export const PacksListWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+`;
+
+export const SubsectionWrapper = styled.div`
+  margin-top: 0.5rem;
+`;
+
+export const StyledGameIcon = styled(GameIcon)`
+  margin-bottom: 0;
+  font-size: 3.5rem;
+`;
+
+export const StyledGameTags = styled(GameTags)`
+  margin-top: 0;
+  margin-bottom: 1rem;
+`;
+
+export const StyledPacksContainer = styled(PacksContainer)`
+  justify-content: flex-start;
+  max-width: none;
+`;
+
+export const StyledPackCount = styled(PackCount)<{ $isPlayable?: boolean }>`
+  background: ${({ $isPlayable }) => ($isPlayable ? '#10B981' : '#333')};
+  color: ${({ $isPlayable }) => ($isPlayable ? 'white' : '#aaa')};
+  font-weight: 600;
+  font-size: 0.75rem;
+`;
+
+export const StyledPlayButton = styled(PlayButton)`
+  margin-top: 1rem;
+  align-self: center;
+  min-width: 160px;
+`;

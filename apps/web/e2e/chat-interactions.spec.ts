@@ -12,7 +12,7 @@ test.describe('Chat Interactions', () => {
     const sendBtn = page.getByRole('button', { name: /send|отправить/i });
     const input = page.getByPlaceholder(/message|сообщение/i);
 
-    await input.scrollIntoViewIfNeeded();
+    await expect(input).toBeVisible({ timeout: 10000 });
     await expect(input).toBeEnabled({ timeout: 10000 });
     await input.click();
     await input.fill('');
@@ -24,7 +24,7 @@ test.describe('Chat Interactions', () => {
 
     const longMessage = 'A'.repeat(500);
     const input = page.getByPlaceholder(/message|сообщение/i);
-    await input.scrollIntoViewIfNeeded();
+    await expect(input).toBeVisible({ timeout: 10000 });
     await expect(input).toBeEnabled({ timeout: 10000 });
     await input.fill(longMessage);
 
@@ -70,6 +70,7 @@ test.describe('Chat Interactions', () => {
   test('should auto-scroll to bottom on new message', async ({ page }) => {
     await navigateTo(page, '/chat?chatId=chat-1&title=Test%20User');
     const input = page.getByPlaceholder(/message|сообщение/i);
+    await expect(input).toBeVisible({ timeout: 10000 });
     await expect(input).toBeEnabled({ timeout: 10000 });
     await input.fill('test scroll');
   });

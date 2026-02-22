@@ -19,6 +19,7 @@ import {
   DropdownDivider,
   MobileVersionText,
 } from './styles';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -104,6 +105,10 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
       )}
 
       <DropdownDivider style={{ marginTop: '1rem' }} />
+
+      <div style={{ padding: '0.5rem 1rem' }}>
+        <LanguageSwitcher />
+      </div>
 
       <MobileNavLink
         href={routes.terms}

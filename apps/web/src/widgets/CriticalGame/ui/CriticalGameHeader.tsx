@@ -31,16 +31,12 @@ interface CriticalGameHeaderProps {
   turnStatusVariant: 'completed' | 'yourTurn' | 'waiting' | 'default';
   turnStatusText: string;
   actionLongPending: boolean;
-  pendingProgress: number;
-  pendingElapsedSeconds: number;
+  actionBusy: string | null;
   isGameOver: boolean;
   currentPlayer: CriticalSnapshot['players'][0] | undefined;
-  idleTimer: {
-    secondsRemaining: number;
-    isActive: boolean;
-    isRunning: boolean;
-    reset: () => void;
-  };
+  canAct: boolean;
+  isMyTurn: boolean;
+  handleIdleTimeout: () => void;
   autoplayState: UseAutoplayReturn;
   idleTimerTriggered: boolean;
   handleStopAutoplay: () => void;
@@ -57,11 +53,12 @@ export function CriticalGameHeader({
   turnStatusVariant,
   turnStatusText,
   actionLongPending,
-  pendingProgress,
-  pendingElapsedSeconds,
+  actionBusy,
   isGameOver,
   currentPlayer,
-  idleTimer,
+  canAct,
+  isMyTurn,
+  handleIdleTimeout,
   autoplayState,
   idleTimerTriggered,
   handleStopAutoplay,
@@ -113,12 +110,7 @@ export function CriticalGameHeader({
           </FastBadge>
         )}
         <TurnStatus $variant={turnStatusVariant}>{turnStatusText}</TurnStatus>
-        {actionLongPending && (
-          <ServerLoadingNotice
-            pendingProgress={pendingProgress}
-            pendingElapsedSeconds={pendingElapsedSeconds}
-          />
-        )}
+        {actionLongPending && <ServerLoadingNotice actionBusy={actionBusy} />}
       </GameInfo>
       <HeaderActions>
         <FullscreenButton
@@ -131,9 +123,10 @@ export function CriticalGameHeader({
         {!isGameOver && currentPlayer && (
           <TimerControlsWrapper>
             <IdleTimerDisplay
-              secondsRemaining={idleTimer.secondsRemaining}
-              isActive={idleTimer.isActive && !autoplayState.allEnabled}
-              isRunning={idleTimer.isRunning}
+              enabled={idleTimerEnabled}
+              isMyTurn={isMyTurn}
+              canAct={canAct}
+              onTimeout={handleIdleTimeout}
               autoplayTriggered={idleTimerTriggered}
               onStop={handleStopAutoplay}
               t={t}

@@ -212,12 +212,16 @@ export const MobileNav = styled.div<{ $isOpen: boolean }>`
   top: 64px;
   left: 0;
   right: 0;
+  bottom: 0;
+  height: calc(100dvh - 64px);
   z-index: 99;
   background: ${({ theme }) => theme.background.base};
   border-bottom: 1px solid ${({ theme }) => theme.surfaces.card.border};
   padding: 1rem 1.5rem;
   flex-direction: column;
   gap: 0.5rem;
+  overflow-y: auto;
+  overscroll-behavior: none;
   transform: ${({ $isOpen }) =>
     $isOpen ? 'translateY(0)' : 'translateY(-100%)'};
   opacity: ${({ $isOpen }) => ($isOpen ? '1' : '0')};
@@ -250,6 +254,16 @@ export const MobileNavLink = styled(Link)<{ $active: boolean }>`
     background: ${theme.surfaces.card.background};
     border-left: 3px solid ${theme.buttons.primary.gradientStart};
   `}
+`;
+
+export const MobileVersionText = styled.div`
+  margin-top: auto;
+  padding: 1rem 1.5rem;
+  font-size: 0.85rem;
+  color: ${({ theme }) => theme.text.muted};
+  text-align: center;
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
 `;
 
 export const MobileUserInfo = styled.div`

@@ -3,10 +3,13 @@
 import styled, { keyframes } from 'styled-components';
 import { Button } from '@/shared/ui';
 
+import { useIdleTimer } from '../hooks/useIdleTimer';
+
 interface IdleTimerDisplayProps {
-  secondsRemaining: number;
-  isActive: boolean;
-  isRunning?: boolean;
+  enabled: boolean;
+  isMyTurn: boolean;
+  canAct: boolean;
+  onTimeout: () => void;
   autoplayTriggered: boolean;
   onStop: () => void;
   t: (key: string, params?: Record<string, unknown>) => string;
@@ -85,13 +88,21 @@ const StopButton = styled(Button).attrs({
  * Shows "Autoplay Active" badge with stop button when autoplay was triggered by timer.
  */
 export function IdleTimerDisplay({
-  secondsRemaining,
-  isActive,
-  isRunning = true,
+  enabled,
+  isMyTurn,
+  canAct,
+  onTimeout,
   autoplayTriggered,
   onStop,
   t,
 }: IdleTimerDisplayProps) {
+  const { secondsRemaining, isActive, isRunning } = useIdleTimer({
+    enabled,
+    isMyTurn,
+    canAct,
+    onTimeout,
+  });
+
   if (!isActive && !autoplayTriggered) {
     return null;
   }

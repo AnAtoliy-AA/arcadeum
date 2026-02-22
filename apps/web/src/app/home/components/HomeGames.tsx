@@ -5,6 +5,7 @@ import {
   CARD_VARIANTS,
   EXPANSION_PACK_DETAILS,
 } from '@/app/games/create/constants';
+import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
 import { routes } from '@/shared/config/routes';
 import {
   SectionHeader,
@@ -18,16 +19,19 @@ import {
   MainGameInfo,
   GameTitle,
   GameDescription,
-  GameTags,
   GameTag,
-  GameIcon,
-  PlayButton,
   SubSectionTitle,
   SimpleBadge,
-  PacksContainer,
   PackBadge,
   PackName,
-  PackCount,
+  GameHeaderWrapper,
+  PacksListWrapper,
+  SubsectionWrapper,
+  StyledGameIcon,
+  StyledGameTags,
+  StyledPacksContainer,
+  StyledPackCount,
+  StyledPlayButton,
 } from './styles/Games.styles';
 
 export function HomeGames() {
@@ -43,6 +47,17 @@ export function HomeGames() {
     emoji: '💣',
     gradient: 'linear-gradient(135deg, #FF4D4D 0%, #F9CB28 100%)',
     tags: ['Card Game', '3-5 Players', '15m Match', 'Strategy'],
+    isPlayable: true,
+  };
+
+  const seaBattle = {
+    id: 'sea-battle',
+    name: 'Sea Battle',
+    description:
+      "A classic naval combat game modernized with new themes and features. Deploy your fleet, strategize your attacks, and sink your opponent's ships before they sink yours.",
+    emoji: '🚢',
+    gradient: 'linear-gradient(135deg, #3498db 0%, #1abc9c 100%)',
+    tags: ['Board Game', '2 Players', '10m Match', 'Strategy'],
     isPlayable: true,
   };
 
@@ -77,85 +92,89 @@ export function HomeGames() {
         {/* Main Game Showcase */}
         <MainGameCard $gradient={mainGame.gradient}>
           <MainGameInfo>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1rem',
-                marginBottom: '0.5rem',
-              }}
-            >
-              <GameIcon style={{ marginBottom: 0, fontSize: '3.5rem' }}>
-                {mainGame.emoji}
-              </GameIcon>
+            <GameHeaderWrapper>
+              <StyledGameIcon>{mainGame.emoji}</StyledGameIcon>
               <GameTitle>{mainGame.name}</GameTitle>
-            </div>
+            </GameHeaderWrapper>
 
-            <GameTags style={{ marginTop: 0, marginBottom: '1rem' }}>
+            <StyledGameTags>
               {mainGame.tags.map((tag) => (
                 <GameTag key={tag}>{tag}</GameTag>
               ))}
-            </GameTags>
+            </StyledGameTags>
 
             <GameDescription>{mainGame.description}</GameDescription>
 
-            {/* Expansion Packs List */}
-            <div style={{ marginTop: '0.5rem' }}>
+            <SubsectionWrapper>
               <SubSectionTitle>
                 {homeCopy.gameIncludesPacks ?? 'Includes 5 Card Packs:'}
               </SubSectionTitle>
-              <div
-                style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '0.5rem',
-                  marginBottom: '1.5rem',
-                }}
-              >
+              <PacksListWrapper>
                 {packs.map((pack) => (
                   <SimpleBadge key={pack.id}>{pack.name}</SimpleBadge>
                 ))}
-              </div>
+              </PacksListWrapper>
 
               <SubSectionTitle>
                 {homeCopy.gameThemedDecks ?? 'Themed Decks:'}
               </SubSectionTitle>
-              <PacksContainer
-                style={{ justifyContent: 'flex-start', maxWidth: 'none' }}
-              >
+              <StyledPacksContainer>
                 {variants.map((variant) => (
                   <PackBadge
                     key={variant.id}
                     style={{ opacity: variant.isPlayable ? 1 : 0.7 }}
                   >
                     <PackName>{variant.name}</PackName>
-                    <PackCount
-                      style={{
-                        background: variant.isPlayable ? '#10B981' : '#333',
-                        color: variant.isPlayable ? 'white' : '#aaa',
-                        fontWeight: 600,
-                        fontSize: '0.75rem',
-                      }}
-                    >
+                    <StyledPackCount $isPlayable={variant.isPlayable}>
                       {variant.isPlayable
                         ? (homeCopy.gameAvailableNow ?? 'Available Now')
                         : (homeCopy.gameComingSoon ?? 'Coming Soon')}
-                    </PackCount>
+                    </StyledPackCount>
                   </PackBadge>
                 ))}
-              </PacksContainer>
-            </div>
+              </StyledPacksContainer>
+            </SubsectionWrapper>
 
-            <PlayButton
-              href={routes.games}
-              style={{
-                marginTop: '1rem',
-                alignSelf: 'center',
-                minWidth: '160px',
-              }}
-            >
+            <StyledPlayButton href={routes.games}>
               {homeCopy.gamePlayButton ?? 'Play Now'}
-            </PlayButton>
+            </StyledPlayButton>
+          </MainGameInfo>
+        </MainGameCard>
+
+        <MainGameCard $gradient={seaBattle.gradient}>
+          <MainGameInfo>
+            <GameHeaderWrapper>
+              <StyledGameIcon>{seaBattle.emoji}</StyledGameIcon>
+              <GameTitle>{seaBattle.name}</GameTitle>
+            </GameHeaderWrapper>
+
+            <StyledGameTags>
+              {seaBattle.tags.map((tag) => (
+                <GameTag key={tag}>{tag}</GameTag>
+              ))}
+            </StyledGameTags>
+
+            <GameDescription>{seaBattle.description}</GameDescription>
+
+            <SubsectionWrapper>
+              <SubSectionTitle>
+                {homeCopy.gameThemedDecks ?? 'Available Themes:'}
+              </SubSectionTitle>
+              <StyledPacksContainer>
+                {SEA_BATTLE_VARIANTS.map((variant) => (
+                  <PackBadge key={variant.id}>
+                    <PackName>{variant.name}</PackName>
+                    <StyledPackCount $isPlayable={true}>
+                      {homeCopy.gameAvailableNow ?? 'Available Now'}
+                    </StyledPackCount>
+                  </PackBadge>
+                ))}
+              </StyledPacksContainer>
+            </SubsectionWrapper>
+
+            <StyledPlayButton href={routes.games}>
+              {homeCopy.gamePlayButton ?? 'Play Now'}
+            </StyledPlayButton>
           </MainGameInfo>
         </MainGameCard>
       </GameGroup>

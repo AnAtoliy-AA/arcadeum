@@ -55,6 +55,11 @@ export const SonarRadar = styled.div`
   animation: ${sonarSweep} 8s linear infinite;
   pointer-events: none;
   z-index: 1;
+  will-change: transform;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `;
 
 export const Bubble = styled.div<{ $delay: number; $left: number }>`
@@ -138,6 +143,13 @@ export const SonarSweep = styled.div`
     filter: blur(1px);
     animation: ${sonarSectorRotate} 6s linear infinite;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before,
+    &::after {
+      animation: none;
+    }
+  }
 `;
 
 export const FloatingDots = styled.div`
@@ -172,6 +184,13 @@ export const FloatingDots = styled.div`
     border-radius: 50%;
     box-shadow: 0 0 10px #ec4899;
     animation: ${dotFloat} 6s ease-in-out infinite 2s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before,
+    &::after {
+      animation: none;
+    }
   }
 `;
 

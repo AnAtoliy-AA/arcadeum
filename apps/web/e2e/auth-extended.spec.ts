@@ -5,11 +5,17 @@ test.describe('Auth Extended', () => {
   test('should validate registration fields', async ({ page }) => {
     await navigateTo(page, '/auth');
 
-    const registerToggle = page.getByRole('button', {
-      name: /register|sign up|регистрация/i,
+    const toggleBtn = page.getByRole('button', {
+      name: /need an account|регистрация|account/i,
     });
-    if (await registerToggle.isVisible()) {
-      await registerToggle.click();
+    await toggleBtn
+      .waitFor({ state: 'visible', timeout: 5000 })
+      .catch(() => {});
+    if (await toggleBtn.isVisible()) {
+      const text = (await toggleBtn.textContent()) || '';
+      if (!/already|уже/i.test(text)) {
+        await toggleBtn.click();
+      }
     }
 
     const submitBtn = page.locator('button[type="submit"]');
@@ -24,11 +30,17 @@ test.describe('Auth Extended', () => {
   test('should show error on password mismatch', async ({ page }) => {
     await navigateTo(page, '/auth');
 
-    const registerToggle = page.getByRole('button', {
-      name: /register|sign up|регистрация/i,
+    const toggleBtn = page.getByRole('button', {
+      name: /need an account|регистрация|account/i,
     });
-    if (await registerToggle.isVisible()) {
-      await registerToggle.click();
+    await toggleBtn
+      .waitFor({ state: 'visible', timeout: 5000 })
+      .catch(() => {});
+    if (await toggleBtn.isVisible()) {
+      const text = (await toggleBtn.textContent()) || '';
+      if (!/already|уже/i.test(text)) {
+        await toggleBtn.click();
+      }
     }
 
     const passwordInput = page
@@ -40,17 +52,20 @@ test.describe('Auth Extended', () => {
       )
       .first();
 
-    if (await passwordInput.isVisible()) {
-      await passwordInput.fill('password123');
-      if (await confirmInput.isVisible()) {
-        await confirmInput.fill('password456');
-        const submitBtn = page
-          .getByRole('button', { name: /register|sign up/i })
-          .first();
-        await submitBtn.click();
-        await expect(page.getByText(/mismatch|совпадают/i)).toBeVisible();
-      }
-    }
+    await expect(passwordInput).toBeVisible();
+    await passwordInput.fill('password123');
+    await expect(confirmInput).toBeVisible();
+    await confirmInput.fill('password456');
+    // The password mismatch error should appear immediately
+    await expect(page.getByText(/do not match|не совпадают/i)).toBeVisible();
+
+    // The submit button should be disabled
+    const submitBtn = page
+      .getByRole('button', {
+        name: /create account|register|sign up|зарегистрироваться/i,
+      })
+      .first();
+    await expect(submitBtn).toBeDisabled();
   });
 
   test('should persist session after manual reload', async ({ page }) => {

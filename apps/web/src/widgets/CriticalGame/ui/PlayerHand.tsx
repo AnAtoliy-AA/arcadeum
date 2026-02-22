@@ -77,7 +77,7 @@ interface PlayerHandProps {
   setHandLayout?: (layout: HandLayoutMode) => void;
 }
 
-export const PlayerHand: React.FC<PlayerHandProps> = ({
+export function PlayerHand({
   currentPlayer,
   onUnstashCard,
   isMyTurn,
@@ -110,7 +110,7 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
   cardVariant,
   handLayout = 'grid',
   setHandLayout,
-}) => {
+}: PlayerHandProps) {
   const [showNames, setShowNames] = useState(true);
   const [showDescriptions, setShowDescriptions] = useState(true);
 
@@ -396,4 +396,4 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
       </HandContainer>
     </HandSection>
   );
-};
+}

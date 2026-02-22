@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "1.1.4",
+  "version": "1.2.4",
   "private": true,
   "scripts": {
     "dev": "concurrently \"next dev\" \"node scripts/patch-next-config.js && storybook dev -p 6006 --no-open\" --names \"next,storybook\" --prefix-colors \"blue,magenta\"",
@@ -48,6 +48,7 @@
     "@vitest/browser-playwright": "^4.0.16",
     "@vitest/coverage-v8": "^4.0.16",
     "babel-loader": "^10.0.0",
+    "babel-plugin-react-compiler": "^1.0.0",
     "concurrently": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.0",

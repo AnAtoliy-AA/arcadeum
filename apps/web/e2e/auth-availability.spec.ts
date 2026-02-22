@@ -30,11 +30,17 @@ test.describe('Auth Availability Checking', () => {
   test('should show availability status for username field in register mode', async ({
     page,
   }) => {
-    const registerToggle = page.getByRole('button', {
+    const toggleBtn = page.getByRole('button', {
       name: /need an account|регистрация|account/i,
     });
-    if (await registerToggle.isVisible()) {
-      await registerToggle.click();
+    await toggleBtn
+      .waitFor({ state: 'visible', timeout: 5000 })
+      .catch(() => {});
+    if (await toggleBtn.isVisible()) {
+      const text = (await toggleBtn.textContent()) || '';
+      if (!/already|уже/i.test(text)) {
+        await toggleBtn.click();
+      }
     }
 
     const usernameInput = page.locator('input[placeholder*="username" i]');
@@ -58,11 +64,17 @@ test.describe('Auth Availability Checking', () => {
   test('should show availability status for email field in register mode', async ({
     page,
   }) => {
-    const registerToggle = page.getByRole('button', {
+    const toggleBtn = page.getByRole('button', {
       name: /need an account|регистрация|account/i,
     });
-    if (await registerToggle.isVisible()) {
-      await registerToggle.click();
+    await toggleBtn
+      .waitFor({ state: 'visible', timeout: 5000 })
+      .catch(() => {});
+    if (await toggleBtn.isVisible()) {
+      const text = (await toggleBtn.textContent()) || '';
+      if (!/already|уже/i.test(text)) {
+        await toggleBtn.click();
+      }
     }
 
     const emailInput = page.locator('input[type="email"]');
@@ -86,11 +98,17 @@ test.describe('Auth Availability Checking', () => {
   test('should display user-friendly error when registering with taken username', async ({
     page,
   }) => {
-    const registerToggle = page.getByRole('button', {
+    const toggleBtn = page.getByRole('button', {
       name: /need an account|регистрация|account/i,
     });
-    if (await registerToggle.isVisible()) {
-      await registerToggle.click();
+    await toggleBtn
+      .waitFor({ state: 'visible', timeout: 5000 })
+      .catch(() => {});
+    if (await toggleBtn.isVisible()) {
+      const text = (await toggleBtn.textContent()) || '';
+      if (!/already|уже/i.test(text)) {
+        await toggleBtn.click();
+      }
     }
 
     const emailInput = page.locator('input[type="email"]');

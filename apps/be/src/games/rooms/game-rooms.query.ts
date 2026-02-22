@@ -30,26 +30,31 @@ export class GameRoomsQueryBuilder {
     }
 
     if (filters.participation && filters.userId) {
-      if (
-        filters.participation === 'host' ||
-        filters.participation === 'hosting'
-      ) {
-        query.hostId = filters.userId;
-      } else if (
-        filters.participation === 'participant' ||
-        filters.participation === 'joined'
-      ) {
-        query['participants.userId'] = filters.userId;
-        query.hostId = { $ne: filters.userId };
-      } else if (filters.participation === 'not_joined') {
-        query['participants.userId'] = { $ne: filters.userId };
-        query.hostId = { $ne: filters.userId };
-      } else if (filters.participation === 'any') {
-        query.$or = [
-          { hostId: filters.userId },
-          { 'participants.userId': filters.userId },
-        ];
+      switch (filters.participation) {
+        case 'host':
+        case 'hosting':
+          query.hostId = filters.userId;
+          break;
+        case 'participant':
+        case 'joined':
+          query['participants.userId'] = filters.userId;
+          query.hostId = { $ne: filters.userId };
+          break;
+        case 'not_joined':
+          query['participants.userId'] = { $ne: filters.userId };
+          query.hostId = { $ne: filters.userId };
+          break;
+        case 'any':
+          query.$or = [
+            { hostId: filters.userId },
+            { 'participants.userId': filters.userId },
+          ];
+          break;
       }
+    }
+
+    if (typeof query.hostId !== 'string') {
+      query.hostId = { ...((query.hostId as object) || {}), $not: /^anon_/ };
     }
 
     return query;

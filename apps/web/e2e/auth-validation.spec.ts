@@ -12,12 +12,18 @@ test.describe('Auth Validation', () => {
     const uniqueId = Date.now().toString(36);
 
     // 1. Switch to Register mode
-    const registerToggle = page.getByRole('button', {
+    const toggleBtn = page.getByRole('button', {
       name: /need an account|регистрация|account/i,
     });
-    // If we're already in register mode, the toggle will say "Already have an account?"
-    if (await registerToggle.isVisible()) {
-      await registerToggle.click();
+    // Wait for button to be visible, then click if it's the right one
+    await toggleBtn
+      .waitFor({ state: 'visible', timeout: 5000 })
+      .catch(() => {});
+    if (await toggleBtn.isVisible()) {
+      const text = (await toggleBtn.textContent()) || '';
+      if (!/already|уже/i.test(text)) {
+        await toggleBtn.click();
+      }
     }
 
     // 2. Locate fields
@@ -41,10 +47,8 @@ test.describe('Auth Validation', () => {
     await passwordInput.fill('Password123!');
     await confirmInput.fill('Password123!');
 
-    // Check if username input is visible (it should be in register mode)
-    if (await usernameInput.isVisible()) {
-      await usernameInput.fill(`user${uniqueId}`);
-    }
+    await expect(usernameInput).toBeVisible();
+    await usernameInput.fill(`user${uniqueId}`);
 
     // 6. Button should still be disabled for invalid email
     await expect(submitBtn).toBeDisabled();
@@ -71,11 +75,18 @@ test.describe('Auth Validation', () => {
     page,
   }) => {
     // 1. Switch to Register mode
-    const registerToggle = page.getByRole('button', {
+    const toggleBtn = page.getByRole('button', {
       name: /need an account|регистрация|account/i,
     });
-    if (await registerToggle.isVisible()) {
-      await registerToggle.click();
+    // Wait for button to be visible, then click if it's the right one
+    await toggleBtn
+      .waitFor({ state: 'visible', timeout: 5000 })
+      .catch(() => {});
+    if (await toggleBtn.isVisible()) {
+      const text = (await toggleBtn.textContent()) || '';
+      if (!/already|уже/i.test(text)) {
+        await toggleBtn.click();
+      }
     }
 
     const passwordInput = page.locator('input[type="password"]').first();

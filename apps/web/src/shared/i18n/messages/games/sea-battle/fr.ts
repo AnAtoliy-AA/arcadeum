@@ -37,6 +37,8 @@ export const frMessages = {
         alive: 'En vie',
         eliminated: 'Éliminé',
         yourTurn: 'Votre tour',
+        yourTurnAttack: '🎯 À vous de jouer - Attaquez un adversaire !',
+        placeShips: 'Placez vos navires',
         waitingFor: 'En attente de {{player}}...',
       },
       phase: {

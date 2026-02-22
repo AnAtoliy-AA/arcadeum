@@ -5,7 +5,7 @@ import { SeaBattleTheme } from '../../lib/theme';
 export const GameContainer = styled.div<{ $theme: SeaBattleTheme }>`
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100dvh;
   background: ${(props) => props.$theme.gameBackground};
   font-family: ${(props) => props.$theme.fontFamily || 'inherit'};
   transition: background 0.5s ease;
@@ -51,6 +51,14 @@ export const BoardArea = styled.div`
   flex-direction: column;
   padding: 20px;
   overflow: auto;
+
+  @media (max-width: 768px) {
+    padding: 8px;
+
+    .placement-header {
+      display: none;
+    }
+  }
 `;
 
 // Chat/sidebar area
@@ -82,6 +90,13 @@ export const BoardGrid = styled.div<{ $theme: SeaBattleTheme }>`
   max-width: 400px;
   aspect-ratio: 1;
   box-shadow: ${(props) => props.$theme.boxShadow || 'none'};
+
+  @media (max-width: 768px) {
+    max-width: none;
+    width: 100%;
+    gap: 1px;
+    padding: 2px;
+  }
 `;
 
 // Individual cell
@@ -131,6 +146,11 @@ export const BoardWithLabels = styled.div`
   grid-template-columns: auto 1fr;
   grid-template-rows: auto 1fr;
   gap: 4px;
+
+  @media (max-width: 768px) {
+    gap: 2px;
+    width: 100%;
+  }
 `;
 
 export const RowLabels = styled.div`
@@ -138,12 +158,20 @@ export const RowLabels = styled.div`
   flex-direction: column;
   justify-content: space-around;
   padding: 4px 0;
+
+  @media (max-width: 768px) {
+    /* Labels remain visible on mobile but compact */
+  }
 `;
 
 export const ColLabels = styled.div`
   display: flex;
   justify-content: space-around;
   padding: 0 4px;
+
+  @media (max-width: 768px) {
+    /* Labels remain visible on mobile but compact */
+  }
 `;
 
 export const Label = styled.span<{ $theme: SeaBattleTheme }>`
@@ -154,6 +182,12 @@ export const Label = styled.span<{ $theme: SeaBattleTheme }>`
   justify-content: center;
   width: 20px;
   height: 20px;
+
+  @media (max-width: 768px) {
+    font-size: 0.5rem;
+    width: 12px;
+    height: 12px;
+  }
 `;
 
 // Player section
@@ -182,6 +216,16 @@ export const PlayerSection = styled.div<{
     props.$isActive
       ? props.$theme.boxShadow || '0 0 15px rgba(0,0,0,0.2)'
       : 'none'};
+
+  @media (max-width: 768px) {
+    padding: 0;
+    gap: 4px;
+    align-items: stretch;
+    width: 100%;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+  }
 `;
 
 export const PlayerName = styled.h3<{ $theme: SeaBattleTheme }>`
@@ -205,6 +249,20 @@ export const ShipPalette = styled.div<{ $theme: SeaBattleTheme }>`
   background: ${(props) => props.$theme.boardBackground};
   border-radius: ${(props) => props.$theme.borderRadius};
   border: 1px solid ${(props) => props.$theme.cellBorder};
+
+  @media (max-width: 768px) {
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 8px;
+    gap: 12px;
+    -webkit-overflow-scrolling: touch;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    .ship-palette-title {
+      display: none;
+    }
+  }
 `;
 
 export const ShipItem = styled.div<{
@@ -234,6 +292,11 @@ export const ShipItem = styled.div<{
   cursor: ${(props) => (props.$isPlaced ? 'default' : 'pointer')};
   opacity: ${(props) => (props.$isPlaced ? 0.6 : 1)};
   color: ${(props) => props.$theme.textColor};
+
+  @media (max-width: 768px) {
+    flex-shrink: 0;
+    padding: 4px 8px;
+  }
 `;
 
 export const ShipPreview = styled.div<{ $size: number }>`
@@ -288,25 +351,37 @@ export const ActionButton = styled.button<{
   }
 `;
 
-// Turn indicator
+// Turn indicator - used as sticky header on mobile
 export const TurnIndicator = styled.div<{
   $isYourTurn: boolean;
   $theme: SeaBattleTheme;
 }>`
-  padding: 12px 20px;
+  width: 100%;
+  padding: 10px 16px;
   background: ${(props) =>
-    props.$isYourTurn ? props.$theme.cellHover : 'transparent'};
-  border: 1px solid
-    ${(props) =>
-      props.$isYourTurn ? props.$theme.accentColor : props.$theme.cellBorder};
-  border-radius: ${(props) => props.$theme.borderRadius};
-  text-align: center;
-  color: ${(props) =>
     props.$isYourTurn
-      ? props.$theme.accentColor
-      : props.$theme.textSecondaryColor};
-  font-weight: 500;
-  margin-bottom: 20px;
+      ? 'linear-gradient(135deg, #10b981, #059669)'
+      : 'rgba(0, 0, 0, 0.6)'};
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 800;
+  white-space: nowrap;
+  color: white;
+  letter-spacing: 0.05em;
+  box-shadow: ${(props) =>
+    props.$isYourTurn ? '0 4px 15px rgba(16, 185, 129, 0.3)' : 'none'};
+  z-index: 99;
+  position: sticky;
+  top: 0;
+
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+    padding: 8px 12px;
+  }
 `;
 
 // Grids container for multiplayer
@@ -315,6 +390,11 @@ export const GridsContainer = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 24px;
   width: 100%;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
 `;
 
 // Phase indicator
@@ -335,6 +415,13 @@ export const PlacementHeader = styled.div`
   align-items: center;
   gap: 16px;
   margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
 `;
 
 export const PlacementControls = styled.div`
@@ -355,4 +442,34 @@ export const RotateButton = styled.button<{ $theme: SeaBattleTheme }>`
   &:hover {
     background: ${(props) => props.$theme.cellHover};
   }
+`;
+
+// Responsive containers for boards
+export const MainGameArea = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    gap: 12px;
+  }
+`;
+
+export const GameBoardWrapper = styled.div`
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 16px;
+  }
+`;
+
+export const BoardContainer = styled.div`
+  flex: 1;
+  min-width: 0;
+  width: 100%;
 `;

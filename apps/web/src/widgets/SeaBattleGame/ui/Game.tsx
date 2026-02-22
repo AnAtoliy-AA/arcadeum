@@ -24,19 +24,62 @@ import { ChatSection } from '@/widgets/CriticalGame/ui/ChatSection';
 import { ChatScope } from '@/shared/types/games';
 import { GameLayout } from '@/features/games/ui/GameLayout';
 import { SEA_BATTLE_VARIANTS } from '../lib/constants';
+import { getTheme } from '../lib/theme';
 
 import { RulesModal } from './RulesModal';
 import { FullscreenButton } from '@/widgets/CriticalGame/ui/styles';
+import { TurnIndicator } from './styles';
 
-const Header = styled.div`
-  height: 60px;
-  background: rgba(0, 0, 0, 0.3);
+const RoomTitle = styled.h2`
+  margin: 0;
+  font-size: 1.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+`;
+
+const ContentHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px;
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    padding: 12px;
+    gap: 8px;
+  }
+`;
+
+const HeaderTopRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+`;
+
+const ActionSection = styled.div`
   display: flex;
   align-items: center;
-  padding: 0 20px;
-  justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px 12px 0 0;
+  gap: 8px;
+
+  @media (max-width: 768px) {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px; /* Space for scrollbar if visible */
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 `;
 
 export default function SeaBattleGame({
@@ -182,19 +225,24 @@ export default function SeaBattleGame({
   // Compute turn status text
   const getTurnStatusText = () => {
     if (!snapshot) return '';
-    if (isGameOver) return 'Game Over';
+    if (isGameOver) return t('games.seaBattle.table.phase.completed');
     if (isPlacementPhase) {
-      return isPlacementComplete ? 'Waiting for others...' : 'Place your ships';
+      return isPlacementComplete
+        ? t('games.seaBattle.table.actions.waitingForOthers')
+        : t('games.seaBattle.table.players.placeShips');
     }
     if (!currentTurnPlayer) return '';
     if (currentTurnPlayer.playerId === currentUserId) {
-      return '🎯 Your Turn!';
+      return t('games.seaBattle.table.players.yourTurnAttack');
     }
-    return `Waiting for ${resolveDisplayName(currentTurnPlayer.playerId, 'opponent')}`;
+    return t('games.seaBattle.table.players.waitingFor', {
+      player: resolveDisplayName(currentTurnPlayer.playerId, 'opponent'),
+    });
   };
 
   const currentVariant = SEA_BATTLE_VARIANTS.find((v) => v.id === cardVariant);
   const variantLabel = currentVariant ? `(${currentVariant.name})` : '';
+  const theme = React.useMemo(() => getTheme(cardVariant), [cardVariant]);
 
   const gameResult = React.useMemo(() => {
     if (!isGameOver) return null;
@@ -221,50 +269,9 @@ export default function SeaBattleGame({
         ) : undefined
       }
       header={
-        <Header>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <h2>
-              Sea Battle {variantLabel} - {room.name}
-            </h2>
-            <div
-              style={{
-                padding: '4px 12px',
-                background: isMyTurn
-                  ? 'linear-gradient(135deg, #10b981, #059669)'
-                  : 'rgba(255,255,255,0.1)',
-                borderRadius: '16px',
-                fontSize: '0.9rem',
-                fontWeight: 600,
-              }}
-            >
-              {getTurnStatusText()}
-            </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <FullscreenButton
-              onClick={() => setShowRules(true)}
-              title="Game Rules"
-              style={{ fontSize: '1.2rem' }}
-            >
-              📖
-            </FullscreenButton>
-            {snapshot && (
-              <button
-                onClick={handleToggleChat}
-                style={{
-                  background: 'rgba(255,255,255,0.1)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  color: 'white',
-                  padding: '8px 16px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                }}
-              >
-                {showChat ? 'Hide Chat' : 'Chat'}
-              </button>
-            )}
-          </div>
-        </Header>
+        <TurnIndicator $isYourTurn={!!isMyTurn} $theme={theme}>
+          {getTurnStatusText()}
+        </TurnIndicator>
       }
       showChat={showChat}
       chat={
@@ -310,7 +317,7 @@ export default function SeaBattleGame({
                 playerId: p.playerId,
                 displayName: resolveDisplayName(
                   p.playerId,
-                  `Player ${p.playerId.slice(0, 4)}`,
+                  `Player ${p.playerId.slice(0, 4)} `,
                 ),
                 alive: p.alive,
               })) || []
@@ -341,6 +348,38 @@ export default function SeaBattleGame({
         </>
       }
     >
+      <ContentHeader>
+        <HeaderTopRow>
+          <RoomTitle>
+            Sea Battle {variantLabel} - {room.name}
+          </RoomTitle>
+          <ActionSection>
+            <FullscreenButton
+              onClick={() => setShowRules(true)}
+              title="Game Rules"
+              style={{ fontSize: '1.2rem' }}
+            >
+              📖
+            </FullscreenButton>
+            {snapshot && (
+              <button
+                onClick={handleToggleChat}
+                style={{
+                  background: 'rgba(255,255,255,0.1)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  color: 'white',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                }}
+              >
+                {showChat ? 'Hide Chat' : 'Chat'}
+              </button>
+            )}
+          </ActionSection>
+        </HeaderTopRow>
+      </ContentHeader>
+
       {snapshot && isPlacementPhase && (
         <ShipPlacementBoard
           currentPlayer={currentPlayer}

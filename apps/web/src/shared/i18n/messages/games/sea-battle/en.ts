@@ -37,6 +37,8 @@ export const enMessages = {
         alive: 'Alive',
         eliminated: 'Eliminated',
         yourTurn: 'Your turn',
+        yourTurnAttack: '🎯 Your Turn - Attack an opponent!',
+        placeShips: 'Place your ships',
         waitingFor: 'Waiting for {{player}}...',
       },
       phase: {

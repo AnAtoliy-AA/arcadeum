@@ -14,6 +14,7 @@ export const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
   background: rgba(10, 15, 25, 0.85);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
@@ -29,7 +30,7 @@ export const ModalContainer = styled.div`
   border-radius: 28px;
   max-width: 850px;
   width: 100%;
-  max-height: 90vh;
+  max-height: 90%;
   display: flex;
   flex-direction: column;
   position: relative;

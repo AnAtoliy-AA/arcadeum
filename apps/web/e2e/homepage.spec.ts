@@ -43,4 +43,16 @@ test.describe('Home Page', () => {
     // Check for app name text presence, case insensitive
     await expect(logoLink).toHaveText(/Arcadeum/i);
   });
+
+  test('should feature Critical game', async ({ page }) => {
+    const criticalFeature = page.locator('h3').filter({ hasText: 'Critical' });
+    await expect(criticalFeature).toBeVisible();
+  });
+
+  test('should feature Sea Battle game', async ({ page }) => {
+    const seaBattleFeature = page
+      .locator('h3')
+      .filter({ hasText: 'Sea Battle' });
+    await expect(seaBattleFeature).toBeVisible();
+  });
 });

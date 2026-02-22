@@ -11,6 +11,7 @@ import { InstallPWAButton } from '@/features/pwa';
 import { LinkButton } from '@/shared/ui';
 import { ProfileMenu } from './ProfileMenu';
 import { MobileMenu } from './MobileMenu';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export function Header() {
   const pathname = usePathname();
@@ -104,6 +105,9 @@ export function Header() {
                 {t('common.actions.support')}
               </LinkButton>
             </DesktopOnly>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <LanguageSwitcher />
+            </div>
             {isAuthenticated && displayName && <ProfileMenu />}
 
             {!isAuthenticated && (

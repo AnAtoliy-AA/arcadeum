@@ -4,9 +4,16 @@ import {
   navigateTo,
   mockRoomInfo,
   closeRulesModal,
+  MOCK_OBJECT_ID,
+  mockGameSocket,
+  checkNoBackendErrors,
 } from './fixtures/test-utils';
 
 test.describe('Critical Single Player Mode', () => {
+  test.afterEach(async () => {
+    checkNoBackendErrors();
+  });
+
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
   });
@@ -14,7 +21,7 @@ test.describe('Critical Single Player Mode', () => {
   test('should allow starting single player game with bots', async ({
     page,
   }) => {
-    const roomId = '507f191e810c19729de860ea';
+    const roomId = MOCK_OBJECT_ID;
     const userId = 'user-1';
 
     const mockState = {
@@ -54,14 +61,19 @@ test.describe('Critical Single Player Mode', () => {
 
     await navigateTo(page, `/games/rooms/${roomId}`);
 
+    await mockGameSocket(page, roomId, userId, {
+      roomJoinedPayload: { gameId: 'critical_v1' },
+    });
+
+    // We still need to mock session start here because it's specific to this test
     await page.evaluate(
-      ({ mockState, roomId, userId }) => {
+      ({ mockState }) => {
         const pollSocket = setInterval(() => {
           const socket = (
             window as unknown as {
               gameSocket: {
-                emit: (e: string, p: unknown) => void;
-                listeners: (e: string) => Array<(d: unknown) => void>;
+                emit: (event: string, payload: unknown) => void;
+                listeners: (event: string) => Array<(payload: unknown) => void>;
               };
             }
           ).gameSocket;
@@ -69,35 +81,6 @@ test.describe('Critical Single Player Mode', () => {
             clearInterval(pollSocket);
             const originalEmit = socket.emit.bind(socket);
             socket.emit = (event: string, payload: unknown) => {
-              if (event === 'games.room.join') {
-                // Simulate games.room.joined for the client without hitting the server
-                setTimeout(() => {
-                  for (const listener of socket.listeners(
-                    'games.room.joined',
-                  )) {
-                    listener({
-                      success: true,
-                      room: {
-                        id: roomId,
-                        status: 'lobby',
-                        gameId: 'critical_v1',
-                        hostId: userId,
-                        playerCount: 1,
-                        members: [
-                          {
-                            id: userId,
-                            userId,
-                            displayName: 'Test User',
-                            isHost: true,
-                          },
-                        ],
-                      },
-                      session: null,
-                    });
-                  }
-                }, 100);
-                return; // Don't send to real server
-              }
               if (event === 'games.session.start') {
                 setTimeout(() => {
                   const sessionData = {
@@ -113,14 +96,14 @@ test.describe('Critical Single Player Mode', () => {
                     listener(sessionData);
                   }
                 }, 100);
-                return; // Don't send to real server
+                return;
               }
               originalEmit(event, payload);
             };
           }
         }, 100);
       },
-      { mockState, roomId, userId },
+      { mockState },
     );
 
     await expect(
@@ -179,14 +162,21 @@ test.describe('Critical Single Player Mode', () => {
 
     await navigateTo(page, `/games/rooms/${roomId}`);
 
+    await mockGameSocket(page, roomId, userId, {
+      roomJoinedPayload: {
+        status: 'active',
+        gameId: 'critical_v1',
+      },
+    });
+
     await page.evaluate(
-      ({ roomId, userId, mockState }) => {
+      ({ mockState: _mockState }) => {
         const pollSocket = setInterval(() => {
           const socket = (
             window as unknown as {
               gameSocket: {
-                emit: (e: string, p: unknown) => void;
-                listeners: (e: string) => Array<(d: unknown) => void>;
+                emit: (event: string, payload: unknown) => void;
+                listeners: (event: string) => Array<(payload: unknown) => void>;
               };
             }
           ).gameSocket;
@@ -194,38 +184,6 @@ test.describe('Critical Single Player Mode', () => {
             clearInterval(pollSocket);
             const originalEmit = socket.emit.bind(socket);
             socket.emit = (event: string, payload: unknown) => {
-              if (event === 'games.room.join') {
-                setTimeout(() => {
-                  for (const listener of socket.listeners(
-                    'games.room.joined',
-                  )) {
-                    listener({
-                      success: true,
-                      room: {
-                        id: roomId,
-                        status: 'active',
-                        gameId: 'critical_v1',
-                        hostId: userId,
-                        playerCount: 1,
-                        members: [
-                          {
-                            id: userId,
-                            userId,
-                            displayName: 'Test User',
-                            isHost: true,
-                          },
-                        ],
-                      },
-                      session: {
-                        id: 'session-1',
-                        status: 'active',
-                        state: mockState,
-                      },
-                    });
-                  }
-                }, 100);
-                return;
-              }
               if (event === 'games.session.draw') {
                 setTimeout(() => {
                   for (const listener of socket.listeners(
@@ -233,15 +191,15 @@ test.describe('Critical Single Player Mode', () => {
                   )) {
                     listener({ success: true });
                   }
-                }, 800); // 800ms delay to ensure busy state visibility
-                return; // Don't send to real server
+                }, 800);
+                return;
               }
               originalEmit(event, payload);
             };
           }
         }, 100);
       },
-      { roomId, userId, mockState },
+      { mockState },
     );
 
     await closeRulesModal(page);

@@ -4,9 +4,15 @@ import {
   navigateTo,
   closeRulesModal,
   mockRoomInfo,
+  MOCK_OBJECT_ID,
+  checkNoBackendErrors,
 } from './fixtures/test-utils';
 
 test.describe('Sea Battle Ships Left', () => {
+  test.afterEach(async () => {
+    checkNoBackendErrors();
+  });
+
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
   });
@@ -14,7 +20,7 @@ test.describe('Sea Battle Ships Left', () => {
   test('should display Ships Left component with correct ship status', async ({
     page,
   }) => {
-    const roomId = 'ships-left-test-room';
+    const roomId = MOCK_OBJECT_ID;
     const userId = 'user-1';
     const opponentId = 'user-2';
 

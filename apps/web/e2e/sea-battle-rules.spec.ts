@@ -1,7 +1,17 @@
 import { test, expect } from '@playwright/test';
-import { mockSession, navigateTo, mockRoomInfo } from './fixtures/test-utils';
+import {
+  mockSession,
+  navigateTo,
+  mockRoomInfo,
+  MOCK_OBJECT_ID,
+  checkNoBackendErrors,
+} from './fixtures/test-utils';
 
 test.describe('Sea Battle Rules Modal', () => {
+  test.afterEach(async () => {
+    checkNoBackendErrors();
+  });
+
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
   });
@@ -9,7 +19,7 @@ test.describe('Sea Battle Rules Modal', () => {
   test('should show rules modal automatically when entering game', async ({
     page,
   }) => {
-    const roomId = 'sea-battle-rules-room';
+    const roomId = MOCK_OBJECT_ID;
 
     await mockRoomInfo(page, {
       room: {
@@ -36,7 +46,7 @@ test.describe('Sea Battle Rules Modal', () => {
   });
 
   test('should be able to close and reopen rules modal', async ({ page }) => {
-    const roomId = 'sea-battle-rules-toggle-room';
+    const roomId = '507f1f77bcf86cd799439011'; // Another valid ObjectId
 
     await mockRoomInfo(page, {
       room: {

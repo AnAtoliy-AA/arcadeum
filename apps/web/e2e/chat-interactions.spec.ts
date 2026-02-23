@@ -1,9 +1,19 @@
 import { test, expect } from '@playwright/test';
-import { navigateTo, mockSession } from './fixtures/test-utils';
+import {
+  navigateTo,
+  mockSession,
+  mockChatSocket,
+  checkNoBackendErrors,
+} from './fixtures/test-utils';
 
 test.describe('Chat Interactions', () => {
+  test.afterEach(async () => {
+    checkNoBackendErrors();
+  });
+
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
+    await mockChatSocket(page);
   });
 
   test('should prevent sending empty messages', async ({ page }) => {

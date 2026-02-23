@@ -4,14 +4,16 @@ import {
   navigateTo,
   closeRulesModal,
   mockRoomInfo,
+  MOCK_OBJECT_ID,
+  mockGameSocket,
+  checkNoBackendErrors,
 } from './fixtures/test-utils';
 
-interface MockSocket {
-  listeners: (event: string) => Array<(data: unknown) => void>;
-  emit: (event: string, payload: unknown) => void;
-}
-
 test.describe('Sea Battle Single Player Mode', () => {
+  test.afterEach(async () => {
+    checkNoBackendErrors();
+  });
+
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
   });
@@ -19,7 +21,7 @@ test.describe('Sea Battle Single Player Mode', () => {
   test('should allow starting sea battle with bots and placing ships', async ({
     page,
   }) => {
-    const roomId = '507f191e810c19729de860ea';
+    const roomId = MOCK_OBJECT_ID;
     const userId = 'user-1';
 
     const generateBoard = () =>
@@ -71,123 +73,72 @@ test.describe('Sea Battle Single Player Mode', () => {
       },
     });
 
-    await page.addInitScript(
-      ({ roomId, userId, mockPlacementState, mockBattleState }) => {
-        const emitMockResponse = (
-          event: string,
-          payload: unknown,
-          attempts = 0,
-        ) => {
-          const socket = (window as unknown as { gameSocket: MockSocket })
-            .gameSocket;
-          if (attempts > 100 || !socket) return;
-
-          const listeners = socket.listeners(event);
-          if (listeners && listeners.length > 0) {
-            for (const listener of listeners) {
-              listener(payload);
-            }
-          } else {
-            setTimeout(
-              () => emitMockResponse(event, payload, attempts + 1),
-              50,
-            );
-          }
-        };
-
-        const pollSocket = setInterval(() => {
-          const socket = (window as unknown as { gameSocket: MockSocket })
-            .gameSocket;
-          if (socket) {
-            clearInterval(pollSocket);
-            const originalEmit = socket.emit.bind(socket);
-            socket.emit = (event: string, payload: unknown) => {
-              if (event === 'games.room.join') {
-                emitMockResponse('games.room.joined', {
-                  success: true,
-                  room: {
-                    id: roomId,
-                    status: 'lobby',
-                    gameId: 'sea_battle_v1',
-                    hostId: userId,
-                    playerCount: 1,
-                    members: [
-                      {
-                        id: userId,
-                        userId,
-                        displayName: 'Test User',
-                        isHost: true,
-                      },
-                    ],
-                  },
-                  session: null,
-                });
-                return;
-              }
-
-              if (event === 'seaBattle.session.start') {
-                emitMockResponse('games.session.started', {
-                  session: {
-                    id: 'session-1',
-                    status: 'active',
-                    state: mockPlacementState,
-                  },
-                });
-                return;
-              }
-
-              if (event === 'seaBattle.session.auto_place') {
-                const shipConfigs = [
-                  { id: 'battleship-1', size: 4 },
-                  { id: 'cruiser-1', size: 3 },
-                  { id: 'cruiser-2', size: 3 },
-                  { id: 'destroyer-1', size: 2 },
-                  { id: 'destroyer-2', size: 2 },
-                  { id: 'destroyer-3', size: 2 },
-                  { id: 'submarine-1', size: 1 },
-                  { id: 'submarine-2', size: 1 },
-                  { id: 'submarine-3', size: 1 },
-                  { id: 'submarine-4', size: 1 },
-                ];
-
-                const ships = shipConfigs.map((config, i) => ({
-                  ...config,
-                  name: 'Ship',
-                  cells: [{ row: i, col: 0 }],
-                  hits: 0,
-                  sunk: false,
-                }));
-
-                const updatedState = {
-                  ...mockPlacementState,
-                  players: mockPlacementState.players.map((p) =>
+    await mockGameSocket(page, roomId, userId, {
+      roomJoinedPayload: { gameId: 'sea_battle_v1' },
+      handlers: {
+        'seaBattle.session.start': {
+          responseEvent: 'games.session.started',
+          responseData: {
+            session: {
+              id: 'session-1',
+              status: 'active',
+              state: mockPlacementState,
+            },
+          },
+        },
+        'seaBattle.session.auto_place': {
+          responseEvent: 'games.session.snapshot',
+          responseData: {
+            roomId,
+            session: {
+              id: 'session-1',
+              status: 'active',
+              state: {
+                ...mockPlacementState,
+                players: mockPlacementState.players.map(
+                  (p: { playerId: string }) =>
                     p.playerId === userId
-                      ? { ...p, placementComplete: false, ships }
+                      ? {
+                          ...p,
+                          placementComplete: false,
+                          ships: [
+                            { id: 'battleship-1', size: 4 },
+                            { id: 'cruiser-1', size: 3 },
+                            { id: 'cruiser-2', size: 3 },
+                            { id: 'destroyer-1', size: 2 },
+                            { id: 'destroyer-2', size: 2 },
+                            { id: 'destroyer-3', size: 2 },
+                            { id: 'submarine-1', size: 1 },
+                            { id: 'submarine-2', size: 1 },
+                            { id: 'submarine-3', size: 1 },
+                            { id: 'submarine-4', size: 1 },
+                          ].map((config, i) => ({
+                            ...config,
+                            name: 'Ship',
+                            cells: [{ row: i, col: 0 }],
+                            hits: 0,
+                            sunk: false,
+                          })),
+                        }
                       : p,
-                  ),
-                };
-                emitMockResponse('games.session.snapshot', {
-                  roomId,
-                  session: { state: updatedState },
-                });
-                return;
-              }
-
-              if (event === 'seaBattle.session.confirm_placement') {
-                emitMockResponse('games.session.snapshot', {
-                  roomId,
-                  session: { state: mockBattleState },
-                });
-                return;
-              }
-
-              originalEmit(event, payload);
-            };
-          }
-        }, 50);
+                ),
+              },
+            },
+          },
+        },
+        'seaBattle.session.confirm_placement': {
+          responseEvent: 'games.session.snapshot',
+          responseData: {
+            roomId,
+            session: {
+              id: 'session-1',
+              status: 'active',
+              state: mockBattleState,
+            },
+          },
+        },
       },
-      { roomId, userId, mockPlacementState, mockBattleState },
-    );
+    });
 
     await navigateTo(page, `/games/rooms/${roomId}`);
     await closeRulesModal(page);
@@ -269,95 +220,48 @@ test.describe('Sea Battle Single Player Mode', () => {
       },
     });
 
-    await page.addInitScript(
-      ({ roomId, userId, mockBattleState }) => {
-        const emitMockResponse = (
-          socket: MockSocket,
-          event: string,
-          payload: unknown,
-          attempts = 0,
-        ) => {
-          if (attempts > 100) return;
-          const listeners = socket.listeners(event);
-          if (listeners && listeners.length > 0) {
-            for (const listener of listeners) {
-              listener(payload);
-            }
-          } else {
-            setTimeout(
-              () => emitMockResponse(socket, event, payload, attempts + 1),
-              50,
-            );
-          }
-        };
-
-        const pollSocket = setInterval(() => {
-          const socket = (window as unknown as { gameSocket: MockSocket })
-            .gameSocket;
-          if (socket) {
-            clearInterval(pollSocket);
-            const originalEmit = socket.emit.bind(socket);
-            socket.emit = (event: string, payload: unknown) => {
-              if (event === 'games.room.join') {
-                emitMockResponse(socket, 'games.room.joined', {
-                  success: true,
-                  room: {
-                    id: roomId,
-                    status: 'active',
-                    gameId: 'sea_battle_v1',
-                    hostId: userId,
-                    playerCount: 1,
-                    members: [
-                      {
-                        id: userId,
-                        userId,
-                        displayName: 'Test User',
-                        isHost: true,
-                      },
-                    ],
-                  },
-                  session: {
-                    id: 'session-1',
-                    status: 'active',
-                    state: mockBattleState,
-                  },
-                });
-                return;
-              }
-
-              if (event === 'seaBattle.session.attack') {
-                const updatedState = {
-                  ...mockBattleState,
-                  currentTurnIndex: 1,
-                  logs: [
-                    {
-                      id: '1',
-                      type: 'action',
-                      message: 'Test User attacked bot-1',
-                      createdAt: new Date().toISOString(),
-                    },
-                  ],
-                };
-                emitMockResponse(socket, 'games.session.snapshot', {
-                  roomId,
-                  session: { state: updatedState },
-                });
-                return;
-              }
-              originalEmit(event, payload);
-            };
-          }
-        }, 50);
+    await mockGameSocket(page, roomId, userId, {
+      roomJoinedPayload: {
+        status: 'active',
+        gameId: 'sea_battle_v1',
+        session: {
+          id: 'session-1',
+          status: 'active',
+          state: mockBattleState,
+        },
       },
-      { roomId, userId, mockBattleState },
-    );
+      handlers: {
+        'seaBattle.session.attack': {
+          responseEvent: 'games.session.snapshot',
+          responseData: {
+            roomId: '507f1f77bcf86cd799439011',
+            session: {
+              id: 'session-1',
+              status: 'active',
+              state: {
+                ...mockBattleState,
+                currentTurnIndex: 1,
+                logs: [
+                  {
+                    id: '1',
+                    type: 'action',
+                    message: 'Test User attacked bot-1',
+                    createdAt: new Date().toISOString(),
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    });
 
     await navigateTo(page, `/games/rooms/${roomId}`);
     await closeRulesModal(page);
 
     await expect(page.getByText(/your turn/i).first()).toBeVisible();
 
-    // Attack a cell on the opponent's board
+    // Attack a cell on the opponent's board (the one with $isClickable=true)
     const cell = page.locator('div[data-row="0"][data-col="0"]').first();
     await expect(cell).toBeVisible();
     await cell.click();

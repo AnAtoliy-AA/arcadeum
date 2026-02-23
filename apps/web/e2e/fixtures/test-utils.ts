@@ -1,4 +1,11 @@
 import { expect, type Page } from '@playwright/test';
+import * as fs from 'fs';
+import * as path from 'path';
+
+/**
+ * Valid MongoDB ObjectId for testing to avoid "Cast to ObjectId failed" errors
+ */
+export const MOCK_OBJECT_ID = '507f191e810c19729de860ea';
 
 /**
  * Shared test utilities for e2e tests
@@ -128,7 +135,7 @@ export async function mockRoomInfo(
   const { room: roomOverrides = {}, session = null } = overrides;
 
   const defaultRoom = {
-    id: 'test-room',
+    id: MOCK_OBJECT_ID,
     name: 'Test Room',
     gameId: 'critical_v1',
     status: 'lobby',
@@ -157,4 +164,167 @@ export async function mockRoomInfo(
       body: JSON.stringify({ room, session }),
     });
   });
+}
+
+/**
+ * Mock game socket events to avoid hitting the real backend
+ */
+export async function mockGameSocket(
+  page: Page,
+  roomId: string,
+  userId: string,
+  overrides: {
+    roomJoinedPayload?: Record<string, unknown>;
+    handlers?: Record<string, { responseEvent: string; responseData: unknown }>;
+  } = {},
+): Promise<void> {
+  const { roomJoinedPayload = {}, handlers = {} } = overrides;
+
+  await page.addInitScript(
+    ({ roomId, userId, roomJoinedPayload, handlers }) => {
+      // Logic to intercept gameSocket as soon as it's attached to window
+      const mockPayload = {
+        success: true,
+        room: {
+          id: roomId,
+          status: 'lobby',
+          gameId: 'critical_v1',
+          hostId: userId,
+          playerCount: 1,
+          members: [
+            {
+              id: userId,
+              userId,
+              displayName: 'Test User',
+              isHost: true,
+            },
+          ],
+          ...roomJoinedPayload,
+        },
+        session: roomJoinedPayload.session || null,
+      };
+
+      let gameSocket: unknown = null;
+
+      Object.defineProperty(window, 'gameSocket', {
+        get() {
+          return gameSocket;
+        },
+        set(socket) {
+          gameSocket = socket;
+          if (socket && !socket._isMocked) {
+            socket._isMocked = true;
+            const originalEmit = socket.emit.bind(socket);
+            socket.emit = (event: string, payload: unknown) => {
+              if (event === 'games.room.join') {
+                setTimeout(() => {
+                  const listeners = socket.listeners('games.room.joined');
+                  for (const listener of listeners) {
+                    listener(mockPayload);
+                  }
+                }, 50);
+                return;
+              }
+
+              if (handlers && handlers[event]) {
+                const handler = handlers[event];
+                const emit = (resEvent: string, resData: unknown) => {
+                  const attemptEmit = (attempts = 0) => {
+                    const listeners = socket.listeners(resEvent);
+                    if (listeners && listeners.length > 0) {
+                      for (const listener of listeners) {
+                        listener(resData);
+                      }
+                    } else if (attempts < 100) {
+                      setTimeout(() => attemptEmit(attempts + 1), 50);
+                    }
+                  };
+                  setTimeout(() => attemptEmit(0), 50);
+                };
+                emit(handler.responseEvent, handler.responseData);
+                return;
+              }
+
+              // Silence seaBattle events by default to avoid backend warnings
+              if (event.startsWith('seaBattle.session.')) {
+                return;
+              }
+
+              return originalEmit(event, payload);
+            };
+          }
+        },
+        configurable: true,
+      });
+    },
+    { roomId, userId, roomJoinedPayload, handlers },
+  );
+}
+
+/**
+ * Mock chat socket events
+ */
+export async function mockChatSocket(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    let chatSocket: unknown = null;
+
+    Object.defineProperty(window, 'chatSocket', {
+      get() {
+        return chatSocket;
+      },
+      set(socket) {
+        chatSocket = socket;
+        if (socket && !socket._isMocked) {
+          socket._isMocked = true;
+          // Force connected state for UI
+          Object.defineProperty(socket, 'connected', {
+            get() {
+              return true;
+            },
+            configurable: true,
+          });
+
+          const originalEmit = socket.emit.bind(socket);
+          socket.emit = (event: string, payload: unknown) => {
+            if (
+              event === 'chat.messages.get' ||
+              event === 'chat.message.send'
+            ) {
+              // Silence these if we are mocking HTTP
+              return;
+            }
+            return originalEmit(event, payload);
+          };
+        }
+      },
+      configurable: true,
+    });
+  });
+}
+
+/**
+ * Check for backend errors in the shared log file
+ */
+export function checkNoBackendErrors() {
+  // Path to the log file in the monorepo root
+  const logPath = path.join(process.cwd(), '../../backend-e2e-errors.log');
+
+  if (fs.existsSync(logPath)) {
+    const errors = fs.readFileSync(logPath, 'utf8');
+    if (errors.trim()) {
+      // Clear the file for the next test run
+      fs.writeFileSync(logPath, '');
+      throw new Error(`Backend [GamesGateway] errors detected:\n${errors}`);
+    }
+  }
+}
+
+/**
+ * Reset backend error log
+ */
+export function resetBackendErrorLog() {
+  const logPath = path.join(process.cwd(), '../../backend-e2e-errors.log');
+  if (fs.existsSync(logPath)) {
+    fs.writeFileSync(logPath, '');
+  }
 }

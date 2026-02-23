@@ -263,7 +263,7 @@ const authMessagesDefinition = {
     badge: 'Ранний доступ',
     title: 'Войдите в {{appName}}',
     description:
-      'Мы приглашаем создателей волнами, пока завершаем внедрение безопасного входа в {{appName}}.',
+      'Мы приглашаем создателей постепенно, пока завершаем внедрение безопасного входа в {{appName}}.',
     statusHeadline: 'Веб-вход скоро появится.',
     statusDescription:
       'Запросите ранний доступ, и мы сообщим вам, когда ваш аккаунт будет готов, или продолжайте в мобильном приложении сегодня.',
@@ -285,7 +285,7 @@ const authMessagesDefinition = {
     },
     providers: {
       guest: 'Гость',
-      local: 'Email',
+      local: 'Почта',
       oauth: 'Google',
     },
     statuses: {
@@ -294,8 +294,8 @@ const authMessagesDefinition = {
       loadingSession: 'Загрузка сессии...',
     },
     local: {
-      loginTitle: 'Войти через email',
-      registerTitle: 'Создать аккаунт через email',
+      loginTitle: 'Войти через почту',
+      registerTitle: 'Создать аккаунт через почту',
       helper: {
         allowedCharacters:
           'Имя пользователя может содержать буквы, цифры, подчеркивания и дефисы.',
@@ -305,8 +305,8 @@ const authMessagesDefinition = {
         usernameTooShort: 'Имя пользователя должно быть не менее 3 символов.',
         invalidEmail: 'Пожалуйста, введите корректный адрес электронной почты.',
         usernameTaken: 'Это имя пользователя уже занято.',
-        emailTaken: 'Этот email уже зарегистрирован.',
-        invalidCredentials: 'Неверный email или пароль.',
+        emailTaken: 'Эта почта уже зарегистрирована.',
+        invalidCredentials: 'Неверная почта или пароль',
         unknownError: 'Произошла ошибка. Пожалуйста, попробуйте снова.',
       },
       availability: {
@@ -318,14 +318,14 @@ const authMessagesDefinition = {
       title: 'Продолжить с Google',
       loginButton: 'Продолжить с Google',
       logoutButton: 'Отключить Google',
-      accessTokenLabel: 'Google access token',
+      accessTokenLabel: 'Токен доступа Google',
       authorizationCodeLabel: 'Код авторизации',
     },
     statusCard: {
       heading: 'Текущая сессия',
       description:
-        'Управляйте вашей веб-сессией {{appName}}, проверяйте связанный профиль и выходите, когда закончите.',
-      sessionActive: 'Вы вошли в систему через веб.',
+        'Управляйте вашей веб-сессией {{appName}}, проверяйте подключённый профиль и отключайте его, когда закончите.',
+      sessionActive: 'Вы вошли в веб-версию.',
       signOutLabel: 'Выйти',
       guestDescription:
         'Детали вашей веб-сессии {{appName}} появятся здесь после входа.',
@@ -333,22 +333,22 @@ const authMessagesDefinition = {
         provider: 'Провайдер',
         displayName: 'Отображаемое имя',
         userId: 'ID пользователя',
-        accessExpires: 'Доступ истекает',
-        refreshExpires: 'Обновление истекает',
+        accessExpires: 'Срок доступа истекает',
+        refreshExpires: 'Срок обновления истекает',
         updated: 'Обновлено',
-        sessionAccessToken: 'AccessToken сессии',
-        refreshToken: 'RefreshToken',
+        sessionAccessToken: 'Токен доступа сессии',
+        refreshToken: 'Токен обновления',
       },
     },
   },
-  be: {
+  by: {
     badge: 'Ранні доступ',
     title: 'Увайдзіце ў {{appName}}',
     description:
-      'Мы запрашаем стваральнікаў хвалямі, пакуль завяршаем укараненне бяспечнага ўваходу ў {{appName}}.',
+      'Мы запрашаем стваральнікаў паступова, пакуль завяршаем укараненне бяспечнага ўваходу ў {{appName}}.',
     statusHeadline: 'Вэб-ўваход хутка з’явіцца.',
     statusDescription:
-      'Запытайце ранні доступ, і мы паведамім вам, калі ваш акаўнт будзе гатовы, ці працягвайце ў мабільным прыкладанні сёння.',
+      'Запытайце ранні доступ, і мы паведамім вам, калі ваш акаўнт будзе гатовы, ці працягвайце ў мабільным дадатку сёння.',
     primaryCtaLabel: 'Звязацца з камандай',
     secondaryCtaLabel: appConfig.primaryCta.label,
     downloadsTitle: 'Мабільныя зборкі',
@@ -367,7 +367,7 @@ const authMessagesDefinition = {
     },
     providers: {
       guest: 'Госць',
-      local: 'Email',
+      local: 'Пошта',
       oauth: 'Google',
     },
     statuses: {
@@ -376,11 +376,11 @@ const authMessagesDefinition = {
       loadingSession: 'Загрузка сесіі...',
     },
     local: {
-      loginTitle: 'Увайсці праз email',
-      registerTitle: 'Стварыць акаўнт праз email',
+      loginTitle: 'Увайсці праз пошту',
+      registerTitle: 'Стварыць акаўнт праз пошту',
       helper: {
         allowedCharacters:
-          'Імя карыстальніка можа ўтрымліваць літары, лічбы, падкрэсліванні і дэфісы.',
+          'Імя карыстальніка можа складацца з літар, лічбаў, падкрэсліванняў і дэфісаў.',
       },
       errors: {
         passwordMismatch: 'Паролі не супадаюць.',
@@ -388,8 +388,8 @@ const authMessagesDefinition = {
           'Імя карыстальніка павінна быць не менш за 3 сімвалы.',
         invalidEmail: 'Калі ласка, увядзіце карэктны адрас электроннай пошты.',
         usernameTaken: 'Гэтае імя карыстальніка ўжо занята.',
-        emailTaken: 'Гэты email ўжо зарэгістраваны.',
-        invalidCredentials: 'Няправільны email ці пароль.',
+        emailTaken: 'Гэтая пошта ўжо зарэгістравана.',
+        invalidCredentials: 'Няправільная пошта ці пароль.',
         unknownError: 'Адбылася памылка. Калі ласка, паспрабуйце яшчэ раз.',
       },
       availability: {
@@ -401,14 +401,14 @@ const authMessagesDefinition = {
       title: 'Працягнуць з Google',
       loginButton: 'Працягнуць з Google',
       logoutButton: 'Адключыць Google',
-      accessTokenLabel: 'Google access token',
+      accessTokenLabel: 'Токен доступу Google',
       authorizationCodeLabel: 'Код аўтарызацыі',
     },
     statusCard: {
       heading: 'Бягучая сесія',
       description:
         'Кіруйце вашай вэб-сесіяй {{appName}}, правярайце звязаны профіль і выходзьце, калі скончыце.',
-      sessionActive: 'Вы ўвайшлі ў сістэму праз вэб.',
+      sessionActive: 'Вы ўвайшлі ў вэб-версію.',
       signOutLabel: 'Выйсці',
       guestDescription:
         'Дэталі вашай вэб-сесіі {{appName}} з’явяцца тут пасля ўваходу.',
@@ -419,8 +419,8 @@ const authMessagesDefinition = {
         accessExpires: 'Доступ заканчваецца',
         refreshExpires: 'Абнаўленне заканчваецца',
         updated: 'Абноўлена',
-        sessionAccessToken: 'AccessToken сесіі',
-        refreshToken: 'RefreshToken',
+        sessionAccessToken: 'Токен доступу сесіі',
+        refreshToken: 'Токен абнаўлення',
       },
     },
   },

@@ -1,12 +1,24 @@
 import { test, expect } from '@playwright/test';
-import { mockSession, navigateTo, mockRoomInfo } from './fixtures/test-utils';
+import {
+  mockSession,
+  navigateTo,
+  mockRoomInfo,
+  MOCK_OBJECT_ID,
+  mockGameSocket,
+  checkNoBackendErrors,
+} from './fixtures/test-utils';
 
 test.describe('Game Room Logic', () => {
-  const roomId = 'room-1';
+  const roomId = MOCK_OBJECT_ID;
+
+  test.afterEach(async () => {
+    checkNoBackendErrors();
+  });
 
   test.beforeEach(async ({ page }) => {
     // Authenticate as 'user-1'
     await mockSession(page);
+    await mockGameSocket(page, roomId, 'user-1');
   });
 
   test('should join as player when game is in lobby', async ({ page }) => {

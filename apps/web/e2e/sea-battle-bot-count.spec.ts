@@ -4,9 +4,16 @@ import {
   navigateTo,
   closeRulesModal,
   mockRoomInfo,
+  MOCK_OBJECT_ID,
+  mockGameSocket,
+  checkNoBackendErrors,
 } from './fixtures/test-utils';
 
 test.describe('Sea Battle Bot Count Selection', () => {
+  test.afterEach(async () => {
+    checkNoBackendErrors();
+  });
+
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
   });
@@ -14,7 +21,7 @@ test.describe('Sea Battle Bot Count Selection', () => {
   test('should allow selecting 4 bots in Sea Battle and starting game', async ({
     page,
   }) => {
-    const roomId = '507f191e810c19729de860ea';
+    const roomId = MOCK_OBJECT_ID;
     const userId = 'user-1';
 
     await mockRoomInfo(page, {
@@ -34,59 +41,31 @@ test.describe('Sea Battle Bot Count Selection', () => {
     await closeRulesModal(page);
 
     // Mock socket to handle join and start
-    await page.evaluate(
-      ({ roomId, userId }) => {
-        const pollSocket = setInterval(() => {
-          interface MockSocket {
-            emit: (event: string, payload: unknown) => void;
-            listeners: (event: string) => ((payload: unknown) => void)[];
+    await mockGameSocket(page, roomId, userId, {
+      roomJoinedPayload: { gameId: 'sea_battle_v1', maxPlayers: 5 },
+    });
+
+    await page.evaluate(() => {
+      const pollSocket = setInterval(() => {
+        const socket = (
+          window as unknown as {
+            gameSocket: { emit: (event: string, payload: unknown) => void };
           }
-          const socket = (window as unknown as { gameSocket: MockSocket })
-            .gameSocket;
-          if (socket) {
-            clearInterval(pollSocket);
-            const originalEmit = socket.emit.bind(socket);
-            socket.emit = (event: string, payload: unknown) => {
-              if (event === 'games.room.join') {
-                setTimeout(() => {
-                  for (const listener of socket.listeners(
-                    'games.room.joined',
-                  )) {
-                    listener({
-                      success: true,
-                      room: {
-                        id: roomId,
-                        status: 'lobby',
-                        gameId: 'sea_battle_v1',
-                        hostId: userId,
-                        playerCount: 1,
-                        members: [
-                          {
-                            id: userId,
-                            userId,
-                            displayName: 'Test User',
-                            isHost: true,
-                          },
-                        ],
-                      },
-                      session: null,
-                    });
-                  }
-                }, 100);
-                return;
-              }
-              if (event === 'seaBattle.session.start') {
-                (
-                  window as unknown as { __lastStartPayload: unknown }
-                ).__lastStartPayload = payload;
-              }
-              originalEmit(event, payload);
-            };
-          }
-        }, 100);
-      },
-      { roomId, userId },
-    );
+        ).gameSocket;
+        if (socket) {
+          clearInterval(pollSocket);
+          const originalEmit = socket.emit.bind(socket);
+          socket.emit = (event: string, payload: unknown) => {
+            if (event === 'seaBattle.session.start') {
+              (
+                window as unknown as { __lastStartPayload: unknown }
+              ).__lastStartPayload = payload;
+            }
+            originalEmit(event, payload);
+          };
+        }
+      }, 100);
+    });
 
     // Wait for the lobby to load
     await expect(page.getByText('Number of bots')).toBeVisible();

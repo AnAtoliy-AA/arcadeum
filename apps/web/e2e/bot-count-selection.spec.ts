@@ -1,7 +1,18 @@
 import { test, expect } from '@playwright/test';
-import { mockSession, navigateTo, mockRoomInfo } from './fixtures/test-utils';
+import {
+  mockSession,
+  navigateTo,
+  mockRoomInfo,
+  MOCK_OBJECT_ID,
+  mockGameSocket,
+  checkNoBackendErrors,
+} from './fixtures/test-utils';
 
 test.describe('Bot Count Selection', () => {
+  test.afterEach(async () => {
+    checkNoBackendErrors();
+  });
+
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
   });
@@ -9,7 +20,7 @@ test.describe('Bot Count Selection', () => {
   test('should allow selecting bot count and starting game', async ({
     page,
   }) => {
-    const roomId = '507f191e810c19729de860ea';
+    const roomId = MOCK_OBJECT_ID;
     const userId = 'user-1';
 
     await mockRoomInfo(page, {
@@ -27,59 +38,31 @@ test.describe('Bot Count Selection', () => {
     await navigateTo(page, `/games/rooms/${roomId}`);
 
     // Mock socket to handle join and start
-    await page.evaluate(
-      ({ roomId, userId }) => {
-        const pollSocket = setInterval(() => {
-          interface MockSocket {
-            emit: (event: string, payload: unknown) => void;
-            listeners: (event: string) => ((payload: unknown) => void)[];
+    await mockGameSocket(page, roomId, userId, {
+      roomJoinedPayload: { gameId: 'critical_v1', maxPlayers: 5 },
+    });
+
+    await page.evaluate(() => {
+      const pollSocket = setInterval(() => {
+        const socket = (
+          window as unknown as {
+            gameSocket: { emit: (event: string, payload: unknown) => void };
           }
-          const socket = (window as unknown as { gameSocket: MockSocket })
-            .gameSocket;
-          if (socket) {
-            clearInterval(pollSocket);
-            const originalEmit = socket.emit.bind(socket);
-            socket.emit = (event: string, payload: unknown) => {
-              if (event === 'games.room.join') {
-                setTimeout(() => {
-                  for (const listener of socket.listeners(
-                    'games.room.joined',
-                  )) {
-                    listener({
-                      success: true,
-                      room: {
-                        id: roomId,
-                        status: 'lobby',
-                        gameId: 'critical_v1',
-                        hostId: userId,
-                        playerCount: 1,
-                        members: [
-                          {
-                            id: userId,
-                            userId,
-                            displayName: 'Test User',
-                            isHost: true,
-                          },
-                        ],
-                      },
-                      session: null,
-                    });
-                  }
-                }, 100);
-                return;
-              }
-              if (event === 'games.session.start') {
-                (
-                  window as unknown as { __lastStartPayload: unknown }
-                ).__lastStartPayload = payload;
-              }
-              originalEmit(event, payload);
-            };
-          }
-        }, 100);
-      },
-      { roomId, userId },
-    );
+        ).gameSocket;
+        if (socket) {
+          clearInterval(pollSocket);
+          const originalEmit = socket.emit.bind(socket);
+          socket.emit = (event: string, payload: unknown) => {
+            if (event === 'games.session.start') {
+              (
+                window as unknown as { __lastStartPayload: unknown }
+              ).__lastStartPayload = payload;
+            }
+            originalEmit(event, payload);
+          };
+        }
+      }, 100);
+    });
 
     await expect(page.getByText('Number of bots')).toBeVisible();
 

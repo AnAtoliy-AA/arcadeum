@@ -4,7 +4,7 @@ import { legalMessagesEn } from './en';
 import { legalMessagesEs } from './es';
 import { legalMessagesFr } from './fr';
 import { legalMessagesRu } from './ru';
-import { legalMessagesBe } from './be';
+import { legalMessagesBy } from './by';
 
 export type {
   LegalMessages,
@@ -18,5 +18,5 @@ export const legalMessages: Record<Locale, LegalMessages> = {
   es: legalMessagesEs,
   fr: legalMessagesFr,
   ru: legalMessagesRu,
-  be: legalMessagesBe,
+  by: legalMessagesBy,
 };

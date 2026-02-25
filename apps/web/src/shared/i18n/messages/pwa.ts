@@ -81,7 +81,7 @@ const pwaMessagesDefinition = {
       retry: 'Повторить',
     },
   },
-  be: {
+  by: {
     install: {
       title: 'Усталяваць Arcadeum',
       button: 'Усталяваць',

@@ -341,7 +341,7 @@ const authMessagesDefinition = {
       },
     },
   },
-  be: {
+  by: {
     badge: 'Ранні доступ',
     title: 'Увайдзіце ў {{appName}}',
     description:

@@ -268,7 +268,7 @@ const homeMessagesDefinition = {
     footerCommunity: 'Присоединяйтесь к сообществу',
     footerRights: '© {{year}} {{appName}}. Все права защищены.',
   },
-  be: {
+  by: {
     kicker: 'Будучыня настольных гульняў',
     tagline:
       '{{appName}} — ваша онлайн-платформа для гульні ў настолкі з сябрамі.',

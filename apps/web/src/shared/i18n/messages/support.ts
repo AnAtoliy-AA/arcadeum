@@ -220,7 +220,7 @@ const supportMessagesDefinition = {
       },
     },
   },
-  be: {
+  by: {
     title: 'Падтрымайце распрацоўшчыкаў',
     tagline:
       'Дапамажыце {{appName}} развівацца хутка і заставацца даступным для ўсіх.',

@@ -1,4 +1,4 @@
-export const beMessages = {
+export const byMessages = {
   sea_battle_v1: {
     name: 'Марскі Бой',
     description: 'Класічны марскі бой да 6 гульцоў',

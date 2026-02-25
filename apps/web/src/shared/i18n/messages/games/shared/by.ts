@@ -1,4 +1,4 @@
-export const beMessages = {
+export const byMessages = {
   coup: { name: 'Coup' },
   'pandemic-lite': { name: 'Pandemic: Rapid Response' },
   lounge: {

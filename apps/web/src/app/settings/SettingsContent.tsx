@@ -76,39 +76,39 @@ const DEFAULT_THEME_OPTIONS: Array<{
   label: string;
   description: string;
 }> = [
-    {
-      code: 'system',
-      label: 'Match system appearance',
-      description: 'Follow your operating system preference automatically.',
-    },
-    {
-      code: 'light',
-      label: 'Light',
-      description: 'Bright neutrals with airy surfaces and subtle gradients.',
-    },
-    {
-      code: 'dark',
-      label: 'Dark',
-      description: 'Contemporary midnight palette ideal for low-light play.',
-    },
-    {
-      code: 'neonLight',
-      label: 'Neon Light',
-      description: 'Arcade-inspired glow with luminous panels and neon edges.',
-    },
-    {
-      code: 'neonDark',
-      label: 'Neon Dark',
-      description: 'High-contrast vaporwave styling for dramatic game tables.',
-    },
-  ];
+  {
+    code: 'system',
+    label: 'Match system appearance',
+    description: 'Follow your operating system preference automatically.',
+  },
+  {
+    code: 'light',
+    label: 'Light',
+    description: 'Bright neutrals with airy surfaces and subtle gradients.',
+  },
+  {
+    code: 'dark',
+    label: 'Dark',
+    description: 'Contemporary midnight palette ideal for low-light play.',
+  },
+  {
+    code: 'neonLight',
+    label: 'Neon Light',
+    description: 'Arcade-inspired glow with luminous panels and neon edges.',
+  },
+  {
+    code: 'neonDark',
+    label: 'Neon Dark',
+    description: 'High-contrast vaporwave styling for dramatic game tables.',
+  },
+];
 
 const LANGUAGE_LABELS: Record<Locale, string> = {
   en: 'English',
   es: 'Español',
   fr: 'Français',
   ru: 'Русский',
-  be: 'Беларуская',
+  by: 'Беларуская',
 };
 
 export default function SettingsContent({
@@ -212,7 +212,8 @@ export default function SettingsContent({
 
   const aboutTitle = settingsCopy.aboutTitle ?? 'About';
   const aboutDescription =
-    settingsCopy.aboutDescription ?? 'Application information and version details.';
+    settingsCopy.aboutDescription ??
+    'Application information and version details.';
   const versionLabel = settingsCopy.versionLabel ?? 'Version';
 
   const handleThemeSelect = useCallback(

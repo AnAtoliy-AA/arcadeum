@@ -16,7 +16,7 @@ export const CARD_SPRITE_MAP: Record<string, number> = {
   insight: 7,
   cancel: 8,
 
-  // COLLECTION (Cats)
+  // COLLECTION (Combo Cards)
   collection_alpha: 9,
   collection_beta: 10,
   collection_gamma: 11,

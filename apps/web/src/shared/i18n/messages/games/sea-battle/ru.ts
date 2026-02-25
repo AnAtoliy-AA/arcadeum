@@ -1,6 +1,7 @@
 export const ruMessages = {
   sea_battle_v1: {
     name: 'Морской Бой',
+    description: 'Классический морской бой до 6 игроков',
     rules: {
       title: 'Правила Игры',
       headers: {
@@ -23,13 +24,56 @@ export const ruMessages = {
 • Эсминец (2 клетки) - Маленький, но маневренный
 • Подлодка (1 клетка) - Скрытное судно`,
     },
-  },
-  seaBattle: {
+    variants: {
+      classic: {
+        name: 'Классика',
+        description: 'Традиционный морской бой',
+      },
+      modern: {
+        name: 'Модерн II',
+        description: 'Современная морская война',
+      },
+      pixel: {
+        name: 'Пиксель-арт',
+        description: 'Ретро-стыль піксель-арта',
+      },
+      cartoon: {
+        name: 'Мультяшный',
+        description: 'Забавные персонажи',
+      },
+      cyber: {
+        name: 'Киберпанк',
+        description: 'Высокотехнологичный дизайн',
+      },
+      vintage: {
+        name: 'Винтаж',
+        description: 'Старинная морская карта',
+      },
+      nebula: {
+        name: 'Туманность',
+        description: 'Глыбокі космас',
+      },
+      forest: {
+        name: 'Лес',
+        description: 'Лесная маскировка',
+      },
+      sunset: {
+        name: 'Закат',
+        description: 'Атмосферные сумерки',
+      },
+      monochrome: {
+        name: 'Noir',
+        description: 'Элегантный монохром',
+      },
+    },
     table: {
       state: {
-        yourBoard: 'Ваше поле',
-        opponentBoard: 'Поле противника',
+        yourBoard: 'Ваша доска',
+        opponentBoard: 'Доска противника',
         shipsRemaining: 'Осталось кораблей',
+        shipsPalette: 'Корабли для расстановки',
+        vertical: 'Вертикально',
+        horizontal: 'Горизонтально',
       },
       players: {
         you: 'Вы',
@@ -86,6 +130,8 @@ export const ruMessages = {
         title: 'Чат битвы',
         empty: 'Нет сообщений',
         send: 'Отпр.',
+        show: 'Показать чат',
+        hide: 'Скрыть чат',
         placeholder: 'Введите сообщение...',
       },
     },

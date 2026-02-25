@@ -104,7 +104,7 @@ export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
   return (
     <Container>
       <TitleContainer>
-        <Title>{t('games.seaBattle.table.state.shipsRemaining')}</Title>
+        <Title>{t('games.sea_battle_v1.table.state.shipsRemaining')}</Title>
         <ShipCount>
           {aliveCount}/{totalShips}
         </ShipCount>

@@ -109,7 +109,7 @@ export function ActiveGameView({
   useWebGameHaptics(isMyTurn);
 
   const {
-    catComboModal,
+    eventComboModal,
     selectedMode,
     selectedTarget,
     selectedCard,
@@ -121,9 +121,9 @@ export function ActiveGameView({
     setSelectedCard,
     setSelectedIndex,
     setSelectedDiscardCard,
-    handleOpenCatCombo,
-    handleCloseCatComboModal,
-    handleSelectCat,
+    handleOpenEventCombo,
+    handleCloseEventComboModal,
+    handleSelectComboCard,
     handleToggleFiverCard,
     favorModal,
     setFavorModal,
@@ -187,13 +187,14 @@ export function ActiveGameView({
     selectedIndex,
     selectedFiverCards,
     selectedDiscardCard,
-    catComboModal,
+    eventComboModal,
     chatMessage,
     chatScope,
     currentPlayerHand: currentPlayer?.hand ?? [],
+    discardPile: snapshot?.discardPile ?? [],
     actions,
-    handleCloseCatComboModal,
-    handleOpenCatCombo,
+    handleCloseEventComboModal,
+    handleOpenEventCombo,
     setSelectedMode,
     setSelectedTarget,
     setStashModal,
@@ -205,7 +206,7 @@ export function ActiveGameView({
   });
 
   const {
-    handleConfirmCatCombo,
+    handleConfirmEventCombo,
     handleSendChatMessage,
     handleOpenFiverCombo,
     handleConfirmStash,
@@ -357,7 +358,7 @@ export function ActiveGameView({
               onOpenFavorModal={handleOpenFavorModal}
               onGiveFavorCard={actions.giveFavorCard}
               onPlayDefuse={actions.playDefuse}
-              onOpenCatCombo={handleOpenCatCombo}
+              onOpenEventCombo={handleOpenEventCombo}
               onOpenFiverCombo={handleOpenFiverCombo}
               forceEnableAutoplay={idleTimerTriggered}
               onAutoplayEnabledChange={autoplayState.setAllEnabled}
@@ -412,9 +413,9 @@ export function ActiveGameView({
         onBlockRematch={rematch.handleBlockRematch}
         onBlockUser={rematch.handleBlockUser}
         isAcceptingInvitation={rematch.isAcceptingInvitation}
-        // Cat Combo Modal
-        catComboModal={catComboModal}
-        onCloseCatComboModal={handleCloseCatComboModal}
+        // Event Combo Modal
+        eventComboModal={eventComboModal}
+        onCloseEventComboModal={handleCloseEventComboModal}
         selectedMode={selectedMode}
         selectedTarget={selectedTarget}
         selectedCard={selectedCard}
@@ -424,14 +425,14 @@ export function ActiveGameView({
         aliveOpponents={aliveOpponents}
         selfHand={currentPlayer?.hand ?? []}
         discardPile={snapshot?.discardPile ?? []}
-        onSelectCat={handleSelectCat}
+        onSelectComboCard={handleSelectComboCard}
         onSelectMode={setSelectedMode}
         onSelectTarget={setSelectedTarget}
         onSelectCard={setSelectedCard}
         onSelectIndex={setSelectedIndex}
         onSelectDiscardCard={setSelectedDiscardCard}
         onToggleFiverCard={handleToggleFiverCard}
-        onConfirmCatCombo={handleConfirmCatCombo}
+        onConfirmEventCombo={handleConfirmEventCombo}
         // See the Future Modal
         seeTheFutureModal={seeTheFutureModal}
         onCloseSeeTheFutureModal={handleCloseSeeTheFutureModal}

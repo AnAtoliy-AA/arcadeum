@@ -1,7 +1,11 @@
 'use client';
 
 import { useCallback } from 'react';
-import type { CriticalCard, CatComboModalState } from '../types';
+import type {
+  CriticalCard,
+  EventComboModalState,
+  CriticalComboCard,
+} from '../types';
 import { FIVER_COMBO_SIZE } from '../types';
 import type { ChatScope } from '@/shared/types/games';
 
@@ -12,13 +16,14 @@ interface UseGameHandlersOptions {
   selectedIndex: number | null;
   selectedFiverCards: CriticalCard[];
   selectedDiscardCard: CriticalCard | null;
-  catComboModal: CatComboModalState | null;
+  eventComboModal: EventComboModalState | null;
   chatMessage: string;
   chatScope: ChatScope;
   currentPlayerHand: CriticalCard[];
+  discardPile: CriticalCard[];
   actions: {
-    playCatCombo: (
-      cat: string | null,
+    playEventCombo: (
+      card: string | null,
       mode: string,
       targetPlayerId?: string,
       desiredCard?: string,
@@ -30,8 +35,11 @@ interface UseGameHandlersOptions {
     postHistoryNote: (message: string, scope: ChatScope) => void;
     commitAlterFuture: (orderedCards: CriticalCard[]) => void;
   };
-  handleCloseCatComboModal: () => void;
-  handleOpenCatCombo: (cats: never[], hand: CriticalCard[]) => void;
+  handleCloseEventComboModal: () => void;
+  handleOpenEventCombo: (
+    cards: CriticalComboCard[],
+    hand: CriticalCard[],
+  ) => void;
   setSelectedMode: (mode: 'pair' | 'trio' | 'fiver' | null) => void;
   setSelectedTarget: (target: string | null) => void;
   setStashModal: (isOpen: boolean) => void;
@@ -50,13 +58,13 @@ export function useGameHandlers(options: UseGameHandlersOptions) {
     selectedIndex,
     selectedFiverCards,
     selectedDiscardCard,
-    catComboModal,
+    eventComboModal,
     chatMessage,
     chatScope,
     currentPlayerHand,
     actions,
-    handleCloseCatComboModal,
-    handleOpenCatCombo,
+    handleCloseEventComboModal,
+    handleOpenEventCombo,
     setSelectedMode,
     setSelectedTarget,
     setStashModal,
@@ -67,14 +75,14 @@ export function useGameHandlers(options: UseGameHandlersOptions) {
     clearChatMessage,
   } = options;
 
-  const handleConfirmCatCombo = useCallback(() => {
+  const handleConfirmEventCombo = useCallback(() => {
     if (selectedMode === 'fiver') {
       if (
         selectedFiverCards.length !== FIVER_COMBO_SIZE ||
         !selectedDiscardCard
       )
         return;
-      actions.playCatCombo(
+      actions.playEventCombo(
         null,
         'fiver',
         undefined,
@@ -83,22 +91,23 @@ export function useGameHandlers(options: UseGameHandlersOptions) {
         selectedDiscardCard,
         selectedFiverCards,
       );
-      handleCloseCatComboModal();
+      handleCloseEventComboModal();
       return;
     }
-    if (!catComboModal?.selectedCat || !selectedMode || !selectedTarget) return;
+    if (!eventComboModal?.selectedComboCard || !selectedMode || !selectedTarget)
+      return;
     if (selectedMode === 'trio' && !selectedCard) return;
     if (selectedMode === 'pair' && selectedIndex === null) return;
-    actions.playCatCombo(
-      catComboModal.selectedCat,
+    actions.playEventCombo(
+      eventComboModal.selectedComboCard,
       selectedMode,
       selectedTarget,
       selectedMode === 'trio' ? selectedCard! : undefined,
       selectedMode === 'pair' ? selectedIndex! : undefined,
     );
-    handleCloseCatComboModal();
+    handleCloseEventComboModal();
   }, [
-    catComboModal,
+    eventComboModal,
     selectedMode,
     selectedTarget,
     selectedCard,
@@ -106,7 +115,7 @@ export function useGameHandlers(options: UseGameHandlersOptions) {
     selectedFiverCards,
     selectedDiscardCard,
     actions,
-    handleCloseCatComboModal,
+    handleCloseEventComboModal,
   ]);
 
   const handleSendChatMessage = useCallback(() => {
@@ -120,10 +129,10 @@ export function useGameHandlers(options: UseGameHandlersOptions) {
     setSelectedMode('fiver');
     const uniqueCards = new Set(currentPlayerHand);
     if (uniqueCards.size >= FIVER_COMBO_SIZE) {
-      handleOpenCatCombo([], currentPlayerHand);
+      handleOpenEventCombo([], currentPlayerHand);
       setSelectedMode('fiver');
     }
-  }, [currentPlayerHand, handleOpenCatCombo, setSelectedMode]);
+  }, [currentPlayerHand, handleOpenEventCombo, setSelectedMode]);
 
   const handleConfirmStash = useCallback(
     (cards: CriticalCard[]) => {
@@ -228,7 +237,7 @@ export function useGameHandlers(options: UseGameHandlersOptions) {
   }, [selectedTarget, actions, setSmiteModal, setSelectedTarget]);
 
   return {
-    handleConfirmCatCombo,
+    handleConfirmEventCombo,
     handleSendChatMessage,
     handleOpenFiverCombo,
     handleConfirmStash,

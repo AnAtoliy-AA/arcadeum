@@ -54,15 +54,15 @@ export interface GameInitialData {
   session?: unknown;
 }
 
-// ===== CAT CARDS (for combos) =====
-export type CriticalCatCard =
+// ===== COMBO CARDS (for combos) =====
+export type CriticalComboCard =
   | 'collection_alpha'
   | 'collection_beta'
   | 'collection_gamma'
   | 'collection_delta'
   | 'collection_epsilon';
 
-export const CAT_CARDS: CriticalCatCard[] = [
+export const COMBO_CARDS: CriticalComboCard[] = [
   'collection_alpha',
   'collection_beta',
   'collection_gamma',
@@ -158,7 +158,7 @@ export type CriticalCard =
   | 'critical_event'
   | 'neutralizer'
   | BaseActionCard
-  | CriticalCatCard
+  | CriticalComboCard
   | AttackPackCard
   | FuturePackCard
   | TheftPackCard

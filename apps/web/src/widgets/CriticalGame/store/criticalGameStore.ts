@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import type {
   CriticalCard,
-  CriticalCatCard,
-  CatComboModalState,
+  CriticalComboCard,
+  EventComboModalState,
   SeeTheFutureModalState,
   AlterTheFutureModalState,
   OmniscienceModalState,
@@ -12,7 +12,7 @@ import { FIVER_COMBO_SIZE } from '../types';
 
 interface CriticalGameState {
   // Modals
-  catComboModal: CatComboModalState | null;
+  eventComboModal: EventComboModalState | null;
   favorModal: boolean;
   targetedAttackModal: boolean;
   seeTheFutureModal: SeeTheFutureModalState | null;
@@ -37,7 +37,7 @@ interface CriticalGameState {
   showChat: boolean;
 
   // Actions
-  setCatComboModal: (state: CatComboModalState | null) => void;
+  setEventComboModal: (state: EventComboModalState | null) => void;
   setFavorModal: (isOpen: boolean) => void;
   setTargetedAttackModal: (isOpen: boolean) => void;
   setSeeTheFutureModal: (state: SeeTheFutureModalState | null) => void;
@@ -63,14 +63,17 @@ interface CriticalGameState {
 
   // Complex Logic Actions
   toggleFiverCard: (card: CriticalCard) => void;
-  openCatCombo: (cats: CriticalCatCard[], handCards: CriticalCard[]) => void;
-  closeCatComboModal: () => void;
-  selectCat: (cat: CriticalCatCard) => void;
+  openEventCombo: (
+    cards: CriticalComboCard[],
+    handCards: CriticalCard[],
+  ) => void;
+  closeEventComboModal: () => void;
+  selectComboCard: (card: CriticalComboCard) => void;
   reset: () => void;
 }
 
 export const useCriticalGameStore = create<CriticalGameState>((set) => ({
-  catComboModal: null,
+  eventComboModal: null,
   favorModal: false,
   targetedAttackModal: false,
   seeTheFutureModal: null,
@@ -92,7 +95,7 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
   chatScope: 'all',
   showChat: true,
 
-  setCatComboModal: (state) => set({ catComboModal: state }),
+  setEventComboModal: (state) => set({ eventComboModal: state }),
   setFavorModal: (isOpen) => set({ favorModal: isOpen }),
   setTargetedAttackModal: (isOpen) => set({ targetedAttackModal: isOpen }),
   setSeeTheFutureModal: (state) => set({ seeTheFutureModal: state }),
@@ -134,29 +137,35 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
       return { selectedFiverCards: [...prev, card] };
     }),
 
-  openCatCombo: (cats, handCards) => {
-    const availableCats = cats
-      .map((cat) => {
-        const count = handCards.filter((c) => c === cat).length;
+  openEventCombo: (comboCards, handCards) => {
+    const availableComboCards = comboCards
+      .map((card) => {
+        const count = handCards.filter((c) => c === card).length;
         const availableModes: ('pair' | 'trio')[] = [];
         if (count >= 2) availableModes.push('pair');
         if (count >= 3) availableModes.push('trio');
-        return { cat, availableModes };
+        return { card, availableModes };
       })
       .filter((item) => item.availableModes.length > 0);
 
-    const fiverAvailable = cats.every((cat) =>
-      handCards.some((c) => c === cat),
+    const fiverAvailable = comboCards.every((card) =>
+      handCards.some((c) => c === card),
     );
 
-    if (availableCats.length === 0 && !fiverAvailable) return;
+    if (availableComboCards.length === 0 && !fiverAvailable) return;
 
-    const selectedCat =
-      availableCats.length === 1 ? availableCats[0].cat : null;
-    const defaultMode = selectedCat ? availableCats[0].availableModes[0] : null;
+    const selectedComboCard =
+      availableComboCards.length === 1 ? availableComboCards[0].card : null;
+    const defaultMode = selectedComboCard
+      ? availableComboCards[0].availableModes[0]
+      : null;
 
     set({
-      catComboModal: { availableCats, selectedCat, fiverAvailable },
+      eventComboModal: {
+        availableComboCards,
+        selectedComboCard,
+        fiverAvailable,
+      },
       selectedMode: defaultMode,
       selectedTarget: null,
       selectedCard: null,
@@ -165,9 +174,9 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
     });
   },
 
-  closeCatComboModal: () =>
+  closeEventComboModal: () =>
     set({
-      catComboModal: null,
+      eventComboModal: null,
       selectedMode: null,
       selectedTarget: null,
       selectedCard: null,
@@ -176,18 +185,18 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
       selectedFiverCards: [],
     }),
 
-  selectCat: (cat) =>
+  selectComboCard: (card) =>
     set((state) => {
-      if (!state.catComboModal) return state;
-      const catData = state.catComboModal.availableCats.find(
-        (c) => c.cat === cat,
+      if (!state.eventComboModal) return state;
+      const cardData = state.eventComboModal.availableComboCards.find(
+        (c) => c.card === card,
       );
       const updates: Partial<CriticalGameState> = {
-        catComboModal: { ...state.catComboModal, selectedCat: cat },
+        eventComboModal: { ...state.eventComboModal, selectedComboCard: card },
       };
 
-      if (catData) {
-        const defaultMode = catData.availableModes[0];
+      if (cardData) {
+        const defaultMode = cardData.availableModes[0];
         updates.selectedMode = defaultMode;
         updates.selectedIndex = defaultMode === 'pair' ? 0 : null;
       }
@@ -198,7 +207,7 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
 
   reset: () =>
     set({
-      catComboModal: null,
+      eventComboModal: null,
       favorModal: false,
       targetedAttackModal: false,
       seeTheFutureModal: null,

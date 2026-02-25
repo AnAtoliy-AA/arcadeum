@@ -1,7 +1,10 @@
 'use client';
 
 import { useCallback } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { resolveGameDisplayInfo } from '@/features/games/lib/variantRegistry';
 import {
@@ -35,8 +38,20 @@ interface RoomCardComponentProps {
 export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
   const { t } = useTranslation();
 
-  const { displayName: gameName, gradient: variantGradient } =
-    resolveGameDisplayInfo(room.gameId, room.gameOptions);
+  const {
+    displayName: rawDisplayName,
+    variantName,
+    gradient: variantGradient,
+  } = resolveGameDisplayInfo(room.gameId, room.gameOptions);
+
+  const translatedGameName =
+    t(`games.${room.gameId}.name` as TranslationKey) || rawDisplayName;
+  const translatedVariantName = variantName
+    ? t(variantName as TranslationKey)
+    : undefined;
+  const gameName = translatedVariantName
+    ? `${translatedGameName}: ${translatedVariantName}`
+    : translatedGameName;
 
   const formatMemberLabel = useCallback(
     (member: {

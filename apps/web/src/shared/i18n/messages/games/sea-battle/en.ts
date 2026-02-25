@@ -1,6 +1,7 @@
 export const enMessages = {
   sea_battle_v1: {
     name: 'Sea Battle',
+    description: 'Classic naval combat game for up to 6 players',
     rules: {
       title: 'Game Rules',
       headers: {
@@ -24,13 +25,56 @@ export const enMessages = {
 • Submarine (3 cells) - Stealthy vessel
 • Destroyer (2 cells) - Small but nimble`,
     },
-  },
-  seaBattle: {
+    variants: {
+      classic: {
+        name: 'Classic',
+        description: 'Traditional battleship theme',
+      },
+      modern: {
+        name: 'Modern II',
+        description: 'Modern naval warfare',
+      },
+      pixel: {
+        name: 'Pixel Art',
+        description: 'Retro pixel art style',
+      },
+      cartoon: {
+        name: 'Cartoon',
+        description: 'Fun cartoon characters',
+      },
+      cyber: {
+        name: 'Cyberpunk',
+        description: 'High-tech neon warfare',
+      },
+      vintage: {
+        name: 'Vintage',
+        description: 'Old maritime map',
+      },
+      nebula: {
+        name: 'Nebula',
+        description: 'Deep space fleet',
+      },
+      forest: {
+        name: 'Forest',
+        description: 'Camouflage operations',
+      },
+      sunset: {
+        name: 'Sunset',
+        description: 'Twilight engagement',
+      },
+      monochrome: {
+        name: 'Noir',
+        description: 'Sleek monochrome style',
+      },
+    },
     table: {
       state: {
         yourBoard: 'Your Board',
         opponentBoard: 'Opponent Board',
         shipsRemaining: 'Ships Remaining',
+        shipsPalette: 'Ships to Place',
+        vertical: 'Vertical',
+        horizontal: 'Horizontal',
       },
       players: {
         you: 'You',
@@ -87,6 +131,8 @@ export const enMessages = {
         title: 'Battle Chat',
         empty: 'No messages yet',
         send: 'Send',
+        show: 'Show Chat',
+        hide: 'Hide Chat',
         placeholder: 'Type a message...',
       },
     },

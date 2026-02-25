@@ -16,14 +16,14 @@ import { getCardEmoji, getCardTranslationKey } from '../../lib/cardUtils';
 import { FIVER_COMBO_SIZE, ALL_GAME_CARDS } from '../../types';
 import type {
   CriticalCard,
-  CriticalCatCard,
-  CatComboModalState,
+  CriticalComboCard,
+  EventComboModalState,
 } from '../../types';
 
-interface CatComboModalProps {
+interface ComboModalProps {
   isOpen: boolean;
   onClose: () => void;
-  catComboModal: CatComboModalState | null;
+  comboModal: EventComboModalState | null;
   selectedMode: 'pair' | 'trio' | 'fiver' | null;
   selectedTarget: string | null;
   selectedCard: CriticalCard | null;
@@ -36,7 +36,7 @@ interface CatComboModalProps {
   }>;
   selfHand: CriticalCard[];
   discardPile: CriticalCard[];
-  onSelectCat: (cat: CriticalCatCard) => void;
+  onSelectComboCard: (card: CriticalComboCard) => void;
   onSelectMode: (mode: 'pair' | 'trio' | 'fiver') => void;
   onSelectTarget: (target: string) => void;
   onSelectCard: (card: CriticalCard) => void;
@@ -49,10 +49,10 @@ interface CatComboModalProps {
   cardVariant?: string;
 }
 
-export const CatComboModal: React.FC<CatComboModalProps> = ({
+export const ComboModal: React.FC<ComboModalProps> = ({
   isOpen,
   onClose,
-  catComboModal,
+  comboModal,
   selectedMode,
   selectedTarget,
   selectedCard,
@@ -62,7 +62,7 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
   aliveOpponents,
   selfHand,
   discardPile,
-  onSelectCat,
+  onSelectComboCard,
   onSelectMode,
   onSelectTarget,
   onSelectCard,
@@ -74,17 +74,17 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
   t,
   cardVariant,
 }) => {
-  if (!isOpen || !catComboModal) return null;
+  if (!isOpen || !comboModal) return null;
 
-  const { availableCats, selectedCat, fiverAvailable } = catComboModal;
-  const currentCatData = selectedCat
-    ? availableCats.find((c) => c.cat === selectedCat)
+  const { availableComboCards, selectedComboCard, fiverAvailable } = comboModal;
+  const currentComboData = selectedComboCard
+    ? availableComboCards.find((c) => c.card === selectedComboCard)
     : null;
   const targetOpponent = aliveOpponents.find(
     (o) => o.playerId === selectedTarget,
   );
   const targetHandSize = targetOpponent?.hand.length ?? 0;
-  const showCatSelection = availableCats.length > 1;
+  const showComboSelection = availableComboCards.length > 1;
 
   // Get unique cards from hand for fiver selection
   const uniqueHandCards = selfHand.filter(
@@ -101,12 +101,12 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
           <ModalTitle $variant={cardVariant}>
             {inFiverMode
               ? '🃏'
-              : selectedCat
-                ? getCardEmoji(selectedCat)
-                : '🐱'}{' '}
+              : selectedComboCard
+                ? getCardEmoji(selectedComboCard)
+                : '🎴'}{' '}
             {inFiverMode
-              ? 'Fiver Combo (5 Cards)'
-              : t('games.table.modals.catCombo.title')}
+              ? t('games.table.modals.eventCombo.fiver')
+              : t('games.table.modals.eventCombo.title')}
           </ModalTitle>
           <CloseButton onClick={onClose} $variant={cardVariant}>
             ×
@@ -114,17 +114,17 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
         </ModalHeader>
 
         {/* Mode Selection - Show fiver option if available */}
-        {fiverAvailable && !selectedCat && !inFiverMode && (
+        {fiverAvailable && !selectedComboCard && !inFiverMode && (
           <ModalSection>
             <SectionLabel $variant={cardVariant}>
-              Select Combo Type
+              {t('games.table.modals.eventCombo.selectType')}
             </SectionLabel>
             <OptionGrid>
               <OptionButton $selected={false} onClick={() => {}}>
                 <div style={{ fontSize: '1.5rem' }}>🎴🎴</div>
-                <div>Pair/Trio</div>
+                <div>{t('games.table.modals.eventCombo.pairTrio')}</div>
                 <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
-                  Select a cat card below
+                  {t('games.table.modals.eventCombo.selectCardHint')}
                 </div>
               </OptionButton>
               <OptionButton
@@ -132,31 +132,37 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
                 onClick={() => onSelectMode('fiver')}
               >
                 <div style={{ fontSize: '1.5rem' }}>🃏🃏🃏🃏🃏</div>
-                <div>Fiver</div>
+                <div>{t('games.table.modals.eventCombo.fiver')}</div>
                 <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
-                  Any 5 different cards
+                  {t('games.table.modals.eventCombo.anyFive')}
                 </div>
               </OptionButton>
             </OptionGrid>
           </ModalSection>
         )}
 
-        {/* Cat Selection - only show if not in fiver mode and multiple cats available */}
-        {!inFiverMode && showCatSelection && (
+        {/* Combo Card Selection - only show if not in fiver mode and multiple options available */}
+        {!inFiverMode && showComboSelection && (
           <ModalSection>
-            <SectionLabel $variant={cardVariant}>Select Cat Card</SectionLabel>
+            <SectionLabel $variant={cardVariant}>
+              {t('games.table.modals.eventCombo.selectComboCard')}
+            </SectionLabel>
             <OptionGrid>
-              {availableCats.map(({ cat, availableModes }) => (
+              {availableComboCards.map(({ card, availableModes }) => (
                 <OptionButton
-                  key={cat}
-                  $selected={selectedCat === cat}
+                  key={card}
+                  $selected={selectedComboCard === card}
                   $variant={cardVariant}
-                  onClick={() => onSelectCat(cat)}
+                  onClick={() => onSelectComboCard(card)}
                 >
-                  <div style={{ fontSize: '1.5rem' }}>{getCardEmoji(cat)}</div>
-                  <div>{t(getCardTranslationKey(cat, cardVariant))}</div>
+                  <div style={{ fontSize: '1.5rem' }}>{getCardEmoji(card)}</div>
+                  <div>{t(getCardTranslationKey(card, cardVariant))}</div>
                   <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
-                    {availableModes.includes('trio') ? '2-3 cards' : '2 cards'}
+                    {availableModes.includes('trio')
+                      ? t('games.table.modals.eventCombo.trioMode')
+                      : t('games.table.modals.eventCombo.cardsCount', {
+                          count: 2,
+                        })}
                   </div>
                 </OptionButton>
               ))}
@@ -164,36 +170,36 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
           </ModalSection>
         )}
 
-        {/* Mode Selection for pair/trio - only show after cat is selected */}
-        {!inFiverMode && selectedCat && currentCatData && (
+        {/* Mode Selection for pair/trio - only show after card is selected */}
+        {!inFiverMode && selectedComboCard && currentComboData && (
           <ModalSection>
             <SectionLabel $variant={cardVariant}>
-              {t('games.table.modals.catCombo.selectMode')}
+              {t('games.table.modals.eventCombo.selectMode')}
             </SectionLabel>
             <OptionGrid>
-              {currentCatData.availableModes.includes('pair') && (
+              {currentComboData.availableModes.includes('pair') && (
                 <OptionButton
                   $selected={selectedMode === 'pair'}
                   $variant={cardVariant}
                   onClick={() => onSelectMode('pair')}
                 >
                   <div style={{ fontSize: '1.5rem' }}>🎴🎴</div>
-                  <div>{t('games.table.modals.catCombo.pair')}</div>
+                  <div>{t('games.table.modals.eventCombo.pair')}</div>
                   <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
-                    {t('games.table.modals.catCombo.pairDesc')}
+                    {t('games.table.modals.eventCombo.pairDesc')}
                   </div>
                 </OptionButton>
               )}
-              {currentCatData.availableModes.includes('trio') && (
+              {currentComboData.availableModes.includes('trio') && (
                 <OptionButton
                   $selected={selectedMode === 'trio'}
                   $variant={cardVariant}
                   onClick={() => onSelectMode('trio')}
                 >
                   <div style={{ fontSize: '1.5rem' }}>🎴🎴🎴</div>
-                  <div>{t('games.table.modals.catCombo.trio')}</div>
+                  <div>{t('games.table.modals.eventCombo.trio')}</div>
                   <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
-                    {t('games.table.modals.catCombo.trioDesc')}
+                    {t('games.table.modals.eventCombo.trioDesc')}
                   </div>
                 </OptionButton>
               )}
@@ -205,8 +211,10 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
         {inFiverMode && (
           <ModalSection>
             <SectionLabel $variant={cardVariant}>
-              Select {FIVER_COMBO_SIZE} different cards (
-              {selectedFiverCards.length}/{FIVER_COMBO_SIZE})
+              {t('games.table.modals.eventCombo.stashCards', {
+                count: FIVER_COMBO_SIZE,
+              })}{' '}
+              ({selectedFiverCards.length}/{FIVER_COMBO_SIZE})
             </SectionLabel>
             <OptionGrid>
               {uniqueHandCards.map((card, idx) => {
@@ -240,7 +248,7 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
           discardPile.length > 0 && (
             <ModalSection>
               <SectionLabel $variant={cardVariant}>
-                Pick a card from the discard pile
+                {t('games.table.modals.eventCombo.pickDiscard')}
               </SectionLabel>
               <OptionGrid>
                 {discardPile.map((card, idx) => (
@@ -262,11 +270,11 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
             </ModalSection>
           )}
 
-        {/* Target Selection - only show for pair/trio after cat is selected */}
-        {!inFiverMode && selectedCat && (
+        {/* Target Selection - only show for pair/trio after card is selected */}
+        {!inFiverMode && selectedComboCard && (
           <ModalSection>
             <SectionLabel $variant={cardVariant}>
-              {t('games.table.modals.catCombo.selectTarget')}
+              {t('games.table.modals.eventCombo.selectTarget')}
             </SectionLabel>
             <OptionGrid>
               {aliveOpponents.map((opponent) => (
@@ -283,7 +291,7 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
                     )}
                   </div>
                   <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
-                    {t('games.table.modals.catCombo.cardsCount').replace(
+                    {t('games.table.modals.eventCombo.cardsCount').replace(
                       '{count}',
                       opponent.hand.length.toString(),
                     )}
@@ -298,7 +306,7 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
         {selectedMode === 'pair' && selectedTarget && targetHandSize > 0 && (
           <ModalSection>
             <SectionLabel $variant={cardVariant}>
-              Pick a card (blind)
+              {t('games.table.modals.eventCombo.pickCardBlind')}
             </SectionLabel>
             <OptionGrid>
               {Array.from({ length: targetHandSize }, (_, index) => (
@@ -309,7 +317,9 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
                 >
                   <div style={{ fontSize: '1.5rem' }}>🎴</div>
                   <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>
-                    Card {index + 1}
+                    {t('games.table.modals.eventCombo.cardLabel', {
+                      index: index + 1,
+                    })}
                   </div>
                 </OptionButton>
               ))}
@@ -321,7 +331,7 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
         {selectedMode === 'trio' && (
           <ModalSection>
             <SectionLabel $variant={cardVariant}>
-              {t('games.table.modals.catCombo.selectCard')}
+              {t('games.table.modals.eventCombo.selectCard')}
             </SectionLabel>
             <OptionGrid>
               {ALL_GAME_CARDS.filter((c) => c !== 'critical_event').map(
@@ -360,13 +370,13 @@ export const CatComboModal: React.FC<CatComboModalProps> = ({
               inFiverMode
                 ? selectedFiverCards.length !== FIVER_COMBO_SIZE ||
                   !selectedDiscardCard
-                : !selectedCat ||
+                : !selectedComboCard ||
                   !selectedTarget ||
                   (selectedMode === 'trio' && !selectedCard) ||
                   (selectedMode === 'pair' && selectedIndex === null)
             }
           >
-            {t('games.table.modals.catCombo.confirm')}
+            {t('games.table.modals.eventCombo.confirm')}
           </ModalButton>
         </ModalActions>
       </ModalContent>

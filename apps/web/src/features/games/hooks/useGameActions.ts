@@ -25,8 +25,8 @@ export interface UseGameActionsReturn {
   playFavor: (targetPlayerId: string) => void;
   giveFavorCard: (cardToGive: string) => void;
   playSeeTheFuture: () => void;
-  playCatCombo: (
-    cat: string | null,
+  playEventCombo: (
+    card: string | null,
     mode: string,
     targetPlayerId?: string,
     desiredCard?: string,
@@ -172,9 +172,9 @@ export function useGameActions(
     gameSocket.emit('games.session.play_see_the_future', { roomId, userId });
   }, [roomId, userId, setActionBusy]);
 
-  const playCatCombo = useCallback(
+  const playEventCombo = useCallback(
     (
-      cat: string | null,
+      card: string | null,
       mode: string,
       targetPlayerId?: string,
       desiredCard?: string,
@@ -183,11 +183,11 @@ export function useGameActions(
       cards?: string[],
     ) => {
       if (!userId) return;
-      setActionBusy?.('cat_combo');
+      setActionBusy?.('event_combo');
       gameSocket.emit('games.session.play_cat_combo', {
         roomId,
         userId,
-        cat,
+        cat: card,
         mode,
         targetPlayerId,
         desiredCard,
@@ -282,7 +282,7 @@ export function useGameActions(
     playFavor,
     giveFavorCard,
     playSeeTheFuture,
-    playCatCombo,
+    playEventCombo,
     playDefuse,
     commitAlterFuture,
 

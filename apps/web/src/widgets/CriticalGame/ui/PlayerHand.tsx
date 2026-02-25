@@ -2,9 +2,9 @@ import React, { useCallback, useMemo, useState } from 'react';
 import {
   CriticalPlayerState,
   CriticalCard,
-  CriticalCatCard,
+  CriticalComboCard,
   CriticalLogEntry,
-  CAT_CARDS,
+  COMBO_CARDS,
   SPECIAL_CARDS,
   HandLayoutMode,
   PendingAction,
@@ -68,7 +68,7 @@ interface PlayerHandProps {
   onOpenFavorModal: () => void;
   onGiveFavorCard: (card: CriticalCard) => void;
   onPlayDefuse: (position: number) => void;
-  onOpenCatCombo: (cats: CriticalCatCard[], hand: CriticalCard[]) => void;
+  onOpenEventCombo: (cards: CriticalComboCard[], hand: CriticalCard[]) => void;
   onOpenFiverCombo: () => void;
   forceEnableAutoplay?: boolean;
   onAutoplayEnabledChange?: (enabled: boolean) => void;
@@ -103,7 +103,7 @@ export function PlayerHand({
   onOpenFavorModal,
   onGiveFavorCard: _onGiveFavorCard,
   onPlayDefuse: _onPlayDefuse,
-  onOpenCatCombo,
+  onOpenEventCombo,
   onOpenFiverCombo,
   forceEnableAutoplay: _forceEnableAutoplay,
   onAutoplayEnabledChange: _onAutoplayEnabledChange,
@@ -177,13 +177,13 @@ export function PlayerHand({
       }
 
       // Check if card can be played as a combo (2+ copies)
-      const isCatCard = CAT_CARDS.includes(card as CriticalCatCard);
+      const isComboCard = COMBO_CARDS.includes(card as CriticalComboCard);
       const isComboableCard = allowActionCardCombos
         ? !SPECIAL_CARDS.includes(card as (typeof SPECIAL_CARDS)[number])
-        : isCatCard;
+        : isComboCard;
 
       if (isComboableCard && count >= 2 && aliveOpponents.length > 0) {
-        onOpenCatCombo([card as CriticalCatCard], currentPlayer.hand);
+        onOpenEventCombo([card as CriticalComboCard], currentPlayer.hand);
         return;
       }
 
@@ -203,7 +203,7 @@ export function PlayerHand({
       onPlaySeeTheFuture,
       onOpenFavorModal,
       onPlayNope,
-      onOpenCatCombo,
+      onOpenEventCombo,
       onPlayActionCard,
     ],
   );
@@ -218,10 +218,10 @@ export function PlayerHand({
         return true;
 
       // Combo cards with 2+ copies
-      const isCatCard = CAT_CARDS.includes(card as CriticalCatCard);
+      const isComboCard = COMBO_CARDS.includes(card as CriticalComboCard);
       const isComboableCard = allowActionCardCombos
         ? !SPECIAL_CARDS.includes(card as (typeof SPECIAL_CARDS)[number])
-        : isCatCard;
+        : isComboCard;
 
       if (isComboableCard && count >= 2 && aliveOpponents.length > 0)
         return true;
@@ -255,7 +255,9 @@ export function PlayerHand({
           onPlayNope={onPlayNope}
           onOpenFavorModal={onOpenFavorModal}
           onPlaySeeTheFuture={onPlaySeeTheFuture}
-          onOpenCatCombo={(cats) => onOpenCatCombo(cats, currentPlayer.hand)}
+          onOpenEventCombo={(cards) =>
+            onOpenEventCombo(cards, currentPlayer.hand)
+          }
           onOpenFiverCombo={onOpenFiverCombo}
           t={t}
           cardVariant={cardVariant}
@@ -355,9 +357,11 @@ export function PlayerHand({
             ))}
 
             {groupedHand.map(({ card, count, id }, idx) => {
-              const isCatCard = CAT_CARDS.includes(card as CriticalCatCard);
+              const isComboCard = COMBO_CARDS.includes(
+                card as CriticalComboCard,
+              );
               const clickable = isCardClickable(card, count);
-              const dimmed = isCatCard && count === 1;
+              const dimmed = isComboCard && count === 1;
 
               return (
                 <HandCard

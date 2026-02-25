@@ -172,12 +172,14 @@ export function ShipPlacementBoard({
             style={{ margin: 0, color: theme.textColor, fontSize: 'inherit' }}
             className="placement-title"
           >
-            {t('games.seaBattle.table.players.placeShips')}
+            {t('games.sea_battle_v1.table.players.placeShips')}
           </h2>
         </PlacementHeader>
 
         <PlayerSection $isMe $isActive={false} $theme={theme}>
-          <PlayerName $theme={theme}>Your Board</PlayerName>
+          <PlayerName $theme={theme}>
+            {t('games.sea_battle_v1.table.state.yourBoard')}
+          </PlayerName>
           <BoardWithLabels>
             <div />
             <ColLabels>
@@ -225,7 +227,7 @@ export function ShipPlacementBoard({
           className="ship-palette-title"
           style={{ margin: '0 0 12px', color: theme.textColor }}
         >
-          Ships to Place
+          {t('games.sea_battle_v1.table.state.shipsPalette')}
         </h3>
         {SHIPS.map((ship) => {
           const isPlaced = placedShipIds.has(ship.id);
@@ -263,8 +265,11 @@ export function ShipPlacementBoard({
           onClick={handleRotate}
           disabled={!selectedShip}
         >
-          {t('games.seaBattle.table.actions.rotate')} (
-          {isVertical ? 'Vertical' : 'Horizontal'})
+          {t('games.sea_battle_v1.table.actions.rotate')} (
+          {isVertical
+            ? t('games.sea_battle_v1.table.state.vertical')
+            : t('games.sea_battle_v1.table.state.horizontal')}
+          )
         </RotateButton>
         <ActionButton
           $variant="primary"
@@ -273,8 +278,8 @@ export function ShipPlacementBoard({
           onClick={onConfirmPlacement}
         >
           {isPlacementComplete
-            ? t('games.seaBattle.table.actions.waitingForOthers')
-            : t('games.seaBattle.table.actions.confirmPlacement')}
+            ? t('games.sea_battle_v1.table.actions.waitingForOthers')
+            : t('games.sea_battle_v1.table.actions.confirmPlacement')}
         </ActionButton>
         {placedShipIds.size > 0 && !isPlacementComplete && (
           <ActionButton
@@ -282,7 +287,7 @@ export function ShipPlacementBoard({
             $theme={theme}
             onClick={onResetPlacement}
           >
-            {t('games.seaBattle.table.actions.resetPlacement')}
+            {t('games.sea_battle_v1.table.actions.resetPlacement')}
           </ActionButton>
         )}
         {!isPlacementComplete && onAutoPlace && (
@@ -292,8 +297,8 @@ export function ShipPlacementBoard({
             onClick={onAutoPlace}
           >
             {placedShipIds.size > 0
-              ? t('games.seaBattle.table.actions.randomize')
-              : t('games.seaBattle.table.actions.autoPlace')}
+              ? t('games.sea_battle_v1.table.actions.randomize')
+              : t('games.sea_battle_v1.table.actions.autoPlace')}
           </ActionButton>
         )}
       </PlacementActions>

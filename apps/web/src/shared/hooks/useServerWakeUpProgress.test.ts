@@ -5,10 +5,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 describe('useServerWakeUpProgress', () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    vi.stubEnv('NEXT_PUBLIC_DEV_WAKE_THRESHOLD_MS', '2000');
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllEnvs();
   });
 
   it('calculates progress over time', () => {

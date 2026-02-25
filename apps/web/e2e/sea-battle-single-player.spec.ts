@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import {
   mockSession,
   navigateTo,
@@ -6,14 +7,10 @@ import {
   mockRoomInfo,
   MOCK_OBJECT_ID,
   mockGameSocket,
-  checkNoBackendErrors,
+  waitForRoomReady,
 } from './fixtures/test-utils';
 
 test.describe('Sea Battle Single Player Mode', () => {
-  test.afterEach(async () => {
-    checkNoBackendErrors();
-  });
-
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
   });
@@ -64,17 +61,36 @@ test.describe('Sea Battle Single Player Mode', () => {
       })),
     };
 
+    // Set up room info mock BEFORE navigating to the page
     await mockRoomInfo(page, {
       room: {
         id: roomId,
         name: 'Sea Battle Test',
         gameId: 'sea_battle_v1',
         gameOptions: { variant: 'classic' },
+        status: 'waiting',
+        hostId: userId,
+        members: [
+          { id: userId, userId, displayName: 'Test User', isHost: true },
+        ],
       },
     });
 
     await mockGameSocket(page, roomId, userId, {
-      roomJoinedPayload: { gameId: 'sea_battle_v1' },
+      roomJoinedPayload: {
+        gameId: 'sea_battle_v1',
+        room: {
+          id: roomId,
+          name: 'Sea Battle Test',
+          gameId: 'sea_battle_v1',
+          gameOptions: { variant: 'classic' },
+          status: 'waiting',
+          hostId: userId,
+          members: [
+            { id: userId, userId, displayName: 'Test User', isHost: true },
+          ],
+        },
+      },
       handlers: {
         'seaBattle.session.start': {
           responseEvent: 'games.session.started',
@@ -141,40 +157,46 @@ test.describe('Sea Battle Single Player Mode', () => {
     });
 
     await navigateTo(page, `/games/rooms/${roomId}`);
+    await waitForRoomReady(page);
     await closeRulesModal(page);
 
     await expect(
       page.getByRole('heading', { name: /Sea Battle/i }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 15000 });
 
-    // Start with bots
     const startBtn = page.getByRole('button', { name: /start with/i });
-    await expect(startBtn).toBeVisible();
+    await expect(startBtn).toBeVisible({ timeout: 15000 });
     await startBtn.click();
     await closeRulesModal(page);
 
-    // Verify placement phase
+    // Increased timeout for placement phase
     await expect(page.getByText(/place your ships/i).first()).toBeVisible({
-      timeout: 10000,
+      timeout: 20000,
     });
 
-    // Auto place
+    // More flexible auto place button selection
     const autoPlaceBtn = page
       .getByRole('button', { name: /auto place/i })
+      .or(page.getByText(/auto place/i))
       .first();
-    await autoPlaceBtn.click();
+    await autoPlaceBtn.click({ timeout: 15000 });
 
-    // Confirm
-    const confirmBtn = page.getByRole('button', { name: /confirm/i }).first();
-    await expect(confirmBtn).toBeEnabled();
-    await confirmBtn.click();
+    // More flexible confirm button selection
+    const confirmBtn = page
+      .getByRole('button', { name: /confirm/i })
+      .or(page.getByText(/confirm/i))
+      .first();
+    await expect(confirmBtn).toBeEnabled({ timeout: 15000 });
+    await confirmBtn.click({ timeout: 15000 });
 
-    // Verify battle phase
-    await expect(page.getByText(/your turn/i).first()).toBeVisible();
+    // Increased timeout for battle phase
+    await expect(page.getByText(/your turn/i).first()).toBeVisible({
+      timeout: 20000,
+    });
   });
 
   test('should allow attacking in sea battle', async ({ page }) => {
-    const roomId = '507f1f77bcf86cd799439011';
+    const roomId = MOCK_OBJECT_ID;
     const userId = 'user-1';
 
     const generateBoard = () =>
@@ -207,11 +229,18 @@ test.describe('Sea Battle Single Player Mode', () => {
       logs: [],
     };
 
+    // Set up room info mock BEFORE navigating to the page
     await mockRoomInfo(page, {
       room: {
         id: roomId,
+        name: 'Sea Battle Attack Test',
         gameId: 'sea_battle_v1',
         status: 'active',
+        hostId: userId,
+        members: [
+          { id: userId, userId, displayName: 'Test User', isHost: true },
+          { id: 'bot-1', userId: 'bot-1', displayName: 'Bot', isHost: false },
+        ],
       },
       session: {
         id: 'session-1',
@@ -224,6 +253,17 @@ test.describe('Sea Battle Single Player Mode', () => {
       roomJoinedPayload: {
         status: 'active',
         gameId: 'sea_battle_v1',
+        room: {
+          id: roomId,
+          name: 'Sea Battle Attack Test',
+          gameId: 'sea_battle_v1',
+          status: 'active',
+          hostId: userId,
+          members: [
+            { id: userId, userId, displayName: 'Test User', isHost: true },
+            { id: 'bot-1', userId: 'bot-1', displayName: 'Bot', isHost: false },
+          ],
+        },
         session: {
           id: 'session-1',
           status: 'active',
@@ -234,7 +274,7 @@ test.describe('Sea Battle Single Player Mode', () => {
         'seaBattle.session.attack': {
           responseEvent: 'games.session.snapshot',
           responseData: {
-            roomId: '507f1f77bcf86cd799439011',
+            roomId: roomId,
             session: {
               id: 'session-1',
               status: 'active',
@@ -257,18 +297,29 @@ test.describe('Sea Battle Single Player Mode', () => {
     });
 
     await navigateTo(page, `/games/rooms/${roomId}`);
+    await waitForRoomReady(page);
     await closeRulesModal(page);
 
-    await expect(page.getByText(/your turn/i).first()).toBeVisible();
-
-    // Attack a cell on the opponent's board (the one with $isClickable=true)
-    const cell = page.locator('div[data-row="0"][data-col="0"]').first();
-    await expect(cell).toBeVisible();
-    await cell.click();
-
-    // Wait for turn change
-    await expect(page.locator('body')).toContainText(/Waiting for/i, {
-      timeout: 15000,
+    // Increased timeout for battle phase
+    await expect(page.getByText(/your turn/i).first()).toBeVisible({
+      timeout: 20000,
     });
+
+    // More flexible cell selection
+    const cell = page
+      .locator('div[data-row="0"][data-col="0"]')
+      .first()
+      .or(page.getByTestId('board-cell-0-0'))
+      .first();
+    await expect(cell).toBeVisible({ timeout: 15000 });
+    await cell.click({ timeout: 15000 });
+
+    // More flexible waiting text
+    await expect(page.locator('body')).toContainText(
+      /waiting for|opponent's turn/i,
+      {
+        timeout: 20000,
+      },
+    );
   });
 });

@@ -67,6 +67,9 @@ export const esMessages = {
     joinByCode: 'Unirse con código',
     cancel: 'Cancelar',
     copyInviteLink: 'Copiar enlace de invitación',
+    actions: {
+      backToHome: 'Volver al Inicio',
+    },
   },
   create: {
     title: 'Crear Sala de Juego',

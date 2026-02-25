@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 
 test.describe('PWA Features', () => {
   test('manifest file is accessible', async ({ request }) => {

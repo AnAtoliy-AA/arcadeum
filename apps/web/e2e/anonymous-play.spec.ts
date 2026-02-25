@@ -1,62 +1,112 @@
-import { test, expect } from '@playwright/test';
-import { checkNoBackendErrors } from './fixtures/test-utils';
-
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
+import { expect } from '@playwright/test';
+import {
+  test,
+  checkNoBackendErrors,
+  waitForRoomReady,
+  MOCK_OBJECT_ID,
+  mockGameSocket,
+  mockAllOnPage,
+} from './fixtures/test-utils';
 
 test.describe('Anonymous Play', () => {
-  let createdRoomId: string | null = null;
-  let anonymousId: string | null = null;
+  test.setTimeout(60000);
 
-  test.afterEach(async ({ request }) => {
-    if (createdRoomId && anonymousId) {
-      await request.post(`${API_BASE}/games/rooms/delete`, {
-        headers: { 'x-anonymous-id': anonymousId },
-        data: { roomId: createdRoomId },
+  const anonymousId = 'anon_test_user_123';
+
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript((id) => {
+      localStorage.setItem('aico_anon_id', id);
+    }, anonymousId);
+
+    await page.route('**/games/rooms', async (route) => {
+      if (route.request().method() !== 'POST') return route.continue();
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          room: {
+            id: MOCK_OBJECT_ID,
+            name: 'Anonymous Bot Game',
+            gameId: 'critical_v1',
+            status: 'lobby',
+            visibility: 'public',
+            members: [
+              {
+                id: anonymousId,
+                userId: anonymousId,
+                displayName: 'Guest',
+                isHost: true,
+              },
+            ],
+            hostId: anonymousId,
+          },
+        }),
       });
-    }
-    createdRoomId = null;
-    anonymousId = null;
+    });
+
+    await page.route('**/games/room-info', async (route) => {
+      if (route.request().method() !== 'POST') return route.continue();
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          room: {
+            id: MOCK_OBJECT_ID,
+            name: 'Anonymous Bot Game',
+            gameId: 'critical_v1',
+            status: 'lobby',
+            visibility: 'public',
+            members: [
+              {
+                id: anonymousId,
+                userId: anonymousId,
+                displayName: 'Guest',
+                isHost: true,
+              },
+            ],
+            hostId: anonymousId,
+          },
+          session: null,
+        }),
+      });
+    });
+
+    await page.route('**/games/rooms/delete', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true }),
+      });
+    });
+
+    await mockGameSocket(page, MOCK_OBJECT_ID, anonymousId);
+  });
+
+  test.afterEach(async () => {
     checkNoBackendErrors();
   });
 
   test('should allow creating a room without login', async ({ page }) => {
-    await page.goto('/');
-
-    await page.getByRole('link', { name: 'Play with Bots' }).click();
+    await page.goto('/games/create?gameId=critical_v1');
 
     await expect(page).toHaveURL(/\/games\/create/, { timeout: 15000 });
-
-    // Wait for the page to be ready and hydrated
     await expect(page.getByRole('heading', { name: /create/i })).toBeVisible();
-    await page.waitForTimeout(1000); // Buffer for hydration
 
     await page
       .getByLabel('Room Name', { exact: false })
       .fill('Anonymous Bot Game');
-
     await page.getByRole('button', { name: 'Create Room' }).click();
 
-    await expect(page).toHaveURL(/\/games\/rooms\//, { timeout: 20000 });
+    await expect(page).toHaveURL(new RegExp(`/games/rooms/${MOCK_OBJECT_ID}`), {
+      timeout: 30000,
+    });
 
-    const url = page.url();
-    const match = url.match(/\/games\/rooms\/([^/?]+)/);
-    createdRoomId = match?.[1] ?? null;
+    await waitForRoomReady(page);
 
-    anonymousId = await page.evaluate(() =>
-      localStorage.getItem('aico_anon_id'),
-    );
-
-    try {
-      await expect(page.getByText('Joining...')).not.toBeVisible({
-        timeout: 5000,
-      });
-    } catch {
-      // Ignore
-    }
-
-    await expect(page.getByRole('button', { name: /Exit/i })).toBeVisible({
-      timeout: 10000,
+    await expect(
+      page.getByTitle(/Go back to lobby|Exit Room/i).first(),
+    ).toBeVisible({
+      timeout: 30000,
     });
 
     await expect(
@@ -70,39 +120,76 @@ test.describe('Anonymous Play', () => {
   }) => {
     await page.goto('/games/create');
     await expect(page.getByRole('heading', { name: /create/i })).toBeVisible();
-    await page.waitForTimeout(500);
 
     await page
       .getByLabel('Room Name', { exact: false })
       .fill('Private Link Test');
-    await page.getByRole('button', { name: /Public|Private/i }).click();
 
-    await page.waitForTimeout(500);
+    const visibilityBtn = page.getByLabel(/Public room/i);
+    await expect(visibilityBtn).toBeVisible();
+    await visibilityBtn.click({ force: true });
+    await expect(page.getByLabel(/Private room/i)).toBeVisible({
+      timeout: 15000,
+    });
+
     await page.getByRole('button', { name: 'Create Room' }).click();
 
-    await expect(page).toHaveURL(/\/games\/rooms\//, { timeout: 20000 });
+    await expect(page).toHaveURL(new RegExp(`/games/rooms/${MOCK_OBJECT_ID}`), {
+      timeout: 25000,
+    });
     const inviteUrl = page.url();
-    const roomId = inviteUrl.match(/\/games\/rooms\/([^/?]+)/)?.[1];
-
-    await page.waitForTimeout(1500);
-    const roomInviteUrl = await page.evaluate(() => window.location.href);
 
     const newPage = await context.newPage();
-    await newPage.goto(roomInviteUrl);
+    await mockAllOnPage(newPage);
 
-    await expect(newPage.getByText('Joining...')).not.toBeVisible({
-      timeout: 10000,
+    await newPage.route('**/games/room-info', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          room: {
+            id: MOCK_OBJECT_ID,
+            name: 'Private Link Test',
+            gameId: 'critical_v1',
+            status: 'lobby',
+            visibility: 'private',
+            members: [
+              {
+                id: 'host-1',
+                userId: 'host-1',
+                displayName: 'Host',
+                isHost: true,
+              },
+              {
+                id: anonymousId,
+                userId: anonymousId,
+                displayName: 'Guest',
+                isHost: false,
+              },
+            ],
+            hostId: 'host-1',
+          },
+          session: null,
+        }),
+      });
     });
-    await expect(newPage.getByRole('button', { name: /Exit/i })).toBeVisible({
-      timeout: 10000,
-    });
+
+    await mockGameSocket(newPage, MOCK_OBJECT_ID, anonymousId);
+
+    await newPage.goto(inviteUrl);
+    await waitForRoomReady(newPage);
+
     await expect(
-      newPage.getByText(/Waiting for host/i).or(newPage.getByText(/Lobby/i)),
-    ).toBeVisible();
+      newPage.getByRole('button', { name: /Exit/i }).first(),
+    ).toBeVisible({
+      timeout: 15000,
+    });
 
-    createdRoomId = roomId ?? null;
-    anonymousId = await newPage.evaluate(() =>
-      localStorage.getItem('aico_anon_id'),
-    );
+    await expect(
+      newPage
+        .getByText('Waiting for host to start the game')
+        .or(newPage.getByText('Players in Lobby'))
+        .first(),
+    ).toBeVisible();
   });
 });

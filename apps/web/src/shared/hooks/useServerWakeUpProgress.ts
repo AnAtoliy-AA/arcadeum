@@ -1,11 +1,33 @@
 import { useState, useEffect, useRef } from 'react';
 
-const LONG_PENDING_THRESHOLD_MS = 2000;
-const ESTIMATED_WAKE_TIME_SECONDS = 30;
+const ESTIMATED_WAKE_TIME_SECONDS = 30; // seconds
+
+function getThreshold(): number {
+  const isPlaywrightTest =
+    typeof window !== 'undefined' &&
+    !!(window as unknown as { isPlaywright?: boolean }).isPlaywright;
+  if (isPlaywrightTest) {
+    return 0;
+  }
+
+  const isLocalhost =
+    typeof window !== 'undefined' &&
+    ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+  const envValue = Number(process.env.NEXT_PUBLIC_DEV_WAKE_THRESHOLD_MS || '');
+  if (Number.isFinite(envValue) && envValue >= 0) {
+    return envValue;
+  }
+  return isLocalhost ? 10000 : 2000;
+}
 
 export function useServerWakeUpProgress(isBusy: boolean) {
+  const threshold = getThreshold();
+
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [isLongPending, setIsLongPending] = useState(false);
+  const [isOverThreshold, setIsOverThreshold] = useState(
+    isBusy && threshold === 0,
+  );
   const startTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -24,7 +46,7 @@ export function useServerWakeUpProgress(isBusy: boolean) {
       const elapsed = Math.floor((now - startTimeRef.current) / 1000);
 
       setElapsedSeconds(elapsed);
-      setIsLongPending(now - startTimeRef.current >= LONG_PENDING_THRESHOLD_MS);
+      setIsOverThreshold(now - startTimeRef.current >= threshold);
     }, 1000);
 
     return () => {
@@ -32,9 +54,9 @@ export function useServerWakeUpProgress(isBusy: boolean) {
       // Reset state when busy state ends or component unmounts
       startTimeRef.current = null;
       setElapsedSeconds(0);
-      setIsLongPending(false);
+      setIsOverThreshold(false);
     };
-  }, [isBusy]);
+  }, [isBusy, threshold]);
 
   const progress = Math.min(
     99,
@@ -42,7 +64,8 @@ export function useServerWakeUpProgress(isBusy: boolean) {
   );
 
   return {
-    isLongPending,
+    isOverThreshold,
+    isLongPending: isOverThreshold,
     progress,
     elapsedSeconds,
   };

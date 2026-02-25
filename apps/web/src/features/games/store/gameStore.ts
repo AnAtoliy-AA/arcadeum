@@ -77,6 +77,7 @@ export const useGameStore = create<GameState>((set, get) => ({
           loading: false,
           error: null,
         });
+      } else {
       }
     };
 
@@ -129,7 +130,10 @@ export const useGameStore = create<GameState>((set, get) => ({
     };
 
     // Decrypt wrapper
-    const decryptHandler = <T>(handler: (payload: T) => void) => {
+    const decryptHandler = <T>(
+      handler: (payload: T) => void,
+      _name: string,
+    ) => {
       return async (raw: unknown) => {
         const payload = await maybeDecrypt<T>(raw);
         if (payload !== null) {
@@ -138,14 +142,24 @@ export const useGameStore = create<GameState>((set, get) => ({
       };
     };
 
-    const wrappedHandleJoined = decryptHandler(handleJoined);
-    const wrappedHandleRoomUpdate = decryptHandler(handleRoomUpdate);
-    const wrappedHandlePlayerJoined = decryptHandler(handlePlayerJoined);
-    const wrappedHandlePlayerLeft = decryptHandler(handlePlayerLeft);
-    const wrappedHandleGameStarted = decryptHandler(handleGameStarted);
-    const wrappedHandleException = decryptHandler(handleException);
+    const wrappedHandleJoined = decryptHandler(handleJoined, 'joined');
+    const wrappedHandleRoomUpdate = decryptHandler(handleRoomUpdate, 'update');
+    const wrappedHandlePlayerJoined = decryptHandler(
+      handlePlayerJoined,
+      'playerJoined',
+    );
+    const wrappedHandlePlayerLeft = decryptHandler(
+      handlePlayerLeft,
+      'playerLeft',
+    );
+    const wrappedHandleGameStarted = decryptHandler(
+      handleGameStarted,
+      'gameStarted',
+    );
+    const wrappedHandleException = decryptHandler(handleException, 'exception');
 
     // Register
+
     gameSocket.on('games.room.joined', wrappedHandleJoined);
     gameSocket.on('games.room.watching', wrappedHandleJoined);
     gameSocket.on('games.room.update', wrappedHandleRoomUpdate);
@@ -192,11 +206,14 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   joinRoom: (roomId, userId, mode, inviteCode) => {
-    set({ loading: true, error: null });
     if (mode === 'watch') {
+      set({ loading: true, error: null });
       gameSocket.emit('games.room.watch', { roomId, inviteCode });
     } else if (userId) {
+      set({ loading: true, error: null });
       gameSocket.emit('games.room.join', { roomId, userId, inviteCode });
+    } else {
+      set({ loading: false, error: null });
     }
   },
 

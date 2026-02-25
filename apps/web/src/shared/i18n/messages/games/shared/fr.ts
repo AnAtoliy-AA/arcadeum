@@ -67,6 +67,9 @@ export const frMessages = {
     joinByCode: 'Rejoindre par code',
     cancel: 'Annuler',
     copyInviteLink: "Copier le lien d'invitation",
+    actions: {
+      backToHome: "Retour à l'Accueil",
+    },
   },
   create: {
     title: 'Créer une Salle de Jeu',

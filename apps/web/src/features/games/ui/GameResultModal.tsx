@@ -48,7 +48,7 @@ export function GameResultModal({
             <CloseButton onClick={onClose}>×</CloseButton>
           </div>
         )}
-        <ResultTitle $isVictory={isVictory}>
+        <ResultTitle $isVictory={isVictory} data-testid="game-result-title">
           <span className="emoji">{isVictory ? '🏆' : '💀'}</span>
           <span className="text">
             {t(`games.table.${result}.title` as TranslationKey)}
@@ -67,6 +67,7 @@ export function GameResultModal({
               onClick={onRematch}
               disabled={rematchLoading}
               $isVictory={isVictory}
+              data-testid="rematch-button"
             >
               {rematchLoading
                 ? t('games.table.rematch.loading')

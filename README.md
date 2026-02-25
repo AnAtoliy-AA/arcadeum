@@ -4,6 +4,15 @@ A monorepo for the Arcadeum gaming platform, featuring a mobile app, web applica
 
 **Live Demo:** [https://arcadeum.vercel.app/](https://arcadeum.vercel.app/)
 
+## Documentation
+
+Refer to the individual app READMEs for detailed setup and configuration instructions:
+
+- [Contributing Guidelines](CONTRIBUTING.md)
+- [Mobile App README](apps/mobile/README.md)
+- [Web App README](apps/web/README.md)
+- [Backend API README](apps/be/README.md)
+
 ## Project Structure
 
 This Turborepo workspace is managed with `pnpm` and contains:
@@ -37,17 +46,13 @@ This Turborepo workspace is managed with `pnpm` and contains:
     To run a specific app individually:
     ```bash
     pnpm --filter mobile dev
+    ```
+    ```bash
     pnpm --filter web dev
+    ```
+    ```bash
     pnpm --filter be start:dev
     ```
-
-## Documentation
-
-Refer to the individual app READMEs for detailed setup and configuration instructions:
-
-- [Mobile App README](apps/mobile/README.md)
-- [Web App README](apps/web/README.md)
-- [Backend API README](apps/be/README.md)
 
 ## Common Commands
 

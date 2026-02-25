@@ -2,7 +2,9 @@ import { variants } from './es-variants';
 
 export const esMessages = {
   critical_v1: {
-    name: 'Crítico',
+    name: 'Critical',
+    description:
+      'Un juego de cartas estratégico donde evitas incidentes críticos',
     rules: {
       title: 'Reglas del Juego',
       headers: {
@@ -36,10 +38,37 @@ export const esMessages = {
       setup:
         'Cada jugador comienza con una carta de Desactivación y una mano de cartas aleatorias. El mazo contiene algunas cartas Explosivas... ¡ten cuidado!',
     },
+    variants: {
+      cyberpunk: {
+        name: 'Cortocircuito',
+        description: 'Hackers cyberpunk evitan la sobrecarga del sistema',
+      },
+      underwater: {
+        name: 'Presión Profunda',
+        description: 'Horror bajo el agua en un submarino con fugas',
+      },
+      crime: {
+        name: 'El Atraco',
+        description: 'Tema noir con redadas policiales y huidas',
+      },
+      horror: {
+        name: 'Banquete Maldito',
+        description: 'Tema de horror social en la fiesta de un mago oscuro',
+      },
+      adventure: {
+        name: 'Caminata por la Montaña',
+        description: 'Supervivencia en una aventura escapando de una avalancha',
+      },
+      random: {
+        name: 'Tema Aleatorio',
+        description: '¡Sorpréndeme con un tema al azar!',
+      },
+    },
   },
+
   table: {
     cards: {
-      criticalEvent: 'Gato Explosivo',
+      criticalEvent: 'Incidente Crítico',
       neutralizer: 'Desactivar',
       strike: 'Ataque',
       evade: 'Saltar',
@@ -47,12 +76,12 @@ export const esMessages = {
       reorder: 'Mezclar',
       insight: 'Ver el Futuro',
       cancel: 'No',
-      collectionAlpha: 'Gato Taco',
-      collectionBeta: 'Gato Papa Peludo',
-      collectionGamma: 'Gato Arcoíris',
-      collectionDelta: 'Gato Sandía',
-      collectionEpsilon: 'Gato Barbudo',
-      generic: 'Gato',
+      collectionAlpha: 'Nodo Alpha',
+      collectionBeta: 'Nodo Beta',
+      collectionGamma: 'Nodo Gamma',
+      collectionDelta: 'Nodo Delta',
+      collectionEpsilon: 'Nodo Epsilon',
+      generic: 'Nodo',
       // Future Pack cards
       seeFuture5x: 'Ver el Futuro (5x)',
       alterFuture3x: 'Alterar el Futuro (3x)',
@@ -91,18 +120,19 @@ export const esMessages = {
       rapture: 'El Rapto',
       descriptions: {
         criticalEvent: '¡Debes desactivarlo o explotas!',
-        neutralizer: 'Usa para desactivar un Gato Explosivo',
+        neutralizer: 'Usa para desactivar un Incidente Crítico',
         strike: 'Termina turno sin robar, siguiente jugador toma 2 turnos',
         evade: 'Termina tu turno sin robar una carta',
         trade: 'Obliga a otro jugador a darte una carta',
         reorder: 'Mezcla el mazo de robo',
         insight: 'Mira las 3 cartas superiores del mazo',
-        cancel: 'Cancela cualquier acción excepto Gato Explosivo o Desactivar',
-        collectionAlpha: 'Junta gatos iguales para robar cartas',
-        collectionBeta: 'Junta gatos iguales para robar cartas',
-        collectionGamma: 'Junta gatos iguales para robar cartas',
-        collectionDelta: 'Junta gatos iguales para robar cartas',
-        collectionEpsilon: 'Junta gatos iguales para robar cartas',
+        cancel:
+          'Cancela cualquier acción excepto Incidente Crítico o Desactivar',
+        collectionAlpha: 'Junta nodos iguales para robar cartas',
+        collectionBeta: 'Junta nodos iguales para robar cartas',
+        collectionGamma: 'Junta nodos iguales para robar cartas',
+        collectionDelta: 'Junta nodos iguales para robar cartas',
+        collectionEpsilon: 'Junta nodos iguales para robar cartas',
         // Future Pack descriptions
         seeFuture5x: 'Mira las 5 cartas superiores del mazo',
         alterFuture3x: 'Reorganiza las 3 cartas superiores',
@@ -136,9 +166,9 @@ export const esMessages = {
         criticalImplosion:
           'Si se roba boca arriba, explota inmediatamente y no se puede desactivar',
         containmentField:
-          'Permite mantener un Gato Explosivo en la mano sin explotar',
+          'Permite mantener un Incidente Crítico en la mano sin explotar',
         fission:
-          'Baraja los Gatos Explosivos de nuevo en el mazo y termina tu turno sin robar',
+          'Baraja los Incidentes Críticos de nuevo en el mazo y termina tu turno sin robar',
         tribute:
           'Todos los jugadores (incluido tú) deben poner una carta de su mano en el mazo',
         blackout: 'Elige un jugador. Jugaran su próximo turno a ciegas',
@@ -170,7 +200,7 @@ export const esMessages = {
       autoShuffle: '🔀 Auto-barajar tras Desactivar',
       autoDrawSkipAfterShuffle: '↪️ Robar/Saltar tras Mezclar',
       autoNopeAttack: '🚫 Auto-nope Ataque',
-      autoGiveFavor: '🤲 Auto-dar Favor (gato→acción→desactivar)',
+      autoGiveFavor: '🤲 Auto-dar Favor (nodo→acción→desactivar)',
       autoDefuse: '🛡️ Auto-desactivar (posición aleatoria)',
     },
     idleTimer: {
@@ -299,17 +329,28 @@ export const esMessages = {
       shareTheFuture: {
         title: 'Compartir el Futuro',
       },
-      catCombo: {
+      eventCombo: {
         title: 'Jugar Combo',
+        selectType: 'Seleccionar Tipo de Combo',
+        pairTrio: 'Pareja/Trío',
+        selectComboCard: 'Seleccionar Carta',
+        fiver: 'Cinco',
+        anyFive: 'Cualquier 5 cartas diferentes',
         selectMode: 'Seleccionar Modo de Combo',
         pair: 'Pareja',
         pairDesc: 'Carta aleatoria del objetivo',
         trio: 'Trío',
         trioDesc: 'Elegir carta específica',
+        trioMode: '2-3 cartas',
         selectTarget: 'Seleccionar Jugador Objetivo',
         selectCard: 'Seleccionar Carta a Solicitar',
         cardsCount: '{{count}} cartas',
         confirm: 'Jugar Combo',
+        stashCards: 'Seleccionar {{count}} cartas diferentes',
+        pickDiscard: 'Elige una carta de la pila de descartes',
+        selectCardHint: 'Selecciona una carta a continuación',
+        pickCardBlind: 'Elige una carta (a ciegas)',
+        cardLabel: 'Carta {{index}}',
       },
       seeTheFuture: { title: 'Cartas Superiores', confirm: '¡Entendido!' },
       targetedAttack: {
@@ -333,8 +374,8 @@ export const esMessages = {
         confirm: 'Dar Carta',
       },
       defuse: {
-        title: '¡Desactivar Gato Explosivo!',
-        description: 'Elige dónde colocar el Gato Explosivo en el mazo',
+        title: '¡Desactivar Incidente Crítico!',
+        description: 'Elige dónde colocar el Incidente Crítico en el mazo',
         positionLabel: 'Posición en el mazo:',
         confirm: 'Colocar Carta',
       },

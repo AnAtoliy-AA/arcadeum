@@ -3,12 +3,12 @@ import {
   CriticalSnapshot,
   CriticalCard,
   CriticalPlayerState,
-  CriticalCatCard,
+  CriticalComboCard,
   CriticalLogEntry,
   ChatScope,
   ATTACK_PACK_CARDS,
   BASE_ACTION_CARDS,
-  CAT_CARDS,
+  COMBO_CARDS,
   SPECIAL_CARDS,
   FUTURE_PACK_CARDS,
   THEFT_PACK_CARDS,
@@ -35,14 +35,14 @@ export interface CriticalGameProps {
 }
 
 /**
- * Cat combo modal state
+ * Event combo modal state
  */
-export interface CatComboModalState {
-  availableCats: Array<{
-    cat: CriticalCatCard;
+export interface EventComboModalState {
+  availableComboCards: Array<{
+    card: CriticalComboCard;
     availableModes: ('pair' | 'trio')[];
   }>;
-  selectedCat: CriticalCatCard | null;
+  selectedComboCard: CriticalComboCard | null;
   fiverAvailable: boolean;
 }
 
@@ -78,7 +78,7 @@ export type {
   CriticalSnapshot,
   CriticalCard,
   CriticalPlayerState,
-  CriticalCatCard,
+  CriticalComboCard,
   CriticalLogEntry,
   ChatScope,
   MarkedCardInfo,
@@ -87,7 +87,7 @@ export type {
 export {
   ATTACK_PACK_CARDS,
   BASE_ACTION_CARDS,
-  CAT_CARDS,
+  COMBO_CARDS,
   SPECIAL_CARDS,
   FUTURE_PACK_CARDS,
   THEFT_PACK_CARDS,
@@ -100,7 +100,7 @@ export {
 export const ALL_GAME_CARDS: CriticalCard[] = [
   ...SPECIAL_CARDS,
   ...BASE_ACTION_CARDS,
-  ...CAT_CARDS,
+  ...COMBO_CARDS,
   ...ATTACK_PACK_CARDS,
   ...FUTURE_PACK_CARDS,
   ...THEFT_PACK_CARDS,

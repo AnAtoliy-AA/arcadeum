@@ -2,6 +2,10 @@
 
 import { useLanguage } from '@/app/i18n/LanguageProvider';
 import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
+import {
   CARD_VARIANTS,
   EXPANSION_PACK_DETAILS,
 } from '@/app/games/create/constants';
@@ -36,36 +40,51 @@ import {
 
 export function HomeGames() {
   const { messages } = useLanguage();
+  const { t } = useTranslation();
   const homeCopy = messages.home ?? {};
 
   // Main game data
   const mainGame = {
-    id: 'critical',
-    name: 'Critical',
+    id: 'critical_v1',
+    name: t('games.critical_v1.name' as TranslationKey) || 'Critical',
     description:
+      t('games.critical_v1.description' as TranslationKey) ||
       'A strategic card game of survival and sabotage. Be the last player standing by avoiding the Critical Meltdown! Use Defuse cards to save yourself, and Action cards to target opponents.',
     emoji: '💣',
     gradient: 'linear-gradient(135deg, #FF4D4D 0%, #F9CB28 100%)',
-    tags: ['Card Game', '3-5 Players', '15m Match', 'Strategy'],
+    tags: [
+      t('games.shared.category.cardGame' as TranslationKey) || 'Card Game',
+      '3-5 Players',
+      '15m Match',
+      t('games.shared.tags.strategy' as TranslationKey) || 'Strategy',
+    ],
     isPlayable: true,
   };
 
   const seaBattle = {
-    id: 'sea-battle',
-    name: 'Sea Battle',
+    id: 'sea_battle_v1',
+    name: t('games.sea_battle_v1.name' as TranslationKey) || 'Sea Battle',
     description:
+      t('games.sea_battle_v1.description' as TranslationKey) ||
       "A classic naval combat game modernized with new themes and features. Deploy your fleet, strategize your attacks, and sink your opponent's ships before they sink yours.",
     emoji: '🚢',
     gradient: 'linear-gradient(135deg, #3498db 0%, #1abc9c 100%)',
-    tags: ['Board Game', '2 Players', '10m Match', 'Strategy'],
+    tags: [
+      t('games.shared.category.boardGame' as TranslationKey) || 'Board Game',
+      '2 Players',
+      '10m Match',
+      t('games.shared.tags.strategy' as TranslationKey) || 'Strategy',
+    ],
+
     isPlayable: true,
   };
 
   // Variants data
   const variants = CARD_VARIANTS.map((variant) => ({
     id: variant.id,
-    name: variant.name,
-    description: variant.description,
+    name: t(variant.name as TranslationKey) || variant.name,
+    description:
+      t(variant.description as TranslationKey) || variant.description,
     isPlayable: !variant.disabled,
   }));
 
@@ -163,7 +182,9 @@ export function HomeGames() {
               <StyledPacksContainer>
                 {SEA_BATTLE_VARIANTS.map((variant) => (
                   <PackBadge key={variant.id}>
-                    <PackName>{variant.name}</PackName>
+                    <PackName>
+                      {t(variant.name as TranslationKey) || variant.name}
+                    </PackName>
                     <StyledPackCount $isPlayable={true}>
                       {homeCopy.gameAvailableNow ?? 'Available Now'}
                     </StyledPackCount>

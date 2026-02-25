@@ -143,4 +143,14 @@ export const enMessages = {
     startWithBots: 'Start with {{count}} 🤖',
     playWithBotsNotice: 'Start with bots immediately or wait for other players',
   },
+  shared: {
+    category: {
+      cardGame: 'Card Game',
+      boardGame: 'Board Game',
+    },
+    tags: {
+      strategy: 'Strategy',
+      cards: 'Cards',
+    },
+  },
 };

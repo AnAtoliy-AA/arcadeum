@@ -230,7 +230,7 @@ export const variants = {
     rapture: 'Sandstorm',
   },
   default: {
-    critical_event: 'Exploding Critical',
+    critical_event: 'Unstable Critical',
     neutralizer: 'Neutralizer',
     strike: 'Strike',
     evade: 'Evade',

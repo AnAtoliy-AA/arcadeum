@@ -31,24 +31,34 @@ export const BoardCell = styled.div<{
   aspect-ratio: 1;
   border-radius: ${(props) => props.$theme.borderRadius};
   background: ${(props) => {
-    if (props.$isHighlighted) return props.$theme.cellHover;
+    let bgColor = 'transparent';
     switch (props.$state) {
       case 0:
-        return props.$theme.cellEmpty; // Empty
+        bgColor = props.$theme.cellEmpty;
+        break;
       case 1:
-        return props.$theme.shipColor; // Ship
+        bgColor = props.$theme.shipColor;
+        break;
       case 2:
-        return props.$theme.hitColor; // Hit
+        bgColor = props.$theme.hitColor;
+        break;
       case 3:
-        return props.$theme.missColor; // Miss
-      default:
-        return 'transparent';
+        bgColor = props.$theme.missColor;
+        break;
     }
+
+    if (props.$isHighlighted) {
+      return `color-mix(in srgb, ${bgColor}, ${props.$theme.cellHover} 70%)`;
+    }
+    return bgColor;
   }};
   border: ${(props) => props.$theme.borderWidth || '1px'} solid
     ${(props) => props.$theme.cellBorder};
   cursor: ${(props) => (props.$isClickable ? 'pointer' : 'default')};
-  transition: all 0.2s ease;
+  transition:
+    background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease;
   box-shadow: ${(props) =>
     (props.$state === 1 || props.$state === 2 || props.$isHighlighted) &&
     props.$theme.boxShadow
@@ -57,8 +67,11 @@ export const BoardCell = styled.div<{
 
   &:hover {
     background: ${(props) =>
-      props.$isClickable ? props.$theme.cellHover : undefined};
-    transform: ${(props) => (props.$isClickable ? 'scale(1.05)' : 'none')};
+      props.$isClickable
+        ? `color-mix(in srgb, ${props.$state === 1 ? props.$theme.shipColor : props.$state === 2 ? props.$theme.hitColor : props.$state === 3 ? props.$theme.missColor : props.$theme.cellEmpty}, ${props.$theme.cellHover} 85%)`
+        : undefined};
+    transform: ${(props) => (props.$isClickable ? 'scale(1.12)' : 'none')};
+    z-index: 10;
   }
 `;
 

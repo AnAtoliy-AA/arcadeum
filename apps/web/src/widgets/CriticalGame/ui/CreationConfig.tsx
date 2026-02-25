@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation, TranslationKey } from '@/shared/lib/useTranslation';
 import { GameCreationConfigProps } from '@/features/games/types';
 import { ExpansionId, CARD_VARIANTS } from '@/app/games/create/constants';
 import { ExpansionPacksSection } from '@/app/games/create/ExpansionPacksSection';
@@ -91,8 +91,10 @@ export function CriticalCreationConfig({
               <GameTileIcon $gradient={variant.gradient}>
                 {variant.emoji}
               </GameTileIcon>
-              <GameTileName>{variant.name}</GameTileName>
-              <GameTileSummary>{variant.description}</GameTileSummary>
+              <GameTileName>{t(variant.name as TranslationKey)}</GameTileName>
+              <GameTileSummary>
+                {t(variant.description as TranslationKey)}
+              </GameTileSummary>
             </GameTile>
           ))}
         </GameSelector>

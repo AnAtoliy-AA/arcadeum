@@ -96,10 +96,11 @@ export function ActiveGameView({
 
   // Sync modal dismissal state with game over state
   const [modalDismissed, setModalDismissed] = useState(false);
-  const [lastGameOver, setLastGameOver] = useState(false);
+  const [prevIsGameOver, setPrevIsGameOver] = useState(isGameOver);
 
-  if (!!isGameOver !== lastGameOver) {
-    setLastGameOver(!!isGameOver);
+  // Reset modal dismissal when game over state changes (e.g. new game starts or current game ends)
+  if (isGameOver !== prevIsGameOver) {
+    setPrevIsGameOver(isGameOver);
     setModalDismissed(false);
   }
 
@@ -297,7 +298,6 @@ export function ActiveGameView({
         idleTimerEnabled={idleTimerEnabled}
         turnStatusVariant={turnStatusVariant}
         turnStatusText={turnStatusText}
-        actionLongPending={!!actionBusy}
         actionBusy={actionBusy}
         isGameOver={!!isGameOver}
         currentPlayer={currentPlayer ?? undefined}

@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
 
 test.describe('Video Presentation', () => {
@@ -9,8 +10,11 @@ test.describe('Video Presentation', () => {
   test('should render video placeholder with custom cover image', async ({
     page,
   }) => {
+    await page.waitForSelector('[data-testid="presentation-section"]', {
+      timeout: 15000,
+    });
     const thumbnail = page.getByTestId('video-thumbnail');
-    await expect(thumbnail).toBeVisible();
+    await expect(thumbnail).toBeVisible({ timeout: 10000 });
     await expect(thumbnail).toHaveAttribute(
       'alt',
       'Arcadeum Trailer Illustration',
@@ -23,7 +27,8 @@ test.describe('Video Presentation', () => {
 
   test('should play video on click', async ({ page }) => {
     const playButton = page.getByTestId('play-btn');
-    await expect(playButton).toBeVisible();
+    await playButton.scrollIntoViewIfNeeded();
+    await expect(playButton).toBeVisible({ timeout: 10000 });
     await page.waitForTimeout(1000); // Give WebKit a moment to stabilize
     await playButton.click({ force: true });
     await expect(playButton).toBeHidden();

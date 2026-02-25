@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
 
 test.describe('Support Page', () => {
@@ -35,7 +36,9 @@ test.describe('Support Page', () => {
   });
 
   test('should have working external links', async ({ page }) => {
+    // Both social links in footer and external links in section
     const externalLinks = page.locator('a[target="_blank"]');
+    await expect(externalLinks.first()).toBeVisible({ timeout: 15000 });
     expect(await externalLinks.count()).toBeGreaterThan(0);
   });
 

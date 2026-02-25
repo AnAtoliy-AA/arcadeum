@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
 
 test.describe('Accessibility', () => {
@@ -114,8 +115,7 @@ test.describe('Accessibility', () => {
 
   test('should have lang attribute on html', async ({ page }) => {
     await navigateTo(page, '/');
-    const lang = await page.getAttribute('html', 'lang');
-    expect(lang).toBeTruthy();
+    await expect(page.locator('html')).toHaveAttribute('lang', /.+/);
   });
 
   test('should have alt text on images', async ({ page }) => {

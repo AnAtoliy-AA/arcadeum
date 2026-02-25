@@ -219,6 +219,7 @@ export function SupportPage({
                           href={action.href}
                           target="_blank"
                           rel="noopener noreferrer"
+                          data-testid="external-cta"
                         >
                           <span>{action.cta}</span>
                           <CtaIcon aria-hidden="true">↗</CtaIcon>

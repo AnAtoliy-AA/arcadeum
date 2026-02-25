@@ -55,7 +55,7 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
     .filter(Boolean);
 
   return createPortal(
-    <ModalOverlay onClick={onClose}>
+    <ModalOverlay onClick={onClose} data-testid="rules-modal">
       <ModalContainer
         onClick={(e) => e.stopPropagation()}
         style={{ maxWidth: '850px' }}

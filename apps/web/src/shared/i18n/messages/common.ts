@@ -7,7 +7,7 @@ const commonMessagesDefinition = {
       es: 'Spanish',
       fr: 'French',
       ru: 'Russian',
-      be: 'Belarusian',
+      by: 'Belarusian',
     },
     labels: {
       email: 'Email',
@@ -50,7 +50,7 @@ const commonMessagesDefinition = {
       es: 'Español',
       fr: 'Francés',
       ru: 'Ruso',
-      be: 'Bielorruso',
+      by: 'Bielorruso',
     },
     labels: {
       email: 'Correo electrónico',
@@ -93,7 +93,7 @@ const commonMessagesDefinition = {
       es: 'Espagnol',
       fr: 'Français',
       ru: 'Russe',
-      be: 'Biélorusse',
+      by: 'Biélorusse',
     },
     labels: {
       email: 'E-mail',
@@ -136,7 +136,7 @@ const commonMessagesDefinition = {
       es: 'Испанский',
       fr: 'Французский',
       ru: 'Русский',
-      be: 'Белорусский',
+      by: 'Белорусский',
     },
     labels: {
       email: 'Email',
@@ -173,13 +173,13 @@ const commonMessagesDefinition = {
       user: 'Пользователь',
     },
   },
-  be: {
+  by: {
     languageNames: {
       en: 'Англійская',
       es: 'Іспанская',
       fr: 'Французская',
       ru: 'Руская',
-      be: 'Беларуская',
+      by: 'Беларуская',
     },
     labels: {
       email: 'Email',

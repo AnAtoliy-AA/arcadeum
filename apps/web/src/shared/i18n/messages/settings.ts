@@ -54,7 +54,7 @@ const settingsMessagesDefinition = {
       es: 'Español',
       fr: 'Français',
       ru: 'Русский',
-      be: 'Беларуская',
+      by: 'Беларуская',
     },
     downloadsTitle: appConfig.downloads.title,
     downloadsDescription: withAppNamePlaceholder(
@@ -125,7 +125,7 @@ const settingsMessagesDefinition = {
       es: 'Español',
       fr: 'Francés',
       ru: 'Русский',
-      be: 'Беларуская',
+      by: 'Беларуская',
     },
     downloadsTitle: 'Compilaciones móviles',
     downloadsDescription:
@@ -194,7 +194,7 @@ const settingsMessagesDefinition = {
       es: 'Espagnol',
       fr: 'Français',
       ru: 'Русский',
-      be: 'Беларуская',
+      by: 'Беларуская',
     },
     downloadsTitle: 'Versions mobiles',
     downloadsDescription:
@@ -214,7 +214,8 @@ const settingsMessagesDefinition = {
     blockedUsersEmpty: 'Aucun utilisateur bloqué',
     blockedUsersUnblock: 'Débloquer',
     aboutTitle: 'À propos',
-    aboutDescription: "Informations sur l'application et détails de la version.",
+    aboutDescription:
+      "Informations sur l'application et détails de la version.",
     versionLabel: 'Version',
   },
   ru: {
@@ -262,7 +263,7 @@ const settingsMessagesDefinition = {
       es: 'Español',
       fr: 'Français',
       ru: 'Русский',
-      be: 'Беларуская',
+      by: 'Беларуская',
     },
     downloadsTitle: appConfig.downloads.title,
     downloadsDescription: withAppNamePlaceholder(
@@ -286,7 +287,7 @@ const settingsMessagesDefinition = {
     aboutDescription: 'Информация о приложении и версии.',
     versionLabel: 'Версия',
   },
-  be: {
+  by: {
     title: 'Налады',
     description:
       'Кіруйце знешнім выглядам, мовай і загрузкамі для вэб-версіі {{appName}}.',
@@ -331,7 +332,7 @@ const settingsMessagesDefinition = {
       es: 'Español',
       fr: 'Français',
       ru: 'Русский',
-      be: 'Беларуская',
+      by: 'Беларуская',
     },
     downloadsTitle: appConfig.downloads.title,
     downloadsDescription: withAppNamePlaceholder(

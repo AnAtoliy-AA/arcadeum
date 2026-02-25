@@ -173,7 +173,7 @@ const historyMessagesDefinition = {
       removeFailed: 'Не удалось удалить из истории',
     },
   },
-  be: {
+  by: {
     unknownGame: 'Невядомая гульня',
     loading: 'Загрузка гісторыі...',
     list: {

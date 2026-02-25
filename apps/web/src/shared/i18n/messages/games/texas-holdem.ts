@@ -13,7 +13,7 @@ const texasHoldemMessagesDefinition = {
   ru: {
     texas_holdem_v1: { name: 'Техасский Холдем' },
   },
-  be: {
+  by: {
     texas_holdem_v1: { name: 'Тэхаскі Холдэн' },
   },
 } satisfies Record<Locale, Record<string, unknown>>;

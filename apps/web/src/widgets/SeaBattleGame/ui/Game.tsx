@@ -2,7 +2,10 @@
 
 import React, { useRef, useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import type { SeaBattleGameProps } from '../types';
 import { MIN_PLAYERS } from '../types';
 import { useSeaBattleState } from '../hooks/useSeaBattleState';
@@ -214,7 +217,7 @@ export default function SeaBattleGame({
     room,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     snapshot: snapshot as any, // Cast to any because types differ slightly but we only need player list
-    youLabel: 'You',
+    youLabel: t('games.sea_battle_v1.table.players.you'),
     translateCardType: () => '',
     seeTheFutureLabel: '',
   });
@@ -225,23 +228,25 @@ export default function SeaBattleGame({
   // Compute turn status text
   const getTurnStatusText = () => {
     if (!snapshot) return '';
-    if (isGameOver) return t('games.seaBattle.table.phase.completed');
+    if (isGameOver) return t('games.sea_battle_v1.table.phase.completed');
     if (isPlacementPhase) {
       return isPlacementComplete
-        ? t('games.seaBattle.table.actions.waitingForOthers')
-        : t('games.seaBattle.table.players.placeShips');
+        ? t('games.sea_battle_v1.table.actions.waitingForOthers')
+        : t('games.sea_battle_v1.table.players.placeShips');
     }
     if (!currentTurnPlayer) return '';
     if (currentTurnPlayer.playerId === currentUserId) {
-      return t('games.seaBattle.table.players.yourTurnAttack');
+      return t('games.sea_battle_v1.table.players.yourTurnAttack');
     }
-    return t('games.seaBattle.table.players.waitingFor', {
+    return t('games.sea_battle_v1.table.players.waitingFor', {
       player: resolveDisplayName(currentTurnPlayer.playerId, 'opponent'),
     });
   };
 
   const currentVariant = SEA_BATTLE_VARIANTS.find((v) => v.id === cardVariant);
-  const variantLabel = currentVariant ? `(${currentVariant.name})` : '';
+  const variantLabel = currentVariant
+    ? `(${t(currentVariant.name as TranslationKey)})`
+    : '';
   const theme = React.useMemo(() => getTheme(cardVariant), [cardVariant]);
 
   const gameResult = React.useMemo(() => {
@@ -285,7 +290,11 @@ export default function SeaBattleGame({
             onChatScopeChange={setChatScope}
             onSendMessage={handleSendChatMessage}
             currentUserId={currentUserId}
-            turnStatus={isMyTurn ? 'Your Turn' : 'Standard'}
+            turnStatus={
+              isMyTurn
+                ? t('games.sea_battle_v1.table.players.yourTurn')
+                : 'Standard'
+            }
             resolveDisplayName={resolveDisplayName}
             formatLogMessage={formatLogMessage}
             t={t}
@@ -351,7 +360,8 @@ export default function SeaBattleGame({
       <ContentHeader>
         <HeaderTopRow>
           <RoomTitle>
-            Sea Battle {variantLabel} - {room.name}
+            {t('games.sea_battle_v1.name' as TranslationKey)} {variantLabel} -{' '}
+            {room.name}
           </RoomTitle>
           <ActionSection>
             <FullscreenButton
@@ -373,7 +383,9 @@ export default function SeaBattleGame({
                   cursor: 'pointer',
                 }}
               >
-                {showChat ? 'Hide Chat' : 'Chat'}
+                {showChat
+                  ? t('games.sea_battle_v1.table.chat.hide' as TranslationKey)
+                  : t('games.sea_battle_v1.table.chat.show' as TranslationKey)}
               </button>
             )}
           </ActionSection>

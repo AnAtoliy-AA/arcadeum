@@ -44,8 +44,8 @@ export const ShipItem = styled.div<{
     props.$isSelected
       ? props.$theme.cellHover
       : props.$isPlaced
-        ? 'rgba(0,0,0,0.1)'
-        : 'transparent'};
+        ? 'rgba(0, 0, 0, 0.2)'
+        : 'rgba(255, 255, 255, 0.05)'};
   border: 1px solid
     ${(props) =>
       props.$isSelected
@@ -53,14 +53,23 @@ export const ShipItem = styled.div<{
         : props.$isPlaced
           ? 'transparent'
           : props.$theme.cellBorder};
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: ${(props) => (props.$isPlaced ? 'default' : 'pointer')};
-  opacity: ${(props) => (props.$isPlaced ? 0.6 : 1)};
+  opacity: ${(props) => (props.$isPlaced ? 0.5 : 1)};
   color: ${(props) => props.$theme.textColor};
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: ${(props) =>
+    props.$isSelected ? `0 0 15px ${props.$theme.primaryColor}33` : 'none'};
+
+  &:hover:not(:disabled) {
+    background: ${(props) =>
+      !props.$isPlaced ? props.$theme.cellHover : undefined};
+    transform: ${(props) => (!props.$isPlaced ? 'translateY(-2px)' : 'none')};
+  }
 
   @media (max-width: 768px) {
     flex-shrink: 0;
-    padding: 4px 8px;
+    padding: 6px 10px;
   }
 `;
 

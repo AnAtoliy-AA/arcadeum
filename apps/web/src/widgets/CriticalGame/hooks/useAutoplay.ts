@@ -65,7 +65,7 @@ interface AutoplayToggles {
 
 // Card selection priority for auto-give favor (lower = give first)
 const CARD_PRIORITY: Record<string, number> = {
-  // Cat cards - give first (least valuable solo)
+  // Combo cards - give first (least valuable solo)
   collection_alpha: 1,
   collection_beta: 1,
   collection_gamma: 1,
@@ -85,7 +85,7 @@ const CARD_PRIORITY: Record<string, number> = {
   recursive_strike: 2,
   // Defuse - give last (most valuable)
   neutralizer: 10,
-  // Exploding cat - should never be in hand normally
+  // Critical event - should never be in hand normally
   critical_event: 100,
 };
 

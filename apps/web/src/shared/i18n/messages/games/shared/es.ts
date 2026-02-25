@@ -146,4 +146,14 @@ export const esMessages = {
     playWithBotsNotice:
       'Empieza con bots inmediatamente o espera a otros jugadores',
   },
+  shared: {
+    category: {
+      cardGame: 'Juego de cartas',
+      boardGame: 'Juego de mesa',
+    },
+    tags: {
+      strategy: 'Estrategia',
+      cards: 'Cartas',
+    },
+  },
 };

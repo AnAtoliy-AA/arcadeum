@@ -1,6 +1,7 @@
 export const esMessages = {
   sea_battle_v1: {
     name: 'Batalla Naval',
+    description: 'Clásico juego de combate naval para hasta 6 jugadores',
     rules: {
       title: 'Reglas del Juego',
       headers: {
@@ -24,13 +25,56 @@ export const esMessages = {
 • Submarino (3 celdas) - Embarcación sigilosa
 • Destructor (2 celdas) - Pequeño pero ágil`,
     },
-  },
-  seaBattle: {
+    variants: {
+      classic: {
+        name: 'Clásico',
+        description: 'Tema tradicional de batalla naval',
+      },
+      modern: {
+        name: 'Moderno II',
+        description: 'Guerra naval moderna',
+      },
+      pixel: {
+        name: 'Pixel Art',
+        description: 'Estilo pixel art retro',
+      },
+      cartoon: {
+        name: 'Dibujos animados',
+        description: 'Divertidos personajes de dibujos animados',
+      },
+      cyber: {
+        name: 'Cyberpunk',
+        description: 'Guerra de neón de alta tecnología',
+      },
+      vintage: {
+        name: 'Vintage',
+        description: 'Viejo mapa marítimo',
+      },
+      nebula: {
+        name: 'Nebulosa',
+        description: 'Flota del espacio profundo',
+      },
+      forest: {
+        name: 'Bosque',
+        description: 'Operaciones de camuflaje',
+      },
+      sunset: {
+        name: 'Atardecer',
+        description: 'Compromiso al atardecer',
+      },
+      monochrome: {
+        name: 'Noir',
+        description: 'Estilo monocromático elegante',
+      },
+    },
     table: {
       state: {
-        yourBoard: 'Tu Tablero',
-        opponentBoard: 'Tablero Oponente',
-        shipsRemaining: 'Barcos Restantes',
+        yourBoard: 'Tu tablero',
+        opponentBoard: 'Tablero oponente',
+        shipsRemaining: 'Barcos restantes',
+        shipsPalette: 'Barcos para colocar',
+        vertical: 'Vertical',
+        horizontal: 'Horizontal',
       },
       players: {
         you: 'Tú',
@@ -87,6 +131,8 @@ export const esMessages = {
         title: 'Chat de Batalla',
         empty: 'Sin mensajes aún',
         send: 'Enviar',
+        show: 'Mostrar chat',
+        hide: 'Ocultar chat',
         placeholder: 'Escribe un mensaje...',
       },
     },

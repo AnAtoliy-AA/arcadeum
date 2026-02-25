@@ -147,4 +147,14 @@ export const frMessages = {
     playWithBotsNotice:
       "Commencez avec des bots immédiatement ou attendez d'autres joueurs",
   },
+  shared: {
+    category: {
+      cardGame: 'Jeu de cartes',
+      boardGame: 'Jeu de société',
+    },
+    tags: {
+      strategy: 'Stratégie',
+      cards: 'Cartes',
+    },
+  },
 };

@@ -49,7 +49,7 @@ const chatMessagesDefinition = {
     },
     send: 'Отправить',
   },
-  be: {
+  by: {
     notFound: 'Чат не знойдзены',
     status: {
       connected: 'Падключана',
@@ -121,7 +121,7 @@ const chatListMessagesDefinition = {
       directChat: 'Личный чат',
     },
   },
-  be: {
+  by: {
     search: {
       placeholder: 'Пошук карыстальнікаў...',
       ariaLabel: 'Пошук карыстальнікаў для чата',

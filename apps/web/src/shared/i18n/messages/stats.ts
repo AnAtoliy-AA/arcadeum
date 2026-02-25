@@ -105,7 +105,7 @@ const statsMessagesDefinition = {
     endOfLeaderboard: 'Вы достигли конца таблицы лидеров',
     noPlayersFound: 'Игроки для таблицы лидеров пока не найдены.',
   },
-  be: {
+  by: {
     pageTitle: 'Статыстыка',
     myStatsTab: 'Мая статыстыка',
     leaderboardTab: 'Табліца лідэраў',

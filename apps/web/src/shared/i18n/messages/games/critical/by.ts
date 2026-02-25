@@ -1,6 +1,6 @@
 import { variants } from './be-variants';
 
-export const beMessages = {
+export const byMessages = {
   critical_v1: {
     name: 'Critical',
     description:

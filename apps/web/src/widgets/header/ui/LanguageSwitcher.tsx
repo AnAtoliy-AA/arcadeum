@@ -47,7 +47,7 @@ const LOCALES_LABELS: Record<Locale, string> = {
   es: 'ES',
   fr: 'FR',
   ru: 'RU',
-  be: 'BY',
+  by: 'BY',
 };
 
 const StyledSelect = styled(Select)`

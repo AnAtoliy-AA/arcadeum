@@ -2,11 +2,15 @@
 
 set -e
 
-# Get the current version from web app package.json
-CURRENT_VERSION=$(node -p "require('./apps/web/package.json').version")
+# Get the current version from web app package.json (allow override for testing)
+if [ -z "$CURRENT_VERSION" ]; then
+  CURRENT_VERSION=$(node -p "require('./apps/web/package.json').version")
+fi
 
-# Extract the commit hash of the previous version bump
-PREVIOUS_COMMIT=$(git log --oneline --grep="chore: bump version to v" --pretty=format:"%h" | head -1)
+# Extract the commit hash of the previous version bump (allow override for testing)
+if [ -z "$PREVIOUS_COMMIT" ]; then
+  PREVIOUS_COMMIT=$(git log --oneline --grep="chore: bump version to v" --pretty=format:"%h" | head -1)
+fi
 
 # Extract the version string from that commit message for display
 PREVIOUS_VERSION=$(git log --oneline --grep="chore: bump version to v" --pretty=format:"%s" | grep -o "v[0-9]\+\.[0-9]\+\.[0-9]\+" | head -1)
@@ -20,8 +24,8 @@ else
   echo "Found previous version from commit message: $PREVIOUS_VERSION (commit: $PREVIOUS_COMMIT)"
 fi
 
-# Extract commits since the last version (using commit hash, not version string)
-COMMITS=$(git log --oneline "$PREVIOUS_COMMIT"..HEAD --no-merges)
+# Extract commits since the last version (using the subject only, no hash)
+COMMITS=$(git log --format="%s" "$PREVIOUS_COMMIT"..HEAD --no-merges)
 
 # Create a temporary changelog entry
 TEMP_CHANGELOG=$(mktemp)
@@ -31,60 +35,60 @@ echo "## [$CURRENT_VERSION] - $(date +%Y-%m-%d)" > "$TEMP_CHANGELOG"
 echo "" >> "$TEMP_CHANGELOG"
 
 # Look for features
-FEATURES=$(echo "$COMMITS" | grep -E "^(feat|ARC-[0-9]+ feat)" | sed 's/^[^:]*: //')
+FEATURES=$(echo "$COMMITS" | grep -E "^(feat|ARC-[0-9]+ feat)" || true)
 if [ -n "$FEATURES" ]; then
   echo "### Added" >> "$TEMP_CHANGELOG"
   echo "$FEATURES" | while read -r line; do
-    ISSUE=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\1/')
-    DESC=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\2/')
+    ISSUE=$(echo "$line" | grep -oE "ARC-[0-9]+" || echo "N/A")
+    DESC=$(echo "$line" | sed -E 's/^([^:]+: )//')
     echo "- $DESC ($ISSUE)" >> "$TEMP_CHANGELOG"
   done
   echo "" >> "$TEMP_CHANGELOG"
 fi
 
 # Look for fixes
-FIXES=$(echo "$COMMITS" | grep -E "^(fix|ARC-[0-9]+ fix)" | sed 's/^[^:]*: //')
+FIXES=$(echo "$COMMITS" | grep -E "^(fix|ARC-[0-9]+ fix)" || true)
 if [ -n "$FIXES" ]; then
   echo "### Fixed" >> "$TEMP_CHANGELOG"
   echo "$FIXES" | while read -r line; do
-    ISSUE=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\1/')
-    DESC=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\2/')
+    ISSUE=$(echo "$line" | grep -oE "ARC-[0-9]+" || echo "N/A")
+    DESC=$(echo "$line" | sed -E 's/^([^:]+: )//')
     echo "- $DESC ($ISSUE)" >> "$TEMP_CHANGELOG"
   done
   echo "" >> "$TEMP_CHANGELOG"
 fi
 
 # Look for improvements
-IMPROVEMENTS=$(echo "$COMMITS" | grep -E "^(perf|improve|ARC-[0-9]+ improve|ARC-[0-9]+ improved)" | sed 's/^[^:]*: //')
+IMPROVEMENTS=$(echo "$COMMITS" | grep -E "^(perf|improve|ARC-[0-9]+ improve|ARC-[0-9]+ improved)" || true)
 if [ -n "$IMPROVEMENTS" ]; then
   echo "### Improved" >> "$TEMP_CHANGELOG"
   echo "$IMPROVEMENTS" | while read -r line; do
-    ISSUE=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\1/')
-    DESC=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\2/')
+    ISSUE=$(echo "$line" | grep -oE "ARC-[0-9]+" || echo "N/A")
+    DESC=$(echo "$line" | sed -E 's/^([^:]+: )//')
     echo "- $DESC ($ISSUE)" >> "$TEMP_CHANGELOG"
   done
   echo "" >> "$TEMP_CHANGELOG"
 fi
 
 # Look for refactors
-REFACTOR=$(echo "$COMMITS" | grep -E "^(refactor|ARC-[0-9]+ refactor)" | sed 's/^[^:]*: //')
+REFACTOR=$(echo "$COMMITS" | grep -E "^(refactor|ARC-[0-9]+ refactor)" || true)
 if [ -n "$REFACTOR" ]; then
   echo "### Refactored" >> "$TEMP_CHANGELOG"
   echo "$REFACTOR" | while read -r line; do
-    ISSUE=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\1/')
-    DESC=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\2/')
+    ISSUE=$(echo "$line" | grep -oE "ARC-[0-9]+" || echo "N/A")
+    DESC=$(echo "$line" | sed -E 's/^([^:]+: )//')
     echo "- $DESC ($ISSUE)" >> "$TEMP_CHANGELOG"
   done
   echo "" >> "$TEMP_CHANGELOG"
 fi
 
 # Look for documentation
-DOCS=$(echo "$COMMITS" | grep -E "^(docs|ARC-[0-9]+ docs)" | sed 's/^[^:]*: //')
+DOCS=$(echo "$COMMITS" | grep -E "^(docs|ARC-[0-9]+ docs)" || true)
 if [ -n "$DOCS" ]; then
   echo "### Documentation" >> "$TEMP_CHANGELOG"
   echo "$DOCS" | while read -r line; do
-    ISSUE=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\1/')
-    DESC=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\2/')
+    ISSUE=$(echo "$line" | grep -oE "ARC-[0-9]+" || echo "N/A")
+    DESC=$(echo "$line" | sed -E 's/^([^:]+: )//')
     echo "- $DESC ($ISSUE)" >> "$TEMP_CHANGELOG"
   done
   echo "" >> "$TEMP_CHANGELOG"
@@ -95,6 +99,12 @@ if [ -f "CHANGELOG.md" ]; then
   cat "CHANGELOG.md" > "$TEMP_CHANGELOG.old"
 else
   echo "# Changelog" > "$TEMP_CHANGELOG.old"
+fi
+
+# Check if this version already exists in changelog
+if grep -q "## \[$CURRENT_VERSION\]" "$TEMP_CHANGELOG.old"; then
+  echo "Version $CURRENT_VERSION already exists in CHANGELOG.md, skipping update."
+  exit 0
 fi
 
 # Combine the new entry with the existing changelog

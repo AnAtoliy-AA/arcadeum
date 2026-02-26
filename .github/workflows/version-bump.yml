@@ -1,10 +1,8 @@
-name: Version Bump and Documentation Update
+name: Version Bump & Changelog
 
 on:
   push:
-    branches:
-      - develop
-      - main
+    branches: [ develop, main ]
 
 jobs:
   bump-version:
@@ -12,203 +10,39 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0  # Needed for git describe
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Install dependencies
+        run: cd apps/web && pnpm install
 
-      - name: Generate changelog entries
-        if: github.ref == 'refs/heads/develop'
-        run: |
-          # Get the current version
-          CURRENT_VERSION=$(node -p "require('./apps/web/package.json').version")
-          
-          # Get the previous version from git tags
-          PREVIOUS_VERSION=$(git describe --tags --abbrev=0 --match "v[0-9]*" --exclude="v${CURRENT_VERSION}" 2>/dev/null || echo "v0.0.0")
-          
-          # Extract commits since the last version
-          COMMITS=$(git log --oneline $PREVIOUS_VERSION..HEAD --no-merges)
-          
-          # Create a temporary changelog entry
-          TEMP_CHANGELOG=$(mktemp)
-          
-          # Parse commits and categorize them
-          echo "## [$CURRENT_VERSION] - $(date +%Y-%m-%d)" > $TEMP_CHANGELOG
-          echo "" >> $TEMP_CHANGELOG
-          
-          # Look for features
-          FEATURES=$(echo "$COMMITS" | grep -E "^(feat|ARC-[0-9]+ feat)" | sed 's/^[^:]*: //')
-          if [ -n "$FEATURES" ]; then
-            echo "### Added" >> $TEMP_CHANGELOG
-            echo "$FEATURES" | while read -r line; do
-              # Extract the description after the issue number
-              ISSUE=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\1/')
-              DESC=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\2/')
-              echo "- $DESC ($ISSUE)" >> $TEMP_CHANGELOG
-            done
-            echo "" >> $TEMP_CHANGELOG
-          fi
-          
-          # Look for fixes
-          FIXES=$(echo "$COMMITS" | grep -E "^(fix|ARC-[0-9]+ fix)" | sed 's/^[^:]*: //')
-          if [ -n "$FIXES" ]; then
-            echo "### Fixed" >> $TEMP_CHANGELOG
-            echo "$FIXES" | while read -r line; do
-              # Extract the description after the issue number
-              ISSUE=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\1/')
-              DESC=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\2/')
-              echo "- $DESC ($ISSUE)" >> $TEMP_CHANGELOG
-            done
-            echo "" >> $TEMP_CHANGELOG
-          fi
-          
-          # Look for improvements
-          IMPROVEMENTS=$(echo "$COMMITS" | grep -E "^(perf|improve|ARC-[0-9]+ improve|ARC-[0-9]+ improved|ARC-[0-9]+ improved)" | sed 's/^[^:]*: //')
-          if [ -n "$IMPROVEMENTS" ]; then
-            echo "### Improved" >> $TEMP_CHANGELOG
-            echo "$IMPROVEMENTS" | while read -r line; do
-              # Extract the description after the issue number
-              ISSUE=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\1/')
-              DESC=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\2/')
-              echo "- $DESC ($ISSUE)" >> $TEMP_CHANGELOG
-            done
-            echo "" >> $TEMP_CHANGELOG
-          fi
-          
-          # Look for refactors
-          REFACTOR=$(echo "$COMMITS" | grep -E "^(refactor|ARC-[0-9]+ refactor)" | sed 's/^[^:]*: //')
-          if [ -n "$REFACTOR" ]; then
-            echo "### Refactored" >> $TEMP_CHANGELOG
-            echo "$REFACTOR" | while read -r line; do
-              # Extract the description after the issue number
-              ISSUE=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\1/')
-              DESC=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\2/')
-              echo "- $DESC ($ISSUE)" >> $TEMP_CHANGELOG
-            done
-            echo "" >> $TEMP_CHANGELOG
-          fi
-          
-          # Look for documentation
-          DOCS=$(echo "$COMMITS" | grep -E "^(docs|ARC-[0-9]+ docs)" | sed 's/^[^:]*: //')
-          if [ -n "$DOCS" ]; then
-            echo "### Documentation" >> $TEMP_CHANGELOG
-            echo "$DOCS" | while read -r line; do
-              # Extract the description after the issue number
-              ISSUE=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\1/')
-              DESC=$(echo "$line" | sed -E 's/^(ARC-[0-9]+) (.*)/\2/')
-              echo "- $DESC ($ISSUE)" >> $TEMP_CHANGELOG
-            done
-            echo "" >> $TEMP_CHANGELOG
-          fi
-          
-          # Read the existing changelog
-          cat CHANGELOG.md > $TEMP_CHANGELOG.old
-          
-          # Combine the new entry with the existing changelog
-          # Find the position of the first version header
-          FIRST_VERSION_LINE=$(grep -n "## \[v[0-9]" $TEMP_CHANGELOG.old | head -1 | cut -d: -f1)
-          
-          if [ -n "$FIRST_VERSION_LINE" ]; then
-            # Extract the header before the first version
-            head -n $(($FIRST_VERSION_LINE - 1)) $TEMP_CHANGELOG.old > $TEMP_CHANGELOG.header
-            # Extract the rest of the changelog after the first version
-            tail -n +$FIRST_VERSION_LINE $TEMP_CHANGELOG.old > $TEMP_CHANGELOG.rest
-            # Combine: header + new entry + rest
-            cat $TEMP_CHANGELOG.header $TEMP_CHANGELOG $TEMP_CHANGELOG.rest > CHANGELOG.md
-          else
-            # No version headers found, just prepend the new entry
-            cat $TEMP_CHANGELOG $TEMP_CHANGELOG.old > CHANGELOG.md
-          fi
-          
-          # Clean up
-          rm $TEMP_CHANGELOG $TEMP_CHANGELOG.old $TEMP_CHANGELOG.header $TEMP_CHANGELOG.rest
-          
-          # Add the updated changelog
-          git add CHANGELOG.md
-          
-          # Check if there are changes to commit
-          if git diff --cached --quiet; then
-            echo "No changelog changes detected"
-          else
-            git commit -m "chore: update changelog for v${CURRENT_VERSION} [skip ci]"
-          fi
-
-      - name: Update README files with version
-        if: github.ref == 'refs/heads/develop'
+      - name: Bump version
         run: |
           CURRENT_VERSION=$(node -p "require('./apps/web/package.json').version")
-          
-          # Update root README.md with version and changelog link
-          sed -i "s/^\(## Documentation\)/## Documentation\n\n- [Changelog](CHANGELOG.md): Detailed history of all releases and changes (v${CURRENT_VERSION})/g" README.md
-          
-          # Update CONTRIBUTING.md with version and changelog info
-          sed -i "s/^\(## Branch Naming Conventions\)/## Branch Naming Conventions\n\n> Note: This project uses automated changelog generation for version ${CURRENT_VERSION}/g" CONTRIBUTING.md
-          
-          # Update web app README.md
-          if [ -f apps/web/README.md ]; then
-            sed -i "s/^\(## Version\)/## Version\n\n- Current version: v${CURRENT_VERSION}/g" apps/web/README.md
-            sed -i "s/^\(## Documentation\)/## Documentation\n\n- [Changelog](../CHANGELOG.md): Detailed history of all releases and changes (v${CURRENT_VERSION})/g" apps/web/README.md
-          fi
-          
-          # Update mobile app README.md
-          if [ -f apps/mobile/README.md ]; then
-            sed -i "s/^\(## Version\)/## Version\n\n- Current version: v${CURRENT_VERSION}/g" apps/mobile/README.md
-            sed -i "s/^\(## Documentation\)/## Documentation\n\n- [Changelog](../CHANGELOG.md): Detailed history of all releases and changes (v${CURRENT_VERSION})/g" apps/mobile/README.md
-          fi
-          
-          # Update backend README.md
-          if [ -f apps/be/README.md ]; then
-            sed -i "s/^\(## Version\)/## Version\n\n- Current version: v${CURRENT_VERSION}/g" apps/be/README.md
-            sed -i "s/^\(## Documentation\)/## Documentation\n\n- [Changelog](../CHANGELOG.md): Detailed history of all releases and changes (v${CURRENT_VERSION})/g" apps/be/README.md
-          fi
-          
-          # Add all updated files
-          git add README.md CONTRIBUTING.md apps/web/README.md apps/mobile/README.md apps/be/README.md
+          NEW_VERSION=$(node -p "const v = '$CURRENT_VERSION'.split('.'); v[2]++; v.join('.')")
+          # Use sed -i without '' for Linux compatibility
+          sed -i "s/\"version\": \"${CURRENT_VERSION}\"/\"version\": \"${NEW_VERSION}\"/g" apps/web/package.json
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "Bumped version to $NEW_VERSION"
 
-      - name: Bump patch version (develop)
-        if: github.ref == 'refs/heads/develop'
+      - name: Generate Changelog
         run: |
-          cd apps/web && npm version patch --no-git-tag-version
-          cd ../be && npm version patch --no-git-tag-version
-          cd ../..
-          npm version patch --no-git-tag-version
+          chmod +x scripts/generate_changelog.sh
+          ./scripts/generate_changelog.sh
 
-      - name: Release Logic (Sync Develop)
-        if: github.ref == 'refs/heads/main'
+      - name: Commit and Push Changes
         run: |
-          # Fetch and checkout develop
-          git fetch origin develop
-          git checkout develop
-          
-          # Merge main into develop to ensure we're up to date
-          git merge main
-          
-          # Bump minor on develop (1.1.4 -> 1.2.0)
-          cd apps/web && npm version minor --no-git-tag-version
-          cd ../be && npm version minor --no-git-tag-version
-          cd ../..
-          npm version minor --no-git-tag-version
-          
-          git add .
-          VERSION=$(node -p "require('./apps/web/package.json').version")
-          git commit -m "chore: start next minor version v${VERSION} [skip ci]"
-          git push origin develop
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add apps/web/package.json CHANGELOG.md
+          git commit -m "chore: bump version to v${NEW_VERSION} and update changelog [skip ci]"
+          git tag -a "v${NEW_VERSION}" -m "Release v${NEW_VERSION}"
+          git push origin HEAD:develop --follow-tags
 
-      - name: Commit and push version bump (develop)
-        if: github.ref == 'refs/heads/develop'
-        run: |
-          git add .
-          VERSION=$(node -p "require('./apps/web/package.json').version")
-          git commit -m "chore: bump version to v${VERSION} [skip ci]" || echo "No changes to commit"
-          git push

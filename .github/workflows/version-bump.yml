@@ -20,19 +20,19 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9
-
       - name: Bump version
         run: |
           CURRENT_VERSION=$(node -p "require('./apps/web/package.json').version")
           NEW_VERSION=$(node -p "const v = '$CURRENT_VERSION'.split('.'); v[2]++; v.join('.')")
-          # Use sed -i without '' for Linux compatibility
-          sed -i "s/\"version\": \"${CURRENT_VERSION}\"/\"version\": \"${NEW_VERSION}\"/g" apps/web/package.json
+          
+          # Find all package.json files and update them
+          find . -name "package.json" -not -path "*/node_modules/*" | while read -r pkg; do
+            echo "Updating $pkg to $NEW_VERSION"
+            node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('$pkg','utf8')); p.version='$NEW_VERSION'; fs.writeFileSync('$pkg', JSON.stringify(p,null,2)+'\n')"
+          done
+          
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-          echo "Bumped version to $NEW_VERSION"
+          echo "Bumped version to $NEW_VERSION across all packages"
 
       - name: Generate Changelog
         run: |
@@ -43,7 +43,11 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add apps/web/package.json CHANGELOG.md
+          
+          # Stage all updated package.json files
+          find . -name "package.json" -not -path "*/node_modules/*" -exec git add {} +
+          git add CHANGELOG.md
+          
           git commit -m "chore: bump version to v${NEW_VERSION} and update changelog [skip ci]"
           git tag -a "v${NEW_VERSION}" -m "Release v${NEW_VERSION}"
           git push origin HEAD:develop --follow-tags

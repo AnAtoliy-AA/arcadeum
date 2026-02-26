@@ -24,6 +24,8 @@ const cspConnectSrc = [
   'wss://arcadeum-be-dev.onrender.com',
   'https://arcadeum-be.onrender.com',
   'wss://arcadeum-be.onrender.com',
+  'https://arcadeum-be-reserve.onrender.com',
+  'wss://arcadeum-be-reserve.onrender.com',
   'https://accounts.google.com',
 ];
 

@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "1.5.8",
+  "version": "1.5.9",
   "private": true,
   "scripts": {
     "dev": "concurrently \"next dev\" \"node scripts/patch-next-config.js && storybook dev -p 6006 --no-open\" --names \"next,storybook\" --prefix-colors \"blue,magenta\"",

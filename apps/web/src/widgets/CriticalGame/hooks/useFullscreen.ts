@@ -17,9 +17,7 @@ export function useFullscreen(containerRef: RefObject<HTMLDivElement | null>) {
         await document.exitFullscreen();
         setIsFullscreen(false);
       }
-    } catch (err) {
-      console.error('Failed to toggle fullscreen:', err);
-    }
+    } catch {}
   }, [containerRef]);
 
   useEffect(() => {

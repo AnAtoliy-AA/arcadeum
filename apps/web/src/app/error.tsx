@@ -21,7 +21,6 @@ export default function Error({
 }) {
   useEffect(() => {
     // Log the error to an error reporting service
-    console.error('App Error:', error);
   }, [error]);
 
   return (

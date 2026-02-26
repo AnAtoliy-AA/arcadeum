@@ -1,7 +1,7 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { Button, GameVariant } from '@/shared/ui';
 import { ActionButton } from './cards';
-import { GAME_VARIANT } from '../../lib/constants';
+import { getVariantStyles } from './variants';
 
 export const ScopeToggle = styled.div`
   display: flex;
@@ -37,11 +37,9 @@ export const ChatInput = styled.textarea<{ $variant?: string }>`
   border-radius: 12px;
   border: 1px solid
     ${({ $variant, theme }) =>
-      $variant === GAME_VARIANT.CYBERPUNK
-        ? 'rgba(192, 38, 211, 0.4)'
-        : theme.surfaces.card.border};
+      getVariantStyles($variant).chat.getInputBorder?.(theme)};
   background: ${({ $variant, theme }) =>
-    $variant === GAME_VARIANT.CYBERPUNK ? '#1a0a20' : theme.background.base};
+    getVariantStyles($variant).chat.getInputBackground?.(theme)};
   color: ${({ theme }) => theme.text.primary};
   padding: 0.75rem;
   font-size: 0.875rem;
@@ -54,39 +52,13 @@ export const ChatInput = styled.textarea<{ $variant?: string }>`
   &:focus {
     outline: none;
     border-color: ${({ $variant, theme }) =>
-      $variant === GAME_VARIANT.CYBERPUNK
-        ? '#c026d3'
-        : theme.buttons.primary.gradientStart};
+      getVariantStyles($variant).chat.getInputFocusBorder?.(theme)};
     box-shadow: ${({ $variant }) =>
-      $variant === GAME_VARIANT.CYBERPUNK
-        ? '0 0 12px rgba(192, 38, 211, 0.4)'
-        : '0 0 0 3px rgba(59, 130, 246, 0.2)'};
+      getVariantStyles($variant).chat.getInputFocusShadow?.()};
   }
 
-  ${({ $variant }) =>
-    $variant === GAME_VARIANT.CYBERPUNK &&
-    css`
-      font-family: 'Courier New', monospace;
-      border-radius: 4px;
-      padding: 0.5rem;
-    `}
-
-  ${({ $variant }) =>
-    $variant === GAME_VARIANT.UNDERWATER &&
-    css`
-      font-family: 'Courier New', monospace;
-      border-radius: 8px;
-      background: rgba(8, 51, 68, 0.8);
-      border: 1px solid rgba(22, 78, 99, 0.8);
-      color: #a5f3fc;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-
-      &:focus {
-        border-color: #22d3ee;
-        box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
-        background: rgba(8, 51, 68, 0.95);
-      }
-    `}
+  /* VARIANT STYLES */
+  ${({ $variant }) => getVariantStyles($variant).chat.getInputStyles?.()}
 
   @media (max-height: 700px) {
     min-height: 60px;
@@ -129,34 +101,8 @@ export const ChatTurnStatus = styled.div<{ $variant?: string }>`
   border-left: 3px solid #8b5cf6;
   margin-bottom: 0.25rem;
 
-  ${({ $variant }) =>
-    $variant === GAME_VARIANT.CYBERPUNK &&
-    css`
-      background: rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(6, 182, 212, 0.4);
-      border-left: 3px solid #06b6d4;
-      font-family: 'Courier New', monospace;
-      color: #06b6d4;
-      text-shadow: 0 0 5px rgba(6, 182, 212, 0.5);
-      border-radius: 2px;
-    `}
-
-  ${({ $variant }) =>
-    $variant === GAME_VARIANT.UNDERWATER &&
-    css`
-      background: linear-gradient(
-        90deg,
-        rgba(8, 51, 68, 0.9),
-        rgba(22, 78, 99, 0.6)
-      );
-      border: 1px solid rgba(34, 211, 238, 0.3);
-      border-left: 3px solid #22d3ee; /* cyan-400 */
-      font-family: 'Courier New', monospace;
-      color: #a5f3fc; /* cyan-200 */
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-      border-radius: 6px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    `}
+  /* VARIANT STYLES */
+  ${({ $variant }) => getVariantStyles($variant).chat.getTurnStatusStyles?.()}
 `;
 
 export const ChatSendButton = styled(ActionButton)`
@@ -366,4 +312,8 @@ export const ChatBubbleContainer = styled.div<{
       }
     }}
   }
+`;
+
+export const LogSender = styled.strong<{ $color: string }>`
+  color: ${({ $color }) => $color};
 `;

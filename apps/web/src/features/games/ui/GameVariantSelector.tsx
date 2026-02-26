@@ -47,8 +47,7 @@ export function GameVariantSelector({
         { token: snapshot.accessToken ?? undefined },
       );
     },
-    onError: (err) => {
-      console.error('Failed to update variant:', err);
+    onError: (_err) => {
       // Revert to prop value on error
       setInternalVariant(currentVariant);
     },

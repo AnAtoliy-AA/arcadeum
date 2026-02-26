@@ -1,5 +1,7 @@
 export const variants = {
   cyberpunk: {
+    name: 'Court-circuit',
+    description: 'Des hackers cyberpunk évitent la surcharge du système',
     critical_event: 'Surcharge Système',
     neutralizer: 'Pare-feu',
     strike: 'DDoS',
@@ -45,6 +47,8 @@ export const variants = {
     rapture: 'Rapt',
   },
   underwater: {
+    name: 'Pression Profonde',
+    description: 'Horreur sous-marine dans un sous-marin qui fuit',
     critical_event: 'Brèche de Coque',
     neutralizer: 'Kit de Réparation',
     strike: 'Torpille',
@@ -90,6 +94,8 @@ export const variants = {
     rapture: 'Rapt',
   },
   crime: {
+    name: 'Le Casse',
+    description: 'Thème noir avec descentes de police et évasions',
     critical_event: 'Raid de Police',
     neutralizer: 'Chauffeur',
     strike: 'Piège',
@@ -135,6 +141,8 @@ export const variants = {
     rapture: 'Rapt',
   },
   horror: {
+    name: 'Banquet Maudit',
+    description: 'Thème d’horreur sociale à la fête d’un mage noir',
     critical_event: 'Possession',
     neutralizer: 'Cercle de Sel',
     strike: 'Cri',
@@ -180,6 +188,8 @@ export const variants = {
     rapture: 'Rapt',
   },
   adventure: {
+    name: 'Le Temple Antique',
+    description: 'Survie dans une aventure dans un temple mystérieux',
     critical_event: 'Effondrement',
     neutralizer: "Bénédiction de l'Idole",
     strike: 'Fil de Détente',
@@ -223,6 +233,54 @@ export const variants = {
     miracle: 'Miracle',
     smite: 'Châtiment',
     rapture: 'Rapt',
+  },
+  high_altitude_hike: {
+    name: 'Randonnée en Montagne',
+    description: 'Survie dans une aventure en échappant à une avalanche',
+    critical_event: 'Avalanche',
+    neutralizer: 'Bouteille d’Oxygène',
+    strike: 'Piolet',
+    evade: 'Parka',
+    trade: 'Échange d’Équipement',
+    reorder: 'Révision de la Carte',
+    insight: 'Reconnaissance',
+    cancel: 'Mur de Glace',
+    targeted_strike: 'Piton',
+    collection_alpha: 'Edelweiss',
+    collection_beta: 'Minerai Rare',
+    collection_gamma: 'Cristal de Glace',
+    collection_delta: 'Fossile',
+    collection_epsilon: 'Poil de Yéti',
+    // Attack Pack
+    private_strike: 'Mal des Montagnes',
+    recursive_strike: 'Tempête de Neige',
+    mega_evade: 'Camp de Base',
+    invert: 'Descente',
+    // Future Pack
+    see_future_5x: 'Vue du Sommet',
+    alter_future_3x: 'Choix de la Route',
+    alter_future_5x: 'Plan d’Expédition',
+    reveal_future_3x: 'Fusée de Détresse',
+    share_future_3x: 'Contrôle Radio',
+    draw_bottom: 'Creuser la Neige',
+    swap_top_bottom: 'Système de Poulies',
+    bury: 'Cache',
+    // Theft Pack
+    wildcard: 'Sherpa',
+    mark: 'Balisage',
+    steal_draw: 'Coup de Corde',
+    stash: 'Ravitaillement',
+    // Chaos Pack
+    critical_implosion: 'Effondrement de Glacier',
+    containment_field: 'Igloo',
+    fission: 'Gelures',
+    tribute: 'Partage de Rations',
+    blackout: 'Jour Blanc',
+    // Deity Pack
+    omniscience: 'Œil d’Aigle',
+    miracle: 'Sauvetage Héliporté',
+    smite: 'Tonnerre',
+    rapture: 'Blizzard',
   },
   default: {
     critical_event: 'Incident Critique',

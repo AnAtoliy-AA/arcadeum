@@ -1,55 +1,7 @@
-import styled, { css, DefaultTheme } from 'styled-components';
+import styled from 'styled-components';
 import { Button } from '@/shared/ui';
-import { GAME_VARIANT } from '../../lib/constants';
 
-// Helper functions for variant-specific styles
-const getHeaderBackground = (
-  variant: string | undefined,
-  theme: DefaultTheme,
-) => {
-  if (variant === GAME_VARIANT.CYBERPUNK) {
-    return 'linear-gradient(135deg, rgba(20, 10, 35, 0.95), rgba(45, 10, 60, 0.9))';
-  }
-  if (variant === GAME_VARIANT.UNDERWATER) {
-    return 'linear-gradient(135deg, rgba(8, 51, 68, 0.95), rgba(22, 78, 99, 0.9))';
-  }
-  return `linear-gradient(135deg, ${theme.surfaces.card.background}f5, ${theme.surfaces.panel.background}e8)`;
-};
-
-const getHeaderBorder = (variant: string | undefined, theme: DefaultTheme) => {
-  if (variant === GAME_VARIANT.CYBERPUNK) return 'rgba(192, 38, 211, 0.3)';
-  return `${theme.surfaces.card.border}40`;
-};
-
-const getHeaderLineBackground = (variant: string | undefined) => {
-  if (variant === GAME_VARIANT.CYBERPUNK) {
-    return `linear-gradient(90deg, transparent 0%, rgba(192, 38, 211, 0.6) 25%, rgba(6, 182, 212, 0.6) 50%, rgba(192, 38, 211, 0.6) 75%, transparent 100%)`;
-  }
-  if (variant === GAME_VARIANT.UNDERWATER) {
-    return `linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.6) 25%, rgba(8, 51, 68, 0.6) 50%, rgba(34, 211, 238, 0.6) 75%, transparent 100%)`;
-  }
-  return `linear-gradient(90deg, transparent 0%, rgba(99, 102, 241, 0.4) 25%, rgba(236, 72, 153, 0.4) 50%, rgba(16, 185, 129, 0.4) 75%, transparent 100%)`;
-};
-
-const getHeaderLineShadow = (variant: string | undefined) => {
-  if (variant === GAME_VARIANT.CYBERPUNK) {
-    return '0 0 10px rgba(192, 38, 211, 0.5), 0 0 20px rgba(6, 182, 212, 0.3)';
-  }
-  if (variant === GAME_VARIANT.UNDERWATER) {
-    return '0 0 10px rgba(34, 211, 238, 0.5), 0 0 20px rgba(22, 78, 99, 0.3)';
-  }
-  return 'none';
-};
-
-const getTitleBackground = (variant: string | undefined) => {
-  if (variant === GAME_VARIANT.CYBERPUNK) {
-    return 'linear-gradient(135deg, #c026d3 0%, #06b6d4 50%, #7c3aed 100%)';
-  }
-  if (variant === GAME_VARIANT.UNDERWATER) {
-    return 'linear-gradient(135deg, #22d3ee 0%, #0891b2 50%, #164e63 100%)';
-  }
-  return 'linear-gradient(135deg, #6366f1 0%, #ec4899 50%, #10b981 100%)';
-};
+import { getVariantStyles } from './variants';
 
 // Header Components
 export const GameHeader = styled.div<{ $variant?: string }>`
@@ -58,10 +10,12 @@ export const GameHeader = styled.div<{ $variant?: string }>`
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.75rem;
-  background: ${({ $variant, theme }) => getHeaderBackground($variant, theme)};
+  background: ${({ $variant, theme }) =>
+    getVariantStyles($variant).header.getBackground(theme)};
   backdrop-filter: blur(16px);
   border-bottom: 1px solid
-    ${({ $variant, theme }) => getHeaderBorder($variant, theme)};
+    ${({ $variant, theme }) =>
+      getVariantStyles($variant).header.getBorder(theme)};
   margin: -2rem -2rem 0 -2rem;
   flex-wrap: wrap;
   position: relative;
@@ -75,8 +29,10 @@ export const GameHeader = styled.div<{ $variant?: string }>`
     left: 0;
     right: 0;
     height: 1px;
-    background: ${({ $variant }) => getHeaderLineBackground($variant)};
-    box-shadow: ${({ $variant }) => getHeaderLineShadow($variant)};
+    background: ${({ $variant }) =>
+      getVariantStyles($variant).header.getLineBackground()};
+    box-shadow: ${({ $variant }) =>
+      getVariantStyles($variant).header.getLineShadow()};
   }
 
   @media (max-width: 768px) {
@@ -110,7 +66,8 @@ export const GameTitle = styled.h2<{ $variant?: string }>`
   margin: 0;
   font-size: 1.5rem;
   font-weight: 800;
-  background: ${({ $variant }) => getTitleBackground($variant)};
+  background: ${({ $variant }) =>
+    getVariantStyles($variant).header.getTitleBackground()};
   background-size: 200% 200%;
   animation: gradientShift 6s ease infinite;
   -webkit-background-clip: text;
@@ -119,54 +76,7 @@ export const GameTitle = styled.h2<{ $variant?: string }>`
   letter-spacing: -0.3px;
   position: relative;
 
-  ${({ $variant }) =>
-    $variant === GAME_VARIANT.CYBERPUNK &&
-    css`
-      &::before,
-      &::after {
-        content: attr(data-text);
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #1a0a20;
-      }
-      &::before {
-        left: 2px;
-        text-shadow: -1px 0 #00ffff;
-        background: #1a0a20;
-        animation: glitchTop 1s infinite linear alternate-reverse;
-      }
-      &::after {
-        left: -2px;
-        text-shadow: -1px 0 #ff00ff;
-        background: #1a0a20;
-        animation: glitchBottom 1.5s infinite linear alternate-reverse;
-      }
-    `}
-
-  ${({ $variant }) =>
-    $variant === GAME_VARIANT.UNDERWATER &&
-    css`
-      text-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          transparent 0%,
-          rgba(34, 211, 238, 0.1) 50%,
-          transparent 100%
-        );
-        background-size: 100% 200%;
-        animation: waterReflect 3s infinite linear;
-        pointer-events: none;
-      }
-    `}
+  ${({ $variant }) => getVariantStyles($variant).header.getTitleTextStyles?.()}
 
   @keyframes gradientShift {
     0%,

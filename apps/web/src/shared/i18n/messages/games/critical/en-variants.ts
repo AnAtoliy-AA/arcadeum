@@ -1,5 +1,7 @@
 export const variants = {
   cyberpunk: {
+    name: 'The Short Circuit',
+    description: 'Cyberpunk hackers preventing system overload',
     critical_event: 'System Overload',
     neutralizer: 'Firewall',
     strike: 'DDoS',
@@ -46,6 +48,8 @@ export const variants = {
     rapture: 'Network Crash',
   },
   underwater: {
+    name: 'Deep Sea Pressure',
+    description: 'Underwater horror in a leaking submarine',
     critical_event: 'Hull Breach',
     neutralizer: 'Patch Kit',
     strike: 'Torpedo',
@@ -92,6 +96,8 @@ export const variants = {
     rapture: 'Tidal Pull',
   },
   crime: {
+    name: 'The Heist',
+    description: 'Crime noir theme with police raids and getaways',
     critical_event: 'Police Raid',
     neutralizer: 'Getaway Driver',
     strike: 'Setup',
@@ -138,6 +144,8 @@ export const variants = {
     rapture: 'Asset Seizure',
   },
   horror: {
+    name: 'The Cursed Banquet',
+    description: 'Social horror theme at a dark sorcerer party',
     critical_event: 'Possession',
     neutralizer: 'Salt Circle',
     strike: 'Scream',
@@ -184,6 +192,8 @@ export const variants = {
     rapture: 'Mass Hysteria',
   },
   adventure: {
+    name: 'The Ancient Temple',
+    description: 'Survival adventure in a mysterious temple',
     critical_event: 'Temple Collapse',
     neutralizer: "Idol's Blessing",
     strike: 'Tripwire',
@@ -228,6 +238,54 @@ export const variants = {
     miracle: 'Rescue Chopper',
     smite: 'Landslide',
     rapture: 'Sandstorm',
+  },
+  high_altitude_hike: {
+    name: 'High-Altitude Hike',
+    description: 'Survival adventure escaping an avalanche',
+    critical_event: 'Avalanche',
+    neutralizer: 'Oxygen Tank',
+    strike: 'Ice Axe',
+    evade: 'Parka',
+    trade: 'Gear Swap',
+    reorder: 'Map Check',
+    insight: 'Scout',
+    cancel: 'Ice Wall',
+    targeted_strike: 'Piton',
+    collection_alpha: 'Edelweiss',
+    collection_beta: 'Rare Mineral',
+    collection_gamma: 'Ice Crystal',
+    collection_delta: 'Fossil',
+    collection_epsilon: 'Yeti Hair',
+    // Attack Pack
+    private_strike: 'Altitude Sickness',
+    recursive_strike: 'Snowstorm',
+    mega_evade: 'Base Camp',
+    invert: 'Descent',
+    // Future Pack
+    see_future_5x: 'Summit View',
+    alter_future_3x: 'Route Choice',
+    alter_future_5x: 'Expedition Plan',
+    reveal_future_3x: 'Signal Flare',
+    share_future_3x: 'Radio Check',
+    draw_bottom: 'Snow Dig',
+    swap_top_bottom: 'Pulley System',
+    bury: 'Cache',
+    // Theft Pack
+    wildcard: 'Sherpa',
+    mark: 'Trail Marker',
+    steal_draw: 'Rope Pull',
+    stash: 'Supplies',
+    // Chaos Pack
+    critical_implosion: 'Glacier Collapse',
+    containment_field: 'Igloo',
+    fission: 'Frostbite',
+    tribute: 'Ration Sharing',
+    blackout: 'Whiteout',
+    // Deity Pack
+    omniscience: 'Eagle Eye',
+    miracle: 'Rescue Chopper',
+    smite: 'Thunderclap',
+    rapture: 'Blizzard',
   },
   default: {
     critical_event: 'Unstable Critical',

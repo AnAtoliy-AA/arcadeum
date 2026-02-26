@@ -4,6 +4,10 @@ import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
+import {
   HeroSection,
   HeroBackground,
   HeroContent,
@@ -50,6 +54,7 @@ export function HomeHero() {
   const isAuthenticated = hydrated && !!snapshot.accessToken;
   const primaryHref = isAuthenticated ? routes.games : primaryCta.href;
 
+  const { t } = useTranslation();
   const cards = HERO_CARDS;
 
   return (
@@ -77,7 +82,7 @@ export function HomeHero() {
           {cards.map((card, index) => (
             <HeroCard key={index} $index={index} $color={card.color}>
               <div className="card-top">
-                <span>{card.name}</span>
+                <span>{t(card.name as TranslationKey) || card.name}</span>
                 <span>{card.icon}</span>
               </div>
               <div className="card-center">{card.icon}</div>

@@ -169,9 +169,7 @@ export default function SeaBattleGame({
       if (!accessToken || !roomId) return;
       try {
         await reorderRoomParticipants(roomId, newOrder, accessToken);
-      } catch (error) {
-        console.error('Failed to reorder participants:', error);
-      }
+      } catch {}
     },
     [roomId, accessToken],
   );

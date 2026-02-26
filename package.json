@@ -10,7 +10,8 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "format": "turbo run format --parallel",
-    "check-file-length": "node scripts/check-file-length.js"
+    "check-file-length": "node scripts/check-file-length.js",
+    "check-translations": "node scripts/check_translation.js"
   },
   "devDependencies": {
     "husky": "^9.1.4",

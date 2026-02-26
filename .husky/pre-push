@@ -14,6 +14,13 @@ pnpm run test || {
 cd ../..
 echo "✅ Web unit tests passed"
 
+# Check translations
+echo "Checking translations..."
+node scripts/check_translation.js || {
+  echo "❌ Translation validation failed. Please fix missing translation keys."
+  exit 1
+}
+
 # Run web e2e tests before pushing
 echo "Running e2e tests..."
 cd apps/web

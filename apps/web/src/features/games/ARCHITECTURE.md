@@ -214,7 +214,6 @@ class GameErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Game error:', error, errorInfo);
     // Log to error reporting service
   }
 }

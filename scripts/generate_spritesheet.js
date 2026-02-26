@@ -35,12 +35,15 @@ function getGameVariants() {
 }
 
 const GAME_VARIANT = getGameVariants();
-const SELECTED_VARIANT = GAME_VARIANT.UNDERWATER;
+const SELECTED_VARIANT = GAME_VARIANT.HIGH_ALTITUDE_HIKE;
+const FILE_PREFIX = SELECTED_VARIANT.replace(/-/g, '_');
 
-const ARTIFACTS_DIR = path.resolve(
-  __dirname,
-  '../../.gemini/antigravity/brain/44d3364a-e853-4aa9-9692-188c78ddebc7',
-);
+const ARTIFACTS_DIR = process.argv[2]
+  ? path.resolve(process.cwd(), process.argv[2])
+  : path.resolve(
+      __dirname,
+      '../../../.gemini/antigravity/brain/459da24d-889d-47cc-85c8-995ca25e3ac7',
+    );
 const OUTPUT_PATH = path.resolve(
   __dirname,
   `../apps/web/public/images/cards/${SELECTED_VARIANT}_sprites.png`,
@@ -55,62 +58,62 @@ const TOTAL_SIZE = TILE_SIZE * GRID_SIZE; // 1197
 // keys must match the index in CARD_SPRITE_MAP (implicit in styles/card-sprites.ts which usually follows a specific order)
 const SPRITE_MAP = {
   // EXTRA (Card Back)
-  0: `${SELECTED_VARIANT}_card_back`,
+  0: `${FILE_PREFIX}_card_back`,
 
   // SPECIAL
-  1: `${SELECTED_VARIANT}_system_overload`, // critical_event (Defuse / Hull Repair)
-  2: `${SELECTED_VARIANT}_firewall`, // neutralizer (Nope / Hatch Seal)
+  1: `${FILE_PREFIX}_avalanche`, // critical_event
+  2: `${FILE_PREFIX}_oxygen_tank`, // neutralizer
 
   // CORE
-  3: `${SELECTED_VARIANT}_ddos`, // strike (Attack / Torpedo)
-  4: `${SELECTED_VARIANT}_proxy`, // evade (Skip / Sonar)
-  5: `${SELECTED_VARIANT}_hack`, // trade (Favor / Salvage)
-  6: `${SELECTED_VARIANT}_rehash`, // reorder (Shuffle / Current)
-  7: `${SELECTED_VARIANT}_ping`, // insight (See Future / Periscope)
-  8: `${SELECTED_VARIANT}_404_error`, // cancel (Reverse / Backwash - mapped same as firewall usually? or separate)
+  3: `${FILE_PREFIX}_ice_axe`, // strike
+  4: `${FILE_PREFIX}_parka`, // evade
+  5: `${FILE_PREFIX}_gear_exchange`, // trade
+  6: `${FILE_PREFIX}_map_check`, // reorder
+  7: `${FILE_PREFIX}_scouting`, // insight
+  8: `${FILE_PREFIX}_ice_wall`, // cancel
 
-  // COLLECTION (e.g. Treasures)
-  9: `${SELECTED_VARIANT}_data_chip`,
-  10: `${SELECTED_VARIANT}_bio_implant`,
-  11: `${SELECTED_VARIANT}_neon_katana`,
-  12: `${SELECTED_VARIANT}_holo_disk`,
-  13: `${SELECTED_VARIANT}_cyberskull`,
+  // COLLECTION
+  9: `${FILE_PREFIX}_edelweiss`,
+  10: `${FILE_PREFIX}_rare_mineral`,
+  11: `${FILE_PREFIX}_ice_crystal`,
+  12: `${FILE_PREFIX}_fossil`,
+  13: `${FILE_PREFIX}_yeti_hair`,
 
   // ATTACK PACK
-  14: `${SELECTED_VARIANT}_targeted_malware`,
-  15: `${SELECTED_VARIANT}_self_destruct`,
-  16: `${SELECTED_VARIANT}_botnet`,
-  17: `${SELECTED_VARIANT}_ghost_mode`,
-  18: `${SELECTED_VARIANT}_loopback`,
+  14: `${FILE_PREFIX}_piton`, // targeted_strike
+  15: `${FILE_PREFIX}_altitude_sickness`, // private_strike
+  16: `${FILE_PREFIX}_snowstorm`, // recursive_strike
+  17: `${FILE_PREFIX}_base_camp`, // mega_evade
+  18: `${FILE_PREFIX}_descent`, // invert
 
   // FUTURE PACK
-  19: `${SELECTED_VARIANT}_deep_scan`,
-  20: `${SELECTED_VARIANT}_rewrite`,
-  21: `${SELECTED_VARIANT}_system_override`,
-  22: `${SELECTED_VARIANT}_broadcast`,
-  23: `${SELECTED_VARIANT}_peer_sync`,
-  24: `${SELECTED_VARIANT}_backdoor_access`,
-  25: `${SELECTED_VARIANT}_kernel_swap`,
-  26: `${SELECTED_VARIANT}_decompile`,
+  19: `${FILE_PREFIX}_summit_view`,
+  20: `${FILE_PREFIX}_route_choice`,
+  21: `${FILE_PREFIX}_expedition_plan`,
+  22: `${FILE_PREFIX}_flare`,
+  23: `${FILE_PREFIX}_radio_check`,
+  24: `${FILE_PREFIX}_dig_snow`,
+  25: `${FILE_PREFIX}_pulley_system`,
+  26: `${FILE_PREFIX}_cache`,
 
   // THEFT PACK
-  27: `${SELECTED_VARIANT}_rogue_ai`, // wildcard
-  28: `${SELECTED_VARIANT}_tracker`, // mark
-  29: `${SELECTED_VARIANT}_intercept`, // steal
-  30: `${SELECTED_VARIANT}_encrypted_vault`, // stash
+  27: `${FILE_PREFIX}_sherpa`, // wildcard
+  28: `${FILE_PREFIX}_trail_marker`, // mark
+  29: `${FILE_PREFIX}_rope_tug`, // steal_draw
+  30: `${FILE_PREFIX}_supplies`, // stash
 
   // DEITY PACK
-  31: `${SELECTED_VARIANT}_god_mode`,
-  32: `${SELECTED_VARIANT}_system_restore`,
-  33: `${SELECTED_VARIANT}_neural_shock`,
-  34: `${SELECTED_VARIANT}_network_crash`,
+  31: `${FILE_PREFIX}_eagle_eye`, // omniscience
+  32: `${FILE_PREFIX}_helicopter`, // miracle
+  33: `${FILE_PREFIX}_thunder`, // smite
+  34: `${FILE_PREFIX}_blizzard`, // rapture
 
   // CHAOS PACK
-  35: `${SELECTED_VARIANT}_core_meltdown`,
-  36: `${SELECTED_VARIANT}_sandbox_env`,
-  37: `${SELECTED_VARIANT}_fission`,
-  38: `${SELECTED_VARIANT}_tribute`,
-  39: `${SELECTED_VARIANT}_blackout`,
+  35: `${FILE_PREFIX}_glacier_collapse`, // critical_implosion
+  36: `${FILE_PREFIX}_igloo`, // containment_field
+  37: `${FILE_PREFIX}_frostbite`, // fission
+  38: `${FILE_PREFIX}_rations`, // tribute
+  39: `${FILE_PREFIX}_whiteout`, // blackout
 };
 
 async function generate() {
@@ -157,10 +160,18 @@ function findFileByPrefix(dir, prefix) {
   try {
     const files = fs.readdirSync(dir);
     // Match "prefix_timestamp.png" or just "prefix.png"
-    // We prioritize the most recent timestamp if multiple exist?
-    // For now just finding one.
-    const match = files.find((f) => f.startsWith(prefix) && f.endsWith('.png'));
-    return match;
+    const matches = files
+      .filter((f) => f.startsWith(prefix) && f.endsWith('.png'))
+      .sort((a, b) => {
+        // Extract timestamps if they exist (last part before .png)
+        const getTs = (filename) => {
+          const parts = filename.split('_');
+          const tsPart = parts[parts.length - 1].replace('.png', '');
+          return parseInt(tsPart, 10) || 0;
+        };
+        return getTs(b) - getTs(a); // Descending order
+      });
+    return matches[0] || null;
   } catch (err) {
     console.error('Error reading artifact dir:', err);
     return null;

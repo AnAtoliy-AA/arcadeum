@@ -1,4 +1,4 @@
-import styled, { keyframes } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
 // --- SHARED KEYFRAMES ---
 
@@ -34,6 +34,23 @@ export const sonarSectorRotate = keyframes`
 export const dotFloat = keyframes`
   0%, 100% { transform: translate(0, 0); opacity: 0.4; }
   50% { transform: translate(20px, -30px); opacity: 1; }
+`;
+
+export const fallingSnow = keyframes`
+  0% {
+    transform: translateY(-10vh) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(110vh) translateX(40px) rotate(360deg);
+    opacity: 0;
+  }
 `;
 
 // --- DECORATIVE COMPONENTS ---
@@ -227,5 +244,102 @@ export const CircuitLines = styled.div`
       linear-gradient(90deg, #164e63 1px, transparent 1px) 0 0 / 20px 100%,
       linear-gradient(0deg, #164e63 1px, transparent 1px) 0 0 / 100% 20px;
     mask-image: radial-gradient(circle at bottom right, black, transparent 70%);
+  }
+`;
+
+export const Snowflake = styled.div<{
+  $delay: number;
+  $left: number;
+  $size: number;
+  $duration: number;
+}>`
+  position: absolute;
+  top: -10vh;
+  left: ${({ $left }) => $left}%;
+  width: ${({ $size }) => $size}px;
+  height: ${({ $size }) => $size}px;
+  background: white;
+  border-radius: 50%;
+  filter: blur(1px);
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 1;
+  animation: ${fallingSnow} ${({ $duration }) => $duration}s linear infinite;
+  animation-delay: ${({ $delay }) => $delay}s;
+
+  &::before {
+    content: '*';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: ${({ $size }) => $size * 1.5}px;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+`;
+
+export const IceCrystal = styled.div<{ $corner: 'tl' | 'tr' | 'bl' | 'br' }>`
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.5;
+
+  ${({ $corner }) => {
+    switch ($corner) {
+      case 'tl':
+        return css`
+          top: 10px;
+          left: 10px;
+          transform: rotate(0deg);
+        `;
+      case 'tr':
+        return css`
+          top: 10px;
+          right: 10px;
+          transform: rotate(90deg);
+        `;
+      case 'bl':
+        return css`
+          bottom: 10px;
+          left: 10px;
+          transform: rotate(-90deg);
+        `;
+      case 'br':
+        return css`
+          bottom: 10px;
+          right: 10px;
+          transform: rotate(180deg);
+        `;
+    }
+  }}
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    background: linear-gradient(to bottom, #f8fafc, #7dd3fc);
+    border-radius: 2px;
+  }
+
+  /* Main Spike */
+  &::before {
+    width: 2px;
+    height: 100%;
+    left: 0;
+    top: 0;
+  }
+
+  /* Cross Spikes */
+  &::after {
+    width: 100%;
+    height: 2px;
+    left: 0;
+    top: 0;
   }
 `;

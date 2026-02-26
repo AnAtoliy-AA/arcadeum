@@ -28,6 +28,13 @@ export const VARIANT_COLORS = {
     secondary: '#78350f',
     background: '#451a03',
   },
+  'high-altitude-hike': {
+    primary: '#7dd3fc', // sky-300
+    secondary: '#1e3a8a', // blue-900
+    background: '#020617', // slate-950
+    accent: '#f8fafc', // slate-50
+    border: '#38bdf8', // sky-400
+  },
   default: {
     primary: 'rgba(99, 102, 241, 0.5)',
     secondary: '#0f172a',

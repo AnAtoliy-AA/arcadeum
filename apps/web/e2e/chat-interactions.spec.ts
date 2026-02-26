@@ -112,7 +112,16 @@ test.describe('Chat Interactions', () => {
     );
 
     await navigateTo(page, '/chat?chatId=chat-1&title=Test%20User');
+
+    // Ensure the chat input is visible first (indicates hydration is complete)
+    const input = page.getByPlaceholder(/message|сообщение|Type a message/i);
+    await expect(input.first()).toBeVisible({ timeout: 15000 });
+
+    // Wait for the newest message to appear
     const newestMessage = page.getByText('Newest message');
     await expect(newestMessage).toBeVisible({ timeout: 15000 });
+
+    // Additional wait to ensure scroll has completed
+    await page.waitForTimeout(1000);
   });
 });

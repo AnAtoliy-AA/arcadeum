@@ -1,7 +1,6 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { Button } from '@/shared/ui';
-import { VARIANT_COLORS } from './variant-palette';
-import { GAME_VARIANT } from '../../lib/constants';
+import { getVariantStyles } from './variants';
 
 /* TableInfo, TableStat, StatIcon, StatValue, and InfoCard have been moved to table-info.ts */
 
@@ -41,48 +40,21 @@ export const ActionsHeader = styled.div<{ $variant?: string }>`
   align-items: center;
   margin-bottom: 1.5rem;
   padding: ${({ $variant }) =>
-    $variant === GAME_VARIANT.UNDERWATER ? '0 1rem' : '0 0 0.5rem 0'};
+    getVariantStyles($variant).table.actions?.getContainerStyles?.()
+      ? '0.5rem 1rem'
+      : '0 0 0.5rem 0'};
   background: none;
   position: relative;
 
   ${({ $variant }) =>
-    $variant === GAME_VARIANT.UNDERWATER &&
-    css`
-      margin: 0 0 0.5rem 0;
-      padding: 0.5rem 1rem;
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 1rem;
-        right: 1rem;
-        height: 1px;
-        background: rgba(34, 211, 238, 0.1);
-      }
-    `}
+    getVariantStyles($variant).table.actions?.getContainerStyles?.()}
 
   ${InfoTitle} {
     margin: 0;
     padding: 0;
     border: none;
     ${({ $variant }) =>
-      $variant === GAME_VARIANT.CYBERPUNK &&
-      css`
-        color: ${VARIANT_COLORS.cyberpunk.secondary};
-        text-shadow: 0 0 5px ${VARIANT_COLORS.cyberpunk.secondary}80;
-        font-family: 'Courier New', monospace;
-      `}
-
-    ${({ $variant }) =>
-      $variant === GAME_VARIANT.UNDERWATER &&
-      css`
-        color: #22d3ee;
-        font-family: 'Courier New', monospace;
-        font-weight: 700;
-        font-size: 0.7rem;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-      `}
+      getVariantStyles($variant).table.actions?.getTitleStyles?.()}
 
     &::after {
       display: none;
@@ -95,17 +67,5 @@ export const ActionsToggleButton = styled(Button).attrs({
   size: 'sm',
 })<{ $variant?: string }>`
   ${({ $variant }) =>
-    $variant === GAME_VARIANT.CYBERPUNK &&
-    css`
-      font-family: monospace;
-      text-shadow: 0 0 5px ${VARIANT_COLORS.cyberpunk.secondary}80;
-      border: 1px solid ${VARIANT_COLORS.cyberpunk.secondary}66;
-      border-radius: 4px;
-    `}
-
-  ${({ $variant }) =>
-    $variant === GAME_VARIANT.UNDERWATER &&
-    css`
-      color: #22d3ee;
-    `}
+    getVariantStyles($variant).table.actions?.getButtonStyles?.()}
 `;

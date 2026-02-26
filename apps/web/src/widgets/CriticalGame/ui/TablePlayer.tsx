@@ -8,23 +8,17 @@ import {
   PlayerStatsContainer,
 } from './styles';
 import { ChatBubble } from './ChatBubble';
-import type { CriticalCard, CriticalLogEntry, MarkedCardInfo } from '../types';
+import type { CriticalLogEntry, CriticalPlayerTableState } from '../types';
 
 export interface TablePlayerProps {
-  player: {
-    playerId: string;
-    alive: boolean;
-    hand: CriticalCard[];
-    stash?: CriticalCard[];
-    markedCards?: MarkedCardInfo[];
-  };
+  player: CriticalPlayerTableState;
   index: number;
   totalPlayers: number;
   currentTurnIndex: number;
   currentUserId: string | null;
   logs?: CriticalLogEntry[];
-  resolveDisplayName: (playerId: string, fallback: string) => string;
   cardVariant?: string;
+  resolveDisplayName: (playerId: string, fallback: string) => string;
 }
 
 function findLastMessage(logs: CriticalLogEntry[], playerId: string) {

@@ -70,8 +70,7 @@ export function CopyActionButton({
       timeoutRef.current = setTimeout(() => {
         setStatus('idle');
       }, 2200);
-    } catch (error) {
-      console.error('copy-action-error', error);
+    } catch {
       setStatus('error');
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);

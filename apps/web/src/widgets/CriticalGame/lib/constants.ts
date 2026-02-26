@@ -4,6 +4,7 @@ export const GAME_VARIANT = {
   CRIME: 'crime',
   HORROR: 'horror',
   ADVENTURE: 'adventure',
+  HIGH_ALTITUDE_HIKE: 'high-altitude-hike',
 } as const;
 
 export const CARD_VARIANTS = [
@@ -44,6 +45,13 @@ export const CARD_VARIANTS = [
     emoji: '🏔️',
     gradient: 'linear-gradient(135deg, #4F566B 0%, #FF4D4D 100%)',
     disabled: true,
+  },
+  {
+    id: GAME_VARIANT.HIGH_ALTITUDE_HIKE,
+    name: 'games.critical_v1.variants.high_altitude_hike.name',
+    description: 'games.critical_v1.variants.high_altitude_hike.description',
+    emoji: '🏔️',
+    gradient: 'linear-gradient(135deg, #7dd3fc 0%, #1e3a8a 100%)',
   },
 ] as const;
 

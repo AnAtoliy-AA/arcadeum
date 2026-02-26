@@ -1,4 +1,4 @@
-import { variants } from './fr-variants';
+import { variants as cardVariants } from './fr-variants';
 
 export const frMessages = {
   critical_v1: {
@@ -56,6 +56,10 @@ export const frMessages = {
         description: 'Thème d’horreur sociale à la fête d’un mage noir',
       },
       adventure: {
+        name: 'Le Temple Antique',
+        description: 'Survie dans une aventure dans un temple mystérieux',
+      },
+      high_altitude_hike: {
         name: 'Randonnée en Montagne',
         description: 'Survie dans une aventure en échappant à une avalanche',
       },
@@ -183,7 +187,7 @@ export const frMessages = {
         smite: 'Choisissez un joueur. Il doit prendre 3 tours immédiatement',
         rapture: 'Tous les autres joueurs doivent vous donner une carte',
       },
-      variants,
+      variants: cardVariants,
     },
     actions: {
       start: 'Démarrer le Jeu',

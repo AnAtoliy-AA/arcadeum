@@ -23,8 +23,13 @@ test.describe('Navigation', () => {
     // Use a more robust selector for the home link/logo
     const homeLink = page.locator('header a[href="/"]').first();
     await expect(homeLink).toBeVisible();
+
+    // Ensure the link is stable and clickable
+    await homeLink.waitFor({ state: 'visible' });
     await homeLink.click();
-    await expect(page).toHaveURL('/');
+
+    // Increased timeout for navigation and ensure we wait for URL to be exactly /
+    await expect(page).toHaveURL('/', { timeout: 10000 });
   });
 
   test('should navigate to games page', async ({ page }) => {

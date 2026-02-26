@@ -86,6 +86,12 @@ const homeMessagesDefinition = {
       'Descarga las últimas compilaciones de Expo para iOS y Android directamente desde la web.',
     downloadsIosLabel: 'Descargar para iOS',
     downloadsAndroidLabel: 'Descargar para Android',
+    // Games section
+    gamesTitle: 'Juegos Destacados',
+    gamesSubtitle:
+      'Explora nuestra creciente biblioteca de experiencias de mesa',
+    gamePlayButton: 'Jugar Ahora',
+    gameComingSoon: 'Próximamente',
     // Features section
     featuresTitle: '¿Por qué {{appName}}?',
     featuresSubtitle:
@@ -131,6 +137,10 @@ const homeMessagesDefinition = {
     comingSoon: 'Próximamente',
     mobileComingSoonDescription:
       'Las apps nativas de iOS y Android para {{appName}} están en desarrollo. ¡Mantente atento!',
+    // Footer
+    footerFollowUs: 'Síguenos',
+    footerCommunity: 'Únete a la comunidad',
+    footerRights: '© {{year}} {{appName}}. Todos los derechos reservados.',
   },
   fr: {
     kicker: 'Plateforme pour jeux de société en ligne',
@@ -199,6 +209,10 @@ const homeMessagesDefinition = {
     comingSoon: 'Bientôt disponible',
     mobileComingSoonDescription:
       "Les applications natives iOS et Android pour {{appName}} sont en développement. Restez à l'écoute !",
+    // Footer
+    footerFollowUs: 'Suivez-nous',
+    footerCommunity: 'Rejoindre la communauté',
+    footerRights: '© {{year}} {{appName}}. Tous droits réservés.',
   },
   ru: {
     kicker: 'Будущее настольных игр',

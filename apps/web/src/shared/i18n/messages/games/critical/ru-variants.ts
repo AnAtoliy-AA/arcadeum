@@ -1,5 +1,7 @@
 export const variants = {
   cyberpunk: {
+    name: 'Короткое замыкание',
+    description: 'Киберпанк-хакеры предотвращают перегрузку системы',
     critical_event: 'Перегрузка системы',
     neutralizer: 'Файрвол',
     strike: 'DDoS',
@@ -46,6 +48,8 @@ export const variants = {
     rapture: 'Крах сети',
   },
   underwater: {
+    name: 'Глубоководное давление',
+    description: 'Подводный хоррор в протекающей субмарине',
     critical_event: 'Пробоина в корпусе',
     neutralizer: 'Ремкомплект',
     strike: 'Торпеда',
@@ -92,6 +96,8 @@ export const variants = {
     rapture: 'Приливное притяжение',
   },
   crime: {
+    name: 'Ограбление',
+    description: 'Нуарная тема с полицейскими рейдами и побегами',
     critical_event: 'Полицейский рейд',
     neutralizer: 'Водитель для побега',
     strike: 'Засада',
@@ -138,6 +144,8 @@ export const variants = {
     rapture: 'Конфискация активов',
   },
   horror: {
+    name: 'Проклятый банкет',
+    description: 'Тема социального хоррора на вечеринке темного мага',
     critical_event: 'Одержимость',
     neutralizer: 'Круг соли',
     strike: 'Крик',
@@ -184,6 +192,8 @@ export const variants = {
     rapture: 'Массовая истерия',
   },
   adventure: {
+    name: 'Древний храм',
+    description: 'Выживание в приключении в таинственном храме',
     critical_event: 'Обрушение храма',
     neutralizer: 'Благословение идола',
     strike: 'Растяжка',
@@ -228,6 +238,54 @@ export const variants = {
     miracle: 'Спасательный вертолет',
     smite: 'Оползень',
     rapture: 'Песчаная буря',
+  },
+  high_altitude_hike: {
+    name: 'Горный поход',
+    description: 'Выживание в приключении, спасаясь от лавины',
+    critical_event: 'Лавина',
+    neutralizer: 'Кислородный баллон',
+    strike: 'Ледоруб',
+    evade: 'Парка',
+    trade: 'Обмен снаряжением',
+    reorder: 'Сверка с картой',
+    insight: 'Разведка',
+    cancel: 'Ледяная стена',
+    targeted_strike: 'Питон',
+    collection_alpha: 'Эдельвейс',
+    collection_beta: 'Редкий минерал',
+    collection_gamma: 'Ледяной кристалл',
+    collection_delta: 'Окаменелость',
+    collection_epsilon: 'Шерсть йети',
+    // Attack Pack
+    private_strike: 'Горная болезнь',
+    recursive_strike: 'Снежная буря',
+    mega_evade: 'Базовый лагерь',
+    invert: 'Спуск',
+    // Future Pack
+    see_future_5x: 'Вид с вершины',
+    alter_future_3x: 'Выбор маршрута',
+    alter_future_5x: 'План экспедиции',
+    reveal_future_3x: 'Сигнальная ракета',
+    share_future_3x: 'Проверка связи',
+    draw_bottom: 'Раскопка снега',
+    swap_top_bottom: 'Система блоков',
+    bury: 'Тайник',
+    // Theft Pack
+    wildcard: 'Шерпа',
+    mark: 'Тропа',
+    steal_draw: 'Трос',
+    stash: 'Припасы',
+    // Chaos Pack
+    critical_implosion: 'Обвал ледника',
+    containment_field: 'Иглу',
+    fission: 'Обморожение',
+    tribute: 'Раздача пайков',
+    blackout: 'Белая мгла',
+    // Deity Pack
+    omniscience: 'Орлиный глаз',
+    miracle: 'Вертолет спасения',
+    smite: 'Удар грома',
+    rapture: 'Метель',
   },
   default: {
     critical_event: 'Критическая ситуация',

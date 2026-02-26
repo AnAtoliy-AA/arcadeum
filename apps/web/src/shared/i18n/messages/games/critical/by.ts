@@ -1,4 +1,4 @@
-import { variants } from './be-variants';
+import { variants as cardVariants } from './by-variants';
 
 export const byMessages = {
   critical_v1: {
@@ -56,6 +56,10 @@ export const byMessages = {
         description: 'Тэма сацыяльнага хоррэра на вечарыне цёмнага мага',
       },
       adventure: {
+        name: 'Старажытны храм',
+        description: 'Выжыванне ў прыгодзе ў таямнічым храме',
+      },
+      high_altitude_hike: {
         name: 'Горны паход',
         description: 'Выжыванне ў прыгодзе, ратуючыся ад лавіны',
       },
@@ -180,7 +184,7 @@ export const byMessages = {
         rapture:
           'Усе астатнія гульцы павінны аддаць вам па адной карце з рукі.',
       },
-      variants,
+      variants: cardVariants,
     },
     actions: {
       start: 'Пачаць гульню',

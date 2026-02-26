@@ -16,6 +16,7 @@ import {
   ChatSendButton,
   InfoTitle,
   ChatCloseButton,
+  LogSender,
 } from './styles';
 
 type GameLog = NonNullable<CriticalSnapshot['logs']>[number];
@@ -100,17 +101,15 @@ export function ChatSection({
                 log.senderId ?? undefined,
                 log.senderName ?? undefined,
               ) && (
-                <strong
-                  style={{
-                    color: getUserColor(log.senderId || log.senderName || ''),
-                  }}
+                <LogSender
+                  $color={getUserColor(log.senderId || log.senderName || '')}
                 >
                   {resolveDisplayName(
                     log.senderId ?? undefined,
                     log.senderName ?? undefined,
                   )}
                   :{' '}
-                </strong>
+                </LogSender>
               )}
               {formatLogMessage(log.message)}
             </LogEntry>

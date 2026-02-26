@@ -108,6 +108,12 @@ const supportMessagesDefinition = {
         cta: 'Copiar datos de IBAN',
         successMessage: 'IBAN copiado al portapapeles: {{iban}}',
       },
+      linkedin: {
+        title: 'Conectar en LinkedIn',
+        description:
+          'Sigue las actualizaciones y noticias profesionales de {{appName}}.',
+        cta: 'Conectar',
+      },
     },
   },
   fr: {
@@ -159,6 +165,12 @@ const supportMessagesDefinition = {
           "Besoin de payer par carte via votre banque ? Saisissez l'IBAN {{iban}} pour envoyer des fonds directement à {{appName}}.",
         cta: "Copier l'IBAN",
         successMessage: 'IBAN copié dans le presse-papiers : {{iban}}',
+      },
+      linkedin: {
+        title: 'Se connecter sur LinkedIn',
+        description:
+          'Suivez les mises à jour et les actualités professionnelles de {{appName}}.',
+        cta: 'Se connecter',
       },
     },
   },

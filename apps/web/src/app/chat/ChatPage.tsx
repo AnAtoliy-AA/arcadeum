@@ -174,7 +174,7 @@ export function ChatPage() {
     chatApi
       .getMessages(chatId, { token: snapshot.accessToken })
       .then(setMessages)
-      .catch((err) => console.error(err));
+      .catch(() => {});
 
     return () => {
       reset();
@@ -227,8 +227,9 @@ export function ChatPage() {
 
           <MessagesContainer>
             {messages.map((msg) => {
+              if (!msg) return null;
               const isEncrypted = !msg.content && '__encrypted' in msg;
-              if (!msg || (!msg.content && !isEncrypted)) return null;
+              if (!msg.content && !isEncrypted) return null;
 
               const isOwn = msg.senderId === snapshot.userId;
 

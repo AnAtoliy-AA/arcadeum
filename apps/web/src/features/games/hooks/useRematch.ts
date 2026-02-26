@@ -122,9 +122,7 @@ export function useRematch({
         token: snapshot.accessToken || undefined,
       });
     },
-    onError: (err) => {
-      console.error('Failed to decline invitation', err);
-    },
+    onError: () => {},
   });
 
   // Mutation for reinviting users
@@ -134,9 +132,7 @@ export function useRematch({
         token: snapshot.accessToken || undefined,
       });
     },
-    onError: (err) => {
-      console.error('Failed to reinvite', err);
-    },
+    onError: (_err) => {},
   });
 
   // Mutation for blocking rematch
@@ -149,9 +145,7 @@ export function useRematch({
     onSuccess: () => {
       setInvitation(null);
     },
-    onError: (err) => {
-      console.error('Failed to block rematch', err);
-    },
+    onError: (_err) => {},
   });
 
   // Mutation for blocking user
@@ -164,9 +158,7 @@ export function useRematch({
     onSuccess: () => {
       setInvitation(null);
     },
-    onError: (err) => {
-      console.error('Failed to block user', err);
-    },
+    onError: (_err) => {},
   });
 
   // Timer logic - auto-decline when time expires

@@ -5,6 +5,7 @@ export {
   TableArea,
   HandSection,
   HandContainer,
+  FrostyVignette,
 } from './layout';
 
 // Header Components
@@ -57,6 +58,8 @@ export {
   SonarRadar,
   Bubble,
   FishSilhouette,
+  Snowflake,
+  IceCrystal,
 } from './table-decorations';
 
 export { InfoTitle, ActionsHeader, ActionsToggleButton } from './table-widgets';
@@ -123,6 +126,7 @@ export {
   ChatSendButton,
   EmptyState,
   ChatBubbleContainer,
+  LogSender,
 } from './chat-widgets';
 
 // Modal Components

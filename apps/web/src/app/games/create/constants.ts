@@ -203,6 +203,13 @@ export const CARD_VARIANTS: {
     gradient: 'linear-gradient(135deg, #4F566B 0%, #FF4D4D 100%)',
     disabled: true,
   },
+  {
+    id: 'high-altitude-hike',
+    name: 'games.critical_v1.variants.high_altitude_hike.name',
+    description: 'games.critical_v1.variants.high_altitude_hike.description',
+    emoji: '🏔️',
+    gradient: 'linear-gradient(135deg, #7dd3fc 0%, #1e3a8a 100%)',
+  },
 ];
 
 export const gamesCatalog = [

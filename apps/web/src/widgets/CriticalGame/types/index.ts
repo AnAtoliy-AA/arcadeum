@@ -126,3 +126,11 @@ export interface PendingFavor {
   requesterId: string;
   targetId: string;
 }
+
+export interface CriticalPlayerTableState {
+  playerId: string;
+  alive: boolean;
+  hand: CriticalCard[];
+  stash?: CriticalCard[];
+  markedCards?: MarkedCardInfo[];
+}

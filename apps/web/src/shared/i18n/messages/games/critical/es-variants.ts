@@ -1,5 +1,7 @@
 export const variants = {
   cyberpunk: {
+    name: 'Cortocircuito',
+    description: 'Hackers cyberpunk evitan la sobrecarga del sistema',
     critical_event: 'Sobrecarga del Sistema',
     neutralizer: 'Cortafuegos',
     strike: 'DDoS',
@@ -45,6 +47,8 @@ export const variants = {
     rapture: 'Arrebato',
   },
   underwater: {
+    name: 'Presión Profunda',
+    description: 'Horror bajo el agua en un submarino con fugas',
     critical_event: 'Brecha en el Casco',
     neutralizer: 'Kit de Parcheo',
     strike: 'Torpedo',
@@ -90,6 +94,8 @@ export const variants = {
     rapture: 'Arrebato',
   },
   crime: {
+    name: 'El Atraco',
+    description: 'Tema noir con redadas policiales y huidas',
     critical_event: 'Redada Policial',
     neutralizer: 'Conductor de Fuga',
     strike: 'Trampa',
@@ -135,6 +141,8 @@ export const variants = {
     rapture: 'Arrebato',
   },
   horror: {
+    name: 'Banquete Maldito',
+    description: 'Tema de horror social en la fiesta de un mago oscuro',
     critical_event: 'Posesión',
     neutralizer: 'Círculo de Sal',
     strike: 'Grito',
@@ -180,6 +188,8 @@ export const variants = {
     rapture: 'Arrebato',
   },
   adventure: {
+    name: 'El Templo Antiguo',
+    description: 'Supervivencia en una aventura en un templo misterioso',
     critical_event: 'Colapso del Templo',
     neutralizer: 'Bendición del Ídolo',
     strike: 'Tripwire',
@@ -223,6 +233,54 @@ export const variants = {
     miracle: 'Milagro',
     smite: 'Desprendimiento',
     rapture: 'Tormenta de arena',
+  },
+  high_altitude_hike: {
+    name: 'Caminata por la Montaña',
+    description: 'Supervivencia en una aventura escapando de una avalancha',
+    critical_event: 'Avalancha',
+    neutralizer: 'Tanque de Oxígeno',
+    strike: 'Piolet',
+    evade: 'Parca',
+    trade: 'Intercambio de Equipo',
+    reorder: 'Revisión del Mapa',
+    insight: 'Exploración',
+    cancel: 'Pared de Hielo',
+    targeted_strike: 'Pitón',
+    collection_alpha: 'Edelweiss',
+    collection_beta: 'Mineral Raro',
+    collection_gamma: 'Cristal de Hielo',
+    collection_delta: 'Fósil',
+    collection_epsilon: 'Pelo de Yeti',
+    // Attack Pack
+    private_strike: 'Mal de Altura',
+    recursive_strike: 'Tormenta de Nieve',
+    mega_evade: 'Campamento Base',
+    invert: 'Descenso',
+    // Future Pack
+    see_future_5x: 'Vista de la Cumbre',
+    alter_future_3x: 'Elección de Ruta',
+    alter_future_5x: 'Plan de Expedición',
+    reveal_future_3x: 'Bengala de Señal',
+    share_future_3x: 'Control de Radio',
+    draw_bottom: 'Excavar Nieve',
+    swap_top_bottom: 'Sistema de Poleas',
+    bury: 'Escondite',
+    // Theft Pack
+    wildcard: 'Sherpa',
+    mark: 'Marcador de Camino',
+    steal_draw: 'Tirón de Cuerda',
+    stash: 'Suministros',
+    // Chaos Pack
+    critical_implosion: 'Colapso Glaciar',
+    containment_field: 'Iglú',
+    fission: 'Congelación',
+    tribute: 'Reparto de Raciones',
+    blackout: 'Ceguera Blanca',
+    // Deity Pack
+    omniscience: 'Ojo de Águila',
+    miracle: 'Rescate en Helicóptero',
+    smite: 'Trueno',
+    rapture: 'Ventisca',
   },
   default: {
     critical_event: 'Incidente Crítico',

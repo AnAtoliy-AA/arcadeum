@@ -1,4 +1,4 @@
-import { variants } from './en-variants';
+import { variants as cardVariants } from './en-variants';
 
 export const enMessages = {
   critical_v1: {
@@ -55,6 +55,10 @@ export const enMessages = {
         description: 'Social horror theme at a dark sorcerer party',
       },
       adventure: {
+        name: 'The Ancient Temple',
+        description: 'Survival adventure in a mysterious temple',
+      },
+      high_altitude_hike: {
         name: 'High-Altitude Hike',
         description: 'Survival adventure escaping an avalanche',
       },
@@ -176,7 +180,7 @@ export const enMessages = {
         smite: 'Choose a player. They must take 3 turns immediately.',
         rapture: 'All other players must give you one card from their hand.',
       },
-      variants,
+      variants: cardVariants,
     },
     actions: {
       start: 'Start Game',

@@ -24,6 +24,7 @@ import { RulesModal } from './RulesModal';
 import React, { useState } from 'react';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 import { MaximizeIcon, MinimizeIcon } from '@/shared/ui';
+import { TranslationKey } from '@/shared/lib/useTranslation';
 
 interface CriticalGameHeaderProps {
   room: GameRoomSummary;
@@ -93,8 +94,16 @@ export function CriticalGameHeader({
             }}
           >
             :{' '}
-            {CARD_VARIANTS.find((v) => v.id === room.gameOptions?.cardVariant)
-              ?.name || 'Classic'}
+            {(() => {
+              const variant = CARD_VARIANTS.find(
+                (v) => v.id === room.gameOptions?.cardVariant,
+              );
+              return variant
+                ? t(variant.name as TranslationKey)
+                : t(
+                    'games.critical_v1.variants.cyberpunk.name' as TranslationKey,
+                  ); // Fallback to default variant name instead of 'Classic'
+            })()}
           </span>
         </GameTitle>
         <RoomNameBadge>

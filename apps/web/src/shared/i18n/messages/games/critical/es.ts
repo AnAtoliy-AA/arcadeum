@@ -1,4 +1,4 @@
-import { variants } from './es-variants';
+import { variants as cardVariants } from './es-variants';
 
 export const esMessages = {
   critical_v1: {
@@ -56,6 +56,10 @@ export const esMessages = {
         description: 'Tema de horror social en la fiesta de un mago oscuro',
       },
       adventure: {
+        name: 'El Templo Antiguo',
+        description: 'Supervivencia en una aventura en un templo misterioso',
+      },
+      high_altitude_hike: {
         name: 'Caminata por la Montaña',
         description: 'Supervivencia en una aventura escapando de una avalancha',
       },
@@ -178,7 +182,7 @@ export const esMessages = {
         smite: 'Elige un jugador. Debe tomar 3 turnos inmediatamente',
         rapture: 'Todos los otros jugadores deben darte una carta de su mano',
       },
-      variants,
+      variants: cardVariants,
     },
     actions: {
       start: 'Iniciar Juego',

@@ -1,4 +1,4 @@
-import { variants } from './ru-variants';
+import { variants as cardVariants } from './ru-variants';
 
 export const ruMessages = {
   critical_v1: {
@@ -56,6 +56,10 @@ export const ruMessages = {
         description: 'Тема социального хоррора на вечеринке темного мага',
       },
       adventure: {
+        name: 'Древний храм',
+        description: 'Выживание в приключении в таинственном храме',
+      },
+      high_altitude_hike: {
         name: 'Горный поход',
         description: 'Выживание в приключении, спасаясь от лавины',
       },
@@ -182,7 +186,7 @@ export const ruMessages = {
         rapture:
           'Все остальные игроки должны отдать вам по одной карте из руки.',
       },
-      variants,
+      variants: cardVariants,
     },
     actions: {
       start: 'Начать игру',

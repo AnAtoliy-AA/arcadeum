@@ -11,6 +11,7 @@ import { CARD_VARIANTS, RANDOM_VARIANT, GAME_VARIANT } from '../lib/constants';
 import { VariantSelector } from './VariantSelector';
 import { RulesModal } from './RulesModal';
 import { VariantSelectorWrapper } from './styles/lobby';
+import { TranslationKey } from '@/shared/lib/useTranslation';
 
 // Get theme based on card variant
 const getCriticalTheme = (variant?: string): GameLobbyTheme => {
@@ -125,9 +126,9 @@ export function CriticalLobby({
       onReorderPlayers={onReorderPlayers}
       onReinvite={onReinvite}
       // Game info
-      gameName="Critical"
+      gameName={t('games.critical_v1.name')}
       gameIcon="🐱💣"
-      variantName={variantInfo.name}
+      variantName={t(variantInfo.name as TranslationKey)}
       roomIcon={variantInfo.emoji}
       minPlayers={2}
       // Labels using translations

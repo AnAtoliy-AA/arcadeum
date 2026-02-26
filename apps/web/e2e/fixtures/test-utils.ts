@@ -148,6 +148,7 @@ export interface MockRoomInfoOverrides {
   session?: unknown;
 }
 
+// Create a dynamic mock for room info that uses the actual room ID from the request
 export async function mockRoomInfo(
   page: Page,
   overrides: MockRoomInfoOverrides = {},
@@ -177,12 +178,44 @@ export async function mockRoomInfo(
     }, session);
   }
 
+  // Mock the room info endpoint with dynamic room ID matching
   await page.route('**/games/room-info', async (route) => {
     if (route.request().method() !== 'POST') return route.continue();
+
+    const postData = await route.request().postDataJSON();
+    const roomId = postData?.roomId;
+
+    // Use the actual room ID from the request if provided
+    const mockRoom = {
+      ...room,
+      id: roomId || room.id,
+    };
+
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ room, session }),
+      body: JSON.stringify({ room: mockRoom, session }),
+    });
+  });
+
+  // Mock the create room endpoint
+  await page.route('**/games/rooms', async (route) => {
+    if (route.request().method() !== 'POST') return route.continue();
+
+    const postData = await route.request().postDataJSON();
+    const roomId = postData?.gameId
+      ? '507f1f77bcf86cd799439011'
+      : MOCK_OBJECT_ID;
+
+    const createdRoom = {
+      ...room,
+      id: roomId,
+    };
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ room: createdRoom }),
     });
   });
 }

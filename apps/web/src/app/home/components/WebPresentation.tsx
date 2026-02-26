@@ -82,9 +82,7 @@ export function WebPresentation() {
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen().catch((err) => {
-        console.error(`Error attempting to enable fullscreen: ${err.message}`);
-      });
+      containerRef.current?.requestFullscreen().catch(() => {});
     } else {
       document.exitFullscreen();
     }

@@ -234,7 +234,9 @@ export default function SeaBattleGame({
     }
     if (!currentTurnPlayer) return '';
     if (currentTurnPlayer.playerId === currentUserId) {
-      return t('games.sea_battle_v1.table.players.yourTurnAttack');
+      return t(
+        'games.sea_battle_v1.table.players.yourTurnAttack' as TranslationKey,
+      ).replace('🎯 ', '');
     }
     return t('games.sea_battle_v1.table.players.waitingFor', {
       player: resolveDisplayName(currentTurnPlayer.playerId, 'opponent'),

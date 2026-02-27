@@ -24,14 +24,20 @@ const LayoutContainer = styled.div<{ $variant?: string; $isMyTurn?: boolean }>`
   min-height: 600px;
   position: relative;
   overflow: hidden;
-  height: 100dvh;
+  height: calc(100dvh - 64px);
   width: 100%;
   box-sizing: border-box;
 
-  /* Basic responsive styles */
   @media (max-width: 768px) {
-    padding: 0;
+    padding: 1rem;
+    gap: 1rem;
+    height: calc(100dvh - 64px);
     border-radius: 0;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.5rem;
+    gap: 0.75rem;
   }
 `;
 

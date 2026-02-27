@@ -239,7 +239,7 @@ export const variants = {
     smite: 'Апаўзень',
     rapture: 'Пясчаная бура',
   },
-  high_altitude_hike: {
+  'high-altitude-hike': {
     name: 'Горны паход',
     description: 'Выжыванне ў прыгодзе, ратуючыся ад лавіны',
     critical_event: 'Лавіна',

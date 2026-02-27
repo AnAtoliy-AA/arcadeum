@@ -59,7 +59,7 @@ export const byMessages = {
         name: 'Старажытны храм',
         description: 'Выжыванне ў прыгодзе ў таямнічым храме',
       },
-      high_altitude_hike: {
+      'high-altitude-hike': {
         name: 'Горны паход',
         description: 'Выжыванне ў прыгодзе, ратуючыся ад лавіны',
       },

@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [1.6.4] - 2026-02-27
+
+### Added
+- add alternative deployment (ARC-422)
+- new high altitude hike critical game variant (ARC-420)
+- threads discord and x links (ARC-405)
+
+### Fixed
+- high altitude game translations (ARC-431)
+- scroll ui styles in game rules modal (ARC-416)
+- sea battle clear understanding of whose turn (ARC-412)
+- clear invite link (ARC-407)
+- version bump yml (ARC-421)
+- version bump yml (ARC-421)
+- version bump yml (ARC-421)
+- use by instead of be (ARC-415)
+- sea battle modern colors (ARC-406)
+- e2e tests utils (ARC-405)
+
+### Documentation
+- code of conduct (ARC-424)
+- update (ARC-421)
+- contributing rules (ARC-411)
+
+
 ## [1.6.3] - 2026-02-27
 
 ### Added
@@ -23,8 +50,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - minor version number (N/A)
 - release version after merging to main (ARC-429)
-
-## [Unreleased]
 
 ## [1.5.12] - 2026-02-27
 

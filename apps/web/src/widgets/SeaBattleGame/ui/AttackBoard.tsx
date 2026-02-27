@@ -16,7 +16,13 @@ import {
   ColLabels,
   Label,
   MainGameArea,
+  BadgeWrapper,
 } from './styles';
+import { Badge } from '@/shared/ui/Badge';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import { getTheme } from '../lib/theme';
 
 interface AttackBoardProps {
@@ -39,6 +45,7 @@ export function AttackBoard({
   disabled = false,
   variant = 'classic',
 }: AttackBoardProps & { variant?: string }) {
+  const { t } = useTranslation();
   const theme = getTheme(variant);
   const currentPlayer = useMemo(() => {
     return players.find((p) => p.playerId === currentUserId) || null;
@@ -70,7 +77,18 @@ export function AttackBoard({
       <GridsContainer>
         {/* Own board - view only */}
         {currentPlayer && (
-          <PlayerSection $isMe $isActive={false} $theme={theme}>
+          <PlayerSection
+            $isMe
+            $isActive={currentTurnPlayerId === currentUserId}
+            $theme={theme}
+          >
+            {currentTurnPlayerId === currentUserId && (
+              <BadgeWrapper>
+                <Badge variant="success" size="sm" pulse>
+                  {t('games.sea_battle_v1.table.players.yourTurn')}
+                </Badge>
+              </BadgeWrapper>
+            )}
             <PlayerName $theme={theme}>
               {resolveDisplayName(currentPlayer.playerId, 'You')} (Your Fleet)
             </PlayerName>
@@ -114,9 +132,19 @@ export function AttackBoard({
           <PlayerSection
             key={opponent.playerId}
             $isMe={false}
-            $isActive={currentTurnPlayerId === currentUserId}
+            $isActive={currentTurnPlayerId === opponent.playerId}
+            $isTargetable={isMyTurn}
             $theme={theme}
           >
+            {currentTurnPlayerId === opponent.playerId && (
+              <BadgeWrapper>
+                <Badge variant="success" size="sm" pulse>
+                  {t(
+                    'games.sea_battle_v1.table.players.alive' as TranslationKey,
+                  )}
+                </Badge>
+              </BadgeWrapper>
+            )}
             <PlayerName $theme={theme}>
               {resolveDisplayName(opponent.playerId, 'Opponent')}
             </PlayerName>

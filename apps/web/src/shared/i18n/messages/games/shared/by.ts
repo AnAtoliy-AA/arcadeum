@@ -66,7 +66,9 @@ export const byMessages = {
     watchRoom: 'Глядзець',
     joinByCode: 'Увайсці па кодзе',
     cancel: 'Адмена',
-    copyInviteLink: 'Капіяваць спасылку',
+    copyInviteLink: 'Падзяліцца спасылкай на гульню',
+    copyInviteLinkCopied: 'Скапіявана!',
+    copyInviteLinkButton: 'Падзяліцца спасылкай',
     actions: {
       backToHome: 'На галоўную',
     },
@@ -125,11 +127,13 @@ export const byMessages = {
     },
   },
   inviteCode: {
-    title: 'Увайсці па кодзе',
+    title: 'Увайсці ў прыватную гульню',
     label: 'Увядзіце код запрашэння',
     placeholder: 'напрыклад, A1B2C3',
     join: 'Увайсці',
     joining: 'Уваход...',
+    helper:
+      'Гэты код быў прадастаўлены арганізатарам гульні. Увядзіце яго дакладна так, як паказана, без прабелаў.',
     errors: {
       notFound: 'Зал не знойдзены або код несапраўдны',
       searchFailed: 'Не ўдалося знайсці зал',

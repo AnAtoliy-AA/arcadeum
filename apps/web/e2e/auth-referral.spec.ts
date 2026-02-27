@@ -76,12 +76,13 @@ test.describe('Auth Referral Code Registration', () => {
     // 2. The form should automatically be in register mode.
     // We can verify this by checking if the username or confirm password fields are visible
     // or if the submit button says "Sign up" / "Register".
-    const submitBtn = page
-      .getByRole('button', {
-        name: /create account|register|sign up|зарегистрироваться/i,
-      })
-      .first();
-
+    // We use a generic locator and wait for the text to change to the "register" label
+    // since the mode toggle happens asynchronously in an useEffect.
+    const submitBtn = page.locator('button[type="submit"]').first();
+    await expect(submitBtn).toHaveText(
+      /create account|register|sign up|зарегистрироваться/i,
+      { timeout: 10000 },
+    );
     await expect(submitBtn).toBeVisible();
 
     // 3. Locate the referral code input

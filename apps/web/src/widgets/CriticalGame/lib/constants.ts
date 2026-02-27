@@ -63,6 +63,8 @@ export const RANDOM_VARIANT = {
   gradient: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
 };
 
+export const CRITICAL_VARIANTS = [...CARD_VARIANTS, RANDOM_VARIANT] as const;
+
 export type CardTypeKey =
   | 'critical_event'
   | 'neutralizer'

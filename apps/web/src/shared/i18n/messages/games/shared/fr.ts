@@ -66,7 +66,9 @@ export const frMessages = {
     watchRoom: 'Regarder',
     joinByCode: 'Rejoindre par code',
     cancel: 'Annuler',
-    copyInviteLink: "Copier le lien d'invitation",
+    copyInviteLink: 'Partager le lien de jeu',
+    copyInviteLinkCopied: 'Copié !',
+    copyInviteLinkButton: 'Partager le lien',
     actions: {
       backToHome: "Retour à l'Accueil",
     },
@@ -128,11 +130,13 @@ export const frMessages = {
     },
   },
   inviteCode: {
-    title: "Rejoindre par Code d'Invitation",
+    title: 'Rejoindre une Partie Privée',
     label: "Code d'invitation",
     placeholder: 'ex. A1B2C3',
     join: 'Rejoindre',
     joining: 'Rejoindre...',
+    helper:
+      "Ce code a été partagé par l'hôte du jeu. Tapez-le exactement comme indiqué, sans espaces.",
     errors: {
       notFound: 'Salle non trouvée ou code invalide',
       searchFailed: 'Échec de la recherche de salle',

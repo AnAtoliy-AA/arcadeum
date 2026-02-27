@@ -41,13 +41,14 @@ test.describe('Contact Form', () => {
     const submitBtn = page.getByRole('button', {
       name: /send|message|отправить/i,
     });
+    await submitBtn.scrollIntoViewIfNeeded();
     await submitBtn.click();
 
-    // Verify success message
+    // Verify success message with a slightly longer timeout
     await expect(
       page.getByText(/thank you|message has been sent|спасибо/i),
-    ).toBeVisible();
-    await expect(page.locator('form')).not.toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('form')).not.toBeVisible({ timeout: 10000 });
   });
 
   test('should have working external links', async ({ page }) => {

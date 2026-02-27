@@ -251,9 +251,11 @@ export function GamesControlPanel({
         variant="secondary"
         size="sm"
         onClick={handleCopyInviteLink}
-        title={t('games.common.copyInviteLink') || 'Copy Invite Link'}
+        title={t('games.common.copyInviteLink') || 'Share Game Link'}
       >
-        {isCopied ? '✅ Copied' : '🔗 Link'}
+        {isCopied
+          ? '✅ ' + t('games.common.copyInviteLinkCopied')
+          : '🔗 ' + t('games.common.copyInviteLinkButton')}
       </StyledPanelButton>
 
       <StyledPanelButton

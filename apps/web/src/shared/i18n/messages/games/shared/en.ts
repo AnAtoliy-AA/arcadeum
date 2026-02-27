@@ -66,7 +66,9 @@ export const enMessages = {
     watchRoom: 'Watch',
     joinByCode: 'Join by Code',
     cancel: 'Cancel',
-    copyInviteLink: 'Copy Invite Link',
+    copyInviteLink: 'Share Game Link',
+    copyInviteLinkCopied: 'Copied!',
+    copyInviteLinkButton: 'Share Link',
     actions: {
       backToHome: 'Back to Home',
     },
@@ -125,11 +127,13 @@ export const enMessages = {
     },
   },
   inviteCode: {
-    title: 'Join by Invite Code',
+    title: 'Join a Private Game',
     label: 'Enter Invite Code',
     placeholder: 'e.g. A1B2C3',
     join: 'Join',
     joining: 'Joining...',
+    helper:
+      'This code was shared by the game host. Type it exactly as shown, without spaces.',
     errors: {
       notFound: 'Room not found or invite code invalid',
       searchFailed: 'Failed to search for room',

@@ -71,7 +71,7 @@ export function InviteCodeModal({ open, onClose }: InviteCodeModalProps) {
       <ModalContent maxWidth="400px">
         <ModalHeader onClose={handleClose}>
           <ModalTitle>
-            {t('games.inviteCode.title') || 'Join by Invite Code'}
+            {t('games.inviteCode.title') || 'Join a Private Game'}
           </ModalTitle>
         </ModalHeader>
         <form onSubmit={handleSubmit}>
@@ -92,6 +92,10 @@ export function InviteCodeModal({ open, onClose }: InviteCodeModalProps) {
                 autoFocus
               />
               {error && <ErrorMessage>{error.message}</ErrorMessage>}
+              <HelperText>
+                {t('games.inviteCode.helper') ||
+                  'This code was shared by the game host. Type it exactly as shown, without spaces.'}
+              </HelperText>
             </InputContainer>
           </ModalBody>
           <ModalFooter>
@@ -158,4 +162,11 @@ const ErrorMessage = styled.div`
   color: #ef4444;
   font-size: 0.875rem;
   margin-top: 0.25rem;
+`;
+
+const HelperText = styled.p`
+  color: ${({ theme }) => theme.text.secondary};
+  font-size: 0.8125rem;
+  margin-top: 0.5rem;
+  line-height: 1.4;
 `;

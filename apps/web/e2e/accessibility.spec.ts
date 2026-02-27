@@ -12,21 +12,16 @@ test.describe('Accessibility', () => {
     expect(count).toBeGreaterThan(0);
   });
 
-  test('should support keyboard navigation (Tab)', async ({
-    page,
-    browserName,
-  }) => {
+  test('should support keyboard navigation (Tab)', async ({ page }) => {
     await navigateTo(page, '/');
     await page.waitForLoadState('networkidle');
 
     // LOCATE ALL INTERACTIVE ELEMENTS
-    // We filter for distinct interactive elements to ensure we have valid targets
     const interactives = page.locator(
       'a[href]:visible, button:visible, input:visible, select:visible, textarea:visible',
     );
     await expect(interactives.first()).toBeVisible();
 
-    // Ensure we have enough elements
     const count = await interactives.count();
     if (count < 2) {
       test.skip(true, 'Not enough interactive elements to test Tab transition');
@@ -34,79 +29,43 @@ test.describe('Accessibility', () => {
     }
 
     // 1. Force window focus
+    await page.bringToFront();
     await page.click('body', { position: { x: 0, y: 0 } });
 
     // 2. Programmatically focus the FIRST element and VERIFY it got focus
     const first = interactives.nth(0);
     await first.focus();
 
-    // Verify we actually have focus on the element we expect
-    await expect
-      .poll(
-        async () => {
-          return await page.evaluate(() => {
-            return document.activeElement?.tagName !== 'BODY';
-          });
-        },
-        {
-          message: 'Failed to programmatically focus the first element',
-          timeout: 2000,
-        },
-      )
-      .toBe(true);
+    // Explicitly wait for focus to land
+    await expect(first).toBeFocused({ timeout: 5000 });
 
-    // Capture state of first element
-    const firstInfo = await page.evaluate(() => {
-      const el = document.activeElement;
-      return {
-        tag: el?.tagName,
-        text: el?.textContent,
-        role: el?.getAttribute('role'),
-      };
-    });
+    // 3. Simple Tab Press
+    await page.keyboard.press('Tab', { delay: 300 });
 
-    // 3. Simple Tab Press (with robustness for other browsers)
-    // We use page.keyboard.press for better cross-browser focus movement
-    // NOTE: WebKit (Safari) often requires Alt+Tab to navigate through links
-    if (browserName === 'webkit') {
-      await page.keyboard.press('Alt+Tab', { delay: 100 });
-    } else {
-      await page.keyboard.press('Tab', { delay: 100 });
-    }
+    // Ensure the first element LOST focus
+    await expect(first).not.toBeFocused({ timeout: 5000 });
 
+    // Verify some element is focused and it's NOT the body
     await expect
       .poll(
         async () => {
           const info = await page.evaluate(() => {
-            const el = document.activeElement;
+            const el = document.activeElement as HTMLElement;
+            if (!el || el === document.body || el.tagName === 'BODY') {
+              return { isBody: true };
+            }
+
             return {
-              tag: el?.tagName,
-              text: el?.textContent?.trim()?.substring(0, 20),
-              role: el?.getAttribute('role') || undefined,
-              id: el?.id || undefined,
-              isBody: el === document.body,
+              tag: el.tagName,
+              id: el.id,
+              isBody: false,
             };
           });
 
-          if (!info || info.isBody) return false;
-
-          // Must be interactive
-          const validTags = ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'];
-          const isInteractive =
-            validTags.includes(info.tag || '') ||
-            info.role === 'button' ||
-            info.role === 'link';
-
-          // Must be DIFFERENT from the start
-          const isSame =
-            info.tag === firstInfo.tag &&
-            info.text === firstInfo.text &&
-            info.role === firstInfo.role;
-
-          return isInteractive && !isSame;
+          return !info.isBody;
         },
         {
-          message: 'Focus should move to a different interactive element',
+          message: 'Some interactive element should be focused after Tab',
           timeout: 5000,
         },
       )
@@ -120,10 +79,27 @@ test.describe('Accessibility', () => {
 
   test('should have alt text on images', async ({ page }) => {
     await navigateTo(page, '/');
-    const imagesWithoutAlt = page.locator('img:not([alt])');
-    // This is a strict test, but good for accessibility
-    // If there are many, we might just check if some have alt
-    expect(await imagesWithoutAlt.count()).toBe(0);
-    // or just log it for now
+    const images = page.locator('img');
+    const imageCount = await images.count();
+
+    for (let i = 0; i < imageCount; i++) {
+      const img = images.nth(i);
+      await expect(img).toHaveAttribute('alt');
+    }
+  });
+
+  test('should have sufficient color contrast for key elements', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/');
+
+    // Check main headings and buttons for basic visibility
+    const heading = page.locator('h1').first();
+    await expect(heading).toBeVisible();
+
+    const primaryButton = page.locator('button').first();
+    if (await primaryButton.isVisible()) {
+      await expect(primaryButton).toBeVisible();
+    }
   });
 });

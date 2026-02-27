@@ -4,6 +4,7 @@ import { ThemeProvider } from 'styled-components';
 import { GameVariantSelector } from './GameVariantSelector';
 import { gamesApi } from '../api';
 import { getThemeTokens } from '@/shared/config/theme';
+import { LanguageProvider } from '@/app/i18n/LanguageProvider';
 
 // Mock dependencies
 vi.mock('../api', () => ({
@@ -32,8 +33,12 @@ vi.mock('@tanstack/react-query', () => ({
 
 const theme = getThemeTokens('dark');
 
-const renderWithTheme = (component: React.ReactNode) => {
-  return render(<ThemeProvider theme={theme}>{component}</ThemeProvider>);
+const renderWithThemeAndLanguage = (component: React.ReactNode) => {
+  return render(
+    <LanguageProvider>
+      <ThemeProvider theme={theme}>{component}</ThemeProvider>
+    </LanguageProvider>,
+  );
 };
 
 describe('GameVariantSelector', () => {
@@ -43,7 +48,7 @@ describe('GameVariantSelector', () => {
   ];
 
   it('renders correctly with a valid variant', () => {
-    renderWithTheme(
+    renderWithThemeAndLanguage(
       <GameVariantSelector
         roomId="room-123"
         currentVariant="variant1"
@@ -57,7 +62,7 @@ describe('GameVariantSelector', () => {
   });
 
   it('renders unknown variant option when currentVariant is invalid', () => {
-    renderWithTheme(
+    renderWithThemeAndLanguage(
       <GameVariantSelector
         roomId="room-123"
         currentVariant="invalid-variant"
@@ -71,7 +76,7 @@ describe('GameVariantSelector', () => {
   });
 
   it('allows changing variant when valid', () => {
-    renderWithTheme(
+    renderWithThemeAndLanguage(
       <GameVariantSelector
         roomId="room-123"
         currentVariant="variant1"

@@ -157,4 +157,14 @@ export const enMessages = {
       cards: 'Cards',
     },
   },
+  connectionOverlay: {
+    title: 'Connection Lost',
+    message: 'Tap anywhere or move your mouse to reconnect',
+    reconnecting: 'Reconnecting...',
+  },
+  idle: {
+    label: 'Idle',
+    title: '💤 You are idle',
+    message: 'Move your mouse or press a key to resume',
+  },
 };

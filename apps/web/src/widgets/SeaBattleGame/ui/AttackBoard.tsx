@@ -19,11 +19,13 @@ import {
   BadgeWrapper,
 } from './styles';
 import { Badge } from '@/shared/ui/Badge';
+import { IdleBadge } from '@/shared/ui';
 import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
 import { getTheme } from '../lib/theme';
+import { useGameStore } from '@/features/games/store/gameStore';
 
 interface AttackBoardProps {
   players: SeaBattlePlayerState[];
@@ -54,6 +56,8 @@ export function AttackBoard({
   const opponents = useMemo(() => {
     return players.filter((p) => p.playerId !== currentUserId && p.alive);
   }, [players, currentUserId]);
+
+  const idlePlayers = useGameStore((s) => s.idlePlayers);
 
   const handleCellClick = useCallback(
     (targetPlayerId: string, row: number, col: number) => {
@@ -91,6 +95,7 @@ export function AttackBoard({
             )}
             <PlayerName $theme={theme}>
               {resolveDisplayName(currentPlayer.playerId, 'You')} (Your Fleet)
+              {idlePlayers.includes(currentPlayer.playerId) && <IdleBadge />}
             </PlayerName>
             <PlayerStats $theme={theme}>
               <ShipsLeft ships={currentPlayer.ships} isMe={true} />
@@ -147,6 +152,7 @@ export function AttackBoard({
             )}
             <PlayerName $theme={theme}>
               {resolveDisplayName(opponent.playerId, 'Opponent')}
+              {idlePlayers.includes(opponent.playerId) && <IdleBadge />}
             </PlayerName>
             <PlayerStats $theme={theme}>
               <ShipsLeft ships={opponent.ships} isMe={false} />

@@ -4,6 +4,7 @@ import { ChatService } from './chat.service';
 import { Chat } from './schemas/chat.schema';
 import { Message } from './schemas/message.schema';
 import { User } from '../auth/schemas/user.schema';
+import { ChatHelperService } from './chat-helper.service';
 
 describe('ChatService', () => {
   let service: ChatService;
@@ -20,6 +21,12 @@ describe('ChatService', () => {
     const chatModelMock = createModelMock();
     const messageModelMock = createModelMock();
     const userModelMock = createModelMock();
+    const chatHelperMock = {
+      normalizeUserIds: jest.fn<string[], [string[]]>((ids) => ids),
+      haveSameMembers: jest.fn(),
+      toMessageViews: jest.fn(),
+      resolveParticipantDisplayName: jest.fn(),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -27,6 +34,7 @@ describe('ChatService', () => {
         { provide: getModelToken(Chat.name), useValue: chatModelMock },
         { provide: getModelToken(Message.name), useValue: messageModelMock },
         { provide: getModelToken(User.name), useValue: userModelMock },
+        { provide: ChatHelperService, useValue: chatHelperMock },
       ],
     }).compile();
 

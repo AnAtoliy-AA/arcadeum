@@ -8,6 +8,30 @@ const IV_LENGTH = 12;
 let encryptionKeyBytes: Uint8Array | null = null;
 let encryptionKeyImported: CryptoKey | null = null;
 
+// Shared promise for waiting on the encryption key
+let keyPromise: Promise<CryptoKey> | null = null;
+let resolveKey: ((key: CryptoKey) => void) | null = null;
+let rejectKey: ((reason: Error) => void) | null = null;
+
+const KEY_WAIT_TIMEOUT_MS = 10000;
+
+function getKeyPromise(): Promise<CryptoKey> {
+  if (keyPromise) return keyPromise;
+  keyPromise = new Promise((resolve, reject) => {
+    resolveKey = resolve;
+    rejectKey = reject;
+
+    // Safety timeout to prevent infinite UI hangs
+    setTimeout(() => {
+      if (rejectKey) {
+        rejectKey(new Error('Timeout waiting for encryption key'));
+        resetEncryptionKey();
+      }
+    }, KEY_WAIT_TIMEOUT_MS);
+  });
+  return keyPromise;
+}
+
 /**
  * Check if socket encryption is enabled via environment variable.
  */
@@ -45,13 +69,21 @@ export async function setEncryptionKey(keyHex: string): Promise<boolean> {
     encryptionKeyBytes = bytes;
 
     // Import for Web Crypto API
-    encryptionKeyImported = await crypto.subtle.importKey(
+    const importedKey = await crypto.subtle.importKey(
       'raw',
       bytes,
       { name: ALGORITHM },
       false,
       ['encrypt', 'decrypt'],
     );
+    encryptionKeyImported = importedKey;
+
+    // Resolve any waiting decryption calls
+    if (resolveKey) {
+      resolveKey(importedKey);
+      resolveKey = null;
+      rejectKey = null;
+    }
 
     return true;
   } catch {
@@ -65,6 +97,14 @@ export async function setEncryptionKey(keyHex: string): Promise<boolean> {
 export function resetEncryptionKey(): void {
   encryptionKeyBytes = null;
   encryptionKeyImported = null;
+
+  if (rejectKey) {
+    rejectKey(new Error('Encryption key reset (disconnected)'));
+  }
+
+  keyPromise = null;
+  resolveKey = null;
+  rejectKey = null;
 }
 
 /**
@@ -95,9 +135,7 @@ function base64ToUint8Array(base64: string): Uint8Array {
  * Returns a Base64-encoded string containing IV + ciphertext + auth tag.
  */
 export async function encryptPayload(payload: unknown): Promise<string> {
-  if (!encryptionKeyImported) {
-    throw new Error('Encryption key not available');
-  }
+  const key = encryptionKeyImported || (await getKeyPromise());
 
   const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
   const jsonString = JSON.stringify(payload);
@@ -106,7 +144,7 @@ export async function encryptPayload(payload: unknown): Promise<string> {
 
   const encrypted = await crypto.subtle.encrypt(
     { name: ALGORITHM, iv },
-    encryptionKeyImported,
+    key,
     data,
   );
 
@@ -125,9 +163,7 @@ export async function encryptPayload(payload: unknown): Promise<string> {
 export async function decryptPayload<T = unknown>(
   ciphertext: string,
 ): Promise<T> {
-  if (!encryptionKeyImported) {
-    throw new Error('Encryption key not available');
-  }
+  const key = encryptionKeyImported || (await getKeyPromise());
 
   const combined = base64ToUint8Array(ciphertext);
 
@@ -140,7 +176,7 @@ export async function decryptPayload<T = unknown>(
 
   const decrypted = await crypto.subtle.decrypt(
     { name: ALGORITHM, iv },
-    encryptionKeyImported,
+    key,
     encrypted,
   );
 
@@ -163,20 +199,15 @@ export async function maybeEncrypt(payload: unknown): Promise<unknown> {
  * Conditionally decrypt a payload based on environment settings.
  * Returns the original payload if encryption is disabled or payload is not encrypted.
  */
-export async function maybeDecrypt<T = unknown>(
-  payload: unknown,
-): Promise<T | null> {
+export async function maybeDecrypt<T = unknown>(payload: unknown): Promise<T> {
   const isEncrypted =
     typeof payload === 'object' &&
     payload !== null &&
     '__encrypted' in payload &&
     typeof (payload as Record<string, unknown>).__encrypted === 'string';
 
-  if (!isSocketEncryptionEnabled() || !hasEncryptionKey()) {
-    if (isEncrypted) {
-      return null;
-    }
-    return payload as T;
+  if (!isSocketEncryptionEnabled()) {
+    return (isEncrypted ? null : payload) as T;
   }
 
   if (isEncrypted) {
@@ -184,8 +215,9 @@ export async function maybeDecrypt<T = unknown>(
       return await decryptPayload<T>(
         (payload as Record<string, string>).__encrypted,
       );
-    } catch {
-      return null;
+    } catch (err) {
+      console.error('[socket-encryption] Decryption failed:', err);
+      return null as unknown as T;
     }
   }
 

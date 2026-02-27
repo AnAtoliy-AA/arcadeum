@@ -80,6 +80,16 @@ fi
 echo "Running build..."
 npm run build
 
+# Run backend unit tests before commiting
+echo "Running backend unit tests..."
+cd apps/be
+pnpm run test || {
+  echo "❌ Backend unit tests failed. Please fix them before commiting."
+  exit 1
+}
+cd ../..
+echo "✅ Backend unit tests passed"
+
 # Run web unit tests before commiting
 echo "Running web unit tests..."
 cd apps/web

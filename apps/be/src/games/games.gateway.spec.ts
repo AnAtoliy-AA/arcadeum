@@ -2,8 +2,10 @@ import { BadRequestException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import type { Socket } from 'socket.io';
 import { CriticalGateway } from './critical.gateway';
+import { CriticalActionsGateway } from './critical-actions.gateway';
 import { GamesService } from './games.service';
 import { CriticalService } from './critical/critical.service';
+import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import type {
   StartCriticalSessionResult,
   GameSessionSummary,
@@ -11,6 +13,7 @@ import type {
 
 describe('CriticalGateway', () => {
   let gateway: CriticalGateway;
+  let actionsGateway: CriticalActionsGateway;
   let gamesService: jest.Mocked<GamesService>;
   let criticalService: jest.Mocked<CriticalService>;
   let client: jest.Mocked<Pick<Socket, 'emit'>>;
@@ -44,9 +47,14 @@ describe('CriticalGateway', () => {
       playFavorByRoom: jest.fn(),
       seeTheFutureByRoom: jest.fn(),
       postHistoryNote: jest.fn(),
+      findSessionByRoom: mockFindSessionByRoom,
     } as unknown as jest.Mocked<CriticalService>;
 
     gateway = new CriticalGateway(
+      criticalService as unknown as CriticalService,
+    );
+
+    actionsGateway = new CriticalActionsGateway(
       gamesService as unknown as GamesService,
       criticalService as unknown as CriticalService,
     );
@@ -97,8 +105,13 @@ describe('CriticalGateway', () => {
         'host-456',
         'room-123',
         'custom-engine',
+        false,
+        undefined,
       );
-      expect(mockEmit).toHaveBeenCalledWith('games.session.started', result);
+      expect(mockEmit).toHaveBeenCalledWith(
+        'games.session.started',
+        maybeEncrypt(result),
+      );
     });
 
     it('throws when required identifiers are missing', async () => {
@@ -154,18 +167,24 @@ describe('CriticalGateway', () => {
         updatedAt: new Date().toISOString(),
       });
 
-      await gateway.handleSessionDraw(client as unknown as Socket, payload);
+      await actionsGateway.handleSessionDraw(
+        client as unknown as Socket,
+        payload,
+      );
 
       expect(mockDrawCard).toHaveBeenCalledWith('session-1', 'guest-2');
-      expect(mockEmit).toHaveBeenCalledWith('games.session.drawn', {
-        roomId: 'room-123',
-        userId: 'guest-2',
-      });
+      expect(mockEmit).toHaveBeenCalledWith(
+        'games.session.drawn',
+        maybeEncrypt({
+          roomId: 'room-123',
+          userId: 'guest-2',
+        }),
+      );
     });
 
     it('throws when identifiers are missing', async () => {
       await expect(
-        gateway.handleSessionDraw(client as unknown as Socket, {
+        actionsGateway.handleSessionDraw(client as unknown as Socket, {
           roomId: undefined,
           userId: 'guest-2',
         }),
@@ -181,7 +200,7 @@ describe('CriticalGateway', () => {
       expect.assertions(2);
 
       try {
-        await gateway.handleSessionDraw(client as unknown as Socket, {
+        await actionsGateway.handleSessionDraw(client as unknown as Socket, {
           roomId: 'room-123',
           userId: 'guest-2',
         });
@@ -198,7 +217,7 @@ describe('CriticalGateway', () => {
       const payload = {
         roomId: ' room-123 ',
         userId: ' host-456 ',
-        card: ' attack ',
+        card: ' strike ',
       };
 
       mockPlayActionByRoom.mockResolvedValue({
@@ -212,7 +231,7 @@ describe('CriticalGateway', () => {
         updatedAt: new Date().toISOString(),
       });
 
-      await gateway.handleSessionPlayAction(
+      await actionsGateway.handleSessionPlayAction(
         client as unknown as Socket,
         payload,
       );
@@ -220,18 +239,27 @@ describe('CriticalGateway', () => {
       expect(mockPlayActionByRoom).toHaveBeenCalledWith(
         'host-456',
         'room-123',
-        'attack',
+        'strike',
+        {
+          cardsToStash: undefined,
+          cardsToUnstash: undefined,
+          targetPlayerId: undefined,
+        },
       );
-      expect(mockEmit).toHaveBeenCalledWith('games.session.action.played', {
-        roomId: 'room-123',
-        userId: 'host-456',
-        card: 'attack',
-      });
+      expect(mockEmit).toHaveBeenCalledWith(
+        'games.session.action.played',
+        maybeEncrypt({
+          roomId: 'room-123',
+          userId: 'host-456',
+          card: 'strike',
+          targetPlayerId: undefined,
+        }),
+      );
     });
 
     it('throws when payload is missing required fields', async () => {
       await expect(
-        gateway.handleSessionPlayAction(client as unknown as Socket, {
+        actionsGateway.handleSessionPlayAction(client as unknown as Socket, {
           roomId: 'room-123',
           userId: 'host-456',
           card: undefined,
@@ -247,11 +275,14 @@ describe('CriticalGateway', () => {
       expect.assertions(2);
 
       try {
-        await gateway.handleSessionPlayAction(client as unknown as Socket, {
-          roomId: 'room-123',
-          userId: 'host-456',
-          card: 'skip',
-        });
+        await actionsGateway.handleSessionPlayAction(
+          client as unknown as Socket,
+          {
+            roomId: 'room-123',
+            userId: 'host-456',
+            card: 'strike',
+          },
+        );
         throw new Error('Expected handleSessionPlayAction to throw');
       } catch (error) {
         expect(error).toBeInstanceOf(WsException);
@@ -267,7 +298,7 @@ describe('CriticalGateway', () => {
       const payload = {
         roomId: ' room-123 ',
         userId: ' host-456 ',
-        cat: ' tacocat ',
+        cat: ' collection_alpha ',
         mode: ' pair ',
         targetPlayerId: ' guest-2 ',
         selectedIndex: 0,
@@ -284,7 +315,7 @@ describe('CriticalGateway', () => {
         updatedAt: new Date().toISOString(),
       });
 
-      await gateway.handleSessionPlayCatCombo(
+      await actionsGateway.handleSessionPlayCatCombo(
         client as unknown as Socket,
         payload,
       );
@@ -292,30 +323,34 @@ describe('CriticalGateway', () => {
       expect(mockPlayCatComboByRoom).toHaveBeenCalledWith(
         'host-456',
         'room-123',
-        'tacocat',
+        'collection_alpha',
         {
           mode: 'pair',
           targetPlayerId: 'guest-2',
           desiredCard: undefined,
           selectedIndex: 0,
+          cards: undefined,
+          requestedDiscardCard: undefined,
         },
       );
       expect(mockEmit).toHaveBeenCalledWith(
         'games.session.cat_combo.played',
-        expect.objectContaining({
-          roomId: 'room-123',
-          userId: 'host-456',
-          cat: 'tacocat',
-          mode: 'pair',
-          targetPlayerId: 'guest-2',
-          selectedIndex: 0,
-        }),
+        maybeEncrypt(
+          expect.objectContaining({
+            roomId: 'room-123',
+            userId: 'host-456',
+            cat: 'collection_alpha',
+            mode: 'pair',
+            targetPlayerId: 'guest-2',
+            selectedIndex: 0,
+          }),
+        ),
       );
     });
 
     it('throws when required fields are missing', async () => {
       await expect(
-        gateway.handleSessionPlayCatCombo(client as unknown as Socket, {
+        actionsGateway.handleSessionPlayCatCombo(client as unknown as Socket, {
           roomId: 'room-123',
           userId: 'host-456',
           cat: undefined,
@@ -334,14 +369,17 @@ describe('CriticalGateway', () => {
       expect.assertions(2);
 
       try {
-        await gateway.handleSessionPlayCatCombo(client as unknown as Socket, {
-          roomId: 'room-123',
-          userId: 'host-456',
-          cat: 'tacocat',
-          mode: 'pair',
-          targetPlayerId: 'guest-2',
-          selectedIndex: 0,
-        });
+        await actionsGateway.handleSessionPlayCatCombo(
+          client as unknown as Socket,
+          {
+            roomId: 'room-123',
+            userId: 'host-456',
+            cat: 'collection_alpha',
+            mode: 'pair',
+            targetPlayerId: 'guest-2',
+            selectedIndex: 0,
+          },
+        );
         throw new Error('Expected handleSessionPlayCatCombo to throw');
       } catch (error) {
         expect(error).toBeInstanceOf(WsException);

@@ -56,16 +56,17 @@ describe('socket-encryption', () => {
   });
 
   it('encryptPayload throws error if key is not set', async () => {
+    // We speed up the timeout for tests or just wait for the timeout
     await expect(encryptPayload({ foo: 1 })).rejects.toThrow(
-      'Encryption key not available',
+      'Timeout waiting for encryption key',
     );
-  });
+  }, 15000); // Higher timeout for vitest
 
   it('decryptPayload throws error if key is not set', async () => {
     await expect(decryptPayload('abc')).rejects.toThrow(
-      'Encryption key not available',
+      'Timeout waiting for encryption key',
     );
-  });
+  }, 15000);
 
   it('decryptPayload throws for too short payload', async () => {
     await setEncryptionKey(VALID_KEY_HEX);

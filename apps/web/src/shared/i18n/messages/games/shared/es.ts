@@ -160,4 +160,14 @@ export const esMessages = {
       cards: 'Cartas',
     },
   },
+  connectionOverlay: {
+    title: 'Conexión perdida',
+    message: 'Toca en cualquier lugar o mueve el ratón para reconectar',
+    reconnecting: 'Reconectando...',
+  },
+  idle: {
+    label: 'Inactivo',
+    title: '💤 Estás inactivo',
+    message: 'Mueve el ratón o pulsa una tecla para continuar',
+  },
 };

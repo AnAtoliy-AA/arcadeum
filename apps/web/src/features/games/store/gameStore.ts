@@ -15,6 +15,7 @@ interface GameState {
   isConnected: boolean;
   loading: boolean;
   error: string | null;
+  idlePlayers: string[];
 
   connect: (
     roomId: string,
@@ -41,6 +42,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   isConnected: false,
   loading: false,
   error: null,
+  idlePlayers: [],
 
   connect: (
     roomId,
@@ -58,11 +60,16 @@ export const useGameStore = create<GameState>((set, get) => ({
 
     if (mode !== 'watch' && !accessToken && !userId) return;
 
+    // Preserve existing room if it's the same roomId to prevent flickering
+    const currentState = get();
+    const isSameRoom = currentState.room?.id === roomId;
+
     set({
-      loading: !initialData?.room, // Don't load if we have data
-      error: null,
-      room: initialData?.room || null,
-      session: initialData?.session || null,
+      loading: !isSameRoom && !initialData?.room,
+      error: isSameRoom ? currentState.error : null,
+      room: initialData?.room || (isSameRoom ? currentState.room : null),
+      session:
+        initialData?.session || (isSameRoom ? currentState.session : null),
     });
 
     // Define handlers
@@ -107,7 +114,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     };
 
     const handleDisconnect = () => {
-      set({ isConnected: false, loading: true });
+      set({ isConnected: false });
     };
 
     const handlePlayerJoined = (payload: { room?: GameRoomSummary }) => {
@@ -158,7 +165,20 @@ export const useGameStore = create<GameState>((set, get) => ({
     );
     const wrappedHandleException = decryptHandler(handleException, 'exception');
 
-    // Register
+    const handleIdleChanged = (payload: {
+      userId?: string;
+      idle?: boolean;
+    }) => {
+      if (!payload?.userId) return;
+      const current = get().idlePlayers;
+      if (payload.idle) {
+        if (!current.includes(payload.userId)) {
+          set({ idlePlayers: [...current, payload.userId] });
+        }
+      } else {
+        set({ idlePlayers: current.filter((id) => id !== payload.userId) });
+      }
+    };
 
     gameSocket.on('games.room.joined', wrappedHandleJoined);
     gameSocket.on('games.room.watching', wrappedHandleJoined);
@@ -169,6 +189,12 @@ export const useGameStore = create<GameState>((set, get) => ({
     gameSocket.on('exception', wrappedHandleException);
     gameSocket.on('connect', handleConnect);
     gameSocket.on('disconnect', handleDisconnect);
+
+    const wrappedHandleIdleChanged = decryptHandler<{
+      userId?: string;
+      idle?: boolean;
+    }>(handleIdleChanged, 'idleChanged');
+    gameSocket.on('games.player.idle_changed', wrappedHandleIdleChanged);
 
     // Store cleanup function to properly remove listeners later
     cleanupListeners = () => {
@@ -181,6 +207,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       gameSocket.off('exception', wrappedHandleException);
       gameSocket.off('connect', handleConnect);
       gameSocket.off('disconnect', handleDisconnect);
+      gameSocket.off('games.player.idle_changed', wrappedHandleIdleChanged);
     };
 
     // If already connected
@@ -195,13 +222,15 @@ export const useGameStore = create<GameState>((set, get) => ({
       cleanupListeners();
       cleanupListeners = null;
     }
-    gameSocket.disconnect();
+
+    // We keep the room and session data so the UI doesn't flicker/redirect
+    // during token refresh or socket reconnects.
+    // Metadata is only cleared on explicit leaveRoom() or hard reset().
     set({
       isConnected: false,
-      room: null,
-      session: null,
       error: null,
       loading: false,
+      idlePlayers: [],
     });
   },
 
@@ -221,8 +250,24 @@ export const useGameStore = create<GameState>((set, get) => ({
     if (roomId && userId) {
       gameSocket.emit('games.room.leave', { roomId, userId });
     }
-    set({ room: null, session: null, error: null });
+    set({ room: null, session: null, error: null, idlePlayers: [] });
   },
 
-  reset: () => set({ room: null, session: null, error: null, loading: false }),
+  reset: () =>
+    set({
+      room: null,
+      session: null,
+      error: null,
+      loading: false,
+      idlePlayers: [],
+    }),
 }));
+
+// Expose store to window for E2E testing
+if (
+  typeof window !== 'undefined' &&
+  (window as unknown as Record<string, unknown>).isPlaywright
+) {
+  (window as unknown as Record<string, unknown>).__ZUSTAND_GAME_STORE__ =
+    useGameStore;
+}

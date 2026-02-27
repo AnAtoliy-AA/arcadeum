@@ -161,4 +161,15 @@ export const frMessages = {
       cards: 'Cartes',
     },
   },
+  connectionOverlay: {
+    title: 'Connexion perdue',
+    message:
+      "Touchez n'importe où ou déplacez votre souris pour vous reconnecter",
+    reconnecting: 'Reconnexion...',
+  },
+  idle: {
+    label: 'Inactif',
+    title: '💤 Vous êtes inactif',
+    message: 'Bougez votre souris ou appuyez sur une touche pour reprendre',
+  },
 };

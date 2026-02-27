@@ -8,6 +8,8 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
+import { useGameStore } from '@/features/games/store/gameStore';
+import { IdleBadge } from '@/shared/ui';
 
 const TableContainer = styled.div`
   display: flex;
@@ -149,6 +151,7 @@ export function SeaBattleTable({
   resolveDisplayName,
 }: SeaBattleTableProps) {
   const { t } = useTranslation();
+  const idlePlayers = useGameStore((s) => s.idlePlayers);
   const activePlayerId = playerOrder[currentTurnIndex];
   const isMyTurn = activePlayerId === currentUserId;
   const activePlayer = players.find((p) => p.playerId === activePlayerId);
@@ -219,6 +222,7 @@ export function SeaBattleTable({
                 {isMe
                   ? `(${t('games.sea_battle_v1.table.players.you' as TranslationKey)})`
                   : ''}
+                {idlePlayers.includes(player.playerId) && <IdleBadge />}
               </PlayerName>
               <Grid>
                 {player.board.map((row, rIndex) =>

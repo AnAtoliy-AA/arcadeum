@@ -5,19 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
 ## [1.6.3] - 2026-02-27
 
 ### Added
-- delete room functionality (ARC-430)
 
+- delete room functionality (ARC-430)
 
 ## [1.6.2] - 2026-02-27
 
 ### Added
-- show idle players on ui (ARC-428)
 
+- show idle players on ui (ARC-428)
 
 ## [1.6.1] - 2026-02-27
 
@@ -25,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - minor version number (N/A)
 - release version after merging to main (ARC-429)
+
+## [Unreleased]
 
 ## [1.5.12] - 2026-02-27
 
@@ -37,22 +37,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Improved clarity of turn indication in Sea Battle game (ARC-412)
-
-## [1.5.10] - 2026-02-27
-
-### Fixed
+- Improved clarity of turn indication in Sea Battle game (ARC-412)
 
 - Fixed invite link generation and display issues (ARC-407)
 
-## [1.5.9] - 2026-02-26
-
-### Documentation
-
 - Updated Code of Conduct document (ARC-424)
-
-## [1.5.8] - 2026-02-26
-
-### Added
 
 - Added alternative deployment configuration options (ARC-422)
 

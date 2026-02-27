@@ -59,7 +59,7 @@ export const esMessages = {
         name: 'El Templo Antiguo',
         description: 'Supervivencia en una aventura en un templo misterioso',
       },
-      high_altitude_hike: {
+      'high-altitude-hike': {
         name: 'Caminata por la Montaña',
         description: 'Supervivencia en una aventura escapando de una avalancha',
       },

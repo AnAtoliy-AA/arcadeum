@@ -205,8 +205,8 @@ export const CARD_VARIANTS: {
   },
   {
     id: 'high-altitude-hike',
-    name: 'games.critical_v1.variants.high_altitude_hike.name',
-    description: 'games.critical_v1.variants.high_altitude_hike.description',
+    name: 'games.critical_v1.variants.high-altitude-hike.name',
+    description: 'games.critical_v1.variants.high-altitude-hike.description',
     emoji: '🏔️',
     gradient: 'linear-gradient(135deg, #7dd3fc 0%, #1e3a8a 100%)',
   },

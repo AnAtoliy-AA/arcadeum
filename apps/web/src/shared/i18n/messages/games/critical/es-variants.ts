@@ -234,7 +234,7 @@ export const variants = {
     smite: 'Desprendimiento',
     rapture: 'Tormenta de arena',
   },
-  high_altitude_hike: {
+  'high-altitude-hike': {
     name: 'Caminata por la Montaña',
     description: 'Supervivencia en una aventura escapando de una avalancha',
     critical_event: 'Avalancha',

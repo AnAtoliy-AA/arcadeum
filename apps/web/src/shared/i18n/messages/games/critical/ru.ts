@@ -59,7 +59,7 @@ export const ruMessages = {
         name: 'Древний храм',
         description: 'Выживание в приключении в таинственном храме',
       },
-      high_altitude_hike: {
+      'high-altitude-hike': {
         name: 'Горный поход',
         description: 'Выживание в приключении, спасаясь от лавины',
       },

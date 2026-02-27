@@ -1,14 +1,8 @@
-'use client';
-
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalGameProps } from '../types';
-import {
-  useCriticalState,
-  useFullscreen,
-  useRematch,
-  useGameRoom,
-} from '../hooks';
+import { useCriticalState, useFullscreen, useRematch } from '../hooks';
+import { useGameStore } from '@/features/games/store/gameStore';
 import { CriticalLobby } from './CriticalLobby';
 import { ActiveGameView } from './ActiveGameView';
 import { GameContainer } from './styles';
@@ -24,9 +18,13 @@ export default function CriticalGame({
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Use dynamic room state
-  const room = useGameRoom(initialRoom);
-  const cardVariant = room.gameOptions?.cardVariant;
+  const storeRoom = useGameStore((s) => s.room);
+  const storeDeleteRoom = useGameStore((s) => s.deleteRoom);
+
+  const room =
+    (storeRoom?.id === roomId ? storeRoom : null) || initialRoom || null;
+
+  const cardVariant = room?.gameOptions?.cardVariant;
 
   const {
     snapshot,
@@ -49,7 +47,9 @@ export default function CriticalGame({
   });
 
   const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef);
-  const rematch = useRematch({ roomId, gameOptions: room.gameOptions });
+  const rematch = useRematch({ roomId, gameOptions: room?.gameOptions });
+
+  if (!room) return null;
 
   // Game not started yet - show Lobby
   if (!snapshot) {
@@ -64,6 +64,7 @@ export default function CriticalGame({
         onStartGame={actions.startCritical}
         onReorderPlayers={reorderParticipants}
         onReinvite={rematch.handleReinvite}
+        onDeleteRoom={() => storeDeleteRoom(roomId)}
         t={t as (key: string) => string}
       />
     );

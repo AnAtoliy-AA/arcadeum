@@ -72,6 +72,14 @@ export const byMessages = {
     actions: {
       backToHome: 'На галоўную',
     },
+    deleteRoom: {
+      button: 'Выдаліць залу',
+      confirmTitle: 'Выдаліць залу',
+      confirmMessage:
+        'Вы ўпэўненыя, што хочаце выдаліць гэтую залу? Гэта дзеянне нельга адмяніць, і ўсе гульцы будуць адключаныя.',
+      confirmButton: 'Выдаліць залу',
+      cancelButton: 'Пакінуць залу',
+    },
   },
   create: {
     title: 'Стварыць гульнявы зал',

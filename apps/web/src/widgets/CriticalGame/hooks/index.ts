@@ -5,7 +5,7 @@ export { useRematch } from './useRematch';
 export { useAutoplay } from './useAutoplay';
 export { useWebGameHaptics } from './useWebGameHaptics';
 export { useIdleTimer } from './useIdleTimer';
-export { useGameRoom } from './useGameRoom';
+export { useGameRoom } from '@/features/games/hooks';
 export { useSeeTheFutureFromLogs } from './useSeeTheFutureFromLogs';
 export { useOmniscienceFromLogs } from './useOmniscienceFromLogs';
 export * from './useGameAutoplayIntegration';

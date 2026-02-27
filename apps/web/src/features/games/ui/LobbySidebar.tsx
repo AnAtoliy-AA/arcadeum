@@ -35,6 +35,7 @@ import {
   StatusBadge,
   InfoValue,
   FastBadge,
+  DeleteButton,
 } from './lobbyStyles';
 import { SortablePlayerItem, AVATAR_COLORS } from './SortablePlayerItem';
 
@@ -62,6 +63,8 @@ interface LobbySidebarProps {
   members: Required<GameRoomSummary>['members'];
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
+  onDeleteRoom?: () => void;
+  deleteRoomLabel: string;
   extraPlayersCardSlot?: React.ReactNode;
 }
 
@@ -89,6 +92,8 @@ export function LobbySidebar({
   members,
   onReorderPlayers,
   onReinvite,
+  onDeleteRoom,
+  deleteRoomLabel,
   extraPlayersCardSlot,
 }: LobbySidebarProps) {
   const maxPlayers = room.maxPlayers ?? 5;
@@ -299,6 +304,15 @@ export function LobbySidebar({
           </InfoRow>
         )}
       </LobbyCard>
+
+      {isHost && onDeleteRoom && (
+        <DeleteButton
+          onClick={onDeleteRoom}
+          style={{ marginTop: '0.5rem', width: '100%' }}
+        >
+          {deleteRoomLabel}
+        </DeleteButton>
+      )}
     </Sidebar>
   );
 }

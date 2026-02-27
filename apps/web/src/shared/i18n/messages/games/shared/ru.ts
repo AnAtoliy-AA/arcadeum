@@ -72,6 +72,14 @@ export const ruMessages = {
     actions: {
       backToHome: 'На главную',
     },
+    deleteRoom: {
+      button: 'Удалить зал',
+      confirmTitle: 'Удалить зал',
+      confirmMessage:
+        'Вы уверены, что хотите удалить этот зал? Это действие нельзя отменить, и все игроки будут отключены.',
+      confirmButton: 'Удалить зал',
+      cancelButton: 'Оставить зал',
+    },
   },
   create: {
     title: 'Создать игровой зал',

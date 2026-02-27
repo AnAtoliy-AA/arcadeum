@@ -72,6 +72,14 @@ export const esMessages = {
     actions: {
       backToHome: 'Volver al Inicio',
     },
+    deleteRoom: {
+      button: 'Eliminar sala',
+      confirmTitle: 'Eliminar sala',
+      confirmMessage:
+        '¿Estás seguro de que quieres eliminar esta sala? Esta acción no se puede deshacer y todos los jugadores serán desconectados.',
+      confirmButton: 'Eliminar sala',
+      cancelButton: 'Mantener sala',
+    },
   },
   create: {
     title: 'Crear Sala de Juego',

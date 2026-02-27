@@ -196,4 +196,11 @@ export const gamesApi = {
       options,
     );
   },
+
+  deleteRoom: async (
+    roomId: string,
+    options?: ApiClientOptions,
+  ): Promise<void> => {
+    return apiClient.post<void>('/games/rooms/delete', { roomId }, options);
+  },
 };

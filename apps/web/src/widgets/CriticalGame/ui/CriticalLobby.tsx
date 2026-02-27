@@ -50,6 +50,7 @@ export interface CriticalLobbyProps {
   onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
+  onDeleteRoom?: () => void;
   t: (key: string) => string;
 }
 
@@ -63,6 +64,7 @@ export function CriticalLobby({
   onStartGame,
   onReorderPlayers,
   onReinvite,
+  onDeleteRoom,
   t,
 }: CriticalLobbyProps) {
   const [showRules, setShowRules] = useState(false);
@@ -125,6 +127,7 @@ export function CriticalLobby({
       onStartGame={onStartGame}
       onReorderPlayers={onReorderPlayers}
       onReinvite={onReinvite}
+      onDeleteRoom={onDeleteRoom}
       // Game info
       gameName={t('games.critical_v1.name')}
       gameIcon="🐱💣"

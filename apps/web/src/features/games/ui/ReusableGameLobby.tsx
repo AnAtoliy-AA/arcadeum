@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import type { GameRoomSummary } from '@/shared/types/games';
 import {
   LobbyContent,
@@ -28,12 +29,14 @@ import {
   HeaderActions,
   IconButton,
   StartButton,
+  DeleteButton,
   BotCountSelector,
   BotCountLabel,
   BotCountButtons,
   BotCountButton,
 } from './lobbyStyles';
 import { LobbySidebar } from './LobbySidebar';
+import { ConfirmationModal } from './ConfirmationModal';
 
 // Re-export all styles for games to use
 export * from './lobbyStyles';
@@ -57,6 +60,7 @@ export interface ReusableGameLobbyProps {
   onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
+  onDeleteRoom?: () => void;
 
   // Game info
   gameName: string;
@@ -122,6 +126,7 @@ export function ReusableGameLobby({
   onStartGame,
   onReorderPlayers,
   onReinvite,
+  onDeleteRoom,
   gameName,
   gameIcon,
   variantName,
@@ -159,10 +164,27 @@ export function ReusableGameLobby({
   showInvitedPlayers = true,
   enableBots = false,
 }: ReusableGameLobbyProps) {
+  const { t } = useTranslation();
   const [botCount, setBotCount] = useState(1);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const members = room.members ?? [];
   const maxPlayers = room.maxPlayers ?? 6;
   const progress = Math.round((room.playerCount / maxPlayers) * 100);
+
+  const deleteRoomTranslations = useMemo(
+    () => ({
+      button: t('games.common.deleteRoom.button'),
+      confirmTitle: t('games.common.deleteRoom.confirmTitle'),
+      confirmMessage: t('games.common.deleteRoom.confirmMessage'),
+      confirmButton: t('games.common.deleteRoom.confirmButton'),
+      cancelButton: t('games.common.deleteRoom.cancelButton'),
+    }),
+    [t],
+  );
+
+  const handleDeleteClick = useCallback(() => {
+    setShowDeleteConfirm(true);
+  }, []);
 
   const defaultSubtitle = useMemo(() => {
     if (room.status !== 'lobby') {
@@ -183,6 +205,17 @@ export function ReusableGameLobby({
   return (
     <GameContainer ref={containerRef}>
       {rulesModalSlot}
+
+      <ConfirmationModal
+        open={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={onDeleteRoom}
+        title={deleteRoomTranslations.confirmTitle}
+        message={deleteRoomTranslations.confirmMessage}
+        confirmLabel={deleteRoomTranslations.confirmButton}
+        cancelLabel={deleteRoomTranslations.cancelButton}
+        isDestructive
+      />
 
       <GameHeader>
         <GameInfo>
@@ -320,6 +353,8 @@ export function ReusableGameLobby({
           members={members}
           onReorderPlayers={onReorderPlayers}
           onReinvite={onReinvite}
+          onDeleteRoom={isHost ? handleDeleteClick : undefined}
+          deleteRoomLabel={deleteRoomTranslations.button}
           extraPlayersCardSlot={extraPlayersCardSlot}
         />
       </LobbyContent>
@@ -337,4 +372,5 @@ export {
   HeaderActions,
   IconButton,
   StartButton,
+  DeleteButton,
 };

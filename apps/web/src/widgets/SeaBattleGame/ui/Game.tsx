@@ -10,7 +10,7 @@ import type { SeaBattleGameProps } from '../types';
 import { MIN_PLAYERS } from '../types';
 import { useSeaBattleState } from '../hooks/useSeaBattleState';
 import { useSeaBattleActions } from '../hooks/useSeaBattleActions';
-import { useGameRoom } from '../hooks/useGameRoom';
+import { useGameStore } from '@/features/games/store/gameStore';
 import { useDisplayNames } from '@/widgets/CriticalGame/lib/displayUtils';
 import { useRematch } from '@/features/games/hooks';
 import {
@@ -94,7 +94,13 @@ export default function SeaBattleGame({
   accessToken,
 }: SeaBattleGameProps) {
   const { t } = useTranslation();
-  const room = useGameRoom(initialRoom);
+
+  const storeRoom = useGameStore((s) => s.room);
+  const storeDeleteRoom = useGameStore((s) => s.deleteRoom);
+
+  const room =
+    (storeRoom?.id === roomId ? storeRoom : null) || initialRoom || null;
+
   const containerRef = useRef<HTMLDivElement>(null);
   const chatMessagesRef = useRef<HTMLDivElement | null>(null);
 
@@ -148,11 +154,12 @@ export default function SeaBattleGame({
     roomId,
     currentUserId,
     initialSession,
-    room,
+    room: room ?? undefined,
   });
 
   const handleStartGame = useCallback(
     (options?: { withBots?: boolean; botCount?: number }) => {
+      if (!room) return;
       const memberCount = room.members?.length || 0;
       if (
         memberCount >= MIN_PLAYERS ||
@@ -161,7 +168,7 @@ export default function SeaBattleGame({
         startSession(options);
       }
     },
-    [room.members, startSession],
+    [room, startSession],
   );
 
   const handleReorderPlayers = useCallback(
@@ -190,7 +197,7 @@ export default function SeaBattleGame({
     isAcceptingInvitation,
   } = useRematch({
     roomId,
-    gameOptions: room.gameOptions,
+    gameOptions: room?.gameOptions,
   });
 
   // Auto-open modal on game over
@@ -207,12 +214,12 @@ export default function SeaBattleGame({
     roomId,
     currentUserId,
     initialSession,
-    room,
+    room: room ?? undefined,
   });
 
   const { resolveDisplayName, formatLogMessage } = useDisplayNames({
     currentUserId,
-    room,
+    room: room!,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     snapshot: snapshot as any, // Cast to any because types differ slightly but we only need player list
     youLabel: t('games.sea_battle_v1.table.players.you'),
@@ -220,8 +227,8 @@ export default function SeaBattleGame({
     seeTheFutureLabel: '',
   });
 
-  const cardVariant = (room.gameOptions?.variant ||
-    room.gameOptions?.cardVariant) as string | undefined;
+  const cardVariant = (room?.gameOptions?.variant ||
+    room?.gameOptions?.cardVariant) as string | undefined;
 
   // Compute turn status text
   const getTurnStatusText = () => {
@@ -255,6 +262,8 @@ export default function SeaBattleGame({
     return 'defeat';
   }, [isGameOver, isWinner, snapshot?.winnerId, currentUserId]);
 
+  if (!room) return null;
+
   return (
     <GameLayout
       gameContainerRef={containerRef as React.RefObject<HTMLDivElement>}
@@ -263,12 +272,13 @@ export default function SeaBattleGame({
       lobby={
         !snapshot ? (
           <SeaBattleLobby
-            room={room}
+            room={room!}
             isHost={isHost}
             startBusy={!!startBusy}
             onStartGame={handleStartGame}
             onReorderPlayers={handleReorderPlayers}
             onShowRules={setShowRules}
+            onDeleteRoom={() => storeDeleteRoom(roomId)}
             t={t}
           />
         ) : undefined
@@ -361,7 +371,7 @@ export default function SeaBattleGame({
         <HeaderTopRow>
           <RoomTitle>
             {t('games.sea_battle_v1.name' as TranslationKey)} {variantLabel} -{' '}
-            {room.name}
+            {room?.name}
           </RoomTitle>
           <ActionSection>
             <FullscreenButton

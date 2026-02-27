@@ -72,6 +72,14 @@ export const enMessages = {
     actions: {
       backToHome: 'Back to Home',
     },
+    deleteRoom: {
+      button: 'Delete Room',
+      confirmTitle: 'Delete Room',
+      confirmMessage:
+        'Are you sure you want to delete this room? This action cannot be undone and all players will be disconnected.',
+      confirmButton: 'Delete Room',
+      cancelButton: 'Keep Room',
+    },
   },
   create: {
     title: 'Create Game Room',

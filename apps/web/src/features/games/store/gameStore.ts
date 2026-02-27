@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { gameSocket } from '@/shared/lib/socket';
 import { maybeDecrypt } from '@/shared/lib/socket-encryption';
+import { gamesApi } from '../api';
 import type { GameRoomSummary, GameInitialData } from '@/shared/types/games';
 
 /**
@@ -16,6 +17,7 @@ interface GameState {
   loading: boolean;
   error: string | null;
   idlePlayers: string[];
+  accessToken: string | null;
 
   connect: (
     roomId: string,
@@ -33,6 +35,7 @@ interface GameState {
     inviteCode?: string,
   ) => void;
   leaveRoom: (roomId: string, userId: string | null) => void;
+  deleteRoom: (roomId: string) => Promise<void>;
   reset: () => void;
 }
 
@@ -43,6 +46,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   loading: false,
   error: null,
   idlePlayers: [],
+  accessToken: null,
 
   connect: (
     roomId,
@@ -70,6 +74,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       room: initialData?.room || (isSameRoom ? currentState.room : null),
       session:
         initialData?.session || (isSameRoom ? currentState.session : null),
+      accessToken,
     });
 
     // Define handlers
@@ -231,6 +236,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       error: null,
       loading: false,
       idlePlayers: [],
+      accessToken: null,
     });
   },
 
@@ -250,7 +256,32 @@ export const useGameStore = create<GameState>((set, get) => ({
     if (roomId && userId) {
       gameSocket.emit('games.room.leave', { roomId, userId });
     }
-    set({ room: null, session: null, error: null, idlePlayers: [] });
+    set({
+      room: null,
+      session: null,
+      error: null,
+      idlePlayers: [],
+      accessToken: null,
+    });
+  },
+
+  deleteRoom: async (roomId) => {
+    const { accessToken } = get();
+    try {
+      await gamesApi.deleteRoom(roomId, { token: accessToken || undefined });
+      set({
+        room: null,
+        session: null,
+        error: null,
+        idlePlayers: [],
+        accessToken: null,
+      });
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'Failed to delete room';
+      set({ error: message });
+      throw err;
+    }
   },
 
   reset: () =>
@@ -260,6 +291,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       error: null,
       loading: false,
       idlePlayers: [],
+      accessToken: null,
     }),
 }));
 

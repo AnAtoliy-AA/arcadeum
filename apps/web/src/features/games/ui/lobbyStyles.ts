@@ -429,6 +429,16 @@ export const StartButton = styled.button<{ $gradient?: string }>`
   }
 `;
 
+export const DeleteButton = styled(StartButton)`
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 6px 24px rgba(239, 68, 68, 0.4);
+  }
+`;
+
 export const BotCountSelector = styled.div`
   display: flex;
   flex-direction: column;

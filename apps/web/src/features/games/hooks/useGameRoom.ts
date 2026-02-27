@@ -20,6 +20,7 @@ interface UseGameRoomReturn {
   isHost: boolean;
   joinRoom: (code?: string) => void;
   leaveRoom: () => void;
+  deleteRoom: (roomId: string) => Promise<void>;
 }
 
 /**
@@ -37,17 +38,15 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
     initialData,
   } = options;
 
-  const {
-    room,
-    session,
-    loading,
-    error,
-    connect,
-    disconnect,
-    joinRoom,
-    leaveRoom: storeLeaveRoom,
-  } = useGameStore();
-
+  const room = useGameStore((s) => s.room);
+  const session = useGameStore((s) => s.session);
+  const loading = useGameStore((s) => s.loading);
+  const error = useGameStore((s) => s.error);
+  const connect = useGameStore((s) => s.connect);
+  const disconnect = useGameStore((s) => s.disconnect);
+  const joinRoom = useGameStore((s) => s.joinRoom);
+  const storeLeaveRoom = useGameStore((s) => s.leaveRoom);
+  const storeDeleteRoom = useGameStore((s) => s.deleteRoom);
   const isHost = room?.hostId === userId;
 
   useEffect(() => {
@@ -72,9 +71,9 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
     mode,
     inviteCode,
     enabled,
+    initialData,
     connect,
     disconnect,
-    initialData,
   ]);
 
   const handleJoinRoom = useCallback(
@@ -89,12 +88,13 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
   }, [roomId, userId, storeLeaveRoom]);
 
   return {
-    room: room?.id === roomId ? room : null,
+    room: (room?.id === roomId ? room : null) || initialData?.room || null,
     session,
     loading,
     error,
     isHost,
     joinRoom: handleJoinRoom,
     leaveRoom: handleLeaveRoom,
+    deleteRoom: storeDeleteRoom,
   };
 }

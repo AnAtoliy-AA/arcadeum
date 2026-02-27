@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.1] - 2026-02-27
+
+### Fixed
+- minor version number (N/A)
+- release version after merging to main (ARC-429)
+
+
 ## [1.5.12] - 2026-02-27
 
 ### Fixed

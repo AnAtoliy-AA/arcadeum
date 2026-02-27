@@ -168,7 +168,7 @@ export const byMessages = {
   connectionOverlay: {
     title: 'Злучэнне страчана',
     message: 'Дакраніцеся да экрана або рухайце мышку для пераключэння',
-    reconnecting: 'Пераключэнне...',
+    reconnecting: 'Переключэнне...',
   },
   idle: {
     label: 'Неактыўны',

@@ -169,7 +169,6 @@ export const useGameStore = create<GameState>((set, get) => ({
       'gameStarted',
     );
     const wrappedHandleException = decryptHandler(handleException, 'exception');
-
     const handleIdleChanged = (payload: {
       userId?: string;
       idle?: boolean;
@@ -185,6 +184,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       }
     };
 
+    // Register
     gameSocket.on('games.room.joined', wrappedHandleJoined);
     gameSocket.on('games.room.watching', wrappedHandleJoined);
     gameSocket.on('games.room.update', wrappedHandleRoomUpdate);

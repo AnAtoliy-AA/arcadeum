@@ -116,7 +116,7 @@ export async function mockGameSocket(
           });
           s.connect = () => {
             isConnected = true;
-            setTimeout(() => s.trigger('connect'), 50);
+            setTimeout(() => s.trigger('connect'), 500);
             return s;
           };
           s.disconnect = () => {

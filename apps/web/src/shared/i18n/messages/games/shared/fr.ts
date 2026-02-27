@@ -72,6 +72,14 @@ export const frMessages = {
     actions: {
       backToHome: "Retour à l'Accueil",
     },
+    deleteRoom: {
+      button: 'Supprimer la salle',
+      confirmTitle: 'Supprimer la salle',
+      confirmMessage:
+        'Êtes-vous sûr de vouloir supprimer cette salle ? Cette action est irréversible et tous les joueurs seront déconnectés.',
+      confirmButton: 'Supprimer la salle',
+      cancelButton: 'Garder la salle',
+    },
   },
   create: {
     title: 'Créer une Salle de Jeu',
@@ -160,5 +168,16 @@ export const frMessages = {
       strategy: 'Stratégie',
       cards: 'Cartes',
     },
+  },
+  connectionOverlay: {
+    title: 'Connexion perdue',
+    message:
+      "Touchez n'importe où ou déplacez votre souris pour vous reconnecter",
+    reconnecting: 'Reconnexion...',
+  },
+  idle: {
+    label: 'Inactif',
+    title: '💤 Vous êtes inactif',
+    message: 'Bougez votre souris ou appuyez sur une touche pour reprendre',
   },
 };

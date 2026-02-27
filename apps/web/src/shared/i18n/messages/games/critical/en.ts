@@ -58,7 +58,7 @@ export const enMessages = {
         name: 'The Ancient Temple',
         description: 'Survival adventure in a mysterious temple',
       },
-      high_altitude_hike: {
+      'high-altitude-hike': {
         name: 'High-Altitude Hike',
         description: 'Survival adventure escaping an avalanche',
       },

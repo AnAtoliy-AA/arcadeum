@@ -7,7 +7,6 @@ import {
   isSocketEncryptionEnabled,
   setEncryptionKey,
   resetEncryptionKey,
-  hasEncryptionKey,
 } from './socket-encryption';
 
 function resolveSocketUrl(): string {
@@ -179,15 +178,9 @@ interface SocketEventHandler {
 export function useSocket(event: string, handler: SocketEventHandler): void {
   useEffect(() => {
     const listener = async (...args: unknown[]) => {
-      if (
-        args.length > 0 &&
-        isSocketEncryptionEnabled() &&
-        hasEncryptionKey()
-      ) {
+      if (args.length > 0 && isSocketEncryptionEnabled()) {
         const decrypted = await maybeDecrypt(args[0]);
-        if (decrypted !== null) {
-          handler(decrypted, ...args.slice(1));
-        }
+        handler(decrypted, ...args.slice(1));
         return;
       }
       handler(...args);
@@ -207,15 +200,9 @@ export function useChatSocket(
 ): void {
   useEffect(() => {
     const listener = async (...args: unknown[]) => {
-      if (
-        args.length > 0 &&
-        isSocketEncryptionEnabled() &&
-        hasEncryptionKey()
-      ) {
+      if (args.length > 0 && isSocketEncryptionEnabled()) {
         const decrypted = await maybeDecrypt(args[0]);
-        if (decrypted !== null) {
-          handler(decrypted, ...args.slice(1));
-        }
+        handler(decrypted, ...args.slice(1));
         return;
       }
       handler(...args);

@@ -72,6 +72,14 @@ export const enMessages = {
     actions: {
       backToHome: 'Back to Home',
     },
+    deleteRoom: {
+      button: 'Delete Room',
+      confirmTitle: 'Delete Room',
+      confirmMessage:
+        'Are you sure you want to delete this room? This action cannot be undone and all players will be disconnected.',
+      confirmButton: 'Delete Room',
+      cancelButton: 'Keep Room',
+    },
   },
   create: {
     title: 'Create Game Room',
@@ -156,5 +164,15 @@ export const enMessages = {
       strategy: 'Strategy',
       cards: 'Cards',
     },
+  },
+  connectionOverlay: {
+    title: 'Connection Lost',
+    message: 'Tap anywhere or move your mouse to reconnect',
+    reconnecting: 'Reconnecting...',
+  },
+  idle: {
+    label: 'Idle',
+    title: '💤 You are idle',
+    message: 'Move your mouse or press a key to resume',
   },
 };

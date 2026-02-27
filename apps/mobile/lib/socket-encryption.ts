@@ -8,6 +8,30 @@ import * as Crypto from 'expo-crypto';
 
 const IV_LENGTH = 12;
 
+// Shared promise for waiting on the encryption key
+let keyPromise: Promise<Uint8Array> | null = null;
+let resolveKey: ((key: Uint8Array) => void) | null = null;
+let rejectKey: ((reason: Error) => void) | null = null;
+
+const KEY_WAIT_TIMEOUT_MS = 10000;
+
+function getKeyPromise(): Promise<Uint8Array> {
+  if (keyPromise) return keyPromise;
+  keyPromise = new Promise((resolve, reject) => {
+    resolveKey = resolve;
+    rejectKey = reject;
+
+    // Safety timeout to prevent infinite UI hangs
+    setTimeout(() => {
+      if (rejectKey) {
+        rejectKey(new Error('Timeout waiting for encryption key'));
+        resetEncryptionKey();
+      }
+    }, KEY_WAIT_TIMEOUT_MS);
+  });
+  return keyPromise;
+}
+
 /**
  * Encryption key received from server at runtime.
  * NOT bundled in client - fetched via socket on connect.
@@ -47,6 +71,14 @@ export function setEncryptionKey(keyHex: string): boolean {
     }
     encryptionKey = bytes;
     console.debug('[socket-encryption] Encryption key set');
+
+    // Resolve any waiting decryption calls
+    if (resolveKey) {
+      resolveKey(bytes);
+      resolveKey = null;
+      rejectKey = null;
+    }
+
     return true;
   } catch (error) {
     console.error('[socket-encryption] Failed to set encryption key:', error);
@@ -59,6 +91,14 @@ export function setEncryptionKey(keyHex: string): boolean {
  */
 export function resetEncryptionKey(): void {
   encryptionKey = null;
+
+  if (rejectKey) {
+    rejectKey(new Error('Encryption key reset (disconnected)'));
+  }
+
+  keyPromise = null;
+  resolveKey = null;
+  rejectKey = null;
 }
 
 /**
@@ -89,9 +129,7 @@ function base64ToUint8Array(base64: string): Uint8Array {
  * Returns a Base64-encoded string containing IV + ciphertext + auth tag.
  */
 export async function encryptPayload(payload: unknown): Promise<string> {
-  if (!encryptionKey) {
-    throw new Error('Encryption key not available');
-  }
+  const key = encryptionKey || (await getKeyPromise());
 
   const iv = Crypto.getRandomBytes(IV_LENGTH);
   const jsonString = JSON.stringify(payload);
@@ -99,7 +137,7 @@ export async function encryptPayload(payload: unknown): Promise<string> {
   const data = encoder.encode(jsonString);
 
   // Use @noble/ciphers for AES-GCM
-  const aes = gcm(encryptionKey, iv);
+  const aes = gcm(key, iv);
   const encrypted = aes.encrypt(data);
 
   // Combine IV + ciphertext (auth tag is already appended by gcm)
@@ -117,9 +155,7 @@ export async function encryptPayload(payload: unknown): Promise<string> {
 export async function decryptPayload<T = unknown>(
   ciphertext: string,
 ): Promise<T> {
-  if (!encryptionKey) {
-    throw new Error('Encryption key not available');
-  }
+  const key = encryptionKey || (await getKeyPromise());
 
   const combined = base64ToUint8Array(ciphertext);
 
@@ -131,7 +167,7 @@ export async function decryptPayload<T = unknown>(
   const encrypted = combined.slice(IV_LENGTH);
 
   // Use @noble/ciphers for AES-GCM
-  const aes = gcm(encryptionKey, iv);
+  const aes = gcm(key, iv);
   const decrypted = aes.decrypt(encrypted);
 
   const decoder = new TextDecoder();
@@ -154,17 +190,25 @@ export async function maybeEncrypt(payload: unknown): Promise<unknown> {
  * Returns the original payload if encryption is disabled or payload is not encrypted.
  */
 export async function maybeDecrypt<T = unknown>(payload: unknown): Promise<T> {
-  if (!isSocketEncryptionEnabled() || !hasEncryptionKey()) {
-    return payload as T;
-  }
-
-  if (
+  const isEncrypted =
     typeof payload === 'object' &&
     payload !== null &&
     '__encrypted' in payload &&
-    typeof (payload as Record<string, unknown>).__encrypted === 'string'
-  ) {
-    return decryptPayload<T>((payload as Record<string, string>).__encrypted);
+    typeof (payload as Record<string, unknown>).__encrypted === 'string';
+
+  if (!isSocketEncryptionEnabled()) {
+    return (isEncrypted ? null : payload) as T;
+  }
+
+  if (isEncrypted) {
+    try {
+      return await decryptPayload<T>(
+        (payload as Record<string, string>).__encrypted,
+      );
+    } catch (err) {
+      console.error('[socket-encryption] Decryption failed:', err);
+      return null as unknown as T;
+    }
   }
 
   return payload as T;

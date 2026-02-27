@@ -99,6 +99,14 @@ if [ -f "CHANGELOG.md" ]; then
   cat "CHANGELOG.md" > "$TEMP_CHANGELOG.old"
 else
   echo "# Changelog" > "$TEMP_CHANGELOG.old"
+  echo "" >> "$TEMP_CHANGELOG.old"
+  echo "All notable changes to this project will be documented in this file." >> "$TEMP_CHANGELOG.old"
+  echo "" >> "$TEMP_CHANGELOG.old"
+  echo "The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)," >> "$TEMP_CHANGELOG.old"
+  echo "and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)." >> "$TEMP_CHANGELOG.old"
+  echo "" >> "$TEMP_CHANGELOG.old"
+  echo "## [Unreleased]" >> "$TEMP_CHANGELOG.old"
+  echo "" >> "$TEMP_CHANGELOG.old"
 fi
 
 # Check if this version already exists in changelog
@@ -107,35 +115,66 @@ if grep -q "## \[$CURRENT_VERSION\]" "$TEMP_CHANGELOG.old"; then
   exit 0
 fi
 
-# Combine the new entry with the existing changelog
-# Find the position of the first version header or the end of the preamble
-FIRST_VERSION_LINE=$(grep -n "^## \[" "$TEMP_CHANGELOG.old" | head -1 | cut -d: -f1)
+# Extract Unreleased content if IS_RELEASE is true
+UNRELEASED_CONTENT=""
+# Find line where [Unreleased] starts
+UNRELEASED_START=$(grep -n "^## \[Unreleased\]" "$TEMP_CHANGELOG.old" | cut -d: -f1)
 
-if [ -n "$FIRST_VERSION_LINE" ]; then
-  # Extract the header before the first version
-  head -n $(($FIRST_VERSION_LINE - 1)) "$TEMP_CHANGELOG.old" > "$TEMP_CHANGELOG.header"
-  # Extract the rest of the changelog after the first version
-  tail -n +$FIRST_VERSION_LINE "$TEMP_CHANGELOG.old" > "$TEMP_CHANGELOG.rest"
-  # Combine: header + new entry + rest
-  cat "$TEMP_CHANGELOG.header" "$TEMP_CHANGELOG" "$TEMP_CHANGELOG.rest" > "CHANGELOG.md"
-else
-  # No version headers found. Locate the end of preamble (usually starts after '# Changelog' and its description)
-  HEADER_END=$(grep -n "^# " "$TEMP_CHANGELOG.old" | head -1 | cut -d: -f1)
-  if [ -z "$HEADER_END" ]; then HEADER_END=0; fi
+if [ -n "$UNRELEASED_START" ]; then
+  # Find where the next version starts after Unreleased
+  NEXT_VERSION_AFTER_UNRELEASED=$(tail -n +$((UNRELEASED_START + 1)) "$TEMP_CHANGELOG.old" | grep -n "^## \[" | head -1 | cut -d: -f1)
   
-  # Try to find where the preamble ends (after first blank line after header or similar)
-  # For simplicity, if no version, we'll just append after the first few lines or prepend if totally empty
-  if [ "$HEADER_END" -gt 0 ]; then
-    head -n "$((HEADER_END + 4))" "$TEMP_CHANGELOG.old" > "$TEMP_CHANGELOG.header"
-    tail -n +"$((HEADER_END + 5))" "$TEMP_CHANGELOG.old" > "$TEMP_CHANGELOG.rest"
-    cat "$TEMP_CHANGELOG.header" "" "$TEMP_CHANGELOG" "$TEMP_CHANGELOG.rest" > "CHANGELOG.md"
-  else
-    cat "$TEMP_CHANGELOG" "$TEMP_CHANGELOG.old" > "CHANGELOG.md"
+  if [ "$IS_RELEASE" = "true" ]; then
+    if [ -n "$NEXT_VERSION_AFTER_UNRELEASED" ]; then
+      UNRELEASED_CONTENT=$(sed -n "$((UNRELEASED_START + 1)),$((UNRELEASED_START + NEXT_VERSION_AFTER_UNRELEASED - 1))p" "$TEMP_CHANGELOG.old")
+    else
+      UNRELEASED_CONTENT=$(tail -n +$((UNRELEASED_START + 1)) "$TEMP_CHANGELOG.old")
+    fi
+    echo "Moving [Unreleased] items to version $CURRENT_VERSION"
+    echo "" >> "$TEMP_CHANGELOG"
+    echo "$UNRELEASED_CONTENT" >> "$TEMP_CHANGELOG"
   fi
+  
+  # Create a file with the Unreleased section removed
+  if [ -n "$NEXT_VERSION_AFTER_UNRELEASED" ]; then
+    head -n $((UNRELEASED_START - 1)) "$TEMP_CHANGELOG.old" > "$TEMP_CHANGELOG.no_unreleased"
+    tail -n +$((UNRELEASED_START + NEXT_VERSION_AFTER_UNRELEASED)) "$TEMP_CHANGELOG.old" >> "$TEMP_CHANGELOG.no_unreleased"
+  else
+    head -n $((UNRELEASED_START - 1)) "$TEMP_CHANGELOG.old" > "$TEMP_CHANGELOG.no_unreleased"
+  fi
+else
+  cat "$TEMP_CHANGELOG.old" > "$TEMP_CHANGELOG.no_unreleased"
+fi
+
+# Reconstruct CHANGELOG.md
+# 1. Preamble (before any ## [)
+# 2. ## [Unreleased]
+# 3. New version
+# 4. Rest of versions
+
+FIRST_VERSION_IN_CLEAN=$(grep -n "^## \[" "$TEMP_CHANGELOG.no_unreleased" | head -1 | cut -d: -f1)
+
+if [ -n "$FIRST_VERSION_IN_CLEAN" ]; then
+  head -n $((FIRST_VERSION_IN_CLEAN - 1)) "$TEMP_CHANGELOG.no_unreleased" > "CHANGELOG.md"
+  {
+    echo "## [Unreleased]"
+    echo ""
+    cat "$TEMP_CHANGELOG"
+    echo ""
+    tail -n +$FIRST_VERSION_IN_CLEAN "$TEMP_CHANGELOG.no_unreleased"
+  } >> "CHANGELOG.md"
+else
+  cat "$TEMP_CHANGELOG.no_unreleased" > "CHANGELOG.md"
+  {
+    echo ""
+    echo "## [Unreleased]"
+    echo ""
+    cat "$TEMP_CHANGELOG"
+  } >> "CHANGELOG.md"
 fi
 
 # Clean up
-rm -f "$TEMP_CHANGELOG" "$TEMP_CHANGELOG.old" "$TEMP_CHANGELOG.header" "$TEMP_CHANGELOG.rest"
+rm -f "$TEMP_CHANGELOG" "$TEMP_CHANGELOG.old" "$TEMP_CHANGELOG.no_unreleased"
 
 echo "Changelog generated for version $CURRENT_VERSION"
 

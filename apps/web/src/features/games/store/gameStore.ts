@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { gameSocket } from '@/shared/lib/socket';
 import { maybeDecrypt } from '@/shared/lib/socket-encryption';
+import { gamesApi } from '../api';
 import type { GameRoomSummary, GameInitialData } from '@/shared/types/games';
 
 /**
@@ -15,6 +16,8 @@ interface GameState {
   isConnected: boolean;
   loading: boolean;
   error: string | null;
+  idlePlayers: string[];
+  accessToken: string | null;
 
   connect: (
     roomId: string,
@@ -32,6 +35,7 @@ interface GameState {
     inviteCode?: string,
   ) => void;
   leaveRoom: (roomId: string, userId: string | null) => void;
+  deleteRoom: (roomId: string) => Promise<void>;
   reset: () => void;
 }
 
@@ -41,6 +45,8 @@ export const useGameStore = create<GameState>((set, get) => ({
   isConnected: false,
   loading: false,
   error: null,
+  idlePlayers: [],
+  accessToken: null,
 
   connect: (
     roomId,
@@ -58,11 +64,17 @@ export const useGameStore = create<GameState>((set, get) => ({
 
     if (mode !== 'watch' && !accessToken && !userId) return;
 
+    // Preserve existing room if it's the same roomId to prevent flickering
+    const currentState = get();
+    const isSameRoom = currentState.room?.id === roomId;
+
     set({
-      loading: !initialData?.room, // Don't load if we have data
-      error: null,
-      room: initialData?.room || null,
-      session: initialData?.session || null,
+      loading: !isSameRoom && !initialData?.room,
+      error: isSameRoom ? currentState.error : null,
+      room: initialData?.room || (isSameRoom ? currentState.room : null),
+      session:
+        initialData?.session || (isSameRoom ? currentState.session : null),
+      accessToken,
     });
 
     // Define handlers
@@ -107,7 +119,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     };
 
     const handleDisconnect = () => {
-      set({ isConnected: false, loading: true });
+      set({ isConnected: false });
     };
 
     const handlePlayerJoined = (payload: { room?: GameRoomSummary }) => {
@@ -157,9 +169,22 @@ export const useGameStore = create<GameState>((set, get) => ({
       'gameStarted',
     );
     const wrappedHandleException = decryptHandler(handleException, 'exception');
+    const handleIdleChanged = (payload: {
+      userId?: string;
+      idle?: boolean;
+    }) => {
+      if (!payload?.userId) return;
+      const current = get().idlePlayers;
+      if (payload.idle) {
+        if (!current.includes(payload.userId)) {
+          set({ idlePlayers: [...current, payload.userId] });
+        }
+      } else {
+        set({ idlePlayers: current.filter((id) => id !== payload.userId) });
+      }
+    };
 
     // Register
-
     gameSocket.on('games.room.joined', wrappedHandleJoined);
     gameSocket.on('games.room.watching', wrappedHandleJoined);
     gameSocket.on('games.room.update', wrappedHandleRoomUpdate);
@@ -169,6 +194,12 @@ export const useGameStore = create<GameState>((set, get) => ({
     gameSocket.on('exception', wrappedHandleException);
     gameSocket.on('connect', handleConnect);
     gameSocket.on('disconnect', handleDisconnect);
+
+    const wrappedHandleIdleChanged = decryptHandler<{
+      userId?: string;
+      idle?: boolean;
+    }>(handleIdleChanged, 'idleChanged');
+    gameSocket.on('games.player.idle_changed', wrappedHandleIdleChanged);
 
     // Store cleanup function to properly remove listeners later
     cleanupListeners = () => {
@@ -181,6 +212,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       gameSocket.off('exception', wrappedHandleException);
       gameSocket.off('connect', handleConnect);
       gameSocket.off('disconnect', handleDisconnect);
+      gameSocket.off('games.player.idle_changed', wrappedHandleIdleChanged);
     };
 
     // If already connected
@@ -195,13 +227,16 @@ export const useGameStore = create<GameState>((set, get) => ({
       cleanupListeners();
       cleanupListeners = null;
     }
-    gameSocket.disconnect();
+
+    // We keep the room and session data so the UI doesn't flicker/redirect
+    // during token refresh or socket reconnects.
+    // Metadata is only cleared on explicit leaveRoom() or hard reset().
     set({
       isConnected: false,
-      room: null,
-      session: null,
       error: null,
       loading: false,
+      idlePlayers: [],
+      accessToken: null,
     });
   },
 
@@ -221,8 +256,50 @@ export const useGameStore = create<GameState>((set, get) => ({
     if (roomId && userId) {
       gameSocket.emit('games.room.leave', { roomId, userId });
     }
-    set({ room: null, session: null, error: null });
+    set({
+      room: null,
+      session: null,
+      error: null,
+      idlePlayers: [],
+      accessToken: null,
+    });
   },
 
-  reset: () => set({ room: null, session: null, error: null, loading: false }),
+  deleteRoom: async (roomId) => {
+    const { accessToken } = get();
+    try {
+      await gamesApi.deleteRoom(roomId, { token: accessToken || undefined });
+      set({
+        room: null,
+        session: null,
+        error: null,
+        idlePlayers: [],
+        accessToken: null,
+      });
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'Failed to delete room';
+      set({ error: message });
+      throw err;
+    }
+  },
+
+  reset: () =>
+    set({
+      room: null,
+      session: null,
+      error: null,
+      loading: false,
+      idlePlayers: [],
+      accessToken: null,
+    }),
 }));
+
+// Expose store to window for E2E testing
+if (
+  typeof window !== 'undefined' &&
+  (window as unknown as Record<string, unknown>).isPlaywright
+) {
+  (window as unknown as Record<string, unknown>).__ZUSTAND_GAME_STORE__ =
+    useGameStore;
+}

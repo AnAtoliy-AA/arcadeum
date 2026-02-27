@@ -39,7 +39,7 @@ export class ChatService {
     @InjectModel(Message.name) private messageModel: Model<Message>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private chatHelper: ChatHelperService,
-  ) {}
+  ) { }
 
   private async hydrateParticipants(
     participantIds: string[],
@@ -213,9 +213,6 @@ export class ChatService {
     if (!sanitizedSenderId) {
       throw new Error('Sender identifier is required.');
     }
-    if (!isValidObjectId(sanitizedSenderId)) {
-      throw new Error(`Invalid sender identifier: ${sanitizedSenderId}`);
-    }
     if (!sanitizedChatId) {
       throw new Error('Chat identifier is required.');
     }
@@ -245,8 +242,8 @@ export class ChatService {
       .lean()
       .exec()) as
       | (Pick<User, 'username' | 'email' | 'displayName'> & {
-          _id?: Types.ObjectId | string;
-        })
+        _id?: Types.ObjectId | string;
+      })
       | null;
     const senderUsername = this.chatHelper.resolveParticipantDisplayName(
       {

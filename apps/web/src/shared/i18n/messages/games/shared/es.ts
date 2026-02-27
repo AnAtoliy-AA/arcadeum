@@ -72,6 +72,14 @@ export const esMessages = {
     actions: {
       backToHome: 'Volver al Inicio',
     },
+    deleteRoom: {
+      button: 'Eliminar sala',
+      confirmTitle: 'Eliminar sala',
+      confirmMessage:
+        '¿Estás seguro de que quieres eliminar esta sala? Esta acción no se puede deshacer y todos los jugadores serán desconectados.',
+      confirmButton: 'Eliminar sala',
+      cancelButton: 'Mantener sala',
+    },
   },
   create: {
     title: 'Crear Sala de Juego',
@@ -159,5 +167,15 @@ export const esMessages = {
       strategy: 'Estrategia',
       cards: 'Cartas',
     },
+  },
+  connectionOverlay: {
+    title: 'Conexión perdida',
+    message: 'Toca en cualquier lugar o mueve el ratón para reconectar',
+    reconnecting: 'Reconectando...',
+  },
+  idle: {
+    label: 'Inactivo',
+    title: '💤 Estás inactivo',
+    message: 'Mueve el ratón o pulsa una tecla para continuar',
   },
 };

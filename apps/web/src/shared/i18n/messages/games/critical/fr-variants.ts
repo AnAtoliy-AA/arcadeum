@@ -234,7 +234,7 @@ export const variants = {
     smite: 'Châtiment',
     rapture: 'Rapt',
   },
-  high_altitude_hike: {
+  'high-altitude-hike': {
     name: 'Randonnée en Montagne',
     description: 'Survie dans une aventure en échappant à une avalanche',
     critical_event: 'Avalanche',

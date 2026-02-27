@@ -1,7 +1,8 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { Button } from '@/shared/ui';
+import { Button, IdleBadge } from '@/shared/ui';
+import { useGameStore } from '@/features/games/store/gameStore';
 import {
   PlayerItem,
   LobbyPlayerAvatar,
@@ -62,6 +63,8 @@ export function SortablePlayerItem({
 
   const getInitials = (name: string) => name.slice(0, 2).toUpperCase();
   const colorIndex = member.displayName.length % AVATAR_COLORS.length;
+  const idlePlayers = useGameStore((s) => s.idlePlayers);
+  const isPlayerIdle = idlePlayers.includes(member.id);
 
   return (
     <PlayerItem ref={setNodeRef} style={style} $isHost={isRoomHost}>
@@ -74,7 +77,10 @@ export function SortablePlayerItem({
           {getInitials(member.displayName)}
         </LobbyPlayerAvatar>
         <PlayerInfo>
-          <LobbyPlayerName>{member.displayName}</LobbyPlayerName>
+          <LobbyPlayerName>
+            {member.displayName}
+            {isPlayerIdle && <IdleBadge />}
+          </LobbyPlayerName>
         </PlayerInfo>
       </div>
 

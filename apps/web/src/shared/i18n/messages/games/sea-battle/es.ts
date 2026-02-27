@@ -75,6 +75,7 @@ export const esMessages = {
         shipsPalette: 'Barcos para colocar',
         vertical: 'Vertical',
         horizontal: 'Horizontal',
+        cells: 'Celdas',
       },
       players: {
         you: 'Tú',

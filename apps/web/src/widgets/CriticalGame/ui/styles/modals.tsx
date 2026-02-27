@@ -4,6 +4,7 @@ import { Button, GameVariant } from '@/shared/ui';
 import { ActionButton, CardsGrid, Card } from './cards';
 import { VARIANT_COLORS } from './variant-palette';
 import { GAME_VARIANT } from '../../lib/constants';
+import { scrollbarStyles } from '@/shared/lib/styles';
 
 const getModalFrameBackground = (
   $variant: string | undefined,
@@ -147,6 +148,8 @@ const StyledScrollArea = styled.div`
   width: 100%;
   height: 100%;
   border-radius: inherit; /* Matches parent radius */
+
+  ${scrollbarStyles}
 `;
 
 export const ModalContent = ({
@@ -283,20 +286,7 @@ export const ScrollableCardsGrid = styled(CardsGrid)`
   margin: -0.5rem;
   width: calc(100% + 1rem); /* Compensate for negative margin */
 
-  /* Custom Scrollbar */
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  &::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
-  }
-  &::-webkit-scrollbar-thumb {
-    background: rgba(192, 38, 211, 0.3);
-    border-radius: 3px;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(192, 38, 211, 0.5);
-  }
+  ${scrollbarStyles}
 `;
 
 export const SelectableCard = styled(Card)<{ $selected?: boolean }>`

@@ -2,6 +2,7 @@ import styled, { keyframes } from 'styled-components';
 import { ReactNode, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '@/shared/ui/Button';
+import { scrollbarStyles } from '@/shared/lib/styles';
 
 export interface ModalProps {
   open: boolean;
@@ -74,6 +75,8 @@ const Content = styled.div<{ $maxWidth: string }>`
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   animation: ${slideUp} 0.3s ease-out;
+
+  ${scrollbarStyles}
 `;
 
 const Header = styled.div`

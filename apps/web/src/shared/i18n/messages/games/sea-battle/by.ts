@@ -75,6 +75,7 @@ export const byMessages = {
         shipsPalette: 'Караблі для расстаноўкі',
         vertical: 'Вертыкальна',
         horizontal: 'Гарызантальна',
+        cells: 'Клеткі',
       },
       players: {
         you: 'Вы',

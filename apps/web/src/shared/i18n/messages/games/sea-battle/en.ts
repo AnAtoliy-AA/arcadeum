@@ -75,6 +75,7 @@ export const enMessages = {
         shipsPalette: 'Ships to Place',
         vertical: 'Vertical',
         horizontal: 'Horizontal',
+        cells: 'Cells',
       },
       players: {
         you: 'You',

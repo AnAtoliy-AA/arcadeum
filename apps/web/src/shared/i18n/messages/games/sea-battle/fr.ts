@@ -75,6 +75,7 @@ export const frMessages = {
         shipsPalette: 'Navires à Placer',
         vertical: 'Vertical',
         horizontal: 'Horizontal',
+        cells: 'Cases',
       },
       players: {
         you: 'Vous',

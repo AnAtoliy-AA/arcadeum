@@ -3,12 +3,16 @@ import { useMutation } from '@tanstack/react-query';
 import { Select } from '@/shared/ui/Select/Select';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi } from '../api';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 
 export interface GameVariantOption {
   id: string;
-  name: string;
+  name: string | TranslationKey;
   emoji?: string;
-  description?: string;
+  description?: string | TranslationKey;
   disabled?: boolean;
 }
 
@@ -30,6 +34,7 @@ export function GameVariantSelector({
   className,
 }: GameVariantSelectorProps) {
   const { snapshot } = useSessionTokens();
+  const { t } = useTranslation();
 
   // Local state for optimistic updates
   const [internalVariant, setInternalVariant] = useState(currentVariant);
@@ -82,6 +87,21 @@ export function GameVariantSelector({
     ];
   }, [internalVariant, variants]);
 
+  // Translate variant names and descriptions
+  const translatedVariants = useMemo(() => {
+    return variants.map((v) => ({
+      ...v,
+      name:
+        typeof v.name === 'string' && v.name.startsWith('games.')
+          ? t(v.name as TranslationKey)
+          : v.name,
+      description:
+        typeof v.description === 'string' && v.description.startsWith('games.')
+          ? t(v.description as TranslationKey)
+          : v.description,
+    }));
+  }, [variants, t]);
+
   const selectId = `variant-select-${roomId}`;
 
   return (
@@ -95,12 +115,22 @@ export function GameVariantSelector({
       className={className}
       aria-label="Select Game Variant"
     >
-      {displayVariants.map((v) => (
-        <option key={v.id} value={v.id} disabled={!!v.disabled}>
-          {v.emoji ? `${v.emoji} ` : ''}
-          {v.name}
-        </option>
-      ))}
+      {displayVariants.map((v) => {
+        const translatedVariant =
+          translatedVariants.find((tv) => tv.id === v.id) || v;
+        return (
+          <option
+            key={translatedVariant.id}
+            value={translatedVariant.id}
+            disabled={!!translatedVariant.disabled}
+          >
+            {translatedVariant.emoji ? `${translatedVariant.emoji} ` : ''}
+            {typeof translatedVariant.name === 'string'
+              ? translatedVariant.name
+              : ''}
+          </option>
+        );
+      })}
     </Select>
   );
 }

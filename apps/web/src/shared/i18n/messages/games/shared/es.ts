@@ -66,7 +66,9 @@ export const esMessages = {
     watchRoom: 'Ver',
     joinByCode: 'Unirse con código',
     cancel: 'Cancelar',
-    copyInviteLink: 'Copiar enlace de invitación',
+    copyInviteLink: 'Compartir enlace de juego',
+    copyInviteLinkCopied: '¡Copiado!',
+    copyInviteLinkButton: 'Compartir enlace',
     actions: {
       backToHome: 'Volver al Inicio',
     },
@@ -127,11 +129,13 @@ export const esMessages = {
     },
   },
   inviteCode: {
-    title: 'Unirse con Código de Invitación',
+    title: 'Unirse a un Juego Privado',
     label: 'Ingresa Código',
     placeholder: 'ej. A1B2C3',
     join: 'Unirse',
     joining: 'Uniéndose...',
+    helper:
+      'Este código fue compartido por el anfitrión del juego. Escríbelo exactamente como se muestra, sin espacios.',
     errors: {
       notFound: 'Sala no encontrada o código inválido',
       searchFailed: 'Error al buscar la sala',

@@ -75,14 +75,19 @@ export function useAuthForm() {
 
   const isRegisterMode = mode === 'register';
 
+  const referralAppliedRef = useRef(false);
+
   // Extract referral from URL and auto-toggle to register mode if needed
   useEffect(() => {
-    if (referralParam) {
-      scheduleStateUpdate(() => setReferralCode(referralParam));
-      // Try to force register mode if not currently
-      if (mode !== 'register') {
-        scheduleStateUpdate(() => toggleMode());
-      }
+    if (referralParam && !referralAppliedRef.current) {
+      referralAppliedRef.current = true;
+      scheduleStateUpdate(() => {
+        setReferralCode(referralParam);
+        // Try to force register mode if not currently
+        if (mode !== 'register') {
+          toggleMode();
+        }
+      });
     }
   }, [referralParam, mode, toggleMode]);
 

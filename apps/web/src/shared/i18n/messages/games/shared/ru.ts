@@ -66,7 +66,9 @@ export const ruMessages = {
     watchRoom: 'Смотреть',
     joinByCode: 'Войти по коду',
     cancel: 'Отмена',
-    copyInviteLink: 'Копировать ссылку',
+    copyInviteLink: 'Поделиться ссылкой на игру',
+    copyInviteLinkCopied: 'Скопировано!',
+    copyInviteLinkButton: 'Поделиться ссылкой',
     actions: {
       backToHome: 'На главную',
     },
@@ -125,11 +127,13 @@ export const ruMessages = {
     },
   },
   inviteCode: {
-    title: 'Войти по коду',
+    title: 'Войти в приватную игру',
     label: 'Введите код приглашения',
     placeholder: 'например, A1B2C3',
     join: 'Войти',
     joining: 'Вход...',
+    helper:
+      'Этот код был предоставлен организатором игры. Введите его точно так, как показано, без пробелов.',
     errors: {
       notFound: 'Зал не найден или код недействителен',
       searchFailed: 'Не удалось найти зал',

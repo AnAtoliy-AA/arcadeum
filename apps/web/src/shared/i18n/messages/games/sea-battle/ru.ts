@@ -74,6 +74,7 @@ export const ruMessages = {
         shipsPalette: 'Корабли для расстановки',
         vertical: 'Вертикально',
         horizontal: 'Горизонтально',
+        cells: 'Клетки',
       },
       players: {
         you: 'Вы',

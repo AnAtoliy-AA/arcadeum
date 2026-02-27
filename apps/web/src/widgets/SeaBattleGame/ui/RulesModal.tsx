@@ -42,7 +42,7 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
   const ships = shipsRaw
     .split('\n')
     .map((line) => {
-      const match = line.match(/•\s+(.+)\s+\((\d+)\s+cells\)\s+-\s+(.+)/);
+      const match = line.match(/•\s+(.+)\s+\((\d+)\s+.*\)\s+-\s+(.+)/);
       if (match) {
         return {
           name: match[1],
@@ -128,7 +128,12 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
                 <ShipCard key={idx}>
                   <ShipHeader>
                     <ShipName>{ship?.name}</ShipName>
-                    <ShipSize>{ship?.size} Cells</ShipSize>
+                    <ShipSize>
+                      {ship?.size}{' '}
+                      {t(
+                        'games.sea_battle_v1.table.state.cells' as TranslationKey,
+                      )}
+                    </ShipSize>
                   </ShipHeader>
                   <ShipDescription>{ship?.description}</ShipDescription>
                 </ShipCard>

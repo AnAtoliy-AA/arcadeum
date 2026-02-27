@@ -27,7 +27,9 @@ test.describe('Video Presentation', () => {
 
   test('should play video on click', async ({ page }) => {
     const playButton = page.getByTestId('play-btn');
-    await playButton.scrollIntoViewIfNeeded();
+    await playButton.waitFor({ state: 'visible', timeout: 10000 });
+    // Note: scrollIntoViewIfNeeded can fail if element is being re-rendered or detached during scroll.
+    // Playwright's click action automatically scrolls to the element.
     await expect(playButton).toBeVisible({ timeout: 10000 });
     await page.waitForTimeout(1000); // Give WebKit a moment to stabilize
     await playButton.click({ force: true });

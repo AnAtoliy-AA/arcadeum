@@ -10,19 +10,25 @@ test.describe('Header Language Switcher', () => {
   test('should display language switcher on header for all devices and change language', async ({
     page,
   }) => {
+    await page.waitForLoadState('networkidle');
+
     const languageSwitcher = page
       .locator('header')
       .getByTestId('header-language-switcher');
+
+    // Wait for the select to be visible and stable
     await expect(languageSwitcher).toBeVisible();
+    await languageSwitcher.waitFor({ state: 'visible', timeout: 5000 });
 
     // Default language is typically en
     await expect(languageSwitcher).toHaveValue('en');
 
     // Change language to Spanish
+    // Use selectOption and wait for the value to actually change
     await languageSwitcher.selectOption('es');
 
-    // The value should be updated
-    await expect(languageSwitcher).toHaveValue('es');
+    // The value should be updated (expect already polls)
+    await expect(languageSwitcher).toHaveValue('es', { timeout: 10000 });
   });
 
   test('should display language switcher and change language on mobile menu', async ({

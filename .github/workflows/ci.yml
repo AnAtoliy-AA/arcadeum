@@ -56,7 +56,7 @@ jobs:
       - name: Run Backend E2E Tests
         env:
           MONGODB_URI: mongodb://localhost:27017/arcadeum_test
-          JWT_SECRET: test_secret
+          AUTH_JWT_SECRET: test_secret
         run: pnpm --filter be test:e2e
 
       - name: Install Playwright Browsers

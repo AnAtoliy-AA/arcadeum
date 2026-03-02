@@ -15,6 +15,7 @@ jobs:
       CI: true
       MONGODB_URI: mongodb://localhost:27017/arcadeum_test
       AUTH_JWT_SECRET: test_secret
+      NEXT_PUBLIC_E2E: true
     services:
       mongodb:
         image: mongo:latest

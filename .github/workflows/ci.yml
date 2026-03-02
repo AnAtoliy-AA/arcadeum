@@ -11,6 +11,8 @@ jobs:
   ci:
     name: Continuous Integration
     runs-on: ubuntu-latest
+    env:
+      CI: true
     services:
       mongodb:
         image: mongo:latest

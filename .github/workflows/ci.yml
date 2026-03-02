@@ -1,22 +1,54 @@
-name: Tests
+name: CI
 
 on:
   push:
     branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
+    types: [opened, synchronize, reopened]
 
 jobs:
+  docs-check:
+    name: Docs Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Run Documentation Link Checker
+        run: pnpm docs:check
+
+      - name: Upload Link Check Report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: broken-links-report
+          path: |
+            scripts/check-doc-links.js
+            **/*.md
+
   test:
     name: Run All Tests
     runs-on: ubuntu-latest
-
     services:
       mongodb:
         image: mongo:latest
         ports:
           - 27017:27017
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4

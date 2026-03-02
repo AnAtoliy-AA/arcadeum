@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.2] - 2026-03-02
+
+### Fixed
+- docs check script (N/A)
+
+### Documentation
+- architecture description (ARC-435)
+
+
 ## [1.7.1] - 2026-03-02
 
 ### Fixed

@@ -85,6 +85,10 @@ The backend uses a **pluggable game engine system** where each game is a self-co
 
 See [Game Engine Architecture](./src/games/ARCHITECTURE.md) for detailed documentation.
 
+### Backend Architecture
+
+For a comprehensive overview of the entire backend system — including authentication, chat, payments, game engine integration, data flow, security, and scalability — see the full [Backend Architecture Documentation](../../docs/BACKEND_ARCHITECTURE.md).
+
 ## Security & Hardening
 
 See [SECURITY.md](./SECURITY.md) for details on:

@@ -169,6 +169,7 @@ export function ShipPlacementBoard({
       <BoardContainer>
         <PlacementHeader className="placement-header">
           <h2
+            data-testid="placement-instruction"
             style={{ margin: 0, color: theme.textColor, fontSize: 'inherit' }}
             className="placement-title"
           >

@@ -42,7 +42,7 @@ test.describe('Sea Battle Game', () => {
     }
 
     // Look for create room button
-    const createBtn = page.getByRole('button', { name: /create/i });
+    const createBtn = page.getByTestId('create-room-button');
 
     if (await createBtn.isVisible()) {
       await createBtn.click();
@@ -112,6 +112,32 @@ test.describe('Sea Battle Game Flow', () => {
 
     // NOTE: This test might need adjustment depending on how we mock the specific game state
     // But assuming we can get to the Lobby or Game screen:
+
+    // Mock room info API to avoid 404
+    await page.route('**/games/room-info*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: 'test-room',
+          name: 'E2E Test Room',
+          status: 'lobby',
+          gameId: 'sea-battle',
+          hostId: 'test-user',
+          playerCount: 1,
+          maxPlayers: 2,
+          visibility: 'public',
+          gameOptions: {},
+          members: [
+            {
+              id: 'test-user',
+              displayName: 'Test User',
+              isHost: true,
+            },
+          ],
+        }),
+      });
+    });
 
     await navigateTo(page, '/games/rooms/test-room');
 

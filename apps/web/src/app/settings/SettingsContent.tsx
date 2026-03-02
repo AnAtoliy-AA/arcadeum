@@ -5,12 +5,10 @@ import { useCallback, useMemo } from 'react';
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import { useThemeController } from '@/app/theme/ThemeContext';
 import { useHapticsSetting } from '@/shared/hooks/useHapticsSetting';
-import { usePlatform } from '@/shared/hooks/usePlatform';
 import { usePWAOptional } from '@/features/pwa';
-import { useTranslation } from '@/shared/lib/useTranslation';
 import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
 import type { ThemePreference } from '@/shared/config/theme';
-import { PageLayout, PageTitle, Section, Card } from '@/shared/ui';
+import { PageLayout, PageTitle, Section } from '@/shared/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { appConfig } from '@/shared/config/app-config';
 
@@ -22,9 +20,6 @@ import {
   OptionDescription,
   PillGroup,
   PillButton,
-  DownloadGrid,
-  DownloadLink,
-  DownloadIcon,
   AccountStatus,
   AccountActions,
   ActionButton,
@@ -35,6 +30,7 @@ import {
   VersionText,
 } from './styles';
 
+import { Button } from '@/shared/ui';
 import { BlockedUsersSection } from './BlockedUsersSection';
 
 type DownloadConfig = {
@@ -55,6 +51,7 @@ export type SettingsContentProps = {
   };
   description: string;
 };
+
 const SETTINGS_TITLE_FALLBACK = 'Settings';
 const APPEARANCE_TITLE_FALLBACK = 'Appearance';
 const APPEARANCE_DESCRIPTION_TEMPLATE =
@@ -62,9 +59,6 @@ const APPEARANCE_DESCRIPTION_TEMPLATE =
 const LANGUAGE_TITLE_FALLBACK = 'Language';
 const LANGUAGE_DESCRIPTION_FALLBACK =
   'Interface translations are a work in progress. Save your preference for upcoming updates.';
-const DOWNLOADS_TITLE_FALLBACK = 'Mobile builds';
-const DOWNLOADS_DESCRIPTION_FALLBACK =
-  'Grab the latest Expo builds to keep the mobile clients in sync with the web release.';
 const ACCOUNT_TITLE_FALLBACK = 'Account';
 const ACCOUNT_DESCRIPTION_FALLBACK =
   'Web sign-in is rolling out soon. In the meantime, manage your subscriptions via the dashboard or continue in the mobile app.';
@@ -113,17 +107,14 @@ const LANGUAGE_LABELS: Record<Locale, string> = {
 
 export default function SettingsContent({
   appName,
-  downloads,
   supportCta,
-  description: _description,
 }: SettingsContentProps) {
   const { themePreference, setThemePreference } = useThemeController();
   const { hapticsEnabled, setHapticsEnabled } = useHapticsSetting();
   const { locale, setLocale, messages } = useLanguage();
-  const pwa = usePWAOptional();
-  const { t } = useTranslation();
+
   const settingsCopy = messages.settings ?? {};
-  const { snapshot, hydrated } = useSessionTokens();
+  const { snapshot } = useSessionTokens();
   const { appVersion } = appConfig;
 
   const pageTitle = settingsCopy.title ?? SETTINGS_TITLE_FALLBACK;
@@ -157,53 +148,30 @@ export default function SettingsContent({
   const languageDescription =
     settingsCopy.languageDescription ?? LANGUAGE_DESCRIPTION_FALLBACK;
 
-  const languageOptions = useMemo(
-    () =>
-      SUPPORTED_LOCALES.map((code) => ({
-        code,
-        label:
-          settingsCopy.languageOptionLabels?.[code] ?? LANGUAGE_LABELS[code],
-      })),
-    [settingsCopy.languageOptionLabels],
-  );
-
-  const downloadsTitle =
-    settingsCopy.downloadsTitle ?? downloads.title ?? DOWNLOADS_TITLE_FALLBACK;
-  const downloadsDescription =
-    formatMessage(settingsCopy.downloadsDescription, { appName }) ??
-    downloads.description ??
-    DOWNLOADS_DESCRIPTION_FALLBACK;
-
-  const { isAndroid } = usePlatform();
-  const downloadButtons = useMemo(() => {
-    const buttons: Array<{ key: string; href: string; label: string }> = [];
-    if (downloads.iosHref && !isAndroid) {
-      const label = settingsCopy.downloadsIosLabel ?? downloads.iosLabel;
-      buttons.push({ key: 'ios', href: downloads.iosHref, label });
-    }
-    // if (downloads.androidHref && !isIos) {
-    //   const label =
-    //     settingsCopy.downloadsAndroidLabel ?? downloads.androidLabel;
-    //   buttons.push({ key: 'android', href: downloads.androidHref, label });
-    // }
-    return buttons;
-  }, [
-    downloads.iosHref,
-    downloads.iosLabel,
-    settingsCopy.downloadsIosLabel,
-    isAndroid,
-  ]);
-
   const accountTitle = settingsCopy.accountTitle ?? ACCOUNT_TITLE_FALLBACK;
   const accountDescription =
     formatMessage(settingsCopy.accountDescription, { appName }) ??
     ACCOUNT_DESCRIPTION_FALLBACK;
-  const accountStatus =
-    settingsCopy.accountGuestStatus ?? ACCOUNT_STATUS_FALLBACK;
-  const accountPrimaryCta =
-    settingsCopy.accountPrimaryCta ?? ACCOUNT_PRIMARY_CTA_FALLBACK;
+  const accountStatus = snapshot.email
+    ? snapshot.email
+    : (settingsCopy.accountGuestStatus ?? ACCOUNT_STATUS_FALLBACK);
+  const accountPrimaryCta = snapshot.email
+    ? 'Logout'
+    : (settingsCopy.accountPrimaryCta ?? ACCOUNT_PRIMARY_CTA_FALLBACK);
   const accountSupportLabel =
     settingsCopy.accountSupportCtaLabel ?? supportCta.label;
+
+  const handleAccountAction = useCallback(async () => {
+    if (snapshot.email) {
+      const { useSessionStore } = await import(
+        '@/entities/session/store/sessionStore'
+      );
+      await useSessionStore.getState().clearTokens();
+      window.location.href = '/';
+    } else {
+      window.location.href = '/auth';
+    }
+  }, [snapshot.email]);
 
   const gameplayTitle = settingsCopy.gameplayTitle ?? 'Gameplay';
   const gameplayDescription =
@@ -223,21 +191,27 @@ export default function SettingsContent({
     [setThemePreference],
   );
 
-  const handleLanguageSelect = useCallback(
-    (code: Locale) => {
-      if (locale === code) {
-        return;
-      }
-      setLocale(code);
-    },
-    [locale, setLocale],
+  const languageGroupLabel = languageTitle;
+
+  const languageOptions = useMemo(
+    () =>
+      SUPPORTED_LOCALES.map((code) => ({
+        code,
+        label: LANGUAGE_LABELS[code],
+      })),
+    [],
   );
 
-  const languageGroupLabel = languageTitle;
+  const pwa = usePWAOptional();
+  const pwaTitle = settingsCopy.pwaTitle ?? 'Install App';
+  const pwaDescription =
+    settingsCopy.pwaDescription ??
+    'Install Arcadeum as a native app on your device.';
+  const pwaInstallLabel = settingsCopy.pwaInstallLabel ?? 'Install';
 
   return (
     <PageLayout>
-      <Container>
+      <Container data-current-locale={locale}>
         <PageTitle size="xl" gradient>
           {pageTitle}
         </PageTitle>
@@ -247,9 +221,9 @@ export default function SettingsContent({
             {themeOptions.map((option) => (
               <OptionButton
                 key={option.code}
-                $active={themePreference === option.code}
+                data-testid={`theme-${option.code}`}
+                isActive={themePreference === option.code}
                 onClick={() => handleThemeSelect(option.code)}
-                aria-pressed={themePreference === option.code}
               >
                 <OptionLabel>{option.label}</OptionLabel>
                 <OptionDescription>{option.description}</OptionDescription>
@@ -263,9 +237,9 @@ export default function SettingsContent({
             {languageOptions.map((option) => (
               <PillButton
                 key={option.code}
-                $active={locale === option.code}
-                onClick={() => handleLanguageSelect(option.code)}
-                aria-pressed={locale === option.code}
+                data-testid={`lang-btn-${option.code}`}
+                isActive={locale === option.code}
+                onClick={() => setLocale(option.code)}
               >
                 {option.label}
               </PillButton>
@@ -277,90 +251,62 @@ export default function SettingsContent({
           <ToggleRow>
             <ToggleLabel>{hapticsLabel}</ToggleLabel>
             <ToggleInput
+              type="checkbox"
               checked={hapticsEnabled}
               onChange={(e) => setHapticsEnabled(e.target.checked)}
             />
           </ToggleRow>
         </Section>
 
-        {downloadButtons.length > 0 || pwa?.canInstall ? (
-          <Section title={downloadsTitle} description={downloadsDescription}>
-            <DownloadGrid>
-              {pwa?.canInstall && (
-                <DownloadLink
-                  as="button"
-                  onClick={pwa.openModal}
-                  style={{ cursor: 'pointer' }}
-                  data-testid="settings-install-pwa"
-                >
-                  <DownloadIcon aria-hidden="true">📲</DownloadIcon>
-                  <span>{t('pwa.install.button') || 'Install App'}</span>
-                </DownloadLink>
-              )}
-              {downloadButtons.map((button) => (
-                <DownloadLink
-                  key={button.key}
-                  href={button.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <DownloadIcon aria-hidden="true">↓</DownloadIcon>
-                  <span>{button.label}</span>
-                </DownloadLink>
-              ))}
-            </DownloadGrid>
-          </Section>
-        ) : null}
-
         <BlockedUsersSection />
 
         <Section title={accountTitle} description={accountDescription}>
-          <Card variant="elevated" padding="md">
-            {hydrated && snapshot.accessToken ? (
-              <>
-                <AccountStatus as="div" role="status">
-                  <div style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>
-                    {snapshot.displayName || snapshot.username || 'User'}
-                  </div>
-                  {snapshot.username &&
-                    snapshot.username !== snapshot.displayName && (
-                      <div style={{ fontSize: '0.9rem', opacity: 0.8 }}>
-                        @{snapshot.username}
-                      </div>
-                    )}
-                  {snapshot.email && (
-                    <div style={{ fontSize: '0.9rem', opacity: 0.8 }}>
-                      {snapshot.email}
-                    </div>
-                  )}
-                </AccountStatus>
-
-                <AccountActions>
-                  <SecondaryButton href={supportCta.href}>
-                    {accountSupportLabel}
-                  </SecondaryButton>
-                </AccountActions>
-              </>
+          <AccountStatus>
+            {accountStatus} {snapshot.username && `(@${snapshot.username})`}
+          </AccountStatus>
+          <AccountActions>
+            {snapshot.email ? (
+              <Button
+                variant="primary"
+                onClick={handleAccountAction}
+                data-testid="account-logout-button"
+                style={{ flex: 1, borderRadius: '999px', minWidth: '140px' }}
+              >
+                {accountPrimaryCta}
+              </Button>
             ) : (
-              <>
-                <AccountStatus role="status">{accountStatus}</AccountStatus>
-                <AccountActions>
-                  <ActionButton href="/auth">{accountPrimaryCta}</ActionButton>
-                  <SecondaryButton href={supportCta.href}>
-                    {accountSupportLabel}
-                  </SecondaryButton>
-                </AccountActions>
-              </>
+              <ActionButton href="/auth" data-testid="account-signin-button">
+                {accountPrimaryCta}
+              </ActionButton>
             )}
-          </Card>
+            <SecondaryButton
+              as="a"
+              href={supportCta.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {accountSupportLabel}
+            </SecondaryButton>
+          </AccountActions>
         </Section>
 
+        {pwa?.canInstall && (
+          <Section title={pwaTitle} description={pwaDescription}>
+            <Button
+              variant="primary"
+              onClick={pwa.openModal}
+              data-testid="pwa-install-button"
+              style={{ flex: 1, borderRadius: '999px', minWidth: '140px' }}
+            >
+              {pwaInstallLabel}
+            </Button>
+          </Section>
+        )}
+
         <Section title={aboutTitle} description={aboutDescription}>
-          <Card variant="elevated" padding="md">
-            <AccountStatus as="div" role="status" data-testid="app-version">
-              {versionLabel}: <VersionText>v{appVersion}</VersionText>
-            </AccountStatus>
-          </Card>
+          <VersionText>
+            {versionLabel}: {appVersion}
+          </VersionText>
         </Section>
       </Container>
     </PageLayout>

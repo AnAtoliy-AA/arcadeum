@@ -77,6 +77,9 @@ const settingsMessagesDefinition = {
     aboutTitle: 'About',
     aboutDescription: 'Application information and version details.',
     versionLabel: 'Version',
+    pwaTitle: 'Install App',
+    pwaDescription: 'Install Arcadeum as a native app on your device.',
+    pwaInstallLabel: 'Install',
   },
   es: {
     title: 'Configuración',
@@ -147,6 +150,10 @@ const settingsMessagesDefinition = {
     aboutTitle: 'Acerca de',
     aboutDescription: 'Información de la aplicación y detalles de la versión.',
     versionLabel: 'Versión',
+    pwaTitle: 'Instalar App',
+    pwaDescription:
+      'Instala Arcadeum como una aplicación nativa en tu dispositivo.',
+    pwaInstallLabel: 'Instalar',
   },
   fr: {
     title: 'Paramètres',
@@ -217,6 +224,10 @@ const settingsMessagesDefinition = {
     aboutDescription:
       "Informations sur l'application et détails de la version.",
     versionLabel: 'Version',
+    pwaTitle: "Installer l'application",
+    pwaDescription:
+      "Installez Arcadeum en tant qu'application native sur votre appareil.",
+    pwaInstallLabel: 'Installer',
   },
   ru: {
     title: 'Настройки',
@@ -286,6 +297,10 @@ const settingsMessagesDefinition = {
     aboutTitle: 'О приложении',
     aboutDescription: 'Информация о приложении и версии.',
     versionLabel: 'Версия',
+    pwaTitle: 'Установить приложение',
+    pwaDescription:
+      'Установите Arcadeum как нативное приложение на ваше устройство.',
+    pwaInstallLabel: 'Установить',
   },
   by: {
     title: 'Налады',
@@ -355,6 +370,9 @@ const settingsMessagesDefinition = {
     aboutTitle: 'Пра праграму',
     aboutDescription: 'Інфармацыя пра праграму і версію.',
     versionLabel: 'Версія',
+    pwaTitle: 'Усталяваць праграму',
+    pwaDescription: 'Усталюйце Arcadeum як натыўную праграму на вашу прыладу.',
+    pwaInstallLabel: 'Усталяваць',
   },
 } satisfies Record<Locale, Record<string, unknown>>;
 

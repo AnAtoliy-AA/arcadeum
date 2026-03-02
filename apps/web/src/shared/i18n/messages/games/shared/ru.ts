@@ -156,6 +156,14 @@ export const ruMessages = {
     playWithBotsNotice: 'Начните с ботами сразу или дождитесь других игроков',
   },
   shared: {
+    rules: {
+      objective: 'Цель',
+      gameplay: 'Процесс игры',
+      combos: 'Комбо',
+      setup: 'Подготовка',
+      placement: 'Размещение',
+      battle: 'Битва',
+    },
     category: {
       cardGame: 'Карточная игра',
       boardGame: 'Настольная игра',

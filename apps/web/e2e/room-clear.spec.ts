@@ -15,19 +15,19 @@ test.describe('Room Clear Functionality', () => {
     await mockRoomInfo(page, {
       room: {
         id: MOCK_OBJECT_ID,
-        hostId: 'user-1',
+        hostId: '507f191e810c19729de860ea',
         name: 'Clear Test Room',
         members: [
           {
-            id: 'user-1',
-            userId: 'user-1',
+            id: '507f191e810c19729de860ea',
+            userId: '507f191e810c19729de860ea',
             displayName: 'Test User',
             isHost: true,
           },
         ],
       },
     });
-    await mockGameSocket(page, MOCK_OBJECT_ID, 'user-1');
+    await mockGameSocket(page, MOCK_OBJECT_ID, '507f191e810c19729de860ea');
 
     // Mock delete endpoint
     await page.route('**/games/rooms/delete', async (route) => {

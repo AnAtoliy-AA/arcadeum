@@ -32,7 +32,7 @@ const meta: Meta<typeof Skeleton> = {
       options: ['shimmer', 'pulse', 'none'],
       description: 'Animation style',
     },
-    delay: {
+    $delay: {
       control: { type: 'number', min: 0, max: 2, step: 0.1 },
       description: 'Animation delay in seconds',
     },
@@ -98,7 +98,7 @@ export const StaggeredAnimation: Story = {
           width="200px"
           height="16px"
           variant="text"
-          delay={i * 0.1}
+          $delay={i * 0.1}
         />
       ))}
     </Container>
@@ -155,7 +155,7 @@ export const TableRowSkeleton: Story = {
     <TableContainer>
       {[1, 2, 3].map((row) => (
         <TableRow key={row}>
-          <SkeletonTableRow columns={4} delay={row * 0.1} />
+          <SkeletonTableRow columns={4} $delay={row * 0.1} />
         </TableRow>
       ))}
     </TableContainer>
@@ -167,7 +167,7 @@ export const LeaderboardSkeleton: Story = {
     <LeaderboardContainer>
       {[1, 2, 3, 4, 5].map((i) => (
         <LeaderboardRow key={i}>
-          <SkeletonCircle width="32px" height="32px" delay={i * 0.1} />
+          <SkeletonCircle width="32px" height="32px" $delay={i * 0.1} />
           <div
             style={{
               display: 'flex',
@@ -176,13 +176,13 @@ export const LeaderboardSkeleton: Story = {
               flex: 2,
             }}
           >
-            <SkeletonAvatar delay={i * 0.1 + 0.05} />
-            <SkeletonText width="120px" delay={i * 0.1 + 0.1} />
+            <SkeletonAvatar $delay={i * 0.1 + 0.05} />
+            <SkeletonText width="120px" $delay={i * 0.1 + 0.1} />
           </div>
-          <SkeletonText width="40px" delay={i * 0.1 + 0.15} />
-          <SkeletonText width="40px" delay={i * 0.1 + 0.2} />
-          <SkeletonText width="40px" delay={i * 0.1 + 0.25} />
-          <SkeletonText width="60px" delay={i * 0.1 + 0.3} />
+          <SkeletonText width="40px" $delay={i * 0.1 + 0.15} />
+          <SkeletonText width="40px" $delay={i * 0.1 + 0.2} />
+          <SkeletonText width="40px" $delay={i * 0.1 + 0.25} />
+          <SkeletonText width="60px" $delay={i * 0.1 + 0.3} />
         </LeaderboardRow>
       ))}
     </LeaderboardContainer>

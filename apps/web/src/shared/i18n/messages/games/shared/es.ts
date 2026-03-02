@@ -159,6 +159,14 @@ export const esMessages = {
       'Empieza con bots inmediatamente o espera a otros jugadores',
   },
   shared: {
+    rules: {
+      objective: 'Objetivo',
+      gameplay: 'Jugabilidad',
+      combos: 'Combos',
+      setup: 'Preparación',
+      placement: 'Colocación',
+      battle: 'Batalla',
+    },
     category: {
       cardGame: 'Juego de cartas',
       boardGame: 'Juego de mesa',

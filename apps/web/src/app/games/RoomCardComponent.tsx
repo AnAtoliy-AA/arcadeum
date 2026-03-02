@@ -81,7 +81,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
           </FastBadge>
         )}
         {viewMode === 'list' && (
-          <StatusBadge status={room.status}>
+          <StatusBadge $status={room.status}>
             {t(`games.rooms.status.${room.status}`) || room.status}
           </StatusBadge>
         )}
@@ -114,7 +114,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
           <MetaRow>
             <MetaIcon>⏱️</MetaIcon>
             <MetaLabel>{t('games.rooms.statusLabel')}</MetaLabel>
-            <StatusBadge status={room.status}>
+            <StatusBadge $status={room.status}>
               {t(`games.rooms.status.${room.status}`) || room.status}
             </StatusBadge>
           </MetaRow>

@@ -57,11 +57,11 @@ export function useAuthForm() {
   const usernameFieldId = useId();
   const referralCodeFieldId = useId();
 
-  const [email, setEmail] = useState(storedEmail ?? '');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [username, setUsername] = useState(storedUsername ?? '');
-  const [referralCode, setReferralCode] = useState(referralParam ?? '');
+  const [username, setUsername] = useState('');
+  const [referralCode, setReferralCode] = useState('');
 
   const [usernameAvailability, setUsernameAvailability] = useState<
     'idle' | 'checking' | 'available' | 'taken'

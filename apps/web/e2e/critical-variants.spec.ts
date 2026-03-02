@@ -7,6 +7,7 @@ import {
   navigateTo,
   waitForRoomReady,
   closeRulesModal,
+  clickButtonByTestId,
 } from './fixtures/test-utils';
 
 test.describe('Critical Variant Selection', () => {
@@ -18,7 +19,7 @@ test.describe('Critical Variant Selection', () => {
     page,
   }) => {
     const roomId = '507f1f77bcf86cd799439011';
-    const userId = 'user-1';
+    const userId = '507f191e810c19729de860ea';
 
     // Mock room info for lobby
     await mockRoomInfo(page, {
@@ -98,9 +99,9 @@ test.describe('Critical Variant Selection', () => {
     await hikeVariant.click();
 
     // Create room
-    const createBtn = page.getByRole('button', { name: /Create Room/i });
+    const createBtn = page.getByTestId('create-room-button');
     await expect(createBtn).toBeEnabled();
-    await createBtn.click();
+    await clickButtonByTestId(page, 'create-room-button');
 
     // The create button should trigger navigation to the room
     await expect(page).toHaveURL(/\/games\/rooms\//, { timeout: 15000 });

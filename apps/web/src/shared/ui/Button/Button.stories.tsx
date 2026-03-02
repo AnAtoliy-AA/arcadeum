@@ -38,7 +38,7 @@ const meta: Meta<typeof Button> = {
       control: 'boolean',
       description: 'Force uppercase text',
     },
-    $active: {
+    isActive: {
       control: 'boolean',
       description: 'Active state for toggles',
     },
@@ -116,7 +116,6 @@ export const Chip: Story = {
   args: {
     variant: 'chip',
     children: 'Chip Button',
-    $active: false,
   },
 };
 
@@ -226,9 +225,7 @@ export const AllVariants: Story = {
       <Button variant="info">Info</Button>
       <Button variant="link">Link</Button>
       <Button variant="chip">Chip</Button>
-      <Button variant="chip" $active>
-        Active Chip
-      </Button>
+      <Button variant="listItem">Active Chip</Button>
       <Button variant="icon">🔍</Button>
     </div>
   ),

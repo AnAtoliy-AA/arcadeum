@@ -13,30 +13,24 @@ test.describe('Auth Validation', () => {
     const uniqueId = Date.now().toString(36);
 
     // 1. Switch to Register mode
-    const toggleBtn = page.getByRole('button', {
-      name: /need an account|регистрация|account/i,
-    });
-    // Wait for button to be visible, then click if it's the right one
-    await toggleBtn
-      .waitFor({ state: 'visible', timeout: 5000 })
-      .catch(() => {});
-    if (await toggleBtn.isVisible()) {
-      const text = (await toggleBtn.textContent()) || '';
-      if (!/already|уже/i.test(text)) {
-        await toggleBtn.click();
-      }
+    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
+    await expect(toggleBtn).toBeVisible({ timeout: 10000 });
+    const text = (await toggleBtn.textContent()) || '';
+    if (!/already|уже/i.test(text)) {
+      await toggleBtn.click({ force: true });
     }
+    await expect(page.locator('form')).toHaveAttribute(
+      'data-mode',
+      'register',
+      { timeout: 10000 },
+    );
+    const confirmInput = page.getByTestId('auth-confirm-password-input');
 
     // 2. Locate fields
-    const emailInput = page.locator('input[type="email"]');
-    const passwordInput = page.locator('input[type="password"]').first();
-    const confirmInput = page.locator('input[placeholder*="confirm" i]');
-    const usernameInput = page.locator('input[placeholder*="username" i]');
-    const submitBtn = page
-      .getByRole('button', {
-        name: /create account|register|sign up|зарегистрироваться/i,
-      })
-      .first();
+    const emailInput = page.getByTestId('auth-email-input');
+    const passwordInput = page.getByTestId('auth-password-input');
+    const usernameInput = page.getByTestId('auth-username-input');
+    const submitBtn = page.getByTestId('auth-submit-button');
 
     // 3. Initially button should be disabled (fields are empty)
     await expect(submitBtn).toBeDisabled();
@@ -76,27 +70,21 @@ test.describe('Auth Validation', () => {
     page,
   }) => {
     // 1. Switch to Register mode
-    const toggleBtn = page.getByRole('button', {
-      name: /need an account|регистрация|account/i,
-    });
-    // Wait for button to be visible, then click if it's the right one
-    await toggleBtn
-      .waitFor({ state: 'visible', timeout: 5000 })
-      .catch(() => {});
-    if (await toggleBtn.isVisible()) {
-      const text = (await toggleBtn.textContent()) || '';
-      if (!/already|уже/i.test(text)) {
-        await toggleBtn.click();
-      }
+    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
+    await expect(toggleBtn).toBeVisible({ timeout: 10000 });
+    const text = (await toggleBtn.textContent()) || '';
+    if (!/already|уже/i.test(text)) {
+      await toggleBtn.click({ force: true });
     }
+    await expect(page.locator('form')).toHaveAttribute(
+      'data-mode',
+      'register',
+      { timeout: 10000 },
+    );
 
-    const passwordInput = page.locator('input[type="password"]').first();
-    const confirmInput = page.locator('input[placeholder*="confirm" i]');
-    const submitBtn = page
-      .getByRole('button', {
-        name: /create account|register|sign up|зарегистрироваться/i,
-      })
-      .first();
+    const confirmInput = page.getByTestId('auth-confirm-password-input');
+    const passwordInput = page.getByTestId('auth-password-input');
+    const submitBtn = page.getByTestId('auth-submit-button');
 
     // 2. Fill mismatched passwords
     await passwordInput.fill('password123');

@@ -15,7 +15,7 @@ export const ScopeOption = styled(Button).attrs<{
 }>(({ $active, $variant }) => ({
   variant: 'chip',
   size: 'sm',
-  active: $active,
+  isActive: $active,
   gameVariant: $variant as GameVariant,
 }))<{
   $active?: boolean;

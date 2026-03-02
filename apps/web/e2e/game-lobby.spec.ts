@@ -14,7 +14,7 @@ test.describe('Game Lobby - Shared Functionality', () => {
     await navigateTo(page, '/games/create?gameId=critical_v1');
 
     // Look for the create button and attempt to create room
-    const createBtn = page.getByRole('button', { name: /create/i });
+    const createBtn = page.getByTestId('create-room-button');
 
     if (await createBtn.isVisible()) {
       // Fill room name if available

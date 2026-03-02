@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   DndContext,
   closestCenter,
@@ -50,8 +51,8 @@ interface LobbySidebarProps {
   reinviteLabel: string;
   roomInfoLabel: string;
   statusLabel: string;
-  statusWaitingLabel: string;
-  statusActiveLabel: string;
+  statusWaitingLabel?: string;
+  statusActiveLabel?: string;
   visibilityLabel: string;
   visibilityPublicLabel: string;
   visibilityPrivateLabel: string;
@@ -79,8 +80,6 @@ export function LobbySidebar({
   reinviteLabel,
   roomInfoLabel,
   statusLabel,
-  statusWaitingLabel,
-  statusActiveLabel,
   visibilityLabel,
   visibilityPublicLabel,
   visibilityPrivateLabel,
@@ -96,6 +95,7 @@ export function LobbySidebar({
   deleteRoomLabel,
   extraPlayersCardSlot,
 }: LobbySidebarProps) {
+  const { t } = useTranslation();
   const maxPlayers = room.maxPlayers ?? 5;
 
   // Get invited/declined for rematch
@@ -276,7 +276,7 @@ export function LobbySidebar({
         <InfoRow>
           <InfoLabel>{statusLabel}</InfoLabel>
           <StatusBadge $status={room.status}>
-            {room.status === 'lobby' ? statusWaitingLabel : statusActiveLabel}
+            {t(`games.rooms.status.${room.status}`) || room.status}
           </StatusBadge>
         </InfoRow>
         {isFastMode && (

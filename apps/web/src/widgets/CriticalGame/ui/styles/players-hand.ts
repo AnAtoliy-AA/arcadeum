@@ -132,7 +132,7 @@ export const DropdownItem = styled(Button).attrs<{
 }>(({ $isActive, $variant }) => ({
   variant: 'listItem',
   size: 'sm',
-  $active: $isActive,
+  isActive: $isActive,
   gameVariant: $variant as GameVariant,
 }))<{
   $variant?: string;

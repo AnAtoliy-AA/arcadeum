@@ -17,9 +17,9 @@ test.describe('Game Room Logic', () => {
   });
 
   test.beforeEach(async ({ page }) => {
-    // Authenticate as 'user-1'
+    // Authenticate as '507f191e810c19729de860ea'
     await mockSession(page);
-    await mockGameSocket(page, roomId, 'user-1');
+    await mockGameSocket(page, roomId, '507f191e810c19729de860ea');
   });
 
   test('should join as player when game is in lobby', async ({ page }) => {
@@ -80,7 +80,9 @@ test.describe('Game Room Logic', () => {
       room: {
         id: roomId,
         status: 'in_progress',
-        members: [{ id: 'user-1', displayName: 'Me', isHost: false }],
+        members: [
+          { id: '507f191e810c19729de860ea', displayName: 'Me', isHost: false },
+        ],
       },
     });
 

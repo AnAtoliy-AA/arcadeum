@@ -80,7 +80,9 @@ export default function ContactPage() {
         <Section>
           <SectionTitle>{s?.form?.title}</SectionTitle>
           {submitted ? (
-            <SuccessMessage>{s?.form?.success}</SuccessMessage>
+            <SuccessMessage data-testid="contact-success-message">
+              {s?.form?.success}
+            </SuccessMessage>
           ) : (
             <Form onSubmit={handleSubmit}>
               <FormGroup>
@@ -91,6 +93,7 @@ export default function ContactPage() {
                   name="name"
                   placeholder={s?.form?.namePlaceholder}
                   required
+                  data-testid="contact-name-input"
                 />
               </FormGroup>
 
@@ -102,6 +105,7 @@ export default function ContactPage() {
                   name="email"
                   placeholder={s?.form?.emailPlaceholder}
                   required
+                  data-testid="contact-email-input"
                 />
               </FormGroup>
 
@@ -113,6 +117,7 @@ export default function ContactPage() {
                   name="subject"
                   placeholder={s?.form?.subjectPlaceholder}
                   required
+                  data-testid="contact-subject-input"
                 />
               </FormGroup>
 
@@ -123,10 +128,13 @@ export default function ContactPage() {
                   name="message"
                   placeholder={s?.form?.messagePlaceholder}
                   required
+                  data-testid="contact-message-textarea"
                 />
               </FormGroup>
 
-              <SubmitButton type="submit">{s?.form?.submit}</SubmitButton>
+              <SubmitButton type="submit" data-testid="contact-submit-button">
+                {s?.form?.submit}
+              </SubmitButton>
             </Form>
           )}
         </Section>

@@ -292,7 +292,8 @@ export function ReusableGameLobby({
                     ).map((count) => (
                       <BotCountButton
                         key={count}
-                        $active={botCount === count}
+                        data-testid={`bot-count-${count}`}
+                        isActive={botCount === count}
                         onClick={() => setBotCount(count)}
                       >
                         {count}
@@ -314,7 +315,7 @@ export function ReusableGameLobby({
                   (room.playerCount < (minPlayers || 2) &&
                     !(enableBots && room.playerCount === 1))
                 }
-                $gradient={theme?.buttonGradient}
+                data-testid="start-with-bots-button"
               >
                 {startBusy
                   ? startingLabel

@@ -110,3 +110,17 @@ export const PlacementHeader = styled.div`
     margin-bottom: 12px;
   }
 `;
+
+export const ChatToggleButton = styled.button`
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+`;

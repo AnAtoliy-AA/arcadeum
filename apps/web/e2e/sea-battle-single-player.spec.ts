@@ -3,7 +3,7 @@ import { test } from './fixtures/test-utils';
 import {
   mockSession,
   navigateTo,
-  closeRulesModal,
+  closeGameRulesModal,
   mockRoomInfo,
   MOCK_OBJECT_ID,
   mockGameSocket,
@@ -19,7 +19,7 @@ test.describe('Sea Battle Single Player Mode', () => {
     page,
   }) => {
     const roomId = MOCK_OBJECT_ID;
-    const userId = 'user-1';
+    const userId = '507f191e810c19729de860ea';
 
     const generateBoard = () =>
       Array(10)
@@ -157,8 +157,7 @@ test.describe('Sea Battle Single Player Mode', () => {
     });
 
     await navigateTo(page, `/games/rooms/${roomId}`);
-    await waitForRoomReady(page);
-    await closeRulesModal(page);
+    await waitForRoomReady(page); // ✅ Handles modal close automatically
 
     await expect(
       page.getByRole('heading', { name: /Sea Battle/i }),
@@ -167,7 +166,7 @@ test.describe('Sea Battle Single Player Mode', () => {
     const startBtn = page.getByRole('button', { name: /start with/i });
     await expect(startBtn).toBeVisible({ timeout: 15000 });
     await startBtn.click();
-    await closeRulesModal(page);
+    await closeGameRulesModal(page);
 
     // Increased timeout for placement phase
     await expect(page.getByText(/place your ships/i).first()).toBeVisible({
@@ -193,11 +192,13 @@ test.describe('Sea Battle Single Player Mode', () => {
     await expect(page.getByText(/your turn/i).first()).toBeVisible({
       timeout: 20000,
     });
+
+    await expect(page.getByTestId('placement-instruction')).toBeVisible();
   });
 
   test('should allow attacking in sea battle', async ({ page }) => {
     const roomId = MOCK_OBJECT_ID;
-    const userId = 'user-1';
+    const userId = '507f191e810c19729de860ea';
 
     const generateBoard = () =>
       Array(10)
@@ -298,7 +299,7 @@ test.describe('Sea Battle Single Player Mode', () => {
 
     await navigateTo(page, `/games/rooms/${roomId}`);
     await waitForRoomReady(page);
-    await closeRulesModal(page);
+    await closeGameRulesModal(page);
 
     // Increased timeout for battle phase
     await expect(page.getByText(/your turn/i).first()).toBeVisible({

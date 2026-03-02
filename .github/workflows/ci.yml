@@ -48,7 +48,7 @@ jobs:
           pnpm --filter mobile build
 
       - name: Run Web Unit Tests
-        run: pnpm exec turbo run test --filter web --log-order=stream -- --forceExit --passWithNoTests
+        run: pnpm exec turbo run test --filter web --log-order=stream -- --passWithNoTests
 
       - name: Run Backend & Mobile Unit Tests
         run: pnpm exec turbo run test --filter be --filter mobile --log-order=stream -- --forceExit --detectOpenHandles --passWithNoTests

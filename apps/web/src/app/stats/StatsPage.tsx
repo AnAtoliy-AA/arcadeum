@@ -77,6 +77,7 @@ export function StatsPage() {
             $active={activeTab === 'my-stats'}
             onClick={() => setActiveTab('my-stats')}
             aria-pressed={activeTab === 'my-stats'}
+            data-testid="stats-tab-my-stats"
           >
             {t('stats.myStatsTab')}
           </TabButton>
@@ -84,6 +85,7 @@ export function StatsPage() {
             $active={activeTab === 'leaderboard'}
             onClick={() => setActiveTab('leaderboard')}
             aria-pressed={activeTab === 'leaderboard'}
+            data-testid="stats-tab-leaderboard"
           >
             {t('stats.leaderboardTab')}
           </TabButton>
@@ -152,7 +154,7 @@ const TabGroup = styled.div`
 const TabButton = styled(Button).attrs<{ $active: boolean }>(({ $active }) => ({
   variant: $active ? 'primary' : 'chip',
   size: 'md',
-  active: $active,
+  isActive: $active,
 }))<{ $active: boolean }>`
   min-width: 120px;
   justify-content: center;

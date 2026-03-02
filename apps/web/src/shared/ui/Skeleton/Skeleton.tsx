@@ -11,7 +11,7 @@ export interface SkeletonProps {
   /** Animation style */
   animation?: 'shimmer' | 'pulse' | 'none';
   /** Animation delay in seconds */
-  delay?: number;
+  $delay?: number;
   /** Custom className */
   className?: string;
 }
@@ -84,7 +84,7 @@ export function Skeleton({
   height = '20px',
   variant = 'rectangular',
   animation = 'shimmer',
-  delay = 0,
+  $delay = 0,
   className,
 }: SkeletonProps) {
   return (
@@ -93,7 +93,7 @@ export function Skeleton({
       $height={height}
       $variant={variant}
       $animation={animation}
-      $delay={delay}
+      $delay={$delay}
       className={className}
     />
   );
@@ -124,12 +124,12 @@ export const SkeletonButton = styled(Skeleton).attrs({
 // Table row skeleton for common patterns
 export interface SkeletonTableRowProps {
   columns: number;
-  delay?: number;
+  $delay?: number;
 }
 
 export function SkeletonTableRow({
   columns,
-  delay = 0,
+  $delay = 0,
 }: SkeletonTableRowProps) {
   return (
     <>
@@ -139,7 +139,7 @@ export function SkeletonTableRow({
           width={i === 0 ? '60%' : '40px'}
           height="16px"
           variant="text"
-          delay={delay + i * 0.05}
+          $delay={$delay + i * 0.05}
         />
       ))}
     </>

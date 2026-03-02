@@ -3,12 +3,21 @@ import { test } from './fixtures/test-utils';
 import { navigateTo, mockSession } from './fixtures/test-utils';
 
 test.describe('Profile and Settings', () => {
+  test.describe.configure({ mode: 'serial' });
+
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
   });
 
   test('should display user profile information', async ({ page }) => {
     await navigateTo(page, '/settings');
+    // Wait for hydration
+    await expect(page.locator('html')).toHaveAttribute(
+      'data-theme-preference',
+      /.*/,
+      { timeout: 10000 },
+    );
+
     await expect(page.getByText(/testuser/i).first()).toBeVisible({
       timeout: 15000,
     });

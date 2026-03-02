@@ -112,6 +112,10 @@ export const useSessionStore = create<SessionState>()(
 
       clearTokens: async () => {
         set({ snapshot: defaultSnapshot });
+        // Manually clear storage to ensure it's immediate for page reloads
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('web_session_tokens_v1');
+        }
       },
 
       refreshTokens: async () => {

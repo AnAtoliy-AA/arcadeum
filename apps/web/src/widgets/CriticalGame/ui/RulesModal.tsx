@@ -16,6 +16,7 @@ import { Card } from './styles/cards';
 import { CARD_GROUPS } from '../lib/constants';
 import { CriticalCard } from '@/shared/types/games';
 import { TranslationKey } from '@/shared/lib/useTranslation';
+import { CloseIcon } from '@/shared/ui/Icons';
 
 interface RulesModalProps {
   isOpen: boolean;
@@ -120,8 +121,12 @@ export function RulesModal({
           <ModalTitle $variant={currentVariant}>
             {t('games.critical_v1.rules.title' as TranslationKey)}
           </ModalTitle>
-          <CloseButton onClick={onClose} $variant={currentVariant}>
-            ×
+          <CloseButton
+            onClick={onClose}
+            $variant={currentVariant}
+            data-testid="modal-close-button"
+          >
+            <CloseIcon size={20} />
           </CloseButton>
         </ModalHeader>
 

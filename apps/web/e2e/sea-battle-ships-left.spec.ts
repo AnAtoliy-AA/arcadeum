@@ -18,7 +18,7 @@ test.describe('Sea Battle Ships Left', () => {
     page,
   }) => {
     const roomId = MOCK_OBJECT_ID;
-    const userId = 'user-1';
+    const userId = '507f191e810c19729de860ea';
     const opponentId = 'user-2';
 
     await mockRoomInfo(page, {

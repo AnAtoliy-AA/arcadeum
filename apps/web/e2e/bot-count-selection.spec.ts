@@ -8,6 +8,7 @@ import {
   mockGameSocket,
   checkNoBackendErrors,
   waitForRoomReady,
+  clickButtonByTestId,
 } from './fixtures/test-utils';
 
 test.describe('Bot Count Selection', () => {
@@ -23,7 +24,7 @@ test.describe('Bot Count Selection', () => {
     page,
   }) => {
     const roomId = MOCK_OBJECT_ID;
-    const userId = 'user-1';
+    const userId = '507f191e810c19729de860ea';
 
     await mockRoomInfo(page, {
       room: {
@@ -65,11 +66,9 @@ test.describe('Bot Count Selection', () => {
     });
 
     // Select 3 bots
-    const botButton3 = page
-      .getByRole('button', { name: '3', exact: true })
-      .or(page.locator('button').filter({ hasText: /^3$/ }));
-    await expect(botButton3.first()).toBeVisible({ timeout: 10000 });
-    await botButton3.first().click();
+    const botButton3 = page.getByTestId('bot-count-3');
+    await expect(botButton3).toBeVisible({ timeout: 10000 });
+    await clickButtonByTestId(page, 'bot-count-3');
 
     // Start button should update label
     const startBtn = page.getByRole('button', { name: /Start with 3 🤖/i });

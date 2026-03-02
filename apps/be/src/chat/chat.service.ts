@@ -39,19 +39,29 @@ export class ChatService {
     @InjectModel(Message.name) private messageModel: Model<Message>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private chatHelper: ChatHelperService,
-  ) { }
+  ) {}
 
   private async hydrateParticipants(
     participantIds: string[],
   ): Promise<Map<string, ChatParticipantSummary>> {
     const normalized = this.chatHelper.normalizeUserIds(participantIds);
+    const validIds = normalized.filter((id) => isValidObjectId(id));
     const lookup = new Map<string, ChatParticipantSummary>();
-    if (!normalized.length) {
+    if (!validIds.length) {
+      // Still need to populate lookup with dummy participants for non-vaild IDs
+      for (const id of normalized) {
+        lookup.set(id, {
+          id,
+          username: id,
+          email: null,
+          displayName: id,
+        });
+      }
       return lookup;
     }
 
     const users = (await this.userModel
-      .find({ _id: { $in: normalized } })
+      .find({ _id: { $in: validIds } })
       .select(['username', 'email', 'displayName'])
       .exec()) as UserDocument[];
 
@@ -236,15 +246,14 @@ export class ChatService {
     const participants = this.chatHelper.normalizeUserIds(chat.users ?? []);
     const receiverIds = participants.filter((id) => id !== sanitizedSenderId);
 
-    const sender = (await this.userModel
-      .findById(sanitizedSenderId)
-      .select(['username', 'email', 'displayName'])
-      .lean()
-      .exec()) as
-      | (Pick<User, 'username' | 'email' | 'displayName'> & {
-        _id?: Types.ObjectId | string;
-      })
-      | null;
+    const sender = isValidObjectId(sanitizedSenderId)
+      ? ((await this.userModel
+          .findById(sanitizedSenderId)
+          .select(['username', 'email', 'displayName'])
+          .lean()
+          .exec()) as Pick<User, 'username' | 'email' | 'displayName'> | null)
+      : null;
+
     const senderUsername = this.chatHelper.resolveParticipantDisplayName(
       {
         username: sender?.username,

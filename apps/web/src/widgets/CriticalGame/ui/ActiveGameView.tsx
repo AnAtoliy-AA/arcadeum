@@ -479,7 +479,12 @@ export function ActiveGameView({
 
       <GameResultModal
         isOpen={!!showResultModal}
-        result={currentPlayer?.alive ? 'victory' : 'defeat'}
+        data-testid="game-result-modal"
+        result={
+          snapshot.players.find((p) => p.alive)?.playerId === currentUserId
+            ? 'victory'
+            : 'defeat'
+        }
         onRematch={isHost ? rematch.openRematchModal : undefined}
         onClose={() => setModalDismissed(true)}
         rematchLoading={rematch.rematchLoading}

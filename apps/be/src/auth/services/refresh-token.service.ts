@@ -5,7 +5,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
@@ -144,6 +144,13 @@ export class RefreshTokenService {
     }
 
     const userId = String(stored.userId);
+    if (!Types.ObjectId.isValid(userId)) {
+      stored.revoked = true;
+      await stored.save();
+      throw new UnauthorizedException(
+        'Invalid user ID format in refresh token',
+      );
+    }
     const userDoc = await this.userModel.findById(userId);
     if (!userDoc) {
       stored.revoked = true;

@@ -6,6 +6,7 @@ import { useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { Modal, CloseButton, ModalButton } from './SharedModalStyles';
+import { CloseIcon } from '@/shared/ui/Icons';
 
 // --- Types ---
 
@@ -45,7 +46,9 @@ export function GameResultModal({
       <ContentContainer $show={isOpen}>
         {onClose && (
           <div style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
-            <CloseButton onClick={onClose}>×</CloseButton>
+            <CloseButton onClick={onClose} data-testid="modal-close-button">
+              <CloseIcon size={20} />
+            </CloseButton>
           </div>
         )}
         <ResultTitle $isVictory={isVictory} data-testid="game-result-title">

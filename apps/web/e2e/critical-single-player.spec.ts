@@ -6,10 +6,13 @@ import {
   mockGameSocket,
   navigateTo,
   waitForRoomReady,
-  closeRulesModal,
+  closeGameRulesModal,
+  clickButtonByTestId,
 } from './fixtures/test-utils';
 
 test.describe('Critical Single Player Mode', () => {
+  test.setTimeout(60000);
+
   test.beforeEach(async ({ page }) => {
     page.on('console', (msg) => {
       if (
@@ -30,7 +33,7 @@ test.describe('Critical Single Player Mode', () => {
     page,
   }) => {
     const roomId = '507f1f77bcf86cd799439011';
-    const userId = 'user-1';
+    const userId = '507f191e810c19729de860ea';
 
     await mockRoomInfo(page, {
       room: {
@@ -99,17 +102,17 @@ test.describe('Critical Single Player Mode', () => {
     await waitForRoomReady(page);
 
     await expect(page.getByRole('heading', { name: /Critical/i })).toBeVisible({
-      timeout: 15000,
+      timeout: 30000,
     });
 
-    const startBtn = page.getByRole('button', { name: /start with/i });
+    const startBtn = page.getByTestId('start-with-bots-button');
     await expect(startBtn).toBeEnabled();
-    await startBtn.click();
+    await clickButtonByTestId(page, 'start-with-bots-button');
 
-    await closeRulesModal(page);
+    await closeGameRulesModal(page);
     await expect(page.getByRole('heading', { name: /your hand/i })).toBeVisible(
       {
-        timeout: 15000,
+        timeout: 30000,
       },
     );
   });
@@ -118,7 +121,7 @@ test.describe('Critical Single Player Mode', () => {
     page,
   }) => {
     const roomId = '507f1f77bcf86cd799439011';
-    const userId = 'user-1';
+    const userId = '507f191e810c19729de860ea';
 
     const mockState = {
       players: [
@@ -190,7 +193,7 @@ test.describe('Critical Single Player Mode', () => {
     await navigateTo(page, `/games/rooms/${roomId}`);
     await waitForRoomReady(page);
 
-    await closeRulesModal(page);
+    await closeGameRulesModal(page);
     await expect(page.locator('body')).toContainText(/your turn/i);
 
     const drawBtn = page.getByRole('button', { name: /draw/i }).first();

@@ -30,12 +30,12 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
           {[1, 2].map((i) => (
             <TableRow key={i}>
               <GameInfo>
-                <SkeletonCircle width="40px" height="40px" delay={i * 0.1} />
-                <SkeletonText width="100px" delay={i * 0.1 + 0.05} />
+                <SkeletonCircle width="40px" height="40px" $delay={i * 0.1} />
+                <SkeletonText width="100px" $delay={i * 0.1 + 0.05} />
               </GameInfo>
-              <SkeletonText width="30px" delay={i * 0.1 + 0.1} />
-              <SkeletonText width="30px" delay={i * 0.1 + 0.15} />
-              <SkeletonText width="50px" delay={i * 0.1 + 0.2} />
+              <SkeletonText width="30px" $delay={i * 0.1 + 0.1} />
+              <SkeletonText width="30px" $delay={i * 0.1 + 0.15} />
+              <SkeletonText width="50px" $delay={i * 0.1 + 0.2} />
             </TableRow>
           ))}
         </Table>

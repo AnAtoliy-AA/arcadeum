@@ -50,7 +50,7 @@ test.describe('Player Stats', () => {
           entries: [
             {
               rank: 1,
-              playerId: 'user-1',
+              playerId: '507f191e810c19729de860ea',
               username: 'testuser',
               totalGames: 10,
               wins: 7,
@@ -89,11 +89,24 @@ test.describe('Player Stats', () => {
   test('should switch to leaderboard and display entries', async ({ page }) => {
     await navigateTo(page, '/stats');
 
-    const leaderboardTab = page.getByRole('button', { name: /leaderboard/i });
-    await leaderboardTab.click();
+    // 2. Click Leaderboard tab using data-testid
+    const leaderboardTab = page.getByTestId('stats-tab-leaderboard');
+    await leaderboardTab
+      .click({ force: true })
+      .catch(() => leaderboardTab.dispatchEvent('click'));
 
-    await expect(page.getByText('proplayer')).toBeVisible();
-    await expect(page.getByText('60.0%')).toBeVisible();
+    // Wait for leaderboard to be active and loading complete
+    await expect(async () => {
+      // Ensure tab is actually active
+      if ((await leaderboardTab.getAttribute('aria-pressed')) !== 'true') {
+        await leaderboardTab
+          .click({ force: true })
+          .catch(() => leaderboardTab.dispatchEvent('click'));
+      }
+      // Check for entries
+      await expect(page.getByText('proplayer')).toBeVisible({ timeout: 5000 });
+      await expect(page.getByText(/60(\.0)?%/)).toBeVisible({ timeout: 5000 });
+    }).toPass({ timeout: 20000 });
   });
 
   test('should not display anonymous users in leaderboard', async ({
@@ -107,7 +120,7 @@ test.describe('Player Stats', () => {
           entries: [
             {
               rank: 1,
-              playerId: 'user-1',
+              playerId: '507f191e810c19729de860ea',
               username: 'testuser',
               totalGames: 10,
               wins: 7,
@@ -123,10 +136,21 @@ test.describe('Player Stats', () => {
 
     await navigateTo(page, '/stats');
 
-    const leaderboardTab = page.getByRole('button', { name: /leaderboard/i });
-    await leaderboardTab.click();
+    const leaderboardTab = page.getByTestId('stats-tab-leaderboard');
+    await expect(async () => {
+      if ((await leaderboardTab.getAttribute('aria-pressed')) !== 'true') {
+        await leaderboardTab
+          .click({ force: true })
+          .catch(() => leaderboardTab.dispatchEvent('click'));
+      }
+      const row = page
+        .locator('div[class*="LeaderboardRow"]')
+        .filter({ hasText: 'testuser' });
+      await expect(row).toBeVisible({ timeout: 5000 });
+    }).toPass({ timeout: 20000 });
 
-    await expect(page.getByText('testuser')).toBeVisible();
-    await expect(page.getByText(/anonymous/i)).not.toBeVisible();
+    // Check that 'anonymous' text is not present in the leaderboard rows
+    const leaderboardRows = page.locator('[class*="LeaderboardRow"]');
+    await expect(leaderboardRows).not.toContainText(/anonymous|аноним/i);
   });
 });

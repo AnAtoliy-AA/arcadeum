@@ -1,19 +1,11 @@
 'use client';
 
-import dynamic from 'next/dynamic';
+import { InstallPWAModalContent } from './InstallPWAModalContent';
 import { Button } from '@/shared/ui';
 import { usePWAOptional } from './PWAContext';
 
-const InstallPWAModalDynamic = dynamic(
-  () =>
-    import('./InstallPWAModalContent').then(
-      (mod) => mod.InstallPWAModalContent,
-    ),
-  { ssr: false },
-);
-
 export function InstallPWAModal() {
-  return <InstallPWAModalDynamic />;
+  return <InstallPWAModalContent />;
 }
 
 export function InstallPWAButton() {

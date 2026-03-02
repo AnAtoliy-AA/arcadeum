@@ -315,7 +315,13 @@ export function CreateGameRoomPage() {
             </ErrorCard>
           )}
 
-          <Button type="submit" disabled={loading} size="lg" fullWidth>
+          <Button
+            type="submit"
+            disabled={loading}
+            size="lg"
+            fullWidth
+            data-testid="create-room-button"
+          >
             {loading
               ? t('games.create.submitCreating') || 'Creating...'
               : t('games.common.createRoom') || 'Create Room'}

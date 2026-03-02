@@ -156,6 +156,14 @@ export const enMessages = {
     playWithBotsNotice: 'Start with bots immediately or wait for other players',
   },
   shared: {
+    rules: {
+      objective: 'Objective',
+      gameplay: 'Gameplay',
+      combos: 'Combos',
+      setup: 'Setup',
+      placement: 'Placement',
+      battle: 'Battle',
+    },
     category: {
       cardGame: 'Card Game',
       boardGame: 'Board Game',

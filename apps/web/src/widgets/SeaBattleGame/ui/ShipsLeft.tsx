@@ -98,7 +98,7 @@ export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
   const sortedConfig = [...SHIPS].sort((a, b) => b.size - a.size);
 
   const totalShips = sortedConfig.length;
-  const sunkCount = ships.filter((s) => s.sunk).length;
+  const sunkCount = ships ? ships.filter((s) => s.sunk).length : 0;
   const aliveCount = totalShips - sunkCount;
 
   return (
@@ -111,7 +111,7 @@ export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
       </TitleContainer>
       <FleetGrid>
         {sortedConfig.map((config) => {
-          const shipState = ships.find((s) => s.id === config.id);
+          const shipState = ships?.find((s) => s.id === config.id);
           // If shipState exists, use its sunk status.
           // If not found (e.g. purely visual or not placed yet), assume alive/not sunk.
           const isSunk = shipState?.sunk ?? false;

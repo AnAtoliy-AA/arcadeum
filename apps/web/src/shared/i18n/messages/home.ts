@@ -21,10 +21,15 @@ const homeMessagesDefinition = {
     gamesTitle: 'Featured Games',
     gamesSubtitle: 'Explore our growing library of tabletop experiences',
     gamePlayButton: 'Play Now',
+    gameRulesButton: 'Game Rules',
     gameComingSoon: 'Coming Soon',
     gameIncludesPacks: 'Includes 5 Card Packs:',
     gameThemedDecks: 'Themed Decks:',
     gameAvailableNow: 'Available Now',
+    showMore: 'Show Details',
+    showLess: 'Show Less',
+    rulesTab: 'Rules',
+    infoTab: 'Game Themes',
 
     // Features section
     featuresTitle: 'Why {{appName}}?',
@@ -91,6 +96,7 @@ const homeMessagesDefinition = {
     gamesSubtitle:
       'Explora nuestra creciente biblioteca de experiencias de mesa',
     gamePlayButton: 'Jugar Ahora',
+    gameRulesButton: 'Reglas del Juego',
     gameComingSoon: 'Próximamente',
     // Features section
     featuresTitle: '¿Por qué {{appName}}?',
@@ -121,6 +127,10 @@ const homeMessagesDefinition = {
     gameIncludesPacks: 'Incluye 5 Paquetes de Cartas:',
     gameThemedDecks: 'Mazos Temáticos:',
     gameAvailableNow: 'Disponible Ahora',
+    showMore: 'Ver Detalles',
+    showLess: 'Ver Menos',
+    rulesTab: 'Reglas',
+    infoTab: 'Temas del Juego',
     // ... how it works ...
     howItWorksTitle: 'Cómo Funciona',
     howItWorksSubtitle: 'Comienza en tres simples pasos',
@@ -163,6 +173,7 @@ const homeMessagesDefinition = {
     gamesSubtitle:
       "Explorez notre bibliothèque croissante d'expériences de table",
     gamePlayButton: 'Jouer Maintenant',
+    gameRulesButton: 'Règles du Jeu',
     gameComingSoon: 'Bientôt Disponible',
     // Features section
     featuresTitle: 'Pourquoi {{appName}} ?',
@@ -193,6 +204,10 @@ const homeMessagesDefinition = {
     gameIncludesPacks: 'Inclus 5 Paquets de Cartes :',
     gameThemedDecks: 'Decks Thématiques :',
     gameAvailableNow: 'Disponible Maintenant',
+    showMore: 'Voir les Détails',
+    showLess: 'Voir Moins',
+    rulesTab: 'Règles',
+    infoTab: 'Thèmes du Jeu',
     // How it works section
     howItWorksTitle: 'Comment Ça Marche',
     howItWorksSubtitle: 'Commencez en trois étapes simples',
@@ -234,10 +249,15 @@ const homeMessagesDefinition = {
     gamesTitle: 'Популярные игры',
     gamesSubtitle: 'Исследуйте нашу растущую библиотеку настольных развлечений',
     gamePlayButton: 'Играть сейчас',
+    gameRulesButton: 'Правила игры',
     gameComingSoon: 'Скоро',
     gameIncludesPacks: 'Включает 5 наборов карт:',
     gameThemedDecks: 'Тематические колоды:',
     gameAvailableNow: 'Доступно сейчас',
+    showMore: 'Подробнее',
+    showLess: 'Свернуть',
+    rulesTab: 'Правила',
+    infoTab: 'Темы игры',
 
     // Features section
     featuresTitle: 'Почему {{appName}}?',
@@ -302,10 +322,15 @@ const homeMessagesDefinition = {
     gamesTitle: 'Папулярныя гульні',
     gamesSubtitle: 'Даследуйце нашу бібліятэку настольных забаў, якая расце',
     gamePlayButton: 'Гуляць зараз',
+    gameRulesButton: 'Правілы гульні',
     gameComingSoon: 'Хутка',
     gameIncludesPacks: 'Уключае 5 набораў карт:',
     gameThemedDecks: 'Тэматычныя калоды:',
     gameAvailableNow: 'Даступна зараз',
+    showMore: 'Падрабязней',
+    showLess: 'Згарнуць',
+    rulesTab: 'Правілы',
+    infoTab: 'Тэмы гульні',
 
     // Features section
     featuresTitle: 'Чаму {{appName}}?',

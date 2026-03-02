@@ -3,6 +3,7 @@ import { ReactNode, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '@/shared/ui/Button';
 import { scrollbarStyles } from '@/shared/lib/styles';
+import { CloseIcon } from '../Icons';
 
 export interface ModalProps {
   open: boolean;
@@ -87,6 +88,19 @@ const Header = styled.div`
   border-bottom: 1px solid ${({ theme }) => theme.surfaces.card.border};
 `;
 
+const StyledCloseButton = styled(Button).attrs({
+  variant: 'icon',
+  size: 'sm',
+})`
+  transition: transform 0.2s ease-in-out;
+  color: ${({ theme }) => theme.text.secondary};
+
+  &:hover:not(:disabled) {
+    transform: rotate(90deg);
+    color: ${({ theme }) => theme.text.primary};
+  }
+`;
+
 const Title = styled.h2`
   margin: 0;
   font-size: 1.25rem;
@@ -158,14 +172,13 @@ export function ModalHeader({ children, onClose }: ModalHeaderProps) {
     <Header>
       {children}
       {onClose && (
-        <Button
-          variant="icon"
-          size="sm"
+        <StyledCloseButton
           onClick={onClose}
           aria-label="Close modal"
+          data-testid="modal-close-button"
         >
-          ×
-        </Button>
+          <CloseIcon size={20} />
+        </StyledCloseButton>
       )}
     </Header>
   );

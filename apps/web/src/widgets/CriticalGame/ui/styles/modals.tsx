@@ -257,7 +257,7 @@ export const OptionButton = styled(Button).attrs<{
 }>(({ $selected, $variant }) => ({
   variant: 'chip',
   size: 'md',
-  active: $selected,
+  isActive: $selected,
   gameVariant: $variant as GameVariant,
 }))<{
   $selected?: boolean;

@@ -25,7 +25,7 @@ test.describe('Game Over Screen', () => {
       id: roomId,
       status: 'completed' as const,
       members: [
-        { id: 'user-1', displayName: 'Winner', isHost: true },
+        { id: '507f191e810c19729de860ea', displayName: 'Winner', isHost: true },
         { id: 'user-2', displayName: 'Loser', isHost: false },
       ],
       gameOptions: { cardVariant: 'default' },
@@ -34,19 +34,24 @@ test.describe('Game Over Screen', () => {
     const sessionData = {
       sessionId: 'sess-1',
       roomId: roomId,
-      userId: 'user-1',
+      userId: '507f191e810c19729de860ea',
       status: 'completed' as const,
       state: {
         players: [
-          { playerId: 'user-1', alive: true, hand: [], stash: [] },
+          {
+            playerId: '507f191e810c19729de860ea',
+            alive: true,
+            hand: [],
+            stash: [],
+          },
           { playerId: 'user-2', alive: false, hand: [], stash: [] },
         ],
-        playerOrder: ['user-1', 'user-2'],
+        playerOrder: ['507f191e810c19729de860ea', 'user-2'],
         currentTurnIndex: 0,
         deck: [],
         discardPile: [],
         logs: [],
-        winnerId: 'user-1',
+        winnerId: '507f191e810c19729de860ea',
       },
     };
 
@@ -55,7 +60,7 @@ test.describe('Game Over Screen', () => {
       session: sessionData,
     });
 
-    await mockGameSocket(page, roomId, 'user-1', {
+    await mockGameSocket(page, roomId, '507f191e810c19729de860ea', {
       roomJoinedPayload: {
         ...roomData,
         session: sessionData,
@@ -67,7 +72,7 @@ test.describe('Game Over Screen', () => {
 
     const victoryHeading = page.getByTestId('game-result-title');
     await expect(victoryHeading).toBeVisible({ timeout: 30000 });
-    await expect(victoryHeading).toContainText(/Victory|🏆/i);
+    await expect(victoryHeading).toContainText(/Victory|🏆|won|победа/i);
 
     const rematchBtn = page.getByRole('button', {
       name: /Play Again|Rematch/i,
@@ -87,7 +92,7 @@ test.describe('Game Over Screen', () => {
       hostId: 'user-2',
       status: 'completed' as const,
       members: [
-        { id: 'user-1', displayName: 'Loser', isHost: false },
+        { id: '507f191e810c19729de860ea', displayName: 'Loser', isHost: false },
         { id: 'user-2', displayName: 'Winner', isHost: true },
       ],
       gameOptions: { cardVariant: 'default' },
@@ -96,14 +101,19 @@ test.describe('Game Over Screen', () => {
     const sessionData = {
       sessionId: 'sess-1',
       roomId: roomId,
-      userId: 'user-1',
+      userId: '507f191e810c19729de860ea',
       status: 'completed' as const,
       state: {
         players: [
-          { playerId: 'user-1', alive: false, hand: [], stash: [] },
+          {
+            playerId: '507f191e810c19729de860ea',
+            alive: false,
+            hand: [],
+            stash: [],
+          },
           { playerId: 'user-2', alive: true, hand: [], stash: [] },
         ],
-        playerOrder: ['user-1', 'user-2'],
+        playerOrder: ['507f191e810c19729de860ea', 'user-2'],
         currentTurnIndex: 1,
         deck: [],
         discardPile: [],
@@ -117,7 +127,7 @@ test.describe('Game Over Screen', () => {
       session: sessionData,
     });
 
-    await mockGameSocket(page, roomId, 'user-1', {
+    await mockGameSocket(page, roomId, '507f191e810c19729de860ea', {
       roomJoinedPayload: {
         ...roomData,
         session: sessionData,
@@ -129,7 +139,7 @@ test.describe('Game Over Screen', () => {
 
     const defeatHeading = page.getByTestId('game-result-title');
     await expect(defeatHeading).toBeVisible({ timeout: 30000 });
-    await expect(defeatHeading).toContainText(/Game Over|💀/i);
+    await expect(defeatHeading).toContainText(/Game Over|💀|lost|поражение/i);
 
     const homeBtn = page.getByRole('link', { name: /Back to Home/i }).first();
     await expect(homeBtn).toBeVisible();

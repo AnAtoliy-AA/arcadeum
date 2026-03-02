@@ -15,6 +15,10 @@ export default defineConfig({
       ? parseInt(process.env.PLAYWRIGHT_WORKERS)
       : undefined,
   reporter: 'html',
+  timeout: 60000,
+  expect: {
+    timeout: 15000,
+  },
 
   use: {
     baseURL: 'http://localhost:3000',

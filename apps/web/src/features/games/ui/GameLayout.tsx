@@ -101,6 +101,7 @@ export function GameLayout({
   if (lobby) {
     return (
       <LayoutContainer
+        key={!!lobby ? 'lobby' : 'game'}
         ref={gameContainerRef}
         className={className}
         $variant={variant}
@@ -113,6 +114,7 @@ export function GameLayout({
 
   return (
     <LayoutContainer
+      key={!!lobby ? 'lobby' : 'game'}
       ref={gameContainerRef}
       className={className}
       $variant={variant}

@@ -48,7 +48,7 @@ jobs:
           pnpm --filter mobile build
 
       - name: Run Unit Tests
-        run: pnpm exec turbo run test --log-order=stream
+        run: pnpm exec turbo run test --log-order=stream -- -- --forceExit --detectOpenHandles
 
       - name: Run Backend E2E Tests
         env:

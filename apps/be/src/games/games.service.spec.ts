@@ -19,6 +19,7 @@ describe('GamesService', () => {
   let roomsService: jest.Mocked<GameRoomsService>;
   let sessionsService: jest.Mocked<GameSessionsService>;
   let realtimeService: jest.Mocked<GamesRealtimeService>;
+  let module: TestingModule;
 
   beforeEach(async () => {
     const mockRoomsService = {
@@ -71,7 +72,7 @@ describe('GamesService', () => {
     const mockSeaBattleService = {};
     const mockCriticalService = {};
 
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       providers: [
         GamesService,
         { provide: GameRoomsService, useValue: mockRoomsService },
@@ -92,6 +93,10 @@ describe('GamesService', () => {
     realtimeService = module.get(GamesRealtimeService);
   });
 
+  afterAll(async () => {
+    await module.close();
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
@@ -109,7 +114,7 @@ describe('GamesService', () => {
       roomsService.createRoom.mockResolvedValue(
         createdRoom as unknown as GameRoomSummary,
       );
-      realtimeService.emitRoomCreated.mockImplementation(() => {});
+      realtimeService.emitRoomCreated.mockImplementation(() => { });
 
       const result = await service.createRoom(userId, dto);
 

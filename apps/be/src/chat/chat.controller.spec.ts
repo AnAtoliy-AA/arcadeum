@@ -4,19 +4,24 @@ import { ChatService } from './chat.service';
 
 describe('ChatController', () => {
   let controller: ChatController;
+  let module: TestingModule;
   const chatServiceMock = {
     listChatsForUser: jest.fn(),
     createChatForUsers: jest.fn(),
   };
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       controllers: [ChatController],
       providers: [{ provide: ChatService, useValue: chatServiceMock }],
     }).compile();
 
     controller = module.get<ChatController>(ChatController);
     jest.clearAllMocks();
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

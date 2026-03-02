@@ -9,7 +9,6 @@ export default defineConfig({
     setupFiles: ['./vitest.setup.ts'],
     globals: true,
     reporters: process.env.CI ? 'verbose' : 'default',
-    maxWorkers: process.env.CI ? 1 : undefined,
     exclude: ['**/node_modules/**', '**/dist/**', '**/e2e/**', '**/.next/**'],
     coverage: {
       provider: 'v8',

@@ -8,9 +8,14 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  docs-check:
-    name: Docs Check
+  ci:
+    name: Continuous Integration
     runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -31,39 +36,6 @@ jobs:
 
       - name: Run Documentation Link Checker
         run: pnpm docs:check
-
-      - name: Upload Link Check Report
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: broken-links-report
-          path: |
-            scripts/check-doc-links.js
-            **/*.md
-
-  test:
-    name: Run All Tests
-    runs-on: ubuntu-latest
-    services:
-      mongodb:
-        image: mongo:latest
-        ports:
-          - 27017:27017
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'pnpm'
-
-      - name: Install Dependencies
-        run: pnpm install
 
       - name: Run Linting
         run: pnpm run lint
@@ -88,10 +60,20 @@ jobs:
       - name: Run Web E2E Tests
         run: pnpm --filter web test:e2e
 
-      - name: Upload Playwright Report
+      - name: Upload CI Reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
-          path: apps/web/playwright-report/
+          name: ci-reports
+          path: |
+            apps/web/playwright-report/
           retention-days: 30
+
+      - name: Upload Broken Links Report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: broken-links-report
+          path: |
+            scripts/check-doc-links.js
+            **/*.md

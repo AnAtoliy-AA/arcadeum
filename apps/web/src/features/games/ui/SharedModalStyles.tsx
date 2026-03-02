@@ -1,6 +1,11 @@
 import styled, { css, DefaultTheme } from 'styled-components';
 import React from 'react';
-import { Button } from '@/shared/ui';
+import { Button } from '@/shared/ui/Button/Button';
+import type {
+  ButtonProps,
+  ButtonVariant,
+  ButtonSize,
+} from '@/shared/ui/Button/Button';
 
 // Simplified constants/types to avoid external deps
 const GAME_VARIANT = {
@@ -201,10 +206,11 @@ export const ModalTitle = styled.h2<{ $variant?: string }>`
     `}
 `;
 
-export const CloseButton = styled(Button).attrs({
-  variant: 'icon',
-  size: 'sm',
-})<{ $variant?: string }>`
+export const CloseButton = styled(Button).attrs<ButtonProps>(() => ({
+  variant: 'icon' as ButtonVariant,
+  size: 'sm' as ButtonSize,
+  'data-testid': 'modal-close-button',
+}))<{ $variant?: string }>`
   &:hover:not(:disabled) {
     transform: rotate(90deg);
   }

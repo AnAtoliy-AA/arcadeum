@@ -61,11 +61,15 @@ jobs:
           git commit -m "chore: bump version to v${NEW_VERSION} and update changelog [skip ci]"
           git tag -a "v${NEW_VERSION}" -m "Release v${NEW_VERSION}"
           
-          # Push to the branch that triggered the action
-          git push origin HEAD:${{ github.ref_name }} --follow-tags
-          
-          # If on main, also sync back to develop
+          # Push the version bump commit
           if [ "${{ github.ref_name }}" = "main" ]; then
-            git push origin HEAD:develop
+            # If triggered from main (e.g. merging develop -> main),
+            # push the new minor version commit/tag ONLY to develop.
+            # This leaves main exactly at the merged develop version.
+            git push origin HEAD:develop --follow-tags
+          else
+            # If triggered from develop, push the new patch release
+            # to develop as normal
+            git push origin HEAD:${{ github.ref_name }} --follow-tags
           fi
 

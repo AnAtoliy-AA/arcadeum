@@ -173,7 +173,7 @@ export function ProfileMenu() {
 
         <DropdownDivider />
 
-        <DropdownItem onClick={handleLogout}>
+        <DropdownItem onClick={handleLogout} data-testid="logout-button">
           <svg
             viewBox="0 0 24 24"
             fill="none"

@@ -14,13 +14,15 @@ test.describe('Hand Layout', () => {
 
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
-    await mockGameSocket(page, roomId, 'user-1');
+    await mockGameSocket(page, roomId, '507f191e810c19729de860ea');
 
     await mockRoomInfo(page, {
       room: {
         id: roomId,
         status: 'in_progress',
-        members: [{ id: 'user-1', displayName: 'Me', isHost: false }],
+        members: [
+          { id: '507f191e810c19729de860ea', displayName: 'Me', isHost: false },
+        ],
         gameOptions: {
           cardVariant: 'default',
         },
@@ -28,11 +30,11 @@ test.describe('Hand Layout', () => {
       session: {
         sessionId: 'sess-1',
         roomId: roomId,
-        userId: 'user-1',
+        userId: '507f191e810c19729de860ea',
         state: {
           players: [
             {
-              playerId: 'user-1',
+              playerId: '507f191e810c19729de860ea',
               alive: true,
               hand: [
                 'strike',
@@ -49,7 +51,7 @@ test.describe('Hand Layout', () => {
               stash: [],
             },
           ],
-          playerOrder: ['user-1'],
+          playerOrder: ['507f191e810c19729de860ea'],
           currentTurnIndex: 0,
           deck: [],
           discardPile: [],

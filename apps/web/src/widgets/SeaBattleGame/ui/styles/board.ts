@@ -52,6 +52,28 @@ export const BoardCell = styled.div<{
     }
     return bgColor;
   }};
+
+  &[data-highlighted='true'] {
+    background: ${(props) => {
+      let bgColor = 'transparent';
+      switch (props.$state) {
+        case 0:
+          bgColor = props.$theme.cellEmpty;
+          break;
+        case 1:
+          bgColor = props.$theme.shipColor;
+          break;
+        case 2:
+          bgColor = props.$theme.hitColor;
+          break;
+        case 3:
+          bgColor = props.$theme.missColor;
+          break;
+      }
+      return `color-mix(in srgb, ${bgColor}, ${props.$theme.cellHover} 70%)`;
+    }};
+  }
+
   border: ${(props) => props.$theme.borderWidth || '1px'} solid
     ${(props) => props.$theme.cellBorder};
   cursor: ${(props) => (props.$isClickable ? 'pointer' : 'default')};

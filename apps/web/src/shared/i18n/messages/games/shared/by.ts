@@ -156,6 +156,14 @@ export const byMessages = {
     playWithBotsNotice: 'Пачніце з ботамі адразу або дачакайцеся іншых гульцоў',
   },
   shared: {
+    rules: {
+      objective: 'Мэта',
+      gameplay: 'Працэс гульні',
+      combos: 'Комба',
+      setup: 'Падрыхтоўка',
+      placement: 'Размяшчэнне',
+      battle: 'Бітва',
+    },
     category: {
       cardGame: 'Картачная гульня',
       boardGame: 'Настольная гульня',

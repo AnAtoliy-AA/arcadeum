@@ -18,7 +18,7 @@ test.describe('Sea Battle Rules Modal', () => {
     page,
   }) => {
     const roomId = MOCK_OBJECT_ID;
-    const userId = 'user-1';
+    const userId = '507f191e810c19729de860ea';
 
     await mockRoomInfo(page, {
       room: {
@@ -42,7 +42,7 @@ test.describe('Sea Battle Rules Modal', () => {
 
   test('should be able to close and reopen rules modal', async ({ page }) => {
     const roomId = MOCK_OBJECT_ID;
-    const userId = 'user-1';
+    const userId = '507f191e810c19729de860ea';
 
     await mockRoomInfo(page, {
       room: {
@@ -64,11 +64,7 @@ test.describe('Sea Battle Rules Modal', () => {
     await expect(modal).toContainText(/objective/i);
 
     // Close using standard close method
-    const closeBtn = page
-      .getByText('×')
-      .first()
-      .or(page.getByRole('button', { name: 'Close' }).first())
-      .or(page.getByTestId('modal-close-button').first());
+    const closeBtn = page.getByTestId('modal-close-button').first();
     await closeBtn.click({ force: true, timeout: 15000 });
 
     // Wait for modal to hide
@@ -94,7 +90,8 @@ test.describe('Sea Battle Rules Modal', () => {
     // Look for rules button on create screen
     const rulesBtn = page
       .getByRole('button', { name: /Game Rules|📖/i })
-      .first();
+      .first()
+      .or(page.getByTestId('view-rules-button'));
     await expect(rulesBtn).toBeVisible({ timeout: 15000 });
 
     // Click to open rules modal
@@ -105,12 +102,8 @@ test.describe('Sea Battle Rules Modal', () => {
     await expect(modal).toBeVisible({ timeout: 20000 });
     await expect(modal).toContainText(/objective/i);
 
-    // Close it
-    const closeBtn = page
-      .getByText('×')
-      .first()
-      .or(page.getByRole('button', { name: 'Close' }).first())
-      .or(page.getByTestId('modal-close-button').first());
+    // Close using standard close method
+    const closeBtn = page.getByTestId('modal-close-button').first();
     await closeBtn.click({ force: true, timeout: 15000 });
 
     await expect(modal).not.toBeVisible({ timeout: 15000 });

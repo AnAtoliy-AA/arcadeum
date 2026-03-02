@@ -19,14 +19,18 @@ test.describe('Idle Detection', () => {
 
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
-    await mockGameSocket(page, roomId, 'user-1');
+    await mockGameSocket(page, roomId, '507f191e810c19729de860ea');
     await mockRoomInfo(page, {
       room: {
         id: roomId,
         status: 'in_progress',
         visibility: 'public',
         members: [
-          { id: 'user-1', displayName: 'Test User', isHost: true },
+          {
+            id: '507f191e810c19729de860ea',
+            displayName: 'Test User',
+            isHost: true,
+          },
           { id: 'user-2', displayName: 'Opponent', isHost: false },
         ],
       },

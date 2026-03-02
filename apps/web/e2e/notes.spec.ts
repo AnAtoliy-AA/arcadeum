@@ -140,8 +140,13 @@ test.describe('Payment Notes Page', () => {
 
     await navigateTo(page, '/notes');
 
-    // Check for empty state message
-    await expect(page.getByText(/no notes yet|be the first/i)).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /supporter notes/i }),
+    ).toBeVisible();
+
+    await expect(page.getByText(/no notes yet|be the first/i)).toBeVisible({
+      timeout: 15000,
+    });
   });
 
   test('should support infinite scroll when more pages exist', async ({

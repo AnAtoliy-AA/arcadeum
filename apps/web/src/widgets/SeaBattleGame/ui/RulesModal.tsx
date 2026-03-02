@@ -20,6 +20,7 @@ import {
   ShipDescription,
 } from './RulesModal.styles';
 import { TranslationKey } from '@/shared/lib/useTranslation';
+import { CloseIcon } from '@/shared/ui/Icons';
 
 interface RulesModalProps {
   isOpen: boolean;
@@ -62,7 +63,13 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
       >
         <ModalHeader>
           <ModalTitle>{t('games.sea_battle_v1.rules.title')}</ModalTitle>
-          <CloseButton onClick={onClose}>×</CloseButton>
+          <CloseButton
+            onClick={onClose}
+            aria-label="Close rules modal"
+            data-testid="modal-close-button"
+          >
+            <CloseIcon size={20} />
+          </CloseButton>
         </ModalHeader>
 
         <ScrollArea>

@@ -12,7 +12,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   gameVariant?: GameVariant;
   pulse?: boolean;
   uppercase?: boolean;
-  $active?: boolean;
+  isActive?: boolean;
+  'data-testid'?: string;
 }
 
 const shimmer = keyframes`
@@ -119,6 +120,7 @@ const variantStyles = {
       background-size: 200% 100%;
       opacity: 0;
       transition: opacity 0.3s ease;
+      pointer-events: none;
     }
 
     &:hover:not(:disabled) {
@@ -414,18 +416,10 @@ const StyledButton = styled.button<StyledButtonProps>`
     `}
   ${({ $uppercase }) =>
     $uppercase && 'text-transform: uppercase; letter-spacing: 0.5px;'}
-  ${activeStyles}
+    ${activeStyles}
 `;
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  fullWidth?: boolean;
-  gameVariant?: GameVariant;
-  pulse?: boolean;
-  uppercase?: boolean;
-  active?: boolean;
-}
+// ButtonProps merged into top of file
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
@@ -436,7 +430,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       gameVariant,
       pulse,
       uppercase,
-      active,
+      isActive,
       children,
       ...props
     },
@@ -448,11 +442,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         $variant={variant}
         $size={size}
         $fullWidth={fullWidth}
-        $active={active}
+        $active={isActive}
         $gameVariant={gameVariant}
         $pulse={pulse}
         $uppercase={uppercase}
         {...props}
+        aria-pressed={isActive ?? props['aria-pressed']}
       >
         {children}
       </StyledButton>

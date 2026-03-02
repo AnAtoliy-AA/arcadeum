@@ -160,6 +160,14 @@ export const frMessages = {
       "Commencez avec des bots immédiatement ou attendez d'autres joueurs",
   },
   shared: {
+    rules: {
+      objective: 'Objectif',
+      gameplay: 'Jouabilité',
+      combos: 'Combos',
+      setup: 'Mise en place',
+      placement: 'Placement',
+      battle: 'Bataille',
+    },
     category: {
       cardGame: 'Jeu de cartes',
       boardGame: 'Jeu de société',

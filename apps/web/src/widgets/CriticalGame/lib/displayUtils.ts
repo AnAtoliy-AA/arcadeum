@@ -60,7 +60,8 @@ export function useDisplayNames({
     room.members?.forEach((member) =>
       register(member.id, member.displayName ?? null),
     );
-    snapshot?.players.forEach((player) =>
+    const players = snapshot?.players || [];
+    players.forEach((player) =>
       register(
         player.playerId,
         player.playerId === currentUserId

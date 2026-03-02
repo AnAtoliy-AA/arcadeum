@@ -130,7 +130,7 @@ export const Row = styled.div`
 export const VisibilityToggle = styled(Button).attrs<{ $isPublic: boolean }>(
   ({ $isPublic }) => ({
     variant: 'chip',
-    $active: $isPublic,
+    isActive: $isPublic,
   }),
 )<{ $isPublic: boolean }>``;
 

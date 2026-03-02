@@ -1,4 +1,4 @@
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { LanguageProvider, useLanguage } from './LanguageProvider';
 import { useLanguageStore, LanguageState } from './store/languageStore';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -40,10 +40,15 @@ describe('LanguageProvider', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useLanguageStore).mockReturnValue({
-      locale: DEFAULT_LOCALE,
-      setLocale: mockSetLocale,
-    } as LanguageState);
+    vi.mocked(useLanguageStore).mockImplementation(
+      (selector: (state: LanguageState) => unknown) => {
+        const state = {
+          locale: DEFAULT_LOCALE,
+          setLocale: mockSetLocale,
+        } as LanguageState;
+        return selector ? selector(state) : state;
+      },
+    );
   });
 
   it('renders children and provides context', async () => {
@@ -56,11 +61,9 @@ describe('LanguageProvider', () => {
     expect(screen.getByTestId('locale')).toHaveTextContent(DEFAULT_LOCALE);
 
     // Wait for isReady to become true
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0));
+    await waitFor(() => {
+      expect(screen.getByTestId('ready')).toHaveTextContent('true');
     });
-
-    expect(screen.getByTestId('ready')).toHaveTextContent('true');
     expect(screen.getByTestId('message')).toHaveTextContent(
       `messages for ${DEFAULT_LOCALE}`,
     );
@@ -75,10 +78,15 @@ describe('LanguageProvider', () => {
 
     expect(document.documentElement.getAttribute('lang')).toBe(DEFAULT_LOCALE);
 
-    vi.mocked(useLanguageStore).mockReturnValue({
-      locale: 'ru' as Locale,
-      setLocale: mockSetLocale,
-    } as LanguageState);
+    vi.mocked(useLanguageStore).mockImplementation(
+      (selector: (state: LanguageState) => unknown) => {
+        const state = {
+          locale: 'ru' as Locale,
+          setLocale: mockSetLocale,
+        } as LanguageState;
+        return selector ? selector(state) : state;
+      },
+    );
 
     rerender(
       <LanguageProvider>

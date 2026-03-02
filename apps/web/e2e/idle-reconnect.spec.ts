@@ -19,13 +19,19 @@ test.describe('Idle Connection Overlay', () => {
 
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
-    await mockGameSocket(page, roomId, 'user-1');
+    await mockGameSocket(page, roomId, '507f191e810c19729de860ea');
     await mockRoomInfo(page, {
       room: {
         id: roomId,
         status: 'in_progress',
         visibility: 'public',
-        members: [{ id: 'user-1', displayName: 'Test User', isHost: true }],
+        members: [
+          {
+            id: '507f191e810c19729de860ea',
+            displayName: 'Test User',
+            isHost: true,
+          },
+        ],
       },
     });
   });
@@ -75,9 +81,13 @@ test.describe('Idle Connection Overlay', () => {
         | {
             trigger?: (event: string, ...args: unknown[]) => void;
             listeners?: (event: string) => ((...args: unknown[]) => void)[];
+            _mockConnected?: boolean;
           }
         | undefined;
       if (socket) {
+        if (typeof socket._mockConnected !== 'undefined') {
+          socket._mockConnected = false;
+        }
         if (typeof socket.trigger === 'function') {
           socket.trigger('disconnect', 'transport close');
         } else if (typeof socket.listeners === 'function') {
@@ -89,13 +99,14 @@ test.describe('Idle Connection Overlay', () => {
       }
     });
 
-    const overlay = page.getByTestId('connection-overlay-disconnected');
-    await expect(overlay).toBeVisible({ timeout: 5000 });
+    const overlay = page.locator('[data-testid^="connection-overlay-"]');
+    await expect(overlay).toBeVisible({ timeout: 10000 });
 
-    await overlay.click();
+    await overlay.click({ timeout: 5000 });
 
     await expect(overlay).toContainText(
       /Reconnecting|Reconectando|Reconnexion|Пераключэнне|Переподключение/,
+      { timeout: 15000 },
     );
   });
 

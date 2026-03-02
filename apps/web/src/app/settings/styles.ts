@@ -16,13 +16,9 @@ export const OptionList = styled.div`
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
 `;
 
-export const OptionButton = styled(Button).attrs<{ $active: boolean }>(
-  ({ $active }) => ({
-    variant: $active ? 'primary' : 'secondary',
-    size: 'lg',
-    active: $active,
-  }),
-) <{ $active: boolean }>`
+export const OptionButton = styled(Button).attrs({
+  size: 'lg',
+})`
   justify-content: flex-start;
   flex-direction: column;
   align-items: flex-start;
@@ -34,8 +30,8 @@ export const OptionButton = styled(Button).attrs<{ $active: boolean }>(
   border-radius: 16px;
   transition: all 0.2s ease;
 
-  ${({ $active, theme }) =>
-    !$active &&
+  ${({ isActive, theme }) =>
+    !isActive &&
     css`
       background: ${theme.interactive.option.background};
       border-color: ${theme.interactive.option.border};
@@ -66,13 +62,9 @@ export const PillGroup = styled.div`
   gap: 0.75rem;
 `;
 
-export const PillButton = styled(Button).attrs<{ $active: boolean }>(
-  ({ $active }) => ({
-    variant: $active ? 'primary' : 'chip',
-    size: 'md',
-    active: $active,
-  }),
-) <{ $active: boolean }>`
+export const PillButton = styled(Button).attrs({
+  size: 'md',
+})`
   min-width: 80px;
   justify-content: center;
 `;

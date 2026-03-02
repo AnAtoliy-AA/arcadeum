@@ -31,7 +31,7 @@ import { getTheme } from '../lib/theme';
 
 import { RulesModal } from './RulesModal';
 import { FullscreenButton } from '@/widgets/CriticalGame/ui/styles';
-import { TurnIndicator } from './styles';
+import { TurnIndicator, ChatToggleButton } from './styles';
 
 const RoomTitle = styled.h2`
   margin: 0;
@@ -106,7 +106,7 @@ export default function SeaBattleGame({
 
   // Chat State
   const [showChat, setShowChat] = useState(true);
-  const [showRules, setShowRules] = useState(true);
+  const [showRules, setShowRules] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
   const [chatScope, setChatScope] = useState<ChatScope>('all');
   // Result Modal State
@@ -202,13 +202,18 @@ export default function SeaBattleGame({
 
   // Auto-open modal on game over
   React.useEffect(() => {
-    if (isGameOver && isHost) {
-      // Host logic if needed
-    }
     if (isGameOver) {
       setShowResultModal(true);
     }
-  }, [isGameOver, isHost]);
+  }, [isGameOver]);
+
+  // Auto-open rules on mount/entry to room if game is in lobby
+  React.useEffect(() => {
+    if (!snapshot || (room && room.status === 'lobby')) {
+      setShowRules(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomId]); // Open only once on room entry
 
   const { isWinner } = useSeaBattleState({
     roomId,
@@ -321,7 +326,7 @@ export default function SeaBattleGame({
             t={t}
           />
           <GameResultModal
-            isOpen={showResultModal && !!(isGameOver || snapshot?.winnerId)}
+            isOpen={showResultModal && isGameOver}
             result={gameResult}
             onRematch={isHost ? openRematchModal : undefined}
             onClose={() => setShowResultModal(false)}
@@ -377,26 +382,15 @@ export default function SeaBattleGame({
             <FullscreenButton
               onClick={() => setShowRules(true)}
               title="Game Rules"
-              style={{ fontSize: '1.2rem' }}
             >
               📖
             </FullscreenButton>
             {snapshot && (
-              <button
-                onClick={handleToggleChat}
-                style={{
-                  background: 'rgba(255,255,255,0.1)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  color: 'white',
-                  padding: '8px 16px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                }}
-              >
+              <ChatToggleButton onClick={handleToggleChat}>
                 {showChat
                   ? t('games.sea_battle_v1.table.chat.hide' as TranslationKey)
                   : t('games.sea_battle_v1.table.chat.show' as TranslationKey)}
-              </button>
+              </ChatToggleButton>
             )}
           </ActionSection>
         </HeaderTopRow>
@@ -404,6 +398,7 @@ export default function SeaBattleGame({
 
       {snapshot && isPlacementPhase && (
         <ShipPlacementBoard
+          key="placement-board"
           currentPlayer={currentPlayer}
           onPlaceShip={placeShip}
           onConfirmPlacement={confirmPlacement}
@@ -413,8 +408,10 @@ export default function SeaBattleGame({
           variant={cardVariant}
         />
       )}
+
       {snapshot && isBattlePhase && (
         <AttackBoard
+          key="attack-board"
           players={snapshot.players}
           currentUserId={currentUserId}
           currentTurnPlayerId={snapshot.playerOrder[snapshot.currentTurnIndex]}

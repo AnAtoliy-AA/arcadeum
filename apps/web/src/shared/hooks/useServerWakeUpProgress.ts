@@ -25,9 +25,7 @@ export function useServerWakeUpProgress(isBusy: boolean) {
   const threshold = getThreshold();
 
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [isOverThreshold, setIsOverThreshold] = useState(
-    isBusy && threshold === 0,
-  );
+  const [isOverThreshold, setIsOverThreshold] = useState(false);
   const startTimeRef = useRef<number | null>(null);
 
   useEffect(() => {

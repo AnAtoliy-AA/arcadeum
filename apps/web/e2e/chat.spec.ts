@@ -27,7 +27,7 @@ test.describe('Chat Functionality', () => {
               chatId: 'chat-1',
               participants: [
                 {
-                  id: 'user-1',
+                  id: '507f191e810c19729de860ea',
                   username: 'testuser',
                   displayName: 'Test User',
                 },
@@ -86,7 +86,7 @@ test.describe('Chat Functionality', () => {
             chatId: 'chat-1',
             senderId: 'user-2',
             senderUsername: 'otheruser',
-            receiverIds: ['user-1'],
+            receiverIds: ['507f191e810c19729de860ea'],
             content: 'Hello there!',
             timestamp: new Date(Date.now() - 60000).toISOString(),
           },

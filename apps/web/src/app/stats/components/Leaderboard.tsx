@@ -65,23 +65,31 @@ export function Leaderboard({
           </LeaderboardHeader>
           {[1, 2, 3, 4, 5].map((i) => (
             <LeaderboardRow key={i}>
-              <SkeletonCircle width="32px" height="32px" delay={i * 0.1} />
+              <SkeletonCircle width="32px" height="32px" $delay={i * 0.1} />
               <PlayerInfo>
                 <SkeletonCircle
                   width="40px"
                   height="40px"
-                  delay={i * 0.1 + 0.05}
+                  $delay={i * 0.1 + 0.05}
                 />
                 <SkeletonText
                   width="120px"
                   height="16px"
-                  delay={i * 0.1 + 0.1}
+                  $delay={i * 0.1 + 0.1}
                 />
               </PlayerInfo>
-              <SkeletonText width="30px" height="16px" delay={i * 0.1 + 0.15} />
-              <SkeletonText width="30px" height="16px" delay={i * 0.1 + 0.2} />
-              <SkeletonText width="30px" height="16px" delay={i * 0.1 + 0.25} />
-              <SkeletonText width="50px" height="16px" delay={i * 0.1 + 0.3} />
+              <SkeletonText
+                width="30px"
+                height="16px"
+                $delay={i * 0.1 + 0.15}
+              />
+              <SkeletonText width="30px" height="16px" $delay={i * 0.1 + 0.2} />
+              <SkeletonText
+                width="30px"
+                height="16px"
+                $delay={i * 0.1 + 0.25}
+              />
+              <SkeletonText width="50px" height="16px" $delay={i * 0.1 + 0.3} />
             </LeaderboardRow>
           ))}
         </Table>

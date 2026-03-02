@@ -106,6 +106,9 @@ export async function mockGameSocket(
               if (window._playwrightMocks?.roomId) return isConnected;
               return originalConnectedProperty;
             },
+            set(v) {
+              isConnected = v;
+            },
             configurable: true,
           });
           s.on('connect', () => {
@@ -233,6 +236,9 @@ export async function mockAllOnPage(page: Page): Promise<void> {
           get() {
             if (window._playwrightMocks?.roomId) return isConnected;
             return originalConnectedProperty;
+          },
+          set(v) {
+            isConnected = v;
           },
           configurable: true,
         });

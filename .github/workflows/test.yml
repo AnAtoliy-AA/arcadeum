@@ -1,0 +1,65 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    name: Run All Tests
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Run Linting
+        run: pnpm run lint
+
+      - name: Run Type Check
+        run: |
+          pnpm --filter web type-check
+          pnpm --filter mobile build
+
+      - name: Run Unit Tests
+        run: pnpm run test
+
+      - name: Run Backend E2E Tests
+        env:
+          MONGODB_URI: mongodb://localhost:27017/arcadeum_test
+          JWT_SECRET: test_secret
+        run: pnpm --filter be test:e2e
+
+      - name: Install Playwright Browsers
+        run: pnpm --filter web exec playwright install --with-deps
+
+      - name: Run Web E2E Tests
+        run: pnpm --filter web test:e2e
+
+      - name: Upload Playwright Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report/
+          retention-days: 30

@@ -46,7 +46,7 @@ jobs:
           pnpm --filter mobile build
 
       - name: Run Unit Tests
-        run: pnpm run test -- --stream
+        run: pnpm exec turbo run test --stream
 
       - name: Run Backend E2E Tests
         env:

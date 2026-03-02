@@ -74,6 +74,10 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - **Analytics**: Vercel Analytics, Sentry for error tracking
 - **Performance**: Next.js Image optimization, code splitting, lazy loading
 
+## Architecture Documentation
+
+For a comprehensive overview of the frontend architecture — including component organization, state flow, WebSocket encryption, i18n system, PWA strategy, and integration with the backend — see the full [Frontend Architecture Documentation](../docs/FRONTEND_ARCHITECTURE.md).
+
 ## Project Structure
 
 ```

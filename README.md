@@ -19,6 +19,11 @@ Refer to the individual app READMEs for detailed setup and configuration instruc
 - [Comprehensive Guide](docs/TRANSLATION_TYPE_SAFETY.md): Detailed explanation of the type-safe translation system
 - [Implementation Summary](docs/TRANSLATION_TYPE_SAFETY.md): Summary of the implementation process and verification checklist
 
+### Architecture Documentation
+
+- [Comprehensive Backend Architecture](docs/BACKEND_ARCHITECTURE.md): Detailed overview of the NestJS backend structure, components, and design patterns
+- [Comprehensive Frontend Architecture](docs/FRONTEND_ARCHITECTURE.md): Detailed overview of the Next.js web app structure, state flow, real-time communication, and UI organization
+
 ## Project Structure
 
 This Turborepo workspace is managed with `pnpm` and contains:

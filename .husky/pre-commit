@@ -109,3 +109,9 @@ pnpm run test:e2e || {
 }
 cd ../..
 echo "✅ E2E tests passed"
+
+echo "Checking documentation links..."
+pnpm docs:check || {
+  echo "❌ Broken links found in documentation. Please fix them before committing."
+  exit 1
+}

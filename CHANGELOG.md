@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.3] - 2026-03-03
+
+### Added
+- CI/CD pipelines tests (#463) (ARC-436)
+
+
 ## [1.7.2] - 2026-03-02
 
 ### Fixed

@@ -59,13 +59,18 @@ jobs:
       - name: Run Backend E2E Tests
         run: pnpm --filter be test:e2e
 
-      - name: Upload Build Artifacts
+      - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
-          name: build-outputs
-          path: |
-            apps/web/.next
-            apps/be/dist
+          name: web-build
+          path: apps/web/.next
+          retention-days: 1
+
+      - name: Upload Backend Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: be-build
+          path: apps/be/dist
           retention-days: 1
 
   web-e2e:
@@ -109,10 +114,17 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --no-frozen-lockfile
 
-      - name: Download Build Artifacts
+      - name: Download Web Build
         uses: actions/download-artifact@v4
         with:
-          name: build-outputs
+          name: web-build
+          path: apps/web/.next
+
+      - name: Download Backend Build
+        uses: actions/download-artifact@v4
+        with:
+          name: be-build
+          path: apps/be/dist
 
       - name: Install Playwright Browsers
         run: pnpm --filter web exec playwright install --with-deps

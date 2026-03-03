@@ -56,6 +56,11 @@ const supportMessagesDefinition = {
         description: 'Follow {{appName}} updates and professional news.',
         cta: 'Connect',
       },
+      github: {
+        title: 'Star on GitHub',
+        description: 'Support the project by starring the repository on GitHub.',
+        cta: 'View on GitHub',
+      },
     },
   },
   es: {
@@ -113,6 +118,11 @@ const supportMessagesDefinition = {
         description:
           'Sigue las actualizaciones y noticias profesionales de {{appName}}.',
         cta: 'Conectar',
+      },
+      github: {
+        title: 'Estrella en GitHub',
+        description: 'Apoya el proyecto dando una estrella en GitHub.',
+        cta: 'Ver en GitHub',
       },
     },
   },
@@ -172,6 +182,11 @@ const supportMessagesDefinition = {
           'Suivez les mises à jour et les actualités professionnelles de {{appName}}.',
         cta: 'Se connecter',
       },
+      github: {
+        title: 'Étoile sur GitHub',
+        description: 'Soutenez le projet en mettant une étoile sur GitHub.',
+        cta: 'Voir sur GitHub',
+      },
     },
   },
   ru: {
@@ -230,6 +245,11 @@ const supportMessagesDefinition = {
           'Следите за обновлениями {{appName}} и профессиональными новостями.',
         cta: 'Связаться',
       },
+      github: {
+        title: 'Звезда на GitHub',
+        description: 'Поддержите проект, поставив звезду на GitHub.',
+        cta: 'Открыть на GitHub',
+      },
     },
   },
   by: {
@@ -287,6 +307,11 @@ const supportMessagesDefinition = {
         description:
           'Сачыце за абнаўленнямі {{appName}} і прафесійнымі навінамі.',
         cta: 'Звязацца',
+      },
+      github: {
+        title: 'Зорка на GitHub',
+        description: 'Падтрымайце праект, паставіўшы зорку на GitHub.',
+        cta: 'Адкрыць на GitHub',
       },
     },
   },

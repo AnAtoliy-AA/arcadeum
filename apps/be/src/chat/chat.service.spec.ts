@@ -8,6 +8,7 @@ import { ChatHelperService } from './chat-helper.service';
 
 describe('ChatService', () => {
   let service: ChatService;
+  let module: TestingModule;
   const createModelMock = () => ({
     findOne: jest.fn(),
     find: jest.fn(),
@@ -28,7 +29,7 @@ describe('ChatService', () => {
       resolveParticipantDisplayName: jest.fn(),
     };
 
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       providers: [
         ChatService,
         { provide: getModelToken(Chat.name), useValue: chatModelMock },
@@ -39,6 +40,10 @@ describe('ChatService', () => {
     }).compile();
 
     service = module.get<ChatService>(ChatService);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

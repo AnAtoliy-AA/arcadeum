@@ -14,7 +14,7 @@ export default defineConfig({
     : process.env.PLAYWRIGHT_WORKERS
       ? parseInt(process.env.PLAYWRIGHT_WORKERS)
       : undefined,
-  reporter: 'html',
+  reporter: process.env.CI ? 'list' : 'html',
   timeout: 60000,
   expect: {
     timeout: 15000,
@@ -41,10 +41,18 @@ export default defineConfig({
     },
   ],
 
-  webServer: {
-    command: 'npm run dev:next',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-  },
+  webServer: [
+    {
+      command: process.env.CI ? 'pnpm --filter be start:prod' : 'pnpm --filter be dev',
+      url: 'http://localhost:4000/health',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120 * 1000,
+    },
+    {
+      command: process.env.CI ? 'npm run start' : 'npm run dev:next',
+      url: 'http://localhost:3000',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120 * 1000,
+    },
+  ],
 });

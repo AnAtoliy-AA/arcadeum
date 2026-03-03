@@ -8,8 +8,8 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  ci:
-    name: Continuous Integration
+  setup:
+    name: Setup & Build
     runs-on: ubuntu-latest
     env:
       CI: true
@@ -59,26 +59,72 @@ jobs:
       - name: Run Backend E2E Tests
         run: pnpm --filter be test:e2e
 
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-outputs
+          path: |
+            apps/web/.next
+            apps/be/dist
+          retention-days: 1
+
+  web-e2e:
+    name: Web E2E (Shard ${{ matrix.shard }}/${{ strategy.job-total }})
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    env:
+      CI: true
+      MONGODB_URI: mongodb://localhost:27017/arcadeum_test
+      AUTH_JWT_SECRET: test_secret
+      NEXT_PUBLIC_E2E: true
+      NEXT_PUBLIC_AUTH_WEB_CLIENT_ID: dummy-client-id
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:4000
+      NEXT_PUBLIC_SOCIAL_LINKEDIN: https://linkedin.com/company/arcadeum
+      NEXT_PUBLIC_SOCIAL_X: https://x.com/arcadeum
+      NEXT_PUBLIC_SOCIAL_INSTAGRAM: https://instagram.com/arcadeum
+      NEXT_PUBLIC_SOCIAL_DISCORD: https://discord.gg/arcadeum
+      NEXT_PUBLIC_PRESENTATION_VIDEO_ID: dQw4w9WgXcQ
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-outputs
+
       - name: Install Playwright Browsers
         run: pnpm --filter web exec playwright install --with-deps
 
       - name: Run Web E2E Tests
-        run: pnpm --filter web test:e2e
+        run: pnpm --filter web test:e2e --shard=${{ matrix.shard }}/${{ strategy.job-total }}
 
-      - name: Upload CI Reports
+      - name: Upload Shard Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ci-reports
+          name: web-e2e-report-${{ matrix.shard }}
           path: |
             apps/web/playwright-report/
           retention-days: 30
-
-      - name: Upload Broken Links Report
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: broken-links-report
-          path: |
-            scripts/check-doc-links.js
-            **/*.md

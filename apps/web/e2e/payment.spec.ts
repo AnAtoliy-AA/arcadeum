@@ -6,8 +6,8 @@ test.describe('Payment Flow', () => {
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
 
-    // Mock payment API (broad match to catch /payment/session or /payments/session)
-    await page.route('**/session', async (route) => {
+    // Mock payment API (broad match to catch /payments/session)
+    await page.route('**/payments/session', async (route) => {
       if (route.request().method() === 'POST') {
         await route.fulfill({
           status: 200,
@@ -96,13 +96,22 @@ test.describe('Payment Flow', () => {
 
   test('should allow selecting recurring subscription', async ({ page }) => {
     // Mock subscription API
-    await page.route('**/subscription', async (route) => {
+    await page.route('**/payments/subscription', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
           paymentUrl: 'https://www.sandbox.paypal.com/mock-subscription',
         }),
+      });
+    });
+
+    // Mock PayPal checkout page
+    await page.route('**/sandbox.paypal.com/**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'text/html',
+        body: '<html><body><h1>PayPal Checkout</h1></body></html>',
       });
     });
 

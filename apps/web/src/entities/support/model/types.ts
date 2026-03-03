@@ -8,7 +8,7 @@ export type SupportTeamMember = {
 };
 
 export type BaseSupportAction = {
-  key: 'payment' | 'sponsor' | 'coffee' | 'iban';
+  key: 'payment' | 'sponsor' | 'coffee' | 'iban' | 'github';
   icon: string;
   title: string;
   description: string;

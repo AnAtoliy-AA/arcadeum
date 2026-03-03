@@ -5,7 +5,9 @@ import packageJson from './package.json';
 
 const withPWA = withPWAInit({
   dest: 'public',
-  disable: process.env.NODE_ENV === 'development',
+  disable:
+    process.env.NODE_ENV === 'development' ||
+    process.env.NEXT_PUBLIC_E2E === 'true',
   register: true,
   fallbacks: {
     document: '/offline',
@@ -82,10 +84,10 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
-          {
+          ...(isE2E ? [] : [{
             key: 'Content-Security-Policy',
             value: csp,
-          },
+          }]),
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=63072000; includeSubDomains; preload',

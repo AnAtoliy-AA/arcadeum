@@ -68,6 +68,17 @@ function buildActions(): SupportAction[] {
     cta: 'Sponsor development',
   });
 
+  actions.push({
+    key: 'github',
+    icon: '🐙',
+    type: 'external',
+    href: 'https://github.com/AnAtoliy-AA/arcadeum',
+    title: 'Star on GitHub',
+    description:
+      'Support the project by starring the repository. It helps our visibility and community growth.',
+    cta: 'View on GitHub',
+  });
+
   return actions;
 }
 

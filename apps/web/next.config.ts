@@ -5,7 +5,9 @@ import packageJson from './package.json';
 
 const withPWA = withPWAInit({
   dest: 'public',
-  disable: process.env.NODE_ENV === 'development',
+  disable:
+    process.env.NODE_ENV === 'development' ||
+    process.env.NEXT_PUBLIC_E2E === 'true',
   register: true,
   fallbacks: {
     document: '/offline',
@@ -42,16 +44,18 @@ const cspFrameSrc = "'self' https://www.youtube-nocookie.com";
 const nextConfig: NextConfig = {
   headers: async () => {
     const isDev = process.env.NODE_ENV === 'development';
+    const isE2E = process.env.NEXT_PUBLIC_E2E === 'true';
+    const allowLocalhost = isDev || isE2E;
 
     const connectSrc = [
       "'self'",
-      ...(isDev
+      ...(allowLocalhost
         ? [
-            'http://localhost:*',
-            'ws://localhost:*',
-            'http://127.0.0.1:*',
-            'ws://127.0.0.1:*',
-          ]
+          'http://localhost:*',
+          'ws://localhost:*',
+          'http://127.0.0.1:*',
+          'ws://127.0.0.1:*',
+        ]
         : []),
       ...cspConnectSrc,
     ]
@@ -70,7 +74,7 @@ const nextConfig: NextConfig = {
       "frame-ancestors 'none';",
       `frame-src ${cspFrameSrc};`,
       `connect-src ${connectSrc};`,
-      ...(isDev ? [] : ['upgrade-insecure-requests;']),
+      ...(allowLocalhost ? [] : ['upgrade-insecure-requests;']),
     ]
       .join(' ')
       .replace(/\s{2,}/g, ' ')
@@ -80,10 +84,10 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
-          {
+          ...(isE2E ? [] : [{
             key: 'Content-Security-Policy',
             value: csp,
-          },
+          }]),
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=63072000; includeSubDomains; preload',

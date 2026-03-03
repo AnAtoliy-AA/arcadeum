@@ -51,7 +51,7 @@ test.describe('Game Lobby - Shared Functionality', () => {
 
   test('should display Sea Battle game lobby', async ({ page }) => {
     // Navigate to Sea Battle create page
-    await navigateTo(page, '/games/create?gameId=sea-battle');
+    await navigateTo(page, '/games/create?gameId=sea_battle_v1');
 
     // Look for the create button
     const createBtn = page.getByRole('button', { name: /create/i });

@@ -44,18 +44,18 @@ jobs:
       - name: Run Build
         run: pnpm exec turbo run build --filter web --filter be
 
-      - name: Verify Build Outputs
-        run: |
-          ls -R apps/web/.next | head -n 20
-          ls -R apps/be/dist | head -n 20
-
-      - name: Upload Build Artifacts
+      - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifacts
-          path: |
-            apps/web/.next
-            apps/be/dist
+          name: web-build-artifacts
+          path: apps/web/.next
+          retention-days: 1
+
+      - name: Upload Backend Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: be-build-artifacts
+          path: apps/be/dist
           retention-days: 1
 
       - name: Run Documentation Link Checker
@@ -114,10 +114,24 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --no-frozen-lockfile
 
-      - name: Download Build Artifacts
+      - name: Download Web Build
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts
+          name: web-build-artifacts
+          path: apps/web/.next
+
+      - name: Download Backend Build
+        uses: actions/download-artifact@v4
+        with:
+          name: be-build-artifacts
+          path: apps/be/dist
+
+      - name: Verify Shard Files
+        run: |
+          echo "Checking Web .next:"
+          ls -F apps/web/.next | head -n 5
+          echo "Checking Backend dist:"
+          ls -F apps/be/dist | head -n 5
 
       - name: Install Playwright Browsers
         run: pnpm --filter web exec playwright install --with-deps

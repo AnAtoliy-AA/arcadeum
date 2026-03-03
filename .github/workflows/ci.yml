@@ -41,14 +41,28 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --no-frozen-lockfile
 
+      - name: Run Build
+        run: pnpm exec turbo run build --filter web --filter be
+
+      - name: Verify Build Outputs
+        run: |
+          ls -R apps/web/.next | head -n 20
+          ls -R apps/be/dist | head -n 20
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            apps/web/.next
+            apps/be/dist
+          retention-days: 1
+
       - name: Run Documentation Link Checker
         run: pnpm docs:check
 
       - name: Run Linting
         run: pnpm run lint
-
-      - name: Run Build
-        run: pnpm exec turbo run build --filter web --filter be
 
       - name: Run Web Unit Tests
         run: pnpm exec turbo run test --filter web --log-order=stream -- --passWithNoTests
@@ -58,20 +72,6 @@ jobs:
 
       - name: Run Backend E2E Tests
         run: pnpm --filter be test:e2e
-
-      - name: Upload Web Build
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-build
-          path: apps/web/.next
-          retention-days: 1
-
-      - name: Upload Backend Build
-        uses: actions/upload-artifact@v4
-        with:
-          name: be-build
-          path: apps/be/dist
-          retention-days: 1
 
   web-e2e:
     name: Web E2E (Shard ${{ matrix.shard }}/${{ strategy.job-total }})
@@ -114,17 +114,10 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --no-frozen-lockfile
 
-      - name: Download Web Build
+      - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: web-build
-          path: apps/web/.next
-
-      - name: Download Backend Build
-        uses: actions/download-artifact@v4
-        with:
-          name: be-build
-          path: apps/be/dist
+          name: build-artifacts
 
       - name: Install Playwright Browsers
         run: pnpm --filter web exec playwright install --with-deps

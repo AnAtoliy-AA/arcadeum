@@ -102,7 +102,7 @@ export function HomeFeatures() {
     (homeCopy as Record<string, string>).comingSoon ?? 'Coming Soon';
 
   return (
-    <FeaturesSection>
+    <FeaturesSection data-testid="features-section">
       <SectionHeader>
         <SectionTitle>{sectionTitle}</SectionTitle>
         <SectionSubtitle>{sectionSubtitle}</SectionSubtitle>

@@ -26,7 +26,7 @@ export function HomeDownloadCta() {
     (homeCopy as Record<string, string>).comingSoon ?? 'Coming Soon';
 
   return (
-    <DownloadCtaSection>
+    <DownloadCtaSection data-testid="download-cta-section">
       <DownloadCtaCard>
         <DownloadTitle>{title}</DownloadTitle>
         <DownloadDescription>{description}</DownloadDescription>

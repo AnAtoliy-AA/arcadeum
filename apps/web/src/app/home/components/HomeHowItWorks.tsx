@@ -63,7 +63,7 @@ export function HomeHowItWorks() {
     'Get started in three simple steps';
 
   return (
-    <HowItWorksSection>
+    <HowItWorksSection data-testid="how-it-works-section">
       <SectionHeader>
         <SectionTitle>{sectionTitle}</SectionTitle>
         <SectionSubtitle>{sectionSubtitle}</SectionSubtitle>

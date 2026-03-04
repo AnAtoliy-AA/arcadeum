@@ -6,17 +6,17 @@ import dynamic from 'next/dynamic';
 const HomeGames = dynamic(() =>
   import('./components/HomeGames').then((mod) => mod.HomeGames),
 );
+const HomeHowItWorks = dynamic(() =>
+  import('./components/HomeHowItWorks').then((mod) => mod.HomeHowItWorks),
+);
+const HomeFeatures = dynamic(() =>
+  import('./components/HomeFeatures').then((mod) => mod.HomeFeatures),
+);
 const HomePresentation = dynamic(() =>
   import('./components/HomePresentation').then((mod) => mod.HomePresentation),
 );
 const HomePitchDeck = dynamic(() =>
   import('./components/HomePitchDeck').then((mod) => mod.HomePitchDeck),
-);
-const HomeFeatures = dynamic(() =>
-  import('./components/HomeFeatures').then((mod) => mod.HomeFeatures),
-);
-const HomeHowItWorks = dynamic(() =>
-  import('./components/HomeHowItWorks').then((mod) => mod.HomeHowItWorks),
 );
 const HomeDownloadCta = dynamic(() =>
   import('./components/HomeDownloadCta').then((mod) => mod.HomeDownloadCta),
@@ -30,11 +30,11 @@ export function HomePage() {
   return (
     <PageWrapper>
       <HomeHero />
+      <HomeGames />
+      <HomeHowItWorks />
+      <HomeFeatures />
       <HomePresentation />
       <HomePitchDeck />
-      <HomeGames />
-      <HomeFeatures />
-      <HomeHowItWorks />
       <HomeDownloadCta />
       <HomeFooter />
     </PageWrapper>

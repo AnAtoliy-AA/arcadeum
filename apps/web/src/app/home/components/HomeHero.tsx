@@ -58,7 +58,7 @@ export function HomeHero() {
   const cards = HERO_CARDS;
 
   return (
-    <HeroSection aria-labelledby="hero-heading">
+    <HeroSection aria-labelledby="hero-heading" data-testid="hero-section">
       <HeroBackground />
 
       <HeroContent>

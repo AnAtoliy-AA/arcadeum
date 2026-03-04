@@ -26,7 +26,8 @@ export const test = base.extend({
           text.includes('The above error occurred in the <TestCrashContent>') ||
           text.includes(
             'hydrated but some attributes of the server rendered HTML',
-          )
+          ) ||
+          text.includes('was preloaded using link preload but not used')
         ) {
           return;
         }
@@ -41,6 +42,35 @@ export const test = base.extend({
         }
 
         console.log(`BROWSER [${type}]: ${text}`);
+      }
+    });
+
+    page.on('requestfailed', (request) => {
+      const failure = request.failure();
+      if (failure) {
+        // Ignore aborted requests which are common during navigation
+        if (
+          failure.errorText === 'NS_BINDING_ABORTED' ||
+          failure.errorText === 'net::ERR_ABORTED'
+        ) {
+          return;
+        }
+        console.log(
+          `NETWORK [error]: ${request.method()} ${request.url()} - ${failure.errorText}`,
+        );
+      }
+    });
+
+    page.on('response', (response) => {
+      if (response.status() === 404) {
+        // Ignore known harmless 404s
+        if (
+          response.url().includes('favicon.ico') ||
+          response.url().includes('apple-touch-icon')
+        ) {
+          return;
+        }
+        console.log(`NETWORK [error]: 404 - ${response.url()}`);
       }
     });
 

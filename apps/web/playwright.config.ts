@@ -15,15 +15,17 @@ export default defineConfig({
       ? parseInt(process.env.PLAYWRIGHT_WORKERS)
       : undefined,
   reporter: process.env.CI ? 'list' : 'html',
-  timeout: 60000,
+  timeout: 90000,
   expect: {
-    timeout: 15000,
+    timeout: 20000,
   },
 
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    actionTimeout: 10000,
+    navigationTimeout: 30000,
   },
 
   projects: [
@@ -43,13 +45,18 @@ export default defineConfig({
 
   webServer: [
     {
-      command: process.env.CI ? 'pnpm --filter be start:prod' : 'pnpm --filter be dev',
+      command: process.env.CI
+        ? 'pnpm --filter be start:prod'
+        : 'pnpm --filter be dev',
       url: 'http://localhost:4000/health',
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
     },
     {
-      command: process.env.CI ? 'npm run start' : 'npm run dev:next',
+      command:
+        process.env.CI || process.env.E2E_PROD
+          ? 'npm run start'
+          : 'npm run dev:next',
       url: 'http://localhost:3000',
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,

@@ -44,18 +44,19 @@ const cspFrameSrc = "'self' https://www.youtube-nocookie.com";
 const nextConfig: NextConfig = {
   headers: async () => {
     const isDev = process.env.NODE_ENV === 'development';
-    const isE2E = process.env.NEXT_PUBLIC_E2E === 'true';
+    const isE2E =
+      process.env.NEXT_PUBLIC_E2E === 'true' || !!process.env.E2E_PROD;
     const allowLocalhost = isDev || isE2E;
 
     const connectSrc = [
       "'self'",
       ...(allowLocalhost
         ? [
-          'http://localhost:*',
-          'ws://localhost:*',
-          'http://127.0.0.1:*',
-          'ws://127.0.0.1:*',
-        ]
+            'http://localhost:*',
+            'ws://localhost:*',
+            'http://127.0.0.1:*',
+            'ws://127.0.0.1:*',
+          ]
         : []),
       ...cspConnectSrc,
     ]
@@ -84,10 +85,14 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
-          ...(isE2E ? [] : [{
-            key: 'Content-Security-Policy',
-            value: csp,
-          }]),
+          ...(isE2E
+            ? []
+            : [
+                {
+                  key: 'Content-Security-Policy',
+                  value: csp,
+                },
+              ]),
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=63072000; includeSubDomains; preload',
@@ -161,6 +166,13 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_APP_VERSION: packageJson.version,
   },
   productionBrowserSourceMaps: true,
+  experimental: {
+    optimizePackageImports: [
+      '@arcadeum/shared-ui',
+      'lucide-react',
+      'framer-motion',
+    ],
+  },
 };
 
 export default withPWA(nextConfig);

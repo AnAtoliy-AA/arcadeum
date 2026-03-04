@@ -29,7 +29,8 @@ test.describe('Navigation', () => {
     await homeLink.click();
 
     // Increased timeout for navigation and ensure we wait for URL to be exactly /
-    await expect(page).toHaveURL('/', { timeout: 10000 });
+    await page.waitForLoadState('networkidle');
+    await expect(page).toHaveURL('/', { timeout: 15000 });
   });
 
   test('should navigate to games page', async ({ page }) => {

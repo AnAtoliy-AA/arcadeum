@@ -6,6 +6,8 @@ on:
   pull_request:
     branches: [ main, develop ]
     types: [opened, synchronize, reopened]
+permissions:
+  contents: read
 
 env:
   CI: true
@@ -32,8 +34,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4

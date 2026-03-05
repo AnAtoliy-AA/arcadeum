@@ -36,6 +36,7 @@ interface GameState {
   ) => void;
   leaveRoom: (roomId: string, userId: string | null) => void;
   deleteRoom: (roomId: string) => Promise<void>;
+  refreshRoom: (roomId: string) => Promise<void>;
   reset: () => void;
 }
 
@@ -280,6 +281,28 @@ export const useGameStore = create<GameState>((set, get) => ({
       const message =
         err instanceof Error ? err.message : 'Failed to delete room';
       set({ error: message });
+      throw err;
+    }
+  },
+
+  refreshRoom: async (roomId) => {
+    const { accessToken } = get();
+    set({ loading: true, error: null });
+    try {
+      const data = await gamesApi.getRoomInfo(roomId, {
+        token: accessToken || undefined,
+      });
+      if (data.room) {
+        set({
+          room: data.room,
+          session: data.session ?? get().session,
+          loading: false,
+        });
+      }
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'Failed to refresh room';
+      set({ error: message, loading: false });
       throw err;
     }
   },

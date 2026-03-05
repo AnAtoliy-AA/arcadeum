@@ -97,6 +97,7 @@ export default function SeaBattleGame({
 
   const storeRoom = useGameStore((s) => s.room);
   const storeDeleteRoom = useGameStore((s) => s.deleteRoom);
+  const storeRefreshRoom = useGameStore((s) => s.refreshRoom);
 
   const room =
     (storeRoom?.id === roomId ? storeRoom : null) || initialRoom || null;
@@ -284,6 +285,7 @@ export default function SeaBattleGame({
             onReorderPlayers={handleReorderPlayers}
             onShowRules={setShowRules}
             onDeleteRoom={() => storeDeleteRoom(roomId)}
+            onRefresh={() => storeRefreshRoom(roomId)}
             t={t}
           />
         ) : undefined

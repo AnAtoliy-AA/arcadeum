@@ -61,6 +61,7 @@ export interface ReusableGameLobbyProps {
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
   onDeleteRoom?: () => void;
+  onRefresh?: () => void;
 
   // Game info
   gameName: string;
@@ -127,6 +128,7 @@ export function ReusableGameLobby({
   onReorderPlayers,
   onReinvite,
   onDeleteRoom,
+  onRefresh,
   gameName,
   gameIcon,
   variantName,
@@ -357,6 +359,7 @@ export function ReusableGameLobby({
           onDeleteRoom={isHost ? handleDeleteClick : undefined}
           deleteRoomLabel={deleteRoomTranslations.button}
           extraPlayersCardSlot={extraPlayersCardSlot}
+          onRefresh={onRefresh}
         />
       </LobbyContent>
     </GameContainer>

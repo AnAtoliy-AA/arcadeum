@@ -60,11 +60,12 @@ test.describe('Payment Flow', () => {
 
   test('should initiate checkout session', async ({ page }) => {
     // Mock Stripe checkout page to avoid external network issues
-    await page.route('**/checkout.stripe.com/**', async (route) => {
+    // Using Regex to ensure reliable interception of any Stripe checkout URL
+    await page.route(/.*checkout\.stripe\.com.*/, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'text/html',
-        body: '<html><body><h1>Stripe Checkout</h1></body></html>',
+        body: '<!DOCTYPE html><html><body><h1>Stripe Checkout</h1></body></html>',
       });
     });
 
@@ -106,12 +107,12 @@ test.describe('Payment Flow', () => {
       });
     });
 
-    // Mock PayPal checkout page
-    await page.route('**/sandbox.paypal.com/**', async (route) => {
+    // Mock PayPal checkout page using robust Regex pattern
+    await page.route(/.*sandbox\.paypal\.com.*/, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'text/html',
-        body: '<html><body><h1>PayPal Checkout</h1></body></html>',
+        body: '<!DOCTYPE html><html><body><h1>PayPal Checkout</h1></body></html>',
       });
     });
 

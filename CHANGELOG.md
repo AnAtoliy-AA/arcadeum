@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.4] - 2026-03-05
+
+### Added
+- reorder home screen sections (ARC-433)
+
+### Fixed
+- peyment 404 in e2e test (N/A)
+- playwright config (N/A)
+- ci yml config (N/A)
+
+
 ## [1.7.3] - 2026-03-03
 
 ### Added

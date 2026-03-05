@@ -47,6 +47,7 @@ interface SeaBattleLobbyProps {
   onReorderPlayers?: (newOrder: string[]) => void;
   onShowRules: (show: boolean) => void;
   onDeleteRoom?: () => void;
+  onRefresh?: () => void;
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
 
@@ -58,6 +59,7 @@ export function SeaBattleLobby({
   onReorderPlayers,
   onShowRules,
   onDeleteRoom,
+  onRefresh,
   t,
 }: SeaBattleLobbyProps) {
   const currentVariant = (room.gameOptions?.variant as string) || 'classic';
@@ -98,6 +100,7 @@ export function SeaBattleLobby({
       onStartGame={onStartGame}
       onReorderPlayers={onReorderPlayers}
       onDeleteRoom={onDeleteRoom}
+      onRefresh={onRefresh}
       gameName={t('games.sea_battle_v1.name' as TranslationKey)}
       gameIcon="🚢"
       roomIcon={variantInfo.emoji || '⚓'}

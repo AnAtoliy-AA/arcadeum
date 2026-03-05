@@ -60,3 +60,19 @@ export const CloseIcon = ({ size = 20 }: { size?: number }) => (
     <line x1="6" y1="6" x2="18" y2="18" />
   </svg>
 );
+
+export const RefreshIcon = ({ size = 20 }: { size?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M23 4v6h-6" />
+    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+  </svg>
+);

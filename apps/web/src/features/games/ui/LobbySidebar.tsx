@@ -37,8 +37,11 @@ import {
   InfoValue,
   FastBadge,
   DeleteButton,
+  CardHeader,
+  RefreshButton,
 } from './lobbyStyles';
 import { SortablePlayerItem, AVATAR_COLORS } from './SortablePlayerItem';
+import { RefreshIcon } from '@/shared/ui/Icons';
 
 interface LobbySidebarProps {
   room: GameRoomSummary;
@@ -67,6 +70,7 @@ interface LobbySidebarProps {
   onDeleteRoom?: () => void;
   deleteRoomLabel: string;
   extraPlayersCardSlot?: React.ReactNode;
+  onRefresh?: () => void;
 }
 
 export function LobbySidebar({
@@ -94,6 +98,7 @@ export function LobbySidebar({
   onDeleteRoom,
   deleteRoomLabel,
   extraPlayersCardSlot,
+  onRefresh,
 }: LobbySidebarProps) {
   const { t } = useTranslation();
   const maxPlayers = room.maxPlayers ?? 5;
@@ -143,9 +148,20 @@ export function LobbySidebar({
   return (
     <Sidebar>
       <LobbyCard>
-        <CardTitle>
-          {playersLabel} ({room.playerCount}/{maxPlayers})
-        </CardTitle>
+        <CardHeader>
+          <CardTitle>
+            {playersLabel} ({room.playerCount}/{maxPlayers})
+          </CardTitle>
+          {onRefresh && (
+            <RefreshButton
+              onClick={onRefresh}
+              title="Refresh Room"
+              data-testid="refresh-room-button"
+            >
+              <RefreshIcon size={16} />
+            </RefreshButton>
+          )}
+        </CardHeader>
         <PlayerList>
           {showReorderControls && isHost ? (
             <DndContext

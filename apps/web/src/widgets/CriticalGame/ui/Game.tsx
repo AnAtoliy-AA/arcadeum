@@ -20,6 +20,7 @@ export default function CriticalGame({
 
   const storeRoom = useGameStore((s) => s.room);
   const storeDeleteRoom = useGameStore((s) => s.deleteRoom);
+  const storeRefreshRoom = useGameStore((s) => s.refreshRoom);
 
   const room =
     (storeRoom?.id === roomId ? storeRoom : null) || initialRoom || null;
@@ -65,6 +66,7 @@ export default function CriticalGame({
         onReorderPlayers={reorderParticipants}
         onReinvite={rematch.handleReinvite}
         onDeleteRoom={() => storeDeleteRoom(roomId)}
+        onRefresh={() => storeRefreshRoom(roomId)}
         t={t as (key: string) => string}
       />
     );

@@ -55,6 +55,21 @@ export class GamesGateway {
 
   handleDisconnect(client: Socket): void {
     this.logger.verbose(`Client disconnected ${client.id}`);
+
+    const userId = (client.data as Record<string, unknown>)?.userId as
+      | string
+      | undefined;
+    if (!userId || !this.server) return;
+
+    for (const room of client.rooms) {
+      if (room.startsWith('game-room:')) {
+        const data = { userId, idle: true };
+        this.server.to(room).emit('games.player.idle_changed', data);
+        const roomId = room.replace('game-room:', '');
+        const specChannel = this.realtime.spectatorChannel(roomId);
+        this.server.to(specChannel).emit('games.player.idle_changed', data);
+      }
+    }
   }
 
   @SubscribeMessage('games.room.join')
@@ -177,7 +192,7 @@ export class GamesGateway {
         this.realtime.emitPlayerLeft(result.room, userId, false);
       }
 
-      client.emit('games.room.left', { roomId });
+      client.emit('games.room.left', maybeEncrypt({ roomId }));
       return { success: true };
     } catch (error) {
       const message =
@@ -280,5 +295,39 @@ export class GamesGateway {
     }
 
     this.realtime.emitSessionSnapshotToClient(client, roomId, diffSession);
+  }
+
+  @SubscribeMessage('games.player.idle')
+  handlePlayerIdle(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { roomId?: string; userId?: string },
+  ): void {
+    const roomId = extractString(payload, 'roomId');
+    const userId = extractString(payload, 'userId');
+    const channel = this.realtime.roomChannel(roomId);
+
+    if (!client.rooms.has(channel)) return;
+
+    const data = { userId, idle: true };
+    this.server.to(channel).emit('games.player.idle_changed', data);
+    const specChannel = this.realtime.spectatorChannel(roomId);
+    this.server.to(specChannel).emit('games.player.idle_changed', data);
+  }
+
+  @SubscribeMessage('games.player.active')
+  handlePlayerActive(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { roomId?: string; userId?: string },
+  ): void {
+    const roomId = extractString(payload, 'roomId');
+    const userId = extractString(payload, 'userId');
+    const channel = this.realtime.roomChannel(roomId);
+
+    if (!client.rooms.has(channel)) return;
+
+    const data = { userId, idle: false };
+    this.server.to(channel).emit('games.player.idle_changed', data);
+    const specChannel = this.realtime.spectatorChannel(roomId);
+    this.server.to(specChannel).emit('games.player.idle_changed', data);
   }
 }

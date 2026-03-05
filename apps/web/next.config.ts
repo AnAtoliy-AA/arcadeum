@@ -5,7 +5,9 @@ import packageJson from './package.json';
 
 const withPWA = withPWAInit({
   dest: 'public',
-  disable: process.env.NODE_ENV === 'development',
+  disable:
+    process.env.NODE_ENV === 'development' ||
+    process.env.NEXT_PUBLIC_E2E === 'true',
   register: true,
   fallbacks: {
     document: '/offline',
@@ -24,6 +26,8 @@ const cspConnectSrc = [
   'wss://arcadeum-be-dev.onrender.com',
   'https://arcadeum-be.onrender.com',
   'wss://arcadeum-be.onrender.com',
+  'https://arcadeum-be-reserve.onrender.com',
+  'wss://arcadeum-be-reserve.onrender.com',
   'https://accounts.google.com',
 ];
 
@@ -40,10 +44,13 @@ const cspFrameSrc = "'self' https://www.youtube-nocookie.com";
 const nextConfig: NextConfig = {
   headers: async () => {
     const isDev = process.env.NODE_ENV === 'development';
+    const isE2E =
+      process.env.NEXT_PUBLIC_E2E === 'true' || !!process.env.E2E_PROD;
+    const allowLocalhost = isDev || isE2E;
 
     const connectSrc = [
       "'self'",
-      ...(isDev
+      ...(allowLocalhost
         ? [
             'http://localhost:*',
             'ws://localhost:*',
@@ -68,7 +75,7 @@ const nextConfig: NextConfig = {
       "frame-ancestors 'none';",
       `frame-src ${cspFrameSrc};`,
       `connect-src ${connectSrc};`,
-      ...(isDev ? [] : ['upgrade-insecure-requests;']),
+      ...(allowLocalhost ? [] : ['upgrade-insecure-requests;']),
     ]
       .join(' ')
       .replace(/\s{2,}/g, ' ')
@@ -78,10 +85,14 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: csp,
-          },
+          ...(isE2E
+            ? []
+            : [
+                {
+                  key: 'Content-Security-Policy',
+                  value: csp,
+                },
+              ]),
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=63072000; includeSubDomains; preload',
@@ -155,6 +166,13 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_APP_VERSION: packageJson.version,
   },
   productionBrowserSourceMaps: true,
+  experimental: {
+    optimizePackageImports: [
+      '@arcadeum/shared-ui',
+      'lucide-react',
+      'framer-motion',
+    ],
+  },
 };
 
 export default withPWA(nextConfig);

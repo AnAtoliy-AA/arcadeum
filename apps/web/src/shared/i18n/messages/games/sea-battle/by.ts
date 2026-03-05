@@ -1,6 +1,7 @@
-export const beMessages = {
+export const byMessages = {
   sea_battle_v1: {
     name: 'Марскі Бой',
+    description: 'Класічны марскі бой да 6 гульцоў',
     rules: {
       title: 'Правілы Гульні',
       headers: {
@@ -24,13 +25,57 @@ export const beMessages = {
 • Падлодка (3 клеткі) - Схаванае судна
 • Эсмінец (2 клеткі) - Маленькі, але манеўраны`,
     },
-  },
-  seaBattle: {
+    variants: {
+      classic: {
+        name: 'Класіка',
+        description: 'Традыцыйны марскі бой',
+      },
+      modern: {
+        name: 'Мадэрн II',
+        description: 'Сучасная марская вайна',
+      },
+      pixel: {
+        name: 'Піксель-арт',
+        description: 'Рэтра-стыль піксель-арта',
+      },
+      cartoon: {
+        name: 'Мульцяшны',
+        description: 'Забаўныя персанажы',
+      },
+      cyber: {
+        name: 'Кіберпанк',
+        description: 'Высакатэхналагічны дызайн',
+      },
+      vintage: {
+        name: 'Вінтаж',
+        description: 'Старадаўняя марская карта',
+      },
+      nebula: {
+        name: 'Туманнасць',
+        description: 'Глыбокі космас',
+      },
+      forest: {
+        name: 'Лес',
+        description: 'Лясная маскіроўка',
+      },
+      sunset: {
+        name: 'Закат',
+        description: 'Атмасфернае сутонне',
+      },
+      monochrome: {
+        name: 'Noir',
+        description: 'Элегантны манахром',
+      },
+    },
     table: {
       state: {
-        yourBoard: 'Ваша поле',
-        opponentBoard: 'Поле праціўніка',
+        yourBoard: 'Ваша дошка',
+        opponentBoard: 'Дошка праціўніка',
         shipsRemaining: 'Засталося караблёў',
+        shipsPalette: 'Караблі для расстаноўкі',
+        vertical: 'Вертыкальна',
+        horizontal: 'Гарызантальна',
+        cells: 'Клеткі',
       },
       players: {
         you: 'Вы',
@@ -38,40 +83,40 @@ export const beMessages = {
         eliminated: 'Выбыў',
         yourTurn: 'Ваш ход',
         yourTurnAttack: '🎯 Ваш ход - Атакуйце праціўніка!',
-        placeShips: 'Расстаўце свае караблі',
+        placeShips: 'Растаўце свае караблі',
         waitingFor: 'Чакаем {{player}}...',
       },
       phase: {
         lobby: 'Лобі',
-        placement: 'Размяшчэнне',
+        placement: 'Расстаноўка',
         battle: 'Бой',
         completed: 'Гульня скончана',
       },
       actions: {
         start: 'Пачаць гульню',
         starting: 'Запуск...',
-        confirmPlacement: 'Пацвердзіць',
+        confirmPlacement: 'Пацвердзіць расстаноўку',
         rotate: 'Павярнуць',
         fire: 'Агонь!',
-        autoPlace: 'Аўтаразмяшчэнне',
+        autoPlace: 'Аўтарасстаноўка',
         randomize: 'Перамяшаць',
         resetPlacement: 'Скінуць',
         waitingForOthers: 'Чаканне іншых...',
       },
       attack: {
         hit: 'Трапіў!',
-        miss: 'Міма',
+        miss: 'Мімма',
         sunk: 'Забіў!',
         shipSunk: '{{ship}} патоплены!',
       },
       lobby: {
         waitingToStart: 'Чаканне пачатку гульні...',
-        playersInLobby: 'Гульцоў у лобі',
-        needTwoPlayers: 'Патрэбна мінімум 2 гульцы',
+        playersInLobby: 'Гульцы ў лобі',
+        needTwoPlayers: 'Трэба мінімум 2 гульцы',
         maxFourPlayers: 'Максімум 4 гульцы',
         hostCanStart: "Націсніце 'Пачаць гульню', калі гатовыя",
-        waitingForHost: 'Чакане пачатку гульні хостам',
-        hostControls: 'Упраўленне хоста',
+        waitingForHost: 'Чаканне пачатку гульні хостам',
+        hostControls: 'Кіраванне хоста',
         roomInfo: 'Інфармацыя аб пакоі',
         host: 'Хост',
       },
@@ -81,12 +126,14 @@ export const beMessages = {
       },
       defeat: {
         title: 'Паражэнне',
-        message: 'Усе вашы караблі патоплены.',
+        message: 'Усе вашы караблі патопленыя.',
       },
       chat: {
         title: 'Чат бітвы',
         empty: 'Няма паведамленняў',
         send: 'Адпр.',
+        show: 'Паказаць чат',
+        hide: 'Схаваць чат',
         placeholder: 'Увядзіце паведамленне...',
       },
     },

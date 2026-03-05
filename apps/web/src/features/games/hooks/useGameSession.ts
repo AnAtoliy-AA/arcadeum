@@ -29,12 +29,18 @@ export function useGameSession(
     initialSession ?? null,
   );
 
-  // Sync with initialSession prop updates
-  const [prevInitialSession, setPrevInitialSession] =
-    useState<GameSessionSummary | null>(initialSession ?? null);
+  const [prevRoomId, setPrevRoomId] = useState(roomId);
+  if (roomId !== prevRoomId) {
+    setPrevRoomId(roomId);
+    setSession(null);
+  }
+
+  const [prevInitialSession, setPrevInitialSession] = useState(initialSession);
   if (initialSession !== prevInitialSession) {
-    setPrevInitialSession(initialSession ?? null);
-    setSession(initialSession ?? null);
+    setPrevInitialSession(initialSession);
+    if (initialSession) {
+      setSession(initialSession);
+    }
   }
 
   const [startBusy, setStartBusy] = useState(false);

@@ -1,5 +1,5 @@
-import styled, { css } from 'styled-components';
-import { GAME_VARIANT } from '../../lib/constants';
+import styled from 'styled-components';
+import { getVariantStyles } from './variants';
 
 export const CardName = styled.div<{ $variant?: string }>`
   font-size: 0.75rem;
@@ -25,76 +25,7 @@ export const CardName = styled.div<{ $variant?: string }>`
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   z-index: 20;
 
-  ${({ $variant }) =>
-    $variant === GAME_VARIANT.CYBERPUNK &&
-    css`
-      font-family: 'Courier New', monospace;
-      letter-spacing: 1px;
-      background: rgba(0, 0, 0, 0.8);
-      border: 1px solid #c026d3;
-      border-radius: 4px;
-      color: #e879f9;
-      text-shadow: 0 0 5px rgba(192, 38, 211, 0.6);
-      clip-path: polygon(
-        10px 0,
-        100% 0,
-        100% calc(100% - 10px),
-        calc(100% - 10px) 100%,
-        0 100%,
-        0 10px
-      );
-      padding: 0.3rem 0.6rem;
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 8px;
-        height: 8px;
-        border-top: 2px solid #06b6d4;
-        border-left: 2px solid #06b6d4;
-      }
-
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        width: 8px;
-        height: 8px;
-        border-bottom: 2px solid #06b6d4;
-        border-right: 2px solid #06b6d4;
-      }
-    `}
-
-  ${({ $variant }) =>
-    $variant === GAME_VARIANT.UNDERWATER &&
-    css`
-      font-family: 'Courier New', monospace;
-      letter-spacing: 0.5px;
-      background: rgba(8, 51, 68, 0.85); /* cyan-950 */
-      border: 1px solid #22d3ee; /* cyan-400 */
-      border-radius: 8px; /* Slightly more rounded */
-      color: #a5f3fc; /* cyan-200 */
-      text-shadow: 0 0 5px rgba(34, 211, 238, 0.6);
-      padding: 0.3rem 0.6rem;
-      box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
-
-      /* Glow effect */
-      &::before {
-        content: '';
-        position: absolute;
-        inset: -2px;
-        border-radius: 10px;
-        background: radial-gradient(
-          circle at center,
-          transparent 30%,
-          rgba(34, 211, 238, 0.3) 100%
-        );
-        z-index: -1;
-      }
-    `}
+  ${({ $variant }) => getVariantStyles($variant).cards.getCardNameStyles?.()}
 
   display: flex;
   align-items: center;
@@ -114,25 +45,8 @@ export const CardDescription = styled.div<{ $variant?: string }>`
   text-align: center;
   color: rgba(255, 255, 255, 0.9);
 
-  /* Cyberpunk Font */
   ${({ $variant }) =>
-    $variant === GAME_VARIANT.CYBERPUNK &&
-    css`
-      font-family: 'Courier New', monospace;
-      font-size: 0.6rem;
-      letter-spacing: 0.5px;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 1);
-    `}
-
-  /* Underwater Font */
-  ${({ $variant }) =>
-    $variant === GAME_VARIANT.UNDERWATER &&
-    css`
-      font-family: 'Courier New', monospace;
-      font-size: 0.65rem;
-      color: #ecfeff; /* cyan-50 */
-      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
-    `}
+    getVariantStyles($variant).cards.getCardDescriptionStyles?.()}
 
   /* Bottom Overlay Position */
   position: absolute;
@@ -188,7 +102,7 @@ export const CardCountBadge = styled.div`
   /* Media query removed to keep consistent size */
 `;
 
-export const CardInner = styled.div`
+export const CardInner = styled.div<{ $variant?: string }>`
   position: relative;
   z-index: 10;
   display: flex;
@@ -200,6 +114,9 @@ export const CardInner = styled.div`
   height: 100%;
   padding: 0.5rem 0.35rem;
   border-radius: 12px;
+  overflow: hidden;
+
+  ${({ $variant }) => getVariantStyles($variant).cards.getCardInnerStyles?.()}
 `;
 
 export const CardFrame = styled.div`

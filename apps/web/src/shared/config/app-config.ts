@@ -14,6 +14,16 @@ type DownloadSectionConfig = {
   androidLabel: string;
 };
 
+type SocialConfig = {
+  instagram?: string;
+  facebook?: string;
+  youtube?: string;
+  linkedin?: string;
+  threads?: string;
+  x?: string;
+  discord?: string;
+};
+
 export type WebAppConfig = {
   appName: string;
   appVersion: string;
@@ -23,12 +33,7 @@ export type WebAppConfig = {
   primaryCta: CtaConfig;
   supportCta: CtaConfig;
   downloads: DownloadSectionConfig;
-  social: {
-    instagram?: string;
-    facebook?: string;
-    youtube?: string;
-    linkedin?: string;
-  };
+  social: SocialConfig;
 };
 
 export function trim(value?: string | null): string | undefined {
@@ -104,6 +109,9 @@ function readAppConfig(): WebAppConfig {
       facebook: trim(process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK),
       youtube: trim(process.env.NEXT_PUBLIC_SOCIAL_YOUTUBE),
       linkedin: trim(process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN),
+      threads: trim(process.env.NEXT_PUBLIC_SOCIAL_THREADS),
+      x: trim(process.env.NEXT_PUBLIC_SOCIAL_X),
+      discord: trim(process.env.NEXT_PUBLIC_SOCIAL_DISCORD),
     },
   };
 }

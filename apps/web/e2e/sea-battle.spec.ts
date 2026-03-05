@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { mockSession, navigateTo } from './fixtures/test-utils';
 
 test.describe('Sea Battle Game', () => {
@@ -9,6 +10,30 @@ test.describe('Sea Battle Game', () => {
   test('should verify Sea Battle game presence on games list', async ({
     page,
   }) => {
+    // Mock games list to include Sea Battle room
+    await page.route('**/games/rooms*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          rooms: [
+            {
+              id: 'sea-battle-room',
+              gameId: 'sea_battle_v1',
+              name: 'E2E Sea Battle',
+              hostId: 'test-user',
+              visibility: 'public',
+              playerCount: 1,
+              maxPlayers: 4,
+              status: 'lobby',
+              createdAt: new Date().toISOString(),
+            },
+          ],
+          total: 1,
+        }),
+      });
+    });
+
     // Navigate to games list
     await navigateTo(page, '/games');
 
@@ -16,12 +41,12 @@ test.describe('Sea Battle Game', () => {
     const seaBattleGame = page.getByText(
       /sea battle|морской бой|bataille navale|batalla naval/i,
     );
-    await expect(seaBattleGame.first()).toBeVisible({ timeout: 10000 });
+    await expect(seaBattleGame.first()).toBeVisible({ timeout: 15000 });
   });
 
   test('should display game create page for Sea Battle', async ({ page }) => {
     // Navigate directly to Sea Battle create page
-    await navigateTo(page, '/games/create?gameId=sea-battle');
+    await navigateTo(page, '/games/create?gameId=sea_battle_v1');
 
     // Verify page loaded
     await expect(page.locator('body')).toContainText(/create|room|sea battle/i);
@@ -29,7 +54,7 @@ test.describe('Sea Battle Game', () => {
 
   test('should display lobby after room creation', async ({ page }) => {
     // Navigate to Sea Battle create page
-    await navigateTo(page, '/games/create?gameId=sea-battle');
+    await navigateTo(page, '/games/create?gameId=sea_battle_v1');
 
     // Fill room name if available
     const roomNameInput = page
@@ -41,7 +66,7 @@ test.describe('Sea Battle Game', () => {
     }
 
     // Look for create room button
-    const createBtn = page.getByRole('button', { name: /create/i });
+    const createBtn = page.getByTestId('create-room-button');
 
     if (await createBtn.isVisible()) {
       await createBtn.click();
@@ -111,6 +136,32 @@ test.describe('Sea Battle Game Flow', () => {
 
     // NOTE: This test might need adjustment depending on how we mock the specific game state
     // But assuming we can get to the Lobby or Game screen:
+
+    // Mock room info API to avoid 404
+    await page.route('**/games/room-info*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: 'test-room',
+          name: 'E2E Test Room',
+          status: 'lobby',
+          gameId: 'sea_battle_v1',
+          hostId: 'test-user',
+          playerCount: 1,
+          maxPlayers: 2,
+          visibility: 'public',
+          gameOptions: {},
+          members: [
+            {
+              id: 'test-user',
+              displayName: 'Test User',
+              isHost: true,
+            },
+          ],
+        }),
+      });
+    });
 
     await navigateTo(page, '/games/rooms/test-room');
 

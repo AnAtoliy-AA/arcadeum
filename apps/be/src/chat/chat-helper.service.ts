@@ -103,10 +103,16 @@ export class ChatHelperService {
     const usernameLookup = new Map<string, string>();
 
     if (missingSenderIds.size) {
-      const users = (await this.userModel
-        .find({ _id: { $in: Array.from(missingSenderIds) } })
-        .select(['username', 'email', 'displayName'])
-        .exec()) as UserDocument[];
+      const validIds = Array.from(missingSenderIds).filter((id) =>
+        Types.ObjectId.isValid(id),
+      );
+
+      const users = validIds.length
+        ? ((await this.userModel
+            .find({ _id: { $in: validIds } })
+            .select(['username', 'email', 'displayName'])
+            .exec()) as UserDocument[])
+        : [];
 
       for (const user of users) {
         const rawId = user._id;

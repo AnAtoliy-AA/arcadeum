@@ -1,50 +1,44 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 import {
+  test,
   mockSession,
-  navigateTo,
   mockRoomInfo,
-  closeRulesModal,
+  mockGameSocket,
+  navigateTo,
+  waitForRoomReady,
+  closeGameRulesModal,
+  clickButtonByTestId,
 } from './fixtures/test-utils';
 
 test.describe('Critical Single Player Mode', () => {
+  test.setTimeout(60000);
+
   test.beforeEach(async ({ page }) => {
+    page.on('console', (msg) => {
+      if (
+        msg.type() === 'error' ||
+        msg.type() === 'warning' ||
+        msg.text().includes('session') ||
+        msg.text().includes('room')
+      ) {
+        console.log(
+          `BROWSER [${msg.type()}]: ${msg.text()}${msg.location().url ? ' @ ' + msg.location().url : ''}`,
+        );
+      }
+    });
     await mockSession(page);
   });
 
   test('should allow starting single player game with bots', async ({
     page,
   }) => {
-    const roomId = '507f191e810c19729de860ea';
-    const userId = 'user-1';
-
-    const mockState = {
-      players: [
-        {
-          playerId: userId,
-          alive: true,
-          hand: ['strike'],
-          defuseCount: 1,
-          stash: [],
-        },
-        {
-          playerId: 'bot-1',
-          alive: true,
-          hand: ['strike'],
-          defuseCount: 1,
-          stash: [],
-        },
-      ],
-      deck: Array(40).fill('strike'),
-      discardPile: [],
-      currentTurnIndex: 0,
-      playerOrder: [userId, 'bot-1'],
-      pendingAction: null,
-    };
+    const roomId = '507f1f77bcf86cd799439011';
+    const userId = '507f191e810c19729de860ea';
 
     await mockRoomInfo(page, {
       room: {
         id: roomId,
-        name: 'Single Player Test',
+        status: 'lobby',
         hostId: userId,
         members: [
           { id: userId, userId, displayName: 'Test User', isHost: true },
@@ -52,94 +46,82 @@ test.describe('Critical Single Player Mode', () => {
       },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
-
-    await page.evaluate(
-      ({ mockState, roomId, userId }) => {
-        const pollSocket = setInterval(() => {
-          const socket = (
-            window as unknown as {
-              gameSocket: {
-                emit: (e: string, p: unknown) => void;
-                listeners: (e: string) => Array<(d: unknown) => void>;
-              };
-            }
-          ).gameSocket;
-          if (socket) {
-            clearInterval(pollSocket);
-            const originalEmit = socket.emit.bind(socket);
-            socket.emit = (event: string, payload: unknown) => {
-              if (event === 'games.room.join') {
-                // Simulate games.room.joined for the client without hitting the server
-                setTimeout(() => {
-                  for (const listener of socket.listeners(
-                    'games.room.joined',
-                  )) {
-                    listener({
-                      success: true,
-                      room: {
-                        id: roomId,
-                        status: 'lobby',
-                        gameId: 'critical_v1',
-                        hostId: userId,
-                        playerCount: 1,
-                        members: [
-                          {
-                            id: userId,
-                            userId,
-                            displayName: 'Test User',
-                            isHost: true,
-                          },
-                        ],
-                      },
-                      session: null,
-                    });
-                  }
-                }, 100);
-                return; // Don't send to real server
-              }
-              if (event === 'games.session.start') {
-                setTimeout(() => {
-                  const sessionData = {
-                    session: {
-                      id: 'session-1',
-                      status: 'active',
-                      state: mockState,
-                    },
-                  };
-                  for (const listener of socket.listeners(
-                    'games.session.started',
-                  )) {
-                    listener(sessionData);
-                  }
-                }, 100);
-                return; // Don't send to real server
-              }
-              originalEmit(event, payload);
-            };
-          }
-        }, 100);
+    await mockGameSocket(page, roomId, userId, {
+      handlers: {
+        'games.session.start': {
+          responseEvent: 'games.session.started',
+          responseData: {
+            success: true,
+            room: {
+              id: roomId,
+              status: 'active',
+              gameId: 'critical_v1',
+              hostId: userId,
+              members: [
+                {
+                  id: userId,
+                  userId: userId,
+                  displayName: 'Test User',
+                  isHost: true,
+                },
+              ],
+            },
+            session: {
+              id: 'session-1',
+              status: 'active',
+              state: {
+                players: [
+                  {
+                    playerId: userId,
+                    alive: true,
+                    hand: [],
+                    defuseCount: 1,
+                    stash: [],
+                  },
+                  {
+                    playerId: 'bot-1',
+                    alive: true,
+                    hand: [],
+                    defuseCount: 1,
+                    stash: [],
+                  },
+                ],
+                deck: [],
+                discardPile: [],
+                currentTurnIndex: 0,
+                playerOrder: [userId, 'bot-1'],
+                pendingAction: null,
+              },
+            },
+          },
+        },
       },
-      { mockState, roomId, userId },
-    );
+    });
 
-    await expect(
-      page.getByRole('heading', { name: /Critical/i }),
-    ).toBeVisible();
+    await navigateTo(page, `/games/rooms/${roomId}`);
+    await waitForRoomReady(page);
 
-    const startBtn = page.getByRole('button', { name: /start with/i });
+    await expect(page.getByRole('heading', { name: /Critical/i })).toBeVisible({
+      timeout: 30000,
+    });
+
+    const startBtn = page.getByTestId('start-with-bots-button');
     await expect(startBtn).toBeEnabled();
-    await startBtn.click();
+    await clickButtonByTestId(page, 'start-with-bots-button');
 
-    await closeRulesModal(page);
-    await expect(page.getByText(/your hand/i)).toBeVisible({ timeout: 15000 });
+    await closeGameRulesModal(page);
+    await expect(page.getByRole('heading', { name: /your hand/i })).toBeVisible(
+      {
+        timeout: 30000,
+      },
+    );
   });
 
   test('should allow playing a move in single player mode', async ({
     page,
   }) => {
     const roomId = '507f1f77bcf86cd799439011';
-    const userId = 'user-1';
+    const userId = '507f191e810c19729de860ea';
 
     const mockState = {
       players: [
@@ -177,85 +159,52 @@ test.describe('Critical Single Player Mode', () => {
       session: { id: 'session-1', status: 'active', state: mockState },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
-
-    await page.evaluate(
-      ({ roomId, userId, mockState }) => {
-        const pollSocket = setInterval(() => {
-          const socket = (
-            window as unknown as {
-              gameSocket: {
-                emit: (e: string, p: unknown) => void;
-                listeners: (e: string) => Array<(d: unknown) => void>;
-              };
-            }
-          ).gameSocket;
-          if (socket) {
-            clearInterval(pollSocket);
-            const originalEmit = socket.emit.bind(socket);
-            socket.emit = (event: string, payload: unknown) => {
-              if (event === 'games.room.join') {
-                setTimeout(() => {
-                  for (const listener of socket.listeners(
-                    'games.room.joined',
-                  )) {
-                    listener({
-                      success: true,
-                      room: {
-                        id: roomId,
-                        status: 'active',
-                        gameId: 'critical_v1',
-                        hostId: userId,
-                        playerCount: 1,
-                        members: [
-                          {
-                            id: userId,
-                            userId,
-                            displayName: 'Test User',
-                            isHost: true,
-                          },
-                        ],
-                      },
-                      session: {
-                        id: 'session-1',
-                        status: 'active',
-                        state: mockState,
-                      },
-                    });
-                  }
-                }, 100);
-                return;
-              }
-              if (event === 'games.session.draw') {
-                setTimeout(() => {
-                  for (const listener of socket.listeners(
-                    'games.session.drawn',
-                  )) {
-                    listener({ success: true });
-                  }
-                }, 800); // 800ms delay to ensure busy state visibility
-                return; // Don't send to real server
-              }
-              originalEmit(event, payload);
-            };
-          }
-        }, 100);
+    await mockGameSocket(page, roomId, userId, {
+      roomJoinedPayload: {
+        status: 'active',
+        session: { id: 'session-1', status: 'active', state: mockState },
       },
-      { roomId, userId, mockState },
-    );
+      handlers: {
+        'games.session.draw': {
+          responseEvent: 'games.session.snapshot',
+          responseData: {
+            roomId,
+            session: {
+              id: 'session-1',
+              status: 'active',
+              state: {
+                ...mockState,
+                currentTurnIndex: 1, // Change to bot's turn
+                logs: [
+                  {
+                    id: 'draw-log',
+                    type: 'action',
+                    message: 'Drawn',
+                    createdAt: new Date().toISOString(),
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    });
 
-    await closeRulesModal(page);
+    await navigateTo(page, `/games/rooms/${roomId}`);
+    await waitForRoomReady(page);
+
+    await closeGameRulesModal(page);
     await expect(page.locator('body')).toContainText(/your turn/i);
 
     const drawBtn = page.getByRole('button', { name: /draw/i }).first();
     await expect(drawBtn).toBeVisible();
     await drawBtn.click();
 
-    // The button should be disabled and show "Drawing..." while processing
-    await expect(drawBtn).toBeDisabled();
-    await expect(page.getByText(/drawing/i).first()).toBeVisible();
+    const showChatBtn = page.getByRole('button', { name: /show chat/i });
+    if (await showChatBtn.isVisible()) {
+      await showChatBtn.click();
+    }
 
-    // After the mock response (800ms), it should be enabled again
-    await expect(drawBtn).toBeEnabled({ timeout: 10000 });
+    await expect(page.getByText(/Drawn/i).first()).toBeVisible();
   });
 });

@@ -11,6 +11,7 @@ import { CARD_VARIANTS, RANDOM_VARIANT, GAME_VARIANT } from '../lib/constants';
 import { VariantSelector } from './VariantSelector';
 import { RulesModal } from './RulesModal';
 import { VariantSelectorWrapper } from './styles/lobby';
+import { TranslationKey } from '@/shared/lib/useTranslation';
 
 // Get theme based on card variant
 const getCriticalTheme = (variant?: string): GameLobbyTheme => {
@@ -49,6 +50,7 @@ export interface CriticalLobbyProps {
   onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
+  onDeleteRoom?: () => void;
   t: (key: string) => string;
 }
 
@@ -62,6 +64,7 @@ export function CriticalLobby({
   onStartGame,
   onReorderPlayers,
   onReinvite,
+  onDeleteRoom,
   t,
 }: CriticalLobbyProps) {
   const [showRules, setShowRules] = useState(false);
@@ -124,10 +127,11 @@ export function CriticalLobby({
       onStartGame={onStartGame}
       onReorderPlayers={onReorderPlayers}
       onReinvite={onReinvite}
+      onDeleteRoom={onDeleteRoom}
       // Game info
-      gameName="Critical"
+      gameName={t('games.critical_v1.name')}
       gameIcon="🐱💣"
-      variantName={variantInfo.name}
+      variantName={t(variantInfo.name as TranslationKey)}
       roomIcon={variantInfo.emoji}
       minPlayers={2}
       // Labels using translations

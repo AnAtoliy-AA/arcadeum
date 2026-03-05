@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 
 test.describe('Error Handling', () => {
   test('should display error boundary when an unhandled error occurs', async ({

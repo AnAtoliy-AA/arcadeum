@@ -1,10 +1,8 @@
-name: Version Bump
+name: Version Bump & Changelog
 
 on:
   push:
-    branches:
-      - develop
-      - main
+    branches: [ develop, main ]
 
 jobs:
   bump-version:
@@ -12,55 +10,66 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0  # Needed for git describe
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Configure Git
+      - name: Bump version
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Bump patch version (develop)
-        if: github.ref == 'refs/heads/develop'
-        run: |
-          cd apps/web && npm version patch --no-git-tag-version
-          cd ../be && npm version patch --no-git-tag-version
-          cd ../..
-          npm version patch --no-git-tag-version
-
-      - name: Release Logic (Sync Develop)
-        if: github.ref == 'refs/heads/main'
-        run: |
-          # Fetch and checkout develop
-          git fetch origin develop
-          git checkout develop
+          CURRENT_VERSION=$(node -p "require('./apps/web/package.json').version")
+          BRANCH_NAME=${GITHUB_REF_NAME}
           
-          # Merge main into develop to ensure we're up to date
-          git merge main
+          if [ "$BRANCH_NAME" = "main" ]; then
+            # Minor bump for main branch (release)
+            NEW_VERSION=$(node -p "const v = '$CURRENT_VERSION'.split('.'); v[1]++; v[2]=0; v.join('.')")
+          else
+            # Patch bump for develop branch
+            NEW_VERSION=$(node -p "const v = '$CURRENT_VERSION'.split('.'); v[2]++; v.join('.')")
+          fi
           
-          # Bump minor on develop (1.1.4 -> 1.2.0)
-          cd apps/web && npm version minor --no-git-tag-version
-          cd ../be && npm version minor --no-git-tag-version
-          cd ../..
-          npm version minor --no-git-tag-version
+          # Find all package.json files and update them
+          find . -name "package.json" -not -path "*/node_modules/*" | while read -r pkg; do
+            echo "Updating $pkg to $NEW_VERSION"
+            node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('$pkg','utf8')); p.version='$NEW_VERSION'; fs.writeFileSync('$pkg', JSON.stringify(p,null,2)+'\n')"
+          done
           
-          git add .
-          VERSION=$(node -p "require('./apps/web/package.json').version")
-          git commit -m "chore: start next minor version v${VERSION} [skip ci]"
-          git push origin develop
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "Bumped version to $NEW_VERSION across all packages on branch $BRANCH_NAME"
 
-      - name: Commit and push patch bump (develop)
-        if: github.ref == 'refs/heads/develop'
+      - name: Generate Changelog
         run: |
-          git add .
-          VERSION=$(node -p "require('./apps/web/package.json').version")
-          git commit -m "chore: bump version to v${VERSION} [skip ci]" || echo "No changes to commit"
-          git push
+          chmod +x scripts/generate_changelog.sh
+          ./scripts/generate_changelog.sh
+        env:
+          IS_RELEASE: ${{ github.ref_name == 'main' }}
+
+      - name: Commit and Push Changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Stage all updated package.json files
+          find . -name "package.json" -not -path "*/node_modules/*" -exec git add {} +
+          git add CHANGELOG.md
+          
+          git commit -m "chore: bump version to v${NEW_VERSION} and update changelog [skip ci]"
+          git tag -a "v${NEW_VERSION}" -m "Release v${NEW_VERSION}"
+          
+          # Push the version bump commit
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            # If triggered from main (e.g. merging develop -> main),
+            # push the new minor version commit/tag ONLY to develop.
+            # This leaves main exactly at the merged develop version.
+            git push origin HEAD:develop --follow-tags
+          else
+            # If triggered from develop, push the new patch release
+            # to develop as normal
+            git push origin HEAD:${{ github.ref_name }} --follow-tags
+          fi
+

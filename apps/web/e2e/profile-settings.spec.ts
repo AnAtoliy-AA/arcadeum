@@ -1,16 +1,29 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { navigateTo, mockSession } from './fixtures/test-utils';
 
 test.describe('Profile and Settings', () => {
+  test.describe.configure({ mode: 'serial' });
+
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
   });
 
   test('should display user profile information', async ({ page }) => {
     await navigateTo(page, '/settings');
-    // Check for username in settings (often displayed at top or in a section)
-    await expect(page.getByText(/testuser/i).first()).toBeVisible();
-    await expect(page.getByText(/test@example.com/i).first()).toBeVisible();
+    // Wait for hydration
+    await expect(page.locator('html')).toHaveAttribute(
+      'data-theme-preference',
+      /.*/,
+      { timeout: 10000 },
+    );
+
+    await expect(page.getByText(/testuser/i).first()).toBeVisible({
+      timeout: 15000,
+    });
+    await expect(page.getByText(/test@example.com/i).first()).toBeVisible({
+      timeout: 15000,
+    });
   });
 
   test('should allow toggling sound settings', async ({ page }) => {

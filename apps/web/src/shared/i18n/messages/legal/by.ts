@@ -1,6 +1,6 @@
 import type { LegalMessages } from './types';
 
-export const legalMessagesBe: LegalMessages = {
+export const legalMessagesBy: LegalMessages = {
   nav: {
     terms: 'Умовы',
     privacy: 'Канфідэнцыяльнасць',

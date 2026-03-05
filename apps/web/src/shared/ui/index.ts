@@ -109,3 +109,11 @@ export type { CosmeticBadgeProps } from './CosmeticBadge/CosmeticBadge';
 
 // Icons
 export * from './Icons';
+
+// ConnectionOverlay
+export { ConnectionOverlay } from './ConnectionOverlay';
+export type { ConnectionOverlayProps } from './ConnectionOverlay';
+
+// IdleBadge
+export { IdleBadge } from './IdleBadge';
+export type { IdleBadgeProps } from './IdleBadge';

@@ -9,6 +9,9 @@ import { GamesControlPanel } from '@/widgets/GamesControlPanel';
 import { gamesApi } from '@/features/games/api';
 import { useGameRoom, type GameType } from '@/features/games/hooks';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useIdleReconnect } from '@/shared/hooks/useIdleReconnect';
+import { useIdleDetection } from '@/shared/hooks/useIdleDetection';
+import { ConnectionOverlay } from '@/shared/ui';
 import { mapToGameType } from '@/features/games/lib/gameIdMapping';
 import { gameFactory } from '@/features/games/lib/gameFactory';
 import { gameMetadata } from '@/features/games/registry';
@@ -276,6 +279,17 @@ export default function GameRoomPage() {
     }
   }, [gameType]);
 
+  const { isDisconnected, isReconnecting, reconnect } = useIdleReconnect({
+    accessToken: snapshot.accessToken,
+    enabled: !!room,
+  });
+
+  const { isIdle } = useIdleDetection({
+    roomId,
+    userId: snapshot.userId,
+    enabled: !!room && !isDisconnected,
+  });
+
   // Wait for session to hydrate before checking authentication
   if (!hydrated || roomInfoLoading) {
     return (
@@ -361,6 +375,25 @@ export default function GameRoomPage() {
   return (
     <Page>
       <Container ref={gameContainerRef}>
+        <ConnectionOverlay
+          visible={isDisconnected}
+          reconnecting={isReconnecting}
+          onReconnect={reconnect}
+          title={t('games.connectionOverlay.title')}
+          message={t('games.connectionOverlay.message')}
+          reconnectingText={t('games.connectionOverlay.reconnecting')}
+          testId="connection-overlay-disconnected"
+        />
+
+        {!isDisconnected && (
+          <ConnectionOverlay
+            visible={isIdle}
+            title={t('games.idle.title')}
+            message={t('games.idle.message')}
+            testId="connection-overlay-idle"
+          />
+        )}
+
         <GamesControlPanel
           roomId={roomId}
           inviteCode={room?.inviteCode}

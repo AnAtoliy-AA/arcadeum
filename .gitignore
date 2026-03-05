@@ -19,3 +19,6 @@ coverage/
 
 # OS metadata
 .DS_Store
+
+# E2E test logs
+backend-e2e-errors.log

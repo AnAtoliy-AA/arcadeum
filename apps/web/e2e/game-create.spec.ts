@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { navigateTo, mockSession } from './fixtures/test-utils';
 
 test.describe('Game Room Creation', () => {
@@ -32,11 +33,16 @@ test.describe('Game Room Creation', () => {
       status: 'lobby',
       playerCount: 1,
       maxPlayers: 4,
-      hostId: 'user-1',
-      host: { id: 'user-1', displayName: 'Test User' },
+      hostId: '507f191e810c19729de860ea',
+      host: { id: '507f191e810c19729de860ea', displayName: 'Test User' },
       createdAt: new Date().toISOString(),
       visibility: 'public',
-      participants: [{ userId: 'user-1', joinedAt: new Date().toISOString() }],
+      participants: [
+        {
+          userId: '507f191e810c19729de860ea',
+          joinedAt: new Date().toISOString(),
+        },
+      ],
     };
 
     // Mock the creation and retrieval API
@@ -101,7 +107,7 @@ test.describe('Game Room Creation', () => {
     await nameInput.clear();
     await expect(nameInput).toHaveValue('');
 
-    const submitBtn = page.getByRole('button', { name: /create room/i });
+    const submitBtn = page.getByTestId('create-room-button');
     await expect(submitBtn).toBeVisible();
     await submitBtn.click();
     await expect(page).toHaveURL(/\/games\/create/);

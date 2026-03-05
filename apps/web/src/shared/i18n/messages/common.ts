@@ -7,7 +7,7 @@ const commonMessagesDefinition = {
       es: 'Spanish',
       fr: 'French',
       ru: 'Russian',
-      be: 'Belarusian',
+      by: 'Belarusian',
     },
     labels: {
       email: 'Email',
@@ -50,7 +50,7 @@ const commonMessagesDefinition = {
       es: 'Español',
       fr: 'Francés',
       ru: 'Ruso',
-      be: 'Bielorruso',
+      by: 'Bielorruso',
     },
     labels: {
       email: 'Correo electrónico',
@@ -63,6 +63,7 @@ const commonMessagesDefinition = {
       register: 'Crear cuenta',
       logout: 'Cerrar sesión',
       openApp: 'Abrir app',
+      support: 'Soporte',
       supportTeam: 'Equipo de soporte',
       loggedInAs: 'Sesión iniciada como',
       changeAccount: 'Cambiar cuenta',
@@ -92,7 +93,7 @@ const commonMessagesDefinition = {
       es: 'Espagnol',
       fr: 'Français',
       ru: 'Russe',
-      be: 'Biélorusse',
+      by: 'Biélorusse',
     },
     labels: {
       email: 'E-mail',
@@ -105,6 +106,7 @@ const commonMessagesDefinition = {
       register: "S'inscrire",
       logout: 'Se déconnecter',
       openApp: "Ouvrir l'application",
+      support: 'Support',
       supportTeam: 'Équipe de support',
       loggedInAs: 'Connecté en tant que',
       changeAccount: 'Changer de compte',
@@ -134,7 +136,7 @@ const commonMessagesDefinition = {
       es: 'Испанский',
       fr: 'Французский',
       ru: 'Русский',
-      be: 'Белорусский',
+      by: 'Белорусский',
     },
     labels: {
       email: 'Email',
@@ -147,6 +149,7 @@ const commonMessagesDefinition = {
       register: 'Создать аккаунт',
       logout: 'Выйти',
       openApp: 'Открыть приложение',
+      support: 'Поддержка',
       supportTeam: 'Служба поддержки',
       loggedInAs: 'Вы вошли как',
       changeAccount: 'Сменить аккаунт',
@@ -170,13 +173,13 @@ const commonMessagesDefinition = {
       user: 'Пользователь',
     },
   },
-  be: {
+  by: {
     languageNames: {
       en: 'Англійская',
       es: 'Іспанская',
       fr: 'Французская',
       ru: 'Руская',
-      be: 'Беларуская',
+      by: 'Беларуская',
     },
     labels: {
       email: 'Email',
@@ -189,6 +192,7 @@ const commonMessagesDefinition = {
       register: 'Стварыць акаўнт',
       logout: 'Выйсці',
       openApp: 'Адкрыць прыкладанне',
+      support: 'Падтрымка',
       supportTeam: 'Служба падтрымкі',
       loggedInAs: 'Вы ўвайшлі як',
       changeAccount: 'Змяніць акаўнт',

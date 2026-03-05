@@ -1,5 +1,8 @@
 import { useEffect } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import { GameCreationConfigProps } from '@/features/games/types';
 import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
 import { Section } from '@/shared/ui';
@@ -55,8 +58,10 @@ export function SeaBattleCreationConfig({
               <GameTileIcon $gradient={variant.gradient}>
                 {variant.emoji}
               </GameTileIcon>
-              <GameTileName>{variant.name}</GameTileName>
-              <GameTileSummary>{variant.description}</GameTileSummary>
+              <GameTileName>{t(variant.name as TranslationKey)}</GameTileName>
+              <GameTileSummary>
+                {t(variant.description as TranslationKey)}
+              </GameTileSummary>
             </GameTile>
           ))}
         </GameSelector>

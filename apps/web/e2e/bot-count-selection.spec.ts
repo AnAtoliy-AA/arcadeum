@@ -1,7 +1,21 @@
-import { test, expect } from '@playwright/test';
-import { mockSession, navigateTo, mockRoomInfo } from './fixtures/test-utils';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
+import {
+  mockSession,
+  navigateTo,
+  mockRoomInfo,
+  MOCK_OBJECT_ID,
+  mockGameSocket,
+  checkNoBackendErrors,
+  waitForRoomReady,
+  clickButtonByTestId,
+} from './fixtures/test-utils';
 
 test.describe('Bot Count Selection', () => {
+  test.afterEach(async () => {
+    checkNoBackendErrors();
+  });
+
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
   });
@@ -9,8 +23,8 @@ test.describe('Bot Count Selection', () => {
   test('should allow selecting bot count and starting game', async ({
     page,
   }) => {
-    const roomId = '507f191e810c19729de860ea';
-    const userId = 'user-1';
+    const roomId = MOCK_OBJECT_ID;
+    const userId = '507f191e810c19729de860ea';
 
     await mockRoomInfo(page, {
       room: {
@@ -24,69 +38,37 @@ test.describe('Bot Count Selection', () => {
       },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
-
     // Mock socket to handle join and start
-    await page.evaluate(
-      ({ roomId, userId }) => {
-        const pollSocket = setInterval(() => {
-          interface MockSocket {
-            emit: (event: string, payload: unknown) => void;
-            listeners: (event: string) => ((payload: unknown) => void)[];
-          }
-          const socket = (window as unknown as { gameSocket: MockSocket })
-            .gameSocket;
-          if (socket) {
-            clearInterval(pollSocket);
-            const originalEmit = socket.emit.bind(socket);
-            socket.emit = (event: string, payload: unknown) => {
-              if (event === 'games.room.join') {
-                setTimeout(() => {
-                  for (const listener of socket.listeners(
-                    'games.room.joined',
-                  )) {
-                    listener({
-                      success: true,
-                      room: {
-                        id: roomId,
-                        status: 'lobby',
-                        gameId: 'critical_v1',
-                        hostId: userId,
-                        playerCount: 1,
-                        members: [
-                          {
-                            id: userId,
-                            userId,
-                            displayName: 'Test User',
-                            isHost: true,
-                          },
-                        ],
-                      },
-                      session: null,
-                    });
-                  }
-                }, 100);
-                return;
-              }
-              if (event === 'games.session.start') {
-                (
-                  window as unknown as { __lastStartPayload: unknown }
-                ).__lastStartPayload = payload;
-              }
-              originalEmit(event, payload);
-            };
-          }
-        }, 100);
-      },
-      { roomId, userId },
-    );
+    await mockGameSocket(page, roomId, userId, {
+      roomJoinedPayload: { gameId: 'critical_v1', maxPlayers: 5 },
+    });
 
-    await expect(page.getByText('Number of bots')).toBeVisible();
+    await navigateTo(page, `/games/rooms/${roomId}`);
+    await waitForRoomReady(page);
+
+    await page.waitForFunction(() => window.gameSocket);
+    await page.evaluate(() => {
+      const socket = window.gameSocket;
+      if (!socket) return;
+      const originalEmit = socket.emit.bind(socket);
+      socket.emit = (event: string, ...args: unknown[]) => {
+        if (event === 'games.session.start') {
+          (
+            window as unknown as { __lastStartPayload: unknown }
+          ).__lastStartPayload = args[0];
+        }
+        return originalEmit(event, ...args);
+      };
+    });
+
+    await expect(page.getByText(/Number of bots/i)).toBeVisible({
+      timeout: 15000,
+    });
 
     // Select 3 bots
-    const botButton3 = page.getByRole('button', { name: '3', exact: true });
-    await expect(botButton3).toBeVisible();
-    await botButton3.click();
+    const botButton3 = page.getByTestId('bot-count-3');
+    await expect(botButton3).toBeVisible({ timeout: 10000 });
+    await clickButtonByTestId(page, 'bot-count-3');
 
     // Start button should update label
     const startBtn = page.getByRole('button', { name: /Start with 3 🤖/i });

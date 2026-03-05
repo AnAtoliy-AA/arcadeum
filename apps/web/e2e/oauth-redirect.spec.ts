@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
 
 test.describe('OAuth Redirect Resolution', () => {

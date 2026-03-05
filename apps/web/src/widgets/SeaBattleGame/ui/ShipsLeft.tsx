@@ -98,20 +98,20 @@ export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
   const sortedConfig = [...SHIPS].sort((a, b) => b.size - a.size);
 
   const totalShips = sortedConfig.length;
-  const sunkCount = ships.filter((s) => s.sunk).length;
+  const sunkCount = ships ? ships.filter((s) => s.sunk).length : 0;
   const aliveCount = totalShips - sunkCount;
 
   return (
     <Container>
       <TitleContainer>
-        <Title>{t('games.seaBattle.table.state.shipsRemaining')}</Title>
+        <Title>{t('games.sea_battle_v1.table.state.shipsRemaining')}</Title>
         <ShipCount>
           {aliveCount}/{totalShips}
         </ShipCount>
       </TitleContainer>
       <FleetGrid>
         {sortedConfig.map((config) => {
-          const shipState = ships.find((s) => s.id === config.id);
+          const shipState = ships?.find((s) => s.id === config.id);
           // If shipState exists, use its sunk status.
           // If not found (e.g. purely visual or not placed yet), assume alive/not sunk.
           const isSunk = shipState?.sunk ?? false;

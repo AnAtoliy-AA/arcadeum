@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { mockSession, navigateTo } from './fixtures/test-utils';
 
 test.describe('Game Lobby - Shared Functionality', () => {
@@ -13,7 +14,7 @@ test.describe('Game Lobby - Shared Functionality', () => {
     await navigateTo(page, '/games/create?gameId=critical_v1');
 
     // Look for the create button and attempt to create room
-    const createBtn = page.getByRole('button', { name: /create/i });
+    const createBtn = page.getByTestId('create-room-button');
 
     if (await createBtn.isVisible()) {
       // Fill room name if available
@@ -50,7 +51,7 @@ test.describe('Game Lobby - Shared Functionality', () => {
 
   test('should display Sea Battle game lobby', async ({ page }) => {
     // Navigate to Sea Battle create page
-    await navigateTo(page, '/games/create?gameId=sea-battle');
+    await navigateTo(page, '/games/create?gameId=sea_battle_v1');
 
     // Look for the create button
     const createBtn = page.getByRole('button', { name: /create/i });

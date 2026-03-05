@@ -22,7 +22,9 @@ import { UseAutoplayReturn } from '../hooks/useAutoplay';
 import { CARD_VARIANTS } from '../lib/constants';
 import { RulesModal } from './RulesModal';
 import React, { useState } from 'react';
+import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 import { MaximizeIcon, MinimizeIcon } from '@/shared/ui';
+import { TranslationKey } from '@/shared/lib/useTranslation';
 
 interface CriticalGameHeaderProps {
   room: GameRoomSummary;
@@ -30,7 +32,6 @@ interface CriticalGameHeaderProps {
   idleTimerEnabled: boolean;
   turnStatusVariant: 'completed' | 'yourTurn' | 'waiting' | 'default';
   turnStatusText: string;
-  actionLongPending: boolean;
   actionBusy: string | null;
   isGameOver: boolean;
   currentPlayer: CriticalSnapshot['players'][0] | undefined;
@@ -52,7 +53,6 @@ export function CriticalGameHeader({
   idleTimerEnabled,
   turnStatusVariant,
   turnStatusText,
-  actionLongPending,
   actionBusy,
   isGameOver,
   currentPlayer,
@@ -69,6 +69,8 @@ export function CriticalGameHeader({
 }: CriticalGameHeaderProps) {
   const cardVariant = room.gameOptions?.cardVariant;
   const [showRules, setShowRules] = useState(true);
+
+  const { isLongPending } = useServerWakeUpProgress(Boolean(actionBusy));
 
   return (
     <GameHeader $variant={cardVariant}>
@@ -92,8 +94,16 @@ export function CriticalGameHeader({
             }}
           >
             :{' '}
-            {CARD_VARIANTS.find((v) => v.id === room.gameOptions?.cardVariant)
-              ?.name || 'Classic'}
+            {(() => {
+              const variant = CARD_VARIANTS.find(
+                (v) => v.id === room.gameOptions?.cardVariant,
+              );
+              return variant
+                ? t(variant.name as TranslationKey)
+                : t(
+                    'games.critical_v1.variants.cyberpunk.name' as TranslationKey,
+                  ); // Fallback to default variant name instead of 'Classic'
+            })()}
           </span>
         </GameTitle>
         <RoomNameBadge>
@@ -110,7 +120,7 @@ export function CriticalGameHeader({
           </FastBadge>
         )}
         <TurnStatus $variant={turnStatusVariant}>{turnStatusText}</TurnStatus>
-        {actionLongPending && <ServerLoadingNotice actionBusy={actionBusy} />}
+        {isLongPending && <ServerLoadingNotice actionBusy={actionBusy} />}
       </GameInfo>
       <HeaderActions>
         <FullscreenButton

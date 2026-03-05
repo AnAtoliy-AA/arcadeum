@@ -1,12 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { navigateTo, mockSession } from './fixtures/test-utils';
 
 test.describe('Payment Flow', () => {
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
 
-    // Mock payment API (broad match to catch /payment/session or /payments/session)
-    await page.route('**/session', async (route) => {
+    // Mock payment API (broad match to catch /payments/session)
+    await page.route('**/payments/session', async (route) => {
       if (route.request().method() === 'POST') {
         await route.fulfill({
           status: 200,
@@ -59,11 +60,12 @@ test.describe('Payment Flow', () => {
 
   test('should initiate checkout session', async ({ page }) => {
     // Mock Stripe checkout page to avoid external network issues
-    await page.route('**/checkout.stripe.com/**', async (route) => {
+    // Using Regex to ensure reliable interception of any Stripe checkout URL
+    await page.route(/.*checkout\.stripe\.com.*/, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'text/html',
-        body: '<html><body><h1>Stripe Checkout</h1></body></html>',
+        body: '<!DOCTYPE html><html><body><h1>Stripe Checkout</h1></body></html>',
       });
     });
 
@@ -95,13 +97,22 @@ test.describe('Payment Flow', () => {
 
   test('should allow selecting recurring subscription', async ({ page }) => {
     // Mock subscription API
-    await page.route('**/subscription', async (route) => {
+    await page.route('**/payments/subscription', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
           paymentUrl: 'https://www.sandbox.paypal.com/mock-subscription',
         }),
+      });
+    });
+
+    // Mock PayPal checkout page using robust Regex pattern
+    await page.route(/.*sandbox\.paypal\.com.*/, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'text/html',
+        body: '<!DOCTYPE html><html><body><h1>PayPal Checkout</h1></body></html>',
       });
     });
 

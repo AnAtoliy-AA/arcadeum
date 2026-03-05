@@ -161,7 +161,11 @@ export function LocalAuthPanel({ labels, form }: LocalAuthPanelProps) {
         <PanelTitle>{localHeading}</PanelTitle>
         <PanelSubtitle>{localSubtitle}</PanelSubtitle>
       </PanelHeader>
-      <AuthForm onSubmit={handleLocalSubmit} noValidate>
+      <AuthForm
+        onSubmit={handleLocalSubmit}
+        noValidate
+        data-mode={isRegisterMode ? 'register' : 'login'}
+      >
         <Field>
           <FieldLabel htmlFor={emailFieldId}>{emailLabel}</FieldLabel>
           <Input
@@ -175,6 +179,7 @@ export function LocalAuthPanel({ labels, form }: LocalAuthPanelProps) {
             placeholder={emailLabel}
             required
             disabled={localLoading}
+            data-testid="auth-email-input"
           />
         </Field>
         {showInvalidEmail ? <ErrorText>{invalidEmailMessage}</ErrorText> : null}
@@ -198,6 +203,7 @@ export function LocalAuthPanel({ labels, form }: LocalAuthPanelProps) {
             placeholder={passwordLabel}
             required
             disabled={localLoading}
+            data-testid="auth-password-input"
           />
         </Field>
         {isRegisterMode ? (
@@ -215,6 +221,7 @@ export function LocalAuthPanel({ labels, form }: LocalAuthPanelProps) {
                 placeholder={confirmPasswordLabel}
                 required
                 disabled={localLoading}
+                data-testid="auth-confirm-password-input"
               />
             </Field>
             <Field>
@@ -227,6 +234,7 @@ export function LocalAuthPanel({ labels, form }: LocalAuthPanelProps) {
                 onBlur={handleUsernameBlur}
                 placeholder={usernameLabel}
                 disabled={localLoading}
+                data-testid="auth-username-input"
               />
             </Field>
             {usernameAvailability === 'checking' ? (
@@ -249,6 +257,7 @@ export function LocalAuthPanel({ labels, form }: LocalAuthPanelProps) {
                 onChange={handleReferralCodeChange}
                 placeholder={referralCodeLabel}
                 disabled={localLoading}
+                data-testid="auth-referral-input"
               />
             </Field>
             <HelperText>{helperText}</HelperText>
@@ -262,13 +271,18 @@ export function LocalAuthPanel({ labels, form }: LocalAuthPanelProps) {
         ) : null}
         {localError ? <ErrorText>{localError}</ErrorText> : null}
         <ButtonRow>
-          <PrimaryButton type="submit" disabled={localSubmitDisabled}>
+          <PrimaryButton
+            type="submit"
+            disabled={localSubmitDisabled}
+            data-testid="auth-submit-button"
+          >
             {submitLabel}
           </PrimaryButton>
           <SecondaryButton
             type="button"
             onClick={handleToggleMode}
             disabled={localLoading}
+            data-testid="auth-toggle-mode-button"
           >
             {toggleLabel}
           </SecondaryButton>

@@ -3,6 +3,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/navigation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import type { GameMetadata } from '../types';
 import { Card as SharedCard, Badge } from '@/shared/ui';
 
@@ -148,6 +152,7 @@ export function GameCard({
   disabled = false,
 }: GameCardProps) {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleClick = () => {
     if (disabled) return;
@@ -166,11 +171,16 @@ export function GameCard({
 
       <GameImage $thumbnail={game.thumbnail}>{game.name.charAt(0)}</GameImage>
 
-      <GameName>{game.name}</GameName>
+      <GameName>
+        {t(`games.${game.slug}.name` as TranslationKey) || game.name}
+      </GameName>
 
       {showDetails && (
         <>
-          <GameDescription>{game.description}</GameDescription>
+          <GameDescription>
+            {t(`games.${game.slug}.description` as TranslationKey) ||
+              game.description}
+          </GameDescription>
 
           <GameMeta>
             <MetaTag>

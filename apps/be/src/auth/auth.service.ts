@@ -266,6 +266,9 @@ export class AuthService {
   }
 
   async getUserProfileById(userId: string): Promise<AuthUserProfile> {
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new UnauthorizedException('User not found');
+    }
     const doc = await this.userModel.findById(userId);
     if (!doc) {
       throw new UnauthorizedException('User not found');
@@ -296,6 +299,7 @@ export class AuthService {
     userId: string,
     potentiallyBlockedUserId: string,
   ): Promise<boolean> {
+    if (!Types.ObjectId.isValid(userId)) return false;
     const user = await this.userModel
       .findById(userId)
       .select('blockedUsers')
@@ -305,6 +309,7 @@ export class AuthService {
   }
 
   async getBlockedUsers(userId: string): Promise<string[]> {
+    if (!Types.ObjectId.isValid(userId)) return [];
     const user = await this.userModel
       .findById(userId)
       .select('blockedUsers')
@@ -320,6 +325,7 @@ export class AuthService {
       username: string;
     }>
   > {
+    if (!Types.ObjectId.isValid(userId)) return [];
     const user = await this.userModel
       .findById(userId)
       .select('blockedUsers')

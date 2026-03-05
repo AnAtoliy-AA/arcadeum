@@ -149,7 +149,7 @@ export const RoomTitle = styled.h3`
   max-width: 100%;
 `;
 
-export const StatusBadge = styled.span<{ status: string }>`
+export const StatusBadge = styled.span<{ $status: string }>`
   padding: 0.3rem 0.6rem;
   border-radius: 6px;
   font-size: 0.65rem;
@@ -158,17 +158,17 @@ export const StatusBadge = styled.span<{ status: string }>`
   letter-spacing: 0.3px;
   white-space: nowrap;
   flex-shrink: 0;
-  background: ${({ status }) => {
-    if (status === 'lobby')
+  background: ${({ $status }) => {
+    if ($status === 'lobby')
       return 'linear-gradient(135deg, #10B981 0%, #059669 100%)';
-    if (status === 'in_progress')
+    if ($status === 'in_progress')
       return 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)';
     return 'linear-gradient(135deg, #6B7280 0%, #4B5563 100%)';
   }};
   color: white;
-  box-shadow: ${({ status }) => {
-    if (status === 'lobby') return '0 2px 8px #10B98140';
-    if (status === 'in_progress') return '0 2px 8px #F59E0B40';
+  box-shadow: ${({ $status }) => {
+    if ($status === 'lobby') return '0 2px 8px #10B98140';
+    if ($status === 'in_progress') return '0 2px 8px #F59E0B40';
     return '0 2px 8px #6B728040';
   }};
 `;

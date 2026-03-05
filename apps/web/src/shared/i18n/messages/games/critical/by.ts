@@ -1,8 +1,10 @@
-import { variants } from './be-variants';
+import { variants as cardVariants } from './by-variants';
 
-export const beMessages = {
+export const byMessages = {
   critical_v1: {
     name: 'Critical',
+    description:
+      'Стратэгічная картачная гульня, дзе трэба пазбягаць крытычных пагроз',
     rules: {
       title: 'Правілы гульні',
       headers: {
@@ -34,9 +36,40 @@ export const beMessages = {
         '🔒 Прыватны зал: уваход толькі па запрашэннях. Падзяліцеся кодам або спасылкай, каб гуляць з сябрамі!',
       chat: '💬 Чат стала: \n• Усе: бачна ўсім (уключаючы гледачоў). \n• Гульцы: толькі для жывых гульцоў. \n• Асабістае: нататкі для сябе (бачыце толькі вы).',
       setup:
-        'Кожны гулец пачынае з картай «Абясшкодзіць» і наборам выпадковых карт. У калодзе ёсць некалькі выбуховых карт... беражыцеся!',
+        'Кожны гулец пачынае з картай «Абясшкодзіць» і наборам выпадковых карт. У калодзе ёсць некалькі крытычных карт... беражыцеся!',
+    },
+    variants: {
+      cyberpunk: {
+        name: 'Кароткае замыканне',
+        description: 'Кіберпанк-хакеры прадухіляюць перагрузку сістэмы',
+      },
+      underwater: {
+        name: 'Глыбакаводны ціск',
+        description: 'Падводны хоррэр у субмарыне, якая працякае',
+      },
+      crime: {
+        name: 'Рабаванне',
+        description: 'Нуарная тэма з паліцэйскімі рэйдамі і ўцёкамі',
+      },
+      horror: {
+        name: 'Пракляты банкет',
+        description: 'Тэма сацыяльнага хоррэра на вечарыне цёмнага мага',
+      },
+      adventure: {
+        name: 'Старажытны храм',
+        description: 'Выжыванне ў прыгодзе ў таямнічым храме',
+      },
+      'high-altitude-hike': {
+        name: 'Горны паход',
+        description: 'Выжыванне ў прыгодзе, ратуючыся ад лавіны',
+      },
+      random: {
+        name: 'Выпадковая тэма',
+        description: 'Здзівіце мяне выпадковай тэмай!',
+      },
     },
   },
+
   table: {
     cards: {
       criticalEvent: 'Крытычная сітуацыя',
@@ -151,7 +184,7 @@ export const beMessages = {
         rapture:
           'Усе астатнія гульцы павінны аддаць вам па адной карце з рукі.',
       },
-      variants,
+      variants: cardVariants,
     },
     actions: {
       start: 'Пачаць гульню',
@@ -294,17 +327,28 @@ export const beMessages = {
         selectPlayer: 'Выберыце мэту',
         description: 'Выберыце гульца, які зробіць 2 ходы замест наступнага.',
       },
-      catCombo: {
+      eventCombo: {
         title: 'Згуляць комба',
+        selectType: 'Выберыце тып комба',
+        pairTrio: 'Пара/Тройка',
+        selectComboCard: 'Выберыце карту',
+        fiver: 'Пяцёрка',
+        anyFive: 'Любыя 5 розных карт',
         selectMode: 'Выберыце тып комба',
         pair: 'Пара',
         pairDesc: 'Выпадковая карта ў мэты',
         trio: 'Тройка',
         trioDesc: 'Выбраць канкрэтную карту',
+        trioMode: '2-3 карты',
         selectTarget: 'Выберыце мэту',
         selectCard: 'Выберыце карту для запыту',
         cardsCount: '{{count}} карт',
         confirm: 'Згуляць комба',
+        stashCards: 'Выберыце {{count}} розных карт',
+        pickDiscard: 'Выберыце карту са стоса скіду',
+        selectCardHint: 'Выберыце карту ніжэй',
+        pickCardBlind: 'Выберыце карту (ўсляпую)',
+        cardLabel: 'Карта {{index}}',
       },
       seeTheFuture: { title: 'Верхнія карты', confirm: 'Зразумела!' },
       alterTheFuture: {

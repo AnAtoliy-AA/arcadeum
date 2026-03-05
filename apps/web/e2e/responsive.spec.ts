@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
 
 test.describe('Responsive Layout', () => {
@@ -10,26 +11,18 @@ test.describe('Responsive Layout', () => {
     await navigateTo(page, '/');
     await page.waitForLoadState('networkidle');
 
-    // Wait for header to be visible
     await expect(page.locator('header')).toBeVisible();
 
-    // Check for hamburger menu
     const menuButton = page.getByTestId('mobile-menu-button');
     await expect(menuButton).toBeVisible();
     await expect(menuButton).toBeEnabled();
 
-    // Open menu
     await menuButton.click({ force: true });
 
-    // Wait for animation frame or transition
-    // Adding a small delay to allow CSS transitions to start/finish in slower environments
-    await page.waitForTimeout(1000);
-
-    // Wait for the menu container to be visible first
     const mobileNav = page.getByTestId('mobile-nav');
-    await expect(mobileNav).toBeVisible({ timeout: 15000 });
+    await expect(mobileNav).toHaveCSS('opacity', '1', { timeout: 15000 });
+    await expect(mobileNav).toBeVisible();
 
-    // Then check for the link
     const navLink = mobileNav.getByRole('link').first();
     await expect(navLink).toBeVisible({ timeout: 5000 });
   });
@@ -53,8 +46,6 @@ test.describe('Responsive Layout', () => {
 
   test('should hide desktop-only elements', async ({ page }) => {
     await navigateTo(page, '/');
-    // Example: some sidebar titles or large banners might be hidden
-    // We'll just check if common desktop patterns are modified
     const desktopOnly = page.locator('.desktop-only, [class*="DesktopOnly"]');
     if ((await desktopOnly.count()) > 0) {
       await expect(desktopOnly.first()).not.toBeVisible();

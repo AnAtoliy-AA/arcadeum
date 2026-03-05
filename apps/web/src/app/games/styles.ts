@@ -63,7 +63,7 @@ export const ViewToggleButton = styled(Button).attrs<{ $active?: boolean }>(
   ({ $active }) => ({
     variant: 'chip',
     size: 'sm',
-    active: $active,
+    isActive: $active,
   }),
 )<{ $active?: boolean }>`
   border-radius: 0;
@@ -128,7 +128,7 @@ export const FilterChip = styled(Button).attrs<{ $active?: boolean }>(
   ({ $active }) => ({
     variant: 'chip',
     size: 'sm',
-    active: $active,
+    isActive: $active,
   }),
 )<{
   $active?: boolean;

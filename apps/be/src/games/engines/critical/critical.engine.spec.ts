@@ -12,13 +12,18 @@ const createMockContext = (userId: string): GameActionContext => ({
 
 describe('CriticalEngine', () => {
   let engine: CriticalEngine;
+  let module: TestingModule;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       providers: [CriticalEngine],
     }).compile();
 
     engine = module.get<CriticalEngine>(CriticalEngine);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should reset pendingDraws to 1 when turn advances after drawing a card', () => {

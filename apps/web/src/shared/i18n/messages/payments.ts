@@ -272,7 +272,7 @@ const paymentsMessagesDefinition = {
     },
     showNameLabel: 'Показать моё имя в этой записке',
   },
-  be: {
+  by: {
     title: 'Аплата',
     subtitle: 'Бяспечныя і хуткія плацяжы праз PayPal',
     description:

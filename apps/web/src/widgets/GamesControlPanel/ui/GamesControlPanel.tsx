@@ -125,9 +125,7 @@ export function GamesControlPanel({
       } else {
         await document.exitFullscreen();
       }
-    } catch (err) {
-      console.error('Fullscreen toggle failed:', err);
-    }
+    } catch {}
   }, [fullscreenContainerRef]);
 
   const handleLeaveGame = useCallback(() => {
@@ -181,9 +179,7 @@ export function GamesControlPanel({
     try {
       await navigator.clipboard.writeText(url);
       setIsCopied(true);
-    } catch (err) {
-      console.error('Failed to copy link', err);
-    }
+    } catch {}
   };
 
   return (
@@ -255,9 +251,11 @@ export function GamesControlPanel({
         variant="secondary"
         size="sm"
         onClick={handleCopyInviteLink}
-        title={t('games.common.copyInviteLink') || 'Copy Invite Link'}
+        title={t('games.common.copyInviteLink') || 'Share Game Link'}
       >
-        {isCopied ? '✅ Copied' : '🔗 Link'}
+        {isCopied
+          ? '✅ ' + t('games.common.copyInviteLinkCopied')
+          : '🔗 ' + t('games.common.copyInviteLinkButton')}
       </StyledPanelButton>
 
       <StyledPanelButton

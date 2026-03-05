@@ -1,65 +1,55 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { navigateTo, mockSession } from './fixtures/test-utils';
 
 test.describe('Auth Extended', () => {
   test('should validate registration fields', async ({ page }) => {
     await navigateTo(page, '/auth');
 
-    const toggleBtn = page.getByRole('button', {
-      name: /need an account|регистрация|account/i,
-    });
-    await toggleBtn
-      .waitFor({ state: 'visible', timeout: 5000 })
-      .catch(() => {});
+    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
     if (await toggleBtn.isVisible()) {
       const text = (await toggleBtn.textContent()) || '';
-      if (!/already|уже/i.test(text)) {
-        await toggleBtn.click();
+      if (
+        /need|регистрация|account/i.test(text) &&
+        !/already|уже/i.test(text)
+      ) {
+        await toggleBtn.click({ force: true });
       }
     }
 
     const submitBtn = page.locator('button[type="submit"]');
-    // Wait for the button to appear - default timeout is usually enough but we want to be sure
     await expect(submitBtn).toBeVisible({ timeout: 10000 });
     await submitBtn.click({ force: true });
 
-    // Wait for potential validation messages
     await expect(page.locator('form')).toBeVisible();
   });
 
   test('should show error on password mismatch', async ({ page }) => {
     await navigateTo(page, '/auth');
 
-    const toggleBtn = page.getByRole('button', {
-      name: /need an account|регистрация|account/i,
-    });
-    await toggleBtn
-      .waitFor({ state: 'visible', timeout: 5000 })
-      .catch(() => {});
-    if (await toggleBtn.isVisible()) {
-      const text = (await toggleBtn.textContent()) || '';
-      if (!/already|уже/i.test(text)) {
-        await toggleBtn.click();
-      }
+    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
+    await expect(toggleBtn).toBeEnabled({ timeout: 10000 });
+    const text = (await toggleBtn.textContent()) || '';
+    if (/need|регистрация|account/i.test(text) && !/already|уже/i.test(text)) {
+      await toggleBtn.click({ force: true });
     }
 
-    const passwordInput = page
-      .locator('input[name="password"], input[type="password"]')
-      .first();
-    const confirmInput = page
-      .locator(
-        'input[name="confirmPassword"], input[id="confirm-password"], input[placeholder*="confirm" i]',
-      )
-      .first();
+    // Wait for form to actually switch mode
+    const form = page.locator('form');
+    await expect(form).toHaveAttribute('data-mode', 'register', {
+      timeout: 10000,
+    });
 
-    await expect(passwordInput).toBeVisible();
+    const confirmInput = page.getByTestId('auth-confirm-password-input');
+    await expect(confirmInput).toBeVisible({ timeout: 10000 });
+
+    const passwordInput = page.getByTestId('auth-password-input');
+
     await passwordInput.fill('password123');
-    await expect(confirmInput).toBeVisible();
     await confirmInput.fill('password456');
     // The password mismatch error should appear immediately
     await expect(page.getByText(/do not match|не совпадают/i)).toBeVisible();
 
-    // The submit button should be disabled
     const submitBtn = page
       .getByRole('button', {
         name: /create account|register|sign up|зарегистрироваться/i,
@@ -71,13 +61,8 @@ test.describe('Auth Extended', () => {
   test('should persist session after manual reload', async ({ page }) => {
     await mockSession(page);
     await navigateTo(page, '/settings');
-
-    // Check if authenticated
     await expect(page).toHaveURL(/\/settings/);
-
     await page.reload();
-
-    // Still on settings (not redirected to auth)
     await expect(page).toHaveURL(/\/settings/);
   });
 
@@ -85,13 +70,18 @@ test.describe('Auth Extended', () => {
     await mockSession(page);
     await navigateTo(page, '/settings');
 
-    const logoutBtn = page.getByRole('button', {
-      name: /logout|sign out|выйти/i,
-    });
-    if (await logoutBtn.isVisible()) {
-      await logoutBtn.click();
-      await page.waitForURL(/\/auth|login/);
-      await expect(page).toHaveURL(/\/auth|login/);
-    }
+    // 1. Open profile menu
+    const menuToggle = page.getByTestId('header-username');
+    await expect(menuToggle).toBeVisible({ timeout: 10000 });
+    await menuToggle.click({ force: true });
+
+    // 2. Click logout
+    const logoutBtn = page.getByTestId('logout-button');
+    await expect(logoutBtn).toBeVisible({ timeout: 5000 });
+    await logoutBtn.click({ force: true });
+
+    // 3. Verify session is cleared and redirected
+    await expect(menuToggle).not.toBeVisible({ timeout: 15000 });
+    await expect(page).toHaveURL(/\/(auth|login)?$/, { timeout: 10000 });
   });
 });

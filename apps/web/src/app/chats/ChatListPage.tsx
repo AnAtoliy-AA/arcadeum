@@ -170,9 +170,7 @@ export function ChatListPage() {
         router.push(
           `/chat?chatId=${response.chatId}&receiverIds=${user.id}&title=${encodeURIComponent(user.displayName || user.username)}`,
         );
-      } catch (err) {
-        console.error('Failed to create chat:', err);
-      }
+      } catch {}
     },
     [snapshot.accessToken, snapshot.userId, router],
   );

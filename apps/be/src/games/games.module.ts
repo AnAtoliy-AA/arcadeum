@@ -12,6 +12,7 @@ import { User, UserSchema } from '../auth/schemas/user.schema';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GamesGateway } from './games.gateway';
 import { CriticalGateway } from './critical.gateway';
+import { CriticalActionsGateway } from './critical-actions.gateway';
 import { TexasHoldemGateway } from './texas-holdem.gateway';
 import { SeaBattleGateway } from './sea-battle.gateway';
 import { GameEnginesModule } from './engines/engines.module';
@@ -73,6 +74,7 @@ import { AuthModule } from '../auth/auth.module';
     // Gateways
     GamesGateway,
     CriticalGateway,
+    CriticalActionsGateway,
     TexasHoldemGateway,
     SeaBattleGateway,
   ],

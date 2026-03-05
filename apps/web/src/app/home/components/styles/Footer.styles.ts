@@ -38,6 +38,8 @@ export const SocialTitle = styled.h3`
 export const SocialLinks = styled.div`
   display: flex;
   gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
 `;
 
 export const SocialIcon = styled.a`

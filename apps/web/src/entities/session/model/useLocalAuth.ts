@@ -100,7 +100,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
     loading: false,
     error: null,
     accessToken: null,
-    email: typeof window === 'undefined' ? null : readStoredEmail(),
+    email: null,
     username: null,
     displayName: null,
   }));

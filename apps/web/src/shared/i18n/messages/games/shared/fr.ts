@@ -66,7 +66,20 @@ export const frMessages = {
     watchRoom: 'Regarder',
     joinByCode: 'Rejoindre par code',
     cancel: 'Annuler',
-    copyInviteLink: "Copier le lien d'invitation",
+    copyInviteLink: 'Partager le lien de jeu',
+    copyInviteLinkCopied: 'Copié !',
+    copyInviteLinkButton: 'Partager le lien',
+    actions: {
+      backToHome: "Retour à l'Accueil",
+    },
+    deleteRoom: {
+      button: 'Supprimer la salle',
+      confirmTitle: 'Supprimer la salle',
+      confirmMessage:
+        'Êtes-vous sûr de vouloir supprimer cette salle ? Cette action est irréversible et tous les joueurs seront déconnectés.',
+      confirmButton: 'Supprimer la salle',
+      cancelButton: 'Garder la salle',
+    },
   },
   create: {
     title: 'Créer une Salle de Jeu',
@@ -125,11 +138,13 @@ export const frMessages = {
     },
   },
   inviteCode: {
-    title: "Rejoindre par Code d'Invitation",
+    title: 'Rejoindre une Partie Privée',
     label: "Code d'invitation",
     placeholder: 'ex. A1B2C3',
     join: 'Rejoindre',
     joining: 'Rejoindre...',
+    helper:
+      "Ce code a été partagé par l'hôte du jeu. Tapez-le exactement comme indiqué, sans espaces.",
     errors: {
       notFound: 'Salle non trouvée ou code invalide',
       searchFailed: 'Échec de la recherche de salle',
@@ -143,5 +158,34 @@ export const frMessages = {
     startWithBots: 'Commencer avec {{count}} 🤖',
     playWithBotsNotice:
       "Commencez avec des bots immédiatement ou attendez d'autres joueurs",
+  },
+  shared: {
+    rules: {
+      objective: 'Objectif',
+      gameplay: 'Jouabilité',
+      combos: 'Combos',
+      setup: 'Mise en place',
+      placement: 'Placement',
+      battle: 'Bataille',
+    },
+    category: {
+      cardGame: 'Jeu de cartes',
+      boardGame: 'Jeu de société',
+    },
+    tags: {
+      strategy: 'Stratégie',
+      cards: 'Cartes',
+    },
+  },
+  connectionOverlay: {
+    title: 'Connexion perdue',
+    message:
+      "Touchez n'importe où ou déplacez votre souris pour vous reconnecter",
+    reconnecting: 'Reconnexion...',
+  },
+  idle: {
+    label: 'Inactif',
+    title: '💤 Vous êtes inactif',
+    message: 'Bougez votre souris ou appuyez sur une touche pour reprendre',
   },
 };

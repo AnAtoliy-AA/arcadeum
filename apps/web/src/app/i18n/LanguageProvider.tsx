@@ -11,6 +11,7 @@ import {
 
 import { useLanguageStore } from './store/languageStore';
 import {
+  DEFAULT_LOCALE,
   Locale,
   TranslationBundle,
   formatMessage,
@@ -29,18 +30,14 @@ const LanguageContext = createContext<LanguageContextValue | undefined>(
 );
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const { locale, setLocale } = useLanguageStore();
+  const locale = useLanguageStore((state) => state.locale);
+  const setLocale = useLanguageStore((state) => state.setLocale);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    // Determine readiness (just a flag now since we persist)
-    // Legacy logic waited for async storage, here persistence is likely sync enough for hydration,
-    // or we can assume ready. But let's keep the flag for consistency if needed.
-    // Zustand persist middleware rehydrates automatically.
-    // We can use onRehydrateStorage if we need to know exactly when it finishes,
-    // but for now let's just set ready.
-    const t = setTimeout(() => setIsReady(true), 0);
-    return () => clearTimeout(t);
+    requestAnimationFrame(() => {
+      setIsReady(true);
+    });
   }, []);
 
   useEffect(() => {
@@ -51,7 +48,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     document.documentElement.setAttribute('lang', locale);
   }, [locale]);
 
-  const messages = useMemo(() => getMessages(locale), [locale]);
+  const messages = useMemo(() => {
+    // During hydration, always use default locale to match server
+    if (!isReady) return getMessages(DEFAULT_LOCALE);
+    return getMessages(locale);
+  }, [locale, isReady]);
 
   const value = useMemo<LanguageContextValue>(
     () => ({ locale, setLocale, messages, isReady }),

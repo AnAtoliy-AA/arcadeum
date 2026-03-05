@@ -66,9 +66,19 @@ export const enMessages = {
     watchRoom: 'Watch',
     joinByCode: 'Join by Code',
     cancel: 'Cancel',
-    copyInviteLink: 'Copy Invite Link',
+    copyInviteLink: 'Share Game Link',
+    copyInviteLinkCopied: 'Copied!',
+    copyInviteLinkButton: 'Share Link',
     actions: {
       backToHome: 'Back to Home',
+    },
+    deleteRoom: {
+      button: 'Delete Room',
+      confirmTitle: 'Delete Room',
+      confirmMessage:
+        'Are you sure you want to delete this room? This action cannot be undone and all players will be disconnected.',
+      confirmButton: 'Delete Room',
+      cancelButton: 'Keep Room',
     },
   },
   create: {
@@ -125,11 +135,13 @@ export const enMessages = {
     },
   },
   inviteCode: {
-    title: 'Join by Invite Code',
+    title: 'Join a Private Game',
     label: 'Enter Invite Code',
     placeholder: 'e.g. A1B2C3',
     join: 'Join',
     joining: 'Joining...',
+    helper:
+      'This code was shared by the game host. Type it exactly as shown, without spaces.',
     errors: {
       notFound: 'Room not found or invite code invalid',
       searchFailed: 'Failed to search for room',
@@ -142,5 +154,33 @@ export const enMessages = {
     botCountLabel: 'Number of bots',
     startWithBots: 'Start with {{count}} 🤖',
     playWithBotsNotice: 'Start with bots immediately or wait for other players',
+  },
+  shared: {
+    rules: {
+      objective: 'Objective',
+      gameplay: 'Gameplay',
+      combos: 'Combos',
+      setup: 'Setup',
+      placement: 'Placement',
+      battle: 'Battle',
+    },
+    category: {
+      cardGame: 'Card Game',
+      boardGame: 'Board Game',
+    },
+    tags: {
+      strategy: 'Strategy',
+      cards: 'Cards',
+    },
+  },
+  connectionOverlay: {
+    title: 'Connection Lost',
+    message: 'Tap anywhere or move your mouse to reconnect',
+    reconnecting: 'Reconnecting...',
+  },
+  idle: {
+    label: 'Idle',
+    title: '💤 You are idle',
+    message: 'Move your mouse or press a key to resume',
   },
 };

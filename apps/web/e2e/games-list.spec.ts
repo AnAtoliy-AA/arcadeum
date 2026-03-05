@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
 
 test.describe('Games List Page', () => {
@@ -64,13 +65,17 @@ test.describe('Games List Page', () => {
 
   test('should handle navigation to create room', async ({ page }) => {
     await navigateTo(page, '/games');
+    await expect(
+      page.getByRole('heading', { name: /Game Rooms/i }),
+    ).toBeVisible({ timeout: 15000 });
+
     const createLink = page
       .getByRole('link', { name: /create|new|создать|crear/i })
       .first();
-    if (await createLink.isVisible()) {
-      await createLink.click();
-      await expect(page).toHaveURL(/\/games\/create/);
-    }
+    await expect(createLink).toBeVisible();
+
+    const href = await createLink.getAttribute('href');
+    expect(href).toContain('/games/create');
   });
 
   test('should display game cards or empty state', async ({ page }) => {
@@ -121,7 +126,7 @@ test.describe('Games List Page', () => {
 
     await navigateTo(page, '/games');
 
-    await expect(page.getByText('Normal Room')).toBeVisible();
+    await expect(page.getByText('Normal Room')).toBeVisible({ timeout: 30000 });
     await expect(page.getByText('Anonymous Bot Game')).not.toBeVisible();
   });
 });

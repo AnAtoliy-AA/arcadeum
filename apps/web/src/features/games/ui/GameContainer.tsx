@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React, { useRef, useCallback, useState, useEffect } from "react";
-import styled from "styled-components";
-import { GamesControlPanel } from "@/widgets/GamesControlPanel";
-import type { GameRoomSummary, GameSessionSummary } from "@/shared/types/games";
+import React, { useRef, useCallback, useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { GamesControlPanel } from '@/widgets/GamesControlPanel';
+import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
 interface GameContainerProps {
   room: GameRoomSummary;
@@ -83,23 +83,19 @@ export function GameContainer({
       } else {
         await document.exitFullscreen();
       }
-    } catch (err) {
-      console.error("Fullscreen failed:", err);
-    }
+    } catch {}
   }, []);
 
   useEffect(() => {
     const handler = () => setIsFullscreen(!!document.fullscreenElement);
-    document.addEventListener("fullscreenchange", handler);
-    return () => document.removeEventListener("fullscreenchange", handler);
+    document.addEventListener('fullscreenchange', handler);
+    return () => document.removeEventListener('fullscreenchange', handler);
   }, []);
 
   return (
     <Container ref={containerRef} className={className}>
       <GamesControlPanel roomId={roomId} />
-      <GameArea>
-        {children}
-      </GameArea>
+      <GameArea>{children}</GameArea>
     </Container>
   );
 }

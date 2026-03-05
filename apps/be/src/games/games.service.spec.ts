@@ -3,7 +3,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GamesService } from './games.service';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
+import { GameHistoryService } from './history/game-history.service';
 import { GamesRealtimeService } from './games.realtime.service';
+import { GameUtilitiesService } from './utilities/game-utilities.service';
+import { AuthService } from '../auth/auth.service';
+import { GamesRematchService } from './games.rematch.service';
+import { SeaBattleService } from './sea-battle/sea-battle.service';
+import { CriticalService } from './critical/critical.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { GameRoomSummary } from './rooms/game-rooms.types';
 import { GameSessionSummary } from './sessions/game-sessions.service';
@@ -13,6 +19,7 @@ describe('GamesService', () => {
   let roomsService: jest.Mocked<GameRoomsService>;
   let sessionsService: jest.Mocked<GameSessionsService>;
   let realtimeService: jest.Mocked<GamesRealtimeService>;
+  let module: TestingModule;
 
   beforeEach(async () => {
     const mockRoomsService = {
@@ -36,6 +43,11 @@ describe('GamesService', () => {
       removePlayer: jest.fn(),
     };
 
+    const mockHistoryService = {
+      createHistoryRecord: jest.fn(),
+      listHistoryByPlayer: jest.fn(),
+    };
+
     const mockRealtimeService = {
       emitRoomCreated: jest.fn(),
       emitPlayerJoined: jest.fn(),
@@ -45,12 +57,33 @@ describe('GamesService', () => {
       emitActionExecuted: jest.fn(),
     };
 
-    const module: TestingModule = await Test.createTestingModule({
+    const mockUtilities = {
+      generateInviteCode: jest.fn(),
+    };
+
+    const mockAuthService = {
+      validateToken: jest.fn(),
+    };
+
+    const mockRematchService = {
+      createRematch: jest.fn(),
+    };
+
+    const mockSeaBattleService = {};
+    const mockCriticalService = {};
+
+    module = await Test.createTestingModule({
       providers: [
         GamesService,
         { provide: GameRoomsService, useValue: mockRoomsService },
         { provide: GameSessionsService, useValue: mockSessionsService },
+        { provide: GameHistoryService, useValue: mockHistoryService },
         { provide: GamesRealtimeService, useValue: mockRealtimeService },
+        { provide: GameUtilitiesService, useValue: mockUtilities },
+        { provide: AuthService, useValue: mockAuthService },
+        { provide: GamesRematchService, useValue: mockRematchService },
+        { provide: SeaBattleService, useValue: mockSeaBattleService },
+        { provide: CriticalService, useValue: mockCriticalService },
       ],
     }).compile();
 
@@ -58,6 +91,10 @@ describe('GamesService', () => {
     roomsService = module.get(GameRoomsService);
     sessionsService = module.get(GameSessionsService);
     realtimeService = module.get(GamesRealtimeService);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {
@@ -77,7 +114,7 @@ describe('GamesService', () => {
       roomsService.createRoom.mockResolvedValue(
         createdRoom as unknown as GameRoomSummary,
       );
-      realtimeService.emitRoomCreated.mockImplementation(() => {});
+      realtimeService.emitRoomCreated.mockImplementation(() => { });
 
       const result = await service.createRoom(userId, dto);
 
@@ -121,6 +158,7 @@ describe('GamesService', () => {
       expect(realtimeService.emitGameStarted).toHaveBeenCalledWith(
         room,
         session,
+        expect.any(Function),
       );
       expect(result).toEqual({ room, session });
     });

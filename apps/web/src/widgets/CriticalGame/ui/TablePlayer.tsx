@@ -8,23 +8,19 @@ import {
   PlayerStatsContainer,
 } from './styles';
 import { ChatBubble } from './ChatBubble';
-import type { CriticalCard, CriticalLogEntry, MarkedCardInfo } from '../types';
+import type { CriticalLogEntry, CriticalPlayerTableState } from '../types';
+import { useGameStore } from '@/features/games/store/gameStore';
+import { IdleBadge } from '@/shared/ui';
 
 export interface TablePlayerProps {
-  player: {
-    playerId: string;
-    alive: boolean;
-    hand: CriticalCard[];
-    stash?: CriticalCard[];
-    markedCards?: MarkedCardInfo[];
-  };
+  player: CriticalPlayerTableState;
   index: number;
   totalPlayers: number;
   currentTurnIndex: number;
   currentUserId: string | null;
   logs?: CriticalLogEntry[];
-  resolveDisplayName: (playerId: string, fallback: string) => string;
   cardVariant?: string;
+  resolveDisplayName: (playerId: string, fallback: string) => string;
 }
 
 function findLastMessage(logs: CriticalLogEntry[], playerId: string) {
@@ -52,6 +48,8 @@ export function TablePlayer({
   );
 
   const latestMessage = findLastMessage(logs, playerId);
+  const idlePlayers = useGameStore((s) => s.idlePlayers);
+  const isPlayerIdle = idlePlayers.includes(playerId);
 
   // Determine bubble position based on player position index
   let bubblePosition: 'top' | 'bottom' | 'left' | 'right' = 'top';
@@ -98,6 +96,7 @@ export function TablePlayer({
         </PlayerAvatar>
         <PlayerName $isCurrentTurn={isCurrent} $variant={cardVariant}>
           {displayName}
+          {isPlayerIdle && <IdleBadge />}
         </PlayerName>
         {player.alive && (
           <PlayerStatsContainer>

@@ -66,9 +66,19 @@ export const ruMessages = {
     watchRoom: 'Смотреть',
     joinByCode: 'Войти по коду',
     cancel: 'Отмена',
-    copyInviteLink: 'Копировать ссылку',
+    copyInviteLink: 'Поделиться ссылкой на игру',
+    copyInviteLinkCopied: 'Скопировано!',
+    copyInviteLinkButton: 'Поделиться ссылкой',
     actions: {
       backToHome: 'На главную',
+    },
+    deleteRoom: {
+      button: 'Удалить зал',
+      confirmTitle: 'Удалить зал',
+      confirmMessage:
+        'Вы уверены, что хотите удалить этот зал? Это действие нельзя отменить, и все игроки будут отключены.',
+      confirmButton: 'Удалить зал',
+      cancelButton: 'Оставить зал',
     },
   },
   create: {
@@ -125,11 +135,13 @@ export const ruMessages = {
     },
   },
   inviteCode: {
-    title: 'Войти по коду',
+    title: 'Войти в приватную игру',
     label: 'Введите код приглашения',
     placeholder: 'например, A1B2C3',
     join: 'Войти',
     joining: 'Вход...',
+    helper:
+      'Этот код был предоставлен организатором игры. Введите его точно так, как показано, без пробелов.',
     errors: {
       notFound: 'Зал не найден или код недействителен',
       searchFailed: 'Не удалось найти зал',
@@ -142,5 +154,33 @@ export const ruMessages = {
     botCountLabel: 'Количество ботов',
     startWithBots: 'Начать с {{count}} 🤖',
     playWithBotsNotice: 'Начните с ботами сразу или дождитесь других игроков',
+  },
+  shared: {
+    rules: {
+      objective: 'Цель',
+      gameplay: 'Процесс игры',
+      combos: 'Комбо',
+      setup: 'Подготовка',
+      placement: 'Размещение',
+      battle: 'Битва',
+    },
+    category: {
+      cardGame: 'Карточная игра',
+      boardGame: 'Настольная игра',
+    },
+    tags: {
+      strategy: 'Стратегия',
+      cards: 'Карты',
+    },
+  },
+  connectionOverlay: {
+    title: 'Соединение потеряно',
+    message: 'Нажмите в любом месте или пошевелите мышкой для переподключения',
+    reconnecting: 'Переподключение...',
+  },
+  idle: {
+    label: 'Неактивен',
+    title: '💤 Вы неактивны',
+    message: 'Пошевелите мышкой или нажмите клавишу, чтобы продолжить',
   },
 };

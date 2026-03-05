@@ -115,7 +115,7 @@ export function getCardEmoji(card: CriticalCard): string {
     smite: '⚡',
     rapture: '🎺',
   };
-  return emojis[card] || '🐱';
+  return emojis[card] || '🎴';
 }
 
 export function getCardDescriptionKey(card: CriticalCard): TranslationKey {

@@ -1,11 +1,19 @@
-import { Suspense } from "react";
-import { ChatPage } from "./ChatPage";
+'use client';
+
+import { Suspense } from 'react';
+
+import styled from 'styled-components';
+import { ChatPage } from './ChatPage';
+
+const LoadingWrapper = styled.div`
+  padding: 2rem;
+  text-align: center;
+`;
 
 export default function ChatRoute() {
   return (
-    <Suspense fallback={<div style={{ padding: "2rem", textAlign: "center" }}>Loading...</div>}>
+    <Suspense fallback={<LoadingWrapper>Loading...</LoadingWrapper>}>
       <ChatPage />
     </Suspense>
   );
 }
-

@@ -14,6 +14,7 @@ import {
   extractString,
   handleError,
 } from './games.gateway.utils';
+import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { ChatScope } from './engines';
 
 @WebSocketGateway({
@@ -47,7 +48,7 @@ export class SeaBattleGateway {
         withBots,
         payload?.botCount,
       );
-      client.emit('seaBattle.session.started', result);
+      client.emit('seaBattle.session.started', maybeEncrypt(result));
     } catch (error) {
       handleError(
         this.logger,
@@ -86,11 +87,14 @@ export class SeaBattleGateway {
         shipId,
         cells,
       });
-      client.emit('seaBattle.session.ship_placed', {
-        roomId,
-        userId,
-        shipId,
-      });
+      client.emit(
+        'seaBattle.session.ship_placed',
+        maybeEncrypt({
+          roomId,
+          userId,
+          shipId,
+        }),
+      );
     } catch (error) {
       handleError(
         this.logger,
@@ -114,10 +118,13 @@ export class SeaBattleGateway {
 
     try {
       await this.seaBattleService.confirmPlacementByRoom(userId, roomId);
-      client.emit('seaBattle.session.placement_confirmed', {
-        roomId,
-        userId,
-      });
+      client.emit(
+        'seaBattle.session.placement_confirmed',
+        maybeEncrypt({
+          roomId,
+          userId,
+        }),
+      );
     } catch (error) {
       handleError(
         this.logger,
@@ -141,10 +148,13 @@ export class SeaBattleGateway {
 
     try {
       await this.seaBattleService.resetPlacementByRoom(userId, roomId);
-      client.emit('seaBattle.session.placement_reset', {
-        roomId,
-        userId,
-      });
+      client.emit(
+        'seaBattle.session.placement_reset',
+        maybeEncrypt({
+          roomId,
+          userId,
+        }),
+      );
     } catch (error) {
       handleError(
         this.logger,
@@ -168,10 +178,13 @@ export class SeaBattleGateway {
 
     try {
       await this.seaBattleService.autoPlaceShipsByRoom(userId, roomId);
-      client.emit('seaBattle.session.ships_auto_placed', {
-        roomId,
-        userId,
-      });
+      client.emit(
+        'seaBattle.session.ships_auto_placed',
+        maybeEncrypt({
+          roomId,
+          userId,
+        }),
+      );
     } catch (error) {
       handleError(
         this.logger,
@@ -213,13 +226,16 @@ export class SeaBattleGateway {
         row,
         col,
       });
-      client.emit('seaBattle.session.attack_result', {
-        roomId,
-        userId,
-        targetPlayerId,
-        row,
-        col,
-      });
+      client.emit(
+        'seaBattle.session.attack_result',
+        maybeEncrypt({
+          roomId,
+          userId,
+          targetPlayerId,
+          row,
+          col,
+        }),
+      );
     } catch (error) {
       handleError(
         this.logger,
@@ -261,11 +277,14 @@ export class SeaBattleGateway {
         message,
         scope as ChatScope,
       );
-      client.emit('seaBattle.session.history_note.ack', {
-        roomId,
-        userId,
-        scope,
-      });
+      client.emit(
+        'seaBattle.session.history_note.ack',
+        maybeEncrypt({
+          roomId,
+          userId,
+          scope,
+        }),
+      );
     } catch (error) {
       handleError(
         this.logger,

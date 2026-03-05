@@ -145,7 +145,7 @@ const referralsMessagesDefinition = {
       inviteFriends: 'Пригласить друзей',
     },
   },
-  be: {
+  by: {
     dashboard: {
       title: 'Запрасіць сяброў',
       subtitle:

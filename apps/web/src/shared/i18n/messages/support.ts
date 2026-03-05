@@ -56,6 +56,11 @@ const supportMessagesDefinition = {
         description: 'Follow {{appName}} updates and professional news.',
         cta: 'Connect',
       },
+      github: {
+        title: 'Star on GitHub',
+        description: 'Support the project by starring the repository on GitHub.',
+        cta: 'View on GitHub',
+      },
     },
   },
   es: {
@@ -108,6 +113,17 @@ const supportMessagesDefinition = {
         cta: 'Copiar datos de IBAN',
         successMessage: 'IBAN copiado al portapapeles: {{iban}}',
       },
+      linkedin: {
+        title: 'Conectar en LinkedIn',
+        description:
+          'Sigue las actualizaciones y noticias profesionales de {{appName}}.',
+        cta: 'Conectar',
+      },
+      github: {
+        title: 'Estrella en GitHub',
+        description: 'Apoya el proyecto dando una estrella en GitHub.',
+        cta: 'Ver en GitHub',
+      },
     },
   },
   fr: {
@@ -159,6 +175,17 @@ const supportMessagesDefinition = {
           "Besoin de payer par carte via votre banque ? Saisissez l'IBAN {{iban}} pour envoyer des fonds directement à {{appName}}.",
         cta: "Copier l'IBAN",
         successMessage: 'IBAN copié dans le presse-papiers : {{iban}}',
+      },
+      linkedin: {
+        title: 'Se connecter sur LinkedIn',
+        description:
+          'Suivez les mises à jour et les actualités professionnelles de {{appName}}.',
+        cta: 'Se connecter',
+      },
+      github: {
+        title: 'Étoile sur GitHub',
+        description: 'Soutenez le projet en mettant une étoile sur GitHub.',
+        cta: 'Voir sur GitHub',
       },
     },
   },
@@ -218,9 +245,14 @@ const supportMessagesDefinition = {
           'Следите за обновлениями {{appName}} и профессиональными новостями.',
         cta: 'Связаться',
       },
+      github: {
+        title: 'Звезда на GitHub',
+        description: 'Поддержите проект, поставив звезду на GitHub.',
+        cta: 'Открыть на GitHub',
+      },
     },
   },
-  be: {
+  by: {
     title: 'Падтрымайце распрацоўшчыкаў',
     tagline:
       'Дапамажыце {{appName}} развівацца хутка і заставацца даступным для ўсіх.',
@@ -275,6 +307,11 @@ const supportMessagesDefinition = {
         description:
           'Сачыце за абнаўленнямі {{appName}} і прафесійнымі навінамі.',
         cta: 'Звязацца',
+      },
+      github: {
+        title: 'Зорка на GitHub',
+        description: 'Падтрымайце праект, паставіўшы зорку на GitHub.',
+        cta: 'Адкрыць на GitHub',
       },
     },
   },

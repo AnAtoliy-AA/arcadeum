@@ -1,5 +1,13 @@
-import { test, expect } from '@playwright/test';
-import { mockSession, navigateTo, mockRoomInfo } from './fixtures/test-utils';
+import { expect } from '@playwright/test';
+import {
+  test,
+  mockSession,
+  navigateTo,
+  mockRoomInfo,
+  MOCK_OBJECT_ID,
+  waitForRoomReady,
+  mockGameSocket,
+} from './fixtures/test-utils';
 
 test.describe('Sea Battle Rules Modal', () => {
   test.beforeEach(async ({ page }) => {
@@ -9,7 +17,8 @@ test.describe('Sea Battle Rules Modal', () => {
   test('should show rules modal automatically when entering game', async ({
     page,
   }) => {
-    const roomId = 'sea-battle-rules-room';
+    const roomId = MOCK_OBJECT_ID;
+    const userId = '507f191e810c19729de860ea';
 
     await mockRoomInfo(page, {
       room: {
@@ -20,23 +29,20 @@ test.describe('Sea Battle Rules Modal', () => {
       },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await mockGameSocket(page, roomId, userId, { gameId: 'sea_battle_v1' });
 
-    // Modal should be visible automatically
-    await expect(
-      page.getByRole('heading', {
-        name: /Game Rules|games\.sea_battle_v1\.rules\.title/i,
-      }),
-    ).toBeVisible({ timeout: 10000 });
-    await expect(
-      page.getByText(
-        /Objective|games\.sea_battle_v1\.rules\.headers\.objective/i,
-      ),
-    ).toBeVisible();
+    await navigateTo(page, `/games/rooms/${roomId}`);
+    await waitForRoomReady(page, { autoCloseRules: false });
+
+    // Check for modal presence using specialized locator
+    const modal = page.getByTestId('rules-modal');
+    await expect(modal).toBeVisible({ timeout: 20000 });
+    await expect(modal).toContainText(/objective|gameplay|battle/i);
   });
 
   test('should be able to close and reopen rules modal', async ({ page }) => {
-    const roomId = 'sea-battle-rules-toggle-room';
+    const roomId = MOCK_OBJECT_ID;
+    const userId = '507f191e810c19729de860ea';
 
     await mockRoomInfo(page, {
       room: {
@@ -47,30 +53,32 @@ test.describe('Sea Battle Rules Modal', () => {
       },
     });
 
+    await mockGameSocket(page, roomId, userId, { gameId: 'sea_battle_v1' });
+
     await navigateTo(page, `/games/rooms/${roomId}`);
+    await waitForRoomReady(page, { autoCloseRules: false });
 
-    // Wait for modal and close it
-    await expect(
-      page.getByRole('heading', {
-        name: /Game Rules|games\.sea_battle_v1\.rules\.title/i,
-      }),
-    ).toBeVisible({ timeout: 10000 });
-    await page.getByRole('button', { name: '×' }).click();
-    await expect(
-      page.getByRole('heading', {
-        name: /Game Rules|games\.sea_battle_v1\.rules\.title/i,
-      }),
-    ).not.toBeVisible();
+    // Initial modal visible
+    const modal = page.getByTestId('rules-modal');
+    await expect(modal).toBeVisible({ timeout: 20000 });
+    await expect(modal).toContainText(/objective/i);
 
-    // Reopen via header button
-    await page
-      .getByRole('button', { name: /Rules|📖/i })
-      .click({ timeout: 5000 });
-    await expect(
-      page.getByRole('heading', {
-        name: /Game Rules|games\.sea_battle_v1\.rules\.title/i,
-      }),
-    ).toBeVisible();
+    // Close using standard close method
+    const closeBtn = page.getByTestId('modal-close-button').first();
+    await closeBtn.click({ force: true, timeout: 15000 });
+
+    // Wait for modal to hide
+    await expect(modal).not.toBeVisible({ timeout: 15000 });
+
+    // Now find the button to reopen it
+    const rulesBtn = page
+      .getByRole('button', { name: /Game Rules|📖/i })
+      .first();
+    await rulesBtn.click({ force: true, timeout: 15000 });
+
+    // Check it reopened
+    await expect(modal).toBeVisible({ timeout: 15000 });
+    await expect(modal).toContainText(/objective/i);
   });
 
   test('should be able to view rules from create game screen', async ({
@@ -79,29 +87,25 @@ test.describe('Sea Battle Rules Modal', () => {
     await navigateTo(page, '/games/create?gameId=sea_battle_v1');
     await page.waitForLoadState('networkidle');
 
-    // Click "View Game Rules"
-    const rulesButton = page.getByRole('button', { name: /Game Rules|📖/i });
-    await expect(rulesButton).toBeVisible({ timeout: 10000 });
-    await rulesButton.click();
+    // Look for rules button on create screen
+    const rulesBtn = page
+      .getByRole('button', { name: /Game Rules|📖/i })
+      .first()
+      .or(page.getByTestId('view-rules-button'));
+    await expect(rulesBtn).toBeVisible({ timeout: 15000 });
 
-    // Modal should be visible
-    await expect(
-      page.getByRole('heading', {
-        name: /Game Rules|games\.sea_battle_v1\.rules\.title/i,
-      }),
-    ).toBeVisible({ timeout: 10000 });
-    await expect(
-      page.getByText(
-        /Objective|games\.sea_battle_v1\.rules\.headers\.objective/i,
-      ),
-    ).toBeVisible();
+    // Click to open rules modal
+    await rulesBtn.click({ force: true, timeout: 10000 });
 
-    // Close it
-    await page.getByRole('button', { name: '×' }).click();
-    await expect(
-      page.getByRole('heading', {
-        name: /Game Rules|games\.sea_battle_v1\.rules\.title/i,
-      }),
-    ).not.toBeVisible();
+    // Check modal
+    const modal = page.getByTestId('rules-modal');
+    await expect(modal).toBeVisible({ timeout: 20000 });
+    await expect(modal).toContainText(/objective/i);
+
+    // Close using standard close method
+    const closeBtn = page.getByTestId('modal-close-button').first();
+    await closeBtn.click({ force: true, timeout: 15000 });
+
+    await expect(modal).not.toBeVisible({ timeout: 15000 });
   });
 });

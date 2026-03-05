@@ -57,11 +57,11 @@ export function useAuthForm() {
   const usernameFieldId = useId();
   const referralCodeFieldId = useId();
 
-  const [email, setEmail] = useState(storedEmail ?? '');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [username, setUsername] = useState(storedUsername ?? '');
-  const [referralCode, setReferralCode] = useState(referralParam ?? '');
+  const [username, setUsername] = useState('');
+  const [referralCode, setReferralCode] = useState('');
 
   const [usernameAvailability, setUsernameAvailability] = useState<
     'idle' | 'checking' | 'available' | 'taken'
@@ -75,14 +75,19 @@ export function useAuthForm() {
 
   const isRegisterMode = mode === 'register';
 
+  const referralAppliedRef = useRef(false);
+
   // Extract referral from URL and auto-toggle to register mode if needed
   useEffect(() => {
-    if (referralParam) {
-      scheduleStateUpdate(() => setReferralCode(referralParam));
-      // Try to force register mode if not currently
-      if (mode !== 'register') {
-        scheduleStateUpdate(() => toggleMode());
-      }
+    if (referralParam && !referralAppliedRef.current) {
+      referralAppliedRef.current = true;
+      scheduleStateUpdate(() => {
+        setReferralCode(referralParam);
+        // Try to force register mode if not currently
+        if (mode !== 'register') {
+          toggleMode();
+        }
+      });
     }
   }, [referralParam, mode, toggleMode]);
 

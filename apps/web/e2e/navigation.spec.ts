@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
 
 test.describe('Navigation', () => {
@@ -17,13 +18,19 @@ test.describe('Navigation', () => {
   });
 
   test('should navigate to home from any page', async ({ page }) => {
-    await page.goto('/games');
+    await page.goto('/games', { waitUntil: 'domcontentloaded' });
 
     // Use a more robust selector for the home link/logo
     const homeLink = page.locator('header a[href="/"]').first();
     await expect(homeLink).toBeVisible();
+
+    // Ensure the link is stable and clickable
+    await homeLink.waitFor({ state: 'visible' });
     await homeLink.click();
-    await expect(page).toHaveURL('/');
+
+    // Increased timeout for navigation and ensure we wait for URL to be exactly /
+    await page.waitForLoadState('networkidle');
+    await expect(page).toHaveURL('/', { timeout: 15000 });
   });
 
   test('should navigate to games page', async ({ page }) => {

@@ -56,7 +56,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
   sea_battle_v1: {
     slug: 'sea_battle_v1',
     name: 'Sea Battle',
-    description: 'Classic naval combat game for up to 4 players',
+    description: 'Classic naval combat game for up to 6 players',
     category: 'Strategy',
     minPlayers: 2,
     maxPlayers: 4,

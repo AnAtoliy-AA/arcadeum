@@ -1,8 +1,9 @@
-import { variants } from './en-variants';
+import { variants as cardVariants } from './en-variants';
 
 export const enMessages = {
   critical_v1: {
     name: 'Critical',
+    description: 'A strategic card game where you avoid critical hazards',
     rules: {
       title: 'Game Rules',
       headers: {
@@ -34,9 +35,40 @@ export const enMessages = {
         '🔒 Private Room: This room is invite-only. Share the invite code or link to play with friends!',
       chat: '💬 Table Chat: \n• All: Visible to everyone (spectators too). \n• Players: Only for players currently alive. \n• Private: Notes for yourself (only you can see).',
       setup:
-        'Each player starts with a Defuse card and a hand of random cards. The deck contains some Exploding cards... beware!',
+        'Each player starts with a Defuse card and a hand of random cards. The deck contains some Unstable cards... beware!',
+    },
+    variants: {
+      cyberpunk: {
+        name: 'The Short Circuit',
+        description: 'Cyberpunk hackers preventing system overload',
+      },
+      underwater: {
+        name: 'Deep Sea Pressure',
+        description: 'Underwater horror in a leaking submarine',
+      },
+      crime: {
+        name: 'The Heist',
+        description: 'Crime noir theme with police raids and getaways',
+      },
+      horror: {
+        name: 'The Cursed Banquet',
+        description: 'Social horror theme at a dark sorcerer party',
+      },
+      adventure: {
+        name: 'The Ancient Temple',
+        description: 'Survival adventure in a mysterious temple',
+      },
+      'high-altitude-hike': {
+        name: 'High-Altitude Hike',
+        description: 'Survival adventure escaping an avalanche',
+      },
+      random: {
+        name: 'Random Theme',
+        description: 'Surprise me with a random theme!',
+      },
     },
   },
+
   table: {
     cards: {
       criticalEvent: 'Critical',
@@ -135,7 +167,7 @@ export const enMessages = {
         criticalImplosion:
           'When drawn, this card goes back in the deck face up. The next time it is drawn, it explodes immediately!',
         containmentField:
-          'Allows you to hold a Critical card in your hand without exploding.',
+          'Allows you to hold a Critical card in your hand without failing.',
         fission:
           'Remove all Critical cards from the Deck. Shuffle the Deck, then place the Critical cards back on top.',
         tribute:
@@ -148,7 +180,7 @@ export const enMessages = {
         smite: 'Choose a player. They must take 3 turns immediately.',
         rapture: 'All other players must give you one card from their hand.',
       },
-      variants,
+      variants: cardVariants,
     },
     actions: {
       start: 'Start Game',
@@ -292,17 +324,28 @@ export const enMessages = {
         description:
           'Choose a player to take 2 turns instead of the next player.',
       },
-      catCombo: {
+      eventCombo: {
         title: 'Play Combo',
+        selectType: 'Select Combo Type',
+        pairTrio: 'Pair/Trio',
+        selectComboCard: 'Select Card',
+        fiver: 'Fiver',
+        anyFive: 'Any 5 different cards',
         selectMode: 'Select Combo Mode',
         pair: 'Pair',
         pairDesc: 'Random card from target',
         trio: 'Trio',
         trioDesc: 'Choose specific card',
+        trioMode: '2-3 cards',
         selectTarget: 'Select Target Player',
         selectCard: 'Select Card to Request',
         cardsCount: '{{count}} cards',
         confirm: 'Play Combo',
+        stashCards: 'Select {{count}} different cards',
+        pickDiscard: 'Pick a card from the discard pile',
+        selectCardHint: 'Select a card below',
+        pickCardBlind: 'Pick a card (blind)',
+        cardLabel: 'Card {{index}}',
       },
       seeTheFuture: { title: 'Top Cards', confirm: 'Got it!' },
       alterTheFuture: {

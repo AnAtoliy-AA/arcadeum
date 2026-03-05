@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
 
-const CatComboModal = dynamic(
-  () => import('./modals/CatComboModal').then((m) => m.CatComboModal),
+const ComboModal = dynamic(
+  () => import('./modals/ComboModal').then((m) => m.ComboModal),
   { ssr: false },
 );
 const StashModal = dynamic(
@@ -51,8 +51,8 @@ const OmniscienceModal = dynamic(
 );
 import type {
   CriticalCard,
-  CatComboModalState,
-  CriticalCatCard,
+  EventComboModalState,
+  CriticalComboCard,
   CriticalPlayerState,
   OmniscienceModalState,
 } from '../types';
@@ -88,9 +88,9 @@ export interface GameModalsProps {
   onBlockUser?: (userId: string) => void;
   isAcceptingInvitation: boolean;
 
-  // Cat Combo Modal
-  catComboModal: CatComboModalState | null;
-  onCloseCatComboModal: () => void;
+  // Event Combo Modal
+  eventComboModal: EventComboModalState | null;
+  onCloseEventComboModal: () => void;
   selectedMode: 'pair' | 'trio' | 'fiver' | null;
   selectedTarget: string | null;
   selectedCard: CriticalCard | null;
@@ -100,14 +100,14 @@ export interface GameModalsProps {
   aliveOpponents: CriticalPlayerState[];
   selfHand: CriticalCard[];
   discardPile: CriticalCard[];
-  onSelectCat: (card: CriticalCatCard) => void;
+  onSelectComboCard: (card: CriticalComboCard) => void;
   onSelectMode: (mode: 'pair' | 'trio' | 'fiver' | null) => void;
   onSelectTarget: (target: string | null) => void;
   onSelectCard: (card: CriticalCard | null) => void;
   onSelectIndex: (index: number | null) => void;
   onSelectDiscardCard: (card: CriticalCard | null) => void;
   onToggleFiverCard: (card: CriticalCard) => void;
-  onConfirmCatCombo: () => void;
+  onConfirmEventCombo: () => void;
 
   // See the Future Modal
   seeTheFutureModal: SeeTheFutureModalState;
@@ -175,9 +175,9 @@ export function GameModals({
   onBlockUser,
   isAcceptingInvitation,
 
-  // Cat Combo Modal
-  catComboModal,
-  onCloseCatComboModal,
+  // Event Combo Modal
+  eventComboModal,
+  onCloseEventComboModal,
   selectedMode,
   selectedTarget,
   selectedCard,
@@ -187,13 +187,13 @@ export function GameModals({
   aliveOpponents,
   selfHand,
   discardPile,
-  onSelectCat,
+  onSelectComboCard,
   onSelectMode,
   onSelectCard,
   onSelectIndex,
   onSelectDiscardCard,
   onToggleFiverCard,
-  onConfirmCatCombo,
+  onConfirmEventCombo,
 
   // See the Future Modal
   seeTheFutureModal,
@@ -273,11 +273,11 @@ export function GameModals({
         cardVariant={cardVariant}
       />
 
-      {/* Cat Combo Modal */}
-      <CatComboModal
-        isOpen={!!catComboModal}
-        onClose={onCloseCatComboModal}
-        catComboModal={catComboModal}
+      {/* Event Combo Modal */}
+      <ComboModal
+        isOpen={!!eventComboModal}
+        onClose={onCloseEventComboModal}
+        comboModal={eventComboModal}
         selectedMode={selectedMode}
         selectedTarget={selectedTarget}
         selectedCard={selectedCard}
@@ -287,14 +287,14 @@ export function GameModals({
         aliveOpponents={aliveOpponents}
         selfHand={selfHand}
         discardPile={discardPile}
-        onSelectCat={onSelectCat}
+        onSelectComboCard={onSelectComboCard}
         onSelectMode={onSelectMode}
         onSelectTarget={onSelectTarget}
         onSelectCard={onSelectCard}
         onSelectIndex={onSelectIndex}
         onSelectDiscardCard={onSelectDiscardCard}
         onToggleFiverCard={onToggleFiverCard}
-        onConfirm={onConfirmCatCombo}
+        onConfirm={onConfirmEventCombo}
         resolveDisplayName={resolveDisplayName}
         t={t}
         cardVariant={cardVariant}

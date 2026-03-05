@@ -63,8 +63,8 @@ export function useCriticalModals({
   }, [store.setSeeTheFutureModal, store]);
 
   return {
-    // Cat combo modal
-    catComboModal: store.catComboModal,
+    // Event combo modal
+    eventComboModal: store.eventComboModal,
     selectedMode: store.selectedMode,
     selectedTarget: store.selectedTarget,
     selectedCard: store.selectedCard,
@@ -73,9 +73,9 @@ export function useCriticalModals({
     setSelectedTarget: store.setSelectedTarget,
     setSelectedCard: store.setSelectedCard,
     setSelectedIndex: store.setSelectedIndex,
-    handleOpenCatCombo: store.openCatCombo,
-    handleCloseCatComboModal: store.closeCatComboModal,
-    handleSelectCat: store.selectCat,
+    handleOpenEventCombo: store.openEventCombo,
+    handleCloseEventComboModal: store.closeEventComboModal,
+    handleSelectComboCard: store.selectComboCard,
 
     // Fiver mode state
     selectedDiscardCard: store.selectedDiscardCard,

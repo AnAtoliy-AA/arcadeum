@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
 
 test.describe('Language Switching', () => {
@@ -11,35 +12,56 @@ test.describe('Language Switching', () => {
 
     // 2. Go to Settings and change to Russian
     await navigateTo(page, '/settings');
-    const russianBtn = page.getByRole('button', { name: /русский/i });
-    await russianBtn.click();
-    await expect(russianBtn).toHaveAttribute('aria-pressed', 'true');
+    // Verify English is selected
+    await expect(page.getByTestId('lang-btn-en')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
 
-    // 3. Verify Settings page translated
-    await expect(page.locator('h1')).toContainText(/настройки/i);
+    // Switch to Russian using the page button
+    await page.getByTestId('lang-btn-ru').click();
+
+    // Verify page content changed to Russian using polling for stability
+    await expect(async () => {
+      const settingsTitle = page.getByRole('heading', { level: 1 });
+      const text = await settingsTitle.innerText();
+      if (!/настройки/i.test(text)) {
+        throw new Error(`Not yet Russian. Current text: "${text}"`);
+      }
+    }).toPass({ timeout: 15000 });
 
     // 4. Navigate back to Home and verify it is translated
-    await page.goto('/');
+    await navigateTo(page, '/');
+
     // Check for "Games" link translation in Russian (likely "Игры" or similar)
     // Based on settings.ts, ru translation for title is "Настройки"
-    // Let's check common.ts or just check that English text is NOT there
     await expect(
       page.getByRole('link', { name: /games/i }).first(),
-    ).not.toBeVisible();
-    await expect(
-      page.getByRole('link', { name: /игры/i }).first(),
-    ).toBeVisible();
+    ).not.toBeVisible({ timeout: 10000 });
+
+    await expect(page.getByRole('link', { name: /игры/i }).first()).toBeVisible(
+      { timeout: 10000 },
+    );
 
     // 5. Reload page and verify language persists
     await page.reload();
-    await expect(
-      page.getByRole('link', { name: /игры/i }).first(),
-    ).toBeVisible();
+    // Wait for hydration after reload
+    await expect(page.locator('html')).toHaveAttribute(
+      'data-theme-preference',
+      /.+/,
+      { timeout: 10000 },
+    );
+
+    await expect(page.getByRole('link', { name: /игры/i }).first()).toBeVisible(
+      { timeout: 10000 },
+    );
 
     // 6. Change back to English
     await navigateTo(page, '/settings');
-    const englishBtn = page.getByRole('button', { name: /english/i });
-    await englishBtn.click();
-    await expect(page.locator('h1')).toContainText(/settings/i);
+    await page.getByTestId('lang-btn-en').click();
+    await expect(page.getByRole('heading', { level: 1 })).toContainText(
+      /settings/i,
+      { timeout: 10000 },
+    );
   });
 });

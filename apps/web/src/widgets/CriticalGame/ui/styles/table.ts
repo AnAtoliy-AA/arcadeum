@@ -1,15 +1,7 @@
 import styled, { css } from 'styled-components';
 import { VARIANT_COLORS } from './variant-palette';
 import { GAME_VARIANT } from '../../lib/constants';
-import {
-  getTableBackground,
-  getTableBorder,
-  getTableShadow,
-  getCenterTableBackground,
-  getCenterTableBorder,
-  getCenterTableShadow,
-  getCenterTableGlow,
-} from './table-helpers';
+import { getVariantStyles } from './variants';
 
 // Table Components
 export const GameTable = styled.div`
@@ -36,15 +28,16 @@ export const TableBackground = styled.div<{ $variant?: string }>`
   position: absolute;
   inset: 0;
   border-radius: 20px;
-  background: ${({ $variant }) => getTableBackground($variant)};
-  border: ${({ $variant }) => getTableBorder($variant)};
+  background: ${({ $variant }) =>
+    getVariantStyles($variant).table.getBackground()};
+  border: ${({ $variant }) => getVariantStyles($variant).table.getBorder()};
   border-image: ${({ $variant }) =>
     $variant === GAME_VARIANT.UNDERWATER
       ? `linear-gradient(135deg, ${VARIANT_COLORS.underwater.accent}99 0%, ${VARIANT_COLORS.underwater.primary}80 25%, ${VARIANT_COLORS.underwater.primary}4D 50%, ${VARIANT_COLORS.underwater.primary}80 75%, ${VARIANT_COLORS.underwater.accent}99 100%) 1`
       : 'none'};
   overflow: hidden;
   z-index: 0;
-  box-shadow: ${({ $variant }) => getTableShadow($variant)};
+  box-shadow: ${({ $variant }) => getVariantStyles($variant).table.getShadow()};
 
   /* Sonar Grid Pattern for Underwater */
   ${({ $variant }) =>
@@ -195,13 +188,16 @@ export const CenterTable = styled.div<{ $variant?: string }>`
   gap: 1.5rem;
   padding: 1.25rem;
   border-radius: 50%;
-  background: ${({ $variant }) => getCenterTableBackground($variant)};
-  border: ${({ $variant }) => getCenterTableBorder($variant)};
+  background: ${({ $variant }) =>
+    getVariantStyles($variant).table.center.getBackground()};
+  border: ${({ $variant }) =>
+    getVariantStyles($variant).table.center.getBorder()};
   width: 200px;
   height: 200px;
   position: relative;
   z-index: 1;
-  box-shadow: ${({ $variant }) => getCenterTableShadow($variant)};
+  box-shadow: ${({ $variant }) =>
+    getVariantStyles($variant).table.center.getShadow()};
 
   /* Rotating glow border */
   &::before {
@@ -209,7 +205,8 @@ export const CenterTable = styled.div<{ $variant?: string }>`
     position: absolute;
     inset: -2px;
     border-radius: 50%;
-    background: ${({ $variant }) => getCenterTableGlow($variant)};
+    background: ${({ $variant }) =>
+      getVariantStyles($variant).table.center.getGlow()};
     animation: rotate 20s linear infinite;
     z-index: -1;
   }

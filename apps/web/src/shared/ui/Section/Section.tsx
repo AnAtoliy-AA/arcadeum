@@ -41,7 +41,9 @@ export function Section({
 }: SectionProps) {
   return (
     <StyledSection {...props}>
-      {title && <SectionTitle>{title}</SectionTitle>}
+      {title && (
+        <SectionTitle data-testid="section-title">{title}</SectionTitle>
+      )}
       {description && <SectionDescription>{description}</SectionDescription>}
       {children}
     </StyledSection>

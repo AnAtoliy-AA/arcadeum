@@ -56,15 +56,19 @@ describe('socket-encryption', () => {
   });
 
   it('encryptPayload throws error if key is not set', async () => {
-    await expect(encryptPayload({ foo: 1 })).rejects.toThrow(
-      'Encryption key not available',
-    );
+    vi.useFakeTimers();
+    const promise = encryptPayload({ foo: 1 });
+    vi.advanceTimersByTime(11000);
+    await expect(promise).rejects.toThrow('Timeout waiting for encryption key');
+    vi.useRealTimers();
   });
 
   it('decryptPayload throws error if key is not set', async () => {
-    await expect(decryptPayload('abc')).rejects.toThrow(
-      'Encryption key not available',
-    );
+    vi.useFakeTimers();
+    const promise = decryptPayload('abc');
+    vi.advanceTimersByTime(11000);
+    await expect(promise).rejects.toThrow('Timeout waiting for encryption key');
+    vi.useRealTimers();
   });
 
   it('decryptPayload throws for too short payload', async () => {

@@ -1,4 +1,4 @@
-import { CARD_VARIANTS, RANDOM_VARIANT, GAME_VARIANT } from '../lib/constants';
+import { GAME_VARIANT, CRITICAL_VARIANTS } from '../lib/constants';
 import { GameVariantSelector } from '@/features/games/ui/GameVariantSelector';
 
 interface VariantSelectorProps {
@@ -12,14 +12,13 @@ export function VariantSelector({
   currentVariant,
   disabled = false,
 }: VariantSelectorProps) {
-  const combinedVariants = [...CARD_VARIANTS, RANDOM_VARIANT];
   const safeVariant = currentVariant || GAME_VARIANT.CYBERPUNK;
 
   return (
     <GameVariantSelector
       roomId={roomId}
       currentVariant={safeVariant}
-      variants={combinedVariants}
+      variants={CRITICAL_VARIANTS}
       optionKey="cardVariant"
       disabled={disabled}
     />

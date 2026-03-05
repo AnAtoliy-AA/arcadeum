@@ -3,7 +3,7 @@ import { enMessages } from './en';
 import { esMessages } from './es';
 import { frMessages } from './fr';
 import { ruMessages } from './ru';
-import { beMessages } from './be';
+import { byMessages } from './by';
 
 export type SeaBattleGamesMessages = typeof enMessages;
 
@@ -12,5 +12,5 @@ export const seaBattleMessages: Record<Locale, SeaBattleGamesMessages> = {
   es: esMessages,
   fr: frMessages,
   ru: ruMessages,
-  be: beMessages,
+  by: byMessages,
 };

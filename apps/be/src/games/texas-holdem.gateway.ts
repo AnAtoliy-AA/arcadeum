@@ -14,6 +14,7 @@ import {
   handleError,
 } from './games.gateway.utils';
 
+import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 
 @WebSocketGateway({
@@ -54,7 +55,7 @@ export class TexasHoldemGateway {
         engine,
       );
 
-      client.emit('games.session.holdem_started', result);
+      client.emit('games.session.holdem_started', maybeEncrypt(result));
     } catch (error) {
       handleError(
         this.logger,
@@ -101,12 +102,15 @@ export class TexasHoldemGateway {
         raiseAmount,
       );
 
-      client.emit('games.session.holdem_action.performed', {
-        roomId,
-        userId,
-        action,
-        raiseAmount,
-      });
+      client.emit(
+        'games.session.holdem_action.performed',
+        maybeEncrypt({
+          roomId,
+          userId,
+          action,
+          raiseAmount,
+        }),
+      );
     } catch (error) {
       handleError(
         this.logger,
@@ -144,11 +148,14 @@ export class TexasHoldemGateway {
     try {
       await this.texasHoldemService.postHistoryNote(userId, roomId, message);
 
-      client.emit('games.session.holdem_history_note.ack', {
-        roomId,
-        userId,
-        scope,
-      });
+      client.emit(
+        'games.session.holdem_history_note.ack',
+        maybeEncrypt({
+          roomId,
+          userId,
+          scope,
+        }),
+      );
     } catch (error) {
       handleError(
         this.logger,

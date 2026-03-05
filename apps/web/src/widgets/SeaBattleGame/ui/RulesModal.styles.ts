@@ -1,4 +1,5 @@
 import styled, { keyframes } from 'styled-components';
+import { scrollbarStyles } from '@/shared/lib/styles';
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(10px); }
@@ -22,6 +23,10 @@ export const ModalOverlay = styled.div`
   z-index: 1100;
   padding: 1.5rem;
   animation: ${fadeIn} 0.3s ease-out;
+
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+  }
 `;
 
 export const ModalContainer = styled.div`
@@ -48,6 +53,10 @@ export const ModalHeader = styled.div`
   align-items: center;
   background: linear-gradient(to bottom, rgba(56, 189, 248, 0.05), transparent);
   border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+
+  @media (max-width: 768px) {
+    padding: 1.5rem 1.5rem 1rem;
+  }
 `;
 
 export const ModalTitle = styled.h2`
@@ -88,18 +97,10 @@ export const ScrollArea = styled.div`
   overflow-y: auto;
   flex: 1;
 
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: rgba(56, 189, 248, 0.2);
-    border-radius: 10px;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(56, 189, 248, 0.4);
+  ${scrollbarStyles}
+
+  @media (max-width: 768px) {
+    padding: 1rem 1.5rem 2rem;
   }
 `;
 
@@ -109,6 +110,10 @@ export const Section = styled.div`
 
   &:last-child {
     margin-bottom: 0;
+  }
+
+  @media (max-width: 768px) {
+    margin-bottom: 1.5rem;
   }
 `;
 
@@ -146,6 +151,11 @@ export const RulesText = styled.p`
   line-height: 1.7;
   color: #94a3b8;
   padding-left: 3.6rem; /* Align with title text (Icon size + gap) */
+
+  @media (max-width: 768px) {
+    padding-left: 0;
+    margin-top: 0.5rem;
+  }
 `;
 
 export const FleetGrid = styled.div`
@@ -154,6 +164,11 @@ export const FleetGrid = styled.div`
   gap: 1.25rem;
   padding-left: 3.6rem;
   margin-top: 1.5rem;
+
+  @media (max-width: 768px) {
+    padding-left: 0;
+    margin-top: 1rem;
+  }
 `;
 
 export const ShipCard = styled.div`

@@ -1,31 +1,18 @@
 import { TableStats } from './TableStats';
-import { LastPlayedCardDisplay } from './LastPlayedCardDisplay';
-import { DeckDisplay } from './DeckDisplay';
-import {
-  GameTable,
-  TableBackground,
-  PlayersRing,
-  CenterTable,
-  CardSlot,
-  SonarSweep,
-  FloatingDots,
-  CircuitLines,
-} from './styles';
+import { GameTable, TableBackground, PlayersRing } from './styles';
 
-import type { CriticalCard, CriticalLogEntry, MarkedCardInfo } from '../types';
+import { TableDecorations } from './TableDecorations';
+import { CenterTableSection } from './CenterTableSection';
+
+import type {
+  CriticalCard,
+  CriticalLogEntry,
+  CriticalPlayerTableState,
+} from '../types';
 import { TablePlayer } from './TablePlayer';
-import { GAME_VARIANT } from '../lib/constants';
-
-interface PlayerState {
-  playerId: string;
-  alive: boolean;
-  hand: CriticalCard[];
-  stash?: CriticalCard[];
-  markedCards?: MarkedCardInfo[];
-}
 
 interface GameTableSectionProps {
-  players: PlayerState[];
+  players: CriticalPlayerTableState[];
   playerOrder: string[];
   currentTurnIndex: number;
   currentUserId: string | null;
@@ -56,13 +43,7 @@ export function GameTableSection({
   return (
     <GameTable>
       <TableBackground $variant={cardVariant} />
-      {cardVariant === GAME_VARIANT.UNDERWATER && (
-        <>
-          <SonarSweep />
-          <FloatingDots />
-          <CircuitLines />
-        </>
-      )}
+      <TableDecorations variant={cardVariant} />
       <PlayersRing $playerCount={playerOrder.length}>
         {playerOrder.map((playerId, index) => {
           const player = players.find((p) => p.playerId === playerId);
@@ -83,18 +64,12 @@ export function GameTableSection({
           );
         })}
 
-        <CenterTable $variant={cardVariant}>
-          <CardSlot>
-            <LastPlayedCardDisplay
-              discardPile={discardPile}
-              t={t}
-              cardVariant={cardVariant}
-            />
-          </CardSlot>
-          <CardSlot>
-            <DeckDisplay deck={deck} t={t} cardVariant={cardVariant} />
-          </CardSlot>
-        </CenterTable>
+        <CenterTableSection
+          discardPile={discardPile}
+          deck={deck}
+          cardVariant={cardVariant}
+          t={t}
+        />
       </PlayersRing>
       <TableStats
         deckCount={deck.length}

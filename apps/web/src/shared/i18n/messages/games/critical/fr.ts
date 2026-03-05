@@ -1,8 +1,10 @@
-import { variants } from './fr-variants';
+import { variants as cardVariants } from './fr-variants';
 
 export const frMessages = {
   critical_v1: {
     name: 'Critique',
+    description:
+      'Un jeu de cartes stratégique où vous évitez les incidents critiques',
     rules: {
       title: 'Règles du Jeu',
       headers: {
@@ -36,10 +38,41 @@ export const frMessages = {
       setup:
         'Chaque joueur commence avec une carte Désamorçage et une main de cartes aléatoires. Le paquet contient des cartes Explosives... attention !',
     },
+    variants: {
+      cyberpunk: {
+        name: 'Court-circuit',
+        description: 'Des hackers cyberpunk évitent la surcharge du système',
+      },
+      underwater: {
+        name: 'Pression Profonde',
+        description: 'Horreur sous-marine dans un sous-marin qui fuit',
+      },
+      crime: {
+        name: 'Le Casse',
+        description: 'Thème noir avec descentes de police et évasions',
+      },
+      horror: {
+        name: 'Banquet Maudit',
+        description: 'Thème d’horreur sociale à la fête d’un mage noir',
+      },
+      adventure: {
+        name: 'Le Temple Antique',
+        description: 'Survie dans une aventure dans un temple mystérieux',
+      },
+      'high-altitude-hike': {
+        name: 'Randonnée en Montagne',
+        description: 'Survie dans une aventure en échappant à une avalanche',
+      },
+      random: {
+        name: 'Thème Aléatoire',
+        description: 'Surprenez-moi avec un thème au hasard !',
+      },
+    },
   },
+
   table: {
     cards: {
-      criticalEvent: 'Chat Explosif',
+      criticalEvent: 'Incident Critique',
       neutralizer: 'Désamorcer',
       strike: 'Attaque',
       evade: 'Passer',
@@ -47,12 +80,12 @@ export const frMessages = {
       reorder: 'Mélanger',
       insight: "Voir l'Avenir",
       cancel: 'Non',
-      collectionAlpha: 'Chat Taco',
-      collectionBeta: 'Chat Patate Poilu',
-      collectionGamma: 'Chat Arc-en-ciel',
-      collectionDelta: 'Chat Pastèque',
-      collectionEpsilon: 'Chat Barbu',
-      generic: 'Chat',
+      collectionAlpha: 'Module Alpha',
+      collectionBeta: 'Module Bêta',
+      collectionGamma: 'Module Gamma',
+      collectionDelta: 'Module Delta',
+      collectionEpsilon: 'Module Epsilon',
+      generic: 'Module',
       // Future Pack cards
       seeFuture5x: "Voir l'Avenir (5x)",
       alterFuture3x: "Altérer l'Avenir (3x)",
@@ -91,19 +124,23 @@ export const frMessages = {
       rapture: 'Le Ravissement',
       descriptions: {
         criticalEvent: 'Vous devez le désamorcer ou vous explosez !',
-        neutralizer: 'Utilisez pour désamorcer un Chat Explosif',
+        neutralizer: 'Utilisez pour désamorcer un Incident Critique',
         strike: 'Fin du tour sans piocher, le joueur suivant joue 2 tours',
         evade: 'Terminez votre tour sans piocher de carte',
         trade: 'Forcez un autre joueur à vous donner une carte',
         reorder: 'Mélangez la pioche',
         insight: 'Regardez les 3 premières cartes du paquet',
-        cancel: 'Annule toute action sauf Chat Explosif ou Désamorcer',
-        collectionAlpha: 'Collectez des chats identiques pour voler des cartes',
-        collectionBeta: 'Collectez des chats identiques pour voler des cartes',
-        collectionGamma: 'Collectez des chats identiques pour voler des cartes',
-        collectionDelta: 'Collectez des chats identiques pour voler des cartes',
+        cancel: 'Annule toute action sauf Incident Critique ou Désamorcer',
+        collectionAlpha:
+          'Collectez des modules identiques pour voler des cartes',
+        collectionBeta:
+          'Collectez des modules identiques pour voler des cartes',
+        collectionGamma:
+          'Collectez des modules identiques pour voler des cartes',
+        collectionDelta:
+          'Collectez des modules identiques pour voler des cartes',
         collectionEpsilon:
-          'Collectez des chats identiques pour voler des cartes',
+          'Collectez des modules identiques pour voler des cartes',
         // Future Pack descriptions
         seeFuture5x: 'Regardez les 5 premières cartes du paquet',
         alterFuture3x: 'Réorganisez les 3 premières cartes',
@@ -137,9 +174,9 @@ export const frMessages = {
         criticalImplosion:
           'Si pioché face visible, explose immédiatement et ne peut pas être désamorcé',
         containmentField:
-          'Permet de garder un Chat Explosif en main sans exploser',
+          'Permet de garder un Incident Critique en main sans exploser',
         fission:
-          'Mélange les Chats Explosifs dans le paquet et termine le tour sans piocher',
+          'Mélange les Incidents Critiques dans le paquet et termine le tour sans piocher',
         tribute:
           'Tous les joueurs (vous inclus) mettent une carte de leur main sur le paquet',
         blackout: "Cible un joueur. Il jouera son prochain tour à l'aveugle",
@@ -150,7 +187,7 @@ export const frMessages = {
         smite: 'Choisissez un joueur. Il doit prendre 3 tours immédiatement',
         rapture: 'Tous les autres joueurs doivent vous donner une carte',
       },
-      variants,
+      variants: cardVariants,
     },
     actions: {
       start: 'Démarrer le Jeu',
@@ -172,7 +209,7 @@ export const frMessages = {
       autoShuffle: '🔀 Auto-mélanger après Désamorçage',
       autoDrawSkipAfterShuffle: '↪️ Piocher/Passer après Mélange',
       autoNopeAttack: '🚫 Auto-nope Attaque',
-      autoGiveFavor: '🤲 Auto-donner Faveur (chat→action→désamorcer)',
+      autoGiveFavor: '🤲 Auto-donner Faveur (module→action→désamorcer)',
       autoDefuse: '🛡️ Auto-désamorcer (position aléatoire)',
     },
     idleTimer: {
@@ -306,17 +343,28 @@ export const frMessages = {
       shareTheFuture: {
         title: "Partager l'Avenir",
       },
-      catCombo: {
+      eventCombo: {
         title: 'Jouer un Combo',
+        selectType: 'Sélectionner le type de Combo',
+        pairTrio: 'Paire/Trio',
+        selectComboCard: 'Sélectionner une carte',
+        fiver: 'Cinq',
+        anyFive: '5 cartes différentes',
         selectMode: 'Sélectionner le mode de Combo',
         pair: 'Paire',
         pairDesc: 'Carte aléatoire de la cible',
         trio: 'Trio',
         trioDesc: 'Choisir une carte spécifique',
+        trioMode: '2-3 cartes',
         selectTarget: 'Sélectionner le Joueur Cible',
         selectCard: 'Sélectionner la Carte à Demander',
         cardsCount: '{{count}} cartes',
         confirm: 'Jouer le Combo',
+        stashCards: 'Sélectionner {{count}} cartes différentes',
+        pickDiscard: 'Choisir une carte dans la pile de défausse',
+        selectCardHint: 'Sélectionnez une carte ci-dessous',
+        pickCardBlind: "Choisissez une carte (à l'aveugle)",
+        cardLabel: 'Carte {{index}}',
       },
       seeTheFuture: { title: 'Cartes du Dessus', confirm: 'Compris !' },
       targetedAttack: {
@@ -340,8 +388,8 @@ export const frMessages = {
         confirm: 'Donner Carte',
       },
       defuse: {
-        title: 'Désamorcer le Chat Explosif !',
-        description: 'Choisissez où placer le Chat Explosif dans le paquet',
+        title: "Désamorcer l'Incident Critique !",
+        description: "Choisissez où placer l'Incident Critique dans le paquet",
         positionLabel: 'Position dans le paquet :',
         confirm: 'Placer la Carte',
       },

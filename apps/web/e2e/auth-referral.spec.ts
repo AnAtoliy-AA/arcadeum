@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
 
 test.describe('Auth Referral Code Registration', () => {
@@ -9,30 +10,26 @@ test.describe('Auth Referral Code Registration', () => {
     await navigateTo(page, '/auth');
 
     // 1. Switch to Register mode
-    const toggleBtn = page.getByRole('button', {
-      name: /need an account|регистрация|account/i,
-    });
-    await toggleBtn
-      .waitFor({ state: 'visible', timeout: 5000 })
-      .catch(() => {});
-    if (await toggleBtn.isVisible()) {
-      const text = (await toggleBtn.textContent()) || '';
-      if (!/already|уже/i.test(text)) {
-        await toggleBtn.click();
-      }
+    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
+    await expect(toggleBtn).toBeVisible({ timeout: 10000 });
+    const text = (await toggleBtn.textContent()) || '';
+    if (!/already|уже/i.test(text)) {
+      await toggleBtn.click({ force: true });
+      // Wait for form to actually switch mode
+      await expect(page.locator('form')).toHaveAttribute(
+        'data-mode',
+        'register',
+        { timeout: 10000 },
+      );
     }
 
     // 2. Locate fields
-    const emailInput = page.locator('input[type="email"]');
-    const passwordInput = page.locator('input[type="password"]').first();
-    const confirmInput = page.locator('input[placeholder*="confirm" i]');
-    const usernameInput = page.locator('input[placeholder*="username" i]');
-    const referralCodeInput = page.locator('input[placeholder*="Referral" i]');
-    const submitBtn = page
-      .getByRole('button', {
-        name: /create account|register|sign up|зарегистрироваться/i,
-      })
-      .first();
+    const emailInput = page.getByTestId('auth-email-input');
+    const passwordInput = page.getByTestId('auth-password-input');
+    const confirmInput = page.getByTestId('auth-confirm-password-input');
+    const usernameInput = page.getByTestId('auth-username-input');
+    const referralCodeInput = page.getByTestId('auth-referral-input');
+    const submitBtn = page.getByTestId('auth-submit-button');
 
     // 3. Optional Referral Code Input should be visible
     await expect(referralCodeInput).toBeVisible();
@@ -72,19 +69,18 @@ test.describe('Auth Referral Code Registration', () => {
     // 1. Navigate directly with the query parameter
     await navigateTo(page, '/auth?ref=FRIEND_CODE_123');
 
-    // 2. The form should automatically be in register mode.
-    // We can verify this by checking if the username or confirm password fields are visible
-    // or if the submit button says "Sign up" / "Register".
-    const submitBtn = page
-      .getByRole('button', {
-        name: /create account|register|sign up|зарегистрироваться/i,
-      })
-      .first();
-
-    await expect(submitBtn).toBeVisible();
+    // 2. Wait for registration mode to be active
+    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
+    await expect(toggleBtn).toBeVisible({ timeout: 10000 });
+    // In register mode, the toggle button should offer to go back to login
+    await expect(page.locator('form')).toHaveAttribute(
+      'data-mode',
+      'register',
+      { timeout: 10000 },
+    );
 
     // 3. Locate the referral code input
-    const referralCodeInput = page.locator('input[placeholder*="Referral" i]');
+    const referralCodeInput = page.getByTestId('auth-referral-input');
 
     // 4. It should be visible and its value should be pre-filled
     await expect(referralCodeInput).toBeVisible();

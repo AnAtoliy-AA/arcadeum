@@ -54,7 +54,7 @@ const settingsMessagesDefinition = {
       es: 'Español',
       fr: 'Français',
       ru: 'Русский',
-      be: 'Беларуская',
+      by: 'Беларуская',
     },
     downloadsTitle: appConfig.downloads.title,
     downloadsDescription: withAppNamePlaceholder(
@@ -77,6 +77,9 @@ const settingsMessagesDefinition = {
     aboutTitle: 'About',
     aboutDescription: 'Application information and version details.',
     versionLabel: 'Version',
+    pwaTitle: 'Install App',
+    pwaDescription: 'Install Arcadeum as a native app on your device.',
+    pwaInstallLabel: 'Install',
   },
   es: {
     title: 'Configuración',
@@ -125,7 +128,7 @@ const settingsMessagesDefinition = {
       es: 'Español',
       fr: 'Francés',
       ru: 'Русский',
-      be: 'Беларуская',
+      by: 'Беларуская',
     },
     downloadsTitle: 'Compilaciones móviles',
     downloadsDescription:
@@ -147,6 +150,10 @@ const settingsMessagesDefinition = {
     aboutTitle: 'Acerca de',
     aboutDescription: 'Información de la aplicación y detalles de la versión.',
     versionLabel: 'Versión',
+    pwaTitle: 'Instalar App',
+    pwaDescription:
+      'Instala Arcadeum como una aplicación nativa en tu dispositivo.',
+    pwaInstallLabel: 'Instalar',
   },
   fr: {
     title: 'Paramètres',
@@ -194,7 +201,7 @@ const settingsMessagesDefinition = {
       es: 'Espagnol',
       fr: 'Français',
       ru: 'Русский',
-      be: 'Беларуская',
+      by: 'Беларуская',
     },
     downloadsTitle: 'Versions mobiles',
     downloadsDescription:
@@ -214,8 +221,13 @@ const settingsMessagesDefinition = {
     blockedUsersEmpty: 'Aucun utilisateur bloqué',
     blockedUsersUnblock: 'Débloquer',
     aboutTitle: 'À propos',
-    aboutDescription: "Informations sur l'application et détails de la version.",
+    aboutDescription:
+      "Informations sur l'application et détails de la version.",
     versionLabel: 'Version',
+    pwaTitle: "Installer l'application",
+    pwaDescription:
+      "Installez Arcadeum en tant qu'application native sur votre appareil.",
+    pwaInstallLabel: 'Installer',
   },
   ru: {
     title: 'Настройки',
@@ -262,7 +274,7 @@ const settingsMessagesDefinition = {
       es: 'Español',
       fr: 'Français',
       ru: 'Русский',
-      be: 'Беларуская',
+      by: 'Беларуская',
     },
     downloadsTitle: appConfig.downloads.title,
     downloadsDescription: withAppNamePlaceholder(
@@ -285,8 +297,12 @@ const settingsMessagesDefinition = {
     aboutTitle: 'О приложении',
     aboutDescription: 'Информация о приложении и версии.',
     versionLabel: 'Версия',
+    pwaTitle: 'Установить приложение',
+    pwaDescription:
+      'Установите Arcadeum как нативное приложение на ваше устройство.',
+    pwaInstallLabel: 'Установить',
   },
-  be: {
+  by: {
     title: 'Налады',
     description:
       'Кіруйце знешнім выглядам, мовай і загрузкамі для вэб-версіі {{appName}}.',
@@ -331,7 +347,7 @@ const settingsMessagesDefinition = {
       es: 'Español',
       fr: 'Français',
       ru: 'Русский',
-      be: 'Беларуская',
+      by: 'Беларуская',
     },
     downloadsTitle: appConfig.downloads.title,
     downloadsDescription: withAppNamePlaceholder(
@@ -354,6 +370,9 @@ const settingsMessagesDefinition = {
     aboutTitle: 'Пра праграму',
     aboutDescription: 'Інфармацыя пра праграму і версію.',
     versionLabel: 'Версія',
+    pwaTitle: 'Усталяваць праграму',
+    pwaDescription: 'Усталюйце Arcadeum як натыўную праграму на вашу прыладу.',
+    pwaInstallLabel: 'Усталяваць',
   },
 } satisfies Record<Locale, Record<string, unknown>>;
 

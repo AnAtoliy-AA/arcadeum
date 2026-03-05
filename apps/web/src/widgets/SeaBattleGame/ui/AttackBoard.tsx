@@ -16,8 +16,16 @@ import {
   ColLabels,
   Label,
   MainGameArea,
+  BadgeWrapper,
 } from './styles';
+import { Badge } from '@/shared/ui/Badge';
+import { IdleBadge } from '@/shared/ui';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import { getTheme } from '../lib/theme';
+import { useGameStore } from '@/features/games/store/gameStore';
 
 interface AttackBoardProps {
   players: SeaBattlePlayerState[];
@@ -39,6 +47,7 @@ export function AttackBoard({
   disabled = false,
   variant = 'classic',
 }: AttackBoardProps & { variant?: string }) {
+  const { t } = useTranslation();
   const theme = getTheme(variant);
   const currentPlayer = useMemo(() => {
     return players.find((p) => p.playerId === currentUserId) || null;
@@ -47,6 +56,8 @@ export function AttackBoard({
   const opponents = useMemo(() => {
     return players.filter((p) => p.playerId !== currentUserId && p.alive);
   }, [players, currentUserId]);
+
+  const idlePlayers = useGameStore((s) => s.idlePlayers);
 
   const handleCellClick = useCallback(
     (targetPlayerId: string, row: number, col: number) => {
@@ -70,9 +81,21 @@ export function AttackBoard({
       <GridsContainer>
         {/* Own board - view only */}
         {currentPlayer && (
-          <PlayerSection $isMe $isActive={false} $theme={theme}>
+          <PlayerSection
+            $isMe
+            $isActive={currentTurnPlayerId === currentUserId}
+            $theme={theme}
+          >
+            {currentTurnPlayerId === currentUserId && (
+              <BadgeWrapper>
+                <Badge variant="success" size="sm" pulse>
+                  {t('games.sea_battle_v1.table.players.yourTurn')}
+                </Badge>
+              </BadgeWrapper>
+            )}
             <PlayerName $theme={theme}>
               {resolveDisplayName(currentPlayer.playerId, 'You')} (Your Fleet)
+              {idlePlayers.includes(currentPlayer.playerId) && <IdleBadge />}
             </PlayerName>
             <PlayerStats $theme={theme}>
               <ShipsLeft ships={currentPlayer.ships} isMe={true} />
@@ -114,11 +137,22 @@ export function AttackBoard({
           <PlayerSection
             key={opponent.playerId}
             $isMe={false}
-            $isActive={currentTurnPlayerId === currentUserId}
+            $isActive={currentTurnPlayerId === opponent.playerId}
+            $isTargetable={isMyTurn}
             $theme={theme}
           >
+            {currentTurnPlayerId === opponent.playerId && (
+              <BadgeWrapper>
+                <Badge variant="success" size="sm" pulse>
+                  {t(
+                    'games.sea_battle_v1.table.players.alive' as TranslationKey,
+                  )}
+                </Badge>
+              </BadgeWrapper>
+            )}
             <PlayerName $theme={theme}>
               {resolveDisplayName(opponent.playerId, 'Opponent')}
+              {idlePlayers.includes(opponent.playerId) && <IdleBadge />}
             </PlayerName>
             <PlayerStats $theme={theme}>
               <ShipsLeft ships={opponent.ships} isMe={false} />

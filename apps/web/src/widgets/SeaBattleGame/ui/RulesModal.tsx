@@ -20,6 +20,7 @@ import {
   ShipDescription,
 } from './RulesModal.styles';
 import { TranslationKey } from '@/shared/lib/useTranslation';
+import { CloseIcon } from '@/shared/ui/Icons';
 
 interface RulesModalProps {
   isOpen: boolean;
@@ -42,7 +43,7 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
   const ships = shipsRaw
     .split('\n')
     .map((line) => {
-      const match = line.match(/•\s+(.+)\s+\((\d+)\s+cells\)\s+-\s+(.+)/);
+      const match = line.match(/•\s+(.+)\s+\((\d+)\s+.*\)\s+-\s+(.+)/);
       if (match) {
         return {
           name: match[1],
@@ -55,14 +56,20 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
     .filter(Boolean);
 
   return createPortal(
-    <ModalOverlay onClick={onClose}>
+    <ModalOverlay onClick={onClose} data-testid="rules-modal">
       <ModalContainer
         onClick={(e) => e.stopPropagation()}
         style={{ maxWidth: '850px' }}
       >
         <ModalHeader>
           <ModalTitle>{t('games.sea_battle_v1.rules.title')}</ModalTitle>
-          <CloseButton onClick={onClose}>×</CloseButton>
+          <CloseButton
+            onClick={onClose}
+            aria-label="Close rules modal"
+            data-testid="modal-close-button"
+          >
+            <CloseIcon size={20} />
+          </CloseButton>
         </ModalHeader>
 
         <ScrollArea>
@@ -128,7 +135,12 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
                 <ShipCard key={idx}>
                   <ShipHeader>
                     <ShipName>{ship?.name}</ShipName>
-                    <ShipSize>{ship?.size} Cells</ShipSize>
+                    <ShipSize>
+                      {ship?.size}{' '}
+                      {t(
+                        'games.sea_battle_v1.table.state.cells' as TranslationKey,
+                      )}
+                    </ShipSize>
                   </ShipHeader>
                   <ShipDescription>{ship?.description}</ShipDescription>
                 </ShipCard>

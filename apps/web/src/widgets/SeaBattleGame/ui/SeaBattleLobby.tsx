@@ -46,6 +46,7 @@ interface SeaBattleLobbyProps {
   onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
   onShowRules: (show: boolean) => void;
+  onDeleteRoom?: () => void;
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
 
@@ -56,6 +57,7 @@ export function SeaBattleLobby({
   onStartGame,
   onReorderPlayers,
   onShowRules,
+  onDeleteRoom,
   t,
 }: SeaBattleLobbyProps) {
   const currentVariant = (room.gameOptions?.variant as string) || 'classic';
@@ -66,9 +68,9 @@ export function SeaBattleLobby({
     if (room.status !== 'lobby') return t('games.roomPage.errors.loadingRoom');
     if (room.playerCount === 1) return t('games.lobby.playWithBotsNotice');
     if (room.playerCount < MIN_PLAYERS)
-      return t('games.table.lobby.needTwoPlayers');
-    if (isHost) return t('games.table.lobby.hostCanStart');
-    return t('games.table.lobby.waitingForHost');
+      return t('games.sea_battle_v1.table.lobby.needTwoPlayers');
+    if (isHost) return t('games.sea_battle_v1.table.lobby.hostCanStart');
+    return t('games.sea_battle_v1.table.lobby.waitingForHost');
   };
 
   const optionsSlot =
@@ -95,18 +97,21 @@ export function SeaBattleLobby({
       startBusy={startBusy}
       onStartGame={onStartGame}
       onReorderPlayers={onReorderPlayers}
-      gameName="Sea Battle"
+      onDeleteRoom={onDeleteRoom}
+      gameName={t('games.sea_battle_v1.name' as TranslationKey)}
       gameIcon="🚢"
       roomIcon={variantInfo.emoji || '⚓'}
-      variantName={variantInfo.name}
+      variantName={
+        variantInfo.name ? t(variantInfo.name as TranslationKey) : undefined
+      }
       minPlayers={MIN_PLAYERS}
-      waitingLabel={t('games.seaBattle.table.lobby.waitingToStart')}
+      waitingLabel={t('games.sea_battle_v1.table.lobby.waitingToStart')}
       subtitleText={getSubtitleText()}
       playersLabel={t('games.rooms.playersLabel')}
-      hostControlsLabel={t('games.seaBattle.table.lobby.hostControls')}
-      startLabel={t('games.seaBattle.table.actions.start')}
-      startingLabel={t('games.seaBattle.table.actions.starting')}
-      roomInfoLabel={t('games.seaBattle.table.lobby.roomInfo')}
+      hostControlsLabel={t('games.sea_battle_v1.table.lobby.hostControls')}
+      startLabel={t('games.sea_battle_v1.table.actions.start')}
+      startingLabel={t('games.sea_battle_v1.table.actions.starting')}
+      roomInfoLabel={t('games.sea_battle_v1.table.lobby.roomInfo')}
       fastRoomLabel={t('games.rooms.fastRoom')}
       botCountLabel={t('games.lobby.botCountLabel')}
       startWithBotsLabel={t('games.lobby.startWithBots')}

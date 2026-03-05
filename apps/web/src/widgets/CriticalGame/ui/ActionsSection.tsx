@@ -4,10 +4,10 @@ import { useMemo, useState } from 'react';
 import type {
   CriticalPlayerState,
   CriticalCard,
-  CriticalCatCard,
+  CriticalComboCard,
 } from '../types';
 import { getCardTranslationKey } from '../lib/cardUtils';
-import { CAT_CARDS, FIVER_COMBO_SIZE, SPECIAL_CARDS } from '../types';
+import { COMBO_CARDS, FIVER_COMBO_SIZE, SPECIAL_CARDS } from '../types';
 import {
   InfoCard,
   InfoTitle,
@@ -26,8 +26,8 @@ export type ActionBusyState =
   | 'insight'
   | 'cancel'
   | 'neutralizer'
-  | 'cat_combo'
-  | 'cat_combo_fiver'
+  | 'event_combo'
+  | 'event_combo_fiver'
   | 'mark'
   | 'steal_draw'
   | 'stash'
@@ -49,7 +49,7 @@ interface ActionsSectionProps {
   onPlayNope: () => void;
   onOpenFavorModal: () => void;
   onPlaySeeTheFuture: () => void;
-  onOpenCatCombo: (cats: CriticalCatCard[]) => void;
+  onOpenEventCombo: (cards: CriticalComboCard[]) => void;
   onOpenFiverCombo: () => void;
   t: (key: string) => string;
   cardVariant?: string;
@@ -67,7 +67,7 @@ export function ActionsSection({
   onPlayNope,
   onOpenFavorModal,
   onPlaySeeTheFuture,
-  onOpenCatCombo,
+  onOpenEventCombo,
   onOpenFiverCombo,
   t,
   cardVariant,
@@ -87,10 +87,10 @@ export function ActionsSection({
             count >= 2 &&
             !SPECIAL_CARDS.includes(card as (typeof SPECIAL_CARDS)[number]),
         )
-        .map(([card]) => card as CriticalCatCard);
+        .map(([card]) => card as CriticalComboCard);
     }
 
-    return CAT_CARDS.filter((cat) => (cardCounts.get(cat) || 0) >= 2);
+    return COMBO_CARDS.filter((card) => (cardCounts.get(card) || 0) >= 2);
   }, [currentPlayer.hand, allowActionCardCombos]);
 
   // Check if fiver combo is available (FIVER_COMBO_SIZE+ unique cards and non-empty discard pile)
@@ -203,12 +203,12 @@ export function ActionsSection({
             <ActionButton
               $variant={cardVariant}
               variant="primary"
-              onClick={() => onOpenCatCombo(availableCombos)}
-              disabled={actionBusy === 'cat_combo'}
+              onClick={() => onOpenEventCombo(availableCombos)}
+              disabled={actionBusy === 'event_combo'}
             >
-              {actionBusy === 'cat_combo'
+              {actionBusy === 'event_combo'
                 ? 'Playing...'
-                : `🐱 ${t('games.table.modals.catCombo.title')}`}
+                : `🌪️ ${t('games.table.modals.eventCombo.title')}`}
             </ActionButton>
           )}
           {fiverAvailable && canAct && (
@@ -216,9 +216,11 @@ export function ActionsSection({
               $variant={cardVariant}
               variant="primary"
               onClick={onOpenFiverCombo}
-              disabled={actionBusy === 'cat_combo'}
+              disabled={actionBusy === 'event_combo'}
             >
-              {actionBusy === 'cat_combo' ? 'Playing...' : '🃏 Fiver (5 Cards)'}
+              {actionBusy === 'event_combo'
+                ? 'Playing...'
+                : '🃏 Fiver (5 Cards)'}
             </ActionButton>
           )}
           {/* Attack Pack Cards */}

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   DndContext,
   closestCenter,
@@ -35,6 +36,7 @@ import {
   StatusBadge,
   InfoValue,
   FastBadge,
+  DeleteButton,
 } from './lobbyStyles';
 import { SortablePlayerItem, AVATAR_COLORS } from './SortablePlayerItem';
 
@@ -49,8 +51,8 @@ interface LobbySidebarProps {
   reinviteLabel: string;
   roomInfoLabel: string;
   statusLabel: string;
-  statusWaitingLabel: string;
-  statusActiveLabel: string;
+  statusWaitingLabel?: string;
+  statusActiveLabel?: string;
   visibilityLabel: string;
   visibilityPublicLabel: string;
   visibilityPrivateLabel: string;
@@ -62,6 +64,8 @@ interface LobbySidebarProps {
   members: Required<GameRoomSummary>['members'];
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
+  onDeleteRoom?: () => void;
+  deleteRoomLabel: string;
   extraPlayersCardSlot?: React.ReactNode;
 }
 
@@ -76,8 +80,6 @@ export function LobbySidebar({
   reinviteLabel,
   roomInfoLabel,
   statusLabel,
-  statusWaitingLabel,
-  statusActiveLabel,
   visibilityLabel,
   visibilityPublicLabel,
   visibilityPrivateLabel,
@@ -89,8 +91,11 @@ export function LobbySidebar({
   members,
   onReorderPlayers,
   onReinvite,
+  onDeleteRoom,
+  deleteRoomLabel,
   extraPlayersCardSlot,
 }: LobbySidebarProps) {
+  const { t } = useTranslation();
   const maxPlayers = room.maxPlayers ?? 5;
 
   // Get invited/declined for rematch
@@ -271,7 +276,7 @@ export function LobbySidebar({
         <InfoRow>
           <InfoLabel>{statusLabel}</InfoLabel>
           <StatusBadge $status={room.status}>
-            {room.status === 'lobby' ? statusWaitingLabel : statusActiveLabel}
+            {t(`games.rooms.status.${room.status}`) || room.status}
           </StatusBadge>
         </InfoRow>
         {isFastMode && (
@@ -299,6 +304,15 @@ export function LobbySidebar({
           </InfoRow>
         )}
       </LobbyCard>
+
+      {isHost && onDeleteRoom && (
+        <DeleteButton
+          onClick={onDeleteRoom}
+          style={{ marginTop: '0.5rem', width: '100%' }}
+        >
+          {deleteRoomLabel}
+        </DeleteButton>
+      )}
     </Sidebar>
   );
 }

@@ -29,7 +29,7 @@ const navigationMessagesDefinition = {
     settingsTab: 'Настройки',
     statsTab: 'Статистика',
   },
-  be: {
+  by: {
     chatsTab: 'Чаты',
     gamesTab: 'Гульні',
     historyTab: 'Гісторыя',

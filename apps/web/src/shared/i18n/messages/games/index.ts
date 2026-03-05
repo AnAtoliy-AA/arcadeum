@@ -41,10 +41,10 @@ export const gamesMessages: Record<Locale, GamesMessagesBundle> = {
     ...texasHoldemMessages.ru,
     ...seaBattleMessages.ru,
   },
-  be: {
-    ...sharedMessages.be,
-    ...criticalMessages.be,
-    ...texasHoldemMessages.be,
-    ...seaBattleMessages.be,
+  by: {
+    ...sharedMessages.by,
+    ...criticalMessages.by,
+    ...texasHoldemMessages.by,
+    ...seaBattleMessages.by,
   },
 } as Record<Locale, GamesMessagesBundle>;

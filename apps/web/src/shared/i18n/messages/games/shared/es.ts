@@ -66,7 +66,20 @@ export const esMessages = {
     watchRoom: 'Ver',
     joinByCode: 'Unirse con código',
     cancel: 'Cancelar',
-    copyInviteLink: 'Copiar enlace de invitación',
+    copyInviteLink: 'Compartir enlace de juego',
+    copyInviteLinkCopied: '¡Copiado!',
+    copyInviteLinkButton: 'Compartir enlace',
+    actions: {
+      backToHome: 'Volver al Inicio',
+    },
+    deleteRoom: {
+      button: 'Eliminar sala',
+      confirmTitle: 'Eliminar sala',
+      confirmMessage:
+        '¿Estás seguro de que quieres eliminar esta sala? Esta acción no se puede deshacer y todos los jugadores serán desconectados.',
+      confirmButton: 'Eliminar sala',
+      cancelButton: 'Mantener sala',
+    },
   },
   create: {
     title: 'Crear Sala de Juego',
@@ -124,11 +137,13 @@ export const esMessages = {
     },
   },
   inviteCode: {
-    title: 'Unirse con Código de Invitación',
+    title: 'Unirse a un Juego Privado',
     label: 'Ingresa Código',
     placeholder: 'ej. A1B2C3',
     join: 'Unirse',
     joining: 'Uniéndose...',
+    helper:
+      'Este código fue compartido por el anfitrión del juego. Escríbelo exactamente como se muestra, sin espacios.',
     errors: {
       notFound: 'Sala no encontrada o código inválido',
       searchFailed: 'Error al buscar la sala',
@@ -142,5 +157,33 @@ export const esMessages = {
     startWithBots: 'Comenzar con {{count}} 🤖',
     playWithBotsNotice:
       'Empieza con bots inmediatamente o espera a otros jugadores',
+  },
+  shared: {
+    rules: {
+      objective: 'Objetivo',
+      gameplay: 'Jugabilidad',
+      combos: 'Combos',
+      setup: 'Preparación',
+      placement: 'Colocación',
+      battle: 'Batalla',
+    },
+    category: {
+      cardGame: 'Juego de cartas',
+      boardGame: 'Juego de mesa',
+    },
+    tags: {
+      strategy: 'Estrategia',
+      cards: 'Cartas',
+    },
+  },
+  connectionOverlay: {
+    title: 'Conexión perdida',
+    message: 'Toca en cualquier lugar o mueve el ratón para reconectar',
+    reconnecting: 'Reconectando...',
+  },
+  idle: {
+    label: 'Inactivo',
+    title: '💤 Estás inactivo',
+    message: 'Mueve el ratón o pulsa una tecla para continuar',
   },
 };

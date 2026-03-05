@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
 
 test.describe('Game Room Detail', () => {
@@ -49,7 +50,9 @@ test.describe('Game Room Detail', () => {
     await expect(page.locator('h1, h2')).toContainText(/game rooms/i);
 
     // Check for "Create Room" button
-    const createRoomBtn = page.getByRole('link', { name: /create room/i });
+    const createRoomBtn = page
+      .getByRole('link', { name: /create room/i })
+      .or(page.getByTestId('create-room-link'));
     await expect(createRoomBtn).toBeVisible();
     await expect(createRoomBtn).toHaveAttribute(
       'href',

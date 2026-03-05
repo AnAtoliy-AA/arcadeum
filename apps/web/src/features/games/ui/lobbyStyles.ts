@@ -403,16 +403,17 @@ export const IconButton = styled.button`
   }
 `;
 
-export const StartButton = styled.button<{ $gradient?: string }>`
+export const StartButton = styled(Button).attrs({
+  variant: 'primary',
+  size: 'lg',
+})`
+  width: 100%;
   padding: 0.75rem 2rem;
   font-size: 1rem;
   font-weight: 600;
-  border: none;
   border-radius: 12px;
   cursor: pointer;
-  background: ${(props) =>
-    props.$gradient ||
-    'linear-gradient(135deg, #c7aa2f 0%, #c7aa2f 50%, #8B7500 100%)'};
+  background: linear-gradient(135deg, #c7aa2f 0%, #c7aa2f 50%, #8b7500 100%);
   color: #1a1a2e;
   box-shadow: 0 4px 16px rgba(199, 170, 47, 0.3);
   transition: all 0.2s ease;
@@ -426,6 +427,16 @@ export const StartButton = styled.button<{ $gradient?: string }>`
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
+  }
+`;
+
+export const DeleteButton = styled(StartButton)`
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 6px 24px rgba(239, 68, 68, 0.4);
   }
 `;
 
@@ -450,9 +461,13 @@ export const BotCountButtons = styled.div`
   gap: 0.5rem;
 `;
 
-export const BotCountButton = styled.button<{ $active?: boolean }>`
+export const BotCountButton = styled(Button).attrs({
+  variant: 'chip',
+  size: 'sm',
+})`
   width: 32px;
   height: 32px;
+  padding: 0;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -461,17 +476,18 @@ export const BotCountButton = styled.button<{ $active?: boolean }>`
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  background: ${({ $active }) =>
-    $active ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.05)'};
+  background: ${({ isActive }) =>
+    isActive ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.05)'};
   border: 1px solid
-    ${({ $active }) =>
-      $active ? 'rgba(99, 102, 241, 0.5)' : 'rgba(255, 255, 255, 0.1)'};
-  color: ${({ $active, theme }) => ($active ? '#6366f1' : theme.text.primary)};
+    ${({ isActive }) =>
+      isActive ? 'rgba(99, 102, 241, 0.5)' : 'rgba(255, 255, 255, 0.1)'};
+  color: ${({ isActive, theme }) =>
+    isActive ? '#6366f1' : theme.text.primary};
 
   &:hover:not(:disabled) {
-    background: ${({ $active }) =>
-      $active ? 'rgba(99, 102, 241, 0.25)' : 'rgba(255, 255, 255, 0.1)'};
-    border-color: ${({ $active }) =>
-      $active ? 'rgba(99, 102, 241, 0.6)' : 'rgba(255, 255, 255, 0.2)'};
+    background: ${({ isActive }) =>
+      isActive ? 'rgba(99, 102, 241, 0.25)' : 'rgba(255, 255, 255, 0.1)'};
+    border-color: ${({ isActive }) =>
+      isActive ? 'rgba(99, 102, 241, 0.6)' : 'rgba(255, 255, 255, 0.2)'};
   }
 `;

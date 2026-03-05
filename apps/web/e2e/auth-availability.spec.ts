@@ -1,47 +1,26 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
 
 test.describe('Auth Availability Checking', () => {
   test.beforeEach(async ({ page }) => {
-    // Mock availability checks to make tests hermetic
-    await page.route('**/auth/check/username/**', async (route) => {
-      const url = new URL(route.request().url());
-      const username = url.pathname.split('/').pop();
-      const available = username !== 'testexisting';
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ available }),
-      });
-    });
-
-    await page.route('**/auth/check/email/**', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ available: true }),
-      });
-    });
-
     await navigateTo(page, '/auth');
-    await page.waitForLoadState('networkidle');
   });
 
   test('should show availability status for username field in register mode', async ({
     page,
   }) => {
-    const toggleBtn = page.getByRole('button', {
-      name: /need an account|регистрация|account/i,
-    });
-    await toggleBtn
-      .waitFor({ state: 'visible', timeout: 5000 })
-      .catch(() => {});
-    if (await toggleBtn.isVisible()) {
-      const text = (await toggleBtn.textContent()) || '';
-      if (!/already|уже/i.test(text)) {
-        await toggleBtn.click();
-      }
+    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
+    await expect(toggleBtn).toBeVisible({ timeout: 10000 });
+    const text = (await toggleBtn.textContent()) || '';
+    if (!/already|уже/i.test(text)) {
+      await toggleBtn.click({ force: true });
     }
+    await expect(page.locator('form')).toHaveAttribute(
+      'data-mode',
+      'register',
+      { timeout: 10000 },
+    );
 
     const usernameInput = page.locator('input[placeholder*="username" i]');
     await expect(usernameInput).toBeVisible();
@@ -64,18 +43,17 @@ test.describe('Auth Availability Checking', () => {
   test('should show availability status for email field in register mode', async ({
     page,
   }) => {
-    const toggleBtn = page.getByRole('button', {
-      name: /need an account|регистрация|account/i,
-    });
-    await toggleBtn
-      .waitFor({ state: 'visible', timeout: 5000 })
-      .catch(() => {});
-    if (await toggleBtn.isVisible()) {
-      const text = (await toggleBtn.textContent()) || '';
-      if (!/already|уже/i.test(text)) {
-        await toggleBtn.click();
-      }
+    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
+    await expect(toggleBtn).toBeVisible({ timeout: 10000 });
+    const text = (await toggleBtn.textContent()) || '';
+    if (!/already|уже/i.test(text)) {
+      await toggleBtn.click({ force: true });
     }
+    await expect(page.locator('form')).toHaveAttribute(
+      'data-mode',
+      'register',
+      { timeout: 10000 },
+    );
 
     const emailInput = page.locator('input[type="email"]');
     await expect(emailInput).toBeVisible();
@@ -98,18 +76,26 @@ test.describe('Auth Availability Checking', () => {
   test('should display user-friendly error when registering with taken username', async ({
     page,
   }) => {
-    const toggleBtn = page.getByRole('button', {
-      name: /need an account|регистрация|account/i,
-    });
-    await toggleBtn
-      .waitFor({ state: 'visible', timeout: 5000 })
-      .catch(() => {});
-    if (await toggleBtn.isVisible()) {
-      const text = (await toggleBtn.textContent()) || '';
-      if (!/already|уже/i.test(text)) {
-        await toggleBtn.click();
-      }
+    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
+    await expect(toggleBtn).toBeVisible({ timeout: 10000 });
+    const text = (await toggleBtn.textContent()) || '';
+    if (!/already|уже/i.test(text)) {
+      await toggleBtn.click({ force: true });
     }
+    await expect(page.locator('form')).toHaveAttribute(
+      'data-mode',
+      'register',
+      { timeout: 10000 },
+    );
+
+    // Mock specific 'taken' result for this test
+    await page.route('**/auth/check/username/testexisting', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ available: false }),
+      });
+    });
 
     const emailInput = page.locator('input[type="email"]');
     const passwordInput = page.locator('input[type="password"]').first();
@@ -140,12 +126,15 @@ test.describe('Auth Availability Checking', () => {
   test('should not show availability checking in login mode', async ({
     page,
   }) => {
-    const loginToggle = page.getByRole('button', {
-      name: /already have an account|уже есть аккаунт/i,
-    });
-    if (await loginToggle.isVisible()) {
-      await loginToggle.click();
+    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
+    await expect(toggleBtn).toBeVisible({ timeout: 10000 });
+    const text = (await toggleBtn.textContent()) || '';
+    if (/already|уже/i.test(text)) {
+      await toggleBtn.click({ force: true });
     }
+    await expect(page.locator('form')).toHaveAttribute('data-mode', 'login', {
+      timeout: 10000,
+    });
 
     const emailInput = page.locator('input[type="email"]');
     await emailInput.fill('test@example.com');

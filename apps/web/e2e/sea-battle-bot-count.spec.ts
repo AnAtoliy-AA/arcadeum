@@ -1,12 +1,32 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 import {
+  test,
   mockSession,
   navigateTo,
   closeRulesModal,
   mockRoomInfo,
+  MOCK_OBJECT_ID,
+  mockGameSocket,
+  checkNoBackendErrors,
+  waitForRoomReady,
+  clickButtonByTestId,
 } from './fixtures/test-utils';
 
+interface EmittedEvent {
+  event: string;
+  payload: unknown;
+}
+
+interface MockSocket {
+  emit: (event: string, ...args: unknown[]) => MockSocket;
+  bind: (context: unknown) => (...args: unknown[]) => MockSocket;
+}
+
 test.describe('Sea Battle Bot Count Selection', () => {
+  test.afterEach(async () => {
+    checkNoBackendErrors();
+  });
+
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
   });
@@ -14,9 +34,10 @@ test.describe('Sea Battle Bot Count Selection', () => {
   test('should allow selecting 4 bots in Sea Battle and starting game', async ({
     page,
   }) => {
-    const roomId = '507f191e810c19729de860ea';
-    const userId = 'user-1';
+    const roomId = MOCK_OBJECT_ID;
+    const userId = '507f191e810c19729de860ea';
 
+    // Set up room info mock BEFORE navigating to the page
     await mockRoomInfo(page, {
       room: {
         id: roomId,
@@ -30,87 +51,79 @@ test.describe('Sea Battle Bot Count Selection', () => {
       },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
-    await closeRulesModal(page);
-
-    // Mock socket to handle join and start
-    await page.evaluate(
-      ({ roomId, userId }) => {
-        const pollSocket = setInterval(() => {
-          interface MockSocket {
-            emit: (event: string, payload: unknown) => void;
-            listeners: (event: string) => ((payload: unknown) => void)[];
-          }
-          const socket = (window as unknown as { gameSocket: MockSocket })
-            .gameSocket;
-          if (socket) {
-            clearInterval(pollSocket);
-            const originalEmit = socket.emit.bind(socket);
-            socket.emit = (event: string, payload: unknown) => {
-              if (event === 'games.room.join') {
-                setTimeout(() => {
-                  for (const listener of socket.listeners(
-                    'games.room.joined',
-                  )) {
-                    listener({
-                      success: true,
-                      room: {
-                        id: roomId,
-                        status: 'lobby',
-                        gameId: 'sea_battle_v1',
-                        hostId: userId,
-                        playerCount: 1,
-                        members: [
-                          {
-                            id: userId,
-                            userId,
-                            displayName: 'Test User',
-                            isHost: true,
-                          },
-                        ],
-                      },
-                      session: null,
-                    });
-                  }
-                }, 100);
-                return;
-              }
-              if (event === 'seaBattle.session.start') {
-                (
-                  window as unknown as { __lastStartPayload: unknown }
-                ).__lastStartPayload = payload;
-              }
-              originalEmit(event, payload);
-            };
-          }
-        }, 100);
+    await mockGameSocket(page, roomId, userId, {
+      roomJoinedPayload: {
+        gameId: 'sea_battle_v1',
+        maxPlayers: 5,
+        room: {
+          id: roomId,
+          name: 'Sea Battle Bot Test',
+          gameId: 'sea_battle_v1',
+          maxPlayers: 5,
+          hostId: userId,
+          members: [
+            { id: userId, userId, displayName: 'Test User', isHost: true },
+          ],
+        },
       },
-      { roomId, userId },
-    );
+    });
 
-    // Wait for the lobby to load
-    await expect(page.getByText('Number of bots')).toBeVisible();
+    await page.addInitScript(() => {
+      (window as unknown as { _emittedEvents: EmittedEvent[] })._emittedEvents =
+        [];
+      const poll = setInterval(() => {
+        const s = (window as unknown as { gameSocket: MockSocket }).gameSocket;
+        if (s) {
+          clearInterval(poll);
+          const originalEmit = s.emit.bind(s);
+          s.emit = (event: string, payload: unknown) => {
+            console.log(`[TestInterceptor] Emitting ${event}`, payload);
+            (
+              window as unknown as { _emittedEvents: EmittedEvent[] }
+            )._emittedEvents.push({ event, payload });
+            return originalEmit(event, payload);
+          };
+          console.log('[TestInterceptor] Socket intercepted');
+        }
+      }, 50);
+    });
 
-    // Select 4 bots
-    const botButton4 = page.getByRole('button', { name: '4', exact: true });
-    await expect(botButton4).toBeVisible();
-    await botButton4.click();
-
-    // Start button should update label
-    const startBtn = page.getByRole('button', { name: /Start with 4 🤖/i });
-    await expect(startBtn).toBeVisible();
-    await startBtn.click();
+    await navigateTo(page, `/games/rooms/${roomId}`);
+    await waitForRoomReady(page);
     await closeRulesModal(page);
 
-    // Verify payload
-    const lastPayload = await page.evaluate(
-      () =>
-        (window as unknown as { __lastStartPayload: unknown })
-          .__lastStartPayload,
-    );
-    expect(lastPayload).toMatchObject({
-      withBots: true,
-      botCount: 4,
+    // Wait for the bot selection UI to be present
+    await expect(page.locator('body')).toContainText(/bots|number of bots/i, {
+      timeout: 20000,
     });
+
+    const botButton4 = page.getByTestId('bot-count-4');
+    await expect(botButton4).toBeVisible({ timeout: 15000 });
+    await clickButtonByTestId(page, 'bot-count-4');
+
+    const startBtn = page.getByRole('button', { name: /Start with 4 🤖/i });
+    await expect(startBtn).toBeVisible({ timeout: 15000 });
+    await startBtn.click();
+
+    await expect
+      .poll(
+        async () => {
+          const events = await page.evaluate(
+            () =>
+              (window as unknown as { _emittedEvents: EmittedEvent[] })
+                ._emittedEvents,
+          );
+          return events.find(
+            (e: EmittedEvent) => e.event === 'seaBattle.session.start',
+          )?.payload;
+        },
+        {
+          timeout: 15000,
+        },
+      )
+      .toMatchObject({
+        withBots: true,
+        botCount: 4,
+      });
   });
 });

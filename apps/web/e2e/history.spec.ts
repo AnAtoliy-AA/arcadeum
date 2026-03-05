@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './fixtures/test-utils';
 import { navigateTo, mockSession } from './fixtures/test-utils';
 
 test.describe('Game History', () => {
@@ -27,9 +28,17 @@ test.describe('Game History', () => {
         roomName: 'Awesome Battle',
         status: 'completed',
         lastActivityAt: new Date(Date.now() - 86000000).toISOString(),
-        host: { id: 'user-1', username: 'testuser', isHost: true },
+        host: {
+          id: '507f191e810c19729de860ea',
+          username: 'testuser',
+          isHost: true,
+        },
         participants: [
-          { id: 'user-1', username: 'testuser', isHost: true },
+          {
+            id: '507f191e810c19729de860ea',
+            username: 'testuser',
+            isHost: true,
+          },
           { id: 'user-2', username: 'otheruser', isHost: false },
         ],
         gameOptions: {

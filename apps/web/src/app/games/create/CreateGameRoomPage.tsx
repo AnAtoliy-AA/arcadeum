@@ -4,7 +4,10 @@ import { useState, useCallback, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import { gamesApi } from '@/features/games/api';
 import {
@@ -166,8 +169,13 @@ export function CreateGameRoomPage() {
                   disabled={!game.isPlayable}
                   onClick={() => game.isPlayable && handleGameChange(game.id)}
                 >
-                  <GameTileName>{game.name}</GameTileName>
-                  <GameTileSummary>{game.summary}</GameTileSummary>
+                  <GameTileName>
+                    {t(`games.${game.id}.name` as TranslationKey) || game.name}
+                  </GameTileName>
+                  <GameTileSummary>
+                    {t(`games.${game.id}.description` as TranslationKey) ||
+                      game.summary}
+                  </GameTileSummary>
                 </GameTile>
               ))}
             </GameSelector>
@@ -307,7 +315,13 @@ export function CreateGameRoomPage() {
             </ErrorCard>
           )}
 
-          <Button type="submit" disabled={loading} size="lg" fullWidth>
+          <Button
+            type="submit"
+            disabled={loading}
+            size="lg"
+            fullWidth
+            data-testid="create-room-button"
+          >
             {loading
               ? t('games.create.submitCreating') || 'Creating...'
               : t('games.common.createRoom') || 'Create Room'}

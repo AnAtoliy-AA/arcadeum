@@ -8,7 +8,6 @@ import {
   isSocketEncryptionEnabled,
   setEncryptionKey,
   resetEncryptionKey,
-  hasEncryptionKey,
 } from '@/lib/socket-encryption';
 
 function resolveSocketUrl(): string {
@@ -180,12 +179,8 @@ function useSocketListener<T extends unknown[]>(
 ): void {
   useEffect(() => {
     const listener = async (...args: unknown[]) => {
-      // Decrypt the first argument if encryption is enabled and key is available
-      if (
-        args.length > 0 &&
-        isSocketEncryptionEnabled() &&
-        hasEncryptionKey()
-      ) {
+      // Decrypt the first argument if encryption is enabled
+      if (args.length > 0 && isSocketEncryptionEnabled()) {
         const decrypted = await maybeDecrypt<T[0]>(args[0]);
         const reconstructed = [decrypted, ...args.slice(1)] as unknown as T;
         handler(...reconstructed);

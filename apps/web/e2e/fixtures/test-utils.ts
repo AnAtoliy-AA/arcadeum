@@ -152,6 +152,18 @@ export const test = base.extend({
       route.fulfill({ status: 200, body: '{}' }),
     );
 
+    // Global payment gateway mocks to prevent 404s and external network noise
+    await page.route(
+      /.*(?:checkout\.stripe\.com|sandbox\.paypal\.com).*/,
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'text/html',
+          body: '<!DOCTYPE html><html><body><h1>Mock Payment Gateway</h1></body></html>',
+        });
+      },
+    );
+
     await run(page);
 
     checkNoBackendErrors();

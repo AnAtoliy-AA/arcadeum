@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.5] - 2026-03-06
+
+### Added
+- add refresh button to waiting for game start modal (ARC-414)
+
+
 ## [1.7.4] - 2026-03-05
 
 ### Added

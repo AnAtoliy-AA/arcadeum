@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.6] - 2026-03-06
+
+### Fixed
+- video attributes warnings in e2e (N/A)
+- idle screen after changing page (ARC-439)
+
+
 ## [1.7.5] - 2026-03-06
 
 ### Added

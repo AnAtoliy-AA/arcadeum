@@ -98,7 +98,7 @@ interface StyledLinkProps {
   $fullWidth: boolean;
 }
 
-const StyledLink = styled(Link)<StyledLinkProps>`
+const StyledLink = styled(Link).attrs({ prefetch: false })<StyledLinkProps>`
   ${buttonBase}
   ${({ $size }) => sizeStyles[$size]}
   ${({ $variant }) => variantStyles[$variant]}

@@ -50,7 +50,19 @@ export function useIdleReconnect({
     if (!isDisconnected || reconnectingRef.current) return;
 
     const handleActivity = () => {
+      if (!accessToken) return;
+
       reconnect();
+
+      // Safety timeout to reset the reconnecting flag if connection fails to establish
+      const timeoutId = setTimeout(() => {
+        if (reconnectingRef.current) {
+          reconnectingRef.current = false;
+          setIsReconnecting(false);
+        }
+      }, 5000);
+
+      return () => clearTimeout(timeoutId);
     };
 
     ACTIVITY_EVENTS.forEach((evt) => {
@@ -62,7 +74,7 @@ export function useIdleReconnect({
         document.removeEventListener(evt, handleActivity);
       });
     };
-  }, [isDisconnected, reconnect]);
+  }, [isDisconnected, reconnect, accessToken]);
 
   return { isDisconnected, isReconnecting, reconnect };
 }

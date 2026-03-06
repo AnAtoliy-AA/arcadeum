@@ -4,7 +4,11 @@ import React, { useMemo, useEffect, Suspense, useState, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { connectSockets, connectSocketsAnonymous } from '@/shared/lib/socket';
+import {
+  connectSockets,
+  connectSocketsAnonymous,
+  disconnectSockets,
+} from '@/shared/lib/socket';
 import { GamesControlPanel } from '@/widgets/GamesControlPanel';
 import { gamesApi } from '@/features/games/api';
 import { useGameRoom, type GameType } from '@/features/games/hooks';
@@ -119,9 +123,7 @@ export default function GameRoomPage() {
 
     return () => {
       // Disconnect sockets when leaving the game room
-      import('@/shared/lib/socket').then(({ disconnectSockets }) => {
-        disconnectSockets();
-      });
+      disconnectSockets();
     };
   }, [
     isAuthenticated,

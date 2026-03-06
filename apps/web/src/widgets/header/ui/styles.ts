@@ -28,7 +28,7 @@ export const HeaderInner = styled.div`
   }
 `;
 
-export const Logo = styled(Link)`
+export const Logo = styled(Link).attrs({ prefetch: false })`
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -69,7 +69,9 @@ export const Nav = styled.nav`
   }
 `;
 
-export const NavLink = styled(Link)<{ $active: boolean }>`
+export const NavLink = styled(Link).attrs({ prefetch: false })<{
+  $active: boolean;
+}>`
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-size: 0.9375rem;
@@ -174,7 +176,7 @@ export const DropdownItem = styled(Button).attrs({
   }
 `;
 
-export const DropdownLink = styled(Link)`
+export const DropdownLink = styled(Link).attrs({ prefetch: false })`
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -246,7 +248,9 @@ export const MobileNav = styled.div<{ $isOpen: boolean }>`
   }
 `;
 
-export const MobileNavLink = styled(Link)<{ $active: boolean }>`
+export const MobileNavLink = styled(Link).attrs({ prefetch: false })<{
+  $active: boolean;
+}>`
   padding: 0.75rem 1rem;
   border-radius: 8px;
   font-size: 1rem;
@@ -323,7 +327,9 @@ const roleColors: Record<string, { bg: string; text: string; glow?: string }> =
     },
   };
 
-export const MobileLoginIndicator = styled(Link)<{ $isAuthenticated: boolean }>`
+export const MobileLoginIndicator = styled(Link).attrs({ prefetch: false })<{
+  $isAuthenticated: boolean;
+}>`
   display: none;
   align-items: center;
   justify-content: center;

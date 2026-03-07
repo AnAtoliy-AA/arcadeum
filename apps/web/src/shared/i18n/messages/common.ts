@@ -182,7 +182,7 @@ const commonMessagesDefinition = {
       by: 'Беларуская',
     },
     labels: {
-      email: 'Email',
+      email: 'Пошта',
       password: 'Пароль',
       confirmPassword: 'Пацвердзіце пароль',
       username: 'Імя карыстальніка',
@@ -191,7 +191,7 @@ const commonMessagesDefinition = {
       login: 'Увайсці',
       register: 'Стварыць акаўнт',
       logout: 'Выйсці',
-      openApp: 'Адкрыць прыкладанне',
+      openApp: 'Адкрыць дадатак',
       support: 'Падтрымка',
       supportTeam: 'Служба падтрымкі',
       loggedInAs: 'Вы ўвайшлі як',

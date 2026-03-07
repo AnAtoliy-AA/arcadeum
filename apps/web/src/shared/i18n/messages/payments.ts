@@ -287,7 +287,7 @@ const paymentsMessagesDefinition = {
     noteLabel: 'Заўвага (неабавязкова)',
     notePlaceholder: 'Дадайце заўвагу...',
     noteAria: 'Заўвага або апісанне плацяжу',
-    submit: 'Стварыць плацёж',
+    submit: 'Стварыць плацеж',
     submitting: 'Апрацоўка...',
     status: {
       success: 'Плацежная сесія паспяхова створана!',
@@ -303,7 +303,7 @@ const paymentsMessagesDefinition = {
       coffee: '☕️ Кава',
       lunch: '🍕 Обед',
       gift: '🎁 Падарунак',
-      boost: '🚀 Буст',
+      boost: '🚀 Паскарэнне',
     },
     successPage: {
       title: 'Аплата прайшла паспяхова!',
@@ -311,7 +311,7 @@ const paymentsMessagesDefinition = {
         'Дзякуй за вашу шчодрую падтрымку! Ваш унёсак дапамагае нам падтрымліваць працу сервераў і выпускаць абнаўленні.',
       referenceLabel: 'Нумар транзакцыі',
       returnHome: 'На галоўную',
-      supportAgain: 'Падрымаць яшчэ раз',
+      supportAgain: 'Падтрымаць яшчэ раз',
     },
     cancelPage: {
       title: 'Аплата адменена',
@@ -329,16 +329,16 @@ const paymentsMessagesDefinition = {
       yearly: 'Штогод',
     },
     notes: {
-      title: 'Запіскі падтрымкі',
+      title: 'Нататкі падтрымкі',
       subtitle:
         'Паведамленні падтрымкі ад нашай дзіўнай супольнасці. Дзякуй, што падтрымліваеце нас!',
       emptyMessage:
-        'Пакуль няма запісак. Будзь першым, хто пакіне паведамленне падтрымкі!',
+        'Пакуль няма нататак. Будзьце першым, хто пакіне паведамленне падтрымкі!',
       anonymous: 'Ананімны Падтрымальнік',
       loading: 'Загрузка...',
       loadMore: 'Загрузіць Яшчэ',
     },
-    showNameLabel: 'Паказаць маё імя ў гэтай запісцы',
+    showNameLabel: 'Паказаць маё імя ў гэтай нататцы',
   },
 } satisfies Record<Locale, Record<string, unknown>>;
 

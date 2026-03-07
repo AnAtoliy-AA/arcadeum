@@ -305,22 +305,22 @@ const homeMessagesDefinition = {
   by: {
     kicker: 'Будучыня настольных гульняў',
     tagline:
-      '{{appName}} — ваша онлайн-платформа для гульні ў настолкі з сябрамі.',
+      '{{appName}} — ваша анлайн-платформа для гульні ў настолкі з сябрамі.',
     description:
       'Стварайце гульнявыя пакоі ў рэальным часе, запрашайце сяброў, а {{appName}} возьме на сябе правілы, падлік ачкоў і чарговасць хадоў, каб вы маглі засяродзіцца на весялосці.',
     primaryCtaLabel: 'Пачаць',
     playWithBotsLabel: 'Гуляць з ботамі',
     defaultRoomName: 'Гульня {{name}}',
-    heroCardBrand: 'CRITICAL',
+    heroCardBrand: 'КРЫТЫЧНА',
     supportCtaLabel: 'Падрымаць распрацоўшчыкаў',
     downloadsTitle: 'Усталюйце мабільныя зборкі',
     downloadsDescription:
-      'Загрузіце апошнія зборкі Expo для iOS і Android прама з вэб-прыкладання.',
+      'Загрузіце апошнія зборкі Expo для iOS і Android непасрэдна з вэб-дадатку.',
     downloadsIosLabel: 'Спампаваць для iOS',
     downloadsAndroidLabel: 'Спампаваць для Android',
     // Games section
     gamesTitle: 'Папулярныя гульні',
-    gamesSubtitle: 'Даследуйце нашу бібліятэку настольных забаў, якая расце',
+    gamesSubtitle: 'Азнаёмцеся з нашай бібліятэкай настольных гульняў, якая пастаянна пашыраецца'                    Translated with https://laratranslate.com',
     gamePlayButton: 'Гуляць зараз',
     gameRulesButton: 'Правілы гульні',
     gameComingSoon: 'Хутка',
@@ -340,10 +340,10 @@ const homeMessagesDefinition = {
       'Стварайце гульнявыя пакоі імгненна і пачынайце гуляць з сябрамі за секунды. Загрузка не патрабуецца.',
     featureRulesTitle: 'Аўтаматызаваныя правілы',
     featureRulesDescription:
-      'Няхай прыкладанне бярэ на сябе правілы, ачкі і кіраванне хадамі, пакуль вы атрымліваеце асалоду ад гульні.',
+      'Няхай дадатак бярэ на сябе правілы, ачкі і кіраванне хадамі, пакуль вы атрымліваеце асалоду ад гульні.',
     featureCrossplatformTitle: 'Кроссплатформавасць',
     featureCrossplatformDescription:
-      'Гуляйце імгненна ў браўзеры на ПК і мабільных прыладах. Натыўныя прыкладанні для iOS і Android хутка з’явяцца.',
+      'Гуляйце імгненна ў браўзеры на ПК і мабільных прыладах. Натыўныя дадаткі для iOS і Android хутка з’явяцца.',
     featureInviteTitle: 'Прыватныя пакоі і чат',
     featureInviteDescription:
       'Стварайце абароненыя пакоі для сваёй групы з убудаваным чатам для камунікацыі падчас гульні.',

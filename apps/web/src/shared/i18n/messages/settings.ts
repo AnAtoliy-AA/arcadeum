@@ -306,7 +306,7 @@ const settingsMessagesDefinition = {
     title: 'Налады',
     description:
       'Кіруйце знешнім выглядам, мовай і загрузкамі для вэб-версіі {{appName}}.',
-    gameplayTitle: 'Геймплэй',
+    gameplayTitle: 'Працэс гульні',
     gameplayDescription: 'Наладзьце ваш гульнявы вопыт.',
     hapticsLabel: 'Тактыльная аддача',
     hapticsDescription:
@@ -357,7 +357,7 @@ const settingsMessagesDefinition = {
     downloadsAndroidLabel: appConfig.downloads.androidLabel,
     accountTitle: 'Акаўнт',
     accountDescription:
-      'Вэб-ўваход хутка з’явіцца. Пакуль што вы можаце кіраваць падпіскамі праз панэль кіравання або ў мабільным прыкладанні.',
+      'Вэб-ўваход хутка з’явіцца. Пакуль што вы можаце кіраваць падпіскамі праз панэль кіравання або ў мабільным дадатку.',
     accountGuestStatus: 'Вы праглядаеце як госць.',
     accountPrimaryCta: 'Перайсці да ўваходу',
     accountSupportCtaLabel: appConfig.supportCta.label,

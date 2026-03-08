@@ -84,12 +84,12 @@ const pwaMessagesDefinition = {
   by: {
     install: {
       title: 'Усталяваць Arcadeum',
-      button: 'Усталяваць',
+      button: 'Усталяваць дадатак',
       notNow: 'Не зараз',
       description:
         'Усталюйце Arcadeum на прыладу для лепшага гульнявога досведу.',
       features: {
-        fast: 'Хуткая загрузка і прадукцыйнасць',
+        fast: 'Больш хуткая загрузка і прадукцыйнасць',
         offline: 'Гуляйце нават афлайн',
         notifications: 'Атрымлівайце запрашэнні імгненна',
       },

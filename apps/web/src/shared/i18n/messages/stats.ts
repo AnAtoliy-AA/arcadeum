@@ -109,7 +109,7 @@ const statsMessagesDefinition = {
     pageTitle: 'Статыстыка',
     myStatsTab: 'Мая статыстыка',
     leaderboardTab: 'Табліца лідэраў',
-    loginRequired: 'Калі ласка, увайдзіце, каб праглядзець статыстыку.',
+    loginRequired: 'Калі ласка, увайдзіце, каб праглядзець вашу статыстыку.',
     errorLoading: 'Памылка загрузкі статыстыкі',
     // Overview cards
     totalGames: 'Усяго гульняў',

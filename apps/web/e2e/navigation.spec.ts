@@ -1,5 +1,9 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
+import {
+  test,
+  ensureNavigationVisible,
+  getIsMobile,
+} from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
 
 test.describe('Navigation', () => {
@@ -13,8 +17,13 @@ test.describe('Navigation', () => {
   });
 
   test('should have navigation links', async ({ page }) => {
-    const nav = page.locator('nav').first();
-    await expect(nav).toBeVisible();
+    if (getIsMobile(page)) {
+      const menuButton = page.getByTestId('mobile-menu-button');
+      await expect(menuButton).toBeVisible();
+    } else {
+      const nav = page.locator('nav').first();
+      await expect(nav).toBeVisible();
+    }
   });
 
   test('should navigate to home from any page', async ({ page }) => {
@@ -34,15 +43,23 @@ test.describe('Navigation', () => {
   });
 
   test('should navigate to games page', async ({ page }) => {
+    await ensureNavigationVisible(page);
     const gamesLink = page.getByRole('link', { name: /games|игры/i }).first();
     await gamesLink.click();
     await expect(page).toHaveURL(/\/games/);
   });
 
   test('should navigate to auth page', async ({ page }) => {
-    const signInLink = page.locator('a[href="/auth"]').first();
-    if (await signInLink.isVisible()) {
-      await signInLink.click();
+    if (getIsMobile(page)) {
+      // On mobile, use the specific login indicator
+      const loginLink = page.getByTestId('mobile-login-indicator').first();
+      await expect(loginLink).toBeVisible();
+      await loginLink.click();
+      await expect(page).toHaveURL(/\/auth/);
+    } else {
+      const loginLink = page.getByTestId('desktop-login-button');
+      await expect(loginLink).toBeVisible();
+      await loginLink.click();
       await expect(page).toHaveURL(/\/auth/);
     }
   });

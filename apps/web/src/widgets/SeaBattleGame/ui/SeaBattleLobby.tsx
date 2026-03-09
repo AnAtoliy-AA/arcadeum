@@ -12,9 +12,58 @@ import { VariantSelector } from './VariantSelector';
 import styled from 'styled-components';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { IconButton } from '@/features/games/ui/ReusableGameLobby';
+import { VARIANT_THEMES } from '../lib/theme';
 
 const VariantSelectorWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
   margin-left: 1rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-left: 0;
+    width: 100%;
+  }
+`;
+
+const ColorPreviewContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    width: 100%;
+    justify-content: space-between;
+  }
+`;
+
+const ColorItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+const ColorSwatch = styled.div<{ $color: string }>`
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background-color: ${(props) => props.$color};
+  border: 1px solid rgba(255, 255, 255, 0.2);
+`;
+
+const ColorLabel = styled.span`
+  font-size: 0.75rem;
+  color: ${({ theme }) => theme.text.secondary};
+  white-space: nowrap;
 `;
 
 const getSeaBattleTheme = (variantId?: string): GameLobbyTheme => {
@@ -61,9 +110,16 @@ export function SeaBattleLobby({
   onRefresh,
   t,
 }: SeaBattleLobbyProps) {
-  const currentVariant = (room.gameOptions?.variant as string) || 'classic';
-  const theme = getSeaBattleTheme(currentVariant);
-  const variantInfo = getVariantInfo(currentVariant);
+  const roomVariant = (room.gameOptions?.variant as string) || 'classic';
+  const [selectedVariant, setSelectedVariant] = React.useState(roomVariant);
+
+  // Sync with room variant when it changes from server
+  React.useEffect(() => {
+    setSelectedVariant(roomVariant);
+  }, [roomVariant]);
+
+  const theme = getSeaBattleTheme(selectedVariant);
+  const variantInfo = getVariantInfo(selectedVariant);
 
   const getSubtitleText = () => {
     if (room.status !== 'lobby') return t('games.roomPage.errors.loadingRoom');
@@ -77,7 +133,65 @@ export function SeaBattleLobby({
   const optionsSlot =
     isHost && room.status === 'lobby' ? (
       <VariantSelectorWrapper>
-        <VariantSelector roomId={room.id} currentVariant={currentVariant} />
+        <VariantSelector
+          roomId={room.id}
+          currentVariant={selectedVariant}
+          onVariantChange={setSelectedVariant}
+        />
+        <ColorPreviewContainer data-testid="color-preview-container">
+          <ColorItem>
+            <ColorSwatch
+              $color={
+                VARIANT_THEMES[selectedVariant as keyof typeof VARIANT_THEMES]
+                  ?.shipColor || VARIANT_THEMES.classic.shipColor
+              }
+              title="Ship"
+              data-testid="color-swatch-ship"
+            />
+            <ColorLabel data-testid="color-label-ship">
+              {t('games.sea_battle_v1.colors.ship' as TranslationKey)}
+            </ColorLabel>
+          </ColorItem>
+          <ColorItem>
+            <ColorSwatch
+              $color={
+                VARIANT_THEMES[selectedVariant as keyof typeof VARIANT_THEMES]
+                  ?.hitColor || VARIANT_THEMES.classic.hitColor
+              }
+              title="Hit"
+              data-testid="color-swatch-hit"
+            />
+            <ColorLabel data-testid="color-label-hit">
+              {t('games.sea_battle_v1.colors.hit' as TranslationKey)}
+            </ColorLabel>
+          </ColorItem>
+          <ColorItem>
+            <ColorSwatch
+              $color={
+                VARIANT_THEMES[selectedVariant as keyof typeof VARIANT_THEMES]
+                  ?.missColor || VARIANT_THEMES.classic.missColor
+              }
+              title="Miss"
+              data-testid="color-swatch-miss"
+            />
+            <ColorLabel data-testid="color-label-miss">
+              {t('games.sea_battle_v1.colors.miss' as TranslationKey)}
+            </ColorLabel>
+          </ColorItem>
+          <ColorItem>
+            <ColorSwatch
+              $color={
+                VARIANT_THEMES[selectedVariant as keyof typeof VARIANT_THEMES]
+                  ?.cellEmpty || VARIANT_THEMES.classic.cellEmpty
+              }
+              title="Empty"
+              data-testid="color-swatch-empty"
+            />
+            <ColorLabel data-testid="color-label-empty">
+              {t('games.sea_battle_v1.colors.empty' as TranslationKey)}
+            </ColorLabel>
+          </ColorItem>
+        </ColorPreviewContainer>
       </VariantSelectorWrapper>
     ) : null;
 

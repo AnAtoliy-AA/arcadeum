@@ -18,11 +18,13 @@ export interface GameVariantOption {
 
 export interface GameVariantSelectorProps {
   roomId: string;
+  currentUserId?: string; // Add if needed, but not required for now
   currentVariant: string;
   variants: ReadonlyArray<GameVariantOption>;
   optionKey?: string; // e.g., 'variant' or 'cardVariant'
   disabled?: boolean;
   className?: string;
+  onVariantChange?: (variant: string) => void;
 }
 
 export function GameVariantSelector({
@@ -32,6 +34,7 @@ export function GameVariantSelector({
   optionKey = 'variant',
   disabled = false,
   className,
+  onVariantChange,
 }: GameVariantSelectorProps) {
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
@@ -62,6 +65,7 @@ export function GameVariantSelector({
     const newVariant = e.target.value;
     // Optimistic update
     setInternalVariant(newVariant);
+    onVariantChange?.(newVariant);
     mutate(newVariant);
   };
 

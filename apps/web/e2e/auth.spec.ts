@@ -17,10 +17,13 @@ test.describe('Auth Page', () => {
   });
 
   test('should display OAuth provider buttons', async ({ page }) => {
-    // Look for common OAuth providers (Google, GitHub, etc.)
-    const authButtons = page.locator('button, a').filter({
-      hasText: /google|github|sign in|login|continue with/i,
-    });
+    // Look for common OAuth providers (Google, GitHub, etc.) inside main content
+    const authButtons = page
+      .locator('main')
+      .locator('button, a')
+      .filter({
+        hasText: /google|github|sign in|login|continue with/i,
+      });
 
     // At least one auth option should be visible
     if ((await authButtons.count()) > 0) {

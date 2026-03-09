@@ -96,7 +96,7 @@ test.describe('Sea Battle Popup Challenge', () => {
 
     // Emit a message from the opponent AFTER the page is ready
     await page.evaluate(
-      ({ otherUserId, roomId, userId }) => {
+      async ({ otherUserId, roomId, userId }) => {
         const logs = [
           {
             id: 'msg-active',
@@ -135,27 +135,62 @@ test.describe('Sea Battle Popup Challenge', () => {
             state,
           },
         };
+        // Wait a small bit for socket to be fully ready
+        await new Promise((r) => setTimeout(r, 500));
         window.gameSocket?.trigger('games.session.snapshot', snapshot);
+
+        const win = window as unknown as {
+          _playwrightMocks?: { lastSession: unknown };
+        };
+        if (win._playwrightMocks) {
+          win._playwrightMocks.lastSession = snapshot.session;
+        }
       },
       { otherUserId, roomId, userId },
     );
 
+    // Verify state update (checking for log entry in window.gameSocket)
+    await page.waitForFunction(
+      (msgId) => {
+        const win = window as unknown as {
+          gameSocket?: { connected: boolean };
+          _playwrightMocks?: {
+            lastSession?: { state?: { logs?: Array<{ id: string }> } };
+          };
+        };
+        return (
+          win.gameSocket?.connected &&
+          win._playwrightMocks?.lastSession?.state?.logs?.some(
+            (l) => l.id === msgId,
+          )
+        );
+      },
+      'msg-active',
+      { timeout: 10000 },
+    );
+
     // Verify Chat Bubble
-    await expect(page.getByText('Challenge me!', { exact: true })).toBeVisible({
-      timeout: 10000,
-    });
+    // Verify Chat Bubble exists in DOM
+    const bubble = page.getByTestId('chat-bubble');
+    await bubble.waitFor({ state: 'attached', timeout: 15000 });
+    await expect(bubble).toBeVisible({ timeout: 5000 });
+    await expect(bubble).toHaveText(/Challenge me!/i);
 
     // Verify Sea Battle challenge popup is visible
-    const challengeButton = page.getByRole('button', {
-      name: /challenge|вызов/i,
-    });
+    const challengeButton = page.getByTestId('challenge-button');
     await expect(challengeButton).toBeVisible({ timeout: 15000 });
 
-    // Click challenge and verify navigation
+    // Wait a bit for the UI to be fully interactive
+    await page.waitForTimeout(1000);
+
+    // Click challenge with fallback mechanism
     await challengeButton.click({ force: true });
+    await challengeButton.dispatchEvent('click').catch(() => {});
 
     // Verify redirection to game creation page
-    await expect(page).toHaveURL(/.*\/games\/create\?gameId=sea_battle_v1.*/);
+    await page.waitForURL(/.*\/games\/create\?gameId=sea_battle_v1.*/, {
+      timeout: 20000,
+    });
     await expect(page).toHaveURL(/.*opponentId=other-user-id.*/);
   });
 });

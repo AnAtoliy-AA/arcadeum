@@ -40,9 +40,8 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
 
   const handleLogout = useCallback(async () => {
     await clearTokens();
-    onClose();
-    window.location.href = '/';
-  }, [clearTokens, onClose]);
+    window.location.replace('/');
+  }, [clearTokens]);
 
   return (
     <MobileNav $isOpen={isOpen} data-mobile-menu data-testid="mobile-nav">
@@ -71,10 +70,7 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
             ))}
           </MobileUserInfo>
           <DropdownItem
-            onClick={() => {
-              handleLogout();
-              onClose();
-            }}
+            onClick={handleLogout}
             style={{ marginTop: '0.5rem' }}
             data-testid="mobile-logout-button"
           >

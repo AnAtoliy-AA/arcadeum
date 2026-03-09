@@ -59,6 +59,9 @@ export const TimerControlsWrapper = styled.div`
 export const GameInfo = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
+  align-items: center;
+  margin-top: 1rem;
   gap: 0.5rem;
 `;
 

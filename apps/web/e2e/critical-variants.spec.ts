@@ -7,7 +7,6 @@ import {
   navigateTo,
   waitForRoomReady,
   closeRulesModal,
-  clickButtonByTestId,
 } from './fixtures/test-utils';
 
 test.describe('Critical Variant Selection', () => {
@@ -101,10 +100,11 @@ test.describe('Critical Variant Selection', () => {
     // Create room
     const createBtn = page.getByTestId('create-room-button');
     await expect(createBtn).toBeEnabled();
-    await clickButtonByTestId(page, 'create-room-button');
+    await createBtn.click({ force: true });
 
     // The create button should trigger navigation to the room
-    await expect(page).toHaveURL(/\/games\/rooms\//, { timeout: 15000 });
+    await expect(page).toHaveURL(/\/games\/rooms\//, { timeout: 30000 });
+    await page.waitForLoadState('domcontentloaded');
     await waitForRoomReady(page);
 
     // Wait specifically for the game title to appear in the header

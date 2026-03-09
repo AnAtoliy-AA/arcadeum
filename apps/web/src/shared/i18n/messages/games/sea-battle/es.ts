@@ -2,6 +2,7 @@ export const esMessages = {
   sea_battle_v1: {
     name: 'Batalla Naval',
     description: 'Clásico juego de combate naval para hasta 6 jugadores',
+    challengePlayer: '¿Desafiar a {{name}} a Batalla Naval?',
     rules: {
       title: 'Reglas del Juego',
       headers: {
@@ -97,6 +98,7 @@ export const esMessages = {
         starting: 'Iniciando...',
         confirmPlacement: 'Confirmar Colocación',
         rotate: 'Rotar',
+        challenge: 'Desafío',
         fire: '¡Fuego!',
         autoPlace: 'Auto Colocar',
         randomize: 'Aleatorio',

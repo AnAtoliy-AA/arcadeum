@@ -2,6 +2,7 @@ export const ruMessages = {
   sea_battle_v1: {
     name: 'Морской Бой',
     description: 'Классический морской бой до 6 игроков',
+    challengePlayer: 'Вызвать {{name}} на Морской бой?',
     rules: {
       title: 'Правила Игры',
       headers: {
@@ -96,6 +97,7 @@ export const ruMessages = {
         starting: 'Запуск...',
         confirmPlacement: 'Подтвердить расстановку',
         rotate: 'Повернуть',
+        challenge: 'Вызов',
         fire: 'Огонь!',
         autoPlace: 'Авторасстановка',
         randomize: 'Перемешать',

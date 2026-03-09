@@ -243,6 +243,8 @@ export const frMessages = {
       hostCanStart: "Cliquez sur 'Démarrer la Partie' quand vous êtes prêt",
       waitingForHost: "En attente que l'hôte démarre la partie",
       gameLoading: 'Le jeu est en cours de chargement...',
+      playWithBotsNotice:
+        'Commencez avec des bots immédiatement ou attendez les autres joueurs',
       hostControls: "Contrôles de l'Hôte",
       host: 'Hôte',
       players: 'Joueurs',

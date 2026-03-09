@@ -74,14 +74,14 @@ const ShipBody = styled.div`
 const ShipBlock = styled.div<{
   $sunk: boolean;
   $isMe: boolean;
-  $idx: number; // Index in the ship (0..size-1)
+  $idx: number;
 }>`
   width: 10px;
   height: 10px;
   background-color: ${(props) => {
     if (props.$sunk) return '#ff4444';
     if (props.$isMe) return '#4caf50';
-    return '#ccc'; // Enemy ships are neutral gray until sunk
+    return '#ccc';
   }};
   border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 2px;
@@ -94,7 +94,7 @@ interface ShipsLeftProps {
 
 export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
   const { t } = useTranslation();
-  // Sort ships for consistent display: 4, 3, 3, 2, 2, 2, 1, 1, 1, 1
+
   const sortedConfig = [...SHIPS].sort((a, b) => b.size - a.size);
 
   const totalShips = sortedConfig.length;
@@ -112,8 +112,7 @@ export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
       <FleetGrid>
         {sortedConfig.map((config) => {
           const shipState = ships?.find((s) => s.id === config.id);
-          // If shipState exists, use its sunk status.
-          // If not found (e.g. purely visual or not placed yet), assume alive/not sunk.
+
           const isSunk = shipState?.sunk ?? false;
 
           return (

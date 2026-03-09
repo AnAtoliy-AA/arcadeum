@@ -3,10 +3,11 @@ import styled from 'styled-components';
 
 interface GameLayoutProps {
   header?: React.ReactNode;
-  children: React.ReactNode; // Game Board
+  children: React.ReactNode;
   chat?: React.ReactNode;
   modals?: React.ReactNode;
   lobby?: React.ReactNode;
+  popupOverlay?: React.ReactNode;
   showChat?: boolean;
   className?: string;
   gameContainerRef?: React.RefObject<HTMLDivElement>;
@@ -29,15 +30,18 @@ const LayoutContainer = styled.div<{ $variant?: string; $isMyTurn?: boolean }>`
   box-sizing: border-box;
 
   @media (max-width: 768px) {
-    padding: 1rem;
-    gap: 1rem;
-    height: calc(100dvh - 64px);
+    padding: 0.75rem;
+    gap: 0.75rem;
+    height: auto;
+    min-height: calc(100dvh - 64px);
     border-radius: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
   @media (max-width: 480px) {
     padding: 0.5rem;
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
 `;
 
@@ -45,14 +49,15 @@ const MainArea = styled.div<{ $showChat?: boolean }>`
   display: flex;
   flex: 1;
   gap: 1rem;
-  min-height: 0; /* Important for scrollable children */
+  min-height: 0;
   overflow: hidden;
 
-  /* If chat is shown, we might split the view or overlay on mobile */
   flex-direction: row;
 
   @media (max-width: 1024px) {
     flex-direction: column;
+    overflow: visible;
+    flex: none;
   }
 `;
 
@@ -77,11 +82,13 @@ const ChatArea = styled.div<{ $showChat: boolean }>`
   @media (max-width: 1024px) {
     width: 100%;
     min-width: 0;
-    flex: 1; /* Allow it to flex naturally instead of fixed 300px */
-    min-height: 250px;
+    flex: none;
+    min-height: 280px;
+    flex-shrink: 0;
     border-left: none;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-left: 0;
+    padding-top: 0.5rem;
   }
 `;
 
@@ -91,13 +98,13 @@ export function GameLayout({
   chat,
   modals,
   lobby,
+  popupOverlay,
   showChat = false,
   gameContainerRef,
   variant,
   isMyTurn,
   className,
 }: GameLayoutProps) {
-  // If lobby is provided (e.g. game not started), it takes precedence over board/chat
   if (lobby) {
     return (
       <LayoutContainer
@@ -125,6 +132,7 @@ export function GameLayout({
         <GameBoardArea>{children}</GameBoardArea>
         {chat && <ChatArea $showChat={showChat}>{chat}</ChatArea>}
       </MainArea>
+      {popupOverlay}
       {modals}
     </LayoutContainer>
   );

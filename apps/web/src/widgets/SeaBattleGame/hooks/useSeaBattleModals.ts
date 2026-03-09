@@ -36,7 +36,6 @@ export function useSeaBattleModals() {
     isWinner: false,
   });
 
-  // Ship placement modal handlers
   const openShipPlacementModal = useCallback(() => {
     setShipPlacementModal({ isOpen: true, currentShipIndex: 0 });
   }, []);
@@ -57,7 +56,6 @@ export function useSeaBattleModals() {
     return SHIPS[shipPlacementModal.currentShipIndex];
   }, [shipPlacementModal.currentShipIndex]);
 
-  // Attack result modal handlers
   const showAttackResult = useCallback(
     (result: 'hit' | 'miss' | 'sunk', shipName?: string) => {
       setAttackResultModal({ isOpen: true, result, shipName });
@@ -69,7 +67,6 @@ export function useSeaBattleModals() {
     setAttackResultModal({ isOpen: false, result: null });
   }, []);
 
-  // Game over modal handlers
   const showGameOver = useCallback((isWinner: boolean) => {
     setGameOverModal({ isOpen: true, isWinner });
   }, []);
@@ -79,19 +76,16 @@ export function useSeaBattleModals() {
   }, []);
 
   return {
-    // Ship placement modal
     shipPlacementModal,
     openShipPlacementModal,
     closeShipPlacementModal,
     advanceToNextShip,
     getCurrentShip,
 
-    // Attack result modal
     attackResultModal,
     showAttackResult,
     closeAttackResultModal,
 
-    // Game over modal
     gameOverModal,
     showGameOver,
     closeGameOverModal,

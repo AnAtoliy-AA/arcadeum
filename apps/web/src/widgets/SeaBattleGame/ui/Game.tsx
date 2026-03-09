@@ -1,6 +1,13 @@
 'use client';
 
-import React, { useRef, useCallback, useState } from 'react';
+import React, {
+  useRef,
+  useCallback,
+  useState,
+  useEffect,
+  useMemo,
+  RefObject,
+} from 'react';
 import styled from 'styled-components';
 import {
   useTranslation,
@@ -12,6 +19,7 @@ import { useSeaBattleState } from '../hooks/useSeaBattleState';
 import { useSeaBattleActions } from '../hooks/useSeaBattleActions';
 import { useGameStore } from '@/features/games/store/gameStore';
 import { useDisplayNames } from '@/widgets/CriticalGame/lib/displayUtils';
+import type { CriticalSnapshot } from '@/widgets/CriticalGame/types';
 import { useRematch } from '@/features/games/hooks';
 import {
   GameResultModal,
@@ -30,6 +38,8 @@ import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { getTheme } from '../lib/theme';
 
 import { RulesModal } from './RulesModal';
+import { ChatMessagePopup } from './ChatMessagePopup';
+import { useLatestChatMessage } from '../hooks/useLatestChatMessage';
 import { FullscreenButton } from '@/widgets/CriticalGame/ui/styles';
 import { TurnIndicator, ChatToggleButton } from './styles';
 
@@ -74,14 +84,11 @@ const ActionSection = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 
   @media (max-width: 768px) {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: 4px; /* Space for scrollbar if visible */
-    &::-webkit-scrollbar {
-      display: none;
-    }
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
 `;
 
@@ -105,13 +112,13 @@ export default function SeaBattleGame({
   const containerRef = useRef<HTMLDivElement>(null);
   const chatMessagesRef = useRef<HTMLDivElement | null>(null);
 
-  // Chat State
+  const isLobby = room?.status === 'lobby';
+
   const [showChat, setShowChat] = useState(true);
-  const [showRules, setShowRules] = useState(false);
+  const [showRules, setShowRules] = useState(isLobby);
   const [chatMessage, setChatMessage] = useState('');
   const [chatScope, setChatScope] = useState<ChatScope>('all');
-  // Result Modal State
-  const [showResultModal, setShowResultModal] = useState(false);
+  const [resultModalDismissed, setResultModalDismissed] = useState(false);
 
   const {
     startSession,
@@ -127,7 +134,6 @@ export default function SeaBattleGame({
   });
 
   const handleAutoPlace = useCallback(() => {
-    // Just trigger the backend action
     autoPlace();
   }, [autoPlace]);
 
@@ -158,6 +164,18 @@ export default function SeaBattleGame({
     room: room ?? undefined,
   });
 
+  const chatLogCount = snapshot?.logs?.length ?? 0;
+  useEffect(() => {
+    if (chatMessagesRef.current?.lastElementChild) {
+      const container = chatMessagesRef.current;
+      const lastElement = container.lastElementChild as HTMLElement;
+      container.scrollTo({
+        top: lastElement.offsetTop,
+        behavior: 'smooth',
+      });
+    }
+  }, [chatLogCount]);
+
   const handleStartGame = useCallback(
     (options?: { withBots?: boolean; botCount?: number }) => {
       if (!room) return;
@@ -182,7 +200,6 @@ export default function SeaBattleGame({
     [roomId, accessToken],
   );
 
-  // Rematch Logic
   const {
     rematchLoading,
     showRematchModal,
@@ -201,21 +218,6 @@ export default function SeaBattleGame({
     gameOptions: room?.gameOptions,
   });
 
-  // Auto-open modal on game over
-  React.useEffect(() => {
-    if (isGameOver) {
-      setShowResultModal(true);
-    }
-  }, [isGameOver]);
-
-  // Auto-open rules on mount/entry to room if game is in lobby
-  React.useEffect(() => {
-    if (!snapshot || (room && room.status === 'lobby')) {
-      setShowRules(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomId]); // Open only once on room entry
-
   const { isWinner } = useSeaBattleState({
     roomId,
     currentUserId,
@@ -223,11 +225,14 @@ export default function SeaBattleGame({
     room: room ?? undefined,
   });
 
+  const { latestMessage, dismiss: dismissPopup } = useLatestChatMessage(
+    snapshot?.logs ?? [],
+  );
+
   const { resolveDisplayName, formatLogMessage } = useDisplayNames({
     currentUserId,
     room: room!,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    snapshot: snapshot as any, // Cast to any because types differ slightly but we only need player list
+    snapshot: snapshot as unknown as CriticalSnapshot,
     youLabel: t('games.sea_battle_v1.table.players.you'),
     translateCardType: () => '',
     seeTheFutureLabel: '',
@@ -236,7 +241,6 @@ export default function SeaBattleGame({
   const cardVariant = (room?.gameOptions?.variant ||
     room?.gameOptions?.cardVariant) as string | undefined;
 
-  // Compute turn status text
   const getTurnStatusText = () => {
     if (!snapshot) return '';
     if (isGameOver) return t('games.sea_battle_v1.table.phase.completed');
@@ -260,9 +264,9 @@ export default function SeaBattleGame({
   const variantLabel = currentVariant
     ? `(${t(currentVariant.name as TranslationKey)})`
     : '';
-  const theme = React.useMemo(() => getTheme(cardVariant), [cardVariant]);
+  const theme = useMemo(() => getTheme(cardVariant), [cardVariant]);
 
-  const gameResult = React.useMemo(() => {
+  const gameResult = useMemo(() => {
     if (!isGameOver) return null;
     if (isWinner || snapshot?.winnerId === currentUserId) return 'victory';
     return 'defeat';
@@ -272,9 +276,20 @@ export default function SeaBattleGame({
 
   return (
     <GameLayout
-      gameContainerRef={containerRef as React.RefObject<HTMLDivElement>}
+      gameContainerRef={containerRef as RefObject<HTMLDivElement>}
       variant={cardVariant}
       isMyTurn={!!isMyTurn}
+      popupOverlay={
+        latestMessage ? (
+          <ChatMessagePopup
+            key={latestMessage.id}
+            senderName={latestMessage.senderName}
+            message={latestMessage.message}
+            visible={!!latestMessage}
+            onDismiss={dismissPopup}
+          />
+        ) : undefined
+      }
       lobby={
         !snapshot ? (
           <SeaBattleLobby
@@ -328,10 +343,10 @@ export default function SeaBattleGame({
             t={t}
           />
           <GameResultModal
-            isOpen={showResultModal && isGameOver}
+            isOpen={isGameOver && !resultModalDismissed}
             result={gameResult}
             onRematch={isHost ? openRematchModal : undefined}
-            onClose={() => setShowResultModal(false)}
+            onClose={() => setResultModalDismissed(true)}
             rematchLoading={rematchLoading}
             t={t}
           />

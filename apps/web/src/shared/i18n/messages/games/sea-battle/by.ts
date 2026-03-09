@@ -2,6 +2,7 @@ export const byMessages = {
   sea_battle_v1: {
     name: 'Марскі Бой',
     description: 'Класічны марскі бой да 6 гульцоў',
+    challengePlayer: 'Выклікаць {{name}} на Марскі бой?',
     rules: {
       title: 'Правілы Гульні',
       headers: {
@@ -97,6 +98,7 @@ export const byMessages = {
         starting: 'Запуск...',
         confirmPlacement: 'Пацвердзіць расстаноўку',
         rotate: 'Павярнуць',
+        challenge: 'Выклік',
         fire: 'Агонь!',
         autoPlace: 'Аўтарасстаноўка',
         randomize: 'Перамяшаць',

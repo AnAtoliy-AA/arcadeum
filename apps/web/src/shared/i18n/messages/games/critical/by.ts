@@ -240,6 +240,8 @@ export const byMessages = {
       hostCanStart: "Націсніце 'Пачаць гульню', калі будзеце гатовыя",
       waitingForHost: 'Чаканне запуску гульні арганізатарам',
       gameLoading: 'Гульня загружаецца...',
+      playWithBotsNotice:
+        'Пачніце гульню з ботамі альбо пачакайце іншых гульцоў',
       hostControls: 'Кіраванне',
       host: 'Арганізатар',
       players: 'Гульцы',

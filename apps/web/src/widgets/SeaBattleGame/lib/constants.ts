@@ -1,6 +1,3 @@
-// Sea Battle game constants and configuration
-
-// Game variants/themes
 export const SEA_BATTLE_VARIANTS = [
   {
     id: 'classic',
@@ -76,21 +73,18 @@ export const SEA_BATTLE_VARIANTS = [
 
 export type SeaBattleVariant = (typeof SEA_BATTLE_VARIANTS)[number]['id'];
 
-// Default game options
 export const DEFAULT_GAME_OPTIONS = {
   variant: 'classic' as SeaBattleVariant,
   showTurnTimer: false,
-  turnTimeLimit: 60, // seconds
+  turnTimeLimit: 60,
 };
 
-// Board configuration
 export const BOARD_CONFIG = {
   size: 10,
-  cellSize: 36, // pixels
-  gap: 2, // pixels
+  cellSize: 36,
+  gap: 2,
 };
 
-// Animation durations (ms)
 export const ANIMATION_DURATIONS = {
   explosion: 800,
   splash: 600,
@@ -98,7 +92,6 @@ export const ANIMATION_DURATIONS = {
   turnTransition: 300,
 };
 
-// Colors for game elements (references to palette)
 export const GAME_COLORS = {
   cellEmpty: 'var(--color-surface)',
   cellShip: 'var(--color-primary)',

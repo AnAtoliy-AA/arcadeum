@@ -38,7 +38,6 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
 
   if (!isOpen || !mounted) return null;
 
-  // Parse ship rules into structured data
   const shipsRaw = t('games.sea_battle_v1.rules.ships');
   const ships = shipsRaw
     .split('\n')

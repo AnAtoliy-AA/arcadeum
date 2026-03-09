@@ -116,7 +116,6 @@ export const RowLabels = styled.div`
   padding: 4px 0;
 
   @media (max-width: 768px) {
-    /* Labels remain visible on mobile but compact */
   }
 `;
 
@@ -126,7 +125,6 @@ export const ColLabels = styled.div`
   padding: 0 4px;
 
   @media (max-width: 768px) {
-    /* Labels remain visible on mobile but compact */
   }
 `;
 

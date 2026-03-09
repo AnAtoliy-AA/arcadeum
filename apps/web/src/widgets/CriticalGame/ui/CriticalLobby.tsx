@@ -80,7 +80,7 @@ export function CriticalLobby({
   const getSubtitleText = () => {
     if (room.status !== 'lobby') return t('games.table.lobby.gameLoading');
     // If 1 player, we can start with bots
-    if (room.playerCount === 1) return t('games.lobby.playWithBotsNotice'); // I'll add this one too
+    if (room.playerCount === 1) return t('games.lobby.playWithBotsNotice');
     // If < 2 players (0?), shouldn't happen but fallback
     if (room.playerCount < 2) return t('games.table.lobby.needTwoPlayers');
     if (isHost) return t('games.table.lobby.hostCanStart');

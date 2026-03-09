@@ -239,6 +239,8 @@ export const esMessages = {
       hostCanStart: "Haz clic en 'Iniciar Juego' cuando estés listo",
       waitingForHost: 'Esperando que el anfitrión inicie el juego',
       gameLoading: 'El juego está cargando...',
+      playWithBotsNotice:
+        'Empieza con bots inmediatamente o espera a otros jugadores',
       hostControls: 'Controles del Anfitrión',
       host: 'Anfitrión',
       players: 'Jugadores',

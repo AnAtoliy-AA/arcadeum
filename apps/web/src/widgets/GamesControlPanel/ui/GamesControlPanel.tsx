@@ -69,6 +69,7 @@ const Panel = styled.div`
 
   @media (max-width: 768px) {
     padding: 0.5rem 1rem;
+    padding-top: 40px;
     gap: 0.5rem;
     border-radius: 10px;
   }
@@ -118,7 +119,6 @@ export function GamesControlPanel({
   const handleFullscreenToggle = useCallback(async () => {
     try {
       if (!document.fullscreenElement) {
-        // Use provided container ref, or fall back to document element
         const element =
           fullscreenContainerRef?.current || document.documentElement;
         await element.requestFullscreen();
@@ -134,17 +134,14 @@ export function GamesControlPanel({
 
   const handleConfirmLeave = useCallback(() => {
     if (roomId && snapshot.userId) {
-      // Use socket acknowledgement to ensure server processing before navigation
       gameSocket.emit(
         'games.room.leave',
         { roomId, userId: snapshot.userId },
         () => {
-          // Callback received from server (after DB update)
           router.push('/games');
         },
       );
     } else {
-      // Fallback if no socket/user (shouldn't happen)
       router.push('/games');
     }
     setShowLeaveConfirm(false);

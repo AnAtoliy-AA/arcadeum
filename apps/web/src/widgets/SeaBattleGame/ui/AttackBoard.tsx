@@ -68,7 +68,7 @@ export function AttackBoard({
 
       const cellState = target.board[row]?.[col];
       if (cellState === CELL_STATE.HIT || cellState === CELL_STATE.MISS) {
-        return; // Already attacked
+        return;
       }
 
       onAttack(targetPlayerId, row, col);
@@ -79,7 +79,6 @@ export function AttackBoard({
   return (
     <MainGameArea>
       <GridsContainer>
-        {/* Own board - view only */}
         {currentPlayer && (
           <PlayerSection
             $isMe
@@ -132,7 +131,6 @@ export function AttackBoard({
           </PlayerSection>
         )}
 
-        {/* Opponent boards - clickable */}
         {opponents.map((opponent) => (
           <PlayerSection
             key={opponent.playerId}
@@ -176,7 +174,6 @@ export function AttackBoard({
               <BoardGrid $theme={theme}>
                 {opponent.board.map((row, rIndex) =>
                   row.map((cellState, cIndex) => {
-                    // Only show hits and misses, hide ships
                     const displayState =
                       cellState === CELL_STATE.SHIP
                         ? CELL_STATE.EMPTY

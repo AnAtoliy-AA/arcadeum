@@ -2,6 +2,7 @@ export const frMessages = {
   sea_battle_v1: {
     name: 'Bataille Navale',
     description: 'Jeu de combat naval classique jusqu’à 6 joueurs',
+    challengePlayer: 'Défier {{name}} à la Bataille Navale ?',
     rules: {
       title: 'Règles du Jeu',
       headers: {
@@ -52,7 +53,7 @@ export const frMessages = {
       },
       nebula: {
         name: 'Nébuleuse',
-        description: 'Flotte de l’espace lointain',
+        description: 'Flote de l’espace lointain',
       },
       forest: {
         name: 'Forêt',
@@ -97,6 +98,7 @@ export const frMessages = {
         starting: 'Démarrage...',
         confirmPlacement: 'Confirmer le placement',
         rotate: 'Pivoter',
+        challenge: 'Défi',
         fire: 'Feu !',
         autoPlace: 'Placement auto',
         randomize: 'Aléatoire',

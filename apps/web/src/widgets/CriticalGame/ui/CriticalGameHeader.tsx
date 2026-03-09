@@ -68,7 +68,7 @@ export function CriticalGameHeader({
   toggleFullscreen,
 }: CriticalGameHeaderProps) {
   const cardVariant = room.gameOptions?.cardVariant;
-  const [showRules, setShowRules] = useState(true);
+  const [showRules, setShowRules] = useState(false);
 
   const { isLongPending } = useServerWakeUpProgress(Boolean(actionBusy));
 

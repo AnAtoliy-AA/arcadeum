@@ -83,13 +83,11 @@ export function ShipPlacementBoard({
       const cells = getCellsForPlacement(row, col, ship.size, isVertical);
       if (!cells) return false;
 
-      // Check if all cells are empty and not adjacent to other ships
       for (const cell of cells) {
         if (board[cell.row]?.[cell.col] !== CELL_STATE.EMPTY) {
           return false;
         }
 
-        // Check surrounding cells
         const directions = [
           [-1, -1],
           [-1, 0],
@@ -307,7 +305,6 @@ export function ShipPlacementBoard({
   );
 }
 
-// Helper functions
 function createEmptyBoard(): CellState[][] {
   return Array(BOARD_SIZE)
     .fill(null)

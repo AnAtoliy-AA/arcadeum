@@ -78,11 +78,16 @@ export const TurnIndicator = styled.div<{
     `}
 
   @media (max-width: 768px) {
-    min-width: 200px;
-    padding: 8px 16px;
-    font-size: 0.8rem;
-    margin: 12px auto;
-    top: 10px;
+    width: 90%;
+    max-width: 400px;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    position: fixed;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    z-index: 100;
   }
 `;
 

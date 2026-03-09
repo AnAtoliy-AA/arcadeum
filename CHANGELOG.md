@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.8] - 2026-03-09
+
+### Fixed
+- play again modal (ARC-442)
+
+
 ## [1.7.7] - 2026-03-09
 
 ### Added

@@ -19,7 +19,7 @@ export const GameTable = styled.div`
   // Previously overflow: hidden; Removed to allow bubbles to overflow
 
   @media (max-width: 768px) {
-    padding: 2.5rem 1.5rem;
+    padding: 4rem 0.5rem 1.5rem;
     min-height: 360px;
   }
 `;
@@ -133,19 +133,33 @@ export const PlayersRing = styled.div<{ $playerCount: number }>`
   justify-content: center;
 
   @media (max-width: 768px) {
-    min-height: 280px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      'tl tc tr'
+      'ml center mr'
+      'bl bc br';
+    gap: 0.5rem;
+    min-height: auto;
+    padding: 0.25rem;
+    align-items: center;
+    justify-items: center;
   }
 `;
 
 export const PlayerPositionWrapper = styled.div<{
   $position: number;
   $total: number;
+  $isCurrentUser?: boolean;
 }>`
   position: absolute;
   z-index: 5;
   ${({ $position, $total }) => {
-    const angle = ($position / $total) * 2 * Math.PI - Math.PI / 2;
-    // Smaller radius to keep players inside the container
+    // Current user ($position 0) should be at the bottom (90 degrees or PI/2)
+    // We sweep clockwise from there.
+    // Left side: positive angle. Top: PI * 1.5. Right side: > PI * 1.5
+    const angle = ($position / $total) * 2 * Math.PI + Math.PI / 2;
     const radiusX = 38;
     const radiusY = 36;
     const x = 50 + radiusX * Math.cos(angle);
@@ -154,13 +168,35 @@ export const PlayerPositionWrapper = styled.div<{
   }}
 
   @media (max-width: 768px) {
+    position: static;
+    transform: none;
+
     ${({ $position, $total }) => {
-      const angle = ($position / $total) * 2 * Math.PI - Math.PI / 2;
-      const radiusX = 36;
-      const radiusY = 34;
-      const x = 50 + radiusX * Math.cos(angle);
-      const y = 50 + radiusY * Math.sin(angle);
-      return `left: ${x}%; top: ${y}%;`;
+      // Map to 3x3 grid areas based on relative index and total players
+      if ($position === 0) return 'grid-area: bc;'; // User always bottom center
+
+      if ($total === 2) {
+        if ($position === 1) return 'grid-area: tc;';
+      } else if ($total === 3) {
+        if ($position === 1) return 'grid-area: ml;';
+        if ($position === 2) return 'grid-area: mr;';
+      } else if ($total === 4) {
+        if ($position === 1) return 'grid-area: ml;';
+        if ($position === 2) return 'grid-area: tc;';
+        if ($position === 3) return 'grid-area: mr;';
+      } else if ($total === 5) {
+        if ($position === 1) return 'grid-area: ml;';
+        if ($position === 2) return 'grid-area: tl;';
+        if ($position === 3) return 'grid-area: tr;';
+        if ($position === 4) return 'grid-area: mr;';
+      } else if ($total === 6) {
+        if ($position === 1) return 'grid-area: bl;';
+        if ($position === 2) return 'grid-area: tl;';
+        if ($position === 3) return 'grid-area: tc;';
+        if ($position === 4) return 'grid-area: tr;';
+        if ($position === 5) return 'grid-area: br;';
+      }
+      return ''; // Fallback
     }}
   }
 `;
@@ -251,6 +287,7 @@ export const CenterTable = styled.div<{ $variant?: string }>`
     padding: 0.75rem;
     border-width: 2px;
     gap: 0.5rem;
+    grid-area: center;
   }
 `;
 

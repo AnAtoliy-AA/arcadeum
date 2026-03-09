@@ -71,7 +71,7 @@ test.describe('Auth Extended', () => {
   });
 
   test('should handle logout', async ({ page }) => {
-    await mockSession(page);
+    await mockSession(page, { persistent: false });
     await navigateTo(page, '/settings');
 
     if (getIsMobile(page)) {
@@ -89,13 +89,14 @@ test.describe('Auth Extended', () => {
       ? page.getByTestId('mobile-logout-button')
       : page.getByTestId('desktop-logout-button');
 
+    // Wait for button to be ready (especially on Mobile Safari)
     await expect(logoutBtn).toBeVisible({ timeout: 5000 });
-
-    await logoutBtn.click({ force: true }).catch(() => {
-      return logoutBtn.dispatchEvent('click');
-    });
+    await page.waitForTimeout(500);
 
     // 3. Verify session is cleared and redirected
-    await expect(page).toHaveURL(/\/(auth|login)?$/, { timeout: 20000 });
+    await Promise.all([
+      page.waitForURL(/\/(auth|login)?$/, { timeout: 30000 }),
+      logoutBtn.click({ force: true }),
+    ]);
   });
 });

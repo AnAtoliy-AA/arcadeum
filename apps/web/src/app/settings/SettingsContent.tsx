@@ -166,8 +166,8 @@ export default function SettingsContent({
       const { useSessionStore } = await import(
         '@/entities/session/store/sessionStore'
       );
-      await useSessionStore.getState().clearTokens();
-      window.location.href = '/';
+      useSessionStore.getState().clearTokens();
+      window.location.replace('/');
     } else {
       window.location.href = '/auth';
     }

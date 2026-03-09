@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.7] - 2026-03-09
+
+### Added
+- sea battle pop up sending message (ARC-413)
+
+
 ## [1.7.6] - 2026-03-06
 
 ### Fixed

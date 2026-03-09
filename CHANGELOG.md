@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.10] - 2026-03-09
+
+### Fixed
+- critical game table layout on mobile (ARC-441)
+
+
 ## [1.7.9] - 2026-03-09
 
 ### Added

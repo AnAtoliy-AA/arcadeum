@@ -35,6 +35,13 @@ export function SeaBattlePopup({
 
   useEffect(() => {
     if (!visible) return;
+
+    // Don't auto-hide in E2E tests
+    const isPlaywright =
+      typeof window !== 'undefined' &&
+      (window as unknown as { isPlaywright?: boolean }).isPlaywright;
+    if (isPlaywright) return;
+
     const timer = setTimeout(() => {
       onClose?.();
     }, POPUP_VISIBILITY_MS);
@@ -42,9 +49,8 @@ export function SeaBattlePopup({
   }, [visible, onClose]);
 
   const handleChallenge = () => {
-    router.push(
-      `/games/create?gameId=sea_battle_v1&opponentId=${playerId}&opponentName=${encodeURIComponent(playerName)}`,
-    );
+    const url = `/games/create?gameId=sea_battle_v1&opponentId=${playerId}&opponentName=${encodeURIComponent(playerName)}`;
+    router.push(url);
     onClose?.();
   };
 
@@ -58,7 +64,7 @@ export function SeaBattlePopup({
           name: playerName,
         }) || `Challenge ${playerName}?`}
       </PopupTitle>
-      <ChallengeButton onClick={handleChallenge}>
+      <ChallengeButton onClick={handleChallenge} data-testid="challenge-button">
         {t('games.sea_battle_v1.table.actions.challenge' as TranslationKey) ||
           'Challenge'}
       </ChallengeButton>

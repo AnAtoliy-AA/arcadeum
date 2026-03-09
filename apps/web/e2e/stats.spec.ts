@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
+import { test, getIsMobile } from './fixtures/test-utils';
 import { navigateTo, mockSession } from './fixtures/test-utils';
 
 test.describe('Player Stats', () => {
@@ -105,7 +105,13 @@ test.describe('Player Stats', () => {
       }
       // Check for entries
       await expect(page.getByText('proplayer')).toBeVisible({ timeout: 5000 });
-      await expect(page.getByText(/60(\.0)?%/)).toBeVisible({ timeout: 5000 });
+
+      // Win rate is hidden on mobile (max-width: 768px)
+      if (!getIsMobile(page)) {
+        await expect(page.getByText(/60(\.0)?%/)).toBeVisible({
+          timeout: 5000,
+        });
+      }
     }).toPass({ timeout: 20000 });
   });
 

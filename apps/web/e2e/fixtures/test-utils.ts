@@ -179,6 +179,21 @@ export const test = base.extend({
 
 export const MOCK_OBJECT_ID = '507f191e810c19729de860ea';
 
+export function getIsMobile(page: Page): boolean {
+  return (page.viewportSize()?.width || 0) <= 900;
+}
+
+export async function ensureNavigationVisible(page: Page): Promise<void> {
+  if (getIsMobile(page)) {
+    const mobileNav = page.getByTestId('mobile-nav');
+    if (!(await mobileNav.isVisible())) {
+      const menuButton = page.getByTestId('mobile-menu-button');
+      await menuButton.click({ force: true });
+      await expect(mobileNav).toBeVisible();
+    }
+  }
+}
+
 export async function navigateTo(page: Page, path: string): Promise<void> {
   await page.goto(path, { timeout: 60000, waitUntil: 'domcontentloaded' });
   await page.waitForLoadState('domcontentloaded', { timeout: 60000 });

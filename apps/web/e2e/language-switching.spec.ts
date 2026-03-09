@@ -1,11 +1,12 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
+import { test, ensureNavigationVisible } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
 
 test.describe('Language Switching', () => {
   test('should change language and persist across pages', async ({ page }) => {
     // 1. Start at Home Page in English
     await navigateTo(page, '/');
+    await ensureNavigationVisible(page);
     await expect(
       page.getByRole('link', { name: /games/i }).first(),
     ).toBeVisible();
@@ -35,6 +36,7 @@ test.describe('Language Switching', () => {
 
     // Check for "Games" link translation in Russian (likely "Игры" or similar)
     // Based on settings.ts, ru translation for title is "Настройки"
+    await ensureNavigationVisible(page);
     await expect(
       page.getByRole('link', { name: /games/i }).first(),
     ).not.toBeVisible({ timeout: 10000 });
@@ -52,6 +54,7 @@ test.describe('Language Switching', () => {
       { timeout: 10000 },
     );
 
+    await ensureNavigationVisible(page);
     await expect(page.getByRole('link', { name: /игры/i }).first()).toBeVisible(
       { timeout: 10000 },
     );

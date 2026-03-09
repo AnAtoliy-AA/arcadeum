@@ -2,6 +2,12 @@ export const byMessages = {
   sea_battle_v1: {
     name: 'Марскі Бой',
     description: 'Класічны марскі бой да 6 гульцоў',
+    colors: {
+      ship: 'Карабель',
+      hit: 'Трапіў',
+      miss: 'Міма',
+      empty: 'Пуста',
+    },
     challengePlayer: 'Выклікаць {{name}} на Марскі бой?',
     rules: {
       title: 'Правілы Гульні',
@@ -134,7 +140,7 @@ export const byMessages = {
         title: 'Чат бітвы',
         empty: 'Няма паведамленняў',
         send: 'Адпр.',
-        show: 'Паказаць чат',
+        show: 'Показать чат',
         hide: 'Схаваць чат',
         placeholder: 'Увядзіце паведамленне...',
       },

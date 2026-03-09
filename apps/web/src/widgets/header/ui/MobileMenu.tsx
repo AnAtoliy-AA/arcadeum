@@ -76,6 +76,7 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
               onClose();
             }}
             style={{ marginTop: '0.5rem' }}
+            data-testid="mobile-logout-button"
           >
             <svg
               viewBox="0 0 24 24"
@@ -99,6 +100,7 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
           href="/auth"
           onClick={onClose}
           style={{ marginTop: '0.5rem', textAlign: 'center' }}
+          data-testid="mobile-login-button"
         >
           {t('common.actions.login')}
         </AuthButton>

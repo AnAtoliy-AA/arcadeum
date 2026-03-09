@@ -2,6 +2,12 @@ export const frMessages = {
   sea_battle_v1: {
     name: 'Bataille Navale',
     description: 'Jeu de combat naval classique jusqu’à 6 joueurs',
+    colors: {
+      ship: 'Navire',
+      hit: 'Touché',
+      miss: 'Manqué',
+      empty: 'Vide',
+    },
     challengePlayer: 'Défier {{name}} à la Bataille Navale ?',
     rules: {
       title: 'Règles du Jeu',
@@ -15,7 +21,7 @@ export const frMessages = {
       objective:
         'Coulez tous les navires ennemis avant qu’ils ne coulent les vôtres ! Le dernier joueur avec des navires restants gagne.',
       gameplay:
-        'Le jeu se déroule en deux phases : Placement des navires et Bataille. D’abord, placez secrètement vos navires sur votre grille 10×10. Ensuite, tirez à tour de rôle sur les grilles adverses pour trouver et couler leurs navires.',
+        'Le jeu se déroule en deux phases : Placement des navires et Bataille. D’abord, placez secrètement vos navires on votre grille 10×10. Ensuite, tirez à tour de rôle sur les grilles adverses pour trouver et couler leurs navires.',
       placement:
         'Placez les 5 navires sur votre grille avant le début de la bataille. Les navires ne peuvent pas se chevaucher ou se toucher. Cliquez pour placer, faites pivoter avec le bouton.',
       battle:
@@ -44,8 +50,8 @@ export const frMessages = {
         description: 'Personnages de dessins animés amusants',
       },
       cyber: {
-        name: 'Cyberpunk',
-        description: 'Guerre néon high-tech',
+        name: 'Guerre néon high-tech',
+        description: 'Cyberpunk',
       },
       vintage: {
         name: 'Vintage',

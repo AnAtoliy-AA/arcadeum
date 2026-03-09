@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
+import { test, ensureNavigationVisible } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
 
 test.describe('Home Page', () => {
@@ -27,11 +27,13 @@ test.describe('Home Page', () => {
   });
 
   test('should have games link in navigation', async ({ page }) => {
+    await ensureNavigationVisible(page);
     const gamesLink = page.getByRole('link', { name: /games/i });
     await expect(gamesLink.first()).toBeVisible();
   });
 
   test('should navigate to games page', async ({ page }) => {
+    await ensureNavigationVisible(page);
     const gamesLink = page.getByRole('link', { name: /games/i }).first();
     await gamesLink.click();
     await expect(page).toHaveURL(/\/games/);

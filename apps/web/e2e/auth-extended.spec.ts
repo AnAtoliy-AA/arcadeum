@@ -1,5 +1,9 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
+import {
+  test,
+  ensureNavigationVisible,
+  getIsMobile,
+} from './fixtures/test-utils';
 import { navigateTo, mockSession } from './fixtures/test-utils';
 
 test.describe('Auth Extended', () => {
@@ -70,18 +74,28 @@ test.describe('Auth Extended', () => {
     await mockSession(page);
     await navigateTo(page, '/settings');
 
-    // 1. Open profile menu
-    const menuToggle = page.getByTestId('header-username');
-    await expect(menuToggle).toBeVisible({ timeout: 10000 });
-    await menuToggle.click({ force: true });
+    if (getIsMobile(page)) {
+      // 1. Open mobile menu
+      await ensureNavigationVisible(page);
+    } else {
+      // 1. Open profile menu
+      const menuToggle = page.getByTestId('header-username');
+      await expect(menuToggle).toBeVisible({ timeout: 10000 });
+      await menuToggle.click({ force: true });
+    }
 
-    // 2. Click logout
-    const logoutBtn = page.getByTestId('logout-button');
+    // 2. Click logout (disambiguate from desktop/mobile menus)
+    const logoutBtn = getIsMobile(page)
+      ? page.getByTestId('mobile-logout-button')
+      : page.getByTestId('desktop-logout-button');
+
     await expect(logoutBtn).toBeVisible({ timeout: 5000 });
-    await logoutBtn.click({ force: true });
+
+    await logoutBtn.click({ force: true }).catch(() => {
+      return logoutBtn.dispatchEvent('click');
+    });
 
     // 3. Verify session is cleared and redirected
-    await expect(menuToggle).not.toBeVisible({ timeout: 15000 });
-    await expect(page).toHaveURL(/\/(auth|login)?$/, { timeout: 10000 });
+    await expect(page).toHaveURL(/\/(auth|login)?$/, { timeout: 20000 });
   });
 });

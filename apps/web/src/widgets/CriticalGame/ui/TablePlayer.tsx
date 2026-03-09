@@ -8,6 +8,7 @@ import {
   PlayerStatsContainer,
 } from './styles';
 import { ChatBubble } from './ChatBubble';
+import { SeaBattlePopup } from '@/widgets/SeaBattleGame/ui/SeaBattlePopup';
 import type { CriticalLogEntry, CriticalPlayerTableState } from '../types';
 import { useGameStore } from '@/features/games/store/gameStore';
 import { IdleBadge } from '@/shared/ui';
@@ -74,17 +75,29 @@ export function TablePlayer({
       $total={totalPlayers}
     >
       {latestMessage && (
-        <ChatBubble
-          key={latestMessage.id}
-          message={latestMessage.message}
-          position={bubblePosition}
-        />
+        <>
+          <ChatBubble
+            key={`bubble-${latestMessage.id}`}
+            message={latestMessage.message}
+            position={bubblePosition}
+          />
+          {!isCurrentUserCard && (
+            <SeaBattlePopup
+              key={`popup-${latestMessage.id}`}
+              playerId={playerId}
+              playerName={displayName}
+              visible={true}
+              position={bubblePosition}
+            />
+          )}
+        </>
       )}
       <PlayerCard
         $isCurrentTurn={isCurrent}
         $isAlive={player.alive}
         $isCurrentUser={isCurrentUserCard}
         $variant={cardVariant}
+        data-testid={`player-card-${playerId}`}
       >
         {isCurrent && <TurnIndicator $variant={cardVariant}>⭐</TurnIndicator>}
         <PlayerAvatar
@@ -94,7 +107,11 @@ export function TablePlayer({
         >
           {player.alive ? '🎮' : '💀'}
         </PlayerAvatar>
-        <PlayerName $isCurrentTurn={isCurrent} $variant={cardVariant}>
+        <PlayerName
+          $isCurrentTurn={isCurrent}
+          $variant={cardVariant}
+          data-testid={`player-name-${playerId}`}
+        >
           {displayName}
           {isPlayerIdle && <IdleBadge />}
         </PlayerName>

@@ -12,7 +12,6 @@ import { VariantSelector } from './VariantSelector';
 import styled from 'styled-components';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { IconButton } from '@/features/games/ui/ReusableGameLobby';
-// RulesModal is handled by the parent Game component via GameLayout.modals
 
 const VariantSelectorWrapper = styled.div`
   margin-left: 1rem;

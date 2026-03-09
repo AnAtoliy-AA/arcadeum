@@ -2,10 +2,6 @@ import { useMemo } from 'react';
 import { useGameSession } from '@/features/games/hooks';
 import type { SeaBattleSnapshot, SeaBattlePlayerState } from '../types';
 
-// Re-checking usage... line 73: const isPlacementPhase = gamePhase === 'placement'; 'placement' is a string literal.
-// But check imports again.
-// The lint said: 7:3 warning 'GAME_PHASE' is defined but never used.
-// So removal IS correct.
 import { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
 interface UseSeaBattleStateOptions {
@@ -32,7 +28,6 @@ export function useSeaBattleState({
       return session.state as unknown as SeaBattleSnapshot;
     }
 
-    // Return null if no session - game hasn't started yet
     return null;
   }, [session]);
 

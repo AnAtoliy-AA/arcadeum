@@ -242,6 +242,7 @@ export const ruMessages = {
       hostCanStart: "Нажмите 'Начать игру', когда будете готовы",
       waitingForHost: 'Ожидание запуска игры организатором',
       gameLoading: 'Игра загружается...',
+      playWithBotsNotice: 'Начните игру с ботами или подождите других игроков',
       hostControls: 'Управление',
       host: 'Организатор',
       players: 'Игроки',

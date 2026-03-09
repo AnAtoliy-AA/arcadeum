@@ -2,6 +2,7 @@ export const enMessages = {
   sea_battle_v1: {
     name: 'Sea Battle',
     description: 'Classic naval combat game for up to 6 players',
+    challengePlayer: 'Challenge {{name}} to Sea Battle?',
     rules: {
       title: 'Game Rules',
       headers: {
@@ -97,6 +98,7 @@ export const enMessages = {
         starting: 'Starting...',
         confirmPlacement: 'Confirm Placement',
         rotate: 'Rotate',
+        challenge: 'Challenge',
         fire: 'Fire!',
         autoPlace: 'Auto Place Ships',
         randomize: 'Randomize Ships',

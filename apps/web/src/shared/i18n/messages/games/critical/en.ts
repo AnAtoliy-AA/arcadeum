@@ -236,6 +236,8 @@ export const enMessages = {
       hostCanStart: "Click 'Start Game' when ready",
       waitingForHost: 'Waiting for host to start the game',
       gameLoading: 'Game is loading...',
+      playWithBotsNotice:
+        'Start with bots immediately or wait for other players',
       hostControls: 'Host Controls',
       host: 'Host',
       players: 'Players',

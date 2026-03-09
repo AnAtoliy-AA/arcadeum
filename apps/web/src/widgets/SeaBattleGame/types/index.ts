@@ -4,12 +4,8 @@ import {
   GameSessionSummary,
 } from '@/shared/types/games';
 
-// ============ Player Limits ============
-
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 6;
-
-// ============ Constants ============
 
 export const BOARD_SIZE = 10;
 
@@ -39,11 +35,8 @@ export const ATTACK_RESULT = {
 
 export type AttackResult = (typeof ATTACK_RESULT)[keyof typeof ATTACK_RESULT];
 
-// Grid labels
 export const ROW_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 export const COL_LABELS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
-
-// ============ Ship Configuration ============
 
 export interface ShipConfig {
   id: string;
@@ -63,8 +56,6 @@ export const SHIPS: ShipConfig[] = [
   { id: 'submarine-3', name: 'Submarine', size: 1 },
   { id: 'submarine-4', name: 'Submarine', size: 1 },
 ];
-
-// ============ Game Types ============
 
 export interface ShipCell {
   row: number;
@@ -118,8 +109,6 @@ export interface SeaBattleSnapshot {
   lastAttack?: LastAttack;
 }
 
-// ============ Component Props ============
-
 export interface SeaBattleGameProps {
   roomId: string;
   room: GameRoomSummary;
@@ -147,8 +136,6 @@ export interface ShipPlacementProps {
   onPlaceShip: (shipId: string, cells: ShipCell[]) => void;
   onConfirmPlacement: () => void;
 }
-
-// ============ Action Payloads ============
 
 export interface PlaceShipPayload {
   roomId: string;

@@ -30,7 +30,6 @@ export function SeaBattleCreationConfig({
   const { t } = useTranslation();
   const [showRules, setShowRules] = useState(false);
 
-  // Initialize default variant
   useEffect(() => {
     if (!options.variant) {
       onChange({ ...options, variant: 'classic' });

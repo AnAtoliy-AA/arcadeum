@@ -91,6 +91,12 @@ const BadgeWrapper = styled.div`
   top: -10px;
   right: -10px;
   z-index: 10;
+
+  @media (max-width: 768px) {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 `;
 
 const PlayerName = styled.h3`
@@ -116,13 +122,13 @@ const Cell = styled.div<{ $state: number }>`
   background: ${(props) => {
     switch (props.$state) {
       case 0:
-        return 'rgba(255, 255, 255, 0.05)'; // Empty water
+        return 'rgba(255, 255, 255, 0.05)';
       case 1:
-        return '#666'; // Ship (only visible to owner normally)
+        return '#666';
       case 2:
-        return '#ff4444'; // Hit
+        return '#ff4444';
       case 3:
-        return '#ffffff'; // Miss
+        return '#ffffff';
       default:
         return 'transparent';
     }

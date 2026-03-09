@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import {
   Modal,
@@ -81,9 +82,15 @@ export function RematchModal({
     onConfirm(Array.from(selectedPlayers), message);
   };
 
-  if (!isOpen) return null;
+  const isClient = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
-  return (
+  if (!isOpen || !isClient) return null;
+
+  return createPortal(
     <Modal onClick={onClose}>
       <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
         <ModalTitle $variant={cardVariant}>
@@ -139,7 +146,8 @@ export function RematchModal({
           </ModalButton>
         </ModalActions>
       </ModalContent>
-    </Modal>
+    </Modal>,
+    document.body,
   );
 }
 

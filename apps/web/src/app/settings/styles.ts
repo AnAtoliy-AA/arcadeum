@@ -29,6 +29,7 @@ export const OptionButton = styled(Button).attrs({
   text-align: left;
   border-radius: 16px;
   transition: all 0.2s ease;
+  color: ${({ theme }) => theme.text.primary};
 
   ${({ isActive, theme }) =>
     !isActive &&
@@ -51,9 +52,10 @@ export const OptionLabel = styled.span`
 
 export const OptionDescription = styled.span`
   font-size: 0.9rem;
-  opacity: 0.8;
+  opacity: 0.85;
   line-height: 1.5;
   font-weight: 400;
+  color: inherit;
 `;
 
 export const PillGroup = styled.div`

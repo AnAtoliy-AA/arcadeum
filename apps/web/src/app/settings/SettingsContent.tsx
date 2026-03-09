@@ -239,6 +239,7 @@ export default function SettingsContent({
                 key={option.code}
                 data-testid={`lang-btn-${option.code}`}
                 isActive={locale === option.code}
+                variant={locale === option.code ? 'primary' : 'secondary'}
                 onClick={() => setLocale(option.code)}
               >
                 {option.label}

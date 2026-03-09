@@ -89,7 +89,7 @@ export const GameContainer = styled.div<{
   }
 
   @media (max-width: 768px) {
-    padding: 1.25rem;
+    padding: 0.5rem;
     border-radius: 16px;
     gap: 1rem;
     border-width: 1px;
@@ -145,7 +145,7 @@ export const getTableAreaGridStyles = ($showChat: boolean) => {
 
     @media (max-width: 1024px) {
       grid-template-columns: 1fr;
-      grid-template-rows: ${$showChat ? '1fr auto 2fr' : '1fr auto'};
+      grid-template-rows: ${$showChat ? '1fr auto 1fr' : '1fr auto'};
       grid-template-areas: ${$showChat
         ? '"table" "hand" "chat"'
         : '"table" "hand"'};

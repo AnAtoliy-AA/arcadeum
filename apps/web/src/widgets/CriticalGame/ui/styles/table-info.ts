@@ -59,10 +59,13 @@ export const TableInfo = styled.div<{ $variant?: string }>`
   }
 
   @media (max-width: 768px) {
-    top: 0.5rem;
-    right: 0.5rem;
-    gap: 0.4rem;
-    padding: 0.75rem;
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.4rem;
     border-radius: 12px;
   }
 `;
@@ -117,15 +120,18 @@ export const TableStat = styled.div<{ $variant?: string }>`
   }
 
   @media (max-width: 768px) {
-    gap: 0.5rem;
-    padding: 0.4rem 0.5rem;
+    flex: 1;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.4rem;
     > div:first-child {
-      width: 24px;
-      height: 24px;
-      font-size: 0.8rem;
+      width: 20px;
+      height: 20px;
+      font-size: 0.75rem;
+      border-radius: 6px;
     }
     > div:last-child {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
     }
   }
 `;

@@ -33,9 +33,8 @@ export function ProfileMenu() {
 
   const handleLogout = useCallback(async () => {
     await clearTokens();
-    closeMenu();
-    window.location.href = '/';
-  }, [clearTokens, closeMenu]);
+    window.location.replace('/');
+  }, [clearTokens]);
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

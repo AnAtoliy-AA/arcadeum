@@ -16,6 +16,7 @@ import { IdleBadge } from '@/shared/ui';
 export interface TablePlayerProps {
   player: CriticalPlayerTableState;
   index: number;
+  relativeIndex: number;
   totalPlayers: number;
   currentTurnIndex: number;
   currentUserId: string | null;
@@ -33,6 +34,7 @@ function findLastMessage(logs: CriticalLogEntry[], playerId: string) {
 export function TablePlayer({
   player,
   index,
+  relativeIndex,
   totalPlayers,
   currentTurnIndex,
   currentUserId,
@@ -52,27 +54,38 @@ export function TablePlayer({
   const idlePlayers = useGameStore((s) => s.idlePlayers);
   const isPlayerIdle = idlePlayers.includes(playerId);
 
-  // Determine bubble position based on player position index
+  // Determine bubble position based on player relative position index
+  // relativeIndex 0 is always bottom center
   let bubblePosition: 'top' | 'bottom' | 'left' | 'right' = 'top';
 
   if (totalPlayers > 0) {
-    const ratio = index / totalPlayers;
-    if (ratio >= 0.875 || ratio < 0.125) {
+    if (relativeIndex === 0) {
+      // Bottom center player (the viewer) - bubbles go up
       bubblePosition = 'top';
-    } else if (ratio >= 0.125 && ratio < 0.375) {
-      bubblePosition = 'right';
-    } else if (ratio >= 0.375 && ratio < 0.625) {
-      bubblePosition = 'bottom';
     } else {
-      bubblePosition = 'left';
+      const ratio = relativeIndex / totalPlayers;
+      if (ratio > 0.1 && ratio < 0.4) {
+        // Left side of table - bubbles go right
+        bubblePosition = 'right';
+      } else if (ratio >= 0.4 && ratio <= 0.6) {
+        // Top of table - bubbles go down
+        bubblePosition = 'bottom';
+      } else if (ratio > 0.6 && ratio < 0.9) {
+        // Right side of table - bubbles go left
+        bubblePosition = 'left';
+      } else {
+        // Fallback for edge cases near bottom
+        bubblePosition = 'top';
+      }
     }
   }
 
   return (
     <PlayerPositionWrapper
       key={playerId}
-      $position={index}
+      $position={relativeIndex}
       $total={totalPlayers}
+      $isCurrentUser={isCurrentUserCard}
     >
       {latestMessage && (
         <>

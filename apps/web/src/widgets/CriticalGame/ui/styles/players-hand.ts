@@ -26,6 +26,7 @@ export const HandTitle = styled.h3`
 
 export const HandControls = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
 `;
 

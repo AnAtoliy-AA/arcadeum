@@ -40,6 +40,9 @@ export function GameTableSection({
   t,
   cardVariant,
 }: GameTableSectionProps) {
+  const myIndex = playerOrder.findIndex((id) => id === currentUserId);
+  const viewerIndex = myIndex >= 0 ? myIndex : 0; // Default to 0 if spectating
+
   return (
     <GameTable>
       <TableBackground $variant={cardVariant} />
@@ -49,11 +52,16 @@ export function GameTableSection({
           const player = players.find((p) => p.playerId === playerId);
           if (!player) return null;
 
+          // Calculate index relative to the viewer so viewer is always 0
+          const relativeIndex =
+            (index - viewerIndex + playerOrder.length) % playerOrder.length;
+
           return (
             <TablePlayer
               key={playerId}
               player={player}
               index={index}
+              relativeIndex={relativeIndex}
               totalPlayers={playerOrder.length}
               currentTurnIndex={currentTurnIndex}
               currentUserId={currentUserId}

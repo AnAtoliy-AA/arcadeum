@@ -43,11 +43,10 @@ export const PlayerCardCount = styled.div<{
 `;
 
 export const TurnIndicator = styled.div<{ $variant?: string }>`
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  width: 24px;
-  height: 24px;
+  position: relative;
+  margin-bottom: -10px; /* pull avatar up slightly */
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;

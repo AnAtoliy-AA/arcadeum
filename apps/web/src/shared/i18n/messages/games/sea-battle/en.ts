@@ -2,6 +2,12 @@ export const enMessages = {
   sea_battle_v1: {
     name: 'Sea Battle',
     description: 'Classic naval combat game for up to 6 players',
+    colors: {
+      ship: 'Ship',
+      hit: 'Hit',
+      miss: 'Miss',
+      empty: 'Empty',
+    },
     challengePlayer: 'Challenge {{name}} to Sea Battle?',
     rules: {
       title: 'Game Rules',

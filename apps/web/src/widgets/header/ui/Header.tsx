@@ -130,7 +130,7 @@ export function Header() {
                 >
                   {t('legal.nav.contact')}
                 </NavLink>
-                <AuthButton href="/auth">
+                <AuthButton href="/auth" data-testid="desktop-login-button">
                   {t('common.actions.login')}
                 </AuthButton>
               </DesktopOnly>
@@ -142,6 +142,7 @@ export function Header() {
               title={
                 isAuthenticated ? displayName || 'Logged in' : 'Not logged in'
               }
+              data-testid="mobile-login-indicator"
             >
               {isAuthenticated ? (
                 <svg viewBox="0 0 24 24" fill="currentColor">

@@ -218,6 +218,11 @@ export default function SeaBattleGame({
     gameOptions: room?.gameOptions,
   });
 
+  const handleOpenRematch = useCallback(() => {
+    setResultModalDismissed(true);
+    openRematchModal();
+  }, [openRematchModal, setResultModalDismissed]);
+
   const { isWinner } = useSeaBattleState({
     roomId,
     currentUserId,
@@ -345,7 +350,7 @@ export default function SeaBattleGame({
           <GameResultModal
             isOpen={isGameOver && !resultModalDismissed}
             result={gameResult}
-            onRematch={isHost ? openRematchModal : undefined}
+            onRematch={isHost ? handleOpenRematch : undefined}
             onClose={() => setResultModalDismissed(true)}
             rematchLoading={rematchLoading}
             t={t}

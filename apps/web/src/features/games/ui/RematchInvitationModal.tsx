@@ -1,5 +1,7 @@
 'use client';
 
+import { useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import { Button } from '@/shared/ui';
 import {
@@ -43,9 +45,15 @@ export function RematchInvitationModal({
   t,
   cardVariant,
 }: RematchInvitationModalProps) {
-  if (!isOpen) return null;
+  const isClient = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
-  return (
+  if (!isOpen || !isClient) return null;
+
+  return createPortal(
     <Modal onClick={onDecline}>
       <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
         <ModalTitle $variant={cardVariant}>
@@ -98,7 +106,8 @@ export function RematchInvitationModal({
           )}
         </BlockOptions>
       </ModalContent>
-    </Modal>
+    </Modal>,
+    document.body,
   );
 }
 

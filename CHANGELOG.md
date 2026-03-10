@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.18] - 2026-03-10
+
+### Added
+- make layout rotatable for mobiles (ARC-445)
+
+
 ## [1.7.17] - 2026-03-10
 
 ### Fixed

@@ -36,6 +36,7 @@ export const SectionHeader = styled.div`
 
 export const HeaderLeft = styled.div`
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
   flex: 1;

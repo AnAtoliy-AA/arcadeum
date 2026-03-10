@@ -16,6 +16,7 @@ import {
   ActionsHeader,
   ActionsToggleButton,
 } from './styles';
+import { ExpansionActions } from './ExpansionActions';
 
 export type ActionBusyState =
   | 'draw'
@@ -121,7 +122,18 @@ export function ActionsSection({
           <ActionButton
             $variant={cardVariant}
             onClick={onDraw}
-            disabled={!canAct || actionBusy === 'draw'}
+            disabled={
+              !canAct ||
+              [
+                'draw',
+                'cancel',
+                'insight',
+                'trade',
+                'nope',
+                'see_the_future',
+                'favor',
+              ].includes(actionBusy as string)
+            }
           >
             {actionBusy === 'draw'
               ? t('games.table.actions.drawing') || 'Drawing...'
@@ -168,9 +180,9 @@ export function ActionsSection({
               $variant={cardVariant}
               variant="secondary"
               onClick={onPlayNope}
-              disabled={!canAct || actionBusy === 'cancel'}
+              disabled={!canAct || actionBusy === 'nope'}
             >
-              {actionBusy === 'cancel'
+              {actionBusy === 'nope'
                 ? 'Playing...'
                 : `🚫 ${t(getCardTranslationKey('cancel', cardVariant))}`}
             </ActionButton>
@@ -180,9 +192,9 @@ export function ActionsSection({
               $variant={cardVariant}
               variant="primary"
               onClick={onOpenFavorModal}
-              disabled={!canAct || actionBusy === 'trade'}
+              disabled={!canAct || actionBusy === 'favor'}
             >
-              {actionBusy === 'trade'
+              {actionBusy === 'favor'
                 ? 'Playing...'
                 : `🤝 ${t(getCardTranslationKey('trade', cardVariant))}`}
             </ActionButton>
@@ -192,9 +204,9 @@ export function ActionsSection({
               $variant={cardVariant}
               variant="primary"
               onClick={onPlaySeeTheFuture}
-              disabled={!canAct || actionBusy === 'insight'}
+              disabled={!canAct || actionBusy === 'see_the_future'}
             >
-              {actionBusy === 'insight'
+              {actionBusy === 'see_the_future'
                 ? 'Playing...'
                 : `🔮 ${t(getCardTranslationKey('insight', cardVariant))}`}
             </ActionButton>
@@ -223,250 +235,14 @@ export function ActionsSection({
                 : '🃏 Fiver (5 Cards)'}
             </ActionButton>
           )}
-          {/* Attack Pack Cards */}
-          {currentPlayer.hand.includes('invert') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="secondary"
-              onClick={() => onPlayActionCard('invert')}
-              disabled={!canAct || actionBusy === 'invert'}
-            >
-              {actionBusy === 'invert'
-                ? 'Playing...'
-                : `🔄 ${t(getCardTranslationKey('invert', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('mega_evade') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="primary"
-              onClick={() => onPlayActionCard('mega_evade')}
-              disabled={!canAct || actionBusy === 'mega_evade'}
-            >
-              {actionBusy === 'mega_evade'
-                ? 'Playing...'
-                : `🦸 ${t(getCardTranslationKey('mega_evade', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('targeted_strike') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="danger"
-              onClick={() => onPlayActionCard('targeted_strike')}
-              disabled={!canAct || actionBusy === 'targeted_strike'}
-            >
-              {actionBusy === 'targeted_strike'
-                ? 'Playing...'
-                : `🎯 ${t(getCardTranslationKey('targeted_strike', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('private_strike') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="danger"
-              onClick={() => onPlayActionCard('private_strike')}
-              disabled={!canAct || actionBusy === 'private_strike'}
-            >
-              {actionBusy === 'private_strike'
-                ? 'Playing...'
-                : `💜 ${t(getCardTranslationKey('private_strike', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('recursive_strike') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="danger"
-              onClick={() => onPlayActionCard('recursive_strike')}
-              disabled={!canAct || actionBusy === 'recursive_strike'}
-            >
-              {actionBusy === 'recursive_strike'
-                ? 'Playing...'
-                : `🧟 ${t(getCardTranslationKey('recursive_strike', cardVariant))}`}
-            </ActionButton>
-          )}
-          {/* Future Pack Cards */}
-          {currentPlayer.hand.includes('see_future_5x') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="primary"
-              onClick={() => onPlayActionCard('see_future_5x')}
-              disabled={!canAct || actionBusy === 'see_future_5x'}
-            >
-              {actionBusy === 'see_future_5x'
-                ? 'Playing...'
-                : `👀 ${t(getCardTranslationKey('see_future_5x', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('alter_future_3x') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="primary"
-              onClick={() => onPlayActionCard('alter_future_3x')}
-              disabled={!canAct || actionBusy === 'alter_future_3x'}
-            >
-              {actionBusy === 'alter_future_3x'
-                ? 'Playing...'
-                : `🪄 ${t(getCardTranslationKey('alter_future_3x', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('alter_future_5x') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="primary"
-              onClick={() => onPlayActionCard('alter_future_5x')}
-              disabled={!canAct || actionBusy === 'alter_future_5x'}
-            >
-              {actionBusy === 'alter_future_5x'
-                ? 'Playing...'
-                : `🌀 ${t(getCardTranslationKey('alter_future_5x', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('reveal_future_3x') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="primary"
-              onClick={() => onPlayActionCard('reveal_future_3x')}
-              disabled={!canAct || actionBusy === 'reveal_future_3x'}
-            >
-              {actionBusy === 'reveal_future_3x'
-                ? 'Playing...'
-                : `📢 ${t(getCardTranslationKey('reveal_future_3x', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('share_future_3x') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="primary"
-              onClick={() => onPlayActionCard('share_future_3x')}
-              disabled={!canAct || actionBusy === 'share_future_3x'}
-            >
-              {actionBusy === 'share_future_3x'
-                ? 'Playing...'
-                : `🤲 ${t(getCardTranslationKey('share_future_3x', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('draw_bottom') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="secondary"
-              onClick={() => onPlayActionCard('draw_bottom')}
-              disabled={!canAct || actionBusy === 'draw_bottom'}
-            >
-              {actionBusy === 'draw_bottom'
-                ? 'Playing...'
-                : `🔽 ${t(getCardTranslationKey('draw_bottom', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('swap_top_bottom') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="secondary"
-              onClick={() => onPlayActionCard('swap_top_bottom')}
-              disabled={!canAct || actionBusy === 'swap_top_bottom'}
-            >
-              {actionBusy === 'swap_top_bottom'
-                ? 'Playing...'
-                : `🔃 ${t(getCardTranslationKey('swap_top_bottom', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('bury') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="secondary"
-              onClick={() => onPlayActionCard('bury')}
-              disabled={!canAct || actionBusy === 'bury'}
-            >
-              {actionBusy === 'bury'
-                ? 'Playing...'
-                : `⚰️ ${t(getCardTranslationKey('bury', cardVariant))}`}
-            </ActionButton>
-          )}
-          {/* Theft Pack Cards */}
-          {currentPlayer.hand.includes('mark') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="primary"
-              onClick={() => onPlayActionCard('mark')}
-              disabled={!canAct || actionBusy === 'mark'}
-            >
-              {actionBusy === 'mark'
-                ? 'Playing...'
-                : `🏷️ ${t(getCardTranslationKey('mark', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('steal_draw') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="primary"
-              onClick={() => onPlayActionCard('steal_draw')}
-              disabled={!canAct || actionBusy === 'steal_draw'}
-            >
-              {actionBusy === 'steal_draw'
-                ? 'Playing...'
-                : `🤏 ${t(getCardTranslationKey('steal_draw', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('stash') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="primary"
-              onClick={() => onPlayActionCard('stash')}
-              disabled={!canAct || actionBusy === 'stash'}
-            >
-              {actionBusy === 'stash'
-                ? 'Playing...'
-                : `🏰 ${t(getCardTranslationKey('stash', cardVariant))}`}
-            </ActionButton>
-          )}
-          {/* Deity Pack Cards */}
-          {currentPlayer.hand.includes('omniscience') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="primary"
-              onClick={() => onPlayActionCard('omniscience')}
-              disabled={!canAct || actionBusy === 'omniscience'}
-            >
-              {actionBusy === 'omniscience'
-                ? 'Playing...'
-                : `👁️ ${t(getCardTranslationKey('omniscience', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('miracle') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="primary"
-              onClick={() => onPlayActionCard('miracle')}
-              disabled={!canAct || actionBusy === 'miracle'}
-            >
-              {actionBusy === 'miracle'
-                ? 'Playing...'
-                : `✨ ${t(getCardTranslationKey('miracle', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('smite') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="danger"
-              onClick={() => onPlayActionCard('smite')}
-              disabled={!canAct || actionBusy === 'smite'}
-            >
-              {actionBusy === 'smite'
-                ? 'Playing...'
-                : `⚡ ${t(getCardTranslationKey('smite', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('rapture') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="danger"
-              onClick={() => onPlayActionCard('rapture')}
-              disabled={!canAct || actionBusy === 'rapture'}
-            >
-              {actionBusy === 'rapture'
-                ? 'Playing...'
-                : `🎺 ${t(getCardTranslationKey('rapture', cardVariant))}`}
-            </ActionButton>
-          )}
+          <ExpansionActions
+            currentPlayer={currentPlayer}
+            canAct={canAct}
+            actionBusy={actionBusy as string | null}
+            cardVariant={cardVariant}
+            t={t}
+            onPlayActionCard={onPlayActionCard}
+          />
         </ActionButtons>
       )}
     </InfoCard>

@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { getVariantStyles } from './variants';
 
 export const CardName = styled.div<{ $variant?: string }>`
-  font-size: 0.75rem;
+  font-size: 0.5rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;

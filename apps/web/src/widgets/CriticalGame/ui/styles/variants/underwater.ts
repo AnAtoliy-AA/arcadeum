@@ -372,7 +372,7 @@ export const underwaterVariantStyles: VariantStyleConfig = {
     borderEffect: `2px solid ${VARIANT_COLORS.underwater.primary}`,
     getCardSpriteUrl: () => '/images/cards/underwater_sprites.png',
     getDeckBackground: () =>
-      "url('/images/cards/underwater_sprites.png') 0% 0% / 800% 800% no-repeat",
+      "url('/images/cards/underwater_sprites.png') 0% 0% / 700% 700% no-repeat border-box border-box",
     getDeckBorder: () => VARIANT_COLORS.underwater.primary,
     getDecorationBackground: () => '#083344e6',
     getDecorationBorder: () =>

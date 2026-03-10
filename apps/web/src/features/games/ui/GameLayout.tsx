@@ -48,16 +48,18 @@ const LayoutContainer = styled.div<{ $variant?: string; $isMyTurn?: boolean }>`
 const MainArea = styled.div<{ $showChat?: boolean }>`
   display: flex;
   flex: 1;
-  gap: 1rem;
+  gap: 1.5rem;
   min-height: 0;
   overflow: hidden;
 
   flex-direction: row;
 
-  @media (max-width: 1024px) {
+  @media (max-width: 900px) {
     flex-direction: column;
-    overflow: visible;
-    flex: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    gap: 1rem;
   }
 `;
 
@@ -68,7 +70,14 @@ const GameBoardArea = styled.div`
   min-width: 0;
   position: relative;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+
+  @media (max-width: 900px) {
+    flex: none;
+    overflow: visible;
+    padding-bottom: 0;
+  }
 `;
 
 const ChatArea = styled.div<{ $showChat: boolean }>`
@@ -77,18 +86,23 @@ const ChatArea = styled.div<{ $showChat: boolean }>`
   flex-direction: column;
   min-width: 320px;
   border-left: 1px solid rgba(255, 255, 255, 0.1);
-  padding-left: 1rem;
+  padding-left: 1.5rem;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  margin-left: 0.5rem;
 
-  @media (max-width: 1024px) {
+  @media (max-width: 900px) {
     width: 100%;
     min-width: 0;
     flex: none;
-    min-height: 280px;
+    min-height: 350px;
     flex-shrink: 0;
     border-left: none;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-left: 0;
-    padding-top: 0.5rem;
+    padding-top: 1rem;
+    margin-left: 0;
+    background: transparent;
   }
 `;
 
@@ -126,11 +140,16 @@ export function GameLayout({
       className={className}
       $variant={variant}
       $isMyTurn={isMyTurn}
+      data-testid="game-layout-container"
     >
       {header}
-      <MainArea $showChat={showChat}>
-        <GameBoardArea>{children}</GameBoardArea>
-        {chat && <ChatArea $showChat={showChat}>{chat}</ChatArea>}
+      <MainArea $showChat={showChat} data-testid="game-main-area">
+        <GameBoardArea data-testid="game-board-area">{children}</GameBoardArea>
+        {chat && (
+          <ChatArea $showChat={showChat} data-testid="game-chat-area">
+            {chat}
+          </ChatArea>
+        )}
       </MainArea>
       {popupOverlay}
       {modals}

@@ -5,7 +5,6 @@ import type { SeaBattlePlayerState } from '../types';
 import { CELL_STATE, ROW_LABELS, COL_LABELS } from '../types';
 import { ShipsLeft } from './ShipsLeft';
 import {
-  GridsContainer,
   PlayerSection,
   PlayerName,
   PlayerStats,
@@ -18,6 +17,7 @@ import {
   MainGameArea,
   BadgeWrapper,
 } from './styles';
+import { SeaBattleGrids } from './SeaBattleGrids';
 import { Badge } from '@/shared/ui/Badge';
 import { IdleBadge } from '@/shared/ui';
 import {
@@ -78,7 +78,7 @@ export function AttackBoard({
 
   return (
     <MainGameArea>
-      <GridsContainer>
+      <SeaBattleGrids>
         {currentPlayer && (
           <PlayerSection
             $isMe
@@ -204,7 +204,7 @@ export function AttackBoard({
             </BoardWithLabels>
           </PlayerSection>
         ))}
-      </GridsContainer>
+      </SeaBattleGrids>
     </MainGameArea>
   );
 }

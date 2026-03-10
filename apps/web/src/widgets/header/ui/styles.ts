@@ -118,7 +118,7 @@ export const DesktopOnly = styled.div`
 export const ProfileMenuContainer = styled.div`
   position: relative;
 
-  @media (max-width: 640px) {
+  @media (max-width: 900px) {
     display: none;
   }
 `;
@@ -129,7 +129,7 @@ export const UserInfo = styled(Button).attrs({
 })`
   gap: 0.75rem;
 
-  @media (max-width: 640px) {
+  @media (max-width: 900px) {
     display: none;
   }
 `;
@@ -362,7 +362,7 @@ export const MobileLoginIndicator = styled(Link).attrs({ prefetch: false })<{
     height: 16px;
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 900px) {
     display: flex;
   }
 `;

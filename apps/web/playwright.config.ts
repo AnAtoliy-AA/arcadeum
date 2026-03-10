@@ -49,6 +49,10 @@ export default defineConfig({
       name: 'Mobile Safari',
       use: { ...devices['iPhone 12'] },
     },
+    {
+      name: 'Tablet Safari',
+      use: { ...devices['iPad Pro 11'] },
+    },
   ],
 
   webServer: [

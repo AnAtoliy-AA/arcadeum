@@ -78,12 +78,9 @@ export const BadgeWrapper = styled.div`
   top: -12px;
   right: -12px;
   z-index: 10;
-
-  @media (max-width: 768px) {
-    right: auto;
-    left: 50%;
-    transform: translateX(-50%);
-  }
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
 `;
 
 export const PlayerName = styled.h3<{ $theme: SeaBattleTheme }>`

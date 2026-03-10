@@ -36,6 +36,7 @@ import {
   BoardContainer,
   PlacementActions,
 } from './styles';
+import { SeaBattleGrids } from './SeaBattleGrids';
 import { getTheme } from '../lib/theme';
 
 interface ShipPlacementBoardProps {
@@ -164,99 +165,105 @@ export function ShipPlacementBoard({
 
   return (
     <GameBoardWrapper>
-      <BoardContainer>
-        <PlacementHeader className="placement-header">
-          <h2
-            data-testid="placement-instruction"
-            style={{ margin: 0, color: theme.textColor, fontSize: 'inherit' }}
-            className="placement-title"
-          >
-            {t('games.sea_battle_v1.table.players.placeShips')}
-          </h2>
-        </PlacementHeader>
-
-        <PlayerSection $isMe $isActive={false} $theme={theme}>
-          <PlayerName $theme={theme}>
-            {t('games.sea_battle_v1.table.state.yourBoard')}
-          </PlayerName>
-          <BoardWithLabels>
-            <div />
-            <ColLabels>
-              {COL_LABELS.map((label) => (
-                <Label key={label} $theme={theme}>
-                  {label}
-                </Label>
-              ))}
-            </ColLabels>
-            <RowLabels>
-              {ROW_LABELS.map((label) => (
-                <Label key={label} $theme={theme}>
-                  {label}
-                </Label>
-              ))}
-            </RowLabels>
-            <BoardGrid $theme={theme} onMouseLeave={() => setHoveredCells([])}>
-              {board.map((row, rIndex) =>
-                row.map((cellState, cIndex) => {
-                  const isHovered = hoveredCells.some(
-                    (c) => c.row === rIndex && c.col === cIndex,
-                  );
-                  return (
-                    <BoardCell
-                      key={`${rIndex}-${cIndex}`}
-                      $state={cellState}
-                      $isClickable={!!selectedShip}
-                      $isHighlighted={isHovered}
-                      $theme={theme}
-                      data-row={rIndex}
-                      data-col={cIndex}
-                      onMouseEnter={() => handleCellHover(rIndex, cIndex)}
-                      onClick={() => handleCellClick(rIndex, cIndex)}
-                    />
-                  );
-                }),
-              )}
-            </BoardGrid>
-          </BoardWithLabels>
-        </PlayerSection>
-      </BoardContainer>
-
-      <ShipPalette $theme={theme}>
-        <h3
-          className="ship-palette-title"
-          style={{ margin: '0 0 12px', color: theme.textColor }}
-        >
-          {t('games.sea_battle_v1.table.state.shipsPalette')}
-        </h3>
-        {SHIPS.map((ship) => {
-          const isPlaced = placedShipIds.has(ship.id);
-          const isSelected = selectedShipId === ship.id;
-
-          return (
-            <ShipItem
-              key={ship.id}
-              $size={ship.size}
-              $isPlaced={isPlaced}
-              $isSelected={isSelected}
-              $theme={theme}
-              onClick={() =>
-                !isPlaced && setSelectedShipId(isSelected ? null : ship.id)
-              }
+      <SeaBattleGrids>
+        <BoardContainer>
+          <PlacementHeader className="placement-header">
+            <h2
+              data-testid="placement-instruction"
+              style={{ margin: 0, color: theme.textColor, fontSize: 'inherit' }}
+              className="placement-title"
             >
-              <ShipPreview $size={ship.size}>
-                {Array(ship.size)
-                  .fill(null)
-                  .map((_, i) => (
-                    <ShipCellStyled key={i} $theme={theme} />
-                  ))}
-              </ShipPreview>
-              <ShipName $theme={theme}>
-                {ship.name} ({ship.size}){isPlaced && ' ✓'}
-              </ShipName>
-            </ShipItem>
-          );
-        })}
-      </ShipPalette>
+              {t('games.sea_battle_v1.table.players.placeShips')}
+            </h2>
+          </PlacementHeader>
+
+          <PlayerSection $isMe $isActive={false} $theme={theme}>
+            <PlayerName $theme={theme}>
+              {t('games.sea_battle_v1.table.state.yourBoard')}
+            </PlayerName>
+            <BoardWithLabels>
+              <div />
+              <ColLabels>
+                {COL_LABELS.map((label) => (
+                  <Label key={label} $theme={theme}>
+                    {label}
+                  </Label>
+                ))}
+              </ColLabels>
+              <RowLabels>
+                {ROW_LABELS.map((label) => (
+                  <Label key={label} $theme={theme}>
+                    {label}
+                  </Label>
+                ))}
+              </RowLabels>
+              <BoardGrid
+                $theme={theme}
+                onMouseLeave={() => setHoveredCells([])}
+                data-testid="sea-battle-board-grid"
+              >
+                {board.map((row, rIndex) =>
+                  row.map((cellState, cIndex) => {
+                    const isHovered = hoveredCells.some(
+                      (c) => c.row === rIndex && c.col === cIndex,
+                    );
+                    return (
+                      <BoardCell
+                        key={`${rIndex}-${cIndex}`}
+                        $state={cellState}
+                        $isClickable={!!selectedShip}
+                        $isHighlighted={isHovered}
+                        $theme={theme}
+                        data-row={rIndex}
+                        data-col={cIndex}
+                        onMouseEnter={() => handleCellHover(rIndex, cIndex)}
+                        onClick={() => handleCellClick(rIndex, cIndex)}
+                      />
+                    );
+                  }),
+                )}
+              </BoardGrid>
+            </BoardWithLabels>
+          </PlayerSection>
+        </BoardContainer>
+
+        <ShipPalette $theme={theme} data-testid="sea-battle-ship-palette">
+          <h3
+            className="ship-palette-title"
+            style={{ margin: '0 0 12px', color: theme.textColor }}
+          >
+            {t('games.sea_battle_v1.table.state.shipsPalette')}
+          </h3>
+          {SHIPS.map((ship) => {
+            const isPlaced = placedShipIds.has(ship.id);
+            const isSelected = selectedShipId === ship.id;
+
+            return (
+              <ShipItem
+                key={ship.id}
+                $size={ship.size}
+                $isPlaced={isPlaced}
+                $isSelected={isSelected}
+                $theme={theme}
+                onClick={() =>
+                  !isPlaced && setSelectedShipId(isSelected ? null : ship.id)
+                }
+              >
+                <ShipPreview $size={ship.size}>
+                  {Array(ship.size)
+                    .fill(null)
+                    .map((_, i) => (
+                      <ShipCellStyled key={i} $theme={theme} />
+                    ))}
+                </ShipPreview>
+                <ShipName $theme={theme}>
+                  {ship.name} ({ship.size}){isPlaced && ' ✓'}
+                </ShipName>
+              </ShipItem>
+            );
+          })}
+        </ShipPalette>
+      </SeaBattleGrids>
 
       <PlacementActions>
         <RotateButton

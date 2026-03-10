@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.13] - 2026-03-10
+
+### Fixed
+- tablet layout for sea battle (ARC-440)
+
+
 ## [1.7.12] - 2026-03-10
 
 ### Fixed

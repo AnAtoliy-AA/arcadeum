@@ -74,6 +74,7 @@ export type { LoadingStateProps } from './LoadingState';
 // EmptyState
 export { EmptyState } from './EmptyState';
 export type { EmptyStateProps } from './EmptyState';
+export * from './DownloadButtons/DownloadButtons';
 
 // ErrorState
 export { ErrorState } from './ErrorState';

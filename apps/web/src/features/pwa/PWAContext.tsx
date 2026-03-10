@@ -22,6 +22,7 @@ interface PWAContextValue {
   openModal: () => void;
   closeModal: () => void;
   install: () => Promise<void>;
+  isPromptAvailable: boolean;
 }
 
 const PWAContext = createContext<PWAContextValue | null>(null);
@@ -36,6 +37,16 @@ export function usePWA() {
 
 export function usePWAOptional() {
   return useContext(PWAContext);
+}
+
+export function usePWAInstallProps() {
+  const pwa = usePWAOptional();
+
+  return {
+    onInstall: pwa?.isPromptAvailable ? pwa.openModal : undefined,
+    onShowInstructions:
+      pwa && !pwa.isPromptAvailable ? pwa.openModal : () => pwa?.openModal(),
+  };
 }
 
 interface PWAProviderProps {
@@ -84,10 +95,10 @@ export function PWAProvider({ children }: PWAProviderProps) {
   }, []);
 
   const openModal = useCallback(() => {
-    if (deferredPrompt && !isInstalled) {
+    if (!isInstalled) {
       setIsModalOpen(true);
     }
-  }, [deferredPrompt, isInstalled]);
+  }, [isInstalled]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
@@ -106,12 +117,13 @@ export function PWAProvider({ children }: PWAProviderProps) {
   }, [deferredPrompt]);
 
   const value: PWAContextValue = {
-    canInstall: !isInstalled && deferredPrompt !== null,
+    canInstall: !isInstalled,
     isInstalled,
     isModalOpen,
     openModal,
     closeModal,
     install,
+    isPromptAvailable: deferredPrompt !== null,
   };
 
   return (

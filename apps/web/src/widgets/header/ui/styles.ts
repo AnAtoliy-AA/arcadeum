@@ -22,6 +22,10 @@ export const HeaderInner = styled.div`
   height: 64px;
   gap: 2rem;
 
+  @media (max-width: 1400px) {
+    gap: 1rem;
+  }
+
   @media (max-width: 640px) {
     padding: 0 1rem;
     gap: 0.5rem;
@@ -64,7 +68,7 @@ export const Nav = styled.nav`
   gap: 0.5rem;
   flex: 1;
 
-  @media (max-width: 900px) {
+  @media (max-width: 1150px) {
     display: none;
   }
 `;
@@ -110,7 +114,7 @@ export const DesktopOnly = styled.div`
   align-items: center;
   gap: 0.75rem;
 
-  @media (max-width: 900px) {
+  @media (max-width: 1150px) {
     display: none;
   }
 `;
@@ -118,7 +122,7 @@ export const DesktopOnly = styled.div`
 export const ProfileMenuContainer = styled.div`
   position: relative;
 
-  @media (max-width: 900px) {
+  @media (max-width: 1150px) {
     display: none;
   }
 `;
@@ -129,7 +133,7 @@ export const UserInfo = styled(Button).attrs({
 })`
   gap: 0.75rem;
 
-  @media (max-width: 900px) {
+  @media (max-width: 1150px) {
     display: none;
   }
 `;
@@ -216,7 +220,7 @@ export const MobileMenuButton = styled(Button).attrs({
 })`
   display: none;
 
-  @media (max-width: 900px) {
+  @media (max-width: 1150px) {
     display: flex;
   }
 `;
@@ -243,7 +247,7 @@ export const MobileNav = styled.div<{ $isOpen: boolean }>`
   visibility: ${({ $isOpen }) => ($isOpen ? 'visible' : 'hidden')};
   transition: all 0.3s ease;
 
-  @media (max-width: 900px) {
+  @media (max-width: 1150px) {
     display: flex;
   }
 `;
@@ -362,7 +366,7 @@ export const MobileLoginIndicator = styled(Link).attrs({ prefetch: false })<{
     height: 16px;
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 1150px) {
     display: flex;
   }
 `;

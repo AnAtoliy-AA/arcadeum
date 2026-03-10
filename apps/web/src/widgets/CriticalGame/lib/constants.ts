@@ -185,6 +185,7 @@ import {
   ATTACK_PACK_CARDS,
   FUTURE_PACK_CARDS,
   THEFT_PACK_CARDS,
+  CHAOS_PACK_CARDS,
   DEITY_PACK_CARDS,
   CriticalCard,
 } from '@/shared/types/games';
@@ -198,6 +199,7 @@ export const PLAYABLE_ACTION_CARDS: CriticalCard[] = [
   ...ATTACK_PACK_CARDS,
   ...FUTURE_PACK_CARDS,
   ...THEFT_PACK_CARDS.filter((c) => c !== 'wildcard'), // wildcard used in combos
+  ...CHAOS_PACK_CARDS,
   ...DEITY_PACK_CARDS,
 ];
 

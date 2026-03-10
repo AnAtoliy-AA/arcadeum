@@ -143,6 +143,22 @@ export const THEFT_PACK_CARDS: TheftPackCard[] = [
   'stash',
 ];
 
+// ===== CHAOS PACK EXPANSION CARDS =====
+export type ChaosPackCard =
+  | 'critical_implosion'
+  | 'containment_field'
+  | 'fission'
+  | 'tribute'
+  | 'blackout';
+
+export const CHAOS_PACK_CARDS: ChaosPackCard[] = [
+  'critical_implosion',
+  'containment_field',
+  'fission',
+  'tribute',
+  'blackout',
+];
+
 // ===== DEITY PACK EXPANSION CARDS =====
 export type DeityPackCard = 'omniscience' | 'miracle' | 'smite' | 'rapture';
 
@@ -153,7 +169,6 @@ export const DEITY_PACK_CARDS: DeityPackCard[] = [
   'rapture',
 ];
 
-// ===== COMBINED CARD TYPE =====
 export type CriticalCard =
   | 'critical_event'
   | 'neutralizer'
@@ -162,6 +177,7 @@ export type CriticalCard =
   | AttackPackCard
   | FuturePackCard
   | TheftPackCard
+  | ChaosPackCard
   | DeityPackCard;
 
 // Marked card info for theft mechanics

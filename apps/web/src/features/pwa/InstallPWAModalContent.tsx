@@ -49,15 +49,28 @@ const FeatureIcon = styled.span`
   font-size: 1.25rem;
 `;
 
+const ManualSection = styled.div`
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: ${({ theme }) => theme.surfaces.panel.background};
+  border-radius: 12px;
+  border: 1px solid ${({ theme }) => theme.surfaces.panel.border};
+`;
+
+const ManualText = styled(Description)`
+  font-size: 0.85rem;
+  text-align: left;
+  line-height: 1.4;
+`;
+
 export function InstallPWAModalContent() {
   const { t } = useTranslation();
   const pwa = usePWAOptional();
 
   if (!pwa) return null;
+  const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-  const { isModalOpen, closeModal, install, canInstall } = pwa;
-
-  if (!canInstall) return null;
+  const { isModalOpen, closeModal, install, isPromptAvailable } = pwa;
 
   return (
     <Modal open={isModalOpen} onClose={closeModal}>
@@ -70,28 +83,41 @@ export function InstallPWAModalContent() {
             <Avatar src="/icon-192x192.png" name="Arcadeum" size="xl" alt="" />
           </AppIconWrapper>
           <Description>{t('pwa.install.description')}</Description>
+
           <FeatureList>
             <FeatureItem>
               <FeatureIcon>⚡</FeatureIcon>
               {t('pwa.install.features.fast')}
             </FeatureItem>
             <FeatureItem>
-              <FeatureIcon>📴</FeatureIcon>
-              {t('pwa.install.features.offline')}
-            </FeatureItem>
-            <FeatureItem>
               <FeatureIcon>🔔</FeatureIcon>
               {t('pwa.install.features.notifications')}
             </FeatureItem>
           </FeatureList>
+
+          {!isPromptAvailable && (
+            <ManualSection>
+              <ManualText>
+                <strong>{t('pwa.install.manual.title')}:</strong>
+                <br />
+                {isIos
+                  ? t('pwa.install.manual.ios', { icon: '⎙', plus: '⊞' })
+                  : t('pwa.install.manual.generic')}
+              </ManualText>
+            </ManualSection>
+          )}
         </ModalBody>
         <ModalFooter>
           <Button variant="secondary" onClick={closeModal}>
-            {t('pwa.install.notNow')}
+            {isPromptAvailable
+              ? t('pwa.install.notNow')
+              : t('common.actions.close')}
           </Button>
-          <Button onClick={install} data-testid="install-pwa-button">
-            {t('pwa.install.button')}
-          </Button>
+          {isPromptAvailable && (
+            <Button onClick={install} data-testid="install-pwa-button">
+              {t('pwa.install.button')}
+            </Button>
+          )}
         </ModalFooter>
       </ModalContent>
     </Modal>

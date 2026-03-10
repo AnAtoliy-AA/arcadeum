@@ -2,11 +2,9 @@ import {
   DownloadSectionWrapper,
   DownloadTitle,
   DownloadDescription,
-  DownloadButtons,
-  DownloadButton,
-  DownloadIcon,
 } from './styles';
-import { usePlatform } from '@/shared/hooks/usePlatform';
+import { DownloadButtons } from '@/shared/ui';
+import { usePWAInstallProps } from '@/features/pwa';
 
 export interface DownloadSectionLabels {
   downloadsTitle: string;
@@ -22,37 +20,24 @@ export interface DownloadSectionConfig {
 
 interface DownloadSectionProps {
   labels: DownloadSectionLabels;
-  config: DownloadSectionConfig;
+  config?: DownloadSectionConfig;
 }
 
-export function DownloadSection({ labels, config }: DownloadSectionProps) {
-  const { downloadsTitle, downloadsDescription, downloadsIosLabel } = labels;
+export function DownloadSection({ labels }: DownloadSectionProps) {
+  const { downloadsTitle, downloadsDescription } = labels;
 
-  const { iosHref, androidHref } = config;
-
-  const hasLinks = Boolean(iosHref || androidHref);
-  const { isIos: _isIos, isAndroid } = usePlatform();
-
-  if (!hasLinks) {
-    return null;
-  }
+  const { onInstall, onShowInstructions } = usePWAInstallProps();
 
   return (
     <DownloadSectionWrapper>
       <DownloadTitle>{downloadsTitle}</DownloadTitle>
       <DownloadDescription>{downloadsDescription}</DownloadDescription>
-      <DownloadButtons>
-        {iosHref && !isAndroid ? (
-          <DownloadButton
-            href={iosHref}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DownloadIcon aria-hidden="true">↓</DownloadIcon>
-            <span>{downloadsIosLabel}</span>
-          </DownloadButton>
-        ) : null}
-      </DownloadButtons>
+      <div style={{ marginTop: '1.5rem', width: '100%' }}>
+        <DownloadButtons
+          onInstall={onInstall}
+          onShowInstructions={onShowInstructions}
+        />
+      </div>
     </DownloadSectionWrapper>
   );
 }

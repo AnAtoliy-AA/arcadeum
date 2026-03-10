@@ -10,20 +10,22 @@ export const ShipPalette = styled.div<{ $theme: SeaBattleTheme }>`
   border-radius: ${(props) => props.$theme.borderRadius};
   border: 1px solid ${(props) => props.$theme.cellBorder};
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     flex-direction: row;
     overflow-x: auto;
-    padding: 12px 8px;
-    gap: 16px;
-    border: none;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 8px;
+    padding: 1rem;
+    gap: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
     -webkit-overflow-scrolling: touch;
     width: 100%;
     box-sizing: border-box;
+
     &::-webkit-scrollbar {
       display: none;
     }
+
     .ship-palette-title {
       display: none;
     }
@@ -109,6 +111,11 @@ export const RotateButton = styled.button<{ $theme: SeaBattleTheme }>`
 
   &:hover {
     background: ${(props) => props.$theme.cellHover};
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    padding: 12px 20px;
+    font-size: 1rem;
   }
 
   @media (max-width: 768px) {

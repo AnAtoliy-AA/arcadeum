@@ -14,6 +14,12 @@ export const BoardGrid = styled.div<{ $theme: SeaBattleTheme }>`
   aspect-ratio: 1;
   box-shadow: ${(props) => props.$theme.boxShadow || 'none'};
 
+  @media (min-width: 769px) and (max-width: 1200px) {
+    max-width: 450px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
   @media (max-width: 768px) {
     max-width: none;
     width: 100%;
@@ -137,9 +143,15 @@ export const Label = styled.span<{ $theme: SeaBattleTheme }>`
   width: 20px;
   height: 20px;
 
+  @media (min-width: 769px) and (max-width: 1200px) {
+    font-size: 0.875rem;
+    width: 25px;
+    height: 25px;
+  }
+
   @media (max-width: 768px) {
-    font-size: 0.5rem;
-    width: 12px;
-    height: 12px;
+    font-size: 0.625rem;
+    width: 16px;
+    height: 16px;
   }
 `;

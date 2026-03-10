@@ -10,6 +10,7 @@ import {
 } from '@/shared/lib/useTranslation';
 import { useGameStore } from '@/features/games/store/gameStore';
 import { IdleBadge } from '@/shared/ui';
+import { SeaBattleGrids } from './SeaBattleGrids';
 
 const TableContainer = styled.div`
   display: flex;
@@ -20,19 +21,6 @@ const TableContainer = styled.div`
   height: 100%;
   gap: 20px;
   padding: 20px;
-`;
-
-const GridsContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 40px;
-  width: 100%;
-  max-width: 1200px;
-  margin-top: 20px;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
 `;
 
 const TurnBanner = styled(GlassCard)`
@@ -91,12 +79,9 @@ const BadgeWrapper = styled.div`
   top: -10px;
   right: -10px;
   z-index: 10;
-
-  @media (max-width: 768px) {
-    right: auto;
-    left: 50%;
-    transform: translateX(-50%);
-  }
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
 `;
 
 const PlayerName = styled.h3`
@@ -203,7 +188,7 @@ export function SeaBattleTable({
         </div>
       </TurnBanner>
 
-      <GridsContainer>
+      <SeaBattleGrids>
         {players.map((player) => {
           const isMe = player.playerId === currentUserId;
           const isActive = playerOrder[currentTurnIndex] === player.playerId;
@@ -245,7 +230,7 @@ export function SeaBattleTable({
             </PlayerSection>
           );
         })}
-      </GridsContainer>
+      </SeaBattleGrids>
     </TableContainer>
   );
 }

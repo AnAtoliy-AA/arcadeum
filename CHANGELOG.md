@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.12] - 2026-03-10
+
+### Fixed
+- settings themes buttons colors (ARC-438)
+
+
 ## [1.7.11] - 2026-03-09
 
 ### Documentation

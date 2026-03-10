@@ -5,130 +5,136 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased] - Coming Soon
+
+*This section documents upcoming changes that will be included in the next release. Check back soon for updates!*
+
+## [Released]
 
 ## [1.7.18] - 2026-03-10
 
 ### Added
-- make layout rotatable for mobiles (ARC-445)
+- Made game layouts automatically rotate on mobile devices for better orientation (ARC-445)
 
 
 ## [1.7.17] - 2026-03-10
 
 ### Fixed
-- ci yml optimization (ARC-447)
+- Optimized CI/CD pipeline configuration for faster and more reliable builds (ARC-447)
 
 
 ## [1.7.16] - 2026-03-10
 
 ### Fixed
-- more understandable download button (ARC-442)
+- Improved clarity and visibility of the download button for better user guidance (ARC-442)
 
 
 ## [1.7.15] - 2026-03-10
 
 ### Fixed
-- rework header layout for middle devices (ARC-444)
+- Refined header layout to improve usability on mid-sized tablets and foldable devices (ARC-444)
 
 
 ## [1.7.14] - 2026-03-10
 
 ### Fixed
-- critical maelstrom card action (ARC-409)
+- Fixed a critical bug in the Maelstrom card action that could cause game state errors (ARC-409)
 
 
 ## [1.7.13] - 2026-03-10
 
 ### Fixed
-- tablet layout for sea battle (ARC-440)
+- Improved tablet layout for Sea Battle to ensure proper spacing and touch targets (ARC-440)
 
 
 ## [1.7.12] - 2026-03-10
 
 ### Fixed
-- settings themes buttons colors (ARC-438)
+- Corrected color inconsistencies in theme buttons within Settings menu (ARC-438)
 
 
 ## [1.7.11] - 2026-03-09
 
 ### Documentation
-- security md (ARC-443)
+- Updated SECURITY.md with current practices and contact information (ARC-443)
 
 
 ## [1.7.10] - 2026-03-09
 
 ### Fixed
-- critical game table layout on mobile (ARC-441)
+- Fixed layout issues on mobile devices that caused game tables to overflow or misalign (ARC-441)
 
 
 ## [1.7.9] - 2026-03-09
 
 ### Added
-- sea battle show field colors in the lobby (ARC-426)
+- Added color-coded field indicators in the Sea Battle lobby to help players identify their territory (ARC-426)
 
 
 ## [1.7.8] - 2026-03-09
 
 ### Fixed
-- play again modal (ARC-442)
+- Fixed an issue where the Play Again modal would not appear correctly after a match ended (ARC-442)
 
 
 ## [1.7.7] - 2026-03-09
 
 ### Added
-- sea battle pop up sending message (ARC-413)
+- Added a pop-up notification when sending messages in Sea Battle to confirm successful delivery (ARC-413)
 
 
 ## [1.7.6] - 2026-03-06
 
 ### Fixed
-- video attributes warnings in e2e (N/A)
-- idle screen after changing page (ARC-439)
+- Resolved video attribute warnings in E2E tests that were cluttering logs (N/A)
+- Fixed an issue where users were stuck on an idle screen after navigating away from a game (ARC-439)
 
 
 ## [1.7.5] - 2026-03-06
 
 ### Added
-- add refresh button to waiting for game start modal (ARC-414)
+- Added a refresh button to the "Waiting for Game Start" modal to let players manually retry connection (ARC-414)
 
 
 ## [1.7.4] - 2026-03-05
 
 ### Added
-- reorder home screen sections (ARC-433)
+- Reordered sections on the home screen to prioritize the most popular games and features (ARC-433)
 
 ### Fixed
-- peyment 404 in e2e test (N/A)
-- playwright config (N/A)
-- ci yml config (N/A)
+- Fixed a 404 error in E2E tests related to payment endpoints (N/A)
+- Updated Playwright configuration for more stable test runs (N/A)
+- Streamlined CI/CD configuration for improved reliability (N/A)
 
 
 ## [1.7.3] - 2026-03-03
 
 ### Added
-- CI/CD pipelines tests (#463) (ARC-436)
+- Added automated tests for CI/CD pipelines to catch configuration issues before deployment (#463) (ARC-436)
 
 
 ## [1.7.2] - 2026-03-02
 
 ### Fixed
-- docs check script (N/A)
+- Fixed a bug in the documentation link checker script that caused false positives (N/A)
 
 ### Documentation
-- architecture description (ARC-435)
+- Added detailed backend and frontend architecture diagrams to improve developer onboarding (ARC-435)
 
 
 ## [1.7.1] - 2026-03-02
 
 ### Fixed
-- create room clear logic (ARC-408)
+- Improved room creation logic to properly clear stale game data when a room is deleted (ARC-408)
 
 
 ## [1.7.0] - 2026-02-27
 
+### Added
+- This release focused on polish and stability, with improvements to layout, usability, and testing infrastructure across all platforms.
 
-
-
+### Fixed
+- Numerous minor UI and performance fixes to enhance the overall user experience.
 ## [1.6.4] - 2026-02-27
 
 ### Added

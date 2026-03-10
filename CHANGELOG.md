@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.16] - 2026-03-10
+
+### Fixed
+- more understandable download button (ARC-442)
+
+
 ## [1.7.15] - 2026-03-10
 
 ### Fixed

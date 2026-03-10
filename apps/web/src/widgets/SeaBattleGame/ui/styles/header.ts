@@ -33,10 +33,9 @@ export const TurnIndicator = styled.div<{
   $theme: SeaBattleTheme;
 }>`
   width: auto;
-  min-width: 320px;
+  min-width: 240px;
   max-width: fit-content;
-  margin: 16px auto;
-  padding: 12px 32px;
+  padding: 8px 24px;
   background: ${(props) =>
     props.$isYourTurn ? 'rgba(16, 185, 129, 0.45)' : 'rgba(0, 0, 0, 0.75)'};
   backdrop-filter: blur(20px);
@@ -50,8 +49,8 @@ export const TurnIndicator = styled.div<{
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  font-size: 1rem;
+  gap: 10px;
+  font-size: 0.9rem;
   font-weight: 800;
   color: white;
   text-transform: uppercase;
@@ -61,13 +60,11 @@ export const TurnIndicator = styled.div<{
       ? '0 10px 40px -10px rgba(16, 185, 129, 0.6)'
       : '0 10px 25px -10px rgba(0, 0, 0, 0.5)'};
   z-index: 90;
-  position: sticky;
-  top: 10px;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
   &::before {
     content: '${(props) => (props.$isYourTurn ? '🎯' : '⏳')}';
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
 
   ${(props) =>
@@ -77,17 +74,41 @@ export const TurnIndicator = styled.div<{
       border-color: #10b981;
     `}
 
-  @media (max-width: 768px) {
-    width: 90%;
-    max-width: 400px;
-    padding: 10px 20px;
-    font-size: 0.9rem;
-    position: fixed;
-    top: 70px;
-    left: 50%;
-    transform: translateX(-50%);
-    margin: 0;
-    z-index: 100;
+  @media (max-width: 1024px) {
+    min-width: 0;
+    padding: 6px 16px;
+    font-size: 0.8rem;
+
+    &::before {
+      font-size: 1rem;
+    }
+  }
+`;
+
+export const CompactHeaderContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 1rem;
+  padding: 0.5rem 0;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+`;
+
+export const HeaderTitleArea = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+
+  @media (max-width: 900px) {
+    align-items: center;
+    text-align: center;
   }
 `;
 
@@ -124,8 +145,14 @@ export const ChatToggleButton = styled.button`
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.2s;
+  white-space: nowrap;
 
   &:hover {
     background: rgba(255, 255, 255, 0.15);
+  }
+
+  @media (max-width: 1024px) {
+    padding: 6px 12px;
+    font-size: 0.85rem;
   }
 `;

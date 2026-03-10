@@ -54,13 +54,16 @@ export const SidebarArea = styled.div`
 
 export const GridsContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
   width: 100%;
+  padding: 1rem 0.5rem;
+  min-width: 800px;
 
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
     grid-template-columns: 1fr;
-    gap: 8px;
+    gap: 1rem;
+    min-width: 0;
   }
 `;
 

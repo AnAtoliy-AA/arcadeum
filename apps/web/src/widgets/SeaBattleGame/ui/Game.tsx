@@ -41,7 +41,12 @@ import { RulesModal } from './RulesModal';
 import { ChatMessagePopup } from './ChatMessagePopup';
 import { useLatestChatMessage } from '../hooks/useLatestChatMessage';
 import { FullscreenButton } from '@/widgets/CriticalGame/ui/styles';
-import { TurnIndicator, ChatToggleButton } from './styles';
+import {
+  TurnIndicator,
+  ChatToggleButton,
+  CompactHeaderContainer,
+  HeaderTitleArea,
+} from './styles/header';
 
 const RoomTitle = styled.h2`
   margin: 0;
@@ -56,28 +61,6 @@ const RoomTitle = styled.h2`
     overflow: visible;
     text-overflow: clip;
   }
-`;
-
-const ContentHeader = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px 20px;
-  width: 100%;
-  box-sizing: border-box;
-
-  @media (max-width: 768px) {
-    padding: 12px;
-    gap: 8px;
-  }
-`;
-
-const HeaderTopRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  width: 100%;
 `;
 
 const ActionSection = styled.div`
@@ -311,9 +294,34 @@ export default function SeaBattleGame({
         ) : undefined
       }
       header={
-        <TurnIndicator $isYourTurn={!!isMyTurn} $theme={theme}>
-          {getTurnStatusText()}
-        </TurnIndicator>
+        <CompactHeaderContainer>
+          <HeaderTitleArea>
+            <RoomTitle>
+              {t('games.sea_battle_v1.name' as TranslationKey)} {variantLabel} -{' '}
+              {room?.name}
+            </RoomTitle>
+          </HeaderTitleArea>
+
+          <TurnIndicator $isYourTurn={!!isMyTurn} $theme={theme}>
+            {getTurnStatusText()}
+          </TurnIndicator>
+
+          <ActionSection>
+            <FullscreenButton
+              onClick={() => setShowRules(true)}
+              title="Game Rules"
+            >
+              📖
+            </FullscreenButton>
+            {snapshot && (
+              <ChatToggleButton onClick={handleToggleChat}>
+                {showChat
+                  ? t('games.sea_battle_v1.table.chat.hide' as TranslationKey)
+                  : t('games.sea_battle_v1.table.chat.show' as TranslationKey)}
+              </ChatToggleButton>
+            )}
+          </ActionSection>
+        </CompactHeaderContainer>
       }
       showChat={showChat}
       chat={
@@ -394,30 +402,6 @@ export default function SeaBattleGame({
         </>
       }
     >
-      <ContentHeader>
-        <HeaderTopRow>
-          <RoomTitle>
-            {t('games.sea_battle_v1.name' as TranslationKey)} {variantLabel} -{' '}
-            {room?.name}
-          </RoomTitle>
-          <ActionSection>
-            <FullscreenButton
-              onClick={() => setShowRules(true)}
-              title="Game Rules"
-            >
-              📖
-            </FullscreenButton>
-            {snapshot && (
-              <ChatToggleButton onClick={handleToggleChat}>
-                {showChat
-                  ? t('games.sea_battle_v1.table.chat.hide' as TranslationKey)
-                  : t('games.sea_battle_v1.table.chat.show' as TranslationKey)}
-              </ChatToggleButton>
-            )}
-          </ActionSection>
-        </HeaderTopRow>
-      </ContentHeader>
-
       {snapshot && isPlacementPhase && (
         <ShipPlacementBoard
           key="placement-board"

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.15] - 2026-03-10
+
+### Fixed
+- rework header layout for middle devices (ARC-444)
+
+
 ## [1.7.14] - 2026-03-10
 
 ### Fixed

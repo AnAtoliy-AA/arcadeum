@@ -12,6 +12,7 @@ import {
   SPECIAL_CARDS,
   FUTURE_PACK_CARDS,
   THEFT_PACK_CARDS,
+  CHAOS_PACK_CARDS,
   MarkedCardInfo,
   DEITY_PACK_CARDS,
   GameSessionSummary,
@@ -91,12 +92,10 @@ export {
   SPECIAL_CARDS,
   FUTURE_PACK_CARDS,
   THEFT_PACK_CARDS,
+  CHAOS_PACK_CARDS,
   DEITY_PACK_CARDS,
 };
 
-/**
- * List of all game cards
- */
 export const ALL_GAME_CARDS: CriticalCard[] = [
   ...SPECIAL_CARDS,
   ...BASE_ACTION_CARDS,
@@ -104,6 +103,7 @@ export const ALL_GAME_CARDS: CriticalCard[] = [
   ...ATTACK_PACK_CARDS,
   ...FUTURE_PACK_CARDS,
   ...THEFT_PACK_CARDS,
+  ...CHAOS_PACK_CARDS,
   ...DEITY_PACK_CARDS,
 ];
 

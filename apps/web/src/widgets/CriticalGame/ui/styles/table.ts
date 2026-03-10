@@ -142,7 +142,6 @@ export const PlayersRing = styled.div<{ $playerCount: number }>`
       'bl bc br';
     gap: 0.5rem;
     min-height: auto;
-    padding: 0.25rem;
     align-items: center;
     justify-items: center;
   }
@@ -221,15 +220,15 @@ export const CenterTable = styled.div<{ $variant?: string }>`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 2rem;
   padding: 1.25rem;
   border-radius: 50%;
   background: ${({ $variant }) =>
     getVariantStyles($variant).table.center.getBackground()};
   border: ${({ $variant }) =>
     getVariantStyles($variant).table.center.getBorder()};
-  width: 200px;
-  height: 200px;
+  width: 240px;
+  height: 240px;
   position: relative;
   z-index: 1;
   box-shadow: ${({ $variant }) =>
@@ -282,11 +281,11 @@ export const CenterTable = styled.div<{ $variant?: string }>`
   }
 
   @media (max-width: 768px) {
-    width: 140px;
-    height: 140px;
+    width: 160px;
+    height: 160px;
     padding: 0.75rem;
     border-width: 2px;
-    gap: 0.5rem;
+    gap: 1rem;
     grid-area: center;
   }
 `;

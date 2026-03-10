@@ -226,8 +226,9 @@ export const StashIcon = styled.div`
 `;
 
 export const DeckCard = styled.div<{ $variant?: string }>`
-  width: 75px;
-  height: 112px; // aspect ratio 2/3 roughly
+  width: 100%;
+  height: 100%;
+  padding: 0;
   border-radius: 12px;
   background: ${({ $variant }) =>
     getVariantStyles($variant).cards.getDeckBackground?.($variant)};

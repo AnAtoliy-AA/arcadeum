@@ -7,13 +7,12 @@ export * from './cards-base';
 
 export const LastPlayedCard = styled(Card)<{ $isAnimating?: boolean }>`
   position: absolute;
-  width: 75px;
-  max-width: 75px;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%)
-    ${({ $isAnimating }) =>
-      $isAnimating ? 'rotateY(180deg) scale(1.1)' : 'rotateY(0deg)'};
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  transform: ${({ $isAnimating }) =>
+    $isAnimating ? 'rotateY(180deg) scale(1.1)' : 'rotateY(0deg)'};
   z-index: 10;
   animation: ${({ $isAnimating }) =>
     $isAnimating
@@ -24,28 +23,28 @@ export const LastPlayedCard = styled(Card)<{ $isAnimating?: boolean }>`
 
   @keyframes cardFlip {
     0% {
-      transform: translate(-50%, -50%) rotateY(0deg) scale(1);
+      transform: rotateY(0deg) scale(1);
     }
     50% {
-      transform: translate(-50%, -50%) rotateY(90deg) scale(1.1);
+      transform: rotateY(90deg) scale(1.1);
     }
     100% {
-      transform: translate(-50%, -50%) rotateY(180deg) scale(1);
+      transform: rotateY(180deg) scale(1);
     }
   }
 
   @keyframes cardFloat {
     0%,
     100% {
-      transform: translate(-50%, -50%) translateY(0px);
+      transform: translateY(0px);
     }
     50% {
-      transform: translate(-50%, -50%) translateY(-8px);
+      transform: translateY(-8px);
     }
   }
 
   &:hover {
-    transform: translate(-50%, -50%) scale(1.05);
+    transform: scale(1.05);
   }
 
   /* Media query removed to keep consistent size */

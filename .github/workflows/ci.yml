@@ -23,14 +23,9 @@ env:
   NEXT_PUBLIC_SOCIAL_DISCORD: https://discord.gg/arcadeum
 
 jobs:
-  setup:
-    name: Setup & Build
+  build:
+    name: Build
     runs-on: ubuntu-latest
-    services:
-      mongodb:
-        image: mongo:latest
-        ports:
-          - 27017:27017
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -60,11 +55,54 @@ jobs:
           path: build-artifacts.tar
           retention-days: 1
 
+  lint:
+    name: Lint & Docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --no-frozen-lockfile
+
       - name: Run Documentation Link Checker
         run: pnpm docs:check
 
       - name: Run Linting
         run: pnpm run lint
+
+  test-unit:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --no-frozen-lockfile
 
       - name: Run Web Unit Tests
         run: pnpm exec turbo run test --filter web --log-order=stream -- --passWithNoTests
@@ -72,16 +110,42 @@ jobs:
       - name: Run Backend & Mobile Unit Tests
         run: pnpm exec turbo run test --filter be --filter mobile --log-order=stream -- --forceExit --detectOpenHandles --passWithNoTests
 
+  test-e2e-be:
+    name: Backend E2E Tests
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --no-frozen-lockfile
+
       - name: Run Backend E2E Tests
         run: pnpm --filter be test:e2e
 
+
   web-e2e:
-    name: Web E2E (Shard ${{ matrix.shard }}/${{ strategy.job-total }})
-    needs: setup
+    name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/4)
+    needs: build
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        project: [chromium, firefox, webkit, "Mobile Chrome", "Mobile Safari", "Tablet Safari"]
         shard: [1, 2, 3, 4]
     services:
       mongodb:
@@ -117,17 +181,36 @@ jobs:
           ls -F apps/web/.next | head -n 5
           ls -F apps/be/dist | head -n 5
 
+      - name: Determine Browser Engine
+        id: engine
+        run: |
+          if [[ "${{ matrix.project }}" == "chromium" || "${{ matrix.project }}" == "Mobile Chrome" ]]; then
+            echo "browser=chromium" >> $GITHUB_OUTPUT
+          elif [[ "${{ matrix.project }}" == "firefox" ]]; then
+            echo "browser=firefox" >> $GITHUB_OUTPUT
+          else
+            echo "browser=webkit" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.engine.outputs.browser }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-${{ steps.engine.outputs.browser }}-
+
       - name: Install Playwright Browsers
-        run: pnpm --filter web exec playwright install --with-deps
+        run: pnpm --filter web exec playwright install ${{ steps.engine.outputs.browser }} --with-deps
 
       - name: Run Web E2E Tests
-        run: pnpm --filter web test:e2e --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+        run: pnpm --filter web test:e2e --project="${{ matrix.project }}" --shard=${{ matrix.shard }}/4
 
       - name: Upload Shard Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: web-e2e-report-${{ matrix.shard }}
+          name: web-e2e-report-${{ matrix.project }}-${{ matrix.shard }}
           path: |
             apps/web/playwright-report/
           retention-days: 30

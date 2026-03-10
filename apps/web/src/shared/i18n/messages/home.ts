@@ -12,9 +12,10 @@ const homeMessagesDefinition = {
     defaultRoomName: "{{name}}'s game",
     heroCardBrand: 'CRITICAL',
     supportCtaLabel: 'Support the developers',
-    downloadsTitle: 'Install the mobile builds',
-    downloadsDescription:
-      'Grab the latest Expo builds for iOS and Android directly from the web app.',
+    downloadsTitle: 'Install Arcadeum',
+    pwaDescription:
+      'Install {{appName}} as a Web App on your device for the ultimate board game experience. Same performance, more convenience.',
+    downloadsDescription: 'Grab the latest builds directly from the web app.',
     downloadsIosLabel: 'Download for iOS',
     downloadsAndroidLabel: 'Download for Android',
     // Games section
@@ -86,9 +87,11 @@ const homeMessagesDefinition = {
     defaultRoomName: 'Partida de {{name}}',
     heroCardBrand: 'CRITICAL',
     supportCtaLabel: 'Apoyar a los desarrolladores',
-    downloadsTitle: 'Instala las apps móviles',
+    downloadsTitle: 'Instalar Arcadeum',
+    pwaDescription:
+      'Instala {{appName}} como una Web App en tu dispositivo para la mejor experiencia de juego. El mismo rendimiento, más comodidad.',
     downloadsDescription:
-      'Descarga las últimas compilaciones de Expo para iOS y Android directamente desde la web.',
+      'Descarga las últimas versiones directamente desde la web.',
     downloadsIosLabel: 'Descargar para iOS',
     downloadsAndroidLabel: 'Descargar para Android',
     // Games section
@@ -163,9 +166,11 @@ const homeMessagesDefinition = {
     defaultRoomName: 'Partie de {{name}}',
     heroCardBrand: 'CRITICAL',
     supportCtaLabel: 'Soutenir les développeurs',
-    downloadsTitle: 'Installer les applications mobiles',
+    downloadsTitle: 'Installer Arcadeum',
+    pwaDescription:
+      'Installez {{appName}} en tant que Web App sur votre appareil pour une expérience de jeu ultime. Mêmes performances, plus de commodité.',
     downloadsDescription:
-      'Téléchargez les dernières versions Expo pour iOS et Android directement depuis le web.',
+      'Téléchargez les dernières versions directement depuis le web.',
     downloadsIosLabel: 'Télécharger pour iOS',
     downloadsAndroidLabel: 'Télécharger pour Android',
     // Games section
@@ -240,9 +245,10 @@ const homeMessagesDefinition = {
     defaultRoomName: 'Игра {{name}}',
     heroCardBrand: 'CRITICAL',
     supportCtaLabel: 'Поддержать разработчиков',
-    downloadsTitle: 'Установите мобильные сборки',
-    downloadsDescription:
-      'Загрузите последние сборки Expo для iOS и Android прямо из веб-приложения.',
+    downloadsTitle: 'Установить Arcadeum',
+    pwaDescription:
+      'Установите {{appName}} как веб-приложение на свое устройство для лучшего игрового опыта. Та же производительность, больше удобства.',
+    downloadsDescription: 'Загрузите последние версии прямо из веб-приложения.',
     downloadsIosLabel: 'Скачать для iOS',
     downloadsAndroidLabel: 'Скачать для Android',
     // Games section
@@ -313,9 +319,10 @@ const homeMessagesDefinition = {
     defaultRoomName: 'Гульня {{name}}',
     heroCardBrand: 'CRITICAL',
     supportCtaLabel: 'Падрымаць распрацоўшчыкаў',
-    downloadsTitle: 'Усталюйце мабільныя зборкі',
-    downloadsDescription:
-      'Загрузіце апошнія зборкі Expo для iOS і Android прама з вэб-прыкладання.',
+    downloadsTitle: 'Усталяваць Arcadeum',
+    pwaDescription:
+      'Усталюйце {{appName}} як вэб-прыкладанне на сваю прыладу для лепшага гульнявога досведу. Тая ж прадукцыйнасць, больш зручнасці.',
+    downloadsDescription: 'Загрузіце апошнія версіі прама з вэб-прыкладання.',
     downloadsIosLabel: 'Спампаваць для iOS',
     downloadsAndroidLabel: 'Спампаваць для Android',
     // Games section

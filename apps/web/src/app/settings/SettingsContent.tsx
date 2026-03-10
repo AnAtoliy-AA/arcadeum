@@ -5,7 +5,7 @@ import { useCallback, useMemo } from 'react';
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import { useThemeController } from '@/app/theme/ThemeContext';
 import { useHapticsSetting } from '@/shared/hooks/useHapticsSetting';
-import { usePWAOptional } from '@/features/pwa';
+import { usePWAInstallProps } from '@/features/pwa';
 import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
 import type { ThemePreference } from '@/shared/config/theme';
 import { PageLayout, PageTitle, Section } from '@/shared/ui';
@@ -30,7 +30,7 @@ import {
   VersionText,
 } from './styles';
 
-import { Button } from '@/shared/ui';
+import { Button, DownloadButtons } from '@/shared/ui';
 import { BlockedUsersSection } from './BlockedUsersSection';
 
 type DownloadConfig = {
@@ -202,12 +202,7 @@ export default function SettingsContent({
     [],
   );
 
-  const pwa = usePWAOptional();
-  const pwaTitle = settingsCopy.pwaTitle ?? 'Install App';
-  const pwaDescription =
-    settingsCopy.pwaDescription ??
-    'Install Arcadeum as a native app on your device.';
-  const pwaInstallLabel = settingsCopy.pwaInstallLabel ?? 'Install';
+  const { onInstall, onShowInstructions } = usePWAInstallProps();
 
   return (
     <PageLayout>
@@ -291,18 +286,18 @@ export default function SettingsContent({
           </AccountActions>
         </Section>
 
-        {pwa?.canInstall && (
-          <Section title={pwaTitle} description={pwaDescription}>
-            <Button
-              variant="primary"
-              onClick={pwa.openModal}
-              data-testid="pwa-install-button"
-              style={{ flex: 1, borderRadius: '999px', minWidth: '140px' }}
-            >
-              {pwaInstallLabel}
-            </Button>
-          </Section>
-        )}
+        <Section
+          title={appConfig.downloads.title}
+          description={
+            settingsCopy.downloadsDescription ??
+            'Install Arcadeum on your device for the best experience.'
+          }
+        >
+          <DownloadButtons
+            onInstall={onInstall}
+            onShowInstructions={onShowInstructions}
+          />
+        </Section>
 
         <Section title={aboutTitle} description={aboutDescription}>
           <VersionText>

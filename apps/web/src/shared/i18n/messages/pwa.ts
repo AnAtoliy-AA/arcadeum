@@ -6,12 +6,21 @@ const pwaMessagesDefinition = {
       title: 'Install Arcadeum',
       button: 'Install App',
       notNow: 'Not Now',
+      installAs: 'Install as',
+      webApp: 'Web App',
+      getThe: 'Get the',
+      appGuide: 'App Guide',
       description:
         'Install Arcadeum on your device for the best gaming experience.',
       features: {
         fast: 'Faster loading and performance',
-        offline: 'Play even when offline',
         notifications: 'Get game invites instantly',
+      },
+      manual: {
+        title: 'How to Install',
+        ios: 'Tap the share button {{icon}} in the browser toolbar and select "Add to Home Screen" {{plus}}.',
+        generic:
+          'Open your browser menu and select "Install" or "Add to Home Screen".',
       },
     },
     offline: {
@@ -26,12 +35,21 @@ const pwaMessagesDefinition = {
       title: 'Instalar Arcadeum',
       button: 'Instalar App',
       notNow: 'Ahora no',
+      installAs: 'Instalar como',
+      webApp: 'Web App',
+      getThe: 'Obtener la',
+      appGuide: 'Guía de la App',
       description:
         'Instala Arcadeum en tu dispositivo para la mejor experiencia de juego.',
       features: {
         fast: 'Carga y rendimiento más rápidos',
-        offline: 'Juega incluso sin conexión',
         notifications: 'Recibe invitaciones de juego al instante',
+      },
+      manual: {
+        title: 'Cómo instalar',
+        ios: 'Toca el botón compartir {{icon}} en la barra de herramientas del navegador y selecciona "Añadir a la pantalla de inicio" {{plus}}.',
+        generic:
+          'Abre el menú de tu navegador y selecciona "Instalar" o "Añadir a la pantalla de inicio".',
       },
     },
     offline: {
@@ -46,12 +64,21 @@ const pwaMessagesDefinition = {
       title: 'Installer Arcadeum',
       button: "Installer l'app",
       notNow: 'Plus tard',
+      installAs: 'Installer comme',
+      webApp: 'Web App',
+      getThe: "Obtenir l'",
+      appGuide: "Guide de l'App",
       description:
         'Installez Arcadeum sur votre appareil pour la meilleure expérience de jeu.',
       features: {
         fast: 'Chargement et performances plus rapides',
-        offline: 'Jouez même hors ligne',
         notifications: 'Recevez les invitations instantanément',
+      },
+      manual: {
+        title: 'Comment installer',
+        ios: "Appuyez sur le bouton de partage {{icon}} dans la barre d'outils du navigateur et sélectionnez \"Sur l'écran d'accueil\" {{plus}}.",
+        generic:
+          'Ouvrez le menu de votre navigateur et sélectionnez "Installer" ou "Ajouter à l\'écran d\'accueil".',
       },
     },
     offline: {
@@ -66,12 +93,21 @@ const pwaMessagesDefinition = {
       title: 'Установить Arcadeum',
       button: 'Установить',
       notNow: 'Не сейчас',
+      installAs: 'Установить как',
+      webApp: 'Веб-приложение',
+      getThe: 'Открыть',
+      appGuide: 'Инструкцию',
       description:
         'Установите Arcadeum на устройство для лучшего игрового опыта.',
       features: {
         fast: 'Быстрая загрузка и производительность',
-        offline: 'Играйте даже офлайн',
         notifications: 'Получайте приглашения мгновенно',
+      },
+      manual: {
+        title: 'Как установить',
+        ios: 'Нажмите кнопку «Поделиться» {{icon}} в панели браузера и выберите «На экран „Домой“» {{plus}}.',
+        generic:
+          'Открывайте меню браузера и выбирайте «Установить» или «На экран „Домой“».',
       },
     },
     offline: {
@@ -86,12 +122,21 @@ const pwaMessagesDefinition = {
       title: 'Усталяваць Arcadeum',
       button: 'Усталяваць',
       notNow: 'Не зараз',
+      installAs: 'Усталяваць як',
+      webApp: 'Вэб-прыкладанне',
+      getThe: 'Адкрыць',
+      appGuide: 'Інструкцыю',
       description:
         'Усталюйце Arcadeum на прыладу для лепшага гульнявога досведу.',
       features: {
         fast: 'Хуткая загрузка і прадукцыйнасць',
-        offline: 'Гуляйце нават афлайн',
         notifications: 'Атрымлівайце запрашэнні імгненна',
+      },
+      manual: {
+        title: 'Як усталяваць',
+        ios: 'Націсніце кнопку «Падзяліцца» {{icon}} у панэлі браўзера і выберыце «На экран „Дамоў“» {{plus}}.',
+        generic:
+          'Адкрывайце меню браўзера і выбірайце «Усталяваць» або «На экран „Дамоў“».',
       },
     },
     offline: {

@@ -97,8 +97,8 @@ function readAppConfig(): WebAppConfig {
       label: 'Support Arcadeum',
     },
     downloads: {
-      title: 'Install the mobile builds',
-      description: 'Grab the latest builds directly from the web app.',
+      title: 'Install the app',
+      description: 'Install Arcadeum on your device for the best experience.',
       iosHref: downloadIosHref,
       iosLabel: 'Download for iOS',
       androidHref: downloadAndroidHref,

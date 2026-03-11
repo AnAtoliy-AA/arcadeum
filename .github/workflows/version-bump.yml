@@ -20,56 +20,67 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Bump version
+      - name: Calculate and apply version bump
+        shell: bash
         run: |
           CURRENT_VERSION=$(node -p "require('./apps/web/package.json').version")
-          BRANCH_NAME=${GITHUB_REF_NAME}
+          BRANCH_NAME="${{ github.ref_name }}"
           
-          if [ "$BRANCH_NAME" = "main" ]; then
-            # Minor bump for main branch (release)
+          echo "Current Version: $CURRENT_VERSION"
+          echo "Branch: $BRANCH_NAME"
+          
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            # Minor bump: 1.7.18 -> 1.8.0
             NEW_VERSION=$(node -p "const v = '$CURRENT_VERSION'.split('.'); v[1]++; v[2]=0; v.join('.')")
+            COMMIT_MSG="chore: start next minor version v${NEW_VERSION} [skip ci]"
+            IS_RELEASE="true"
           else
-            # Patch bump for develop branch
+            # Patch bump: 1.7.18 -> 1.7.19
             NEW_VERSION=$(node -p "const v = '$CURRENT_VERSION'.split('.'); v[2]++; v.join('.')")
+            COMMIT_MSG="chore: bump version to v${NEW_VERSION} and update changelog [skip ci]"
+            IS_RELEASE="false"
           fi
           
-          # Find all package.json files and update them
+          echo "New Version: $NEW_VERSION"
+          echo "Commit Message: $COMMIT_MSG"
+          
+          # Apply to all package.json files
           find . -name "package.json" -not -path "*/node_modules/*" | while read -r pkg; do
-            echo "Updating $pkg to $NEW_VERSION"
             node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('$pkg','utf8')); p.version='$NEW_VERSION'; fs.writeFileSync('$pkg', JSON.stringify(p,null,2)+'\n')"
           done
           
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-          echo "Bumped version to $NEW_VERSION across all packages on branch $BRANCH_NAME"
+          echo "COMMIT_MSG=$COMMIT_MSG" >> $GITHUB_ENV
+          echo "IS_RELEASE=$IS_RELEASE" >> $GITHUB_ENV
 
       - name: Generate Changelog
         run: |
           chmod +x scripts/generate_changelog.sh
+          # CURRENT_VERSION and IS_RELEASE are already in the environment from the previous step
           ./scripts/generate_changelog.sh
-        env:
-          IS_RELEASE: ${{ github.ref_name == 'main' }}
 
       - name: Commit and Push Changes
+        shell: bash
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           
-          # Stage all updated package.json files
+          # BRANCH_NAME, NEW_VERSION, and COMMIT_MSG are available from the environment
+          BRANCH_NAME="${{ github.ref_name }}"
+          
+          # Stage changes
           find . -name "package.json" -not -path "*/node_modules/*" -exec git add {} +
           git add CHANGELOG.md
           
-          git commit -m "chore: bump version to v${NEW_VERSION} and update changelog [skip ci]"
-          git tag -a "v${NEW_VERSION}" -m "Release v${NEW_VERSION}"
+          git commit -m "$COMMIT_MSG"
+          git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
           
-          # Push the version bump commit
-          if [ "${{ github.ref_name }}" = "main" ]; then
-            # If triggered from main (e.g. merging develop -> main),
-            # push the new minor version commit/tag ONLY to develop.
-            # This leaves main exactly at the merged develop version.
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            echo "Pushing minor bump to develop"
+            git fetch origin develop
             git push origin HEAD:develop --follow-tags
           else
-            # If triggered from develop, push the new patch release
-            # to develop as normal
-            git push origin HEAD:${{ github.ref_name }} --follow-tags
+            echo "Pushing patch bump to $BRANCH_NAME"
+            git push origin HEAD:${BRANCH_NAME} --follow-tags
           fi
 

@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, ComponentProps, ReactNode } from 'react';
 import styled from 'styled-components';
 import {
-  Button,
   PageLayout,
   Container as SharedContainer,
   Select,
   ErrorState,
   EmptyState,
 } from '@/shared/ui';
+import { Button } from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
   useTranslation,
@@ -114,14 +114,9 @@ export function StatsPage() {
               <FilterLabel>{t('stats.filterByGame')}</FilterLabel>
               <Select
                 value={selectedGame}
-                onChange={(e) => setSelectedGame(e.target.value)}
-              >
-                {gameOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
+                onValueChange={setSelectedGame}
+                options={gameOptions}
+              />
             </FilterContainer>
             <Leaderboard
               leaderboard={leaderboard}
@@ -151,14 +146,21 @@ const TabGroup = styled.div`
   flex-wrap: wrap;
 `;
 
-const TabButton = styled(Button).attrs<{ $active: boolean }>(({ $active }) => ({
-  variant: $active ? 'primary' : 'chip',
-  size: 'md',
-  isActive: $active,
-}))<{ $active: boolean }>`
-  min-width: 120px;
-  justify-content: center;
-`;
+interface TabButtonProps extends ComponentProps<typeof Button> {
+  $active?: boolean;
+  children?: ReactNode;
+}
+
+const TabButton = ({ $active, ...props }: TabButtonProps) => (
+  <Button
+    variant={$active ? 'primary' : 'chip'}
+    size="md"
+    isActive={$active}
+    minWidth={120}
+    justifyContent="center"
+    {...props}
+  />
+);
 
 const FilterContainer = styled.div`
   display: flex;

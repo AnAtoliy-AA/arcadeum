@@ -1,5 +1,4 @@
 import styled, { keyframes } from 'styled-components';
-import { LinkButton } from '@/shared/ui';
 
 const fadeIn = keyframes`
   from {
@@ -270,13 +269,6 @@ export const ParticipantChip = styled.span<{ $isHost?: boolean }>`
       $isHost
         ? theme.buttons.primary.gradientStart
         : theme.surfaces.card.border};
-`;
-
-export const ActionButton = styled(LinkButton)<{
-  variant?: 'primary' | 'secondary';
-}>`
-  padding: 0.75rem 1.25rem;
-  font-size: 0.85rem;
 `;
 
 export const GameNameValue = styled(MetaValue)<{ $gradient?: string }>`

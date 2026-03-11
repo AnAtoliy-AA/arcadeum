@@ -1,7 +1,6 @@
 'use client';
 
 import styled from 'styled-components';
-import { LinkButton } from '@/shared/ui';
 import { fadeInUp } from './Animations.styles';
 import { SectionContainer } from './Common.styles';
 
@@ -71,21 +70,6 @@ export const DownloadButtons = styled.div`
 
   @media (max-width: 640px) {
     width: 100%;
-  }
-`;
-
-export const DownloadButton = styled(LinkButton).attrs({
-  variant: 'secondary',
-  external: true,
-})`
-  border-radius: 999px;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  @media (max-width: 640px) {
-    width: 100%;
-    justify-content: center;
   }
 `;
 

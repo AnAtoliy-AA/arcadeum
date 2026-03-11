@@ -1,4 +1,5 @@
 import type { SessionDetailItem, SessionDetailLabels } from '../types';
+import { Button, XStack } from '@arcadeum/ui';
 import {
   PanelCard,
   PanelHeader,
@@ -9,8 +10,6 @@ import {
   SessionCallout,
   CalloutHeading,
   CalloutDetail,
-  ButtonRow,
-  SecondaryButton,
   TokenList,
   TokenRow,
   TokenLabel,
@@ -96,14 +95,16 @@ export function SessionStatusPanel({
               {hasSession ? statusDescription : guestDescription}
             </CalloutDetail>
             {hasSession ? (
-              <ButtonRow>
-                <SecondaryButton
+              <XStack flexWrap="wrap" gap="$3">
+                <Button
                   type="button"
                   onClick={() => void handleSignOut()}
+                  variant="secondary"
+                  pill
                 >
                   {signOutLabel}
-                </SecondaryButton>
-              </ButtonRow>
+                </Button>
+              </XStack>
             ) : null}
           </SessionCallout>
           {hasSession ? (

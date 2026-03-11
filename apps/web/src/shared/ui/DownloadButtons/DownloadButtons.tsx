@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppleIcon, AndroidIcon, SmartphoneIcon } from '../Icons';
+import { AppleIcon, AndroidIcon, SmartphoneIcon } from '@/shared/ui';
 import * as S from './styles';
 import { useTranslation } from '@/shared/lib/useTranslation';
 

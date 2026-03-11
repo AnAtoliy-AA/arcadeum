@@ -2,9 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import type { PlayerStats } from '@/features/history/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { Card } from '@/shared/ui';
-import { SkeletonText } from '@/shared/ui/Skeleton';
-import { ProgressCircle, PROGRESS_COLORS } from '@/shared/ui/Progress';
+import { Card, SkeletonText, ProgressCircle } from '@/shared/ui';
 
 interface StatsOverviewProps {
   stats: PlayerStats | null;
@@ -19,8 +17,8 @@ export function StatsOverview({ stats, loading }: StatsOverviewProps) {
       <Grid>
         {[1, 2, 3, 4].map((i) => (
           <Card key={i} variant="glass" padding="md">
-            <SkeletonText width="60%" height="14px" $delay={i * 0.1} />
-            <SkeletonValue $delay={i * 0.1 + 0.05} />
+            <SkeletonText width="60%" height="14px" delay={i * 0.1} />
+            <SkeletonValue delay={i * 0.1 + 0.05} />
           </Card>
         ))}
       </Grid>
@@ -37,20 +35,15 @@ export function StatsOverview({ stats, loading }: StatsOverviewProps) {
       </StatCard>
       <StatCard variant="glass" padding="md" interactive>
         <StatLabel>{t('stats.wins')}</StatLabel>
-        <StatValue $color={PROGRESS_COLORS.success}>{stats.wins}</StatValue>
+        <StatValue $color="#10b981">{stats.wins}</StatValue>
       </StatCard>
       <StatCard variant="glass" padding="md" interactive>
         <StatLabel>{t('stats.losses')}</StatLabel>
-        <StatValue $color={PROGRESS_COLORS.danger}>{stats.losses}</StatValue>
+        <StatValue $color="#ef4444">{stats.losses}</StatValue>
       </StatCard>
       <WinRateCard variant="glass" padding="md" interactive>
         <StatLabel>{t('stats.winRate')}</StatLabel>
-        <ProgressCircle
-          value={stats.winRate}
-          size={80}
-          strokeWidth={8}
-          animate
-        />
+        <ProgressCircle value={stats.winRate} size={80} strokeWidth={8} />
       </WinRateCard>
     </Grid>
   );
@@ -85,7 +78,7 @@ const StatValue = styled.div<{ $color?: string }>`
   letter-spacing: -0.02em;
 `;
 
-const SkeletonValue = styled.div<{ $delay?: number }>`
+const SkeletonValue = styled.div<{ delay?: number }>`
   height: 32px;
   width: 100px;
   background: ${({ theme }) => theme.surfaces.card.border};

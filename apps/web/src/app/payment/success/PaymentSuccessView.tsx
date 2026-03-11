@@ -240,7 +240,6 @@ function SuccessContent() {
                 opacity: 0.7,
                 fontSize: '0.875rem',
                 marginBottom: '0.75rem',
-                textTransform: 'uppercase',
                 letterSpacing: '0.05em',
               }}
             >

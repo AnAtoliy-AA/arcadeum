@@ -27,8 +27,8 @@ import {
   ModalHeader,
   ModalTitle,
   ModalActions as ModalFooter,
-  ModalButton as Button,
 } from '../styles';
+import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import styled from 'styled-components';
 

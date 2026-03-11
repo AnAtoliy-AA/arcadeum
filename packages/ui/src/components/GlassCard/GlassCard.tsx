@@ -1,0 +1,49 @@
+import { YStack, styled } from 'tamagui';
+import { memo } from 'react';
+import type { ReactNode, ReactElement } from 'react';
+
+export type GlassCardProps = {
+  children: ReactNode;
+};
+
+const StyledGlassCard = styled(YStack, {
+  name: 'GlassCard',
+  backgroundColor: '$glassBg',
+  borderColor: '$glassBorder',
+  borderWidth: 1,
+  borderRadius: '$6',
+  padding: '$7',
+  gap: '$5',
+  position: 'relative',
+  overflow: 'hidden',
+
+  variants: {
+    animated: {
+      true: {
+        animation: 'slow',
+      },
+    },
+  } as const,
+
+  defaultVariants: {
+    animated: true,
+  },
+});
+
+const TopLine = styled(YStack, {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  height: 1,
+  background: 'linear-gradient(90deg, transparent 0%, $glassBorderHover 50%, transparent 100%)',
+});
+
+export const GlassCard = memo(function GlassCard({ children }: GlassCardProps): ReactElement {
+  return (
+    <StyledGlassCard>
+      <TopLine />
+      {children}
+    </StyledGlassCard>
+  );
+});

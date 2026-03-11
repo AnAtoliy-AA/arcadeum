@@ -16,12 +16,11 @@ import {
   Tagline,
   HeroDescription,
   HeroActions,
-  PrimaryAction,
-  SecondaryAction,
   HeroVisual,
   CardStack,
   HeroCard,
 } from './styles/Hero.styles';
+import { LinkButton } from '@/shared/ui';
 import { CARD_VARIANTS } from '@/app/games/create/constants';
 
 // Define fixed cards for the hero visual to ensure consistency and avoid hydration/purity issues
@@ -67,13 +66,19 @@ export function HomeHero() {
         <Tagline>{tagline}</Tagline>
         <HeroDescription>{description}</HeroDescription>
         <HeroActions>
-          <PrimaryAction href={primaryHref}>{primaryLabel}</PrimaryAction>
-          <SecondaryAction href="/games/create?mode=bot">
+          <LinkButton href={primaryHref} variant="primary" size="lg">
+            {primaryLabel}
+          </LinkButton>
+          <LinkButton
+            href={`${routes.gameCreate}?mode=bot`}
+            variant="secondary"
+            size="lg"
+          >
             {playWithBotsLabel}
-          </SecondaryAction>
-          <SecondaryAction href={supportCta.href}>
+          </LinkButton>
+          <LinkButton href={supportCta.href} variant="secondary" size="lg">
             {supportLabel}
-          </SecondaryAction>
+          </LinkButton>
         </HeroActions>
       </HeroContent>
 

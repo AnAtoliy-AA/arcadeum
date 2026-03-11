@@ -1,6 +1,12 @@
+import { ComponentProps, ReactNode } from 'react';
 import styled from 'styled-components';
-import { Button } from '@/shared/ui';
+import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
+
+interface PresetCardProps extends ComponentProps<typeof Button> {
+  $active?: boolean;
+  children?: ReactNode;
+}
 
 const PresetGrid = styled.div`
   display: grid;
@@ -12,33 +18,39 @@ const PresetGrid = styled.div`
   }
 `;
 
-const PresetCard = styled(Button).attrs({
-  variant: 'secondary',
-  size: 'md',
-})<{ $active?: boolean }>`
-  background: ${(props) =>
-    props.$active
-      ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2))'
-      : 'rgba(255, 255, 255, 0.03)'};
-  border: 1px solid
-    ${(props) =>
-      props.$active ? 'rgba(59, 130, 246, 0.5)' : 'rgba(255, 255, 255, 0.08)'};
-  border-radius: 16px;
-  padding: 1rem;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    background: ${(props) =>
-      props.$active
+const PresetCard = ({ $active, ...props }: PresetCardProps) => (
+  <Button
+    variant="secondary"
+    size="md"
+    isActive={$active}
+    bg={
+      $active
+        ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2))'
+        : 'rgba(255, 255, 255, 0.03)'
+    }
+    borderWidth={1}
+    borderColor={
+      $active ? 'rgba(59, 130, 246, 0.5)' : 'rgba(255, 255, 255, 0.08)'
+    }
+    borderRadius={16}
+    padding="$4"
+    flexDirection="column"
+    gap="$2"
+    hoverStyle={{
+      y: -2,
+      backgroundColor: $active
         ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.3))'
-        : 'rgba(255, 255, 255, 0.08)'};
-    border-color: ${(props) =>
-      props.$active ? 'rgba(59, 130, 246, 0.6)' : 'rgba(255, 255, 255, 0.2)'};
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-`;
+        : 'rgba(255, 255, 255, 0.08)',
+      borderColor: $active
+        ? 'rgba(59, 130, 246, 0.6)'
+        : 'rgba(255, 255, 255, 0.2)',
+      shadowColor: 'rgba(0, 0, 0, 0.1)',
+      shadowRadius: 12,
+      shadowOffset: { width: 0, height: 4 },
+    }}
+    {...props}
+  />
+);
 
 const Emoji = styled.span`
   font-size: 2rem;

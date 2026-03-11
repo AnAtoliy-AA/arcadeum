@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, ComponentProps, ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useDebounce } from '@/shared/hooks/useDebounce';
+import { Button } from '@arcadeum/ui';
 import {
   PageLayout,
   Container,
@@ -17,36 +18,37 @@ import {
   Avatar,
   Input,
   Spinner,
-  Button,
   EmptyState,
 } from '@/shared/ui';
 import { chatApi, ChatParticipant } from '@/features/chat/api';
 import { formatSafeDate } from '@/shared/lib/date';
 import { QUERY_CONFIG, DEBOUNCE } from '@/shared/config/constants';
 
-const SearchResultItem = styled(Button).attrs({
-  variant: 'ghost',
-  size: 'md',
-})`
-  padding: 1rem;
-  width: 100%;
-  justify-content: flex-start;
-  border-radius: 0;
-  border-bottom: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.primary};
-  text-align: left;
-  gap: 1rem;
+interface SearchResultItemProps extends ComponentProps<typeof Button> {
+  isLast?: boolean;
+  children?: ReactNode;
+}
 
-  &:hover:not(:disabled) {
-    background: ${({ theme }) => theme.surfaces.card.background};
-    opacity: 0.9;
-  }
-
-  &:last-child {
-    border-bottom: none;
-  }
-`;
+const SearchResultItem = ({ isLast, ...props }: SearchResultItemProps) => (
+  <Button
+    variant="ghost"
+    size="md"
+    p="$4"
+    w="100%"
+    justifyContent="flex-start"
+    br={0}
+    bbw={isLast ? 0 : 1}
+    bbc="$borderColor"
+    bg="$background"
+    color="$color"
+    gap="$3"
+    hoverStyle={{
+      bg: '$background',
+      opacity: 0.9,
+    }}
+    {...props}
+  />
+);
 
 const SearchResults = styled.div`
   display: flex;
@@ -185,7 +187,7 @@ export function ChatListPage() {
         </PageTitle>
 
         {snapshot.accessToken && (
-          <GlassCard style={{ padding: '1.5rem' }}>
+          <GlassCard>
             <Input
               type="text"
               placeholder={
@@ -210,11 +212,12 @@ export function ChatListPage() {
                 <Spinner size="sm" />
               </div>
             )}
-            {searchQuery.trim() && displaySearchResults.length > 0 && (
+            {!!searchQuery.trim() && displaySearchResults.length > 0 && (
               <SearchResults>
-                {displaySearchResults.map((result) => (
+                {displaySearchResults.map((result, index) => (
                   <SearchResultItem
                     key={result.id}
+                    isLast={index === displaySearchResults.length - 1}
                     onClick={() => handleSelectUser(result)}
                   >
                     <Avatar

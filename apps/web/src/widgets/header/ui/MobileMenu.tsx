@@ -14,11 +14,11 @@ import {
   MobileUserInfo,
   UserName,
   RoleBadge,
-  DropdownItem,
   AuthButton,
   DropdownDivider,
   MobileVersionText,
 } from './styles';
+import { Button } from '@arcadeum/ui';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface MobileMenuProps {
@@ -69,37 +69,42 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
               <CosmeticBadge key={badgeId} badgeId={badgeId} />
             ))}
           </MobileUserInfo>
-          <DropdownItem
-            onClick={handleLogout}
-            style={{ marginTop: '0.5rem' }}
+          <Button
+            variant="listItem"
+            mt="$2"
             data-testid="mobile-logout-button"
+            onClick={handleLogout}
+            icon={
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ width: 18, height: 18, color: '#94a3b8' }}
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+            }
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
             {t('common.actions.logout')}
-          </DropdownItem>
+          </Button>
         </>
       )}
 
       {!isAuthenticated && (
-        <AuthButton
-          href="/auth"
-          onClick={onClose}
-          style={{ marginTop: '0.5rem', textAlign: 'center' }}
-          data-testid="mobile-login-button"
-        >
-          {t('common.actions.login')}
-        </AuthButton>
+        <div style={{ marginTop: '0.5rem', textAlign: 'center' }}>
+          <AuthButton
+            href="/auth"
+            onPress={onClose}
+            data-testid="mobile-login-button"
+          >
+            {t('common.actions.login')}
+          </AuthButton>
+        </div>
       )}
 
       <DropdownDivider style={{ marginTop: '1rem' }} />
@@ -107,28 +112,6 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
       <div style={{ padding: '0.5rem 1rem' }}>
         <LanguageSwitcher />
       </div>
-
-      <MobileNavLink
-        href={routes.terms}
-        $active={pathname === routes.terms}
-        onClick={onClose}
-      >
-        {t('legal.nav.terms')}
-      </MobileNavLink>
-      <MobileNavLink
-        href={routes.privacy}
-        $active={pathname === routes.privacy}
-        onClick={onClose}
-      >
-        {t('legal.nav.privacy')}
-      </MobileNavLink>
-      <MobileNavLink
-        href={routes.contact}
-        $active={pathname === routes.contact}
-        onClick={onClose}
-      >
-        {t('legal.nav.contact')}
-      </MobileNavLink>
       <MobileNavLink
         href={routes.support}
         $active={pathname === routes.support}

@@ -3,7 +3,8 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { PageTitle, Button } from '@/shared/ui';
+import { PageTitle } from '@/shared/ui';
+import { Button } from '@arcadeum/ui';
 
 interface StatsHeaderProps {
   loading: boolean;

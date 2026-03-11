@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
-import { Button } from '@/shared/ui';
+import { Button, ButtonProps } from '@arcadeum/ui';
 import {
   Modal,
   ModalContent,
@@ -168,16 +168,14 @@ const BlockOptions = styled.div`
   margin-top: 1rem;
 `;
 
-const BlockLink = styled(Button).attrs({
-  variant: 'ghost',
-  size: 'sm',
-})`
-  margin-top: 1rem;
-  padding: 0.5rem;
-  color: ${({ theme }) => theme.text.secondary};
-  text-decoration: underline;
-
-  &:hover:not(:disabled) {
-    color: #ef4444;
-  }
-`;
+const BlockLink = (props: ButtonProps) => (
+  <Button
+    variant="ghost"
+    size="sm"
+    marginTop="$4"
+    padding="$2"
+    textDecorationLine="underline"
+    hoverStyle={{ color: '#ef4444' }}
+    {...props}
+  />
+);

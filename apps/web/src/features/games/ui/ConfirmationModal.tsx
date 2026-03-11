@@ -7,8 +7,8 @@ import {
   ModalTitle,
   ModalBody,
   ModalFooter,
-} from '@/shared/ui/Modal';
-import { Button } from '@/shared/ui/Button';
+  Button,
+} from '@arcadeum/ui';
 
 interface ConfirmationModalProps {
   open: boolean;

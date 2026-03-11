@@ -4,6 +4,8 @@ import React from 'react';
 import type { Preview, Decorator } from '@storybook/nextjs-vite';
 import { ThemeProvider } from 'styled-components';
 import { themeTokens, ThemeName } from '../src/shared/config/theme';
+import { TamaguiProvider } from 'tamagui';
+import tamaguiConfig from '../src/shared/config/tamagui.config';
 
 // Global styles for Storybook
 const StorybookGlobalStyle = ({ theme }: { theme: ThemeName }) => (
@@ -19,12 +21,14 @@ const StorybookGlobalStyle = ({ theme }: { theme: ThemeName }) => (
 );
 
 const withThemeProvider: Decorator = (Story, context) => {
-  const theme = context.globals.theme || 'neonDark';
+  const theme = (context.globals.theme || 'neonDark') as ThemeName;
   return (
-    <ThemeProvider theme={themeTokens[theme]}>
-      <StorybookGlobalStyle theme={theme} />
-      <Story />
-    </ThemeProvider>
+    <TamaguiProvider config={tamaguiConfig} defaultTheme={theme}>
+      <ThemeProvider theme={themeTokens[theme]}>
+        <StorybookGlobalStyle theme={theme} />
+        <Story />
+      </ThemeProvider>
+    </TamaguiProvider>
   );
 };
 

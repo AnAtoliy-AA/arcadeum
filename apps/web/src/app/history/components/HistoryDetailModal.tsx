@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   Modal,
@@ -7,14 +8,12 @@ import {
   ModalHeader,
   ModalTitle,
   ModalBody,
-  Button,
   LoadingState,
   ErrorState,
-  Avatar,
-  Badge,
-  Card,
+  Section,
 } from '@/shared/ui';
-import { ArrowLeftIcon } from '@/shared/ui/Icons';
+import { Avatar, Badge, Card } from '@arcadeum/ui';
+import { ArrowLeftIcon } from '@arcadeum/ui';
 import type {
   HistorySummary,
   HistoryDetail,
@@ -22,7 +21,6 @@ import type {
 } from '../types';
 import {
   DetailTimestamp,
-  Section,
   SectionTitle,
   SectionDescription,
   ParticipantRow,

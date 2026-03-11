@@ -112,24 +112,6 @@ export function Header() {
 
             {!isAuthenticated && (
               <DesktopOnly>
-                <NavLink
-                  href={routes.terms}
-                  $active={pathname === routes.terms}
-                >
-                  {t('legal.nav.terms')}
-                </NavLink>
-                <NavLink
-                  href={routes.privacy}
-                  $active={pathname === routes.privacy}
-                >
-                  {t('legal.nav.privacy')}
-                </NavLink>
-                <NavLink
-                  href={routes.contact}
-                  $active={pathname === routes.contact}
-                >
-                  {t('legal.nav.contact')}
-                </NavLink>
                 <AuthButton href="/auth" data-testid="desktop-login-button">
                   {t('common.actions.login')}
                 </AuthButton>
@@ -164,37 +146,41 @@ export function Header() {
               )}
             </MobileLoginIndicator>
 
-            <MobileMenuButton
-              onClick={toggleMobileMenu}
-              aria-label="Toggle menu"
-              aria-expanded={isMobileMenuOpen}
-              data-mobile-menu-button
-              data-testid="mobile-menu-button"
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+            <MobileMenuContainer>
+              <Button
+                variant="icon"
+                size="sm"
+                onClick={toggleMobileMenu}
+                aria-label="Toggle menu"
+                aria-expanded={isMobileMenuOpen}
+                data-mobile-menu-button
+                data-testid="mobile-menu-button"
               >
-                {isMobileMenuOpen ? (
-                  <>
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </>
-                ) : (
-                  <>
-                    <line x1="3" y1="12" x2="21" y2="12" />
-                    <line x1="3" y1="6" x2="21" y2="6" />
-                    <line x1="3" y1="18" x2="21" y2="18" />
-                  </>
-                )}
-              </svg>
-            </MobileMenuButton>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  {isMobileMenuOpen ? (
+                    <>
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </>
+                  ) : (
+                    <>
+                      <line x1="3" y1="12" x2="21" y2="12" />
+                      <line x1="3" y1="6" x2="21" y2="6" />
+                      <line x1="3" y1="18" x2="21" y2="18" />
+                    </>
+                  )}
+                </svg>
+              </Button>
+            </MobileMenuContainer>
           </Actions>
         </HeaderInner>
       </HeaderContainer>
@@ -218,6 +204,8 @@ import {
   Actions,
   DesktopOnly,
   AuthButton,
-  MobileMenuButton,
+  MobileMenuContainer,
   MobileLoginIndicator,
 } from './styles';
+
+import { Button } from '@arcadeum/ui';

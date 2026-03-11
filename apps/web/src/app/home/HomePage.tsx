@@ -21,23 +21,25 @@ const HomePitchDeck = dynamic(() =>
 const HomeDownloadCta = dynamic(() =>
   import('./components/HomeDownloadCta').then((mod) => mod.HomeDownloadCta),
 );
-const HomeFooter = dynamic(() =>
-  import('./components/HomeFooter').then((mod) => mod.HomeFooter),
+const AppFooter = dynamic(() =>
+  import('@/widgets/footer').then((mod) => mod.AppFooter),
 );
 import { PageWrapper } from './components/styles/Common.styles';
 
 export function HomePage() {
   return (
-    <PageWrapper>
-      <HomeHero />
-      <HomeGames />
-      <HomeHowItWorks />
-      <HomeFeatures />
-      <HomePresentation />
-      <HomePitchDeck />
-      <HomeDownloadCta />
-      <HomeFooter />
-    </PageWrapper>
+    <>
+      <PageWrapper>
+        <HomeHero />
+        <HomeGames />
+        <HomeHowItWorks />
+        <HomeFeatures />
+        <HomePresentation />
+        <HomePitchDeck />
+        <HomeDownloadCta />
+      </PageWrapper>
+      <AppFooter />
+    </>
   );
 }
 

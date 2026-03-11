@@ -16,6 +16,7 @@ import {
   LoadingState,
   EmptyState,
 } from '@/shared/ui';
+import { routes } from '@/shared/config/routes';
 
 const RoomCard = styled(Card).attrs({ interactive: true, padding: 'md' })`
   text-decoration: none;
@@ -84,7 +85,10 @@ export function GameDetailPage() {
           <PageTitle size="lg">
             {t('games.detail.title') || 'Game Rooms'}
           </PageTitle>
-          <LinkButton href={`/games/create?gameId=${gameId}`} variant="primary">
+          <LinkButton
+            href={`${routes.gameCreate}?gameId=${gameId}`}
+            variant="primary"
+          >
             {t('games.common.createRoom') || 'Create Room'}
           </LinkButton>
         </HeaderActions>
@@ -101,7 +105,7 @@ export function GameDetailPage() {
             style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
           >
             {rooms.map((room) => (
-              <RoomCard key={room.id} as="a" href={`/games/rooms/${room.id}`}>
+              <RoomCard key={room.id} as="a" href={routes.gameRoom(room.id)}>
                 <RoomHeader>
                   <RoomTitle>{room.name}</RoomTitle>
                   <Badge variant={getStatusVariant(room.status)} size="sm">

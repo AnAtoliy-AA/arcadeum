@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { historyApi } from '@/features/history/api';
+import { routes } from '@/shared/config/routes';
 import { useHistoryStore } from '../store/historyStore';
 import type { HistoryDetail } from '../types';
 
@@ -84,7 +85,7 @@ export function useHistoryActions({
       });
     },
     onSuccess: (data) => {
-      router.push(`/games/rooms/${data.room.id}`);
+      router.push(routes.gameRoom(data.room.id));
       onClose();
       onRefresh(); // Refresh history list just in case
     },

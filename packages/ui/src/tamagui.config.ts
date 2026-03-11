@@ -1,0 +1,289 @@
+import { createAnimations } from '@tamagui/animations-css';
+import { shorthands } from '@tamagui/shorthands';
+import { createTamagui, createTokens } from 'tamagui';
+
+const animations = createAnimations({
+  fast: 'ease-in 100ms',
+  medium: 'ease-in 200ms',
+  slow: 'ease-in 300ms',
+  pulse: 'pulse 2s infinite',
+});
+
+const font = {
+  family: 'inherit',
+  size: {
+    1: 12,
+    2: 14,
+    3: 16,
+    4: 18,
+    5: 20,
+    6: 24,
+    7: 28,
+    8: 32,
+    9: 40,
+    10: 48,
+    sm: 14,
+    md: 16,
+    lg: 18,
+    xl: 20,
+    true: 16,
+  },
+  lineHeight: {
+    1: 16,
+    2: 18,
+    3: 20,
+    4: 24,
+    5: 28,
+    6: 30,
+    7: 34,
+    8: 38,
+    9: 46,
+    10: 54,
+    sm: 18,
+    md: 20,
+    lg: 24,
+    xl: 28,
+    true: 24,
+  },
+  weight: {
+    4: '400',
+    6: '600',
+  },
+  letterSpacing: {
+    4: 0,
+    6: 0,
+  },
+  face: {},
+};
+
+const tokens = createTokens({
+  size: {
+    '0': 0,
+    '1': 4,
+    '2': 8,
+    '3': 12,
+    '4': 16,
+    '5': 20,
+    '6': 24,
+    '7': 28,
+    '8': 32,
+    '9': 36,
+    '10': 40,
+    true: 16,
+  },
+  space: {
+    '0': 0,
+    '1': 4,
+    '2': 8,
+    '3': 12,
+    '4': 16,
+    '5': 20,
+    '6': 24,
+    '7': 28,
+    '8': 32,
+    '9': 36,
+    '10': 40,
+    true: 16,
+  },
+  radius: {
+    '0': 0,
+    '1': 4,
+    '2': 8,
+    '3': 12,
+    '4': 16,
+    '5': 20,
+    '6': 24,
+    true: 8,
+  },
+  zIndex: {
+    '0': 0,
+    '1': 100,
+    '2': 200,
+    '3': 300,
+    '4': 400,
+    '5': 500,
+  },
+  color: {
+    white: '#f5f7ff',
+    black: '#000000',
+    transparent: 'transparent',
+  },
+});
+
+const darkTheme = {
+  background: '#151718',
+  backgroundHover: '#1e2326',
+  color: '#ecefee',
+  borderColor: '#32353d',
+  borderColorHover: 'rgba(255, 255, 255, 0.2)',
+  shadowColor: 'rgba(0,0,0,0.5)',
+  // Brand Colors
+  primary: '#57c3ff',
+  primaryGradientStart: '#7ad7ff',
+  primaryGradientEnd: '#57c3ff',
+  secondary: '#8f9bff',
+  secondaryGradientStart: '#a8b1ff',
+  secondaryGradientEnd: '#8f9bff',
+  danger: '#ef4444',
+  dangerGradientStart: '#f87171',
+  dangerGradientEnd: '#ef4444',
+  success: '#10b981',
+  warning: '#f59e0b',
+  info: '#3b82f6',
+  accent: '#81f1ff',
+  // Status Colors
+  successBorder: 'rgba(16, 185, 129, 0.4)',
+  warningBorder: 'rgba(245, 158, 11, 0.4)',
+  dangerBorder: 'rgba(239, 68, 68, 0.4)',
+  infoBorder: 'rgba(87, 195, 255, 0.4)',
+  neutral: '#6b7280',
+  neutralBorder: 'rgba(107, 114, 128, 0.4)',
+  // Status Soft Variants
+  successBgSoft: 'rgba(16, 185, 129, 0.2)',
+  warningBgSoft: 'rgba(251, 191, 36, 0.2)',
+  dangerBgSoft: 'rgba(239, 68, 68, 0.25)',
+  infoBgSoft: 'rgba(99, 102, 241, 0.1)',
+  // Gradients
+  successGradient: 'linear-gradient(135deg, #10b981, #059669)',
+  warningGradient: 'linear-gradient(135deg, #f59e0b, #d97706)',
+  infoGradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+  goldGradient: 'linear-gradient(135deg, #fceabb 0%, #f8b500 50%, #fceabb 100%)',
+  silverGradient: 'linear-gradient(135deg, #eef2f3 0%, #8e9eab 100%)',
+  // Overlay & Specials
+  overlayBg: 'rgba(0, 0, 0, 0.6)',
+  // Glass Tokens
+  glassBg: 'rgba(255, 255, 255, 0.03)',
+  glassBorder: 'rgba(255, 255, 255, 0.15)',
+  glassBgHover: 'rgba(255, 255, 255, 0.08)',
+  glassBorderHover: 'rgba(255, 255, 255, 0.3)',
+};
+
+const lightTheme = {
+  background: '#f8fafc',
+  backgroundHover: '#edf1f6',
+  color: '#0f172a',
+  borderColor: '#cbd5e1',
+  borderColorHover: 'rgba(0, 0, 0, 0.15)',
+  shadowColor: 'rgba(0,0,0,0.1)',
+  // Brand Colors
+  primary: '#3b82f6',
+  primaryGradientStart: '#60a5fa',
+  primaryGradientEnd: '#3b82f6',
+  secondary: '#6366f1',
+  secondaryGradientStart: '#818cf8',
+  secondaryGradientEnd: '#6366f1',
+  danger: '#dc2626',
+  dangerGradientStart: '#ef4444',
+  dangerGradientEnd: '#dc2626',
+  success: '#059669',
+  warning: '#d97706',
+  info: '#2563eb',
+  accent: '#06b6d4',
+  // Status Colors
+  successBorder: 'rgba(5, 150, 105, 0.2)',
+  warningBorder: 'rgba(217, 119, 6, 0.2)',
+  dangerBorder: 'rgba(220, 38, 38, 0.2)',
+  infoBorder: 'rgba(37, 99, 235, 0.2)',
+  neutral: '#94a3b8',
+  neutralBorder: 'rgba(148, 163, 184, 0.3)',
+  // Status Soft Variants
+  successBgSoft: 'rgba(16, 185, 129, 0.1)',
+  warningBgSoft: 'rgba(251, 191, 36, 0.1)',
+  dangerBgSoft: 'rgba(239, 68, 68, 0.1)',
+  infoBgSoft: 'rgba(99, 102, 241, 0.05)',
+  // Gradients
+  successGradient: 'linear-gradient(135deg, #10b981, #059669)',
+  warningGradient: 'linear-gradient(135deg, #f59e0b, #d97706)',
+  infoGradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+  goldGradient: 'linear-gradient(135deg, #fceabb 0%, #f8b500 50%, #fceabb 100%)',
+  silverGradient: 'linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%)',
+  // Overlay & Specials
+  overlayBg: 'rgba(0, 0, 0, 0.4)',
+  // Glass Tokens
+  glassBg: 'rgba(0, 0, 0, 0.03)',
+  glassBorder: 'rgba(0, 0, 0, 0.1)',
+  glassBgHover: 'rgba(0, 0, 0, 0.06)',
+  glassBorderHover: 'rgba(0, 0, 0, 0.2)',
+};
+
+const neonDarkTheme = {
+  ...darkTheme,
+  background: '#06011b',
+  backgroundHover: '#100830',
+  color: '#f5f7ff',
+  borderColor: 'rgba(143, 155, 255, 0.35)',
+  shadowColor: 'rgba(5, 0, 40, 0.35)',
+  // Status Border Overrides for Neon
+  successBorder: 'rgba(16, 185, 129, 0.6)',
+  warningBorder: 'rgba(245, 158, 11, 0.6)',
+  dangerBorder: 'rgba(239, 68, 68, 0.6)',
+  infoBorder: 'rgba(87, 195, 255, 0.6)',
+  neutralBorder: 'rgba(143, 155, 255, 0.5)',
+  overlayBg: 'rgba(0, 0, 0, 0.8)',
+  // Glass Tokens
+  glassBg: 'rgba(6, 1, 27, 0.58)',
+  glassBorder: 'rgba(245, 247, 255, 0.08)',
+};
+
+const neonLightTheme = {
+  ...darkTheme, // Neon light still uses a dark background base in the app config
+  background: '#06011b',
+  backgroundHover: '#100830',
+  color: '#f5f7ff',
+  borderColor: 'rgba(102, 69, 182, 0.6)',
+  shadowColor: 'rgba(8, 5, 24, 0.65)',
+  // Status Border Overrides for Neon
+  successBorder: 'rgba(16, 185, 129, 0.7)',
+  warningBorder: 'rgba(245, 158, 11, 0.7)',
+  dangerBorder: 'rgba(239, 68, 68, 0.7)',
+  infoBorder: 'rgba(87, 195, 255, 0.7)',
+  neutralBorder: 'rgba(102, 69, 182, 0.7)',
+  overlayBg: 'rgba(0, 0, 0, 0.8)',
+  // Glass Tokens
+  glassBg: 'rgba(18, 4, 46, 0.9)',
+  glassBorder: 'rgba(102, 69, 182, 0.6)',
+};
+
+export const config = createTamagui({
+  animations,
+  defaultTheme: 'dark',
+  shouldAddPrefersColorSelection: true,
+  themeClassNameOnRoot: true,
+  shorthands,
+  fonts: {
+    heading: font,
+    body: font,
+  },
+  tokens,
+  themes: {
+    light: lightTheme,
+    dark: darkTheme,
+    neonLight: neonLightTheme,
+    neonDark: neonDarkTheme,
+  },
+  media: {
+    xs: { maxWidth: 660 },
+    sm: { maxWidth: 800 },
+    tablet: { maxWidth: 1024 },
+    md: { maxWidth: 1150 },
+    lg: { maxWidth: 1280 },
+    xl: { maxWidth: 1420 },
+    xxl: { maxWidth: 1600 },
+    gtXs: { minWidth: 660 + 1 },
+    gtSm: { minWidth: 800 + 1 },
+    gtMd: { minWidth: 1150 + 1 },
+    gtLg: { minWidth: 1280 + 1 },
+    short: { maxHeight: 820 },
+    tall: { minHeight: 820 },
+    hoverNone: { hover: 'none' },
+    pointerCoarse: { pointer: 'coarse' },
+  },
+});
+
+export type AppConfig = typeof config;
+
+declare module 'tamagui' {
+  interface TamaguiCustomConfig extends AppConfig {}
+}
+
+export default config;

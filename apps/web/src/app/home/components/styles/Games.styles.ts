@@ -1,6 +1,5 @@
 'use client';
 
-import { LinkButton } from '@/shared/ui';
 import styled from 'styled-components';
 import { fadeInUp } from './Animations.styles';
 import { SectionContainer } from './Common.styles';
@@ -301,24 +300,8 @@ export const StyledGameTags = styled(GameTags)`
   margin-bottom: 1rem;
 `;
 
-export const PlayButton = styled(LinkButton)`
-  align-self: flex-start;
-  position: relative;
-  z-index: 1;
-
-  ${GameCard}:hover & {
-    transform: translateX(4px);
-    box-shadow: 0 4px 12px
-      ${({ theme }) => theme.buttons.primary.gradientStart}40;
-  }
-`;
-
 export const CardFooter = styled.div`
   display: flex;
   margin-top: auto;
   padding-top: 1rem;
-`;
-
-export const StyledPlayButton = styled(PlayButton)`
-  width: 100%;
 `;

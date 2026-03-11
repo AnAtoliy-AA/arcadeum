@@ -24,10 +24,10 @@ import {
   GameDescription,
   StyledGameTags,
   GameTag,
-  StyledPlayButton,
   HelpIcon,
   CardFooter,
 } from './styles/Games.styles';
+import { LinkButton } from '@/shared/ui';
 import { featuredGames } from '../data/games';
 import { HomeGameDetailsModal } from './modals/HomeGameDetailsModal';
 
@@ -164,17 +164,18 @@ export function HomeGames() {
                   </StyledGameTags>
 
                   <CardFooter>
-                    <StyledPlayButton
+                    <LinkButton
                       href={
                         game.isPlayable
                           ? `${routes.gameCreate}?gameId=${game.id}`
                           : '#'
                       }
+                      fullWidth
                     >
                       {game.isPlayable
                         ? (homeCopy.gamePlayButton ?? 'Play Now')
                         : (homeCopy.gameComingSoon ?? 'Coming Soon')}
-                    </StyledPlayButton>
+                    </LinkButton>
                   </CardFooter>
                 </MainGameInfo>
               </MainGameCard>

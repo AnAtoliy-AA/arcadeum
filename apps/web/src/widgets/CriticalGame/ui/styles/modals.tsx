@@ -1,6 +1,6 @@
 import styled, { css, DefaultTheme } from 'styled-components';
-import React from 'react';
-import { Button, GameVariant } from '@/shared/ui';
+import React, { ComponentProps, ReactNode } from 'react';
+import { Button, GameVariant } from '@arcadeum/ui';
 import { ActionButton, CardsGrid, Card } from './cards';
 import { VARIANT_COLORS } from './variant-palette';
 import { GAME_VARIANT } from '../../lib/constants';
@@ -208,14 +208,19 @@ export const ModalTitle = styled.h2<{ $variant?: string }>`
     `}
 `;
 
-export const CloseButton = styled(Button).attrs({
-  variant: 'icon',
-  size: 'sm',
-})<{ $variant?: string }>`
-  &:hover:not(:disabled) {
-    transform: rotate(90deg);
-  }
-`;
+interface CloseButtonProps extends ComponentProps<typeof Button> {
+  $variant?: string;
+}
+
+export const CloseButton = ({ $variant, ...props }: CloseButtonProps) => (
+  <Button
+    variant="icon"
+    size="sm"
+    hoverStyle={{ rotate: '90deg' }}
+    gameVariant={$variant as GameVariant}
+    {...props}
+  />
+);
 
 export const ModalSection = styled.div`
   margin-bottom: 1.5rem;
@@ -251,22 +256,27 @@ export const OptionGrid = styled.div`
   gap: 0.75rem;
 `;
 
-export const OptionButton = styled(Button).attrs<{
+interface OptionButtonProps extends ComponentProps<typeof Button> {
   $selected?: boolean;
   $variant?: string;
-}>(({ $selected, $variant }) => ({
-  variant: 'chip',
-  size: 'md',
-  isActive: $selected,
-  gameVariant: $variant as GameVariant,
-}))<{
-  $selected?: boolean;
-  $variant?: string;
-}>`
-  padding: 1rem;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
+}
+
+export const OptionButton = ({
+  $selected,
+  $variant,
+  ...props
+}: OptionButtonProps) => (
+  <Button
+    variant="chip"
+    size="md"
+    isActive={$selected}
+    gameVariant={$variant as GameVariant}
+    p="$4"
+    flexDirection="column"
+    gap="$2"
+    {...props}
+  />
+);
 
 export const ModalActions = styled.div`
   display: flex;
@@ -274,9 +284,14 @@ export const ModalActions = styled.div`
   margin-top: 2rem;
 `;
 
-export const ModalButton = styled(ActionButton)`
-  flex: 1;
-`;
+interface ModalButtonProps extends ComponentProps<typeof ActionButton> {
+  children?: ReactNode;
+  flex?: number;
+}
+
+export const ModalButton = (props: ModalButtonProps) => (
+  <ActionButton flex={1} {...props} />
+);
 
 export const ScrollableCardsGrid = styled(CardsGrid)`
   max-height: 55vh;

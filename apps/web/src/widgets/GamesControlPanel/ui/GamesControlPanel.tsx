@@ -7,7 +7,6 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { gameSocket } from '@/shared/lib/socket';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
-  Button,
   Modal,
   ModalContent,
   ModalHeader,
@@ -17,6 +16,7 @@ import {
   MaximizeIcon,
   MinimizeIcon,
 } from '@/shared/ui';
+import { Button } from '@arcadeum/ui';
 
 interface GamesControlPanelProps {
   roomId?: string;
@@ -88,17 +88,6 @@ const DirectionColumn = styled.div`
   flex-direction: column;
   gap: 0.25rem;
 `;
-
-const SmallButton = styled(Button).attrs({
-  variant: 'glass',
-})`
-  padding: 0.5rem;
-  min-width: auto;
-`;
-
-const StyledPanelButton = styled(Button).attrs({
-  variant: 'glass',
-})``;
 
 export function GamesControlPanel({
   roomId,
@@ -181,8 +170,8 @@ export function GamesControlPanel({
 
   return (
     <Panel className={className}>
-      <StyledPanelButton
-        variant="secondary"
+      <Button
+        variant="glass"
         size="sm"
         onClick={handleFullscreenToggle}
         title={
@@ -193,59 +182,69 @@ export function GamesControlPanel({
       >
         {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}{' '}
         {t('games.table.controlPanel.fullscreen')}
-      </StyledPanelButton>
+      </Button>
 
       {showMoveControls && (
         <MoveControlsContainer>
-          <SmallButton
-            variant="secondary"
+          <Button
+            variant="glass"
             size="sm"
+            p="$2"
+            minWidth="auto"
             onClick={() => handleMove('up')}
             title={t('games.table.controlPanel.moveControls.shortcuts.up')}
           >
             ↑
-          </SmallButton>
+          </Button>
           <DirectionColumn>
-            <SmallButton
-              variant="secondary"
+            <Button
+              variant="glass"
               size="sm"
+              p="$2"
+              minWidth="auto"
               onClick={() => handleMove('left')}
               title={t('games.table.controlPanel.moveControls.shortcuts.left')}
             >
               ←
-            </SmallButton>
-            <SmallButton
-              variant="secondary"
+            </Button>
+            <Button
+              variant="glass"
               size="sm"
+              p="$2"
+              minWidth="auto"
               onClick={() => handleCenterView()}
               title={t(
                 'games.table.controlPanel.moveControls.shortcuts.center',
               )}
             >
               ⚡
-            </SmallButton>
-            <SmallButton
-              variant="secondary"
+            </Button>
+            <Button
+              variant="glass"
               size="sm"
+              p="$2"
+              minWidth="auto"
               onClick={() => handleMove('right')}
               title={t('games.table.controlPanel.moveControls.shortcuts.right')}
             >
               →
-            </SmallButton>
+            </Button>
           </DirectionColumn>
-          <SmallButton
-            variant="secondary"
+          <Button
+            variant="glass"
             size="sm"
+            p="$2"
+            minWidth="auto"
             onClick={() => handleMove('down')}
             title={t('games.table.controlPanel.moveControls.shortcuts.down')}
           >
             ↓
-          </SmallButton>
+          </Button>
         </MoveControlsContainer>
       )}
 
-      <StyledPanelButton
-        variant="secondary"
+      <Button
+        variant="glass"
         size="sm"
         onClick={handleCopyInviteLink}
         title={t('games.common.copyInviteLink') || 'Share Game Link'}
@@ -253,10 +252,10 @@ export function GamesControlPanel({
         {isCopied
           ? '✅ ' + t('games.common.copyInviteLinkCopied')
           : '🔗 ' + t('games.common.copyInviteLinkButton')}
-      </StyledPanelButton>
+      </Button>
 
-      <StyledPanelButton
-        variant="secondary"
+      <Button
+        variant="glass"
         size="sm"
         onClick={handleExitRoom}
         title={
@@ -265,7 +264,7 @@ export function GamesControlPanel({
         }
       >
         🏃 {t('games.table.controlPanel.exitRoom') || 'Exit'}
-      </StyledPanelButton>
+      </Button>
 
       {snapshot.userId && (
         <Button

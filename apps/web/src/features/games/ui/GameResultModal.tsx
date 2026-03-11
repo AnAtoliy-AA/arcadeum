@@ -1,12 +1,12 @@
 'use client';
 
-import styled, { keyframes, css } from 'styled-components';
-import { Button } from '@/shared/ui';
+import styled, { keyframes } from 'styled-components';
+import { Button } from '@arcadeum/ui';
 import { useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { Modal, CloseButton, ModalButton } from './SharedModalStyles';
-import { CloseIcon } from '@/shared/ui/Icons';
+import { CloseIcon } from '@arcadeum/ui';
 
 // --- Types ---
 
@@ -64,18 +64,19 @@ export function GameResultModal({
 
         <Actions>
           {onRematch && (
-            <StyledButton
-              variant={isVictory ? 'primary' : 'secondary'}
+            <Button
+              variant={isVictory ? 'victory' : 'secondary'}
               size="lg"
+              fullWidth
+              pulse={isVictory}
               onClick={onRematch}
               disabled={rematchLoading}
-              $isVictory={isVictory}
               data-testid="rematch-button"
             >
               {rematchLoading
                 ? t('games.table.rematch.loading')
                 : t('games.table.rematch.button')}
-            </StyledButton>
+            </Button>
           )}
 
           <HomeButton href="/">
@@ -97,12 +98,6 @@ export function GameResultModal({
 }
 
 // --- Animations ---
-
-const pulse = keyframes`
-  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
-  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
-  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
-`;
 
 const float = keyframes`
   0% { transform: translateY(0px); }
@@ -186,27 +181,6 @@ const Actions = styled.div`
   flex-direction: column;
   gap: 1rem;
   width: 100%;
-`;
-
-const StyledButton = styled(Button)<{ $isVictory: boolean }>`
-  width: 100%;
-  padding: 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-
-  ${(props) =>
-    props.$isVictory &&
-    css`
-      background: linear-gradient(45deg, #ffd700, #ffa500);
-      border: none;
-      color: #1a1a1a;
-      animation: ${pulse} 2s infinite;
-
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
-      }
-    `}
 `;
 
 const HomeButton = styled.a`

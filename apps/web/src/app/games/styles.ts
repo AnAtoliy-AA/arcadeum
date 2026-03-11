@@ -2,8 +2,6 @@ import styled, { keyframes } from 'styled-components';
 import {
   Spinner as SharedSpinner,
   Card,
-  LinkButton,
-  Button,
   PageTitle as SharedPageTitle,
 } from '@/shared/ui';
 
@@ -59,32 +57,12 @@ export const ViewToggle = styled.div`
   }
 `;
 
-export const ViewToggleButton = styled(Button).attrs<{ $active?: boolean }>(
-  ({ $active }) => ({
-    variant: 'chip',
-    size: 'sm',
-    isActive: $active,
-  }),
-)<{ $active?: boolean }>`
-  border-radius: 0;
-`;
-
 export const Title = styled(SharedPageTitle).attrs({
   size: 'xl',
   gradient: true,
 })`
   font-weight: 800;
 `;
-
-export const CreateButton = styled(LinkButton).attrs({
-  variant: 'primary',
-  size: 'lg',
-})``;
-
-export const JoinByCodeButton = styled(Button).attrs({
-  variant: 'secondary',
-  size: 'md',
-})``;
 
 export const Filters = styled.div`
   display: flex;
@@ -122,20 +100,6 @@ export const FilterChips = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-`;
-
-export const FilterChip = styled(Button).attrs<{ $active?: boolean }>(
-  ({ $active }) => ({
-    variant: 'chip',
-    size: 'sm',
-    isActive: $active,
-  }),
-)<{
-  $active?: boolean;
-  $disabled?: boolean;
-}>`
-  opacity: ${({ $disabled }) => ($disabled ? 0.4 : 1)};
-  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
 `;
 
 export const RoomsContainer = styled.div<{ $viewMode?: 'grid' | 'list' }>`

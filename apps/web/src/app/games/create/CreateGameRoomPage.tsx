@@ -11,19 +11,22 @@ import {
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import { gamesApi } from '@/features/games/api';
 import {
+  Button,
   PageLayout,
   Container,
   PageTitle,
   Section,
-  Button,
   Input,
   TextArea,
   FormGroup,
-} from '@/shared/ui';
+  Card,
+} from '@arcadeum/ui';
 import { gamesCatalog } from './constants';
 import { CriticalCreationConfig } from '@/widgets/CriticalGame/ui/CreationConfig';
 import { SeaBattleCreationConfig } from '@/widgets/SeaBattleGame/ui/CreationConfig';
 import { GameCreationConfigProps } from '@/features/games/types';
+
+import { routes } from '@/shared/config/routes';
 
 import {
   Form,
@@ -31,9 +34,7 @@ import {
   GameTile,
   GameTileName,
   GameTileSummary,
-  ErrorCard,
   Row,
-  VisibilityToggle,
 } from './styles';
 
 // Filter out hidden games for display
@@ -109,9 +110,10 @@ export function CreateGameRoomPage() {
       );
     },
     onSuccess: (data) => {
-      const roomUrl = data.room.inviteCode
-        ? `/games/rooms/${data.room.id}?inviteCode=${encodeURIComponent(data.room.inviteCode)}`
-        : `/games/rooms/${data.room.id}`;
+      let roomUrl = routes.gameRoom(data.room.id);
+      if (data.room.inviteCode) {
+        roomUrl += `?inviteCode=${encodeURIComponent(data.room.inviteCode)}`;
+      }
       router.push(roomUrl);
     },
   });
@@ -269,11 +271,11 @@ export function CreateGameRoomPage() {
                 label={t('games.create.fieldVisibility') || 'Visibility'}
                 htmlFor="visibility"
               >
-                <VisibilityToggle
+                <Button
                   id="visibility"
                   type="button"
                   variant="secondary"
-                  $isPublic={visibility === 'public'}
+                  isActive={visibility === 'public'}
                   onClick={() =>
                     setVisibility(
                       visibility === 'public' ? 'private' : 'public',
@@ -286,7 +288,7 @@ export function CreateGameRoomPage() {
                   fullWidth
                 >
                   {visibility === 'public' ? '🌐 Public' : '🔒 Private'}
-                </VisibilityToggle>
+                </Button>
               </FormGroup>
             </Row>
 
@@ -310,9 +312,9 @@ export function CreateGameRoomPage() {
           </Section>
 
           {error && (
-            <ErrorCard variant="outlined" padding="sm">
+            <Card variant="error" padding="sm">
               {error}
-            </ErrorCard>
+            </Card>
           )}
 
           <Button

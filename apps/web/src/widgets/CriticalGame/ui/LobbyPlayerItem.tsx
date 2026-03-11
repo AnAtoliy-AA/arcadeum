@@ -1,7 +1,8 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { Button, IdleBadge } from '@/shared/ui';
+import { Button } from '@arcadeum/ui';
+import { IdleBadge } from '@/shared/ui';
 import { useGameStore } from '@/features/games/store/gameStore';
 import {
   PlayerItem,

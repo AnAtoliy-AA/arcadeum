@@ -2,7 +2,8 @@
 
 import React from 'react';
 import styled from 'styled-components';
-import { Button, Divider, Card } from '@/shared/ui';
+import { Button } from '@arcadeum/ui';
+import { Divider, Card } from '@/shared/ui';
 
 interface GameControlsProps {
   children: React.ReactNode;
@@ -52,8 +53,6 @@ const ControlsContainer = styled(Card)<{
   }
 `;
 
-const ControlButton = styled(Button)``;
-
 const ControlDivider = styled(Divider)`
   width: 1px;
   height: 24px;
@@ -88,36 +87,36 @@ export function GameControls({
       )}
 
       {showFullscreen && (
-        <ControlButton
+        <Button
           variant={buttonVariant}
           size="sm"
           onClick={onFullscreenToggle}
           title="Toggle fullscreen"
         >
           🖥️
-        </ControlButton>
+        </Button>
       )}
 
       {showSettings && (
-        <ControlButton
+        <Button
           variant={buttonVariant}
           size="sm"
           onClick={onSettings}
           title="Game settings"
         >
           ⚙️
-        </ControlButton>
+        </Button>
       )}
 
       {showHelp && (
-        <ControlButton
+        <Button
           variant={buttonVariant}
           size="sm"
           onClick={onHelp}
           title="Game help"
         >
           ❓
-        </ControlButton>
+        </Button>
       )}
     </ControlsContainer>
   );

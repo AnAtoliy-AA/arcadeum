@@ -1,12 +1,10 @@
+import { Button, XStack } from '@arcadeum/ui';
 import {
   PanelCard,
   PanelHeader,
   PanelBadge,
   PanelTitle,
   PanelSubtitle,
-  ButtonRow,
-  PrimaryButton,
-  SecondaryButton,
   StatusText,
   ErrorText,
   TokenList,
@@ -81,22 +79,30 @@ export function OAuthPanel({ labels, form }: OAuthPanelProps) {
         <PanelTitle>{oauthTitle}</PanelTitle>
         <PanelSubtitle>{heroStatusDescription}</PanelSubtitle>
       </PanelHeader>
-      <ButtonRow>
-        <PrimaryButton type="button" onClick={handleStartOAuth} disabled={busy}>
+      <XStack flexWrap="wrap" gap="$3">
+        <Button
+          type="button"
+          onClick={handleStartOAuth}
+          disabled={busy}
+          variant="primary"
+          pill
+        >
           {busy && processingStatusLabel
             ? processingStatusLabel
             : oauthButtonLabel}
-        </PrimaryButton>
+        </Button>
         {sessionSnapshot.accessToken && isOAuthProvider ? (
-          <SecondaryButton
+          <Button
             type="button"
             onClick={() => void handleOAuthLogout()}
             disabled={oauthLoading}
+            variant="secondary"
+            pill
           >
             {oauthLogoutLabel}
-          </SecondaryButton>
+          </Button>
         ) : null}
-      </ButtonRow>
+      </XStack>
       {isRedirecting && redirectingStatusLabel ? (
         <StatusText>{redirectingStatusLabel}</StatusText>
       ) : null}

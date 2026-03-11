@@ -53,7 +53,9 @@ test.describe('Home Page Games Grid Refinement', () => {
     await page.waitForTimeout(1000);
     await questionIcon.click({ force: true });
 
-    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 15000 });
+    await expect(
+      page.locator('[role="dialog"][data-state="open"]'),
+    ).toBeVisible({ timeout: 15000 });
     await expect(
       page.getByRole('heading', { name: /Objective/i }),
     ).toBeVisible();

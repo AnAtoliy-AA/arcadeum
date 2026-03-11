@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Button, Input } from '@/shared/ui';
+import { Button } from '@arcadeum/ui';
+import { Input } from '@/shared/ui';
 
 export interface GamesSearchProps {
   /** Callback triggered when search query changes (debounced) or search button is clicked */

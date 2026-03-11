@@ -1,11 +1,6 @@
 import styled, { css, DefaultTheme } from 'styled-components';
-import React from 'react';
-import { Button } from '@/shared/ui/Button/Button';
-import type {
-  ButtonProps,
-  ButtonVariant,
-  ButtonSize,
-} from '@/shared/ui/Button/Button';
+import React, { ComponentProps, ReactNode } from 'react';
+import { Button, GameVariant } from '@arcadeum/ui';
 
 // Simplified constants/types to avoid external deps
 const GAME_VARIANT = {
@@ -206,15 +201,20 @@ export const ModalTitle = styled.h2<{ $variant?: string }>`
     `}
 `;
 
-export const CloseButton = styled(Button).attrs<ButtonProps>(() => ({
-  variant: 'icon' as ButtonVariant,
-  size: 'sm' as ButtonSize,
-  'data-testid': 'modal-close-button',
-}))<{ $variant?: string }>`
-  &:hover:not(:disabled) {
-    transform: rotate(90deg);
-  }
-`;
+interface CloseButtonProps extends ComponentProps<typeof Button> {
+  $variant?: string;
+}
+
+export const CloseButton = ({ $variant, ...props }: CloseButtonProps) => (
+  <Button
+    variant="icon"
+    size="sm"
+    data-testid="modal-close-button"
+    hoverStyle={{ rotate: '90deg' }}
+    gameVariant={$variant as GameVariant}
+    {...props}
+  />
+);
 
 export const ModalActions = styled.div`
   display: flex;
@@ -222,6 +222,10 @@ export const ModalActions = styled.div`
   margin-top: 2rem;
 `;
 
-export const ModalButton = styled(Button)`
-  flex: 1;
-`;
+interface ModalButtonProps extends ComponentProps<typeof Button> {
+  children?: ReactNode;
+}
+
+export const ModalButton = (props: ModalButtonProps) => (
+  <Button flex={1} {...props} />
+);

@@ -8,7 +8,7 @@ import {
   ModalHeader,
   ModalTitle,
   ModalBody,
-} from '@/shared/ui/Modal';
+} from '@arcadeum/ui';
 import { LinkButton } from '@/shared/ui';
 import { routes } from '@/shared/config/routes';
 import {
@@ -208,12 +208,6 @@ const ModalActionFooter = styled.div`
   border-top: 1px solid ${({ theme }) => theme.surfaces.card.border}50;
 `;
 
-const StyledPlayNowButton = styled(LinkButton)`
-  padding: 1rem 2.5rem;
-  font-size: 1.1rem;
-  border-radius: 14px;
-`;
-
 import { featuredGames } from '../../data/games';
 
 export function HomeGameDetailsModal({
@@ -340,11 +334,9 @@ export function HomeGameDetailsModal({
               {locale.toUpperCase()} •{' '}
               {t(`games.shared.category.${game.type}Game` as TranslationKey)}
             </div>
-            <StyledPlayNowButton
-              href={`${routes.gameCreate}?gameId=${game.id}`}
-            >
+            <LinkButton href={`${routes.gameCreate}?gameId=${game.id}`}>
               {homeCopy.gamePlayButton ?? 'Play Now!'}
-            </StyledPlayNowButton>
+            </LinkButton>
           </ModalActionFooter>
         </ModalBody>
       </ModalGlassContent>

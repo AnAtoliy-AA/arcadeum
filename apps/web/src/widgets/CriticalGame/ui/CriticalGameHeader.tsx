@@ -8,6 +8,7 @@ import {
   ChatToggleButton,
   FullscreenButton,
 } from './styles';
+import { appConfig } from '@/shared/config/app-config';
 import {
   RoomNameBadge,
   RoomNameIcon,
@@ -16,14 +17,14 @@ import {
 } from './styles/lobby';
 import { IdleTimerDisplay } from './IdleTimerDisplay';
 import { AutoplayControls } from './AutoplayControls';
-import { ServerLoadingNotice } from '@/shared/ui/ServerLoadingNotice';
+import { ServerLoadingNotice, MaximizeIcon, MinimizeIcon } from '@/shared/ui';
 import type { GameRoomSummary, CriticalSnapshot } from '@/shared/types/games';
 import { UseAutoplayReturn } from '../hooks/useAutoplay';
 import { CARD_VARIANTS } from '../lib/constants';
 import { RulesModal } from './RulesModal';
 import React, { useState } from 'react';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
-import { MaximizeIcon, MinimizeIcon } from '@/shared/ui';
+
 import { TranslationKey } from '@/shared/lib/useTranslation';
 
 interface CriticalGameHeaderProps {
@@ -70,7 +71,9 @@ export function CriticalGameHeader({
   const cardVariant = room.gameOptions?.cardVariant;
   const [showRules, setShowRules] = useState(false);
 
-  const { isLongPending } = useServerWakeUpProgress(Boolean(actionBusy));
+  const { isLongPending, progress, elapsedSeconds } = useServerWakeUpProgress(
+    Boolean(actionBusy),
+  );
 
   return (
     <GameHeader $variant={cardVariant}>
@@ -120,7 +123,18 @@ export function CriticalGameHeader({
           </FastBadge>
         )}
         <TurnStatus $variant={turnStatusVariant}>{turnStatusText}</TurnStatus>
-        {isLongPending && <ServerLoadingNotice actionBusy={actionBusy} />}
+        {isLongPending && (
+          <ServerLoadingNotice
+            title={t('common.loading.title')}
+            message={t('common.loading.message')}
+            progress={progress}
+            elapsedSeconds={elapsedSeconds}
+            supportLabel={t('common.support')}
+            onSupportClick={() =>
+              window.open(appConfig.supportCta.href, '_blank')
+            }
+          />
+        )}
       </GameInfo>
       <HeaderActions>
         <FullscreenButton

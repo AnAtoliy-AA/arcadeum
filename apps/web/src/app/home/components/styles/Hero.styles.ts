@@ -1,7 +1,6 @@
 'use client';
 
 import styled from 'styled-components';
-import { LinkButton } from '@/shared/ui';
 import { fadeInUp, shimmer, float } from './Animations.styles';
 
 export const HeroSection = styled.section`
@@ -230,29 +229,5 @@ export const HeroActions = styled.div`
 
   @media (min-width: 1024px) {
     justify-content: flex-start;
-  }
-`;
-
-export const PrimaryAction = styled(LinkButton).attrs({
-  variant: 'primary',
-  size: 'lg',
-})`
-  border-radius: 999px;
-  padding: 1rem 2.5rem;
-
-  @media (max-width: 640px) {
-    width: 100%;
-  }
-`;
-
-export const SecondaryAction = styled(LinkButton).attrs({
-  variant: 'secondary',
-  size: 'lg',
-})`
-  border-radius: 999px;
-  padding: 1rem 2.5rem;
-
-  @media (max-width: 640px) {
-    width: 100%;
   }
 `;

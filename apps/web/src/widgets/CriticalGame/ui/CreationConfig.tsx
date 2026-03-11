@@ -5,7 +5,7 @@ import { ExpansionId, CARD_VARIANTS } from '@/app/games/create/constants';
 import { ExpansionPacksSection } from '@/app/games/create/ExpansionPacksSection';
 import { RulesModal } from '@/widgets/CriticalGame/ui/RulesModal';
 import { IDLE_TIMER_DURATION_SEC } from '@/shared/config/game';
-import { Section } from '@/shared/ui';
+import { Section, Button } from '@/shared/ui';
 import {
   GameSelector,
   GameTile,
@@ -18,7 +18,6 @@ import {
   ExpansionLabel,
   ExpansionBadge,
   ComingSoonBadge,
-  RulesTrigger,
   ThemeHeader,
 } from '@/app/games/create/styles';
 
@@ -66,9 +65,15 @@ export function CriticalCreationConfig({
 
       <Section title={t('games.create.sectionVariant') || 'Game Theme'}>
         <ThemeHeader>
-          <RulesTrigger type="button" onClick={() => setShowRules(true)}>
+          <Button
+            variant="link"
+            size="sm"
+            mb="$4"
+            type="button"
+            onClick={() => setShowRules(true)}
+          >
             📖 {t('games.rules.button') || 'View Game Rules'}
-          </RulesTrigger>
+          </Button>
         </ThemeHeader>
         <GameSelector>
           {CARD_VARIANTS.map((variant) => (

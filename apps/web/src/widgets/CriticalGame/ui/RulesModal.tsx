@@ -16,7 +16,7 @@ import { Card } from './styles/cards';
 import { CARD_GROUPS } from '../lib/constants';
 import { CriticalCard } from '@/shared/types/games';
 import { TranslationKey } from '@/shared/lib/useTranslation';
-import { CloseIcon } from '@/shared/ui/Icons';
+import { CloseIcon } from '@/shared/ui';
 
 interface RulesModalProps {
   isOpen: boolean;

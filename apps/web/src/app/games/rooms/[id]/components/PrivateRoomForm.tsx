@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   Card,
@@ -7,7 +8,6 @@ import {
   Form,
   InputGroup,
   Input,
-  Button,
   ErrorMessage,
   LockIcon,
   NoticeMessage,
@@ -60,7 +60,13 @@ export function PrivateRoomForm({
             disabled={isSubmitting}
             autoFocus
           />
-          <Button type="submit" disabled={isSubmitting || !inviteCode.trim()}>
+          <Button
+            variant="primary"
+            size="md"
+            type="submit"
+            disabled={isSubmitting || !inviteCode.trim()}
+            style={{ padding: '0 1.5rem' }}
+          >
             {isSubmitting ? '...' : t('games.roomPage.privateRoom.joinButton')}
           </Button>
         </InputGroup>

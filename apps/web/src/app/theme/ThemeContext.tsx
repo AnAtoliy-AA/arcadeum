@@ -9,6 +9,7 @@ import {
   useState,
 } from 'react';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
+import { TamaguiProvider } from 'tamagui';
 
 import { useThemeStore } from './store/themeStore';
 import {
@@ -17,6 +18,7 @@ import {
   ThemeTokens,
   themeTokens,
 } from '@/shared/config/theme';
+import tamaguiConfig from '@/shared/config/tamagui.config';
 
 type ThemeContextValue = {
   themePreference: ThemePreference;
@@ -109,9 +111,6 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
     }
   }, [resolvedTheme, theme, themePreference]);
 
-  // Sync legacy storage if needed, or just rely on store persistence.
-  // The store handles persistence now.
-
   const contextValue = useMemo<ThemeContextValue>(
     () => ({ themePreference, resolvedTheme, setThemePreference }),
     [themePreference, resolvedTheme, setThemePreference],
@@ -119,20 +118,18 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
 
   return (
     <ThemeContext.Provider value={contextValue}>
-      <StyledThemeProvider theme={theme}>{children}</StyledThemeProvider>
+      <TamaguiProvider
+        config={tamaguiConfig}
+        defaultTheme={resolvedTheme}
+        disableInjectCSS
+      >
+        <StyledThemeProvider theme={theme}>{children}</StyledThemeProvider>
+      </TamaguiProvider>
     </ThemeContext.Provider>
   );
 }
 
 export function useThemeController(): ThemeContextValue {
-  // We can return store values directly or keep context.
-  // Keeping context allows us to avoid refactoring all call sites that might expect a Provider content,
-  // although Zustand can be used anywhere.
-  // For now, let's keep the Provider wrapping but feed it from the store,
-  // so consumers of useThemeController get the store values.
-  // Actually, to fully migrate, we should eventually remove the Context,
-  // but to be safe and incremental, feeding the context from the store is a good step.
-  // However, pure Zustand usage would be: const { ... } = useThemeStore()
   const context = useContext(ThemeContext);
 
   if (!context) {

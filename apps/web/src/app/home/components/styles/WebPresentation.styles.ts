@@ -1,7 +1,4 @@
-'use client';
-
 import styled, { css } from 'styled-components';
-import { Button } from '@/shared/ui';
 
 export const PresentationContainer = styled.div`
   width: 100%;
@@ -138,37 +135,21 @@ export const SlideCounter = styled.div`
   backdrop-filter: blur(4px);
 `;
 
-export const NavButton = styled(Button).attrs({
-  variant: 'glass',
-  size: 'md',
-})<{ $position: 'left' | 'right' }>`
+export const NavButtonContainer = styled.div<{ $position: 'left' | 'right' }>`
   position: absolute;
   top: 50%;
   ${({ $position }) => $position}: 1rem;
   transform: translateY(-50%);
-  width: 48px;
-  height: 48px;
-  padding: 0;
-  min-width: auto;
-  border-radius: 50%;
+  z-index: 20;
   opacity: 0;
+  transition: all 0.3s ease;
   pointer-events: auto;
 
   ${PresentationContainer}:hover & {
     opacity: 1;
   }
-
-  &:hover:not(:disabled) {
-    transform: translateY(-50%) scale(1.1);
-  }
 `;
 
-export const FullscreenButton = styled(Button).attrs({
-  variant: 'glass',
-  size: 'sm',
-})`
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  min-width: auto;
+export const FullscreenButtonContainer = styled.div`
+  pointer-events: auto;
 `;

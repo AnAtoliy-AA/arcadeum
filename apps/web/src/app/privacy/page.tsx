@@ -1,24 +1,22 @@
-"use client";
+'use client';
 
-import { appConfig } from "@/shared/config/app-config";
-import { routes } from "@/shared/config/routes";
-import { useLanguage, formatMessage } from "@/app/i18n/LanguageProvider";
+import { appConfig } from '@/shared/config/app-config';
+import { routes } from '@/shared/config/routes';
+import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
+import Link from 'next/link';
 import {
-  Page,
-  Wrapper,
-  Header,
-  Title,
-  LastUpdated,
+  PageLayout,
+  Container,
+  GlassCard,
+  PageTitle,
+  Typography,
   Section,
-  SectionTitle,
-  Paragraph,
-  List,
-  ListItem,
-  ContactLink,
-} from "@/shared/ui/legal-styles";
+  YStack,
+} from '@/shared/ui';
 
 const APP_NAME = appConfig.appName;
-const PRIVACY_EMAIL = process.env.NEXT_PUBLIC_PRIVACY_EMAIL ?? "arcadeum.care@gmail.com";
+const PRIVACY_EMAIL =
+  process.env.NEXT_PUBLIC_PRIVACY_EMAIL ?? 'arcadeum.care@gmail.com';
 
 export default function PrivacyPage() {
   const { messages } = useLanguage();
@@ -26,104 +24,210 @@ export default function PrivacyPage() {
   const s = t?.sections;
 
   return (
-    <Page>
-      <Wrapper>
-        <Header>
-          <Title>{t?.title}</Title>
-          <LastUpdated>{t?.lastUpdated}</LastUpdated>
-        </Header>
+    <PageLayout variant="legal">
+      <Container size="md">
+        <GlassCard>
+          <PageTitle size="xl" gradient>
+            {t?.title}
+          </PageTitle>
+          <Typography variant="caption" alpha="medium">
+            {t?.lastUpdated}
+          </Typography>
+        </GlassCard>
 
-        <Section>
-          <SectionTitle>{s?.introduction?.title}</SectionTitle>
-          <Paragraph>
+        <Section variant="legal" title={s?.introduction?.title}>
+          <Typography variant="body" uiSize="md" alpha="high">
             {formatMessage(s?.introduction?.content, { appName: APP_NAME })}
-          </Paragraph>
+          </Typography>
         </Section>
 
-        <Section>
-          <SectionTitle>{s?.dataCollection?.title}</SectionTitle>
-          <Paragraph>{s?.dataCollection?.intro}</Paragraph>
-          <List>
-            <ListItem><strong>{s?.dataCollection?.items?.account}</strong></ListItem>
-            <ListItem><strong>{s?.dataCollection?.items?.payment}</strong></ListItem>
-            <ListItem><strong>{s?.dataCollection?.items?.usage}</strong></ListItem>
-            <ListItem><strong>{s?.dataCollection?.items?.device}</strong></ListItem>
-            <ListItem><strong>{s?.dataCollection?.items?.communications}</strong></ListItem>
-          </List>
+        <Section variant="legal" title={s?.dataCollection?.title}>
+          <Typography variant="body" uiSize="md" alpha="high">
+            {s?.dataCollection?.intro}
+          </Typography>
+          <YStack paddingLeft="$5" gap="$2">
+            <ul
+              style={{
+                listStyleType: 'disc',
+                margin: 0,
+                paddingLeft: '1.25rem',
+              }}
+            >
+              <li>
+                <Typography variant="body" uiSize="md" alpha="high">
+                  <strong>{s?.dataCollection?.items?.account}</strong>
+                </Typography>
+              </li>
+              <li>
+                <Typography variant="body" uiSize="md" alpha="high">
+                  <strong>{s?.dataCollection?.items?.payment}</strong>
+                </Typography>
+              </li>
+              <li>
+                <Typography variant="body" uiSize="md" alpha="high">
+                  <strong>{s?.dataCollection?.items?.usage}</strong>
+                </Typography>
+              </li>
+              <li>
+                <Typography variant="body" uiSize="md" alpha="high">
+                  <strong>{s?.dataCollection?.items?.device}</strong>
+                </Typography>
+              </li>
+              <li>
+                <Typography variant="body" uiSize="md" alpha="high">
+                  <strong>{s?.dataCollection?.items?.communications}</strong>
+                </Typography>
+              </li>
+            </ul>
+          </YStack>
         </Section>
 
-        <Section>
-          <SectionTitle>{s?.dataUsage?.title}</SectionTitle>
-          <Paragraph>{s?.dataUsage?.intro}</Paragraph>
-          <List>
-            {s?.dataUsage?.items?.map((item, index) => (
-              <ListItem key={index}>{item}</ListItem>
-            ))}
-          </List>
+        <Section variant="legal" title={s?.dataUsage?.title}>
+          <Typography variant="body" uiSize="md" alpha="high">
+            {s?.dataUsage?.intro}
+          </Typography>
+          <YStack paddingLeft="$5" gap="$2">
+            <ul
+              style={{
+                listStyleType: 'disc',
+                margin: 0,
+                paddingLeft: '1.25rem',
+              }}
+            >
+              {s?.dataUsage?.items?.map((item, index) => (
+                <li key={index}>
+                  <Typography variant="body" uiSize="md" alpha="high">
+                    {item}
+                  </Typography>
+                </li>
+              ))}
+            </ul>
+          </YStack>
         </Section>
 
-        <Section>
-          <SectionTitle>{s?.dataSharing?.title}</SectionTitle>
-          <Paragraph>{s?.dataSharing?.intro}</Paragraph>
-          <List>
-            <ListItem><strong>{s?.dataSharing?.items?.serviceProviders}</strong></ListItem>
-            <ListItem><strong>{s?.dataSharing?.items?.legal}</strong></ListItem>
-            <ListItem><strong>{s?.dataSharing?.items?.businessTransfers}</strong></ListItem>
-          </List>
+        <Section variant="legal" title={s?.dataSharing?.title}>
+          <Typography variant="body" uiSize="md" alpha="high">
+            {s?.dataSharing?.intro}
+          </Typography>
+          <YStack paddingLeft="$5" gap="$2">
+            <ul
+              style={{
+                listStyleType: 'disc',
+                margin: 0,
+                paddingLeft: '1.25rem',
+              }}
+            >
+              <li>
+                <Typography variant="body" uiSize="md" alpha="high">
+                  <strong>{s?.dataSharing?.items?.serviceProviders}</strong>
+                </Typography>
+              </li>
+              <li>
+                <Typography variant="body" uiSize="md" alpha="high">
+                  <strong>{s?.dataSharing?.items?.legal}</strong>
+                </Typography>
+              </li>
+              <li>
+                <Typography variant="body" uiSize="md" alpha="high">
+                  <strong>{s?.dataSharing?.items?.businessTransfers}</strong>
+                </Typography>
+              </li>
+            </ul>
+          </YStack>
         </Section>
 
-        <Section>
-          <SectionTitle>{s?.dataSecurity?.title}</SectionTitle>
-          <Paragraph>{s?.dataSecurity?.content}</Paragraph>
+        <Section variant="legal" title={s?.dataSecurity?.title}>
+          <Typography variant="body" uiSize="md" alpha="high">
+            {s?.dataSecurity?.content}
+          </Typography>
         </Section>
 
-        <Section>
-          <SectionTitle>{s?.dataRetention?.title}</SectionTitle>
-          <Paragraph>{s?.dataRetention?.content}</Paragraph>
+        <Section variant="legal" title={s?.dataRetention?.title}>
+          <Typography variant="body" uiSize="md" alpha="high">
+            {s?.dataRetention?.content}
+          </Typography>
         </Section>
 
-        <Section>
-          <SectionTitle>{s?.userRights?.title}</SectionTitle>
-          <Paragraph>{s?.userRights?.intro}</Paragraph>
-          <List>
-            <ListItem><strong>{s?.userRights?.items?.access}</strong></ListItem>
-            <ListItem><strong>{s?.userRights?.items?.correction}</strong></ListItem>
-            <ListItem><strong>{s?.userRights?.items?.deletion}</strong></ListItem>
-            <ListItem><strong>{s?.userRights?.items?.portability}</strong></ListItem>
-            <ListItem><strong>{s?.userRights?.items?.objection}</strong></ListItem>
-          </List>
-          <Paragraph>
-            {s?.userRights?.contact} <ContactLink href={routes.contact}>{messages.legal?.contact?.title}</ContactLink>.
-          </Paragraph>
+        <Section variant="legal" title={s?.userRights?.title}>
+          <Typography variant="body" uiSize="md" alpha="high">
+            {s?.userRights?.intro}
+          </Typography>
+          <YStack paddingLeft="$5" gap="$2">
+            <ul
+              style={{
+                listStyleType: 'disc',
+                margin: 0,
+                paddingLeft: '1.25rem',
+              }}
+            >
+              <li>
+                <Typography variant="body" uiSize="md" alpha="high">
+                  <strong>{s?.userRights?.items?.access}</strong>
+                </Typography>
+              </li>
+              <li>
+                <Typography variant="body" uiSize="md" alpha="high">
+                  <strong>{s?.userRights?.items?.correction}</strong>
+                </Typography>
+              </li>
+              <li>
+                <Typography variant="body" uiSize="md" alpha="high">
+                  <strong>{s?.userRights?.items?.deletion}</strong>
+                </Typography>
+              </li>
+              <li>
+                <Typography variant="body" uiSize="md" alpha="high">
+                  <strong>{s?.userRights?.items?.portability}</strong>
+                </Typography>
+              </li>
+              <li>
+                <Typography variant="body" uiSize="md" alpha="high">
+                  <strong>{s?.userRights?.items?.objection}</strong>
+                </Typography>
+              </li>
+            </ul>
+          </YStack>
+          <Typography variant="body" uiSize="md" alpha="high" marginTop="$4">
+            {s?.userRights?.contact}{' '}
+            <Link href={routes.contact}>
+              <Typography color="$primary" textDecorationLine="underline">
+                {messages.legal?.contact?.title}
+              </Typography>
+            </Link>
+            .
+          </Typography>
         </Section>
 
-        <Section>
-          <SectionTitle>{s?.cookies?.title}</SectionTitle>
-          <Paragraph>{s?.cookies?.content}</Paragraph>
+        <Section variant="legal" title={s?.cookies?.title}>
+          <Typography variant="body" uiSize="md" alpha="high">
+            {s?.cookies?.content}
+          </Typography>
         </Section>
 
-        <Section>
-          <SectionTitle>{s?.children?.title}</SectionTitle>
-          <Paragraph>{s?.children?.content}</Paragraph>
+        <Section variant="legal" title={s?.children?.title}>
+          <Typography variant="body" uiSize="md" alpha="high">
+            {s?.children?.content}
+          </Typography>
         </Section>
 
-        <Section>
-          <SectionTitle>{s?.internationalTransfers?.title}</SectionTitle>
-          <Paragraph>{s?.internationalTransfers?.content}</Paragraph>
+        <Section variant="legal" title={s?.internationalTransfers?.title}>
+          <Typography variant="body" uiSize="md" alpha="high">
+            {s?.internationalTransfers?.content}
+          </Typography>
         </Section>
 
-        <Section>
-          <SectionTitle>{s?.policyChanges?.title}</SectionTitle>
-          <Paragraph>{s?.policyChanges?.content}</Paragraph>
+        <Section variant="legal" title={s?.policyChanges?.title}>
+          <Typography variant="body" uiSize="md" alpha="high">
+            {s?.policyChanges?.content}
+          </Typography>
         </Section>
 
-        <Section>
-          <SectionTitle>{s?.contact?.title}</SectionTitle>
-          <Paragraph>
+        <Section variant="legal" title={s?.contact?.title}>
+          <Typography variant="body" uiSize="md" alpha="high">
             {formatMessage(s?.contact?.content, { email: PRIVACY_EMAIL })}
-          </Paragraph>
+          </Typography>
         </Section>
-      </Wrapper>
-    </Page>
+      </Container>
+    </PageLayout>
   );
 }

@@ -1,7 +1,8 @@
 'use client';
 
+import { ComponentProps, ReactNode } from 'react';
 import styled from 'styled-components';
-import { Button } from '@/shared/ui';
+import { Button } from '@arcadeum/ui';
 import {
   Modal,
   ModalContent,
@@ -157,16 +158,18 @@ const BlockOptions = styled.div`
   margin-top: 1rem;
 `;
 
-const BlockLink = styled(Button).attrs({
-  variant: 'ghost',
-  size: 'sm',
-})`
-  margin-top: 1rem;
-  padding: 0.5rem;
-  color: ${({ theme }) => theme.text.secondary};
-  text-decoration: underline;
+interface BlockLinkProps extends ComponentProps<typeof Button> {
+  children?: ReactNode;
+}
 
-  &:hover:not(:disabled) {
-    color: #ef4444;
-  }
-`;
+const BlockLink = (props: BlockLinkProps) => (
+  <Button
+    variant="ghost"
+    size="sm"
+    marginTop="$4"
+    padding="$2"
+    textDecorationLine="underline"
+    hoverStyle={{ color: '#ef4444' }}
+    {...props}
+  />
+);

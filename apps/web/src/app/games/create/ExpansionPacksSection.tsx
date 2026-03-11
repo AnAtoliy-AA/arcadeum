@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { CollapsibleSection } from '@/shared/ui';
+import { Button, CollapsibleSection } from '@/shared/ui';
 
 import { ExpansionId, EXPANSION_PACK_DETAILS } from './constants';
 
@@ -17,7 +17,6 @@ import {
   PackCardRow,
   PackCardName,
   QuantityControl,
-  QuantityButton,
   QuantityValue,
   SelectAllRow,
 } from './styles';
@@ -209,7 +208,9 @@ export function ExpansionPacksSection({
                   />
                   <PackCardName>{card.name}</PackCardName>
                   <QuantityControl>
-                    <QuantityButton
+                    <Button
+                      variant="icon"
+                      size="sm"
                       type="button"
                       disabled={
                         !(card.id in customCards) || customCards[card.id] <= 1
@@ -219,9 +220,11 @@ export function ExpansionPacksSection({
                       }
                     >
                       −
-                    </QuantityButton>
+                    </Button>
                     <QuantityValue>{customCards[card.id] ?? 0}</QuantityValue>
-                    <QuantityButton
+                    <Button
+                      variant="icon"
+                      size="sm"
                       type="button"
                       disabled={
                         !(card.id in customCards) ||
@@ -232,7 +235,7 @@ export function ExpansionPacksSection({
                       }
                     >
                       +
-                    </QuantityButton>
+                    </Button>
                   </QuantityControl>
                 </PackCardRow>
               ))}

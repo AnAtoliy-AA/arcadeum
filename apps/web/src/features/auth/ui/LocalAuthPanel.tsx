@@ -1,4 +1,5 @@
 import type { ChangeEvent, FormEvent } from 'react';
+import { Button, XStack } from '@arcadeum/ui';
 import {
   PanelCard,
   PanelHeader,
@@ -11,9 +12,6 @@ import {
   Input,
   HelperText,
   ErrorText,
-  ButtonRow,
-  PrimaryButton,
-  SecondaryButton,
   StatusText,
   SessionCallout,
   CalloutHeading,
@@ -270,23 +268,27 @@ export function LocalAuthPanel({ labels, form }: LocalAuthPanelProps) {
           <ErrorText>{usernameTooShortMessage}</ErrorText>
         ) : null}
         {localError ? <ErrorText>{localError}</ErrorText> : null}
-        <ButtonRow>
-          <PrimaryButton
+        <XStack flexWrap="wrap" gap="$3">
+          <Button
             type="submit"
             disabled={localSubmitDisabled}
             data-testid="auth-submit-button"
+            variant="primary"
+            pill
           >
             {submitLabel}
-          </PrimaryButton>
-          <SecondaryButton
+          </Button>
+          <Button
             type="button"
             onClick={handleToggleMode}
             disabled={localLoading}
             data-testid="auth-toggle-mode-button"
+            variant="secondary"
+            pill
           >
             {toggleLabel}
-          </SecondaryButton>
-        </ButtonRow>
+          </Button>
+        </XStack>
       </AuthForm>
       {localLoading && processingStatusLabel ? (
         <StatusText>{processingStatusLabel}</StatusText>
@@ -309,11 +311,16 @@ export function LocalAuthPanel({ labels, form }: LocalAuthPanelProps) {
               {sessionDetailLabels.displayName}: {storedDisplayName}
             </CalloutDetail>
           ) : null}
-          <ButtonRow>
-            <SecondaryButton type="button" onClick={() => void logoutLocal()}>
+          <XStack flexWrap="wrap" gap="$3">
+            <Button
+              type="button"
+              onClick={() => void logoutLocal()}
+              variant="secondary"
+              pill
+            >
               {logoutLabel}
-            </SecondaryButton>
-          </ButtonRow>
+            </Button>
+          </XStack>
         </SessionCallout>
       ) : null}
     </PanelCard>

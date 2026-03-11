@@ -2,7 +2,7 @@ import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GameRoomMemberSummary } from '@/shared/types/games';
-import { Button } from '@/shared/ui';
+import { Button } from '@arcadeum/ui';
 import {
   PlayerItem,
   LobbyPlayerAvatar,

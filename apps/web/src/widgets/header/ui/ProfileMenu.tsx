@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback } from 'react';
+import { Button } from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useCosmeticBadges } from '@/features/referrals/hooks/useCosmeticBadges';
@@ -8,11 +9,9 @@ import { CosmeticBadge } from '@/shared/ui';
 import { routes } from '@/shared/config/routes';
 import {
   ProfileMenuContainer,
-  UserInfo,
   UserName,
   ChevronIcon,
   ProfileDropdown,
-  DropdownItem,
   DropdownLink,
   DropdownDivider,
   RoleBadge,
@@ -54,7 +53,14 @@ export function ProfileMenu() {
 
   return (
     <ProfileMenuContainer data-profile-menu>
-      <UserInfo onClick={toggleMenu}>
+      <Button
+        variant="chip"
+        size="sm"
+        gap="$3"
+        onClick={toggleMenu}
+        // Responsive display: block on desktop, hidden on tablet/mobile (< 1150px)
+        display={['none', 'none', 'flex']}
+      >
         <UserName data-testid="header-username">{displayName}</UserName>
         {role !== 'free' && (
           <RoleBadge $role={role}>{t(`common.roles.${role}`)}</RoleBadge>
@@ -69,7 +75,7 @@ export function ProfileMenu() {
             clipRule="evenodd"
           />
         </ChevronIcon>
-      </UserInfo>
+      </Button>
 
       <ProfileDropdown $isOpen={isOpen}>
         <DropdownLink href="/settings" onClick={closeMenu}>
@@ -172,24 +178,28 @@ export function ProfileMenu() {
 
         <DropdownDivider />
 
-        <DropdownItem
+        <Button
+          variant="listItem"
           onClick={handleLogout}
           data-testid="desktop-logout-button"
+          icon={
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ width: 18, height: 18, color: '#94a3b8' }}
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+          }
         >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-          </svg>
           {t('common.actions.logout')}
-        </DropdownItem>
+        </Button>
       </ProfileDropdown>
     </ProfileMenuContainer>
   );

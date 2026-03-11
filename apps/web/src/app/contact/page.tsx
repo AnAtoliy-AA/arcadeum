@@ -4,27 +4,19 @@ import { useState } from 'react';
 
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import {
-  Page,
-  Wrapper,
-  Header,
-  Title,
-  Tagline,
+  PageLayout,
+  Container,
+  GlassCard,
+  PageTitle,
+  Typography,
   Section,
-  SectionTitle,
-  ContactGrid,
-  ContactCard,
-  ContactIcon,
-  ContactLabel,
-  ContactValue,
-  ExternalLink,
-  Form,
-  FormGroup,
-  Label,
+  Card,
   Input,
   TextArea,
-  SubmitButton,
-  SuccessMessage,
-} from '@/shared/ui/legal-styles';
+  Button,
+  XStack,
+  YStack,
+} from '@/shared/ui';
 
 const SUPPORT_EMAIL =
   process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'arcadeum.care@gmail.com';
@@ -43,124 +35,169 @@ export default function ContactPage() {
   };
 
   return (
-    <Page>
-      <Wrapper $maxWidth="700px">
-        <Header>
-          <Title>{t?.title}</Title>
-          <Tagline>{t?.tagline}</Tagline>
-        </Header>
+    <PageLayout variant="legal">
+      <Container size="md">
+        <GlassCard>
+          <PageTitle size="xl" gradient>
+            {t?.title}
+          </PageTitle>
+          <Typography variant="body" uiSize="lg" alpha="medium">
+            {t?.tagline}
+          </Typography>
+        </GlassCard>
 
-        <Section>
-          <SectionTitle>{s?.getInTouch?.title}</SectionTitle>
-          <ContactGrid>
-            <ContactCard>
-              <ContactIcon>📧</ContactIcon>
-              <ContactLabel>{s?.getInTouch?.email}</ContactLabel>
-              <ContactValue>
-                <ExternalLink href={`mailto:${SUPPORT_EMAIL}`}>
+        <Section variant="legal" title={s?.getInTouch?.title}>
+          <XStack flexWrap="wrap" gap="$4">
+            <Card flex={1} minWidth={200} p="$4" variant="glass">
+              <Typography uiSize="2xl">📧</Typography>
+              <Typography variant="label" uiSize="xs" marginTop="$2">
+                {s?.getInTouch?.email}
+              </Typography>
+              <Typography fontWeight="700">
+                <a
+                  href={`mailto:${SUPPORT_EMAIL}`}
+                  style={{ color: 'inherit', textDecoration: 'none' }}
+                >
                   {SUPPORT_EMAIL}
-                </ExternalLink>
-              </ContactValue>
-            </ContactCard>
+                </a>
+              </Typography>
+            </Card>
 
-            <ContactCard>
-              <ContactIcon>🕐</ContactIcon>
-              <ContactLabel>{s?.getInTouch?.workingHours}</ContactLabel>
-              <ContactValue>{WORKING_HOURS}</ContactValue>
-            </ContactCard>
+            <Card flex={1} minWidth={200} p="$4" variant="glass">
+              <Typography uiSize="2xl">🕐</Typography>
+              <Typography variant="label" uiSize="xs" marginTop="$2">
+                {s?.getInTouch?.workingHours}
+              </Typography>
+              <Typography fontWeight="700">{WORKING_HOURS}</Typography>
+            </Card>
 
-            <ContactCard>
-              <ContactIcon>⏱️</ContactIcon>
-              <ContactLabel>{s?.getInTouch?.responseTime}</ContactLabel>
-              <ContactValue>{s?.getInTouch?.responseValue}</ContactValue>
-            </ContactCard>
-          </ContactGrid>
+            <Card flex={1} minWidth={200} p="$4" variant="glass">
+              <Typography uiSize="2xl">⏱️</Typography>
+              <Typography variant="label" uiSize="xs" marginTop="$2">
+                {s?.getInTouch?.responseTime}
+              </Typography>
+              <Typography fontWeight="700">
+                {s?.getInTouch?.responseValue}
+              </Typography>
+            </Card>
+          </XStack>
         </Section>
 
-        <Section>
-          <SectionTitle>{s?.form?.title}</SectionTitle>
+        <Section variant="legal" title={s?.form?.title}>
           {submitted ? (
-            <SuccessMessage data-testid="contact-success-message">
-              {s?.form?.success}
-            </SuccessMessage>
+            <Card
+              variant="glass"
+              p="$6"
+              alignItems="center"
+              data-testid="contact-success-message"
+            >
+              <Typography fontWeight="500" textAlign="center">
+                {s?.form?.success}
+              </Typography>
+            </Card>
           ) : (
-            <Form onSubmit={handleSubmit}>
-              <FormGroup>
-                <Label htmlFor="name">{s?.form?.nameLabel}</Label>
-                <Input
-                  type="text"
-                  id="name"
-                  name="name"
-                  placeholder={s?.form?.namePlaceholder}
-                  required
-                  data-testid="contact-name-input"
-                />
-              </FormGroup>
+            <form onSubmit={handleSubmit}>
+              <YStack gap="$4">
+                <YStack gap="$2">
+                  <Typography variant="label" uiSize="xs">
+                    <label htmlFor="name">{s?.form?.nameLabel}</label>
+                  </Typography>
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder={s?.form?.namePlaceholder}
+                    required
+                    data-testid="contact-name-input"
+                  />
+                </YStack>
 
-              <FormGroup>
-                <Label htmlFor="email">{s?.form?.emailLabel}</Label>
-                <Input
-                  type="email"
-                  id="email"
-                  name="email"
-                  placeholder={s?.form?.emailPlaceholder}
-                  required
-                  data-testid="contact-email-input"
-                />
-              </FormGroup>
+                <YStack gap="$2">
+                  <Typography variant="label" uiSize="xs">
+                    <label htmlFor="email">{s?.form?.emailLabel}</label>
+                  </Typography>
+                  <Input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder={s?.form?.emailPlaceholder}
+                    required
+                    data-testid="contact-email-input"
+                  />
+                </YStack>
 
-              <FormGroup>
-                <Label htmlFor="subject">{s?.form?.subjectLabel}</Label>
-                <Input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  placeholder={s?.form?.subjectPlaceholder}
-                  required
-                  data-testid="contact-subject-input"
-                />
-              </FormGroup>
+                <YStack gap="$2">
+                  <Typography variant="label" uiSize="xs">
+                    <label htmlFor="subject">{s?.form?.subjectLabel}</label>
+                  </Typography>
+                  <Input
+                    id="subject"
+                    name="subject"
+                    placeholder={s?.form?.subjectPlaceholder}
+                    required
+                    data-testid="contact-subject-input"
+                  />
+                </YStack>
 
-              <FormGroup>
-                <Label htmlFor="message">{s?.form?.messageLabel}</Label>
-                <TextArea
-                  id="message"
-                  name="message"
-                  placeholder={s?.form?.messagePlaceholder}
-                  required
-                  data-testid="contact-message-textarea"
-                />
-              </FormGroup>
+                <YStack gap="$2">
+                  <Typography variant="label" uiSize="xs">
+                    <label htmlFor="message">{s?.form?.messageLabel}</label>
+                  </Typography>
+                  <TextArea
+                    id="message"
+                    name="message"
+                    placeholder={s?.form?.messagePlaceholder}
+                    required
+                    data-testid="contact-message-textarea"
+                  />
+                </YStack>
 
-              <SubmitButton type="submit" data-testid="contact-submit-button">
-                {s?.form?.submit}
-              </SubmitButton>
-            </Form>
+                <YStack mt="$2">
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    data-testid="contact-submit-button"
+                  >
+                    {s?.form?.submit}
+                  </Button>
+                </YStack>
+              </YStack>
+            </form>
           )}
         </Section>
 
-        <Section>
-          <SectionTitle>{s?.faq?.title}</SectionTitle>
-          <ContactCard>
-            <ContactLabel>{s?.faq?.refund?.question}</ContactLabel>
-            <ContactValue>
-              {formatMessage(s?.faq?.refund?.answer, { email: SUPPORT_EMAIL })}
-            </ContactValue>
-          </ContactCard>
-          <ContactCard>
-            <ContactLabel>{s?.faq?.password?.question}</ContactLabel>
-            <ContactValue>{s?.faq?.password?.answer}</ContactValue>
-          </ContactCard>
-          <ContactCard>
-            <ContactLabel>{s?.faq?.deleteAccount?.question}</ContactLabel>
-            <ContactValue>
-              {formatMessage(s?.faq?.deleteAccount?.answer, {
-                email: SUPPORT_EMAIL,
-              })}
-            </ContactValue>
-          </ContactCard>
+        <Section variant="legal" title={s?.faq?.title}>
+          <YStack gap="$4">
+            <Card variant="glass" p="$4">
+              <Typography variant="label" uiSize="xs">
+                {s?.faq?.refund?.question}
+              </Typography>
+              <Typography marginTop="$1">
+                {formatMessage(s?.faq?.refund?.answer, {
+                  email: SUPPORT_EMAIL,
+                })}
+              </Typography>
+            </Card>
+
+            <Card variant="glass" p="$4">
+              <Typography variant="label" uiSize="xs">
+                {s?.faq?.password?.question}
+              </Typography>
+              <Typography marginTop="$1">{s?.faq?.password?.answer}</Typography>
+            </Card>
+
+            <Card variant="glass" p="$4">
+              <Typography variant="label" uiSize="xs">
+                {s?.faq?.deleteAccount?.question}
+              </Typography>
+              <Typography marginTop="$1">
+                {formatMessage(s?.faq?.deleteAccount?.answer, {
+                  email: SUPPORT_EMAIL,
+                })}
+              </Typography>
+            </Card>
+          </YStack>
         </Section>
-      </Wrapper>
-    </Page>
+      </Container>
+    </PageLayout>
   );
 }

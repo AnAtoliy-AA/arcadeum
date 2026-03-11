@@ -1,7 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
-import { Button } from '@/shared/ui';
+import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 const Container = styled.div`

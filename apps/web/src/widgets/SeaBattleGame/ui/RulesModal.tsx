@@ -20,7 +20,7 @@ import {
   ShipDescription,
 } from './RulesModal.styles';
 import { TranslationKey } from '@/shared/lib/useTranslation';
-import { CloseIcon } from '@/shared/ui/Icons';
+import { CloseIcon } from '@/shared/ui';
 
 interface RulesModalProps {
   isOpen: boolean;

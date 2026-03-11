@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import styled, { css, keyframes } from 'styled-components';
-import { GlassCard } from '@/shared/ui/GlassCard';
+import { GlassCard } from '@arcadeum/ui';
 import { CopyActionButton } from '@/features/support/copy-action/ui/CopyActionButton';
 
 const fadeIn = keyframes`

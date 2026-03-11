@@ -1,6 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import {
+  Button,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  MaximizeIcon,
+  MinimizeIcon,
+} from '@arcadeum/ui';
 import { slides } from '../data/slides';
 import {
   PresentationContainer,
@@ -12,8 +19,8 @@ import {
   ProgressBar,
   ProgressSegment,
   SlideCounter,
-  NavButton,
-  FullscreenButton,
+  NavButtonContainer,
+  FullscreenButtonContainer,
 } from './styles/WebPresentation.styles';
 
 export function WebPresentation() {
@@ -157,87 +164,49 @@ export function WebPresentation() {
         </TopBar>
 
         {/* Floating Navigation Buttons (Desktop) */}
-        <NavButton
-          $position="left"
-          onClick={() => {
-            prevSlide();
-          }}
-          aria-label="Previous slide"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        <NavButtonContainer $position="left">
+          <Button
+            variant="glass"
+            size="md"
+            onClick={prevSlide}
+            aria-label="Previous slide"
+            style={{ borderRadius: '50%' }}
           >
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </NavButton>
+            <ArrowLeftIcon size={24} />
+          </Button>
+        </NavButtonContainer>
 
-        <NavButton
-          $position="right"
-          onClick={() => {
-            nextSlide();
-          }}
-          aria-label="Next slide"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        <NavButtonContainer $position="right">
+          <Button
+            variant="glass"
+            size="md"
+            onClick={nextSlide}
+            aria-label="Next slide"
+            style={{ borderRadius: '50%' }}
           >
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </NavButton>
+            <ArrowRightIcon size={24} />
+          </Button>
+        </NavButtonContainer>
 
         <BottomBar>
           <SlideCounter>
             {currentSlide + 1} / {slides.length}
           </SlideCounter>
 
-          <FullscreenButton
-            onClick={() => {
-              toggleFullscreen();
-            }}
-            aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-          >
-            {isFullscreen ? (
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
-              </svg>
-            ) : (
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
-              </svg>
-            )}
-          </FullscreenButton>
+          <FullscreenButtonContainer>
+            <Button
+              variant="glass"
+              size="sm"
+              onClick={toggleFullscreen}
+              aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+            >
+              {isFullscreen ? (
+                <MinimizeIcon size={20} />
+              ) : (
+                <MaximizeIcon size={20} />
+              )}
+            </Button>
+          </FullscreenButtonContainer>
         </BottomBar>
       </ControlsOverlay>
     </PresentationContainer>

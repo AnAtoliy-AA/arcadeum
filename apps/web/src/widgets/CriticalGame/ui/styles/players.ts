@@ -85,10 +85,10 @@ export const PlayerCard = styled.div<{
   ${({ $variant }) => getVariantStyles($variant).players.getStyles?.()}
 
   @media (max-width: 768px) {
-    min-width: 80px;
-    max-width: 95px;
-    padding: 0.5rem 0.5rem;
-    gap: 0.3rem;
+    min-width: 75px;
+    max-width: 85px;
+    padding: 0.4rem 0.4rem;
+    gap: 0.25rem;
     border-radius: 10px;
   }
 `;

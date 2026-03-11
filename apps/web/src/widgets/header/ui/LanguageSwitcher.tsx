@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { useLanguageStore } from '@/app/i18n/store/languageStore';
 import { SUPPORTED_LOCALES, Locale } from '@/shared/i18n';
-import { Select } from '@/shared/ui/Select';
+import { Select } from '@/shared/ui';
 
 const Container = styled.div`
   display: flex;
@@ -50,23 +50,6 @@ const LOCALES_LABELS: Record<Locale, string> = {
   by: 'BY',
 };
 
-const StyledSelect = styled(Select)`
-  padding: 0.25rem 2rem 0.25rem 0.5rem !important;
-  font-size: 0.875rem !important;
-  background-position: right 0.5rem center !important;
-  width: auto !important;
-  min-width: 70px !important;
-  height: 36px !important;
-
-  @media (max-width: 640px) {
-    padding: 0.125rem 1.25rem 0.125rem 0.375rem !important;
-    font-size: 0.75rem !important;
-    background-position: right 0.25rem center !important;
-    min-width: 50px !important;
-    height: 32px !important;
-  }
-`;
-
 interface LanguageSwitcherProps {
   className?: string;
 }
@@ -75,8 +58,8 @@ export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
   const locale = useLanguageStore((state) => state.locale);
   const setLocale = useLanguageStore((state) => state.setLocale);
 
-  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setLocale(e.target.value as Locale);
+  const handleLanguageChange = (val: string) => {
+    setLocale(val as Locale);
   };
 
   const options = useMemo(() => {
@@ -91,18 +74,13 @@ export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
       <IconWrapper>
         <GlobeIcon />
       </IconWrapper>
-      <StyledSelect
+      <Select
         value={locale}
-        onChange={handleLanguageChange}
+        onValueChange={handleLanguageChange}
+        options={options}
         aria-label="Select language"
         data-testid="header-language-switcher"
-      >
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </StyledSelect>
+      />
     </Container>
   );
 }

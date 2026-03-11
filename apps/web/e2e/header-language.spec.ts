@@ -1,6 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
-import { navigateTo } from './fixtures/test-utils';
+import { test, navigateTo } from './fixtures/test-utils';
 
 test.describe('Header Language Switcher', () => {
   test.beforeEach(async ({ page }) => {
@@ -16,52 +15,50 @@ test.describe('Header Language Switcher', () => {
       .locator('header')
       .getByTestId('header-language-switcher');
 
-    // Wait for the select to be visible and stable
+    // Wait for the trigger to be visible
     await expect(languageSwitcher).toBeVisible();
-    await languageSwitcher.waitFor({ state: 'visible', timeout: 5000 });
 
-    // Default language is typically en
-    await expect(languageSwitcher).toHaveValue('en');
+    // Default language from text
+    await expect(languageSwitcher).toContainText('EN');
 
     // Change language to Spanish
-    // Use selectOption and wait for the value to actually change
-    await languageSwitcher.selectOption('es');
+    await languageSwitcher.click();
+    await page.getByRole('option', { name: 'ES' }).click();
 
-    // The value should be updated (expect already polls)
-    await expect(languageSwitcher).toHaveValue('es', { timeout: 10000 });
+    // The value should be updated
+    await expect(languageSwitcher).toContainText('ES', { timeout: 10000 });
   });
 
   test('should display language switcher and change language on mobile menu', async ({
     page,
   }) => {
-    // We conditionally test the mobile menu without skipping
-    // to prevent Playwright warning about skipped tests.
-    // If it's a desktop browser, we don't have a mobile menu toggle button visible,
-    // so we can just assert that and exit cleanly or resize the viewport.
-
-    // Resize to mobile viewport to enforce mobile menu visibility across all environments
+    // Resize to mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.waitForTimeout(500); // Allow viewport recalculations
+    await page.waitForTimeout(500);
 
     // Open mobile menu
     const menuButton = page.getByTestId('mobile-menu-button');
     await expect(menuButton).toBeVisible();
-    await menuButton.dispatchEvent('click');
+    await menuButton.click();
 
     // The mobile menu should be open
     const mobileNav = page.getByTestId('mobile-nav');
     await expect(mobileNav).toBeVisible();
 
-    const languageSwitcher = mobileNav.locator('select');
-    await expect(languageSwitcher).toBeVisible();
+    const trigger = mobileNav.getByTestId('header-language-switcher');
+    await expect(trigger).toBeVisible();
 
     // Default language
-    await expect(languageSwitcher).toHaveValue('en');
+    await expect(trigger).toContainText('EN');
 
     // Change language to French
-    await languageSwitcher.selectOption('fr');
+    await trigger.click();
+    await page.getByRole('option', { name: 'FR' }).click();
 
-    // The value should be updated
-    await expect(languageSwitcher).toHaveValue('fr');
+    // The value should be updated — check the header trigger which is always visible
+    const headerTrigger = page
+      .locator('header')
+      .getByTestId('header-language-switcher');
+    await expect(headerTrigger).toContainText('FR', { timeout: 10000 });
   });
 });

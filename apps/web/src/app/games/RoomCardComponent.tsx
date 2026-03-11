@@ -20,13 +20,15 @@ import {
   ParticipantsList,
   ParticipantChip,
   RoomActions,
-  ActionButton,
   RoomHeader,
   BadgeIcon,
   ParticipantsLabel,
   MetaListContainer,
   GameNameValue,
 } from './room-card.styles';
+import { LinkButton } from '@arcadeum/ui';
+
+import { routes } from '@/shared/config/routes';
 
 const MAX_VISIBLE_PARTICIPANTS = 5;
 
@@ -194,12 +196,16 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
       )}
 
       <RoomActions $viewMode={viewMode}>
-        <ActionButton href={`/games/rooms/${room.id}`} variant="primary">
+        <LinkButton href={routes.gameRoom(room.id)} variant="primary" size="sm">
           {t('games.common.joinRoom')}
-        </ActionButton>
-        <ActionButton href={`/games/rooms/${room.id}`} variant="secondary">
+        </LinkButton>
+        <LinkButton
+          href={routes.gameRoom(room.id)}
+          variant="secondary"
+          size="sm"
+        >
           {t('games.common.watchRoom')}
-        </ActionButton>
+        </LinkButton>
       </RoomActions>
     </RoomCard>
   );

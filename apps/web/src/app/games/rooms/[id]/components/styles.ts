@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { Button as SharedButton } from '@/shared/ui';
 
 export const Page = styled.main`
   min-height: 100vh;
@@ -128,13 +127,6 @@ export const Input = styled.input`
     opacity: 0.5;
     cursor: not-allowed;
   }
-`;
-
-export const Button = styled(SharedButton).attrs({
-  variant: 'primary',
-  size: 'md',
-})`
-  padding: 0 1.5rem;
 `;
 
 export const LoginLink = styled.a`

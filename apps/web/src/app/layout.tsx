@@ -10,6 +10,7 @@ import { StyledComponentsRegistry } from './StyledComponentsRegistry';
 import { AppThemeProvider } from './theme/ThemeContext';
 import { Header } from '@/widgets/header';
 import { PWAProvider } from '@/features/pwa';
+import { TamaguiRegistry } from './TamaguiRegistry';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -46,10 +47,12 @@ export default function RootLayout({
           <LanguageProvider>
             <AppThemeProvider>
               <QueryProvider>
-                <PWAProvider>
-                  <Header />
-                  {children}
-                </PWAProvider>
+                <TamaguiRegistry>
+                  <PWAProvider>
+                    <Header />
+                    {children}
+                  </PWAProvider>
+                </TamaguiRegistry>
               </QueryProvider>
             </AppThemeProvider>
           </LanguageProvider>

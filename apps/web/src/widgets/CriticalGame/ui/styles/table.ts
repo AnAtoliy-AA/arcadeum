@@ -19,7 +19,7 @@ export const GameTable = styled.div`
   // Previously overflow: hidden; Removed to allow bubbles to overflow
 
   @media (max-width: 768px) {
-    padding: 4rem 0.5rem 1.5rem;
+    padding: 3.5rem 0.5rem 1.5rem;
     min-height: 360px;
   }
 `;
@@ -141,6 +141,7 @@ export const PlayersRing = styled.div<{ $playerCount: number }>`
       'ml center mr'
       'bl bc br';
     gap: 0.5rem;
+    grid-row-gap: 1.5rem;
     min-height: auto;
     align-items: center;
     justify-items: center;
@@ -281,12 +282,13 @@ export const CenterTable = styled.div<{ $variant?: string }>`
   }
 
   @media (max-width: 768px) {
-    width: 160px;
-    height: 160px;
-    padding: 0.75rem;
+    width: 130px;
+    height: 130px;
+    padding: 0.4rem;
     border-width: 2px;
-    gap: 1rem;
+    gap: 0.6rem;
     grid-area: center;
+    margin-top: -10px; /* Shift up to avoid overlap with bottom player */
   }
 `;
 

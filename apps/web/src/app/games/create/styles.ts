@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Button, Card } from '@/shared/ui';
+import { Card } from '@/shared/ui';
 
 export const Form = styled.form`
   display: flex;
@@ -127,18 +127,6 @@ export const Row = styled.div`
   }
 `;
 
-export const VisibilityToggle = styled(Button).attrs<{ $isPublic: boolean }>(
-  ({ $isPublic }) => ({
-    variant: 'chip',
-    isActive: $isPublic,
-  }),
-)<{ $isPublic: boolean }>``;
-
-export const ErrorCard = styled(Card)`
-  border-color: #dc2626;
-  color: #ef4444;
-`;
-
 export const ExpansionGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -263,11 +251,6 @@ export const QuantityControl = styled.div`
   gap: 0.25rem;
 `;
 
-export const QuantityButton = styled(Button).attrs({
-  variant: 'icon',
-  size: 'sm',
-})``;
-
 export const QuantityValue = styled.span`
   min-width: 24px;
   text-align: center;
@@ -309,12 +292,5 @@ export const ThemeHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-`;
-
-export const RulesTrigger = styled(Button).attrs({
-  variant: 'link',
-  size: 'sm',
-})`
   margin-bottom: 1rem;
 `;

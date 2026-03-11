@@ -5,8 +5,8 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import { SkeletonCircle, SkeletonText } from '@/shared/ui/Skeleton';
-import { ProgressBar } from '@/shared/ui/Progress';
+import { SkeletonCircle, SkeletonText } from '@arcadeum/ui';
+import { ProgressBar } from '@arcadeum/ui';
 import { Section } from '@/shared/ui';
 
 interface GameBreakdownProps {
@@ -30,12 +30,12 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
           {[1, 2].map((i) => (
             <TableRow key={i}>
               <GameInfo>
-                <SkeletonCircle width="40px" height="40px" $delay={i * 0.1} />
-                <SkeletonText width="100px" $delay={i * 0.1 + 0.05} />
+                <SkeletonCircle width="40px" height="40px" delay={i * 0.1} />
+                <SkeletonText width="100px" delay={i * 0.1 + 0.05} />
               </GameInfo>
-              <SkeletonText width="30px" $delay={i * 0.1 + 0.1} />
-              <SkeletonText width="30px" $delay={i * 0.1 + 0.15} />
-              <SkeletonText width="50px" $delay={i * 0.1 + 0.2} />
+              <SkeletonText width="30px" delay={i * 0.1 + 0.1} />
+              <SkeletonText width="30px" delay={i * 0.1 + 0.15} />
+              <SkeletonText width="50px" delay={i * 0.1 + 0.2} />
             </TableRow>
           ))}
         </Table>
@@ -65,7 +65,7 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
             <StatCell>{game.totalGames}</StatCell>
             <StatCell>{game.wins}</StatCell>
             <WinRateCell>
-              <ProgressBar value={game.winRate} height={8} showInlineLabel />
+              <ProgressBar value={game.winRate} height={8} showLabel />
             </WinRateCell>
           </TableRow>
         ))}

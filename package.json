@@ -5,7 +5,7 @@
   "packageManager": "pnpm@9.15.0",
   "scripts": {
     "prepare": "husky",
-    "dev": "turbo run dev --parallel",
+    "dev": "turbo run dev --parallel && cd packages/ui && npm run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
@@ -13,7 +13,8 @@
     "check-file-length": "node scripts/check-file-length.js",
     "check-translations": "node scripts/check_translation.js",
     "docs:check": "node scripts/check-doc-links.js",
-    "changelog": "auto-changelog --stdout --template ./scripts/changelog-template.hbs --unreleased --commit-limit false > CHANGELOG.md"
+    "changelog": "auto-changelog --stdout --template ./scripts/changelog-template.hbs --unreleased --commit-limit false > CHANGELOG.md",
+    "release": "standard-version"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.4.3",
@@ -24,6 +25,7 @@
     "lint-staged": "^15.2.10",
     "markdown-it": "^14.1.1",
     "prettier": "3.4.2",
+    "standard-version": "^9.5.0",
     "turbo": "^2.1.3"
   }
 }

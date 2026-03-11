@@ -2,14 +2,12 @@ import styled, { css, keyframes } from 'styled-components';
 import React from 'react';
 import { SeaBattlePlayerState } from '../types';
 import { ShipsLeft } from './ShipsLeft';
-import { GlassCard } from '@/shared/ui/GlassCard';
-import { Badge } from '@/shared/ui/Badge';
+import { GlassCard, Badge, IdleBadge } from '@/shared/ui';
 import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
 import { useGameStore } from '@/features/games/store/gameStore';
-import { IdleBadge } from '@/shared/ui';
 import { SeaBattleGrids } from './SeaBattleGrids';
 
 const TableContainer = styled.div`
@@ -165,7 +163,6 @@ export function SeaBattleTable({
             style={{
               fontSize: '0.8rem',
               opacity: 0.7,
-              textTransform: 'uppercase',
               fontWeight: 700,
             }}
           >

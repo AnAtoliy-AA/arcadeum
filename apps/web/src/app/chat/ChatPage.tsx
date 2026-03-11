@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@arcadeum/ui';
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import styled from 'styled-components';
@@ -8,7 +9,6 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   PageLayout,
   Container,
-  Button,
   Input,
   GlassCard,
   Avatar,

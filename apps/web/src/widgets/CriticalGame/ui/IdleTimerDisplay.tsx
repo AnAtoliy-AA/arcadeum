@@ -1,7 +1,8 @@
 'use client';
 
+import { ComponentProps, ReactNode } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { Button } from '@/shared/ui';
+import { Button } from '@arcadeum/ui';
 
 import { useIdleTimer } from '../hooks/useIdleTimer';
 
@@ -75,12 +76,13 @@ const ActiveText = styled.span`
   color: rgb(34, 197, 94);
 `;
 
-const StopButton = styled(Button).attrs({
-  variant: 'danger',
-  size: 'sm',
-})`
-  padding: 0.375rem 0.75rem;
-`;
+interface StopButtonProps extends ComponentProps<typeof Button> {
+  children?: ReactNode;
+}
+
+const StopButton = (props: StopButtonProps) => (
+  <Button variant="danger" size="sm" p="0.375rem 0.75rem" {...props} />
+);
 
 /**
  * Displays the idle timer countdown and autoplay status.

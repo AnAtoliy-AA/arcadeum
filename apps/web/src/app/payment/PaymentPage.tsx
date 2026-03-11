@@ -8,11 +8,11 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { isValidPaymentUrl, parseAmount } from '@/shared/config/payment-config';
 import { paymentApi } from '@/features/payment/api';
+import { Button } from '@arcadeum/ui';
 import {
   PageLayout,
   Container,
   Section,
-  Button,
   TextArea,
   FormGroup,
   GlassCard,
@@ -378,7 +378,7 @@ export function PaymentPage() {
                 />
               </FormGroup>
 
-              {snapshot.userId && note.trim() && (
+              {!!snapshot.userId && !!note.trim() && (
                 <CheckboxWrapper>
                   <StyledCheckbox
                     type="checkbox"

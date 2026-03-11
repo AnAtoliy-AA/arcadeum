@@ -3,7 +3,6 @@
 import styled from 'styled-components';
 import {
   Avatar,
-  Button,
   Modal,
   ModalContent,
   ModalHeader,
@@ -13,6 +12,7 @@ import {
 } from '@/shared/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { usePWAOptional } from './PWAContext';
+import { Button } from '@arcadeum/ui';
 
 const AppIconWrapper = styled.div`
   display: flex;

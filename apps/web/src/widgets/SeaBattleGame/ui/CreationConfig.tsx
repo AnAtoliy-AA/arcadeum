@@ -5,7 +5,7 @@ import {
 } from '@/shared/lib/useTranslation';
 import { GameCreationConfigProps } from '@/features/games/types';
 import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
-import { Section } from '@/shared/ui';
+import { Section, Button } from '@/shared/ui';
 import {
   GameSelector,
   GameTile,
@@ -13,7 +13,6 @@ import {
   GameTileSummary,
   SelectionIndicator,
   GameTileIcon,
-  RulesTrigger,
   ThemeHeader,
 } from '@/app/games/create/styles';
 import { RulesModal } from './RulesModal';
@@ -40,9 +39,15 @@ export function SeaBattleCreationConfig({
     <>
       <Section title={t('games.create.sectionVariant') || 'Game Theme'}>
         <ThemeHeader>
-          <RulesTrigger type="button" onClick={() => setShowRules(true)}>
+          <Button
+            variant="link"
+            size="sm"
+            mb="$4"
+            type="button"
+            onClick={() => setShowRules(true)}
+          >
             📖 {t('games.rules.button') || 'View Game Rules'}
-          </RulesTrigger>
+          </Button>
         </ThemeHeader>
         <GameSelector>
           {SEA_BATTLE_VARIANTS.map((variant) => (

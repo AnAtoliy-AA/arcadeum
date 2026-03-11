@@ -18,8 +18,7 @@ import {
   BadgeWrapper,
 } from './styles';
 import { SeaBattleGrids } from './SeaBattleGrids';
-import { Badge } from '@/shared/ui/Badge';
-import { IdleBadge } from '@/shared/ui';
+import { Badge, IdleBadge } from '@/shared/ui';
 import {
   useTranslation,
   type TranslationKey,

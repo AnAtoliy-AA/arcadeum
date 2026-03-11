@@ -1,5 +1,5 @@
 import styled, { keyframes } from 'styled-components';
-import { GlassCard } from '@/shared/ui/GlassCard';
+import { GlassCard } from '@/shared/ui';
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(5px) scale(0.95); }

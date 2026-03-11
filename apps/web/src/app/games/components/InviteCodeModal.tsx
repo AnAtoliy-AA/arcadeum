@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { routes } from '@/shared/config/routes';
 import {
   Modal,
   ModalContent,
@@ -10,8 +11,8 @@ import {
   ModalTitle,
   ModalBody,
   ModalFooter,
-} from '@/shared/ui/Modal/Modal';
-import { Button } from '@/shared/ui';
+  Button,
+} from '@/shared/ui';
 import { gamesApi } from '@/features/games/api';
 
 interface InviteCodeModalProps {
@@ -49,7 +50,7 @@ export function InviteCodeModal({ open, onClose }: InviteCodeModalProps) {
       onClose();
       // Pass invite code in URL so GameRoomPage auto-joins without re-entering
       router.push(
-        `/games/rooms/${room.id}?inviteCode=${encodeURIComponent(inviteCode)}`,
+        `${routes.gameRoom(room.id)}?inviteCode=${encodeURIComponent(inviteCode)}`,
       );
     },
   });

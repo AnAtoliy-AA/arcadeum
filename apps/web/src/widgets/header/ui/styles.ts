@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import Link from 'next/link';
-import { LinkButton, Button, Divider } from '@/shared/ui';
+import { LinkButton, Divider } from '@/shared/ui';
 
 export const HeaderContainer = styled.header`
   position: sticky;
@@ -127,17 +127,6 @@ export const ProfileMenuContainer = styled.div`
   }
 `;
 
-export const UserInfo = styled(Button).attrs({
-  variant: 'chip',
-  size: 'sm',
-})`
-  gap: 0.75rem;
-
-  @media (max-width: 1150px) {
-    display: none;
-  }
-`;
-
 export const UserName = styled.span`
   font-size: 0.875rem;
   font-weight: 500;
@@ -168,16 +157,6 @@ export const ProfileDropdown = styled.div<{ $isOpen: boolean }>`
   transition: all 0.2s ease;
   z-index: 1000;
   overflow: hidden;
-`;
-
-export const DropdownItem = styled(Button).attrs({
-  variant: 'listItem',
-})`
-  svg {
-    width: 18px;
-    height: 18px;
-    color: ${({ theme }) => theme.text.muted};
-  }
 `;
 
 export const DropdownLink = styled(Link).attrs({ prefetch: false })`
@@ -214,14 +193,11 @@ export const AuthButton = styled(LinkButton).attrs({
   }
 `;
 
-export const MobileMenuButton = styled(Button).attrs({
-  variant: 'icon',
-  size: 'sm',
-})`
-  display: none;
+export const MobileMenuContainer = styled.div`
+  display: none !important;
 
   @media (max-width: 1150px) {
-    display: flex;
+    display: flex !important;
   }
 `;
 

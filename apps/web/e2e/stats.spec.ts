@@ -82,7 +82,7 @@ test.describe('Player Stats', () => {
     ).toBeVisible();
     await expect(page.getByText('10', { exact: true }).first()).toBeVisible(); // Total games
     await expect(page.getByText('7', { exact: true }).first()).toBeVisible(); // Wins
-    await expect(page.getByText('70%')).toBeVisible(); // Win rate
+    await expect(page.getByText('70%').first()).toBeVisible(); // Win rate
     await expect(page.getByText('Critical', { exact: true })).toBeVisible(); // Game ID should be human readable
   });
 

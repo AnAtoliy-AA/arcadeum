@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.21] - 2026-03-11
+
+### Fixed
+- versioning after merge to develop (ARC-449)
+
+
+## [1.7.20] - 2026-03-11
+
+### Added
+- make layout rotatable for mobiles (ARC-445)
+- sea battle show field colors in the lobby (ARC-426)
+- sea battle pop up sending message (ARC-413)
+- add refresh button to waiting for game start modal (ARC-414)
+- reorder home screen sections (ARC-433)
+- CI/CD pipelines tests (#463) (ARC-436)
+
+### Fixed
+- ci yml optimization (ARC-447)
+- more understandable download button (ARC-442)
+- rework header layout for middle devices (ARC-444)
+- critical maelstrom card action (ARC-409)
+- tablet layout for sea battle (ARC-440)
+- settings themes buttons colors (ARC-438)
+- critical game table layout on mobile (ARC-441)
+- play again modal (ARC-442)
+- video attributes warnings in e2e (N/A)
+- idle screen after changing page (ARC-439)
+- peyment 404 in e2e test (N/A)
+- playwright config (N/A)
+- ci yml config (N/A)
+- docs check script (N/A)
+- create room clear logic (ARC-408)
+
+### Documentation
+- update 1.7 release docs (ARC-448)
+- security md (ARC-443)
+- architecture description (ARC-435)
+
+
 ## [1.7.19] - 2026-03-10
 
 ### Documentation

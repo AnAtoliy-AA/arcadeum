@@ -12,9 +12,13 @@
     "format": "turbo run format --parallel",
     "check-file-length": "node scripts/check-file-length.js",
     "check-translations": "node scripts/check_translation.js",
-    "docs:check": "node scripts/check-doc-links.js"
+    "docs:check": "node scripts/check-doc-links.js",
+    "changelog": "auto-changelog --stdout --template ./scripts/changelog-template.hbs --unreleased --commit-limit false > CHANGELOG.md"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.4.3",
+    "@commitlint/config-conventional": "^20.4.3",
+    "auto-changelog": "^2.5.0",
     "husky": "^9.1.4",
     "jimp": "^0.22.12",
     "lint-staged": "^15.2.10",

@@ -9,204 +9,169 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.8.0] - 2026-03-11
 
-
-
-
 ## [1.7.21] - 2026-03-11
 
 ### Fixed
+
 - versioning after merge to develop (ARC-449)
-
-
-## [1.7.20] - 2026-03-11
-
-### Added
-- make layout rotatable for mobiles (ARC-445)
-- sea battle show field colors in the lobby (ARC-426)
-- sea battle pop up sending message (ARC-413)
-- add refresh button to waiting for game start modal (ARC-414)
-- reorder home screen sections (ARC-433)
-- CI/CD pipelines tests (#463) (ARC-436)
-
-### Fixed
-- ci yml optimization (ARC-447)
-- more understandable download button (ARC-442)
-- rework header layout for middle devices (ARC-444)
-- critical maelstrom card action (ARC-409)
-- tablet layout for sea battle (ARC-440)
-- settings themes buttons colors (ARC-438)
-- critical game table layout on mobile (ARC-441)
-- play again modal (ARC-442)
-- video attributes warnings in e2e (N/A)
-- idle screen after changing page (ARC-439)
-- peyment 404 in e2e test (N/A)
-- playwright config (N/A)
-- ci yml config (N/A)
-- docs check script (N/A)
-- create room clear logic (ARC-408)
-
-### Documentation
-- update 1.7 release docs (ARC-448)
-- security md (ARC-443)
-- architecture description (ARC-435)
-
 
 ## [1.7.19] - 2026-03-10
 
 ### Documentation
+
 - update 1.7 release docs (ARC-448)
-
-
-## [Released]
 
 ## [1.7.18] - 2026-03-10
 
 ### Added
-- Made game layouts automatically rotate on mobile devices for better orientation (ARC-445)
 
+- Made game layouts automatically rotate on mobile devices for better orientation (ARC-445)
 
 ## [1.7.17] - 2026-03-10
 
 ### Fixed
-- Optimized CI/CD pipeline configuration for faster and more reliable builds (ARC-447)
 
+- Optimized CI/CD pipeline configuration for faster and more reliable builds (ARC-447)
 
 ## [1.7.16] - 2026-03-10
 
 ### Fixed
-- Improved clarity and visibility of the download button for better user guidance (ARC-442)
 
+- Improved clarity and visibility of the download button for better user guidance (ARC-442)
 
 ## [1.7.15] - 2026-03-10
 
 ### Fixed
-- Refined header layout to improve usability on mid-sized tablets and foldable devices (ARC-444)
 
+- Refined header layout to improve usability on mid-sized tablets and foldable devices (ARC-444)
 
 ## [1.7.14] - 2026-03-10
 
 ### Fixed
-- Fixed a critical bug in the Maelstrom card action that could cause game state errors (ARC-409)
 
+- Fixed a critical bug in the Maelstrom card action that could cause game state errors (ARC-409)
 
 ## [1.7.13] - 2026-03-10
 
 ### Fixed
-- Improved tablet layout for Sea Battle to ensure proper spacing and touch targets (ARC-440)
 
+- Improved tablet layout for Sea Battle to ensure proper spacing and touch targets (ARC-440)
 
 ## [1.7.12] - 2026-03-10
 
 ### Fixed
-- Corrected color inconsistencies in theme buttons within Settings menu (ARC-438)
 
+- Corrected color inconsistencies in theme buttons within Settings menu (ARC-438)
 
 ## [1.7.11] - 2026-03-09
 
 ### Documentation
-- Updated SECURITY.md with current practices and contact information (ARC-443)
 
+- Updated SECURITY.md with current practices and contact information (ARC-443)
 
 ## [1.7.10] - 2026-03-09
 
 ### Fixed
-- Fixed layout issues on mobile devices that caused game tables to overflow or misalign (ARC-441)
 
+- Fixed layout issues on mobile devices that caused game tables to overflow or misalign (ARC-441)
 
 ## [1.7.9] - 2026-03-09
 
 ### Added
-- Added color-coded field indicators in the Sea Battle lobby to help players identify their territory (ARC-426)
 
+- Added color-coded field indicators in the Sea Battle lobby to help players identify their territory (ARC-426)
 
 ## [1.7.8] - 2026-03-09
 
 ### Fixed
-- Fixed an issue where the Play Again modal would not appear correctly after a match ended (ARC-442)
 
+- Fixed an issue where the Play Again modal would not appear correctly after a match ended (ARC-442)
 
 ## [1.7.7] - 2026-03-09
 
 ### Added
-- Added a pop-up notification when sending messages in Sea Battle to confirm successful delivery (ARC-413)
 
+- Added a pop-up notification when sending messages in Sea Battle to confirm successful delivery (ARC-413)
 
 ## [1.7.6] - 2026-03-06
 
 ### Fixed
+
 - Resolved video attribute warnings in E2E tests that were cluttering logs (N/A)
 - Fixed an issue where users were stuck on an idle screen after navigating away from a game (ARC-439)
-
 
 ## [1.7.5] - 2026-03-06
 
 ### Added
-- Added a refresh button to the "Waiting for Game Start" modal to let players manually retry connection (ARC-414)
 
+- Added a refresh button to the "Waiting for Game Start" modal to let players manually retry connection (ARC-414)
 
 ## [1.7.4] - 2026-03-05
 
 ### Added
+
 - Reordered sections on the home screen to prioritize the most popular games and features (ARC-433)
 
 ### Fixed
+
 - Fixed a 404 error in E2E tests related to payment endpoints (N/A)
 - Updated Playwright configuration for more stable test runs (N/A)
 - Streamlined CI/CD configuration for improved reliability (N/A)
 
-
 ## [1.7.3] - 2026-03-03
 
 ### Added
-- Added automated tests for CI/CD pipelines to catch configuration issues before deployment (#463) (ARC-436)
 
+- Added automated tests for CI/CD pipelines to catch configuration issues before deployment (#463) (ARC-436)
 
 ## [1.7.2] - 2026-03-02
 
 ### Fixed
+
 - Fixed a bug in the documentation link checker script that caused false positives (N/A)
 
 ### Documentation
-- Added detailed backend and frontend architecture diagrams to improve developer onboarding (ARC-435)
 
+- Added detailed backend and frontend architecture diagrams to improve developer onboarding (ARC-435)
 
 ## [1.7.1] - 2026-03-02
 
 ### Fixed
-- Improved room creation logic to properly clear stale game data when a room is deleted (ARC-408)
 
+- Improved room creation logic to properly clear stale game data when a room is deleted (ARC-408)
 
 ## [1.7.0] - 2026-02-27
 
 ### Added
+
 - This release focused on polish and stability, with improvements to layout, usability, and testing infrastructure across all platforms.
 
 ### Fixed
+
 - Numerous minor UI and performance fixes to enhance the overall user experience.
+
 ## [1.6.4] - 2026-02-27
 
 ### Added
-- add alternative deployment (ARC-422)
-- new high altitude hike critical game variant (ARC-420)
-- threads discord and x links (ARC-405)
+
+- Added alternative deployment configuration (ARC-422)
+- Added new "High Altitude Hike" critical game variant (ARC-420)
+- Added links to Threads, Discord, and X (ARC-405)
 
 ### Fixed
-- high altitude game translations (ARC-431)
-- scroll ui styles in game rules modal (ARC-416)
-- sea battle clear understanding of whose turn (ARC-412)
-- clear invite link (ARC-407)
-- version bump yml (ARC-421)
-- version bump yml (ARC-421)
-- version bump yml (ARC-421)
-- use by instead of be (ARC-415)
-- sea battle modern colors (ARC-406)
-- e2e tests utils (ARC-405)
+
+- Fixed translations for the "High Altitude Hike" game (ARC-431)
+- Improved scroll UI styles in the game rules modal (ARC-416)
+- Clarified turn indication in Sea Battle (ARC-412)
+- Fixed invite link generation and display (ARC-407)
+- Corrected typo: replaced "be" with "by" in UI text (ARC-415)
+- Updated Sea Battle color scheme to modern palette (ARC-406)
+- Enhanced E2E test utilities for reliability (ARC-405)
 
 ### Documentation
-- code of conduct (ARC-424)
-- update (ARC-421)
-- contributing rules (ARC-411)
 
+- Updated Code of Conduct (ARC-424)
+- Updated contributing guidelines (ARC-411)
 
 ## [1.6.3] - 2026-02-27
 
@@ -239,11 +204,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improved clarity of turn indication in Sea Battle game (ARC-412)
 - Improved clarity of turn indication in Sea Battle game (ARC-412)
-
 - Fixed invite link generation and display issues (ARC-407)
-
 - Updated Code of Conduct document (ARC-424)
-
 - Added alternative deployment configuration options (ARC-422)
 
 ## [1.5.7] - 2026-02-26
@@ -263,9 +225,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added new game variant support for upcoming features
-
-### Added
-
 - New game variants in development
 - Enhanced user interface improvements
 - Performance optimizations for mobile devices

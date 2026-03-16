@@ -1,3 +1,5 @@
+'use client';
+
 import { YStack, XStack, Text, Button, styled } from 'tamagui';
 import { useState, useCallback, memo } from 'react';
 import type { ReactNode } from 'react';

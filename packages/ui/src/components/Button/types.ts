@@ -18,7 +18,7 @@ export type ButtonVariant =
   | 'info'
   | 'victory';
 
-export type GameVariant = 'cyberpunk' | 'underwater';
+export type GameVariant = 'cyberpunk' | 'underwater' | 'crime' | 'horror' | 'adventure' | 'high-altitude-hike';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 export type ButtonProps = Omit<GetProps<typeof StyledButton>, 'size' | 'onClick'> & {
@@ -31,7 +31,6 @@ export type ButtonProps = Omit<GetProps<typeof StyledButton>, 'size' | 'onClick'
   disabled?: boolean;
   pulse?: boolean;
   isActive?: boolean;
-  uppercase?: boolean;
   pill?: boolean;
   gameVariant?: GameVariant;
   onPress?: GetProps<typeof StyledButton>['onPress'];

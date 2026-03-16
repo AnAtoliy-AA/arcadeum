@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
 import { usePathname } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -10,15 +11,19 @@ import { routes } from '@/shared/config/routes';
 import { appConfig } from '@/shared/config/app-config';
 import {
   MobileNav,
-  MobileNavLink,
   MobileUserInfo,
-  UserName,
-  RoleBadge,
-  AuthButton,
-  DropdownDivider,
+  UserNameEllipsis,
   MobileVersionText,
 } from './styles';
-import { Button } from '@arcadeum/ui';
+import {
+  Button,
+  YStack,
+  LogoutIcon,
+  SupportIcon,
+  RoleBadge,
+  LinkButton,
+  Divider,
+} from '@arcadeum/ui';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface MobileMenuProps {
@@ -27,10 +32,17 @@ interface MobileMenuProps {
   navItems: Array<{ href: string; label: string }>;
 }
 
+const noop = () => () => {};
+
 export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
   const pathname = usePathname();
   const { snapshot, clearTokens } = useSessionTokens();
   const { t } = useTranslation();
+  const mounted = useSyncExternalStore(
+    noop,
+    () => true,
+    () => false,
+  );
 
   const isAuthenticated = !!snapshot.accessToken;
   const displayName =
@@ -43,27 +55,28 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
     window.location.replace('/');
   }, [clearTokens]);
 
-  return (
-    <MobileNav $isOpen={isOpen} data-mobile-menu data-testid="mobile-nav">
+  const content = (
+    <MobileNav isOpen={isOpen} data-mobile-menu data-testid="mobile-nav">
       {navItems.map((item) => (
-        <MobileNavLink
+        <LinkButton
           key={item.href}
           href={item.href}
-          $active={pathname === item.href}
+          variant="ghost"
+          size="sm"
+          isActive={pathname === item.href}
           onClick={onClose}
+          fullWidth
         >
           {item.label}
-        </MobileNavLink>
+        </LinkButton>
       ))}
 
       {isAuthenticated && displayName && (
         <>
           <MobileUserInfo>
-            <UserName>{displayName}</UserName>
+            <UserNameEllipsis>{displayName}</UserNameEllipsis>
             {role !== 'free' && (
-              <RoleBadge $role={role} style={{ marginLeft: '0.5rem' }}>
-                {t(`common.roles.${role}`)}
-              </RoleBadge>
+              <RoleBadge role={role}>{t(`common.roles.${role}`)}</RoleBadge>
             )}
             {cosmeticBadges?.map((badgeId) => (
               <CosmeticBadge key={badgeId} badgeId={badgeId} />
@@ -74,21 +87,7 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
             mt="$2"
             data-testid="mobile-logout-button"
             onClick={handleLogout}
-            icon={
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                style={{ width: 18, height: 18, color: '#94a3b8' }}
-              >
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
-            }
+            icon={<LogoutIcon size={18} />}
           >
             {t('common.actions.logout')}
           </Button>
@@ -97,44 +96,41 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
 
       {!isAuthenticated && (
         <div style={{ marginTop: '0.5rem', textAlign: 'center' }}>
-          <AuthButton
+          <LinkButton
             href="/auth"
+            variant="ghost"
+            size="sm"
             onPress={onClose}
             data-testid="mobile-login-button"
           >
             {t('common.actions.login')}
-          </AuthButton>
+          </LinkButton>
         </div>
       )}
 
-      <DropdownDivider style={{ marginTop: '1rem' }} />
+      <YStack marginTop="$4">
+        <Divider spacing="sm" />
+      </YStack>
 
       <div style={{ padding: '0.5rem 1rem' }}>
-        <LanguageSwitcher />
+        <LanguageSwitcher data-testid="header-language-switcher" />
       </div>
-      <MobileNavLink
+      <LinkButton
         href={routes.support}
-        $active={pathname === routes.support}
+        variant="ghost"
+        size="sm"
+        isActive={pathname === routes.support}
         onClick={onClose}
-        style={{ color: '#ec4899' }}
+        fullWidth
       >
-        <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{ width: 18, height: 18 }}
-          >
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-          </svg>
-          {t('common.actions.support')}
-        </span>
-      </MobileNavLink>
+        <SupportIcon size={18} />
+        {t('common.actions.support')}
+      </LinkButton>
 
       <MobileVersionText>v{appConfig.appVersion}</MobileVersionText>
     </MobileNav>
   );
+
+  if (!mounted) return content;
+  return createPortal(content, document.body);
 }

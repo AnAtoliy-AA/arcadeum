@@ -5,6 +5,7 @@ import {
   isThemePreference,
   themeTokens,
   DEFAULT_THEME_NAME,
+  ThemeName,
 } from './theme';
 
 describe('theme config', () => {
@@ -16,8 +17,9 @@ describe('theme config', () => {
   });
 
   it('returns default tokens for unknown theme names', () => {
-    // @ts-expect-error - testing invalid input
-    expect(getThemeTokens('invalid')).toBe(themeTokens[DEFAULT_THEME_NAME]);
+    expect(getThemeTokens('invalid' as ThemeName)).toBe(
+      themeTokens[DEFAULT_THEME_NAME],
+    );
   });
 
   it('identifies theme names correctly', () => {

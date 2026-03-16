@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import type { PlayerStats } from '@/features/history/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { Card, SkeletonText, ProgressCircle } from '@/shared/ui';
@@ -18,7 +18,7 @@ export function StatsOverview({ stats, loading }: StatsOverviewProps) {
         {[1, 2, 3, 4].map((i) => (
           <Card key={i} variant="glass" padding="md">
             <SkeletonText width="60%" height="14px" delay={i * 0.1} />
-            <SkeletonValue delay={i * 0.1 + 0.05} />
+            <SkeletonValue $delay={i * 0.1 + 0.05} />
           </Card>
         ))}
       </Grid>
@@ -78,13 +78,24 @@ const StatValue = styled.div<{ $color?: string }>`
   letter-spacing: -0.02em;
 `;
 
-const SkeletonValue = styled.div<{ delay?: number }>`
+const shimmer = keyframes`
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+`;
+
+const SkeletonValue = styled.div<{ $delay?: number }>`
   height: 32px;
   width: 100px;
-  background: ${({ theme }) => theme.surfaces.card.border};
   border-radius: 8px;
-    }
-  }
+  background: linear-gradient(
+    90deg,
+    ${({ theme }) => theme.surfaces.card.border} 0%,
+    ${({ theme }) => theme.surfaces.card.background} 50%,
+    ${({ theme }) => theme.surfaces.card.border} 100%
+  );
+  background-size: 200% 100%;
+  animation: ${shimmer} 1.5s infinite;
+  animation-delay: ${({ $delay }) => $delay ?? 0}s;
 `;
 
 const WinRateCard = styled(StatCard)`

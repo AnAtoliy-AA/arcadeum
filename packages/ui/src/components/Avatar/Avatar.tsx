@@ -1,4 +1,6 @@
-import { Avatar as TamaguiAvatar, YStack, Text, styled, Circle, FontSizeTokens, GetProps } from 'tamagui';
+'use client';
+
+import { YStack, Text, styled, Circle, FontSizeTokens } from 'tamagui';
 import { memo, useMemo } from 'react';
 import type { ReactElement } from 'react';
 
@@ -81,25 +83,14 @@ export const Avatar = memo(function Avatar({
   return (
     <StyledAvatarContainer size={size} data-testid={dataTestId}>
       {src ? (
-        <TamaguiAvatar circular size={sizeValue}>
-          <TamaguiAvatar.Image
-            src={src}
-            accessibilityLabel={alt || name}
-            alt={alt || name}
-          />
-          <TamaguiAvatar.Fallback
-            delayMs={0}
-            backgroundColor="$primary"
-            alignItems="center"
-            justifyContent="center"
-            width="100%"
-            height="100%"
-          >
-            <Text color="$white" fontWeight="700" fontSize={fontSize}>
-              {initials}
-            </Text>
-          </TamaguiAvatar.Fallback>
-        </TamaguiAvatar>
+        <img
+          src={src}
+          alt={alt || name}
+          style={{ width: sizeValue, height: sizeValue, objectFit: 'cover', borderRadius: '50%' }}
+          onError={(e) => {
+            e.currentTarget.style.display = 'none';
+          }}
+        />
       ) : (
         <Text color="$white" fontWeight="700" fontSize={fontSize}>
           {initials}

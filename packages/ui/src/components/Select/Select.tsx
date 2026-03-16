@@ -16,8 +16,8 @@ export type SelectProps = {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   'data-testid'?: string;
-  onChange?: (e: any) => void;
-  style?: any;
+  onChange?: (e: { target: { value: string } }) => void;
+  style?: React.CSSProperties;
   className?: string;
   'aria-label'?: string;
 };
@@ -78,7 +78,17 @@ export const Select = memo(function Select({
   children,
   onValueChange,
   onChange,
-  ...rest
+  value,
+  defaultValue,
+  id,
+  name,
+  disabled,
+  open,
+  onOpenChange,
+  'data-testid': dataTestId,
+  style,
+  className,
+  'aria-label': ariaLabel,
 }: SelectProps) {
   const handleValueChange = (val: string) => {
     onValueChange?.(val);
@@ -86,8 +96,24 @@ export const Select = memo(function Select({
   };
 
   return (
-    <TamaguiSelect onValueChange={handleValueChange} {...rest}>
-      <StyledSelectTrigger error={error} fullWidth={fullWidth} {...rest}>
+    <TamaguiSelect
+      value={value}
+      defaultValue={defaultValue}
+      onValueChange={handleValueChange}
+      open={open}
+      onOpenChange={onOpenChange}
+      name={name}
+    >
+      <StyledSelectTrigger
+        error={error}
+        fullWidth={fullWidth}
+        id={id}
+        disabled={disabled}
+        data-testid={dataTestId}
+        style={style}
+        className={className}
+        aria-label={ariaLabel}
+      >
         <TamaguiSelect.Value />
       </StyledSelectTrigger>
 

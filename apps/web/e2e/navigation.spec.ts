@@ -27,7 +27,7 @@ test.describe('Navigation', () => {
   });
 
   test('should navigate to home from any page', async ({ page }) => {
-    await page.goto('/games', { waitUntil: 'domcontentloaded' });
+    await navigateTo(page, '/games');
 
     // Use a more robust selector for the home link/logo
     const homeLink = page.locator('header a[href="/"]').first();

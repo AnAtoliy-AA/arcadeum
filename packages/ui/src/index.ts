@@ -1,3 +1,5 @@
+'use client';
+
 export * from './components/Button';
 
 export * from './components/Avatar/Avatar';
@@ -24,13 +26,16 @@ export * from './components/EmptyState/EmptyState';
 export * from './components/ErrorState/ErrorState';
 export * from './components/Skeleton/Skeleton';
 export * from './components/Progress/Progress';
-export * from './components/Button/LinkButton';
 export * from './components/CosmeticBadge/CosmeticBadge';
+export * from './components/RoleBadge/RoleBadge';
+export * from './components/MobileLoginIndicator/MobileLoginIndicator';
 
+export * from './components/Chat';
 export * from './components/CollapsibleSection/CollapsibleSection';
+
 export * from './components/ConnectionOverlay/ConnectionOverlay';
 export * from './components/Footer/Footer';
 export * from './components/IdleBadge/IdleBadge';
 export * from './components/ServerLoadingNotice/ServerLoadingNotice';
 export * from './components/Typography/Typography';
-export { XStack, YStack } from 'tamagui';
+export { XStack, YStack, ZStack, ScrollView, ThemeableStack } from 'tamagui';

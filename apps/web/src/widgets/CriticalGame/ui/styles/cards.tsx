@@ -15,7 +15,6 @@ export const ActionButton = ({
   <Button
     variant={variant || 'primary'}
     size="md"
-    uppercase
     gameVariant={$variant as unknown as GameVariant}
     {...props}
   />

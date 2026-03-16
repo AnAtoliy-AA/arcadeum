@@ -1,9 +1,10 @@
-import { YStack, styled } from 'tamagui';
+import { YStack, styled, GetProps } from 'tamagui';
 import { memo } from 'react';
 import type { ReactNode, ReactElement } from 'react';
 
-export type GlassCardProps = {
+export type GlassCardProps = GetProps<typeof YStack> & {
   children: ReactNode;
+  animated?: boolean;
 };
 
 const StyledGlassCard = styled(YStack, {
@@ -36,12 +37,13 @@ const TopLine = styled(YStack, {
   left: 0,
   right: 0,
   height: 1,
+  pointerEvents: 'none',
   background: 'linear-gradient(90deg, transparent 0%, $glassBorderHover 50%, transparent 100%)',
 });
 
-export const GlassCard = memo(function GlassCard({ children }: GlassCardProps): ReactElement {
+export const GlassCard = memo(function GlassCard({ children, ...props }: GlassCardProps): ReactElement {
   return (
-    <StyledGlassCard>
+    <StyledGlassCard {...props}>
       <TopLine />
       {children}
     </StyledGlassCard>

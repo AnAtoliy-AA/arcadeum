@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Select } from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
@@ -61,7 +61,7 @@ export function GameVariantSelector({
     },
   });
 
-  const handleVariantChange = (e: ChangeEvent<HTMLSelectElement>) => {
+  const handleVariantChange = (e: { target: { value: string } }) => {
     const newVariant = e.target.value;
     // Optimistic update
     setInternalVariant(newVariant);

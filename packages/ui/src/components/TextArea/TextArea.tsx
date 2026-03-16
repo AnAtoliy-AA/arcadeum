@@ -43,10 +43,10 @@ export type TextAreaProps = {
   value?: string;
   defaultValue?: string;
   placeholder?: string;
-  onChange?: (e: any) => void;
+  onChange?: GetProps<typeof TamaguiTextArea>['onChange'];
   onChangeText?: (text: string) => void;
-  onFocus?: (e: any) => void;
-  onBlur?: (e: any) => void;
+  onFocus?: GetProps<typeof TamaguiTextArea>['onFocus'];
+  onBlur?: GetProps<typeof TamaguiTextArea>['onBlur'];
   disabled?: boolean;
   error?: boolean;
   fullWidth?: boolean;

@@ -38,37 +38,11 @@ const StyledInput = styled(TamaguiInput, {
   } as const,
 });
 
-export type InputProps = {
-  value?: string;
-  defaultValue?: string;
-  placeholder?: string;
-  onChange?: (e: any) => void;
-  onChangeText?: (text: string) => void;
-  onFocus?: (e: any) => void;
-  onBlur?: (e: any) => void;
-  onKeyPress?: (e: any) => void;
-  onKeyDown?: (e: any) => void;
-  disabled?: boolean;
-  type?: string;
+export type InputProps = GetProps<typeof TamaguiInput> & {
   error?: boolean;
   fullWidth?: boolean;
-  'data-testid'?: string;
-  'aria-label'?: string;
-  id?: string;
-  name?: string;
-  autoFocus?: boolean;
-  required?: boolean;
-  style?: any;
-  min?: string | number;
-  max?: string | number;
-  autoComplete?: string;
-  inputMode?: 'none' | 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';
 };
 
-export const Input: TamaguiComponent<InputProps> = StyledInput.styleable<InputProps>(
-  ({ error, fullWidth, ...rest }, ref) => (
-    <StyledInput ref={ref} error={error} fullWidth={fullWidth} {...rest} />
-  )
-);
+export const Input: TamaguiComponent<InputProps> = StyledInput as TamaguiComponent<InputProps>;
 
 Input.displayName = 'Input';

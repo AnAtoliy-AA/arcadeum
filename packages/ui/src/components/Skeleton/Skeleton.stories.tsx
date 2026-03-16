@@ -238,7 +238,7 @@ const TableContainer = styled(YStack, {
 });
 
 const TableRow = styled(XStack, {
-  display: 'grid' as any,
+  display: 'grid' as unknown as 'inherit',
   gridTemplateColumns: '2fr 1fr 1fr 1fr',
   gap: '$4',
   padding: '$4',
@@ -254,7 +254,7 @@ const LeaderboardContainer = styled(YStack, {
 });
 
 const LeaderboardRow = styled(XStack, {
-  display: 'grid' as any,
+  display: 'grid' as unknown as 'inherit',
   gridTemplateColumns: '60px 2fr 80px 80px 80px 100px',
   gap: '$2',
   padding: '$4 $5',

@@ -1,40 +1,12 @@
-import { GetProps, styled, YStack, TamaguiComponent } from 'tamagui';
+'use client';
+
+import { GetProps } from 'tamagui';
 import { useMemo, Children } from 'react';
 import type { ReactNode, MouseEventHandler } from 'react';
 import Link from 'next/link';
 import { Typography } from '../Typography/Typography';
-import { sharedButtonVariants, sharedButtonSizes } from './SharedButtonStyles';
-import { ButtonVariant, ButtonSize } from './types';
-
-const StyledLinkButton: TamaguiComponent<any, any, any, any> = styled(YStack, {
-  name: 'LinkButton',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flexDirection: 'row',
-  borderRadius: '$4',
-  cursor: 'pointer',
-
-  variants: {
-    ...sharedButtonSizes,
-    ...sharedButtonVariants,
-
-    fullWidth: {
-      true: { width: '100%' },
-    },
-    isActive: {
-      true: {
-        opacity: 0.8,
-        backgroundColor: '$glassBgHover',
-      },
-    },
-  } as const,
-
-  defaultVariants: {
-    variant: 'primary',
-    buttonSize: 'md',
-  },
-});
+import { StyledLinkButton } from './StyledLinkButton';
+import type { ButtonVariant, ButtonSize } from './types';
 
 type StyledLinkButtonProps = GetProps<typeof StyledLinkButton>;
 
@@ -115,7 +87,5 @@ export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
     );
   }
 );
-
-
 
 LinkButton.displayName = 'LinkButton';

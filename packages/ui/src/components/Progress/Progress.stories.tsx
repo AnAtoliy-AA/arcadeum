@@ -232,7 +232,7 @@ const BarContainer = styled(YStack, {
 });
 
 const Dashboard = styled(YStack, {
-  display: 'grid' as any,
+  display: 'grid' as unknown as 'inherit',
   gridTemplateColumns: 'repeat(3, 1fr)',
   gap: '$4',
   width: '100%',

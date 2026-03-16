@@ -1,5 +1,4 @@
-import Link from 'next/link';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { Button, ButtonProps } from '@arcadeum/ui';
 
 export const Container = styled.div`
@@ -87,58 +86,6 @@ export const AccountActions = styled.div`
   flex-wrap: wrap;
   gap: 1.25rem;
   margin-top: 0.75rem;
-`;
-
-const baseActionStyles = css`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.875rem 1.75rem;
-  border-radius: 12px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  flex: 1;
-  min-width: 140px;
-
-  &:hover {
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-`;
-
-export const ActionButton = styled(Link)`
-  ${baseActionStyles}
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.buttons.primary.gradientStart},
-    ${({ theme }) => theme.buttons.primary.gradientEnd}
-  );
-  color: ${({ theme }) => theme.buttons.primary.text};
-  box-shadow: 0 8px 20px -4px
-    ${({ theme }) => theme.buttons.primary.gradientStart}40;
-
-  &:hover {
-    box-shadow: 0 12px 28px -4px
-      ${({ theme }) => theme.buttons.primary.gradientStart}60;
-    filter: brightness(1.1);
-  }
-`;
-
-export const SecondaryButton = styled(Link)`
-  ${baseActionStyles}
-  border: 1px solid ${({ theme }) => theme.buttons.secondary.border};
-  background: ${({ theme }) => theme.buttons.secondary.background};
-  color: ${({ theme }) => theme.buttons.secondary.text};
-  backdrop-filter: blur(4px);
-
-  &:hover {
-    border-color: ${({ theme }) => theme.buttons.secondary.hoverBorder};
-    background: ${({ theme }) => theme.buttons.secondary.hoverBackground};
-  }
 `;
 
 export const ToggleRow = styled.label`

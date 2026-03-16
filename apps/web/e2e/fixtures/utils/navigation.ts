@@ -19,8 +19,32 @@ export async function ensureNavigationVisible(page: Page): Promise<void> {
 }
 
 export async function navigateTo(page: Page, path: string): Promise<void> {
-  await page.goto(path, { timeout: 60000, waitUntil: 'domcontentloaded' });
-  await page.waitForLoadState('domcontentloaded', { timeout: 60000 });
+  let chunkLoadError = false;
+
+  const onPageError = (err: Error) => {
+    if (
+      err.message.includes('ChunkLoadError') ||
+      err.message.includes('Failed to load chunk')
+    ) {
+      chunkLoadError = true;
+    }
+  };
+
+  page.on('pageerror', onPageError);
+
+  try {
+    await page.goto(path, { timeout: 60000, waitUntil: 'domcontentloaded' });
+    await page.waitForLoadState('domcontentloaded', { timeout: 60000 });
+
+    // Reload once if Turbopack chunk hashes changed (common in dev/HMR)
+    if (chunkLoadError) {
+      chunkLoadError = false;
+      await page.reload({ waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page.waitForLoadState('domcontentloaded', { timeout: 60000 });
+    }
+  } finally {
+    page.off('pageerror', onPageError);
+  }
 
   // Wait for hydration - theme provider sets these attributes in useEffect
   // This is a reliable way to ensure React has finished mounting and effects have run.

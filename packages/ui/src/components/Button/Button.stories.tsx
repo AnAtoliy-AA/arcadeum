@@ -27,16 +27,12 @@ const meta: Meta<typeof Button> = {
     },
     gameVariant: {
       control: 'select',
-      options: ['cyberpunk', 'underwater'],
+      options: ['cyberpunk', 'underwater', 'crime', 'horror', 'adventure', 'high-altitude-hike'],
       description: 'Game-specific styling',
     },
     pulse: {
       control: 'boolean',
       description: 'Enable pulse animation',
-    },
-    uppercase: {
-      control: 'boolean',
-      description: 'Force uppercase text',
     },
     isActive: {
       control: 'boolean',
@@ -121,7 +117,6 @@ export const Chip: Story = {
     variant: 'chip',
     children: 'Chip Button',
     isActive: false,
-    uppercase: false,
     loading: false,
   },
 };
@@ -180,7 +175,6 @@ export const GameCyberpunk: Story = {
   args: {
     gameVariant: 'cyberpunk',
     children: 'Cyberpunk Action',
-    uppercase: true,
   },
   globals: {
     backgrounds: {
@@ -193,7 +187,54 @@ export const GameUnderwater: Story = {
   args: {
     gameVariant: 'underwater',
     children: 'Underwater Action',
-    uppercase: true,
+  },
+  globals: {
+    backgrounds: {
+      value: 'dark',
+    },
+  },
+};
+
+export const GameCrime: Story = {
+  args: {
+    gameVariant: 'crime',
+    children: 'Crime Action',
+  },
+  globals: {
+    backgrounds: {
+      value: 'dark',
+    },
+  },
+};
+
+export const GameHorror: Story = {
+  args: {
+    gameVariant: 'horror',
+    children: 'Horror Action',
+  },
+  globals: {
+    backgrounds: {
+      value: 'dark',
+    },
+  },
+};
+
+export const GameAdventure: Story = {
+  args: {
+    gameVariant: 'adventure',
+    children: 'Adventure Action',
+  },
+  globals: {
+    backgrounds: {
+      value: 'dark',
+    },
+  },
+};
+
+export const GameHighAltitudeHike: Story = {
+  args: {
+    gameVariant: 'high-altitude-hike',
+    children: 'High Altitude Action',
   },
   globals: {
     backgrounds: {

@@ -302,7 +302,7 @@ export function CreateGameRoomPage() {
                   t('games.create.notesPlaceholder') || 'Add notes...'
                 }
                 value={notes}
-                onChange={(e) => setNotes(e.target.value)}
+                onChangeText={setNotes}
                 aria-label={
                   t('games.create.notesAria') || 'Additional notes for the room'
                 }

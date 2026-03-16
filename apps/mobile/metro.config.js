@@ -1,6 +1,9 @@
 // Metro configuration tweaks: ensure SVG support for all builds and
 // keep dev defaults aligned with the Expo workflow.
 const { getDefaultConfig } = require('expo/metro-config');
+const path = require('path');
+const workspaceRoot = path.resolve(__dirname, '../..');
+const projectRoot = __dirname;
 
 function withSvgSupport(config) {
   const transformer = config.transformer ?? {};
@@ -22,13 +25,19 @@ function withSvgSupport(config) {
     sourceExts: sourceExts.includes('svg')
       ? sourceExts
       : [...sourceExts, 'svg'],
-    nodeModulesPaths: [require('path').resolve(__dirname, 'node_modules')],
+    nodeModulesPaths: [
+      path.resolve(projectRoot, 'node_modules'),
+      path.resolve(workspaceRoot, 'node_modules'),
+    ],
   };
 
   return config;
 }
 
-const config = withSvgSupport(getDefaultConfig(__dirname));
+const config = withSvgSupport(getDefaultConfig(projectRoot));
+
+config.projectRoot = projectRoot;
+config.watchFolders = [workspaceRoot];
 
 if (process.env.NODE_ENV !== 'production') {
   // Improve web debugging: keep module names and disable inline requires for clearer stack & sources

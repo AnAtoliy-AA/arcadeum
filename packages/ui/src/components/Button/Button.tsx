@@ -1,18 +1,9 @@
-import { styled, YStack, TamaguiComponent } from 'tamagui';
 import { memo } from 'react';
 import type { ReactElement } from 'react';
-import { StyledButton } from './StyledButton';
-import { ButtonProps, ButtonVariant, GameVariant } from './types';
+import { StyledButton, Shimmer } from './StyledButton';
+import type { ButtonProps } from './types';
 
-export { StyledButton, type ButtonVariant, type GameVariant };
-export type { ButtonProps };
-
-export const Shimmer: TamaguiComponent = styled(YStack, {
-  position: 'absolute',
-  inset: 0,
-  background: 'linear-gradient(90deg, transparent, $glassBorder, transparent)',
-  x: '-100%',
-});
+export { Shimmer };
 
 export const Button = memo(function Button({
   size,
@@ -20,7 +11,6 @@ export const Button = memo(function Button({
   loading,
   disabled,
   showShimmer,
-  gameVariant,
   children,
   ...rest
 }: ButtonProps): ReactElement {

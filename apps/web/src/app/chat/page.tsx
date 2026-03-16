@@ -1,18 +1,18 @@
-'use client';
-
 import { Suspense } from 'react';
-
-import styled from 'styled-components';
+import { YStack, Typography } from '@arcadeum/ui';
 import { ChatPage } from './ChatPage';
-
-const LoadingWrapper = styled.div`
-  padding: 2rem;
-  text-align: center;
-`;
 
 export default function ChatRoute() {
   return (
-    <Suspense fallback={<LoadingWrapper>Loading...</LoadingWrapper>}>
+    <Suspense
+      fallback={
+        <YStack p="$7" ai="center">
+          <Typography uiSize="md" alpha="medium">
+            Loading...
+          </Typography>
+        </YStack>
+      }
+    >
       <ChatPage />
     </Suspense>
   );

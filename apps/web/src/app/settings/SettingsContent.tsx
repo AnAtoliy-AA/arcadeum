@@ -18,15 +18,13 @@ import {
   PillGroup,
   AccountStatus,
   AccountActions,
-  ActionButton,
-  SecondaryButton,
   ToggleRow,
   ToggleLabel,
   ToggleInput,
   VersionText,
 } from './styles';
 
-import { Button } from '@arcadeum/ui';
+import { Button, LinkButton } from '@arcadeum/ui';
 import { DownloadButtons, OptionCard, Footer } from '@/shared/ui';
 import { BlockedUsersSection } from './BlockedUsersSection';
 
@@ -264,25 +262,36 @@ export default function SettingsContent({
               {snapshot.email ? (
                 <Button
                   variant="primary"
+                  size="sm"
                   onClick={handleAccountAction}
                   data-testid="account-logout-button"
-                  style={{ flex: 1, borderRadius: '999px', minWidth: '140px' }}
+                  flex={1}
                 >
                   {accountPrimaryCta}
                 </Button>
               ) : (
-                <ActionButton href="/auth" data-testid="account-signin-button">
-                  {accountPrimaryCta}
-                </ActionButton>
+                <span style={{ flex: 1 }}>
+                  <LinkButton
+                    href="/auth"
+                    variant="primary"
+                    size="sm"
+                    data-testid="account-signin-button"
+                    fullWidth
+                  >
+                    {accountPrimaryCta}
+                  </LinkButton>
+                </span>
               )}
-              <SecondaryButton
-                as="a"
-                href={supportCta.href}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {accountSupportLabel}
-              </SecondaryButton>
+              <span style={{ flex: 1 }}>
+                <LinkButton
+                  href={supportCta.href}
+                  variant="secondary"
+                  size="sm"
+                  fullWidth
+                >
+                  {accountSupportLabel}
+                </LinkButton>
+              </span>
             </AccountActions>
           </Section>
 

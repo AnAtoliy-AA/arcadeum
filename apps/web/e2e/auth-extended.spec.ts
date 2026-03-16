@@ -10,7 +10,7 @@ test.describe('Auth Extended', () => {
   test('should validate registration fields', async ({ page }) => {
     await navigateTo(page, '/auth');
 
-    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
+    const toggleBtn = page.getByTestId('auth-toggle-mode-button').first();
     if (await toggleBtn.isVisible()) {
       const text = (await toggleBtn.textContent()) || '';
       if (
@@ -31,7 +31,7 @@ test.describe('Auth Extended', () => {
   test('should show error on password mismatch', async ({ page }) => {
     await navigateTo(page, '/auth');
 
-    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
+    const toggleBtn = page.getByTestId('auth-toggle-mode-button').first();
     await expect(toggleBtn).toBeEnabled({ timeout: 10000 });
     const text = (await toggleBtn.textContent()) || '';
     if (/need|регистрация|account/i.test(text) && !/already|уже/i.test(text)) {

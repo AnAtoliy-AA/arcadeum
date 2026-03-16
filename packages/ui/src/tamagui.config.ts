@@ -107,14 +107,63 @@ const tokens = createTokens({
     white: '#f5f7ff',
     black: '#000000',
     transparent: 'transparent',
+    // Cyberpunk
+    cyberpunkBg: '#0f0518',
+    cyberpunkBgEnd: '#1a0520',
+    cyberpunkPrimary: '#06b6d4',
+    cyberpunkSecondary: '#c026d3',
+    cyberpunkAccent: '#e879f9',
+    // Underwater
+    underwaterBg: '#040b15',
+    underwaterBgEnd: '#0c1a2e',
+    underwaterPrimary: '#22d3ee',
+    underwaterAccent: '#ec4899',
+    // Crime
+    crimeBg: '#18181b',
+    crimeBgEnd: '#27272a',
+    crimePrimary: '#dc2626',
+    crimeSecondary: '#ef4444',
+    crimeAccent: '#fca5a5',
+    // Horror
+    horrorBg: '#020617',
+    horrorBgEnd: '#0f172a',
+    horrorPrimary: '#10b981',
+    horrorSecondary: '#34d399',
+    horrorAccent: '#6ee7b7',
+    // Adventure
+    adventureBg: '#451a03',
+    adventureBgEnd: '#78350f',
+    adventurePrimary: '#f59e0b',
+    adventureSecondary: '#fbbf24',
+    adventureAccent: '#fcd34d',
+    // High Altitude Hike
+    hikeBg: '#020617',
+    hikeBgEnd: '#1e3a8a',
+    hikePrimary: '#38bdf8',
+    hikeSecondary: '#7dd3fc',
+    // Role badge colors
+    rolePremium: '#fbbf24',        // text + glow base
+    rolePremiumShade: '#f59e0b',   // bg gradient end
+    roleVip: '#e879f9',            // text
+    roleVipFrom: '#a855f7',        // bg gradient start
+    roleVipTo: '#db2777',          // bg gradient end
+    roleSupporter: '#f472b6',      // text + bg gradient end
+    roleSupporterFrom: '#ec4899',  // bg gradient start + glow base
+    roleDeveloper: '#818cf8',      // text
+    roleDeveloperShade: '#6366f1', // bg
   },
 });
 
 const darkTheme = {
   background: '#151718',
   backgroundHover: '#1e2326',
+  backgroundPress: '#252a2e',
+  backgroundFocus: '#1e2326',
+  outlineColor: 'transparent',
   color: '#ecefee',
   borderColor: '#32353d',
+  borderColorPress: '#4a4f5a',
+  borderColorFocus: '#57c3ff',
   borderColorHover: 'rgba(255, 255, 255, 0.2)',
   shadowColor: 'rgba(0,0,0,0.5)',
   // Brand Colors
@@ -161,8 +210,13 @@ const darkTheme = {
 const lightTheme = {
   background: '#f8fafc',
   backgroundHover: '#edf1f6',
+  backgroundPress: '#dde4ed',
+  backgroundFocus: '#edf1f6',
+  outlineColor: 'transparent',
   color: '#0f172a',
   borderColor: '#cbd5e1',
+  borderColorPress: '#94a3b8',
+  borderColorFocus: '#3b82f6',
   borderColorHover: 'rgba(0, 0, 0, 0.15)',
   shadowColor: 'rgba(0,0,0,0.1)',
   // Brand Colors
@@ -210,8 +264,11 @@ const neonDarkTheme = {
   ...darkTheme,
   background: '#06011b',
   backgroundHover: '#100830',
+  backgroundPress: '#1a0f3d',
   color: '#f5f7ff',
   borderColor: 'rgba(143, 155, 255, 0.35)',
+  borderColorPress: 'rgba(143, 155, 255, 0.6)',
+  borderColorFocus: 'rgba(143, 155, 255, 0.8)',
   shadowColor: 'rgba(5, 0, 40, 0.35)',
   // Status Border Overrides for Neon
   successBorder: 'rgba(16, 185, 129, 0.6)',
@@ -229,8 +286,11 @@ const neonLightTheme = {
   ...darkTheme, // Neon light still uses a dark background base in the app config
   background: '#06011b',
   backgroundHover: '#100830',
+  backgroundPress: '#1a0f3d',
   color: '#f5f7ff',
   borderColor: 'rgba(102, 69, 182, 0.6)',
+  borderColorPress: 'rgba(102, 69, 182, 0.9)',
+  borderColorFocus: 'rgba(102, 69, 182, 1)',
   shadowColor: 'rgba(8, 5, 24, 0.65)',
   // Status Border Overrides for Neon
   successBorder: 'rgba(16, 185, 129, 0.7)',

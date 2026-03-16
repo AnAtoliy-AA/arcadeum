@@ -1,3 +1,5 @@
+'use client';
+
 import { Dialog, YStack, XStack, styled, GetProps, TamaguiComponent } from 'tamagui';
 import { memo, useCallback } from 'react';
 import type { ReactNode } from 'react';

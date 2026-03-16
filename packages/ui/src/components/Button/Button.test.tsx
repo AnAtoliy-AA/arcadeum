@@ -2,7 +2,8 @@ import { TamaguiProvider } from "tamagui";
 import config from "../../tamagui.config";
 
 import { render as rtlRender, screen } from '@testing-library/react';
-import { Button, ButtonVariant, GameVariant } from './Button';
+import { Button } from './Button';
+import type { ButtonVariant, GameVariant } from './types';
 import { describe, it, expect } from 'vitest';
 
 const render = (ui: React.ReactElement) => {

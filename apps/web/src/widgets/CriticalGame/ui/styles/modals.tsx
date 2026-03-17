@@ -1,7 +1,9 @@
 import styled, { css, DefaultTheme } from 'styled-components';
-import React, { ComponentProps, ReactNode } from 'react';
-import { Button, GameVariant } from '@arcadeum/ui';
-import { ActionButton, CardsGrid, Card } from './cards';
+import React, { ComponentProps } from 'react';
+import { Button, GameVariant, ModalButton, OptionButton } from '@arcadeum/ui';
+
+export { ModalButton, OptionButton };
+import { CardsGrid, Card } from './cards';
 import { VARIANT_COLORS } from './variant-palette';
 import { GAME_VARIANT } from '../../lib/constants';
 import { scrollbarStyles } from '@/shared/lib/styles';
@@ -256,42 +258,11 @@ export const OptionGrid = styled.div`
   gap: 0.75rem;
 `;
 
-interface OptionButtonProps extends ComponentProps<typeof Button> {
-  $selected?: boolean;
-  $variant?: string;
-}
-
-export const OptionButton = ({
-  $selected,
-  $variant,
-  ...props
-}: OptionButtonProps) => (
-  <Button
-    variant="chip"
-    size="md"
-    isActive={$selected}
-    gameVariant={$variant as GameVariant}
-    p="$4"
-    flexDirection="column"
-    gap="$2"
-    {...props}
-  />
-);
-
 export const ModalActions = styled.div`
   display: flex;
   gap: 0.75rem;
   margin-top: 2rem;
 `;
-
-interface ModalButtonProps extends ComponentProps<typeof ActionButton> {
-  children?: ReactNode;
-  flex?: number;
-}
-
-export const ModalButton = (props: ModalButtonProps) => (
-  <ActionButton flex={1} {...props} />
-);
 
 export const ScrollableCardsGrid = styled(CardsGrid)`
   max-height: 55vh;

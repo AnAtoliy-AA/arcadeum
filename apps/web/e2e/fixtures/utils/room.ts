@@ -130,6 +130,7 @@ export async function mockRoomInfo(
         isHost: true,
       },
     ],
+    playerCount: r.members ? (r.members as unknown[]).length : 1,
     ...r,
   };
 

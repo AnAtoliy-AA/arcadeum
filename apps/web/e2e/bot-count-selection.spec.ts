@@ -35,6 +35,7 @@ test.describe('Bot Count Selection', () => {
         members: [
           { id: userId, userId, displayName: 'Test User', isHost: true },
         ],
+        playerCount: 1,
       },
     });
 

@@ -1,14 +1,14 @@
 'use client';
 
 import React from 'react';
-import styled from 'styled-components';
+import { styled, YStack, XStack, H3, Paragraph, Text } from 'tamagui';
 import { useRouter } from 'next/navigation';
 import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
 import type { GameMetadata } from '../types';
-import { Card as SharedCard, Badge } from '@/shared/ui';
+import { Card as SharedCard, Badge } from '@arcadeum/ui';
 
 interface GameCardProps {
   game: GameMetadata;
@@ -18,114 +18,81 @@ interface GameCardProps {
   disabled?: boolean;
 }
 
-const Card = styled(SharedCard)<{ $disabled?: boolean }>`
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  opacity: ${({ $disabled }) => ($disabled ? 0.6 : 1)};
+const StyledCard = styled(SharedCard, {
+  name: 'GameCard',
+  cursor: 'pointer',
+  position: 'relative',
+  overflow: 'hidden',
+  borderWidth: 1,
+  borderColor: '$borderColor',
 
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    border-color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  }
+  hoverStyle: {
+    y: -2,
+    shadowColor: 'rgba(0, 0, 0, 0.15)',
+    shadowRadius: 25,
+    borderColor: '$primary',
+  },
 
-  &:disabled {
-    cursor: not-allowed;
-  }
+  pressStyle: {
+    y: 0,
+    scale: 0.98,
+  },
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(
-      90deg,
-      ${({ theme, $disabled }) =>
-        $disabled ? theme.text.muted : theme.buttons.primary.gradientStart},
-      ${({ theme, $disabled }) =>
-        $disabled
-          ? theme.text.muted
-          : theme.buttons.primary.gradientEnd ||
-            theme.buttons.primary.gradientStart}
-    );
-  }
-`;
+  variants: {
+    disabled: {
+      true: {
+        opacity: 0.6,
+        cursor: 'not-allowed',
+        hoverStyle: {
+          y: 0,
+          shadowRadius: 0,
+          borderColor: '$borderColor',
+        },
+      },
+    },
+  } as const,
+});
 
-const GameImage = styled.div<{ $thumbnail?: string }>`
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
-  background: ${({ $thumbnail, theme }) =>
-    $thumbnail
-      ? `url(${$thumbnail}) center/cover`
-      : theme.surfaces.panel.background};
-  border: 2px solid ${({ theme }) => theme.surfaces.card.border};
-  margin-bottom: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ theme }) => theme.text.muted};
-  font-size: 1.5rem;
-`;
+const CardGlow = styled(YStack, {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  height: 3,
+  variants: {
+    disabled: {
+      true: {
+        backgroundColor: '$outlineColor',
+      },
+      false: {
+        background: 'linear-gradient(90deg, $primary, $secondary)',
+      },
+    },
+  } as const,
+});
 
-const GameName = styled.h3`
-  margin: 0 0 0.5rem 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.text.primary};
-  line-height: 1.3;
-`;
+const GameImage = styled(YStack, {
+  width: 60,
+  height: 60,
+  borderRadius: 8,
+  backgroundColor: '$backgroundFocus',
+  borderWidth: 2,
+  borderColor: '$borderColor',
+  marginBottom: '$3',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
 
-const GameDescription = styled.p`
-  margin: 0 0 1rem 0;
-  font-size: 0.875rem;
-  color: ${({ theme }) => theme.text.secondary};
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`;
-
-const GameMeta = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-`;
-
-const MetaTag = styled.span`
-  font-size: 0.75rem;
-  color: ${({ theme }) => theme.text.muted};
-  background: ${({ theme }) => theme.surfaces.panel.background};
-  padding: 0.25rem 0.5rem;
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-`;
-
-const GameTags = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-`;
-
-const Tag = styled.span`
-  font-size: 0.7rem;
-  color: ${({ theme }) => theme.text.muted};
-  background: ${({ theme }) => theme.buttons.secondary.background};
-  padding: 0.125rem 0.375rem;
-  border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-`;
-
-const StatusContainer = styled.div`
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-`;
+const MetaTag = styled(XStack, {
+  backgroundColor: '$backgroundFocus',
+  paddingHorizontal: '$2',
+  paddingVertical: '$1',
+  borderRadius: 12,
+  borderWidth: 1,
+  borderColor: '$borderColor',
+  alignItems: 'center',
+  gap: '$1',
+});
 
 function getStatusVariant(
   status: string,
@@ -157,50 +124,88 @@ export function GameCard({
   const handleClick = () => {
     if (disabled) return;
     onClick?.();
-    // Navigate to game room creation or game page
     router.push(`/games/${game.slug}`);
   };
 
   return (
-    <Card className={className} onClick={handleClick} $disabled={disabled}>
-      <StatusContainer>
+    <StyledCard
+      className={className}
+      onClick={handleClick}
+      disabled={disabled}
+      padding="$4"
+    >
+      <CardGlow disabled={disabled} />
+
+      <XStack position="absolute" top="$3" right="$3">
         <Badge variant={getStatusVariant(game.status)} size="sm">
           {game.status}
         </Badge>
-      </StatusContainer>
+      </XStack>
 
-      <GameImage $thumbnail={game.thumbnail}>{game.name.charAt(0)}</GameImage>
+      <GameImage
+        {...(game.thumbnail
+          ? {
+              background: `url(${game.thumbnail}) center/cover`,
+            }
+          : {})}
+      >
+        {!game.thumbnail && (
+          <Text fontSize="$6" color="$color">
+            {game.name.charAt(0)}
+          </Text>
+        )}
+      </GameImage>
 
-      <GameName>
+      <H3 fontSize="$5" fontWeight="600" marginBottom="$2">
         {t(`games.${game.slug}.name` as TranslationKey) || game.name}
-      </GameName>
+      </H3>
 
       {showDetails && (
-        <>
-          <GameDescription>
+        <YStack gap="$3">
+          <Paragraph fontSize="$3" color="$textSecondary" numberOfLines={2}>
             {t(`games.${game.slug}.description` as TranslationKey) ||
               game.description}
-          </GameDescription>
+          </Paragraph>
 
-          <GameMeta>
+          <XStack flexWrap="wrap" gap="$2">
             <MetaTag>
-              👥 {game.minPlayers}-{game.maxPlayers} players
+              <Text fontSize="$1">
+                👥 {game.minPlayers}-{game.maxPlayers}
+              </Text>
             </MetaTag>
             {game.estimatedDuration && (
-              <MetaTag>⏱️ {game.estimatedDuration} min</MetaTag>
+              <MetaTag>
+                <Text fontSize="$1">⏱️ {game.estimatedDuration}m</Text>
+              </MetaTag>
             )}
-            {game.complexity && <MetaTag>🧠 {game.complexity}/5</MetaTag>}
-          </GameMeta>
+            {game.complexity && (
+              <MetaTag>
+                <Text fontSize="$1">🧠 {game.complexity}/5</Text>
+              </MetaTag>
+            )}
+          </XStack>
 
           {game.tags && game.tags.length > 0 && (
-            <GameTags>
+            <XStack flexWrap="wrap" gap="$1">
               {game.tags.map((tag) => (
-                <Tag key={tag}>{tag}</Tag>
+                <XStack
+                  key={tag}
+                  backgroundColor="$backgroundHover"
+                  paddingHorizontal="$2"
+                  paddingVertical="$1"
+                  borderRadius={8}
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                >
+                  <Text fontSize={10} color="$textSecondary">
+                    {tag}
+                  </Text>
+                </XStack>
               ))}
-            </GameTags>
+            </XStack>
           )}
-        </>
+        </YStack>
       )}
-    </Card>
+    </StyledCard>
   );
 }

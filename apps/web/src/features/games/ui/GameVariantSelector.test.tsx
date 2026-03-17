@@ -1,10 +1,8 @@
 import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { ThemeProvider } from 'styled-components';
 import { TamaguiProvider } from 'tamagui';
 import { GameVariantSelector } from './GameVariantSelector';
 import { gamesApi } from '../api';
-import { getThemeTokens } from '@/shared/config/theme';
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
 import config from '@/shared/config/tamagui.config';
 
@@ -78,13 +76,11 @@ vi.mock('@tanstack/react-query', () => ({
   }),
 }));
 
-const theme = getThemeTokens('dark');
-
 const render = (ui: React.ReactElement) => {
   return rtlRender(
     <LanguageProvider>
       <TamaguiProvider config={config} defaultTheme="dark">
-        <ThemeProvider theme={theme}>{ui}</ThemeProvider>
+        {ui}
       </TamaguiProvider>
     </LanguageProvider>,
   );

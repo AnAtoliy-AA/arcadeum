@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import { styled, YStack, XStack, TamaguiElement } from 'tamagui';
 
 interface GameLayoutProps {
   header?: React.ReactNode;
@@ -10,101 +10,112 @@ interface GameLayoutProps {
   popupOverlay?: React.ReactNode;
   showChat?: boolean;
   className?: string;
-  gameContainerRef?: React.RefObject<HTMLDivElement>;
-  variant?: string;
+  gameContainerRef?: React.RefObject<TamaguiElement | null>;
   isMyTurn?: boolean;
+  variant?: string;
 }
 
-const LayoutContainer = styled.div<{ $variant?: string; $isMyTurn?: boolean }>`
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  padding: 2rem;
-  border-radius: 24px;
-  background: ${({ theme }) => theme.background.base};
-  min-height: 600px;
-  position: relative;
-  overflow: hidden;
-  height: calc(100dvh - 64px);
-  width: 100%;
-  box-sizing: border-box;
+const LayoutContainer = styled(YStack, {
+  name: 'GameLayoutContainer',
+  gap: '$5',
+  padding: '$sm',
+  borderRadius: 24,
+  backgroundColor: '$background',
+  minHeight: 600,
+  position: 'relative',
+  overflow: 'hidden',
+  height: 'calc(100dvh - 64px)',
+  width: '100%',
 
-  @media (max-width: 768px) {
-    padding: 0.75rem;
-    gap: 0.75rem;
-    height: auto;
-    min-height: calc(100dvh - 64px);
-    border-radius: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
+  $sm: {
+    padding: '$3',
+    gap: '$3',
+    height: 'auto',
+    minHeight: 'calc(100dvh - 64px)',
+    borderRadius: 0,
+    overflowY: 'auto',
+  },
 
-  @media (max-width: 480px) {
-    padding: 0.5rem;
-    gap: 0.5rem;
-  }
-`;
+  $xs: {
+    padding: '$2',
+    gap: '$2',
+  },
 
-const MainArea = styled.div<{ $showChat?: boolean }>`
-  display: flex;
-  flex: 1;
-  gap: 1.5rem;
-  min-height: 0;
-  overflow: hidden;
+  variants: {
+    isMyTurn: {
+      true: {
+        // can add specific turn indicator styles here
+      },
+    },
+  } as const,
+});
 
-  flex-direction: row;
+const MainArea = styled(XStack, {
+  name: 'GameMainArea',
+  flex: 1,
+  gap: '$5',
+  minHeight: 0,
+  overflow: 'hidden',
 
-  @media (max-width: 900px) {
-    flex-direction: column;
-    overflow-y: auto;
-    overflow-x: hidden;
-    flex: 1;
-    gap: 1rem;
-  }
-`;
+  $gtSm: {
+    flexDirection: 'row',
+  },
 
-const GameBoardArea = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  position: relative;
-  overflow-y: auto;
-  overflow-x: auto;
-  padding-bottom: 1rem;
+  $sm: {
+    flexDirection: 'column',
+    overflowY: 'auto',
+    gap: '$4',
+  },
+});
 
-  @media (max-width: 900px) {
-    flex: none;
-    overflow: visible;
-    padding-bottom: 0;
-  }
-`;
+const GameBoardArea = styled(YStack, {
+  name: 'GameBoardArea',
+  flex: 1,
+  minWidth: 0,
+  position: 'relative',
+  overflowY: 'scroll',
+  paddingBottom: '$4',
 
-const ChatArea = styled.div<{ $showChat: boolean }>`
-  width: 320px;
-  display: ${({ $showChat }) => ($showChat ? 'flex' : 'none')};
-  flex-direction: column;
-  min-width: 320px;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
-  padding-left: 1.5rem;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 16px;
-  margin-left: 0.5rem;
+  $sm: {
+    flex: 0,
+    overflow: 'visible',
+    paddingBottom: 0,
+  },
+});
 
-  @media (max-width: 900px) {
-    width: 100%;
-    min-width: 0;
-    flex: none;
-    min-height: 350px;
-    flex-shrink: 0;
-    border-left: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-left: 0;
-    padding-top: 1rem;
-    margin-left: 0;
-    background: transparent;
-  }
-`;
+const ChatArea = styled(YStack, {
+  name: 'GameChatArea',
+  width: 320,
+  minWidth: 320,
+  borderLeftWidth: 1,
+  borderLeftColor: '$borderColor',
+  paddingLeft: '$5',
+  backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  borderRadius: 16,
+  marginLeft: '$2',
+
+  $sm: {
+    width: '100%',
+    minWidth: 0,
+    flex: 0,
+    minHeight: 350,
+    borderLeftWidth: 0,
+    borderTopWidth: 1,
+    borderTopColor: '$borderColor',
+    paddingLeft: 0,
+    paddingTop: '$4',
+    marginLeft: 0,
+    backgroundColor: 'transparent',
+  },
+
+  variants: {
+    showChat: {
+      false: {
+        display: 'none',
+      },
+    },
+  } as const,
+});
 
 export function GameLayout({
   header,
@@ -115,18 +126,19 @@ export function GameLayout({
   popupOverlay,
   showChat = false,
   gameContainerRef,
-  variant,
   isMyTurn,
   className,
 }: GameLayoutProps) {
+  const commonProps = {
+    ref: gameContainerRef,
+    className,
+    isMyTurn,
+    'data-testid': 'game-layout-container',
+  };
+
   if (lobby) {
     return (
-      <LayoutContainer
-        key={!!lobby ? 'lobby' : 'game'}
-        ref={gameContainerRef}
-        className={className}
-        $variant={variant}
-      >
+      <LayoutContainer key={!!lobby ? 'lobby' : 'game'} {...commonProps}>
         {lobby}
         {modals}
       </LayoutContainer>
@@ -134,19 +146,12 @@ export function GameLayout({
   }
 
   return (
-    <LayoutContainer
-      key={!!lobby ? 'lobby' : 'game'}
-      ref={gameContainerRef}
-      className={className}
-      $variant={variant}
-      $isMyTurn={isMyTurn}
-      data-testid="game-layout-container"
-    >
+    <LayoutContainer key={!!lobby ? 'lobby' : 'game'} {...commonProps}>
       {header}
-      <MainArea $showChat={showChat} data-testid="game-main-area">
+      <MainArea data-testid="game-main-area">
         <GameBoardArea data-testid="game-board-area">{children}</GameBoardArea>
         {chat && (
-          <ChatArea $showChat={showChat} data-testid="game-chat-area">
+          <ChatArea showChat={showChat} data-testid="game-chat-area">
             {chat}
           </ChatArea>
         )}

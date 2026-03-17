@@ -1,51 +1,44 @@
-"use client";
-
-import React from "react";
-import styled from "styled-components";
-import { GameCard } from "./GameCard";
-import type { GameMetadata } from "../types";
+import React from 'react';
+import { styled, YStack } from 'tamagui';
+import { GameCard } from './GameCard';
+import type { GameMetadata } from '../types';
 
 interface GameGridProps {
   games: GameMetadata[];
   className?: string;
-  columns?: number;
-  gap?: string;
+  gap?: number | string;
   showDetails?: boolean;
   onGameClick?: (game: GameMetadata) => void;
   disabledGames?: string[];
 }
 
-const Grid = styled.div<{ $columns?: number; $gap?: string }>`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: ${({ $gap }) => $gap || "1.5rem"};
-  
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1rem;
-  }
-  
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
-  }
-`;
+const GridContainer = styled(YStack, {
+  name: 'GameGrid',
+  display: 'grid' as unknown as 'flex',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+  gap: '$5',
 
-export function GameGrid({ 
-  games, 
-  className, 
-  columns, 
-  gap, 
-  showDetails = false, 
+  $gtSm: {
+    gap: '$4',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+  },
+
+  $xs: {
+    gridTemplateColumns: '1fr',
+  },
+});
+
+export function GameGrid({
+  games,
+  className,
+  gap,
+  showDetails = false,
   onGameClick,
-  disabledGames = []
+  disabledGames = [],
 }: GameGridProps) {
   return (
-    <Grid 
-      className={className} 
-      $columns={columns} 
-      $gap={gap}
-    >
-      {games.map(game => (
+    <GridContainer className={className} {...(gap ? { gap } : {})}>
+      {games.map((game) => (
         <GameCard
           key={game.slug}
           game={game}
@@ -54,6 +47,6 @@ export function GameGrid({
           onClick={() => onGameClick?.(game)}
         />
       ))}
-    </Grid>
+    </GridContainer>
   );
 }

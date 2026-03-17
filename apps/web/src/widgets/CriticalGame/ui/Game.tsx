@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { TamaguiElement } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalGameProps } from '../types';
 import { useCriticalState, useFullscreen, useRematch } from '../hooks';
@@ -16,7 +17,7 @@ export default function CriticalGame({
   accessToken,
 }: CriticalGameProps) {
   const { t } = useTranslation();
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement & TamaguiElement>(null);
 
   const storeRoom = useGameStore((s) => s.room);
   const storeDeleteRoom = useGameStore((s) => s.deleteRoom);
@@ -67,7 +68,7 @@ export default function CriticalGame({
         onReinvite={rematch.handleReinvite}
         onDeleteRoom={() => storeDeleteRoom(roomId)}
         onRefresh={() => storeRefreshRoom(roomId)}
-        t={t as (key: string) => string}
+        t={t}
       />
     );
   }

@@ -1,14 +1,10 @@
-'use client';
-
 import React from 'react';
-import styled from 'styled-components';
+import { styled, YStack, XStack } from 'tamagui';
 import { Button } from '@arcadeum/ui';
-import { Divider, Card } from '@/shared/ui';
 
 interface GameControlsProps {
   children: React.ReactNode;
   className?: string;
-  position?: 'top' | 'bottom' | 'left' | 'right';
   variant?: 'primary' | 'secondary' | 'minimal';
   showFullscreen?: boolean;
   onFullscreenToggle?: () => void;
@@ -18,52 +14,56 @@ interface GameControlsProps {
   onHelp?: () => void;
 }
 
-const ControlsContainer = styled(Card)<{
-  $position?: string;
-  $variant?: string;
-}>`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: ${({ theme, $variant }) => {
-    switch ($variant) {
-      case 'primary':
-        return theme.surfaces.panel.background;
-      case 'secondary':
-        return 'rgba(255, 255, 255, 0.05)';
-      case 'minimal':
-        return 'transparent';
-      default:
-        return theme.surfaces.panel.background;
-    }
-  }};
-  border: ${({ theme, $variant }) =>
-    $variant === 'minimal'
-      ? 'none'
-      : `1px solid ${theme.surfaces.card.border}`};
-  box-shadow: ${({ $variant }) =>
-    $variant === 'minimal' ? 'none' : '0 4px 12px rgba(0, 0, 0, 0.1)'};
-  backdrop-filter: blur(10px);
-  flex-wrap: wrap;
+const ControlsContainer = styled(XStack, {
+  name: 'GameControls',
+  alignItems: 'center',
+  gap: '$3',
+  paddingHorizontal: '$4',
+  paddingVertical: '$3',
+  borderRadius: 8,
+  borderWidth: 1,
+  borderColor: '$borderColor',
+  backgroundColor: '$background',
+  flexWrap: 'wrap',
 
-  @media (max-width: 768px) {
-    gap: 0.5rem;
-    padding: 0.5rem 0.75rem;
-  }
-`;
+  $sm: {
+    gap: '$2',
+    paddingHorizontal: '$3',
+    paddingVertical: '$2',
+  },
 
-const ControlDivider = styled(Divider)`
-  width: 1px;
-  height: 24px;
-  margin: 0;
-  opacity: 0.3;
-`;
+  variants: {
+    variant: {
+      primary: {
+        backgroundColor: '$background',
+        borderColor: '$borderColor',
+      },
+      secondary: {
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        borderColor: '$borderColor',
+      },
+      minimal: {
+        backgroundColor: 'transparent',
+        borderWidth: 0,
+        borderColor: 'transparent',
+        shadowColor: 'transparent',
+      },
+    },
+  } as const,
+});
+
+const ControlDivider = styled(YStack, {
+  name: 'ControlDivider',
+  width: 1,
+  height: 24,
+  backgroundColor: '$borderColor',
+  opacity: 0.3,
+  marginHorizontal: '$1',
+});
 
 export function GameControls({
   children,
   className,
-  position = 'bottom',
   variant = 'primary',
   showFullscreen = true,
   onFullscreenToggle,
@@ -75,11 +75,7 @@ export function GameControls({
   const buttonVariant = variant === 'primary' ? 'primary' : 'secondary';
 
   return (
-    <ControlsContainer
-      className={className}
-      $position={position}
-      $variant={variant}
-    >
+    <ControlsContainer className={className} variant={variant}>
       {children}
 
       {children && (showFullscreen || showSettings || showHelp) && (
@@ -87,34 +83,19 @@ export function GameControls({
       )}
 
       {showFullscreen && (
-        <Button
-          variant={buttonVariant}
-          size="sm"
-          onClick={onFullscreenToggle}
-          title="Toggle fullscreen"
-        >
+        <Button variant={buttonVariant} size="sm" onClick={onFullscreenToggle}>
           🖥️
         </Button>
       )}
 
       {showSettings && (
-        <Button
-          variant={buttonVariant}
-          size="sm"
-          onClick={onSettings}
-          title="Game settings"
-        >
+        <Button variant={buttonVariant} size="sm" onClick={onSettings}>
           ⚙️
         </Button>
       )}
 
       {showHelp && (
-        <Button
-          variant={buttonVariant}
-          size="sm"
-          onClick={onHelp}
-          title="Game help"
-        >
+        <Button variant={buttonVariant} size="sm" onClick={onHelp}>
           ❓
         </Button>
       )}
@@ -133,13 +114,7 @@ export function LeaveButton({
   variant?: 'primary' | 'secondary' | 'danger';
 }) {
   return (
-    <Button
-      className={className}
-      variant={variant}
-      size="sm"
-      onClick={onClick}
-      title="Leave game"
-    >
+    <Button className={className} variant={variant} size="sm" onPress={onClick}>
       🚪 Leave
     </Button>
   );
@@ -161,9 +136,8 @@ export function StartButton({
       className={className}
       variant={variant}
       size="sm"
-      onClick={onClick}
+      onPress={onClick}
       disabled={disabled}
-      title="Start game"
     >
       ▶️ Start
     </Button>
@@ -185,8 +159,7 @@ export function ReadyButton({
       className={className}
       variant={ready ? 'primary' : 'secondary'}
       size="sm"
-      onClick={onClick}
-      title={ready ? 'Not ready' : "I'm ready"}
+      onPress={onClick}
     >
       {ready ? '✅' : '⚪'} {ready ? 'Ready' : 'Not Ready'}
     </Button>

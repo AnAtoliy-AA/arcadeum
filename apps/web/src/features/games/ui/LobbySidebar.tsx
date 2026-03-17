@@ -18,7 +18,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { Button } from '@arcadeum/ui';
+import { Button, Badge } from '@arcadeum/ui';
 import {
   Sidebar,
   LobbyCard,
@@ -28,14 +28,16 @@ import {
   LobbyPlayerAvatar,
   PlayerInfo,
   LobbyPlayerName,
-  PlayerBadge,
+  LobbyPlayerAvatarText,
   EmptySlot,
   EmptyAvatar,
+  EmptyAvatarText,
   InfoRow,
   InfoLabel,
   StatusBadge,
   InfoValue,
   FastBadge,
+  FastBadgeText,
   DeleteButton,
   CardHeader,
   RefreshButton,
@@ -48,20 +50,21 @@ interface LobbySidebarProps {
   isHost: boolean;
   minPlayers: number;
   isFastMode?: boolean;
-  playersLabel: string;
-  invitedPlayersLabel: string;
-  declinedLabel: string;
-  reinviteLabel: string;
-  roomInfoLabel: string;
-  statusLabel: string;
-  statusWaitingLabel?: string;
-  statusActiveLabel?: string;
-  visibilityLabel: string;
-  visibilityPublicLabel: string;
-  visibilityPrivateLabel: string;
-  inviteCodeLabel: string;
-  waitingForPlayerLabel: string;
-  fastRoomLabel: string;
+  labels: {
+    playersLabel?: string;
+    invitedPlayersLabel?: string;
+    declinedLabel?: string;
+    reinviteLabel?: string;
+    roomInfoLabel?: string;
+    statusLabel?: string;
+    visibilityLabel?: string;
+    visibilityPublicLabel?: string;
+    visibilityPrivateLabel?: string;
+    inviteCodeLabel?: string;
+    waitingForPlayerLabel?: string;
+    fastRoomLabel?: string;
+    deleteRoomLabel?: string;
+  };
   showReorderControls: boolean;
   showInvitedPlayers: boolean;
   members: Required<GameRoomSummary>['members'];
@@ -78,18 +81,6 @@ export function LobbySidebar({
   isHost,
   minPlayers,
   isFastMode,
-  playersLabel,
-  invitedPlayersLabel,
-  declinedLabel,
-  reinviteLabel,
-  roomInfoLabel,
-  statusLabel,
-  visibilityLabel,
-  visibilityPublicLabel,
-  visibilityPrivateLabel,
-  inviteCodeLabel,
-  waitingForPlayerLabel,
-  fastRoomLabel,
   showReorderControls,
   showInvitedPlayers,
   members,
@@ -99,7 +90,22 @@ export function LobbySidebar({
   deleteRoomLabel,
   extraPlayersCardSlot,
   onRefresh,
+  labels,
 }: LobbySidebarProps) {
+  const {
+    playersLabel = 'Players',
+    invitedPlayersLabel = 'Invited Players',
+    declinedLabel = 'Declined',
+    reinviteLabel = 'Re-invite',
+    roomInfoLabel = 'Room Info',
+    statusLabel = 'Status',
+    visibilityLabel = 'Visibility',
+    visibilityPublicLabel = 'Public',
+    visibilityPrivateLabel = 'Private',
+    inviteCodeLabel = 'Invite Code',
+    waitingForPlayerLabel = 'Waiting for player...',
+    fastRoomLabel = 'Fast Room',
+  } = labels;
   const { t } = useTranslation();
   const maxPlayers = room.maxPlayers ?? 5;
 
@@ -122,6 +128,8 @@ export function LobbySidebar({
   const pendingInvited = invitedUsers.filter((u) => !joinedIds.has(u.id));
   const pendingDeclined = declinedUsers.filter((u) => !joinedIds.has(u.id));
 
+  const getInitials = (name: string) => name.slice(0, 2).toUpperCase();
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, {
@@ -143,8 +151,6 @@ export function LobbySidebar({
     }
   };
 
-  const getInitials = (name: string) => name.slice(0, 2).toUpperCase();
-
   return (
     <Sidebar>
       <LobbyCard>
@@ -155,6 +161,7 @@ export function LobbySidebar({
           {onRefresh && (
             <RefreshButton
               onClick={onRefresh}
+              onPress={onRefresh}
               title="Refresh Room"
               data-testid="refresh-room-button"
             >
@@ -203,13 +210,19 @@ export function LobbySidebar({
               const avatarColor =
                 AVATAR_COLORS[member.displayName.length % AVATAR_COLORS.length];
               return (
-                <PlayerItem key={member.id} $isHost={isRoomHost}>
-                  <LobbyPlayerAvatar $color={avatarColor}>
-                    {getInitials(member.displayName)}
+                <PlayerItem key={member.id} isHost={isRoomHost}>
+                  <LobbyPlayerAvatar backgroundColor={avatarColor}>
+                    <LobbyPlayerAvatarText>
+                      {getInitials(member.displayName)}
+                    </LobbyPlayerAvatarText>
                   </LobbyPlayerAvatar>
                   <PlayerInfo>
                     <LobbyPlayerName>{member.displayName}</LobbyPlayerName>
-                    {isRoomHost && <PlayerBadge>HOST</PlayerBadge>}
+                    {isRoomHost && (
+                      <Badge variant="info" size="sm">
+                        HOST
+                      </Badge>
+                    )}
                   </PlayerInfo>
                 </PlayerItem>
               );
@@ -218,7 +231,9 @@ export function LobbySidebar({
           {Array.from({ length: Math.max(0, minPlayers - members.length) }).map(
             (_, i) => (
               <EmptySlot key={`empty-${i}`}>
-                <EmptyAvatar>?</EmptyAvatar>
+                <EmptyAvatar>
+                  <EmptyAvatarText>?</EmptyAvatarText>
+                </EmptyAvatar>
                 <InfoLabel>{waitingForPlayerLabel}</InfoLabel>
               </EmptySlot>
             ),
@@ -236,12 +251,14 @@ export function LobbySidebar({
               {pendingInvited.map((u) => (
                 <PlayerItem key={u.id} style={{ opacity: 0.7 }}>
                   <LobbyPlayerAvatar
-                    $color={
+                    backgroundColor={
                       AVATAR_COLORS[u.displayName.length % AVATAR_COLORS.length]
                     }
                     style={{ filter: 'grayscale(1)' }}
                   >
-                    {getInitials(u.displayName)}
+                    <LobbyPlayerAvatarText>
+                      {getInitials(u.displayName)}
+                    </LobbyPlayerAvatarText>
                   </LobbyPlayerAvatar>
                   <PlayerInfo>
                     <LobbyPlayerName>{u.displayName}</LobbyPlayerName>
@@ -255,10 +272,12 @@ export function LobbySidebar({
                     style={{ display: 'flex', alignItems: 'center', flex: 1 }}
                   >
                     <LobbyPlayerAvatar
-                      $color="#ccc"
+                      backgroundColor="#ccc"
                       style={{ filter: 'grayscale(1)' }}
                     >
-                      {getInitials(u.displayName)}
+                      <LobbyPlayerAvatarText>
+                        {getInitials(u.displayName)}
+                      </LobbyPlayerAvatarText>
                     </LobbyPlayerAvatar>
                     <PlayerInfo>
                       <LobbyPlayerName
@@ -275,8 +294,9 @@ export function LobbySidebar({
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => onReinvite([u.id])}
-                      style={{ marginLeft: '8px' }}
+                      onClick={() => onReinvite?.([u.id])}
+                      onPress={() => onReinvite?.([u.id])}
+                      marginLeft="$2"
                     >
                       {reinviteLabel}
                     </Button>
@@ -291,14 +311,16 @@ export function LobbySidebar({
         <CardTitle>{roomInfoLabel}</CardTitle>
         <InfoRow>
           <InfoLabel>{statusLabel}</InfoLabel>
-          <StatusBadge $status={room.status}>
+          <StatusBadge status={room.status}>
             {t(`games.rooms.status.${room.status}`) || room.status}
           </StatusBadge>
         </InfoRow>
         {isFastMode && (
           <InfoRow>
             <InfoLabel>Mode</InfoLabel>
-            <FastBadge>⚡ {fastRoomLabel}</FastBadge>
+            <FastBadge>
+              <FastBadgeText>⚡ {fastRoomLabel}</FastBadgeText>
+            </FastBadge>
           </InfoRow>
         )}
         <InfoRow>
@@ -324,7 +346,9 @@ export function LobbySidebar({
       {isHost && onDeleteRoom && (
         <DeleteButton
           onClick={onDeleteRoom}
-          style={{ marginTop: '0.5rem', width: '100%' }}
+          onPress={onDeleteRoom}
+          marginTop="$2"
+          width="100%"
         >
           {deleteRoomLabel}
         </DeleteButton>

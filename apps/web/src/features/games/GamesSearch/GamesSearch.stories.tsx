@@ -33,7 +33,6 @@ export const WithInitialValue: Story = {
 
 export const CustomDebounce: Story = {
   args: {
-    debounceDelay: 500, // Faster debounce for testing
     placeholder: 'Fast debounce (500ms)...',
     buttonLabel: 'Go',
   },

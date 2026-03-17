@@ -1,12 +1,13 @@
 'use client';
 
-import styled, { keyframes } from 'styled-components';
-import { Button } from '@arcadeum/ui';
-import { useSyncExternalStore } from 'react';
+import React from 'react';
 import { createPortal } from 'react-dom';
+import { styled, YStack, XStack, H1, Paragraph, Text } from 'tamagui';
+import { Button, CloseIcon, LinkButton, ModalButton } from '@arcadeum/ui';
+import { useSyncExternalStore } from 'react';
 import { TranslationKey } from '@/shared/lib/useTranslation';
-import { Modal, CloseButton, ModalButton } from './SharedModalStyles';
-import { CloseIcon } from '@arcadeum/ui';
+import { Modal, CloseButton } from './SharedModalStyles';
+import { Dialog, VisuallyHidden } from 'tamagui';
 
 // --- Types ---
 
@@ -19,7 +20,159 @@ interface GameResultModalProps {
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
 
-// --- Component ---
+// --- Internal Styled Components ---
+
+const StyledBackdrop = styled(YStack, {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  zIndex: -1,
+  backgroundColor: 'rgba(0, 0, 0, 0.85)',
+  backdropFilter: 'blur(8px)',
+
+  variants: {
+    isVictory: {
+      true: {
+        backgroundColor: 'rgba(20, 0, 10, 0.9)',
+      },
+      false: {
+        backgroundColor: 'rgba(10, 10, 10, 0.95)',
+      },
+    },
+  } as const,
+});
+
+const ContentWrapper = styled(YStack, {
+  name: 'GameResultContent',
+  alignItems: 'center',
+  padding: '$10',
+  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  borderRadius: 32,
+  borderWidth: 1,
+  borderColor: 'rgba(255, 255, 255, 0.1)',
+  shadowColor: 'rgba(0, 0, 0, 0.5)',
+  shadowRadius: 60,
+  maxWidth: '90%',
+  width: 500,
+  position: 'relative',
+});
+
+const ResultTitleText = styled(H1, {
+  name: 'ResultTitleText',
+  fontSize: 56,
+  fontWeight: '800',
+  textAlign: 'center',
+  textTransform: 'uppercase',
+  letterSpacing: 2,
+
+  variants: {
+    isVictory: {
+      true: {
+        color: '#FFD700',
+      },
+      false: {
+        color: '#ff4d4d',
+      },
+    },
+  } as const,
+});
+
+const ResultMessage = styled(Paragraph, {
+  name: 'ResultMessage',
+  fontSize: '$5',
+  color: 'rgba(255, 255, 255, 0.8)',
+  lineHeight: '$4',
+  textAlign: 'center',
+  marginBottom: '$8',
+});
+
+const ActionsContainer = styled(YStack, {
+  name: 'ResultActions',
+  gap: '$4',
+  width: '100%',
+});
+
+const HomeLink = styled(LinkButton, {
+  name: 'HomeLink',
+  variant: 'ghost',
+  marginTop: '$2',
+});
+
+const ConfettiWrapper = styled(YStack, {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  pointerEvents: 'none',
+  overflow: 'hidden',
+  zIndex: 0,
+});
+
+// --- Confetti Component ---
+
+const CONFETTI_PARTICLES = Array.from({ length: 50 }).map((_, i) => ({
+  left: (i * 7) % 100,
+  delay: (i * 0.17) % 3,
+  color: ['#FFD700', '#FF0000', '#00FF00', '#0000FF', '#FF00FF'][i % 5],
+}));
+
+const ConfettiContainer = () => {
+  return (
+    <ConfettiWrapper>
+      {CONFETTI_PARTICLES.map((p, i) => (
+        <YStack
+          key={i}
+          position="absolute"
+          top={-10}
+          width={10}
+          height={10}
+          left={`${p.left}%`}
+          backgroundColor={p.color}
+          style={{
+            animation: `fall 4s linear ${p.delay}s infinite`,
+          }}
+        />
+      ))}
+    </ConfettiWrapper>
+  );
+};
+
+// --- Main Component ---
+
+const StyledResultContent = styled(Dialog.Content, {
+  name: 'ResultContent',
+  backgroundColor: 'transparent',
+  borderWidth: 0,
+  padding: 0,
+  x: 0,
+  y: 0,
+  scale: 1,
+  opacity: 1,
+
+  variants: {
+    animated: {
+      true: {
+        animation: [
+          'quick',
+          {
+            opacity: {
+              overshootClamping: true,
+            },
+          },
+        ] as unknown as object,
+        enterStyle: { x: 0, y: -20, opacity: 0, scale: 0.9 },
+        exitStyle: { x: 0, y: 10, opacity: 0, scale: 0.95 },
+      },
+    },
+  } as const,
+
+  defaultVariants: {
+    animated: true,
+  },
+});
 
 export function GameResultModal({
   isOpen,
@@ -40,206 +193,80 @@ export function GameResultModal({
   const isVictory = result === 'victory';
 
   return createPortal(
-    <Modal style={{ background: 'transparent' }}>
-      <Backdrop $isVictory={isVictory} />
+    <Modal open={isOpen} onOpenChange={(val) => !val && onClose?.()}>
+      <Dialog.Portal>
+        <Dialog.Overlay key="overlay" backgroundColor="black" />
+        <StyledBackdrop isVictory={isVictory} />
+        <StyledResultContent elevate key="content">
+          <VisuallyHidden>
+            <Dialog.Title>Game Result</Dialog.Title>
+            <Dialog.Description>
+              Showing your game performance and options
+            </Dialog.Description>
+          </VisuallyHidden>
 
-      <ContentContainer $show={isOpen}>
-        {onClose && (
-          <div style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
-            <CloseButton onClick={onClose} data-testid="modal-close-button">
-              <CloseIcon size={20} />
-            </CloseButton>
-          </div>
-        )}
-        <ResultTitle $isVictory={isVictory} data-testid="game-result-title">
-          <span className="emoji">{isVictory ? '🏆' : '💀'}</span>
-          <span className="text">
-            {t(`games.table.${result}.title` as TranslationKey)}
-          </span>
-        </ResultTitle>
+          <ContentWrapper>
+            {onClose && (
+              <XStack position="absolute" top="$4" right="$4">
+                <CloseButton onClick={onClose} data-testid="modal-close-button">
+                  <CloseIcon size={20} />
+                </CloseButton>
+              </XStack>
+            )}
 
-        <ResultMessage>
-          {t(`games.table.${result}.message` as TranslationKey)}
-        </ResultMessage>
+            <YStack alignItems="center" gap="$5" marginBottom="$5">
+              <Text
+                fontSize={80}
+                style={{ animation: 'float 3s ease-in-out infinite' }}
+              >
+                {isVictory ? '🏆' : '💀'}
+              </Text>
+              <ResultTitleText
+                isVictory={isVictory}
+                data-testid="game-result-title"
+              >
+                {t(`games.table.${result}.title` as TranslationKey)}
+              </ResultTitleText>
+            </YStack>
 
-        <Actions>
-          {onRematch && (
-            <Button
-              variant={isVictory ? 'victory' : 'secondary'}
-              size="lg"
-              fullWidth
-              pulse={isVictory}
-              onClick={onRematch}
-              disabled={rematchLoading}
-              data-testid="rematch-button"
-            >
-              {rematchLoading
-                ? t('games.table.rematch.loading')
-                : t('games.table.rematch.button')}
-            </Button>
-          )}
+            <ResultMessage>
+              {t(`games.table.${result}.message` as TranslationKey)}
+            </ResultMessage>
 
-          <HomeButton href="/">
-            {t('games.common.actions.backToHome')}
-          </HomeButton>
+            <ActionsContainer>
+              {onRematch && (
+                <Button
+                  variant={isVictory ? 'primary' : 'secondary'}
+                  size="lg"
+                  onClick={onRematch}
+                  disabled={rematchLoading}
+                  data-testid="rematch-button"
+                  {...(isVictory
+                    ? { animation: 'quick', pressStyle: { scale: 0.95 } }
+                    : {})}
+                >
+                  {rematchLoading
+                    ? t('games.table.rematch.loading' as TranslationKey)
+                    : t('games.table.rematch.button' as TranslationKey)}
+                </Button>
+              )}
 
-          {onClose && (
-            <ModalButton variant="ghost" onClick={onClose}>
-              {t('games.table.modals.common.close' as TranslationKey)}
-            </ModalButton>
-          )}
-        </Actions>
-      </ContentContainer>
+              <HomeLink href="/">
+                {t('games.common.actions.backToHome' as TranslationKey)}
+              </HomeLink>
+
+              {onClose && (
+                <ModalButton variant="ghost" onClick={onClose} padding="$3">
+                  {t('games.table.modals.common.close' as TranslationKey)}
+                </ModalButton>
+              )}
+            </ActionsContainer>
+          </ContentWrapper>
+        </StyledResultContent>
+      </Dialog.Portal>
 
       {isVictory && <ConfettiContainer />}
     </Modal>,
     document.body,
   );
 }
-
-// --- Animations ---
-
-const float = keyframes`
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-`;
-
-// --- Styled Components ---
-
-const Backdrop = styled.div<{ $isVictory: boolean }>`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: ${(props) =>
-    props.$isVictory
-      ? 'linear-gradient(135deg, rgba(20, 0, 10, 0.9), rgba(50, 20, 0, 0.9))'
-      : 'linear-gradient(135deg, rgba(10, 10, 10, 0.95), rgba(20, 0, 0, 0.95))'};
-  backdrop-filter: blur(8px);
-  z-index: -1;
-`;
-
-const ContentContainer = styled.div<{ $show: boolean }>`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 3rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  max-width: 90%;
-  width: 500px;
-  text-align: center;
-  transform: translateY(${(props) => (props.$show ? '0' : '50px')});
-  opacity: ${(props) => (props.$show ? '1' : '0')};
-  transition:
-    transform 0.6s cubic-bezier(0.19, 1, 0.22, 1),
-    opacity 0.6s ease-out;
-  transition-delay: ${(props) => (props.$show ? '0.1s' : '0s')};
-  position: relative;
-`;
-
-const ResultTitle = styled.h1<{ $isVictory: boolean }>`
-  font-size: 3.5rem;
-  font-weight: 800;
-  margin: 0 0 1rem 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-
-  .emoji {
-    font-size: 5rem;
-    animation: ${float} 3s ease-in-out infinite;
-  }
-
-  .text {
-    background: ${(props) =>
-      props.$isVictory
-        ? 'linear-gradient(to right, #FFD700, #FDB931)'
-        : 'linear-gradient(to right, #ff4d4d, #c92f2f)'};
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-  }
-`;
-
-const ResultMessage = styled.p`
-  font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 2.5rem;
-  line-height: 1.5;
-`;
-
-const Actions = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 100%;
-`;
-
-const HomeButton = styled.a`
-  display: block;
-  padding: 0.75rem;
-  text-decoration: none;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.9rem;
-  transition: color 0.2s;
-
-  &:hover {
-    color: rgba(255, 255, 255, 0.9);
-  }
-`;
-
-// Static random values for pure rendering
-const CONFETTI_PARTICLES = Array.from({ length: 50 }).map((_, i) => ({
-  left: (i * 7) % 100,
-  delay: (i * 0.17) % 3,
-  color: ['#FFD700', '#FF0000', '#00FF00', '#0000FF', '#FF00FF'][i % 5],
-}));
-
-const ConfettiContainer = () => {
-  return (
-    <ConfettiWrapper>
-      {CONFETTI_PARTICLES.map((p, i) => (
-        <ConfettiPiece
-          key={i}
-          style={{
-            left: `${p.left}%`,
-            animationDelay: `${p.delay}s`,
-            backgroundColor: p.color,
-          }}
-        />
-      ))}
-    </ConfettiWrapper>
-  );
-};
-
-const fall = keyframes`
-  0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-`;
-
-const ConfettiWrapper = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 0;
-`;
-
-const ConfettiPiece = styled.div`
-  position: absolute;
-  top: -10px;
-  width: 10px;
-  height: 10px;
-  animation: ${fall} 4s linear infinite;
-`;

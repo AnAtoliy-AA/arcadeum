@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import { XStack } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 import { Input } from '@/shared/ui';
 
@@ -12,18 +12,8 @@ export interface GamesSearchProps {
   placeholder?: string;
   /** Label for search button */
   buttonLabel?: string;
-  /** Debounce delay in milliseconds */
-  debounceDelay?: number;
   className?: string;
 }
-
-const Container = styled.div`
-  flex: 1;
-  min-width: 200px;
-  max-width: 400px;
-  display: flex;
-  gap: 0.5rem;
-`;
 
 export function GamesSearch({
   onSearch,
@@ -56,7 +46,13 @@ export function GamesSearch({
   };
 
   return (
-    <Container className={className}>
+    <XStack
+      className={className}
+      flex={1}
+      minWidth={200}
+      maxWidth={400}
+      gap="$2"
+    >
       <Input
         placeholder={placeholder}
         value={searchText}
@@ -67,6 +63,6 @@ export function GamesSearch({
       <Button variant="primary" onClick={handleSearchClick}>
         {buttonLabel}
       </Button>
-    </Container>
+    </XStack>
   );
 }

@@ -225,16 +225,18 @@ export function SeaBattleLobby({
         variantInfo.name ? t(variantInfo.name as TranslationKey) : undefined
       }
       minPlayers={MIN_PLAYERS}
-      waitingLabel={t('games.sea_battle_v1.table.lobby.waitingToStart')}
-      subtitleText={getSubtitleText()}
-      playersLabel={t('games.rooms.playersLabel')}
-      hostControlsLabel={t('games.sea_battle_v1.table.lobby.hostControls')}
-      startLabel={t('games.sea_battle_v1.table.actions.start')}
-      startingLabel={t('games.sea_battle_v1.table.actions.starting')}
-      roomInfoLabel={t('games.sea_battle_v1.table.lobby.roomInfo')}
-      fastRoomLabel={t('games.rooms.fastRoom')}
-      botCountLabel={t('games.lobby.botCountLabel')}
-      startWithBotsLabel={t('games.lobby.startWithBots')}
+      labels={{
+        waitingLabel: t('games.sea_battle_v1.table.lobby.waitingToStart'),
+        subtitleText: getSubtitleText(),
+        playersLabel: t('games.rooms.playersLabel'),
+        hostControlsLabel: t('games.sea_battle_v1.table.lobby.hostControls'),
+        startLabel: t('games.sea_battle_v1.table.actions.start'),
+        startingLabel: t('games.sea_battle_v1.table.actions.starting'),
+        roomInfoLabel: t('games.sea_battle_v1.table.lobby.roomInfo'),
+        fastRoomLabel: t('games.rooms.fastRoom'),
+        botCountLabel: t('games.lobby.botCountLabel'),
+        startWithBotsLabel: t('games.lobby.startWithBots'),
+      }}
       theme={theme}
       showReorderControls={true}
       showInvitedPlayers={false}

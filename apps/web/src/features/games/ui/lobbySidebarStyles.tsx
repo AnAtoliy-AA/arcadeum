@@ -1,178 +1,221 @@
-import styled from 'styled-components';
-import { Button, ButtonProps } from '@arcadeum/ui';
-import { slideIn } from './lobbyAnimations';
+import { styled, YStack, XStack, H3, Text } from 'tamagui';
+import React from 'react';
+import { ButtonProps, IconButton } from '@arcadeum/ui';
 
 // Sidebar
-export const Sidebar = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  animation: ${slideIn} 0.5s ease-out 0.2s both;
-`;
+export const Sidebar = styled(YStack, {
+  name: 'LobbySidebar',
+  gap: '$4',
+  width: 300,
+  $sm: {
+    width: '100%',
+  },
+});
 
-export const LobbyCard = styled.div`
-  background: linear-gradient(
-    135deg,
-    rgba(99, 102, 241, 0.08),
-    rgba(139, 92, 246, 0.04)
-  );
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(99, 102, 241, 0.15);
-  border-radius: 16px;
-  padding: 1.25rem;
-  position: relative;
-  overflow: hidden;
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
-  }
-`;
+export const LobbyCard = styled(YStack, {
+  name: 'LobbyCard',
+  backgroundColor: 'rgba(99, 102, 241, 0.08)',
+  borderRadius: 16,
+  padding: '$5',
+  position: 'relative',
+  overflow: 'hidden',
+  borderWidth: 1,
+  borderColor: 'rgba(99, 102, 241, 0.15)',
+});
 
-export const CardHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-`;
+export const LobbyCardGlow = styled(YStack, {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  height: 2,
+  background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899)',
+});
 
-export const CardTitle = styled.h3`
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: ${({ theme }) => theme.text.secondary};
-  margin: 0;
-`;
+export const CardHeader = styled(XStack, {
+  name: 'CardHeader',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: '$4',
+});
+
+export const CardTitle = styled(H3, {
+  name: 'CardTitle',
+  fontSize: '$1',
+  fontWeight: '600',
+  textTransform: 'uppercase',
+  letterSpacing: 0.5,
+  color: '$textSecondary',
+  margin: 0,
+});
 
 // Player List
-export const PlayerList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-`;
+export const PlayerList = styled(YStack, {
+  name: 'LobbyPlayerList',
+  gap: '$3',
+});
 
-export const PlayerItem = styled.div<{ $isHost?: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem;
-  border-radius: 10px;
-  background: ${({ $isHost }) =>
-    $isHost ? 'rgba(99, 102, 241, 0.1)' : 'rgba(255, 255, 255, 0.03)'};
-  border: 1px solid
-    ${({ $isHost }) => ($isHost ? 'rgba(99, 102, 241, 0.3)' : 'transparent')};
-`;
+export const PlayerItem = styled(XStack, {
+  name: 'PlayerItem',
+  alignItems: 'center',
+  gap: '$3',
+  padding: '$2',
+  borderRadius: 10,
+  variants: {
+    isHost: {
+      true: {
+        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+        borderWidth: 1,
+        borderColor: 'rgba(99, 102, 241, 0.3)',
+      },
+      false: {
+        backgroundColor: 'rgba(255, 255, 255, 0.03)',
+        borderWidth: 1,
+        borderColor: 'transparent',
+      },
+    },
+  } as const,
+});
 
-export const LobbyPlayerAvatar = styled.div<{ $color: string }>`
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: ${({ $color }) => $color};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: white;
-  flex-shrink: 0;
-`;
+export const LobbyPlayerAvatar = styled(YStack, {
+  name: 'LobbyPlayerAvatar',
+  width: 36,
+  height: 36,
+  borderRadius: 10,
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: '$background',
+  flexShrink: 0,
+});
 
-export const PlayerInfo = styled.div`
-  flex: 1;
-  min-width: 0;
-`;
+export const LobbyPlayerAvatarText = styled(Text, {
+  name: 'LobbyPlayerAvatarText',
+  fontWeight: '600',
+  fontSize: '$2',
+  color: 'white',
+});
 
-export const LobbyPlayerName = styled.div`
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: ${({ theme }) => theme.text.primary};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
+export const PlayerInfo = styled(YStack, {
+  name: 'PlayerInfo',
+  flex: 1,
+  minWidth: 0,
+});
 
-export const PlayerBadge = styled.span`
-  font-size: 0.65rem;
-  padding: 0.15rem 0.5rem;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  color: white;
-  border-radius: 8px;
-  font-weight: 600;
-`;
+export const LobbyPlayerName = styled(Text, {
+  name: 'LobbyPlayerName',
+  fontSize: '$3',
+  fontWeight: '500',
+  color: '$color',
+});
+
+export const PlayerBadge = styled(Text, {
+  name: 'PlayerBadge',
+  fontSize: 10,
+  paddingHorizontal: '$2',
+  paddingVertical: 2,
+  background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+  color: 'white',
+  borderRadius: 8,
+  fontWeight: '600',
+});
 
 export const ReorderButton = (props: ButtonProps) => (
-  <Button variant="icon" size="sm" {...props} />
+  <IconButton size="sm" {...props} />
 );
 
-export const EmptySlot = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem;
-  border-radius: 10px;
-  border: 1px dashed rgba(99, 102, 241, 0.2);
-  opacity: 0.5;
-`;
+export const EmptySlot = styled(XStack, {
+  name: 'EmptySlot',
+  alignItems: 'center',
+  gap: '$3',
+  padding: '$2',
+  borderRadius: 10,
+  borderWidth: 1,
+  borderStyle: 'dashed',
+  borderColor: 'rgba(99, 102, 241, 0.2)',
+  opacity: 0.5,
+});
 
-export const EmptyAvatar = styled.div`
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: rgba(99, 102, 241, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-`;
+export const EmptyAvatar = styled(YStack, {
+  name: 'EmptyAvatar',
+  width: 36,
+  height: 36,
+  borderRadius: 10,
+  backgroundColor: 'rgba(99, 102, 241, 0.1)',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
+export const EmptyAvatarText = styled(Text, {
+  name: 'EmptyAvatarText',
+  fontSize: '$4',
+});
 
 // Info Row
-export const InfoRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
-  &:last-child {
-    border-bottom: none;
-  }
-`;
+export const InfoRow = styled(XStack, {
+  name: 'InfoRow',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  paddingVertical: '$2',
+  borderBottomWidth: 1,
+  borderBottomColor: 'rgba(99, 102, 241, 0.1)',
+  // Handle last-child via props or conditionally in component
+});
 
-export const InfoLabel = styled.span`
-  font-size: 0.8rem;
-  color: ${({ theme }) => theme.text.secondary};
-`;
+export const InfoLabel = styled(Text, {
+  name: 'InfoLabel',
+  fontSize: '$2',
+  color: '$textSecondary',
+});
 
-export const InfoValue = styled.span`
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: ${({ theme }) => theme.text.primary};
-`;
+export const InfoValue = styled(Text, {
+  name: 'InfoValue',
+  fontSize: '$3',
+  fontWeight: '500',
+  color: '$color',
+});
 
-export const StatusBadge = styled.span<{ $status: string }>`
-  font-size: 0.75rem;
-  padding: 0.25rem 0.6rem;
-  border-radius: 8px;
-  font-weight: 500;
-  background: ${({ $status }) =>
-    $status === 'lobby'
-      ? 'rgba(16, 185, 129, 0.15)'
-      : 'rgba(99, 102, 241, 0.15)'};
-  color: ${({ $status }) => ($status === 'lobby' ? '#10b981' : '#6366f1')};
-`;
+export const StatusBadge = styled(Text, {
+  name: 'StatusBadge',
+  fontSize: '$2',
+  paddingHorizontal: '$3',
+  paddingVertical: '$1',
+  borderRadius: 8,
+  fontWeight: '500',
+  variants: {
+    status: {
+      lobby: {
+        backgroundColor: 'rgba(16, 185, 129, 0.15)',
+        color: '#10b981',
+      },
+      ready: {
+        backgroundColor: 'rgba(99, 102, 241, 0.15)',
+        color: '#6366f1',
+      },
+      in_progress: {
+        backgroundColor: 'rgba(99, 102, 241, 0.15)',
+        color: '#6366f1',
+      },
+      completed: {
+        backgroundColor: 'rgba(156, 163, 175, 0.15)',
+        color: '#9ca3af',
+      },
+    },
+  } as const,
+});
 
-export const FastBadge = styled.span`
-  font-size: 0.75rem;
-  padding: 0.25rem 0.6rem;
-  border-radius: 8px;
-  font-weight: 500;
-  background: rgba(234, 179, 8, 0.15);
-  color: #eab308;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-`;
+export const FastBadge = styled(XStack, {
+  name: 'FastBadge',
+  paddingHorizontal: '$3',
+  paddingVertical: '$1',
+  borderRadius: 8,
+  backgroundColor: 'rgba(234, 179, 8, 0.15)',
+  alignItems: 'center',
+  gap: '$2',
+});
+
+export const FastBadgeText = styled(Text, {
+  name: 'FastBadgeText',
+  fontSize: '$2',
+  fontWeight: '500',
+  color: '#eab308',
+});

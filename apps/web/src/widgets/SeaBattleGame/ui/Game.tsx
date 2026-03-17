@@ -6,20 +6,19 @@ import React, {
   useState,
   useEffect,
   useMemo,
-  RefObject,
 } from 'react';
+import { TamaguiElement } from 'tamagui';
 import styled from 'styled-components';
 import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import type { SeaBattleGameProps } from '../types';
+import type { SeaBattleGameProps, SeaBattleSnapshot } from '../types';
 import { MIN_PLAYERS } from '../types';
 import { useSeaBattleState } from '../hooks/useSeaBattleState';
 import { useSeaBattleActions } from '../hooks/useSeaBattleActions';
 import { useGameStore } from '@/features/games/store/gameStore';
 import { useDisplayNames } from '@/widgets/CriticalGame/lib/displayUtils';
-import type { CriticalSnapshot } from '@/widgets/CriticalGame/types';
 import { useRematch } from '@/features/games/hooks';
 import {
   GameResultModal,
@@ -92,7 +91,7 @@ export default function SeaBattleGame({
   const room =
     (storeRoom?.id === roomId ? storeRoom : null) || initialRoom || null;
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement & TamaguiElement>(null);
   const chatMessagesRef = useRef<HTMLDivElement | null>(null);
 
   const isLobby = room?.status === 'lobby';
@@ -192,10 +191,6 @@ export default function SeaBattleGame({
     invitation,
     handleAcceptInvitation,
     handleDeclineInvitation,
-    invitationTimeLeft,
-    handleBlockRematch,
-    handleBlockUser,
-    isAcceptingInvitation,
   } = useRematch({
     roomId,
     gameOptions: room?.gameOptions,
@@ -220,7 +215,7 @@ export default function SeaBattleGame({
   const { resolveDisplayName, formatLogMessage } = useDisplayNames({
     currentUserId,
     room: room!,
-    snapshot: snapshot as unknown as CriticalSnapshot,
+    snapshot: snapshot as SeaBattleSnapshot,
     youLabel: t('games.sea_battle_v1.table.players.you'),
     translateCardType: () => '',
     seeTheFutureLabel: '',
@@ -264,7 +259,7 @@ export default function SeaBattleGame({
 
   return (
     <GameLayout
-      gameContainerRef={containerRef as RefObject<HTMLDivElement>}
+      gameContainerRef={containerRef}
       variant={cardVariant}
       isMyTurn={!!isMyTurn}
       popupOverlay={
@@ -386,18 +381,10 @@ export default function SeaBattleGame({
 
           <RematchInvitationModal
             isOpen={!!invitation}
-            hostName={invitation?.hostName || ''}
-            hostId={invitation?.hostId}
-            roomId={invitation?.newRoomId}
-            message={invitation?.message}
-            timeLeft={invitationTimeLeft}
+            senderName={invitation?.hostName || ''}
             onAccept={handleAcceptInvitation}
             onDecline={handleDeclineInvitation}
-            onBlockRematch={handleBlockRematch}
-            onBlockUser={handleBlockUser}
-            accepting={isAcceptingInvitation}
             t={t}
-            cardVariant={cardVariant}
           />
         </>
       }

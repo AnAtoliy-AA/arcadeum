@@ -147,8 +147,7 @@ export const DeckCard = styled(Card, {
     $variant: (val: string) => {
       const config = getVariantStyles(val).cards;
       return {
-        backgroundColor: config.getDeckBackground?.(val),
-        borderColor: config.getDeckBorder?.(val),
+        borderColor: config.deckBorderColor,
         ...config.getDeckStyles?.(),
       };
     },
@@ -164,6 +163,16 @@ export const StashedCard = styled(Card, {
   borderColor: '$primary',
   borderWidth: 1,
   opacity: 0.9,
+
+  variants: {
+    $variant: (val: string) => {
+      const config = getVariantStyles(val).cards;
+      return {
+        borderColor: config.deckBorderColor,
+        ...config.getCardStyles?.(),
+      };
+    },
+  } as const,
 });
 
 export const StashIcon = styled(Text, {

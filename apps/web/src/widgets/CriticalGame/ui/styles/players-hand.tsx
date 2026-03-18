@@ -149,6 +149,7 @@ export const HandCard = styled(Card, {
       const config = getVariantStyles(val).cards;
       return {
         ...config.getCardStyles?.(),
+        hoverStyle: { scale: 1.05, boxShadow: config.getHoverGlow?.() },
       };
     },
   } as const,

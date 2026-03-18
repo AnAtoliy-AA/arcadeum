@@ -18,55 +18,135 @@ No changes to game logic, state management, modals, chat, or server communicatio
 
 ### CardImage (new primitive)
 
-Replaces `CardEmoji` in all card contexts. Renders the correct tile from the variant's sprite sheet.
+A plain React component (not a Tamagui styled component) that renders a `<div>` with inline styles. Replaces `CardEmoji` in all card contexts.
 
-**Sprite sheet spec:**
-- File: `/images/cards/{variant}_sprites.png`
-- Grid: 7×7 tiles, each 171×171px, total 1197×1197px
-- Position 0: card back (face-down)
-- Positions 1–39: card fronts mapped via `CARD_SPRITE_MAP`
-
-**CSS rendering:**
-```css
-background-image: url(/images/cards/{variant}_sprites.png);
-background-size: 1197px 1197px;
-background-position: -{col * 171}px -{row * 171}px;
-width: 100%;
-height: 100%;
-position: absolute;
-top: 0; left: 0;
+**Props:**
+```ts
+interface CardImageProps {
+  variant: string;        // e.g. 'cyberpunk', 'crime'
+  cardType: string;       // e.g. 'strike', 'cancel'
+  faceDown?: boolean;     // true → use sprite index 0 (card back)
+}
 ```
 
-Where `col = spriteIndex % 7`, `row = Math.floor(spriteIndex / 7)`.
+**Sprite index resolution:**
+```ts
+import { CARD_SPRITE_MAP } from '../styles/card-sprites';
+const spriteIndex = faceDown ? 0 : (CARD_SPRITE_MAP[cardType] ?? 0);
+```
+`CARD_SPRITE_MAP` is already defined in `styles/card-sprites.ts` and maps all 39 card type strings to positions 1–39. Any unmapped card type falls back to index 0 (card back).
 
-### Card layout (HandCard, DeckCard, LastPlayedCard, StashedCard)
+**Sprite URL resolution:**
+```ts
+const spriteUrl = getVariantStyles(variant).cards.getCardSpriteUrl?.(variant);
+```
+`getCardSpriteUrl` signature in `VariantStyleConfig.cards`: `(variant?: string) => string | undefined`. The base implementation in `base.ts` already handles crime/horror/adventure via the variant argument. Cyberpunk, underwater, and high-altitude-hike override this in their own config files and return their URL directly. New variant files (crime.ts, horror.ts, adventure.ts) follow the same override pattern — return the URL directly without using the argument. If `spriteUrl` is undefined (default variant), `CardImage` renders nothing — the card shows only the gradient scrim and name label.
 
-- Full-bleed `CardImage` as absolute background layer
-- Dark gradient scrim overlay at bottom 40%: `linear-gradient(transparent, rgba(0,0,0,0.85))`
-- Card name in styled text at bottom, colored by variant primary color
-- `CardEmoji` removed from all card renders
-- `DeckCard` (face-down) uses sprite index 0 with variant border styling
-
-**Hover effect:** scale(1.05) + variant-colored `box-shadow` glow
+**CSS rendering:**
+```ts
+const col = spriteIndex % 7;
+const row = Math.floor(spriteIndex / 7);
+const style = {
+  position: 'absolute' as const,
+  inset: 0,
+  borderRadius: 'inherit',
+  backgroundImage: `url(${spriteUrl})`,
+  backgroundSize: '1197px 1197px',
+  backgroundPosition: `-${col * 171}px -${row * 171}px`,
+  backgroundRepeat: 'no-repeat',
+};
+```
 
 **New file:** `styles/card-image.tsx`
 
 ---
 
+### Card layout (HandCard, DeckCard, LastPlayedCard, StashedCard)
+
+All four card components get the same layered structure inside their `CardInner` (or direct children):
+
+1. `<CardImage variant={cardVariant} cardType={card} />` — absolute background, renders sprite art
+2. Gradient scrim `<div>`: `position: absolute; bottom: 0; left: 0; right: 0; height: 40%; background: linear-gradient(transparent, rgba(0,0,0,0.85)); pointer-events: none; z-index: 1`
+3. Card name `<Text>` absolutely at bottom, `z-index: 2`, colored by variant primary
+4. `CardEmoji` removed from all card renders
+
+**`StashedCard`** currently has no `$variant` variant handler in `cards.tsx`. Add one (same pattern as `HandCard`). Also update `StashedCard` render in `PlayerHand.tsx` to use `CardImage` + gradient scrim + name, removing `CardEmoji` there too.
+
+**`DeckCard`** (face-down): use `<CardImage variant={cardVariant} faceDown />` to show the card-back sprite (index 0). The existing `getDeckBackground` / `getDeckBorder` functions in `VariantStyleConfig.cards` are **deprecated** — remove them from all variant configs and from the `DeckCard.$variant` handler. Border color for `DeckCard` is supplied directly by `getDeckBorder` being replaced with a `borderColor` field in the variant cards config.
+
+**Hover glow:** Add `getHoverGlow(): string` to `VariantStyleConfig.cards` type. Each variant returns a `box-shadow` string (e.g. `'0 0 24px #06b6d4cc'`). Apply in `HandCard.$variant` handler:
+```ts
+$variant: (val: string) => {
+  const config = getVariantStyles(val).cards;
+  return {
+    ...config.getCardStyles?.(),
+    hoverStyle: { scale: 1.05, boxShadow: config.getHoverGlow?.() },
+  };
+},
+```
+This replaces the base `Card` hoverStyle `elevation: 8` for styled variants. The base `Card` keeps its default hoverStyle; only variant-styled cards override it.
+
+---
+
 ## Card Flip Animation
 
-When a card is drawn, the newly added card plays a CSS flip reveal:
+When the local player draws a card (hand gains a new card type they did not previously hold), that card plays a CSS 3D flip reveal.
 
-1. Starts showing card-back sprite (index 0), rotateY(0deg)
-2. Flips to rotateY(90deg) — card disappears mid-flip
-3. Sprite switches to the actual card front
-4. Completes to rotateY(0deg) — card front visible
+### `useCardFlip` hook
 
-**Hook:** `useCardFlip` — tracks previous hand length, identifies new card, sets a `isFlipping` flag for ~600ms.
+**Input:** `currentHand: CriticalCard[]`
+**Output:** `{ flippingCardType: CriticalCard | null }`
 
-**Applied in:** `PlayerHand` — the most recently added card gets the `isFlipping` class.
+**Rules:**
+- Tracks `previousGroupedTypes: Set<CriticalCard>` via `useRef` — the set of distinct card types in the previous render
+- On each render, computes `currentGroupedTypes` from `currentHand`
+- If exactly one new card type appears in `currentGroupedTypes` that was not in `previousGroupedTypes`: set `flippingCardType` to that card type for 600ms then clear it
+- If zero or more-than-one new card types appear: no flip (bulk draw, combo result, or no change)
+- If player already holds 2 `strike` and draws a 3rd: `strike` is already in `previousGroupedTypes`, count increases but no new type → no flip (the rendered `HandCard` for `strike` already exists)
+- Only active for local player's hand — not passed to spectator views
 
-**Implementation:** Pure CSS `@keyframes` + `transition`, no JS animation library.
+**Hook file:** `hooks/useCardFlip.ts`
+
+### CSS prerequisites and animation
+
+In `PlayerHand.tsx`, wrap each `HandCard` in a plain `<div>` element:
+```tsx
+<div
+  key={id}
+  style={
+    card === flippingCardType
+      ? { perspective: '600px' }
+      : undefined
+  }
+>
+  <HandCard
+    style={
+      card === flippingCardType
+        ? { transformStyle: 'preserve-3d', animation: 'cardFlip 600ms ease-in-out' }
+        : undefined
+    }
+    ...
+  />
+</div>
+```
+
+The `<div>` wrapper provides `perspective`; the `HandCard` element itself gets `transform-style: preserve-3d` and the keyframe animation. This avoids Tamagui transform normalization issues.
+
+**Sprite swap at midpoint:** Use a `setTimeout(300)` inside `useCardFlip` to flip an internal `showBack` boolean from `true` → `false` at the animation midpoint. While `showBack` is true, `CardImage` receives `faceDown={true}` (shows card back); after the timeout it receives `faceDown={false}` (shows card front). The 600ms timer clears `flippingCardType`.
+
+**`@keyframes cardFlip` definition** (in `ParticleOverlay.module.css` or a shared CSS module):
+```css
+@keyframes cardFlip {
+  0%   { transform: rotateY(0deg); }
+  45%  { transform: rotateY(90deg); }
+  55%  { transform: rotateY(90deg); }
+  100% { transform: rotateY(0deg); }
+}
+```
+
+### Coexistence with `LastPlayedCard.$isAnimating`
+
+`LastPlayedCard.$isAnimating` (existing Tamagui variant, sets `rotateY: '180deg'`) is on a separate component in `CenterTableSection` (discard pile). `useCardFlip` only applies to `HandCard` inside `PlayerHand`. No conflict.
 
 ---
 
@@ -83,61 +163,85 @@ When a card is drawn, the newly added card plays a CSS flip reveal:
 | horror | `#10b981` green | `#020617` near-black | **new** |
 | adventure | `#f59e0b` amber | `#451a03` dark brown | **new** |
 
-### Per-variant style config covers
+### `VariantStyleConfig.cards` additions
 
-- Card border color + corner glow
-- Card name label color
-- Card back sprite border
-- Game container background gradient
-- Table section background/border
-- Ambient overlay animation type
+Add to the `cards` section of the type in `variants/types.ts`:
+- `getHoverGlow?: () => string` — box-shadow string for card hover
+- `getCardNameColor?: () => string` — color for the name label overlay
+- Remove `getDeckBackground` and `getDeckBorder` (deprecated in favour of `CardImage` + `borderColor` field)
 
 ### New style files
 
-- `styles/variants/crime.ts`
-- `styles/variants/horror.ts`
-- `styles/variants/adventure.ts`
+`crime.ts`, `horror.ts`, `adventure.ts` each export a full `VariantStyleConfig`. They follow the cyberpunk pattern: `getCardSpriteUrl` returns the URL directly (`'/images/cards/crime_sprites.png'` etc.) without using the argument. All three are registered in `variants/index.ts`.
+
+### `constants.ts` change
+
+Remove `disabled: true` from the crime, horror, and adventure entries in `CARD_VARIANTS`. All three entries already exist — no new constants are added.
 
 ---
 
 ## Ambient Particle Overlay
 
 **Component:** `ui/ParticleOverlay.tsx`
+**CSS:** `ui/ParticleOverlay.module.css`
 
-A positioned overlay inside the game container. Pure CSS animations, no canvas or external libraries. Renders variant-specific ambient effects:
+Particle elements are rendered as React children (`<span>` divs), **not** via CSS `::before`/`::after` on spans (pseudo-elements are not viable on dynamically rendered React elements). Keyframe animations and per-particle styles are defined in the CSS module.
 
-| Variant | Effect | Implementation |
+**Stacking context isolation:** In `ActiveGameContent.tsx`, wrap `ParticleOverlay` in:
+```tsx
+<div style={{ position: 'absolute', inset: 0, isolation: 'isolate', pointerEvents: 'none', zIndex: 0 }}>
+  <ParticleOverlay variant={cardVariant} />
+</div>
+```
+`isolation: isolate` creates a new stacking context. All z-indices inside this wrapper are scoped to it and cannot affect `LastPlayedCard` (z-index: 10), `ActionButtons` (z-index: 50), or other siblings.
+
+**ParticleOverlay base styles (from CSS module):**
+```css
+.overlay {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+```
+
+### Per-variant effects
+
+| Variant | Effect | Elements |
 |---|---|---|
-| cyberpunk | Horizontal scanline flicker | Animated pseudo-element, opacity pulse |
-| underwater | Floating bubble dots | 8–12 `::before` spans, float upward keyframes |
-| crime | Vertical rain streaks | Thin diagonal lines, translateY animation |
-| horror | Flickering vignette | Radial gradient opacity flicker keyframes |
-| adventure | Floating golden dust motes | Small dots, random float paths |
-| high-altitude-hike | Drifting snow dots | Small dots, slow drift + fade |
+| cyberpunk | Horizontal scanline flicker | 1 `<div>` full-width, `repeating-linear-gradient` + opacity keyframe at 2s loop |
+| underwater | Floating bubble dots | 10 `<span>`, `border-radius: 50%`, staggered `animation-delay`, `translateY(-100vh)` + opacity keyframe |
+| crime | Vertical rain streaks | 15 `<span>`, 1px wide, varied heights/positions, `translateY(100%)` keyframe, staggered delays |
+| horror | Flickering radial vignette | 1 `<div>` with `radial-gradient` from edges, opacity flicker keyframe (irregular timing) |
+| adventure | Floating golden dust motes | 8 `<span>`, 3–6px circles, random absolute positions, slow float + opacity fade |
+| high-altitude-hike | Drifting snow | 12 `<span>`, 2–4px circles, slow drift with slight horizontal sway via `translateX` + `translateY` keyframe |
 
-Overlay is `pointer-events: none`, `position: absolute`, `inset: 0`, `z-index: 1`. Game content renders above it at `z-index: 2`.
+`ParticleOverlay` accepts a `variant` prop and renders the appropriate element set. Non-matching variants render `null`.
 
 ---
 
 ## Files Changed
 
 ### New files
-- `apps/web/src/widgets/CriticalGame/ui/styles/card-image.tsx`
-- `apps/web/src/widgets/CriticalGame/ui/ParticleOverlay.tsx`
+- `apps/web/src/widgets/CriticalGame/ui/styles/card-image.tsx` — `CardImage` component
+- `apps/web/src/widgets/CriticalGame/ui/ParticleOverlay.tsx` — ambient overlay component
+- `apps/web/src/widgets/CriticalGame/ui/ParticleOverlay.module.css` — keyframes + particle classes
 - `apps/web/src/widgets/CriticalGame/ui/styles/variants/crime.ts`
 - `apps/web/src/widgets/CriticalGame/ui/styles/variants/horror.ts`
 - `apps/web/src/widgets/CriticalGame/ui/styles/variants/adventure.ts`
 - `apps/web/src/widgets/CriticalGame/hooks/useCardFlip.ts`
 
 ### Modified files
-- `apps/web/src/widgets/CriticalGame/ui/styles/cards-base.tsx` — add gradient scrim, CardImage integration
-- `apps/web/src/widgets/CriticalGame/ui/styles/cards.tsx` — update HandCard, DeckCard, LastPlayedCard, StashedCard
+- `apps/web/src/widgets/CriticalGame/ui/styles/variants/types.ts` — add `getHoverGlow`, `getCardNameColor` to cards type; remove `getDeckBackground`, `getDeckBorder`
+- `apps/web/src/widgets/CriticalGame/ui/styles/variants/base.ts` — remove `getDeckBackground`, `getDeckBorder`; add `getHoverGlow`, `getCardNameColor` defaults
 - `apps/web/src/widgets/CriticalGame/ui/styles/variants/index.ts` — register crime, horror, adventure
-- `apps/web/src/widgets/CriticalGame/ui/styles/layout.tsx` — variant game background styles
-- `apps/web/src/widgets/CriticalGame/ui/DeckDisplay.tsx` — use card-back sprite
-- `apps/web/src/widgets/CriticalGame/ui/PlayerHand.tsx` — remove CardEmoji, use CardImage, useCardFlip
-- `apps/web/src/widgets/CriticalGame/ui/ActiveGameContent.tsx` — add ParticleOverlay
-- `apps/web/src/widgets/CriticalGame/lib/constants.ts` — enable crime, horror, adventure variants
+- `apps/web/src/widgets/CriticalGame/ui/styles/cards-base.tsx` — add gradient scrim absolute div, card name overlay Text; update base Card to include CardImage slot
+- `apps/web/src/widgets/CriticalGame/ui/styles/cards.tsx` — update `HandCard.$variant` with hover glow; update `DeckCard.$variant` (remove `getDeckBackground`/`getDeckBorder` calls); add `$variant` handler to `StashedCard`
+- `apps/web/src/widgets/CriticalGame/ui/styles/players-hand.tsx` — update `HandCard.$variant` hoverStyle
+- `apps/web/src/widgets/CriticalGame/ui/DeckDisplay.tsx` — use `<CardImage faceDown />` for face-down deck
+- `apps/web/src/widgets/CriticalGame/ui/PlayerHand.tsx` — remove `CardEmoji`; add `<div>` wrapper per card with perspective/flip animation; add `CardImage` to both `HandCard` and `StashedCard` renders; wire `useCardFlip`
+- `apps/web/src/widgets/CriticalGame/ui/ActiveGameContent.tsx` — add isolated `ParticleOverlay` wrapper
+- `apps/web/src/widgets/CriticalGame/lib/constants.ts` — remove `disabled: true` from crime, horror, adventure
 
 ---
 

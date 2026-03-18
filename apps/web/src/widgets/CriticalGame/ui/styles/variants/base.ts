@@ -231,6 +231,9 @@ export const baseVariantStyles: VariantStyleConfig = {
   cards: {
     glowEffect: `${VARIANT_COLORS.default.primary}`,
     borderEffect: `2px solid ${VARIANT_COLORS.default.primary}`,
+    deckBorderColor: VARIANT_COLORS.default.primary,
+    getHoverGlow: () => `0 0 24px ${VARIANT_COLORS.default.primary}cc`,
+    getCardNameColor: () => 'rgba(255, 255, 255, 0.9)',
     getCardSpriteUrl: (variant) => {
       if (variant === GAME_VARIANT.CRIME)
         return '/images/cards/crime_sprites.png';
@@ -239,22 +242,6 @@ export const baseVariantStyles: VariantStyleConfig = {
       if (variant === GAME_VARIANT.ADVENTURE)
         return '/images/cards/adventure_sprites.png';
       return undefined;
-    },
-    getDeckBackground: (variant) => {
-      if (variant === GAME_VARIANT.CRIME)
-        return 'linear-gradient(135deg, #18181b 0%, #27272a 100%)';
-      if (variant === GAME_VARIANT.HORROR)
-        return 'linear-gradient(135deg, #020617 0%, #0f172a 100%)';
-      if (variant === GAME_VARIANT.ADVENTURE)
-        return 'linear-gradient(135deg, #451a03 0%, #78350f 100%)';
-      return `linear-gradient(135deg, ${VARIANT_COLORS.default.background} 0%, ${VARIANT_COLORS.default.secondary} 100%)`;
-    },
-    getDeckBorder: (variant) => {
-      if (variant === GAME_VARIANT.CRIME) return VARIANT_COLORS.crime.primary;
-      if (variant === GAME_VARIANT.HORROR) return VARIANT_COLORS.horror.primary;
-      if (variant === GAME_VARIANT.ADVENTURE)
-        return VARIANT_COLORS.adventure.primary;
-      return VARIANT_COLORS.default.primary;
     },
   },
 };

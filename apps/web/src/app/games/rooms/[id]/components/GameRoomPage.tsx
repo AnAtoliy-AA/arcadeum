@@ -1,6 +1,13 @@
 'use client';
 
-import React, { useMemo, useEffect, Suspense, useState, useRef } from 'react';
+import React, {
+  useMemo,
+  useEffect,
+  Suspense,
+  useState,
+  useRef,
+  useCallback,
+} from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
@@ -10,6 +17,7 @@ import {
   disconnectSockets,
 } from '@/shared/lib/socket';
 import { GamesControlPanel } from '@/widgets/GamesControlPanel';
+import { GameChat } from '@/widgets/GameChat';
 import { gamesApi } from '@/features/games/api';
 import { useGameRoom, type GameType } from '@/features/games/hooks';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -43,6 +51,9 @@ export default function GameRoomPage() {
   const [autoJoinAttempted, setAutoJoinAttempted] = useState(false);
   // Track if user manually submitted invite code
   const [manualSubmitPending, setManualSubmitPending] = useState(false);
+  // Chat visibility state
+  const [showChat, setShowChat] = useState(false);
+  const handleToggleChat = useCallback(() => setShowChat((v) => !v), []);
 
   // State for room visibility check
 
@@ -400,6 +411,8 @@ export default function GameRoomPage() {
           roomId={roomId}
           inviteCode={room?.inviteCode}
           fullscreenContainerRef={gameContainerRef}
+          showChat={showChat}
+          onToggleChat={handleToggleChat}
         />
 
         <GameWrapper>
@@ -429,6 +442,8 @@ export default function GameRoomPage() {
             )}
           </Suspense>
         </GameWrapper>
+
+        {showChat && <GameChat onClose={() => setShowChat(false)} />}
       </Container>
     </Page>
   );

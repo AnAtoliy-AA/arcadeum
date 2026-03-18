@@ -12,10 +12,11 @@ import {
 } from '../types';
 import { PLAYABLE_ACTION_CARDS } from '../lib/constants';
 import {
-  getCardEmoji,
   getCardTranslationKey,
   getCardDescriptionKey,
 } from '../lib/cardUtils';
+import { CardImage } from './styles/card-image';
+import { useCardFlip } from '../hooks/useCardFlip';
 import { ActionsSection } from './ActionsSection';
 import { HandLayoutDropdown } from './HandLayoutDropdown';
 
@@ -29,7 +30,7 @@ import {
   CardCorner,
   CardFrame,
   CardInner,
-  CardEmoji,
+  GradientScrim,
   CardName,
   CardDescription,
   CardCountBadge,
@@ -157,6 +158,12 @@ export function PlayerHand({
     });
     return items;
   }, [currentPlayer.stash]);
+
+  const distinctCardTypes = useMemo(
+    () => groupedHand.map((item) => item.card),
+    [groupedHand],
+  );
+  const { flippingCardType, showBack } = useCardFlip(distinctCardTypes);
 
   // Handle clicking on a card in hand
   const handleCardClick = useCallback(
@@ -340,8 +347,9 @@ export function PlayerHand({
                 <CardCorner $position="bl" />
                 <CardCorner $position="br" />
                 <CardFrame />
-                <CardInner>
-                  <CardEmoji>{getCardEmoji(card)}</CardEmoji>
+                <CardImage variant={cardVariant ?? ''} cardType={card} />
+                <GradientScrim />
+                <CardInner style={{ zIndex: 2 }}>
                   {showNames && (
                     <CardName $variant={cardVariant as GameVariant}>
                       {t(getCardTranslationKey(card, cardVariant)) || card}
@@ -363,37 +371,55 @@ export function PlayerHand({
               );
               const clickable = isCardClickable(card, count);
               const dimmed = isComboCard && count === 1;
+              const isFlipping = card === flippingCardType;
 
               return (
-                <HandCard
+                <div
                   key={id}
-                  $cardType={card}
-                  $index={idx}
-                  $variant={cardVariant as GameVariant}
-                  $clickable={clickable}
-                  $dimmed={dimmed}
-                  onPress={() => handleCardClick(card, count)}
+                  style={isFlipping ? { perspective: '600px' } : undefined}
                 >
-                  <CardCorner $position="tl" />
-                  <CardCorner $position="tr" />
-                  <CardCorner $position="bl" />
-                  <CardCorner $position="br" />
-                  <CardFrame />
-                  <CardInner>
-                    <CardEmoji>{getCardEmoji(card)}</CardEmoji>
-                    {showNames && (
-                      <CardName $variant={cardVariant as GameVariant}>
-                        {t(getCardTranslationKey(card, cardVariant)) || card}
-                      </CardName>
-                    )}
-                    {showDescriptions && (
-                      <CardDescription $variant={cardVariant as GameVariant}>
-                        {t(getCardDescriptionKey(card))}
-                      </CardDescription>
-                    )}
-                  </CardInner>
-                  {count > 1 && <CardCountBadge>{count}</CardCountBadge>}
-                </HandCard>
+                  <HandCard
+                    $cardType={card}
+                    $index={idx}
+                    $variant={cardVariant as GameVariant}
+                    $clickable={clickable}
+                    $dimmed={dimmed}
+                    onPress={() => handleCardClick(card, count)}
+                    style={
+                      isFlipping
+                        ? {
+                            transformStyle: 'preserve-3d',
+                            animation: 'cardFlip 600ms ease-in-out',
+                          }
+                        : undefined
+                    }
+                  >
+                    <CardCorner $position="tl" />
+                    <CardCorner $position="tr" />
+                    <CardCorner $position="bl" />
+                    <CardCorner $position="br" />
+                    <CardFrame />
+                    <CardImage
+                      variant={cardVariant ?? ''}
+                      cardType={card}
+                      faceDown={isFlipping ? showBack : false}
+                    />
+                    <GradientScrim />
+                    <CardInner style={{ zIndex: 2 }}>
+                      {showNames && (
+                        <CardName $variant={cardVariant as GameVariant}>
+                          {t(getCardTranslationKey(card, cardVariant)) || card}
+                        </CardName>
+                      )}
+                      {showDescriptions && (
+                        <CardDescription $variant={cardVariant as GameVariant}>
+                          {t(getCardDescriptionKey(card))}
+                        </CardDescription>
+                      )}
+                    </CardInner>
+                    {count > 1 && <CardCountBadge>{count}</CardCountBadge>}
+                  </HandCard>
+                </div>
               );
             })}
           </CardsGrid>

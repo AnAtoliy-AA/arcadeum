@@ -34,6 +34,7 @@ import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress'
 
 // Extracted Components
 import { Page, Container, LoadingContainer, GameWrapper } from './styles';
+import { GameRow, ChatPanel } from './layoutStyles';
 import { GameRoomLoading } from './GameRoomLoading';
 import { GameRoomError } from './GameRoomError';
 import { PrivateRoomForm } from './PrivateRoomForm';
@@ -52,7 +53,7 @@ export default function GameRoomPage() {
   // Track if user manually submitted invite code
   const [manualSubmitPending, setManualSubmitPending] = useState(false);
   // Chat visibility state
-  const [showChat, setShowChat] = useState(false);
+  const [showChat, setShowChat] = useState(true);
   const handleToggleChat = useCallback(() => setShowChat((v) => !v), []);
 
   // State for room visibility check
@@ -415,35 +416,39 @@ export default function GameRoomPage() {
           onToggleChat={handleToggleChat}
         />
 
-        <GameWrapper>
-          <Suspense
-            fallback={
-              <LoadingContainer>
-                {t('games.roomPage.loadingGame')}
-              </LoadingContainer>
-            }
-          >
-            {gameLoading && (
-              <LoadingContainer>
-                {t('games.roomPage.loadingGame')}
-              </LoadingContainer>
-            )}
+        <GameRow>
+          <GameWrapper>
+            <Suspense
+              fallback={
+                <LoadingContainer>
+                  {t('games.roomPage.loadingGame')}
+                </LoadingContainer>
+              }
+            >
+              {gameLoading && (
+                <LoadingContainer>
+                  {t('games.roomPage.loadingGame')}
+                </LoadingContainer>
+              )}
 
-            {!gameLoading && !gameType && room && (
-              <LoadingContainer>
-                {t('games.roomPage.errors.unsupportedGame', {
-                  gameId: room.gameId,
-                })}
-              </LoadingContainer>
-            )}
+              {!gameLoading && !gameType && room && (
+                <LoadingContainer>
+                  {t('games.roomPage.errors.unsupportedGame', {
+                    gameId: room.gameId,
+                  })}
+                </LoadingContainer>
+              )}
 
-            {!gameLoading && isGameReady && gameType && gameProps && (
-              <DynamicGameRenderer gameType={gameType} props={gameProps} />
-            )}
-          </Suspense>
-        </GameWrapper>
+              {!gameLoading && isGameReady && gameType && gameProps && (
+                <DynamicGameRenderer gameType={gameType} props={gameProps} />
+              )}
+            </Suspense>
+          </GameWrapper>
 
-        {showChat && <GameChat onClose={() => setShowChat(false)} />}
+          <ChatPanel visible={showChat}>
+            <GameChat onClose={() => setShowChat(false)} />
+          </ChatPanel>
+        </GameRow>
       </Container>
     </Page>
   );

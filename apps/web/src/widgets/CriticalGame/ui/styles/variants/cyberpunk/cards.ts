@@ -3,10 +3,10 @@ import { VARIANT_COLORS } from '../../variant-palette';
 export const cardsStyles = {
   glowEffect: `0 0 20px ${VARIANT_COLORS.cyberpunk.secondary}cc`,
   borderEffect: `2px solid ${VARIANT_COLORS.cyberpunk.secondary}`,
+  deckBorderColor: VARIANT_COLORS.cyberpunk.secondary,
+  getHoverGlow: (): string => `0 0 24px ${VARIANT_COLORS.cyberpunk.primary}cc`,
+  getCardNameColor: (): string => VARIANT_COLORS.cyberpunk.accent,
   getCardSpriteUrl: (): string => '/images/cards/cyberpunk_sprites.png',
-  getDeckBackground: (): string =>
-    "url('/images/cards/cyberpunk_sprites.png') 0% 0% / 700% 700% no-repeat",
-  getDeckBorder: (): string => VARIANT_COLORS.cyberpunk.secondary,
   getDecorationBackground: (): string =>
     `${VARIANT_COLORS.cyberpunk.background}e6`,
   getDecorationBorder: (): string =>

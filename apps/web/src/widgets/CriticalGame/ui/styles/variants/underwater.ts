@@ -336,10 +336,10 @@ export const underwaterVariantStyles: VariantStyleConfig = {
   cards: {
     glowEffect: `0 0 15px ${VARIANT_COLORS.underwater.primary}80`,
     borderEffect: `2px solid ${VARIANT_COLORS.underwater.primary}`,
+    deckBorderColor: VARIANT_COLORS.underwater.primary,
+    getHoverGlow: () => `0 0 24px ${VARIANT_COLORS.underwater.primary}cc`,
+    getCardNameColor: () => '#a5f3fc',
     getCardSpriteUrl: () => '/images/cards/underwater_sprites.png',
-    getDeckBackground: () =>
-      "url('/images/cards/underwater_sprites.png') 0% 0% / 700% 700% no-repeat border-box border-box",
-    getDeckBorder: () => VARIANT_COLORS.underwater.primary,
     getDecorationBackground: () => '#083344e6',
     getDecorationBorder: () =>
       `1px solid ${VARIANT_COLORS.underwater.primary}99`,

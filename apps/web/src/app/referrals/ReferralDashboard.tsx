@@ -27,29 +27,29 @@ const BadgesRow = ({ badgeIds }: { badgeIds: string[] }) => {
 
 export function ReferralDashboard() {
   const { t } = useTranslation();
-  const { snapshot } = useSessionTokens();
+  const { snapshot, hydrated } = useSessionTokens();
   const isAuthenticated = !!snapshot.accessToken;
   const { data, isLoading, error } = useReferralStats();
 
-  if (!isAuthenticated) {
+  if (!hydrated || (isLoading && isAuthenticated)) {
     return (
-      <DashboardContainer>
-        <EmptyState message={t('referrals.unauthenticated.title')} icon="🔒" />
+      <DashboardContainer data-testid="referral-dashboard">
+        <LoadingState message={t('referrals.loading')} />
       </DashboardContainer>
     );
   }
 
-  if (isLoading) {
+  if (!isAuthenticated) {
     return (
-      <DashboardContainer>
-        <LoadingState message={t('referrals.loading')} />
+      <DashboardContainer data-testid="referral-dashboard">
+        <EmptyState message={t('referrals.unauthenticated.title')} icon="🔒" />
       </DashboardContainer>
     );
   }
 
   if (error || !data) {
     return (
-      <DashboardContainer>
+      <DashboardContainer data-testid="referral-dashboard">
         <EmptyState message={t('referrals.error.title')} icon="⚠️" />
       </DashboardContainer>
     );

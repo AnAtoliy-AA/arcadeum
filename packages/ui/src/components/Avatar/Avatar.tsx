@@ -67,6 +67,7 @@ export type AvatarProps = {
   src?: string;
   size?: AvatarSize;
   'data-testid'?: string;
+  isHost?: boolean;
 };
 
 export const Avatar = memo(function Avatar({
@@ -75,6 +76,7 @@ export const Avatar = memo(function Avatar({
   src,
   size = 'md',
   'data-testid': dataTestId,
+  isHost,
 }: AvatarProps): ReactElement {
   const initials = useMemo(() => getInitials(name), [name]);
   const sizeValue = sizeMap[size];

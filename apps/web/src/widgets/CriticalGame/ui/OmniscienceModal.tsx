@@ -12,6 +12,7 @@ import {
   ModalActions,
   ModalButton,
 } from './styles';
+import { type GameVariant } from '@arcadeum/ui';
 import { getCardEmoji, getCardTranslationKey } from '../lib/cardUtils';
 import type { OmniscienceModalState } from '../types';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
@@ -37,20 +38,23 @@ export function OmniscienceModal({
   if (!omniscienceModal) return null;
 
   return (
-    <Modal onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
-        <ModalHeader $variant={cardVariant}>
-          <ModalTitle $variant={cardVariant}>
+    <Modal>
+      <ModalContent
+        onPress={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        $variant={cardVariant as GameVariant}
+      >
+        <ModalHeader $variant={cardVariant as GameVariant}>
+          <ModalTitle $variant={cardVariant as GameVariant}>
             👁️ {t('games.table.cards.omniscience') || 'Omniscience'}
           </ModalTitle>
-          <CloseButton onClick={onClose} $variant={cardVariant}>
+          <CloseButton onPress={onClose} $variant={cardVariant as GameVariant}>
             ×
           </CloseButton>
         </ModalHeader>
 
         {omniscienceModal.hands.map((hand) => (
           <ModalSection key={hand.playerId}>
-            <SectionLabel $variant={cardVariant}>
+            <SectionLabel $variant={cardVariant as GameVariant}>
               {resolveDisplayName(hand.playerId, 'Player')}
             </SectionLabel>
             {hand.cards.length === 0 ? (
@@ -64,7 +68,7 @@ export function OmniscienceModal({
                   <OptionButton
                     key={`${hand.playerId}-${idx}`}
                     $selected={false}
-                    $variant={cardVariant}
+                    $variant={cardVariant as GameVariant}
                   >
                     <div style={{ fontSize: '2rem' }}>{getCardEmoji(card)}</div>
                     <div style={{ fontSize: '0.75rem' }}>
@@ -78,7 +82,7 @@ export function OmniscienceModal({
         ))}
 
         <ModalActions>
-          <ModalButton onClick={onClose}>
+          <ModalButton onPress={onClose}>
             {t('games.table.modals.common.close') || 'Close'}
           </ModalButton>
         </ModalActions>

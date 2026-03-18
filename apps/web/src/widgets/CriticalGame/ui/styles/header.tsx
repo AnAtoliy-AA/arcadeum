@@ -1,160 +1,135 @@
-import styled from 'styled-components';
-import { Button, ButtonProps, GameVariant } from '@arcadeum/ui';
-
+import { styled, XStack, YStack, Text } from 'tamagui';
+import { Button, IconButton } from '@arcadeum/ui';
+import type { ButtonProps } from '@arcadeum/ui';
 import { getVariantStyles } from './variants';
+import { TamaguiTheme } from './variants/types';
 
 // Header Components
-export const GameHeader = styled.div<{ $variant?: string }>`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.75rem;
-  background: ${({ $variant, theme }) =>
-    getVariantStyles($variant).header.getBackground(theme)};
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid
-    ${({ $variant, theme }) =>
-      getVariantStyles($variant).header.getBorder(theme)};
-  margin: -2rem -2rem 0 -2rem;
-  flex-wrap: wrap;
-  position: relative;
-  z-index: 30;
-  flex-shrink: 0;
+export const GameHeader = styled(XStack, {
+  name: 'GameHeader',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  gap: '$4',
+  paddingHorizontal: '$7',
+  paddingVertical: '$4',
+  backgroundColor: '$glassBg',
+  backdropFilter: 'blur(16px)',
+  borderBottomWidth: 1,
+  borderBottomColor: '$glassBorder',
+  marginHorizontal: -28, // Match $7 (28px) padding
+  marginTop: -28,
+  flexWrap: 'wrap',
+  position: 'relative',
+  zIndex: 30,
+  flexShrink: 0,
 
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: ${({ $variant }) =>
-      getVariantStyles($variant).header.getLineBackground()};
-    box-shadow: ${({ $variant }) =>
-      getVariantStyles($variant).header.getLineShadow()};
-  }
+  $sm: {
+    paddingHorizontal: '$4',
+    paddingVertical: '$3',
+    marginHorizontal: -8, // Match $2 (8px) padding
+    marginTop: -8,
+  },
 
-  @media (max-width: 768px) {
-    padding: 0.75rem 1rem;
-    margin: -1.25rem -1.25rem 0 -1.25rem;
-  }
-`;
+  variants: {
+    $variant: (val: string, { theme }: { theme: TamaguiTheme }) => {
+      const config = getVariantStyles(val).header;
+      return {
+        backgroundColor: config.getBackground(theme),
+        borderBottomColor: config.getBorder(theme),
+      };
+    },
+  } as const,
+});
 
-export const HeaderActions = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-`;
+export const HeaderActions = styled(XStack, {
+  name: 'HeaderActions',
+  gap: '$2',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  justifyContent: 'flex-end',
+});
 
-export const TimerControlsWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  z-index: 10;
-`;
+export const TimerControlsWrapper = styled(XStack, {
+  name: 'TimerControlsWrapper',
+  alignItems: 'center',
+  gap: 8,
+  zIndex: 10,
+});
 
-export const GameInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  align-items: center;
-  margin-top: 1rem;
-  gap: 0.5rem;
-`;
+export const GameInfo = styled(YStack, {
+  name: 'GameInfo',
+  width: '100%',
+  alignItems: 'center',
+  marginTop: '$4',
+  gap: '$2',
+});
 
-export const GameTitle = styled.h2<{ $variant?: string }>`
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 800;
-  background: ${({ $variant }) =>
-    getVariantStyles($variant).header.getTitleBackground()};
-  background-size: 200% 200%;
-  animation: gradientShift 6s ease infinite;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.3px;
-  position: relative;
+export const GameTitle = styled(Text, {
+  name: 'GameTitle',
+  margin: 0,
+  fontSize: 24, // 1.5rem
+  fontWeight: '800',
+  letterSpacing: -0.3,
+  position: 'relative',
 
-  ${({ $variant }) => getVariantStyles($variant).header.getTitleTextStyles?.()}
+  $sm: {
+    fontSize: 20, // 1.25rem
+  },
 
-  @keyframes gradientShift {
-    0%,
-    100% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-  }
+  variants: {
+    $variant: (val: string) => {
+      const config = getVariantStyles(val).header;
+      return {
+        backgroundColor: config.getTitleBackground(),
+        ...config.getTitleTextStyles?.(),
+      };
+    },
+  } as const,
+});
 
-  @media (max-width: 768px) {
-    font-size: 1.25rem;
-  }
-`;
+export const TurnStatus = styled(Text, {
+  name: 'TurnStatus',
+  fontSize: 14, // 0.875rem
+  fontWeight: '600',
 
-export const TurnStatus = styled.div<{
-  $variant?: 'yourTurn' | 'waiting' | 'completed' | 'default';
-}>`
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: ${({ $variant, theme }) => {
-    switch ($variant) {
-      case 'yourTurn':
-        return '#10b981';
-      case 'waiting':
-        return '#f59e0b';
-      case 'completed':
-        return '#8b5cf6';
-      default:
-        return theme.text.secondary;
-    }
-  }};
-`;
+  variants: {
+    $status: {
+      yourTurn: { color: '$success' },
+      waiting: { color: '$warning' },
+      completed: { color: '$secondary' },
+      default: { color: '$color', opacity: 0.7 },
+    },
+  } as const,
 
-export const StartButton = ({
-  $variant,
-  ...props
-}: ButtonProps & { $variant?: string }) => (
-  <Button
-    variant="primary"
-    size="md"
-    pulse
-    gameVariant={$variant as unknown as GameVariant}
+  defaultVariants: {
+    $status: 'default',
+  },
+});
+
+export const StartButton = (props: ButtonProps) => (
+  <Button variant="secondary" {...props} />
+);
+
+export const FullscreenButton = (props: ButtonProps) => (
+  <IconButton
+    size="sm"
+    padding="$2"
+    borderRadius={8}
+    pressStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
     {...props}
   />
 );
 
-export const FullscreenButton = ({
-  $variant,
-  ...props
-}: ButtonProps & { $variant?: string }) => (
+export const ChatToggleButton = ({ isActive, ...props }: ButtonProps) => (
   <Button
-    variant="icon"
+    variant="secondary"
     size="sm"
-    gameVariant={$variant as unknown as GameVariant}
-    {...props}
-  />
-);
-
-interface ChatToggleButtonProps extends ButtonProps {
-  $active?: boolean;
-  $variant?: string;
-}
-
-export const ChatToggleButton = ({
-  $active,
-  $variant,
-  ...props
-}: ChatToggleButtonProps) => (
-  <Button
-    variant="chip"
-    size="sm"
-    isActive={$active}
-    gameVariant={$variant as unknown as GameVariant}
+    paddingHorizontal="$4"
+    paddingVertical="$2"
+    borderRadius={8}
+    borderWidth={1}
+    borderColor="rgba(255, 255, 255, 0.2)"
+    isActive={isActive}
     {...props}
   />
 );

@@ -62,7 +62,7 @@ export const PlayerItem = styled(XStack, {
   padding: '$2',
   borderRadius: 10,
   variants: {
-    isHost: {
+    $isHost: {
       true: {
         backgroundColor: 'rgba(99, 102, 241, 0.1)',
         borderWidth: 1,
@@ -182,7 +182,7 @@ export const StatusBadge = styled(Text, {
   borderRadius: 8,
   fontWeight: '500',
   variants: {
-    status: {
+    $status: {
       lobby: {
         backgroundColor: 'rgba(16, 185, 129, 0.15)',
         color: '#10b981',

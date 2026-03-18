@@ -1,17 +1,16 @@
-import { css, RuleSet } from 'styled-components';
 import { VARIANT_COLORS } from '../../variant-palette';
 
 export const layoutStyles = {
-  getBackgroundEffects: (): RuleSet<object> => css`
-    perspective: 1000px;
-    &::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(
+  getBackgroundEffects: () => ({
+    perspective: 1000,
+    before: {
+      content: '""',
+      position: 'absolute',
+      top: '-50%',
+      left: '-50%',
+      width: '200%',
+      height: '200%',
+      background: `linear-gradient(
           transparent 0%,
           rgba(192, 38, 211, 0.2) 2%,
           transparent 3%
@@ -21,31 +20,28 @@ export const layoutStyles = {
           transparent 0%,
           rgba(6, 182, 212, 0.2) 2%,
           transparent 3%
-        );
-      background-size: 100px 100px;
-      transform: rotateX(60deg);
-      animation: gridMove 20s linear infinite;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    &::after {
-      content: ' ';
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      background: linear-gradient(
-        rgba(18, 16, 16, 0) 50%,
-        rgba(0, 0, 0, 0.1) 50%
-      );
-      background-size: 100% 4px;
-      z-index: 2;
-      pointer-events: none;
-    }
-  `,
+        )`,
+      backgroundSize: '100px 100px',
+      transform: [{ rotateX: '60deg' }],
+      animation: 'gridMove 20s linear infinite',
+      zIndex: 0,
+      pointerEvents: 'none',
+    },
+    after: {
+      content: '" "',
+      display: 'block',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0,
+      background:
+        'linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%)',
+      backgroundSize: '100% 4px',
+      zIndex: 2,
+      pointerEvents: 'none',
+    },
+  }),
   getRoomBackground: (): string => `
     radial-gradient(
       ellipse at 20% 0%,

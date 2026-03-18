@@ -93,7 +93,7 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
 
   chatMessage: '',
   chatScope: 'all',
-  showChat: true,
+  showChat: false,
 
   setEventComboModal: (state) => set({ eventComboModal: state }),
   setFavorModal: (isOpen) => set({ favorModal: isOpen }),

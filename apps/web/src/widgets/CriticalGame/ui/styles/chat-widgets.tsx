@@ -1,319 +1,191 @@
-import React, { ComponentProps } from 'react';
-import styled from 'styled-components';
-import { Button, GameVariant, ButtonProps } from '@arcadeum/ui';
-import { ActionButton } from './cards';
+import { styled, YStack, XStack, Text, TextArea } from 'tamagui';
+import { Button, ButtonProps, GameVariant } from '@arcadeum/ui';
 import { getVariantStyles } from './variants';
+import { TamaguiTheme } from './variants/types';
 
-export const ScopeToggle = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-`;
+export const ScopeToggle = styled(XStack, {
+  name: 'ScopeToggle',
+  gap: '$2',
+  flexWrap: 'wrap',
+});
 
-interface ScopeOptionProps extends ButtonProps {
-  $active?: boolean;
-  $variant?: string;
+interface ScopeOptionProps extends Omit<ButtonProps, 'variant'> {
+  isActive?: boolean;
+  variant?: string; // string variant from game options
 }
 
 export const ScopeOption = ({
+  isActive,
   $active,
+  variant,
   $variant,
   ...props
-}: ScopeOptionProps) => (
+}: ScopeOptionProps & { $active?: boolean; $variant?: string }) => (
   <Button
-    variant={$active ? 'primary' : 'secondary'}
+    variant={isActive || $active ? 'primary' : 'secondary'}
     size="sm"
-    isActive={$active}
-    gameVariant={$variant as unknown as GameVariant}
+    isActive={isActive || $active}
+    gameVariant={(variant || $variant) as GameVariant}
     flex={1}
-    minWidth={120} /* Original min-width from the provided code */
-    $xs={{ minWidth: 80 }} /* Original media query from the provided code */
+    minWidth={120}
+    $xs={{ minWidth: 80 }}
     {...props}
   />
 );
 
-export const ChatInput = styled.textarea<{ $variant?: string }>`
-  width: 100%;
-  min-height: 90px;
-  border-radius: 12px;
-  border: 1px solid
-    ${({ $variant, theme }) =>
-      getVariantStyles($variant).chat.getInputBorder?.(theme)};
-  background: ${({ $variant, theme }) =>
-    getVariantStyles($variant).chat.getInputBackground?.(theme)};
-  color: ${({ theme }) => theme.text.primary};
-  padding: 0.75rem;
-  font-size: 0.875rem;
-  resize: none;
-  flex-shrink: 0;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+export const ChatInput = styled(TextArea, {
+  name: 'ChatInput',
+  width: '100%',
+  minHeight: 90,
+  borderRadius: 12,
+  padding: '$3',
+  fontSize: 14,
+  backgroundColor: '$background',
+  borderColor: '$borderColor',
+  borderWidth: 1,
 
-  &:focus {
-    outline: none;
-    border-color: ${({ $variant, theme }) =>
-      getVariantStyles($variant).chat.getInputFocusBorder?.(theme)};
-    box-shadow: ${({ $variant }) =>
-      getVariantStyles($variant).chat.getInputFocusShadow?.()};
-  }
+  focusStyle: {
+    borderColor: '$primary',
+    borderWidth: 2,
+  },
 
-  /* VARIANT STYLES */
-  ${({ $variant }) => getVariantStyles($variant).chat.getInputStyles?.()}
+  $short: {
+    minHeight: 60,
+    padding: '$2',
+  },
 
-  @media (max-height: 700px) {
-    min-height: 60px;
-    padding: 0.5rem;
-  }
+  variants: {
+    $variant: (val: string, { theme }: { theme: TamaguiTheme }) => {
+      const config = getVariantStyles(val).chat;
+      return {
+        backgroundColor: config.getInputBackground?.(theme),
+        borderColor: config.getInputBorder?.(theme),
+        ...config.getInputStyles?.(),
+        focusStyle: {
+          borderColor: config.getInputFocusBorder?.(theme),
+          boxShadow: config.getInputFocusShadow?.(),
+        },
+      };
+    },
+  } as const,
+});
 
-  @media (max-height: 500px) {
-    min-height: 40px;
-    padding: 0.4rem;
-    font-size: 0.8rem;
-  }
-`;
+export const ChatControls = styled(XStack, {
+  name: 'ChatControls',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  gap: '$3',
+  flexWrap: 'wrap',
+  flexShrink: 0,
+});
 
-export const ChatControls = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  flex-shrink: 0;
-`;
+export const ChatHint = styled(Text, {
+  name: 'ChatHint',
+  fontSize: 12,
+  color: '$color',
+  opacity: 0.7,
+});
 
-export const ChatHint = styled.div`
-  font-size: 0.75rem;
-  color: ${({ theme }) => theme.text.secondary};
-  opacity: 0.85;
-`;
+export const ChatTurnStatus = styled(Text, {
+  name: 'ChatTurnStatus',
+  padding: '$2 $3',
+  backgroundColor: '$glassBg',
+  borderRadius: 8,
+  borderLeftWidth: 3,
+  borderLeftColor: '$primary',
+  marginBottom: '$1',
 
-export const ChatTurnStatus = styled.div<{ $variant?: string }>`
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.text.primary};
-  padding: 0.5rem 0.75rem;
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.surfaces.panel.background},
-    ${({ theme }) => theme.background.base}
-  );
-  border-radius: 8px;
-  border-left: 3px solid #8b5cf6;
-  margin-bottom: 0.25rem;
+  variants: {
+    $variant: (val: string) => {
+      const config = getVariantStyles(val).chat;
+      return {
+        ...config.getTurnStatusStyles?.(),
+      };
+    },
+  } as const,
+});
 
-  /* VARIANT STYLES */
-  ${({ $variant }) => getVariantStyles($variant).chat.getTurnStatusStyles?.()}
-`;
-
-export const ChatSendButton = (props: ComponentProps<typeof ActionButton>) => (
-  <ActionButton p="0.65rem 1.25rem" fontSize="$2" {...props} />
+export const ChatSendButton = ({
+  variant,
+  $variant,
+  ...props
+}: ButtonProps & { variant?: string; $variant?: string }) => (
+  <Button
+    variant="primary"
+    size="sm"
+    gameVariant={(variant || $variant) as GameVariant}
+    {...props}
+  />
 );
 
-export const EmptyState = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  padding: 3rem;
-  color: ${({ theme }) => theme.text.muted};
-  text-align: center;
-`;
+export const EmptyState = styled(YStack, {
+  name: 'EmptyState',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '$4',
+  padding: '$9',
+});
 
-export const ChatBubbleContainer = styled.div<{
+const StyledChatBubbleContainer = styled(YStack, {
+  name: 'ChatBubbleContainer',
+  position: 'absolute',
+  backgroundColor: '$background',
+  padding: '$2 $3',
+  borderRadius: 12,
+  elevation: 5,
+  borderWidth: 1,
+  borderColor: '$borderColor',
+  maxWidth: 180,
+  zIndex: 100,
+
+  variants: {
+    $visible: {
+      true: { opacity: 1, scale: 1 },
+      false: { opacity: 0, scale: 0.9, pointerEvents: 'none' },
+    },
+    $position: {
+      top: { bottom: '100%', left: '50%', x: '-50%', marginBottom: 12 },
+      bottom: { top: '100%', left: '50%', x: '-50%', marginTop: 12 },
+      left: { top: '50%', right: '100%', y: '-50%', marginRight: 12 },
+      right: { top: '50%', left: '100%', y: '-50%', marginLeft: 12 },
+    },
+    $variant: (_val: unknown) => ({}),
+  } as const,
+});
+
+import { memo, type ReactElement, type ReactNode } from 'react';
+
+interface ChatBubbleContainerProps {
   $visible: boolean;
   $position?: 'top' | 'bottom' | 'left' | 'right';
-}>`
-  position: absolute;
-  /* Default to top behavior if undefined */
-  ${({ $position }) => {
-    switch ($position) {
-      case 'bottom':
-        return `
-          top: 100%;
-          left: 50%;
-          transform: translateX(-50%);
-          margin-top: 12px;
-        `;
-      case 'left':
-        return `
-          top: 50%;
-          right: 100%;
-          transform: translateY(-50%);
-          margin-right: 12px;
-        `;
-      case 'right':
-        return `
-          top: 50%;
-          left: 100%;
-          transform: translateY(-50%);
-          margin-left: 12px;
-        `;
-      case 'top':
-      default:
-        return `
-          bottom: 100%;
-          left: 50%;
-          transform: translateX(-50%);
-          margin-bottom: 12px;
-        `;
-    }
-  }}
+  children?: ReactNode;
+  $variant?: string;
+}
 
-  background: ${({ theme }) => theme.background.base};
-  color: ${({ theme }) => theme.text.primary};
-  padding: 0.5rem 0.85rem;
-  border-radius: 12px;
-  font-size: 0.85rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  white-space: normal;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  max-width: 180px;
-  width: max-content;
+export const ChatBubbleContainer = memo(function ChatBubbleContainer({
+  $visible,
+  $position,
+  $variant,
+  ...props
+}: ChatBubbleContainerProps): ReactElement {
+  return (
+    <StyledChatBubbleContainer
+      $visible={$visible}
+      $position={$position}
+      $variant={$variant}
+      {...props}
+    />
+  );
+});
 
-  /* Line clamping */
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  z-index: 100;
-  pointer-events: auto; /* Enable pointer events for hover */
-  pointer-events: auto; /* Enable pointer events for hover */
-  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
-  cursor: help;
+export const LogSender = styled(Text, {
+  name: 'LogSender',
+  fontWeight: '700',
 
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-    max-width 0.3s ease;
-
-  &:hover {
-    -webkit-line-clamp: unset;
-    max-width: 280px;
-    z-index: 110;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  }
-
-  /* Transform animations based on position */
-  transform: ${({ $visible, $position }) => {
-    switch ($position) {
-      case 'bottom':
-        return $visible
-          ? 'translateX(-50%) scale(1) translateY(0)'
-          : 'translateX(-50%) scale(0.9) translateY(-10px)';
-      case 'left':
-        return $visible
-          ? 'translateY(-50%) scale(1) translateX(0)'
-          : 'translateY(-50%) scale(0.9) translateX(10px)';
-      case 'right':
-        return $visible
-          ? 'translateY(-50%) scale(1) translateX(0)'
-          : 'translateY(-50%) scale(0.9) translateX(-10px)';
-      case 'top':
-      default:
-        return $visible
-          ? 'translateX(-50%) scale(1) translateY(0)'
-          : 'translateX(-50%) scale(0.9) translateY(10px)';
-    }
-  }};
-
-  /* Arrow styles */
-  &::after,
-  &::before {
-    content: '';
-    position: absolute;
-    border-style: solid;
-  }
-
-  /* Inner arrow (background color) */
-  &::after {
-    ${({ $position, theme }) => {
-      switch ($position) {
-        case 'bottom':
-          return `
-            top: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 0 6px 6px 6px;
-            border-color: transparent transparent ${theme.background.base} transparent;
-          `;
-        case 'left':
-          return `
-            top: 50%;
-            right: -6px;
-            transform: translateY(-50%);
-            border-width: 6px 0 6px 6px;
-            border-color: transparent transparent transparent ${theme.background.base};
-            `;
-        case 'right':
-          return `
-            top: 50%;
-            left: -6px;
-            transform: translateY(-50%);
-            border-width: 6px 6px 6px 0;
-            border-color: transparent ${theme.background.base} transparent transparent;
-          `;
-        case 'top':
-        default:
-          return `
-            bottom: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 6px 6px 0 6px;
-            border-color: ${theme.background.base} transparent transparent transparent;
-          `;
-      }
-    }}
-  }
-
-  /* Outer arrow (border color) */
-  &::before {
-    z-index: -1;
-    ${({ $position, theme }) => {
-      switch ($position) {
-        case 'bottom':
-          return `
-            top: -7px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 0 7px 7px 7px;
-            border-color: transparent transparent ${theme.surfaces.card.border} transparent;
-          `;
-        case 'left':
-          return `
-            top: 50%;
-            right: -7px;
-            transform: translateY(-50%);
-            border-width: 7px 0 7px 7px;
-            border-color: transparent transparent transparent ${theme.surfaces.card.border};
-          `;
-        case 'right':
-          return `
-            top: 50%;
-            left: -7px;
-            transform: translateY(-50%);
-            border-width: 7px 7px 7px 0;
-            border-color: transparent ${theme.surfaces.card.border} transparent transparent;
-          `;
-        case 'top':
-        default:
-          return `
-            bottom: -7px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 7px 7px 0 7px;
-            border-color: ${theme.surfaces.card.border} transparent transparent transparent;
-          `;
-      }
-    }}
-  }
-`;
-
-export const LogSender = styled.strong<{ $color: string }>`
-  color: ${({ $color }) => $color};
-`;
+  variants: {
+    $color: (_val: unknown) => ({
+      color: '$$color',
+    }),
+    $variant: (_val: unknown) => ({}),
+  } as const,
+});

@@ -10,6 +10,7 @@ import {
   CardEmoji,
   CardName,
 } from './styles';
+import { GameVariant } from '@arcadeum/ui';
 
 interface DeckDisplayProps {
   deck: CriticalCard[];
@@ -32,9 +33,8 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
     // Show Face Up Card
     return (
       <LastPlayedCard
-        as="div"
         $isAnimating={false}
-        $variant={cardVariant}
+        $variant={cardVariant as GameVariant}
         style={{
           position: 'relative',
           transform: 'none',
@@ -57,5 +57,5 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
   }
 
   // Show Face Down Deck
-  return <DeckCard $variant={cardVariant} />;
+  return <DeckCard $variant={cardVariant as GameVariant} />;
 };

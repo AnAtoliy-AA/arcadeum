@@ -1,4 +1,3 @@
-import { css, RuleSet } from 'styled-components';
 import { VARIANT_COLORS } from '../../variant-palette';
 
 export const headerStyles = {
@@ -11,28 +10,28 @@ export const headerStyles = {
     `0 0 10px ${VARIANT_COLORS.cyberpunk.secondary}80, 0 0 20px ${VARIANT_COLORS.cyberpunk.primary}4d`,
   getTitleBackground: (): string =>
     `linear-gradient(135deg, ${VARIANT_COLORS.cyberpunk.secondary} 0%, ${VARIANT_COLORS.cyberpunk.primary} 50%, #7c3aed 100%)`,
-  getTitleTextStyles: (): RuleSet<object> => css`
-    &::before,
-    &::after {
-      content: attr(data-text);
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: ${VARIANT_COLORS.cyberpunk.cardBack};
-    }
-    &::before {
-      left: 2px;
-      text-shadow: -1px 0 ${VARIANT_COLORS.cyberpunk.primary};
-      background: ${VARIANT_COLORS.cyberpunk.cardBack};
-      animation: glitchTop 1s infinite linear alternate-reverse;
-    }
-    &::after {
-      left: -2px;
-      text-shadow: -1px 0 ${VARIANT_COLORS.cyberpunk.secondary};
-      background: ${VARIANT_COLORS.cyberpunk.cardBack};
-      animation: glitchBottom 1.5s infinite linear alternate-reverse;
-    }
-  `,
+  getTitleTextStyles: () => ({
+    before: {
+      content: 'attr(data-text)',
+      position: 'absolute',
+      top: 0,
+      width: '100%',
+      height: '100%',
+      background: VARIANT_COLORS.cyberpunk.cardBack,
+      left: 2,
+      textShadow: `-1px 0 ${VARIANT_COLORS.cyberpunk.primary}`,
+      animation: 'glitchTop 1s infinite linear alternate-reverse',
+    },
+    after: {
+      content: 'attr(data-text)',
+      position: 'absolute',
+      top: 0,
+      width: '100%',
+      height: '100%',
+      background: VARIANT_COLORS.cyberpunk.cardBack,
+      left: -2,
+      textShadow: `-1px 0 ${VARIANT_COLORS.cyberpunk.secondary}`,
+      animation: 'glitchBottom 1.5s infinite linear alternate-reverse',
+    },
+  }),
 };

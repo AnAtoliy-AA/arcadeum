@@ -102,8 +102,38 @@ export type CardProps = GetProps<typeof StyledCard> & {
   children?: ReactNode;
 };
 
+interface CardInnerProps extends CardProps {
+  isCurrent?: boolean;
+  isHost?: boolean;
+  isCurrentUserCard?: boolean;
+  $isCurrent?: boolean;
+  $isHost?: boolean;
+  $isCurrentUser?: boolean;
+  $variant?: string;
+  $status?: string;
+  [key: string]: any;
+}
+
 export const Card = StyledCard.styleable<CardProps>(
-  ({ variant = 'elevated', padding = 'md', interactive = false, children, ...rest }, ref) => {
+  (
+    {
+      variant = 'elevated',
+      padding = 'md',
+      interactive = false,
+      children,
+      // Destructure props that might leak to the DOM
+      isCurrent,
+      isHost,
+      isCurrentUserCard,
+      $isCurrent,
+      $isHost,
+      $isCurrentUser,
+      $variant,
+      $status,
+      ...rest
+    }: CardInnerProps,
+    ref,
+  ) => {
     return (
       <StyledCard
         ref={ref}
@@ -116,7 +146,7 @@ export const Card = StyledCard.styleable<CardProps>(
         {children}
       </StyledCard>
     );
-  }
+  },
 );
 
 Card.displayName = 'Card';

@@ -34,7 +34,7 @@ const StyledPlayerItem = styled(Card, {
   },
 
   variants: {
-    isCurrent: {
+    $isCurrent: {
       true: {
         background:
           'linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(29, 78, 216, 0.12))',
@@ -45,7 +45,7 @@ const StyledPlayerItem = styled(Card, {
         borderColor: '$borderColor',
       },
     },
-    isHost: {
+    $isHost: {
       true: {
         borderColor: '#10b981',
       },
@@ -115,8 +115,8 @@ export function PlayerList({
       {players.map((player) => (
         <StyledPlayerItem
           key={player.id}
-          isCurrent={player.isCurrent}
-          isHost={player.isHost}
+          $isCurrent={player.isCurrent}
+          $isHost={player.isHost}
           onPress={() => onPlayerAction?.(player.id, 'info')}
         >
           <Avatar

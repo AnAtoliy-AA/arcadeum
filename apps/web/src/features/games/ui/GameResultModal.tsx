@@ -33,7 +33,7 @@ const StyledBackdrop = styled(YStack, {
   backdropFilter: 'blur(8px)',
 
   variants: {
-    isVictory: {
+    $isVictory: {
       true: {
         backgroundColor: 'rgba(20, 0, 10, 0.9)',
       },
@@ -68,7 +68,7 @@ const ResultTitleText = styled(H1, {
   letterSpacing: 2,
 
   variants: {
-    isVictory: {
+    $isVictory: {
       true: {
         color: '#FFD700',
       },
@@ -196,7 +196,7 @@ export function GameResultModal({
     <Modal open={isOpen} onOpenChange={(val) => !val && onClose?.()}>
       <Dialog.Portal>
         <Dialog.Overlay key="overlay" backgroundColor="black" />
-        <StyledBackdrop isVictory={isVictory} />
+        <StyledBackdrop $isVictory={isVictory} />
         <StyledResultContent elevate key="content">
           <VisuallyHidden>
             <Dialog.Title>Game Result</Dialog.Title>
@@ -215,17 +215,16 @@ export function GameResultModal({
             )}
 
             <YStack alignItems="center" gap="$5" marginBottom="$5">
-              <Text
-                fontSize={80}
-                style={{ animation: 'float 3s ease-in-out infinite' }}
-              >
-                {isVictory ? '🏆' : '💀'}
-              </Text>
               <ResultTitleText
-                isVictory={isVictory}
+                $isVictory={isVictory}
                 data-testid="game-result-title"
               >
-                {t(`games.table.${result}.title` as TranslationKey)}
+                <YStack alignItems="center" gap="$2">
+                  <Text fontSize={80}>{isVictory ? '🏆' : '💀'}</Text>
+                  <Text>
+                    {t(`games.table.${result}.title` as TranslationKey)}
+                  </Text>
+                </YStack>
               </ResultTitleText>
             </YStack>
 

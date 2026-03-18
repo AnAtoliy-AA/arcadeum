@@ -102,7 +102,6 @@ export function CriticalLobby({
       onClick={() => setShowRules(true)}
       onPress={() => setShowRules(true)}
       title="Game Rules"
-      style={{ fontSize: '1.2rem' }}
     >
       📖
     </IconButton>

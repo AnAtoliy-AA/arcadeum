@@ -67,7 +67,7 @@ export function SortablePlayerItem({
       style={style}
       {...(isHost ? { ...attributes, ...listeners } : {})}
     >
-      <PlayerItem isHost={isRoomHost}>
+      <PlayerItem $isHost={isRoomHost}>
         <LobbyPlayerAvatar backgroundColor={avatarColor}>
           <LobbyPlayerAvatarText>
             {member.displayName.slice(0, 2).toUpperCase()}

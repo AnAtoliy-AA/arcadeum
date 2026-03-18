@@ -41,7 +41,21 @@ const TopLine = styled(YStack, {
   background: 'linear-gradient(90deg, transparent 0%, $glassBorderHover 50%, transparent 100%)',
 });
 
-export const GlassCard = memo(function GlassCard({ children, ...props }: GlassCardProps): ReactElement {
+interface GlassCardInnerProps extends GlassCardProps {
+  // Destructure props that might leak
+  $visible?: boolean;
+  $position?: 'top' | 'bottom' | 'left' | 'right';
+  isHost?: boolean;
+}
+
+export const GlassCard = memo(function GlassCard({
+  children,
+  // Destructure props that might leak
+  $visible,
+  $position,
+  isHost,
+  ...props
+}: GlassCardInnerProps): ReactElement {
   return (
     <StyledGlassCard {...props}>
       <TopLine />

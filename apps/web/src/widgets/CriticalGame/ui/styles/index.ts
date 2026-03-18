@@ -135,6 +135,7 @@ export {
   ModalContent,
   ModalHeader,
   ModalTitle,
+  ModalOverlay,
   CloseButton,
   ModalSection,
   SectionLabel,
@@ -144,4 +145,6 @@ export {
   ModalButton,
   ScrollableCardsGrid,
   SelectableCard,
+  RulesText,
+  RulesTextPre,
 } from './modals';

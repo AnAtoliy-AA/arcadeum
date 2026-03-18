@@ -17,6 +17,7 @@ import {
   ModalActions,
   ModalButton,
 } from '../styles';
+import { type GameVariant } from '@arcadeum/ui';
 import { getCardEmoji, getCardTranslationKey } from '../../lib/cardUtils';
 import type { CriticalCard } from '../../types';
 
@@ -64,64 +65,67 @@ export const StashModal: React.FC<StashModalProps> = ({
   };
 
   return (
-    <Modal onClick={handleClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
-        <ModalHeader $variant={cardVariant}>
-          <ModalTitle $variant={cardVariant}>
+    <Modal open={isOpen}>
+      <ModalContent
+        onPress={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        $variant={cardVariant as GameVariant}
+      >
+        <ModalHeader $variant={cardVariant as GameVariant}>
+          <ModalTitle $variant={cardVariant as GameVariant}>
             🏰 {t('games.table.modals.stash.title')}
           </ModalTitle>
-          <CloseButton onClick={handleClose} $variant={cardVariant}>
+          <CloseButton
+            onPress={handleClose}
+            $variant={cardVariant as GameVariant}
+          >
             ×
           </CloseButton>
         </ModalHeader>
         <ModalSection>
-          <SectionLabel $variant={cardVariant}>
+          <SectionLabel $variant={cardVariant as GameVariant}>
             {t('games.table.modals.stash.description')}
           </SectionLabel>
-          <CardsGrid
-            style={{ maxHeight: '400px', overflowY: 'auto', padding: '0.5rem' }}
-          >
-            {hand.map((card, index) => (
-              <Card
-                key={`${card}-${index}`}
-                $cardType={card}
-                $index={0}
-                $variant={cardVariant}
-                onClick={() => toggleCard(index)}
-                style={{
-                  cursor: 'pointer',
-                  transform: selectedIndices.includes(index)
-                    ? 'scale(1.05)'
-                    : 'scale(1)',
-                  boxShadow: selectedIndices.includes(index)
-                    ? '0 0 15px rgba(255, 255, 255, 0.5)'
-                    : 'none',
-                  border: selectedIndices.includes(index)
-                    ? '2px solid white'
-                    : 'none',
-                }}
-              >
-                <CardCorner $position="tl" />
-                <CardCorner $position="tr" />
-                <CardCorner $position="bl" />
-                <CardCorner $position="br" />
-                <CardFrame />
-                <CardInner>
-                  <CardEmoji>{getCardEmoji(card)}</CardEmoji>
-                  <CardName>
-                    {t(getCardTranslationKey(card, cardVariant))}
-                  </CardName>
-                </CardInner>
-              </Card>
-            ))}
+          <CardsGrid maxHeight={400} overflowY="auto" padding="$2">
+            {hand.map((card, index) => {
+              const isSelected = selectedIndices.includes(index);
+              return (
+                <Card
+                  key={`${card}-${index}`}
+                  $cardType={card}
+                  $index={0}
+                  $variant={cardVariant as GameVariant}
+                  onPress={() => toggleCard(index)}
+                  scale={isSelected ? 1.05 : 1}
+                  shadowColor={
+                    isSelected ? 'rgba(255, 255, 255, 0.5)' : undefined
+                  }
+                  shadowRadius={isSelected ? 15 : undefined}
+                  borderWidth={isSelected ? 2 : 0}
+                  borderColor={isSelected ? 'white' : 'transparent'}
+                  cursor="pointer"
+                >
+                  <CardCorner $position="tl" />
+                  <CardCorner $position="tr" />
+                  <CardCorner $position="bl" />
+                  <CardCorner $position="br" />
+                  <CardFrame />
+                  <CardInner>
+                    <CardEmoji>{getCardEmoji(card)}</CardEmoji>
+                    <CardName>
+                      {t(getCardTranslationKey(card, cardVariant))}
+                    </CardName>
+                  </CardInner>
+                </Card>
+              );
+            })}
           </CardsGrid>
         </ModalSection>
         <ModalActions>
-          <ModalButton variant="secondary" onClick={handleClose}>
+          <ModalButton variant="secondary" onPress={handleClose}>
             {t('games.table.modals.common.cancel')}
           </ModalButton>
           <ModalButton
-            onClick={handleConfirm}
+            onPress={handleConfirm}
             disabled={selectedIndices.length === 0}
           >
             {t('games.table.modals.stash.confirm')}

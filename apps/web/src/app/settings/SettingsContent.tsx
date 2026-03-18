@@ -5,6 +5,7 @@ import { useCallback, useMemo } from 'react';
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import { useThemeController } from '@/app/theme/ThemeContext';
 import { useHapticsSetting } from '@/shared/hooks/useHapticsSetting';
+import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
 import { usePWAInstallProps } from '@/features/pwa';
 import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
 import type { ThemePreference } from '@/shared/config/theme';
@@ -106,6 +107,7 @@ export default function SettingsContent({
 }: SettingsContentProps) {
   const { themePreference, setThemePreference } = useThemeController();
   const { hapticsEnabled, setHapticsEnabled } = useHapticsSetting();
+  const { soundEnabled, setSoundEnabled } = useSoundSetting();
   const { locale, setLocale, messages } = useLanguage();
 
   const settingsCopy = messages.settings ?? {};
@@ -242,6 +244,15 @@ export default function SettingsContent({
           </Section>
 
           <Section title={gameplayTitle} description={gameplayDescription}>
+            <ToggleRow>
+              <ToggleLabel>{settingsCopy.soundLabel ?? 'Sound'}</ToggleLabel>
+              <ToggleInput
+                type="checkbox"
+                checked={soundEnabled}
+                onChange={(e) => setSoundEnabled(e.target.checked)}
+                aria-label={settingsCopy.soundLabel ?? 'Sound'}
+              />
+            </ToggleRow>
             <ToggleRow>
               <ToggleLabel>{hapticsLabel}</ToggleLabel>
               <ToggleInput

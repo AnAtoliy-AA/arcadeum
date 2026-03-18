@@ -7,7 +7,7 @@ export interface BotCountButtonProps extends ButtonProps {
 }
 
 export const BotCountButton = ({
-  isActive,
+  $isActive: isActive,
   children,
   testId,
   ...props

@@ -328,7 +328,7 @@ export function ReusableGameLobby({
                       <BotCountButton
                         key={count}
                         data-testid={`bot-count-${count}`}
-                        isActive={botCount === count}
+                        $isActive={botCount === count}
                         onPress={() => setBotCount(count)}
                       >
                         {count}

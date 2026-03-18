@@ -19,6 +19,7 @@ const settingsMessagesDefinition = {
     hapticsLabel: 'Haptic Feedback',
     hapticsDescription:
       "Vibrate when it's your turn to play (mobile devices only).",
+    soundLabel: 'Sound',
     appearanceTitle: 'Appearance',
     appearanceDescription:
       'Choose a theme to use across the {{appName}} web experience.',
@@ -90,6 +91,7 @@ const settingsMessagesDefinition = {
     hapticsLabel: 'Respuesta háptica',
     hapticsDescription:
       'Vibrar cuando sea tu turno de jugar (solo dispositivos móviles).',
+    soundLabel: 'Sonido',
     appearanceTitle: 'Apariencia',
     appearanceDescription:
       'Elige un tema para usar en toda la experiencia web de {{appName}}.',
@@ -164,6 +166,7 @@ const settingsMessagesDefinition = {
     hapticsLabel: 'Retour haptique',
     hapticsDescription:
       "Vibrer quand c'est à votre tour de jouer (appareils mobiles uniquement).",
+    soundLabel: 'Son',
     appearanceTitle: 'Apparence',
     appearanceDescription:
       "Choisissez un thème à utiliser sur l'ensemble de l'expérience web de {{appName}}.",
@@ -238,6 +241,7 @@ const settingsMessagesDefinition = {
     hapticsLabel: 'Тактильная отдача',
     hapticsDescription:
       'Вибрировать, когда наступает ваш ход (только для мобильных устройств).',
+    soundLabel: 'Звук',
     appearanceTitle: 'Внешний вид',
     appearanceDescription:
       'Выберите тему оформления для веб-версии {{appName}}.',
@@ -311,6 +315,7 @@ const settingsMessagesDefinition = {
     hapticsLabel: 'Тактыльная аддача',
     hapticsDescription:
       'Вібраваць, калі наступае ваш ход (толькі для мабільных прылад).',
+    soundLabel: 'Гук',
     appearanceTitle: 'Знешні выгляд',
     appearanceDescription:
       'Выберыце тэму афармлення для вэб-версіі {{appName}}.',

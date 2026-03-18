@@ -92,7 +92,7 @@ export default function SeaBattleGame({
     (storeRoom?.id === roomId ? storeRoom : null) || initialRoom || null;
 
   const containerRef = useRef<HTMLDivElement & TamaguiElement>(null);
-  const chatMessagesRef = useRef<HTMLDivElement | null>(null);
+  const chatMessagesRef = useRef<TamaguiElement | null>(null);
 
   const isLobby = room?.status === 'lobby';
 
@@ -148,8 +148,8 @@ export default function SeaBattleGame({
 
   const chatLogCount = snapshot?.logs?.length ?? 0;
   useEffect(() => {
-    if (chatMessagesRef.current?.lastElementChild) {
-      const container = chatMessagesRef.current;
+    const container = chatMessagesRef.current as HTMLElement | null;
+    if (container?.lastElementChild) {
       const lastElement = container.lastElementChild as HTMLElement;
       container.scrollTo({
         top: lastElement.offsetTop,

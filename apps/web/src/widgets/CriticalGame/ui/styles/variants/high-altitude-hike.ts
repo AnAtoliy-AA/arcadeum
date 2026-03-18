@@ -1,4 +1,3 @@
-import { css } from 'styled-components';
 import { VariantStyleConfig } from './types';
 import { VARIANT_COLORS } from '../variant-palette';
 
@@ -6,19 +5,19 @@ const COLORS = VARIANT_COLORS['high-altitude-hike'];
 
 export const highAltitudeHikeVariantStyles: VariantStyleConfig = {
   layout: {
-    getBackgroundEffects: () => css`
-      &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(
+    getBackgroundEffects: () => ({
+      before: {
+        content: '""',
+        position: 'absolute',
+        inset: 0,
+        background: `radial-gradient(
           circle at 50% -20%,
           rgba(255, 255, 255, 0.15) 0%,
           transparent 60%
-        );
-        pointer-events: none;
-      }
-    `,
+        )`,
+        pointerEvents: 'none',
+      },
+    }),
     getRoomBackground: () => `
       linear-gradient(
         180deg,
@@ -102,16 +101,16 @@ export const highAltitudeHikeVariantStyles: VariantStyleConfig = {
       isCurrentTurn ? `0 0 20px ${COLORS.primary}4d` : 'none',
     getTurnIndicatorGlow: () =>
       `radial-gradient(circle at center, ${COLORS.primary}99 0%, transparent 70%)`,
-    getTurnIndicatorStyles: () => css`
-      border-radius: 50%;
-      background: linear-gradient(
+    getTurnIndicatorStyles: () => ({
+      borderRadius: '50%',
+      background: `linear-gradient(
         135deg,
         ${COLORS.primary},
         ${COLORS.secondary}
-      );
-      border: 2px solid ${COLORS.accent};
-      animation: bounce 1s ease-in-out infinite;
-    `,
+      )`,
+      border: `2px solid ${COLORS.accent}`,
+      animation: 'bounce 1s ease-in-out infinite',
+    }),
   },
   tableInfo: {
     getBackground: () => `${COLORS.background}cc`,
@@ -125,28 +124,25 @@ export const highAltitudeHikeVariantStyles: VariantStyleConfig = {
     getInfoCardShadow: () => '0 8px 24px rgba(0, 0, 0, 0.2)',
     getInfoCardPattern: () =>
       `repeating-linear-gradient(45deg, transparent, transparent 10px, ${COLORS.primary}05 10px, ${COLORS.primary}05 20px)`,
-    getStyles: () => css`
-      &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: 12px;
-        padding: 1px;
-        background: linear-gradient(
+    getStyles: () => ({
+      before: {
+        content: '""',
+        position: 'absolute',
+        inset: 0,
+        borderRadius: 12,
+        padding: 1,
+        background: `linear-gradient(
           135deg,
           ${COLORS.primary}99,
           ${COLORS.secondary}66
-        );
-        -webkit-mask:
-          linear-gradient(#fff 0 0) content-box,
-          linear-gradient(#fff 0 0);
-        mask:
-          linear-gradient(#fff 0 0) content-box,
-          linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-      }
-    `,
+        )`,
+        WebkitMask:
+          'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+        mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+        WebkitMaskComposite: 'xor',
+        maskComposite: 'exclude',
+      },
+    }),
   },
   chat: {
     getBackground: () => `${COLORS.background}cc`,
@@ -164,44 +160,44 @@ export const highAltitudeHikeVariantStyles: VariantStyleConfig = {
     getDeckBackground: () =>
       `url('/images/cards/high-altitude-hike_sprites.png') 0% 0% / 700% 700% no-repeat`,
     getDeckBorder: () => COLORS.primary,
-    getCardNameStyles: () => css`
-      font-family: 'Inter', sans-serif;
-      font-weight: 900;
-      letter-spacing: 0.5px;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid ${COLORS.primary};
-      border-radius: 6px;
-      color: ${COLORS.accent};
-      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
-      padding: 0.25rem 0.6rem;
-      box-shadow: 0 0 12px ${COLORS.primary}33;
+    getCardNameStyles: () => ({
+      fontFamily: '"Inter", sans-serif',
+      fontWeight: 900,
+      letterSpacing: '0.5px',
+      background: 'rgba(15, 23, 42, 0.8)',
+      border: `1px solid ${COLORS.primary}`,
+      borderRadius: 6,
+      color: COLORS.accent,
+      textShadow: '0 1px 1px rgba(0, 0, 0, 0.5)',
+      padding: '0.25rem 0.6rem',
+      boxShadow: `0 0 12px ${COLORS.primary}33`,
 
-      &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: 5px;
-        border-top: 2px solid rgba(255, 255, 255, 0.4);
-        pointer-events: none;
-      }
-    `,
-    getCardInnerStyles: () => css`
-      &::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
+      before: {
+        content: '""',
+        position: 'absolute',
+        inset: 0,
+        borderRadius: 5,
+        borderTop: '2px solid rgba(255, 255, 255, 0.4)',
+        pointerEvents: 'none',
+      },
+    }),
+    getCardInnerStyles: () => ({
+      after: {
+        content: '""',
+        position: 'absolute',
+        inset: 0,
+        background: `linear-gradient(
           90deg,
           transparent,
           rgba(255, 255, 255, 0.1) 20%,
           rgba(255, 255, 255, 0.2) 50%,
           rgba(255, 255, 255, 0.1) 80%,
           transparent
-        );
-        animation: icyShimmer 4s ease-in-out infinite;
-        pointer-events: none;
-        z-index: 5;
-      }
-    `,
+        )`,
+        animation: 'icyShimmer 4s ease-in-out infinite',
+        pointerEvents: 'none',
+        zIndex: 5,
+      },
+    }),
   },
 };

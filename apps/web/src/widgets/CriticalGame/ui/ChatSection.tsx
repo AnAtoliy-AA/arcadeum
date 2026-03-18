@@ -1,8 +1,8 @@
 'use client';
 
 import { type RefObject } from 'react';
+import { type TamaguiElement } from 'tamagui';
 import type { CriticalSnapshot, ChatScope } from '../types';
-import { TranslationKey } from '@/shared/lib/useTranslation';
 import {
   ChatCard,
   ChatMessages,
@@ -18,12 +18,14 @@ import {
   ChatCloseButton,
   LogSender,
 } from './styles';
+import { GameVariant } from '@arcadeum/ui';
+import type { TranslationKey } from '@/shared/lib/useTranslation';
 
 type GameLog = NonNullable<CriticalSnapshot['logs']>[number];
 
 interface ChatSectionProps {
   logs: GameLog[];
-  chatMessagesRef: RefObject<HTMLDivElement | null>;
+  chatMessagesRef: RefObject<TamaguiElement | null>;
   chatMessage: string;
   onChatMessageChange: (value: string) => void;
   chatScope: ChatScope;
@@ -80,23 +82,18 @@ export function ChatSection({
   const canSendChatMessage = chatMessage.trim().length > 0;
 
   return (
-    <ChatCard $variant={cardVariant}>
+    <ChatCard>
       <InfoTitle>{t('games.table.chat.title') || 'Table Chat'}</InfoTitle>
       {onClose && (
         <ChatCloseButton onClick={onClose} aria-label="Close Chat">
           ✕
         </ChatCloseButton>
       )}
-      <ChatTurnStatus $variant={cardVariant}>{turnStatus}</ChatTurnStatus>
+      <ChatTurnStatus>{turnStatus}</ChatTurnStatus>
       {logs && logs.length > 0 ? (
         <ChatMessages ref={chatMessagesRef}>
           {logs.map((log) => (
-            <LogEntry
-              key={log.id}
-              $type={log.type}
-              $scope={log.scope}
-              $variant={cardVariant}
-            >
+            <LogEntry key={log.id} $type={log.type} $scope={log.scope}>
               {resolveDisplayName(
                 log.senderId ?? undefined,
                 log.senderName ?? undefined,
@@ -125,7 +122,7 @@ export function ChatSection({
           type="button"
           $active={chatScope === 'all'}
           onClick={() => onChatScopeChange('all')}
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
         >
           {t('games.table.chat.scope.all') || 'All'}
         </ScopeOption>
@@ -133,7 +130,7 @@ export function ChatSection({
           type="button"
           $active={chatScope === 'players'}
           onClick={() => onChatScopeChange('players')}
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
         >
           {t('games.table.chat.scope.players') || 'Players'}
         </ScopeOption>
@@ -141,16 +138,14 @@ export function ChatSection({
           type="button"
           $active={chatScope === 'private'}
           onClick={() => onChatScopeChange('private')}
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
         >
           {t('games.table.chat.scope.private') || 'Private'}
         </ScopeOption>
       </ScopeToggle>
       <ChatInput
         value={chatMessage}
-        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-          onChatMessageChange(e.target.value)
-        }
+        onChangeText={(text) => onChatMessageChange(text)}
         placeholder={
           chatScope === 'all'
             ? t('games.table.chat.placeholderAll') || 'Send a note to everyone'
@@ -161,7 +156,6 @@ export function ChatSection({
                 'Send a private note to yourself'
         }
         disabled={!currentUserId}
-        $variant={cardVariant}
       />
       <ChatControls>
         <ChatHint>
@@ -175,7 +169,7 @@ export function ChatSection({
           type="button"
           onClick={onSendMessage}
           disabled={!currentUserId || !canSendChatMessage}
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
         >
           {t('games.table.chat.send') || 'Send'}
         </ChatSendButton>

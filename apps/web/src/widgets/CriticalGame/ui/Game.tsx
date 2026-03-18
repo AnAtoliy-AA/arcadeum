@@ -7,6 +7,7 @@ import { useGameStore } from '@/features/games/store/gameStore';
 import { CriticalLobby } from './CriticalLobby';
 import { ActiveGameView } from './ActiveGameView';
 import { GameContainer } from './styles';
+import type { GameVariant } from '@arcadeum/ui';
 
 export default function CriticalGame({
   roomId,
@@ -78,7 +79,7 @@ export default function CriticalGame({
     <GameContainer
       ref={containerRef}
       $isMyTurn={!!isMyTurn}
-      $variant={cardVariant}
+      $variant={cardVariant as GameVariant}
     >
       <ActiveGameView
         currentUserId={currentUserId}

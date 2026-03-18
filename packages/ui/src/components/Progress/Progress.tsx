@@ -1,11 +1,14 @@
 import { Progress as TamaguiProgress, YStack, XStack, Text, Circle } from 'tamagui';
 import { memo } from 'react';
 
+import { GameVariant } from '../Game/GameContainer';
+
 export type ProgressBarProps = {
   value: number;
   height?: number;
   color?: string;
   showLabel?: boolean;
+  gameVariant?: GameVariant;
 };
 
 export const ProgressBar = memo(function ProgressBar({
@@ -13,11 +16,22 @@ export const ProgressBar = memo(function ProgressBar({
   height = 8,
   color = '$primary',
   showLabel = false,
+  gameVariant,
 }: ProgressBarProps) {
+  const getIndicatorColor = () => {
+    if (gameVariant === 'cyberpunk') return '$cyberpunkPrimary';
+    if (gameVariant === 'underwater') return '$underwaterPrimary';
+    if (gameVariant === 'crime') return '$crimePrimary';
+    if (gameVariant === 'horror') return '$horrorPrimary';
+    if (gameVariant === 'adventure') return '$adventurePrimary';
+    if (gameVariant === 'high-altitude-hike') return '$hikePrimary';
+    return color;
+  };
+
   return (
     <YStack width="100%" gap="$2">
       <TamaguiProgress value={value} height={height} backgroundColor="$borderColor">
-        <TamaguiProgress.Indicator backgroundColor={color} />
+        <TamaguiProgress.Indicator backgroundColor={getIndicatorColor()} />
       </TamaguiProgress>
       {showLabel && (
         <Text fontSize="$2" textAlign="right">{Math.round(value)}%</Text>

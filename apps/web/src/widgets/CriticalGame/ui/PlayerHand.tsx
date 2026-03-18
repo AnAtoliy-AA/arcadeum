@@ -77,6 +77,8 @@ interface PlayerHandProps {
   setHandLayout?: (layout: HandLayoutMode) => void;
 }
 
+import { type GameVariant } from '@arcadeum/ui';
+
 export function PlayerHand({
   currentPlayer,
   onUnstashCard,
@@ -270,7 +272,7 @@ export function PlayerHand({
           <InfoTitle>{t('games.table.actions.start') || 'Actions'}</InfoTitle>
           <ActionButton
             variant="secondary"
-            onClick={onPlayNope}
+            onPress={onPlayNope}
             disabled={typeof actionBusy === 'string' && actionBusy === 'cancel'}
           >
             {typeof actionBusy === 'string' && actionBusy === 'cancel'
@@ -292,18 +294,18 @@ export function PlayerHand({
             </HandTitle>
             <HandControls>
               <HandToggleButton
-                $variant={cardVariant}
+                $variant={cardVariant as GameVariant}
                 variant="secondary"
-                onClick={() => setShowNames(!showNames)}
+                onPress={() => setShowNames(!showNames)}
               >
                 {showNames
                   ? t('games.table.hand.hideNames') || 'Hide Names'
                   : t('games.table.hand.showNames') || 'Show Names'}
               </HandToggleButton>
               <HandToggleButton
-                $variant={cardVariant}
+                $variant={cardVariant as GameVariant}
                 variant="secondary"
-                onClick={() => setShowDescriptions(!showDescriptions)}
+                onPress={() => setShowDescriptions(!showDescriptions)}
               >
                 {showDescriptions
                   ? t('games.table.hand.hideDescriptions') ||
@@ -315,7 +317,7 @@ export function PlayerHand({
                 <HandLayoutDropdown
                   layout={handLayout}
                   onChange={setHandLayout}
-                  variant={cardVariant}
+                  variant={cardVariant as GameVariant}
                   t={t}
                 />
               )}
@@ -329,9 +331,8 @@ export function PlayerHand({
                 key={id}
                 $cardType={card}
                 $index={idx + 10}
-                $variant={cardVariant}
-                onClick={() => onUnstashCard?.(card)}
-                title="Stashed card - Click to return to hand"
+                $variant={cardVariant as GameVariant}
+                onPress={() => onUnstashCard?.(card)}
               >
                 <StashIcon>🏰</StashIcon>
                 <CardCorner $position="tl" />
@@ -342,12 +343,12 @@ export function PlayerHand({
                 <CardInner>
                   <CardEmoji>{getCardEmoji(card)}</CardEmoji>
                   {showNames && (
-                    <CardName $variant={cardVariant}>
+                    <CardName $variant={cardVariant as GameVariant}>
                       {t(getCardTranslationKey(card, cardVariant)) || card}
                     </CardName>
                   )}
                   {showDescriptions && (
-                    <CardDescription $variant={cardVariant}>
+                    <CardDescription $variant={cardVariant as GameVariant}>
                       {t(getCardDescriptionKey(card))}
                     </CardDescription>
                   )}
@@ -368,10 +369,10 @@ export function PlayerHand({
                   key={id}
                   $cardType={card}
                   $index={idx}
-                  $variant={cardVariant}
+                  $variant={cardVariant as GameVariant}
                   $clickable={clickable}
                   $dimmed={dimmed}
-                  onClick={() => handleCardClick(card, count)}
+                  onPress={() => handleCardClick(card, count)}
                 >
                   <CardCorner $position="tl" />
                   <CardCorner $position="tr" />
@@ -381,12 +382,12 @@ export function PlayerHand({
                   <CardInner>
                     <CardEmoji>{getCardEmoji(card)}</CardEmoji>
                     {showNames && (
-                      <CardName $variant={cardVariant}>
+                      <CardName $variant={cardVariant as GameVariant}>
                         {t(getCardTranslationKey(card, cardVariant)) || card}
                       </CardName>
                     )}
                     {showDescriptions && (
-                      <CardDescription $variant={cardVariant}>
+                      <CardDescription $variant={cardVariant as GameVariant}>
                         {t(getCardDescriptionKey(card))}
                       </CardDescription>
                     )}

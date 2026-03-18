@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react';
 export type BadgeVariant = 'success' | 'warning' | 'error' | 'info' | 'neutral';
 export type BadgeSize = 'sm' | 'md';
 
-export const Badge = styled(Text, {
+const StyledBadge = styled(Text, {
   name: 'Badge',
   flexDirection: 'row',
   alignItems: 'center',
@@ -56,6 +56,32 @@ export const Badge = styled(Text, {
         fontSize: '$2',
       },
     },
+    gameVariant: {
+      cyberpunk: {
+        backgroundColor: '$cyberpunkPrimary',
+        borderColor: '$cyberpunkAccent',
+      },
+      underwater: {
+        backgroundColor: '$underwaterPrimary',
+        borderColor: '$underwaterAccent',
+      },
+      crime: {
+        backgroundColor: '$crimePrimary',
+        borderColor: '$crimeAccent',
+      },
+      horror: {
+        backgroundColor: '$horrorPrimary',
+        borderColor: '$horrorAccent',
+      },
+      adventure: {
+        backgroundColor: '$adventurePrimary',
+        borderColor: '$adventureAccent',
+      },
+      'high-altitude-hike': {
+        backgroundColor: '$hikePrimary',
+        borderColor: '$hikeSecondary',
+      },
+    },
     pulse: {
       true: {
         animation: 'slow',
@@ -69,4 +95,36 @@ export const Badge = styled(Text, {
   },
 });
 
-export type BadgeProps = ComponentProps<typeof Badge>;
+import { memo } from 'react';
+import type { ReactElement } from 'react';
+
+export type BadgeProps = ComponentProps<typeof StyledBadge>;
+
+interface BadgeInnerProps extends BadgeProps {
+  // Destructure props that might leak
+  $variant?: string;
+  $status?: string;
+  isHost?: boolean;
+}
+
+export const Badge = memo(function Badge({ 
+  variant, 
+  size, 
+  gameVariant, 
+  pulse,
+  // Destructure props that might leak
+  $variant,
+  $status,
+  isHost,
+  ...props 
+}: BadgeInnerProps): ReactElement {
+  return (
+    <StyledBadge 
+      variant={variant} 
+      size={size} 
+      gameVariant={gameVariant} 
+      pulse={pulse}
+      {...props} 
+    />
+  );
+});

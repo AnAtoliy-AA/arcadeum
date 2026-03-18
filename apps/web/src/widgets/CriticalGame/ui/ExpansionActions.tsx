@@ -1,6 +1,7 @@
 import type { CriticalPlayerState, CriticalCard } from '../types';
 import { getCardTranslationKey } from '../lib/cardUtils';
 import { ActionButton } from './styles';
+import type { GameVariant } from '@arcadeum/ui';
 
 export interface ExpansionActionsProps {
   currentPlayer: CriticalPlayerState;
@@ -24,7 +25,7 @@ export function ExpansionActions({
       {/* Attack Pack Cards */}
       {currentPlayer.hand.includes('invert') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="secondary"
           onClick={() => onPlayActionCard('invert')}
           disabled={!canAct || actionBusy === 'invert'}
@@ -36,7 +37,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('mega_evade') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="primary"
           onClick={() => onPlayActionCard('mega_evade')}
           disabled={!canAct || actionBusy === 'mega_evade'}
@@ -48,7 +49,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('targeted_strike') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="danger"
           onClick={() => onPlayActionCard('targeted_strike')}
           disabled={!canAct || actionBusy === 'targeted_strike'}
@@ -60,7 +61,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('private_strike') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="danger"
           onClick={() => onPlayActionCard('private_strike')}
           disabled={!canAct || actionBusy === 'private_strike'}
@@ -72,7 +73,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('recursive_strike') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="danger"
           onClick={() => onPlayActionCard('recursive_strike')}
           disabled={!canAct || actionBusy === 'recursive_strike'}
@@ -85,7 +86,7 @@ export function ExpansionActions({
       {/* Future Pack Cards */}
       {currentPlayer.hand.includes('see_future_5x') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="primary"
           onClick={() => onPlayActionCard('see_future_5x')}
           disabled={!canAct || actionBusy === 'see_future_5x'}
@@ -97,7 +98,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('alter_future_3x') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="primary"
           onClick={() => onPlayActionCard('alter_future_3x')}
           disabled={!canAct || actionBusy === 'alter_future_3x'}
@@ -109,7 +110,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('alter_future_5x') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="primary"
           onClick={() => onPlayActionCard('alter_future_5x')}
           disabled={!canAct || actionBusy === 'alter_future_5x'}
@@ -121,7 +122,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('reveal_future_3x') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="primary"
           onClick={() => onPlayActionCard('reveal_future_3x')}
           disabled={!canAct || actionBusy === 'reveal_future_3x'}
@@ -133,7 +134,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('share_future_3x') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="primary"
           onClick={() => onPlayActionCard('share_future_3x')}
           disabled={!canAct || actionBusy === 'share_future_3x'}
@@ -145,7 +146,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('draw_bottom') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="secondary"
           onClick={() => onPlayActionCard('draw_bottom')}
           disabled={!canAct || actionBusy === 'draw_bottom'}
@@ -157,7 +158,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('swap_top_bottom') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="secondary"
           onClick={() => onPlayActionCard('swap_top_bottom')}
           disabled={!canAct || actionBusy === 'swap_top_bottom'}
@@ -169,7 +170,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('bury') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="secondary"
           onClick={() => onPlayActionCard('bury')}
           disabled={!canAct || actionBusy === 'bury'}
@@ -182,7 +183,7 @@ export function ExpansionActions({
       {/* Theft Pack Cards */}
       {currentPlayer.hand.includes('mark') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="primary"
           onClick={() => onPlayActionCard('mark')}
           disabled={!canAct || actionBusy === 'mark'}
@@ -194,7 +195,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('steal_draw') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="primary"
           onClick={() => onPlayActionCard('steal_draw')}
           disabled={!canAct || actionBusy === 'steal_draw'}
@@ -206,7 +207,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('stash') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="primary"
           onClick={() => onPlayActionCard('stash')}
           disabled={!canAct || actionBusy === 'stash'}
@@ -219,7 +220,7 @@ export function ExpansionActions({
       {/* Deity Pack Cards */}
       {currentPlayer.hand.includes('omniscience') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="primary"
           onClick={() => onPlayActionCard('omniscience')}
           disabled={!canAct || actionBusy === 'omniscience'}
@@ -231,7 +232,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('miracle') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="primary"
           onClick={() => onPlayActionCard('miracle')}
           disabled={!canAct || actionBusy === 'miracle'}
@@ -243,7 +244,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('smite') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="danger"
           onClick={() => onPlayActionCard('smite')}
           disabled={!canAct || actionBusy === 'smite'}
@@ -255,7 +256,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('rapture') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="danger"
           onClick={() => onPlayActionCard('rapture')}
           disabled={!canAct || actionBusy === 'rapture'}
@@ -268,7 +269,7 @@ export function ExpansionActions({
       {/* Chaos Pack Cards */}
       {currentPlayer.hand.includes('critical_implosion') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="danger"
           onClick={() => onPlayActionCard('critical_implosion')}
           disabled={!canAct || actionBusy === 'critical_implosion'}
@@ -280,7 +281,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('containment_field') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="secondary"
           onClick={() => onPlayActionCard('containment_field')}
           disabled={!canAct || actionBusy === 'containment_field'}
@@ -292,7 +293,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('fission') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="danger"
           onClick={() => onPlayActionCard('fission')}
           disabled={!canAct || actionBusy === 'fission'}
@@ -304,7 +305,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('tribute') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="primary"
           onClick={() => onPlayActionCard('tribute')}
           disabled={!canAct || actionBusy === 'tribute'}
@@ -316,7 +317,7 @@ export function ExpansionActions({
       )}
       {currentPlayer.hand.includes('blackout') && (
         <ActionButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           variant="secondary"
           onClick={() => onPlayActionCard('blackout')}
           disabled={!canAct || actionBusy === 'blackout'}

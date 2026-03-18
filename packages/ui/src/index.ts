@@ -38,4 +38,7 @@ export * from './components/Footer/Footer';
 export * from './components/IdleBadge/IdleBadge';
 export * from './components/ServerLoadingNotice/ServerLoadingNotice';
 export * from './components/Typography/Typography';
+export * from './components/Game/GameContainer';
+export * from './components/Game/GameLayout';
+
 export { XStack, YStack, ZStack, ScrollView, ThemeableStack } from 'tamagui';

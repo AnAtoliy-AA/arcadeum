@@ -10,7 +10,7 @@ import {
 import { GAME_VARIANT } from '../lib/constants';
 
 interface TableDecorationsProps {
-  variant?: string;
+  $variant?: string;
 }
 
 const ICE_CRYSTAL_CORNERS = ['tl', 'tr', 'bl', 'br'] as const;
@@ -23,11 +23,13 @@ const SNOWFLAKES = [...Array(20)].map((_, i) => ({
   size: 2 + ((i * 7) % 4),
 }));
 
-export function TableDecorations({ variant }: TableDecorationsProps) {
+export function TableDecorations({
+  $variant: currentVariant,
+}: TableDecorationsProps) {
   const snowflakes =
-    variant === GAME_VARIANT.HIGH_ALTITUDE_HIKE ? SNOWFLAKES : [];
+    currentVariant === GAME_VARIANT.HIGH_ALTITUDE_HIKE ? SNOWFLAKES : [];
 
-  if (variant === GAME_VARIANT.UNDERWATER) {
+  if (currentVariant === GAME_VARIANT.UNDERWATER) {
     return (
       <>
         <SonarSweep />
@@ -37,20 +39,23 @@ export function TableDecorations({ variant }: TableDecorationsProps) {
     );
   }
 
-  if (variant === GAME_VARIANT.HIGH_ALTITUDE_HIKE) {
+  if (currentVariant === GAME_VARIANT.HIGH_ALTITUDE_HIKE) {
     return (
       <>
         <FrostyVignette />
         {ICE_CRYSTAL_CORNERS.map((corner) => (
-          <IceCrystal key={corner} $corner={corner} />
+          <IceCrystal key={corner} corner={corner} />
         ))}
         {snowflakes.map((snowflake) => (
           <Snowflake
             key={snowflake.id}
-            $left={snowflake.left}
-            $delay={snowflake.delay}
-            $duration={snowflake.duration}
-            $size={snowflake.size}
+            style={{
+              left: `${snowflake.left}%`,
+              animationDelay: `${snowflake.delay}s`,
+              animationDuration: `${snowflake.duration}s`,
+              width: snowflake.size,
+              height: snowflake.size,
+            }}
           />
         ))}
       </>

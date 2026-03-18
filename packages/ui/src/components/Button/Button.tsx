@@ -12,6 +12,7 @@ export const Button = memo(function Button({
   disabled,
   showShimmer,
   children,
+  gameVariant,
   ...rest
 }: ButtonProps): ReactElement {
   return (
@@ -22,7 +23,18 @@ export const Button = memo(function Button({
       animation="medium"
       fontWeight="600"
       letterSpacing={0.5}
-      {...rest}
+      gameVariant={gameVariant}
+      // Destructure transient props that might leak
+      {...(() => {
+        const {
+          $variant,
+          $status,
+          $isMyTurn,
+          $isActive,
+          ...props
+        } = rest as Record<string, unknown>;
+        return props;
+      })()}
     >
       {children}
       {showShimmer && <Shimmer />}

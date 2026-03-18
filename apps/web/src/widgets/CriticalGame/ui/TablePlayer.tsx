@@ -1,3 +1,4 @@
+import React, { useMemo } from 'react';
 import {
   PlayerPositionWrapper,
   PlayerCard,
@@ -12,6 +13,8 @@ import { SeaBattlePopup } from '@/widgets/SeaBattleGame/ui/SeaBattlePopup';
 import type { CriticalLogEntry, CriticalPlayerTableState } from '../types';
 import { useGameStore } from '@/features/games/store/gameStore';
 import { IdleBadge } from '@/shared/ui';
+import { useMedia, Text } from 'tamagui';
+import { GameVariant } from '@arcadeum/ui';
 
 export interface TablePlayerProps {
   player: CriticalPlayerTableState;
@@ -53,40 +56,55 @@ export function TablePlayer({
   const latestMessage = findLastMessage(logs, playerId);
   const idlePlayers = useGameStore((s) => s.idlePlayers);
   const isPlayerIdle = idlePlayers.includes(playerId);
+  const media = useMedia();
+  const isMobile = media.sm;
 
-  // Determine bubble position based on player relative position index
-  // relativeIndex 0 is always bottom center
+  // Circular Positioning Logic (from table.ts)
+  const positionStyle = useMemo(() => {
+    if (isMobile) {
+      return {
+        position: 'relative' as const,
+        left: 'auto',
+        top: 'auto',
+        transform: 'none',
+        width: 'auto',
+      };
+    }
+
+    const angle = (relativeIndex / totalPlayers) * 2 * Math.PI + Math.PI / 2;
+    const radiusX = 42; // Increased from 38
+    const radiusY = 38; // Increased from 36
+    const x = 50 + radiusX * Math.cos(angle);
+    const y = 50 + radiusY * Math.sin(angle);
+
+    return {
+      left: `${x}%`,
+      top: `${y}%`,
+      transform: 'translate(-50%, -50%)',
+    } as const;
+  }, [isMobile, relativeIndex, totalPlayers]);
+
+  // Determine bubble position
   let bubblePosition: 'top' | 'bottom' | 'left' | 'right' = 'top';
-
   if (totalPlayers > 0) {
     if (relativeIndex === 0) {
-      // Bottom center player (the viewer) - bubbles go up
       bubblePosition = 'top';
     } else {
       const ratio = relativeIndex / totalPlayers;
       if (ratio > 0.1 && ratio < 0.4) {
-        // Left side of table - bubbles go right
         bubblePosition = 'right';
       } else if (ratio >= 0.4 && ratio <= 0.6) {
-        // Top of table - bubbles go down
         bubblePosition = 'bottom';
       } else if (ratio > 0.6 && ratio < 0.9) {
-        // Right side of table - bubbles go left
         bubblePosition = 'left';
       } else {
-        // Fallback for edge cases near bottom
         bubblePosition = 'top';
       }
     }
   }
 
   return (
-    <PlayerPositionWrapper
-      key={playerId}
-      $position={relativeIndex}
-      $total={totalPlayers}
-      $isCurrentUser={isCurrentUserCard}
-    >
+    <PlayerPositionWrapper key={playerId} style={positionStyle}>
       {latestMessage && (
         <>
           <ChatBubble
@@ -109,46 +127,30 @@ export function TablePlayer({
         $isCurrentTurn={isCurrent}
         $isAlive={player.alive}
         $isCurrentUser={isCurrentUserCard}
-        $variant={cardVariant}
+        $variant={cardVariant as GameVariant}
         data-testid={`player-card-${playerId}`}
       >
-        {isCurrent && <TurnIndicator $variant={cardVariant}>⭐</TurnIndicator>}
-        <PlayerAvatar
-          $isCurrentTurn={isCurrent}
-          $isAlive={player.alive}
-          $variant={cardVariant}
-        >
-          {player.alive ? '🎮' : '💀'}
+        {isCurrent && <TurnIndicator>⭐</TurnIndicator>}
+        <PlayerAvatar $isCurrentTurn={isCurrent} $isAlive={player.alive}>
+          <Text>{player.alive ? '🎮' : '💀'}</Text>
         </PlayerAvatar>
-        <PlayerName
-          $isCurrentTurn={isCurrent}
-          $variant={cardVariant}
-          data-testid={`player-name-${playerId}`}
-        >
+        <PlayerName data-testid={`player-name-${playerId}`}>
           {displayName}
           {isPlayerIdle && <IdleBadge />}
         </PlayerName>
         {player.alive && (
           <PlayerStatsContainer>
-            <PlayerCardCount $isCurrentTurn={isCurrent} $variant={cardVariant}>
-              🃏 {player.hand.length}
+            <PlayerCardCount $isCurrentTurn={isCurrent}>
+              <Text>🃏 {player.hand.length}</Text>
             </PlayerCardCount>
             {stash.length > 0 && (
-              <PlayerCardCount
-                $isCurrentTurn={isCurrent}
-                $variant={cardVariant}
-                $type="stash"
-              >
-                🏰 {stash.length}
+              <PlayerCardCount $isCurrentTurn={isCurrent} $type="stash">
+                <Text>🏰 {stash.length}</Text>
               </PlayerCardCount>
             )}
             {markedCards.length > 0 && (
-              <PlayerCardCount
-                $isCurrentTurn={isCurrent}
-                $variant={cardVariant}
-                $type="marked"
-              >
-                🏷️ {markedCards.length}
+              <PlayerCardCount $isCurrentTurn={isCurrent} $type="marked">
+                <Text>🏷️ {markedCards.length}</Text>
               </PlayerCardCount>
             )}
           </PlayerStatsContainer>

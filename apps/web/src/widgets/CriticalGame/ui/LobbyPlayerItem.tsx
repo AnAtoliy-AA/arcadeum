@@ -1,12 +1,13 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { Button } from '@arcadeum/ui';
+import { Button, XStack } from '@arcadeum/ui';
 import { IdleBadge } from '@/shared/ui';
 import { useGameStore } from '@/features/games/store/gameStore';
 import {
   PlayerItem,
   LobbyPlayerAvatar,
+  LobbyPlayerAvatarText,
   PlayerInfo,
   LobbyPlayerName,
   PlayerBadge,
@@ -68,14 +69,21 @@ export function SortablePlayerItem({
   const isPlayerIdle = idlePlayers.includes(member.id);
 
   return (
-    <PlayerItem ref={setNodeRef} style={style} $isHost={isRoomHost}>
-      <div
-        style={{ display: 'flex', alignItems: 'center', flex: 1 }}
-        {...attributes}
-        {...listeners}
+    <PlayerItem
+      ref={setNodeRef as unknown as (instance: unknown) => void}
+      style={style}
+      $isHost={isRoomHost}
+    >
+      <XStack
+        alignItems="center"
+        flex={1}
+        {...(attributes as unknown as Record<string, unknown>)}
+        {...(listeners as unknown as Record<string, unknown>)}
       >
-        <LobbyPlayerAvatar $color={AVATAR_COLORS[colorIndex]}>
-          {getInitials(member.displayName)}
+        <LobbyPlayerAvatar backgroundColor={AVATAR_COLORS[colorIndex]}>
+          <LobbyPlayerAvatarText>
+            {getInitials(member.displayName)}
+          </LobbyPlayerAvatarText>
         </LobbyPlayerAvatar>
         <PlayerInfo>
           <LobbyPlayerName>
@@ -83,25 +91,17 @@ export function SortablePlayerItem({
             {isPlayerIdle && <IdleBadge />}
           </LobbyPlayerName>
         </PlayerInfo>
-      </div>
+      </XStack>
 
       {isRoomHost && <PlayerBadge>HOST</PlayerBadge>}
 
       {isHost && (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            marginLeft: 'auto',
-            paddingLeft: '8px',
-          }}
-        >
+        <XStack alignItems="center" gap="$1" marginLeft="auto" paddingLeft="$2">
           <Button
             variant="ghost"
             size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
+            onPress={(event: { stopPropagation: () => void }) => {
+              event.stopPropagation();
               onMoveUp();
             }}
             disabled={index === 0}
@@ -112,8 +112,8 @@ export function SortablePlayerItem({
           <Button
             variant="ghost"
             size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
+            onPress={(event: { stopPropagation: () => void }) => {
+              event.stopPropagation();
               onMoveDown();
             }}
             disabled={index === totalCount - 1}
@@ -121,14 +121,15 @@ export function SortablePlayerItem({
           >
             ↓
           </Button>
-          <div
-            style={{ opacity: 0.5, cursor: 'grab' }}
-            {...attributes}
-            {...listeners}
+          <XStack
+            opacity={0.5}
+            cursor="grab"
+            {...(attributes as unknown as Record<string, unknown>)}
+            {...(listeners as unknown as Record<string, unknown>)}
           >
             ⋮⋮
-          </div>
-        </div>
+          </XStack>
+        </XStack>
       )}
     </PlayerItem>
   );

@@ -5,15 +5,17 @@ import {
   ModalContent,
   ModalHeader,
   ModalTitle,
+  ModalOverlay,
   CloseButton,
   ModalSection,
   SectionLabel,
   RulesText,
   RulesTextPre,
-} from '@/features/games/ui/SharedModalStyles';
+} from './styles';
 import { Card } from './styles/cards';
 import { CARD_GROUPS } from '../lib/constants';
-import { CriticalCard } from '@/shared/types/games';
+import { CriticalCard } from '../types';
+import { GameVariant } from '@arcadeum/ui';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { CloseIcon } from '@/shared/ui';
 
@@ -110,24 +112,20 @@ export function RulesModal({
   };
 
   const snakeToCamel = (str: string) =>
-    str.replace(/([-_][a-z])/g, (group) =>
-      group.toUpperCase().replace('-', '').replace('_', ''),
+    str.replace(/([-_][a-z])/g, (_group) =>
+      _group.toUpperCase().replace('-', '').replace('_', ''),
     );
 
   return (
     <Modal open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay
-          {...({
-            animation: 'quick',
-            enterStyle: { opacity: 0 },
-            exitStyle: { opacity: 0 },
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            backdropFilter: 'blur(10px)',
-          } as unknown as object)}
+        <ModalOverlay
+          key="overlay"
+          animation="fast"
+          backdropFilter="blur(10px)"
         />
         <ModalContent
-          $variant={currentVariant}
+          $variant={currentVariant as GameVariant}
           style={{ maxWidth: 900 }}
           data-testid="rules-modal"
         >
@@ -138,15 +136,14 @@ export function RulesModal({
             <Dialog.Description>Game rules for Critical</Dialog.Description>
           </VisuallyHidden>
 
-          <ModalHeader variant={currentVariant as unknown as 'cyberpunk'}>
-            <ModalTitle variant={currentVariant as unknown as 'cyberpunk'}>
+          <ModalHeader>
+            <ModalTitle>
               {t('games.critical_v1.rules.title' as TranslationKey)}
             </ModalTitle>
             <Dialog.Close asChild>
               <CloseButton
-                onClick={onClose}
                 onPress={onClose}
-                $variant={currentVariant}
+                $variant={currentVariant as GameVariant}
                 data-testid="modal-close-button"
               >
                 <CloseIcon size={20} />
@@ -155,7 +152,7 @@ export function RulesModal({
           </ModalHeader>
 
           <ModalSection>
-            <SectionLabel variant={currentVariant as unknown as 'cyberpunk'}>
+            <SectionLabel $variant={currentVariant as GameVariant}>
               {t('games.critical_v1.rules.headers.objective' as TranslationKey)}
             </SectionLabel>
             <RulesText>
@@ -168,7 +165,7 @@ export function RulesModal({
 
           {isFastMode && (
             <ModalSection>
-              <SectionLabel variant={currentVariant as unknown as 'cyberpunk'}>
+              <SectionLabel $variant={currentVariant as GameVariant}>
                 {t(
                   'games.critical_v1.rules.headers.fastGame' as TranslationKey,
                 )}
@@ -181,7 +178,7 @@ export function RulesModal({
 
           {isPrivate && (
             <ModalSection>
-              <SectionLabel variant={currentVariant as unknown as 'cyberpunk'}>
+              <SectionLabel $variant={currentVariant as GameVariant}>
                 {t(
                   'games.critical_v1.rules.headers.privateRoom' as TranslationKey,
                 )}
@@ -193,7 +190,7 @@ export function RulesModal({
           )}
 
           <ModalSection>
-            <SectionLabel variant={currentVariant as unknown as 'cyberpunk'}>
+            <SectionLabel $variant={currentVariant as GameVariant}>
               {t('games.critical_v1.rules.headers.gameplay' as TranslationKey)}
             </SectionLabel>
             <RulesText>
@@ -202,7 +199,7 @@ export function RulesModal({
           </ModalSection>
 
           <ModalSection>
-            <SectionLabel variant={currentVariant as unknown as 'cyberpunk'}>
+            <SectionLabel $variant={currentVariant as GameVariant}>
               {t('games.critical_v1.rules.headers.combos' as TranslationKey)}
             </SectionLabel>
             <RulesTextPre>
@@ -211,7 +208,7 @@ export function RulesModal({
           </ModalSection>
 
           <ModalSection>
-            <SectionLabel variant={currentVariant as unknown as 'cyberpunk'}>
+            <SectionLabel $variant={currentVariant as GameVariant}>
               {t('games.critical_v1.rules.headers.chat' as TranslationKey)}
             </SectionLabel>
             <RulesTextPre>
@@ -221,7 +218,7 @@ export function RulesModal({
 
           {CARD_GROUPS.map((group) => (
             <ModalSection key={group.id}>
-              <SectionLabel variant={currentVariant as unknown as 'cyberpunk'}>
+              <SectionLabel $variant={currentVariant as GameVariant}>
                 {t(
                   `games.critical_v1.rules.cardGroups.${group.id}` as TranslationKey,
                 )}
@@ -232,7 +229,7 @@ export function RulesModal({
                     <CardVisual>
                       <Card
                         $cardType={cardKey as CriticalCard}
-                        $variant={currentVariant}
+                        $variant={currentVariant as string}
                       />
                     </CardVisual>
                     <CardInfo>

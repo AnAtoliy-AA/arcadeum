@@ -1,12 +1,14 @@
 import { useEffect, useCallback, RefObject } from 'react';
+import { type TamaguiElement } from 'tamagui';
 import { gameSocket } from '@/shared/lib/socket';
 import { maybeDecrypt } from '@/shared/lib/socket-encryption';
 import { useCriticalGameStore } from '../store/criticalGameStore';
 import type { CriticalCard } from '../types';
 
 interface UseCriticalModalsOptions {
-  chatMessagesRef: RefObject<HTMLDivElement | null>;
+  chatMessagesRef: RefObject<TamaguiElement | null>;
   chatLogCount: number;
+  playFavor?: (targetId: string) => void;
 }
 
 /**
@@ -15,6 +17,7 @@ interface UseCriticalModalsOptions {
 export function useCriticalModals({
   chatMessagesRef,
   chatLogCount,
+  playFavor,
 }: UseCriticalModalsOptions) {
   const store = useCriticalGameStore();
 
@@ -25,8 +28,8 @@ export function useCriticalModals({
   // Auto-scroll chat to newest message
   useEffect(() => {
     // Scroll to the last message (newest) without scrolling the whole page
-    if (chatMessagesRef.current?.lastElementChild) {
-      const container = chatMessagesRef.current;
+    const container = chatMessagesRef.current as unknown as HTMLElement;
+    if (container?.lastElementChild) {
       const lastElement = container.lastElementChild as HTMLElement;
 
       // With position: relative on the container, offsetTop gives us the precise
@@ -118,5 +121,40 @@ export function useCriticalModals({
       [store],
     ),
     clearChatMessage: useCallback(() => store.setChatMessage(''), [store]),
+
+    // Handlers
+    handleOpenFavorModal: useCallback(() => store.setFavorModal(true), [store]),
+    handleCloseFavorModal: useCallback(() => {
+      store.setFavorModal(false);
+      store.setSelectedTarget(null);
+    }, [store]),
+    handleConfirmFavor: useCallback(() => {
+      if (store.selectedTarget && playFavor) {
+        playFavor(store.selectedTarget);
+        store.setFavorModal(false);
+        store.setSelectedTarget(null);
+      }
+    }, [store, playFavor]),
+    handleCloseSeeTheFutureModal: useCallback(
+      () => store.setSeeTheFutureModal(null),
+      [store],
+    ),
+    handleCloseStashModal: useCallback(
+      () => store.setStashModal(false),
+      [store],
+    ),
+    handleCloseMarkModal: useCallback(() => store.setMarkModal(false), [store]),
+    handleCloseStealDrawModal: useCallback(
+      () => store.setStealDrawModal(false),
+      [store],
+    ),
+    handleCloseSmiteModal: useCallback(
+      () => store.setSmiteModal(false),
+      [store],
+    ),
+    handleCloseOmniscienceModal: useCallback(
+      () => store.setOmniscienceModal(null),
+      [store],
+    ),
   };
 }

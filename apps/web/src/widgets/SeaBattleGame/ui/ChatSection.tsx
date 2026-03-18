@@ -2,7 +2,8 @@
 
 import { type RefObject } from 'react';
 import { type TamaguiElement } from 'tamagui';
-import type { CriticalSnapshot, ChatScope } from '../types';
+import type { GameLogEntry } from '../types';
+import type { ChatScope } from '@/shared/types/games';
 import {
   ChatCard,
   ChatMessages,
@@ -17,14 +18,12 @@ import {
   InfoTitle,
   ChatCloseButton,
   LogSender,
-} from './styles';
+} from '@/widgets/CriticalGame/ui/styles';
 import { GameVariant } from '@arcadeum/ui';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 
-type GameLog = NonNullable<CriticalSnapshot['logs']>[number];
-
 interface ChatSectionProps {
-  logs: GameLog[];
+  logs: GameLogEntry[];
   chatMessagesRef: RefObject<TamaguiElement | null>;
   chatMessage: string;
   onChatMessageChange: (value: string) => void;

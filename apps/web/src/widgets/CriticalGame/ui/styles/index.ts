@@ -18,7 +18,6 @@ export {
   TurnStatus,
   StartButton,
   FullscreenButton,
-  ChatToggleButton,
 } from './header';
 
 export {

@@ -119,17 +119,3 @@ export const FullscreenButton = (props: ButtonProps) => (
     {...props}
   />
 );
-
-export const ChatToggleButton = ({ isActive, ...props }: ButtonProps) => (
-  <Button
-    variant="secondary"
-    size="sm"
-    paddingHorizontal="$4"
-    paddingVertical="$2"
-    borderRadius={8}
-    borderWidth={1}
-    borderColor="rgba(255, 255, 255, 0.2)"
-    isActive={isActive}
-    {...props}
-  />
-);

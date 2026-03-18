@@ -80,21 +80,9 @@ export const TableArea = styled(BaseTableArea, {
   name: 'TableArea',
   flex: 1,
   gap: '$4',
+  flexDirection: 'column',
 
   variants: {
-    showChat: {
-      true: {
-        $gtMd: {
-          flexDirection: 'row',
-        },
-        $md: {
-          flexDirection: 'column',
-        },
-      },
-      false: {
-        flexDirection: 'column',
-      },
-    },
     $variant: (_val: unknown) => ({}),
   } as const,
 });

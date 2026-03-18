@@ -1,12 +1,9 @@
 'use client';
 
-import { RefObject } from 'react';
-import { type TamaguiElement } from 'tamagui';
 import { YStack } from '@arcadeum/ui';
 import { GameBoard, TableArea } from './styles/layout';
 import { GameTableSection } from './GameTableSection';
 import { PlayerHand } from './PlayerHand';
-import { ChatSection } from './ChatSection';
 import type {
   CriticalSnapshot,
   GameRoomSummary,
@@ -14,7 +11,7 @@ import type {
   CriticalCard,
   CriticalComboCard,
 } from '../types';
-import { HandLayoutMode, ChatScope } from '../types';
+import { HandLayoutMode } from '../types';
 import type { UseGameActionsReturn } from '@/features/games/hooks/useGameActions';
 
 interface ActiveGameContentProps {
@@ -31,20 +28,10 @@ interface ActiveGameContentProps {
   aliveOpponents: CriticalPlayerState[];
   handLayout: HandLayoutMode;
   setHandLayout: (mode: HandLayoutMode) => void;
-  showChat: boolean;
-  handleToggleChat: () => void;
-  chatMessagesRef: RefObject<TamaguiElement | null>;
-  chatMessage: string;
-  setChatMessage: (msg: string) => void;
-  chatScope: ChatScope;
-  setChatScope: (scope: ChatScope) => void;
-  handleSendChatMessage: () => void;
-  turnStatusText: string;
   resolveDisplayName: (
     playerId?: string,
     fallbackName?: string,
   ) => string | undefined;
-  formatLogMessage: (log: string) => string;
   t: (key: string, params?: Record<string, string | number>) => string;
   actions: UseGameActionsReturn;
   idleTimerTriggered: boolean;
@@ -74,17 +61,7 @@ export function ActiveGameContent({
   aliveOpponents,
   handLayout,
   setHandLayout,
-  showChat,
-  handleToggleChat,
-  chatMessagesRef,
-  chatMessage,
-  setChatMessage,
-  chatScope,
-  setChatScope,
-  handleSendChatMessage,
-  turnStatusText,
   resolveDisplayName,
-  formatLogMessage,
   t,
   actions,
   idleTimerTriggered,
@@ -97,7 +74,7 @@ export function ActiveGameContent({
 }: ActiveGameContentProps) {
   return (
     <GameBoard>
-      <TableArea showChat={showChat}>
+      <TableArea>
         <YStack flex={2} gap="$4">
           <GameTableSection
             players={snapshot.players}
@@ -151,27 +128,6 @@ export function ActiveGameContent({
             />
           )}
         </YStack>
-
-        {showChat && (
-          <YStack flex={1} minWidth={260}>
-            <ChatSection
-              logs={snapshot.logs ?? []}
-              chatMessagesRef={chatMessagesRef}
-              chatMessage={chatMessage}
-              onChatMessageChange={setChatMessage}
-              chatScope={chatScope}
-              onChatScopeChange={setChatScope}
-              onSendMessage={handleSendChatMessage}
-              currentUserId={currentUserId}
-              turnStatus={turnStatusText}
-              resolveDisplayName={resolveDisplayName}
-              formatLogMessage={formatLogMessage}
-              t={t}
-              cardVariant={cardVariant}
-              onClose={handleToggleChat}
-            />
-          </YStack>
-        )}
       </TableArea>
     </GameBoard>
   );

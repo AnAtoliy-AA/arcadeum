@@ -5,7 +5,6 @@ import {
   TurnStatus,
   HeaderActions,
   TimerControlsWrapper,
-  ChatToggleButton,
   FullscreenButton,
 } from './styles/header';
 import { appConfig } from '@/shared/config/app-config';
@@ -42,8 +41,6 @@ interface CriticalGameHeaderProps {
   autoplayState: UseAutoplayReturn;
   idleTimerTriggered: boolean;
   handleStopAutoplay: () => void;
-  showChat: boolean;
-  handleToggleChat: () => void;
   isFullscreen: boolean;
   toggleFullscreen: () => void;
 }
@@ -63,8 +60,6 @@ export function CriticalGameHeader({
   autoplayState,
   idleTimerTriggered,
   handleStopAutoplay,
-  showChat,
-  handleToggleChat,
   isFullscreen,
   toggleFullscreen,
 }: CriticalGameHeaderProps) {
@@ -158,13 +153,6 @@ export function CriticalGameHeader({
             <AutoplayControls autoplayState={autoplayState} t={t} />
           </TimerControlsWrapper>
         )}
-        <ChatToggleButton
-          type="button"
-          onPress={handleToggleChat}
-          isActive={showChat}
-        >
-          {showChat ? t('games.table.chat.hide') : t('games.table.chat.show')}
-        </ChatToggleButton>
         <FullscreenButton
           onPress={toggleFullscreen}
           title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}

@@ -1,7 +1,7 @@
 'use client';
 
-import { useRef, useCallback, useMemo, useState } from 'react';
-import { type TamaguiElement } from 'tamagui';
+import { useEffect, useCallback, useMemo, useState } from 'react';
+import { useGameChatStore } from '@/widgets/GameChat';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type {
   CriticalCard,
@@ -86,7 +86,6 @@ export function ActiveGameView({
   rematch,
 }: ActiveGameViewProps) {
   const { t } = useTranslation();
-  const chatMessagesRef = useRef<TamaguiElement | null>(null);
 
   // Layout State
   const [handLayout, setHandLayout] = useState<HandLayoutMode>('grid');
@@ -131,13 +130,6 @@ export function ActiveGameView({
     setTargetedAttackModal,
     seeTheFutureModal,
     handleCloseSeeTheFutureModal,
-    chatMessage,
-    setChatMessage,
-    chatScope,
-    setChatScope,
-    showChat,
-    handleToggleChat,
-    clearChatMessage,
     stashModal,
     handleCloseStashModal,
     markModal,
@@ -149,10 +141,19 @@ export function ActiveGameView({
     omniscienceModal,
     handleCloseOmniscienceModal,
   } = useCriticalModals({
-    chatMessagesRef,
-    chatLogCount: snapshot?.logs?.length ?? 0,
     playFavor: actions.playFavor,
   });
+
+  // Sync logs to gameChatStore
+  useEffect(() => {
+    useGameChatStore.getState().setLogs(snapshot?.logs ?? []);
+  }, [snapshot?.logs]);
+
+  // Register sendMessage on mount, clear on unmount
+  useEffect(() => {
+    useGameChatStore.getState().registerSendMessage(actions.postHistoryNote);
+    return () => useGameChatStore.getState().clear();
+  }, [actions.postHistoryNote]);
 
   // Monitor logs for seeTheFuture.reveal and omniscience.reveal entries
   useSeeTheFutureFromLogs({
@@ -193,8 +194,6 @@ export function ActiveGameView({
     selectedFiverCards,
     selectedDiscardCard,
     eventComboModal,
-    chatMessage,
-    chatScope,
     currentPlayerHand: currentPlayer?.hand ?? [],
     discardPile: snapshot?.discardPile ?? [],
     actions,
@@ -206,13 +205,11 @@ export function ActiveGameView({
     setMarkModal: () => {},
     setStealDrawModal: () => {},
     setSmiteModal: () => {},
-    clearChatMessage,
     setTargetedAttackModal,
   });
 
   const {
     handleConfirmEventCombo,
-    handleSendChatMessage,
     handleOpenFiverCombo,
     handleConfirmStash,
     handleConfirmMark,
@@ -287,8 +284,6 @@ export function ActiveGameView({
         autoplayState={autoplayState}
         idleTimerTriggered={idleTimerTriggered}
         handleStopAutoplay={handleStopAutoplay}
-        showChat={showChat}
-        handleToggleChat={handleToggleChat}
         isFullscreen={isFullscreen}
         toggleFullscreen={toggleFullscreen}
       />
@@ -307,17 +302,7 @@ export function ActiveGameView({
         aliveOpponents={aliveOpponents}
         handLayout={handLayout}
         setHandLayout={setHandLayout}
-        showChat={showChat}
-        handleToggleChat={handleToggleChat}
-        chatMessagesRef={chatMessagesRef}
-        chatMessage={chatMessage}
-        setChatMessage={setChatMessage}
-        chatScope={chatScope}
-        setChatScope={setChatScope}
-        handleSendChatMessage={handleSendChatMessage}
-        turnStatusText={turnStatusText}
         resolveDisplayName={resolveDisplayName}
-        formatLogMessage={formatLogMessage}
         t={
           t as unknown as (
             key: string,

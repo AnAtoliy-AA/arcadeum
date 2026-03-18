@@ -30,7 +30,7 @@ import { ShipPlacementBoard } from './ShipPlacementBoard';
 import { AttackBoard } from './AttackBoard';
 import { SeaBattleLobby } from './SeaBattleLobby';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
-import { ChatSection } from '@/widgets/CriticalGame/ui/ChatSection';
+import { ChatSection } from './ChatSection';
 import { ChatScope } from '@/shared/types/games';
 import { GameLayout } from '@/features/games/ui/GameLayout';
 import { SEA_BATTLE_VARIANTS } from '../lib/constants';

@@ -4,6 +4,7 @@ import { YStack } from '@arcadeum/ui';
 import { GameBoard, TableArea } from './styles/layout';
 import { GameTableSection } from './GameTableSection';
 import { PlayerHand } from './PlayerHand';
+import { ParticleOverlay } from './ParticleOverlay';
 import type {
   CriticalSnapshot,
   GameRoomSummary,
@@ -74,6 +75,18 @@ export function ActiveGameContent({
 }: ActiveGameContentProps) {
   return (
     <GameBoard>
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          isolation: 'isolate',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      >
+        <ParticleOverlay variant={cardVariant} />
+      </div>
+
       <TableArea>
         <YStack flex={2} gap="$4">
           <GameTableSection

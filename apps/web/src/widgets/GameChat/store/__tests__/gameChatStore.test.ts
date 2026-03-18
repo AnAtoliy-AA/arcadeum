@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useGameChatStore } from '../gameChatStore';
+import type { ChatScope } from '../gameChatStore';
 
 describe('gameChatStore', () => {
   beforeEach(() => {
@@ -28,18 +29,14 @@ describe('gameChatStore', () => {
   });
 
   it('registerSendMessage registers the function', () => {
-    const fn = (msg: string) => {
-      void msg;
-    };
-    useGameChatStore.getState().registerSendMessage(fn as never);
+    const fn = (_msg: string, _scope: ChatScope) => {};
+    useGameChatStore.getState().registerSendMessage(fn);
     expect(useGameChatStore.getState().sendMessage).toBe(fn);
   });
 
   it('clear resets state', () => {
-    const fn = (msg: string) => {
-      void msg;
-    };
-    useGameChatStore.getState().registerSendMessage(fn as never);
+    const fn = (_msg: string, _scope: ChatScope) => {};
+    useGameChatStore.getState().registerSendMessage(fn);
     useGameChatStore.getState().clear();
     expect(useGameChatStore.getState().logs).toEqual([]);
     expect(useGameChatStore.getState().sendMessage).toBeNull();

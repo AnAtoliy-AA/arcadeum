@@ -1,15 +1,16 @@
 import React from 'react';
 import type { CriticalCard } from '../types';
-import { getCardEmoji, getCardTranslationKey } from '../lib/cardUtils';
+import { getCardTranslationKey } from '../lib/cardUtils';
 import {
   LastPlayedCard, // Reuse positioning/style if possible, or use DeckCard
   DeckCard,
   CardCorner,
   CardFrame,
   CardInner,
-  CardEmoji,
   CardName,
 } from './styles';
+import { CardImage } from './styles/card-image';
+import { GradientScrim } from './styles/cards-base';
 import { GameVariant } from '@arcadeum/ui';
 
 interface DeckDisplayProps {
@@ -35,21 +36,16 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
       <LastPlayedCard
         $isAnimating={false}
         $variant={cardVariant as GameVariant}
-        style={{
-          position: 'relative',
-          transform: 'none',
-          left: 'auto',
-          top: 'auto',
-          animation: 'none',
-        }}
+        style={{ position: 'relative', transform: 'none', left: 'auto', top: 'auto', animation: 'none' }}
       >
+        <CardImage variant={cardVariant ?? ''} cardType={topCard as string} />
+        <GradientScrim />
         <CardCorner $position="tl" />
         <CardCorner $position="tr" />
         <CardCorner $position="bl" />
         <CardCorner $position="br" />
         <CardFrame />
-        <CardInner>
-          <CardEmoji>{getCardEmoji(topCard)}</CardEmoji>
+        <CardInner style={{ zIndex: 2 }}>
           <CardName>{t(getCardTranslationKey(topCard, cardVariant))}</CardName>
         </CardInner>
       </LastPlayedCard>
@@ -57,5 +53,9 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
   }
 
   // Show Face Down Deck
-  return <DeckCard $variant={cardVariant as GameVariant} />;
+  return (
+    <DeckCard $variant={cardVariant as GameVariant}>
+      <CardImage variant={cardVariant ?? ''} faceDown />
+    </DeckCard>
+  );
 };

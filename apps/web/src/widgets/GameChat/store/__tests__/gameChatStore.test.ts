@@ -19,6 +19,7 @@ describe('gameChatStore', () => {
         id: '1',
         message: 'hello',
         type: 'message' as const,
+        createdAt: '2026-03-18T00:00:00Z',
         senderId: 'u1',
         senderName: 'Alice',
         scope: 'all' as const,

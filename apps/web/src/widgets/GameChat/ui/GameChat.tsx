@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { XStack, YStack, ScrollView } from '@arcadeum/ui';
-import { Button } from '@arcadeum/ui';
-import { Input, Text } from 'tamagui';
+import { XStack, YStack, ScrollView, Button, Input } from '@arcadeum/ui';
+import { Text } from 'tamagui';
+import type { ScrollView as TamaguiScrollView } from 'tamagui';
 import { useGameChatStore } from '../store/gameChatStore';
 import type { ChatScope } from '../store/gameChatStore';
 import { ChatMessageBubble } from './ChatMessageBubble';
@@ -25,9 +25,7 @@ export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
 
   const [chatMessage, setChatMessage] = useState('');
   const [chatScope, setChatScope] = useState<ChatScope>('all');
-  const scrollRef = useRef<{
-    scrollToEnd: (options?: { animated?: boolean }) => void;
-  }>(null);
+  const scrollRef = useRef<TamaguiScrollView>(null);
 
   useEffect(() => {
     // scrollToEnd works on both web and native ScrollView
@@ -77,7 +75,7 @@ export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
       </XStack>
 
       {/* Messages */}
-      <ScrollView flex={1} ref={scrollRef as React.Ref<never>}>
+      <ScrollView flex={1} ref={scrollRef}>
         {logs.length === 0 ? (
           <Text
             padding="$4"
@@ -102,7 +100,7 @@ export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
                     : (log.senderName ?? undefined)
                 }
                 message={log.message}
-                type={log.type as 'system' | 'action' | 'message'}
+                type={log.type}
                 scope={log.scope}
               />
             ))}

@@ -85,6 +85,8 @@ export {
 } from './player-widgets';
 
 // Card Components
+export { GradientScrim } from './cards-base';
+
 export {
   CardsGrid,
   Card,

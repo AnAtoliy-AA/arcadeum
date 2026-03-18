@@ -51,3 +51,20 @@ export const Card = styled(YStack, {
     scale: 0.98,
   },
 });
+
+export function GradientScrim() {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: '40%',
+        background: 'linear-gradient(transparent, rgba(0,0,0,0.85))',
+        pointerEvents: 'none',
+        zIndex: 1,
+      }}
+    />
+  );
+}

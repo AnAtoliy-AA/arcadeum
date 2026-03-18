@@ -1,15 +1,6 @@
 'use client';
 
-import React from 'react';
-import {
-  PopupOverlay,
-  PopupCard,
-  SenderAvatar,
-  PopupContent,
-  SenderName,
-  MessageText,
-  DismissButton,
-} from './styles/chatMessagePopup';
+import { ChatMessageBubble } from '@/widgets/GameChat';
 
 interface ChatMessagePopupProps {
   senderName: string;
@@ -26,18 +17,16 @@ export function ChatMessagePopup({
 }: ChatMessagePopupProps) {
   if (!visible) return null;
 
-  const initial = senderName.charAt(0).toUpperCase();
-
   return (
-    <PopupOverlay data-testid="chat-message-popup">
-      <PopupCard $visible={visible} onClick={onDismiss}>
-        <SenderAvatar>{initial}</SenderAvatar>
-        <PopupContent>
-          <SenderName>{senderName}</SenderName>
-          <MessageText>{message}</MessageText>
-        </PopupContent>
-        <DismissButton aria-label="dismiss">✕</DismissButton>
-      </PopupCard>
-    </PopupOverlay>
+    <div
+      onClick={onDismiss}
+      style={{ cursor: 'pointer', maxWidth: 340, position: 'relative' }}
+    >
+      <ChatMessageBubble
+        senderName={senderName}
+        message={message}
+        type="message"
+      />
+    </div>
   );
 }

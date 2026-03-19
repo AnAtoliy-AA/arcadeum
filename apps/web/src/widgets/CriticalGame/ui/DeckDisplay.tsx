@@ -8,6 +8,7 @@ import {
   CardFrame,
   CardInner,
   CardName,
+  CardNameContainer,
 } from './styles';
 import { CardImage } from './styles/card-image';
 import { GradientScrim } from './styles/cards-base';
@@ -46,7 +47,9 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
         <CardCorner $position="br" />
         <CardFrame />
         <CardInner style={{ zIndex: 2 }}>
-          <CardName>{t(getCardTranslationKey(topCard, cardVariant))}</CardName>
+          <CardNameContainer $variant={cardVariant as GameVariant}>
+            <CardName>{t(getCardTranslationKey(topCard, cardVariant))}</CardName>
+          </CardNameContainer>
         </CardInner>
       </LastPlayedCard>
     );

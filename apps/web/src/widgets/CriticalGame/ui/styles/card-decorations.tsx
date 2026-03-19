@@ -1,18 +1,73 @@
 import { styled, YStack, Text } from 'tamagui';
 
+export const CardNameContainer = styled(YStack, {
+  name: 'CardNameContainer',
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  backgroundColor: 'rgba(0, 0, 0, 0.45)',
+  backdropFilter: 'blur(8px)',
+  padding: '$1.5 $2',
+  borderTopLeftRadius: 14,
+  borderTopRightRadius: 14,
+  zIndex: 10,
+  borderBottomWidth: 1,
+  borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+
+  variants: {
+    $variant: (val: string) => {
+      if (val === 'cyberpunk') {
+        return {
+          borderTopLeftRadius: 4,
+          borderTopRightRadius: 4,
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        };
+      }
+      return {};
+    },
+  } as const,
+});
+
+export const CardDescriptionContainer = styled(YStack, {
+  name: 'CardDescriptionContainer',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  right: 0,
+  backgroundColor: 'rgba(0, 0, 0, 0.45)',
+  backdropFilter: 'blur(8px)',
+  padding: '$1.5 $2',
+  borderBottomLeftRadius: 14,
+  borderBottomRightRadius: 14,
+  zIndex: 10,
+  borderTopWidth: 1,
+  borderTopColor: 'rgba(255, 255, 255, 0.1)',
+
+  variants: {
+    $variant: (val: string) => {
+      if (val === 'cyberpunk') {
+        return {
+          borderBottomLeftRadius: 4,
+          borderBottomRightRadius: 4,
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        };
+      }
+      return {};
+    },
+  } as const,
+});
+
 export const CardName = styled(Text, {
   name: 'CardName',
   fontWeight: '800',
   textTransform: 'uppercase',
-  letterSpacing: 0.5,
+  letterSpacing: 1,
+  fontSize: 11,
   color: 'white',
-  position: 'absolute',
-  top: '$2',
-  left: '$2',
-  padding: '$1 $2',
-  borderRadius: 4,
-  backgroundColor: 'rgba(0,0,0,0.5)',
-  zIndex: 10,
+  textAlign: 'center',
+  numberOfLines: 1,
+  textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
 
   variants: {
     $variant: (_val: unknown) => ({}),
@@ -22,10 +77,11 @@ export const CardName = styled(Text, {
 export const CardDescription = styled(Text, {
   name: 'CardDescription',
   fontSize: 10,
-  color: 'white',
+  lineHeight: 13,
+  fontWeight: '500',
+  color: 'rgba(255, 255, 255, 0.95)',
   textAlign: 'center',
-  paddingHorizontal: '$3',
-  opacity: 0.9,
+  textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
 
   variants: {
     $variant: (_val: unknown) => ({}),

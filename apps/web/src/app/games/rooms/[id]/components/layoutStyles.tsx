@@ -7,11 +7,14 @@ import { styled, XStack, YStack } from 'tamagui';
 export const GameRow = styled(XStack, {
   name: 'GameRow',
   flex: 1,
+  minHeight: 0,
   gap: '$4',
   alignItems: 'stretch',
 
   $sm: {
     flexDirection: 'column',
+    flex: 'unset',
+    minHeight: 'auto',
   },
 });
 
@@ -31,7 +34,7 @@ export const ChatPanel = styled(YStack, {
     width: '100%',
     minWidth: 0,
     minHeight: 0,
-    height: 400,
+    height: 350,
   },
 
   variants: {

@@ -361,33 +361,16 @@ export const underwaterVariantStyles: VariantStyleConfig = {
     getDisabledOverlay: () => '#083344b3',
     getCardNameStyles: () => ({
       fontFamily: '"Courier New", monospace',
-      letterSpacing: '0.5px',
-      background: '#083344d9',
-      border: `1px solid ${VARIANT_COLORS.underwater.primary}`,
-      borderRadius: 8,
+      letterSpacing: '1px',
       color: '#a5f3fc',
-      textShadow: `0 0 5px ${VARIANT_COLORS.underwater.primary}99`,
-      padding: '0.3rem 0.6rem',
-      boxShadow: `0 0 10px ${VARIANT_COLORS.underwater.primary}4d`,
-
-      before: {
-        content: '""',
-        position: 'absolute',
-        inset: -2,
-        borderRadius: 10,
-        background: `radial-gradient(
-          circle at center,
-          transparent 30%,
-          ${VARIANT_COLORS.underwater.primary}4d 100%
-        )`,
-        zIndex: -1,
-      },
+      textShadow: `0 0 8px ${VARIANT_COLORS.underwater.primary}`,
+      padding: '0.1rem 0',
     }),
     getCardDescriptionStyles: () => ({
       fontFamily: '"Courier New", monospace',
-      fontSize: '0.65rem',
+      fontSize: '0.75rem',
       color: '#ecfeff',
-      textShadow: '0 1px 4px rgba(0, 0, 0, 0.8)',
+      textShadow: '0 2px 4px rgba(0, 0, 0, 0.9)',
     }),
   },
 };

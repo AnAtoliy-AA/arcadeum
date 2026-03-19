@@ -12,7 +12,9 @@ import {
   CardInner,
   CardEmoji,
   CardName,
+  CardNameContainer,
   CardDescription,
+  CardDescriptionContainer,
   ModalActions,
   ModalButton,
   ScrollableCardsGrid,
@@ -89,12 +91,18 @@ export const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
                 <CardFrame />
                 <CardInner>
                   <CardEmoji>{getCardEmoji(card)}</CardEmoji>
-                  <CardName $variant={cardVariant as GameVariant}>
-                    {t(getCardTranslationKey(card, cardVariant)) || card}
-                  </CardName>
-                  <CardDescription $variant={cardVariant as GameVariant}>
-                    {t(getCardDescriptionKey(card))}
-                  </CardDescription>
+                  <CardNameContainer $variant={cardVariant as GameVariant}>
+                    <CardName $variant={cardVariant as GameVariant}>
+                      {t(getCardTranslationKey(card, cardVariant)) || card}
+                    </CardName>
+                  </CardNameContainer>
+                  <CardDescriptionContainer
+                    $variant={cardVariant as GameVariant}
+                  >
+                    <CardDescription $variant={cardVariant as GameVariant}>
+                      {t(getCardDescriptionKey(card))}
+                    </CardDescription>
+                  </CardDescriptionContainer>
                 </CardInner>
               </SelectableCard>
             ))}

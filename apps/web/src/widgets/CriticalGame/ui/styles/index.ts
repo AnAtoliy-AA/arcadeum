@@ -101,7 +101,9 @@ export {
 
 export {
   CardName,
+  CardNameContainer,
   CardDescription,
+  CardDescriptionContainer,
   CardCountBadge,
   CardInner,
   CardFrame,

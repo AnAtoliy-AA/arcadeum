@@ -1,19 +1,26 @@
 import styled from 'styled-components';
 
 export const Page = styled.main`
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: ${({ theme }) => theme.background.base};
   color: ${({ theme }) => theme.text.primary};
   position: relative;
+  overflow: hidden;
 `;
 
 export const Container = styled.div`
   max-width: 1400px;
+  width: 100%;
   margin: 0 auto;
   padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 
   &:fullscreen,
   &:-webkit-full-screen,
@@ -45,6 +52,8 @@ export const ErrorContainer = styled.div`
 
 export const GameWrapper = styled.div`
   flex: 1;
+  min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 `;

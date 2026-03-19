@@ -137,6 +137,8 @@ export const DropdownItem = ({
 
 export const HandCard = styled(Card, {
   name: 'HandCard',
+  width: 110,
+  flexShrink: 0,
   variants: {
     $clickable: {
       true: { cursor: 'pointer', opacity: 1 },

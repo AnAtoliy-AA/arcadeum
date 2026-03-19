@@ -32,7 +32,9 @@ import {
   CardInner,
   GradientScrim,
   CardName,
+  CardNameContainer,
   CardDescription,
+  CardDescriptionContainer,
   CardCountBadge,
   ActionButton,
   StashedCard,
@@ -351,14 +353,20 @@ export function PlayerHand({
                 <GradientScrim />
                 <CardInner style={{ zIndex: 2 }}>
                   {showNames && (
-                    <CardName $variant={cardVariant as GameVariant}>
-                      {t(getCardTranslationKey(card, cardVariant)) || card}
-                    </CardName>
+                    <CardNameContainer $variant={cardVariant as GameVariant}>
+                      <CardName $variant={cardVariant as GameVariant}>
+                        {t(getCardTranslationKey(card, cardVariant)) || card}
+                      </CardName>
+                    </CardNameContainer>
                   )}
                   {showDescriptions && (
-                    <CardDescription $variant={cardVariant as GameVariant}>
-                      {t(getCardDescriptionKey(card))}
-                    </CardDescription>
+                    <CardDescriptionContainer
+                      $variant={cardVariant as GameVariant}
+                    >
+                      <CardDescription $variant={cardVariant as GameVariant}>
+                        {t(getCardDescriptionKey(card))}
+                      </CardDescription>
+                    </CardDescriptionContainer>
                   )}
                 </CardInner>
                 {count > 1 && <CardCountBadge>{count}</CardCountBadge>}
@@ -404,19 +412,25 @@ export function PlayerHand({
                       cardType={card}
                       faceDown={isFlipping ? showBack : false}
                     />
-                    <GradientScrim />
-                    <CardInner style={{ zIndex: 2 }}>
                       {showNames && (
-                        <CardName $variant={cardVariant as GameVariant}>
-                          {t(getCardTranslationKey(card, cardVariant)) || card}
-                        </CardName>
+                        <CardNameContainer $variant={cardVariant as GameVariant}>
+                          <CardName $variant={cardVariant as GameVariant}>
+                            {t(getCardTranslationKey(card, cardVariant)) ||
+                              card}
+                          </CardName>
+                        </CardNameContainer>
                       )}
                       {showDescriptions && (
-                        <CardDescription $variant={cardVariant as GameVariant}>
-                          {t(getCardDescriptionKey(card))}
-                        </CardDescription>
+                        <CardDescriptionContainer
+                          $variant={cardVariant as GameVariant}
+                        >
+                          <CardDescription
+                            $variant={cardVariant as GameVariant}
+                          >
+                            {t(getCardDescriptionKey(card))}
+                          </CardDescription>
+                        </CardDescriptionContainer>
                       )}
-                    </CardInner>
                     {count > 1 && <CardCountBadge>{count}</CardCountBadge>}
                   </HandCard>
                 </div>

@@ -30,13 +30,7 @@ const HeaderBorderLine = styled(YStack, {
 
 export function HeaderContainer({ children }: { children: React.ReactNode }) {
   return (
-    <HeaderOuter
-      style={
-        {
-          backdropFilter: 'blur(24px) saturate(180%)',
-        } satisfies React.CSSProperties
-      }
-    >
+    <HeaderOuter style={{ backdropFilter: 'blur(24px) saturate(180%)' }}>
       {children}
       <HeaderBorderLine />
     </HeaderOuter>
@@ -75,7 +69,6 @@ export function Logo({
         gap="$2"
         flexShrink={0}
         cursor="pointer"
-        style={{ transition: 'opacity 0.2s ease' }}
         hoverStyle={{ opacity: 0.85 }}
       >
         {children}
@@ -160,18 +153,15 @@ export function ProfileDropdown({
       overflow="hidden"
       zIndex={1000}
       pointerEvents={isOpen ? 'auto' : 'none'}
+      opacity={isOpen ? 1 : 0}
       style={{
         top: 'calc(100% + 10px)',
         backdropFilter: 'blur(12px)',
         boxShadow: '0 8px 32px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.1)',
-        opacity: isOpen ? 1 : 0,
         visibility: isOpen ? 'visible' : 'hidden',
-        transform: isOpen
-          ? 'translateY(0) scale(1)'
-          : 'translateY(-6px) scale(0.98)',
+        transform: isOpen ? 'translateY(0) scale(1)' : 'translateY(-6px) scale(0.98)',
         transformOrigin: 'top right',
-        transition:
-          'opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease',
+        transition: 'opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease',
       }}
     >
       <YStack
@@ -201,26 +191,22 @@ export function DropdownLink({
   children: React.ReactNode;
 }) {
   return (
-    <Link
-      href={href}
-      prefetch={false}
-      style={{ textDecoration: 'none' }}
-      onClick={onClick}
-    >
+    <Link href={href} prefetch={false} style={{ textDecoration: 'none' }} onClick={onClick}>
       <XStack
         alignItems="center"
         gap="$3"
         paddingVertical={11}
         paddingHorizontal="$4"
         cursor="pointer"
-        style={{ transition: 'background 0.15s ease' }}
         hoverStyle={{ backgroundColor: '$backgroundHover' }}
       >
         <Typography
           uiSize="sm"
           weight="500"
           color="$color"
-          style={{ display: 'flex', alignItems: 'center', gap: 12 }}
+          flexDirection="row"
+          alignItems="center"
+          gap={12}
         >
           {children}
         </Typography>
@@ -258,18 +244,15 @@ export function MobileNav({ isOpen, children, ...props }: MobileNavProps) {
       paddingTop="$4"
       gap="$1"
       pointerEvents={isOpen ? 'auto' : 'none'}
+      opacity={isOpen ? 1 : 0}
       style={{
         height: `calc(100dvh - ${HEADER_HEIGHT}px)`,
         backdropFilter: 'blur(24px) saturate(160%)',
         overflowY: 'auto',
         overscrollBehavior: 'none',
-        opacity: isOpen ? 1 : 0,
         visibility: isOpen ? 'visible' : 'hidden',
         transform: isOpen ? 'translateY(0)' : 'translateY(-12px)',
-        transition:
-          'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, visibility 0.25s ease',
-        display: 'flex',
-        flexDirection: 'column',
+        transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, visibility 0.25s ease',
       }}
       {...props}
     >

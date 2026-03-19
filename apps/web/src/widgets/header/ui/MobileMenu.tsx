@@ -95,7 +95,7 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
       )}
 
       {!isAuthenticated && (
-        <div style={{ marginTop: '0.5rem', textAlign: 'center' }}>
+        <YStack marginTop="$2" alignItems="center">
           <LinkButton
             href="/auth"
             variant="ghost"
@@ -105,16 +105,16 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
           >
             {t('common.actions.login')}
           </LinkButton>
-        </div>
+        </YStack>
       )}
 
       <YStack marginTop="$4">
         <Divider spacing="sm" />
       </YStack>
 
-      <div style={{ padding: '0.5rem 1rem' }}>
+      <YStack paddingVertical="$2" paddingHorizontal="$4">
         <LanguageSwitcher data-testid="header-language-switcher" />
-      </div>
+      </YStack>
       <LinkButton
         href={routes.support}
         variant="ghost"

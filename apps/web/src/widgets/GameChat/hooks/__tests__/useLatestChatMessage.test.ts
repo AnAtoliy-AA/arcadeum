@@ -10,7 +10,7 @@ const makeLog = (overrides: Partial<ChatLogEntry> = {}): ChatLogEntry => ({
   createdAt: new Date().toISOString(),
   senderId: 'user-1',
   senderName: 'Alice',
-  scope: 'general',
+  scope: 'all',
   ...overrides,
 });
 

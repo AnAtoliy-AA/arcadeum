@@ -1,16 +1,23 @@
 'use client';
-
-import React from 'react';
-import { GridsContainer } from './styles';
+import { XStack } from 'tamagui';
+import type { ReactNode } from 'react';
 
 interface SeaBattleGridsProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   return (
-    <GridsContainer data-testid="sea-battle-grids-container">
+    <XStack
+      flexWrap="wrap"
+      gap="$8"
+      width="100%"
+      paddingVertical="$4"
+      paddingHorizontal="$2"
+      data-testid="sea-battle-grids-container"
+      $sm={{ flexDirection: 'column', gap: '$4' }}
+    >
       {children}
-    </GridsContainer>
+    </XStack>
   );
 }

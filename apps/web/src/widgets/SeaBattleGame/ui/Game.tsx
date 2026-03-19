@@ -1,14 +1,13 @@
 'use client';
 
-import React, {
+import {
   useRef,
   useCallback,
   useState,
   useEffect,
   useMemo,
 } from 'react';
-import { TamaguiElement } from 'tamagui';
-import styled from 'styled-components';
+import { TamaguiElement, Text, XStack } from 'tamagui';
 import {
   useTranslation,
   type TranslationKey,
@@ -32,43 +31,17 @@ import { SeaBattleLobby } from './SeaBattleLobby';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { GameLayout } from '@/features/games/ui/GameLayout';
 import { SEA_BATTLE_VARIANTS } from '../lib/constants';
-import { getTheme } from '../lib/theme';
+import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 
 import { RulesModal } from './RulesModal';
 import { useGameChatStore, ChatMessagePopup, useLatestChatMessage } from '@/widgets/GameChat';
 import { FullscreenButton } from '@/widgets/CriticalGame/ui/styles';
 import {
-  TurnIndicator,
   CompactHeaderContainer,
   HeaderTitleArea,
 } from './styles/header';
+import { TurnIndicator } from '@arcadeum/ui';
 
-const RoomTitle = styled.h2`
-  margin: 0;
-  font-size: 1.25rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  @media (max-width: 768px) {
-    font-size: 1rem;
-    white-space: normal;
-    overflow: visible;
-    text-overflow: clip;
-  }
-`;
-
-const ActionSection = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-
-  @media (max-width: 768px) {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-`;
 
 export default function SeaBattleGame({
   roomId,
@@ -229,7 +202,6 @@ export default function SeaBattleGame({
   const variantLabel = currentVariant
     ? `(${t(currentVariant.name as TranslationKey)})`
     : '';
-  const theme = useMemo(() => getTheme(cardVariant), [cardVariant]);
 
   const gameResult = useMemo(() => {
     if (!isGameOver) return null;
@@ -240,6 +212,7 @@ export default function SeaBattleGame({
   if (!room) return null;
 
   return (
+    <SeaBattleThemeProvider variant={cardVariant}>
     <GameLayout
       gameContainerRef={containerRef}
       variant={cardVariant}
@@ -273,24 +246,31 @@ export default function SeaBattleGame({
       header={
         <CompactHeaderContainer>
           <HeaderTitleArea>
-            <RoomTitle>
+            <Text
+              fontSize="$5"
+              fontWeight="600"
+              whiteSpace="nowrap"
+              overflow="hidden"
+              textOverflow="ellipsis"
+              $sm={{ fontSize: '$4', whiteSpace: 'normal', overflow: 'visible', textOverflow: 'clip' }}
+            >
               {t('games.sea_battle_v1.name' as TranslationKey)} {variantLabel} -{' '}
               {room?.name}
-            </RoomTitle>
+            </Text>
           </HeaderTitleArea>
 
-          <TurnIndicator $isYourTurn={!!isMyTurn} $theme={theme}>
+          <TurnIndicator isYourTurn={!!isMyTurn}>
             {getTurnStatusText()}
           </TurnIndicator>
 
-          <ActionSection>
+          <XStack alignItems="center" gap="$2" flexShrink={0}>
             <FullscreenButton
               onClick={() => setShowRules(true)}
               title="Game Rules"
             >
               📖
             </FullscreenButton>
-          </ActionSection>
+          </XStack>
         </CompactHeaderContainer>
       }
       modals={
@@ -363,5 +343,6 @@ export default function SeaBattleGame({
         />
       )}
     </GameLayout>
+    </SeaBattleThemeProvider>
   );
 }

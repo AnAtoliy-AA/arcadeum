@@ -2,7 +2,7 @@
 import { YStack, XStack, Text } from 'tamagui';
 import { GlassCard, Badge, IdleBadge } from '@/shared/ui';
 import { useTranslation, type TranslationKey } from '@/shared/lib/useTranslation';
-import { useGameStore } from '@/features/games/store/gameStore';
+import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { SeaBattleGrids } from './SeaBattleGrids';
 import { ShipsLeft } from './ShipsLeft';
 import { SeaBattlePlayerState, CELL_STATE } from '../types';
@@ -30,7 +30,7 @@ export function SeaBattleTable({
   resolveDisplayName,
 }: SeaBattleTableProps) {
   const { t } = useTranslation();
-  const idlePlayers = useGameStore((s) => s.idlePlayers);
+  const idlePlayers = useGameStore((s: GameState) => s.idlePlayers);
   const activePlayerId = playerOrder[currentTurnIndex];
   const isMyTurn = activePlayerId === currentUserId;
   const activePlayer = players.find((p) => p.playerId === activePlayerId);

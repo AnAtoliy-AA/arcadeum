@@ -16,7 +16,7 @@ import type { SeaBattleGameProps, SeaBattleSnapshot } from '../types';
 import { MIN_PLAYERS } from '../types';
 import { useSeaBattleState } from '../hooks/useSeaBattleState';
 import { useSeaBattleActions } from '../hooks/useSeaBattleActions';
-import { useGameStore } from '@/features/games/store/gameStore';
+import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { useDisplayNames } from '@/widgets/CriticalGame/lib/displayUtils';
 import { useRematch } from '@/features/games/hooks';
 import {
@@ -53,9 +53,9 @@ export default function SeaBattleGame({
 }: SeaBattleGameProps) {
   const { t } = useTranslation();
 
-  const storeRoom = useGameStore((s) => s.room);
-  const storeDeleteRoom = useGameStore((s) => s.deleteRoom);
-  const storeRefreshRoom = useGameStore((s) => s.refreshRoom);
+  const storeRoom = useGameStore((s: GameState) => s.room);
+  const storeDeleteRoom = useGameStore((s: GameState) => s.deleteRoom);
+  const storeRefreshRoom = useGameStore((s: GameState) => s.refreshRoom);
 
   const room =
     (storeRoom?.id === roomId ? storeRoom : null) || initialRoom || null;

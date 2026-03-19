@@ -1,4 +1,5 @@
 import { styled, XStack, YStack, Text } from 'tamagui';
+import type { ReactNode } from 'react';
 
 // Structure only — pass backgroundColor, borderColor, borderRadius as inline props
 // from consuming components that call useSeaBattleTheme()
@@ -7,12 +8,12 @@ export const BoardGrid = styled(YStack, {
   flexDirection: 'row',
   flexWrap: 'wrap',
   padding: 4,
+  width: '100%',
   maxWidth: 400,
   aspectRatio: 1,
 
   $md: {
     maxWidth: '100%',
-    width: '100%',
   },
 
   $sm: {
@@ -41,16 +42,24 @@ export const BoardCell = styled(YStack, {
   },
 });
 
-export const BoardWithLabels = styled(XStack, {
-  name: 'BoardWithLabels',
-  flexWrap: 'wrap',
-  gap: 4,
-
-  $sm: {
-    gap: 2,
-    width: '100%',
-  },
-});
+// CSS Grid layout: [empty corner] [col labels]
+//                  [row labels  ] [board grid ]
+export function BoardWithLabels({ children }: { children: ReactNode }) {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'auto 1fr',
+        gridTemplateRows: 'auto 1fr',
+        gap: '4px',
+        width: '100%',
+        maxWidth: 400,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
 export const RowLabels = styled(YStack, {
   name: 'RowLabels',

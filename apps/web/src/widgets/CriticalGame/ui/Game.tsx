@@ -3,7 +3,7 @@ import { TamaguiElement } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalGameProps } from '../types';
 import { useCriticalState, useFullscreen, useRematch } from '../hooks';
-import { useGameStore } from '@/features/games/store/gameStore';
+import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { CriticalLobby } from './CriticalLobby';
 import { ActiveGameView } from './ActiveGameView';
 import { GameContainer } from './styles';
@@ -20,9 +20,9 @@ export default function CriticalGame({
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement & TamaguiElement>(null);
 
-  const storeRoom = useGameStore((s) => s.room);
-  const storeDeleteRoom = useGameStore((s) => s.deleteRoom);
-  const storeRefreshRoom = useGameStore((s) => s.refreshRoom);
+  const storeRoom = useGameStore((s: GameState) => s.room);
+  const storeDeleteRoom = useGameStore((s: GameState) => s.deleteRoom);
+  const storeRefreshRoom = useGameStore((s: GameState) => s.refreshRoom);
 
   const room =
     (storeRoom?.id === roomId ? storeRoom : null) || initialRoom || null;

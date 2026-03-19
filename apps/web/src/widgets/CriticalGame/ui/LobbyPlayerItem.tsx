@@ -3,7 +3,7 @@ import { CSS } from '@dnd-kit/utilities';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { Button, XStack } from '@arcadeum/ui';
 import { IdleBadge } from '@/shared/ui';
-import { useGameStore } from '@/features/games/store/gameStore';
+import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import {
   PlayerItem,
   LobbyPlayerAvatar,
@@ -65,7 +65,7 @@ export function SortablePlayerItem({
 
   const getInitials = (name: string) => name.slice(0, 2).toUpperCase();
   const colorIndex = member.displayName.length % AVATAR_COLORS.length;
-  const idlePlayers = useGameStore((s) => s.idlePlayers);
+  const idlePlayers = useGameStore((s: GameState) => s.idlePlayers);
   const isPlayerIdle = idlePlayers.includes(member.id);
 
   return (

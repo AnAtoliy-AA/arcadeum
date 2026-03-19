@@ -25,7 +25,7 @@ import {
 } from '@/shared/lib/useTranslation';
 import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
 import type { SeaBattleTheme } from '../lib/theme';
-import { useGameStore } from '@/features/games/store/gameStore';
+import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 
 interface AttackBoardProps {
   players: SeaBattlePlayerState[];
@@ -66,7 +66,7 @@ export function AttackBoard({
     return players.filter((p) => p.playerId !== currentUserId && p.alive);
   }, [players, currentUserId]);
 
-  const idlePlayers = useGameStore((s) => s.idlePlayers);
+  const idlePlayers = useGameStore((s: GameState) => s.idlePlayers);
 
   const handleCellClick = useCallback(
     (targetPlayerId: string, row: number, col: number) => {

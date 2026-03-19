@@ -11,7 +11,7 @@ import {
 import { ChatBubble } from './ChatBubble';
 import { SeaBattlePopup } from '@/widgets/SeaBattleGame/ui/SeaBattlePopup';
 import type { CriticalLogEntry, CriticalPlayerTableState } from '../types';
-import { useGameStore } from '@/features/games/store/gameStore';
+import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { IdleBadge } from '@/shared/ui';
 import { useMedia, Text } from 'tamagui';
 import { GameVariant } from '@arcadeum/ui';
@@ -54,7 +54,7 @@ export function TablePlayer({
   );
 
   const latestMessage = findLastMessage(logs, playerId);
-  const idlePlayers = useGameStore((s) => s.idlePlayers);
+  const idlePlayers = useGameStore((s: GameState) => s.idlePlayers);
   const isPlayerIdle = idlePlayers.includes(playerId);
   const media = useMedia();
   const isMobile = media.sm;

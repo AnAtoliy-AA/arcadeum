@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useState, useRef } from 'react';
-import { useGameStore } from '@/features/games/store/gameStore';
+import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { connectSockets } from '@/shared/lib/socket';
 
 const ACTIVITY_EVENTS: (keyof DocumentEventMap)[] = [
@@ -25,8 +25,8 @@ export function useIdleReconnect({
   accessToken,
   enabled = true,
 }: UseIdleReconnectOptions): UseIdleReconnectReturn {
-  const isConnected = useGameStore((s) => s.isConnected);
-  const room = useGameStore((s) => s.room);
+  const isConnected = useGameStore((s: GameState) => s.isConnected);
+  const room = useGameStore((s: GameState) => s.room);
   const [isReconnecting, setIsReconnecting] = useState(false);
   const reconnectingRef = useRef(false);
 

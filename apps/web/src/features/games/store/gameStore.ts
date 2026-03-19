@@ -10,7 +10,7 @@ import type { GameRoomSummary, GameInitialData } from '@/shared/types/games';
  */
 let cleanupListeners: (() => void) | null = null;
 
-interface GameState {
+export interface GameState {
   room: GameRoomSummary | null;
   session: unknown | null;
   isConnected: boolean;

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useCallback, useMemo, useState } from 'react';
-import { useGameChatStore } from '@/widgets/GameChat';
+import { useGameChatStore, useLatestChatMessage, ChatMessagePopup } from '@/widgets/GameChat';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type {
   CriticalCard,
@@ -154,6 +154,10 @@ export function ActiveGameView({
     useGameChatStore.getState().registerSendMessage(actions.postHistoryNote);
     return () => useGameChatStore.getState().clear();
   }, [actions.postHistoryNote]);
+
+  const { latestMessage, dismiss: dismissPopup } = useLatestChatMessage(
+    snapshot?.logs ?? [],
+  );
 
   // Monitor logs for seeTheFuture.reveal and omniscience.reveal entries
   useSeeTheFutureFromLogs({
@@ -324,6 +328,16 @@ export function ActiveGameView({
           currentPlayerAlive={currentPlayer.alive}
           isGameOver={!!isGameOver}
           t={t as (key: string) => string}
+        />
+      )}
+
+      {latestMessage && (
+        <ChatMessagePopup
+          key={latestMessage.id}
+          senderName={latestMessage.senderName}
+          message={latestMessage.message}
+          visible={!!latestMessage}
+          onDismiss={dismissPopup}
         />
       )}
 

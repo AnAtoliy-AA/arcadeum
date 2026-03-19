@@ -30,15 +30,12 @@ import { ShipPlacementBoard } from './ShipPlacementBoard';
 import { AttackBoard } from './AttackBoard';
 import { SeaBattleLobby } from './SeaBattleLobby';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
-import { ChatSection } from './ChatSection';
-import { ChatScope } from '@/shared/types/games';
 import { GameLayout } from '@/features/games/ui/GameLayout';
 import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { getTheme } from '../lib/theme';
 
 import { RulesModal } from './RulesModal';
-import { ChatMessagePopup } from './ChatMessagePopup';
-import { useLatestChatMessage } from '../hooks/useLatestChatMessage';
+import { GameChat, useGameChatStore, ChatMessagePopup, useLatestChatMessage } from '@/widgets/GameChat';
 import { FullscreenButton } from '@/widgets/CriticalGame/ui/styles';
 import {
   TurnIndicator,
@@ -92,14 +89,11 @@ export default function SeaBattleGame({
     (storeRoom?.id === roomId ? storeRoom : null) || initialRoom || null;
 
   const containerRef = useRef<HTMLDivElement & TamaguiElement>(null);
-  const chatMessagesRef = useRef<TamaguiElement | null>(null);
 
   const isLobby = room?.status === 'lobby';
 
   const [showChat, setShowChat] = useState(true);
   const [showRules, setShowRules] = useState(isLobby);
-  const [chatMessage, setChatMessage] = useState('');
-  const [chatScope, setChatScope] = useState<ChatScope>('all');
   const [resultModalDismissed, setResultModalDismissed] = useState(false);
 
   const {
@@ -123,12 +117,6 @@ export default function SeaBattleGame({
     setShowChat((prev) => !prev);
   }, []);
 
-  const handleSendChatMessage = useCallback(() => {
-    if (!chatMessage.trim() || !currentUserId || !postHistoryNoteAction) return;
-    postHistoryNoteAction(chatMessage, chatScope);
-    setChatMessage('');
-  }, [chatMessage, chatScope, currentUserId, postHistoryNoteAction]);
-
   const {
     snapshot,
     startBusy,
@@ -146,17 +134,17 @@ export default function SeaBattleGame({
     room: room ?? undefined,
   });
 
-  const chatLogCount = snapshot?.logs?.length ?? 0;
+  // Sync snapshot logs into gameChatStore so GameChat can read them
   useEffect(() => {
-    const container = chatMessagesRef.current as HTMLElement | null;
-    if (container?.lastElementChild) {
-      const lastElement = container.lastElementChild as HTMLElement;
-      container.scrollTo({
-        top: lastElement.offsetTop,
-        behavior: 'smooth',
-      });
-    }
-  }, [chatLogCount]);
+    useGameChatStore.getState().setLogs(snapshot?.logs ?? []);
+  }, [snapshot?.logs]);
+
+  // Register send function; clear store on unmount
+  useEffect(() => {
+    if (!postHistoryNoteAction) return;
+    useGameChatStore.getState().registerSendMessage(postHistoryNoteAction);
+    return () => useGameChatStore.getState().clear();
+  }, [postHistoryNoteAction]);
 
   const handleStartGame = useCallback(
     (options?: { withBots?: boolean; botCount?: number }) => {
@@ -212,7 +200,7 @@ export default function SeaBattleGame({
     snapshot?.logs ?? [],
   );
 
-  const { resolveDisplayName, formatLogMessage } = useDisplayNames({
+  const { resolveDisplayName } = useDisplayNames({
     currentUserId,
     room: room!,
     snapshot: snapshot as SeaBattleSnapshot,
@@ -321,24 +309,8 @@ export default function SeaBattleGame({
       showChat={showChat}
       chat={
         snapshot ? (
-          <ChatSection
-            logs={snapshot.logs ?? []}
-            chatMessagesRef={chatMessagesRef}
-            chatMessage={chatMessage}
-            onChatMessageChange={setChatMessage}
-            chatScope={chatScope}
-            onChatScopeChange={setChatScope}
-            onSendMessage={handleSendChatMessage}
-            currentUserId={currentUserId}
-            turnStatus={
-              isMyTurn
-                ? t('games.sea_battle_v1.table.players.yourTurn')
-                : 'Standard'
-            }
+          <GameChat
             resolveDisplayName={resolveDisplayName}
-            formatLogMessage={formatLogMessage}
-            t={t}
-            cardVariant={cardVariant}
             onClose={handleToggleChat}
           />
         ) : undefined

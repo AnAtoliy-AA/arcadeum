@@ -348,7 +348,6 @@ export default function SeaBattleGame({
           onResetPlacement={resetPlacement}
           isPlacementComplete={isPlacementComplete}
           onAutoPlace={handleAutoPlace}
-          variant={cardVariant}
         />
       )}
 
@@ -361,7 +360,6 @@ export default function SeaBattleGame({
           isMyTurn={isMyTurn}
           onAttack={attack}
           resolveDisplayName={resolveDisplayName}
-          variant={cardVariant}
         />
       )}
     </GameLayout>

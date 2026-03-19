@@ -114,7 +114,7 @@ export function SeaBattleLobby({
               }
               borderWidth={1}
               borderColor="rgba(255,255,255,0.2)"
-              title="Ship"
+              aria-label="Ship"
               data-testid="color-swatch-ship"
             />
             <Text
@@ -137,7 +137,7 @@ export function SeaBattleLobby({
               }
               borderWidth={1}
               borderColor="rgba(255,255,255,0.2)"
-              title="Hit"
+              aria-label="Hit"
               data-testid="color-swatch-hit"
             />
             <Text
@@ -160,7 +160,7 @@ export function SeaBattleLobby({
               }
               borderWidth={1}
               borderColor="rgba(255,255,255,0.2)"
-              title="Miss"
+              aria-label="Miss"
               data-testid="color-swatch-miss"
             />
             <Text
@@ -183,7 +183,7 @@ export function SeaBattleLobby({
               }
               borderWidth={1}
               borderColor="rgba(255,255,255,0.2)"
-              title="Empty"
+              aria-label="Empty"
               data-testid="color-swatch-empty"
             />
             <Text

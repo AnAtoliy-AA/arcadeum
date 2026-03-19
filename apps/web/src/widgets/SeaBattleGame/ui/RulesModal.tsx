@@ -107,7 +107,6 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
                     gap="$2"
                     flexBasis="45%"
                     flexGrow={1}
-                    animation="medium"
                   >
                     <XStack justifyContent="space-between" alignItems="center">
                       <Text fontWeight="700" color="#f8fafc">{ship?.name}</Text>

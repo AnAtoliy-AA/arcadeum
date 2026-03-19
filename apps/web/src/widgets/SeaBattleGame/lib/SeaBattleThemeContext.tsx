@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { getTheme, type SeaBattleTheme } from './theme';
 
@@ -11,8 +11,9 @@ export function SeaBattleThemeProvider({
   variant?: string;
   children: ReactNode;
 }) {
+  const value = useMemo(() => getTheme(variant), [variant]);
   return (
-    <SeaBattleThemeContext.Provider value={getTheme(variant)}>
+    <SeaBattleThemeContext.Provider value={value}>
       {children}
     </SeaBattleThemeContext.Provider>
   );

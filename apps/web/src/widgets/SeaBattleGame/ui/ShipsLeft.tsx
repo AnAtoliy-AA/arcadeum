@@ -35,7 +35,7 @@ export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
         >
           {t('games.sea_battle_v1.table.state.shipsRemaining')}
         </Text>
-        <Text fontSize={13} color="$success" fontWeight="800" fontFamily="monospace">
+        <Text fontSize={13} color="$success" fontWeight="800" style={{ fontFamily: 'monospace' }}>
           {aliveCount}/{totalShips}
         </Text>
       </XStack>
@@ -49,7 +49,6 @@ export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
               alignItems="center"
               gap={2}
               opacity={isSunk ? 0.5 : 1}
-              animation="medium"
               position="relative"
             >
               <XStack gap={1}>

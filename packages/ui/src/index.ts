@@ -40,5 +40,6 @@ export * from './components/ServerLoadingNotice/ServerLoadingNotice';
 export * from './components/Typography/Typography';
 export * from './components/Game/GameContainer';
 export * from './components/Game/GameLayout';
+export * from './components/Game/TurnIndicator';
 
 export { XStack, YStack, ZStack, ScrollView, ThemeableStack } from 'tamagui';

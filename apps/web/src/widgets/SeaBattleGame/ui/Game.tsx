@@ -35,11 +35,10 @@ import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { getTheme } from '../lib/theme';
 
 import { RulesModal } from './RulesModal';
-import { GameChat, useGameChatStore, ChatMessagePopup, useLatestChatMessage } from '@/widgets/GameChat';
+import { useGameChatStore, ChatMessagePopup, useLatestChatMessage } from '@/widgets/GameChat';
 import { FullscreenButton } from '@/widgets/CriticalGame/ui/styles';
 import {
   TurnIndicator,
-  ChatToggleButton,
   CompactHeaderContainer,
   HeaderTitleArea,
 } from './styles/header';
@@ -92,7 +91,6 @@ export default function SeaBattleGame({
 
   const isLobby = room?.status === 'lobby';
 
-  const [showChat, setShowChat] = useState(true);
   const [showRules, setShowRules] = useState(isLobby);
   const [resultModalDismissed, setResultModalDismissed] = useState(false);
 
@@ -112,10 +110,6 @@ export default function SeaBattleGame({
   const handleAutoPlace = useCallback(() => {
     autoPlace();
   }, [autoPlace]);
-
-  const handleToggleChat = useCallback(() => {
-    setShowChat((prev) => !prev);
-  }, []);
 
   const {
     snapshot,
@@ -296,24 +290,8 @@ export default function SeaBattleGame({
             >
               📖
             </FullscreenButton>
-            {snapshot && (
-              <ChatToggleButton onClick={handleToggleChat}>
-                {showChat
-                  ? t('games.sea_battle_v1.table.chat.hide' as TranslationKey)
-                  : t('games.sea_battle_v1.table.chat.show' as TranslationKey)}
-              </ChatToggleButton>
-            )}
           </ActionSection>
         </CompactHeaderContainer>
-      }
-      showChat={showChat}
-      chat={
-        snapshot ? (
-          <GameChat
-            resolveDisplayName={resolveDisplayName}
-            onClose={handleToggleChat}
-          />
-        ) : undefined
       }
       modals={
         <>

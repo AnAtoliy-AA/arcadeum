@@ -15,7 +15,14 @@ export const PlayerSection = styled(YStack, {
       true: { cursor: 'crosshair' },
       false: { cursor: 'default' },
     },
+    animated: {
+      true: { animation: 'medium' },
+    },
   } as const,
+
+  defaultVariants: {
+    animated: true,
+  },
 
   $sm: {
     padding: '$3',
@@ -44,4 +51,6 @@ export const PlayerName = styled(Text, {
 
 export const PlayerStats = styled(YStack, {
   name: 'PlayerStats',
+  // @ts-ignore — fontSize cascades to child Text nodes
+  fontSize: 14,
 });

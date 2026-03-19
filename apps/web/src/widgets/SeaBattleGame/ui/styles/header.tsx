@@ -1,4 +1,4 @@
-import React from 'react';
+import type { ReactNode } from 'react';
 import { styled, XStack, YStack } from 'tamagui';
 import type { SeaBattleTheme } from '../../lib/theme';
 
@@ -51,7 +51,7 @@ export function TurnIndicator({
 }: {
   $isYourTurn: boolean;
   $theme?: SeaBattleTheme;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }) {
   const emoji = $isYourTurn ? '🎯' : '⏳';
   return (

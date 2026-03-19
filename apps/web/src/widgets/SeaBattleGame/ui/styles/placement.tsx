@@ -1,4 +1,5 @@
 import { styled, XStack, YStack, Text } from 'tamagui';
+import { Button } from '@arcadeum/ui';
 
 export const ShipPalette = styled(YStack, {
   name: 'ShipPalette',
@@ -29,7 +30,14 @@ export const ShipItem = styled(XStack, {
       true: { opacity: 0.5, cursor: 'default' },
       false: { cursor: 'pointer' },
     },
+    animated: {
+      true: { animation: 'medium' },
+    },
   } as const,
+
+  defaultVariants: {
+    animated: true,
+  },
 
   $sm: {
     flexShrink: 0,
@@ -69,52 +77,5 @@ export const PlacementActions = styled(YStack, {
   },
 });
 
-export const RotateButton = styled(YStack, {
-  name: 'RotateButton',
-  paddingHorizontal: '$4',
-  paddingVertical: '$2',
-  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  borderWidth: 1,
-  borderRadius: 4,
-  cursor: 'pointer',
-
-  $sm: {
-    flex: 1,
-    minWidth: 120,
-    paddingVertical: '$2',
-    paddingHorizontal: '$4',
-    borderRadius: 8,
-    backgroundColor: 'transparent',
-  },
-});
-
-export const ActionButton = styled(YStack, {
-  name: 'ActionButton',
-  paddingHorizontal: '$6',
-  paddingVertical: '$3',
-  borderRadius: 8,
-  cursor: 'pointer',
-  alignItems: 'center',
-  justifyContent: 'center',
-
-  variants: {
-    $variant: {
-      primary: {
-        backgroundColor: '$primary',
-      },
-      secondary: {
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-      },
-    },
-    disabled: {
-      true: { opacity: 0.5, cursor: 'not-allowed' },
-    },
-  } as const,
-
-  $sm: {
-    paddingVertical: '$2',
-    paddingHorizontal: '$4',
-    flex: 1,
-    minWidth: 120,
-  },
-});
+// Re-export Button as ActionButton and RotateButton for call sites that import by name
+export { Button as ActionButton, Button as RotateButton };

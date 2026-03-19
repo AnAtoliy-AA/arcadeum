@@ -31,7 +31,14 @@ export const BoardCell = styled(YStack, {
       true: { cursor: 'crosshair' },
       false: { cursor: 'default' },
     },
+    animated: {
+      true: { animation: 'medium' },
+    },
   } as const,
+
+  defaultVariants: {
+    animated: true,
+  },
 });
 
 export const BoardWithLabels = styled(XStack, {

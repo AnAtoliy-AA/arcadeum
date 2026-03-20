@@ -252,7 +252,7 @@ export function HomeGameDetailsModal({
             borderTopWidth={1}
             borderTopColor="$borderColor"
           >
-            <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+            <div style={{ color: 'rgba(236, 239, 238, 0.7)', fontSize: '0.9rem' }}>
               {locale.toUpperCase()} •{' '}
               {t(`games.shared.category.${game.type}Game` as TranslationKey)}
             </div>

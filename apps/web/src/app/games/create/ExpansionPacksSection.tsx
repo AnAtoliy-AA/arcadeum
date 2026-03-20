@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { Button, CollapsibleSection } from '@/shared/ui';
 
@@ -165,10 +165,12 @@ export function ExpansionPacksSection({
         {EXPANSION_PACK_DETAILS.map((pack) => (
           <ExpandablePackContainer key={pack.id}>
             <ExpandablePackHeader
-              $disabled={!pack.available}
-              $expanded={expandedPacks.includes(pack.id)}
               data-disabled={!pack.available}
-              onClick={(e) => {
+              style={{
+                cursor: !pack.available ? 'not-allowed' : 'pointer',
+                opacity: !pack.available ? 0.5 : 1,
+              }}
+              onClick={(e: React.MouseEvent<HTMLDivElement>) => {
                 // Don't toggle expand if clicking on checkbox
                 if ((e.target as HTMLElement).tagName === 'INPUT') return;
                 if (pack.available && pack.cards.length > 0) {
@@ -190,13 +192,21 @@ export function ExpansionPacksSection({
                   : t('games.create.comingSoon') || 'Soon'}
               </ExpansionBadge>
               {pack.available && pack.cards.length > 0 && (
-                <ExpandToggle $expanded={expandedPacks.includes(pack.id)}>
+                <ExpandToggle
+                  style={{
+                    transform: expandedPacks.includes(pack.id) ? 'rotate(180deg)' : 'rotate(0deg)',
+                  }}
+                >
                   ▼
                 </ExpandToggle>
               )}
             </ExpandablePackHeader>
 
-            <PackCardList $expanded={expandedPacks.includes(pack.id)}>
+            <PackCardList
+              style={{
+                display: expandedPacks.includes(pack.id) ? 'flex' : 'none',
+              }}
+            >
               {pack.cards.map((card) => (
                 <PackCardRow key={card.id}>
                   <input

@@ -31,7 +31,9 @@ import { routes } from '@/shared/config/routes';
 import {
   Form,
   GameSelector,
-  GameTile,
+  getGameTileStyle,
+  gameTileCSS,
+  GAME_TILE_CLASS,
   GameTileName,
   GameTileSummary,
   Row,
@@ -154,20 +156,21 @@ export function CreateGameRoomPage() {
 
   return (
     <PageLayout>
+      <style>{gameTileCSS}</style>
       <Container size="md">
         <PageTitle size="lg">
           {t('games.create.title') || 'Create Game Room'}
         </PageTitle>
 
-        <Form onSubmit={handleSubmit}>
+        <Form {...{ onSubmit: handleSubmit } as any}>
           <Section title={t('games.create.sectionGame') || 'Select Game'}>
             <GameSelector>
               {visibleGames.map((game) => (
-                <GameTile
+                <button
                   key={game.id}
-                  as="button"
                   type="button"
-                  $active={gameId === game.id}
+                  className={`${GAME_TILE_CLASS}${gameId === game.id ? ' active' : ''}`}
+                  style={getGameTileStyle(gameId === game.id, !game.isPlayable)}
                   disabled={!game.isPlayable}
                   onClick={() => game.isPlayable && handleGameChange(game.id)}
                 >
@@ -178,7 +181,7 @@ export function CreateGameRoomPage() {
                     {t(`games.${game.id}.description` as TranslationKey) ||
                       game.summary}
                   </GameTileSummary>
-                </GameTile>
+                </button>
               ))}
             </GameSelector>
           </Section>

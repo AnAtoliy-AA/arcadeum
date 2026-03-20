@@ -8,12 +8,15 @@ import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
 import { Section, Button } from '@/shared/ui';
 import {
   GameSelector,
-  GameTile,
   GameTileName,
   GameTileSummary,
   SelectionIndicator,
   GameTileIcon,
   ThemeHeader,
+  getGameTileStyle,
+  gameTileCSS,
+  GAME_TILE_CLASS,
+  GAME_TILE_ICON_CLASS,
 } from '@/app/games/create/styles';
 import { RulesModal } from './RulesModal';
 import { useState } from 'react';
@@ -37,6 +40,7 @@ export function SeaBattleCreationConfig({
 
   return (
     <>
+      <style>{gameTileCSS}</style>
       <Section title={t('games.create.sectionVariant') || 'Game Theme'}>
         <ThemeHeader>
           <Button
@@ -51,22 +55,33 @@ export function SeaBattleCreationConfig({
         </ThemeHeader>
         <GameSelector>
           {SEA_BATTLE_VARIANTS.map((variant) => (
-            <GameTile
+            <button
               key={variant.id}
-              as="button"
               type="button"
-              $active={options.variant === variant.id}
+              className={`${GAME_TILE_CLASS}${options.variant === variant.id ? ' active' : ''}`}
+              style={getGameTileStyle(options.variant === variant.id)}
               onClick={() => onChange({ ...options, variant: variant.id })}
             >
               <SelectionIndicator />
-              <GameTileIcon $gradient={variant.gradient}>
+              <GameTileIcon
+                className={GAME_TILE_ICON_CLASS}
+                style={
+                  variant.gradient
+                    ? {
+                        background: variant.gradient,
+                        WebkitBackgroundClip: 'text',
+                        backgroundClip: 'text',
+                      }
+                    : undefined
+                }
+              >
                 {variant.emoji}
               </GameTileIcon>
               <GameTileName>{t(variant.name as TranslationKey)}</GameTileName>
               <GameTileSummary>
                 {t(variant.description as TranslationKey)}
               </GameTileSummary>
-            </GameTile>
+            </button>
           ))}
         </GameSelector>
       </Section>

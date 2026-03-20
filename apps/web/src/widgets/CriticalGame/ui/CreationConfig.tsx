@@ -8,7 +8,6 @@ import { IDLE_TIMER_DURATION_SEC } from '@/shared/config/game';
 import { Section, Button } from '@/shared/ui';
 import {
   GameSelector,
-  GameTile,
   GameTileName,
   GameTileSummary,
   SelectionIndicator,
@@ -19,6 +18,10 @@ import {
   ExpansionBadge,
   ComingSoonBadge,
   ThemeHeader,
+  getGameTileStyle,
+  gameTileCSS,
+  GAME_TILE_CLASS,
+  GAME_TILE_ICON_CLASS,
 } from '@/app/games/create/styles';
 
 interface CriticalGameOptions {
@@ -56,6 +59,7 @@ export function CriticalCreationConfig({
 
   return (
     <>
+      <style>{gameTileCSS}</style>
       <ExpansionPacksSection
         expansions={options.expansions || []}
         customCards={options.customCards || {}}
@@ -77,11 +81,11 @@ export function CriticalCreationConfig({
         </ThemeHeader>
         <GameSelector>
           {CARD_VARIANTS.map((variant) => (
-            <GameTile
+            <button
               key={variant.id}
-              as="button"
               type="button"
-              $active={options.cardVariant === variant.id}
+              className={`${GAME_TILE_CLASS}${options.cardVariant === variant.id ? ' active' : ''}`}
+              style={getGameTileStyle(options.cardVariant === variant.id, variant.disabled)}
               disabled={variant.disabled}
               onClick={() =>
                 !variant.disabled && handleUpdate({ cardVariant: variant.id })
@@ -93,14 +97,25 @@ export function CriticalCreationConfig({
                   {t('games.create.comingSoon') || 'Coming Soon'}
                 </ComingSoonBadge>
               )}
-              <GameTileIcon $gradient={variant.gradient}>
+              <GameTileIcon
+                className={GAME_TILE_ICON_CLASS}
+                style={
+                  variant.gradient
+                    ? {
+                        background: variant.gradient,
+                        WebkitBackgroundClip: 'text',
+                        backgroundClip: 'text',
+                      }
+                    : undefined
+                }
+              >
                 {variant.emoji}
               </GameTileIcon>
               <GameTileName>{t(variant.name as TranslationKey)}</GameTileName>
               <GameTileSummary>
                 {t(variant.description as TranslationKey)}
               </GameTileSummary>
-            </GameTile>
+            </button>
           ))}
         </GameSelector>
       </Section>

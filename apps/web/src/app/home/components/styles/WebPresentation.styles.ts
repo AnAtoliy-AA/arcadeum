@@ -1,155 +1,101 @@
-import styled, { css } from 'styled-components';
+'use client';
 
-export const PresentationContainer = styled.div`
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  border-radius: 16px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-  group: 'presentation-container';
+import { styled, YStack, XStack, Text } from 'tamagui';
 
-  &:fullscreen {
-    border-radius: 0;
-    border: none;
-    width: 100vw;
-    height: 100vh;
-  }
-`;
+export const PresentationContainer = styled(YStack, {
+  name: 'PresentationContainer',
+  width: '100%',
+  borderRadius: 16,
+  overflow: 'hidden',
+  position: 'relative',
+  borderWidth: 1,
+  borderColor: '$borderColor',
+  backgroundColor: '$background',
+});
 
-export const SlideContent = styled.div<{ $isActive: boolean }>`
-  position: absolute;
-  inset: 0;
-  display: block;
-  opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
-  visibility: ${({ $isActive }) => ($isActive ? 'visible' : 'hidden')};
-  transition:
-    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0.6s;
-  padding: 0;
-  z-index: ${({ $isActive }) => ($isActive ? 1 : 0)};
+// SlideContent: opacity and visibility controlled via style prop at render time
+export const SlideContent = styled(YStack, {
+  name: 'SlideContent',
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+});
 
-  // Slight scale effect for premium feel
-  & > img {
-    animation: ${({ $isActive }) =>
-      $isActive ? css`scaleIn 0.6s cubic-bezier(0.22, 1, 0.36, 1)` : 'none'};
-  }
+export const ControlsOverlay = styled(YStack, {
+  name: 'ControlsOverlay',
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  pointerEvents: 'none',
+  zIndex: 10,
+  justifyContent: 'space-between',
+});
 
-  @keyframes scaleIn {
-    from {
-      transform: scale(1.02);
-      opacity: 0;
-    }
-    to {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-`;
+export const TopBar = styled(XStack, {
+  name: 'TopBar',
+  padding: '$4',
+  justifyContent: 'center',
+  pointerEvents: 'auto',
+  width: '100%',
+});
 
-export const SlideImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-`;
+export const ProgressBar = styled(XStack, {
+  name: 'ProgressBar',
+  gap: '$1',
+  maxWidth: 600,
+  height: 4,
+  alignItems: 'center',
+  width: '100%',
+});
 
-// --- New Modern Controls ---
+export const ProgressSegment = styled(YStack, {
+  name: 'ProgressSegment',
+  flex: 1,
+  height: '100%',
+  borderRadius: 2,
+  cursor: 'pointer',
+  // @ts-expect-error tamagui animation token
+  animation: 'fast',
 
-export const ControlsOverlay = styled.div`
-  position: absolute;
-  inset: 0;
-  pointer-events: none; // Let clicks pass through to drag areas
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  z-index: 10;
-`;
+  hoverStyle: {
+    backgroundColor: 'rgba(255,255,255,0.8)',
+  },
+});
 
-export const TopBar = styled.div`
-  padding: 1rem;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.6) 0%,
-    transparent 100%
-  );
-  pointer-events: auto;
-`;
+export const BottomBar = styled(XStack, {
+  name: 'BottomBar',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: '$4',
+  pointerEvents: 'auto',
+});
 
-export const ProgressBar = styled.div`
-  display: flex;
-  gap: 4px;
-  width: 100%;
-  max-width: 600px;
-  height: 4px;
-  align-items: center;
-`;
+export const SlideCounter = styled(Text, {
+  name: 'SlideCounter',
+  fontSize: '$3',
+  fontWeight: '500',
+  color: 'rgba(255,255,255,0.9)',
+  borderRadius: 20,
+  paddingHorizontal: '$3',
+  paddingVertical: '$1',
+  backgroundColor: 'rgba(0,0,0,0.3)',
+});
 
-export const ProgressSegment = styled.div<{
-  $isActive: boolean;
-  $isViewed: boolean;
-}>`
-  flex: 1;
-  height: 100%;
-  border-radius: 2px;
-  background: ${({ theme, $isActive, $isViewed }) =>
-    $isActive
-      ? theme.text.accent
-      : $isViewed
-        ? 'rgba(255, 255, 255, 0.5)'
-        : 'rgba(255, 255, 255, 0.2)'};
-  transition: all 0.3s ease;
-  cursor: pointer;
-  box-shadow: ${({ $isActive }) =>
-    $isActive ? '0 0 8px rgba(255, 255, 255, 0.4)' : 'none'};
+export const NavButtonContainer = styled(YStack, {
+  name: 'NavButtonContainer',
+  position: 'absolute',
+  top: '50%',
+  zIndex: 20,
+  pointerEvents: 'auto',
+  // @ts-expect-error tamagui animation token
+  animation: 'medium',
+});
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.8);
-  }
-`;
-
-export const BottomBar = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.5rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
-  pointer-events: auto;
-`;
-
-export const SlideCounter = styled.div`
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
-  font-feature-settings: 'tnum'; // Tabular numbers prevent jumping
-  background: rgba(0, 0, 0, 0.3);
-  padding: 4px 12px;
-  border-radius: 20px;
-  backdrop-filter: blur(4px);
-`;
-
-export const NavButtonContainer = styled.div<{ $position: 'left' | 'right' }>`
-  position: absolute;
-  top: 50%;
-  ${({ $position }) => $position}: 1rem;
-  transform: translateY(-50%);
-  z-index: 20;
-  opacity: 0;
-  transition: all 0.3s ease;
-  pointer-events: auto;
-
-  ${PresentationContainer}:hover & {
-    opacity: 1;
-  }
-`;
-
-export const FullscreenButtonContainer = styled.div`
-  pointer-events: auto;
-`;
+export const FullscreenButtonContainer = styled(YStack, {
+  name: 'FullscreenButtonContainer',
+  pointerEvents: 'auto',
+});

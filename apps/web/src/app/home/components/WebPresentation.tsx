@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import type { TamaguiElement } from 'tamagui';
 import {
   Button,
   ArrowLeftIcon,
@@ -12,7 +13,6 @@ import { slides } from '../data/slides';
 import {
   PresentationContainer,
   SlideContent,
-  SlideImage,
   ControlsOverlay,
   TopBar,
   BottomBar,
@@ -25,8 +25,9 @@ import {
 
 export function WebPresentation() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<TamaguiElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   // Track which slides have been loaded to minimize bandwidth.
   // Initially load current, next (+1, +2), and previous (for loop wrap-around).
   const [loadedIndices, setLoadedIndices] = useState<Set<number>>(() => {
@@ -89,7 +90,7 @@ export function WebPresentation() {
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen().catch(() => {});
+      (containerRef.current as HTMLElement | null)?.requestFullscreen().catch(() => {});
     } else {
       document.exitFullscreen();
     }
@@ -126,45 +127,74 @@ export function WebPresentation() {
   );
 
   return (
-    <PresentationContainer ref={containerRef}>
-      {slides.map((slide, index) => (
-        <SlideContent
-          key={slide.id}
-          $isActive={index === currentSlide}
-          role="group"
-          aria-roledescription="slide"
-          aria-label={`${index + 1} of ${slides.length}: ${slide.title}`}
-        >
-          {loadedIndices.has(index) ? (
-            <SlideImage
-              src={slide.image}
-              alt={slide.title}
-              // Keep eager for purely the current one to ensure priority,
-              // though strict lazy state handles most of it.
-              loading={index === currentSlide ? 'eager' : 'lazy'}
-            />
-          ) : null}
-        </SlideContent>
-      ))}
+    <PresentationContainer
+      ref={containerRef}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{ aspectRatio: '16/9' }}
+    >
+      {slides.map((slide, index) => {
+        const isActive = index === currentSlide;
+        return (
+          <SlideContent
+            key={slide.id}
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${index + 1} of ${slides.length}: ${slide.title}`}
+            style={{
+              opacity: isActive ? 1 : 0,
+              visibility: isActive ? 'visible' : 'hidden',
+              transition: 'opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.6s',
+              zIndex: isActive ? 1 : 0,
+            }}
+          >
+            {loadedIndices.has(index) ? (
+              <img
+                src={slide.image}
+                alt={slide.title}
+                // Keep eager for purely the current one to ensure priority,
+                // though strict lazy state handles most of it.
+                loading={index === currentSlide ? 'eager' : 'lazy'}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  display: 'block',
+                  animation: isActive ? 'scaleIn 0.6s cubic-bezier(0.22, 1, 0.36, 1)' : 'none',
+                }}
+              />
+            ) : null}
+          </SlideContent>
+        );
+      })}
 
       <ControlsOverlay>
-        <TopBar>
+        <TopBar style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%)' }}>
           <ProgressBar>
-            {slides.map((_, index) => (
-              <ProgressSegment
-                key={index}
-                $isActive={index === currentSlide}
-                $isViewed={index < currentSlide}
-                onClick={createSlideClickHandler(index)}
-                role="button"
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
+            {slides.map((_, index) => {
+              const isActive = index === currentSlide;
+              const isViewed = index < currentSlide;
+              return (
+                <ProgressSegment
+                  key={index}
+                  onClick={createSlideClickHandler(index)}
+                  role="button"
+                  aria-label={`Go to slide ${index + 1}`}
+                  style={{
+                    background: isActive ? 'var(--accent, #81f1ff)' : isViewed ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.2)',
+                    boxShadow: isActive ? '0 0 8px rgba(255,255,255,0.4)' : 'none',
+                  }}
+                />
+              );
+            })}
           </ProgressBar>
         </TopBar>
 
         {/* Floating Navigation Buttons (Desktop) */}
-        <NavButtonContainer $position="left">
+        <NavButtonContainer
+          opacity={isHovered ? 1 : 0}
+          style={{ left: 16, transform: 'translateY(-50%)' }}
+        >
           <Button
             variant="glass"
             size="md"
@@ -176,7 +206,10 @@ export function WebPresentation() {
           </Button>
         </NavButtonContainer>
 
-        <NavButtonContainer $position="right">
+        <NavButtonContainer
+          opacity={isHovered ? 1 : 0}
+          style={{ right: 16, transform: 'translateY(-50%)' }}
+        >
           <Button
             variant="glass"
             size="md"
@@ -188,7 +221,7 @@ export function WebPresentation() {
           </Button>
         </NavButtonContainer>
 
-        <BottomBar>
+        <BottomBar style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)' }}>
           <SlideCounter>
             {currentSlide + 1} / {slides.length}
           </SlideCounter>

@@ -1,27 +1,29 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { YStack } from 'tamagui';
 import { appConfig } from '@/shared/config/app-config';
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import {
   PresentationSection,
   VideoContainer,
+  VideoIframe,
   VideoPlaceholder,
   PlaceholderOverlay,
+  PulseRing,
   PlayButton,
 } from './styles/Presentation.styles';
-
-// Tamagui styled YStack types don't expose `tag` even though it works at runtime.
-type WithHtmlProps<T> = T & { tag?: string };
-const PlayButtonEl = PlayButton as React.ComponentType<
-  WithHtmlProps<React.ComponentProps<typeof PlayButton>>
->;
 import {
   SectionHeader,
   SectionTitle,
   SectionSubtitle,
 } from './styles/Common.styles';
+
+// Tamagui styled YStack types don't expose `tag` even though it works at runtime.
+type WithHtmlProps<T> = T & { tag?: string; animation?: string; src?: string; title?: string; sandbox?: string; allowFullScreen?: boolean };
+const PlayButtonEl = PlayButton as React.ComponentType<WithHtmlProps<React.ComponentProps<typeof PlayButton>>>;
+const VideoIframeEl = VideoIframe as React.ComponentType<WithHtmlProps<React.ComponentProps<typeof VideoIframe>>>;
 
 export function HomePresentation() {
   const { presentationVideoId, appName } = appConfig;
@@ -50,10 +52,10 @@ export function HomePresentation() {
         <SectionTitle>{sectionTitle}</SectionTitle>
         <SectionSubtitle>{sectionSubtitle}</SectionSubtitle>
       </SectionHeader>
-      <VideoContainer style={{ paddingBottom: '56.25%' }}>
+      <VideoContainer>
         {isPlaying ? (
-          <iframe
-            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+          <VideoIframeEl
+            tag="iframe"
             src={`https://www.youtube-nocookie.com/embed/${presentationVideoId}?autoplay=1&rel=0&controls=1&mute=0&partitioned=1&widget_referrer=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
             allowFullScreen
             title="Arcadeum Trailer"
@@ -61,39 +63,29 @@ export function HomePresentation() {
           />
         ) : (
           <VideoPlaceholder onClick={() => setIsPlaying(true)} data-testid="video-placeholder">
-            <img
+            <Image
               src="/images/home/video-cover.png"
               alt="Arcadeum Trailer Illustration"
+              fill
               loading="lazy"
               data-testid="video-thumbnail"
-              style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
+              style={{ objectFit: 'cover', opacity: 0.85 }}
             />
-            <PlaceholderOverlay
-              style={{
-                background: 'radial-gradient(circle at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%)',
-              }}
-            />
+            <PlaceholderOverlay />
             {/* Pulse ring replaces ::after */}
-            <YStack
-              position="absolute"
-              width={90}
-              height={90}
-              borderRadius={999}
-              borderWidth={2.5}
-              borderColor="rgba(255,255,255,0.5)"
-              zIndex={1}
-              pointerEvents="none"
-              style={{ animation: 'playButtonPulse 3s infinite' }}
-            />
+            <PulseRing className="pulse-ring" />
             <PlayButtonEl
               tag="button"
+              animation="medium"
               onClick={() => setIsPlaying(true)}
               aria-label="Play video"
               data-testid="play-btn"
             >
-              <svg viewBox="0 0 24 24" style={{ width: 38, height: 38, fill: 'white', marginLeft: 6 }}>
-                <path d="M8 5v14l11-7z" />
-              </svg>
+              <YStack marginLeft={6}>
+                <svg viewBox="0 0 24 24" width={38} height={38} fill="white">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </YStack>
             </PlayButtonEl>
           </VideoPlaceholder>
         )}

@@ -1,5 +1,6 @@
 'use client';
 
+import { Text } from 'tamagui';
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import { appConfig } from '@/shared/config/app-config';
 import {
@@ -118,7 +119,7 @@ export function HomeFeatures() {
 
           return (
             <FeatureCard key={feature.titleKey} flex={1} minWidth={280}>
-              <FeatureIcon>{feature.icon}</FeatureIcon>
+              <FeatureIcon><Text>{feature.icon}</Text></FeatureIcon>
               <FeatureTitle>{title}</FeatureTitle>
               <FeatureDescription>{description}</FeatureDescription>
               {feature.comingSoon && (

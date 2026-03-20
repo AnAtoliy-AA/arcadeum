@@ -177,6 +177,10 @@ a {
   100% { transform: scale(1.4); opacity: 0; }
 }
 
+.pulse-ring {
+  animation: playButtonPulse 3s infinite;
+}
+
 @keyframes scaleIn {
   from { transform: scale(1.02); opacity: 0; }
   to   { transform: scale(1);    opacity: 1; }

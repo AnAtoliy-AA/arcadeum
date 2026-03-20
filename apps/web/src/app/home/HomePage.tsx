@@ -1,5 +1,6 @@
 'use client';
 
+import { PageLayout } from '@/shared/ui';
 import { HomeHero } from './components/HomeHero';
 import dynamic from 'next/dynamic';
 
@@ -24,12 +25,15 @@ const HomeDownloadCta = dynamic(() =>
 const AppFooter = dynamic(() =>
   import('@/widgets/footer').then((mod) => mod.AppFooter),
 );
-import { PageWrapper } from './components/styles/Common.styles';
 
 export function HomePage() {
   return (
     <>
-      <PageWrapper>
+      <PageLayout
+        justifyContent="flex-start"
+        alignItems="stretch"
+        padding={0}
+      >
         <HomeHero />
         <HomeGames />
         <HomeHowItWorks />
@@ -37,7 +41,7 @@ export function HomePage() {
         <HomePresentation />
         <HomePitchDeck />
         <HomeDownloadCta />
-      </PageWrapper>
+      </PageLayout>
       <AppFooter />
     </>
   );

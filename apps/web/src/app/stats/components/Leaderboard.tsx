@@ -191,7 +191,10 @@ export function Leaderboard({
         ))}
       </Table>
 
-      <LoadMoreContainer ref={loadMoreRef}>
+      <div
+        ref={loadMoreRef}
+        style={{ minHeight: 60, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
         {loadingMore && (
           <LoadingMoreRow>
             <Spinner size="sm" />
@@ -203,7 +206,7 @@ export function Leaderboard({
         {!hasMore && leaderboard.length > 0 && (
           <EndOfList>{t('stats.endOfLeaderboard')}</EndOfList>
         )}
-      </LoadMoreContainer>
+      </div>
     </Section>
   );
 }
@@ -261,13 +264,6 @@ const RankBadge = styled(YStack, {
 const TrophyIcon = styled(Text, {
   name: 'LeaderboardTrophyIcon',
   fontSize: '$6',
-} as any);
-
-const LoadMoreContainer = styled(YStack, {
-  name: 'LeaderboardLoadMoreContainer',
-  minHeight: 60,
-  alignItems: 'center',
-  justifyContent: 'center',
 } as any);
 
 const LoadingMoreRow = styled(XStack, {

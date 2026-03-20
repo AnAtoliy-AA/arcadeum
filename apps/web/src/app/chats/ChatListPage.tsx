@@ -4,7 +4,7 @@ import { useState, useCallback, ComponentProps, ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import styled from 'styled-components';
+import { XStack, YStack, Text } from 'tamagui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useDebounce } from '@/shared/hooks/useDebounce';
@@ -49,82 +49,6 @@ const SearchResultItem = ({ isLast, ...props }: SearchResultItemProps) => (
     {...props}
   />
 );
-
-const SearchResults = styled.div`
-  display: flex;
-  flex-direction: column;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  border-radius: 12px;
-  overflow: hidden;
-  margin-top: 0.5rem;
-`;
-
-const ChatList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const ChatItemContent = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
-`;
-
-const ChatInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  flex: 1;
-  min-width: 0; /* meaningful for text truncation */
-`;
-
-const ChatHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-`;
-
-const ChatTitleText = styled.div`
-  font-weight: 600;
-  font-size: 1rem;
-  color: ${({ theme }) => theme.text.primary};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const ChatSubtitle = styled.div`
-  font-size: 0.875rem;
-  color: ${({ theme }) => theme.text.muted};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const ChatTimestamp = styled.div`
-  font-size: 0.75rem;
-  color: ${({ theme }) => theme.text.muted};
-  white-space: nowrap;
-`;
-
-const LoadingContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  padding: 3rem;
-  color: ${({ theme }) => theme.text.muted};
-`;
-
-const StyledLink = styled(Link)`
-  text-decoration: none;
-  color: inherit;
-  display: block;
-`;
 
 export function ChatListPage() {
   const router = useRouter();
@@ -202,18 +126,18 @@ export function ChatListPage() {
               fullWidth
             />
             {searchLoading && (
-              <div
-                style={{
-                  padding: '1rem',
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}
-              >
+              <XStack p="$4" jc="center">
                 <Spinner size="sm" />
-              </div>
+              </XStack>
             )}
             {!!searchQuery.trim() && displaySearchResults.length > 0 && (
-              <SearchResults>
+              <YStack
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius={12}
+                overflow="hidden"
+                marginTop="$2"
+              >
                 {displaySearchResults.map((result, index) => (
                   <SearchResultItem
                     key={result.id}
@@ -225,28 +149,28 @@ export function ChatListPage() {
                       size="sm"
                       alt=""
                     />
-                    <div>
-                      <div style={{ fontWeight: 600 }}>
+                    <YStack>
+                      <Text fontWeight="600">
                         {result.displayName || result.username}
-                      </div>
+                      </Text>
                       {result.email && (
-                        <div style={{ fontSize: '0.875rem', color: '#666' }}>
+                        <Text fontSize="$3" color="rgba(236,239,238,0.45)">
                           {result.email}
-                        </div>
+                        </Text>
                       )}
-                    </div>
+                    </YStack>
                   </SearchResultItem>
                 ))}
-              </SearchResults>
+              </YStack>
             )}
           </GlassCard>
         )}
 
         {loading ? (
-          <LoadingContainer>
+          <YStack jc="center" ai="center" gap="$4" p="$12">
             <Spinner size="lg" aria-label="Loading" />
-            <div>Loading chats...</div>
-          </LoadingContainer>
+            <Text color="rgba(236,239,238,0.45)">Loading chats...</Text>
+          </YStack>
         ) : displayChats.length === 0 ? (
           <EmptyState
             message={
@@ -260,7 +184,7 @@ export function ChatListPage() {
             }
           />
         ) : (
-          <ChatList>
+          <YStack gap="$4">
             {displayChats.map((chat) => {
               const otherParticipants = chat.participants.filter(
                 (p) => p.id !== currentUserId,
@@ -274,37 +198,54 @@ export function ChatListPage() {
               const receiverIds = otherParticipants.map((p) => p.id).join(',');
 
               return (
-                <StyledLink
+                <Link
                   key={chat.chatId}
                   href={`/chat?chatId=${chat.chatId}&receiverIds=${receiverIds}&title=${encodeURIComponent(title)}`}
+                  style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
                 >
                   <Card interactive padding="md" variant="elevated">
-                    <ChatItemContent>
+                    <XStack ai="center" gap="$4" width="100%">
                       <Avatar name={title} size="md" alt="" />
-                      <ChatInfo>
-                        <ChatHeader>
-                          <ChatTitleText>{title}</ChatTitleText>
+                      <YStack flex={1} gap="$1" minWidth={0}>
+                        <XStack jc="space-between" ai="center" gap="$2">
+                          <Text
+                            fontWeight="600"
+                            fontSize="$5"
+                            color="$color"
+                            numberOfLines={1}
+                            flexShrink={1}
+                          >
+                            {title}
+                          </Text>
                           {chat.lastMessage && (
-                            <ChatTimestamp>
+                            <Text
+                              fontSize="$2"
+                              color="rgba(236,239,238,0.45)"
+                              whiteSpace="nowrap"
+                            >
                               {formatSafeDate(chat.lastMessage.timestamp)}
-                            </ChatTimestamp>
+                            </Text>
                           )}
-                        </ChatHeader>
+                        </XStack>
                         {chat.lastMessage && (
-                          <ChatSubtitle>
-                            <span style={{ fontWeight: 600 }}>
+                          <Text
+                            fontSize="$3"
+                            color="rgba(236,239,238,0.45)"
+                            numberOfLines={1}
+                          >
+                            <Text fontWeight="600">
                               {chat.lastMessage.senderUsername}:
-                            </span>{' '}
+                            </Text>{' '}
                             {chat.lastMessage.content}
-                          </ChatSubtitle>
+                          </Text>
                         )}
-                      </ChatInfo>
-                    </ChatItemContent>
+                      </YStack>
+                    </XStack>
                   </Card>
-                </StyledLink>
+                </Link>
               );
             })}
-          </ChatList>
+          </YStack>
         )}
       </Container>
     </PageLayout>

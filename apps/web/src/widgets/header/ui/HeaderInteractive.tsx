@@ -17,7 +17,7 @@ import {
 import { ProfileMenu } from './ProfileMenu';
 import { MobileMenu } from './MobileMenu';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { Nav, Actions, DesktopOnly, MobileMenuContainer, NavLinkContainer, NavLinkIndicator, NavHeaderLink } from './styles';
+import { Nav, Actions, DesktopOnly, MobileMenuContainer, NavLinkContainer, NavHeaderLink, NavLinkIndicator } from './styles';
 
 export function HeaderInteractive() {
   const pathname = usePathname();
@@ -103,7 +103,7 @@ export function HeaderInteractive() {
         {!isAuthenticated && (
           <DesktopOnly>
             <LinkButton
-              variant="ghost"
+              variant="primary"
               size="sm"
               href="/auth"
               data-testid="desktop-login-button"

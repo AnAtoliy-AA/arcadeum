@@ -224,6 +224,12 @@ a {
   .step-number-hover:hover {
     transform: none !important;
   }
+  .pulse-ring {
+    animation: none !important;
+  }
+  .hero-card-stack {
+    animation: none !important;
+  }
 }
 
 /* ─── Home: Game card hover lift ──────────────────────── */

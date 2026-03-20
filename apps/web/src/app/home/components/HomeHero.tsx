@@ -124,7 +124,7 @@ export function HomeHero() {
       </HeroContent>
 
       <HeroVisual>
-        <CardStack style={{ animation: 'float 6s ease-in-out infinite' }}>
+        <CardStack className="hero-card-stack" style={{ animation: 'float 6s ease-in-out infinite' }}>
           {cards.map((card, index) => (
             <HeroCard
               key={index}

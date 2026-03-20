@@ -28,7 +28,6 @@ export const FeatureIcon = styled(YStack, {
   backgroundColor: 'rgba(255,255,255,0.08)',
   borderWidth: 1,
   borderColor: '$glassBorder',
-  transition: 'transform 0.2s ease-out' as any,
 });
 
 export const FeatureTitle = styled(Text, {

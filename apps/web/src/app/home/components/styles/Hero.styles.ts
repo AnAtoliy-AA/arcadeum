@@ -86,12 +86,6 @@ export const HeroCard = styled(YStack, {
   justifyContent: 'space-between',
   padding: '$6',
   overflow: 'hidden',
-  transition: 'all 0.5s ease' as any,
-
-  hoverStyle: {
-    scale: 1.05,
-    zIndex: 10,
-  },
 });
 
 export const Kicker = styled(Text, {

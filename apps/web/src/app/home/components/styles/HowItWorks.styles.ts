@@ -71,7 +71,6 @@ export const StepNumber = styled(YStack, {
   position: 'relative',
   zIndex: 1,
   shadowColor: 'transparent',
-  transition: 'transform 0.2s ease, box-shadow 0.2s ease' as any,
 } as any);
 
 export const StepContent = styled(YStack, {

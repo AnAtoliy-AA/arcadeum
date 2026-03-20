@@ -116,28 +116,33 @@ export const Actions = styled(XStack, {
 });
 // ─── Navigation Link ──────────────────────────────────────────────────────────
 
-export const NavLinkContainer = styled(YStack, {
+export const NavLinkContainer = styled(XStack, {
   name: 'NavLinkContainer',
   position: 'relative',
   alignItems: 'center',
   justifyContent: 'center',
-  paddingHorizontal: '$1',
+  height: 72,
 });
 
-export const NavLinkIndicator = styled(YStack, {
+export const NavLinkIndicator = styled(XStack, {
   name: 'NavLinkIndicator',
   position: 'absolute',
-  bottom: -4,
-  height: 3,
-  borderRadius: 999,
-  backgroundColor: '$primary',
-  width: 0,
+  // Center is 36, button is 36. Top of button is 18, bottom is 54.
+  top: 18,
+  height: 36,
+  left: 0,
+  right: 0,
+  borderRadius: '$4',
+  borderBottomWidth: 3,
+  borderBottomColor: '#57c3ff',
+  pointerEvents: 'none',
+  zIndex: 10,
   opacity: 0,
+  transition: 'all 0.2s ease-in-out' as any,
 
   variants: {
     active: {
       true: {
-        width: 16,
         opacity: 1,
       },
     },
@@ -344,6 +349,8 @@ export const MobileUserInfo = styled(XStack, {
 
 export const NavHeaderLink = styled(LinkButton, {
   name: 'NavHeaderLink',
+  borderRadius: '$4',
+  overflow: 'visible',
   hoverStyle: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     transform: 'translateY(-1px)',
@@ -354,8 +361,8 @@ export const NavHeaderLink = styled(LinkButton, {
   variants: {
     isActive: {
       true: {
-        backgroundColor: 'rgba(255, 255, 255, 0.08)',
-        color: '$primary',
+        backgroundColor: 'rgba(0, 0, 0, 0.45)',
+        color: '$color',
       },
     },
   } as const,

@@ -166,7 +166,11 @@ export function HomeGames() {
         >
           {featuredGames.map((game) => (
             <SliderItem key={game.id} style={{ scrollSnapAlign: 'center' }}>
-              <MainGameCard padding="$5" flex={1}>
+              <MainGameCard
+                padding="$5"
+                flex={1}
+                style={{ boxShadow: '0 20px 50px rgba(0,0,0,0.35)' }}
+              >
                 {/* Gradient hover overlay replaces $gradient ::before */}
                 <YStack
                   position="absolute"
@@ -177,7 +181,7 @@ export function HomeGames() {
                   zIndex={0}
                   pointerEvents="none"
                   opacity={0}
-                  hoverStyle={{ opacity: 0.05 }}
+                  hoverStyle={{ opacity: 0.08 }}
                   style={{ background: game.gradient ?? 'transparent' }}
                 />
                 <MainGameInfo>

@@ -132,7 +132,7 @@ export const HeroDescription = styled(Text, {
   fontSize: '$4',
   lineHeight: '$5' as any,
   color: '$color',
-  opacity: 0.7,
+  opacity: 0.75,
 });
 
 export const HeroActions = styled(XStack, {

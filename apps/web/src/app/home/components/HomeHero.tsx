@@ -62,7 +62,7 @@ export function HomeHero() {
       <HeroBackground
         style={{
           background:
-            'linear-gradient(to bottom, transparent 0%, var(--background) 100%), radial-gradient(circle at 50% 50%, rgba(90,196,255,0.06) 0%, transparent 50%)',
+            'linear-gradient(to bottom, transparent 0%, var(--background) 100%), radial-gradient(circle at 50% 50%, rgba(90,196,255,0.12) 0%, transparent 50%)',
         }}
       />
 
@@ -118,7 +118,7 @@ export function HomeHero() {
               style={{
                 transform: `rotate(${index * 10 - 10}deg) translate(${index * 20 - 20}px, ${index * -10}px)`,
                 zIndex: index,
-                boxShadow: `0 20px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1)`,
+                boxShadow: `0 28px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.18)`,
               }}
             >
               {/* Colour overlay replaces ::before */}

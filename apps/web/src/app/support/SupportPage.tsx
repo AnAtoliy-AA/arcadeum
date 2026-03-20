@@ -40,6 +40,7 @@ import {
   TeamName,
   TeamRole,
   Thanks,
+  supportStyles,
 } from './styles';
 
 export type SupportPageProps = {
@@ -145,7 +146,8 @@ export function SupportPage({
 
   return (
     <>
-      <Page>
+      <style>{supportStyles}</style>
+      <Page className="support-page">
         <BackgroundBlob />
         <ContentWrapper>
           <Header>
@@ -174,7 +176,6 @@ export function SupportPage({
                           href={member.linkedin}
                           target="_blank"
                           rel="noopener noreferrer"
-                          as="a"
                           aria-label={`LinkedIn for ${member.name}`}
                         >
                           <span>in</span>

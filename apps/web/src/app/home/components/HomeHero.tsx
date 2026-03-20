@@ -81,7 +81,7 @@ export function HomeHero() {
           id="hero-heading"
           style={{
             fontSize: 'clamp(3.5rem, 8vw, 6rem)',
-            background: 'linear-gradient(135deg, var(--color) 0%, var(--primary) 50%, var(--secondary) 100%)',
+            background: 'linear-gradient(135deg, #ffffff 0%, #57c3ff 50%, #8f9bff 100%)',
             backgroundSize: '200% auto',
             backgroundClip: 'text',
             WebkitBackgroundClip: 'text',

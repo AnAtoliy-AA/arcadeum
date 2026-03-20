@@ -55,6 +55,7 @@ export const HeroVisual = styled(YStack, {
   alignItems: 'center',
   justifyContent: 'center',
   zIndex: 1,
+  perspective: 1000,
 
   $gtMd: {
     display: 'flex',
@@ -86,6 +87,11 @@ export const HeroCard = styled(YStack, {
   padding: '$5',
   overflow: 'hidden',
   transition: 'all 0.5s ease' as any,
+
+  hoverStyle: {
+    scale: 1.05,
+    zIndex: 10,
+  },
 });
 
 export const Kicker = styled(Text, {

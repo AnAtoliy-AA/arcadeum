@@ -50,11 +50,23 @@ const CURRENT_YEAR = new Date().getFullYear();
 const FooterRoot = styled(View, {
   name: 'Footer',
   width: '100%',
-  backgroundColor: '$background',
-  borderTopWidth: 1,
-  borderTopColor: '$borderColor',
-  paddingTop: '$8',
-  paddingBottom: '$6',
+  backgroundColor: '$glassBg',
+  borderTopWidth: 0,
+  paddingTop: '$10',
+  paddingBottom: '$8',
+  position: 'relative',
+  backdropFilter: 'blur(24px) saturate(180%)',
+});
+
+const FooterBorderLine = styled(YStack, {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  height: 1,
+  pointerEvents: 'none',
+  background:
+    'linear-gradient(90deg, transparent 0%, var(--borderColor) 15%, var(--primaryGradientStart) 50%, var(--borderColor) 85%, transparent 100%)',
 });
 
 const BrandSection = styled(XStack, {
@@ -141,14 +153,15 @@ export const Footer = memo(function Footer({
     <YStack asChild width="100%">
       <footer>
         <FooterRoot>
+          <FooterBorderLine />
           <Container size="xl">
             <BrandSection>
               <BrandInfo>
                 <YStack gap="$2">
-                  <Typography variant="heading" uiSize="2xl" gradient="primary">
+                  <Typography variant="heading" uiSize="2xl" weight="800" gradient="primary">
                     {appName}
                   </Typography>
-                  <Typography uiSize="sm" alpha="medium" maxWidth={400}>
+                  <Typography uiSize="md" alpha="medium" maxWidth={420} lineHeight={24}>
                     {description}
                   </Typography>
                 </YStack>

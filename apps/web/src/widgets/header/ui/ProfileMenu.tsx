@@ -23,7 +23,7 @@ import { routes } from '@/shared/config/routes';
 import {
   ProfileMenuContainer,
   UserNameEllipsis,
-  ProfileDropdown,
+  ProfileDropdownWrapper,
   DropdownLink,
 } from './styles';
 
@@ -83,7 +83,7 @@ export function ProfileMenu() {
         <ChevronIcon isOpen={isOpen} />
       </Button>
 
-      <ProfileDropdown isOpen={isOpen}>
+      <ProfileDropdownWrapper isOpen={isOpen}>
         <DropdownLink href="/settings" onClick={closeMenu}>
           <SettingsIcon size={16} />
           {t('navigation.settingsTab')}
@@ -126,7 +126,7 @@ export function ProfileMenu() {
         >
           {t('common.actions.logout')}
         </Button>
-      </ProfileDropdown>
+      </ProfileDropdownWrapper>
     </ProfileMenuContainer>
   );
 }

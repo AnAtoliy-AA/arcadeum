@@ -14,6 +14,7 @@ import {
   MobileUserInfo,
   UserNameEllipsis,
   MobileVersionText,
+  NavMobileLink,
 } from './styles';
 import {
   Button,
@@ -32,7 +33,7 @@ interface MobileMenuProps {
   navItems: Array<{ href: string; label: string }>;
 }
 
-const noop = () => () => {};
+const noop = () => () => { };
 
 export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
   const pathname = usePathname();
@@ -56,9 +57,13 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
   }, [clearTokens]);
 
   const content = (
-    <MobileNav isOpen={isOpen} data-mobile-menu data-testid="mobile-nav">
+    <MobileNav
+      isOpen={isOpen}
+      data-mobile-menu
+      data-testid="mobile-nav"
+    >
       {navItems.map((item) => (
-        <LinkButton
+        <NavMobileLink
           key={item.href}
           href={item.href}
           variant="ghost"
@@ -68,7 +73,7 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
           fullWidth
         >
           {item.label}
-        </LinkButton>
+        </NavMobileLink>
       ))}
 
       {isAuthenticated && displayName && (

@@ -19,5 +19,11 @@ export const FooterLink = styled(Anchor, {
   hoverStyle: {
     opacity: 1,
     color: '$primary',
+    transform: 'translateY(-1px)',
+  },
+
+  pressStyle: {
+    transform: 'translateY(0)',
+    opacity: 0.8,
   },
 });

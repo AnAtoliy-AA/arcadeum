@@ -17,7 +17,7 @@ import {
 import { ProfileMenu } from './ProfileMenu';
 import { MobileMenu } from './MobileMenu';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { Nav, Actions, DesktopOnly, MobileMenuContainer } from './styles';
+import { Nav, Actions, DesktopOnly, MobileMenuContainer, NavLinkContainer, NavLinkIndicator, NavHeaderLink } from './styles';
 
 export function HeaderInteractive() {
   const pathname = usePathname();
@@ -70,15 +70,17 @@ export function HeaderInteractive() {
     <>
       <Nav>
         {navItems.map((item) => (
-          <LinkButton
-            key={item.href}
-            href={item.href}
-            variant="ghost"
-            size="sm"
-            isActive={pathname === item.href}
-          >
-            {item.label}
-          </LinkButton>
+          <NavLinkContainer key={item.href}>
+            <NavHeaderLink
+              href={item.href}
+              variant="ghost"
+              size="sm"
+              isActive={pathname === item.href}
+            >
+              {item.label}
+            </NavHeaderLink>
+            <NavLinkIndicator active={pathname === item.href} />
+          </NavLinkContainer>
         ))}
       </Nav>
 

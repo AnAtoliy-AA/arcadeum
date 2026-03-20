@@ -5,7 +5,7 @@ import React from 'react';
 export const HEADER_HEIGHT = 72;
 import Link from 'next/link';
 import { styled, GetProps, Header, Nav as TamaguiNav } from 'tamagui';
-import { XStack, YStack, Typography } from '@arcadeum/ui';
+import { XStack, YStack, Typography, LinkButton } from '@arcadeum/ui';
 
 // ─── Header Container ─────────────────────────────────────────────────────────
 
@@ -14,7 +14,10 @@ const HeaderOuter = styled(Header, {
   position: 'sticky',
   top: 0,
   zIndex: '$1',
-  backgroundColor: '$background',
+  backgroundColor: '$glassBg',
+  borderBottomWidth: 0,
+  backdropFilter: 'blur(32px) saturate(200%)',
+  boxShadow: '0 4px 24px -1px rgba(0, 0, 0, 0.2)',
 });
 
 const HeaderBorderLine = styled(YStack, {
@@ -26,11 +29,12 @@ const HeaderBorderLine = styled(YStack, {
   pointerEvents: 'none',
   background:
     'linear-gradient(90deg, transparent 0%, var(--borderColor) 15%, var(--primaryGradientStart) 50%, var(--borderColor) 85%, transparent 100%)',
+  boxShadow: '0 0 15px rgba(87, 195, 255, 0.2)',
 });
 
 export function HeaderContainer({ children }: { children: React.ReactNode }) {
   return (
-    <HeaderOuter style={{ backdropFilter: 'blur(24px) saturate(180%)' }}>
+    <HeaderOuter>
       {children}
       <HeaderBorderLine />
     </HeaderOuter>
@@ -55,6 +59,17 @@ export const HeaderInner = styled(XStack, {
 
 // ─── Logo ─────────────────────────────────────────────────────────────────────
 
+const LogoInner = styled(XStack, {
+  alignItems: 'center',
+  gap: '$2',
+  flexShrink: 0,
+  cursor: 'pointer',
+  hoverStyle: {
+    transform: 'scale(1.02)',
+    opacity: 0.95
+  },
+});
+
 export function Logo({
   href,
   children,
@@ -64,22 +79,16 @@ export function Logo({
 }) {
   return (
     <Link href={href} prefetch={false} style={{ textDecoration: 'none' }}>
-      <XStack
-        alignItems="center"
-        gap="$2"
-        flexShrink={0}
-        cursor="pointer"
-        hoverStyle={{ opacity: 0.85 }}
-      >
+      <LogoInner>
         {children}
-      </XStack>
+      </LogoInner>
     </Link>
   );
 }
 
 export const LogoText = styled(Typography, {
   name: 'LogoText',
-  fontSize: 22,
+  uiSize: '2xl',
   weight: '800',
   color: '$primaryGradientStart',
   $xs: { display: 'none' },
@@ -104,6 +113,35 @@ export const Actions = styled(XStack, {
   gap: '$2',
   flexShrink: 0,
   $xs: { gap: '$1' },
+});
+// ─── Navigation Link ──────────────────────────────────────────────────────────
+
+export const NavLinkContainer = styled(YStack, {
+  name: 'NavLinkContainer',
+  position: 'relative',
+  alignItems: 'center',
+  justifyContent: 'center',
+  paddingHorizontal: '$1',
+});
+
+export const NavLinkIndicator = styled(YStack, {
+  name: 'NavLinkIndicator',
+  position: 'absolute',
+  bottom: -4,
+  height: 3,
+  borderRadius: 999,
+  backgroundColor: '$primary',
+  width: 0,
+  opacity: 0,
+
+  variants: {
+    active: {
+      true: {
+        width: 16,
+        opacity: 1,
+      },
+    },
+  } as const,
 });
 
 export const DesktopOnly = styled(XStack, {
@@ -134,36 +172,50 @@ export const UserNameEllipsis = styled(UserName, {
   whiteSpace: 'nowrap',
 });
 
-export function ProfileDropdown({
+export const ProfileDropdown = styled(YStack, {
+  name: 'ProfileDropdown',
+  position: 'absolute',
+  right: 0,
+  minWidth: 220,
+  backgroundColor: '$glassBg',
+  borderColor: '$glassBorder',
+  borderWidth: 1,
+  borderRadius: '$4',
+  overflow: 'hidden',
+  zIndex: 1000,
+  top: 'calc(100% + 12px)',
+  backdropFilter: 'blur(20px) saturate(160%)',
+  boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
+  transformOrigin: 'right top',
+
+  variants: {
+    isOpen: {
+      true: {
+        opacity: 1,
+        pointerEvents: 'auto',
+        visibility: 'visible',
+        transform: 'translateY(0) scale(1)',
+      },
+      false: {
+        opacity: 0,
+        pointerEvents: 'none',
+        visibility: 'hidden',
+        transform: 'translateY(-10px) scale(0.96)',
+      },
+    },
+  } as const,
+});
+
+export function ProfileDropdownWrapper({
   isOpen,
   children,
+  ...props
 }: {
   isOpen: boolean;
   children: React.ReactNode;
-}) {
+} & GetProps<typeof ProfileDropdown>) {
   return (
-    <YStack
-      position="absolute"
-      right={0}
-      minWidth={210}
-      backgroundColor="$glassBg"
-      borderColor="$glassBorder"
-      borderWidth={1}
-      borderRadius="$3"
-      overflow="hidden"
-      zIndex={1000}
-      pointerEvents={isOpen ? 'auto' : 'none'}
-      opacity={isOpen ? 1 : 0}
-      style={{
-        top: 'calc(100% + 10px)',
-        backdropFilter: 'blur(12px)',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.1)',
-        visibility: isOpen ? 'visible' : 'hidden',
-        transform: isOpen ? 'translateY(0) scale(1)' : 'translateY(-6px) scale(0.98)',
-        transformOrigin: 'top right',
-        transition: 'opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease',
-      }}
-    >
+    <ProfileDropdown isOpen={isOpen} {...props}>
       <YStack
         position="absolute"
         top={0}
@@ -171,13 +223,10 @@ export function ProfileDropdown({
         right={0}
         height={1}
         pointerEvents="none"
-        style={{
-          background:
-            'linear-gradient(90deg, transparent, color-mix(in srgb, var(--primaryGradientStart) 25%, transparent), transparent)',
-        }}
+        background="linear-gradient(90deg, transparent, color-mix(in srgb, var(--primaryGradientStart) 25%, transparent), transparent)"
       />
       {children}
-    </YStack>
+    </ProfileDropdown>
   );
 }
 
@@ -228,38 +277,45 @@ type MobileNavProps = {
   children: React.ReactNode;
 } & Omit<GetProps<typeof YStack>, 'children'>;
 
-export function MobileNav({ isOpen, children, ...props }: MobileNavProps) {
-  return (
-    <YStack
-      position="fixed"
-      top={HEADER_HEIGHT}
-      left={0}
-      right={0}
-      bottom={0}
-      zIndex="$1"
-      backgroundColor="$background"
-      borderTopWidth={1}
-      borderTopColor="$borderColor"
-      paddingHorizontal="$5"
-      paddingTop="$4"
-      gap="$1"
-      pointerEvents={isOpen ? 'auto' : 'none'}
-      opacity={isOpen ? 1 : 0}
-      style={{
-        height: `calc(100dvh - ${HEADER_HEIGHT}px)`,
-        backdropFilter: 'blur(24px) saturate(160%)',
-        overflowY: 'auto',
-        overscrollBehavior: 'none',
-        visibility: isOpen ? 'visible' : 'hidden',
-        transform: isOpen ? 'translateY(0)' : 'translateY(-12px)',
-        transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, visibility 0.25s ease',
-      }}
-      {...props}
-    >
-      {children}
-    </YStack>
-  );
-}
+export const MobileNav = styled(YStack, {
+  name: 'MobileNav',
+  position: 'fixed',
+  top: HEADER_HEIGHT,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  zIndex: '$1',
+  backgroundColor: '$background',
+  borderTopWidth: 1,
+  borderTopColor: '$borderColor',
+  paddingHorizontal: '$5',
+  paddingTop: '$4',
+  gap: '$1',
+  height: `calc(100dvh - ${HEADER_HEIGHT}px)`,
+  backdropFilter: 'blur(32px) saturate(180%)',
+  overflowY: 'auto',
+
+  variants: {
+    isOpen: {
+      true: {
+        opacity: 1,
+        pointerEvents: 'auto',
+        visibility: 'visible',
+        transform: 'translateX(0)',
+      },
+      false: {
+        opacity: 0,
+        pointerEvents: 'none',
+        visibility: 'hidden',
+        transform: 'translateX(100%)',
+      },
+    },
+  } as const,
+
+  defaultVariants: {
+    isOpen: false,
+  },
+});
 
 export const MobileVersionText = styled(Typography, {
   name: 'MobileVersionText',
@@ -284,4 +340,38 @@ export const MobileUserInfo = styled(XStack, {
   alignItems: 'center',
   gap: '$2',
   flexWrap: 'wrap',
+});
+
+export const NavHeaderLink = styled(LinkButton, {
+  name: 'NavHeaderLink',
+  hoverStyle: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    transform: 'translateY(-1px)',
+  },
+  pressStyle: {
+    transform: 'translateY(1px)',
+  },
+  variants: {
+    isActive: {
+      true: {
+        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+        color: '$primary',
+      },
+    },
+  } as const,
+});
+
+export const NavMobileLink = styled(LinkButton, {
+  name: 'NavMobileLink',
+  paddingVertical: '$3',
+  paddingHorizontal: '$4',
+  justifyContent: 'flex-start',
+  variants: {
+    isActive: {
+      true: {
+        backgroundColor: 'rgba(87, 195, 255, 0.1)',
+        color: '$primary',
+      },
+    },
+  } as const,
 });

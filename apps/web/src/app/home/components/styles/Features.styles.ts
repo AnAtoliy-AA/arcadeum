@@ -29,10 +29,6 @@ export const FeatureIcon = styled(YStack, {
   borderWidth: 1,
   borderColor: '$glassBorder',
   transition: 'transform 0.2s ease-out' as any,
-
-  hoverStyle: {
-    scale: 1.1,
-  },
 });
 
 export const FeatureTitle = styled(Text, {

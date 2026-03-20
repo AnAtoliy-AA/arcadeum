@@ -128,7 +128,7 @@ export function HomeFeatures() {
               data-reveal
               data-reveal-delay={String(Math.min(index + 2, 6))}
             >
-              <FeatureIcon style={{ boxShadow: '0 4px 20px rgba(87,195,255,0.12)' }}><Text>{feature.icon}</Text></FeatureIcon>
+              <FeatureIcon data-feature-icon style={{ boxShadow: '0 4px 20px rgba(87,195,255,0.12)' }}><Text>{feature.icon}</Text></FeatureIcon>
               <FeatureTitle>{title}</FeatureTitle>
               <FeatureDescription>{description}</FeatureDescription>
               {feature.comingSoon && (

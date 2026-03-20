@@ -235,3 +235,7 @@ a {
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4) !important;
   border-color: rgba(87, 195, 255, 0.35) !important;
 }
+.feature-card-hover:hover [data-feature-icon] {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-out;
+}

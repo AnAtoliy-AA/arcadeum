@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, YStack } from 'tamagui';
+import { styled, XStack, YStack } from 'tamagui';
 import {
   Spinner as SharedSpinner,
   PageTitle as SharedPageTitle,
@@ -12,7 +12,17 @@ export const fadeInCSS = `
   }
 `;
 
+export const roomsContainerCSS = `
+  @media (max-width: 800px) {
+    .games-rooms-container {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+    }
+  }
+`;
+
 export const Page = styled(YStack, {
+  name: 'Page',
   tag: 'main',
   minHeight: '100vh',
   padding: '2rem 1.5rem',
@@ -21,29 +31,30 @@ export const Page = styled(YStack, {
 } as any);
 
 export const Container = styled(YStack, {
+  name: 'Container',
   maxWidth: 1200,
   marginHorizontal: 'auto',
   flexDirection: 'column',
   gap: '2rem',
 } as any);
 
-export const Header = styled(YStack, {
-  flexDirection: 'row',
+export const Header = styled(XStack, {
+  name: 'Header',
   justifyContent: 'space-between',
   alignItems: 'center',
   gap: '1rem',
   flexWrap: 'wrap',
 } as any);
 
-export const HeaderControls = styled(YStack, {
-  flexDirection: 'row',
+export const HeaderControls = styled(XStack, {
+  name: 'HeaderControls',
   alignItems: 'center',
   gap: '1rem',
 } as any);
 
 // $sm = max-width:768px
-export const ViewToggle = styled(YStack, {
-  flexDirection: 'row',
+export const ViewToggle = styled(XStack, {
+  name: 'ViewToggle',
   borderRadius: 10,
   overflow: 'hidden',
   borderWidth: 1,
@@ -53,11 +64,12 @@ export const ViewToggle = styled(YStack, {
 
 // Pass size="xl" gradient as JSX props in consuming components
 export const Title = styled(SharedPageTitle, {
+  name: 'Title',
   fontWeight: '800',
 } as any);
 
-export const Filters = styled(YStack, {
-  flexDirection: 'row',
+export const Filters = styled(XStack, {
+  name: 'Filters',
   gap: '2rem',
   flexWrap: 'wrap',
   padding: '1.25rem 1.5rem',
@@ -67,21 +79,22 @@ export const Filters = styled(YStack, {
   borderColor: '$borderColor',
 } as any);
 
-export const SearchContainer = styled(YStack, {
+export const SearchContainer = styled(XStack, {
+  name: 'SearchContainer',
   flex: 1,
   minWidth: 200,
   maxWidth: 400,
-  flexDirection: 'row',
   gap: '0.5rem',
 } as any);
 
-export const FilterGroup = styled(YStack, {
-  flexDirection: 'row',
+export const FilterGroup = styled(XStack, {
+  name: 'FilterGroup',
   alignItems: 'center',
   gap: '0.75rem',
 } as any);
 
 export const FilterLabel = styled(YStack, {
+  name: 'FilterLabel',
   tag: 'label',
   fontSize: '0.8rem',
   fontWeight: '600',
@@ -90,8 +103,8 @@ export const FilterLabel = styled(YStack, {
   color: 'rgba(236,239,238,0.45)',
 } as any);
 
-export const FilterChips = styled(YStack, {
-  flexDirection: 'row',
+export const FilterChips = styled(XStack, {
+  name: 'FilterChips',
   flexWrap: 'wrap',
   gap: '0.5rem',
 } as any);
@@ -109,10 +122,8 @@ export function getRoomsContainerStyle(
   };
 }
 
-// Legacy named export kept for backward-compat
-export const RoomsContainer = styled(YStack, {} as any);
-
 export const Loading = styled(YStack, {
+  name: 'Loading',
   flexDirection: 'column',
   justifyContent: 'center',
   alignItems: 'center',
@@ -123,11 +134,13 @@ export const Loading = styled(YStack, {
 } as any);
 
 export const Spinner = styled(SharedSpinner, {
+  name: 'Spinner',
   size: 'lg',
 } as any);
 
 // Error: replaced Card with plain div (Card had variant/padding attrs)
 export const Error = styled(YStack, {
+  name: 'Error',
   background: 'linear-gradient(135deg, #7f1d1d20, transparent)',
   borderColor: '#dc2626',
   borderWidth: 1,
@@ -139,6 +152,7 @@ export const Error = styled(YStack, {
 } as any);
 
 export const Empty = styled(YStack, {
+  name: 'Empty',
   padding: '4rem 2rem',
   textAlign: 'center',
   color: 'rgba(236,239,238,0.45)',
@@ -152,6 +166,7 @@ export const Empty = styled(YStack, {
 } as any);
 
 export const ServerWakeUpContainer = styled(YStack, {
+  name: 'ServerWakeUpContainer',
   justifyContent: 'center',
   alignItems: 'center',
   width: '100%',
@@ -160,14 +175,8 @@ export const ServerWakeUpContainer = styled(YStack, {
   gridColumn: '1 / -1',
 } as any);
 
-export const ScrollSentinel = styled(YStack, {
-  gridColumn: '1 / -1',
-  justifyContent: 'center',
-  padding: '2rem',
-  width: '100%',
-} as any);
-
 export const EndOfListText = styled(YStack, {
+  name: 'EndOfListText',
   gridColumn: '1 / -1',
   textAlign: 'center',
   padding: '2rem',

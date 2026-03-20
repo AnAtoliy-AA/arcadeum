@@ -1,11 +1,11 @@
-import { styled, YStack } from 'tamagui';
+import { styled, XStack, YStack } from 'tamagui';
 import { Input as UIInput } from '@arcadeum/ui';
 
 // ─── Fullscreen CSS for Container ─────────────────────────────────────────────
 export const fullscreenStyles = `
-  .game-room-container:fullscreen,
-  .game-room-container:-webkit-full-screen,
-  .game-room-container:-moz-full-screen {
+  .games-room-container:fullscreen,
+  .games-room-container:-webkit-full-screen,
+  .games-room-container:-moz-full-screen {
     max-width: 100% !important;
     width: 100% !important;
     height: 100% !important;
@@ -17,6 +17,7 @@ export const fullscreenStyles = `
 `;
 
 export const Page = styled(YStack, {
+  name: 'Page',
   tag: 'main',
   height: '100vh',
   flexDirection: 'column',
@@ -27,6 +28,7 @@ export const Page = styled(YStack, {
 } as any);
 
 export const Container = styled(YStack, {
+  name: 'Container',
   maxWidth: 1400,
   width: '100%',
   marginHorizontal: 'auto',
@@ -39,6 +41,7 @@ export const Container = styled(YStack, {
 } as any);
 
 export const LoadingContainer = styled(YStack, {
+  name: 'LoadingContainer',
   alignItems: 'center',
   justifyContent: 'center',
   minHeight: '50vh',
@@ -47,12 +50,14 @@ export const LoadingContainer = styled(YStack, {
 } as any);
 
 export const ErrorContainer = styled(YStack, {
+  name: 'ErrorContainer',
   padding: '2rem',
   textAlign: 'center',
   color: '#dc2626',
 } as any);
 
 export const GameWrapper = styled(YStack, {
+  name: 'GameWrapper',
   flex: 1,
   minWidth: 0,
   minHeight: 0,
@@ -61,6 +66,7 @@ export const GameWrapper = styled(YStack, {
 
 // Glassmorphism card — no GlassCard in @arcadeum/ui, use YStack with inline styles
 export const Card = styled(YStack, {
+  name: 'Card',
   background: 'rgba(30,30,40,0.6)',
   backdropFilter: 'blur(12px)',
   WebkitBackdropFilter: 'blur(12px)',
@@ -79,6 +85,7 @@ export const Card = styled(YStack, {
 
 // Title: rendered with gradient via inline style in consuming component
 export const Title = styled(YStack, {
+  name: 'Title',
   tag: 'h2',
   fontSize: '1.75rem',
   fontWeight: '700',
@@ -93,6 +100,7 @@ export const titleGradientStyle = {
 } as const;
 
 export const Description = styled(YStack, {
+  name: 'Description',
   tag: 'p',
   color: 'rgba(236,239,238,0.7)',
   marginBottom: '2rem',
@@ -101,19 +109,21 @@ export const Description = styled(YStack, {
 } as any);
 
 export const Form = styled(YStack, {
+  name: 'Form',
   tag: 'form',
   width: '100%',
   flexDirection: 'column',
   gap: '1rem',
 } as any);
 
-export const InputGroup = styled(YStack, {
-  flexDirection: 'row',
+export const InputGroup = styled(XStack, {
+  name: 'InputGroup',
   gap: '0.75rem',
   width: '100%',
 } as any);
 
 export const ErrorMessage = styled(YStack, {
+  name: 'ErrorMessage',
   color: '#ef4444',
   fontSize: '0.875rem',
   textAlign: 'left',
@@ -128,6 +138,7 @@ export const ErrorMessage = styled(YStack, {
 export { UIInput as Input };
 
 export const LoginLink = styled(YStack, {
+  name: 'LoginLink',
   tag: 'a',
   color: '$accent',
   textDecoration: 'underline',
@@ -136,6 +147,7 @@ export const LoginLink = styled(YStack, {
 } as any);
 
 export const LockIcon = styled(YStack, {
+  name: 'LockIcon',
   fontSize: '3rem',
   marginBottom: '1rem',
   justifyContent: 'center',
@@ -143,6 +155,7 @@ export const LockIcon = styled(YStack, {
 } as any);
 
 export const NoticeMessage = styled(YStack, {
+  name: 'NoticeMessage',
   color: '$accent',
   fontSize: '0.875rem',
   textAlign: 'left',

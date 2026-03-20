@@ -13,7 +13,7 @@ import {
   Button,
   Input,
 } from '@/shared/ui';
-import { YStack } from '@arcadeum/ui';
+import { YStack } from 'tamagui';
 import { gamesApi } from '@/features/games/api';
 
 interface InviteCodeModalProps {

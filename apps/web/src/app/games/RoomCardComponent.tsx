@@ -76,13 +76,13 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
       <style>{roomCardCSS}</style>
       <div
         key={room.id}
-        className="room-card"
+        className="games-room-card"
         style={getRoomCardStyle(viewMode)}
         data-testid="room-card"
       >
         {/* Header: Name and Status - column in list, row in grid */}
         <div style={getRoomHeaderStyle(viewMode)}>
-          <h3 className="room-title" title={room.name}>{room.name}</h3>
+          <h3 className="games-room-title" title={room.name}>{room.name}</h3>
           {room.gameOptions?.idleTimerEnabled && (
             <FastBadge>
               <BadgeIcon>⚡</BadgeIcon>

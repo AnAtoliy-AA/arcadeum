@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, YStack } from 'tamagui';
+import { styled, XStack, YStack } from 'tamagui';
 
 const LIST_VIEW_MIN_WIDTH = '200px';
 
@@ -18,13 +18,13 @@ export const roomCardCSS = `
     100% { background-position: 0% 50%; }
   }
 
-  .room-card {
+  .games-room-card {
     animation: fadeIn 0.5s ease-out both;
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
   }
-  .room-card::before {
+  .games-room-card::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
@@ -33,22 +33,22 @@ export const roomCardCSS = `
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-  .room-card:hover {
+  .games-room-card:hover {
     transform: translateY(-4px);
     border-color: #7ad7ff40;
     box-shadow: 0 12px 40px rgba(0,0,0,0.3), 0 0 20px #7ad7ff20;
   }
-  .room-card:hover::before {
+  .games-room-card:hover::before {
     opacity: 1;
   }
-  .room-card:nth-child(1) { animation-delay: 0s; }
-  .room-card:nth-child(2) { animation-delay: 0.1s; }
-  .room-card:nth-child(3) { animation-delay: 0.2s; }
-  .room-card:nth-child(4) { animation-delay: 0.3s; }
-  .room-card:nth-child(5) { animation-delay: 0.4s; }
+  .games-room-card:nth-child(1) { animation-delay: 0s; }
+  .games-room-card:nth-child(2) { animation-delay: 0.1s; }
+  .games-room-card:nth-child(3) { animation-delay: 0.2s; }
+  .games-room-card:nth-child(4) { animation-delay: 0.3s; }
+  .games-room-card:nth-child(5) { animation-delay: 0.4s; }
 
   @media (max-width: 768px) {
-    .room-card {
+    .games-room-card {
       padding: 1.5rem !important;
       border-radius: 20px !important;
       flex-direction: column !important;
@@ -58,7 +58,7 @@ export const roomCardCSS = `
     }
   }
 
-  .room-title {
+  .games-room-title {
     margin: 0;
     font-size: 1.4rem;
     font-weight: 800;
@@ -179,6 +179,7 @@ export function getParticipantChipStyle(isHost?: boolean): React.CSSProperties {
 // ─── Simple layout components (Tamagui YStack-based) ─────────────────────────
 
 export const RoomMeta = styled(YStack, {
+  name: 'RoomMeta',
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
   gap: '0.75rem',
@@ -186,20 +187,22 @@ export const RoomMeta = styled(YStack, {
   color: '$color',
 } as any);
 
-export const MetaRow = styled(YStack, {
-  flexDirection: 'row',
+export const MetaRow = styled(XStack, {
+  name: 'MetaRow',
   alignItems: 'center',
   gap: '0.5rem',
   color: '$color',
 } as any);
 
 export const MetaIcon = styled(YStack, {
+  name: 'MetaIcon',
   tag: 'span',
   fontSize: '0.9rem',
   filter: 'grayscale(30%)',
 } as any);
 
 export const MetaLabel = styled(YStack, {
+  name: 'MetaLabel',
   tag: 'span',
   fontWeight: '500',
   color: 'rgba(236,239,238,0.45)',
@@ -207,12 +210,14 @@ export const MetaLabel = styled(YStack, {
 } as any);
 
 export const MetaValue = styled(YStack, {
+  name: 'MetaValue',
   tag: 'span',
   color: '$color',
   fontWeight: '600',
 } as any);
 
 export const ParticipantsLabel = styled(YStack, {
+  name: 'ParticipantsLabel',
   tag: 'span',
   fontWeight: '500',
   color: 'rgba(236,239,238,0.45)',
@@ -221,23 +226,24 @@ export const ParticipantsLabel = styled(YStack, {
   marginBottom: '0.35rem',
 } as any);
 
-export const MetaListContainer = styled(YStack, {
-  flexDirection: 'row',
+export const MetaListContainer = styled(XStack, {
+  name: 'MetaListContainer',
   gap: '1.5rem',
   alignItems: 'center',
   flex: 1,
   flexWrap: 'wrap',
 } as any);
 
-export const ParticipantsList = styled(YStack, {
-  flexDirection: 'row',
+export const ParticipantsList = styled(XStack, {
+  name: 'ParticipantsList',
   flexWrap: 'wrap',
   gap: '0.5rem',
   marginTop: '0.25rem',
   gridColumn: '1 / -1',
 } as any);
 
-export const FastBadge = styled(YStack, {
+export const FastBadge = styled(XStack, {
+  name: 'FastBadge',
   tag: 'span',
   padding: '0.35rem 0.85rem',
   borderRadius: 8,
@@ -250,11 +256,11 @@ export const FastBadge = styled(YStack, {
   boxShadow: '0 2px 8px #eab30840',
   flexShrink: 0,
   whiteSpace: 'nowrap',
-  flexDirection: 'row',
   alignItems: 'center',
 } as any);
 
 export const BadgeIcon = styled(YStack, {
+  name: 'BadgeIcon',
   tag: 'span',
   marginRight: 4,
 } as any);

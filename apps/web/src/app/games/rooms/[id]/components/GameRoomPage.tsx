@@ -389,8 +389,7 @@ export default function GameRoomPage() {
   return (
     <Page>
       <style>{fullscreenStyles}</style>
-      <div ref={gameContainerRef} className="game-room-container" style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-      <Container>
+      <Container ref={gameContainerRef as any} className="games-room-container">
         <ConnectionOverlay
           visible={isDisconnected}
           reconnecting={isReconnecting}
@@ -452,7 +451,6 @@ export default function GameRoomPage() {
           </ChatPanel>
         </GameRow>
       </Container>
-      </div>
     </Page>
   );
 }

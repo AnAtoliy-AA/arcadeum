@@ -69,6 +69,8 @@ const tokens = createTokens({
     '8': 32,
     '9': 36,
     '10': 40,
+    '11': 44,
+    '12': 48,
     true: 16,
   },
   space: {
@@ -83,6 +85,8 @@ const tokens = createTokens({
     '8': 32,
     '9': 36,
     '10': 40,
+    '11': 44,
+    '12': 48,
     true: 16,
   },
   radius: {

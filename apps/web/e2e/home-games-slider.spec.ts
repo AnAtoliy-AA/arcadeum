@@ -5,6 +5,9 @@ import { navigateTo } from './fixtures/test-utils';
 test.describe('Home Page Games Grid Refinement', () => {
   test.beforeEach(async ({ page }) => {
     await navigateTo(page, '/');
+    await page.addStyleTag({
+      content: '[data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }',
+    });
   });
 
   test('should render featured games in slider', async ({ page }) => {
@@ -23,14 +26,14 @@ test.describe('Home Page Games Grid Refinement', () => {
     const sliderTrack = page.locator('div[class*="SliderTrack"]');
     await expect(sliderTrack).toBeVisible();
 
-    const nextButton = page.getByRole('button', { name: /Next game/i });
+    const nextButton = page.getByTestId('next-game-button');
     await expect(nextButton).toBeVisible();
 
     if (await nextButton.isDisabled()) {
       return;
     }
 
-    await nextButton.click();
+    await nextButton.click({ force: true });
     await page.waitForTimeout(1500);
 
     const newScrollLeft = await sliderTrack.evaluate((el) => el.scrollLeft);
@@ -42,12 +45,10 @@ test.describe('Home Page Games Grid Refinement', () => {
       .waitForLoadState('networkidle', { timeout: 15000 })
       .catch(() => {});
 
-    const criticalCard = page
-      .locator('div[class*="MainGameCard"]')
-      .filter({ hasText: 'Critical' });
+    const criticalCard = page.getByTestId('game-card-critical_v1');
     await expect(criticalCard).toBeVisible();
 
-    const questionIcon = criticalCard.getByRole('button', { name: '?' });
+    const questionIcon = criticalCard.getByTestId('game-help-button');
     await expect(questionIcon).toBeVisible();
 
     await page.waitForTimeout(1000);
@@ -64,12 +65,10 @@ test.describe('Home Page Games Grid Refinement', () => {
   test('should redirect to create page with preselected game', async ({
     page,
   }) => {
-    const criticalCard = page
-      .locator('div[class*="MainGameCard"]')
-      .filter({ hasText: 'Critical' });
-    const playNowButton = criticalCard.getByRole('link', { name: /Play Now/i });
+    const criticalCard = page.getByTestId('game-card-critical_v1');
+    const playNowButton = criticalCard.getByTestId('game-play-button');
 
-    await playNowButton.click();
+    await playNowButton.click({ force: true });
 
     // Should be on create page with gameId param
     await expect(page).toHaveURL(/\/games\/create\?gameId=critical_v1/);

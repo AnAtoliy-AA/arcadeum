@@ -76,6 +76,7 @@ export function HeaderInteractive() {
               variant="ghost"
               size="sm"
               isActive={pathname === item.href}
+              data-testid={`nav-${item.href.replace('/', '') || 'home'}`}
             >
               {item.label}
             </NavHeaderLink>

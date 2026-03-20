@@ -35,7 +35,7 @@ export function useScrollReveal<T extends HTMLElement = HTMLElement>(
         }
       },
       {
-        threshold: options.threshold ?? 0.12,
+        threshold: options.threshold ?? 0.01,
         rootMargin: options.rootMargin ?? '0px',
       },
     );

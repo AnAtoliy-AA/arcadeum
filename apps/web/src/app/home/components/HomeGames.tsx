@@ -170,6 +170,7 @@ export function HomeGames() {
           {featuredGames.map((game) => (
             <SliderItem key={game.id} style={{ scrollSnapAlign: 'center' }}>
               <MainGameCard
+                data-testid={`game-card-${game.id}`}
                 padding="$5"
                 flex={1}
                 className="game-card-hover"
@@ -192,6 +193,7 @@ export function HomeGames() {
                   <GameHeaderWrapper>
                     <StyledGameIcon>{game.emoji}</StyledGameIcon>
                     <GameTitle
+                      data-testid={`game-title-${game.id}`}
                       style={{
                         background: game.gradient,
                         WebkitBackgroundClip: 'text',
@@ -206,6 +208,7 @@ export function HomeGames() {
                         openDetails(game.id, 'rules', e)
                       }
                       title={homeCopy.showMore ?? 'Show Details'}
+                      data-testid="game-help-button"
                     >
                       <GameDescription fontSize={14} opacity={1} margin={0}>
                         ?
@@ -229,6 +232,7 @@ export function HomeGames() {
                           : '#'
                       }
                       fullWidth
+                      data-testid="game-play-button"
                     >
                       {game.isPlayable
                         ? (homeCopy.gamePlayButton ?? 'Play Now')
@@ -246,6 +250,7 @@ export function HomeGames() {
             tag="button"
             onClick={() => scroll('left')}
             aria-label="Previous game"
+            data-testid="prev-game-button"
             opacity={canScrollLeft ? 1 : 0.3}
             pointerEvents={canScrollLeft ? 'auto' : 'none'}
           >
@@ -266,6 +271,7 @@ export function HomeGames() {
             tag="button"
             onClick={() => scroll('right')}
             aria-label="Next game"
+            data-testid="next-game-button"
             opacity={canScrollRight ? 1 : 0.3}
             pointerEvents={canScrollRight ? 'auto' : 'none'}
           >

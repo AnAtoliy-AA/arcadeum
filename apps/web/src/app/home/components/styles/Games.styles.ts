@@ -1,6 +1,6 @@
 'use client';
 
-import { styled, YStack, XStack, Text } from 'tamagui';
+import { styled, YStack, XStack, Text, H3 } from 'tamagui';
 
 export const SliderSection = styled(YStack, {
   name: 'SliderSection',
@@ -29,7 +29,7 @@ export const SliderItem = styled(YStack, {
   name: 'SliderItem',
   flexShrink: 0,
   width: 360,
-  height: 320,
+  height: 420,
 });
 
 export const SliderControls = styled(XStack, {
@@ -62,8 +62,10 @@ export const SliderButton = styled(YStack, {
   },
 });
 
-// MainGameCard uses GlassCard from packages/ui — imported directly in component
-export { GlassCard as MainGameCard } from '@/shared/ui';
+import { GlassCard } from '@/shared/ui';
+export const MainGameCard = styled(GlassCard, {
+  name: 'MainGameCard',
+});
 
 export const MainGameInfo = styled(YStack, {
   name: 'MainGameInfo',
@@ -85,7 +87,7 @@ export const StyledGameIcon = styled(Text, {
   lineHeight: 1 as any,
 });
 
-export const GameTitle = styled(Text, {
+export const GameTitle = styled(H3, {
   name: 'GameTitle',
   margin: 0,
   fontSize: '$6',

@@ -63,15 +63,16 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
       data-testid="mobile-nav"
     >
       {navItems.map((item) => (
-        <NavMobileLink
-          key={item.href}
-          href={item.href}
-          variant="ghost"
-          size="sm"
-          isActive={pathname === item.href}
-          onClick={onClose}
-          fullWidth
-        >
+          <NavMobileLink
+            key={item.href}
+            href={item.href}
+            variant="ghost"
+            size="sm"
+            isActive={pathname === item.href}
+            onClick={onClose}
+            fullWidth
+            data-testid={`mobile-nav-${item.href.replace('/', '') || 'home'}`}
+          >
           {item.label}
         </NavMobileLink>
       ))}

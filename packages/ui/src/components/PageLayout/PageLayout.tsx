@@ -1,7 +1,7 @@
-import { YStack, styled } from 'tamagui';
+import { Main, styled } from 'tamagui';
 import type { ComponentProps } from 'react';
 
-export const PageLayout = styled(YStack, {
+export const PageLayout = styled(Main, {
   name: 'PageLayout',
   minHeight: '100vh',
   padding: '$5',

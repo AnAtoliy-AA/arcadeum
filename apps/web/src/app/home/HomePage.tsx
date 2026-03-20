@@ -30,6 +30,7 @@ export function HomePage() {
   return (
     <>
       <PageLayout
+        data-testid="page-layout"
         justifyContent="flex-start"
         alignItems="stretch"
         padding={0}

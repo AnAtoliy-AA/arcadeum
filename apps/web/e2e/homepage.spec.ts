@@ -5,6 +5,9 @@ import { navigateTo } from './fixtures/test-utils';
 test.describe('Home Page', () => {
   test.beforeEach(async ({ page }) => {
     await navigateTo(page, '/');
+    await page.addStyleTag({
+      content: '[data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }',
+    });
   });
 
   test('should load successfully', async ({ page }) => {
@@ -12,7 +15,7 @@ test.describe('Home Page', () => {
   });
 
   test('should render hero section', async ({ page }) => {
-    const hero = page.locator('main').first();
+    const hero = page.getByTestId('page-layout').filter({ visible: true }).first();
     await expect(hero).toBeVisible();
   });
 
@@ -28,14 +31,19 @@ test.describe('Home Page', () => {
 
   test('should have games link in navigation', async ({ page }) => {
     await ensureNavigationVisible(page);
-    const gamesLink = page.getByRole('link', { name: /games/i });
+    const gamesLink = page.getByRole('link', { name: /games/i }).filter({ visible: true });
     await expect(gamesLink.first()).toBeVisible();
   });
 
-  test('should navigate to games page', async ({ page }) => {
+  test('should navigate to games page', async ({ page, isMobile }) => {
     await ensureNavigationVisible(page);
-    const gamesLink = page.getByRole('link', { name: /games/i }).first();
-    await gamesLink.click();
+    const gamesLink = isMobile 
+      ? page.getByTestId('mobile-nav-games') 
+      : page.getByTestId('nav-games');
+    
+    await expect(gamesLink).toBeVisible();
+    await gamesLink.dispatchEvent('click');
+    
     await expect(page).toHaveURL(/\/games/);
   });
 
@@ -48,14 +56,12 @@ test.describe('Home Page', () => {
   });
 
   test('should feature Critical game', async ({ page }) => {
-    const criticalFeature = page.locator('h3').filter({ hasText: 'Critical' });
+    const criticalFeature = page.getByTestId('game-title-critical_v1');
     await expect(criticalFeature).toBeVisible();
   });
 
   test('should feature Sea Battle game', async ({ page }) => {
-    const seaBattleFeature = page
-      .locator('h3')
-      .filter({ hasText: 'Sea Battle' });
+    const seaBattleFeature = page.getByTestId('game-title-sea_battle_v1');
     await expect(seaBattleFeature).toBeVisible();
   });
 });

@@ -14,6 +14,7 @@ export const StepsContainer = styled(YStack, {
   maxWidth: 700,
   alignSelf: 'center',
   width: '100%',
+  height: 'auto',
 
   $gtMd: {
     flexDirection: 'row',
@@ -24,13 +25,17 @@ export const StepsContainer = styled(YStack, {
 
 export const StepItem = styled(YStack, {
   name: 'StepItem',
-  flex: 1,
+  flexGrow: 1,
+  flexShrink: 0,
+  flexBasis: 'auto',
+  minHeight: 120,
   gap: '$4',
   position: 'relative',
   flexDirection: 'row',
   alignItems: 'flex-start',
 
   $gtMd: {
+    minHeight: 180,
     flexDirection: 'column',
     alignItems: 'center',
   },

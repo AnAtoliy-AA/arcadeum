@@ -19,7 +19,7 @@ export function GameRoomError({
       {isPrivateRoomError && (
         <>
           <br />
-          <LoginLink href="/auth">
+          <LoginLink {...{ href: '/auth' } as any}>
             {t('games.roomPage.errors.loginButton')}
           </LoginLink>
         </>

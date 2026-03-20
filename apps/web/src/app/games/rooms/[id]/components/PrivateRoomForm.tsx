@@ -4,6 +4,7 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   Card,
   Title,
+  titleGradientStyle,
   Description,
   Form,
   InputGroup,
@@ -43,10 +44,10 @@ export function PrivateRoomForm({
   return (
     <Card>
       <LockIcon>🔒</LockIcon>
-      <Title>{t('games.roomPage.privateRoom.title')}</Title>
+      <Title style={titleGradientStyle}>{t('games.roomPage.privateRoom.title')}</Title>
       <Description>{t('games.roomPage.privateRoom.description')}</Description>
 
-      <Form onSubmit={handleSubmit}>
+      <Form {...{ onSubmit: handleSubmit } as any}>
         <InputGroup>
           <Input
             type="text"

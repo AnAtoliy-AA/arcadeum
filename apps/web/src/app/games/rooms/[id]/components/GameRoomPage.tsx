@@ -33,7 +33,7 @@ import type { GameSessionSummary } from '@/shared/types/games';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 
 // Extracted Components
-import { Page, Container, LoadingContainer, GameWrapper } from './styles';
+import { Page, Container, LoadingContainer, GameWrapper, fullscreenStyles } from './styles';
 import { GameRow, ChatPanel } from './layoutStyles';
 import { GameRoomLoading } from './GameRoomLoading';
 import { GameRoomError } from './GameRoomError';
@@ -388,7 +388,9 @@ export default function GameRoomPage() {
 
   return (
     <Page>
-      <Container ref={gameContainerRef}>
+      <style>{fullscreenStyles}</style>
+      <div ref={gameContainerRef} className="game-room-container" style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+      <Container>
         <ConnectionOverlay
           visible={isDisconnected}
           reconnecting={isReconnecting}
@@ -450,6 +452,7 @@ export default function GameRoomPage() {
           </ChatPanel>
         </GameRow>
       </Container>
+      </div>
     </Page>
   );
 }

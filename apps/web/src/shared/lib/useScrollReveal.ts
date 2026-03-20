@@ -22,6 +22,8 @@ export function useScrollReveal<T extends HTMLElement = HTMLElement>(
     const el = ref.current;
     if (!el) return;
 
+    // NOTE: [data-reveal] must be on descendants of the ref element, not on the ref
+    // element itself. The observer target is the container; only its children are revealed.
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {

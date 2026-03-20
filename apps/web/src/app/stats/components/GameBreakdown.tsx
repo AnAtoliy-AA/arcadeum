@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import { styled, XStack, YStack, Text } from 'tamagui';
 import type { PlayerStats } from '@/features/history/api';
 import {
   useTranslation,
@@ -8,6 +8,36 @@ import {
 import { SkeletonCircle, SkeletonText } from '@arcadeum/ui';
 import { ProgressBar } from '@arcadeum/ui';
 import { Section } from '@/shared/ui';
+
+export const gameBreakdownCSS = `
+  .stats-breakdown-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1.5fr;
+    padding: 1rem 1.5rem;
+    background: #151718;
+    border-bottom: 1px solid #32353d;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: rgba(236,239,238,0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .stats-breakdown-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1.5fr;
+    padding: 1rem 1.5rem;
+    background: #151718;
+    border-bottom: 1px solid #32353d;
+    align-items: center;
+    transition: all 0.2s ease;
+  }
+  .stats-breakdown-row:last-child {
+    border-bottom: none;
+  }
+  .stats-breakdown-row:hover {
+    background: rgba(21,23,24,0.87);
+  }
+`;
 
 interface GameBreakdownProps {
   stats: PlayerStats | null;
@@ -20,15 +50,16 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
   if (loading && !stats) {
     return (
       <Section title={t('stats.gameBreakdownTitle')}>
+        <style>{gameBreakdownCSS}</style>
         <Table>
-          <TableHeader>
+          <div className="stats-breakdown-header">
             <div>{t('stats.game')}</div>
             <div>{t('stats.total')}</div>
             <div>{t('stats.wins')}</div>
             <div>{t('stats.winRate')}</div>
-          </TableHeader>
+          </div>
           {[1, 2].map((i) => (
-            <TableRow key={i}>
+            <div key={i} className="stats-breakdown-row">
               <GameInfo>
                 <SkeletonCircle width="40px" height="40px" delay={i * 0.1} />
                 <SkeletonText width="100px" delay={i * 0.1 + 0.05} />
@@ -36,7 +67,7 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
               <SkeletonText width="30px" delay={i * 0.1 + 0.1} />
               <SkeletonText width="30px" delay={i * 0.1 + 0.15} />
               <SkeletonText width="50px" delay={i * 0.1 + 0.2} />
-            </TableRow>
+            </div>
           ))}
         </Table>
       </Section>
@@ -47,15 +78,16 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
 
   return (
     <Section title={t('stats.gameBreakdownTitle')}>
+      <style>{gameBreakdownCSS}</style>
       <Table>
-        <TableHeader>
+        <div className="stats-breakdown-header">
           <div>{t('stats.game')}</div>
           <div>{t('stats.total')}</div>
           <div>{t('stats.wins')}</div>
           <div>{t('stats.winRate')}</div>
-        </TableHeader>
+        </div>
         {stats.byGameType.map((game) => (
-          <TableRow key={game.gameId}>
+          <div key={game.gameId} className="stats-breakdown-row">
             <GameInfo>
               <GameIcon>🎯</GameIcon>
               <GameName>
@@ -67,80 +99,52 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
             <WinRateCell>
               <ProgressBar value={game.winRate} height={8} showLabel />
             </WinRateCell>
-          </TableRow>
+          </div>
         ))}
       </Table>
     </Section>
   );
 }
 
-const Table = styled.div`
-  width: 100%;
-  border-radius: 12px;
-  overflow: hidden;
-`;
+const Table = styled(YStack, {
+  name: 'GameBreakdownTable',
+  width: '100%',
+  borderRadius: 12,
+  overflow: 'hidden',
+} as any);
 
-const TableHeader = styled.div`
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1.5fr;
-  padding: 1rem 1.5rem;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border-bottom: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: ${({ theme }) => theme.text.muted};
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-`;
+const GameInfo = styled(XStack, {
+  name: 'GameBreakdownGameInfo',
+  alignItems: 'center',
+  gap: '$3',
+} as any);
 
-const TableRow = styled.div`
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1.5fr;
-  padding: 1rem 1.5rem;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border-bottom: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  align-items: center;
-  transition: all 0.2s ease;
+const GameIcon = styled(YStack, {
+  name: 'GameBreakdownGameIcon',
+  width: 40,
+  height: 40,
+  borderRadius: 10,
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: 'rgba(122,215,255,0.082)',
+  fontSize: '$5',
+} as any);
 
-  &:last-child {
-    border-bottom: none;
-  }
+const GameName = styled(Text, {
+  name: 'GameBreakdownGameName',
+  fontWeight: '600',
+  color: '$color',
+} as any);
 
-  &:hover {
-    background: ${({ theme }) => theme.surfaces.card.background}dd;
-  }
-`;
+const StatCell = styled(Text, {
+  name: 'GameBreakdownStatCell',
+  fontWeight: '500',
+  color: '$color',
+} as any);
 
-const GameInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-`;
-
-const GameIcon = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: ${({ theme }) => theme.buttons.primary.gradientStart}15;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-`;
-
-const GameName = styled.div`
-  font-weight: 600;
-  color: ${({ theme }) => theme.text.primary};
-`;
-
-const StatCell = styled.div`
-  font-weight: 500;
-  color: ${({ theme }) => theme.text.primary};
-`;
-
-const WinRateCell = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  min-width: 120px;
-`;
+const WinRateCell = styled(XStack, {
+  name: 'GameBreakdownWinRateCell',
+  alignItems: 'center',
+  gap: '$3',
+  minWidth: 120,
+} as any);

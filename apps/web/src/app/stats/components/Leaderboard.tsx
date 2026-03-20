@@ -1,10 +1,62 @@
 import React, { useRef, useCallback, useEffect } from 'react';
-import styled from 'styled-components';
+import { styled, XStack, YStack, Text } from 'tamagui';
 import type { LeaderboardEntry } from '@/features/history/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { Avatar, Badge, Section, EmptyState } from '@/shared/ui';
 import { SkeletonCircle, SkeletonText, ProgressBar } from '@arcadeum/ui';
 import { Spinner } from '@/shared/ui';
+
+export const leaderboardCSS = `
+  .stats-leaderboard-header {
+    display: grid;
+    grid-template-columns: 60px 2fr 80px 80px 80px 100px;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #32353d;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: rgba(236,239,238,0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: #151718;
+  }
+  @media (max-width: 768px) {
+    .stats-leaderboard-header { display: none; }
+  }
+
+  .stats-leaderboard-row {
+    display: grid;
+    grid-template-columns: 60px 2fr 80px 80px 80px 100px;
+    padding: 1rem 1.5rem;
+    background: #151718;
+    border-bottom: 1px solid #32353d;
+    align-items: center;
+    transition: all 0.2s ease;
+  }
+  .stats-leaderboard-row:last-child {
+    border-bottom: none;
+  }
+  .stats-leaderboard-row:hover {
+    background: rgba(21,23,24,0.87);
+  }
+  .stats-leaderboard-row--current-user {
+    background: rgba(122,215,255,0.063);
+    border-left: 3px solid #7ad7ff;
+  }
+  .stats-leaderboard-row--current-user:hover {
+    background: rgba(122,215,255,0.082);
+  }
+  @media (max-width: 768px) {
+    .stats-leaderboard-row {
+      grid-template-columns: 50px 1fr 60px;
+      gap: 0.5rem;
+    }
+    .stats-leaderboard-row > *:nth-child(4),
+    .stats-leaderboard-row > *:nth-child(5),
+    .stats-leaderboard-row > *:nth-child(6) {
+      display: none;
+    }
+  }
+`;
 
 interface LeaderboardProps {
   leaderboard: LeaderboardEntry[];
@@ -53,17 +105,18 @@ export function Leaderboard({
   if (loading && leaderboard.length === 0) {
     return (
       <Section title={t('stats.leaderboardTab')}>
+        <style>{leaderboardCSS}</style>
         <Table>
-          <LeaderboardHeader>
+          <div className="stats-leaderboard-header">
             <div>{t('stats.rank')}</div>
             <div>{t('stats.player')}</div>
             <div>{t('stats.games')}</div>
             <div>{t('stats.wins')}</div>
             <div>{t('stats.losses')}</div>
             <div>{t('stats.winRate')}</div>
-          </LeaderboardHeader>
+          </div>
           {[1, 2, 3, 4, 5].map((i) => (
-            <LeaderboardRow key={i}>
+            <div key={i} className="stats-leaderboard-row">
               <SkeletonCircle width="32px" height="32px" delay={i * 0.1} />
               <PlayerInfo>
                 <SkeletonCircle
@@ -81,7 +134,7 @@ export function Leaderboard({
               <SkeletonText width="30px" height="16px" delay={i * 0.1 + 0.2} />
               <SkeletonText width="30px" height="16px" delay={i * 0.1 + 0.25} />
               <SkeletonText width="50px" height="16px" delay={i * 0.1 + 0.3} />
-            </LeaderboardRow>
+            </div>
           ))}
         </Table>
       </Section>
@@ -98,19 +151,25 @@ export function Leaderboard({
 
   return (
     <Section title={t('stats.leaderboardTab')}>
+      <style>{leaderboardCSS}</style>
       <Table>
-        <LeaderboardHeader>
+        <div className="stats-leaderboard-header">
           <div>{t('stats.rank')}</div>
           <div>{t('stats.player')}</div>
           <div>{t('stats.games')}</div>
           <div>{t('stats.wins')}</div>
           <div>{t('stats.losses')}</div>
           <div>{t('stats.winRate')}</div>
-        </LeaderboardHeader>
+        </div>
         {leaderboard.map((entry) => (
-          <LeaderboardRow
+          <div
             key={entry.playerId}
-            $isCurrentUser={entry.playerId === currentUserId}
+            className={
+              'stats-leaderboard-row' +
+              (entry.playerId === currentUserId
+                ? ' stats-leaderboard-row--current-user'
+                : '')
+            }
           >
             <RankDisplay rank={entry.rank} />
             <PlayerInfo>
@@ -125,10 +184,10 @@ export function Leaderboard({
               </PlayerName>
             </PlayerInfo>
             <StatCell>{entry.totalGames}</StatCell>
-            <StatCell $color="$success">{entry.wins}</StatCell>
-            <StatCell $color="$danger">{entry.losses}</StatCell>
+            <StatCell color="$success">{entry.wins}</StatCell>
+            <StatCell color="$danger">{entry.losses}</StatCell>
             <ProgressBar value={entry.winRate} height={6} showLabel />
-          </LeaderboardRow>
+          </div>
         ))}
       </Table>
 
@@ -136,7 +195,9 @@ export function Leaderboard({
         {loadingMore && (
           <LoadingMoreRow>
             <Spinner size="sm" />
-            <span>{t('stats.loadingMore')}</span>
+            <Text color="rgba(236,239,238,0.7)" fontSize="$3">
+              {t('stats.loadingMore')}
+            </Text>
           </LoadingMoreRow>
         )}
         {!hasMore && leaderboard.length > 0 && (
@@ -149,140 +210,77 @@ export function Leaderboard({
 
 function RankDisplay({ rank }: { rank: number }) {
   if (rank === 1) {
-    return <TrophyIcon $rank={1}>🥇</TrophyIcon>;
+    return <TrophyIcon style={{ filter: 'drop-shadow(0 2px 4px rgba(251, 191, 36, 0.5))' }}>🥇</TrophyIcon>;
   }
   if (rank === 2) {
-    return <TrophyIcon $rank={2}>🥈</TrophyIcon>;
+    return <TrophyIcon style={{ filter: 'drop-shadow(0 2px 4px rgba(156, 163, 175, 0.5))' }}>🥈</TrophyIcon>;
   }
   if (rank === 3) {
-    return <TrophyIcon $rank={3}>🥉</TrophyIcon>;
+    return <TrophyIcon style={{ filter: 'drop-shadow(0 2px 4px rgba(217, 119, 6, 0.5))' }}>🥉</TrophyIcon>;
   }
   return <RankBadge>{rank}</RankBadge>;
 }
 
-const Table = styled.div`
-  width: 100%;
-  border-radius: 12px;
-  overflow: hidden;
-`;
+const Table = styled(YStack, {
+  name: 'LeaderboardTable',
+  width: '100%',
+  borderRadius: 12,
+  overflow: 'hidden',
+} as any);
 
-const LeaderboardHeader = styled.div`
-  display: grid;
-  grid-template-columns: 60px 2fr 80px 80px 80px 100px;
-  padding: 1rem 1.5rem;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border-bottom: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: ${({ theme }) => theme.text.muted};
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+const PlayerInfo = styled(XStack, {
+  name: 'LeaderboardPlayerInfo',
+  alignItems: 'center',
+  gap: '$3',
+} as any);
 
-  @media (max-width: 768px) {
-    display: none;
-  }
-`;
+const PlayerName = styled(XStack, {
+  name: 'LeaderboardPlayerName',
+  alignItems: 'center',
+  gap: '$2',
+} as any);
 
-const LeaderboardRow = styled.div<{ $isCurrentUser?: boolean }>`
-  display: grid;
-  grid-template-columns: 60px 2fr 80px 80px 80px 100px;
-  padding: 1rem 1.5rem;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border-bottom: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  align-items: center;
-  transition: all 0.2s ease;
+const StatCell = styled(Text, {
+  name: 'LeaderboardStatCell',
+  fontWeight: '500',
+  color: '$color',
+} as any);
 
-  ${({ $isCurrentUser, theme }) =>
-    $isCurrentUser &&
-    `
-    background: ${theme.buttons.primary.gradientStart}10;
-    border-left: 3px solid ${theme.buttons.primary.gradientStart};
-  `}
+const RankBadge = styled(YStack, {
+  name: 'LeaderboardRankBadge',
+  width: 36,
+  height: 36,
+  borderRadius: 1000,
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: '$background',
+  borderWidth: 1,
+  borderColor: '$borderColor',
+} as any);
 
-  &:last-child {
-    border-bottom: none;
-  }
+const TrophyIcon = styled(Text, {
+  name: 'LeaderboardTrophyIcon',
+  fontSize: '$6',
+} as any);
 
-  &:hover {
-    background: ${({ theme, $isCurrentUser }) =>
-      $isCurrentUser
-        ? `${theme.buttons.primary.gradientStart}15`
-        : `${theme.surfaces.card.background}dd`};
-  }
+const LoadMoreContainer = styled(YStack, {
+  name: 'LeaderboardLoadMoreContainer',
+  minHeight: 60,
+  alignItems: 'center',
+  justifyContent: 'center',
+} as any);
 
-  @media (max-width: 768px) {
-    grid-template-columns: 50px 1fr 60px;
-    gap: 0.5rem;
+const LoadingMoreRow = styled(XStack, {
+  name: 'LeaderboardLoadingMoreRow',
+  alignItems: 'center',
+  gap: '$3',
+  padding: '$4',
+} as any);
 
-    > *:nth-child(4),
-    > *:nth-child(5),
-    > *:nth-child(6) {
-      display: none;
-    }
-  }
-`;
-
-const PlayerInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-`;
-
-const PlayerName = styled.div`
-  font-weight: 600;
-  color: ${({ theme }) => theme.text.primary};
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-`;
-
-const StatCell = styled.div<{ $color?: string }>`
-  font-weight: 500;
-  color: ${({ $color, theme }) => $color || theme.text.primary};
-`;
-
-const RankBadge = styled.div`
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.9rem;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.primary};
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-`;
-
-const TrophyIcon = styled.span<{ $rank: number }>`
-  font-size: 1.5rem;
-  filter: ${({ $rank }) =>
-    $rank === 1
-      ? 'drop-shadow(0 2px 4px rgba(251, 191, 36, 0.5))'
-      : $rank === 2
-        ? 'drop-shadow(0 2px 4px rgba(156, 163, 175, 0.5))'
-        : 'drop-shadow(0 2px 4px rgba(217, 119, 6, 0.5))'};
-`;
-
-const LoadMoreContainer = styled.div`
-  min-height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const LoadingMoreRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: ${({ theme }) => theme.text.secondary};
-  padding: 1rem;
-`;
-
-const EndOfList = styled.div`
-  color: ${({ theme }) => theme.text.muted};
-  font-size: 0.875rem;
-  padding: 1rem;
-  opacity: 0.7;
-`;
+const EndOfList = styled(Text, {
+  name: 'LeaderboardEndOfList',
+  color: 'rgba(236,239,238,0.45)',
+  fontSize: '$2',
+  padding: '$4',
+  opacity: 0.7,
+} as any);

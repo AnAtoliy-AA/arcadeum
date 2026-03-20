@@ -119,7 +119,7 @@ export function HomeFeatures() {
 
           return (
             <FeatureCard key={feature.titleKey} flex={1} minWidth={280}>
-              <FeatureIcon><Text>{feature.icon}</Text></FeatureIcon>
+              <FeatureIcon style={{ boxShadow: '0 4px 20px rgba(87,195,255,0.12)' }}><Text>{feature.icon}</Text></FeatureIcon>
               <FeatureTitle>{title}</FeatureTitle>
               <FeatureDescription>{description}</FeatureDescription>
               {feature.comingSoon && (

@@ -5,13 +5,13 @@ import { SectionContainer } from './Common.styles';
 
 export const FeaturesSection = styled(SectionContainer, {
   name: 'FeaturesSection',
-  gap: '$8',
+  gap: '$10',
 });
 
 export const FeaturesGrid = styled(XStack, {
   name: 'FeaturesGrid',
   flexWrap: 'wrap',
-  gap: '$5',
+  gap: '$6',
 });
 
 // FeatureCard uses GlassCard directly in the component — see HomeFeatures.tsx
@@ -25,7 +25,7 @@ export const FeatureIcon = styled(YStack, {
   borderRadius: 16,
   alignItems: 'center',
   justifyContent: 'center',
-  backgroundColor: '$glassBg',
+  backgroundColor: 'rgba(255,255,255,0.08)',
   borderWidth: 1,
   borderColor: '$glassBorder',
 });

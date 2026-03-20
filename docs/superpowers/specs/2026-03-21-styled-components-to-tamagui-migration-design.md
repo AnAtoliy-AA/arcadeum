@@ -113,8 +113,10 @@ For theme values with **no direct Tamagui token** (muted text, panel surfaces, i
 - `theme.background.radialStart` → use `$backgroundRadialStart`
 - `theme.interactive.download.*` → use `$borderColor` / `$backgroundHover`
 - `theme.interactive.pill.*` → use `$borderColor` / `$backgroundHover`
-- `theme.copyNotice.*` → use `$dangerBgSoft` / `$dangerBorder`
+- `theme.copyNotice` → `color: '$accent'` (text color only — equals `#81f1ff` in dark themes; do NOT use as background/border)
+- `theme.text.notice` → `color: '$accent'` (same as `text.accent` in neon themes; add comment noting divergence for violet/teal themes)
 - `theme.buttons.secondary.*` → use `$secondary` / `$secondaryGradientStart`
+- `theme.buttons.primary.text` → `color: '#050316'` (hardcoded; Tamagui has no inverse-primary token)
 
 ### Responsive Breakpoints
 
@@ -122,16 +124,17 @@ Based on actual values in `packages/ui/src/tamagui.config.ts`:
 
 | CSS media query | Tamagui prop |
 |---|---|
+| `@media (max-width: 480px)` | No Tamagui equivalent — move to inline `<style>` tag with CSS class |
 | `@media (max-width: 660px)` | `$xs` |
 | `@media (max-width: 768px)` or `@media (max-width: 800px)` | `$sm` |
 | `@media (max-width: 1024px)` | `$tablet` |
 | `@media (max-width: 1150px)` | `$md` |
 | `@media (min-width: 661px)` | `$gtXs` |
-| `@media (min-width: 769px)` or `@media (min-width: 801px)` | `$gtSm` |
+| `@media (min-width: 768px)` or `@media (min-width: 769px)` or `@media (min-width: 801px)` | `$gtSm` (1px gap for 768px; same approximation policy) |
 | `@media (min-width: 1151px)` | `$gtMd` |
 | `@media (min-width: 1281px)` | `$gtLg` |
 
-When a source breakpoint (e.g. 768px) doesn't align exactly with a Tamagui breakpoint (800px), choose the closest and note the deviation in a comment.
+When a source breakpoint doesn't align exactly with a Tamagui breakpoint, choose the closest and note the deviation in a comment.
 
 Non-standard media queries (`@media (hover: hover) and (pointer: fine)`, `@media (prefers-reduced-motion)`) have no Tamagui equivalent — move these to an inline `<style>` tag or CSS module.
 
@@ -179,7 +182,7 @@ export const scrollbarStyles = `
   scrollbar-color: rgba(236, 239, 238, 0.45) transparent;
 `;
 ```
-Then search for all consumers of `scrollbarStyles` (`grep -r "scrollbarStyles" apps/web/src`) and update each one to inject the string via `<style>` tag or a CSS className, since Tamagui `styled()` does not support webkit-scrollbar pseudo-elements.
+Run `grep -r "scrollbarStyles" apps/web/src` to find consumers. As of this spec there are zero import consumers (the export is unused), so no propagation work is needed — just convert the module and leave it in place for future use.
 
 **`support/styles.ts` (complex CSS composition):**
 - Replace `css` tagged template helper with plain Tamagui `styled()` objects
@@ -195,6 +198,9 @@ Then search for all consumers of `scrollbarStyles` (`grep -r "scrollbarStyles" a
 
 **`stats/` components (shimmer keyframes):**
 - The `Skeleton` in `stats/styles.ts` uses inline `@keyframes shimmer` — move to inline `<style>` tag with a CSS class
+
+**`games/rooms/[id]/components/styles.ts` (fullscreen pseudo-classes):**
+- The `Container` component uses `:fullscreen`, `:-webkit-full-screen`, and `:-moz-full-screen` pseudo-class blocks with theme tokens inside. Tamagui `styled()` cannot express these. Move these blocks to an inline `<style>` tag injected in the component that renders `Container`, and apply the styles via a CSS class on the container element.
 
 ## Success Criteria (ordered)
 

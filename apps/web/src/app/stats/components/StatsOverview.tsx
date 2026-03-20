@@ -2,7 +2,8 @@ import React from 'react';
 import { styled, YStack, Text } from 'tamagui';
 import type { PlayerStats } from '@/features/history/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { Card, SkeletonText, ProgressCircle } from '@/shared/ui';
+import { Card } from '@/shared/ui';
+import { SkeletonText, ProgressCircle } from '@arcadeum/ui';
 
 export const statsOverviewCSS = `
   .stats-overview-grid {
@@ -48,11 +49,11 @@ export function StatsOverview({ stats, loading }: StatsOverviewProps) {
         </Card>
         <Card variant="glass" cardPadding="md">
           <StatLabel>{t('stats.wins')}</StatLabel>
-          <StatValue style={{ color: '#10b981' }}>{stats.wins}</StatValue>
+          <StatValue color="$success">{stats.wins}</StatValue>
         </Card>
         <Card variant="glass" cardPadding="md">
           <StatLabel>{t('stats.losses')}</StatLabel>
-          <StatValue style={{ color: '#ef4444' }}>{stats.losses}</StatValue>
+          <StatValue color="$danger">{stats.losses}</StatValue>
         </Card>
         <Card variant="glass" cardPadding="md">
           <WinRateCardContent>

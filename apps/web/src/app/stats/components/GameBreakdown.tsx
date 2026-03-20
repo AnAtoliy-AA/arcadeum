@@ -49,8 +49,9 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
 
   if (loading && !stats) {
     return (
-      <Section title={t('stats.gameBreakdownTitle')}>
+      <>
         <style>{gameBreakdownCSS}</style>
+        <Section title={t('stats.gameBreakdownTitle')}>
         <Table>
           <div className="stats-breakdown-header">
             <div>{t('stats.game')}</div>
@@ -70,15 +71,17 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
             </div>
           ))}
         </Table>
-      </Section>
+        </Section>
+      </>
     );
   }
 
   if (!stats?.byGameType?.length) return null;
 
   return (
-    <Section title={t('stats.gameBreakdownTitle')}>
+    <>
       <style>{gameBreakdownCSS}</style>
+      <Section title={t('stats.gameBreakdownTitle')}>
       <Table>
         <div className="stats-breakdown-header">
           <div>{t('stats.game')}</div>
@@ -102,7 +105,8 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
           </div>
         ))}
       </Table>
-    </Section>
+      </Section>
+    </>
   );
 }
 
@@ -119,15 +123,11 @@ const GameInfo = styled(XStack, {
   gap: '$3',
 } as any);
 
-const GameIcon = styled(YStack, {
+const GameIcon = styled(Text, {
   name: 'GameBreakdownGameIcon',
+  fontSize: '$5',
   width: 40,
   height: 40,
-  borderRadius: 10,
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: 'rgba(122,215,255,0.082)',
-  fontSize: '$5',
 } as any);
 
 const GameName = styled(Text, {

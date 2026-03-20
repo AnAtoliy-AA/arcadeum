@@ -104,8 +104,9 @@ export function Leaderboard({
 
   if (loading && leaderboard.length === 0) {
     return (
-      <Section title={t('stats.leaderboardTab')}>
+      <>
         <style>{leaderboardCSS}</style>
+        <Section title={t('stats.leaderboardTab')}>
         <Table>
           <div className="stats-leaderboard-header">
             <div>{t('stats.rank')}</div>
@@ -137,22 +138,27 @@ export function Leaderboard({
             </div>
           ))}
         </Table>
-      </Section>
+        </Section>
+      </>
     );
   }
 
   if (leaderboard.length === 0) {
     return (
-      <Section title={t('stats.leaderboardTab')}>
-        <EmptyState icon="🏆" message={t('stats.noPlayersFound')} />
-      </Section>
+      <>
+        <style>{leaderboardCSS}</style>
+        <Section title={t('stats.leaderboardTab')}>
+          <EmptyState icon="🏆" message={t('stats.noPlayersFound')} />
+        </Section>
+      </>
     );
   }
 
   return (
-    <Section title={t('stats.leaderboardTab')}>
+    <>
       <style>{leaderboardCSS}</style>
-      <Table>
+      <Section title={t('stats.leaderboardTab')}>
+        <Table>
         <div className="stats-leaderboard-header">
           <div>{t('stats.rank')}</div>
           <div>{t('stats.player')}</div>
@@ -207,7 +213,8 @@ export function Leaderboard({
           <EndOfList>{t('stats.endOfLeaderboard')}</EndOfList>
         )}
       </div>
-    </Section>
+      </Section>
+    </>
   );
 }
 

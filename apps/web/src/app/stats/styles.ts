@@ -1,4 +1,3 @@
-import React from 'react';
 import { styled, YStack, Text } from 'tamagui';
 
 export const Page = styled(YStack, {
@@ -17,19 +16,6 @@ export const Container = styled(YStack, {
   padding: '$6',
   paddingHorizontal: '$4',
 } as any);
-
-/** Returns inline CSS for the stats grid container. */
-export function getStatsGridStyle(): React.CSSProperties {
-  return {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-    gap: '1.5rem',
-    marginTop: '2rem',
-  };
-}
-
-export const statsGridCSS =
-  '@media (max-width:800px) { .stats-grid { grid-template-columns: 1fr !important; } }';
 
 // Card is provided by @arcadeum/ui — use <Card variant="default" cardPadding="md"> in JSX
 

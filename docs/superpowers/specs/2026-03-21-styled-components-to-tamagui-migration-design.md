@@ -125,6 +125,7 @@ Based on actual values in `packages/ui/src/tamagui.config.ts`:
 | CSS media query | Tamagui prop |
 |---|---|
 | `@media (max-width: 480px)` | No Tamagui equivalent — move to inline `<style>` tag with CSS class |
+| `@media (max-width: 640px)` | `$xs` (660px; 20px gap — note deviation in comment) |
 | `@media (max-width: 660px)` | `$xs` |
 | `@media (max-width: 768px)` or `@media (max-width: 800px)` | `$sm` |
 | `@media (max-width: 1024px)` | `$tablet` |
@@ -206,8 +207,8 @@ Run `grep -r "scrollbarStyles" apps/web/src` to find consumers. As of this spec 
 
 1. All 6 agent migrations complete with no TypeScript errors in their respective files
 2. `grep -r "\${({ theme })" apps/web/src` returns zero results
-3. `grep -r "from 'styled-components'" apps/web/src` returns zero results
-4. Infrastructure cleanup applied: `StyledComponentsRegistry` becomes a passthrough, `StyledThemeProvider` removed from `ThemeContext`, `styled.d.ts` deleted
+3. Infrastructure cleanup applied: `StyledComponentsRegistry` becomes a passthrough, `StyledThemeProvider` removed from `ThemeContext`, `styled.d.ts` deleted
+4. `grep -r "from 'styled-components'" apps/web/src` returns zero results (infrastructure imports are removed in step 3, so this must run after)
 5. `tsc --noEmit` passes with no errors
 6. All pages render correctly (visual check)
 7. `styled-components` removed from `package.json`

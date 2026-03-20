@@ -16,7 +16,7 @@ export function GamesHeader({ viewMode, onViewModeChange }: GamesHeaderProps) {
 
   return (
     <Header>
-      <Title>{t('games.lounge.activeTitle')}</Title>
+      <Title size="xl" gradient>{t('games.lounge.activeTitle')}</Title>
       <HeaderControls>
         <ViewToggle>
           <Button

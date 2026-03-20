@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { RoomCardComponent } from '../RoomCardComponent';
-import { Spinner, EndOfListText, ScrollSentinel } from '../styles';
+import { Spinner, EndOfListText } from '../styles';
 import type { GamesViewMode } from '../types';
 
 interface GamesListProps {
@@ -50,9 +50,18 @@ export function GamesList({
       ))}
 
       {hasNextPage || isFetchingNextPage ? (
-        <ScrollSentinel ref={observerTarget}>
+        <div
+          ref={observerTarget}
+          style={{
+            gridColumn: '1 / -1',
+            display: 'flex',
+            justifyContent: 'center',
+            padding: '2rem',
+            width: '100%',
+          }}
+        >
           {isFetchingNextPage && <Spinner />}
-        </ScrollSentinel>
+        </div>
       ) : (
         <EndOfListText>{t('games.lounge.noMoreRooms')}</EndOfListText>
       )}

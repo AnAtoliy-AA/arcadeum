@@ -69,13 +69,12 @@ export function HomeHero() {
       <HeroContent>
         <Kicker
           style={{
-            // Use hardcoded dark theme values — tamagui tokens don't resolve in CSS string style props
-            background: 'linear-gradient(90deg, #7ad7ff, #57c3ff, #7ad7ff)',
+            background: 'linear-gradient(90deg, rgba(87,195,255,0.22), rgba(87,195,255,0.08), rgba(87,195,255,0.22))',
             backgroundSize: '200% auto',
             animation: 'fadeInUp 0.6s ease-out 0.15s both, shimmer 3s linear infinite',
           }}
         >
-          {kicker}
+          ✦ {kicker}
         </Kicker>
         <HeroTitle
           id="hero-heading"
@@ -104,10 +103,20 @@ export function HomeHero() {
           <LinkButton href={`${routes.gameCreate}?mode=bot`} variant="secondary" size="lg">
             {playWithBotsLabel}
           </LinkButton>
-          <LinkButton href={supportCta.href} variant="secondary" size="lg">
-            {supportLabel}
-          </LinkButton>
         </HeroActions>
+        <a
+          href={supportCta.href}
+          style={{
+            fontSize: '0.875rem',
+            color: 'inherit',
+            opacity: 0.5,
+            textDecoration: 'underline',
+            cursor: 'pointer',
+            animation: 'fadeInUp 0.6s ease-out 0.5s both',
+          }}
+        >
+          {supportLabel}
+        </a>
       </HeroContent>
 
       <HeroVisual>
@@ -116,7 +125,7 @@ export function HomeHero() {
             <HeroCard
               key={index}
               style={{
-                transform: `rotate(${index * 10 - 10}deg) translate(${index * 20 - 20}px, ${index * -10}px)`,
+                transform: `rotate(${index * 12 - 12}deg) translate(${index * 24 - 24}px, ${index * -12}px)`,
                 zIndex: index,
                 boxShadow: `0 28px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.18)`,
               }}

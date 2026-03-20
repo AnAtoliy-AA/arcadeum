@@ -49,8 +49,8 @@ export const HeroVisual = styled(YStack, {
   name: 'HeroVisual',
   position: 'relative',
   width: '100%',
-  maxWidth: 500,
-  height: 400,
+  maxWidth: 540,
+  height: 460,
   display: 'none',
   alignItems: 'center',
   justifyContent: 'center',
@@ -65,8 +65,8 @@ export const HeroVisual = styled(YStack, {
 export const CardStack = styled(YStack, {
   name: 'CardStack',
   position: 'relative',
-  width: 240,
-  height: 340,
+  width: 280,
+  height: 380,
 });
 
 // HeroCard is a plain styled YStack — per-card transforms applied via style prop at render time
@@ -77,14 +77,14 @@ export const HeroCard = styled(YStack, {
   left: 0,
   right: 0,
   bottom: 0,
-  borderRadius: 18,
+  borderRadius: 20,
   backgroundColor: '$glassBg',
   borderWidth: 4,
   borderColor: 'white',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-between',
-  padding: '$5',
+  padding: '$6',
   overflow: 'hidden',
   transition: 'all 0.5s ease' as any,
 

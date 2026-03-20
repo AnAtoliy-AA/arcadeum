@@ -1,5 +1,6 @@
 'use client';
 
+import { Text } from 'tamagui';
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import { appConfig } from '@/shared/config/app-config';
 import {
@@ -11,6 +12,7 @@ import {
   HowItWorksSection,
   StepsContainer,
   StepItem,
+  StepConnector,
   StepNumber,
   StepContent,
   StepTitle,
@@ -69,7 +71,7 @@ export function HomeHowItWorks() {
         <SectionSubtitle>{sectionSubtitle}</SectionSubtitle>
       </SectionHeader>
       <StepsContainer>
-        {STEPS.map((step) => {
+        {STEPS.map((step, index) => {
           const title =
             (homeCopy as Record<string, string>)[step.titleKey] ??
             step.defaultTitle;
@@ -81,7 +83,12 @@ export function HomeHowItWorks() {
 
           return (
             <StepItem key={step.number}>
-              <StepNumber>{step.number}</StepNumber>
+              {index < STEPS.length - 1 && <StepConnector />}
+              <StepNumber>
+                <Text color="$primary" fontWeight="700" fontSize="$5">
+                  {step.number}
+                </Text>
+              </StepNumber>
               <StepContent>
                 <StepTitle>{title}</StepTitle>
                 <StepDescription>{description}</StepDescription>

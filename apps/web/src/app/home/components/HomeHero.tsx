@@ -22,7 +22,10 @@ import {
 } from './styles/Hero.styles';
 import { LinkButton } from '@/shared/ui';
 import { CARD_VARIANTS } from '@/app/games/create/constants';
-import { YStack } from 'tamagui';
+import { YStack, Text } from 'tamagui';
+
+type WithHtmlProps<T> = T & { tag?: string; href?: string };
+const TextLink = Text as React.ComponentType<WithHtmlProps<React.ComponentProps<typeof Text>>>;
 
 // Define fixed cards for the hero visual to ensure consistency and avoid hydration/purity issues
 const HERO_CARDS = [...CARD_VARIANTS].slice(0, 3).map((v) => ({
@@ -104,19 +107,20 @@ export function HomeHero() {
             {playWithBotsLabel}
           </LinkButton>
         </HeroActions>
-        <a
+        <TextLink
+          tag="a"
           href={supportCta.href}
+          fontSize="$3"
+          color="$color"
+          opacity={0.5}
           style={{
-            fontSize: '0.875rem',
-            color: 'inherit',
-            opacity: 0.5,
             textDecoration: 'underline',
             cursor: 'pointer',
             animation: 'fadeInUp 0.6s ease-out 0.5s both',
           }}
         >
           {supportLabel}
-        </a>
+        </TextLink>
       </HeroContent>
 
       <HeroVisual>

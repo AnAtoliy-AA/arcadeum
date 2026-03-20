@@ -14,7 +14,7 @@ export const PageWrapper = styled(YStack, {
 export const SectionContainer = styled(Container, {
   name: 'SectionContainer',
   size: 'xl',
-  paddingVertical: '$10',
+  paddingVertical: '$12',
 } as any);
 
 export const SectionHeader = styled(Container, {
@@ -32,13 +32,14 @@ export const SectionTitle = styled(H2, {
   fontWeight: '700',
   color: '$color',
   textAlign: 'center',
+  letterSpacing: -0.5,
 });
 
 export const SectionSubtitle = styled(Text, {
   name: 'SectionSubtitle',
   fontSize: '$4',
   color: '$color',
-  opacity: 0.6,
+  opacity: 0.7,
   textAlign: 'center',
   maxWidth: 600,
   marginHorizontal: 'auto',

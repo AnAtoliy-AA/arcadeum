@@ -64,4 +64,14 @@ test.describe('Home Page', () => {
     const seaBattleFeature = page.getByTestId('game-title-sea_battle_v1');
     await expect(seaBattleFeature).toBeVisible();
   });
+
+  test('should render hero cards stack on desktop', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'Hero cards are only visible on desktop');
+    const cardStack = page.locator('.hero-card-stack').first();
+    await expect(cardStack).toBeVisible();
+    
+    // Check that there are at least 3 cards built
+    const heroCards = cardStack.locator('> div');
+    await expect(heroCards).toHaveCount(3);
+  });
 });

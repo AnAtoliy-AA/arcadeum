@@ -22,17 +22,17 @@ import {
 } from './styles/Hero.styles';
 import { LinkButton } from '@/shared/ui';
 import { CARD_VARIANTS } from '@/app/games/create/constants';
-import { YStack, Text, useTheme } from 'tamagui';
+import { YStack, XStack, Text, useTheme } from 'tamagui';
 
 type WithHtmlProps<T> = T & { tag?: string; href?: string };
 const TextLink = Text as React.ComponentType<WithHtmlProps<React.ComponentProps<typeof Text>>>;
 
-// Define fixed cards for the hero visual to ensure consistency and avoid hydration/purity issues
-const HERO_CARDS = [...CARD_VARIANTS].slice(0, 3).map((v) => ({
+type ThemeColor = '$red10' | '$blue10' | '$purple10';
+const THEME_COLORS: ThemeColor[] = ['$red10', '$blue10', '$purple10'];
+const HERO_CARDS = [...CARD_VARIANTS].slice(0, 3).map((v, i) => ({
   name: v.name,
   icon: v.emoji,
-  // Extract the first color from the gradient string for the glow effect
-  color: v.gradient.match(/#[0-9A-Fa-f]{6}/)?.[0] ?? '#FF4D4D',
+  colorToken: THEME_COLORS[i % THEME_COLORS.length],
 }));
 
 export function HomeHero() {
@@ -125,41 +125,50 @@ export function HomeHero() {
       </HeroContent>
 
       <HeroVisual>
-        <CardStack className="hero-card-stack" style={{ animation: 'float 6s ease-in-out infinite' }}>
-          {cards.map((card, index) => (
-            <HeroCard
-              key={index}
-              style={{
-                transform: `rotate(${index * 12 - 12}deg) translate(${index * 24 - 24}px, ${index * -12}px)`,
-                zIndex: index,
-                boxShadow: `0 28px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.18)`,
-              }}
-            >
-              {/* Colour overlay replaces ::before */}
+        <CardStack className="hero-card-stack">
+          {cards.map((card, index) => {
+            const isCenter = index === 1;
+            
+            // Fanned out by default
+            const x = index * 40 - 40;
+            const y = index * -15;
+            const rotate = `${index * 16 - 16}deg`;
+
+            return (
+              <HeroCard
+                key={index}
+                rotate={rotate as any}
+                x={x}
+                y={y}
+                zIndex={index}
+                animation="quick"
+                hoverStyle={{
+                  zIndex: 10,
+                  scale: 1.05,
+                  y: y - 10,
+                }}
+              >
               <YStack
                 position="absolute"
-                top={0}
-                left={0}
-                right={0}
-                bottom={0}
+                inset={0}
                 zIndex={0}
                 pointerEvents="none"
-                style={{
-                  background: `linear-gradient(135deg, ${card.color}15, transparent)`,
-                }}
+                opacity={0.15}
+                backgroundColor={card.colorToken}
               />
-              <div className="card-top" style={{ position: 'relative', zIndex: 1 }}>
-                <span>{t(card.name as TranslationKey) || card.name}</span>
-                <span>{card.icon}</span>
-              </div>
-              <div className="card-center" style={{ position: 'relative', zIndex: 1 }}>
-                {card.icon}
-              </div>
-              <div className="card-bottom" style={{ position: 'relative', zIndex: 1 }}>
-                <span>{heroCardBrand}</span>
-              </div>
+              <XStack position="relative" zIndex={1} justifyContent="space-between">
+                <Text color="white" fontWeight="bold">{t(card.name as TranslationKey) || card.name}</Text>
+                <Text>{card.icon}</Text>
+              </XStack>
+              <YStack position="relative" zIndex={1} alignItems="center" justifyContent="center" flex={1}>
+                <Text fontSize={120} lineHeight={120}>{card.icon}</Text>
+              </YStack>
+              <XStack position="relative" zIndex={1} justifyContent="center">
+                <Text color="white" opacity={0.5} fontWeight="bold" letterSpacing={2}>{heroCardBrand}</Text>
+              </XStack>
             </HeroCard>
-          ))}
+            );
+          })}
         </CardStack>
       </HeroVisual>
     </HeroSection>

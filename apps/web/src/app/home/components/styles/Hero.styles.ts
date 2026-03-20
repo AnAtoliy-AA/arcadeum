@@ -1,6 +1,7 @@
 'use client';
 
 import { styled, YStack, XStack, Text, H1 } from 'tamagui';
+import { GlassCard } from '@/shared/ui';
 
 export const HeroSection = styled(YStack, {
   name: 'HeroSection',
@@ -62,30 +63,31 @@ export const HeroVisual = styled(YStack, {
   },
 });
 
+const floatAnimation = { animation: 'float 6s ease-in-out infinite' };
+
 export const CardStack = styled(YStack, {
   name: 'CardStack',
   position: 'relative',
   width: 280,
   height: 380,
+  ...floatAnimation,
 });
 
-// HeroCard is a plain styled YStack — per-card transforms applied via style prop at render time
-export const HeroCard = styled(YStack, {
+const quickAnimation = { animation: 'quick' };
+
+export const HeroCard = styled(GlassCard, {
   name: 'HeroCard',
   position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
+  inset: 0,
   borderRadius: 20,
-  backgroundColor: '$glassBg',
-  borderWidth: 4,
-  borderColor: 'white',
+  borderWidth: 2,
+  borderColor: '$glassBorderHover',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-between',
   padding: '$6',
   overflow: 'hidden',
+  ...quickAnimation,
 });
 
 export const Kicker = styled(Text, {

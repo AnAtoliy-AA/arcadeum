@@ -117,7 +117,7 @@ export function HomeFeatures() {
             feature.defaultDescription;
 
           return (
-            <FeatureCard key={feature.titleKey}>
+            <FeatureCard key={feature.titleKey} flex={1} minWidth={280}>
               <FeatureIcon>{feature.icon}</FeatureIcon>
               <FeatureTitle>{title}</FeatureTitle>
               <FeatureDescription>{description}</FeatureDescription>

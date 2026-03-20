@@ -214,6 +214,16 @@ a {
     transform: none;
     transition: none;
   }
+  .game-card-hover,
+  .feature-card-hover,
+  .step-number-hover {
+    transition: none !important;
+  }
+  .game-card-hover:hover,
+  .feature-card-hover:hover,
+  .step-number-hover:hover {
+    transform: none !important;
+  }
 }
 
 /* ─── Home: Game card hover lift ──────────────────────── */

@@ -85,7 +85,7 @@ export function HomeHowItWorks() {
             formatMessage(rawDescription, { appName }) ?? rawDescription;
 
           return (
-            <StepItem key={step.number} data-reveal data-reveal-delay={String(index + 2)}>
+            <StepItem key={step.number} data-reveal data-reveal-delay={String(Math.min(index + 2, 6))}>
               {index < STEPS.length - 1 && (
                 <StepConnector
                   style={{

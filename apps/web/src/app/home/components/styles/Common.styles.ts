@@ -8,16 +8,18 @@ export const PageWrapper = styled(YStack, {
   tag: 'main',
   minHeight: '100vh',
   flexDirection: 'column',
-  overflow: 'hidden',
+  overflowX: 'hidden',
 } as any);
 
 export const SectionContainer = styled(Container, {
   name: 'SectionContainer',
+  size: 'xl',
   paddingVertical: '$10',
 } as any);
 
 export const SectionHeader = styled(Container, {
   name: 'SectionHeader',
+  size: 'xl',
   paddingVertical: 0,
   alignItems: 'center',
   gap: '$3',

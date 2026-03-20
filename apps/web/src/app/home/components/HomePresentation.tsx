@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { YStack } from 'tamagui';
 import { appConfig } from '@/shared/config/app-config';
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
+import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 import {
   PresentationSection,
   VideoContainer,
@@ -29,6 +30,7 @@ export function HomePresentation() {
   const { presentationVideoId, appName } = appConfig;
   const { messages } = useLanguage();
   const [isPlaying, setIsPlaying] = useState(false);
+  const sectionRef = useScrollReveal<HTMLDivElement>();
   const homeCopy = messages.home ?? {};
 
   if (!presentationVideoId) {
@@ -47,12 +49,12 @@ export function HomePresentation() {
   // from img.youtube.com before the user clicks play.
 
   return (
-    <PresentationSection data-testid="presentation-section">
-      <SectionHeader>
+    <PresentationSection data-testid="presentation-section" ref={sectionRef as any}>
+      <SectionHeader data-reveal data-reveal-delay="1">
         <SectionTitle>{sectionTitle}</SectionTitle>
         <SectionSubtitle>{sectionSubtitle}</SectionSubtitle>
       </SectionHeader>
-      <VideoContainer>
+      <VideoContainer data-reveal data-reveal-delay="2">
         {isPlaying ? (
           <VideoIframeEl
             tag="iframe"

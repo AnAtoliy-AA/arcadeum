@@ -91,6 +91,26 @@ const DEFAULT_THEME_OPTIONS: Array<{
     label: 'Neon Dark',
     description: 'High-contrast vaporwave styling for dramatic game tables.',
   },
+  {
+    code: 'violetDark',
+    label: 'Violet Dark',
+    description: 'Deep violet-black with lavender glass and purple glow.',
+  },
+  {
+    code: 'violetLight',
+    label: 'Violet Light',
+    description: 'Soft lavender-white with crisp violet accents.',
+  },
+  {
+    code: 'tealDark',
+    label: 'Teal Dark',
+    description: 'Deep teal-black with mint glass and ocean glow.',
+  },
+  {
+    code: 'tealLight',
+    label: 'Teal Light',
+    description: 'Fresh teal-white with clean emerald accents.',
+  },
 ];
 
 const LANGUAGE_LABELS: Record<Locale, string> = {

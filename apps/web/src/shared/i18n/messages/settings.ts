@@ -46,6 +46,22 @@ const settingsMessagesDefinition = {
         description:
           'High-contrast vaporwave styling for dramatic game tables.',
       },
+      violetDark: {
+        label: 'Violet Dark',
+        description: 'Deep violet-black with lavender glass and purple glow.',
+      },
+      violetLight: {
+        label: 'Violet Light',
+        description: 'Soft lavender-white with crisp violet accents.',
+      },
+      tealDark: {
+        label: 'Teal Dark',
+        description: 'Deep teal-black with mint glass and ocean glow.',
+      },
+      tealLight: {
+        label: 'Teal Light',
+        description: 'Fresh teal-white with clean emerald accents.',
+      },
     },
     languageTitle: 'Language',
     languageDescription:
@@ -121,6 +137,22 @@ const settingsMessagesDefinition = {
         description:
           'Estilo vaporwave de alto contraste para mesas dramáticas.',
       },
+      violetDark: {
+        label: 'Violet Dark',
+        description: 'Deep violet-black with lavender glass and purple glow.',
+      },
+      violetLight: {
+        label: 'Violet Light',
+        description: 'Soft lavender-white with crisp violet accents.',
+      },
+      tealDark: {
+        label: 'Teal Dark',
+        description: 'Deep teal-black with mint glass and ocean glow.',
+      },
+      tealLight: {
+        label: 'Teal Light',
+        description: 'Fresh teal-white with clean emerald accents.',
+      },
     },
     languageTitle: 'Idioma',
     languageDescription:
@@ -194,6 +226,22 @@ const settingsMessagesDefinition = {
         label: 'Néon sombre',
         description:
           'Style vaporwave à fort contraste pour des tables spectaculaires.',
+      },
+      violetDark: {
+        label: 'Violet Dark',
+        description: 'Deep violet-black with lavender glass and purple glow.',
+      },
+      violetLight: {
+        label: 'Violet Light',
+        description: 'Soft lavender-white with crisp violet accents.',
+      },
+      tealDark: {
+        label: 'Teal Dark',
+        description: 'Deep teal-black with mint glass and ocean glow.',
+      },
+      tealLight: {
+        label: 'Teal Light',
+        description: 'Fresh teal-white with clean emerald accents.',
       },
     },
     languageTitle: 'Langue',
@@ -269,6 +317,22 @@ const settingsMessagesDefinition = {
         description:
           'Высококонтрастный стиль vaporwave для эффектных игровых столов.',
       },
+      violetDark: {
+        label: 'Violet Dark',
+        description: 'Deep violet-black with lavender glass and purple glow.',
+      },
+      violetLight: {
+        label: 'Violet Light',
+        description: 'Soft lavender-white with crisp violet accents.',
+      },
+      tealDark: {
+        label: 'Teal Dark',
+        description: 'Deep teal-black with mint glass and ocean glow.',
+      },
+      tealLight: {
+        label: 'Teal Light',
+        description: 'Fresh teal-white with clean emerald accents.',
+      },
     },
     languageTitle: 'Язык',
     languageDescription:
@@ -342,6 +406,22 @@ const settingsMessagesDefinition = {
         label: 'Неонавая цёмная',
         description:
           'Высакакантрастны стыль vaporwave для эфектных гульнявых сталоў.',
+      },
+      violetDark: {
+        label: 'Violet Dark',
+        description: 'Deep violet-black with lavender glass and purple glow.',
+      },
+      violetLight: {
+        label: 'Violet Light',
+        description: 'Soft lavender-white with crisp violet accents.',
+      },
+      tealDark: {
+        label: 'Teal Dark',
+        description: 'Deep teal-black with mint glass and ocean glow.',
+      },
+      tealLight: {
+        label: 'Teal Light',
+        description: 'Fresh teal-white with clean emerald accents.',
       },
     },
     languageTitle: 'Мова',

@@ -1,16 +1,22 @@
 'use client';
 
 import { useState } from 'react';
+import { YStack } from 'tamagui';
 import { appConfig } from '@/shared/config/app-config';
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import {
   PresentationSection,
   VideoContainer,
   VideoPlaceholder,
-  ThumbnailImage,
   PlaceholderOverlay,
   PlayButton,
 } from './styles/Presentation.styles';
+
+// Tamagui styled YStack types don't expose `tag` even though it works at runtime.
+type WithHtmlProps<T> = T & { tag?: string };
+const PlayButtonEl = PlayButton as React.ComponentType<
+  WithHtmlProps<React.ComponentProps<typeof PlayButton>>
+>;
 import {
   SectionHeader,
   SectionTitle,
@@ -44,35 +50,51 @@ export function HomePresentation() {
         <SectionTitle>{sectionTitle}</SectionTitle>
         <SectionSubtitle>{sectionSubtitle}</SectionSubtitle>
       </SectionHeader>
-      <VideoContainer>
+      <VideoContainer style={{ paddingBottom: '56.25%' }}>
         {isPlaying ? (
           <iframe
-            src={`https://www.youtube-nocookie.com/embed/${presentationVideoId}?autoplay=1&rel=0&controls=1&mute=0&partitioned=1&widget_referrer=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+            src={`https://www.youtube-nocookie.com/embed/${presentationVideoId}?autoplay=1&rel=0&controls=1&mute=0`}
             allowFullScreen
             title="Arcadeum Trailer"
             sandbox="allow-scripts allow-same-origin allow-popups"
           />
         ) : (
-          <VideoPlaceholder
-            onClick={() => setIsPlaying(true)}
-            data-testid="video-placeholder"
-          >
-            <ThumbnailImage
+          <VideoPlaceholder onClick={() => setIsPlaying(true)} data-testid="video-placeholder">
+            <img
               src="/images/home/video-cover.png"
               alt="Arcadeum Trailer Illustration"
               loading="lazy"
               data-testid="video-thumbnail"
+              style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
             />
-            <PlaceholderOverlay />
-            <PlayButton
+            <PlaceholderOverlay
+              style={{
+                background: 'radial-gradient(circle at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%)',
+              }}
+            />
+            {/* Pulse ring replaces ::after */}
+            <YStack
+              position="absolute"
+              width={90}
+              height={90}
+              borderRadius={999}
+              borderWidth={2.5}
+              borderColor="rgba(255,255,255,0.5)"
+              zIndex={1}
+              pointerEvents="none"
+              style={{ animation: 'playButtonPulse 3s infinite' }}
+            />
+            <PlayButtonEl
+              tag="button"
               onClick={() => setIsPlaying(true)}
               aria-label="Play video"
               data-testid="play-btn"
             >
-              <svg viewBox="0 0 24 24">
+              <svg viewBox="0 0 24 24" style={{ width: 38, height: 38, fill: 'white', marginLeft: 6 }}>
                 <path d="M8 5v14l11-7z" />
               </svg>
-            </PlayButton>
+            </PlayButtonEl>
           </VideoPlaceholder>
         )}
       </VideoContainer>

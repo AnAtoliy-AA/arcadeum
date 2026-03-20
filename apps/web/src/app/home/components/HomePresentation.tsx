@@ -54,7 +54,7 @@ export function HomePresentation() {
         {isPlaying ? (
           <iframe
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
-            src={`https://www.youtube-nocookie.com/embed/${presentationVideoId}?autoplay=1&rel=0&controls=1&mute=0`}
+            src={`https://www.youtube-nocookie.com/embed/${presentationVideoId}?autoplay=1&rel=0&controls=1&mute=0&partitioned=1&widget_referrer=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
             allowFullScreen
             title="Arcadeum Trailer"
             sandbox="allow-scripts allow-same-origin allow-popups"

@@ -89,30 +89,26 @@ export const HeroCard = styled(YStack, {
 });
 
 export const Kicker = styled(Text, {
-  name: 'Kicker',
   fontSize: '$3',
   fontWeight: '700',
-  letterSpacing: 3,
+  letterSpacing: 2,
   textTransform: 'uppercase',
   color: 'white',
   borderRadius: 999,
   paddingHorizontal: '$5',
   paddingVertical: '$2',
   marginBottom: '$2',
-  display: 'inline-block' as any,
+  display: 'inline-flex',
   borderWidth: 1,
   borderColor: 'rgba(255,255,255,0.2)',
 });
 
 export const HeroTitle = styled(H1, {
-  name: 'HeroTitle',
-  margin: 0,
   fontWeight: '800',
-  lineHeight: 1.1 as any,
+  lineHeight: '1.1' as unknown as number,
 });
 
 export const Tagline = styled(Text, {
-  name: 'Tagline',
   margin: 0,
   fontSize: '$6',
   fontWeight: '600',
@@ -120,17 +116,15 @@ export const Tagline = styled(Text, {
 });
 
 export const HeroDescription = styled(Text, {
-  name: 'HeroDescription',
   margin: 0,
   maxWidth: 500,
   fontSize: '$4',
-  lineHeight: '$5' as any,
+  lineHeight: '$5',
   color: '$color',
   opacity: 0.75,
 });
 
 export const HeroActions = styled(XStack, {
-  name: 'HeroActions',
   marginTop: '$4',
   flexWrap: 'wrap',
   gap: '$4',

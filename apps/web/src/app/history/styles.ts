@@ -1,4 +1,3 @@
-export * from './styles/structure';
 export * from './styles/header';
 export * from './styles/filters';
 export * from './styles/entries';

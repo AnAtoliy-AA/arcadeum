@@ -22,7 +22,7 @@ import {
 } from './styles/Hero.styles';
 import { LinkButton } from '@/shared/ui';
 import { CARD_VARIANTS } from '@/app/games/create/constants';
-import { YStack, Text } from 'tamagui';
+import { YStack, Text, useTheme } from 'tamagui';
 
 type WithHtmlProps<T> = T & { tag?: string; href?: string };
 const TextLink = Text as React.ComponentType<WithHtmlProps<React.ComponentProps<typeof Text>>>;
@@ -38,6 +38,7 @@ const HERO_CARDS = [...CARD_VARIANTS].slice(0, 3).map((v) => ({
 export function HomeHero() {
   const { messages } = useLanguage();
   const { snapshot, hydrated } = useSessionTokens();
+  const theme = useTheme();
   const homeCopy = messages.home ?? {};
 
   const { appName, primaryCta, supportCta } = appConfig;
@@ -72,7 +73,7 @@ export function HomeHero() {
       <HeroContent>
         <Kicker
           style={{
-            background: 'linear-gradient(90deg, rgba(87,195,255,0.22), rgba(87,195,255,0.08), rgba(87,195,255,0.22))',
+            background: `linear-gradient(90deg, ${theme.primaryGradientStart?.get() ?? 'rgba(87,195,255,0.22)'}38, ${theme.primaryGradientStart?.get() ?? 'rgba(87,195,255,0.08)'}14, ${theme.primaryGradientStart?.get() ?? 'rgba(87,195,255,0.22)'}38)`,
             backgroundSize: '200% auto',
             animation: 'fadeInUp 0.6s ease-out 0.15s both, shimmer 3s linear infinite',
           }}
@@ -83,7 +84,7 @@ export function HomeHero() {
           id="hero-heading"
           style={{
             fontSize: 'clamp(3.5rem, 8vw, 6rem)',
-            background: 'linear-gradient(135deg, #ffffff 0%, #57c3ff 50%, #8f9bff 100%)',
+            background: `linear-gradient(135deg, ${theme.color?.get() ?? '#ffffff'} 0%, ${theme.primaryGradientStart?.get() ?? '#57c3ff'} 50%, ${theme.primaryGradientEnd?.get() ?? '#8f9bff'} 100%)`,
             backgroundSize: '200% auto',
             backgroundClip: 'text',
             WebkitBackgroundClip: 'text',

@@ -20,6 +20,7 @@ const StyledTitle = styled(H1, {
   letterSpacing: -0.5,
   overflow: 'visible',
   color: '$color',
+  lineHeight: '1.2' as unknown as number,
 
   variants: {
     gradient: {

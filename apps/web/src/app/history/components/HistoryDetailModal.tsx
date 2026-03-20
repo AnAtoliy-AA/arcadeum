@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@arcadeum/ui';
+import { Button, Avatar, Badge, Card, ArrowLeftIcon, XStack } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   Modal,
@@ -12,8 +12,6 @@ import {
   ErrorState,
   Section,
 } from '@/shared/ui';
-import { Avatar, Badge, Card } from '@arcadeum/ui';
-import { ArrowLeftIcon } from '@arcadeum/ui';
 import type {
   HistorySummary,
   HistoryDetail,
@@ -33,7 +31,6 @@ import {
   LogScope,
   LogSender,
   LogMessage,
-  ConfirmRow,
 } from '../styles';
 
 interface HistoryDetailModalProps {
@@ -215,14 +212,16 @@ export function HistoryDetailModal({
                   </Badge>
                 )}
                 {showRemoveConfirm ? (
-                  <ConfirmRow>
+                  <XStack gap="$4">
                     <Button
+                      flex={1}
                       variant="secondary"
                       onClick={() => onSetShowRemoveConfirm(false)}
                     >
                       {t('history.detail.removeCancel')}
                     </Button>
                     <Button
+                      flex={1}
                       variant="danger"
                       onClick={onRemove}
                       disabled={removeLoading}
@@ -232,7 +231,7 @@ export function HistoryDetailModal({
                         ? t('history.detail.removeRemoving')
                         : t('history.detail.removeConfirm')}
                     </Button>
-                  </ConfirmRow>
+                  </XStack>
                 ) : (
                   <Button
                     variant="danger"

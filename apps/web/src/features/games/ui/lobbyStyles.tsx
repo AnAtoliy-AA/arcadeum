@@ -210,11 +210,30 @@ export const GameTitleText = styled(H2, {
   fontSize: '$6',
   fontWeight: '700',
   margin: 0,
+
+  variants: {
+    hasGradient: {
+      true: {
+        color: 'transparent',
+        backgroundClip: 'text',
+      },
+    },
+  } as const,
 });
 
 export const VariantText = styled(Text, {
   name: 'VariantText',
-  fontSize: '$2',
+  fontSize: '$4',
+  fontWeight: '600',
+
+  variants: {
+    hasGradient: {
+      true: {
+        color: 'transparent',
+        backgroundClip: 'text',
+      },
+    },
+  } as const,
 });
 
 export const HeaderActions = styled(XStack, {

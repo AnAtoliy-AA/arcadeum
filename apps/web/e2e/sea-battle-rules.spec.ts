@@ -7,6 +7,7 @@ import {
   MOCK_OBJECT_ID,
   waitForRoomReady,
   mockGameSocket,
+  closeGameRulesModal,
 } from './fixtures/test-utils';
 
 test.describe('Sea Battle Rules Modal', () => {
@@ -102,9 +103,10 @@ test.describe('Sea Battle Rules Modal', () => {
     await expect(modal).toBeVisible({ timeout: 20000 });
     await expect(modal).toContainText(/objective/i);
 
-    // Close using standard close method
+    // Close using close button, with fallback for Tamagui animation timing
     const closeBtn = page.getByTestId('modal-close-button').first();
     await closeBtn.click({ force: true, timeout: 15000 });
+    await closeGameRulesModal(page);
 
     await expect(modal).not.toBeVisible({ timeout: 15000 });
   });

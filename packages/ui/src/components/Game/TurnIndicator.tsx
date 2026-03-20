@@ -3,7 +3,6 @@ import { styled, XStack, Text, type XStackProps } from 'tamagui';
 const TurnIndicatorBase = styled(XStack, {
   name: 'TurnIndicator',
   minWidth: 240,
-  maxWidth: 'fit-content' as any,
   paddingHorizontal: '$6',
   paddingVertical: '$2',
   backdropFilter: 'blur(20px)',
@@ -13,7 +12,6 @@ const TurnIndicatorBase = styled(XStack, {
   justifyContent: 'center',
   gap: '$2',
   zIndex: 90,
-  animation: 'medium',
 
   $md: {
     minWidth: 0,
@@ -42,7 +40,7 @@ export interface TurnIndicatorProps extends Omit<XStackProps, 'children'> {
 
 export function TurnIndicator({ isYourTurn, children, ...props }: TurnIndicatorProps) {
   return (
-    <TurnIndicatorBase isYourTurn={isYourTurn} {...props}>
+    <TurnIndicatorBase isYourTurn={isYourTurn} style={{ maxWidth: 'fit-content' }} {...props}>
       <Text fontSize={18}>{isYourTurn ? '🎯' : '⏳'}</Text>
       <Text
         color="white"

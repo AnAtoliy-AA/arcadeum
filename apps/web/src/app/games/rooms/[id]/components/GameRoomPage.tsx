@@ -445,7 +445,7 @@ export default function GameRoomPage() {
             </Suspense>
           </GameWrapper>
 
-          <ChatPanel visible={showChat}>
+          <ChatPanel visible={showChat} data-testid="game-chat-area">
             <GameChat onClose={() => setShowChat(false)} />
           </ChatPanel>
         </GameRow>

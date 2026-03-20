@@ -205,6 +205,9 @@ const darkTheme = {
   glassBorder: 'rgba(255, 255, 255, 0.15)',
   glassBgHover: 'rgba(255, 255, 255, 0.08)',
   glassBorderHover: 'rgba(255, 255, 255, 0.3)',
+  // Background Radials
+  backgroundRadialStart: 'rgba(87, 195, 255, 0.35)',
+  backgroundRadialEnd: 'rgba(255, 106, 247, 0.35)',
 };
 
 const lightTheme = {
@@ -258,6 +261,9 @@ const lightTheme = {
   glassBorder: 'rgba(0, 0, 0, 0.1)',
   glassBgHover: 'rgba(0, 0, 0, 0.06)',
   glassBorderHover: 'rgba(0, 0, 0, 0.2)',
+  // Background Radials
+  backgroundRadialStart: 'rgba(87, 195, 255, 0.15)',
+  backgroundRadialEnd: 'rgba(255, 106, 247, 0.15)',
 };
 
 const neonDarkTheme = {

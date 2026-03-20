@@ -50,13 +50,21 @@ interface ShipPlacementBoardProps {
   onAutoPlace?: () => void;
 }
 
-function getCellBg(state: number, theme: SeaBattleTheme, highlighted = false): string {
+function getCellBg(
+  state: number,
+  theme: SeaBattleTheme,
+  highlighted = false,
+): string {
   if (highlighted) return theme.cellHover;
   switch (state) {
-    case CELL_STATE.HIT: return theme.hitColor;
-    case CELL_STATE.MISS: return theme.missColor;
-    case CELL_STATE.SHIP: return theme.shipColor;
-    default: return theme.cellEmpty;
+    case CELL_STATE.HIT:
+      return theme.hitColor;
+    case CELL_STATE.MISS:
+      return theme.missColor;
+    case CELL_STATE.SHIP:
+      return theme.shipColor;
+    default:
+      return theme.cellEmpty;
   }
 }
 
@@ -234,6 +242,7 @@ export function ShipPlacementBoard({
                         borderRadius={parseInt(theme.borderRadius) || 4}
                         data-row={rIndex}
                         data-col={cIndex}
+                        data-highlighted={isHovered || undefined}
                         onMouseEnter={() => handleCellHover(rIndex, cIndex)}
                         onClick={() => handleCellClick(rIndex, cIndex)}
                       />
@@ -268,17 +277,23 @@ export function ShipPlacementBoard({
               <ShipItem
                 key={ship.id}
                 isPlaced={isPlaced}
-                backgroundColor={isSelected ? theme.accentColor + '33' : theme.boardBackground}
+                backgroundColor={
+                  isSelected ? theme.accentColor + '33' : theme.boardBackground
+                }
                 borderColor={isSelected ? theme.accentColor : theme.cellBorder}
                 onClick={() =>
                   !isPlaced && setSelectedShipId(isSelected ? null : ship.id)
                 }
+                data-testid="ship-palette-item"
               >
                 <ShipPreview>
                   {Array(ship.size)
                     .fill(null)
                     .map((_, i) => (
-                      <ShipCellStyled key={i} backgroundColor={theme.shipColor} />
+                      <ShipCellStyled
+                        key={i}
+                        backgroundColor={theme.shipColor}
+                      />
                     ))}
                 </ShipPreview>
                 <ShipName color={theme.textColor}>
@@ -312,18 +327,12 @@ export function ShipPlacementBoard({
             : t('games.sea_battle_v1.table.actions.confirmPlacement')}
         </ActionButton>
         {placedShipIds.size > 0 && !isPlacementComplete && (
-          <ActionButton
-            variant="secondary"
-            onClick={onResetPlacement}
-          >
+          <ActionButton variant="secondary" onClick={onResetPlacement}>
             {t('games.sea_battle_v1.table.actions.resetPlacement')}
           </ActionButton>
         )}
         {!isPlacementComplete && onAutoPlace && (
-          <ActionButton
-            variant="secondary"
-            onClick={onAutoPlace}
-          >
+          <ActionButton variant="secondary" onClick={onAutoPlace}>
             {placedShipIds.size > 0
               ? t('games.sea_battle_v1.table.actions.randomize')
               : t('games.sea_battle_v1.table.actions.autoPlace')}

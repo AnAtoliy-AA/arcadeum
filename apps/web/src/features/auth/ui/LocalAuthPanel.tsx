@@ -1,98 +1,22 @@
-import type { ChangeEvent, FormEvent } from 'react';
-import { Button, XStack } from '@arcadeum/ui';
 import {
-  PanelCard,
-  PanelHeader,
-  PanelBadge,
-  PanelTitle,
-  PanelSubtitle,
-  AuthForm,
-  Field,
-  FieldLabel,
+  Button,
+  XStack,
+  YStack,
+  GlassCard,
+  FormGroup,
   Input,
-  HelperText,
-  ErrorText,
-  StatusText,
-  SessionCallout,
-  CalloutHeading,
-  CalloutDetail,
-} from './styles';
+  Typography,
+  Badge,
+} from '@arcadeum/ui';
+import { useAuthForm } from '../hooks';
 
-export interface LocalAuthPanelLabels {
-  localBadge: string;
-  localHeading: string;
-  localSubtitle: string;
-  emailLabel: string;
-  passwordLabel: string;
-  confirmPasswordLabel: string;
-  usernameLabel: string;
-  referralCodeLabel: string;
-  helperText: string;
-  submitLabel: string;
-  toggleLabel: string;
-  logoutLabel: string;
-  passwordMismatchMessage: string;
-  usernameTooShortMessage: string;
-  invalidEmailMessage: string;
-  processingStatusLabel: string;
-  statusActiveMessage: string;
-  sessionDetailLabels: {
-    displayName: string;
-  };
-  usernameAvailabilityMessages: {
-    checking: string;
-    available: string;
-    taken: string;
-  };
-  emailAvailabilityMessages: {
-    checking: string;
-    available: string;
-    taken: string;
-  };
-}
-
-export interface LocalAuthPanelForm {
-  isRegisterMode: boolean;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  username: string;
-  referralCode: string;
-  localLoading: boolean;
-  localError: string | null;
-  localSubmitDisabled: boolean;
-  emailFieldId: string;
-  passwordFieldId: string;
-  confirmFieldId: string;
-  usernameFieldId: string;
-  referralCodeFieldId: string;
-  showPasswordMismatch: boolean;
-  showUsernameTooShort: boolean;
-  showInvalidEmail: boolean;
-  usernameAvailability: 'idle' | 'checking' | 'available' | 'taken';
-  emailAvailability: 'idle' | 'checking' | 'available' | 'taken';
-  localAccessToken: string | null;
-  storedEmail: string | null;
-  storedUsername: string | null;
-  storedDisplayName: string | null;
-  handleEmailChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  handlePasswordChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleConfirmChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleUsernameChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleReferralCodeChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleUsernameBlur: () => void;
-  handleEmailBlur: () => void;
-  handleLocalSubmit: (e: FormEvent<HTMLFormElement>) => void;
-  handleToggleMode: () => void;
-  logoutLocal: () => void;
-}
+import type { LocalAuthPanelLabels } from '../types';
 
 interface LocalAuthPanelProps {
   labels: LocalAuthPanelLabels;
-  form: LocalAuthPanelForm;
 }
 
-export function LocalAuthPanel({ labels, form }: LocalAuthPanelProps) {
+export function LocalAuthPanel({ labels }: LocalAuthPanelProps) {
   const {
     localBadge,
     localHeading,
@@ -150,179 +74,232 @@ export function LocalAuthPanel({ labels, form }: LocalAuthPanelProps) {
     handleLocalSubmit,
     handleToggleMode,
     logoutLocal,
-  } = form;
+  } = useAuthForm();
+
+  const getEmailError = () => {
+    if (showInvalidEmail) return invalidEmailMessage;
+    if (isRegisterMode && emailAvailability === 'taken')
+      return emailAvailabilityMessages.taken;
+    return undefined;
+  };
+
+  const getEmailDescription = () => {
+    if (isRegisterMode) {
+      if (emailAvailability === 'checking')
+        return emailAvailabilityMessages.checking;
+      if (emailAvailability === 'available')
+        return emailAvailabilityMessages.available;
+    }
+    return undefined;
+  };
+
+  const getUsernameError = () => {
+    if (showUsernameTooShort) return usernameTooShortMessage;
+    if (usernameAvailability === 'taken')
+      return usernameAvailabilityMessages.taken;
+    return undefined;
+  };
+
+  const getUsernameDescription = () => {
+    if (usernameAvailability === 'checking')
+      return usernameAvailabilityMessages.checking;
+    if (usernameAvailability === 'available')
+      return usernameAvailabilityMessages.available;
+    return undefined;
+  };
 
   return (
-    <PanelCard>
-      <PanelHeader>
-        <PanelBadge>{localBadge}</PanelBadge>
-        <PanelTitle>{localHeading}</PanelTitle>
-        <PanelSubtitle>{localSubtitle}</PanelSubtitle>
-      </PanelHeader>
-      <AuthForm
+    <GlassCard flex={1} minWidth={320} gap="$4" padding="$5">
+      <YStack gap="$1">
+        <Badge size="sm" variant="neutral" alignSelf="flex-start">
+          {localBadge}
+        </Badge>
+        <Typography variant="heading" uiSize="lg">
+          {localHeading}
+        </Typography>
+        <Typography variant="body" uiSize="sm" color="$colorMuted">
+          {localSubtitle}
+        </Typography>
+      </YStack>
+
+      <form
         onSubmit={handleLocalSubmit}
         noValidate
         data-mode={isRegisterMode ? 'register' : 'login'}
       >
-        <Field>
-          <FieldLabel htmlFor={emailFieldId}>{emailLabel}</FieldLabel>
-          <Input
-            id={emailFieldId}
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            value={email}
-            onChange={handleEmailChange}
-            onBlur={handleEmailBlur}
-            placeholder={emailLabel}
+        <YStack gap="$3">
+          <FormGroup
+            label={emailLabel}
+            htmlFor={emailFieldId}
+            error={getEmailError()}
+            description={getEmailDescription()}
             required
-            disabled={localLoading}
-            data-testid="auth-email-input"
-          />
-        </Field>
-        {showInvalidEmail ? <ErrorText>{invalidEmailMessage}</ErrorText> : null}
-        {isRegisterMode && emailAvailability === 'checking' ? (
-          <HelperText>{emailAvailabilityMessages.checking}</HelperText>
-        ) : null}
-        {isRegisterMode && emailAvailability === 'available' ? (
-          <HelperText>{emailAvailabilityMessages.available}</HelperText>
-        ) : null}
-        {isRegisterMode && emailAvailability === 'taken' ? (
-          <ErrorText>{emailAvailabilityMessages.taken}</ErrorText>
-        ) : null}
-        <Field>
-          <FieldLabel htmlFor={passwordFieldId}>{passwordLabel}</FieldLabel>
-          <Input
-            id={passwordFieldId}
-            type="password"
-            autoComplete={isRegisterMode ? 'new-password' : 'current-password'}
-            value={password}
-            onChange={handlePasswordChange}
-            placeholder={passwordLabel}
-            required
-            disabled={localLoading}
-            data-testid="auth-password-input"
-          />
-        </Field>
-        {isRegisterMode ? (
-          <>
-            <Field>
-              <FieldLabel htmlFor={confirmFieldId}>
-                {confirmPasswordLabel}
-              </FieldLabel>
-              <Input
-                id={confirmFieldId}
-                type="password"
-                autoComplete="new-password"
-                value={confirmPassword}
-                onChange={handleConfirmChange}
-                placeholder={confirmPasswordLabel}
+          >
+            <Input
+              id={emailFieldId}
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              value={email}
+              onChange={handleEmailChange}
+              onBlur={handleEmailBlur}
+              placeholder={emailLabel}
+              disabled={localLoading}
+              data-testid="auth-email-input"
+            />
+          </FormGroup>
+
+          <FormGroup label={passwordLabel} htmlFor={passwordFieldId} required>
+            <Input
+              id={passwordFieldId}
+              type="password"
+              autoComplete={
+                isRegisterMode ? 'new-password' : 'current-password'
+              }
+              value={password}
+              onChange={handlePasswordChange}
+              placeholder={passwordLabel}
+              disabled={localLoading}
+              data-testid="auth-password-input"
+            />
+          </FormGroup>
+
+          {isRegisterMode && (
+            <>
+              <FormGroup
+                label={confirmPasswordLabel}
+                htmlFor={confirmFieldId}
+                error={
+                  showPasswordMismatch ? passwordMismatchMessage : undefined
+                }
                 required
-                disabled={localLoading}
-                data-testid="auth-confirm-password-input"
-              />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor={usernameFieldId}>{usernameLabel}</FieldLabel>
-              <Input
-                id={usernameFieldId}
-                type="text"
-                value={username}
-                onChange={handleUsernameChange}
-                onBlur={handleUsernameBlur}
-                placeholder={usernameLabel}
-                disabled={localLoading}
-                data-testid="auth-username-input"
-              />
-            </Field>
-            {usernameAvailability === 'checking' ? (
-              <HelperText>{usernameAvailabilityMessages.checking}</HelperText>
-            ) : null}
-            {usernameAvailability === 'available' ? (
-              <HelperText>{usernameAvailabilityMessages.available}</HelperText>
-            ) : null}
-            {usernameAvailability === 'taken' ? (
-              <ErrorText>{usernameAvailabilityMessages.taken}</ErrorText>
-            ) : null}
-            <Field>
-              <FieldLabel htmlFor={referralCodeFieldId}>
-                {referralCodeLabel}
-              </FieldLabel>
-              <Input
-                id={referralCodeFieldId}
-                type="text"
-                value={referralCode}
-                onChange={handleReferralCodeChange}
-                placeholder={referralCodeLabel}
-                disabled={localLoading}
-                data-testid="auth-referral-input"
-              />
-            </Field>
-            <HelperText>{helperText}</HelperText>
-          </>
-        ) : null}
-        {showPasswordMismatch ? (
-          <ErrorText>{passwordMismatchMessage}</ErrorText>
-        ) : null}
-        {showUsernameTooShort ? (
-          <ErrorText>{usernameTooShortMessage}</ErrorText>
-        ) : null}
-        {localError ? <ErrorText>{localError}</ErrorText> : null}
-        <XStack flexWrap="wrap" gap="$3">
-          <Button
-            type="submit"
-            disabled={localSubmitDisabled}
-            data-testid="auth-submit-button"
-            variant="primary"
-            pill
-          >
-            {submitLabel}
-          </Button>
-          <Button
-            type="button"
-            onClick={handleToggleMode}
-            disabled={localLoading}
-            data-testid="auth-toggle-mode-button"
-            variant="secondary"
-            pill
-          >
-            {toggleLabel}
-          </Button>
-        </XStack>
-      </AuthForm>
-      {localLoading && processingStatusLabel ? (
-        <StatusText>{processingStatusLabel}</StatusText>
-      ) : null}
-      {localAccessToken ? (
-        <SessionCallout>
-          <CalloutHeading>{statusActiveMessage}</CalloutHeading>
-          {storedEmail ? (
-            <CalloutDetail>
-              {emailLabel}: {storedEmail}
-            </CalloutDetail>
-          ) : null}
-          {storedUsername ? (
-            <CalloutDetail>
-              {usernameLabel}: {storedUsername}
-            </CalloutDetail>
-          ) : null}
-          {storedDisplayName ? (
-            <CalloutDetail>
-              {sessionDetailLabels.displayName}: {storedDisplayName}
-            </CalloutDetail>
-          ) : null}
-          <XStack flexWrap="wrap" gap="$3">
+              >
+                <Input
+                  id={confirmFieldId}
+                  type="password"
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={handleConfirmChange}
+                  placeholder={confirmPasswordLabel}
+                  disabled={localLoading}
+                  data-testid="auth-confirm-password-input"
+                />
+              </FormGroup>
+
+              <FormGroup
+                label={usernameLabel}
+                htmlFor={usernameFieldId}
+                error={getUsernameError()}
+                description={getUsernameDescription()}
+              >
+                <Input
+                  id={usernameFieldId}
+                  type="text"
+                  value={username}
+                  onChange={handleUsernameChange}
+                  onBlur={handleUsernameBlur}
+                  placeholder={usernameLabel}
+                  disabled={localLoading}
+                  data-testid="auth-username-input"
+                />
+              </FormGroup>
+
+              <FormGroup
+                label={referralCodeLabel}
+                htmlFor={referralCodeFieldId}
+                description={helperText}
+              >
+                <Input
+                  id={referralCodeFieldId}
+                  type="text"
+                  value={referralCode}
+                  onChange={handleReferralCodeChange}
+                  placeholder={referralCodeLabel}
+                  disabled={localLoading}
+                  data-testid="auth-referral-input"
+                />
+              </FormGroup>
+            </>
+          )}
+
+          {localError && (
+            <Typography variant="body" uiSize="xs" color="$error">
+              {localError}
+            </Typography>
+          )}
+
+          <XStack flexWrap="wrap" gap="$3" marginTop="$2">
+            <Button
+              type="submit"
+              disabled={localSubmitDisabled}
+              data-testid="auth-submit-button"
+              variant="primary"
+              pill
+            >
+              {submitLabel}
+            </Button>
             <Button
               type="button"
-              onClick={() => void logoutLocal()}
+              onPress={handleToggleMode}
+              disabled={localLoading}
+              data-testid="auth-toggle-mode-button"
               variant="secondary"
               pill
             >
-              {logoutLabel}
+              {toggleLabel}
             </Button>
           </XStack>
-        </SessionCallout>
-      ) : null}
-    </PanelCard>
+        </YStack>
+      </form>
+
+      {localLoading && processingStatusLabel && (
+        <Typography variant="body" uiSize="xs" color="$accent">
+          {processingStatusLabel}
+        </Typography>
+      )}
+
+      {localAccessToken && (
+        <YStack
+          gap="$2"
+          padding="$4"
+          borderRadius={16}
+          borderWidth={1}
+          borderColor="$successBorder"
+          backgroundColor="$successBgSoft"
+        >
+          <Typography variant="heading" uiSize="sm">
+            {statusActiveMessage}
+          </Typography>
+          <YStack gap="$1">
+            {storedEmail && (
+              <Typography variant="body" uiSize="sm" color="$colorMuted">
+                {emailLabel}: {storedEmail}
+              </Typography>
+            )}
+            {storedUsername && (
+              <Typography variant="body" uiSize="sm" color="$colorMuted">
+                {usernameLabel}: {storedUsername}
+              </Typography>
+            )}
+            {storedDisplayName && (
+              <Typography variant="body" uiSize="sm" color="$colorMuted">
+                {sessionDetailLabels.displayName}: {storedDisplayName}
+              </Typography>
+            )}
+          </YStack>
+          <Button
+            type="button"
+            onPress={() => void logoutLocal()}
+            variant="secondary"
+            pill
+            size="sm"
+            alignSelf="flex-start"
+            marginTop="$2"
+          >
+            {logoutLabel}
+          </Button>
+        </YStack>
+      )}
+    </GlassCard>
   );
 }

@@ -97,7 +97,7 @@ export const ModalHeader = memo(function ModalHeader({ children, onClose, 'data-
     >
       {children}
       {onClose && (
-        <Button variant="icon" size="sm" onClick={onClose} aria-label="Close modal">
+        <Button variant="icon" size="sm" onClick={onClose} aria-label="Close modal" data-testid="modal-close-button">
           <CloseIcon size={20} />
         </Button>
       )}

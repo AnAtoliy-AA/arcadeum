@@ -115,11 +115,7 @@ export interface ReusableGameLobbyProps {
   enableBots?: boolean;
 }
 
-const gradientTextStyle: React.CSSProperties = {
-  WebkitBackgroundClip: 'text',
-  WebkitTextFillColor: 'transparent',
-  backgroundClip: 'text',
-};
+// Styles
 
 const floatStyle: React.CSSProperties = {
   animation: 'float 3s ease-in-out infinite',
@@ -249,7 +245,7 @@ export function ReusableGameLobby({
         <GameInfo>
           <GameTitleText
             background={theme.titleGradient}
-            style={theme.titleGradient ? gradientTextStyle : undefined}
+            hasGradient={!!theme.titleGradient}
           >
             {gameName}
             {variantName && (
@@ -257,7 +253,7 @@ export function ReusableGameLobby({
                 {' '}
                 <VariantText
                   background={theme.variantGradient}
-                  style={theme.variantGradient ? gradientTextStyle : undefined}
+                  hasGradient={!!theme.variantGradient}
                 >
                   : {variantName}
                 </VariantText>
@@ -291,9 +287,11 @@ export function ReusableGameLobby({
       </GameHeader>
 
       <LobbyContent>
-        <CenterSection style={slideInStyle}>
-          <GameIcon style={floatStyle}>{gameIcon}</GameIcon>
-          <LobbyTitle style={slideInDelayedStyle}>{waitingLabel}</LobbyTitle>
+        <CenterSection style={slideInStyle as never}>
+          <GameIcon style={floatStyle as never}>{gameIcon}</GameIcon>
+          <LobbyTitle style={slideInDelayedStyle as never}>
+            {waitingLabel}
+          </LobbyTitle>
           <LobbySubtitle>{subtitleText || defaultSubtitle}</LobbySubtitle>
 
           <ProgressWrapper>
@@ -309,9 +307,9 @@ export function ReusableGameLobby({
           </ProgressWrapper>
 
           <WaitingDots>
-            <Dot style={dotPulseStyle(0)} />
-            <Dot style={dotPulseStyle(200)} />
-            <Dot style={dotPulseStyle(400)} />
+            <Dot style={dotPulseStyle(0) as never} />
+            <Dot style={dotPulseStyle(200) as never} />
+            <Dot style={dotPulseStyle(400) as never} />
           </WaitingDots>
 
           {isHost && room.status === 'lobby' && (

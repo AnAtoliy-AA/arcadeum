@@ -31,7 +31,7 @@ export default function TermsPage() {
   const s = t?.sections;
 
   return (
-    <PageLayout variant="legal">
+    <PageLayout>
       <Container size="md">
         <GlassCard>
           <PageTitle size="xl" gradient>

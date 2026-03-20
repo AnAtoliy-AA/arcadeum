@@ -3,6 +3,17 @@ import { AppleIcon, AndroidIcon, SmartphoneIcon } from '@/shared/ui';
 import * as S from './styles';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
+// Tamagui XStack types don't expose `tag`/`href`/`target`/`rel` even though
+// they work at runtime when tag="a". This typed alias adds those props.
+const DownloadLinkAnchor = S.DownloadLink as React.ComponentType<
+  React.ComponentProps<typeof S.DownloadLink> & {
+    tag?: string;
+    href?: string;
+    target?: string;
+    rel?: string;
+  }
+>;
+
 export interface DownloadButtonsProps {
   iosHref?: string;
   androidHref?: string;
@@ -24,48 +35,52 @@ export const DownloadButtons: React.FC<DownloadButtonsProps> = ({
   return (
     <S.Container>
       {iosHref && (
-        <S.DownloadLink
+        <DownloadLinkAnchor
+          tag="a"
           href={iosHref}
           target="_blank"
           rel="noopener noreferrer"
           data-testid="download-ios-button"
+          style={{ textDecoration: 'none' }}
         >
           <S.IconWrapper>
-            <AppleIcon size={32} />
+            <AppleIcon size={32} color="white" />
           </S.IconWrapper>
           <S.TextWrapper>
             <S.SmallText>Download on the</S.SmallText>
             <S.LargeText>App Store</S.LargeText>
           </S.TextWrapper>
-        </S.DownloadLink>
+        </DownloadLinkAnchor>
       )}
 
       {androidHref && (
-        <S.DownloadLink
+        <DownloadLinkAnchor
+          tag="a"
           href={androidHref}
           target="_blank"
           rel="noopener noreferrer"
           data-testid="download-android-button"
+          style={{ textDecoration: 'none' }}
         >
           <S.IconWrapper>
-            <AndroidIcon size={32} />
+            <AndroidIcon size={32} color="white" />
           </S.IconWrapper>
           <S.TextWrapper>
             <S.SmallText>GET IT ON</S.SmallText>
             <S.LargeText>Google Play</S.LargeText>
           </S.TextWrapper>
-        </S.DownloadLink>
+        </DownloadLinkAnchor>
       )}
 
       {(onInstall || onShowInstructions) && (
-        <S.DownloadLink
-          as="button"
-          onClick={onInstall || onShowInstructions}
+        <DownloadLinkAnchor
+          tag="button"
+          onPress={onInstall || onShowInstructions}
           data-testid="install-pwa-button"
-          style={{ cursor: 'pointer', textAlign: 'left' }}
+          isButton
         >
           <S.IconWrapper>
-            <SmartphoneIcon size={32} />
+            <SmartphoneIcon size={32} color="white" />
           </S.IconWrapper>
           <S.TextWrapper>
             <S.SmallText>
@@ -75,7 +90,7 @@ export const DownloadButtons: React.FC<DownloadButtonsProps> = ({
               {onInstall ? t('pwa.install.webApp') : t('pwa.install.appGuide')}
             </S.LargeText>
           </S.TextWrapper>
-        </S.DownloadLink>
+        </DownloadLinkAnchor>
       )}
     </S.Container>
   );

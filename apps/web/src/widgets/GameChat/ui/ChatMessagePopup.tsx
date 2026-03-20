@@ -20,6 +20,7 @@ export function ChatMessagePopup({
   return (
     <div
       onClick={onDismiss}
+      data-testid="chat-message-popup"
       style={{ cursor: 'pointer', maxWidth: 340, position: 'relative' }}
     >
       <ChatMessageBubble

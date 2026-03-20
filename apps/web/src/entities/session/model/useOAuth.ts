@@ -11,10 +11,8 @@ import {
   revokeProviderToken,
   type LoginResponse,
 } from '@/entities/session/api/authApi';
-import {
-  type SessionTokensValue,
-  type SessionTokensSnapshot,
-} from '@/entities/session/model/useSessionTokens';
+import { type SessionTokensValue } from '@/entities/session/model/useSessionTokens';
+import { type SessionTokensSnapshot } from './types';
 import { authConfig, resolveAuthRedirectUri } from '@/shared/config/auth';
 import { OAUTH } from '@/shared/config/constants';
 

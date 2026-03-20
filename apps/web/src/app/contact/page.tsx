@@ -35,7 +35,7 @@ export default function ContactPage() {
   };
 
   return (
-    <PageLayout variant="legal">
+    <PageLayout>
       <Container size="md">
         <GlassCard>
           <PageTitle size="xl" gradient>

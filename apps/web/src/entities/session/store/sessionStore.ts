@@ -1,19 +1,14 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import type { LoginResponse } from '../api/authApi';
+import { refreshSession } from '../api/authApi';
 import type {
   SessionProviderId,
   SessionTokensSnapshot,
   SetSessionTokensInput,
-} from '../model/useSessionTokens';
-import type { LoginResponse } from '../api/authApi';
-import { refreshSession } from '../api/authApi';
+  LocalAuthMode,
+} from '../model/types';
 
-// Reusing types or importing them.
-// Ideally these types should be in a shared 'types' file or 'model' file, but they are exported from 'useSessionTokens' currently.
-// We might need to move them to avoid circular imports if we keep useSessionTokens for compatibility.
-// For now, let's assume we can import them.
-
-// Duplicate default snapshot for now to avoid circular import if useSessionTokens depends on store
 const defaultSnapshot: SessionTokensSnapshot = {
   provider: null,
   accessToken: null,
@@ -34,6 +29,8 @@ interface SessionState {
   hydrated: boolean;
   refreshInFlight: boolean;
 
+  mode: LocalAuthMode;
+  setMode: (mode: LocalAuthMode) => void;
   setTokens: (input: SetSessionTokensInput) => Promise<SessionTokensSnapshot>;
   clearTokens: () => Promise<void>;
   refreshTokens: () => Promise<SessionTokensSnapshot>;
@@ -100,33 +97,32 @@ export const useSessionStore = create<SessionState>()(
       snapshot: defaultSnapshot,
       hydrated: false,
       refreshInFlight: false,
+      mode: 'login',
 
-      setHydrated: (hydrated) => set({ hydrated }),
+      setMode: (mode: LocalAuthMode) => set({ mode }),
+      setHydrated: (hydrated: boolean) => set({ hydrated }),
 
-      setTokens: async (input) => {
-        const { snapshot } = get();
-        const next = buildSnapshot(snapshot, input);
+      setTokens: async (input: SetSessionTokensInput) => {
+        const state = get() as SessionState;
+        const next = buildSnapshot(state.snapshot, input);
         set({ snapshot: next });
         return next;
       },
 
       clearTokens: async () => {
         set({ snapshot: defaultSnapshot });
-        // Manually clear storage to ensure it's immediate for page reloads
         if (typeof window !== 'undefined') {
           localStorage.removeItem('web_session_tokens_v1');
         }
       },
 
       refreshTokens: async () => {
-        const { snapshot, refreshInFlight } = get();
-        if (refreshInFlight) {
-          // If in flight, we might want to wait for it or just throw/return current.
-          // Simplification: return current.
-          return snapshot;
+        const state = get() as SessionState;
+        if (state.refreshInFlight) {
+          return state.snapshot;
         }
 
-        const refreshToken = snapshot.refreshToken;
+        const refreshToken = state.snapshot.refreshToken;
         if (!refreshToken) {
           throw new Error('No refresh token available');
         }
@@ -136,26 +132,28 @@ export const useSessionStore = create<SessionState>()(
         try {
           const response = await refreshSession(refreshToken);
           const merged = enrichWithResponse(
-            snapshot,
+            state.snapshot,
             response,
-            snapshot.provider,
+            state.snapshot.provider!,
           );
           set({ snapshot: merged, refreshInFlight: false });
           return merged;
         } catch (error) {
-          get().clearTokens();
+          (get() as SessionState).clearTokens();
           set({ refreshInFlight: false });
           throw error;
         }
       },
     }),
     {
-      name: 'web_session_tokens_v1', // Using SAME key to migrate seamlessly!
+      name: 'web_session_tokens_v1',
       storage: createJSONStorage(() => localStorage),
-      // We only persist the snapshot
-      partialize: (state) => ({ snapshot: state.snapshot }),
+      partialize: (state) => ({
+        snapshot: (state as SessionState).snapshot,
+        mode: (state as SessionState).mode,
+      }),
       onRehydrateStorage: () => (state) => {
-        state?.setHydrated(true);
+        if (state) (state as SessionState).setHydrated(true);
       },
     },
   ),

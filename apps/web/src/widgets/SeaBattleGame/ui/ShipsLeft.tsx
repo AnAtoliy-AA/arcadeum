@@ -35,7 +35,12 @@ export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
         >
           {t('games.sea_battle_v1.table.state.shipsRemaining')}
         </Text>
-        <Text fontSize={13} color="$success" fontWeight="800" style={{ fontFamily: 'monospace' }}>
+        <Text
+          fontSize={13}
+          color="$success"
+          fontWeight="800"
+          style={{ fontFamily: 'monospace' }}
+        >
           {aliveCount}/{totalShips}
         </Text>
       </XStack>
@@ -50,6 +55,9 @@ export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
               gap={2}
               opacity={isSunk ? 0.5 : 1}
               position="relative"
+              aria-label={config.name}
+              data-title={config.name}
+              data-sunk={String(isSunk)}
             >
               <XStack gap={1}>
                 {Array.from({ length: config.size }).map((_, i) => (
@@ -57,7 +65,9 @@ export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
                     key={i}
                     width={10}
                     height={10}
-                    backgroundColor={isSunk ? '#ff4444' : isMe ? '#4caf50' : '#ccc'}
+                    backgroundColor={
+                      isSunk ? '#ff4444' : isMe ? '#4caf50' : '#ccc'
+                    }
                     borderWidth={1}
                     borderColor="rgba(0,0,0,0.3)"
                     borderRadius={2}

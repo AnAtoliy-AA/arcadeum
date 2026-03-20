@@ -24,7 +24,7 @@ export default function PrivacyPage() {
   const s = t?.sections;
 
   return (
-    <PageLayout variant="legal">
+    <PageLayout>
       <Container size="md">
         <GlassCard>
           <PageTitle size="xl" gradient>

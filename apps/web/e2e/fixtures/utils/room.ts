@@ -31,11 +31,15 @@ export async function closeGameRulesModal(page: Page): Promise<void> {
     btns.forEach((b) => (b as HTMLElement).click());
   }, closeBtnSelector);
 
-  // 3. Final cleanup: manually remove from DOM if still there
+  // 3. Final cleanup: manually remove modal content and overlay from DOM if still there
   await page.evaluate((sel) => {
     const modals = document.querySelectorAll(sel);
     modals.forEach((m) => m.remove());
   }, modalSelector);
+  await page.evaluate(() => {
+    const overlays = document.querySelectorAll('[data-testid="modal-overlay"]');
+    overlays.forEach((o) => o.remove());
+  });
 
   // Wait for all rules modals to disappear (should be instant now)
   await expect

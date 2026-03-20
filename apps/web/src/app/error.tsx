@@ -2,15 +2,7 @@
 
 import { useEffect } from 'react';
 import { ErrorState } from '@/shared/ui';
-import styled from 'styled-components';
-
-const Container = styled.div`
-  padding: 4rem 2rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 50vh;
-`;
+import { XStack } from 'tamagui';
 
 export default function Error({
   error,
@@ -24,7 +16,12 @@ export default function Error({
   }, [error]);
 
   return (
-    <Container>
+    <XStack
+      padding="$10"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="50vh"
+    >
       <ErrorState
         title="Something went wrong!"
         message={error.message || 'An unexpected error has occurred.'}
@@ -34,6 +31,6 @@ export default function Error({
         }
         retryLabel="Try again"
       />
-    </Container>
+    </XStack>
   );
 }

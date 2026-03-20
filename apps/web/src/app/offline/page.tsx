@@ -1,40 +1,8 @@
 'use client';
 
-import styled from 'styled-components';
+import { YStack, Text } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 2rem;
-  text-align: center;
-  background: ${({ theme }) => theme.background.base};
-`;
-
-const Icon = styled.div`
-  font-size: 5rem;
-  margin-bottom: 1.5rem;
-  opacity: 0.8;
-`;
-
-const Title = styled.h1`
-  font-size: 2rem;
-  font-weight: 700;
-  color: ${({ theme }) => theme.text.primary};
-  margin: 0 0 1rem;
-`;
-
-const Description = styled.p`
-  font-size: 1.1rem;
-  color: ${({ theme }) => theme.text.muted};
-  margin: 0 0 2rem;
-  max-width: 400px;
-  line-height: 1.6;
-`;
 
 export default function OfflinePage() {
   const { t } = useTranslation();
@@ -44,13 +12,41 @@ export default function OfflinePage() {
   };
 
   return (
-    <Container>
-      <Icon>📡</Icon>
-      <Title>{t('pwa.offline.title')}</Title>
-      <Description>{t('pwa.offline.description')}</Description>
+    <YStack
+      alignItems="center"
+      justifyContent="center"
+      minHeight="100vh"
+      padding="$6"
+      backgroundColor="$background"
+      style={{ textAlign: 'center' }}
+    >
+      <Text fontSize={80} marginBottom="$5" opacity={0.8}>
+        📡
+      </Text>
+      <h1
+        style={{
+          fontSize: '2rem',
+          fontWeight: 700,
+          margin: '0 0 1rem',
+          color: 'inherit',
+        }}
+      >
+        {t('pwa.offline.title')}
+      </h1>
+      <p
+        style={{
+          fontSize: '1.1rem',
+          color: 'rgba(236,239,238,0.45)',
+          margin: '0 0 2rem',
+          maxWidth: 400,
+          lineHeight: 1.6,
+        }}
+      >
+        {t('pwa.offline.description')}
+      </p>
       <Button onClick={handleRetry} size="lg">
         {t('pwa.offline.retry')}
       </Button>
-    </Container>
+    </YStack>
   );
 }

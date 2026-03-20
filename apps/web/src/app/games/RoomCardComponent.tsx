@@ -8,23 +8,23 @@ import {
 import type { GameRoomSummary } from '@/shared/types/games';
 import { resolveGameDisplayInfo } from '@/features/games/lib/variantRegistry';
 import {
-  RoomCard,
-  RoomTitle,
-  FastBadge,
-  StatusBadge,
+  roomCardCSS,
+  getRoomCardStyle,
+  getRoomHeaderStyle,
+  getStatusBadgeStyle,
+  getGameNameValueStyle,
+  getRoomActionsStyle,
+  getParticipantChipStyle,
   RoomMeta,
   MetaRow,
   MetaIcon,
   MetaLabel,
   MetaValue,
   ParticipantsList,
-  ParticipantChip,
-  RoomActions,
-  RoomHeader,
-  BadgeIcon,
   ParticipantsLabel,
   MetaListContainer,
-  GameNameValue,
+  FastBadge,
+  BadgeIcon,
 } from './room-card.styles';
 import { LinkButton } from '@arcadeum/ui';
 
@@ -72,141 +72,149 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
   );
 
   return (
-    <RoomCard key={room.id} $viewMode={viewMode} data-testid="room-card">
-      {/* Header: Name and Status - column in list, row in grid */}
-      <RoomHeader $viewMode={viewMode}>
-        <RoomTitle title={room.name}>{room.name}</RoomTitle>
-        {room.gameOptions?.idleTimerEnabled && (
-          <FastBadge>
-            <BadgeIcon>⚡</BadgeIcon>
-            {t('games.rooms.fastRoom')}
-          </FastBadge>
-        )}
-        {viewMode === 'list' && (
-          <StatusBadge $status={room.status}>
-            {t(`games.rooms.status.${room.status}`) || room.status}
-          </StatusBadge>
-        )}
-      </RoomHeader>
-
-      {/* Meta Info */}
-      {viewMode === 'grid' ? (
-        <RoomMeta>
-          <MetaRow>
-            <MetaIcon>🎮</MetaIcon>
-            <MetaLabel>{t('games.rooms.gameLabel') || 'Game'}</MetaLabel>
-            <GameNameValue $gradient={variantGradient}>
-              {gameName}
-            </GameNameValue>
-          </MetaRow>
-          <MetaRow>
-            <MetaIcon>👑</MetaIcon>
-            <MetaLabel>{t('games.rooms.hostLabel')}</MetaLabel>
-            <MetaValue>{room.host?.displayName || room.hostId}</MetaValue>
-          </MetaRow>
-          <MetaRow>
-            <MetaIcon>👥</MetaIcon>
-            <MetaLabel>{t('games.rooms.playersLabel')}</MetaLabel>
-            <MetaValue>
-              {room.maxPlayers
-                ? `${room.playerCount}/${room.maxPlayers}`
-                : `${room.playerCount}`}
-            </MetaValue>
-          </MetaRow>
-          <MetaRow>
-            <MetaIcon>⏱️</MetaIcon>
-            <MetaLabel>{t('games.rooms.statusLabel')}</MetaLabel>
-            <StatusBadge $status={room.status}>
-              {t(`games.rooms.status.${room.status}`) || room.status}
-            </StatusBadge>
-          </MetaRow>
-          <MetaRow>
-            <MetaIcon>{room.visibility === 'private' ? '🔒' : '🌐'}</MetaIcon>
-            <MetaLabel>{t('games.rooms.visibilityLabel')}</MetaLabel>
-            <MetaValue>
-              {room.visibility === 'private'
-                ? t('games.rooms.visibility.private')
-                : t('games.rooms.visibility.public')}
-            </MetaValue>
-          </MetaRow>
-          {room.members && room.members.length > 0 && (
-            <div>
-              <ParticipantsLabel>
-                {t('games.rooms.participants')}:
-              </ParticipantsLabel>
-              <ParticipantsList>
-                {room.members
-                  .slice(0, MAX_VISIBLE_PARTICIPANTS)
-                  .map((member) => (
-                    <ParticipantChip
-                      key={member.id}
-                      $isHost={room.host?.id === member.id}
-                    >
-                      {formatMemberLabel(member)}
-                    </ParticipantChip>
-                  ))}
-                {room.members.length > MAX_VISIBLE_PARTICIPANTS && (
-                  <ParticipantChip>
-                    + {room.members.length - MAX_VISIBLE_PARTICIPANTS} more
-                  </ParticipantChip>
-                )}
-              </ParticipantsList>
-            </div>
+    <>
+      <style>{roomCardCSS}</style>
+      <div
+        key={room.id}
+        className="room-card"
+        style={getRoomCardStyle(viewMode)}
+        data-testid="room-card"
+      >
+        {/* Header: Name and Status - column in list, row in grid */}
+        <div style={getRoomHeaderStyle(viewMode)}>
+          <h3 className="room-title" title={room.name}>{room.name}</h3>
+          {room.gameOptions?.idleTimerEnabled && (
+            <FastBadge>
+              <BadgeIcon>⚡</BadgeIcon>
+              {t('games.rooms.fastRoom')}
+            </FastBadge>
           )}
-        </RoomMeta>
-      ) : (
-        <MetaListContainer>
-          <MetaRow title={t('games.rooms.gameLabel') || 'Game'}>
-            <MetaIcon>🎮</MetaIcon>
-            <GameNameValue $gradient={variantGradient}>
-              {gameName}
-            </GameNameValue>
-          </MetaRow>
-          <MetaRow>
-            <MetaIcon>👑</MetaIcon>
-            <MetaValue>{room.host?.displayName || room.hostId}</MetaValue>
-          </MetaRow>
-          <MetaRow>
-            <MetaIcon>👥</MetaIcon>
-            <MetaValue>
-              {room.maxPlayers
-                ? `${room.playerCount}/${room.maxPlayers}`
-                : room.playerCount}
-            </MetaValue>
-          </MetaRow>
-          <MetaRow>
-            <MetaIcon>{room.visibility === 'private' ? '🔒' : '🌐'}</MetaIcon>
-            <MetaValue>
-              {room.visibility === 'private'
-                ? t('games.rooms.visibility.private')
-                : t('games.rooms.visibility.public')}
-            </MetaValue>
-          </MetaRow>
-          {room.members && room.members.length > 0 && (
+          {viewMode === 'list' && (
+            <span style={getStatusBadgeStyle(room.status)}>
+              {t(`games.rooms.status.${room.status}`) || room.status}
+            </span>
+          )}
+        </div>
+
+        {/* Meta Info */}
+        {viewMode === 'grid' ? (
+          <RoomMeta>
             <MetaRow>
-              <MetaIcon>👤</MetaIcon>
+              <MetaIcon>🎮</MetaIcon>
+              <MetaLabel>{t('games.rooms.gameLabel') || 'Game'}</MetaLabel>
+              <span style={getGameNameValueStyle(variantGradient)}>
+                {gameName}
+              </span>
+            </MetaRow>
+            <MetaRow>
+              <MetaIcon>👑</MetaIcon>
+              <MetaLabel>{t('games.rooms.hostLabel')}</MetaLabel>
+              <MetaValue>{room.host?.displayName || room.hostId}</MetaValue>
+            </MetaRow>
+            <MetaRow>
+              <MetaIcon>👥</MetaIcon>
+              <MetaLabel>{t('games.rooms.playersLabel')}</MetaLabel>
               <MetaValue>
-                {t('games.lounge.participantsCount', {
-                  count: room.members.length,
-                })}
+                {room.maxPlayers
+                  ? `${room.playerCount}/${room.maxPlayers}`
+                  : `${room.playerCount}`}
               </MetaValue>
             </MetaRow>
-          )}
-        </MetaListContainer>
-      )}
+            <MetaRow>
+              <MetaIcon>⏱️</MetaIcon>
+              <MetaLabel>{t('games.rooms.statusLabel')}</MetaLabel>
+              <span style={getStatusBadgeStyle(room.status)}>
+                {t(`games.rooms.status.${room.status}`) || room.status}
+              </span>
+            </MetaRow>
+            <MetaRow>
+              <MetaIcon>{room.visibility === 'private' ? '🔒' : '🌐'}</MetaIcon>
+              <MetaLabel>{t('games.rooms.visibilityLabel')}</MetaLabel>
+              <MetaValue>
+                {room.visibility === 'private'
+                  ? t('games.rooms.visibility.private')
+                  : t('games.rooms.visibility.public')}
+              </MetaValue>
+            </MetaRow>
+            {room.members && room.members.length > 0 && (
+              <div>
+                <ParticipantsLabel>
+                  {t('games.rooms.participants')}:
+                </ParticipantsLabel>
+                <ParticipantsList>
+                  {room.members
+                    .slice(0, MAX_VISIBLE_PARTICIPANTS)
+                    .map((member) => (
+                      <span
+                        key={member.id}
+                        style={getParticipantChipStyle(room.host?.id === member.id)}
+                      >
+                        {formatMemberLabel(member)}
+                      </span>
+                    ))}
+                  {room.members.length > MAX_VISIBLE_PARTICIPANTS && (
+                    <span style={getParticipantChipStyle()}>
+                      + {room.members.length - MAX_VISIBLE_PARTICIPANTS} more
+                    </span>
+                  )}
+                </ParticipantsList>
+              </div>
+            )}
+          </RoomMeta>
+        ) : (
+          <MetaListContainer>
+            <MetaRow {...{ title: t('games.rooms.gameLabel') || 'Game' } as any}>
+              <MetaIcon>🎮</MetaIcon>
+              <span style={getGameNameValueStyle(variantGradient)}>
+                {gameName}
+              </span>
+            </MetaRow>
+            <MetaRow>
+              <MetaIcon>👑</MetaIcon>
+              <MetaValue>{room.host?.displayName || room.hostId}</MetaValue>
+            </MetaRow>
+            <MetaRow>
+              <MetaIcon>👥</MetaIcon>
+              <MetaValue>
+                {room.maxPlayers
+                  ? `${room.playerCount}/${room.maxPlayers}`
+                  : room.playerCount}
+              </MetaValue>
+            </MetaRow>
+            <MetaRow>
+              <MetaIcon>{room.visibility === 'private' ? '🔒' : '🌐'}</MetaIcon>
+              <MetaValue>
+                {room.visibility === 'private'
+                  ? t('games.rooms.visibility.private')
+                  : t('games.rooms.visibility.public')}
+              </MetaValue>
+            </MetaRow>
+            {room.members && room.members.length > 0 && (
+              <MetaRow>
+                <MetaIcon>👤</MetaIcon>
+                <MetaValue>
+                  {t('games.lounge.participantsCount', {
+                    count: room.members.length,
+                  })}
+                </MetaValue>
+              </MetaRow>
+            )}
+          </MetaListContainer>
+        )}
 
-      <RoomActions $viewMode={viewMode}>
-        <LinkButton href={routes.gameRoom(room.id)} variant="primary" size="sm">
-          {t('games.common.joinRoom')}
-        </LinkButton>
-        <LinkButton
-          href={routes.gameRoom(room.id)}
-          variant="secondary"
-          size="sm"
-        >
-          {t('games.common.watchRoom')}
-        </LinkButton>
-      </RoomActions>
-    </RoomCard>
+        <div style={getRoomActionsStyle(viewMode)}>
+          <LinkButton href={routes.gameRoom(room.id)} variant="primary" size="sm">
+            {t('games.common.joinRoom')}
+          </LinkButton>
+          <LinkButton
+            href={routes.gameRoom(room.id)}
+            variant="secondary"
+            size="sm"
+          >
+            {t('games.common.watchRoom')}
+          </LinkButton>
+        </div>
+      </div>
+    </>
   );
 }

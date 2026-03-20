@@ -83,8 +83,14 @@ export function HomeHowItWorks() {
 
           return (
             <StepItem key={step.number}>
-              {index < STEPS.length - 1 && <StepConnector />}
-              <StepNumber>
+              {index < STEPS.length - 1 && (
+                <StepConnector
+                  style={{
+                    background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.15), transparent)',
+                  }}
+                />
+              )}
+              <StepNumber style={{ boxShadow: '0 0 20px rgba(87,195,255,0.15), 0 0 0 1px rgba(255,255,255,0.06)' }}>
                 <Text color="$primary" fontWeight="700" fontSize="$5">
                   {step.number}
                 </Text>

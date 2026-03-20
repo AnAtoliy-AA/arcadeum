@@ -40,7 +40,6 @@ export const StepItem = styled(YStack, {
 export const StepConnector = styled(YStack, {
   name: 'StepConnector',
   position: 'absolute',
-  backgroundColor: '$borderColor',
   zIndex: 0,
   // Mobile: vertical line
   left: 27,
@@ -71,7 +70,8 @@ export const StepNumber = styled(YStack, {
   justifyContent: 'center',
   position: 'relative',
   zIndex: 1,
-});
+  shadowColor: 'transparent',
+} as any);
 
 export const StepContent = styled(YStack, {
   name: 'StepContent',
@@ -86,6 +86,7 @@ export const StepTitle = styled(Text, {
   fontSize: '$5',
   fontWeight: '600',
   color: '$color',
+  letterSpacing: -0.3,
 });
 
 export const StepDescription = styled(Text, {

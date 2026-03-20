@@ -224,3 +224,14 @@ a {
   transform: translateY(-6px) !important;
   box-shadow: 0 28px 60px rgba(0, 0, 0, 0.5) !important;
 }
+
+/* ─── Home: Feature card hover lift ───────────────────────── */
+.feature-card-hover {
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border-color 0.2s ease-out !important;
+  cursor: default;
+}
+.feature-card-hover:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4) !important;
+  border-color: rgba(87, 195, 255, 0.35) !important;
+}

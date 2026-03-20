@@ -1,10 +1,20 @@
 'use client';
 
 import React from 'react';
-import styled, { keyframes } from 'styled-components';
+import { styled, XStack } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { PageTitle } from '@/shared/ui';
 import { Button } from '@arcadeum/ui';
+
+export const statsHeaderCSS = `
+  @keyframes stats-header-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  .stats-refresh-icon--spinning {
+    animation: stats-header-spin 1s linear infinite;
+  }
+`;
 
 interface StatsHeaderProps {
   loading: boolean;
@@ -21,6 +31,7 @@ export function StatsHeader({
 
   return (
     <Header>
+      <style>{statsHeaderCSS}</style>
       <PageTitle size="xl" gradient>
         {t('stats.pageTitle')}
       </PageTitle>
@@ -30,39 +41,24 @@ export function StatsHeader({
         onClick={onRefresh}
         disabled={loading || refreshing}
       >
-        <StyledRefreshIcon
-          $isRefreshing={refreshing}
+        <svg
+          className={refreshing ? 'stats-refresh-icon--spinning' : ''}
+          style={{ width: 20, height: 20 }}
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
         >
           <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
-        </StyledRefreshIcon>
+        </svg>
       </Button>
     </Header>
   );
 }
 
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-`;
-
-const spin = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-`;
-
-const StyledRefreshIcon = styled.svg<{ $isRefreshing: boolean }>`
-  width: 20px;
-  height: 20px;
-  animation: ${({ $isRefreshing }) => ($isRefreshing ? spin : 'none')} 1s linear
-    infinite;
-`;
+const Header = styled(XStack, {
+  name: 'StatsHeader',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: '$7',
+} as any);

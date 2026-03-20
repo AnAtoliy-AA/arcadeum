@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { YStack, TamaguiElement } from 'tamagui';
 import { useLanguage } from '@/app/i18n/LanguageProvider';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 import { routes } from '@/shared/config/routes';
 import {
   SectionHeader,
@@ -134,9 +135,11 @@ export function HomeGames() {
     }
   };
 
+  const sectionRef = useScrollReveal<HTMLDivElement>();
+
   return (
-    <SliderSection id="games">
-      <SectionHeader>
+    <SliderSection id="games" ref={sectionRef as any}>
+      <SectionHeader data-reveal data-reveal-delay="1">
         <SectionTitle>{homeCopy.gamesTitle ?? 'Featured Games'}</SectionTitle>
         <SectionSubtitle>
           {homeCopy.gamesSubtitle ??
@@ -144,7 +147,7 @@ export function HomeGames() {
         </SectionSubtitle>
       </SectionHeader>
 
-      <SliderContainer>
+      <SliderContainer data-reveal data-reveal-delay="2">
         <SliderTrack
           ref={sliderRef}
           className="slider-track"
@@ -169,6 +172,7 @@ export function HomeGames() {
               <MainGameCard
                 padding="$5"
                 flex={1}
+                className="game-card-hover"
                 style={{ boxShadow: '0 20px 50px rgba(0,0,0,0.35)' }}
               >
                 {/* Gradient hover overlay replaces $gradient ::before */}

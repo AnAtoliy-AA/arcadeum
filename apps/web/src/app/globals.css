@@ -215,3 +215,12 @@ a {
     transition: none;
   }
 }
+
+/* ─── Home: Game card hover lift ──────────────────────── */
+.game-card-hover {
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out !important;
+}
+.game-card-hover:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.5) !important;
+}

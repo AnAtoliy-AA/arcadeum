@@ -1,5 +1,6 @@
 'use client';
 
+import { YStack } from 'tamagui';
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import { appConfig } from '@/shared/config/app-config';
 import { usePWAInstallProps } from '@/features/pwa';
@@ -28,15 +29,15 @@ export function HomeDownloadCta() {
 
   return (
     <DownloadCtaSection data-testid="download-cta-section">
-      <DownloadCtaCard>
+      <DownloadCtaCard maxWidth={700} alignItems="center" gap="$5">
         <DownloadTitle>{title}</DownloadTitle>
         <DownloadDescription>{description}</DownloadDescription>
-        <div style={{ marginTop: '2rem', width: '100%' }}>
+        <YStack marginTop="$4" width="100%">
           <DownloadButtons
             onInstall={onInstall}
             onShowInstructions={onShowInstructions}
           />
-        </div>
+        </YStack>
       </DownloadCtaCard>
     </DownloadCtaSection>
   );

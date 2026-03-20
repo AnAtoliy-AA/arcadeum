@@ -14,10 +14,16 @@ import {
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { paymentApi, PaymentNote } from '@/features/payment/api';
 
-const notesStyles = `
+export const notesStyles = `
   @keyframes notes-shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-  .notes-card { position: relative; }
+  @keyframes notes-fade-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .notes-card { position: relative; animation: notes-fade-in 0.5s ease-out both; }
   .notes-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #7ad7ff, #57c3ff); border-radius: 3px 3px 0 0; }
+  .notes-card:nth-child(1) { animation: notes-fade-in 0.5s ease-out 0s both; }
+  .notes-card:nth-child(2) { animation: notes-fade-in 0.5s ease-out 0.1s both; }
+  .notes-card:nth-child(3) { animation: notes-fade-in 0.5s ease-out 0.2s both; }
+  .notes-card:nth-child(4) { animation: notes-fade-in 0.5s ease-out 0.3s both; }
+  .notes-card:nth-child(5) { animation: notes-fade-in 0.5s ease-out 0.4s both; }
   .notes-skeleton { position: relative; overflow: hidden; }
   .notes-skeleton::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%); animation: notes-shimmer 1.5s infinite; }
 `;
@@ -176,21 +182,19 @@ export function NotesPage() {
                         {formatDate(note.createdAt)}
                       </Text>
                     </YStack>
-                    <Text
-                      display="inline-flex"
-                      backgroundColor="rgba(87,195,255,0.15)"
+                    <XStack
+                      backgroundColor="rgba(122,215,255,0.1)"
                       borderWidth={1}
-                      borderColor="rgba(87,195,255,0.25)"
-                      color="$primaryGradientStart"
-                      paddingVertical="$2"
+                      borderColor="rgba(122,215,255,0.3)"
+                      paddingVertical="$1"
                       paddingHorizontal="$3"
-                      borderRadius={20}
-                      fontWeight="600"
-                      fontSize="$3"
-                      whiteSpace="nowrap"
+                      borderRadius="$4"
+                      alignSelf="flex-end"
                     >
-                      {formatAmount(note.amount, note.currency)}
-                    </Text>
+                      <Text color="$primaryGradientStart" fontSize="$3" fontWeight="600">
+                        {formatAmount(note.amount, note.currency)}
+                      </Text>
+                    </XStack>
                   </XStack>
                 </GlassCard>
               ))}

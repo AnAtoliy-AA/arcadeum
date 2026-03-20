@@ -239,3 +239,12 @@ a {
   transform: scale(1.1);
   transition: transform 0.2s ease-out;
 }
+
+/* ─── Home: Step number hover glow ────────────────────── */
+.step-number-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+.step-number-hover:hover {
+  transform: scale(1.08) !important;
+  box-shadow: 0 0 28px rgba(87, 195, 255, 0.35), 0 0 0 1px rgba(87, 195, 255, 0.2) !important;
+}

@@ -3,6 +3,7 @@
 import { Text } from 'tamagui';
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import { appConfig } from '@/shared/config/app-config';
+import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 import {
   SectionHeader,
   SectionTitle,
@@ -58,6 +59,8 @@ export function HomeHowItWorks() {
   const homeCopy = messages.home ?? {};
   const { appName } = appConfig;
 
+  const sectionRef = useScrollReveal<HTMLDivElement>();
+
   const sectionTitle =
     (homeCopy as Record<string, string>).howItWorksTitle ?? 'How It Works';
   const sectionSubtitle =
@@ -65,8 +68,8 @@ export function HomeHowItWorks() {
     'Get started in three simple steps';
 
   return (
-    <HowItWorksSection data-testid="how-it-works-section">
-      <SectionHeader>
+    <HowItWorksSection data-testid="how-it-works-section" ref={sectionRef as any}>
+      <SectionHeader data-reveal data-reveal-delay="1">
         <SectionTitle>{sectionTitle}</SectionTitle>
         <SectionSubtitle>{sectionSubtitle}</SectionSubtitle>
       </SectionHeader>
@@ -82,7 +85,7 @@ export function HomeHowItWorks() {
             formatMessage(rawDescription, { appName }) ?? rawDescription;
 
           return (
-            <StepItem key={step.number}>
+            <StepItem key={step.number} data-reveal data-reveal-delay={String(index + 2)}>
               {index < STEPS.length - 1 && (
                 <StepConnector
                   style={{
@@ -90,7 +93,10 @@ export function HomeHowItWorks() {
                   }}
                 />
               )}
-              <StepNumber style={{ boxShadow: '0 0 20px rgba(87,195,255,0.15), 0 0 0 1px rgba(255,255,255,0.06)' }}>
+              <StepNumber
+                className="step-number-hover"
+                style={{ boxShadow: '0 0 20px rgba(87,195,255,0.15), 0 0 0 1px rgba(255,255,255,0.06)' }}
+              >
                 <Text color="$primary" fontWeight="700" fontSize="$5">
                   {step.number}
                 </Text>

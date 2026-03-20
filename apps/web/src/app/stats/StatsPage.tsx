@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, ComponentProps, ReactNode } from 'react';
-import styled from 'styled-components';
+import { styled, XStack, YStack, Text } from 'tamagui';
 import {
   PageLayout,
   Container as SharedContainer,
@@ -133,18 +133,18 @@ export function StatsPage() {
   );
 }
 
-const Container = styled(SharedContainer)`
-  max-width: 1200px;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-`;
+const Container = styled(SharedContainer, {
+  name: 'StatsPageContainer',
+  maxWidth: 1200,
+  flexDirection: 'column',
+  gap: '$5',
+} as any);
 
-const TabGroup = styled.div`
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-`;
+const TabGroup = styled(XStack, {
+  name: 'StatsTabGroup',
+  gap: '$3',
+  flexWrap: 'wrap',
+} as any);
 
 interface TabButtonProps extends ComponentProps<typeof Button> {
   $active?: boolean;
@@ -162,18 +162,21 @@ const TabButton = ({ $active, ...props }: TabButtonProps) => (
   />
 );
 
-const FilterContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  background: ${({ theme }) => theme.surfaces.panel.background};
-  border: 1px solid ${({ theme }) => theme.surfaces.panel.border};
-  border-radius: 16px;
-  backdrop-filter: blur(14px);
-`;
+const FilterContainer = styled(XStack, {
+  name: 'StatsFilterContainer',
+  alignItems: 'center',
+  gap: '$4',
+  padding: '$4',
+  paddingHorizontal: '$5',
+  backgroundColor: '$background',
+  borderWidth: 1,
+  borderColor: '$borderColor',
+  borderRadius: 16,
+} as any);
 
-const FilterLabel = styled.label`
-  font-weight: 500;
-  color: ${({ theme }) => theme.text.secondary};
-`;
+const FilterLabel = styled(Text, {
+  name: 'StatsFilterLabel',
+  tag: 'label',
+  fontWeight: '500',
+  color: 'rgba(236,239,238,0.7)',
+} as any);

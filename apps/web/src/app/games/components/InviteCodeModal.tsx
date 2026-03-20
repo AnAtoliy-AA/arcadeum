@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import styled from 'styled-components';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -12,7 +11,9 @@ import {
   ModalBody,
   ModalFooter,
   Button,
+  Input,
 } from '@/shared/ui';
+import { YStack } from '@arcadeum/ui';
 import { gamesApi } from '@/features/games/api';
 
 interface InviteCodeModalProps {
@@ -77,27 +78,46 @@ export function InviteCodeModal({ open, onClose }: InviteCodeModalProps) {
         </ModalHeader>
         <form onSubmit={handleSubmit}>
           <ModalBody>
-            <InputContainer>
-              <Label>
+            <YStack gap="$2">
+              <label
+                style={{
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  color: 'rgba(236,239,238,0.7)',
+                }}
+              >
                 {t('games.inviteCode.label') || 'Enter Invite Code'}
-              </Label>
+              </label>
               <Input
                 type="text"
                 value={code}
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setCode(e.target.value);
                   reset();
                 }}
                 placeholder={t('games.inviteCode.placeholder') || 'e.g. A1B2C3'}
                 disabled={isPending}
                 autoFocus
+                fullWidth
               />
-              {error && <ErrorMessage>{error.message}</ErrorMessage>}
-              <HelperText>
+              {error && (
+                <span style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem' }}>
+                  {error.message}
+                </span>
+              )}
+              <p
+                style={{
+                  color: 'rgba(236,239,238,0.7)',
+                  fontSize: 13,
+                  marginTop: '0.5rem',
+                  lineHeight: 1.4,
+                  margin: 0,
+                }}
+              >
                 {t('games.inviteCode.helper') ||
                   'This code was shared by the game host. Type it exactly as shown, without spaces.'}
-              </HelperText>
-            </InputContainer>
+              </p>
+            </YStack>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -123,51 +143,3 @@ export function InviteCodeModal({ open, onClose }: InviteCodeModalProps) {
     </Modal>
   );
 }
-
-const InputContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
-
-const Label = styled.label`
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: ${({ theme }) => theme.text.secondary};
-`;
-
-const Input = styled.input`
-  width: 100%;
-  background: ${({ theme }) => theme.interactive.option.background};
-  border: 1px solid ${({ theme }) => theme.interactive.option.border};
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  color: ${({ theme }) => theme.text.primary};
-  font-size: 1rem;
-  transition: all 0.2s;
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) =>
-      theme.buttons?.primary?.gradientStart || '#3b82f6'};
-    background: ${({ theme }) => theme.interactive.option.activeBackground};
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
-
-const ErrorMessage = styled.div`
-  color: #ef4444;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-`;
-
-const HelperText = styled.p`
-  color: ${({ theme }) => theme.text.secondary};
-  font-size: 0.8125rem;
-  margin-top: 0.5rem;
-  line-height: 1.4;
-`;

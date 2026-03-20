@@ -1,52 +1,50 @@
-import styled from 'styled-components';
+import { styled } from 'tamagui';
+import { Typography } from '@arcadeum/ui';
+import { YStack, XStack } from 'tamagui';
 
-export const LogItem = styled.div`
-  padding: 1.25rem;
-  border-radius: 12px;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border}60;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  transition: border-color 0.2s ease;
+export const LogItem = styled(YStack, {
+  name: 'LogItem',
+  padding: '$5',
+  borderRadius: '$4',
+  borderWidth: 1,
+  borderColor: '$borderColor',
+  backgroundColor: '$background',
+  gap: '$3',
+  hoverStyle: {
+    borderColor: '$borderColorHover',
+  },
+} as any);
 
-  &:hover {
-    border-color: ${({ theme }) => theme.surfaces.card.border};
-  }
-`;
+export const LogHeader = styled(XStack, {
+  jc: 'space-between',
+  ai: 'center',
+  gap: '$4',
+});
 
-export const LogHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-`;
+export const LogTimestamp = styled(Typography, {
+  uiSize: 'xs',
+  alpha: 'medium',
+  fontFamily: '$mono',
+} as any);
 
-export const LogTimestamp = styled.div`
-  font-size: 0.75rem;
-  color: ${({ theme }) => theme.text.muted};
-  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-`;
+export const LogScope = styled(Typography, {
+  uiSize: 'xs',
+  weight: '600',
+  textTransform: 'uppercase',
+  letterSpacing: '$md',
+  paddingHorizontal: '$3',
+  paddingVertical: '$1',
+  borderRadius: 999,
+  backgroundColor: '$backgroundStrong',
+  alpha: 'medium',
+} as any);
 
-export const LogScope = styled.div`
-  font-size: 0.6875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.25rem 0.625rem;
-  border-radius: 999px;
-  background: ${({ theme }) => theme.surfaces.card.border}40;
-  color: ${({ theme }) => theme.text.muted};
-`;
+export const LogSender = styled(Typography, {
+  uiSize: 'sm',
+  weight: '500',
+  alpha: 'high',
+} as any);
 
-export const LogSender = styled.div`
-  font-size: 0.8125rem;
-  color: ${({ theme }) => theme.text.secondary};
-  font-weight: 500;
-`;
-
-export const LogMessage = styled.div`
-  font-size: 0.9375rem;
-  color: ${({ theme }) => theme.text.primary};
-  line-height: 1.5;
-`;
+export const LogMessage = styled(Typography, {
+  lineHeight: '$5',
+} as any);

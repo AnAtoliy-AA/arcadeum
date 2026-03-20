@@ -1,4 +1,4 @@
-export type ThemeName = 'light' | 'dark' | 'neonLight' | 'neonDark';
+export type ThemeName = 'light' | 'dark' | 'neonLight' | 'neonDark' | 'violetDark' | 'violetLight' | 'tealDark' | 'tealLight';
 
 export type ThemePreference = ThemeName | 'system';
 
@@ -439,7 +439,11 @@ export function isThemeName(value: unknown): value is ThemeName {
     value === 'light' ||
     value === 'dark' ||
     value === 'neonLight' ||
-    value === 'neonDark'
+    value === 'neonDark' ||
+    value === 'violetDark' ||
+    value === 'violetLight' ||
+    value === 'tealDark' ||
+    value === 'tealLight'
   );
 }
 
@@ -453,4 +457,8 @@ export const THEME_OPTIONS: ThemePreference[] = [
   'dark',
   'neonLight',
   'neonDark',
+  'violetDark',
+  'violetLight',
+  'tealDark',
+  'tealLight',
 ];

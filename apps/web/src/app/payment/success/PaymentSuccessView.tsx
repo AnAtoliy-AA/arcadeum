@@ -1,9 +1,8 @@
 'use client';
 
 import { Suspense, useEffect, useRef } from 'react';
-import styled, { keyframes } from 'styled-components';
 import { useSearchParams } from 'next/navigation';
-
+import { XStack, YStack, Typography } from '@arcadeum/ui';
 import {
   PageLayout,
   Container,
@@ -16,145 +15,39 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { paymentApi } from '@/features/payment/api';
 import { particles } from './confetti-particles';
 
-const fadeIn = keyframes`
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-`;
-
-const popIn = keyframes`
-  0% { transform: scale(0.8); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-`;
-
-const float = keyframes`
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-`;
-
-const shimmer = keyframes`
-  0% { background-position: -1000px 0; }
-  100% { background-position: 1000px 0; }
-`;
-
-const confettiFall = keyframes`
-  0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-`;
-
-const SuccessContainer = styled(Container)`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 2.5rem;
-  padding-top: 6rem;
-  animation: ${fadeIn} 0.6s ease-out;
-  position: relative;
-  z-index: 10;
-`;
-
-const ConfettiContainer = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 1;
-`;
-
-const Particle = styled.div<{
-  $delay: number;
-  $left: number;
-  $duration: number;
-  $color: string;
-}>`
-  position: absolute;
-  top: -20px;
-  left: ${(props) => props.$left}%;
-  width: 10px;
-  height: 10px;
-  background-color: ${(props) => props.$color};
-  animation: ${confettiFall} ${(props) => props.$duration}s linear infinite;
-  animation-delay: ${(props) => props.$delay}s;
-  border-radius: 50%;
-`;
-
-const IconWrapper = styled.div`
-  width: 100px;
-  height: 100px;
-  background: linear-gradient(
-    135deg,
-    rgba(34, 197, 94, 0.2),
-    rgba(34, 197, 94, 0.1)
-  );
-  color: #22c55e;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3.5rem;
-  margin-bottom: 0.5rem;
-  box-shadow: 0 0 40px rgba(34, 197, 94, 0.2);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  animation:
-    ${popIn} 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s backwards,
-    ${float} 3s ease-in-out infinite 0.7s;
-`;
-
-const Title = styled(PageTitle)`
-  font-size: 2.5rem;
-  background: linear-gradient(to right, #ffffff, #86efac);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 1rem;
-`;
-
-const Message = styled.p`
-  color: var(--text-secondary, rgba(255, 255, 255, 0.8));
-  font-size: 1.125rem;
-  max-width: 480px;
-  line-height: 1.7;
-  margin: 0 auto;
-`;
-
-const DetailCard = styled(Card)`
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  max-width: 420px;
-  width: 100%;
-  margin: 0 auto;
-  animation: ${fadeIn} 0.6s ease-out 0.3s backwards;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
+const successStyles = `
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes popIn {
+    0%   { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+  @keyframes float {
+    0%   { transform: translateY(0px); }
+    50%  { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+  @keyframes shimmer {
+    0%   { background-position: -1000px 0; }
+    100% { background-position:  1000px 0; }
+  }
+  @keyframes confettiFall {
+    0%   { transform: translateY(-10vh) rotate(0deg);   opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+  .detail-card::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.05) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
     background-size: 2000px 100%;
-    animation: ${shimmer} 3s linear infinite;
+    animation: shimmer 3s linear infinite;
     pointer-events: none;
+    z-index: 0;
   }
-`;
-
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 1.5rem;
-  margin-top: 1.5rem;
-  animation: ${fadeIn} 0.6s ease-out 0.4s backwards;
 `;
 
 interface PendingNote {
@@ -172,108 +65,117 @@ function SuccessContent() {
   const token = searchParams?.get('token');
   const hasSavedNoteRef = useRef(false);
 
-  // Save pending note on mount
   useEffect(() => {
     if (hasSavedNoteRef.current) return;
-
     const transactionId = paymentId || token;
     if (!transactionId) return;
-
     const pendingNoteStr = localStorage.getItem('pending_payment_note');
     if (!pendingNoteStr) return;
-
     hasSavedNoteRef.current = true;
     localStorage.removeItem('pending_payment_note');
-
     try {
       const pendingNote: PendingNote = JSON.parse(pendingNoteStr);
-      paymentApi
-        .createNote(
-          {
-            note: pendingNote.note,
-            amount: pendingNote.amount,
-            currency: pendingNote.currency,
-            transactionId,
-            displayName: pendingNote.displayName || undefined,
-          },
-          { token: snapshot.accessToken || undefined },
-        )
-        .catch(() => {
-          // Silently fail - the payment still succeeded
-        });
-    } catch {
-      // Invalid JSON in localStorage, ignore
-    }
+      paymentApi.createNote(
+        { note: pendingNote.note, amount: pendingNote.amount, currency: pendingNote.currency, transactionId, displayName: pendingNote.displayName || undefined },
+        { token: snapshot.accessToken || undefined },
+      ).catch(() => {});
+    } catch {}
   }, [paymentId, token, snapshot.accessToken]);
 
   return (
     <>
-      <ConfettiContainer>
+      <style>{successStyles}</style>
+
+      {/* Confetti */}
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', overflow: 'hidden', zIndex: 1 }}>
         {particles.map((p) => (
-          <Particle
+          <div
             key={p.id}
-            $left={p.left}
-            $delay={p.delay}
-            $duration={p.duration}
-            $color={p.color}
+            style={{
+              position: 'absolute',
+              top: -20,
+              left: `${p.left}%`,
+              width: 10,
+              height: 10,
+              backgroundColor: p.color,
+              borderRadius: '50%',
+              animation: `confettiFall ${p.duration}s linear infinite`,
+              animationDelay: `${p.delay}s`,
+            }}
           />
         ))}
-      </ConfettiContainer>
+      </div>
 
-      <SuccessContainer size="sm">
-        <IconWrapper>🎉</IconWrapper>
+      <Container
+        size="sm"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+          gap: '2.5rem',
+          paddingTop: '6rem',
+          position: 'relative',
+          zIndex: 10,
+          animation: 'fadeIn 0.6s ease-out',
+        }}
+      >
+        {/* Icon */}
+        <div style={{
+          width: 100, height: 100,
+          background: 'linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.1))',
+          color: '#22c55e',
+          borderRadius: '50%',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: '3.5rem',
+          marginBottom: '0.5rem',
+          boxShadow: '0 0 40px rgba(34,197,94,0.2)',
+          border: '1px solid rgba(34,197,94,0.3)',
+          animation: 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s backwards, float 3s ease-in-out infinite 0.7s',
+        }}>
+          🎉
+        </div>
 
         <div>
-          <Title size="lg">
-            {t('payments.successPage.title') || 'Payment Successful!'}
-          </Title>
-          <Message>
+          <YStack mb="$4">
+            <PageTitle size="lg" gradient>
+              {t('payments.successPage.title') || 'Payment Successful!'}
+            </PageTitle>
+          </YStack>
+          <Typography uiSize="lg" maxWidth={480} lineHeight="$6" textCenter alpha="high">
             {t('payments.successPage.message') ||
               'Thank you for your generous support! Your contribution helps us keep the servers running, the coffee brewing, and the updates coming.'}
-          </Message>
+          </Typography>
         </div>
 
         {(paymentId || token) && (
-          <DetailCard padding="md">
-            <p
-              style={{
-                opacity: 0.7,
-                fontSize: '0.875rem',
-                marginBottom: '0.75rem',
-                letterSpacing: '0.05em',
-              }}
-            >
-              {t('payments.successPage.referenceLabel') ||
-                'Transaction Reference'}
+          <Card
+            padding="md"
+            className="detail-card"
+            backgroundColor="rgba(255,255,255,0.03)"
+            borderColor="rgba(255,255,255,0.08)"
+            maxWidth={420}
+            width="100%"
+            style={{ margin: '0 auto', animation: 'fadeIn 0.6s ease-out 0.3s backwards' }}
+          >
+            <p style={{ opacity: 0.7, fontSize: '0.875rem', marginBottom: '0.75rem', letterSpacing: '0.05em' }}>
+              {t('payments.successPage.referenceLabel') || 'Transaction Reference'}
             </p>
-            <code
-              style={{
-                background: 'rgba(0, 0, 0, 0.3)',
-                padding: '0.75rem 1rem',
-                borderRadius: '8px',
-                fontFamily: 'monospace',
-                fontSize: '0.9rem',
-                color: '#86efac',
-                display: 'block',
-                wordBreak: 'break-all',
-                position: 'relative',
-                zIndex: 1,
-              }}
-            >
+            <code style={{ background: 'rgba(0,0,0,0.3)', padding: '0.75rem 1rem', borderRadius: '8px', fontFamily: 'monospace', fontSize: '0.9rem', color: '#86efac', display: 'block', wordBreak: 'break-all', position: 'relative', zIndex: 1 }}>
               {paymentId || token}
             </code>
-          </DetailCard>
+          </Card>
         )}
 
-        <ButtonGroup>
+        <XStack gap="$6" mt="$6" style={{ animation: 'fadeIn 0.6s ease-out 0.4s backwards' }}>
           <LinkButton href="/" size="lg" variant="primary">
             {t('payments.successPage.returnHome') || 'Return Home'}
           </LinkButton>
           <LinkButton href="/payment" size="lg" variant="ghost">
             {t('payments.successPage.supportAgain') || 'Support Again'}
           </LinkButton>
-        </ButtonGroup>
-      </SuccessContainer>
+        </XStack>
+      </Container>
     </>
   );
 }

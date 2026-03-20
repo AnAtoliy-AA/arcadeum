@@ -23,6 +23,7 @@ import {
   ToggleLabel,
   ToggleInput,
   VersionText,
+  settingsStyles,
 } from './styles';
 
 import { Button, LinkButton } from '@arcadeum/ui';
@@ -223,6 +224,7 @@ export default function SettingsContent({
 
   return (
     <>
+      <style>{settingsStyles}</style>
       <PageLayout>
         <Container data-current-locale={locale}>
           <PageTitle size="xl" gradient>

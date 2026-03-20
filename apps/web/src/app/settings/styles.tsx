@@ -1,136 +1,28 @@
-import styled from 'styled-components';
+import React from 'react';
+import { YStack, XStack, Text, styled } from 'tamagui';
 import { Button, ButtonProps } from '@arcadeum/ui';
 
-export const Container = styled.div`
-  max-width: 900px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
-`;
-
-export const OptionList = styled.div`
-  display: grid;
-  gap: 1.25rem;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-`;
-
-export const OptionLabel = styled.span`
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.text.primary};
-`;
-
-export const OptionDescription = styled.span`
-  font-size: 0.95rem;
-  color: ${({ theme }) => theme.text.secondary};
-`;
-
-export const PillGroup = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-`;
-
-export const DownloadGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.25rem;
-`;
-
-export const DownloadLink = styled.a`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 1.25rem 1.75rem;
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.interactive.download.border};
-  background: ${({ theme }) => theme.interactive.download.background};
-  color: ${({ theme }) => theme.text.primary};
-  font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none;
-  backdrop-filter: blur(8px);
-
-  &:hover {
-    transform: translateY(-2px);
-    border-color: ${({ theme }) => theme.interactive.download.hoverBorder};
-    background: ${({ theme }) => theme.interactive.download.hoverBackground};
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+export const settingsStyles = `
+  .settings-toggle-input {
+    appearance: none;
+    width: 3.5rem;
+    height: 2rem;
+    background: #32353d;
+    border-radius: 999px;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border: 2px solid rgba(50, 53, 61, 0.8);
+    flex-shrink: 0;
   }
 
-  &:active {
-    transform: translateY(0);
-  }
-`;
-
-export const DownloadIcon = styled.span`
-  font-size: 1.25rem;
-`;
-
-export const AccountStatus = styled.p`
-  margin: 0;
-  font-size: 1.1rem;
-  color: ${({ theme }) => theme.text.secondary};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  padding: 1.5rem;
-  border-radius: 12px;
-  text-align: center;
-  backdrop-filter: blur(12px);
-`;
-
-export const AccountActions = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.25rem;
-  margin-top: 0.75rem;
-`;
-
-export const ToggleRow = styled.label`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.5rem;
-  background: ${({ theme }) => theme.interactive.option.background};
-  border: 1px solid ${({ theme }) => theme.interactive.option.border};
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(8px);
-
-  &:hover {
-    border-color: ${({ theme }) => theme.interactive.option.hoverBorder};
-    background: ${({ theme }) => theme.interactive.option.activeBackground};
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-`;
-
-export const ToggleLabel = styled.span`
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.text.primary};
-`;
-
-export const ToggleInput = styled.input.attrs({ type: 'checkbox' })`
-  appearance: none;
-  width: 3.5rem;
-  height: 2rem;
-  background: ${({ theme }) => theme.interactive.pill.inactiveBackground};
-  border-radius: 999px;
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  border: 2px solid ${({ theme }) => theme.interactive.pill.border};
-
-  &:checked {
-    background: ${({ theme }) => theme.text.accent};
-    border-color: ${({ theme }) => theme.text.accent};
-    box-shadow: 0 0 12px ${({ theme }) => theme.text.accent}40;
+  .settings-toggle-input:checked {
+    background: var(--color-accent, #7ad7ff);
+    border-color: var(--color-accent, #7ad7ff);
+    box-shadow: 0 0 12px var(--color-accent40, rgba(122, 215, 255, 0.25));
   }
 
-  &::after {
+  .settings-toggle-input::after {
     content: '';
     position: absolute;
     top: 4px;
@@ -143,35 +35,191 @@ export const ToggleInput = styled.input.attrs({ type: 'checkbox' })`
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 
-  &:checked::after {
+  .settings-toggle-input:checked::after {
     transform: translateX(1.5rem);
   }
 
-  &:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.outlines.focus};
+  .settings-toggle-input:focus-visible {
+    outline: 2px solid var(--color-border-focus, #7ad7ff);
     outline-offset: 2px;
+  }
+
+  .settings-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    background: var(--color-background-hover, rgba(50, 53, 61, 0.3));
+    border: 1px solid var(--color-border, rgba(50, 53, 61, 0.8));
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(8px);
+  }
+
+  .settings-toggle-row:hover {
+    border-color: var(--color-border-focus, #7ad7ff);
+    background: var(--color-background-hover, rgba(50, 53, 61, 0.5));
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .settings-download-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1.25rem 1.75rem;
+    border-radius: 12px;
+    border: 1px solid var(--color-border, rgba(50, 53, 61, 0.8));
+    background: var(--color-background-hover, rgba(50, 53, 61, 0.3));
+    color: var(--color, #ecefee);
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    backdrop-filter: blur(8px);
+  }
+
+  .settings-download-link:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-border-focus, #7ad7ff);
+    background: var(--color-background-hover, rgba(50, 53, 61, 0.5));
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .settings-download-link:active {
+    transform: translateY(0);
   }
 `;
 
-export const BlockedUserRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem 1.5rem;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  border-radius: 12px;
-  gap: 1rem;
-  backdrop-filter: blur(12px);
-`;
+export const Container = styled(YStack, {
+  maxWidth: 900,
+  alignSelf: 'center',
+  width: '100%',
+  flexDirection: 'column',
+  gap: '$8',
+} as any);
 
-export const BlockedUserInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  min-width: 0;
-  flex: 1;
-`;
+export function OptionList({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gap: '1.25rem',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+export const OptionLabel = styled(Text, {
+  tag: 'span',
+  fontSize: '$4',
+  fontWeight: '600',
+  color: '$color',
+} as any);
+
+export const OptionDescription = styled(Text, {
+  tag: 'span',
+  fontSize: '$3',
+  color: 'rgba(236,239,238,0.7)',
+} as any);
+
+export const PillGroup = styled(XStack, {
+  flexWrap: 'wrap',
+  gap: '$4',
+} as any);
+
+export function DownloadGrid({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: '1.25rem',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function DownloadLink({
+  children,
+  href,
+  ...props
+}: React.AnchorHTMLAttributes<HTMLAnchorElement>) {
+  return (
+    <a className="settings-download-link" href={href} {...props}>
+      {children}
+    </a>
+  );
+}
+
+export function DownloadIcon({ children }: { children: React.ReactNode }) {
+  return <span style={{ fontSize: '1.25rem' }}>{children}</span>;
+}
+
+export const AccountStatus = styled(Text, {
+  tag: 'p',
+  margin: 0,
+  fontSize: '$4',
+  color: 'rgba(236,239,238,0.7)',
+  backgroundColor: '$background',
+  borderWidth: 1,
+  borderColor: '$borderColor',
+  padding: '$5',
+  borderRadius: 12,
+  textAlign: 'center',
+  style: { backdropFilter: 'blur(12px)' },
+} as any);
+
+export const AccountActions = styled(XStack, {
+  flexWrap: 'wrap',
+  gap: '$5',
+  marginTop: '$3',
+} as any);
+
+export function ToggleRow({
+  children,
+  ...props
+}: React.LabelHTMLAttributes<HTMLLabelElement>) {
+  return (
+    <label className="settings-toggle-row" {...props}>
+      {children}
+    </label>
+  );
+}
+
+export const ToggleLabel = styled(Text, {
+  tag: 'span',
+  fontSize: '$4',
+  fontWeight: '600',
+  color: '$color',
+} as any);
+
+export function ToggleInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
+  return <input type="checkbox" className="settings-toggle-input" {...props} />;
+}
+
+export const BlockedUserRow = styled(XStack, {
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: '$4',
+  backgroundColor: '$background',
+  borderWidth: 1,
+  borderColor: '$borderColor',
+  borderRadius: 12,
+  gap: '$4',
+  style: { backdropFilter: 'blur(12px)' },
+} as any);
+
+export const BlockedUserInfo = styled(YStack, {
+  gap: '$2',
+  minWidth: 0,
+  flex: 1,
+} as any);
 
 export const UnblockButton = (props: ButtonProps) => (
   <Button
@@ -188,10 +236,13 @@ export const UnblockButton = (props: ButtonProps) => (
   />
 );
 
-export const VersionText = styled.span`
-  font-size: 0.95rem;
-  color: ${({ theme }) => theme.text.secondary};
-  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-  letter-spacing: 0.05em;
-  opacity: 0.8;
-`;
+export const VersionText = styled(Text, {
+  tag: 'span',
+  fontSize: '$3',
+  color: 'rgba(236,239,238,0.7)',
+  letterSpacing: '0.05em' as any,
+  opacity: 0.8,
+  style: {
+    fontFamily: "'SF Mono', 'Fira Code', 'Consolas', monospace",
+  },
+} as any);

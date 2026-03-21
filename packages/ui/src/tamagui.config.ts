@@ -43,8 +43,8 @@ const font = {
     md: 20,
     lg: 24,
     xl: 28,
-    tight: 1.1,
-    relaxed: 1.5,
+    tight: '1.1' as unknown as number,
+    relaxed: '1.5' as unknown as number,
     true: 24,
   },
   weight: {

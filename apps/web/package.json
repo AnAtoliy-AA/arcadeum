@@ -36,7 +36,6 @@
     "react-dom": "19.1.0",
     "react-native-web": "^0.21.0",
     "socket.io-client": "^4.8.1",
-    "styled-components": "^6.1.12",
     "tamagui": "2.0.0-rc.23",
     "zustand": "^5.0.10"
   },

@@ -43,6 +43,8 @@ const font = {
     md: 20,
     lg: 24,
     xl: 28,
+    tight: 1.1,
+    relaxed: 1.5,
     true: 24,
   },
   weight: {

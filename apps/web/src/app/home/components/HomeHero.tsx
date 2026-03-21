@@ -21,6 +21,7 @@ import {
   HeroCard,
 } from './styles/Hero.styles';
 import { LinkButton } from '@/shared/ui';
+import React, { useState } from 'react';
 import { CARD_VARIANTS } from '@/app/games/create/constants';
 import { YStack, XStack, Text, useTheme } from 'tamagui';
 
@@ -127,46 +128,48 @@ export function HomeHero() {
       <HeroVisual>
         <CardStack className="hero-card-stack">
           {cards.map((card, index) => {
-            const isCenter = index === 1;
-            
-            // Fanned out by default
-            const x = index * 40 - 40;
+            const isLast = index === cards.length - 1;
+
+            // spread them out slightly more for better visibility of the "not covered" parts
+            const x = (index - 1) * 65;
+            const rotate = `${(index - 1) * 12}deg`;
+
             const y = index * -15;
-            const rotate = `${index * 16 - 16}deg`;
+            const zIndexVal = index;
+            const scale = isLast ? 1 : 0.95;
+            const opacity = isLast ? 1 : 0.8;
 
             return (
               <HeroCard
                 key={index}
-                rotate={rotate as any}
+                className="hero-card"
+                rotate={rotate}
                 x={x}
                 y={y}
-                zIndex={index}
-                animation="quick"
-                hoverStyle={{
-                  zIndex: 10,
-                  scale: 1.05,
-                  y: y - 10,
-                }}
+                zIndex={zIndexVal}
+                scale={scale}
+                opacity={opacity}
+                hoverStyle={{ scale: 1.05, filter: 'blur(0px)', rotate }}
               >
-              <YStack
-                position="absolute"
-                inset={0}
-                zIndex={0}
-                pointerEvents="none"
-                opacity={0.15}
-                backgroundColor={card.colorToken}
-              />
-              <XStack position="relative" zIndex={1} justifyContent="space-between">
-                <Text color="white" fontWeight="bold">{t(card.name as TranslationKey) || card.name}</Text>
-                <Text>{card.icon}</Text>
-              </XStack>
-              <YStack position="relative" zIndex={1} alignItems="center" justifyContent="center" flex={1}>
-                <Text fontSize={120} lineHeight={120}>{card.icon}</Text>
-              </YStack>
-              <XStack position="relative" zIndex={1} justifyContent="center">
-                <Text color="white" opacity={0.5} fontWeight="bold" letterSpacing={2}>{heroCardBrand}</Text>
-              </XStack>
-            </HeroCard>
+                <YStack
+                  position="absolute"
+                  inset={0}
+                  zIndex={0}
+                  pointerEvents="none"
+                  opacity={0.4}
+                  backgroundColor={card.colorToken}
+                />
+                <XStack position="relative" zIndex={1} justifyContent="space-between">
+                  <Text color="white" fontWeight="bold">{t(card.name as TranslationKey) || card.name}</Text>
+                  <Text>{card.icon}</Text>
+                </XStack>
+                <YStack position="relative" zIndex={1} alignItems="center" justifyContent="center" flex={1}>
+                  <Text fontSize={120} lineHeight={120}>{card.icon}</Text>
+                </YStack>
+                <XStack position="relative" zIndex={1} justifyContent="center">
+                  <Text color="white" opacity={0.5} fontWeight="bold" letterSpacing={2}>{heroCardBrand}</Text>
+                </XStack>
+              </HeroCard>
             );
           })}
         </CardStack>

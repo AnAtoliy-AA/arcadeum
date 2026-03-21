@@ -7,7 +7,7 @@ export type GlassCardProps = GetProps<typeof YStack> & {
   animated?: boolean;
 };
 
-const StyledGlassCard = styled(YStack, {
+export const StyledGlassCard = styled(YStack, {
   name: 'GlassCard',
   backgroundColor: '$glassBg',
   borderColor: '$glassBorder',

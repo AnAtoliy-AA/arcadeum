@@ -70,24 +70,41 @@ export const CardStack = styled(YStack, {
   position: 'relative',
   width: 280,
   height: 380,
+  group: true,
   ...floatAnimation,
 });
 
 const quickAnimation = { animation: 'quick' };
 
-export const HeroCard = styled(GlassCard, {
+import { StyledGlassCard } from '@arcadeum/ui';
+
+export const HeroCard = styled(StyledGlassCard, {
   name: 'HeroCard',
-  position: 'absolute',
-  inset: 0,
-  borderRadius: 20,
   borderWidth: 2,
-  borderColor: '$glassBorderHover',
+  borderRadius: 20,
+  padding: '$6',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-between',
-  padding: '$6',
+  position: 'absolute',
+  inset: 0,
   overflow: 'hidden',
+  backdropFilter: 'blur(8px)',
   ...quickAnimation,
+
+  // When ANY card in the stack is hovered, apply this to all cards
+  '$group-hover': {
+    filter: 'blur(2px)',
+    scale: 0.98,
+  },
+
+  // When THIS specific card is hovered, override the group hover
+  hoverStyle: {
+    opacity: 1,
+    zIndex: 20,
+    marginTop: -15, // Use marginTop for additive displacement to avoid conflict with 'y' prop
+    borderColor: '$glassBorderHover',
+  },
 });
 
 export const Kicker = styled(Text, {
@@ -107,7 +124,7 @@ export const Kicker = styled(Text, {
 
 export const HeroTitle = styled(H1, {
   fontWeight: '800',
-  lineHeight: '1.1' as unknown as number,
+  lineHeight: '$tight',
 });
 
 export const Tagline = styled(Text, {

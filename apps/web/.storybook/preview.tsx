@@ -2,32 +2,15 @@
 
 import React from 'react';
 import type { Preview, Decorator } from '@storybook/nextjs-vite';
-import { ThemeProvider } from 'styled-components';
-import { themeTokens, ThemeName } from '../src/shared/config/theme';
+import { ThemeName } from '../src/shared/config/theme';
 import { TamaguiProvider } from 'tamagui';
 import tamaguiConfig from '../src/shared/config/tamagui.config';
-
-// Global styles for Storybook
-const StorybookGlobalStyle = ({ theme }: { theme: ThemeName }) => (
-  <style>{`
-    body {
-      margin: 0;
-      padding: 1rem;
-      background: ${themeTokens[theme].background.base};
-      color: ${themeTokens[theme].text.primary};
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-  `}</style>
-);
 
 const withThemeProvider: Decorator = (Story, context) => {
   const theme = (context.globals.theme || 'neonDark') as ThemeName;
   return (
     <TamaguiProvider config={tamaguiConfig} defaultTheme={theme}>
-      <ThemeProvider theme={themeTokens[theme]}>
-        <StorybookGlobalStyle theme={theme} />
-        <Story />
-      </ThemeProvider>
+      <Story />
     </TamaguiProvider>
   );
 };

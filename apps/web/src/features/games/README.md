@@ -203,7 +203,7 @@ export type GameSlug = 'critical_v1' | 'texas_holdem_v1' | 'new_game_v1'; // Add
 
 ### 2. Styling
 
-- Use styled-components with theme support
+- Use Tamagui primitives (YStack, XStack, Text, styled) for component styles
 - Follow the design system
 - Ensure responsive design
 - Support both light and dark themes

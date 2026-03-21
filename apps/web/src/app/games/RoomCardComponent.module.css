@@ -1,0 +1,89 @@
+.roomCard {
+  animation: fadeInUp 0.5s ease-out both;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.roomCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #7ad7ff, transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.roomCard:hover {
+  transform: translateY(-4px);
+  border-color: #7ad7ff40;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.3),
+    0 0 20px #7ad7ff20;
+}
+
+.roomCard:hover::before {
+  opacity: 1;
+}
+
+.roomCard:nth-child(1) {
+  animation-delay: 0s;
+}
+.roomCard:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.roomCard:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.roomCard:nth-child(4) {
+  animation-delay: 0.3s;
+}
+.roomCard:nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+@media (max-width: 768px) {
+  .roomCard {
+    padding: 1.5rem !important;
+    border-radius: 20px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 1rem !important;
+  }
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.roomTitle {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(-45deg, #ecefee, #7ad7ff, #57c3ff, #ecefee);
+  background-size: 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  animation: gradientFlow 5s ease infinite;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+}

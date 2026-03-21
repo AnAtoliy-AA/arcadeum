@@ -18,7 +18,8 @@ import { GamesFilters } from './components/GamesFilters';
 import { GamesHeader } from './components/GamesHeader';
 import { GamesList } from './components/GamesList';
 import { GamesLoading } from './components/GamesLoading';
-import { Container, Page, getRoomsContainerStyle, fadeInCSS, roomsContainerCSS } from './styles';
+import { PageLayout, Container } from '@/shared/ui';
+import styles from './GamesPage.module.css';
 import type {
   GamesParticipationFilter,
   GamesStatusFilter,
@@ -172,10 +173,8 @@ export function GamesPage() {
   };
 
   return (
-    <Page>
-      <style>{fadeInCSS}</style>
-      <style>{roomsContainerCSS}</style>
-      <Container style={{ animation: 'fadeIn 0.5s ease-out' }}>
+    <PageLayout>
+      <Container size="xl" style={{ animation: 'fadeInUp 0.5s ease-out' }}>
         <GamesHeader viewMode={viewMode} onViewModeChange={setViewMode} />
 
         <GamesFilters
@@ -188,8 +187,12 @@ export function GamesPage() {
           isAuthenticated={!!snapshot.accessToken}
         />
 
-        <div className="games-rooms-container" style={getRoomsContainerStyle(viewMode)}>{renderContent()}</div>
+        <div
+          className={`${styles.roomsContainer}${viewMode === 'list' ? ` ${styles.listView}` : ''}`}
+        >
+          {renderContent()}
+        </div>
       </Container>
-    </Page>
+    </PageLayout>
   );
 }

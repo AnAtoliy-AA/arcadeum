@@ -1,0 +1,16 @@
+.roomsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.25rem;
+}
+
+.roomsContainer.listView {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 800px) {
+  .roomsContainer {
+    grid-template-columns: 1fr;
+  }
+}

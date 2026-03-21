@@ -1,42 +1,8 @@
-import React from 'react';
 import { styled, XStack, YStack, Text } from 'tamagui';
 import {
   Spinner as SharedSpinner,
   PageTitle as SharedPageTitle,
 } from '@/shared/ui';
-
-export const fadeInCSS = `
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-`;
-
-export const roomsContainerCSS = `
-  @media (max-width: 800px) {
-    .games-rooms-container {
-      display: grid !important;
-      grid-template-columns: 1fr !important;
-    }
-  }
-`;
-
-export const Page = styled.main({
-  name: 'Page',
-  display: 'flex',
-  flexDirection: 'column',
-  minHeight: '100vh',
-  padding: '2rem 1.5rem',
-  backgroundColor: '$background',
-});
-
-export const Container = styled(YStack, {
-  name: 'Container',
-  maxWidth: 1200,
-  marginHorizontal: 'auto',
-  flexDirection: 'column',
-  gap: '2rem',
-});
 
 export const Header = styled(XStack, {
   name: 'Header',
@@ -90,7 +56,7 @@ export const FilterGroup = styled(XStack, {
   gap: '0.75rem',
 });
 
-export const FilterLabel = styled.label({
+export const FilterLabel = styled(Text, {
   name: 'FilterLabel',
   fontSize: '0.8rem',
   fontWeight: '600',
@@ -104,19 +70,6 @@ export const FilterChips = styled(XStack, {
   flexWrap: 'wrap',
   gap: '0.5rem',
 });
-
-/** Returns inline CSS for the rooms container based on viewMode. */
-export function getRoomsContainerStyle(
-  viewMode?: 'grid' | 'list',
-): React.CSSProperties {
-  if (viewMode === 'list')
-    return { display: 'flex', flexDirection: 'column', gap: '1.25rem' };
-  return {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-    gap: '1.25rem',
-  };
-}
 
 export const Loading = styled(YStack, {
   name: 'Loading',

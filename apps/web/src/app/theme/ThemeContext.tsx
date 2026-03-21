@@ -8,7 +8,6 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 import { TamaguiProvider } from 'tamagui';
 
 import { useThemeStore } from './store/themeStore';
@@ -123,7 +122,7 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
         defaultTheme={resolvedTheme}
         disableInjectCSS
       >
-        <StyledThemeProvider theme={theme}>{children}</StyledThemeProvider>
+        {children}
       </TamaguiProvider>
     </ThemeContext.Provider>
   );

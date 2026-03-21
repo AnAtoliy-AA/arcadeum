@@ -45,9 +45,9 @@ export function ReferralProgressCard({ stats }: ReferralProgressCardProps) {
         </ProgressLabel>
         <ProgressBar value={Math.min(progressValue, 100)} />
         <ProgressLabel>
-          <span>{t('referrals.progressCard.friendsInvited')}</span>
+          <span style={{ fontSize: '0.875rem', color: 'rgba(236,239,238,0.7)' }}>{t('referrals.progressCard.friendsInvited')}</span>
           {nextTier && (
-            <span>
+            <span style={{ fontSize: '0.875rem', color: 'rgba(236,239,238,0.7)' }}>
               {t('referrals.progressCard.remaining', {
                 count: String(nextTier.remaining),
               })}

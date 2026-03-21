@@ -70,7 +70,7 @@ export function ReferralShareCard({ referralCode }: ReferralShareCardProps) {
         </CopyButton>
       </CodeContainer>
       <ShareLinkRow>
-        <span>{t('referrals.shareCard.linkLabel')}</span>
+        <span style={{ fontSize: '0.85rem', color: 'rgba(236,239,238,0.45)' }}>{t('referrals.shareCard.linkLabel')}</span>
         <ShareLink>{shareUrl}</ShareLink>
       </ShareLinkRow>
     </GlassCard>

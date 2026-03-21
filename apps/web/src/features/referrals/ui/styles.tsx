@@ -40,12 +40,14 @@ export const DashboardSubtitle = styled(Text, {
   lineHeight: 1.5 as any,
 } as any);
 
-export const CardTitle = styled(XStack, {
+export const CardTitle = styled(Text, {
+  name: 'CardTitle',
   tag: 'h2',
   fontSize: '$4',
   fontWeight: '600',
   color: '$color',
   marginBottom: '$3',
+  display: 'flex',
   alignItems: 'center',
   gap: '$2',
 } as any);
@@ -85,8 +87,6 @@ export const ShareLinkRow = styled(XStack, {
   alignItems: 'center',
   gap: '$2',
   marginTop: '$3',
-  fontSize: '$2',
-  color: 'rgba(236,239,238,0.45)',
 } as any);
 
 export const ShareLink = styled(Text, {
@@ -102,8 +102,6 @@ export const ProgressSection = styled(YStack, {
 export const ProgressLabel = styled(XStack, {
   justifyContent: 'space-between',
   alignItems: 'center',
-  fontSize: '$3',
-  color: 'rgba(236,239,238,0.7)',
 } as any);
 
 export const ProgressCount = styled(Text, {

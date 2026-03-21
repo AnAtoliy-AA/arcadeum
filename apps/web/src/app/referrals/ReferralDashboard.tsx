@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useReferralStats } from '@/features/referrals/hooks/useReferralStats';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -32,45 +33,28 @@ export function ReferralDashboard() {
   const isAuthenticated = !!snapshot.accessToken;
   const { data, isLoading, error } = useReferralStats();
 
-  // Injected once for all referrals components (TierCard glow, CopyButton hover, etc.)
-  const styleTag = <style>{referralsStyles}</style>;
+  let content: React.ReactNode;
 
   if (!hydrated || (isLoading && isAuthenticated)) {
-    return (
-      <>
-        {styleTag}
-        <DashboardContainer data-testid="referral-dashboard">
-          <LoadingState message={t('referrals.loading')} />
-        </DashboardContainer>
-      </>
+    content = (
+      <DashboardContainer data-testid="referral-dashboard">
+        <LoadingState message={t('referrals.loading')} />
+      </DashboardContainer>
     );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <>
-        {styleTag}
-        <DashboardContainer data-testid="referral-dashboard">
-          <EmptyState message={t('referrals.unauthenticated.title')} icon="🔒" />
-        </DashboardContainer>
-      </>
+  } else if (!isAuthenticated) {
+    content = (
+      <DashboardContainer data-testid="referral-dashboard">
+        <EmptyState message={t('referrals.unauthenticated.title')} icon="🔒" />
+      </DashboardContainer>
     );
-  }
-
-  if (error || !data) {
-    return (
-      <>
-        {styleTag}
-        <DashboardContainer data-testid="referral-dashboard">
-          <EmptyState message={t('referrals.error.title')} icon="⚠️" />
-        </DashboardContainer>
-      </>
+  } else if (error || !data) {
+    content = (
+      <DashboardContainer data-testid="referral-dashboard">
+        <EmptyState message={t('referrals.error.title')} icon="⚠️" />
+      </DashboardContainer>
     );
-  }
-
-  return (
-    <>
-      {styleTag}
+  } else {
+    content = (
       <DashboardContainer data-testid="referral-dashboard">
         <div>
           <DashboardTitle>{t('referrals.dashboard.title')}</DashboardTitle>
@@ -87,6 +71,13 @@ export function ReferralDashboard() {
         <ReferralProgressCard stats={data} />
         <ReferralRewardsCard tiers={data.tiers} />
       </DashboardContainer>
+    );
+  }
+
+  return (
+    <>
+      <style>{referralsStyles}</style>
+      {content}
     </>
   );
 }

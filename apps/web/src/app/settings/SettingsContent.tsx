@@ -281,6 +281,7 @@ export default function SettingsContent({
                 type="checkbox"
                 checked={hapticsEnabled}
                 onChange={(e) => setHapticsEnabled(e.target.checked)}
+                aria-label={hapticsLabel}
               />
             </ToggleRow>
           </Section>

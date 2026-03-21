@@ -52,38 +52,40 @@ export default function PaymentCancelPage() {
   const { t } = useTranslation();
 
   return (
-    <PageLayout>
+    <>
       <style>{cancelStyles}</style>
-      <Container size="sm" className="cancel-container">
-        <div className="cancel-icon-wrapper">✕</div>
+      <PageLayout>
+        <Container size="sm" className="cancel-container">
+          <div className="cancel-icon-wrapper">✕</div>
 
-        <div>
-          <PageTitle size="lg">
-            {t('payments.cancelPage.title') || 'Payment Cancelled'}
-          </PageTitle>
-          <p
-            style={{
-              color: 'rgba(236,239,238,0.7)',
-              fontSize: '1.125rem',
-              maxWidth: 420,
-              lineHeight: 1.6,
-              margin: 0,
-            }}
-          >
-            {t('payments.cancelPage.message') ||
-              "No worries! No charges were made to your account. You can always try again when you're ready—we'll be here."}
-          </p>
-        </div>
+          <div>
+            <PageTitle size="lg">
+              {t('payments.cancelPage.title') || 'Payment Cancelled'}
+            </PageTitle>
+            <p
+              style={{
+                color: 'rgba(236,239,238,0.7)',
+                fontSize: '1.125rem',
+                maxWidth: 420,
+                lineHeight: 1.6,
+                margin: 0,
+              }}
+            >
+              {t('payments.cancelPage.message') ||
+                "No worries! No charges were made to your account. You can always try again when you're ready—we'll be here."}
+            </p>
+          </div>
 
-        <div className="cancel-button-group">
-          <LinkButton href="/payment" size="lg" variant="primary">
-            {t('payments.cancelPage.tryAgain') || 'Try Again'}
-          </LinkButton>
-          <LinkButton href="/" size="lg" variant="ghost">
-            {t('payments.cancelPage.returnHome') || 'Return Home'}
-          </LinkButton>
-        </div>
-      </Container>
-    </PageLayout>
+          <div className="cancel-button-group">
+            <LinkButton href="/payment" size="lg" variant="primary">
+              {t('payments.cancelPage.tryAgain') || 'Try Again'}
+            </LinkButton>
+            <LinkButton href="/" size="lg" variant="ghost">
+              {t('payments.cancelPage.returnHome') || 'Return Home'}
+            </LinkButton>
+          </div>
+        </Container>
+      </PageLayout>
+    </>
   );
 }

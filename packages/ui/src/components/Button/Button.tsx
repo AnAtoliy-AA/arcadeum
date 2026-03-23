@@ -13,28 +13,35 @@ export const Button = memo(function Button({
   showShimmer,
   children,
   gameVariant,
+  onPress,
+  onClick,
+  ref,
   ...rest
 }: ButtonProps): ReactElement {
   return (
     <StyledButton
+      ref={ref}
       buttonSize={size}
       isActive={isActive && !loading && !disabled}
       disabled={loading || disabled}
+      onPress={onPress}
+      onClick={onClick}
       animation="medium"
       fontWeight="600"
       letterSpacing={0.5}
       gameVariant={gameVariant}
-      // Destructure transient props that might leak
       {...(() => {
         const {
           $variant,
           $status,
           $isMyTurn,
           $isActive,
+          textAlign: _textAlign,
           ...props
-        } = rest as Record<string, unknown>;
+        } = rest as any;
         return props;
       })()}
+      aria-pressed={(rest as any)['aria-pressed']}
     >
       {children}
       {showShimmer && <Shimmer />}

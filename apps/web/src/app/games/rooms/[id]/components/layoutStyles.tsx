@@ -11,10 +11,12 @@ export const GameRow = styled(XStack, {
   gap: '$4',
   alignItems: 'stretch',
 
-  $sm: {
+  // Portrait tablet and below (up to 950px approximately)
+  $tablet: {
     flexDirection: 'column',
-    flex: 'unset',
-    minHeight: 'auto',
+    minHeight: 0,
+    flex: 0,
+    flexShrink: 0,
   },
 });
 
@@ -30,7 +32,7 @@ export const ChatPanel = styled(YStack, {
   minHeight: 500,
   flexShrink: 0,
 
-  $sm: {
+  $tablet: {
     width: '100%',
     minWidth: 0,
     minHeight: 0,

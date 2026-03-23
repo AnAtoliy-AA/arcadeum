@@ -71,7 +71,11 @@ export async function waitForRoomReady(
     .waitForLoadState('networkidle', { timeout: 15000 })
     .catch(() => {});
 
-  await expect(page.locator('main')).toBeVisible({ timeout: 60000 });
+  // Wait for the game room container to be visible (the .games-room-container
+  // class is only applied in the fully-loaded state of GameRoomPage).
+  await expect(page.locator('.games-room-container')).toBeVisible({
+    timeout: 60000,
+  });
 
   await expect(page.locator('body')).not.toContainText(
     /Game is loading|Joining\.\.\.|Server is waking up\.\.\.|Loading room\.\.\.|Loading game\.\.\.|Loading\.\.\./i,

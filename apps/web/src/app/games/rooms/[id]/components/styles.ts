@@ -1,4 +1,4 @@
-import { styled, XStack, YStack } from 'tamagui';
+import { Main, styled, XStack, YStack } from 'tamagui';
 import { Input as UIInput } from '@arcadeum/ui';
 
 // ─── Fullscreen CSS for Container ─────────────────────────────────────────────
@@ -16,16 +16,15 @@ export const fullscreenStyles = `
   }
 `;
 
-export const Page = styled(YStack, {
+export const Page = styled(Main, {
   name: 'Page',
-  tag: 'main',
   height: '100vh',
   flexDirection: 'column',
   backgroundColor: '$background',
   color: '$color',
   position: 'relative',
   overflow: 'hidden',
-} as any);
+} as Record<string, unknown>);
 
 export const Container = styled(YStack, {
   name: 'Container',
@@ -38,7 +37,7 @@ export const Container = styled(YStack, {
   flex: 1,
   minHeight: 0,
   overflowY: 'auto',
-} as any);
+} as Record<string, unknown>);
 
 export const LoadingContainer = styled(YStack, {
   name: 'LoadingContainer',
@@ -47,14 +46,14 @@ export const LoadingContainer = styled(YStack, {
   minHeight: '50vh',
   fontSize: '1.125rem',
   color: 'rgba(236,239,238,0.7)',
-} as any);
+} as Record<string, unknown>);
 
 export const ErrorContainer = styled(YStack, {
   name: 'ErrorContainer',
   padding: '2rem',
-  textAlign: 'center',
+  alignItems: 'center',
   color: '#dc2626',
-} as any);
+} as Record<string, unknown>);
 
 export const GameWrapper = styled(YStack, {
   name: 'GameWrapper',
@@ -62,7 +61,7 @@ export const GameWrapper = styled(YStack, {
   minWidth: 0,
   minHeight: 0,
   flexDirection: 'column',
-} as any);
+} as Record<string, unknown>);
 
 // Glassmorphism card — no GlassCard in @arcadeum/ui, use YStack with inline styles
 export const Card = styled(YStack, {
@@ -77,11 +76,10 @@ export const Card = styled(YStack, {
   maxWidth: 480,
   width: '100%',
   marginHorizontal: 'auto',
-  textAlign: 'center',
   boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
   flexDirection: 'column',
   alignItems: 'center',
-} as any);
+} as Record<string, unknown>);
 
 // Title: rendered with gradient via inline style in consuming component
 export const Title = styled(YStack, {
@@ -90,7 +88,7 @@ export const Title = styled(YStack, {
   fontSize: '1.75rem',
   fontWeight: '700',
   marginBottom: '0.75rem',
-} as any);
+} as Record<string, unknown>);
 
 export const titleGradientStyle = {
   background: 'linear-gradient(135deg, #fff 0%, #a5b4fc 100%)',
@@ -106,7 +104,7 @@ export const Description = styled(YStack, {
   marginBottom: '2rem',
   lineHeight: 1.6,
   fontSize: '1rem',
-} as any);
+} as Record<string, unknown>);
 
 export const Form = styled(YStack, {
   name: 'Form',
@@ -114,25 +112,24 @@ export const Form = styled(YStack, {
   width: '100%',
   flexDirection: 'column',
   gap: '1rem',
-} as any);
+} as Record<string, unknown>);
 
 export const InputGroup = styled(XStack, {
   name: 'InputGroup',
   gap: '0.75rem',
   width: '100%',
-} as any);
+} as Record<string, unknown>);
 
 export const ErrorMessage = styled(YStack, {
   name: 'ErrorMessage',
   color: '#ef4444',
   fontSize: '0.875rem',
-  textAlign: 'left',
   background: 'rgba(239,68,68,0.1)',
   padding: '0.5rem 0.75rem',
   borderRadius: 6,
   borderWidth: 1,
   borderColor: 'rgba(239,68,68,0.2)',
-} as any);
+} as Record<string, unknown>);
 
 // Input: use @arcadeum/ui Input instead of styled.input
 export { UIInput as Input };
@@ -144,7 +141,7 @@ export const LoginLink = styled(YStack, {
   textDecoration: 'underline',
   marginTop: '1rem',
   display: 'inline-block',
-} as any);
+} as Record<string, unknown>);
 
 export const LockIcon = styled(YStack, {
   name: 'LockIcon',
@@ -152,16 +149,15 @@ export const LockIcon = styled(YStack, {
   marginBottom: '1rem',
   justifyContent: 'center',
   alignItems: 'center',
-} as any);
+} as Record<string, unknown>);
 
 export const NoticeMessage = styled(YStack, {
   name: 'NoticeMessage',
   color: '$accent',
   fontSize: '0.875rem',
-  textAlign: 'left',
   background: '$backgroundHover',
   padding: '0.5rem 0.75rem',
   borderRadius: 6,
   borderWidth: 1,
   borderColor: '$borderColor',
-} as any);
+} as Record<string, unknown>);

@@ -43,52 +43,6 @@ export const settingsStyles = `
     outline: 2px solid var(--color-border-focus, #7ad7ff);
     outline-offset: 2px;
   }
-
-  .settings-toggle-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.5rem;
-    background: var(--color-background-hover, rgba(50, 53, 61, 0.3));
-    border: 1px solid var(--color-border, rgba(50, 53, 61, 0.8));
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(8px);
-  }
-
-  .settings-toggle-row:hover {
-    border-color: var(--color-border-focus, #7ad7ff);
-    background: var(--color-background-hover, rgba(50, 53, 61, 0.5));
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-
-  .settings-download-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 1.25rem 1.75rem;
-    border-radius: 12px;
-    border: 1px solid var(--color-border, rgba(50, 53, 61, 0.8));
-    background: var(--color-background-hover, rgba(50, 53, 61, 0.3));
-    color: var(--color, #ecefee);
-    font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    text-decoration: none;
-    backdrop-filter: blur(8px);
-  }
-
-  .settings-download-link:hover {
-    transform: translateY(-2px);
-    border-color: var(--color-border-focus, #7ad7ff);
-    background: var(--color-background-hover, rgba(50, 53, 61, 0.5));
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  }
-
-  .settings-download-link:active {
-    transform: translateY(0);
-  }
 `;
 
 export const Container = styled(YStack, {
@@ -97,7 +51,7 @@ export const Container = styled(YStack, {
   width: '100%',
   flexDirection: 'column',
   gap: '$8',
-} as any);
+} as Record<string, unknown>);
 
 export function OptionList({ children }: { children: React.ReactNode }) {
   return (
@@ -113,94 +67,88 @@ export function OptionList({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const OptionLabel = styled(Text, {
-  tag: 'span',
-  fontSize: '$4',
-  fontWeight: '600',
-  color: '$color',
-} as any);
-
-export const OptionDescription = styled(Text, {
-  tag: 'span',
-  fontSize: '$3',
-  color: 'rgba(236,239,238,0.7)',
-} as any);
-
 export const PillGroup = styled(XStack, {
   flexWrap: 'wrap',
   gap: '$4',
-} as any);
+} as Record<string, unknown>);
 
-export function DownloadGrid({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '1.25rem',
-      }}
-    >
-      {children}
-    </div>
-  );
-}
+import { Typography } from '@/shared/ui';
 
-export function DownloadLink({
-  children,
-  href,
-  ...props
-}: React.AnchorHTMLAttributes<HTMLAnchorElement>) {
-  return (
-    <a className="settings-download-link" href={href} {...props}>
-      {children}
-    </a>
-  );
-}
-
-export function DownloadIcon({ children }: { children: React.ReactNode }) {
-  return <span style={{ fontSize: '1.25rem' }}>{children}</span>;
-}
-
-export const AccountStatus = styled(Text, {
+export const AccountStatus = styled(Typography, {
+  name: 'AccountStatus',
   tag: 'p',
   margin: 0,
-  fontSize: '$4',
+  uiSize: 'md',
   color: 'rgba(236,239,238,0.7)',
   backgroundColor: '$background',
   borderWidth: 1,
   borderColor: '$borderColor',
   padding: '$5',
   borderRadius: 12,
-  textAlign: 'center',
-  style: { backdropFilter: 'blur(12px)' },
-} as any);
+  textCenter: true,
+  style: {
+    backdropFilter: 'blur(12px)',
+  },
+} as Record<string, unknown>);
 
 export const AccountActions = styled(XStack, {
   flexWrap: 'wrap',
   gap: '$5',
   marginTop: '$3',
-} as any);
+} as Record<string, unknown>);
 
-export function ToggleRow({
-  children,
-  ...props
-}: React.LabelHTMLAttributes<HTMLLabelElement>) {
-  return (
-    <label className="settings-toggle-row" {...props}>
-      {children}
-    </label>
-  );
-}
+export const ToggleRow = styled(XStack, {
+  name: 'ToggleRow',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: 24,
+  backgroundColor: 'rgba(50, 53, 61, 0.3)',
+  borderWidth: 1,
+  borderColor: 'rgba(50, 53, 61, 0.8)',
+  borderRadius: 12,
+  position: 'relative',
+  cursor: 'pointer',
+  hoverStyle: {
+    borderColor: '#7ad7ff',
+    backgroundColor: 'rgba(50, 53, 61, 0.5)',
+  },
+  style: {
+    backdropFilter: 'blur(8px)',
+    scrollMarginTop: 100,
+  },
+} as Record<string, unknown>);
 
 export const ToggleLabel = styled(Text, {
   tag: 'span',
   fontSize: '$4',
   fontWeight: '600',
   color: '$color',
-} as any);
+} as Record<string, unknown>);
 
-export function ToggleInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  return <input type="checkbox" className="settings-toggle-input" {...props} />;
+export function ToggleInput(
+  props: React.InputHTMLAttributes<HTMLInputElement>,
+) {
+  return (
+    <input
+      type="checkbox"
+      className="settings-toggle-input"
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        opacity: 0,
+        cursor: 'pointer',
+        width: '100%',
+        height: '100%',
+        margin: 0,
+        padding: 0,
+        zIndex: 1,
+      }}
+      {...props}
+    />
+  );
 }
 
 export const BlockedUserRow = styled(XStack, {
@@ -213,13 +161,13 @@ export const BlockedUserRow = styled(XStack, {
   borderRadius: 12,
   gap: '$4',
   style: { backdropFilter: 'blur(12px)' },
-} as any);
+} as Record<string, unknown>);
 
 export const BlockedUserInfo = styled(YStack, {
   gap: '$2',
   minWidth: 0,
   flex: 1,
-} as any);
+} as Record<string, unknown>);
 
 export const UnblockButton = (props: ButtonProps) => (
   <Button
@@ -236,13 +184,29 @@ export const UnblockButton = (props: ButtonProps) => (
   />
 );
 
+export const OptionLabel = styled(Text, {
+  name: 'OptionLabel',
+  tag: 'span',
+  fontSize: '$4',
+  fontWeight: '600',
+  color: '$color',
+} as Record<string, unknown>);
+
+export const OptionDescription = styled(Text, {
+  name: 'OptionDescription',
+  tag: 'p',
+  margin: 0,
+  fontSize: '$3',
+  color: 'rgba(236,239,238,0.7)',
+} as Record<string, unknown>);
+
 export const VersionText = styled(Text, {
   tag: 'span',
   fontSize: '$3',
   color: 'rgba(236,239,238,0.7)',
-  letterSpacing: '0.05em' as any,
+  letterSpacing: '0.05em' as unknown as number,
   opacity: 0.8,
   style: {
     fontFamily: "'SF Mono', 'Fira Code', 'Consolas', monospace",
   },
-} as any);
+} as Record<string, unknown>);

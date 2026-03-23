@@ -1,12 +1,11 @@
-import { styled, YStack, Text } from 'tamagui';
+import { styled, YStack, Text, Main } from 'tamagui';
 
-export const Page = styled(YStack, {
+export const Page = styled(Main, {
   name: 'StatsPage',
-  tag: 'main',
   minHeight: '100vh',
   backgroundColor: '$background',
   paddingTop: 80,
-} as any);
+} as Record<string, unknown>);
 
 export const Container = styled(YStack, {
   name: 'StatsContainer',
@@ -15,7 +14,7 @@ export const Container = styled(YStack, {
   alignSelf: 'center',
   padding: '$6',
   paddingHorizontal: '$4',
-} as any);
+} as Record<string, unknown>);
 
 // Card is provided by @arcadeum/ui — use <Card variant="default" cardPadding="md"> in JSX
 
@@ -26,14 +25,14 @@ export const CardTitle = styled(Text, {
   fontWeight: '600',
   color: '$color',
   margin: 0,
-} as any);
+} as Record<string, unknown>);
 
 export const StatValue = styled(Text, {
   name: 'StatValue',
   fontSize: '$9',
   fontWeight: '700',
   color: '$primaryGradientStart',
-} as any);
+} as Record<string, unknown>);
 
 export const StatLabel = styled(Text, {
   name: 'StatLabel',
@@ -41,7 +40,7 @@ export const StatLabel = styled(Text, {
   color: 'rgba(236,239,238,0.7)',
   textTransform: 'uppercase',
   letterSpacing: 1,
-} as any);
+} as Record<string, unknown>);
 
 export const BreakdownTable = styled(YStack, {
   name: 'BreakdownTable',
@@ -52,4 +51,4 @@ export const BreakdownTable = styled(YStack, {
   borderColor: '$borderColor',
   borderRadius: 12,
   overflow: 'hidden',
-} as any);
+} as Record<string, unknown>);

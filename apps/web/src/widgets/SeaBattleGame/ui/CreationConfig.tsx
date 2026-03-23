@@ -17,7 +17,7 @@ import {
   gameTileCSS,
   GAME_TILE_CLASS,
   GAME_TILE_ICON_CLASS,
-} from '@/app/games/create/styles';
+} from '@/features/games/ui/create/styles';
 import { RulesModal } from './RulesModal';
 import { useState } from 'react';
 

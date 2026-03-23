@@ -35,13 +35,14 @@ export type ButtonProps = Omit<GetProps<typeof StyledButton>, 'size' | 'onClick'
   gameVariant?: GameVariant;
   onPress?: GetProps<typeof StyledButton>['onPress'];
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  ref?: React.Ref<HTMLButtonElement>;
   className?: string;
   id?: string;
   style?: React.CSSProperties;
   type?: 'button' | 'submit' | 'reset';
   'data-testid'?: string;
   'aria-label'?: string;
-  'aria-pressed'?: boolean;
+  'aria-pressed'?: boolean | 'true' | 'false';
   title?: string;
   icon?: React.ReactNode;
 };

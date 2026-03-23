@@ -1,13 +1,20 @@
-"use client";
+import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
 
-import { AuthPage } from "@/app/auth/AuthPage";
-
-import { Suspense } from "react";
+const AuthPageWrapper = dynamic(
+  () =>
+    import('@/features/auth/ui/AuthPageWrapper').then(
+      (mod) => mod.AuthPageWrapper,
+    ),
+  {
+    loading: () => null,
+  },
+);
 
 export default function AuthCallbackRoute() {
   return (
     <Suspense fallback={null}>
-      <AuthPage />
+      <AuthPageWrapper />
     </Suspense>
   );
 }

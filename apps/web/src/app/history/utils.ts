@@ -1,5 +1,5 @@
 import { mapToGameType } from '@/features/games/lib/gameIdMapping';
-import { CARD_VARIANTS } from '@/app/games/create/constants';
+import { CARD_VARIANTS } from '@/features/games/ui/create/constants';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 
 /**

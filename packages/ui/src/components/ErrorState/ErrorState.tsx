@@ -38,7 +38,9 @@ const ErrorMessage = styled(Text, {
   fontSize: '$3',
   color: '$color',
   opacity: 0.6,
-  textAlign: 'center',
+  style: {
+    textAlign: 'center',
+  },
 });
 
 export const ErrorState = memo(function ErrorState({

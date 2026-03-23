@@ -24,3 +24,6 @@ coverage/
 backend-e2e-errors.log
 
 .claude
+.superpowers
+
+docs/superpowers

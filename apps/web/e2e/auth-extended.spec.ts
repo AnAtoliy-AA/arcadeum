@@ -89,9 +89,10 @@ test.describe('Auth Extended', () => {
       ? page.getByTestId('mobile-logout-button')
       : page.getByTestId('desktop-logout-button');
 
-    // Wait for button to be ready (especially on Mobile Safari)
-    await expect(logoutBtn).toBeVisible({ timeout: 5000 });
-    await page.waitForTimeout(500);
+    // Wait for button to be ready (especially on Mobile Safari where Zustand
+    // rehydration + React reconciliation can take a moment)
+    await expect(logoutBtn).toBeVisible({ timeout: 15000 });
+    await page.waitForTimeout(300);
 
     // 3. Verify session is cleared and redirected
     await Promise.all([

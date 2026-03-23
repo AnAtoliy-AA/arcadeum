@@ -1,3 +1,5 @@
+'use client';
+
 import { YStack, Text, styled } from 'tamagui';
 import { ReactNode } from 'react';
 
@@ -5,6 +7,7 @@ export interface OptionCardProps {
   label: ReactNode;
   description?: ReactNode;
   isActive?: boolean;
+  onPress?: () => void;
   onClick?: () => void;
   icon?: ReactNode;
   'data-testid'?: string;
@@ -12,16 +15,22 @@ export interface OptionCardProps {
 
 const StyledOptionCard = styled(YStack, {
   name: 'OptionCard',
+  tag: 'button',
+  role: 'button',
+  type: 'button',
   borderRadius: 12,
   borderWidth: 1,
   padding: '$5',
   gap: '$2',
   cursor: 'pointer',
   position: 'relative',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'stretch',
+  width: '100%',
   overflow: 'hidden',
   backgroundColor: 'rgba(255, 255, 255, 0.03)',
   borderColor: 'rgba(255, 255, 255, 0.1)',
-
   variants: {
     isActive: {
       true: {
@@ -52,7 +61,7 @@ const StyledOptionCard = styled(YStack, {
     isActive: false,
     animated: true,
   },
-});
+} as Record<string, unknown>) as React.ComponentType<Record<string, unknown>>;
 
 const Description = styled(Text, {
   fontSize: '$3',
@@ -93,6 +102,7 @@ export function OptionCard({
   label,
   description,
   isActive,
+  onPress,
   onClick,
   icon,
   'data-testid': dataTestId,
@@ -100,9 +110,17 @@ export function OptionCard({
   return (
     <StyledOptionCard
       isActive={isActive}
-      onClick={onClick}
-      aria-pressed={isActive ? 'true' : 'false'}
+      onPress={onPress || onClick}
       data-testid={dataTestId}
+      {...({
+        'aria-pressed': isActive ? 'true' : 'false',
+        role: 'button',
+        tabIndex: 0,
+      } as Record<string, unknown>)}
+      style={{
+        scrollMarginTop: 100,
+        textAlign: 'left',
+      }}
     >
       <ActiveIndicator visible={isActive} />
       <YStack gap="$1">

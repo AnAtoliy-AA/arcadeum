@@ -68,7 +68,10 @@ export function HomeHowItWorks() {
     'Get started in three simple steps';
 
   return (
-    <HowItWorksSection data-testid="how-it-works-section" ref={sectionRef as any}>
+    <HowItWorksSection
+      data-testid="how-it-works-section"
+      ref={sectionRef as React.RefObject<never>}
+    >
       <SectionHeader data-reveal data-reveal-delay="1">
         <SectionTitle>{sectionTitle}</SectionTitle>
         <SectionSubtitle>{sectionSubtitle}</SectionSubtitle>
@@ -85,17 +88,18 @@ export function HomeHowItWorks() {
             formatMessage(rawDescription, { appName }) ?? rawDescription;
 
           return (
-            <StepItem key={step.number} data-reveal data-reveal-delay={String(Math.min(index + 2, 6))}>
-              {index < STEPS.length - 1 && (
-                <StepConnector
-                  style={{
-                    background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.15), transparent)',
-                  }}
-                />
-              )}
+            <StepItem
+              key={step.number}
+              data-reveal
+              data-reveal-delay={String(Math.min(index + 2, 6))}
+            >
+              {index < STEPS.length - 1 && <StepConnector />}
               <StepNumber
                 className="step-number-hover"
-                style={{ boxShadow: '0 0 20px rgba(87,195,255,0.15), 0 0 0 1px rgba(255,255,255,0.06)' }}
+                style={{
+                  boxShadow:
+                    '0 0 20px rgba(87,195,255,0.15), 0 0 0 1px rgba(255,255,255,0.06)',
+                }}
               >
                 <Text color="$primary" fontWeight="700" fontSize="$5">
                   {step.number}

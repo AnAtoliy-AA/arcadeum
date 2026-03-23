@@ -33,7 +33,14 @@ import type { GameSessionSummary } from '@/shared/types/games';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 
 // Extracted Components
-import { Page, Container, LoadingContainer, GameWrapper, fullscreenStyles } from './styles';
+import { Text } from 'tamagui';
+import {
+  Page,
+  Container,
+  LoadingContainer,
+  GameWrapper,
+  fullscreenStyles,
+} from './styles';
 import { GameRow, ChatPanel } from './layoutStyles';
 import { GameRoomLoading } from './GameRoomLoading';
 import { GameRoomError } from './GameRoomError';
@@ -389,7 +396,10 @@ export default function GameRoomPage() {
   return (
     <Page>
       <style>{fullscreenStyles}</style>
-      <Container ref={gameContainerRef as any} className="games-room-container">
+      <Container
+        ref={gameContainerRef as React.RefObject<never>}
+        className="games-room-container"
+      >
         <ConnectionOverlay
           visible={isDisconnected}
           reconnecting={isReconnecting}
@@ -422,21 +432,23 @@ export default function GameRoomPage() {
             <Suspense
               fallback={
                 <LoadingContainer>
-                  {t('games.roomPage.loadingGame')}
+                  <Text>{t('games.roomPage.loadingGame')}</Text>
                 </LoadingContainer>
               }
             >
               {gameLoading && (
                 <LoadingContainer>
-                  {t('games.roomPage.loadingGame')}
+                  <Text>{t('games.roomPage.loadingGame')}</Text>
                 </LoadingContainer>
               )}
 
               {!gameLoading && !gameType && room && (
                 <LoadingContainer>
-                  {t('games.roomPage.errors.unsupportedGame', {
-                    gameId: room.gameId,
-                  })}
+                  <Text>
+                    {t('games.roomPage.errors.unsupportedGame', {
+                      gameId: room.gameId,
+                    })}
+                  </Text>
                 </LoadingContainer>
               )}
 

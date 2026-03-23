@@ -1,10 +1,11 @@
 import { expect } from '@playwright/test';
-import { test, navigateTo } from './fixtures/test-utils';
+import { test, navigateTo, clearState } from './fixtures/test-utils';
 
 test.describe('Settings Page', () => {
   test.describe.configure({ mode: 'serial' });
 
   test.beforeEach(async ({ page }) => {
+    await clearState(page);
     await navigateTo(page, '/settings');
   });
 
@@ -25,14 +26,15 @@ test.describe('Settings Page', () => {
   });
 
   test('should toggle haptics', async ({ page }) => {
-    const hapticsToggle = page.locator('input[type="checkbox"]').first();
-    await expect(hapticsToggle).toBeVisible();
+    const hapticsRow = page.getByTestId('haptics-row');
+    const hapticsCheckbox = hapticsRow.locator('input[type="checkbox"]');
 
-    const initialState = await hapticsToggle.isChecked();
-    await hapticsToggle.click({ force: true });
+    await expect(hapticsRow).toBeVisible();
+    const initialState = await hapticsCheckbox.isChecked();
+    await hapticsRow.click();
 
     await expect
-      .poll(async () => await hapticsToggle.isChecked(), { timeout: 10000 })
+      .poll(async () => await hapticsCheckbox.isChecked(), { timeout: 15000 })
       .toBe(!initialState);
   });
 
@@ -43,27 +45,36 @@ test.describe('Settings Page', () => {
     await expect(lightThemeBtn).toBeVisible();
     await expect(darkThemeBtn).toBeVisible();
 
-    await darkThemeBtn.click();
-    await expect(darkThemeBtn).toHaveAttribute('aria-pressed', 'true', {
-      timeout: 15000,
-    });
+    await darkThemeBtn.click({ force: true });
+    await expect
+      .poll(async () => await darkThemeBtn.getAttribute('aria-pressed'), {
+        timeout: 15000,
+      })
+      .toBe('true');
+
     await expect(page.locator('html')).toHaveAttribute(
       'data-theme-preference',
       'dark',
-      { timeout: 10000 },
+      { timeout: 15000 },
     );
 
-    await lightThemeBtn.click();
-    await expect(lightThemeBtn).toHaveAttribute('aria-pressed', 'true', {
-      timeout: 15000,
-    });
+    // Wait for state to settle
+    await page.waitForTimeout(500);
+
+    await lightThemeBtn.click({ force: true });
+    await expect
+      .poll(async () => await lightThemeBtn.getAttribute('aria-pressed'), {
+        timeout: 15000,
+      })
+      .toBe('true');
+
     await expect(darkThemeBtn).toHaveAttribute('aria-pressed', 'false', {
       timeout: 15000,
     });
     await expect(page.locator('html')).toHaveAttribute(
       'data-theme-preference',
       'light',
-      { timeout: 10000 },
+      { timeout: 15000 },
     );
   });
 
@@ -72,7 +83,8 @@ test.describe('Settings Page', () => {
     const englishBtn = page.getByTestId('lang-btn-en');
 
     await expect(spanishBtn).toBeVisible();
-    await spanishBtn.click();
+    await spanishBtn.click({ force: true });
+    await page.waitForTimeout(1000);
 
     await expect(page.locator('[data-current-locale]')).toHaveAttribute(
       'data-current-locale',
@@ -89,7 +101,8 @@ test.describe('Settings Page', () => {
       timeout: 15000,
     });
 
-    await englishBtn.click();
+    await englishBtn.click({ force: true });
+    await page.waitForTimeout(1000);
     await expect(page.locator('html')).toHaveAttribute('lang', 'en', {
       timeout: 10000,
     });

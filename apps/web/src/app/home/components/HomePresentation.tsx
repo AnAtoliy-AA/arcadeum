@@ -9,7 +9,6 @@ import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 import {
   PresentationSection,
   VideoContainer,
-  VideoIframe,
   VideoPlaceholder,
   PlaceholderOverlay,
   PulseRing,
@@ -22,9 +21,17 @@ import {
 } from './styles/Common.styles';
 
 // Tamagui styled YStack types don't expose `tag` even though it works at runtime.
-type WithHtmlProps<T> = T & { tag?: string; animation?: string; src?: string; title?: string; sandbox?: string; allowFullScreen?: boolean };
-const PlayButtonEl = PlayButton as React.ComponentType<WithHtmlProps<React.ComponentProps<typeof PlayButton>>>;
-const VideoIframeEl = VideoIframe as React.ComponentType<WithHtmlProps<React.ComponentProps<typeof VideoIframe>>>;
+type WithHtmlProps<T> = T & {
+  tag?: string;
+  animation?: string;
+  src?: string;
+  title?: string;
+  sandbox?: string;
+  allowFullScreen?: boolean;
+};
+const PlayButtonEl = PlayButton as React.ComponentType<
+  WithHtmlProps<React.ComponentProps<typeof PlayButton>>
+>;
 
 export function HomePresentation() {
   const { presentationVideoId, appName } = appConfig;
@@ -49,22 +56,37 @@ export function HomePresentation() {
   // from img.youtube.com before the user clicks play.
 
   return (
-    <PresentationSection data-testid="presentation-section" ref={sectionRef as any}>
+    <PresentationSection
+      data-testid="presentation-section"
+      ref={sectionRef as React.RefObject<never>}
+    >
       <SectionHeader data-reveal data-reveal-delay="1">
         <SectionTitle>{sectionTitle}</SectionTitle>
         <SectionSubtitle>{sectionSubtitle}</SectionSubtitle>
       </SectionHeader>
       <VideoContainer data-reveal data-reveal-delay="2">
         {isPlaying ? (
-          <VideoIframeEl
-            tag="iframe"
+          <iframe
             src={`https://www.youtube-nocookie.com/embed/${presentationVideoId}?autoplay=1&rel=0&controls=1&mute=0&partitioned=1&widget_referrer=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
             allowFullScreen
             title="Arcadeum Trailer"
             sandbox="allow-scripts allow-same-origin allow-popups"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: '100%',
+              height: '100%',
+              border: 0,
+            }}
           />
         ) : (
-          <VideoPlaceholder onClick={() => setIsPlaying(true)} data-testid="video-placeholder">
+          <VideoPlaceholder
+            onClick={() => setIsPlaying(true)}
+            data-testid="video-placeholder"
+          >
             <Image
               src="/images/home/video-cover.png"
               alt="Arcadeum Trailer Illustration"

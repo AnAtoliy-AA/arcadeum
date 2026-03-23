@@ -33,7 +33,9 @@ const EmptyMessage = styled(Text, {
   fontSize: '$4',
   color: '$color',
   opacity: 0.7,
-  textAlign: 'center',
+  style: {
+    textAlign: 'center',
+  },
 });
 
 export const EmptyState = memo(function EmptyState({

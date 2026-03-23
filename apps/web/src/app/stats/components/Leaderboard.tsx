@@ -107,37 +107,53 @@ export function Leaderboard({
       <>
         <style>{leaderboardCSS}</style>
         <Section title={t('stats.leaderboardTab')}>
-        <Table>
-          <div className="stats-leaderboard-header">
-            <div>{t('stats.rank')}</div>
-            <div>{t('stats.player')}</div>
-            <div>{t('stats.games')}</div>
-            <div>{t('stats.wins')}</div>
-            <div>{t('stats.losses')}</div>
-            <div>{t('stats.winRate')}</div>
-          </div>
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="stats-leaderboard-row">
-              <SkeletonCircle width="32px" height="32px" delay={i * 0.1} />
-              <PlayerInfo>
-                <SkeletonCircle
-                  width="40px"
-                  height="40px"
-                  delay={i * 0.1 + 0.05}
+          <Table>
+            <div className="stats-leaderboard-header">
+              <div>{t('stats.rank')}</div>
+              <div>{t('stats.player')}</div>
+              <div>{t('stats.games')}</div>
+              <div>{t('stats.wins')}</div>
+              <div>{t('stats.losses')}</div>
+              <div>{t('stats.winRate')}</div>
+            </div>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="stats-leaderboard-row">
+                <SkeletonCircle width="32px" height="32px" delay={i * 0.1} />
+                <PlayerInfo>
+                  <SkeletonCircle
+                    width="40px"
+                    height="40px"
+                    delay={i * 0.1 + 0.05}
+                  />
+                  <SkeletonText
+                    width="120px"
+                    height="16px"
+                    delay={i * 0.1 + 0.1}
+                  />
+                </PlayerInfo>
+                <SkeletonText
+                  width="30px"
+                  height="16px"
+                  delay={i * 0.1 + 0.15}
                 />
                 <SkeletonText
-                  width="120px"
+                  width="30px"
                   height="16px"
-                  delay={i * 0.1 + 0.1}
+                  delay={i * 0.1 + 0.2}
                 />
-              </PlayerInfo>
-              <SkeletonText width="30px" height="16px" delay={i * 0.1 + 0.15} />
-              <SkeletonText width="30px" height="16px" delay={i * 0.1 + 0.2} />
-              <SkeletonText width="30px" height="16px" delay={i * 0.1 + 0.25} />
-              <SkeletonText width="50px" height="16px" delay={i * 0.1 + 0.3} />
-            </div>
-          ))}
-        </Table>
+                <SkeletonText
+                  width="30px"
+                  height="16px"
+                  delay={i * 0.1 + 0.25}
+                />
+                <SkeletonText
+                  width="50px"
+                  height="16px"
+                  delay={i * 0.1 + 0.3}
+                />
+              </div>
+            ))}
+          </Table>
         </Section>
       </>
     );
@@ -159,60 +175,65 @@ export function Leaderboard({
       <style>{leaderboardCSS}</style>
       <Section title={t('stats.leaderboardTab')}>
         <Table>
-        <div className="stats-leaderboard-header">
-          <div>{t('stats.rank')}</div>
-          <div>{t('stats.player')}</div>
-          <div>{t('stats.games')}</div>
-          <div>{t('stats.wins')}</div>
-          <div>{t('stats.losses')}</div>
-          <div>{t('stats.winRate')}</div>
-        </div>
-        {leaderboard.map((entry) => (
-          <div
-            key={entry.playerId}
-            className={
-              'stats-leaderboard-row' +
-              (entry.playerId === currentUserId
-                ? ' stats-leaderboard-row--current-user'
-                : '')
-            }
-          >
-            <RankDisplay rank={entry.rank} />
-            <PlayerInfo>
-              <Avatar name={entry.username} size="lg" alt="" />
-              <PlayerName>
-                {entry.username}
-                {entry.playerId === currentUserId && (
-                  <Badge variant="info" size="sm">
-                    {t('stats.you')}
-                  </Badge>
-                )}
-              </PlayerName>
-            </PlayerInfo>
-            <StatCell>{entry.totalGames}</StatCell>
-            <StatCell color="$success">{entry.wins}</StatCell>
-            <StatCell color="$danger">{entry.losses}</StatCell>
-            <ProgressBar value={entry.winRate} height={6} showLabel />
+          <div className="stats-leaderboard-header">
+            <div>{t('stats.rank')}</div>
+            <div>{t('stats.player')}</div>
+            <div>{t('stats.games')}</div>
+            <div>{t('stats.wins')}</div>
+            <div>{t('stats.losses')}</div>
+            <div>{t('stats.winRate')}</div>
           </div>
-        ))}
-      </Table>
+          {leaderboard.map((entry) => (
+            <div
+              key={entry.playerId}
+              className={
+                'stats-leaderboard-row' +
+                (entry.playerId === currentUserId
+                  ? ' stats-leaderboard-row--current-user'
+                  : '')
+              }
+            >
+              <RankDisplay rank={entry.rank} />
+              <PlayerInfo>
+                <Avatar name={entry.username} size="lg" alt="" />
+                <PlayerName>
+                  <Text>{entry.username}</Text>
+                  {entry.playerId === currentUserId && (
+                    <Badge variant="info" size="sm">
+                      {t('stats.you')}
+                    </Badge>
+                  )}
+                </PlayerName>
+              </PlayerInfo>
+              <StatCell>{entry.totalGames}</StatCell>
+              <StatCell color="$success">{entry.wins}</StatCell>
+              <StatCell color="$danger">{entry.losses}</StatCell>
+              <ProgressBar value={entry.winRate} height={6} showLabel />
+            </div>
+          ))}
+        </Table>
 
-      <div
-        ref={loadMoreRef}
-        style={{ minHeight: 60, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      >
-        {loadingMore && (
-          <LoadingMoreRow>
-            <Spinner size="sm" />
-            <Text color="rgba(236,239,238,0.7)" fontSize="$3">
-              {t('stats.loadingMore')}
-            </Text>
-          </LoadingMoreRow>
-        )}
-        {!hasMore && leaderboard.length > 0 && (
-          <EndOfList>{t('stats.endOfLeaderboard')}</EndOfList>
-        )}
-      </div>
+        <div
+          ref={loadMoreRef}
+          style={{
+            minHeight: 60,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {loadingMore && (
+            <LoadingMoreRow>
+              <Spinner size="sm" />
+              <Text color="rgba(236,239,238,0.7)" fontSize="$3">
+                {t('stats.loadingMore')}
+              </Text>
+            </LoadingMoreRow>
+          )}
+          {!hasMore && leaderboard.length > 0 && (
+            <EndOfList>{t('stats.endOfLeaderboard')}</EndOfList>
+          )}
+        </div>
       </Section>
     </>
   );
@@ -220,13 +241,31 @@ export function Leaderboard({
 
 function RankDisplay({ rank }: { rank: number }) {
   if (rank === 1) {
-    return <TrophyIcon style={{ filter: 'drop-shadow(0 2px 4px rgba(251, 191, 36, 0.5))' }}>🥇</TrophyIcon>;
+    return (
+      <TrophyIcon
+        style={{ filter: 'drop-shadow(0 2px 4px rgba(251, 191, 36, 0.5))' }}
+      >
+        🥇
+      </TrophyIcon>
+    );
   }
   if (rank === 2) {
-    return <TrophyIcon style={{ filter: 'drop-shadow(0 2px 4px rgba(156, 163, 175, 0.5))' }}>🥈</TrophyIcon>;
+    return (
+      <TrophyIcon
+        style={{ filter: 'drop-shadow(0 2px 4px rgba(156, 163, 175, 0.5))' }}
+      >
+        🥈
+      </TrophyIcon>
+    );
   }
   if (rank === 3) {
-    return <TrophyIcon style={{ filter: 'drop-shadow(0 2px 4px rgba(217, 119, 6, 0.5))' }}>🥉</TrophyIcon>;
+    return (
+      <TrophyIcon
+        style={{ filter: 'drop-shadow(0 2px 4px rgba(217, 119, 6, 0.5))' }}
+      >
+        🥉
+      </TrophyIcon>
+    );
   }
   return <RankBadge>{rank}</RankBadge>;
 }
@@ -236,25 +275,25 @@ const Table = styled(YStack, {
   width: '100%',
   borderRadius: 12,
   overflow: 'hidden',
-} as any);
+} as Record<string, unknown>);
 
 const PlayerInfo = styled(XStack, {
   name: 'LeaderboardPlayerInfo',
   alignItems: 'center',
   gap: '$3',
-} as any);
+} as Record<string, unknown>);
 
 const PlayerName = styled(XStack, {
   name: 'LeaderboardPlayerName',
   alignItems: 'center',
   gap: '$2',
-} as any);
+} as Record<string, unknown>);
 
 const StatCell = styled(Text, {
   name: 'LeaderboardStatCell',
   fontWeight: '500',
   color: '$color',
-} as any);
+} as Record<string, unknown>);
 
 const RankBadge = styled(YStack, {
   name: 'LeaderboardRankBadge',
@@ -266,19 +305,19 @@ const RankBadge = styled(YStack, {
   backgroundColor: '$background',
   borderWidth: 1,
   borderColor: '$borderColor',
-} as any);
+} as Record<string, unknown>);
 
 const TrophyIcon = styled(Text, {
   name: 'LeaderboardTrophyIcon',
   fontSize: '$6',
-} as any);
+} as Record<string, unknown>);
 
 const LoadingMoreRow = styled(XStack, {
   name: 'LeaderboardLoadingMoreRow',
   alignItems: 'center',
   gap: '$3',
   padding: '$4',
-} as any);
+} as Record<string, unknown>);
 
 const EndOfList = styled(Text, {
   name: 'LeaderboardEndOfList',
@@ -286,4 +325,4 @@ const EndOfList = styled(Text, {
   fontSize: '$2',
   padding: '$4',
   opacity: 0.7,
-} as any);
+} as Record<string, unknown>);

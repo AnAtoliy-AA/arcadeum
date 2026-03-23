@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import { VisuallyHidden, XStack, YStack, Dialog } from 'tamagui';
 import {

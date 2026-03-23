@@ -3,6 +3,7 @@ import { shorthands } from '@tamagui/shorthands';
 import { createTamagui, createTokens } from 'tamagui';
 
 const animations = createAnimations({
+  quick: 'ease-out 80ms',
   fast: 'ease-in 100ms',
   medium: 'ease-in 200ms',
   slow: 'ease-in 300ms',

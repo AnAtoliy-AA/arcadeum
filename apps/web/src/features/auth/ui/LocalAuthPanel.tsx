@@ -241,6 +241,7 @@ export function LocalAuthPanel({ labels }: LocalAuthPanelProps) {
             <Button
               type="button"
               onPress={handleToggleMode}
+              onClick={handleToggleMode}
               disabled={localLoading}
               data-testid="auth-toggle-mode-button"
               variant="secondary"
@@ -290,6 +291,7 @@ export function LocalAuthPanel({ labels }: LocalAuthPanelProps) {
           <Button
             type="button"
             onPress={() => void logoutLocal()}
+            onClick={() => void logoutLocal()}
             variant="secondary"
             pill
             size="sm"

@@ -25,7 +25,6 @@ import {
   LinkButton,
   Divider,
 } from '@arcadeum/ui';
-import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -33,7 +32,7 @@ interface MobileMenuProps {
   navItems: Array<{ href: string; label: string }>;
 }
 
-const noop = () => () => { };
+const noop = () => () => {};
 
 export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
   const pathname = usePathname();
@@ -56,23 +55,21 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
     window.location.replace('/');
   }, [clearTokens]);
 
+  if (!mounted || !isOpen) return null;
+
   const content = (
-    <MobileNav
-      isOpen={isOpen}
-      data-mobile-menu
-      data-testid="mobile-nav"
-    >
+    <MobileNav data-mobile-menu data-testid="mobile-nav">
       {navItems.map((item) => (
-          <NavMobileLink
-            key={item.href}
-            href={item.href}
-            variant="ghost"
-            size="sm"
-            isActive={pathname === item.href}
-            onClick={onClose}
-            fullWidth
-            data-testid={`mobile-nav-${item.href.replace('/', '') || 'home'}`}
-          >
+        <NavMobileLink
+          key={item.href}
+          href={item.href}
+          variant="ghost"
+          size="sm"
+          isActive={pathname === item.href}
+          onClick={onClose}
+          fullWidth
+          data-testid={`mobile-nav-${item.href.replace('/', '') || 'home'}`}
+        >
           {item.label}
         </NavMobileLink>
       ))}
@@ -118,9 +115,6 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
         <Divider spacing="sm" />
       </YStack>
 
-      <YStack paddingVertical="$2" paddingHorizontal="$4">
-        <LanguageSwitcher data-testid="header-language-switcher" />
-      </YStack>
       <LinkButton
         href={routes.support}
         variant="ghost"
@@ -137,6 +131,5 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
     </MobileNav>
   );
 
-  if (!mounted) return content;
   return createPortal(content, document.body);
 }

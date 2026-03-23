@@ -2,8 +2,8 @@
 
 import { useMemo } from 'react';
 import { XStack, GlobeIcon } from '@arcadeum/ui';
-import { useLanguageStore } from '@/app/i18n/store/languageStore';
-import { SUPPORTED_LOCALES, Locale } from '@/shared/i18n';
+import { useLanguage } from '@/app/i18n/LanguageProvider';
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES, Locale } from '@/shared/i18n';
 import { Select } from '@/shared/ui';
 
 const LOCALES_LABELS: Record<Locale, string> = {
@@ -23,8 +23,14 @@ export function LanguageSwitcher({
   className,
   'data-testid': testId,
 }: LanguageSwitcherProps) {
-  const locale = useLanguageStore((state) => state.locale);
-  const setLocale = useLanguageStore((state) => state.setLocale);
+  const {
+    locale: storeLocale,
+    setLocale,
+    isReady,
+    initialLocale,
+  } = useLanguage();
+
+  const locale = isReady ? storeLocale : initialLocale || DEFAULT_LOCALE;
 
   const options = useMemo(
     () =>
@@ -39,9 +45,9 @@ export function LanguageSwitcher({
     <XStack
       alignItems="center"
       gap="$2"
-      marginHorizontal="$5"
+      marginHorizontal="$3"
+      $md={{ marginHorizontal: '$5' }}
       className={className}
-      data-testid={testId}
     >
       <XStack alignItems="center" justifyContent="center">
         <GlobeIcon size={18} />
@@ -51,6 +57,7 @@ export function LanguageSwitcher({
         onValueChange={(val) => setLocale(val as Locale)}
         options={options}
         aria-label="Select language"
+        data-testid={testId}
       />
     </XStack>
   );

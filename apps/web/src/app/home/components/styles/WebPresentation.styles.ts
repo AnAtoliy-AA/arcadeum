@@ -5,12 +5,19 @@ import { styled, YStack, XStack, Text } from 'tamagui';
 export const PresentationContainer = styled(YStack, {
   name: 'PresentationContainer',
   width: '100%',
-  borderRadius: 16,
+  alignSelf: 'stretch',
+  aspectRatio: 16 / 9,
+  minHeight: 500,
+  borderRadius: 32,
   overflow: 'hidden',
   position: 'relative',
   borderWidth: 1,
   borderColor: '$borderColor',
   backgroundColor: '$background',
+  shadowColor: 'rgba(0,0,0,0.6)',
+  shadowOffset: { width: 0, height: 30 },
+  shadowRadius: 60,
+  elevation: 20,
 });
 
 // SlideContent: opacity and visibility controlled via style prop at render time

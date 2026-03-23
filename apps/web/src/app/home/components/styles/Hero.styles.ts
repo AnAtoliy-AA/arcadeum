@@ -1,7 +1,6 @@
 'use client';
 
 import { styled, YStack, XStack, Text, H1 } from 'tamagui';
-import { GlassCard } from '@/shared/ui';
 
 export const HeroSection = styled(YStack, {
   name: 'HeroSection',
@@ -12,13 +11,6 @@ export const HeroSection = styled(YStack, {
   position: 'relative',
   overflow: 'hidden',
   gap: '$10',
-
-  $gtMd: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: '$8',
-  },
 });
 
 export const HeroBackground = styled(YStack, {

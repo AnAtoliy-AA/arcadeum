@@ -181,6 +181,11 @@ export const GameContainer = styled(YStack, {
   width: '100%',
   backgroundColor: '$background',
 
+  $tablet: {
+    minHeight: 'unset',
+    flex: 1,
+  },
+
   $sm: {
     minHeight: 'unset',
     flex: 0,

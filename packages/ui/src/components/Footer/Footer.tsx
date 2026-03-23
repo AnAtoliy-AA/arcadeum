@@ -1,7 +1,7 @@
 'use client';
 
 import { YStack, XStack, styled, View } from 'tamagui';
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import {
   InstagramIcon,
@@ -11,10 +11,10 @@ import {
   XIcon,
   DiscordIcon,
   SupportIcon,
+  ChevronDownIcon,
 } from '../Icons';
 import { Typography } from '../Typography/Typography';
 import { Container } from '../Container/Container';
-import { Divider } from '../Divider/Divider';
 import { FooterLink } from './FooterLink';
 import { SocialIcon } from './SocialIcon';
 
@@ -26,6 +26,16 @@ export type SocialLink = {
   external?: boolean;
 };
 
+export type FooterLinkItem = {
+  href: string;
+  label: string;
+};
+
+export type FooterSection = {
+  title: string;
+  links: FooterLinkItem[];
+};
+
 export type FooterProps = {
   social?: Record<string, string | undefined>;
   socialLinks?: SocialLink[];
@@ -34,6 +44,9 @@ export type FooterProps = {
   versionLabel?: string;
   description?: string;
   appName?: string;
+  sections?: FooterSection[];
+  craftedWithLoveLabel?: string;
+  stableReleaseLabel?: string;
 };
 
 const SOCIAL_MAPPING = [
@@ -50,12 +63,17 @@ const CURRENT_YEAR = new Date().getFullYear();
 const FooterRoot = styled(View, {
   name: 'Footer',
   width: '100%',
-  backgroundColor: '$glassBg',
+  backgroundColor: 'var(--glassBg)',
   borderTopWidth: 0,
-  paddingTop: '$10',
-  paddingBottom: '$8',
+  paddingTop: '$12',
+  paddingBottom: '$10',
   position: 'relative',
-  backdropFilter: 'blur(24px) saturate(180%)',
+  backdropFilter: 'blur(32px) saturate(180%)',
+
+  $sm: {
+    paddingTop: '$10',
+    paddingBottom: '$8',
+  },
 });
 
 const FooterBorderLine = styled(YStack, {
@@ -67,30 +85,114 @@ const FooterBorderLine = styled(YStack, {
   pointerEvents: 'none',
   background:
     'linear-gradient(90deg, transparent 0%, var(--borderColor) 15%, var(--primaryGradientStart) 50%, var(--borderColor) 85%, transparent 100%)',
+  opacity: 0.5,
 });
 
-const BrandSection = styled(XStack, {
-  gap: '$8',
+const FooterGrid = styled(XStack, {
+  gap: '$12',
   flexWrap: 'wrap',
   justifyContent: 'space-between',
-  alignItems: 'center',
+  width: '100%',
 
-  $xs: {
+  $tablet: {
+    gap: '$8',
+  },
+
+  $sm: {
     flexDirection: 'column',
-    alignItems: 'center',
-    gap: '$6',
-  },
-});
-
-const BrandInfo = styled(YStack, {
-  flex: 1,
-  minWidth: 280,
-  gap: '$2',
-
-  $xs: {
+    gap: 0,
     alignItems: 'center',
   },
 });
+
+const BrandColumn = styled(YStack, {
+  gap: '$6',
+  flex: 2,
+  minWidth: 320,
+  maxWidth: 600,
+
+  $sm: {
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    alignItems: 'center',
+    minWidth: '100%',
+    paddingBottom: '$10',
+    borderBottomWidth: 1,
+    borderBottomColor: '$glassBorder',
+    marginBottom: '$6',
+  },
+});
+
+const FooterColumnContainer = styled(YStack, {
+  gap: '$4',
+  minWidth: 180,
+
+  $sm: {
+    minWidth: '100%',
+    gap: 0,
+    borderBottomWidth: 1,
+    borderBottomColor: '$glassBorder',
+    paddingBottom: '$4', // Clearance when closed
+  },
+});
+
+const ColumnHeader = styled(XStack, {
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  paddingVertical: '$4',
+  cursor: 'pointer',
+
+  $gtSm: {
+    paddingVertical: 0,
+    paddingBottom: '$2',
+    pointerEvents: 'none',
+  },
+});
+
+const ColumnContent = styled(YStack, {
+  gap: '$3',
+
+  $sm: {
+    paddingBottom: '$6',
+    paddingTop: '$2',
+    alignItems: 'center',
+  },
+});
+
+const ChevronContainer = styled(View, {
+  $gtSm: { display: 'none' },
+});
+
+type CollapsibleColumnProps = {
+  title: string;
+  children: ReactNode;
+  defaultOpen?: boolean;
+};
+
+const CollapsibleColumn = ({ title, children, defaultOpen = false }: CollapsibleColumnProps) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
+
+  return (
+    <FooterColumnContainer>
+      <ColumnHeader onPress={toggle}>
+        <Typography variant="heading" uiSize="sm" weight="700" tracking="sm">
+          {title.toUpperCase()}
+        </Typography>
+        <ChevronContainer rotate={isOpen ? '180deg' : '0deg'}>
+          <ChevronDownIcon size={16} />
+        </ChevronContainer>
+      </ColumnHeader>
+
+      <YStack $sm={{ display: isOpen ? 'flex' : 'none' }}>
+        <ColumnContent>
+          {children}
+        </ColumnContent>
+      </YStack>
+    </FooterColumnContainer>
+  );
+};
 
 const BottomBar = styled(XStack, {
   borderTopWidth: 1,
@@ -102,9 +204,10 @@ const BottomBar = styled(XStack, {
   flexWrap: 'wrap',
   gap: '$6',
 
-  $xs: {
+  $sm: {
     flexDirection: 'column',
     alignItems: 'center',
+    marginTop: '$10',
   },
 });
 
@@ -113,9 +216,12 @@ export const Footer = memo(function Footer({
   socialLinks: customSocialLinks,
   followUsLabel = 'Follow Us',
   copyrightLabel,
-  versionLabel = '1.0.0',
+  versionLabel = '1.1.0',
   description = 'Your ultimate destination for competitive and casual gaming experiences.',
   appName = 'Arcadeum',
+  sections,
+  craftedWithLoveLabel = 'Crafted with passion for gamers worldwide.',
+  stableReleaseLabel = 'STABLE RELEASE',
 }: FooterProps) {
   const socialLinks = useMemo(() => {
     if (customSocialLinks) return customSocialLinks;
@@ -129,7 +235,7 @@ export const Footer = memo(function Footer({
           links.push({
             id,
             label,
-            icon: <Icon size={20} />,
+            icon: <Icon size={18} />,
             href,
             external: true,
           });
@@ -140,14 +246,46 @@ export const Footer = memo(function Footer({
     if (links.length === 0 || social?.support !== null) {
       links.push({
         id: 'support',
-        label: 'Support',
-        icon: <SupportIcon size={18} />,
-        href: '/support',
+        label: (social?.support_label as string) || 'Support',
+        icon: <SupportIcon size={16} />,
+        href: (social?.support_href as string) || '/support',
       });
     }
 
     return links;
   }, [social, customSocialLinks]);
+
+  const defaultSections: FooterSection[] = [
+    {
+      title: 'Platform',
+      links: [
+        { href: '/games', label: 'All Games' },
+        { href: '/tournaments', label: 'Tournaments' },
+        { href: '/leaderboards', label: 'Leaderboards' },
+        { href: '/rewards', label: 'Rewards' },
+      ],
+    },
+    {
+      title: 'Resources',
+      links: [
+        { href: '/help', label: 'Help Center' },
+        { href: '/blog', label: 'Gaming Blog' },
+        { href: '/community', label: 'Community' },
+        { href: '/developers', label: 'Developers (API)' },
+      ],
+    },
+    {
+      title: 'Legal',
+      links: [
+        { href: '/privacy', label: 'Privacy Policy' },
+        { href: '/terms', label: 'Terms of Service' },
+        { href: '/cookies', label: 'Cookie Policy' },
+        { href: '/contact', label: 'Contact Us' },
+      ],
+    },
+  ];
+
+  const footerSections = sections || defaultSections;
 
   return (
     <YStack asChild width="100%">
@@ -155,55 +293,78 @@ export const Footer = memo(function Footer({
         <FooterRoot>
           <FooterBorderLine />
           <Container size="xl">
-            <BrandSection>
-              <BrandInfo>
-                <YStack gap="$2">
-                  <Typography variant="heading" uiSize="2xl" weight="800" gradient="primary">
-                    {appName}
+            <FooterGrid>
+              <BrandColumn>
+                <YStack gap="$4" $sm={{ alignItems: 'center' }}>
+                  <Typography
+                    variant="heading"
+                    uiSize="3xl"
+                    weight="800"
+                    gradient="primary"
+                    $sm={{ textCenter: true }}
+                  >
+                    {appName.toUpperCase()}
                   </Typography>
-                  <Typography uiSize="md" alpha="medium" maxWidth={420} lineHeight={24}>
+                  <Typography
+                    uiSize="md"
+                    alpha="medium"
+                    lineHeight={24}
+                    maxWidth={500}
+                    $sm={{ textCenter: true }}
+                  >
                     {description}
                   </Typography>
                 </YStack>
-              </BrandInfo>
 
-              <YStack gap="$4" alignItems="flex-end" $xs={{ alignItems: 'center' }}>
-                <Typography variant="label" uiSize="xs" alpha="low">
-                  {followUsLabel}
-                </Typography>
-                <XStack gap="$3" flexWrap="wrap" justifyContent="center">
-                  {socialLinks.map((link) => (
-                    <SocialIcon
-                      key={link.id}
-                      href={link.href}
-                      target={link.external ? '_blank' : undefined}
-                      rel={link.external ? 'noopener noreferrer' : undefined}
-                      aria-label={link.label}
-                      data-testid={`footer-social-${link.id}`}
-                    >
-                      {link.icon}
-                    </SocialIcon>
+                <YStack gap="$4" $sm={{ alignItems: 'center' }}>
+                  <Typography variant="label" uiSize="xs" weight="700" tracking="xl" alpha="low">
+                    {followUsLabel.toUpperCase()}
+                  </Typography>
+                  <XStack gap="$3" flexWrap="wrap" $sm={{ justifyContent: 'center' }}>
+                    {socialLinks.map((link) => (
+                      <SocialIcon
+                        key={link.id}
+                        href={link.href}
+                        target={link.external ? '_blank' : undefined}
+                        rel={link.external ? 'noopener noreferrer' : undefined}
+                        aria-label={link.label}
+                        data-testid={`footer-social-${link.id}`}
+                      >
+                        {link.icon}
+                      </SocialIcon>
+                    ))}
+                  </XStack>
+                </YStack>
+              </BrandColumn>
+
+              {footerSections.map((section) => (
+                <CollapsibleColumn key={section.title} title={section.title}>
+                  {section.links.map((link) => (
+                    <FooterLink key={link.href} href={link.href}>
+                      {link.label}
+                    </FooterLink>
                   ))}
-                </XStack>
-              </YStack>
-            </BrandSection>
+                </CollapsibleColumn>
+              ))}
+            </FooterGrid>
 
             <BottomBar>
-              <YStack gap="$1" $xs={{ alignItems: 'center' }}>
-                <Typography uiSize="sm" alpha="medium">
-                  {copyrightLabel || `© ${CURRENT_YEAR} ${appName}`}
+              <YStack gap="$1" $sm={{ alignItems: 'center' }}>
+                <Typography uiSize="sm" alpha="medium" $sm={{ textCenter: true }}>
+                  {copyrightLabel || `© ${CURRENT_YEAR} ${appName}. All rights reserved.`}
                 </Typography>
-                <Typography variant="label" uiSize="xs" tracking="xl" alpha="low">
-                  VERSION {versionLabel}
-                </Typography>
+                <XStack gap="$2" alignItems="center">
+                  <View width={6} height={6} borderRadius={3} backgroundColor="$success" />
+                  <Typography variant="label" uiSize="xs" tracking="xl" alpha="low">
+                    {stableReleaseLabel} {versionLabel}
+                  </Typography>
+                </XStack>
               </YStack>
 
-              <XStack alignItems="center" gap="$4" flexWrap="wrap" justifyContent="center">
-                <FooterLink href="/contact" data-testid="footer-legal-contact">Contact Us</FooterLink>
-                <Divider vertical spacing="none" height={12} opacity={0.3} $xs={{ display: 'none' }} />
-                <FooterLink href="/privacy" data-testid="footer-legal-privacy">Privacy Policy</FooterLink>
-                <Divider vertical spacing="none" height={12} opacity={0.3} $xs={{ display: 'none' }} />
-                <FooterLink href="/terms" data-testid="footer-legal-terms">Terms of Service</FooterLink>
+              <XStack alignItems="center" gap="$6" flexWrap="wrap" justifyContent="center">
+                <Typography uiSize="xs" alpha="low" $sm={{ textCenter: true }}>
+                  {craftedWithLoveLabel}
+                </Typography>
               </XStack>
             </BottomBar>
           </Container>

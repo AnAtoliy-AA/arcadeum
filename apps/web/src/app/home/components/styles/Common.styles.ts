@@ -1,21 +1,21 @@
 'use client';
 
-import { styled, H2, Text, YStack } from 'tamagui';
+import { styled, H2, Text, Main } from 'tamagui';
 import { Container } from '@/shared/ui';
 
-export const PageWrapper = styled(YStack, {
+export const PageWrapper = styled(Main, {
   name: 'PageWrapper',
-  tag: 'main',
   minHeight: '100vh',
   flexDirection: 'column',
   overflowX: 'hidden',
-} as any);
+} as Record<string, unknown>);
 
 export const SectionContainer = styled(Container, {
   name: 'SectionContainer',
   size: 'xl',
   paddingVertical: '$12',
-} as any);
+  overflow: 'hidden',
+} as Record<string, unknown>);
 
 export const SectionHeader = styled(Container, {
   name: 'SectionHeader',
@@ -23,7 +23,7 @@ export const SectionHeader = styled(Container, {
   paddingVertical: 0,
   alignItems: 'center',
   gap: '$3',
-} as any);
+} as Record<string, unknown>);
 
 export const SectionTitle = styled(H2, {
   name: 'SectionTitle',

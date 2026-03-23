@@ -10,7 +10,6 @@ test.describe('Footer Links', () => {
 
   test('should show app version', async ({ page }) => {
     await navigateTo(page, '/');
-    await expect(page.locator('footer')).toContainText(/version/i);
     await expect(page.locator('footer')).toContainText(/\d+\.\d+\.\d+/);
   });
 
@@ -24,15 +23,15 @@ test.describe('Footer Links', () => {
 
     // Check footer contains legal links
     const footer = page.locator('footer');
-    await expect(
-      footer.locator('[data-testid="footer-legal-privacy"]'),
-    ).toBeVisible();
-    await expect(
-      footer.locator('[data-testid="footer-legal-terms"]'),
-    ).toBeVisible();
-    await expect(
-      footer.locator('[data-testid="footer-legal-contact"]'),
-    ).toBeVisible();
+    // On mobile, footer sections are collapsible - expand Legal section if needed
+    const privacyLink = footer.locator('a[href="/privacy"]');
+    if (!(await privacyLink.isVisible())) {
+      await footer.getByText('LEGAL').click({ force: true });
+      await page.waitForTimeout(300);
+    }
+    await expect(footer.locator('a[href="/privacy"]')).toBeVisible();
+    await expect(footer.locator('a[href="/terms"]')).toBeVisible();
+    await expect(footer.locator('a[href="/contact"]')).toBeVisible();
 
     // Check header does not contain legal links (desktop)
     const header = page.locator('header');

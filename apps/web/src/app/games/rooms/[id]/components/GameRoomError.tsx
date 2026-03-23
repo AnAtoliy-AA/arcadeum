@@ -1,4 +1,5 @@
 import React from 'react';
+import { Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { ErrorContainer, LoginLink } from './styles';
 
@@ -15,11 +16,11 @@ export function GameRoomError({
 
   return (
     <ErrorContainer>
-      {error}
+      <Text>{error}</Text>
       {isPrivateRoomError && (
         <>
           <br />
-          <LoginLink {...{ href: '/auth' } as any}>
+          <LoginLink {...({ href: '/auth' } as Record<string, unknown>)}>
             {t('games.roomPage.errors.loginButton')}
           </LoginLink>
         </>

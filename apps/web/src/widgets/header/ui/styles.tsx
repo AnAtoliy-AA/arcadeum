@@ -4,23 +4,23 @@ import React from 'react';
 
 export const HEADER_HEIGHT = 72;
 import Link from 'next/link';
-import { styled, GetProps, Header, Nav as TamaguiNav } from 'tamagui';
+import { styled, GetProps, Nav as TamaguiNav, Header } from 'tamagui';
 import { XStack, YStack, Typography, LinkButton } from '@arcadeum/ui';
 
 // ─── Header Container ─────────────────────────────────────────────────────────
 
-const HeaderOuter = styled(Header, {
+export const HeaderOuter = styled(Header, {
   name: 'HeaderContainer',
   position: 'sticky',
   top: 0,
-  zIndex: '$1',
-  backgroundColor: '$glassBg',
+  zIndex: 100,
+  backgroundColor: 'var(--glassBg)',
   borderBottomWidth: 0,
   backdropFilter: 'blur(32px) saturate(200%)',
   boxShadow: '0 4px 24px -1px rgba(0, 0, 0, 0.2)',
 });
 
-const HeaderBorderLine = styled(YStack, {
+export const HeaderBorderLine = styled(YStack, {
   position: 'absolute',
   bottom: 0,
   left: 0,
@@ -32,20 +32,11 @@ const HeaderBorderLine = styled(YStack, {
   boxShadow: '0 0 15px rgba(87, 195, 255, 0.2)',
 });
 
-export function HeaderContainer({ children }: { children: React.ReactNode }) {
-  return (
-    <HeaderOuter>
-      {children}
-      <HeaderBorderLine />
-    </HeaderOuter>
-  );
-}
-
 // ─── Header Inner ─────────────────────────────────────────────────────────────
 
 export const HeaderInner = styled(XStack, {
   name: 'HeaderInner',
-  maxWidth: 1440,
+  maxWidth: 1400,
   width: '100%',
   alignSelf: 'center',
   alignItems: 'center',
@@ -66,7 +57,7 @@ const LogoInner = styled(XStack, {
   cursor: 'pointer',
   hoverStyle: {
     transform: 'scale(1.02)',
-    opacity: 0.95
+    opacity: 0.95,
   },
 });
 
@@ -79,9 +70,7 @@ export function Logo({
 }) {
   return (
     <Link href={href} prefetch={false} style={{ textDecoration: 'none' }}>
-      <LogoInner>
-        {children}
-      </LogoInner>
+      <LogoInner>{children}</LogoInner>
     </Link>
   );
 }
@@ -138,7 +127,7 @@ export const NavLinkIndicator = styled(XStack, {
   pointerEvents: 'none',
   zIndex: 10,
   opacity: 0,
-  transition: 'all 0.2s ease-in-out' as any,
+  transition: 'all 0.2s ease-in-out' as unknown as undefined,
 
   variants: {
     active: {
@@ -245,7 +234,12 @@ export function DropdownLink({
   children: React.ReactNode;
 }) {
   return (
-    <Link href={href} prefetch={false} style={{ textDecoration: 'none' }} onClick={onClick}>
+    <Link
+      href={href}
+      prefetch={false}
+      style={{ textDecoration: 'none' }}
+      onClick={onClick}
+    >
       <XStack
         alignItems="center"
         gap="$3"
@@ -277,11 +271,6 @@ export const MobileMenuContainer = styled(XStack, {
   $md: { display: 'flex' },
 });
 
-type MobileNavProps = {
-  isOpen: boolean;
-  children: React.ReactNode;
-} & Omit<GetProps<typeof YStack>, 'children'>;
-
 export const MobileNav = styled(YStack, {
   name: 'MobileNav',
   position: 'fixed',
@@ -289,6 +278,8 @@ export const MobileNav = styled(YStack, {
   left: 0,
   right: 0,
   bottom: 0,
+  width: '100%',
+  maxWidth: '100vw',
   zIndex: '$1',
   backgroundColor: '$background',
   borderTopWidth: 1,
@@ -299,27 +290,6 @@ export const MobileNav = styled(YStack, {
   height: `calc(100dvh - ${HEADER_HEIGHT}px)`,
   backdropFilter: 'blur(32px) saturate(180%)',
   overflowY: 'auto',
-
-  variants: {
-    isOpen: {
-      true: {
-        opacity: 1,
-        pointerEvents: 'auto',
-        visibility: 'visible',
-        transform: 'translateX(0)',
-      },
-      false: {
-        opacity: 0,
-        pointerEvents: 'none',
-        visibility: 'hidden',
-        transform: 'translateX(100%)',
-      },
-    },
-  } as const,
-
-  defaultVariants: {
-    isOpen: false,
-  },
 });
 
 export const MobileVersionText = styled(Typography, {

@@ -1,6 +1,11 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useSyncExternalStore,
+} from 'react';
 import { usePathname } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -17,9 +22,26 @@ import {
 import { ProfileMenu } from './ProfileMenu';
 import { MobileMenu } from './MobileMenu';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { Nav, Actions, DesktopOnly, MobileMenuContainer, NavLinkContainer, NavHeaderLink, NavLinkIndicator } from './styles';
+import {
+  Nav,
+  Actions,
+  DesktopOnly,
+  MobileMenuContainer,
+  NavLinkContainer,
+  NavHeaderLink,
+  NavLinkIndicator,
+} from './styles';
+
+const emptySubscribe = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 export function HeaderInteractive() {
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    getClientSnapshot,
+    getServerSnapshot,
+  );
   const pathname = usePathname();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
@@ -66,6 +88,10 @@ export function HeaderInteractive() {
     }
   }, [isMobileMenuOpen, closeMobileMenu]);
 
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <>
       <Nav>
@@ -80,7 +106,10 @@ export function HeaderInteractive() {
             >
               {item.label}
             </NavHeaderLink>
-            <NavLinkIndicator active={pathname === item.href} />
+            <NavLinkIndicator
+              active={pathname === item.href}
+              data-testid="nav-link-indicator"
+            />
           </NavLinkContainer>
         ))}
       </Nav>
@@ -125,7 +154,7 @@ export function HeaderInteractive() {
           <Button
             variant="icon"
             size="sm"
-            onClick={toggleMobileMenu}
+            onPress={toggleMobileMenu}
             aria-label="Toggle menu"
             aria-expanded={isMobileMenuOpen}
             data-mobile-menu-button

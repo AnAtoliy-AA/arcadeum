@@ -61,6 +61,7 @@ test.describe('Sea Battle Tablet Layout', () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
+    await page.waitForTimeout(500);
     await navigateTo(page, '/games/rooms/tablet-test-room');
 
     const mainArea = page.getByTestId('game-main-area');
@@ -87,6 +88,7 @@ test.describe('Sea Battle Tablet Layout', () => {
     page,
   }) => {
     await page.setViewportSize({ width: 768, height: 1024 });
+    await page.waitForTimeout(500);
     await navigateTo(page, '/games/rooms/tablet-test-room');
 
     const mainArea = page.getByTestId('game-main-area');

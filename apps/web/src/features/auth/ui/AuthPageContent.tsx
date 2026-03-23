@@ -1,3 +1,5 @@
+'use client';
+
 import { PageLayout, Container, XStack } from '@arcadeum/ui';
 import { HeroSection } from './HeroSection';
 import { LocalAuthPanel } from './LocalAuthPanel';

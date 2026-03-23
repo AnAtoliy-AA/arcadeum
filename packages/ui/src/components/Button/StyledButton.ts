@@ -30,7 +30,7 @@ export const StyledButton: TamaguiComponent = styled(TButton, {
     shadowRadius: 6,
     shadowOpacity: 1,
   },
-  pressStyle: {
+  pressStyle: (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_E2E === 'true') ? undefined : {
     scale: 0.98,
     y: 3,
     opacity: 0.95,

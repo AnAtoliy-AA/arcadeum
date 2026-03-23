@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import Image from 'next/image';
 import type { TamaguiElement } from 'tamagui';
 import {
   Button,
@@ -90,7 +91,9 @@ export function WebPresentation() {
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      (containerRef.current as HTMLElement | null)?.requestFullscreen().catch(() => {});
+      (containerRef.current as HTMLElement | null)
+        ?.requestFullscreen()
+        .catch(() => {});
     } else {
       document.exitFullscreen();
     }
@@ -131,7 +134,6 @@ export function WebPresentation() {
       ref={containerRef}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ aspectRatio: '16/9' }}
     >
       {slides.map((slide, index) => {
         const isActive = index === currentSlide;
@@ -144,23 +146,23 @@ export function WebPresentation() {
             style={{
               opacity: isActive ? 1 : 0,
               visibility: isActive ? 'visible' : 'hidden',
-              transition: 'opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.6s',
+              transition:
+                'opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.6s',
               zIndex: isActive ? 1 : 0,
             }}
           >
             {loadedIndices.has(index) ? (
-              <img
+              <Image
                 src={slide.image}
                 alt={slide.title}
-                // Keep eager for purely the current one to ensure priority,
-                // though strict lazy state handles most of it.
+                fill
+                sizes="(max-width: 2000px) 100vw, 2000px"
                 loading={index === currentSlide ? 'eager' : 'lazy'}
                 style={{
-                  width: '100%',
-                  height: '100%',
                   objectFit: 'cover',
-                  display: 'block',
-                  animation: isActive ? 'scaleIn 0.6s cubic-bezier(0.22, 1, 0.36, 1)' : 'none',
+                  animation: isActive
+                    ? 'scaleIn 0.6s cubic-bezier(0.22, 1, 0.36, 1)'
+                    : 'none',
                 }}
               />
             ) : null}
@@ -169,7 +171,12 @@ export function WebPresentation() {
       })}
 
       <ControlsOverlay>
-        <TopBar style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%)' }}>
+        <TopBar
+          style={{
+            background:
+              'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%)',
+          }}
+        >
           <ProgressBar>
             {slides.map((_, index) => {
               const isActive = index === currentSlide;
@@ -181,8 +188,14 @@ export function WebPresentation() {
                   role="button"
                   aria-label={`Go to slide ${index + 1}`}
                   style={{
-                    background: isActive ? 'var(--accent, #81f1ff)' : isViewed ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.2)',
-                    boxShadow: isActive ? '0 0 8px rgba(255,255,255,0.4)' : 'none',
+                    background: isActive
+                      ? 'var(--accent, #81f1ff)'
+                      : isViewed
+                        ? 'rgba(255,255,255,0.5)'
+                        : 'rgba(255,255,255,0.2)',
+                    boxShadow: isActive
+                      ? '0 0 8px rgba(255,255,255,0.4)'
+                      : 'none',
                   }}
                 />
               );
@@ -221,7 +234,12 @@ export function WebPresentation() {
           </Button>
         </NavButtonContainer>
 
-        <BottomBar style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)' }}>
+        <BottomBar
+          style={{
+            background:
+              'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)',
+          }}
+        >
           <SlideCounter>
             {currentSlide + 1} / {slides.length}
           </SlideCounter>

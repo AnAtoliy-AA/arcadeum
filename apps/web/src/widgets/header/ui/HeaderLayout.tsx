@@ -1,7 +1,13 @@
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 import { appConfig } from '@/shared/config/app-config';
-import { HeaderContainer, HeaderInner, Logo, LogoText } from './styles';
+import {
+  HeaderInner,
+  HeaderBorderLine,
+  Logo,
+  LogoText,
+  HeaderOuter,
+} from './styles';
 
 interface HeaderLayoutProps {
   children: ReactNode;
@@ -9,7 +15,7 @@ interface HeaderLayoutProps {
 
 export function HeaderLayout({ children }: HeaderLayoutProps) {
   return (
-    <HeaderContainer>
+    <HeaderOuter>
       <HeaderInner>
         <Logo href="/">
           <Image src="/logo.png" alt="" width={32} height={32} priority />
@@ -17,6 +23,7 @@ export function HeaderLayout({ children }: HeaderLayoutProps) {
         </Logo>
         {children}
       </HeaderInner>
-    </HeaderContainer>
+      <HeaderBorderLine />
+    </HeaderOuter>
   );
 }

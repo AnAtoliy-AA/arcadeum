@@ -61,15 +61,8 @@ export function useSessionTokens(): SessionTokensValue {
       return;
     }
 
-    const timeout = window.setTimeout(() => {
-      storeRefreshTokens().catch(() => {
-        // handled
-      });
-    }, delay);
-
-    return () => {
-      window.clearTimeout(timeout);
-    };
+    const { scheduleRefresh } = useSessionStore.getState();
+    scheduleRefresh(delay);
   }, [
     snapshot.accessTokenExpiresAt,
     snapshot.refreshToken,

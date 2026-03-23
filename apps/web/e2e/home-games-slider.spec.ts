@@ -6,7 +6,8 @@ test.describe('Home Page Games Grid Refinement', () => {
   test.beforeEach(async ({ page }) => {
     await navigateTo(page, '/');
     await page.addStyleTag({
-      content: '[data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }',
+      content:
+        '[data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }',
     });
   });
 
@@ -23,7 +24,7 @@ test.describe('Home Page Games Grid Refinement', () => {
   test('should navigate slider via arrows', async ({ page }) => {
     await page.setViewportSize({ width: 400, height: 800 });
 
-    const sliderTrack = page.locator('div[class*="SliderTrack"]');
+    const sliderTrack = page.locator('div[class*="slider-track"]');
     await expect(sliderTrack).toBeVisible();
 
     const nextButton = page.getByTestId('next-game-button');

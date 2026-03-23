@@ -14,7 +14,7 @@ export const Container = styled(YStack, {
       sm: { maxWidth: 600 },
       md: { maxWidth: 800 },
       lg: { maxWidth: 1000 },
-      xl: { maxWidth: 1200 },
+      xl: { maxWidth: 1400 },
       full: { maxWidth: '100%' },
     },
   } as const,

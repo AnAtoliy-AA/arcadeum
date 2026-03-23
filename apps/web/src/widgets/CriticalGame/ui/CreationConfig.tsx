@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useTranslation, TranslationKey } from '@/shared/lib/useTranslation';
 import { GameCreationConfigProps } from '@/features/games/types';
-import { ExpansionId, CARD_VARIANTS } from '@/app/games/create/constants';
-import { ExpansionPacksSection } from '@/app/games/create/ExpansionPacksSection';
+import {
+  ExpansionId,
+  CARD_VARIANTS,
+} from '@/features/games/ui/create/constants';
+import { ExpansionPacksSection } from '@/features/games/ui/create/ExpansionPacksSection';
 import { RulesModal } from '@/widgets/CriticalGame/ui/RulesModal';
 import { IDLE_TIMER_DURATION_SEC } from '@/shared/config/game';
 import { Section, Button } from '@/shared/ui';
@@ -22,7 +25,7 @@ import {
   gameTileCSS,
   GAME_TILE_CLASS,
   GAME_TILE_ICON_CLASS,
-} from '@/app/games/create/styles';
+} from '@/features/games/ui/create/styles';
 
 interface CriticalGameOptions {
   cardVariant?: string;
@@ -85,7 +88,10 @@ export function CriticalCreationConfig({
               key={variant.id}
               type="button"
               className={`${GAME_TILE_CLASS}${options.cardVariant === variant.id ? ' active' : ''}`}
-              style={getGameTileStyle(options.cardVariant === variant.id, variant.disabled)}
+              style={getGameTileStyle(
+                options.cardVariant === variant.id,
+                variant.disabled,
+              )}
               disabled={variant.disabled}
               onClick={() =>
                 !variant.disabled && handleUpdate({ cardVariant: variant.id })

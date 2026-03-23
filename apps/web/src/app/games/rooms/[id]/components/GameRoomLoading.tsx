@@ -1,4 +1,5 @@
 import React from 'react';
+import { Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { ServerLoadingNotice } from '@/shared/ui';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
@@ -35,7 +36,7 @@ export function GameRoomLoading({
           }}
         />
       ) : (
-        message || t('games.roomPage.loading')
+        <Text>{message || t('games.roomPage.loading')}</Text>
       )}
     </LoadingContainer>
   );

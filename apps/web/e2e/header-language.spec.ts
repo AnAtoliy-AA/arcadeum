@@ -29,14 +29,20 @@ test.describe('Header Language Switcher', () => {
     await expect(languageSwitcher).toContainText('ES', { timeout: 10000 });
   });
 
-  test('should display language switcher and change language on mobile menu', async ({
+  test('should display language switcher in header and not in mobile menu on mobile devices', async ({
     page,
   }) => {
     // Resize to mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
     await page.waitForTimeout(500);
 
-    // Open mobile menu
+    // 1. Check it's visible in the header
+    const headerLanguageSwitcher = page
+      .locator('header')
+      .getByTestId('header-language-switcher');
+    await expect(headerLanguageSwitcher).toBeVisible();
+
+    // 2. Open mobile menu
     const menuButton = page.getByTestId('mobile-menu-button');
     await expect(menuButton).toBeVisible();
     await menuButton.click();
@@ -45,20 +51,19 @@ test.describe('Header Language Switcher', () => {
     const mobileNav = page.getByTestId('mobile-nav');
     await expect(mobileNav).toBeVisible();
 
-    const trigger = mobileNav.getByTestId('header-language-switcher');
-    await expect(trigger).toBeVisible();
+    // 3. Verify it's NOT in the mobile menu
+    const menuLanguageSwitcher = mobileNav.getByTestId(
+      'header-language-switcher',
+    );
+    await expect(menuLanguageSwitcher).not.toBeVisible();
 
-    // Default language
-    await expect(trigger).toContainText('EN');
-
-    // Change language to French
-    await trigger.click();
+    // 4. Change language from header while menu is open
+    await headerLanguageSwitcher.click();
     await page.getByRole('option', { name: 'FR' }).click();
 
-    // The value should be updated — check the header trigger which is always visible
-    const headerTrigger = page
-      .locator('header')
-      .getByTestId('header-language-switcher');
-    await expect(headerTrigger).toContainText('FR', { timeout: 10000 });
+    // Verify language changed (header text should update)
+    await expect(headerLanguageSwitcher).toContainText('FR', {
+      timeout: 10000,
+    });
   });
 });

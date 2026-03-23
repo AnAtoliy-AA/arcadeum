@@ -27,8 +27,9 @@ import {
 } from './styles';
 
 import { Button, LinkButton } from '@arcadeum/ui';
-import { DownloadButtons, OptionCard, Footer } from '@/shared/ui';
+import { DownloadButtons, OptionCard } from '@/shared/ui';
 import { BlockedUsersSection } from './BlockedUsersSection';
+import { AppFooter } from '@/widgets/footer';
 
 type DownloadConfig = {
   title: string;
@@ -232,13 +233,13 @@ export default function SettingsContent({
           </PageTitle>
 
           <Section title={appearanceTitle} description={appearanceDescription}>
-            <OptionList>
+            <OptionList key={themePreference}>
               {themeOptions.map((option) => (
                 <OptionCard
                   key={option.code}
                   data-testid={`theme-${option.code}`}
                   isActive={themePreference === option.code}
-                  onClick={() => handleThemeSelect(option.code)}
+                  onPress={() => handleThemeSelect(option.code)}
                   label={option.label}
                   description={option.description}
                 />
@@ -247,13 +248,17 @@ export default function SettingsContent({
           </Section>
 
           <Section title={languageTitle} description={languageDescription}>
-            <PillGroup role="group" aria-label={languageGroupLabel}>
+            <PillGroup
+              key={locale}
+              role="group"
+              aria-label={languageGroupLabel}
+            >
               {languageOptions.map((option) => (
                 <Button
                   key={option.code}
                   data-testid={`lang-btn-${option.code}`}
                   isActive={locale === option.code}
-                  aria-pressed={locale === option.code}
+                  aria-pressed={locale === option.code ? 'true' : 'false'}
                   variant={locale === option.code ? 'primary' : 'secondary'}
                   size="md"
                   minWidth={90}
@@ -266,21 +271,21 @@ export default function SettingsContent({
           </Section>
 
           <Section title={gameplayTitle} description={gameplayDescription}>
-            <ToggleRow>
+            <ToggleRow data-testid="sound-row">
               <ToggleLabel>{settingsCopy.soundLabel ?? 'Sound'}</ToggleLabel>
               <ToggleInput
                 type="checkbox"
                 checked={soundEnabled}
-                onChange={(e) => setSoundEnabled(e.target.checked)}
+                onChange={() => setSoundEnabled(!soundEnabled)}
                 aria-label={settingsCopy.soundLabel ?? 'Sound'}
               />
             </ToggleRow>
-            <ToggleRow>
+            <ToggleRow data-testid="haptics-row">
               <ToggleLabel>{hapticsLabel}</ToggleLabel>
               <ToggleInput
                 type="checkbox"
                 checked={hapticsEnabled}
-                onChange={(e) => setHapticsEnabled(e.target.checked)}
+                onChange={() => setHapticsEnabled(!hapticsEnabled)}
                 aria-label={hapticsLabel}
               />
             </ToggleRow>
@@ -348,7 +353,7 @@ export default function SettingsContent({
           </Section>
         </Container>
       </PageLayout>
-      <Footer />
+      <AppFooter />
     </>
   );
 }

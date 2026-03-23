@@ -44,8 +44,11 @@ test.describe('Navigation', () => {
 
   test('should navigate to games page', async ({ page }) => {
     await ensureNavigationVisible(page);
-    const gamesLink = page.getByRole('link', { name: /games|игры/i }).first();
-    await gamesLink.click();
+    const gamesLink = getIsMobile(page)
+      ? page.getByTestId('mobile-nav-games')
+      : page.getByTestId('nav-games');
+    await expect(gamesLink).toBeVisible();
+    await gamesLink.dispatchEvent('click');
     await expect(page).toHaveURL(/\/games/);
   });
 

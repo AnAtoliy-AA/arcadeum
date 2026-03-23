@@ -49,9 +49,16 @@ export async function navigateTo(page: Page, path: string): Promise<void> {
   // Wait for hydration - theme provider sets these attributes in useEffect
   // This is a reliable way to ensure React has finished mounting and effects have run.
   await expect(page.locator('html'))
-    .toHaveAttribute('data-theme-preference', /.*/, { timeout: 15000 })
+    .toHaveAttribute('data-hydrated', 'true', { timeout: 15000 })
     .catch(() => {
       // Fallback if the attribute is not set, just wait a bit more
       return page.waitForTimeout(2000);
     });
+}
+
+export async function clearState(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
 }

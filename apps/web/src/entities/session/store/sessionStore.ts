@@ -28,12 +28,14 @@ interface SessionState {
   snapshot: SessionTokensSnapshot;
   hydrated: boolean;
   refreshInFlight: boolean;
+  refreshTimeoutId: ReturnType<typeof setTimeout> | null;
 
   mode: LocalAuthMode;
   setMode: (mode: LocalAuthMode) => void;
   setTokens: (input: SetSessionTokensInput) => Promise<SessionTokensSnapshot>;
   clearTokens: () => Promise<void>;
   refreshTokens: () => Promise<SessionTokensSnapshot>;
+  scheduleRefresh: (delay: number) => void;
   setHydrated: (hydrated: boolean) => void;
 }
 
@@ -97,6 +99,7 @@ export const useSessionStore = create<SessionState>()(
       snapshot: defaultSnapshot,
       hydrated: false,
       refreshInFlight: false,
+      refreshTimeoutId: null,
       mode: 'login',
 
       setMode: (mode: LocalAuthMode) => set({ mode }),
@@ -110,7 +113,9 @@ export const useSessionStore = create<SessionState>()(
       },
 
       clearTokens: async () => {
-        set({ snapshot: defaultSnapshot });
+        const { refreshTimeoutId } = get();
+        if (refreshTimeoutId) clearTimeout(refreshTimeoutId);
+        set({ snapshot: defaultSnapshot, refreshTimeoutId: null });
         if (typeof window !== 'undefined') {
           localStorage.removeItem('web_session_tokens_v1');
         }
@@ -127,7 +132,8 @@ export const useSessionStore = create<SessionState>()(
           throw new Error('No refresh token available');
         }
 
-        set({ refreshInFlight: true });
+        if (state.refreshTimeoutId) clearTimeout(state.refreshTimeoutId);
+        set({ refreshInFlight: true, refreshTimeoutId: null });
 
         try {
           const response = await refreshSession(refreshToken);
@@ -143,6 +149,17 @@ export const useSessionStore = create<SessionState>()(
           set({ refreshInFlight: false });
           throw error;
         }
+      },
+
+      scheduleRefresh: (delay: number) => {
+        const state = get();
+        if (state.refreshTimeoutId) clearTimeout(state.refreshTimeoutId);
+        const timeoutId = setTimeout(() => {
+          get()
+            .refreshTokens()
+            .catch(() => {});
+        }, delay);
+        set({ refreshTimeoutId: timeoutId });
       },
     }),
     {

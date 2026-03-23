@@ -5,7 +5,6 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { Button, CollapsibleSection } from '@/shared/ui';
 
 import { ExpansionId, EXPANSION_PACK_DETAILS } from './constants';
-
 import {
   ExpansionGrid,
   ExpansionLabel,
@@ -194,7 +193,9 @@ export function ExpansionPacksSection({
               {pack.available && pack.cards.length > 0 && (
                 <ExpandToggle
                   style={{
-                    transform: expandedPacks.includes(pack.id) ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transform: expandedPacks.includes(pack.id)
+                      ? 'rotate(180deg)'
+                      : 'rotate(0deg)',
                   }}
                 >
                   ▼

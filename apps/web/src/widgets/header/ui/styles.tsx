@@ -14,7 +14,7 @@ export const HeaderOuter = styled(Header, {
   position: 'sticky',
   top: 0,
   zIndex: 100,
-  backgroundColor: 'var(--glassBg)',
+  backgroundColor: 'var(--glass-background)',
   borderBottomWidth: 0,
   backdropFilter: 'blur(32px) saturate(200%)',
   boxShadow: '0 4px 24px -1px rgba(0, 0, 0, 0.2)',
@@ -28,8 +28,9 @@ export const HeaderBorderLine = styled(YStack, {
   height: 1,
   pointerEvents: 'none',
   background:
-    'linear-gradient(90deg, transparent 0%, var(--borderColor) 15%, var(--primaryGradientStart) 50%, var(--borderColor) 85%, transparent 100%)',
-  boxShadow: '0 0 15px rgba(87, 195, 255, 0.2)',
+    'linear-gradient(90deg, transparent 0%, var(--glass-border) 15%, var(--primaryGradientStart) 50%, var(--glass-border) 85%, transparent 100%)',
+  boxShadow: '0 0 15px rgba(87, 195, 255, 0.15)',
+  opacity: 0.8,
 });
 
 // ─── Header Inner ─────────────────────────────────────────────────────────────
@@ -52,7 +53,7 @@ export const HeaderInner = styled(XStack, {
 
 const LogoInner = styled(XStack, {
   alignItems: 'center',
-  gap: '$2',
+  gap: '$3',
   flexShrink: 0,
   cursor: 'pointer',
   hoverStyle: {
@@ -89,7 +90,7 @@ export const Nav = styled(TamaguiNav, {
   name: 'Nav',
   flexDirection: 'row',
   alignItems: 'center',
-  gap: '$1',
+  gap: '$4',
   flex: 1,
   $md: { display: 'none' },
 });
@@ -99,9 +100,9 @@ export const Nav = styled(TamaguiNav, {
 export const Actions = styled(XStack, {
   name: 'Actions',
   alignItems: 'center',
-  gap: '$2',
+  gap: '$4',
   flexShrink: 0,
-  $xs: { gap: '$1' },
+  $xs: { gap: '$2' },
 });
 // ─── Navigation Link ──────────────────────────────────────────────────────────
 

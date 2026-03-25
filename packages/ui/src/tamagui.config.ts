@@ -208,8 +208,8 @@ const darkTheme = {
   // Overlay & Specials
   overlayBg: 'rgba(0, 0, 0, 0.6)',
   // Glass Tokens
-  glassBg: 'rgba(255, 255, 255, 0.03)',
-  glassBorder: 'rgba(255, 255, 255, 0.15)',
+  glassBg: 'rgba(15, 17, 18, 0.72)',
+  glassBorder: 'rgba(255, 255, 255, 0.08)',
   glassBgHover: 'rgba(255, 255, 255, 0.08)',
   glassBorderHover: 'rgba(255, 255, 255, 0.3)',
   // Background Radials
@@ -264,8 +264,8 @@ const lightTheme = {
   // Overlay & Specials
   overlayBg: 'rgba(0, 0, 0, 0.4)',
   // Glass Tokens
-  glassBg: 'rgba(0, 0, 0, 0.03)',
-  glassBorder: 'rgba(0, 0, 0, 0.1)',
+  glassBg: 'rgba(255, 255, 255, 0.72)',
+  glassBorder: 'rgba(0, 0, 0, 0.05)',
   glassBgHover: 'rgba(0, 0, 0, 0.06)',
   glassBorderHover: 'rgba(0, 0, 0, 0.2)',
   // Background Radials
@@ -291,7 +291,7 @@ const neonDarkTheme = {
   neutralBorder: 'rgba(143, 155, 255, 0.5)',
   overlayBg: 'rgba(0, 0, 0, 0.8)',
   // Glass Tokens
-  glassBg: 'rgba(6, 1, 27, 0.58)',
+  glassBg: 'rgba(6, 1, 27, 0.72)',
   glassBorder: 'rgba(245, 247, 255, 0.08)',
 };
 
@@ -313,8 +313,8 @@ const neonLightTheme = {
   neutralBorder: 'rgba(102, 69, 182, 0.7)',
   overlayBg: 'rgba(0, 0, 0, 0.8)',
   // Glass Tokens
-  glassBg: 'rgba(18, 4, 46, 0.9)',
-  glassBorder: 'rgba(102, 69, 182, 0.6)',
+  glassBg: 'rgba(18, 4, 46, 0.85)',
+  glassBorder: 'rgba(102, 69, 182, 0.3)',
 };
 
 const violetDarkTheme = {
@@ -332,8 +332,8 @@ const violetDarkTheme = {
   primaryGradientEnd: '#a78bfa',
   secondary: '#818cf8',
   overlayBg: 'rgba(0,0,0,0.75)',
-  glassBg: 'rgba(139,92,246,0.07)',
-  glassBorder: 'rgba(167,139,250,0.2)',
+  glassBg: 'rgba(13, 10, 24, 0.72)',
+  glassBorder: 'rgba(167, 139, 250, 0.12)',
   glassBgHover: 'rgba(139,92,246,0.14)',
   glassBorderHover: 'rgba(196,181,253,0.38)',
 };
@@ -352,8 +352,8 @@ const violetLightTheme = {
   primaryGradientStart: '#8b5cf6',
   primaryGradientEnd: '#6d28d9',
   secondary: '#4f46e5',
-  glassBg: 'rgba(109,40,217,0.05)',
-  glassBorder: 'rgba(167,139,250,0.3)',
+  glassBg: 'rgba(255, 255, 255, 0.72)',
+  glassBorder: 'rgba(167, 139, 250, 0.15)',
   glassBgHover: 'rgba(109,40,217,0.1)',
   glassBorderHover: 'rgba(139,92,246,0.45)',
 };
@@ -373,8 +373,8 @@ const tealDarkTheme = {
   primaryGradientEnd: '#2dd4bf',
   secondary: '#38bdf8',
   overlayBg: 'rgba(0,0,0,0.75)',
-  glassBg: 'rgba(13,148,136,0.07)',
-  glassBorder: 'rgba(45,212,191,0.2)',
+  glassBg: 'rgba(4, 15, 15, 0.72)',
+  glassBorder: 'rgba(45, 212, 191, 0.12)',
   glassBgHover: 'rgba(13,148,136,0.14)',
   glassBorderHover: 'rgba(94,234,212,0.38)',
 };
@@ -393,8 +393,8 @@ const tealLightTheme = {
   primaryGradientStart: '#2dd4bf',
   primaryGradientEnd: '#0d9488',
   secondary: '#0891b2',
-  glassBg: 'rgba(13,148,136,0.05)',
-  glassBorder: 'rgba(45,212,191,0.3)',
+  glassBg: 'rgba(255, 255, 255, 0.72)',
+  glassBorder: 'rgba(45, 212, 191, 0.15)',
   glassBgHover: 'rgba(13,148,136,0.1)',
   glassBorderHover: 'rgba(45,212,191,0.48)',
 };

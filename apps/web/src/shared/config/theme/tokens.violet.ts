@@ -78,6 +78,10 @@ export const violetDarkTokens: ThemeTokens = {
     cardBackground: 'rgba(12,7,32,0.65)',
     border: 'rgba(139,92,246,0.28)',
   },
+  glass: {
+    background: 'rgba(13, 10, 24, 0.72)',
+    border: 'rgba(167, 139, 250, 0.12)',
+  },
   copyNotice: '#c4b5fd',
 };
 
@@ -158,6 +162,10 @@ export const violetLightTokens: ThemeTokens = {
   account: {
     cardBackground: 'rgba(255,255,255,0.92)',
     border: 'rgba(196,181,253,0.45)',
+  },
+  glass: {
+    background: 'rgba(255, 255, 255, 0.72)',
+    border: 'rgba(167, 139, 250, 0.15)',
   },
   copyNotice: '#6d28d9',
 };

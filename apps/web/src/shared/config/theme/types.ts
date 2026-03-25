@@ -94,5 +94,9 @@ export type ThemeTokens = {
     cardBackground: string;
     border: string;
   };
+  glass: {
+    background: string;
+    border: string;
+  };
   copyNotice: string;
 };

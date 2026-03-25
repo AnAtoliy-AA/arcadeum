@@ -80,6 +80,10 @@ export const neonDarkTokens: ThemeTokens = {
     cardBackground: 'rgba(10, 7, 36, 0.35)',
     border: 'rgba(143, 155, 255, 0.35)',
   },
+  glass: {
+    background: 'rgba(6, 1, 27, 0.72)',
+    border: 'rgba(245, 247, 255, 0.08)',
+  },
   copyNotice: '#81f1ff',
 };
 
@@ -162,6 +166,10 @@ export const neonLightTokens: ThemeTokens = {
   account: {
     cardBackground: 'rgba(22, 10, 55, 0.72)',
     border: 'rgba(102, 69, 182, 0.6)',
+  },
+  glass: {
+    background: 'rgba(18, 4, 46, 0.85)',
+    border: 'rgba(102, 69, 182, 0.3)',
   },
   copyNotice: '#54e4ff',
 };

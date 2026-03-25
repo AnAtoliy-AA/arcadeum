@@ -161,6 +161,8 @@ export function AppThemeProvider({
       '--primary-gradient-start',
       theme.buttons.primary.gradientStart,
     );
+    doc.style.setProperty('--glass-background', theme.glass.background);
+    doc.style.setProperty('--glass-border', theme.glass.border);
 
     doc.style.backgroundColor = theme.background.base;
     doc.style.color = theme.text.primary;

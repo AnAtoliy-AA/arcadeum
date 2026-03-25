@@ -63,7 +63,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 const FooterRoot = styled(View, {
   name: 'Footer',
   width: '100%',
-  backgroundColor: 'var(--glassBg)',
+  backgroundColor: 'var(--glass-background)',
   borderTopWidth: 0,
   paddingTop: '$12',
   paddingBottom: '$10',
@@ -84,8 +84,8 @@ const FooterBorderLine = styled(YStack, {
   height: 1,
   pointerEvents: 'none',
   background:
-    'linear-gradient(90deg, transparent 0%, var(--borderColor) 15%, var(--primaryGradientStart) 50%, var(--borderColor) 85%, transparent 100%)',
-  opacity: 0.5,
+    'linear-gradient(90deg, transparent 0%, var(--glass-border) 15%, var(--primaryGradientStart) 50%, var(--glass-border) 85%, transparent 100%)',
+  opacity: 0.8,
 });
 
 const FooterGrid = styled(XStack, {

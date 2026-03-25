@@ -78,6 +78,10 @@ export const tealDarkTokens: ThemeTokens = {
     cardBackground: 'rgba(5,20,20,0.65)',
     border: 'rgba(13,148,136,0.3)',
   },
+  glass: {
+    background: 'rgba(4, 15, 15, 0.72)',
+    border: 'rgba(45, 212, 191, 0.12)',
+  },
   copyNotice: '#2dd4bf',
 };
 
@@ -158,6 +162,10 @@ export const tealLightTokens: ThemeTokens = {
   account: {
     cardBackground: 'rgba(255,255,255,0.92)',
     border: 'rgba(94,234,212,0.4)',
+  },
+  glass: {
+    background: 'rgba(255, 255, 255, 0.72)',
+    border: 'rgba(45, 212, 191, 0.15)',
   },
   copyNotice: '#0d9488',
 };

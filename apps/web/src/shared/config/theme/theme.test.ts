@@ -86,6 +86,8 @@ function hasValidTokenStructure(tokens: ThemeTokens): void {
   expect(tokens.outlines.focus).toBeTruthy();
   expect(tokens.account.cardBackground).toBeTruthy();
   expect(tokens.account.border).toBeTruthy();
+  expect(tokens.glass.background).toBeTruthy();
+  expect(tokens.glass.border).toBeTruthy();
   expect(tokens.copyNotice).toBeTruthy();
 }
 

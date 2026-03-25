@@ -119,6 +119,7 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
         href={routes.support}
         variant="ghost"
         size="sm"
+        gap="$2"
         isActive={pathname === routes.support}
         onClick={onClose}
         fullWidth

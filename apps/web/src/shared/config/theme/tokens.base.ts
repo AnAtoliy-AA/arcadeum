@@ -80,6 +80,10 @@ export const lightTokens: ThemeTokens = {
     cardBackground: 'rgba(255, 255, 255, 0.95)',
     border: 'rgba(148, 163, 184, 0.45)',
   },
+  glass: {
+    background: 'rgba(255, 255, 255, 0.72)',
+    border: 'rgba(0, 0, 0, 0.05)',
+  },
   copyNotice: '#2563eb',
 };
 
@@ -162,6 +166,10 @@ export const darkTokens: ThemeTokens = {
   account: {
     cardBackground: 'rgba(24, 24, 28, 0.65)',
     border: 'rgba(51, 65, 85, 0.6)',
+  },
+  glass: {
+    background: 'rgba(15, 17, 18, 0.72)',
+    border: 'rgba(255, 255, 255, 0.08)',
   },
   copyNotice: '#38bdf8',
 };

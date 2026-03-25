@@ -119,8 +119,9 @@ export function HeaderInteractive() {
         <DesktopOnly>
           <LinkButton
             href={routes.support}
-            variant="ghost"
+            variant="secondary"
             size="sm"
+            gap="$2"
             aria-label={t('common.actions.support')}
           >
             <SupportIcon size={18} />

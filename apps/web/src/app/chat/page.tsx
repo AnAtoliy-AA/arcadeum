@@ -1,6 +1,12 @@
+'use client';
+
 import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { YStack, Typography } from '@arcadeum/ui';
-import { ChatPage } from './ChatPage';
+
+const ChatPage = dynamic(() =>
+  import('./ChatPage').then((mod) => mod.ChatPage),
+);
 
 export default function ChatRoute() {
   return (

@@ -30,18 +30,7 @@ export const Button = memo(function Button({
       fontWeight="600"
       letterSpacing={0.5}
       gameVariant={gameVariant}
-      {...(() => {
-        const {
-          $variant,
-          $status,
-          $isMyTurn,
-          $isActive,
-          textAlign: _textAlign,
-          ...props
-        } = rest as any;
-        return props;
-      })()}
-      aria-pressed={(rest as any)['aria-pressed']}
+      {...rest}
     >
       {children}
       {showShimmer && <Shimmer />}

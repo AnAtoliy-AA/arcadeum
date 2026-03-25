@@ -3,8 +3,9 @@
 import { YStack, Text } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { BrowserRegistry } from '../BrowserRegistry';
 
-export default function OfflinePage() {
+function OfflinePageContent() {
   const { t } = useTranslation();
 
   const handleRetry = () => {
@@ -48,5 +49,13 @@ export default function OfflinePage() {
         {t('pwa.offline.retry')}
       </Button>
     </YStack>
+  );
+}
+
+export default function OfflinePage() {
+  return (
+    <BrowserRegistry>
+      <OfflinePageContent />
+    </BrowserRegistry>
   );
 }

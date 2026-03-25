@@ -1,14 +1,20 @@
+'use client';
+
+import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
 import { appConfig } from '@/shared/config/app-config';
-import { SupportPage as SupportPageView } from '@/app/support/SupportPage';
 import type {
   SupportAction,
   SupportTeamMember,
 } from '@/entities/support/model/types';
 
-export const metadata = {
-  title: 'Support the developers',
-  description: `Keep ${appConfig.appName} iterating quickly and accessible to the tabletop community. Arcade labs, infrastructure, and community events are self-funded today. Your backing keeps the realtime servers online, unlocks more playtest nights, and helps us ship the next wave of prototypes. Every contribution keeps ${appConfig.appName} evolving. Thank you for helping us build the future of remote tabletop play!`,
-};
+const SupportPage = dynamic(
+  () => import('./SupportPage').then((mod) => mod.SupportPage),
+  {
+    ssr: false,
+    loading: () => null,
+  },
+);
 
 const SUPPORT_TITLE = 'Support the developers';
 const SUPPORT_TAGLINE = `Keep ${appConfig.appName} iterating quickly and accessible to the tabletop community.`;
@@ -86,14 +92,16 @@ export default function SupportRoute() {
   const actions = buildActions();
 
   return (
-    <SupportPageView
-      appName={appConfig.appName}
-      title={SUPPORT_TITLE}
-      tagline={SUPPORT_TAGLINE}
-      description={SUPPORT_DESCRIPTION}
-      thanks={SUPPORT_THANKS}
-      teamMembers={TEAM_MEMBERS}
-      actions={actions}
-    />
+    <Suspense fallback={null}>
+      <SupportPage
+        appName={appConfig.appName}
+        title={SUPPORT_TITLE}
+        tagline={SUPPORT_TAGLINE}
+        description={SUPPORT_DESCRIPTION}
+        thanks={SUPPORT_THANKS}
+        teamMembers={TEAM_MEMBERS}
+        actions={actions}
+      />
+    </Suspense>
   );
 }

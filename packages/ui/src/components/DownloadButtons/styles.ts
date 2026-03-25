@@ -16,26 +16,26 @@ export const DownloadLink = styled(XStack, {
   name: 'DownloadLink',
   alignItems: 'center',
   gap: '$3',
-  padding: '$3 $5',
-  borderRadius: '$4',
-  backgroundColor: '$black',
-  borderWidth: 1,
-  borderColor: 'rgba(255, 255, 255, 0.15)',
+  borderRadius: 100,
+  backgroundColor: '$background',
+  borderWidth: 1.5,
+  borderColor: '$borderColor',
   cursor: 'pointer',
-  minWidth: 180,
+  paddingHorizontal: '$8',
+  paddingVertical: '$3',
+  minHeight: 60,
+  minWidth: 170,
 
   hoverStyle: {
-    y: -2,
-    backgroundColor: '#111',
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    shadowColor: 'rgba(0, 0, 0, 0.4)',
-    shadowOffset: { width: 0, height: 8 },
-    shadowRadius: 20,
+    backgroundColor: '$backgroundHover',
+    borderColor: '$borderColorHover',
+    scale: 1.02,
   },
 
   pressStyle: {
-    y: 0,
-    backgroundColor: '#000',
+    scale: 0.98,
+    backgroundColor: '$backgroundPress',
+    borderColor: '$borderColorPress',
   },
 
   variants: {
@@ -61,19 +61,19 @@ export const TextWrapper = styled(YStack, {
 export const SmallText = styled(Text, {
   name: 'DownloadSmallText',
   fontSize: 10,
-  fontWeight: '500',
+  fontWeight: '600',
   textTransform: 'uppercase',
-  letterSpacing: 0.5,
-  opacity: 0.8,
-  color: '$white',
-  lineHeight: 12, // Numeric value for Tamagui
+  letterSpacing: 1,
+  opacity: 0.9,
+  color: '$color',
+  lineHeight: 12,
 });
 
 export const LargeText = styled(Text, {
   name: 'DownloadLargeText',
-  fontSize: 18,
-  fontWeight: '600',
+  fontSize: 20,
+  fontWeight: '700',
   whiteSpace: 'nowrap',
-  color: '$white',
-  lineHeight: 20, // Numeric value for Tamagui
+  color: '$color',
+  lineHeight: 22,
 });

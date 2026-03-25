@@ -42,4 +42,5 @@ export * from './components/Game/GameContainer';
 export * from './components/Game/GameLayout';
 export * from './components/Game/TurnIndicator';
 
+export * from './components/DownloadButtons';
 export { XStack, YStack, ZStack, ScrollView, ThemeableStack } from 'tamagui';

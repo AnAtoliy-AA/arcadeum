@@ -211,6 +211,7 @@ export function WebPresentation() {
           <Button
             variant="glass"
             size="md"
+            isActive={false}
             onClick={prevSlide}
             aria-label="Previous slide"
             style={{ borderRadius: '50%' }}
@@ -226,6 +227,7 @@ export function WebPresentation() {
           <Button
             variant="glass"
             size="md"
+            isActive={false}
             onClick={nextSlide}
             aria-label="Next slide"
             style={{ borderRadius: '50%' }}
@@ -248,6 +250,7 @@ export function WebPresentation() {
             <Button
               variant="glass"
               size="sm"
+              isActive={false}
               onClick={toggleFullscreen}
               aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
             >

@@ -4,5 +4,6 @@
 export * from '@arcadeum/ui';
 
 // Any web-specific logic that couldn't be migrated or needs to stay here
-export * from './DownloadButtons/DownloadButtons';
+export { DownloadButtons } from './DownloadButtons/DownloadButtons';
+export type { DownloadButtonsProps } from './DownloadButtons/DownloadButtons';
 export * from './OptionCard/OptionCard';

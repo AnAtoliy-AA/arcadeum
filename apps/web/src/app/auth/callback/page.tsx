@@ -1,3 +1,5 @@
+'use client';
+
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 
@@ -7,6 +9,7 @@ const AuthPageWrapper = dynamic(
       (mod) => mod.AuthPageWrapper,
     ),
   {
+    ssr: false,
     loading: () => null,
   },
 );

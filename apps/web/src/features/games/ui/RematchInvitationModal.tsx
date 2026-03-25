@@ -1,8 +1,7 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import { createPortal } from 'react-dom';
-import { YStack, Text, Paragraph, styled } from 'tamagui';
+import { YStack, Text, Paragraph, styled, Dialog } from 'tamagui';
 import { ModalButton } from '@arcadeum/ui';
 import {
   Modal,
@@ -50,50 +49,52 @@ export function RematchInvitationModal({
 
   if (!isOpen || !isClient) return null;
 
-  return createPortal(
+  return (
     <Modal open={isOpen} onOpenChange={(val) => !val && onDecline()}>
-      <ModalContent>
-        <YStack alignItems="center" marginBottom="$4">
-          <Text fontSize={60}>🔄</Text>
-        </YStack>
+      <Dialog.Portal>
+        <Dialog.Overlay key="overlay" backgroundColor="black" />
+        <ModalContent>
+          <YStack alignItems="center" marginBottom="$4">
+            <Text fontSize={60}>🔄</Text>
+          </YStack>
 
-        <TitleText>
-          {t('games.table.rematch.invitation.title' as TranslationKey)}
-        </TitleText>
+          <TitleText>
+            {t('games.table.rematch.invitation.title' as TranslationKey)}
+          </TitleText>
 
-        <MessageText>
-          {t('games.table.rematch.invitation.message' as TranslationKey, {
-            name: senderName,
-          })}
-        </MessageText>
+          <MessageText>
+            {t('games.table.rematch.invitation.message' as TranslationKey, {
+              name: senderName,
+            })}
+          </MessageText>
 
-        <ModalActions>
+          <ModalActions>
+            <ModalButton
+              variant="secondary"
+              onClick={onDecline}
+              data-testid="decline-rematch-button"
+            >
+              {t('games.table.rematch.invitation.decline' as TranslationKey)}
+            </ModalButton>
+            <ModalButton
+              variant="primary"
+              onClick={onAccept}
+              data-testid="accept-rematch-button"
+            >
+              {t('games.table.rematch.invitation.accept' as TranslationKey)}
+            </ModalButton>
+          </ModalActions>
+
           <ModalButton
-            variant="secondary"
+            variant="ghost"
             onClick={onDecline}
-            data-testid="decline-rematch-button"
+            marginTop="$4"
+            padding="$2"
           >
-            {t('games.table.rematch.invitation.decline' as TranslationKey)}
+            {t('games.table.modals.common.close' as TranslationKey)}
           </ModalButton>
-          <ModalButton
-            variant="primary"
-            onClick={onAccept}
-            data-testid="accept-rematch-button"
-          >
-            {t('games.table.rematch.invitation.accept' as TranslationKey)}
-          </ModalButton>
-        </ModalActions>
-
-        <ModalButton
-          variant="ghost"
-          onClick={onDecline}
-          marginTop="$4"
-          padding="$2"
-        >
-          {t('games.table.modals.common.close' as TranslationKey)}
-        </ModalButton>
-      </ModalContent>
-    </Modal>,
-    document.body,
+        </ModalContent>
+      </Dialog.Portal>
+    </Modal>
   );
 }

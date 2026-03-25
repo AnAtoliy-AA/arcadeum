@@ -10,6 +10,7 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { PaymentsModule } from './payments/payments.module';
 import { ReferralModule } from './referrals/referral.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { MessageCodeInterceptor } from './common/interceptors/message-code.interceptor';
 
 @Module({
@@ -27,6 +28,10 @@ import { MessageCodeInterceptor } from './common/interceptors/message-code.inter
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,

@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useMemo, useCallback, useSyncExternalStore } from 'react';
-import { createPortal } from 'react-dom';
-import { YStack, XStack, Text, TextArea, styled } from 'tamagui';
+import { YStack, XStack, Text, TextArea, styled, Dialog } from 'tamagui';
 import { ModalButton } from '@arcadeum/ui';
 import {
   Modal,
@@ -176,66 +175,69 @@ export function RematchModal({
 
   if (!isOpen || !isClient) return null;
 
-  return createPortal(
+  return (
     <Modal open={isOpen} onOpenChange={(val) => !val && onClose()}>
-      <ModalContent $variant={cardVariant}>
-        <ModalTitle>
-          {t('games.table.rematch.title' as TranslationKey)}
-        </ModalTitle>
-        <ModalDescription>
-          {t('games.table.rematch.description' as TranslationKey)}
-        </ModalDescription>
+      <Dialog.Portal>
+        <Dialog.Overlay key="overlay" backgroundColor="black" />
+        <ModalContent $variant={cardVariant}>
+          <ModalTitle>
+            {t('games.table.rematch.title' as TranslationKey)}
+          </ModalTitle>
+          <ModalDescription>
+            {t('games.table.rematch.description' as TranslationKey)}
+          </ModalDescription>
 
-        <PlayerList>
-          {otherPlayers.map((player) => (
-            <PlayerItem
-              key={player.playerId}
-              selected={selectedPlayers.has(player.playerId)}
-              onClick={() => togglePlayer(player.playerId)}
-            >
-              <CheckboxCircle selected={selectedPlayers.has(player.playerId)}>
-                {selectedPlayers.has(player.playerId) && (
-                  <Text color="white" fontSize={12}>
-                    ✓
-                  </Text>
-                )}
-              </CheckboxCircle>
-              <PlayerName>
-                {player.displayName}
-                {!player.alive && <EliminatedBadge>💀</EliminatedBadge>}
-              </PlayerName>
-            </PlayerItem>
-          ))}
-          {otherPlayers.length === 0 && (
-            <EmptyMessage>{t('games.table.rematch.noPlayers')}</EmptyMessage>
-          )}
-        </PlayerList>
+          <PlayerList>
+            {otherPlayers.map((player) => (
+              <PlayerItem
+                key={player.playerId}
+                selected={selectedPlayers.has(player.playerId)}
+                onClick={() => togglePlayer(player.playerId)}
+              >
+                <CheckboxCircle selected={selectedPlayers.has(player.playerId)}>
+                  {selectedPlayers.has(player.playerId) && (
+                    <Text color="white" fontSize={12}>
+                      ✓
+                    </Text>
+                  )}
+                </CheckboxCircle>
+                <PlayerName>
+                  {player.displayName}
+                  {!player.alive && <EliminatedBadge>💀</EliminatedBadge>}
+                </PlayerName>
+              </PlayerItem>
+            ))}
+            {otherPlayers.length === 0 && (
+              <EmptyMessage>{t('games.table.rematch.noPlayers')}</EmptyMessage>
+            )}
+          </PlayerList>
 
-        <MessageInput
-          placeholder={
-            t('games.table.rematch.messagePlaceholder') || 'Enter a message...'
-          }
-          value={message}
-          onChangeText={setMessage}
-          disabled={rematchLoading}
-        />
-
-        <ModalActions>
-          <ModalButton
-            variant="secondary"
-            onClick={onClose}
+          <MessageInput
+            placeholder={
+              t('games.table.rematch.messagePlaceholder') ||
+              'Enter a message...'
+            }
+            value={message}
+            onChangeText={setMessage}
             disabled={rematchLoading}
-          >
-            {t('games.table.modals.common.cancel')}
-          </ModalButton>
-          <ModalButton onClick={handleConfirm} disabled={rematchLoading}>
-            {rematchLoading
-              ? t('games.table.rematch.loading')
-              : t('games.table.rematch.button')}
-          </ModalButton>
-        </ModalActions>
-      </ModalContent>
-    </Modal>,
-    document.body,
+          />
+
+          <ModalActions>
+            <ModalButton
+              variant="secondary"
+              onClick={onClose}
+              disabled={rematchLoading}
+            >
+              {t('games.table.modals.common.cancel')}
+            </ModalButton>
+            <ModalButton onClick={handleConfirm} disabled={rematchLoading}>
+              {rematchLoading
+                ? t('games.table.rematch.loading')
+                : t('games.table.rematch.button')}
+            </ModalButton>
+          </ModalActions>
+        </ModalContent>
+      </Dialog.Portal>
+    </Modal>
   );
 }

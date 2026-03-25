@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { createPortal } from 'react-dom';
 import { styled, YStack, XStack, H1, Paragraph, Text } from 'tamagui';
 import { Button, CloseIcon, LinkButton, ModalButton } from '@arcadeum/ui';
 import { useSyncExternalStore } from 'react';
@@ -192,7 +191,7 @@ export function GameResultModal({
 
   const isVictory = result === 'victory';
 
-  return createPortal(
+  return (
     <Modal open={isOpen} onOpenChange={(val) => !val && onClose?.()}>
       <Dialog.Portal>
         <Dialog.Overlay key="overlay" backgroundColor="black" />
@@ -265,7 +264,6 @@ export function GameResultModal({
       </Dialog.Portal>
 
       {isVictory && <ConfettiContainer />}
-    </Modal>,
-    document.body,
+    </Modal>
   );
 }

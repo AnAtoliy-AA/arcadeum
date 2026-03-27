@@ -1,13 +1,7 @@
 'use client';
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useSyncExternalStore,
-} from 'react';
+import { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
-import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { routes } from '@/shared/config/routes';
 import { InstallPWAButton } from '@/features/pwa';
@@ -31,25 +25,16 @@ import {
   NavHeaderLink,
   NavLinkIndicator,
 } from './styles';
-
-const emptySubscribe = () => () => {};
-const getClientSnapshot = () => true;
-const getServerSnapshot = () => false;
+import { useIsMounted } from './useIsMounted';
+import { useHeaderAuth } from './useHeaderAuth';
+import { useMobileMenu } from './useMobileMenu';
 
 export function HeaderInteractive() {
-  const isMounted = useSyncExternalStore(
-    emptySubscribe,
-    getClientSnapshot,
-    getServerSnapshot,
-  );
+  const isMounted = useIsMounted();
   const pathname = usePathname();
-  const { snapshot } = useSessionTokens();
+  const { isAuthenticated, displayName } = useHeaderAuth();
   const { t } = useTranslation();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
-
-  const isAuthenticated = !!snapshot.accessToken;
-  const displayName =
-    snapshot.displayName || snapshot.username || snapshot.email;
+  const { isOpen: isMobileMenuOpen, toggle: toggleMobileMenu } = useMobileMenu();
 
   const navItems = useMemo(
     () => [
@@ -61,32 +46,6 @@ export function HeaderInteractive() {
     ],
     [t],
   );
-
-  const closeMobileMenu = useCallback(() => {
-    setIsMobileMenuOpen(false);
-  }, []);
-
-  const toggleMobileMenu = useCallback(() => {
-    setIsMobileMenuOpen((prev) => !prev);
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (
-        isMobileMenuOpen &&
-        !target.closest('[data-mobile-menu]') &&
-        !target.closest('[data-mobile-menu-button]')
-      ) {
-        closeMobileMenu();
-      }
-    };
-
-    if (isMobileMenuOpen) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
-    }
-  }, [isMobileMenuOpen, closeMobileMenu]);
 
   if (!isMounted) {
     return null;
@@ -170,11 +129,7 @@ export function HeaderInteractive() {
         </MobileMenuContainer>
       </Actions>
 
-      <MobileMenu
-        isOpen={isMobileMenuOpen}
-        onClose={closeMobileMenu}
-        navItems={navItems}
-      />
+      <MobileMenu isOpen={isMobileMenuOpen} navItems={navItems} />
     </>
   );
 }

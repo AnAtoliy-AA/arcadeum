@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useSyncExternalStore } from 'react';
+import { useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { usePathname } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
@@ -19,34 +19,28 @@ import {
 import {
   Button,
   YStack,
+  XStack,
   LogoutIcon,
   SupportIcon,
   RoleBadge,
   LinkButton,
   Divider,
 } from '@arcadeum/ui';
+import { useIsMounted } from './useIsMounted';
+import { useHeaderAuth } from './useHeaderAuth';
 
 interface MobileMenuProps {
   isOpen: boolean;
-  onClose: () => void;
   navItems: Array<{ href: string; label: string }>;
 }
 
-const noop = () => () => {};
-
-export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
+export function MobileMenu({ isOpen, navItems }: MobileMenuProps) {
   const pathname = usePathname();
+  // clearTokens and snapshot.role are MobileMenu-specific — not in useHeaderAuth
   const { snapshot, clearTokens } = useSessionTokens();
   const { t } = useTranslation();
-  const mounted = useSyncExternalStore(
-    noop,
-    () => true,
-    () => false,
-  );
-
-  const isAuthenticated = !!snapshot.accessToken;
-  const displayName =
-    snapshot.displayName || snapshot.username || snapshot.email;
+  const mounted = useIsMounted();
+  const { isAuthenticated, displayName } = useHeaderAuth();
   const role = snapshot.role || 'free';
   const { data: cosmeticBadges } = useCosmeticBadges();
 
@@ -59,20 +53,30 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
 
   const content = (
     <MobileNav data-mobile-menu data-testid="mobile-nav">
-      {navItems.map((item) => (
-        <NavMobileLink
-          key={item.href}
-          href={item.href}
-          variant="ghost"
-          size="sm"
-          isActive={pathname === item.href}
-          onClick={onClose}
-          fullWidth
-          data-testid={`mobile-nav-${item.href.replace('/', '') || 'home'}`}
-        >
-          {item.label}
-        </NavMobileLink>
-      ))}
+      {navItems.map((item) => {
+        const isActive = pathname === item.href;
+        return (
+          <XStack
+            key={item.href}
+            width="100%"
+            borderRadius="$4"
+            backgroundColor={
+              isActive ? 'rgba(87, 195, 255, 0.1)' : 'transparent'
+            }
+          >
+            <NavMobileLink
+              href={item.href}
+              data-testid={`mobile-nav-${item.href.replace('/', '') || 'home'}`}
+              variant="ghost"
+              size="sm"
+              isActive={isActive}
+              fullWidth
+            >
+              {item.label}
+            </NavMobileLink>
+          </XStack>
+        );
+      })}
 
       {isAuthenticated && displayName && (
         <>
@@ -103,7 +107,6 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
             href="/auth"
             variant="ghost"
             size="sm"
-            onPress={onClose}
             data-testid="mobile-login-button"
           >
             {t('common.actions.login')}
@@ -121,7 +124,6 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
         size="sm"
         gap="$2"
         isActive={pathname === routes.support}
-        onClick={onClose}
         fullWidth
       >
         <SupportIcon size={18} />

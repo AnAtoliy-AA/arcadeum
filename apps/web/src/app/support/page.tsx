@@ -1,18 +1,20 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 import { appConfig } from '@/shared/config/app-config';
 import type {
   SupportAction,
   SupportTeamMember,
 } from '@/entities/support/model/types';
 
+import { PageLoading } from '@/shared/ui';
+
 const SupportPage = dynamic(
   () => import('./SupportPage').then((mod) => mod.SupportPage),
   {
+    loading: () => <PageLoading layout="grid" />,
     ssr: false,
-    loading: () => null,
   },
 );
 
@@ -89,7 +91,7 @@ function buildActions(): SupportAction[] {
 }
 
 export default function SupportRoute() {
-  const actions = buildActions();
+  const actions = useMemo(() => buildActions(), []);
 
   return (
     <Suspense fallback={null}>

@@ -40,6 +40,18 @@ export type ActionMessages = {
   successMessage?: string;
 };
 
+export type PageFeature = {
+  title: string;
+  description: string;
+};
+
+export type CookiePolicySection = {
+  title: string;
+  content?: string;
+  intro?: string;
+  items?: string[];
+};
+
 // Import the actual types for TranslationBundle
 import type { HomeMessages } from './messages/home';
 import type { SettingsMessages } from './messages/settings';
@@ -54,6 +66,7 @@ import type { GamesMessagesBundle } from './messages/games';
 
 export type TranslationBundle = {
   common?: CommonMessages;
+  pages?: import('./messages/pages').PagesMessages;
   home?: HomeMessages;
   settings?: SettingsMessages;
   support?: SupportMessages;
@@ -64,6 +77,9 @@ export type TranslationBundle = {
   games?: GamesMessagesBundle;
   history?: HistoryMessages;
   payments?: PaymentsMessages;
+  stats?: import('./messages/stats').StatsMessages;
+  pwa?: import('./messages/pwa').PwaMessages;
+  referrals?: import('./messages/referrals').ReferralsMessages;
   legal?: {
     nav?: {
       terms?: string;

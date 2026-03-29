@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { XStack, GlobeIcon } from '@arcadeum/ui';
 import { useLanguage } from '@/app/i18n/LanguageProvider';
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES, Locale } from '@/shared/i18n';
@@ -23,6 +24,7 @@ export function LanguageSwitcher({
   className,
   'data-testid': testId,
 }: LanguageSwitcherProps) {
+  const router = useRouter();
   const {
     locale: storeLocale,
     setLocale,
@@ -31,6 +33,16 @@ export function LanguageSwitcher({
   } = useLanguage();
 
   const locale = isReady ? storeLocale : initialLocale || DEFAULT_LOCALE;
+
+  const handleLocaleChange = useCallback(
+    (val: string) => {
+      const next = val as Locale;
+      document.cookie = `app-language=${next}; path=/; max-age=31536000; SameSite=Lax`;
+      setLocale(next);
+      router.refresh();
+    },
+    [setLocale, router],
+  );
 
   const options = useMemo(
     () =>
@@ -54,7 +66,7 @@ export function LanguageSwitcher({
       </XStack>
       <Select
         value={locale}
-        onValueChange={(val) => setLocale(val as Locale)}
+        onValueChange={handleLocaleChange}
         options={options}
         aria-label="Select language"
         data-testid={testId}

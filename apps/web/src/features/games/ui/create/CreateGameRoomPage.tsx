@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  useState,
-  useCallback,
-  useMemo,
-  useEffect,
-  useRef,
-  useSyncExternalStore,
-} from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -52,13 +45,13 @@ import { routes } from '@/shared/config/routes';
 import {
   FormContainer,
   GameSelector,
-  getGameTileStyle,
-  gameTileCSS,
-  GAME_TILE_CLASS,
+  GameTileItem,
+  GameTileContainer,
   GameTileName,
   GameTileSummary,
   Row,
 } from '@/features/games/ui/create/styles';
+import { YStack, XStack } from 'tamagui';
 
 // Filter out hidden games for display
 const visibleGames = gamesCatalog.filter((game) => !game.isHidden);
@@ -75,17 +68,7 @@ const GAME_CONFIGS: Record<
   >,
 };
 
-const emptySubscribe = () => () => {};
-const getClientSnapshot = () => true;
-const getServerSnapshot = () => false;
-
 export function CreateGameRoomPage() {
-  const isMounted = useSyncExternalStore(
-    emptySubscribe,
-    getClientSnapshot,
-    getServerSnapshot,
-  );
-
   const router = useRouter();
   const searchParams = useSearchParams();
   const { snapshot } = useSessionTokens();
@@ -199,13 +182,8 @@ export function CreateGameRoomPage() {
 
   const GameConfigComponent = GAME_CONFIGS[gameId];
 
-  if (!isMounted) {
-    return null;
-  }
-
   return (
     <PageLayout>
-      <style>{gameTileCSS}</style>
       <Container size="md">
         <PageTitle size="lg">
           {t('games.create.title') || 'Create Game Room'}
@@ -216,27 +194,26 @@ export function CreateGameRoomPage() {
             <Section title={t('games.create.sectionGame') || 'Select Game'}>
               <GameSelector>
                 {visibleGames.map((game) => (
-                  <button
+                  <GameTileContainer
                     key={game.id}
-                    type="button"
-                    data-testid={`game-tile-${game.id}`}
-                    className={`${GAME_TILE_CLASS}${gameId === game.id ? ' active' : ''}`}
-                    style={getGameTileStyle(
-                      gameId === game.id,
-                      !game.isPlayable,
-                    )}
                     disabled={!game.isPlayable}
                     onClick={() => game.isPlayable && handleGameChange(game.id)}
+                    data-testid={`game-tile-${game.id}`}
                   >
-                    <GameTileName>
-                      {t(`games.${game.id}.name` as TranslationKey) ||
-                        game.name}
-                    </GameTileName>
-                    <GameTileSummary>
-                      {t(`games.${game.id}.description` as TranslationKey) ||
-                        game.summary}
-                    </GameTileSummary>
-                  </button>
+                    <GameTileItem
+                      active={gameId === game.id}
+                      disabled={!game.isPlayable}
+                    >
+                      <GameTileName>
+                        {t(`games.${game.id}.name` as TranslationKey) ||
+                          game.name}
+                      </GameTileName>
+                      <GameTileSummary>
+                        {t(`games.${game.id}.description` as TranslationKey) ||
+                          game.summary}
+                      </GameTileSummary>
+                    </GameTileItem>
+                  </GameTileContainer>
                 ))}
               </GameSelector>
             </Section>
@@ -279,34 +256,22 @@ export function CreateGameRoomPage() {
                   }
                   htmlFor="max-players"
                 >
-                  <div
-                    style={{
-                      display: 'flex',
-                      gap: '0.5rem',
-                      alignItems: 'flex-start',
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexShrink: 0,
-                        width: '80px',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      {maxPlayers ? (
+                  <XStack gap="$2" alignItems="flex-start">
+                    {maxPlayers ? (
+                      <YStack flexShrink={0} width={80} justifyContent="center">
                         <Button
                           type="button"
                           variant="secondary"
                           onPress={() => setMaxPlayers('')}
                           size="md"
                           aria-label="Set to Auto"
-                          style={{ height: '42px', width: '100%' }}
+                          height={42}
+                          width="100%"
                         >
                           {t('games.create.autoButton') || 'Auto'}
                         </Button>
-                      ) : null}
-                    </div>
+                      </YStack>
+                    ) : null}
                     <Input
                       key="max-players-input"
                       id="max-players"
@@ -323,10 +288,10 @@ export function CreateGameRoomPage() {
                         t('games.create.maxPlayersAria') ||
                         'Maximum number of players'
                       }
-                      style={{ flex: 1 }}
+                      flex={1}
                       fullWidth
                     />
-                  </div>
+                  </XStack>
                 </FormGroup>
 
                 <FormGroup

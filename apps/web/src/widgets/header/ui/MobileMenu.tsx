@@ -56,14 +56,7 @@ export function MobileMenu({ isOpen, navItems }: MobileMenuProps) {
       {navItems.map((item) => {
         const isActive = pathname === item.href;
         return (
-          <XStack
-            key={item.href}
-            width="100%"
-            borderRadius="$4"
-            backgroundColor={
-              isActive ? 'rgba(87, 195, 255, 0.1)' : 'transparent'
-            }
-          >
+          <XStack key={item.href} width="100%" borderRadius="$4">
             <NavMobileLink
               href={item.href}
               data-testid={`mobile-nav-${item.href.replace('/', '') || 'home'}`}

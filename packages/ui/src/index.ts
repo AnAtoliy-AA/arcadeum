@@ -8,6 +8,7 @@ export * from './components/Card/Card';
 export * from './components/Container/Container';
 export * from './components/Divider/Divider';
 export * from './components/LoadingState/LoadingState';
+export * from './components/LoadingState/PageLoading';
 export * from './components/Spinner/Spinner';
 
 export * from './components/Input/Input';

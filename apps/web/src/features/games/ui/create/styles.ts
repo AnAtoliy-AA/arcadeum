@@ -1,6 +1,4 @@
-import React from 'react';
-import { styled, XStack, YStack, Text } from 'tamagui';
-import { Card } from '@/shared/ui';
+import { styled, XStack, YStack, Text, Button } from 'tamagui';
 
 // ─── Class name constants ─────────────────────────────────────────────────────
 export const GAME_TILE_CLASS = 'games-create-tile';
@@ -8,40 +6,62 @@ export const SELECTION_INDICATOR_CLASS = 'games-create-selection-indicator';
 export const GAME_TILE_ICON_CLASS = 'games-create-tile-icon';
 
 // ─── CSS string for complex nested selectors ──────────────────────────────────
-export const gameTileCSS = `
-  .${SELECTION_INDICATOR_CLASS}::after {
-    content: '✓';
-    font-weight: bold;
-  }
-  .${GAME_TILE_CLASS}.active .${SELECTION_INDICATOR_CLASS} {
-    opacity: 1 !important;
-    transform: scale(1) !important;
-  }
-  .${GAME_TILE_CLASS}:hover .${GAME_TILE_ICON_CLASS} {
-    transform: scale(1.1);
-  }
-  .${GAME_TILE_CLASS}:hover:not([data-disabled='true']) { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
-`;
+export const GameTileItem = styled(YStack, {
+  name: 'GameTileItem',
+  padding: '$4',
+  borderRadius: 12,
+  backgroundColor: 'rgba(255,255,255,0.03)',
+  borderWidth: 2,
+  borderColor: '#32353d',
+  cursor: 'pointer',
+  position: 'relative',
+  overflow: 'hidden',
+  display: 'block',
+  width: '100%',
+  // animation: 'quick',
 
-// ─── Helper for dynamic GameTile styles ───────────────────────────────────────
-export function getGameTileStyle(
-  active?: boolean,
-  disabled?: boolean,
-): React.CSSProperties {
-  return {
-    padding: '1rem',
-    borderRadius: '12px',
-    background: active ? 'rgba(122,215,255,0.05)' : 'rgba(255,255,255,0.03)',
-    border: `2px solid ${active ? '#7ad7ff' : '#32353d'}`,
-    cursor: disabled ? 'not-allowed' : 'pointer',
-    opacity: disabled ? 0.6 : 1,
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    position: 'relative' as const,
-    overflow: 'hidden' as const,
-    display: 'block',
-    width: '100%',
-  };
-}
+  pressStyle: {
+    backgroundColor: 'rgba(122,215,255,0.05)',
+    borderColor: '#7ad7ff',
+  },
+
+  variants: {
+    active: {
+      true: {
+        backgroundColor: 'rgba(122,215,255,0.05)',
+        borderColor: '#7ad7ff',
+      },
+    },
+    disabled: {
+      true: {
+        cursor: 'not-allowed',
+        opacity: 0.6,
+      },
+    },
+  } as const,
+});
+
+export const GameTileContainer = styled(Button, {
+  name: 'GameTileContainer',
+  backgroundColor: 'transparent',
+  borderWidth: 0,
+  padding: 0,
+  height: 'auto',
+  display: 'block',
+  width: '100%',
+
+  hoverStyle: {
+    y: -4,
+    backgroundColor: 'transparent',
+    shadowColor: 'rgba(0,0,0,0.3)',
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 24,
+  },
+
+  pressStyle: {
+    backgroundColor: 'transparent',
+  },
+});
 
 // ─── Simple layout components ─────────────────────────────────────────────────
 
@@ -61,37 +81,37 @@ export const GameSelector = styled(YStack, {
 export const SelectionIndicator = styled(XStack, {
   name: 'SelectionIndicator',
   position: 'absolute',
-  top: '0.75rem',
-  right: '0.75rem',
-  width: '1.25rem',
-  height: '1.25rem',
+  top: '$3',
+  right: '$3',
+  width: 20,
+  height: 20,
   borderRadius: 999,
   backgroundColor: '$primaryGradientStart',
   alignItems: 'center',
   justifyContent: 'center',
-  fontSize: '0.75rem',
   opacity: 0,
-  transform: 'scale(0.5)',
-  animation: 'quick',
-} as unknown as Record<string, unknown>);
+  scale: 0.5,
 
-export const GameTile = styled(Card, {
-  name: 'GameTile',
-  padding: 'sm',
-  borderRadius: '$3',
-  position: 'relative',
-  overflow: 'hidden',
-  cursor: 'pointer',
-  interactive: true,
+  variants: {
+    active: {
+      true: {
+        opacity: 1,
+        scale: 1,
+      },
+    },
+  } as const,
 });
 
 export const GameTileIcon = styled(Text, {
   name: 'GameTileIcon',
-  fontSize: '2.5rem',
-  marginBottom: '0.75rem',
-  display: 'inline-block' as 'flex',
-  transition: 'transform 0.3s ease',
-} as unknown as Record<string, unknown>);
+  fontSize: '$8',
+  marginBottom: '$3',
+  display: 'flex',
+
+  hoverStyle: {
+    scale: 1.1,
+  },
+});
 
 export const GameTileName = styled(Text, {
   name: 'GameTileName',
@@ -179,33 +199,66 @@ export const ExpandablePackContainer = styled(YStack, {
   gap: '0.5rem',
 });
 
-export const ExpandablePackHeader = styled(XStack, {
+export const ExpandablePackHeader = styled(Button, {
   name: 'ExpandablePackHeader',
+  padding: '$3',
   alignItems: 'center',
-  gap: '0.75rem',
-  padding: '0.75rem 1rem',
+  gap: '$3',
   borderRadius: 8,
   backgroundColor: '$background',
   borderWidth: 1,
-  borderColor: '$borderColor',
+  height: 'auto',
+  justifyContent: 'flex-start',
+  width: '100%',
   cursor: 'pointer',
-  transition: 'all 0.2s ease',
-} as unknown as Record<string, unknown>);
+
+  hoverStyle: {
+    backgroundColor: 'rgba(255,255,255,0.02)',
+  },
+
+  pressStyle: {
+    backgroundColor: 'rgba(255,255,255,0.05)',
+  },
+
+  variants: {
+    disabled: {
+      true: {
+        cursor: 'not-allowed',
+        opacity: 0.5,
+      },
+    },
+  } as const,
+});
 
 export const ExpandToggle = styled(Text, {
   name: 'ExpandToggle',
-  tag: 'span',
-  marginLeft: 'auto',
-  fontSize: '0.875rem',
-  transition: 'transform 0.2s ease',
-} as unknown as Record<string, unknown>);
+  fontSize: '$2',
+  color: '$textMuted',
+
+  variants: {
+    expanded: {
+      true: {
+        rotate: '180deg',
+      },
+    },
+  } as const,
+});
 
 export const PackCardList = styled(YStack, {
   name: 'PackCardList',
-  flexDirection: 'column',
-  gap: '0.25rem',
-  paddingLeft: '1.5rem',
-  marginTop: '-0.25rem',
+  paddingLeft: '$8',
+  paddingRight: '$4',
+  paddingBottom: '$4',
+  gap: '$2',
+  display: 'none',
+
+  variants: {
+    visible: {
+      true: {
+        display: 'flex',
+      },
+    },
+  } as const,
 });
 
 export const PackCardRow = styled(XStack, {

@@ -21,10 +21,8 @@ import {
   ExpansionBadge,
   ComingSoonBadge,
   ThemeHeader,
-  getGameTileStyle,
-  gameTileCSS,
-  GAME_TILE_CLASS,
-  GAME_TILE_ICON_CLASS,
+  GameTileItem,
+  GameTileContainer,
 } from '@/features/games/ui/create/styles';
 
 interface CriticalGameOptions {
@@ -62,7 +60,6 @@ export function CriticalCreationConfig({
 
   return (
     <>
-      <style>{gameTileCSS}</style>
       <ExpansionPacksSection
         expansions={options.expansions || []}
         customCards={options.customCards || {}}
@@ -84,44 +81,47 @@ export function CriticalCreationConfig({
         </ThemeHeader>
         <GameSelector>
           {CARD_VARIANTS.map((variant) => (
-            <button
+            <GameTileContainer
               key={variant.id}
-              type="button"
-              className={`${GAME_TILE_CLASS}${options.cardVariant === variant.id ? ' active' : ''}`}
-              style={getGameTileStyle(
-                options.cardVariant === variant.id,
-                variant.disabled,
-              )}
               disabled={variant.disabled}
               onClick={() =>
                 !variant.disabled && handleUpdate({ cardVariant: variant.id })
               }
             >
-              {!variant.disabled && <SelectionIndicator />}
-              {variant.disabled && (
-                <ComingSoonBadge>
-                  {t('games.create.comingSoon') || 'Coming Soon'}
-                </ComingSoonBadge>
-              )}
-              <GameTileIcon
-                className={GAME_TILE_ICON_CLASS}
-                style={
-                  variant.gradient
-                    ? {
-                        background: variant.gradient,
-                        WebkitBackgroundClip: 'text',
-                        backgroundClip: 'text',
-                      }
-                    : undefined
-                }
+              <GameTileItem
+                active={options.cardVariant === variant.id}
+                disabled={variant.disabled}
               >
-                {variant.emoji}
-              </GameTileIcon>
-              <GameTileName>{t(variant.name as TranslationKey)}</GameTileName>
-              <GameTileSummary>
-                {t(variant.description as TranslationKey)}
-              </GameTileSummary>
-            </button>
+                {!variant.disabled && (
+                  <SelectionIndicator
+                    active={options.cardVariant === variant.id}
+                  />
+                )}
+                {variant.disabled && (
+                  <ComingSoonBadge>
+                    {t('games.create.comingSoon') || 'Coming Soon'}
+                  </ComingSoonBadge>
+                )}
+                <GameTileIcon
+                  background={variant.gradient || undefined}
+                  style={
+                    variant.gradient
+                      ? {
+                          WebkitBackgroundClip: 'text',
+                          backgroundClip: 'text',
+                          color: 'transparent',
+                        }
+                      : undefined
+                  }
+                >
+                  {variant.emoji}
+                </GameTileIcon>
+                <GameTileName>{t(variant.name as TranslationKey)}</GameTileName>
+                <GameTileSummary>
+                  {t(variant.description as TranslationKey)}
+                </GameTileSummary>
+              </GameTileItem>
+            </GameTileContainer>
           ))}
         </GameSelector>
       </Section>

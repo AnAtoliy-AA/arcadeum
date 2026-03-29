@@ -164,18 +164,15 @@ export function ExpansionPacksSection({
         {EXPANSION_PACK_DETAILS.map((pack) => (
           <ExpandablePackContainer key={pack.id}>
             <ExpandablePackHeader
-              data-disabled={!pack.available}
-              style={{
-                cursor: !pack.available ? 'not-allowed' : 'pointer',
-                opacity: !pack.available ? 0.5 : 1,
-              }}
-              onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+              disabled={!pack.available}
+              onPress={(e: React.BaseSyntheticEvent) => {
                 // Don't toggle expand if clicking on checkbox
-                if ((e.target as HTMLElement).tagName === 'INPUT') return;
+                if (e.target.tagName === 'INPUT') return;
                 if (pack.available && pack.cards.length > 0) {
                   togglePackExpanded(pack.id);
                 }
               }}
+              aria-label={pack.name}
             >
               <input
                 type="checkbox"
@@ -191,23 +188,13 @@ export function ExpansionPacksSection({
                   : t('games.create.comingSoon') || 'Soon'}
               </ExpansionBadge>
               {pack.available && pack.cards.length > 0 && (
-                <ExpandToggle
-                  style={{
-                    transform: expandedPacks.includes(pack.id)
-                      ? 'rotate(180deg)'
-                      : 'rotate(0deg)',
-                  }}
-                >
+                <ExpandToggle expanded={expandedPacks.includes(pack.id)}>
                   ▼
                 </ExpandToggle>
               )}
             </ExpandablePackHeader>
 
-            <PackCardList
-              style={{
-                display: expandedPacks.includes(pack.id) ? 'flex' : 'none',
-              }}
-            >
+            <PackCardList visible={expandedPacks.includes(pack.id)}>
               {pack.cards.map((card) => (
                 <PackCardRow key={card.id}>
                   <input

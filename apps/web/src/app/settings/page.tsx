@@ -1,16 +1,14 @@
-
-
-import { appConfig } from "@/shared/config/app-config";
-import { SettingsPage as SettingsPageView } from "@/app/settings/SettingsPage";
+import { appConfig } from '@/shared/config/app-config';
+import { SettingsClient } from './SettingsClient';
 
 export const metadata = {
-  title: "Settings",
+  title: 'Settings',
   description: `Manage your appearance, language, and download preferences for the ${appConfig.appName} web experience.`,
 };
 
 export default function SettingsRoute() {
   return (
-    <SettingsPageView
+    <SettingsClient
       appName={appConfig.appName}
       downloads={appConfig.downloads}
       supportCta={appConfig.supportCta}

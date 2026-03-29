@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, ComponentProps, ReactNode } from 'react';
-import { styled, XStack, YStack, Text } from 'tamagui';
+import { styled, XStack, Text } from 'tamagui';
 import {
   PageLayout,
   Container as SharedContainer,
@@ -138,13 +138,13 @@ const Container = styled(SharedContainer, {
   maxWidth: 1200,
   flexDirection: 'column',
   gap: '$5',
-} as any);
+} as unknown as Record<string, unknown>);
 
 const TabGroup = styled(XStack, {
   name: 'StatsTabGroup',
   gap: '$3',
   flexWrap: 'wrap',
-} as any);
+} as unknown as Record<string, unknown>);
 
 interface TabButtonProps extends ComponentProps<typeof Button> {
   $active?: boolean;
@@ -172,11 +172,11 @@ const FilterContainer = styled(XStack, {
   borderWidth: 1,
   borderColor: '$borderColor',
   borderRadius: 16,
-} as any);
+} as unknown as Record<string, unknown>);
 
 const FilterLabel = styled(Text, {
   name: 'StatsFilterLabel',
   tag: 'label',
   fontWeight: '500',
   color: 'rgba(236,239,238,0.7)',
-} as any);
+} as unknown as Record<string, unknown>);

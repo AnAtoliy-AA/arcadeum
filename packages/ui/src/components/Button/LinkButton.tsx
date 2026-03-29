@@ -42,6 +42,7 @@ export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
       className,
       'aria-label': ariaLabel,
       'data-testid': testId,
+      ...props
     },
     ref
   ) => {
@@ -75,11 +76,12 @@ export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
           isActive={isActive}
           className={className}
           id={id}
-          data-testid={testId}
           aria-label={ariaLabel}
           onPress={onPress}
           onClick={onClick}
+          {...props}
           ref={ref}
+          data-testid={testId}
         >
           {renderedChildren}
         </StyledLinkButton>

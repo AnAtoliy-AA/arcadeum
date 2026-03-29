@@ -1,4 +1,4 @@
-import { StatsPage } from './StatsPage';
+import { StatsClient } from './StatsClient';
 
 export const metadata = {
   title: 'Player Statistics - AicoApp',
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function Statistics() {
-  return <StatsPage />;
+  return <StatsClient />;
 }

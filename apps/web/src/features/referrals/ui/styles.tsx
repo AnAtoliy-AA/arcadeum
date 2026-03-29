@@ -21,7 +21,7 @@ export const DashboardContainer = styled(YStack, {
     paddingVertical: '$9',
     paddingHorizontal: '$8',
   },
-} as any);
+});
 
 export const DashboardTitle = styled(Text, {
   tag: 'h1',
@@ -29,7 +29,7 @@ export const DashboardTitle = styled(Text, {
   fontWeight: '700',
   color: '$color',
   margin: 0,
-} as any);
+} as unknown as Record<string, unknown>);
 
 export const DashboardSubtitle = styled(Text, {
   tag: 'p',
@@ -37,8 +37,8 @@ export const DashboardSubtitle = styled(Text, {
   color: 'rgba(236,239,238,0.45)',
   marginTop: '-$2',
   marginBottom: '$3',
-  lineHeight: 1.5 as any,
-} as any);
+  lineHeight: 1.5,
+} as unknown as Record<string, unknown>);
 
 export const CardTitle = styled(Text, {
   name: 'CardTitle',
@@ -50,7 +50,7 @@ export const CardTitle = styled(Text, {
   display: 'flex',
   alignItems: 'center',
   gap: '$2',
-} as any);
+} as unknown as Record<string, unknown>);
 
 export const CodeContainer = styled(XStack, {
   alignItems: 'center',
@@ -61,7 +61,7 @@ export const CodeContainer = styled(XStack, {
   borderWidth: 1,
   borderColor: '$borderColor',
   borderRadius: 10,
-} as any);
+});
 
 export const CodeText = styled(Text, {
   tag: 'span',
@@ -69,13 +69,18 @@ export const CodeText = styled(Text, {
   fontWeight: '700',
   color: '$accent',
   flex: 1,
-  style: { fontFamily: "'SF Mono','Fira Code','Courier New',monospace", letterSpacing: 2 },
-} as any);
+  style: {
+    fontFamily: "'SF Mono','Fira Code','Courier New',monospace",
+    letterSpacing: 2,
+  },
+} as unknown as Record<string, unknown>);
 
 export function CopyButton({
   children,
   ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement> & { children: React.ReactNode }) {
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  children: React.ReactNode;
+}) {
   return (
     <button className="referrals-copy-btn" {...props}>
       {children}
@@ -87,39 +92,39 @@ export const ShareLinkRow = styled(XStack, {
   alignItems: 'center',
   gap: '$2',
   marginTop: '$3',
-} as any);
+});
 
 export const ShareLink = styled(Text, {
   tag: 'span',
   color: '$accent',
   style: { wordBreak: 'break-all' },
-} as any);
+} as unknown as Record<string, unknown>);
 
 export const ProgressSection = styled(YStack, {
   gap: '$2',
-} as any);
+});
 
 export const ProgressLabel = styled(XStack, {
   justifyContent: 'space-between',
   alignItems: 'center',
-} as any);
+});
 
 export const ProgressCount = styled(Text, {
   tag: 'span',
   fontWeight: '700',
   fontSize: '$7',
   color: '$color',
-} as any);
+} as unknown as Record<string, unknown>);
 
 export const ProgressTarget = styled(Text, {
   tag: 'span',
   fontWeight: '500',
   color: 'rgba(236,239,238,0.45)',
-} as any);
+} as unknown as Record<string, unknown>);
 
 export const TierList = styled(YStack, {
   gap: '$4',
-} as any);
+});
 
 interface TierCardProps {
   $unlocked: boolean;
@@ -137,11 +142,13 @@ export function TierCard({ $unlocked, children, ...props }: TierCardProps) {
       borderRadius={12}
       borderWidth={1}
       borderColor={$unlocked ? '$primaryGradientStart' : '$borderColor'}
-      backgroundColor={$unlocked ? 'rgba(122,215,255,0.12)' : '$backgroundHover'}
+      backgroundColor={
+        $unlocked ? 'rgba(122,215,255,0.12)' : '$backgroundHover'
+      }
       opacity={$unlocked ? 1 : 0.6}
       className={$unlocked ? 'referrals-tier-card-unlocked' : undefined}
       style={{ transition: 'all 0.3s' }}
-      {...(props as any)}
+      {...props}
     >
       {children}
     </XStack>
@@ -165,18 +172,18 @@ export function TierIcon({
 export const TierContent = styled(YStack, {
   gap: '$2',
   flex: 1,
-} as any);
+});
 
 export const TierTitle = styled(Text, {
   fontWeight: '600',
   fontSize: '$3',
   color: '$color',
-} as any);
+});
 
 export const TierDescription = styled(Text, {
   fontSize: '$2',
   color: 'rgba(236,239,238,0.45)',
-} as any);
+});
 
 export function TierBadge({
   $unlocked,
@@ -213,9 +220,9 @@ export const CopiedNotice = styled(Text, {
   color: '$accent',
   fontSize: '$2',
   fontWeight: '500',
-} as any);
+} as unknown as Record<string, unknown>);
 
 export const BadgesRowContainer = styled(XStack, {
   gap: '$2',
   flexWrap: 'wrap',
-} as any);
+});

@@ -38,6 +38,19 @@ test.describe('Settings Page', () => {
       .toBe(!initialState);
   });
 
+  test('should toggle sound', async ({ page }) => {
+    const soundRow = page.getByTestId('sound-row');
+    const soundCheckbox = soundRow.locator('input[type="checkbox"]');
+
+    await expect(soundRow).toBeVisible();
+    const initialState = await soundCheckbox.isChecked();
+    await soundRow.click();
+
+    await expect
+      .poll(async () => await soundCheckbox.isChecked(), { timeout: 15000 })
+      .toBe(!initialState);
+  });
+
   test('should switch themes', async ({ page }) => {
     const lightThemeBtn = page.getByTestId('theme-light');
     const darkThemeBtn = page.getByTestId('theme-dark');

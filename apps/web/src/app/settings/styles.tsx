@@ -7,19 +7,19 @@ export const settingsStyles = `
     appearance: none;
     width: 3.5rem;
     height: 2rem;
-    background: #32353d;
+    background: var(--color-backgroundHover, #32353d);
     border-radius: 999px;
     position: relative;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
-    border: 2px solid rgba(50, 53, 61, 0.8);
+    border: 2px solid var(--color-borderColor, rgba(50, 53, 61, 0.8));
     flex-shrink: 0;
   }
 
   .settings-toggle-input:checked {
-    background: var(--color-accent, #7ad7ff);
-    border-color: var(--color-accent, #7ad7ff);
-    box-shadow: 0 0 12px var(--color-accent40, rgba(122, 215, 255, 0.25));
+    background: var(--color-primary, #7ad7ff);
+    border-color: var(--color-primary, #7ad7ff);
+    box-shadow: 0 0 12px var(--color-primary, rgba(122, 215, 255, 0.25));
   }
 
   .settings-toggle-input::after {
@@ -40,7 +40,7 @@ export const settingsStyles = `
   }
 
   .settings-toggle-input:focus-visible {
-    outline: 2px solid var(--color-border-focus, #7ad7ff);
+    outline: 2px solid var(--color-borderColorFocus, #7ad7ff);
     outline-offset: 2px;
   }
 `;
@@ -102,15 +102,14 @@ export const ToggleRow = styled(XStack, {
   alignItems: 'center',
   justifyContent: 'space-between',
   padding: 24,
-  backgroundColor: 'rgba(50, 53, 61, 0.3)',
+  backgroundColor: '$background',
   borderWidth: 1,
-  borderColor: 'rgba(50, 53, 61, 0.8)',
+  borderColor: '$borderColor',
   borderRadius: 12,
-  position: 'relative',
   cursor: 'pointer',
   hoverStyle: {
-    borderColor: '#7ad7ff',
-    backgroundColor: 'rgba(50, 53, 61, 0.5)',
+    borderColor: '$primary',
+    backgroundColor: '$backgroundHover',
   },
   style: {
     backdropFilter: 'blur(8px)',
@@ -123,32 +122,13 @@ export const ToggleLabel = styled(Text, {
   fontSize: '$4',
   fontWeight: '600',
   color: '$color',
+  cursor: 'pointer',
 } as Record<string, unknown>);
 
 export function ToggleInput(
   props: React.InputHTMLAttributes<HTMLInputElement>,
 ) {
-  return (
-    <input
-      type="checkbox"
-      className="settings-toggle-input"
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        opacity: 0,
-        cursor: 'pointer',
-        width: '100%',
-        height: '100%',
-        margin: 0,
-        padding: 0,
-        zIndex: 1,
-      }}
-      {...props}
-    />
-  );
+  return <input type="checkbox" className="settings-toggle-input" {...props} />;
 }
 
 export const BlockedUserRow = styled(XStack, {

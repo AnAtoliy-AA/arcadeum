@@ -210,6 +210,14 @@ export default function SettingsContent({
     [setThemePreference],
   );
 
+  const handleToggleSound = useCallback(() => {
+    setSoundEnabled(!soundEnabled);
+  }, [setSoundEnabled, soundEnabled]);
+
+  const handleToggleHaptics = useCallback(() => {
+    setHapticsEnabled(!hapticsEnabled);
+  }, [setHapticsEnabled, hapticsEnabled]);
+
   const languageGroupLabel = languageTitle;
 
   const languageOptions = useMemo(
@@ -271,21 +279,21 @@ export default function SettingsContent({
           </Section>
 
           <Section title={gameplayTitle} description={gameplayDescription}>
-            <ToggleRow data-testid="sound-row">
+            <ToggleRow data-testid="sound-row" onPress={handleToggleSound}>
               <ToggleLabel>{settingsCopy.soundLabel ?? 'Sound'}</ToggleLabel>
               <ToggleInput
                 type="checkbox"
                 checked={soundEnabled}
-                onChange={() => setSoundEnabled(!soundEnabled)}
+                readOnly
                 aria-label={settingsCopy.soundLabel ?? 'Sound'}
               />
             </ToggleRow>
-            <ToggleRow data-testid="haptics-row">
+            <ToggleRow data-testid="haptics-row" onPress={handleToggleHaptics}>
               <ToggleLabel>{hapticsLabel}</ToggleLabel>
               <ToggleInput
                 type="checkbox"
                 checked={hapticsEnabled}
-                onChange={() => setHapticsEnabled(!hapticsEnabled)}
+                readOnly
                 aria-label={hapticsLabel}
               />
             </ToggleRow>

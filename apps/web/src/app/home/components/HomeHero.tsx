@@ -21,15 +21,10 @@ import {
   HeroCard,
 } from './styles/Hero.styles';
 import { SectionContainer } from './styles/Common.styles';
-import { LinkButton } from '@/shared/ui';
+import { LinkButton, SupportIcon } from '@/shared/ui';
 import React from 'react';
 import { CARD_VARIANTS } from '@/features/games/ui/create/constants';
 import { YStack, XStack, Text, useTheme } from 'tamagui';
-
-type WithHtmlProps<T> = T & { tag?: string; href?: string };
-const TextLink = Text as React.ComponentType<
-  WithHtmlProps<React.ComponentProps<typeof Text>>
->;
 
 type ThemeColor = '$red10' | '$blue10' | '$purple10';
 const THEME_COLORS: ThemeColor[] = ['$red10', '$blue10', '$purple10'];
@@ -127,21 +122,19 @@ export function HomeHero() {
             >
               {playWithBotsLabel}
             </LinkButton>
+            <LinkButton
+              href={supportCta.href}
+              variant="ghost"
+              size="md"
+              gap="$2"
+              style={{
+                animation: 'fadeInUp 0.6s ease-out 0.5s both',
+              }}
+            >
+              <SupportIcon size={18} />
+              {supportLabel}
+            </LinkButton>
           </HeroActions>
-          <TextLink
-            tag="a"
-            href={supportCta.href}
-            fontSize="$3"
-            color="$color"
-            opacity={0.5}
-            style={{
-              textDecoration: 'underline',
-              cursor: 'pointer',
-              animation: 'fadeInUp 0.6s ease-out 0.5s both',
-            }}
-          >
-            {supportLabel}
-          </TextLink>
         </HeroContent>
 
         <HeroVisual>

@@ -6,7 +6,8 @@ test.describe('Home Page', () => {
   test.beforeEach(async ({ page }) => {
     await navigateTo(page, '/');
     await page.addStyleTag({
-      content: '[data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }',
+      content:
+        '[data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }',
     });
   });
 
@@ -15,7 +16,10 @@ test.describe('Home Page', () => {
   });
 
   test('should render hero section', async ({ page }) => {
-    const hero = page.getByTestId('page-layout').filter({ visible: true }).first();
+    const hero = page
+      .getByTestId('page-layout')
+      .filter({ visible: true })
+      .first();
     await expect(hero).toBeVisible();
   });
 
@@ -31,19 +35,21 @@ test.describe('Home Page', () => {
 
   test('should have games link in navigation', async ({ page }) => {
     await ensureNavigationVisible(page);
-    const gamesLink = page.getByRole('link', { name: /games/i }).filter({ visible: true });
+    const gamesLink = page
+      .getByRole('link', { name: /games/i })
+      .filter({ visible: true });
     await expect(gamesLink.first()).toBeVisible();
   });
 
   test('should navigate to games page', async ({ page, isMobile }) => {
     await ensureNavigationVisible(page);
-    const gamesLink = isMobile 
-      ? page.getByTestId('mobile-nav-games') 
+    const gamesLink = isMobile
+      ? page.getByTestId('mobile-nav-games')
       : page.getByTestId('nav-games');
-    
+
     await expect(gamesLink).toBeVisible();
     await gamesLink.dispatchEvent('click');
-    
+
     await expect(page).toHaveURL(/\/games/);
   });
 
@@ -65,13 +71,37 @@ test.describe('Home Page', () => {
     await expect(seaBattleFeature).toBeVisible();
   });
 
-  test('should render hero cards stack on desktop', async ({ page, isMobile }) => {
+  test('should render hero cards stack on desktop', async ({
+    page,
+    isMobile,
+  }) => {
     test.skip(isMobile, 'Hero cards are only visible on desktop');
     const cardStack = page.locator('.hero-card-stack').first();
     await expect(cardStack).toBeVisible();
-    
+
     // Check that there are at least 3 cards built
     const heroCards = cardStack.locator('> div');
     await expect(heroCards).toHaveCount(3);
+  });
+
+  test('should have modernized support developers button', async ({ page }) => {
+    const supportButton = page.getByRole('link', {
+      name: /support (the )?developers/i,
+    });
+    await expect(supportButton).toBeVisible();
+    await expect(supportButton).toHaveAttribute('href', /\/support/);
+
+    // Check for the icon
+    const icon = supportButton.locator('svg');
+    await expect(icon).toBeVisible();
+
+    // Check it's an action (should be in the hero actions list)
+    await expect(supportButton).toBeVisible();
+  });
+
+  test('should have Play with Bots button', async ({ page }) => {
+    const botsButton = page.getByRole('link', { name: /play with bots/i });
+    await expect(botsButton).toBeVisible();
+    await expect(botsButton).toHaveAttribute('href', /mode=bot/);
   });
 });

@@ -16,6 +16,10 @@ export const GameBoardWrapper = styled(XStack, {
   flexWrap: 'wrap',
   width: '100%',
 
+  $md: {
+    flexDirection: 'column',
+    gap: '$4',
+  },
   $sm: {
     flexDirection: 'column',
     gap: '$4',
@@ -24,7 +28,12 @@ export const GameBoardWrapper = styled(XStack, {
 
 export const BoardContainer = styled(YStack, {
   name: 'BoardContainer',
-  flex: 1,
-  minWidth: 0,
-  width: '100%',
+  $md: {
+    flex: 0,
+    width: '100%',
+  },
+  $sm: {
+    flex: 0,
+    width: '100%',
+  },
 });

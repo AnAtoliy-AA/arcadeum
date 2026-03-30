@@ -35,8 +35,10 @@ export const Container = styled(YStack, {
   flexDirection: 'column',
   gap: '1rem',
   flex: 1,
-  minHeight: 0,
-  overflowY: 'hidden',
+  // Removed minHeight: 0 and overflowY: hidden for better stability
+  $md: {
+    overflowY: 'auto',
+  },
   $tablet: {
     padding: '$3',
     gap: '$3',
@@ -76,19 +78,19 @@ export const GameWrapper = styled(YStack, {
   flexDirection: 'column',
 
   $md: {
-    flex: 0,
-    minHeight: 0,
-    overflow: 'hidden',
+    flex: 1,
+    minHeight: 400,
+    overflow: 'auto',
   },
   $tablet: {
-    flex: 0,
-    minHeight: 0,
-    overflow: 'hidden',
+    flex: 1,
+    minHeight: 400,
+    overflow: 'auto',
   },
   $sm: {
-    flex: 0,
-    minHeight: 0,
-    overflow: 'hidden',
+    flex: 1,
+    minHeight: 350,
+    overflow: 'auto',
   },
 } as Record<string, unknown>);
 
@@ -145,7 +147,7 @@ export const Form = styled(YStack, {
 
 export const InputGroup = styled(XStack, {
   name: 'InputGroup',
-  gap: '$4',
+  gap: '0.75rem',
   width: '100%',
 } as Record<string, unknown>);
 

@@ -21,7 +21,9 @@ const Label = styled(Text, {
   name: 'FormLabel',
   fontSize: '$3',
   fontWeight: '600',
-  color: '$color',
+  color: '$color11',
+  letterSpacing: 0.5,
+  userSelect: 'none',
 });
 
 const RequiredText = styled(Text, {

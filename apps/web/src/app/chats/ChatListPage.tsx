@@ -111,7 +111,7 @@ export function ChatListPage() {
         </PageTitle>
 
         {snapshot.accessToken && (
-          <GlassCard>
+          <GlassCard p="$4">
             <Input
               type="text"
               placeholder={
@@ -124,6 +124,7 @@ export function ChatListPage() {
                 'Search for users to chat with'
               }
               fullWidth
+              size="md"
             />
             {searchLoading && (
               <XStack p="$4" jc="center">
@@ -201,7 +202,11 @@ export function ChatListPage() {
                 <Link
                   key={chat.chatId}
                   href={`/chat?chatId=${chat.chatId}&receiverIds=${receiverIds}&title=${encodeURIComponent(title)}`}
-                  style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+                  style={{
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    display: 'block',
+                  }}
                 >
                   <Card interactive padding="md" variant="elevated">
                     <XStack ai="center" gap="$4" width="100%">

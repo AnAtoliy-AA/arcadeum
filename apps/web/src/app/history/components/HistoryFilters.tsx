@@ -24,33 +24,37 @@ export function HistoryFilters({
     onStatusChange('all');
   };
 
-  const statusOptions = [
-    { value: 'all', label: t('history.filter.all') },
-    { value: 'lobby', label: t('history.status.lobby') },
-    { value: 'in_progress', label: t('history.status.in_progress') },
-    { value: 'completed', label: t('history.status.completed') },
-    { value: 'waiting', label: t('history.status.waiting') },
-    { value: 'active', label: t('history.status.active') },
-  ];
-
   return (
-    <XStack flexWrap="wrap" gap="$4" ai="center" $xs={{ flexDirection: 'column' }}>
+    <XStack
+      flexWrap="wrap"
+      gap="$4"
+      ai="center"
+      $xs={{ flexDirection: 'column' }}
+    >
       <Input
         flex={1}
         minWidth={250}
-        $xs={{ minWidth: '100%', width: '100%' } as any}
+        $xs={{ minWidth: '100%', width: '100%' }}
         type="text"
         placeholder={t('history.search.placeholder')}
         value={searchQuery}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          onSearchChange(e.target.value)
+        }
         aria-label={t('history.search.label')}
+        size="md"
       />
-      <YStack style={{ minWidth: 180 }} $xs={{ width: '100%' } as any}>
+      <YStack style={{ minWidth: 180 }} $xs={{ width: '100%' }}>
         <Select
+          id="status-select"
           value={statusFilter}
-          onChange={(e) => onStatusChange(e.target.value)}
-          options={statusOptions}
-          aria-label={t('history.filter.label')}
+          onValueChange={onStatusChange}
+          size="md"
+          options={[
+            { value: 'all', label: t('history.filter.all') },
+            { value: 'win', label: t('stats.wins') },
+            { value: 'loss', label: t('stats.losses') },
+          ]}
         />
       </YStack>
       {(searchQuery || statusFilter !== 'all') && (
@@ -58,7 +62,7 @@ export function HistoryFilters({
           variant="ghost"
           size="sm"
           whiteSpace="nowrap"
-          $xs={{ width: '100%' } as any}
+          $xs={{ width: '100%' }}
           onClick={handleClearFilters}
         >
           {t('history.filter.clear')}

@@ -1,7 +1,10 @@
 'use client';
 import { YStack, XStack, Text } from 'tamagui';
 import { GlassCard, Badge, IdleBadge } from '@/shared/ui';
-import { useTranslation, type TranslationKey } from '@/shared/lib/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { SeaBattleGrids } from './SeaBattleGrids';
 import { ShipsLeft } from './ShipsLeft';
@@ -34,10 +37,19 @@ export function SeaBattleTable({
   const activePlayerId = playerOrder[currentTurnIndex];
   const isMyTurn = activePlayerId === currentUserId;
   const activePlayer = players.find((p) => p.playerId === activePlayerId);
-  const activeName = activePlayer ? resolveDisplayName(activePlayer.playerId, 'Player') : '...';
+  const activeName = activePlayer
+    ? resolveDisplayName(activePlayer.playerId, 'Player')
+    : '...';
 
   return (
-    <YStack alignItems="center" justifyContent="center" width="100%" height="100%" gap="$5" padding="$5">
+    <YStack
+      alignItems="center"
+      justifyContent="center"
+      width="100%"
+      minHeight="100%"
+      gap="$5"
+      padding="$5"
+    >
       <GlassCard
         flexDirection="row"
         padding="$4"
@@ -46,18 +58,29 @@ export function SeaBattleTable({
         gap="$4"
         borderRadius={100}
       >
-        <Badge variant={isMyTurn ? 'success' : 'info'} size="md" pulse={isMyTurn}>
+        <Badge
+          variant={isMyTurn ? 'success' : 'info'}
+          size="md"
+          pulse={isMyTurn}
+        >
           {isMyTurn ? '🎯' : '⏳'}
         </Badge>
         <YStack>
           <Text fontSize={13} opacity={0.7} fontWeight="700">
             {isMyTurn
-              ? t('games.sea_battle_v1.table.players.yourTurn' as TranslationKey)
-              : t('games.sea_battle_v1.table.players.waitingFor' as TranslationKey, { player: activeName })}
+              ? t(
+                  'games.sea_battle_v1.table.players.yourTurn' as TranslationKey,
+                )
+              : t(
+                  'games.sea_battle_v1.table.players.waitingFor' as TranslationKey,
+                  { player: activeName },
+                )}
           </Text>
           <Text fontSize={17} fontWeight="800">
             {isMyTurn
-              ? t('games.sea_battle_v1.table.players.yourTurnAttack' as TranslationKey).replace('🎯 ', '')
+              ? t(
+                  'games.sea_battle_v1.table.players.yourTurnAttack' as TranslationKey,
+                ).replace('🎯 ', '')
               : activeName}
           </Text>
         </YStack>
@@ -74,22 +97,40 @@ export function SeaBattleTable({
               alignItems="center"
               gap="$2"
               padding="$4"
-              backgroundColor={isActive ? 'rgba(87, 195, 255, 0.05)' : 'rgba(0, 0, 0, 0.2)'}
+              backgroundColor={
+                isActive ? 'rgba(87, 195, 255, 0.05)' : 'rgba(0, 0, 0, 0.2)'
+              }
               borderWidth={1}
-              borderColor={isMe ? 'var(--primary-color)' : isActive ? '#57c3ff' : 'rgba(255,255,255,0.1)'}
+              borderColor={
+                isMe
+                  ? 'var(--primary-color)'
+                  : isActive
+                    ? '#57c3ff'
+                    : 'rgba(255,255,255,0.1)'
+              }
               borderRadius={12}
               position="relative"
             >
               {isActive && (
-                <XStack position="absolute" top={-10} left="50%" zIndex={10} style={{ transform: 'translateX(-50%)' }}>
+                <XStack
+                  position="absolute"
+                  top={-10}
+                  left="50%"
+                  zIndex={10}
+                  style={{ transform: 'translateX(-50%)' }}
+                >
                   <Badge variant="success" size="sm" pulse>
-                    {t('games.sea_battle_v1.table.players.alive' as TranslationKey)}
+                    {t(
+                      'games.sea_battle_v1.table.players.alive' as TranslationKey,
+                    )}
                   </Badge>
                 </XStack>
               )}
               <Text fontSize={19} fontWeight="600" color="white">
                 {resolveDisplayName(player.playerId, 'Player')}{' '}
-                {isMe ? `(${t('games.sea_battle_v1.table.players.you' as TranslationKey)})` : ''}
+                {isMe
+                  ? `(${t('games.sea_battle_v1.table.players.you' as TranslationKey)})`
+                  : ''}
                 {idlePlayers.includes(player.playerId) && <IdleBadge />}
               </Text>
               <YStack
@@ -98,8 +139,9 @@ export function SeaBattleTable({
                 backgroundColor="rgba(0,0,0,0.5)"
                 padding={4}
                 borderRadius={4}
-                width={300}
-                height={300}
+                width="100%"
+                maxWidth={320}
+                aspectRatio={1}
               >
                 {player.board.map((row, rIndex) =>
                   row.map((cellState, cIndex) => (
@@ -107,12 +149,15 @@ export function SeaBattleTable({
                       key={`${rIndex}-${cIndex}`}
                       width="10%"
                       height="10%"
-                      backgroundColor={CELL_COLORS[isMe || cellState > 1 ? cellState : 0] ?? 'transparent'}
+                      backgroundColor={
+                        CELL_COLORS[isMe || cellState > 1 ? cellState : 0] ??
+                        'transparent'
+                      }
                       borderWidth={1}
                       borderColor="rgba(255,255,255,0.1)"
                       cursor="pointer"
                     />
-                  ))
+                  )),
                 )}
               </YStack>
               <ShipsLeft ships={player.ships} isMe={isMe} />

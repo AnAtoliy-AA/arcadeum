@@ -19,6 +19,7 @@ export const BoardGrid = styled(YStack, {
   $sm: {
     padding: 2,
   },
+  pointerEvents: 'auto',
 });
 
 // State-aware coloring is done inline by the component via useSeaBattleTheme()
@@ -38,8 +39,10 @@ export const BoardCell = styled(YStack, {
   } as const,
 
   defaultVariants: {
-    animated: true,
+    animated: false,
   },
+  pointerEvents: 'auto',
+  userSelect: 'none',
 });
 
 // CSS Grid layout: [empty corner] [col labels]

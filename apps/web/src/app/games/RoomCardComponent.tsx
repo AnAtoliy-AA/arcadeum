@@ -9,28 +9,29 @@ import type { GameRoomSummary } from '@/shared/types/games';
 import { resolveGameDisplayInfo } from '@/features/games/lib/variantRegistry';
 import cardStyles from './RoomCardComponent.module.css';
 import {
-  getRoomCardStyle,
-  getRoomHeaderStyle,
-  getStatusBadgeStyle,
-  getGameNameValueStyle,
-  getRoomActionsStyle,
-  getParticipantChipStyle,
+  StyledRoomCard,
+  StyledRoomHeader,
+  StyledStatusBadge,
+  StyledGameName,
+  StyledRoomActions,
+  ParticipantsLabel,
+  FastBadge,
+  FastBadgeText,
+  BadgeIcon,
   RoomMeta,
+  MetaGrid,
   MetaRow,
   MetaIcon,
   MetaLabel,
   MetaValue,
-  ParticipantsList,
-  ParticipantsLabel,
   MetaListContainer,
-  FastBadge,
-  BadgeIcon,
 } from './room-card.styles';
-import { LinkButton } from '@arcadeum/ui';
+import { LinkButton, Avatar } from '@arcadeum/ui';
+import { XStack, YStack } from 'tamagui';
 
 import { routes } from '@/shared/config/routes';
 
-const MAX_VISIBLE_PARTICIPANTS = 5;
+const MAX_VISIBLE_PARTICIPANTS = 4;
 
 interface RoomCardComponentProps {
   room: GameRoomSummary;
@@ -72,109 +73,136 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
   );
 
   return (
-    <div
+    <StyledRoomCard
+      viewMode={viewMode}
       className={cardStyles.roomCard}
-      style={getRoomCardStyle(viewMode)}
       data-testid="room-card"
     >
-      {/* Header: Name and Status - column in list, row in grid */}
-      <div style={getRoomHeaderStyle(viewMode)}>
-        <h3 className={cardStyles.roomTitle} title={room.name}>
-          {room.name}
-        </h3>
-        {room.gameOptions?.idleTimerEnabled && (
-          <FastBadge>
-            <BadgeIcon>⚡</BadgeIcon>
-            {t('games.rooms.fastRoom')}
-          </FastBadge>
-        )}
-        {viewMode === 'list' && (
-          <span style={getStatusBadgeStyle(room.status)}>
-            {t(`games.rooms.status.${room.status}`) || room.status}
-          </span>
-        )}
-      </div>
+      <StyledRoomHeader viewMode={viewMode}>
+        <YStack gap="$1" flex={1} minWidth={0}>
+          <h3 className={cardStyles.roomTitle} title={room.name}>
+            {room.name}
+          </h3>
+          <StyledGameName
+            hasGradient={!!variantGradient}
+            style={
+              variantGradient
+                ? {
+                    backgroundImage: variantGradient,
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }
+                : {}
+            }
+          >
+            {gameName}
+          </StyledGameName>
+        </YStack>
 
-      {/* Meta Info */}
+        <XStack gap="$2" alignItems="center">
+          {room.gameOptions?.idleTimerEnabled && (
+            <FastBadge>
+              <BadgeIcon>⚡</BadgeIcon>
+              <FastBadgeText>{t('games.rooms.fastRoom')}</FastBadgeText>
+            </FastBadge>
+          )}
+          {viewMode === 'list' && (
+            <StyledStatusBadge status={room.status}>
+              {t(`games.rooms.status.${room.status}`) || room.status}
+            </StyledStatusBadge>
+          )}
+        </XStack>
+      </StyledRoomHeader>
+
       {viewMode === 'grid' ? (
         <RoomMeta>
-          <MetaRow>
-            <MetaIcon>🎮</MetaIcon>
-            <MetaLabel>{t('games.rooms.gameLabel') || 'Game'}</MetaLabel>
-            <span style={getGameNameValueStyle(variantGradient)}>
-              {gameName}
-            </span>
-          </MetaRow>
-          <MetaRow>
-            <MetaIcon>👑</MetaIcon>
-            <MetaLabel>{t('games.rooms.hostLabel')}</MetaLabel>
-            <MetaValue>{room.host?.displayName || room.hostId}</MetaValue>
-          </MetaRow>
-          <MetaRow>
-            <MetaIcon>👥</MetaIcon>
-            <MetaLabel>{t('games.rooms.playersLabel')}</MetaLabel>
-            <MetaValue>
-              {room.maxPlayers
-                ? `${room.playerCount}/${room.maxPlayers}`
-                : `${room.playerCount}`}
-            </MetaValue>
-          </MetaRow>
-          <MetaRow>
-            <MetaIcon>⏱️</MetaIcon>
-            <MetaLabel>{t('games.rooms.statusLabel')}</MetaLabel>
-            <span style={getStatusBadgeStyle(room.status)}>
-              {t(`games.rooms.status.${room.status}`) || room.status}
-            </span>
-          </MetaRow>
-          <MetaRow>
-            <MetaIcon>{room.visibility === 'private' ? '🔒' : '🌐'}</MetaIcon>
-            <MetaLabel>{t('games.rooms.visibilityLabel')}</MetaLabel>
-            <MetaValue>
-              {room.visibility === 'private'
-                ? t('games.rooms.visibility.private')
-                : t('games.rooms.visibility.public')}
-            </MetaValue>
-          </MetaRow>
+          <MetaGrid>
+            <MetaRow>
+              <MetaIcon>👑</MetaIcon>
+              <YStack>
+                <MetaLabel>{t('games.rooms.hostLabel')}</MetaLabel>
+                <MetaValue>{room.host?.displayName || room.hostId}</MetaValue>
+              </YStack>
+            </MetaRow>
+            <MetaRow>
+              <MetaIcon>👥</MetaIcon>
+              <YStack>
+                <MetaLabel>{t('games.rooms.playersLabel')}</MetaLabel>
+                <MetaValue>
+                  {room.maxPlayers
+                    ? `${room.playerCount}/${room.maxPlayers}`
+                    : `${room.playerCount}`}
+                </MetaValue>
+              </YStack>
+            </MetaRow>
+            <MetaRow>
+              <MetaIcon>{room.visibility === 'private' ? '🔒' : '🌐'}</MetaIcon>
+              <YStack>
+                <MetaLabel>{t('games.rooms.visibilityLabel')}</MetaLabel>
+                <MetaValue>
+                  {room.visibility === 'private'
+                    ? t('games.rooms.visibility.private')
+                    : t('games.rooms.visibility.public')}
+                </MetaValue>
+              </YStack>
+            </MetaRow>
+            <MetaRow>
+              <MetaIcon>⏱️</MetaIcon>
+              <YStack>
+                <MetaLabel>{t('games.rooms.statusLabel')}</MetaLabel>
+                <StyledStatusBadge status={room.status}>
+                  {t(`games.rooms.status.${room.status}`) || room.status}
+                </StyledStatusBadge>
+              </YStack>
+            </MetaRow>
+          </MetaGrid>
+
           {room.members && room.members.length > 0 && (
-            <div>
+            <YStack gap="$2">
               <ParticipantsLabel>
-                {t('games.rooms.participants')}:
+                {t('games.rooms.participants')}
               </ParticipantsLabel>
-              <ParticipantsList>
+              <XStack className={cardStyles.participantAvatars}>
                 {room.members
                   .slice(0, MAX_VISIBLE_PARTICIPANTS)
                   .map((member) => (
-                    <span
+                    <div
                       key={member.id}
-                      style={getParticipantChipStyle(
-                        room.host?.id === member.id,
-                      )}
+                      className={cardStyles.avatarOverlap}
+                      title={formatMemberLabel(member)}
                     >
-                      {formatMemberLabel(member)}
-                    </span>
+                      <Avatar name={formatMemberLabel(member)} size="sm" />
+                    </div>
                   ))}
                 {room.members.length > MAX_VISIBLE_PARTICIPANTS && (
-                  <span style={getParticipantChipStyle()}>
-                    + {room.members.length - MAX_VISIBLE_PARTICIPANTS} more
-                  </span>
+                  <div className={cardStyles.avatarOverlap}>
+                    <YStack
+                      width={32}
+                      height={32}
+                      borderRadius={16}
+                      backgroundColor="$backgroundFocus"
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      <MetaLabel
+                        style={{ opacity: 1, fontSize: 10, fontWeight: '700' }}
+                      >
+                        +{room.members.length - MAX_VISIBLE_PARTICIPANTS}
+                      </MetaLabel>
+                    </YStack>
+                  </div>
                 )}
-              </ParticipantsList>
-            </div>
+              </XStack>
+            </YStack>
           )}
         </RoomMeta>
       ) : (
         <MetaListContainer>
-          <MetaRow>
-            <MetaIcon>🎮</MetaIcon>
-            <span style={getGameNameValueStyle(variantGradient)}>
-              {gameName}
-            </span>
-          </MetaRow>
-          <MetaRow>
+          <MetaRow minWidth={150}>
             <MetaIcon>👑</MetaIcon>
             <MetaValue>{room.host?.displayName || room.hostId}</MetaValue>
           </MetaRow>
-          <MetaRow>
+          <MetaRow minWidth={80}>
             <MetaIcon>👥</MetaIcon>
             <MetaValue>
               {room.maxPlayers
@@ -182,7 +210,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                 : room.playerCount}
             </MetaValue>
           </MetaRow>
-          <MetaRow>
+          <MetaRow minWidth={100}>
             <MetaIcon>{room.visibility === 'private' ? '🔒' : '🌐'}</MetaIcon>
             <MetaValue>
               {room.visibility === 'private'
@@ -191,7 +219,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
             </MetaValue>
           </MetaRow>
           {room.members && room.members.length > 0 && (
-            <MetaRow>
+            <MetaRow minWidth={120}>
               <MetaIcon>👤</MetaIcon>
               <MetaValue>
                 {t('games.lounge.participantsCount', {
@@ -203,18 +231,24 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
         </MetaListContainer>
       )}
 
-      <div style={getRoomActionsStyle(viewMode)}>
-        <LinkButton href={routes.gameRoom(room.id)} variant="primary" size="sm">
+      <StyledRoomActions viewMode={viewMode}>
+        <LinkButton
+          href={routes.gameRoom(room.id)}
+          variant="primary"
+          size="md"
+          flex={viewMode === 'grid' ? 1 : 0}
+        >
           {t('games.common.joinRoom')}
         </LinkButton>
         <LinkButton
           href={routes.gameRoom(room.id)}
           variant="secondary"
-          size="sm"
+          size="md"
+          flex={viewMode === 'grid' ? 1 : 0}
         >
           {t('games.common.watchRoom')}
         </LinkButton>
-      </div>
-    </div>
+      </StyledRoomActions>
+    </StyledRoomCard>
   );
 }

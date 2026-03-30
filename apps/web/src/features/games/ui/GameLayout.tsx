@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, YStack, XStack, TamaguiElement } from 'tamagui';
+import { styled, YStack, TamaguiElement } from 'tamagui';
 
 interface GameLayoutProps {
   header?: React.ReactNode;
@@ -21,24 +21,26 @@ const LayoutContainer = styled(YStack, {
   padding: '$sm',
   borderRadius: 24,
   backgroundColor: '$background',
-  minHeight: 600,
-  position: 'relative',
-  overflow: 'hidden',
-  height: 'calc(100dvh - 64px)',
+  flex: 1,
+  height: '100%',
   width: '100%',
+  position: 'relative',
+  overflow: 'visible',
+  pointerEvents: 'auto',
 
-  $sm: {
+  $tablet: {
     padding: '$3',
     gap: '$3',
+    flex: 1,
+    minHeight: 400,
     height: 'auto',
-    minHeight: 'calc(100dvh - 64px)',
     borderRadius: 0,
-    overflowY: 'auto',
+    overflowY: 'visible',
   },
-
-  $xs: {
-    padding: '$2',
-    gap: '$2',
+  $sm: {
+    flex: 1,
+    minHeight: 350,
+    height: 'auto',
   },
 
   variants: {
@@ -50,20 +52,25 @@ const LayoutContainer = styled(YStack, {
   } as const,
 });
 
-const MainArea = styled(XStack, {
+const MainArea = styled(YStack, {
   name: 'GameMainArea',
   flex: 1,
   gap: '$5',
-  minHeight: 0,
-  overflow: 'hidden',
+  overflow: 'visible',
+  flexDirection: 'column',
+  pointerEvents: 'auto',
 
-  $gtSm: {
+  $gtMd: {
     flexDirection: 'row',
+    flex: 1,
   },
 
+  $tablet: {
+    flexDirection: 'column',
+    gap: '$4',
+  },
   $sm: {
     flexDirection: 'column',
-    overflowY: 'auto',
     gap: '$4',
   },
 });
@@ -73,11 +80,19 @@ const GameBoardArea = styled(YStack, {
   flex: 1,
   minWidth: 0,
   position: 'relative',
-  overflowY: 'scroll',
+  overflowY: 'auto',
   paddingBottom: '$4',
+  pointerEvents: 'auto',
 
+  $tablet: {
+    flex: 1,
+    minHeight: 300,
+    overflow: 'visible',
+    paddingBottom: '$4',
+  },
   $sm: {
-    flex: 0,
+    flex: 1,
+    minHeight: 250,
     overflow: 'visible',
     paddingBottom: 0,
   },
@@ -88,12 +103,41 @@ const ChatArea = styled(YStack, {
   width: 320,
   minWidth: 320,
   borderLeftWidth: 1,
-  borderLeftColor: '$borderColor',
+  borderLeftColor: '$glassBorder',
   paddingLeft: '$5',
-  backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  backgroundColor: '$glassBg',
   borderRadius: 16,
   marginLeft: '$2',
+  overflow: 'hidden',
 
+  $md: {
+    width: '100%',
+    minWidth: 0,
+    flex: 0,
+    minHeight: 250,
+    borderLeftWidth: 0,
+    borderTopWidth: 1,
+    borderTopColor: '$glassBorder',
+    paddingLeft: 0,
+    paddingTop: '$4',
+    marginLeft: 0,
+    backgroundColor: 'transparent',
+    borderRadius: 0,
+  },
+  $tablet: {
+    width: '100%',
+    minWidth: 0,
+    flex: 0,
+    minHeight: 250,
+    borderLeftWidth: 0,
+    borderTopWidth: 1,
+    borderTopColor: '$glassBorder',
+    paddingLeft: 0,
+    paddingTop: '$4',
+    marginLeft: 0,
+    backgroundColor: 'transparent',
+    borderRadius: 0,
+  },
   $sm: {
     width: '100%',
     minWidth: 0,
@@ -101,11 +145,12 @@ const ChatArea = styled(YStack, {
     minHeight: 350,
     borderLeftWidth: 0,
     borderTopWidth: 1,
-    borderTopColor: '$borderColor',
+    borderTopColor: '$glassBorder',
     paddingLeft: 0,
     paddingTop: '$4',
     marginLeft: 0,
     backgroundColor: 'transparent',
+    borderRadius: 0,
   },
 
   variants: {

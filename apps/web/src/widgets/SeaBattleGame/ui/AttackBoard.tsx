@@ -37,13 +37,21 @@ interface AttackBoardProps {
   disabled?: boolean;
 }
 
-function getCellBg(state: number, theme: SeaBattleTheme, highlighted = false): string {
+function getCellBg(
+  state: number,
+  theme: SeaBattleTheme,
+  highlighted = false,
+): string {
   if (highlighted) return theme.cellHover;
   switch (state) {
-    case CELL_STATE.HIT: return theme.hitColor;
-    case CELL_STATE.MISS: return theme.missColor;
-    case CELL_STATE.SHIP: return theme.shipColor;
-    default: return theme.cellEmpty;
+    case CELL_STATE.HIT:
+      return theme.hitColor;
+    case CELL_STATE.MISS:
+      return theme.missColor;
+    case CELL_STATE.SHIP:
+      return theme.shipColor;
+    default:
+      return theme.cellEmpty;
   }
 }
 
@@ -90,6 +98,8 @@ export function AttackBoard({
       <SeaBattleGrids>
         {currentPlayer && (
           <PlayerSection
+            position="relative"
+            overflow="visible"
             backgroundColor={theme.boardBackground}
             borderColor={theme.cellBorder}
           >
@@ -146,6 +156,8 @@ export function AttackBoard({
         {opponents.map((opponent) => (
           <PlayerSection
             key={opponent.playerId}
+            position="relative"
+            overflow="visible"
             isTargetable={isMyTurn}
             backgroundColor={theme.boardBackground}
             borderColor={theme.cellBorder}
@@ -203,6 +215,11 @@ export function AttackBoard({
                         key={`${opponent.playerId}-${rIndex}-${cIndex}`}
                         isClickable={canAttack}
                         backgroundColor={getCellBg(displayState, theme)}
+                        hoverStyle={
+                          canAttack
+                            ? { backgroundColor: theme.cellHover }
+                            : undefined
+                        }
                         borderColor={theme.cellBorder}
                         borderRadius={parseInt(theme.borderRadius) || 4}
                         data-row={rIndex}

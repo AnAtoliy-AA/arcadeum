@@ -23,6 +23,11 @@ const StyledInput = styled(TamaguiInput, {
   },
 
   variants: {
+    size: {
+      sm: { height: 36, px: '$3', fontSize: '$3' },
+      md: { height: 48, px: '$4', fontSize: '$4' },
+      lg: { height: 60, px: '$5', fontSize: '$5' },
+    },
     error: {
       true: {
         borderColor: '$error',
@@ -36,9 +41,13 @@ const StyledInput = styled(TamaguiInput, {
       },
     },
   } as const,
+  defaultVariants: {
+    size: 'md',
+  },
 });
 
 export type InputProps = GetProps<typeof TamaguiInput> & {
+  size?: 'sm' | 'md' | 'lg';
   error?: boolean;
   fullWidth?: boolean;
 };

@@ -7,8 +7,6 @@ export const PlayerSection = styled(YStack, {
   gap: '$2',
   padding: '$4',
   borderWidth: 2,
-  position: 'relative',
-  overflow: 'visible',
 
   variants: {
     isTargetable: {
@@ -24,6 +22,13 @@ export const PlayerSection = styled(YStack, {
     animated: true,
   },
 
+  $md: {
+    padding: '$4',
+    gap: '$3',
+    alignItems: 'center',
+    width: '100%',
+    maxWidth: 600,
+  },
   $sm: {
     padding: '$3',
     gap: '$2',
@@ -38,8 +43,8 @@ export const BadgeWrapper = styled(XStack, {
   position: 'absolute',
   top: -12,
   zIndex: 10,
-  left: '50%' as any,
-  transform: [{ translateX: '-50%' }] as any,
+  left: '50%',
+  transform: [{ translateX: '-50%' }],
 });
 
 export const PlayerName = styled(Text, {
@@ -51,6 +56,6 @@ export const PlayerName = styled(Text, {
 
 export const PlayerStats = styled(YStack, {
   name: 'PlayerStats',
-  // @ts-ignore — fontSize cascades to child Text nodes
+  // @ts-expect-error — fontSize cascades to child Text nodes
   fontSize: 14,
 });

@@ -33,7 +33,7 @@ import type { GameSessionSummary } from '@/shared/types/games';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 
 // Extracted Components
-import { Text } from 'tamagui';
+import { Text, useMedia } from 'tamagui';
 import {
   Page,
   Container,
@@ -48,6 +48,8 @@ import { PrivateRoomForm } from './PrivateRoomForm';
 import { DynamicGameRenderer } from './DynamicGameRenderer';
 
 export default function GameRoomPage() {
+  const media = useMedia();
+  const roomFlexDirection = media.gtMd ? 'row' : 'column';
   const params = useParams();
   const searchParams = useSearchParams();
   const roomId = params?.id as string;
@@ -59,9 +61,17 @@ export default function GameRoomPage() {
   const [autoJoinAttempted, setAutoJoinAttempted] = useState(false);
   // Track if user manually submitted invite code
   const [manualSubmitPending, setManualSubmitPending] = useState(false);
-  // Chat visibility state
+  // Chat visibility state — wide screens default to visible, narrow to hidden.
   const [showChat, setShowChat] = useState(true);
   const handleToggleChat = useCallback(() => setShowChat((v) => !v), []);
+
+  // Sync chat visibility to breakpoint after hydration and on resize.
+  // useState(true) is the SSR-safe default; the effect corrects it on the client.
+  useEffect(() => {
+    queueMicrotask(() => {
+      setShowChat(media.gtSm);
+    });
+  }, [media.gtSm]);
 
   // State for room visibility check
 
@@ -427,7 +437,7 @@ export default function GameRoomPage() {
           onToggleChat={handleToggleChat}
         />
 
-        <GameRow>
+        <GameRow flexDirection={roomFlexDirection}>
           <GameWrapper>
             <Suspense
               fallback={

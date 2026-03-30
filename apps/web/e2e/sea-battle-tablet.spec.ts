@@ -67,11 +67,11 @@ test.describe('Sea Battle Tablet Layout', () => {
     const mainArea = page.getByTestId('game-main-area');
     await expect(mainArea).toBeVisible();
 
-    // Check if flex-direction is row (default for desktop/large tablet)
+    // Check if flex-direction is column (for screens < 1150px)
     const flexDirection = await mainArea.evaluate(
       (el) => getComputedStyle(el).flexDirection,
     );
-    expect(flexDirection).toBe('row');
+    expect(flexDirection).toBe('column');
 
     const chatArea = page.getByTestId('game-chat-area');
     await expect(chatArea).toBeVisible();
@@ -81,7 +81,7 @@ test.describe('Sea Battle Tablet Layout', () => {
     const containerFlexDirection = await boardArea
       .getByTestId('sea-battle-grids-container')
       .evaluate((el) => getComputedStyle(el).flexDirection);
-    expect(containerFlexDirection).toBe('row');
+    expect(containerFlexDirection).toBe('column');
   });
 
   test('should have stacked layout on portrait tablet (768x1024)', async ({

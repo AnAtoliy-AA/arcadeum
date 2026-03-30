@@ -127,7 +127,7 @@ export function LocalAuthPanel({ labels }: LocalAuthPanelProps) {
         noValidate
         data-mode={isRegisterMode ? 'register' : 'login'}
       >
-        <YStack gap="$3">
+        <YStack gap="$4">
           <FormGroup
             label={emailLabel}
             htmlFor={emailFieldId}

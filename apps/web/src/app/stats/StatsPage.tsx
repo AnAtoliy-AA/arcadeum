@@ -177,6 +177,9 @@ const FilterContainer = styled(XStack, {
 const FilterLabel = styled(Text, {
   name: 'StatsFilterLabel',
   tag: 'label',
-  fontWeight: '500',
-  color: 'rgba(236,239,238,0.7)',
+  fontSize: '$3',
+  fontWeight: '600',
+  color: '$color11',
+  letterSpacing: 0.5,
+  userSelect: 'none',
 } as unknown as Record<string, unknown>);

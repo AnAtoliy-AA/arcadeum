@@ -14,6 +14,7 @@ import {
   Button,
   XStack,
   YStack,
+  FormGroup,
 } from '@/shared/ui';
 import { formatMessage } from '@/shared/i18n';
 import type { DeepPartial, TranslationBundle } from '@/shared/i18n/types';
@@ -100,24 +101,19 @@ export function ContactView({
             </Card>
           ) : (
             <form onSubmit={handleSubmit}>
-              <YStack gap="$4">
-                <YStack gap="$2">
-                  <Typography variant="label" uiSize="xs">
-                    <label htmlFor="name">{s?.form?.nameLabel}</label>
-                  </Typography>
+              <YStack gap="$5">
+                <FormGroup label={s?.form?.nameLabel} htmlFor="name" required>
                   <Input
                     id="name"
                     name="name"
                     placeholder={s?.form?.namePlaceholder}
                     required
                     data-testid="contact-name-input"
+                    fullWidth
                   />
-                </YStack>
+                </FormGroup>
 
-                <YStack gap="$2">
-                  <Typography variant="label" uiSize="xs">
-                    <label htmlFor="email">{s?.form?.emailLabel}</label>
-                  </Typography>
+                <FormGroup label={s?.form?.emailLabel} htmlFor="email" required>
                   <Input
                     type="email"
                     id="email"
@@ -125,34 +121,39 @@ export function ContactView({
                     placeholder={s?.form?.emailPlaceholder}
                     required
                     data-testid="contact-email-input"
+                    fullWidth
                   />
-                </YStack>
+                </FormGroup>
 
-                <YStack gap="$2">
-                  <Typography variant="label" uiSize="xs">
-                    <label htmlFor="subject">{s?.form?.subjectLabel}</label>
-                  </Typography>
+                <FormGroup
+                  label={s?.form?.subjectLabel}
+                  htmlFor="subject"
+                  required
+                >
                   <Input
                     id="subject"
                     name="subject"
                     placeholder={s?.form?.subjectPlaceholder}
                     required
                     data-testid="contact-subject-input"
+                    fullWidth
                   />
-                </YStack>
+                </FormGroup>
 
-                <YStack gap="$2">
-                  <Typography variant="label" uiSize="xs">
-                    <label htmlFor="message">{s?.form?.messageLabel}</label>
-                  </Typography>
+                <FormGroup
+                  label={s?.form?.messageLabel}
+                  htmlFor="message"
+                  required
+                >
                   <TextArea
                     id="message"
                     name="message"
                     placeholder={s?.form?.messagePlaceholder}
                     required
                     data-testid="contact-message-textarea"
+                    fullWidth
                   />
-                </YStack>
+                </FormGroup>
 
                 <YStack mt="$2">
                   <Button

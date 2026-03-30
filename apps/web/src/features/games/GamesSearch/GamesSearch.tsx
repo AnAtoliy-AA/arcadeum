@@ -48,19 +48,26 @@ export function GamesSearch({
   return (
     <XStack
       className={className}
-      flex={1}
-      minWidth={200}
-      maxWidth={400}
+      minWidth={280}
+      maxWidth={450}
       gap="$2"
+      alignItems="center"
     >
       <Input
         placeholder={placeholder}
         value={searchText}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        fullWidth
+        flex={1}
+        size="md"
       />
-      <Button variant="primary" onClick={handleSearchClick}>
+      <Button
+        variant="primary"
+        onClick={handleSearchClick}
+        flexShrink={0}
+        size="md"
+        px="$6"
+      >
         {buttonLabel}
       </Button>
     </XStack>

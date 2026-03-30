@@ -33,42 +33,49 @@ export const Title = SharedPageTitle;
 
 export const Filters = styled(XStack, {
   name: 'Filters',
-  gap: '2rem',
+  columnGap: '1.5rem',
+  rowGap: '1.25rem',
   flexWrap: 'wrap',
-  padding: '1.25rem 1.5rem',
+  padding: '1.5rem 2.25rem',
   backgroundColor: '$background',
   borderRadius: 16,
   borderWidth: 1,
   borderColor: '$borderColor',
+  alignItems: 'center',
 });
 
 export const SearchContainer = styled(XStack, {
   name: 'SearchContainer',
   flex: 1,
-  minWidth: 200,
-  maxWidth: 400,
+  minWidth: 280,
+  maxWidth: 450,
   gap: '0.5rem',
 });
 
-export const FilterGroup = styled(XStack, {
+export const FilterGroup = styled(YStack, {
   name: 'FilterGroup',
-  alignItems: 'center',
-  gap: '0.75rem',
+  alignItems: 'flex-start',
+  gap: '$1',
+  minWidth: 150,
+  padding: '$1',
 });
 
 export const FilterLabel = styled(Text, {
   name: 'FilterLabel',
-  fontSize: '0.8rem',
-  fontWeight: '600',
+  fontSize: '$3',
+  fontWeight: '700',
   textTransform: 'uppercase',
-  letterSpacing: 0.5,
-  color: 'rgba(236,239,238,0.45)',
+  letterSpacing: 1.5,
+  color: '$color11',
+  marginBottom: '$1',
+  userSelect: 'none',
+  opacity: 0.8,
 });
 
 export const FilterChips = styled(XStack, {
   name: 'FilterChips',
   flexWrap: 'wrap',
-  gap: '0.5rem',
+  gap: '0.4rem',
 });
 
 export const Loading = styled(YStack, {
@@ -82,7 +89,7 @@ export const Loading = styled(YStack, {
 
 export const Spinner = styled(SharedSpinner, {
   name: 'Spinner',
-  size: 'lg',
+  size: 'xl',
 });
 
 // Error: replaced Card with plain div (Card had variant/padding attrs)

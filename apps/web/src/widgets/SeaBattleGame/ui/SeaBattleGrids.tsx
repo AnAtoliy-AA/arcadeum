@@ -15,7 +15,8 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
       paddingVertical="$4"
       paddingHorizontal="$2"
       data-testid="sea-battle-grids-container"
-      $sm={{ flexDirection: 'column', gap: '$4' }}
+      $md={{ flexDirection: 'column', gap: '$4', alignItems: 'center' }}
+      $sm={{ flexDirection: 'column', gap: '$4', alignItems: 'center' }}
     >
       {children}
     </XStack>

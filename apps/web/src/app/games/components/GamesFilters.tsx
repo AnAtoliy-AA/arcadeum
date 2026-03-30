@@ -1,4 +1,5 @@
 import { GamesSearch } from '@/features/games';
+import { XStack, Text } from 'tamagui';
 import {
   useTranslation,
   type TranslationKey,
@@ -67,9 +68,22 @@ export function GamesFilters({
       </FilterGroup>
 
       <FilterGroup>
-        <FilterLabel>
-          {t('games.lounge.filters.participationLabel')}
-        </FilterLabel>
+        <XStack gap="$2" alignItems="center">
+          <FilterLabel>
+            {t('games.lounge.filters.participationLabel')}
+          </FilterLabel>
+          {!isAuthenticated && (
+            <Text
+              fontSize="$1"
+              color="$color9"
+              opacity={0.6}
+              fontStyle="italic"
+              marginBottom="$1"
+            >
+              ({t('games.create.loginRequired').toLowerCase()})
+            </Text>
+          )}
+        </XStack>
         <FilterChips>
           {(['all', 'hosting', 'joined', 'not_joined'] as const).map(
             (value) => {

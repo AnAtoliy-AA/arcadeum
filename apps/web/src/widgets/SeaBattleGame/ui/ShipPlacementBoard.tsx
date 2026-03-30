@@ -225,8 +225,8 @@ export function ShipPlacementBoard({
               <BoardGrid
                 backgroundColor={theme.boardBackground}
                 borderColor={theme.cellBorder}
-                onMouseLeave={() => setHoveredCells([])}
                 data-testid="sea-battle-board-grid"
+                pointerEvents="auto"
               >
                 {board.map((row, rIndex) =>
                   row.map((cellState, cIndex) => {
@@ -242,9 +242,13 @@ export function ShipPlacementBoard({
                         borderRadius={parseInt(theme.borderRadius) || 4}
                         data-row={rIndex}
                         data-col={cIndex}
-                        data-highlighted={isHovered || undefined}
+                        data-highlighted={isHovered ? 'true' : 'false'}
                         onMouseEnter={() => handleCellHover(rIndex, cIndex)}
-                        onClick={() => handleCellClick(rIndex, cIndex)}
+                        onMouseLeave={() => handleCellHover(-1, -1)}
+                        onPointerEnter={() => handleCellHover(rIndex, cIndex)}
+                        onPointerMove={() => handleCellHover(rIndex, cIndex)}
+                        onPointerLeave={() => handleCellHover(-1, -1)}
+                        onPress={() => handleCellClick(rIndex, cIndex)}
                       />
                     );
                   }),
@@ -281,7 +285,7 @@ export function ShipPlacementBoard({
                   isSelected ? theme.accentColor + '33' : theme.boardBackground
                 }
                 borderColor={isSelected ? theme.accentColor : theme.cellBorder}
-                onClick={() =>
+                onPress={() =>
                   !isPlaced && setSelectedShipId(isSelected ? null : ship.id)
                 }
                 data-testid="ship-palette-item"

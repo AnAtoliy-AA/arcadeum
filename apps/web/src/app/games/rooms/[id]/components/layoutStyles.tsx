@@ -1,42 +1,56 @@
-import { styled, XStack, YStack } from 'tamagui';
+import { styled, YStack } from 'tamagui';
 
 /**
- * Horizontal flex row on desktop (≥800px), vertical stack on mobile.
+ * Horizontal flex row on desktop (≥1150px), vertical stack on mobile/tablet.
  * Wraps GameWrapper + ChatPanel side by side.
  */
-export const GameRow = styled(XStack, {
+export const GameRow = styled(YStack, {
   name: 'GameRow',
   flex: 1,
   minHeight: 0,
   gap: '$4',
   alignItems: 'stretch',
 
-  // Portrait tablet and below (up to 950px approximately)
+  // Switch to horizontal layout only on wide screens (> 1150px)
+  $md: {
+    flexDirection: 'column',
+    flex: 1,
+  },
   $tablet: {
     flexDirection: 'column',
-    minHeight: 0,
-    flex: 0,
-    flexShrink: 0,
+    flex: 1,
+  },
+  $gtMd: {
+    flexDirection: 'row',
+    flex: 1,
   },
 });
 
 /**
- * Chat panel — fixed 300px wide on desktop, full width below game on mobile.
- * Hidden via display:none when visible=false so GameChat stays mounted
- * (preserves scroll position and store subscription).
+ * Chat panel — fixed 320px wide on desktop, full width below game on mobile/tablet.
+ * Uses glassmorphism for a premium look and separates cleanly from the game.
  */
 export const ChatPanel = styled(YStack, {
   name: 'ChatPanel',
-  width: 300,
-  minWidth: 300,
-  minHeight: 500,
+  width: 320,
+  minWidth: 320,
+  minHeight: 400,
   flexShrink: 0,
+  backgroundColor: '$glassBg',
+  borderRadius: '$4',
+  borderWidth: 1,
+  borderColor: '$glassBorder',
+  overflow: 'hidden',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
 
-  $tablet: {
+  $md: {
     width: '100%',
     minWidth: 0,
-    minHeight: 0,
-    height: 350,
+    minHeight: 250,
+    height: 'auto',
+    paddingTop: 0,
+    marginTop: '$2',
+    borderRadius: '$3',
   },
 
   variants: {

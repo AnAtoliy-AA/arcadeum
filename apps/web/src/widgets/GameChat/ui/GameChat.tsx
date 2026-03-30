@@ -131,10 +131,13 @@ export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
 
       {/* Input row */}
       <XStack
-        paddingHorizontal="$3"
-        paddingBottom="$3"
-        gap="$2"
+        paddingHorizontal="$4"
+        paddingBottom="$4"
+        paddingTop="$3"
+        gap="$3"
         alignItems="center"
+        borderTopWidth={1}
+        borderTopColor="rgba(99,102,241,0.15)"
       >
         <Input
           flex={1}
@@ -148,6 +151,7 @@ export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
                 : 'Send a private note to yourself'
           }
           onSubmitEditing={handleSend}
+          size="md"
         />
         <Button
           variant="secondary"

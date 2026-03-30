@@ -20,6 +20,7 @@ export type SelectProps = {
   style?: React.CSSProperties;
   className?: string;
   'aria-label'?: string;
+  size?: 'sm' | 'md' | 'lg';
 };
 
 // `unstyled` bypasses the default variant that sets `elevate: true`, which Tamagui 2.0.0-rc.23
@@ -56,6 +57,11 @@ const StyledSelectTrigger = styled(TamaguiSelect.Trigger, {
   },
 
   variants: {
+    size: {
+      sm: { height: 36, px: '$3' },
+      md: { height: 48, px: '$4' },
+      lg: { height: 60, px: '$5' },
+    },
     error: {
       true: {
         borderColor: '$error',
@@ -69,11 +75,15 @@ const StyledSelectTrigger = styled(TamaguiSelect.Trigger, {
       },
     },
   } as const,
+  defaultVariants: {
+    size: 'md',
+  },
 });
 
 export const Select = memo(function Select({
   error = false,
   fullWidth = false,
+  size = 'md',
   options,
   children,
   onValueChange,
@@ -107,6 +117,7 @@ export const Select = memo(function Select({
       <StyledSelectTrigger
         error={error}
         fullWidth={fullWidth}
+        size={size}
         id={id}
         disabled={disabled}
         data-testid={dataTestId}

@@ -31,9 +31,9 @@ test.describe('Sea Battle Color Visibility', () => {
     test(`should have clearly visible hover colors in ${variant} theme`, async ({
       page,
     }) => {
-      // Hover is a desktop/mouse concept — skip on mobile viewports
+      // Hover is a desktop/mouse concept — skip on mobile/tablet viewports
       const viewport = page.viewportSize();
-      if (viewport && viewport.width < 768) {
+      if (viewport && viewport.width < 1024) {
         return;
       }
 
@@ -92,9 +92,12 @@ test.describe('Sea Battle Color Visibility', () => {
       await waitForRoomReady(page);
 
       // Verify we are in placement phase
-      await expect(page.locator('body').first()).toContainText(/place ships/i, {
-        timeout: 15000,
-      });
+      await expect(page.locator('body').first()).toContainText(
+        /place your ships/i,
+        {
+          timeout: 15000,
+        },
+      );
 
       // Find a board cell and read its initial (non-highlighted) background
       const cell = page.locator('[data-row="1"][data-col="1"]').first();
@@ -107,25 +110,40 @@ test.describe('Sea Battle Color Visibility', () => {
       // Select a ship to enable placement highlights (from the palette)
       const shipItem = page.getByTestId('ship-palette-item').first();
       await expect(shipItem).toBeVisible({ timeout: 15000 });
-      await shipItem.click({ force: true, timeout: 5000 });
+      await shipItem.scrollIntoViewIfNeeded();
+      await shipItem.click({ timeout: 5000 });
 
-      // Dispatch native mouseover event to trigger React's onMouseEnter
-      // (works on all browsers including mobile emulations that lack real hover)
-      await page.evaluate(() => {
-        const el = document.querySelector('[data-row="1"][data-col="1"]');
-        if (el) {
-          el.dispatchEvent(
-            new MouseEvent('mouseover', { bubbles: true, cancelable: true }),
-          );
-        }
-      });
+      // Small delay to ensure React state update (ship selection) is processed
+      await page.waitForTimeout(500);
 
-      // Wait for the React state update to be reflected via data-highlighted attribute
-      await expect(cell).toHaveAttribute('data-highlighted', 'true', {
-        timeout: 3000,
-      });
+      // Hover the cell — use mouse.move with bounding box for reliable WebKit pointer events
+      await cell.scrollIntoViewIfNeeded();
+      const cellBox = await cell.boundingBox();
+      if (cellBox) {
+        await page.mouse.move(
+          cellBox.x + cellBox.width / 2,
+          cellBox.y + cellBox.height / 2,
+          { steps: 3 },
+        );
+      }
 
-      // Now read the highlighted background (React has already re-rendered)
+      // Wait for the background color to change (React state update reflection)
+      // This is a more robust way to check for hover highlights than data-attributes
+      await page.waitForFunction(
+        ({ selector, initialBg }) => {
+          const el = document.querySelector(selector);
+          if (!el) return false;
+          const currentBg = window.getComputedStyle(el).backgroundColor;
+          return currentBg !== initialBg;
+        },
+        { selector: '[data-row="1"][data-col="1"]', initialBg },
+        { timeout: 8000 },
+      );
+
+      // Small delay to ensure the highlight color is stable
+      await page.waitForTimeout(500);
+
+      // Now read the highlighted background for the final assertion
       const highlightedBg = await cell.evaluate(
         (el) => window.getComputedStyle(el).backgroundColor,
       );

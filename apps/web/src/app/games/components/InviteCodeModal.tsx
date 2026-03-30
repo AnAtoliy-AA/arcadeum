@@ -12,8 +12,8 @@ import {
   ModalFooter,
   Button,
   Input,
+  FormGroup,
 } from '@/shared/ui';
-import { YStack } from 'tamagui';
 import { gamesApi } from '@/features/games/api';
 
 interface InviteCodeModalProps {
@@ -78,16 +78,14 @@ export function InviteCodeModal({ open, onClose }: InviteCodeModalProps) {
         </ModalHeader>
         <form onSubmit={handleSubmit}>
           <ModalBody>
-            <YStack gap="$2">
-              <label
-                style={{
-                  fontSize: '0.875rem',
-                  fontWeight: 500,
-                  color: 'rgba(236,239,238,0.7)',
-                }}
-              >
-                {t('games.inviteCode.label') || 'Enter Invite Code'}
-              </label>
+            <FormGroup
+              label={t('games.inviteCode.label') || 'Enter Invite Code'}
+              error={error?.message}
+              description={
+                t('games.inviteCode.helper') ||
+                'This code was shared by the game host. Type it exactly as shown, without spaces.'
+              }
+            >
               <Input
                 type="text"
                 value={code}
@@ -100,24 +98,7 @@ export function InviteCodeModal({ open, onClose }: InviteCodeModalProps) {
                 autoFocus
                 fullWidth
               />
-              {error && (
-                <span style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-                  {error.message}
-                </span>
-              )}
-              <p
-                style={{
-                  color: 'rgba(236,239,238,0.7)',
-                  fontSize: 13,
-                  marginTop: '0.5rem',
-                  lineHeight: 1.4,
-                  margin: 0,
-                }}
-              >
-                {t('games.inviteCode.helper') ||
-                  'This code was shared by the game host. Type it exactly as shown, without spaces.'}
-              </p>
-            </YStack>
+            </FormGroup>
           </ModalBody>
           <ModalFooter>
             <Button

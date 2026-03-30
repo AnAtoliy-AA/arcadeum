@@ -7,6 +7,9 @@ export const Sidebar = styled(YStack, {
   name: 'LobbySidebar',
   gap: '$4',
   width: 300,
+  $tablet: {
+    width: '100%',
+  },
   $sm: {
     width: '100%',
   },

@@ -17,10 +17,10 @@ export const LobbyContent = styled(XStack, {
   minHeight: 0,
   padding: '$5',
   overflowY: 'auto',
-  $sm: {
+  $tablet: {
     flexDirection: 'column',
-    flex: 0,
-    minHeight: 'unset',
+    flex: 1,
+    minHeight: 0,
     overflowY: 'visible',
     padding: '$3',
     gap: '$4',
@@ -35,7 +35,7 @@ export const CenterSection = styled(YStack, {
   justifyContent: 'center',
   gap: '$5',
   flex: 1,
-  $sm: {
+  $tablet: {
     flex: 0,
     width: '100%',
     justifyContent: 'flex-start',
@@ -184,11 +184,6 @@ export const GameContainer = styled(YStack, {
   $tablet: {
     minHeight: 'unset',
     flex: 1,
-  },
-
-  $sm: {
-    minHeight: 'unset',
-    flex: 0,
   },
 });
 

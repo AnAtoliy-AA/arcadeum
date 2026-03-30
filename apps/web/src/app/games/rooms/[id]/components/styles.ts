@@ -36,7 +36,19 @@ export const Container = styled(YStack, {
   gap: '1rem',
   flex: 1,
   minHeight: 0,
-  overflowY: 'auto',
+  overflowY: 'hidden',
+  $tablet: {
+    padding: '$3',
+    gap: '$3',
+    flex: 1,
+    overflowY: 'auto',
+  },
+  $sm: {
+    padding: '$3',
+    gap: '$3',
+    flex: 1,
+    overflowY: 'auto',
+  },
 } as Record<string, unknown>);
 
 export const LoadingContainer = styled(YStack, {
@@ -60,7 +72,24 @@ export const GameWrapper = styled(YStack, {
   flex: 1,
   minWidth: 0,
   minHeight: 0,
+  overflow: 'auto',
   flexDirection: 'column',
+
+  $md: {
+    flex: 0,
+    minHeight: 0,
+    overflow: 'hidden',
+  },
+  $tablet: {
+    flex: 0,
+    minHeight: 0,
+    overflow: 'hidden',
+  },
+  $sm: {
+    flex: 0,
+    minHeight: 0,
+    overflow: 'hidden',
+  },
 } as Record<string, unknown>);
 
 // Glassmorphism card — no GlassCard in @arcadeum/ui, use YStack with inline styles
@@ -116,7 +145,7 @@ export const Form = styled(YStack, {
 
 export const InputGroup = styled(XStack, {
   name: 'InputGroup',
-  gap: '0.75rem',
+  gap: '$4',
   width: '100%',
 } as Record<string, unknown>);
 

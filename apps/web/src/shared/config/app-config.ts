@@ -34,6 +34,7 @@ export type WebAppConfig = {
   supportCta: CtaConfig;
   downloads: DownloadSectionConfig;
   social: SocialConfig;
+  siteUrl: string;
 };
 
 export function trim(value?: string | null): string | undefined {
@@ -113,6 +114,7 @@ function readAppConfig(): WebAppConfig {
       x: trim(process.env.NEXT_PUBLIC_SOCIAL_X),
       discord: trim(process.env.NEXT_PUBLIC_SOCIAL_DISCORD),
     },
+    siteUrl: trim(process.env.NEXT_PUBLIC_SITE_URL) ?? 'https://arcadeum.games',
   };
 }
 

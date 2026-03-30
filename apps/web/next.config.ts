@@ -18,6 +18,8 @@ const withPWA = withPWAInit({
 });
 
 const cspConnectSrc = [
+  'https://arcadeum.games',
+  'wss://arcadeum.games',
   'https://arcadeum.vercel.app',
   'wss://arcadeum.vercel.app',
   'https://arcadeum-dev.vercel.app',

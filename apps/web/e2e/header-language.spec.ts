@@ -9,8 +9,6 @@ test.describe('Header Language Switcher', () => {
   test('should display language switcher on header for all devices and change language', async ({
     page,
   }) => {
-    await page.waitForLoadState('networkidle');
-
     const languageSwitcher = page
       .locator('header')
       .getByTestId('header-language-switcher');

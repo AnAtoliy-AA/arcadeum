@@ -79,16 +79,19 @@ test.describe('Header and Footer Modernization', () => {
       'Hover effects are not applicable on mobile/touch devices',
     );
     const logo = page.locator('header a[href="/"]').first();
-    await logo.hover();
-    // The hover transform is applied to the inner wrapper (LogoInner), not the <a> tag itself
     const logoInner = logo.locator('> div').first();
-    // Brief wait for hover state to be reflected in computed styles (needed for webkit)
-    await page.waitForTimeout(300);
-    const transform = await logoInner.evaluate(
-      (el) => window.getComputedStyle(el).transform,
-    );
-    // "scale(1.02)" results in a matrix like matrix(1.02, 0, 0, 1.02, 1, 0)
-    expect(transform).toContain('matrix');
+
+    // Hover directly on the inner div that has the hoverStyle
+    await logoInner.hover();
+
+    // Use toPass to wait for the transition to be reflected in computed styles
+    await expect(async () => {
+      const transform = await logoInner.evaluate(
+        (el) => window.getComputedStyle(el).transform,
+      );
+      // "scale(1.02)" results in a matrix like matrix(1.02, 0, 0, 1.02, 1, 0)
+      expect(transform).toContain('matrix');
+    }).toPass();
   });
 
   test('footer social icons should have hover effect', async ({
@@ -101,12 +104,15 @@ test.describe('Header and Footer Modernization', () => {
     );
     const socialIcons = page.getByTestId(/footer-social-/);
     const firstIcon = socialIcons.first();
+
     await firstIcon.hover();
-    // Brief wait for hover state to be reflected in computed styles (needed for webkit)
-    await page.waitForTimeout(300);
-    const transform = await firstIcon.evaluate(
-      (el) => window.getComputedStyle(el).transform,
-    );
-    expect(transform).toContain('matrix');
+
+    // Use toPass to wait for the transition to be reflected in computed styles
+    await expect(async () => {
+      const transform = await firstIcon.evaluate(
+        (el) => window.getComputedStyle(el).transform,
+      );
+      expect(transform).toContain('matrix');
+    }).toPass();
   });
 });

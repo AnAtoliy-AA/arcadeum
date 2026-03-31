@@ -35,11 +35,18 @@ test.describe('Navigation', () => {
 
     // Ensure the link is stable and clickable
     await homeLink.waitFor({ state: 'visible' });
+    // Click on the home link/logo
     await homeLink.click();
 
-    // Increased timeout for navigation and ensure we wait for URL to be exactly /
-    await page.waitForLoadState('networkidle');
+    // Increased timeout for check and ensure we wait for URL to be exactly /
     await expect(page).toHaveURL('/', { timeout: 15000 });
+
+    // Wait for hydration on the home page
+    await expect(page.locator('html')).toHaveAttribute(
+      'data-hydrated',
+      'true',
+      { timeout: 10000 },
+    );
   });
 
   test('should navigate to games page', async ({ page }) => {
@@ -48,8 +55,8 @@ test.describe('Navigation', () => {
       ? page.getByTestId('mobile-nav-games')
       : page.getByTestId('nav-games');
     await expect(gamesLink).toBeVisible();
-    await gamesLink.dispatchEvent('click');
-    await expect(page).toHaveURL(/\/games/);
+    await gamesLink.click();
+    await expect(page).toHaveURL(/\/games/, { timeout: 10000 });
   });
 
   test('should navigate to auth page', async ({ page }) => {

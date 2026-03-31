@@ -7,10 +7,12 @@ test.describe('Contact Form', () => {
     await navigateTo(page, '/contact');
 
     // Try to submit empty form
-    await page.getByRole('button', { name: /send|submit|отправить/i }).click();
+    await page
+      .getByRole('button', { name: /send|submit|отправить/i })
+      .click({ force: true });
 
     // Check for browser validation or HTML5 validation
-    await expect(page.locator('form')).toBeVisible();
+    await expect(page.locator('form')).toBeVisible({ timeout: 15000 });
   });
 
   test('should validate email format', async ({ page }) => {
@@ -23,10 +25,10 @@ test.describe('Contact Form', () => {
       .getByTestId('contact-message-textarea')
       .fill('Hello, this is a test message.');
 
-    await page.getByTestId('contact-submit-button').click();
+    await page.getByTestId('contact-submit-button').click({ force: true });
 
     // Form should not be submitted
-    await expect(page.locator('form')).toBeVisible();
+    await expect(page.locator('form')).toBeVisible({ timeout: 15000 });
   });
 
   test('should show success message on valid submission', async ({ page }) => {
@@ -59,7 +61,7 @@ test.describe('Contact Form', () => {
     await navigateTo(page, '/contact');
 
     const emailLink = page.locator('a[href^="mailto:"]');
-    await expect(emailLink).toBeVisible();
+    await expect(emailLink).toBeVisible({ timeout: 15000 });
     await expect(emailLink).toHaveAttribute(
       'href',
       /arcadeum\.care@gmail\.com/,

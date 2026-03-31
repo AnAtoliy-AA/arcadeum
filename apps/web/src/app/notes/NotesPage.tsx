@@ -30,7 +30,7 @@ export const notesStyles = `
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
-  return date.toLocaleDateString(undefined, {
+  return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -158,7 +158,12 @@ export function NotesPage() {
                   >
                     {note.note}
                   </Text>
-                  <XStack jc="space-between" ai="flex-end" gap="$4" flexWrap="wrap">
+                  <XStack
+                    jc="space-between"
+                    ai="flex-end"
+                    gap="$4"
+                    flexWrap="wrap"
+                  >
                     <YStack gap="$1">
                       {note.displayName ? (
                         <Text
@@ -191,7 +196,11 @@ export function NotesPage() {
                       borderRadius="$4"
                       alignSelf="flex-end"
                     >
-                      <Text color="$primaryGradientStart" fontSize="$3" fontWeight="600">
+                      <Text
+                        color="$primaryGradientStart"
+                        fontSize="$3"
+                        fontWeight="600"
+                      >
                         {formatAmount(note.amount, note.currency)}
                       </Text>
                     </XStack>
@@ -200,7 +209,10 @@ export function NotesPage() {
               ))}
             </div>
 
-            <div ref={loadTriggerRef} style={{ height: 1, marginTop: '2rem' }} />
+            <div
+              ref={loadTriggerRef}
+              style={{ height: 1, marginTop: '2rem' }}
+            />
 
             {isFetchingNextPage && (
               <XStack jc="center" py="$8">

@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback } from 'react';
-import { createPortal } from 'react-dom';
 import { usePathname } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -127,5 +126,5 @@ export function MobileMenu({ isOpen, navItems }: MobileMenuProps) {
     </MobileNav>
   );
 
-  return createPortal(content, document.body);
+  return content;
 }

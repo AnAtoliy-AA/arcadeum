@@ -137,6 +137,29 @@ export function HomeGames() {
 
   const sectionRef = useScrollReveal<HTMLDivElement>();
 
+  const withKeyboardClick =
+    (callback: () => void) => (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        callback();
+      }
+    };
+
+  const handleHelpClick = (gameId: string) => (e: React.MouseEvent) => {
+    openDetails(gameId, 'rules', e);
+  };
+
+  const handleHelpKeyDown = (gameId: string) =>
+    withKeyboardClick(() => openDetails(gameId, 'rules'));
+
+  const handleScrollLeft = () => scroll('left');
+  const handleScrollLeftKeyDown = (e: React.KeyboardEvent) =>
+    withKeyboardClick(handleScrollLeft)(e);
+
+  const handleScrollRight = () => scroll('right');
+  const handleScrollRightKeyDown = (e: React.KeyboardEvent) =>
+    withKeyboardClick(handleScrollRight)(e);
+
   return (
     <SliderSection id="games" ref={sectionRef as never}>
       <SectionHeader data-reveal data-reveal-delay="1">
@@ -203,10 +226,10 @@ export function HomeGames() {
                       {t(game.nameKey)}
                     </GameTitle>
                     <HelpIconEl
-                      tag="button"
-                      onClick={(e: React.MouseEvent) =>
-                        openDetails(game.id, 'rules', e)
-                      }
+                      role="button"
+                      tabIndex={0}
+                      onClick={handleHelpClick(game.id)}
+                      onKeyDown={handleHelpKeyDown(game.id)}
                       title={homeCopy.showMore ?? 'Show Details'}
                       data-testid="game-help-button"
                     >
@@ -233,6 +256,7 @@ export function HomeGames() {
                       }
                       fullWidth
                       data-testid="game-play-button"
+                      aria-label={`${game.isPlayable ? (homeCopy.gamePlayButton ?? 'Play Now') : (homeCopy.gameComingSoon ?? 'Coming Soon')} ${t(game.nameKey)}`}
                     >
                       {game.isPlayable
                         ? (homeCopy.gamePlayButton ?? 'Play Now')
@@ -247,8 +271,10 @@ export function HomeGames() {
 
         <SliderControls>
           <SliderButtonEl
-            tag="button"
-            onClick={() => scroll('left')}
+            role="button"
+            tabIndex={0}
+            onClick={handleScrollLeft}
+            onKeyDown={handleScrollLeftKeyDown}
             aria-label="Previous game"
             data-testid="prev-game-button"
             opacity={canScrollLeft ? 1 : 0.3}
@@ -268,8 +294,10 @@ export function HomeGames() {
             </svg>
           </SliderButtonEl>
           <SliderButtonEl
-            tag="button"
-            onClick={() => scroll('right')}
+            role="button"
+            tabIndex={0}
+            onClick={handleScrollRight}
+            onKeyDown={handleScrollRightKeyDown}
             aria-label="Next game"
             data-testid="next-game-button"
             opacity={canScrollRight ? 1 : 0.3}

@@ -63,14 +63,19 @@ const StyledTitle = styled(Dialog.Title, {
 });
 
 export const Modal = memo(function Modal({ open, onClose, children }: ModalProps) {
-  const handleOpenChange = useCallback((val: boolean) => {
-    if (!val) onClose?.();
-  }, [onClose]);
+  const handleOpenChange = useCallback(
+    (val: boolean) => {
+      if (!val) {
+        onClose?.();
+      }
+    },
+    [onClose]
+  );
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <Dialog.Portal>
-        <StyledDialogOverlay data-testid="modal-overlay" />
+        <StyledDialogOverlay data-testid="modal-overlay" onPress={onClose} key="overlay" />
         {children}
       </Dialog.Portal>
     </Dialog>

@@ -317,7 +317,7 @@ export const Footer = memo(function Footer({
                 </YStack>
 
                 <YStack gap="$4" $sm={{ alignItems: 'center' }}>
-                  <Typography variant="label" uiSize="xs" weight="700" tracking="xl" alpha="low">
+                  <Typography variant="label" uiSize="xs" weight="700" tracking="xl">
                     {followUsLabel.toUpperCase()}
                   </Typography>
                   <XStack gap="$3" flexWrap="wrap" $sm={{ justifyContent: 'center' }}>
@@ -355,14 +355,14 @@ export const Footer = memo(function Footer({
                 </Typography>
                 <XStack gap="$2" alignItems="center">
                   <View width={6} height={6} borderRadius={3} backgroundColor="$success" />
-                  <Typography variant="label" uiSize="xs" tracking="xl" alpha="low">
+                  <Typography variant="label" uiSize="xs" tracking="xl">
                     {stableReleaseLabel} {versionLabel}
                   </Typography>
                 </XStack>
               </YStack>
 
               <XStack alignItems="center" gap="$6" flexWrap="wrap" justifyContent="center">
-                <Typography uiSize="xs" alpha="low" $sm={{ textCenter: true }}>
+                <Typography uiSize="xs" $sm={{ textCenter: true }}>
                   {craftedWithLoveLabel}
                 </Typography>
               </XStack>

@@ -40,6 +40,11 @@ export const test = base.extend({
           return;
         }
 
+        // Ignore Next.js stack-frame CORS errors during aborts
+        if (text.includes('__nextjs_original-stack-frames')) {
+          return;
+        }
+
         console.log(`BROWSER [${type}]: ${text}`);
       }
     });
@@ -54,6 +59,7 @@ export const test = base.extend({
           failure.errorText === 'NS_BINDING_ABORTED' ||
           failure.errorText === 'net::ERR_ABORTED' ||
           failure.errorText === 'canceled' || // Common in WebKit
+          failure.errorText === 'cancelled' || // Other runtimes
           url.includes('__nextjs_original-stack-frames')
         ) {
           return;
@@ -78,6 +84,9 @@ export const test = base.extend({
     });
 
     page.on('pageerror', (err) => {
+      if (err.message.includes('__nextjs_original-stack-frames')) {
+        return;
+      }
       console.log(`BROWSER [error]: ${err.message}\n${err.stack || ''}`);
     });
 

@@ -47,9 +47,9 @@ const StyledTypography = styled(Text, {
       '800': { fontWeight: '800' },
     },
     alpha: {
-      low: { opacity: 0.3 },
-      medium: { opacity: 0.5 },
-      high: { opacity: 0.8 },
+      low: { opacity: 0.65 },
+      medium: { opacity: 0.8 },
+      high: { opacity: 0.95 },
     },
     tracking: {
       sm: { letterSpacing: 0.5 },

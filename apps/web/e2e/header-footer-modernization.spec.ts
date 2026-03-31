@@ -13,7 +13,13 @@ test.describe('Header and Footer Modernization', () => {
   test('header should have glassmorphism effect', async ({ page }) => {
     const header = page.locator('header').first();
     const backdropFilter = await header.evaluate((el) => {
-      return window.getComputedStyle(el).backdropFilter;
+      const styles = window.getComputedStyle(el);
+      return (
+        styles.backdropFilter ||
+        (styles as CSSStyleDeclaration & { webkitBackdropFilter?: string })
+          .webkitBackdropFilter ||
+        ''
+      );
     });
     // The actual value might be "blur(32px) saturate(200%)" or similar depending on browser
     expect(backdropFilter).toContain('blur');
@@ -49,9 +55,10 @@ test.describe('Header and Footer Modernization', () => {
       const backgroundColor = await activeLink.evaluate(
         (el) => window.getComputedStyle(el).backgroundColor,
       );
-      // 'rgba(87, 195, 255, 0.1)' or similar
-      expect(backgroundColor).toContain('rgba');
-      expect(backgroundColor).not.toContain('rgba(0, 0, 0, 0)');
+      // 'rgba(87, 195, 255, 0.1)' or similar, but may be 'rgb(37, 42, 46)' if opaque
+      expect(backgroundColor).toMatch(/rgba?\(/);
+      expect(backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+      expect(backgroundColor).not.toBe('transparent');
     } else {
       // Desktop link in nav should be active — its indicator should have opacity > 0
       const activeIndicator = page

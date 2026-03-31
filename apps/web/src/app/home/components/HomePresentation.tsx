@@ -40,6 +40,15 @@ export function HomePresentation() {
   const sectionRef = useScrollReveal<HTMLDivElement>();
   const homeCopy = messages.home ?? {};
 
+  const handlePlayClick = () => setIsPlaying(true);
+
+  const handlePlayKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setIsPlaying(true);
+    }
+  };
+
   if (!presentationVideoId) {
     return null;
   }
@@ -84,7 +93,7 @@ export function HomePresentation() {
           />
         ) : (
           <VideoPlaceholder
-            onClick={() => setIsPlaying(true)}
+            onClick={handlePlayClick}
             data-testid="video-placeholder"
           >
             <Image
@@ -96,12 +105,13 @@ export function HomePresentation() {
               style={{ objectFit: 'cover', opacity: 0.85 }}
             />
             <PlaceholderOverlay />
-            {/* Pulse ring replaces ::after */}
             <PulseRing className="pulse-ring" />
             <PlayButtonEl
-              tag="button"
+              role="button"
+              tabIndex={0}
               animation="medium"
-              onClick={() => setIsPlaying(true)}
+              onClick={handlePlayClick}
+              onKeyDown={handlePlayKeyDown}
               aria-label="Play video"
               data-testid="play-btn"
             >

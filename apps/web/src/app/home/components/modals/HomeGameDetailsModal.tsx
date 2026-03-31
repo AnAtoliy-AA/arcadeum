@@ -322,7 +322,10 @@ export function HomeGameDetailsModal({
               {locale.toUpperCase()} •{' '}
               {t(`games.shared.category.${game.type}Game` as TranslationKey)}
             </div>
-            <LinkButton href={`${routes.gameCreate}?gameId=${game.id}`}>
+            <LinkButton
+              href={`${routes.gameCreate}?gameId=${game.id}`}
+              aria-label={`${homeCopy.gamePlayButton ?? 'Play Now!'} ${t(game.nameKey)}`}
+            >
               {homeCopy.gamePlayButton ?? 'Play Now!'}
             </LinkButton>
           </XStack>

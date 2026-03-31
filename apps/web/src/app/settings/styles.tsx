@@ -79,7 +79,8 @@ export const AccountStatus = styled(Typography, {
   tag: 'p',
   margin: 0,
   uiSize: 'md',
-  color: 'rgba(236,239,238,0.7)',
+  color: '$color',
+  opacity: 0.8,
   backgroundColor: '$background',
   borderWidth: 1,
   borderColor: '$borderColor',
@@ -177,15 +178,16 @@ export const OptionDescription = styled(Text, {
   tag: 'p',
   margin: 0,
   fontSize: '$3',
-  color: 'rgba(236,239,238,0.7)',
+  color: '$color',
+  opacity: 0.7,
 } as Record<string, unknown>);
 
 export const VersionText = styled(Text, {
   tag: 'span',
   fontSize: '$3',
-  color: 'rgba(236,239,238,0.7)',
+  color: '$color',
   letterSpacing: '0.05em' as unknown as number,
-  opacity: 0.8,
+  opacity: 0.7,
   style: {
     fontFamily: "'SF Mono', 'Fira Code', 'Consolas', monospace",
   },

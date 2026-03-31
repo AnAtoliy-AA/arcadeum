@@ -80,7 +80,7 @@ export const LogoText = styled(Typography, {
   name: 'LogoText',
   uiSize: '2xl',
   weight: '800',
-  color: '$primaryGradientStart',
+  color: '$primary',
   $xs: { display: 'none' },
 });
 
@@ -301,7 +301,6 @@ export const MobileVersionText = styled(Typography, {
   marginTop: 'auto',
   paddingVertical: '$4',
   paddingHorizontal: '$2',
-  color: '$neutral',
 });
 
 export const MobileUserInfo = styled(XStack, {
@@ -323,7 +322,7 @@ export const NavHeaderLink = styled(LinkButton, {
   borderRadius: '$4',
   overflow: 'visible',
   hoverStyle: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: '$backgroundHover',
     transform: 'translateY(-1px)',
   },
   pressStyle: {
@@ -332,7 +331,7 @@ export const NavHeaderLink = styled(LinkButton, {
   variants: {
     isActive: {
       true: {
-        backgroundColor: 'rgba(0, 0, 0, 0.45)',
+        backgroundColor: '$backgroundPress',
         color: '$color',
       },
     },
@@ -347,7 +346,7 @@ export const NavMobileLink = styled(LinkButton, {
   variants: {
     isActive: {
       true: {
-        backgroundColor: 'rgba(87, 195, 255, 0.1)',
+        backgroundColor: '$backgroundPress',
         color: '$primary',
       },
     },

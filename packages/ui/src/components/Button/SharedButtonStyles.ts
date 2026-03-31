@@ -3,6 +3,7 @@ export const sharedButtonVariants = {
     primary: {
       backgroundColor: '$primary',
       background: 'linear-gradient(160deg, $primaryGradientStart 0%, $primaryGradientEnd 100%)',
+      color: '$primaryText',
       borderColor: '$glassBorder',
       borderTopColor: 'rgba(255,255,255,0.18)',
       borderWidth: 1,
@@ -29,6 +30,7 @@ export const sharedButtonVariants = {
     secondary: {
       backgroundColor: '$secondary',
       background: 'linear-gradient(160deg, $secondaryGradientStart 0%, $secondaryGradientEnd 100%)',
+      color: '$secondaryText',
       borderColor: '$glassBorder',
       borderTopColor: 'rgba(255,255,255,0.14)',
       borderWidth: 1,
@@ -55,6 +57,7 @@ export const sharedButtonVariants = {
     danger: {
       backgroundColor: '$danger',
       background: 'linear-gradient(160deg, $dangerGradientStart 0%, $dangerGradientEnd 100%)',
+      color: '$dangerText',
       borderColor: '$glassBorder',
       borderTopColor: 'rgba(255,255,255,0.14)',
       borderWidth: 1,
@@ -233,6 +236,7 @@ export const sharedButtonVariants = {
     },
     success: {
       backgroundColor: '$success',
+      color: '$successText',
       shadowColor: '$success',
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.5,
@@ -255,6 +259,7 @@ export const sharedButtonVariants = {
     },
     warning: {
       backgroundColor: '$warning',
+      color: '$warningText',
       shadowColor: '$warning',
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.5,
@@ -277,6 +282,7 @@ export const sharedButtonVariants = {
     },
     info: {
       backgroundColor: '$info',
+      color: '$infoText',
       shadowColor: '$info',
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.5,

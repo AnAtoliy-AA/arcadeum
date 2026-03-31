@@ -8,6 +8,9 @@ import { Typography } from '../Typography/Typography';
 import { StyledLinkButton } from './StyledLinkButton';
 import type { ButtonVariant, ButtonSize } from './types';
 
+// Variants that use vibrant backgrounds and need white text for contrast
+const VIBRANT_VARIANTS = ['primary', 'secondary', 'danger', 'success', 'warning', 'info'];
+
 type StyledLinkButtonProps = GetProps<typeof StyledLinkButton>;
 
 export interface LinkButtonProps {
@@ -50,8 +53,13 @@ export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
       () =>
         Children.map(children, (child) => {
           if (typeof child === 'string') {
+            const isVibrant = VIBRANT_VARIANTS.includes((variant as string) || 'primary');
             return (
-              <Typography uiSize={size} variant="label">
+              <Typography 
+                uiSize={size} 
+                variant="label"
+                color={isVibrant ? `$${variant || 'primary'}Text` as never : undefined}
+              >
                 {child}
               </Typography>
             );

@@ -1,6 +1,12 @@
 import { type Page } from '@playwright/test';
 
 export const MOCK_OBJECT_ID = '507f191e810c19729de860ea';
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': 'http://localhost:3000',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-anonymous-id',
+  'Access-Control-Allow-Credentials': 'true',
+};
 
 export interface MockSessionOptions {
   persistent?: boolean;
@@ -59,6 +65,7 @@ export async function mockSession(
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
+      headers: CORS_HEADERS,
       body: JSON.stringify({
         user: {
           id: MOCK_OBJECT_ID,
@@ -75,6 +82,7 @@ export async function mockSession(
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
+      headers: CORS_HEADERS,
       body: JSON.stringify({
         profile: {
           userId: MOCK_OBJECT_ID,
@@ -97,6 +105,7 @@ export async function mockSettingsExtraData(page: Page): Promise<void> {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
+      headers: CORS_HEADERS,
       body: JSON.stringify({
         referralCode: 'TESTCODE',
         totalReferrals: 0,
@@ -111,6 +120,7 @@ export async function mockSettingsExtraData(page: Page): Promise<void> {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
+      headers: CORS_HEADERS,
       body: JSON.stringify({ referralCode: 'TESTCODE' }),
     });
   });
@@ -119,6 +129,7 @@ export async function mockSettingsExtraData(page: Page): Promise<void> {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
+      headers: CORS_HEADERS,
       body: JSON.stringify([]),
     });
   });

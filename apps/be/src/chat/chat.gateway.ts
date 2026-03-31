@@ -16,10 +16,11 @@ import {
   isSocketEncryptionEnabled,
   getEncryptionKeyHex,
 } from '../common/utils/socket-encryption.util';
+import { corsOriginMatcher } from '../common/utils/cors.util';
 
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: corsOriginMatcher,
   },
 })
 export class ChatGateway {

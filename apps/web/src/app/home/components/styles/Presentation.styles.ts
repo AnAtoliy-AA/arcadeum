@@ -46,7 +46,8 @@ export const PlaceholderOverlay = styled(YStack, {
   alignItems: 'center',
   justifyContent: 'center',
   overflow: 'hidden',
-  background: 'radial-gradient(circle at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%)' as any,
+  background:
+    'radial-gradient(circle at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%)' as never,
 });
 
 export const PulseRing = styled(YStack, {

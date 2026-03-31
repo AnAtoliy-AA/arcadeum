@@ -105,7 +105,7 @@ export function HomeFeatures() {
     (homeCopy as Record<string, string>).comingSoon ?? 'Coming Soon';
 
   return (
-    <FeaturesSection data-testid="features-section" ref={sectionRef as any}>
+    <FeaturesSection data-testid="features-section" ref={sectionRef as never}>
       <SectionHeader data-reveal data-reveal-delay="1">
         <SectionTitle>{sectionTitle}</SectionTitle>
         <SectionSubtitle>{sectionSubtitle}</SectionSubtitle>
@@ -128,7 +128,12 @@ export function HomeFeatures() {
               data-reveal
               data-reveal-delay={String(Math.min(index + 2, 6))}
             >
-              <FeatureIcon data-feature-icon style={{ boxShadow: '0 4px 20px rgba(87,195,255,0.12)' }}><Text>{feature.icon}</Text></FeatureIcon>
+              <FeatureIcon
+                data-feature-icon
+                style={{ boxShadow: '0 4px 20px rgba(87,195,255,0.12)' }}
+              >
+                <Text>{feature.icon}</Text>
+              </FeatureIcon>
               <FeatureTitle>{title}</FeatureTitle>
               <FeatureDescription>{description}</FeatureDescription>
               {feature.comingSoon && (

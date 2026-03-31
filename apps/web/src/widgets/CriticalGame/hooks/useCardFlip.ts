@@ -13,8 +13,12 @@ interface UseCardFlipResult {
  *
  * @param distinctCardTypes - memoized array of distinct card types in hand (from groupedHand.map(i => i.card))
  */
-export function useCardFlip(distinctCardTypes: CriticalCard[]): UseCardFlipResult {
-  const [flippingCardType, setFlippingCardType] = useState<CriticalCard | null>(null);
+export function useCardFlip(
+  distinctCardTypes: CriticalCard[],
+): UseCardFlipResult {
+  const [flippingCardType, setFlippingCardType] = useState<CriticalCard | null>(
+    null,
+  );
   const [showBack, setShowBack] = useState(true);
   const previousTypes = useRef<Set<CriticalCard>>(new Set());
   const flipTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -35,8 +39,10 @@ export function useCardFlip(distinctCardTypes: CriticalCard[]): UseCardFlipResul
 
       flipTimers.current.forEach(clearTimeout);
 
-      setFlippingCardType(card);
-      setShowBack(true);
+      setTimeout(() => {
+        setFlippingCardType(card);
+        setShowBack(true);
+      }, 0);
 
       // At midpoint: reveal front face
       const midTimer = setTimeout(() => {

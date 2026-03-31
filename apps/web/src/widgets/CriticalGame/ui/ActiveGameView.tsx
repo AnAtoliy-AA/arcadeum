@@ -1,7 +1,11 @@
 'use client';
 
 import { useEffect, useCallback, useMemo, useState } from 'react';
-import { useGameChatStore, useLatestChatMessage, ChatMessagePopup } from '@/widgets/GameChat';
+import {
+  useGameChatStore,
+  useLatestChatMessage,
+  ChatMessagePopup,
+} from '@/widgets/GameChat';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type {
   CriticalCard,
@@ -181,7 +185,7 @@ export function ActiveGameView({
     (cardType: CriticalCard) => t(getCardTranslationKey(cardType, cardVariant)),
     [t, cardVariant],
   );
-  const { resolveDisplayName, formatLogMessage } = useDisplayNames({
+  const { resolveDisplayName } = useDisplayNames({
     currentUserId,
     room,
     snapshot,

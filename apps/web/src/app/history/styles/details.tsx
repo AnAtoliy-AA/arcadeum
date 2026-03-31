@@ -11,7 +11,7 @@ export const DetailTimestamp = styled(Typography, {
   borderWidth: 1,
   borderColor: '$borderColor',
   backgroundColor: '$backgroundStrong',
-} as any);
+} as Record<string, unknown>);
 
 export const Section = styled(YStack, {
   gap: '$4',
@@ -32,7 +32,10 @@ export function SectionTitle({ children }: { children: ReactNode }) {
         height={18}
         borderRadius={2}
         // Use inline style for gradient — Tamagui's background prop doesn't support linear-gradient strings
-        style={{ background: 'linear-gradient(180deg, var(--color-primary, #6366f1) 0%, var(--color-primary-dark, #4f46e5) 100%)' }}
+        style={{
+          background:
+            'linear-gradient(180deg, var(--color-primary, #6366f1) 0%, var(--color-primary-dark, #4f46e5) 100%)',
+        }}
       />
       <Typography uiSize="lg" weight="600" margin={0}>
         {children}
@@ -45,4 +48,4 @@ export const SectionDescription = styled(Typography, {
   uiSize: 'sm',
   alpha: 'medium',
   lineHeight: '$5',
-} as any);
+} as Record<string, unknown>);

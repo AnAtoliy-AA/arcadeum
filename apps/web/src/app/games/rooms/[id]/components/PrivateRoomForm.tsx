@@ -44,10 +44,12 @@ export function PrivateRoomForm({
   return (
     <Card>
       <LockIcon>🔒</LockIcon>
-      <Title style={titleGradientStyle}>{t('games.roomPage.privateRoom.title')}</Title>
+      <Title style={titleGradientStyle}>
+        {t('games.roomPage.privateRoom.title')}
+      </Title>
       <Description>{t('games.roomPage.privateRoom.description')}</Description>
 
-      <Form {...{ onSubmit: handleSubmit } as any}>
+      <Form {...({ onSubmit: handleSubmit } as Record<string, unknown>)}>
         <InputGroup>
           <Input
             type="text"

@@ -26,7 +26,7 @@ export function HomePitchDeck() {
     'Explore the strategy and vision behind the platform';
 
   return (
-    <PitchDeckSection id="presentation" ref={sectionRef as any}>
+    <PitchDeckSection id="presentation" ref={sectionRef as never}>
       <SectionHeader data-reveal data-reveal-delay="1">
         <SectionTitle>{sectionTitle}</SectionTitle>
         <SectionSubtitle>{sectionSubtitle}</SectionSubtitle>

@@ -25,7 +25,7 @@ export const DownloadDescription = styled(Text, {
   margin: 0,
   maxWidth: 500,
   fontSize: '$4',
-  lineHeight: '$5' as any,
+  lineHeight: '$5' as never,
   color: '$color',
   opacity: 0.7,
   textAlign: 'center',

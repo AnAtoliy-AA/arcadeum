@@ -1,13 +1,20 @@
-import { styled, XStack } from 'tamagui';
+import type React from 'react';
+import { styled, XStack, TextArea as TamaguiTextArea } from 'tamagui';
 import { TextArea } from '@arcadeum/ui';
+import type { ComponentProps } from 'react';
 
-export const StyledTextArea = styled(TextArea, {
-  name: 'PaymentTextArea',
-  borderWidth: 1,
-  borderRadius: 16,
-  padding: '$4',
-  fontSize: '$4',
-} as any);
+export const StyledTextArea = styled(
+  TextArea as unknown as typeof TamaguiTextArea,
+  {
+    name: 'PaymentTextArea',
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: '$4',
+    fontSize: '$4',
+  },
+) as unknown as React.ComponentType<
+  ComponentProps<typeof TextArea> & { 'aria-label'?: string }
+>;
 
 export const StatusMessage = styled(XStack, {
   name: 'StatusMessage',

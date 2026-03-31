@@ -84,7 +84,7 @@ export const GameHeaderWrapper = styled(XStack, {
 export const StyledGameIcon = styled(Text, {
   name: 'StyledGameIcon',
   fontSize: 40,
-  lineHeight: 1 as any,
+  lineHeight: 1 as never,
 });
 
 export const GameTitle = styled(H3, {
@@ -93,7 +93,7 @@ export const GameTitle = styled(H3, {
   fontSize: '$6',
   fontWeight: '800',
   flex: 1,
-  letterSpacing: -0.02 as any,
+  letterSpacing: -0.02 as never,
 });
 
 export const HelpIcon = styled(YStack, {
@@ -122,7 +122,7 @@ export const GameDescription = styled(Text, {
   name: 'GameDescription',
   margin: 0,
   fontSize: '$4',
-  lineHeight: '$5' as any,
+  lineHeight: '$5' as never,
   color: '$color',
   opacity: 0.7,
   maxWidth: 650,

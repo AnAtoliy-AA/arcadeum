@@ -13,7 +13,7 @@ export const LogItem = styled(YStack, {
   hoverStyle: {
     borderColor: '$borderColorHover',
   },
-} as any);
+} as Record<string, unknown>);
 
 export const LogHeader = styled(XStack, {
   jc: 'space-between',
@@ -25,7 +25,7 @@ export const LogTimestamp = styled(Typography, {
   uiSize: 'xs',
   alpha: 'medium',
   fontFamily: '$mono',
-} as any);
+} as Record<string, unknown>);
 
 export const LogScope = styled(Typography, {
   uiSize: 'xs',
@@ -37,14 +37,14 @@ export const LogScope = styled(Typography, {
   borderRadius: 999,
   backgroundColor: '$backgroundStrong',
   alpha: 'medium',
-} as any);
+} as Record<string, unknown>);
 
 export const LogSender = styled(Typography, {
   uiSize: 'sm',
   weight: '500',
   alpha: 'high',
-} as any);
+} as Record<string, unknown>);
 
 export const LogMessage = styled(Typography, {
   lineHeight: '$5',
-} as any);
+} as Record<string, unknown>);

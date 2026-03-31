@@ -52,25 +52,25 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
       <>
         <style>{gameBreakdownCSS}</style>
         <Section title={t('stats.gameBreakdownTitle')}>
-        <Table>
-          <div className="stats-breakdown-header">
-            <div>{t('stats.game')}</div>
-            <div>{t('stats.total')}</div>
-            <div>{t('stats.wins')}</div>
-            <div>{t('stats.winRate')}</div>
-          </div>
-          {[1, 2].map((i) => (
-            <div key={i} className="stats-breakdown-row">
-              <GameInfo>
-                <SkeletonCircle width="40px" height="40px" delay={i * 0.1} />
-                <SkeletonText width="100px" delay={i * 0.1 + 0.05} />
-              </GameInfo>
-              <SkeletonText width="30px" delay={i * 0.1 + 0.1} />
-              <SkeletonText width="30px" delay={i * 0.1 + 0.15} />
-              <SkeletonText width="50px" delay={i * 0.1 + 0.2} />
+          <Table>
+            <div className="stats-breakdown-header">
+              <div>{t('stats.game')}</div>
+              <div>{t('stats.total')}</div>
+              <div>{t('stats.wins')}</div>
+              <div>{t('stats.winRate')}</div>
             </div>
-          ))}
-        </Table>
+            {[1, 2].map((i) => (
+              <div key={i} className="stats-breakdown-row">
+                <GameInfo>
+                  <SkeletonCircle width="40px" height="40px" delay={i * 0.1} />
+                  <SkeletonText width="100px" delay={i * 0.1 + 0.05} />
+                </GameInfo>
+                <SkeletonText width="30px" delay={i * 0.1 + 0.1} />
+                <SkeletonText width="30px" delay={i * 0.1 + 0.15} />
+                <SkeletonText width="50px" delay={i * 0.1 + 0.2} />
+              </div>
+            ))}
+          </Table>
         </Section>
       </>
     );
@@ -82,29 +82,29 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
     <>
       <style>{gameBreakdownCSS}</style>
       <Section title={t('stats.gameBreakdownTitle')}>
-      <Table>
-        <div className="stats-breakdown-header">
-          <div>{t('stats.game')}</div>
-          <div>{t('stats.total')}</div>
-          <div>{t('stats.wins')}</div>
-          <div>{t('stats.winRate')}</div>
-        </div>
-        {stats.byGameType.map((game) => (
-          <div key={game.gameId} className="stats-breakdown-row">
-            <GameInfo>
-              <GameIcon>🎯</GameIcon>
-              <GameName>
-                {t(`games.${game.gameId}.name` as TranslationKey)}
-              </GameName>
-            </GameInfo>
-            <StatCell>{game.totalGames}</StatCell>
-            <StatCell>{game.wins}</StatCell>
-            <WinRateCell>
-              <ProgressBar value={game.winRate} height={8} showLabel />
-            </WinRateCell>
+        <Table>
+          <div className="stats-breakdown-header">
+            <div>{t('stats.game')}</div>
+            <div>{t('stats.total')}</div>
+            <div>{t('stats.wins')}</div>
+            <div>{t('stats.winRate')}</div>
           </div>
-        ))}
-      </Table>
+          {stats.byGameType.map((game) => (
+            <div key={game.gameId} className="stats-breakdown-row">
+              <GameInfo>
+                <GameIcon>🎯</GameIcon>
+                <GameName>
+                  {t(`games.${game.gameId}.name` as TranslationKey)}
+                </GameName>
+              </GameInfo>
+              <StatCell>{game.totalGames}</StatCell>
+              <StatCell>{game.wins}</StatCell>
+              <WinRateCell>
+                <ProgressBar value={game.winRate} height={8} showLabel />
+              </WinRateCell>
+            </div>
+          ))}
+        </Table>
       </Section>
     </>
   );
@@ -115,36 +115,36 @@ const Table = styled(YStack, {
   width: '100%',
   borderRadius: 12,
   overflow: 'hidden',
-} as any);
+} as never);
 
 const GameInfo = styled(XStack, {
   name: 'GameBreakdownGameInfo',
   alignItems: 'center',
   gap: '$3',
-} as any);
+} as never);
 
 const GameIcon = styled(Text, {
   name: 'GameBreakdownGameIcon',
   fontSize: '$5',
   width: 40,
   height: 40,
-} as any);
+} as never);
 
 const GameName = styled(Text, {
   name: 'GameBreakdownGameName',
   fontWeight: '600',
   color: '$color',
-} as any);
+} as never);
 
 const StatCell = styled(Text, {
   name: 'GameBreakdownStatCell',
   fontWeight: '500',
   color: '$color',
-} as any);
+} as never);
 
 const WinRateCell = styled(XStack, {
   name: 'GameBreakdownWinRateCell',
   alignItems: 'center',
   gap: '$3',
   minWidth: 120,
-} as any);
+} as never);

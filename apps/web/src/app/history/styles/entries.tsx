@@ -16,14 +16,14 @@ export const EntriesGrid = ({ children }: { children: ReactNode }) => (
 
 export const EntryCard = styled(Card, {
   name: 'EntryCard',
-  variant: 'elevated' as any,
-  cardPadding: 'md' as any,
+  variant: 'elevated' as never,
+  cardPadding: 'md' as never,
   interactive: true,
   flexDirection: 'column',
   gap: '$3',
   cursor: 'pointer',
-  group: 'entry' as any,
-} as any);
+  group: 'entry' as never,
+} as Record<string, unknown>);
 
 export const EntryHeader = styled(XStack, {
   jc: 'space-between',
@@ -43,14 +43,15 @@ const StyledEntryGameName = styled(Typography, {
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
   width: '100%',
-} as any);
+} as Record<string, unknown>);
 
 export const EntryGameName = ({
   children,
   title,
   ...props
 }: { children?: ReactNode; title?: string } & Record<string, unknown>) => (
-  <StyledEntryGameName title={title as any} {...(props as any)}>
+  // @ts-expect-error tamagui styled typings
+  <StyledEntryGameName title={title} {...props}>
     {children}
   </StyledEntryGameName>
 );
@@ -62,14 +63,15 @@ const StyledEntryRoomName = styled(Typography, {
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
   width: '100%',
-} as any);
+} as Record<string, unknown>);
 
 export const EntryRoomName = ({
   children,
   title,
   ...props
 }: { children?: ReactNode; title?: string } & Record<string, unknown>) => (
-  <StyledEntryRoomName title={title as any} {...(props as any)}>
+  // @ts-expect-error tamagui styled typings
+  <StyledEntryRoomName title={title} {...props}>
     {children}
   </StyledEntryRoomName>
 );
@@ -78,7 +80,13 @@ export const EntryStatus = ({
   children,
   ...props
 }: { children?: ReactNode } & Record<string, unknown>) => (
-  <Badge variant="info" size="sm" borderRadius={999} flexShrink={0} {...(props as any)}>
+  <Badge
+    variant="info"
+    size="sm"
+    borderRadius={999}
+    flexShrink={0}
+    {...(props as Record<string, unknown>)}
+  >
     {children}
   </Badge>
 );
@@ -101,7 +109,7 @@ export const EntryFooter = styled(XStack, {
 export const EntryTimestamp = styled(Typography, {
   uiSize: 'xs',
   alpha: 'medium',
-} as any);
+} as Record<string, unknown>);
 
 export const EntryViewDetails = styled(Typography, {
   uiSize: 'sm',
@@ -110,4 +118,4 @@ export const EntryViewDetails = styled(Typography, {
   '$group-entry-hover': {
     opacity: 0.8,
   },
-} as any);
+} as Record<string, unknown>);

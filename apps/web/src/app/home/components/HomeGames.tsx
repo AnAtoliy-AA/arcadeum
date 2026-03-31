@@ -138,7 +138,7 @@ export function HomeGames() {
   const sectionRef = useScrollReveal<HTMLDivElement>();
 
   return (
-    <SliderSection id="games" ref={sectionRef as any}>
+    <SliderSection id="games" ref={sectionRef as never}>
       <SectionHeader data-reveal data-reveal-delay="1">
         <SectionTitle>{homeCopy.gamesTitle ?? 'Featured Games'}</SectionTitle>
         <SectionSubtitle>

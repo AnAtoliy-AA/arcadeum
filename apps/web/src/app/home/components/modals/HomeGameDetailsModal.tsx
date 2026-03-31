@@ -31,7 +31,7 @@ const ModalGlassContent = styled(ModalContent, {
   borderColor: '$borderColor',
   position: 'relative',
   overflow: 'hidden',
-} as any);
+} as never);
 
 const HeaderBackgroundEmoji = styled(YStack, {
   position: 'absolute',
@@ -40,7 +40,7 @@ const HeaderBackgroundEmoji = styled(YStack, {
   opacity: 0.1,
   pointerEvents: 'none',
   zIndex: 0,
-} as any);
+} as never);
 
 const tabStyles = `
   .tab-pill { background: transparent; border: none; border-radius: 999px; padding: 0.6rem 2rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); text-transform: uppercase; letter-spacing: 0.05em; color: rgba(236,239,238,0.7); }
@@ -104,8 +104,21 @@ export function HomeGameDetailsModal({
   }, [game, t]);
 
   const renderRules = () => (
-    <div style={{ display: 'grid', gap: '1.5rem', position: 'relative', zIndex: 1 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+    <div
+      style={{
+        display: 'grid',
+        gap: '1.5rem',
+        position: 'relative',
+        zIndex: 1,
+      }}
+    >
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '1.25rem',
+        }}
+      >
         {rulesData.map((rule) => (
           <div
             key={rule.id}
@@ -124,7 +137,8 @@ export function HomeGameDetailsModal({
                 width: 44,
                 height: 44,
                 borderRadius: 12,
-                background: game?.gradient ?? 'linear-gradient(135deg,#ff4d4d,#f9cb28)',
+                background:
+                  game?.gradient ?? 'linear-gradient(135deg,#ff4d4d,#f9cb28)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -136,9 +150,34 @@ export function HomeGameDetailsModal({
             >
               {rule.index}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1 }}>
-              <h5 style={{ margin: 0, color: '#ecefee', fontSize: '1.1rem', fontWeight: 700 }}>{rule.name}</h5>
-              <p style={{ margin: 0, color: 'rgba(236,239,238,0.7)', fontSize: '0.95rem', lineHeight: 1.5 }}>{rule.description}</p>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.35rem',
+                flex: 1,
+              }}
+            >
+              <h5
+                style={{
+                  margin: 0,
+                  color: '#ecefee',
+                  fontSize: '1.1rem',
+                  fontWeight: 700,
+                }}
+              >
+                {rule.name}
+              </h5>
+              <p
+                style={{
+                  margin: 0,
+                  color: 'rgba(236,239,238,0.7)',
+                  fontSize: '0.95rem',
+                  lineHeight: 1.5,
+                }}
+              >
+                {rule.description}
+              </p>
             </div>
           </div>
         ))}
@@ -150,8 +189,21 @@ export function HomeGameDetailsModal({
     if (!game) return null;
 
     return (
-      <div style={{ display: 'grid', gap: '1.5rem', position: 'relative', zIndex: 1 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem' }}>
+      <div
+        style={{
+          display: 'grid',
+          gap: '1.5rem',
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+            gap: '1rem',
+          }}
+        >
           {game.variants.map((v) => {
             const active = !v.disabled;
             return (
@@ -160,7 +212,13 @@ export function HomeGameDetailsModal({
                 borderRadius={16}
                 padding="$4"
                 gap="$3"
-                style={{ opacity: v.disabled ? 0.6 : 1, border: active ? '1px solid #32353d' : '1px solid transparent', transition: 'all 0.2s ease' }}
+                style={{
+                  opacity: v.disabled ? 0.6 : 1,
+                  border: active
+                    ? '1px solid #32353d'
+                    : '1px solid transparent',
+                  transition: 'all 0.2s ease',
+                }}
               >
                 <Text color="$color" fontWeight="700" fontSize="$4">
                   {t(v.nameKey) || v.id}
@@ -173,7 +231,9 @@ export function HomeGameDetailsModal({
                     letterSpacing: 1,
                     padding: '0.25rem 0.6rem',
                     borderRadius: 6,
-                    background: active ? 'rgba(122,215,255,0.12)' : 'rgba(236,239,238,0.12)',
+                    background: active
+                      ? 'rgba(122,215,255,0.12)'
+                      : 'rgba(236,239,238,0.12)',
                     color: active ? '#7ad7ff' : 'rgba(236,239,238,0.45)',
                     width: 'fit-content',
                     display: 'inline-block',
@@ -198,13 +258,17 @@ export function HomeGameDetailsModal({
       <ModalGlassContent maxWidth="800px">
         <style>{tabStyles}</style>
         <HeaderBackgroundEmoji>
-          <span style={{ fontSize: '10rem', filter: 'blur(4px)' }}>{game.emoji}</span>
+          <span style={{ fontSize: '10rem', filter: 'blur(4px)' }}>
+            {game.emoji}
+          </span>
         </HeaderBackgroundEmoji>
         <ModalHeader onClose={onClose}>
           <ModalTitle>
             <span
               style={{
-                background: game.gradient ?? 'linear-gradient(135deg, #ff4d4d 0%, #f9cb28 100%)',
+                background:
+                  game.gradient ??
+                  'linear-gradient(135deg, #ff4d4d 0%, #f9cb28 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 fontSize: '2.25rem',
@@ -252,7 +316,9 @@ export function HomeGameDetailsModal({
             borderTopWidth={1}
             borderTopColor="$borderColor"
           >
-            <div style={{ color: 'rgba(236, 239, 238, 0.7)', fontSize: '0.9rem' }}>
+            <div
+              style={{ color: 'rgba(236, 239, 238, 0.7)', fontSize: '0.9rem' }}
+            >
               {locale.toUpperCase()} •{' '}
               {t(`games.shared.category.${game.type}Game` as TranslationKey)}
             </div>

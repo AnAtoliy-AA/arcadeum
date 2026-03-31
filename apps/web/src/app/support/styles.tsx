@@ -190,7 +190,7 @@ export const Page = styled(YStack, {
   justifyContent: 'center',
   overflow: 'hidden',
   position: 'relative',
-} as any);
+} as never);
 
 export function BackgroundBlob() {
   return (
@@ -261,7 +261,7 @@ export const Tagline = styled(Text, {
   color: 'rgba(236,239,238,0.7)',
   maxWidth: 650,
   style: { lineHeight: 1.5 },
-} as any);
+} as never);
 
 export function SectionTitle({
   children,
@@ -284,7 +284,7 @@ export const HeaderDescription = styled(Text, {
   color: 'rgba(236,239,238,0.45)',
   maxWidth: 700,
   style: { lineHeight: 1.7 },
-} as any);
+} as never);
 
 export function TeamGrid({ children }: { children: React.ReactNode }) {
   return (
@@ -323,7 +323,7 @@ export const TeamHeader = styled(XStack, {
   justifyContent: 'space-between',
   alignItems: 'flex-start',
   width: '100%',
-} as any);
+} as never);
 
 export function TeamIcon({
   children,
@@ -346,7 +346,7 @@ export const TeamName = styled(Text, {
   fontWeight: '700',
   color: '$color',
   marginBottom: '$1',
-} as any);
+} as never);
 
 export const TeamRole = styled(Text, {
   tag: 'p',
@@ -355,7 +355,7 @@ export const TeamRole = styled(Text, {
   fontWeight: '500',
   color: 'rgba(236,239,238,0.7)',
   marginBottom: '$2',
-} as any);
+} as never);
 
 export const TeamBio = styled(Text, {
   tag: 'p',
@@ -363,7 +363,7 @@ export const TeamBio = styled(Text, {
   fontSize: '$3',
   color: 'rgba(236,239,238,0.45)',
   style: { lineHeight: 1.6 },
-} as any);
+} as never);
 
 export function ActionList({ children }: { children: React.ReactNode }) {
   return (
@@ -383,7 +383,7 @@ export const ActionHeader = styled(XStack, {
   tag: 'header',
   alignItems: 'center',
   gap: '$3',
-} as any);
+} as never);
 
 export const ActionTitle = styled(Text, {
   tag: 'h3',
@@ -391,7 +391,7 @@ export const ActionTitle = styled(Text, {
   fontSize: '$4',
   fontWeight: '600',
   color: 'rgba(236,239,238,0.7)',
-} as any);
+} as never);
 
 export const ActionDescription = styled(Text, {
   tag: 'p',
@@ -399,20 +399,24 @@ export const ActionDescription = styled(Text, {
   fontSize: '$3',
   color: 'rgba(236,239,238,0.45)',
   style: { lineHeight: 1.6 },
-} as any);
+} as never);
 
 export const CtaRow = styled(XStack, {
   flexWrap: 'wrap',
   justifyContent: 'space-between',
   alignItems: 'center',
   gap: '$3',
-} as any);
+} as never);
 
 export const CtaLink = ({
   children,
   href,
   ...props
-}: { children: React.ReactNode; href: string; [key: string]: unknown }) => (
+}: {
+  children: React.ReactNode;
+  href: string;
+  [key: string]: unknown;
+}) => (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   <Link className="support-cta" href={href} {...(props as any)}>
     {children}
@@ -422,7 +426,9 @@ export const CtaLink = ({
 export const ExternalCta = ({
   children,
   ...props
-}: React.AnchorHTMLAttributes<HTMLAnchorElement> & { children?: React.ReactNode }) => (
+}: React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+  children?: React.ReactNode;
+}) => (
   <a className="support-cta" {...props}>
     {children}
   </a>
@@ -431,9 +437,13 @@ export const ExternalCta = ({
 export const LinkedInButton = ({
   children,
   ...props
-}: React.AnchorHTMLAttributes<HTMLAnchorElement> & { children?: React.ReactNode; as?: string }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { as: _as, ...rest } = props as { as?: string } & React.AnchorHTMLAttributes<HTMLAnchorElement>;
+}: React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+  children?: React.ReactNode;
+  as?: string;
+}) => {
+  const { as: _as, ...rest } = props as {
+    as?: string;
+  } & React.AnchorHTMLAttributes<HTMLAnchorElement>;
   return (
     <a className="support-cta support-linkedin-btn" {...rest}>
       {children}
@@ -473,4 +483,4 @@ export const Thanks = styled(Text, {
   fontSize: '$4',
   color: 'rgba(236,239,238,0.45)',
   style: { lineHeight: 1.7 },
-} as any);
+} as never);

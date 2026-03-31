@@ -42,7 +42,7 @@ export const FeatureDescription = styled(Text, {
   name: 'FeatureDescription',
   margin: 0,
   fontSize: '$3',
-  lineHeight: '$4' as any,
+  lineHeight: '$4' as never,
   color: '$color',
   opacity: 0.7,
 });

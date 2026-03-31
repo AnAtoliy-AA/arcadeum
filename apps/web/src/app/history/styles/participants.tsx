@@ -16,7 +16,7 @@ export const ParticipantRow = styled(XStack, {
     borderColor: '$primary',
     backgroundColor: '$backgroundStrong',
   },
-} as any);
+} as Record<string, unknown>);
 
 export const ParticipantInfo = styled(XStack, {
   ai: 'center',
@@ -27,7 +27,7 @@ export const ParticipantInfo = styled(XStack, {
 export const ParticipantName = styled(Typography, {
   weight: '500',
   flex: 1,
-} as any);
+} as Record<string, unknown>);
 
 // Native checkbox — appearance:none + pseudo-selectors cannot be expressed in Tamagui.
 // Styles injected via a <style> block rendered alongside the component.

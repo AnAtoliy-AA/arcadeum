@@ -29,7 +29,11 @@ export function StatsOverview({ stats, loading }: StatsOverviewProps) {
           {[1, 2, 3, 4].map((i) => (
             <Card key={i} variant="glass" cardPadding="md">
               <SkeletonText width="60%" height="14px" delay={i * 0.1} />
-              <SkeletonText width="100px" height="32px" delay={i * 0.1 + 0.05} />
+              <SkeletonText
+                width="100px"
+                height="32px"
+                delay={i * 0.1 + 0.05}
+              />
             </Card>
           ))}
         </div>
@@ -73,7 +77,7 @@ const StatLabel = styled(Text, {
   textTransform: 'uppercase',
   letterSpacing: 1.2,
   fontWeight: '500',
-} as any);
+});
 
 const StatValue = styled(Text, {
   name: 'StatsOverviewStatValue',
@@ -82,11 +86,11 @@ const StatValue = styled(Text, {
   color: '$primaryGradientStart',
   lineHeight: 1,
   letterSpacing: -0.5,
-} as any);
+});
 
 const WinRateCardContent = styled(YStack, {
   name: 'StatsOverviewWinRateContent',
   alignItems: 'center',
   justifyContent: 'center',
   gap: '$4',
-} as any);
+});

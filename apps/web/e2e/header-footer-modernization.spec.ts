@@ -81,11 +81,11 @@ test.describe('Header and Footer Modernization', () => {
     const logo = page.locator('header a[href="/"]').first();
     const logoInner = logo.locator('> div').first();
 
-    // Hover directly on the inner div that has the hoverStyle
-    await logoInner.hover();
-
     // Use toPass to wait for the transition to be reflected in computed styles
     await expect(async () => {
+      // Hover repeatedly to ensure state is caught even if hydration swaps elements
+      await logoInner.hover();
+      
       const styles = await logoInner.evaluate((el) => {
         const s = window.getComputedStyle(el);
         return {
@@ -96,8 +96,9 @@ test.describe('Header and Footer Modernization', () => {
       });
 
       // Check if any hover effect is applied
-      const hasTransform = styles.transform !== 'none' && styles.transform.includes('matrix');
-      const hasScale = styles.scale !== 'none' && styles.scale !== '1';
+      // Firefox often reports matrix for transform; others might use scale property
+      const hasTransform = styles.transform !== 'none' && styles.transform !== 'matrix(1, 0, 0, 1, 0, 0)';
+      const hasScale = styles.scale !== 'none' && styles.scale !== '1' && !styles.scale.startsWith('1 1');
       const hasOpacityChange = parseFloat(styles.opacity) < 1;
 
       expect(hasTransform || hasScale || hasOpacityChange).toBe(true);
@@ -115,10 +116,10 @@ test.describe('Header and Footer Modernization', () => {
     const socialIcons = page.getByTestId(/footer-social-/);
     const firstIcon = socialIcons.first();
 
-    await firstIcon.hover();
-
     // Use toPass to wait for the transition to be reflected in computed styles
     await expect(async () => {
+      await firstIcon.hover();
+      
       const styles = await firstIcon.evaluate((el) => {
         const s = window.getComputedStyle(el);
         return {
@@ -130,9 +131,9 @@ test.describe('Header and Footer Modernization', () => {
       });
 
       // Check if any hover effect is applied
-      const hasTransform = styles.transform !== 'none' && styles.transform.includes('matrix');
-      const hasScale = styles.scale !== 'none' && styles.scale !== '1';
-      const hasRotate = styles.rotate !== 'none' && styles.rotate !== '0deg';
+      const hasTransform = styles.transform !== 'none' && styles.transform !== 'matrix(1, 0, 0, 1, 0, 0)';
+      const hasScale = styles.scale !== 'none' && styles.scale !== '1' && !styles.scale.startsWith('1 1');
+      const hasRotate = styles.rotate !== 'none' && styles.rotate !== '0deg' && styles.rotate !== '0';
       const hasOpacityChange = parseFloat(styles.opacity) > 0.85; // Default is 0.8
 
       expect(hasTransform || hasScale || hasRotate || hasOpacityChange).toBe(true);

@@ -2,7 +2,7 @@
 
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { Section } from '@/shared/ui';
+import { Section, PageLayout, Container } from '@/shared/ui';
 import { useHistoryFetch, useHistoryDetail, useHistoryActions } from './hooks';
 import {
   HistoryHeader,
@@ -10,7 +10,6 @@ import {
   HistoryList,
   HistoryDetailModal,
 } from './components';
-import { Page, Container } from './styles';
 
 export function HistoryPage() {
   const { snapshot } = useSessionTokens();
@@ -70,8 +69,8 @@ export function HistoryPage() {
 
   return (
     <>
-      <Page>
-        <Container>
+      <PageLayout>
+        <Container size="xl" gap="$5">
           <HistoryHeader
             loading={loading}
             refreshing={refreshing}
@@ -102,7 +101,7 @@ export function HistoryPage() {
             formatDate={formatDate}
           />
         </Container>
-      </Page>
+      </PageLayout>
 
       {selectedEntry && (
         <HistoryDetailModal

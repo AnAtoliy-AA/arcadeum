@@ -10,24 +10,15 @@ import {
   type LoginResponse,
 } from '@/entities/session/api/authApi';
 import { parseApiError } from '@/entities/session/lib/parseApiError';
-import {
-  type SessionTokensValue,
-  type SessionTokensSnapshot,
-} from '@/entities/session/model/useSessionTokens';
+import { type SessionTokensValue } from '@/entities/session/model/useSessionTokens';
+import { useSessionStore } from '@/entities/session/store/sessionStore';
+import type {
+  LocalAuthMode,
+  LocalAuthState,
+  SessionTokensSnapshot,
+} from './types';
 
 const EMAIL_STORAGE_KEY = 'web_auth_email';
-
-type LocalAuthMode = 'login' | 'register';
-
-type LocalAuthState = {
-  mode: LocalAuthMode;
-  loading: boolean;
-  error: string | null;
-  accessToken: string | null;
-  email: string | null;
-  username: string | null;
-  displayName: string | null;
-};
 
 export type UseLocalAuthResult = LocalAuthState & {
   register: (params: {
@@ -95,8 +86,8 @@ function mergeSnapshot(
 }
 
 export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
-  const [state, setState] = useState<LocalAuthState>(() => ({
-    mode: 'login',
+  const { mode, setMode } = useSessionStore();
+  const [state, setState] = useState<Omit<LocalAuthState, 'mode'>>(() => ({
     loading: false,
     error: null,
     accessToken: null,
@@ -106,21 +97,13 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
   }));
   const hasCheckedOnceRef = useRef(false);
 
-  const setMode = useCallback((mode: LocalAuthMode) => {
-    setState((current) => ({
-      ...current,
-      mode,
-      error: null,
-    }));
-  }, []);
-
   const toggleMode = useCallback(() => {
+    setMode(mode === 'login' ? 'register' : 'login');
     setState((current) => ({
       ...current,
-      mode: current.mode === 'login' ? 'register' : 'login',
       error: null,
     }));
-  }, []);
+  }, [mode, setMode]);
 
   const applySnapshot = useCallback((snapshot: SessionTokensSnapshot) => {
     setState((current) => ({
@@ -169,9 +152,9 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
         setState((current) => ({
           ...current,
           loading: false,
-          mode: 'login',
           error: null,
         }));
+        setMode('login');
       } catch (error) {
         const rawMessage =
           error instanceof Error ? error.message : String(error);
@@ -183,7 +166,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
         }));
       }
     },
-    [registerMutation],
+    [registerMutation, setMode],
   );
 
   const login = useCallback(
@@ -340,6 +323,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
   const value: UseLocalAuthResult = useMemo(
     () => ({
       ...state,
+      mode,
       register,
       login,
       toggleMode,
@@ -347,7 +331,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
       checkSession,
       setMode,
     }),
-    [state, register, login, toggleMode, logout, checkSession, setMode],
+    [state, mode, register, login, toggleMode, logout, checkSession, setMode],
   );
 
   return value;

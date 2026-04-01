@@ -83,10 +83,7 @@ test.describe('Critical Variant Selection', () => {
     await navigateTo(page, '/games/create');
 
     // Select Critical game tile
-    const criticalTile = page
-      .locator('div,a,button')
-      .filter({ hasText: /^Critical$/ })
-      .first();
+    const criticalTile = page.getByTestId('game-tile-critical_v1');
     await expect(criticalTile).toBeVisible();
     await criticalTile.click();
 

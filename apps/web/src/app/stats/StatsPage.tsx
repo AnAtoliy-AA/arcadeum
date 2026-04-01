@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import styled from 'styled-components';
+import React, { useState, useMemo, ComponentProps, ReactNode } from 'react';
+import { styled, XStack, Text } from 'tamagui';
 import {
-  Button,
   PageLayout,
   Container as SharedContainer,
   Select,
   ErrorState,
   EmptyState,
 } from '@/shared/ui';
+import { Button } from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
   useTranslation,
@@ -114,14 +114,9 @@ export function StatsPage() {
               <FilterLabel>{t('stats.filterByGame')}</FilterLabel>
               <Select
                 value={selectedGame}
-                onChange={(e) => setSelectedGame(e.target.value)}
-              >
-                {gameOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
+                onValueChange={setSelectedGame}
+                options={gameOptions}
+              />
             </FilterContainer>
             <Leaderboard
               leaderboard={leaderboard}
@@ -138,40 +133,53 @@ export function StatsPage() {
   );
 }
 
-const Container = styled(SharedContainer)`
-  max-width: 1200px;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-`;
+const Container = styled(SharedContainer, {
+  name: 'StatsPageContainer',
+  maxWidth: 1200,
+  flexDirection: 'column',
+  gap: '$5',
+} as unknown as Record<string, unknown>);
 
-const TabGroup = styled.div`
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-`;
+const TabGroup = styled(XStack, {
+  name: 'StatsTabGroup',
+  gap: '$3',
+  flexWrap: 'wrap',
+} as unknown as Record<string, unknown>);
 
-const TabButton = styled(Button).attrs<{ $active: boolean }>(({ $active }) => ({
-  variant: $active ? 'primary' : 'chip',
-  size: 'md',
-  isActive: $active,
-}))<{ $active: boolean }>`
-  min-width: 120px;
-  justify-content: center;
-`;
+interface TabButtonProps extends ComponentProps<typeof Button> {
+  $active?: boolean;
+  children?: ReactNode;
+}
 
-const FilterContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  background: ${({ theme }) => theme.surfaces.panel.background};
-  border: 1px solid ${({ theme }) => theme.surfaces.panel.border};
-  border-radius: 16px;
-  backdrop-filter: blur(14px);
-`;
+const TabButton = ({ $active, ...props }: TabButtonProps) => (
+  <Button
+    variant={$active ? 'primary' : 'chip'}
+    size="md"
+    isActive={$active}
+    minWidth={120}
+    justifyContent="center"
+    {...props}
+  />
+);
 
-const FilterLabel = styled.label`
-  font-weight: 500;
-  color: ${({ theme }) => theme.text.secondary};
-`;
+const FilterContainer = styled(XStack, {
+  name: 'StatsFilterContainer',
+  alignItems: 'center',
+  gap: '$4',
+  padding: '$4',
+  paddingHorizontal: '$5',
+  backgroundColor: '$background',
+  borderWidth: 1,
+  borderColor: '$borderColor',
+  borderRadius: 16,
+} as unknown as Record<string, unknown>);
+
+const FilterLabel = styled(Text, {
+  name: 'StatsFilterLabel',
+  tag: 'label',
+  fontSize: '$3',
+  fontWeight: '600',
+  color: '$color11',
+  letterSpacing: 0.5,
+  userSelect: 'none',
+} as unknown as Record<string, unknown>);

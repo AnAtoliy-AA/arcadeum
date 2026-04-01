@@ -1,12 +1,11 @@
 import { GamesSearch } from '@/features/games';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { XStack, Text } from 'tamagui';
 import {
-  FilterChip,
-  FilterChips,
-  FilterGroup,
-  FilterLabel,
-  Filters,
-} from '../styles';
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
+import { FilterChips, FilterGroup, FilterLabel, Filters } from '../styles';
+import { Button } from '@arcadeum/ui';
 import type { GamesParticipationFilter, GamesStatusFilter } from '../types';
 
 interface GamesFiltersProps {
@@ -49,25 +48,19 @@ export function GamesFilters({
                 in_progress: 'games.lounge.filters.status.in_progress',
                 completed: 'games.lounge.filters.status.completed',
               } as const;
-              const label = t(statusKeys[value]);
+              const label = t(statusKeys[value] as TranslationKey);
               return (
-                <FilterChip
+                <Button
                   key={value}
-                  $active={statusFilter === value}
+                  variant="chip"
+                  size="sm"
+                  isActive={statusFilter === value}
                   onClick={() => onStatusChange(value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      onStatusChange(value);
-                    }
-                  }}
                   aria-label={`Filter by status: ${label || value}`}
                   aria-pressed={statusFilter === value}
-                  role="button"
-                  tabIndex={0}
                 >
                   {label || value}
-                </FilterChip>
+                </Button>
               );
             },
           )}
@@ -75,9 +68,22 @@ export function GamesFilters({
       </FilterGroup>
 
       <FilterGroup>
-        <FilterLabel>
-          {t('games.lounge.filters.participationLabel')}
-        </FilterLabel>
+        <XStack gap="$2" alignItems="center">
+          <FilterLabel>
+            {t('games.lounge.filters.participationLabel')}
+          </FilterLabel>
+          {!isAuthenticated && (
+            <Text
+              fontSize="$1"
+              color="$color9"
+              opacity={0.6}
+              fontStyle="italic"
+              marginBottom="$1"
+            >
+              ({t('games.create.loginRequired').toLowerCase()})
+            </Text>
+          )}
+        </XStack>
         <FilterChips>
           {(['all', 'hosting', 'joined', 'not_joined'] as const).map(
             (value) => {
@@ -87,35 +93,20 @@ export function GamesFilters({
                 joined: 'games.lounge.filters.participation.joined',
                 not_joined: 'games.lounge.filters.participation.not_joined',
               } as const;
-              const label = t(participationKeys[value]);
+              const label = t(participationKeys[value] as TranslationKey);
               return (
-                <FilterChip
+                <Button
                   key={value}
-                  $active={participationFilter === value}
-                  onClick={() => {
-                    if (value !== 'all' && !isAuthenticated) {
-                      // Optionally show a login prompt or ignore
-                      return;
-                    }
-                    onParticipationChange(value);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      if (value !== 'all' && !isAuthenticated) {
-                        return;
-                      }
-                      e.preventDefault();
-                      onParticipationChange(value);
-                    }
-                  }}
-                  $disabled={value !== 'all' && !isAuthenticated}
+                  variant="chip"
+                  size="sm"
+                  isActive={participationFilter === value}
+                  disabled={value !== 'all' && !isAuthenticated}
+                  onClick={() => onParticipationChange(value)}
                   aria-label={`Filter by participation: ${label || value}`}
                   aria-pressed={participationFilter === value}
-                  role="button"
-                  tabIndex={value !== 'all' && !isAuthenticated ? -1 : 0}
                 >
                   {label || value}
-                </FilterChip>
+                </Button>
               );
             },
           )}

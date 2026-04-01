@@ -14,12 +14,13 @@ import {
 } from './games.gateway.utils';
 
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
+import { corsOriginMatcher } from '../common/utils/cors.util';
 import { CriticalService } from './critical/critical.service';
 import { ChatScope } from './engines';
 
 @WebSocketGateway({
   namespace: 'games',
-  cors: { origin: '*' },
+  cors: { origin: corsOriginMatcher },
 })
 @Injectable()
 export class CriticalGateway {

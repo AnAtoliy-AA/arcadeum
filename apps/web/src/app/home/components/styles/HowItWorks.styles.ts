@@ -1,125 +1,114 @@
 'use client';
 
-import styled from 'styled-components';
-import { fadeInUp } from './Animations.styles';
+import { styled, YStack, Text } from 'tamagui';
 import { SectionContainer } from './Common.styles';
 
-export const HowItWorksSection = styled(SectionContainer)`
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
-`;
+export const HowItWorksSection = styled(SectionContainer, {
+  name: 'HowItWorksSection',
+  gap: '$8',
+  overflow: 'hidden',
+});
 
-export const StepsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  max-width: 700px;
-  margin: 0 auto;
-  position: relative;
+export const StepsContainer = styled(YStack, {
+  name: 'StepsContainer',
+  gap: '$8',
+  maxWidth: 700,
+  alignSelf: 'center',
+  width: '100%',
+  height: 'auto',
 
-  @media (min-width: 1024px) {
-    flex-direction: row;
-    max-width: 1200px;
-    gap: 3rem;
-  }
-`;
+  $gtMd: {
+    flexDirection: 'row',
+    maxWidth: 1100,
+    gap: '$12',
+  },
+});
 
-export const StepItem = styled.div`
-  display: flex;
-  gap: 1.5rem;
-  align-items: flex-start;
-  animation: ${fadeInUp} 0.5s ease-out both;
-  position: relative;
-  flex: 1;
+export const StepItem = styled(YStack, {
+  name: 'StepItem',
+  flexGrow: 1,
+  flexShrink: 1,
+  flexBasis: 0,
+  minWidth: 0,
+  minHeight: 120,
+  gap: '$4',
+  position: 'relative',
+  flexDirection: 'row',
+  alignItems: 'flex-start',
 
-  &:nth-child(1) {
-    animation-delay: 0.1s;
-  }
-  &:nth-child(2) {
-    animation-delay: 0.2s;
-  }
-  &:nth-child(3) {
-    animation-delay: 0.3s;
-  }
+  $gtMd: {
+    minHeight: 180,
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+});
 
-  /* Vertical line for mobile */
-  &::after {
-    content: '';
-    position: absolute;
-    left: 27px;
-    top: 56px;
-    bottom: -2rem;
-    width: 2px;
-    background: ${({ theme }) => theme.surfaces.card.border};
-    z-index: 0;
-  }
+// Connector line rendered as a separate element inside StepItem — see HomeHowItWorks.tsx
+export const StepConnector = styled(YStack, {
+  name: 'StepConnector',
+  position: 'absolute',
+  zIndex: 0,
+  // Mobile: vertical line
+  left: 27,
+  top: 56,
+  bottom: -32,
+  width: 2,
+  background:
+    'linear-gradient(to bottom, transparent, rgba(255,255,255,0.2), transparent)',
 
-  &:last-child::after {
-    display: none;
-  }
+  $gtMd: {
+    // Desktop: horizontal line
+    left: '50%',
+    top: 28,
+    width: 'calc(100% + 48px)',
+    height: 2,
+    bottom: 'auto',
+    background:
+      'linear-gradient(to right, transparent, rgba(87, 195, 255, 0.3), transparent)',
+  },
+});
 
-  /* Desktop Styles */
-  @media (min-width: 1024px) {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 1.5rem;
+export const StepNumber = styled(YStack, {
+  name: 'StepNumber',
+  flexShrink: 0,
+  width: 56,
+  height: 56,
+  borderRadius: 999,
+  backgroundColor: '$glassBg',
+  borderWidth: 1,
+  borderColor: '$primary',
+  alignItems: 'center',
+  justifyContent: 'center',
+  position: 'relative',
+  zIndex: 1,
+  shadowColor: 'transparent',
+} as Record<string, unknown>);
 
-    /* Horizontal line for desktop */
-    &::after {
-      left: 50%;
-      top: 28px;
-      width: 100%;
-      height: 2px;
-      background: ${({ theme }) => theme.surfaces.card.border};
-    }
+export const StepContent = styled(YStack, {
+  name: 'StepContent',
+  flex: 1,
+  gap: '$2',
+  paddingTop: '$2',
+  alignItems: 'center',
+});
 
-    &:last-child::after {
-      display: none;
-    }
-  }
-`;
+export const StepTitle = styled(Text, {
+  name: 'StepTitle',
+  margin: 0,
+  fontSize: '$5',
+  fontWeight: '600',
+  color: '$color',
+  letterSpacing: -0.3,
+  textAlign: 'center',
+});
 
-export const StepNumber = styled.div`
-  flex-shrink: 0;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border: 1px solid ${({ theme }) => theme.buttons.primary.gradientStart}40;
-  color: ${({ theme }) => theme.buttons.primary.gradientStart};
-  font-size: 1.25rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  z-index: 1;
-  box-shadow: 0 0 15px ${({ theme }) => theme.buttons.primary.gradientStart}20;
-
-  @media (max-width: 640px) {
-    width: 48px;
-    height: 48px;
-    font-size: 1.1rem;
-  }
-`;
-
-export const StepContent = styled.div`
-  flex: 1;
-  padding-top: 0.5rem;
-`;
-
-export const StepTitle = styled.h3`
-  margin: 0 0 0.5rem;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.text.primary};
-`;
-
-export const StepDescription = styled.p`
-  margin: 0;
-  font-size: 1rem;
-  line-height: 1.6;
-  color: ${({ theme }) => theme.text.muted};
-`;
+export const StepDescription = styled(Text, {
+  name: 'StepDescription',
+  margin: 0,
+  fontSize: '$4',
+  lineHeight: '$5' as unknown as number,
+  color: '$color',
+  opacity: 0.7,
+  textAlign: 'center',
+  maxWidth: 300,
+});

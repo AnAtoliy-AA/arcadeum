@@ -24,7 +24,9 @@ export const test = base.extend({
           text.includes(
             'hydrated but some attributes of the server rendered HTML',
           ) ||
-          text.includes('was preloaded using link preload but not used')
+          text.includes('was preloaded using link preload but not used') ||
+          (/font|geist/i.test(text) &&
+            /(download failed|rejected|decode)/i.test(text))
         ) {
           return;
         }
@@ -38,22 +40,32 @@ export const test = base.extend({
           return;
         }
 
+        // Ignore Next.js stack-frame CORS errors during aborts
+        if (text.includes('__nextjs_original-stack-frames')) {
+          return;
+        }
+
         console.log(`BROWSER [${type}]: ${text}`);
       }
     });
 
     page.on('requestfailed', (request) => {
       const failure = request.failure();
+      const url = request.url();
       if (failure) {
         // Ignore aborted requests which are common during navigation
+        // Also ignore Next.js stack frame requests which often get cancelled on reload
         if (
           failure.errorText === 'NS_BINDING_ABORTED' ||
-          failure.errorText === 'net::ERR_ABORTED'
+          failure.errorText === 'net::ERR_ABORTED' ||
+          failure.errorText === 'canceled' || // Common in WebKit
+          failure.errorText === 'cancelled' || // Other runtimes
+          url.includes('__nextjs_original-stack-frames')
         ) {
           return;
         }
         console.log(
-          `NETWORK [error]: ${request.method()} ${request.url()} - ${failure.errorText}`,
+          `NETWORK [error]: ${request.method()} ${url} - ${failure.errorText}`,
         );
       }
     });
@@ -72,6 +84,9 @@ export const test = base.extend({
     });
 
     page.on('pageerror', (err) => {
+      if (err.message.includes('__nextjs_original-stack-frames')) {
+        return;
+      }
       console.log(`BROWSER [error]: ${err.message}\n${err.stack || ''}`);
     });
 
@@ -147,6 +162,11 @@ export const test = base.extend({
     );
     await page.route('**/manifest.json', (route) =>
       route.fulfill({ status: 200, body: '{}' }),
+    );
+
+    // Mock Next.js Geist fonts to prevent connection refused noise in E2E
+    await page.route('**/__nextjs_font/**', (route) =>
+      route.fulfill({ status: 200, body: '' }),
     );
 
     // Global payment gateway mocks to prevent 404s and external network noise

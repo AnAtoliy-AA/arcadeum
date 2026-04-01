@@ -1,6 +1,4 @@
-'use client';
-
-import styled from 'styled-components';
+import { styled, YStack, Text } from 'tamagui';
 
 interface GameStatusMessageProps {
   currentPlayerAlive: boolean;
@@ -22,15 +20,13 @@ export function GameStatusMessage({
   if (!currentPlayerAlive) {
     return (
       <EmptyState>
-        <div style={{ fontSize: '4rem' }}>💀</div>
-        <div>
-          <strong style={{ fontSize: '1.25rem' }}>
+        <Text fontSize={64}>💀</Text>
+        <YStack alignItems="center">
+          <Text fontSize={20} fontWeight="bold">
             {t('games.table.eliminated.title')}
-          </strong>
-        </div>
-        <div style={{ fontSize: '1rem' }}>
-          {t('games.table.eliminated.message')}
-        </div>
+          </Text>
+        </YStack>
+        <Text fontSize={16}>{t('games.table.eliminated.message')}</Text>
       </EmptyState>
     );
   }
@@ -38,15 +34,13 @@ export function GameStatusMessage({
   return null;
 }
 
-const EmptyState = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 2rem;
-  text-align: center;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 1rem;
-  margin-top: 1rem;
-`;
+const EmptyState = styled(YStack, {
+  name: 'EmptyState',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '$3',
+  padding: '$8',
+  backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  borderRadius: '$4',
+  marginTop: '$4',
+});

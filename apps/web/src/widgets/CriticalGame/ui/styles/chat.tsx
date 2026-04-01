@@ -1,0 +1,84 @@
+import { styled, YStack, Text } from 'tamagui';
+import { getVariantStyles } from './variants';
+
+export const ChatCard = styled(YStack, {
+  name: 'ChatCard',
+  flexDirection: 'column',
+  gap: '$4',
+  padding: '$4',
+  borderRadius: 20,
+  backgroundColor: '$background',
+  backdropFilter: 'blur(20px)',
+  borderWidth: 2,
+  borderColor: '$borderColor',
+  elevation: 10,
+  height: '100%',
+  maxHeight: 450,
+
+  variants: {
+    $variant: (val: string) => {
+      const config = getVariantStyles(val).chat;
+      return {
+        backgroundColor: config.getBackground(),
+        borderColor: config.getBorder(),
+        shadowColor: config.getShadow(),
+      };
+    },
+  } as const,
+});
+
+export const ChatMessages = styled(YStack, {
+  name: 'ChatMessages',
+  flex: 1,
+  overflowY: 'scroll',
+  gap: '$3',
+  padding: '$2',
+});
+
+export const ChatCloseButton = styled(Text, {
+  name: 'ChatCloseButton',
+  position: 'absolute',
+  top: '$3',
+  right: '$3',
+  width: 24,
+  height: 24,
+  lineHeight: 24,
+  textAlign: 'center',
+  borderRadius: 12,
+  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  cursor: 'pointer',
+  zIndex: 10,
+  borderWidth: 1,
+  borderColor: 'rgba(255, 255, 255, 0.1)',
+
+  hoverStyle: {
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    scale: 1.1,
+  },
+
+  pressStyle: {
+    scale: 0.95,
+  },
+});
+
+export const LogEntry = styled(Text, {
+  name: 'LogEntry',
+  paddingVertical: '$2',
+  paddingHorizontal: '$3',
+  borderRadius: 8,
+  backgroundColor: 'rgba(255, 255, 255, 0.03)',
+
+  variants: {
+    $type: (_val: unknown) => ({}),
+    $scope: (_val: unknown) => ({}),
+    $variant: (_val: unknown) => ({}),
+  } as const,
+});
+
+export const GameLog = styled(YStack, {
+  name: 'GameLog',
+  flex: 1,
+  overflowY: 'scroll',
+  gap: '$2',
+  padding: '$2',
+});

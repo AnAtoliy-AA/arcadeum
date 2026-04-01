@@ -43,6 +43,7 @@ test.describe('Critical Single Player Mode', () => {
         members: [
           { id: userId, userId, displayName: 'Test User', isHost: true },
         ],
+        playerCount: 1,
       },
     });
 

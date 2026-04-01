@@ -1,4 +1,5 @@
 import React from 'react';
+import { YStack, Text } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -10,15 +11,15 @@ import {
   ModalActions,
   ModalButton,
 } from '../styles';
+import { type GameVariant } from '@arcadeum/ui';
 import { getCardEmoji, getCardTranslationKey } from '../../lib/cardUtils';
 import type { CriticalCard } from '../../types';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
 
 interface SeeTheFutureModalProps {
   isOpen: boolean;
   onClose: () => void;
   cards: CriticalCard[];
-  t: (key: TranslationKey) => string;
+  t: (key: string) => string;
   cardVariant?: string;
 }
 
@@ -32,13 +33,16 @@ export const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <Modal onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
-        <ModalHeader $variant={cardVariant}>
-          <ModalTitle $variant={cardVariant}>
+    <Modal open={isOpen}>
+      <ModalContent
+        onPress={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        $variant={cardVariant as GameVariant}
+      >
+        <ModalHeader $variant={cardVariant as GameVariant}>
+          <ModalTitle $variant={cardVariant as GameVariant}>
             🔮 {t('games.table.modals.seeTheFuture.title')}
           </ModalTitle>
-          <CloseButton onClick={onClose} $variant={cardVariant}>
+          <CloseButton onPress={onClose} $variant={cardVariant as GameVariant}>
             ×
           </CloseButton>
         </ModalHeader>
@@ -47,20 +51,22 @@ export const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
             <OptionButton
               key={`${card}-${index}`}
               $selected={false}
-              $variant={cardVariant}
+              $variant={cardVariant as GameVariant}
             >
-              <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
-                #{index + 1}
-              </div>
-              <div style={{ fontSize: '2rem' }}>{getCardEmoji(card)}</div>
-              <div style={{ fontSize: '0.75rem' }}>
-                {t(getCardTranslationKey(card, cardVariant)) || card}
-              </div>
+              <YStack alignItems="center">
+                <Text fontSize="$2" opacity={0.7}>
+                  #{index + 1}
+                </Text>
+                <Text fontSize="$8">{getCardEmoji(card)}</Text>
+                <Text fontSize="$2" textAlign="center">
+                  {t(getCardTranslationKey(card, cardVariant)) || card}
+                </Text>
+              </YStack>
             </OptionButton>
           ))}
         </OptionGrid>
         <ModalActions>
-          <ModalButton onClick={onClose}>
+          <ModalButton onPress={onClose}>
             {t('games.table.modals.seeTheFuture.confirm')}
           </ModalButton>
         </ModalActions>

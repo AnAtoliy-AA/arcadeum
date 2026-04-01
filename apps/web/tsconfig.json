@@ -19,7 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@arcadeum/ui": ["../../packages/ui/src"],
+      "@arcadeum/ui/*": ["../../packages/ui/src/*"]
     }
   },
   "include": [

@@ -1,7 +1,14 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import styled from 'styled-components';
+import {
+  YStack,
+  XStack,
+  Text,
+  TextArea,
+  Checkbox as TamaCheckbox,
+  styled,
+} from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -9,6 +16,7 @@ import {
   ModalActions,
   ModalButton,
 } from '../styles';
+import { type GameVariant } from '@arcadeum/ui';
 
 interface PlayerInfo {
   playerId: string;
@@ -27,6 +35,81 @@ interface RematchModalProps {
   cardVariant?: string;
 }
 
+const ModalDescription = styled(Text, {
+  name: 'ModalDescription',
+  fontSize: '$3',
+  marginBottom: '$4',
+  opacity: 0.8,
+});
+
+const PlayerList = styled(YStack, {
+  name: 'PlayerList',
+  gap: '$2',
+  marginBottom: '$4',
+});
+
+const PlayerItem = styled(XStack, {
+  name: 'PlayerItem',
+  alignItems: 'center',
+  gap: '$3',
+  padding: '$3',
+  borderRadius: '$4',
+  cursor: 'pointer',
+  borderWidth: 1,
+
+  variants: {
+    selected: {
+      true: {
+        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+        borderColor: 'rgba(99, 102, 241, 0.5)',
+      },
+      false: {
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+      },
+    },
+  } as const,
+
+  hoverStyle: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+});
+
+const PlayerName = styled(Text, {
+  name: 'PlayerName',
+  fontSize: '$4',
+  flex: 1,
+});
+
+const EliminatedBadge = styled(Text, {
+  name: 'EliminatedBadge',
+  fontSize: '$2',
+});
+
+const EmptyMessage = styled(Text, {
+  name: 'EmptyMessage',
+  padding: '$4',
+  textAlign: 'center',
+  opacity: 0.6,
+});
+
+const StyledMessageInput = styled(TextArea, {
+  name: 'MessageInput',
+  width: '100%',
+  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  borderColor: 'rgba(255, 255, 255, 0.1)',
+  borderRadius: '$4',
+  color: '$color',
+  minHeight: 80,
+  fontSize: '$3',
+  marginBottom: '$4',
+
+  focusStyle: {
+    borderColor: '#6366f1',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+  },
+});
+
 export function RematchModal({
   isOpen,
   players,
@@ -37,19 +120,15 @@ export function RematchModal({
   t,
   cardVariant,
 }: RematchModalProps) {
-  // Filter to other players (not current user)
   const otherPlayers = useMemo(
     () => players.filter((p) => p.playerId !== currentUserId),
     [players, currentUserId],
   );
 
-  // Track deselected players instead of selected to avoid useState in effects
-  // By default all players are selected, we only track who was deselected
   const [deselectedPlayers, setDeselectedPlayers] = useState<Set<string>>(
     () => new Set(),
   );
 
-  // Derive selected players from otherPlayers minus deselected
   const selectedPlayers = useMemo(
     () =>
       new Set(
@@ -72,7 +151,6 @@ export function RematchModal({
     });
   }, []);
 
-  // Add message state
   const [message, setMessage] = useState('');
 
   const handleConfirm = () => {
@@ -82,9 +160,12 @@ export function RematchModal({
   if (!isOpen) return null;
 
   return (
-    <Modal onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
-        <ModalTitle $variant={cardVariant}>
+    <Modal open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <ModalContent
+        onPress={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        $variant={cardVariant as GameVariant}
+      >
+        <ModalTitle $variant={cardVariant as GameVariant}>
           {t('games.table.rematch.modalTitle')}
         </ModalTitle>
         <ModalDescription>
@@ -95,17 +176,22 @@ export function RematchModal({
           {otherPlayers.map((player) => (
             <PlayerItem
               key={player.playerId}
-              onClick={() => togglePlayer(player.playerId)}
-              $selected={selectedPlayers.has(player.playerId)}
+              onPress={() => togglePlayer(player.playerId)}
+              selected={selectedPlayers.has(player.playerId)}
             >
-              <Checkbox
-                type="checkbox"
+              <TamaCheckbox
+                id={player.playerId}
+                size="$4"
                 checked={selectedPlayers.has(player.playerId)}
-                onChange={() => togglePlayer(player.playerId)}
-              />
+                onCheckedChange={() => togglePlayer(player.playerId)}
+              >
+                <TamaCheckbox.Indicator>
+                  <Text color="#6366f1">✓</Text>
+                </TamaCheckbox.Indicator>
+              </TamaCheckbox>
               <PlayerName>
                 {player.displayName}
-                {!player.alive && <EliminatedBadge>💀</EliminatedBadge>}
+                {!player.alive && <EliminatedBadge ml="$2">💀</EliminatedBadge>}
               </PlayerName>
             </PlayerItem>
           ))}
@@ -113,24 +199,24 @@ export function RematchModal({
             <EmptyMessage>{t('games.table.rematch.noPlayers')}</EmptyMessage>
           )}
         </PlayerList>
-        <MessageInput
+        <StyledMessageInput
           placeholder={
             t('games.table.rematch.messagePlaceholder') || 'Enter a message...'
           }
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChangeText={setMessage}
           disabled={rematchLoading}
         />
 
         <ModalActions>
           <ModalButton
             variant="secondary"
-            onClick={onClose}
+            onPress={onClose}
             disabled={rematchLoading}
           >
             {t('games.table.modals.common.cancel')}
           </ModalButton>
-          <ModalButton onClick={handleConfirm} disabled={rematchLoading}>
+          <ModalButton onPress={handleConfirm} disabled={rematchLoading}>
             {rematchLoading
               ? t('games.table.rematch.loading')
               : t('games.table.rematch.button')}
@@ -140,84 +226,3 @@ export function RematchModal({
     </Modal>
   );
 }
-
-const MessageInput = styled.textarea`
-  width: 100%;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.5rem;
-  color: ${({ theme }) => theme.text.primary};
-  resize: vertical;
-  min-height: 80px;
-  font-family: inherit;
-  font-size: 0.9rem;
-
-  &:focus {
-    outline: none;
-    border-color: #6366f1;
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.4);
-  }
-`;
-
-const ModalDescription = styled.p`
-  margin: 0 0 1rem;
-  font-size: 0.9rem;
-  color: ${({ theme }) => theme.text.secondary};
-`;
-
-const PlayerList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-`;
-
-const PlayerItem = styled.div<{ $selected: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  background: ${({ $selected }) =>
-    $selected ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.05)'};
-  border: 1px solid
-    ${({ $selected }) =>
-      $selected ? 'rgba(99, 102, 241, 0.5)' : 'rgba(255, 255, 255, 0.1)'};
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: ${({ $selected }) =>
-      $selected ? 'rgba(99, 102, 241, 0.3)' : 'rgba(255, 255, 255, 0.1)'};
-  }
-`;
-
-const Checkbox = styled.input`
-  width: 1.25rem;
-  height: 1.25rem;
-  cursor: pointer;
-`;
-
-const PlayerName = styled.span`
-  color: ${({ theme }) => theme.text.primary};
-  font-size: 0.95rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-`;
-
-const EliminatedBadge = styled.span`
-  font-size: 0.8rem;
-`;
-
-const EmptyMessage = styled.div`
-  padding: 1rem;
-  text-align: center;
-  color: ${({ theme }) => theme.text.secondary};
-`;

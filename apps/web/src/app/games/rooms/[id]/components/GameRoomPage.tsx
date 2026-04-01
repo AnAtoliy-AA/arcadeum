@@ -1,6 +1,13 @@
 'use client';
 
-import React, { useMemo, useEffect, Suspense, useState, useRef } from 'react';
+import React, {
+  useMemo,
+  useEffect,
+  Suspense,
+  useState,
+  useRef,
+  useCallback,
+} from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
@@ -10,6 +17,7 @@ import {
   disconnectSockets,
 } from '@/shared/lib/socket';
 import { GamesControlPanel } from '@/widgets/GamesControlPanel';
+import { GameChat } from '@/widgets/GameChat';
 import { gamesApi } from '@/features/games/api';
 import { useGameRoom, type GameType } from '@/features/games/hooks';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -25,13 +33,23 @@ import type { GameSessionSummary } from '@/shared/types/games';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 
 // Extracted Components
-import { Page, Container, LoadingContainer, GameWrapper } from './styles';
+import { Text, useMedia } from 'tamagui';
+import {
+  Page,
+  Container,
+  LoadingContainer,
+  GameWrapper,
+  fullscreenStyles,
+} from './styles';
+import { GameRow, ChatPanel } from './layoutStyles';
 import { GameRoomLoading } from './GameRoomLoading';
 import { GameRoomError } from './GameRoomError';
 import { PrivateRoomForm } from './PrivateRoomForm';
 import { DynamicGameRenderer } from './DynamicGameRenderer';
 
 export default function GameRoomPage() {
+  const media = useMedia();
+  const roomFlexDirection = media.gtMd ? 'row' : 'column';
   const params = useParams();
   const searchParams = useSearchParams();
   const roomId = params?.id as string;
@@ -43,6 +61,17 @@ export default function GameRoomPage() {
   const [autoJoinAttempted, setAutoJoinAttempted] = useState(false);
   // Track if user manually submitted invite code
   const [manualSubmitPending, setManualSubmitPending] = useState(false);
+  // Chat visibility state — wide screens default to visible, narrow to hidden.
+  const [showChat, setShowChat] = useState(true);
+  const handleToggleChat = useCallback(() => setShowChat((v) => !v), []);
+
+  // Sync chat visibility to breakpoint after hydration and on resize.
+  // useState(true) is the SSR-safe default; the effect corrects it on the client.
+  useEffect(() => {
+    queueMicrotask(() => {
+      setShowChat(media.gtSm);
+    });
+  }, [media.gtSm]);
 
   // State for room visibility check
 
@@ -376,7 +405,11 @@ export default function GameRoomPage() {
 
   return (
     <Page>
-      <Container ref={gameContainerRef}>
+      <style>{fullscreenStyles}</style>
+      <Container
+        ref={gameContainerRef as React.RefObject<never>}
+        className="games-room-container"
+      >
         <ConnectionOverlay
           visible={isDisconnected}
           reconnecting={isReconnecting}
@@ -400,35 +433,45 @@ export default function GameRoomPage() {
           roomId={roomId}
           inviteCode={room?.inviteCode}
           fullscreenContainerRef={gameContainerRef}
+          showChat={showChat}
+          onToggleChat={handleToggleChat}
         />
 
-        <GameWrapper>
-          <Suspense
-            fallback={
-              <LoadingContainer>
-                {t('games.roomPage.loadingGame')}
-              </LoadingContainer>
-            }
-          >
-            {gameLoading && (
-              <LoadingContainer>
-                {t('games.roomPage.loadingGame')}
-              </LoadingContainer>
-            )}
+        <GameRow flexDirection={roomFlexDirection}>
+          <GameWrapper>
+            <Suspense
+              fallback={
+                <LoadingContainer>
+                  <Text>{t('games.roomPage.loadingGame')}</Text>
+                </LoadingContainer>
+              }
+            >
+              {gameLoading && (
+                <LoadingContainer>
+                  <Text>{t('games.roomPage.loadingGame')}</Text>
+                </LoadingContainer>
+              )}
 
-            {!gameLoading && !gameType && room && (
-              <LoadingContainer>
-                {t('games.roomPage.errors.unsupportedGame', {
-                  gameId: room.gameId,
-                })}
-              </LoadingContainer>
-            )}
+              {!gameLoading && !gameType && room && (
+                <LoadingContainer>
+                  <Text>
+                    {t('games.roomPage.errors.unsupportedGame', {
+                      gameId: room.gameId,
+                    })}
+                  </Text>
+                </LoadingContainer>
+              )}
 
-            {!gameLoading && isGameReady && gameType && gameProps && (
-              <DynamicGameRenderer gameType={gameType} props={gameProps} />
-            )}
-          </Suspense>
-        </GameWrapper>
+              {!gameLoading && isGameReady && gameType && gameProps && (
+                <DynamicGameRenderer gameType={gameType} props={gameProps} />
+              )}
+            </Suspense>
+          </GameWrapper>
+
+          <ChatPanel visible={showChat} data-testid="game-chat-area">
+            <GameChat onClose={() => setShowChat(false)} />
+          </ChatPanel>
+        </GameRow>
       </Container>
     </Page>
   );

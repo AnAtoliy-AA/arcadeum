@@ -31,11 +31,15 @@ export async function closeGameRulesModal(page: Page): Promise<void> {
     btns.forEach((b) => (b as HTMLElement).click());
   }, closeBtnSelector);
 
-  // 3. Final cleanup: manually remove from DOM if still there
+  // 3. Final cleanup: manually remove modal content and overlay from DOM if still there
   await page.evaluate((sel) => {
     const modals = document.querySelectorAll(sel);
     modals.forEach((m) => m.remove());
   }, modalSelector);
+  await page.evaluate(() => {
+    const overlays = document.querySelectorAll('[data-testid="modal-overlay"]');
+    overlays.forEach((o) => o.remove());
+  });
 
   // Wait for all rules modals to disappear (should be instant now)
   await expect
@@ -67,7 +71,11 @@ export async function waitForRoomReady(
     .waitForLoadState('networkidle', { timeout: 15000 })
     .catch(() => {});
 
-  await expect(page.locator('main')).toBeVisible({ timeout: 60000 });
+  // Wait for the game room container to be visible (the .games-room-container
+  // class is only applied in the fully-loaded state of GameRoomPage).
+  await expect(page.locator('.games-room-container')).toBeVisible({
+    timeout: 60000,
+  });
 
   await expect(page.locator('body')).not.toContainText(
     /Game is loading|Joining\.\.\.|Server is waking up\.\.\.|Loading room\.\.\.|Loading game\.\.\.|Loading\.\.\./i,
@@ -130,6 +138,7 @@ export async function mockRoomInfo(
         isHost: true,
       },
     ],
+    playerCount: r.members ? (r.members as unknown[]).length : 1,
     ...r,
   };
 

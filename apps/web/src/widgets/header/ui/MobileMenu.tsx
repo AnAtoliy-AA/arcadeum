@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -10,31 +10,36 @@ import { routes } from '@/shared/config/routes';
 import { appConfig } from '@/shared/config/app-config';
 import {
   MobileNav,
-  MobileNavLink,
   MobileUserInfo,
-  UserName,
-  RoleBadge,
-  DropdownItem,
-  AuthButton,
-  DropdownDivider,
+  UserNameEllipsis,
   MobileVersionText,
+  NavMobileLink,
 } from './styles';
-import { LanguageSwitcher } from './LanguageSwitcher';
+import {
+  Button,
+  YStack,
+  XStack,
+  LogoutIcon,
+  SupportIcon,
+  RoleBadge,
+  LinkButton,
+  Divider,
+} from '@arcadeum/ui';
+import { useIsMounted } from './useIsMounted';
+import { useHeaderAuth } from './useHeaderAuth';
 
 interface MobileMenuProps {
   isOpen: boolean;
-  onClose: () => void;
   navItems: Array<{ href: string; label: string }>;
 }
 
-export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
+export function MobileMenu({ isOpen, navItems }: MobileMenuProps) {
   const pathname = usePathname();
+  // clearTokens and snapshot.role are MobileMenu-specific — not in useHeaderAuth
   const { snapshot, clearTokens } = useSessionTokens();
   const { t } = useTranslation();
-
-  const isAuthenticated = !!snapshot.accessToken;
-  const displayName =
-    snapshot.displayName || snapshot.username || snapshot.email;
+  const mounted = useIsMounted();
+  const { isAuthenticated, displayName } = useHeaderAuth();
   const role = snapshot.role || 'free';
   const { data: cosmeticBadges } = useCosmeticBadges();
 
@@ -43,115 +48,83 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
     window.location.replace('/');
   }, [clearTokens]);
 
-  return (
-    <MobileNav $isOpen={isOpen} data-mobile-menu data-testid="mobile-nav">
-      {navItems.map((item) => (
-        <MobileNavLink
-          key={item.href}
-          href={item.href}
-          $active={pathname === item.href}
-          onClick={onClose}
-        >
-          {item.label}
-        </MobileNavLink>
-      ))}
+  if (!mounted || !isOpen) return null;
+
+  const content = (
+    <MobileNav data-mobile-menu data-testid="mobile-nav">
+      {navItems.map((item) => {
+        const isActive = pathname === item.href;
+        return (
+          <XStack key={item.href} width="100%" borderRadius="$4">
+            <NavMobileLink
+              href={item.href}
+              data-testid={`mobile-nav-${item.href.replace('/', '') || 'home'}`}
+              variant="ghost"
+              size="sm"
+              isActive={isActive}
+              fullWidth
+            >
+              {item.label}
+            </NavMobileLink>
+          </XStack>
+        );
+      })}
 
       {isAuthenticated && displayName && (
         <>
           <MobileUserInfo>
-            <UserName>{displayName}</UserName>
+            <UserNameEllipsis>{displayName}</UserNameEllipsis>
             {role !== 'free' && (
-              <RoleBadge $role={role} style={{ marginLeft: '0.5rem' }}>
-                {t(`common.roles.${role}`)}
-              </RoleBadge>
+              <RoleBadge role={role}>{t(`common.roles.${role}`)}</RoleBadge>
             )}
             {cosmeticBadges?.map((badgeId) => (
               <CosmeticBadge key={badgeId} badgeId={badgeId} />
             ))}
           </MobileUserInfo>
-          <DropdownItem
-            onClick={handleLogout}
-            style={{ marginTop: '0.5rem' }}
+          <Button
+            variant="listItem"
+            mt="$2"
             data-testid="mobile-logout-button"
+            onClick={handleLogout}
+            icon={<LogoutIcon size={18} />}
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
             {t('common.actions.logout')}
-          </DropdownItem>
+          </Button>
         </>
       )}
 
       {!isAuthenticated && (
-        <AuthButton
-          href="/auth"
-          onClick={onClose}
-          style={{ marginTop: '0.5rem', textAlign: 'center' }}
-          data-testid="mobile-login-button"
-        >
-          {t('common.actions.login')}
-        </AuthButton>
+        <YStack marginTop="$2" alignItems="center">
+          <LinkButton
+            href="/auth"
+            variant="ghost"
+            size="sm"
+            data-testid="mobile-login-button"
+          >
+            {t('common.actions.login')}
+          </LinkButton>
+        </YStack>
       )}
 
-      <DropdownDivider style={{ marginTop: '1rem' }} />
+      <YStack marginTop="$4">
+        <Divider spacing="sm" />
+      </YStack>
 
-      <div style={{ padding: '0.5rem 1rem' }}>
-        <LanguageSwitcher />
-      </div>
-
-      <MobileNavLink
-        href={routes.terms}
-        $active={pathname === routes.terms}
-        onClick={onClose}
-      >
-        {t('legal.nav.terms')}
-      </MobileNavLink>
-      <MobileNavLink
-        href={routes.privacy}
-        $active={pathname === routes.privacy}
-        onClick={onClose}
-      >
-        {t('legal.nav.privacy')}
-      </MobileNavLink>
-      <MobileNavLink
-        href={routes.contact}
-        $active={pathname === routes.contact}
-        onClick={onClose}
-      >
-        {t('legal.nav.contact')}
-      </MobileNavLink>
-      <MobileNavLink
+      <LinkButton
         href={routes.support}
-        $active={pathname === routes.support}
-        onClick={onClose}
-        style={{ color: '#ec4899' }}
+        variant="ghost"
+        size="sm"
+        gap="$2"
+        isActive={pathname === routes.support}
+        fullWidth
       >
-        <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{ width: 18, height: 18 }}
-          >
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-          </svg>
-          {t('common.actions.support')}
-        </span>
-      </MobileNavLink>
+        <SupportIcon size={18} />
+        {t('common.actions.support')}
+      </LinkButton>
 
       <MobileVersionText>v{appConfig.appVersion}</MobileVersionText>
     </MobileNav>
   );
+
+  return content;
 }

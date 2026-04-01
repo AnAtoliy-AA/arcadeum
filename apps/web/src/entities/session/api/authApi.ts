@@ -1,18 +1,6 @@
 import { resolveApiBase } from '@/shared/lib/api-base';
 
-/** Available user roles */
-export const USER_ROLES = [
-  'free',
-  'premium',
-  'vip',
-  'supporter',
-  'moderator',
-  'tester',
-  'developer',
-  'admin',
-] as const;
-
-export type UserRole = (typeof USER_ROLES)[number];
+import { type UserRole } from '../model/types';
 
 export type AuthUserProfile = {
   id: string;

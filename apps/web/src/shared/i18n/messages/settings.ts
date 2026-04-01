@@ -19,6 +19,7 @@ const settingsMessagesDefinition = {
     hapticsLabel: 'Haptic Feedback',
     hapticsDescription:
       "Vibrate when it's your turn to play (mobile devices only).",
+    soundLabel: 'Sound',
     appearanceTitle: 'Appearance',
     appearanceDescription:
       'Choose a theme to use across the {{appName}} web experience.',
@@ -44,6 +45,22 @@ const settingsMessagesDefinition = {
         label: 'Neon Dark',
         description:
           'High-contrast vaporwave styling for dramatic game tables.',
+      },
+      violetDark: {
+        label: 'Violet Dark',
+        description: 'Deep violet-black with lavender glass and purple glow.',
+      },
+      violetLight: {
+        label: 'Violet Light',
+        description: 'Soft lavender-white with crisp violet accents.',
+      },
+      tealDark: {
+        label: 'Teal Dark',
+        description: 'Deep teal-black with mint glass and ocean glow.',
+      },
+      tealLight: {
+        label: 'Teal Light',
+        description: 'Fresh teal-white with clean emerald accents.',
       },
     },
     languageTitle: 'Language',
@@ -90,6 +107,7 @@ const settingsMessagesDefinition = {
     hapticsLabel: 'Respuesta háptica',
     hapticsDescription:
       'Vibrar cuando sea tu turno de jugar (solo dispositivos móviles).',
+    soundLabel: 'Sonido',
     appearanceTitle: 'Apariencia',
     appearanceDescription:
       'Elige un tema para usar en toda la experiencia web de {{appName}}.',
@@ -118,6 +136,22 @@ const settingsMessagesDefinition = {
         label: 'Neón oscuro',
         description:
           'Estilo vaporwave de alto contraste para mesas dramáticas.',
+      },
+      violetDark: {
+        label: 'Violet Dark',
+        description: 'Deep violet-black with lavender glass and purple glow.',
+      },
+      violetLight: {
+        label: 'Violet Light',
+        description: 'Soft lavender-white with crisp violet accents.',
+      },
+      tealDark: {
+        label: 'Teal Dark',
+        description: 'Deep teal-black with mint glass and ocean glow.',
+      },
+      tealLight: {
+        label: 'Teal Light',
+        description: 'Fresh teal-white with clean emerald accents.',
       },
     },
     languageTitle: 'Idioma',
@@ -164,6 +198,7 @@ const settingsMessagesDefinition = {
     hapticsLabel: 'Retour haptique',
     hapticsDescription:
       "Vibrer quand c'est à votre tour de jouer (appareils mobiles uniquement).",
+    soundLabel: 'Son',
     appearanceTitle: 'Apparence',
     appearanceDescription:
       "Choisissez un thème à utiliser sur l'ensemble de l'expérience web de {{appName}}.",
@@ -191,6 +226,22 @@ const settingsMessagesDefinition = {
         label: 'Néon sombre',
         description:
           'Style vaporwave à fort contraste pour des tables spectaculaires.',
+      },
+      violetDark: {
+        label: 'Violet Dark',
+        description: 'Deep violet-black with lavender glass and purple glow.',
+      },
+      violetLight: {
+        label: 'Violet Light',
+        description: 'Soft lavender-white with crisp violet accents.',
+      },
+      tealDark: {
+        label: 'Teal Dark',
+        description: 'Deep teal-black with mint glass and ocean glow.',
+      },
+      tealLight: {
+        label: 'Teal Light',
+        description: 'Fresh teal-white with clean emerald accents.',
       },
     },
     languageTitle: 'Langue',
@@ -238,6 +289,7 @@ const settingsMessagesDefinition = {
     hapticsLabel: 'Тактильная отдача',
     hapticsDescription:
       'Вибрировать, когда наступает ваш ход (только для мобильных устройств).',
+    soundLabel: 'Звук',
     appearanceTitle: 'Внешний вид',
     appearanceDescription:
       'Выберите тему оформления для веб-версии {{appName}}.',
@@ -264,6 +316,22 @@ const settingsMessagesDefinition = {
         label: 'Неоновая темная',
         description:
           'Высококонтрастный стиль vaporwave для эффектных игровых столов.',
+      },
+      violetDark: {
+        label: 'Violet Dark',
+        description: 'Deep violet-black with lavender glass and purple glow.',
+      },
+      violetLight: {
+        label: 'Violet Light',
+        description: 'Soft lavender-white with crisp violet accents.',
+      },
+      tealDark: {
+        label: 'Teal Dark',
+        description: 'Deep teal-black with mint glass and ocean glow.',
+      },
+      tealLight: {
+        label: 'Teal Light',
+        description: 'Fresh teal-white with clean emerald accents.',
       },
     },
     languageTitle: 'Язык',
@@ -311,6 +379,7 @@ const settingsMessagesDefinition = {
     hapticsLabel: 'Тактыльная аддача',
     hapticsDescription:
       'Вібраваць, калі наступае ваш ход (толькі для мабільных прылад).',
+    soundLabel: 'Гук',
     appearanceTitle: 'Знешні выгляд',
     appearanceDescription:
       'Выберыце тэму афармлення для вэб-версіі {{appName}}.',
@@ -337,6 +406,22 @@ const settingsMessagesDefinition = {
         label: 'Неонавая цёмная',
         description:
           'Высакакантрастны стыль vaporwave для эфектных гульнявых сталоў.',
+      },
+      violetDark: {
+        label: 'Violet Dark',
+        description: 'Deep violet-black with lavender glass and purple glow.',
+      },
+      violetLight: {
+        label: 'Violet Light',
+        description: 'Soft lavender-white with crisp violet accents.',
+      },
+      tealDark: {
+        label: 'Teal Dark',
+        description: 'Deep teal-black with mint glass and ocean glow.',
+      },
+      tealLight: {
+        label: 'Teal Light',
+        description: 'Fresh teal-white with clean emerald accents.',
       },
     },
     languageTitle: 'Мова',

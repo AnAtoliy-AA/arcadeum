@@ -154,6 +154,14 @@ const nextConfig: NextConfig = {
     ];
   },
   reactCompiler: true,
+  transpilePackages: [
+    '@arcadeum/ui',
+    'tamagui',
+    '@tamagui/core',
+    '@tamagui/web',
+    '@tamagui/button',
+    '@tamagui/text',
+  ],
   compiler: {
     styledComponents: {
       ssr: true,

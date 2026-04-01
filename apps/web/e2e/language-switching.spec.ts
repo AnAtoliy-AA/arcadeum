@@ -49,9 +49,9 @@ test.describe('Language Switching', () => {
     await page.reload();
     // Wait for hydration after reload
     await expect(page.locator('html')).toHaveAttribute(
-      'data-theme-preference',
-      /.+/,
-      { timeout: 10000 },
+      'data-hydrated',
+      'true',
+      { timeout: 15000 },
     );
 
     await ensureNavigationVisible(page);

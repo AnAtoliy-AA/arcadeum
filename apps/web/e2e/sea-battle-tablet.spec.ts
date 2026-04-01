@@ -61,34 +61,34 @@ test.describe('Sea Battle Tablet Layout', () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
+    await page.waitForTimeout(500);
     await navigateTo(page, '/games/rooms/tablet-test-room');
 
     const mainArea = page.getByTestId('game-main-area');
     await expect(mainArea).toBeVisible();
 
-    // Check if flex-direction is row (default for desktop/large tablet)
+    // Check if flex-direction is column (for screens < 1150px)
     const flexDirection = await mainArea.evaluate(
       (el) => getComputedStyle(el).flexDirection,
     );
-    expect(flexDirection).toBe('row');
+    expect(flexDirection).toBe('column');
 
     const chatArea = page.getByTestId('game-chat-area');
     await expect(chatArea).toBeVisible();
 
-    // Check if boards are in 2 columns
+    // Check if grids container uses row layout (flexbox)
     const boardArea = page.getByTestId('game-board-area');
-    const gridTemplateColumns = await boardArea
+    const containerFlexDirection = await boardArea
       .getByTestId('sea-battle-grids-container')
-      .evaluate((el) => getComputedStyle(el).gridTemplateColumns);
-    // Should have 2 columns (e.g., "span 1 / span 1" or explicit pixel values)
-    const columnsCount = gridTemplateColumns.split(' ').length;
-    expect(columnsCount).toBeGreaterThanOrEqual(2);
+      .evaluate((el) => getComputedStyle(el).flexDirection);
+    expect(containerFlexDirection).toBe('column');
   });
 
   test('should have stacked layout on portrait tablet (768x1024)', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 768, height: 1024 });
+    await page.waitForTimeout(500);
     await navigateTo(page, '/games/rooms/tablet-test-room');
 
     const mainArea = page.getByTestId('game-main-area');

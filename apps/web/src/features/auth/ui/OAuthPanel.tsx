@@ -1,122 +1,84 @@
-import {
-  PanelCard,
-  PanelHeader,
-  PanelBadge,
-  PanelTitle,
-  PanelSubtitle,
-  ButtonRow,
-  PrimaryButton,
-  SecondaryButton,
-  StatusText,
-  ErrorText,
-  TokenList,
-  TokenRow,
-  TokenLabel,
-  TokenValue,
-} from './styles';
+import { useAuthForm, useAuthLabels } from '../hooks';
+import { Button, XStack, YStack, GlassCard, Typography } from '@arcadeum/ui';
 
-export interface OAuthPanelLabels {
-  oauthBadge: string;
-  oauthTitle: string;
-  heroStatusDescription: string;
-  oauthButtonLabel: string;
-  oauthLogoutLabel: string;
-  processingStatusLabel: string;
-  redirectingStatusLabel: string;
-  oauthAuthorizationCodeLabel: string;
-  oauthAccessTokenLabel: string;
-}
-
-export interface OAuthPanelForm {
-  oauthLoading: boolean;
-  isRedirecting: boolean;
-  oauthError: string | null;
-  authorizationCode: string | null;
-  providerAccessToken: string | null;
-  sessionSnapshot: {
-    accessToken: string | null;
-    provider: string | null;
-  };
-  handleStartOAuth: () => void;
-  handleOAuthLogout: () => Promise<void>;
-}
-
-interface OAuthPanelProps {
-  labels: OAuthPanelLabels;
-  form: OAuthPanelForm;
-}
-
-export function OAuthPanel({ labels, form }: OAuthPanelProps) {
+export function OAuthPanel() {
+  const { isRegisterMode, authorizationCode, handleStartOAuth, oauthLoading } =
+    useAuthForm();
+  const labels = useAuthLabels(isRegisterMode);
   const {
-    oauthBadge,
     oauthTitle,
-    heroStatusDescription,
-    oauthButtonLabel,
-    oauthLogoutLabel,
-    processingStatusLabel,
-    redirectingStatusLabel,
+    oauthSubtitle,
     oauthAuthorizationCodeLabel,
-    oauthAccessTokenLabel,
+    oauthEmptyState,
+    oauthButtonLabel,
   } = labels;
 
-  const {
-    oauthLoading,
-    isRedirecting,
-    oauthError,
-    authorizationCode,
-    providerAccessToken,
-    sessionSnapshot,
-    handleStartOAuth,
-    handleOAuthLogout,
-  } = form;
-
-  const busy = oauthLoading || isRedirecting;
-  const showTokens = Boolean(authorizationCode || providerAccessToken);
-  const isOAuthProvider = sessionSnapshot.provider === 'oauth';
-
   return (
-    <PanelCard>
-      <PanelHeader>
-        <PanelBadge>{oauthBadge}</PanelBadge>
-        <PanelTitle>{oauthTitle}</PanelTitle>
-        <PanelSubtitle>{heroStatusDescription}</PanelSubtitle>
-      </PanelHeader>
-      <ButtonRow>
-        <PrimaryButton type="button" onClick={handleStartOAuth} disabled={busy}>
-          {busy && processingStatusLabel
-            ? processingStatusLabel
-            : oauthButtonLabel}
-        </PrimaryButton>
-        {sessionSnapshot.accessToken && isOAuthProvider ? (
-          <SecondaryButton
-            type="button"
-            onClick={() => void handleOAuthLogout()}
-            disabled={oauthLoading}
+    <GlassCard flex={1} minWidth={320} gap="$4" padding="$5">
+      <YStack gap="$1">
+        <Typography variant="heading" uiSize="lg">
+          {oauthTitle}
+        </Typography>
+        <Typography variant="body" uiSize="sm" color="$colorMuted">
+          {oauthSubtitle}
+        </Typography>
+      </YStack>
+
+      <XStack gap="$3" flexWrap="wrap">
+        <Button
+          onPress={handleStartOAuth}
+          disabled={oauthLoading}
+          variant="primary"
+          pill
+        >
+          {oauthButtonLabel || 'Sign in with Google'}
+        </Button>
+      </XStack>
+
+      {authorizationCode ? (
+        <YStack gap="$2" marginTop="$2">
+          <YStack gap="$1">
+            <Typography variant="label" uiSize="xs" color="$colorMuted">
+              {oauthAuthorizationCodeLabel}
+            </Typography>
+            <YStack
+              padding="$2.5"
+              borderRadius={10}
+              borderWidth={1}
+              borderColor="$borderColor"
+              backgroundColor="$background"
+            >
+              <Typography
+                variant="body"
+                uiSize="xs"
+                color="$accent"
+                fontFamily="$body"
+              >
+                {authorizationCode}
+              </Typography>
+            </YStack>
+          </YStack>
+          <Button
+            variant="secondary"
+            size="sm"
+            onPress={() => {
+              if (authorizationCode) {
+                void navigator.clipboard.writeText(authorizationCode);
+              }
+            }}
+            pill
+            alignSelf="flex-start"
           >
-            {oauthLogoutLabel}
-          </SecondaryButton>
-        ) : null}
-      </ButtonRow>
-      {isRedirecting && redirectingStatusLabel ? (
-        <StatusText>{redirectingStatusLabel}</StatusText>
-      ) : null}
-      {oauthError ? <ErrorText>{oauthError}</ErrorText> : null}
-      {showTokens ? (
-        <TokenList>
-          {authorizationCode ? (
-            <TokenRow>
-              <TokenLabel>{oauthAuthorizationCodeLabel}</TokenLabel>
-              <TokenValue>{authorizationCode}</TokenValue>
-            </TokenRow>
-          ) : null}
-          {providerAccessToken ? (
-            <TokenRow>
-              <TokenLabel>{oauthAccessTokenLabel}</TokenLabel>
-              <TokenValue>{providerAccessToken}</TokenValue>
-            </TokenRow>
-          ) : null}
-        </TokenList>
-      ) : null}
-    </PanelCard>
+            Copy Code
+          </Button>
+        </YStack>
+      ) : (
+        !oauthLoading && (
+          <Typography variant="body" uiSize="sm" color="$colorMuted">
+            {oauthEmptyState}
+          </Typography>
+        )
+      )}
+    </GlassCard>
   );
 }

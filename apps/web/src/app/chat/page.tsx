@@ -1,18 +1,24 @@
 'use client';
 
 import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
+import { YStack, Typography } from '@arcadeum/ui';
 
-import styled from 'styled-components';
-import { ChatPage } from './ChatPage';
-
-const LoadingWrapper = styled.div`
-  padding: 2rem;
-  text-align: center;
-`;
+const ChatPage = dynamic(() =>
+  import('./ChatPage').then((mod) => mod.ChatPage),
+);
 
 export default function ChatRoute() {
   return (
-    <Suspense fallback={<LoadingWrapper>Loading...</LoadingWrapper>}>
+    <Suspense
+      fallback={
+        <YStack p="$7" ai="center">
+          <Typography uiSize="md" alpha="medium">
+            Loading...
+          </Typography>
+        </YStack>
+      }
+    >
       <ChatPage />
     </Suspense>
   );

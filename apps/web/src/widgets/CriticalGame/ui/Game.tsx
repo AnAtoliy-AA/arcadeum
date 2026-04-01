@@ -1,11 +1,13 @@
 import React, { useRef } from 'react';
+import { TamaguiElement } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalGameProps } from '../types';
 import { useCriticalState, useFullscreen, useRematch } from '../hooks';
-import { useGameStore } from '@/features/games/store/gameStore';
+import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { CriticalLobby } from './CriticalLobby';
 import { ActiveGameView } from './ActiveGameView';
 import { GameContainer } from './styles';
+import type { GameVariant } from '@arcadeum/ui';
 
 export default function CriticalGame({
   roomId,
@@ -16,11 +18,11 @@ export default function CriticalGame({
   accessToken,
 }: CriticalGameProps) {
   const { t } = useTranslation();
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement & TamaguiElement>(null);
 
-  const storeRoom = useGameStore((s) => s.room);
-  const storeDeleteRoom = useGameStore((s) => s.deleteRoom);
-  const storeRefreshRoom = useGameStore((s) => s.refreshRoom);
+  const storeRoom = useGameStore((s: GameState) => s.room);
+  const storeDeleteRoom = useGameStore((s: GameState) => s.deleteRoom);
+  const storeRefreshRoom = useGameStore((s: GameState) => s.refreshRoom);
 
   const room =
     (storeRoom?.id === roomId ? storeRoom : null) || initialRoom || null;
@@ -67,7 +69,7 @@ export default function CriticalGame({
         onReinvite={rematch.handleReinvite}
         onDeleteRoom={() => storeDeleteRoom(roomId)}
         onRefresh={() => storeRefreshRoom(roomId)}
-        t={t as (key: string) => string}
+        t={t}
       />
     );
   }
@@ -77,7 +79,7 @@ export default function CriticalGame({
     <GameContainer
       ref={containerRef}
       $isMyTurn={!!isMyTurn}
-      $variant={cardVariant}
+      $variant={cardVariant as GameVariant}
     >
       <ActiveGameView
         currentUserId={currentUserId}

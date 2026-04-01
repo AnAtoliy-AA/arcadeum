@@ -2,38 +2,13 @@
 
 import { useCallback, useEffect, useMemo } from 'react';
 import { useSessionStore } from '../store/sessionStore';
-import { type UserRole } from '../api/authApi';
+import type {
+  SessionProviderId,
+  SessionTokensSnapshot,
+  SetSessionTokensInput,
+} from './types';
 
-export type SessionProviderId = 'oauth' | 'local' | null;
-
-export type SessionTokensSnapshot = {
-  provider: SessionProviderId;
-  accessToken: string | null;
-  refreshToken: string | null;
-  tokenType: string | null;
-  accessTokenExpiresAt: string | null;
-  refreshTokenExpiresAt: string | null;
-  updatedAt: string | null;
-  userId: string | null;
-  email: string | null;
-  username: string | null;
-  displayName: string | null;
-  role: UserRole | null;
-};
-
-export type SetSessionTokensInput = {
-  provider?: SessionProviderId;
-  accessToken?: string | null;
-  refreshToken?: string | null;
-  tokenType?: string | null;
-  accessTokenExpiresAt?: string | Date | null;
-  refreshTokenExpiresAt?: string | Date | null;
-  userId?: string | null;
-  email?: string | null;
-  username?: string | null;
-  displayName?: string | null;
-  role?: UserRole | null;
-};
+export type { SessionTokensSnapshot, SetSessionTokensInput, SessionProviderId };
 
 export type SessionTokensValue = {
   snapshot: SessionTokensSnapshot;
@@ -86,15 +61,8 @@ export function useSessionTokens(): SessionTokensValue {
       return;
     }
 
-    const timeout = window.setTimeout(() => {
-      storeRefreshTokens().catch(() => {
-        // handled
-      });
-    }, delay);
-
-    return () => {
-      window.clearTimeout(timeout);
-    };
+    const { scheduleRefresh } = useSessionStore.getState();
+    scheduleRefresh(delay);
   }, [
     snapshot.accessTokenExpiresAt,
     snapshot.refreshToken,

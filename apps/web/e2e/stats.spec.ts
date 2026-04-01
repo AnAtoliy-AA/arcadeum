@@ -82,7 +82,7 @@ test.describe('Player Stats', () => {
     ).toBeVisible();
     await expect(page.getByText('10', { exact: true }).first()).toBeVisible(); // Total games
     await expect(page.getByText('7', { exact: true }).first()).toBeVisible(); // Wins
-    await expect(page.getByText('70%')).toBeVisible(); // Win rate
+    await expect(page.getByText('70%').first()).toBeVisible(); // Win rate
     await expect(page.getByText('Critical', { exact: true })).toBeVisible(); // Game ID should be human readable
   });
 
@@ -150,13 +150,13 @@ test.describe('Player Stats', () => {
           .catch(() => leaderboardTab.dispatchEvent('click'));
       }
       const row = page
-        .locator('div[class*="LeaderboardRow"]')
+        .locator('div.stats-leaderboard-row')
         .filter({ hasText: 'testuser' });
       await expect(row).toBeVisible({ timeout: 5000 });
     }).toPass({ timeout: 20000 });
 
     // Check that 'anonymous' text is not present in the leaderboard rows
-    const leaderboardRows = page.locator('[class*="LeaderboardRow"]');
+    const leaderboardRows = page.locator('.stats-leaderboard-row');
     await expect(leaderboardRows).not.toContainText(/anonymous|аноним/i);
   });
 });

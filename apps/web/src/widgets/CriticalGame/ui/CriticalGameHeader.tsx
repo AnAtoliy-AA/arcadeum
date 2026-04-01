@@ -5,9 +5,9 @@ import {
   TurnStatus,
   HeaderActions,
   TimerControlsWrapper,
-  ChatToggleButton,
   FullscreenButton,
-} from './styles';
+} from './styles/header';
+import { appConfig } from '@/shared/config/app-config';
 import {
   RoomNameBadge,
   RoomNameIcon,
@@ -16,19 +16,19 @@ import {
 } from './styles/lobby';
 import { IdleTimerDisplay } from './IdleTimerDisplay';
 import { AutoplayControls } from './AutoplayControls';
-import { ServerLoadingNotice } from '@/shared/ui/ServerLoadingNotice';
+import { ServerLoadingNotice, MaximizeIcon, MinimizeIcon } from '@/shared/ui';
 import type { GameRoomSummary, CriticalSnapshot } from '@/shared/types/games';
 import { UseAutoplayReturn } from '../hooks/useAutoplay';
 import { CARD_VARIANTS } from '../lib/constants';
 import { RulesModal } from './RulesModal';
 import React, { useState } from 'react';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
-import { MaximizeIcon, MinimizeIcon } from '@/shared/ui';
 import { TranslationKey } from '@/shared/lib/useTranslation';
+import { GameVariant } from '@arcadeum/ui';
 
 interface CriticalGameHeaderProps {
   room: GameRoomSummary;
-  t: (key: string, params?: Record<string, unknown>) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
   idleTimerEnabled: boolean;
   turnStatusVariant: 'completed' | 'yourTurn' | 'waiting' | 'default';
   turnStatusText: string;
@@ -41,8 +41,6 @@ interface CriticalGameHeaderProps {
   autoplayState: UseAutoplayReturn;
   idleTimerTriggered: boolean;
   handleStopAutoplay: () => void;
-  showChat: boolean;
-  handleToggleChat: () => void;
   isFullscreen: boolean;
   toggleFullscreen: () => void;
 }
@@ -62,18 +60,18 @@ export function CriticalGameHeader({
   autoplayState,
   idleTimerTriggered,
   handleStopAutoplay,
-  showChat,
-  handleToggleChat,
   isFullscreen,
   toggleFullscreen,
 }: CriticalGameHeaderProps) {
   const cardVariant = room.gameOptions?.cardVariant;
   const [showRules, setShowRules] = useState(false);
 
-  const { isLongPending } = useServerWakeUpProgress(Boolean(actionBusy));
+  const { isLongPending, progress, elapsedSeconds } = useServerWakeUpProgress(
+    Boolean(actionBusy),
+  );
 
   return (
-    <GameHeader $variant={cardVariant}>
+    <GameHeader $variant={cardVariant as GameVariant}>
       <RulesModal
         isOpen={showRules}
         onClose={() => setShowRules(false)}
@@ -83,7 +81,7 @@ export function CriticalGameHeader({
         t={t}
       />
       <GameInfo>
-        <GameTitle>
+        <GameTitle $variant={cardVariant as GameVariant}>
           {t('games.critical_v1.name')}
           <span
             style={{
@@ -102,7 +100,7 @@ export function CriticalGameHeader({
                 ? t(variant.name as TranslationKey)
                 : t(
                     'games.critical_v1.variants.cyberpunk.name' as TranslationKey,
-                  ); // Fallback to default variant name instead of 'Classic'
+                  );
             })()}
           </span>
         </GameTitle>
@@ -119,12 +117,23 @@ export function CriticalGameHeader({
             <span>{t('games.rooms.fastRoom')}</span>
           </FastBadge>
         )}
-        <TurnStatus $variant={turnStatusVariant}>{turnStatusText}</TurnStatus>
-        {isLongPending && <ServerLoadingNotice actionBusy={actionBusy} />}
+        <TurnStatus $status={turnStatusVariant}>{turnStatusText}</TurnStatus>
+        {isLongPending && (
+          <ServerLoadingNotice
+            title={t('common.loading.title')}
+            message={t('common.loading.message')}
+            progress={progress}
+            elapsedSeconds={elapsedSeconds}
+            supportLabel={t('common.support')}
+            onSupportClick={() =>
+              window.open(appConfig.supportCta.href, '_blank')
+            }
+          />
+        )}
       </GameInfo>
       <HeaderActions>
         <FullscreenButton
-          onClick={() => setShowRules(true)}
+          onPress={() => setShowRules(true)}
           title="Game Rules"
           style={{ fontSize: '1.2rem', marginRight: '0.5rem' }}
         >
@@ -141,21 +150,11 @@ export function CriticalGameHeader({
               onStop={handleStopAutoplay}
               t={t}
             />
-            <AutoplayControls
-              autoplayState={autoplayState}
-              t={t as (key: string) => string}
-            />
+            <AutoplayControls autoplayState={autoplayState} t={t} />
           </TimerControlsWrapper>
         )}
-        <ChatToggleButton
-          type="button"
-          onClick={handleToggleChat}
-          $active={showChat}
-        >
-          {showChat ? t('games.table.chat.hide') : t('games.table.chat.show')}
-        </ChatToggleButton>
         <FullscreenButton
-          onClick={toggleFullscreen}
+          onPress={toggleFullscreen}
           title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
         >
           {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}

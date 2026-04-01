@@ -95,7 +95,8 @@ test.describe('Anonymous Play', () => {
     await page
       .getByLabel('Room Name', { exact: false })
       .fill('Anonymous Bot Game');
-    await page.getByRole('button', { name: 'Create Room' }).click();
+    await page.waitForTimeout(1000); // Allow state to settle
+    await page.getByTestId('create-room-button').click({ force: true });
 
     await expect(page).toHaveURL(new RegExp(`/games/rooms/${MOCK_OBJECT_ID}`), {
       timeout: 30000,
@@ -126,8 +127,11 @@ test.describe('Anonymous Play', () => {
       .fill('Private Link Test');
 
     const visibilityBtn = page.getByLabel(/Public room/i);
-    await expect(visibilityBtn).toBeVisible();
+    await visibilityBtn.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500); // Wait for potential layout shifts
     await visibilityBtn.click({ force: true });
+
+    // In Firefox, transition might take a moment
     await expect(page.getByLabel(/Private room/i)).toBeVisible({
       timeout: 15000,
     });

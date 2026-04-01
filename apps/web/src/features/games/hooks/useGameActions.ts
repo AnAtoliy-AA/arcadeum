@@ -110,6 +110,7 @@ export function useGameActions(
   const startCritical = useCallback(
     (options?: { withBots?: boolean; botCount?: number }) => {
       if (!userId) return;
+      setActionBusy?.('start');
       gameSocket.emit('games.session.start', {
         roomId,
         userId,
@@ -118,7 +119,7 @@ export function useGameActions(
         botCount: options?.botCount,
       });
     },
-    [roomId, userId],
+    [roomId, userId, setActionBusy],
   );
 
   const drawCard = useCallback(() => {
@@ -235,6 +236,7 @@ export function useGameActions(
   const startHoldem = useCallback(
     (startingChips: number = 1000) => {
       if (!userId) return;
+      setActionBusy?.('start');
       gameSocket.emit('games.session.start_holdem', {
         roomId,
         userId,
@@ -242,7 +244,7 @@ export function useGameActions(
         startingChips,
       });
     },
-    [roomId, userId],
+    [roomId, userId, setActionBusy],
   );
 
   const holdemAction = useCallback(

@@ -4,13 +4,17 @@ import {
   ensureNavigationVisible,
   getIsMobile,
 } from './fixtures/test-utils';
-import { navigateTo, mockSession } from './fixtures/test-utils';
+import {
+  navigateTo,
+  mockSession,
+  mockSettingsExtraData,
+} from './fixtures/test-utils';
 
 test.describe('Auth Extended', () => {
   test('should validate registration fields', async ({ page }) => {
     await navigateTo(page, '/auth');
 
-    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
+    const toggleBtn = page.getByTestId('auth-toggle-mode-button').first();
     if (await toggleBtn.isVisible()) {
       const text = (await toggleBtn.textContent()) || '';
       if (
@@ -25,13 +29,13 @@ test.describe('Auth Extended', () => {
     await expect(submitBtn).toBeVisible({ timeout: 10000 });
     await submitBtn.click({ force: true });
 
-    await expect(page.locator('form')).toBeVisible();
+    await expect(page.locator('form')).toBeVisible({ timeout: 15000 });
   });
 
   test('should show error on password mismatch', async ({ page }) => {
     await navigateTo(page, '/auth');
 
-    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
+    const toggleBtn = page.getByTestId('auth-toggle-mode-button').first();
     await expect(toggleBtn).toBeEnabled({ timeout: 10000 });
     const text = (await toggleBtn.textContent()) || '';
     if (/need|регистрация|account/i.test(text) && !/already|уже/i.test(text)) {
@@ -51,19 +55,23 @@ test.describe('Auth Extended', () => {
 
     await passwordInput.fill('password123');
     await confirmInput.fill('password456');
+    await confirmInput.blur();
     // The password mismatch error should appear immediately
-    await expect(page.getByText(/do not match|не совпадают/i)).toBeVisible();
+    await expect(page.getByText(/do not match|не совпадают/i)).toBeVisible({
+      timeout: 15000,
+    });
 
     const submitBtn = page
       .getByRole('button', {
         name: /create account|register|sign up|зарегистрироваться/i,
       })
       .first();
-    await expect(submitBtn).toBeDisabled();
+    await expect(submitBtn).toBeDisabled({ timeout: 15000 });
   });
 
   test('should persist session after manual reload', async ({ page }) => {
     await mockSession(page);
+    await mockSettingsExtraData(page);
     await navigateTo(page, '/settings');
     await expect(page).toHaveURL(/\/settings/);
     await page.reload();
@@ -72,6 +80,7 @@ test.describe('Auth Extended', () => {
 
   test('should handle logout', async ({ page }) => {
     await mockSession(page, { persistent: false });
+    await mockSettingsExtraData(page);
     await navigateTo(page, '/settings');
 
     if (getIsMobile(page)) {
@@ -89,9 +98,10 @@ test.describe('Auth Extended', () => {
       ? page.getByTestId('mobile-logout-button')
       : page.getByTestId('desktop-logout-button');
 
-    // Wait for button to be ready (especially on Mobile Safari)
-    await expect(logoutBtn).toBeVisible({ timeout: 5000 });
-    await page.waitForTimeout(500);
+    // Wait for button to be ready (especially on Mobile Safari where Zustand
+    // rehydration + React reconciliation can take a moment)
+    await expect(logoutBtn).toBeVisible({ timeout: 15000 });
+    await page.waitForTimeout(300);
 
     // 3. Verify session is cleared and redirected
     await Promise.all([

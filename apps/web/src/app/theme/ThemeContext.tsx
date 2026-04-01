@@ -7,8 +7,9 @@ import {
   useEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
 } from 'react';
-import { ThemeProvider as StyledThemeProvider } from 'styled-components';
+import { TamaguiProvider } from 'tamagui';
 
 import { useThemeStore } from './store/themeStore';
 import {
@@ -17,6 +18,7 @@ import {
   ThemeTokens,
   themeTokens,
 } from '@/shared/config/theme';
+import tamaguiConfig from '@/shared/config/tamagui.config';
 
 type ThemeContextValue = {
   themePreference: ThemePreference;
@@ -65,16 +67,40 @@ function useSystemTheme(): SystemThemeName {
   return systemTheme;
 }
 
-export function AppThemeProvider({ children }: { children: ReactNode }) {
+const emptySubscribe = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
+
+export function AppThemeProvider({
+  children,
+  initialTheme,
+}: {
+  children: ReactNode;
+  initialTheme?: ThemeName;
+}) {
   const { themePreference, setThemePreference } = useThemeStore();
   const systemTheme = useSystemTheme();
+  const isReady = useSyncExternalStore(
+    emptySubscribe,
+    getClientSnapshot,
+    getServerSnapshot,
+  );
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-app-ready', 'true');
+    }
+  }, []);
 
   const resolvedTheme: ThemeName = useMemo(() => {
+    // Return initialTheme during hydration to match server exactly
+    if (!isReady) return initialTheme || 'dark';
+
     if (themePreference === 'system') {
       return systemTheme;
     }
     return themePreference;
-  }, [systemTheme, themePreference]);
+  }, [systemTheme, themePreference, isReady, initialTheme]);
 
   const theme: ThemeTokens = useMemo(
     () => themeTokens[resolvedTheme],
@@ -86,31 +112,65 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const root = document.documentElement;
-    root.setAttribute('data-theme', resolvedTheme);
-    root.setAttribute('data-theme-preference', themePreference);
-    root.style.setProperty('--background', theme.background.base);
-    root.style.setProperty('--foreground', theme.text.primary);
-    root.style.setProperty('--muted-foreground', theme.text.muted);
-    root.style.setProperty('--card-background', theme.surfaces.card.background);
-    root.style.setProperty('--card-border', theme.surfaces.card.border);
-    root.style.setProperty(
+    const doc = document.documentElement;
+    const currentTheme = doc.getAttribute('data-theme');
+    const currentPreference = doc.getAttribute('data-theme-preference');
+
+    // Ensure both attributes and class are present
+    if (
+      currentTheme === resolvedTheme &&
+      currentPreference === themePreference &&
+      doc.classList.contains(`t_${resolvedTheme}`)
+    ) {
+      return;
+    }
+
+    doc.setAttribute('data-theme', resolvedTheme);
+    doc.setAttribute('data-theme-preference', themePreference);
+
+    // Clean up body classes (Tamagui or legacy injections)
+    if (document.body) {
+      const bodyClasses = Array.from(document.body.classList);
+      bodyClasses.forEach((c) => {
+        if (c.startsWith('t_')) document.body.classList.remove(c);
+      });
+    }
+
+    // Update classes on html element only
+    const currentClasses = Array.from(doc.classList);
+    const themeClasses = currentClasses.filter((c) => c.startsWith('t_'));
+
+    if (
+      !doc.classList.contains(`t_${resolvedTheme}`) ||
+      themeClasses.length > 1
+    ) {
+      themeClasses.forEach((c) => doc.classList.remove(c));
+      doc.classList.add(`t_${resolvedTheme}`);
+    }
+
+    doc.style.setProperty('--background', theme.background.base);
+    doc.style.setProperty('--foreground', theme.text.primary);
+    doc.style.setProperty('--muted-foreground', theme.text.muted);
+    doc.style.setProperty('--card-background', theme.surfaces.card.background);
+    doc.style.setProperty('--card-border', theme.surfaces.card.border);
+    doc.style.setProperty(
       '--surface-background',
       theme.surfaces.panel.background,
     );
-    root.style.setProperty(
+    doc.style.setProperty(
       '--primary-gradient-start',
       theme.buttons.primary.gradientStart,
     );
+    doc.style.setProperty('--glass-background', theme.glass.background);
+    doc.style.setProperty('--glass-border', theme.glass.border);
 
-    if (document.body) {
-      document.body.style.backgroundColor = theme.background.base;
-      document.body.style.color = theme.text.primary;
-    }
+    doc.style.backgroundColor = theme.background.base;
+    doc.style.color = theme.text.primary;
+
+    const cookieOptions = 'path=/; max-age=31536000; SameSite=Lax';
+    document.cookie = `app-theme=${resolvedTheme}; ${cookieOptions}`;
+    document.cookie = `app-theme-preference=${themePreference}; ${cookieOptions}`;
   }, [resolvedTheme, theme, themePreference]);
-
-  // Sync legacy storage if needed, or just rely on store persistence.
-  // The store handles persistence now.
 
   const contextValue = useMemo<ThemeContextValue>(
     () => ({ themePreference, resolvedTheme, setThemePreference }),
@@ -119,20 +179,18 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
 
   return (
     <ThemeContext.Provider value={contextValue}>
-      <StyledThemeProvider theme={theme}>{children}</StyledThemeProvider>
+      <TamaguiProvider
+        config={tamaguiConfig}
+        defaultTheme={resolvedTheme || initialTheme || 'dark'}
+        disableInjectCSS
+      >
+        {children}
+      </TamaguiProvider>
     </ThemeContext.Provider>
   );
 }
 
 export function useThemeController(): ThemeContextValue {
-  // We can return store values directly or keep context.
-  // Keeping context allows us to avoid refactoring all call sites that might expect a Provider content,
-  // although Zustand can be used anywhere.
-  // For now, let's keep the Provider wrapping but feed it from the store,
-  // so consumers of useThemeController get the store values.
-  // Actually, to fully migrate, we should eventually remove the Context,
-  // but to be safe and incremental, feeding the context from the store is a good step.
-  // However, pure Zustand usage would be: const { ... } = useThemeStore()
   const context = useContext(ThemeContext);
 
   if (!context) {

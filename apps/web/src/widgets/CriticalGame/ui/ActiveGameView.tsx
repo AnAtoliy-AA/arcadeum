@@ -1,6 +1,11 @@
 'use client';
 
-import { useRef, useCallback, useMemo, useState } from 'react';
+import { useEffect, useCallback, useMemo, useState } from 'react';
+import {
+  useGameChatStore,
+  useLatestChatMessage,
+  ChatMessagePopup,
+} from '@/widgets/GameChat';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type {
   CriticalCard,
@@ -22,11 +27,8 @@ import {
 import { useGameHandlers } from '../hooks/useGameHandlers';
 import { GameModals } from './GameModals';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
-import { ChatSection } from './ChatSection';
 import { GameStatusMessage } from './GameStatusMessage';
-import { PlayerHand } from './PlayerHand';
-import { GameTableSection } from './GameTableSection';
-import { GameBoard, TableArea } from './styles';
+import { ActiveGameContent } from './ActiveGameContent';
 import { CriticalGameHeader } from './CriticalGameHeader';
 import type { UseGameActionsReturn } from '@/features/games/hooks/useGameActions';
 import type { RematchInvitation } from '../hooks/useRematch';
@@ -88,7 +90,6 @@ export function ActiveGameView({
   rematch,
 }: ActiveGameViewProps) {
   const { t } = useTranslation();
-  const chatMessagesRef = useRef<HTMLDivElement | null>(null);
 
   // Layout State
   const [handLayout, setHandLayout] = useState<HandLayoutMode>('grid');
@@ -126,43 +127,56 @@ export function ActiveGameView({
     handleSelectComboCard,
     handleToggleFiverCard,
     favorModal,
-    setFavorModal,
+    handleOpenFavorModal,
+    handleCloseFavorModal,
+    handleConfirmFavor,
     targetedAttackModal,
     setTargetedAttackModal,
     seeTheFutureModal,
-    setSeeTheFutureModal,
-    chatMessage,
-    setChatMessage,
-    chatScope,
-    setChatScope,
-    showChat,
-    handleToggleChat,
-    clearChatMessage,
+    handleCloseSeeTheFutureModal,
     stashModal,
-    setStashModal,
+    handleCloseStashModal,
     markModal,
-    setMarkModal,
+    handleCloseMarkModal,
     stealDrawModal,
-    setStealDrawModal,
+    handleCloseStealDrawModal,
     smiteModal,
-    setSmiteModal,
+    handleCloseSmiteModal,
     omniscienceModal,
-    setOmniscienceModal,
+    handleCloseOmniscienceModal,
   } = useCriticalModals({
-    chatMessagesRef,
-    chatLogCount: snapshot?.logs?.length ?? 0,
+    playFavor: actions.playFavor,
   });
+
+  // Sync logs to gameChatStore
+  useEffect(() => {
+    useGameChatStore.getState().setLogs(snapshot?.logs ?? []);
+  }, [snapshot?.logs]);
+
+  // Register sendMessage on mount, clear on unmount
+  useEffect(() => {
+    useGameChatStore.getState().registerSendMessage(actions.postHistoryNote);
+    return () => useGameChatStore.getState().clear();
+  }, [actions.postHistoryNote]);
+
+  const { latestMessage, dismiss: dismissPopup } = useLatestChatMessage(
+    snapshot?.logs ?? [],
+  );
 
   // Monitor logs for seeTheFuture.reveal and omniscience.reveal entries
   useSeeTheFutureFromLogs({
     logs: snapshot?.logs,
     currentUserId,
-    setSeeTheFutureModal,
+    setSeeTheFutureModal: (_val: unknown) => {
+      // Compatibility if needed, but useCriticalModals should handle it
+    },
   });
   useOmniscienceFromLogs({
     logs: snapshot?.logs,
     currentUserId,
-    setOmniscienceModal,
+    setOmniscienceModal: (_val: unknown) => {
+      // Compatibility
+    },
   });
 
   const youLabel = t('games.table.players.you');
@@ -171,7 +185,7 @@ export function ActiveGameView({
     (cardType: CriticalCard) => t(getCardTranslationKey(cardType, cardVariant)),
     [t, cardVariant],
   );
-  const { resolveDisplayName, formatLogMessage } = useDisplayNames({
+  const { resolveDisplayName } = useDisplayNames({
     currentUserId,
     room,
     snapshot,
@@ -188,8 +202,6 @@ export function ActiveGameView({
     selectedFiverCards,
     selectedDiscardCard,
     eventComboModal,
-    chatMessage,
-    chatScope,
     currentPlayerHand: currentPlayer?.hand ?? [],
     discardPile: snapshot?.discardPile ?? [],
     actions,
@@ -197,17 +209,15 @@ export function ActiveGameView({
     handleOpenEventCombo,
     setSelectedMode,
     setSelectedTarget,
-    setStashModal,
-    setMarkModal,
-    setStealDrawModal,
-    setSmiteModal,
-    clearChatMessage,
+    setStashModal: () => {}, // Handled by useCriticalModals
+    setMarkModal: () => {},
+    setStealDrawModal: () => {},
+    setSmiteModal: () => {},
     setTargetedAttackModal,
   });
 
   const {
     handleConfirmEventCombo,
-    handleSendChatMessage,
     handleOpenFiverCombo,
     handleConfirmStash,
     handleConfirmMark,
@@ -215,11 +225,8 @@ export function ActiveGameView({
     handleUnstash,
     handlePlayActionCard,
     handleCloseTargetedAttackModal,
-    handleCloseMarkModal,
-    handleCloseStealDrawModal,
     handleConfirmTargetedAttack,
     handleConfirmAlterFuture,
-    handleCloseSmiteModal,
     handleConfirmSmite,
   } = gameHandlers;
 
@@ -250,34 +257,6 @@ export function ActiveGameView({
     t: t as (key: string) => string,
   });
 
-  const handleOpenFavorModal = useCallback(
-    () => setFavorModal(true),
-    [setFavorModal],
-  );
-  const handleCloseFavorModal = useCallback(() => {
-    setFavorModal(false);
-    setSelectedTarget(null);
-  }, [setFavorModal, setSelectedTarget]);
-  const handleConfirmFavor = useCallback(() => {
-    if (selectedTarget) {
-      actions.playFavor(selectedTarget);
-      setFavorModal(false);
-      setSelectedTarget(null);
-    }
-  }, [selectedTarget, actions, setFavorModal, setSelectedTarget]);
-  const handleCloseSeeTheFutureModal = useCallback(
-    () => setSeeTheFutureModal(null),
-    [setSeeTheFutureModal],
-  );
-  const handleCloseStashModal = useCallback(
-    () => setStashModal(false),
-    [setStashModal],
-  );
-  const handleCloseOmniscienceModal = useCallback(
-    () => setOmniscienceModal(null),
-    [setOmniscienceModal],
-  );
-
   const modalPlayers = useMemo(
     () =>
       snapshot.players.map((p: CriticalPlayerState) => ({
@@ -295,7 +274,12 @@ export function ActiveGameView({
     <>
       <CriticalGameHeader
         room={room}
-        t={t as (key: string, params?: Record<string, unknown>) => string}
+        t={
+          t as unknown as (
+            key: string,
+            params?: Record<string, string | number>,
+          ) => string
+        }
         idleTimerEnabled={idleTimerEnabled}
         turnStatusVariant={turnStatusVariant}
         turnStatusText={turnStatusText}
@@ -308,94 +292,58 @@ export function ActiveGameView({
         autoplayState={autoplayState}
         idleTimerTriggered={idleTimerTriggered}
         handleStopAutoplay={handleStopAutoplay}
-        showChat={showChat}
-        handleToggleChat={handleToggleChat}
         isFullscreen={isFullscreen}
         toggleFullscreen={toggleFullscreen}
       />
 
-      <GameBoard>
-        <TableArea $showChat={showChat}>
-          <GameTableSection
-            players={snapshot.players}
-            playerOrder={snapshot.playerOrder}
-            currentTurnIndex={snapshot.currentTurnIndex}
-            currentUserId={currentUserId}
-            deck={snapshot.deck}
-            discardPileLength={snapshot.discardPile.length}
-            pendingDraws={snapshot.pendingDraws}
-            discardPile={snapshot.discardPile}
-            logs={snapshot.logs ?? []}
-            resolveDisplayName={resolveDisplayName}
-            t={t as (key: string) => string}
-            cardVariant={cardVariant}
-          />
+      <ActiveGameContent
+        room={room}
+        snapshot={snapshot}
+        currentUserId={currentUserId}
+        currentPlayer={currentPlayer}
+        cardVariant={cardVariant}
+        isGameOver={!!isGameOver}
+        isMyTurn={!!isMyTurn}
+        canAct={!!canAct}
+        canPlayNope={!!canPlayNope}
+        actionBusy={actionBusy}
+        aliveOpponents={aliveOpponents}
+        handLayout={handLayout}
+        setHandLayout={setHandLayout}
+        resolveDisplayName={resolveDisplayName}
+        t={
+          t as unknown as (
+            key: string,
+            params?: Record<string, string | number>,
+          ) => string
+        }
+        actions={actions}
+        idleTimerTriggered={idleTimerTriggered}
+        autoplayState={autoplayState}
+        handleUnstash={handleUnstash}
+        handlePlayActionCard={handlePlayActionCard}
+        handleOpenFavorModal={handleOpenFavorModal}
+        handleOpenEventCombo={handleOpenEventCombo}
+        handleOpenFiverCombo={handleOpenFiverCombo}
+      />
 
-          {currentPlayer && currentPlayer.alive && !isGameOver && (
-            <PlayerHand
-              currentPlayer={currentPlayer}
-              onUnstashCard={handleUnstash}
-              isMyTurn={!!isMyTurn}
-              isGameOver={!!isGameOver}
-              canAct={!!canAct}
-              canPlayNope={!!canPlayNope}
-              actionBusy={actionBusy}
-              aliveOpponents={aliveOpponents}
-              discardPileLength={snapshot?.discardPile?.length ?? 0}
-              logs={snapshot?.logs ?? []}
-              pendingAction={snapshot?.pendingAction ?? null}
-              pendingFavor={snapshot?.pendingFavor ?? null}
-              pendingDefuse={snapshot?.pendingDefuse ?? null}
-              deckSize={snapshot?.deck?.length ?? 0}
-              playerOrder={snapshot?.playerOrder ?? []}
-              currentUserId={currentUserId}
-              allowActionCardCombos={snapshot?.allowActionCardCombos ?? false}
-              t={t as (key: string) => string}
-              onDraw={actions.drawCard}
-              onPlayActionCard={handlePlayActionCard}
-              onPlayNope={actions.playNope}
-              onPlaySeeTheFuture={actions.playSeeTheFuture}
-              onOpenFavorModal={handleOpenFavorModal}
-              onGiveFavorCard={actions.giveFavorCard}
-              onPlayDefuse={actions.playDefuse}
-              onOpenEventCombo={handleOpenEventCombo}
-              onOpenFiverCombo={handleOpenFiverCombo}
-              forceEnableAutoplay={idleTimerTriggered}
-              onAutoplayEnabledChange={autoplayState.setAllEnabled}
-              cardVariant={cardVariant}
-              handLayout={handLayout}
-              setHandLayout={setHandLayout}
-            />
-          )}
+      {currentPlayer && (
+        <GameStatusMessage
+          currentPlayerAlive={currentPlayer.alive}
+          isGameOver={!!isGameOver}
+          t={t as (key: string) => string}
+        />
+      )}
 
-          {showChat && (
-            <ChatSection
-              logs={snapshot.logs ?? []}
-              chatMessagesRef={chatMessagesRef}
-              chatMessage={chatMessage}
-              onChatMessageChange={setChatMessage}
-              chatScope={chatScope}
-              onChatScopeChange={setChatScope}
-              onSendMessage={handleSendChatMessage}
-              currentUserId={currentUserId}
-              turnStatus={turnStatusText}
-              resolveDisplayName={resolveDisplayName}
-              formatLogMessage={formatLogMessage}
-              t={t as (key: string) => string}
-              cardVariant={cardVariant}
-              onClose={handleToggleChat}
-            />
-          )}
-        </TableArea>
-
-        {currentPlayer && (
-          <GameStatusMessage
-            currentPlayerAlive={currentPlayer.alive}
-            isGameOver={!!isGameOver}
-            t={t as (key: string) => string}
-          />
-        )}
-      </GameBoard>
+      {latestMessage && (
+        <ChatMessagePopup
+          key={latestMessage.id}
+          senderName={latestMessage.senderName}
+          message={latestMessage.message}
+          visible={!!latestMessage}
+          onDismiss={dismissPopup}
+        />
+      )}
 
       <GameModals
         // Rematch Modal
@@ -466,7 +414,6 @@ export function ActiveGameView({
         markModal={markModal}
         onCloseMarkModal={handleCloseMarkModal}
         onConfirmMark={handleConfirmMark}
-        stealDrawModal={stealDrawModal}
         onCloseStealDrawModal={handleCloseStealDrawModal}
         onConfirmStealDraw={handleConfirmStealDraw}
         smiteModal={smiteModal}
@@ -475,6 +422,7 @@ export function ActiveGameView({
         // Omniscience Modal
         omniscienceModal={omniscienceModal}
         onCloseOmniscienceModal={handleCloseOmniscienceModal}
+        stealDrawModal={stealDrawModal}
       />
 
       <GameResultModal

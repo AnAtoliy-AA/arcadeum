@@ -16,10 +16,11 @@ import {
   isSocketEncryptionEnabled,
   getEncryptionKeyHex,
 } from '../common/utils/socket-encryption.util';
+import { corsOriginMatcher } from '../common/utils/cors.util';
 
 @WebSocketGateway({
   namespace: 'games',
-  cors: { origin: '*' },
+  cors: { origin: corsOriginMatcher },
 })
 @Injectable()
 export class GamesGateway {

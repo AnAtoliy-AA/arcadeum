@@ -1,147 +1,95 @@
-import type { SessionDetailItem, SessionDetailLabels } from '../types';
-import {
-  PanelCard,
-  PanelHeader,
-  PanelBadge,
-  PanelTitle,
-  PanelSubtitle,
-  StatusText,
-  SessionCallout,
-  CalloutHeading,
-  CalloutDetail,
-  ButtonRow,
-  SecondaryButton,
-  TokenList,
-  TokenRow,
-  TokenLabel,
-  TokenValue,
-  SessionDetailList,
-  SessionDetailRow,
-  SessionDetailTerm,
-  SessionDetailValue,
-  EmptyState,
-} from './styles';
+import { useAuthForm, useAuthLabels } from '../hooks';
+import { GlassCard, Typography, YStack, XStack } from '@arcadeum/ui';
 
-export interface SessionStatusPanelLabels {
-  statusBadge: string;
-  statusHeading: string;
-  statusDescription: string;
-  statusActiveMessage: string;
-  heroStatusHeadline: string;
-  guestDescription: string;
-  signOutLabel: string;
-  loadingStatusLabel: string;
-  oauthAccessTokenLabel: string;
-  sessionDetailLabels: SessionDetailLabels;
-}
-
-export interface SessionStatusPanelForm {
-  isSessionHydrating: boolean;
-  hasSession: boolean;
-  sessionSnapshot: {
-    provider: string | null;
-    accessToken: string | null;
-    refreshToken: string | null;
-  };
-  handleSignOut: () => Promise<void>;
-}
-
-interface SessionStatusPanelProps {
-  labels: SessionStatusPanelLabels;
-  form: SessionStatusPanelForm;
-  sessionDetails: SessionDetailItem[];
-}
-
-export function SessionStatusPanel({
-  labels,
-  form,
-  sessionDetails,
-}: SessionStatusPanelProps) {
-  const {
-    statusBadge,
-    statusHeading,
-    statusDescription,
-    statusActiveMessage,
-    heroStatusHeadline,
-    guestDescription,
-    signOutLabel,
-    loadingStatusLabel,
-    oauthAccessTokenLabel,
-    sessionDetailLabels,
-  } = labels;
-
-  const { isSessionHydrating, hasSession, sessionSnapshot, handleSignOut } =
-    form;
-
-  const isOAuthProvider = sessionSnapshot.provider === 'oauth';
+export function SessionStatusPanel() {
+  const { isRegisterMode, hasSession, sessionSnapshot } = useAuthForm();
+  const labels = useAuthLabels(isRegisterMode);
+  const { statusHeading, statusDescription, statusActiveMessage } = labels;
 
   return (
-    <PanelCard>
-      <PanelHeader>
-        <PanelBadge>{statusBadge}</PanelBadge>
-        <PanelTitle>{statusHeading}</PanelTitle>
-        <PanelSubtitle>{statusDescription}</PanelSubtitle>
-      </PanelHeader>
-      {isSessionHydrating ? (
-        loadingStatusLabel ? (
-          <StatusText>{loadingStatusLabel}</StatusText>
-        ) : null
+    <GlassCard flex={1} minWidth={320} gap="$4" padding="$5">
+      <YStack gap="$1">
+        <Typography variant="heading" uiSize="lg">
+          {statusHeading}
+        </Typography>
+        <Typography variant="body" uiSize="sm" color="$colorMuted">
+          {statusDescription}
+        </Typography>
+      </YStack>
+
+      {hasSession && sessionSnapshot ? (
+        <YStack gap="$4">
+          <YStack
+            gap="$1"
+            paddingVertical="$3"
+            paddingHorizontal="$4"
+            borderRadius={16}
+            borderWidth={1}
+            borderColor="$successBorder"
+            backgroundColor="$successBgSoft"
+          >
+            <Typography variant="heading" uiSize="sm">
+              {statusActiveMessage}
+            </Typography>
+            <Typography variant="body" uiSize="sm" color="$colorMuted">
+              User:{' '}
+              {sessionSnapshot.userId ||
+                sessionSnapshot.displayName ||
+                'Authenticated'}
+            </Typography>
+          </YStack>
+
+          <YStack gap="$2">
+            <XStack
+              justifyContent="space-between"
+              gap="$4"
+              alignItems="baseline"
+            >
+              <Typography variant="body" uiSize="xs" color="$colorMuted">
+                Session ID
+              </Typography>
+              <Typography variant="body" uiSize="sm" fontFamily="$body">
+                {sessionSnapshot.userId}
+              </Typography>
+            </XStack>
+            {sessionSnapshot.accessTokenExpiresAt && (
+              <XStack
+                justifyContent="space-between"
+                gap="$4"
+                alignItems="baseline"
+              >
+                <Typography variant="body" uiSize="xs" color="$colorMuted">
+                  Expires
+                </Typography>
+                <Typography variant="body" uiSize="sm" fontFamily="$body">
+                  {new Date(
+                    sessionSnapshot.accessTokenExpiresAt,
+                  ).toLocaleString()}
+                </Typography>
+              </XStack>
+            )}
+          </YStack>
+        </YStack>
       ) : (
-        <>
-          <SessionCallout>
-            <CalloutHeading>
-              {hasSession ? statusActiveMessage : heroStatusHeadline}
-            </CalloutHeading>
-            <CalloutDetail>
-              {hasSession ? statusDescription : guestDescription}
-            </CalloutDetail>
-            {hasSession ? (
-              <ButtonRow>
-                <SecondaryButton
-                  type="button"
-                  onClick={() => void handleSignOut()}
-                >
-                  {signOutLabel}
-                </SecondaryButton>
-              </ButtonRow>
-            ) : null}
-          </SessionCallout>
-          {hasSession ? (
-            <>
-              <TokenList>
-                {sessionSnapshot.accessToken ? (
-                  <TokenRow>
-                    <TokenLabel>
-                      {isOAuthProvider
-                        ? oauthAccessTokenLabel
-                        : sessionDetailLabels.sessionAccessToken}
-                    </TokenLabel>
-                    <TokenValue>{sessionSnapshot.accessToken}</TokenValue>
-                  </TokenRow>
-                ) : null}
-                {sessionSnapshot.refreshToken ? (
-                  <TokenRow>
-                    <TokenLabel>{sessionDetailLabels.refreshToken}</TokenLabel>
-                    <TokenValue>{sessionSnapshot.refreshToken}</TokenValue>
-                  </TokenRow>
-                ) : null}
-              </TokenList>
-              <SessionDetailList>
-                {sessionDetails.map(({ key, term, value }) =>
-                  value ? (
-                    <SessionDetailRow key={key}>
-                      <SessionDetailTerm>{term ?? key}</SessionDetailTerm>
-                      <SessionDetailValue>{value}</SessionDetailValue>
-                    </SessionDetailRow>
-                  ) : null,
-                )}
-              </SessionDetailList>
-            </>
-          ) : (
-            <EmptyState>{guestDescription}</EmptyState>
-          )}
-        </>
+        <YStack gap="$4">
+          <YStack
+            gap="$1"
+            paddingVertical="$3"
+            paddingHorizontal="$4"
+            borderRadius={16}
+            borderWidth={1}
+            borderColor="$borderColor"
+            backgroundColor="$backgroundFocus"
+          >
+            <Typography variant="heading" uiSize="sm">
+              Inactive
+            </Typography>
+          </YStack>
+          <Typography variant="body" uiSize="sm" color="$colorMuted">
+            No active session found. Please sign in to access your account.
+          </Typography>
+        </YStack>
       )}
-    </PanelCard>
+    </GlassCard>
   );
 }

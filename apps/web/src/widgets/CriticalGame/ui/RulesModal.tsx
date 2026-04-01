@@ -1,22 +1,24 @@
+'use client';
 import React from 'react';
-import { createPortal } from 'react-dom';
-import styled from 'styled-components';
+import { VisuallyHidden, XStack, YStack, Dialog } from 'tamagui';
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalTitle,
+  ModalOverlay,
   CloseButton,
   ModalSection,
   SectionLabel,
   RulesText,
   RulesTextPre,
-} from './styles/modals';
+} from './styles';
 import { Card } from './styles/cards';
 import { CARD_GROUPS } from '../lib/constants';
-import { CriticalCard } from '@/shared/types/games';
+import { CriticalCard } from '../types';
+import { GameVariant } from '@arcadeum/ui';
 import { TranslationKey } from '@/shared/lib/useTranslation';
-import { CloseIcon } from '@/shared/ui/Icons';
+import { CloseIcon } from '@/shared/ui';
 
 interface RulesModalProps {
   isOpen: boolean;
@@ -27,49 +29,52 @@ interface RulesModalProps {
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
 
-const snakeToCamel = (str: string) =>
-  str.replace(/([-_][a-z])/g, (group) =>
-    group.toUpperCase().replace('-', '').replace('_', ''),
-  );
+// Rules grid using Tamagui
+const RulesGrid = ({ children }: { children: React.ReactNode }) => (
+  <XStack flexWrap="wrap" gap="$4">
+    {children}
+  </XStack>
+);
 
-const RulesGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-`;
+const CardRuleItem = ({ children }: { children: React.ReactNode }) => (
+  <XStack
+    gap="$3"
+    alignItems="flex-start"
+    backgroundColor="rgba(255, 255, 255, 0.03)"
+    padding="$3"
+    borderRadius={12}
+    borderWidth={1}
+    borderColor="rgba(255, 255, 255, 0.05)"
+    width="100%"
+    $gtSm={{ width: 'calc(50% - 8px)' }}
+  >
+    {children}
+  </XStack>
+);
 
-const CardRuleItem = styled.div`
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-  background: rgba(255, 255, 255, 0.03);
-  padding: 1rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-`;
+const CardVisual = ({ children }: { children: React.ReactNode }) => (
+  <YStack flexShrink={0} width={80}>
+    {children}
+  </YStack>
+);
 
-const CardVisual = styled.div`
-  flex-shrink: 0;
-  width: 80px;
-`;
+const CardInfo = ({ children }: { children: React.ReactNode }) => (
+  <YStack gap="$1" flex={1}>
+    {children}
+  </YStack>
+);
 
-const CardInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-`;
+const CardName = ({ children }: { children: React.ReactNode }) => (
+  <RulesText fontWeight="700" fontSize="$4">
+    {children}
+  </RulesText>
+);
 
-const CardName = styled.div`
-  font-weight: 700;
-  font-size: 1rem;
-  color: ${({ theme }) => theme.text.primary};
-`;
-
-const CardDescription = styled.div`
-  font-size: 0.85rem;
-  color: ${({ theme }) => theme.text.secondary};
-  line-height: 1.4;
-`;
+const CardDescription = ({ children }: { children: React.ReactNode }) => (
+  <RulesText fontSize="$2" opacity={0.7} lineHeight={16}>
+    {children}
+  </RulesText>
+);
 
 export function RulesModal({
   isOpen,
@@ -103,127 +108,144 @@ export function RulesModal({
   };
 
   const getCardDescription = (key: string) => {
-    // 1. Try variant specific description (usually not different, but could be)
-    // Actually typically descriptions are generic but we might want them themed later.
-    // For now, let's use the core descriptions which are generic but thematic enough.
     const camelKey = snakeToCamel(key);
     return t(`games.table.cards.descriptions.${camelKey}` as TranslationKey);
   };
 
-  return createPortal(
-    <Modal onClick={onClose} data-testid="rules-modal">
-      <ModalContent
-        onClick={(e) => e.stopPropagation()}
-        $variant={currentVariant}
-        style={{ maxWidth: '900px' }}
-      >
-        <ModalHeader $variant={currentVariant}>
-          <ModalTitle $variant={currentVariant}>
-            {t('games.critical_v1.rules.title' as TranslationKey)}
-          </ModalTitle>
-          <CloseButton
-            onClick={onClose}
-            $variant={currentVariant}
-            data-testid="modal-close-button"
-          >
-            <CloseIcon size={20} />
-          </CloseButton>
-        </ModalHeader>
+  const snakeToCamel = (str: string) =>
+    str.replace(/([-_][a-z])/g, (_group) =>
+      _group.toUpperCase().replace('-', '').replace('_', ''),
+    );
 
-        <ModalSection>
-          <SectionLabel $variant={currentVariant}>
-            {t('games.critical_v1.rules.headers.objective' as TranslationKey)}
-          </SectionLabel>
-          <RulesText>
-            {t('games.critical_v1.rules.objective' as TranslationKey, {
-              criticalEvent: getCardName('critical_event'),
-              neutralizer: getCardName('neutralizer'),
-            })}
-          </RulesText>
-        </ModalSection>
+  return (
+    <Modal open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Portal>
+        <ModalOverlay
+          key="overlay"
+          animation="fast"
+          backdropFilter="blur(10px)"
+        />
+        <ModalContent
+          $variant={currentVariant as GameVariant}
+          style={{ maxWidth: 900 }}
+          data-testid="rules-modal"
+        >
+          <VisuallyHidden>
+            <Dialog.Title>
+              {t('games.critical_v1.rules.title' as TranslationKey)}
+            </Dialog.Title>
+            <Dialog.Description>Game rules for Critical</Dialog.Description>
+          </VisuallyHidden>
 
-        {isFastMode && (
+          <ModalHeader>
+            <ModalTitle>
+              {t('games.critical_v1.rules.title' as TranslationKey)}
+            </ModalTitle>
+            <Dialog.Close asChild>
+              <CloseButton
+                onPress={onClose}
+                $variant={currentVariant as GameVariant}
+                data-testid="modal-close-button"
+              >
+                <CloseIcon size={20} />
+              </CloseButton>
+            </Dialog.Close>
+          </ModalHeader>
+
           <ModalSection>
-            <SectionLabel $variant={currentVariant}>
-              {t('games.critical_v1.rules.headers.fastGame' as TranslationKey)}
+            <SectionLabel $variant={currentVariant as GameVariant}>
+              {t('games.critical_v1.rules.headers.objective' as TranslationKey)}
             </SectionLabel>
             <RulesText>
-              {t('games.critical_v1.rules.fastGame' as TranslationKey)}
+              {t('games.critical_v1.rules.objective' as TranslationKey, {
+                criticalEvent: getCardName('critical_event'),
+                neutralizer: getCardName('neutralizer'),
+              })}
             </RulesText>
           </ModalSection>
-        )}
 
-        {isPrivate && (
+          {isFastMode && (
+            <ModalSection>
+              <SectionLabel $variant={currentVariant as GameVariant}>
+                {t(
+                  'games.critical_v1.rules.headers.fastGame' as TranslationKey,
+                )}
+              </SectionLabel>
+              <RulesText>
+                {t('games.critical_v1.rules.fastGame' as TranslationKey)}
+              </RulesText>
+            </ModalSection>
+          )}
+
+          {isPrivate && (
+            <ModalSection>
+              <SectionLabel $variant={currentVariant as GameVariant}>
+                {t(
+                  'games.critical_v1.rules.headers.privateRoom' as TranslationKey,
+                )}
+              </SectionLabel>
+              <RulesText>
+                {t('games.critical_v1.rules.privateRoom' as TranslationKey)}
+              </RulesText>
+            </ModalSection>
+          )}
+
           <ModalSection>
-            <SectionLabel $variant={currentVariant}>
-              {t(
-                'games.critical_v1.rules.headers.privateRoom' as TranslationKey,
-              )}
+            <SectionLabel $variant={currentVariant as GameVariant}>
+              {t('games.critical_v1.rules.headers.gameplay' as TranslationKey)}
             </SectionLabel>
             <RulesText>
-              {t('games.critical_v1.rules.privateRoom' as TranslationKey)}
+              {t('games.critical_v1.rules.gameplay' as TranslationKey)}
             </RulesText>
           </ModalSection>
-        )}
 
-        <ModalSection>
-          <SectionLabel $variant={currentVariant}>
-            {t('games.critical_v1.rules.headers.gameplay' as TranslationKey)}
-          </SectionLabel>
-          <RulesText>
-            {t('games.critical_v1.rules.gameplay' as TranslationKey)}
-          </RulesText>
-        </ModalSection>
-
-        <ModalSection>
-          <SectionLabel $variant={currentVariant}>
-            {t('games.critical_v1.rules.headers.combos' as TranslationKey)}
-          </SectionLabel>
-          <RulesTextPre>
-            {t('games.critical_v1.rules.combos' as TranslationKey)}
-          </RulesTextPre>
-        </ModalSection>
-
-        <ModalSection>
-          <SectionLabel $variant={currentVariant}>
-            {t('games.critical_v1.rules.headers.chat' as TranslationKey)}
-          </SectionLabel>
-          <RulesTextPre>
-            {t('games.critical_v1.rules.chat' as TranslationKey)}
-          </RulesTextPre>
-        </ModalSection>
-
-        {CARD_GROUPS.map((group) => (
-          <ModalSection key={group.id}>
-            <SectionLabel $variant={currentVariant}>
-              {t(
-                `games.critical_v1.rules.cardGroups.${group.id}` as TranslationKey,
-              )}
+          <ModalSection>
+            <SectionLabel $variant={currentVariant as GameVariant}>
+              {t('games.critical_v1.rules.headers.combos' as TranslationKey)}
             </SectionLabel>
-            <RulesGrid>
-              {group.cards.map((cardKey) => (
-                <CardRuleItem key={cardKey}>
-                  <CardVisual>
-                    <Card
-                      $cardType={cardKey as CriticalCard}
-                      $variant={currentVariant}
-                    >
-                      {/* Optional: Show name on card too if needed, but we show it on side */}
-                    </Card>
-                  </CardVisual>
-                  <CardInfo>
-                    <CardName>{getCardName(cardKey)}</CardName>
-                    <CardDescription>
-                      {getCardDescription(cardKey)}
-                    </CardDescription>
-                  </CardInfo>
-                </CardRuleItem>
-              ))}
-            </RulesGrid>
+            <RulesTextPre>
+              {t('games.critical_v1.rules.combos' as TranslationKey)}
+            </RulesTextPre>
           </ModalSection>
-        ))}
-      </ModalContent>
-    </Modal>,
-    document.body,
+
+          <ModalSection>
+            <SectionLabel $variant={currentVariant as GameVariant}>
+              {t('games.critical_v1.rules.headers.chat' as TranslationKey)}
+            </SectionLabel>
+            <RulesTextPre>
+              {t('games.critical_v1.rules.chat' as TranslationKey)}
+            </RulesTextPre>
+          </ModalSection>
+
+          {CARD_GROUPS.map((group) => (
+            <ModalSection key={group.id}>
+              <SectionLabel $variant={currentVariant as GameVariant}>
+                {t(
+                  `games.critical_v1.rules.cardGroups.${group.id}` as TranslationKey,
+                )}
+              </SectionLabel>
+              <RulesGrid>
+                {group.cards.map((cardKey) => (
+                  <CardRuleItem key={cardKey}>
+                    <CardVisual>
+                      <Card
+                        $cardType={cardKey as CriticalCard}
+                        $variant={currentVariant as string}
+                      />
+                    </CardVisual>
+                    <CardInfo>
+                      <CardName>{getCardName(cardKey)}</CardName>
+                      <CardDescription>
+                        {getCardDescription(cardKey)}
+                      </CardDescription>
+                    </CardInfo>
+                  </CardRuleItem>
+                ))}
+              </RulesGrid>
+            </ModalSection>
+          ))}
+        </ModalContent>
+      </Dialog.Portal>
+    </Modal>
   );
 }

@@ -34,9 +34,16 @@ export class ArcadeumLogger extends ConsoleLogger {
   error(message: unknown, stack?: string, context?: string) {
     const ctx = context || this.context;
 
-    // Capture GamesGateway errors for E2E tests in non-production
-    if (!this.isProduction && ctx === 'GamesGateway') {
-      const logEntry = `[${new Date().toISOString()}] [${ctx}] ERROR: ${String(message)}\n${stack ? stack + '\n' : ''}`;
+    // Capture all errors for E2E tests in non-production to identify 500s
+    if (!this.isProduction) {
+      const errorMessage = String(message);
+      // Skip EADDRINUSE as it's common in watch mode and not a real backend error for E2E tests
+      if (errorMessage.includes('EADDRINUSE')) {
+        super.error(message, stack, ctx);
+        return;
+      }
+
+      const logEntry = `[${new Date().toISOString()}] [${ctx || 'Generic'}] ERROR: ${errorMessage}\n${stack ? stack + '\n' : ''}`;
       try {
         fs.appendFileSync(this.logFilePath, logEntry);
       } catch {

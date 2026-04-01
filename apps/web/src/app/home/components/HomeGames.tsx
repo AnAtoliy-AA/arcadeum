@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { YStack, TamaguiElement } from 'tamagui';
 import { useLanguage } from '@/app/i18n/LanguageProvider';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 import { routes } from '@/shared/config/routes';
 import {
   SectionHeader,
@@ -24,17 +26,27 @@ import {
   GameDescription,
   StyledGameTags,
   GameTag,
-  StyledPlayButton,
   HelpIcon,
   CardFooter,
 } from './styles/Games.styles';
+import { LinkButton } from '@/shared/ui';
 import { featuredGames } from '../data/games';
 import { HomeGameDetailsModal } from './modals/HomeGameDetailsModal';
+
+// Tamagui styled YStack types don't expose `tag`/`title` even though they work at runtime.
+// These typed aliases add the props for TS without breaking behaviour.
+type WithHtmlProps<T> = T & { tag?: string; title?: string };
+const SliderButtonEl = SliderButton as React.ComponentType<
+  WithHtmlProps<React.ComponentProps<typeof SliderButton>>
+>;
+const HelpIconEl = HelpIcon as React.ComponentType<
+  WithHtmlProps<React.ComponentProps<typeof HelpIcon>>
+>;
 
 export function HomeGames() {
   const { t } = useTranslation();
   const { messages } = useLanguage();
-  const sliderRef = useRef<HTMLDivElement>(null);
+  const sliderRef = useRef<TamaguiElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
@@ -62,7 +74,8 @@ export function HomeGames() {
 
   const checkScroll = () => {
     if (sliderRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = sliderRef.current;
+      const el = sliderRef.current as unknown as HTMLDivElement;
+      const { scrollLeft, scrollWidth, clientWidth } = el;
       setCanScrollLeft(scrollLeft > 10);
       setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
     }
@@ -76,32 +89,35 @@ export function HomeGames() {
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!sliderRef.current) return;
+    const el = sliderRef.current as unknown as HTMLDivElement;
     setIsDragging(true);
     setHasMoved(false);
-    setStartX(e.pageX - sliderRef.current.offsetLeft);
-    setScrollLeft(sliderRef.current.scrollLeft);
+    setStartX(e.pageX - el.offsetLeft);
+    setScrollLeft(el.scrollLeft);
 
     // Disable smooth scroll and snap during drag for responsiveness
-    sliderRef.current.style.scrollBehavior = 'auto';
-    sliderRef.current.style.scrollSnapType = 'none';
+    el.style.scrollBehavior = 'auto';
+    el.style.scrollSnapType = 'none';
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !sliderRef.current) return;
+    const el = sliderRef.current as unknown as HTMLDivElement;
     e.preventDefault();
-    const x = e.pageX - sliderRef.current.offsetLeft;
+    const x = e.pageX - el.offsetLeft;
     const walk = (x - startX) * 2; // scroll-fast
     if (Math.abs(walk) > 5) setHasMoved(true);
-    sliderRef.current.scrollLeft = scrollLeft - walk;
+    el.scrollLeft = scrollLeft - walk;
   };
 
   const handleMouseUp = () => {
     if (!sliderRef.current) return;
+    const el = sliderRef.current as unknown as HTMLDivElement;
     setIsDragging(false);
 
     // Re-enable smooth scroll and snap
-    sliderRef.current.style.scrollBehavior = 'smooth';
-    sliderRef.current.style.scrollSnapType = 'x mandatory';
+    el.style.scrollBehavior = 'smooth';
+    el.style.scrollSnapType = 'x mandatory';
 
     // Check scroll after snap finishes (roughly)
     setTimeout(checkScroll, 100);
@@ -109,18 +125,44 @@ export function HomeGames() {
 
   const scroll = (direction: 'left' | 'right') => {
     if (sliderRef.current) {
+      const el = sliderRef.current as unknown as HTMLDivElement;
       const scrollAmount = 392; // card width (360) + gap (32)
-      sliderRef.current.style.scrollBehavior = 'smooth';
-      sliderRef.current.scrollBy({
+      el.style.scrollBehavior = 'smooth';
+      el.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth',
       });
     }
   };
 
+  const sectionRef = useScrollReveal<HTMLDivElement>();
+
+  const withKeyboardClick =
+    (callback: () => void) => (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        callback();
+      }
+    };
+
+  const handleHelpClick = (gameId: string) => (e: React.MouseEvent) => {
+    openDetails(gameId, 'rules', e);
+  };
+
+  const handleHelpKeyDown = (gameId: string) =>
+    withKeyboardClick(() => openDetails(gameId, 'rules'));
+
+  const handleScrollLeft = () => scroll('left');
+  const handleScrollLeftKeyDown = (e: React.KeyboardEvent) =>
+    withKeyboardClick(handleScrollLeft)(e);
+
+  const handleScrollRight = () => scroll('right');
+  const handleScrollRightKeyDown = (e: React.KeyboardEvent) =>
+    withKeyboardClick(handleScrollRight)(e);
+
   return (
-    <SliderSection id="games">
-      <SectionHeader>
+    <SliderSection id="games" ref={sectionRef as never}>
+      <SectionHeader data-reveal data-reveal-delay="1">
         <SectionTitle>{homeCopy.gamesTitle ?? 'Featured Games'}</SectionTitle>
         <SectionSubtitle>
           {homeCopy.gamesSubtitle ??
@@ -128,31 +170,73 @@ export function HomeGames() {
         </SectionSubtitle>
       </SectionHeader>
 
-      <SliderContainer>
+      <SliderContainer data-reveal data-reveal-delay="2">
         <SliderTrack
           ref={sliderRef}
+          className="slider-track"
           onScroll={checkScroll}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
-          $isDragging={isDragging}
+          style={{
+            overflowX: 'auto',
+            scrollSnapType: 'x mandatory',
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none',
+            paddingBottom: '3rem',
+            paddingTop: '1.5rem',
+            cursor: isDragging ? 'grabbing' : 'grab',
+            userSelect: isDragging ? 'none' : 'auto',
+          }}
         >
           {featuredGames.map((game) => (
-            <SliderItem key={game.id}>
-              <MainGameCard $gradient={game.gradient}>
+            <SliderItem key={game.id} style={{ scrollSnapAlign: 'center' }}>
+              <MainGameCard
+                data-testid={`game-card-${game.id}`}
+                padding="$5"
+                flex={1}
+                className="game-card-hover"
+                style={{ boxShadow: '0 20px 50px rgba(0,0,0,0.35)' }}
+              >
+                {/* Gradient hover overlay replaces $gradient ::before */}
+                <YStack
+                  position="absolute"
+                  top={0}
+                  left={0}
+                  right={0}
+                  bottom={0}
+                  zIndex={0}
+                  pointerEvents="none"
+                  opacity={0}
+                  hoverStyle={{ opacity: 0.08 }}
+                  style={{ background: game.gradient ?? 'transparent' }}
+                />
                 <MainGameInfo>
                   <GameHeaderWrapper>
                     <StyledGameIcon>{game.emoji}</StyledGameIcon>
-                    <GameTitle $gradient={game.gradient}>
+                    <GameTitle
+                      data-testid={`game-title-${game.id}`}
+                      style={{
+                        background: game.gradient,
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                      }}
+                    >
                       {t(game.nameKey)}
                     </GameTitle>
-                    <HelpIcon
-                      onClick={(e) => openDetails(game.id, 'rules', e)}
+                    <HelpIconEl
+                      role="button"
+                      tabIndex={0}
+                      onClick={handleHelpClick(game.id)}
+                      onKeyDown={handleHelpKeyDown(game.id)}
                       title={homeCopy.showMore ?? 'Show Details'}
+                      data-testid="game-help-button"
                     >
-                      ?
-                    </HelpIcon>
+                      <GameDescription fontSize={14} opacity={1} margin={0}>
+                        ?
+                      </GameDescription>
+                    </HelpIconEl>
                   </GameHeaderWrapper>
 
                   <GameDescription>{t(game.descriptionKey)}</GameDescription>
@@ -164,17 +248,20 @@ export function HomeGames() {
                   </StyledGameTags>
 
                   <CardFooter>
-                    <StyledPlayButton
+                    <LinkButton
                       href={
                         game.isPlayable
                           ? `${routes.gameCreate}?gameId=${game.id}`
                           : '#'
                       }
+                      fullWidth
+                      data-testid="game-play-button"
+                      aria-label={`${game.isPlayable ? (homeCopy.gamePlayButton ?? 'Play Now') : (homeCopy.gameComingSoon ?? 'Coming Soon')} ${t(game.nameKey)}`}
                     >
                       {game.isPlayable
                         ? (homeCopy.gamePlayButton ?? 'Play Now')
                         : (homeCopy.gameComingSoon ?? 'Coming Soon')}
-                    </StyledPlayButton>
+                    </LinkButton>
                   </CardFooter>
                 </MainGameInfo>
               </MainGameCard>
@@ -183,12 +270,19 @@ export function HomeGames() {
         </SliderTrack>
 
         <SliderControls>
-          <SliderButton
-            onClick={() => scroll('left')}
-            disabled={!canScrollLeft}
+          <SliderButtonEl
+            role="button"
+            tabIndex={0}
+            onClick={handleScrollLeft}
+            onKeyDown={handleScrollLeftKeyDown}
             aria-label="Previous game"
+            data-testid="prev-game-button"
+            opacity={canScrollLeft ? 1 : 0.3}
+            pointerEvents={canScrollLeft ? 'auto' : 'none'}
           >
             <svg
+              width={24}
+              height={24}
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -198,13 +292,20 @@ export function HomeGames() {
             >
               <path d="M15 18l-6-6 6-6" />
             </svg>
-          </SliderButton>
-          <SliderButton
-            onClick={() => scroll('right')}
-            disabled={!canScrollRight}
+          </SliderButtonEl>
+          <SliderButtonEl
+            role="button"
+            tabIndex={0}
+            onClick={handleScrollRight}
+            onKeyDown={handleScrollRightKeyDown}
             aria-label="Next game"
+            data-testid="next-game-button"
+            opacity={canScrollRight ? 1 : 0.3}
+            pointerEvents={canScrollRight ? 'auto' : 'none'}
           >
             <svg
+              width={24}
+              height={24}
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -214,7 +315,7 @@ export function HomeGames() {
             >
               <path d="M9 5l6 6-6 6" />
             </svg>
-          </SliderButton>
+          </SliderButtonEl>
         </SliderControls>
       </SliderContainer>
 

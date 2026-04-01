@@ -9,6 +9,7 @@ import {
   CardEmoji,
   CardName,
 } from './styles';
+import type { GameVariant } from '@arcadeum/ui';
 
 interface LastPlayedCardDisplayProps {
   discardPile: CriticalCard[];
@@ -31,7 +32,7 @@ export const LastPlayedCardDisplay: React.FC<LastPlayedCardDisplayProps> = ({
     <LastPlayedCard
       $cardType={lastCard}
       $isAnimating={false}
-      $variant={cardVariant}
+      $variant={cardVariant as GameVariant}
     >
       <CardCorner $position="tl" />
       <CardCorner $position="tr" />

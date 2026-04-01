@@ -3,8 +3,7 @@
 import { ErrorState } from '@/shared/ui';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import { AppThemeProvider } from './theme/ThemeContext';
-import { StyledComponentsRegistry } from './StyledComponentsRegistry';
+import { BrowserRegistry } from './BrowserRegistry';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -17,36 +16,39 @@ const geistMono = Geist_Mono({
 });
 
 export default function GlobalError({
-  error: _error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const cookieStore = typeof document !== 'undefined' ? document.cookie : '';
+  const theme = (cookieStore.match(/app-theme=(light|dark)/)?.[1] || 'dark') as
+    | 'light'
+    | 'dark';
+
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <StyledComponentsRegistry>
-          <AppThemeProvider>
-            <div
-              style={{
-                height: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: 'var(--background)',
-                color: 'var(--foreground)',
-              }}
-            >
-              <ErrorState
-                title="Critical Error"
-                message="A critical error occurred preventing the application from loading."
-                onRetry={() => reset()}
-                retryLabel="Reload Application"
-              />
-            </div>
-          </AppThemeProvider>
-        </StyledComponentsRegistry>
+    <html lang="en" className={`t_${theme}`} data-theme={theme}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} t_${theme}`}
+      >
+        <BrowserRegistry initialTheme={theme}>
+          <div
+            className="main-outer"
+            style={{
+              height: '100vh',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <ErrorState
+              title="Critical Error"
+              message="A critical error occurred preventing the application from loading."
+              onRetry={() => reset()}
+              retryLabel="Reload Application"
+            />
+          </div>
+        </BrowserRegistry>
       </body>
     </html>
   );

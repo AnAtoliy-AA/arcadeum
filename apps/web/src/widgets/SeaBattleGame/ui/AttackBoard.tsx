@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import type { SeaBattlePlayerState } from '../types';
 import { CELL_STATE, ROW_LABELS, COL_LABELS } from '../types';
 import { ShipsLeft } from './ShipsLeft';
@@ -18,14 +18,14 @@ import {
   BadgeWrapper,
 } from './styles';
 import { SeaBattleGrids } from './SeaBattleGrids';
-import { Badge } from '@/shared/ui/Badge';
-import { IdleBadge } from '@/shared/ui';
+import { Badge, IdleBadge } from '@/shared/ui';
 import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import { getTheme } from '../lib/theme';
-import { useGameStore } from '@/features/games/store/gameStore';
+import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
+import type { SeaBattleTheme } from '../lib/theme';
+import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 
 interface AttackBoardProps {
   players: SeaBattlePlayerState[];
@@ -37,6 +37,24 @@ interface AttackBoardProps {
   disabled?: boolean;
 }
 
+function getCellBg(
+  state: number,
+  theme: SeaBattleTheme,
+  highlighted = false,
+): string {
+  if (highlighted) return theme.cellHover;
+  switch (state) {
+    case CELL_STATE.HIT:
+      return theme.hitColor;
+    case CELL_STATE.MISS:
+      return theme.missColor;
+    case CELL_STATE.SHIP:
+      return theme.shipColor;
+    default:
+      return theme.cellEmpty;
+  }
+}
+
 export function AttackBoard({
   players,
   currentUserId,
@@ -45,10 +63,9 @@ export function AttackBoard({
   onAttack,
   resolveDisplayName,
   disabled = false,
-  variant = 'classic',
-}: AttackBoardProps & { variant?: string }) {
+}: AttackBoardProps) {
   const { t } = useTranslation();
-  const theme = getTheme(variant);
+  const theme = useSeaBattleTheme();
   const currentPlayer = useMemo(() => {
     return players.find((p) => p.playerId === currentUserId) || null;
   }, [players, currentUserId]);
@@ -57,7 +74,7 @@ export function AttackBoard({
     return players.filter((p) => p.playerId !== currentUserId && p.alive);
   }, [players, currentUserId]);
 
-  const idlePlayers = useGameStore((s) => s.idlePlayers);
+  const idlePlayers = useGameStore((s: GameState) => s.idlePlayers);
 
   const handleCellClick = useCallback(
     (targetPlayerId: string, row: number, col: number) => {
@@ -81,9 +98,10 @@ export function AttackBoard({
       <SeaBattleGrids>
         {currentPlayer && (
           <PlayerSection
-            $isMe
-            $isActive={currentTurnPlayerId === currentUserId}
-            $theme={theme}
+            position="relative"
+            overflow="visible"
+            backgroundColor={theme.boardBackground}
+            borderColor={theme.cellBorder}
           >
             {currentTurnPlayerId === currentUserId && (
               <BadgeWrapper>
@@ -92,37 +110,41 @@ export function AttackBoard({
                 </Badge>
               </BadgeWrapper>
             )}
-            <PlayerName $theme={theme}>
+            <PlayerName color={theme.textColor}>
               {resolveDisplayName(currentPlayer.playerId, 'You')} (Your Fleet)
               {idlePlayers.includes(currentPlayer.playerId) && <IdleBadge />}
             </PlayerName>
-            <PlayerStats $theme={theme}>
+            <PlayerStats>
               <ShipsLeft ships={currentPlayer.ships} isMe={true} />
             </PlayerStats>
             <BoardWithLabels>
               <div />
               <ColLabels>
                 {COL_LABELS.map((label) => (
-                  <Label key={label} $theme={theme}>
+                  <Label key={label} color={theme.textSecondaryColor}>
                     {label}
                   </Label>
                 ))}
               </ColLabels>
               <RowLabels>
                 {ROW_LABELS.map((label) => (
-                  <Label key={label} $theme={theme}>
+                  <Label key={label} color={theme.textSecondaryColor}>
                     {label}
                   </Label>
                 ))}
               </RowLabels>
-              <BoardGrid $theme={theme}>
+              <BoardGrid
+                backgroundColor={theme.boardBackground}
+                borderColor={theme.cellBorder}
+              >
                 {currentPlayer.board.map((row, rIndex) =>
                   row.map((cellState, cIndex) => (
                     <BoardCell
                       key={`own-${rIndex}-${cIndex}`}
-                      $state={cellState}
-                      $isClickable={false}
-                      $theme={theme}
+                      isClickable={false}
+                      backgroundColor={getCellBg(cellState, theme)}
+                      borderColor={theme.cellBorder}
+                      borderRadius={parseInt(theme.borderRadius) || 4}
                     />
                   )),
                 )}
@@ -134,10 +156,11 @@ export function AttackBoard({
         {opponents.map((opponent) => (
           <PlayerSection
             key={opponent.playerId}
-            $isMe={false}
-            $isActive={currentTurnPlayerId === opponent.playerId}
-            $isTargetable={isMyTurn}
-            $theme={theme}
+            position="relative"
+            overflow="visible"
+            isTargetable={isMyTurn}
+            backgroundColor={theme.boardBackground}
+            borderColor={theme.cellBorder}
           >
             {currentTurnPlayerId === opponent.playerId && (
               <BadgeWrapper>
@@ -148,30 +171,33 @@ export function AttackBoard({
                 </Badge>
               </BadgeWrapper>
             )}
-            <PlayerName $theme={theme}>
+            <PlayerName color={theme.textColor}>
               {resolveDisplayName(opponent.playerId, 'Opponent')}
               {idlePlayers.includes(opponent.playerId) && <IdleBadge />}
             </PlayerName>
-            <PlayerStats $theme={theme}>
+            <PlayerStats>
               <ShipsLeft ships={opponent.ships} isMe={false} />
             </PlayerStats>
             <BoardWithLabels>
               <div />
               <ColLabels>
                 {COL_LABELS.map((label) => (
-                  <Label key={label} $theme={theme}>
+                  <Label key={label} color={theme.textSecondaryColor}>
                     {label}
                   </Label>
                 ))}
               </ColLabels>
               <RowLabels>
                 {ROW_LABELS.map((label) => (
-                  <Label key={label} $theme={theme}>
+                  <Label key={label} color={theme.textSecondaryColor}>
                     {label}
                   </Label>
                 ))}
               </RowLabels>
-              <BoardGrid $theme={theme}>
+              <BoardGrid
+                backgroundColor={theme.boardBackground}
+                borderColor={theme.cellBorder}
+              >
                 {opponent.board.map((row, rIndex) =>
                   row.map((cellState, cIndex) => {
                     const displayState =
@@ -187,9 +213,15 @@ export function AttackBoard({
                     return (
                       <BoardCell
                         key={`${opponent.playerId}-${rIndex}-${cIndex}`}
-                        $state={displayState}
-                        $isClickable={canAttack}
-                        $theme={theme}
+                        isClickable={canAttack}
+                        backgroundColor={getCellBg(displayState, theme)}
+                        hoverStyle={
+                          canAttack
+                            ? { backgroundColor: theme.cellHover }
+                            : undefined
+                        }
+                        borderColor={theme.cellBorder}
+                        borderRadius={parseInt(theme.borderRadius) || 4}
                         data-row={rIndex}
                         data-col={cIndex}
                         onClick={() =>

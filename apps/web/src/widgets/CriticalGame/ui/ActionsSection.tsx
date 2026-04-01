@@ -17,6 +17,7 @@ import {
   ActionsToggleButton,
 } from './styles';
 import { ExpansionActions } from './ExpansionActions';
+import { GameVariant } from '@arcadeum/ui';
 
 export type ActionBusyState =
   | 'draw'
@@ -105,11 +106,11 @@ export function ActionsSection({
   const [showActions, setShowActions] = useState(true);
 
   return (
-    <InfoCard $variant={cardVariant}>
-      <ActionsHeader $variant={cardVariant}>
+    <InfoCard>
+      <ActionsHeader>
         <InfoTitle>{t('games.table.actions.start') || 'Actions'}</InfoTitle>
         <ActionsToggleButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           onClick={() => setShowActions(!showActions)}
           title={showActions ? 'Hide Actions' : 'Show Actions'}
         >
@@ -118,10 +119,11 @@ export function ActionsSection({
       </ActionsHeader>
 
       {showActions && (
-        <ActionButtons $variant={cardVariant}>
+        <ActionButtons>
           <ActionButton
-            $variant={cardVariant}
+            $variant={cardVariant as GameVariant}
             onClick={onDraw}
+            data-testid="draw-card-button"
             disabled={
               !canAct ||
               [
@@ -141,9 +143,10 @@ export function ActionsSection({
           </ActionButton>
           {currentPlayer.hand.includes('evade') && (
             <ActionButton
-              $variant={cardVariant}
+              $variant={cardVariant as GameVariant}
               variant="secondary"
               onClick={() => onPlayActionCard('evade')}
+              data-testid="play-evade-button"
               disabled={!canAct || actionBusy === 'evade'}
             >
               {actionBusy === 'evade'
@@ -153,9 +156,10 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('strike') && (
             <ActionButton
-              $variant={cardVariant}
+              $variant={cardVariant as GameVariant}
               variant="danger"
               onClick={() => onPlayActionCard('strike')}
+              data-testid="play-strike-button"
               disabled={!canAct || actionBusy === 'strike'}
             >
               {actionBusy === 'strike'
@@ -165,7 +169,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('reorder') && (
             <ActionButton
-              $variant={cardVariant}
+              $variant={cardVariant as GameVariant}
               variant="secondary"
               onClick={() => onPlayActionCard('reorder')}
               disabled={!canAct || actionBusy === 'reorder'}
@@ -177,7 +181,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('cancel') && (
             <ActionButton
-              $variant={cardVariant}
+              $variant={cardVariant as GameVariant}
               variant="secondary"
               onClick={onPlayNope}
               disabled={!canAct || actionBusy === 'nope'}
@@ -189,7 +193,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('trade') && (
             <ActionButton
-              $variant={cardVariant}
+              $variant={cardVariant as GameVariant}
               variant="primary"
               onClick={onOpenFavorModal}
               disabled={!canAct || actionBusy === 'favor'}
@@ -201,7 +205,7 @@ export function ActionsSection({
           )}
           {currentPlayer.hand.includes('insight') && (
             <ActionButton
-              $variant={cardVariant}
+              $variant={cardVariant as GameVariant}
               variant="primary"
               onClick={onPlaySeeTheFuture}
               disabled={!canAct || actionBusy === 'see_the_future'}
@@ -213,7 +217,7 @@ export function ActionsSection({
           )}
           {canPlayCombo && (
             <ActionButton
-              $variant={cardVariant}
+              $variant={cardVariant as GameVariant}
               variant="primary"
               onClick={() => onOpenEventCombo(availableCombos)}
               disabled={actionBusy === 'event_combo'}
@@ -225,7 +229,7 @@ export function ActionsSection({
           )}
           {fiverAvailable && canAct && (
             <ActionButton
-              $variant={cardVariant}
+              $variant={cardVariant as GameVariant}
               variant="primary"
               onClick={onOpenFiverCombo}
               disabled={actionBusy === 'event_combo'}

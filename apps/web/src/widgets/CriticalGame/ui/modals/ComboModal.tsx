@@ -1,4 +1,5 @@
 import React from 'react';
+import { YStack, Text } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -12,6 +13,7 @@ import {
   ModalActions,
   ModalButton,
 } from '../styles';
+import { type GameVariant } from '@arcadeum/ui';
 import { getCardEmoji, getCardTranslationKey } from '../../lib/cardUtils';
 import { FIVER_COMBO_SIZE, ALL_GAME_CARDS } from '../../types';
 import type {
@@ -45,7 +47,7 @@ interface ComboModalProps {
   onToggleFiverCard: (card: CriticalCard) => void;
   onConfirm: () => void;
   resolveDisplayName: (playerId?: string, fallback?: string) => string;
-  t: (key: string, params?: Record<string, unknown>) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
   cardVariant?: string;
 }
 
@@ -95,10 +97,13 @@ export const ComboModal: React.FC<ComboModalProps> = ({
   const inFiverMode = selectedMode === 'fiver';
 
   return (
-    <Modal onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
-        <ModalHeader $variant={cardVariant}>
-          <ModalTitle $variant={cardVariant}>
+    <Modal open={isOpen}>
+      <ModalContent
+        onPress={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        $variant={cardVariant as GameVariant}
+      >
+        <ModalHeader $variant={cardVariant as GameVariant}>
+          <ModalTitle $variant={cardVariant as GameVariant}>
             {inFiverMode
               ? '🃏'
               : selectedComboCard
@@ -108,7 +113,7 @@ export const ComboModal: React.FC<ComboModalProps> = ({
               ? t('games.table.modals.eventCombo.fiver')
               : t('games.table.modals.eventCombo.title')}
           </ModalTitle>
-          <CloseButton onClick={onClose} $variant={cardVariant}>
+          <CloseButton onPress={onClose} $variant={cardVariant as GameVariant}>
             ×
           </CloseButton>
         </ModalHeader>
@@ -116,26 +121,26 @@ export const ComboModal: React.FC<ComboModalProps> = ({
         {/* Mode Selection - Show fiver option if available */}
         {fiverAvailable && !selectedComboCard && !inFiverMode && (
           <ModalSection>
-            <SectionLabel $variant={cardVariant}>
+            <SectionLabel $variant={cardVariant as GameVariant}>
               {t('games.table.modals.eventCombo.selectType')}
             </SectionLabel>
             <OptionGrid>
-              <OptionButton $selected={false} onClick={() => {}}>
-                <div style={{ fontSize: '1.5rem' }}>🎴🎴</div>
-                <div>{t('games.table.modals.eventCombo.pairTrio')}</div>
-                <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
-                  {t('games.table.modals.eventCombo.selectCardHint')}
-                </div>
+              <OptionButton $selected={false} onPress={() => {}}>
+                <Text fontSize="$6">🎴🎴</Text>
+                <Text>{t('games.table.modals.eventCombo.pairTrio')}</Text>
+                <Text fontSize="$2" opacity={0.7}>
+                  {t('games.table.modals.eventCombo.pairTrioDesc')}
+                </Text>
               </OptionButton>
               <OptionButton
                 $selected={inFiverMode}
-                onClick={() => onSelectMode('fiver')}
+                onPress={() => onSelectMode('fiver')}
               >
-                <div style={{ fontSize: '1.5rem' }}>🃏🃏🃏🃏🃏</div>
-                <div>{t('games.table.modals.eventCombo.fiver')}</div>
-                <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
-                  {t('games.table.modals.eventCombo.anyFive')}
-                </div>
+                <Text fontSize="$6">🃏🃏🃏🃏🃏</Text>
+                <Text>{t('games.table.modals.eventCombo.fiver')}</Text>
+                <Text fontSize="$2" opacity={0.7}>
+                  {t('games.table.modals.eventCombo.fiverDesc')}
+                </Text>
               </OptionButton>
             </OptionGrid>
           </ModalSection>
@@ -144,7 +149,7 @@ export const ComboModal: React.FC<ComboModalProps> = ({
         {/* Combo Card Selection - only show if not in fiver mode and multiple options available */}
         {!inFiverMode && showComboSelection && (
           <ModalSection>
-            <SectionLabel $variant={cardVariant}>
+            <SectionLabel $variant={cardVariant as GameVariant}>
               {t('games.table.modals.eventCombo.selectComboCard')}
             </SectionLabel>
             <OptionGrid>
@@ -152,18 +157,18 @@ export const ComboModal: React.FC<ComboModalProps> = ({
                 <OptionButton
                   key={card}
                   $selected={selectedComboCard === card}
-                  $variant={cardVariant}
-                  onClick={() => onSelectComboCard(card)}
+                  $variant={cardVariant as GameVariant}
+                  onPress={() => onSelectComboCard(card)}
                 >
-                  <div style={{ fontSize: '1.5rem' }}>{getCardEmoji(card)}</div>
-                  <div>{t(getCardTranslationKey(card, cardVariant))}</div>
-                  <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
+                  <Text fontSize="$6">{getCardEmoji(card)}</Text>
+                  <Text>{t(getCardTranslationKey(card, cardVariant))}</Text>
+                  <Text fontSize="$2" opacity={0.7}>
                     {availableModes.includes('trio')
                       ? t('games.table.modals.eventCombo.trioMode')
                       : t('games.table.modals.eventCombo.cardsCount', {
                           count: 2,
                         })}
-                  </div>
+                  </Text>
                 </OptionButton>
               ))}
             </OptionGrid>
@@ -173,34 +178,34 @@ export const ComboModal: React.FC<ComboModalProps> = ({
         {/* Mode Selection for pair/trio - only show after card is selected */}
         {!inFiverMode && selectedComboCard && currentComboData && (
           <ModalSection>
-            <SectionLabel $variant={cardVariant}>
+            <SectionLabel $variant={cardVariant as GameVariant}>
               {t('games.table.modals.eventCombo.selectMode')}
             </SectionLabel>
             <OptionGrid>
               {currentComboData.availableModes.includes('pair') && (
                 <OptionButton
                   $selected={selectedMode === 'pair'}
-                  $variant={cardVariant}
-                  onClick={() => onSelectMode('pair')}
+                  $variant={cardVariant as GameVariant}
+                  onPress={() => onSelectMode('pair')}
                 >
-                  <div style={{ fontSize: '1.5rem' }}>🎴🎴</div>
-                  <div>{t('games.table.modals.eventCombo.pair')}</div>
-                  <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
+                  <Text fontSize="$6">🎴🎴</Text>
+                  <Text>{t('games.table.modals.eventCombo.pair')}</Text>
+                  <Text fontSize="$2" opacity={0.7}>
                     {t('games.table.modals.eventCombo.pairDesc')}
-                  </div>
+                  </Text>
                 </OptionButton>
               )}
               {currentComboData.availableModes.includes('trio') && (
                 <OptionButton
                   $selected={selectedMode === 'trio'}
-                  $variant={cardVariant}
-                  onClick={() => onSelectMode('trio')}
+                  $variant={cardVariant as GameVariant}
+                  onPress={() => onSelectMode('trio')}
                 >
-                  <div style={{ fontSize: '1.5rem' }}>🎴🎴🎴</div>
-                  <div>{t('games.table.modals.eventCombo.trio')}</div>
-                  <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
+                  <Text fontSize="$6">🎴🎴🎴</Text>
+                  <Text>{t('games.table.modals.eventCombo.trio')}</Text>
+                  <Text fontSize="$2" opacity={0.7}>
                     {t('games.table.modals.eventCombo.trioDesc')}
-                  </div>
+                  </Text>
                 </OptionButton>
               )}
             </OptionGrid>
@@ -210,7 +215,7 @@ export const ComboModal: React.FC<ComboModalProps> = ({
         {/* Fiver Mode: Select 5 cards from hand */}
         {inFiverMode && (
           <ModalSection>
-            <SectionLabel $variant={cardVariant}>
+            <SectionLabel $variant={cardVariant as GameVariant}>
               {t('games.table.modals.eventCombo.stashCards', {
                 count: FIVER_COMBO_SIZE,
               })}{' '}
@@ -225,16 +230,14 @@ export const ComboModal: React.FC<ComboModalProps> = ({
                   <OptionButton
                     key={`${card}-${idx}`}
                     $selected={isSelected}
-                    $variant={cardVariant}
-                    onClick={() => canSelect && onToggleFiverCard(card)}
-                    style={{ opacity: canSelect ? 1 : 0.5 }}
+                    $variant={cardVariant as GameVariant}
+                    onPress={() => canSelect && onToggleFiverCard(card)}
+                    opacity={canSelect ? 1 : 0.5}
                   >
-                    <div style={{ fontSize: '1.5rem' }}>
-                      {getCardEmoji(card)}
-                    </div>
-                    <div style={{ fontSize: '0.75rem' }}>
+                    <Text fontSize="$6">{getCardEmoji(card)}</Text>
+                    <Text fontSize="$2">
                       {t(getCardTranslationKey(card, cardVariant)) || card}
-                    </div>
+                    </Text>
                   </OptionButton>
                 );
               })}
@@ -247,7 +250,7 @@ export const ComboModal: React.FC<ComboModalProps> = ({
           selectedFiverCards.length === FIVER_COMBO_SIZE &&
           discardPile.length > 0 && (
             <ModalSection>
-              <SectionLabel $variant={cardVariant}>
+              <SectionLabel $variant={cardVariant as GameVariant}>
                 {t('games.table.modals.eventCombo.pickDiscard')}
               </SectionLabel>
               <OptionGrid>
@@ -255,15 +258,13 @@ export const ComboModal: React.FC<ComboModalProps> = ({
                   <OptionButton
                     key={`discard-${card}-${idx}`}
                     $selected={selectedDiscardCard === card}
-                    $variant={cardVariant}
-                    onClick={() => onSelectDiscardCard(card)}
+                    $variant={cardVariant as GameVariant}
+                    onPress={() => onSelectDiscardCard(card)}
                   >
-                    <div style={{ fontSize: '1.5rem' }}>
-                      {getCardEmoji(card)}
-                    </div>
-                    <div style={{ fontSize: '0.75rem' }}>
+                    <Text fontSize="$6">{getCardEmoji(card)}</Text>
+                    <Text fontSize="$2">
                       {t(getCardTranslationKey(card, cardVariant)) || card}
-                    </div>
+                    </Text>
                   </OptionButton>
                 ))}
               </OptionGrid>
@@ -273,7 +274,7 @@ export const ComboModal: React.FC<ComboModalProps> = ({
         {/* Target Selection - only show for pair/trio after card is selected */}
         {!inFiverMode && selectedComboCard && (
           <ModalSection>
-            <SectionLabel $variant={cardVariant}>
+            <SectionLabel $variant={cardVariant as GameVariant}>
               {t('games.table.modals.eventCombo.selectTarget')}
             </SectionLabel>
             <OptionGrid>
@@ -281,31 +282,32 @@ export const ComboModal: React.FC<ComboModalProps> = ({
                 <OptionButton
                   key={opponent.playerId}
                   $selected={selectedTarget === opponent.playerId}
-                  onClick={() => onSelectTarget(opponent.playerId)}
+                  $variant={cardVariant as GameVariant}
+                  onPress={() => onSelectTarget(opponent.playerId)}
                 >
-                  <div style={{ fontSize: '1.5rem' }}>🎮</div>
-                  <div>
-                    {resolveDisplayName(
-                      opponent.playerId,
-                      `Player ${opponent.playerId.slice(0, 8)}`,
-                    )}
-                  </div>
-                  <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
-                    {t('games.table.modals.eventCombo.cardsCount').replace(
-                      '{count}',
-                      opponent.hand.length.toString(),
-                    )}
-                  </div>
+                  <Text fontSize="$6">🎮</Text>
+                  <YStack>
+                    <Text>
+                      {resolveDisplayName(
+                        opponent.playerId,
+                        `Player ${opponent.playerId.slice(0, 8)}`,
+                      )}
+                    </Text>
+                    <Text fontSize="$2" opacity={0.7}>
+                      {t('games.table.modals.eventCombo.cardsCount', {
+                        count: opponent.hand.length,
+                      })}
+                    </Text>
+                  </YStack>
                 </OptionButton>
               ))}
             </OptionGrid>
           </ModalSection>
         )}
-
         {/* Card Index Selection for Pair */}
         {selectedMode === 'pair' && selectedTarget && targetHandSize > 0 && (
           <ModalSection>
-            <SectionLabel $variant={cardVariant}>
+            <SectionLabel $variant={cardVariant as GameVariant}>
               {t('games.table.modals.eventCombo.pickCardBlind')}
             </SectionLabel>
             <OptionGrid>
@@ -313,14 +315,15 @@ export const ComboModal: React.FC<ComboModalProps> = ({
                 <OptionButton
                   key={index}
                   $selected={selectedIndex === index}
-                  onClick={() => onSelectIndex(index)}
+                  $variant={cardVariant as GameVariant}
+                  onPress={() => onSelectIndex(index)}
                 >
-                  <div style={{ fontSize: '1.5rem' }}>🎴</div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>
+                  <Text fontSize="$6">🎴</Text>
+                  <Text fontSize="$3" fontWeight="600">
                     {t('games.table.modals.eventCombo.cardLabel', {
                       index: index + 1,
                     })}
-                  </div>
+                  </Text>
                 </OptionButton>
               ))}
             </OptionGrid>
@@ -330,7 +333,7 @@ export const ComboModal: React.FC<ComboModalProps> = ({
         {/* Card Type Selection for Trio */}
         {selectedMode === 'trio' && (
           <ModalSection>
-            <SectionLabel $variant={cardVariant}>
+            <SectionLabel $variant={cardVariant as GameVariant}>
               {t('games.table.modals.eventCombo.selectCard')}
             </SectionLabel>
             <OptionGrid>
@@ -339,20 +342,20 @@ export const ComboModal: React.FC<ComboModalProps> = ({
                   <OptionButton
                     key={card}
                     $selected={selectedCard === card}
-                    $variant={cardVariant}
-                    onClick={() => onSelectCard(card as CriticalCard)}
+                    $variant={cardVariant as GameVariant}
+                    onPress={() => onSelectCard(card as CriticalCard)}
                   >
-                    <div style={{ fontSize: '1.5rem' }}>
+                    <Text fontSize="$6">
                       {getCardEmoji(card as CriticalCard)}
-                    </div>
-                    <div style={{ fontSize: '0.75rem' }}>
+                    </Text>
+                    <Text fontSize="$2">
                       {t(
                         getCardTranslationKey(
                           card as CriticalCard,
                           cardVariant,
                         ),
                       ) || card}
-                    </div>
+                    </Text>
                   </OptionButton>
                 ),
               )}
@@ -361,11 +364,11 @@ export const ComboModal: React.FC<ComboModalProps> = ({
         )}
 
         <ModalActions>
-          <ModalButton variant="secondary" onClick={onClose}>
+          <ModalButton variant="secondary" onPress={onClose}>
             {t('games.table.modals.common.cancel')}
           </ModalButton>
           <ModalButton
-            onClick={onConfirm}
+            onPress={onConfirm}
             disabled={
               inFiverMode
                 ? selectedFiverCards.length !== FIVER_COMBO_SIZE ||

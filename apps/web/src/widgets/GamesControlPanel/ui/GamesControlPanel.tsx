@@ -2,12 +2,10 @@
 
 import { useCallback, useState, useEffect, RefObject } from 'react';
 import { useRouter } from 'next/navigation';
-import styled from 'styled-components';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { gameSocket } from '@/shared/lib/socket';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
-  Button,
   Modal,
   ModalContent,
   ModalHeader,
@@ -17,6 +15,7 @@ import {
   MaximizeIcon,
   MinimizeIcon,
 } from '@/shared/ui';
+import { Button, XStack, YStack } from '@arcadeum/ui';
 
 interface GamesControlPanelProps {
   roomId?: string;
@@ -26,79 +25,9 @@ interface GamesControlPanelProps {
   onCenterView?: () => void;
   showMoveControls?: boolean;
   fullscreenContainerRef?: RefObject<HTMLDivElement | null>;
+  showChat?: boolean;
+  onToggleChat?: () => void;
 }
-
-const Panel = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.surfaces.panel.background}f5,
-    ${({ theme }) => theme.surfaces.card.background}e8
-  );
-  border-radius: 14px;
-  border: 1px solid ${({ theme }) => theme.surfaces.panel.border}60;
-  box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.15),
-    0 4px 8px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  position: sticky;
-  top: 1rem;
-  z-index: 50;
-  backdrop-filter: blur(16px);
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 10%;
-    right: 10%;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(99, 102, 241, 0.3) 25%,
-      rgba(236, 72, 153, 0.3) 50%,
-      rgba(16, 185, 129, 0.3) 75%,
-      transparent 100%
-    );
-  }
-
-  @media (max-width: 768px) {
-    padding: 0.5rem 1rem;
-    padding-top: 40px;
-    gap: 0.5rem;
-    border-radius: 10px;
-  }
-`;
-
-const MoveControlsContainer = styled.div`
-  display: flex;
-  gap: 0.25rem;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  border-radius: 6px;
-  padding: 0.25rem;
-`;
-
-const DirectionColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-`;
-
-const SmallButton = styled(Button).attrs({
-  variant: 'glass',
-})`
-  padding: 0.5rem;
-  min-width: auto;
-`;
-
-const StyledPanelButton = styled(Button).attrs({
-  variant: 'glass',
-})``;
 
 export function GamesControlPanel({
   roomId,
@@ -108,6 +37,8 @@ export function GamesControlPanel({
   onCenterView,
   showMoveControls,
   fullscreenContainerRef,
+  showChat,
+  onToggleChat,
 }: GamesControlPanelProps) {
   const router = useRouter();
   const { snapshot } = useSessionTokens();
@@ -180,9 +111,21 @@ export function GamesControlPanel({
   };
 
   return (
-    <Panel className={className}>
-      <StyledPanelButton
-        variant="secondary"
+    <XStack
+      className={className}
+      alignItems="center"
+      gap="$4"
+      paddingVertical="$3"
+      paddingHorizontal="$6"
+      backgroundColor="rgba(15,23,42,0.95)"
+      borderRadius={14}
+      borderWidth={1}
+      borderColor="rgba(99,102,241,0.2)"
+      position="relative"
+      zIndex={50}
+    >
+      <Button
+        variant="glass"
         size="sm"
         onClick={handleFullscreenToggle}
         title={
@@ -193,59 +136,82 @@ export function GamesControlPanel({
       >
         {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}{' '}
         {t('games.table.controlPanel.fullscreen')}
-      </StyledPanelButton>
+      </Button>
+
+      {onToggleChat && (
+        <Button variant="glass" size="sm" onPress={onToggleChat}>
+          💬{' '}
+          {showChat ? t('games.table.chat.hide') : t('games.table.chat.show')}
+        </Button>
+      )}
 
       {showMoveControls && (
-        <MoveControlsContainer>
-          <SmallButton
-            variant="secondary"
+        <XStack
+          gap="$1"
+          borderWidth={1}
+          borderColor="$borderColor"
+          borderRadius={6}
+          padding="$1"
+        >
+          <Button
+            variant="glass"
             size="sm"
+            p="$2"
+            minWidth="auto"
             onClick={() => handleMove('up')}
             title={t('games.table.controlPanel.moveControls.shortcuts.up')}
           >
             ↑
-          </SmallButton>
-          <DirectionColumn>
-            <SmallButton
-              variant="secondary"
+          </Button>
+          <YStack gap="$1">
+            <Button
+              variant="glass"
               size="sm"
+              p="$2"
+              minWidth="auto"
               onClick={() => handleMove('left')}
               title={t('games.table.controlPanel.moveControls.shortcuts.left')}
             >
               ←
-            </SmallButton>
-            <SmallButton
-              variant="secondary"
+            </Button>
+            <Button
+              variant="glass"
               size="sm"
+              p="$2"
+              minWidth="auto"
               onClick={() => handleCenterView()}
               title={t(
                 'games.table.controlPanel.moveControls.shortcuts.center',
               )}
             >
               ⚡
-            </SmallButton>
-            <SmallButton
-              variant="secondary"
+            </Button>
+            <Button
+              variant="glass"
               size="sm"
+              p="$2"
+              minWidth="auto"
               onClick={() => handleMove('right')}
               title={t('games.table.controlPanel.moveControls.shortcuts.right')}
             >
               →
-            </SmallButton>
-          </DirectionColumn>
-          <SmallButton
-            variant="secondary"
+            </Button>
+          </YStack>
+          <Button
+            variant="glass"
             size="sm"
+            p="$2"
+            minWidth="auto"
             onClick={() => handleMove('down')}
             title={t('games.table.controlPanel.moveControls.shortcuts.down')}
           >
             ↓
-          </SmallButton>
-        </MoveControlsContainer>
+          </Button>
+        </XStack>
       )}
 
-      <StyledPanelButton
-        variant="secondary"
+      <Button
+        variant="glass"
         size="sm"
         onClick={handleCopyInviteLink}
         title={t('games.common.copyInviteLink') || 'Share Game Link'}
@@ -253,10 +219,10 @@ export function GamesControlPanel({
         {isCopied
           ? '✅ ' + t('games.common.copyInviteLinkCopied')
           : '🔗 ' + t('games.common.copyInviteLinkButton')}
-      </StyledPanelButton>
+      </Button>
 
-      <StyledPanelButton
-        variant="secondary"
+      <Button
+        variant="glass"
         size="sm"
         onClick={handleExitRoom}
         title={
@@ -265,7 +231,7 @@ export function GamesControlPanel({
         }
       >
         🏃 {t('games.table.controlPanel.exitRoom') || 'Exit'}
-      </StyledPanelButton>
+      </Button>
 
       {snapshot.userId && (
         <Button
@@ -305,6 +271,6 @@ export function GamesControlPanel({
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </Panel>
+    </XStack>
   );
 }

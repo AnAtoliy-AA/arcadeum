@@ -1,4 +1,5 @@
 import { authMessages } from './auth';
+import { pagesMessages } from './pages';
 import { chatMessages, chatListMessages } from './chat';
 import { commonMessages } from './common';
 import { gamesMessages } from './games';
@@ -18,6 +19,7 @@ import { supportMessages } from './support';
 export const translations = {
   en: {
     common: commonMessages.en,
+    pages: pagesMessages.en,
     home: homeMessages.en,
     settings: settingsMessages.en,
     support: supportMessages.en,
@@ -35,6 +37,7 @@ export const translations = {
   },
   es: {
     common: commonMessages.es,
+    pages: pagesMessages.es,
     home: homeMessages.es,
     settings: settingsMessages.es,
     support: supportMessages.es,
@@ -52,6 +55,7 @@ export const translations = {
   },
   fr: {
     common: commonMessages.fr,
+    pages: pagesMessages.fr,
     home: homeMessages.fr,
     settings: settingsMessages.fr,
     support: supportMessages.fr,
@@ -69,6 +73,7 @@ export const translations = {
   },
   ru: {
     common: commonMessages.ru,
+    pages: pagesMessages.ru,
     home: homeMessages.ru,
     settings: settingsMessages.ru,
     support: supportMessages.ru,
@@ -86,6 +91,7 @@ export const translations = {
   },
   by: {
     common: commonMessages.by,
+    pages: pagesMessages.by,
     home: homeMessages.by,
     settings: settingsMessages.by,
     support: supportMessages.by,

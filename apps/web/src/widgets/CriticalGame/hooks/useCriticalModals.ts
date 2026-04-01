@@ -1,42 +1,22 @@
-import { useEffect, useCallback, RefObject } from 'react';
+import { useEffect, useCallback } from 'react';
 import { gameSocket } from '@/shared/lib/socket';
 import { maybeDecrypt } from '@/shared/lib/socket-encryption';
 import { useCriticalGameStore } from '../store/criticalGameStore';
 import type { CriticalCard } from '../types';
 
 interface UseCriticalModalsOptions {
-  chatMessagesRef: RefObject<HTMLDivElement | null>;
-  chatLogCount: number;
+  playFavor?: (targetId: string) => void;
 }
 
 /**
  * Hook for managing game modals and chat state
  */
-export function useCriticalModals({
-  chatMessagesRef,
-  chatLogCount,
-}: UseCriticalModalsOptions) {
+export function useCriticalModals({ playFavor }: UseCriticalModalsOptions) {
   const store = useCriticalGameStore();
 
   // Destructure for easier usage, but keep store prefix or similar if needed?
   // Actually, returning 'store' directly or checking differences.
   // The original hook returns a flat object. We can mimic that.
-
-  // Auto-scroll chat to newest message
-  useEffect(() => {
-    // Scroll to the last message (newest) without scrolling the whole page
-    if (chatMessagesRef.current?.lastElementChild) {
-      const container = chatMessagesRef.current;
-      const lastElement = container.lastElementChild as HTMLElement;
-
-      // With position: relative on the container, offsetTop gives us the precise
-      // local position of the element.
-      container.scrollTo({
-        top: lastElement.offsetTop,
-        behavior: 'smooth',
-      });
-    }
-  }, [chatLogCount, chatMessagesRef]);
 
   // Listen for See the Future response
   // This logic ties socket events to store updates.
@@ -107,16 +87,39 @@ export function useCriticalModals({
     omniscienceModal: store.omniscienceModal,
     setOmniscienceModal: store.setOmniscienceModal,
 
-    // Chat
-    chatMessage: store.chatMessage,
-    setChatMessage: store.setChatMessage,
-    chatScope: store.chatScope,
-    setChatScope: store.setChatScope,
-    showChat: store.showChat,
-    handleToggleChat: useCallback(
-      () => store.setShowChat((prev: boolean) => !prev),
+    // Handlers
+    handleOpenFavorModal: useCallback(() => store.setFavorModal(true), [store]),
+    handleCloseFavorModal: useCallback(() => {
+      store.setFavorModal(false);
+      store.setSelectedTarget(null);
+    }, [store]),
+    handleConfirmFavor: useCallback(() => {
+      if (store.selectedTarget && playFavor) {
+        playFavor(store.selectedTarget);
+        store.setFavorModal(false);
+        store.setSelectedTarget(null);
+      }
+    }, [store, playFavor]),
+    handleCloseSeeTheFutureModal: useCallback(
+      () => store.setSeeTheFutureModal(null),
       [store],
     ),
-    clearChatMessage: useCallback(() => store.setChatMessage(''), [store]),
+    handleCloseStashModal: useCallback(
+      () => store.setStashModal(false),
+      [store],
+    ),
+    handleCloseMarkModal: useCallback(() => store.setMarkModal(false), [store]),
+    handleCloseStealDrawModal: useCallback(
+      () => store.setStealDrawModal(false),
+      [store],
+    ),
+    handleCloseSmiteModal: useCallback(
+      () => store.setSmiteModal(false),
+      [store],
+    ),
+    handleCloseOmniscienceModal: useCallback(
+      () => store.setOmniscienceModal(null),
+      [store],
+    ),
   };
 }

@@ -1,7 +1,9 @@
 'use client';
 
+import { Text } from 'tamagui';
 import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
 import { appConfig } from '@/shared/config/app-config';
+import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 import {
   SectionHeader,
   SectionTitle,
@@ -90,6 +92,7 @@ export function HomeFeatures() {
   const { messages } = useLanguage();
   const homeCopy = messages.home ?? {};
   const { appName } = appConfig;
+  const sectionRef = useScrollReveal<HTMLDivElement>();
 
   const sectionTitle =
     formatMessage((homeCopy as Record<string, string>).featuresTitle, {
@@ -102,13 +105,13 @@ export function HomeFeatures() {
     (homeCopy as Record<string, string>).comingSoon ?? 'Coming Soon';
 
   return (
-    <FeaturesSection data-testid="features-section">
-      <SectionHeader>
+    <FeaturesSection data-testid="features-section" ref={sectionRef as never}>
+      <SectionHeader data-reveal data-reveal-delay="1">
         <SectionTitle>{sectionTitle}</SectionTitle>
         <SectionSubtitle>{sectionSubtitle}</SectionSubtitle>
       </SectionHeader>
       <FeaturesGrid>
-        {FEATURES.map((feature) => {
+        {FEATURES.map((feature, index) => {
           const title =
             (homeCopy as Record<string, string>)[feature.titleKey] ??
             feature.defaultTitle;
@@ -117,8 +120,20 @@ export function HomeFeatures() {
             feature.defaultDescription;
 
           return (
-            <FeatureCard key={feature.titleKey}>
-              <FeatureIcon>{feature.icon}</FeatureIcon>
+            <FeatureCard
+              key={feature.titleKey}
+              flex={1}
+              minWidth={280}
+              className="feature-card-hover"
+              data-reveal
+              data-reveal-delay={String(Math.min(index + 2, 6))}
+            >
+              <FeatureIcon
+                data-feature-icon
+                style={{ boxShadow: '0 4px 20px rgba(87,195,255,0.12)' }}
+              >
+                <Text>{feature.icon}</Text>
+              </FeatureIcon>
               <FeatureTitle>{title}</FeatureTitle>
               <FeatureDescription>{description}</FeatureDescription>
               {feature.comingSoon && (

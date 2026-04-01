@@ -1,19 +1,18 @@
-import { css } from 'styled-components';
 import { VariantStyleConfig } from './types';
 import { GAME_VARIANT } from '../../../lib/constants';
 import { VARIANT_COLORS } from '../variant-palette';
 
 export const baseVariantStyles: VariantStyleConfig = {
   layout: {
-    getBackgroundEffects: () => css`
-      &::before {
-        content: '';
-        position: absolute;
-        top: -60%;
-        left: -60%;
-        width: 220%;
-        height: 220%;
-        background: radial-gradient(
+    getBackgroundEffects: () => ({
+      before: {
+        content: '""',
+        position: 'absolute',
+        top: '-60%',
+        left: '-60%',
+        width: '220%',
+        height: '220%',
+        background: `radial-gradient(
             circle at 30% 30%,
             rgba(99, 102, 241, 0.12) 0%,
             transparent 35%
@@ -22,33 +21,31 @@ export const baseVariantStyles: VariantStyleConfig = {
             circle at 70% 70%,
             rgba(236, 72, 153, 0.1) 0%,
             transparent 35%
-          );
-        animation: ambientGlow 12s ease-in-out infinite;
-        pointer-events: none;
-        z-index: 0;
-      }
-
-      &::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: linear-gradient(
+          )`,
+        animation: 'ambientGlow 12s ease-in-out infinite',
+        pointerEvents: 'none',
+        zIndex: 0,
+      },
+      after: {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 2,
+        background: `linear-gradient(
           90deg,
           transparent 0%,
           rgba(99, 102, 241, 0.8) 15%,
           rgba(236, 72, 153, 0.8) 50%,
           rgba(16, 185, 129, 0.8) 85%,
           transparent 100%
-        );
-        box-shadow:
-          0 0 30px rgba(99, 102, 241, 0.5),
-          0 0 60px rgba(236, 72, 153, 0.3);
-        animation: shimmer 6s ease-in-out infinite;
-      }
-    `,
+        )`,
+        boxShadow:
+          '0 0 30px rgba(99, 102, 241, 0.5), 0 0 60px rgba(236, 72, 153, 0.3)',
+        animation: 'shimmer 6s ease-in-out infinite',
+      },
+    }),
     getRoomBackground: (themeBase, themeCardBg) => `
       radial-gradient(
         ellipse at 20% 0%,
@@ -112,15 +109,16 @@ export const baseVariantStyles: VariantStyleConfig = {
       )`,
     },
     actions: {
-      getContainerStyles: () => css``,
-      getTitleStyles: () => css``,
-      getButtonStyles: () => css``,
+      getContainerStyles: () => ({}),
+      getTitleStyles: () => ({}),
+      getButtonStyles: () => ({}),
     },
   },
   header: {
     getBackground: (theme) =>
-      `linear-gradient(135deg, ${theme.surfaces.card.background}f5, ${theme.surfaces.panel.background}e8)`,
-    getBorder: (theme) => `${theme.surfaces.card.border}40`,
+      `linear-gradient(135deg, ${theme.glassBg?.val || theme.backgroundHover?.val || ''}f5, ${theme.backgroundPress?.val || ''}e8)`,
+    getBorder: (theme) =>
+      `${theme.glassBorder?.val || theme.borderColor?.val || ''}40`,
     getLineBackground: () =>
       'linear-gradient(90deg, transparent 0%, rgba(99, 102, 241, 0.4) 25%, rgba(236, 72, 153, 0.4) 50%, rgba(16, 185, 129, 0.4) 75%, transparent 100%)',
     getLineShadow: () => 'none',
@@ -151,9 +149,11 @@ export const baseVariantStyles: VariantStyleConfig = {
     getCardClipPath: () => 'none',
     getCardDimensions: () => ({ minWidth: '95px', maxWidth: '115px' }),
     getAvatarBackground: (isCurrentTurn, theme) =>
-      isCurrentTurn ? '#fff' : theme?.background.base || 'inherit',
+      isCurrentTurn ? '#fff' : theme?.background?.val || 'inherit',
     getAvatarBorder: (isCurrentTurn, theme) =>
-      isCurrentTurn ? '#fff' : theme?.surfaces.card.border || 'inherit',
+      isCurrentTurn
+        ? '#fff'
+        : theme?.glassBorder?.val || theme?.borderColor?.val || 'inherit',
     getNameShadow: (isCurrentTurn) =>
       isCurrentTurn
         ? '0 1px 3px rgba(0, 0, 0, 0.8), 0 0 8px rgba(0, 0, 0, 0.5)'
@@ -168,13 +168,13 @@ export const baseVariantStyles: VariantStyleConfig = {
     getTurnIndicatorGlow: () =>
       'radial-gradient(circle at center, rgba(16, 185, 129, 0.8) 0%, transparent 70%)',
     getCardCountStyles: () => null,
-    getTurnIndicatorStyles: () => css`
-      border-radius: 50%;
-      background: linear-gradient(135deg, #ffd700, #ffa500);
-      border: 2px solid white;
-      font-size: 0.75rem;
-      animation: bounce 1s ease-in-out infinite;
-    `,
+    getTurnIndicatorStyles: () => ({
+      borderRadius: '50%',
+      background: 'linear-gradient(135deg, #ffd700, #ffa500)',
+      border: '2px solid white',
+      fontSize: '0.75rem',
+      animation: 'bounce 1s ease-in-out infinite',
+    }),
   },
   tableInfo: {
     getBackground: () => 'rgba(15, 23, 42, 0.85)',
@@ -184,8 +184,8 @@ export const baseVariantStyles: VariantStyleConfig = {
     getTextGlow: () => 'inherit',
     getStatValueColor: (isWarning) => (isWarning ? '#DC2626' : 'inherit'),
     getInfoCardBackground: (theme) =>
-      `linear-gradient(135deg, ${theme?.surfaces.panel.background}ee, ${theme?.surfaces.card.background}dd)`,
-    getInfoCardBorder: (theme) => theme?.surfaces.panel.border || 'inherit',
+      `linear-gradient(135deg, ${theme?.backgroundPress?.val || ''}ee, ${theme?.glassBg?.val || theme?.backgroundHover?.val || ''}dd)`,
+    getInfoCardBorder: (theme) => theme?.borderColor?.val || 'inherit',
     getInfoCardShadow: () =>
       '0 8px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
     getInfoCardPattern: () => `repeating-linear-gradient(
@@ -195,44 +195,45 @@ export const baseVariantStyles: VariantStyleConfig = {
       rgba(255, 255, 255, 0.02) 10px,
       rgba(255, 255, 255, 0.02) 20px
     )`,
-    getStyles: () => css`
-      &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: 16px;
-        padding: 1px;
-        background: linear-gradient(
+    getStyles: () => ({
+      before: {
+        content: '""',
+        position: 'absolute',
+        inset: 0,
+        borderRadius: 16,
+        padding: 1,
+        background: `linear-gradient(
           135deg,
           rgba(99, 102, 241, 0.6),
           rgba(168, 85, 247, 0.4),
           rgba(236, 72, 153, 0.3),
           rgba(99, 102, 241, 0.6)
-        );
-        -webkit-mask:
-          linear-gradient(#fff 0 0) content-box,
-          linear-gradient(#fff 0 0);
-        mask:
-          linear-gradient(#fff 0 0) content-box,
-          linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-        animation: shimmer 3s ease-in-out infinite;
-      }
-    `,
+        )`,
+        WebkitMask:
+          'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+        mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+        WebkitMaskComposite: 'xor',
+        maskComposite: 'exclude',
+        animation: 'shimmer 3s ease-in-out infinite',
+      },
+    }),
   },
   chat: {
     getBackground: () => 'inherit',
     getBorder: () => 'inherit',
     getShadow: () => 'none',
-    getInputBackground: (theme) => theme.background.base,
-    getInputBorder: (theme) => theme.surfaces.card.border,
-    getInputFocusBorder: (theme) => theme.buttons.primary.gradientStart,
+    getInputBackground: (theme) => theme.background?.val || '',
+    getInputBorder: (theme) =>
+      theme.glassBorder?.val || theme.borderColor?.val || '',
+    getInputFocusBorder: (theme) => theme.primaryGradientStart?.val || '',
     getInputFocusShadow: () => '0 0 0 3px rgba(59, 130, 246, 0.2)',
   },
   cards: {
     glowEffect: `${VARIANT_COLORS.default.primary}`,
     borderEffect: `2px solid ${VARIANT_COLORS.default.primary}`,
+    deckBorderColor: VARIANT_COLORS.default.primary,
+    getHoverGlow: () => `0 0 24px ${VARIANT_COLORS.default.primary}cc`,
+    getCardNameColor: () => 'rgba(255, 255, 255, 0.9)',
     getCardSpriteUrl: (variant) => {
       if (variant === GAME_VARIANT.CRIME)
         return '/images/cards/crime_sprites.png';
@@ -241,22 +242,6 @@ export const baseVariantStyles: VariantStyleConfig = {
       if (variant === GAME_VARIANT.ADVENTURE)
         return '/images/cards/adventure_sprites.png';
       return undefined;
-    },
-    getDeckBackground: (variant) => {
-      if (variant === GAME_VARIANT.CRIME)
-        return 'linear-gradient(135deg, #18181b 0%, #27272a 100%)';
-      if (variant === GAME_VARIANT.HORROR)
-        return 'linear-gradient(135deg, #020617 0%, #0f172a 100%)';
-      if (variant === GAME_VARIANT.ADVENTURE)
-        return 'linear-gradient(135deg, #451a03 0%, #78350f 100%)';
-      return `linear-gradient(135deg, ${VARIANT_COLORS.default.background} 0%, ${VARIANT_COLORS.default.secondary} 100%)`;
-    },
-    getDeckBorder: (variant) => {
-      if (variant === GAME_VARIANT.CRIME) return VARIANT_COLORS.crime.primary;
-      if (variant === GAME_VARIANT.HORROR) return VARIANT_COLORS.horror.primary;
-      if (variant === GAME_VARIANT.ADVENTURE)
-        return VARIANT_COLORS.adventure.primary;
-      return VARIANT_COLORS.default.primary;
     },
   },
 };

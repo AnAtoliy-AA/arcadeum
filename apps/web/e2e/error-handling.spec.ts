@@ -39,6 +39,7 @@ test.describe('Error Handling', () => {
     // component with the same URL (which still has ?crash=true), so it effectively
     // "re-crashes". This confirms the button is reachable and interactive.
     await tryAgainBtn.click();
+    await page.waitForTimeout(500);
 
     await expect(page.getByText('Something went wrong!')).toBeVisible();
   });

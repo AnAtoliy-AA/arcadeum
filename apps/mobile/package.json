@@ -29,6 +29,9 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@arcadeum/ui": "workspace:*",
+    "@tamagui/config": "2.0.0-rc.23",
+    "tamagui": "2.0.0-rc.23",
     "@expo/vector-icons": "^15.0.3",
     "@noble/ciphers": "^2.1.1",
     "@react-native-community/slider": "^5.0.1",
@@ -83,7 +86,7 @@
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^13.3.3",
     "@types/jest": "^29.5.14",
-    "@types/react": "~19.1.10",
+    "@types/react": "^19.2.0",
     "dotenv": "^17.2.2",
     "eas-cli": "^16.26.0",
     "eslint": "^9.25.0",

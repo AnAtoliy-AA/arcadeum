@@ -100,7 +100,7 @@ test.describe('Payment Notes Page', () => {
     await navigateTo(page, '/notes');
 
     // Wait for notes to load
-    await page.waitForSelector('text=John Doe');
+    await expect(page.getByText('John Doe')).toBeVisible({ timeout: 15000 });
 
     // Check that amounts are displayed
     await expect(page.getByText('$25')).toBeVisible();
@@ -112,7 +112,7 @@ test.describe('Payment Notes Page', () => {
     await navigateTo(page, '/notes');
 
     // Wait for notes to load
-    await page.waitForSelector('text=John Doe');
+    await expect(page.getByText('John Doe')).toBeVisible({ timeout: 15000 });
 
     // Check for formatted dates (format depends on locale)
     await expect(page.getByText(/jan.*15.*2026|15.*jan.*2026/i)).toBeVisible();
@@ -186,7 +186,9 @@ test.describe('Payment Notes Page', () => {
     await navigateTo(page, '/notes');
 
     // Wait for first page notes to load
-    await page.waitForSelector('text=Test note from page 1');
+    await expect(page.getByText('Test note from page 1')).toBeVisible({
+      timeout: 15000,
+    });
 
     // Verify the first page content is visible
     await expect(page.getByText('Test note from page 1')).toBeVisible();

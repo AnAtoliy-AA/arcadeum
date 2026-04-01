@@ -135,7 +135,7 @@ export function useCriticalState({
     session,
     snapshot,
     actionBusy,
-    startBusy,
+    startBusy: startBusy || actionBusy === 'start',
     actions,
     reorderParticipants,
     currentPlayer,

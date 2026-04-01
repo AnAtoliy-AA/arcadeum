@@ -53,7 +53,7 @@ test.describe('Support Page', () => {
 
   test('should satisfy accessibility requirements', async ({ page }) => {
     // Check for standard landmarks like banner (header)
-    await expect(page.getByRole('banner')).toBeVisible();
+    await expect(page.getByRole('banner').first()).toBeVisible();
 
     // Scroll to bottom to ensure footer is visible
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));

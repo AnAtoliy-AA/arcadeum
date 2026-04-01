@@ -16,25 +16,28 @@ import {
   Tagline,
   HeroDescription,
   HeroActions,
-  PrimaryAction,
-  SecondaryAction,
   HeroVisual,
   CardStack,
   HeroCard,
 } from './styles/Hero.styles';
-import { CARD_VARIANTS } from '@/app/games/create/constants';
+import { SectionContainer } from './styles/Common.styles';
+import { LinkButton, SupportIcon } from '@/shared/ui';
+import React from 'react';
+import { CARD_VARIANTS } from '@/features/games/ui/create/constants';
+import { YStack, XStack, Text, useTheme } from 'tamagui';
 
-// Define fixed cards for the hero visual to ensure consistency and avoid hydration/purity issues
-const HERO_CARDS = [...CARD_VARIANTS].slice(0, 3).map((v) => ({
+type ThemeColor = '$red10' | '$blue10' | '$purple10';
+const THEME_COLORS: ThemeColor[] = ['$red10', '$blue10', '$purple10'];
+const HERO_CARDS = [...CARD_VARIANTS].slice(0, 3).map((v, i) => ({
   name: v.name,
   icon: v.emoji,
-  // Extract the first color from the gradient string for the glow effect
-  color: v.gradient.match(/#[0-9A-Fa-f]{6}/)?.[0] ?? '#FF4D4D',
+  colorToken: THEME_COLORS[i % THEME_COLORS.length],
 }));
 
 export function HomeHero() {
   const { messages } = useLanguage();
   const { snapshot, hydrated } = useSessionTokens();
+  const theme = useTheme();
   const homeCopy = messages.home ?? {};
 
   const { appName, primaryCta, supportCta } = appConfig;
@@ -59,40 +62,156 @@ export function HomeHero() {
 
   return (
     <HeroSection aria-labelledby="hero-heading" data-testid="hero-section">
-      <HeroBackground />
+      <HeroBackground
+        style={{
+          background:
+            'linear-gradient(to bottom, transparent 0%, var(--background) 100%), radial-gradient(circle at 50% 50%, rgba(90,196,255,0.12) 0%, transparent 50%)',
+        }}
+      />
 
-      <HeroContent>
-        <Kicker>{kicker}</Kicker>
-        <HeroTitle id="hero-heading">{appName}</HeroTitle>
-        <Tagline>{tagline}</Tagline>
-        <HeroDescription>{description}</HeroDescription>
-        <HeroActions>
-          <PrimaryAction href={primaryHref}>{primaryLabel}</PrimaryAction>
-          <SecondaryAction href="/games/create?mode=bot">
-            {playWithBotsLabel}
-          </SecondaryAction>
-          <SecondaryAction href={supportCta.href}>
-            {supportLabel}
-          </SecondaryAction>
-        </HeroActions>
-      </HeroContent>
+      <SectionContainer
+        flexDirection="column"
+        $gtMd={{ flexDirection: 'row', justifyContent: 'space-between' }}
+        alignItems="center"
+        paddingVertical={0}
+      >
+        <HeroContent>
+          <Kicker
+            style={{
+              background: `linear-gradient(90deg, ${theme.primaryGradientStart?.get() ?? 'rgba(87,195,255,0.22)'}38, ${theme.primaryGradientStart?.get() ?? 'rgba(87,195,255,0.08)'}14, ${theme.primaryGradientStart?.get() ?? 'rgba(87,195,255,0.22)'}38)`,
+              backgroundSize: '200% auto',
+              animation:
+                'fadeInUp 0.6s ease-out 0.15s both, shimmer 3s linear infinite',
+            }}
+          >
+            ✦ {kicker}
+          </Kicker>
+          <HeroTitle
+            id="hero-heading"
+            style={{
+              fontSize: 'clamp(3.5rem, 8vw, 6rem)',
+              background: `linear-gradient(135deg, ${theme.color?.get() ?? '#ffffff'} 0%, ${theme.primaryGradientStart?.get() ?? '#57c3ff'} 50%, ${theme.primaryGradientEnd?.get() ?? '#8f9bff'} 100%)`,
+              backgroundSize: '200% auto',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              animation:
+                'fadeInUp 0.6s ease-out 0.1s both, shimmer 8s linear infinite',
+            }}
+          >
+            {appName}
+          </HeroTitle>
+          <Tagline style={{ animation: 'fadeInUp 0.6s ease-out 0.2s both' }}>
+            {tagline}
+          </Tagline>
+          <HeroDescription
+            style={{ animation: 'fadeInUp 0.6s ease-out 0.3s both' }}
+          >
+            {description}
+          </HeroDescription>
+          <HeroActions
+            style={{ animation: 'fadeInUp 0.6s ease-out 0.4s both' }}
+          >
+            <LinkButton href={primaryHref} variant="primary" size="lg">
+              {primaryLabel}
+            </LinkButton>
+            <LinkButton
+              href={`${routes.gameCreate}?mode=bot`}
+              variant="secondary"
+              size="lg"
+            >
+              {playWithBotsLabel}
+            </LinkButton>
+            <LinkButton
+              href={supportCta.href}
+              variant="ghost"
+              size="md"
+              gap="$2"
+              style={{
+                animation: 'fadeInUp 0.6s ease-out 0.5s both',
+              }}
+            >
+              <SupportIcon size={18} />
+              {supportLabel}
+            </LinkButton>
+          </HeroActions>
+        </HeroContent>
 
-      <HeroVisual>
-        <CardStack>
-          {cards.map((card, index) => (
-            <HeroCard key={index} $index={index} $color={card.color}>
-              <div className="card-top">
-                <span>{t(card.name as TranslationKey) || card.name}</span>
-                <span>{card.icon}</span>
-              </div>
-              <div className="card-center">{card.icon}</div>
-              <div className="card-bottom">
-                <span>{heroCardBrand}</span>
-              </div>
-            </HeroCard>
-          ))}
-        </CardStack>
-      </HeroVisual>
+        <HeroVisual>
+          <CardStack className="hero-card-stack">
+            {cards.map((card, index) => {
+              const isLast = index === cards.length - 1;
+
+              // spread them out slightly more for better visibility of the "not covered" parts
+              const x = (index - 1) * 65;
+              const rotate = `${(index - 1) * 12}deg`;
+
+              const y = index * -15;
+              const zIndexVal = index;
+              const scale = isLast ? 1 : 0.95;
+              const opacity = isLast ? 1 : 0.8;
+
+              return (
+                <HeroCard
+                  key={index}
+                  className="hero-card"
+                  rotate={rotate}
+                  x={x}
+                  y={y}
+                  zIndex={zIndexVal}
+                  scale={scale}
+                  opacity={opacity}
+                  hoverStyle={{ scale: 1.05, filter: 'blur(0px)', rotate }}
+                >
+                  <YStack
+                    position="absolute"
+                    inset={0}
+                    zIndex={0}
+                    pointerEvents="none"
+                    opacity={0.4}
+                    backgroundColor={card.colorToken}
+                  />
+                  <XStack
+                    position="relative"
+                    zIndex={1}
+                    justifyContent="space-between"
+                  >
+                    <Text color="white" fontWeight="bold">
+                      {t(card.name as TranslationKey) || card.name}
+                    </Text>
+                    <Text>{card.icon}</Text>
+                  </XStack>
+                  <YStack
+                    position="relative"
+                    zIndex={1}
+                    alignItems="center"
+                    justifyContent="center"
+                    flex={1}
+                  >
+                    <Text fontSize={120} lineHeight={120}>
+                      {card.icon}
+                    </Text>
+                  </YStack>
+                  <XStack
+                    position="relative"
+                    zIndex={1}
+                    justifyContent="center"
+                  >
+                    <Text
+                      color="white"
+                      opacity={0.5}
+                      fontWeight="bold"
+                      letterSpacing={2}
+                    >
+                      {heroCardBrand}
+                    </Text>
+                  </XStack>
+                </HeroCard>
+              );
+            })}
+          </CardStack>
+        </HeroVisual>
+      </SectionContainer>
     </HeroSection>
   );
 }

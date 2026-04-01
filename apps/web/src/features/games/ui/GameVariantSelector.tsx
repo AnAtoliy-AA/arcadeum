@@ -1,6 +1,6 @@
-import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { Select } from '@/shared/ui/Select/Select';
+import { Select } from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi } from '../api';
 import {
@@ -61,7 +61,7 @@ export function GameVariantSelector({
     },
   });
 
-  const handleVariantChange = (e: ChangeEvent<HTMLSelectElement>) => {
+  const handleVariantChange = (e: { target: { value: string } }) => {
     const newVariant = e.target.value;
     // Optimistic update
     setInternalVariant(newVariant);
@@ -118,23 +118,19 @@ export function GameVariantSelector({
       style={{ minWidth: '200px' }}
       className={className}
       aria-label="Select Game Variant"
-    >
-      {displayVariants.map((v) => {
+      options={displayVariants.map((v) => {
         const translatedVariant =
           translatedVariants.find((tv) => tv.id === v.id) || v;
-        return (
-          <option
-            key={translatedVariant.id}
-            value={translatedVariant.id}
-            disabled={!!translatedVariant.disabled}
-          >
-            {translatedVariant.emoji ? `${translatedVariant.emoji} ` : ''}
-            {typeof translatedVariant.name === 'string'
+        return {
+          value: translatedVariant.id,
+          label: `${translatedVariant.emoji ? `${translatedVariant.emoji} ` : ''}${
+            typeof translatedVariant.name === 'string'
               ? translatedVariant.name
-              : ''}
-          </option>
-        );
+              : ''
+          }`,
+          disabled: !!translatedVariant.disabled,
+        };
       })}
-    </Select>
+    />
   );
 }

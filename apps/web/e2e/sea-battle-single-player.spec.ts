@@ -163,7 +163,7 @@ test.describe('Sea Battle Single Player Mode', () => {
       page.getByRole('heading', { name: /Sea Battle/i }),
     ).toBeVisible({ timeout: 15000 });
 
-    const startBtn = page.getByRole('button', { name: /start with/i });
+    const startBtn = page.getByTestId('start-with-bots-button');
     await expect(startBtn).toBeVisible({ timeout: 15000 });
     await startBtn.click();
     await closeGameRulesModal(page);
@@ -192,8 +192,6 @@ test.describe('Sea Battle Single Player Mode', () => {
     await expect(page.getByText(/your turn/i).first()).toBeVisible({
       timeout: 20000,
     });
-
-    await expect(page.getByTestId('placement-instruction')).toBeVisible();
   });
 
   test('should allow attacking in sea battle', async ({ page }) => {

@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useReferralStats } from '@/features/referrals/hooks/useReferralStats';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -12,6 +13,7 @@ import {
   DashboardTitle,
   DashboardSubtitle,
   BadgesRowContainer,
+  referralsStyles,
 } from '@/features/referrals/ui/styles';
 
 const BadgesRow = ({ badgeIds }: { badgeIds: string[] }) => {
@@ -27,50 +29,55 @@ const BadgesRow = ({ badgeIds }: { badgeIds: string[] }) => {
 
 export function ReferralDashboard() {
   const { t } = useTranslation();
-  const { snapshot } = useSessionTokens();
+  const { snapshot, hydrated } = useSessionTokens();
   const isAuthenticated = !!snapshot.accessToken;
   const { data, isLoading, error } = useReferralStats();
 
-  if (!isAuthenticated) {
-    return (
-      <DashboardContainer>
-        <EmptyState message={t('referrals.unauthenticated.title')} icon="🔒" />
-      </DashboardContainer>
-    );
-  }
+  let content: React.ReactNode;
 
-  if (isLoading) {
-    return (
-      <DashboardContainer>
+  if (!hydrated || (isLoading && isAuthenticated)) {
+    content = (
+      <DashboardContainer data-testid="referral-dashboard">
         <LoadingState message={t('referrals.loading')} />
       </DashboardContainer>
     );
-  }
-
-  if (error || !data) {
-    return (
-      <DashboardContainer>
+  } else if (!isAuthenticated) {
+    content = (
+      <DashboardContainer data-testid="referral-dashboard">
+        <EmptyState message={t('referrals.unauthenticated.title')} icon="🔒" />
+      </DashboardContainer>
+    );
+  } else if (error || !data) {
+    content = (
+      <DashboardContainer data-testid="referral-dashboard">
         <EmptyState message={t('referrals.error.title')} icon="⚠️" />
+      </DashboardContainer>
+    );
+  } else {
+    content = (
+      <DashboardContainer data-testid="referral-dashboard">
+        <div>
+          <DashboardTitle>{t('referrals.dashboard.title')}</DashboardTitle>
+          <DashboardSubtitle>
+            {t('referrals.dashboard.subtitle')}
+          </DashboardSubtitle>
+        </div>
+        <BadgesRow
+          badgeIds={data.rewards
+            .filter((r) => r.rewardType === 'badge')
+            .map((r) => r.rewardId)}
+        />
+        <ReferralShareCard referralCode={data.referralCode} />
+        <ReferralProgressCard stats={data} />
+        <ReferralRewardsCard tiers={data.tiers} />
       </DashboardContainer>
     );
   }
 
   return (
-    <DashboardContainer data-testid="referral-dashboard">
-      <div>
-        <DashboardTitle>{t('referrals.dashboard.title')}</DashboardTitle>
-        <DashboardSubtitle>
-          {t('referrals.dashboard.subtitle')}
-        </DashboardSubtitle>
-      </div>
-      <BadgesRow
-        badgeIds={data.rewards
-          .filter((r) => r.rewardType === 'badge')
-          .map((r) => r.rewardId)}
-      />
-      <ReferralShareCard referralCode={data.referralCode} />
-      <ReferralProgressCard stats={data} />
-      <ReferralRewardsCard tiers={data.tiers} />
-    </DashboardContainer>
+    <>
+      <style>{referralsStyles}</style>
+      {content}
+    </>
   );
 }

@@ -6,19 +6,371 @@
   margin: 0;
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: clip;
+html {
+  overflow-x: hidden;
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  max-width: 100vw;
+  background-color: #151718;
+  color: #ecefee;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: var(--font-geist-sans), sans-serif;
+}
+
+:root {
+  --background: #151718;
+  --foreground: #ecefee;
+  --muted-foreground: #9ba1a6;
+  --card-background: rgba(31, 34, 40, 0.88);
+  --card-border: rgba(68, 72, 80, 0.45);
+  --surface-background: rgba(22, 24, 28, 0.78);
+  --primary-gradient-start: #38bdf8;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7);
+  }
+
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(255, 215, 0, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dotPulse {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* CriticalGame Animations */
+@keyframes icyShimmer {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: translateX(100%) skewX(-15deg);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(100%) skewX(-15deg);
+    opacity: 0;
+  }
+}
+
+@keyframes auroraWave {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1) skewX(5deg);
+    opacity: 0.3;
+    filter: blur(40px) hue-rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-30px) scaleY(1.2) skewX(-5deg);
+    opacity: 0.6;
+    filter: blur(50px) hue-rotate(20deg);
+  }
+}
+
+@keyframes turnBorderPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px rgba(34, 197, 94, 0.4),
+      0 0 40px rgba(34, 197, 94, 0.2),
+      inset 0 0 20px rgba(34, 197, 94, 0.1);
+  }
+
+  50% {
+    box-shadow:
+      0 0 30px rgba(34, 197, 94, 0.6),
+      0 0 60px rgba(34, 197, 94, 0.3),
+      inset 0 0 30px rgba(34, 197, 94, 0.15);
+  }
+}
+
+@keyframes cyberpunkTurnBorderPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px rgba(192, 38, 211, 0.5),
+      0 0 40px rgba(6, 182, 212, 0.3),
+      inset 0 0 20px rgba(192, 38, 211, 0.15);
+  }
+
+  50% {
+    box-shadow:
+      0 0 35px rgba(192, 38, 211, 0.7),
+      0 0 70px rgba(6, 182, 212, 0.4),
+      inset 0 0 35px rgba(192, 38, 211, 0.2);
+  }
+}
+
+@keyframes cardFlip {
+  0% {
+    transform: rotateY(0deg);
+  }
+
+  45% {
+    transform: rotateY(90deg);
+  }
+
+  55% {
+    transform: rotateY(90deg);
+  }
+
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes playButtonPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+.pulse-ring {
+  animation: playButtonPulse 3s infinite;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(1.02);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.slider-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Scroll Reveal ─────────────────────────────────────── */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.55s ease-out,
+    transform 0.55s ease-out;
+}
+
+[data-reveal='visible'] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger delays — apply alongside data-reveal */
+[data-reveal-delay='1'] {
+  transition-delay: 0.08s;
+}
+
+[data-reveal-delay='2'] {
+  transition-delay: 0.16s;
+}
+
+[data-reveal-delay='3'] {
+  transition-delay: 0.24s;
+}
+
+[data-reveal-delay='4'] {
+  transition-delay: 0.32s;
+}
+
+[data-reveal-delay='5'] {
+  transition-delay: 0.4s;
+}
+
+[data-reveal-delay='6'] {
+  transition-delay: 0.48s;
+}
+
+/* Reduced motion: skip animations entirely */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .game-card-hover,
+  .feature-card-hover,
+  .step-number-hover {
+    transition: none !important;
+  }
+
+  .game-card-hover:hover,
+  .feature-card-hover:hover,
+  .step-number-hover:hover {
+    transform: none !important;
+  }
+
+  .pulse-ring {
+    animation: none !important;
+  }
+
+  .hero-card-stack {
+    animation: none !important;
+  }
+}
+
+/* ─── Home: Game card hover lift ──────────────────────── */
+.game-card-hover {
+  transition:
+    transform 0.2s ease-out,
+    box-shadow 0.2s ease-out !important;
+}
+
+.game-card-hover:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ─── Home: Feature card hover lift ───────────────────────── */
+.feature-card-hover {
+  transition:
+    transform 0.2s ease-out,
+    box-shadow 0.2s ease-out,
+    border-color 0.2s ease-out !important;
+  cursor: default;
+}
+
+.feature-card-hover:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4) !important;
+  border-color: rgba(87, 195, 255, 0.35) !important;
+}
+
+.feature-card-hover:hover [data-feature-icon] {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-out;
+}
+
+/* ─── Home: Step number hover glow ────────────────────── */
+.step-number-hover {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease !important;
+}
+
+.step-number-hover:hover {
+  transform: scale(1.08) !important;
+  box-shadow:
+    0 0 28px rgba(87, 195, 255, 0.35),
+    0 0 0 1px rgba(87, 195, 255, 0.2) !important;
 }

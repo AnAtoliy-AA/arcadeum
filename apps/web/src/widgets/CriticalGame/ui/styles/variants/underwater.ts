@@ -1,31 +1,30 @@
-import { css } from 'styled-components';
 import { VariantStyleConfig } from './types';
 import { VARIANT_COLORS } from '../variant-palette';
 
 export const underwaterVariantStyles: VariantStyleConfig = {
   layout: {
-    getBackgroundEffects: () => css`
-      &::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
+    getBackgroundEffects: () => ({
+      after: {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: `linear-gradient(
           105deg,
           transparent 40%,
           rgba(34, 211, 238, 0.03) 45%,
           transparent 50%,
           rgba(34, 211, 238, 0.02) 55%,
           transparent 60%
-        );
-        filter: blur(8px);
-        transform-origin: top left;
-        animation: sunbeamSway 10s ease-in-out infinite alternate;
-        pointer-events: none;
-      }
-    `,
+        )`,
+        filter: 'blur(8px)',
+        transformOrigin: 'top left',
+        animation: 'sunbeamSway 10s ease-in-out infinite alternate',
+        pointerEvents: 'none',
+      },
+    }),
     getRoomBackground: () => `
       radial-gradient(
         ellipse at 50% 100%,
@@ -97,25 +96,25 @@ export const underwaterVariantStyles: VariantStyleConfig = {
       `0 0 10px ${VARIANT_COLORS.underwater.primary}80, 0 0 20px ${VARIANT_COLORS.underwater.secondary}4d`,
     getTitleBackground: () =>
       `linear-gradient(135deg, ${VARIANT_COLORS.underwater.primary} 0%, #0891b2 50%, ${VARIANT_COLORS.underwater.secondary} 100%)`,
-    getTitleTextStyles: () => css`
-      text-shadow: 0 0 10px ${VARIANT_COLORS.underwater.primary}66;
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
+    getTitleTextStyles: () => ({
+      textShadow: `0 0 10px ${VARIANT_COLORS.underwater.primary}66`,
+      before: {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: `linear-gradient(
           transparent 0%,
           ${VARIANT_COLORS.underwater.primary}1a 50%,
           transparent 100%
-        );
-        background-size: 100% 200%;
-        animation: waterReflect 3s infinite linear;
-        pointer-events: none;
-      }
-    `,
+        )`,
+        backgroundSize: '100% 200%',
+        animation: 'waterReflect 3s infinite linear',
+        pointerEvents: 'none',
+      },
+    }),
   },
   players: {
     getCardBackground: (isCurrentTurn, isCurrentUser, isAlive) => {
@@ -141,42 +140,42 @@ export const underwaterVariantStyles: VariantStyleConfig = {
     getCardClipPath: () => 'none',
     getCardDimensions: () => ({ minWidth: '80px', maxWidth: '100px' }),
     getAvatarBackground: (isCurrentTurn, theme) =>
-      isCurrentTurn ? '#fff' : theme?.background.base || 'inherit',
+      isCurrentTurn ? '#fff' : theme?.background?.val || 'inherit',
     getAvatarBorder: (isCurrentTurn, _theme) =>
       isCurrentTurn ? '#fff' : `${VARIANT_COLORS.underwater.primary}80`,
     getNameShadow: (isCurrentTurn) =>
       isCurrentTurn
         ? '0 1px 3px rgba(0, 0, 0, 0.8), 0 0 8px rgba(0, 0, 0, 0.5)'
         : 'none',
-    getAvatarStyles: () => css`
-      border-radius: 4px;
-      background: rgba(4, 11, 21, 0.4);
-      border-color: ${VARIANT_COLORS.underwater.primary}66;
-      &::after {
-        content: '+';
-        position: absolute;
-        top: -8px;
-        right: -8px;
-        width: 16px;
-        height: 16px;
-        background: ${VARIANT_COLORS.underwater.primary};
-        color: #040b15;
-        border-radius: 50%;
-        font-size: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-      }
-    `,
-    getNameStyles: () => css`
-      font-family: 'Courier New', monospace;
-      font-size: 0.75rem;
-      color: #a5f3fc;
-      background: rgba(4, 11, 21, 0.4);
-      padding: 2px 4px;
-      border-radius: 2px;
-    `,
+    getAvatarStyles: () => ({
+      borderRadius: 4,
+      background: 'rgba(4, 11, 21, 0.4)',
+      borderColor: `${VARIANT_COLORS.underwater.primary}66`,
+      after: {
+        content: '"+"',
+        position: 'absolute',
+        top: -8,
+        right: -8,
+        width: 16,
+        height: 16,
+        background: VARIANT_COLORS.underwater.primary,
+        color: '#040b15',
+        borderRadius: '50%',
+        fontSize: 12,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: 'bold',
+      },
+    }),
+    getNameStyles: () => ({
+      fontFamily: '"Courier New", monospace',
+      fontSize: '0.75rem',
+      color: '#a5f3fc',
+      background: 'rgba(4, 11, 21, 0.4)',
+      padding: '2px 4px',
+      borderRadius: 2,
+    }),
     getAvatarRing: (isCurrentTurn, isEliminated) => {
       if (isEliminated) return '3px solid rgba(255, 255, 255, 0.1)';
       if (isCurrentTurn)
@@ -189,44 +188,33 @@ export const underwaterVariantStyles: VariantStyleConfig = {
         : 'none',
     getTurnIndicatorGlow: () =>
       `radial-gradient(circle at center, ${VARIANT_COLORS.underwater.primary}99 0%, transparent 70%)`,
-    getCardCountStyles: (isCurrentTurn?: boolean) => css`
-      background: rgba(4, 11, 21, 0.6);
-      border: 1px solid ${VARIANT_COLORS.underwater.primary}66;
-      border-radius: 4px;
-      color: #a5f3fc;
-      padding: 0.15rem 0.4rem;
-      font-family: 'Courier New', monospace;
+    getCardCountStyles: (isCurrentTurn?: boolean) => ({
+      background: 'rgba(4, 11, 21, 0.6)',
+      border: `1px solid ${VARIANT_COLORS.underwater.primary}66`,
+      borderRadius: 4,
+      color: '#a5f3fc',
+      padding: '0.15rem 0.4rem',
+      fontFamily: '"Courier New", monospace',
 
-      &::before {
-        content: '🎴';
-        font-size: 0.8rem;
-        margin-right: 0.2rem;
-        opacity: 0.7;
-      }
+      before: {
+        content: '"🎴"',
+        fontSize: '0.8rem',
+        marginRight: '0.2rem',
+        opacity: 0.7,
+      },
 
-      ${isCurrentTurn &&
-      css`
-        background: ${VARIANT_COLORS.underwater.primary}26;
-        border-color: ${VARIANT_COLORS.underwater.primary};
-        color: #fff;
-      `}
-    `,
-    getTurnIndicatorStyles: () => css`
-      background: radial-gradient(circle at 30% 30%, #67e8f9, #0891b2);
-      border: 2px solid rgba(255, 255, 255, 0.8);
-      box-shadow: 0 0 10px ${VARIANT_COLORS.underwater.primary}99;
-      animation: bubbleFloat 2s ease-in-out infinite;
-
-      @keyframes bubbleFloat {
-        0%,
-        100% {
-          transform: translateY(0) scale(1.05);
-        }
-        50% {
-          transform: translateY(-4px) scale(0.95);
-        }
-      }
-    `,
+      ...(isCurrentTurn && {
+        background: `${VARIANT_COLORS.underwater.primary}26`,
+        borderColor: VARIANT_COLORS.underwater.primary,
+        color: '#fff',
+      }),
+    }),
+    getTurnIndicatorStyles: () => ({
+      background: 'radial-gradient(circle at 30% 30%, #67e8f9, #0891b2)',
+      border: '2px solid rgba(255, 255, 255, 0.8)',
+      boxShadow: `0 0 10px ${VARIANT_COLORS.underwater.primary}99`,
+      animation: 'bubbleFloat 2s ease-in-out infinite',
+    }),
   },
   tableInfo: {
     getBackground: () =>
@@ -247,91 +235,67 @@ export const underwaterVariantStyles: VariantStyleConfig = {
       ${VARIANT_COLORS.underwater.primary}0d 0%,
       transparent 60%
     )`,
-    getStyles: () => css`
-      background: rgba(4, 11, 21, 0.6);
-      backdrop-filter: blur(12px);
-      border: 1px solid ${VARIANT_COLORS.underwater.primary}33;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-      padding: 0;
-      border-radius: 8px;
+    getStyles: () => ({
+      background: 'rgba(4, 11, 21, 0.6)',
+      backdropFilter: 'blur(12px)',
+      border: `1px solid ${VARIANT_COLORS.underwater.primary}33`,
+      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
+      padding: 0,
+      borderRadius: 8,
 
-      &::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
+      after: {
+        content: '""',
+        position: 'absolute',
+        inset: 0,
+        background: `linear-gradient(
           45deg,
           transparent 40%,
           ${VARIANT_COLORS.underwater.primary}08 45%,
           rgba(103, 232, 249, 0.07) 50%,
           ${VARIANT_COLORS.underwater.primary}08 55%,
           transparent 60%
-        );
-        background-size: 200% 200%;
-        mix-blend-mode: overlay;
-        animation: waterFlow 8s linear infinite;
-        pointer-events: none;
-      }
-    `,
-    getTableStatStyles: () => css`
-      background: ${VARIANT_COLORS.underwater.secondary}66;
-      border: 1px solid ${VARIANT_COLORS.underwater.primary}4d;
-      border-radius: 8px;
-      padding: 0.4rem 0.6rem;
-      box-shadow: inset 0 0 10px #08334480;
+        )`,
+        backgroundSize: '200% 200%',
+        mixBlendMode: 'overlay',
+        animation: 'waterFlow 8s linear infinite',
+        pointerEvents: 'none',
+      },
+    }),
+    getTableStatStyles: () => ({
+      background: `${VARIANT_COLORS.underwater.secondary}66`,
+      border: `1px solid ${VARIANT_COLORS.underwater.primary}4d`,
+      borderRadius: 8,
+      padding: '0.4rem 0.6rem',
+      boxShadow: 'inset 0 0 10px #08334480',
 
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      position: 'relative',
+      overflow: 'hidden',
 
-      &:hover {
-        background: ${VARIANT_COLORS.underwater.primary}33;
-        border-color: #67e8f9cc;
-        box-shadow:
-          0 0 15px ${VARIANT_COLORS.underwater.primary}40,
-          inset 0 0 10px ${VARIANT_COLORS.underwater.primary}1a;
-        transform: translateY(-2px) scale(1.02);
+      hoverStyle: {
+        background: `${VARIANT_COLORS.underwater.primary}33`,
+        borderColor: '#67e8f9cc',
+        boxShadow: `0 0 15px ${VARIANT_COLORS.underwater.primary}40, inset 0 0 10px ${VARIANT_COLORS.underwater.primary}1a`,
+        transform: [{ translateY: -2 }, { scale: 1.02 }],
+      },
 
-        > div:last-child {
-          text-shadow:
-            0 0 8px #67e8f9cc,
-            0 0 12px ${VARIANT_COLORS.underwater.primary}66;
-        }
-      }
-
-      &::before {
-        content: '';
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        width: 4px;
-        height: 4px;
-        background: rgba(165, 243, 252, 0.6);
-        border-radius: 50%;
-        opacity: 0;
-      }
-
-      &:hover::before {
-        animation: bubbleRise 1.5s ease-out infinite;
-      }
-
-      > div:first-child {
-        background: ${VARIANT_COLORS.underwater.primary}40 !important;
-        color: #a5f3fc;
-        box-shadow: 0 0 10px ${VARIANT_COLORS.underwater.primary}33;
-      }
-
-      > div:last-child {
-        font-family: 'Courier New', monospace;
-        letter-spacing: 0.5px;
-        text-shadow: 0 0 4px ${VARIANT_COLORS.underwater.primary}66;
-      }
-    `,
-    getInfoCardStyles: () => css`
-      background: rgba(4, 11, 21, 0.7);
-      border: 1px solid ${VARIANT_COLORS.underwater.primary}26;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-    `,
+      before: {
+        content: '""',
+        position: 'absolute',
+        bottom: -10,
+        left: '50%',
+        width: 4,
+        height: 4,
+        background: 'rgba(165, 243, 252, 0.6)',
+        borderRadius: '50%',
+        opacity: 0,
+      },
+    }),
+    getInfoCardStyles: () => ({
+      background: 'rgba(4, 11, 21, 0.7)',
+      border: `1px solid ${VARIANT_COLORS.underwater.primary}26`,
+      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+    }),
   },
   chat: {
     getBackground: () => `${VARIANT_COLORS.underwater.secondary}cc`,
@@ -342,86 +306,71 @@ export const underwaterVariantStyles: VariantStyleConfig = {
     getInputFocusBorder: () => VARIANT_COLORS.underwater.primary,
     getInputFocusShadow: () =>
       `0 0 10px ${VARIANT_COLORS.underwater.primary}4d`,
-    getInputStyles: () => css`
-      font-family: 'Courier New', monospace;
-      border-radius: 8px;
-      color: #a5f3fc;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    getInputStyles: () => ({
+      fontFamily: '"Courier New", monospace',
+      borderRadius: 8,
+      color: '#a5f3fc',
+      boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)',
 
-      &:focus {
-        background: ${VARIANT_COLORS.underwater.secondary}f2;
-      }
-    `,
-    getTurnStatusStyles: () => css`
-      background: linear-gradient(
+      focusStyle: {
+        background: `${VARIANT_COLORS.underwater.secondary}f2`,
+      },
+    }),
+    getTurnStatusStyles: () => ({
+      background: `linear-gradient(
         90deg,
         #083344e6,
         ${VARIANT_COLORS.underwater.secondary}99
-      );
-      border: 1px solid ${VARIANT_COLORS.underwater.primary}4d;
-      border-left: 3px solid ${VARIANT_COLORS.underwater.primary};
-      font-family: 'Courier New', monospace;
-      color: #a5f3fc;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-      border-radius: 6px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    `,
+      )`,
+      borderWidth: 1,
+      borderColor: `${VARIANT_COLORS.underwater.primary}4d`,
+      borderLeftWidth: 3,
+      borderLeftColor: VARIANT_COLORS.underwater.primary,
+      fontFamily: '"Courier New", monospace',
+      color: '#a5f3fc',
+      textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)',
+      borderRadius: 6,
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)',
+    }),
   },
   cards: {
     glowEffect: `0 0 15px ${VARIANT_COLORS.underwater.primary}80`,
     borderEffect: `2px solid ${VARIANT_COLORS.underwater.primary}`,
+    deckBorderColor: VARIANT_COLORS.underwater.primary,
+    getHoverGlow: () => `0 0 24px ${VARIANT_COLORS.underwater.primary}cc`,
+    getCardNameColor: () => '#a5f3fc',
     getCardSpriteUrl: () => '/images/cards/underwater_sprites.png',
-    getDeckBackground: () =>
-      "url('/images/cards/underwater_sprites.png') 0% 0% / 700% 700% no-repeat border-box border-box",
-    getDeckBorder: () => VARIANT_COLORS.underwater.primary,
     getDecorationBackground: () => '#083344e6',
     getDecorationBorder: () =>
       `1px solid ${VARIANT_COLORS.underwater.primary}99`,
-    getDecorationEffects: () => css`
-      &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
+    getDecorationEffects: () => ({
+      before: {
+        content: '""',
+        position: 'absolute',
+        inset: 0,
+        background: `linear-gradient(
           45deg,
           transparent 0%,
           ${VARIANT_COLORS.underwater.primary}1a 50%,
           transparent 100%
-        );
-        animation: waterReflect 3s infinite linear;
-        pointer-events: none;
-      }
-    `,
+        )`,
+        animation: 'waterReflect 3s infinite linear',
+        pointerEvents: 'none',
+      },
+    }),
     getDisabledOverlay: () => '#083344b3',
-    getCardNameStyles: () => css`
-      font-family: 'Courier New', monospace;
-      letter-spacing: 0.5px;
-      background: #083344d9;
-      border: 1px solid ${VARIANT_COLORS.underwater.primary};
-      border-radius: 8px;
-      color: #a5f3fc;
-      text-shadow: 0 0 5px ${VARIANT_COLORS.underwater.primary}99;
-      padding: 0.3rem 0.6rem;
-      box-shadow: 0 0 10px ${VARIANT_COLORS.underwater.primary}4d;
-
-      &::before {
-        content: '';
-        position: absolute;
-        inset: -2px;
-        border-radius: 10px;
-        background: radial-gradient(
-          circle at center,
-          transparent 30%,
-          ${VARIANT_COLORS.underwater.primary}4d 100%
-        );
-        z-index: -1;
-      }
-    `,
-    getCardDescriptionStyles: () => css`
-      font-family: 'Courier New', monospace;
-      font-size: 0.65rem;
-      color: #ecfeff;
-      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
-    `,
+    getCardNameStyles: () => ({
+      fontFamily: '"Courier New", monospace',
+      letterSpacing: '1px',
+      color: '#a5f3fc',
+      textShadow: `0 0 8px ${VARIANT_COLORS.underwater.primary}`,
+      padding: '0.1rem 0',
+    }),
+    getCardDescriptionStyles: () => ({
+      fontFamily: '"Courier New", monospace',
+      fontSize: '0.75rem',
+      color: '#ecfeff',
+      textShadow: '0 2px 4px rgba(0, 0, 0, 0.9)',
+    }),
   },
 };

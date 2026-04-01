@@ -28,7 +28,6 @@ export const CARD_VARIANTS = [
     description: 'games.critical_v1.variants.crime.description',
     emoji: '🕵️‍♀️',
     gradient: 'linear-gradient(135deg, #F5A623 0%, #F8E71C 100%)',
-    disabled: true,
   },
   {
     id: GAME_VARIANT.HORROR,
@@ -36,7 +35,6 @@ export const CARD_VARIANTS = [
     description: 'games.critical_v1.variants.horror.description',
     emoji: '👻',
     gradient: 'linear-gradient(135deg, #7928CA 0%, #FF0080 100%)',
-    disabled: true,
   },
   {
     id: GAME_VARIANT.ADVENTURE,
@@ -44,7 +42,6 @@ export const CARD_VARIANTS = [
     description: 'games.critical_v1.variants.adventure.description',
     emoji: '🏔️',
     gradient: 'linear-gradient(135deg, #4F566B 0%, #FF4D4D 100%)',
-    disabled: true,
   },
   {
     id: GAME_VARIANT.HIGH_ALTITUDE_HIKE,

@@ -1,4 +1,4 @@
-import { CARD_VARIANTS } from '@/app/games/create/constants';
+import { CARD_VARIANTS } from '@/features/games/lib/criticalVariants';
 import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
 import { gameMetadata } from '@/features/games/registry';
 

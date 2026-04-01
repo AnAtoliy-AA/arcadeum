@@ -144,8 +144,6 @@ export const CHAOS_PACK_CARDS: ChaosPackCard[] = [
 
 export const ANYTIME_ACTION_CARDS: CriticalCard[] = ['cancel', 'shield_bash'];
 
-// snatch is omitted: like other theft cards (mark, steal_draw, stash), it does NOT require
-// the player to draw after playing. The theft dispatcher handles turn flow.
 export const CARDS_REQUIRING_DRAWS: CriticalCard[] = [
   'strike',
   'evade',
@@ -153,6 +151,7 @@ export const CARDS_REQUIRING_DRAWS: CriticalCard[] = [
   'mark',
   'steal_draw',
   'stash',
+  'snatch',
   ...ATTACK_PACK_CARDS.filter((c) => c !== 'shield_bash'),
   ...FUTURE_PACK_CARDS,
   ...DEITY_PACK_CARDS,

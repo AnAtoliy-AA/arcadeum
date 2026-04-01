@@ -392,6 +392,7 @@ export function validateCriticalAction(
     case 'snatch':
       return (
         hasCard(player, 'snatch') &&
+        state.pendingDraws > 0 &&
         !!typedPayload?.targetPlayerId &&
         !!typedPayload?.requestedCard
       );

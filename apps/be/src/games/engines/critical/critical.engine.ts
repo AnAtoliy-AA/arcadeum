@@ -21,6 +21,7 @@ import {
   executeSuperSkip,
   executeReverse,
   executeChainStrike,
+  executeShieldBash,
 } from './critical-attack.utils';
 import {
   getAvailableActionsForPlayer,
@@ -266,6 +267,9 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
           typedPayload!.targetPlayerId!,
           helpers,
         );
+
+      case 'shield_bash':
+        return executeShieldBash(newState, context.userId, helpers);
 
       case 'commit_alter_future':
         return executeCommitAlterFuture(

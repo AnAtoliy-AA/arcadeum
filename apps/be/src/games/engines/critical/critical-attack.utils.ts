@@ -306,6 +306,63 @@ export function executeChainStrike(
   return { success: true, state };
 }
 
+const STRIKE_ACTION_TYPES = [
+  'strike',
+  'targeted_strike',
+  'private_strike',
+  'recursive_strike',
+  'smite',
+  'chain_strike',
+];
+
+/**
+ * Execute Shield Bash — anytime card; absorb incoming strike and reflect draws onto attacker
+ */
+export function executeShieldBash(
+  state: CriticalState,
+  playerId: string,
+  helpers: Helpers,
+): GameActionResult<CriticalState> {
+  const player = CriticalLogic.findPlayer(state, playerId);
+  if (!player) return { success: false, error: 'Player not found' };
+
+  const cardIndex = player.hand.indexOf('shield_bash');
+  if (cardIndex === -1)
+    return { success: false, error: 'Card not found in hand' };
+
+  const pending = state.pendingAction;
+  const payload = pending?.payload as Record<string, unknown> | undefined;
+  const isValidStrike =
+    pending &&
+    STRIKE_ACTION_TYPES.includes(pending.type) &&
+    payload?.targetPlayerId === playerId;
+
+  if (!isValidStrike) {
+    return { success: false, error: 'No strike targeting you to bash' };
+  }
+
+  player.hand.splice(cardIndex, 1);
+  state.discardPile.push('shield_bash');
+
+  const attackerId = pending.playerId;
+  const reflectedDraws = state.pendingDraws;
+
+  state.currentTurnIndex = state.playerOrder.indexOf(attackerId);
+  state.pendingDraws = reflectedDraws;
+  state.pendingAction = null;
+
+  helpers.addLog(
+    state,
+    helpers.createLogEntry(
+      'action',
+      `Shield Bash! Reflected ${reflectedDraws} draw(s) back at ${attackerId}! 🛡️`,
+      { scope: 'all', senderId: playerId },
+    ),
+  );
+
+  return { success: true, state };
+}
+
 // Check if a card is an Attack Pack card
 export function isAttackPackCard(card: CriticalCard): boolean {
   return ATTACK_PACK_CARDS.includes(card as AttackPackCard);

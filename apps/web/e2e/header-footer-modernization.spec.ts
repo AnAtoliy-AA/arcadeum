@@ -73,10 +73,14 @@ test.describe('Header and Footer Modernization', () => {
     }
   });
 
-  test('logo should have hover effect', async ({ page, isMobile }) => {
+  test('logo should have hover effect', async ({ page, isMobile, browserName }) => {
     test.skip(
       isMobile,
       'Hover effects are not applicable on mobile/touch devices',
+    );
+    test.skip(
+      browserName === 'firefox',
+      'Firefox CI does not apply CSS :hover computed styles via synthetic mouse events',
     );
     const logo = page.locator('header a[href="/"]').first();
     const logoInner = logo.locator('> div').first();
@@ -108,10 +112,15 @@ test.describe('Header and Footer Modernization', () => {
   test('footer social icons should have hover effect', async ({
     page,
     isMobile,
+    browserName,
   }) => {
     test.skip(
       isMobile,
       'Hover effects are not applicable on mobile/touch devices',
+    );
+    test.skip(
+      browserName === 'firefox',
+      'Firefox CI does not apply CSS :hover computed styles via synthetic mouse events',
     );
     const socialIcons = page.getByTestId(/footer-social-/);
     const firstIcon = socialIcons.first();

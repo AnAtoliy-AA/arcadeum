@@ -7,9 +7,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.2] - 2026-04-01
+
+### Added
+
+- add prophecy deity pack card with commit_prophecy (ARC-432) (ARC-432
+  ARC-432)
+- add judgment deity pack card (ARC-432) (ARC-432
+  ARC-432)
+- add resurrection deity pack card (ARC-432)
+- add echo chaos pack card with dispatchCard helper (ARC-432) (ARC-432
+  ARC-432)
+- add scramble chaos pack card (ARC-432) (ARC-432
+  ARC-432)
+- add snatch theft pack card (ARC-432) (ARC-432
+  ARC-432)
+- add swap_hands theft pack card (ARC-432) (ARC-432
+  ARC-432)
+- implement shield_bash card (ARC-432)
+- implement chain_strike card (ARC-432)
+- add eliminatedPlayers and pendingJudgment state fields (ARC-432)
+- extend card type definitions and deck quantities for 9 new cards (ARC-432)
+
+### Fixed
+
+- lint warnings (ARC-432)
+- update deck size assertions for new attack and theft pack cards (ARC-432) (ARC-432
+  ARC-432)
+- fix prophecy duplicate card validation and split deity spec file (ARC-432) (ARC-432
+  ARC-432)
+- add critical_implosion to echo forbidden list and integration test (ARC-432) (ARC-432
+  ARC-432)
+- remove dead code in scramble un-cancel branch (ARC-432) (ARC-432
+  ARC-432)
+- add snatch to CARDS_REQUIRING_DRAWS and fix validation (ARC-432) (ARC-432
+  ARC-432)
+- fix swap_hands cancel handler, self-target guard, and add tests (ARC-432) (ARC-432
+  ARC-432)
+- add shield_bash validation and available actions (ARC-432) (ARC-432
+  ARC-432)
+- add chain_strike validation and available actions entry (ARC-432)
+
+### Refactored
+
+- remove duplicate chain_strike carry-over block (ARC-432)
+
 ## [1.9.1] - 2026-04-01
 
 ### Added
+
 - pages from footer list (ARC-425)
 - presentation and pitch deck scroll reveal (ARC-425)
 - how it works scroll reveal and step number hover glow (ARC-425)
@@ -68,6 +114,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - tamagui ui kit (ARC-425)
 
 ### Fixed
+
 - header hover e2e ci tests (ARC-425)
 - e2e header test (ARC-425)
 - e2e test (ARC-425)
@@ -111,6 +158,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - use properly-typed fn in gameChatStore tests (ARC-425)
 
 ### Refactored
+
 - simplify MobileMenu using extracted hooks (ARC-425)
 - simplify HeaderInteractive using extracted hooks (ARC-425)
 - extract useMobileMenu hook for header widget (ARC-425)
@@ -158,6 +206,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ui kit components (ARC-425)
 
 ### Documentation
+
 - add styled-components to Tamagui implementation plan (N/A)
 - add 640px breakpoint row, fix success criteria ordering (N/A)
 - fix token gaps, breakpoints, fullscreen special case, scrollbar consumer note (N/A)
@@ -170,23 +219,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - finalize CriticalGame rework spec after review (N/A)
 - add CriticalGame widget rework design spec (N/A)
 
-
 ## [1.9.0] - 2026-03-19
-
-
-
 
 ## [1.8.2] - 2026-03-19
 
 ### Added
-- SEO optimizations for new domen (ARC-480)
 
+- SEO optimizations for new domen (ARC-480)
 
 ## [1.8.1] - 2026-03-11
 
 ### Fixed
-- changelog md changes (ARC-450)
 
+- changelog md changes (ARC-450)
 
 ## [1.8.0] - 2026-03-11
 

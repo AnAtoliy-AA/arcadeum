@@ -18,6 +18,7 @@ export interface CriticalPlayerState {
   markedCards: MarkedCardInfo[]; // Cards marked for stealing
   pendingStealDraw?: string; // Player ID who will steal next draw
   isBlind?: boolean; // Chaos: blackout/blinded state
+  pendingJudgment?: boolean; // Set by judgment; player must discard to ≤3 cards
   [key: string]: unknown;
 }
 
@@ -58,10 +59,16 @@ export interface CriticalState {
     payload?: unknown;
     nopeCount: number; // Odd = canceled, even = active
   } | null;
+  // Deity: Prophecy state
+  pendingProphecy?: {
+    playerId: string;
+    top5: CriticalCard[];
+  };
   // Chaos: Implosion state
   implosionState?: {
     isFaceUp: boolean; // if true, next draw explodes immediately
   };
+  eliminatedPlayers: string[]; // Ordered by elimination time; last entry = most recently eliminated
   players: CriticalPlayerState[];
   logs: CriticalLogEntry[];
   allowActionCardCombos: boolean; // House rule: allow any matching cards for combos
@@ -94,6 +101,8 @@ function getAttackPackCards(customCards?: CustomCardConfig): CriticalCard[] {
     recursive_strike: 2,
     mega_evade: 2,
     invert: 4,
+    chain_strike: 2,
+    shield_bash: 3,
   };
 
   return [
@@ -114,6 +123,14 @@ function getAttackPackCards(customCards?: CustomCardConfig): CriticalCard[] {
       Number(customCards?.mega_evade ?? defaults.mega_evade),
     ),
     ...repeatCard('invert', Number(customCards?.invert ?? defaults.invert)),
+    ...repeatCard(
+      'chain_strike',
+      Number(customCards?.chain_strike ?? defaults.chain_strike),
+    ),
+    ...repeatCard(
+      'shield_bash',
+      Number(customCards?.shield_bash ?? defaults.shield_bash),
+    ),
   ];
 }
 
@@ -170,6 +187,8 @@ function getTheftPackCards(customCards?: CustomCardConfig): CriticalCard[] {
     mark: 3, // 3 mark cards
     steal_draw: 3, // 3 steal draw cards
     stash: 2, // 2 stash cards
+    swap_hands: 2,
+    snatch: 3,
   };
 
   return [
@@ -183,6 +202,11 @@ function getTheftPackCards(customCards?: CustomCardConfig): CriticalCard[] {
       Number(customCards?.steal_draw ?? defaults.steal_draw),
     ),
     ...repeatCard('stash', Number(customCards?.stash ?? defaults.stash)),
+    ...repeatCard(
+      'swap_hands',
+      Number(customCards?.swap_hands ?? defaults.swap_hands),
+    ),
+    ...repeatCard('snatch', Number(customCards?.snatch ?? defaults.snatch)),
   ];
 }
 
@@ -194,6 +218,8 @@ function getChaosPackCards(customCards?: CustomCardConfig): CriticalCard[] {
     fission: 1,
     tribute: 2,
     blackout: 2,
+    echo: 2,
+    scramble: 1,
   };
 
   return [
@@ -211,6 +237,11 @@ function getChaosPackCards(customCards?: CustomCardConfig): CriticalCard[] {
       'blackout',
       Number(customCards?.blackout ?? defaults.blackout),
     ),
+    ...repeatCard('echo', Number(customCards?.echo ?? defaults.echo)),
+    ...repeatCard(
+      'scramble',
+      Number(customCards?.scramble ?? defaults.scramble),
+    ),
   ];
 }
 
@@ -221,6 +252,9 @@ function getDeityPackCards(customCards?: CustomCardConfig): CriticalCard[] {
     miracle: 2,
     smite: 3,
     rapture: 2,
+    resurrection: 1,
+    judgment: 2,
+    prophecy: 2,
   };
 
   return [
@@ -231,6 +265,18 @@ function getDeityPackCards(customCards?: CustomCardConfig): CriticalCard[] {
     ...repeatCard('miracle', Number(customCards?.miracle ?? defaults.miracle)),
     ...repeatCard('smite', Number(customCards?.smite ?? defaults.smite)),
     ...repeatCard('rapture', Number(customCards?.rapture ?? defaults.rapture)),
+    ...repeatCard(
+      'resurrection',
+      Number(customCards?.resurrection ?? defaults.resurrection),
+    ),
+    ...repeatCard(
+      'judgment',
+      Number(customCards?.judgment ?? defaults.judgment),
+    ),
+    ...repeatCard(
+      'prophecy',
+      Number(customCards?.prophecy ?? defaults.prophecy),
+    ),
   ];
 }
 
@@ -338,6 +384,7 @@ export function createInitialCriticalState(
     pendingAlter: null,
     pendingAction: null,
     pendingDraws: 1,
+    eliminatedPlayers: [],
     players,
     logs: [
       {

@@ -7,6 +7,7 @@ import {
 } from '../base/game-engine.interface';
 import {
   CriticalState,
+  CriticalCard,
   CriticalPlayerState,
   CriticalExpansion,
   CustomCardConfig,
@@ -20,6 +21,8 @@ import {
   executeAttackOfTheDead,
   executeSuperSkip,
   executeReverse,
+  executeChainStrike,
+  executeShieldBash,
 } from './critical-attack.utils';
 import {
   getAvailableActionsForPlayer,
@@ -35,7 +38,10 @@ import {
 } from './critical-future.utils';
 import { dispatchTheftPackAction } from './critical-theft.utils';
 import { dispatchChaosPackAction } from './critical-chaos.utils';
-import { dispatchDeityPackAction } from './critical-deity.utils';
+import {
+  dispatchDeityPackAction,
+  executeCommitProphecy,
+} from './critical-deity.utils';
 
 /**
  * Critical Game Engine
@@ -105,7 +111,8 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
     const typedPayload = payload as CriticalPayload | undefined;
 
     // Use arrow functions instead of bind() to preserve type safety
-    const helpers = {
+    // dispatchCard references helpers via closure (valid since it's called after initialization)
+    const helpers: Parameters<typeof dispatchChaosPackAction>[4] = {
       addLog: (
         state: CriticalState,
         log: ReturnType<typeof this.createLogEntry>,
@@ -117,6 +124,36 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
       shuffleArray: <T>(arr: T[]) => this.shuffleArray(arr),
       findPlayer: (state: CriticalState, pid: string) =>
         this.findPlayer(state, pid) as CriticalPlayerState,
+      dispatchCard: (
+        state: CriticalState,
+        playerId: string,
+        card: CriticalCard,
+        targetPlayerId?: string,
+      ) =>
+        dispatchFuturePackAction(state, playerId, card, helpers) ??
+        dispatchTheftPackAction(
+          state,
+          playerId,
+          card,
+          targetPlayerId,
+          helpers,
+          {},
+        ) ??
+        dispatchChaosPackAction(
+          state,
+          playerId,
+          card,
+          targetPlayerId,
+          helpers,
+        ) ??
+        dispatchDeityPackAction(
+          state,
+          playerId,
+          card,
+          targetPlayerId,
+          helpers,
+        ) ??
+        null,
     };
 
     switch (action) {
@@ -258,11 +295,30 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
       case 'invert':
         return executeReverse(newState, context.userId, helpers);
 
+      case 'chain_strike':
+        return executeChainStrike(
+          newState,
+          context.userId,
+          typedPayload!.targetPlayerId!,
+          helpers,
+        );
+
+      case 'shield_bash':
+        return executeShieldBash(newState, context.userId, helpers);
+
       case 'commit_alter_future':
         return executeCommitAlterFuture(
           newState,
           context.userId,
           typedPayload!.newOrder!,
+          helpers,
+        );
+
+      case 'commit_prophecy':
+        return executeCommitProphecy(
+          newState,
+          context.userId,
+          typedPayload!.reorderedTop2!,
           helpers,
         );
 
@@ -312,6 +368,9 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
     }
 
     player.alive = false;
+    if (!Array.isArray(newState.eliminatedPlayers))
+      newState.eliminatedPlayers = [];
+    newState.eliminatedPlayers.push(playerId);
     this.addLog(
       newState,
       this.createLogEntry('system', `Player left the game`, {

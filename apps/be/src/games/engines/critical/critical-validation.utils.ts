@@ -45,13 +45,18 @@ export interface TheftPackPayload {
   cardsToUnstash?: CriticalCard[];
 }
 
+export interface ProphecyPayload {
+  reorderedTop2?: CriticalCard[];
+}
+
 export type CriticalPayload = PlayCardPayload &
   PlayCollectionComboPayload &
   FavorPayload &
   GiveFavorCardPayload &
   DefusePayload &
   CommitAlterFuturePayload &
-  TheftPackPayload;
+  TheftPackPayload &
+  ProphecyPayload;
 
 /**
  * Validation utilities for Critical game actions
@@ -59,6 +64,31 @@ export type CriticalPayload = PlayCardPayload &
 
 /** Number of different cards required for the fiver combo */
 export const FIVER_COMBO_SIZE = 5;
+
+/** Strike-type actions that shield_bash can block */
+const STRIKE_TYPES = [
+  'strike',
+  'targeted_strike',
+  'private_strike',
+  'recursive_strike',
+  'chain_strike',
+] as const;
+
+/** Returns true if the pending strike action targets the given player */
+export function isStrikeTargetingPlayer(
+  state: CriticalState,
+  player: CriticalPlayerState,
+): boolean {
+  if (!state.pendingAction) return false;
+  if (!(STRIKE_TYPES as readonly string[]).includes(state.pendingAction.type))
+    return false;
+  const p = state.pendingAction.payload as Record<string, unknown> | undefined;
+  const isTargeted = p?.targetPlayerId === player.playerId;
+  const isUntargetedAndActive =
+    !p?.targetPlayerId &&
+    state.playerOrder[state.currentTurnIndex] === player.playerId;
+  return isTargeted || isUntargetedAndActive;
+}
 
 export function hasCard(
   player: CriticalPlayerState,
@@ -203,72 +233,7 @@ export function canPlayFiverCombo(player: CriticalPlayerState): boolean {
   return uniqueCards.size >= FIVER_COMBO_SIZE;
 }
 
-export function getAvailableActionsForPlayer(
-  state: CriticalState,
-  playerId: string,
-  isTurn: boolean,
-): string[] {
-  const player = state.players.find((p) => p.playerId === playerId);
-  if (!player || !player.alive || !isTurn) {
-    return [];
-  }
-
-  // If player must defuse, that's the only available action
-  if (state.pendingDefuse === playerId) {
-    return ['neutralizer'];
-  }
-
-  const actions: string[] = [];
-
-  if (state.pendingDraws > 0) {
-    actions.push('draw_card');
-  } else {
-    // Standard cards
-    if (hasCard(player, 'strike')) actions.push('play_card:strike');
-    if (hasCard(player, 'evade')) actions.push('play_card:evade');
-    if (hasCard(player, 'reorder')) actions.push('play_card:reorder');
-    if (hasCard(player, 'insight')) actions.push('insight');
-    if (hasCard(player, 'trade')) actions.push('trade');
-
-    // Attack Pack
-    if (hasCard(player, 'targeted_strike'))
-      actions.push('play_card:targeted_strike');
-    if (hasCard(player, 'private_strike'))
-      actions.push('play_card:private_strike');
-    if (hasCard(player, 'recursive_strike'))
-      actions.push('play_card:recursive_strike');
-    if (hasCard(player, 'mega_evade')) actions.push('play_card:mega_evade');
-    if (hasCard(player, 'invert')) actions.push('play_card:invert');
-
-    // Future Pack
-    if (hasCard(player, 'see_future_5x'))
-      actions.push('play_card:see_future_5x');
-    if (hasCard(player, 'alter_future_3x'))
-      actions.push('play_card:alter_future_3x');
-    if (hasCard(player, 'alter_future_5x'))
-      actions.push('play_card:alter_future_5x');
-    if (hasCard(player, 'reveal_future_3x'))
-      actions.push('play_card:reveal_future_3x');
-    if (hasCard(player, 'share_future_3x'))
-      actions.push('play_card:share_future_3x');
-    if (hasCard(player, 'draw_bottom')) actions.push('play_card:draw_bottom');
-    if (hasCard(player, 'swap_top_bottom'))
-      actions.push('play_card:swap_top_bottom');
-    if (hasCard(player, 'bury')) actions.push('play_card:bury');
-
-    // Theft Pack
-    if (hasCard(player, 'mark')) actions.push('play_card:mark');
-    if (hasCard(player, 'steal_draw')) actions.push('play_card:steal_draw');
-    if (hasCard(player, 'stash')) actions.push('play_card:stash');
-    // Note: wildcard is used in combos, not played directly
-
-    // Can play collection combos
-    if (canPlayCollectionCombo(player, state.allowActionCardCombos))
-      actions.push('play_cat_combo');
-  }
-
-  return actions;
-}
+export { getAvailableActionsForPlayer } from './critical-available-actions.utils';
 
 export function validateCriticalAction(
   state: CriticalState,
@@ -298,6 +263,13 @@ export function validateCriticalAction(
     return hasCard(player, 'cancel');
   }
 
+  // shield_bash can be played by ANY alive player when there's a pending strike targeting them
+  if (action === 'shield_bash') {
+    return (
+      isStrikeTargetingPlayer(state, player) && hasCard(player, 'shield_bash')
+    );
+  }
+
   // Exception: play_card with 'cancel' acts like play_cancel
   const checkPayload = payload as CriticalPayload | undefined;
   if (action === 'play_card' && checkPayload?.card === 'cancel') {
@@ -323,6 +295,11 @@ export function validateCriticalAction(
     return false;
   }
 
+  // If pending Prophecy, block all actions except commit_prophecy (matches pendingAlter pattern)
+  if (state.pendingProphecy && action !== 'commit_prophecy') {
+    return false;
+  }
+
   // If player must defuse, only allow neutralizer action
   if (state.pendingDefuse === context.userId && action !== 'neutralizer') {
     return false;
@@ -343,6 +320,12 @@ export function validateCriticalAction(
         card === 'mark' ||
         card === 'steal_draw' ||
         card === 'stash' ||
+        card === 'swap_hands' ||
+        card === 'snatch' ||
+        card === 'scramble' ||
+        card === 'echo' ||
+        card === 'judgment' ||
+        card === 'prophecy' ||
         (card as string) === 'unstash'
       ) {
         return validateCriticalAction(
@@ -405,6 +388,13 @@ export function validateCriticalAction(
     case 'invert':
       return hasCard(player, 'invert') && state.pendingDraws > 0;
 
+    case 'chain_strike':
+      return (
+        hasCard(player, 'chain_strike') &&
+        state.pendingDraws > 0 &&
+        !!typedPayload?.targetPlayerId
+      );
+
     // Theft Pack
     case 'mark':
       return (
@@ -418,6 +408,21 @@ export function validateCriticalAction(
         hasCard(player, 'steal_draw') &&
         state.pendingDraws > 0 &&
         !!typedPayload?.targetPlayerId
+      );
+
+    case 'swap_hands':
+      return (
+        hasCard(player, 'swap_hands') &&
+        state.pendingDraws > 0 &&
+        !!typedPayload?.targetPlayerId
+      );
+
+    case 'snatch':
+      return (
+        hasCard(player, 'snatch') &&
+        state.pendingDraws > 0 &&
+        !!typedPayload?.targetPlayerId &&
+        !!typedPayload?.requestedCard
       );
 
     case 'stash':
@@ -435,6 +440,34 @@ export function validateCriticalAction(
         player.stash.length > 0 &&
         !!typedPayload?.cardsToUnstash &&
         typedPayload.cardsToUnstash.length > 0
+      );
+
+    // Chaos Pack
+    case 'scramble':
+      return hasCard(player, 'scramble') && state.pendingDraws > 0;
+
+    case 'echo':
+      return hasCard(player, 'echo') && state.pendingDraws > 0;
+
+    // Deity Pack
+    case 'resurrection':
+      return (
+        hasCard(player, 'resurrection') &&
+        state.pendingDraws > 0 &&
+        state.eliminatedPlayers.length > 0
+      );
+
+    case 'judgment':
+      return hasCard(player, 'judgment');
+
+    case 'prophecy':
+      return hasCard(player, 'prophecy');
+
+    case 'commit_prophecy':
+      return (
+        !!state.pendingProphecy &&
+        state.pendingProphecy.playerId === context.userId &&
+        !!typedPayload?.reorderedTop2
       );
 
     // Future Pack

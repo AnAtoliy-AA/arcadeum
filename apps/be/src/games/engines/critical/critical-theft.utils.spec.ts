@@ -1,6 +1,7 @@
 import { CriticalState, CriticalPlayerState } from '../../critical/critical.state';
 import { EngineHelpers } from './critical-theft.utils';
 import { executeSwapHands } from './critical-theft.utils';
+import { validateCriticalAction } from './critical-validation.utils';
 
 function makePlayer(
   playerId: string,
@@ -90,5 +91,53 @@ describe('executeSwapHands', () => {
     const result = executeSwapHands(state, 'playerA', 'nonexistent', helpers);
 
     expect(result.success).toBe(false);
+  });
+
+  it('fails if player targets themselves', () => {
+    const playerA = makePlayer('playerA', ['mark', 'steal_draw']);
+    const state = makeState([playerA]);
+
+    const result = executeSwapHands(state, 'playerA', 'playerA', helpers);
+
+    expect(result.success).toBe(false);
+    expect((result as { success: false; error: string }).error).toBe(
+      'Cannot swap with yourself',
+    );
+  });
+
+  it('swaps correctly when one player has an empty hand', () => {
+    // playerA has empty hand (swap_hands already removed by dispatcher)
+    const playerA = makePlayer('playerA', []);
+    const playerB = makePlayer('playerB', ['evade', 'strike']);
+    const state = makeState([playerA, playerB]);
+    state.discardPile = ['swap_hands'];
+
+    const result = executeSwapHands(state, 'playerA', 'playerB', helpers);
+
+    expect(result.success).toBe(true);
+
+    const stateA = state.players.find((p) => p.playerId === 'playerA')!;
+    const stateB = state.players.find((p) => p.playerId === 'playerB')!;
+
+    expect(stateA.hand).toEqual(['evade', 'strike']);
+    expect(stateB.hand).toEqual([]);
+  });
+});
+
+describe('validateCriticalAction — swap_hands', () => {
+  it('returns true when player has swap_hands, pendingDraws > 0, and targetPlayerId provided', () => {
+    const playerA = makePlayer('playerA', ['swap_hands']);
+    const playerB = makePlayer('playerB', ['evade']);
+    const state = makeState([playerA, playerB]);
+    state.pendingDraws = 1;
+
+    const isValid = validateCriticalAction(
+      state,
+      'swap_hands',
+      { userId: 'playerA', gameId: 'game1' },
+      { targetPlayerId: 'playerB' },
+    );
+
+    expect(isValid).toBe(true);
   });
 });

@@ -120,17 +120,27 @@ export function executeSwapHands(
 ): GameActionResult<CriticalState> {
   const player = helpers.findPlayer(state, playerId);
   const target = helpers.findPlayer(state, targetPlayerId);
-  if (!player || !target || !target.alive) {
+  if (!player || !player.alive || !target || !target.alive) {
     return { success: false, error: 'Invalid target' };
   }
-  // Swap hands (card already removed from hand by dispatcher's playCard())
-  const playerHand = [...player.hand];
-  player.hand = [...target.hand];
-  target.hand = playerHand;
+  if (playerId === targetPlayerId) {
+    return { success: false, error: 'Cannot swap with yourself' };
+  }
+  // Before swap, capture original hands (card already removed from hand by dispatcher's playCard())
+  const originalPlayerHand = [...player.hand];
+  const originalTargetHand = [...target.hand];
+
+  // Swap
+  player.hand = [...originalTargetHand];
+  target.hand = [...originalPlayerHand];
   state.pendingAction = {
     type: 'swap_hands',
     playerId,
-    payload: { targetPlayerId },
+    payload: {
+      targetPlayerId,
+      originalPlayerHand,
+      originalTargetHand,
+    },
     nopeCount: 0,
   };
   helpers.addLog(

@@ -179,6 +179,25 @@ export function executeCancel(
         }
         break;
       }
+      case 'swap_hands': {
+        // Restore original hands
+        const swapPayload = state.pendingAction.payload as {
+          targetPlayerId: string;
+          originalPlayerHand: string[];
+          originalTargetHand: string[];
+        };
+        const swapInitiator = state.players.find(
+          (p) => p.playerId === state.pendingAction!.playerId,
+        );
+        const swapTarget = state.players.find(
+          (p) => p.playerId === swapPayload.targetPlayerId,
+        );
+        if (swapInitiator && swapTarget) {
+          swapInitiator.hand = swapPayload.originalPlayerHand as CriticalCard[];
+          swapTarget.hand = swapPayload.originalTargetHand as CriticalCard[];
+        }
+        break;
+      }
     }
   } else {
     // Un-cancel the action - re-apply effects
@@ -300,6 +319,25 @@ export function executeCancel(
         );
         if (stealTarget) {
           stealTarget.pendingStealDraw = state.pendingAction.playerId;
+        }
+        break;
+      }
+      case 'swap_hands': {
+        // Re-apply swap using stored original hands
+        const swapPayload = state.pendingAction.payload as {
+          targetPlayerId: string;
+          originalPlayerHand: string[];
+          originalTargetHand: string[];
+        };
+        const swapInitiator = state.players.find(
+          (p) => p.playerId === state.pendingAction!.playerId,
+        );
+        const swapTarget = state.players.find(
+          (p) => p.playerId === swapPayload.targetPlayerId,
+        );
+        if (swapInitiator && swapTarget) {
+          swapInitiator.hand = swapPayload.originalTargetHand as CriticalCard[];
+          swapTarget.hand = swapPayload.originalPlayerHand as CriticalCard[];
         }
         break;
       }

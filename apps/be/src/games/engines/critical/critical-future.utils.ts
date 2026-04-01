@@ -29,6 +29,12 @@ export interface EngineHelpers {
     state: CriticalState,
     playerId: string,
   ) => CriticalPlayerState | undefined;
+  dispatchCard?: (
+    state: CriticalState,
+    playerId: string,
+    card: CriticalCard,
+    targetPlayerId?: string,
+  ) => GameActionResult<CriticalState> | null;
 }
 
 /**
@@ -318,6 +324,8 @@ export function executeDrawBottom(
       return { success: true, state };
     } else {
       player.alive = false;
+      if (!Array.isArray(state.eliminatedPlayers)) state.eliminatedPlayers = [];
+      state.eliminatedPlayers.push(playerId);
       helpers.addLog(
         state,
         helpers.createLogEntry('system', `Player exploded from bottom draw!`, {

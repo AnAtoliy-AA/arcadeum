@@ -379,11 +379,6 @@ export function executeCancel(
           handSnapshots: { playerId: string; hand: CriticalCard[] }[];
           direction: number;
         };
-        // Restore originals first
-        for (const snap of scramblePayload.handSnapshots) {
-          const pl = state.players.find((p) => p.playerId === snap.playerId);
-          if (pl) pl.hand = [...snap.hand];
-        }
         // Re-apply rotation
         const scrambleN = scramblePayload.handSnapshots.length;
         const scrambleDir = scramblePayload.direction ?? 1;

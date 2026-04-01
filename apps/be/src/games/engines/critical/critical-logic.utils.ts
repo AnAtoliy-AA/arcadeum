@@ -198,21 +198,6 @@ export class CriticalLogic {
     }
 
     if (state.pendingDraws === 0) {
-      // Chain Strike carry-over: after first target draws, move turn to second target
-      if (priorPendingAction?.type === 'chain_strike') {
-        const payload = priorPendingAction.payload as Record<string, unknown>;
-        const chainTargetId = payload?.chainTargetId as string | undefined;
-        if (chainTargetId) {
-          const chainIndex = state.playerOrder.indexOf(chainTargetId);
-          if (chainIndex !== -1) {
-            state.currentTurnIndex = chainIndex;
-            state.pendingDraws = 1;
-            payload.chainTargetId = undefined; // clear so it doesn't repeat
-            return { success: true, state };
-          }
-        }
-      }
-
       helpers.advanceTurn(state);
     }
 

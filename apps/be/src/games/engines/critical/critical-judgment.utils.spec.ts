@@ -53,7 +53,9 @@ function makeHelpers(): EngineHelpers {
     }),
     advanceTurn: (state: CriticalState) => {
       state.currentTurnIndex =
-        (state.currentTurnIndex + state.playDirection + state.playerOrder.length) %
+        (state.currentTurnIndex +
+          state.playDirection +
+          state.playerOrder.length) %
         state.playerOrder.length;
       state.pendingDraws = 1;
     },
@@ -71,8 +73,12 @@ describe('executeJudgment', () => {
     const result = executeJudgment(state, 'playerA', helpers);
 
     expect(result.success).toBe(true);
-    const playerB = state.players.find((p) => p.playerId === 'playerB') as CriticalPlayerState;
-    const playerC = state.players.find((p) => p.playerId === 'playerC') as CriticalPlayerState;
+    const playerB = state.players.find(
+      (p) => p.playerId === 'playerB',
+    ) as CriticalPlayerState;
+    const playerC = state.players.find(
+      (p) => p.playerId === 'playerC',
+    ) as CriticalPlayerState;
     expect(playerB.pendingJudgment).toBe(true);
     expect(playerC.pendingJudgment).toBe(true);
   });
@@ -83,7 +89,9 @@ describe('executeJudgment', () => {
 
     executeJudgment(state, 'playerA', helpers);
 
-    const playerA = state.players.find((p) => p.playerId === 'playerA') as CriticalPlayerState;
+    const playerA = state.players.find(
+      (p) => p.playerId === 'playerA',
+    ) as CriticalPlayerState;
     expect(playerA.pendingJudgment).toBeUndefined();
   });
 
@@ -99,8 +107,12 @@ describe('executeJudgment', () => {
 
     executeJudgment(state, 'playerA', helpers);
 
-    const playerB = state.players.find((p) => p.playerId === 'playerB') as CriticalPlayerState;
-    const playerC = state.players.find((p) => p.playerId === 'playerC') as CriticalPlayerState;
+    const playerB = state.players.find(
+      (p) => p.playerId === 'playerB',
+    ) as CriticalPlayerState;
+    const playerC = state.players.find(
+      (p) => p.playerId === 'playerC',
+    ) as CriticalPlayerState;
     expect(playerB.pendingJudgment).toBeUndefined();
     expect(playerC.pendingJudgment).toBe(true);
   });

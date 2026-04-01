@@ -1,4 +1,7 @@
-import { CriticalState, CriticalPlayerState } from '../../critical/critical.state';
+import {
+  CriticalState,
+  CriticalPlayerState,
+} from '../../critical/critical.state';
 import { EngineHelpers } from './critical-theft.utils';
 import { executeSwapHands } from './critical-theft.utils';
 import { executeSnatch } from './critical-theft-snatch.utils';

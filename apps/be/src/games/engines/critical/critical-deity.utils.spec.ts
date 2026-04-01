@@ -3,10 +3,7 @@ import {
   CriticalCard,
   CriticalPlayerState,
 } from '../../critical/critical.state';
-import {
-  executeProphecy,
-  executeCommitProphecy,
-} from './critical-deity.utils';
+import { executeProphecy, executeCommitProphecy } from './critical-deity.utils';
 import { EngineHelpers } from './critical-future.utils';
 import { GameLogEntry } from '../base/game-engine.interface';
 
@@ -36,7 +33,9 @@ function makeHelpers(): EngineHelpers {
     }),
     advanceTurn: (state: CriticalState) => {
       state.currentTurnIndex =
-        (state.currentTurnIndex + state.playDirection + state.playerOrder.length) %
+        (state.currentTurnIndex +
+          state.playDirection +
+          state.playerOrder.length) %
         state.playerOrder.length;
       state.pendingDraws = 1;
     },
@@ -73,10 +72,7 @@ describe('executeProphecy', () => {
       pendingAlter: null,
       pendingAction: null,
       eliminatedPlayers: [],
-      players: [
-        makePlayer('playerA', ['prophecy']),
-        makePlayer('playerB', []),
-      ],
+      players: [makePlayer('playerA', ['prophecy']), makePlayer('playerB', [])],
       logs: [],
       ...overrides,
     };
@@ -141,9 +137,23 @@ describe('executeProphecy', () => {
 
 describe('executeCommitProphecy', () => {
   function makeState(overrides: Partial<CriticalState> = {}): CriticalState {
-    const top5: CriticalCard[] = ['strike', 'evade', 'reorder', 'insight', 'cancel'];
+    const top5: CriticalCard[] = [
+      'strike',
+      'evade',
+      'reorder',
+      'insight',
+      'cancel',
+    ];
     return {
-      deck: ['strike', 'evade', 'reorder', 'insight', 'cancel', 'trade', 'neutralizer'] as CriticalCard[],
+      deck: [
+        'strike',
+        'evade',
+        'reorder',
+        'insight',
+        'cancel',
+        'trade',
+        'neutralizer',
+      ] as CriticalCard[],
       discardPile: [],
       playerOrder: ['playerA', 'playerB'],
       currentTurnIndex: 0,
@@ -157,10 +167,7 @@ describe('executeCommitProphecy', () => {
       pendingAction: null,
       eliminatedPlayers: [],
       pendingProphecy: { playerId: 'playerA', top5 },
-      players: [
-        makePlayer('playerA', []),
-        makePlayer('playerB', []),
-      ],
+      players: [makePlayer('playerA', []), makePlayer('playerB', [])],
       logs: [],
       ...overrides,
     };
@@ -198,7 +205,12 @@ describe('executeCommitProphecy', () => {
     const state = makeState({ pendingProphecy: undefined });
     const helpers = makeHelpers();
 
-    const result = executeCommitProphecy(state, 'playerA', ['evade', 'strike'], helpers);
+    const result = executeCommitProphecy(
+      state,
+      'playerA',
+      ['evade', 'strike'],
+      helpers,
+    );
 
     expect(result.success).toBe(false);
     expect(result.error).toBeDefined();
@@ -213,7 +225,12 @@ describe('executeCommitProphecy', () => {
     });
     const helpers = makeHelpers();
 
-    const result = executeCommitProphecy(state, 'playerA', ['evade', 'strike'], helpers);
+    const result = executeCommitProphecy(
+      state,
+      'playerA',
+      ['evade', 'strike'],
+      helpers,
+    );
 
     expect(result.success).toBe(false);
   });
@@ -237,7 +254,12 @@ describe('executeCommitProphecy', () => {
     const state = makeState();
     const helpers = makeHelpers();
 
-    const result = executeCommitProphecy(state, 'playerA', ['strike'] as CriticalCard[], helpers);
+    const result = executeCommitProphecy(
+      state,
+      'playerA',
+      ['strike'] as CriticalCard[],
+      helpers,
+    );
 
     expect(result.success).toBe(false);
   });

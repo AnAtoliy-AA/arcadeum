@@ -37,7 +37,12 @@ export interface EngineHelpers {
 }
 
 /** Cards that cannot be re-executed via echo */
-const ECHO_FORBIDDEN = ['echo', 'critical_event', 'critical_implosion', 'neutralizer'] as const;
+const ECHO_FORBIDDEN = [
+  'echo',
+  'critical_event',
+  'critical_implosion',
+  'neutralizer',
+] as const;
 type EchoForbiddenCard = (typeof ECHO_FORBIDDEN)[number];
 
 /**
@@ -150,7 +155,7 @@ export function executeScramble(
   // direction=-1: player[i] receives from player[(i+1)%n]
   const n = alivePlayers.length;
   for (let i = 0; i < n; i++) {
-    const sourceIndex = ((i - direction) + n) % n;
+    const sourceIndex = (i - direction + n) % n;
     alivePlayers[i].hand = [...handSnapshots[sourceIndex].hand];
   }
 
@@ -163,11 +168,10 @@ export function executeScramble(
 
   helpers.addLog(
     state,
-    helpers.createLogEntry(
-      'action',
-      `Played Scramble! All hands rotated!`,
-      { scope: 'all', senderId: playerId },
-    ),
+    helpers.createLogEntry('action', `Played Scramble! All hands rotated!`, {
+      scope: 'all',
+      senderId: playerId,
+    }),
   );
 
   return { success: true, state };

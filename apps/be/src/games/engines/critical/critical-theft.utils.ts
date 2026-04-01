@@ -109,17 +109,29 @@ export function dispatchTheftPackAction(
 
     case 'swap_hands':
       if (!targetPlayerId) {
-        return { success: false, error: 'Target player required for Swap Hands' };
+        return {
+          success: false,
+          error: 'Target player required for Swap Hands',
+        };
       }
       playCard();
       return executeSwapHands(state, playerId, targetPlayerId, helpers);
 
     case 'snatch': {
       if (!targetPlayerId) return { success: false, error: 'Target required' };
-      const snatchPayload = payload as { requestedCard?: CriticalCard } | undefined;
-      if (!snatchPayload?.requestedCard) return { success: false, error: 'requestedCard required' };
+      const snatchPayload = payload as
+        | { requestedCard?: CriticalCard }
+        | undefined;
+      if (!snatchPayload?.requestedCard)
+        return { success: false, error: 'requestedCard required' };
       playCard();
-      return executeSnatch(state, playerId, targetPlayerId, snatchPayload.requestedCard, helpers);
+      return executeSnatch(
+        state,
+        playerId,
+        targetPlayerId,
+        snatchPayload.requestedCard,
+        helpers,
+      );
     }
 
     default:

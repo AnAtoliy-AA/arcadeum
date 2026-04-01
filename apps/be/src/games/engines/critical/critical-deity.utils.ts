@@ -1,4 +1,4 @@
-import { CriticalState, CriticalCard, CriticalPlayerState } from '../../critical/critical.state';
+import { CriticalState, CriticalCard } from '../../critical/critical.state';
 import { GameActionResult } from '../base/game-engine.interface';
 import { EngineHelpers } from './critical-future.utils';
 
@@ -255,7 +255,7 @@ export function executeJudgment(
   // Set pendingJudgment on all other alive players
   state.players.forEach((p) => {
     if (p.playerId !== playerId && p.alive) {
-      (p as CriticalPlayerState).pendingJudgment = true;
+      p.pendingJudgment = true;
     }
   });
 
@@ -296,17 +296,16 @@ export function executeProphecy(
     return { success: false, error: 'Deck is empty' };
   }
 
-  const top5 = state.deck.slice(0, Math.min(5, state.deck.length)) as CriticalCard[];
+  const top5 = state.deck.slice(0, Math.min(5, state.deck.length));
   state.pendingProphecy = { playerId, top5: [...top5] };
 
   const cardKeys = top5.map((c) => `cards:${c}`);
   helpers.addLog(
     state,
-    helpers.createLogEntry(
-      'action',
-      `prophecy.reveal:${cardKeys.join(',')}`,
-      { scope: 'private', senderId: playerId },
-    ),
+    helpers.createLogEntry('action', `prophecy.reveal:${cardKeys.join(',')}`, {
+      scope: 'private',
+      senderId: playerId,
+    }),
   );
   helpers.addLog(
     state,

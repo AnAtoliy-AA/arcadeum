@@ -1,6 +1,14 @@
-import { CriticalState, CriticalPlayerState } from '../../critical/critical.state';
+import {
+  CriticalState,
+  CriticalPlayerState,
+} from '../../critical/critical.state';
 import { GameActionResult } from '../base/game-engine.interface';
-import { executeScramble, executeEcho, EngineHelpers, dispatchChaosPackAction } from './critical-chaos.utils';
+import {
+  executeScramble,
+  executeEcho,
+  EngineHelpers,
+  dispatchChaosPackAction,
+} from './critical-chaos.utils';
 
 function makeState(
   players: { id: string; hand: string[]; alive?: boolean }[],
@@ -22,7 +30,9 @@ function makeState(
     allowActionCardCombos: false,
     players: players.map((p) => ({
       playerId: p.id,
-      hand: [...p.hand] as import('../../critical/critical.state').CriticalCard[],
+      hand: [
+        ...p.hand,
+      ] as import('../../critical/critical.state').CriticalCard[],
       alive: p.alive ?? true,
       stash: [],
       markedCards: [],
@@ -31,9 +41,7 @@ function makeState(
   } as unknown as CriticalState;
 }
 
-function makeHelpers(
-  overrides?: Partial<EngineHelpers>,
-): EngineHelpers {
+function makeHelpers(overrides?: Partial<EngineHelpers>): EngineHelpers {
   return {
     addLog: () => undefined,
     createLogEntry: () => ({
@@ -52,17 +60,21 @@ function makeHelpers(
 
 describe('executeScramble', () => {
   it('basic forward — direction=1: each player receives hand from previous player', () => {
-    const state = makeState([
-      { id: 'A', hand: ['mark'] },
-      { id: 'B', hand: ['evade', 'strike'] },
-      { id: 'C', hand: ['reorder'] },
-    ], 1);
+    const state = makeState(
+      [
+        { id: 'A', hand: ['mark'] },
+        { id: 'B', hand: ['evade', 'strike'] },
+        { id: 'C', hand: ['reorder'] },
+      ],
+      1,
+    );
 
-    const result = executeScramble(state, 'A', makeHelpers()) as GameActionResult<CriticalState>;
+    const result = executeScramble(state, 'A', makeHelpers());
     expect(result.success).toBe(true);
 
     const s = result.state!;
-    const getHand = (id: string) => s.players.find((p: CriticalPlayerState) => p.playerId === id)!.hand;
+    const getHand = (id: string) =>
+      s.players.find((p: CriticalPlayerState) => p.playerId === id)!.hand;
 
     // direction=1: player[i] receives from player[(i-1+n)%n]
     // A(0) receives from C(2): ['reorder']
@@ -74,17 +86,21 @@ describe('executeScramble', () => {
   });
 
   it('reversed direction — direction=-1: each player passes to the previous, receives from next', () => {
-    const state = makeState([
-      { id: 'A', hand: ['mark'] },
-      { id: 'B', hand: ['evade', 'strike'] },
-      { id: 'C', hand: ['reorder'] },
-    ], -1);
+    const state = makeState(
+      [
+        { id: 'A', hand: ['mark'] },
+        { id: 'B', hand: ['evade', 'strike'] },
+        { id: 'C', hand: ['reorder'] },
+      ],
+      -1,
+    );
 
-    const result = executeScramble(state, 'A', makeHelpers()) as GameActionResult<CriticalState>;
+    const result = executeScramble(state, 'A', makeHelpers());
     expect(result.success).toBe(true);
 
     const s = result.state!;
-    const getHand = (id: string) => s.players.find((p: CriticalPlayerState) => p.playerId === id)!.hand;
+    const getHand = (id: string) =>
+      s.players.find((p: CriticalPlayerState) => p.playerId === id)!.hand;
 
     // direction=-1: player[i] receives from player[(i+1)%n]
     // A(0) receives from B(1): ['evade', 'strike']
@@ -96,17 +112,21 @@ describe('executeScramble', () => {
   });
 
   it('skips dead players — only alive players participate in the rotation', () => {
-    const state = makeState([
-      { id: 'A', hand: ['mark'] },
-      { id: 'B', hand: ['evade', 'strike'], alive: false },
-      { id: 'C', hand: ['reorder'] },
-    ], 1);
+    const state = makeState(
+      [
+        { id: 'A', hand: ['mark'] },
+        { id: 'B', hand: ['evade', 'strike'], alive: false },
+        { id: 'C', hand: ['reorder'] },
+      ],
+      1,
+    );
 
-    const result = executeScramble(state, 'A', makeHelpers()) as GameActionResult<CriticalState>;
+    const result = executeScramble(state, 'A', makeHelpers());
     expect(result.success).toBe(true);
 
     const s = result.state!;
-    const getHand = (id: string) => s.players.find((p: CriticalPlayerState) => p.playerId === id)!.hand;
+    const getHand = (id: string) =>
+      s.players.find((p: CriticalPlayerState) => p.playerId === id)!.hand;
 
     // Only A and C are alive. direction=1: A(0) receives from C(1), C(1) receives from A(0)
     expect(getHand('A')).toEqual(['reorder']);
@@ -116,12 +136,15 @@ describe('executeScramble', () => {
   });
 
   it('sets pendingAction with type scramble after play', () => {
-    const state = makeState([
-      { id: 'A', hand: ['mark'] },
-      { id: 'B', hand: ['evade'] },
-    ], 1);
+    const state = makeState(
+      [
+        { id: 'A', hand: ['mark'] },
+        { id: 'B', hand: ['evade'] },
+      ],
+      1,
+    );
 
-    const result = executeScramble(state, 'A', makeHelpers()) as GameActionResult<CriticalState>;
+    const result = executeScramble(state, 'A', makeHelpers());
     expect(result.success).toBe(true);
 
     const s = result.state!;
@@ -134,24 +157,43 @@ describe('executeScramble', () => {
 
 describe('executeEcho', () => {
   it('re-executes the top card from discard pile via dispatchCard helper', () => {
-    const state = makeState([
-      { id: 'A', hand: ['echo'] },
-      { id: 'B', hand: ['evade'] },
-    ], 1);
-    state.discardPile = ['strike'] as import('../../critical/critical.state').CriticalCard[];
+    const state = makeState(
+      [
+        { id: 'A', hand: ['echo'] },
+        { id: 'B', hand: ['evade'] },
+      ],
+      1,
+    );
+    state.discardPile = [
+      'strike',
+    ] as import('../../critical/critical.state').CriticalCard[];
     state.pendingDraws = 1;
 
     // dispatchCard mock simulates strike being executed: advances turn, sets pendingDraws=2
     const dispatchCard = jest.fn(
-      (s: CriticalState, _pid: string, card: import('../../critical/critical.state').CriticalCard) => {
+      (
+        s: CriticalState,
+        _pid: string,
+        card: import('../../critical/critical.state').CriticalCard,
+      ) => {
         s.pendingDraws = 2;
-        s.pendingAction = { type: card, playerId: _pid, payload: {}, nopeCount: 0 };
+        s.pendingAction = {
+          type: card,
+          playerId: _pid,
+          payload: {},
+          nopeCount: 0,
+        };
         return { success: true as const, state: s };
       },
     );
 
     const helpers = makeHelpers({ dispatchCard });
-    const result = executeEcho(state, 'A', 'strike' as import('../../critical/critical.state').CriticalCard, helpers) as GameActionResult<CriticalState>;
+    const result = executeEcho(
+      state,
+      'A',
+      'strike' as import('../../critical/critical.state').CriticalCard,
+      helpers,
+    );
 
     expect(result.success).toBe(true);
     expect(dispatchCard).toHaveBeenCalledWith(state, 'A', 'strike', undefined);
@@ -161,32 +203,57 @@ describe('executeEcho', () => {
 
   it('rejects echoing echo (infinite loop guard)', () => {
     const state = makeState([{ id: 'A', hand: ['echo'] }]);
-    const result = executeEcho(state, 'A', 'echo' as import('../../critical/critical.state').CriticalCard, makeHelpers());
+    const result = executeEcho(
+      state,
+      'A',
+      'echo' as import('../../critical/critical.state').CriticalCard,
+      makeHelpers(),
+    );
     expect(result.success).toBe(false);
   });
 
   it('rejects echoing critical_event', () => {
     const state = makeState([{ id: 'A', hand: ['echo'] }]);
-    const result = executeEcho(state, 'A', 'critical_event' as import('../../critical/critical.state').CriticalCard, makeHelpers());
+    const result = executeEcho(
+      state,
+      'A',
+      'critical_event' as import('../../critical/critical.state').CriticalCard,
+      makeHelpers(),
+    );
     expect(result.success).toBe(false);
   });
 
   it('rejects echoing neutralizer', () => {
     const state = makeState([{ id: 'A', hand: ['echo'] }]);
-    const result = executeEcho(state, 'A', 'neutralizer' as import('../../critical/critical.state').CriticalCard, makeHelpers());
+    const result = executeEcho(
+      state,
+      'A',
+      'neutralizer' as import('../../critical/critical.state').CriticalCard,
+      makeHelpers(),
+    );
     expect(result.success).toBe(false);
   });
 
   it('rejects critical_implosion', () => {
     const state = makeState([{ id: 'A', hand: ['echo'] }]);
-    const result = executeEcho(state, 'A', 'critical_implosion' as import('../../critical/critical.state').CriticalCard, makeHelpers());
+    const result = executeEcho(
+      state,
+      'A',
+      'critical_implosion' as import('../../critical/critical.state').CriticalCard,
+      makeHelpers(),
+    );
     expect(result.success).toBe(false);
   });
 
   it('returns failure when dispatchCard helper is not provided', () => {
     const state = makeState([{ id: 'A', hand: ['echo'] }]);
     // No dispatchCard in helpers
-    const result = executeEcho(state, 'A', 'strike' as import('../../critical/critical.state').CriticalCard, makeHelpers());
+    const result = executeEcho(
+      state,
+      'A',
+      'strike' as import('../../critical/critical.state').CriticalCard,
+      makeHelpers(),
+    );
     expect(result.success).toBe(false);
   });
 });
@@ -197,27 +264,49 @@ describe('dispatchChaosPackAction with echo', () => {
       { id: 'playerA', hand: ['echo'] },
       { id: 'playerB', hand: ['evade'] },
     ]);
-    state.discardPile = ['strike'] as import('../../critical/critical.state').CriticalCard[];
+    state.discardPile = [
+      'strike',
+    ] as import('../../critical/critical.state').CriticalCard[];
     state.pendingDraws = 1;
 
     // dispatchCard mock: just return a recognizable result
     const dispatchCardMock = jest.fn(
-      (_state: CriticalState, _playerId: string, card: import('../../critical/critical.state').CriticalCard) => {
+      (
+        _state: CriticalState,
+        _playerId: string,
+        card: import('../../critical/critical.state').CriticalCard,
+      ) => {
         return {
           success: true as const,
           state: {
             ..._state,
-            pendingAction: { type: card, playerId: _playerId, payload: {}, nopeCount: 0 },
+            pendingAction: {
+              type: card,
+              playerId: _playerId,
+              payload: {},
+              nopeCount: 0,
+            },
           },
         };
       },
     );
 
     const helpers = makeHelpers({ dispatchCard: dispatchCardMock });
-    const result = dispatchChaosPackAction(state, 'playerA', 'echo', undefined, helpers) as GameActionResult<CriticalState>;
+    const result = dispatchChaosPackAction(
+      state,
+      'playerA',
+      'echo',
+      undefined,
+      helpers,
+    ) as GameActionResult<CriticalState>;
 
     expect(result.success).toBe(true);
     // The dispatchCard was called with 'strike' (not 'echo'), proving pre-snapshot ordering
-    expect(dispatchCardMock).toHaveBeenCalledWith(expect.anything(), 'playerA', 'strike', undefined);
+    expect(dispatchCardMock).toHaveBeenCalledWith(
+      expect.anything(),
+      'playerA',
+      'strike',
+      undefined,
+    );
   });
 });

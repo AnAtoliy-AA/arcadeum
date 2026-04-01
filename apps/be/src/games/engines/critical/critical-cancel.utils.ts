@@ -1,7 +1,6 @@
 import type {
   CriticalState,
   CriticalCard,
-  CriticalPlayerState,
 } from '../../critical/critical.state';
 import type {
   GameLogEntry,
@@ -254,7 +253,7 @@ export function executeCancel(
       case 'judgment': {
         // Clear pendingJudgment from all players
         for (const p of state.players) {
-          (p as CriticalPlayerState).pendingJudgment = undefined;
+          p.pendingJudgment = undefined;
         }
         // Reverse turn advance (go back to the judgment player)
         const judgeIndex = state.playerOrder.findIndex(
@@ -476,7 +475,7 @@ export function executeCancel(
         // Re-apply judgment: set pendingJudgment on all other alive players
         state.players.forEach((p) => {
           if (p.playerId !== state.pendingAction!.playerId && p.alive) {
-            (p as CriticalPlayerState).pendingJudgment = true;
+            p.pendingJudgment = true;
           }
         });
         helpers.advanceTurn(state);

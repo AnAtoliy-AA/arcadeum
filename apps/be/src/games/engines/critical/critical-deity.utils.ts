@@ -335,7 +335,13 @@ export function executeCommitProphecy(
     return { success: false, error: 'Must provide exactly 2 cards to reorder' };
   }
   const top5 = state.pendingProphecy.top5;
-  const validCards = reorderedTop2.every((c) => top5.includes(c));
+  const remaining = [...top5];
+  const validCards = reorderedTop2.every((c) => {
+    const idx = remaining.indexOf(c);
+    if (idx === -1) return false;
+    remaining.splice(idx, 1);
+    return true;
+  });
   if (!validCards) {
     return { success: false, error: 'Provided cards are not in the top 5' };
   }

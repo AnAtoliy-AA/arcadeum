@@ -295,12 +295,8 @@ export function validateCriticalAction(
     return false;
   }
 
-  // If pending Prophecy for this player, only allow commit_prophecy
-  if (
-    state.pendingProphecy &&
-    state.pendingProphecy.playerId === context.userId &&
-    action !== 'commit_prophecy'
-  ) {
+  // If pending Prophecy, block all actions except commit_prophecy (matches pendingAlter pattern)
+  if (state.pendingProphecy && action !== 'commit_prophecy') {
     return false;
   }
 

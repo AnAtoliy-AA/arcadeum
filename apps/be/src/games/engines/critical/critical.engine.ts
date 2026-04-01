@@ -107,7 +107,10 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
     const typedPayload = payload as CriticalPayload | undefined;
 
     // Use arrow functions instead of bind() to preserve type safety
-    const helpers = {
+    // helpers is declared with let so dispatchCard can reference it via closure
+    // eslint-disable-next-line prefer-const
+    let helpers: Parameters<typeof dispatchChaosPackAction>[4];
+    helpers = {
       addLog: (
         state: CriticalState,
         log: ReturnType<typeof this.createLogEntry>,
@@ -119,6 +122,17 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
       shuffleArray: <T>(arr: T[]) => this.shuffleArray(arr),
       findPlayer: (state: CriticalState, pid: string) =>
         this.findPlayer(state, pid) as CriticalPlayerState,
+      dispatchCard: (
+        state: CriticalState,
+        playerId: string,
+        card: CriticalCard,
+        targetPlayerId?: string,
+      ) =>
+        dispatchFuturePackAction(state, playerId, card, helpers) ??
+        dispatchTheftPackAction(state, playerId, card, targetPlayerId, helpers, {}) ??
+        dispatchChaosPackAction(state, playerId, card, targetPlayerId, helpers) ??
+        dispatchDeityPackAction(state, playerId, card, targetPlayerId, helpers) ??
+        null,
     };
 
     switch (action) {

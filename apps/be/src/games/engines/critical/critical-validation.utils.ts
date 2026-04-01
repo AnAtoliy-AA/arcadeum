@@ -299,6 +299,7 @@ export function validateCriticalAction(
         card === 'swap_hands' ||
         card === 'snatch' ||
         card === 'scramble' ||
+        card === 'echo' ||
         (card as string) === 'unstash'
       ) {
         return validateCriticalAction(
@@ -418,6 +419,9 @@ export function validateCriticalAction(
     // Chaos Pack
     case 'scramble':
       return hasCard(player, 'scramble') && state.pendingDraws > 0;
+
+    case 'echo':
+      return hasCard(player, 'echo') && state.pendingDraws > 0;
 
     // Future Pack
     case 'commit_alter_future':

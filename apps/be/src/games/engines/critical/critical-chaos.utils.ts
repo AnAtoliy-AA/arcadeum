@@ -28,7 +28,17 @@ export interface EngineHelpers {
     state: CriticalState,
     playerId: string,
   ) => CriticalPlayerState | undefined;
+  dispatchCard?: (
+    state: CriticalState,
+    playerId: string,
+    card: CriticalCard,
+    targetPlayerId?: string,
+  ) => GameActionResult<CriticalState> | null;
 }
+
+/** Cards that cannot be re-executed via echo */
+const ECHO_FORBIDDEN = ['echo', 'critical_event', 'neutralizer'] as const;
+type EchoForbiddenCard = (typeof ECHO_FORBIDDEN)[number];
 
 /**
  * Dispatcher for all Chaos Pack cards.
@@ -68,9 +78,44 @@ export function dispatchChaosPackAction(
     case 'scramble':
       playCard();
       return executeScramble(state, playerId, helpers);
+    case 'echo': {
+      // Capture top of discard BEFORE adding echo to discard pile
+      const topDiscard = state.discardPile[state.discardPile.length - 1];
+      if (!topDiscard) return { success: false, error: 'No card to echo' };
+      playCard(); // Now echo is on top of discard
+      return executeEcho(state, playerId, topDiscard, helpers);
+    }
     default:
       return null;
   }
+}
+
+/**
+ * Execute Echo
+ * Re-executes the top card of the discard pile with the same playerId.
+ * Cannot echo echo itself, critical_event, or neutralizer.
+ */
+export function executeEcho(
+  state: CriticalState,
+  playerId: string,
+  cardToEcho: CriticalCard,
+  helpers: EngineHelpers,
+): GameActionResult<CriticalState> {
+  if (ECHO_FORBIDDEN.includes(cardToEcho as EchoForbiddenCard)) {
+    return { success: false, error: `Cannot echo ${cardToEcho}` };
+  }
+
+  if (!helpers.dispatchCard) {
+    return { success: false, error: 'dispatchCard helper not available' };
+  }
+
+  const result = helpers.dispatchCard(state, playerId, cardToEcho, undefined);
+
+  if (!result) {
+    return { success: false, error: `Card ${cardToEcho} not dispatchable` };
+  }
+
+  return result;
 }
 
 /**

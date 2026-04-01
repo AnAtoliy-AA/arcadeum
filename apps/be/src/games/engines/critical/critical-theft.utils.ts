@@ -31,6 +31,12 @@ export interface EngineHelpers {
     state: CriticalState,
     playerId: string,
   ) => CriticalPlayerState | undefined;
+  dispatchCard?: (
+    state: CriticalState,
+    playerId: string,
+    card: CriticalCard,
+    targetPlayerId?: string,
+  ) => GameActionResult<CriticalState> | null;
 }
 
 // Maximum number of cards that can be stored in stash

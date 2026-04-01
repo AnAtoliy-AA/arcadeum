@@ -87,6 +87,7 @@ export function getAvailableActionsForPlayer(
 
     // Chaos Pack
     if (hasCard(player, 'scramble')) actions.push('play_card:scramble');
+    if (hasCard(player, 'echo')) actions.push('play_card:echo');
 
     // Can play collection combos
     if (canPlayCollectionCombo(player, state.allowActionCardCombos))

@@ -286,6 +286,7 @@ export function getAvailableActionsForPlayer(
     if (hasCard(player, 'mark')) actions.push('play_card:mark');
     if (hasCard(player, 'steal_draw')) actions.push('play_card:steal_draw');
     if (hasCard(player, 'stash')) actions.push('play_card:stash');
+    if (hasCard(player, 'swap_hands')) actions.push('play_card:swap_hands');
     // Note: wildcard is used in combos, not played directly
 
     // Can play collection combos
@@ -374,6 +375,7 @@ export function validateCriticalAction(
         card === 'mark' ||
         card === 'steal_draw' ||
         card === 'stash' ||
+        card === 'swap_hands' ||
         (card as string) === 'unstash'
       ) {
         return validateCriticalAction(
@@ -454,6 +456,13 @@ export function validateCriticalAction(
     case 'steal_draw':
       return (
         hasCard(player, 'steal_draw') &&
+        state.pendingDraws > 0 &&
+        !!typedPayload?.targetPlayerId
+      );
+
+    case 'swap_hands':
+      return (
+        hasCard(player, 'swap_hands') &&
         state.pendingDraws > 0 &&
         !!typedPayload?.targetPlayerId
       );

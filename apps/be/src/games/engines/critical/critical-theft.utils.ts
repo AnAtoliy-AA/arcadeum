@@ -99,9 +99,48 @@ export function dispatchTheftPackAction(
         helpers,
       );
 
+    case 'swap_hands':
+      if (!targetPlayerId) {
+        return { success: false, error: 'Target player required for Swap Hands' };
+      }
+      playCard();
+      return executeSwapHands(state, playerId, targetPlayerId, helpers);
+
     default:
       return null;
   }
+}
+
+/** Execute Swap Hands - swap entire hand with a target player's hand */
+export function executeSwapHands(
+  state: CriticalState,
+  playerId: string,
+  targetPlayerId: string,
+  helpers: EngineHelpers,
+): GameActionResult<CriticalState> {
+  const player = helpers.findPlayer(state, playerId);
+  const target = helpers.findPlayer(state, targetPlayerId);
+  if (!player || !target || !target.alive) {
+    return { success: false, error: 'Invalid target' };
+  }
+  // Swap hands (card already removed from hand by dispatcher's playCard())
+  const playerHand = [...player.hand];
+  player.hand = [...target.hand];
+  target.hand = playerHand;
+  state.pendingAction = {
+    type: 'swap_hands',
+    playerId,
+    payload: { targetPlayerId },
+    nopeCount: 0,
+  };
+  helpers.addLog(
+    state,
+    helpers.createLogEntry('action', 'Played Swap Hands!', {
+      scope: 'all',
+      senderId: playerId,
+    }),
+  );
+  return { success: true, state };
 }
 
 /**

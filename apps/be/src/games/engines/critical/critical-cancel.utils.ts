@@ -198,6 +198,27 @@ export function executeCancel(
         }
         break;
       }
+      case 'snatch': {
+        // Return stolen card from initiator's hand back to target's hand
+        const snatchPayload = state.pendingAction.payload as {
+          targetPlayerId: string;
+          requestedCard: string;
+        };
+        const snatchInitiator = state.players.find(
+          (p) => p.playerId === state.pendingAction!.playerId,
+        );
+        const snatchTarget = state.players.find(
+          (p) => p.playerId === snatchPayload.targetPlayerId,
+        );
+        if (snatchInitiator && snatchTarget) {
+          const cardIdx = snatchInitiator.hand.indexOf(snatchPayload.requestedCard as CriticalCard);
+          if (cardIdx > -1) {
+            snatchInitiator.hand.splice(cardIdx, 1);
+            snatchTarget.hand.push(snatchPayload.requestedCard as CriticalCard);
+          }
+        }
+        break;
+      }
     }
   } else {
     // Un-cancel the action - re-apply effects
@@ -338,6 +359,27 @@ export function executeCancel(
         if (swapInitiator && swapTarget) {
           swapInitiator.hand = swapPayload.originalTargetHand as CriticalCard[];
           swapTarget.hand = swapPayload.originalPlayerHand as CriticalCard[];
+        }
+        break;
+      }
+      case 'snatch': {
+        // Re-steal: move card from target back to initiator
+        const snatchPayload = state.pendingAction.payload as {
+          targetPlayerId: string;
+          requestedCard: string;
+        };
+        const snatchInitiator = state.players.find(
+          (p) => p.playerId === state.pendingAction!.playerId,
+        );
+        const snatchTarget = state.players.find(
+          (p) => p.playerId === snatchPayload.targetPlayerId,
+        );
+        if (snatchInitiator && snatchTarget) {
+          const cardIdx = snatchTarget.hand.indexOf(snatchPayload.requestedCard as CriticalCard);
+          if (cardIdx > -1) {
+            snatchTarget.hand.splice(cardIdx, 1);
+            snatchInitiator.hand.push(snatchPayload.requestedCard as CriticalCard);
+          }
         }
         break;
       }

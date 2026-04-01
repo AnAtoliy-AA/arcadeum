@@ -1,6 +1,7 @@
 import { CriticalState, CriticalPlayerState } from '../../critical/critical.state';
 import { EngineHelpers } from './critical-theft.utils';
 import { executeSwapHands } from './critical-theft.utils';
+import { executeSnatch } from './critical-theft-snatch.utils';
 import { validateCriticalAction } from './critical-validation.utils';
 
 function makePlayer(
@@ -121,6 +122,69 @@ describe('executeSwapHands', () => {
 
     expect(stateA.hand).toEqual(['evade', 'strike']);
     expect(stateB.hand).toEqual([]);
+  });
+});
+
+describe('executeSnatch', () => {
+  it('steals correct card — moves requested card from target to player', () => {
+    const playerA = makePlayer('playerA', ['mark', 'steal_draw']);
+    const playerB = makePlayer('playerB', ['evade', 'strike', 'reorder']);
+    const state = makeState([playerA, playerB]);
+
+    const result = executeSnatch(state, 'playerA', 'playerB', 'evade', helpers);
+
+    expect(result.success).toBe(true);
+
+    const stateA = state.players.find((p) => p.playerId === 'playerA')!;
+    const stateB = state.players.find((p) => p.playerId === 'playerB')!;
+
+    expect(stateA.hand).toContain('evade');
+    expect(stateB.hand).not.toContain('evade');
+    expect(stateB.hand).toEqual(['strike', 'reorder']);
+
+    expect(state.pendingAction).toMatchObject({
+      type: 'snatch',
+      playerId: 'playerA',
+      payload: { targetPlayerId: 'playerB', requestedCard: 'evade' },
+      nopeCount: 0,
+    });
+  });
+
+  it('fails if target lacks the requested card', () => {
+    const playerA = makePlayer('playerA', ['mark']);
+    const playerB = makePlayer('playerB', ['strike', 'reorder']);
+    const state = makeState([playerA, playerB]);
+
+    const result = executeSnatch(state, 'playerA', 'playerB', 'evade', helpers);
+
+    expect(result.success).toBe(false);
+  });
+
+  it('fails if no requestedCard provided', () => {
+    const playerA = makePlayer('playerA', ['mark']);
+    const playerB = makePlayer('playerB', ['evade', 'strike']);
+    const state = makeState([playerA, playerB]);
+
+    // Pass undefined cast as CriticalCard to simulate missing payload
+    const result = executeSnatch(
+      state,
+      'playerA',
+      'playerB',
+      undefined as unknown as import('../../critical/critical.state').CriticalCard,
+      helpers,
+    );
+
+    expect(result.success).toBe(false);
+  });
+
+  it('fails if target is dead', () => {
+    const playerA = makePlayer('playerA', ['mark']);
+    const playerB = makePlayer('playerB', ['evade', 'strike'], false);
+    const state = makeState([playerA, playerB]);
+
+    const result = executeSnatch(state, 'playerA', 'playerB', 'evade', helpers);
+
+    expect(result.success).toBe(false);
   });
 });
 

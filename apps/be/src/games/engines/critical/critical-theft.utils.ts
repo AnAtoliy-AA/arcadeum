@@ -4,6 +4,8 @@ import {
   CriticalPlayerState,
   COLLECTION_CARDS,
 } from '../../critical/critical.state';
+export { executeSnatch } from './critical-theft-snatch.utils';
+import { executeSnatch } from './critical-theft-snatch.utils';
 import {
   GameActionResult,
   GameLogEntry,
@@ -105,6 +107,14 @@ export function dispatchTheftPackAction(
       }
       playCard();
       return executeSwapHands(state, playerId, targetPlayerId, helpers);
+
+    case 'snatch': {
+      if (!targetPlayerId) return { success: false, error: 'Target required' };
+      const snatchPayload = payload as { requestedCard?: CriticalCard } | undefined;
+      if (!snatchPayload?.requestedCard) return { success: false, error: 'requestedCard required' };
+      playCard();
+      return executeSnatch(state, playerId, targetPlayerId, snatchPayload.requestedCard, helpers);
+    }
 
     default:
       return null;
@@ -456,54 +466,4 @@ export function executeUnstash(
   return { success: true, state };
 }
 
-/**
- * Check and handle marked card when a card is played or discarded
- * Call this when cards are removed from a player's hand
- */
-export function checkAndHandleMarkedCard(
-  state: CriticalState,
-  playerId: string,
-  cardIndex: number,
-  card: CriticalCard,
-  helpers: EngineHelpers,
-): void {
-  const player = helpers.findPlayer(state, playerId);
-  if (!player?.markedCards || player.markedCards.length === 0) {
-    return;
-  }
-
-  // Find if this card index was marked
-  const markInfo = player.markedCards.find((m) => m.cardIndex === cardIndex);
-  if (!markInfo) {
-    return;
-  }
-
-  // Remove the mark
-  player.markedCards = player.markedCards.filter(
-    (m) => m.cardIndex !== cardIndex,
-  );
-
-  // Give the card to the marker
-  const marker = helpers.findPlayer(state, markInfo.markedBy);
-  if (marker && marker.alive) {
-    marker.hand.push(card);
-
-    helpers.addLog(
-      state,
-      helpers.createLogEntry(
-        'action',
-        `Marked card triggered! Card stolen! 🏷️`,
-        {
-          scope: 'all',
-          senderId: markInfo.markedBy,
-        },
-      ),
-    );
-  }
-
-  // Update remaining mark indices (cards after the removed one shift down)
-  player.markedCards = player.markedCards.map((m) => ({
-    ...m,
-    cardIndex: m.cardIndex > cardIndex ? m.cardIndex - 1 : m.cardIndex,
-  }));
-}
+export { checkAndHandleMarkedCard } from './critical-theft-mark-check.utils';

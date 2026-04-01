@@ -236,18 +236,18 @@ describe('CriticalEngine', () => {
       expect(state.deck.length).toBe(44);
     });
 
-    it('should have 56 cards for 2 players with Theft Pack (+12 cards)', () => {
+    it('should have 61 cards for 2 players with Theft Pack (+17 cards)', () => {
       const state = engine.initializeState(['p1', 'p2'], {
         expansions: ['theft'],
       });
-      expect(state.deck.length).toBe(56);
+      expect(state.deck.length).toBe(61);
     });
 
-    it('should have 57 cards for 2 players with Attack Pack (+13 cards)', () => {
+    it('should have 62 cards for 2 players with Attack Pack (+18 cards)', () => {
       const state = engine.initializeState(['p1', 'p2'], {
         expansions: ['attack'],
       });
-      expect(state.deck.length).toBe(57);
+      expect(state.deck.length).toBe(62);
     });
 
     it('should have 69 cards for 2 players with Future Pack (+25 cards)', () => {
@@ -257,11 +257,11 @@ describe('CriticalEngine', () => {
       expect(state.deck.length).toBe(69);
     });
 
-    it('should have 94 cards for 2 players with all expansions (+50 cards)', () => {
+    it('should have 104 cards for 2 players with all expansions (+60 cards)', () => {
       const state = engine.initializeState(['p1', 'p2'], {
         expansions: ['theft', 'attack', 'future'],
       });
-      expect(state.deck.length).toBe(94);
+      expect(state.deck.length).toBe(104);
     });
 
     it('should respect custom card counts', () => {
@@ -271,8 +271,8 @@ describe('CriticalEngine', () => {
           wildcard: 10, // +6 from default 4
         },
       });
-      // 56 (default theft) + 6 extra wildcards = 62
-      expect(state.deck.length).toBe(62);
+      // 61 (default theft with new cards) + 6 extra wildcards = 67
+      expect(state.deck.length).toBe(67);
     });
   });
 

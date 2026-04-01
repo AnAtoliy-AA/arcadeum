@@ -7,6 +7,7 @@ import {
 } from '../base/game-engine.interface';
 import {
   CriticalState,
+  CriticalCard,
   CriticalPlayerState,
   CriticalExpansion,
   CustomCardConfig,
@@ -107,10 +108,8 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
     const typedPayload = payload as CriticalPayload | undefined;
 
     // Use arrow functions instead of bind() to preserve type safety
-    // helpers is declared with let so dispatchCard can reference it via closure
-    // eslint-disable-next-line prefer-const
-    let helpers: Parameters<typeof dispatchChaosPackAction>[4];
-    helpers = {
+    // dispatchCard references helpers via closure (valid since it's called after initialization)
+    const helpers: Parameters<typeof dispatchChaosPackAction>[4] = {
       addLog: (
         state: CriticalState,
         log: ReturnType<typeof this.createLogEntry>,
@@ -129,9 +128,28 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
         targetPlayerId?: string,
       ) =>
         dispatchFuturePackAction(state, playerId, card, helpers) ??
-        dispatchTheftPackAction(state, playerId, card, targetPlayerId, helpers, {}) ??
-        dispatchChaosPackAction(state, playerId, card, targetPlayerId, helpers) ??
-        dispatchDeityPackAction(state, playerId, card, targetPlayerId, helpers) ??
+        dispatchTheftPackAction(
+          state,
+          playerId,
+          card,
+          targetPlayerId,
+          helpers,
+          {},
+        ) ??
+        dispatchChaosPackAction(
+          state,
+          playerId,
+          card,
+          targetPlayerId,
+          helpers,
+        ) ??
+        dispatchDeityPackAction(
+          state,
+          playerId,
+          card,
+          targetPlayerId,
+          helpers,
+        ) ??
         null,
     };
 

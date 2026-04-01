@@ -61,15 +61,27 @@ export type CriticalPayload = PlayCardPayload &
 export const FIVER_COMBO_SIZE = 5;
 
 /** Strike-type actions that shield_bash can block */
-const STRIKE_TYPES = ['strike', 'targeted_strike', 'private_strike', 'recursive_strike', 'chain_strike'] as const;
+const STRIKE_TYPES = [
+  'strike',
+  'targeted_strike',
+  'private_strike',
+  'recursive_strike',
+  'chain_strike',
+] as const;
 
 /** Returns true if the pending strike action targets the given player */
-export function isStrikeTargetingPlayer(state: CriticalState, player: CriticalPlayerState): boolean {
+export function isStrikeTargetingPlayer(
+  state: CriticalState,
+  player: CriticalPlayerState,
+): boolean {
   if (!state.pendingAction) return false;
-  if (!(STRIKE_TYPES as readonly string[]).includes(state.pendingAction.type)) return false;
+  if (!(STRIKE_TYPES as readonly string[]).includes(state.pendingAction.type))
+    return false;
   const p = state.pendingAction.payload as Record<string, unknown> | undefined;
   const isTargeted = p?.targetPlayerId === player.playerId;
-  const isUntargetedAndActive = !p?.targetPlayerId && state.playerOrder[state.currentTurnIndex] === player.playerId;
+  const isUntargetedAndActive =
+    !p?.targetPlayerId &&
+    state.playerOrder[state.currentTurnIndex] === player.playerId;
   return isTargeted || isUntargetedAndActive;
 }
 
@@ -248,7 +260,9 @@ export function validateCriticalAction(
 
   // shield_bash can be played by ANY alive player when there's a pending strike targeting them
   if (action === 'shield_bash') {
-    return isStrikeTargetingPlayer(state, player) && hasCard(player, 'shield_bash');
+    return (
+      isStrikeTargetingPlayer(state, player) && hasCard(player, 'shield_bash')
+    );
   }
 
   // Exception: play_card with 'cancel' acts like play_cancel
@@ -422,6 +436,14 @@ export function validateCriticalAction(
 
     case 'echo':
       return hasCard(player, 'echo') && state.pendingDraws > 0;
+
+    // Deity Pack
+    case 'resurrection':
+      return (
+        hasCard(player, 'resurrection') &&
+        state.pendingDraws > 0 &&
+        state.eliminatedPlayers.length > 0
+      );
 
     // Future Pack
     case 'commit_alter_future':

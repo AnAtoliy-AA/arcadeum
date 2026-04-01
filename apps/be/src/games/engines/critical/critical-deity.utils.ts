@@ -40,6 +40,9 @@ export function dispatchDeityPackAction(
     case 'rapture':
       playCard();
       return executeRapture(state, playerId, helpers);
+    case 'resurrection':
+      playCard();
+      return executeResurrection(state, playerId, helpers);
     default:
       return null;
   }
@@ -172,6 +175,58 @@ export function executeSmite(
         scope: 'all',
         senderId: playerId,
       },
+    ),
+  );
+
+  return { success: true, state };
+}
+
+/**
+ * Resurrection: Revive the most recently eliminated player.
+ * Restores alive = true, removes from eliminatedPlayers, gives 3 cards from deck bottom.
+ */
+export function executeResurrection(
+  state: CriticalState,
+  playerId: string,
+  helpers: EngineHelpers,
+): GameActionResult<CriticalState> {
+  const player = helpers.findPlayer(state, playerId);
+  if (!player) return { success: false, error: 'Player not found' };
+
+  if (!state.eliminatedPlayers || state.eliminatedPlayers.length === 0) {
+    return { success: false, error: 'No eliminated players to resurrect' };
+  }
+
+  // Get the most recently eliminated player (last entry)
+  const targetId = state.eliminatedPlayers[state.eliminatedPlayers.length - 1];
+  const target = helpers.findPlayer(state, targetId);
+  if (!target) return { success: false, error: 'Eliminated player not found' };
+
+  // Revive the player
+  target.alive = true;
+
+  // Remove from eliminatedPlayers
+  state.eliminatedPlayers = state.eliminatedPlayers.filter(
+    (id) => id !== targetId,
+  );
+
+  // Give 3 cards from bottom of deck
+  const cardsFromBottom = state.deck.splice(-3);
+  target.hand.push(...cardsFromBottom);
+
+  state.pendingAction = {
+    type: 'resurrection',
+    playerId,
+    payload: { targetPlayerId: targetId },
+    nopeCount: 0,
+  };
+
+  helpers.addLog(
+    state,
+    helpers.createLogEntry(
+      'action',
+      `Played Resurrection! ${targetId} is revived with 3 cards!`,
+      { scope: 'all', senderId: playerId },
     ),
   );
 

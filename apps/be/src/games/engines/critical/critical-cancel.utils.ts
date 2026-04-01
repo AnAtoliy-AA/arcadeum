@@ -222,11 +222,31 @@ export function executeCancel(
           (p) => p.playerId === snatchPayload.targetPlayerId,
         );
         if (snatchInitiator && snatchTarget) {
-          const cardIdx = snatchInitiator.hand.indexOf(snatchPayload.requestedCard as CriticalCard);
+          const cardIdx = snatchInitiator.hand.indexOf(
+            snatchPayload.requestedCard as CriticalCard,
+          );
           if (cardIdx > -1) {
             snatchInitiator.hand.splice(cardIdx, 1);
             snatchTarget.hand.push(snatchPayload.requestedCard as CriticalCard);
           }
+        }
+        break;
+      }
+      case 'resurrection': {
+        // Resurrection revived a player and gave them 3 cards - reverse it
+        const p = state.pendingAction.payload as { targetPlayerId: string };
+        const resurrectTarget = state.players.find(
+          (pl) => pl.playerId === p.targetPlayerId,
+        );
+        if (resurrectTarget) {
+          resurrectTarget.alive = false;
+          if (!state.eliminatedPlayers) state.eliminatedPlayers = [];
+          if (!state.eliminatedPlayers.includes(p.targetPlayerId)) {
+            state.eliminatedPlayers.push(p.targetPlayerId);
+          }
+          // Remove the 3 given cards (last 3 in hand) back to bottom of deck
+          const givenCards = resurrectTarget.hand.splice(-3);
+          state.deck.push(...givenCards);
         }
         break;
       }
@@ -387,7 +407,7 @@ export function executeCancel(
           hand: [...s.hand],
         }));
         for (let i = 0; i < scrambleN; i++) {
-          const sourceIndex = ((i - scrambleDir) + scrambleN) % scrambleN;
+          const sourceIndex = (i - scrambleDir + scrambleN) % scrambleN;
           const pl = state.players.find(
             (p) => p.playerId === scramblePayload.handSnapshots[i].playerId,
           );
@@ -408,11 +428,31 @@ export function executeCancel(
           (p) => p.playerId === snatchPayload.targetPlayerId,
         );
         if (snatchInitiator && snatchTarget) {
-          const cardIdx = snatchTarget.hand.indexOf(snatchPayload.requestedCard as CriticalCard);
+          const cardIdx = snatchTarget.hand.indexOf(
+            snatchPayload.requestedCard as CriticalCard,
+          );
           if (cardIdx > -1) {
             snatchTarget.hand.splice(cardIdx, 1);
-            snatchInitiator.hand.push(snatchPayload.requestedCard as CriticalCard);
+            snatchInitiator.hand.push(
+              snatchPayload.requestedCard as CriticalCard,
+            );
           }
+        }
+        break;
+      }
+      case 'resurrection': {
+        // Re-resurrect: revive again and give 3 more cards from deck bottom
+        const p = state.pendingAction.payload as { targetPlayerId: string };
+        const resurrectTarget = state.players.find(
+          (pl) => pl.playerId === p.targetPlayerId,
+        );
+        if (resurrectTarget) {
+          resurrectTarget.alive = true;
+          state.eliminatedPlayers = (state.eliminatedPlayers || []).filter(
+            (id) => id !== p.targetPlayerId,
+          );
+          const cardsFromBottom = state.deck.splice(-3);
+          resurrectTarget.hand.push(...cardsFromBottom);
         }
         break;
       }

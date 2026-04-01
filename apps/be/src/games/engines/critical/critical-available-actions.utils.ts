@@ -1,7 +1,4 @@
-import {
-  CriticalState,
-  CriticalPlayerState,
-} from '../../critical/critical.state';
+import { CriticalState } from '../../critical/critical.state';
 import {
   hasCard,
   canPlayCollectionCombo,
@@ -27,7 +24,10 @@ export function getAvailableActionsForPlayer(
   if (state.pendingAction && hasCard(player, 'cancel')) {
     actions.push('play_cancel');
   }
-  if (hasCard(player, 'shield_bash') && isStrikeTargetingPlayer(state, player)) {
+  if (
+    hasCard(player, 'shield_bash') &&
+    isStrikeTargetingPlayer(state, player)
+  ) {
     actions.push('shield_bash');
   }
 
@@ -42,6 +42,9 @@ export function getAvailableActionsForPlayer(
 
   if (state.pendingDraws > 0) {
     actions.push('draw_card');
+    // Deity Pack: resurrection can be played instead of drawing
+    if (hasCard(player, 'resurrection') && state.eliminatedPlayers.length > 0)
+      actions.push('play_card:resurrection');
   } else {
     // Standard cards
     if (hasCard(player, 'strike')) actions.push('play_card:strike');

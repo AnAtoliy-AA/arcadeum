@@ -37,7 +37,7 @@ export interface EngineHelpers {
 }
 
 /** Cards that cannot be re-executed via echo */
-const ECHO_FORBIDDEN = ['echo', 'critical_event', 'neutralizer'] as const;
+const ECHO_FORBIDDEN = ['echo', 'critical_event', 'critical_implosion', 'neutralizer'] as const;
 type EchoForbiddenCard = (typeof ECHO_FORBIDDEN)[number];
 
 /**

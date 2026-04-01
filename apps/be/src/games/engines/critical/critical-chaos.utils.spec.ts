@@ -1,6 +1,6 @@
 import { CriticalState, CriticalPlayerState } from '../../critical/critical.state';
 import { GameActionResult } from '../base/game-engine.interface';
-import { executeScramble, executeEcho, EngineHelpers } from './critical-chaos.utils';
+import { executeScramble, executeEcho, EngineHelpers, dispatchChaosPackAction } from './critical-chaos.utils';
 
 function makeState(
   players: { id: string; hand: string[]; alive?: boolean }[],
@@ -177,10 +177,47 @@ describe('executeEcho', () => {
     expect(result.success).toBe(false);
   });
 
+  it('rejects critical_implosion', () => {
+    const state = makeState([{ id: 'A', hand: ['echo'] }]);
+    const result = executeEcho(state, 'A', 'critical_implosion' as import('../../critical/critical.state').CriticalCard, makeHelpers());
+    expect(result.success).toBe(false);
+  });
+
   it('returns failure when dispatchCard helper is not provided', () => {
     const state = makeState([{ id: 'A', hand: ['echo'] }]);
     // No dispatchCard in helpers
     const result = executeEcho(state, 'A', 'strike' as import('../../critical/critical.state').CriticalCard, makeHelpers());
     expect(result.success).toBe(false);
+  });
+});
+
+describe('dispatchChaosPackAction with echo', () => {
+  it('dispatchChaosPackAction echoes the top discard card (not echo itself)', () => {
+    const state = makeState([
+      { id: 'playerA', hand: ['echo'] },
+      { id: 'playerB', hand: ['evade'] },
+    ]);
+    state.discardPile = ['strike'] as import('../../critical/critical.state').CriticalCard[];
+    state.pendingDraws = 1;
+
+    // dispatchCard mock: just return a recognizable result
+    const dispatchCardMock = jest.fn(
+      (_state: CriticalState, _playerId: string, card: import('../../critical/critical.state').CriticalCard) => {
+        return {
+          success: true as const,
+          state: {
+            ..._state,
+            pendingAction: { type: card, playerId: _playerId, payload: {}, nopeCount: 0 },
+          },
+        };
+      },
+    );
+
+    const helpers = makeHelpers({ dispatchCard: dispatchCardMock });
+    const result = dispatchChaosPackAction(state, 'playerA', 'echo', undefined, helpers) as GameActionResult<CriticalState>;
+
+    expect(result.success).toBe(true);
+    // The dispatchCard was called with 'strike' (not 'echo'), proving pre-snapshot ordering
+    expect(dispatchCardMock).toHaveBeenCalledWith(expect.anything(), 'playerA', 'strike', undefined);
   });
 });

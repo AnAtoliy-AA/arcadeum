@@ -96,7 +96,7 @@ test.describe('Sea Battle Single Player Mode', () => {
           responseEvent: 'games.session.started',
           responseData: {
             session: {
-              id: 'session-1',
+              id: '507f191e810c19729de860f1',
               status: 'active',
               state: mockPlacementState,
             },
@@ -107,7 +107,7 @@ test.describe('Sea Battle Single Player Mode', () => {
           responseData: {
             roomId,
             session: {
-              id: 'session-1',
+              id: '507f191e810c19729de860f1',
               status: 'active',
               state: {
                 ...mockPlacementState,
@@ -147,7 +147,7 @@ test.describe('Sea Battle Single Player Mode', () => {
           responseData: {
             roomId,
             session: {
-              id: 'session-1',
+              id: '507f191e810c19729de860f1',
               status: 'active',
               state: mockBattleState,
             },
@@ -275,7 +275,7 @@ test.describe('Sea Battle Single Player Mode', () => {
           responseData: {
             roomId: roomId,
             session: {
-              id: 'session-1',
+              id: '507f191e810c19729de860f1',
               status: 'active',
               state: {
                 ...mockBattleState,

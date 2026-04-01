@@ -44,15 +44,25 @@ test.describe('Critical Card Visibility', () => {
         id: roomId,
         status: 'active',
         hostId: userId,
-        members: [{ id: userId, userId, displayName: 'Test User', isHost: true }],
+        members: [
+          { id: userId, userId, displayName: 'Test User', isHost: true },
+        ],
       },
-      session: { id: 'session-1', status: 'active', state: mockState },
+      session: {
+        id: '507f191e810c19729de860f1',
+        status: 'active',
+        state: mockState,
+      },
     });
 
     await mockGameSocket(page, roomId, userId, {
       roomJoinedPayload: {
         status: 'active',
-        session: { id: 'session-1', status: 'active', state: mockState },
+        session: {
+          id: '507f191e810c19729de860f1',
+          status: 'active',
+          state: mockState,
+        },
       },
     });
 
@@ -72,7 +82,7 @@ test.describe('Critical Card Visibility', () => {
     const containerBg = await cardName.locator('..').evaluate((el) => {
       return window.getComputedStyle(el).backgroundColor;
     });
-    
+
     expect(containerBg).toContain('rgba(0, 0, 0');
   });
 });

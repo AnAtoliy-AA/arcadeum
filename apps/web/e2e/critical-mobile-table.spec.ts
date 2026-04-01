@@ -98,13 +98,21 @@ test.describe('Critical Game Table Mobile Layout', () => {
           },
         ],
       },
-      session: { id: 'session-1', status: 'active', state: mockState },
+      session: {
+        id: '507f191e810c19729de860f1',
+        status: 'active',
+        state: mockState,
+      },
     });
 
     await mockGameSocket(page, roomId, userId, {
       roomJoinedPayload: {
         status: 'active',
-        session: { id: 'session-1', status: 'active', state: mockState },
+        session: {
+          id: '507f191e810c19729de860f1',
+          status: 'active',
+          state: mockState,
+        },
       },
     });
 
@@ -221,13 +229,21 @@ test.describe('Critical Game Table Mobile Layout', () => {
           },
         ],
       },
-      session: { id: 'session-1', status: 'active', state: mockState },
+      session: {
+        id: '507f191e810c19729de860f1',
+        status: 'active',
+        state: mockState,
+      },
     });
 
     await mockGameSocket(page, roomId, userId, {
       roomJoinedPayload: {
         status: 'active',
-        session: { id: 'session-1', status: 'active', state: mockState },
+        session: {
+          id: '507f191e810c19729de860f1',
+          status: 'active',
+          state: mockState,
+        },
       },
     });
 

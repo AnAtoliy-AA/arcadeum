@@ -2,7 +2,9 @@
 
 import { useCallback, useState, useEffect, RefObject } from 'react';
 import { useRouter } from 'next/navigation';
+import { Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTimedTrue } from '@/shared/hooks/useTimedTrue';
 import { gameSocket } from '@/shared/lib/socket';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
@@ -41,10 +43,11 @@ export function GamesControlPanel({
   onToggleChat,
 }: GamesControlPanelProps) {
   const router = useRouter();
+
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
+  const [isCopied, setIsCopied] = useTimedTrue(2000);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
   const handleFullscreenToggle = useCallback(async () => {
@@ -106,42 +109,72 @@ export function GamesControlPanel({
     const url = `${origin}/games/rooms/${roomId}${inviteCode ? `?inviteCode=${inviteCode}` : ''}`;
     try {
       await navigator.clipboard.writeText(url);
-      setIsCopied(true);
+      setIsCopied();
     } catch {}
   };
 
   return (
     <XStack
       className={className}
+      data-testid="games-control-panel"
       alignItems="center"
+      justifyContent="flex-start"
       gap="$4"
+      flexWrap="wrap"
       paddingVertical="$3"
       paddingHorizontal="$6"
-      backgroundColor="rgba(15,23,42,0.95)"
-      borderRadius={14}
+      backgroundColor="$glassBg"
+      borderRadius={16}
       borderWidth={1}
-      borderColor="rgba(99,102,241,0.2)"
+      borderColor="$glassBorder"
       position="relative"
       zIndex={50}
+      $sm={{
+        justifyContent: 'center',
+        gap: '$2',
+        paddingVertical: '$2',
+        paddingHorizontal: '$4',
+      }}
     >
       <Button
         variant="glass"
         size="sm"
+        data-testid="fullscreen-button"
         onClick={handleFullscreenToggle}
+        aria-label={
+          isFullscreen
+            ? t('games.table.controlPanel.exitFullscreen')
+            : t('games.table.controlPanel.enterFullscreen')
+        }
         title={
           isFullscreen
             ? t('games.table.controlPanel.exitFullscreen')
             : t('games.table.controlPanel.enterFullscreen')
         }
       >
-        {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}{' '}
-        {t('games.table.controlPanel.fullscreen')}
+        {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
+        <Text $sm={{ display: 'none' }}>
+          {' ' + t('games.table.controlPanel.fullscreen')}
+        </Text>
       </Button>
 
       {onToggleChat && (
-        <Button variant="glass" size="sm" onPress={onToggleChat}>
-          💬{' '}
-          {showChat ? t('games.table.chat.hide') : t('games.table.chat.show')}
+        <Button
+          variant="glass"
+          size="sm"
+          onPress={onToggleChat}
+          data-testid="toggle-chat-button"
+          aria-label={
+            showChat ? t('games.table.chat.hide') : t('games.table.chat.show')
+          }
+        >
+          💬
+          <Text $sm={{ display: 'none' }}>
+            {' ' +
+              (showChat
+                ? t('games.table.chat.hide')
+                : t('games.table.chat.show'))}
+          </Text>
         </Button>
       )}
 
@@ -150,60 +183,74 @@ export function GamesControlPanel({
           gap="$1"
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius={6}
+          borderRadius={8}
           padding="$1"
+          scale={1}
+          $sm={{ scale: 0.9 }}
+          data-testid="move-controls"
         >
           <Button
             variant="glass"
             size="sm"
-            p="$2"
-            minWidth="auto"
+            p="$1"
+            minWidth={32}
             onClick={() => handleMove('up')}
             title={t('games.table.controlPanel.moveControls.shortcuts.up')}
+            data-testid="move-up-button"
           >
             ↑
           </Button>
           <YStack gap="$1">
-            <Button
-              variant="glass"
-              size="sm"
-              p="$2"
-              minWidth="auto"
-              onClick={() => handleMove('left')}
-              title={t('games.table.controlPanel.moveControls.shortcuts.left')}
-            >
-              ←
-            </Button>
-            <Button
-              variant="glass"
-              size="sm"
-              p="$2"
-              minWidth="auto"
-              onClick={() => handleCenterView()}
-              title={t(
-                'games.table.controlPanel.moveControls.shortcuts.center',
-              )}
-            >
-              ⚡
-            </Button>
-            <Button
-              variant="glass"
-              size="sm"
-              p="$2"
-              minWidth="auto"
-              onClick={() => handleMove('right')}
-              title={t('games.table.controlPanel.moveControls.shortcuts.right')}
-            >
-              →
-            </Button>
+            <XStack gap="$1">
+              <Button
+                variant="glass"
+                size="sm"
+                p="$1"
+                minWidth={32}
+                onClick={() => handleMove('left')}
+                title={t(
+                  'games.table.controlPanel.moveControls.shortcuts.left',
+                )}
+                data-testid="move-left-button"
+              >
+                ←
+              </Button>
+              <Button
+                variant="glass"
+                size="sm"
+                p="$1"
+                minWidth={32}
+                onClick={() => handleCenterView()}
+                title={t(
+                  'games.table.controlPanel.moveControls.shortcuts.center',
+                )}
+                data-testid="center-view-button"
+              >
+                ⚡
+              </Button>
+              <Button
+                variant="glass"
+                size="sm"
+                p="$1"
+                minWidth={32}
+                onClick={() => handleMove('right')}
+                title={t(
+                  'games.table.controlPanel.moveControls.shortcuts.right',
+                )}
+                data-testid="move-right-button"
+              >
+                →
+              </Button>
+            </XStack>
           </YStack>
           <Button
             variant="glass"
             size="sm"
-            p="$2"
-            minWidth="auto"
+            p="$1"
+            minWidth={32}
             onClick={() => handleMove('down')}
             title={t('games.table.controlPanel.moveControls.shortcuts.down')}
+            data-testid="move-down-button"
           >
             ↓
           </Button>
@@ -214,23 +261,38 @@ export function GamesControlPanel({
         variant="glass"
         size="sm"
         onClick={handleCopyInviteLink}
+        aria-label={
+          isCopied
+            ? t('games.common.copyInviteLinkCopied')
+            : t('games.common.copyInviteLinkButton')
+        }
         title={t('games.common.copyInviteLink') || 'Share Game Link'}
+        data-testid="copy-invite-button"
       >
-        {isCopied
-          ? '✅ ' + t('games.common.copyInviteLinkCopied')
-          : '🔗 ' + t('games.common.copyInviteLinkButton')}
+        {isCopied ? '✅' : '🔗'}
+        <Text $sm={{ display: 'none' }}>
+          {' ' +
+            (isCopied
+              ? t('games.common.copyInviteLinkCopied')
+              : t('games.common.copyInviteLinkButton'))}
+        </Text>
       </Button>
 
       <Button
         variant="glass"
         size="sm"
         onClick={handleExitRoom}
+        aria-label={t('games.table.controlPanel.exitRoom') || 'Exit'}
         title={
           t('games.table.controlPanel.exitRoomTooltip') ||
           'Go back to lobby but stay in the game'
         }
+        data-testid="exit-room-button"
       >
-        🏃 {t('games.table.controlPanel.exitRoom') || 'Exit'}
+        🏃
+        <Text $sm={{ display: 'none' }}>
+          {' ' + (t('games.table.controlPanel.exitRoom') || 'Exit')}
+        </Text>
       </Button>
 
       {snapshot.userId && (
@@ -238,12 +300,17 @@ export function GamesControlPanel({
           variant="danger"
           size="sm"
           onClick={handleLeaveGame}
+          aria-label={t('games.table.controlPanel.leaveRoom')}
           title={
             t('games.table.controlPanel.leaveGameTooltip') ||
             'Remove yourself from the game and return to lobby'
           }
+          data-testid="leave-game-button"
         >
-          🚪 {t('games.table.controlPanel.leaveRoom')}
+          🚪
+          <Text $sm={{ display: 'none' }}>
+            {' ' + t('games.table.controlPanel.leaveRoom')}
+          </Text>
         </Button>
       )}
 
@@ -253,21 +320,25 @@ export function GamesControlPanel({
             <ModalTitle>{t('games.table.controlPanel.leaveRoom')}</ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <p>
-              {t('games.table.controlPanel.leaveConfirmMessage') ||
-                'Are you sure you want to leave the game? You will be removed from the participants list.'}
-            </p>
+            <YStack padding="$4">
+              <p>
+                {t('games.table.controlPanel.leaveConfirmMessage') ||
+                  'Are you sure you want to leave the game? You will be removed from the participants list.'}
+              </p>
+            </YStack>
           </ModalBody>
           <ModalFooter>
-            <Button
-              variant="secondary"
-              onClick={() => setShowLeaveConfirm(false)}
-            >
-              {t('games.common.cancel') || 'Cancel'}
-            </Button>
-            <Button variant="danger" onClick={handleConfirmLeave}>
-              {t('games.table.controlPanel.leaveRoom')}
-            </Button>
+            <XStack gap="$3" justifyContent="flex-end">
+              <Button
+                variant="secondary"
+                onClick={() => setShowLeaveConfirm(false)}
+              >
+                {t('games.common.cancel') || 'Cancel'}
+              </Button>
+              <Button variant="danger" onClick={handleConfirmLeave}>
+                {t('games.table.controlPanel.leaveRoom')}
+              </Button>
+            </XStack>
           </ModalFooter>
         </ModalContent>
       </Modal>

@@ -23,9 +23,9 @@ test.describe('Game Room Detail', () => {
           body: JSON.stringify({
             rooms: [
               {
-                id: 'room-1',
+                id: '507f191e810c19729de860ed',
                 name: 'Mock Room',
-                gameId: 'sample-game-id',
+                gameId: 'critical_v1',
                 status: 'lobby',
                 playerCount: 1,
                 maxPlayers: 4,
@@ -44,7 +44,7 @@ test.describe('Game Room Detail', () => {
 
   test('should load game detail page', async ({ page }) => {
     // Navigate to a sample game ID
-    await navigateTo(page, '/games/sample-game-id');
+    await navigateTo(page, '/games/critical_v1');
 
     // Check for page title or header
     await expect(page.locator('h1, h2')).toContainText(/game rooms/i);
@@ -56,7 +56,7 @@ test.describe('Game Room Detail', () => {
     await expect(createRoomBtn).toBeVisible();
     await expect(createRoomBtn).toHaveAttribute(
       'href',
-      /\/games\/create\?gameId=sample-game-id/,
+      /\/games\/create\?gameId=critical_v1/,
     );
   });
 
@@ -69,11 +69,11 @@ test.describe('Game Room Detail', () => {
   });
 
   test('should navigate to create room page', async ({ page }) => {
-    await navigateTo(page, '/games/sample-game-id');
+    await navigateTo(page, '/games/critical_v1');
     const createRoomBtn = page.getByRole('link', { name: /create room/i });
     await createRoomBtn.click();
 
     await expect(page).toHaveURL(/\/games\/create/);
-    await expect(page).toHaveURL(/\?gameId=sample-game-id/);
+    await expect(page).toHaveURL(/\?gameId=critical_v1/);
   });
 });

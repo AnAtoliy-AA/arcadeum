@@ -58,9 +58,11 @@ test.describe('Games List Page', () => {
     const filters = page
       .locator('button')
       .filter({ hasText: /all|lobby|active|finished|все|все|всего/i });
-    if ((await filters.count()) > 0) {
+
+    await expect(async () => {
+      expect(await filters.count()).toBeGreaterThan(0);
       await expect(filters.first()).toBeVisible();
-    }
+    }).toPass({ timeout: 15000 });
   });
 
   test('should handle navigation to create room', async ({ page }) => {
@@ -108,7 +110,7 @@ test.describe('Games List Page', () => {
         body: JSON.stringify({
           rooms: [
             {
-              id: 'room-1',
+              id: '507f191e810c19729de860ee',
               gameId: 'critical_v1',
               name: 'Normal Room',
               hostId: 'user-123',

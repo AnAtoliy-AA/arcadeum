@@ -38,7 +38,10 @@ import {
 } from './critical-future.utils';
 import { dispatchTheftPackAction } from './critical-theft.utils';
 import { dispatchChaosPackAction } from './critical-chaos.utils';
-import { dispatchDeityPackAction } from './critical-deity.utils';
+import {
+  dispatchDeityPackAction,
+  executeCommitProphecy,
+} from './critical-deity.utils';
 
 /**
  * Critical Game Engine
@@ -308,6 +311,14 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
           newState,
           context.userId,
           typedPayload!.newOrder!,
+          helpers,
+        );
+
+      case 'commit_prophecy':
+        return executeCommitProphecy(
+          newState,
+          context.userId,
+          typedPayload!.reorderedTop2!,
           helpers,
         );
 

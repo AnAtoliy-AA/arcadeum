@@ -45,13 +45,18 @@ export interface TheftPackPayload {
   cardsToUnstash?: CriticalCard[];
 }
 
+export interface ProphecyPayload {
+  reorderedTop2?: CriticalCard[];
+}
+
 export type CriticalPayload = PlayCardPayload &
   PlayCollectionComboPayload &
   FavorPayload &
   GiveFavorCardPayload &
   DefusePayload &
   CommitAlterFuturePayload &
-  TheftPackPayload;
+  TheftPackPayload &
+  ProphecyPayload;
 
 /**
  * Validation utilities for Critical game actions
@@ -290,6 +295,15 @@ export function validateCriticalAction(
     return false;
   }
 
+  // If pending Prophecy for this player, only allow commit_prophecy
+  if (
+    state.pendingProphecy &&
+    state.pendingProphecy.playerId === context.userId &&
+    action !== 'commit_prophecy'
+  ) {
+    return false;
+  }
+
   // If player must defuse, only allow neutralizer action
   if (state.pendingDefuse === context.userId && action !== 'neutralizer') {
     return false;
@@ -314,6 +328,8 @@ export function validateCriticalAction(
         card === 'snatch' ||
         card === 'scramble' ||
         card === 'echo' ||
+        card === 'judgment' ||
+        card === 'prophecy' ||
         (card as string) === 'unstash'
       ) {
         return validateCriticalAction(
@@ -447,6 +463,16 @@ export function validateCriticalAction(
 
     case 'judgment':
       return hasCard(player, 'judgment');
+
+    case 'prophecy':
+      return hasCard(player, 'prophecy');
+
+    case 'commit_prophecy':
+      return (
+        !!state.pendingProphecy &&
+        state.pendingProphecy.playerId === context.userId &&
+        !!typedPayload?.reorderedTop2
+      );
 
     // Future Pack
     case 'commit_alter_future':

@@ -3,7 +3,12 @@ import {
   CriticalCard,
   CriticalPlayerState,
 } from '../../critical/critical.state';
-import { executeResurrection, executeJudgment } from './critical-deity.utils';
+import {
+  executeResurrection,
+  executeJudgment,
+  executeProphecy,
+  executeCommitProphecy,
+} from './critical-deity.utils';
 import { EngineHelpers } from './critical-future.utils';
 import { GameLogEntry } from '../base/game-engine.interface';
 
@@ -332,5 +337,258 @@ describe('executeJudgment', () => {
 
     expect(result.success).toBe(false);
     expect(result.error).toBeDefined();
+  });
+});
+
+describe('executeProphecy', () => {
+  function makeProphecyState(overrides: Partial<CriticalState> = {}): CriticalState {
+    return {
+      deck: [
+        'strike',
+        'evade',
+        'reorder',
+        'insight',
+        'cancel',
+        'trade',
+        'neutralizer',
+        'strike',
+        'evade',
+        'reorder',
+      ] as CriticalCard[],
+      discardPile: [],
+      playerOrder: ['playerA', 'playerB'],
+      currentTurnIndex: 0,
+      pendingDraws: 1,
+      playDirection: 1,
+      expansions: ['deity'],
+      allowActionCardCombos: false,
+      pendingDefuse: null,
+      pendingFavor: null,
+      pendingAlter: null,
+      pendingAction: null,
+      eliminatedPlayers: [],
+      players: [
+        makePlayer('playerA', ['prophecy']),
+        makePlayer('playerB', []),
+      ],
+      logs: [],
+      ...overrides,
+    };
+  }
+
+  function makeAdvancingHelpers(): EngineHelpers {
+    return {
+      addLog: (state: CriticalState, entry: GameLogEntry) => {
+        state.logs.push(entry as CriticalState['logs'][number]);
+      },
+      createLogEntry: (
+        _type: string,
+        message: string,
+        options?: Record<string, unknown>,
+      ): GameLogEntry => ({
+        id: 'test-id',
+        type: 'action',
+        message,
+        createdAt: new Date().toISOString(),
+        ...(options ?? {}),
+      }),
+      advanceTurn: (state: CriticalState) => {
+        state.currentTurnIndex =
+          (state.currentTurnIndex + state.playDirection + state.playerOrder.length) %
+          state.playerOrder.length;
+        state.pendingDraws = 1;
+      },
+      shuffleArray: () => {},
+      findPlayer: (state: CriticalState, playerId: string) =>
+        state.players.find((p) => p.playerId === playerId),
+    };
+  }
+
+  it('sends private log with top 5 cards', () => {
+    const state = makeProphecyState();
+    const helpers = makeAdvancingHelpers();
+
+    executeProphecy(state, 'playerA', helpers);
+
+    const privateLog = state.logs.find(
+      (l) => l.scope === 'private' && l.message.startsWith('prophecy.reveal:'),
+    );
+    expect(privateLog).toBeDefined();
+    expect(privateLog?.senderId).toBe('playerA');
+    // Deck has 10 cards, top 5 are indices 0-4
+    expect(privateLog?.message).toBe(
+      'prophecy.reveal:cards:strike,cards:evade,cards:reorder,cards:insight,cards:cancel',
+    );
+  });
+
+  it('sets pendingProphecy state with playerId and top5', () => {
+    const state = makeProphecyState();
+    const helpers = makeAdvancingHelpers();
+
+    executeProphecy(state, 'playerA', helpers);
+
+    expect(state.pendingProphecy).toBeDefined();
+    expect(state.pendingProphecy?.playerId).toBe('playerA');
+    expect(state.pendingProphecy?.top5).toHaveLength(5);
+    expect(state.pendingProphecy?.top5).toEqual([
+      'strike',
+      'evade',
+      'reorder',
+      'insight',
+      'cancel',
+    ]);
+  });
+
+  it('fails if deck is empty', () => {
+    const state = makeProphecyState({ deck: [] });
+    const helpers = makeAdvancingHelpers();
+
+    const result = executeProphecy(state, 'playerA', helpers);
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBeDefined();
+  });
+
+  it('peeks at fewer than 5 if deck has fewer cards', () => {
+    const state = makeProphecyState({
+      deck: ['strike', 'evade', 'reorder'] as CriticalCard[],
+    });
+    const helpers = makeAdvancingHelpers();
+
+    executeProphecy(state, 'playerA', helpers);
+
+    expect(state.pendingProphecy?.top5).toHaveLength(3);
+  });
+});
+
+describe('executeCommitProphecy', () => {
+  function makeCommitState(overrides: Partial<CriticalState> = {}): CriticalState {
+    const top5: CriticalCard[] = ['strike', 'evade', 'reorder', 'insight', 'cancel'];
+    return {
+      deck: ['strike', 'evade', 'reorder', 'insight', 'cancel', 'trade', 'neutralizer'] as CriticalCard[],
+      discardPile: [],
+      playerOrder: ['playerA', 'playerB'],
+      currentTurnIndex: 0,
+      pendingDraws: 1,
+      playDirection: 1,
+      expansions: ['deity'],
+      allowActionCardCombos: false,
+      pendingDefuse: null,
+      pendingFavor: null,
+      pendingAlter: null,
+      pendingAction: null,
+      eliminatedPlayers: [],
+      pendingProphecy: { playerId: 'playerA', top5 },
+      players: [
+        makePlayer('playerA', []),
+        makePlayer('playerB', []),
+      ],
+      logs: [],
+      ...overrides,
+    };
+  }
+
+  function makeAdvancingHelpers(): EngineHelpers {
+    return {
+      addLog: (state: CriticalState, entry: GameLogEntry) => {
+        state.logs.push(entry as CriticalState['logs'][number]);
+      },
+      createLogEntry: (
+        _type: string,
+        message: string,
+        options?: Record<string, unknown>,
+      ): GameLogEntry => ({
+        id: 'test-id',
+        type: 'action',
+        message,
+        createdAt: new Date().toISOString(),
+        ...(options ?? {}),
+      }),
+      advanceTurn: (state: CriticalState) => {
+        state.currentTurnIndex =
+          (state.currentTurnIndex + state.playDirection + state.playerOrder.length) %
+          state.playerOrder.length;
+        state.pendingDraws = 1;
+      },
+      shuffleArray: () => {},
+      findPlayer: (state: CriticalState, playerId: string) =>
+        state.players.find((p) => p.playerId === playerId),
+    };
+  }
+
+  it('reorders top 2 cards in chosen order', () => {
+    const state = makeCommitState();
+    const helpers = makeAdvancingHelpers();
+
+    executeCommitProphecy(state, 'playerA', ['evade', 'strike'], helpers);
+
+    expect(state.deck[0]).toBe('evade');
+    expect(state.deck[1]).toBe('strike');
+  });
+
+  it('clears pendingProphecy after commit', () => {
+    const state = makeCommitState();
+    const helpers = makeAdvancingHelpers();
+
+    executeCommitProphecy(state, 'playerA', ['evade', 'strike'], helpers);
+
+    expect(state.pendingProphecy).toBeUndefined();
+  });
+
+  it('advances turn after commit', () => {
+    const state = makeCommitState();
+    const helpers = makeAdvancingHelpers();
+
+    executeCommitProphecy(state, 'playerA', ['evade', 'strike'], helpers);
+
+    expect(state.currentTurnIndex).toBe(1);
+  });
+
+  it('fails if no pendingProphecy', () => {
+    const state = makeCommitState({ pendingProphecy: undefined });
+    const helpers = makeAdvancingHelpers();
+
+    const result = executeCommitProphecy(state, 'playerA', ['evade', 'strike'], helpers);
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBeDefined();
+  });
+
+  it('fails if pendingProphecy belongs to different player', () => {
+    const state = makeCommitState({
+      pendingProphecy: {
+        playerId: 'playerB',
+        top5: ['strike', 'evade', 'reorder', 'insight', 'cancel'],
+      },
+    });
+    const helpers = makeAdvancingHelpers();
+
+    const result = executeCommitProphecy(state, 'playerA', ['evade', 'strike'], helpers);
+
+    expect(result.success).toBe(false);
+  });
+
+  it('fails if reorderedTop2 does not contain cards from top5', () => {
+    const state = makeCommitState();
+    const helpers = makeAdvancingHelpers();
+
+    const result = executeCommitProphecy(
+      state,
+      'playerA',
+      ['neutralizer', 'trade'] as CriticalCard[],
+      helpers,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBeDefined();
+  });
+
+  it('fails if reorderedTop2 does not have exactly 2 cards', () => {
+    const state = makeCommitState();
+    const helpers = makeAdvancingHelpers();
+
+    const result = executeCommitProphecy(state, 'playerA', ['strike'] as CriticalCard[], helpers);
+
+    expect(result.success).toBe(false);
   });
 });

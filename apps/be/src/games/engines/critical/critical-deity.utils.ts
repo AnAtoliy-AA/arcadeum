@@ -46,6 +46,9 @@ export function dispatchDeityPackAction(
     case 'judgment':
       playCard();
       return executeJudgment(state, playerId, helpers);
+    case 'prophecy':
+      playCard();
+      return executeProphecy(state, playerId, helpers);
     default:
       return null;
   }
@@ -272,6 +275,81 @@ export function executeJudgment(
   );
 
   // End turn without drawing
+  helpers.advanceTurn(state);
+
+  return { success: true, state };
+}
+
+/**
+ * Prophecy: Peek at the top 5 deck cards privately; enter pendingProphecy state.
+ * The player must then commit a reorder of the top 2 via executeCommitProphecy.
+ */
+export function executeProphecy(
+  state: CriticalState,
+  playerId: string,
+  helpers: EngineHelpers,
+): GameActionResult<CriticalState> {
+  const player = helpers.findPlayer(state, playerId);
+  if (!player) return { success: false, error: 'Player not found' };
+
+  if (state.deck.length === 0) {
+    return { success: false, error: 'Deck is empty' };
+  }
+
+  const top5 = state.deck.slice(0, Math.min(5, state.deck.length)) as CriticalCard[];
+  state.pendingProphecy = { playerId, top5: [...top5] };
+
+  const cardKeys = top5.map((c) => `cards:${c}`);
+  helpers.addLog(
+    state,
+    helpers.createLogEntry(
+      'action',
+      `prophecy.reveal:${cardKeys.join(',')}`,
+      { scope: 'private', senderId: playerId },
+    ),
+  );
+  helpers.addLog(
+    state,
+    helpers.createLogEntry('action', `Played Prophecy!`, {
+      scope: 'all',
+      senderId: playerId,
+    }),
+  );
+
+  return { success: true, state };
+}
+
+/**
+ * CommitProphecy: Accepts reorderedTop2 and splices the top 2 back in chosen order.
+ */
+export function executeCommitProphecy(
+  state: CriticalState,
+  playerId: string,
+  reorderedTop2: CriticalCard[],
+  helpers: EngineHelpers,
+): GameActionResult<CriticalState> {
+  if (!state.pendingProphecy || state.pendingProphecy.playerId !== playerId) {
+    return { success: false, error: 'No pending prophecy for this player' };
+  }
+  if (!reorderedTop2 || reorderedTop2.length !== 2) {
+    return { success: false, error: 'Must provide exactly 2 cards to reorder' };
+  }
+  const top5 = state.pendingProphecy.top5;
+  const validCards = reorderedTop2.every((c) => top5.includes(c));
+  if (!validCards) {
+    return { success: false, error: 'Provided cards are not in the top 5' };
+  }
+
+  state.deck.splice(0, 2, ...reorderedTop2);
+  state.pendingProphecy = undefined;
+
+  helpers.addLog(
+    state,
+    helpers.createLogEntry('action', `Committed Prophecy reorder!`, {
+      scope: 'all',
+      senderId: playerId,
+    }),
+  );
   helpers.advanceTurn(state);
 
   return { success: true, state };

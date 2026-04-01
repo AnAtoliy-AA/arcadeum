@@ -40,6 +40,11 @@ export function getAvailableActionsForPlayer(
     return ['neutralizer'];
   }
 
+  // If player has a pending prophecy, they must commit it
+  if (state.pendingProphecy && state.pendingProphecy.playerId === playerId) {
+    return ['commit_prophecy'];
+  }
+
   if (state.pendingDraws > 0) {
     actions.push('draw_card');
     // Deity Pack: resurrection can be played instead of drawing
@@ -94,6 +99,7 @@ export function getAvailableActionsForPlayer(
 
     // Deity Pack (non-draw-consuming cards)
     if (hasCard(player, 'judgment')) actions.push('play_card:judgment');
+    if (hasCard(player, 'prophecy')) actions.push('play_card:prophecy');
 
     // Can play collection combos
     if (canPlayCollectionCombo(player, state.allowActionCardCombos))

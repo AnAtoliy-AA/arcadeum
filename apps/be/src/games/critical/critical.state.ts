@@ -59,6 +59,11 @@ export interface CriticalState {
     payload?: unknown;
     nopeCount: number; // Odd = canceled, even = active
   } | null;
+  // Deity: Prophecy state
+  pendingProphecy?: {
+    playerId: string;
+    top5: CriticalCard[];
+  };
   // Chaos: Implosion state
   implosionState?: {
     isFaceUp: boolean; // if true, next draw explodes immediately

@@ -60,6 +60,19 @@ export type CriticalPayload = PlayCardPayload &
 /** Number of different cards required for the fiver combo */
 export const FIVER_COMBO_SIZE = 5;
 
+/** Strike-type actions that shield_bash can block */
+const STRIKE_TYPES = ['strike', 'targeted_strike', 'private_strike', 'recursive_strike', 'chain_strike'] as const;
+
+/** Returns true if the pending strike action targets the given player */
+function isStrikeTargetingPlayer(state: CriticalState, player: CriticalPlayerState): boolean {
+  if (!state.pendingAction) return false;
+  if (!(STRIKE_TYPES as readonly string[]).includes(state.pendingAction.type)) return false;
+  const p = state.pendingAction.payload as Record<string, unknown> | undefined;
+  const isTargeted = p?.targetPlayerId === player.playerId;
+  const isUntargetedAndActive = !p?.targetPlayerId && state.playerOrder[state.currentTurnIndex] === player.playerId;
+  return isTargeted || isUntargetedAndActive;
+}
+
 export function hasCard(
   player: CriticalPlayerState,
   card: CriticalCard,
@@ -209,16 +222,28 @@ export function getAvailableActionsForPlayer(
   isTurn: boolean,
 ): string[] {
   const player = state.players.find((p) => p.playerId === playerId);
-  if (!player || !player.alive || !isTurn) {
+  if (!player || !player.alive) {
     return [];
+  }
+
+  const actions: string[] = [];
+
+  // Anytime cards: available regardless of whose turn it is
+  if (state.pendingAction && hasCard(player, 'cancel')) {
+    actions.push('play_cancel');
+  }
+  if (hasCard(player, 'shield_bash') && isStrikeTargetingPlayer(state, player)) {
+    actions.push('shield_bash');
+  }
+
+  if (!isTurn) {
+    return actions;
   }
 
   // If player must defuse, that's the only available action
   if (state.pendingDefuse === playerId) {
     return ['neutralizer'];
   }
-
-  const actions: string[] = [];
 
   if (state.pendingDraws > 0) {
     actions.push('draw_card');
@@ -297,6 +322,11 @@ export function validateCriticalAction(
     if (!state.pendingAction) return false;
     // Must have a cancel card
     return hasCard(player, 'cancel');
+  }
+
+  // shield_bash can be played by ANY alive player when there's a pending strike targeting them
+  if (action === 'shield_bash') {
+    return isStrikeTargetingPlayer(state, player) && hasCard(player, 'shield_bash');
   }
 
   // Exception: play_card with 'cancel' acts like play_cancel

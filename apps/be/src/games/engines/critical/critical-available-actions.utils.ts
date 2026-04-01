@@ -85,6 +85,9 @@ export function getAvailableActionsForPlayer(
     if (hasCard(player, 'snatch')) actions.push('play_card:snatch');
     // Note: wildcard is used in combos, not played directly
 
+    // Chaos Pack
+    if (hasCard(player, 'scramble')) actions.push('play_card:scramble');
+
     // Can play collection combos
     if (canPlayCollectionCombo(player, state.allowActionCardCombos))
       actions.push('play_cat_combo');

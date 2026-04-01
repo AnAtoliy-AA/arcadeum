@@ -65,9 +65,67 @@ export function dispatchChaosPackAction(
       }
       playCard();
       return executeBlackout(state, playerId, targetPlayerId, helpers);
+    case 'scramble':
+      playCard();
+      return executeScramble(state, playerId, helpers);
     default:
       return null;
   }
+}
+
+/**
+ * Execute Scramble
+ * All alive players simultaneously pass their entire hand to the next player in turn order.
+ * Respects playDirection.
+ */
+export function executeScramble(
+  state: CriticalState,
+  playerId: string,
+  helpers: EngineHelpers,
+): GameActionResult<CriticalState> {
+  const player = helpers.findPlayer(state, playerId);
+  if (!player) return { success: false, error: 'Player not found' };
+
+  const direction = state.playDirection ?? 1;
+  const alivePlayers = state.playerOrder
+    .map((id) => state.players.find((p) => p.playerId === id))
+    .filter((p): p is CriticalPlayerState => !!p && p.alive);
+
+  if (alivePlayers.length < 2) {
+    return { success: false, error: 'Not enough players to scramble' };
+  }
+
+  // Snapshot hands before mutation
+  const handSnapshots = alivePlayers.map((p) => ({
+    playerId: p.playerId,
+    hand: [...p.hand],
+  }));
+
+  // direction=1: player[i] receives from player[(i-1+n)%n]
+  // direction=-1: player[i] receives from player[(i+1)%n]
+  const n = alivePlayers.length;
+  for (let i = 0; i < n; i++) {
+    const sourceIndex = ((i - direction) + n) % n;
+    alivePlayers[i].hand = [...handSnapshots[sourceIndex].hand];
+  }
+
+  state.pendingAction = {
+    type: 'scramble',
+    playerId,
+    payload: { handSnapshots, direction },
+    nopeCount: 0,
+  };
+
+  helpers.addLog(
+    state,
+    helpers.createLogEntry(
+      'action',
+      `Played Scramble! All hands rotated!`,
+      { scope: 'all', senderId: playerId },
+    ),
+  );
+
+  return { success: true, state };
 }
 
 /**

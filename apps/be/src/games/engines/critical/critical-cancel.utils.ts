@@ -198,6 +198,17 @@ export function executeCancel(
         }
         break;
       }
+      case 'scramble': {
+        // Restore original hands
+        const scramblePayload = state.pendingAction.payload as {
+          handSnapshots: { playerId: string; hand: CriticalCard[] }[];
+        };
+        for (const snap of scramblePayload.handSnapshots) {
+          const pl = state.players.find((p) => p.playerId === snap.playerId);
+          if (pl) pl.hand = [...snap.hand];
+        }
+        break;
+      }
       case 'snatch': {
         // Return stolen card from initiator's hand back to target's hand
         const snatchPayload = state.pendingAction.payload as {
@@ -359,6 +370,33 @@ export function executeCancel(
         if (swapInitiator && swapTarget) {
           swapInitiator.hand = swapPayload.originalTargetHand as CriticalCard[];
           swapTarget.hand = swapPayload.originalPlayerHand as CriticalCard[];
+        }
+        break;
+      }
+      case 'scramble': {
+        // Re-apply rotation using stored snapshots
+        const scramblePayload = state.pendingAction.payload as {
+          handSnapshots: { playerId: string; hand: CriticalCard[] }[];
+          direction: number;
+        };
+        // Restore originals first
+        for (const snap of scramblePayload.handSnapshots) {
+          const pl = state.players.find((p) => p.playerId === snap.playerId);
+          if (pl) pl.hand = [...snap.hand];
+        }
+        // Re-apply rotation
+        const scrambleN = scramblePayload.handSnapshots.length;
+        const scrambleDir = scramblePayload.direction ?? 1;
+        const restored = scramblePayload.handSnapshots.map((s) => ({
+          ...s,
+          hand: [...s.hand],
+        }));
+        for (let i = 0; i < scrambleN; i++) {
+          const sourceIndex = ((i - scrambleDir) + scrambleN) % scrambleN;
+          const pl = state.players.find(
+            (p) => p.playerId === scramblePayload.handSnapshots[i].playerId,
+          );
+          if (pl) pl.hand = [...restored[sourceIndex].hand];
         }
         break;
       }

@@ -99,6 +99,9 @@ export class CriticalLogic {
         return { success: true, state };
       } else {
         player.alive = false;
+        if (!Array.isArray(state.eliminatedPlayers))
+          state.eliminatedPlayers = [];
+        state.eliminatedPlayers.push(playerId);
         helpers.addLog(
           state,
           helpers.createLogEntry('system', `Player exploded!`, {
@@ -116,6 +119,9 @@ export class CriticalLogic {
       if (isFaceUp) {
         // Explode immediately, no defuse allowed
         player.alive = false;
+        if (!Array.isArray(state.eliminatedPlayers))
+          state.eliminatedPlayers = [];
+        state.eliminatedPlayers.push(playerId);
         helpers.addLog(
           state,
           helpers.createLogEntry(

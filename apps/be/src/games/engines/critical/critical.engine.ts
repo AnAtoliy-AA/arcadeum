@@ -312,6 +312,9 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
     }
 
     player.alive = false;
+    if (!Array.isArray(newState.eliminatedPlayers))
+      newState.eliminatedPlayers = [];
+    newState.eliminatedPlayers.push(playerId);
     this.addLog(
       newState,
       this.createLogEntry('system', `Player left the game`, {

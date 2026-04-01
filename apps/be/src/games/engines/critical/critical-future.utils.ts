@@ -318,6 +318,8 @@ export function executeDrawBottom(
       return { success: true, state };
     } else {
       player.alive = false;
+      if (!Array.isArray(state.eliminatedPlayers)) state.eliminatedPlayers = [];
+      state.eliminatedPlayers.push(playerId);
       helpers.addLog(
         state,
         helpers.createLogEntry('system', `Player exploded from bottom draw!`, {

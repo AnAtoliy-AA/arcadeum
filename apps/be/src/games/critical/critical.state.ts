@@ -18,6 +18,7 @@ export interface CriticalPlayerState {
   markedCards: MarkedCardInfo[]; // Cards marked for stealing
   pendingStealDraw?: string; // Player ID who will steal next draw
   isBlind?: boolean; // Chaos: blackout/blinded state
+  pendingJudgment?: boolean; // Set by judgment; player must discard to ≤3 cards
   [key: string]: unknown;
 }
 
@@ -62,6 +63,7 @@ export interface CriticalState {
   implosionState?: {
     isFaceUp: boolean; // if true, next draw explodes immediately
   };
+  eliminatedPlayers: string[]; // Ordered by elimination time; last entry = most recently eliminated
   players: CriticalPlayerState[];
   logs: CriticalLogEntry[];
   allowActionCardCombos: boolean; // House rule: allow any matching cards for combos
@@ -377,6 +379,7 @@ export function createInitialCriticalState(
     pendingAlter: null,
     pendingAction: null,
     pendingDraws: 1,
+    eliminatedPlayers: [],
     players,
     logs: [
       {

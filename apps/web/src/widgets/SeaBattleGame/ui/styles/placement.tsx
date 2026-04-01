@@ -9,7 +9,7 @@ export const ShipPalette = styled(YStack, {
 
   $md: {
     flexDirection: 'row',
-    overflowX: 'scroll',
+    overflowX: 'auto',
     padding: '$4',
     gap: '$6',
     width: '100%',

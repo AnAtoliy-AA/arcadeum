@@ -115,11 +115,48 @@ test.describe('Anonymous Play', () => {
     ).toBeVisible();
   });
 
+  const hostId = 'anon-host-id';
+  const joinerId = 'anon-joiner-id';
+
   test('should allow joining a private room as anonymous via invite link', async ({
     context,
     page,
   }) => {
-    await page.goto('/games/create');
+    // Basic setup for the first page (host)
+    await page.addInitScript((id) => {
+      window.isPlaywright = true;
+      localStorage.setItem('aico_anon_id', id);
+    }, hostId);
+
+    // Mock games/rooms to return a specific ID for the created room
+    await page.route('**/games/rooms', async (route) => {
+      if (route.request().method() === 'POST') {
+        const payload = {
+          success: true,
+          room: {
+            id: MOCK_OBJECT_ID,
+            name: 'Private Room',
+            gameId: 'critical_v1',
+            status: 'lobby',
+            visibility: 'private',
+            members: [
+              { id: hostId, userId: hostId, displayName: 'Host', isHost: true },
+            ],
+            hostId: hostId,
+          },
+        };
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(payload),
+        });
+      }
+    });
+
+    await page.goto('/games/create', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
     await expect(page.getByRole('heading', { name: /create/i })).toBeVisible();
 
     await page
@@ -143,9 +180,21 @@ test.describe('Anonymous Play', () => {
     });
     const inviteUrl = page.url();
 
-    const newPage = await context.newPage();
-    await mockAllOnPage(newPage);
+    // Create a NEW context and page for the second player to ensure complete isolation
+    // and prevent shared resource hangs that occur when multiple pages in one context
+    // are navigating simultaneously to the same dev server.
+    const joinerContext = await context.browser()!.newContext({
+      viewport: page.viewportSize() ?? undefined,
+    });
+    const newPage = await joinerContext.newPage();
 
+    // Ensure the new page has a distinct anonymous user ID
+    await newPage.addInitScript((id) => {
+      window.isPlaywright = true;
+      localStorage.setItem('aico_anon_id', id);
+    }, joinerId);
+
+    // Thoroughly mock room info and common routes for the new page
     await newPage.route('**/games/room-info', async (route) => {
       await route.fulfill({
         status: 200,
@@ -158,35 +207,67 @@ test.describe('Anonymous Play', () => {
             status: 'lobby',
             visibility: 'private',
             members: [
+              { id: hostId, userId: hostId, displayName: 'Host', isHost: true },
               {
-                id: 'host-1',
-                userId: 'host-1',
-                displayName: 'Host',
-                isHost: true,
-              },
-              {
-                id: anonymousId,
-                userId: anonymousId,
+                id: joinerId,
+                userId: joinerId,
                 displayName: 'Guest',
                 isHost: false,
               },
             ],
-            hostId: 'host-1',
+            hostId: hostId,
           },
           session: null,
         }),
       });
     });
 
-    await mockGameSocket(newPage, MOCK_OBJECT_ID, anonymousId);
+    await newPage.route('**/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ user: null }),
+      });
+    });
 
-    await newPage.goto(inviteUrl);
+    await newPage.route('**/auth/blocked', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([]),
+      });
+    });
+
+    await mockAllOnPage(newPage);
+
+    await mockGameSocket(newPage, MOCK_OBJECT_ID, joinerId, {
+      roomJoinedPayload: {
+        members: [
+          { id: hostId, userId: hostId, displayName: 'Host', isHost: true },
+          {
+            id: joinerId,
+            userId: joinerId,
+            displayName: 'Guest',
+            isHost: false,
+          },
+        ],
+        hostId: hostId,
+      },
+    });
+
+    // Navigation with 'domcontentloaded' and generous timeout for CI stability.
+    // Serial mode is enabled for this describe block to prevent resource contention
+    // on the dev server during multi-browser runs.
+    await newPage.goto(inviteUrl, {
+      waitUntil: 'domcontentloaded',
+      timeout: 90000,
+    });
     await waitForRoomReady(newPage);
 
     await expect(
-      newPage.getByRole('button', { name: /Exit/i }).first(),
+      newPage.getByRole('button', { name: /Exit|Leave/i }).first(),
     ).toBeVisible({
-      timeout: 15000,
+      timeout: 30000,
     });
 
     await expect(

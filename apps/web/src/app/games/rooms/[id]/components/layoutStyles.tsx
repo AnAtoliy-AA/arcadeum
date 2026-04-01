@@ -32,9 +32,10 @@ export const GameRow = styled(YStack, {
  */
 export const ChatPanel = styled(YStack, {
   name: 'ChatPanel',
-  width: 320,
-  minWidth: 320,
-  minHeight: 400,
+  width: 350,
+  minWidth: 350,
+  height: '100%',
+  minHeight: 350,
   flexShrink: 0,
   backgroundColor: '$glassBg',
   borderRadius: '$4',
@@ -46,7 +47,6 @@ export const ChatPanel = styled(YStack, {
   $md: {
     width: '100%',
     minWidth: 0,
-    minHeight: 250,
     height: 'auto',
     paddingTop: 0,
     marginTop: '$2',

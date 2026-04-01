@@ -30,7 +30,7 @@ export const ChatCard = styled(YStack, {
 export const ChatMessages = styled(YStack, {
   name: 'ChatMessages',
   flex: 1,
-  overflowY: 'scroll',
+  overflowY: 'auto',
   gap: '$3',
   padding: '$2',
 });
@@ -78,7 +78,7 @@ export const LogEntry = styled(Text, {
 export const GameLog = styled(YStack, {
   name: 'GameLog',
   flex: 1,
-  overflowY: 'scroll',
+  overflowY: 'auto',
   gap: '$2',
   padding: '$2',
 });

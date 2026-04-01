@@ -71,7 +71,7 @@ const StyledModalFrame = styled(Dialog.Content, {
 
 const StyledScrollArea = styled(YStack, {
   name: 'ScrollArea',
-  overflowY: 'scroll',
+  overflowY: 'auto',
   padding: '$6',
   width: '100%',
   height: '100%',
@@ -219,7 +219,7 @@ export const ModalActions = styled(XStack, {
 export const ScrollableCardsGrid = styled(CardsGrid, {
   name: 'ScrollableCardsGrid',
   maxHeight: '55vh',
-  overflowY: 'scroll',
+  overflowY: 'auto',
   padding: '$2',
 });
 

@@ -44,6 +44,7 @@ export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
   return (
     <YStack
       flex={1}
+      minHeight={350}
       backgroundColor="rgba(10,14,30,0.95)"
       borderRadius="$4"
       borderWidth={1}
@@ -58,6 +59,7 @@ export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
         justifyContent="space-between"
         borderBottomWidth={1}
         borderBottomColor="rgba(99,102,241,0.2)"
+        flexShrink={0}
       >
         <Text fontSize="$5" fontWeight="700" color="$color">
           Table Chat
@@ -115,6 +117,7 @@ export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
         gap="$2"
         borderTopWidth={1}
         borderTopColor="rgba(99,102,241,0.15)"
+        flexShrink={0}
       >
         {SCOPES.map(({ value, label }) => (
           <Button
@@ -138,6 +141,7 @@ export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
         alignItems="center"
         borderTopWidth={1}
         borderTopColor="rgba(99,102,241,0.15)"
+        flexShrink={0}
       >
         <Input
           flex={1}

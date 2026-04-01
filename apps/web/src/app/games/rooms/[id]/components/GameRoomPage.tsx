@@ -23,7 +23,7 @@ import { useGameRoom, type GameType } from '@/features/games/hooks';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useIdleReconnect } from '@/shared/hooks/useIdleReconnect';
 import { useIdleDetection } from '@/shared/hooks/useIdleDetection';
-import { ConnectionOverlay } from '@/shared/ui';
+import { ConnectionOverlay, Page } from '@/shared/ui';
 import { mapToGameType } from '@/features/games/lib/gameIdMapping';
 import { gameFactory } from '@/features/games/lib/gameFactory';
 import { gameMetadata } from '@/features/games/registry';
@@ -35,7 +35,6 @@ import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress'
 // Extracted Components
 import { Text, useMedia } from 'tamagui';
 import {
-  Page,
   Container,
   LoadingContainer,
   GameWrapper,
@@ -324,7 +323,7 @@ export default function GameRoomPage() {
   // Wait for session to hydrate before checking authentication
   if (!hydrated || roomInfoLoading) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <GameRoomLoading />
         </Container>
@@ -335,7 +334,7 @@ export default function GameRoomPage() {
   // Show error if room visibility check failed
   if (visibilityError) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <GameRoomError
             error={visibilityError}
@@ -349,7 +348,7 @@ export default function GameRoomPage() {
   // If we are auto-joining or loading generally (and not manually submitting), show loading
   if (isAutoJoining || (roomLoading && !manualSubmitPending)) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <GameRoomLoading
             isLongPending={isRoomLoadingLongPending}
@@ -368,7 +367,7 @@ export default function GameRoomPage() {
   // If we have an error or are submitting code for a private room, show the invite code form
   if (roomVisibility === 'private' && !room) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <PrivateRoomForm
             onJoin={handleInviteCodeSubmit}
@@ -385,7 +384,7 @@ export default function GameRoomPage() {
 
   if (error && !room) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <GameRoomError error={error} />
         </Container>
@@ -395,7 +394,7 @@ export default function GameRoomPage() {
 
   if (!room) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <GameRoomError error={t('games.roomPage.errors.roomNotFound')} />
         </Container>
@@ -404,7 +403,7 @@ export default function GameRoomPage() {
   }
 
   return (
-    <Page>
+    <Page fixedHeight>
       <style>{fullscreenStyles}</style>
       <Container
         ref={gameContainerRef as React.RefObject<never>}

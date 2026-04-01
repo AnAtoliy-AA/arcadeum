@@ -239,6 +239,7 @@ export function getAvailableActionsForPlayer(
       actions.push('play_card:recursive_strike');
     if (hasCard(player, 'mega_evade')) actions.push('play_card:mega_evade');
     if (hasCard(player, 'invert')) actions.push('play_card:invert');
+    if (hasCard(player, 'chain_strike')) actions.push('play_card:chain_strike');
 
     // Future Pack
     if (hasCard(player, 'see_future_5x'))
@@ -404,6 +405,13 @@ export function validateCriticalAction(
 
     case 'invert':
       return hasCard(player, 'invert') && state.pendingDraws > 0;
+
+    case 'chain_strike':
+      return (
+        hasCard(player, 'chain_strike') &&
+        state.pendingDraws > 0 &&
+        !!typedPayload?.targetPlayerId
+      );
 
     // Theft Pack
     case 'mark':

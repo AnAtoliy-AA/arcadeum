@@ -445,6 +445,9 @@ export function validateCriticalAction(
         state.eliminatedPlayers.length > 0
       );
 
+    case 'judgment':
+      return hasCard(player, 'judgment');
+
     // Future Pack
     case 'commit_alter_future':
       return (

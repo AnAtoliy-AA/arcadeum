@@ -92,6 +92,9 @@ export function getAvailableActionsForPlayer(
     if (hasCard(player, 'scramble')) actions.push('play_card:scramble');
     if (hasCard(player, 'echo')) actions.push('play_card:echo');
 
+    // Deity Pack (non-draw-consuming cards)
+    if (hasCard(player, 'judgment')) actions.push('play_card:judgment');
+
     // Can play collection combos
     if (canPlayCollectionCombo(player, state.allowActionCardCombos))
       actions.push('play_cat_combo');

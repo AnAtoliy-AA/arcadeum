@@ -1,6 +1,7 @@
 import type {
   CriticalState,
   CriticalCard,
+  CriticalPlayerState,
 } from '../../critical/critical.state';
 import type {
   GameLogEntry,
@@ -250,6 +251,21 @@ export function executeCancel(
         }
         break;
       }
+      case 'judgment': {
+        // Clear pendingJudgment from all players
+        for (const p of state.players) {
+          (p as CriticalPlayerState).pendingJudgment = undefined;
+        }
+        // Reverse turn advance (go back to the judgment player)
+        const judgeIndex = state.playerOrder.findIndex(
+          (id) => id === state.pendingAction!.playerId,
+        );
+        if (judgeIndex !== -1) {
+          state.currentTurnIndex = judgeIndex;
+          state.pendingDraws = 1;
+        }
+        break;
+      }
     }
   } else {
     // Un-cancel the action - re-apply effects
@@ -454,6 +470,16 @@ export function executeCancel(
           const cardsFromBottom = state.deck.splice(-3);
           resurrectTarget.hand.push(...cardsFromBottom);
         }
+        break;
+      }
+      case 'judgment': {
+        // Re-apply judgment: set pendingJudgment on all other alive players
+        state.players.forEach((p) => {
+          if (p.playerId !== state.pendingAction!.playerId && p.alive) {
+            (p as CriticalPlayerState).pendingJudgment = true;
+          }
+        });
+        helpers.advanceTurn(state);
         break;
       }
     }

@@ -1,4 +1,4 @@
-import { CriticalState, CriticalCard } from '../../critical/critical.state';
+import { CriticalState, CriticalCard, CriticalPlayerState } from '../../critical/critical.state';
 import { GameActionResult } from '../base/game-engine.interface';
 import { EngineHelpers } from './critical-future.utils';
 
@@ -43,6 +43,9 @@ export function dispatchDeityPackAction(
     case 'resurrection':
       playCard();
       return executeResurrection(state, playerId, helpers);
+    case 'judgment':
+      playCard();
+      return executeJudgment(state, playerId, helpers);
     default:
       return null;
   }
@@ -229,6 +232,47 @@ export function executeResurrection(
       { scope: 'all', senderId: playerId },
     ),
   );
+
+  return { success: true, state };
+}
+
+/**
+ * Judgment: Set pendingJudgment on all other alive players.
+ * Each affected player must discard down to 3 cards on their next action.
+ * Current player ends turn without drawing.
+ */
+export function executeJudgment(
+  state: CriticalState,
+  playerId: string,
+  helpers: EngineHelpers,
+): GameActionResult<CriticalState> {
+  const player = helpers.findPlayer(state, playerId);
+  if (!player) return { success: false, error: 'Player not found' };
+
+  // Set pendingJudgment on all other alive players
+  state.players.forEach((p) => {
+    if (p.playerId !== playerId && p.alive) {
+      (p as CriticalPlayerState).pendingJudgment = true;
+    }
+  });
+
+  state.pendingAction = {
+    type: 'judgment',
+    playerId,
+    nopeCount: 0,
+  };
+
+  helpers.addLog(
+    state,
+    helpers.createLogEntry(
+      'action',
+      `Played Judgment! All players must discard to 3 cards!`,
+      { scope: 'all', senderId: playerId },
+    ),
+  );
+
+  // End turn without drawing
+  helpers.advanceTurn(state);
 
   return { success: true, state };
 }

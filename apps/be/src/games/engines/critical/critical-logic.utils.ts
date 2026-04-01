@@ -18,6 +18,7 @@ import { executeCollectionCombo as executeCollectionComboHelper } from './critic
 
 import { executeCancel } from './critical-cancel.utils';
 export { executeCancel };
+import { executeDefuse as executeDefuseHelper } from './critical-defuse.utils';
 
 export interface LogEntryOptions {
   scope?: ChatScope;
@@ -59,6 +60,9 @@ export class CriticalLogic {
     if (!card) return { success: false, error: 'Deck is empty' };
     const player = this.findPlayer(state, playerId);
     if (!player) return { success: false, error: 'Player not found' };
+
+    // Capture pending action before clearing (needed for chain_strike carry-over)
+    const priorPendingAction = state.pendingAction;
 
     // Clear any pending action - drawing finalizes the turn, no more nopes allowed
     state.pendingAction = null;
@@ -175,7 +179,40 @@ export class CriticalLogic {
       }),
     );
 
+    // Chain Strike carry-over: after first target draws, move turn to second target
+    if (
+      state.pendingDraws === 0 &&
+      priorPendingAction?.type === 'chain_strike'
+    ) {
+      const payload = priorPendingAction.payload as Record<string, unknown>;
+      const chainTargetId = payload?.chainTargetId as string | undefined;
+      if (chainTargetId) {
+        const chainIndex = state.playerOrder.indexOf(chainTargetId);
+        if (chainIndex !== -1) {
+          state.currentTurnIndex = chainIndex;
+          state.pendingDraws = 1;
+          payload.chainTargetId = undefined;
+          return { success: true, state };
+        }
+      }
+    }
+
     if (state.pendingDraws === 0) {
+      // Chain Strike carry-over: after first target draws, move turn to second target
+      if (priorPendingAction?.type === 'chain_strike') {
+        const payload = priorPendingAction.payload as Record<string, unknown>;
+        const chainTargetId = payload?.chainTargetId as string | undefined;
+        if (chainTargetId) {
+          const chainIndex = state.playerOrder.indexOf(chainTargetId);
+          if (chainIndex !== -1) {
+            state.currentTurnIndex = chainIndex;
+            state.pendingDraws = 1;
+            payload.chainTargetId = undefined; // clear so it doesn't repeat
+            return { success: true, state };
+          }
+        }
+      }
+
       helpers.advanceTurn(state);
     }
 
@@ -422,9 +459,10 @@ export class CriticalLogic {
   }
 
   // executeFavor and executeGiveFavorCard have been extracted to critical-favor.utils.ts
+  // executeDefuse has been extracted to critical-defuse.utils.ts
 
   /**
-   * Execute Defuse
+   * Execute Defuse — delegates to critical-defuse.utils.ts
    */
   static executeDefuse(
     state: CriticalState,
@@ -440,33 +478,12 @@ export class CriticalLogic {
       advanceTurn: (state: CriticalState) => void;
     },
   ): GameActionResult<CriticalState> {
-    const player = this.findPlayer(state, playerId);
-    if (!player) return { success: false, error: 'Player not found' };
-
-    // Remove defuse card
-    const defuseIndex = player.hand.indexOf('neutralizer');
-    if (defuseIndex === -1)
-      return { success: false, error: 'Defuse card not found' };
-
-    player.hand.splice(defuseIndex, 1);
-    state.discardPile.push('neutralizer');
-
-    // Insert exploding cat back into deck at specified position
-    state.deck.splice(position, 0, 'critical_event');
-
-    // Clear the pending defuse state
-    state.pendingDefuse = null;
-
-    helpers.addLog(
+    return executeDefuseHelper(
       state,
-      helpers.createLogEntry('action', `Defused an Exploding Cat!`, {
-        scope: 'all',
-        senderId: playerId,
-      }),
+      playerId,
+      position,
+      (s, pid) => this.findPlayer(s, pid),
+      helpers,
     );
-
-    helpers.advanceTurn(state);
-
-    return { success: true, state };
   }
 }

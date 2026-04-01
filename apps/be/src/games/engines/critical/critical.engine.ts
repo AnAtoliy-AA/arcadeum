@@ -20,6 +20,7 @@ import {
   executeAttackOfTheDead,
   executeSuperSkip,
   executeReverse,
+  executeChainStrike,
 } from './critical-attack.utils';
 import {
   getAvailableActionsForPlayer,
@@ -257,6 +258,14 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
 
       case 'invert':
         return executeReverse(newState, context.userId, helpers);
+
+      case 'chain_strike':
+        return executeChainStrike(
+          newState,
+          context.userId,
+          typedPayload!.targetPlayerId!,
+          helpers,
+        );
 
       case 'commit_alter_future':
         return executeCommitAlterFuture(

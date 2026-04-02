@@ -7,8 +7,8 @@
   "scripts": {
     "test": "node scripts/vitest-wrapper.js",
     "type-check": "tsc --noEmit",
-    "storybook": "storybook dev -p 6007",
-    "dev": "storybook dev -p 6007"
+    "storybook": "storybook dev -p $(node ../../scripts/resolve-env-port.js .env STORYBOOK_PORT 6007)",
+    "dev": "storybook dev -p $(node ../../scripts/resolve-env-port.js .env STORYBOOK_PORT 6007) --no-open"
   },
   "dependencies": {
     "react": "19.1.0",

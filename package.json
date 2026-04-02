@@ -5,7 +5,8 @@
   "packageManager": "pnpm@9.15.0",
   "scripts": {
     "prepare": "husky",
-    "dev": "turbo run dev --parallel && cd packages/ui && npm run dev",
+    "dev": "turbo run dev --parallel --filter be --filter web --filter \"@arcadeum/ui\"",
+    "dev:all": "turbo run dev --parallel && cd packages/ui && npm run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
@@ -22,6 +23,7 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "auto-changelog": "^2.5.0",
+    "dotenv": "^17.2.2",
     "husky": "^9.1.4",
     "jimp": "^0.22.12",
     "lint-staged": "^15.2.10",

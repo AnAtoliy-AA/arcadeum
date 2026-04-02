@@ -7,7 +7,11 @@ export function getAllowedOrigins(): string[] {
 
   // Add localhost only in non-production environments
   if (process.env.NODE_ENV !== 'production') {
-    allowedOrigins.push('http://localhost:3000', 'http://127.0.0.1:3000');
+    const webPort = process.env.WEB_PORT || '3000';
+    allowedOrigins.push(
+      `http://localhost:${webPort}`,
+      `http://127.0.0.1:${webPort}`,
+    );
   }
 
   return allowedOrigins;

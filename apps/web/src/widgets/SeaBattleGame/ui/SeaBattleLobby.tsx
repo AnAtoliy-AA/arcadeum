@@ -9,10 +9,10 @@ import {
 import type { GameRoomSummary } from '@/shared/types/games';
 import { MIN_PLAYERS } from '../types';
 import { SEA_BATTLE_VARIANTS } from '../lib/constants';
-import { VariantSelector } from './VariantSelector';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { IconButton } from '@/features/games/ui/ReusableGameLobby';
-import { VARIANT_THEMES } from '../lib/theme';
+import { SeaBattleThemePreview } from './SeaBattleThemePreview';
+import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 
 const getSeaBattleTheme = (variantId?: string): GameLobbyTheme => {
   const variant = SEA_BATTLE_VARIANTS.find((v) => v.id === variantId);
@@ -60,11 +60,18 @@ export function SeaBattleLobby({
 }: SeaBattleLobbyProps) {
   const roomVariant = (room.gameOptions?.variant as string) || 'classic';
   const [selectedVariant, setSelectedVariant] = React.useState(roomVariant);
+  const [showAllVariants, setShowAllVariants] = React.useState(false);
 
   // Sync with room variant when it changes from server
   React.useEffect(() => {
     setSelectedVariant(roomVariant);
   }, [roomVariant]);
+
+  const VISIBLE_COUNT = 4;
+  const visibleVariants = showAllVariants
+    ? SEA_BATTLE_VARIANTS
+    : SEA_BATTLE_VARIANTS.slice(0, VISIBLE_COUNT);
+  const hiddenCount = SEA_BATTLE_VARIANTS.length - VISIBLE_COUNT;
 
   const theme = getSeaBattleTheme(selectedVariant);
   const variantInfo = getVariantInfo(selectedVariant);
@@ -81,121 +88,78 @@ export function SeaBattleLobby({
   const optionsSlot =
     isHost && room.status === 'lobby' ? (
       <XStack
-        alignItems="center"
-        gap="$6"
-        marginLeft="$4"
-        $md={{ flexDirection: 'column', alignItems: 'flex-start', gap: '$4', marginLeft: 0, width: '100%' }}
+        gap="$4"
+        flexWrap="wrap"
+        alignItems="flex-start"
+        $md={{ flexDirection: 'column', gap: '$3' }}
       >
-        <VariantSelector
-          roomId={room.id}
-          currentVariant={selectedVariant}
-          onVariantChange={setSelectedVariant}
-        />
-        <XStack
-          alignItems="center"
-          gap="$4"
-          backgroundColor="rgba(255,255,255,0.05)"
-          paddingVertical="$2"
-          paddingHorizontal="$4"
-          borderRadius={8}
-          borderWidth={1}
-          borderColor="rgba(255,255,255,0.1)"
-          data-testid="color-preview-container"
-          $md={{ flexWrap: 'wrap', gap: '$3', width: '100%' }}
-        >
-          <XStack alignItems="center" gap="$2">
-            <YStack
-              width={16}
-              height={16}
-              borderRadius={4}
-              backgroundColor={
-                VARIANT_THEMES[selectedVariant as keyof typeof VARIANT_THEMES]?.shipColor ??
-                VARIANT_THEMES.classic.shipColor
-              }
-              borderWidth={1}
-              borderColor="rgba(255,255,255,0.2)"
-              aria-label="Ship"
-              data-testid="color-swatch-ship"
-            />
-            <Text
-              fontSize={12}
-              color="rgba(255,255,255,0.6)"
-              style={{ whiteSpace: 'nowrap' }}
-              data-testid="color-label-ship"
-            >
-              {t('games.sea_battle_v1.colors.ship' as TranslationKey)}
-            </Text>
+        {/* Theme picker tabs */}
+        <YStack gap="$2">
+          <Text
+            fontSize={10}
+            color="rgba(148,163,184,0.6)"
+            letterSpacing={2}
+            textTransform="uppercase"
+          >
+            {t('games.sea_battle_v1.table.lobby.theme' as TranslationKey)}
+          </Text>
+          <XStack gap="$2" flexWrap="wrap">
+            {visibleVariants.map((variant) => (
+              <XStack
+                key={variant.id}
+                alignItems="center"
+                gap="$1"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                borderRadius={20}
+                borderWidth={1.5}
+                cursor="pointer"
+                onPress={() => setSelectedVariant(variant.id)}
+                borderColor={
+                  selectedVariant === variant.id
+                    ? 'rgba(96,165,250,0.6)'
+                    : 'rgba(255,255,255,0.1)'
+                }
+                backgroundColor={
+                  selectedVariant === variant.id
+                    ? 'rgba(96,165,250,0.12)'
+                    : 'rgba(255,255,255,0.03)'
+                }
+              >
+                <Text fontSize={14}>{variant.emoji}</Text>
+                <Text
+                  fontSize={11}
+                  fontWeight="500"
+                  color={selectedVariant === variant.id ? '#93c5fd' : '#cbd5e1'}
+                >
+                  {t(variant.name as TranslationKey)}
+                </Text>
+              </XStack>
+            ))}
+            {!showAllVariants && hiddenCount > 0 && (
+              <XStack
+                alignItems="center"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                borderRadius={20}
+                borderWidth={1}
+                borderColor="rgba(255,255,255,0.1)"
+                cursor="pointer"
+                onPress={() => setShowAllVariants(true)}
+                aria-label="Show all themes"
+              >
+                <Text fontSize={11} color="rgba(148,163,184,0.5)">
+                  + {hiddenCount} more ▾
+                </Text>
+              </XStack>
+            )}
           </XStack>
-          <XStack alignItems="center" gap="$2">
-            <YStack
-              width={16}
-              height={16}
-              borderRadius={4}
-              backgroundColor={
-                VARIANT_THEMES[selectedVariant as keyof typeof VARIANT_THEMES]?.hitColor ??
-                VARIANT_THEMES.classic.hitColor
-              }
-              borderWidth={1}
-              borderColor="rgba(255,255,255,0.2)"
-              aria-label="Hit"
-              data-testid="color-swatch-hit"
-            />
-            <Text
-              fontSize={12}
-              color="rgba(255,255,255,0.6)"
-              style={{ whiteSpace: 'nowrap' }}
-              data-testid="color-label-hit"
-            >
-              {t('games.sea_battle_v1.colors.hit' as TranslationKey)}
-            </Text>
-          </XStack>
-          <XStack alignItems="center" gap="$2">
-            <YStack
-              width={16}
-              height={16}
-              borderRadius={4}
-              backgroundColor={
-                VARIANT_THEMES[selectedVariant as keyof typeof VARIANT_THEMES]?.missColor ??
-                VARIANT_THEMES.classic.missColor
-              }
-              borderWidth={1}
-              borderColor="rgba(255,255,255,0.2)"
-              aria-label="Miss"
-              data-testid="color-swatch-miss"
-            />
-            <Text
-              fontSize={12}
-              color="rgba(255,255,255,0.6)"
-              style={{ whiteSpace: 'nowrap' }}
-              data-testid="color-label-miss"
-            >
-              {t('games.sea_battle_v1.colors.miss' as TranslationKey)}
-            </Text>
-          </XStack>
-          <XStack alignItems="center" gap="$2">
-            <YStack
-              width={16}
-              height={16}
-              borderRadius={4}
-              backgroundColor={
-                VARIANT_THEMES[selectedVariant as keyof typeof VARIANT_THEMES]?.cellEmpty ??
-                VARIANT_THEMES.classic.cellEmpty
-              }
-              borderWidth={1}
-              borderColor="rgba(255,255,255,0.2)"
-              aria-label="Empty"
-              data-testid="color-swatch-empty"
-            />
-            <Text
-              fontSize={12}
-              color="rgba(255,255,255,0.6)"
-              style={{ whiteSpace: 'nowrap' }}
-              data-testid="color-label-empty"
-            >
-              {t('games.sea_battle_v1.colors.empty' as TranslationKey)}
-            </Text>
-          </XStack>
-        </XStack>
+        </YStack>
+
+        {/* Live board preview */}
+        <SeaBattleThemeProvider variant={selectedVariant}>
+          <SeaBattleThemePreview selectedVariant={selectedVariant} />
+        </SeaBattleThemeProvider>
       </XStack>
     ) : null;
 

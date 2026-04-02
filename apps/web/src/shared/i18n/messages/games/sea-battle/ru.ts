@@ -91,6 +91,7 @@ export const ruMessages = {
         yourTurnAttack: '🎯 Ваш ход - Атакуйте противника!',
         placeShips: 'Расставьте свои корабли',
         waitingFor: 'Ждем {{player}}...',
+        targetBadge: 'Цель',
       },
       phase: {
         lobby: 'Лобби',
@@ -109,6 +110,7 @@ export const ruMessages = {
         randomize: 'Перемешать',
         resetPlacement: 'Сбросить',
         waitingForOthers: 'Ожидание других...',
+        dragHint: 'Перетащите на поле · Нажмите для выбора',
       },
       attack: {
         hit: 'Попал!',
@@ -124,6 +126,7 @@ export const ruMessages = {
         hostCanStart: "Нажмите 'Начать игру', когда готовы",
         waitingForHost: 'Ожидание начала игры хостом',
         hostControls: 'Управление хоста',
+        theme: 'Тема',
         roomInfo: 'Информация о комнате',
         host: 'Хост',
       },

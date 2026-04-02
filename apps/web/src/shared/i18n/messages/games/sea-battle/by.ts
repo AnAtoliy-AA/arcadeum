@@ -92,6 +92,7 @@ export const byMessages = {
         yourTurnAttack: '🎯 Ваш ход - Атакуйце праціўніка!',
         placeShips: 'Растаўце свае караблі',
         waitingFor: 'Чакаем {{player}}...',
+        targetBadge: 'Мэта',
       },
       phase: {
         lobby: 'Лобі',
@@ -110,6 +111,7 @@ export const byMessages = {
         randomize: 'Перамяшаць',
         resetPlacement: 'Скінуць',
         waitingForOthers: 'Чаканне іншых...',
+        dragHint: 'Перацягніце на поле · Націсніце для выбару',
       },
       attack: {
         hit: 'Трапіў!',
@@ -125,6 +127,7 @@ export const byMessages = {
         hostCanStart: "Націсніце 'Пачаць гульню', калі гатовыя",
         waitingForHost: 'Чаканне пачатку гульні хостам',
         hostControls: 'Кіраванне хоста',
+        theme: 'Тэма',
         roomInfo: 'Інфармацыя аб пакоі',
         host: 'Хост',
       },

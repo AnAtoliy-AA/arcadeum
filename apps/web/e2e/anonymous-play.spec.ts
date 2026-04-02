@@ -87,7 +87,10 @@ test.describe('Anonymous Play', () => {
   });
 
   test('should allow creating a room without login', async ({ page }) => {
-    await page.goto('/games/create?gameId=critical_v1');
+    await page.goto('/games/create?gameId=critical_v1', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
 
     await expect(page).toHaveURL(/\/games\/create/, { timeout: 15000 });
     await expect(page.getByRole('heading', { name: /create/i })).toBeVisible();

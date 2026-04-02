@@ -80,7 +80,7 @@ const GameBoardArea = styled(YStack, {
   flex: 1,
   minWidth: 0,
   position: 'relative',
-  overflowY: 'auto',
+  overflow: 'visible',
   paddingBottom: '$4',
   pointerEvents: 'auto',
 
@@ -201,7 +201,16 @@ export function GameLayout({
           </ChatArea>
         )}
       </MainArea>
-      {popupOverlay}
+      {popupOverlay && (
+        <YStack
+          position="absolute"
+          bottom="$4"
+          left="$4"
+          zIndex={50}
+        >
+          {popupOverlay}
+        </YStack>
+      )}
       {modals}
     </LayoutContainer>
   );

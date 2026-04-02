@@ -187,62 +187,59 @@ export function AttackBoard({
                 borderColor={theme.cellBorder}
               >
                 {currentPlayer.board.map((row, rIndex) =>
-                  row.map((cellState, cIndex) => (
-                    <BoardCell
-                      key={`own-${rIndex}-${cIndex}`}
-                      isClickable={false}
-                      position="relative"
-                      backgroundColor={getCellBg(cellState, theme)}
-                      borderColor={theme.cellBorder}
-                      borderRadius={parseInt(theme.borderRadius) || 4}
-                      className={getCellAnimClass(
-                        sunkCellSet,
-                        currentPlayer.playerId,
-                        rIndex,
-                        cIndex,
-                        cellState,
-                      )}
-                    >
-                      {getCellIcon(
-                        sunkCellSet,
-                        currentPlayer.playerId,
-                        rIndex,
-                        cIndex,
-                        cellState,
-                      ) && (
-                        <Text
-                          position="absolute"
-                          fontSize={12}
-                          style={
-                            {
-                              pointerEvents: 'none',
-                              userSelect: 'none',
-                            } as React.CSSProperties
-                          }
-                        >
-                          {getCellIcon(
-                            sunkCellSet,
-                            currentPlayer.playerId,
-                            rIndex,
-                            cIndex,
-                            cellState,
-                          )}
-                        </Text>
-                      )}
-                      {cellState === CELL_STATE.MISS && (
-                        <YStack
-                          position="absolute"
-                          width={9}
-                          height={9}
-                          borderRadius={100}
-                          backgroundColor="rgba(255,255,255,0.55)"
-                          style={
-                            { pointerEvents: 'none' } as React.CSSProperties
-                          }
-                        />
-                      )}
-                    </BoardCell>
-                  )),
+                  row.map((cellState, cIndex) => {
+                    const ownIcon = getCellIcon(
+                      sunkCellSet,
+                      currentPlayer.playerId,
+                      rIndex,
+                      cIndex,
+                      cellState,
+                    );
+                    return (
+                      <BoardCell
+                        key={`own-${rIndex}-${cIndex}`}
+                        isClickable={false}
+                        position="relative"
+                        backgroundColor={getCellBg(cellState, theme)}
+                        borderColor={theme.cellBorder}
+                        borderRadius={parseInt(theme.borderRadius) || 4}
+                        className={getCellAnimClass(
+                          sunkCellSet,
+                          currentPlayer.playerId,
+                          rIndex,
+                          cIndex,
+                          cellState,
+                        )}
+                      >
+                        {ownIcon && (
+                          <Text
+                            position="absolute"
+                            fontSize={12}
+                            style={
+                              {
+                                pointerEvents: 'none',
+                                userSelect: 'none',
+                              } as React.CSSProperties
+                            }
+                          >
+                            {ownIcon}
+                          </Text>
+                        )}
+                        {cellState === CELL_STATE.MISS && (
+                          <YStack
+                            position="absolute"
+                            width={9}
+                            height={9}
+                            borderRadius={100}
+                            backgroundColor="rgba(255,255,255,0.55)"
+                            style={
+                              { pointerEvents: 'none' } as React.CSSProperties
+                            }
+                          />
+                        )}
+                      </BoardCell>
+                    );
+                  }),
                 )}
               </BoardGrid>
             </BoardWithLabels>

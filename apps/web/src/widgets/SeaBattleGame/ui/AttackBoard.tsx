@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo } from 'react';
+import { XStack, YStack, Text } from 'tamagui';
 import type { SeaBattlePlayerState } from '../types';
 import { CELL_STATE, ROW_LABELS, COL_LABELS } from '../types';
 import { ShipsLeft } from './ShipsLeft';
@@ -18,7 +19,7 @@ import {
   BadgeWrapper,
 } from './styles';
 import { SeaBattleGrids } from './SeaBattleGrids';
-import { Badge, IdleBadge } from '@/shared/ui';
+import { IdleBadge } from '@/shared/ui';
 import {
   useTranslation,
   type TranslationKey,
@@ -26,6 +27,7 @@ import {
 import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
 import type { SeaBattleTheme } from '../lib/theme';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
+import { TurnBadge } from './TurnBadge';
 
 interface AttackBoardProps {
   players: SeaBattlePlayerState[];
@@ -55,6 +57,30 @@ function getCellBg(
   }
 }
 
+function getCellIcon(
+  sunkCellSet: Set<string>,
+  playerId: string,
+  rIndex: number,
+  cIndex: number,
+  cellState: number,
+): string | null {
+  if (sunkCellSet.has(`${playerId}-${rIndex}-${cIndex}`)) return '💀';
+  if (cellState === CELL_STATE.HIT) return '🔥';
+  return null;
+}
+
+function getCellAnimClass(
+  sunkCellSet: Set<string>,
+  playerId: string,
+  rIndex: number,
+  cIndex: number,
+  cellState: number,
+): string | undefined {
+  if (sunkCellSet.has(`${playerId}-${rIndex}-${cIndex}`)) return 'sb-glow-sunk';
+  if (cellState === CELL_STATE.HIT) return 'sb-glow-hit';
+  return undefined;
+}
+
 export function AttackBoard({
   players,
   currentUserId,
@@ -75,6 +101,19 @@ export function AttackBoard({
   }, [players, currentUserId]);
 
   const idlePlayers = useGameStore((s: GameState) => s.idlePlayers);
+
+  // Build a set of "playerId-row-col" keys for all sunk ship cells
+  const sunkCellSet = useMemo(() => {
+    const set = new Set<string>();
+    players.forEach((p) => {
+      p.ships
+        .filter((s) => s.sunk)
+        .forEach((s) => {
+          s.cells.forEach((c) => set.add(`${p.playerId}-${c.row}-${c.col}`));
+        });
+    });
+    return set;
+  }, [players]);
 
   const handleCellClick = useCallback(
     (targetPlayerId: string, row: number, col: number) => {
@@ -102,14 +141,24 @@ export function AttackBoard({
             overflow="visible"
             backgroundColor={theme.boardBackground}
             borderColor={theme.cellBorder}
+            style={{ backdropFilter: 'blur(8px)' } as React.CSSProperties}
           >
-            {currentTurnPlayerId === currentUserId && (
-              <BadgeWrapper>
-                <Badge variant="success" size="sm" pulse>
-                  {t('games.sea_battle_v1.table.players.yourTurn')}
-                </Badge>
-              </BadgeWrapper>
-            )}
+            <BadgeWrapper>
+              <TurnBadge
+                isYourTurn={isMyTurn}
+                text={
+                  isMyTurn
+                    ? t(
+                        'games.sea_battle_v1.table.players.yourTurnAttack' as TranslationKey,
+                      )
+                    : opponents[0]
+                      ? `${t('games.sea_battle_v1.table.players.waitingFor' as TranslationKey)} ${resolveDisplayName(currentTurnPlayerId ?? '', 'Opponent')}`
+                      : t(
+                          'games.sea_battle_v1.table.players.yourTurnAttack' as TranslationKey,
+                        )
+                }
+              />
+            </BadgeWrapper>
             <PlayerName color={theme.textColor}>
               {resolveDisplayName(currentPlayer.playerId, 'You')} (Your Fleet)
               {idlePlayers.includes(currentPlayer.playerId) && <IdleBadge />}
@@ -142,10 +191,57 @@ export function AttackBoard({
                     <BoardCell
                       key={`own-${rIndex}-${cIndex}`}
                       isClickable={false}
+                      position="relative"
                       backgroundColor={getCellBg(cellState, theme)}
                       borderColor={theme.cellBorder}
                       borderRadius={parseInt(theme.borderRadius) || 4}
-                    />
+                      className={getCellAnimClass(
+                        sunkCellSet,
+                        currentPlayer.playerId,
+                        rIndex,
+                        cIndex,
+                        cellState,
+                      )}
+                    >
+                      {getCellIcon(
+                        sunkCellSet,
+                        currentPlayer.playerId,
+                        rIndex,
+                        cIndex,
+                        cellState,
+                      ) && (
+                        <Text
+                          position="absolute"
+                          fontSize={12}
+                          style={
+                            {
+                              pointerEvents: 'none',
+                              userSelect: 'none',
+                            } as React.CSSProperties
+                          }
+                        >
+                          {getCellIcon(
+                            sunkCellSet,
+                            currentPlayer.playerId,
+                            rIndex,
+                            cIndex,
+                            cellState,
+                          )}
+                        </Text>
+                      )}
+                      {cellState === CELL_STATE.MISS && (
+                        <YStack
+                          position="absolute"
+                          width={9}
+                          height={9}
+                          borderRadius={100}
+                          backgroundColor="rgba(255,255,255,0.55)"
+                          style={
+                            { pointerEvents: 'none' } as React.CSSProperties
+                          }
+                        />
+                      )}
+                    </BoardCell>
                   )),
                 )}
               </BoardGrid>
@@ -160,17 +256,31 @@ export function AttackBoard({
             overflow="visible"
             isTargetable={isMyTurn}
             backgroundColor={theme.boardBackground}
-            borderColor={theme.cellBorder}
+            borderColor={isMyTurn ? theme.accentColor : theme.cellBorder}
+            className={isMyTurn ? 'sb-breathe' : undefined}
+            style={{ backdropFilter: 'blur(8px)' } as React.CSSProperties}
           >
-            {currentTurnPlayerId === opponent.playerId && (
-              <BadgeWrapper>
-                <Badge variant="success" size="sm" pulse>
-                  {t(
-                    'games.sea_battle_v1.table.players.alive' as TranslationKey,
-                  )}
-                </Badge>
-              </BadgeWrapper>
-            )}
+            <BadgeWrapper>
+              {isMyTurn && (
+                <XStack
+                  alignItems="center"
+                  gap="$1"
+                  paddingHorizontal="$3"
+                  paddingVertical="$1"
+                  borderRadius={12}
+                  borderWidth={1}
+                  backgroundColor="rgba(239,68,68,0.15)"
+                  borderColor="rgba(239,68,68,0.4)"
+                >
+                  <Text fontSize={12}>🎯</Text>
+                  <Text fontSize={10} fontWeight="600" color="#fca5a5">
+                    {t(
+                      'games.sea_battle_v1.table.players.targetBadge' as TranslationKey,
+                    )}
+                  </Text>
+                </XStack>
+              )}
+            </BadgeWrapper>
             <PlayerName color={theme.textColor}>
               {resolveDisplayName(opponent.playerId, 'Opponent')}
               {idlePlayers.includes(opponent.playerId) && <IdleBadge />}
@@ -200,35 +310,86 @@ export function AttackBoard({
               >
                 {opponent.board.map((row, rIndex) =>
                   row.map((cellState, cIndex) => {
-                    const displayState =
-                      cellState === CELL_STATE.SHIP
+                    const isSunk = sunkCellSet.has(
+                      `${opponent.playerId}-${rIndex}-${cIndex}`,
+                    );
+                    const displayState = isSunk
+                      ? CELL_STATE.HIT
+                      : cellState === CELL_STATE.SHIP
                         ? CELL_STATE.EMPTY
                         : cellState;
                     const canAttack =
                       isMyTurn &&
                       !disabled &&
                       cellState !== CELL_STATE.HIT &&
-                      cellState !== CELL_STATE.MISS;
+                      cellState !== CELL_STATE.MISS &&
+                      !isSunk;
+                    const icon = getCellIcon(
+                      sunkCellSet,
+                      opponent.playerId,
+                      rIndex,
+                      cIndex,
+                      cellState,
+                    );
 
                     return (
                       <BoardCell
                         key={`${opponent.playerId}-${rIndex}-${cIndex}`}
                         isClickable={canAttack}
+                        position="relative"
                         backgroundColor={getCellBg(displayState, theme)}
                         hoverStyle={
                           canAttack
-                            ? { backgroundColor: theme.cellHover }
+                            ? {
+                                scale: 1.08,
+                                backgroundColor: theme.cellHover,
+                                borderColor: theme.primaryColor,
+                              }
                             : undefined
                         }
                         borderColor={theme.cellBorder}
                         borderRadius={parseInt(theme.borderRadius) || 4}
                         data-row={rIndex}
                         data-col={cIndex}
+                        className={getCellAnimClass(
+                          sunkCellSet,
+                          opponent.playerId,
+                          rIndex,
+                          cIndex,
+                          cellState,
+                        )}
                         onClick={() =>
                           canAttack &&
                           handleCellClick(opponent.playerId, rIndex, cIndex)
                         }
-                      />
+                      >
+                        {icon && (
+                          <Text
+                            position="absolute"
+                            fontSize={12}
+                            style={
+                              {
+                                pointerEvents: 'none',
+                                userSelect: 'none',
+                              } as React.CSSProperties
+                            }
+                          >
+                            {icon}
+                          </Text>
+                        )}
+                        {displayState === CELL_STATE.MISS && (
+                          <YStack
+                            position="absolute"
+                            width={9}
+                            height={9}
+                            borderRadius={100}
+                            backgroundColor="rgba(255,255,255,0.55)"
+                            style={
+                              { pointerEvents: 'none' } as React.CSSProperties
+                            }
+                          />
+                        )}
+                      </BoardCell>
                     );
                   }),
                 )}

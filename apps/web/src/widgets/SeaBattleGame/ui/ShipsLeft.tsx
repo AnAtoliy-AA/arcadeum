@@ -2,6 +2,7 @@
 import { YStack, XStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { Ship, SHIPS } from '../types';
+import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
 
 interface ShipsLeftProps {
   ships: Ship[];
@@ -10,6 +11,7 @@ interface ShipsLeftProps {
 
 export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
   const { t } = useTranslation();
+  const theme = useSeaBattleTheme();
   const sortedConfig = [...SHIPS].sort((a, b) => b.size - a.size);
   const totalShips = sortedConfig.length;
   const sunkCount = ships?.filter((s) => s.sunk).length ?? 0;
@@ -66,7 +68,11 @@ export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
                     width={10}
                     height={10}
                     backgroundColor={
-                      isSunk ? '#ff4444' : isMe ? '#4caf50' : '#ccc'
+                      isSunk
+                        ? `${theme.hitColor}59`
+                        : isMe
+                          ? theme.primaryColor
+                          : theme.textSecondaryColor
                     }
                     borderWidth={1}
                     borderColor="rgba(0,0,0,0.3)"

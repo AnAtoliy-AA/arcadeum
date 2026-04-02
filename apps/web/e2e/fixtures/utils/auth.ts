@@ -2,7 +2,7 @@ import { type Page } from '@playwright/test';
 
 export const MOCK_OBJECT_ID = '507f191e810c19729de860ea';
 const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': 'http://localhost:3000',
+  'Access-Control-Allow-Origin': `http://localhost:${process.env.WEB_PORT || '3000'}`,
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-anonymous-id',
   'Access-Control-Allow-Credentials': 'true',

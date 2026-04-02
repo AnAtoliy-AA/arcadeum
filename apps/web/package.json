@@ -3,8 +3,8 @@
   "version": "1.9.2",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "dev:next": "next dev",
+    "dev": "next dev -p $(node ../../scripts/resolve-env-port.js .env.local WEB_PORT 3000)",
+    "dev:next": "next dev -p $(node ../../scripts/resolve-env-port.js .env.local WEB_PORT 3000)",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

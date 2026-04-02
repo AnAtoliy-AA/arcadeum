@@ -8,9 +8,10 @@ async function bootstrap() {
   });
 
   const isProduction = process.env.NODE_ENV === 'production';
+  const webPort = process.env.WEB_PORT || '3000';
   const allowedOrigins = isProduction
     ? (process.env.CORS_ORIGINS?.split(',') ?? [])
-    : ['http://localhost:3000', 'http://127.0.0.1:3000'];
+    : [`http://localhost:${webPort}`, `http://127.0.0.1:${webPort}`];
 
   app.enableCors({
     origin: allowedOrigins,
@@ -24,7 +25,7 @@ async function bootstrap() {
     ],
   });
 
-  await app.listen(process.env.PORT ?? 4000, '0.0.0.0');
+  await app.listen(process.env.BE_PORT ?? 4000, '0.0.0.0');
 }
 
 void bootstrap();

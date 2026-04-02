@@ -6,6 +6,7 @@ import {
   MOCK_OBJECT_ID,
   mockGameSocket,
   mockAllOnPage,
+  navigateTo,
 } from './fixtures/test-utils';
 
 test.describe('Anonymous Play', () => {
@@ -87,7 +88,7 @@ test.describe('Anonymous Play', () => {
   });
 
   test('should allow creating a room without login', async ({ page }) => {
-    await page.goto('/games/create?gameId=critical_v1');
+    await navigateTo(page, '/games/create?gameId=critical_v1');
 
     await expect(page).toHaveURL(/\/games\/create/, { timeout: 15000 });
     await expect(page.getByRole('heading', { name: /create/i })).toBeVisible();
@@ -119,7 +120,7 @@ test.describe('Anonymous Play', () => {
     context,
     page,
   }) => {
-    await page.goto('/games/create');
+    await navigateTo(page, '/games/create');
     await expect(page.getByRole('heading', { name: /create/i })).toBeVisible();
 
     await page
@@ -179,8 +180,7 @@ test.describe('Anonymous Play', () => {
     });
 
     await mockGameSocket(newPage, MOCK_OBJECT_ID, anonymousId);
-
-    await newPage.goto(inviteUrl);
+    await navigateTo(newPage, inviteUrl);
     await waitForRoomReady(newPage);
 
     await expect(

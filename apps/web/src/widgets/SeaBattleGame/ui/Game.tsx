@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  useRef,
-  useCallback,
-  useState,
-  useEffect,
-  useMemo,
-} from 'react';
+import { useRef, useCallback, useState, useEffect, useMemo } from 'react';
 import { TamaguiElement, Text, XStack } from 'tamagui';
 import {
   useTranslation,
@@ -34,14 +28,15 @@ import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 
 import { RulesModal } from './RulesModal';
-import { useGameChatStore, ChatMessagePopup, useLatestChatMessage } from '@/widgets/GameChat';
-import { FullscreenButton } from '@/widgets/CriticalGame/ui/styles';
 import {
-  CompactHeaderContainer,
-  HeaderTitleArea,
-} from './styles/header';
+  useGameChatStore,
+  ChatMessagePopup,
+  useLatestChatMessage,
+} from '@/widgets/GameChat';
+import { FullscreenButton } from '@/widgets/CriticalGame/ui/styles';
+import { CompactHeaderContainer, HeaderTitleArea } from './styles/header';
+import { useSeaBattleAnimations } from './styles/animations';
 import { TurnIndicator } from '@arcadeum/ui';
-
 
 export default function SeaBattleGame({
   roomId,
@@ -52,6 +47,7 @@ export default function SeaBattleGame({
   accessToken,
 }: SeaBattleGameProps) {
   const { t } = useTranslation();
+  useSeaBattleAnimations();
 
   const storeRoom = useGameStore((s: GameState) => s.room);
   const storeDeleteRoom = useGameStore((s: GameState) => s.deleteRoom);
@@ -213,136 +209,143 @@ export default function SeaBattleGame({
 
   return (
     <SeaBattleThemeProvider variant={cardVariant}>
-    <GameLayout
-      gameContainerRef={containerRef}
-      variant={cardVariant}
-      isMyTurn={!!isMyTurn}
-      popupOverlay={
-        latestMessage ? (
-          <ChatMessagePopup
-            key={latestMessage.id}
-            senderName={latestMessage.senderName}
-            message={latestMessage.message}
-            visible={!!latestMessage}
-            onDismiss={dismissPopup}
-          />
-        ) : undefined
-      }
-      lobby={
-        !snapshot ? (
-          <SeaBattleLobby
-            room={room!}
-            isHost={isHost}
-            startBusy={!!startBusy}
-            onStartGame={handleStartGame}
-            onReorderPlayers={handleReorderPlayers}
-            onShowRules={setShowRules}
-            onDeleteRoom={() => storeDeleteRoom(roomId)}
-            onRefresh={() => storeRefreshRoom(roomId)}
-            t={t}
-          />
-        ) : undefined
-      }
-      header={
-        <CompactHeaderContainer>
-          <HeaderTitleArea>
-            <Text
-              fontSize="$5"
-              fontWeight="600"
-              whiteSpace="nowrap"
-              overflow="hidden"
-              textOverflow="ellipsis"
-              $sm={{ fontSize: '$4', whiteSpace: 'normal', overflow: 'visible', textOverflow: 'clip' }}
-            >
-              {t('games.sea_battle_v1.name' as TranslationKey)} {variantLabel} -{' '}
-              {room?.name}
-            </Text>
-          </HeaderTitleArea>
+      <GameLayout
+        gameContainerRef={containerRef}
+        variant={cardVariant}
+        isMyTurn={!!isMyTurn}
+        popupOverlay={
+          latestMessage ? (
+            <ChatMessagePopup
+              key={latestMessage.id}
+              senderName={latestMessage.senderName}
+              message={latestMessage.message}
+              visible={!!latestMessage}
+              onDismiss={dismissPopup}
+            />
+          ) : undefined
+        }
+        lobby={
+          !snapshot ? (
+            <SeaBattleLobby
+              room={room!}
+              isHost={isHost}
+              startBusy={!!startBusy}
+              onStartGame={handleStartGame}
+              onReorderPlayers={handleReorderPlayers}
+              onShowRules={setShowRules}
+              onDeleteRoom={() => storeDeleteRoom(roomId)}
+              onRefresh={() => storeRefreshRoom(roomId)}
+              t={t}
+            />
+          ) : undefined
+        }
+        header={
+          <CompactHeaderContainer>
+            <HeaderTitleArea>
+              <Text
+                fontSize="$5"
+                fontWeight="600"
+                whiteSpace="nowrap"
+                overflow="hidden"
+                textOverflow="ellipsis"
+                $sm={{
+                  fontSize: '$4',
+                  whiteSpace: 'normal',
+                  overflow: 'visible',
+                  textOverflow: 'clip',
+                }}
+              >
+                {t('games.sea_battle_v1.name' as TranslationKey)} {variantLabel}{' '}
+                - {room?.name}
+              </Text>
+            </HeaderTitleArea>
 
-          <TurnIndicator isYourTurn={!!isMyTurn}>
-            {getTurnStatusText()}
-          </TurnIndicator>
+            <TurnIndicator isYourTurn={!!isMyTurn}>
+              {getTurnStatusText()}
+            </TurnIndicator>
 
-          <XStack alignItems="center" gap="$2" flexShrink={0}>
-            <FullscreenButton
-              onClick={() => setShowRules(true)}
-              title="Game Rules"
-            >
-              📖
-            </FullscreenButton>
-          </XStack>
-        </CompactHeaderContainer>
-      }
-      modals={
-        <>
-          <RulesModal
-            isOpen={showRules}
-            onClose={() => setShowRules(false)}
-            t={t}
-          />
-          <GameResultModal
-            isOpen={isGameOver && !resultModalDismissed}
-            result={gameResult}
-            onRematch={isHost ? handleOpenRematch : undefined}
-            onClose={() => setResultModalDismissed(true)}
-            rematchLoading={rematchLoading}
-            t={t}
-          />
+            <XStack alignItems="center" gap="$2" flexShrink={0}>
+              <FullscreenButton
+                onClick={() => setShowRules(true)}
+                title="Game Rules"
+              >
+                📖
+              </FullscreenButton>
+            </XStack>
+          </CompactHeaderContainer>
+        }
+        modals={
+          <>
+            <RulesModal
+              isOpen={showRules}
+              onClose={() => setShowRules(false)}
+              t={t}
+            />
+            <GameResultModal
+              isOpen={isGameOver && !resultModalDismissed}
+              result={gameResult}
+              onRematch={isHost ? handleOpenRematch : undefined}
+              onClose={() => setResultModalDismissed(true)}
+              rematchLoading={rematchLoading}
+              t={t}
+            />
 
-          <RematchModal
-            isOpen={showRematchModal}
-            players={
-              snapshot?.players.map((p) => ({
-                playerId: p.playerId,
-                displayName: resolveDisplayName(
-                  p.playerId,
-                  `Player ${p.playerId.slice(0, 4)} `,
-                ),
-                alive: p.alive,
-              })) || []
-            }
+            <RematchModal
+              isOpen={showRematchModal}
+              players={
+                snapshot?.players.map((p) => ({
+                  playerId: p.playerId,
+                  displayName: resolveDisplayName(
+                    p.playerId,
+                    `Player ${p.playerId.slice(0, 4)} `,
+                  ),
+                  alive: p.alive,
+                })) || []
+              }
+              currentUserId={currentUserId}
+              rematchLoading={rematchLoading}
+              onClose={closeRematchModal}
+              onConfirm={handleRematch}
+              t={t}
+              cardVariant={cardVariant}
+            />
+
+            <RematchInvitationModal
+              isOpen={!!invitation}
+              senderName={invitation?.hostName || ''}
+              onAccept={handleAcceptInvitation}
+              onDecline={handleDeclineInvitation}
+              t={t}
+            />
+          </>
+        }
+      >
+        {snapshot && isPlacementPhase && (
+          <ShipPlacementBoard
+            key="placement-board"
+            currentPlayer={currentPlayer}
+            onPlaceShip={placeShip}
+            onConfirmPlacement={confirmPlacement}
+            onResetPlacement={resetPlacement}
+            isPlacementComplete={isPlacementComplete}
+            onAutoPlace={handleAutoPlace}
+          />
+        )}
+
+        {snapshot && isBattlePhase && (
+          <AttackBoard
+            key="attack-board"
+            players={snapshot.players}
             currentUserId={currentUserId}
-            rematchLoading={rematchLoading}
-            onClose={closeRematchModal}
-            onConfirm={handleRematch}
-            t={t}
-            cardVariant={cardVariant}
+            currentTurnPlayerId={
+              snapshot.playerOrder[snapshot.currentTurnIndex]
+            }
+            isMyTurn={isMyTurn}
+            onAttack={attack}
+            resolveDisplayName={resolveDisplayName}
           />
-
-          <RematchInvitationModal
-            isOpen={!!invitation}
-            senderName={invitation?.hostName || ''}
-            onAccept={handleAcceptInvitation}
-            onDecline={handleDeclineInvitation}
-            t={t}
-          />
-        </>
-      }
-    >
-      {snapshot && isPlacementPhase && (
-        <ShipPlacementBoard
-          key="placement-board"
-          currentPlayer={currentPlayer}
-          onPlaceShip={placeShip}
-          onConfirmPlacement={confirmPlacement}
-          onResetPlacement={resetPlacement}
-          isPlacementComplete={isPlacementComplete}
-          onAutoPlace={handleAutoPlace}
-        />
-      )}
-
-      {snapshot && isBattlePhase && (
-        <AttackBoard
-          key="attack-board"
-          players={snapshot.players}
-          currentUserId={currentUserId}
-          currentTurnPlayerId={snapshot.playerOrder[snapshot.currentTurnIndex]}
-          isMyTurn={isMyTurn}
-          onAttack={attack}
-          resolveDisplayName={resolveDisplayName}
-        />
-      )}
-    </GameLayout>
+        )}
+      </GameLayout>
     </SeaBattleThemeProvider>
   );
 }

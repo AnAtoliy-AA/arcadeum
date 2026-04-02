@@ -11,6 +11,7 @@ export const BoardGrid = styled(YStack, {
   width: '100%',
   maxWidth: 400,
   aspectRatio: 1,
+  overflow: 'visible',
 
   $md: {
     maxWidth: '100%',

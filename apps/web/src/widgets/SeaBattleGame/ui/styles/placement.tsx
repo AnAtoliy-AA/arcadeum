@@ -32,7 +32,7 @@ export const ShipItem = styled(XStack, {
   variants: {
     isPlaced: {
       true: { opacity: 0.5, cursor: 'default' },
-      false: { cursor: 'pointer' },
+      false: { cursor: 'grab' },
     },
     animated: {
       true: { animation: 'medium' },

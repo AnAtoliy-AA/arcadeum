@@ -7,6 +7,7 @@ export const PlayerSection = styled(YStack, {
   gap: '$2',
   padding: '$4',
   borderWidth: 2,
+  borderRadius: 12,
 
   variants: {
     isTargetable: {

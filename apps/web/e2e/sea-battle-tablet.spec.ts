@@ -73,6 +73,11 @@ test.describe('Sea Battle Tablet Layout', () => {
     );
     expect(flexDirection).toBe('column');
 
+    // At ≤1150px chat is hidden by default — toggle it open first
+    const toggleChatButton = page.getByTestId('toggle-chat-button');
+    await expect(toggleChatButton).toBeVisible();
+    await toggleChatButton.click();
+
     const chatArea = page.getByTestId('game-chat-area');
     await expect(chatArea).toBeVisible();
 

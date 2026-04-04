@@ -404,6 +404,7 @@ export const byMessages = {
       fullscreen: 'Увесь экран',
       exitFullscreen: 'Выйсці з поўнаэкраннага рэжыму',
       enterFullscreen: 'На ўвесь экран',
+      rules: 'Правілы',
       leaveRoom: 'Пакінуць',
       leaveConfirmMessage:
         'Вы ўпэўнены, што хочаце пакінуць гульню? Вы будзеце выдалены са спіса ўдзельнікаў.',

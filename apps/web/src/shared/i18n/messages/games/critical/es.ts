@@ -408,6 +408,7 @@ export const esMessages = {
       fullscreen: 'Pantalla completa',
       exitFullscreen: 'Salir de pantalla completa',
       enterFullscreen: 'Entrar en pantalla completa',
+      rules: 'Reglas',
       leaveRoom: 'Salir',
       leaveConfirmMessage:
         '¿Estás seguro de que quieres salir del juego? Serás eliminado de la lista de participantes.',

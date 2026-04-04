@@ -71,19 +71,23 @@ export const GameWrapper = styled(YStack, {
   flexDirection: 'column',
 
   $md: {
-    flex: 1,
-    minHeight: 400,
-    overflow: 'auto',
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    overflow: 'visible',
+    minHeight: 'calc(100dvh - 180px)',
   },
   $tablet: {
-    flex: 1,
-    minHeight: 400,
-    overflow: 'auto',
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    overflow: 'visible',
   },
   $sm: {
-    flex: 1,
-    minHeight: 350,
-    overflow: 'auto',
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    overflow: 'visible',
   },
 } as Record<string, unknown>);
 

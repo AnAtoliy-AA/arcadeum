@@ -61,16 +61,19 @@ export default function GameRoomPage() {
   // Track if user manually submitted invite code
   const [manualSubmitPending, setManualSubmitPending] = useState(false);
   // Chat visibility state — wide screens default to visible, narrow to hidden.
-  const [showChat, setShowChat] = useState(true);
+  const [showChat, setShowChat] = useState(false);
   const handleToggleChat = useCallback(() => setShowChat((v) => !v), []);
+  const [showRules, setShowRules] = useState(false);
+  const handleShowRules = useCallback(() => setShowRules(true), []);
+  const handleCloseRules = useCallback(() => setShowRules(false), []);
 
   // Sync chat visibility to breakpoint after hydration and on resize.
-  // useState(true) is the SSR-safe default; the effect corrects it on the client.
+  // Only show chat automatically when the layout is side-by-side (> 1150px).
   useEffect(() => {
     queueMicrotask(() => {
-      setShowChat(media.gtSm);
+      setShowChat(media.gtMd);
     });
-  }, [media.gtSm]);
+  }, [media.gtMd]);
 
   // State for room visibility check
 
@@ -258,6 +261,8 @@ export default function GameRoomPage() {
         version: '1.0.0',
       },
       accessToken: snapshot.accessToken,
+      showRulesOpen: showRules,
+      onShowRulesClose: handleCloseRules,
     };
   }, [
     roomId,
@@ -266,6 +271,8 @@ export default function GameRoomPage() {
     initialSession,
     snapshot.userId,
     snapshot.accessToken,
+    showRules,
+    handleCloseRules,
   ]);
 
   // Track room loading progress for server wake-up message
@@ -434,6 +441,7 @@ export default function GameRoomPage() {
           fullscreenContainerRef={gameContainerRef}
           showChat={showChat}
           onToggleChat={handleToggleChat}
+          onShowRules={handleShowRules}
         />
 
         <GameRow flexDirection={roomFlexDirection}>

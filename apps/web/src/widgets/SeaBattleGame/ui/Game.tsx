@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useCallback, useState, useEffect, useMemo } from 'react';
-import { TamaguiElement, Text, XStack } from 'tamagui';
+import { TamaguiElement, Text, XStack, YStack } from 'tamagui';
 import {
   useTranslation,
   type TranslationKey,
@@ -33,8 +33,7 @@ import {
   ChatMessagePopup,
   useLatestChatMessage,
 } from '@/widgets/GameChat';
-import { FullscreenButton } from '@/widgets/CriticalGame/ui/styles';
-import { CompactHeaderContainer, HeaderTitleArea } from './styles/header';
+import { HeaderTitleArea } from './styles/header';
 import { useSeaBattleAnimations } from './styles/animations';
 import { TurnIndicator } from '@arcadeum/ui';
 
@@ -45,6 +44,8 @@ export default function SeaBattleGame({
   session: initialSession,
   isHost,
   accessToken,
+  showRulesOpen,
+  onShowRulesClose,
 }: SeaBattleGameProps) {
   const { t } = useTranslation();
   useSeaBattleAnimations();
@@ -240,45 +241,64 @@ export default function SeaBattleGame({
           ) : undefined
         }
         header={
-          <CompactHeaderContainer>
-            <HeaderTitleArea>
-              <Text
-                fontSize="$5"
-                fontWeight="600"
-                whiteSpace="nowrap"
-                overflow="hidden"
-                textOverflow="ellipsis"
-                $sm={{
-                  fontSize: '$4',
-                  whiteSpace: 'normal',
-                  overflow: 'visible',
-                  textOverflow: 'clip',
-                }}
-              >
-                {t('games.sea_battle_v1.name' as TranslationKey)} {variantLabel}{' '}
-                - {room?.name}
-              </Text>
-            </HeaderTitleArea>
-
-            <TurnIndicator isYourTurn={!!isMyTurn}>
-              {getTurnStatusText()}
-            </TurnIndicator>
-
-            <XStack alignItems="center" gap="$2" flexShrink={0}>
-              <FullscreenButton
-                onClick={() => setShowRules(true)}
-                title="Game Rules"
-              >
-                📖
-              </FullscreenButton>
+          <YStack
+            style={
+              {
+                position: 'sticky',
+                top: 0,
+                overflow: 'hidden',
+              } as React.CSSProperties
+            }
+            zIndex={100}
+            backgroundColor="$background"
+            borderBottomWidth={1}
+            borderBottomColor="$glassBorder"
+            paddingVertical="$2"
+            gap="$2"
+            flexShrink={0}
+          >
+            <XStack
+              flexShrink={0}
+              alignItems="center"
+              justifyContent="space-between"
+              width="100%"
+              gap="$4"
+            >
+              <HeaderTitleArea>
+                <Text
+                  fontSize="$5"
+                  fontWeight="600"
+                  whiteSpace="nowrap"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                  $sm={{
+                    fontSize: '$4',
+                    whiteSpace: 'normal',
+                    overflow: 'visible',
+                    textOverflow: 'clip',
+                  }}
+                >
+                  {t('games.sea_battle_v1.name' as TranslationKey)}{' '}
+                  {variantLabel} - {room?.name}
+                </Text>
+              </HeaderTitleArea>
             </XStack>
-          </CompactHeaderContainer>
+
+            <XStack justifyContent="center" width="100%" flexShrink={0}>
+              <TurnIndicator isYourTurn={!!isMyTurn}>
+                {getTurnStatusText()}
+              </TurnIndicator>
+            </XStack>
+          </YStack>
         }
         modals={
           <>
             <RulesModal
-              isOpen={showRules}
-              onClose={() => setShowRules(false)}
+              isOpen={showRules || !!showRulesOpen}
+              onClose={() => {
+                setShowRules(false);
+                onShowRulesClose?.();
+              }}
               t={t}
             />
             <GameResultModal
@@ -337,9 +357,6 @@ export default function SeaBattleGame({
             key="attack-board"
             players={snapshot.players}
             currentUserId={currentUserId}
-            currentTurnPlayerId={
-              snapshot.playerOrder[snapshot.currentTurnIndex]
-            }
             isMyTurn={isMyTurn}
             onAttack={attack}
             resolveDisplayName={resolveDisplayName}

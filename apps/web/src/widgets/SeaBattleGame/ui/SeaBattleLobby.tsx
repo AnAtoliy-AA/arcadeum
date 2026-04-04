@@ -16,13 +16,13 @@ import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 
 const getSeaBattleTheme = (variantId?: string): GameLobbyTheme => {
   const variant = SEA_BATTLE_VARIANTS.find((v) => v.id === variantId);
-  const gradient =
-    variant?.gradient ||
-    'linear-gradient(135deg, #3498db 0%, #2980b9 50%, #1abc9c 100%)';
+  const lightGradient =
+    variant?.lightGradient ||
+    'linear-gradient(90deg, #93c5fd 0%, #7dd3fc 40%, #6ee7b7 70%, #93c5fd 100%)';
 
   return {
-    titleGradient: gradient,
-    variantGradient: gradient,
+    titleGradient: lightGradient,
+    variantGradient: lightGradient,
     buttonGradient: 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)',
   };
 };

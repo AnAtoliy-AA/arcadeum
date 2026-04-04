@@ -1,6 +1,5 @@
 import { styled, XStack, YStack, Text } from 'tamagui';
 
-// Border/bg colors passed as inline props from components using useSeaBattleTheme()
 export const PlayerSection = styled(YStack, {
   name: 'PlayerSection',
   alignItems: 'center',
@@ -8,6 +7,9 @@ export const PlayerSection = styled(YStack, {
   padding: '$4',
   borderWidth: 2,
   borderRadius: 12,
+  minWidth: 0,
+  width: '100%',
+  overflow: 'hidden',
 
   variants: {
     isTargetable: {
@@ -23,26 +25,35 @@ export const PlayerSection = styled(YStack, {
     animated: true,
   },
 
-  $md: {
-    padding: '$4',
-    gap: '$3',
-    alignItems: 'center',
-    width: '100%',
-    maxWidth: 600,
-  },
   $sm: {
     padding: '$3',
     gap: '$2',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: '$5',
+  },
+});
+
+// Narrow (≤1150px): full-width block, stacked vertically by parent column layout.
+// Wide (>1150px): flex:1 side-by-side row, capped at 440px.
+export const PlayerSectionWrapper = styled(YStack, {
+  name: 'PlayerSectionWrapper',
+  position: 'relative',
+  overflow: 'visible',
+  paddingTop: 12,
+  width: '100%',
+  maxWidth: 500,
+  alignSelf: 'center',
+
+  $gtMd: {
+    width: 'auto',
+    alignSelf: 'auto',
+    flex: 1,
+    maxWidth: 'min(600px, calc(100vh - 430px))',
   },
 });
 
 export const BadgeWrapper = styled(XStack, {
   name: 'BadgeWrapper',
   position: 'absolute',
-  top: -12,
+  top: 0,
   zIndex: 10,
   left: '50%',
   transform: [{ translateX: '-50%' }],

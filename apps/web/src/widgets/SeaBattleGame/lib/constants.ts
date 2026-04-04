@@ -5,6 +5,8 @@ export const SEA_BATTLE_VARIANTS = [
     description: 'games.sea_battle_v1.variants.classic.description',
     emoji: '🚢',
     gradient: 'linear-gradient(135deg, #3498db 0%, #2980b9 50%, #1abc9c 100%)',
+    lightGradient:
+      'linear-gradient(90deg, #fff 0%, #7dd3fc 40%, #34d399 80%, #fff 100%)',
   },
   {
     id: 'modern',
@@ -12,6 +14,7 @@ export const SEA_BATTLE_VARIANTS = [
     description: 'games.sea_battle_v1.variants.modern.description',
     emoji: '🛡️',
     gradient: 'linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #7f8c8d 100%)',
+    lightGradient: 'linear-gradient(90deg, #fff 0%, #cbd5e1 50%, #fff 100%)',
   },
   {
     id: 'pixel',
@@ -19,6 +22,7 @@ export const SEA_BATTLE_VARIANTS = [
     description: 'games.sea_battle_v1.variants.pixel.description',
     emoji: '👾',
     gradient: 'linear-gradient(135deg, #2ecc71 0%, #27ae60 50%, #16a085 100%)',
+    lightGradient: 'linear-gradient(90deg, #fff 0%, #4ade80 50%, #fff 100%)',
   },
   {
     id: 'cartoon',
@@ -26,6 +30,8 @@ export const SEA_BATTLE_VARIANTS = [
     description: 'games.sea_battle_v1.variants.cartoon.description',
     emoji: '🐙',
     gradient: 'linear-gradient(135deg, #e74c3c 0%, #c0392b 50%, #d35400 100%)',
+    lightGradient:
+      'linear-gradient(90deg, #fff 0%, #f87171 40%, #fb923c 80%, #fff 100%)',
   },
   {
     id: 'cyber',
@@ -33,6 +39,8 @@ export const SEA_BATTLE_VARIANTS = [
     description: 'games.sea_battle_v1.variants.cyber.description',
     emoji: '🧬',
     gradient: 'linear-gradient(135deg, #9b59b6 0%, #8e44ad 50%, #2980b9 100%)',
+    lightGradient:
+      'linear-gradient(90deg, #fff 0%, #c084fc 40%, #93c5fd 80%, #fff 100%)',
   },
   {
     id: 'vintage',
@@ -40,6 +48,8 @@ export const SEA_BATTLE_VARIANTS = [
     description: 'games.sea_battle_v1.variants.vintage.description',
     emoji: '📜',
     gradient: 'linear-gradient(135deg, #d35400 0%, #e67e22 50%, #f1c40f 100%)',
+    lightGradient:
+      'linear-gradient(90deg, #fff 0%, #fdba74 40%, #fde047 80%, #fff 100%)',
   },
   {
     id: 'nebula',
@@ -47,6 +57,8 @@ export const SEA_BATTLE_VARIANTS = [
     description: 'games.sea_battle_v1.variants.nebula.description',
     emoji: '🌌',
     gradient: 'linear-gradient(135deg, #1abc9c 0%, #16a085 50%, #2c3e50 100%)',
+    lightGradient:
+      'linear-gradient(90deg, #fff 0%, #34d399 40%, #7dd3fc 80%, #fff 100%)',
   },
   {
     id: 'forest',
@@ -54,6 +66,8 @@ export const SEA_BATTLE_VARIANTS = [
     description: 'games.sea_battle_v1.variants.forest.description',
     emoji: '🌲',
     gradient: 'linear-gradient(135deg, #27ae60 0%, #16a085 50%, #2c3e50 100%)',
+    lightGradient:
+      'linear-gradient(90deg, #fff 0%, #4ade80 40%, #34d399 80%, #fff 100%)',
   },
   {
     id: 'sunset',
@@ -61,6 +75,8 @@ export const SEA_BATTLE_VARIANTS = [
     description: 'games.sea_battle_v1.variants.sunset.description',
     emoji: '🌅',
     gradient: 'linear-gradient(135deg, #f1c40f 0%, #e67e22 50%, #e74c3c 100%)',
+    lightGradient:
+      'linear-gradient(90deg, #fff 0%, #fde047 40%, #fca5a5 80%, #fff 100%)',
   },
   {
     id: 'monochrome',
@@ -68,6 +84,7 @@ export const SEA_BATTLE_VARIANTS = [
     description: 'games.sea_battle_v1.variants.monochrome.description',
     emoji: '🖤',
     gradient: 'linear-gradient(135deg, #7f8c8d 0%, #34495e 50%, #2c3e50 100%)',
+    lightGradient: 'linear-gradient(90deg, #fff 0%, #e2e8f0 50%, #fff 100%)',
   },
 ] as const;
 

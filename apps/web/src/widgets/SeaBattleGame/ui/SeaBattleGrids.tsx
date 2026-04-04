@@ -1,5 +1,5 @@
 'use client';
-import { XStack } from 'tamagui';
+import { XStack, useMedia } from 'tamagui';
 import type { ReactNode } from 'react';
 
 interface SeaBattleGridsProps {
@@ -7,16 +7,37 @@ interface SeaBattleGridsProps {
 }
 
 export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
+  const media = useMedia();
+  const isNarrow = !media.gtMd;
+
+  if (isNarrow) {
+    return (
+      <XStack
+        flexDirection="column"
+        flexWrap="nowrap"
+        gap="$8"
+        width="100%"
+        paddingTop="$2"
+        paddingHorizontal="$2"
+        alignItems="stretch"
+        data-testid="sea-battle-grids-container"
+      >
+        {children}
+      </XStack>
+    );
+  }
+
   return (
     <XStack
+      flexDirection="row"
       flexWrap="wrap"
       gap="$8"
       width="100%"
-      paddingVertical="$4"
+      flex={1}
       paddingHorizontal="$2"
+      alignItems="flex-start"
+      justifyContent="center"
       data-testid="sea-battle-grids-container"
-      $md={{ flexDirection: 'column', gap: '$4', alignItems: 'center' }}
-      $sm={{ flexDirection: 'column', gap: '$4', alignItems: 'center' }}
     >
       {children}
     </XStack>

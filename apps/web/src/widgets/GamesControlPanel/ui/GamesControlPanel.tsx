@@ -29,6 +29,7 @@ interface GamesControlPanelProps {
   fullscreenContainerRef?: RefObject<HTMLDivElement | null>;
   showChat?: boolean;
   onToggleChat?: () => void;
+  onShowRules?: () => void;
 }
 
 export function GamesControlPanel({
@@ -41,6 +42,7 @@ export function GamesControlPanel({
   fullscreenContainerRef,
   showChat,
   onToggleChat,
+  onShowRules,
 }: GamesControlPanelProps) {
   const router = useRouter();
 
@@ -157,6 +159,22 @@ export function GamesControlPanel({
           {' ' + t('games.table.controlPanel.fullscreen')}
         </Text>
       </Button>
+
+      {onShowRules && (
+        <Button
+          variant="glass"
+          size="sm"
+          onClick={onShowRules}
+          aria-label={t('games.table.controlPanel.rules') || 'Game Rules'}
+          title={t('games.table.controlPanel.rules') || 'Game Rules'}
+          data-testid="show-rules-button"
+        >
+          📖
+          <Text $sm={{ display: 'none' }}>
+            {' ' + (t('games.table.controlPanel.rules') || 'Rules')}
+          </Text>
+        </Button>
+      )}
 
       {onToggleChat && (
         <Button

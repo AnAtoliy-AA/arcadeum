@@ -14,11 +14,15 @@ export const GameRow = styled(YStack, {
   // Switch to horizontal layout only on wide screens (> 1150px)
   $md: {
     flexDirection: 'column',
-    flex: 1,
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
   },
   $tablet: {
     flexDirection: 'column',
-    flex: 1,
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
   },
   $gtMd: {
     flexDirection: 'row',
@@ -47,6 +51,25 @@ export const ChatPanel = styled(YStack, {
   $md: {
     width: '100%',
     minWidth: 0,
+    minHeight: 0,
+    height: 'auto',
+    paddingTop: 0,
+    marginTop: '$2',
+    borderRadius: '$3',
+  },
+  $tablet: {
+    width: '100%',
+    minWidth: 0,
+    minHeight: 0,
+    height: 'auto',
+    paddingTop: 0,
+    marginTop: '$2',
+    borderRadius: '$3',
+  },
+  $sm: {
+    width: '100%',
+    minWidth: 0,
+    minHeight: 0,
     height: 'auto',
     paddingTop: 0,
     marginTop: '$2',

@@ -91,15 +91,7 @@ export const GameTitle = styled(Text, {
   },
 
   variants: {
-    $variant: (val: string) => {
-      const config = getVariantStyles(val).header;
-      return {
-        background: config.getTitleBackground(),
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        backgroundClip: 'text',
-      };
-    },
+    $variant: (_val: string) => ({}),
   } as const,
 });
 

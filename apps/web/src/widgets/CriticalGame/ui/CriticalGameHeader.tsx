@@ -22,6 +22,7 @@ import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress'
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { GameVariant } from '@arcadeum/ui';
 import { YStack, Text } from 'tamagui';
+import { getVariantStyles } from './styles/variants';
 
 interface CriticalGameHeaderProps {
   room: GameRoomSummary;
@@ -87,17 +88,28 @@ export function CriticalGameHeader({
         </VariantIconBadge>
 
         <YStack gap={0} minWidth={0} flex={1}>
-          <GameTitle $variant={cardVariant as GameVariant} numberOfLines={1}>
-            {t('games.critical_v1.name')}
-            {' · '}
-            {(() => {
-              const variant = CARD_VARIANTS.find((v) => v.id === cardVariant);
-              return variant
-                ? t(variant.name as TranslationKey)
-                : t(
-                    'games.critical_v1.variants.cyberpunk.name' as TranslationKey,
-                  );
-            })()}
+          <GameTitle numberOfLines={1}>
+            <span
+              style={{
+                background: getVariantStyles(
+                  cardVariant || 'default',
+                ).header.getTitleBackground(),
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              {t('games.critical_v1.name')}
+              {' · '}
+              {(() => {
+                const variant = CARD_VARIANTS.find((v) => v.id === cardVariant);
+                return variant
+                  ? t(variant.name as TranslationKey)
+                  : t(
+                      'games.critical_v1.variants.cyberpunk.name' as TranslationKey,
+                    );
+              })()}
+            </span>
           </GameTitle>
 
           <Text

@@ -96,25 +96,7 @@ export const underwaterVariantStyles: VariantStyleConfig = {
       `0 0 10px ${VARIANT_COLORS.underwater.primary}80, 0 0 20px ${VARIANT_COLORS.underwater.secondary}4d`,
     getTitleBackground: () =>
       `linear-gradient(135deg, ${VARIANT_COLORS.underwater.primary} 0%, #0891b2 50%, ${VARIANT_COLORS.underwater.secondary} 100%)`,
-    getTitleTextStyles: () => ({
-      textShadow: `0 0 10px ${VARIANT_COLORS.underwater.primary}66`,
-      before: {
-        content: '""',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        background: `linear-gradient(
-          transparent 0%,
-          ${VARIANT_COLORS.underwater.primary}1a 50%,
-          transparent 100%
-        )`,
-        backgroundSize: '100% 200%',
-        animation: 'waterReflect 3s infinite linear',
-        pointerEvents: 'none',
-      },
-    }),
+    getTitleTextStyles: () => ({}),
   },
   players: {
     getCardBackground: (isCurrentTurn, isCurrentUser, isAlive) => {

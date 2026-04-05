@@ -84,9 +84,8 @@ export const GameWrapper = styled(YStack, {
     overflow: 'visible',
   },
   $sm: {
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 'auto',
+    flex: 1,
+    minHeight: 0,
     overflow: 'visible',
   },
 } as Record<string, unknown>);

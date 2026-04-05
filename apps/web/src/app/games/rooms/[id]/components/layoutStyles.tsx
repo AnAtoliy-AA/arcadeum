@@ -14,15 +14,18 @@ export const GameRow = styled(YStack, {
   // Switch to horizontal layout only on wide screens (> 1150px)
   $md: {
     flexDirection: 'column',
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 'auto',
+    flex: 1,
+    minHeight: 0,
   },
   $tablet: {
     flexDirection: 'column',
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 'auto',
+    flex: 1,
+    minHeight: 0,
+  },
+  $sm: {
+    flexDirection: 'column',
+    flex: 1,
+    minHeight: 0,
   },
   $gtMd: {
     flexDirection: 'row',

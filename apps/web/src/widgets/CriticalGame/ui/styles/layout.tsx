@@ -10,7 +10,9 @@ import { TamaguiTheme } from './variants/types';
 export const GameContainer = styled(BaseGameContainer, {
   name: 'GameContainer',
   gap: '$5',
-  padding: '$7',
+  paddingHorizontal: '$7',
+  paddingTop: '$7',
+  paddingBottom: '$4',
   borderRadius: 24,
   minHeight: 600,
   position: 'relative',
@@ -70,6 +72,7 @@ export const GameBoard = styled(BaseGameBoard, {
   zIndex: 20,
   overflowY: 'auto',
   minHeight: 0,
+  paddingBottom: '$2',
 
   variants: {
     $variant: (_val: unknown) => ({}),

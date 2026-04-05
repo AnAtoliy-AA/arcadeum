@@ -3,17 +3,13 @@ import {
   GameInfo,
   GameTitle,
   TurnStatus,
+  TurnStatusPill,
+  VariantIconBadge,
   HeaderActions,
   TimerControlsWrapper,
   FullscreenButton,
 } from './styles/header';
 import { appConfig } from '@/shared/config/app-config';
-import {
-  RoomNameBadge,
-  RoomNameIcon,
-  RoomNameText,
-  FastBadge,
-} from './styles/lobby';
 import { IdleTimerDisplay } from './IdleTimerDisplay';
 import { AutoplayControls } from './AutoplayControls';
 import { ServerLoadingNotice, MaximizeIcon, MinimizeIcon } from '@/shared/ui';
@@ -25,6 +21,7 @@ import React, { useState } from 'react';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { GameVariant } from '@arcadeum/ui';
+import { YStack, Text } from 'tamagui';
 
 interface CriticalGameHeaderProps {
   room: GameRoomSummary;
@@ -80,44 +77,48 @@ export function CriticalGameHeader({
         isPrivate={room.visibility === 'private'}
         t={t}
       />
+
+      {/* Left: variant identity */}
       <GameInfo>
-        <GameTitle $variant={cardVariant as GameVariant}>
-          {t('games.critical_v1.name')}
-          <span
-            style={{
-              background: 'linear-gradient(135deg, #FF0080 0%, #7928CA 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              fontSize: '0.8em',
-            }}
-          >
-            :{' '}
+        <VariantIconBadge>
+          <Text fontSize={15}>
+            {CARD_VARIANTS.find((v) => v.id === cardVariant)?.emoji ?? '🎲'}
+          </Text>
+        </VariantIconBadge>
+
+        <YStack gap={0} minWidth={0} flex={1}>
+          <GameTitle $variant={cardVariant as GameVariant} numberOfLines={1}>
+            {t('games.critical_v1.name')}
+            {' · '}
             {(() => {
-              const variant = CARD_VARIANTS.find(
-                (v) => v.id === room.gameOptions?.cardVariant,
-              );
+              const variant = CARD_VARIANTS.find((v) => v.id === cardVariant);
               return variant
                 ? t(variant.name as TranslationKey)
                 : t(
                     'games.critical_v1.variants.cyberpunk.name' as TranslationKey,
                   );
             })()}
-          </span>
-        </GameTitle>
-        <RoomNameBadge>
-          <RoomNameIcon>
-            {CARD_VARIANTS.find((v) => v.id === room.gameOptions?.cardVariant)
-              ?.emoji || '🎲'}
-          </RoomNameIcon>
-          <RoomNameText>{room.name}</RoomNameText>
-        </RoomNameBadge>
-        {idleTimerEnabled && (
-          <FastBadge>
-            <span>⚡</span>
-            <span>{t('games.rooms.fastRoom')}</span>
-          </FastBadge>
-        )}
+          </GameTitle>
+
+          <Text
+            fontSize={11}
+            opacity={0.45}
+            numberOfLines={1}
+            $sm={{ display: 'none' }}
+          >
+            {room.name}
+            {idleTimerEnabled ? ' · ⚡' : ''}
+          </Text>
+        </YStack>
+      </GameInfo>
+
+      {/* Center: turn status */}
+      <TurnStatusPill $status={turnStatusVariant}>
         <TurnStatus $status={turnStatusVariant}>{turnStatusText}</TurnStatus>
+      </TurnStatusPill>
+
+      {/* Right: actions */}
+      <HeaderActions>
         {isLongPending && (
           <ServerLoadingNotice
             title={t('common.loading.title')}
@@ -130,17 +131,9 @@ export function CriticalGameHeader({
             }
           />
         )}
-      </GameInfo>
-      <HeaderActions>
-        <FullscreenButton
-          onPress={() => setShowRules(true)}
-          title="Game Rules"
-          style={{ fontSize: '1.2rem', marginRight: '0.5rem' }}
-        >
-          📖
-        </FullscreenButton>
+
         {!isGameOver && currentPlayer && (
-          <TimerControlsWrapper>
+          <TimerControlsWrapper $sm={{ display: 'none' }}>
             <IdleTimerDisplay
               enabled={idleTimerEnabled}
               isMyTurn={isMyTurn}
@@ -153,6 +146,11 @@ export function CriticalGameHeader({
             <AutoplayControls autoplayState={autoplayState} t={t} />
           </TimerControlsWrapper>
         )}
+
+        <FullscreenButton onPress={() => setShowRules(true)} title="Game Rules">
+          📖
+        </FullscreenButton>
+
         <FullscreenButton
           onPress={toggleFullscreen}
           title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}

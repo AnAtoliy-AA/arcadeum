@@ -16,6 +16,8 @@ export {
   GameInfo,
   GameTitle,
   TurnStatus,
+  TurnStatusPill,
+  VariantIconBadge,
   StartButton,
   FullscreenButton,
 } from './header';

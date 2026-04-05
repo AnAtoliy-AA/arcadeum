@@ -11,14 +11,13 @@ export const GameHeader = styled(XStack, {
   alignItems: 'center',
   gap: '$3',
   paddingHorizontal: '$7',
-  paddingVertical: '$2', // reduced from $4
+  paddingVertical: '$2',
   backgroundColor: '$glassBg',
   backdropFilter: 'blur(16px)',
   borderBottomWidth: 1,
   borderBottomColor: '$glassBorder',
   marginHorizontal: -28,
   marginTop: -28,
-  // no flexWrap — single row always
   position: 'relative',
   zIndex: 30,
   flexShrink: 0,
@@ -38,7 +37,7 @@ export const GameHeader = styled(XStack, {
       return {
         backgroundColor: config.getBackground(theme),
         borderBottomColor: config.getBorder(theme),
-        // accent line at top via pseudo-element
+        // web-only: Tamagui passes pseudo-element objects to the CSS layer on web
         before: {
           content: '""',
           position: 'absolute',
@@ -81,7 +80,7 @@ export const GameInfo = styled(XStack, {
 export const GameTitle = styled(Text, {
   name: 'GameTitle',
   margin: 0,
-  fontSize: 16, // reduced from 24
+  fontSize: 16,
   fontWeight: '800',
   letterSpacing: -0.3,
   position: 'relative',
@@ -99,7 +98,6 @@ export const GameTitle = styled(Text, {
         WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
         backgroundClip: 'text',
-        // getTitleTextStyles is now always () => ({}) — no spread needed
       };
     },
   } as const,

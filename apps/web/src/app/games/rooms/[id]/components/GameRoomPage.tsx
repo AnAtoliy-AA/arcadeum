@@ -23,7 +23,7 @@ import { useGameRoom, type GameType } from '@/features/games/hooks';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useIdleReconnect } from '@/shared/hooks/useIdleReconnect';
 import { useIdleDetection } from '@/shared/hooks/useIdleDetection';
-import { ConnectionOverlay } from '@/shared/ui';
+import { ConnectionOverlay, Page } from '@/shared/ui';
 import { mapToGameType } from '@/features/games/lib/gameIdMapping';
 import { gameFactory } from '@/features/games/lib/gameFactory';
 import { gameMetadata } from '@/features/games/registry';
@@ -35,7 +35,6 @@ import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress'
 // Extracted Components
 import { Text, useMedia } from 'tamagui';
 import {
-  Page,
   Container,
   LoadingContainer,
   GameWrapper,
@@ -62,16 +61,19 @@ export default function GameRoomPage() {
   // Track if user manually submitted invite code
   const [manualSubmitPending, setManualSubmitPending] = useState(false);
   // Chat visibility state — wide screens default to visible, narrow to hidden.
-  const [showChat, setShowChat] = useState(true);
+  const [showChat, setShowChat] = useState(false);
   const handleToggleChat = useCallback(() => setShowChat((v) => !v), []);
+  const [showRules, setShowRules] = useState(false);
+  const handleShowRules = useCallback(() => setShowRules(true), []);
+  const handleCloseRules = useCallback(() => setShowRules(false), []);
 
   // Sync chat visibility to breakpoint after hydration and on resize.
-  // useState(true) is the SSR-safe default; the effect corrects it on the client.
+  // Only show chat automatically when the layout is side-by-side (> 1150px).
   useEffect(() => {
     queueMicrotask(() => {
-      setShowChat(media.gtSm);
+      setShowChat(media.gtMd);
     });
-  }, [media.gtSm]);
+  }, [media.gtMd]);
 
   // State for room visibility check
 
@@ -259,6 +261,8 @@ export default function GameRoomPage() {
         version: '1.0.0',
       },
       accessToken: snapshot.accessToken,
+      showRulesOpen: showRules,
+      onShowRulesClose: handleCloseRules,
     };
   }, [
     roomId,
@@ -267,6 +271,8 @@ export default function GameRoomPage() {
     initialSession,
     snapshot.userId,
     snapshot.accessToken,
+    showRules,
+    handleCloseRules,
   ]);
 
   // Track room loading progress for server wake-up message
@@ -324,7 +330,7 @@ export default function GameRoomPage() {
   // Wait for session to hydrate before checking authentication
   if (!hydrated || roomInfoLoading) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <GameRoomLoading />
         </Container>
@@ -335,7 +341,7 @@ export default function GameRoomPage() {
   // Show error if room visibility check failed
   if (visibilityError) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <GameRoomError
             error={visibilityError}
@@ -349,7 +355,7 @@ export default function GameRoomPage() {
   // If we are auto-joining or loading generally (and not manually submitting), show loading
   if (isAutoJoining || (roomLoading && !manualSubmitPending)) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <GameRoomLoading
             isLongPending={isRoomLoadingLongPending}
@@ -368,7 +374,7 @@ export default function GameRoomPage() {
   // If we have an error or are submitting code for a private room, show the invite code form
   if (roomVisibility === 'private' && !room) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <PrivateRoomForm
             onJoin={handleInviteCodeSubmit}
@@ -385,7 +391,7 @@ export default function GameRoomPage() {
 
   if (error && !room) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <GameRoomError error={error} />
         </Container>
@@ -395,7 +401,7 @@ export default function GameRoomPage() {
 
   if (!room) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <GameRoomError error={t('games.roomPage.errors.roomNotFound')} />
         </Container>
@@ -404,7 +410,7 @@ export default function GameRoomPage() {
   }
 
   return (
-    <Page>
+    <Page fixedHeight>
       <style>{fullscreenStyles}</style>
       <Container
         ref={gameContainerRef as React.RefObject<never>}
@@ -435,6 +441,7 @@ export default function GameRoomPage() {
           fullscreenContainerRef={gameContainerRef}
           showChat={showChat}
           onToggleChat={handleToggleChat}
+          onShowRules={handleShowRules}
         />
 
         <GameRow flexDirection={roomFlexDirection}>

@@ -9,7 +9,7 @@ export const ShipPalette = styled(YStack, {
 
   $md: {
     flexDirection: 'row',
-    overflowX: 'scroll',
+    overflowX: 'auto',
     padding: '$4',
     gap: '$6',
     width: '100%',
@@ -32,7 +32,7 @@ export const ShipItem = styled(XStack, {
   variants: {
     isPlaced: {
       true: { opacity: 0.5, cursor: 'default' },
-      false: { cursor: 'pointer' },
+      false: { cursor: 'grab' },
     },
     animated: {
       true: { animation: 'medium' },

@@ -130,7 +130,7 @@ test.describe('Sea Battle Popup Challenge', () => {
         const snapshot = {
           roomId,
           session: {
-            id: 'session-1',
+            id: '507f191e810c19729de860f1',
             status: 'active',
             state,
           },

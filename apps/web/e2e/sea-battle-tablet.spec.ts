@@ -13,7 +13,7 @@ test.describe('Sea Battle Tablet Layout', () => {
         contentType: 'application/json',
         json: {
           room: {
-            id: 'tablet-test-room',
+            id: '507f191e810c19729de860ec',
             name: 'Tablet Test Room',
             status: 'playing',
             gameId: 'sea_battle_v1',
@@ -32,7 +32,7 @@ test.describe('Sea Battle Tablet Layout', () => {
           },
           session: {
             id: 'session-123',
-            roomId: 'tablet-test-room',
+            roomId: '507f191e810c19729de860ec',
             gameId: 'sea_battle_v1',
             status: 'active',
             state: {
@@ -62,7 +62,7 @@ test.describe('Sea Battle Tablet Layout', () => {
   }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.waitForTimeout(500);
-    await navigateTo(page, '/games/rooms/tablet-test-room');
+    await navigateTo(page, '/games/rooms/507f191e810c19729de860ec');
 
     const mainArea = page.getByTestId('game-main-area');
     await expect(mainArea).toBeVisible();
@@ -72,6 +72,11 @@ test.describe('Sea Battle Tablet Layout', () => {
       (el) => getComputedStyle(el).flexDirection,
     );
     expect(flexDirection).toBe('column');
+
+    // At ≤1150px chat is hidden by default — toggle it open first
+    const toggleChatButton = page.getByTestId('toggle-chat-button');
+    await expect(toggleChatButton).toBeVisible();
+    await toggleChatButton.click();
 
     const chatArea = page.getByTestId('game-chat-area');
     await expect(chatArea).toBeVisible();
@@ -89,7 +94,7 @@ test.describe('Sea Battle Tablet Layout', () => {
   }) => {
     await page.setViewportSize({ width: 768, height: 1024 });
     await page.waitForTimeout(500);
-    await navigateTo(page, '/games/rooms/tablet-test-room');
+    await navigateTo(page, '/games/rooms/507f191e810c19729de860ec');
 
     const mainArea = page.getByTestId('game-main-area');
     await expect(mainArea).toBeVisible();
@@ -105,7 +110,7 @@ test.describe('Sea Battle Tablet Layout', () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
-    await navigateTo(page, '/games/rooms/tablet-test-room');
+    await navigateTo(page, '/games/rooms/507f191e810c19729de860ec');
 
     // Board should be visible
     const board = page.getByTestId('sea-battle-board-grid').first();

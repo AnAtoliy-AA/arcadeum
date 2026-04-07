@@ -104,7 +104,10 @@ test.describe('Chat Interactions', () => {
         const messages = Array.from({ length: 30 }).map((_, index) => ({
           id: `${index + 1}`,
           chatId: 'chat-1',
-          senderId: index % 2 === 0 ? '507f191e810c19729de860ea' : 'user-2',
+          senderId:
+            index % 2 === 0
+              ? '507f191e810c19729de860ea'
+              : '507f191e810c19729de860e2',
           content: `Message ${index + 1}`,
           senderUsername: index % 2 === 0 ? 'testuser' : 'otheruser',
           receiverIds: ['507f191e810c19729de860ea'],

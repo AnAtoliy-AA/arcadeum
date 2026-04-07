@@ -118,6 +118,8 @@ export interface SeaBattleGameProps {
   onPostHistoryNote?: (message: string, scope: ChatScope) => void;
   config?: unknown;
   accessToken?: string | null;
+  showRulesOpen?: boolean;
+  onShowRulesClose?: () => void;
 }
 
 export interface BoardProps {

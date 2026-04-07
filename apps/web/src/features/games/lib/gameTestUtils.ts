@@ -16,7 +16,7 @@ export class GameTestUtils {
     overrides: Partial<GameRoomSummary> = {},
   ): GameRoomSummary {
     return {
-      id: 'test-room-1',
+      id: '507f191e810c19729de860ef',
       name: 'Test Room',
       gameId: 'critical_v1',
       playerCount: 2,
@@ -37,7 +37,7 @@ export class GameTestUtils {
     overrides: Partial<GameSessionSummary> = {},
   ): GameSessionSummary {
     return {
-      id: 'test-session-1',
+      id: '507f191e810c19729de860f0',
       roomId: room.id,
       gameId: room.gameId,
       engine: room.gameId,
@@ -189,7 +189,7 @@ export class GameTestUtils {
     overrides: Partial<GameSessionSummary> = {},
   ): GameSessionSummary {
     return {
-      id: 'test-texas-session-1',
+      id: '507f191e810c19729de860f1',
       roomId: room.id,
       gameId: room.gameId,
       engine: room.gameId,
@@ -249,7 +249,7 @@ export class GameTestUtils {
     overrides: Partial<GameSessionSummary> = {},
   ): GameSessionSummary {
     return {
-      id: 'test-exploding-session-1',
+      id: '507f191e810c19729de860f2',
       roomId: room.id,
       gameId: room.gameId,
       engine: room.gameId,

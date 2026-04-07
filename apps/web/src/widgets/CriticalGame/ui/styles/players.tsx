@@ -5,6 +5,8 @@ import { TamaguiTheme } from './variants/types';
 export const PlayerCard = styled(YStack, {
   name: 'PlayerCard',
   position: 'relative',
+  alignItems: 'center',
+  justifyContent: 'center',
 
   variants: {
     $animate: {
@@ -170,6 +172,7 @@ export const TurnIndicator = styled(YStack, {
   width: 12,
   height: 12,
   borderRadius: 6,
+  display: 'flex',
   position: 'absolute',
   top: -4,
   right: -4,

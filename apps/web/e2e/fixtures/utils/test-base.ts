@@ -160,9 +160,6 @@ export const test = base.extend({
     await page.route('**/apple-touch-icon*', (route) =>
       route.fulfill({ status: 200, body: '' }),
     );
-    await page.route('**/manifest.json', (route) =>
-      route.fulfill({ status: 200, body: '{}' }),
-    );
 
     // Mock Next.js Geist fonts to prevent connection refused noise in E2E
     await page.route('**/__nextjs_font/**', (route) =>

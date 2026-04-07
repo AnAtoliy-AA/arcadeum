@@ -124,6 +124,7 @@ export const baseVariantStyles: VariantStyleConfig = {
     getLineShadow: () => 'none',
     getTitleBackground: () =>
       'linear-gradient(135deg, #6366f1 0%, #ec4899 50%, #10b981 100%)',
+    getTitleTextStyles: () => ({}),
   },
   players: {
     getCardBackground: (isCurrentTurn, isCurrentUser, isAlive) => {

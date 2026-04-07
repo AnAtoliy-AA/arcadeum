@@ -10,17 +10,25 @@ import { TamaguiTheme } from './variants/types';
 export const GameContainer = styled(BaseGameContainer, {
   name: 'GameContainer',
   gap: '$5',
-  padding: '$7',
+  paddingHorizontal: '$7',
+  paddingTop: '$7',
+  paddingBottom: 0,
   borderRadius: 24,
-  minHeight: 600,
+  minHeight: 0,
   position: 'relative',
-  overflow: 'hidden',
+  overflowX: 'hidden',
+  overflowY: 'auto',
   backdropFilter: 'blur(20px)',
   height: '100%',
+  flexDirection: 'column',
+  minWidth: 0,
 
   $sm: {
-    padding: '$2',
+    paddingHorizontal: '$2',
+    paddingTop: '$2',
+    paddingBottom: 0,
     borderRadius: 16,
+    overflowX: 'hidden',
     overflowY: 'auto',
   },
 
@@ -68,8 +76,13 @@ export const GameBoard = styled(BaseGameBoard, {
   name: 'GameBoard',
   gap: '$4',
   zIndex: 20,
-  overflowY: 'auto',
-  minHeight: 0,
+  flexDirection: 'column',
+  position: 'relative',
+  width: '100%',
+  flexGrow: 0,
+  flexShrink: 0,
+  flexBasis: 'auto',
+  overflow: 'visible',
 
   variants: {
     $variant: (_val: unknown) => ({}),
@@ -78,9 +91,16 @@ export const GameBoard = styled(BaseGameBoard, {
 
 export const TableArea = styled(BaseTableArea, {
   name: 'TableArea',
-  flex: 1,
   gap: '$4',
   flexDirection: 'column',
+  minHeight: 0,
+  position: 'relative',
+  zIndex: 1,
+  width: '100%',
+  flexGrow: 0,
+  flexShrink: 0,
+  flexBasis: 'auto',
+  height: 'auto',
 
   variants: {
     $variant: (_val: unknown) => ({}),
@@ -93,6 +113,10 @@ export const HandSection = styled(YStack, {
   width: '100%',
   flexShrink: 0,
   zIndex: 30,
+  position: 'relative',
+  borderTopWidth: 1,
+  borderTopColor: '$borderColor',
+  paddingTop: '$4',
 
   variants: {
     $variant: (_val: unknown) => ({}),

@@ -10,8 +10,12 @@ test.describe('Game Rules', () => {
     const rulesBtn = page
       .getByRole('button', { name: /rules|правила|📖/i })
       .or(page.getByTestId('view-rules-button'));
+
     await expect(rulesBtn).toBeVisible({ timeout: 15000 });
     await rulesBtn.click({ force: true });
+
+    // Safety wait for the modal animation to settle
+    await page.waitForTimeout(500);
 
     // Check for modal presence using testId
     const modal = page.getByTestId('rules-modal');

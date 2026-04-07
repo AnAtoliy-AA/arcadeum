@@ -4,9 +4,9 @@ import { baseVariantStyles } from './base';
 import { cyberpunkVariantStyles } from './cyberpunk';
 import { underwaterVariantStyles } from './underwater';
 import { highAltitudeHikeVariantStyles } from './high-altitude-hike';
-import { crimeVariantStyles } from './crime';
-import { horrorVariantStyles } from './horror';
-import { adventureVariantStyles } from './adventure';
+import { crimeFullVariantStyles } from './crime-full';
+import { horrorFullVariantStyles } from './horror-full';
+import { adventureFullVariantStyles } from './adventure-full';
 
 export const getVariantStyles = (variant?: string): VariantStyleConfig => {
   switch (variant) {
@@ -28,17 +28,17 @@ export const getVariantStyles = (variant?: string): VariantStyleConfig => {
     case GAME_VARIANT.CRIME:
       return {
         ...baseVariantStyles,
-        cards: { ...baseVariantStyles.cards, ...crimeVariantStyles.cards! },
+        ...crimeFullVariantStyles,
       };
     case GAME_VARIANT.HORROR:
       return {
         ...baseVariantStyles,
-        cards: { ...baseVariantStyles.cards, ...horrorVariantStyles.cards! },
+        ...horrorFullVariantStyles,
       };
     case GAME_VARIANT.ADVENTURE:
       return {
         ...baseVariantStyles,
-        cards: { ...baseVariantStyles.cards, ...adventureVariantStyles.cards! },
+        ...adventureFullVariantStyles,
       };
     default:
       return baseVariantStyles;

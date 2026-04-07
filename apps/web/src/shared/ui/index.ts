@@ -7,3 +7,4 @@ export * from '@arcadeum/ui';
 export { DownloadButtons } from './DownloadButtons/DownloadButtons';
 export type { DownloadButtonsProps } from './DownloadButtons/DownloadButtons';
 export * from './OptionCard/OptionCard';
+export { Page } from './Page/Page';

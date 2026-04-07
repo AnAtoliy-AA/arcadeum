@@ -7,7 +7,7 @@ export const LobbyContent = styled(XStack, {
   flex: 1,
   padding: '$6',
   gap: '$6',
-  overflow: 'scroll',
+  overflow: 'auto',
 
   $gtSm: {
     flexDirection: 'row',
@@ -15,7 +15,7 @@ export const LobbyContent = styled(XStack, {
   $sm: {
     flexDirection: 'column',
   },
-});
+} as Record<string, unknown>);
 
 // Main Center Section
 export const CenterSection = styled(YStack, {

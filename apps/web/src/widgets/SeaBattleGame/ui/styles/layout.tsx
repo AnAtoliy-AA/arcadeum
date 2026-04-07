@@ -4,8 +4,23 @@ export const MainGameArea = styled(YStack, {
   name: 'MainGameArea',
   gap: '$5',
   width: '100%',
+  flex: 1,
+  minHeight: 0,
 
+  $md: {
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+  },
+  $tablet: {
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+  },
   $sm: {
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
     gap: '$3',
   },
 });

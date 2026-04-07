@@ -16,7 +16,7 @@ const List = styled(YStack, {
   name: 'PlayerList',
   gap: '$2',
   maxHeight: 300,
-  overflowY: 'scroll',
+  overflowY: 'auto',
 });
 
 const StyledPlayerItem = styled(Card, {

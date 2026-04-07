@@ -32,7 +32,7 @@ test.describe('Chat Functionality', () => {
                   displayName: 'Test User',
                 },
                 {
-                  id: 'user-2',
+                  id: '507f191e810c19729de860e2',
                   username: 'otheruser',
                   displayName: 'Other User',
                 },
@@ -64,7 +64,7 @@ test.describe('Chat Functionality', () => {
         contentType: 'application/json',
         body: JSON.stringify([
           {
-            id: 'user-3',
+            id: '507f191e810c19729de860e3',
             username: 'searchuser',
             displayName: 'Search User',
             email: 'search@example.com',
@@ -84,7 +84,7 @@ test.describe('Chat Functionality', () => {
           {
             id: 'msg-1',
             chatId: 'chat-1',
-            senderId: 'user-2',
+            senderId: '507f191e810c19729de860e2',
             senderUsername: 'otheruser',
             receiverIds: ['507f191e810c19729de860ea'],
             content: 'Hello there!',

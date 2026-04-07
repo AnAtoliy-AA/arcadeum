@@ -92,6 +92,7 @@ export const esMessages = {
         yourTurnAttack: '🎯 ¡Tu turno! - ¡Ataca a un oponente!',
         placeShips: 'Coloca tus barcos',
         waitingFor: 'Esperando a {{player}}...',
+        targetBadge: 'Objetivo',
       },
       phase: {
         lobby: 'Vestíbulo',
@@ -110,6 +111,7 @@ export const esMessages = {
         randomize: 'Aleatorio',
         resetPlacement: 'Reiniciar',
         waitingForOthers: 'Esperando a otros...',
+        dragHint: 'Arrastra al tablero · Haz clic para seleccionar',
       },
       attack: {
         hit: '¡Impacto!',
@@ -125,6 +127,7 @@ export const esMessages = {
         hostCanStart: "Haz clic en 'Iniciar Juego' cuando estés listo",
         waitingForHost: 'Esperando al anfitrión',
         hostControls: 'Controles del Anfitrión',
+        theme: 'Tema',
         roomInfo: 'Información de la Sala',
         host: 'Anfitrión',
       },

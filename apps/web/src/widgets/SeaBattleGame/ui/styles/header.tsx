@@ -7,6 +7,11 @@ export const CompactHeaderContainer = styled(XStack, {
   width: '100%',
   gap: '$4',
   paddingVertical: '$2',
+  paddingBottom: '$3',
+  zIndex: 100,
+  backgroundColor: '$background',
+  borderBottomWidth: 1,
+  borderBottomColor: '$glassBorder',
 
   $sm: {
     flexDirection: 'column',
@@ -39,4 +44,3 @@ export const PlacementHeader = styled(XStack, {
     marginBottom: '$3',
   },
 });
-

@@ -80,7 +80,7 @@ test.describe('Critical Single Player Mode', () => {
                     stash: [],
                   },
                   {
-                    playerId: 'bot-1',
+                    playerId: '507f191e810c19729de860b1',
                     alive: true,
                     hand: [],
                     defuseCount: 1,
@@ -90,7 +90,7 @@ test.describe('Critical Single Player Mode', () => {
                 deck: [],
                 discardPile: [],
                 currentTurnIndex: 0,
-                playerOrder: [userId, 'bot-1'],
+                playerOrder: [userId, '507f191e810c19729de860b1'],
                 pendingAction: null,
               },
             },
@@ -134,7 +134,7 @@ test.describe('Critical Single Player Mode', () => {
           stash: [],
         },
         {
-          playerId: 'bot-1',
+          playerId: '507f191e810c19729de860b1',
           alive: true,
           hand: ['strike'],
           defuseCount: 1,
@@ -144,7 +144,7 @@ test.describe('Critical Single Player Mode', () => {
       deck: Array(40).fill('strike'),
       discardPile: [],
       currentTurnIndex: 0,
-      playerOrder: [userId, 'bot-1'],
+      playerOrder: [userId, '507f191e810c19729de860b1'],
       pendingAction: null,
     };
 
@@ -157,13 +157,21 @@ test.describe('Critical Single Player Mode', () => {
           { id: userId, userId, displayName: 'Test User', isHost: true },
         ],
       },
-      session: { id: 'session-1', status: 'active', state: mockState },
+      session: {
+        id: '507f191e810c19729de860f1',
+        status: 'active',
+        state: mockState,
+      },
     });
 
     await mockGameSocket(page, roomId, userId, {
       roomJoinedPayload: {
         status: 'active',
-        session: { id: 'session-1', status: 'active', state: mockState },
+        session: {
+          id: '507f191e810c19729de860f1',
+          status: 'active',
+          state: mockState,
+        },
       },
       handlers: {
         'games.session.draw': {
@@ -171,7 +179,7 @@ test.describe('Critical Single Player Mode', () => {
           responseData: {
             roomId,
             session: {
-              id: 'session-1',
+              id: '507f191e810c19729de860f1',
               status: 'active',
               state: {
                 ...mockState,

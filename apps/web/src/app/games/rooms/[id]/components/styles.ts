@@ -1,5 +1,5 @@
-import { Main, styled, XStack, YStack } from 'tamagui';
-import { Input as UIInput } from '@arcadeum/ui';
+import { styled, XStack, YStack } from 'tamagui';
+import { Input as UIInput } from '@/shared/ui';
 
 // ─── Fullscreen CSS for Container ─────────────────────────────────────────────
 export const fullscreenStyles = `
@@ -16,15 +16,7 @@ export const fullscreenStyles = `
   }
 `;
 
-export const Page = styled(Main, {
-  name: 'Page',
-  height: '100vh',
-  flexDirection: 'column',
-  backgroundColor: '$background',
-  color: '$color',
-  position: 'relative',
-  overflow: 'hidden',
-} as Record<string, unknown>);
+// Using Page component from shared/ui
 
 export const Container = styled(YStack, {
   name: 'Container',
@@ -35,6 +27,7 @@ export const Container = styled(YStack, {
   flexDirection: 'column',
   gap: '1rem',
   flex: 1,
+  minHeight: 0,
   // Removed minHeight: 0 and overflowY: hidden for better stability
   $md: {
     overflowY: 'auto',
@@ -74,23 +67,26 @@ export const GameWrapper = styled(YStack, {
   flex: 1,
   minWidth: 0,
   minHeight: 0,
-  overflow: 'auto',
+  overflow: 'hidden',
   flexDirection: 'column',
 
   $md: {
-    flex: 1,
-    minHeight: 400,
-    overflow: 'auto',
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    overflow: 'visible',
+    minHeight: 'calc(100dvh - 180px)',
   },
   $tablet: {
-    flex: 1,
-    minHeight: 400,
-    overflow: 'auto',
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    overflow: 'visible',
   },
   $sm: {
     flex: 1,
-    minHeight: 350,
-    overflow: 'auto',
+    minHeight: 0,
+    overflow: 'visible',
   },
 } as Record<string, unknown>);
 

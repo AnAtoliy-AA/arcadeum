@@ -246,6 +246,13 @@ export function ReusableGameLobby({
           <GameTitleText
             background={theme.titleGradient}
             hasGradient={!!theme.titleGradient}
+            style={
+              theme.titleGradient
+                ? ({
+                    animation: 'shimmer 4s linear infinite',
+                  } as React.CSSProperties)
+                : undefined
+            }
           >
             {gameName}
             {variantName && (
@@ -254,6 +261,13 @@ export function ReusableGameLobby({
                 <VariantText
                   background={theme.variantGradient}
                   hasGradient={!!theme.variantGradient}
+                  style={
+                    theme.variantGradient
+                      ? ({
+                          animation: 'shimmer 4s linear infinite',
+                        } as React.CSSProperties)
+                      : undefined
+                  }
                 >
                   : {variantName}
                 </VariantText>
@@ -270,7 +284,6 @@ export function ReusableGameLobby({
               <span>{fastRoomLabel}</span>
             </FastBadge>
           )}
-          {optionsSlot}
         </GameInfo>
         <HeaderActions>
           {headerActionsSlot}
@@ -356,6 +369,8 @@ export function ReusableGameLobby({
               </StartButton>
             </HostControls>
           )}
+
+          {optionsSlot}
         </CenterSection>
 
         <LobbySidebar

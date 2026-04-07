@@ -17,6 +17,7 @@ export const LobbyContent = styled(XStack, {
   minHeight: 0,
   padding: '$5',
   overflowY: 'auto',
+  alignItems: 'flex-start',
   $tablet: {
     flexDirection: 'column',
     flex: 1,
@@ -35,12 +36,13 @@ export const CenterSection = styled(YStack, {
   justifyContent: 'center',
   gap: '$5',
   flex: 1,
+  minHeight: '100%',
   $tablet: {
     flex: 0,
+    minHeight: 'unset',
     width: '100%',
     justifyContent: 'flex-start',
     gap: '$4',
-    minHeight: 'unset',
   },
 });
 
@@ -177,12 +179,12 @@ export const VariantSelectorWrapper = styled(XStack, {
 export const GameContainer = styled(YStack, {
   name: 'GameContainer',
   flex: 1,
-  minHeight: 'calc(100dvh - 64px)',
+  minHeight: 0,
   width: '100%',
   backgroundColor: '$background',
 
   $tablet: {
-    minHeight: 'unset',
+    minHeight: 0,
     flex: 1,
   },
 });
@@ -216,6 +218,7 @@ export const GameTitleText = styled(H2, {
       true: {
         color: 'transparent',
         backgroundClip: 'text',
+        backgroundSize: '200% auto',
       },
     },
   } as const,
@@ -231,6 +234,7 @@ export const VariantText = styled(Text, {
       true: {
         color: 'transparent',
         backgroundClip: 'text',
+        backgroundSize: '200% auto',
       },
     },
   } as const,

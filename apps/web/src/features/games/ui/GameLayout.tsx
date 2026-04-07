@@ -28,18 +28,29 @@ const LayoutContainer = styled(YStack, {
   overflow: 'visible',
   pointerEvents: 'auto',
 
+  $md: {
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    minHeight: 'calc(100dvh - 180px)',
+    height: 'auto',
+  },
   $tablet: {
     padding: '$3',
     gap: '$3',
-    flex: 1,
-    minHeight: 400,
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    minHeight: 0,
     height: 'auto',
     borderRadius: 0,
     overflowY: 'visible',
   },
   $sm: {
-    flex: 1,
-    minHeight: 350,
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    minHeight: 0,
     height: 'auto',
   },
 
@@ -67,10 +78,16 @@ const MainArea = styled(YStack, {
 
   $tablet: {
     flexDirection: 'column',
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
     gap: '$4',
   },
   $sm: {
     flexDirection: 'column',
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
     gap: '$4',
   },
 });
@@ -80,19 +97,24 @@ const GameBoardArea = styled(YStack, {
   flex: 1,
   minWidth: 0,
   position: 'relative',
-  overflowY: 'auto',
+  overflow: 'visible',
   paddingBottom: '$4',
   pointerEvents: 'auto',
+  display: 'flex',
 
   $tablet: {
-    flex: 1,
-    minHeight: 300,
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    minHeight: 0,
     overflow: 'visible',
     paddingBottom: '$4',
   },
   $sm: {
-    flex: 1,
-    minHeight: 250,
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    minHeight: 0,
     overflow: 'visible',
     paddingBottom: 0,
   },
@@ -192,7 +214,9 @@ export function GameLayout({
 
   return (
     <LayoutContainer key={!!lobby ? 'lobby' : 'game'} {...commonProps}>
-      {header}
+      <YStack flexShrink={0} overflow="hidden">
+        {header}
+      </YStack>
       <MainArea data-testid="game-main-area">
         <GameBoardArea data-testid="game-board-area">{children}</GameBoardArea>
         {chat && (
@@ -201,7 +225,11 @@ export function GameLayout({
           </ChatArea>
         )}
       </MainArea>
-      {popupOverlay}
+      {popupOverlay && (
+        <YStack position="absolute" bottom="$4" left="$4" zIndex={50}>
+          {popupOverlay}
+        </YStack>
+      )}
       {modals}
     </LayoutContainer>
   );

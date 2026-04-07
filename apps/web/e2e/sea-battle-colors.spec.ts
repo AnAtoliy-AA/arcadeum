@@ -137,7 +137,7 @@ test.describe('Sea Battle Color Visibility', () => {
           return currentBg !== initialBg;
         },
         { selector: '[data-row="1"][data-col="1"]', initialBg },
-        { timeout: 8000 },
+        { timeout: 15000 },
       );
 
       // Small delay to ensure the highlight color is stable

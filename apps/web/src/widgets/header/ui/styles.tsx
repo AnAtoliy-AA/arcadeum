@@ -1,8 +1,8 @@
 'use client';
 
+import { HEADER_HEIGHT } from '@/shared/config/layout';
 import React from 'react';
 
-export const HEADER_HEIGHT = 72;
 import Link from 'next/link';
 import { styled, GetProps, Nav as TamaguiNav, Header } from 'tamagui';
 import { XStack, YStack, Typography, LinkButton } from '@arcadeum/ui';

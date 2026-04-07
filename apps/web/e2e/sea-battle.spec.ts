@@ -18,7 +18,7 @@ test.describe('Sea Battle Game', () => {
         body: JSON.stringify({
           rooms: [
             {
-              id: 'sea-battle-room',
+              id: '507f191e810c19729de860ea',
               gameId: 'sea_battle_v1',
               name: 'E2E Sea Battle',
               hostId: 'test-user',
@@ -143,7 +143,7 @@ test.describe('Sea Battle Game Flow', () => {
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
-          id: 'test-room',
+          id: '507f191e810c19729de860eb',
           name: 'E2E Test Room',
           status: 'lobby',
           gameId: 'sea_battle_v1',
@@ -163,7 +163,7 @@ test.describe('Sea Battle Game Flow', () => {
       });
     });
 
-    await navigateTo(page, '/games/rooms/test-room');
+    await navigateTo(page, '/games/rooms/507f191e810c19729de860eb');
 
     // If the game component loads, we should find the placement board if state is right.
     // Without full backend mock, we might only check that we don't crash.

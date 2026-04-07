@@ -59,7 +59,7 @@ test.describe('Player Stats', () => {
             },
             {
               rank: 2,
-              playerId: 'user-2',
+              playerId: '507f191e810c19729de860e2',
               username: 'proplayer',
               totalGames: 20,
               wins: 12,

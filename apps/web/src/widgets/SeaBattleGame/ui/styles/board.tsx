@@ -9,8 +9,8 @@ export const BoardGrid = styled(YStack, {
   flexWrap: 'wrap',
   padding: 4,
   width: '100%',
-  maxWidth: 400,
   aspectRatio: 1,
+  overflow: 'visible',
 
   $md: {
     maxWidth: '100%',
@@ -46,7 +46,7 @@ export const BoardCell = styled(YStack, {
 });
 
 // CSS Grid layout: [empty corner] [col labels]
-//                  [row labels  ] [board grid ]
+// [row labels ] [board grid ]
 export function BoardWithLabels({ children }: { children: ReactNode }) {
   return (
     <div
@@ -56,7 +56,6 @@ export function BoardWithLabels({ children }: { children: ReactNode }) {
         gridTemplateRows: 'auto 1fr',
         gap: '4px',
         width: '100%',
-        maxWidth: 400,
       }}
     >
       {children}

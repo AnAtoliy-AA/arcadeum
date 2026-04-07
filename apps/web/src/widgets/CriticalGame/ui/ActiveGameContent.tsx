@@ -1,6 +1,5 @@
 'use client';
 
-import { YStack } from '@arcadeum/ui';
 import { GameBoard, TableArea } from './styles/layout';
 import { GameTableSection } from './GameTableSection';
 import { PlayerHand } from './PlayerHand';
@@ -78,70 +77,72 @@ export function ActiveGameContent({
       <div
         style={{
           position: 'absolute',
-          inset: 0,
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
           isolation: 'isolate',
           pointerEvents: 'none',
           zIndex: 0,
+          overflow: 'hidden',
         }}
       >
         <ParticleOverlay variant={cardVariant} />
       </div>
 
       <TableArea>
-        <YStack flex={2} gap="$4">
-          <GameTableSection
-            players={snapshot.players}
-            playerOrder={snapshot.playerOrder}
-            currentTurnIndex={snapshot.currentTurnIndex}
-            currentUserId={currentUserId}
-            deck={snapshot.deck}
-            discardPileLength={snapshot.discardPile.length}
-            pendingDraws={snapshot.pendingDraws}
-            discardPile={snapshot.discardPile}
-            logs={snapshot.logs ?? []}
-            resolveDisplayName={(id, fb) => resolveDisplayName(id, fb) ?? fb}
-            t={t as (key: string) => string}
-            cardVariant={cardVariant}
-          />
-
-          {currentPlayer && currentPlayer.alive && !isGameOver && (
-            <PlayerHand
-              currentPlayer={currentPlayer}
-              onUnstashCard={handleUnstash}
-              isMyTurn={isMyTurn}
-              isGameOver={isGameOver}
-              canAct={canAct}
-              canPlayNope={canPlayNope}
-              actionBusy={actionBusy}
-              aliveOpponents={aliveOpponents}
-              discardPileLength={snapshot?.discardPile?.length ?? 0}
-              logs={snapshot?.logs ?? []}
-              pendingAction={snapshot?.pendingAction ?? null}
-              pendingFavor={snapshot?.pendingFavor ?? null}
-              pendingDefuse={snapshot?.pendingDefuse ?? null}
-              deckSize={snapshot?.deck?.length ?? 0}
-              playerOrder={snapshot?.playerOrder ?? []}
-              currentUserId={currentUserId}
-              allowActionCardCombos={snapshot?.allowActionCardCombos ?? false}
-              t={t as (key: string) => string}
-              onDraw={actions.drawCard}
-              onPlayActionCard={handlePlayActionCard}
-              onPlayNope={actions.playNope}
-              onPlaySeeTheFuture={actions.playSeeTheFuture}
-              onOpenFavorModal={handleOpenFavorModal}
-              onGiveFavorCard={actions.giveFavorCard}
-              onPlayDefuse={actions.playDefuse}
-              onOpenEventCombo={handleOpenEventCombo}
-              onOpenFiverCombo={handleOpenFiverCombo}
-              forceEnableAutoplay={idleTimerTriggered}
-              onAutoplayEnabledChange={autoplayState.setAllEnabled}
-              cardVariant={cardVariant}
-              handLayout={handLayout}
-              setHandLayout={setHandLayout}
-            />
-          )}
-        </YStack>
+        <GameTableSection
+          players={snapshot.players}
+          playerOrder={snapshot.playerOrder}
+          currentTurnIndex={snapshot.currentTurnIndex}
+          currentUserId={currentUserId}
+          deck={snapshot.deck}
+          discardPileLength={snapshot.discardPile.length}
+          pendingDraws={snapshot.pendingDraws}
+          discardPile={snapshot.discardPile}
+          logs={snapshot.logs ?? []}
+          resolveDisplayName={(id, fb) => resolveDisplayName(id, fb) ?? fb}
+          t={t as (key: string) => string}
+          cardVariant={cardVariant}
+        />
       </TableArea>
+
+      {currentPlayer && currentPlayer.alive && !isGameOver && (
+        <PlayerHand
+          currentPlayer={currentPlayer}
+          onUnstashCard={handleUnstash}
+          isMyTurn={isMyTurn}
+          isGameOver={isGameOver}
+          canAct={canAct}
+          canPlayNope={canPlayNope}
+          actionBusy={actionBusy}
+          aliveOpponents={aliveOpponents}
+          discardPileLength={snapshot?.discardPile?.length ?? 0}
+          logs={snapshot?.logs ?? []}
+          pendingAction={snapshot?.pendingAction ?? null}
+          pendingFavor={snapshot?.pendingFavor ?? null}
+          pendingDefuse={snapshot?.pendingDefuse ?? null}
+          deckSize={snapshot?.deck?.length ?? 0}
+          playerOrder={snapshot?.playerOrder ?? []}
+          currentUserId={currentUserId}
+          allowActionCardCombos={snapshot?.allowActionCardCombos ?? false}
+          t={t as (key: string) => string}
+          onDraw={actions.drawCard}
+          onPlayActionCard={handlePlayActionCard}
+          onPlayNope={actions.playNope}
+          onPlaySeeTheFuture={actions.playSeeTheFuture}
+          onOpenFavorModal={handleOpenFavorModal}
+          onGiveFavorCard={actions.giveFavorCard}
+          onPlayDefuse={actions.playDefuse}
+          onOpenEventCombo={handleOpenEventCombo}
+          onOpenFiverCombo={handleOpenFiverCombo}
+          forceEnableAutoplay={idleTimerTriggered}
+          onAutoplayEnabledChange={autoplayState.setAllEnabled}
+          cardVariant={cardVariant}
+          handLayout={handLayout}
+          setHandLayout={setHandLayout}
+        />
+      )}
     </GameBoard>
   );
 }

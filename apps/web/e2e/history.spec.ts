@@ -23,7 +23,7 @@ test.describe('Game History', () => {
     let historyItems = [
       {
         roomId: 'game-1',
-        sessionId: 'session-1',
+        sessionId: '507f191e810c19729de860f1',
         gameId: 'critical_v1',
         roomName: 'Awesome Battle',
         status: 'completed',
@@ -39,7 +39,11 @@ test.describe('Game History', () => {
             username: 'testuser',
             isHost: true,
           },
-          { id: 'user-2', username: 'otheruser', isHost: false },
+          {
+            id: '507f191e810c19729de860e2',
+            username: 'otheruser',
+            isHost: false,
+          },
         ],
         gameOptions: {
           cardVariant: 'cyberpunk',

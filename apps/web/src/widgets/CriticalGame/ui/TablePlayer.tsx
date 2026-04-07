@@ -59,6 +59,13 @@ export function TablePlayer({
   const media = useMedia();
   const isMobile = media.sm;
 
+  const initials = displayName
+    .split(' ')
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
   // Circular Positioning Logic (from table.ts)
   const positionStyle = useMemo(() => {
     if (isMobile) {
@@ -129,11 +136,78 @@ export function TablePlayer({
         $isCurrentUser={isCurrentUserCard}
         $variant={cardVariant as GameVariant}
         data-testid={`player-card-${playerId}`}
+        className={`player-card-entrance${isCurrent ? ' player-card-float' : ''}`}
       >
-        {isCurrent && <TurnIndicator>⭐</TurnIndicator>}
-        <PlayerAvatar $isCurrentTurn={isCurrent} $isAlive={player.alive}>
-          <Text>{player.alive ? '🎮' : '💀'}</Text>
-        </PlayerAvatar>
+        {isCurrent && (
+          <TurnIndicator $variant={cardVariant as GameVariant}>
+            ⭐
+          </TurnIndicator>
+        )}
+
+        {/* Avatar with animated ring */}
+        <div
+          style={{
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 54,
+            height: 54,
+          }}
+        >
+          {isCurrent && (
+            <div
+              className="player-avatar-ring-spin"
+              style={{
+                position: 'absolute',
+                inset: -5,
+                borderRadius: '50%',
+                border: '2px dashed rgba(255,255,255,0.5)',
+                pointerEvents: 'none',
+              }}
+            />
+          )}
+          {isCurrent && (
+            <div
+              className="player-avatar-glow-pulse"
+              style={{
+                position: 'absolute',
+                inset: -8,
+                borderRadius: '50%',
+                background:
+                  'radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%)',
+                pointerEvents: 'none',
+              }}
+            />
+          )}
+          <PlayerAvatar
+            $isCurrentTurn={isCurrent}
+            $isAlive={player.alive}
+            $variant={cardVariant as GameVariant}
+            width={44}
+            height={44}
+            borderRadius={9999}
+            alignItems="center"
+            justifyContent="center"
+            overflow="hidden"
+          >
+            <Text
+              fontSize={15}
+              fontWeight="800"
+              letterSpacing={0.5}
+              color={
+                player.alive
+                  ? isCurrent
+                    ? '#1a1a1a'
+                    : '$colorSubtle'
+                  : 'rgba(255,255,255,0.3)'
+              }
+            >
+              {player.alive ? initials : '💀'}
+            </Text>
+          </PlayerAvatar>
+        </div>
+
         <PlayerName data-testid={`player-name-${playerId}`}>
           {displayName}
           {isPlayerIdle && <IdleBadge />}

@@ -67,7 +67,7 @@ export const GameWrapper = styled(YStack, {
   flex: 1,
   minWidth: 0,
   minHeight: 0,
-  overflow: 'auto',
+  overflow: 'hidden',
   flexDirection: 'column',
 
   $md: {

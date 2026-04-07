@@ -11,8 +11,8 @@ export const GameTable = styled(YStack, {
   paddingHorizontal: '$7',
   position: 'relative',
   width: '100%',
-  flex: 1,
-  minHeight: 500, // Increased from 420
+  flexShrink: 0,
+  minHeight: 500,
 
   $sm: {
     paddingTop: '$9',

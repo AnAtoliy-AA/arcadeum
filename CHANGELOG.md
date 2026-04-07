@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.4] - 2026-04-07
+
+### Added
+- wire crime/horror/adventure full variant styles in getVariantStyles (ARC-456)
+- full variant immersion styles for adventure theme (ARC-456)
+- full variant immersion styles for horror theme (ARC-456)
+- compact single-row CriticalGameHeader with glassy pill (ARC-456)
+- add SeaBattleThemePreview component (ARC-456)
+- redesign SeaBattleLobby with theme tabs and live board preview (ARC-456)
+- redesign AttackBoard with sunk cells, emoji icons, glassmorphism (ARC-456)
+- add useDragPlacement hook (ARC-456)
+- add TurnBadge component (ARC-456)
+- add CSS animations hook for sea battle UI (ARC-456)
+
+### Fixed
+- critical game widget styles (ARC-456)
+- fill viewport on mobile and eliminate empty space below game content (ARC-456)
+- apply GameTitle gradient via inline span to avoid Tamagui DOM prop warning (ARC-456)
+- export TurnStatusPill/VariantIconBadge from barrel, clean up header (ARC-456)
+- sea battle game styles (ARC-456)
+- e2e tests failings (ARC-456)
+- game chat layout (ARC-456)
+- game control pannel styles (ARC-456)
+
+### Refactored
+- compact glassy pill header styled components (ARC-456)
+- no-op getTitleTextStyles in all existing variant configs (ARC-456)
+- compute ownIcon once per cell in AttackBoard own-board render (ARC-456)
+
+### Documentation
+- add Critical game header and variant styles design spec (ARC-456)
+- add Sea Battle UI redesign spec (ARC-456) (ARC-456)
+
+
 ## [1.9.3] - 2026-04-02
 
 ### Added

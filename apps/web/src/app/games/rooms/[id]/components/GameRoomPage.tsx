@@ -8,7 +8,7 @@ import React, {
   useRef,
   useCallback,
 } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from '@/shared/hooks/useQuery';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
@@ -46,7 +46,13 @@ import { GameRoomError } from './GameRoomError';
 import { PrivateRoomForm } from './PrivateRoomForm';
 import { DynamicGameRenderer } from './DynamicGameRenderer';
 
-export default function GameRoomPage() {
+interface GameRoomPageProps {
+  initialData: GameInitialData | null;
+}
+
+export default function GameRoomPage({
+  initialData: serverInitialData,
+}: GameRoomPageProps) {
   const media = useMedia();
   const roomFlexDirection = media.gtMd ? 'row' : 'column';
   const params = useParams();
@@ -93,7 +99,7 @@ export default function GameRoomPage() {
       });
     },
     enabled: !!roomId,
-    retry: 1,
+    initialData: serverInitialData,
   });
 
   const roomInfo = roomData?.room;
@@ -187,7 +193,7 @@ export default function GameRoomPage() {
     accessToken: snapshot.accessToken,
     mode: roomMode,
     inviteCode: urlInviteCode || undefined,
-    enabled: !roomInfoLoading && !visibilityError,
+    enabled: (!roomInfoLoading || !!serverInitialData) && !visibilityError,
     initialData,
   });
 
@@ -328,7 +334,7 @@ export default function GameRoomPage() {
   });
 
   // Wait for session to hydrate before checking authentication
-  if (!hydrated || roomInfoLoading) {
+  if (!hydrated || (roomInfoLoading && !serverInitialData)) {
     return (
       <Page fixedHeight>
         <Container>

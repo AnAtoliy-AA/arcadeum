@@ -1,42 +1,39 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
-import { navigateTo } from './fixtures/test-utils';
+import { test, navigateTo, handleRoute } from './fixtures/test-utils';
 
 test.describe('Game Room Detail', () => {
   test.beforeEach(async ({ page }) => {
     // Mock the rooms API
     await page.route('**/games/rooms*', async (route) => {
+      const method = route.request().method();
+      if (method === 'OPTIONS') {
+        await handleRoute(route, null);
+        return;
+      }
+
       const url = route.request().url();
       if (url.includes('empty-game')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            rooms: [],
-            total: 0,
-          }),
+        await handleRoute(route, {
+          rooms: [],
+          total: 0,
         });
       } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            rooms: [
-              {
-                id: '507f191e810c19729de860ed',
-                name: 'Mock Room',
-                gameId: 'critical_v1',
-                status: 'lobby',
-                playerCount: 1,
-                maxPlayers: 4,
-                hostId: 'host-1',
-                host: { id: 'host-1', displayName: 'Mock Host' },
-                createdAt: new Date().toISOString(),
-                visibility: 'public',
-              },
-            ],
-            total: 1,
-          }),
+        await handleRoute(route, {
+          rooms: [
+            {
+              id: '507f191e810c19729de860ed',
+              name: 'Mock Room',
+              gameId: 'critical_v1',
+              status: 'lobby',
+              playerCount: 1,
+              maxPlayers: 4,
+              hostId: 'host-1',
+              host: { id: 'host-1', displayName: 'Mock Host' },
+              createdAt: new Date().toISOString(),
+              visibility: 'public',
+            },
+          ],
+          total: 1,
         });
       }
     });
@@ -65,7 +62,12 @@ test.describe('Game Room Detail', () => {
     await navigateTo(page, '/games/empty-game');
 
     // Verify empty state message
-    await expect(page.getByText(/no rooms found for this game/i)).toBeVisible();
+    await expect(
+      page
+        .getByRole('main')
+        .getByText(/no rooms found for this game/i)
+        .first(),
+    ).toBeVisible();
   });
 
   test('should navigate to create room page', async ({ page }) => {

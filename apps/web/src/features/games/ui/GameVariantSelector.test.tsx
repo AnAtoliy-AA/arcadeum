@@ -64,15 +64,22 @@ vi.mock('@/entities/session/model/useSessionTokens', () => ({
   }),
 }));
 
-// Mock useMutation from @tanstack/react-query
-vi.mock('@tanstack/react-query', () => ({
+// Mock custom useMutation hook
+vi.mock('@/shared/hooks/useMutation', () => ({
   useMutation: ({
     mutationFn,
   }: {
-    mutationFn: (variables: unknown) => unknown;
+    mutationFn: (variables: unknown) => Promise<unknown>;
   }) => ({
     mutate: (variables: unknown) => mutationFn(variables),
+    mutateAsync: (variables: unknown) => mutationFn(variables),
+    isLoading: false,
     isPending: false,
+    error: null,
+    data: null,
+    isSuccess: false,
+    isError: false,
+    reset: vi.fn(),
   }),
 }));
 

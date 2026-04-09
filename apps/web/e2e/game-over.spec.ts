@@ -10,11 +10,6 @@ import {
 
 test.describe('Game Over Screen', () => {
   test.beforeEach(async ({ page }) => {
-    page.on('console', (msg) => {
-      if (msg.type() === 'error' || msg.type() === 'warning') {
-        console.log(`BROWSER [${msg.type()}]: ${msg.text()}`);
-      }
-    });
     await mockSession(page);
   });
 

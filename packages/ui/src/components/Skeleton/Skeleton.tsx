@@ -3,7 +3,7 @@
 import { YStack, styled, GetProps } from 'tamagui';
 import { memo, useMemo } from 'react';
 
-export type SkeletonProps = {
+export type SkeletonProps = GetProps<typeof YStack> & {
   width?: string | number;
   height?: string | number;
   variant?: 'rectangular' | 'circular' | 'text';
@@ -43,13 +43,22 @@ export const Skeleton = memo(function Skeleton({
   animation = 'shimmer',
   delay,
   'data-testid': dataTestId,
+  ...rest
 }: SkeletonProps) {
   const style = useMemo(
     () => (delay ? { animationDelay: typeof delay === 'number' ? `${delay}s` : delay } : undefined),
     [delay]
   );
   return (
-    <StyledSkeleton width={width} height={height} variant={variant} animation={animation} style={style} data-testid={dataTestId} />
+    <StyledSkeleton
+      width={width}
+      height={height}
+      variant={variant}
+      animation={animation}
+      style={style}
+      data-testid={dataTestId}
+      {...rest}
+    />
   );
 });
 

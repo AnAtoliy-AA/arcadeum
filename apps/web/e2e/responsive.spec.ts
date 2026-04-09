@@ -9,7 +9,6 @@ test.describe('Responsive Layout', () => {
     page,
   }) => {
     await navigateTo(page, '/');
-    await page.waitForLoadState('networkidle');
 
     await expect(page.locator('header')).toBeVisible();
 

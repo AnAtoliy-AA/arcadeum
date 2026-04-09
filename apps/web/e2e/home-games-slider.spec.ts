@@ -42,9 +42,7 @@ test.describe('Home Page Games Grid Refinement', () => {
   });
 
   test('should open game details modal from slider', async ({ page }) => {
-    await page
-      .waitForLoadState('networkidle', { timeout: 15000 })
-      .catch(() => {});
+    await expect(page.locator('body')).toBeVisible();
 
     const criticalCard = page.getByTestId('game-card-critical_v1');
     await expect(criticalCard).toBeVisible();

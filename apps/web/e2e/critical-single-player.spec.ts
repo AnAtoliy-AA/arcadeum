@@ -14,18 +14,6 @@ test.describe('Critical Single Player Mode', () => {
   test.setTimeout(60000);
 
   test.beforeEach(async ({ page }) => {
-    page.on('console', (msg) => {
-      if (
-        msg.type() === 'error' ||
-        msg.type() === 'warning' ||
-        msg.text().includes('session') ||
-        msg.text().includes('room')
-      ) {
-        console.log(
-          `BROWSER [${msg.type()}]: ${msg.text()}${msg.location().url ? ' @ ' + msg.location().url : ''}`,
-        );
-      }
-    });
     await mockSession(page);
   });
 

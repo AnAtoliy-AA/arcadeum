@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo } from 'react';
 
-import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
+import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { useThemeController } from '@/app/theme/ThemeContext';
 import { useHapticsSetting } from '@/shared/hooks/useHapticsSetting';
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';

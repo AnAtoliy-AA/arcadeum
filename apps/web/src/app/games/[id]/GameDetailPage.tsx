@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from '@/shared/hooks/useQuery';
 import { useParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -16,6 +16,7 @@ import {
   EmptyState,
 } from '@/shared/ui';
 import { routes } from '@/shared/config/routes';
+import type { GameRoomSummary } from '@/shared/types/games';
 
 function getStatusVariant(
   status: string,
@@ -25,14 +26,18 @@ function getStatusVariant(
   return 'neutral';
 }
 
-export function GameDetailPage() {
+interface GameDetailPageProps {
+  initialRooms?: GameRoomSummary[];
+}
+
+export function GameDetailPage({ initialRooms = [] }: GameDetailPageProps) {
   const params = useParams();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
   const gameId = params?.id as string;
 
-  const { data: rooms, isLoading: loading } = useQuery({
-    queryKey: ['games', 'rooms', gameId],
+  const { data: rooms = [], isLoading: loading } = useQuery<GameRoomSummary[]>({
+    queryKey: ['games', 'rooms', gameId, snapshot.accessToken],
     queryFn: async () => {
       const response = await gamesApi.getRooms(
         { gameId },
@@ -41,8 +46,11 @@ export function GameDetailPage() {
       return response.rooms;
     },
     enabled: !!gameId,
-    initialData: [],
+    initialData: initialRooms,
+    refreshKey: `game-detail-${gameId}`,
   });
+
+  const displayRooms = rooms || [];
 
   return (
     <PageLayout>
@@ -66,9 +74,9 @@ export function GameDetailPage() {
           </LinkButton>
         </div>
 
-        {loading ? (
+        {loading && !displayRooms.length ? (
           <LoadingState message="Loading rooms..." />
-        ) : rooms.length === 0 ? (
+        ) : displayRooms.length === 0 ? (
           <EmptyState
             message={t('games.detail.empty') || 'No rooms found for this game'}
             icon="🎮"
@@ -77,61 +85,62 @@ export function GameDetailPage() {
           <div
             style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
           >
-            {rooms.map((room) => (
+            {displayRooms.map((room) => (
               <a
                 key={room.id}
                 href={routes.gameRoom(room.id)}
                 style={{ textDecoration: 'none' }}
               >
-              <Card
-                interactive
-                padding="md"
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.75rem',
-                }}
-              >
-                <div
+                <Card
+                  interactive
+                  padding="md"
                   style={{
                     display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: '1rem',
+                    flexDirection: 'column',
+                    gap: '0.75rem',
                   }}
                 >
-                  <h3
+                  <div
                     style={{
-                      margin: 0,
-                      fontSize: '1.25rem',
-                      fontWeight: 600,
-                      color: '#ecefee',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      gap: '1rem',
                     }}
                   >
-                    {room.name}
-                  </h3>
-                  <Badge variant={getStatusVariant(room.status)} size="sm">
-                    {t(`games.rooms.status.${room.status}`) || room.status}
-                  </Badge>
-                </div>
-                <div
-                  style={{
-                    fontSize: '0.875rem',
-                    color: 'rgba(236,239,238,0.45)',
-                  }}
-                >
-                  <div>
-                    {t('games.rooms.hostedBy', {
-                      host: room.host?.displayName || room.hostId,
-                    }) || `Hosted by ${room.host?.displayName || room.hostId}`}
+                    <h3
+                      style={{
+                        margin: 0,
+                        fontSize: '1.25rem',
+                        fontWeight: 600,
+                        color: '#ecefee',
+                      }}
+                    >
+                      {room.name}
+                    </h3>
+                    <Badge variant={getStatusVariant(room.status)} size="sm">
+                      {t(`games.rooms.status.${room.status}`) || room.status}
+                    </Badge>
                   </div>
-                  <div>
-                    {room.maxPlayers
-                      ? `${room.playerCount}/${room.maxPlayers} players`
-                      : `${room.playerCount} players`}
+                  <div
+                    style={{
+                      fontSize: '0.875rem',
+                      color: 'rgba(236,239,238,0.45)',
+                    }}
+                  >
+                    <div>
+                      {t('games.rooms.hostedBy', {
+                        host: room.host?.displayName || room.hostId,
+                      }) ||
+                        `Hosted by ${room.host?.displayName || room.hostId}`}
+                    </div>
+                    <div>
+                      {room.maxPlayers
+                        ? `${room.playerCount}/${room.maxPlayers} players`
+                        : `${room.playerCount} players`}
+                    </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
               </a>
             ))}
           </div>

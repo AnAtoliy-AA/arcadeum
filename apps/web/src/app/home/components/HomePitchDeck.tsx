@@ -1,6 +1,6 @@
 'use client';
 
-import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
+import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { appConfig } from '@/shared/config/app-config';
 import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 import { PitchDeckSection } from './styles/PitchDeck.styles';

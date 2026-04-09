@@ -62,7 +62,7 @@ export class PaymentsController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ): Promise<PaginatedNotes> {
-    const pageNum = Math.max(1, parseInt(page || '1', 10) || 1);
+    const pageNum = parseInt(page || '0', 10) || 0;
     const limitNum = Math.max(
       1,
       Math.min(100, parseInt(limit || '20', 10) || 20),

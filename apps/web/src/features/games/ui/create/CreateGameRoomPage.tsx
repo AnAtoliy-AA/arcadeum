@@ -2,14 +2,15 @@
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from '@/shared/hooks/useMutation';
+import { useRefreshStore } from '@/shared/model/useRefreshStore';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
+import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { gamesApi } from '@/features/games/api';
 import {
   Button,
@@ -73,6 +74,7 @@ export function CreateGameRoomPage() {
   const searchParams = useSearchParams();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
+  const triggerRefresh = useRefreshStore((state) => state.triggerRefresh);
 
   const initialGameId = useMemo(() => {
     const gameId = searchParams?.get('gameId');
@@ -121,7 +123,7 @@ export function CreateGameRoomPage() {
 
   const {
     mutate: createRoom,
-    isPending: loading,
+    isLoading: loading,
     error: mutationError,
   } = useMutation({
     mutationFn: async () => {
@@ -140,6 +142,7 @@ export function CreateGameRoomPage() {
       );
     },
     onSuccess: (data) => {
+      triggerRefresh(['games', 'rooms']); // Refresh lists
       let roomUrl = routes.gameRoom(data.room.id);
       if (data.room.inviteCode) {
         roomUrl += `?inviteCode=${encodeURIComponent(data.room.inviteCode)}`;
@@ -148,12 +151,7 @@ export function CreateGameRoomPage() {
     },
   });
 
-  const error =
-    mutationError instanceof Error
-      ? mutationError.message
-      : mutationError
-        ? 'Failed to create room'
-        : null;
+  const error = mutationError?.message || null;
 
   const handleSubmit = useCallback(
     (e?: React.FormEvent) => {
@@ -175,7 +173,7 @@ export function CreateGameRoomPage() {
         return;
       }
 
-      createRoom();
+      createRoom({});
     },
     [name, maxPlayers, gameId, createRoom, loading],
   );
@@ -188,7 +186,6 @@ export function CreateGameRoomPage() {
         <PageTitle size="lg">
           {t('games.create.title') || 'Create Game Room'}
         </PageTitle>
-
         <form onSubmit={handleSubmit}>
           <FormContainer>
             <Section title={t('games.create.sectionGame') || 'Select Game'}>
@@ -283,7 +280,9 @@ export function CreateGameRoomPage() {
                       }
                       placeholder={t('games.create.autoPlaceholder') || 'Auto'}
                       value={maxPlayers}
-                      onChange={(e) => setMaxPlayers(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setMaxPlayers(e.target.value)
+                      }
                       aria-label={
                         t('games.create.maxPlayersAria') ||
                         'Maximum number of players'

@@ -10,8 +10,18 @@ import {
   HistoryList,
   HistoryDetailModal,
 } from './components';
+import { HistorySummary } from './types';
 
-export function HistoryPage() {
+interface HistoryPageProps {
+  initialData?: {
+    entries: HistorySummary[];
+    total: number;
+    hasMore: boolean;
+    page: number;
+  };
+}
+
+export function HistoryPage({ initialData }: HistoryPageProps) {
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
   const currentUserId = snapshot.userId ?? '';
@@ -29,6 +39,7 @@ export function HistoryPage() {
     refresh,
   } = useHistoryFetch({
     accessToken: snapshot.accessToken,
+    initialData,
   });
 
   const {
@@ -61,7 +72,7 @@ export function HistoryPage() {
     accessToken: snapshot.accessToken,
     currentUserId,
     onClose: handleCloseModal,
-    onRefresh: () => fetchHistory(1, false),
+    onRefresh: () => fetchHistory(0, false),
   });
 
   const isHost = detail?.summary.host.id === currentUserId;
@@ -95,7 +106,7 @@ export function HistoryPage() {
             error={error}
             isAuthenticated={Boolean(snapshot.accessToken)}
             hasFilters={hasFilters}
-            onRetry={() => fetchHistory(1, false)}
+            onRetry={() => fetchHistory(0, false)}
             onSelectEntry={handleSelectEntry}
             formatParticipantName={formatParticipantName}
             formatDate={formatDate}

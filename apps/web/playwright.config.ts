@@ -44,7 +44,7 @@ export default defineConfig({
     ? 1
     : process.env.PLAYWRIGHT_WORKERS
       ? parseInt(process.env.PLAYWRIGHT_WORKERS)
-      : 2,
+      : undefined,
   reporter: process.env.CI ? 'list' : 'html',
   timeout: 90000,
   expect: {

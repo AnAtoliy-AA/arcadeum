@@ -1,9 +1,11 @@
 'use client';
 
 import { useCallback } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@/shared/hooks/useQuery';
+import { useMutation } from '@/shared/hooks/useMutation';
+import { useRefreshStore } from '@/shared/model/useRefreshStore';
 
-import { useLanguage } from '@/app/i18n/LanguageProvider';
+import { useLanguage } from '@/shared/i18n/context';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { getMessages, DEFAULT_LOCALE } from '@/shared/i18n';
 import { authApi } from '@/features/auth/api';
@@ -24,17 +26,20 @@ export function BlockedUsersSection() {
   const d = defaultMessages.settings ?? {};
 
   const { snapshot, hydrated } = useSessionTokens();
-  const queryClient = useQueryClient();
+  const triggerRefresh = useRefreshStore((state) => state.triggerRefresh);
 
-  const { data: blockedUsers = [], isLoading: loading } = useQuery({
+  const { data: rawBlockedUsers, isLoading: loading } = useQuery({
     queryKey: ['auth', 'blocked'],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       return authApi.getBlockedUsers({
         token: snapshot.accessToken || undefined,
+        signal,
       });
     },
     enabled: !!hydrated && !!snapshot.accessToken,
   });
+
+  const blockedUsers = rawBlockedUsers || [];
 
   const { mutate: unblock } = useMutation({
     mutationFn: async (userId: string) => {
@@ -43,7 +48,7 @@ export function BlockedUsersSection() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['auth', 'blocked'] });
+      triggerRefresh(['auth', 'blocked']);
     },
   });
 

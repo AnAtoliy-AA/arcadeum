@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useEffect, useCallback } from 'react';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@/shared/hooks/useInfiniteQuery';
 import { XStack, YStack, Text } from 'tamagui';
 
 import {
@@ -10,23 +10,14 @@ import {
   PageTitle,
   GlassCard,
   EmptyState,
+  Skeleton,
 } from '@/shared/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { paymentApi, PaymentNote } from '@/features/payment/api';
-
-export const notesStyles = `
-  @keyframes notes-shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-  @keyframes notes-fade-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-  .notes-card { position: relative; animation: notes-fade-in 0.5s ease-out both; }
-  .notes-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #7ad7ff, #57c3ff); border-radius: 3px 3px 0 0; }
-  .notes-card:nth-child(1) { animation: notes-fade-in 0.5s ease-out 0s both; }
-  .notes-card:nth-child(2) { animation: notes-fade-in 0.5s ease-out 0.1s both; }
-  .notes-card:nth-child(3) { animation: notes-fade-in 0.5s ease-out 0.2s both; }
-  .notes-card:nth-child(4) { animation: notes-fade-in 0.5s ease-out 0.3s both; }
-  .notes-card:nth-child(5) { animation: notes-fade-in 0.5s ease-out 0.4s both; }
-  .notes-skeleton { position: relative; overflow: hidden; }
-  .notes-skeleton::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%); animation: notes-shimmer 1.5s infinite; }
-`;
+import {
+  paymentApi,
+  PaymentNote,
+  PaginatedNotes,
+} from '@/features/payment/api';
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
@@ -48,19 +39,23 @@ function formatAmount(amount: number, currency: string): string {
 
 const NOTES_PER_PAGE = 12;
 
-export function NotesPage() {
+interface NotesPageProps {
+  initialData: { pages: PaginatedNotes[] } | null;
+}
+
+export function NotesPage({ initialData }: NotesPageProps) {
   const { t } = useTranslation();
   const loadTriggerRef = useRef<HTMLDivElement>(null);
 
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
-    useInfiniteQuery({
+    useInfiniteQuery<PaginatedNotes, number>({
       queryKey: ['payment-notes'],
       queryFn: ({ pageParam }) =>
         paymentApi.getNotes(pageParam, NOTES_PER_PAGE),
-      initialPageParam: 1,
+      initialPageParam: 0,
       getNextPageParam: (lastPage) =>
-        lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
-      staleTime: 30 * 1000,
+        lastPage.page + 1 < lastPage.totalPages ? lastPage.page + 1 : undefined,
+      initialData,
     });
 
   const handleIntersect = useCallback(
@@ -90,7 +85,6 @@ export function NotesPage() {
 
   return (
     <PageLayout>
-      <style>{notesStyles}</style>
       <Container size="lg" paddingTop="$12" paddingBottom="$16">
         <YStack ai="center" mb="$12">
           <PageTitle size="lg">
@@ -109,28 +103,18 @@ export function NotesPage() {
           </Text>
         </YStack>
 
-        {isLoading ? (
-          <div
-            style={{
-              display: 'grid',
-              gap: '1.5rem',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-            }}
-          >
+        {isLoading && !initialData ? (
+          <XStack flexWrap="wrap" gap="$6">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div
+              <Skeleton
                 key={i}
-                className="notes-skeleton"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: 16,
-                  padding: '1.5rem',
-                  minHeight: 140,
-                }}
+                height={140}
+                minWidth={300}
+                flex={1}
+                borderRadius={16}
               />
             ))}
-          </div>
+          </XStack>
         ) : allNotes.length === 0 ? (
           <EmptyState
             message={
@@ -140,15 +124,9 @@ export function NotesPage() {
           />
         ) : (
           <>
-            <div
-              style={{
-                display: 'grid',
-                gap: '1.5rem',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-              }}
-            >
+            <XStack flexWrap="wrap" gap="$6" minHeight={200}>
               {allNotes.map((note) => (
-                <GlassCard key={note.id} className="notes-card">
+                <GlassCard key={note.id} minWidth={300} flex={1}>
                   <Text
                     color="$color"
                     fontSize="$4"
@@ -207,7 +185,7 @@ export function NotesPage() {
                   </XStack>
                 </GlassCard>
               ))}
-            </div>
+            </XStack>
 
             <div
               ref={loadTriggerRef}

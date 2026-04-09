@@ -1,18 +1,30 @@
-'use client';
+import { getServerAccessToken } from '@/entities/session/api/serverTokens';
+import { gamesApi } from '@/features/games/api';
+import type { GameRoomSummary } from '@/shared/types/games';
+import { GameDetailPage } from './GameDetailPage';
 
-// This is a client-side entry point to isolate the page from SSR.
-// This prevents "module factory is not available" errors in Turbopack
-// caused by client-only dependencies (like sockets) leaking into unrelated SSR bundles.
-import dynamic from 'next/dynamic';
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
 
-const GameDetailPage = dynamic(
-  () => import('./GameDetailPage').then((mod) => mod.GameDetailPage),
-  {
-    ssr: false,
-    loading: () => null,
-  },
-);
+export default async function GameDetailRoute({ params }: PageProps) {
+  const { id: gameId } = await params;
+  const accessToken = await getServerAccessToken();
 
-export default function GameDetailRoute() {
-  return <GameDetailPage />;
+  // Initial fetch on server
+  let initialRooms: GameRoomSummary[] = [];
+  try {
+    const response = await gamesApi.getRooms(
+      { gameId },
+      { token: accessToken || undefined, timeout: 5000 },
+    );
+    initialRooms = response.rooms;
+  } catch (error) {
+    console.error(
+      `Failed to pre-fetch rooms for game ${gameId} during SSR:`,
+      error,
+    );
+  }
+
+  return <GameDetailPage initialRooms={initialRooms} />;
 }

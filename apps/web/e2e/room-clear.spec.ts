@@ -7,6 +7,7 @@ import {
   MOCK_OBJECT_ID,
   waitForRoomReady,
   mockGameSocket,
+  handleRoute,
 } from './fixtures/test-utils';
 
 test.describe('Room Clear Functionality', () => {
@@ -31,15 +32,16 @@ test.describe('Room Clear Functionality', () => {
 
     // Mock delete endpoint
     await page.route('**/games/rooms/delete', async (route) => {
-      if (route.request().method() !== 'POST') return route.continue();
-
-      const postData = await route.request().postDataJSON();
-      if (postData?.roomId === MOCK_OBJECT_ID) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ success: true }),
-        });
+      const method = route.request().method();
+      if (method === 'POST') {
+        const postData = await route.request().postDataJSON();
+        if (postData?.roomId === MOCK_OBJECT_ID) {
+          await handleRoute(route, { success: true });
+        } else {
+          await route.continue();
+        }
+      } else if (method === 'OPTIONS') {
+        await handleRoute(route, null);
       } else {
         await route.continue();
       }

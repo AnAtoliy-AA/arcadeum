@@ -21,7 +21,7 @@ const Label = styled(Text, {
   name: 'FormLabel',
   fontSize: '$3',
   fontWeight: '600',
-  color: '$color11',
+  color: '$color',
   letterSpacing: 0.5,
   userSelect: 'none',
 });

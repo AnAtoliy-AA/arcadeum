@@ -1,7 +1,7 @@
 'use client';
 
 import { YStack } from 'tamagui';
-import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
+import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { appConfig } from '@/shared/config/app-config';
 import { usePWAInstallProps } from '@/features/pwa';
 import {

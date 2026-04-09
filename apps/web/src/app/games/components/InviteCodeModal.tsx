@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from '@/shared/hooks/useMutation';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { routes } from '@/shared/config/routes';
 import {
@@ -26,7 +26,7 @@ export function InviteCodeModal({ open, onClose }: InviteCodeModalProps) {
   const router = useRouter();
   const [code, setCode] = useState('');
 
-  const { mutate, isPending, error, reset } = useMutation({
+  const { mutate, isLoading, error, reset } = useMutation({
     mutationFn: async (inviteCode: string) => {
       // Search for room by invite code
       const response = await gamesApi.getRooms({
@@ -94,7 +94,7 @@ export function InviteCodeModal({ open, onClose }: InviteCodeModalProps) {
                   reset();
                 }}
                 placeholder={t('games.inviteCode.placeholder') || 'e.g. A1B2C3'}
-                disabled={isPending}
+                disabled={isLoading}
                 autoFocus
                 fullWidth
               />
@@ -104,7 +104,7 @@ export function InviteCodeModal({ open, onClose }: InviteCodeModalProps) {
             <Button
               variant="ghost"
               onClick={handleClose}
-              disabled={isPending}
+              disabled={isLoading}
               type="button"
             >
               {t('games.common.cancel') || 'Cancel'}
@@ -112,9 +112,9 @@ export function InviteCodeModal({ open, onClose }: InviteCodeModalProps) {
             <Button
               variant="primary"
               type="submit"
-              disabled={isPending || !code.trim()}
+              disabled={isLoading || !code.trim()}
             >
-              {isPending
+              {isLoading
                 ? t('games.inviteCode.joining') || 'Joining...'
                 : t('games.inviteCode.join') || 'Join'}
             </Button>

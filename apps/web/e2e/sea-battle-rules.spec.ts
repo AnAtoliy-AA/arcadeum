@@ -90,7 +90,6 @@ test.describe('Sea Battle Rules Modal', () => {
     page,
   }) => {
     await navigateTo(page, '/games/create?gameId=sea_battle_v1');
-    await page.waitForLoadState('networkidle');
 
     // Look for rules button on create screen
     const rulesBtn = page

@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures/test-utils';
-import { navigateTo, mockSession } from './fixtures/test-utils';
+import { navigateTo, mockSession, handleRoute } from './fixtures/test-utils';
 
 test.describe('Game History', () => {
   test.beforeEach(async ({ page }) => {
@@ -71,63 +71,57 @@ test.describe('Game History', () => {
       const url = route.request().url();
       const method = route.request().method();
 
+      if (method === 'OPTIONS') {
+        await handleRoute(route, null);
+        return;
+      }
+
       if (url.includes('rematch')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ room: { id: 'rematch-room-id' } }),
-        });
+        if (method === 'POST') {
+          await handleRoute(route, { room: { id: 'rematch-room-id' } });
+        } else {
+          await route.continue();
+        }
         return;
       }
 
       if (method === 'DELETE') {
         // Remove item from state
         historyItems = [];
-        await route.fulfill({ status: 200 });
+        await handleRoute(route, { success: true });
         return;
       }
 
       if (method === 'GET') {
         // Determine if it's a detail request (has ID at end) or list request
-        // Broaden regex to ensure we catch IDs that might fail strict splitting
-        // Any path that isn't 'history' exactly or query params is detail?
         const isList =
           url.endsWith('/history') ||
           url.includes('/history?') ||
           url.includes('/history/search');
-        const isDetail = !isList; // Assume anything else under /history is detail/rematch (but rematch handled above)
+        const isDetail = !isList;
 
         if (isDetail) {
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              summary: historyItems[0] || {},
-              logs: [
-                {
-                  id: 'log-1',
-                  type: 'system',
-                  message: 'Game started',
-                  createdAt: new Date(Date.now() - 86400000).toISOString(),
-                },
-              ],
-            }),
+          await handleRoute(route, {
+            summary: historyItems[0] || {},
+            logs: [
+              {
+                id: 'log-1',
+                type: 'system',
+                message: 'Game started',
+                createdAt: new Date(Date.now() - 86400000).toISOString(),
+              },
+            ],
           });
         } else {
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              entries: historyItems,
-              total: historyItems.length,
-              hasMore: false,
-              page: 1,
-            }),
+          await handleRoute(route, {
+            entries: historyItems,
+            total: historyItems.length,
+            hasMore: false,
+            page: 0,
           });
         }
       } else {
-        // Fallback for any other history requests to prevent 500s
-        await route.fulfill({ status: 200, body: JSON.stringify({}) });
+        await handleRoute(route, {});
       }
     });
   });

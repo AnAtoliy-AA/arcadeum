@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@/shared/hooks/useMutation';
 
 import {
   exchangeOAuthCode,
@@ -15,6 +15,14 @@ import { type SessionTokensValue } from '@/entities/session/model/useSessionToke
 import { type SessionTokensSnapshot } from './types';
 import { authConfig, resolveAuthRedirectUri } from '@/shared/config/auth';
 import { OAUTH } from '@/shared/config/constants';
+
+interface OAuthDiscovery {
+  authorization_endpoint?: string;
+  token_endpoint?: string;
+  userinfo_endpoint?: string;
+  revocation_endpoint?: string;
+  jwks_uri?: string;
+}
 
 const CODE_VERIFIER_KEY = 'oauth_code_verifier';
 const STATE_KEY = 'oauth_state';
@@ -34,6 +42,26 @@ const defaultState: OAuthState = {
   authorizationCode: null,
   providerAccessToken: null,
 };
+
+// Simple discovery cache to replace queryClient.fetchQuery
+let discoveryCache: {
+  promise: Promise<OAuthDiscovery>;
+  timestamp: number;
+} | null = null;
+
+async function getCachedDiscovery(issuer: string): Promise<OAuthDiscovery> {
+  const now = Date.now();
+  if (
+    discoveryCache &&
+    now - discoveryCache.timestamp < OAUTH.DISCOVERY_CACHE_TIME
+  ) {
+    return discoveryCache.promise;
+  }
+
+  const promise = fetchDiscovery(issuer) as unknown as Promise<OAuthDiscovery>;
+  discoveryCache = { promise, timestamp: now };
+  return promise;
+}
 
 function storeSessionValue(key: string, value: string | null) {
   if (typeof window === 'undefined') {
@@ -137,8 +165,6 @@ async function applySessionResponse(
   });
 }
 
-// removed local revokeProviderToken
-
 export type UseOAuthResult = OAuthState & {
   startOAuth: () => Promise<void>;
   logout: () => Promise<void>;
@@ -151,8 +177,6 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
   const processingRef = useRef(false);
   const providerTokenRef = useRef<string | null>(null);
   const handledCallbackRef = useRef(false);
-
-  const queryClient = useQueryClient();
 
   // Exchange Code Mutation
   const { mutateAsync: exchangeCodeMutation } = useMutation({
@@ -190,12 +214,8 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
         error: null,
       }));
 
-      // Use queryClient to fetch discovery document with caching
-      const discovery = await queryClient.fetchQuery({
-        queryKey: ['oauth-discovery', authConfig.issuer],
-        queryFn: () => fetchDiscovery(authConfig.issuer),
-        staleTime: OAUTH.DISCOVERY_CACHE_TIME,
-      });
+      // Replace queryClient.fetchQuery with simple cached fetch
+      const discovery = await getCachedDiscovery(authConfig.issuer);
 
       const authEndpoint =
         discovery.authorization_endpoint ??
@@ -227,7 +247,7 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
       }));
       clearOAuthSessionState();
     }
-  }, [queryClient]);
+  }, []);
 
   const logout = useCallback(async () => {
     const providerToken = providerTokenRef.current;
@@ -237,11 +257,7 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
     if (providerToken) {
       // Attempt to revoke using discovery endpoint if available
       try {
-        const discovery = await queryClient.fetchQuery({
-          queryKey: ['oauth-discovery', authConfig.issuer],
-          queryFn: () => fetchDiscovery(authConfig.issuer),
-          staleTime: OAUTH.DISCOVERY_CACHE_TIME,
-        });
+        const discovery = await getCachedDiscovery(authConfig.issuer);
         if (discovery.revocation_endpoint) {
           await revokeProviderToken(
             discovery.revocation_endpoint,
@@ -254,7 +270,7 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
       }
     }
     await session.clearTokens();
-  }, [session, queryClient]);
+  }, [session]);
 
   const handleCallback = useCallback(
     async ({

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useMemo, ComponentProps, ReactNode } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { styled, XStack, Text } from 'tamagui';
 import {
   PageLayout,
@@ -24,17 +25,35 @@ import {
   Leaderboard,
 } from './components';
 import { getAllSupportedGameIds } from '@/features/games/lib/gameIdMapping';
+import type { PlayerStats, LeaderboardResponse } from '@/features/history/api';
 
 type TabType = 'my-stats' | 'leaderboard';
 
-export function StatsPage() {
+interface StatsPageProps {
+  initialStats: PlayerStats | null;
+  initialLeaderboard: LeaderboardResponse | null;
+}
+
+export function StatsPage({
+  initialStats,
+  initialLeaderboard,
+}: StatsPageProps) {
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // URL state management for filters
+  const selectedGame = searchParams?.get('game') || '';
   const [activeTab, setActiveTab] = useState<TabType>('my-stats');
-  const [selectedGame, setSelectedGame] = useState('');
+
   const { snapshot } = useSessionTokens();
+
   const { stats, loading, refreshing, error, refresh } = useStats({
     accessToken: snapshot.accessToken,
+    initialData: initialStats,
   });
+
   const {
     leaderboard,
     loading: leaderboardLoading,
@@ -42,7 +61,7 @@ export function StatsPage() {
     hasMore,
     loadMore,
     refresh: refreshLeaderboard,
-  } = useLeaderboard(selectedGame || undefined);
+  } = useLeaderboard(selectedGame || undefined, initialLeaderboard);
 
   const gameOptions = useMemo(() => {
     const supportedGames = getAllSupportedGameIds();
@@ -54,6 +73,19 @@ export function StatsPage() {
       })),
     ];
   }, [t]);
+
+  const updateParams = useCallback(
+    (gameId: string) => {
+      const params = new URLSearchParams(searchParams?.toString() || '');
+      if (!gameId) {
+        params.delete('game');
+      } else {
+        params.set('game', gameId);
+      }
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [pathname, router, searchParams],
+  );
 
   const handleRefresh = () => {
     if (activeTab === 'my-stats') {
@@ -114,7 +146,7 @@ export function StatsPage() {
               <FilterLabel>{t('stats.filterByGame')}</FilterLabel>
               <Select
                 value={selectedGame}
-                onValueChange={setSelectedGame}
+                onValueChange={updateParams}
                 options={gameOptions}
               />
             </FilterContainer>
@@ -146,12 +178,15 @@ const TabGroup = styled(XStack, {
   flexWrap: 'wrap',
 } as unknown as Record<string, unknown>);
 
-interface TabButtonProps extends ComponentProps<typeof Button> {
+interface TabButtonProps {
   $active?: boolean;
-  children?: ReactNode;
+  onClick?: () => void;
+  children?: React.ReactNode;
+  'aria-pressed'?: boolean;
+  'data-testid'?: string;
 }
 
-const TabButton = ({ $active, ...props }: TabButtonProps) => (
+const TabButton = ({ $active, children, ...props }: TabButtonProps) => (
   <Button
     variant={$active ? 'primary' : 'chip'}
     size="md"
@@ -159,7 +194,9 @@ const TabButton = ({ $active, ...props }: TabButtonProps) => (
     minWidth={120}
     justifyContent="center"
     {...props}
-  />
+  >
+    {children}
+  </Button>
 );
 
 const FilterContainer = styled(XStack, {
@@ -179,7 +216,7 @@ const FilterLabel = styled(Text, {
   tag: 'label',
   fontSize: '$3',
   fontWeight: '600',
-  color: '$color11',
+  color: '$color',
   letterSpacing: 0.5,
   userSelect: 'none',
 } as unknown as Record<string, unknown>);

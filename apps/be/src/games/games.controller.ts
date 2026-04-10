@@ -125,8 +125,8 @@ export class GamesController {
       participationFilter = undefined;
     }
 
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
+    const pageNum = page ? parseInt(page, 10) : 0;
+    const limitNum = limit ? parseInt(limit, 10) : 12;
 
     return this.gamesService.listRooms({
       userId: user?.userId,
@@ -188,7 +188,7 @@ export class GamesController {
       throw new UnauthorizedException();
     }
 
-    const pageNum = page ? parseInt(page, 10) : 1;
+    const pageNum = page ? parseInt(page, 10) : 0;
     const limitNum = limit ? parseInt(limit, 10) : 20;
 
     const result = await this.gamesService.listHistoryForUser(user.userId, {

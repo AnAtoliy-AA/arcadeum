@@ -75,7 +75,7 @@ export function GamesFilters({
           {!isAuthenticated && (
             <Text
               fontSize="$1"
-              color="$color9"
+              color="$color"
               opacity={0.6}
               fontStyle="italic"
               marginBottom="$1"

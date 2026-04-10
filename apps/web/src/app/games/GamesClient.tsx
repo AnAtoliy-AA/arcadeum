@@ -1,16 +1,12 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-import { PageLoading } from '@/shared/ui';
+import { GamesPage } from './GamesPage';
+import { GetRoomsResponse } from '@/features/games/api';
 
-const GamesPage = dynamic(
-  () => import('./GamesPage').then((mod) => mod.GamesPage),
-  {
-    ssr: false,
-    loading: () => <PageLoading layout="grid" />,
-  },
-);
+interface GamesClientProps {
+  initialData: GetRoomsResponse | null;
+}
 
-export function GamesClient() {
-  return <GamesPage />;
+export function GamesClient({ initialData }: GamesClientProps) {
+  return <GamesPage initialData={initialData} />;
 }

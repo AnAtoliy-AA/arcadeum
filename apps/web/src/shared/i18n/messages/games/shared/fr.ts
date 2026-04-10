@@ -30,8 +30,11 @@ export const frMessages = {
   rooms: {
     status: {
       lobby: "Salon d'attente",
+      waiting: 'En attente',
       in_progress: 'En cours',
       completed: 'Terminé',
+      placement: 'Placement',
+      active: 'Actif',
     },
     hostedBy: 'Hébergé par {{host}}',
     participants: 'Participants',

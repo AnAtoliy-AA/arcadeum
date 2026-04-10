@@ -1,5 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 import { MOCK_OBJECT_ID } from './auth';
+import { handleRoute } from './network';
 
 export interface WaitForRoomReadyOptions {
   autoCloseRules?: boolean;
@@ -67,9 +68,8 @@ export async function waitForRoomReady(
 ): Promise<void> {
   const { autoCloseRules = true } = options;
 
-  await page
-    .waitForLoadState('networkidle', { timeout: 15000 })
-    .catch(() => {});
+  // We removed networkidle here as it hangs intermittently due to active socket mocks.
+  // The visibility check for .games-room-container below is a more reliable ready-signal.
 
   // Wait for the game room container to be visible (the .games-room-container
   // class is only applied in the fully-loaded state of GameRoomPage).
@@ -152,7 +152,13 @@ export async function mockRoomInfo(
 
   // Mock the room info endpoint with dynamic room ID matching
   await page.route('**/games/room-info', async (route) => {
-    if (route.request().method() !== 'POST') return route.continue();
+    const method = route.request().method();
+    if (method !== 'POST' && method !== 'OPTIONS') return route.continue();
+
+    if (method === 'OPTIONS') {
+      await handleRoute(route, null);
+      return;
+    }
 
     const postData = await route.request().postDataJSON();
     const roomId = postData?.roomId;
@@ -163,16 +169,18 @@ export async function mockRoomInfo(
       id: roomId || room.id,
     };
 
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ room: mockRoom, session }),
-    });
+    await handleRoute(route, { room: mockRoom, session });
   });
 
   // Mock the create room endpoint
   await page.route('**/games/rooms', async (route) => {
-    if (route.request().method() !== 'POST') return route.continue();
+    const method = route.request().method();
+    if (method !== 'POST' && method !== 'OPTIONS') return route.continue();
+
+    if (method === 'OPTIONS') {
+      await handleRoute(route, null);
+      return;
+    }
 
     const postData = await route.request().postDataJSON();
     const roomId = postData?.gameId
@@ -184,10 +192,6 @@ export async function mockRoomInfo(
       id: roomId,
     };
 
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ room: createdRoom }),
-    });
+    await handleRoute(route, { room: createdRoom });
   });
 }

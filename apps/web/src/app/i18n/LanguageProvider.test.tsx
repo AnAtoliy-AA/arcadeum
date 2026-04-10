@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { LanguageProvider, useLanguage } from './LanguageProvider';
+import { LanguageProvider } from './LanguageProvider';
+import { useLanguage } from '@/shared/i18n/context';
 import { useLanguageStore, LanguageState } from './store/languageStore';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DEFAULT_LOCALE, Locale, TranslationBundle } from '@/shared/i18n';

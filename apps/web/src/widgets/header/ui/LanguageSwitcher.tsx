@@ -3,7 +3,7 @@
 import { useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { XStack, GlobeIcon } from '@arcadeum/ui';
-import { useLanguage } from '@/app/i18n/LanguageProvider';
+import { useLanguage } from '@/shared/i18n/context';
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES, Locale } from '@/shared/i18n';
 import { Select } from '@/shared/ui';
 

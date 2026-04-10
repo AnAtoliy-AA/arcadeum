@@ -30,7 +30,24 @@ type SystemThemeName = Extract<ThemeName, 'light' | 'dark'>;
 
 const SYSTEM_THEME_FALLBACK: SystemThemeName = 'dark';
 
-const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+const THEME_CONTEXT_SYMBOL = Symbol.for('arcadeum.themeContext');
+
+// Use a separate type to avoid 'any'
+type GlobalWithThemeContext = typeof globalThis & {
+  [THEME_CONTEXT_SYMBOL]?: React.Context<ThemeContextValue | undefined>;
+};
+
+const globalWithContext = globalThis as GlobalWithThemeContext;
+
+if (!globalWithContext[THEME_CONTEXT_SYMBOL]) {
+  globalWithContext[THEME_CONTEXT_SYMBOL] = createContext<
+    ThemeContextValue | undefined
+  >(undefined);
+}
+
+const ThemeContext = globalWithContext[THEME_CONTEXT_SYMBOL] as React.Context<
+  ThemeContextValue | undefined
+>;
 
 function useSystemTheme(): SystemThemeName {
   const [systemTheme, setSystemTheme] = useState<SystemThemeName>(

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, ComponentProps, ReactNode } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from '@/shared/hooks/useQuery';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { XStack, YStack, Text } from 'tamagui';
@@ -20,9 +20,9 @@ import {
   Spinner,
   EmptyState,
 } from '@/shared/ui';
-import { chatApi, ChatParticipant } from '@/features/chat/api';
+import { chatApi, ChatParticipant, ChatSummary } from '@/features/chat/api';
 import { formatSafeDate } from '@/shared/lib/date';
-import { QUERY_CONFIG, DEBOUNCE } from '@/shared/config/constants';
+import { DEBOUNCE } from '@/shared/config/constants';
 
 interface SearchResultItemProps extends ComponentProps<typeof Button> {
   isLast?: boolean;
@@ -50,7 +50,11 @@ const SearchResultItem = ({ isLast, ...props }: SearchResultItemProps) => (
   />
 );
 
-export function ChatListPage() {
+interface ChatListPageProps {
+  initialData: ChatSummary[] | null;
+}
+
+export function ChatListPage({ initialData }: ChatListPageProps) {
   const router = useRouter();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
@@ -63,7 +67,7 @@ export function ChatListPage() {
       return chatApi.getChats({ token: snapshot.accessToken || undefined });
     },
     enabled: !!snapshot.accessToken,
-    staleTime: QUERY_CONFIG.STALE_TIME.SHORT,
+    initialData,
   });
 
   const { data: querySearchResults, isLoading: searchLoading } = useQuery({
@@ -81,7 +85,7 @@ export function ChatListPage() {
 
   const displayChats = queryChats || [];
   const displaySearchResults = querySearchResults || [];
-  const loading = chatsLoading;
+  const loading = chatsLoading && !initialData;
 
   const handleSelectUser = useCallback(
     async (user: ChatParticipant) => {
@@ -186,17 +190,19 @@ export function ChatListPage() {
           />
         ) : (
           <YStack gap="$4">
-            {displayChats.map((chat) => {
+            {displayChats.map((chat: ChatSummary) => {
               const otherParticipants = chat.participants.filter(
-                (p) => p.id !== currentUserId,
+                (p: ChatParticipant) => p.id !== currentUserId,
               );
               const title =
                 otherParticipants.length > 0
                   ? otherParticipants
-                      .map((p) => p.displayName || p.username)
+                      .map((p: ChatParticipant) => p.displayName || p.username)
                       .join(', ')
                   : t('chatList.messages.directChat') || 'Direct Chat';
-              const receiverIds = otherParticipants.map((p) => p.id).join(',');
+              const receiverIds = otherParticipants
+                .map((p: ChatParticipant) => p.id)
+                .join(',');
 
               return (
                 <Link

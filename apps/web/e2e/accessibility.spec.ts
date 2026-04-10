@@ -14,7 +14,6 @@ test.describe('Accessibility', () => {
 
   test('should support keyboard navigation (Tab)', async ({ page }) => {
     await navigateTo(page, '/');
-    await page.waitForLoadState('networkidle');
 
     // LOCATE ALL INTERACTIVE ELEMENTS
     const interactives = page.locator(

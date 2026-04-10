@@ -66,7 +66,7 @@ export const FilterLabel = styled(Text, {
   fontWeight: '700',
   textTransform: 'uppercase',
   letterSpacing: 1.5,
-  color: '$color11',
+  color: '$color',
   marginBottom: '$1',
   userSelect: 'none',
   opacity: 0.8,

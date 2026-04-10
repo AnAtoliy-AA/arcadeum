@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from '@/shared/hooks/useMutation';
 import { Select } from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi } from '../api';
@@ -47,7 +47,7 @@ export function GameVariantSelector({
     setInternalVariant(currentVariant);
   }, [currentVariant]);
 
-  const { mutate, isPending } = useMutation({
+  const { mutate, isLoading: isPending } = useMutation({
     mutationFn: async (newVariant: string) => {
       await gamesApi.updateRoomOptions(
         roomId,

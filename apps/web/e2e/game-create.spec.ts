@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures/test-utils';
-import { navigateTo, mockSession } from './fixtures/test-utils';
+import { navigateTo, mockSession, handleRoute } from './fixtures/test-utils';
 
 test.describe('Game Room Creation', () => {
   test.beforeEach(async ({ page }) => {
@@ -51,38 +51,29 @@ test.describe('Game Room Creation', () => {
       const url = route.request().url();
 
       if (method === 'POST') {
-        await route.fulfill({
-          status: 201,
-          contentType: 'application/json',
-          body: JSON.stringify({
+        await handleRoute(
+          route,
+          {
             id: mockRoom.id,
             room: mockRoom,
-          }),
-        });
+          },
+          201,
+        );
       } else if (method === 'GET') {
         if (url.includes(mockRoom.id)) {
           // Specific room request
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ room: mockRoom }),
-          });
+          await handleRoute(route, { room: mockRoom });
         } else {
           // List request
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ rooms: [mockRoom], total: 1 }),
-          });
+          await handleRoute(route, { rooms: [mockRoom], total: 1 });
         }
       } else {
-        await route.fulfill({ status: 200, body: JSON.stringify({}) });
+        await handleRoute(route, {});
       }
     });
 
     await navigateTo(page, '/games/create?gameId=critical_v1');
-    // Ensure network is idle and page is hydrated
-    await page.waitForLoadState('networkidle');
+    // Ensure page is hydrated
   });
 
   test('should load creation page with correct game selected', async ({

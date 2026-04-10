@@ -15,7 +15,7 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import { useLanguage } from '@/app/i18n/LanguageProvider';
+import { useLanguage } from '@/shared/i18n/context';
 
 interface HomeGameDetailsModalProps {
   isOpen: boolean;

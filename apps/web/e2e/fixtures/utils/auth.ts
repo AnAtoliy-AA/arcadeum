@@ -1,16 +1,11 @@
 import { type Page } from '@playwright/test';
-
-export const MOCK_OBJECT_ID = '507f191e810c19729de860ea';
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': `http://localhost:${process.env.WEB_PORT || '3000'}`,
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-anonymous-id',
-  'Access-Control-Allow-Credentials': 'true',
-};
+import { handleRoute } from './network';
 
 export interface MockSessionOptions {
   persistent?: boolean;
 }
+
+export const MOCK_OBJECT_ID = '507f191e810c19729de860ea';
 
 export async function mockSession(
   page: Page,
@@ -44,11 +39,7 @@ export async function mockSession(
   if (persistent) {
     await page.addInitScript(setSession, snapshot);
   } else {
-    // For non-persistent session (e.g. testing logout), we set it once
-    // and use a secure cookie to track that it was already initialized
-    // across reloads within the same session.
     await page.addInitScript((s) => {
-      // Use a cookie to survive the logout redirect reload more reliably than sessionStorage in some CI environments
       if (!document.cookie.includes('__arcadeum_session_mocked=true')) {
         window.localStorage.setItem(
           'web_session_tokens_v1',
@@ -62,36 +53,26 @@ export async function mockSession(
 
   // Mock auth check
   await page.route('**/auth/me', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      headers: CORS_HEADERS,
-      body: JSON.stringify({
-        user: {
-          id: MOCK_OBJECT_ID,
-          email: 'test@example.com',
-          username: 'testuser',
-          displayName: 'Test User',
-        },
-      }),
+    await handleRoute(route, {
+      user: {
+        id: MOCK_OBJECT_ID,
+        email: 'test@example.com',
+        username: 'testuser',
+        displayName: 'Test User',
+      },
     });
   });
 
   // Mock profile
   await page.route('**/profile/**', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      headers: CORS_HEADERS,
-      body: JSON.stringify({
-        profile: {
-          userId: MOCK_OBJECT_ID,
-          email: snapshot.email,
-          username: snapshot.username,
-          displayName: snapshot.displayName,
-          stats: { wins: 10, totalGames: 20 },
-        },
-      }),
+    await handleRoute(route, {
+      profile: {
+        userId: MOCK_OBJECT_ID,
+        email: snapshot.email,
+        username: snapshot.username,
+        displayName: snapshot.displayName,
+        stats: { wins: 10, totalGames: 20 },
+      },
     });
   });
 }
@@ -102,35 +83,20 @@ export async function mockSession(
  */
 export async function mockSettingsExtraData(page: Page): Promise<void> {
   await page.route('**/referrals/stats', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      headers: CORS_HEADERS,
-      body: JSON.stringify({
-        referralCode: 'TESTCODE',
-        totalReferrals: 0,
-        rewards: [],
-        tiers: [],
-        nextTier: { requiredInvites: 5, remaining: 5 },
-      }),
+    await handleRoute(route, {
+      referralCode: 'TESTCODE',
+      totalReferrals: 0,
+      rewards: [],
+      tiers: [],
+      nextTier: { requiredInvites: 5, remaining: 5 },
     });
   });
 
   await page.route('**/referrals/code', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      headers: CORS_HEADERS,
-      body: JSON.stringify({ referralCode: 'TESTCODE' }),
-    });
+    await handleRoute(route, { referralCode: 'TESTCODE' });
   });
 
   await page.route('**/auth/blocked', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      headers: CORS_HEADERS,
-      body: JSON.stringify([]),
-    });
+    await handleRoute(route, []);
   });
 }

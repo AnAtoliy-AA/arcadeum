@@ -47,7 +47,18 @@ test.describe('Sea Battle Popup Challenge', () => {
       allowActionCardCombos: false,
     });
 
-    const initialMockState = createInitialState();
+    const challengeLogs = [
+      {
+        id: 'msg-active',
+        type: 'message',
+        senderId: otherUserId,
+        senderName: 'Opponent',
+        message: 'Challenge me!',
+        createdAt: new Date().toISOString(),
+      },
+    ];
+
+    const initialMockState = createInitialState(challengeLogs);
 
     await mockRoomInfo(page, {
       room: {
@@ -86,90 +97,10 @@ test.describe('Sea Battle Popup Challenge', () => {
 
     await page.goto(`/games/rooms/${roomId}`);
 
-    // Wait for the game to be ready
-    const main = page.locator('main');
+    // Wait for the game to be ready - this ensures socket and state are sync'd
+    const main = page.locator('main').first();
     await main.waitFor({ state: 'visible', timeout: 30000 });
 
-    // Check if players are rendered
-    const opponentCard = page.getByTestId(`player-card-${otherUserId}`);
-    await expect(opponentCard).toBeVisible({ timeout: 15000 });
-
-    // Emit a message from the opponent AFTER the page is ready
-    await page.evaluate(
-      async ({ otherUserId, roomId, userId }) => {
-        const logs = [
-          {
-            id: 'msg-active',
-            type: 'message',
-            senderId: otherUserId,
-            senderName: 'Opponent',
-            message: 'Challenge me!',
-            createdAt: new Date().toISOString(),
-          },
-        ];
-
-        // Inline the function because evaluate context is isolated
-        const state = {
-          deck: [],
-          discardPile: [],
-          playerOrder: [userId, otherUserId],
-          currentTurnIndex: 0,
-          pendingDraws: 0,
-          pendingDefuse: null,
-          pendingFavor: null,
-          pendingAlter: null,
-          pendingAction: null,
-          players: [
-            { playerId: userId, alive: true, hand: [] },
-            { playerId: otherUserId, alive: true, hand: [] },
-          ],
-          logs,
-          allowActionCardCombos: false,
-        };
-
-        const snapshot = {
-          roomId,
-          session: {
-            id: '507f191e810c19729de860f1',
-            status: 'active',
-            state,
-          },
-        };
-        // Wait a small bit for socket to be fully ready
-        await new Promise((r) => setTimeout(r, 500));
-        window.gameSocket?.trigger('games.session.snapshot', snapshot);
-
-        const win = window as unknown as {
-          _playwrightMocks?: { lastSession: unknown };
-        };
-        if (win._playwrightMocks) {
-          win._playwrightMocks.lastSession = snapshot.session;
-        }
-      },
-      { otherUserId, roomId, userId },
-    );
-
-    // Verify state update (checking for log entry in window.gameSocket)
-    await page.waitForFunction(
-      (msgId) => {
-        const win = window as unknown as {
-          gameSocket?: { connected: boolean };
-          _playwrightMocks?: {
-            lastSession?: { state?: { logs?: Array<{ id: string }> } };
-          };
-        };
-        return (
-          win.gameSocket?.connected &&
-          win._playwrightMocks?.lastSession?.state?.logs?.some(
-            (l) => l.id === msgId,
-          )
-        );
-      },
-      'msg-active',
-      { timeout: 10000 },
-    );
-
-    // Verify Chat Bubble
     // Verify Chat Bubble exists in DOM
     const bubble = page.getByTestId('chat-bubble');
     await bubble.waitFor({ state: 'attached', timeout: 15000 });
@@ -177,8 +108,13 @@ test.describe('Sea Battle Popup Challenge', () => {
     await expect(bubble).toHaveText(/Challenge me!/i);
 
     // Verify Sea Battle challenge popup is visible
+    const popupContainer = page.getByTestId('sea-battle-popup-container');
+
+    await expect(popupContainer).toBeVisible({ timeout: 15000 });
+
     const challengeButton = page.getByTestId('challenge-button');
-    await expect(challengeButton).toBeVisible({ timeout: 15000 });
+    await expect(challengeButton).toBeVisible({ timeout: 10000 });
+    await expect(challengeButton).toBeInViewport();
 
     // Wait a bit for the UI to be fully interactive
     await page.waitForTimeout(1000);

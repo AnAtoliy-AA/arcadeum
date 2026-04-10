@@ -243,10 +243,10 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   joinRoom: (roomId, userId, mode, inviteCode) => {
     if (mode === 'watch') {
-      set({ loading: true, error: null });
+      if (!get().room) set({ loading: true, error: null });
       gameSocket.emit('games.room.watch', { roomId, inviteCode });
     } else if (userId) {
-      set({ loading: true, error: null });
+      if (!get().room) set({ loading: true, error: null });
       gameSocket.emit('games.room.join', { roomId, userId, inviteCode });
     } else {
       set({ loading: false, error: null });

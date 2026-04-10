@@ -9,7 +9,7 @@ describe('useTranslation', () => {
   });
 
   afterEach(() => {
-    vi.doUnmock('@/app/i18n/LanguageProvider');
+    vi.doUnmock('@/shared/i18n/context');
   });
 
   // Helper to setup mock and import
@@ -17,7 +17,7 @@ describe('useTranslation', () => {
     // Mock the dependency BEFORE importing the module under test
     const useLanguageMock = vi.fn().mockReturnValue({ locale, messages });
 
-    vi.doMock('@/app/i18n/LanguageProvider', () => ({
+    vi.doMock('@/shared/i18n/context', () => ({
       useLanguage: useLanguageMock,
     }));
 

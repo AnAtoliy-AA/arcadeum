@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { YStack, TamaguiElement } from 'tamagui';
-import { useLanguage } from '@/app/i18n/LanguageProvider';
+import { useLanguage } from '@/shared/i18n/context';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 import { routes } from '@/shared/config/routes';

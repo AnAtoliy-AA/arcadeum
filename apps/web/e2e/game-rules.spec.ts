@@ -5,7 +5,6 @@ import { navigateTo } from './fixtures/test-utils';
 test.describe('Game Rules', () => {
   test('should display rules for Critical game', async ({ page }) => {
     await navigateTo(page, '/games/create?gameId=critical_v1');
-    await page.waitForLoadState('networkidle');
 
     const rulesBtn = page
       .getByRole('button', { name: /rules|правила|📖/i })
@@ -27,7 +26,6 @@ test.describe('Game Rules', () => {
 
   test('should show objective in rules modal', async ({ page }) => {
     await navigateTo(page, '/games/create?gameId=critical_v1');
-    await page.waitForLoadState('networkidle');
 
     const rulesBtn = page.getByRole('button', { name: /rules|правила|📖/i });
     await expect(rulesBtn).toBeVisible({ timeout: 15000 });
@@ -40,7 +38,6 @@ test.describe('Game Rules', () => {
 
   test('should close rules modal', async ({ page }) => {
     await navigateTo(page, '/games/create?gameId=critical_v1');
-    await page.waitForLoadState('networkidle');
 
     const rulesBtn = page.getByRole('button', { name: /rules|правила|📖/i });
     await expect(rulesBtn).toBeVisible({ timeout: 15000 });

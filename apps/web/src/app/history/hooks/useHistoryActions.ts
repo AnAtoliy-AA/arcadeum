@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@/shared/hooks/useMutation';
+import { useRefreshStore } from '@/shared/model/useRefreshStore';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { historyApi } from '@/features/history/api';
 import { routes } from '@/shared/config/routes';
@@ -12,7 +13,7 @@ interface UseHistoryActionsOptions {
   accessToken: string | null;
   currentUserId: string;
   onClose: () => void;
-  onRefresh: () => void; // Changed promise to void as refetch is usually void or we don't await strictly perfectly here
+  onRefresh: () => void;
 }
 
 interface UseHistoryActionsResult {
@@ -45,7 +46,7 @@ export function useHistoryActions({
 }: UseHistoryActionsOptions): UseHistoryActionsResult {
   const router = useRouter();
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
+  const triggerRefresh = useRefreshStore((state) => state.triggerRefresh);
 
   const { participantSelection, toggleParticipant, setParticipantSelection } =
     useHistoryStore();
@@ -74,11 +75,7 @@ export function useHistoryActions({
     }
   }, [detail, currentUserId, setParticipantSelection]);
 
-  const {
-    mutateAsync: rematch,
-    isPending: rematchLoading,
-    error: queryRematchError,
-  } = useMutation({
+  const { mutateAsync: rematch, isLoading: rematchLoading } = useMutation({
     mutationFn: async (vars: { roomId: string; participantIds: string[] }) => {
       return historyApi.rematch(vars.roomId, vars.participantIds, {
         token: accessToken || undefined,
@@ -88,38 +85,34 @@ export function useHistoryActions({
       router.push(routes.gameRoom(data.room.id));
       onClose();
       onRefresh(); // Refresh history list just in case
+      triggerRefresh('history');
     },
   });
 
-  const {
-    mutateAsync: remove,
-    isPending: removeLoading,
-    error: queryRemoveError,
-  } = useMutation({
+  const { mutateAsync: remove, isLoading: removeLoading } = useMutation({
     mutationFn: async (roomId: string) => {
       return historyApi.remove(roomId, { token: accessToken || undefined });
     },
     onSuccess: () => {
       onClose();
-      onRefresh(); // This likely calls refetch which we want
-      queryClient.invalidateQueries({ queryKey: ['history'] });
+      onRefresh();
+      triggerRefresh('history');
     },
   });
 
-  const rematchError =
-    manualRematchError ||
-    (queryRematchError ? (queryRematchError as Error).message : null);
-  const removeError =
-    manualRemoveError ||
-    (queryRemoveError ? (queryRemoveError as Error).message : null);
+  const [rematchError, setRematchError] = useState<string | null>(null);
+  const [removeError, setRemoveError] = useState<string | null>(null);
 
   const resetErrors = useCallback(() => {
+    setRematchError(null);
+    setRemoveError(null);
     setManualRematchError(null);
     setManualRemoveError(null);
     setShowRemoveConfirm(false);
   }, []);
 
   const handleStartRematch = useCallback(async () => {
+    setRematchError(null);
     setManualRematchError(null);
     if (!detail || !accessToken) {
       setManualRematchError(t('history.errors.authRequired'));
@@ -140,12 +133,13 @@ export function useHistoryActions({
         roomId: detail.summary.roomId,
         participantIds: consenting,
       });
-    } catch (_err) {
-      // Error handled by query state
+    } catch (err) {
+      setRematchError(err instanceof Error ? err.message : String(err));
     }
   }, [detail, accessToken, participantSelection, t, rematch]);
 
   const confirmRemoveFromHistory = useCallback(async () => {
+    setRemoveError(null);
     setManualRemoveError(null);
     if (!detail || !accessToken) {
       setManualRemoveError(t('history.errors.authRequired'));
@@ -154,19 +148,22 @@ export function useHistoryActions({
 
     try {
       await remove(detail.summary.roomId);
-    } catch (_err) {
-      // Handled by query state
+    } catch (err) {
+      setRemoveError(err instanceof Error ? err.message : String(err));
     }
   }, [detail, accessToken, t, remove]);
+
+  const effectiveRematchError = manualRematchError || rematchError;
+  const effectiveRemoveError = manualRemoveError || removeError;
 
   return {
     participantSelection,
     handleToggleParticipant: toggleParticipant,
     rematchLoading,
-    rematchError,
+    rematchError: effectiveRematchError,
     handleStartRematch,
     removeLoading,
-    removeError,
+    removeError: effectiveRemoveError,
     showRemoveConfirm,
     setShowRemoveConfirm,
     confirmRemoveFromHistory,

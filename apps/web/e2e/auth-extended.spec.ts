@@ -74,8 +74,21 @@ test.describe('Auth Extended', () => {
     await mockSettingsExtraData(page);
     await navigateTo(page, '/settings');
     await expect(page).toHaveURL(/\/settings/);
+
+    // Setup listener before reloading to avoid race conditions.
+    // We use a promise so we can wait for it after the reload action starts.
+    const responsePromise = page
+      .waitForResponse((res) => res.url().includes('auth/blocked'), {
+        timeout: 15000,
+      })
+      .catch(() => null);
+
     await page.reload();
     await expect(page).toHaveURL(/\/settings/);
+
+    // Wait for the background fetches to settle
+    await responsePromise;
+    await page.waitForTimeout(1000); // Settling pause for Strict Mode noise
   });
 
   test('should handle logout', async ({ page }) => {

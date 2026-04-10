@@ -77,13 +77,11 @@ test.describe('Sea Battle Bot Count Selection', () => {
           clearInterval(poll);
           const originalEmit = s.emit.bind(s);
           s.emit = (event: string, payload: unknown) => {
-            console.log(`[TestInterceptor] Emitting ${event}`, payload);
             (
               window as unknown as { _emittedEvents: EmittedEvent[] }
             )._emittedEvents.push({ event, payload });
             return originalEmit(event, payload);
           };
-          console.log('[TestInterceptor] Socket intercepted');
         }
       }, 50);
     });

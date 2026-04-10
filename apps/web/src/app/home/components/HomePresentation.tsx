@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { YStack } from 'tamagui';
 import { appConfig } from '@/shared/config/app-config';
-import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
+import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 import {
   PresentationSection,

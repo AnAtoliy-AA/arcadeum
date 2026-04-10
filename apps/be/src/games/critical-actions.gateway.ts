@@ -99,9 +99,11 @@ export class CriticalActionsGateway {
     const { card, targetPlayerId, cardsToStash, cardsToUnstash } =
       extractPlayActionPayload(payload as unknown as Record<string, unknown>);
 
-    this.logger.log(
-      `handleSessionPlayAction: card=${card}, targetPlayerId=${targetPlayerId}`,
-    );
+    if (process.env.NODE_ENV !== 'test') {
+      this.logger.log(
+        `handleSessionPlayAction: card=${card}, targetPlayerId=${targetPlayerId}`,
+      );
+    }
 
     if (!isSimpleActionCard(card) && card !== 'unstash') {
       throw new WsException('Card is not supported for this action.');

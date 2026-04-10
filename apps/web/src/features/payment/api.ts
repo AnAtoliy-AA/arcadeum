@@ -75,7 +75,7 @@ export const paymentApi = {
   },
 
   getNotes: async (
-    page = 1,
+    page = 0,
     limit = 20,
     options?: ApiClientOptions,
   ): Promise<PaginatedNotes> => {

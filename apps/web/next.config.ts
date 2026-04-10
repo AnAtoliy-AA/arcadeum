@@ -147,13 +147,19 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'private, no-cache, no-transform',
+            value: 'public, max-age=0, must-revalidate',
           },
         ],
       })),
     ];
   },
-  reactCompiler: true,
+  reactCompiler: false,
+  compiler: {
+    styledComponents: {
+      ssr: true,
+      displayName: true,
+    },
+  },
   transpilePackages: [
     '@arcadeum/ui',
     'tamagui',
@@ -161,13 +167,10 @@ const nextConfig: NextConfig = {
     '@tamagui/web',
     '@tamagui/button',
     '@tamagui/text',
+    '@tamagui/avatar',
+    '@tamagui/config',
+    '@tamagui/font-inter',
   ],
-  compiler: {
-    styledComponents: {
-      ssr: true,
-      displayName: true,
-    },
-  },
   typedRoutes: false,
   turbopack: {
     root: path.resolve(process.cwd(), '../..'),
@@ -179,6 +182,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: [
       '@arcadeum/shared-ui',
+      '@arcadeum/ui',
       'lucide-react',
       'framer-motion',
     ],

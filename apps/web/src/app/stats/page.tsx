@@ -1,10 +1,73 @@
-import { StatsClient } from './StatsClient';
+import { Suspense } from 'react';
+import { getServerAccessToken } from '@/entities/session/api/serverTokens';
+import {
+  historyApi,
+  type LeaderboardResponse,
+  type PlayerStats,
+} from '@/features/history/api';
+import { StatsPage } from './StatsPage';
+import StatsLoading from './loading';
 
 export const metadata = {
-  title: 'Player Statistics - AicoApp',
+  title: 'Player Statistics - Arcadeum',
   description: 'View your game performance and statistics',
 };
 
-export default function Statistics() {
-  return <StatsClient />;
+interface PageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function Statistics({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams;
+
+  return (
+    <Suspense fallback={<StatsLoading />}>
+      <StatsDataFetcher searchParams={resolvedSearchParams} />
+    </Suspense>
+  );
+}
+
+async function StatsDataFetcher({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const accessToken = await getServerAccessToken();
+  const selectedGame =
+    typeof searchParams.game === 'string' ? searchParams.game : undefined;
+
+  // Initial fetches on server
+  let initialStats = null;
+  let initialLeaderboard = null;
+
+  try {
+    const promises: Promise<unknown>[] = [
+      historyApi.getLeaderboard(10, 0, selectedGame, { timeout: 3000 }),
+    ];
+
+    if (accessToken) {
+      promises.push(historyApi.getStats({ token: accessToken, timeout: 3000 }));
+    }
+
+    const results = await Promise.allSettled(promises);
+
+    // Result 0 is always leaderboard
+    if (results[0].status === 'fulfilled') {
+      initialLeaderboard = results[0].value as LeaderboardResponse;
+    }
+
+    // Result 1 is stats (if user is authenticated)
+    if (accessToken && results[1]?.status === 'fulfilled') {
+      initialStats = results[1].value as PlayerStats;
+    }
+  } catch (error) {
+    console.error('Failed to pre-fetch stats during SSR:', error);
+  }
+
+  return (
+    <StatsPage
+      initialStats={initialStats}
+      initialLeaderboard={initialLeaderboard}
+    />
+  );
 }

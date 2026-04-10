@@ -63,8 +63,8 @@ export class PaymentNotesService {
     return note;
   }
 
-  async getNotes(page = 1, limit = 20): Promise<PaginatedNotes> {
-    const skip = (page - 1) * limit;
+  async getNotes(page = 0, limit = 20): Promise<PaginatedNotes> {
+    const skip = page * limit;
     const safeLimit = Math.min(limit, 100);
 
     const [notes, total] = await Promise.all([

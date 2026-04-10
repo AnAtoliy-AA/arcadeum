@@ -30,7 +30,6 @@
     "@tamagui/config": "2.0.0-rc.23",
     "@tamagui/next-plugin": "2.0.0-rc.23",
     "@tamagui/shorthands": "2.0.0-rc.23",
-    "@tanstack/react-query": "^5.90.16",
     "next": "16.1.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",

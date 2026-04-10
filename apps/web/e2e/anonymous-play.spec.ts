@@ -6,6 +6,7 @@ import {
   MOCK_OBJECT_ID,
   mockGameSocket,
   mockAllOnPage,
+  handleRoute,
 } from './fixtures/test-utils';
 
 test.describe('Anonymous Play', () => {
@@ -19,11 +20,9 @@ test.describe('Anonymous Play', () => {
     }, anonymousId);
 
     await page.route('**/games/rooms', async (route) => {
-      if (route.request().method() !== 'POST') return route.continue();
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
+      const method = route.request().method();
+      if (method === 'POST') {
+        await handleRoute(route, {
           room: {
             id: MOCK_OBJECT_ID,
             name: 'Anonymous Bot Game',
@@ -40,16 +39,18 @@ test.describe('Anonymous Play', () => {
             ],
             hostId: anonymousId,
           },
-        }),
-      });
+        });
+      } else if (method === 'OPTIONS') {
+        await handleRoute(route, null);
+      } else {
+        await route.continue();
+      }
     });
 
     await page.route('**/games/room-info', async (route) => {
-      if (route.request().method() !== 'POST') return route.continue();
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
+      const method = route.request().method();
+      if (method === 'POST') {
+        await handleRoute(route, {
           room: {
             id: MOCK_OBJECT_ID,
             name: 'Anonymous Bot Game',
@@ -67,16 +68,16 @@ test.describe('Anonymous Play', () => {
             hostId: anonymousId,
           },
           session: null,
-        }),
-      });
+        });
+      } else if (method === 'OPTIONS') {
+        await handleRoute(route, null);
+      } else {
+        await route.continue();
+      }
     });
 
     await page.route('**/games/rooms/delete', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ success: true }),
-      });
+      await handleRoute(route, { success: true });
     });
 
     await mockGameSocket(page, MOCK_OBJECT_ID, anonymousId);
@@ -133,7 +134,8 @@ test.describe('Anonymous Play', () => {
 
     // Mock games/rooms to return a specific ID for the created room
     await page.route('**/games/rooms', async (route) => {
-      if (route.request().method() === 'POST') {
+      const method = route.request().method();
+      if (method === 'POST') {
         const payload = {
           success: true,
           room: {
@@ -148,11 +150,11 @@ test.describe('Anonymous Play', () => {
             hostId: hostId,
           },
         };
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(payload),
-        });
+        await handleRoute(route, payload);
+      } else if (method === 'OPTIONS') {
+        await handleRoute(route, null);
+      } else {
+        await route.continue();
       }
     });
 
@@ -199,46 +201,34 @@ test.describe('Anonymous Play', () => {
 
     // Thoroughly mock room info and common routes for the new page
     await newPage.route('**/games/room-info', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          room: {
-            id: MOCK_OBJECT_ID,
-            name: 'Private Link Test',
-            gameId: 'critical_v1',
-            status: 'lobby',
-            visibility: 'private',
-            members: [
-              { id: hostId, userId: hostId, displayName: 'Host', isHost: true },
-              {
-                id: joinerId,
-                userId: joinerId,
-                displayName: 'Guest',
-                isHost: false,
-              },
-            ],
-            hostId: hostId,
-          },
-          session: null,
-        }),
+      await handleRoute(route, {
+        room: {
+          id: MOCK_OBJECT_ID,
+          name: 'Private Link Test',
+          gameId: 'critical_v1',
+          status: 'lobby',
+          visibility: 'private',
+          members: [
+            { id: hostId, userId: hostId, displayName: 'Host', isHost: true },
+            {
+              id: joinerId,
+              userId: joinerId,
+              displayName: 'Guest',
+              isHost: false,
+            },
+          ],
+          hostId: hostId,
+        },
+        session: null,
       });
     });
 
     await newPage.route('**/auth/me', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ user: null }),
-      });
+      await handleRoute(route, { user: null });
     });
 
     await newPage.route('**/auth/blocked', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([]),
-      });
+      await handleRoute(route, []);
     });
 
     await mockAllOnPage(newPage);

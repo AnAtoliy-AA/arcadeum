@@ -107,9 +107,11 @@ export function handleError(
       ? error.message
       : defaultMessage;
 
-  logger.warn(
-    `Failed to ${context.action} for room ${context.roomId}, user ${context.userId}: ${message}`,
-  );
+  if (process.env.NODE_ENV !== 'test') {
+    logger.warn(
+      `Failed to ${context.action} for room ${context.roomId}, user ${context.userId}: ${message}`,
+    );
+  }
 
   throw new WsException(message);
 }

@@ -1,4 +1,4 @@
-import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
+import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { appConfig } from '@/shared/config/app-config';
 import { DEFAULT_LOCALE, getMessages } from '@/shared/i18n';
 import type { AuthMessages, CommonMessages } from '@/shared/i18n/types';

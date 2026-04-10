@@ -82,9 +82,9 @@ export class GameRoomsService {
     filters: ListRoomsFilters = {},
     viewerId?: string,
   ): Promise<ListRoomsResult> {
-    const page = filters.page || 1;
+    const page = filters.page || 0;
     const limit = filters.limit || 10;
-    const skip = (page - 1) * limit;
+    const skip = page * limit;
 
     const query = GameRoomsQueryBuilder.buildListQuery(filters);
 

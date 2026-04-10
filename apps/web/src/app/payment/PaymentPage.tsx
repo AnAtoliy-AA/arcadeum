@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from '@/shared/hooks/useMutation';
 import { useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -71,7 +71,7 @@ export function PaymentPage() {
 
   const currency = 'USD';
 
-  const { mutate: createSession, isPending: loading } = useMutation({
+  const { mutate: createSession, isLoading: loading } = useMutation({
     mutationFn: async (params: {
       amount: number;
       currency: string;

@@ -10,7 +10,8 @@ import { useAuthForm, useAuthLabels } from '../hooks';
 import { appConfig } from '@/shared/config/app-config';
 
 export function AuthPageContent() {
-  const { isRegisterMode } = useAuthForm();
+  const auth = useAuthForm();
+  const { isRegisterMode } = auth;
   const labels = useAuthLabels(isRegisterMode);
 
   const config = {
@@ -31,9 +32,9 @@ export function AuthPageContent() {
             flexWrap="wrap"
             justifyContent="center"
           >
-            <LocalAuthPanel labels={labels} />
-            <OAuthPanel />
-            <SessionStatusPanel />
+            <LocalAuthPanel labels={labels} auth={auth} />
+            <OAuthPanel auth={auth} />
+            <SessionStatusPanel auth={auth} />
           </XStack>
           <DownloadSection labels={labels} />
         </Container>

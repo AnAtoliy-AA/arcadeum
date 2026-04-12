@@ -24,6 +24,10 @@ export function useLeaderboard(
   gameId?: string,
   initialData: LeaderboardResponse | null = null,
 ): UseLeaderboardResult {
+  const memoizedInitialData = useMemo(() => {
+    return initialData ? { pages: [initialData] } : null;
+  }, [initialData]);
+
   const {
     data,
     isLoading,
@@ -42,7 +46,7 @@ export function useLeaderboard(
       if (!lastPage.hasMore) return undefined;
       return allPages.length * PAGE_SIZE;
     },
-    initialData: initialData ? { pages: [initialData] } : null,
+    initialData: memoizedInitialData,
     refreshKey: `leaderboard-${gameId || 'all'}`,
   });
 

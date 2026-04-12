@@ -1,6 +1,13 @@
 'use client';
 
-import { Button, Avatar, Badge, Card, ArrowLeftIcon, XStack } from '@arcadeum/ui';
+import {
+  Button,
+  Avatar,
+  Badge,
+  Card,
+  ArrowLeftIcon,
+  XStack,
+} from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   Modal,
@@ -31,6 +38,7 @@ import {
   LogScope,
   LogSender,
   LogMessage,
+  EntryStatus,
 } from '../styles';
 
 interface HistoryDetailModalProps {
@@ -84,7 +92,7 @@ export function HistoryDetailModal({
 
   return (
     <Modal open={!!selectedEntry} onClose={onClose}>
-      <ModalContent maxWidth="800px">
+      <ModalContent maxWidth="800px" data-testid="history-detail-modal">
         <ModalHeader onClose={onClose}>
           <Button
             variant="ghost"
@@ -95,7 +103,13 @@ export function HistoryDetailModal({
             <ArrowLeftIcon size={16} />
             {t('history.detail.backToList')}
           </Button>
-          <ModalTitle>{selectedEntry.roomName}</ModalTitle>
+          <XStack ai="center" gap="$3">
+            <ModalTitle>{selectedEntry.roomName}</ModalTitle>
+            <EntryStatus data-testid="history-status">
+              {t(`history.status.${selectedEntry.status}`) ||
+                selectedEntry.status}
+            </EntryStatus>
+          </XStack>
         </ModalHeader>
 
         <ModalBody>

@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 import { appConfig } from '@/shared/config/app-config';
@@ -16,7 +18,7 @@ interface HeaderLayoutProps {
 export function HeaderLayout({ children }: HeaderLayoutProps) {
   return (
     <HeaderOuter>
-      <HeaderInner>
+      <HeaderInner data-testid="header-inner">
         <Logo href="/">
           <Image src="/logo.png" alt="" width={32} height={32} priority />
           <LogoText>{appConfig.appName}</LogoText>

@@ -73,7 +73,11 @@ test.describe('Header and Footer Modernization', () => {
     }
   });
 
-  test('logo should have hover effect', async ({ page, isMobile, browserName }) => {
+  test('logo should have hover effect', async ({
+    page,
+    isMobile,
+    browserName,
+  }) => {
     test.skip(
       isMobile,
       'Hover effects are not applicable on mobile/touch devices',
@@ -82,14 +86,13 @@ test.describe('Header and Footer Modernization', () => {
       browserName === 'firefox',
       'Firefox CI does not apply CSS :hover computed styles via synthetic mouse events',
     );
-    const logo = page.locator('header a[href="/"]').first();
-    const logoInner = logo.locator('> div').first();
+    const logoInner = page.getByTestId('logo-inner');
 
     // Use toPass to wait for the transition to be reflected in computed styles
     await expect(async () => {
       // Hover repeatedly to ensure state is caught even if hydration swaps elements
-      await logoInner.hover();
-      
+      await logoInner.hover({ force: true });
+
       const styles = await logoInner.evaluate((el) => {
         const s = window.getComputedStyle(el);
         return {
@@ -101,12 +104,18 @@ test.describe('Header and Footer Modernization', () => {
 
       // Check if any hover effect is applied
       // Firefox often reports matrix for transform; others might use scale property
-      const hasTransform = styles.transform !== 'none' && styles.transform !== 'matrix(1, 0, 0, 1, 0, 0)';
-      const hasScale = styles.scale !== 'none' && styles.scale !== '1' && !styles.scale.startsWith('1 1');
-      const hasOpacityChange = parseFloat(styles.opacity) < 1;
+      const hasTransform =
+        styles.transform !== 'none' &&
+        styles.transform !== 'matrix(1, 0, 0, 1, 0, 0)';
+      // Some browsers use scale property, others use transform matrix
+      const hasScale =
+        styles.scale !== 'none' &&
+        styles.scale !== '1' &&
+        !styles.scale.startsWith('1 1');
+      const isPartiallyTransparent = parseFloat(styles.opacity) < 1;
 
-      expect(hasTransform || hasScale || hasOpacityChange).toBe(true);
-    }).toPass();
+      expect(hasTransform || hasScale || isPartiallyTransparent).toBe(true);
+    }).toPass({ timeout: 10000 });
   });
 
   test('footer social icons should have hover effect', async ({
@@ -127,8 +136,8 @@ test.describe('Header and Footer Modernization', () => {
 
     // Use toPass to wait for the transition to be reflected in computed styles
     await expect(async () => {
-      await firstIcon.hover();
-      
+      await firstIcon.hover({ force: true });
+
       const styles = await firstIcon.evaluate((el) => {
         const s = window.getComputedStyle(el);
         return {
@@ -140,12 +149,23 @@ test.describe('Header and Footer Modernization', () => {
       });
 
       // Check if any hover effect is applied
-      const hasTransform = styles.transform !== 'none' && styles.transform !== 'matrix(1, 0, 0, 1, 0, 0)';
-      const hasScale = styles.scale !== 'none' && styles.scale !== '1' && !styles.scale.startsWith('1 1');
-      const hasRotate = styles.rotate !== 'none' && styles.rotate !== '0deg' && styles.rotate !== '0';
+      const hasTransform =
+        styles.transform !== 'none' &&
+        styles.transform !== 'matrix(1, 0, 0, 1, 0, 0)';
+      const hasScale =
+        styles.scale !== 'none' &&
+        styles.scale !== '1' &&
+        !styles.scale.startsWith('1 1');
+      const hasRotate =
+        styles.rotate !== 'none' &&
+        styles.rotate !== '0deg' &&
+        styles.rotate !== '0' &&
+        styles.rotate !== '0rad';
       const hasOpacityChange = parseFloat(styles.opacity) > 0.85; // Default is 0.8
 
-      expect(hasTransform || hasScale || hasRotate || hasOpacityChange).toBe(true);
-    }).toPass();
+      expect(hasTransform || hasScale || hasRotate || hasOpacityChange).toBe(
+        true,
+      );
+    }).toPass({ timeout: 10000 });
   });
 });

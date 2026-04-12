@@ -119,3 +119,22 @@ export const EntryViewDetails = styled(Typography, {
     opacity: 0.8,
   },
 } as Record<string, unknown>);
+
+export const PaginationSpinner = styled(YStack, {
+  name: 'PaginationSpinner',
+  gridColumn: '1 / -1',
+  jc: 'center',
+  ai: 'center',
+  padding: '$8',
+  width: '100%',
+});
+
+export const EndOfListText = styled(Typography, {
+  name: 'EndOfListText',
+  uiSize: 'sm',
+  alpha: 'medium',
+  textAlign: 'center',
+  padding: '$8',
+  gridColumn: '1 / -1',
+  width: '100%',
+} as Record<string, unknown>);

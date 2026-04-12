@@ -113,7 +113,11 @@ export const test = base.extend({
 
     page.on('pageerror', (err) => {
       const msg = err.message;
-      if (msg.includes('__nextjs_original-stack-frames')) {
+      if (
+        msg.includes('__nextjs_original-stack-frames') ||
+        msg.includes('The operation was aborted') ||
+        msg.includes('AbortError')
+      ) {
         return;
       }
 

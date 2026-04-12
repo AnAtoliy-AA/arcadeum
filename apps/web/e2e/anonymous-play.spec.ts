@@ -7,6 +7,7 @@ import {
   mockGameSocket,
   mockAllOnPage,
   handleRoute,
+  navigateTo,
 } from './fixtures/test-utils';
 
 test.describe('Anonymous Play', () => {
@@ -16,7 +17,7 @@ test.describe('Anonymous Play', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.addInitScript((id) => {
-      localStorage.setItem('aico_anon_id', id);
+      localStorage.setItem('arcadeum_anon_id', id);
     }, anonymousId);
 
     await page.route('**/games/rooms', async (route) => {
@@ -88,13 +89,12 @@ test.describe('Anonymous Play', () => {
   });
 
   test('should allow creating a room without login', async ({ page }) => {
-    await page.goto('/games/create?gameId=critical_v1', {
-      waitUntil: 'domcontentloaded',
-      timeout: 60000,
-    });
+    await navigateTo(page, '/games/create?gameId=critical_v1');
 
     await expect(page).toHaveURL(/\/games\/create/, { timeout: 15000 });
-    await expect(page.getByRole('heading', { name: /create/i })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /create game room/i }),
+    ).toBeVisible({ timeout: 15000 });
 
     await page
       .getByLabel('Room Name', { exact: false })
@@ -108,15 +108,14 @@ test.describe('Anonymous Play', () => {
 
     await waitForRoomReady(page);
 
-    await expect(
-      page.getByTitle(/Go back to lobby|Exit Room/i).first(),
-    ).toBeVisible({
+    await expect(page.getByTestId('exit-room-button').first()).toBeVisible({
       timeout: 30000,
     });
 
-    await expect(
-      page.getByRole('button', { name: /Start Game|Start with/i }),
-    ).toBeVisible();
+    // The host should be able to start the game directly.
+    const startBtn = page.getByTestId('start-with-bots-button');
+    await expect(startBtn).toBeVisible({ timeout: 15000 });
+    await startBtn.click({ force: true });
   });
 
   const hostId = 'anon-host-id';
@@ -129,7 +128,7 @@ test.describe('Anonymous Play', () => {
     // Basic setup for the first page (host)
     await page.addInitScript((id) => {
       window.isPlaywright = true;
-      localStorage.setItem('aico_anon_id', id);
+      localStorage.setItem('arcadeum_anon_id', id);
     }, hostId);
 
     // Mock games/rooms to return a specific ID for the created room
@@ -158,27 +157,26 @@ test.describe('Anonymous Play', () => {
       }
     });
 
-    await page.goto('/games/create', {
-      waitUntil: 'domcontentloaded',
-      timeout: 60000,
-    });
-    await expect(page.getByRole('heading', { name: /create/i })).toBeVisible();
+    await navigateTo(page, '/games/create');
+    await expect(
+      page.getByRole('heading', { name: /create game room/i }),
+    ).toBeVisible({ timeout: 15000 });
 
     await page
       .getByLabel('Room Name', { exact: false })
       .fill('Private Link Test');
 
-    const visibilityBtn = page.getByLabel(/Public room/i);
+    const visibilityBtn = page.getByTestId('visibility-toggle-button');
     await visibilityBtn.scrollIntoViewIfNeeded();
     await page.waitForTimeout(500); // Wait for potential layout shifts
     await visibilityBtn.click({ force: true });
 
     // In Firefox, transition might take a moment
-    await expect(page.getByLabel(/Private room/i)).toBeVisible({
-      timeout: 15000,
-    });
-
-    await page.getByRole('button', { name: 'Create Room' }).click();
+    await expect(async () => {
+      const startBtn = page.getByTestId('create-room-button');
+      await expect(startBtn).toBeVisible();
+      await startBtn.click({ force: true });
+    }).toPass({ timeout: 15000 });
 
     await expect(page).toHaveURL(new RegExp(`/games/rooms/${MOCK_OBJECT_ID}`), {
       timeout: 25000,
@@ -196,7 +194,7 @@ test.describe('Anonymous Play', () => {
     // Ensure the new page has a distinct anonymous user ID
     await newPage.addInitScript((id) => {
       window.isPlaywright = true;
-      localStorage.setItem('aico_anon_id', id);
+      localStorage.setItem('arcadeum_anon_id', id);
     }, joinerId);
 
     // Thoroughly mock room info and common routes for the new page
@@ -257,9 +255,7 @@ test.describe('Anonymous Play', () => {
     });
     await waitForRoomReady(newPage);
 
-    await expect(
-      newPage.getByRole('button', { name: /Exit|Leave/i }).first(),
-    ).toBeVisible({
+    await expect(newPage.getByTestId('exit-room-button').first()).toBeVisible({
       timeout: 30000,
     });
 

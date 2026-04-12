@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, FilterQuery } from 'mongoose';
 import { GameSession } from '../schemas/game-session.schema';
 import { ChatScope } from '../engines/base/game-engine.interface';
 import { GameRoom } from '../schemas/game-room.schema';
@@ -48,8 +48,24 @@ export class GameHistoryService {
    */
   async listHistoryForUser(
     userId: string,
-    grouped = false,
-  ): Promise<GameHistorySummary[] | GroupedHistorySummary[]> {
+    options: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      status?: string;
+      grouped?: boolean;
+    } = {},
+  ): Promise<{
+    entries: GameHistorySummary[] | GroupedHistorySummary[];
+    total: number;
+    page: number;
+    limit: number;
+    hasMore: boolean;
+  }> {
+    const page = options.page || 0;
+    const limit = options.limit || 20;
+    const skip = page * limit;
+
     // Get hidden history entries for this user
     const hiddenEntries = await this.historyHiddenModel
       .find({ userId })
@@ -59,11 +75,32 @@ export class GameHistoryService {
     const hiddenRoomIds = hiddenEntries.map((h) => h.roomId);
 
     // Find rooms where user participated
+    const orFilters: FilterQuery<GameRoom>[] = [
+      { hostId: userId },
+      { 'participants.userId': userId },
+    ];
+
+    if (options.search) {
+      const searchRegex = new RegExp(options.search, 'i');
+      orFilters.push({ name: searchRegex });
+    }
+
+    const query: FilterQuery<GameRoom> = {
+      $or: orFilters,
+      _id: { $nin: hiddenRoomIds },
+    };
+
+    if (options.status && !options.grouped) {
+      query.status = options.status;
+    }
+
+    const total = await this.gameRoomModel.countDocuments(query).exec();
+
     const rooms = await this.gameRoomModel
-      .find({
-        $or: [{ hostId: userId }, { 'participants.userId': userId }],
-        _id: { $nin: hiddenRoomIds },
-      })
+      .find(query)
+      .sort({ updatedAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .exec();
 
     const roomIds = rooms.map((r) => r._id.toString());
@@ -74,11 +111,20 @@ export class GameHistoryService {
       .sort({ createdAt: -1 })
       .exec();
 
-    if (grouped) {
-      return this.builder.buildGroupedHistory(rooms, sessions);
+    let entries: GameHistorySummary[] | GroupedHistorySummary[];
+    if (options.grouped) {
+      entries = await this.builder.buildGroupedHistory(rooms, sessions);
+    } else {
+      entries = await this.builder.buildHistoryList(rooms, sessions);
     }
 
-    return this.builder.buildHistoryList(rooms, sessions);
+    return {
+      entries,
+      total,
+      page,
+      limit,
+      hasMore: skip + entries.length < total,
+    };
   }
 
   /**

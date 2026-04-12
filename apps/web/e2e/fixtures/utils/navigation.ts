@@ -1,4 +1,4 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Page, type Response } from '@playwright/test';
 
 export function getIsMobile(page: Page): boolean {
   return (page.viewportSize()?.width || 0) <= 900;
@@ -32,6 +32,14 @@ export async function navigateTo(page: Page, path: string): Promise<void> {
 
   page.on('pageerror', onPageError);
 
+  const onResponse = (response: Response) => {
+    if (response.status() === 404 && response.url().includes('.js')) {
+      chunkLoadError = true;
+    }
+  };
+
+  page.on('response', onResponse);
+
   try {
     await page.goto(path, { timeout: 60000, waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('domcontentloaded', { timeout: 60000 });
@@ -44,6 +52,7 @@ export async function navigateTo(page: Page, path: string): Promise<void> {
     }
   } finally {
     page.off('pageerror', onPageError);
+    page.off('response', onResponse);
   }
 
   // Wait for hydration - theme provider sets these attributes in useEffect

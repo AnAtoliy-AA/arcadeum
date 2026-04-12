@@ -1,9 +1,10 @@
-import { useAuthForm, useAuthLabels } from '../hooks';
+import type { UseAuthFormResult } from '../hooks/useAuthForm';
+import { useAuthLabels } from '../hooks';
 import { Button, XStack, YStack, GlassCard, Typography } from '@arcadeum/ui';
 
-export function OAuthPanel() {
+export function OAuthPanel({ auth }: { auth: UseAuthFormResult }) {
   const { isRegisterMode, authorizationCode, handleStartOAuth, oauthLoading } =
-    useAuthForm();
+    auth;
   const labels = useAuthLabels(isRegisterMode);
   const {
     oauthTitle,

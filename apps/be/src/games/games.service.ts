@@ -286,14 +286,8 @@ export class GamesService {
       grouped?: boolean;
     },
   ) {
-    // Get all history
-    const allHistory = await this.historyService.listHistoryForUser(
-      userId,
-      options?.grouped || false,
-    );
-
-    // Use utility for filtering and pagination
-    return this.utilities.filterAndPaginateHistory(allHistory, options);
+    // Use the optimized service with DB-level pagination
+    return this.historyService.listHistoryForUser(userId, options);
   }
 
   /**

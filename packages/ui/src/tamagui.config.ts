@@ -2,13 +2,25 @@ import { createAnimations } from '@tamagui/animations-css';
 import { shorthands } from '@tamagui/shorthands';
 import { createTamagui, createTokens } from 'tamagui';
 
-const animations = createAnimations({
-  quick: 'ease-out 80ms',
-  fast: 'ease-in 100ms',
-  medium: 'ease-in 200ms',
-  slow: 'ease-in 300ms',
-  pulse: 'pulse 2s infinite',
-});
+// RSC safety: ensure animations are only created on the client/SSR passes
+const getAnimations = () => {
+  if (typeof window === 'undefined') {
+    return {
+      quick: 'ease-out 80ms',
+      fast: 'ease-in 100ms',
+      medium: 'ease-in 200ms',
+      slow: 'ease-in 300ms',
+      pulse: 'pulse 2s infinite',
+    } as any;
+  }
+  return createAnimations({
+    quick: 'ease-out 80ms',
+    fast: 'ease-in 100ms',
+    medium: 'ease-in 200ms',
+    slow: 'ease-in 300ms',
+    pulse: 'pulse 2s infinite',
+  });
+};
 
 const font = {
   family: 'inherit',
@@ -411,51 +423,74 @@ const tealLightTheme = {
   glassBorderHover: 'rgba(45,212,191,0.48)',
 };
 
-export const config = createTamagui({
-  animations,
-  defaultTheme: 'dark',
-  shouldAddPrefersColorSelection: true,
-  themeClassNameOnRoot: true,
-  shorthands,
-  fonts: {
-    heading: font,
-    body: font,
-  },
-  tokens,
-  themes: {
-    light: lightTheme,
-    dark: darkTheme,
-    neonLight: neonLightTheme,
-    neonDark: neonDarkTheme,
-    violetDark: violetDarkTheme,
-    violetLight: violetLightTheme,
-    tealDark: tealDarkTheme,
-    tealLight: tealLightTheme,
-  },
-  media: {
-    xs: { maxWidth: 660 },
-    sm: { maxWidth: 800 },
-    tablet: { maxWidth: 1023 },
-    md: { maxWidth: 1150 },
-    lg: { maxWidth: 1280 },
-    xl: { maxWidth: 1420 },
-    xxl: { maxWidth: 1600 },
-    gtXs: { minWidth: 660 + 1 },
-    gtSm: { minWidth: 800 + 1 },
-    gtTablet: { minWidth: 1023 + 1 },
-    gtMd: { minWidth: 1150 + 1 },
-    gtLg: { minWidth: 1280 + 1 },
-    short: { maxHeight: 820 },
-    tall: { minHeight: 820 },
-    hoverNone: { hover: 'none' },
-    pointerCoarse: { pointer: 'coarse' },
-  },
-});
+export const config = (function () {
+  const conf = createTamagui({
+    animations: getAnimations(),
+    defaultTheme: 'dark',
+    shouldAddPrefersColorSelection: true,
+    themeClassNameOnRoot: true,
+    shorthands,
+    fonts: {
+      heading: font,
+      body: font,
+    },
+    tokens,
+    themes: {
+      light: lightTheme,
+      dark: darkTheme,
+      neonLight: neonLightTheme,
+      neonDark: neonDarkTheme,
+      violetDark: violetDarkTheme,
+      violetLight: violetLightTheme,
+      tealDark: tealDarkTheme,
+      tealLight: tealLightTheme,
+    },
+    media: {
+      // Desktop-first (maxWidth) - Order from largest to smallest so narrower ones override broader ones
+      xxl: { maxWidth: 1600 },
+      xl: { maxWidth: 1420 },
+      lg: { maxWidth: 1280 },
+      md: { maxWidth: 1150 },
+      tablet: { maxWidth: 1023 },
+      sm: { maxWidth: 800 },
+      xs: { maxWidth: 660 },
+
+      // Mobile-first (minWidth) - Order from smallest to largest so broader ones override narrower ones
+      gtXs: { minWidth: 661 },
+      gtSm: { minWidth: 801 },
+      gtTablet: { minWidth: 1024 },
+      gtMd: { minWidth: 1151 },
+      gtLg: { minWidth: 1281 },
+
+      // Height and interaction
+      short: { maxHeight: 820 },
+      tall: { minHeight: 820 },
+      hoverNone: { hover: 'none' },
+      pointerCoarse: { pointer: 'coarse' },
+    },
+  });
+
+  return conf;
+})();
+
+/**
+ * Ensures Tamagui is initialized globally.
+ * This is safe to call multiple times and should be called early in the
+ * render cycle of the root client component to stabilize SSR.
+ */
+export const setupTamagui = () => {
+  if (typeof globalThis !== 'undefined' && !(globalThis as any).TamaguiConfig) {
+    (globalThis as any).TamaguiConfig = config;
+  }
+};
 
 export type AppConfig = typeof config;
 
 declare module 'tamagui' {
   interface TamaguiCustomConfig extends AppConfig { }
 }
+
+// Prime the global configuration immediately upon module evaluation
+setupTamagui();
 
 export default config;

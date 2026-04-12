@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 import { paymentApi } from '@/features/payment/api';
+import { SSR_TIMEOUT } from '@/shared/config/app-config';
 import { NotesPage } from './NotesPage';
 import NotesLoading from './loading';
 
@@ -24,8 +25,8 @@ async function NotesDataFetcher() {
   // Initial fetch on server
   let initialData = null;
   try {
-    initialData = await paymentApi.getNotes(1, 12, {
-      timeout: 3000,
+    initialData = await paymentApi.getNotes(0, 12, {
+      timeout: SSR_TIMEOUT,
     });
   } catch (error) {
     console.error('Failed to pre-fetch notes during SSR:', error);

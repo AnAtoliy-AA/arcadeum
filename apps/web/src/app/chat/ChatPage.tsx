@@ -9,6 +9,7 @@ import {
   GlassCard,
   EmptyState,
   YStack,
+  Button,
 } from '@arcadeum/ui';
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -74,6 +75,31 @@ export function ChatPage() {
         <Container size="md">
           <GlassCard>
             <EmptyState message={t('chat.notFound') || 'Chat not found'} />
+          </GlassCard>
+        </Container>
+      </PageLayout>
+    );
+  }
+
+  // Authentication barrier
+  if (!snapshot.accessToken) {
+    return (
+      <PageLayout>
+        <Container size="md" flex={1} jc="center" ai="center" p="$10">
+          <GlassCard p="$10" ai="center" gap="$5">
+            <EmptyState
+              icon="🔒"
+              message={
+                t('chat.loginRequired') || 'Login required to view messages'
+              }
+            />
+            <Button
+              variant="primary"
+              size="lg"
+              onPress={() => (window.location.href = '/auth')}
+            >
+              Log In
+            </Button>
           </GlassCard>
         </Container>
       </PageLayout>

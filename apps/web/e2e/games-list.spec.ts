@@ -78,7 +78,7 @@ test.describe('Games List Page', () => {
 
   test('should display game cards or empty state', async ({ page }) => {
     await navigateTo(page, '/games');
-    const mainContent = page.locator('main, [class*="Container"]').first();
+    const mainContent = page.locator('main');
     await expect(mainContent).toBeVisible();
 
     await expect(async () => {
@@ -126,7 +126,9 @@ test.describe('Games List Page', () => {
     // Use toPass to handle hydration and fetch timing
     await expect(async () => {
       await expect(page.getByText('Normal Room')).toBeVisible();
-      await expect(page.getByText('Anonymous Bot Game')).not.toBeVisible();
-    }).toPass({ timeout: 15000 });
+      const anonGame = page.getByText('Anonymous Bot Game');
+      const isVisible = await anonGame.isVisible();
+      expect(isVisible).toBe(false);
+    }).toPass({ timeout: 20000 });
   });
 });

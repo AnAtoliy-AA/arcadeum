@@ -20,13 +20,11 @@ export type SessionTokensValue = {
 };
 
 export function useSessionTokens(): SessionTokensValue {
-  const {
-    snapshot,
-    hydrated,
-    setTokens,
-    clearTokens,
-    refreshTokens: storeRefreshTokens,
-  } = useSessionStore();
+  const snapshot = useSessionStore((state) => state.snapshot);
+  const hydrated = useSessionStore((state) => state.hydrated);
+  const setTokens = useSessionStore((state) => state.setTokens);
+  const clearTokens = useSessionStore((state) => state.clearTokens);
+  const storeRefreshTokens = useSessionStore((state) => state.refreshTokens);
 
   const reload = useCallback(async () => {
     // Rehydration is automatic in Zustand, but we can force a re-read if needed or just return current.
@@ -69,18 +67,23 @@ export function useSessionTokens(): SessionTokensValue {
     storeRefreshTokens,
   ]);
 
-  const getEffectiveUserId = useCallback(() => {
+  const userId = useMemo(() => {
     if (snapshot.userId) return snapshot.userId;
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem('aico_anon_id');
+    return localStorage.getItem('arcadeum_anon_id');
   }, [snapshot.userId]);
+
+  const finalSnapshot = useMemo(
+    () => ({
+      ...snapshot,
+      userId,
+    }),
+    [snapshot, userId],
+  );
 
   return useMemo(
     () => ({
-      snapshot: {
-        ...snapshot,
-        userId: getEffectiveUserId(),
-      },
+      snapshot: finalSnapshot,
       hydrated,
       setTokens,
       clearTokens,
@@ -88,13 +91,12 @@ export function useSessionTokens(): SessionTokensValue {
       refreshTokens: storeRefreshTokens,
     }),
     [
-      snapshot,
+      finalSnapshot,
       hydrated,
       setTokens,
       clearTokens,
       reload,
       storeRefreshTokens,
-      getEffectiveUserId,
     ],
   );
 }

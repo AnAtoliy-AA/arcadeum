@@ -1,3 +1,4 @@
+import { SSR_TIMEOUT } from '../config/app-config';
 import { resolveApiUrl } from './api-base';
 import { HttpStatus } from './http-status';
 
@@ -42,17 +43,65 @@ export class ApiError extends Error {
   }
 }
 
+const inFlightRequests = new Map<string, Promise<unknown>>();
+
 export const apiClient = {
   async fetch<T>(path: string, options: ApiClientOptions = {}): Promise<T> {
     const {
+      method = 'GET',
       token,
       data,
       headers: customHeaders,
-      timeout = 5000,
+      timeout = SSR_TIMEOUT,
       signal: customSignal,
       ...fetchOptions
     } = options;
     const url = resolveApiUrl(path);
+
+    // Only deduplicate GET requests
+    const isGet = method.toUpperCase() === 'GET';
+    const cacheKey = isGet ? `${method}:${url}:${token || ''}` : null;
+
+    if (cacheKey && inFlightRequests.has(cacheKey)) {
+      return inFlightRequests.get(cacheKey) as Promise<T>;
+    }
+
+    const requestPromise = (async () => {
+      try {
+        const result = await this.performFetch<T>(url, {
+          method,
+          token,
+          data,
+          headers: customHeaders,
+          timeout,
+          signal: customSignal,
+          ...fetchOptions,
+        });
+        return result;
+      } finally {
+        if (cacheKey) inFlightRequests.delete(cacheKey);
+      }
+    })();
+
+    if (cacheKey) {
+      inFlightRequests.set(cacheKey, requestPromise);
+    }
+
+    return requestPromise;
+  },
+
+  async performFetch<T>(
+    url: string,
+    options: ApiClientOptions = {},
+  ): Promise<T> {
+    const {
+      token,
+      data,
+      headers: customHeaders,
+      timeout,
+      signal: customSignal,
+      ...fetchOptions
+    } = options;
 
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
@@ -84,7 +133,7 @@ export const apiClient = {
 
     const isDev = process.env.NODE_ENV === 'development';
     let attempts = 0;
-    const maxAttempts = isDev ? 5 : 1;
+    const maxAttempts = isDev ? 2 : 1;
 
     while (attempts < maxAttempts) {
       try {

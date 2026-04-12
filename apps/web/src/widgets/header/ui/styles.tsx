@@ -1,26 +1,30 @@
-'use client';
-
 import { HEADER_HEIGHT } from '@/shared/config/layout';
 import React from 'react';
 
 import Link from 'next/link';
-import { styled, GetProps, Nav as TamaguiNav, Header } from 'tamagui';
-import { XStack, YStack, Typography, LinkButton } from '@arcadeum/ui';
+import { styled, GetProps, Nav as TamaguiNav, Header, XStack } from 'tamagui';
+import { YStack, Typography, LinkButton } from '@arcadeum/ui';
+import { setupTamagui } from '@/shared/config/tamagui.config';
+
+// Ensure Tamagui is initialized before module-level styled() calls evaluate
+setupTamagui();
 
 // ─── Header Container ─────────────────────────────────────────────────────────
 
 export const HeaderOuter = styled(Header, {
-  name: 'HeaderContainer',
+  name: 'HeaderOuter',
+  role: 'banner',
   position: 'sticky',
   top: 0,
   zIndex: 100,
-  backgroundColor: 'var(--glass-background)',
-  borderBottomWidth: 0,
+  backgroundColor: '$glassBg',
   backdropFilter: 'blur(32px) saturate(200%)',
   boxShadow: '0 4px 24px -1px rgba(0, 0, 0, 0.2)',
+  flexDirection: 'column',
 });
 
-export const HeaderBorderLine = styled(YStack, {
+export const HeaderBorderLine = styled(XStack, {
+  name: 'HeaderBorderLine',
   position: 'absolute',
   bottom: 0,
   left: 0,
@@ -28,14 +32,15 @@ export const HeaderBorderLine = styled(YStack, {
   height: 1,
   pointerEvents: 'none',
   background:
-    'linear-gradient(90deg, transparent 0%, var(--glass-border) 15%, var(--primaryGradientStart) 50%, var(--glass-border) 85%, transparent 100%)',
+    'linear-gradient(90deg, transparent 0%, $glassBorder 15%, $primaryGradientStart 50%, $glassBorder 85%, transparent 100%)',
   boxShadow: '0 0 15px rgba(87, 195, 255, 0.15)',
   opacity: 0.8,
+  flexDirection: 'column',
 });
 
 // ─── Header Inner ─────────────────────────────────────────────────────────────
 
-export const HeaderInner = styled(XStack, {
+const HeaderInnerBase = styled(XStack, {
   name: 'HeaderInner',
   maxWidth: 1400,
   width: '100%',
@@ -44,22 +49,32 @@ export const HeaderInner = styled(XStack, {
   justifyContent: 'space-between',
   height: HEADER_HEIGHT,
   paddingHorizontal: '$6',
-  gap: '$8',
-  $xl: { gap: '$4' },
-  $xs: { paddingHorizontal: '$4', gap: '$2' },
+
+  $xs: {
+    paddingHorizontal: '$4',
+  },
 });
+
+export function HeaderInner({ children, ...props }: GetProps<typeof XStack>) {
+  return (
+    <HeaderInnerBase
+      className="header-inner-gap"
+      data-testid="header-inner"
+      {...props}
+    >
+      {children}
+    </HeaderInnerBase>
+  );
+}
 
 // ─── Logo ─────────────────────────────────────────────────────────────────────
 
-const LogoInner = styled(XStack, {
+export const LogoInner = styled(XStack, {
+  name: 'LogoInner',
   alignItems: 'center',
   gap: '$3',
   flexShrink: 0,
   cursor: 'pointer',
-  hoverStyle: {
-    transform: 'scale(1.02)',
-    opacity: 0.95,
-  },
 });
 
 export function Logo({
@@ -71,7 +86,9 @@ export function Logo({
 }) {
   return (
     <Link href={href} prefetch={false} style={{ textDecoration: 'none' }}>
-      <LogoInner>{children}</LogoInner>
+      <LogoInner className="logo-hover" data-testid="logo-inner">
+        {children}
+      </LogoInner>
     </Link>
   );
 }
@@ -106,8 +123,8 @@ export const Actions = styled(XStack, {
 });
 // ─── Navigation Link ──────────────────────────────────────────────────────────
 
-export const NavLinkContainer = styled(XStack, {
-  name: 'NavLinkContainer',
+export const NavLinkWrapper = styled(XStack, {
+  name: 'NavLinkWrapper',
   position: 'relative',
   alignItems: 'center',
   justifyContent: 'center',

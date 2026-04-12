@@ -4,9 +4,11 @@ const historyMessagesDefinition = {
   en: {
     unknownGame: 'Unknown Game',
     loading: 'Loading history...',
+    loginRequired: 'Login required to view history',
     list: {
       emptyNoEntries: 'No game history yet',
       emptySignedOut: 'Sign in to view your game history',
+      noMoreEntries: 'No more entries to show',
     },
     search: {
       label: 'Search history',
@@ -74,7 +76,9 @@ const historyMessagesDefinition = {
     list: {
       emptyNoEntries: 'Aún no hay historial de juegos',
       emptySignedOut: 'Inicia sesión para ver tu historial de juegos',
+      noMoreEntries: 'No hay más entradas para mostrar',
     },
+    loginRequired: 'Se requiere iniciar sesión para ver el historial',
     filters: {
       title: 'Buscar y Filtrar',
       description: 'Encuentra juegos por nombre, participante o estado',
@@ -91,7 +95,9 @@ const historyMessagesDefinition = {
     list: {
       emptyNoEntries: 'Aucun historique de jeu pour le moment',
       emptySignedOut: 'Connectez-vous pour voir votre historique de jeu',
+      noMoreEntries: "Plus d'entrées à afficher",
     },
+    loginRequired: "Connexion requise pour voir l'historique",
     filters: {
       title: 'Rechercher et Filtrer',
       description: 'Trouvez des jeux par nom, participant ou statut',
@@ -107,9 +113,11 @@ const historyMessagesDefinition = {
   ru: {
     unknownGame: 'Неизвестная игра',
     loading: 'Загрузка истории...',
+    loginRequired: 'Войдите, чтобы просмотреть историю игр',
     list: {
       emptyNoEntries: 'История игр пуста',
       emptySignedOut: 'Войдите, чтобы просмотреть свою историю игр',
+      noMoreEntries: 'Больше записей нет',
     },
     search: {
       label: 'Поиск по истории',
@@ -176,9 +184,11 @@ const historyMessagesDefinition = {
   by: {
     unknownGame: 'Невядомая гульня',
     loading: 'Загрузка гісторыі...',
+    loginRequired: 'Увайдзіце, каб прагледзець гісторыю гульняў',
     list: {
       emptyNoEntries: 'Гісторыя гульняў пустая',
       emptySignedOut: 'Увайдзіце, каб праглядзець сваю гісторыю гульняў',
+      noMoreEntries: 'Больш запісаў няма',
     },
     search: {
       label: 'Пошук па гісторыі',

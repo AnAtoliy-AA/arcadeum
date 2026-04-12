@@ -34,6 +34,9 @@ export async function mockSession(
       'web_session_tokens_v1',
       JSON.stringify({ state: { snapshot: s }, version: 0 }),
     );
+    // Also set cookie for server-side detection during hydration/SSR
+    document.cookie = `web_access_token=${s.accessToken}; path=/; max-age=3600; SameSite=Lax`;
+    document.cookie = `web_refresh_token=${s.refreshToken}; path=/; max-age=3600; SameSite=Lax`;
   };
 
   if (persistent) {

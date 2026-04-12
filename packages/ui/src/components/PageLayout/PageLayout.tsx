@@ -1,3 +1,4 @@
+'use client';
 import { Main, styled } from 'tamagui';
 import type { ComponentProps } from 'react';
 

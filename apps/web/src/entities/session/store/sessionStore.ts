@@ -104,7 +104,10 @@ export const useSessionStore = create<SessionState>()(
       mode: 'login',
 
       setMode: (mode: LocalAuthMode) => set({ mode }),
-      setHydrated: (hydrated: boolean) => set({ hydrated }),
+      setHydrated: (hydrated: boolean) => {
+        if (get().hydrated === hydrated) return;
+        set({ hydrated });
+      },
 
       setTokens: async (input: SetSessionTokensInput) => {
         const state = get() as SessionState;
@@ -184,9 +187,6 @@ export const useSessionStore = create<SessionState>()(
         snapshot: (state as SessionState).snapshot,
         mode: (state as SessionState).mode,
       }),
-      onRehydrateStorage: () => (state) => {
-        if (state) (state as SessionState).setHydrated(true);
-      },
     },
   ),
 );

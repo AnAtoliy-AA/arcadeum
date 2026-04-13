@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.7] - 2026-04-13
+
+### Fixed
+- tamagui configs (ARC-466)
+
+
 ## [1.9.6] - 2026-04-13
 
 ### Fixed

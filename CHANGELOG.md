@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.8] - 2026-04-13
+
+### Refactored
+- same games widget container for all games (ARC-465)
+
+
 ## [1.9.7] - 2026-04-13
 
 ### Fixed

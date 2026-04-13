@@ -1,3 +1,5 @@
+'use client';
+
 import { HEADER_HEIGHT } from '@/shared/config/layout';
 import React from 'react';
 

@@ -1,11 +1,11 @@
-import type { GameMetadata, BaseGameProps } from './types';
+import type { GameMetadata, BaseGameWidgetProps } from './types';
 import type { GameSlug } from './registry.types';
 
 export { GameSlug };
 
 export const gameLoaders: Record<
   string,
-  () => Promise<{ default: React.ComponentType<BaseGameProps> }>
+  () => Promise<{ default: React.ComponentType<BaseGameWidgetProps> }>
 > = {
   critical_v1: () => import('@/widgets/CriticalGame'),
   sea_battle_v1: () => import('@/widgets/SeaBattleGame'),

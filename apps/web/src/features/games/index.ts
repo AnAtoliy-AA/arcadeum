@@ -5,6 +5,7 @@ export type {
   GameConfig,
   GameMetadata,
   BaseGameProps,
+  BaseGameWidgetProps,
   GameState,
   GameAction,
   GameEvent,
@@ -18,8 +19,6 @@ export { gameLoaders, gameMetadata, type GameSlug } from './registry';
 
 // UI Components
 export { GameContainer } from './ui/GameContainer';
-
-export { GameLayout } from './ui/GameLayout';
 
 export { GameCard } from './ui/GameCard';
 

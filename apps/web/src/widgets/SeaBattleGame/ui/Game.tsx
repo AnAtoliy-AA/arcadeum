@@ -1,7 +1,6 @@
 'use client';
 
-import { useRef, useCallback, useState, useEffect, useMemo } from 'react';
-import { TamaguiElement, Text, XStack, YStack } from 'tamagui';
+import { useCallback, useState, useMemo } from 'react';
 import {
   useTranslation,
   type TranslationKey,
@@ -13,29 +12,24 @@ import { useSeaBattleActions } from '../hooks/useSeaBattleActions';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { useDisplayNames } from '@/widgets/CriticalGame/lib/displayUtils';
 import { useRematch } from '@/features/games/hooks';
+import { useGameChatIntegration } from '@/features/games/hooks';
 import {
   GameResultModal,
   RematchModal,
   RematchInvitationModal,
+  GameWidgetContainer,
+  type TurnStatusVariant,
 } from '@/features/games/ui';
 
 import { ShipPlacementBoard } from './ShipPlacementBoard';
 import { AttackBoard } from './AttackBoard';
 import { SeaBattleLobby } from './SeaBattleLobby';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
-import { GameLayout } from '@/features/games/ui/GameLayout';
 import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 
 import { RulesModal } from './RulesModal';
-import {
-  useGameChatStore,
-  ChatMessagePopup,
-  useLatestChatMessage,
-} from '@/widgets/GameChat';
-import { HeaderTitleArea } from './styles/header';
 import { useSeaBattleAnimations } from './styles/animations';
-import { TurnIndicator } from '@arcadeum/ui';
 
 export default function SeaBattleGame({
   roomId,
@@ -46,6 +40,8 @@ export default function SeaBattleGame({
   accessToken,
   showRulesOpen,
   onShowRulesClose,
+  isFullscreen: _isFullscreen,
+  toggleFullscreen: _toggleFullscreen,
 }: SeaBattleGameProps) {
   const { t } = useTranslation();
   useSeaBattleAnimations();
@@ -56,8 +52,6 @@ export default function SeaBattleGame({
 
   const room =
     (storeRoom?.id === roomId ? storeRoom : null) || initialRoom || null;
-
-  const containerRef = useRef<HTMLDivElement & TamaguiElement>(null);
 
   const isLobby = room?.status === 'lobby';
 
@@ -98,17 +92,8 @@ export default function SeaBattleGame({
     room: room ?? undefined,
   });
 
-  // Sync snapshot logs into gameChatStore so GameChat can read them
-  useEffect(() => {
-    useGameChatStore.getState().setLogs(snapshot?.logs ?? []);
-  }, [snapshot?.logs]);
-
-  // Register send function; clear store on unmount
-  useEffect(() => {
-    if (!postHistoryNoteAction) return;
-    useGameChatStore.getState().registerSendMessage(postHistoryNoteAction);
-    return () => useGameChatStore.getState().clear();
-  }, [postHistoryNoteAction]);
+  // Use shared chat integration hook
+  useGameChatIntegration(snapshot?.logs, postHistoryNoteAction);
 
   const handleStartGame = useCallback(
     (options?: { withBots?: boolean; botCount?: number }) => {
@@ -160,10 +145,6 @@ export default function SeaBattleGame({
     room: room ?? undefined,
   });
 
-  const { latestMessage, dismiss: dismissPopup } = useLatestChatMessage(
-    snapshot?.logs ?? [],
-  );
-
   const { resolveDisplayName } = useDisplayNames({
     currentUserId,
     room: room!,
@@ -176,29 +157,45 @@ export default function SeaBattleGame({
   const cardVariant = (room?.gameOptions?.variant ||
     room?.gameOptions?.cardVariant) as string | undefined;
 
-  const getTurnStatusText = () => {
-    if (!snapshot) return '';
-    if (isGameOver) return t('games.sea_battle_v1.table.phase.completed');
+  const currentVariant = SEA_BATTLE_VARIANTS.find((v) => v.id === cardVariant);
+
+  const getTurnStatus = (): { text: string; variant: TurnStatusVariant } => {
+    if (!snapshot) return { text: '', variant: 'default' };
+    if (isGameOver)
+      return {
+        text: t('games.sea_battle_v1.table.phase.completed'),
+        variant: 'completed',
+      };
     if (isPlacementPhase) {
-      return isPlacementComplete
-        ? t('games.sea_battle_v1.table.actions.waitingForOthers')
-        : t('games.sea_battle_v1.table.players.placeShips');
+      return {
+        text: isPlacementComplete
+          ? t('games.sea_battle_v1.table.actions.waitingForOthers')
+          : t('games.sea_battle_v1.table.players.placeShips'),
+        variant: isPlacementComplete ? 'waiting' : 'yourTurn',
+      };
     }
-    if (!currentTurnPlayer) return '';
+    if (!currentTurnPlayer) return { text: '', variant: 'default' };
     if (currentTurnPlayer.playerId === currentUserId) {
-      return t(
-        'games.sea_battle_v1.table.players.yourTurnAttack' as TranslationKey,
-      ).replace('🎯 ', '');
+      return {
+        text: t(
+          'games.sea_battle_v1.table.players.yourTurnAttack' as TranslationKey,
+        ).replace('🎯 ', ''),
+        variant: 'yourTurn',
+      };
     }
-    return t('games.sea_battle_v1.table.players.waitingFor', {
-      player: resolveDisplayName(currentTurnPlayer.playerId, 'opponent'),
-    });
+    return {
+      text: t('games.sea_battle_v1.table.players.waitingFor', {
+        player: resolveDisplayName(currentTurnPlayer.playerId, 'opponent'),
+      }),
+      variant: 'waiting',
+    };
   };
 
-  const currentVariant = SEA_BATTLE_VARIANTS.find((v) => v.id === cardVariant);
-  const variantLabel = currentVariant
-    ? `(${t(currentVariant.name as TranslationKey)})`
-    : '';
+  const turnStatus = getTurnStatus();
+
+  const headerTitle = currentVariant
+    ? `${t('games.sea_battle_v1.name' as TranslationKey)} · ${t(currentVariant.name as TranslationKey)}`
+    : t('games.sea_battle_v1.name' as TranslationKey);
 
   const gameResult = useMemo(() => {
     if (!isGameOver) return null;
@@ -208,88 +205,70 @@ export default function SeaBattleGame({
 
   if (!room) return null;
 
+  // Lobby — early return before GameWidgetContainer
+  if (!snapshot) {
+    return (
+      <SeaBattleThemeProvider variant={cardVariant}>
+        <SeaBattleLobby
+          room={room}
+          isHost={isHost}
+          startBusy={!!startBusy}
+          onStartGame={handleStartGame}
+          onReorderPlayers={handleReorderPlayers}
+          onShowRules={setShowRules}
+          onDeleteRoom={() => storeDeleteRoom(roomId)}
+          onRefresh={() => storeRefreshRoom(roomId)}
+          t={t}
+        />
+        <RulesModal
+          isOpen={showRules || !!showRulesOpen}
+          onClose={() => {
+            setShowRules(false);
+            onShowRulesClose?.();
+          }}
+          t={t}
+        />
+      </SeaBattleThemeProvider>
+    );
+  }
+
+  // Active game
   return (
     <SeaBattleThemeProvider variant={cardVariant}>
-      <GameLayout
-        gameContainerRef={containerRef}
-        variant={cardVariant}
-        isMyTurn={!!isMyTurn}
-        popupOverlay={
-          latestMessage ? (
-            <ChatMessagePopup
-              key={latestMessage.id}
-              senderName={latestMessage.senderName}
-              message={latestMessage.message}
-              visible={!!latestMessage}
-              onDismiss={dismissPopup}
-            />
-          ) : undefined
-        }
-        lobby={
-          !snapshot ? (
-            <SeaBattleLobby
-              room={room!}
-              isHost={isHost}
-              startBusy={!!startBusy}
-              onStartGame={handleStartGame}
-              onReorderPlayers={handleReorderPlayers}
-              onShowRules={setShowRules}
-              onDeleteRoom={() => storeDeleteRoom(roomId)}
-              onRefresh={() => storeRefreshRoom(roomId)}
-              t={t}
-            />
-          ) : undefined
-        }
-        header={
-          <YStack
-            style={
-              {
-                position: 'sticky',
-                top: 0,
-                overflow: 'hidden',
-              } as React.CSSProperties
-            }
-            zIndex={100}
-            backgroundColor="$background"
-            borderBottomWidth={1}
-            borderBottomColor="$glassBorder"
-            paddingVertical="$2"
-            gap="$2"
-            flexShrink={0}
-          >
-            <XStack
-              flexShrink={0}
-              alignItems="center"
-              justifyContent="space-between"
-              width="100%"
-              gap="$4"
-            >
-              <HeaderTitleArea>
-                <Text
-                  fontSize="$5"
-                  fontWeight="600"
-                  whiteSpace="nowrap"
-                  overflow="hidden"
-                  textOverflow="ellipsis"
-                  $sm={{
-                    fontSize: '$4',
-                    whiteSpace: 'normal',
-                    overflow: 'visible',
-                    textOverflow: 'clip',
-                  }}
-                >
-                  {t('games.sea_battle_v1.name' as TranslationKey)}{' '}
-                  {variantLabel} - {room?.name}
-                </Text>
-              </HeaderTitleArea>
-            </XStack>
+      <GameWidgetContainer
+        headerProps={{
+          variantEmoji: currentVariant?.emoji ?? '🚢',
+          title: headerTitle,
+          subtitle: room?.name,
+          turnStatusVariant: turnStatus.variant,
+          turnStatusText: turnStatus.text,
+          titleGradient: currentVariant?.gradient,
+        }}
+        board={
+          <>
+            {isPlacementPhase && (
+              <ShipPlacementBoard
+                key="placement-board"
+                currentPlayer={currentPlayer}
+                onPlaceShip={placeShip}
+                onConfirmPlacement={confirmPlacement}
+                onResetPlacement={resetPlacement}
+                isPlacementComplete={isPlacementComplete}
+                onAutoPlace={handleAutoPlace}
+              />
+            )}
 
-            <XStack justifyContent="center" width="100%" flexShrink={0}>
-              <TurnIndicator isYourTurn={!!isMyTurn}>
-                {getTurnStatusText()}
-              </TurnIndicator>
-            </XStack>
-          </YStack>
+            {isBattlePhase && (
+              <AttackBoard
+                key="attack-board"
+                players={snapshot.players}
+                currentUserId={currentUserId}
+                isMyTurn={isMyTurn}
+                onAttack={attack}
+                resolveDisplayName={resolveDisplayName}
+              />
+            )}
+          </>
         }
         modals={
           <>
@@ -339,30 +318,9 @@ export default function SeaBattleGame({
             />
           </>
         }
-      >
-        {snapshot && isPlacementPhase && (
-          <ShipPlacementBoard
-            key="placement-board"
-            currentPlayer={currentPlayer}
-            onPlaceShip={placeShip}
-            onConfirmPlacement={confirmPlacement}
-            onResetPlacement={resetPlacement}
-            isPlacementComplete={isPlacementComplete}
-            onAutoPlace={handleAutoPlace}
-          />
-        )}
-
-        {snapshot && isBattlePhase && (
-          <AttackBoard
-            key="attack-board"
-            players={snapshot.players}
-            currentUserId={currentUserId}
-            isMyTurn={isMyTurn}
-            onAttack={attack}
-            resolveDisplayName={resolveDisplayName}
-          />
-        )}
-      </GameLayout>
+        variant={cardVariant}
+        isMyTurn={!!isMyTurn}
+      />
     </SeaBattleThemeProvider>
   );
 }

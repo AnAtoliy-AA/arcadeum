@@ -5,7 +5,6 @@ import React, {
   useEffect,
   Suspense,
   useState,
-  useRef,
   useCallback,
 } from 'react';
 import { useQuery } from '@/shared/hooks/useQuery';
@@ -16,14 +15,13 @@ import {
   connectSocketsAnonymous,
   disconnectSockets,
 } from '@/shared/lib/socket';
-import { GamesControlPanel } from '@/widgets/GamesControlPanel';
-import { GameChat } from '@/widgets/GameChat';
+import { GamePageLayout } from './GamePageLayout';
 import { gamesApi } from '@/features/games/api';
 import { useGameRoom, type GameType } from '@/features/games/hooks';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useIdleReconnect } from '@/shared/hooks/useIdleReconnect';
 import { useIdleDetection } from '@/shared/hooks/useIdleDetection';
-import { ConnectionOverlay, Page } from '@/shared/ui';
+import { Page } from '@/shared/ui';
 import { mapToGameType } from '@/features/games/lib/gameIdMapping';
 import { gameFactory } from '@/features/games/lib/gameFactory';
 import { gameMetadata } from '@/features/games/registry';
@@ -33,14 +31,8 @@ import type { GameSessionSummary } from '@/shared/types/games';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 
 // Extracted Components
-import { Text, useMedia } from 'tamagui';
-import {
-  Container,
-  LoadingContainer,
-  GameWrapper,
-  fullscreenStyles,
-} from './styles';
-import { GameRow, ChatPanel } from './layoutStyles';
+import { Text } from 'tamagui';
+import { Container, LoadingContainer, GameWrapper } from './styles';
 import { GameRoomLoading } from './GameRoomLoading';
 import { GameRoomError } from './GameRoomError';
 import { PrivateRoomForm } from './PrivateRoomForm';
@@ -53,33 +45,19 @@ interface GameRoomPageProps {
 export default function GameRoomPage({
   initialData: serverInitialData,
 }: GameRoomPageProps) {
-  const media = useMedia();
-  const roomFlexDirection = media.gtMd ? 'row' : 'column';
   const params = useParams();
   const searchParams = useSearchParams();
   const roomId = params?.id as string;
   const urlInviteCode = searchParams?.get('inviteCode');
   const { snapshot, hydrated } = useSessionTokens();
   const { t } = useTranslation();
-  const gameContainerRef = useRef<HTMLDivElement>(null);
   // Track if we've attempted auto-join with URL invite code
   const [autoJoinAttempted, setAutoJoinAttempted] = useState(false);
   // Track if user manually submitted invite code
   const [manualSubmitPending, setManualSubmitPending] = useState(false);
-  // Chat visibility state — wide screens default to visible, narrow to hidden.
-  const [showChat, setShowChat] = useState(false);
-  const handleToggleChat = useCallback(() => setShowChat((v) => !v), []);
   const [showRules, setShowRules] = useState(false);
   const handleShowRules = useCallback(() => setShowRules(true), []);
   const handleCloseRules = useCallback(() => setShowRules(false), []);
-
-  // Sync chat visibility to breakpoint after hydration and on resize.
-  // Only show chat automatically when the layout is side-by-side (> 1150px).
-  useEffect(() => {
-    queueMicrotask(() => {
-      setShowChat(media.gtMd);
-    });
-  }, [media.gtMd]);
 
   // State for room visibility check
 
@@ -246,26 +224,15 @@ export default function GameRoomPage({
   const [isGameReady, setIsGameReady] = useState(false);
   const [gameLoading, setGameLoading] = useState(false);
 
-  // Memoize game props to prevent re-renders with stale data
-  const gameProps = useMemo(() => {
+  // Memoize game props base — isFullscreen/toggleFullscreen come from render prop
+  const gamePropsBase = useMemo(() => {
     if (!roomId || !room) return null;
-    // Ensure all required BaseGameProps are provided
     return {
       roomId: room.id,
       room,
       session: initialSession as GameSessionSummary | null,
       currentUserId: snapshot.userId,
       isHost,
-      onPostHistoryNote: () => {}, // Provide a stub or actual implementation
-      config: {
-        slug: room.gameId,
-        name: '',
-        description: '',
-        category: '',
-        minPlayers: 2,
-        maxPlayers: 5,
-        version: '1.0.0',
-      },
       accessToken: snapshot.accessToken,
       showRulesOpen: showRules,
       onShowRulesClose: handleCloseRules,
@@ -417,75 +384,54 @@ export default function GameRoomPage({
 
   return (
     <Page fixedHeight>
-      <style>{fullscreenStyles}</style>
-      <Container
-        ref={gameContainerRef as React.RefObject<never>}
-        className="games-room-container"
+      <GamePageLayout
+        roomId={roomId}
+        room={room}
+        inviteCode={room?.inviteCode}
+        isDisconnected={isDisconnected}
+        isReconnecting={isReconnecting}
+        isIdle={isIdle}
+        onReconnect={reconnect}
+        onShowRules={handleShowRules}
       >
-        <ConnectionOverlay
-          visible={isDisconnected}
-          reconnecting={isReconnecting}
-          onReconnect={reconnect}
-          title={t('games.connectionOverlay.title')}
-          message={t('games.connectionOverlay.message')}
-          reconnectingText={t('games.connectionOverlay.reconnecting')}
-          testId="connection-overlay-disconnected"
-        />
+        {({ isFullscreen, toggleFullscreen }) => {
+          const gameProps = gamePropsBase
+            ? { ...gamePropsBase, isFullscreen, toggleFullscreen }
+            : null;
 
-        {!isDisconnected && (
-          <ConnectionOverlay
-            visible={isIdle}
-            title={t('games.idle.title')}
-            message={t('games.idle.message')}
-            testId="connection-overlay-idle"
-          />
-        )}
+          return (
+            <GameWrapper>
+              <Suspense
+                fallback={
+                  <LoadingContainer>
+                    <Text>{t('games.roomPage.loadingGame')}</Text>
+                  </LoadingContainer>
+                }
+              >
+                {gameLoading && (
+                  <LoadingContainer>
+                    <Text>{t('games.roomPage.loadingGame')}</Text>
+                  </LoadingContainer>
+                )}
 
-        <GamesControlPanel
-          roomId={roomId}
-          inviteCode={room?.inviteCode}
-          fullscreenContainerRef={gameContainerRef}
-          showChat={showChat}
-          onToggleChat={handleToggleChat}
-          onShowRules={handleShowRules}
-        />
+                {!gameLoading && !gameType && room && (
+                  <LoadingContainer>
+                    <Text>
+                      {t('games.roomPage.errors.unsupportedGame', {
+                        gameId: room.gameId,
+                      })}
+                    </Text>
+                  </LoadingContainer>
+                )}
 
-        <GameRow flexDirection={roomFlexDirection}>
-          <GameWrapper>
-            <Suspense
-              fallback={
-                <LoadingContainer>
-                  <Text>{t('games.roomPage.loadingGame')}</Text>
-                </LoadingContainer>
-              }
-            >
-              {gameLoading && (
-                <LoadingContainer>
-                  <Text>{t('games.roomPage.loadingGame')}</Text>
-                </LoadingContainer>
-              )}
-
-              {!gameLoading && !gameType && room && (
-                <LoadingContainer>
-                  <Text>
-                    {t('games.roomPage.errors.unsupportedGame', {
-                      gameId: room.gameId,
-                    })}
-                  </Text>
-                </LoadingContainer>
-              )}
-
-              {!gameLoading && isGameReady && gameType && gameProps && (
-                <DynamicGameRenderer gameType={gameType} props={gameProps} />
-              )}
-            </Suspense>
-          </GameWrapper>
-
-          <ChatPanel visible={showChat} data-testid="game-chat-area">
-            <GameChat onClose={() => setShowChat(false)} />
-          </ChatPanel>
-        </GameRow>
-      </Container>
+                {!gameLoading && isGameReady && gameType && gameProps && (
+                  <DynamicGameRenderer gameType={gameType} props={gameProps} />
+                )}
+              </Suspense>
+            </GameWrapper>
+          );
+        }}
+      </GamePageLayout>
     </Page>
   );
 }

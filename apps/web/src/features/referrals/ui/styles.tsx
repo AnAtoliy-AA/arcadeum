@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, XStack, YStack, Text } from 'tamagui';
+import { styled, XStack, YStack, Text, H1, H2, Paragraph } from 'tamagui';
 
 // CSS for pseudo-states, keyframes, and hover effects — injected once in ReferralDashboard
 export const referralsStyles = `
@@ -23,26 +23,23 @@ export const DashboardContainer = styled(YStack, {
   },
 });
 
-export const DashboardTitle = styled(Text, {
-  tag: 'h1',
+export const DashboardTitle = styled(H1, {
   fontSize: '$8',
   fontWeight: '700',
   color: '$color',
   margin: 0,
-} as unknown as Record<string, unknown>);
+});
 
-export const DashboardSubtitle = styled(Text, {
-  tag: 'p',
+export const DashboardSubtitle = styled(Paragraph, {
   fontSize: '$3',
   color: 'rgba(236,239,238,0.45)',
   marginTop: '-$2',
   marginBottom: '$3',
   lineHeight: 1.5,
-} as unknown as Record<string, unknown>);
+});
 
-export const CardTitle = styled(Text, {
+export const CardTitle = styled(H2, {
   name: 'CardTitle',
-  tag: 'h2',
   fontSize: '$4',
   fontWeight: '600',
   color: '$color',
@@ -50,7 +47,7 @@ export const CardTitle = styled(Text, {
   display: 'flex',
   alignItems: 'center',
   gap: '$2',
-} as unknown as Record<string, unknown>);
+});
 
 export const CodeContainer = styled(XStack, {
   alignItems: 'center',
@@ -64,7 +61,6 @@ export const CodeContainer = styled(XStack, {
 });
 
 export const CodeText = styled(Text, {
-  tag: 'span',
   fontSize: '$5',
   fontWeight: '700',
   color: '$accent',
@@ -73,7 +69,7 @@ export const CodeText = styled(Text, {
     fontFamily: "'SF Mono','Fira Code','Courier New',monospace",
     letterSpacing: 2,
   },
-} as unknown as Record<string, unknown>);
+});
 
 export function CopyButton({
   children,
@@ -95,10 +91,9 @@ export const ShareLinkRow = styled(XStack, {
 });
 
 export const ShareLink = styled(Text, {
-  tag: 'span',
   color: '$accent',
   style: { wordBreak: 'break-all' },
-} as unknown as Record<string, unknown>);
+});
 
 export const ProgressSection = styled(YStack, {
   gap: '$2',
@@ -110,17 +105,15 @@ export const ProgressLabel = styled(XStack, {
 });
 
 export const ProgressCount = styled(Text, {
-  tag: 'span',
   fontWeight: '700',
   fontSize: '$7',
   color: '$color',
-} as unknown as Record<string, unknown>);
+});
 
 export const ProgressTarget = styled(Text, {
-  tag: 'span',
   fontWeight: '500',
   color: 'rgba(236,239,238,0.45)',
-} as unknown as Record<string, unknown>);
+});
 
 export const TierList = styled(YStack, {
   gap: '$4',
@@ -216,11 +209,10 @@ export function TierBadge({
 }
 
 export const CopiedNotice = styled(Text, {
-  tag: 'span',
   color: '$accent',
   fontSize: '$2',
   fontWeight: '500',
-} as unknown as Record<string, unknown>);
+});
 
 export const BadgesRowContainer = styled(XStack, {
   gap: '$2',

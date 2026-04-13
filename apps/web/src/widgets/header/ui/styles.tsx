@@ -2,7 +2,7 @@ import { HEADER_HEIGHT } from '@/shared/config/layout';
 import React from 'react';
 
 import Link from 'next/link';
-import { styled, GetProps, Nav as TamaguiNav, Header, XStack } from 'tamagui';
+import { styled, GetProps, Nav as TamaguiNav, XStack } from 'tamagui';
 import { YStack, Typography, LinkButton } from '@arcadeum/ui';
 import { setupTamagui } from '@/shared/config/tamagui.config';
 
@@ -11,71 +11,60 @@ setupTamagui();
 
 // ─── Header Container ─────────────────────────────────────────────────────────
 
-export const HeaderOuter = styled(Header, {
-  name: 'HeaderOuter',
-  role: 'banner',
-  position: 'sticky',
-  top: 0,
-  zIndex: 100,
-  backgroundColor: '$glassBg',
-  backdropFilter: 'blur(32px) saturate(200%)',
-  boxShadow: '0 4px 24px -1px rgba(0, 0, 0, 0.2)',
-  flexDirection: 'column',
-});
+export function HeaderOuter({
+  children,
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'header'>) {
+  return (
+    <header
+      role="banner"
+      className={`header-outer ${className || ''}`}
+      {...props}
+    >
+      {children}
+    </header>
+  );
+}
 
-export const HeaderBorderLine = styled(XStack, {
-  name: 'HeaderBorderLine',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  right: 0,
-  height: 1,
-  pointerEvents: 'none',
-  background:
-    'linear-gradient(90deg, transparent 0%, $glassBorder 15%, $primaryGradientStart 50%, $glassBorder 85%, transparent 100%)',
-  boxShadow: '0 0 15px rgba(87, 195, 255, 0.15)',
-  opacity: 0.8,
-  flexDirection: 'column',
-});
+export function HeaderBorderLine({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'div'>) {
+  return <div className={`header-border ${className || ''}`} {...props} />;
+}
 
 // ─── Header Inner ─────────────────────────────────────────────────────────────
 
-const HeaderInnerBase = styled(XStack, {
-  name: 'HeaderInner',
-  maxWidth: 1400,
-  width: '100%',
-  alignSelf: 'center',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  height: HEADER_HEIGHT,
-  paddingHorizontal: '$6',
-
-  $xs: {
-    paddingHorizontal: '$4',
-  },
-});
-
-export function HeaderInner({ children, ...props }: GetProps<typeof XStack>) {
+export function HeaderInner({
+  children,
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'div'>) {
   return (
-    <HeaderInnerBase
-      className="header-inner-gap"
+    <div
+      className={`header-inner header-inner-gap ${className || ''}`}
       data-testid="header-inner"
       {...props}
     >
       {children}
-    </HeaderInnerBase>
+    </div>
   );
 }
 
 // ─── Logo ─────────────────────────────────────────────────────────────────────
 
-export const LogoInner = styled(XStack, {
-  name: 'LogoInner',
-  alignItems: 'center',
-  gap: '$3',
-  flexShrink: 0,
-  cursor: 'pointer',
-});
+export function LogoInner({
+  children,
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'div'>) {
+  return (
+    <div className={`logo-inner logo-hover ${className || ''}`} {...props}>
+      {children}
+    </div>
+  );
+}
 
 export function Logo({
   href,
@@ -86,20 +75,26 @@ export function Logo({
 }) {
   return (
     <Link href={href} prefetch={false} style={{ textDecoration: 'none' }}>
-      <LogoInner className="logo-hover" data-testid="logo-inner">
-        {children}
-      </LogoInner>
+      <LogoInner data-testid="logo-inner">{children}</LogoInner>
     </Link>
   );
 }
 
-export const LogoText = styled(Typography, {
-  name: 'LogoText',
-  uiSize: '2xl',
-  weight: '800',
-  color: '$primary',
-  $xs: { display: 'none' },
-});
+export function LogoText({
+  children,
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'span'>) {
+  return (
+    <span
+      className={`logo-text logo-text-desktop ${className || ''}`}
+      data-testid="logo-text"
+      {...props}
+    >
+      {children}
+    </span>
+  );
+}
 
 // ─── Navigation ───────────────────────────────────────────────────────────────
 

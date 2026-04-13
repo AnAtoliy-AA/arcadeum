@@ -1,8 +1,11 @@
 'use client';
 import { Main, styled } from 'tamagui';
 import type { ComponentProps } from 'react';
+import { setupTamagui } from '../../tamagui.config';
 
-export const PageLayout = styled(Main, {
+setupTamagui();
+
+const StyledPageLayout = styled(Main, {
   name: 'PageLayout',
   minHeight: '100vh',
   padding: '$5',
@@ -11,5 +14,9 @@ export const PageLayout = styled(Main, {
   paddingTop: '$8',
   background: 'radial-gradient(circle at top left, $backgroundRadialStart, transparent 55%), radial-gradient(circle at bottom right, $backgroundRadialEnd, transparent 55%), $background',
 });
+
+export const PageLayout = StyledPageLayout.styleable((props, ref) => (
+  <StyledPageLayout {...props} ref={ref} />
+));
 
 export type PageLayoutProps = ComponentProps<typeof PageLayout>;

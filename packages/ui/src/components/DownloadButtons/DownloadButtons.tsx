@@ -3,20 +3,18 @@ import { Theme, useThemeName, useTheme } from 'tamagui';
 import { AppleIcon, AndroidIcon, SmartphoneIcon } from '../Icons';
 import * as S from './styles';
 
-// Tamagui XStack types don't expose `tag`/`href`/`target`/`rel` even though
-// they work at runtime when tag="a". This typed alias adds those props.
-const DownloadLinkAnchor = S.DownloadLink as React.ComponentType<
-  React.ComponentProps<typeof S.DownloadLink> & {
-    tag?: string;
-    href?: string;
-    target?: string;
-    rel?: string;
-    animation?: string;
-    color?: string;
-    fontWeight?: string | number;
-    lineHeight?: number;
-  }
->;
+import type { ThemeName, XStackProps } from 'tamagui';
+
+export const DownloadLinkAnchor = S.DownloadLink.styleable<
+  {
+    tag?: 'a' | 'button' | 'div';
+    animation?: 'quick' | 'medium' | 'slow' | (string & {});
+    isButton?: boolean;
+  } & XStackProps &
+    React.AnchorHTMLAttributes<HTMLAnchorElement>
+>((props, ref) => (
+  <S.DownloadLink {...props} ref={ref} />
+));
 
 export interface DownloadButtonsProps {
   iosHref?: string;
@@ -55,7 +53,7 @@ export const DownloadButtons: React.FC<DownloadButtonsProps> = ({
   }
 
   return (
-    <Theme name={invertedTheme as any}>
+    <Theme name={invertedTheme as ThemeName}>
       <S.Container>
         {iosHref && (
           <DownloadLinkAnchor

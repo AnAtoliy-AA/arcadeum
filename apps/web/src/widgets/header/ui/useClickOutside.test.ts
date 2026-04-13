@@ -7,7 +7,7 @@ function fireClick(target: Element) {
 }
 
 describe('useClickOutside', () => {
-  let onClose: ReturnType<typeof vi.fn>;
+  let onClose: () => void;
   // Track appended elements so afterEach can clean up even if a test throws
   const appended: Element[] = [];
 
@@ -51,10 +51,6 @@ describe('useClickOutside', () => {
   });
 
   it('does not call onClose when clicking [data-mobile-menu-button]', () => {
-    // This also covers the case where the user clicks the toggle button to open
-    // the menu: even if the effect were synchronously registered (it is not —
-    // useEffect defers to after paint), the [data-mobile-menu-button] guard
-    // prevents onClose from firing on the same click that opened the menu.
     const btn = append(document.createElement('button'));
     btn.setAttribute('data-mobile-menu-button', '');
 

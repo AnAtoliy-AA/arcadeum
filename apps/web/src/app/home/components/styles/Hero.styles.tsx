@@ -1,9 +1,17 @@
 'use client';
 
-import { styled, YStack, XStack, Text, H1 } from 'tamagui';
+import type { FC, ReactNode } from 'react';
+import {
+  styled,
+  YStack,
+  XStack,
+  Text,
+  H1,
+  type GetThemeValueForKey,
+  type GetProps,
+} from 'tamagui';
 
 export const HeroSection = styled(YStack, {
-  name: 'HeroSection',
   alignItems: 'center',
   justifyContent: 'center',
   minHeight: '90vh',
@@ -14,7 +22,6 @@ export const HeroSection = styled(YStack, {
 });
 
 export const HeroBackground = styled(YStack, {
-  name: 'HeroBackground',
   position: 'absolute',
   top: 0,
   left: 0,
@@ -26,7 +33,6 @@ export const HeroBackground = styled(YStack, {
 });
 
 export const HeroContent = styled(YStack, {
-  name: 'HeroContent',
   position: 'relative',
   zIndex: 2,
   gap: '$6',
@@ -39,7 +45,6 @@ export const HeroContent = styled(YStack, {
 });
 
 export const HeroVisual = styled(YStack, {
-  name: 'HeroVisual',
   position: 'relative',
   width: '100%',
   maxWidth: 540,
@@ -48,30 +53,22 @@ export const HeroVisual = styled(YStack, {
   alignItems: 'center',
   justifyContent: 'center',
   zIndex: 1,
-  perspective: 1000,
 
   $gtMd: {
     display: 'flex',
   },
 });
 
-const floatAnimation = { animation: 'float 6s ease-in-out infinite' };
-
 export const CardStack = styled(YStack, {
-  name: 'CardStack',
   position: 'relative',
   width: 280,
   height: 380,
-  group: true,
-  ...floatAnimation,
 });
 
-const quickAnimation = { animation: 'quick' };
-
-import { StyledGlassCard } from '@arcadeum/ui';
-
-export const HeroCard = styled(StyledGlassCard, {
+const StyledHeroCard = styled(YStack, {
   name: 'HeroCard',
+  backgroundColor: '$glassBg',
+  borderColor: '$glassBorder',
   borderWidth: 2,
   borderRadius: 20,
   padding: '$6',
@@ -81,23 +78,27 @@ export const HeroCard = styled(StyledGlassCard, {
   position: 'absolute',
   inset: 0,
   overflow: 'hidden',
-  backdropFilter: 'blur(8px)',
-  ...quickAnimation,
 
-  // When ANY card in the stack is hovered, apply this to all cards
-  '$group-hover': {
-    filter: 'blur(2px)',
-    scale: 0.98,
-  },
-
-  // When THIS specific card is hovered, override the group hover
   hoverStyle: {
     opacity: 1,
     zIndex: 20,
-    marginTop: -15, // Use marginTop for additive displacement to avoid conflict with 'y' prop
     borderColor: '$glassBorderHover',
   },
 });
+
+export const HeroCard: FC<
+  GetProps<typeof StyledHeroCard> & {
+    children?: ReactNode;
+    rotate?: string | number;
+    x?: string | number;
+    y?: string | number;
+    scale?: number;
+    opacity?: number;
+    zIndex?: number;
+    className?: string;
+    hoverStyle?: GetProps<typeof StyledHeroCard>['hoverStyle'];
+  }
+> = (props) => <StyledHeroCard {...props} />;
 
 export const Kicker = styled(Text, {
   fontSize: '$3',
@@ -114,10 +115,21 @@ export const Kicker = styled(Text, {
   borderColor: 'rgba(255,255,255,0.2)',
 });
 
-export const HeroTitle = styled(H1, {
-  fontWeight: '800',
-  lineHeight: '$tight',
+const StyledHeroTitle = styled(H1, {
+  display: 'block',
+  fontWeight: '$8',
+  fontSize:
+    'clamp(3.5rem, 8vw, 6rem)' as unknown as GetThemeValueForKey<'fontSize'>,
+  lineHeight: '1.1' as unknown as GetThemeValueForKey<'lineHeight'>,
 });
+
+export const HeroTitle: FC<
+  GetProps<typeof StyledHeroTitle> & {
+    children?: ReactNode;
+    id?: string;
+    className?: string;
+  }
+> = (props) => <StyledHeroTitle {...props} />;
 
 export const Tagline = styled(Text, {
   margin: 0,
@@ -130,7 +142,6 @@ export const HeroDescription = styled(Text, {
   margin: 0,
   maxWidth: 500,
   fontSize: '$4',
-  lineHeight: '$5',
   color: '$color',
   opacity: 0.75,
 });

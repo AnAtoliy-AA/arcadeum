@@ -76,9 +76,12 @@ export const viewport: Viewport = {
 };
 
 import { BrowserRegistry } from './BrowserRegistry';
-import { TamaguiConfig } from './TamaguiConfig';
+import { setupTamagui } from '@/shared/config/tamagui.config';
 import { ThemeName, ThemePreference } from '@/shared/config/theme';
 import { Locale } from '@/shared/i18n';
+
+// Prime Tamagui config as early as possible on the server
+setupTamagui();
 
 export default async function RootLayout({
   children,
@@ -113,7 +116,6 @@ export default async function RootLayout({
         <JsonLd data={jsonLd} />
       </head>
       <body className={fontClassName}>
-        <TamaguiConfig />
         <BrowserRegistry initialTheme={theme} initialLocale={locale}>
           <Header />
           {children}

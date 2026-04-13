@@ -161,44 +161,24 @@ const nextConfig: NextConfig = {
       displayName: true,
     },
   },
-  transpilePackages: [
-    '@arcadeum/ui',
-    'tamagui',
-    '@tamagui/core',
-    '@tamagui/web',
-    '@tamagui/button',
-    '@tamagui/text',
-    '@tamagui/avatar',
-    '@tamagui/config',
-    '@tamagui/font-inter',
-  ],
+  transpilePackages: ['@arcadeum/ui'],
   typedRoutes: false,
   turbopack: {
     root: path.resolve(process.cwd(), '../..'),
     resolveAlias: {
-      // Prevent turbopack from creating duplicate module instances of Tamagui
-      // across the monorepo (apps/web vs packages/ui), which would cause
-      // React context (ThemeStateContext) duplication and SSR failures.
-      '@tamagui/web': '@tamagui/web',
-      '@tamagui/core': '@tamagui/core',
-      tamagui: 'tamagui',
+      '@tamagui/web': 'apps/web/node_modules/@tamagui/web',
+      '@tamagui/core': 'apps/web/node_modules/@tamagui/core',
+      tamagui: 'apps/web/node_modules/tamagui',
     },
   },
   env: {
     NEXT_PUBLIC_APP_VERSION: packageJson.version,
   },
   productionBrowserSourceMaps: true,
-  experimental: {
-    optimizePackageImports: [
-      '@arcadeum/shared-ui',
-      'lucide-react',
-      'framer-motion',
-    ],
-  },
 };
 
 const tamaguiPlugin = withTamagui({
-  config: './src/shared/config/tamagui.config.ts',
+  config: path.resolve(process.cwd(), './src/shared/config/tamagui.config.ts'),
   components: ['tamagui', '@arcadeum/ui'],
   appDir: true,
 });

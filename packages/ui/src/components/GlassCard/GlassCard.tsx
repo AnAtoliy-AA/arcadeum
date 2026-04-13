@@ -48,18 +48,11 @@ interface GlassCardInnerProps extends GlassCardProps {
   isHost?: boolean;
 }
 
-export const GlassCard = memo(function GlassCard({
-  children,
-  // Destructure props that might leak
-  $visible,
-  $position,
-  isHost,
-  ...props
-}: GlassCardInnerProps): ReactElement {
-  return (
-    <StyledGlassCard {...props}>
-      <TopLine />
-      {children}
-    </StyledGlassCard>
-  );
-});
+export const GlassCard = StyledGlassCard.styleable<
+  Omit<GlassCardInnerProps, 'children'> & GetProps<typeof StyledGlassCard>
+>(({ children, $visible, $position, isHost, ...props }, ref) => (
+  <StyledGlassCard {...props} ref={ref}>
+    <TopLine />
+    {children}
+  </StyledGlassCard>
+));

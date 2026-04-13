@@ -55,7 +55,7 @@ aria-label={t("chat.send") || "Send message"}
 cat apps/mobile/lib/i18n/__examples__/translation-type-safety.example.ts
 
 # Test by uncommenting invalid keys and running:
-cd apps/mobile && npm run build
+cd apps/mobile && pnpm run build
 ```
 
 #### 3. Added Type Check Script for Web ✅
@@ -75,7 +75,7 @@ cd apps/mobile && npm run build
 **Usage:**
 
 ```bash
-cd apps/web && npm run type-check
+cd apps/web && pnpm run type-check
 ```
 
 **Note:** Mobile already had this as the `build` script.
@@ -452,10 +452,10 @@ If you have existing code using string literals for translation keys:
 
    ```bash
    # Web
-   cd apps/web && npm run type-check
+   cd apps/web && pnpm run type-check
 
    # Mobile
-   cd apps/mobile && npm run type-check
+   cd apps/mobile && pnpm run type-check
    ```
 
 ## Conclusion

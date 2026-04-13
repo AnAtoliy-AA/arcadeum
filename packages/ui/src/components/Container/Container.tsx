@@ -1,10 +1,10 @@
 'use client';
-import { YStack, styled } from 'tamagui';
+import { YStack, styled, GetProps } from 'tamagui';
 import type { ComponentProps } from 'react';
 
 export type ContainerSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
 
-export const Container = styled(YStack, {
+const StyledContainer = styled(YStack, {
   name: 'Container',
   marginHorizontal: 'auto',
   width: '100%',
@@ -24,5 +24,9 @@ export const Container = styled(YStack, {
     size: 'lg',
   },
 });
+
+export const Container = StyledContainer.styleable<
+  { size?: ContainerSize } & GetProps<typeof StyledContainer>
+>((props, ref) => <StyledContainer {...props} ref={ref} />);
 
 export type ContainerProps = ComponentProps<typeof Container>;

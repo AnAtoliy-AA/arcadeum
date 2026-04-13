@@ -52,6 +52,23 @@ export const es = {
     subtitle: 'Conecta con jugadores de todo el mundo',
     description:
       'Comparte estrategias, participa en eventos comunitarios y haz amigos que amen los juegos de mesa tanto como tú.',
+    sections: {
+      discord: {
+        title: 'Discord',
+        description:
+          'Únete a nuestra activa comunidad en Discord para discutir juegos, reportar errores y conocer a otros jugadores.',
+      },
+      twitter: {
+        title: 'Twitter / X',
+        description:
+          'Síguenos para estar al tanto de las últimas noticias, actualizaciones y anuncios.',
+      },
+      github: {
+        title: 'Github',
+        description:
+          'Arcadeum es de código abierto. Contribuye al proyecto en Github.',
+      },
+    },
     comingSoon: '¡La comunidad llegará pronto!',
   },
   cookies: {

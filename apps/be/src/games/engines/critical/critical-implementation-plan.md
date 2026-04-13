@@ -146,5 +146,5 @@ function createInitialCriticalState(
 ## Verification
 
 ```bash
-npm run test -- --testPathPattern=critical
+pnpm run test -- --testPathPattern=critical
 ```

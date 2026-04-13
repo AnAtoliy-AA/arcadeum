@@ -6,15 +6,13 @@ import { LanguageProvider } from '@/app/i18n/LanguageProvider';
 import { PWAProvider } from '@/features/pwa';
 import { AppThemeProvider } from './theme/ThemeContext';
 import { disconnectSockets } from '@/shared/lib/socket';
-import tamaguiConfig, { setupTamagui } from '@/shared/config/tamagui.config';
-
-// Initialize Tamagui on the server as early as possible to stabilize the SSR pass
-setupTamagui();
-
 import { useSessionStore } from '@/entities/session/store/sessionStore';
-
 import { ThemeName } from '@/shared/config/theme';
 import { Locale } from '@/shared/i18n';
+import tamaguiConfig, { setupTamagui } from '@/shared/config/tamagui.config';
+
+// Prime config immediately for SSR and Client environments
+setupTamagui();
 
 interface BrowserRegistryProps {
   children: ReactNode;
@@ -37,7 +35,6 @@ export function BrowserRegistry({
       }
       const code = tamaguiConfig.getCSS();
       if (!code) {
-        console.warn('Tamagui generated empty CSS during SSR');
         return null;
       }
       return (
@@ -54,10 +51,6 @@ export function BrowserRegistry({
   });
 
   useEffect(() => {
-    /**
-     * Disconnecting WebSockets on pagehide is essential for Back/Forward cache (bfcache)
-     * restoration. Active connections block the page from being stored in memory.
-     */
     const handlePageHide = () => {
       disconnectSockets();
     };
@@ -68,7 +61,6 @@ export function BrowserRegistry({
     };
   }, []);
 
-  // Safe hydration sync after the first client-side mount
   useEffect(() => {
     useSessionStore.getState().setHydrated(true);
   }, []);

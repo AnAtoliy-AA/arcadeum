@@ -22,9 +22,8 @@ import {
 } from './styles/Hero.styles';
 import { SectionContainer } from './styles/Common.styles';
 import { LinkButton, SupportIcon } from '@/shared/ui';
-import React from 'react';
 import { CARD_VARIANTS } from '@/features/games/ui/create/constants';
-import { YStack, XStack, Text, useTheme } from 'tamagui';
+import { YStack, XStack, Text } from 'tamagui';
 
 type ThemeColor = '$red10' | '$blue10' | '$purple10';
 const THEME_COLORS: ThemeColor[] = ['$red10', '$blue10', '$purple10'];
@@ -37,7 +36,6 @@ const HERO_CARDS = [...CARD_VARIANTS].slice(0, 3).map((v, i) => ({
 export function HomeHero() {
   const { messages } = useLanguage();
   const { snapshot, hydrated } = useSessionTokens();
-  const theme = useTheme();
   const homeCopy = messages.home ?? {};
 
   const { appName, primaryCta, supportCta } = appConfig;
@@ -62,12 +60,7 @@ export function HomeHero() {
 
   return (
     <HeroSection aria-labelledby="hero-heading" data-testid="hero-section">
-      <HeroBackground
-        style={{
-          background:
-            'linear-gradient(to bottom, transparent 0%, var(--background) 100%), radial-gradient(circle at 50% 50%, rgba(90,196,255,0.12) 0%, transparent 50%)',
-        }}
-      />
+      <HeroBackground />
 
       <SectionContainer
         flexDirection="column"
@@ -77,28 +70,16 @@ export function HomeHero() {
       >
         <HeroContent>
           <Kicker
+            background="linear-gradient(90deg, rgba(87,195,255,0.2), rgba(87,195,255,0.05), rgba(87,195,255,0.2))"
+            backgroundSize="200% auto"
             style={{
-              background: `linear-gradient(90deg, ${theme.primaryGradientStart?.get() ?? 'rgba(87,195,255,0.22)'}38, ${theme.primaryGradientStart?.get() ?? 'rgba(87,195,255,0.08)'}14, ${theme.primaryGradientStart?.get() ?? 'rgba(87,195,255,0.22)'}38)`,
-              backgroundSize: '200% auto',
               animation:
                 'fadeInUp 0.6s ease-out 0.15s both, shimmer 3s linear infinite',
             }}
           >
             ✦ {kicker}
           </Kicker>
-          <HeroTitle
-            id="hero-heading"
-            style={{
-              fontSize: 'clamp(3.5rem, 8vw, 6rem)',
-              background: `linear-gradient(135deg, ${theme.color?.get() ?? '#ffffff'} 0%, ${theme.primaryGradientStart?.get() ?? '#57c3ff'} 50%, ${theme.primaryGradientEnd?.get() ?? '#8f9bff'} 100%)`,
-              backgroundSize: '200% auto',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              animation:
-                'fadeInUp 0.6s ease-out 0.1s both, shimmer 8s linear infinite',
-            }}
-          >
+          <HeroTitle id="hero-heading" className="hero-title-animated">
             {appName}
           </HeroTitle>
           <Tagline style={{ animation: 'fadeInUp 0.6s ease-out 0.2s both' }}>

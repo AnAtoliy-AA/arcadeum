@@ -5,6 +5,7 @@ import {
   type LeaderboardResponse,
   type PlayerStats,
 } from '@/features/history/api';
+import { SSR_TIMEOUT } from '@/shared/config/app-config';
 import { StatsPage } from './StatsPage';
 import StatsLoading from './loading';
 
@@ -42,11 +43,13 @@ async function StatsDataFetcher({
 
   try {
     const promises: Promise<unknown>[] = [
-      historyApi.getLeaderboard(10, 0, selectedGame, { timeout: 3000 }),
+      historyApi.getLeaderboard(10, 0, selectedGame, { timeout: SSR_TIMEOUT }),
     ];
 
     if (accessToken) {
-      promises.push(historyApi.getStats({ token: accessToken, timeout: 3000 }));
+      promises.push(
+        historyApi.getStats({ token: accessToken, timeout: SSR_TIMEOUT }),
+      );
     }
 
     const results = await Promise.allSettled(promises);
@@ -57,7 +60,7 @@ async function StatsDataFetcher({
     }
 
     // Result 1 is stats (if user is authenticated)
-    if (accessToken && results[1]?.status === 'fulfilled') {
+    if (results[1]?.status === 'fulfilled') {
       initialStats = results[1].value as PlayerStats;
     }
   } catch (error) {

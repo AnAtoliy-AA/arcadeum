@@ -311,6 +311,7 @@ export function CreateGameRoomPage() {
                     aria-label={
                       visibility === 'public' ? 'Public room' : 'Private room'
                     }
+                    data-testid="visibility-toggle-button"
                     fullWidth
                   >
                     {visibility === 'public' ? '🌐 Public' : '🔒 Private'}

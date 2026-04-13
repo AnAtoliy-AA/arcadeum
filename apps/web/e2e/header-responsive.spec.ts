@@ -34,10 +34,21 @@ test.describe('Header Responsive Layout', () => {
     await page.setViewportSize({ width: 1200, height: 800 });
     await navigateTo(page, '/');
 
-    const headerInner = page.locator('header > div').first();
+    const headerInner = page.getByTestId('header-inner');
     const gap = await headerInner.evaluate(
       (el) => window.getComputedStyle(el).gap,
     );
     expect(gap).toBe('16px'); // 1rem = 16px
+  });
+
+  test('should have full gap at 1440px', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 800 });
+    await navigateTo(page, '/');
+
+    const headerInner = page.getByTestId('header-inner');
+    const gap = await headerInner.evaluate(
+      (el) => window.getComputedStyle(el).gap,
+    );
+    expect(gap).toBe('32px'); // 2rem = 32px
   });
 });

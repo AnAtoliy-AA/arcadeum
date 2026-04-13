@@ -77,11 +77,8 @@ export function useInfiniteQuery<T, P = unknown>({
   const queryFnRef = useRef(queryFn);
   const getNextPageParamRef = useRef(getNextPageParam);
   const nextPageParamRef = useRef(nextPageParam);
+  const initialPageParamRef = useRef(initialPageParam);
   const pagesRef = useRef(pages);
-
-  useEffect(() => {
-    pagesRef.current = pages;
-  }, [pages]);
 
   useEffect(() => {
     queryFnRef.current = queryFn;
@@ -92,16 +89,28 @@ export function useInfiniteQuery<T, P = unknown>({
   useEffect(() => {
     nextPageParamRef.current = nextPageParam;
   }, [nextPageParam]);
+  useEffect(() => {
+    initialPageParamRef.current = initialPageParam;
+  }, [initialPageParam]);
+
+  useEffect(() => {
+    pagesRef.current = pages;
+  }, [pages]);
 
   const fetchData = useCallback(
     async (isInitial = false, isNextPage = false) => {
+      // Cancel any previous in-flight request before starting a new one.
+      // This prevents React StrictMode's double-invoke from sending duplicate
+      // requests to the backend (which cause CORS console errors in dev).
       abortControllerRef.current?.abort();
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
       const currentFetchId = ++fetchRef.current;
       const paramToUse =
-        isInitial || !isNextPage ? initialPageParam : nextPageParamRef.current;
+        isInitial || !isNextPage
+          ? initialPageParamRef.current
+          : nextPageParamRef.current;
 
       if (isInitial) {
         if (pagesRef.current.length === 0) setIsLoading(true);
@@ -120,14 +129,16 @@ export function useInfiniteQuery<T, P = unknown>({
         });
 
         if (currentFetchId === fetchRef.current) {
+          const nextParam = getNextPageParamRef.current(result, [
+            ...(isNextPage ? pagesRef.current : []),
+            result,
+          ]);
+
+          setNextPageParam(nextParam);
+          setHasNextPage(nextParam !== undefined);
+
           setPages((prevPages) => {
-            const newPages = isNextPage ? [...prevPages, result] : [result];
-
-            const nextParam = getNextPageParamRef.current(result, newPages);
-            setNextPageParam(nextParam);
-            setHasNextPage(nextParam !== undefined);
-
-            return newPages;
+            return isNextPage ? [...prevPages, result] : [result];
           });
         }
       } catch (err) {
@@ -144,7 +155,7 @@ export function useInfiniteQuery<T, P = unknown>({
         }
       }
     },
-    [initialPageParam],
+    [], // Stable: all values accessed via refs
   );
 
   const queryKeyStr = JSON.stringify(queryKey);
@@ -152,22 +163,42 @@ export function useInfiniteQuery<T, P = unknown>({
   const prevQueryKeyRef = useRef(queryKeyStr);
 
   useEffect(() => {
+    const isNewKey = prevQueryKeyRef.current !== queryKeyStr;
+    const isInitialMount = isFirstMount.current;
+
     // If key explicitly changed, reset data and loading state
-    if (!isFirstMount.current && prevQueryKeyRef.current !== queryKeyStr) {
-      setPages([]);
-      setIsLoading(true);
-      // No return here, continue to refetch below
+    if (!isInitialMount && isNewKey) {
+      setPages(initialData?.pages || []);
+      setIsLoading(enabled && initialData == null);
+      setNextPageParam(() => {
+        if (initialData && initialData.pages.length > 0) {
+          return getNextPageParamRef.current(
+            initialData.pages[initialData.pages.length - 1],
+            initialData.pages,
+          ) as P;
+        }
+        return initialPageParam;
+      });
+      setHasNextPage(() => {
+        if (initialData && initialData.pages.length > 0) {
+          return (
+            getNextPageParamRef.current(
+              initialData.pages[initialData.pages.length - 1],
+              initialData.pages,
+            ) !== undefined
+          );
+        }
+        return true;
+      });
     }
+
     prevQueryKeyRef.current = queryKeyStr;
 
-    if (isFirstMount.current) {
+    if (isInitialMount) {
       isFirstMount.current = false;
-      if (initialData != null) {
-        // SSR provided data — background-refetch to ensure client sees fresh data
-        // (mirrors TanStack Query stale-while-revalidate behaviour needed for e2e mocks)
-        if (enabled && refetchOnMount) {
-          fetchData(false);
-        }
+      if (initialData != null && !refetchOnMount) {
+        // SSR provided data — we skip the initial client-side fetch to avoid redundant requests
+        // only if refetchOnMount is explicitly disabled.
         return;
       }
     }
@@ -175,18 +206,19 @@ export function useInfiniteQuery<T, P = unknown>({
     const currentFetchRef = fetchRef;
 
     if (enabled) {
-      // If we have initial data and we're not refetching on mount, skip the very first fetch
-      // after the query becomes enabled.
-      const hasInitialData = initialData != null && pagesRef.current.length > 0;
-      const isFirstEnabledFetch =
-        hasInitialData && currentFetchRef.current === 0;
+      // If we have initial data (from SSR or current state) and it's the first fetch for this key
+      const hasDataForThisKey = pagesRef.current.length > 0;
+      const isFirstFetchForKey = currentFetchRef.current === 0 || isNewKey;
 
-      if (isFirstEnabledFetch && !refetchOnMount) {
-        // Skip background refetch as we trust the SSR/initial data
+      if (isFirstFetchForKey && hasDataForThisKey && !refetchOnMount) {
+        // Already have data (e.g. from mount or key change reset) and don't want to refetch
         return;
       }
 
-      fetchData(true);
+      // If it's a new key OR we have no data OR we want to refetch on mount, perform a fetch
+      if (isNewKey || !hasDataForThisKey || refetchOnMount) {
+        fetchData(true);
+      }
     } else {
       setNextPageParam(initialPageParam);
       setHasNextPage(true);

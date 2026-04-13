@@ -7,9 +7,11 @@ test.describe('Contact Form', () => {
     await navigateTo(page, '/contact');
 
     // Try to submit empty form
-    await page
-      .getByRole('button', { name: /send|submit|отправить/i })
-      .click({ force: true });
+    const submitBtn = page.getByRole('button', {
+      name: /send|submit|отправить/i,
+    });
+    await submitBtn.scrollIntoViewIfNeeded();
+    await submitBtn.click({ force: true });
 
     // Check for browser validation or HTML5 validation
     await expect(page.locator('form')).toBeVisible({ timeout: 15000 });
@@ -25,7 +27,9 @@ test.describe('Contact Form', () => {
       .getByTestId('contact-message-textarea')
       .fill('Hello, this is a test message.');
 
-    await page.getByTestId('contact-submit-button').click({ force: true });
+    const submitBtn = page.getByTestId('contact-submit-button');
+    await submitBtn.scrollIntoViewIfNeeded();
+    await submitBtn.click({ force: true });
 
     // Form should not be submitted
     await expect(page.locator('form')).toBeVisible({ timeout: 15000 });

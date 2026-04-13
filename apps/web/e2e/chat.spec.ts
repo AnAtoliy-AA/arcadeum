@@ -97,8 +97,9 @@ test.describe('Chat Functionality', () => {
 
   test('should load chat list and search users', async ({ page }) => {
     await navigateTo(page, '/chats');
-
-    await expect(page.locator('h1')).toContainText(/chats/i);
+    await expect(
+      page.getByRole('heading', { name: /chats/i, level: 1 }),
+    ).toBeVisible();
 
     // Check if existing chat is visible
     await expect(page.getByText('Other User')).toBeVisible();

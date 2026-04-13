@@ -111,6 +111,10 @@ export function useHistoryFetch({
     }
   }, [deferredSearchQuery, updateParams]);
 
+  const memoizedInitialData = useMemo(() => {
+    return initialData ? { pages: [initialData] } : undefined;
+  }, [initialData]);
+
   const {
     data,
     isLoading,
@@ -141,7 +145,7 @@ export function useHistoryFetch({
       return lastPage.hasMore ? lastPage.page + 1 : undefined;
     },
     enabled: !!accessToken,
-    initialData: initialData ? { pages: [initialData] } : undefined,
+    initialData: memoizedInitialData,
     refreshKey: 'history',
   });
 

@@ -143,6 +143,10 @@ export function GamesPage({ initialData }: GamesPageProps) {
     };
   }, [triggerRefresh]);
 
+  const memoizedInitialData = useMemo(() => {
+    return initialData ? { pages: [initialData] } : null;
+  }, [initialData]);
+
   const {
     data,
     isLoading,
@@ -177,7 +181,7 @@ export function GamesPage({ initialData }: GamesPageProps) {
       return nextPage < totalPages ? nextPage : undefined;
     },
     initialPageParam: 0,
-    initialData: initialData ? { pages: [initialData] } : null,
+    initialData: memoizedInitialData,
     refreshKey: 'games',
     enabled: hydrated,
     refetchOnMount: true,

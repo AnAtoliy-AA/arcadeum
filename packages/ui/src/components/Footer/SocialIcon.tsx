@@ -13,7 +13,6 @@ export const SocialIcon = styled(Anchor, {
   justifyContent: 'center',
   color: '$color',
   opacity: 0.8,
-  
   hoverStyle: {
     backgroundColor: '$glassBgHover',
     borderColor: '$primary',
@@ -25,8 +24,11 @@ export const SocialIcon = styled(Anchor, {
     shadowRadius: 12,
     shadowOpacity: 0.15,
   },
-
   pressStyle: {
     scale: 0.95,
+  },
+}, {
+  defaultProps: {
+    animation: 'quick',
   },
 });

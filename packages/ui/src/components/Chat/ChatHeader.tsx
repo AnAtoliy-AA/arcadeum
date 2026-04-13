@@ -1,5 +1,5 @@
-import React, { memo } from 'react';
-import { XStack, YStack, styled, ThemeableStack } from 'tamagui';
+import { memo } from 'react';
+import { XStack, YStack, styled, View } from 'tamagui';
 import { PageTitle } from '../PageTitle/PageTitle';
 import { Typography } from '../Typography/Typography';
 
@@ -7,38 +7,38 @@ export type ChatHeaderProps = {
   title: string;
   isConnected: boolean;
   statusText?: string;
+  onBack?: () => void;
 };
 
 const HeaderContainer = styled(XStack, {
-  name: 'ChatHeader',
-  padding: '$4 $5',
+  name: 'ChatHeaderContainer',
+  padding: '$3 $5',
   borderBottomWidth: 1,
   borderBottomColor: '$glassBorder',
   justifyContent: 'space-between',
   alignItems: 'center',
   backgroundColor: '$glassBg',
-  backdropFilter: 'blur(16px)',
-  shadowColor: '$shadowColor',
-  shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.1,
-  shadowRadius: 10,
+  backdropFilter: 'blur(24px)',
 });
 
-const StatusDot = styled(ThemeableStack, {
-  width: 10,
-  height: 10,
-  borderRadius: 5,
+const StatusDot = styled(View, {
+  width: 8,
+  height: 8,
+  borderRadius: 4,
 
   variants: {
     connected: {
       true: {
-        backgroundColor: '$green10',
-        shadowColor: '$green10',
-        shadowRadius: 10,
-        animation: 'pulse',
+        backgroundColor: '$success',
+        shadowColor: '$success',
+        shadowRadius: 8,
+        shadowOpacity: 0.5,
       },
       false: {
-        backgroundColor: '$orange10',
+        backgroundColor: '$warning',
+        shadowColor: '$warning',
+        shadowRadius: 8,
+        shadowOpacity: 0.3,
       },
     },
   } as const,
@@ -51,13 +51,13 @@ export const ChatHeader = memo(function ChatHeader({
 }: ChatHeaderProps) {
   return (
     <HeaderContainer>
-      <YStack>
+      <YStack gap="$1">
         <PageTitle size="sm" gradient>
           {title || 'Chat'}
         </PageTitle>
-        <XStack ai="center" gap="$2">
+        <XStack ai="center" gap="$2" opacity={0.8}>
           <StatusDot connected={isConnected} />
-          <Typography uiSize="xs" alpha="high">
+          <Typography uiSize="xs" weight="600" alpha="medium" textTransform="uppercase" letterSpacing={1}>
             {statusText}
           </Typography>
         </XStack>

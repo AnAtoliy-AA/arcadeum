@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useMutation } from '@/shared/hooks/useMutation';
 
 import {
@@ -102,6 +102,9 @@ function clearOAuthSessionState() {
   storeSessionValue(STATE_KEY, null);
 }
 
+// Module-level guard to prevent multiple hook instances from handling the same code simultaneously
+const handledCodes = new Set<string>();
+
 function base64UrlEncode(arrayBuffer: ArrayBuffer): string {
   const bytes = new Uint8Array(arrayBuffer);
   let binary = '';
@@ -172,7 +175,6 @@ export type UseOAuthResult = OAuthState & {
 
 export function useOAuth(session: SessionTokensValue): UseOAuthResult {
   const [state, setState] = useState<OAuthState>(defaultState);
-  const router = useRouter();
   const searchParams = useSearchParams();
   const processingRef = useRef(false);
   const providerTokenRef = useRef<string | null>(null);
@@ -301,6 +303,12 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
           return;
         }
 
+        // Prevent multiple simultaneous exchanges of the same code
+        if (handledCodes.has(code)) {
+          return;
+        }
+        handledCodes.add(code);
+
         const expectedState = readSessionValue(STATE_KEY);
         if (expectedState && stateParam && expectedState !== stateParam) {
           throw new Error('OAuth state mismatch. Please try again.');
@@ -362,13 +370,20 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
         clearOAuthSessionState();
         processingRef.current = false;
         try {
-          router.replace('/auth', { scroll: false });
+          // Instead of forcing a redirect to /auth, we just clear the URL parameters
+          // to prevent the callback from firing again on reload.
+          const url = new URL(window.location.href);
+          url.searchParams.delete('code');
+          url.searchParams.delete('state');
+          url.searchParams.delete('error');
+          url.searchParams.delete('error_description');
+          window.history.replaceState({}, '', url.toString());
         } catch {
-          // ignore router replace failures
+          // ignore window history failures
         }
       }
     },
-    [router, session, exchangeCodeMutation, loginSessionMutation],
+    [session, exchangeCodeMutation, loginSessionMutation],
   );
 
   const paramsKey = searchParams?.toString();

@@ -1,7 +1,8 @@
-import React, { memo } from 'react';
-import { XStack, styled } from 'tamagui';
+import { memo, useState } from 'react';
+import { XStack, styled, View } from 'tamagui';
 import { Input } from '../Input/Input';
 import { Button } from '../Button/Button';
+import { SendIcon } from '../Icons';
 
 export type ChatInputProps = {
   value: string;
@@ -13,17 +14,18 @@ export type ChatInputProps = {
 };
 
 const InputContainer = styled(XStack, {
-  padding: '$4 $5',
+  name: 'ChatInputContainer',
+  padding: '$3 $4',
   backgroundColor: '$glassBg',
   borderTopWidth: 1,
   borderTopColor: '$glassBorder',
   gap: '$3',
   ai: 'center',
-  backdropFilter: 'blur(16px)',
-  shadowColor: '$shadowColor',
-  shadowOffset: { width: 0, height: -4 },
-  shadowOpacity: 0.1,
-  shadowRadius: 10,
+  backdropFilter: 'blur(20px)',
+  
+  hoverStyle: {
+    backgroundColor: '$glassBgHover',
+  },
 });
 
 export const ChatInput = memo(function ChatInput({
@@ -32,8 +34,9 @@ export const ChatInput = memo(function ChatInput({
   onSend,
   disabled,
   placeholder = 'Type a message...',
-  sendText = 'Send',
 }: ChatInputProps) {
+  const [isFocused, setIsFocused] = useState(false);
+
   const handleKeyPress = (e: any) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -42,24 +45,37 @@ export const ChatInput = memo(function ChatInput({
   };
 
   return (
-    <InputContainer>
-      <Input
-        value={value}
-        onChangeText={onChange}
-        onKeyPress={handleKeyPress}
-        placeholder={placeholder}
-        disabled={disabled}
-        fullWidth
-      />
+    <InputContainer 
+      borderColor={isFocused ? '$primary' : '$glassBorder'}
+    >
+      <View flex={1}>
+        <Input
+          value={value}
+          onChangeText={onChange}
+          onKeyPress={handleKeyPress}
+          placeholder={placeholder}
+          disabled={disabled}
+          fullWidth
+          unstyled
+          paddingVertical="$2"
+          fontSize="$4"
+          backgroundColor="transparent"
+          borderWidth={0}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+        />
+      </View>
       <Button
         onPress={onSend}
         disabled={disabled || !value.trim()}
         variant="primary"
-        showShimmer
-        size="md"
-      >
-        {sendText}
-      </Button>
+        size="sm"
+        circular
+        icon={<SendIcon size={18} />}
+        aria-label="Send"
+        hoverStyle={{ scale: 1.1 }}
+        pressStyle={{ scale: 0.9 }}
+      />
     </InputContainer>
   );
 });

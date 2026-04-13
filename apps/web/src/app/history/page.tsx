@@ -1,6 +1,9 @@
 import { Suspense } from 'react';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { historyApi } from '@/features/history/api';
+import { SSR_TIMEOUT } from '@/shared/config/app-config';
+import { ApiError } from '@/shared/lib/api-client';
+import { HttpStatus } from '@/shared/lib/http-status';
 import { HistoryPage } from './HistoryPage';
 import HistoryLoading from './loading';
 
@@ -41,17 +44,26 @@ async function HistoryDataFetcher({
         {
           status,
           search,
-          page,
+          page: page - 1, // Convert from 1-indexed UI to 0-indexed API
           limit: 12,
         },
         {
           token: accessToken,
-          timeout: 3000,
+          timeout: SSR_TIMEOUT,
         },
       );
     }
   } catch (error) {
+    if (error instanceof ApiError && error.status === HttpStatus.UNAUTHORIZED) {
+      // Intentionally ignore to show 'Login Required' UI on the client
+      return <HistoryPage initialData={undefined} />;
+    }
     console.error('Failed to pre-fetch history during SSR:', error);
+  }
+
+  // Handle redirect outside the primary data fetching try/catch
+  if (accessToken === null) {
+    // If we wanted to redirect based on missing token, we'd do it here
   }
 
   return <HistoryPage initialData={initialData || undefined} />;

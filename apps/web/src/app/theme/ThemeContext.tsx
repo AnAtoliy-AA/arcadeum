@@ -18,7 +18,7 @@ import {
   ThemeTokens,
   themeTokens,
 } from '@/shared/config/theme';
-import tamaguiConfig from '@/shared/config/tamagui.config';
+import tamaguiConfig, { setupTamagui } from '@/shared/config/tamagui.config';
 
 type ThemeContextValue = {
   themePreference: ThemePreference;
@@ -174,6 +174,7 @@ export function AppThemeProvider({
       '--surface-background',
       theme.surfaces.panel.background,
     );
+    doc.style.setProperty('--primary', theme.text.accent);
     doc.style.setProperty(
       '--primary-gradient-start',
       theme.buttons.primary.gradientStart,
@@ -193,6 +194,11 @@ export function AppThemeProvider({
     () => ({ themePreference, resolvedTheme, setThemePreference }),
     [themePreference, resolvedTheme, setThemePreference],
   );
+
+  // Ensure config is primed before rendering the provider (safety net for SSR)
+  if (typeof setupTamagui === 'function') {
+    setupTamagui();
+  }
 
   return (
     <ThemeContext.Provider value={contextValue}>

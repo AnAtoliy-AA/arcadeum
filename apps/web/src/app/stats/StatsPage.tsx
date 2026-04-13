@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { styled, XStack, Text } from 'tamagui';
+import { styled, XStack, YStack, Text } from 'tamagui';
 import {
   PageLayout,
   Container as SharedContainer,
@@ -138,7 +138,16 @@ export function StatsPage({
               <GameBreakdown stats={stats} loading={loading} />
             </>
           ) : (
-            <EmptyState icon="🔒" message={t('stats.loginRequired')} />
+            <YStack ai="center" gap="$5" p="$10">
+              <EmptyState icon="🔒" message={t('stats.loginRequired')} />
+              <Button
+                variant="primary"
+                size="lg"
+                onPress={() => router.push('/auth')}
+              >
+                Log In
+              </Button>
+            </YStack>
           )
         ) : (
           <>

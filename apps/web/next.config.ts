@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 import path from 'path';
 import withPWAInit from '@ducanh2912/next-pwa';
+import { withTamagui } from '@tamagui/next-plugin';
 import packageJson from './package.json';
 
 const withPWA = withPWAInit({
@@ -174,6 +175,14 @@ const nextConfig: NextConfig = {
   typedRoutes: false,
   turbopack: {
     root: path.resolve(process.cwd(), '../..'),
+    resolveAlias: {
+      // Prevent turbopack from creating duplicate module instances of Tamagui
+      // across the monorepo (apps/web vs packages/ui), which would cause
+      // React context (ThemeStateContext) duplication and SSR failures.
+      '@tamagui/web': '@tamagui/web',
+      '@tamagui/core': '@tamagui/core',
+      tamagui: 'tamagui',
+    },
   },
   env: {
     NEXT_PUBLIC_APP_VERSION: packageJson.version,
@@ -182,11 +191,16 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: [
       '@arcadeum/shared-ui',
-      '@arcadeum/ui',
       'lucide-react',
       'framer-motion',
     ],
   },
 };
 
-export default withPWA(nextConfig);
+const tamaguiPlugin = withTamagui({
+  config: './src/shared/config/tamagui.config.ts',
+  components: ['tamagui', '@arcadeum/ui'],
+  appDir: true,
+});
+
+export default tamaguiPlugin(withPWA(nextConfig));

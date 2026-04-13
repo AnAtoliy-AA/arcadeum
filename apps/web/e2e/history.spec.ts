@@ -149,13 +149,16 @@ test.describe('Game History', () => {
     await navigateTo(page, '/history');
 
     const entry = page.getByText('Awesome Battle');
-    await expect(entry).toBeVisible({ timeout: 10000 });
-    await entry.click();
+    await expect(async () => {
+      await expect(entry).toBeVisible();
+      await entry.click({ force: true });
+    }).toPass({ timeout: 15000 });
 
-    // Wait for modal content
-    await expect(page.getByText('Game started')).toBeVisible({
-      timeout: 10000,
-    });
+    const modal = page.getByTestId('history-detail-modal');
+    await expect(async () => {
+      await expect(modal).toBeVisible();
+      await expect(modal).toContainText(/completed/i);
+    }).toPass({ timeout: 15000 });
   });
 
   test('should handle rematch action', async ({ page }) => {

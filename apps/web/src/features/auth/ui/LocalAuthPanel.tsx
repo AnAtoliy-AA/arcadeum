@@ -8,15 +8,15 @@ import {
   Typography,
   Badge,
 } from '@arcadeum/ui';
-import { useAuthForm } from '../hooks';
-
+import type { UseAuthFormResult } from '../hooks/useAuthForm';
 import type { LocalAuthPanelLabels } from '../types';
 
 interface LocalAuthPanelProps {
   labels: LocalAuthPanelLabels;
+  auth: UseAuthFormResult;
 }
 
-export function LocalAuthPanel({ labels }: LocalAuthPanelProps) {
+export function LocalAuthPanel({ labels, auth }: LocalAuthPanelProps) {
   const {
     localBadge,
     localHeading,
@@ -74,7 +74,7 @@ export function LocalAuthPanel({ labels }: LocalAuthPanelProps) {
     handleLocalSubmit,
     handleToggleMode,
     logoutLocal,
-  } = useAuthForm();
+  } = auth;
 
   const getEmailError = () => {
     if (showInvalidEmail) return invalidEmailMessage;

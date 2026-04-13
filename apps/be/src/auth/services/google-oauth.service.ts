@@ -94,6 +94,7 @@ export class GoogleOAuthService {
       scope?: string;
       expires_in?: number;
       error?: string;
+      error_description?: string;
     };
 
     let json: TokenJSON | null = null;
@@ -105,7 +106,7 @@ export class GoogleOAuthService {
 
     if (!res.ok || !json) {
       throw new InternalServerErrorException(
-        `Token exchange failed: ${(json && json.error) || res.status}`,
+        `Token exchange failed: ${(json && (json.error_description || json.error)) || res.status}`,
       );
     }
 

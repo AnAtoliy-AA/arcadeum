@@ -11,12 +11,14 @@ export function useMobileMenu(): {
   const pathname = usePathname();
   const [prevPathname, setPrevPathname] = useState(pathname);
 
-  // Render-phase state update: close the menu when the pathname changes.
-  // This mirrors the pattern from the original HeaderInteractive and avoids
-  // triggering the react-hooks/set-state-in-effect lint rule.
+  // Close the menu when the pathname changes.
+  // We do this during render to satisfy the 'no-set-state-in-effect' lint rule
+  // and ensure the menu is closed properly before the next paint.
   if (pathname !== prevPathname) {
     setPrevPathname(pathname);
-    setIsOpen(false);
+    if (isOpen) {
+      setIsOpen(false);
+    }
   }
 
   const close = useCallback(() => setIsOpen(false), []);

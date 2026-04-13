@@ -11,6 +11,7 @@ interface UseQueryOptions<T> {
   enabled?: boolean;
   refreshKey?: string;
   initialData?: T | null; // Added support for initial data from SSR hydration
+  refetchOnMount?: boolean;
   onSuccess?: (data: T) => void;
   onError?: (error: Error) => void;
 }
@@ -30,6 +31,7 @@ export function useQuery<T>({
   enabled = true,
   refreshKey,
   initialData,
+  refetchOnMount = true,
   onSuccess,
   onError,
 }: UseQueryOptions<T>): UseQueryResult<T> {
@@ -130,10 +132,8 @@ export function useQuery<T>({
 
     if (isFirstMount.current) {
       isFirstMount.current = false;
-      if (initialData != null) {
-        // SSR provided data — background-refetch to ensure client sees fresh data
-        // (mirrors TanStack Query stale-while-revalidate behaviour needed for e2e mocks)
-        if (enabled) fetchData(false);
+      if (initialData != null && !refetchOnMount) {
+        // SSR provided data — we skip the initial client-side fetch only if refetchOnMount is false.
         return;
       }
     }
@@ -141,6 +141,15 @@ export function useQuery<T>({
     const currentFetchRef = fetchRef;
 
     if (enabled) {
+      // If we have data and don't want to refetch on mount, skip.
+      // Otherwise (new key, no data, or refetchOnMount is true), proceed to fetch.
+      const hasData = dataRef.current != null;
+      const isNewKey = prevQueryKeyRef.current !== queryKeyStr;
+
+      if (!isNewKey && hasData && !refetchOnMount) {
+        return;
+      }
+
       fetchData(true);
     }
 
@@ -150,7 +159,7 @@ export function useQuery<T>({
       abortControllerRef.current?.abort();
       currentFetchRef.current++;
     };
-  }, [queryKeyStr, enabled, fetchData, initialData]);
+  }, [queryKeyStr, enabled, fetchData, initialData, refetchOnMount]);
 
   // Handle global refresh trigger
   useEffect(() => {

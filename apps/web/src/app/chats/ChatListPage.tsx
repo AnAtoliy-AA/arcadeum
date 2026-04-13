@@ -8,6 +8,7 @@ import { XStack, YStack, Text } from 'tamagui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useDebounce } from '@/shared/hooks/useDebounce';
+import { useIsMounted } from '@/widgets/header/ui/useIsMounted';
 import { Button } from '@arcadeum/ui';
 import {
   PageLayout,
@@ -57,6 +58,7 @@ interface ChatListPageProps {
 export function ChatListPage({ initialData }: ChatListPageProps) {
   const router = useRouter();
   const { snapshot } = useSessionTokens();
+  const isMounted = useIsMounted();
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, DEBOUNCE.SEARCH_DELAY);
@@ -177,17 +179,29 @@ export function ChatListPage({ initialData }: ChatListPageProps) {
             <Text color="rgba(236,239,238,0.45)">Loading chats...</Text>
           </YStack>
         ) : displayChats.length === 0 ? (
-          <EmptyState
-            message={
-              snapshot.accessToken
-                ? (t('chatList.empty.noChats') || 'No chats yet') +
-                  '\n' +
-                  'Start a conversation by searching for a user above!'
-                : (t('chatList.empty.unauthenticated') || 'Sign in to chat') +
-                  '\n' +
-                  'Please sign in to access your chats.'
-            }
-          />
+          <YStack ai="center" gap="$5" p="$10" flex={1}>
+            <EmptyState
+              icon="💬"
+              message={
+                !isMounted
+                  ? t('chatList.empty.loading') || 'Loading...'
+                  : snapshot.accessToken
+                    ? (t('chatList.empty.noChats') || 'No chats yet') +
+                      '\n' +
+                      'Start a conversation by searching for a user above!'
+                    : t('chatList.empty.unauthenticated') || 'Sign in to chat'
+              }
+            />
+            {!snapshot.accessToken && (
+              <Button
+                variant="primary"
+                size="lg"
+                onPress={() => router.push('/auth')}
+              >
+                Log In
+              </Button>
+            )}
+          </YStack>
         ) : (
           <YStack gap="$4">
             {displayChats.map((chat: ChatSummary) => {

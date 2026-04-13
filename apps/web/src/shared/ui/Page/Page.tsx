@@ -1,3 +1,4 @@
+'use client';
 import { styled, GetProps, Main } from 'tamagui';
 import { HEADER_HEIGHT } from '@/shared/config/layout';
 

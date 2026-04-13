@@ -1,5 +1,8 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+import { Button } from '@arcadeum/ui';
+import { EmptyState } from '@/shared/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { Section, PageLayout, Container } from '@/shared/ui';
@@ -22,6 +25,7 @@ interface HistoryPageProps {
 }
 
 export function HistoryPage({ initialData }: HistoryPageProps) {
+  const router = useRouter();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
   const currentUserId = snapshot.userId ?? '';
@@ -37,6 +41,9 @@ export function HistoryPage({ initialData }: HistoryPageProps) {
     setStatusFilter,
     fetchHistory,
     refresh,
+    hasMore,
+    loadingMore,
+    loadMore,
   } = useHistoryFetch({
     accessToken: snapshot.accessToken,
     initialData,
@@ -75,6 +82,28 @@ export function HistoryPage({ initialData }: HistoryPageProps) {
     onRefresh: () => fetchHistory(0, false),
   });
 
+  if (!snapshot.accessToken) {
+    return (
+      <PageLayout>
+        <Container size="xl" gap="$5" ai="center" jc="center" p="$10" flex={1}>
+          <EmptyState
+            icon="🔒"
+            message={
+              t('history.loginRequired') || 'Login required to view history'
+            }
+          />
+          <Button
+            variant="primary"
+            size="lg"
+            onPress={() => router.push('/auth')}
+          >
+            Log In
+          </Button>
+        </Container>
+      </PageLayout>
+    );
+  }
+
   const isHost = detail?.summary.host.id === currentUserId;
   const hasFilters = Boolean(searchQuery || statusFilter !== 'all');
 
@@ -103,6 +132,9 @@ export function HistoryPage({ initialData }: HistoryPageProps) {
           <HistoryList
             entries={entries}
             loading={loading}
+            hasNextPage={hasMore}
+            isFetchingNextPage={loadingMore}
+            onLoadMore={loadMore}
             error={error}
             isAuthenticated={Boolean(snapshot.accessToken)}
             hasFilters={hasFilters}

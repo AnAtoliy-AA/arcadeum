@@ -21,7 +21,7 @@ import {
   Actions,
   DesktopOnly,
   MobileMenuContainer,
-  NavLinkContainer,
+  NavLinkWrapper,
   NavHeaderLink,
   NavLinkIndicator,
 } from './styles';
@@ -34,7 +34,8 @@ export function HeaderInteractive() {
   const pathname = usePathname();
   const { isAuthenticated, displayName } = useHeaderAuth();
   const { t } = useTranslation();
-  const { isOpen: isMobileMenuOpen, toggle: toggleMobileMenu } = useMobileMenu();
+  const { isOpen: isMobileMenuOpen, toggle: toggleMobileMenu } =
+    useMobileMenu();
 
   const navItems = useMemo(
     () => [
@@ -55,7 +56,7 @@ export function HeaderInteractive() {
     <>
       <Nav>
         {navItems.map((item) => (
-          <NavLinkContainer key={item.href}>
+          <NavLinkWrapper key={item.href}>
             <NavHeaderLink
               href={item.href}
               variant="ghost"
@@ -69,7 +70,7 @@ export function HeaderInteractive() {
               active={pathname === item.href}
               data-testid="nav-link-indicator"
             />
-          </NavLinkContainer>
+          </NavLinkWrapper>
         ))}
       </Nav>
 

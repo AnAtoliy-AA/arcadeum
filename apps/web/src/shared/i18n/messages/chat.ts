@@ -12,6 +12,7 @@ const chatMessagesDefinition = {
       ariaLabel: 'Message input',
     },
     send: 'Send',
+    loginRequired: 'Login required to view messages',
   },
   es: {
     notFound: 'Chat no encontrado',
@@ -24,6 +25,7 @@ const chatMessagesDefinition = {
       ariaLabel: 'Entrada de mensaje',
     },
     send: 'Enviar',
+    loginRequired: 'Inicia sesión para ver los mensajes',
   },
   fr: {
     notFound: 'Discussion introuvable',
@@ -36,6 +38,7 @@ const chatMessagesDefinition = {
       ariaLabel: 'Saisie de message',
     },
     send: 'Envoyer',
+    loginRequired: 'Connexion requise pour voir les messages',
   },
   ru: {
     notFound: 'Чат не найден',
@@ -48,6 +51,7 @@ const chatMessagesDefinition = {
       ariaLabel: 'Ввод сообщения',
     },
     send: 'Отправить',
+    loginRequired: 'Войдите, чтобы просмотреть сообщения',
   },
   by: {
     notFound: 'Чат не знойдзены',
@@ -60,6 +64,7 @@ const chatMessagesDefinition = {
       ariaLabel: 'Увод паведамлення',
     },
     send: 'Адправіць',
+    loginRequired: 'Увайдзіце, каб прагледзець паведамленні',
   },
 } satisfies Record<Locale, Record<string, unknown>>;
 
@@ -77,6 +82,7 @@ const chatListMessagesDefinition = {
     empty: {
       noChats: 'No chats yet. Start a conversation!',
       unauthenticated: 'Sign in to start chatting',
+      loading: 'Loading...',
     },
     messages: {
       directChat: 'Direct Chat',
@@ -90,6 +96,7 @@ const chatListMessagesDefinition = {
     empty: {
       noChats: 'Aún no hay chats. ¡Inicia una conversación!',
       unauthenticated: 'Inicia sesión para chatear',
+      loading: 'Cargando...',
     },
     messages: {
       directChat: 'Chat Directo',
@@ -103,6 +110,7 @@ const chatListMessagesDefinition = {
     empty: {
       noChats: 'Aucune discussion pour le moment. Lancez une conversation !',
       unauthenticated: 'Connectez-vous pour discuter',
+      loading: 'Chargement...',
     },
     messages: {
       directChat: 'Discussion Directe',
@@ -116,6 +124,7 @@ const chatListMessagesDefinition = {
     empty: {
       noChats: 'Чатов пока нет. Начните общение!',
       unauthenticated: 'Войдите, чтобы начать общаться',
+      loading: 'Загрузка...',
     },
     messages: {
       directChat: 'Личный чат',
@@ -129,6 +138,7 @@ const chatListMessagesDefinition = {
     empty: {
       noChats: 'Чатаў пакуль няма. Пачніце зносіны!',
       unauthenticated: 'Увайдзіце, каб пачаць камунікаваць',
+      loading: 'Загрузка...',
     },
     messages: {
       directChat: 'Асабісты чат',

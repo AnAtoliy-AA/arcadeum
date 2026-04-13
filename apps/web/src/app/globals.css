@@ -432,3 +432,29 @@ a {
     0 0 28px rgba(87, 195, 255, 0.35),
     0 0 0 1px rgba(87, 195, 255, 0.2) !important;
 }
+
+/* Logo hover effect — CSS to ensure reliable hover behavior across SSR/CSR */
+.logo-hover {
+  transition:
+    transform 80ms ease-out,
+    opacity 80ms ease-out;
+}
+.logo-hover:hover {
+  transform: scale(1.1);
+  opacity: 0.7;
+}
+
+/* Header responsive gap — CSS media queries to override Tamagui inline styles */
+.header-inner-gap {
+  gap: 16px !important;
+}
+@media (max-width: 660px) {
+  .header-inner-gap {
+    gap: 8px !important;
+  }
+}
+@media (min-width: 1281px) {
+  .header-inner-gap {
+    gap: 32px !important;
+  }
+}

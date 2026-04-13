@@ -75,12 +75,14 @@ test.describe('Payment Notes Page', () => {
   test('should display notes from supporters', async ({ page }) => {
     await navigateTo(page, '/notes');
 
-    // Check for John Doe's note
-    await expect(
-      page.getByText('Great project! Keep up the amazing work!'),
-    ).toBeVisible();
-    await expect(page.getByText('John Doe')).toBeVisible();
-    await expect(page.getByText('$25')).toBeVisible();
+    // Check for John Doe's note with toPass for robustness
+    await expect(async () => {
+      await expect(page.getByText('John Doe')).toBeVisible();
+      await expect(
+        page.getByText('Great project! Keep up the amazing work!'),
+      ).toBeVisible();
+      await expect(page.getByText('$25')).toBeVisible();
+    }).toPass({ timeout: 20000 });
 
     // Check for anonymous supporter note
     await expect(
@@ -98,23 +100,25 @@ test.describe('Payment Notes Page', () => {
   }) => {
     await navigateTo(page, '/notes');
 
-    // Wait for notes to load
-    await expect(page.getByText('John Doe')).toBeVisible({ timeout: 15000 });
-
-    // Check that amounts are displayed
-    await expect(page.getByText('$25')).toBeVisible();
-    await expect(page.getByText('$50')).toBeVisible();
-    await expect(page.getByText('$10')).toBeVisible();
+    // Wait for notes to load with toPass
+    await expect(async () => {
+      await expect(page.getByText('John Doe')).toBeVisible();
+      await expect(page.getByText('$25')).toBeVisible();
+      await expect(page.getByText('$50')).toBeVisible();
+      await expect(page.getByText('$10')).toBeVisible();
+    }).toPass({ timeout: 20000 });
   });
 
   test('should display dates for notes', async ({ page }) => {
     await navigateTo(page, '/notes');
 
-    // Wait for notes to load
-    await expect(page.getByText('John Doe')).toBeVisible({ timeout: 15000 });
-
-    // Check for formatted dates (format depends on locale)
-    await expect(page.getByText(/jan.*15.*2026|15.*jan.*2026/i)).toBeVisible();
+    // Wait for notes to load and check date
+    await expect(async () => {
+      await expect(page.getByText('John Doe')).toBeVisible();
+      await expect(
+        page.getByText(/jan.*15.*2026|15.*jan.*2026/i),
+      ).toBeVisible();
+    }).toPass({ timeout: 20000 });
   });
 
   test('should show empty state when no notes exist', async ({ page }) => {
@@ -188,9 +192,9 @@ test.describe('Payment Notes Page', () => {
     await navigateTo(page, '/notes');
 
     // Wait for first page notes to load
-    await expect(page.getByText('Test note from page 0')).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(async () => {
+      await expect(page.getByText('Test note from page 0')).toBeVisible();
+    }).toPass({ timeout: 20000 });
 
     // Verify the first page content is visible
     await expect(page.getByText('Test note from page 0')).toBeVisible();

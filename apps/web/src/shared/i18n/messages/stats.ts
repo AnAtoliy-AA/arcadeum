@@ -7,6 +7,7 @@ const statsMessagesDefinition = {
     leaderboardTab: 'Leaderboard',
     loginRequired: 'Please log in to view your statistics.',
     errorLoading: 'Error loading stats',
+    loginRequiredBarrier: 'Login required to view statistics',
     // Overview cards
     totalGames: 'Total Games',
     wins: 'Wins',
@@ -33,6 +34,7 @@ const statsMessagesDefinition = {
     leaderboardTab: 'Clasificación',
     loginRequired: 'Por favor inicia sesión para ver tus estadísticas.',
     errorLoading: 'Error al cargar estadísticas',
+    loginRequiredBarrier: 'Inicia sesión para ver las estadísticas',
     // Overview cards
     totalGames: 'Juegos Totales',
     wins: 'Victorias',
@@ -59,6 +61,7 @@ const statsMessagesDefinition = {
     leaderboardTab: 'Classement',
     loginRequired: 'Veuillez vous connecter pour voir vos statistiques.',
     errorLoading: 'Erreur de chargement des statistiques',
+    loginRequiredBarrier: 'Connexion requise pour voir les statistiques',
     // Overview cards
     totalGames: 'Total des Parties',
     wins: 'Victoires',
@@ -85,6 +88,7 @@ const statsMessagesDefinition = {
     leaderboardTab: 'Таблица лидеров',
     loginRequired: 'Пожалуйста, войдите, чтобы просмотреть статистику.',
     errorLoading: 'Ошибка загрузки статистики',
+    loginRequiredBarrier: 'Войдите, чтобы просмотреть статистику',
     // Overview cards
     totalGames: 'Всего игр',
     wins: 'Победы',
@@ -111,6 +115,7 @@ const statsMessagesDefinition = {
     leaderboardTab: 'Табліца лідэраў',
     loginRequired: 'Калі ласка, увайдзіце, каб праглядзець статыстыку.',
     errorLoading: 'Памылка загрузкі статыстыкі',
+    loginRequiredBarrier: 'Увайдзіце, каб прагледзець статыстыку',
     // Overview cards
     totalGames: 'Усяго гульняў',
     wins: 'Перамогі',

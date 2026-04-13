@@ -8,6 +8,7 @@ interface GetHistoryParams {
   status?: string;
   page?: number;
   limit?: number;
+  grouped?: boolean;
 }
 
 export interface GetHistoryResponse {

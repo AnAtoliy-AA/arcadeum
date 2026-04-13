@@ -1,8 +1,9 @@
-import { useAuthForm, useAuthLabels } from '../hooks';
+import type { UseAuthFormResult } from '../hooks/useAuthForm';
+import { useAuthLabels } from '../hooks';
 import { GlassCard, Typography, YStack, XStack } from '@arcadeum/ui';
 
-export function SessionStatusPanel() {
-  const { isRegisterMode, hasSession, sessionSnapshot } = useAuthForm();
+export function SessionStatusPanel({ auth }: { auth: UseAuthFormResult }) {
+  const { isRegisterMode, hasSession, sessionSnapshot } = auth;
   const labels = useAuthLabels(isRegisterMode);
   const { statusHeading, statusDescription, statusActiveMessage } = labels;
 

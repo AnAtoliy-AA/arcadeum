@@ -52,6 +52,23 @@ export const en = {
     subtitle: 'Connect with fellow gamers worldwide',
     description:
       'Share strategies, discuss your favorite games, participate in community events, and make friends who love board games as much as you do.',
+    sections: {
+      discord: {
+        title: 'Discord',
+        description:
+          'Join our active community on Discord to discuss games, report bugs, and meet other players.',
+      },
+      twitter: {
+        title: 'Twitter / X',
+        description:
+          'Follow us for the latest news, updates, and announcements.',
+      },
+      github: {
+        title: 'Github',
+        description:
+          'Arcadeum is open-source. Contribute to the project on Github.',
+      },
+    },
     comingSoon: 'Community hub is coming soon. Stay tuned!',
   },
   cookies: {

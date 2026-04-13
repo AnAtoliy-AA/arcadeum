@@ -1,5 +1,7 @@
 'use client';
 
+import './tamagui.config';
+
 export * from './components/Button';
 
 export * from './components/Avatar/Avatar';

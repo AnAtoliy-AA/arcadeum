@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { type ComponentProps } from 'react';
 import Link from 'next/link';
-import { YStack, XStack, Text, styled } from 'tamagui';
+import { YStack, XStack, styled, GetProps } from 'tamagui';
 import { GlassCard } from '@arcadeum/ui';
 import { CopyActionButton } from '@/features/support/copy-action/ui/CopyActionButton';
 
@@ -183,14 +183,13 @@ export const supportStyles = `
 `;
 
 export const Page = styled(YStack, {
-  tag: 'div',
+  name: 'SupportPageRoot',
   minHeight: '100vh',
   backgroundColor: '$background',
-  color: '$color',
   justifyContent: 'center',
   overflow: 'hidden',
   position: 'relative',
-} as never);
+});
 
 export function BackgroundBlob() {
   return (
@@ -224,13 +223,12 @@ export function AnimatedGlassCard({
 }: {
   children: React.ReactNode;
   $delay?: string;
-  [key: string]: unknown;
-}) {
+} & GetProps<typeof GlassCard>) {
   return (
     <GlassCard
       className="support-animated-card"
       style={{ animationDelay: $delay || '0s' }}
-      {...(props as Record<string, unknown>)}
+      {...props}
     >
       {children}
     </GlassCard>
@@ -254,14 +252,15 @@ export function Header({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const Tagline = styled(Text, {
-  tag: 'p',
+import { Paragraph, H3 } from 'tamagui';
+
+export const Tagline = styled(Paragraph, {
   margin: 0,
   fontWeight: '500',
   color: 'rgba(236,239,238,0.7)',
   maxWidth: 650,
-  style: { lineHeight: 1.5 },
-} as never);
+  lineHeight: 1.5,
+});
 
 export function SectionTitle({
   children,
@@ -277,14 +276,13 @@ export function SectionTitle({
   );
 }
 
-export const HeaderDescription = styled(Text, {
-  tag: 'p',
+export const HeaderDescription = styled(Paragraph, {
   margin: 0,
   fontSize: '$4',
   color: 'rgba(236,239,238,0.45)',
   maxWidth: 700,
-  style: { lineHeight: 1.7 },
-} as never);
+  lineHeight: 1.7,
+});
 
 export function TeamGrid({ children }: { children: React.ReactNode }) {
   return (
@@ -323,7 +321,7 @@ export const TeamHeader = styled(XStack, {
   justifyContent: 'space-between',
   alignItems: 'flex-start',
   width: '100%',
-} as never);
+});
 
 export function TeamIcon({
   children,
@@ -339,31 +337,28 @@ export function TeamIcon({
   );
 }
 
-export const TeamName = styled(Text, {
-  tag: 'h3',
+export const TeamName = styled(H3, {
   margin: 0,
   fontSize: '$6',
   fontWeight: '700',
   color: '$color',
   marginBottom: '$1',
-} as never);
+});
 
-export const TeamRole = styled(Text, {
-  tag: 'p',
+export const TeamRole = styled(Paragraph, {
   margin: 0,
   fontSize: '$4',
   fontWeight: '500',
   color: 'rgba(236,239,238,0.7)',
   marginBottom: '$2',
-} as never);
+});
 
-export const TeamBio = styled(Text, {
-  tag: 'p',
+export const TeamBio = styled(Paragraph, {
   margin: 0,
   fontSize: '$3',
   color: 'rgba(236,239,238,0.45)',
-  style: { lineHeight: 1.6 },
-} as never);
+  lineHeight: 1.6,
+});
 
 export function ActionList({ children }: { children: React.ReactNode }) {
   return (
@@ -380,33 +375,30 @@ export function ActionList({ children }: { children: React.ReactNode }) {
 }
 
 export const ActionHeader = styled(XStack, {
-  tag: 'header',
   alignItems: 'center',
   gap: '$3',
-} as never);
+});
 
-export const ActionTitle = styled(Text, {
-  tag: 'h3',
+export const ActionTitle = styled(H3, {
   margin: 0,
   fontSize: '$4',
   fontWeight: '600',
   color: 'rgba(236,239,238,0.7)',
-} as never);
+});
 
-export const ActionDescription = styled(Text, {
-  tag: 'p',
+export const ActionDescription = styled(Paragraph, {
   margin: 0,
   fontSize: '$3',
   color: 'rgba(236,239,238,0.45)',
-  style: { lineHeight: 1.6 },
-} as never);
+  lineHeight: 1.6,
+});
 
 export const CtaRow = styled(XStack, {
   flexWrap: 'wrap',
   justifyContent: 'space-between',
   alignItems: 'center',
   gap: '$3',
-} as never);
+});
 
 export const CtaLink = ({
   children,
@@ -415,10 +407,8 @@ export const CtaLink = ({
 }: {
   children: React.ReactNode;
   href: string;
-  [key: string]: unknown;
-}) => (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  <Link className="support-cta" href={href} {...(props as any)}>
+} & Omit<ComponentProps<typeof Link>, 'href' | 'children'>) => (
+  <Link className="support-cta" href={href} {...props}>
     {children}
   </Link>
 );
@@ -476,11 +466,10 @@ export const CtaIcon = ({ children }: { children: React.ReactNode }) => (
   <span>{children}</span>
 );
 
-export const Thanks = styled(Text, {
-  tag: 'p',
+export const Thanks = styled(Paragraph, {
   margin: 0,
   textAlign: 'center',
   fontSize: '$4',
   color: 'rgba(236,239,238,0.45)',
-  style: { lineHeight: 1.7 },
-} as never);
+  lineHeight: 1.7,
+});

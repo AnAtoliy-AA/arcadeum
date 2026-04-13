@@ -151,7 +151,7 @@ Convenient scripts defined in `package.json`:
 | `reset-project`          | Reset the starter code into `app-example/` and create a blank `app/`                                                                                                                                            |
 | `android`                | Convenience wrapper: reverse ports, install debug build, then open the dev client                                                                                                                               |
 | `ios`                    | Run `expo run:ios` (prebuild and run native project)                                                                                                                                                            |
-| `web`                    | Start the web bundler (`expo start --web`). Note: `npm run dev` starts Web by default as part of the unified flow.                                                                                              |
+| `web`                    | Start the web bundler (`expo start --web`). Note: `pnpm run dev` starts Web by default as part of the unified flow.                                                                                             |
 | `lint`                   | Run ESLint via `expo lint`                                                                                                                                                                                      |
 | `build`                  | Run TypeScript type checking                                                                                                                                                                                    |
 | `type-check`             | Run TypeScript type checking                                                                                                                                                                                    |
@@ -436,7 +436,7 @@ Thank you for helping us build Arcadeum! 🎮
 Tip: For Android dev on device/emulator, try:
 
 ```bash
-npm run android:dev
+pnpm run android:dev
 ```
 
 Test your app scheme

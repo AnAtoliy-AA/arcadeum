@@ -102,8 +102,8 @@ export default defineConfig({
     {
       command:
         process.env.CI || process.env.E2E_PROD
-          ? 'NEXT_PUBLIC_E2E=true npm run start'
-          : 'NEXT_PUBLIC_E2E=true npm run dev:next',
+          ? 'NEXT_PUBLIC_E2E=true pnpm run start'
+          : 'NEXT_PUBLIC_E2E=true pnpm run dev:next',
       url: BASE_URL,
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,

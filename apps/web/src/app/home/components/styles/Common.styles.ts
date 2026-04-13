@@ -8,14 +8,14 @@ export const PageWrapper = styled(Main, {
   minHeight: '100vh',
   flexDirection: 'column',
   overflowX: 'hidden',
-} as Record<string, unknown>);
+});
 
 export const SectionContainer = styled(Container, {
   name: 'SectionContainer',
   size: 'xl',
   paddingVertical: '$12',
   overflow: 'hidden',
-} as Record<string, unknown>);
+});
 
 export const SectionHeader = styled(Container, {
   name: 'SectionHeader',
@@ -23,7 +23,7 @@ export const SectionHeader = styled(Container, {
   paddingVertical: 0,
   alignItems: 'center',
   gap: '$3',
-} as Record<string, unknown>);
+});
 
 export const SectionTitle = styled(H2, {
   name: 'SectionTitle',

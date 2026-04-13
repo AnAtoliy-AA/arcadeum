@@ -2,6 +2,10 @@ import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { gamesApi } from '@/features/games/api';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { GameDetailPage } from './GameDetailPage';
+import { setupTamagui } from '@/shared/config/tamagui.config';
+
+// Ensure Tamagui is initialized for build-time SSR of this route
+setupTamagui();
 
 interface PageProps {
   params: Promise<{ id: string }>;

@@ -21,7 +21,7 @@ export function HeaderLayout({ children }: HeaderLayoutProps) {
       <HeaderInner data-testid="header-inner">
         <Logo href="/">
           <Image src="/logo.png" alt="" width={32} height={32} priority />
-          <LogoText>{appConfig.appName}</LogoText>
+          <LogoText data-testid="logo-text">{appConfig.appName}</LogoText>
         </Logo>
         {children}
       </HeaderInner>

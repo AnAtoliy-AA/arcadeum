@@ -49,20 +49,12 @@ const SectionDescription = styled(Text, {
   opacity: 0.7,
 });
 
-export const Section = memo(function Section({
-  title,
-  description,
-  variant,
-  children,
-  'data-testid': dataTestId,
-}: SectionProps): ReactElement {
-  return (
-    <StyledSection variant={variant} data-testid={dataTestId}>
-      {title && (
-        <SectionTitle data-testid="section-title">{title}</SectionTitle>
-      )}
-      {description && <SectionDescription>{description}</SectionDescription>}
-      {children}
-    </StyledSection>
-  );
-});
+export const Section = StyledSection.styleable<
+  Omit<SectionProps, 'children'> & GetProps<typeof StyledSection>
+>(({ title, description, variant, ...props }, ref) => (
+  <StyledSection {...props} variant={variant} ref={ref}>
+    {title && <SectionTitle data-testid="section-title">{title}</SectionTitle>}
+    {description && <SectionDescription>{description}</SectionDescription>}
+    {props.children}
+  </StyledSection>
+));

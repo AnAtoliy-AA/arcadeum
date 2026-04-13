@@ -7,6 +7,10 @@ import {
   Typography,
   Section,
 } from '@arcadeum/ui';
+import { setupTamagui } from '@/shared/config/tamagui.config';
+
+// Ensure Tamagui is initialized for build-time SSR of this route
+setupTamagui();
 
 export default async function CommunityPage() {
   const messages = await getTranslations();
@@ -19,20 +23,31 @@ export default async function CommunityPage() {
           <PageTitle size="xl" gradient>
             {t?.title}
           </PageTitle>
-          <Typography variant="caption" alpha="medium">
-            {t?.subtitle}
+          {t?.subtitle && (
+            <Typography variant="subheading" uiSize="md" alpha="medium">
+              {t.subtitle}
+            </Typography>
+          )}
+          <Typography variant="body" uiSize="lg" alpha="high">
+            {t?.description}
           </Typography>
         </GlassCard>
 
-        <Section variant="legal">
-          <Typography variant="body" uiSize="md" alpha="high">
-            {t?.description}
+        <Section title={t?.sections?.discord?.title ?? 'Discord'}>
+          <Typography variant="body" uiSize="md">
+            {t?.sections?.discord?.description}
           </Typography>
         </Section>
 
-        <Section variant="legal">
-          <Typography variant="body" uiSize="md" alpha="medium">
-            {t?.comingSoon}
+        <Section title={t?.sections?.twitter?.title ?? 'Twitter / X'}>
+          <Typography variant="body" uiSize="md">
+            {t?.sections?.twitter?.description}
+          </Typography>
+        </Section>
+
+        <Section title={t?.sections?.github?.title ?? 'Github'}>
+          <Typography variant="body" uiSize="md">
+            {t?.sections?.github?.description}
           </Typography>
         </Section>
       </Container>

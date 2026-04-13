@@ -71,6 +71,8 @@ const StyledTypography = styled(Text, {
   },
 });
 
-export type TypographyProps = GetProps<typeof StyledTypography>;
+export const Typography = StyledTypography.styleable((props, ref) => (
+  <StyledTypography {...props} ref={ref} />
+));
 
-export const Typography = StyledTypography;
+export type TypographyProps = GetProps<typeof Typography>;

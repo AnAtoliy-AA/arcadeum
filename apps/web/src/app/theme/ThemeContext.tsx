@@ -18,7 +18,7 @@ import {
   ThemeTokens,
   themeTokens,
 } from '@/shared/config/theme';
-import tamaguiConfig, { setupTamagui } from '@/shared/config/tamagui.config';
+import tamaguiConfig from '@/shared/config/tamagui.config';
 
 type ThemeContextValue = {
   themePreference: ThemePreference;
@@ -55,28 +55,21 @@ function useSystemTheme(): SystemThemeName {
   );
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
+    if (typeof window === 'undefined') return;
 
     const media = window.matchMedia('(prefers-color-scheme: dark)');
-
-    const apply = (matches: boolean) => {
+    const apply = (matches: boolean) =>
       setSystemTheme(matches ? 'dark' : 'light');
-    };
 
     apply(media.matches);
 
-    const listener = (event: MediaQueryListEvent) => {
-      apply(event.matches);
-    };
+    const listener = (event: MediaQueryListEvent) => apply(event.matches);
 
     if (typeof media.addEventListener === 'function') {
       media.addEventListener('change', listener);
       return () => media.removeEventListener('change', listener);
     }
 
-    // Safari < 14 fallback
     media.addListener(listener);
     return () => media.removeListener(listener);
   }, []);
@@ -97,43 +90,32 @@ export function AppThemeProvider({
 }) {
   const { themePreference, setThemePreference } = useThemeStore();
   const systemTheme = useSystemTheme();
-  const isReady = useSyncExternalStore(
+  const isHydrated = useSyncExternalStore(
     emptySubscribe,
     getClientSnapshot,
     getServerSnapshot,
   );
 
-  useEffect(() => {
-    if (typeof document !== 'undefined') {
-      document.documentElement.setAttribute('data-app-ready', 'true');
-    }
-  }, []);
-
   const resolvedTheme: ThemeName = useMemo(() => {
-    // Return initialTheme during hydration to match server exactly
-    if (!isReady) return initialTheme || 'dark';
-
-    if (themePreference === 'system') {
-      return systemTheme;
-    }
+    // Exact match for the server theme during hydration pass
+    if (!isHydrated) return initialTheme || 'dark';
+    if (themePreference === 'system') return systemTheme;
     return themePreference;
-  }, [systemTheme, themePreference, isReady, initialTheme]);
+  }, [systemTheme, themePreference, isHydrated, initialTheme]);
 
-  const theme: ThemeTokens = useMemo(
+  const themeTokensValue: ThemeTokens = useMemo(
     () => themeTokens[resolvedTheme],
     [resolvedTheme],
   );
 
+  // Sync theme to document element
   useEffect(() => {
-    if (typeof document === 'undefined') {
-      return;
-    }
+    if (typeof document === 'undefined') return;
 
     const doc = document.documentElement;
     const currentTheme = doc.getAttribute('data-theme');
     const currentPreference = doc.getAttribute('data-theme-preference');
 
-    // Ensure both attributes and class are present
     if (
       currentTheme === resolvedTheme &&
       currentPreference === themePreference &&
@@ -145,66 +127,42 @@ export function AppThemeProvider({
     doc.setAttribute('data-theme', resolvedTheme);
     doc.setAttribute('data-theme-preference', themePreference);
 
-    // Clean up body classes (Tamagui or legacy injections)
-    if (document.body) {
-      const bodyClasses = Array.from(document.body.classList);
-      bodyClasses.forEach((c) => {
-        if (c.startsWith('t_')) document.body.classList.remove(c);
-      });
-    }
+    // Update classes meticulously
+    doc.classList.forEach((c) => {
+      if (c.startsWith('t_')) doc.classList.remove(c);
+    });
+    doc.classList.add(`t_${resolvedTheme}`);
 
-    // Update classes on html element only
-    const currentClasses = Array.from(doc.classList);
-    const themeClasses = currentClasses.filter((c) => c.startsWith('t_'));
-
-    if (
-      !doc.classList.contains(`t_${resolvedTheme}`) ||
-      themeClasses.length > 1
-    ) {
-      themeClasses.forEach((c) => doc.classList.remove(c));
-      doc.classList.add(`t_${resolvedTheme}`);
-    }
-
-    doc.style.setProperty('--background', theme.background.base);
-    doc.style.setProperty('--foreground', theme.text.primary);
-    doc.style.setProperty('--muted-foreground', theme.text.muted);
-    doc.style.setProperty('--card-background', theme.surfaces.card.background);
-    doc.style.setProperty('--card-border', theme.surfaces.card.border);
-    doc.style.setProperty(
-      '--surface-background',
-      theme.surfaces.panel.background,
-    );
-    doc.style.setProperty('--primary', theme.text.accent);
-    doc.style.setProperty(
-      '--primary-gradient-start',
-      theme.buttons.primary.gradientStart,
-    );
-    doc.style.setProperty('--glass-background', theme.glass.background);
-    doc.style.setProperty('--glass-border', theme.glass.border);
-
-    doc.style.backgroundColor = theme.background.base;
-    doc.style.color = theme.text.primary;
+    // Update variables
+    doc.style.setProperty('--background', themeTokensValue.background.base);
+    doc.style.setProperty('--foreground', themeTokensValue.text.primary);
+    doc.style.setProperty('--muted-foreground', themeTokensValue.text.muted);
+    doc.style.setProperty('--primary', themeTokensValue.text.accent);
+    doc.style.setProperty('--glassBg', themeTokensValue.glass.background);
+    doc.style.setProperty('--glassBorder', themeTokensValue.glass.border);
 
     const cookieOptions = 'path=/; max-age=31536000; SameSite=Lax';
     document.cookie = `app-theme=${resolvedTheme}; ${cookieOptions}`;
     document.cookie = `app-theme-preference=${themePreference}; ${cookieOptions}`;
-  }, [resolvedTheme, theme, themePreference]);
+  }, [resolvedTheme, themeTokensValue, themePreference]);
+
+  // Handle data-app-ready for E2E tests
+  useEffect(() => {
+    if (isHydrated && typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-app-ready', 'true');
+    }
+  }, [isHydrated]);
 
   const contextValue = useMemo<ThemeContextValue>(
     () => ({ themePreference, resolvedTheme, setThemePreference }),
     [themePreference, resolvedTheme, setThemePreference],
   );
 
-  // Ensure config is primed before rendering the provider (safety net for SSR)
-  if (typeof setupTamagui === 'function') {
-    setupTamagui();
-  }
-
   return (
     <ThemeContext.Provider value={contextValue}>
       <TamaguiProvider
         config={tamaguiConfig}
-        defaultTheme={resolvedTheme || initialTheme || 'dark'}
+        defaultTheme={resolvedTheme}
         disableInjectCSS
       >
         {children}
@@ -215,10 +173,8 @@ export function AppThemeProvider({
 
 export function useThemeController(): ThemeContextValue {
   const context = useContext(ThemeContext);
-
   if (!context) {
     throw new Error('useThemeController must be used within AppThemeProvider');
   }
-
   return context;
 }

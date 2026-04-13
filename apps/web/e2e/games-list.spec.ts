@@ -78,7 +78,7 @@ test.describe('Games List Page', () => {
 
   test('should display game cards or empty state', async ({ page }) => {
     await navigateTo(page, '/games');
-    const mainContent = page.locator('main');
+    const mainContent = page.locator('main').first();
     await expect(mainContent).toBeVisible();
 
     await expect(async () => {

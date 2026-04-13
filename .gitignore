@@ -24,6 +24,8 @@ coverage/
 backend-e2e-errors.log
 
 .claude
+.claw
+.playwright-mcp
 .superpowers
 
 docs/superpowers

@@ -2,64 +2,85 @@ import { expect } from '@playwright/test';
 import { test } from './fixtures/test-utils';
 import { mockSession, navigateTo } from './fixtures/test-utils';
 
+const emptyBoard = () =>
+  Array(10)
+    .fill(null)
+    .map(() => Array(10).fill(0));
+
+const placementRoomMock = {
+  room: {
+    id: '507f191e810c19729de860ec',
+    name: 'Tablet Test Room',
+    status: 'playing',
+    gameId: 'sea_battle_v1',
+    hostId: 'test-user',
+    playerCount: 1,
+    maxPlayers: 2,
+    visibility: 'public',
+    gameOptions: { variant: 'classic' },
+    members: [{ id: 'test-user', displayName: 'Test User', isHost: true }],
+  },
+  session: {
+    id: 'session-123',
+    roomId: '507f191e810c19729de860ec',
+    gameId: 'sea_battle_v1',
+    status: 'active',
+    state: {
+      phase: 'placement',
+      players: [
+        { playerId: 'test-user', board: emptyBoard(), ships: [], alive: true },
+      ],
+      playerOrder: ['test-user'],
+      currentTurnIndex: 0,
+      logs: [],
+    },
+  },
+};
+
+const battleRoomMock = {
+  room: {
+    ...placementRoomMock.room,
+    playerCount: 2,
+    members: [
+      { id: 'test-user', displayName: 'Test User', isHost: true },
+      { id: 'opponent-user', displayName: 'Opponent', isHost: false },
+    ],
+  },
+  session: {
+    ...placementRoomMock.session,
+    state: {
+      phase: 'battle',
+      players: [
+        { playerId: 'test-user', board: emptyBoard(), ships: [], alive: true },
+        {
+          playerId: 'opponent-user',
+          board: emptyBoard(),
+          ships: [],
+          alive: true,
+        },
+      ],
+      playerOrder: ['test-user', 'opponent-user'],
+      currentTurnIndex: 0,
+      logs: [],
+    },
+  },
+};
+
 test.describe('Sea Battle Tablet Layout', () => {
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
-
-    // Mock room info API to show a game in placement phase
-    await page.route('**/games/room-info*', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        json: {
-          room: {
-            id: '507f191e810c19729de860ec',
-            name: 'Tablet Test Room',
-            status: 'playing',
-            gameId: 'sea_battle_v1',
-            hostId: 'test-user',
-            playerCount: 1,
-            maxPlayers: 2,
-            visibility: 'public',
-            gameOptions: { variant: 'classic' },
-            members: [
-              {
-                id: 'test-user',
-                displayName: 'Test User',
-                isHost: true,
-              },
-            ],
-          },
-          session: {
-            id: 'session-123',
-            roomId: '507f191e810c19729de860ec',
-            gameId: 'sea_battle_v1',
-            status: 'active',
-            state: {
-              phase: 'placement',
-              players: [
-                {
-                  playerId: 'test-user',
-                  board: Array(10)
-                    .fill(null)
-                    .map(() => Array(10).fill(0)),
-                  ships: [],
-                  alive: true,
-                },
-              ],
-              playerOrder: ['test-user'],
-              currentTurnIndex: 0,
-              logs: [],
-            },
-          },
-        },
-      });
-    });
   });
 
   test('should have side-by-side layout on landscape tablet (1024x768)', async ({
     page,
   }) => {
+    await page.route('**/games/room-info*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        json: battleRoomMock,
+      });
+    });
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.waitForTimeout(500);
     await navigateTo(page, '/games/rooms/507f191e810c19729de860ec');
@@ -82,8 +103,7 @@ test.describe('Sea Battle Tablet Layout', () => {
     await expect(chatArea).toBeVisible();
 
     // Check if grids container uses row layout (flexbox)
-    const boardArea = page.getByTestId('game-board-area');
-    const containerFlexDirection = await boardArea
+    const containerFlexDirection = await mainArea
       .getByTestId('sea-battle-grids-container')
       .evaluate((el) => getComputedStyle(el).flexDirection);
     expect(containerFlexDirection).toBe('column');
@@ -92,6 +112,13 @@ test.describe('Sea Battle Tablet Layout', () => {
   test('should have stacked layout on portrait tablet (768x1024)', async ({
     page,
   }) => {
+    await page.route('**/games/room-info*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        json: battleRoomMock,
+      });
+    });
     await page.setViewportSize({ width: 768, height: 1024 });
     await page.waitForTimeout(500);
     await navigateTo(page, '/games/rooms/507f191e810c19729de860ec');
@@ -109,6 +136,13 @@ test.describe('Sea Battle Tablet Layout', () => {
   test('should show boards and ship palette correctly on tablet', async ({
     page,
   }) => {
+    await page.route('**/games/room-info*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        json: placementRoomMock,
+      });
+    });
     await page.setViewportSize({ width: 1024, height: 768 });
     await navigateTo(page, '/games/rooms/507f191e810c19729de860ec');
 

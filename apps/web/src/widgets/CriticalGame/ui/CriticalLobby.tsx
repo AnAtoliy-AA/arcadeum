@@ -46,7 +46,7 @@ export interface CriticalLobbyProps {
   isHost: boolean;
   startBusy: boolean;
   isFullscreen: boolean;
-  containerRef: React.RefObject<TamaguiElement | null>;
+  containerRef?: React.RefObject<TamaguiElement | null>;
   onToggleFullscreen: () => void;
   onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;

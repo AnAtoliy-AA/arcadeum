@@ -1,5 +1,4 @@
 export { useCriticalState } from './useCriticalState';
-export { useFullscreen } from './useFullscreen';
 export { useCriticalModals } from './useCriticalModals';
 export { useRematch } from './useRematch';
 export { useAutoplay } from './useAutoplay';

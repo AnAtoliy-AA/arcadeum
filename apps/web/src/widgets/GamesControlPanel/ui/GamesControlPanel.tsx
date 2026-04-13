@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, useEffect, RefObject } from 'react';
+import { useCallback, useState, type RefObject } from 'react';
 import { useRouter } from 'next/navigation';
 import { Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -30,6 +30,8 @@ interface GamesControlPanelProps {
   showChat?: boolean;
   onToggleChat?: () => void;
   onShowRules?: () => void;
+  isFullscreen?: boolean;
+  toggleFullscreen?: () => void;
 }
 
 export function GamesControlPanel({
@@ -39,30 +41,18 @@ export function GamesControlPanel({
   onMovePlayer,
   onCenterView,
   showMoveControls,
-  fullscreenContainerRef,
   showChat,
   onToggleChat,
   onShowRules,
+  isFullscreen,
+  toggleFullscreen,
 }: GamesControlPanelProps) {
   const router = useRouter();
 
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [isCopied, setIsCopied] = useTimedTrue(2000);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
-
-  const handleFullscreenToggle = useCallback(async () => {
-    try {
-      if (!document.fullscreenElement) {
-        const element =
-          fullscreenContainerRef?.current || document.documentElement;
-        await element.requestFullscreen();
-      } else {
-        await document.exitFullscreen();
-      }
-    } catch {}
-  }, [fullscreenContainerRef]);
 
   const handleLeaveGame = useCallback(() => {
     setShowLeaveConfirm(true);
@@ -86,16 +76,6 @@ export function GamesControlPanel({
   const handleExitRoom = useCallback(() => {
     router.push('/games');
   }, [router]);
-
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () =>
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }, []);
 
   const handleMove = (direction: 'up' | 'down' | 'left' | 'right') => {
     onMovePlayer?.(direction);
@@ -142,7 +122,7 @@ export function GamesControlPanel({
         variant="glass"
         size="sm"
         data-testid="fullscreen-button"
-        onClick={handleFullscreenToggle}
+        onClick={toggleFullscreen}
         aria-label={
           isFullscreen
             ? t('games.table.controlPanel.exitFullscreen')

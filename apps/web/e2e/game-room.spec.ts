@@ -44,7 +44,7 @@ test.describe('Game Room Detail', () => {
     await navigateTo(page, '/games/critical_v1');
 
     // Check for page title or header
-    await expect(page.locator('h1, h2')).toContainText(/game rooms/i);
+    await expect(page.locator('h1, h2').first()).toContainText(/game rooms/i);
 
     // Check for "Create Room" button
     const createRoomBtn = page

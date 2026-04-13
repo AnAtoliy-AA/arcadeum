@@ -130,7 +130,7 @@ export function AttackBoard({
   );
 
   return (
-    <MainGameArea>
+    <MainGameArea data-testid="game-main-area">
       <SeaBattleGrids>
         {currentPlayer && (
           <PlayerSectionWrapper>

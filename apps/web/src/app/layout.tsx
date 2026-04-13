@@ -111,6 +111,7 @@ export default async function RootLayout({
       className={`t_${theme}`}
       data-theme={theme}
       data-theme-preference={themePreference}
+      suppressHydrationWarning
     >
       <head>
         <JsonLd data={jsonLd} />

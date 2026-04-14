@@ -139,14 +139,14 @@ jobs:
 
 
   web-e2e:
-    name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/4)
+    name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/3)
     needs: build
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         project: [chromium, firefox, webkit, "Mobile Chrome", "Mobile Safari", "Tablet Safari"]
-        shard: [1, 2, 3, 4]
+        shard: [1, 2, 3]
     services:
       mongodb:
         image: mongo:latest
@@ -204,9 +204,9 @@ jobs:
         run: pnpm --filter web exec playwright install ${{ steps.engine.outputs.browser }} --with-deps
 
       - name: Run Web E2E Tests
-        run: pnpm --filter web test:e2e --project="${{ matrix.project }}" --shard=${{ matrix.shard }}/4
+        run: pnpm --filter web test:e2e --project="${{ matrix.project }}" --shard=${{ matrix.shard }}/3
 
-      - name: Upload Shard Report
+      - name: Upload Test Report
         if: always()
         uses: actions/upload-artifact@v4
         with:

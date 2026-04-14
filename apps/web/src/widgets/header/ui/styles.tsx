@@ -6,10 +6,6 @@ import React from 'react';
 import Link from 'next/link';
 import { styled, GetProps, Nav as TamaguiNav, XStack } from 'tamagui';
 import { YStack, Typography, LinkButton } from '@arcadeum/ui';
-import { setupTamagui } from '@/shared/config/tamagui.config';
-
-// Ensure Tamagui is initialized before module-level styled() calls evaluate
-setupTamagui();
 
 // ─── Header Container ─────────────────────────────────────────────────────────
 
@@ -100,7 +96,7 @@ export function LogoText({
 
 // ─── Navigation ───────────────────────────────────────────────────────────────
 
-export const Nav = styled(TamaguiNav, {
+const NavStyled = styled(TamaguiNav, {
   name: 'Nav',
   flexDirection: 'row',
   alignItems: 'center',
@@ -108,6 +104,10 @@ export const Nav = styled(TamaguiNav, {
   flex: 1,
   $md: { display: 'none' },
 });
+
+export const Nav = (props: GetProps<typeof NavStyled>) => (
+  <NavStyled {...props} />
+);
 
 // ─── Actions ──────────────────────────────────────────────────────────────────
 

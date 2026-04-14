@@ -5,7 +5,7 @@ export interface QueryFunctionContext {
   signal: AbortSignal;
 }
 
-interface UseQueryOptions<T> {
+export interface UseQueryOptions<T> {
   queryKey: (string | number | undefined | null)[];
   queryFn: (ctx: QueryFunctionContext) => Promise<T>;
   enabled?: boolean;
@@ -16,7 +16,7 @@ interface UseQueryOptions<T> {
   onError?: (error: Error) => void;
 }
 
-interface UseQueryResult<T> {
+export interface UseQueryResult<T> {
   data: T | null;
   isLoading: boolean;
   isFetching: boolean;

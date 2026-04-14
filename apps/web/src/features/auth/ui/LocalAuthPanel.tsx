@@ -109,7 +109,7 @@ export function LocalAuthPanel({ labels, auth }: LocalAuthPanelProps) {
   };
 
   return (
-    <GlassCard flex={1} minWidth={320} gap="$4" padding="$5">
+    <GlassCard flex={1} minWidth={320} minHeight={450} gap="$4" padding="$5">
       <YStack gap="$1">
         <Badge size="sm" variant="neutral" alignSelf="flex-start">
           {localBadge}

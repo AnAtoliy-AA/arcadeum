@@ -100,7 +100,7 @@ export function HomePresentation() {
               src="/images/home/video-cover.png"
               alt="Arcadeum Trailer Illustration"
               fill
-              loading="lazy"
+              priority
               data-testid="video-thumbnail"
               style={{ objectFit: 'cover', opacity: 0.85 }}
             />

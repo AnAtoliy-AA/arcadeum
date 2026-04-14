@@ -13,10 +13,11 @@ import {
   Section,
   YStack,
 } from '@/shared/ui';
-import type { TranslationBundle } from '@/shared/i18n/types';
+import type { TermsMessages, ContactMessages } from '@/shared/i18n/types';
 
-interface TermsContentProps {
-  messages: TranslationBundle;
+export interface TermsContentProps {
+  t?: TermsMessages;
+  contactT?: ContactMessages;
   LEGAL_NAME: string;
   ID_CODE: string;
   SUPPORT_EMAIL: string;
@@ -26,13 +27,13 @@ interface TermsContentProps {
 const APP_NAME = appConfig.appName;
 
 export default function TermsContent({
-  messages,
+  t,
+  contactT,
   LEGAL_NAME,
   ID_CODE,
   SUPPORT_EMAIL,
   WORKING_HOURS,
 }: TermsContentProps) {
-  const t = messages.legal?.terms;
   const s = t?.sections;
 
   return (
@@ -163,7 +164,7 @@ export default function TermsContent({
             {s?.refund?.contact}{' '}
             <Link href={routes.contact}>
               <Typography color="$primary" textDecorationLine="underline">
-                {messages.legal?.contact?.title}
+                {contactT?.title}
               </Typography>
             </Link>
             .

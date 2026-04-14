@@ -27,6 +27,7 @@ export interface LinkButtonProps {
   onClick?: MouseEventHandler<any>;
   'data-testid'?: string;
   'aria-label'?: string;
+  prefetch?: boolean;
 }
 
 export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
@@ -45,6 +46,7 @@ export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
       className,
       'aria-label': ariaLabel,
       'data-testid': testId,
+      prefetch,
       ...props
     },
     ref
@@ -58,6 +60,7 @@ export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
               <Typography 
                 uiSize={size} 
                 variant="label"
+                fontWeight="800"
                 color={isVibrant ? `$${variant || 'primary'}Text` as never : undefined}
               >
                 {child}
@@ -66,7 +69,7 @@ export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
           }
           return child;
         }),
-      [children, size]
+      [children, size, variant]
     );
 
     return (
@@ -75,6 +78,7 @@ export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
         passHref
         target={external ? '_blank' : undefined}
         rel={external ? 'noopener noreferrer' : undefined}
+        prefetch={prefetch}
       >
         <StyledLinkButton
           as="span"

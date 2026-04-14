@@ -1,6 +1,6 @@
 import type { LegalMessages } from './types';
 
-export const legalMessagesFr: LegalMessages = {
+export const fr: LegalMessages = {
   nav: {
     terms: 'Conditions',
     privacy: 'Confidentialité',
@@ -176,7 +176,7 @@ export const legalMessagesFr: LegalMessages = {
             'Correction : Demander la correction de données inexactes',
           deletion: 'Suppression : Demander la suppression de vos données',
           portability:
-            'Portabilité : Demander le transfert de vos données vers un autre service',
+            'Portability : Demander le transfert de vos données vers un autre service',
           objection:
             "Opposition : S'opposer à certaines activités de traitement",
         },
@@ -257,3 +257,5 @@ export const legalMessagesFr: LegalMessages = {
     },
   },
 };
+
+export const legalMessagesFr = fr;

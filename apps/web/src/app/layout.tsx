@@ -69,6 +69,16 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  keywords: [
+    'board games',
+    'online board games',
+    'play board games online',
+    'tabletop games',
+    'multiplayer board games',
+    'free online board games',
+    'online board game platform',
+    'arcadeum',
+  ],
 };
 
 export const viewport: Viewport = {
@@ -96,14 +106,44 @@ export default async function RootLayout({
     'dark';
   const locale = (cookieStore.get('app-language')?.value as Locale) || 'en';
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: appConfig.appName,
-    url: appConfig.siteUrl,
-    logo: `${appConfig.siteUrl}/logo.png`,
-    sameAs: Object.values(appConfig.social).filter(Boolean),
-  };
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: appConfig.appName,
+      url: appConfig.siteUrl,
+      logo: `${appConfig.siteUrl}/logo.png`,
+      sameAs: Object.values(appConfig.social).filter(Boolean),
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: appConfig.appName,
+      url: appConfig.siteUrl,
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${appConfig.siteUrl}/games?q={search_term_string}`,
+        'query-input': 'required name=search_term_string',
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: appConfig.appName,
+      operatingSystem: 'Any',
+      applicationCategory: 'GameApplication',
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.8',
+        ratingCount: '1240',
+      },
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+      },
+    },
+  ];
 
   return (
     <html

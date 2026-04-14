@@ -156,7 +156,7 @@ export function WebPresentation() {
                 src={slide.image}
                 alt={slide.title}
                 fill
-                sizes="(max-width: 2000px) 100vw, 2000px"
+                sizes="(max-width: 1400px) 100vw, 1400px"
                 loading={index === currentSlide ? 'eager' : 'lazy'}
                 style={{
                   objectFit: 'cover',

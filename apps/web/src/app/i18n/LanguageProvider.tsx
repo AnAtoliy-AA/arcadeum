@@ -1,13 +1,21 @@
 'use client';
 
-import { ReactNode, useEffect, useMemo, useSyncExternalStore } from 'react';
+import {
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 
 import { useLanguageStore } from './store/languageStore';
 import {
   DEFAULT_LOCALE,
   Locale,
+  TranslationBundle,
   formatMessage,
   getMessages,
+  loadMessages,
 } from '@/shared/i18n';
 
 import { LanguageContext, LanguageContextValue } from '@/shared/i18n/context';
@@ -31,6 +39,11 @@ export function LanguageProvider({
     getServerSnapshot,
   );
 
+  // Initialize with messages for the initial locale (usually 'en' which is statically loaded)
+  const [loadedMessages, setLoadedMessages] = useState<TranslationBundle>(() =>
+    getMessages(initialLocale || DEFAULT_LOCALE),
+  );
+
   useEffect(() => {
     if (typeof document === 'undefined') {
       return;
@@ -42,18 +55,29 @@ export function LanguageProvider({
     // Sync to cookie
     const cookieOptions = 'path=/; max-age=31536000; SameSite=Lax';
     document.cookie = `app-language=${locale}; ${cookieOptions}`;
+
+    // Dynamically load the messages for the new locale
+    let isMounted = true;
+    loadMessages(locale).then((msgs) => {
+      if (isMounted) {
+        setLoadedMessages(msgs);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, [locale]);
 
-  const messages = useMemo(() => {
-    // During hydration, use initialLocale if provided, else DEFAULT_LOCALE
-    // This must match what RootLayout used to render on the server
-    if (!isReady) return getMessages(initialLocale || DEFAULT_LOCALE);
-    return getMessages(locale);
-  }, [locale, isReady, initialLocale]);
-
   const value = useMemo<LanguageContextValue>(
-    () => ({ locale, setLocale, messages, isReady, initialLocale }),
-    [locale, setLocale, messages, isReady, initialLocale],
+    () => ({
+      locale,
+      setLocale,
+      messages: loadedMessages,
+      isReady,
+      initialLocale,
+    }),
+    [locale, setLocale, loadedMessages, isReady, initialLocale],
   );
 
   return (

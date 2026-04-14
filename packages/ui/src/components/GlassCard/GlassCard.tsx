@@ -41,7 +41,7 @@ const TopLine = styled(YStack, {
   background: 'linear-gradient(90deg, transparent 0%, $glassBorderHover 50%, transparent 100%)',
 });
 
-interface GlassCardInnerProps extends GlassCardProps {
+export interface GlassCardInnerProps extends GlassCardProps {
   // Destructure props that might leak
   $visible?: boolean;
   $position?: 'top' | 'bottom' | 'left' | 'right';

@@ -1,6 +1,6 @@
 import type { LegalMessages } from './types';
 
-export const legalMessagesEn: LegalMessages = {
+export const en: LegalMessages = {
   nav: {
     terms: 'Terms',
     privacy: 'Privacy',
@@ -251,3 +251,5 @@ export const legalMessagesEn: LegalMessages = {
     },
   },
 };
+
+export const legalMessagesEn = en;

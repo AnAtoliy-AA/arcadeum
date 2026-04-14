@@ -70,7 +70,7 @@ export const lightTokens: ThemeTokens = {
       hoverBackground: 'rgba(59, 130, 246, 0.12)',
       border: 'rgba(37, 99, 235, 0.18)',
       hoverBorder: 'rgba(37, 99, 235, 0.35)',
-      text: '#1d4ed8',
+      text: '#1e293b',
     },
   },
   outlines: {
@@ -148,7 +148,7 @@ export const darkTokens: ThemeTokens = {
     primary: {
       gradientStart: '#38bdf8',
       gradientEnd: '#2563eb',
-      text: '#0f172a',
+      text: '#000000',
       shadow: '0 12px 30px rgba(56, 189, 248, 0.25)',
       hoverShadow: '0 16px 36px rgba(56, 189, 248, 0.35)',
     },

@@ -3,11 +3,24 @@
 import { PageLayout } from '@/shared/ui';
 import { HomeHero } from './components/HomeHero';
 import { HomeGames } from './components/HomeGames';
-import { HomeHowItWorks } from './components/HomeHowItWorks';
-import { HomeFeatures } from './components/HomeFeatures';
-import { HomePresentation } from './components/HomePresentation';
-import { HomePitchDeck } from './components/HomePitchDeck';
-import { HomeDownloadCta } from './components/HomeDownloadCta';
+import dynamic from 'next/dynamic';
+
+const HomeHowItWorks = dynamic(() =>
+  import('./components/HomeHowItWorks').then((m) => m.HomeHowItWorks),
+);
+const HomeFeatures = dynamic(() =>
+  import('./components/HomeFeatures').then((m) => m.HomeFeatures),
+);
+const HomePresentation = dynamic(() =>
+  import('./components/HomePresentation').then((m) => m.HomePresentation),
+);
+const HomePitchDeck = dynamic(() =>
+  import('./components/HomePitchDeck').then((m) => m.HomePitchDeck),
+);
+const HomeDownloadCta = dynamic(() =>
+  import('./components/HomeDownloadCta').then((m) => m.HomeDownloadCta),
+);
+
 import { AppFooter } from '@/widgets/footer';
 
 export function HomePage() {

@@ -17,10 +17,10 @@ import {
   FormGroup,
 } from '@/shared/ui';
 import { formatMessage } from '@/shared/i18n';
-import type { DeepPartial, TranslationBundle } from '@/shared/i18n/types';
+import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
-interface ContactViewProps {
-  t: DeepPartial<NonNullable<TranslationBundle['legal']>['contact']>;
+export interface ContactViewProps {
+  t?: ContactMessages;
   SUPPORT_EMAIL: string;
   WORKING_HOURS: string;
 }

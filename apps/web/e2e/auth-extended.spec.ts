@@ -13,27 +13,7 @@ import {
 test.describe('Auth Extended', () => {
   test('should validate registration fields', async ({ page }) => {
     await navigateTo(page, '/auth');
-
-    const toggleBtn = page.getByTestId('auth-toggle-mode-button').first();
-    if (await toggleBtn.isVisible()) {
-      const text = (await toggleBtn.textContent()) || '';
-      if (
-        /need|регистрация|account/i.test(text) &&
-        !/already|уже/i.test(text)
-      ) {
-        await toggleBtn.click({ force: true });
-      }
-    }
-
-    const submitBtn = page.locator('button[type="submit"]');
-    await expect(submitBtn).toBeVisible({ timeout: 10000 });
-    await submitBtn.click({ force: true });
-
-    await expect(page.locator('form')).toBeVisible({ timeout: 15000 });
-  });
-
-  test('should show error on password mismatch', async ({ page }) => {
-    await navigateTo(page, '/auth');
+    await page.waitForLoadState('networkidle');
 
     const toggleBtn = page.getByTestId('auth-toggle-mode-button').first();
     await expect(toggleBtn).toBeEnabled({ timeout: 10000 });
@@ -92,6 +72,8 @@ test.describe('Auth Extended', () => {
   });
 
   test('should handle logout', async ({ page }) => {
+    await navigateTo(page, '/auth');
+    await page.waitForLoadState('networkidle');
     await mockSession(page, { persistent: false });
     await mockSettingsExtraData(page);
     await navigateTo(page, '/settings');

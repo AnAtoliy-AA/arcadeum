@@ -4,7 +4,7 @@ import { TamaguiProvider } from 'tamagui';
 import { GameVariantSelector } from './GameVariantSelector';
 import { gamesApi } from '../api';
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
-import config from '@/shared/config/tamagui.config';
+import { config } from '@/shared/config/tamagui.config';
 
 // Mock dependencies
 vi.mock('../api', () => ({

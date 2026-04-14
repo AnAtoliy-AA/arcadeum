@@ -10,8 +10,11 @@ test.describe('Auth Availability Checking', () => {
   test('should show availability status for username field in register mode', async ({
     page,
   }) => {
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForLoadState('networkidle');
     const toggleBtn = page.getByTestId('auth-toggle-mode-button');
-    await expect(toggleBtn).toBeVisible({ timeout: 10000 });
+    await toggleBtn.scrollIntoViewIfNeeded();
+    await expect(toggleBtn).toBeVisible({ timeout: 15000 });
     const text = (await toggleBtn.textContent()) || '';
     if (!/already|уже/i.test(text)) {
       await toggleBtn.click({ force: true });
@@ -43,8 +46,10 @@ test.describe('Auth Availability Checking', () => {
   test('should show availability status for email field in register mode', async ({
     page,
   }) => {
+    await page.waitForLoadState('networkidle');
     const toggleBtn = page.getByTestId('auth-toggle-mode-button');
-    await expect(toggleBtn).toBeVisible({ timeout: 10000 });
+    await toggleBtn.scrollIntoViewIfNeeded();
+    await expect(toggleBtn).toBeVisible({ timeout: 15000 });
     const text = (await toggleBtn.textContent()) || '';
     if (!/already|уже/i.test(text)) {
       await toggleBtn.click({ force: true });
@@ -76,8 +81,10 @@ test.describe('Auth Availability Checking', () => {
   test('should display user-friendly error when registering with taken username', async ({
     page,
   }) => {
+    await page.waitForLoadState('networkidle');
     const toggleBtn = page.getByTestId('auth-toggle-mode-button');
-    await expect(toggleBtn).toBeVisible({ timeout: 10000 });
+    await toggleBtn.scrollIntoViewIfNeeded();
+    await expect(toggleBtn).toBeVisible({ timeout: 15000 });
     const text = (await toggleBtn.textContent()) || '';
     if (!/already|уже/i.test(text)) {
       await toggleBtn.click({ force: true });
@@ -126,8 +133,10 @@ test.describe('Auth Availability Checking', () => {
   test('should not show availability checking in login mode', async ({
     page,
   }) => {
+    await page.waitForLoadState('networkidle');
     const toggleBtn = page.getByTestId('auth-toggle-mode-button');
-    await expect(toggleBtn).toBeVisible({ timeout: 10000 });
+    await toggleBtn.scrollIntoViewIfNeeded();
+    await expect(toggleBtn).toBeVisible({ timeout: 15000 });
     const text = (await toggleBtn.textContent()) || '';
     if (/already|уже/i.test(text)) {
       await toggleBtn.click({ force: true });

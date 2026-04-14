@@ -61,7 +61,7 @@ export const neonDarkTokens: ThemeTokens = {
     primary: {
       gradientStart: '#57c3ff',
       gradientEnd: '#8f9bff',
-      text: '#050316',
+      text: '#000000',
       shadow: '0 12px 30px rgba(87, 195, 255, 0.35)',
       hoverShadow: '0 16px 36px rgba(87, 195, 255, 0.45)',
     },
@@ -90,7 +90,7 @@ export const neonDarkTokens: ThemeTokens = {
 export const neonLightTokens: ThemeTokens = {
   name: 'neonLight',
   background: {
-    base: '#06011b',
+    base: '#f8fafc',
     radialStart: 'rgba(87, 195, 255, 0.28)',
     radialEnd: 'rgba(255, 106, 247, 0.32)',
   },
@@ -168,7 +168,7 @@ export const neonLightTokens: ThemeTokens = {
     border: 'rgba(102, 69, 182, 0.6)',
   },
   glass: {
-    background: 'rgba(18, 4, 46, 0.85)',
+    background: 'rgba(255, 255, 255, 0.8)',
     border: 'rgba(102, 69, 182, 0.3)',
   },
   copyNotice: '#54e4ff',

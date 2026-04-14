@@ -12,5 +12,11 @@ export const metadata = {
 export default async function PrivacyPage() {
   const messages = await getTranslations();
 
-  return <PrivacyClient messages={messages} PRIVACY_EMAIL={PRIVACY_EMAIL} />;
+  return (
+    <PrivacyClient
+      t={messages.legal?.privacy}
+      contactT={messages.legal?.contact}
+      PRIVACY_EMAIL={PRIVACY_EMAIL}
+    />
+  );
 }

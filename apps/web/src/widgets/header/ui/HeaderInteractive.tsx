@@ -4,7 +4,6 @@ import { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { routes } from '@/shared/config/routes';
-import { InstallPWAButton } from '@/features/pwa';
 import {
   Button,
   SupportIcon,
@@ -13,9 +12,25 @@ import {
   LinkButton,
   MobileLoginIndicator,
 } from '@arcadeum/ui';
-import { ProfileMenu } from './ProfileMenu';
-import { MobileMenu } from './MobileMenu';
-import { LanguageSwitcher } from './LanguageSwitcher';
+import dynamic from 'next/dynamic';
+
+const ProfileMenu = dynamic(
+  () => import('./ProfileMenu').then((m) => m.ProfileMenu),
+  { ssr: false },
+);
+const MobileMenu = dynamic(
+  () => import('./MobileMenu').then((m) => m.MobileMenu),
+  { ssr: false },
+);
+const LanguageSwitcher = dynamic(
+  () => import('./LanguageSwitcher').then((m) => m.LanguageSwitcher),
+  { ssr: false },
+);
+const InstallPWAButton = dynamic(
+  () => import('@/features/pwa').then((m) => m.InstallPWAButton),
+  { ssr: false },
+);
+
 import {
   Nav,
   Actions,

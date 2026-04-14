@@ -15,6 +15,7 @@ import {
 } from './types';
 
 export { DEFAULT_LOCALE, SUPPORTED_LOCALES };
+export { loadMessages } from './messages';
 
 export type {
   ActionMessages,
@@ -30,7 +31,8 @@ export type {
 };
 
 export function getMessages(locale: Locale): TranslationBundle {
-  return translations[locale] ?? {};
+  // @ts-expect-error - translations only contains 'en' statically now
+  return translations[locale] ?? translations[DEFAULT_LOCALE];
 }
 
 export function isLocale(value: unknown): value is Locale {

@@ -1,110 +1,109 @@
-import { authMessages } from './auth';
-import { pagesMessages } from './pages';
-import { chatMessages, chatListMessages } from './chat';
-import { commonMessages } from './common';
-import { gamesMessages } from './games';
-import { historyMessages } from './history';
-import { homeMessages } from './home';
-import { legalMessages } from './legal';
-import { navigationMessages } from './navigation';
-import { paymentsMessages } from './payments';
-import { pwaMessages } from './pwa';
-import { settingsMessages } from './settings';
-import { referralsMessages } from './referrals';
-import { statsMessages } from './stats';
-import { supportMessages } from './support';
+import type { Locale, TranslationBundle } from '../types';
 
-// Build translations with concrete types for proper type inference
-// This approach preserves the full structure for StringPaths type generation
+// Static imports for the default locale (English) to ensure it's always available immediately
+import { en as authEn } from './auth';
+import { en as pagesEn } from './pages';
+import { chatMessages, chatListMessages } from './chat';
+import { en as commonEn } from './common';
+import { en as gamesEn } from './games';
+import { en as historyEn } from './history';
+import { en as homeEn } from './home';
+import { en as legalEn } from './legal';
+import { en as navigationEn } from './navigation';
+import { en as paymentsEn } from './payments';
+import { en as pwaEn } from './pwa';
+import { en as settingsEn } from './settings';
+import { en as referralsEn } from './referrals';
+import { en as statsEn } from './stats';
+import { en as supportEn } from './support';
+
+/**
+ * Static translations bundle for the default locale.
+ * This is used for SSR and as a fallback.
+ */
 export const translations = {
   en: {
-    common: commonMessages.en,
-    pages: pagesMessages.en,
-    home: homeMessages.en,
-    settings: settingsMessages.en,
-    support: supportMessages.en,
-    auth: authMessages.en,
-    navigation: navigationMessages.en,
+    common: commonEn,
+    pages: pagesEn,
+    home: homeEn,
+    settings: settingsEn,
+    support: supportEn,
+    auth: authEn,
+    navigation: navigationEn,
     chat: chatMessages.en,
     chatList: chatListMessages.en,
-    games: gamesMessages.en,
-    history: historyMessages.en,
-    payments: paymentsMessages.en,
-    legal: legalMessages.en,
-    stats: statsMessages.en,
-    pwa: pwaMessages.en,
-    referrals: referralsMessages.en,
-  },
-  es: {
-    common: commonMessages.es,
-    pages: pagesMessages.es,
-    home: homeMessages.es,
-    settings: settingsMessages.es,
-    support: supportMessages.es,
-    auth: authMessages.es,
-    navigation: navigationMessages.es,
-    chat: chatMessages.es,
-    chatList: chatListMessages.es,
-    games: gamesMessages.es,
-    history: historyMessages.es,
-    payments: paymentsMessages.es,
-    legal: legalMessages.es,
-    stats: statsMessages.es,
-    pwa: pwaMessages.es,
-    referrals: referralsMessages.es,
-  },
-  fr: {
-    common: commonMessages.fr,
-    pages: pagesMessages.fr,
-    home: homeMessages.fr,
-    settings: settingsMessages.fr,
-    support: supportMessages.fr,
-    auth: authMessages.fr,
-    navigation: navigationMessages.fr,
-    chat: chatMessages.fr,
-    chatList: chatListMessages.fr,
-    games: gamesMessages.fr,
-    history: historyMessages.fr,
-    payments: paymentsMessages.fr,
-    legal: legalMessages.fr,
-    stats: statsMessages.fr,
-    pwa: pwaMessages.fr,
-    referrals: referralsMessages.fr,
-  },
-  ru: {
-    common: commonMessages.ru,
-    pages: pagesMessages.ru,
-    home: homeMessages.ru,
-    settings: settingsMessages.ru,
-    support: supportMessages.ru,
-    auth: authMessages.ru,
-    navigation: navigationMessages.ru,
-    chat: chatMessages.ru,
-    chatList: chatListMessages.ru,
-    games: gamesMessages.ru,
-    history: historyMessages.ru,
-    payments: paymentsMessages.ru,
-    legal: legalMessages.ru,
-    stats: statsMessages.ru,
-    pwa: pwaMessages.ru,
-    referrals: referralsMessages.ru,
-  },
-  by: {
-    common: commonMessages.by,
-    pages: pagesMessages.by,
-    home: homeMessages.by,
-    settings: settingsMessages.by,
-    support: supportMessages.by,
-    auth: authMessages.by,
-    navigation: navigationMessages.by,
-    chat: chatMessages.by,
-    chatList: chatListMessages.by,
-    games: gamesMessages.by,
-    history: historyMessages.by,
-    payments: paymentsMessages.by,
-    legal: legalMessages.by,
-    stats: statsMessages.by,
-    pwa: pwaMessages.by,
-    referrals: referralsMessages.by,
+    games: gamesEn,
+    history: historyEn,
+    payments: paymentsEn,
+    legal: legalEn,
+    stats: statsEn,
+    pwa: pwaEn,
+    referrals: referralsEn,
   },
 } as const;
+
+/**
+ * Dynamically loads translation bundles for a specific locale.
+ * This enables code-splitting, so users only download the messages they need.
+ */
+export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
+  // If English, return the statically bundled version
+  if (locale === 'en') {
+    return translations.en;
+  }
+
+  // Dynamically import all message modules in parallel
+  const [
+    auth,
+    pages,
+    chat,
+    common,
+    games,
+    history,
+    home,
+    legal,
+    navigation,
+    payments,
+    pwa,
+    settings,
+    referrals,
+    stats,
+    support,
+  ] = await Promise.all([
+    import('./auth'),
+    import('./pages'),
+    import('./chat'),
+    import('./common'),
+    import('./games'),
+    import('./history'),
+    import('./home'),
+    import('./legal'),
+    import('./navigation'),
+    import('./payments'),
+    import('./pwa'),
+    import('./settings'),
+    import('./referrals'),
+    import('./stats'),
+    import('./support'),
+  ]);
+
+  // Extract the specific locale from each module
+  return {
+    common: common[locale],
+    pages: pages[locale],
+    home: home[locale],
+    settings: settings[locale],
+    support: support[locale],
+    auth: auth[locale],
+    navigation: navigation[locale],
+    chat: chat.chatMessages[locale],
+    chatList: chat.chatListMessages[locale],
+    games: games[locale],
+    history: history[locale],
+    payments: payments[locale],
+    legal: legal[locale],
+    stats: stats[locale],
+    pwa: pwa[locale],
+    referrals: referrals[locale],
+  };
+}

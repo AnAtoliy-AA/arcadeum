@@ -97,8 +97,8 @@ export function AppThemeProvider({
   );
 
   const resolvedTheme: ThemeName = useMemo(() => {
-    // Exact match for the server theme during hydration pass
     if (!isHydrated) return initialTheme || 'dark';
+
     if (themePreference === 'system') return systemTheme;
     return themePreference;
   }, [systemTheme, themePreference, isHydrated, initialTheme]);
@@ -133,7 +133,37 @@ export function AppThemeProvider({
     });
     doc.classList.add(`t_${resolvedTheme}`);
 
-    // Update variables
+    // Sync all theme tokens from the active Tamagui theme to CSS variables
+    // This handles both base tokens (color, background) and our custom high-contrast tokens
+    const activeTamaguiTheme = tamaguiConfig.themes[
+      resolvedTheme
+    ] as unknown as Record<
+      string,
+      { val?: string; variable?: string } | string
+    >;
+    if (activeTamaguiTheme) {
+      Object.entries(activeTamaguiTheme).forEach(([key, value]) => {
+        if (value) {
+          // Safely extract the variable value string
+          // Tamagui variables are often objects with a .get(), .val, or .variable property
+          const stringValue =
+            typeof value === 'object' && value !== null
+              ? value.val || value.variable || String(value)
+              : String(value);
+
+          if (
+            stringValue &&
+            typeof stringValue === 'string' &&
+            !stringValue.includes('[object')
+          ) {
+            doc.style.setProperty(`--${key}`, stringValue);
+            doc.style.setProperty(`--color-${key}`, stringValue);
+          }
+        }
+      });
+    }
+
+    // Explicitly sync foundational tokens for standard CSS fallbacks
     doc.style.setProperty('--background', themeTokensValue.background.base);
     doc.style.setProperty('--foreground', themeTokensValue.text.primary);
     doc.style.setProperty('--muted-foreground', themeTokensValue.text.muted);
@@ -146,12 +176,22 @@ export function AppThemeProvider({
     document.cookie = `app-theme-preference=${themePreference}; ${cookieOptions}`;
   }, [resolvedTheme, themeTokensValue, themePreference]);
 
-  // Handle data-app-ready for E2E tests
   useEffect(() => {
     if (isHydrated && typeof document !== 'undefined') {
       document.documentElement.setAttribute('data-app-ready', 'true');
+
+      // Expose theme switcher to window for E2E audits to avoid full page reloads
+      if (process.env.NEXT_PUBLIC_E2E === 'true') {
+        (
+          window as Window & {
+            __SET_THEME__: (theme: string) => void;
+          }
+        ).__SET_THEME__ = (theme: string) => {
+          setThemePreference(theme as ThemePreference);
+        };
+      }
     }
-  }, [isHydrated]);
+  }, [isHydrated, setThemePreference]);
 
   const contextValue = useMemo<ThemeContextValue>(
     () => ({ themePreference, resolvedTheme, setThemePreference }),

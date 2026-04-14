@@ -62,7 +62,7 @@ export const SliderButton = styled(YStack, {
   },
 });
 
-import { GlassCard } from '@/shared/ui';
+import { GlassCard } from '@arcadeum/ui';
 export const MainGameCard = styled(GlassCard, {
   name: 'MainGameCard',
 });

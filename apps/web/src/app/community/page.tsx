@@ -7,10 +7,6 @@ import {
   Typography,
   Section,
 } from '@arcadeum/ui';
-import { setupTamagui } from '@/shared/config/tamagui.config';
-
-// Ensure Tamagui is initialized for build-time SSR of this route
-setupTamagui();
 
 export default async function CommunityPage() {
   const messages = await getTranslations();

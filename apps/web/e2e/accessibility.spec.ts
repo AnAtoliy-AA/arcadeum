@@ -12,7 +12,15 @@ test.describe('Accessibility', () => {
     expect(count).toBeGreaterThan(0);
   });
 
-  test('should support keyboard navigation (Tab)', async ({ page }) => {
+  test('should support keyboard navigation (Tab)', async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(
+      browserName === 'webkit',
+      'WebKit on macOS requires system-level keyboard navigation enabled',
+    );
+
     await navigateTo(page, '/');
 
     // LOCATE ALL INTERACTIVE ELEMENTS

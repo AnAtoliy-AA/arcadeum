@@ -21,7 +21,8 @@ export default async function TermsPage() {
 
   return (
     <TermsClient
-      messages={messages}
+      t={messages.legal?.terms}
+      contactT={messages.legal?.contact}
       LEGAL_NAME={LEGAL_NAME}
       ID_CODE={ID_CODE}
       SUPPORT_EMAIL={SUPPORT_EMAIL}

@@ -30,7 +30,12 @@ const LoadingSkeleton = () => (
   </PageLayout>
 );
 
-export const TermsClient = dynamic(() => import('./TermsContent'), {
-  ssr: false,
-  loading: LoadingSkeleton,
-});
+import type { TermsContentProps } from './TermsContent';
+
+export const TermsClient = dynamic<TermsContentProps>(
+  () => import('./TermsContent'),
+  {
+    ssr: false,
+    loading: LoadingSkeleton,
+  },
+);

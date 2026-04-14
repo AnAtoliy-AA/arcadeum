@@ -61,7 +61,7 @@ export const tealDarkTokens: ThemeTokens = {
     primary: {
       gradientStart: '#0d9488',
       gradientEnd: '#2dd4bf',
-      text: '#022c22',
+      text: '#000000',
       shadow: '0 12px 30px rgba(13,148,136,0.4)',
       hoverShadow: '0 16px 36px rgba(13,148,136,0.5)',
     },
@@ -155,7 +155,7 @@ export const tealLightTokens: ThemeTokens = {
       hoverBackground: 'rgba(13,148,136,0.14)',
       border: 'rgba(13,148,136,0.2)',
       hoverBorder: 'rgba(13,148,136,0.38)',
-      text: '#0d9488',
+      text: '#042f2e',
     },
   },
   outlines: { focus: 'rgba(13,148,136,0.7)' },

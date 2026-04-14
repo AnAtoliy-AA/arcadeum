@@ -60,7 +60,7 @@ export function HomeHero() {
 
   return (
     <HeroSection aria-labelledby="hero-heading" data-testid="hero-section">
-      <HeroBackground />
+      <HeroBackground style={{ willChange: 'transform, opacity' }} />
 
       <SectionContainer
         flexDirection="column"
@@ -108,6 +108,7 @@ export function HomeHero() {
               variant="ghost"
               size="md"
               gap="$2"
+              prefetch={false}
               style={{
                 animation: 'fadeInUp 0.6s ease-out 0.5s both',
               }}
@@ -143,6 +144,7 @@ export function HomeHero() {
                   scale={scale}
                   opacity={opacity}
                   hoverStyle={{ scale: 1.05, filter: 'blur(0px)', rotate }}
+                  style={{ willChange: 'transform, opacity' }}
                 >
                   <YStack
                     position="absolute"

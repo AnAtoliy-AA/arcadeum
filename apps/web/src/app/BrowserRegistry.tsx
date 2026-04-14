@@ -9,10 +9,17 @@ import { disconnectSockets } from '@/shared/lib/socket';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { ThemeName } from '@/shared/config/theme';
 import { Locale } from '@/shared/i18n';
-import tamaguiConfig, { setupTamagui } from '@/shared/config/tamagui.config';
+import {
+  config as tamaguiConfig,
+  setupTamagui,
+} from '@/shared/config/tamagui.config';
 
 // Prime config immediately for SSR and Client environments
-setupTamagui();
+try {
+  setupTamagui();
+} catch (e) {
+  console.error('Initial setupTamagui failed in BrowserRegistry:', e);
+}
 
 interface BrowserRegistryProps {
   children: ReactNode;
@@ -28,7 +35,12 @@ export function BrowserRegistry({
   useServerInsertedHTML(() => {
     try {
       if (!tamaguiConfig) {
-        throw new Error('tamaguiConfig is not loaded');
+        console.warn(
+          'tamaguiConfig is missing during useServerInsertedHTML evaluation',
+        );
+        // Try fallback initialization
+        setupTamagui();
+        if (!tamaguiConfig) return null;
       }
       if (typeof tamaguiConfig.getCSS !== 'function') {
         throw new Error('tamaguiConfig.getCSS is not a function');
@@ -66,10 +78,10 @@ export function BrowserRegistry({
   }, []);
 
   return (
-    <LanguageProvider initialLocale={initialLocale}>
-      <AppThemeProvider initialTheme={initialTheme}>
+    <AppThemeProvider initialTheme={initialTheme}>
+      <LanguageProvider initialLocale={initialLocale}>
         <PWAProvider>{children}</PWAProvider>
-      </AppThemeProvider>
-    </LanguageProvider>
+      </LanguageProvider>
+    </AppThemeProvider>
   );
 }

@@ -1,4 +1,11 @@
-import { styled, YStack, XStack, Text, Dialog } from 'tamagui';
+import {
+  styled,
+  YStack,
+  XStack,
+  Text,
+  Dialog,
+  TamaguiComponent,
+} from 'tamagui';
 import React, { ComponentProps } from 'react';
 import { Button, GameVariant } from '@arcadeum/ui';
 
@@ -20,7 +27,7 @@ export const Modal = styled(Dialog, {
   name: 'Modal',
 });
 
-export const StyledModalFrame = styled(Dialog.Content, {
+export const StyledModalFrame: TamaguiComponent = styled(Dialog.Content, {
   name: 'ModalFrame',
   maxWidth: 600,
   width: '100%',

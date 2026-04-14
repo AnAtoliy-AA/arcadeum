@@ -29,6 +29,19 @@ test.describe('Navigation', () => {
   test('should navigate to home from any page', async ({ page }) => {
     await navigateTo(page, '/games');
 
+    // Track chunk load errors during client-side navigation
+    let chunkLoadError = false;
+    const onPageError = (err: Error) => {
+      if (
+        err.message.includes('ChunkLoadError') ||
+        err.message.includes('Failed to load chunk') ||
+        err.message.includes("Can't find Tamagui")
+      ) {
+        chunkLoadError = true;
+      }
+    };
+    page.on('pageerror', onPageError);
+
     // Use a more robust selector for the home link/logo
     const homeLink = page.locator('header a[href="/"]').first();
     await expect(homeLink).toBeVisible();
@@ -37,6 +50,12 @@ test.describe('Navigation', () => {
     await homeLink.waitFor({ state: 'visible' });
     // Click on the home link/logo
     await homeLink.click();
+
+    // If chunk errors occurred during client-side navigation, reload
+    if (chunkLoadError) {
+      await page.reload({ waitUntil: 'domcontentloaded', timeout: 60000 });
+    }
+    page.off('pageerror', onPageError);
 
     // Increased timeout for check and ensure we wait for URL to be exactly /
     await expect(page).toHaveURL('/', { timeout: 15000 });

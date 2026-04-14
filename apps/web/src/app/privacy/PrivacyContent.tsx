@@ -13,20 +13,21 @@ import {
   Section,
   YStack,
 } from '@/shared/ui';
-import type { TranslationBundle } from '@/shared/i18n/types';
+import type { PrivacyMessages, ContactMessages } from '@/shared/i18n/types';
 
-interface PrivacyContentProps {
-  messages: TranslationBundle;
+export interface PrivacyContentProps {
+  t?: PrivacyMessages;
+  contactT?: ContactMessages;
   PRIVACY_EMAIL: string;
 }
 
 const APP_NAME = appConfig.appName;
 
 export default function PrivacyContent({
-  messages,
+  t,
+  contactT,
   PRIVACY_EMAIL,
 }: PrivacyContentProps) {
-  const t = messages.legal?.privacy;
   const s = t?.sections;
 
   return (
@@ -197,7 +198,7 @@ export default function PrivacyContent({
             {s?.userRights?.contact}{' '}
             <Link href={routes.contact}>
               <Typography color="$primary" textDecorationLine="underline">
-                {messages.legal?.contact?.title}
+                {contactT?.title}
               </Typography>
             </Link>
             .

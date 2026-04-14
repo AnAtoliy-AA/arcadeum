@@ -43,32 +43,32 @@ const themeBase = {
   background: '#151718',
   color: '#ecefee',
   borderColor: '#32353d',
-  primary: '#57c3ff',
-  secondary: '#e11d48',
-  danger: '#ef4444',
-  success: '#10b981',
-  warning: '#f59e0b',
-  info: '#3b82f6',
-  accent: '#81f1ff',
+  primary: '#0369a1',
+  primaryText: '#ffffff',
+  secondary: '#4338ca',
+  danger: '#b91c1c',
+  success: '#047857',
+  warning: '#92400e',
+  info: '#2563eb',
+  accent: '#38bdf8',
   backgroundHover: 'rgba(255, 255, 255, 0.05)',
   backgroundPress: 'rgba(255, 255, 255, 0.12)',
   backgroundTransparent: 'transparent',
-  glassBg: 'rgba(15, 17, 18, 0.72)',
-  glassBgHover: 'rgba(255, 255, 255, 0.1)',
-  glassBorder: 'rgba(255, 255, 255, 0.08)',
+  glassBg: 'rgba(15, 17, 18, 0.8)',
+  glassBgHover: 'rgba(255, 255, 255, 0.12)',
+  glassBorder: 'rgba(255, 255, 255, 0.1)',
   glassBorderHover: 'rgba(255, 255, 255, 0.16)',
-  primaryGradientStart: '#38bdf8',
-  primaryGradientEnd: '#06b6d4',
-  secondaryGradientStart: '#fb7185',
-  secondaryGradientEnd: '#e11d48',
+  primaryGradientStart: '#0284c7',
+  primaryGradientEnd: '#0369a1',
+  secondaryGradientStart: '#4f46e5',
+  secondaryGradientEnd: '#4338ca',
   dangerGradientStart: '#f87171',
   dangerGradientEnd: '#dc2626',
-  primaryText: '#ffffff',
   secondaryText: '#ffffff',
   dangerText: '#ffffff',
   successText: '#ffffff',
-  warningText: '#1a1a1a',
-  infoText: '#ffffff',
+  warningText: '#0f172a',
+  infoText: '#0f172a',
 };
 
 const lightTheme = {
@@ -76,25 +76,35 @@ const lightTheme = {
   background: '#f8fafc',
   color: '#0f172a',
   borderColor: '#cbd5e1',
+  primary: '#0369a1',           // Darker blue for light mode primary button
+  primaryGradientStart: '#0ea5e9',
+  primaryGradientEnd: '#0369a1',
+  primaryText: '#ffffff',       // White text for dark blue primary button
+  secondaryText: '#0f172a',     // Dark text for light mode secondary/ghost
+  infoText: '#0f172a',          // Darker text for info
+  glassBg: 'rgba(255, 255, 255, 0.8)',
+  glassBorder: 'rgba(0, 0, 0, 0.1)',
 };
 
 const neonDarkTheme = {
   ...themeBase,
   background: '#06011b',
-  primary: '#81f1ff',
-  accent: '#57c3ff',
+  primary: '#0369a1',
+  accent: '#38bdf8',
   glassBg: 'rgba(6, 1, 27, 0.72)',
 };
 
 const neonLightTheme = {
-  ...neonDarkTheme,
+  ...lightTheme,
+  primary: '#0891b2',
+  accent: '#06b6d4',
 };
 
 const violetDarkTheme = {
   ...themeBase,
   background: '#080510',
-  primary: '#c4b5fd',
-  accent: '#6d28d9',
+  primary: '#6d28d9',
+  accent: '#9333ea',
   glassBg: 'rgba(13, 10, 24, 0.72)',
 };
 
@@ -104,15 +114,17 @@ const violetLightTheme = {
   color: '#1e1b4b',
   primary: '#7c3aed',
   accent: '#6d28d9',
-  glassBg: 'rgba(255, 255, 255, 0.72)',
+  glassBg: 'rgba(255, 255, 255, 0.8)',
   borderColor: 'rgba(167, 139, 250, 0.3)',
+  primaryText: '#ffffff',   // White text for vibrant primary button
+  secondaryText: '#0f172a', // Dark text for light mode secondary/ghost
 };
 
 const tealDarkTheme = {
   ...themeBase,
   background: '#040f0f',
-  primary: '#2dd4bf',
-  accent: '#0d9488',
+  primary: '#0f766e',
+  accent: '#2dd4bf',
   glassBg: 'rgba(4, 15, 15, 0.72)',
 };
 
@@ -122,8 +134,10 @@ const tealLightTheme = {
   color: '#042f2e',
   primary: '#0d9488',
   accent: '#0891b2',
-  glassBg: 'rgba(255, 255, 255, 0.72)',
+  glassBg: 'rgba(255, 255, 255, 0.8)',
   borderColor: 'rgba(45, 212, 191, 0.15)',
+  primaryText: '#ffffff',   // White text for vibrant primary button
+  secondaryText: '#0f172a', // Dark text for light mode secondary/ghost
 };
 
 export const config = createTamagui({
@@ -171,11 +185,15 @@ declare global {
 }
 
 export const setupTamagui = () => {
-  if (typeof globalThis !== 'undefined' && !globalThis.TamaguiConfig) {
-    globalThis.TamaguiConfig = config;
+  if (typeof globalThis !== 'undefined') {
+    // Avoid re-initialization if already set
+    if (!globalThis.TamaguiConfig) {
+      globalThis.TamaguiConfig = config;
+    }
   }
 };
 
+// Initialize immediately to ensure config is available to any early imports
 setupTamagui();
 
 export type AppConfig = typeof config;

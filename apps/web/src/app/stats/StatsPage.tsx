@@ -29,7 +29,7 @@ import type { PlayerStats, LeaderboardResponse } from '@/features/history/api';
 
 type TabType = 'my-stats' | 'leaderboard';
 
-interface StatsPageProps {
+export interface StatsPageProps {
   initialStats: PlayerStats | null;
   initialLeaderboard: LeaderboardResponse | null;
 }

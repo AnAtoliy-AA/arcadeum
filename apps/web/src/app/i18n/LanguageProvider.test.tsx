@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { LanguageProvider } from './LanguageProvider';
 import { useLanguage } from '@/shared/i18n/context';
 import { useLanguageStore, LanguageState } from './store/languageStore';
@@ -18,6 +18,11 @@ vi.mock('@/shared/i18n', async () => {
     ...actual,
     getMessages: vi.fn(
       (locale: Locale): TranslationBundle => ({
+        common: { labels: { email: `messages for ${locale}` } },
+      }),
+    ),
+    loadMessages: vi.fn(
+      async (locale: Locale): Promise<TranslationBundle> => ({
         common: { labels: { email: `messages for ${locale}` } },
       }),
     ),
@@ -70,7 +75,7 @@ describe('LanguageProvider', () => {
     );
   });
 
-  it('updates document lang attribute when locale changes', () => {
+  it('updates document lang attribute when locale changes', async () => {
     const { rerender } = render(
       <LanguageProvider>
         <div />
@@ -95,17 +100,29 @@ describe('LanguageProvider', () => {
       </LanguageProvider>,
     );
 
-    expect(document.documentElement.getAttribute('lang')).toBe('ru');
+    // Wait for the async effect that updates loadedMessages,
+    // even though we are only checking the 'lang' attribute.
+    await waitFor(() => {
+      expect(document.documentElement.getAttribute('lang')).toBe('ru');
+    });
   });
 
-  it('calls setLocale from store', () => {
+  it('calls setLocale from store', async () => {
     render(
       <LanguageProvider>
         <Consumer />
       </LanguageProvider>,
     );
 
-    screen.getByText('Change Locale').click();
+    // Wait for initial load
+    await waitFor(() => {
+      expect(screen.getByTestId('ready')).toHaveTextContent('true');
+    });
+
+    act(() => {
+      screen.getByText('Change Locale').click();
+    });
+
     expect(mockSetLocale).toHaveBeenCalledWith('en');
   });
 

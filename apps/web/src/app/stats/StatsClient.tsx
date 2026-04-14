@@ -4,7 +4,9 @@ import dynamic from 'next/dynamic';
 
 import { PageLoading } from '@/shared/ui';
 
-export const StatsClient = dynamic(
+import type { StatsPageProps } from './StatsPage';
+
+export const StatsClient = dynamic<StatsPageProps>(
   () => import('./StatsPage').then((mod) => mod.StatsPage),
   {
     ssr: false,

@@ -27,7 +27,9 @@ const LoadingSkeleton = () => (
   </PageLayout>
 );
 
-export const ContactClient = dynamic(
+import type { ContactView } from './ContactView';
+
+export const ContactClient = dynamic<React.ComponentProps<typeof ContactView>>(
   () => import('./ContactView').then((mod) => mod.ContactView),
   {
     ssr: false,

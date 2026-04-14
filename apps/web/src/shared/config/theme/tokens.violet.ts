@@ -146,7 +146,7 @@ export const violetLightTokens: ThemeTokens = {
     primary: {
       gradientStart: '#6d28d9',
       gradientEnd: '#8b5cf6',
-      text: '#fff',
+      text: '#ffffff',
       shadow: '0 12px 30px rgba(109,40,217,0.3)',
       hoverShadow: '0 16px 36px rgba(109,40,217,0.4)',
     },
@@ -155,7 +155,7 @@ export const violetLightTokens: ThemeTokens = {
       hoverBackground: 'rgba(109,40,217,0.14)',
       border: 'rgba(109,40,217,0.2)',
       hoverBorder: 'rgba(109,40,217,0.38)',
-      text: '#6d28d9',
+      text: '#1e1b4b',
     },
   },
   outlines: { focus: 'rgba(109,40,217,0.7)' },

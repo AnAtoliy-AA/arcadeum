@@ -30,7 +30,12 @@ const LoadingSkeleton = () => (
   </PageLayout>
 );
 
-export const PrivacyClient = dynamic(() => import('./PrivacyContent'), {
-  ssr: false,
-  loading: LoadingSkeleton,
-});
+import type { PrivacyContentProps } from './PrivacyContent';
+
+export const PrivacyClient = dynamic<PrivacyContentProps>(
+  () => import('./PrivacyContent'),
+  {
+    ssr: false,
+    loading: LoadingSkeleton,
+  },
+);

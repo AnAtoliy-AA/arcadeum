@@ -120,6 +120,32 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: '/robots.txt',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'text/plain',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
+          },
+        ],
+      },
+      {
+        source: '/sitemap.xml',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/xml',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
+          },
+        ],
+      },
+      {
         source: '/sw.js',
         headers: [
           {
@@ -154,27 +180,41 @@ const nextConfig: NextConfig = {
       })),
     ];
   },
+  env: {
+    NEXT_PUBLIC_APP_VERSION: packageJson.version,
+  },
   reactCompiler: false,
   compiler: {
     styledComponents: {
       ssr: true,
-      displayName: true,
     },
   },
-  transpilePackages: ['@arcadeum/ui'],
-  typedRoutes: false,
+  transpilePackages: [
+    'tamagui',
+    '@tamagui/core',
+    '@tamagui/web',
+    'react-native-web',
+    '@arcadeum/ui',
+  ],
+  experimental: {
+    optimizePackageImports: [
+      'tamagui',
+      '@tamagui/core',
+      '@tamagui/web',
+      '@tamagui/lucide-icons',
+      'lucide-react',
+      '@arcadeum/ui',
+    ],
+  },
   turbopack: {
-    root: path.resolve(process.cwd(), '../..'),
+    root: path.resolve(__dirname, '../../'),
     resolveAlias: {
-      '@tamagui/web': 'apps/web/node_modules/@tamagui/web',
-      '@tamagui/core': 'apps/web/node_modules/@tamagui/core',
-      tamagui: 'apps/web/node_modules/tamagui',
+      '@tamagui/web': './node_modules/@tamagui/web',
+      '@tamagui/core': './node_modules/@tamagui/core',
+      tamagui: './node_modules/tamagui',
     },
   },
-  env: {
-    NEXT_PUBLIC_APP_VERSION: packageJson.version,
-  },
-  productionBrowserSourceMaps: true,
+  productionBrowserSourceMaps: false,
 };
 
 const tamaguiPlugin = withTamagui({

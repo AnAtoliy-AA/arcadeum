@@ -1,25 +1,30 @@
-import type { Locale } from '../../types';
+export const en = {
+  texas_holdem_v1: { name: "Texas Hold'em Poker" },
+};
 
-const texasHoldemMessagesDefinition = {
-  en: {
-    texas_holdem_v1: { name: "Texas Hold'em Poker" },
-  },
-  es: {
-    texas_holdem_v1: { name: "Texas Hold'em Poker" },
-  },
-  fr: {
-    texas_holdem_v1: { name: "Texas Hold'em Poker" },
-  },
-  ru: {
-    texas_holdem_v1: { name: 'Техасский Холдем' },
-  },
-  by: {
-    texas_holdem_v1: { name: 'Тэхаскі Холдэн' },
-  },
-} satisfies Record<Locale, Record<string, unknown>>;
+export const es = {
+  texas_holdem_v1: { name: "Texas Hold'em Poker" },
+};
 
-export const texasHoldemMessages = texasHoldemMessagesDefinition;
+export const fr = {
+  texas_holdem_v1: { name: "Texas Hold'em Poker" },
+};
+
+export const ru = {
+  texas_holdem_v1: { name: 'Техасский Холдем' },
+};
+
+export const by = {
+  texas_holdem_v1: { name: 'Тэхаскі Холдэн' },
+};
+
+export const texasHoldemMessages = {
+  en,
+  es,
+  fr,
+  ru,
+  by,
+} as const;
 
 /** Derived type from the texasHoldemMessages object - English locale structure */
-export type TexasHoldemGamesMessages =
-  (typeof texasHoldemMessagesDefinition)['en'];
+export type TexasHoldemGamesMessages = typeof en;

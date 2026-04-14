@@ -152,12 +152,18 @@ export function useAuthLabels(isRegisterMode: boolean): AuthLabels {
       defaultAuthLocalErrors.invalidEmail ??
       '',
     submitLabel: isRegisterMode
-      ? (commonActions.register ?? defaultCommonActions.register ?? '')
-      : (commonActions.login ?? defaultCommonActions.login ?? ''),
+      ? (commonActions.register ??
+        defaultCommonActions.register ??
+        'Create account')
+      : (commonActions.login ?? defaultCommonActions.login ?? 'Sign in'),
     toggleLabel: isRegisterMode
-      ? (commonPrompts.haveAccount ?? defaultCommonPrompts.haveAccount ?? '')
-      : (commonPrompts.needAccount ?? defaultCommonPrompts.needAccount ?? ''),
-    logoutLabel,
+      ? (commonPrompts.haveAccount ??
+        defaultCommonPrompts.haveAccount ??
+        'Already have an account?')
+      : (commonPrompts.needAccount ??
+        defaultCommonPrompts.needAccount ??
+        'Need an account?'),
+    logoutLabel: logoutLabel || 'Sign out',
 
     // OAuth
     oauthTitle: authCopy.oauth?.title ?? defaultAuthOauth.title ?? '',

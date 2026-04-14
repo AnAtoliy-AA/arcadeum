@@ -4,6 +4,7 @@ export const sharedButtonVariants = {
       backgroundColor: '$primary',
       background: 'linear-gradient(160deg, $primaryGradientStart 0%, $primaryGradientEnd 100%)',
       color: '$primaryText',
+      fontWeight: '800',
       borderColor: '$glassBorder',
       borderTopColor: 'rgba(255,255,255,0.18)',
       borderWidth: 1,
@@ -14,6 +15,7 @@ export const sharedButtonVariants = {
       hoverStyle: {
         y: -5,
         opacity: 1,
+        backgroundColor: '$accent',
         background: 'linear-gradient(160deg, $accent 0%, $primaryGradientStart 100%)',
         shadowColor: '$primary',
         shadowOffset: { width: 0, height: 10 },
@@ -22,6 +24,7 @@ export const sharedButtonVariants = {
       },
       pressStyle: {
         y: 3,
+        backgroundColor: '$primary',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.4,
         shadowRadius: 2,
@@ -41,6 +44,7 @@ export const sharedButtonVariants = {
       hoverStyle: {
         y: -5,
         opacity: 1,
+        backgroundColor: '$accent',
         background: 'linear-gradient(160deg, $accent 0%, $secondaryGradientStart 100%)',
         shadowColor: '$secondary',
         shadowOffset: { width: 0, height: 10 },
@@ -49,6 +53,7 @@ export const sharedButtonVariants = {
       },
       pressStyle: {
         y: 3,
+        backgroundColor: '$secondary',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.35,
         shadowRadius: 2,

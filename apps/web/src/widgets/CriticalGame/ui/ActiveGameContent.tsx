@@ -3,7 +3,6 @@
 import { GameBoard, TableArea } from './styles/layout';
 import { GameTableSection } from './GameTableSection';
 import { PlayerHand } from './PlayerHand';
-import { ParticleOverlay } from './ParticleOverlay';
 import type {
   CriticalSnapshot,
   GameRoomSummary,
@@ -74,22 +73,6 @@ export function ActiveGameContent({
 }: ActiveGameContentProps) {
   return (
     <GameBoard>
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          isolation: 'isolate',
-          pointerEvents: 'none',
-          zIndex: 0,
-          overflow: 'hidden',
-        }}
-      >
-        <ParticleOverlay variant={cardVariant} />
-      </div>
-
       <TableArea>
         <GameTableSection
           players={snapshot.players}

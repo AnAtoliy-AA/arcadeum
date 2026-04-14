@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ArcadeumLogger } from './common/logger/arcadeum-logger.service';
@@ -25,7 +26,9 @@ async function bootstrap() {
     ],
   });
 
-  await app.listen(process.env.BE_PORT ?? 4000, '0.0.0.0');
+  const port = process.env.BE_PORT ?? 4000;
+  await app.listen(port, '0.0.0.0');
+  console.log(`[Backend] Listening on port ${port}`);
 }
 
 void bootstrap();

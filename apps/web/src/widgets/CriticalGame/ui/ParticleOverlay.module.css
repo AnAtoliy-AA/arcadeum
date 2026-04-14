@@ -5,104 +5,175 @@
   pointer-events: none;
 }
 
-/* --- Cyberpunk: scanline flicker --- */
-
-@keyframes scanlineFlicker {
-  0%, 100% { opacity: 0.04; }
-  50%       { opacity: 0.12; }
-}
+/* --- Global Animations handled in globals.css + React style props --- */
 
 .scanline {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: repeating-linear-gradient(
     0deg,
     transparent,
     transparent 2px,
-    rgba(6, 182, 212, 0.06) 2px,
-    rgba(6, 182, 212, 0.06) 4px
+    rgba(236, 72, 153, 0.12) 2px,
+    rgba(236, 72, 153, 0.12) 4px
   );
-  animation: scanlineFlicker 2s ease-in-out infinite;
+  z-index: 10;
+}
+
+.digitalBit {
+  position: absolute;
+  bottom: -20px; /* Start from off-screen bottom */
+  background: rgba(236, 72, 153, 0.6);
+  box-shadow: 0 0 8px rgba(236, 72, 153, 0.4);
+}
+
+.cyberpunkGrid {
+  position: absolute;
+  top: -100%;
+  left: -20%;
+  width: 140%;
+  height: 300%;
+  background: linear-gradient(
+      transparent 0%,
+      rgba(192, 38, 211, 0.4) 1px,
+      transparent 2px
+    ),
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(6, 182, 212, 0.4) 1px,
+      transparent 2px
+    );
+  background-size: 40px 40px;
+  background-position: 0 0;
+  transform: perspective(1000px) rotateX(70deg); /* Static 3D perspective */
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(circle at center, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(
+    circle at center,
+    black 30%,
+    transparent 75%
+  );
 }
 
 /* --- Underwater: bubbles --- */
-@keyframes bubbleRise {
-  0%   { transform: translateY(0); opacity: 0; }
-  10%  { opacity: 0.7; }
-  90%  { opacity: 0.7; }
-  100% { transform: translateY(-100vh); opacity: 0; }
-}
-
 .bubble {
   position: absolute;
+  bottom: -40px; /* Start from off-screen bottom */
   border-radius: 50%;
-  background: rgba(34, 211, 238, 0.3);
-  animation: bubbleRise 6s ease-in infinite;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 0.45),
+    rgba(34, 211, 238, 0.15)
+  );
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+.sunbeam {
+  position: absolute;
+  top: -50%;
+  left: 20%;
+  width: 40px;
+  height: 200%;
+  background: linear-gradient(to bottom, rgba(34, 211, 238, 0.2), transparent);
+  filter: blur(40px);
+  transform: rotate(-45deg);
+  pointer-events: none;
 }
 
 /* --- Crime: rain streaks --- */
-@keyframes rainFall {
-  0%   { transform: translateY(-100%); opacity: 0; }
-  10%  { opacity: 0.6; }
-  90%  { opacity: 0.6; }
-  100% { transform: translateY(100vh); opacity: 0; }
-}
-
 .rainStreak {
   position: absolute;
+  top: -60px; /* Start from off-screen top */
   width: 1px;
-  background: rgba(220, 38, 38, 0.5);
-  animation: rainFall 1.2s linear infinite;
+  background: linear-gradient(to bottom, transparent, rgba(225, 29, 72, 0.5));
+}
+
+.searchlight {
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  width: 300px;
+  height: 150%;
+  background: radial-gradient(
+    ellipse at top,
+    rgba(225, 29, 72, 0.05),
+    transparent 70%
+  );
+  filter: blur(80px);
+  transform-origin: top center;
 }
 
 /* --- Horror: vignette flicker --- */
-@keyframes vignetteFlicker {
-  0%   { opacity: 0.4; }
-  15%  { opacity: 0.7; }
-  30%  { opacity: 0.3; }
-  55%  { opacity: 0.6; }
-  70%  { opacity: 0.2; }
-  85%  { opacity: 0.5; }
-  100% { opacity: 0.4; }
-}
-
 .vignette {
   position: absolute;
   inset: 0;
   background: radial-gradient(
     ellipse at center,
-    transparent 40%,
-    rgba(0, 0, 0, 0.7) 100%
+    transparent 20%,
+    rgba(0, 0, 0, 0.8) 100%
   );
-  animation: vignetteFlicker 4s ease-in-out infinite;
+  z-index: 10;
+}
+
+.mist {
+  position: absolute;
+  bottom: -20%;
+  left: -20%;
+  width: 140%;
+  height: 60%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(16, 185, 129, 0.1),
+    transparent 70%
+  );
+  filter: blur(100px);
 }
 
 /* --- Adventure: dust motes --- */
-@keyframes dustFloat {
-  0%   { transform: translateY(0) translateX(0); opacity: 0; }
-  20%  { opacity: 0.8; }
-  80%  { opacity: 0.8; }
-  100% { transform: translateY(-60px) translateX(20px); opacity: 0; }
-}
-
 .dustMote {
   position: absolute;
+  bottom: -20px; /* Start from off-screen bottom */
   border-radius: 50%;
-  background: rgba(245, 158, 11, 0.6);
-  animation: dustFloat 4s ease-in-out infinite;
+  background: radial-gradient(
+    circle at center,
+    rgba(251, 191, 36, 0.8),
+    transparent
+  );
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+}
+
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #fbbf24;
 }
 
 /* --- High-altitude-hike: drifting snow --- */
-@keyframes snowDrift {
-  0%   { transform: translateY(-10px) translateX(0); opacity: 0; }
-  10%  { opacity: 0.8; }
-  90%  { opacity: 0.8; }
-  100% { transform: translateY(100vh) translateX(30px); opacity: 0; }
-}
-
 .snowFlake {
   position: absolute;
+  top: -20px; /* Start from off-screen top */
   border-radius: 50%;
-  background: rgba(248, 250, 252, 0.8);
-  animation: snowDrift 5s linear infinite;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.frostFrame {
+  position: absolute;
+  inset: 0;
+  border: 40px solid transparent;
+  border-image: radial-gradient(
+      circle,
+      rgba(56, 189, 248, 0.1) 0%,
+      transparent 70%
+    )
+    40;
+  pointer-events: none;
 }

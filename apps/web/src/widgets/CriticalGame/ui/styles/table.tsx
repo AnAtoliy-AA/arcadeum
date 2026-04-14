@@ -98,16 +98,16 @@ export const PlayerPositionWrapper = styled(YStack, {
 
 export const CardSlot = styled(YStack, {
   name: 'CardSlot',
-  width: 75,
-  height: 112,
+  width: 130,
+  height: 195,
   position: 'relative',
   alignItems: 'center',
   justifyContent: 'center',
   zIndex: 2,
 
   $sm: {
-    width: 55,
-    height: 82,
+    width: 90,
+    height: 135,
   },
 
   variants: {
@@ -122,8 +122,8 @@ export const CenterTable = styled(XStack, {
   gap: '$6',
   padding: '$4',
   borderRadius: 1000, // Circular
-  width: 240,
-  height: 240,
+  width: 340,
+  height: 340,
   position: 'relative',
   zIndex: 1,
 
@@ -133,17 +133,18 @@ export const CenterTable = styled(XStack, {
       return {
         backgroundColor: config.getBackground(),
         borderColor: config.getBorder(),
-        borderWidth: 1,
+        borderWidth: 2,
         shadowColor: config.getGlow(),
-        shadowRadius: 20,
-        shadowOpacity: 0.3,
+        shadowRadius: 40,
+        shadowOpacity: 0.5,
+        elevation: 10,
       };
     },
   } as const,
 
   $sm: {
-    width: 130,
-    height: 130,
+    width: 220,
+    height: 220,
     padding: '$2',
     marginTop: -10,
   },

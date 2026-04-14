@@ -29,7 +29,7 @@ export const GameContainer = styled(BaseGameContainer, {
     paddingBottom: 0,
     borderRadius: 16,
     overflowX: 'hidden',
-    overflowY: 'auto',
+    overflowY: 'hidden',
   },
 
   variants: {

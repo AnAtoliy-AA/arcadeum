@@ -31,15 +31,15 @@ export const LastPlayedCard = styled(Card, {
   left: 0,
   top: 0,
   zIndex: 10,
-  elevation: 10,
+  elevation: 12,
   cursor: 'default',
+  borderWidth: 2,
 
   variants: {
     $isAnimating: {
       true: {
         rotateY: '180deg',
         scale: 1.1,
-        // Animation handled via animation prop
       },
       false: {
         rotateY: '0deg',
@@ -48,8 +48,8 @@ export const LastPlayedCard = styled(Card, {
     $variant: (val: string) => {
       const config = getVariantStyles(val).cards;
       return {
-        boxShadow: config.glowEffect,
-        borderColor: config.borderEffect,
+        boxShadow: `0 10px 30px rgba(0,0,0,0.5), ${config.glowEffect}`,
+        borderColor: config.borderEffect.split(' ')[2] || config.borderEffect,
         ...config.getCardStyles?.(),
       };
     },
@@ -57,6 +57,7 @@ export const LastPlayedCard = styled(Card, {
 
   hoverStyle: {
     scale: 1.05,
+    shadowOpacity: 0.8,
   },
 });
 
@@ -139,22 +140,30 @@ export const CardEmoji = styled(Text, {
 
 export const DeckCard = styled(Card, {
   name: 'DeckCard',
-  borderStyle: 'dashed',
-  opacity: 0.8,
-  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  width: '100%',
+  height: '100%',
+  borderStyle: 'solid',
+  borderWidth: 2,
+  opacity: 1,
+  backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  shadowColor: 'rgba(0,0,0,0.4)',
+  shadowRadius: 10,
 
   variants: {
     $variant: (val: string) => {
       const config = getVariantStyles(val).cards;
       return {
         borderColor: config.deckBorderColor,
+        boxShadow: `3px 3px 0 ${config.deckBorderColor}40, 6px 6px 0 ${config.deckBorderColor}20`,
         ...config.getDeckStyles?.(),
       };
     },
   } as const,
 
   hoverStyle: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    scale: 1.02,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: '$primary',
   },
 });
 

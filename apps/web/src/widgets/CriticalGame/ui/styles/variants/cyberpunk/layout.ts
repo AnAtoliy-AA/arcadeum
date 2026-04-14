@@ -12,18 +12,17 @@ export const layoutStyles = {
       height: '200%',
       background: `linear-gradient(
           transparent 0%,
-          rgba(192, 38, 211, 0.2) 2%,
-          transparent 3%
+          rgba(192, 38, 211, 0.4) 1px,
+          transparent 2px
         ),
         linear-gradient(
           90deg,
           transparent 0%,
-          rgba(6, 182, 212, 0.2) 2%,
-          transparent 3%
+          rgba(6, 182, 212, 0.4) 1px,
+          transparent 2px
         )`,
-      backgroundSize: '100px 100px',
-      transform: [{ rotateX: '60deg' }],
-      animation: 'gridMove 20s linear infinite',
+      backgroundSize: '80px 80px',
+      transform: [{ rotateX: '70deg' }],
       zIndex: 0,
       pointerEvents: 'none',
     },
@@ -36,10 +35,11 @@ export const layoutStyles = {
       bottom: 0,
       right: 0,
       background:
-        'linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%)',
+        'linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(236, 72, 153, 0.05) 50%)',
       backgroundSize: '100% 4px',
       zIndex: 2,
       pointerEvents: 'none',
+      opacity: 0.5,
     },
   }),
   getRoomBackground: (): string => `

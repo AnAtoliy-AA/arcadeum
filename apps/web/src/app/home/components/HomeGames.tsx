@@ -221,6 +221,10 @@ export function HomeGames() {
                       background={game.gradient}
                       backgroundClip="text"
                       color="transparent"
+                      style={{
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                      }}
                     >
                       {t(game.nameKey)}
                     </GameTitle>

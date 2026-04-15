@@ -124,7 +124,7 @@ export function HomeHero() {
                     inset={0}
                     zIndex={0}
                     pointerEvents="none"
-                    opacity={0.4}
+                    opacity={0.6}
                     backgroundColor={card.colorToken}
                   />
                   <XStack
@@ -155,7 +155,7 @@ export function HomeHero() {
                   >
                     <Text
                       color="white"
-                      opacity={0.5}
+                      opacity={0.7}
                       fontWeight="bold"
                       letterSpacing={2}
                     >

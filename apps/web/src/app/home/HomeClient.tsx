@@ -5,5 +5,5 @@ import { PageLoading } from '@/shared/ui';
 
 export const HomeClient = dynamic(() => import('@/app/home/HomePage'), {
   ssr: false,
-  loading: () => <PageLoading layout="grid" />,
+  loading: () => <PageLoading layout="home" />,
 });

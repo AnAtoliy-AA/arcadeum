@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.14] - 2026-04-15
+
+### Added
+- images for additional critical game variants (ARC-457)
+
+
 ## [1.9.13] - 2026-04-15
 
 ### Fixed

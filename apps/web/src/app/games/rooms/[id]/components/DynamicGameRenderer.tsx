@@ -1,12 +1,12 @@
 import React from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { gameFactory, BaseGameProps } from '@/features/games';
+import { gameFactory, type BaseGameWidgetProps } from '@/features/games';
 import { type GameType } from '@/features/games/hooks';
 import { ErrorContainer } from './styles';
 
 interface DynamicGameRendererProps {
   gameType: GameType;
-  props: BaseGameProps;
+  props: BaseGameWidgetProps;
 }
 
 export const DynamicGameRenderer: React.FC<DynamicGameRendererProps> = ({

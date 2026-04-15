@@ -27,7 +27,20 @@ test.describe('Navigation', () => {
   });
 
   test('should navigate to home from any page', async ({ page }) => {
-    await page.goto('/games', { waitUntil: 'domcontentloaded' });
+    await navigateTo(page, '/games');
+
+    // Track chunk load errors during client-side navigation
+    let chunkLoadError = false;
+    const onPageError = (err: Error) => {
+      if (
+        err.message.includes('ChunkLoadError') ||
+        err.message.includes('Failed to load chunk') ||
+        err.message.includes("Can't find Tamagui")
+      ) {
+        chunkLoadError = true;
+      }
+    };
+    page.on('pageerror', onPageError);
 
     // Use a more robust selector for the home link/logo
     const homeLink = page.locator('header a[href="/"]').first();
@@ -35,18 +48,34 @@ test.describe('Navigation', () => {
 
     // Ensure the link is stable and clickable
     await homeLink.waitFor({ state: 'visible' });
+    // Click on the home link/logo
     await homeLink.click();
 
-    // Increased timeout for navigation and ensure we wait for URL to be exactly /
-    await page.waitForLoadState('networkidle');
+    // If chunk errors occurred during client-side navigation, reload
+    if (chunkLoadError) {
+      await page.reload({ waitUntil: 'domcontentloaded', timeout: 60000 });
+    }
+    page.off('pageerror', onPageError);
+
+    // Increased timeout for check and ensure we wait for URL to be exactly /
     await expect(page).toHaveURL('/', { timeout: 15000 });
+
+    // Wait for hydration on the home page
+    await expect(page.locator('html')).toHaveAttribute(
+      'data-hydrated',
+      'true',
+      { timeout: 10000 },
+    );
   });
 
   test('should navigate to games page', async ({ page }) => {
     await ensureNavigationVisible(page);
-    const gamesLink = page.getByRole('link', { name: /games|игры/i }).first();
+    const gamesLink = getIsMobile(page)
+      ? page.getByTestId('mobile-nav-games')
+      : page.getByTestId('nav-games');
+    await expect(gamesLink).toBeVisible();
     await gamesLink.click();
-    await expect(page).toHaveURL(/\/games/);
+    await expect(page).toHaveURL(/\/games/, { timeout: 10000 });
   });
 
   test('should navigate to auth page', async ({ page }) => {

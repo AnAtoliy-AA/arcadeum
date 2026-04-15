@@ -1,10 +1,10 @@
-import type { Locale } from '../../types';
-import type { LegalMessages } from './types';
-import { legalMessagesEn } from './en';
-import { legalMessagesEs } from './es';
-import { legalMessagesFr } from './fr';
-import { legalMessagesRu } from './ru';
-import { legalMessagesBy } from './by';
+import { en } from './en';
+import { es } from './es';
+import { fr } from './fr';
+import { ru } from './ru';
+import { by } from './by';
+
+export { en, es, fr, ru, by };
 
 export type {
   LegalMessages,
@@ -13,10 +13,10 @@ export type {
   ContactMessages,
 } from './types';
 
-export const legalMessages: Record<Locale, LegalMessages> = {
-  en: legalMessagesEn,
-  es: legalMessagesEs,
-  fr: legalMessagesFr,
-  ru: legalMessagesRu,
-  by: legalMessagesBy,
-};
+export const legalMessages = {
+  en,
+  es,
+  fr,
+  ru,
+  by,
+} as const;

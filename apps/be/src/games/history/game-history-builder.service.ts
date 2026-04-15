@@ -37,6 +37,15 @@ export class GameHistoryBuilderService {
       sessionsByRoom.get(roomId)!.push(session);
     });
 
+    // Batch fetch all users for all rooms to avoid N+1 problem
+    const allUserIds = new Set<string>();
+    rooms.forEach((room) => {
+      allUserIds.add(room.hostId);
+      room.participants.forEach((p) => allUserIds.add(p.userId));
+    });
+
+    const userMap = await this.getUserMap(Array.from(allUserIds));
+
     const history: GameHistorySummary[] = [];
 
     for (const room of rooms) {
@@ -47,7 +56,7 @@ export class GameHistoryBuilderService {
       const latestSession = roomSessions[0];
 
       if (latestSession) {
-        const participants = await this.getParticipantSummaries(room);
+        const participants = this.getParticipantSummariesSync(room, userMap);
 
         history.push({
           id: latestSession._id.toString(),
@@ -93,6 +102,15 @@ export class GameHistoryBuilderService {
       sessionsByRoom.get(roomId)!.push(session);
     });
 
+    // Batch fetch all users
+    const allUserIds = new Set<string>();
+    rooms.forEach((room) => {
+      allUserIds.add(room.hostId);
+      room.participants.forEach((p) => allUserIds.add(p.userId));
+    });
+
+    const userMap = await this.getUserMap(Array.from(allUserIds));
+
     const grouped: GroupedHistorySummary[] = [];
 
     for (const room of rooms) {
@@ -101,7 +119,7 @@ export class GameHistoryBuilderService {
 
       if (roomSessions.length === 0) continue;
 
-      const participants = await this.getParticipantSummaries(room);
+      const participants = this.getParticipantSummariesSync(room, userMap);
 
       grouped.push({
         roomId,
@@ -127,6 +145,39 @@ export class GameHistoryBuilderService {
         new Date(b.latestSessionAt).getTime() -
         new Date(a.latestSessionAt).getTime(),
     );
+  }
+
+  private async getUserMap(
+    uniqueUserIds: string[],
+  ): Promise<Map<string, User>> {
+    const validUserIds = uniqueUserIds.filter((id) =>
+      Types.ObjectId.isValid(id),
+    );
+
+    const users = await this.userModel
+      .find({ _id: { $in: validUserIds } })
+      .select('username email')
+      .exec();
+
+    return new Map(users.map((u) => [u._id.toString(), u]));
+  }
+
+  private getParticipantSummariesSync(
+    room: GameRoom,
+    userMap: Map<string, User>,
+  ): HistoryParticipantSummary[] {
+    const userIds = [room.hostId, ...room.participants.map((p) => p.userId)];
+    const uniqueUserIds = Array.from(new Set(userIds));
+
+    return uniqueUserIds.map((uid) => {
+      const user = userMap.get(uid);
+      return {
+        id: uid,
+        username: user?.username || 'Unknown',
+        email: user?.email || null,
+        isHost: uid === room.hostId,
+      };
+    });
   }
 
   async getParticipantSummaries(

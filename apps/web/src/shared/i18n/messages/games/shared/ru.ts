@@ -30,8 +30,11 @@ export const ruMessages = {
   rooms: {
     status: {
       lobby: 'Лобби',
+      waiting: 'Ожидание',
       in_progress: 'В процессе',
       completed: 'Завершено',
+      placement: 'Размещение',
+      active: 'Активная',
     },
     hostedBy: 'Организатор: {{host}}',
     participants: 'Участники',

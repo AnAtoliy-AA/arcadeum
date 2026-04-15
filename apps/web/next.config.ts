@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 import path from 'path';
 import withPWAInit from '@ducanh2912/next-pwa';
+import { withTamagui } from '@tamagui/next-plugin';
 import packageJson from './package.json';
 
 const withPWA = withPWAInit({
@@ -119,6 +120,32 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: '/robots.txt',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'text/plain',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
+          },
+        ],
+      },
+      {
+        source: '/sitemap.xml',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/xml',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
+          },
+        ],
+      },
+      {
         source: '/sw.js',
         headers: [
           {
@@ -147,34 +174,53 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'private, no-cache, no-transform',
+            value: 'public, max-age=0, must-revalidate',
           },
         ],
       })),
     ];
   },
-  reactCompiler: true,
-  compiler: {
-    styledComponents: {
-      ssr: true,
-      displayName: true,
-    },
-  },
-  typedRoutes: false,
-  turbopack: {
-    root: path.resolve(process.cwd(), '../..'),
-  },
   env: {
     NEXT_PUBLIC_APP_VERSION: packageJson.version,
   },
-  productionBrowserSourceMaps: true,
+  reactCompiler: false,
+  compiler: {
+    styledComponents: {
+      ssr: true,
+    },
+  },
+  transpilePackages: [
+    'tamagui',
+    '@tamagui/core',
+    '@tamagui/web',
+    'react-native-web',
+    '@arcadeum/ui',
+  ],
   experimental: {
     optimizePackageImports: [
-      '@arcadeum/shared-ui',
+      'tamagui',
+      '@tamagui/core',
+      '@tamagui/web',
+      '@tamagui/lucide-icons',
       'lucide-react',
-      'framer-motion',
+      '@arcadeum/ui',
     ],
   },
+  turbopack: {
+    root: path.resolve(__dirname, '../../'),
+    resolveAlias: {
+      '@tamagui/web': './node_modules/@tamagui/web',
+      '@tamagui/core': './node_modules/@tamagui/core',
+      tamagui: './node_modules/tamagui',
+    },
+  },
+  productionBrowserSourceMaps: false,
 };
 
-export default withPWA(nextConfig);
+const tamaguiPlugin = withTamagui({
+  config: path.resolve(process.cwd(), './src/shared/config/tamagui.config.ts'),
+  components: ['tamagui', '@arcadeum/ui'],
+  appDir: true,
+});
+
+export default tamaguiPlugin(withPWA(nextConfig));

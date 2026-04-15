@@ -51,7 +51,15 @@ This Turborepo workspace is managed with `pnpm` and contains:
     pnpm install
     ```
 
-2.  **Run development servers**:
+2.  **Set up Claude Code hooks** (if using Claude Code as your AI assistant):
+
+    ```bash
+    cp .claude/settings.example.json .claude/settings.local.json
+    ```
+
+    `settings.local.json` is gitignored — it is your personal local override and should never be committed.
+
+3.  **Run development servers**:
 
     ```bash
     pnpm dev
@@ -63,7 +71,7 @@ This Turborepo workspace is managed with `pnpm` and contains:
     - Mobile app on `http://localhost:19000`
     - Backend API on `http://localhost:4000`
 
-3.  **Specific App Development**:
+4.  **Specific App Development**:
     To run a specific app individually:
 
     ```bash

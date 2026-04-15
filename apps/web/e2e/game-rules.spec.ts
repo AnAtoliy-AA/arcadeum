@@ -5,13 +5,16 @@ import { navigateTo } from './fixtures/test-utils';
 test.describe('Game Rules', () => {
   test('should display rules for Critical game', async ({ page }) => {
     await navigateTo(page, '/games/create?gameId=critical_v1');
-    await page.waitForLoadState('networkidle');
 
     const rulesBtn = page
       .getByRole('button', { name: /rules|правила|📖/i })
       .or(page.getByTestId('view-rules-button'));
+
     await expect(rulesBtn).toBeVisible({ timeout: 15000 });
     await rulesBtn.click({ force: true });
+
+    // Safety wait for the modal animation to settle
+    await page.waitForTimeout(500);
 
     // Check for modal presence using testId
     const modal = page.getByTestId('rules-modal');
@@ -23,7 +26,6 @@ test.describe('Game Rules', () => {
 
   test('should show objective in rules modal', async ({ page }) => {
     await navigateTo(page, '/games/create?gameId=critical_v1');
-    await page.waitForLoadState('networkidle');
 
     const rulesBtn = page.getByRole('button', { name: /rules|правила|📖/i });
     await expect(rulesBtn).toBeVisible({ timeout: 15000 });
@@ -36,7 +38,6 @@ test.describe('Game Rules', () => {
 
   test('should close rules modal', async ({ page }) => {
     await navigateTo(page, '/games/create?gameId=critical_v1');
-    await page.waitForLoadState('networkidle');
 
     const rulesBtn = page.getByRole('button', { name: /rules|правила|📖/i });
     await expect(rulesBtn).toBeVisible({ timeout: 15000 });

@@ -6,7 +6,6 @@ import type {
   SeeTheFutureModalState,
   AlterTheFutureModalState,
   OmniscienceModalState,
-  ChatScope,
 } from '../types';
 import { FIVER_COMBO_SIZE } from '../types';
 
@@ -31,11 +30,6 @@ interface CriticalGameState {
   selectedDiscardCard: CriticalCard | null;
   selectedFiverCards: CriticalCard[];
 
-  // Chat (UI state mostly, message data in global chatStore)
-  chatMessage: string;
-  chatScope: ChatScope;
-  showChat: boolean;
-
   // Actions
   setEventComboModal: (state: EventComboModalState | null) => void;
   setFavorModal: (isOpen: boolean) => void;
@@ -56,10 +50,6 @@ interface CriticalGameState {
   setSelectedFiverCards: (
     cards: CriticalCard[] | ((prev: CriticalCard[]) => CriticalCard[]),
   ) => void;
-
-  setChatMessage: (message: string) => void;
-  setChatScope: (scope: ChatScope) => void;
-  setShowChat: (show: boolean | ((prev: boolean) => boolean)) => void;
 
   // Complex Logic Actions
   toggleFiverCard: (card: CriticalCard) => void;
@@ -91,10 +81,6 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
   selectedDiscardCard: null,
   selectedFiverCards: [],
 
-  chatMessage: '',
-  chatScope: 'all',
-  showChat: true,
-
   setEventComboModal: (state) => set({ eventComboModal: state }),
   setFavorModal: (isOpen) => set({ favorModal: isOpen }),
   setTargetedAttackModal: (isOpen) => set({ targetedAttackModal: isOpen }),
@@ -116,13 +102,6 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
     set((state) => ({
       selectedFiverCards:
         typeof input === 'function' ? input(state.selectedFiverCards) : input,
-    })),
-
-  setChatMessage: (message) => set({ chatMessage: message }),
-  setChatScope: (scope) => set({ chatScope: scope }),
-  setShowChat: (input) =>
-    set((state) => ({
-      showChat: typeof input === 'function' ? input(state.showChat) : input,
     })),
 
   toggleFiverCard: (card) =>
@@ -223,9 +202,5 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
       stealDrawModal: false,
       smiteModal: false,
       omniscienceModal: null,
-      chatMessage: '',
-      // Don't reset chatScope or showChat perhaps? Or do we want to reset UI prefs?
-      // Keeping scope and showChat might be annoying if reset on every game end if user prefers hidden.
-      // Let's reset them for now for clean slate.
     }),
 }));

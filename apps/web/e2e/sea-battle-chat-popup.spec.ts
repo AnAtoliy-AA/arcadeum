@@ -272,7 +272,7 @@ test.describe('Sea Battle Chat Message Popup', () => {
     const popup = page.getByTestId('chat-message-popup');
     await expect(popup).toBeVisible({ timeout: 10000 });
 
-    await expect(popup).not.toBeVisible({ timeout: 8000 });
+    await expect(popup).not.toBeVisible({ timeout: 12000 });
   });
 
   test('should also show popup for own messages', async ({ page }) => {

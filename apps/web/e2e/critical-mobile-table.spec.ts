@@ -98,13 +98,21 @@ test.describe('Critical Game Table Mobile Layout', () => {
           },
         ],
       },
-      session: { id: 'session-1', status: 'active', state: mockState },
+      session: {
+        id: '507f191e810c19729de860f1',
+        status: 'active',
+        state: mockState,
+      },
     });
 
     await mockGameSocket(page, roomId, userId, {
       roomJoinedPayload: {
         status: 'active',
-        session: { id: 'session-1', status: 'active', state: mockState },
+        session: {
+          id: '507f191e810c19729de860f1',
+          status: 'active',
+          state: mockState,
+        },
       },
     });
 
@@ -115,39 +123,46 @@ test.describe('Critical Game Table Mobile Layout', () => {
     const playerCards = page.locator('[data-testid^="player-card-"]');
     await expect(playerCards.first()).toBeVisible({ timeout: 15000 });
 
-    const count = await playerCards.count();
-    expect(count).toBe(5);
+    await expect(playerCards).toHaveCount(5, { timeout: 15000 });
 
-    const boxes: { id: string; x: number; y: number; w: number; h: number }[] =
-      [];
-    for (let i = 0; i < count; i++) {
-      const card = playerCards.nth(i);
-      const box = await card.boundingBox();
-      expect(box).not.toBeNull();
-      if (box) {
-        const testId = (await card.getAttribute('data-testid')) ?? `card-${i}`;
-        boxes.push({
-          id: testId,
-          x: box.x,
-          y: box.y,
-          w: box.width,
-          h: box.height,
-        });
+    await expect(async () => {
+      const boxes: {
+        id: string;
+        x: number;
+        y: number;
+        w: number;
+        h: number;
+      }[] = [];
+      for (let i = 0; i < 5; i++) {
+        const card = playerCards.nth(i);
+        const box = await card.boundingBox();
+        expect(box).not.toBeNull();
+        if (box) {
+          const testId =
+            (await card.getAttribute('data-testid')) ?? `card-${i}`;
+          boxes.push({
+            id: testId,
+            x: box.x,
+            y: box.y,
+            w: box.width,
+            h: box.height,
+          });
+        }
       }
-    }
 
-    for (let i = 0; i < boxes.length; i++) {
-      for (let j = i + 1; j < boxes.length; j++) {
-        const a = boxes[i];
-        const b = boxes[j];
-        const overlapX = a.x < b.x + b.w && a.x + a.w > b.x;
-        const overlapY = a.y < b.y + b.h && a.y + a.h > b.y;
-        const overlaps = overlapX && overlapY;
-        expect(overlaps, `Cards ${a.id} and ${b.id} should not overlap`).toBe(
-          false,
-        );
+      for (let i = 0; i < boxes.length; i++) {
+        for (let j = i + 1; j < boxes.length; j++) {
+          const a = boxes[i];
+          const b = boxes[j];
+          const overlapX = a.x < b.x + b.w && a.x + a.w > b.x;
+          const overlapY = a.y < b.y + b.h && a.y + a.h > b.y;
+          const overlaps = overlapX && overlapY;
+          expect(overlaps, `Cards ${a.id} and ${b.id} should not overlap`).toBe(
+            false,
+          );
+        }
       }
-    }
+    }).toPass({ timeout: 15000, intervals: [1000] });
   });
 
   test('all player names should be fully visible on mobile', async ({
@@ -221,13 +236,21 @@ test.describe('Critical Game Table Mobile Layout', () => {
           },
         ],
       },
-      session: { id: 'session-1', status: 'active', state: mockState },
+      session: {
+        id: '507f191e810c19729de860f1',
+        status: 'active',
+        state: mockState,
+      },
     });
 
     await mockGameSocket(page, roomId, userId, {
       roomJoinedPayload: {
         status: 'active',
-        session: { id: 'session-1', status: 'active', state: mockState },
+        session: {
+          id: '507f191e810c19729de860f1',
+          status: 'active',
+          state: mockState,
+        },
       },
     });
 
@@ -238,10 +261,9 @@ test.describe('Critical Game Table Mobile Layout', () => {
     const playerNames = page.locator('[data-testid^="player-name-"]');
     await expect(playerNames.first()).toBeVisible({ timeout: 15000 });
 
-    const nameCount = await playerNames.count();
-    expect(nameCount).toBe(4);
+    await expect(playerNames).toHaveCount(4, { timeout: 15000 });
 
-    for (let i = 0; i < nameCount; i++) {
+    for (let i = 0; i < 4; i++) {
       await expect(playerNames.nth(i)).toBeVisible();
     }
   });

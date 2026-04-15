@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ "v*.*.*" ]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required to get full git history for auto-changelog
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install Dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Generate Changelog
+        run: pnpm changelog
+
+      - name: Check if CHANGELOG.md was updated
+        id: check-changelog
+        run: |
+          if git diff --quiet HEAD -- CHANGELOG.md; then
+            echo "no-changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "no-changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and Push Changelog
+        if: steps.check-changelog.outputs.no-changes == 'false'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add CHANGELOG.md
+          git commit -m "chore: update changelog for ${{ github.ref_name }}" --allow-empty
+          git push origin main
+
+      - name: Notify on No Changes
+        if: steps.check-changelog.outputs.no-changes == 'true'
+        run: |
+          echo "No changes to CHANGELOG.md — release tag pushed without changelog update."

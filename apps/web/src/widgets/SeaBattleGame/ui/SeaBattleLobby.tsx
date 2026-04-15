@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { XStack, YStack, Text } from 'tamagui';
 import {
   ReusableGameLobby,
   type GameLobbyTheme,
@@ -8,77 +9,20 @@ import {
 import type { GameRoomSummary } from '@/shared/types/games';
 import { MIN_PLAYERS } from '../types';
 import { SEA_BATTLE_VARIANTS } from '../lib/constants';
-import { VariantSelector } from './VariantSelector';
-import styled from 'styled-components';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { IconButton } from '@/features/games/ui/ReusableGameLobby';
-import { VARIANT_THEMES } from '../lib/theme';
-
-const VariantSelectorWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  margin-left: 1rem;
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-left: 0;
-    width: 100%;
-  }
-`;
-
-const ColorPreviewContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-
-  @media (max-width: 1024px) {
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  @media (max-width: 480px) {
-    justify-content: space-between;
-  }
-`;
-
-const ColorItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-`;
-
-const ColorSwatch = styled.div<{ $color: string }>`
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  background-color: ${(props) => props.$color};
-  border: 1px solid rgba(255, 255, 255, 0.2);
-`;
-
-const ColorLabel = styled.span`
-  font-size: 0.75rem;
-  color: ${({ theme }) => theme.text.secondary};
-  white-space: nowrap;
-`;
+import { SeaBattleThemePreview } from './SeaBattleThemePreview';
+import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 
 const getSeaBattleTheme = (variantId?: string): GameLobbyTheme => {
   const variant = SEA_BATTLE_VARIANTS.find((v) => v.id === variantId);
-  const gradient =
-    variant?.gradient ||
-    'linear-gradient(135deg, #3498db 0%, #2980b9 50%, #1abc9c 100%)';
+  const lightGradient =
+    variant?.lightGradient ||
+    'linear-gradient(90deg, #93c5fd 0%, #7dd3fc 40%, #6ee7b7 70%, #93c5fd 100%)';
 
   return {
-    titleGradient: gradient,
-    variantGradient: gradient,
+    titleGradient: lightGradient,
+    variantGradient: lightGradient,
     buttonGradient: 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)',
   };
 };
@@ -116,11 +60,18 @@ export function SeaBattleLobby({
 }: SeaBattleLobbyProps) {
   const roomVariant = (room.gameOptions?.variant as string) || 'classic';
   const [selectedVariant, setSelectedVariant] = React.useState(roomVariant);
+  const [showAllVariants, setShowAllVariants] = React.useState(false);
 
   // Sync with room variant when it changes from server
   React.useEffect(() => {
     setSelectedVariant(roomVariant);
   }, [roomVariant]);
+
+  const VISIBLE_COUNT = 4;
+  const visibleVariants = showAllVariants
+    ? SEA_BATTLE_VARIANTS
+    : SEA_BATTLE_VARIANTS.slice(0, VISIBLE_COUNT);
+  const hiddenCount = SEA_BATTLE_VARIANTS.length - VISIBLE_COUNT;
 
   const theme = getSeaBattleTheme(selectedVariant);
   const variantInfo = getVariantInfo(selectedVariant);
@@ -136,67 +87,80 @@ export function SeaBattleLobby({
 
   const optionsSlot =
     isHost && room.status === 'lobby' ? (
-      <VariantSelectorWrapper>
-        <VariantSelector
-          roomId={room.id}
-          currentVariant={selectedVariant}
-          onVariantChange={setSelectedVariant}
-        />
-        <ColorPreviewContainer data-testid="color-preview-container">
-          <ColorItem>
-            <ColorSwatch
-              $color={
-                VARIANT_THEMES[selectedVariant as keyof typeof VARIANT_THEMES]
-                  ?.shipColor || VARIANT_THEMES.classic.shipColor
-              }
-              title="Ship"
-              data-testid="color-swatch-ship"
-            />
-            <ColorLabel data-testid="color-label-ship">
-              {t('games.sea_battle_v1.colors.ship' as TranslationKey)}
-            </ColorLabel>
-          </ColorItem>
-          <ColorItem>
-            <ColorSwatch
-              $color={
-                VARIANT_THEMES[selectedVariant as keyof typeof VARIANT_THEMES]
-                  ?.hitColor || VARIANT_THEMES.classic.hitColor
-              }
-              title="Hit"
-              data-testid="color-swatch-hit"
-            />
-            <ColorLabel data-testid="color-label-hit">
-              {t('games.sea_battle_v1.colors.hit' as TranslationKey)}
-            </ColorLabel>
-          </ColorItem>
-          <ColorItem>
-            <ColorSwatch
-              $color={
-                VARIANT_THEMES[selectedVariant as keyof typeof VARIANT_THEMES]
-                  ?.missColor || VARIANT_THEMES.classic.missColor
-              }
-              title="Miss"
-              data-testid="color-swatch-miss"
-            />
-            <ColorLabel data-testid="color-label-miss">
-              {t('games.sea_battle_v1.colors.miss' as TranslationKey)}
-            </ColorLabel>
-          </ColorItem>
-          <ColorItem>
-            <ColorSwatch
-              $color={
-                VARIANT_THEMES[selectedVariant as keyof typeof VARIANT_THEMES]
-                  ?.cellEmpty || VARIANT_THEMES.classic.cellEmpty
-              }
-              title="Empty"
-              data-testid="color-swatch-empty"
-            />
-            <ColorLabel data-testid="color-label-empty">
-              {t('games.sea_battle_v1.colors.empty' as TranslationKey)}
-            </ColorLabel>
-          </ColorItem>
-        </ColorPreviewContainer>
-      </VariantSelectorWrapper>
+      <XStack
+        gap="$4"
+        flexWrap="wrap"
+        alignItems="flex-start"
+        $md={{ flexDirection: 'column', gap: '$3' }}
+      >
+        {/* Theme picker tabs */}
+        <YStack gap="$2">
+          <Text
+            fontSize={10}
+            color="rgba(148,163,184,0.6)"
+            letterSpacing={2}
+            textTransform="uppercase"
+          >
+            {t('games.sea_battle_v1.table.lobby.theme' as TranslationKey)}
+          </Text>
+          <XStack gap="$2" flexWrap="wrap">
+            {visibleVariants.map((variant) => (
+              <XStack
+                key={variant.id}
+                alignItems="center"
+                gap="$1"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                borderRadius={20}
+                borderWidth={1.5}
+                cursor="pointer"
+                onPress={() => setSelectedVariant(variant.id)}
+                borderColor={
+                  selectedVariant === variant.id
+                    ? 'rgba(96,165,250,0.6)'
+                    : 'rgba(255,255,255,0.1)'
+                }
+                backgroundColor={
+                  selectedVariant === variant.id
+                    ? 'rgba(96,165,250,0.12)'
+                    : 'rgba(255,255,255,0.03)'
+                }
+              >
+                <Text fontSize={14}>{variant.emoji}</Text>
+                <Text
+                  fontSize={11}
+                  fontWeight="500"
+                  color={selectedVariant === variant.id ? '#93c5fd' : '#cbd5e1'}
+                >
+                  {t(variant.name as TranslationKey)}
+                </Text>
+              </XStack>
+            ))}
+            {!showAllVariants && hiddenCount > 0 && (
+              <XStack
+                alignItems="center"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                borderRadius={20}
+                borderWidth={1}
+                borderColor="rgba(255,255,255,0.1)"
+                cursor="pointer"
+                onPress={() => setShowAllVariants(true)}
+                aria-label="Show all themes"
+              >
+                <Text fontSize={11} color="rgba(148,163,184,0.5)">
+                  + {hiddenCount} more ▾
+                </Text>
+              </XStack>
+            )}
+          </XStack>
+        </YStack>
+
+        {/* Live board preview */}
+        <SeaBattleThemeProvider variant={selectedVariant}>
+          <SeaBattleThemePreview selectedVariant={selectedVariant} />
+        </SeaBattleThemeProvider>
+      </XStack>
     ) : null;
 
   const headerActionsSlot = (
@@ -225,16 +189,18 @@ export function SeaBattleLobby({
         variantInfo.name ? t(variantInfo.name as TranslationKey) : undefined
       }
       minPlayers={MIN_PLAYERS}
-      waitingLabel={t('games.sea_battle_v1.table.lobby.waitingToStart')}
-      subtitleText={getSubtitleText()}
-      playersLabel={t('games.rooms.playersLabel')}
-      hostControlsLabel={t('games.sea_battle_v1.table.lobby.hostControls')}
-      startLabel={t('games.sea_battle_v1.table.actions.start')}
-      startingLabel={t('games.sea_battle_v1.table.actions.starting')}
-      roomInfoLabel={t('games.sea_battle_v1.table.lobby.roomInfo')}
-      fastRoomLabel={t('games.rooms.fastRoom')}
-      botCountLabel={t('games.lobby.botCountLabel')}
-      startWithBotsLabel={t('games.lobby.startWithBots')}
+      labels={{
+        waitingLabel: t('games.sea_battle_v1.table.lobby.waitingToStart'),
+        subtitleText: getSubtitleText(),
+        playersLabel: t('games.rooms.playersLabel'),
+        hostControlsLabel: t('games.sea_battle_v1.table.lobby.hostControls'),
+        startLabel: t('games.sea_battle_v1.table.actions.start'),
+        startingLabel: t('games.sea_battle_v1.table.actions.starting'),
+        roomInfoLabel: t('games.sea_battle_v1.table.lobby.roomInfo'),
+        fastRoomLabel: t('games.rooms.fastRoom'),
+        botCountLabel: t('games.lobby.botCountLabel'),
+        startWithBotsLabel: t('games.lobby.startWithBots'),
+      }}
       theme={theme}
       showReorderControls={true}
       showInvitedPlayers={false}

@@ -1,8 +1,13 @@
-import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
+import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { appConfig } from '@/shared/config/app-config';
 import { DEFAULT_LOCALE, getMessages } from '@/shared/i18n';
 import type { AuthMessages, CommonMessages } from '@/shared/i18n/types';
-import type { SessionDetailLabels } from '../types';
+import type {
+  HeroSectionLabels,
+  LocalAuthPanelLabels,
+  DownloadSectionLabels,
+  SessionDetailLabels,
+} from '../types';
 
 const DEFAULT_TRANSLATIONS = getMessages(DEFAULT_LOCALE);
 const DEFAULT_AUTH_COPY: Partial<AuthMessages> =
@@ -10,46 +15,22 @@ const DEFAULT_AUTH_COPY: Partial<AuthMessages> =
 const DEFAULT_COMMON_COPY: Partial<CommonMessages> =
   DEFAULT_TRANSLATIONS.common ?? {};
 
-interface AuthLabels {
-  // Hero section
-  heroTitle: string;
-  heroDescription: string;
-  heroStatusHeadline: string;
-  heroStatusDescription: string;
-  badgeLabel: string;
-  primaryActionLabel: string;
-  secondaryActionLabel: string;
-  homeLinkLabel: string;
-  browseGamesLabel: string;
-
-  // Downloads
-  downloadsTitle: string;
-  downloadsDescription: string;
-  downloadsIosLabel: string;
-  downloadsAndroidLabel: string;
-
-  // Panel badges
-  localBadge: string;
-  oauthBadge: string;
+export interface AuthLabels
+  extends HeroSectionLabels,
+    LocalAuthPanelLabels,
+    DownloadSectionLabels {
+  // Panel badges (already in LocalAuthPanelLabels but statusBadge is independent)
   statusBadge: string;
+  oauthBadge: string;
 
-  // Local auth
-  localHeading: string;
-  localSubtitle: string;
-  helperText: string;
-  passwordMismatchMessage: string;
-  usernameTooShortMessage: string;
-  invalidEmailMessage: string;
-  submitLabel: string;
-  toggleLabel: string;
-  logoutLabel: string;
-
-  // OAuth
+  // OAuth (some are in LocalAuthPanelLabels but these are specific to OAuthPanel)
   oauthTitle: string;
+  oauthSubtitle: string;
   oauthButtonLabel: string;
   oauthLogoutLabel: string;
   oauthAccessTokenLabel: string;
   oauthAuthorizationCodeLabel: string;
+  oauthEmptyState?: string;
 
   // Status
   statusHeading: string;
@@ -63,27 +44,8 @@ interface AuthLabels {
   redirectingStatusLabel: string;
   loadingStatusLabel: string;
 
-  // Common
-  emailLabel: string;
-  passwordLabel: string;
-  confirmPasswordLabel: string;
-  usernameLabel: string;
-  referralCodeLabel: string;
-
   // Session details
   sessionDetailLabels: SessionDetailLabels;
-
-  // Availability
-  usernameAvailabilityMessages: {
-    checking: string;
-    available: string;
-    taken: string;
-  };
-  emailAvailabilityMessages: {
-    checking: string;
-    available: string;
-    taken: string;
-  };
 }
 
 export function useAuthLabels(isRegisterMode: boolean): AuthLabels {
@@ -190,15 +152,22 @@ export function useAuthLabels(isRegisterMode: boolean): AuthLabels {
       defaultAuthLocalErrors.invalidEmail ??
       '',
     submitLabel: isRegisterMode
-      ? (commonActions.register ?? defaultCommonActions.register ?? '')
-      : (commonActions.login ?? defaultCommonActions.login ?? ''),
+      ? (commonActions.register ??
+        defaultCommonActions.register ??
+        'Create account')
+      : (commonActions.login ?? defaultCommonActions.login ?? 'Sign in'),
     toggleLabel: isRegisterMode
-      ? (commonPrompts.haveAccount ?? defaultCommonPrompts.haveAccount ?? '')
-      : (commonPrompts.needAccount ?? defaultCommonPrompts.needAccount ?? ''),
-    logoutLabel,
+      ? (commonPrompts.haveAccount ??
+        defaultCommonPrompts.haveAccount ??
+        'Already have an account?')
+      : (commonPrompts.needAccount ??
+        defaultCommonPrompts.needAccount ??
+        'Need an account?'),
+    logoutLabel: logoutLabel || 'Sign out',
 
     // OAuth
     oauthTitle: authCopy.oauth?.title ?? defaultAuthOauth.title ?? '',
+    oauthSubtitle: authCopy.sections?.oauth ?? defaultAuthSections.oauth ?? '',
     oauthButtonLabel:
       authCopy.oauth?.loginButton ?? defaultAuthOauth.loginButton ?? '',
     oauthLogoutLabel:
@@ -212,6 +181,10 @@ export function useAuthLabels(isRegisterMode: boolean): AuthLabels {
     oauthAuthorizationCodeLabel:
       authCopy.oauth?.authorizationCodeLabel ??
       defaultAuthOauth.authorizationCodeLabel ??
+      '',
+    oauthEmptyState:
+      formatMessage(authCopy.statusCard?.guestDescription, { appName }) ??
+      formatMessage(defaultStatusCard.guestDescription, { appName }) ??
       '',
 
     // Status

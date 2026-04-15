@@ -1,3 +1,4 @@
+import type { GameVariant } from '@arcadeum/ui';
 import React, { useState } from 'react';
 import {
   Modal,
@@ -11,11 +12,13 @@ import {
   CardInner,
   CardEmoji,
   CardName,
+  CardNameContainer,
   CardDescription,
+  CardDescriptionContainer,
   ModalActions,
   ModalButton,
-  ScrollableCardsGrid, // New component
-  SelectableCard, // New component
+  ScrollableCardsGrid,
+  SelectableCard,
 } from '../styles';
 import {
   getCardEmoji,
@@ -29,8 +32,7 @@ interface GiveFavorModalProps {
   requesterName: string;
   myHand: CriticalCard[];
   onGiveCard: (card: CriticalCard) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  t: (key: string, params?: Record<string, any>) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
   cardVariant?: string;
 }
 
@@ -53,16 +55,21 @@ export const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
     }
   };
 
+  const gameVariant = cardVariant as GameVariant;
+
   return (
-    <Modal>
-      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
-        <ModalHeader $variant={cardVariant}>
-          <ModalTitle $variant={cardVariant}>
+    <Modal open={isOpen}>
+      <ModalContent
+        onPress={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        $variant={gameVariant}
+      >
+        <ModalHeader $variant={gameVariant}>
+          <ModalTitle $variant={gameVariant}>
             🤲 {t('games.table.modals.giveFavor.title')}
           </ModalTitle>
         </ModalHeader>
         <ModalSection>
-          <SectionLabel $variant={cardVariant}>
+          <SectionLabel $variant={gameVariant}>
             {t('games.table.modals.giveFavor.description', {
               player: requesterName,
             })}
@@ -72,10 +79,10 @@ export const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
               <SelectableCard
                 key={`${card}-${index}`}
                 $cardType={card}
-                $index={0}
-                $variant={cardVariant}
-                onClick={() => setSelectedCard(card)}
-                $selected={selectedCard === card}
+                $index={index}
+                $variant={cardVariant as GameVariant}
+                onPress={() => setSelectedCard(card)}
+                selected={selectedCard === card}
               >
                 <CardCorner $position="tl" />
                 <CardCorner $position="tr" />
@@ -83,21 +90,26 @@ export const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
                 <CardCorner $position="br" />
                 <CardFrame />
                 <CardInner>
-                  {/* Emoji hidden by default in styles, but good to have for accessibility/fallback if styles change */}
                   <CardEmoji>{getCardEmoji(card)}</CardEmoji>
-                  <CardName $variant={cardVariant}>
-                    {t(getCardTranslationKey(card, cardVariant)) || card}
-                  </CardName>
-                  <CardDescription $variant={cardVariant}>
-                    {t(getCardDescriptionKey(card))}
-                  </CardDescription>
+                  <CardNameContainer $variant={cardVariant as GameVariant}>
+                    <CardName $variant={cardVariant as GameVariant}>
+                      {t(getCardTranslationKey(card, cardVariant)) || card}
+                    </CardName>
+                  </CardNameContainer>
+                  <CardDescriptionContainer
+                    $variant={cardVariant as GameVariant}
+                  >
+                    <CardDescription $variant={cardVariant as GameVariant}>
+                      {t(getCardDescriptionKey(card))}
+                    </CardDescription>
+                  </CardDescriptionContainer>
                 </CardInner>
               </SelectableCard>
             ))}
           </ScrollableCardsGrid>
         </ModalSection>
         <ModalActions>
-          <ModalButton onClick={handleConfirm} disabled={!selectedCard}>
+          <ModalButton onPress={handleConfirm} disabled={!selectedCard}>
             {t('games.table.modals.giveFavor.confirm')}
           </ModalButton>
         </ModalActions>

@@ -30,8 +30,11 @@ export const enMessages = {
   rooms: {
     status: {
       lobby: 'Lobby',
+      waiting: 'Waiting',
       in_progress: 'In Progress',
       completed: 'Completed',
+      placement: 'Placement',
+      active: 'Active',
     },
     hostedBy: 'Hosted by {{host}}',
     participants: 'Participants',

@@ -1,15 +1,16 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import styled from 'styled-components';
+import React, { useState, useMemo, useCallback } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { styled, XStack, YStack, Text } from 'tamagui';
 import {
-  Button,
   PageLayout,
   Container as SharedContainer,
   Select,
   ErrorState,
   EmptyState,
 } from '@/shared/ui';
+import { Button } from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
   useTranslation,
@@ -24,17 +25,35 @@ import {
   Leaderboard,
 } from './components';
 import { getAllSupportedGameIds } from '@/features/games/lib/gameIdMapping';
+import type { PlayerStats, LeaderboardResponse } from '@/features/history/api';
 
 type TabType = 'my-stats' | 'leaderboard';
 
-export function StatsPage() {
+export interface StatsPageProps {
+  initialStats: PlayerStats | null;
+  initialLeaderboard: LeaderboardResponse | null;
+}
+
+export function StatsPage({
+  initialStats,
+  initialLeaderboard,
+}: StatsPageProps) {
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // URL state management for filters
+  const selectedGame = searchParams?.get('game') || '';
   const [activeTab, setActiveTab] = useState<TabType>('my-stats');
-  const [selectedGame, setSelectedGame] = useState('');
+
   const { snapshot } = useSessionTokens();
+
   const { stats, loading, refreshing, error, refresh } = useStats({
     accessToken: snapshot.accessToken,
+    initialData: initialStats,
   });
+
   const {
     leaderboard,
     loading: leaderboardLoading,
@@ -42,7 +61,7 @@ export function StatsPage() {
     hasMore,
     loadMore,
     refresh: refreshLeaderboard,
-  } = useLeaderboard(selectedGame || undefined);
+  } = useLeaderboard(selectedGame || undefined, initialLeaderboard);
 
   const gameOptions = useMemo(() => {
     const supportedGames = getAllSupportedGameIds();
@@ -54,6 +73,19 @@ export function StatsPage() {
       })),
     ];
   }, [t]);
+
+  const updateParams = useCallback(
+    (gameId: string) => {
+      const params = new URLSearchParams(searchParams?.toString() || '');
+      if (!gameId) {
+        params.delete('game');
+      } else {
+        params.set('game', gameId);
+      }
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [pathname, router, searchParams],
+  );
 
   const handleRefresh = () => {
     if (activeTab === 'my-stats') {
@@ -106,7 +138,16 @@ export function StatsPage() {
               <GameBreakdown stats={stats} loading={loading} />
             </>
           ) : (
-            <EmptyState icon="🔒" message={t('stats.loginRequired')} />
+            <YStack ai="center" gap="$5" p="$10">
+              <EmptyState icon="🔒" message={t('stats.loginRequired')} />
+              <Button
+                variant="primary"
+                size="lg"
+                onPress={() => router.push('/auth')}
+              >
+                Log In
+              </Button>
+            </YStack>
           )
         ) : (
           <>
@@ -114,14 +155,9 @@ export function StatsPage() {
               <FilterLabel>{t('stats.filterByGame')}</FilterLabel>
               <Select
                 value={selectedGame}
-                onChange={(e) => setSelectedGame(e.target.value)}
-              >
-                {gameOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
+                onValueChange={updateParams}
+                options={gameOptions}
+              />
             </FilterContainer>
             <Leaderboard
               leaderboard={leaderboard}
@@ -138,40 +174,58 @@ export function StatsPage() {
   );
 }
 
-const Container = styled(SharedContainer)`
-  max-width: 1200px;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-`;
+const Container = styled(SharedContainer, {
+  name: 'StatsPageContainer',
+  maxWidth: 1200,
+  flexDirection: 'column',
+  gap: '$5',
+} as unknown as Record<string, unknown>);
 
-const TabGroup = styled.div`
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-`;
+const TabGroup = styled(XStack, {
+  name: 'StatsTabGroup',
+  gap: '$3',
+  flexWrap: 'wrap',
+} as unknown as Record<string, unknown>);
 
-const TabButton = styled(Button).attrs<{ $active: boolean }>(({ $active }) => ({
-  variant: $active ? 'primary' : 'chip',
-  size: 'md',
-  isActive: $active,
-}))<{ $active: boolean }>`
-  min-width: 120px;
-  justify-content: center;
-`;
+interface TabButtonProps {
+  $active?: boolean;
+  onClick?: () => void;
+  children?: React.ReactNode;
+  'aria-pressed'?: boolean;
+  'data-testid'?: string;
+}
 
-const FilterContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  background: ${({ theme }) => theme.surfaces.panel.background};
-  border: 1px solid ${({ theme }) => theme.surfaces.panel.border};
-  border-radius: 16px;
-  backdrop-filter: blur(14px);
-`;
+const TabButton = ({ $active, children, ...props }: TabButtonProps) => (
+  <Button
+    variant={$active ? 'primary' : 'chip'}
+    size="md"
+    isActive={$active}
+    minWidth={120}
+    justifyContent="center"
+    {...props}
+  >
+    {children}
+  </Button>
+);
 
-const FilterLabel = styled.label`
-  font-weight: 500;
-  color: ${({ theme }) => theme.text.secondary};
-`;
+const FilterContainer = styled(XStack, {
+  name: 'StatsFilterContainer',
+  alignItems: 'center',
+  gap: '$4',
+  padding: '$4',
+  paddingHorizontal: '$5',
+  backgroundColor: '$background',
+  borderWidth: 1,
+  borderColor: '$borderColor',
+  borderRadius: 16,
+} as unknown as Record<string, unknown>);
+
+const FilterLabel = styled(Text, {
+  name: 'StatsFilterLabel',
+  tag: 'label',
+  fontSize: '$3',
+  fontWeight: '600',
+  color: '$color',
+  letterSpacing: 0.5,
+  userSelect: 'none',
+} as unknown as Record<string, unknown>);

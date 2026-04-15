@@ -1,7 +1,13 @@
 'use client';
 
-import React, { useMemo, useEffect, Suspense, useState, useRef } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, {
+  useMemo,
+  useEffect,
+  Suspense,
+  useState,
+  useCallback,
+} from 'react';
+import { useQuery } from '@/shared/hooks/useQuery';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
@@ -9,13 +15,13 @@ import {
   connectSocketsAnonymous,
   disconnectSockets,
 } from '@/shared/lib/socket';
-import { GamesControlPanel } from '@/widgets/GamesControlPanel';
+import { GamePageLayout } from './GamePageLayout';
 import { gamesApi } from '@/features/games/api';
 import { useGameRoom, type GameType } from '@/features/games/hooks';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useIdleReconnect } from '@/shared/hooks/useIdleReconnect';
 import { useIdleDetection } from '@/shared/hooks/useIdleDetection';
-import { ConnectionOverlay } from '@/shared/ui';
+import { Page } from '@/shared/ui';
 import { mapToGameType } from '@/features/games/lib/gameIdMapping';
 import { gameFactory } from '@/features/games/lib/gameFactory';
 import { gameMetadata } from '@/features/games/registry';
@@ -25,24 +31,33 @@ import type { GameSessionSummary } from '@/shared/types/games';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 
 // Extracted Components
-import { Page, Container, LoadingContainer, GameWrapper } from './styles';
+import { Text } from 'tamagui';
+import { Container, LoadingContainer, GameWrapper } from './styles';
 import { GameRoomLoading } from './GameRoomLoading';
 import { GameRoomError } from './GameRoomError';
 import { PrivateRoomForm } from './PrivateRoomForm';
 import { DynamicGameRenderer } from './DynamicGameRenderer';
 
-export default function GameRoomPage() {
+interface GameRoomPageProps {
+  initialData: GameInitialData | null;
+}
+
+export default function GameRoomPage({
+  initialData: serverInitialData,
+}: GameRoomPageProps) {
   const params = useParams();
   const searchParams = useSearchParams();
   const roomId = params?.id as string;
   const urlInviteCode = searchParams?.get('inviteCode');
   const { snapshot, hydrated } = useSessionTokens();
   const { t } = useTranslation();
-  const gameContainerRef = useRef<HTMLDivElement>(null);
   // Track if we've attempted auto-join with URL invite code
   const [autoJoinAttempted, setAutoJoinAttempted] = useState(false);
   // Track if user manually submitted invite code
   const [manualSubmitPending, setManualSubmitPending] = useState(false);
+  const [showRules, setShowRules] = useState(false);
+  const handleShowRules = useCallback(() => setShowRules(true), []);
+  const handleCloseRules = useCallback(() => setShowRules(false), []);
 
   // State for room visibility check
 
@@ -62,7 +77,7 @@ export default function GameRoomPage() {
       });
     },
     enabled: !!roomId,
-    retry: 1,
+    initialData: serverInitialData,
   });
 
   const roomInfo = roomData?.room;
@@ -156,7 +171,7 @@ export default function GameRoomPage() {
     accessToken: snapshot.accessToken,
     mode: roomMode,
     inviteCode: urlInviteCode || undefined,
-    enabled: !roomInfoLoading && !visibilityError,
+    enabled: (!roomInfoLoading || !!serverInitialData) && !visibilityError,
     initialData,
   });
 
@@ -209,27 +224,18 @@ export default function GameRoomPage() {
   const [isGameReady, setIsGameReady] = useState(false);
   const [gameLoading, setGameLoading] = useState(false);
 
-  // Memoize game props to prevent re-renders with stale data
-  const gameProps = useMemo(() => {
+  // Memoize game props base — isFullscreen/toggleFullscreen come from render prop
+  const gamePropsBase = useMemo(() => {
     if (!roomId || !room) return null;
-    // Ensure all required BaseGameProps are provided
     return {
       roomId: room.id,
       room,
       session: initialSession as GameSessionSummary | null,
       currentUserId: snapshot.userId,
       isHost,
-      onPostHistoryNote: () => {}, // Provide a stub or actual implementation
-      config: {
-        slug: room.gameId,
-        name: '',
-        description: '',
-        category: '',
-        minPlayers: 2,
-        maxPlayers: 5,
-        version: '1.0.0',
-      },
       accessToken: snapshot.accessToken,
+      showRulesOpen: showRules,
+      onShowRulesClose: handleCloseRules,
     };
   }, [
     roomId,
@@ -238,6 +244,8 @@ export default function GameRoomPage() {
     initialSession,
     snapshot.userId,
     snapshot.accessToken,
+    showRules,
+    handleCloseRules,
   ]);
 
   // Track room loading progress for server wake-up message
@@ -293,9 +301,9 @@ export default function GameRoomPage() {
   });
 
   // Wait for session to hydrate before checking authentication
-  if (!hydrated || roomInfoLoading) {
+  if (!hydrated || (roomInfoLoading && !serverInitialData)) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <GameRoomLoading />
         </Container>
@@ -306,7 +314,7 @@ export default function GameRoomPage() {
   // Show error if room visibility check failed
   if (visibilityError) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <GameRoomError
             error={visibilityError}
@@ -320,7 +328,7 @@ export default function GameRoomPage() {
   // If we are auto-joining or loading generally (and not manually submitting), show loading
   if (isAutoJoining || (roomLoading && !manualSubmitPending)) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <GameRoomLoading
             isLongPending={isRoomLoadingLongPending}
@@ -339,7 +347,7 @@ export default function GameRoomPage() {
   // If we have an error or are submitting code for a private room, show the invite code form
   if (roomVisibility === 'private' && !room) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <PrivateRoomForm
             onJoin={handleInviteCodeSubmit}
@@ -356,7 +364,7 @@ export default function GameRoomPage() {
 
   if (error && !room) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <GameRoomError error={error} />
         </Container>
@@ -366,7 +374,7 @@ export default function GameRoomPage() {
 
   if (!room) {
     return (
-      <Page>
+      <Page fixedHeight>
         <Container>
           <GameRoomError error={t('games.roomPage.errors.roomNotFound')} />
         </Container>
@@ -375,61 +383,55 @@ export default function GameRoomPage() {
   }
 
   return (
-    <Page>
-      <Container ref={gameContainerRef}>
-        <ConnectionOverlay
-          visible={isDisconnected}
-          reconnecting={isReconnecting}
-          onReconnect={reconnect}
-          title={t('games.connectionOverlay.title')}
-          message={t('games.connectionOverlay.message')}
-          reconnectingText={t('games.connectionOverlay.reconnecting')}
-          testId="connection-overlay-disconnected"
-        />
+    <Page fixedHeight>
+      <GamePageLayout
+        roomId={roomId}
+        room={room}
+        inviteCode={room?.inviteCode}
+        isDisconnected={isDisconnected}
+        isReconnecting={isReconnecting}
+        isIdle={isIdle}
+        onReconnect={reconnect}
+        onShowRules={handleShowRules}
+      >
+        {({ isFullscreen, toggleFullscreen }) => {
+          const gameProps = gamePropsBase
+            ? { ...gamePropsBase, isFullscreen, toggleFullscreen }
+            : null;
 
-        {!isDisconnected && (
-          <ConnectionOverlay
-            visible={isIdle}
-            title={t('games.idle.title')}
-            message={t('games.idle.message')}
-            testId="connection-overlay-idle"
-          />
-        )}
+          return (
+            <GameWrapper>
+              <Suspense
+                fallback={
+                  <LoadingContainer>
+                    <Text>{t('games.roomPage.loadingGame')}</Text>
+                  </LoadingContainer>
+                }
+              >
+                {gameLoading && (
+                  <LoadingContainer>
+                    <Text>{t('games.roomPage.loadingGame')}</Text>
+                  </LoadingContainer>
+                )}
 
-        <GamesControlPanel
-          roomId={roomId}
-          inviteCode={room?.inviteCode}
-          fullscreenContainerRef={gameContainerRef}
-        />
+                {!gameLoading && !gameType && room && (
+                  <LoadingContainer>
+                    <Text>
+                      {t('games.roomPage.errors.unsupportedGame', {
+                        gameId: room.gameId,
+                      })}
+                    </Text>
+                  </LoadingContainer>
+                )}
 
-        <GameWrapper>
-          <Suspense
-            fallback={
-              <LoadingContainer>
-                {t('games.roomPage.loadingGame')}
-              </LoadingContainer>
-            }
-          >
-            {gameLoading && (
-              <LoadingContainer>
-                {t('games.roomPage.loadingGame')}
-              </LoadingContainer>
-            )}
-
-            {!gameLoading && !gameType && room && (
-              <LoadingContainer>
-                {t('games.roomPage.errors.unsupportedGame', {
-                  gameId: room.gameId,
-                })}
-              </LoadingContainer>
-            )}
-
-            {!gameLoading && isGameReady && gameType && gameProps && (
-              <DynamicGameRenderer gameType={gameType} props={gameProps} />
-            )}
-          </Suspense>
-        </GameWrapper>
-      </Container>
+                {!gameLoading && isGameReady && gameType && gameProps && (
+                  <DynamicGameRenderer gameType={gameType} props={gameProps} />
+                )}
+              </Suspense>
+            </GameWrapper>
+          );
+        }}
+      </GamePageLayout>
     </Page>
   );
 }

@@ -12,9 +12,16 @@ test.describe('Accessibility', () => {
     expect(count).toBeGreaterThan(0);
   });
 
-  test('should support keyboard navigation (Tab)', async ({ page }) => {
+  test('should support keyboard navigation (Tab)', async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(
+      browserName === 'webkit',
+      'WebKit on macOS requires system-level keyboard navigation enabled',
+    );
+
     await navigateTo(page, '/');
-    await page.waitForLoadState('networkidle');
 
     // LOCATE ALL INTERACTIVE ELEMENTS
     const interactives = page.locator(

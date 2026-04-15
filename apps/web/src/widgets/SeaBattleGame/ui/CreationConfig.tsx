@@ -5,17 +5,17 @@ import {
 } from '@/shared/lib/useTranslation';
 import { GameCreationConfigProps } from '@/features/games/types';
 import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
-import { Section } from '@/shared/ui';
+import { Section, Button } from '@/shared/ui';
 import {
   GameSelector,
-  GameTile,
   GameTileName,
   GameTileSummary,
   SelectionIndicator,
   GameTileIcon,
-  RulesTrigger,
   ThemeHeader,
-} from '@/app/games/create/styles';
+  GameTileItem,
+  GameTileContainer,
+} from '@/features/games/ui/create/styles';
 import { RulesModal } from './RulesModal';
 import { useState } from 'react';
 
@@ -34,34 +34,52 @@ export function SeaBattleCreationConfig({
     if (!options.variant) {
       onChange({ ...options, variant: 'classic' });
     }
-  }, [options, onChange]);
+    // Only run when variant is truly missing to avoid re-triggering parent URL sync
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.variant]);
 
   return (
     <>
       <Section title={t('games.create.sectionVariant') || 'Game Theme'}>
         <ThemeHeader>
-          <RulesTrigger type="button" onClick={() => setShowRules(true)}>
+          <Button
+            variant="link"
+            size="sm"
+            mb="$4"
+            type="button"
+            onClick={() => setShowRules(true)}
+          >
             📖 {t('games.rules.button') || 'View Game Rules'}
-          </RulesTrigger>
+          </Button>
         </ThemeHeader>
         <GameSelector>
           {SEA_BATTLE_VARIANTS.map((variant) => (
-            <GameTile
+            <GameTileContainer
               key={variant.id}
-              as="button"
-              type="button"
-              $active={options.variant === variant.id}
-              onClick={() => onChange({ ...options, variant: variant.id })}
+              onPress={() => onChange({ ...options, variant: variant.id })}
             >
-              <SelectionIndicator />
-              <GameTileIcon $gradient={variant.gradient}>
-                {variant.emoji}
-              </GameTileIcon>
-              <GameTileName>{t(variant.name as TranslationKey)}</GameTileName>
-              <GameTileSummary>
-                {t(variant.description as TranslationKey)}
-              </GameTileSummary>
-            </GameTile>
+              <GameTileItem active={options.variant === variant.id}>
+                <SelectionIndicator active={options.variant === variant.id} />
+                <GameTileIcon
+                  background={variant.gradient || undefined}
+                  style={
+                    variant.gradient
+                      ? {
+                          WebkitBackgroundClip: 'text',
+                          backgroundClip: 'text',
+                          color: 'transparent',
+                        }
+                      : undefined
+                  }
+                >
+                  {variant.emoji}
+                </GameTileIcon>
+                <GameTileName>{t(variant.name as TranslationKey)}</GameTileName>
+                <GameTileSummary>
+                  {t(variant.description as TranslationKey)}
+                </GameTileSummary>
+              </GameTileItem>
+            </GameTileContainer>
           ))}
         </GameSelector>
       </Section>

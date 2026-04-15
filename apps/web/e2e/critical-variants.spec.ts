@@ -54,7 +54,7 @@ test.describe('Critical Variant Selection', () => {
               ],
             },
             session: {
-              id: 'session-1',
+              id: '507f191e810c19729de860f1',
               status: 'active',
               state: {
                 players: [
@@ -81,14 +81,13 @@ test.describe('Critical Variant Selection', () => {
 
     // Navigate to game creation page
     await navigateTo(page, '/games/create');
+    await page.waitForLoadState('networkidle');
 
     // Select Critical game tile
-    const criticalTile = page
-      .locator('div,a,button')
-      .filter({ hasText: /^Critical$/ })
-      .first();
-    await expect(criticalTile).toBeVisible();
-    await criticalTile.click();
+    const criticalTile = page.getByTestId('game-tile-critical_v1');
+    await expect(criticalTile).toBeVisible({ timeout: 15000 });
+    await criticalTile.click({ force: true });
+    await page.waitForTimeout(500); // Allow variant section to animate in
 
     // Select High-Altitude Hike variant tile
     const hikeVariant = page
@@ -99,7 +98,7 @@ test.describe('Critical Variant Selection', () => {
 
     // Create room
     const createBtn = page.getByTestId('create-room-button');
-    await expect(createBtn).toBeEnabled();
+    await expect(createBtn).toBeEnabled({ timeout: 10000 });
     await createBtn.click({ force: true });
 
     // The create button should trigger navigation to the room

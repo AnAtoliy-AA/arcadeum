@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from '@/shared/hooks/useQuery';
 import { referralsApi } from '../api';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 
@@ -7,9 +7,9 @@ export function useReferralStats() {
   const token = snapshot.accessToken ?? undefined;
 
   return useQuery({
-    queryKey: ['referral-stats'],
+    queryKey: ['referral-stats', token],
     queryFn: () => referralsApi.getStats({ token }),
     enabled: !!token,
-    staleTime: 30_000,
+    refreshKey: 'referral-stats',
   });
 }

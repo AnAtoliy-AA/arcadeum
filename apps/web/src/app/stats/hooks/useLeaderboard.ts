@@ -1,6 +1,9 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@/shared/hooks/useInfiniteQuery';
 import { historyApi } from '@/features/history/api';
-import type { LeaderboardEntry } from '@/features/history/api';
+import type {
+  LeaderboardEntry,
+  LeaderboardResponse,
+} from '@/features/history/api';
 import { useMemo } from 'react';
 
 interface UseLeaderboardResult {
@@ -17,7 +20,14 @@ interface UseLeaderboardResult {
 
 const PAGE_SIZE = 20;
 
-export function useLeaderboard(gameId?: string): UseLeaderboardResult {
+export function useLeaderboard(
+  gameId?: string,
+  initialData: LeaderboardResponse | null = null,
+): UseLeaderboardResult {
+  const memoizedInitialData = useMemo(() => {
+    return initialData ? { pages: [initialData] } : null;
+  }, [initialData]);
+
   const {
     data,
     isLoading,
@@ -27,7 +37,7 @@ export function useLeaderboard(gameId?: string): UseLeaderboardResult {
     error,
     hasNextPage,
     fetchNextPage,
-  } = useInfiniteQuery({
+  } = useInfiniteQuery<LeaderboardResponse, number>({
     queryKey: ['leaderboard', gameId],
     queryFn: ({ pageParam = 0 }) =>
       historyApi.getLeaderboard(PAGE_SIZE, pageParam, gameId),
@@ -36,6 +46,8 @@ export function useLeaderboard(gameId?: string): UseLeaderboardResult {
       if (!lastPage.hasMore) return undefined;
       return allPages.length * PAGE_SIZE;
     },
+    initialData: memoizedInitialData,
+    refreshKey: `leaderboard-${gameId || 'all'}`,
   });
 
   const leaderboard = useMemo(() => {

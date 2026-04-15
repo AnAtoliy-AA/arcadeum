@@ -16,9 +16,10 @@ export {
   GameInfo,
   GameTitle,
   TurnStatus,
+  TurnStatusPill,
+  VariantIconBadge,
   StartButton,
   FullscreenButton,
-  ChatToggleButton,
 } from './header';
 
 export {
@@ -86,6 +87,8 @@ export {
 } from './player-widgets';
 
 // Card Components
+export { GradientScrim } from './cards-base';
+
 export {
   CardsGrid,
   Card,
@@ -100,7 +103,9 @@ export {
 
 export {
   CardName,
+  CardNameContainer,
   CardDescription,
+  CardDescriptionContainer,
   CardCountBadge,
   CardInner,
   CardFrame,
@@ -135,6 +140,7 @@ export {
   ModalContent,
   ModalHeader,
   ModalTitle,
+  ModalOverlay,
   CloseButton,
   ModalSection,
   SectionLabel,
@@ -144,4 +150,6 @@ export {
   ModalButton,
   ScrollableCardsGrid,
   SelectableCard,
+  RulesText,
+  RulesTextPre,
 } from './modals';

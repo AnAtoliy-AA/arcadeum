@@ -1,4 +1,5 @@
 import React from 'react';
+import { YStack } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -11,8 +12,14 @@ import {
   OptionButton,
   ModalActions,
   ModalButton,
+  Card,
+  CardFrame,
+  CardCorner,
+  GradientScrim,
 } from './styles';
-import { getCardEmoji, getCardTranslationKey } from '../lib/cardUtils';
+import { CardImage } from './styles/card-image';
+import { type GameVariant } from '@arcadeum/ui';
+import { getCardTranslationKey } from '../lib/cardUtils';
 import type { OmniscienceModalState } from '../types';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 
@@ -37,20 +44,23 @@ export function OmniscienceModal({
   if (!omniscienceModal) return null;
 
   return (
-    <Modal onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
-        <ModalHeader $variant={cardVariant}>
-          <ModalTitle $variant={cardVariant}>
+    <Modal>
+      <ModalContent
+        onPress={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        $variant={cardVariant as GameVariant}
+      >
+        <ModalHeader $variant={cardVariant as GameVariant}>
+          <ModalTitle $variant={cardVariant as GameVariant}>
             👁️ {t('games.table.cards.omniscience') || 'Omniscience'}
           </ModalTitle>
-          <CloseButton onClick={onClose} $variant={cardVariant}>
+          <CloseButton onPress={onClose} $variant={cardVariant as GameVariant}>
             ×
           </CloseButton>
         </ModalHeader>
 
         {omniscienceModal.hands.map((hand) => (
           <ModalSection key={hand.playerId}>
-            <SectionLabel $variant={cardVariant}>
+            <SectionLabel $variant={cardVariant as GameVariant}>
               {resolveDisplayName(hand.playerId, 'Player')}
             </SectionLabel>
             {hand.cards.length === 0 ? (
@@ -64,12 +74,46 @@ export function OmniscienceModal({
                   <OptionButton
                     key={`${hand.playerId}-${idx}`}
                     $selected={false}
-                    $variant={cardVariant}
+                    $variant={cardVariant as GameVariant}
+                    padding={0}
+                    height="auto"
                   >
-                    <div style={{ fontSize: '2rem' }}>{getCardEmoji(card)}</div>
-                    <div style={{ fontSize: '0.75rem' }}>
-                      {t(getCardTranslationKey(card, cardVariant)) || card}
-                    </div>
+                    <YStack
+                      alignItems="center"
+                      width={100}
+                      gap="$2"
+                      padding="$2"
+                    >
+                      <Card
+                        $cardType={card}
+                        $variant={cardVariant as GameVariant}
+                        width="100%"
+                        cursor="default"
+                      >
+                        <CardCorner $position="tl" $variant={cardVariant} />
+                        <CardCorner $position="tr" $variant={cardVariant} />
+                        <CardCorner $position="bl" $variant={cardVariant} />
+                        <CardCorner $position="br" $variant={cardVariant} />
+                        <CardFrame $variant={cardVariant} />
+                        <CardImage
+                          variant={cardVariant ?? ''}
+                          cardType={card}
+                        />
+                        <GradientScrim />
+                      </Card>
+                      <div
+                        style={{
+                          fontSize: '0.75rem',
+                          textAlign: 'center',
+                          width: '100%',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {t(getCardTranslationKey(card, cardVariant)) || card}
+                      </div>
+                    </YStack>
                   </OptionButton>
                 ))}
               </OptionGrid>
@@ -78,7 +122,7 @@ export function OmniscienceModal({
         ))}
 
         <ModalActions>
-          <ModalButton onClick={onClose}>
+          <ModalButton onPress={onClose}>
             {t('games.table.modals.common.close') || 'Close'}
           </ModalButton>
         </ModalActions>

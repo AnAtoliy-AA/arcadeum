@@ -92,6 +92,7 @@ export const frMessages = {
         yourTurnAttack: '🎯 C’est votre tour - Attaquez un adversaire !',
         placeShips: 'Placez vos navires',
         waitingFor: 'En attente de {{player}}...',
+        targetBadge: 'Cible',
       },
       phase: {
         lobby: 'Salon',
@@ -110,6 +111,7 @@ export const frMessages = {
         randomize: 'Aléatoire',
         resetPlacement: 'Réinitialiser',
         waitingForOthers: 'En attente des autres...',
+        dragHint: 'Glisser sur le plateau · Cliquer pour sélectionner',
       },
       attack: {
         hit: 'Touché !',
@@ -125,6 +127,7 @@ export const frMessages = {
         hostCanStart: "Cliquez sur 'Démarrer' quand vous êtes prêt",
         waitingForHost: 'En attente du démarrage par l’hôte',
         hostControls: 'Contrôles de l’hôte',
+        theme: 'Thème',
         roomInfo: 'Infos de la salle',
         host: 'Hôte',
       },

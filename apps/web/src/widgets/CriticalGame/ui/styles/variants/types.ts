@@ -1,8 +1,10 @@
-import { RuleSet, DefaultTheme } from 'styled-components';
+export interface TamaguiTheme {
+  [key: string]: { val?: string; get?: () => string } | undefined;
+}
 
 export interface VariantStyleConfig {
   layout: {
-    getBackgroundEffects: () => RuleSet<object>;
+    getBackgroundEffects: () => Record<string, unknown>;
     getRoomBackground: (themeBase: string, themeCardBg: string) => string;
     getRoomBorder: (isMyTurn: boolean, themeBorder: string) => string;
     getRoomShadow: (isMyTurn: boolean) => string;
@@ -18,25 +20,25 @@ export interface VariantStyleConfig {
       getGlow: () => string;
     };
     actions?: {
-      getContainerStyles?: () => RuleSet<object>;
-      getTitleStyles?: () => RuleSet<object>;
-      getButtonStyles?: () => RuleSet<object>;
+      getContainerStyles?: () => Record<string, unknown>;
+      getTitleStyles?: () => Record<string, unknown>;
+      getButtonStyles?: () => Record<string, unknown>;
     };
   };
   header: {
-    getBackground: (theme: DefaultTheme) => string;
-    getBorder: (theme: DefaultTheme) => string;
+    getBackground: (theme: TamaguiTheme) => string;
+    getBorder: (theme: TamaguiTheme) => string;
     getLineBackground: () => string;
     getLineShadow: () => string;
     getTitleBackground: () => string;
-    getTitleTextStyles?: () => RuleSet<object>;
+    getTitleTextStyles?: () => Record<string, unknown>;
   };
   players: {
     getCardBackground: (
       isCurrentTurn?: boolean,
       isCurrentUser?: boolean,
       isAlive?: boolean,
-      theme?: DefaultTheme,
+      theme?: TamaguiTheme,
     ) => string;
     getCardBorder: (isCurrentTurn?: boolean, isCurrentUser?: boolean) => string;
     getCardShadow: (isCurrentTurn?: boolean, isCurrentUser?: boolean) => string;
@@ -47,9 +49,9 @@ export interface VariantStyleConfig {
     getCardDimensions: () => { minWidth: string; maxWidth: string };
     getAvatarBackground: (
       isCurrentTurn?: boolean,
-      theme?: DefaultTheme,
+      theme?: TamaguiTheme,
     ) => string;
-    getAvatarBorder: (isCurrentTurn?: boolean, theme?: DefaultTheme) => string;
+    getAvatarBorder: (isCurrentTurn?: boolean, theme?: TamaguiTheme) => string;
     getNameShadow: (isCurrentTurn?: boolean) => string;
     getAvatarRing: (isCurrentTurn: boolean, isEliminated: boolean) => string;
     getAvatarShadow: (isCurrentTurn: boolean) => string;
@@ -57,11 +59,11 @@ export interface VariantStyleConfig {
     getCardCountStyles?: (
       isCurrentTurn?: boolean,
       type?: 'default' | 'stash' | 'marked',
-    ) => RuleSet<object> | null;
-    getTurnIndicatorStyles?: () => RuleSet<object>;
-    getStyles?: () => RuleSet<object>;
-    getAvatarStyles?: () => RuleSet<object>;
-    getNameStyles?: () => RuleSet<object>;
+    ) => Record<string, unknown> | null;
+    getTurnIndicatorStyles?: () => Record<string, unknown>;
+    getStyles?: () => Record<string, unknown>;
+    getAvatarStyles?: () => Record<string, unknown>;
+    getNameStyles?: () => Record<string, unknown>;
   };
   tableInfo: {
     getBackground: () => string;
@@ -69,42 +71,43 @@ export interface VariantStyleConfig {
     getShadow: () => string;
     getTextGlow: () => string;
     getStatValueColor: (isWarning?: boolean) => string;
-    getInfoCardBackground: (theme?: DefaultTheme) => string;
-    getInfoCardBorder: (theme?: DefaultTheme) => string;
+    getInfoCardBackground: (theme?: TamaguiTheme) => string;
+    getInfoCardBorder: (theme?: TamaguiTheme) => string;
     getInfoCardShadow: () => string;
     getInfoCardPattern: () => string;
-    getStyles?: () => RuleSet<object>;
-    getTableStatStyles?: () => RuleSet<object>;
-    getInfoCardStyles?: () => RuleSet<object>;
+    getStyles?: () => Record<string, unknown>;
+    getTableStatStyles?: () => Record<string, unknown>;
+    getInfoCardStyles?: () => Record<string, unknown>;
   };
   chat: {
     getBackground: () => string;
     getBorder: () => string;
     getShadow: () => string;
-    getInputBackground?: (theme: DefaultTheme) => string;
-    getInputBorder?: (theme: DefaultTheme) => string;
-    getInputFocusBorder?: (theme: DefaultTheme) => string;
+    getInputBackground?: (theme: TamaguiTheme) => string;
+    getInputBorder?: (theme: TamaguiTheme) => string;
+    getInputFocusBorder?: (theme: TamaguiTheme) => string;
     getInputFocusShadow?: () => string;
-    getInputStyles?: () => RuleSet<object>;
-    getTurnStatusStyles?: () => RuleSet<object>;
+    getInputStyles?: () => Record<string, unknown>;
+    getTurnStatusStyles?: () => Record<string, unknown>;
   };
   cards: {
     glowEffect: string;
     borderEffect: string;
+    deckBorderColor?: string;           // replaces getDeckBorder
     getDecorationBackground?: () => string;
     getDecorationBorder?: () => string;
-    getDecorationEffects?: () => RuleSet<object>;
+    getDecorationEffects?: () => Record<string, unknown>;
     getDisabledOverlay?: () => string;
-    getActionButtonsStyles?: () => RuleSet<object>;
-    getCardNameStyles?: () => RuleSet<object>;
-    getCardDescriptionStyles?: () => RuleSet<object>;
-    getCardInnerStyles?: () => RuleSet<object>;
+    getActionButtonsStyles?: () => Record<string, unknown>;
+    getCardNameStyles?: () => Record<string, unknown>;
+    getCardDescriptionStyles?: () => Record<string, unknown>;
+    getCardInnerStyles?: () => Record<string, unknown>;
 
-    // cards-base.ts additions
+    // sprite support
     getCardSpriteUrl?: (variant?: string) => string | undefined;
-    getDeckBackground?: (variant?: string) => string;
-    getDeckBorder?: (variant?: string) => string;
-    getDeckStyles?: () => RuleSet<object>;
-    getCardStyles?: () => RuleSet<object>;
+    getDeckStyles?: () => Record<string, unknown>;
+    getCardStyles?: () => Record<string, unknown>;
+    getHoverGlow?: () => string;         // box-shadow string for card hover
+    getCardNameColor?: () => string;     // color for name label overlay
   };
 }

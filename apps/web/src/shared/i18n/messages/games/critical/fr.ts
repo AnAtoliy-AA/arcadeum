@@ -418,6 +418,7 @@ export const frMessages = {
       fullscreen: 'Plein écran',
       exitFullscreen: 'Quitter le plein écran',
       enterFullscreen: 'Entrer en plein écran',
+      rules: 'Règles',
       leaveRoom: 'Quitter',
       leaveConfirmMessage:
         'Êtes-vous sûr de vouloir quitter la partie ? Vous serez retiré de la liste des participants.',

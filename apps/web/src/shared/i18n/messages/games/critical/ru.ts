@@ -406,6 +406,7 @@ export const ruMessages = {
       fullscreen: 'Весь экран',
       exitFullscreen: 'Выйти из полноэкранного режима',
       enterFullscreen: 'На весь экран',
+      rules: 'Правила',
       leaveRoom: 'Покинуть',
       leaveConfirmMessage:
         'Вы уверены, что хотите покинуть игру? Вы будете удалены из списка участников.',

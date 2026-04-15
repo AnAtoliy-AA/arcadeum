@@ -30,8 +30,11 @@ export const byMessages = {
   rooms: {
     status: {
       lobby: 'Лобі',
+      waiting: 'Чаканне',
       in_progress: 'У працэсе',
       completed: 'Завершана',
+      placement: 'Размяшчэнне',
+      active: 'Актыўная',
     },
     hostedBy: 'Арганізатар: {{host}}',
     participants: 'Удзельнікі',

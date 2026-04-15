@@ -26,7 +26,7 @@ test.describe('PWA Features', () => {
   });
 
   test('page has PWA meta tags', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
 
     const manifestLink = page.locator('link[rel="manifest"]');
     await expect(manifestLink).toHaveAttribute('href', '/manifest.json');
@@ -36,7 +36,7 @@ test.describe('PWA Features', () => {
   });
 
   test('offline page is accessible', async ({ page }) => {
-    await page.goto('/offline');
+    await page.goto('/offline', { waitUntil: 'domcontentloaded' });
 
     await expect(
       page.getByRole('heading', { name: "You're Offline" }),

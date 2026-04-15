@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useCallback, ComponentProps, ReactNode } from 'react';
+import { useQuery } from '@/shared/hooks/useQuery';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import styled from 'styled-components';
+import { XStack, YStack, Text } from 'tamagui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useDebounce } from '@/shared/hooks/useDebounce';
+import { useIsMounted } from '@/widgets/header/ui/useIsMounted';
+import { Button } from '@arcadeum/ui';
 import {
   PageLayout,
   Container,
@@ -17,116 +19,46 @@ import {
   Avatar,
   Input,
   Spinner,
-  Button,
   EmptyState,
 } from '@/shared/ui';
-import { chatApi, ChatParticipant } from '@/features/chat/api';
+import { chatApi, ChatParticipant, ChatSummary } from '@/features/chat/api';
 import { formatSafeDate } from '@/shared/lib/date';
-import { QUERY_CONFIG, DEBOUNCE } from '@/shared/config/constants';
+import { DEBOUNCE } from '@/shared/config/constants';
 
-const SearchResultItem = styled(Button).attrs({
-  variant: 'ghost',
-  size: 'md',
-})`
-  padding: 1rem;
-  width: 100%;
-  justify-content: flex-start;
-  border-radius: 0;
-  border-bottom: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  color: ${({ theme }) => theme.text.primary};
-  text-align: left;
-  gap: 1rem;
+interface SearchResultItemProps extends ComponentProps<typeof Button> {
+  isLast?: boolean;
+  children?: ReactNode;
+}
 
-  &:hover:not(:disabled) {
-    background: ${({ theme }) => theme.surfaces.card.background};
-    opacity: 0.9;
-  }
+const SearchResultItem = ({ isLast, ...props }: SearchResultItemProps) => (
+  <Button
+    variant="ghost"
+    size="md"
+    p="$4"
+    w="100%"
+    justifyContent="flex-start"
+    br={0}
+    bbw={isLast ? 0 : 1}
+    bbc="$borderColor"
+    bg="$background"
+    color="$color"
+    gap="$3"
+    hoverStyle={{
+      bg: '$background',
+      opacity: 0.9,
+    }}
+    {...props}
+  />
+);
 
-  &:last-child {
-    border-bottom: none;
-  }
-`;
+interface ChatListPageProps {
+  initialData: ChatSummary[] | null;
+}
 
-const SearchResults = styled.div`
-  display: flex;
-  flex-direction: column;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  border-radius: 12px;
-  overflow: hidden;
-  margin-top: 0.5rem;
-`;
-
-const ChatList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const ChatItemContent = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
-`;
-
-const ChatInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  flex: 1;
-  min-width: 0; /* meaningful for text truncation */
-`;
-
-const ChatHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-`;
-
-const ChatTitleText = styled.div`
-  font-weight: 600;
-  font-size: 1rem;
-  color: ${({ theme }) => theme.text.primary};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const ChatSubtitle = styled.div`
-  font-size: 0.875rem;
-  color: ${({ theme }) => theme.text.muted};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const ChatTimestamp = styled.div`
-  font-size: 0.75rem;
-  color: ${({ theme }) => theme.text.muted};
-  white-space: nowrap;
-`;
-
-const LoadingContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  padding: 3rem;
-  color: ${({ theme }) => theme.text.muted};
-`;
-
-const StyledLink = styled(Link)`
-  text-decoration: none;
-  color: inherit;
-  display: block;
-`;
-
-export function ChatListPage() {
+export function ChatListPage({ initialData }: ChatListPageProps) {
   const router = useRouter();
   const { snapshot } = useSessionTokens();
+  const isMounted = useIsMounted();
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, DEBOUNCE.SEARCH_DELAY);
@@ -137,7 +69,7 @@ export function ChatListPage() {
       return chatApi.getChats({ token: snapshot.accessToken || undefined });
     },
     enabled: !!snapshot.accessToken,
-    staleTime: QUERY_CONFIG.STALE_TIME.SHORT,
+    initialData,
   });
 
   const { data: querySearchResults, isLoading: searchLoading } = useQuery({
@@ -155,7 +87,7 @@ export function ChatListPage() {
 
   const displayChats = queryChats || [];
   const displaySearchResults = querySearchResults || [];
-  const loading = chatsLoading;
+  const loading = chatsLoading && !initialData;
 
   const handleSelectUser = useCallback(
     async (user: ChatParticipant) => {
@@ -185,7 +117,7 @@ export function ChatListPage() {
         </PageTitle>
 
         {snapshot.accessToken && (
-          <GlassCard style={{ padding: '1.5rem' }}>
+          <GlassCard p="$4">
             <Input
               type="text"
               placeholder={
@@ -198,23 +130,25 @@ export function ChatListPage() {
                 'Search for users to chat with'
               }
               fullWidth
+              size="md"
             />
             {searchLoading && (
-              <div
-                style={{
-                  padding: '1rem',
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}
-              >
+              <XStack p="$4" jc="center">
                 <Spinner size="sm" />
-              </div>
+              </XStack>
             )}
-            {searchQuery.trim() && displaySearchResults.length > 0 && (
-              <SearchResults>
-                {displaySearchResults.map((result) => (
+            {!!searchQuery.trim() && displaySearchResults.length > 0 && (
+              <YStack
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius={12}
+                overflow="hidden"
+                marginTop="$2"
+              >
+                {displaySearchResults.map((result, index) => (
                   <SearchResultItem
                     key={result.id}
+                    isLast={index === displaySearchResults.length - 1}
                     onClick={() => handleSelectUser(result)}
                   >
                     <Avatar
@@ -222,86 +156,121 @@ export function ChatListPage() {
                       size="sm"
                       alt=""
                     />
-                    <div>
-                      <div style={{ fontWeight: 600 }}>
+                    <YStack>
+                      <Text fontWeight="600">
                         {result.displayName || result.username}
-                      </div>
+                      </Text>
                       {result.email && (
-                        <div style={{ fontSize: '0.875rem', color: '#666' }}>
+                        <Text fontSize="$3" color="rgba(236,239,238,0.45)">
                           {result.email}
-                        </div>
+                        </Text>
                       )}
-                    </div>
+                    </YStack>
                   </SearchResultItem>
                 ))}
-              </SearchResults>
+              </YStack>
             )}
           </GlassCard>
         )}
 
         {loading ? (
-          <LoadingContainer>
+          <YStack jc="center" ai="center" gap="$4" p="$12">
             <Spinner size="lg" aria-label="Loading" />
-            <div>Loading chats...</div>
-          </LoadingContainer>
+            <Text color="rgba(236,239,238,0.45)">Loading chats...</Text>
+          </YStack>
         ) : displayChats.length === 0 ? (
-          <EmptyState
-            message={
-              snapshot.accessToken
-                ? (t('chatList.empty.noChats') || 'No chats yet') +
-                  '\n' +
-                  'Start a conversation by searching for a user above!'
-                : (t('chatList.empty.unauthenticated') || 'Sign in to chat') +
-                  '\n' +
-                  'Please sign in to access your chats.'
-            }
-          />
+          <YStack ai="center" gap="$5" p="$10" flex={1}>
+            <EmptyState
+              icon="💬"
+              message={
+                !isMounted
+                  ? t('chatList.empty.loading') || 'Loading...'
+                  : snapshot.accessToken
+                    ? (t('chatList.empty.noChats') || 'No chats yet') +
+                      '\n' +
+                      'Start a conversation by searching for a user above!'
+                    : t('chatList.empty.unauthenticated') || 'Sign in to chat'
+              }
+            />
+            {!snapshot.accessToken && (
+              <Button
+                variant="primary"
+                size="lg"
+                onPress={() => router.push('/auth')}
+              >
+                Log In
+              </Button>
+            )}
+          </YStack>
         ) : (
-          <ChatList>
-            {displayChats.map((chat) => {
+          <YStack gap="$4">
+            {displayChats.map((chat: ChatSummary) => {
               const otherParticipants = chat.participants.filter(
-                (p) => p.id !== currentUserId,
+                (p: ChatParticipant) => p.id !== currentUserId,
               );
               const title =
                 otherParticipants.length > 0
                   ? otherParticipants
-                      .map((p) => p.displayName || p.username)
+                      .map((p: ChatParticipant) => p.displayName || p.username)
                       .join(', ')
                   : t('chatList.messages.directChat') || 'Direct Chat';
-              const receiverIds = otherParticipants.map((p) => p.id).join(',');
+              const receiverIds = otherParticipants
+                .map((p: ChatParticipant) => p.id)
+                .join(',');
 
               return (
-                <StyledLink
+                <Link
                   key={chat.chatId}
                   href={`/chat?chatId=${chat.chatId}&receiverIds=${receiverIds}&title=${encodeURIComponent(title)}`}
+                  style={{
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    display: 'block',
+                  }}
                 >
                   <Card interactive padding="md" variant="elevated">
-                    <ChatItemContent>
+                    <XStack ai="center" gap="$4" width="100%">
                       <Avatar name={title} size="md" alt="" />
-                      <ChatInfo>
-                        <ChatHeader>
-                          <ChatTitleText>{title}</ChatTitleText>
+                      <YStack flex={1} gap="$1" minWidth={0}>
+                        <XStack jc="space-between" ai="center" gap="$2">
+                          <Text
+                            fontWeight="600"
+                            fontSize="$5"
+                            color="$color"
+                            numberOfLines={1}
+                            flexShrink={1}
+                          >
+                            {title}
+                          </Text>
                           {chat.lastMessage && (
-                            <ChatTimestamp>
+                            <Text
+                              fontSize="$2"
+                              color="rgba(236,239,238,0.45)"
+                              whiteSpace="nowrap"
+                            >
                               {formatSafeDate(chat.lastMessage.timestamp)}
-                            </ChatTimestamp>
+                            </Text>
                           )}
-                        </ChatHeader>
+                        </XStack>
                         {chat.lastMessage && (
-                          <ChatSubtitle>
-                            <span style={{ fontWeight: 600 }}>
+                          <Text
+                            fontSize="$3"
+                            color="rgba(236,239,238,0.45)"
+                            numberOfLines={1}
+                          >
+                            <Text fontWeight="600">
                               {chat.lastMessage.senderUsername}:
-                            </span>{' '}
+                            </Text>{' '}
                             {chat.lastMessage.content}
-                          </ChatSubtitle>
+                          </Text>
                         )}
-                      </ChatInfo>
-                    </ChatItemContent>
+                      </YStack>
+                    </XStack>
                   </Card>
-                </StyledLink>
+                </Link>
               );
             })}
-          </ChatList>
+          </YStack>
         )}
       </Container>
     </PageLayout>

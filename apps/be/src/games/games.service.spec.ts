@@ -114,7 +114,7 @@ describe('GamesService', () => {
       roomsService.createRoom.mockResolvedValue(
         createdRoom as unknown as GameRoomSummary,
       );
-      realtimeService.emitRoomCreated.mockImplementation(() => { });
+      realtimeService.emitRoomCreated.mockImplementation(() => {});
 
       const result = await service.createRoom(userId, dto);
 

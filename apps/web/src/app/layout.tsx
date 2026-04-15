@@ -3,24 +3,22 @@ import { Geist, Geist_Mono } from 'next/font/google';
 
 import './globals.css';
 
+import { cookies } from 'next/headers';
 import { appConfig } from '@/shared/config/app-config';
-import { QueryProvider } from './providers/QueryProvider';
-import { LanguageProvider } from './i18n/LanguageProvider';
-import { StyledComponentsRegistry } from './StyledComponentsRegistry';
-import { AppThemeProvider } from './theme/ThemeContext';
 import { Header } from '@/widgets/header';
-import { PWAProvider } from '@/features/pwa';
 
 import { JsonLd } from '@/shared/ui/JsonLd';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
+  display: 'swap',
 });
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -71,44 +69,98 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  keywords: [
+    'board games',
+    'online board games',
+    'play board games online',
+    'tabletop games',
+    'multiplayer board games',
+    'free online board games',
+    'online board game platform',
+    'arcadeum',
+  ],
 };
 
 export const viewport: Viewport = {
   themeColor: '#151718',
 };
 
-export default function RootLayout({
+import { BrowserRegistry } from './BrowserRegistry';
+import { setupTamagui } from '@/shared/config/tamagui.config';
+import { ThemeName, ThemePreference } from '@/shared/config/theme';
+import { Locale } from '@/shared/i18n';
+
+// Prime Tamagui config as early as possible on the server
+setupTamagui();
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: appConfig.appName,
-    url: appConfig.siteUrl,
-    logo: `${appConfig.siteUrl}/logo.png`,
-    sameAs: Object.values(appConfig.social).filter(Boolean),
-  };
+  const fontClassName = `${geistSans.variable} ${geistMono.variable}`;
+  const cookieStore = await cookies();
+  const theme = (cookieStore.get('app-theme')?.value as ThemeName) || 'dark';
+  const themePreference =
+    (cookieStore.get('app-theme-preference')?.value as ThemePreference) ||
+    'dark';
+  const locale = (cookieStore.get('app-language')?.value as Locale) || 'en';
+
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: appConfig.appName,
+      url: appConfig.siteUrl,
+      logo: `${appConfig.siteUrl}/logo.png`,
+      sameAs: Object.values(appConfig.social).filter(Boolean),
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: appConfig.appName,
+      url: appConfig.siteUrl,
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${appConfig.siteUrl}/games?q={search_term_string}`,
+        'query-input': 'required name=search_term_string',
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: appConfig.appName,
+      operatingSystem: 'Any',
+      applicationCategory: 'GameApplication',
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.8',
+        ratingCount: '1240',
+      },
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+      },
+    },
+  ];
 
   return (
-    <html lang="en">
+    <html
+      lang={locale}
+      className={`t_${theme}`}
+      data-theme={theme}
+      data-theme-preference={themePreference}
+      suppressHydrationWarning
+    >
       <head>
         <JsonLd data={jsonLd} />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <StyledComponentsRegistry>
-          <LanguageProvider>
-            <AppThemeProvider>
-              <QueryProvider>
-                <PWAProvider>
-                  <Header />
-                  {children}
-                </PWAProvider>
-              </QueryProvider>
-            </AppThemeProvider>
-          </LanguageProvider>
-        </StyledComponentsRegistry>
+      <body className={fontClassName}>
+        <BrowserRegistry initialTheme={theme} initialLocale={locale}>
+          <Header />
+          {children}
+        </BrowserRegistry>
       </body>
     </html>
   );

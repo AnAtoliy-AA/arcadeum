@@ -19,6 +19,8 @@ import { sanitizeUsername, scheduleStateUpdate } from '../lib/utils';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+export type UseAuthFormResult = ReturnType<typeof useAuthForm>;
+
 export function useAuthForm() {
   const session = useSessionTokens();
   const sessionSnapshot = session.snapshot;

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { HandLayoutMode } from '../types';
 import { HAND_LAYOUT_OPTIONS } from '../lib/constants';
+import type { GameVariant } from '@arcadeum/ui';
 import {
   DropdownContainer,
   DropdownTrigger,
@@ -54,18 +55,18 @@ export const HandLayoutDropdown: React.FC<HandLayoutDropdownProps> = ({
       )}
       <DropdownTrigger
         data-testid="layout-trigger"
-        $variant={variant}
+        $variant={variant as GameVariant}
         $isOpen={isOpen}
         onClick={() => setIsOpen(!isOpen)}
       >
         {getLabel(layout)}
       </DropdownTrigger>
       {isOpen && (
-        <DropdownList $variant={variant}>
+        <DropdownList $variant={variant as GameVariant}>
           {HAND_LAYOUT_OPTIONS.map((mode) => (
             <DropdownItem
               key={mode}
-              $variant={variant}
+              $variant={variant as GameVariant}
               $isActive={layout === mode}
               onClick={() => {
                 onChange(mode);

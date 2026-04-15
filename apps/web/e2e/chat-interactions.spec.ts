@@ -5,6 +5,7 @@ import {
   mockSession,
   mockChatSocket,
   mockGameSocket,
+  handleRoute,
 } from './fixtures/test-utils';
 
 test.describe('Chat Interactions', () => {
@@ -15,12 +16,11 @@ test.describe('Chat Interactions', () => {
 
     // Default mock for chat messages to avoid 401 on initial load
     await page.route('**/chat/*/messages', async (route) => {
-      if (route.request().method() === 'GET') {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify([]),
-        });
+      const method = route.request().method();
+      if (method === 'GET') {
+        await handleRoute(route, []);
+      } else if (method === 'OPTIONS') {
+        await handleRoute(route, null);
       } else {
         await route.continue();
       }
@@ -64,14 +64,9 @@ test.describe('Chat Interactions', () => {
       (url) =>
         url.pathname.includes('/chat/') && url.pathname.endsWith('/messages'),
       async (route) => {
-        if (route.request().method() !== 'GET') {
-          return route.continue();
-        }
-
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify([
+        const method = route.request().method();
+        if (method === 'GET') {
+          await handleRoute(route, [
             {
               id: '1',
               chatId: 'chat-1',
@@ -81,8 +76,12 @@ test.describe('Chat Interactions', () => {
               receiverIds: ['507f191e810c19729de860ea'],
               timestamp: new Date().toISOString(),
             },
-          ]),
-        });
+          ]);
+        } else if (method === 'OPTIONS') {
+          await handleRoute(route, null);
+        } else {
+          await route.continue();
+        }
       },
     );
 
@@ -97,34 +96,36 @@ test.describe('Chat Interactions', () => {
       (url) =>
         url.pathname.includes('/chat/') && url.pathname.endsWith('/messages'),
       async (route) => {
-        if (route.request().method() !== 'GET') {
-          return route.continue();
+        const method = route.request().method();
+        if (method === 'GET') {
+          const messages = Array.from({ length: 30 }).map((_, index) => ({
+            id: `${index + 1}`,
+            chatId: 'chat-1',
+            senderId:
+              index % 2 === 0
+                ? '507f191e810c19729de860ea'
+                : '507f191e810c19729de860e2',
+            content: `Message ${index + 1}`,
+            senderUsername: index % 2 === 0 ? 'testuser' : 'otheruser',
+            receiverIds: ['507f191e810c19729de860ea'],
+            timestamp: new Date(Date.now() + index * 1000).toISOString(),
+          }));
+          messages.push({
+            id: 'last',
+            chatId: 'chat-1',
+            senderId: 'user-2',
+            content: 'Newest message',
+            senderUsername: 'otheruser',
+            receiverIds: ['507f191e810c19729de860ea'],
+            timestamp: new Date().toISOString(),
+          });
+
+          await handleRoute(route, messages);
+        } else if (method === 'OPTIONS') {
+          await handleRoute(route, null);
+        } else {
+          await route.continue();
         }
-
-        const messages = Array.from({ length: 30 }).map((_, index) => ({
-          id: `${index + 1}`,
-          chatId: 'chat-1',
-          senderId: index % 2 === 0 ? '507f191e810c19729de860ea' : 'user-2',
-          content: `Message ${index + 1}`,
-          senderUsername: index % 2 === 0 ? 'testuser' : 'otheruser',
-          receiverIds: ['507f191e810c19729de860ea'],
-          timestamp: new Date(Date.now() + index * 1000).toISOString(),
-        }));
-        messages.push({
-          id: 'last',
-          chatId: 'chat-1',
-          senderId: 'user-2',
-          content: 'Newest message',
-          senderUsername: 'otheruser',
-          receiverIds: ['507f191e810c19729de860ea'],
-          timestamp: new Date().toISOString(),
-        });
-
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(messages),
-        });
       },
     );
 

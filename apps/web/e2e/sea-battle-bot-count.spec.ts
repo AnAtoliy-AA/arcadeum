@@ -77,13 +77,11 @@ test.describe('Sea Battle Bot Count Selection', () => {
           clearInterval(poll);
           const originalEmit = s.emit.bind(s);
           s.emit = (event: string, payload: unknown) => {
-            console.log(`[TestInterceptor] Emitting ${event}`, payload);
             (
               window as unknown as { _emittedEvents: EmittedEvent[] }
             )._emittedEvents.push({ event, payload });
             return originalEmit(event, payload);
           };
-          console.log('[TestInterceptor] Socket intercepted');
         }
       }, 50);
     });
@@ -101,7 +99,7 @@ test.describe('Sea Battle Bot Count Selection', () => {
     await expect(botButton4).toBeVisible({ timeout: 15000 });
     await clickButtonByTestId(page, 'bot-count-4');
 
-    const startBtn = page.getByRole('button', { name: /Start with 4 🤖/i });
+    const startBtn = page.getByTestId('start-with-bots-button');
     await expect(startBtn).toBeVisible({ timeout: 15000 });
     await startBtn.click();
 

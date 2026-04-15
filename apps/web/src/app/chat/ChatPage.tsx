@@ -1,154 +1,28 @@
 'use client';
 
+import {
+  ChatHeader,
+  ChatMessage,
+  ChatInput,
+  PageLayout,
+  Container,
+  GlassCard,
+  EmptyState,
+  YStack,
+  Button,
+} from '@arcadeum/ui';
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
-import styled from 'styled-components';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
-  PageLayout,
-  Container,
-  Button,
-  Input,
-  GlassCard,
-  Avatar,
-  EmptyState,
-  PageTitle,
-} from '@/shared/ui';
-import { chatApi } from '@/features/chat/api';
+  chatApi,
+  type ChatMessage as ChatMessageData,
+} from '@/features/chat/api';
 import { useChatStore } from '@/features/chat/store/chatStore';
 import { useChatSocket } from '@/features/chat/hooks/useChatSocket';
 import { formatSafeTime } from '@/shared/lib/date';
-
-const ChatLayout = styled(Container)`
-  height: calc(100vh - 4rem); /* Adjust based on navbar height if needed */
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 1rem;
-`;
-
-const ChatCard = styled(GlassCard)`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  overflow: hidden;
-  gap: 0;
-`;
-
-const Header = styled.div`
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: ${({ theme }) => theme.surfaces.card.background}80;
-  backdrop-filter: blur(10px);
-`;
-
-const HeaderInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Status = styled.div`
-  font-size: 0.8rem;
-  color: ${({ theme }) => theme.text.muted};
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-`;
-
-const StatusDot = styled.span<{ $connected: boolean }>`
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: ${({ $connected }) => ($connected ? '#22c55e' : '#f59e0b')};
-  box-shadow: 0 0 8px
-    ${({ $connected }) => ($connected ? '#22c55e80' : 'transparent')};
-`;
-
-const MessagesContainer = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-
-  /* Custom Scrollbar */
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.surfaces.card.border};
-    border-radius: 3px;
-  }
-`;
-
-const MessageGroup = styled.div<{ $isOwn: boolean }>`
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  align-items: ${({ $isOwn }) => ($isOwn ? 'flex-end' : 'flex-start')};
-  max-width: 75%;
-  align-self: ${({ $isOwn }) => ($isOwn ? 'flex-end' : 'flex-start')};
-`;
-
-const MessageBubble = styled.div<{ $isOwn: boolean }>`
-  padding: 0.75rem 1rem;
-  border-radius: ${({ $isOwn }) =>
-    $isOwn ? '16px 16px 4px 16px' : '16px 16px 16px 4px'};
-  background: ${({ $isOwn, theme }) =>
-    $isOwn
-      ? `linear-gradient(135deg, ${theme.buttons.primary.gradientStart}, ${theme.buttons.primary.gradientEnd || theme.buttons.primary.gradientStart})`
-      : theme.surfaces.card.background};
-  color: ${({ $isOwn, theme }) =>
-    $isOwn ? theme.buttons.primary.text : theme.text.primary};
-  border: ${({ $isOwn, theme }) =>
-    $isOwn ? 'none' : `1px solid ${theme.surfaces.card.border}`};
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  position: relative;
-`;
-
-const MessageMeta = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.25rem;
-  padding: 0 0.5rem;
-`;
-
-const SenderName = styled.span`
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.text.muted};
-`;
-
-const MessageContent = styled.div`
-  word-wrap: break-word;
-  line-height: 1.5;
-`;
-
-const MessageTime = styled.span<{ $isOwn: boolean }>`
-  font-size: 0.7rem;
-  color: ${({ $isOwn, theme }) =>
-    $isOwn ? 'rgba(255, 255, 255, 0.7)' : theme.text.muted};
-  margin-left: 0.5rem;
-  display: inline-block;
-`;
-
-const InputArea = styled.div`
-  padding: 1.5rem;
-  background: ${({ theme }) => theme.surfaces.card.background};
-  border-top: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-`;
+import { ScrollView } from 'tamagui';
 
 export function ChatPage() {
   const searchParams = useSearchParams();
@@ -207,80 +81,101 @@ export function ChatPage() {
     );
   }
 
-  return (
-    <PageLayout>
-      <ChatLayout size="md">
-        <ChatCard>
-          <Header>
-            <HeaderInfo>
-              <PageTitle size="sm" gradient>
-                {title}
-              </PageTitle>
-              <Status>
-                <StatusDot $connected={isConnected} />
-                {isConnected
-                  ? t('chat.status.connected') || 'Connected'
-                  : t('chat.status.connecting') || 'Connecting...'}
-              </Status>
-            </HeaderInfo>
-          </Header>
-
-          <MessagesContainer>
-            {messages.map((msg) => {
-              if (!msg) return null;
-              const isEncrypted = !msg.content && '__encrypted' in msg;
-              if (!msg.content && !isEncrypted) return null;
-
-              const isOwn = msg.senderId === snapshot.userId;
-
-              return (
-                <MessageGroup key={msg.id} $isOwn={isOwn}>
-                  {!isOwn && (
-                    <MessageMeta>
-                      <Avatar name={msg.senderUsername} size="sm" alt="" />
-                      <SenderName>{msg.senderUsername || 'Unknown'}</SenderName>
-                    </MessageMeta>
-                  )}
-                  <MessageBubble $isOwn={isOwn}>
-                    <MessageContent>
-                      {isEncrypted ? '[Encrypted Message]' : msg.content || ''}
-                      <MessageTime $isOwn={isOwn}>
-                        {formatSafeTime(msg.timestamp)}
-                      </MessageTime>
-                    </MessageContent>
-                  </MessageBubble>
-                </MessageGroup>
-              );
-            })}
-            <div ref={messagesEndRef} />
-          </MessagesContainer>
-
-          <InputArea>
-            <Input
-              type="text"
-              placeholder={t('chat.input.placeholder') || 'Type a message...'}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSend();
-                }
-              }}
-              disabled={!isConnected}
-              aria-label={t('chat.input.ariaLabel') || 'Message input'}
-              fullWidth
+  // Authentication barrier
+  if (!snapshot.accessToken) {
+    return (
+      <PageLayout>
+        <Container size="md" flex={1} jc="center" ai="center" p="$10">
+          <GlassCard p="$10" ai="center" gap="$5">
+            <EmptyState
+              icon="🔒"
+              message={
+                t('chat.loginRequired') || 'Login required to view messages'
+              }
             />
             <Button
-              onClick={handleSend}
-              disabled={!isConnected || !inputValue.trim()}
-              aria-label={t('chat.send') || 'Send message'}
+              variant="primary"
+              size="lg"
+              onPress={() => (window.location.href = '/auth')}
             >
-              {t('chat.send') || 'Send'}
+              Log In
             </Button>
-          </InputArea>
-        </ChatCard>
-      </ChatLayout>
+          </GlassCard>
+        </Container>
+      </PageLayout>
+    );
+  }
+
+  return (
+    <PageLayout>
+      <YStack
+        position="absolute"
+        top={0}
+        left={0}
+        right={0}
+        height="100%"
+        zIndex={-1}
+        opacity={0.3}
+        background="radial-gradient(circle at 10% 20%, $primaryGradientStart 0%, transparent 40%), radial-gradient(circle at 90% 80%, $secondaryGradientStart 0%, transparent 40%)"
+        pointerEvents="none"
+      />
+      <Container size="md" flex={1} pb="$4" pt="$4" height="calc(100vh - 4rem)">
+        <GlassCard
+          flex={1}
+          p={0}
+          overflow="hidden"
+          gap={0}
+          borderWidth={1}
+          borderColor="$glassBorder"
+          shadowColor="$shadowColor"
+          shadowOffset={{ width: 0, height: 10 }}
+          shadowOpacity={0.2}
+          shadowRadius={30}
+        >
+          <ChatHeader
+            title={title}
+            isConnected={isConnected}
+            statusText={
+              isConnected
+                ? t('chat.status.connected') || 'Connected'
+                : t('chat.status.connecting') || 'Connecting...'
+            }
+          />
+
+          <ScrollView flex={1} paddingHorizontal="$4" paddingVertical="$4">
+            <YStack gap="$4">
+              {messages.map((msg: ChatMessageData) => {
+                if (!msg) return null;
+                const isEncrypted = !msg.content && '__encrypted' in msg;
+                if (!msg.content && !isEncrypted) return null;
+
+                const isOwn = msg.senderId === snapshot.userId;
+
+                return (
+                  <ChatMessage
+                    key={msg.id}
+                    content={msg.content || ''}
+                    senderName={msg.senderUsername}
+                    timestamp={formatSafeTime(msg.timestamp)}
+                    isOwn={isOwn}
+                    isEncrypted={isEncrypted}
+                  />
+                );
+              })}
+              <div ref={messagesEndRef} />
+            </YStack>
+          </ScrollView>
+
+          <ChatInput
+            value={inputValue}
+            onChange={setInputValue}
+            onSend={handleSend}
+            disabled={!isConnected}
+            placeholder={t('chat.input.placeholder') || 'Type a message...'}
+            sendText={t('chat.send') || 'Send'}
+          />
+        </GlassCard>
+      </Container>
     </PageLayout>
   );
 }

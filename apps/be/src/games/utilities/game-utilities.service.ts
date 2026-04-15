@@ -238,9 +238,9 @@ export class GameUtilitiesService {
     }
 
     // Pagination
-    const page = options?.page || 1;
+    const page = options?.page || 0;
     const limit = options?.limit || 20;
-    const offset = (page - 1) * limit;
+    const offset = page * limit;
     const entries = filtered.slice(offset, offset + limit);
 
     return {

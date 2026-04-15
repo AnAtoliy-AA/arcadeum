@@ -35,6 +35,7 @@ test.describe('Bot Count Selection', () => {
         members: [
           { id: userId, userId, displayName: 'Test User', isHost: true },
         ],
+        playerCount: 1,
       },
     });
 
@@ -71,7 +72,7 @@ test.describe('Bot Count Selection', () => {
     await clickButtonByTestId(page, 'bot-count-3');
 
     // Start button should update label
-    const startBtn = page.getByRole('button', { name: /Start with 3 🤖/i });
+    const startBtn = page.getByTestId('start-with-bots-button');
     await expect(startBtn).toBeVisible();
     await startBtn.click();
 

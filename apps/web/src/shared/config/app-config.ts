@@ -1,5 +1,7 @@
 import { routes } from './routes';
 
+export const SSR_TIMEOUT = process.env.NODE_ENV === 'development' ? 5000 : 1000;
+
 type CtaConfig = {
   href: string;
   label: string;
@@ -87,8 +89,8 @@ function readAppConfig(): WebAppConfig {
     appName,
     appVersion,
     presentationVideoId,
-    seoTitle: `${appName} - Online Board Game Platform`,
-    seoDescription: `${appName} is your online platform to play board games with friends.`,
+    seoTitle: `${appName} - Play Board Games Online | Best Online Board Game Platform`,
+    seoDescription: `Play the best board games online with friends on ${appName}. Create private rooms, automate rules, and enjoy a premium tabletop experience in your browser. No registration required.`,
     primaryCta: {
       href: primaryCtaHref,
       label: 'Get started',

@@ -1,10 +1,10 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { ThemeProvider } from 'styled-components';
+import { TamaguiProvider } from 'tamagui';
 import { GameVariantSelector } from './GameVariantSelector';
 import { gamesApi } from '../api';
-import { getThemeTokens } from '@/shared/config/theme';
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
+import { config } from '@/shared/config/tamagui.config';
 
 // Mock dependencies
 vi.mock('../api', () => ({
@@ -13,30 +13,82 @@ vi.mock('../api', () => ({
   },
 }));
 
+interface MockSelectProps {
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  options?: { label: string; value: string; disabled?: boolean }[];
+  disabled?: boolean;
+  'aria-label'?: string;
+  id?: string;
+}
+
+interface MockButtonProps {
+  children?: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+}
+
+vi.mock('@arcadeum/ui', () => ({
+  Select: ({
+    value,
+    onChange,
+    options,
+    disabled,
+    'aria-label': ariaLabel,
+    id,
+  }: MockSelectProps) => (
+    <select
+      id={id}
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      aria-label={ariaLabel}
+    >
+      {options?.map((opt) => (
+        <option key={opt.value} value={opt.value} disabled={opt.disabled}>
+          {opt.label}
+        </option>
+      ))}
+    </select>
+  ),
+  Button: ({ children, onClick, disabled }: MockButtonProps) => (
+    <button onClick={onClick} disabled={disabled}>
+      {children}
+    </button>
+  ),
+}));
+
 vi.mock('@/entities/session/model/useSessionTokens', () => ({
   useSessionTokens: () => ({
     snapshot: { accessToken: 'fake-token' },
   }),
 }));
 
-// Mock useMutation from @tanstack/react-query
-vi.mock('@tanstack/react-query', () => ({
+// Mock custom useMutation hook
+vi.mock('@/shared/hooks/useMutation', () => ({
   useMutation: ({
     mutationFn,
   }: {
-    mutationFn: (variables: unknown) => unknown;
+    mutationFn: (variables: unknown) => Promise<unknown>;
   }) => ({
     mutate: (variables: unknown) => mutationFn(variables),
+    mutateAsync: (variables: unknown) => mutationFn(variables),
+    isLoading: false,
     isPending: false,
+    error: null,
+    data: null,
+    isSuccess: false,
+    isError: false,
+    reset: vi.fn(),
   }),
 }));
 
-const theme = getThemeTokens('dark');
-
-const renderWithThemeAndLanguage = (component: React.ReactNode) => {
-  return render(
+const render = (ui: React.ReactElement) => {
+  return rtlRender(
     <LanguageProvider>
-      <ThemeProvider theme={theme}>{component}</ThemeProvider>
+      <TamaguiProvider config={config} defaultTheme="dark">
+        {ui}
+      </TamaguiProvider>
     </LanguageProvider>,
   );
 };
@@ -48,7 +100,7 @@ describe('GameVariantSelector', () => {
   ];
 
   it('renders correctly with a valid variant', () => {
-    renderWithThemeAndLanguage(
+    render(
       <GameVariantSelector
         roomId="room-123"
         currentVariant="variant1"
@@ -62,7 +114,7 @@ describe('GameVariantSelector', () => {
   });
 
   it('renders unknown variant option when currentVariant is invalid', () => {
-    renderWithThemeAndLanguage(
+    render(
       <GameVariantSelector
         roomId="room-123"
         currentVariant="invalid-variant"
@@ -76,7 +128,7 @@ describe('GameVariantSelector', () => {
   });
 
   it('allows changing variant when valid', () => {
-    renderWithThemeAndLanguage(
+    render(
       <GameVariantSelector
         roomId="room-123"
         currentVariant="variant1"

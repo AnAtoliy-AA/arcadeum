@@ -130,10 +130,7 @@ export const gamesApi = {
         ) {
           throw new Error('private_room_error');
         }
-        if (
-          status === HttpStatus.NOT_FOUND ||
-          status === HttpStatus.INTERNAL_SERVER_ERROR
-        ) {
+        if (status === HttpStatus.NOT_FOUND) {
           throw new Error('room_not_found_error');
         }
       }
@@ -167,10 +164,7 @@ export const gamesApi = {
         ) {
           throw new Error('private_room_error');
         }
-        if (
-          status === HttpStatus.NOT_FOUND ||
-          status === HttpStatus.INTERNAL_SERVER_ERROR
-        ) {
+        if (status === HttpStatus.NOT_FOUND) {
           throw new Error('room_not_found_error');
         }
       }

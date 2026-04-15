@@ -10,7 +10,7 @@ import type { GameRoomSummary, GameInitialData } from '@/shared/types/games';
  */
 let cleanupListeners: (() => void) | null = null;
 
-interface GameState {
+export interface GameState {
   room: GameRoomSummary | null;
   session: unknown | null;
   isConnected: boolean;
@@ -243,10 +243,10 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   joinRoom: (roomId, userId, mode, inviteCode) => {
     if (mode === 'watch') {
-      set({ loading: true, error: null });
+      if (!get().room) set({ loading: true, error: null });
       gameSocket.emit('games.room.watch', { roomId, inviteCode });
     } else if (userId) {
-      set({ loading: true, error: null });
+      if (!get().room) set({ loading: true, error: null });
       gameSocket.emit('games.room.join', { roomId, userId, inviteCode });
     } else {
       set({ loading: false, error: null });

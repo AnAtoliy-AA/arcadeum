@@ -1,8 +1,5 @@
-import {
-  GameRoomSummary,
-  ChatScope,
-  GameSessionSummary,
-} from '@/shared/types/games';
+import { ChatScope } from '@/shared/types/games';
+import type { BaseGameWidgetProps } from '@/features/games/types/base';
 
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 6;
@@ -109,16 +106,7 @@ export interface SeaBattleSnapshot {
   lastAttack?: LastAttack;
 }
 
-export interface SeaBattleGameProps {
-  roomId: string;
-  room: GameRoomSummary;
-  session: GameSessionSummary | null;
-  currentUserId: string | null;
-  isHost: boolean;
-  onPostHistoryNote?: (message: string, scope: ChatScope) => void;
-  config?: unknown;
-  accessToken?: string | null;
-}
+export interface SeaBattleGameProps extends BaseGameWidgetProps {}
 
 export interface BoardProps {
   board: CellState[][];

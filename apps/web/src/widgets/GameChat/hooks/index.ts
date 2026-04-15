@@ -1,0 +1,1 @@
+export { useLatestChatMessage } from './useLatestChatMessage';

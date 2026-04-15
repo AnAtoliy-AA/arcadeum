@@ -10,6 +10,7 @@ import {
 } from './styles';
 
 import { GAME_VARIANT } from '../lib/constants';
+import type { GameVariant } from '@arcadeum/ui';
 
 interface TableStatsProps {
   deckCount: number;
@@ -25,19 +26,19 @@ export const TableStats: React.FC<TableStatsProps> = ({
   cardVariant,
 }) => {
   return (
-    <TableInfo $variant={cardVariant}>
-      {cardVariant === GAME_VARIANT.UNDERWATER && (
+    <TableInfo $variant={cardVariant as GameVariant}>
+      {(cardVariant as string) === GAME_VARIANT.UNDERWATER && (
         <>
           <SonarRadar />
-          <Bubble $delay={0} $left={10} />
-          <Bubble $delay={2} $left={30} />
-          <Bubble $delay={1} $left={60} />
-          <Bubble $delay={3} $left={85} />
-          <FishSilhouette $delay={0} $top={20} />
-          <FishSilhouette $delay={5} $top={70} />
+          <Bubble style={{ left: '10%' }} />
+          <Bubble style={{ left: '30%', animationDelay: '2s' }} />
+          <Bubble style={{ left: '60%', animationDelay: '1s' }} />
+          <Bubble style={{ left: '85%', animationDelay: '3s' }} />
+          <FishSilhouette style={{ top: '20%' }} />
+          <FishSilhouette style={{ top: '70%', animationDelay: '5s' }} />
         </>
       )}
-      <TableStat $variant={cardVariant}>
+      <TableStat>
         <StatIcon>
           <svg
             width="16"
@@ -59,9 +60,9 @@ export const TableStats: React.FC<TableStatsProps> = ({
             <line x1="17" y1="7" x2="22" y2="7" />
           </svg>
         </StatIcon>
-        <StatValue $variant={cardVariant}>{deckCount}</StatValue>
+        <StatValue>{deckCount}</StatValue>
       </TableStat>
-      <TableStat $variant={cardVariant}>
+      <TableStat>
         <StatIcon>
           <svg
             width="16"
@@ -79,9 +80,9 @@ export const TableStats: React.FC<TableStatsProps> = ({
             <line x1="14" y1="11" x2="14" y2="17" />
           </svg>
         </StatIcon>
-        <StatValue $variant={cardVariant}>{discardPileCount}</StatValue>
+        <StatValue>{discardPileCount}</StatValue>
       </TableStat>
-      <TableStat $variant={cardVariant}>
+      <TableStat>
         <StatIcon>
           <svg
             width="16"
@@ -99,9 +100,7 @@ export const TableStats: React.FC<TableStatsProps> = ({
             <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" />
           </svg>
         </StatIcon>
-        <StatValue $isWarning={true} $variant={cardVariant}>
-          {pendingDraws}
-        </StatValue>
+        <StatValue $isWarning={true}>{pendingDraws}</StatValue>
       </TableStat>
     </TableInfo>
   );

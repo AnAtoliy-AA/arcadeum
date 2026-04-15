@@ -1,8 +1,11 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+import { Button } from '@arcadeum/ui';
+import { EmptyState } from '@/shared/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { Section } from '@/shared/ui';
+import { Section, PageLayout, Container } from '@/shared/ui';
 import { useHistoryFetch, useHistoryDetail, useHistoryActions } from './hooks';
 import {
   HistoryHeader,
@@ -10,9 +13,19 @@ import {
   HistoryList,
   HistoryDetailModal,
 } from './components';
-import { Page, Container } from './styles';
+import { HistorySummary } from './types';
 
-export function HistoryPage() {
+interface HistoryPageProps {
+  initialData?: {
+    entries: HistorySummary[];
+    total: number;
+    hasMore: boolean;
+    page: number;
+  };
+}
+
+export function HistoryPage({ initialData }: HistoryPageProps) {
+  const router = useRouter();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
   const currentUserId = snapshot.userId ?? '';
@@ -28,8 +41,12 @@ export function HistoryPage() {
     setStatusFilter,
     fetchHistory,
     refresh,
+    hasMore,
+    loadingMore,
+    loadMore,
   } = useHistoryFetch({
     accessToken: snapshot.accessToken,
+    initialData,
   });
 
   const {
@@ -62,16 +79,38 @@ export function HistoryPage() {
     accessToken: snapshot.accessToken,
     currentUserId,
     onClose: handleCloseModal,
-    onRefresh: () => fetchHistory(1, false),
+    onRefresh: () => fetchHistory(0, false),
   });
+
+  if (!snapshot.accessToken) {
+    return (
+      <PageLayout>
+        <Container size="xl" gap="$5" ai="center" jc="center" p="$10" flex={1}>
+          <EmptyState
+            icon="🔒"
+            message={
+              t('history.loginRequired') || 'Login required to view history'
+            }
+          />
+          <Button
+            variant="primary"
+            size="lg"
+            onPress={() => router.push('/auth')}
+          >
+            Log In
+          </Button>
+        </Container>
+      </PageLayout>
+    );
+  }
 
   const isHost = detail?.summary.host.id === currentUserId;
   const hasFilters = Boolean(searchQuery || statusFilter !== 'all');
 
   return (
     <>
-      <Page>
-        <Container>
+      <PageLayout>
+        <Container size="xl" gap="$5">
           <HistoryHeader
             loading={loading}
             refreshing={refreshing}
@@ -93,16 +132,19 @@ export function HistoryPage() {
           <HistoryList
             entries={entries}
             loading={loading}
+            hasNextPage={hasMore}
+            isFetchingNextPage={loadingMore}
+            onLoadMore={loadMore}
             error={error}
             isAuthenticated={Boolean(snapshot.accessToken)}
             hasFilters={hasFilters}
-            onRetry={() => fetchHistory(1, false)}
+            onRetry={() => fetchHistory(0, false)}
             onSelectEntry={handleSelectEntry}
             formatParticipantName={formatParticipantName}
             formatDate={formatDate}
           />
         </Container>
-      </Page>
+      </PageLayout>
 
       {selectedEntry && (
         <HistoryDetailModal

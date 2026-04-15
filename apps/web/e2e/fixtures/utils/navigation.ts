@@ -1,4 +1,4 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Page, type Response } from '@playwright/test';
 
 export function getIsMobile(page: Page): boolean {
   return (page.viewportSize()?.width || 0) <= 900;
@@ -19,15 +19,55 @@ export async function ensureNavigationVisible(page: Page): Promise<void> {
 }
 
 export async function navigateTo(page: Page, path: string): Promise<void> {
-  await page.goto(path, { timeout: 60000, waitUntil: 'domcontentloaded' });
-  await page.waitForLoadState('domcontentloaded', { timeout: 60000 });
+  let chunkLoadError = false;
+
+  const onPageError = (err: Error) => {
+    if (
+      err.message.includes('ChunkLoadError') ||
+      err.message.includes('Failed to load chunk')
+    ) {
+      chunkLoadError = true;
+    }
+  };
+
+  page.on('pageerror', onPageError);
+
+  const onResponse = (response: Response) => {
+    if (response.status() === 404 && response.url().includes('.js')) {
+      chunkLoadError = true;
+    }
+  };
+
+  page.on('response', onResponse);
+
+  try {
+    await page.goto(path, { timeout: 60000, waitUntil: 'domcontentloaded' });
+    await page.waitForLoadState('domcontentloaded', { timeout: 60000 });
+
+    // Reload once if Turbopack chunk hashes changed (common in dev/HMR)
+    if (chunkLoadError) {
+      chunkLoadError = false;
+      await page.reload({ waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page.waitForLoadState('domcontentloaded', { timeout: 60000 });
+    }
+  } finally {
+    page.off('pageerror', onPageError);
+    page.off('response', onResponse);
+  }
 
   // Wait for hydration - theme provider sets these attributes in useEffect
   // This is a reliable way to ensure React has finished mounting and effects have run.
   await expect(page.locator('html'))
-    .toHaveAttribute('data-theme-preference', /.*/, { timeout: 15000 })
+    .toHaveAttribute('data-hydrated', 'true', { timeout: 15000 })
     .catch(() => {
       // Fallback if the attribute is not set, just wait a bit more
       return page.waitForTimeout(2000);
     });
+}
+
+export async function clearState(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
 }

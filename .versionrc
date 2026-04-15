@@ -1,0 +1,12 @@
+{
+  "type": "commit",
+  "preset": "conventionalcommits",
+  "releaseCommitMessageFormat": "chore: release {{version}} [skip ci]",
+  "infile": "CHANGELOG.md",
+  "scripts": {
+    "prebump": "echo 'Skipping auto-changelog generation — using pnpm changelog'",
+    "postbump": "pnpm changelog && git add CHANGELOG.md"
+  },
+  "commitAll": true,
+  "dryRun": false
+}

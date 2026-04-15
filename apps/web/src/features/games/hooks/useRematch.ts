@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from '@/shared/hooks/useMutation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useSocket } from '@/shared/lib/socket';
 import { rematchApi } from '@/features/rematch/api';
@@ -86,7 +86,7 @@ export function useRematch({
   useSocket('games.rematch.invited', handleRematchInvited);
 
   // Mutation for creating a rematch
-  const { mutateAsync: createRematchMutate, isPending: rematchLoading } =
+  const { mutateAsync: createRematchMutate, isLoading: rematchLoading } =
     useMutation({
       mutationFn: async (params: {
         participantIds: string[];
@@ -122,7 +122,6 @@ export function useRematch({
         token: snapshot.accessToken || undefined,
       });
     },
-    onError: () => {},
   });
 
   // Mutation for reinviting users
@@ -132,7 +131,6 @@ export function useRematch({
         token: snapshot.accessToken || undefined,
       });
     },
-    onError: (_err) => {},
   });
 
   // Mutation for blocking rematch
@@ -145,7 +143,6 @@ export function useRematch({
     onSuccess: () => {
       setInvitation(null);
     },
-    onError: (_err) => {},
   });
 
   // Mutation for blocking user
@@ -158,7 +155,6 @@ export function useRematch({
     onSuccess: () => {
       setInvitation(null);
     },
-    onError: (_err) => {},
   });
 
   // Timer logic - auto-decline when time expires

@@ -1,5 +1,5 @@
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { ServerLoadingNotice } from '@/shared/ui/ServerLoadingNotice';
+import { ServerLoadingNotice } from '@/shared/ui';
 import { Loading, ServerWakeUpContainer, Spinner } from '../styles';
 
 interface GamesLoadingProps {
@@ -12,7 +12,14 @@ export function GamesLoading({ isLoadingLongPending }: GamesLoadingProps) {
   if (isLoadingLongPending) {
     return (
       <ServerWakeUpContainer data-testid="games-loading-wakeup">
-        <ServerLoadingNotice actionBusy="loading_games" />
+        <ServerLoadingNotice
+          title={t('games.lounge.loadingRooms')}
+          message={t('games.room.pendingNotice.message')}
+          progress={50}
+          elapsedSeconds={0}
+          supportLabel={t('common.actions.support')}
+          onSupportClick={() => {}}
+        />
       </ServerWakeUpContainer>
     );
   }

@@ -1,4 +1,4 @@
-import { useLanguage } from '@/app/i18n/LanguageProvider';
+import { useLanguage } from '@/shared/i18n/context';
 import { translations } from '../i18n/translations';
 import type { StringPaths } from './translation-paths';
 

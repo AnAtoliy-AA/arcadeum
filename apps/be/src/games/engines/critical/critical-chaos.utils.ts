@@ -28,7 +28,22 @@ export interface EngineHelpers {
     state: CriticalState,
     playerId: string,
   ) => CriticalPlayerState | undefined;
+  dispatchCard?: (
+    state: CriticalState,
+    playerId: string,
+    card: CriticalCard,
+    targetPlayerId?: string,
+  ) => GameActionResult<CriticalState> | null;
 }
+
+/** Cards that cannot be re-executed via echo */
+const ECHO_FORBIDDEN = [
+  'echo',
+  'critical_event',
+  'critical_implosion',
+  'neutralizer',
+] as const;
+type EchoForbiddenCard = (typeof ECHO_FORBIDDEN)[number];
 
 /**
  * Dispatcher for all Chaos Pack cards.
@@ -65,9 +80,101 @@ export function dispatchChaosPackAction(
       }
       playCard();
       return executeBlackout(state, playerId, targetPlayerId, helpers);
+    case 'scramble':
+      playCard();
+      return executeScramble(state, playerId, helpers);
+    case 'echo': {
+      // Capture top of discard BEFORE adding echo to discard pile
+      const topDiscard = state.discardPile[state.discardPile.length - 1];
+      if (!topDiscard) return { success: false, error: 'No card to echo' };
+      playCard(); // Now echo is on top of discard
+      return executeEcho(state, playerId, topDiscard, helpers);
+    }
     default:
       return null;
   }
+}
+
+/**
+ * Execute Echo
+ * Re-executes the top card of the discard pile with the same playerId.
+ * Cannot echo echo itself, critical_event, or neutralizer.
+ */
+export function executeEcho(
+  state: CriticalState,
+  playerId: string,
+  cardToEcho: CriticalCard,
+  helpers: EngineHelpers,
+): GameActionResult<CriticalState> {
+  if (ECHO_FORBIDDEN.includes(cardToEcho as EchoForbiddenCard)) {
+    return { success: false, error: `Cannot echo ${cardToEcho}` };
+  }
+
+  if (!helpers.dispatchCard) {
+    return { success: false, error: 'dispatchCard helper not available' };
+  }
+
+  const result = helpers.dispatchCard(state, playerId, cardToEcho, undefined);
+
+  if (!result) {
+    return { success: false, error: `Card ${cardToEcho} not dispatchable` };
+  }
+
+  return result;
+}
+
+/**
+ * Execute Scramble
+ * All alive players simultaneously pass their entire hand to the next player in turn order.
+ * Respects playDirection.
+ */
+export function executeScramble(
+  state: CriticalState,
+  playerId: string,
+  helpers: EngineHelpers,
+): GameActionResult<CriticalState> {
+  const player = helpers.findPlayer(state, playerId);
+  if (!player) return { success: false, error: 'Player not found' };
+
+  const direction = state.playDirection ?? 1;
+  const alivePlayers = state.playerOrder
+    .map((id) => state.players.find((p) => p.playerId === id))
+    .filter((p): p is CriticalPlayerState => !!p && p.alive);
+
+  if (alivePlayers.length < 2) {
+    return { success: false, error: 'Not enough players to scramble' };
+  }
+
+  // Snapshot hands before mutation
+  const handSnapshots = alivePlayers.map((p) => ({
+    playerId: p.playerId,
+    hand: [...p.hand],
+  }));
+
+  // direction=1: player[i] receives from player[(i-1+n)%n]
+  // direction=-1: player[i] receives from player[(i+1)%n]
+  const n = alivePlayers.length;
+  for (let i = 0; i < n; i++) {
+    const sourceIndex = (i - direction + n) % n;
+    alivePlayers[i].hand = [...handSnapshots[sourceIndex].hand];
+  }
+
+  state.pendingAction = {
+    type: 'scramble',
+    playerId,
+    payload: { handSnapshots, direction },
+    nopeCount: 0,
+  };
+
+  helpers.addLog(
+    state,
+    helpers.createLogEntry('action', `Played Scramble! All hands rotated!`, {
+      scope: 'all',
+      senderId: playerId,
+    }),
+  );
+
+  return { success: true, state };
 }
 
 /**

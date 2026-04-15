@@ -1,9 +1,8 @@
 'use client';
 
-import styled from 'styled-components';
+import { XStack, YStack, Paragraph } from 'tamagui';
 import {
   Avatar,
-  Button,
   Modal,
   ModalContent,
   ModalHeader,
@@ -13,55 +12,7 @@ import {
 } from '@/shared/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { usePWAOptional } from './PWAContext';
-
-const AppIconWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-`;
-
-const Description = styled.p`
-  text-align: center;
-  color: ${({ theme }) => theme.text.secondary};
-  font-size: 1rem;
-  line-height: 1.6;
-  margin: 0;
-`;
-
-const FeatureList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 1.5rem 0 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-`;
-
-const FeatureItem = styled.li`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: ${({ theme }) => theme.text.secondary};
-  font-size: 0.9rem;
-`;
-
-const FeatureIcon = styled.span`
-  font-size: 1.25rem;
-`;
-
-const ManualSection = styled.div`
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: ${({ theme }) => theme.surfaces.panel.background};
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.surfaces.panel.border};
-`;
-
-const ManualText = styled(Description)`
-  font-size: 0.85rem;
-  text-align: left;
-  line-height: 1.4;
-`;
+import { Button } from '@arcadeum/ui';
 
 export function InstallPWAModalContent() {
   const { t } = useTranslation();
@@ -79,32 +30,80 @@ export function InstallPWAModalContent() {
           <ModalTitle>{t('pwa.install.title')}</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <AppIconWrapper>
+          <XStack justifyContent="center" marginBottom="$5">
             <Avatar src="/icon-192x192.png" name="Arcadeum" size="xl" alt="" />
-          </AppIconWrapper>
-          <Description>{t('pwa.install.description')}</Description>
+          </XStack>
+          <Paragraph
+            textAlign="center"
+            color="$color"
+            opacity={0.7}
+            fontSize="1rem"
+            lineHeight="$multiplier16"
+            margin={0}
+          >
+            {t('pwa.install.description')}
+          </Paragraph>
 
-          <FeatureList>
-            <FeatureItem>
-              <FeatureIcon>⚡</FeatureIcon>
+          <ul
+            style={{
+              listStyle: 'none',
+              padding: 0,
+              margin: '1.5rem 0 0',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.75rem',
+            }}
+          >
+            <li
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                color: 'rgba(236,239,238,0.7)',
+                fontSize: '0.9rem',
+              }}
+            >
+              <span style={{ fontSize: '1.25rem' }}>⚡</span>
               {t('pwa.install.features.fast')}
-            </FeatureItem>
-            <FeatureItem>
-              <FeatureIcon>🔔</FeatureIcon>
+            </li>
+            <li
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                color: 'rgba(236,239,238,0.7)',
+                fontSize: '0.9rem',
+              }}
+            >
+              <span style={{ fontSize: '1.25rem' }}>🔔</span>
               {t('pwa.install.features.notifications')}
-            </FeatureItem>
-          </FeatureList>
+            </li>
+          </ul>
 
           {!isPromptAvailable && (
-            <ManualSection>
-              <ManualText>
+            <YStack
+              marginTop="$5"
+              padding="$4"
+              backgroundColor="$background"
+              borderRadius={12}
+              borderWidth={1}
+              borderColor="$borderColor"
+            >
+              <Paragraph
+                textAlign="left"
+                color="$color"
+                opacity={0.7}
+                fontSize="0.85rem"
+                lineHeight="$normal"
+                margin={0}
+              >
                 <strong>{t('pwa.install.manual.title')}:</strong>
                 <br />
                 {isIos
                   ? t('pwa.install.manual.ios', { icon: '⎙', plus: '⊞' })
                   : t('pwa.install.manual.generic')}
-              </ManualText>
-            </ManualSection>
+              </Paragraph>
+            </YStack>
           )}
         </ModalBody>
         <ModalFooter>

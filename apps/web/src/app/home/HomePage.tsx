@@ -1,43 +1,47 @@
 'use client';
 
+import { PageLayout } from '@/shared/ui';
 import { HomeHero } from './components/HomeHero';
+import { HomeGames } from './components/HomeGames';
 import dynamic from 'next/dynamic';
 
-const HomeGames = dynamic(() =>
-  import('./components/HomeGames').then((mod) => mod.HomeGames),
-);
 const HomeHowItWorks = dynamic(() =>
-  import('./components/HomeHowItWorks').then((mod) => mod.HomeHowItWorks),
+  import('./components/HomeHowItWorks').then((m) => m.HomeHowItWorks),
 );
 const HomeFeatures = dynamic(() =>
-  import('./components/HomeFeatures').then((mod) => mod.HomeFeatures),
+  import('./components/HomeFeatures').then((m) => m.HomeFeatures),
 );
 const HomePresentation = dynamic(() =>
-  import('./components/HomePresentation').then((mod) => mod.HomePresentation),
+  import('./components/HomePresentation').then((m) => m.HomePresentation),
 );
 const HomePitchDeck = dynamic(() =>
-  import('./components/HomePitchDeck').then((mod) => mod.HomePitchDeck),
+  import('./components/HomePitchDeck').then((m) => m.HomePitchDeck),
 );
 const HomeDownloadCta = dynamic(() =>
-  import('./components/HomeDownloadCta').then((mod) => mod.HomeDownloadCta),
+  import('./components/HomeDownloadCta').then((m) => m.HomeDownloadCta),
 );
-const HomeFooter = dynamic(() =>
-  import('./components/HomeFooter').then((mod) => mod.HomeFooter),
-);
-import { PageWrapper } from './components/styles/Common.styles';
+
+import { AppFooter } from '@/widgets/footer';
 
 export function HomePage() {
   return (
-    <PageWrapper>
-      <HomeHero />
-      <HomeGames />
-      <HomeHowItWorks />
-      <HomeFeatures />
-      <HomePresentation />
-      <HomePitchDeck />
-      <HomeDownloadCta />
-      <HomeFooter />
-    </PageWrapper>
+    <>
+      <PageLayout
+        data-testid="page-layout"
+        justifyContent="flex-start"
+        alignItems="stretch"
+        padding={0}
+      >
+        <HomeHero />
+        <HomeGames />
+        <HomeHowItWorks />
+        <HomeFeatures />
+        <HomePresentation />
+        <HomePitchDeck />
+        <HomeDownloadCta />
+      </PageLayout>
+      <AppFooter />
+    </>
   );
 }
 

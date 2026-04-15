@@ -30,8 +30,11 @@ export const esMessages = {
   rooms: {
     status: {
       lobby: 'Sala de espera',
+      waiting: 'Esperando',
       in_progress: 'En progreso',
       completed: 'Completado',
+      placement: 'Colocación',
+      active: 'Activo',
     },
     hostedBy: 'Anfitrión: {{host}}',
     participants: 'Participantes',

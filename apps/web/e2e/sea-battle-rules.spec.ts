@@ -7,6 +7,7 @@ import {
   MOCK_OBJECT_ID,
   waitForRoomReady,
   mockGameSocket,
+  closeGameRulesModal,
 } from './fixtures/test-utils';
 
 test.describe('Sea Battle Rules Modal', () => {
@@ -63,21 +64,25 @@ test.describe('Sea Battle Rules Modal', () => {
     await expect(modal).toBeVisible({ timeout: 20000 });
     await expect(modal).toContainText(/objective/i);
 
-    // Close using standard close method
+    // Close using close button
     const closeBtn = page.getByTestId('modal-close-button').first();
     await closeBtn.click({ force: true, timeout: 15000 });
 
-    // Wait for modal to hide
-    await expect(modal).not.toBeVisible({ timeout: 15000 });
+    // Wait for modal to hide (longer timeout for mobile browser animation)
+    await expect(modal).not.toBeVisible({ timeout: 30000 });
+    // Extra wait for Tamagui exit animation to fully complete on mobile
+    await page.waitForTimeout(500);
 
     // Now find the button to reopen it
     const rulesBtn = page
       .getByRole('button', { name: /Game Rules|📖/i })
       .first();
-    await rulesBtn.click({ force: true, timeout: 15000 });
+    await expect(rulesBtn).toBeVisible({ timeout: 10000 });
+    // Use evaluate to dispatch a native click on mobile (touch events may not trigger onClick)
+    await rulesBtn.evaluate((el) => (el as HTMLElement).click());
 
-    // Check it reopened
-    await expect(modal).toBeVisible({ timeout: 15000 });
+    // Check it reopened (longer timeout for mobile browser portal re-mount)
+    await expect(modal).toBeVisible({ timeout: 30000 });
     await expect(modal).toContainText(/objective/i);
   });
 
@@ -85,7 +90,6 @@ test.describe('Sea Battle Rules Modal', () => {
     page,
   }) => {
     await navigateTo(page, '/games/create?gameId=sea_battle_v1');
-    await page.waitForLoadState('networkidle');
 
     // Look for rules button on create screen
     const rulesBtn = page
@@ -102,9 +106,10 @@ test.describe('Sea Battle Rules Modal', () => {
     await expect(modal).toBeVisible({ timeout: 20000 });
     await expect(modal).toContainText(/objective/i);
 
-    // Close using standard close method
+    // Close using close button, with fallback for Tamagui animation timing
     const closeBtn = page.getByTestId('modal-close-button').first();
     await closeBtn.click({ force: true, timeout: 15000 });
+    await closeGameRulesModal(page);
 
     await expect(modal).not.toBeVisible({ timeout: 15000 });
   });

@@ -16,7 +16,7 @@ export interface FeaturedGame {
   variants: Array<{ id: string; nameKey: TranslationKey; disabled?: boolean }>;
 }
 
-import { CARD_VARIANTS } from '@/app/games/create/constants';
+import { CARD_VARIANTS } from '@/features/games/ui/create/constants';
 import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
 
 export const featuredGames: FeaturedGame[] = [

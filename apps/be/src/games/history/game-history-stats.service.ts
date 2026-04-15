@@ -52,6 +52,7 @@ export class GameHistoryStatsService {
     // 2. Find sessions for these rooms
     const sessions = await this.gameSessionModel
       .find({ roomId: { $in: roomIds }, status: 'completed' })
+      .select('roomId gameId state')
       .exec();
 
     // 3. Calculate statistics
@@ -111,14 +112,22 @@ export class GameHistoryStatsService {
     // 2. Aggregate stats per player
     const playerStats: Record<string, { wins: number; total: number }> = {};
 
+    // Batch fetch all required rooms to avoid N+1 queries
+    const roomIds = Array.from(new Set(sessions.map((s) => s.roomId)));
+    const rooms = await this.gameRoomModel
+      .find({ _id: { $in: roomIds } })
+      .select('hostId participants')
+      .exec();
+    const roomMap = new Map(rooms.map((r) => [r._id.toString(), r]));
+
     for (const session of sessions) {
       const winners = this.builder.extractWinners(session);
-      const room = await this.gameRoomModel.findById(session.roomId).exec();
+      const room = roomMap.get(session.roomId);
       if (!room) continue;
 
       const playerIds = [
         ...new Set([room.hostId, ...room.participants.map((p) => p.userId)]),
-      ].filter((id) => !id.startsWith('anon_'));
+      ].filter((id) => id && !id.startsWith('anon_'));
 
       for (const playerId of playerIds) {
         if (!playerStats[playerId]) {

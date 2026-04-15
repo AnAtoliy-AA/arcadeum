@@ -17,8 +17,6 @@ interface UseGameHandlersOptions {
   selectedFiverCards: CriticalCard[];
   selectedDiscardCard: CriticalCard | null;
   eventComboModal: EventComboModalState | null;
-  chatMessage: string;
-  chatScope: ChatScope;
   currentPlayerHand: CriticalCard[];
   discardPile: CriticalCard[];
   actions: {
@@ -47,7 +45,6 @@ interface UseGameHandlersOptions {
   setStealDrawModal: (isOpen: boolean) => void;
   setTargetedAttackModal: (isOpen: boolean) => void;
   setSmiteModal: (isOpen: boolean) => void;
-  clearChatMessage: () => void;
 }
 
 export function useGameHandlers(options: UseGameHandlersOptions) {
@@ -59,8 +56,6 @@ export function useGameHandlers(options: UseGameHandlersOptions) {
     selectedFiverCards,
     selectedDiscardCard,
     eventComboModal,
-    chatMessage,
-    chatScope,
     currentPlayerHand,
     actions,
     handleCloseEventComboModal,
@@ -72,7 +67,6 @@ export function useGameHandlers(options: UseGameHandlersOptions) {
     setStealDrawModal,
     setTargetedAttackModal,
     setSmiteModal,
-    clearChatMessage,
   } = options;
 
   const handleConfirmEventCombo = useCallback(() => {
@@ -117,13 +111,6 @@ export function useGameHandlers(options: UseGameHandlersOptions) {
     actions,
     handleCloseEventComboModal,
   ]);
-
-  const handleSendChatMessage = useCallback(() => {
-    const trimmed = chatMessage.trim();
-    if (!trimmed) return;
-    actions.postHistoryNote(trimmed, chatScope);
-    clearChatMessage();
-  }, [chatMessage, chatScope, actions, clearChatMessage]);
 
   const handleOpenFiverCombo = useCallback(() => {
     setSelectedMode('fiver');
@@ -238,7 +225,6 @@ export function useGameHandlers(options: UseGameHandlersOptions) {
 
   return {
     handleConfirmEventCombo,
-    handleSendChatMessage,
     handleOpenFiverCombo,
     handleConfirmStash,
     handleConfirmMark,

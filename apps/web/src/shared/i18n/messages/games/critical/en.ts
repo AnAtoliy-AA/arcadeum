@@ -402,6 +402,7 @@ export const enMessages = {
       fullscreen: 'Fullscreen',
       exitFullscreen: 'Exit fullscreen',
       enterFullscreen: 'Enter fullscreen',
+      rules: 'Rules',
       leaveRoom: 'Leave',
       leaveConfirmMessage:
         'Are you sure you want to leave the game? You will be removed from the participants list.',

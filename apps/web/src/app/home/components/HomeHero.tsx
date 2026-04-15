@@ -1,8 +1,7 @@
 'use client';
-import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
+import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
-import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
   useTranslation,
   type TranslationKey,
@@ -16,28 +15,28 @@ import {
   Tagline,
   HeroDescription,
   HeroActions,
-  PrimaryAction,
-  SecondaryAction,
   HeroVisual,
   CardStack,
   HeroCard,
 } from './styles/Hero.styles';
-import { CARD_VARIANTS } from '@/app/games/create/constants';
+import { SectionContainer } from './styles/Common.styles';
+import { HomePrimaryLinkButton, LinkButton, SupportIcon } from '@/shared/ui';
+import { CARD_VARIANTS } from '@/features/games/ui/create/constants';
+import { YStack, XStack, Text } from 'tamagui';
 
-// Define fixed cards for the hero visual to ensure consistency and avoid hydration/purity issues
-const HERO_CARDS = [...CARD_VARIANTS].slice(0, 3).map((v) => ({
+type ThemeColor = '$red10' | '$blue10' | '$purple10';
+const THEME_COLORS: ThemeColor[] = ['$red10', '$blue10', '$purple10'];
+const HERO_CARDS = [...CARD_VARIANTS].slice(0, 3).map((v, i) => ({
   name: v.name,
   icon: v.emoji,
-  // Extract the first color from the gradient string for the glow effect
-  color: v.gradient.match(/#[0-9A-Fa-f]{6}/)?.[0] ?? '#FF4D4D',
+  colorToken: THEME_COLORS[i % THEME_COLORS.length],
 }));
 
 export function HomeHero() {
   const { messages } = useLanguage();
-  const { snapshot, hydrated } = useSessionTokens();
   const homeCopy = messages.home ?? {};
 
-  const { appName, primaryCta, supportCta } = appConfig;
+  const { appName, supportCta } = appConfig;
 
   const kicker = homeCopy.kicker ?? 'The future of table games';
   const tagline =
@@ -45,14 +44,12 @@ export function HomeHero() {
     `${appName} is your online platform to play board games with friends.`;
   const description =
     formatMessage(homeCopy.description, { appName }) ??
-    `Create real-time game rooms, invite your friends, or play with bots instantly without registration. Let ${appName} handle rules, scoring, and turns so you can focus on the fun.`;
+    `Create real-time game rooms and invite your friends instantly without registration. Let ${appName} handle rules, scoring, and turns so you can focus on the fun.`;
   const primaryLabel = homeCopy.primaryCtaLabel ?? 'Get started';
-  const playWithBotsLabel = homeCopy.playWithBotsLabel ?? 'Play with Bots';
   const heroCardBrand = homeCopy.heroCardBrand ?? 'CRITICAL';
   const supportLabel = homeCopy.supportCtaLabel ?? 'Support the developers';
 
-  const isAuthenticated = hydrated && !!snapshot.accessToken;
-  const primaryHref = isAuthenticated ? routes.games : primaryCta.href;
+  const primaryHref = routes.games;
 
   const { t } = useTranslation();
   const cards = HERO_CARDS;
@@ -61,38 +58,116 @@ export function HomeHero() {
     <HeroSection aria-labelledby="hero-heading" data-testid="hero-section">
       <HeroBackground />
 
-      <HeroContent>
-        <Kicker>{kicker}</Kicker>
-        <HeroTitle id="hero-heading">{appName}</HeroTitle>
-        <Tagline>{tagline}</Tagline>
-        <HeroDescription>{description}</HeroDescription>
-        <HeroActions>
-          <PrimaryAction href={primaryHref}>{primaryLabel}</PrimaryAction>
-          <SecondaryAction href="/games/create?mode=bot">
-            {playWithBotsLabel}
-          </SecondaryAction>
-          <SecondaryAction href={supportCta.href}>
-            {supportLabel}
-          </SecondaryAction>
-        </HeroActions>
-      </HeroContent>
+      <SectionContainer
+        flexDirection="column"
+        $gtMd={{ flexDirection: 'row', justifyContent: 'space-between' }}
+        alignItems="center"
+        paddingVertical={0}
+      >
+        <HeroContent>
+          <Kicker
+            background="linear-gradient(90deg, $primary10, $primary5, $primary10)"
+            backgroundSize="200% auto"
+          >
+            ✦ {kicker}
+          </Kicker>
+          <HeroTitle id="hero-heading" className="hero-title-animated">
+            {appName}
+          </HeroTitle>
+          <Tagline>{tagline}</Tagline>
+          <HeroDescription>{description}</HeroDescription>
+          <HeroActions>
+            <HomePrimaryLinkButton href={primaryHref} ml="$10" mb="$10">
+              {primaryLabel}
+            </HomePrimaryLinkButton>
+            <LinkButton
+              href={supportCta.href}
+              variant="ghost"
+              size="md"
+              gap="$2"
+              prefetch={false}
+            >
+              <SupportIcon size={18} />
+              {supportLabel}
+            </LinkButton>
+          </HeroActions>
+        </HeroContent>
 
-      <HeroVisual>
-        <CardStack>
-          {cards.map((card, index) => (
-            <HeroCard key={index} $index={index} $color={card.color}>
-              <div className="card-top">
-                <span>{t(card.name as TranslationKey) || card.name}</span>
-                <span>{card.icon}</span>
-              </div>
-              <div className="card-center">{card.icon}</div>
-              <div className="card-bottom">
-                <span>{heroCardBrand}</span>
-              </div>
-            </HeroCard>
-          ))}
-        </CardStack>
-      </HeroVisual>
+        <HeroVisual>
+          <CardStack className="hero-card-stack">
+            {cards.map((card, index) => {
+              const isLast = index === cards.length - 1;
+
+              // spread them out slightly more for better visibility of the "not covered" parts
+              const x = (index - 1) * 65;
+              const rotate = `${(index - 1) * 12}deg`;
+
+              const y = index * -15;
+              const zIndexVal = index;
+              const scale = isLast ? 1 : 0.95;
+              const opacity = isLast ? 1 : 0.8;
+
+              return (
+                <HeroCard
+                  key={index}
+                  className="hero-card"
+                  rotate={rotate}
+                  x={x}
+                  y={y}
+                  zIndex={zIndexVal}
+                  scale={scale}
+                  opacity={opacity}
+                  hoverStyle={{ scale: 1.05, filter: 'blur(0px)', rotate }}
+                >
+                  <YStack
+                    position="absolute"
+                    inset={0}
+                    zIndex={0}
+                    pointerEvents="none"
+                    opacity={0.6}
+                    backgroundColor={card.colorToken}
+                  />
+                  <XStack
+                    position="relative"
+                    zIndex={1}
+                    justifyContent="space-between"
+                  >
+                    <Text color="white" fontWeight="bold">
+                      {t(card.name as TranslationKey) || card.name}
+                    </Text>
+                    <Text>{card.icon}</Text>
+                  </XStack>
+                  <YStack
+                    position="relative"
+                    zIndex={1}
+                    alignItems="center"
+                    justifyContent="center"
+                    flex={1}
+                  >
+                    <Text fontSize={120} lineHeight={120}>
+                      {card.icon}
+                    </Text>
+                  </YStack>
+                  <XStack
+                    position="relative"
+                    zIndex={1}
+                    justifyContent="center"
+                  >
+                    <Text
+                      color="white"
+                      opacity={0.7}
+                      fontWeight="bold"
+                      letterSpacing={2}
+                    >
+                      {heroCardBrand}
+                    </Text>
+                  </XStack>
+                </HeroCard>
+              );
+            })}
+          </CardStack>
+        </HeroVisual>
+      </SectionContainer>
     </HeroSection>
   );
 }

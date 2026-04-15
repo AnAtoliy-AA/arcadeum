@@ -1,231 +1,237 @@
-import type { DeepPartial, Locale } from '../types';
+import type { DeepPartial } from '../base-types';
 
-const commonMessagesDefinition = {
-  en: {
-    languageNames: {
-      en: 'English',
-      es: 'Spanish',
-      fr: 'French',
-      ru: 'Russian',
-      by: 'Belarusian',
-    },
-    labels: {
-      email: 'Email',
-      password: 'Password',
-      confirmPassword: 'Confirm password',
-      username: 'Username',
-    },
-    actions: {
-      login: 'Sign in',
-      register: 'Create account',
-      logout: 'Sign out',
-      openApp: 'Open app',
-      support: 'Support',
-      supportTeam: 'Support Team',
-      loggedInAs: 'Logged in as',
-      changeAccount: 'Change account',
-      close: 'Close',
-    },
-    prompts: {
-      haveAccount: 'Already have an account?',
-      needAccount: 'Need an account?',
-    },
-    statuses: {
-      authenticated: 'You are signed in.',
-    },
-    roles: {
-      free: 'Free',
-      premium: 'Premium',
-      vip: 'VIP',
-      supporter: 'Supporter',
-      moderator: 'Mod',
-      tester: 'Tester',
-      developer: 'Dev',
-      admin: 'Admin',
-      user: 'User',
-    },
+export const en = {
+  languageNames: {
+    en: 'English',
+    es: 'Spanish',
+    fr: 'French',
+    ru: 'Russian',
+    by: 'Belarusian',
   },
-  es: {
-    languageNames: {
-      en: 'Inglés',
-      es: 'Español',
-      fr: 'Francés',
-      ru: 'Ruso',
-      by: 'Bielorruso',
-    },
-    labels: {
-      email: 'Correo electrónico',
-      password: 'Contraseña',
-      confirmPassword: 'Confirmar contraseña',
-      username: 'Nombre de usuario',
-    },
-    actions: {
-      login: 'Iniciar sesión',
-      register: 'Crear cuenta',
-      logout: 'Cerrar sesión',
-      openApp: 'Abrir app',
-      support: 'Soporte',
-      supportTeam: 'Equipo de soporte',
-      loggedInAs: 'Sesión iniciada como',
-      changeAccount: 'Cambiar cuenta',
-      close: 'Cerrar',
-    },
-    prompts: {
-      haveAccount: '¿Ya tienes una cuenta?',
-      needAccount: '¿Necesitas una cuenta?',
-    },
-    statuses: {
-      authenticated: 'Has iniciado sesión.',
-    },
-    roles: {
-      free: 'Gratis',
-      premium: 'Premium',
-      vip: 'VIP',
-      supporter: 'Colaborador',
-      moderator: 'Mod',
-      tester: 'Tester',
-      developer: 'Dev',
-      admin: 'Admin',
-      user: 'Usuario',
-    },
+  labels: {
+    email: 'Email',
+    password: 'Password',
+    confirmPassword: 'Confirm password',
+    username: 'Username',
   },
-  fr: {
-    languageNames: {
-      en: 'Anglais',
-      es: 'Espagnol',
-      fr: 'Français',
-      ru: 'Russe',
-      by: 'Biélorusse',
-    },
-    labels: {
-      email: 'E-mail',
-      password: 'Mot de passe',
-      confirmPassword: 'Confirmer le mot de passe',
-      username: "Nom d'utilisateur",
-    },
-    actions: {
-      login: 'Se connecter',
-      register: "S'inscrire",
-      logout: 'Se déconnecter',
-      openApp: "Ouvrir l'application",
-      support: 'Support',
-      supportTeam: 'Équipe de support',
-      loggedInAs: 'Connecté en tant que',
-      changeAccount: 'Changer de compte',
-      close: 'Fermer',
-    },
-    prompts: {
-      haveAccount: 'Vous avez déjà un compte ?',
-      needAccount: "Besoin d'un compte ?",
-    },
-    statuses: {
-      authenticated: 'Vous êtes connecté.',
-    },
-    roles: {
-      free: 'Gratuit',
-      premium: 'Premium',
-      vip: 'VIP',
-      supporter: 'Supporteur',
-      moderator: 'Mod',
-      tester: 'Testeur',
-      developer: 'Dev',
-      admin: 'Admin',
-      user: 'Utilisateur',
-    },
+  actions: {
+    login: 'Sign in',
+    register: 'Create account',
+    logout: 'Sign out',
+    openApp: 'Open app',
+    support: 'Support',
+    supportTeam: 'Support Team',
+    loggedInAs: 'Logged in as',
+    changeAccount: 'Change account',
+    close: 'Close',
   },
-  ru: {
-    languageNames: {
-      en: 'Английский',
-      es: 'Испанский',
-      fr: 'Французский',
-      ru: 'Русский',
-      by: 'Белорусский',
-    },
-    labels: {
-      email: 'Email',
-      password: 'Пароль',
-      confirmPassword: 'Подтвердите пароль',
-      username: 'Имя пользователя',
-    },
-    actions: {
-      login: 'Войти',
-      register: 'Создать аккаунт',
-      logout: 'Выйти',
-      openApp: 'Открыть приложение',
-      support: 'Поддержка',
-      supportTeam: 'Служба поддержки',
-      loggedInAs: 'Вы вошли как',
-      changeAccount: 'Сменить аккаунт',
-      close: 'Закрыть',
-    },
-    prompts: {
-      haveAccount: 'Уже есть аккаунт?',
-      needAccount: 'Нужен аккаунт?',
-    },
-    statuses: {
-      authenticated: 'Вы вошли в систему.',
-    },
-    roles: {
-      free: 'Бесплатный',
-      premium: 'Премиум',
-      vip: 'VIP',
-      supporter: 'Поддержка',
-      moderator: 'Мод',
-      tester: 'Тестер',
-      developer: 'Разработчик',
-      admin: 'Админ',
-      user: 'Пользователь',
-    },
+  prompts: {
+    haveAccount: 'Already have an account?',
+    needAccount: 'Need an account?',
   },
-  by: {
-    languageNames: {
-      en: 'Англійская',
-      es: 'Іспанская',
-      fr: 'Французская',
-      ru: 'Руская',
-      by: 'Беларуская',
-    },
-    labels: {
-      email: 'Email',
-      password: 'Пароль',
-      confirmPassword: 'Пацвердзіце пароль',
-      username: 'Імя карыстальніка',
-    },
-    actions: {
-      login: 'Увайсці',
-      register: 'Стварыць акаўнт',
-      logout: 'Выйсці',
-      openApp: 'Адкрыць прыкладанне',
-      support: 'Падтрымка',
-      supportTeam: 'Служба падтрымкі',
-      loggedInAs: 'Вы ўвайшлі як',
-      changeAccount: 'Змяніць акаўнт',
-      close: 'Зачыніць',
-    },
-    prompts: {
-      haveAccount: 'Ужо ёсць акаўнт?',
-      needAccount: 'Патрэбен акаўнт?',
-    },
-    statuses: {
-      authenticated: 'Вы ўвайшлі ў сістэму.',
-    },
-    roles: {
-      free: 'Бясплатны',
-      premium: 'Прэміум',
-      vip: 'VIP',
-      supporter: 'Падтрымка',
-      moderator: 'Мод',
-      tester: 'Тэстар',
-      developer: 'Распрацоўшчык',
-      admin: 'Адмін',
-      user: 'Карыстальнік',
-    },
+  statuses: {
+    authenticated: 'You are signed in.',
   },
-} satisfies Record<Locale, Record<string, unknown>>;
+  roles: {
+    free: 'Free',
+    premium: 'Premium',
+    vip: 'VIP',
+    supporter: 'Supporter',
+    moderator: 'Mod',
+    tester: 'Tester',
+    developer: 'Dev',
+    admin: 'Admin',
+    user: 'User',
+  },
+};
 
-export const commonMessages = commonMessagesDefinition;
+export const es = {
+  languageNames: {
+    en: 'Inglés',
+    es: 'Español',
+    fr: 'Francés',
+    ru: 'Ruso',
+    by: 'Bielorruso',
+  },
+  labels: {
+    email: 'Correo electrónico',
+    password: 'Contraseña',
+    confirmPassword: 'Confirmar contraseña',
+    username: 'Nombre de usuario',
+  },
+  actions: {
+    login: 'Iniciar sesión',
+    register: 'Crear cuenta',
+    logout: 'Cerrar sesión',
+    openApp: 'Abrir app',
+    support: 'Soporte',
+    supportTeam: 'Equipo de soporte',
+    loggedInAs: 'Sesión iniciada como',
+    changeAccount: 'Cambiar cuenta',
+    close: 'Cerrar',
+  },
+  prompts: {
+    haveAccount: '¿Ya tienes una cuenta?',
+    needAccount: '¿Necesitas una cuenta?',
+  },
+  statuses: {
+    authenticated: 'Has iniciado sesión.',
+  },
+  roles: {
+    free: 'Gratis',
+    premium: 'Premium',
+    vip: 'VIP',
+    supporter: 'Colaborador',
+    moderator: 'Mod',
+    tester: 'Tester',
+    developer: 'Dev',
+    admin: 'Admin',
+    user: 'Usuario',
+  },
+};
+
+export const fr = {
+  languageNames: {
+    en: 'Anglais',
+    es: 'Espagnol',
+    fr: 'Français',
+    ru: 'Russe',
+    by: 'Biélorusse',
+  },
+  labels: {
+    email: 'E-mail',
+    password: 'Mot de passe',
+    confirmPassword: 'Confirmer le mot de passe',
+    username: "Nom d'utilisateur",
+  },
+  actions: {
+    login: 'Se connecter',
+    register: "S'inscrire",
+    logout: 'Se déconnecter',
+    openApp: "Ouvrir l'application",
+    support: 'Support',
+    supportTeam: 'Équipe de support',
+    loggedInAs: 'Connecté en tant que',
+    changeAccount: 'Changer de compte',
+    close: 'Fermer',
+  },
+  prompts: {
+    haveAccount: 'Vous avez déjà un compte ?',
+    needAccount: "Besoin d'un compte ?",
+  },
+  statuses: {
+    authenticated: 'Vous êtes connecté.',
+  },
+  roles: {
+    free: 'Gratuit',
+    premium: 'Premium',
+    vip: 'VIP',
+    supporter: 'Supporteur',
+    moderator: 'Mod',
+    tester: 'Testeur',
+    developer: 'Dev',
+    admin: 'Admin',
+    user: 'Utilisateur',
+  },
+};
+
+export const ru = {
+  languageNames: {
+    en: 'Английский',
+    es: 'Испанский',
+    fr: 'Французский',
+    ru: 'Русский',
+    by: 'Белорусский',
+  },
+  labels: {
+    email: 'Email',
+    password: 'Пароль',
+    confirmPassword: 'Подтвердите пароль',
+    username: 'Имя пользователя',
+  },
+  actions: {
+    login: 'Войти',
+    register: 'Создать аккаунт',
+    logout: 'Выйти',
+    openApp: 'Открыть приложение',
+    support: 'Поддержка',
+    supportTeam: 'Служба поддержки',
+    loggedInAs: 'Вы вошли как',
+    changeAccount: 'Сменить аккаунт',
+    close: 'Закрыть',
+  },
+  prompts: {
+    haveAccount: 'Уже есть аккаунт?',
+    needAccount: 'Нужен аккаунт?',
+  },
+  statuses: {
+    authenticated: 'Вы вошли в систему.',
+  },
+  roles: {
+    free: 'Бесплатный',
+    premium: 'Премиум',
+    vip: 'VIP',
+    supporter: 'Поддержка',
+    moderator: 'Мод',
+    tester: 'Тестер',
+    developer: 'Разработчик',
+    admin: 'Админ',
+    user: 'Пользователь',
+  },
+};
+
+export const by = {
+  languageNames: {
+    en: 'Англійская',
+    es: 'Іспанская',
+    fr: 'Французская',
+    ru: 'Руская',
+    by: 'Беларуская',
+  },
+  labels: {
+    email: 'Email',
+    password: 'Пароль',
+    confirmPassword: 'Пацвердзіце пароль',
+    username: 'Імя карыстальніка',
+  },
+  actions: {
+    login: 'Увайсці',
+    register: 'Стварыць акаўнт',
+    logout: 'Выйсці',
+    openApp: 'Адкрыць прыкладанне',
+    support: 'Падтрымка',
+    supportTeam: 'Служба падтрымкі',
+    loggedInAs: 'Вы ўвайшлі як',
+    changeAccount: 'Змяніць акаўнт',
+    close: 'Зачыніць',
+  },
+  prompts: {
+    haveAccount: 'Ужо ёсць акаўнт?',
+    needAccount: 'Патрэбен акаўнт?',
+  },
+  statuses: {
+    authenticated: 'Вы ўвайшлі ў сістэму.',
+  },
+  roles: {
+    free: 'Бясплатны',
+    premium: 'Прэміум',
+    vip: 'VIP',
+    supporter: 'Падтрымка',
+    moderator: 'Мод',
+    tester: 'Тэстар',
+    developer: 'Распрацоўшчык',
+    admin: 'Адмін',
+    user: 'Карыстальнік',
+  },
+};
+
+export const commonMessages = {
+  en,
+  es,
+  fr,
+  ru,
+  by,
+} as const;
 
 /** Derived type with Partial wrapper for backward compatibility */
-export type CommonMessages = DeepPartial<
-  (typeof commonMessagesDefinition)['en']
->;
+export type CommonMessages = DeepPartial<typeof en>;

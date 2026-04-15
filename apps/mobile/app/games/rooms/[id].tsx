@@ -1,1 +1,3 @@
-export { default } from '@/pages/GamesScreen/GameRoomScreen';
+import GameRoomScreen from '@/pages/GamesScreen/GameRoomScreen';
+
+export default GameRoomScreen;

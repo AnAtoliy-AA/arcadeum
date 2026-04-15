@@ -1,7 +1,11 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useState, useCallback, useMemo } from 'react';
+import { Text } from 'tamagui';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import type {
   ShipCell,
   ShipConfig,
@@ -37,7 +41,9 @@ import {
   PlacementActions,
 } from './styles';
 import { SeaBattleGrids } from './SeaBattleGrids';
-import { getTheme } from '../lib/theme';
+import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
+import type { SeaBattleTheme } from '../lib/theme';
+import { useDragPlacement } from '../hooks/useDragPlacement';
 
 interface ShipPlacementBoardProps {
   currentPlayer: SeaBattlePlayerState | null;
@@ -48,6 +54,26 @@ interface ShipPlacementBoardProps {
   onAutoPlace?: () => void;
 }
 
+function getCellBg(
+  state: number,
+  theme: SeaBattleTheme,
+  highlighted = false,
+  invalid = false,
+): string {
+  if (highlighted && invalid) return 'rgba(239, 68, 68, 0.2)';
+  if (highlighted) return theme.cellHover;
+  switch (state) {
+    case CELL_STATE.HIT:
+      return theme.hitColor;
+    case CELL_STATE.MISS:
+      return theme.missColor;
+    case CELL_STATE.SHIP:
+      return theme.shipColor;
+    default:
+      return theme.cellEmpty;
+  }
+}
+
 export function ShipPlacementBoard({
   currentPlayer,
   onPlaceShip,
@@ -55,13 +81,13 @@ export function ShipPlacementBoard({
   onResetPlacement,
   isPlacementComplete,
   onAutoPlace,
-  variant = 'classic',
-}: ShipPlacementBoardProps & { variant?: string }) {
+}: ShipPlacementBoardProps) {
   const [selectedShipId, setSelectedShipId] = useState<string | null>(null);
   const [isVertical, setIsVertical] = useState(false);
   const [hoveredCells, setHoveredCells] = useState<ShipCell[]>([]);
+  const [isInvalidHover, setIsInvalidHover] = useState(false);
   const { t } = useTranslation();
-  const theme = getTheme(variant);
+  const theme = useSeaBattleTheme();
 
   const placedShipIds = useMemo(() => {
     return new Set(currentPlayer?.ships.map((s) => s.id) || []);
@@ -76,6 +102,16 @@ export function ShipPlacementBoard({
   const selectedShip = useMemo(() => {
     return SHIPS.find((s) => s.id === selectedShipId) || null;
   }, [selectedShipId]);
+
+  const { getDragProps, getDropProps, handleDragEnd } = useDragPlacement({
+    board,
+    isVertical,
+    placedShipIds,
+    onPlaceShip,
+    setSelectedShipId,
+    setHoveredCells,
+    setIsInvalidHover,
+  });
 
   const canPlaceAt = useCallback(
     (row: number, col: number, ship: ShipConfig): boolean => {
@@ -101,8 +137,8 @@ export function ShipPlacementBoard({
         ];
 
         for (const [dr, dc] of directions) {
-          const r = cell.row + dr;
-          const c = cell.col + dc;
+          const r = cell.row + (dr ?? 0);
+          const c = cell.col + (dc ?? 0);
           if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
             if (board[r][c] === CELL_STATE.SHIP) {
               return false;
@@ -120,6 +156,7 @@ export function ShipPlacementBoard({
     (row: number, col: number) => {
       if (!selectedShip) {
         setHoveredCells([]);
+        setIsInvalidHover(false);
         return;
       }
 
@@ -129,10 +166,19 @@ export function ShipPlacementBoard({
         selectedShip.size,
         isVertical,
       );
-      if (cells && canPlaceAt(row, col, selectedShip)) {
-        setHoveredCells(cells);
-      } else {
+
+      if (!cells) {
         setHoveredCells([]);
+        setIsInvalidHover(false);
+        return;
+      }
+
+      if (canPlaceAt(row, col, selectedShip)) {
+        setHoveredCells(cells);
+        setIsInvalidHover(false);
+      } else {
+        setHoveredCells(cells);
+        setIsInvalidHover(true);
       }
     },
     [selectedShip, isVertical, canPlaceAt],
@@ -153,6 +199,7 @@ export function ShipPlacementBoard({
       onPlaceShip(selectedShip.id, cells);
       setSelectedShipId(null);
       setHoveredCells([]);
+      setIsInvalidHover(false);
     },
     [selectedShip, isVertical, canPlaceAt, onPlaceShip],
   );
@@ -164,60 +211,94 @@ export function ShipPlacementBoard({
   const isAllShipsPlaced = unplacedShips.length === 0;
 
   return (
-    <GameBoardWrapper>
+    <GameBoardWrapper onDragEnd={handleDragEnd}>
       <SeaBattleGrids>
         <BoardContainer>
           <PlacementHeader className="placement-header">
-            <h2
+            <Text
               data-testid="placement-instruction"
-              style={{ margin: 0, color: theme.textColor, fontSize: 'inherit' }}
+              color={theme.textColor}
+              fontSize="$5"
+              fontWeight="700"
+              margin={0}
               className="placement-title"
             >
               {t('games.sea_battle_v1.table.players.placeShips')}
-            </h2>
+            </Text>
           </PlacementHeader>
 
-          <PlayerSection $isMe $isActive={false} $theme={theme}>
-            <PlayerName $theme={theme}>
+          <PlayerSection
+            backgroundColor={theme.boardBackground}
+            borderColor={theme.cellBorder}
+          >
+            <PlayerName color={theme.textColor}>
               {t('games.sea_battle_v1.table.state.yourBoard')}
             </PlayerName>
             <BoardWithLabels>
               <div />
               <ColLabels>
                 {COL_LABELS.map((label) => (
-                  <Label key={label} $theme={theme}>
+                  <Label key={label} color={theme.textSecondaryColor}>
                     {label}
                   </Label>
                 ))}
               </ColLabels>
               <RowLabels>
                 {ROW_LABELS.map((label) => (
-                  <Label key={label} $theme={theme}>
+                  <Label key={label} color={theme.textSecondaryColor}>
                     {label}
                   </Label>
                 ))}
               </RowLabels>
               <BoardGrid
-                $theme={theme}
-                onMouseLeave={() => setHoveredCells([])}
+                backgroundColor={theme.boardBackground}
+                borderColor={theme.cellBorder}
                 data-testid="sea-battle-board-grid"
+                pointerEvents="auto"
               >
                 {board.map((row, rIndex) =>
                   row.map((cellState, cIndex) => {
                     const isHovered = hoveredCells.some(
                       (c) => c.row === rIndex && c.col === cIndex,
                     );
+                    const isInvalidCell = isHovered && isInvalidHover;
                     return (
                       <BoardCell
                         key={`${rIndex}-${cIndex}`}
-                        $state={cellState}
-                        $isClickable={!!selectedShip}
-                        $isHighlighted={isHovered}
-                        $theme={theme}
+                        isClickable={!!selectedShip}
+                        backgroundColor={getCellBg(
+                          cellState,
+                          theme,
+                          isHovered,
+                          isInvalidCell,
+                        )}
+                        borderColor={
+                          isInvalidCell
+                            ? 'rgba(239,68,68,0.6)'
+                            : theme.cellBorder
+                        }
+                        borderRadius={parseInt(theme.borderRadius) || 4}
                         data-row={rIndex}
                         data-col={cIndex}
+                        data-highlighted={isHovered ? 'true' : 'false'}
+                        className={
+                          isHovered && !isInvalidCell
+                            ? 'sb-valid-pulse'
+                            : undefined
+                        }
                         onMouseEnter={() => handleCellHover(rIndex, cIndex)}
-                        onClick={() => handleCellClick(rIndex, cIndex)}
+                        onMouseLeave={() => {
+                          handleCellHover(-1, -1);
+                          setIsInvalidHover(false);
+                        }}
+                        onPointerEnter={() => handleCellHover(rIndex, cIndex)}
+                        onPointerMove={() => handleCellHover(rIndex, cIndex)}
+                        onPointerLeave={() => {
+                          handleCellHover(-1, -1);
+                          setIsInvalidHover(false);
+                        }}
+                        onPress={() => handleCellClick(rIndex, cIndex)}
+                        {...getDropProps(rIndex, cIndex)}
                       />
                     );
                   }),
@@ -227,13 +308,29 @@ export function ShipPlacementBoard({
           </PlayerSection>
         </BoardContainer>
 
-        <ShipPalette $theme={theme} data-testid="sea-battle-ship-palette">
-          <h3
+        <ShipPalette
+          backgroundColor={theme.boardBackground}
+          borderColor={theme.cellBorder}
+          data-testid="sea-battle-ship-palette"
+        >
+          <Text
             className="ship-palette-title"
-            style={{ margin: '0 0 12px', color: theme.textColor }}
+            color={theme.textColor}
+            fontSize="$4"
+            fontWeight="600"
+            margin={0}
+            marginBottom="$2"
           >
             {t('games.sea_battle_v1.table.state.shipsPalette')}
-          </h3>
+          </Text>
+          <Text
+            fontSize={11}
+            color={theme.textSecondaryColor}
+            textAlign="center"
+            marginBottom="$2"
+          >
+            {t('games.sea_battle_v1.table.actions.dragHint' as TranslationKey)}
+          </Text>
           {SHIPS.map((ship) => {
             const isPlaced = placedShipIds.has(ship.id);
             const isSelected = selectedShipId === ship.id;
@@ -241,23 +338,31 @@ export function ShipPlacementBoard({
             return (
               <ShipItem
                 key={ship.id}
-                $size={ship.size}
-                $isPlaced={isPlaced}
-                $isSelected={isSelected}
-                $theme={theme}
-                onClick={() =>
+                isPlaced={isPlaced}
+                backgroundColor={
+                  isSelected ? theme.accentColor + '33' : theme.boardBackground
+                }
+                borderColor={isSelected ? theme.accentColor : theme.cellBorder}
+                className={isSelected ? 'sb-selected-glow' : undefined}
+                onPress={() =>
                   !isPlaced && setSelectedShipId(isSelected ? null : ship.id)
                 }
+                data-testid="ship-palette-item"
+                {...getDragProps(ship.id)}
               >
-                <ShipPreview $size={ship.size}>
+                <ShipPreview>
                   {Array(ship.size)
                     .fill(null)
                     .map((_, i) => (
-                      <ShipCellStyled key={i} $theme={theme} />
+                      <ShipCellStyled
+                        key={i}
+                        backgroundColor={theme.shipColor}
+                      />
                     ))}
                 </ShipPreview>
-                <ShipName $theme={theme}>
-                  {ship.name} ({ship.size}){isPlaced && ' ✓'}
+                <ShipName color={theme.textColor}>
+                  {ship.name} ({ship.size})
+                  {isPlaced ? ' ✓' : isSelected ? ' ◀' : ''}
                 </ShipName>
               </ShipItem>
             );
@@ -267,41 +372,46 @@ export function ShipPlacementBoard({
 
       <PlacementActions>
         <RotateButton
-          $theme={theme}
+          variant="secondary"
           onClick={handleRotate}
           disabled={!selectedShip}
         >
-          {t('games.sea_battle_v1.table.actions.rotate')} (
+          ↻ {t('games.sea_battle_v1.table.actions.rotate')} (
           {isVertical
             ? t('games.sea_battle_v1.table.state.vertical')
             : t('games.sea_battle_v1.table.state.horizontal')}
           )
         </RotateButton>
         <ActionButton
-          $variant="primary"
-          $theme={theme}
+          variant="primary"
           disabled={!isAllShipsPlaced || isPlacementComplete}
           onClick={onConfirmPlacement}
+          className={
+            isAllShipsPlaced && !isPlacementComplete
+              ? 'sb-valid-pulse'
+              : undefined
+          }
+          style={
+            isAllShipsPlaced && !isPlacementComplete
+              ? {
+                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  boxShadow: '0 2px 12px rgba(16,185,129,0.5)',
+                }
+              : undefined
+          }
         >
           {isPlacementComplete
             ? t('games.sea_battle_v1.table.actions.waitingForOthers')
-            : t('games.sea_battle_v1.table.actions.confirmPlacement')}
+            : `⚓ ${t('games.sea_battle_v1.table.actions.confirmPlacement')}`}
         </ActionButton>
         {placedShipIds.size > 0 && !isPlacementComplete && (
-          <ActionButton
-            $variant="secondary"
-            $theme={theme}
-            onClick={onResetPlacement}
-          >
-            {t('games.sea_battle_v1.table.actions.resetPlacement')}
+          <ActionButton variant="secondary" onClick={onResetPlacement}>
+            ↺ {t('games.sea_battle_v1.table.actions.resetPlacement')}
           </ActionButton>
         )}
         {!isPlacementComplete && onAutoPlace && (
-          <ActionButton
-            $variant="secondary"
-            $theme={theme}
-            onClick={onAutoPlace}
-          >
+          <ActionButton variant="secondary" onClick={onAutoPlace}>
+            🎲{' '}
             {placedShipIds.size > 0
               ? t('games.sea_battle_v1.table.actions.randomize')
               : t('games.sea_battle_v1.table.actions.autoPlace')}

@@ -44,17 +44,20 @@ test.describe('Sea Battle Lobby Color Preview', () => {
 
     // Check if color preview container is visible
     const colorPreview = page.getByTestId('color-preview-container');
-    await expect(colorPreview).toBeVisible();
+    await expect(colorPreview).toBeVisible({ timeout: 15000 });
 
     // Verify classic colors (approximate check of background-color)
     const shipSwatch = page.getByTestId('color-swatch-ship');
     await expect(shipSwatch).toHaveCSS(
       'background-color',
       'rgb(148, 163, 184)',
+      { timeout: 10000 },
     ); // #94a3b8
 
     const hitSwatch = page.getByTestId('color-swatch-hit');
-    await expect(hitSwatch).toHaveCSS('background-color', 'rgb(239, 68, 68)'); // #ef4444
+    await expect(hitSwatch).toHaveCSS('background-color', 'rgb(239, 68, 68)', {
+      timeout: 10000,
+    }); // #ef4444
 
     // Change variant to modern
     await mockRoomInfo(page, {
@@ -86,7 +89,7 @@ test.describe('Sea Battle Lobby Color Preview', () => {
     await waitForRoomReady(page);
 
     // Verify modern colors
-    await expect(shipSwatch).toHaveCSS('background-color', 'rgb(87, 195, 255)'); // #57c3ff
-    await expect(hitSwatch).toHaveCSS('background-color', 'rgb(255, 75, 75)'); // #ff4b4b
+    await expect(shipSwatch).toHaveCSS('background-color', 'rgb(87, 195, 255)', { timeout: 10000 }); // #57c3ff
+    await expect(hitSwatch).toHaveCSS('background-color', 'rgb(255, 75, 75)', { timeout: 10000 }); // #ff4b4b
   });
 });

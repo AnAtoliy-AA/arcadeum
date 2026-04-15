@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Button } from '@/shared/ui';
+import { Button } from '@arcadeum/ui';
 
 function trim(value?: string | null): string | undefined {
   if (!value) {

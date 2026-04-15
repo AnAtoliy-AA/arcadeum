@@ -1,6 +1,6 @@
 import type { LegalMessages } from './types';
 
-export const legalMessagesEs: LegalMessages = {
+export const es: LegalMessages = {
   nav: {
     terms: 'Términos',
     privacy: 'Privacidad',
@@ -174,7 +174,7 @@ export const legalMessagesEs: LegalMessages = {
           correction: 'Corrección: Solicitar la corrección de datos inexactos',
           deletion: 'Eliminación: Solicitar la eliminación de sus datos',
           portability:
-            'Portabilidad: Solicitar la transferencia de sus datos a otro servicio',
+            'Portability: Solicitar la transferencia de sus datos a otro servicio',
           objection:
             'Objeción: Oponerse a ciertas actividades de procesamiento',
         },
@@ -255,3 +255,5 @@ export const legalMessagesEs: LegalMessages = {
     },
   },
 };
+
+export const legalMessagesEs = es;

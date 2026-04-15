@@ -1,5 +1,7 @@
+import React from 'react';
 import { TableStats } from './TableStats';
 import { GameTable, TableBackground, PlayersRing } from './styles';
+import type { GameVariant } from '@arcadeum/ui';
 
 import { TableDecorations } from './TableDecorations';
 import { CenterTableSection } from './CenterTableSection';
@@ -45,9 +47,9 @@ export function GameTableSection({
 
   return (
     <GameTable>
-      <TableBackground $variant={cardVariant} />
-      <TableDecorations variant={cardVariant} />
-      <PlayersRing $playerCount={playerOrder.length}>
+      <TableBackground $variant={cardVariant as GameVariant} />
+      <TableDecorations $variant={cardVariant as GameVariant} />
+      <PlayersRing>
         {playerOrder.map((playerId, index) => {
           const player = players.find((p) => p.playerId === playerId);
           if (!player) return null;

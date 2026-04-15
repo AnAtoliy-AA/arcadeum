@@ -1,15 +1,17 @@
 import { useCallback, useMemo } from 'react';
-import {
-  GameRoomSummary,
-  CriticalSnapshot,
-  CriticalCard,
-  ALL_GAME_CARDS,
-} from '../types';
+import { GameRoomSummary, CriticalCard, ALL_GAME_CARDS } from '../types';
+
+interface GenericSnapshot {
+  players: Array<{
+    playerId: string;
+    alive: boolean;
+  }>;
+}
 
 interface DisplayNameResolverOptions {
   currentUserId: string | null;
   room: GameRoomSummary;
-  snapshot: CriticalSnapshot | null;
+  snapshot: GenericSnapshot | null;
   youLabel: string;
   translateCardType?: (cardType: CriticalCard) => string;
   seeTheFutureLabel?: string;

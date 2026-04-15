@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import { test, getIsMobile } from './fixtures/test-utils';
-import { navigateTo, mockSession } from './fixtures/test-utils';
+import { navigateTo, mockSession, handleRoute } from './fixtures/test-utils';
 
 test.describe('Player Stats', () => {
   test.beforeEach(async ({ page }) => {
@@ -12,64 +12,55 @@ test.describe('Player Stats', () => {
         return route.continue();
       }
       const url = route.request().url();
-      // Allow specifics to be handled by subsequent routes (Playwright LIFO means subsequent routes check FIRST)
       if (url.includes('stats') || url.includes('leaderboard')) {
         return route.continue();
       }
-      await route.fulfill({ status: 200, body: JSON.stringify({}) });
+      await handleRoute(route, {});
     });
 
     // Mock stats API
     await page.route('**/games/stats', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          totalGames: 10,
-          wins: 7,
-          losses: 3,
-          winRate: 70,
-          byGameType: [
-            {
-              gameId: 'critical_v1',
-              totalGames: 10,
-              wins: 7,
-              winRate: 70,
-            },
-          ],
-        }),
+      await handleRoute(route, {
+        totalGames: 10,
+        wins: 7,
+        losses: 3,
+        winRate: 70,
+        byGameType: [
+          {
+            gameId: 'critical_v1',
+            totalGames: 10,
+            wins: 7,
+            winRate: 70,
+          },
+        ],
       });
     });
 
     // Mock leaderboard API
     await page.route('**/games/leaderboard*', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          entries: [
-            {
-              rank: 1,
-              playerId: '507f191e810c19729de860ea',
-              username: 'testuser',
-              totalGames: 10,
-              wins: 7,
-              losses: 3,
-              winRate: 70,
-            },
-            {
-              rank: 2,
-              playerId: 'user-2',
-              username: 'proplayer',
-              totalGames: 20,
-              wins: 12,
-              losses: 8,
-              winRate: 60,
-            },
-          ],
-          hasMore: false,
-          total: 2,
-        }),
+      await handleRoute(route, {
+        entries: [
+          {
+            rank: 1,
+            playerId: '507f191e810c19729de860ea',
+            username: 'testuser',
+            totalGames: 10,
+            wins: 7,
+            losses: 3,
+            winRate: 70,
+          },
+          {
+            rank: 2,
+            playerId: '507f191e810c19729de860e2',
+            username: 'proplayer',
+            totalGames: 20,
+            wins: 12,
+            losses: 8,
+            winRate: 60,
+          },
+        ],
+        hasMore: false,
+        total: 2,
       });
     });
   });
@@ -82,7 +73,7 @@ test.describe('Player Stats', () => {
     ).toBeVisible();
     await expect(page.getByText('10', { exact: true }).first()).toBeVisible(); // Total games
     await expect(page.getByText('7', { exact: true }).first()).toBeVisible(); // Wins
-    await expect(page.getByText('70%')).toBeVisible(); // Win rate
+    await expect(page.getByText('70%').first()).toBeVisible(); // Win rate
     await expect(page.getByText('Critical', { exact: true })).toBeVisible(); // Game ID should be human readable
   });
 
@@ -119,24 +110,20 @@ test.describe('Player Stats', () => {
     page,
   }) => {
     await page.route('**/games/leaderboard*', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          entries: [
-            {
-              rank: 1,
-              playerId: '507f191e810c19729de860ea',
-              username: 'testuser',
-              totalGames: 10,
-              wins: 7,
-              losses: 3,
-              winRate: 70,
-            },
-          ],
-          hasMore: false,
-          total: 1,
-        }),
+      await handleRoute(route, {
+        entries: [
+          {
+            rank: 1,
+            playerId: '507f191e810c19729de860ea',
+            username: 'testuser',
+            totalGames: 10,
+            wins: 7,
+            losses: 3,
+            winRate: 70,
+          },
+        ],
+        hasMore: false,
+        total: 1,
       });
     });
 
@@ -150,13 +137,13 @@ test.describe('Player Stats', () => {
           .catch(() => leaderboardTab.dispatchEvent('click'));
       }
       const row = page
-        .locator('div[class*="LeaderboardRow"]')
+        .locator('div.stats-leaderboard-row')
         .filter({ hasText: 'testuser' });
       await expect(row).toBeVisible({ timeout: 5000 });
     }).toPass({ timeout: 20000 });
 
     // Check that 'anonymous' text is not present in the leaderboard rows
-    const leaderboardRows = page.locator('[class*="LeaderboardRow"]');
+    const leaderboardRows = page.locator('.stats-leaderboard-row');
     await expect(leaderboardRows).not.toContainText(/anonymous|аноним/i);
   });
 });

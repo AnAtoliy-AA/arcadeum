@@ -1,4 +1,4 @@
-import type { GameMetadata, BaseGameProps } from '../types';
+import type { GameMetadata, BaseGameWidgetProps } from '../types';
 import { gameLoaders } from '../registry';
 
 /**
@@ -6,7 +6,7 @@ import { gameLoaders } from '../registry';
  */
 export class GameFactory {
   private static instance: GameFactory;
-  private loadedGames: Map<string, React.ComponentType<BaseGameProps>> =
+  private loadedGames: Map<string, React.ComponentType<BaseGameWidgetProps>> =
     new Map();
   private gameMetadata: Map<string, GameMetadata> = new Map();
 
@@ -25,7 +25,7 @@ export class GameFactory {
    */
   public async loadGame(
     slug: string,
-  ): Promise<React.ComponentType<BaseGameProps>> {
+  ): Promise<React.ComponentType<BaseGameWidgetProps>> {
     // Return cached component if already loaded
     if (this.loadedGames.has(slug)) {
       return this.loadedGames.get(slug)!;
@@ -36,7 +36,7 @@ export class GameFactory {
       const gameModule = await gameLoaders[slug]();
 
       const GameComponent =
-        gameModule.default as React.ComponentType<BaseGameProps>;
+        gameModule.default as React.ComponentType<BaseGameWidgetProps>;
 
       if (!GameComponent) {
         throw new Error(`Game ${slug} has no default export`);
@@ -123,7 +123,7 @@ export class GameFactory {
    */
   public getLoadedGame(
     slug: string,
-  ): React.ComponentType<BaseGameProps> | null {
+  ): React.ComponentType<BaseGameWidgetProps> | null {
     return this.loadedGames.get(slug) || null;
   }
 

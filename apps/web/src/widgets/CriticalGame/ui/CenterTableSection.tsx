@@ -1,6 +1,7 @@
 import { CenterTable, CardSlot } from './styles';
 import { LastPlayedCardDisplay } from './LastPlayedCardDisplay';
 import { DeckDisplay } from './DeckDisplay';
+import type { GameVariant } from '@arcadeum/ui';
 import type { CriticalCard } from '../types';
 
 interface CenterTableSectionProps {
@@ -17,7 +18,7 @@ export function CenterTableSection({
   t,
 }: CenterTableSectionProps) {
   return (
-    <CenterTable $variant={cardVariant}>
+    <CenterTable $variant={cardVariant as GameVariant}>
       <CardSlot>
         <LastPlayedCardDisplay
           discardPile={discardPile}

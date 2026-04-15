@@ -15,8 +15,8 @@ import {
   CHAOS_PACK_CARDS,
   MarkedCardInfo,
   DEITY_PACK_CARDS,
-  GameSessionSummary,
 } from '@/shared/types/games';
+import type { BaseGameWidgetProps } from '@/features/games/types/base';
 
 /** Number of different cards required for the fiver combo */
 export const FIVER_COMBO_SIZE = 5;
@@ -24,16 +24,7 @@ export const FIVER_COMBO_SIZE = 5;
 /**
  * Props for the CriticalGame component
  */
-export interface CriticalGameProps {
-  roomId: string;
-  room: GameRoomSummary;
-  session: GameSessionSummary | null;
-  currentUserId: string | null;
-  isHost: boolean;
-  onPostHistoryNote?: (message: string, scope: 'all' | 'players') => void;
-  config?: unknown;
-  accessToken?: string | null;
-}
+export interface CriticalGameProps extends BaseGameWidgetProps {}
 
 /**
  * Event combo modal state

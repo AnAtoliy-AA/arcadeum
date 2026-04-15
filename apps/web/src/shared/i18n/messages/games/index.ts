@@ -1,50 +1,53 @@
-import type { Locale } from '../../types';
-import { criticalMessages, type CriticalGamesMessages } from './critical/index';
-import {
-  texasHoldemMessages,
-  type TexasHoldemGamesMessages,
-} from './texas-holdem';
-import { sharedMessages, type SharedGamesMessages } from './shared/index';
-import {
-  seaBattleMessages,
-  type SeaBattleGamesMessages,
-} from './sea-battle/index';
+import * as shared from './shared/index';
+import * as critical from './critical/index';
+import * as texasHoldem from './texas-holdem';
+import * as seaBattle from './sea-battle/index';
 
 /** Combined games messages type derived from actual message objects */
-export type GamesMessagesBundle = SharedGamesMessages &
-  CriticalGamesMessages &
-  TexasHoldemGamesMessages &
-  SeaBattleGamesMessages;
+export type GamesMessagesBundle = shared.SharedGamesMessages &
+  critical.CriticalGamesMessages &
+  texasHoldem.TexasHoldemGamesMessages &
+  seaBattle.SeaBattleGamesMessages;
 
-export const gamesMessages: Record<Locale, GamesMessagesBundle> = {
-  en: {
-    ...sharedMessages.en,
-    ...criticalMessages.en,
-    ...texasHoldemMessages.en,
-    ...seaBattleMessages.en,
-  },
-  es: {
-    ...sharedMessages.es,
-    ...criticalMessages.es,
-    ...texasHoldemMessages.es,
-    ...seaBattleMessages.es,
-  },
-  fr: {
-    ...sharedMessages.fr,
-    ...criticalMessages.fr,
-    ...texasHoldemMessages.fr,
-    ...seaBattleMessages.fr,
-  },
-  ru: {
-    ...sharedMessages.ru,
-    ...criticalMessages.ru,
-    ...texasHoldemMessages.ru,
-    ...seaBattleMessages.ru,
-  },
-  by: {
-    ...sharedMessages.by,
-    ...criticalMessages.by,
-    ...texasHoldemMessages.by,
-    ...seaBattleMessages.by,
-  },
-} as Record<Locale, GamesMessagesBundle>;
+export const en = {
+  ...shared.en,
+  ...critical.en,
+  ...texasHoldem.en,
+  ...seaBattle.en,
+};
+
+export const es = {
+  ...shared.es,
+  ...critical.es,
+  ...texasHoldem.es,
+  ...seaBattle.es,
+};
+
+export const fr = {
+  ...shared.fr,
+  ...critical.fr,
+  ...texasHoldem.fr,
+  ...seaBattle.fr,
+};
+
+export const ru = {
+  ...shared.ru,
+  ...critical.ru,
+  ...texasHoldem.ru,
+  ...seaBattle.ru,
+};
+
+export const by = {
+  ...shared.by,
+  ...critical.by,
+  ...texasHoldem.by,
+  ...seaBattle.by,
+};
+
+export const gamesMessages = {
+  en,
+  es,
+  fr,
+  ru,
+  by,
+} as const;

@@ -10,7 +10,7 @@ import {
 } from './styles';
 
 import { GAME_VARIANT } from '../lib/constants';
-import { GameVariant } from '@arcadeum/ui';
+import type { GameVariant } from '@arcadeum/ui';
 
 interface TableStatsProps {
   deckCount: number;

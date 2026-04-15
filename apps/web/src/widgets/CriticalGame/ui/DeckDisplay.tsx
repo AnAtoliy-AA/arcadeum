@@ -12,7 +12,7 @@ import {
 } from './styles';
 import { CardImage } from './styles/card-image';
 import { GradientScrim } from './styles/cards-base';
-import { GameVariant } from '@arcadeum/ui';
+import type { GameVariant } from '@arcadeum/ui';
 
 interface DeckDisplayProps {
   deck: CriticalCard[];

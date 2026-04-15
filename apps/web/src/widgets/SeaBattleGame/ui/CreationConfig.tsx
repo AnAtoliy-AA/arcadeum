@@ -34,7 +34,9 @@ export function SeaBattleCreationConfig({
     if (!options.variant) {
       onChange({ ...options, variant: 'classic' });
     }
-  }, [options, onChange]);
+    // Only run when variant is truly missing to avoid re-triggering parent URL sync
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.variant]);
 
   return (
     <>
@@ -54,7 +56,7 @@ export function SeaBattleCreationConfig({
           {SEA_BATTLE_VARIANTS.map((variant) => (
             <GameTileContainer
               key={variant.id}
-              onClick={() => onChange({ ...options, variant: variant.id })}
+              onPress={() => onChange({ ...options, variant: variant.id })}
             >
               <GameTileItem active={options.variant === variant.id}>
                 <SelectionIndicator active={options.variant === variant.id} />

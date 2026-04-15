@@ -10,9 +10,14 @@ import {
   OptionButton,
   ModalActions,
   ModalButton,
+  Card,
+  CardFrame,
+  CardCorner,
+  GradientScrim,
 } from '../styles';
+import { CardImage } from '../styles/card-image';
 import { type GameVariant } from '@arcadeum/ui';
-import { getCardEmoji, getCardTranslationKey } from '../../lib/cardUtils';
+import { getCardTranslationKey } from '../../lib/cardUtils';
 import type { CriticalCard } from '../../types';
 
 interface SeeTheFutureModalProps {
@@ -52,13 +57,28 @@ export const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
               key={`${card}-${index}`}
               $selected={false}
               $variant={cardVariant as GameVariant}
+              padding={0}
+              height="auto"
             >
-              <YStack alignItems="center">
+              <YStack alignItems="center" width={100} gap="$2" padding="$2">
                 <Text fontSize="$2" opacity={0.7}>
                   #{index + 1}
                 </Text>
-                <Text fontSize="$8">{getCardEmoji(card)}</Text>
-                <Text fontSize="$2" textAlign="center">
+                <Card
+                  $cardType={card}
+                  $variant={cardVariant as GameVariant}
+                  width="100%"
+                  cursor="default"
+                >
+                  <CardCorner $position="tl" $variant={cardVariant} />
+                  <CardCorner $position="tr" $variant={cardVariant} />
+                  <CardCorner $position="bl" $variant={cardVariant} />
+                  <CardCorner $position="br" $variant={cardVariant} />
+                  <CardFrame $variant={cardVariant} />
+                  <CardImage variant={cardVariant ?? ''} cardType={card} />
+                  <GradientScrim />
+                </Card>
+                <Text fontSize="$2" textAlign="center" numberOfLines={1}>
                   {t(getCardTranslationKey(card, cardVariant)) || card}
                 </Text>
               </YStack>

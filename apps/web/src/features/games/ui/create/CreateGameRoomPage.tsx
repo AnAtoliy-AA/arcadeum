@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { useMutation } from '@/shared/hooks/useMutation';
 import { useRefreshStore } from '@/shared/model/useRefreshStore';
@@ -77,12 +77,13 @@ export function CreateGameRoomPage() {
   const { t } = useTranslation();
   const triggerRefresh = useRefreshStore((state) => state.triggerRefresh);
 
-  const initialGameId = useMemo(() => {
-    const gameId = searchParams?.get('gameId');
-    return gameId && visibleGames.some((g) => g.id === gameId)
-      ? gameId
-      : visibleGames[0]?.id || '';
-  }, [searchParams]);
+  // 1. Source of Truth: URL
+  const gameId = searchParams?.get('gameId') || visibleGames[0].id;
+  const urlVariant = searchParams?.get('variant');
+
+  // 2. Local state for non-URL options (expansions, house rules, etc.)
+  const [localOptions, setLocalOptions] = useState<Record<string, unknown>>({});
+  const [pendingVariant, setPendingVariant] = useState<string | null>(null);
 
   const { messages } = useLanguage();
   const homeCopy = messages.home ?? {};
@@ -95,32 +96,129 @@ export function CreateGameRoomPage() {
     );
   }, [snapshot.displayName, snapshot.username, homeCopy.defaultRoomName]);
 
-  const [gameId, setGameId] = useState(initialGameId);
   const [name, setName] = useState(defaultRoomName);
-  const isNameEdited = useRef(false);
+  // Initialize prevDefaultRoomName for the effect
+  const [prevDefaultRoomName, setPrevDefaultRoomName] =
+    useState(defaultRoomName);
+  const [isNameEdited, setIsNameEdited] = useState(false);
 
-  useEffect(() => {
-    if (
-      !isNameEdited.current &&
-      defaultRoomName &&
-      defaultRoomName !== "Anonymous's game"
-    ) {
-      queueMicrotask(() => {
-        setName(defaultRoomName);
-      });
+  // Sync name with defaultRoomName if it hasn't been edited
+  if (
+    !isNameEdited &&
+    defaultRoomName &&
+    defaultRoomName !== prevDefaultRoomName
+  ) {
+    setPrevDefaultRoomName(defaultRoomName);
+    // Avoid resetting to a generic name if we have something better (except if truly anonymous)
+    if (defaultRoomName !== "Anonymous's game" || !name) {
+      setName(defaultRoomName);
     }
-  }, [defaultRoomName]);
+  }
 
   const [visibility, setVisibility] = useState<'public' | 'private'>('public');
   const [maxPlayers, setMaxPlayers] = useState('');
   const [notes, setNotes] = useState('');
-  const [gameOptions, setGameOptions] = useState<Record<string, unknown>>({});
 
-  // Reset options when game changes
-  const handleGameChange = (newGameId: string) => {
-    setGameId(newGameId);
-    setGameOptions({});
-  };
+  // 3. Derived game options (merging URL variant with local options)
+  // Use pendingVariant if available to bridge the gap during URL updates
+  const gameOptions = useMemo(() => {
+    const variantValue = pendingVariant || urlVariant || undefined;
+    const options = { ...localOptions };
+
+    // Inject the correct variant key based on the game
+    if (gameId === 'critical_v1') {
+      return { ...options, cardVariant: variantValue };
+    }
+    if (gameId === 'sea_battle_v1') {
+      return { ...options, variant: variantValue };
+    }
+
+    return options;
+  }, [localOptions, urlVariant, pendingVariant, gameId]);
+
+  // Adjust pending variant during rendering if the URL has caught up.
+  // This avoids the cascading render warning from useEffect.
+  if (pendingVariant !== null && urlVariant === pendingVariant) {
+    setPendingVariant(null);
+  }
+
+  // 4. State Update Handlers
+  const updateUrl = useCallback(
+    (updates: { gameId?: string; variant?: string | null }) => {
+      const params = new URLSearchParams(searchParams?.toString());
+
+      if (updates.gameId !== undefined) {
+        params.set('gameId', updates.gameId);
+        // Clear variant when switching games to avoid invalid theme links
+        if (!updates.variant) params.delete('variant');
+      }
+      if (updates.variant !== undefined) {
+        if (updates.variant) {
+          params.set('variant', updates.variant);
+        } else {
+          params.delete('variant');
+        }
+      }
+
+      router.replace(`${routes.games}/create?${params.toString()}`, {
+        scroll: false,
+      });
+    },
+    [router, searchParams],
+  );
+
+  const handleGameChange = useCallback(
+    (newGameId: string) => {
+      setLocalOptions({}); // Clear local options when switching games
+      setPendingVariant(null);
+      updateUrl({ gameId: newGameId, variant: null });
+    },
+    [updateUrl],
+  );
+
+  const handleOptionsChange = useCallback(
+    (newOptions: Record<string, unknown>) => {
+      const { cardVariant, variant, ...rest } = newOptions;
+
+      // Determine which variant value to use based on the game
+      let newVariant: string | undefined;
+      if (gameId === 'critical_v1') {
+        newVariant = cardVariant as string | undefined;
+      } else if (gameId === 'sea_battle_v1') {
+        newVariant = variant as string | undefined;
+      } else {
+        newVariant = (cardVariant || variant) as string | undefined;
+      }
+
+      const isChanged =
+        newVariant !== undefined &&
+        newVariant !== urlVariant &&
+        newVariant !== pendingVariant;
+
+      if (isChanged) {
+        setPendingVariant(newVariant!);
+        updateUrl({ variant: newVariant! });
+      } else if (newVariant === undefined && urlVariant) {
+        setPendingVariant(null);
+        updateUrl({ variant: null });
+      }
+
+      setLocalOptions(rest);
+    },
+    [updateUrl, urlVariant, pendingVariant, gameId],
+  );
+
+  const handleNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setName(e.target.value);
+      setIsNameEdited(true);
+    },
+    [],
+  );
+
+  const handleNameFocus = useCallback(() => {
+    setIsNameEdited(true);
+  }, []);
 
   const {
     mutate: createRoom,
@@ -195,7 +293,7 @@ export function CreateGameRoomPage() {
                   <GameTileContainer
                     key={game.id}
                     disabled={!game.isPlayable}
-                    onClick={() => game.isPlayable && handleGameChange(game.id)}
+                    onPress={() => game.isPlayable && handleGameChange(game.id)}
                     data-testid={`game-tile-${game.id}`}
                   >
                     <GameTileItem
@@ -219,7 +317,7 @@ export function CreateGameRoomPage() {
             {GameConfigComponent && (
               <GameConfigComponent
                 options={gameOptions}
-                onChange={setGameOptions}
+                onChange={handleOptionsChange}
               />
             )}
 
@@ -236,10 +334,8 @@ export function CreateGameRoomPage() {
                     t('games.create.namePlaceholder') || 'Enter room name'
                   }
                   value={name}
-                  onChange={(e) => {
-                    setName(e.target.value);
-                    isNameEdited.current = true;
-                  }}
+                  onChange={handleNameChange}
+                  onFocus={handleNameFocus}
                   required
                   aria-required="true"
                   fullWidth
@@ -259,20 +355,6 @@ export function CreateGameRoomPage() {
                   htmlFor="max-players"
                 >
                   <XStack gap="$2" alignItems="flex-start">
-                    {maxPlayers ? (
-                      <YStack flexShrink={0} width={80} justifyContent="center">
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          onPress={() => setMaxPlayers('')}
-                          size="lg"
-                          aria-label="Set to Auto"
-                          width="100%"
-                        >
-                          {t('games.create.autoButton') || 'Auto'}
-                        </Button>
-                      </YStack>
-                    ) : null}
                     <Input
                       key="max-players-input"
                       id="max-players"
@@ -295,6 +377,25 @@ export function CreateGameRoomPage() {
                       fullWidth
                       size="lg"
                     />
+                    {maxPlayers ? (
+                      <YStack
+                        flexShrink={0}
+                        width={150}
+                        justifyContent="center"
+                      >
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          onPress={() => setMaxPlayers('')}
+                          size="lg"
+                          aria-label="Set to Auto"
+                          data-testid="auto-max-players-button"
+                          width="100%"
+                        >
+                          {t('games.create.autoButton') || 'Auto'}
+                        </Button>
+                      </YStack>
+                    ) : null}
                   </XStack>
                 </FormGroup>
 

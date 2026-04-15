@@ -13,10 +13,11 @@ import {
   RulesText,
   RulesTextPre,
 } from './styles';
-import { Card } from './styles/cards';
+import { Card, CardFrame, CardCorner, GradientScrim } from './styles';
+import { CardImage } from './styles/card-image';
 import { CARD_GROUPS } from '../lib/constants';
 import { CriticalCard } from '../types';
-import { GameVariant } from '@arcadeum/ui';
+import type { GameVariant } from '@arcadeum/ui';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { CloseIcon } from '@/shared/ui';
 
@@ -231,7 +232,19 @@ export function RulesModal({
                       <Card
                         $cardType={cardKey as CriticalCard}
                         $variant={currentVariant as string}
-                      />
+                        cursor="default"
+                      >
+                        <CardCorner $position="tl" $variant={currentVariant} />
+                        <CardCorner $position="tr" $variant={currentVariant} />
+                        <CardCorner $position="bl" $variant={currentVariant} />
+                        <CardCorner $position="br" $variant={currentVariant} />
+                        <CardFrame $variant={currentVariant} />
+                        <CardImage
+                          variant={currentVariant ?? ''}
+                          cardType={cardKey}
+                        />
+                        <GradientScrim />
+                      </Card>
                     </CardVisual>
                     <CardInfo>
                       <CardName>{getCardName(cardKey)}</CardName>

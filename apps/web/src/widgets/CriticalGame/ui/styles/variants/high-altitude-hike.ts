@@ -159,7 +159,7 @@ export const highAltitudeHikeVariantStyles: VariantStyleConfig = {
     deckBorderColor: COLORS.primary,
     getHoverGlow: () => `0 0 24px ${COLORS.primary}cc`,
     getCardNameColor: () => COLORS.accent,
-    getCardSpriteUrl: () => '/images/cards/high-altitude-hike_sprites.png',
+    getCardSpriteUrl: () => '/images/cards/high_altitude_hike_sprites.png',
     getCardNameStyles: () => ({
       fontFamily: '"Inter", sans-serif',
       fontWeight: 900,

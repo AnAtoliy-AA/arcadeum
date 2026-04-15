@@ -12,13 +12,14 @@ import {
   CardCorner,
   CardFrame,
   CardInner,
-  CardEmoji,
   CardName,
   ModalActions,
   ModalButton,
+  GradientScrim,
 } from '../styles';
+import { CardImage } from '../styles/card-image';
 import { type GameVariant } from '@arcadeum/ui';
-import { getCardEmoji, getCardTranslationKey } from '../../lib/cardUtils';
+import { getCardTranslationKey } from '../../lib/cardUtils';
 import type { CriticalCard } from '../../types';
 
 interface StashModalProps {
@@ -110,7 +111,8 @@ export const StashModal: React.FC<StashModalProps> = ({
                   <CardCorner $position="br" />
                   <CardFrame />
                   <CardInner>
-                    <CardEmoji>{getCardEmoji(card)}</CardEmoji>
+                    <CardImage variant={cardVariant ?? ''} cardType={card} />
+                    <GradientScrim />
                     <CardName>
                       {t(getCardTranslationKey(card, cardVariant))}
                     </CardName>

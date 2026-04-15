@@ -1,4 +1,5 @@
 import React from 'react';
+import { YStack } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -11,9 +12,14 @@ import {
   OptionButton,
   ModalActions,
   ModalButton,
+  Card,
+  CardFrame,
+  CardCorner,
+  GradientScrim,
 } from './styles';
+import { CardImage } from './styles/card-image';
 import { type GameVariant } from '@arcadeum/ui';
-import { getCardEmoji, getCardTranslationKey } from '../lib/cardUtils';
+import { getCardTranslationKey } from '../lib/cardUtils';
 import type { OmniscienceModalState } from '../types';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 
@@ -69,11 +75,45 @@ export function OmniscienceModal({
                     key={`${hand.playerId}-${idx}`}
                     $selected={false}
                     $variant={cardVariant as GameVariant}
+                    padding={0}
+                    height="auto"
                   >
-                    <div style={{ fontSize: '2rem' }}>{getCardEmoji(card)}</div>
-                    <div style={{ fontSize: '0.75rem' }}>
-                      {t(getCardTranslationKey(card, cardVariant)) || card}
-                    </div>
+                    <YStack
+                      alignItems="center"
+                      width={100}
+                      gap="$2"
+                      padding="$2"
+                    >
+                      <Card
+                        $cardType={card}
+                        $variant={cardVariant as GameVariant}
+                        width="100%"
+                        cursor="default"
+                      >
+                        <CardCorner $position="tl" $variant={cardVariant} />
+                        <CardCorner $position="tr" $variant={cardVariant} />
+                        <CardCorner $position="bl" $variant={cardVariant} />
+                        <CardCorner $position="br" $variant={cardVariant} />
+                        <CardFrame $variant={cardVariant} />
+                        <CardImage
+                          variant={cardVariant ?? ''}
+                          cardType={card}
+                        />
+                        <GradientScrim />
+                      </Card>
+                      <div
+                        style={{
+                          fontSize: '0.75rem',
+                          textAlign: 'center',
+                          width: '100%',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {t(getCardTranslationKey(card, cardVariant)) || card}
+                      </div>
+                    </YStack>
                   </OptionButton>
                 ))}
               </OptionGrid>

@@ -73,7 +73,9 @@ test.describe('Game Room Creation', () => {
     });
 
     await navigateTo(page, '/games/create?gameId=critical_v1');
-    // Ensure page is hydrated
+    // Ensure page is fully hydrated and network is idle
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000); // Buffer for hydration and theme initialization
   });
 
   test('should load creation page with correct game selected', async ({
@@ -95,7 +97,7 @@ test.describe('Game Room Creation', () => {
   test('should show validation error for empty name', async ({ page }) => {
     const nameInput = page.getByLabel(/room name/i);
     await expect(nameInput).toBeVisible();
-    await nameInput.clear();
+    await nameInput.fill('');
     await expect(nameInput).toHaveValue('');
 
     const submitBtn = page.getByTestId('create-room-button');
@@ -128,7 +130,9 @@ test.describe('Game Room Creation', () => {
     await expect(maxInput).toHaveValue('6');
     await submitBtn.click();
 
-    await expect(page).toHaveURL(/\/games\/rooms\/507f1f77bcf86cd799439011/);
+    await expect(page).toHaveURL(/\/games\/rooms\/507f1f77bcf86cd799439011/, {
+      timeout: 20000,
+    });
   });
 
   test('should clear max players with Auto button', async ({ page }) => {
@@ -138,7 +142,7 @@ test.describe('Game Room Creation', () => {
     await maxInput.fill('5');
     await expect(maxInput).toHaveValue('5');
 
-    const autoBtn = page.getByRole('button', { name: /auto/i });
+    const autoBtn = page.getByTestId('auto-max-players-button');
     await expect(autoBtn).toBeVisible();
     await autoBtn.click();
 

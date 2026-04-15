@@ -14,7 +14,7 @@ import type { CriticalLogEntry, CriticalPlayerTableState } from '../types';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { IdleBadge } from '@/shared/ui';
 import { useMedia, Text } from 'tamagui';
-import { GameVariant } from '@arcadeum/ui';
+import type { GameVariant } from '@arcadeum/ui';
 
 export interface TablePlayerProps {
   player: CriticalPlayerTableState;

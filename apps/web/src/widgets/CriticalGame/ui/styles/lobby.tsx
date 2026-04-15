@@ -29,7 +29,7 @@ export const CenterSection = styled(YStack, {
 export const GameIcon = styled(Text, {
   name: 'GameIcon',
   fontSize: 80,
-  lineHeight: 1,
+  lineHeight: '$none',
   textShadowColor: 'rgba(99, 102, 241, 0.3)',
   textShadowOffset: { width: 0, height: 8 },
   textShadowRadius: 24,

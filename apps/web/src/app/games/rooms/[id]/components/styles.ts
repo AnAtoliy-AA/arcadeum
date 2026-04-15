@@ -1,4 +1,4 @@
-import { styled, XStack, YStack } from 'tamagui';
+import { styled, XStack, YStack, Text } from 'tamagui';
 import { Input as UIInput } from '@/shared/ui';
 
 // ─── Fullscreen CSS for Container ─────────────────────────────────────────────
@@ -109,6 +109,7 @@ export const Card = styled(YStack, {
 } as Record<string, unknown>);
 
 // Title: rendered with gradient via inline style in consuming component
+
 export const Title = styled(YStack, {
   name: 'Title',
   tag: 'h2',
@@ -124,14 +125,13 @@ export const titleGradientStyle = {
   backgroundClip: 'text',
 } as const;
 
-export const Description = styled(YStack, {
+export const Description = styled(Text, {
   name: 'Description',
-  tag: 'p',
   color: 'rgba(236,239,238,0.7)',
   marginBottom: '2rem',
-  lineHeight: 1.6,
+  lineHeight: '$multiplier16',
   fontSize: '1rem',
-} as Record<string, unknown>);
+});
 
 export const Form = styled(YStack, {
   name: 'Form',

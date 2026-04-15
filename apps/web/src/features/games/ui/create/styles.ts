@@ -12,12 +12,12 @@ export const GameTileItem = styled(YStack, {
   borderRadius: 12,
   backgroundColor: 'rgba(255,255,255,0.03)',
   borderWidth: 2,
-  borderColor: '#32353d',
+  borderColor: '$borderColor',
   cursor: 'pointer',
   position: 'relative',
   overflow: 'hidden',
-  display: 'block',
   width: '100%',
+  gap: '$1.5',
   // animation: 'quick',
 
   pressStyle: {
@@ -117,17 +117,15 @@ export const GameTileName = styled(Text, {
   name: 'GameTileName',
   fontWeight: '700',
   fontSize: '1.125rem',
-  marginBottom: '0.25rem',
   color: '$color',
-  display: 'block',
 });
 
 export const GameTileSummary = styled(Text, {
   name: 'GameTileSummary',
   fontSize: '0.875rem',
-  color: 'rgba(236,239,238,0.7)',
-  lineHeight: 1.4,
-  display: 'block',
+  color: '$color',
+  opacity: 0.65,
+  lineHeight: '$normal',
 });
 
 export const ComingSoonBadge = styled(Text, {
@@ -136,7 +134,8 @@ export const ComingSoonBadge = styled(Text, {
   top: '0.75rem',
   right: '0.75rem',
   backgroundColor: '$background',
-  color: 'rgba(236,239,238,0.45)',
+  color: '$color',
+  opacity: 0.5,
   fontSize: '0.625rem',
   fontWeight: '700',
   textTransform: 'uppercase',
@@ -147,9 +146,8 @@ export const ComingSoonBadge = styled(Text, {
 });
 
 // $xs = max-width:640px (note: Tamagui $xs = 660px breakpoint ~20px gap from 640px)
-export const Row = styled(YStack, {
+export const Row = styled(XStack, {
   name: 'Row',
-  flexDirection: 'row',
   gap: '$4',
   $xs: { flexDirection: 'column' },
 });
@@ -187,8 +185,9 @@ export const ExpansionBadge = styled(Text, {
   name: 'ExpansionBadge',
   tag: 'span',
   fontSize: '0.75rem',
-  color: 'rgba(236,239,238,0.45)',
-  backgroundColor: '$background',
+  color: '$color',
+  opacity: 0.5,
+  backgroundColor: 'rgba(255,255,255,0.05)',
   padding: '0.125rem 0.5rem',
   borderRadius: 12,
 } as unknown as Record<string, unknown>);
@@ -278,7 +277,8 @@ export const PackCardName = styled(Text, {
   tag: 'span',
   flex: 1,
   fontSize: '0.8125rem',
-  color: 'rgba(236,239,238,0.7)',
+  color: '$color',
+  opacity: 0.7,
 } as unknown as Record<string, unknown>);
 
 export const QuantityControl = styled(XStack, {

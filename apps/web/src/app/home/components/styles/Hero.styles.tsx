@@ -105,15 +105,20 @@ export const Kicker = styled(Text, {
   fontWeight: '700',
   letterSpacing: 2,
   textTransform: 'uppercase',
-  color: 'white',
+  color: '$primary',
   borderRadius: 999,
   paddingHorizontal: '$5',
   paddingVertical: '$2',
   marginBottom: '$2',
   display: 'inline-flex',
   borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.2)',
-});
+  borderColor: '$primary',
+  opacity: 0.8,
+  animation: 'lazy', // For tamagui internal
+  style: {
+    animation: 'fadeInUp 0.6s ease-out 0.15s both, shimmer 3s linear infinite',
+  },
+} as never);
 
 const StyledHeroTitle = styled(H1, {
   display: 'block',
@@ -136,7 +141,10 @@ export const Tagline = styled(Text, {
   fontSize: '$6',
   fontWeight: '600',
   color: '$color',
-});
+  style: {
+    animation: 'fadeInUp 0.6s ease-out 0.2s both',
+  },
+} as never);
 
 export const HeroDescription = styled(Text, {
   margin: 0,
@@ -144,15 +152,21 @@ export const HeroDescription = styled(Text, {
   fontSize: '$4',
   color: '$color',
   opacity: 0.75,
-});
+  style: {
+    animation: 'fadeInUp 0.6s ease-out 0.3s both',
+  },
+} as never);
 
 export const HeroActions = styled(XStack, {
   marginTop: '$4',
   flexWrap: 'wrap',
   gap: '$4',
   justifyContent: 'center',
+  style: {
+    animation: 'fadeInUp 0.6s ease-out 0.4s both',
+  },
 
   $gtMd: {
     justifyContent: 'flex-start',
   },
-});
+} as never);

@@ -65,6 +65,15 @@ export const LobbyTitle = styled(H2, {
   // Shimmer logic via background gradient
 });
 
+export const LobbyEmptyText = styled(Text, {
+  name: 'LobbyEmptyText',
+  fontSize: '$3',
+  color: '$textMuted',
+  textAlign: 'center',
+  paddingTop: '$5',
+  lineHeight: '$none',
+});
+
 export const LobbySubtitle = styled(Paragraph, {
   name: 'LobbySubtitle',
   fontSize: '$4',

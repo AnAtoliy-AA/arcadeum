@@ -259,7 +259,7 @@ export const Tagline = styled(Paragraph, {
   fontWeight: '500',
   color: 'rgba(236,239,238,0.7)',
   maxWidth: 650,
-  lineHeight: 1.5,
+  lineHeight: '$relaxed',
 });
 
 export function SectionTitle({
@@ -281,7 +281,7 @@ export const HeaderDescription = styled(Paragraph, {
   fontSize: '$4',
   color: 'rgba(236,239,238,0.45)',
   maxWidth: 700,
-  lineHeight: 1.7,
+  lineHeight: '$multiplier17',
 });
 
 export function TeamGrid({ children }: { children: React.ReactNode }) {
@@ -357,7 +357,7 @@ export const TeamBio = styled(Paragraph, {
   margin: 0,
   fontSize: '$3',
   color: 'rgba(236,239,238,0.45)',
-  lineHeight: 1.6,
+  lineHeight: '$multiplier16',
 });
 
 export function ActionList({ children }: { children: React.ReactNode }) {
@@ -390,7 +390,7 @@ export const ActionDescription = styled(Paragraph, {
   margin: 0,
   fontSize: '$3',
   color: 'rgba(236,239,238,0.45)',
-  lineHeight: 1.6,
+  lineHeight: '$multiplier16',
 });
 
 export const CtaRow = styled(XStack, {
@@ -471,5 +471,5 @@ export const Thanks = styled(Paragraph, {
   textAlign: 'center',
   fontSize: '$4',
   color: 'rgba(236,239,238,0.45)',
-  lineHeight: 1.7,
+  lineHeight: '$multiplier17',
 });

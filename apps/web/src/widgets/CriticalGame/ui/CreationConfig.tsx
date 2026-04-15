@@ -24,6 +24,7 @@ import {
   GameTileItem,
   GameTileContainer,
 } from '@/features/games/ui/create/styles';
+import { YStack } from 'tamagui';
 
 interface CriticalGameOptions {
   cardVariant?: string;
@@ -138,12 +139,14 @@ export function CriticalCreationConfig({
                 })
               }
             />
-            <ExpansionLabel>
-              {t('games.create.houseRuleActionCardCombos')}
-            </ExpansionLabel>
-            <ExpansionBadge>
-              {t('games.create.houseRuleActionCardCombosHint')}
-            </ExpansionBadge>
+            <YStack flex={1} gap="$0.5">
+              <ExpansionLabel>
+                {t('games.create.houseRuleActionCardCombos')}
+              </ExpansionLabel>
+              <ExpansionBadge>
+                {t('games.create.houseRuleActionCardCombosHint')}
+              </ExpansionBadge>
+            </YStack>
           </ExpansionCheckbox>
 
           <ExpansionCheckbox>
@@ -154,14 +157,16 @@ export function CriticalCreationConfig({
                 handleUpdate({ idleTimerEnabled: !options.idleTimerEnabled })
               }
             />
-            <ExpansionLabel>
-              {t('games.create.houseRuleIdleTimer') || 'Idle Timer Autoplay'}
-            </ExpansionLabel>
-            <ExpansionBadge>
-              {t('games.create.houseRuleIdleTimerHint', {
-                seconds: String(IDLE_TIMER_DURATION_SEC),
-              }) || 'Automated play after 15s'}
-            </ExpansionBadge>
+            <YStack flex={1} gap="$0.5">
+              <ExpansionLabel>
+                {t('games.create.houseRuleIdleTimer') || 'Idle Timer Autoplay'}
+              </ExpansionLabel>
+              <ExpansionBadge>
+                {t('games.create.houseRuleIdleTimerHint', {
+                  seconds: String(IDLE_TIMER_DURATION_SEC),
+                }) || 'Automated play after 15s'}
+              </ExpansionBadge>
+            </YStack>
           </ExpansionCheckbox>
         </ExpansionGrid>
       </Section>

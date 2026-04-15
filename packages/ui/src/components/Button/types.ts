@@ -30,6 +30,7 @@ export type ButtonProps = Omit<GetProps<typeof StyledButton>, 'size' | 'onClick'
   fullWidth?: boolean;
   disabled?: boolean;
   pulse?: boolean;
+  jump?: boolean;
   isActive?: boolean;
   pill?: boolean;
   gameVariant?: GameVariant;

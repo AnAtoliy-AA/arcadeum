@@ -35,7 +35,7 @@ export const DashboardSubtitle = styled(Paragraph, {
   color: 'rgba(236,239,238,0.45)',
   marginTop: '-$2',
   marginBottom: '$3',
-  lineHeight: 1.5,
+  lineHeight: '$relaxed',
 });
 
 export const CardTitle = styled(H2, {

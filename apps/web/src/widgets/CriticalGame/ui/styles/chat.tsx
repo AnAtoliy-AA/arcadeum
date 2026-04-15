@@ -27,6 +27,12 @@ export const ChatCard = styled(YStack, {
   } as const,
 });
 
+export const ChatContainer = styled(YStack, {
+  name: 'ChatContainer',
+  flex: 1,
+  backgroundColor: '$background',
+});
+
 export const ChatMessages = styled(YStack, {
   name: 'ChatMessages',
   flex: 1,

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { Header, HeaderControls, Title, ViewToggle } from '../styles';
-import { Button, LinkButton } from '@arcadeum/ui';
+import { Button, CreateRoomLinkButton } from '@arcadeum/ui';
 import { InviteCodeModal } from './InviteCodeModal';
 import type { GamesViewMode } from '../types';
 
@@ -16,7 +16,9 @@ export function GamesHeader({ viewMode, onViewModeChange }: GamesHeaderProps) {
 
   return (
     <Header>
-      <Title size="xl" gradient>{t('games.lounge.activeTitle')}</Title>
+      <Title size="xl" gradient>
+        {t('games.lounge.activeTitle')}
+      </Title>
       <HeaderControls>
         <ViewToggle>
           <Button
@@ -47,9 +49,9 @@ export function GamesHeader({ viewMode, onViewModeChange }: GamesHeaderProps) {
         >
           {t('games.common.joinByCode') || 'Join by Code'}
         </Button>
-        <LinkButton href="/games/create" variant="primary" size="lg">
+        <CreateRoomLinkButton href="/games/create">
           {t('games.common.createRoom')}
-        </LinkButton>
+        </CreateRoomLinkButton>
       </HeaderControls>
 
       <InviteCodeModal

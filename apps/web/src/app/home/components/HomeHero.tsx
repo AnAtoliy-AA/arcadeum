@@ -2,7 +2,6 @@
 import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
-import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
   useTranslation,
   type TranslationKey,
@@ -21,7 +20,7 @@ import {
   HeroCard,
 } from './styles/Hero.styles';
 import { SectionContainer } from './styles/Common.styles';
-import { LinkButton, SupportIcon } from '@/shared/ui';
+import { HomePrimaryLinkButton, LinkButton, SupportIcon } from '@/shared/ui';
 import { CARD_VARIANTS } from '@/features/games/ui/create/constants';
 import { YStack, XStack, Text } from 'tamagui';
 
@@ -35,10 +34,9 @@ const HERO_CARDS = [...CARD_VARIANTS].slice(0, 3).map((v, i) => ({
 
 export function HomeHero() {
   const { messages } = useLanguage();
-  const { snapshot, hydrated } = useSessionTokens();
   const homeCopy = messages.home ?? {};
 
-  const { appName, primaryCta, supportCta } = appConfig;
+  const { appName, supportCta } = appConfig;
 
   const kicker = homeCopy.kicker ?? 'The future of table games';
   const tagline =
@@ -46,21 +44,19 @@ export function HomeHero() {
     `${appName} is your online platform to play board games with friends.`;
   const description =
     formatMessage(homeCopy.description, { appName }) ??
-    `Create real-time game rooms, invite your friends, or play with bots instantly without registration. Let ${appName} handle rules, scoring, and turns so you can focus on the fun.`;
+    `Create real-time game rooms and invite your friends instantly without registration. Let ${appName} handle rules, scoring, and turns so you can focus on the fun.`;
   const primaryLabel = homeCopy.primaryCtaLabel ?? 'Get started';
-  const playWithBotsLabel = homeCopy.playWithBotsLabel ?? 'Play with Bots';
   const heroCardBrand = homeCopy.heroCardBrand ?? 'CRITICAL';
   const supportLabel = homeCopy.supportCtaLabel ?? 'Support the developers';
 
-  const isAuthenticated = hydrated && !!snapshot.accessToken;
-  const primaryHref = isAuthenticated ? routes.games : primaryCta.href;
+  const primaryHref = routes.games;
 
   const { t } = useTranslation();
   const cards = HERO_CARDS;
 
   return (
     <HeroSection aria-labelledby="hero-heading" data-testid="hero-section">
-      <HeroBackground style={{ willChange: 'transform, opacity' }} />
+      <HeroBackground />
 
       <SectionContainer
         flexDirection="column"
@@ -70,48 +66,26 @@ export function HomeHero() {
       >
         <HeroContent>
           <Kicker
-            background="linear-gradient(90deg, rgba(87,195,255,0.2), rgba(87,195,255,0.05), rgba(87,195,255,0.2))"
+            background="linear-gradient(90deg, $primary10, $primary5, $primary10)"
             backgroundSize="200% auto"
-            style={{
-              animation:
-                'fadeInUp 0.6s ease-out 0.15s both, shimmer 3s linear infinite',
-            }}
           >
             ✦ {kicker}
           </Kicker>
           <HeroTitle id="hero-heading" className="hero-title-animated">
             {appName}
           </HeroTitle>
-          <Tagline style={{ animation: 'fadeInUp 0.6s ease-out 0.2s both' }}>
-            {tagline}
-          </Tagline>
-          <HeroDescription
-            style={{ animation: 'fadeInUp 0.6s ease-out 0.3s both' }}
-          >
-            {description}
-          </HeroDescription>
-          <HeroActions
-            style={{ animation: 'fadeInUp 0.6s ease-out 0.4s both' }}
-          >
-            <LinkButton href={primaryHref} variant="primary" size="lg">
+          <Tagline>{tagline}</Tagline>
+          <HeroDescription>{description}</HeroDescription>
+          <HeroActions>
+            <HomePrimaryLinkButton href={primaryHref} ml="$10" mb="$10">
               {primaryLabel}
-            </LinkButton>
-            <LinkButton
-              href={`${routes.gameCreate}?mode=bot`}
-              variant="secondary"
-              size="lg"
-            >
-              {playWithBotsLabel}
-            </LinkButton>
+            </HomePrimaryLinkButton>
             <LinkButton
               href={supportCta.href}
               variant="ghost"
               size="md"
               gap="$2"
               prefetch={false}
-              style={{
-                animation: 'fadeInUp 0.6s ease-out 0.5s both',
-              }}
             >
               <SupportIcon size={18} />
               {supportLabel}
@@ -144,7 +118,6 @@ export function HomeHero() {
                   scale={scale}
                   opacity={opacity}
                   hoverStyle={{ scale: 1.05, filter: 'blur(0px)', rotate }}
-                  style={{ willChange: 'transform, opacity' }}
                 >
                   <YStack
                     position="absolute"

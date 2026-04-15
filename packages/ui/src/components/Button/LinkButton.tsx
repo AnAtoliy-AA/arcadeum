@@ -6,14 +6,15 @@ import type { ReactNode, MouseEventHandler } from 'react';
 import Link from 'next/link';
 import { Typography } from '../Typography/Typography';
 import { StyledLinkButton } from './StyledLinkButton';
+import { Shimmer } from './StyledButton';
 import type { ButtonVariant, ButtonSize } from './types';
 
 // Variants that use vibrant backgrounds and need white text for contrast
-const VIBRANT_VARIANTS = ['primary', 'secondary', 'danger', 'success', 'warning', 'info'];
+const VIBRANT_VARIANTS = ['primary', 'secondary', 'danger', 'success', 'warning', 'info', 'victory'];
 
 type StyledLinkButtonProps = GetProps<typeof StyledLinkButton>;
 
-export interface LinkButtonProps {
+export interface LinkButtonProps extends StyledLinkButtonProps {
   href: string;
   children: ReactNode;
   variant?: ButtonVariant;
@@ -21,6 +22,11 @@ export interface LinkButtonProps {
   external?: boolean;
   fullWidth?: boolean;
   isActive?: boolean;
+  pulse?: boolean;
+  jump?: boolean;
+  pill?: boolean;
+  showShimmer?: boolean;
+  icon?: ReactNode;
   id?: string;
   className?: string;
   onPress?: StyledLinkButtonProps['onPress'];
@@ -40,6 +46,11 @@ export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
       external,
       fullWidth,
       isActive,
+      pulse,
+      jump,
+      pill,
+      showShimmer,
+      icon,
       onPress,
       onClick,
       id,
@@ -86,6 +97,9 @@ export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
           buttonSize={size}
           fullWidth={fullWidth}
           isActive={isActive}
+          pulse={pulse}
+          jump={jump}
+          pill={pill}
           className={className}
           id={id}
           aria-label={ariaLabel}
@@ -95,7 +109,9 @@ export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
           ref={ref}
           data-testid={testId}
         >
+          {icon}
           {renderedChildren}
+          {showShimmer && <Shimmer />}
         </StyledLinkButton>
       </Link>
     );

@@ -47,15 +47,9 @@ export const StyledButton: TamaguiComponent = styled(TButton, {
       true: { width: '100%' },
     },
 
-    pulse: {
-      true: { animation: 'pulse' },
-    },
-
     isActive: {
       true: {
         y: -3,
-        backgroundColor: '$glassBgHover',
-        borderColor: '$glassBorderHover',
         shadowOffset: { width: 0, height: 6 },
         shadowRadius: 3,
         shadowOpacity: 1,
@@ -71,12 +65,6 @@ export const StyledButton: TamaguiComponent = styled(TButton, {
       },
       false: {
         pointerEvents: 'auto',
-      },
-    },
-
-    pill: {
-      true: {
-        borderRadius: 999,
       },
     },
 

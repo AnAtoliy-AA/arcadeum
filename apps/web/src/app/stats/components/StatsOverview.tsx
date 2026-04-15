@@ -84,7 +84,7 @@ const StatValue = styled(Text, {
   fontSize: '$10',
   fontWeight: '800',
   color: '$primaryGradientStart',
-  lineHeight: 1,
+  lineHeight: '$none',
   letterSpacing: -0.5,
 });
 

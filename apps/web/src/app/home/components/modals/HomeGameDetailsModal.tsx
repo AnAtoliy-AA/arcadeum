@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { YStack, XStack, Text, styled } from 'tamagui';
+import { YStack, XStack, Text, styled, H4, SizableText } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -104,99 +104,59 @@ export function HomeGameDetailsModal({
   }, [game, t]);
 
   const renderRules = () => (
-    <div
-      style={{
-        display: 'grid',
-        gap: '1.5rem',
-        position: 'relative',
-        zIndex: 1,
-      }}
-    >
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '1.25rem',
-        }}
-      >
-        {rulesData.map((rule) => (
-          <div
-            key={rule.id}
-            style={{
-              background: 'rgba(21,23,24,0.5)',
-              border: '1px solid #32353d',
-              borderRadius: 20,
-              padding: '1.5rem',
-              display: 'flex',
-              gap: '1.25rem',
-              transition: 'transform 0.2s ease',
-            }}
+    <YStack gap="$4" position="relative" zIndex={1}>
+      {rulesData.map((rule) => (
+        <XStack
+          key={rule.id}
+          backgroundColor="rgba(21,23,24,0.5)"
+          borderWidth={1}
+          borderColor="$borderColor"
+          borderRadius={20}
+          padding="$5"
+          gap="$5"
+          alignItems="flex-start"
+        >
+          <YStack
+            width={44}
+            height={44}
+            borderRadius={12}
+            background={
+              game?.gradient ?? 'linear-gradient(135deg,#ff4d4d,#f9cb28)'
+            }
+            alignItems="center"
+            justifyContent="center"
+            flexShrink={0}
+            boxShadow="0 4px 12px rgba(0,0,0,0.2)"
           >
-            <div
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: 12,
-                background:
-                  game?.gradient ?? 'linear-gradient(135deg,#ff4d4d,#f9cb28)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-                color: 'white',
-                fontWeight: 900,
-                boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-              }}
-            >
+            <SizableText fontWeight="900" size="$4" color="white">
               {rule.index}
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.35rem',
-                flex: 1,
-              }}
+            </SizableText>
+          </YStack>
+          <YStack gap="$2" flex={1}>
+            <H4
+              role="heading"
+              aria-level={4}
+              fontWeight="700"
+              size="$5"
+              color="$color"
+              lineHeight={24}
             >
-              <h5
-                style={{
-                  margin: 0,
-                  color: '#ecefee',
-                  fontSize: '1.1rem',
-                  fontWeight: 700,
-                }}
-              >
-                {rule.name}
-              </h5>
-              <p
-                style={{
-                  margin: 0,
-                  color: 'rgba(236,239,238,0.7)',
-                  fontSize: '0.95rem',
-                  lineHeight: 1.5,
-                }}
-              >
-                {rule.description}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+              {rule.name}
+            </H4>
+            <SizableText color="$color" opacity={0.7} size="$3" lineHeight={20}>
+              {rule.description}
+            </SizableText>
+          </YStack>
+        </XStack>
+      ))}
+    </YStack>
   );
 
   const renderGameInfo = () => {
     if (!game) return null;
 
     return (
-      <div
-        style={{
-          display: 'grid',
-          gap: '1.5rem',
-          position: 'relative',
-          zIndex: 1,
-        }}
-      >
+      <YStack gap="$5" position="relative" zIndex={1}>
         <div
           style={{
             display: 'grid',
@@ -212,42 +172,41 @@ export function HomeGameDetailsModal({
                 borderRadius={16}
                 padding="$4"
                 gap="$3"
-                style={{
-                  opacity: v.disabled ? 0.6 : 1,
-                  border: active
-                    ? '1px solid #32353d'
-                    : '1px solid transparent',
-                  transition: 'all 0.2s ease',
-                }}
+                opacity={v.disabled ? 0.6 : 1}
+                borderWidth={1}
+                borderColor={active ? '$borderColor' : 'transparent'}
+                hoverStyle={
+                  active
+                    ? { backgroundColor: '$backgroundHover', scale: 1.05 }
+                    : undefined
+                }
               >
                 <Text color="$color" fontWeight="700" fontSize="$4">
                   {t(v.nameKey) || v.id}
                 </Text>
-                <span
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 800,
-                    textTransform: 'uppercase',
-                    letterSpacing: 1,
-                    padding: '0.25rem 0.6rem',
-                    borderRadius: 6,
-                    background: active
-                      ? 'rgba(122,215,255,0.12)'
-                      : 'rgba(236,239,238,0.12)',
-                    color: active ? '#7ad7ff' : 'rgba(236,239,238,0.45)',
-                    width: 'fit-content',
-                    display: 'inline-block',
-                  }}
+                <SizableText
+                  fontSize={11}
+                  fontWeight="800"
+                  textTransform="uppercase"
+                  letterSpacing={1}
+                  paddingHorizontal="$3"
+                  paddingVertical="$1"
+                  borderRadius={6}
+                  backgroundColor={
+                    active ? 'rgba(122,215,255,0.12)' : 'rgba(236,239,238,0.12)'
+                  }
+                  color={active ? '#7ad7ff' : 'rgba(236,239,238,0.45)'}
+                  width="fit-content"
                 >
-                  {!v.disabled
+                  {active
                     ? (homeCopy.gameAvailableNow ?? 'Playable')
                     : (homeCopy.gameComingSoon ?? 'Coming Soon')}
-                </span>
+                </SizableText>
               </YStack>
             );
           })}
         </div>
-      </div>
+      </YStack>
     );
   };
 
@@ -316,12 +275,10 @@ export function HomeGameDetailsModal({
             borderTopWidth={1}
             borderTopColor="$borderColor"
           >
-            <div
-              style={{ color: 'rgba(236, 239, 238, 0.7)', fontSize: '0.9rem' }}
-            >
+            <SizableText color="rgba(236, 239, 238, 0.7)" fontSize="$3">
               {locale.toUpperCase()} •{' '}
               {t(`games.shared.category.${game.type}Game` as TranslationKey)}
-            </div>
+            </SizableText>
             <LinkButton
               href={`${routes.gameCreate}?gameId=${game.id}`}
               aria-label={`${homeCopy.gamePlayButton ?? 'Play Now!'} ${t(game.nameKey)}`}

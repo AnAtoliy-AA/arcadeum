@@ -142,7 +142,7 @@ export const Select = memo(function Select({
                 borderRadius="$3"
                 cursor="pointer"
               >
-                <TamaguiSelect.ItemText>{option.label}</TamaguiSelect.ItemText>
+                <TamaguiSelect.ItemText color="$color">{option.label}</TamaguiSelect.ItemText>
               </TamaguiSelect.Item>
             ))}
             {children}

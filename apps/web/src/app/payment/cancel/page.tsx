@@ -2,6 +2,7 @@
 
 import { PageLayout, Container, PageTitle, LinkButton } from '@/shared/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { Paragraph } from 'tamagui';
 
 const cancelStyles = `
   @keyframes cancelFadeIn {
@@ -62,18 +63,16 @@ export default function PaymentCancelPage() {
             <PageTitle size="lg">
               {t('payments.cancelPage.title') || 'Payment Cancelled'}
             </PageTitle>
-            <p
-              style={{
-                color: 'rgba(236,239,238,0.7)',
-                fontSize: '1.125rem',
-                maxWidth: 420,
-                lineHeight: 1.6,
-                margin: 0,
-              }}
+            <Paragraph
+              color="$color"
+              opacity={0.7}
+              fontSize="1rem"
+              lineHeight="$multiplier16"
+              maxWidth={400}
             >
               {t('payments.cancelPage.message') ||
                 "No worries! No charges were made to your account. You can always try again when you're ready—we'll be here."}
-            </p>
+            </Paragraph>
           </div>
 
           <div className="cancel-button-group">

@@ -14,6 +14,7 @@ import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { gamesApi } from '@/features/games/api';
 import {
   Button,
+  CreateRoomButton,
   PageLayout,
   Container,
   PageTitle,
@@ -242,11 +243,15 @@ export function CreateGameRoomPage() {
                   required
                   aria-required="true"
                   fullWidth
+                  size="lg"
                 />
               </FormGroup>
 
               <Row>
                 <FormGroup
+                  flexGrow={1}
+                  flexBasis={0}
+                  $xs={{ flexGrow: 0, flexBasis: 'auto' }}
                   label={
                     t('games.create.fieldMaxPlayers') ||
                     'Max Players (optional)'
@@ -260,9 +265,8 @@ export function CreateGameRoomPage() {
                           type="button"
                           variant="secondary"
                           onPress={() => setMaxPlayers('')}
-                          size="md"
+                          size="lg"
                           aria-label="Set to Auto"
-                          height={42}
                           width="100%"
                         >
                           {t('games.create.autoButton') || 'Auto'}
@@ -289,11 +293,15 @@ export function CreateGameRoomPage() {
                       }
                       flex={1}
                       fullWidth
+                      size="lg"
                     />
                   </XStack>
                 </FormGroup>
 
                 <FormGroup
+                  flexGrow={1}
+                  flexBasis={0}
+                  $xs={{ flexGrow: 0, flexBasis: 'auto' }}
                   label={t('games.create.fieldVisibility') || 'Visibility'}
                   htmlFor="visibility"
                 >
@@ -313,6 +321,7 @@ export function CreateGameRoomPage() {
                     }
                     data-testid="visibility-toggle-button"
                     fullWidth
+                    size="lg"
                   >
                     {visibility === 'public' ? '🌐 Public' : '🔒 Private'}
                   </Button>
@@ -345,17 +354,16 @@ export function CreateGameRoomPage() {
               </Card>
             )}
 
-            <Button
+            <CreateRoomButton
               type="submit"
               disabled={loading}
-              size="lg"
               fullWidth
               data-testid="create-room-button"
             >
               {loading
                 ? t('games.create.submitCreating') || 'Creating...'
                 : t('games.common.createRoom') || 'Create Room'}
-            </Button>
+            </CreateRoomButton>
           </FormContainer>
         </form>
       </Container>

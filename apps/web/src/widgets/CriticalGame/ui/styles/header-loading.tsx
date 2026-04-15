@@ -84,3 +84,11 @@ export const ServerLoadingTimer = styled(Text, {
   color: '$color',
   opacity: 0.7,
 });
+
+export const HeaderProgressLabel = styled(Text, {
+  fontSize: 12,
+  fontWeight: '700',
+  lineHeight: '$2',
+  color: '$color',
+  opacity: 0.9,
+});

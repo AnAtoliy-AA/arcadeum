@@ -22,6 +22,7 @@ import { GamesHeader } from './components/GamesHeader';
 import { GamesList } from './components/GamesList';
 import { GamesLoading } from './components/GamesLoading';
 import { PageLayout, Container } from '@/shared/ui';
+import { GlassCard } from '@arcadeum/ui';
 import styles from './GamesPage.module.css';
 import type {
   GamesParticipationFilter,
@@ -229,9 +230,11 @@ export function GamesPage({ initialData }: GamesPageProps) {
 
   return (
     <PageLayout>
-      <Container size="xl" style={{ animation: 'fadeInUp 0.5s ease-out' }}>
-        <GamesHeader viewMode={viewMode} onViewModeChange={setViewMode} />
-
+      <Container
+        size="xl"
+        style={{ animation: 'fadeInUp 0.5s ease-out' }}
+        gap="$6"
+      >
         <GamesFilters
           searchQuery={searchQuery}
           onSearch={handleSearch}
@@ -242,11 +245,18 @@ export function GamesPage({ initialData }: GamesPageProps) {
           isAuthenticated={!!snapshot.accessToken}
         />
 
-        <div
-          className={`${styles.roomsContainer}${viewMode === 'list' ? ` ${styles.listView}` : ''}`}
-        >
-          {renderContent()}
-        </div>
+        <GlassCard padding="$6">
+          <GamesHeader viewMode={viewMode} onViewModeChange={setViewMode} />
+
+          <div
+            className={`${styles.roomsContainer}${
+              viewMode === 'list' ? ` ${styles.listView}` : ''
+            }`}
+            style={{ marginTop: '1.5rem' }}
+          >
+            {renderContent()}
+          </div>
+        </GlassCard>
       </Container>
     </PageLayout>
   );

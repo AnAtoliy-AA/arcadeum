@@ -77,7 +77,7 @@ export const CardName = styled(Text, {
 export const CardDescription = styled(Text, {
   name: 'CardDescription',
   fontSize: 10,
-  lineHeight: 13,
+  lineHeight: '$13',
   fontWeight: '500',
   color: 'rgba(255, 255, 255, 0.95)',
   textAlign: 'center',
@@ -123,6 +123,21 @@ export const CardInner = styled(YStack, {
   variants: {
     $variant: (_val: unknown) => ({}),
   } as const,
+});
+
+export const CardBackContainer = styled(YStack, {
+  name: 'CardBackContainer',
+  flex: 1,
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+});
+
+export const CardBackLogo = styled(Text, {
+  name: 'CardBackLogo',
+  fontSize: 40,
+  lineHeight: '$48',
+  opacity: 0.15,
 });
 
 export const CardFrame = styled(YStack, {

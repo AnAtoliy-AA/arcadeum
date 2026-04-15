@@ -16,6 +16,9 @@ export const Button = memo(function Button({
   onPress,
   onClick,
   ref,
+  pulse,
+  jump,
+  pill,
   ...rest
 }: ButtonProps): ReactElement {
   return (
@@ -30,6 +33,9 @@ export const Button = memo(function Button({
       fontWeight="600"
       letterSpacing={0.5}
       gameVariant={gameVariant}
+      pulse={pulse}
+      jump={jump}
+      pill={pill}
       {...rest}
     >
       {children}

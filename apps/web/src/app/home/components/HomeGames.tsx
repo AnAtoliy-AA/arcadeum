@@ -179,16 +179,15 @@ export function HomeGames() {
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          overflowX="auto"
           style={{
-            overflowX: 'auto',
             scrollSnapType: 'x mandatory',
             WebkitOverflowScrolling: 'touch',
-            scrollbarWidth: 'none',
-            paddingBottom: '3rem',
-            paddingTop: '1.5rem',
-            cursor: isDragging ? 'grabbing' : 'grab',
-            userSelect: isDragging ? 'none' : 'auto',
           }}
+          paddingBottom="$7"
+          paddingTop="$4"
+          cursor={isDragging ? 'grabbing' : 'grab'}
+          userSelect={isDragging ? 'none' : 'auto'}
         >
           {featuredGames.map((game) => (
             <SliderItem key={game.id} style={{ scrollSnapAlign: 'center' }}>
@@ -197,7 +196,9 @@ export function HomeGames() {
                 padding="$5"
                 flex={1}
                 className="game-card-hover"
-                style={{ boxShadow: '0 20px 50px rgba(0,0,0,0.35)' }}
+                shadowColor="rgba(0,0,0,0.35)"
+                shadowOffset={{ width: 0, height: 20 }}
+                shadowRadius={50}
               >
                 {/* Gradient hover overlay replaces $gradient ::before */}
                 <YStack
@@ -210,18 +211,16 @@ export function HomeGames() {
                   pointerEvents="none"
                   opacity={0}
                   hoverStyle={{ opacity: 0.08 }}
-                  style={{ background: game.gradient ?? 'transparent' }}
+                  background={game.gradient ?? 'transparent'}
                 />
                 <MainGameInfo>
                   <GameHeaderWrapper>
                     <StyledGameIcon>{game.emoji}</StyledGameIcon>
                     <GameTitle
                       data-testid={`game-title-${game.id}`}
-                      style={{
-                        background: game.gradient,
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                      }}
+                      background={game.gradient}
+                      backgroundClip="text"
+                      color="transparent"
                     >
                       {t(game.nameKey)}
                     </GameTitle>

@@ -128,13 +128,13 @@ export const CardsGrid = styled(XStack, {
 export const CardEmoji = styled(Text, {
   name: 'CardEmoji',
   fontSize: 40,
-  lineHeight: 48,
+  lineHeight: '$48',
   marginBottom: '$2',
   textAlign: 'center',
 
   $sm: {
     fontSize: 28,
-    lineHeight: 34,
+    lineHeight: '$7',
   },
 });
 

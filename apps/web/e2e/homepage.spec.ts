@@ -99,9 +99,12 @@ test.describe('Home Page', () => {
     await expect(supportButton).toBeVisible();
   });
 
-  test('should have Play with Bots button', async ({ page }) => {
-    const botsButton = page.getByRole('link', { name: /play with bots/i });
-    await expect(botsButton).toBeVisible();
-    await expect(botsButton).toHaveAttribute('href', /mode=bot/);
+  test('should navigate to games page via Get Started button', async ({
+    page,
+  }) => {
+    const getStartedButton = page.getByRole('link', { name: /get started/i });
+    await expect(getStartedButton).toBeVisible();
+    await getStartedButton.click();
+    await expect(page).toHaveURL(/\/games/);
   });
 });

@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, YStack } from 'tamagui';
+import { XStack, YStack, Paragraph } from 'tamagui';
 import {
   Avatar,
   Modal,
@@ -33,30 +33,76 @@ export function InstallPWAModalContent() {
           <XStack justifyContent="center" marginBottom="$5">
             <Avatar src="/icon-192x192.png" name="Arcadeum" size="xl" alt="" />
           </XStack>
-          <p style={{ textAlign: 'center', color: 'rgba(236,239,238,0.7)', fontSize: '1rem', lineHeight: 1.6, margin: 0 }}>
+          <Paragraph
+            textAlign="center"
+            color="$color"
+            opacity={0.7}
+            fontSize="1rem"
+            lineHeight="$multiplier16"
+            margin={0}
+          >
             {t('pwa.install.description')}
-          </p>
+          </Paragraph>
 
-          <ul style={{ listStyle: 'none', padding: 0, margin: '1.5rem 0 0', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <li style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'rgba(236,239,238,0.7)', fontSize: '0.9rem' }}>
+          <ul
+            style={{
+              listStyle: 'none',
+              padding: 0,
+              margin: '1.5rem 0 0',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.75rem',
+            }}
+          >
+            <li
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                color: 'rgba(236,239,238,0.7)',
+                fontSize: '0.9rem',
+              }}
+            >
               <span style={{ fontSize: '1.25rem' }}>⚡</span>
               {t('pwa.install.features.fast')}
             </li>
-            <li style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'rgba(236,239,238,0.7)', fontSize: '0.9rem' }}>
+            <li
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                color: 'rgba(236,239,238,0.7)',
+                fontSize: '0.9rem',
+              }}
+            >
               <span style={{ fontSize: '1.25rem' }}>🔔</span>
               {t('pwa.install.features.notifications')}
             </li>
           </ul>
 
           {!isPromptAvailable && (
-            <YStack marginTop="$5" padding="$4" backgroundColor="$background" borderRadius={12} borderWidth={1} borderColor="$borderColor">
-              <p style={{ textAlign: 'left', color: 'rgba(236,239,238,0.7)', fontSize: '0.85rem', lineHeight: 1.4, margin: 0 }}>
+            <YStack
+              marginTop="$5"
+              padding="$4"
+              backgroundColor="$background"
+              borderRadius={12}
+              borderWidth={1}
+              borderColor="$borderColor"
+            >
+              <Paragraph
+                textAlign="left"
+                color="$color"
+                opacity={0.7}
+                fontSize="0.85rem"
+                lineHeight="$normal"
+                margin={0}
+              >
                 <strong>{t('pwa.install.manual.title')}:</strong>
                 <br />
                 {isIos
                   ? t('pwa.install.manual.ios', { icon: '⎙', plus: '⊞' })
                   : t('pwa.install.manual.generic')}
-              </p>
+              </Paragraph>
             </YStack>
           )}
         </ModalBody>

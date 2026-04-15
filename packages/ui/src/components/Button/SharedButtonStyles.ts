@@ -336,6 +336,15 @@ export const sharedButtonVariants = {
       },
     },
   },
+  pulse: {
+    true: { animation: 'pulse' },
+  },
+  pill: {
+    true: { borderRadius: 999 },
+  },
+  jump: {
+    true: { animation: 'jump' },
+  },
 } as const;
 
 export const sharedButtonSizes = {

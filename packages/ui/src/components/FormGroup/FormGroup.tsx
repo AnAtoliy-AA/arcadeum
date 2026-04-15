@@ -1,8 +1,8 @@
-import { YStack, Text, styled } from 'tamagui';
+import { YStack, Text, styled, GetProps } from 'tamagui';
 import { memo } from 'react';
 import type { ReactNode } from 'react';
 
-export type FormGroupProps = {
+export type FormGroupProps = GetProps<typeof Container> & {
   label?: string;
   htmlFor?: string;
   error?: string;
@@ -50,9 +50,10 @@ export const FormGroup = memo(function FormGroup({
   required,
   description,
   children,
+  ...rest
 }: FormGroupProps) {
   return (
-    <Container>
+    <Container {...rest}>
       {label && (
         <label htmlFor={htmlFor} style={{ display: 'block', cursor: 'pointer' }}>
           <Label>

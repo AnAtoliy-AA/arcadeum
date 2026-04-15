@@ -1,5 +1,7 @@
 import React from 'react';
 import { Button } from './Button';
+import { LinkButton, type LinkButtonProps } from './LinkButton';
+import { ArrowRightIcon, PlusCircleIcon } from '../Icons/index';
 import type { ButtonProps, GameVariant } from './types';
 
 export interface BotCountButtonProps extends ButtonProps {
@@ -172,6 +174,62 @@ export const OptionButton = ({
     p="$4"
     flexDirection="column"
     gap="$2"
+    {...props}
+  />
+);
+
+export const CreateRoomButton = (props: ButtonProps) => (
+  <Button
+    variant="victory"
+    size="lg"
+    pulse
+    jump
+    showShimmer
+    fontWeight="800"
+    letterSpacing={1}
+    icon={<PlusCircleIcon size={24} />}
+    {...props}
+  />
+);
+
+export const CreateRoomLinkButton = (props: LinkButtonProps) => (
+  <LinkButton
+    variant="victory"
+    size="lg"
+    pulse
+    jump
+    showShimmer
+    fontWeight="800"
+    letterSpacing={1}
+    icon={<PlusCircleIcon size={24} />}
+    {...props}
+  />
+);
+
+export const HomePrimaryButton = (props: ButtonProps) => (
+  <Button
+    variant="victory"
+    size="lg"
+    pulse
+    jump
+    showShimmer
+    fontWeight="800"
+    letterSpacing={1.5}
+    icon={<ArrowRightIcon size={24} />}
+    {...props}
+  />
+);
+
+export const HomePrimaryLinkButton = (props: LinkButtonProps) => (
+  <LinkButton
+    variant="victory"
+    size="lg"
+    pulse
+    jump
+    showShimmer
+    fontWeight="800"
+    letterSpacing={1.5}
+    icon={<ArrowRightIcon size={24} />}
     {...props}
   />
 );

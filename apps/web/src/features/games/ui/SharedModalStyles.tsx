@@ -224,7 +224,7 @@ export const SectionLabel = styled(Text, {
 
 export const RulesText = styled(Text, {
   name: 'RulesText',
-  lineHeight: 20,
+  lineHeight: '$3',
   opacity: 0.9,
 });
 

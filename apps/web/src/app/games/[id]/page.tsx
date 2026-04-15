@@ -9,10 +9,6 @@ interface PageProps {
 
 export default async function GameDetailRoute({ params }: PageProps) {
   const { id: gameId } = await params;
-
-  if (gameId === 'create') {
-    return null;
-  }
   const accessToken = await getServerAccessToken();
 
   // Initial fetch on server

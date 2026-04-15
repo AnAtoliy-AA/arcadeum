@@ -18,10 +18,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { YStack, XStack, Text, styled } from 'tamagui';
 import type { CriticalCard } from '@/widgets/CriticalGame/types';
-import {
-  getCardTranslationKey,
-  getCardEmoji,
-} from '@/widgets/CriticalGame/lib/cardUtils';
+import { getCardTranslationKey } from '@/widgets/CriticalGame/lib/cardUtils';
 import {
   Modal as Overlay,
   ModalContent as ModalContainer,
@@ -29,7 +26,12 @@ import {
   ModalTitle,
   ModalActions as ModalFooter,
   ModalButton,
+  Card,
+  CardFrame,
+  CardCorner,
+  GradientScrim,
 } from '../styles';
+import { CardImage } from '../styles/card-image';
 import { type GameVariant } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
@@ -69,10 +71,7 @@ const SortableCardWrapper = styled(YStack, {
   },
 });
 
-const CardEmoji = styled(Text, {
-  name: 'CardEmoji',
-  fontSize: '$9',
-});
+// Removed CardEmoji styled component as it is replaced by CardImage
 
 const CardName = styled(Text, {
   name: 'CardName',
@@ -130,7 +129,20 @@ function SortableCard({ id, card, index, t, cardVariant }: SortableCardProps) {
       {...listeners}
     >
       <CardIndex>#{index + 1}</CardIndex>
-      <CardEmoji>{getCardEmoji(card)}</CardEmoji>
+      <Card
+        $cardType={card}
+        $variant={cardVariant as GameVariant}
+        width="100%"
+        marginBottom="$2"
+      >
+        <CardCorner $position="tl" $variant={cardVariant} />
+        <CardCorner $position="tr" $variant={cardVariant} />
+        <CardCorner $position="bl" $variant={cardVariant} />
+        <CardCorner $position="br" $variant={cardVariant} />
+        <CardFrame $variant={cardVariant} />
+        <CardImage variant={cardVariant ?? ''} cardType={card} />
+        <GradientScrim />
+      </Card>
       <CardName>
         {t(getCardTranslationKey(card, cardVariant) as string)}
       </CardName>

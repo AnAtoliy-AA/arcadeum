@@ -20,7 +20,7 @@ import { RulesModal } from './RulesModal';
 import React, { useState } from 'react';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 import { TranslationKey } from '@/shared/lib/useTranslation';
-import { GameVariant } from '@arcadeum/ui';
+import type { GameVariant } from '@arcadeum/ui';
 import { YStack, Text } from 'tamagui';
 import { getVariantStyles } from './styles/variants';
 

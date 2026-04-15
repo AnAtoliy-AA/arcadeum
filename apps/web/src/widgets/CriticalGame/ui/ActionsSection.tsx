@@ -6,7 +6,7 @@ import type {
   CriticalCard,
   CriticalComboCard,
 } from '../types';
-import { getCardTranslationKey } from '../lib/cardUtils';
+import { getCardName } from '../lib/cardUtils';
 import { COMBO_CARDS, FIVER_COMBO_SIZE, SPECIAL_CARDS } from '../types';
 import {
   InfoCard,
@@ -17,7 +17,7 @@ import {
   ActionsToggleButton,
 } from './styles';
 import { ExpansionActions } from './ExpansionActions';
-import { GameVariant } from '@arcadeum/ui';
+import type { GameVariant } from '@arcadeum/ui';
 
 export type ActionBusyState =
   | 'draw'
@@ -151,7 +151,7 @@ export function ActionsSection({
             >
               {actionBusy === 'evade'
                 ? 'Playing...'
-                : `Play ${t(getCardTranslationKey('evade', cardVariant))}`}
+                : `Play ${getCardName('evade', cardVariant || 'adventure')}`}
             </ActionButton>
           )}
           {currentPlayer.hand.includes('strike') && (
@@ -164,7 +164,7 @@ export function ActionsSection({
             >
               {actionBusy === 'strike'
                 ? 'Playing...'
-                : `Play ${t(getCardTranslationKey('strike', cardVariant))}`}
+                : `Play ${getCardName('strike', cardVariant || 'adventure')}`}
             </ActionButton>
           )}
           {currentPlayer.hand.includes('reorder') && (
@@ -176,7 +176,7 @@ export function ActionsSection({
             >
               {actionBusy === 'reorder'
                 ? 'Playing...'
-                : `🔀 ${t(getCardTranslationKey('reorder', cardVariant))}`}
+                : `🔀 ${getCardName('reorder', cardVariant || 'adventure')}`}
             </ActionButton>
           )}
           {currentPlayer.hand.includes('cancel') && (
@@ -188,7 +188,7 @@ export function ActionsSection({
             >
               {actionBusy === 'nope'
                 ? 'Playing...'
-                : `🚫 ${t(getCardTranslationKey('cancel', cardVariant))}`}
+                : `🚫 ${getCardName('cancel', cardVariant || 'adventure')}`}
             </ActionButton>
           )}
           {currentPlayer.hand.includes('trade') && (
@@ -200,7 +200,7 @@ export function ActionsSection({
             >
               {actionBusy === 'favor'
                 ? 'Playing...'
-                : `🤝 ${t(getCardTranslationKey('trade', cardVariant))}`}
+                : `🤝 ${getCardName('trade', cardVariant || 'adventure')}`}
             </ActionButton>
           )}
           {currentPlayer.hand.includes('insight') && (
@@ -212,7 +212,7 @@ export function ActionsSection({
             >
               {actionBusy === 'see_the_future'
                 ? 'Playing...'
-                : `🔮 ${t(getCardTranslationKey('insight', cardVariant))}`}
+                : `🔮 ${getCardName('insight', cardVariant || 'adventure')}`}
             </ActionButton>
           )}
           {canPlayCombo && (

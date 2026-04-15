@@ -1,5 +1,6 @@
 import type { CriticalCard } from '../types';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
+import { THEMATIC_CARD_NAMES } from './constants';
 
 /**
  * Get translation key for a card
@@ -63,6 +64,22 @@ export function getCardTranslationKey(
     rapture: 'games.table.cards.rapture',
   };
   return keys[card] || 'games.table.cards.generic';
+}
+
+/**
+ * Get the thematic name of a card based on the current variant
+ */
+export function getCardName(card: CriticalCard, variant: string): string {
+  const variantNames = THEMATIC_CARD_NAMES[variant];
+  if (variantNames && variantNames[card]) {
+    return variantNames[card];
+  }
+
+  // Fallback to internal name formatting
+  return card
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
 
 /**

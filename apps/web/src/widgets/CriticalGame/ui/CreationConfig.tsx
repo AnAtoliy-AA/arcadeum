@@ -45,15 +45,17 @@ export function CriticalCreationConfig({
   useEffect(() => {
     if (!options.cardVariant) {
       onChange({
-        cardVariant: 'cyberpunk',
-        expansions: [],
-        customCards: {},
-        allowActionCardCombos: false,
-        idleTimerEnabled: false,
         ...options,
+        cardVariant: 'cyberpunk',
+        expansions: options.expansions || [],
+        customCards: options.customCards || {},
+        allowActionCardCombos: options.allowActionCardCombos || false,
+        idleTimerEnabled: options.idleTimerEnabled || false,
       });
     }
-  }, [options, onChange]);
+    // Only run when cardVariant is truly missing to avoid re-triggering parent URL sync
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.cardVariant]);
 
   const handleUpdate = (updates: Partial<CriticalGameOptions>) => {
     onChange({ ...options, ...updates });
@@ -85,7 +87,7 @@ export function CriticalCreationConfig({
             <GameTileContainer
               key={variant.id}
               disabled={variant.disabled}
-              onClick={() =>
+              onPress={() =>
                 !variant.disabled && handleUpdate({ cardVariant: variant.id })
               }
             >

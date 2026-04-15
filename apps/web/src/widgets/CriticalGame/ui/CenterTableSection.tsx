@@ -1,7 +1,7 @@
 import { CenterTable, CardSlot } from './styles';
 import { LastPlayedCardDisplay } from './LastPlayedCardDisplay';
 import { DeckDisplay } from './DeckDisplay';
-import { GameVariant } from '@arcadeum/ui';
+import type { GameVariant } from '@arcadeum/ui';
 import type { CriticalCard } from '../types';
 
 interface CenterTableSectionProps {

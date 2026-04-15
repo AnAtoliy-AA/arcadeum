@@ -12,9 +12,18 @@ import {
   OptionButton,
   ModalActions,
   ModalButton,
+  Card,
+  CardFrame,
+  CardCorner,
+  GradientScrim,
 } from '../styles';
+import { CardImage } from '../styles/card-image';
 import { type GameVariant } from '@arcadeum/ui';
-import { getCardEmoji, getCardTranslationKey } from '../../lib/cardUtils';
+import {
+  getCardTranslationKey,
+  getCardName,
+  getCardEmoji,
+} from '../../lib/cardUtils';
 import { FIVER_COMBO_SIZE, ALL_GAME_CARDS } from '../../types';
 import type {
   CriticalCard,
@@ -159,16 +168,40 @@ export const ComboModal: React.FC<ComboModalProps> = ({
                   $selected={selectedComboCard === card}
                   $variant={cardVariant as GameVariant}
                   onPress={() => onSelectComboCard(card)}
+                  padding={0}
+                  height="auto"
                 >
-                  <Text fontSize="$6">{getCardEmoji(card)}</Text>
-                  <Text>{t(getCardTranslationKey(card, cardVariant))}</Text>
-                  <Text fontSize="$2" opacity={0.7}>
-                    {availableModes.includes('trio')
-                      ? t('games.table.modals.eventCombo.trioMode')
-                      : t('games.table.modals.eventCombo.cardsCount', {
-                          count: 2,
-                        })}
-                  </Text>
+                  <YStack alignItems="center" width={100} gap="$2" padding="$2">
+                    <Card
+                      $cardType={card}
+                      $variant={cardVariant as GameVariant}
+                      width="100%"
+                      cursor="default"
+                    >
+                      <CardCorner $position="tl" $variant={cardVariant} />
+                      <CardCorner $position="tr" $variant={cardVariant} />
+                      <CardCorner $position="bl" $variant={cardVariant} />
+                      <CardCorner $position="br" $variant={cardVariant} />
+                      <CardFrame $variant={cardVariant} />
+                      <CardImage variant={cardVariant ?? ''} cardType={card} />
+                      <GradientScrim />
+                    </Card>
+                    <Text
+                      fontSize="$2"
+                      textAlign="center"
+                      width="100%"
+                      numberOfLines={1}
+                    >
+                      {getCardName(card, cardVariant || 'adventure')}
+                    </Text>
+                    <Text fontSize="$1" opacity={0.7}>
+                      {availableModes.includes('trio')
+                        ? t('games.table.modals.eventCombo.trioMode')
+                        : t('games.table.modals.eventCombo.cardsCount', {
+                            count: 2,
+                          })}
+                    </Text>
+                  </YStack>
                 </OptionButton>
               ))}
             </OptionGrid>
@@ -233,11 +266,36 @@ export const ComboModal: React.FC<ComboModalProps> = ({
                     $variant={cardVariant as GameVariant}
                     onPress={() => canSelect && onToggleFiverCard(card)}
                     opacity={canSelect ? 1 : 0.5}
+                    padding={0}
+                    height="auto"
                   >
-                    <Text fontSize="$6">{getCardEmoji(card)}</Text>
-                    <Text fontSize="$2">
-                      {t(getCardTranslationKey(card, cardVariant)) || card}
-                    </Text>
+                    <YStack
+                      alignItems="center"
+                      width={100}
+                      gap="$2"
+                      padding="$2"
+                    >
+                      <Card
+                        $cardType={card}
+                        $variant={cardVariant as GameVariant}
+                        width="100%"
+                        cursor="default"
+                      >
+                        <CardCorner $position="tl" $variant={cardVariant} />
+                        <CardCorner $position="tr" $variant={cardVariant} />
+                        <CardCorner $position="bl" $variant={cardVariant} />
+                        <CardCorner $position="br" $variant={cardVariant} />
+                        <CardFrame $variant={cardVariant} />
+                        <CardImage
+                          variant={cardVariant ?? ''}
+                          cardType={card}
+                        />
+                        <GradientScrim />
+                      </Card>
+                      <Text fontSize="$2" textAlign="center" numberOfLines={1}>
+                        {t(getCardTranslationKey(card, cardVariant)) || card}
+                      </Text>
+                    </YStack>
                   </OptionButton>
                 );
               })}
@@ -260,11 +318,36 @@ export const ComboModal: React.FC<ComboModalProps> = ({
                     $selected={selectedDiscardCard === card}
                     $variant={cardVariant as GameVariant}
                     onPress={() => onSelectDiscardCard(card)}
+                    padding={0}
+                    height="auto"
                   >
-                    <Text fontSize="$6">{getCardEmoji(card)}</Text>
-                    <Text fontSize="$2">
-                      {t(getCardTranslationKey(card, cardVariant)) || card}
-                    </Text>
+                    <YStack
+                      alignItems="center"
+                      width={100}
+                      gap="$2"
+                      padding="$2"
+                    >
+                      <Card
+                        $cardType={card}
+                        $variant={cardVariant as GameVariant}
+                        width="100%"
+                        cursor="default"
+                      >
+                        <CardCorner $position="tl" $variant={cardVariant} />
+                        <CardCorner $position="tr" $variant={cardVariant} />
+                        <CardCorner $position="bl" $variant={cardVariant} />
+                        <CardCorner $position="br" $variant={cardVariant} />
+                        <CardFrame $variant={cardVariant} />
+                        <CardImage
+                          variant={cardVariant ?? ''}
+                          cardType={card}
+                        />
+                        <GradientScrim />
+                      </Card>
+                      <Text fontSize="$2" textAlign="center" numberOfLines={1}>
+                        {t(getCardTranslationKey(card, cardVariant)) || card}
+                      </Text>
+                    </YStack>
                   </OptionButton>
                 ))}
               </OptionGrid>
@@ -344,18 +427,39 @@ export const ComboModal: React.FC<ComboModalProps> = ({
                     $selected={selectedCard === card}
                     $variant={cardVariant as GameVariant}
                     onPress={() => onSelectCard(card as CriticalCard)}
+                    padding={0}
+                    height="auto"
                   >
-                    <Text fontSize="$6">
-                      {getCardEmoji(card as CriticalCard)}
-                    </Text>
-                    <Text fontSize="$2">
-                      {t(
-                        getCardTranslationKey(
+                    <YStack
+                      alignItems="center"
+                      width={100}
+                      gap="$2"
+                      padding="$2"
+                    >
+                      <Card
+                        $cardType={card as CriticalCard}
+                        $variant={cardVariant as GameVariant}
+                        width="100%"
+                        cursor="default"
+                      >
+                        <CardCorner $position="tl" $variant={cardVariant} />
+                        <CardCorner $position="tr" $variant={cardVariant} />
+                        <CardCorner $position="bl" $variant={cardVariant} />
+                        <CardCorner $position="br" $variant={cardVariant} />
+                        <CardFrame $variant={cardVariant} />
+                        <CardImage
+                          variant={cardVariant ?? ''}
+                          cardType={card as string}
+                        />
+                        <GradientScrim />
+                      </Card>
+                      <Text fontSize="$2" textAlign="center" numberOfLines={1}>
+                        {getCardName(
                           card as CriticalCard,
-                          cardVariant,
-                        ),
-                      ) || card}
-                    </Text>
+                          cardVariant || 'adventure',
+                        )}
+                      </Text>
+                    </YStack>
                   </OptionButton>
                 ),
               )}

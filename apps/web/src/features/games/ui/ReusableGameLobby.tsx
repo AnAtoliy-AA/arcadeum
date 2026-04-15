@@ -250,6 +250,8 @@ export function ReusableGameLobby({
               theme.titleGradient
                 ? ({
                     animation: 'shimmer 4s linear infinite',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
                   } as React.CSSProperties)
                 : undefined
             }
@@ -265,6 +267,8 @@ export function ReusableGameLobby({
                     theme.variantGradient
                       ? ({
                           animation: 'shimmer 4s linear infinite',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
                         } as React.CSSProperties)
                       : undefined
                   }

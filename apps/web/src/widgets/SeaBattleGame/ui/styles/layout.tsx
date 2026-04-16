@@ -43,12 +43,18 @@ export const GameBoardWrapper = styled(XStack, {
 
 export const BoardContainer = styled(YStack, {
   name: 'BoardContainer',
+  flex: 1,
+  maxWidth: 520,
+
   $md: {
     flex: 0,
     width: '100%',
+    maxWidth: 500,
+    alignSelf: 'center',
   },
   $sm: {
     flex: 0,
     width: '100%',
+    maxWidth: 'none',
   },
 });

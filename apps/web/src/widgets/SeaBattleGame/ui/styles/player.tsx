@@ -26,8 +26,8 @@ export const PlayerSection = styled(YStack, {
   },
 
   $sm: {
-    padding: '$3',
-    gap: '$2',
+    padding: '$2',
+    gap: '$1',
   },
 });
 
@@ -46,7 +46,7 @@ export const PlayerSectionWrapper = styled(YStack, {
     width: 'auto',
     alignSelf: 'auto',
     flex: 1,
-    maxWidth: 'min(600px, calc(100vh - 430px))',
+    maxWidth: 'min(520px, calc(100vh - 350px))',
   },
 });
 

@@ -2,7 +2,7 @@
 
 import { useLanguage, formatMessage } from '@/shared/i18n/context';
 
-import { PageTitle } from '@arcadeum/ui';
+import { PageTitle } from '@/shared/ui';
 import type {
   SupportAction,
   SupportTeamMember,
@@ -11,6 +11,7 @@ import { DEFAULT_LOCALE, getMessages } from '@/shared/i18n';
 import type {
   SupportTeamKey,
   SupportActionKey,
+  SupportMessages,
 } from '@/shared/i18n/messages/support';
 import { AppFooter } from '@/widgets/footer';
 import {
@@ -44,45 +45,37 @@ import {
 } from './styles';
 
 export type SupportPageProps = {
-  appName: string;
-  title: string;
-  tagline: string;
-  description: string;
-  thanks: string;
-  teamMembers: SupportTeamMember[];
-  actions: SupportAction[];
+  appName?: string;
+  supportT?: SupportMessages; // Initial translations
+  teamMembers?: SupportTeamMember[];
+  actions?: SupportAction[];
 };
+
 const DEFAULT_TRANSLATIONS = getMessages(DEFAULT_LOCALE);
 const DEFAULT_SUPPORT_COPY = DEFAULT_TRANSLATIONS.support ?? {};
 
 export function SupportPage({
-  appName,
-  title,
-  tagline,
-  description,
-  thanks,
-  teamMembers,
-  actions,
+  appName = '',
+  supportT: initialSupportT,
+  teamMembers = [],
+  actions = [],
 }: SupportPageProps) {
   const { messages } = useLanguage();
-  const supportCopy = messages.support ?? {};
+  const supportCopy = messages.support ?? initialSupportT ?? {};
   const defaultSupport = DEFAULT_SUPPORT_COPY;
   const defaultTeam = defaultSupport.team ?? {};
   const defaultActions = defaultSupport.actions ?? {};
 
-  const resolvedTitle = supportCopy.title ?? defaultSupport.title ?? title;
+  const resolvedTitle = supportCopy.title ?? defaultSupport.title ?? 'Support';
   const resolvedTagline =
     formatMessage(supportCopy.tagline, { appName }) ??
-    formatMessage(defaultSupport.tagline, { appName }) ??
-    tagline;
+    formatMessage(defaultSupport.tagline, { appName });
   const resolvedDescription =
     formatMessage(supportCopy.description, { appName }) ??
-    formatMessage(defaultSupport.description, { appName }) ??
-    description;
+    formatMessage(defaultSupport.description, { appName });
   const resolvedThanks =
     formatMessage(supportCopy.thanks, { appName }) ??
-    formatMessage(defaultSupport.thanks, { appName }) ??
-    thanks;
+    formatMessage(defaultSupport.thanks, { appName });
 
   const localizedTeamMembers = teamMembers.map((member) => {
     const teamKey = member.key as SupportTeamKey;

@@ -3,6 +3,7 @@
 import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { formatMessage } from '@/shared/i18n';
+import { useLanguage } from '@/shared/i18n/context';
 import Link from 'next/link';
 import {
   PageLayout,
@@ -27,13 +28,16 @@ export interface TermsContentProps {
 const APP_NAME = appConfig.appName;
 
 export default function TermsContent({
-  t,
-  contactT,
+  t: initialT,
+  contactT: initialContactT,
   LEGAL_NAME,
   ID_CODE,
   SUPPORT_EMAIL,
   WORKING_HOURS,
 }: TermsContentProps) {
+  const { messages } = useLanguage();
+  const t = (messages.legal?.terms as unknown as TermsMessages) || initialT;
+  const contactT = messages.legal?.contact || initialContactT;
   const s = t?.sections;
 
   return (

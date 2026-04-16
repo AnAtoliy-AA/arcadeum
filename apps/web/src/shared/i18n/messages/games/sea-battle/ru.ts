@@ -136,7 +136,20 @@ export const ruMessages = {
       },
       defeat: {
         title: 'Поражение',
-        message: 'Все ваши корабли потоплены.',
+        message: 'Все ваши корабли были потоплены.',
+      },
+      controlPanel: {
+        spectating: 'Наблюдение',
+        fullscreen: 'Полноэкранный режим',
+        exitFullscreen: 'Выйти из полноэкранного режима',
+        enterFullscreen: 'На весь экран',
+        rules: 'Правила',
+        leaveRoom: 'Покинуть',
+        leaveConfirmMessage:
+          'Вы уверены, что хотите покинуть игру? Вы будете удалены из списка участников.',
+        exitRoom: 'Выйти',
+        exitRoomTooltip: 'Вернуться в лобби, но остаться в игре',
+        leaveGameTooltip: 'Удалить себя из игры и вернуться в лобби',
       },
       chat: {
         title: 'Чат битвы',

@@ -14,11 +14,11 @@ export const StyledRoomCard = styled(YStack, {
 
   hoverStyle: {
     scale: 1.05,
-    y: -12,
+    y: -8,
     borderColor: 'rgba(122, 215, 255, 0.4)',
     backgroundColor: '$backgroundHover',
     boxShadow:
-      '0 30px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(122, 215, 255, 0.25)',
+      '0 25px 50px rgba(0, 0, 0, 0.4), 0 0 20px rgba(122, 215, 255, 0.15)',
   },
 
   variants: {
@@ -95,14 +95,6 @@ export const StyledGameName = styled(Text, {
   color: '$color',
   opacity: 0.9,
   numberOfLines: 1,
-
-  variants: {
-    hasGradient: {
-      true: {
-        // Handled via inline style or CSS module if needed
-      },
-    },
-  } as const,
 });
 
 export const StyledRoomHeader = styled(XStack, {

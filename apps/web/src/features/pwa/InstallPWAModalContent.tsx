@@ -11,7 +11,7 @@ import {
   ModalFooter,
 } from '@/shared/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { usePWAOptional } from './PWAContext';
+import { usePWAOptional } from './context';
 import { Button } from '@arcadeum/ui';
 
 export function InstallPWAModalContent() {

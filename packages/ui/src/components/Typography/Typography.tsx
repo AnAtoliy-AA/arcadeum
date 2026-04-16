@@ -1,4 +1,6 @@
+'use client';
 import { Text, styled, GetProps } from 'tamagui';
+import './Typography.css';
 
 const StyledTypography = styled(Text, {
   name: 'Typography',
@@ -24,19 +26,13 @@ const StyledTypography = styled(Text, {
     },
     gradient: {
       primary: {
-        color: 'transparent',
-        background: 'linear-gradient(135deg, $color 0%, $primary 100%)',
-        backgroundClip: 'text',
+        className: 'typography-gradient-primary',
       },
       gold: {
-        color: 'transparent',
-        background: '$goldGradient',
-        backgroundClip: 'text',
+        className: 'typography-gradient-gold',
       },
       silver: {
-        color: 'transparent',
-        background: '$silverGradient',
-        backgroundClip: 'text',
+        className: 'typography-gradient-silver',
       },
     },
     weight: {

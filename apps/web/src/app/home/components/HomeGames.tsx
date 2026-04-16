@@ -219,12 +219,7 @@ export function HomeGames() {
                     <GameTitle
                       data-testid={`game-title-${game.id}`}
                       background={game.gradient}
-                      backgroundClip="text"
-                      color="transparent"
-                      style={{
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                      }}
+                      className="text-gradient"
                     >
                       {t(game.nameKey)}
                     </GameTitle>

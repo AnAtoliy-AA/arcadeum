@@ -94,6 +94,7 @@ export const GameTitle = styled(H3, {
   fontWeight: '800',
   flex: 1,
   letterSpacing: -0.02 as never,
+  color: 'transparent',
 });
 
 export const HelpIcon = styled(YStack, {

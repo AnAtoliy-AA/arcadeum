@@ -1,15 +1,19 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-
-import { PageLoading } from '@/shared/ui';
-
+import StatsLoading from './loading';
 import type { StatsPageProps } from './StatsPage';
 
-export const StatsClient = dynamic<StatsPageProps>(
+const StatsPageDynamic = dynamic<StatsPageProps>(
   () => import('./StatsPage').then((mod) => mod.StatsPage),
   {
     ssr: false,
-    loading: () => <PageLoading layout="stats" />,
+    loading: () => <StatsLoading />,
   },
 );
+
+const StatsClient = (props: StatsPageProps) => {
+  return <StatsPageDynamic {...props} />;
+};
+
+export default StatsClient;

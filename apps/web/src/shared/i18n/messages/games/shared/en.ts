@@ -186,4 +186,17 @@ export const enMessages = {
     title: '💤 You are idle',
     message: 'Move your mouse or press a key to resume',
   },
+  table: {
+    controlPanel: {
+      spectating: 'Spectating',
+      fullscreen: 'Fullscreen',
+      exitFullscreen: 'Exit Fullscreen',
+      enterFullscreen: 'Enter Fullscreen',
+      rules: 'Rules',
+    },
+    chat: {
+      show: 'Show Chat',
+      hide: 'Hide Chat',
+    },
+  },
 };

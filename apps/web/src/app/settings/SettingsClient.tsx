@@ -9,6 +9,8 @@ const SettingsPage = dynamic(() => import('./SettingsPage'), {
   ssr: false,
 });
 
-export function SettingsClient(props: SettingsPageProps) {
+function SettingsClient(props: SettingsPageProps) {
   return <SettingsPage {...props} />;
 }
+
+export default SettingsClient;

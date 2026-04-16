@@ -415,6 +415,7 @@ export const frMessages = {
       },
     },
     controlPanel: {
+      spectating: 'Observation',
       fullscreen: 'Plein écran',
       exitFullscreen: 'Quitter le plein écran',
       enterFullscreen: 'Entrer en plein écran',

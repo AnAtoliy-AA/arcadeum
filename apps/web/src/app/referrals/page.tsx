@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ReferralsClient } from './ReferralsClient';
+import ReferralsClient from './ReferralsClient';
 
 export const metadata: Metadata = {
   title: 'Invite Friends | Earn Rewards',

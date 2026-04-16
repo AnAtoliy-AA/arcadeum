@@ -93,4 +93,25 @@ test.describe('Game Room Logic', () => {
       page.getByText('Cannot join - game already started'),
     ).not.toBeVisible();
   });
+
+  test('should display spectating badge when entering with mode=watch', async ({
+    page,
+  }) => {
+    // Mock room info: Lobby, Not a participant
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        status: 'lobby',
+        visibility: 'public',
+        members: [],
+      },
+    });
+
+    // Navigate with explicit watch mode
+    await navigateTo(page, `/games/rooms/${roomId}?mode=watch`);
+
+    // Verify the "Spectating" badge is visible in the control panel
+    const spectatingBadge = page.getByText(/spectating/i);
+    await expect(spectatingBadge).toBeVisible();
+  });
 });

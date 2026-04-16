@@ -399,6 +399,7 @@ export const enMessages = {
       },
     },
     controlPanel: {
+      spectating: 'Spectating',
       fullscreen: 'Fullscreen',
       exitFullscreen: 'Exit fullscreen',
       enterFullscreen: 'Enter fullscreen',

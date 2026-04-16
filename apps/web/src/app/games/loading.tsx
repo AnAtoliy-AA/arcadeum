@@ -1,6 +1,6 @@
 'use client';
 
-import { PageLoading } from '@arcadeum/ui';
+import { PageLoading } from '@/shared/ui';
 
 export default function GamesLoading() {
   return <PageLoading layout="grid" />;

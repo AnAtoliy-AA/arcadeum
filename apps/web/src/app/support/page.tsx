@@ -1,28 +1,15 @@
-'use client';
-
-import dynamic from 'next/dynamic';
-import { Suspense, useMemo } from 'react';
+import { getTranslations } from '@/shared/i18n/server';
+import SupportClient from './client';
 import { appConfig } from '@/shared/config/app-config';
 import type {
   SupportAction,
   SupportTeamMember,
 } from '@/entities/support/model/types';
 
-import { PageLoading } from '@/shared/ui';
-
-const SupportPage = dynamic(
-  () => import('./SupportPage').then((mod) => mod.SupportPage),
-  {
-    loading: () => <PageLoading layout="grid" />,
-    ssr: false,
-  },
-);
-
-const SUPPORT_TITLE = 'Support the developers';
-const SUPPORT_TAGLINE = `Keep ${appConfig.appName} iterating quickly and accessible to the tabletop community.`;
-const SUPPORT_DESCRIPTION =
-  'Arcade labs, infrastructure, and community events are self-funded today. Your backing keeps the realtime servers online, unlocks more playtest nights, and helps us ship the next wave of prototypes.';
-const SUPPORT_THANKS = `Every contribution keeps ${appConfig.appName} evolving. Thank you for helping us build the future of remote tabletop play!`;
+export const metadata = {
+  title: 'Support the developers',
+  description: `Keep ${appConfig.appName} iterating quickly and accessible to the tabletop community.`,
+};
 
 const TEAM_MEMBERS: SupportTeamMember[] = [
   {
@@ -63,47 +50,42 @@ function buildActions(): SupportAction[] {
         "Enter an amount and we'll open PayPal's secure checkout in your browser.",
       cta: 'Enter amount',
     },
+    {
+      key: 'sponsor',
+      icon: '⭐️',
+      type: 'route',
+      href: '/payment?mode=subscription',
+      title: 'Recurring sponsorship',
+      description:
+        'Set up a monthly or annual contribution to underwrite hosting, QA sessions, and new game prototypes.',
+      cta: 'Sponsor development',
+    },
+    {
+      key: 'github',
+      icon: '🐙',
+      type: 'external',
+      href: 'https://github.com/AnAtoliy-AA/arcadeum',
+      title: 'Star on GitHub',
+      description:
+        'Support the project by starring the repository. It helps our visibility and community growth.',
+      cta: 'View on GitHub',
+    },
   ];
-
-  actions.push({
-    key: 'sponsor',
-    icon: '⭐️',
-    type: 'route',
-    href: '/payment?mode=subscription',
-    title: 'Recurring sponsorship',
-    description:
-      'Set up a monthly or annual contribution to underwrite hosting, QA sessions, and new game prototypes.',
-    cta: 'Sponsor development',
-  });
-
-  actions.push({
-    key: 'github',
-    icon: '🐙',
-    type: 'external',
-    href: 'https://github.com/AnAtoliy-AA/arcadeum',
-    title: 'Star on GitHub',
-    description:
-      'Support the project by starring the repository. It helps our visibility and community growth.',
-    cta: 'View on GitHub',
-  });
 
   return actions;
 }
 
-export default function SupportRoute() {
-  const actions = useMemo(() => buildActions(), []);
+export default async function SupportRoute() {
+  const messages = await getTranslations();
+  const supportT = messages.support;
+  const actions = buildActions();
 
   return (
-    <Suspense fallback={null}>
-      <SupportPage
-        appName={appConfig.appName}
-        title={SUPPORT_TITLE}
-        tagline={SUPPORT_TAGLINE}
-        description={SUPPORT_DESCRIPTION}
-        thanks={SUPPORT_THANKS}
-        teamMembers={TEAM_MEMBERS}
-        actions={actions}
-      />
-    </Suspense>
+    <SupportClient
+      appName={appConfig.appName}
+      supportT={supportT}
+      teamMembers={TEAM_MEMBERS}
+      actions={actions}
+    />
   );
 }

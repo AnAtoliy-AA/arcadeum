@@ -224,12 +224,11 @@ export function HomeGameDetailsModal({
         <ModalHeader onClose={onClose}>
           <ModalTitle>
             <span
+              className="text-gradient"
               style={{
                 background:
                   game.gradient ??
                   'linear-gradient(135deg, #ff4d4d 0%, #f9cb28 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
                 fontSize: '2.25rem',
                 fontWeight: '900',
                 letterSpacing: '-0.02em',

@@ -139,6 +139,19 @@ export const esMessages = {
         title: 'Derrota',
         message: 'Todos tus barcos han sido hundidos.',
       },
+      controlPanel: {
+        spectating: 'Espectando',
+        fullscreen: 'Pantalla completa',
+        exitFullscreen: 'Salir de pantalla completa',
+        enterFullscreen: 'Entrar en pantalla completa',
+        rules: 'Reglas',
+        leaveRoom: 'Salir',
+        leaveConfirmMessage:
+          '¿Estás seguro de que quieres salir de la partida? Serás eliminado de la lista de participantes.',
+        exitRoom: 'Salir',
+        exitRoomTooltip: 'Volver al vestíbulo pero mantenerte en el juego',
+        leaveGameTooltip: 'Eliminarte del juego y volver al vestíbulo',
+      },
       chat: {
         title: 'Chat de Batalla',
         empty: 'Sin mensajes aún',

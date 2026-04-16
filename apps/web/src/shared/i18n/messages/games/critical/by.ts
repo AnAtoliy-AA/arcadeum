@@ -401,7 +401,8 @@ export const byMessages = {
       },
     },
     controlPanel: {
-      fullscreen: 'Увесь экран',
+      spectating: 'Назіранне',
+      fullscreen: 'Поўнаэкранны рэжым',
       exitFullscreen: 'Выйсці з поўнаэкраннага рэжыму',
       enterFullscreen: 'На ўвесь экран',
       rules: 'Правілы',

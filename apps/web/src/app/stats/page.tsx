@@ -6,7 +6,7 @@ import {
   type PlayerStats,
 } from '@/features/history/api';
 import { SSR_TIMEOUT } from '@/shared/config/app-config';
-import { StatsPage } from './StatsPage';
+import StatsClient from './StatsClient';
 import StatsLoading from './loading';
 
 export const metadata = {
@@ -68,7 +68,7 @@ async function StatsDataFetcher({
   }
 
   return (
-    <StatsPage
+    <StatsClient
       initialStats={initialStats}
       initialLeaderboard={initialLeaderboard}
     />

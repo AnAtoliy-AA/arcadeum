@@ -1,5 +1,5 @@
 import { appConfig } from '@/shared/config/app-config';
-import { SettingsClient } from './SettingsClient';
+import SettingsClient from './SettingsClient';
 
 export const metadata = {
   title: 'Settings',

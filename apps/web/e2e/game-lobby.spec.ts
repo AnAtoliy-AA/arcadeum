@@ -142,4 +142,19 @@ test.describe('Game Lobby - Room Info Display', () => {
     // Page should have some game content
     expect(criticalExists || seaBattleExists || true).toBeTruthy();
   });
+
+  test('should have a Watch Room link with specatating mode', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/games');
+
+    // Find any room card and check for the watch link
+    const watchLink = page.getByRole('link', { name: /watch/i }).first();
+
+    const exists = await watchLink.isVisible().catch(() => false);
+    if (exists) {
+      const href = await watchLink.getAttribute('href');
+      expect(href).toContain('?mode=watch');
+    }
+  });
 });

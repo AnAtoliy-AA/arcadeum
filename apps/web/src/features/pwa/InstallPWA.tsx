@@ -2,7 +2,7 @@
 
 import { InstallPWAModalContent } from './InstallPWAModalContent';
 import { Button } from '@arcadeum/ui';
-import { usePWAOptional } from './PWAContext';
+import { usePWAOptional } from './context';
 
 export function InstallPWAModal() {
   return <InstallPWAModalContent />;

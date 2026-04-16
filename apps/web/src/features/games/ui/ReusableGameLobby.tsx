@@ -245,16 +245,10 @@ export function ReusableGameLobby({
         <GameInfo>
           <GameTitleText
             background={theme.titleGradient}
-            hasGradient={!!theme.titleGradient}
-            style={
-              theme.titleGradient
-                ? ({
-                    animation: 'shimmer 4s linear infinite',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  } as React.CSSProperties)
-                : undefined
+            className={
+              theme.titleGradient ? 'text-gradient shimmer-animated' : undefined
             }
+            style={theme.titleGradient ? { backgroundSize: '200% auto' } : {}}
           >
             {gameName}
             {variantName && (
@@ -262,15 +256,13 @@ export function ReusableGameLobby({
                 {' '}
                 <VariantText
                   background={theme.variantGradient}
-                  hasGradient={!!theme.variantGradient}
-                  style={
+                  className={
                     theme.variantGradient
-                      ? ({
-                          animation: 'shimmer 4s linear infinite',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                        } as React.CSSProperties)
+                      ? 'text-gradient shimmer-animated'
                       : undefined
+                  }
+                  style={
+                    theme.variantGradient ? { backgroundSize: '200% auto' } : {}
                   }
                 >
                   : {variantName}

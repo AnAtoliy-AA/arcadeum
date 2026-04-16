@@ -137,7 +137,20 @@ export const byMessages = {
       },
       defeat: {
         title: 'Паражэнне',
-        message: 'Усе вашы караблі патопленыя.',
+        message: 'Усе вашы караблі былі патоплены.',
+      },
+      controlPanel: {
+        spectating: 'Назіранне',
+        fullscreen: 'Поўнаэкранны рэжым',
+        exitFullscreen: 'Выйсці з поўнаэкраннага рэжыму',
+        enterFullscreen: 'На ўвесь экран',
+        rules: 'Правілы',
+        leaveRoom: 'Пакінуць',
+        leaveConfirmMessage:
+          'Вы ўпэўненыя, што хочаце пакінуць гульню? Вы будзеце выдалены са спісу ўдзельнікаў.',
+        exitRoom: 'Выйсці',
+        exitRoomTooltip: 'Вярнуцца ў лобі, але застацца ў гульні',
+        leaveGameTooltip: 'Выдаліць сябе з гульні і вярнуцца ў лобі',
       },
       chat: {
         title: 'Чат бітвы',

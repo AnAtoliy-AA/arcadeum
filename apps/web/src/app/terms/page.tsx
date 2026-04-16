@@ -1,6 +1,6 @@
 import { appConfig } from '@/shared/config/app-config';
 import { getTranslations } from '@/shared/i18n/server';
-import { TermsClient } from './TermsClient';
+import TermsClient from './TermsClient';
 
 const LEGAL_NAME =
   process.env.NEXT_PUBLIC_LEGAL_NAME ??

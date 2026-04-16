@@ -319,11 +319,9 @@ export function GameWidgetContainer({
             <GameTitle numberOfLines={1}>
               {headerProps.titleGradient ? (
                 <span
+                  className="text-gradient"
                   style={{
                     background: headerProps.titleGradient,
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
                   }}
                 >
                   {headerProps.title}

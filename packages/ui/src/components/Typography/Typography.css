@@ -1,0 +1,23 @@
+.typography-gradient-primary {
+  background: linear-gradient(135deg, var(--color) 0%, var(--primary) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent !important;
+}
+
+.typography-gradient-gold {
+  background: var(--goldGradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent !important;
+}
+
+.typography-gradient-silver {
+  background: var(--silverGradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent !important;
+}

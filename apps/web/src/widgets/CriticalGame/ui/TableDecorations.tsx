@@ -49,13 +49,16 @@ export function TableDecorations({
         {snowflakes.map((snowflake) => (
           <Snowflake
             key={snowflake.id}
-            style={{
-              left: `${snowflake.left}%`,
-              animationDelay: `${snowflake.delay}s`,
-              animationDuration: `${snowflake.duration}s`,
-              width: snowflake.size,
-              height: snowflake.size,
-            }}
+            className="snowflake-animated"
+            style={
+              {
+                left: `${snowflake.left}%`,
+                '--snowflake-delay': `${snowflake.delay}s`,
+                '--snowflake-duration': `${snowflake.duration}s`,
+                width: snowflake.size,
+                height: snowflake.size,
+              } as React.CSSProperties
+            }
           />
         ))}
       </>

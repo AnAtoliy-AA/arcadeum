@@ -1,7 +1,7 @@
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { gamesApi } from '@/features/games/api';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { GameDetailPage } from './GameDetailPage';
+import GameDetailClient from './GameDetailClient';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -26,5 +26,5 @@ export default async function GameDetailRoute({ params }: PageProps) {
     );
   }
 
-  return <GameDetailPage initialRooms={initialRooms} />;
+  return <GameDetailClient initialRooms={initialRooms} />;
 }

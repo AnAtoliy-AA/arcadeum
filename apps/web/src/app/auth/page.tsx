@@ -1,18 +1,5 @@
-'use client';
-
-import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
-
-const AuthPageWrapper = dynamic(
-  () =>
-    import('@/features/auth/ui/AuthPageWrapper').then(
-      (mod) => mod.AuthPageWrapper,
-    ),
-  {
-    ssr: false,
-    loading: () => null,
-  },
-);
+import { AuthPageWrapper } from '@/features/auth/ui/AuthPageWrapper';
 
 // metadata moved to layout.tsx
 

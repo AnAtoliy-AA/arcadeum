@@ -1,6 +1,7 @@
 import { routes } from './routes';
 
-export const SSR_TIMEOUT = process.env.NODE_ENV === 'development' ? 5000 : 1000;
+export const SSR_TIMEOUT =
+  process.env.NODE_ENV === 'development' ? 15000 : 5000;
 
 type CtaConfig = {
   href: string;

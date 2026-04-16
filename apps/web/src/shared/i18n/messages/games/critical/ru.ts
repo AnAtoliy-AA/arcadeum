@@ -403,7 +403,8 @@ export const ruMessages = {
       },
     },
     controlPanel: {
-      fullscreen: 'Весь экран',
+      spectating: 'Наблюдение',
+      fullscreen: 'Полноэкранный режим',
       exitFullscreen: 'Выйти из полноэкранного режима',
       enterFullscreen: 'На весь экран',
       rules: 'Правила',

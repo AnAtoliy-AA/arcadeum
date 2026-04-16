@@ -182,8 +182,13 @@ export const byMessages = {
     reconnecting: 'Переключэнне...',
   },
   idle: {
-    label: 'Неактыўны',
-    title: '💤 Вы неактыўны',
-    message: 'Рухайце мышку або націсніце клавішу, каб працягнуць',
+    label: 'Бяздзейнасць',
+    title: '💤 Вы бяздзейнічаеце',
+    message: 'Рухайце мышшу альбо націсніце любую клавішу для вяртання',
+  },
+  table: {
+    controlPanel: {
+      spectating: 'Spectating',
+    },
   },
 };

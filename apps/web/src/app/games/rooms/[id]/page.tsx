@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { gamesApi } from '@/features/games/api';
 import { appConfig } from '@/shared/config/app-config';
-import GameRoomPage from './components/GameRoomPage';
+import GameRoomClient from './GameRoomClient';
 import GameRoomLoading from './loading';
 
 interface PageProps {
@@ -55,5 +55,10 @@ async function RoomDataFetcher({ id }: { id: string }) {
     }
   }
 
-  return <GameRoomPage initialData={initialData} />;
+  return (
+    <GameRoomClient
+      params={Promise.resolve({ id })}
+      initialData={initialData}
+    />
+  );
 }

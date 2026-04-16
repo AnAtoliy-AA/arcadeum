@@ -68,6 +68,13 @@ export function CriticalGameHeader({
     Boolean(actionBusy),
   );
 
+  const variantName = (() => {
+    const variant = CARD_VARIANTS.find((v) => v.id === cardVariant);
+    return variant
+      ? t(variant.name as TranslationKey)
+      : t('games.critical_v1.variants.cyberpunk.name' as TranslationKey);
+  })();
+
   return (
     <GameHeader $variant={cardVariant as GameVariant}>
       <RulesModal
@@ -90,25 +97,16 @@ export function CriticalGameHeader({
         <YStack gap={0} minWidth={0} flex={1}>
           <GameTitle numberOfLines={1}>
             <span
+              className="text-gradient"
               style={{
                 background: getVariantStyles(
                   cardVariant || 'default',
                 ).header.getTitleBackground(),
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
               }}
             >
               {t('games.critical_v1.name')}
               {' · '}
-              {(() => {
-                const variant = CARD_VARIANTS.find((v) => v.id === cardVariant);
-                return variant
-                  ? t(variant.name as TranslationKey)
-                  : t(
-                      'games.critical_v1.variants.cyberpunk.name' as TranslationKey,
-                    );
-              })()}
+              {variantName}
             </span>
           </GameTitle>
 

@@ -31,6 +31,8 @@ interface GamePageLayoutProps {
   // Rules
   onShowRules: () => void;
 
+  isSpectating?: boolean;
+
   // The game widget — receives isFullscreen/toggleFullscreen via render prop
   children: (layoutProps: {
     isFullscreen: boolean;
@@ -38,17 +40,20 @@ interface GamePageLayoutProps {
   }) => React.ReactNode;
 }
 
-export function GamePageLayout({
-  roomId,
-  room: _room,
-  inviteCode,
-  isDisconnected,
-  isReconnecting,
-  isIdle,
-  onReconnect,
-  onShowRules,
-  children,
-}: GamePageLayoutProps) {
+export function GamePageLayout(props: GamePageLayoutProps) {
+  const {
+    roomId,
+    room: _room,
+    inviteCode,
+    isDisconnected,
+    isReconnecting,
+    isIdle,
+    onReconnect,
+    onShowRules,
+    isSpectating,
+    children,
+  } = props;
+
   const { t } = useTranslation();
   const media = useMedia();
   const roomFlexDirection = media.gtMd ? 'row' : 'column';
@@ -104,6 +109,7 @@ export function GamePageLayout({
           showChat={showChat}
           onToggleChat={handleToggleChat}
           onShowRules={onShowRules}
+          isSpectating={isSpectating}
         />
 
         <GameRow flexDirection={roomFlexDirection}>

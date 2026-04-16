@@ -32,10 +32,16 @@ const LoadingSkeleton = () => (
 
 import type { PrivacyContentProps } from './PrivacyContent';
 
-export const PrivacyClient = dynamic<PrivacyContentProps>(
+const PrivacyContentDynamic = dynamic<PrivacyContentProps>(
   () => import('./PrivacyContent'),
   {
     ssr: false,
     loading: LoadingSkeleton,
   },
 );
+
+const PrivacyClient = (props: PrivacyContentProps) => {
+  return <PrivacyContentDynamic {...props} />;
+};
+
+export default PrivacyClient;

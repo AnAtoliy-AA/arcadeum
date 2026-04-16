@@ -3,6 +3,7 @@
 import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { formatMessage } from '@/shared/i18n';
+import { useLanguage } from '@/shared/i18n/context';
 import Link from 'next/link';
 import {
   PageLayout,
@@ -24,10 +25,13 @@ export interface PrivacyContentProps {
 const APP_NAME = appConfig.appName;
 
 export default function PrivacyContent({
-  t,
-  contactT,
+  t: initialT,
+  contactT: initialContactT,
   PRIVACY_EMAIL,
 }: PrivacyContentProps) {
+  const { messages } = useLanguage();
+  const t = (messages.legal?.privacy as unknown as PrivacyMessages) || initialT;
+  const contactT = messages.legal?.contact || initialContactT;
   const s = t?.sections;
 
   return (

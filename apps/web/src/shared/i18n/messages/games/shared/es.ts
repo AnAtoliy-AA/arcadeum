@@ -189,4 +189,9 @@ export const esMessages = {
     title: '💤 Estás inactivo',
     message: 'Mueve el ratón o pulsa una tecla para continuar',
   },
+  table: {
+    controlPanel: {
+      spectating: 'Spectating',
+    },
+  },
 };

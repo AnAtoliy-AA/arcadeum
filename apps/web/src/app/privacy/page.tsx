@@ -1,6 +1,6 @@
 import { appConfig } from '@/shared/config/app-config';
 import { getTranslations } from '@/shared/i18n/server';
-import { PrivacyClient } from './PrivacyClient';
+import PrivacyClient from './PrivacyClient';
 
 const PRIVACY_EMAIL =
   process.env.NEXT_PUBLIC_PRIVACY_EMAIL ?? 'arcadeum.care@gmail.com';

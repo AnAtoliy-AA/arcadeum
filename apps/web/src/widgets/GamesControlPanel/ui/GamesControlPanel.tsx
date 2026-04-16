@@ -32,31 +32,39 @@ interface GamesControlPanelProps {
   onShowRules?: () => void;
   isFullscreen?: boolean;
   toggleFullscreen?: () => void;
+  isSpectating?: boolean;
 }
 
-export function GamesControlPanel({
-  roomId,
-  inviteCode,
-  className,
-  onMovePlayer,
-  onCenterView,
-  showMoveControls,
-  showChat,
-  onToggleChat,
-  onShowRules,
-  isFullscreen,
-  toggleFullscreen,
-}: GamesControlPanelProps) {
+export function GamesControlPanel(props: GamesControlPanelProps) {
+  const { t } = useTranslation();
   const router = useRouter();
+  const {
+    roomId,
+    inviteCode,
+    className,
+    onMovePlayer,
+    onCenterView,
+    showMoveControls,
+    showChat,
+    onToggleChat,
+    onShowRules,
+    isFullscreen,
+    toggleFullscreen,
+    isSpectating,
+  } = props;
 
   const { snapshot } = useSessionTokens();
-  const { t } = useTranslation();
   const [isCopied, setIsCopied] = useTimedTrue(2000);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
   const handleLeaveGame = useCallback(() => {
+    if (isSpectating) {
+      // If spectating, we can just leave the room UI
+      router.push('/games');
+      return;
+    }
     setShowLeaveConfirm(true);
-  }, []);
+  }, [isSpectating, router]);
 
   const handleConfirmLeave = useCallback(() => {
     if (roomId && snapshot.userId) {
@@ -118,6 +126,32 @@ export function GamesControlPanel({
         paddingHorizontal: '$4',
       }}
     >
+      {isSpectating && (
+        <XStack
+          backgroundColor="rgba(56, 189, 248, 0.15)"
+          borderColor="rgba(56, 189, 248, 0.4)"
+          borderWidth={1}
+          paddingHorizontal="$3"
+          paddingVertical="$2"
+          borderRadius={20}
+          alignItems="center"
+          gap="$2"
+          aria-label="Spectating mode"
+          data-testid="spectating-indicator"
+        >
+          <Text fontSize={14}>👁️</Text>
+          <Text
+            fontSize={11}
+            fontWeight="800"
+            color="$blue10"
+            textTransform="uppercase"
+            letterSpacing={1}
+          >
+            {t('games.table.controlPanel.spectating') || 'Spectating'}
+          </Text>
+        </XStack>
+      )}
+
       <Button
         variant="glass"
         size="sm"
@@ -313,27 +347,53 @@ export function GamesControlPanel({
       )}
 
       <Modal open={showLeaveConfirm} onClose={() => setShowLeaveConfirm(false)}>
-        <ModalContent maxWidth="400px">
+        <ModalContent maxWidth="420px">
           <ModalHeader onClose={() => setShowLeaveConfirm(false)}>
             <ModalTitle>{t('games.table.controlPanel.leaveRoom')}</ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <YStack padding="$4">
-              <p>
+            <YStack gap="$4" alignItems="center" paddingVertical="$4">
+              <YStack
+                width={80}
+                height={80}
+                borderRadius={40}
+                backgroundColor="rgba(239, 68, 68, 0.1)"
+                alignItems="center"
+                justifyContent="center"
+                marginBottom="$2"
+              >
+                <Text fontSize={32}>🚪</Text>
+              </YStack>
+              <Text
+                textAlign="center"
+                fontSize={16}
+                lineHeight={24}
+                opacity={0.8}
+                fontWeight="500"
+              >
                 {t('games.table.controlPanel.leaveConfirmMessage') ||
                   'Are you sure you want to leave the game? You will be removed from the participants list.'}
-              </p>
+              </Text>
             </YStack>
           </ModalBody>
           <ModalFooter>
-            <XStack gap="$3" justifyContent="flex-end">
+            <XStack gap="$3" justifyContent="center" width="100%">
               <Button
                 variant="secondary"
+                size="lg"
+                flex={1}
                 onClick={() => setShowLeaveConfirm(false)}
+                borderRadius={12}
               >
                 {t('games.common.cancel') || 'Cancel'}
               </Button>
-              <Button variant="danger" onClick={handleConfirmLeave}>
+              <Button
+                variant="danger"
+                size="lg"
+                flex={1}
+                onClick={handleConfirmLeave}
+                borderRadius={12}
+              >
                 {t('games.table.controlPanel.leaveRoom')}
               </Button>
             </XStack>

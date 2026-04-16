@@ -4,7 +4,7 @@ import { historyApi } from '@/features/history/api';
 import { SSR_TIMEOUT } from '@/shared/config/app-config';
 import { ApiError } from '@/shared/lib/api-client';
 import { HttpStatus } from '@/shared/lib/http-status';
-import { HistoryPage } from './HistoryPage';
+import HistoryClient from './HistoryClient';
 import HistoryLoading from './loading';
 
 interface PageProps {
@@ -56,15 +56,10 @@ async function HistoryDataFetcher({
   } catch (error) {
     if (error instanceof ApiError && error.status === HttpStatus.UNAUTHORIZED) {
       // Intentionally ignore to show 'Login Required' UI on the client
-      return <HistoryPage initialData={undefined} />;
+      return <HistoryClient initialData={undefined} />;
     }
     console.error('Failed to pre-fetch history during SSR:', error);
   }
 
-  // Handle redirect outside the primary data fetching try/catch
-  if (accessToken === null) {
-    // If we wanted to redirect based on missing token, we'd do it here
-  }
-
-  return <HistoryPage initialData={initialData || undefined} />;
+  return <HistoryClient initialData={initialData || undefined} />;
 }

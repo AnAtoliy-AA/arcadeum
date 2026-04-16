@@ -104,6 +104,10 @@ export default function GameRoomPage({
   const roomMode = useMemo(() => {
     if (roomInfoLoading || !roomInfo) return 'play'; // Default to play while loading (won't connect yet)
 
+    // Respect explicit mode from query parameter if provided
+    const requestedMode = searchParams?.get('mode');
+    if (requestedMode === 'watch') return 'watch';
+
     // If user is a participant, they always re-join as PLAY
     const isParticipant = roomInfo.members?.some(
       (p: { id: string }) => p.id === snapshot.userId,
@@ -122,7 +126,13 @@ export default function GameRoomPage({
       return 'watch';
 
     return 'play';
-  }, [roomInfoLoading, roomInfo, snapshot.userId, isAuthenticated]);
+  }, [
+    roomInfoLoading,
+    roomInfo,
+    snapshot.userId,
+    isAuthenticated,
+    searchParams,
+  ]);
 
   // Connect sockets based on auth status and room visibility
   useEffect(() => {
@@ -391,6 +401,7 @@ export default function GameRoomPage({
         isDisconnected={isDisconnected}
         isReconnecting={isReconnecting}
         isIdle={isIdle}
+        isSpectating={roomMode === 'watch'}
         onReconnect={reconnect}
         onShowRules={handleShowRules}
       >

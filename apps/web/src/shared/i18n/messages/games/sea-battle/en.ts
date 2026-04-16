@@ -139,6 +139,19 @@ export const enMessages = {
         title: 'Defeat',
         message: 'All your ships have been sunk.',
       },
+      controlPanel: {
+        spectating: 'Spectating',
+        fullscreen: 'Fullscreen',
+        exitFullscreen: 'Exit Fullscreen',
+        enterFullscreen: 'Enter Fullscreen',
+        rules: 'Rules',
+        leaveRoom: 'Leave',
+        leaveConfirmMessage:
+          'Are you sure you want to leave the game? You will be removed from the participants list.',
+        exitRoom: 'Exit',
+        exitRoomTooltip: 'Go back to lobby but stay in the game',
+        leaveGameTooltip: 'Remove yourself from the game and return to lobby',
+      },
       chat: {
         title: 'Battle Chat',
         empty: 'No messages yet',

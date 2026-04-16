@@ -107,15 +107,7 @@ export function CriticalCreationConfig({
                 )}
                 <GameTileIcon
                   background={variant.gradient || undefined}
-                  style={
-                    variant.gradient
-                      ? {
-                          WebkitBackgroundClip: 'text',
-                          backgroundClip: 'text',
-                          color: 'transparent',
-                        }
-                      : undefined
-                  }
+                  className={variant.gradient ? 'text-gradient' : undefined}
                 >
                   {variant.emoji}
                 </GameTileIcon>

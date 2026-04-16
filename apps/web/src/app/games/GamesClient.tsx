@@ -1,12 +1,19 @@
 'use client';
 
-import { GamesPage } from './GamesPage';
-import { GetRoomsResponse } from '@/features/games/api';
+import dynamic from 'next/dynamic';
+import GamesLoading from './loading';
+import type { GamesClientProps } from './types';
 
-interface GamesClientProps {
-  initialData: GetRoomsResponse | null;
+const GamesPageDynamic = dynamic(
+  () => import('./GamesPage').then((mod) => mod.GamesPage),
+  {
+    ssr: false,
+    loading: () => <GamesLoading />,
+  },
+);
+
+function GamesClient(props: GamesClientProps) {
+  return <GamesPageDynamic {...props} />;
 }
 
-export function GamesClient({ initialData }: GamesClientProps) {
-  return <GamesPage initialData={initialData} />;
-}
+export default GamesClient;

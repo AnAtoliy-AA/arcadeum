@@ -10,10 +10,10 @@ export const ShipPalette = styled(YStack, {
   $md: {
     flexDirection: 'row',
     overflowX: 'auto',
-    padding: '$4',
-    gap: '$6',
+    padding: '$2',
+    gap: '$2',
     width: '100%',
-    alignItems: 'stretch',
+    alignItems: 'center',
   },
 });
 
@@ -43,9 +43,11 @@ export const ShipItem = styled(XStack, {
     animated: false,
   },
 
-  $sm: {
+  $md: {
     flexShrink: 0,
     width: 'auto',
+    paddingHorizontal: '$2',
+    paddingVertical: '$1',
   },
 });
 
@@ -66,17 +68,28 @@ export const ShipCell = styled(YStack, {
 export const ShipName = styled(Text, {
   name: 'ShipName',
   fontSize: 14,
+
+  $md: {
+    fontSize: 12,
+  },
 });
 
-export const PlacementActions = styled(XStack, {
+export const PlacementActions = styled(YStack, {
   name: 'PlacementActions',
-  gap: '$3',
+  gap: '$2',
   width: '100%',
-  flexWrap: 'wrap',
   justifyContent: 'center',
   alignItems: 'center',
-  paddingHorizontal: '$4',
+  paddingHorizontal: '$2',
   paddingVertical: '$2',
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+
+  $gtMd: {
+    gap: '$3',
+    paddingHorizontal: '$4',
+    paddingVertical: '$4',
+  },
 });
 
 // Re-export Button as ActionButton and RotateButton for call sites that import by name

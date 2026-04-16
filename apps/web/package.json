@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "1.9.14",
+  "version": "1.9.15",
   "private": true,
   "scripts": {
     "dev": "next dev -p $(node ../../scripts/resolve-env-port.js .env.local WEB_PORT 3000)",

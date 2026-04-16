@@ -43,7 +43,7 @@ const HelpIconEl = HelpIcon as React.ComponentType<
   WithHtmlProps<React.ComponentProps<typeof HelpIcon>>
 >;
 
-export function HomeGames() {
+export default function HomeGames() {
   const { t } = useTranslation();
   const { messages } = useLanguage();
   const sliderRef = useRef<TamaguiElement>(null);

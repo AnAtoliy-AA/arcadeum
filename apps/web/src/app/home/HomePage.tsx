@@ -1,29 +1,19 @@
 'use client';
 
 import { PageLayout } from '@/shared/ui';
-import { HomeHero } from './components/HomeHero';
-import { HomeGames } from './components/HomeGames';
+import HomeHero from './components/HomeHero';
+import HomeGames from './components/HomeGames';
 import dynamic from 'next/dynamic';
 
-const HomeHowItWorks = dynamic(() =>
-  import('./components/HomeHowItWorks').then((m) => m.HomeHowItWorks),
-);
-const HomeFeatures = dynamic(() =>
-  import('./components/HomeFeatures').then((m) => m.HomeFeatures),
-);
-const HomePresentation = dynamic(() =>
-  import('./components/HomePresentation').then((m) => m.HomePresentation),
-);
-const HomePitchDeck = dynamic(() =>
-  import('./components/HomePitchDeck').then((m) => m.HomePitchDeck),
-);
-const HomeDownloadCta = dynamic(() =>
-  import('./components/HomeDownloadCta').then((m) => m.HomeDownloadCta),
-);
+const HomeHowItWorks = dynamic(() => import('./components/HomeHowItWorks'));
+const HomeFeatures = dynamic(() => import('./components/HomeFeatures'));
+const HomePresentation = dynamic(() => import('./components/HomePresentation'));
+const HomePitchDeck = dynamic(() => import('./components/HomePitchDeck'));
+const HomeDownloadCta = dynamic(() => import('./components/HomeDownloadCta'));
 
 import { AppFooter } from '@/widgets/footer';
 
-export function HomePage() {
+export default function HomePage() {
   return (
     <>
       <PageLayout
@@ -44,5 +34,3 @@ export function HomePage() {
     </>
   );
 }
-
-export default HomePage;

@@ -88,7 +88,7 @@ const FEATURES: Feature[] = [
   },
 ];
 
-export function HomeFeatures() {
+export default function HomeFeatures() {
   const { messages } = useLanguage();
   const homeCopy = messages.home ?? {};
   const { appName } = appConfig;

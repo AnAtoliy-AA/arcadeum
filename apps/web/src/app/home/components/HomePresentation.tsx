@@ -33,7 +33,7 @@ const PlayButtonEl = PlayButton as React.ComponentType<
   WithHtmlProps<React.ComponentProps<typeof PlayButton>>
 >;
 
-export function HomePresentation() {
+export default function HomePresentation() {
   const { presentationVideoId, appName } = appConfig;
   const { messages } = useLanguage();
   const [isPlaying, setIsPlaying] = useState(false);

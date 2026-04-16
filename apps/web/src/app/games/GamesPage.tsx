@@ -36,7 +36,7 @@ interface GamesPageProps {
   initialData: GetRoomsResponse | null;
 }
 
-export function GamesPage({ initialData }: GamesPageProps) {
+export default function GamesPage({ initialData }: GamesPageProps) {
   const { snapshot, hydrated } = useSessionTokens();
   const searchParams = useSearchParams();
   const router = useRouter();

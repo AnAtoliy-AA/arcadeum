@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.17] - 2026-04-16
+
+### Fixed
+- build import error (ARC-471)
+- be cors policy (ARC-471)
+
+
 ## [1.9.16] - 2026-04-16
 
 ### Fixed

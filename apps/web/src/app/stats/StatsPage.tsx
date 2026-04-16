@@ -34,7 +34,7 @@ export interface StatsPageProps {
   initialLeaderboard: LeaderboardResponse | null;
 }
 
-export function StatsPage({
+export default function StatsPage({
   initialStats,
   initialLeaderboard,
 }: StatsPageProps) {

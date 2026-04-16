@@ -27,7 +27,7 @@ interface BrowserRegistryProps {
   initialLocale?: Locale;
 }
 
-export function BrowserRegistry({
+export default function BrowserRegistry({
   children,
   initialTheme,
   initialLocale,

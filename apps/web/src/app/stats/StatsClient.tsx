@@ -5,7 +5,7 @@ import StatsLoading from './loading';
 import type { StatsPageProps } from './StatsPage';
 
 const StatsPageDynamic = dynamic<StatsPageProps>(
-  () => import('./StatsPage').then((mod) => mod.StatsPage),
+  () => import('./StatsPage'),
   {
     ssr: false,
     loading: () => <StatsLoading />,

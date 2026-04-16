@@ -54,7 +54,7 @@ const STEPS: Step[] = [
   },
 ];
 
-export function HomeHowItWorks() {
+export default function HomeHowItWorks() {
   const { messages } = useLanguage();
   const homeCopy = messages.home ?? {};
   const { appName } = appConfig;

@@ -26,7 +26,7 @@ export interface HistoryPageProps {
     | undefined;
 }
 
-export function HistoryPage({ initialData }: HistoryPageProps) {
+export default function HistoryPage({ initialData }: HistoryPageProps) {
   const router = useRouter();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();

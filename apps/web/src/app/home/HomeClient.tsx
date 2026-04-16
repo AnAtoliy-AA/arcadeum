@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import { PageLoading } from '@/shared/ui';
 
-const HomeClient = dynamic(() => import('@/app/home/HomePage'), {
+const HomeClient = dynamic(() => import('./HomePage'), {
   ssr: false,
   loading: () => <PageLoading layout="home" />,
 });

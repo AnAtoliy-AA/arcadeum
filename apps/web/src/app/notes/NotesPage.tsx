@@ -43,7 +43,7 @@ interface NotesPageProps {
   initialData: { pages: PaginatedNotes[] } | null;
 }
 
-export function NotesPage({ initialData }: NotesPageProps) {
+export default function NotesPage({ initialData }: NotesPageProps) {
   const { t } = useTranslation();
   const loadTriggerRef = useRef<HTMLDivElement>(null);
 

@@ -24,7 +24,7 @@ import { useChatSocket } from '@/features/chat/hooks/useChatSocket';
 import { formatSafeTime } from '@/shared/lib/date';
 import { ScrollView } from 'tamagui';
 
-export function ChatPage() {
+export default function ChatPage() {
   const searchParams = useSearchParams();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();

@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { gamesApi } from '@/features/games/api';
-import { appConfig } from '@/shared/config/app-config';
+import { appConfig, SSR_TIMEOUT } from '@/shared/config/app-config';
 import GamesClient from './GamesClient';
 import GamesLoading from './loading';
 
@@ -57,7 +57,7 @@ async function GamesDataFetcher({
       },
       {
         token: accessToken || undefined,
-        timeout: 5000,
+        timeout: SSR_TIMEOUT,
       },
     );
   } catch (error) {

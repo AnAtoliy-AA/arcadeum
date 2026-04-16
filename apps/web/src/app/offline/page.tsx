@@ -1,5 +1,5 @@
 import { getTranslations, getServerLocale } from '@/shared/i18n/server';
-import { BrowserRegistry } from '../BrowserRegistry';
+import BrowserRegistry from '../BrowserRegistry';
 import { OfflineView } from './OfflineView';
 
 export default async function OfflinePage() {

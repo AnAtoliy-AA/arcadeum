@@ -4,9 +4,7 @@ import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { YStack, Typography } from '@arcadeum/ui';
 
-const ChatPage = dynamic(() =>
-  import('./ChatPage').then((mod) => mod.ChatPage),
-);
+const ChatPage = dynamic(() => import('./ChatPage'));
 
 export default function ChatRoute() {
   return (

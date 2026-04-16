@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { gamesApi } from '@/features/games/api';
 import { appConfig } from '@/shared/config/app-config';
-import { GamesClient } from './GamesClient';
+import GamesClient from './GamesClient';
 import GamesLoading from './loading';
 
 export const metadata: Metadata = {

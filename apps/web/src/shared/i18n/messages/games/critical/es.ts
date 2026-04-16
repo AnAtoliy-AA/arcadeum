@@ -405,6 +405,7 @@ export const esMessages = {
       },
     },
     controlPanel: {
+      spectating: 'Espectando',
       fullscreen: 'Pantalla completa',
       exitFullscreen: 'Salir de pantalla completa',
       enterFullscreen: 'Entrar en pantalla completa',

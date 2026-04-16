@@ -15,13 +15,15 @@ import {
 } from './components';
 import { HistorySummary } from './types';
 
-interface HistoryPageProps {
-  initialData?: {
-    entries: HistorySummary[];
-    total: number;
-    hasMore: boolean;
-    page: number;
-  };
+export interface HistoryPageProps {
+  initialData?:
+    | {
+        entries: HistorySummary[];
+        total: number;
+        hasMore: boolean;
+        page: number;
+      }
+    | undefined;
 }
 
 export function HistoryPage({ initialData }: HistoryPageProps) {

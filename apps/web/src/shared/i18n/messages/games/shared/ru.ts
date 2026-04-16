@@ -186,4 +186,9 @@ export const ruMessages = {
     title: '💤 Вы неактивны',
     message: 'Пошевелите мышкой или нажмите клавишу, чтобы продолжить',
   },
+  table: {
+    controlPanel: {
+      spectating: 'Наблюдение',
+    },
+  },
 };

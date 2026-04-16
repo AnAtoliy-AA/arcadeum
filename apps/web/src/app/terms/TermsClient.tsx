@@ -32,10 +32,16 @@ const LoadingSkeleton = () => (
 
 import type { TermsContentProps } from './TermsContent';
 
-export const TermsClient = dynamic<TermsContentProps>(
+const TermsContentDynamic = dynamic<TermsContentProps>(
   () => import('./TermsContent'),
   {
     ssr: false,
     loading: LoadingSkeleton,
   },
 );
+
+const TermsClient = (props: TermsContentProps) => {
+  return <TermsContentDynamic {...props} />;
+};
+
+export default TermsClient;

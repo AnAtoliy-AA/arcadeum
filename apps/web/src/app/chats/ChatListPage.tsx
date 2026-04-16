@@ -51,7 +51,7 @@ const SearchResultItem = ({ isLast, ...props }: SearchResultItemProps) => (
   />
 );
 
-interface ChatListPageProps {
+export interface ChatListPageProps {
   initialData: ChatSummary[] | null;
 }
 

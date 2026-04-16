@@ -32,9 +32,12 @@ const cspConnectSrc = [
   'https://arcadeum-be-reserve.onrender.com',
   'wss://arcadeum-be-reserve.onrender.com',
   'https://accounts.google.com',
+  'https://vercel.live',
+  'wss://*.vercel.live',
+  'https://*.vercel.app',
 ];
 
-const cspScriptSrc = "'unsafe-inline'";
+const cspScriptSrc = "'unsafe-inline' https://vercel.live https://*.vercel.app";
 
 const cspStyleSrc = "'self' 'unsafe-inline'";
 
@@ -42,7 +45,8 @@ const cspImgSrc = "'self' blob: data: https:";
 
 const cspFontSrc = "'self' data:";
 
-const cspFrameSrc = "'self' https://www.youtube-nocookie.com";
+const cspFrameSrc =
+  "'self' https://www.youtube-nocookie.com https://vercel.com";
 
 const nextConfig: NextConfig = {
   headers: async () => {

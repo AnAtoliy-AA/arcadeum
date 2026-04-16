@@ -191,4 +191,9 @@ export const frMessages = {
     title: '💤 Vous êtes inactif',
     message: 'Bougez votre souris ou appuyez sur une touche pour reprendre',
   },
+  table: {
+    controlPanel: {
+      spectating: 'Spectating',
+    },
+  },
 };

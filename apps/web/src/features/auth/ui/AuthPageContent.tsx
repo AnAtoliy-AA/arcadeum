@@ -1,6 +1,6 @@
 'use client';
 
-import { PageLayout, Container, XStack } from '@arcadeum/ui';
+import { PageLayout, Container, XStack } from '@/shared/ui';
 import { HeroSection } from './HeroSection';
 import { LocalAuthPanel } from './LocalAuthPanel';
 import { OAuthPanel } from './OAuthPanel';

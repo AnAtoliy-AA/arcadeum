@@ -241,7 +241,7 @@ export class GamesController {
     return this.gamesService.getHistoryEntry(user.userId, roomId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtOptionalAuthGuard)
   @Post('history/:roomId/rematch')
   async requestRematch(
     @Req() req: Request,
@@ -279,7 +279,7 @@ export class GamesController {
     return { room: newRoomId };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms/:roomId/invitation/decline')
   @HttpCode(204)
   async declineInvitation(
@@ -294,7 +294,7 @@ export class GamesController {
     await this.gamesService.declineInvitation(roomId, user.userId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms/:roomId/invitation/block')
   @HttpCode(204)
   async blockRematchRoom(
@@ -309,7 +309,7 @@ export class GamesController {
     await this.gamesService.blockRematchRoom(roomId, user.userId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms/:roomId/invitation/invite')
   @HttpCode(204)
   async invitePlayers(

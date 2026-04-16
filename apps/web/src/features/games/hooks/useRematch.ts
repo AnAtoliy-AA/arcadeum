@@ -168,7 +168,7 @@ export function useRematch({
           const currentInvitation = invitationRef.current;
           setInvitation(null);
 
-          if (snapshot.accessToken && currentInvitation?.newRoomId) {
+          if (snapshot.userId && currentInvitation?.newRoomId) {
             declineInvitationMutate(currentInvitation.newRoomId);
           }
           return 0;
@@ -181,7 +181,7 @@ export function useRematch({
   }, [
     invitation,
     invitationTimeLeft,
-    snapshot.accessToken,
+    snapshot.userId,
     declineInvitationMutate,
   ]);
 
@@ -196,14 +196,14 @@ export function useRematch({
 
   const handleRematch = useCallback(
     async (participantIds: string[], message?: string) => {
-      if (!snapshot.accessToken) {
+      if (!snapshot.userId) {
         setRematchError('Authentication required');
         return;
       }
       setRematchError(null);
       await createRematchMutate({ participantIds, message });
     },
-    [snapshot.accessToken, createRematchMutate],
+    [snapshot.userId, createRematchMutate],
   );
 
   const handleAcceptInvitation = useCallback(() => {
@@ -219,36 +219,36 @@ export function useRematch({
     const targetRoomId = invitation.newRoomId;
     setInvitation(null);
 
-    if (snapshot.accessToken) {
+    if (snapshot.userId) {
       declineInvitationMutate(targetRoomId);
     }
-  }, [invitation, snapshot.accessToken, declineInvitationMutate]);
+  }, [invitation, snapshot.userId, declineInvitationMutate]);
 
   const handleReinvite = useCallback(
     (userIds: string[]) => {
-      if (snapshot.accessToken) {
+      if (snapshot.userId) {
         reinviteMutate(userIds);
       }
     },
-    [snapshot.accessToken, reinviteMutate],
+    [snapshot.userId, reinviteMutate],
   );
 
   const handleBlockUser = useCallback(
     (userId: string) => {
-      if (snapshot.accessToken) {
+      if (snapshot.userId) {
         blockUserMutate(userId);
       }
     },
-    [snapshot.accessToken, blockUserMutate],
+    [snapshot.userId, blockUserMutate],
   );
 
   const handleBlockRematch = useCallback(
     (targetRoomId: string) => {
-      if (snapshot.accessToken) {
+      if (snapshot.userId) {
         blockRematchMutate(targetRoomId);
       }
     },
-    [snapshot.accessToken, blockRematchMutate],
+    [snapshot.userId, blockRematchMutate],
   );
 
   return {

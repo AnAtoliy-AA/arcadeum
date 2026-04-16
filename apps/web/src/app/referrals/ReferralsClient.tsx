@@ -11,6 +11,8 @@ const ReferralDashboard = dynamic(
   },
 );
 
-export function ReferralsClient() {
+function ReferralsClient() {
   return <ReferralDashboard />;
 }
+
+export default ReferralsClient;

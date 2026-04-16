@@ -84,16 +84,8 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
             {room.name}
           </h3>
           <StyledGameName
-            hasGradient={!!variantGradient}
-            style={
-              variantGradient
-                ? {
-                    backgroundImage: variantGradient,
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }
-                : {}
-            }
+            className={variantGradient ? 'text-gradient' : undefined}
+            style={variantGradient ? { backgroundImage: variantGradient } : {}}
           >
             {gameName}
           </StyledGameName>
@@ -241,7 +233,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
           {t('games.common.joinRoom')}
         </LinkButton>
         <LinkButton
-          href={routes.gameRoom(room.id)}
+          href={`${routes.gameRoom(room.id)}?mode=watch`}
           variant="secondary"
           size="md"
           flex={viewMode === 'grid' ? 1 : 0}

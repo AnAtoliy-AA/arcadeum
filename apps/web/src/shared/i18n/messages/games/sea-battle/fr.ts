@@ -139,6 +139,19 @@ export const frMessages = {
         title: 'Défaite',
         message: 'Tous vos navires ont été coulés.',
       },
+      controlPanel: {
+        spectating: 'Observation',
+        fullscreen: 'Plein écran',
+        exitFullscreen: 'Quitter le plein écran',
+        enterFullscreen: 'Entrer en plein écran',
+        rules: 'Règles',
+        leaveRoom: 'Quitter',
+        leaveConfirmMessage:
+          'Êtes-vous sûr de vouloir quitter la partie ? Vous serez retiré de la liste des participants.',
+        exitRoom: 'Sortir',
+        exitRoomTooltip: 'Retourner au lobby tout en restant dans le jeu',
+        leaveGameTooltip: 'Vous retirer du jeu et retourner au lobby',
+      },
       chat: {
         title: 'Chat de Bataille',
         empty: 'Aucun message pour le moment',

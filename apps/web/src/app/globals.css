@@ -734,3 +734,20 @@ a {
     filter: blur(4px);
   }
 }
+.text-gradient {
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.snowflake-animated {
+  animation-name: snowDrift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-duration: var(--snowflake-duration);
+  animation-delay: var(--snowflake-delay);
+}
+
+.shimmer-animated {
+  animation: shimmer 4s linear infinite;
+}

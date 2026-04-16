@@ -201,7 +201,12 @@ describe('validateCriticalAction — swap_hands', () => {
     const isValid = validateCriticalAction(
       state,
       'swap_hands',
-      { userId: 'playerA', gameId: 'game1' },
+      {
+        userId: 'playerA',
+        roomId: 'room1',
+        sessionId: 'session1',
+        timestamp: new Date(),
+      },
       { targetPlayerId: 'playerB' },
     );
 

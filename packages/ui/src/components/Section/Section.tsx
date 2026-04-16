@@ -1,3 +1,4 @@
+'use client';
 import { YStack, Text, styled, H2, GetProps } from 'tamagui';
 import { memo } from 'react';
 import type { ReactNode, ReactElement } from 'react';

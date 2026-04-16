@@ -1,32 +1,49 @@
 import { styled, XStack, YStack, Text } from 'tamagui';
-import type { ReactNode } from 'react';
+import type { ReactNode, CSSProperties } from 'react';
 
-// Structure only — pass backgroundColor, borderColor, borderRadius as inline props
-// from consuming components that call useSeaBattleTheme()
-export const BoardGrid = styled(YStack, {
-  name: 'BoardGrid',
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-  padding: 4,
-  width: '100%',
-  aspectRatio: 1,
-  overflow: 'visible',
+// CSS Grid wrapper — 10×10 grid that reliably computes its own height.
+// Accepts the same theme props (backgroundColor, borderColor) as inline styles.
+interface BoardGridProps extends React.HTMLAttributes<HTMLDivElement> {
+  backgroundColor?: string;
+  borderColor?: string;
+  pointerEvents?: CSSProperties['pointerEvents'];
+  children?: ReactNode;
+}
 
-  $md: {
-    maxWidth: '100%',
-  },
-
-  $sm: {
-    padding: 2,
-  },
-  pointerEvents: 'auto',
-});
+export function BoardGrid({
+  backgroundColor,
+  borderColor,
+  pointerEvents,
+  style,
+  children,
+  ...rest
+}: BoardGridProps) {
+  return (
+    <div
+      {...rest}
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(10, 1fr)',
+        gridTemplateRows: 'repeat(10, 1fr)',
+        aspectRatio: '1',
+        padding: 4,
+        width: '100%',
+        overflow: 'hidden',
+        boxSizing: 'border-box',
+        backgroundColor: backgroundColor ?? undefined,
+        borderColor: borderColor ?? undefined,
+        pointerEvents: pointerEvents ?? 'auto',
+        ...(typeof style === 'object' ? style : {}),
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
 // State-aware coloring is done inline by the component via useSeaBattleTheme()
 export const BoardCell = styled(YStack, {
   name: 'BoardCell',
-  width: '10%',
-  aspectRatio: 1,
 
   variants: {
     isClickable: {
@@ -53,7 +70,7 @@ export function BoardWithLabels({ children }: { children: ReactNode }) {
       style={{
         display: 'grid',
         gridTemplateColumns: 'auto 1fr',
-        gridTemplateRows: 'auto 1fr',
+        gridTemplateRows: 'auto auto',
         gap: '4px',
         width: '100%',
       }}
@@ -77,9 +94,9 @@ export const ColLabels = styled(XStack, {
 
 export const Label = styled(Text, {
   name: 'Label',
-  fontSize: 12,
-  width: 20,
-  height: 20,
+  fontSize: 14,
+  width: 24,
+  height: 24,
   textAlign: 'center',
 
   $md: {

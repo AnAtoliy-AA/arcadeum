@@ -91,7 +91,7 @@ const themeBase = {
   borderColorFocus: '#4a4d59',
   shadowColor: 'rgba(0, 0, 0, 0.2)',
   overlayBg: 'rgba(0, 0, 0, 0.5)',
-  primary: '#0369a1',
+  primary: '#0284c7',
   primaryText: '#ffffff',
   secondary: '#4338ca',
   danger: '#b91c1c',
@@ -104,8 +104,8 @@ const themeBase = {
   glassBgHover: 'rgba(255, 255, 255, 0.12)',
   glassBorder: 'rgba(255, 255, 255, 0.1)',
   glassBorderHover: 'rgba(255, 255, 255, 0.16)',
-  primaryGradientStart: '#0277b0',
-  primaryGradientEnd: '#0369a1',
+  primaryGradientStart: '#0384c4',
+  primaryGradientEnd: '#0284c7',
   secondaryGradientStart: '#4f46e5',
   secondaryGradientEnd: '#4338ca',
   dangerGradientStart: '#dc2626',
@@ -127,9 +127,9 @@ const lightTheme = {
   borderColor: '#cbd5e1',
   borderColorHover: '#b1bdcd',
   borderColorPress: '#94a3b8',
-  primary: '#0369a1',
+  primary: '#0284c7',
   primaryGradientStart: '#0ea5e9',
-  primaryGradientEnd: '#0369a1',
+  primaryGradientEnd: '#0284c7',
   primaryText: '#ffffff',
   secondaryText: '#ffffff',
   infoText: '#0f172a',
@@ -246,7 +246,7 @@ declare global {
 
 export const setupTamagui = () => {
   if (typeof globalThis !== 'undefined') {
-    // Avoid re-initialization if already set
+    // Avoid re-initialization if already set and consistent
     if (!globalThis.TamaguiConfig) {
       globalThis.TamaguiConfig = config;
     }
@@ -254,7 +254,11 @@ export const setupTamagui = () => {
 };
 
 // Initialize immediately to ensure config is available to any early imports
-setupTamagui();
+try {
+  setupTamagui();
+} catch (e) {
+  // Silent catch for edge cases during server initialization
+}
 
 export type AppConfig = typeof config;
 

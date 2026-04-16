@@ -5,7 +5,7 @@ import HistoryLoading from './loading';
 import type { HistoryPageProps } from './HistoryPage';
 
 const HistoryPageDynamic = dynamic<HistoryPageProps>(
-  () => import('./HistoryPage').then((mod) => mod.HistoryPage),
+  () => import('./HistoryPage'),
   {
     ssr: false,
     loading: () => <HistoryLoading />,

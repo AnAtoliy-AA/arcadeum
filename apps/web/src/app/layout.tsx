@@ -85,7 +85,7 @@ export const viewport: Viewport = {
   themeColor: '#151718',
 };
 
-import { BrowserRegistry } from './BrowserRegistry';
+import BrowserRegistry from './BrowserRegistry';
 import { setupTamagui } from '@/shared/config/tamagui.config';
 import { ThemeName, ThemePreference } from '@/shared/config/theme';
 import { Locale } from '@/shared/i18n';

@@ -2,7 +2,7 @@ import { Footer } from '@arcadeum/ui';
 import { appConfig } from '@/shared/config/app-config';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
-export function AppFooter() {
+export default function AppFooter() {
   const { social, appName, appVersion } = appConfig;
   const { t } = useTranslation();
 

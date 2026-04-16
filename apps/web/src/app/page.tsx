@@ -1,5 +1,10 @@
+import { Suspense } from 'react';
 import HomeClient from './home/HomeClient';
 
 export default function HomeRoute() {
-  return <HomeClient />;
+  return (
+    <Suspense fallback={null}>
+      <HomeClient />
+    </Suspense>
+  );
 }

@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { gamesApi } from '@/features/games/api';
-import { appConfig } from '@/shared/config/app-config';
+import { appConfig, SSR_TIMEOUT } from '@/shared/config/app-config';
 import GameRoomClient from './GameRoomClient';
 import GameRoomLoading from './loading';
 
@@ -38,7 +38,7 @@ async function RoomDataFetcher({ id }: { id: string }) {
   try {
     initialData = await gamesApi.getRoomInfo(id, {
       token: accessToken || undefined,
-      timeout: 5000,
+      timeout: SSR_TIMEOUT,
     });
   } catch (error) {
     // Suppress noisy 'room_not_found_error' logs during SSR in development/test

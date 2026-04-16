@@ -5,7 +5,7 @@ import GamesLoading from './loading';
 import type { GamesClientProps } from './types';
 
 const GamesPageDynamic = dynamic(
-  () => import('./GamesPage').then((mod) => mod.GamesPage),
+  () => import('./GamesPage'),
   {
     ssr: false,
     loading: () => <GamesLoading />,

@@ -1,6 +1,7 @@
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { gamesApi } from '@/features/games/api';
 import type { GameRoomSummary } from '@/shared/types/games';
+import { SSR_TIMEOUT } from '@/shared/config/app-config';
 import GameDetailClient from './GameDetailClient';
 
 interface PageProps {
@@ -16,7 +17,7 @@ export default async function GameDetailRoute({ params }: PageProps) {
   try {
     const response = await gamesApi.getRooms(
       { gameId },
-      { token: accessToken || undefined, timeout: 5000 },
+      { token: accessToken || undefined, timeout: SSR_TIMEOUT },
     );
     initialRooms = response.rooms;
   } catch (error) {

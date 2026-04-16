@@ -32,7 +32,7 @@ const HERO_CARDS = [...CARD_VARIANTS].slice(0, 3).map((v, i) => ({
   colorToken: THEME_COLORS[i % THEME_COLORS.length],
 }));
 
-export function HomeHero() {
+export default function HomeHero() {
   const { messages } = useLanguage();
   const homeCopy = messages.home ?? {};
 

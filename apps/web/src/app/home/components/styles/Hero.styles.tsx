@@ -105,14 +105,14 @@ export const Kicker = styled(Text, {
   fontWeight: '700',
   letterSpacing: 2,
   textTransform: 'uppercase',
-  color: '$primary',
+  color: '$accent',
   borderRadius: 999,
   paddingHorizontal: '$5',
   paddingVertical: '$2',
   marginBottom: '$2',
   display: 'inline-flex',
   borderWidth: 1,
-  borderColor: '$primary',
+  borderColor: '$accent',
   opacity: 0.8,
   animation: 'lazy', // For tamagui internal
   style: {

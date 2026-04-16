@@ -1,8 +1,8 @@
 'use client';
 
 import { PageLayout } from '@/shared/ui';
-import { HomeHero } from './components/HomeHero';
-import { HomeGames } from './components/HomeGames';
+import HomeHero from './components/HomeHero';
+import HomeGames from './components/HomeGames';
 import dynamic from 'next/dynamic';
 
 const HomeHowItWorks = dynamic(() =>
@@ -23,7 +23,7 @@ const HomeDownloadCta = dynamic(() =>
 
 import { AppFooter } from '@/widgets/footer';
 
-export function HomePage() {
+export default function HomePage() {
   return (
     <>
       <PageLayout
@@ -44,5 +44,3 @@ export function HomePage() {
     </>
   );
 }
-
-export default HomePage;

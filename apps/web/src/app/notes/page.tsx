@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 export const dynamic = 'force-dynamic';
 import { paymentApi } from '@/features/payment/api';
 import { SSR_TIMEOUT } from '@/shared/config/app-config';
-import { NotesPage } from './NotesPage';
+import NotesPage from './NotesPage';
 import NotesLoading from './loading';
 
 export const metadata: Metadata = {

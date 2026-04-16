@@ -11,7 +11,7 @@ import {
 } from './styles/Common.styles';
 import { WebPresentation } from './WebPresentation';
 
-export function HomePitchDeck() {
+export default function HomePitchDeck() {
   const { messages } = useLanguage();
   const { appName } = appConfig;
   const sectionRef = useScrollReveal<HTMLDivElement>();

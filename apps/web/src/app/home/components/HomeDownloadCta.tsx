@@ -12,7 +12,7 @@ import {
 } from './styles/DownloadCta.styles';
 import { DownloadButtons } from '@/shared/ui';
 
-export function HomeDownloadCta() {
+export default function HomeDownloadCta() {
   const { messages } = useLanguage();
   const homeCopy = messages.home ?? {};
 

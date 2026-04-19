@@ -83,6 +83,21 @@ export const ruMessages = {
       confirmButton: 'Удалить зал',
       cancelButton: 'Оставить зал',
     },
+    kickPlayer: {
+      button: 'Удалить',
+      confirmTitle: 'Удалить игрока',
+      confirmMessage:
+        'Вы уверены, что хотите удалить {{playerName}} из комнаты?',
+      confirmButton: 'Удалить',
+      cancelButton: 'Отмена',
+    },
+    leaveRoom: {
+      button: 'Покинуть комнату',
+      confirmTitle: 'Покинуть комнату',
+      confirmMessage: 'Вы уверены, что хотите покинуть эту комнату?',
+      confirmButton: 'Покинуть',
+      cancelButton: 'Остаться',
+    },
   },
   create: {
     title: 'Создать игровой зал',

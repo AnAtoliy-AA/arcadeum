@@ -206,6 +206,46 @@ export class GamesGateway {
     }
   }
 
+  @SubscribeMessage('games.room.kick')
+  async handleKickPlayer(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: { roomId?: string; targetUserId?: string; callerId?: string },
+  ): Promise<{ success: boolean }> {
+    const roomId = extractString(payload, 'roomId');
+    const targetUserId = extractString(payload, 'targetUserId');
+    const callerId = extractString(payload, 'callerId');
+
+    if (!roomId) throw new WsException('roomId is required.');
+    if (!targetUserId) throw new WsException('targetUserId is required.');
+    if (!callerId) throw new WsException('callerId is required.');
+
+    this.logger.log(
+      `Host ${callerId} kicking user ${targetUserId} from room ${roomId}`,
+    );
+
+    try {
+      await this.gamesService.leaveRoom(
+        { roomId, kickedBy: callerId },
+        targetUserId,
+      );
+
+      const channel = this.realtime.roomChannel(roomId);
+      this.server
+        .to(channel)
+        .emit('games.room.kicked', maybeEncrypt({ roomId, targetUserId }));
+
+      return { success: true };
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to kick player';
+      this.logger.error(
+        `Failed to kick user ${targetUserId} from room ${roomId}: ${message}`,
+      );
+      return { success: false };
+    }
+  }
+
   @SubscribeMessage('games.room.watch')
   async handleWatchRoom(
     @ConnectedSocket() client: Socket,

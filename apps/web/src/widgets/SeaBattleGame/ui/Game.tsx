@@ -48,6 +48,8 @@ export default function SeaBattleGame({
 
   const storeRoom = useGameStore((s: GameState) => s.room);
   const storeDeleteRoom = useGameStore((s: GameState) => s.deleteRoom);
+  const storeKickPlayer = useGameStore((s: GameState) => s.kickPlayer);
+  const storeLeaveRoom = useGameStore((s: GameState) => s.leaveRoom);
   const storeRefreshRoom = useGameStore((s: GameState) => s.refreshRoom);
 
   const room =
@@ -217,6 +219,17 @@ export default function SeaBattleGame({
           onReorderPlayers={handleReorderPlayers}
           onShowRules={setShowRules}
           onDeleteRoom={() => storeDeleteRoom(roomId)}
+          onKickPlayer={
+            currentUserId
+              ? (targetUserId) =>
+                  storeKickPlayer(roomId, targetUserId, currentUserId)
+              : undefined
+          }
+          onLeaveRoom={
+            currentUserId
+              ? () => storeLeaveRoom(roomId, currentUserId)
+              : undefined
+          }
           onRefresh={() => storeRefreshRoom(roomId)}
           t={t}
         />

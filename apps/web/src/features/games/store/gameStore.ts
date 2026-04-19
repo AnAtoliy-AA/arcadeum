@@ -35,6 +35,7 @@ export interface GameState {
     inviteCode?: string,
   ) => void;
   leaveRoom: (roomId: string, userId: string | null) => void;
+  kickPlayer: (roomId: string, targetUserId: string, callerId: string) => void;
   deleteRoom: (roomId: string) => Promise<void>;
   refreshRoom: (roomId: string) => Promise<void>;
   reset: () => void;
@@ -170,6 +171,21 @@ export const useGameStore = create<GameState>((set, get) => ({
       'gameStarted',
     );
     const wrappedHandleException = decryptHandler(handleException, 'exception');
+    const handleKicked = (payload: {
+      roomId?: string;
+      targetUserId?: string;
+    }) => {
+      if (payload?.targetUserId === userId && payload?.roomId === roomId) {
+        set({
+          room: null,
+          session: null,
+          error: 'You were kicked from the room by the host',
+          idlePlayers: [],
+          accessToken: null,
+        });
+      }
+    };
+
     const handleIdleChanged = (payload: {
       userId?: string;
       idle?: boolean;
@@ -202,6 +218,12 @@ export const useGameStore = create<GameState>((set, get) => ({
     }>(handleIdleChanged, 'idleChanged');
     gameSocket.on('games.player.idle_changed', wrappedHandleIdleChanged);
 
+    const wrappedHandleKicked = decryptHandler<{
+      roomId?: string;
+      targetUserId?: string;
+    }>(handleKicked, 'kicked');
+    gameSocket.on('games.room.kicked', wrappedHandleKicked);
+
     // Store cleanup function to properly remove listeners later
     cleanupListeners = () => {
       gameSocket.off('games.room.joined', wrappedHandleJoined);
@@ -214,6 +236,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       gameSocket.off('connect', handleConnect);
       gameSocket.off('disconnect', handleDisconnect);
       gameSocket.off('games.player.idle_changed', wrappedHandleIdleChanged);
+      gameSocket.off('games.room.kicked', wrappedHandleKicked);
     };
 
     // If already connected
@@ -264,6 +287,10 @@ export const useGameStore = create<GameState>((set, get) => ({
       idlePlayers: [],
       accessToken: null,
     });
+  },
+
+  kickPlayer: (roomId, targetUserId, callerId) => {
+    gameSocket.emit('games.room.kick', { roomId, targetUserId, callerId });
   },
 
   deleteRoom: async (roomId) => {

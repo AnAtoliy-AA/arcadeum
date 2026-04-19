@@ -229,6 +229,21 @@ export class GameRoomsService {
       throw new BadRequestException('Not a member of this room');
     }
 
+    // Kick flow: verify caller is host and target is not the caller
+    if (dto.kickedBy) {
+      if (dto.kickedBy !== room.hostId) {
+        throw new ForbiddenException('Only the host can kick players');
+      }
+      if (userId === dto.kickedBy) {
+        throw new BadRequestException('Cannot kick yourself');
+      }
+      if (!isParticipant) {
+        throw new BadRequestException(
+          'Target user is not a participant of this room',
+        );
+      }
+    }
+
     // If it's the last player, delete the room
     if (room.participants.length === 1) {
       await this.gameRoomModel.findByIdAndDelete(dto.roomId).exec();
@@ -236,6 +251,7 @@ export class GameRoomsService {
         room: null,
         deleted: true,
         removedPlayerId: userId,
+        kicked: !!dto.kickedBy,
       };
     }
 
@@ -257,6 +273,7 @@ export class GameRoomsService {
       room: summary,
       deleted: false,
       removedPlayerId: userId,
+      kicked: !!dto.kickedBy,
     };
   }
 

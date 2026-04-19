@@ -83,6 +83,21 @@ export const enMessages = {
       confirmButton: 'Delete Room',
       cancelButton: 'Keep Room',
     },
+    kickPlayer: {
+      button: 'Remove',
+      confirmTitle: 'Remove Player',
+      confirmMessage:
+        'Are you sure you want to remove {{playerName}} from the room?',
+      confirmButton: 'Remove',
+      cancelButton: 'Cancel',
+    },
+    leaveRoom: {
+      button: 'Leave Room',
+      confirmTitle: 'Leave Room',
+      confirmMessage: 'Are you sure you want to leave this room?',
+      confirmButton: 'Leave',
+      cancelButton: 'Stay',
+    },
   },
   create: {
     title: 'Create Game Room',

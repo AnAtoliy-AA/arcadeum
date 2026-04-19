@@ -96,15 +96,18 @@ test.describe('Anonymous Play', () => {
       page.getByRole('heading', { name: /create game room/i }),
     ).toBeVisible({ timeout: 15000 });
 
-    await page
-      .getByLabel('Room Name', { exact: false })
-      .fill('Anonymous Bot Game');
+    const nameInput = page.getByLabel('Room Name', { exact: false });
+    await expect(nameInput).toBeVisible({ timeout: 15000 });
+    await nameInput.fill('Anonymous Bot Game');
     await page.waitForTimeout(1000); // Allow state to settle
-    await page.getByTestId('create-room-button').click({ force: true });
 
-    await expect(page).toHaveURL(new RegExp(`/games/rooms/${MOCK_OBJECT_ID}`), {
-      timeout: 30000,
-    });
+    await expect(async () => {
+      await page.getByTestId('create-room-button').click({ force: true });
+      await expect(page).toHaveURL(
+        new RegExp(`/games/rooms/${MOCK_OBJECT_ID}`),
+        { timeout: 5000 },
+      );
+    }).toPass({ timeout: 30000 });
 
     await waitForRoomReady(page);
 
@@ -162,25 +165,25 @@ test.describe('Anonymous Play', () => {
       page.getByRole('heading', { name: /create game room/i }),
     ).toBeVisible({ timeout: 15000 });
 
-    await page
-      .getByLabel('Room Name', { exact: false })
-      .fill('Private Link Test');
+    const nameInput = page.getByLabel('Room Name', { exact: false });
+    await expect(nameInput).toBeVisible({ timeout: 15000 });
+    await nameInput.fill('Private Link Test');
 
     const visibilityBtn = page.getByTestId('visibility-toggle-button');
     await visibilityBtn.scrollIntoViewIfNeeded();
     await page.waitForTimeout(500); // Wait for potential layout shifts
     await visibilityBtn.click({ force: true });
 
-    // In Firefox, transition might take a moment
+    // Retry click + navigation check to handle hydration race conditions
     await expect(async () => {
       const startBtn = page.getByTestId('create-room-button');
       await expect(startBtn).toBeVisible();
       await startBtn.click({ force: true });
-    }).toPass({ timeout: 15000 });
-
-    await expect(page).toHaveURL(new RegExp(`/games/rooms/${MOCK_OBJECT_ID}`), {
-      timeout: 25000,
-    });
+      await expect(page).toHaveURL(
+        new RegExp(`/games/rooms/${MOCK_OBJECT_ID}`),
+        { timeout: 5000 },
+      );
+    }).toPass({ timeout: 30000 });
     const inviteUrl = page.url();
 
     // Create a NEW context and page for the second player to ensure complete isolation

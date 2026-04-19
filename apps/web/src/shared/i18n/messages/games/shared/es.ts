@@ -83,6 +83,21 @@ export const esMessages = {
       confirmButton: 'Eliminar sala',
       cancelButton: 'Mantener sala',
     },
+    kickPlayer: {
+      button: 'Eliminar',
+      confirmTitle: 'Eliminar jugador',
+      confirmMessage:
+        '¿Estás seguro de que quieres eliminar a {{playerName}} de la sala?',
+      confirmButton: 'Eliminar',
+      cancelButton: 'Cancelar',
+    },
+    leaveRoom: {
+      button: 'Salir de la sala',
+      confirmTitle: 'Salir de la sala',
+      confirmMessage: '¿Estás seguro de que quieres salir de esta sala?',
+      confirmButton: 'Salir',
+      cancelButton: 'Quedarse',
+    },
   },
   create: {
     title: 'Crear Sala de Juego',

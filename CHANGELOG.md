@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.18] - 2026-04-19
+
+### Added
+- add kick/leave UI, store actions, game wiring, and fix flaky e2e tests (N/A)
+- pass kicked flag through realtime emitPlayerLeft (N/A)
+- extend leaveRoom authorization for host kick flow (N/A)
+- add kickedBy to LeaveGameRoomDto and kicked flag to result type (N/A)
+
+### Documentation
+- add lobby kick/leave implementation plan (N/A)
+- add lobby kick & leave design spec (N/A)
+
+
 ## [1.9.17] - 2026-04-16
 
 ### Fixed

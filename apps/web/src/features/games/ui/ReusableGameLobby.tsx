@@ -62,6 +62,8 @@ export interface ReusableGameLobbyProps {
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
   onDeleteRoom?: () => void;
+  onKickPlayer?: (userId: string) => void;
+  onLeaveRoom?: () => void;
   onRefresh?: () => void;
 
   // Game info
@@ -95,6 +97,8 @@ export interface ReusableGameLobbyProps {
     botCountLabel?: string;
     startWithBotsLabel?: string;
     deleteRoomLabel?: string;
+    kickPlayerLabel?: string;
+    leaveRoomLabel?: string;
   };
   // Theme
   theme?: GameLobbyTheme;
@@ -146,6 +150,8 @@ export function ReusableGameLobby({
   onReorderPlayers,
   onReinvite,
   onDeleteRoom,
+  onKickPlayer,
+  onLeaveRoom,
   onRefresh,
   gameName,
   gameIcon,
@@ -380,6 +386,8 @@ export function ReusableGameLobby({
           onReorderPlayers={onReorderPlayers}
           onReinvite={onReinvite}
           onDeleteRoom={isHost ? handleDeleteClick : undefined}
+          onKickPlayer={isHost ? onKickPlayer : undefined}
+          onLeaveRoom={!isHost ? onLeaveRoom : undefined}
           deleteRoomLabel={deleteRoomLabel || deleteRoomTranslations.button}
           extraPlayersCardSlot={extraPlayersCardSlot}
           onRefresh={onRefresh}

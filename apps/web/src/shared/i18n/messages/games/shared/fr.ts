@@ -83,6 +83,21 @@ export const frMessages = {
       confirmButton: 'Supprimer la salle',
       cancelButton: 'Garder la salle',
     },
+    kickPlayer: {
+      button: 'Retirer',
+      confirmTitle: 'Retirer le joueur',
+      confirmMessage:
+        'Êtes-vous sûr de vouloir retirer {{playerName}} de la salle ?',
+      confirmButton: 'Retirer',
+      cancelButton: 'Annuler',
+    },
+    leaveRoom: {
+      button: 'Quitter la salle',
+      confirmTitle: 'Quitter la salle',
+      confirmMessage: 'Êtes-vous sûr de vouloir quitter cette salle ?',
+      confirmButton: 'Quitter',
+      cancelButton: 'Rester',
+    },
   },
   create: {
     title: 'Créer une Salle de Jeu',

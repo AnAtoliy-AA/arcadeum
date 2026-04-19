@@ -73,8 +73,10 @@ test.describe('Game Room Creation', () => {
     });
 
     await navigateTo(page, '/games/create?gameId=critical_v1');
-    // Ensure page is fully hydrated and network is idle
-    await page.waitForLoadState('networkidle');
+    // Wait for page to be hydrated by checking for a visible element
+    await expect(
+      page.locator('h1, h2, [class*="Title"]').first(),
+    ).toBeVisible({ timeout: 30000 });
     await page.waitForTimeout(1000); // Buffer for hydration and theme initialization
   });
 

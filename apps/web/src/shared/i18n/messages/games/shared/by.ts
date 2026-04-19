@@ -83,6 +83,21 @@ export const byMessages = {
       confirmButton: 'Выдаліць залу',
       cancelButton: 'Пакінуць залу',
     },
+    kickPlayer: {
+      button: 'Выдаліць',
+      confirmTitle: 'Выдаліць гульца',
+      confirmMessage:
+        'Вы ўпэўненыя, што хочаце выдаліць {{playerName}} з залы?',
+      confirmButton: 'Выдаліць',
+      cancelButton: 'Адмена',
+    },
+    leaveRoom: {
+      button: 'Пакінуць залу',
+      confirmTitle: 'Пакінуць залу',
+      confirmMessage: 'Вы ўпэўненыя, што хочаце пакінуць гэтую залу?',
+      confirmButton: 'Пакінуць',
+      cancelButton: 'Застацца',
+    },
   },
   create: {
     title: 'Стварыць гульнявы зал',

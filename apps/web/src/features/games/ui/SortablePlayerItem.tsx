@@ -31,6 +31,7 @@ export interface SortablePlayerItemProps {
   totalCount: number;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  onKick?: () => void;
 }
 
 export function SortablePlayerItem({
@@ -41,6 +42,7 @@ export function SortablePlayerItem({
   totalCount,
   onMoveUp,
   onMoveDown,
+  onKick,
 }: SortablePlayerItemProps) {
   const {
     attributes,
@@ -112,6 +114,22 @@ export function SortablePlayerItem({
               ↓
             </Button>
           </XStack>
+        )}
+        {onKick && !isRoomHost && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e: { stopPropagation: () => void }) => {
+              e.stopPropagation();
+              onKick();
+            }}
+            paddingVertical="$1"
+            paddingHorizontal="$2"
+            minWidth="auto"
+            style={{ color: '#ef4444' }}
+          >
+            ✕
+          </Button>
         )}
       </PlayerItem>
     </div>

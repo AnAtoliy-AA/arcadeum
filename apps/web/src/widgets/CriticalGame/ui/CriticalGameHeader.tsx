@@ -157,12 +157,12 @@ export function CriticalGameHeader({
           </TimerControlsWrapper>
         )}
 
-        <FullscreenButton onPress={() => setShowRules(true)} title="Game Rules">
+        <FullscreenButton onClick={() => setShowRules(true)} title="Game Rules">
           📖
         </FullscreenButton>
 
         <FullscreenButton
-          onPress={toggleFullscreen}
+          onClick={toggleFullscreen}
           title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
         >
           {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}

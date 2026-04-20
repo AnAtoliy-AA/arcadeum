@@ -114,7 +114,7 @@ export function LeaveButton({
   variant?: 'primary' | 'secondary' | 'danger';
 }) {
   return (
-    <Button className={className} variant={variant} size="sm" onPress={onClick}>
+    <Button className={className} variant={variant} size="sm" onClick={onClick}>
       🚪 Leave
     </Button>
   );
@@ -136,7 +136,7 @@ export function StartButton({
       className={className}
       variant={variant}
       size="sm"
-      onPress={onClick}
+      onClick={onClick}
       disabled={disabled}
     >
       ▶️ Start
@@ -159,7 +159,7 @@ export function ReadyButton({
       className={className}
       variant={ready ? 'primary' : 'secondary'}
       size="sm"
-      onPress={onClick}
+      onClick={onClick}
     >
       {ready ? '✅' : '⚪'} {ready ? 'Ready' : 'Not Ready'}
     </Button>

@@ -23,7 +23,7 @@ interface SeaBattleOptions {
   variant?: string;
 }
 
-export function SeaBattleCreationConfig({
+export default function SeaBattleCreationConfig({
   options,
   onChange,
 }: GameCreationConfigProps<SeaBattleOptions>) {
@@ -56,7 +56,7 @@ export function SeaBattleCreationConfig({
           {SEA_BATTLE_VARIANTS.map((variant) => (
             <GameTileContainer
               key={variant.id}
-              onPress={() => onChange({ ...options, variant: variant.id })}
+              onClick={() => onChange({ ...options, variant: variant.id })}
             >
               <GameTileItem active={options.variant === variant.id}>
                 <SelectionIndicator active={options.variant === variant.id} />

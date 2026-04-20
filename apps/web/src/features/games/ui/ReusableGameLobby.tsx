@@ -292,7 +292,6 @@ export function ReusableGameLobby({
           {showFullscreenButton && onToggleFullscreen && (
             <IconButton
               onClick={onToggleFullscreen}
-              onPress={onToggleFullscreen}
               title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
             >
               {isFullscreen ? '⤓' : '⤢'}
@@ -342,7 +341,7 @@ export function ReusableGameLobby({
                         key={count}
                         data-testid={`bot-count-${count}`}
                         $isActive={botCount === count}
-                        onPress={() => setBotCount(count)}
+                        onClick={() => setBotCount(count)}
                       >
                         {count}
                       </BotCountButton>
@@ -352,7 +351,6 @@ export function ReusableGameLobby({
               )}
               <StartButton
                 onClick={handleStart}
-                onPress={handleStart}
                 disabled={
                   startBusy ||
                   (room.playerCount < (minPlayers || 2) &&

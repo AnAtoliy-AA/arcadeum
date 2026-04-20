@@ -60,7 +60,7 @@ const PositionValue = styled(Text, {
   borderRadius: '$2',
 });
 
-export const DefuseModal: React.FC<DefuseModalProps> = ({
+const DefuseModal: React.FC<DefuseModalProps> = ({
   isOpen,
   onDefuse,
   deckSize,
@@ -78,7 +78,7 @@ export const DefuseModal: React.FC<DefuseModalProps> = ({
   return (
     <Modal open={isOpen}>
       <ModalContent
-        onPress={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
         $variant={cardVariant as GameVariant}
       >
         <ModalHeader $variant={cardVariant as GameVariant}>
@@ -123,7 +123,7 @@ export const DefuseModal: React.FC<DefuseModalProps> = ({
           </PositionValue>
         </PositionSelector>
         <ModalActions>
-          <ModalButton onPress={handleConfirm}>
+          <ModalButton onClick={handleConfirm}>
             {t('games.table.modals.defuse.confirm')}
           </ModalButton>
         </ModalActions>
@@ -131,3 +131,5 @@ export const DefuseModal: React.FC<DefuseModalProps> = ({
     </Modal>
   );
 };
+
+export default DefuseModal;

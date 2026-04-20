@@ -27,7 +27,7 @@ const BadgesRow = ({ badgeIds }: { badgeIds: string[] }) => {
   );
 };
 
-export function ReferralDashboard() {
+export default function ReferralDashboard() {
   const { t } = useTranslation();
   const { snapshot, hydrated } = useSessionTokens();
   const isAuthenticated = !!snapshot.accessToken;

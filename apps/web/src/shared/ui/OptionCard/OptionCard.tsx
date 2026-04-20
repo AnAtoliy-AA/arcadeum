@@ -7,10 +7,12 @@ export interface OptionCardProps {
   label: ReactNode;
   description?: ReactNode;
   isActive?: boolean;
+  /** @deprecated Use onClick instead */
   onPress?: () => void;
   onClick?: () => void;
   icon?: ReactNode;
   'data-testid'?: string;
+  className?: string;
 }
 
 const StyledOptionCard = styled(YStack, {
@@ -106,12 +108,14 @@ export function OptionCard({
   onClick,
   icon,
   'data-testid': dataTestId,
+  ...rest
 }: OptionCardProps) {
   return (
     <StyledOptionCard
       isActive={isActive}
-      onPress={onPress || onClick}
+      onClick={onClick || onPress}
       data-testid={dataTestId}
+      {...rest}
       {...({
         'aria-pressed': isActive ? 'true' : 'false',
         role: 'button',

@@ -48,7 +48,7 @@ export const CollapsibleSection = memo(function CollapsibleSection({
           )}
           {headerContent}
         </XStack>
-        <Button size="$2" variant="outlined" onPress={toggle}>
+        <Button size="$2" variant="outlined" onClick={toggle}>
           <XStack alignItems="center" gap="$1">
             <Text fontSize="$2">{isExpanded ? hideLabel : showLabel}</Text>
             <Text fontSize="$2" rotate={isExpanded ? '0deg' : '180deg'}>

@@ -5,18 +5,21 @@ import {
   PageLayout,
   Container,
   GlassCard,
-  Skeleton,
+  PageTitle,
   YStack,
+  Skeleton,
 } from '@/shared/ui';
 
 const LoadingSkeleton = () => (
   <PageLayout>
     <Container size="md">
       <GlassCard>
-        <YStack marginBottom="$4">
-          <Skeleton height={60} width="60%" />
+        <PageTitle size="xl" gradient>
+          <Skeleton height={40} width="60%" />
+        </PageTitle>
+        <YStack marginTop="$2">
+          <Skeleton height={20} width="80%" />
         </YStack>
-        <Skeleton height={20} width="30%" />
       </GlassCard>
       <YStack gap="$6" marginTop="$8">
         <Skeleton height={150} width="100%" />
@@ -27,10 +30,10 @@ const LoadingSkeleton = () => (
   </PageLayout>
 );
 
-import type { ContactView } from './ContactView';
+import type ContactView from './ContactView';
 
 const ContactClient = dynamic<React.ComponentProps<typeof ContactView>>(
-  () => import('./ContactView').then((mod) => mod.ContactView),
+  () => import('./ContactView'),
   {
     ssr: false,
     loading: LoadingSkeleton,

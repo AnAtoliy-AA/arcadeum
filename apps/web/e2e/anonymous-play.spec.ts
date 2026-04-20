@@ -99,7 +99,11 @@ test.describe('Anonymous Play', () => {
     const nameInput = page.getByLabel('Room Name', { exact: false });
     await expect(nameInput).toBeVisible({ timeout: 15000 });
     await nameInput.fill('Anonymous Bot Game');
+
+    const createBtn = page.getByTestId('create-room-button');
+    await expect(createBtn).toBeVisible({ timeout: 15000 });
     await page.waitForTimeout(1000); // Allow state to settle
+    await createBtn.scrollIntoViewIfNeeded();
 
     await expect(async () => {
       await page.getByTestId('create-room-button').click({ force: true });

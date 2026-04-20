@@ -13,6 +13,7 @@ export const GameTable = styled(YStack, {
   width: '100%',
   flexShrink: 0,
   minHeight: 500,
+  overflow: 'hidden',
 
   $sm: {
     paddingTop: '$9',

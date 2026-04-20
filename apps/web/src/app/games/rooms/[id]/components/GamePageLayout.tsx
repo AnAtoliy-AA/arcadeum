@@ -1,5 +1,6 @@
 'use client';
 
+import '@/features/games/ui/scrollbar.css';
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { useMedia } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';

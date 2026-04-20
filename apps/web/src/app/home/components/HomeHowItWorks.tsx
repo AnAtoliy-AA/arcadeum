@@ -94,13 +94,7 @@ export default function HomeHowItWorks() {
               data-reveal-delay={String(Math.min(index + 2, 6))}
             >
               {index < STEPS.length - 1 && <StepConnector />}
-              <StepNumber
-                className="step-number-hover"
-                style={{
-                  boxShadow:
-                    '0 0 20px rgba(87,195,255,0.15), 0 0 0 1px rgba(255,255,255,0.06)',
-                }}
-              >
+              <StepNumber>
                 <Text color="$primary" fontWeight="700" fontSize="$5">
                   {step.number}
                 </Text>

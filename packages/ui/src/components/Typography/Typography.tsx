@@ -67,8 +67,21 @@ const StyledTypography = styled(Text, {
   },
 });
 
-export const Typography = StyledTypography.styleable((props, ref) => (
-  <StyledTypography {...props} ref={ref} />
-));
+import { filterProps } from '../../utils/filterProps';
 
-export type TypographyProps = GetProps<typeof Typography>;
+export type TypographyProps = GetProps<typeof StyledTypography> & {
+  /** @deprecated Use onClick instead */
+  onPress?: () => void;
+  onClick?: (e: unknown) => void;
+};
+
+export const Typography = StyledTypography.styleable<TypographyProps>(({ onPress, onClick, ...props }, ref) => {
+  const filteredProps = filterProps({ ...props, onPress, onClick });
+
+  return (
+    <StyledTypography 
+      {...filteredProps} 
+      ref={ref} 
+    />
+  );
+});

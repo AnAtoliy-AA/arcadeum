@@ -26,7 +26,7 @@ export interface ContactViewProps {
   WORKING_HOURS: string;
 }
 
-export function ContactView({
+export default function ContactView({
   t: initialT,
   SUPPORT_EMAIL,
   WORKING_HOURS,

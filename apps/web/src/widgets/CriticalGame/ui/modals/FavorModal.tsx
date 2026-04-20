@@ -31,7 +31,7 @@ interface FavorModalProps {
   cardVariant?: string;
 }
 
-export const FavorModal: React.FC<FavorModalProps> = ({
+const FavorModal: React.FC<FavorModalProps> = ({
   isOpen,
   onClose,
   aliveOpponents,
@@ -47,14 +47,14 @@ export const FavorModal: React.FC<FavorModalProps> = ({
   return (
     <Modal open={isOpen}>
       <ModalContent
-        onPress={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
         $variant={cardVariant as GameVariant}
       >
         <ModalHeader $variant={cardVariant as GameVariant}>
           <ModalTitle $variant={cardVariant as GameVariant}>
             🤝 {t('games.table.modals.favor.title')}
           </ModalTitle>
-          <CloseButton onPress={onClose} $variant={cardVariant as GameVariant}>
+          <CloseButton onClick={onClose} $variant={cardVariant as GameVariant}>
             ×
           </CloseButton>
         </ModalHeader>
@@ -71,7 +71,7 @@ export const FavorModal: React.FC<FavorModalProps> = ({
                 key={opponent.playerId}
                 $selected={selectedTarget === opponent.playerId}
                 $variant={cardVariant as GameVariant}
-                onPress={() => onSelectTarget(opponent.playerId)}
+                onClick={() => onSelectTarget(opponent.playerId)}
                 disabled={opponent.hand.length === 0}
               >
                 <Text fontSize="$6">🎮</Text>
@@ -94,10 +94,10 @@ export const FavorModal: React.FC<FavorModalProps> = ({
           </OptionGrid>
         </ModalSection>
         <ModalActions>
-          <ModalButton variant="secondary" onPress={onClose}>
+          <ModalButton variant="secondary" onClick={onClose}>
             {t('games.table.modals.common.cancel')}
           </ModalButton>
-          <ModalButton onPress={onConfirm} disabled={!selectedTarget}>
+          <ModalButton onClick={onConfirm} disabled={!selectedTarget}>
             {t('games.table.modals.favor.confirm')}
           </ModalButton>
         </ModalActions>
@@ -105,3 +105,5 @@ export const FavorModal: React.FC<FavorModalProps> = ({
     </Modal>
   );
 };
+
+export default FavorModal;

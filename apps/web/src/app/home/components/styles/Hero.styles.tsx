@@ -126,7 +126,25 @@ const StyledHeroTitle = styled(H1, {
   fontSize:
     'clamp(3.5rem, 8vw, 6rem)' as unknown as GetThemeValueForKey<'fontSize'>,
   lineHeight: '1.1' as unknown as GetThemeValueForKey<'lineHeight'>,
-});
+  textAlign: 'center',
+  backgroundImage:
+    'linear-gradient(135deg, var(--color) 0%, var(--primary) 25%, #ffffff 50%, var(--primary) 75%, var(--accent) 100%)',
+  backgroundSize: '200% auto',
+  backgroundClip: 'text',
+  // webkitBackgroundClip: 'text', // depending on tamagui version, it might need this
+  color: 'transparent',
+  animation: 'lazy', // internal
+  style: {
+    // Explicitly add webkit for safety
+    WebkitBackgroundClip: 'text',
+    backgroundClip: 'text',
+    animation: 'fadeInUp 0.6s ease-out 0.1s both, shimmer 5s linear infinite',
+  },
+
+  $gtMd: {
+    textAlign: 'left',
+  },
+} as never);
 
 export const HeroTitle: FC<
   GetProps<typeof StyledHeroTitle> & {

@@ -100,7 +100,7 @@ export function SortablePlayerItem({
           <Button
             variant="ghost"
             size="sm"
-            onPress={(event: { stopPropagation: () => void }) => {
+            onClick={(event: { stopPropagation: () => void }) => {
               event.stopPropagation();
               onMoveUp();
             }}
@@ -112,7 +112,7 @@ export function SortablePlayerItem({
           <Button
             variant="ghost"
             size="sm"
-            onPress={(event: { stopPropagation: () => void }) => {
+            onClick={(event: { stopPropagation: () => void }) => {
               event.stopPropagation();
               onMoveDown();
             }}

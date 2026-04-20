@@ -55,7 +55,7 @@ export interface ChatListPageProps {
   initialData: ChatSummary[] | null;
 }
 
-export function ChatListPage({ initialData }: ChatListPageProps) {
+export default function ChatListPage({ initialData }: ChatListPageProps) {
   const router = useRouter();
   const { snapshot } = useSessionTokens();
   const isMounted = useIsMounted();
@@ -196,7 +196,7 @@ export function ChatListPage({ initialData }: ChatListPageProps) {
               <Button
                 variant="primary"
                 size="lg"
-                onPress={() => router.push('/auth')}
+                onClick={() => router.push('/auth')}
               >
                 Log In
               </Button>
@@ -224,8 +224,6 @@ export function ChatListPage({ initialData }: ChatListPageProps) {
                   href={`/chat?chatId=${chat.chatId}&receiverIds=${receiverIds}&title=${encodeURIComponent(title)}`}
                   style={{
                     textDecoration: 'none',
-                    color: 'inherit',
-                    display: 'block',
                   }}
                 >
                   <Card interactive padding="md" variant="elevated">

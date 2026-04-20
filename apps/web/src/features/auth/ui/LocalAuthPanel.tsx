@@ -240,7 +240,6 @@ export function LocalAuthPanel({ labels, auth }: LocalAuthPanelProps) {
             </Button>
             <Button
               type="button"
-              onPress={handleToggleMode}
               onClick={handleToggleMode}
               disabled={localLoading}
               data-testid="auth-toggle-mode-button"
@@ -290,7 +289,6 @@ export function LocalAuthPanel({ labels, auth }: LocalAuthPanelProps) {
           </YStack>
           <Button
             type="button"
-            onPress={() => void logoutLocal()}
             onClick={() => void logoutLocal()}
             variant="secondary"
             pill

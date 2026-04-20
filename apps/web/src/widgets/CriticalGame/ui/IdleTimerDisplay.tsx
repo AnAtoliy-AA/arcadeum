@@ -121,7 +121,7 @@ export function IdleTimerDisplay({
             <RobotEmoji>🤖</RobotEmoji>
             <ActiveText>{t('games.table.idleTimer.active')}</ActiveText>
           </ActiveBadge>
-          <Button variant="danger" size="sm" onPress={onStop}>
+          <Button variant="danger" size="sm" onClick={onStop}>
             {t('games.table.idleTimer.stop')}
           </Button>
         </ActiveContainer>

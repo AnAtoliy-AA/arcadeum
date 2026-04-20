@@ -34,7 +34,7 @@ interface CriticalGameOptions {
   idleTimerEnabled?: boolean;
 }
 
-export function CriticalCreationConfig({
+export default function CriticalCreationConfig({
   options,
   onChange,
 }: GameCreationConfigProps<CriticalGameOptions>) {
@@ -87,7 +87,7 @@ export function CriticalCreationConfig({
             <GameTileContainer
               key={variant.id}
               disabled={variant.disabled}
-              onPress={() =>
+              onClick={() =>
                 !variant.disabled && handleUpdate({ cardVariant: variant.id })
               }
             >

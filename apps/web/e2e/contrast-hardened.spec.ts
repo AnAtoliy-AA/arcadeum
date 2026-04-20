@@ -175,7 +175,10 @@ test.describe('Contrast Hardening Verification', () => {
         )
         .catch(() => null);
 
-      await page.waitForTimeout(500);
+      // Ensure the page has re-hydrated and main content is visible
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('main')).toBeVisible({ timeout: 10000 });
+      await page.waitForTimeout(500); // Allow styles to settle
 
       const ctaSelector =
         '.is_LinkButton:has-text("Get started"), a:has-text("Get started")';

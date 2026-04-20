@@ -103,7 +103,7 @@ const BlockLink = styled(Text, {
   },
 });
 
-export function RematchInvitationModal({
+export default function RematchInvitationModal({
   isOpen,
   hostName,
   hostId,
@@ -123,7 +123,7 @@ export function RematchInvitationModal({
   return (
     <Modal open={isOpen}>
       <ModalContent
-        onPress={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
         $variant={cardVariant as GameVariant}
       >
         <ModalTitle $variant={cardVariant as GameVariant}>
@@ -148,12 +148,12 @@ export function RematchInvitationModal({
         <ModalActions>
           <ModalButton
             variant="secondary"
-            onPress={onDecline}
+            onClick={onDecline}
             disabled={accepting}
           >
             {t('games.table.rematch.decline')}
           </ModalButton>
-          <ModalButton onPress={onAccept} disabled={accepting}>
+          <ModalButton onClick={onAccept} disabled={accepting}>
             {accepting
               ? t('games.table.rematch.joining')
               : t('games.table.rematch.accept')}
@@ -163,7 +163,7 @@ export function RematchInvitationModal({
         <BlockOptions>
           {onBlockRematch && roomId && (
             <BlockLink
-              onPress={() => onBlockRematch(roomId)}
+              onClick={() => onBlockRematch(roomId)}
               disabled={accepting}
             >
               <Text textDecorationLine="underline">
@@ -172,7 +172,7 @@ export function RematchInvitationModal({
             </BlockLink>
           )}
           {onBlockUser && hostId && (
-            <BlockLink onPress={() => onBlockUser(hostId)} disabled={accepting}>
+            <BlockLink onClick={() => onBlockUser(hostId)} disabled={accepting}>
               <Text textDecorationLine="underline">
                 {t('games.table.rematch.blockInvitations')}
               </Text>

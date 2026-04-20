@@ -1,7 +1,5 @@
-'use client';
-
 import { PageLoading } from '@/shared/ui';
 
 export default function GameRoomLoading() {
-  return <PageLoading layout="standard" />;
+  return <PageLoading layout="room" />;
 }

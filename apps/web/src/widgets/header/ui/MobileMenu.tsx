@@ -33,7 +33,7 @@ interface MobileMenuProps {
   navItems: Array<{ href: string; label: string }>;
 }
 
-export function MobileMenu({ isOpen, navItems }: MobileMenuProps) {
+export default function MobileMenu({ isOpen, navItems }: MobileMenuProps) {
   const pathname = usePathname();
   // clearTokens and snapshot.role are MobileMenu-specific — not in useHeaderAuth
   const { snapshot, clearTokens } = useSessionTokens();

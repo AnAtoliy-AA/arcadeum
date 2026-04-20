@@ -124,7 +124,6 @@ export default function HomeFeatures() {
               key={feature.titleKey}
               flex={1}
               minWidth={280}
-              className="feature-card-hover"
               data-reveal
               data-reveal-delay={String(Math.min(index + 2, 6))}
             >

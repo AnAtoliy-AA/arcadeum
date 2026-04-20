@@ -1,6 +1,7 @@
 'use client';
 
 import { useLanguage, formatMessage } from '@/shared/i18n/context';
+import { YStack } from 'tamagui';
 
 import { PageTitle } from '@/shared/ui';
 import type {
@@ -175,10 +176,10 @@ export function SupportPage({
                         </LinkedInButton>
                       )}
                     </TeamHeader>
-                    <div>
+                    <YStack gap="$1">
                       <TeamName>{member.name}</TeamName>
                       <TeamRole>{member.role}</TeamRole>
-                    </div>
+                    </YStack>
                     <TeamBio>{member.bio}</TeamBio>
                   </TeamCardInner>
                 </AnimatedGlassCard>

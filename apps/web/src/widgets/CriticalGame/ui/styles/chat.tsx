@@ -1,5 +1,6 @@
 import { styled, YStack, Text } from 'tamagui';
 import { getVariantStyles } from './variants';
+import { scrollbarStyles } from '@/shared/lib/styles';
 
 export const ChatCard = styled(YStack, {
   name: 'ChatCard',
@@ -39,6 +40,8 @@ export const ChatMessages = styled(YStack, {
   overflowY: 'auto',
   gap: '$3',
   padding: '$2',
+
+  ...scrollbarStyles,
 });
 
 export const ChatCloseButton = styled(Text, {
@@ -87,4 +90,6 @@ export const GameLog = styled(YStack, {
   overflowY: 'auto',
   gap: '$2',
   padding: '$2',
+
+  ...scrollbarStyles,
 });

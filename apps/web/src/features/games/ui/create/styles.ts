@@ -73,7 +73,7 @@ export const FormContainer = styled(YStack, {
 
 export const GameSelector = styled(YStack, {
   name: 'GameSelector',
-  display: 'grid' as 'flex',
+  display: 'grid',
   gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
   gap: '$4',
 } as unknown as Record<string, unknown>);
@@ -161,7 +161,6 @@ export const ExpansionGrid = styled(YStack, {
 
 export const ExpansionCheckbox = styled(XStack, {
   name: 'ExpansionCheckbox',
-  tag: 'label',
   alignItems: 'center',
   gap: '0.75rem',
   padding: '0.75rem 1rem',
@@ -175,22 +174,20 @@ export const ExpansionCheckbox = styled(XStack, {
 
 export const ExpansionLabel = styled(Text, {
   name: 'ExpansionLabel',
-  tag: 'span',
   flex: 1,
   fontSize: '0.875rem',
   fontWeight: '500',
-} as unknown as Record<string, unknown>);
+});
 
 export const ExpansionBadge = styled(Text, {
   name: 'ExpansionBadge',
-  tag: 'span',
   fontSize: '0.75rem',
   color: '$color',
   opacity: 0.5,
   backgroundColor: 'rgba(255,255,255,0.05)',
   padding: '0.125rem 0.5rem',
   borderRadius: 12,
-} as unknown as Record<string, unknown>);
+});
 
 export const ExpandablePackContainer = styled(YStack, {
   name: 'ExpandablePackContainer',
@@ -262,7 +259,6 @@ export const PackCardList = styled(YStack, {
 
 export const PackCardRow = styled(XStack, {
   name: 'PackCardRow',
-  tag: 'label',
   alignItems: 'center',
   gap: '0.5rem',
   padding: '0.5rem 0.75rem',
@@ -274,12 +270,11 @@ export const PackCardRow = styled(XStack, {
 
 export const PackCardName = styled(Text, {
   name: 'PackCardName',
-  tag: 'span',
   flex: 1,
   fontSize: '0.8125rem',
   color: '$color',
   opacity: 0.7,
-} as unknown as Record<string, unknown>);
+});
 
 export const QuantityControl = styled(XStack, {
   name: 'QuantityControl',
@@ -289,17 +284,15 @@ export const QuantityControl = styled(XStack, {
 
 export const QuantityValue = styled(Text, {
   name: 'QuantityValue',
-  tag: 'span',
   minWidth: 24,
   textAlign: 'center',
   fontSize: '0.8125rem',
   fontWeight: '600',
   color: '$color',
-} as unknown as Record<string, unknown>);
+});
 
 export const SelectAllRow = styled(XStack, {
   name: 'SelectAllRow',
-  tag: 'label',
   alignItems: 'center',
   gap: '0.75rem',
   padding: '0.75rem 1rem',
@@ -317,4 +310,4 @@ export const ThemeHeader = styled(XStack, {
   justifyContent: 'space-between',
   alignItems: 'center',
   marginBottom: '1rem',
-} as unknown as Record<string, unknown>);
+});

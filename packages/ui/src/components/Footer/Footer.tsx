@@ -176,7 +176,7 @@ const CollapsibleColumn = ({ title, children, defaultOpen = false }: Collapsible
 
   return (
     <FooterColumnContainer>
-      <ColumnHeader onPress={toggle}>
+      <ColumnHeader onClick={toggle}>
         <Typography variant="heading" uiSize="sm" weight="700" tracking="sm">
           {title.toUpperCase()}
         </Typography>

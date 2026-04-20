@@ -195,10 +195,6 @@ export default function HomeGames() {
                 data-testid={`game-card-${game.id}`}
                 padding="$5"
                 flex={1}
-                className="game-card-hover"
-                shadowColor="rgba(0,0,0,0.35)"
-                shadowOffset={{ width: 0, height: 20 }}
-                shadowRadius={50}
               >
                 {/* Gradient hover overlay replaces $gradient ::before */}
                 <YStack

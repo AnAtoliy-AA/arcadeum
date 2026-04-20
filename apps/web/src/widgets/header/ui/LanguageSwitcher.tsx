@@ -20,7 +20,7 @@ interface LanguageSwitcherProps {
   'data-testid'?: string;
 }
 
-export function LanguageSwitcher({
+export default function LanguageSwitcher({
   className,
   'data-testid': testId,
 }: LanguageSwitcherProps) {

@@ -1,7 +1,7 @@
 'use client';
 
 import { InstallPWAModalContent } from './InstallPWAModalContent';
-import { Button } from '@arcadeum/ui';
+import { Button } from '@arcadeum/ui/components/Button/Button';
 import { usePWAOptional } from './context';
 
 export function InstallPWAModal() {

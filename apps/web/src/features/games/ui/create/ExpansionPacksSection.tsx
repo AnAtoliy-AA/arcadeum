@@ -2,7 +2,8 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { Button, CollapsibleSection } from '@/shared/ui';
+import { Button } from '@arcadeum/ui/components/Button/Button';
+import { CollapsibleSection } from '@arcadeum/ui/components/CollapsibleSection/CollapsibleSection';
 
 import { ExpansionId, EXPANSION_PACK_DETAILS } from './constants';
 import {

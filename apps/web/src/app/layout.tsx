@@ -90,6 +90,11 @@ import { setupTamagui } from '@/shared/config/tamagui.config';
 import { ThemeName, ThemePreference } from '@/shared/config/theme';
 import { Locale } from '@/shared/i18n';
 
+// Provider Imports (Hoisted)
+import { LanguageProvider } from '@/app/i18n/LanguageProvider';
+import { PWAProvider } from '@/features/pwa';
+import { AppThemeProvider } from './theme/ThemeContext';
+
 // Prime Tamagui config as early as possible on the server
 setupTamagui();
 
@@ -156,10 +161,16 @@ export default async function RootLayout({
         <JsonLd data={jsonLd} />
       </head>
       <body className={fontClassName}>
-        <BrowserRegistry initialTheme={theme} initialLocale={locale}>
-          <Header />
-          {children}
-        </BrowserRegistry>
+        <AppThemeProvider initialTheme={theme}>
+          <LanguageProvider initialLocale={locale}>
+            <PWAProvider>
+              <BrowserRegistry>
+                <Header />
+                {children}
+              </BrowserRegistry>
+            </PWAProvider>
+          </LanguageProvider>
+        </AppThemeProvider>
       </body>
     </html>
   );

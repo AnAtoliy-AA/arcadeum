@@ -2,13 +2,8 @@
 
 import { ReactNode, useEffect } from 'react';
 import { useServerInsertedHTML } from 'next/navigation';
-import { LanguageProvider } from '@/app/i18n/LanguageProvider';
-import { PWAProvider } from '@/features/pwa';
-import { AppThemeProvider } from './theme/ThemeContext';
 import { disconnectSockets } from '@/shared/lib/socket';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
-import { ThemeName } from '@/shared/config/theme';
-import { Locale } from '@/shared/i18n';
 import {
   config as tamaguiConfig,
   setupTamagui,
@@ -18,15 +13,9 @@ import {
 
 interface BrowserRegistryProps {
   children: ReactNode;
-  initialTheme?: ThemeName;
-  initialLocale?: Locale;
 }
 
-export default function BrowserRegistry({
-  children,
-  initialTheme,
-  initialLocale,
-}: BrowserRegistryProps) {
+export default function BrowserRegistry({ children }: BrowserRegistryProps) {
   useServerInsertedHTML(() => {
     try {
       if (!tamaguiConfig) {
@@ -72,11 +61,5 @@ export default function BrowserRegistry({
     useSessionStore.getState().setHydrated(true);
   }, []);
 
-  return (
-    <AppThemeProvider initialTheme={initialTheme}>
-      <LanguageProvider initialLocale={initialLocale}>
-        <PWAProvider>{children}</PWAProvider>
-      </LanguageProvider>
-    </AppThemeProvider>
-  );
+  return <>{children}</>;
 }

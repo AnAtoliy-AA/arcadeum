@@ -12,18 +12,16 @@ import {
 } from '@/shared/lib/useTranslation';
 import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { gamesApi } from '@/features/games/api';
-import {
-  Button,
-  CreateRoomButton,
-  PageLayout,
-  Container,
-  PageTitle,
-  Section,
-  Input,
-  TextArea,
-  FormGroup,
-  Card,
-} from '@arcadeum/ui';
+import { Button } from '@arcadeum/ui/components/Button/Button';
+import { CreateRoomButton } from '@arcadeum/ui/components/Button/SpecializedButtons';
+import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
+import { Container } from '@arcadeum/ui/components/Container/Container';
+import { PageTitle } from '@arcadeum/ui/components/PageTitle/PageTitle';
+import { Section } from '@arcadeum/ui/components/Section/Section';
+import { Input } from '@arcadeum/ui/components/Input/Input';
+import { TextArea } from '@arcadeum/ui/components/TextArea/TextArea';
+import { FormGroup } from '@arcadeum/ui/components/FormGroup/FormGroup';
+import { Card } from '@arcadeum/ui/components/Card/Card';
 import { gamesCatalog } from '@/features/games/ui/create/constants';
 const CriticalCreationConfig = dynamic(
   () => import('@/widgets/CriticalGame/ui/CreationConfig'),

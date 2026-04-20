@@ -1,13 +1,10 @@
-import {
-  Button,
-  XStack,
-  YStack,
-  GlassCard,
-  FormGroup,
-  Input,
-  Typography,
-  Badge,
-} from '@arcadeum/ui';
+import { Button } from '@arcadeum/ui/components/Button/Button';
+import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
+import { FormGroup } from '@arcadeum/ui/components/FormGroup/FormGroup';
+import { Input } from '@arcadeum/ui/components/Input/Input';
+import { Typography } from '@arcadeum/ui/components/Typography/Typography';
+import { Badge } from '@arcadeum/ui/components/Badge/Badge';
+import { XStack, YStack } from 'tamagui';
 import type { UseAuthFormResult } from '../hooks/useAuthForm';
 import type { LocalAuthPanelLabels } from '../types';
 

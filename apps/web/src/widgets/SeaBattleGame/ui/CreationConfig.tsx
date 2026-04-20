@@ -5,7 +5,8 @@ import {
 } from '@/shared/lib/useTranslation';
 import { GameCreationConfigProps } from '@/features/games/types';
 import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
-import { Section, Button } from '@/shared/ui';
+import { Section } from '@arcadeum/ui/components/Section/Section';
+import { Button } from '@arcadeum/ui/components/Button/Button';
 import {
   GameSelector,
   GameTileName,

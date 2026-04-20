@@ -1,3 +1,4 @@
+'use client';
 import { Footer } from '@arcadeum/ui';
 import { appConfig } from '@/shared/config/app-config';
 import { useTranslation } from '@/shared/lib/useTranslation';

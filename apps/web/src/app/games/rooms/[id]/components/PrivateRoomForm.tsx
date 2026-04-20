@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from '@arcadeum/ui';
+import { Button } from '@arcadeum/ui/components/Button/Button';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   Card,

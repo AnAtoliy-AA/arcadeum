@@ -8,7 +8,8 @@ import {
 import { ExpansionPacksSection } from '@/features/games/ui/create/ExpansionPacksSection';
 import { RulesModal } from '@/widgets/CriticalGame/ui/RulesModal';
 import { IDLE_TIMER_DURATION_SEC } from '@/shared/config/game';
-import { Section, Button } from '@/shared/ui';
+import { Section } from '@arcadeum/ui/components/Section/Section';
+import { Button } from '@arcadeum/ui/components/Button/Button';
 import {
   GameSelector,
   GameTileName,

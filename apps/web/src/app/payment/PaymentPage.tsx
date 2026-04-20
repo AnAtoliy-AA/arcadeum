@@ -7,14 +7,14 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { isValidPaymentUrl, parseAmount } from '@/shared/config/payment-config';
 import { paymentApi } from '@/features/payment/api';
-import { Button, XStack, YStack, Typography } from '@arcadeum/ui';
-import {
-  PageLayout,
-  Container,
-  Section,
-  FormGroup,
-  GlassCard,
-} from '@/shared/ui';
+import { XStack, YStack } from 'tamagui';
+import { Button } from '@arcadeum/ui/components/Button/Button';
+import { Typography } from '@arcadeum/ui/components/Typography/Typography';
+import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
+import { Container } from '@arcadeum/ui/components/Container/Container';
+import { Section } from '@arcadeum/ui/components/Section/Section';
+import { FormGroup } from '@arcadeum/ui/components/FormGroup/FormGroup';
+import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { PaymentHeader, PaymentPresets, AmountDisplay } from './ui';
 import { StyledTextArea, StatusMessage } from './styles';
 

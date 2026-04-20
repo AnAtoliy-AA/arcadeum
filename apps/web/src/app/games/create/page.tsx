@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { PageLoading } from '@/shared/ui';
+import { PageLoading } from '@/shared/ui/Loading/PageLoading';
 
 const CreateGameRoomPage = dynamic(
   () => import('@/features/games/ui/create/CreateGameRoomPage'),

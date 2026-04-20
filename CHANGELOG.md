@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.19] - 2026-04-20
+
+### Refactored
+- global css styles (ARC-479)
+
+
 ## [1.9.18] - 2026-04-19
 
 ### Added

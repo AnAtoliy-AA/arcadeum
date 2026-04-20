@@ -4,14 +4,14 @@ import { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { routes } from '@/shared/config/routes';
+import { Button } from '@arcadeum/ui/components/Button/Button';
+import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import {
-  Button,
   SupportIcon,
   MenuIcon,
   CloseIcon,
-  LinkButton,
-  MobileLoginIndicator,
-} from '@arcadeum/ui';
+} from '@arcadeum/ui/components/Icons/index';
+import { MobileLoginIndicator } from '@arcadeum/ui/components/MobileLoginIndicator/MobileLoginIndicator';
 import dynamic from 'next/dynamic';
 
 const ProfileMenu = dynamic(() => import('@/widgets/header/ui/ProfileMenu'), {

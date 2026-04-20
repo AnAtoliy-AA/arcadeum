@@ -1,6 +1,9 @@
 import type { UseAuthFormResult } from '../hooks/useAuthForm';
-import { useAuthLabels } from '../hooks';
-import { Button, XStack, YStack, GlassCard, Typography } from '@arcadeum/ui';
+import { useAuthLabels } from '../hooks/useAuthLabels';
+import { Button } from '@arcadeum/ui/components/Button/Button';
+import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
+import { Typography } from '@arcadeum/ui/components/Typography/Typography';
+import { XStack, YStack } from 'tamagui';
 
 export function OAuthPanel({ auth }: { auth: UseAuthFormResult }) {
   const { isRegisterMode, authorizationCode, handleStartOAuth, oauthLoading } =

@@ -1,6 +1,6 @@
 'use client';
 
-import { PageLayout } from '@/shared/ui';
+import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import HomeHero from './components/HomeHero';
 import HomeGames from './components/HomeGames';
 import dynamic from 'next/dynamic';
@@ -11,7 +11,7 @@ const HomePresentation = dynamic(() => import('./components/HomePresentation'));
 const HomePitchDeck = dynamic(() => import('./components/HomePitchDeck'));
 const HomeDownloadCta = dynamic(() => import('./components/HomeDownloadCta'));
 
-import { AppFooter } from '@/widgets/footer';
+import AppFooter from '@/widgets/footer/ui/AppFooter';
 
 export default function HomePage() {
   return (

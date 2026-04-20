@@ -1,6 +1,8 @@
 import type { UseAuthFormResult } from '../hooks/useAuthForm';
-import { useAuthLabels } from '../hooks';
-import { GlassCard, Typography, YStack, XStack } from '@arcadeum/ui';
+import { useAuthLabels } from '../hooks/useAuthLabels';
+import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
+import { Typography } from '@arcadeum/ui/components/Typography/Typography';
+import { XStack, YStack } from 'tamagui';
 
 export function SessionStatusPanel({ auth }: { auth: UseAuthFormResult }) {
   const { isRegisterMode, hasSession, sessionSnapshot } = auth;

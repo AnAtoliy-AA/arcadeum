@@ -1,26 +1,10 @@
-import { Suspense } from 'react';
-import type { Metadata } from 'next';
-
-export const dynamic = 'force-dynamic';
 import { paymentApi } from '@/features/payment/api';
 import { SSR_TIMEOUT } from '@/shared/config/app-config';
-import NotesPage from './NotesPage';
-import NotesLoading from './loading';
+import NotesClient from './NotesClient';
 
-export const metadata: Metadata = {
-  title: 'Supporter Notes',
-  description:
-    'Messages of support from our amazing community. Thank you for keeping us going!',
-};
+export const dynamic = 'force-dynamic';
 
-export default function NotesRoute() {
-  return (
-    <Suspense fallback={<NotesLoading />}>
-      <NotesDataFetcher />
-    </Suspense>
-  );
-}
-
+// We separate the data fetching to keep the page logic client-side while still leveraging SSR for initial data
 async function NotesDataFetcher() {
   // Initial fetch on server
   let initialData = null;
@@ -33,6 +17,10 @@ async function NotesDataFetcher() {
   }
 
   return (
-    <NotesPage initialData={initialData ? { pages: [initialData] } : null} />
+    <NotesClient initialData={initialData ? { pages: [initialData] } : null} />
   );
+}
+
+export default function Page() {
+  return <NotesDataFetcher />;
 }

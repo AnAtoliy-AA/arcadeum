@@ -9,7 +9,7 @@ import { useLanguage } from '@/shared/i18n/context';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { getMessages, DEFAULT_LOCALE } from '@/shared/i18n';
 import { authApi } from '@/features/auth/api';
-import { Section } from '@/shared/ui';
+import { Section } from '@arcadeum/ui/components/Section/Section';
 import {
   OptionList,
   OptionLabel,

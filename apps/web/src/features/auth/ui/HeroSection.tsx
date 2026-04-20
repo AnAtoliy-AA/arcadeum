@@ -1,13 +1,10 @@
 import Link from 'next/link';
-import {
-  GlassCard,
-  Badge,
-  PageTitle,
-  Typography,
-  Button,
-  YStack,
-  XStack,
-} from '@arcadeum/ui';
+import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
+import { Badge } from '@arcadeum/ui/components/Badge/Badge';
+import { PageTitle } from '@arcadeum/ui/components/PageTitle/PageTitle';
+import { Typography } from '@arcadeum/ui/components/Typography/Typography';
+import { Button } from '@arcadeum/ui/components/Button/Button';
+import { XStack, YStack } from 'tamagui';
 
 import type { HeroSectionLabels } from '../types';
 

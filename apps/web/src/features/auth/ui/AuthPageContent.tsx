@@ -1,12 +1,15 @@
 'use client';
 
-import { PageLayout, Container, XStack } from '@/shared/ui';
+import { XStack } from 'tamagui';
+import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
+import { Container } from '@arcadeum/ui/components/Container/Container';
 import { HeroSection } from './HeroSection';
 import { LocalAuthPanel } from './LocalAuthPanel';
 import { OAuthPanel } from './OAuthPanel';
 import { SessionStatusPanel } from './SessionStatusPanel';
 import { DownloadSection } from './DownloadSection';
-import { useAuthForm, useAuthLabels } from '../hooks';
+import { useAuthForm } from '../hooks/useAuthForm';
+import { useAuthLabels } from '../hooks/useAuthLabels';
 import { appConfig } from '@/shared/config/app-config';
 
 export default function AuthPageContent() {

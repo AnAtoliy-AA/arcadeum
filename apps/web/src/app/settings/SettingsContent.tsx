@@ -6,10 +6,12 @@ import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { useThemeController } from '@/app/theme/ThemeContext';
 import { useHapticsSetting } from '@/shared/hooks/useHapticsSetting';
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
-import { usePWAInstallProps } from '@/features/pwa';
+import { usePWAInstallProps } from '@/features/pwa/context';
 import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
 import type { ThemePreference } from '@/shared/config/theme';
-import { PageLayout, PageTitle, Section } from '@/shared/ui';
+import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
+import { PageTitle } from '@arcadeum/ui/components/PageTitle/PageTitle';
+import { Section } from '@arcadeum/ui/components/Section/Section';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { appConfig } from '@/shared/config/app-config';
 
@@ -27,8 +29,10 @@ import {
   settingsStyles,
 } from './styles';
 
-import { Button, LinkButton } from '@arcadeum/ui';
-import { DownloadButtons, OptionCard } from '@/shared/ui';
+import { Button } from '@arcadeum/ui/components/Button/Button';
+import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
+import { DownloadButtons } from '@/shared/ui/DownloadButtons/DownloadButtons';
+import { OptionCard } from '@/shared/ui/OptionCard/OptionCard';
 import { BlockedUsersSection } from './BlockedUsersSection';
 import { AppFooter } from '@/widgets/footer';
 

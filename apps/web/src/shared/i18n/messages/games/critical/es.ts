@@ -227,6 +227,8 @@ export const esMessages = {
       alive: 'Vivo',
       eliminated: 'Eliminado',
       yourTurn: 'Tu turno',
+      yourMove: 'Tu jugada',
+      playerTurn: 'Turno de {{name}}',
       waitingFor: 'Esperando jugador...',
     },
     status: {

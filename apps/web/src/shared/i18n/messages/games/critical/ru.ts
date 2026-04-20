@@ -230,6 +230,8 @@ export const ruMessages = {
       alive: 'Жив',
       eliminated: 'Выбыл',
       yourTurn: 'Ваш ход',
+      yourMove: 'Ваш ход',
+      playerTurn: 'Ход {{name}}',
       waitingFor: 'Ожидание игрока...',
     },
     status: {

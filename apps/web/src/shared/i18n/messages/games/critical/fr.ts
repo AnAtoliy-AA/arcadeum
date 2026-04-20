@@ -231,6 +231,8 @@ export const frMessages = {
       alive: 'En vie',
       eliminated: 'Éliminé',
       yourTurn: 'Votre tour',
+      yourMove: 'À vous de jouer',
+      playerTurn: 'Tour de {{name}}',
       waitingFor: "En attente d'un joueur...",
     },
     status: {

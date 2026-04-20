@@ -224,6 +224,8 @@ export const enMessages = {
       alive: 'Alive',
       eliminated: 'Eliminated',
       yourTurn: 'Your turn',
+      yourMove: 'Your move',
+      playerTurn: "{{name}}'s turn",
       waitingFor: 'Waiting for player...',
     },
     status: {

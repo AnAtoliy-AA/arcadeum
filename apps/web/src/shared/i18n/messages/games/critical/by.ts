@@ -228,6 +228,8 @@ export const byMessages = {
       alive: 'Жывы',
       eliminated: 'Выбыў',
       yourTurn: 'Ваш ход',
+      yourMove: 'Ваш ход',
+      playerTurn: 'Ход {{name}}',
       waitingFor: 'Чаканне гульца...',
     },
     status: {

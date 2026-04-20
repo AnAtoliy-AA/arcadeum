@@ -102,11 +102,7 @@ export function CriticalLobby({
 
   // Rules button
   const headerActionsSlot = (
-    <IconButton
-      onClick={() => setShowRules(true)}
-      onPress={() => setShowRules(true)}
-      title="Game Rules"
-    >
+    <IconButton onClick={() => setShowRules(true)} title="Game Rules">
       📖
     </IconButton>
   );

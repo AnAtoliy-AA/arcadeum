@@ -9,6 +9,9 @@ export type SectionProps = {
   variant?: 'legal';
   children: ReactNode;
   'data-testid'?: string;
+  /** @deprecated Use onClick instead */
+  onPress?: () => void;
+  onClick?: (e: unknown) => void;
 };
 
 const StyledSection = styled(YStack, {
@@ -50,12 +53,22 @@ const SectionDescription = styled(Text, {
   opacity: 0.7,
 });
 
+import { filterProps } from '../../utils/filterProps';
+
 export const Section = StyledSection.styleable<
   Omit<SectionProps, 'children'> & GetProps<typeof StyledSection>
->(({ title, description, variant, ...props }, ref) => (
-  <StyledSection {...props} variant={variant} ref={ref}>
-    {title && <SectionTitle data-testid="section-title">{title}</SectionTitle>}
-    {description && <SectionDescription>{description}</SectionDescription>}
-    {props.children}
-  </StyledSection>
-));
+>(({ title, description, variant, onPress, onClick, ...props }, ref) => {
+  const filteredProps = filterProps({ ...props, onPress, onClick });
+
+  return (
+    <StyledSection 
+      {...filteredProps} 
+      variant={variant} 
+      ref={ref}
+    >
+      {title && <SectionTitle data-testid="section-title">{title}</SectionTitle>}
+      {description && <SectionDescription>{description}</SectionDescription>}
+      {props.children}
+    </StyledSection>
+  );
+});

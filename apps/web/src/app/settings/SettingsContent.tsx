@@ -19,6 +19,7 @@ import {
   PillGroup,
   AccountStatus,
   AccountActions,
+  AccountActionItem,
   ToggleRow,
   ToggleLabel,
   ToggleInput,
@@ -247,7 +248,7 @@ export default function SettingsContent({
                   key={option.code}
                   data-testid={`theme-${option.code}`}
                   isActive={themePreference === option.code}
-                  onPress={() => handleThemeSelect(option.code)}
+                  onClick={() => handleThemeSelect(option.code)}
                   label={option.label}
                   description={option.description}
                 />
@@ -270,7 +271,7 @@ export default function SettingsContent({
                   variant={locale === option.code ? 'primary' : 'secondary'}
                   size="md"
                   minWidth={90}
-                  onPress={() => setLocale(option.code)}
+                  onClick={() => setLocale(option.code)}
                 >
                   {option.label}
                 </Button>
@@ -279,7 +280,7 @@ export default function SettingsContent({
           </Section>
 
           <Section title={gameplayTitle} description={gameplayDescription}>
-            <ToggleRow data-testid="sound-row" onPress={handleToggleSound}>
+            <ToggleRow data-testid="sound-row" onClick={handleToggleSound}>
               <ToggleLabel>{settingsCopy.soundLabel ?? 'Sound'}</ToggleLabel>
               <ToggleInput
                 type="checkbox"
@@ -288,7 +289,7 @@ export default function SettingsContent({
                 aria-label={settingsCopy.soundLabel ?? 'Sound'}
               />
             </ToggleRow>
-            <ToggleRow data-testid="haptics-row" onPress={handleToggleHaptics}>
+            <ToggleRow data-testid="haptics-row" onClick={handleToggleHaptics}>
               <ToggleLabel>{hapticsLabel}</ToggleLabel>
               <ToggleInput
                 type="checkbox"
@@ -307,17 +308,19 @@ export default function SettingsContent({
             </AccountStatus>
             <AccountActions>
               {snapshot.email ? (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={handleAccountAction}
-                  data-testid="account-logout-button"
-                  flex={1}
-                >
-                  {accountPrimaryCta}
-                </Button>
+                <AccountActionItem>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={handleAccountAction}
+                    data-testid="account-logout-button"
+                    fullWidth
+                  >
+                    {accountPrimaryCta}
+                  </Button>
+                </AccountActionItem>
               ) : (
-                <span style={{ flex: 1 }}>
+                <AccountActionItem>
                   <LinkButton
                     href="/auth"
                     variant="primary"
@@ -327,9 +330,9 @@ export default function SettingsContent({
                   >
                     {accountPrimaryCta}
                   </LinkButton>
-                </span>
+                </AccountActionItem>
               )}
-              <span style={{ flex: 1 }}>
+              <AccountActionItem>
                 <LinkButton
                   href={supportCta.href}
                   variant="secondary"
@@ -338,7 +341,7 @@ export default function SettingsContent({
                 >
                   {accountSupportLabel}
                 </LinkButton>
-              </span>
+              </AccountActionItem>
             </AccountActions>
           </Section>
 

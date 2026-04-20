@@ -144,7 +144,7 @@ export function RulesModal({
             </ModalTitle>
             <Dialog.Close asChild>
               <CloseButton
-                onPress={onClose}
+                onClick={onClose}
                 $variant={currentVariant as GameVariant}
                 data-testid="modal-close-button"
               >

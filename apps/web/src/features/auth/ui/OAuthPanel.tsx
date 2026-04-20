@@ -27,7 +27,7 @@ export function OAuthPanel({ auth }: { auth: UseAuthFormResult }) {
 
       <XStack gap="$3" flexWrap="wrap">
         <Button
-          onPress={handleStartOAuth}
+          onClick={handleStartOAuth}
           disabled={oauthLoading}
           variant="primary"
           pill
@@ -62,7 +62,7 @@ export function OAuthPanel({ auth }: { auth: UseAuthFormResult }) {
           <Button
             variant="secondary"
             size="sm"
-            onPress={() => {
+            onClick={() => {
               if (authorizationCode) {
                 void navigator.clipboard.writeText(authorizationCode);
               }

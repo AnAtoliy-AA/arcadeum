@@ -27,7 +27,7 @@ import {
   DropdownLink,
 } from './styles';
 
-export function ProfileMenu() {
+export default function ProfileMenu() {
   const { snapshot, clearTokens } = useSessionTokens();
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);

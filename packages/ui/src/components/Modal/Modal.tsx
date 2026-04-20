@@ -75,7 +75,7 @@ export const Modal = memo(function Modal({ open, onClose, children }: ModalProps
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <Dialog.Portal>
-        <StyledDialogOverlay data-testid="modal-overlay" onPress={onClose} key="overlay" />
+        <StyledDialogOverlay data-testid="modal-overlay" onClick={onClose} key="overlay" />
         {children}
       </Dialog.Portal>
     </Dialog>

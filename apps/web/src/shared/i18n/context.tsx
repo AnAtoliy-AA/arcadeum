@@ -12,24 +12,9 @@ export type LanguageContextValue = {
   initialLocale?: Locale;
 };
 
-const LANGUAGE_CONTEXT_SYMBOL = Symbol.for('arcadeum.languageContext');
-
-// Use a separate type to avoid 'any'
-type GlobalWithLanguageContext = typeof globalThis & {
-  [LANGUAGE_CONTEXT_SYMBOL]?: React.Context<LanguageContextValue | undefined>;
-};
-
-const globalWithContext = globalThis as GlobalWithLanguageContext;
-
-if (!globalWithContext[LANGUAGE_CONTEXT_SYMBOL]) {
-  globalWithContext[LANGUAGE_CONTEXT_SYMBOL] = createContext<
-    LanguageContextValue | undefined
-  >(undefined);
-}
-
-export const LanguageContext = globalWithContext[
-  LANGUAGE_CONTEXT_SYMBOL
-] as React.Context<LanguageContextValue | undefined>;
+export const LanguageContext = createContext<LanguageContextValue | undefined>(
+  undefined,
+);
 
 /**
  * Hook to access the current language state and translations.

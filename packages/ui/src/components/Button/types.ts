@@ -34,6 +34,7 @@ export type ButtonProps = Omit<GetProps<typeof StyledButton>, 'size' | 'onClick'
   isActive?: boolean;
   pill?: boolean;
   gameVariant?: GameVariant;
+  /** @deprecated Use onClick instead */
   onPress?: GetProps<typeof StyledButton>['onPress'];
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   ref?: React.Ref<HTMLButtonElement>;

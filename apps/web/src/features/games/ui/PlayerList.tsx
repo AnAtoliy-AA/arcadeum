@@ -117,7 +117,7 @@ export function PlayerList({
           key={player.id}
           $isCurrent={player.isCurrent}
           $isHost={player.isHost}
-          onPress={() => onPlayerAction?.(player.id, 'info')}
+          onClick={() => onPlayerAction?.(player.id, 'info')}
         >
           <Avatar
             name={player.name}

@@ -5,38 +5,44 @@ import type { ButtonProps } from './types';
 
 export { Shimmer };
 
+import { filterProps } from '../../utils/filterProps';
+
 export const Button = memo(function Button({
-  size,
-  isActive,
-  loading,
-  disabled,
-  showShimmer,
   children,
+  variant = 'primary',
+  size = 'md',
+  loading,
+  showShimmer = false,
+  fullWidth,
+  disabled,
+  pulse = false,
+  jump = false,
+  isActive,
+  pill = false,
   gameVariant,
   onPress,
   onClick,
-  ref,
-  pulse,
-  jump,
-  pill,
+  icon,
   ...rest
 }: ButtonProps): ReactElement {
+  const filteredProps = filterProps({ ...rest, onPress, onClick });
+
   return (
     <StyledButton
-      ref={ref}
+      ref={rest.ref as unknown as React.Ref<HTMLElement>}
       buttonSize={size}
       isActive={isActive && !loading && !disabled}
       disabled={loading || disabled}
-      onPress={onPress}
-      onClick={onClick}
       animation="medium"
       fontWeight="600"
       letterSpacing={0.5}
-      gameVariant={gameVariant}
+      variant={variant}
+      fullWidth={fullWidth}
       pulse={pulse}
       jump={jump}
       pill={pill}
-      {...rest}
+      gameVariant={gameVariant}
+      {...filteredProps}
     >
       {children}
       {showShimmer && <Shimmer />}

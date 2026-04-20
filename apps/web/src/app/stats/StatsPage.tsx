@@ -143,7 +143,7 @@ export default function StatsPage({
               <Button
                 variant="primary"
                 size="lg"
-                onPress={() => router.push('/auth')}
+                onClick={() => router.push('/auth')}
               >
                 Log In
               </Button>

@@ -174,7 +174,6 @@ export function LobbySidebar({
           {onRefresh && (
             <RefreshButton
               onClick={onRefresh}
-              onPress={onRefresh}
               title="Refresh Room"
               data-testid="refresh-room-button"
             >
@@ -251,12 +250,6 @@ export function LobbySidebar({
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        setKickTarget({
-                          id: member.id,
-                          name: member.displayName,
-                        })
-                      }
-                      onPress={() =>
                         setKickTarget({
                           id: member.id,
                           name: member.displayName,
@@ -341,7 +334,6 @@ export function LobbySidebar({
                       variant="ghost"
                       size="sm"
                       onClick={() => onReinvite?.([u.id])}
-                      onPress={() => onReinvite?.([u.id])}
                       marginLeft="$2"
                     >
                       {reinviteLabel}
@@ -390,12 +382,7 @@ export function LobbySidebar({
       </LobbyCard>
 
       {isHost && onDeleteRoom && (
-        <DeleteButton
-          onClick={onDeleteRoom}
-          onPress={onDeleteRoom}
-          marginTop="$2"
-          width="100%"
-        >
+        <DeleteButton onClick={onDeleteRoom} marginTop="$2" width="100%">
           {deleteRoomLabel}
         </DeleteButton>
       )}
@@ -403,7 +390,6 @@ export function LobbySidebar({
       {!isHost && onLeaveRoom && (
         <DeleteButton
           onClick={() => setShowLeaveConfirm(true)}
-          onPress={() => setShowLeaveConfirm(true)}
           marginTop="$2"
           width="100%"
         >

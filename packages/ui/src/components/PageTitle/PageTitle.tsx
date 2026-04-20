@@ -21,6 +21,17 @@ const StyledTitle = styled(H1, {
   overflow: 'visible',
   color: '$color',
   lineHeight: 1.2,
+
+  variants: {
+    gradient: {
+      true: {
+        color: 'transparent',
+        backgroundClip: 'text',
+        backgroundSize: '200% 200%',
+        backgroundImage: 'linear-gradient(135deg, var(--color, #ecefee) 0%, var(--primary, #0369a1) 100%)',
+      },
+    },
+  } as const,
 });
 
 export type PageTitleProps = {
@@ -37,6 +48,7 @@ export const PageTitle = memo(function PageTitle({
   return (
     <StyledTitle
       size={sizeMap[size]}
+      gradient={gradient}
       className={gradient ? 'page-title-gradient' : 'page-title-base'}
     >
       {children}

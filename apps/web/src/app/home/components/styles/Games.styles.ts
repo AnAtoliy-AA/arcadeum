@@ -65,7 +65,15 @@ export const SliderButton = styled(YStack, {
 import { GlassCard } from '@arcadeum/ui';
 export const MainGameCard = styled(GlassCard, {
   name: 'MainGameCard',
-});
+  transition: 'transform 0.2s ease-out, box-shadow 0.2s ease-out',
+
+  hoverStyle: {
+    transform: 'translateY(-6px)',
+    shadowColor: 'rgba(0,0,0,0.5)',
+    shadowOffset: { width: 0, height: 28 },
+    shadowRadius: 60,
+  },
+} as unknown as Record<string, unknown>);
 
 export const MainGameInfo = styled(YStack, {
   name: 'MainGameInfo',

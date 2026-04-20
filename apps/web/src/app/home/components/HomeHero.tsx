@@ -71,9 +71,7 @@ export default function HomeHero() {
           >
             ✦ {kicker}
           </Kicker>
-          <HeroTitle id="hero-heading" className="hero-title-animated">
-            {appName}
-          </HeroTitle>
+          <HeroTitle id="hero-heading">{appName}</HeroTitle>
           <Tagline>{tagline}</Tagline>
           <HeroDescription>{description}</HeroDescription>
           <HeroActions>
@@ -110,7 +108,6 @@ export default function HomeHero() {
               return (
                 <HeroCard
                   key={index}
-                  className="hero-card"
                   rotate={rotate}
                   x={x}
                   y={y}
@@ -118,6 +115,7 @@ export default function HomeHero() {
                   scale={scale}
                   opacity={opacity}
                   hoverStyle={{ scale: 1.05, filter: 'blur(0px)', rotate }}
+                  data-testid={`hero-card-${index}`}
                 >
                   <YStack
                     position="absolute"

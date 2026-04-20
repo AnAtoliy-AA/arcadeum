@@ -1,0 +1,11 @@
+:root {
+  --background: #151718;
+  --foreground: #ecefee;
+  --muted-foreground: #9ba1a6;
+  --card-background: rgba(31, 34, 40, 0.88);
+  --card-border: rgba(68, 72, 80, 0.45);
+  --surface-background: rgba(22, 24, 28, 0.78);
+  --primary-gradient-start: #38bdf8;
+  --glassBg: rgba(15, 17, 18, 0.72);
+  --glassBorder: rgba(255, 255, 255, 0.08);
+}

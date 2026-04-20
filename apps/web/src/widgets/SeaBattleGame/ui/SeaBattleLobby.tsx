@@ -118,7 +118,7 @@ export function SeaBattleLobby({
                 borderRadius={20}
                 borderWidth={1.5}
                 cursor="pointer"
-                onPress={() => setSelectedVariant(variant.id)}
+                onClick={() => setSelectedVariant(variant.id)}
                 borderColor={
                   selectedVariant === variant.id
                     ? 'rgba(96,165,250,0.6)'
@@ -149,7 +149,7 @@ export function SeaBattleLobby({
                 borderWidth={1}
                 borderColor="rgba(255,255,255,0.1)"
                 cursor="pointer"
-                onPress={() => setShowAllVariants(true)}
+                onClick={() => setShowAllVariants(true)}
                 aria-label="Show all themes"
               >
                 <Text fontSize={11} color="rgba(148,163,184,0.5)">

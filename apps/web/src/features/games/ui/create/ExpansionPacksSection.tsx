@@ -165,7 +165,7 @@ export function ExpansionPacksSection({
           <ExpandablePackContainer key={pack.id}>
             <ExpandablePackHeader
               disabled={!pack.available}
-              onPress={(e: React.BaseSyntheticEvent) => {
+              onClick={(e: React.BaseSyntheticEvent) => {
                 // Don't toggle expand if clicking on checkbox
                 if (e.target.tagName === 'INPUT') return;
                 if (pack.available && pack.cards.length > 0) {

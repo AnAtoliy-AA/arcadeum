@@ -15,11 +15,6 @@ import {
 } from '@/shared/config/tamagui.config';
 
 // Prime config immediately for SSR and Client environments
-try {
-  setupTamagui();
-} catch (e) {
-  console.error('Initial setupTamagui failed in BrowserRegistry:', e);
-}
 
 interface BrowserRegistryProps {
   children: ReactNode;

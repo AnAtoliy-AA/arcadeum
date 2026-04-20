@@ -4,10 +4,7 @@ import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 
 const AuthPageWrapper = dynamic(
-  () =>
-    import('@/features/auth/ui/AuthPageWrapper').then(
-      (mod) => mod.AuthPageWrapper,
-    ),
+  () => import('@/features/auth/ui/AuthPageWrapper'),
   {
     ssr: false,
     loading: () => null,

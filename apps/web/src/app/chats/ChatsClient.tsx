@@ -12,7 +12,7 @@ interface ChatsClientProps extends ChatListPageProps {
 }
 
 const ChatListPageDynamic = dynamic<ChatListPageProps>(
-  () => import('./ChatListPage').then((mod) => mod.ChatListPage),
+  () => import('./ChatListPage'),
   {
     ssr: false,
     loading: () => <ChatsLoading />,

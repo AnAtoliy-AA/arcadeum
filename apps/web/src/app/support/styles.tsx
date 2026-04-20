@@ -78,7 +78,7 @@ export const supportStyles = `
     font-size: 0.95rem;
     border: 1px solid #32353d;
     background: rgba(50, 53, 61, 0.5);
-    color: #ecefee;
+    color: var(--color);
     transition: all 0.2s ease;
   }
 
@@ -148,7 +148,7 @@ export const supportStyles = `
     font-size: 0.95rem;
     border: 1px solid #32353d;
     background: rgba(50, 53, 61, 0.5);
-    color: #ecefee;
+    color: var(--color);
     transition: all 0.2s ease;
     width: 100%;
     cursor: pointer;
@@ -219,6 +219,8 @@ export function ContentWrapper({ children }: { children: React.ReactNode }) {
 export function AnimatedGlassCard({
   children,
   $delay,
+  style,
+  className,
   ...props
 }: {
   children: React.ReactNode;
@@ -226,9 +228,9 @@ export function AnimatedGlassCard({
 } & GetProps<typeof GlassCard>) {
   return (
     <GlassCard
-      className="support-animated-card"
-      style={{ animationDelay: $delay || '0s' }}
       {...props}
+      className={`support-animated-card ${className || ''}`}
+      style={[style, { animationDelay: $delay || '0s' }]}
     >
       {children}
     </GlassCard>
@@ -255,9 +257,8 @@ export function Header({ children }: { children: React.ReactNode }) {
 import { Paragraph, H3 } from 'tamagui';
 
 export const Tagline = styled(Paragraph, {
-  margin: 0,
-  fontWeight: '500',
-  color: 'rgba(236,239,238,0.7)',
+  color: '$color',
+  opacity: 0.7,
   maxWidth: 650,
   lineHeight: '$relaxed',
 });
@@ -277,9 +278,8 @@ export function SectionTitle({
 }
 
 export const HeaderDescription = styled(Paragraph, {
-  margin: 0,
-  fontSize: '$4',
-  color: 'rgba(236,239,238,0.45)',
+  color: '$color',
+  opacity: 0.5,
   maxWidth: 700,
   lineHeight: '$multiplier17',
 });
@@ -346,17 +346,14 @@ export const TeamName = styled(H3, {
 });
 
 export const TeamRole = styled(Paragraph, {
-  margin: 0,
-  fontSize: '$4',
-  fontWeight: '500',
-  color: 'rgba(236,239,238,0.7)',
+  color: '$color',
+  opacity: 0.8,
   marginBottom: '$2',
 });
 
 export const TeamBio = styled(Paragraph, {
-  margin: 0,
-  fontSize: '$3',
-  color: 'rgba(236,239,238,0.45)',
+  color: '$color',
+  opacity: 0.6,
   lineHeight: '$multiplier16',
 });
 
@@ -380,16 +377,13 @@ export const ActionHeader = styled(XStack, {
 });
 
 export const ActionTitle = styled(H3, {
-  margin: 0,
-  fontSize: '$4',
-  fontWeight: '600',
-  color: 'rgba(236,239,238,0.7)',
+  color: '$color',
+  opacity: 0.9,
 });
 
 export const ActionDescription = styled(Paragraph, {
-  margin: 0,
-  fontSize: '$3',
-  color: 'rgba(236,239,238,0.45)',
+  color: '$color',
+  opacity: 0.6,
   lineHeight: '$multiplier16',
 });
 
@@ -467,9 +461,7 @@ export const CtaIcon = ({ children }: { children: React.ReactNode }) => (
 );
 
 export const Thanks = styled(Paragraph, {
-  margin: 0,
-  textAlign: 'center',
-  fontSize: '$4',
-  color: 'rgba(236,239,238,0.45)',
+  color: '$color',
+  opacity: 0.6,
   lineHeight: '$multiplier17',
 });

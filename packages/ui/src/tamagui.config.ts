@@ -1,14 +1,14 @@
 import { shorthands } from '@tamagui/shorthands';
-import { createTamagui, createTokens } from '@tamagui/web';
+import { createTamagui, createTokens, createFont } from '@tamagui/web';
 
-const font = {
+const font = createFont({
   family: 'inherit',
   size: { 1: 12, 2: 14, 3: 16, 4: 18, 5: 20, 6: 24, 7: 28, 8: 32, 9: 40, 10: 48, sm: 14, md: 16, lg: 18, xl: 20, true: 16 },
-  lineHeight: { 1: 16, 2: 18, 3: 20, 4: 24, 5: 28, 6: 30, 7: 34, 8: 38, 9: 46, 10: 54, sm: 18, md: 20, lg: 24, xl: 28, tight: 1.1, relaxed: 1.5, none: 1, normal: 1.4, multiplier16: 1.6, multiplier17: 1.7, 13: 13, 48: 48, true: 24 },
+  lineHeight: { 1: 16, 2: 18, 3: 20, 4: 24, 5: 28, 6: 30, 7: 34, 8: 38, 9: 46, 10: 54, sm: 18, md: 20, lg: 24, xl: 28, tight: 1.1, relaxed: 24, none: 1, normal: 22, multiplier16: 32, multiplier17: 48, 13: 13, 48: 48, true: 24 },
   weight: { 4: '400', 5: '500', 6: '600', 7: '700', 8: '800', 9: '900' },
   letterSpacing: { 4: 0, 6: 0, 7: 0, 8: 0, 9: 0 },
   face: {},
-};
+});
 
 const tokens = createTokens({
   size: { 0: 0, 1: 4, 2: 8, 3: 12, 4: 16, 5: 20, 6: 24, 7: 28, 8: 32, 9: 36, 10: 40, 11: 44, 12: 48, true: 16 },
@@ -246,18 +246,18 @@ declare global {
 
 export const setupTamagui = () => {
   if (typeof globalThis !== 'undefined') {
-    // Avoid re-initialization if already set and consistent
+    // Avoid re-initialization if already set
     if (!globalThis.TamaguiConfig) {
       globalThis.TamaguiConfig = config;
     }
   }
 };
 
-// Initialize immediately to ensure config is available to any early imports
+// Prime config immediately on module evaluation to ensure availability for styled components
 try {
   setupTamagui();
 } catch (e) {
-  // Silent catch for edge cases during server initialization
+  // Safe ignore for environment-specific initialization edge cases
 }
 
 export type AppConfig = typeof config;

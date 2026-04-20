@@ -14,22 +14,22 @@ import {
 } from '@arcadeum/ui';
 import dynamic from 'next/dynamic';
 
-const ProfileMenu = dynamic(
-  () => import('./ProfileMenu').then((m) => m.ProfileMenu),
-  { ssr: false },
-);
-const MobileMenu = dynamic(
-  () => import('./MobileMenu').then((m) => m.MobileMenu),
-  { ssr: false },
-);
+const ProfileMenu = dynamic(() => import('@/widgets/header/ui/ProfileMenu'), {
+  ssr: false,
+  loading: () => <div style={{ width: 40, height: 40 }} />,
+});
+const MobileMenu = dynamic(() => import('@/widgets/header/ui/MobileMenu'), {
+  ssr: false,
+  loading: () => null,
+});
 const LanguageSwitcher = dynamic(
-  () => import('./LanguageSwitcher').then((m) => m.LanguageSwitcher),
-  { ssr: false },
+  () => import('@/widgets/header/ui/LanguageSwitcher'),
+  {
+    ssr: false,
+    loading: () => <div style={{ width: 80, height: 40 }} />,
+  },
 );
-const InstallPWAButton = dynamic(
-  () => import('@/features/pwa').then((m) => m.InstallPWAButton),
-  { ssr: false },
-);
+import { InstallPWAButton } from '@/features/pwa';
 
 import {
   Nav,
@@ -40,12 +40,10 @@ import {
   NavHeaderLink,
   NavLinkIndicator,
 } from './styles';
-import { useIsMounted } from './useIsMounted';
 import { useHeaderAuth } from './useHeaderAuth';
 import { useMobileMenu } from './useMobileMenu';
 
 export function HeaderInteractive() {
-  const isMounted = useIsMounted();
   const pathname = usePathname();
   const { isAuthenticated, displayName } = useHeaderAuth();
   const { t } = useTranslation();
@@ -62,10 +60,6 @@ export function HeaderInteractive() {
     ],
     [t],
   );
-
-  if (!isMounted) {
-    return null;
-  }
 
   return (
     <>
@@ -130,7 +124,7 @@ export function HeaderInteractive() {
           <Button
             variant="icon"
             size="sm"
-            onPress={toggleMobileMenu}
+            onClick={toggleMobileMenu}
             aria-label="Toggle menu"
             aria-expanded={isMobileMenuOpen}
             data-mobile-menu-button

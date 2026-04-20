@@ -98,7 +98,7 @@ export const DownloadButtons: React.FC<DownloadButtonsProps> = ({
         {(onInstall || onShowInstructions) && (
           <DownloadLinkAnchor
             tag="button"
-            onPress={onInstall || onShowInstructions}
+            onClick={onInstall || onShowInstructions}
             data-testid="install-pwa-button"
             isButton
             animation="quick"

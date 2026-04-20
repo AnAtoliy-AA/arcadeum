@@ -44,10 +44,10 @@ export function ConfirmationModal({
           <Typography color="$textSecondary">{message}</Typography>
         </ModalBody>
         <ModalFooter>
-          <Button variant="secondary" onPress={onClose}>
+          <Button variant="secondary" onClick={onClose}>
             {cancelLabel}
           </Button>
-          <Button variant="danger" onPress={handleConfirm}>
+          <Button variant="danger" onClick={handleConfirm}>
             {confirmLabel}
           </Button>
         </ModalFooter>

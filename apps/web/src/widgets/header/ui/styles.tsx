@@ -4,65 +4,101 @@ import { HEADER_HEIGHT } from '@/shared/config/layout';
 import React from 'react';
 
 import Link from 'next/link';
-import { styled, GetProps, Nav as TamaguiNav, XStack } from 'tamagui';
+import { styled, GetProps, Nav as TamaguiNav, XStack, Header } from 'tamagui';
 import { YStack, Typography, LinkButton } from '@arcadeum/ui';
 
 // ─── Header Container ─────────────────────────────────────────────────────────
 
+// We'll use the 'as' prop at the call site or define it as a header primitive
+const HeaderOuterPrimitive = styled(Header, {
+  name: 'HeaderOuter',
+  position: 'sticky',
+  top: 0,
+  zIndex: 100,
+  backgroundColor: '$glassBg',
+  backdropFilter: 'blur(32px) saturate(200%)',
+  boxShadow: '0 4px 24px -1px rgba(0, 0, 0, 0.2)',
+  display: 'flex',
+  flexDirection: 'column',
+});
+
 export function HeaderOuter({
   children,
   className,
+  /** @deprecated Use onClick instead */
+  onPress,
+  onClick,
   ...props
-}: React.ComponentPropsWithoutRef<'header'>) {
+}: GetProps<typeof HeaderOuterPrimitive> & {
+  /** @deprecated Use onClick instead */
+  onPress?: () => void;
+  onClick?: () => void;
+}) {
   return (
-    <header
-      role="banner"
-      className={`header-outer ${className || ''}`}
+    <HeaderOuterPrimitive
+      className={className}
       {...props}
+      onClick={onClick || onPress}
     >
       {children}
-    </header>
+    </HeaderOuterPrimitive>
   );
 }
 
-export function HeaderBorderLine({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<'div'>) {
-  return <div className={`header-border ${className || ''}`} {...props} />;
-}
+export const HeaderBorderLine = styled(YStack, {
+  name: 'HeaderBorderLine',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  right: 0,
+  height: 1,
+  pointerEvents: 'none',
+  background:
+    'linear-gradient(90deg, transparent 0%, $glassBorder 15%, $primaryGradientStart 50%, $glassBorder 85%, transparent 100%)',
+  boxShadow: '0 0 15px rgba(87, 195, 255, 0.15)',
+  opacity: 0.8,
+});
 
 // ─── Header Inner ─────────────────────────────────────────────────────────────
 
-export function HeaderInner({
-  children,
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<'div'>) {
-  return (
-    <div
-      className={`header-inner header-inner-gap ${className || ''}`}
-      data-testid="header-inner"
-      {...props}
-    >
-      {children}
-    </div>
-  );
-}
+export const HeaderInner = styled(XStack, {
+  name: 'HeaderInner',
+  maxWidth: 1400,
+  width: '100%',
+  alignSelf: 'center',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  height: 72,
+  paddingHorizontal: '$6',
+  gap: '$4',
+
+  $xs: {
+    paddingHorizontal: '$4',
+    gap: '$2',
+  },
+
+  $gtLg: {
+    gap: '$8',
+  },
+});
 
 // ─── Logo ─────────────────────────────────────────────────────────────────────
 
-export function LogoInner({
-  children,
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<'div'>) {
-  return (
-    <div className={`logo-inner logo-hover ${className || ''}`} {...props}>
-      {children}
-    </div>
-  );
-}
+export const LogoInner = styled(XStack, {
+  name: 'LogoInner',
+  alignItems: 'center',
+  gap: '$3',
+  flexShrink: 0,
+  cursor: 'pointer',
+  style: {
+    transition: 'transform 80ms ease-out, opacity 80ms ease-out',
+  },
+
+  hoverStyle: {
+    scale: 1.1,
+    opacity: 0.7,
+  },
+});
 
 export function Logo({
   href,
@@ -78,21 +114,21 @@ export function Logo({
   );
 }
 
-export function LogoText({
-  children,
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<'span'>) {
-  return (
-    <span
-      className={`logo-text logo-text-desktop ${className || ''}`}
-      data-testid="logo-text"
-      {...props}
-    >
-      {children}
-    </span>
-  );
-}
+import { Text } from 'tamagui';
+
+export const LogoText = styled(Text, {
+  name: 'LogoText',
+  color: '$primary',
+  fontWeight: '800',
+  fontSize: 24,
+  lineHeight: 32,
+  letterSpacing: -0.5,
+  fontFamily: '$body',
+
+  $xs: {
+    display: 'none',
+  },
+});
 
 // ─── Navigation ───────────────────────────────────────────────────────────────
 
@@ -105,9 +141,16 @@ const NavStyled = styled(TamaguiNav, {
   $md: { display: 'none' },
 });
 
-export const Nav = (props: GetProps<typeof NavStyled>) => (
-  <NavStyled {...props} />
-);
+export const Nav = ({
+  /** @deprecated Use onClick instead */
+  onPress,
+  onClick,
+  ...props
+}: GetProps<typeof NavStyled> & {
+  /** @deprecated Use onClick instead */
+  onPress?: () => void;
+  onClick?: () => void;
+}) => <NavStyled {...props} onClick={onClick || onPress} />;
 
 // ─── Actions ──────────────────────────────────────────────────────────────────
 
@@ -142,7 +185,9 @@ export const NavLinkIndicator = styled(XStack, {
   pointerEvents: 'none',
   zIndex: 10,
   opacity: 0,
-  transition: 'all 0.2s ease-in-out' as unknown as undefined,
+  style: {
+    transition: 'all 0.2s ease-in-out',
+  },
 
   variants: {
     active: {
@@ -218,13 +263,19 @@ export const ProfileDropdown = styled(YStack, {
 export function ProfileDropdownWrapper({
   isOpen,
   children,
+  /** @deprecated Use onClick instead */
+  onPress,
+  onClick,
   ...props
 }: {
   isOpen: boolean;
   children: React.ReactNode;
+  /** @deprecated Use onClick instead */
+  onPress?: () => void;
+  onClick?: () => void;
 } & GetProps<typeof ProfileDropdown>) {
   return (
-    <ProfileDropdown isOpen={isOpen} {...props}>
+    <ProfileDropdown isOpen={isOpen} {...props} onClick={onClick || onPress}>
       <YStack
         position="absolute"
         top={0}

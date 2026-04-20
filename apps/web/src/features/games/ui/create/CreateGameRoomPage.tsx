@@ -26,18 +26,12 @@ import {
 } from '@arcadeum/ui';
 import { gamesCatalog } from '@/features/games/ui/create/constants';
 const CriticalCreationConfig = dynamic(
-  () =>
-    import('@/widgets/CriticalGame/ui/CreationConfig').then(
-      (mod) => mod.CriticalCreationConfig,
-    ),
+  () => import('@/widgets/CriticalGame/ui/CreationConfig'),
   { ssr: false },
 );
 
 const SeaBattleCreationConfig = dynamic(
-  () =>
-    import('@/widgets/SeaBattleGame/ui/CreationConfig').then(
-      (mod) => mod.SeaBattleCreationConfig,
-    ),
+  () => import('@/widgets/SeaBattleGame/ui/CreationConfig'),
   { ssr: false },
 );
 import { GameCreationConfigProps } from '@/features/games/types';
@@ -70,7 +64,7 @@ const GAME_CONFIGS: Record<
   >,
 };
 
-export function CreateGameRoomPage() {
+export default function CreateGameRoomPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { snapshot } = useSessionTokens();
@@ -293,7 +287,7 @@ export function CreateGameRoomPage() {
                   <GameTileContainer
                     key={game.id}
                     disabled={!game.isPlayable}
-                    onPress={() => game.isPlayable && handleGameChange(game.id)}
+                    onClick={() => game.isPlayable && handleGameChange(game.id)}
                     data-testid={`game-tile-${game.id}`}
                   >
                     <GameTileItem
@@ -386,7 +380,7 @@ export function CreateGameRoomPage() {
                         <Button
                           type="button"
                           variant="secondary"
-                          onPress={() => setMaxPlayers('')}
+                          onClick={() => setMaxPlayers('')}
                           size="lg"
                           aria-label="Set to Auto"
                           data-testid="auto-max-players-button"
@@ -411,7 +405,7 @@ export function CreateGameRoomPage() {
                     type="button"
                     variant="secondary"
                     isActive={visibility === 'public'}
-                    onPress={() =>
+                    onClick={() =>
                       setVisibility(
                         visibility === 'public' ? 'private' : 'public',
                       )

@@ -97,7 +97,7 @@ export default function HistoryPage({ initialData }: HistoryPageProps) {
           <Button
             variant="primary"
             size="lg"
-            onPress={() => router.push('/auth')}
+            onClick={() => router.push('/auth')}
           >
             Log In
           </Button>

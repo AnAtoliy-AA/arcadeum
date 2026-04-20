@@ -1,7 +1,6 @@
 'use client';
 import { YStack, styled, GetProps } from 'tamagui';
-import { memo } from 'react';
-import type { ReactNode, ReactElement } from 'react';
+import type { ReactNode } from 'react';
 
 export type GlassCardProps = GetProps<typeof YStack> & {
   children: ReactNode;
@@ -49,9 +48,14 @@ export interface GlassCardInnerProps extends GlassCardProps {
   isHost?: boolean;
 }
 
-export const GlassCard = StyledGlassCard.styleable<
-  Omit<GlassCardInnerProps, 'children'> & GetProps<typeof StyledGlassCard>
->(({ children, $visible, $position, isHost, ...props }, ref) => (
+export type GlassCardExtraProps = {
+  $visible?: boolean;
+  $position?: 'top' | 'bottom' | 'left' | 'right';
+  isHost?: boolean;
+  animated?: boolean;
+};
+
+export const GlassCard = StyledGlassCard.styleable<GlassCardExtraProps>(({ children, $visible, $position, isHost, ...props }, ref) => (
   <StyledGlassCard {...props} ref={ref}>
     <TopLine />
     {children}

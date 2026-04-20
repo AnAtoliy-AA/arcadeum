@@ -229,7 +229,7 @@ export function ShipPlacementBoard({
         }
         borderColor={isSelected ? theme.accentColor : theme.cellBorder}
         className={isSelected ? 'sb-selected-glow' : undefined}
-        onPress={() =>
+        onClick={() =>
           !isPlaced && setSelectedShipId(isSelected ? null : ship.id)
         }
         data-testid="ship-palette-item"
@@ -412,7 +412,7 @@ export function ShipPlacementBoard({
                       handleCellHover(-1, -1);
                       setIsInvalidHover(false);
                     }}
-                    onPress={() => handleCellClick(rIndex, cIndex)}
+                    onClick={() => handleCellClick(rIndex, cIndex)}
                     {...getDropProps(rIndex, cIndex)}
                   />
                 );

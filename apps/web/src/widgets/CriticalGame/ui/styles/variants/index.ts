@@ -44,3 +44,5 @@ export const getVariantStyles = (variant?: string): VariantStyleConfig => {
       return baseVariantStyles;
   }
 };
+// Invariant: every returned config has a fully-populated `scene` palette,
+// because variants use `...baseVariantStyles.scene` as their starting point.

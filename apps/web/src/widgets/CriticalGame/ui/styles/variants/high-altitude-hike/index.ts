@@ -1,4 +1,5 @@
 import { VariantStyleConfig } from '../types';
+import { baseVariantStyles } from '../base';
 import { layoutStyles } from './layout';
 import { tableStyles } from './table';
 import { headerStyles } from './header';
@@ -15,6 +16,7 @@ const highAltitudeHikeFullVariantStyles: VariantStyleConfig = {
   tableInfo: tableInfoStyles,
   chat: chatStyles,
   cards: cardsStyles,
+  scene: { ...baseVariantStyles.scene },
 };
 
 export { highAltitudeHikeFullVariantStyles };

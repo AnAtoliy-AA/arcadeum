@@ -110,4 +110,47 @@ export interface VariantStyleConfig {
     getHoverGlow?: () => string;         // box-shadow string for card hover
     getCardNameColor?: () => string;     // color for name label overlay
   };
+  scene: VariantScenePalette;
+}
+
+export interface VariantScenePalette {
+  // Background scene
+  sceneBgGradient: string;
+  gridLineColorA: string;
+  gridLineColorB: string;
+  horizonGradient: string;
+  backlightColor: string;
+  vignetteColor: string;
+  particleColors: string[];
+
+  // Turn banner
+  turnBannerBorderGradient: string;
+  turnBannerDotColor: string;
+  turnBannerShadow: string;
+
+  // Player (opponents + you)
+  opponentTurnRingColor: string;
+  opponentTurnHaloColor: string;
+  youAvatarGradient: string;
+
+  // Table cards
+  deckGradient: string;
+  deckGlow: string;
+  discardGradient: string;
+  discardGlow: string;
+  lastPlayedGradient: string;
+  lastPlayedHaloColor: string;
+
+  // Hand card gradients by role
+  handColorByRole: {
+    attack: string;
+    defuse: string;
+    skip: string;
+    nope: string;
+    favor: string;
+    see: string;
+    combo: string;
+    special: string;
+    [k: string]: string;
+  };
 }

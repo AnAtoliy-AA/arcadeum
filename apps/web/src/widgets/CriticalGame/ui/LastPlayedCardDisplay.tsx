@@ -11,6 +11,7 @@ import {
 } from './styles';
 import { CardImage } from './styles/card-image';
 import { GradientScrim } from './styles/cards-base';
+import { useScenePalette } from './ScenePaletteContext';
 import type { GameVariant } from '@arcadeum/ui';
 
 interface LastPlayedCardDisplayProps {
@@ -24,6 +25,8 @@ export const LastPlayedCardDisplay: React.FC<LastPlayedCardDisplayProps> = ({
   t,
   cardVariant,
 }) => {
+  const scene = useScenePalette();
+
   if (discardPile.length === 0) {
     return null;
   }
@@ -32,9 +35,14 @@ export const LastPlayedCardDisplay: React.FC<LastPlayedCardDisplayProps> = ({
 
   return (
     <LastPlayedCard
+      data-testid="last-played-card"
       $cardType={lastCard}
       $isAnimating={false}
       $variant={cardVariant as GameVariant}
+      style={{
+        background: scene.lastPlayedGradient,
+        boxShadow: `0 0 24px ${scene.lastPlayedHaloColor}`,
+      }}
     >
       <CardImage variant={cardVariant ?? ''} cardType={lastCard as string} />
       <GradientScrim />

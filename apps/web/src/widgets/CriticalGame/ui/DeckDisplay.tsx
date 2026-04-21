@@ -12,6 +12,7 @@ import {
 } from './styles';
 import { CardImage } from './styles/card-image';
 import { GradientScrim } from './styles/cards-base';
+import { useScenePalette } from './ScenePaletteContext';
 import type { GameVariant } from '@arcadeum/ui';
 
 interface DeckDisplayProps {
@@ -25,11 +26,19 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
   t,
   cardVariant,
 }) => {
+  const scene = useScenePalette();
+
   if (!deck || deck.length === 0) {
     return (
       <DeckCard
+        data-testid="deck-card"
         $variant={cardVariant as GameVariant}
-        style={{ opacity: 0.3, cursor: 'default' }}
+        style={{
+          opacity: 0.3,
+          cursor: 'default',
+          background: scene.deckGradient,
+          boxShadow: scene.deckGlow,
+        }}
       />
     );
   }
@@ -40,9 +49,14 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
     // Show Face Up Card in the Deck Slot (some game variants allow this)
     return (
       <LastPlayedCard
+        data-testid="deck-card"
         $isAnimating={false}
         $variant={cardVariant as GameVariant}
-        style={{ position: 'relative' }} // Override absolute to stay in flow
+        style={{
+          position: 'relative',
+          background: scene.deckGradient,
+          boxShadow: scene.deckGlow,
+        }} // Override absolute to stay in flow
       >
         <CardImage variant={cardVariant ?? ''} cardType={topCard as string} />
         <GradientScrim />
@@ -64,7 +78,11 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
 
   // Show Face Down Deck with "Stacked" effect using shadow/border
   return (
-    <DeckCard $variant={cardVariant as GameVariant}>
+    <DeckCard
+      data-testid="deck-card"
+      $variant={cardVariant as GameVariant}
+      style={{ background: scene.deckGradient, boxShadow: scene.deckGlow }}
+    >
       <CardImage variant={cardVariant ?? ''} faceDown />
       <CardFrame $variant={cardVariant} />
     </DeckCard>

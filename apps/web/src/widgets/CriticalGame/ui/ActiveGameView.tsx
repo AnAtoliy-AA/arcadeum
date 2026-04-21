@@ -26,6 +26,10 @@ import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { GameStatusMessage } from './GameStatusMessage';
 import { ActiveGameContent } from './ActiveGameContent';
 import { CriticalGameHeader } from './CriticalGameHeader';
+import { getVariantStyles } from './styles/variants';
+import { ScenePaletteProvider } from './ScenePaletteContext';
+import { SceneBackdrop } from './SceneBackdrop';
+import { TurnBanner } from './TurnBanner';
 import type { UseGameActionsReturn } from '@/features/games/hooks/useGameActions';
 import type { RematchInvitation } from '../hooks/useRematch';
 
@@ -93,6 +97,10 @@ export function ActiveGameView({
   // Layout State
   const [handLayout, setHandLayout] = useState<HandLayoutMode>('grid');
   const cardVariant = room.gameOptions?.cardVariant;
+  const scenePalette = useMemo(
+    () => getVariantStyles(cardVariant).scene,
+    [cardVariant],
+  );
 
   // Sync modal dismissal state with game over state
   const [modalDismissed, setModalDismissed] = useState(false);
@@ -257,7 +265,8 @@ export function ActiveGameView({
   );
 
   return (
-    <>
+    <ScenePaletteProvider palette={scenePalette}>
+      <SceneBackdrop />
       <CriticalGameHeader
         room={room}
         t={
@@ -280,6 +289,15 @@ export function ActiveGameView({
         handleStopAutoplay={handleStopAutoplay}
         isFullscreen={isFullscreen}
         toggleFullscreen={toggleFullscreen}
+      />
+      <TurnBanner
+        isMyTurn={!!isMyTurn}
+        currentPlayerName={
+          currentTurnPlayer
+            ? resolveDisplayName(currentTurnPlayer.playerId, 'Player')
+            : ''
+        }
+        secondsRemaining={null}
       />
 
       <ActiveGameContent
@@ -414,6 +432,6 @@ export function ActiveGameView({
         rematchLoading={rematch.rematchLoading}
         t={t}
       />
-    </>
+    </ScenePaletteProvider>
   );
 }

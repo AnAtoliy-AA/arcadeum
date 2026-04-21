@@ -69,7 +69,6 @@ export const GameContainer = styled(BaseGameContainer, {
           theme.borderColor?.val || '',
         ),
         shadowColor: config.getRoomShadow(!!isMyTurn),
-        ...config.getBackgroundEffects(),
       };
     },
   } as const,

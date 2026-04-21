@@ -2,8 +2,6 @@ import {
   GameHeader,
   GameInfo,
   GameTitle,
-  TurnStatus,
-  TurnStatusPill,
   VariantIconBadge,
   HeaderActions,
   TimerControlsWrapper,
@@ -121,11 +119,6 @@ export function CriticalGameHeader({
           </Text>
         </YStack>
       </GameInfo>
-
-      {/* Center: turn status */}
-      <TurnStatusPill $status={turnStatusVariant}>
-        <TurnStatus $status={turnStatusVariant}>{turnStatusText}</TurnStatus>
-      </TurnStatusPill>
 
       {/* Right: actions */}
       <HeaderActions>

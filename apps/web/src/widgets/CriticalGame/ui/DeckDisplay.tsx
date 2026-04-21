@@ -27,18 +27,17 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
   cardVariant,
 }) => {
   const scene = useScenePalette();
+  const deckStyle = {
+    background: scene.deckGradient,
+    boxShadow: scene.deckGlow,
+  };
 
   if (!deck || deck.length === 0) {
     return (
       <DeckCard
         data-testid="deck-card"
         $variant={cardVariant as GameVariant}
-        style={{
-          opacity: 0.3,
-          cursor: 'default',
-          background: scene.deckGradient,
-          boxShadow: scene.deckGlow,
-        }}
+        style={{ ...deckStyle, opacity: 0.3, cursor: 'default' }}
       />
     );
   }
@@ -52,11 +51,7 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
         data-testid="deck-card"
         $isAnimating={false}
         $variant={cardVariant as GameVariant}
-        style={{
-          position: 'relative',
-          background: scene.deckGradient,
-          boxShadow: scene.deckGlow,
-        }} // Override absolute to stay in flow
+        style={{ ...deckStyle, position: 'relative' }}
       >
         <CardImage variant={cardVariant ?? ''} cardType={topCard as string} />
         <GradientScrim />
@@ -81,7 +76,7 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
     <DeckCard
       data-testid="deck-card"
       $variant={cardVariant as GameVariant}
-      style={{ background: scene.deckGradient, boxShadow: scene.deckGlow }}
+      style={deckStyle}
     >
       <CardImage variant={cardVariant ?? ''} faceDown />
       <CardFrame $variant={cardVariant} />

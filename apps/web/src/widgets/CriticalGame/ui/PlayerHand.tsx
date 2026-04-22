@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { useMedia } from 'tamagui';
 import {
   CriticalPlayerState,
   CriticalCard,
@@ -12,8 +13,11 @@ import {
 } from '../types';
 import { PLAYABLE_ACTION_CARDS } from '../lib/constants';
 import { getCardTranslationKey, getCardDescriptionKey } from '../lib/cardUtils';
+import { getCardRole } from '../lib/cardRoles';
+import { getFanTransform } from '../lib/handLayout';
 import { CardImage } from './styles/card-image';
 import { useCardFlip } from '../hooks/useCardFlip';
+import { useScenePalette } from './ScenePaletteContext';
 import { ActionsSection } from './ActionsSection';
 import { HandLayoutDropdown } from './HandLayoutDropdown';
 
@@ -115,6 +119,16 @@ export function PlayerHand({
 }: PlayerHandProps) {
   const [showNames, setShowNames] = useState(true);
   const [showDescriptions, setShowDescriptions] = useState(true);
+  const scene = useScenePalette();
+  const media = useMedia();
+  const isMobile = media.sm;
+  const handSize = isMobile ? 'mobileFlat' : 'desktopFan';
+  const isFanned = !isMobile && handLayout === 'grid';
+  const handCardCount = currentPlayer.hand.length;
+  const effectiveLayout: HandLayoutMode =
+    isMobile && handLayout === 'grid' && handCardCount > 6
+      ? 'linear'
+      : handLayout;
 
   // Group current hand by card type/count for rendering logic
   const groupedHand = useMemo(() => {
@@ -330,7 +344,7 @@ export function PlayerHand({
             </HandControls>
           </HandHeader>
 
-          <CardsGrid data-testid="hand-grid" $layout={handLayout}>
+          <CardsGrid data-testid="hand-grid" $layout={effectiveLayout}>
             {/* Render Stash first if any */}
             {stashItems.map(({ card, count, id }, idx) => (
               <StashedCard
@@ -377,27 +391,47 @@ export function PlayerHand({
               const clickable = isCardClickable(card, count);
               const dimmed = isComboCard && count === 1;
               const isFlipping = card === flippingCardType;
+              const role = getCardRole(card);
+              const roleGradient = scene.handColorByRole[role];
+              const fan = isFanned
+                ? getFanTransform(idx, groupedHand.length)
+                : null;
+              const wrapperStyle: React.CSSProperties = {
+                ...(isFlipping ? { perspective: '600px' } : {}),
+                ...(fan
+                  ? {
+                      marginLeft: idx === 0 ? 0 : -20,
+                      zIndex: idx,
+                    }
+                  : {}),
+              };
+              const cardStyle: React.CSSProperties = {
+                background: roleGradient,
+                ...(fan
+                  ? {
+                      transform: `rotate(${fan.angle}deg) translateY(${fan.offsetY}px)`,
+                      transformOrigin: 'bottom center',
+                    }
+                  : {}),
+                ...(isFlipping
+                  ? {
+                      transformStyle: 'preserve-3d',
+                      animation: 'cardFlip 600ms ease-in-out',
+                    }
+                  : {}),
+              };
 
               return (
-                <div
-                  key={id}
-                  style={isFlipping ? { perspective: '600px' } : undefined}
-                >
+                <div key={id} style={wrapperStyle}>
                   <HandCard
                     $cardType={card}
                     $index={idx}
+                    $size={handSize}
                     $variant={cardVariant as GameVariant}
                     $clickable={clickable}
                     $dimmed={dimmed}
                     onClick={() => handleCardClick(card, count)}
-                    style={
-                      isFlipping
-                        ? {
-                            transformStyle: 'preserve-3d',
-                            animation: 'cardFlip 600ms ease-in-out',
-                          }
-                        : undefined
-                    }
+                    style={cardStyle}
                   >
                     <CardCorner $position="tl" />
                     <CardCorner $position="tr" />

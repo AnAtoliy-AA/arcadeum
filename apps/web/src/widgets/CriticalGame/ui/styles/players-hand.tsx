@@ -135,10 +135,19 @@ export const DropdownItem = ({
   />
 );
 
+// Gold (yellow-400) ring + layered drop-shadow + soft glow used when a hand
+// card is hovered/focused ("selected"). Spec: 2px gold border + triple-stack
+// shadow from Task 12.
+export const HAND_CARD_SELECTED_SHADOW =
+  '0 2px 4px rgba(0,0,0,0.3), 0 8px 16px rgba(0,0,0,0.4), 0 0 24px rgba(250, 204, 21, 0.4)';
+export const HAND_CARD_SELECTED_BORDER_COLOR = 'rgba(250, 204, 21, 1)';
+
 export const HandCard = styled(Card, {
   name: 'HandCard',
-  width: 110,
   flexShrink: 0,
+  // Size is now controlled via $size variant (set per-card by PlayerHand based
+  // on useMedia().sm). Default width kept for any legacy callers.
+  width: 110,
   variants: {
     $clickable: {
       true: { cursor: 'pointer', opacity: 1 },
@@ -147,11 +156,34 @@ export const HandCard = styled(Card, {
     $dimmed: {
       true: { opacity: 0.7 },
     },
+    $size: {
+      desktopFan: {
+        width: 82,
+        height: 114,
+        aspectRatio: undefined,
+        hoverStyle: {
+          y: -26,
+          borderColor: HAND_CARD_SELECTED_BORDER_COLOR,
+          borderWidth: 2,
+          boxShadow: HAND_CARD_SELECTED_SHADOW,
+        },
+      },
+      mobileFlat: {
+        width: 62,
+        height: 88,
+        aspectRatio: undefined,
+        pressStyle: {
+          y: -14,
+          borderColor: HAND_CARD_SELECTED_BORDER_COLOR,
+          borderWidth: 2,
+          boxShadow: HAND_CARD_SELECTED_SHADOW,
+        },
+      },
+    },
     $variant: (val: string) => {
       const config = getVariantStyles(val).cards;
       return {
         ...config.getCardStyles?.(),
-        hoverStyle: { scale: 1.05, boxShadow: config.getHoverGlow?.() },
       };
     },
   } as const,

@@ -6,6 +6,7 @@ import { SSR_TIMEOUT } from '@/shared/config/app-config';
 import { ApiError } from '@/shared/lib/api-client';
 import { HttpStatus } from '@/shared/lib/http-status';
 import { getTranslations } from '@/shared/i18n/server';
+import { handleSsrFetchError } from '@/shared/lib/ssr';
 import ChatsClient from './ChatsClient';
 import ChatsLoading from './loading';
 
@@ -48,7 +49,7 @@ async function ChatDataFetcher() {
         />
       );
     }
-    console.error('Failed to pre-fetch chats during SSR:', error);
+    handleSsrFetchError('chats', error);
   }
 
   return (

@@ -31,7 +31,7 @@ const ModalGlassContent = styled(ModalContent, {
   borderColor: '$borderColor',
   position: 'relative',
   overflow: 'hidden',
-} as never);
+});
 
 const HeaderBackgroundEmoji = styled(YStack, {
   position: 'absolute',
@@ -40,7 +40,7 @@ const HeaderBackgroundEmoji = styled(YStack, {
   opacity: 0.1,
   pointerEvents: 'none',
   zIndex: 0,
-} as never);
+});
 
 const tabStyles = `
   .tab-pill { background: transparent; border: none; border-radius: 999px; padding: 0.6rem 2rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); text-transform: uppercase; letter-spacing: 0.05em; color: rgba(236,239,238,0.7); }

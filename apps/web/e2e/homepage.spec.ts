@@ -62,12 +62,20 @@ test.describe('Home Page', () => {
   });
 
   test('should feature Critical game', async ({ page }) => {
-    const criticalFeature = page.getByTestId('game-title-critical_v1');
+    const criticalFeature = page
+      .locator('main')
+      .first()
+      .getByTestId('game-title-critical_v1')
+      .first();
     await expect(criticalFeature).toBeVisible();
   });
 
   test('should feature Sea Battle game', async ({ page }) => {
-    const seaBattleFeature = page.getByTestId('game-title-sea_battle_v1');
+    const seaBattleFeature = page
+      .locator('main')
+      .first()
+      .getByTestId('game-title-sea_battle_v1')
+      .first();
     await expect(seaBattleFeature).toBeVisible();
   });
 
@@ -76,12 +84,19 @@ test.describe('Home Page', () => {
     isMobile,
   }) => {
     test.skip(isMobile, 'Hero cards are only visible on desktop');
-    const cardStack = page.locator('.hero-card-stack').first();
-    await expect(cardStack).toBeVisible();
 
-    // Check that there are at least 3 cards built
-    const heroCards = cardStack.locator('> div');
-    await expect(heroCards).toHaveCount(3);
+    // Ensure viewport is large enough for gtMd breakpoint (1151px)
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await navigateTo(page, '/');
+
+    // Use toPass to handle potential hydration delays and breakpoint updates
+    await expect(async () => {
+      const cardStack = page.getByTestId('hero-card-stack');
+      await expect(cardStack).toBeVisible();
+
+      const heroCards = cardStack.locator('[data-testid^="hero-card-"]');
+      await expect(heroCards).toHaveCount(3);
+    }).toPass({ timeout: 15000 });
   });
 
   test('should have modernized support developers button', async ({ page }) => {

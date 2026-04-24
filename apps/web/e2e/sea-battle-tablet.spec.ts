@@ -1,6 +1,12 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
-import { mockSession, navigateTo } from './fixtures/test-utils';
+import {
+  test,
+  mockSession,
+  navigateTo,
+  mockGameSocket,
+  waitForRoomReady,
+  MOCK_OBJECT_ID,
+} from './fixtures/test-utils';
 
 const emptyBoard = () =>
   Array(10)
@@ -13,12 +19,12 @@ const placementRoomMock = {
     name: 'Tablet Test Room',
     status: 'playing',
     gameId: 'sea_battle_v1',
-    hostId: 'test-user',
+    hostId: MOCK_OBJECT_ID,
     playerCount: 1,
     maxPlayers: 2,
     visibility: 'public',
     gameOptions: { variant: 'classic' },
-    members: [{ id: 'test-user', displayName: 'Test User', isHost: true }],
+    members: [{ id: MOCK_OBJECT_ID, displayName: 'Test User', isHost: true }],
   },
   session: {
     id: 'session-123',
@@ -28,9 +34,14 @@ const placementRoomMock = {
     state: {
       phase: 'placement',
       players: [
-        { playerId: 'test-user', board: emptyBoard(), ships: [], alive: true },
+        {
+          playerId: MOCK_OBJECT_ID,
+          board: emptyBoard(),
+          ships: [],
+          alive: true,
+        },
       ],
-      playerOrder: ['test-user'],
+      playerOrder: [MOCK_OBJECT_ID],
       currentTurnIndex: 0,
       logs: [],
     },
@@ -42,7 +53,7 @@ const battleRoomMock = {
     ...placementRoomMock.room,
     playerCount: 2,
     members: [
-      { id: 'test-user', displayName: 'Test User', isHost: true },
+      { id: MOCK_OBJECT_ID, displayName: 'Test User', isHost: true },
       { id: 'opponent-user', displayName: 'Opponent', isHost: false },
     ],
   },
@@ -51,7 +62,12 @@ const battleRoomMock = {
     state: {
       phase: 'battle',
       players: [
-        { playerId: 'test-user', board: emptyBoard(), ships: [], alive: true },
+        {
+          playerId: MOCK_OBJECT_ID,
+          board: emptyBoard(),
+          ships: [],
+          alive: true,
+        },
         {
           playerId: 'opponent-user',
           board: emptyBoard(),
@@ -59,7 +75,7 @@ const battleRoomMock = {
           alive: true,
         },
       ],
-      playerOrder: ['test-user', 'opponent-user'],
+      playerOrder: [MOCK_OBJECT_ID, 'opponent-user'],
       currentTurnIndex: 0,
       logs: [],
     },
@@ -74,6 +90,9 @@ test.describe('Sea Battle Tablet Layout', () => {
   test('should have side-by-side layout on landscape tablet (1024x768)', async ({
     page,
   }) => {
+    const roomId = '507f191e810c19729de860ec';
+    const userId = MOCK_OBJECT_ID;
+
     await page.route('**/games/room-info*', async (route) => {
       await route.fulfill({
         status: 200,
@@ -81,9 +100,18 @@ test.describe('Sea Battle Tablet Layout', () => {
         json: battleRoomMock,
       });
     });
+
+    await mockGameSocket(page, roomId, userId, {
+      gameId: 'sea_battle_v1',
+      roomJoinedPayload: {
+        ...battleRoomMock.room,
+        session: battleRoomMock.session,
+      },
+    });
+
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.waitForTimeout(500);
-    await navigateTo(page, '/games/rooms/507f191e810c19729de860ec');
+    await navigateTo(page, `/games/rooms/${roomId}`);
+    await waitForRoomReady(page);
 
     const mainArea = page.getByTestId('game-main-area');
     await expect(mainArea).toBeVisible();
@@ -112,6 +140,9 @@ test.describe('Sea Battle Tablet Layout', () => {
   test('should have stacked layout on portrait tablet (768x1024)', async ({
     page,
   }) => {
+    const roomId = '507f191e810c19729de860ec';
+    const userId = MOCK_OBJECT_ID;
+
     await page.route('**/games/room-info*', async (route) => {
       await route.fulfill({
         status: 200,
@@ -119,9 +150,18 @@ test.describe('Sea Battle Tablet Layout', () => {
         json: battleRoomMock,
       });
     });
+
+    await mockGameSocket(page, roomId, userId, {
+      gameId: 'sea_battle_v1',
+      roomJoinedPayload: {
+        ...battleRoomMock.room,
+        session: battleRoomMock.session,
+      },
+    });
+
     await page.setViewportSize({ width: 768, height: 1024 });
-    await page.waitForTimeout(500);
-    await navigateTo(page, '/games/rooms/507f191e810c19729de860ec');
+    await navigateTo(page, `/games/rooms/${roomId}`);
+    await waitForRoomReady(page);
 
     const mainArea = page.getByTestId('game-main-area');
     await expect(mainArea).toBeVisible();
@@ -136,6 +176,9 @@ test.describe('Sea Battle Tablet Layout', () => {
   test('should show boards and ship palette correctly on tablet', async ({
     page,
   }) => {
+    const roomId = '507f191e810c19729de860ec';
+    const userId = MOCK_OBJECT_ID;
+
     await page.route('**/games/room-info*', async (route) => {
       await route.fulfill({
         status: 200,
@@ -143,8 +186,18 @@ test.describe('Sea Battle Tablet Layout', () => {
         json: placementRoomMock,
       });
     });
+
+    await mockGameSocket(page, roomId, userId, {
+      gameId: 'sea_battle_v1',
+      roomJoinedPayload: {
+        ...placementRoomMock.room,
+        session: placementRoomMock.session,
+      },
+    });
+
     await page.setViewportSize({ width: 1024, height: 768 });
-    await navigateTo(page, '/games/rooms/507f191e810c19729de860ec');
+    await navigateTo(page, `/games/rooms/${roomId}`);
+    await waitForRoomReady(page);
 
     // Board should be visible
     const board = page.getByTestId('sea-battle-board-grid').first();

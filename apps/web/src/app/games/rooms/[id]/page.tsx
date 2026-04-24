@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { gamesApi } from '@/features/games/api';
 import { appConfig, SSR_TIMEOUT } from '@/shared/config/app-config';
+import { handleSsrFetchError } from '@/shared/lib/ssr';
 import GameRoomClient from './GameRoomClient';
 import GameRoomLoading from './loading';
 
@@ -41,18 +42,7 @@ async function RoomDataFetcher({ id }: { id: string }) {
       timeout: SSR_TIMEOUT,
     });
   } catch (error) {
-    // Suppress noisy 'room_not_found_error' logs during SSR in development/test
-    // as mocked rooms in E2E only exist in the browser context.
-    const isNotFoundError =
-      error instanceof Error && error.message === 'room_not_found_error';
-    const isDev = process.env.NODE_ENV === 'development';
-
-    if (!isNotFoundError || !isDev) {
-      console.error(
-        `Failed to pre-fetch room info for ${id} during SSR:`,
-        error,
-      );
-    }
+    handleSsrFetchError(`room info for ${id}`, error);
   }
 
   return (

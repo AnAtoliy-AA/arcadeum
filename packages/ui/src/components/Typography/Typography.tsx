@@ -5,42 +5,36 @@ import './Typography.css';
 const StyledTypography = styled(Text, {
   name: 'Typography',
   color: '$color',
-  fontFamily: '$body', // Explicitly use body font
+  fontFamily: '$body',
 
   variants: {
     uiSize: {
-      xs: { fontSize: 12, lineHeight: 16 },
-      sm: { fontSize: 14, lineHeight: 18 },
-      md: { fontSize: 16, lineHeight: 24 },
-      lg: { fontSize: 18, lineHeight: 28 },
-      xl: { fontSize: 20, lineHeight: 30 },
-      '2xl': { fontSize: 24, lineHeight: 32 },
-      '3xl': { fontSize: 32, lineHeight: 40 },
+      xs: { className: 'typography-size-xs' },
+      sm: { className: 'typography-size-sm' },
+      md: { className: 'typography-size-md' },
+      lg: { className: 'typography-size-lg' },
+      xl: { className: 'typography-size-xl' },
+      '2xl': { className: 'typography-size-2xl' },
+      '3xl': { className: 'typography-size-3xl' },
     },
     variant: {
-      heading: { fontWeight: '800', letterSpacing: -0.5 },
-      subheading: { fontWeight: '700', letterSpacing: -0.2 },
-      body: { fontWeight: '400' },
-      label: { fontWeight: '600', letterSpacing: 1 },
-      caption: { fontWeight: '400', opacity: 0.6 },
+      heading: { className: 'typography-variant-heading' },
+      subheading: { className: 'typography-variant-subheading' },
+      body: { className: 'typography-variant-body' },
+      label: { className: 'typography-variant-label' },
+      caption: { className: 'typography-variant-caption' },
     },
     gradient: {
-      primary: {
-        className: 'typography-gradient-primary',
-      },
-      gold: {
-        className: 'typography-gradient-gold',
-      },
-      silver: {
-        className: 'typography-gradient-silver',
-      },
+      primary: { className: 'typography-gradient-primary' },
+      gold: { className: 'typography-gradient-gold' },
+      silver: { className: 'typography-gradient-silver' },
     },
     weight: {
-      '400': { fontWeight: '400' },
-      '500': { fontWeight: '500' },
-      '600': { fontWeight: '600' },
-      '700': { fontWeight: '700' },
-      '800': { fontWeight: '800' },
+      '400': { className: 'typography-weight-400' },
+      '500': { className: 'typography-weight-500' },
+      '600': { className: 'typography-weight-600' },
+      '700': { className: 'typography-weight-700' },
+      '800': { className: 'typography-weight-800' },
     },
     alpha: {
       low: { opacity: 0.65 },
@@ -54,10 +48,10 @@ const StyledTypography = styled(Text, {
       xl: { letterSpacing: 3 },
     },
     textCenter: {
-      true: { textAlign: 'center' },
+      true: { className: 'typography-text-center' },
     },
     textRight: {
-      true: { textAlign: 'right' },
+      true: { className: 'typography-text-right' },
     },
   } as const,
 
@@ -70,6 +64,7 @@ const StyledTypography = styled(Text, {
 import { filterProps } from '../../utils/filterProps';
 
 export type TypographyProps = GetProps<typeof StyledTypography> & {
+  title?: string;
   /** @deprecated Use onClick instead */
   onPress?: () => void;
   onClick?: (e: unknown) => void;

@@ -34,7 +34,7 @@ import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import { DownloadButtons } from '@/shared/ui/DownloadButtons/DownloadButtons';
 import { OptionCard } from '@/shared/ui/OptionCard/OptionCard';
 import { BlockedUsersSection } from './BlockedUsersSection';
-import { AppFooter } from '@/widgets/footer';
+import AppFooter from '@/widgets/footer/ui/AppFooter';
 
 type DownloadConfig = {
   title: string;

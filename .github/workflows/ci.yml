@@ -152,6 +152,8 @@ jobs:
         image: mongo:latest
         ports:
           - 27017:27017
+    env:
+      E2E_PROD: true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4

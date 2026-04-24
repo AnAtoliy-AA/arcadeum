@@ -115,36 +115,36 @@ const Table = styled(YStack, {
   width: '100%',
   borderRadius: 12,
   overflow: 'hidden',
-} as never);
+});
 
 const GameInfo = styled(XStack, {
   name: 'GameBreakdownGameInfo',
   alignItems: 'center',
   gap: '$3',
-} as never);
+});
 
 const GameIcon = styled(Text, {
   name: 'GameBreakdownGameIcon',
   fontSize: '$5',
   width: 40,
   height: 40,
-} as never);
+});
 
 const GameName = styled(Text, {
   name: 'GameBreakdownGameName',
   fontWeight: '600',
   color: '$color',
-} as never);
+});
 
 const StatCell = styled(Text, {
   name: 'GameBreakdownStatCell',
   fontWeight: '500',
   color: '$color',
-} as never);
+});
 
 const WinRateCell = styled(XStack, {
   name: 'GameBreakdownWinRateCell',
   alignItems: 'center',
   gap: '$3',
   minWidth: 120,
-} as never);
+});

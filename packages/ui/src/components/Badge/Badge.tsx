@@ -99,6 +99,7 @@ import { memo } from 'react';
 import type { ReactElement } from 'react';
 
 export type BadgeProps = ComponentProps<typeof StyledBadge> & {
+  title?: string;
   /** @deprecated Use onClick instead */
   onPress?: () => void;
   onClick?: (e: unknown) => void;

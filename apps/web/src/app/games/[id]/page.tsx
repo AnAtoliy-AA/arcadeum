@@ -2,6 +2,7 @@ import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { gamesApi } from '@/features/games/api';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { SSR_TIMEOUT } from '@/shared/config/app-config';
+import { handleSsrFetchError } from '@/shared/lib/ssr';
 import GameDetailClient from './GameDetailClient';
 
 interface PageProps {
@@ -21,10 +22,7 @@ export default async function GameDetailRoute({ params }: PageProps) {
     );
     initialRooms = response.rooms;
   } catch (error) {
-    console.error(
-      `Failed to pre-fetch rooms for game ${gameId} during SSR:`,
-      error,
-    );
+    handleSsrFetchError(`rooms for game ${gameId}`, error);
   }
 
   return <GameDetailClient initialRooms={initialRooms} />;

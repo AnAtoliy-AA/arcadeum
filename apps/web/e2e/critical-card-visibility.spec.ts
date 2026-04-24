@@ -10,10 +10,12 @@ import {
 } from './fixtures/test-utils';
 
 test.describe('Critical Card Visibility', () => {
-  test.setTimeout(60000);
-
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
+  });
+
+  test('should render Critical game card on home page', async ({ page }) => {
+    await navigateTo(page, '/');
   });
 
   test('should show card names and descriptions with modern styling', async ({

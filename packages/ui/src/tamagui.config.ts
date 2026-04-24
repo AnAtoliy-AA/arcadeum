@@ -118,6 +118,8 @@ const themeBase = {
   victoryText: '#1a1a1a',
   victoryGradientStart: '#ffe866',
   victoryGradientEnd: '#ff9500',
+  backgroundRadialStart: 'rgba(59, 130, 246, 0.18)',
+  backgroundRadialEnd: 'rgba(126, 58, 242, 0.16)',
 };
 
 const lightTheme = {
@@ -135,6 +137,8 @@ const lightTheme = {
   infoText: '#0f172a',
   glassBg: 'rgba(255, 255, 255, 0.8)',
   glassBorder: 'rgba(0, 0, 0, 0.1)',
+  backgroundRadialStart: 'rgba(96, 165, 250, 0.22)',
+  backgroundRadialEnd: 'rgba(129, 140, 248, 0.18)',
 };
 
 const neonDarkTheme = {
@@ -145,6 +149,8 @@ const neonDarkTheme = {
   victoryText: '#1a1a1a',
   accent: '#38bdf8',
   glassBg: 'rgba(6, 1, 27, 0.72)',
+  backgroundRadialStart: 'rgba(87, 195, 255, 0.35)',
+  backgroundRadialEnd: 'rgba(255, 106, 247, 0.35)',
 };
 
 const neonLightTheme = {
@@ -162,6 +168,8 @@ const violetDarkTheme = {
   victoryText: '#1a1a1a',
   accent: '#9333ea',
   glassBg: 'rgba(13, 10, 24, 0.72)',
+  backgroundRadialStart: 'rgba(124, 58, 237, 0.22)',
+  backgroundRadialEnd: 'rgba(192, 132, 252, 0.18)',
 };
 
 const violetLightTheme = {
@@ -175,6 +183,8 @@ const violetLightTheme = {
   primaryText: '#ffffff',
   secondaryText: '#ffffff',
   victoryText: '#1a1a1a',
+  backgroundRadialStart: 'rgba(167, 139, 250, 0.28)',
+  backgroundRadialEnd: 'rgba(196, 181, 253, 0.24)',
 };
 
 const tealDarkTheme = {
@@ -185,6 +195,8 @@ const tealDarkTheme = {
   victoryText: '#1a1a1a',
   accent: '#2dd4bf',
   glassBg: 'rgba(4, 15, 15, 0.72)',
+  backgroundRadialStart: 'rgba(13,148,136,0.22)',
+  backgroundRadialEnd: 'rgba(6,182,212,0.18)',
 };
 
 const tealLightTheme = {
@@ -198,6 +210,8 @@ const tealLightTheme = {
   primaryText: '#0f172a',
   secondaryText: '#ffffff',
   victoryText: '#1a1a1a',
+  backgroundRadialStart: 'rgba(13,148,136,0.18)',
+  backgroundRadialEnd: 'rgba(6,182,212,0.14)',
 };
 
 export const config = createTamagui({

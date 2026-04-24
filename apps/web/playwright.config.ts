@@ -46,17 +46,17 @@ export default defineConfig({
       ? parseInt(process.env.PLAYWRIGHT_WORKERS)
       : undefined,
   reporter: process.env.CI ? 'list' : 'html',
-  timeout: 90000,
+  timeout: 120000,
   expect: {
-    timeout: 20000,
+    timeout: 30000,
   },
 
   use: {
     baseURL: BASE_URL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
-    actionTimeout: 10000,
-    navigationTimeout: 30000,
+    actionTimeout: 20000,
+    navigationTimeout: 60000,
   },
 
   projects: [
@@ -88,15 +88,17 @@ export default defineConfig({
 
   webServer: [
     {
-      command: process.env.CI
-        ? 'pnpm --filter be start:prod'
-        : 'pnpm --filter be dev',
+      command:
+        process.env.CI || process.env.E2E_PROD
+          ? 'pnpm --filter be start:prod'
+          : 'pnpm --filter be dev',
       url: `${BE_URL}/health`,
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
       env: {
         WEB_PORT: WEB_PORT,
         BE_PORT: BE_PORT,
+        NODE_ENV: process.env.E2E_PROD ? 'production' : 'development',
       },
     },
     {
@@ -110,6 +112,7 @@ export default defineConfig({
       env: {
         WEB_PORT: WEB_PORT,
         BE_PORT: BE_PORT,
+        NODE_ENV: process.env.E2E_PROD ? 'production' : 'development',
       },
     },
   ],

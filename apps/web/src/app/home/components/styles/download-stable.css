@@ -1,0 +1,62 @@
+/* Static Download Button Styles */
+
+.download-buttons-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--t-space-4);
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.download-btn-static {
+  display: flex;
+  align-items: center;
+  background-color: var(--glass-background, rgba(0, 0, 0, 0.4));
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+  border-radius: var(--t-radius-4, 12px);
+  padding: var(--t-space-2, 8px) var(--t-space-4, 16px);
+  color: white;
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+  min-width: 160px;
+  cursor: pointer;
+}
+
+.download-btn-static:hover {
+  transform: translateY(-2px);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.download-btn-static:active {
+  transform: translateY(0);
+}
+
+.download-btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--t-space-3, 12px);
+}
+
+.download-btn-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.download-btn-small {
+  font-size: 10px;
+  text-transform: uppercase;
+  opacity: 0.8;
+  line-height: 1.2;
+}
+
+.download-btn-large {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+}

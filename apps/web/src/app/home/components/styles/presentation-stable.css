@@ -1,0 +1,120 @@
+/* Static Presentation Styles */
+
+.presentation-container {
+  width: 100%;
+  align-self: stretch;
+  aspect-ratio: 16 / 9;
+  min-height: 500px;
+  border-radius: 32px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--borderColor);
+  background-color: var(--background);
+  box-shadow: rgba(0, 0, 0, 0.6) 0px 30px 60px;
+}
+
+.presentation-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.presentation-controls {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.presentation-top-bar {
+  display: flex;
+  padding: var(--t-space-4);
+  justify-content: center;
+  pointer-events: auto;
+  width: 100%;
+}
+
+.presentation-progress-bar {
+  display: flex;
+  gap: var(--t-space-1);
+  max-width: 600px;
+  height: 4px;
+  align-items: center;
+  width: 100%;
+}
+
+.presentation-progress-segment {
+  flex: 1;
+  height: 100%;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-out;
+}
+
+.presentation-progress-segment:hover {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.presentation-bottom-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--t-space-4);
+  pointer-events: auto;
+}
+
+.presentation-counter {
+  font-size: var(--t-space-3);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  padding: var(--t-space-1) var(--t-space-3);
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.presentation-nav-container {
+  position: absolute;
+  top: 50%;
+  z-index: 20;
+  pointer-events: auto;
+  transition: opacity 0.3s ease;
+}
+
+.presentation-fullscreen-container {
+  pointer-events: auto;
+}
+
+.presentation-btn-glass {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.presentation-btn-glass-md {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.presentation-btn-glass-sm {
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.presentation-btn-glass:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}

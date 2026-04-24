@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { gamesApi } from '@/features/games/api';
 import { appConfig, SSR_TIMEOUT } from '@/shared/config/app-config';
+import { handleSsrFetchError } from '@/shared/lib/ssr';
 import GamesClient from './GamesClient';
 import GamesLoading from './loading';
 
@@ -61,7 +62,7 @@ async function GamesDataFetcher({
       },
     );
   } catch (error) {
-    console.error('Failed to pre-fetch games during SSR:', error);
+    handleSsrFetchError('games', error);
     // Keep initialData as null so client can try to fetch
   }
 

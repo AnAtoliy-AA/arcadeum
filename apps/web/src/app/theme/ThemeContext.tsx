@@ -203,7 +203,7 @@ export function AppThemeProvider({
       <TamaguiProvider
         config={tamaguiConfig}
         defaultTheme={resolvedTheme}
-        disableInjectCSS
+        disableInjectCSS={process.env.NODE_ENV === 'production'}
       >
         {children}
       </TamaguiProvider>

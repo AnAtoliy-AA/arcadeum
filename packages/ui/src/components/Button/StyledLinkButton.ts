@@ -10,6 +10,12 @@ export const StyledLinkButton = styled(YStack, {
   borderRadius: '$4',
   cursor: 'pointer',
 
+  focusStyle: {
+    borderColor: '$primary',
+    borderWidth: 2,
+    outlineColor: 'transparent',
+  },
+
   variants: {
     ...sharedButtonSizes,
     ...sharedButtonVariants,

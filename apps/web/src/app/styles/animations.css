@@ -1310,3 +1310,19 @@
   animation: shimmer-glide 3s infinite;
   pointer-events: none;
 }
+
+/* Respect prefers-reduced-motion: collapse every keyframe animation to a
+   single frame and short-circuit CSS transitions. Scene + variant visuals
+   remain fully styled (gradients, shadows, borders) — only autonomous
+   motion is suppressed. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

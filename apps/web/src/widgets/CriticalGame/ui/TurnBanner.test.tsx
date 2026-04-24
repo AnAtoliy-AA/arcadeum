@@ -68,4 +68,20 @@ describe('TurnBanner', () => {
     renderBanner({ secondsRemaining: null });
     expect(screen.getByTestId('turn-banner')).toHaveTextContent('0:00');
   });
+
+  it('gates the pulsing dot animation behind prefers-reduced-motion: no-preference', () => {
+    const { container } = renderBanner({ isMyTurn: true });
+    // The animation must live inside a @media (prefers-reduced-motion: no-preference)
+    // block so that users with "reduce" set never receive the animation property.
+    const styleTag = container.querySelector('style');
+    expect(styleTag).not.toBeNull();
+    const css = styleTag?.innerHTML ?? '';
+    expect(css).toMatch(/prefers-reduced-motion:\s*no-preference/);
+    expect(css).toMatch(/animation:\s*turnBannerDotPulse/);
+
+    // The dot's inline style must not contain an animation rule — animation is
+    // only attached via the guarded @media CSS block.
+    const dot = screen.getByTestId('turn-banner-dot');
+    expect(dot.getAttribute('style') ?? '').not.toContain('animation');
+  });
 });

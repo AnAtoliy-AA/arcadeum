@@ -16,10 +16,7 @@ import { IdleBadge } from '@/shared/ui';
 import { useMedia, Text } from 'tamagui';
 import type { GameVariant } from '@arcadeum/ui';
 import { useScenePalette } from './ScenePaletteContext';
-import {
-  useTranslation,
-  type TranslationKey,
-} from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/lib/useTranslation';
 
 export interface TablePlayerProps {
   player: CriticalPlayerTableState;
@@ -237,7 +234,7 @@ export function TablePlayer({
             textTransform="uppercase"
             color={ELIMINATED_RING_COLOR}
           >
-            {t('games.critical_v1.players.eliminated' as TranslationKey)}
+            {t('games.table.players.eliminated')}
           </Text>
         )}
         {player.alive && (

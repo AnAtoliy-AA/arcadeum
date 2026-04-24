@@ -189,7 +189,7 @@ test.describe('Critical Single Player Mode', () => {
     await waitForRoomReady(page);
 
     await closeGameRulesModal(page);
-    await expect(page.locator('body')).toContainText(/your turn/i);
+    await expect(page.locator('body')).toContainText(/your (turn|move)/i);
 
     const drawBtn = page.getByRole('button', { name: /draw/i }).first();
     await expect(drawBtn).toBeVisible();

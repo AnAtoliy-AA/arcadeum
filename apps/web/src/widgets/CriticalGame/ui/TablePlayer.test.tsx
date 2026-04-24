@@ -9,7 +9,7 @@ import type { CriticalPlayerTableState } from '../types';
 vi.mock('@/shared/lib/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => {
-      if (key === 'games.critical_v1.players.eliminated') return 'Eliminated';
+      if (key === 'games.table.players.eliminated') return 'Eliminated';
       return key;
     },
   }),
@@ -75,7 +75,8 @@ describe('TablePlayer', () => {
     const ring = screen.getByTestId('player-turn-ring');
     const style = ring.getAttribute('style') ?? '';
     // jsdom may normalize fully-opaque rgba() to rgb(); match the rgb triple.
-    const rgbTriple = palette.opponentTurnRingColor.match(/\d+,\s*\d+,\s*\d+/)?.[0];
+    const rgbTriple =
+      palette.opponentTurnRingColor.match(/\d+,\s*\d+,\s*\d+/)?.[0];
     expect(rgbTriple).toBeTruthy();
     expect(style).toMatch(new RegExp(rgbTriple!.replace(/\s+/g, '\\s*')));
     expect(style).toContain(palette.opponentTurnHaloColor);
@@ -92,9 +93,9 @@ describe('TablePlayer', () => {
     const ring = screen.getByTestId('player-eliminated-ring');
     expect(ring).toBeInTheDocument();
     expect(ring.getAttribute('style') ?? '').toMatch(/dashed/);
-    expect(
-      screen.getByTestId('player-eliminated-label-p1'),
-    ).toHaveTextContent(/Eliminated/i);
+    expect(screen.getByTestId('player-eliminated-label-p1')).toHaveTextContent(
+      /Eliminated/i,
+    );
   });
 
   it('does not render the eliminated label when player is alive', () => {

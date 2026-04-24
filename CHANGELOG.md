@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.21] - 2026-04-24
+
+### Refactored
+- modernize e2e tests with mockGameSocket and wrap dynamic renderer error messages in Text component (ARC-482)
+- migrate UI components from Tamagui to native CSS for improved layout stability and performance (ARC-482)
+
+
 ## [1.9.20] - 2026-04-20
 
 ### Added

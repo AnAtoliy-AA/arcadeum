@@ -136,6 +136,10 @@ export interface GameModalsProps {
   onConfirmSmite: () => void;
   omniscienceModal: OmniscienceModalState | null;
   onCloseOmniscienceModal: () => void;
+
+  // Mobile gating — suppresses TargetedAttackModal + FavorModal on $sm;
+  // ActiveGameView renders MobileActionSheet in their place.
+  isMobile?: boolean;
 }
 
 export function GameModals({
@@ -222,6 +226,7 @@ export function GameModals({
   onSelectTarget,
   omniscienceModal,
   onCloseOmniscienceModal,
+  isMobile = false,
 }: GameModalsProps) {
   return (
     <>
@@ -303,31 +308,35 @@ export function GameModals({
           />
         )}
 
-      {/* Targeted Attack Modal */}
-      <TargetedAttackModal
-        isOpen={targetedAttackModal}
-        onClose={onCloseTargetedAttackModal}
-        aliveOpponents={aliveOpponents}
-        selectedTarget={selectedTarget}
-        onSelectTarget={onSelectTarget}
-        onConfirm={onConfirmTargetedAttack}
-        resolveDisplayName={resolveDisplayName}
-        t={t}
-        cardVariant={cardVariant}
-      />
+      {/* Targeted Attack Modal — desktop only; mobile uses MobileActionSheet */}
+      {!isMobile && (
+        <TargetedAttackModal
+          isOpen={targetedAttackModal}
+          onClose={onCloseTargetedAttackModal}
+          aliveOpponents={aliveOpponents}
+          selectedTarget={selectedTarget}
+          onSelectTarget={onSelectTarget}
+          onConfirm={onConfirmTargetedAttack}
+          resolveDisplayName={resolveDisplayName}
+          t={t}
+          cardVariant={cardVariant}
+        />
+      )}
 
-      {/* Favor Modal */}
-      <FavorModal
-        isOpen={favorModal}
-        onClose={onCloseFavorModal}
-        aliveOpponents={aliveOpponents}
-        selectedTarget={selectedTarget}
-        onSelectTarget={onSelectTarget}
-        onConfirm={onConfirmFavor}
-        resolveDisplayName={resolveDisplayName}
-        t={t}
-        cardVariant={cardVariant}
-      />
+      {/* Favor Modal — desktop only; mobile uses MobileActionSheet */}
+      {!isMobile && (
+        <FavorModal
+          isOpen={favorModal}
+          onClose={onCloseFavorModal}
+          aliveOpponents={aliveOpponents}
+          selectedTarget={selectedTarget}
+          onSelectTarget={onSelectTarget}
+          onConfirm={onConfirmFavor}
+          resolveDisplayName={resolveDisplayName}
+          t={t}
+          cardVariant={cardVariant}
+        />
+      )}
 
       {/* Defuse Modal - shows when player must defuse */}
       <DefuseModal

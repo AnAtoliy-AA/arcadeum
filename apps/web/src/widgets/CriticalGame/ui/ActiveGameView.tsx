@@ -1,8 +1,9 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
+import { useMedia } from 'tamagui';
 import { useGameChatIntegration } from '@/features/games/hooks';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation, TranslationKey } from '@/shared/lib/useTranslation';
 import type {
   CriticalCard,
   HandLayoutMode,
@@ -26,6 +27,7 @@ import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { GameStatusMessage } from './GameStatusMessage';
 import { ActiveGameContent } from './ActiveGameContent';
 import { CriticalGameHeader } from './CriticalGameHeader';
+import { MobileActionSheet } from './MobileActionSheet';
 import { getVariantStyles } from './styles/variants';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { SceneBackdrop } from './SceneBackdrop';
@@ -93,6 +95,8 @@ export function ActiveGameView({
   rematch,
 }: ActiveGameViewProps) {
   const { t } = useTranslation();
+  const media = useMedia();
+  const isMobile = media.sm;
 
   // Layout State
   const [handLayout, setHandLayout] = useState<HandLayoutMode>('grid');
@@ -417,7 +421,49 @@ export function ActiveGameView({
         omniscienceModal={omniscienceModal}
         onCloseOmniscienceModal={handleCloseOmniscienceModal}
         stealDrawModal={stealDrawModal}
+        isMobile={isMobile}
       />
+
+      {/* Mobile-only target pickers; desktop falls through to GameModals */}
+      {isMobile && (
+        <MobileActionSheet
+          isOpen={targetedAttackModal}
+          title={t('games.critical_v1.mobile.attack.title' as TranslationKey)}
+          description={t(
+            'games.critical_v1.mobile.attack.description' as TranslationKey,
+          )}
+          opponents={aliveOpponents}
+          resolveDisplayName={resolveDisplayName}
+          confirmLabel={t('games.critical_v1.mobile.play' as TranslationKey)}
+          cancelLabel={t('games.critical_v1.mobile.cancel' as TranslationKey)}
+          onConfirm={(targetId) => {
+            actions.playActionCard('targeted_strike', {
+              targetPlayerId: targetId,
+            });
+            handleCloseTargetedAttackModal();
+          }}
+          onCancel={handleCloseTargetedAttackModal}
+        />
+      )}
+
+      {isMobile && (
+        <MobileActionSheet
+          isOpen={favorModal}
+          title={t('games.critical_v1.mobile.favor.title' as TranslationKey)}
+          description={t(
+            'games.critical_v1.mobile.favor.description' as TranslationKey,
+          )}
+          opponents={aliveOpponents}
+          resolveDisplayName={resolveDisplayName}
+          confirmLabel={t('games.critical_v1.mobile.play' as TranslationKey)}
+          cancelLabel={t('games.critical_v1.mobile.cancel' as TranslationKey)}
+          onConfirm={(targetId) => {
+            actions.playFavor(targetId);
+            handleCloseFavorModal();
+          }}
+          onCancel={handleCloseFavorModal}
+        />
+      )}
 
       <GameResultModal
         isOpen={!!showResultModal}

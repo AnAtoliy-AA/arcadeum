@@ -295,6 +295,18 @@ export const byMessages = {
       title: 'Вы выбылі!',
       message: 'Сачыце за бітвай астатніх гульцоў',
     },
+    mobile: {
+      attack: {
+        title: 'Выберыце мэту',
+        description: 'Згуляць «Атаку» супраць каго?',
+      },
+      favor: {
+        title: 'Выберыце мэту',
+        description: 'У каго папрасіць карту?',
+      },
+      cancel: 'Адмена',
+      play: 'Згуляць',
+    },
     victory: { title: 'Перамога!', message: 'Віншуем! Вы выжылі!' },
     defeat: { title: 'Гульня скончана', message: 'Пашанцуе ў наступны раз!' },
     rematch: {

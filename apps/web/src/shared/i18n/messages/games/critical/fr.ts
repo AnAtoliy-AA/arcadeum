@@ -301,6 +301,18 @@ export const frMessages = {
       title: 'Vous avez été éliminé !',
       message: 'Regardez les joueurs restants se battre',
     },
+    mobile: {
+      attack: {
+        title: 'Choisir la cible',
+        description: 'Jouer Attaque sur quel joueur ?',
+      },
+      favor: {
+        title: 'Choisir la cible',
+        description: 'Demander une faveur à quel joueur ?',
+      },
+      cancel: 'Annuler',
+      play: 'Jouer',
+    },
     victory: {
       title: 'Victoire !',
       message: 'Félicitations ! Vous avez survécu !',

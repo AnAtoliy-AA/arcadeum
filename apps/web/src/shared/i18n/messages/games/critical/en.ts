@@ -291,6 +291,18 @@ export const enMessages = {
       title: 'You have been eliminated!',
       message: 'Watch the remaining players battle it out',
     },
+    mobile: {
+      attack: {
+        title: 'Select target',
+        description: 'Play Attack on which player?',
+      },
+      favor: {
+        title: 'Select target',
+        description: 'Ask which player for a favor?',
+      },
+      cancel: 'Cancel',
+      play: 'Play',
+    },
     victory: { title: 'Victory!', message: 'Congratulations! You survived!' },
     defeat: { title: 'Game Over', message: 'Better luck next time!' },
     rematch: {

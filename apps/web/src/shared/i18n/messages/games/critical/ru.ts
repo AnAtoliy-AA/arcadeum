@@ -296,6 +296,18 @@ export const ruMessages = {
       title: 'Вы выбыли!',
       message: 'Следите за битвой оставшихся игроков',
     },
+    mobile: {
+      attack: {
+        title: 'Выберите цель',
+        description: 'Сыграть «Атаку» против кого?',
+      },
+      favor: {
+        title: 'Выберите цель',
+        description: 'У кого попросить карту?',
+      },
+      cancel: 'Отмена',
+      play: 'Сыграть',
+    },
     victory: { title: 'Победа!', message: 'Поздравляем! Вы выжили!' },
     defeat: { title: 'Игра окончена', message: 'Повезет в следующий раз!' },
     rematch: {

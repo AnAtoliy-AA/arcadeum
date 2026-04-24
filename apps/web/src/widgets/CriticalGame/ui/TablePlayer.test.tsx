@@ -26,7 +26,6 @@ vi.mock('@/widgets/SeaBattleGame/ui/SeaBattlePopup', () => ({
 
 vi.mock('./ChatBubble', () => ({ ChatBubble: () => null }));
 
-// eslint-disable-next-line import/first
 import { TablePlayer } from './TablePlayer';
 
 const palette = getVariantStyles('cyberpunk').scene;

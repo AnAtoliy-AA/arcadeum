@@ -17,6 +17,10 @@ const eslintConfig = defineConfig([
     "storybook-static/**",
     "scripts/**",
     "coverage/**",
+    // Generated Playwright artifacts (also gitignored).
+    "playwright-report/**",
+    "playwright/.cache/**",
+    "test-results/**",
   ]),
   {
     rules: {

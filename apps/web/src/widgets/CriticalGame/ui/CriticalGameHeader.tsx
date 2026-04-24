@@ -27,8 +27,6 @@ interface CriticalGameHeaderProps {
   room: GameRoomSummary;
   t: (key: string, params?: Record<string, string | number>) => string;
   idleTimerEnabled: boolean;
-  turnStatusVariant: 'completed' | 'yourTurn' | 'waiting' | 'default';
-  turnStatusText: string;
   actionBusy: string | null;
   isGameOver: boolean;
   currentPlayer: CriticalSnapshot['players'][0] | undefined;
@@ -46,8 +44,6 @@ export function CriticalGameHeader({
   room,
   t,
   idleTimerEnabled,
-  turnStatusVariant,
-  turnStatusText,
   actionBusy,
   isGameOver,
   currentPlayer,

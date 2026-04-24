@@ -18,7 +18,6 @@ vi.mock('@/shared/lib/useTranslation', () => ({
   }),
 }));
 
-// eslint-disable-next-line import/first
 import { TurnBanner } from './TurnBanner';
 
 const palette = getVariantStyles('cyberpunk').scene;

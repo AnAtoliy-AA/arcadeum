@@ -19,7 +19,6 @@ import {
   useSeeTheFutureFromLogs,
   useOmniscienceFromLogs,
   useGameAutoplayIntegration,
-  useTurnStatus,
 } from '../hooks';
 import { useGameHandlers } from '../hooks/useGameHandlers';
 import { GameModals } from './GameModals';
@@ -247,14 +246,6 @@ export function ActiveGameView({
     handlePlayActionCard,
   });
 
-  const { turnStatusVariant, turnStatusText } = useTurnStatus({
-    isGameOver: !!isGameOver,
-    currentTurnPlayer: currentTurnPlayer ?? undefined,
-    currentUserId: currentUserId || '',
-    resolveDisplayName,
-    t: t as (key: string) => string,
-  });
-
   const modalPlayers = useMemo(
     () =>
       snapshot.players.map((p: CriticalPlayerState) => ({
@@ -280,8 +271,6 @@ export function ActiveGameView({
           ) => string
         }
         idleTimerEnabled={idleTimerEnabled}
-        turnStatusVariant={turnStatusVariant}
-        turnStatusText={turnStatusText}
         actionBusy={actionBusy}
         isGameOver={!!isGameOver}
         currentPlayer={currentPlayer ?? undefined}

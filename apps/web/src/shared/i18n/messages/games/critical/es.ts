@@ -227,6 +227,8 @@ export const esMessages = {
       alive: 'Vivo',
       eliminated: 'Eliminado',
       yourTurn: 'Tu turno',
+      yourMove: 'Tu jugada',
+      playerTurn: 'Turno de {{name}}',
       waitingFor: 'Esperando jugador...',
     },
     status: {
@@ -291,6 +293,18 @@ export const esMessages = {
     eliminated: {
       title: '¡Has sido eliminado!',
       message: 'Observa cómo los jugadores restantes batallan',
+    },
+    mobile: {
+      attack: {
+        title: 'Selecciona objetivo',
+        description: '¿Jugar Ataque contra qué jugador?',
+      },
+      favor: {
+        title: 'Selecciona objetivo',
+        description: '¿A qué jugador pedir un favor?',
+      },
+      cancel: 'Cancelar',
+      play: 'Jugar',
     },
     victory: { title: '¡Victoria!', message: '¡Felicidades! ¡Sobreviviste!' },
     defeat: {

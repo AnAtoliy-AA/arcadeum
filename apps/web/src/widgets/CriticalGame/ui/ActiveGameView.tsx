@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
+import { useMedia } from 'tamagui';
 import { useGameChatIntegration } from '@/features/games/hooks';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type {
@@ -18,7 +19,6 @@ import {
   useSeeTheFutureFromLogs,
   useOmniscienceFromLogs,
   useGameAutoplayIntegration,
-  useTurnStatus,
 } from '../hooks';
 import { useGameHandlers } from '../hooks/useGameHandlers';
 import { GameModals } from './GameModals';
@@ -26,6 +26,11 @@ import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { GameStatusMessage } from './GameStatusMessage';
 import { ActiveGameContent } from './ActiveGameContent';
 import { CriticalGameHeader } from './CriticalGameHeader';
+import { MobileActionSheet } from './MobileActionSheet';
+import { getVariantStyles } from './styles/variants';
+import { ScenePaletteProvider } from './ScenePaletteContext';
+import { SceneBackdrop } from './SceneBackdrop';
+import { TurnBanner } from './TurnBanner';
 import type { UseGameActionsReturn } from '@/features/games/hooks/useGameActions';
 import type { RematchInvitation } from '../hooks/useRematch';
 
@@ -89,10 +94,16 @@ export function ActiveGameView({
   rematch,
 }: ActiveGameViewProps) {
   const { t } = useTranslation();
+  const media = useMedia();
+  const isMobile = media.sm;
 
   // Layout State
   const [handLayout, setHandLayout] = useState<HandLayoutMode>('grid');
   const cardVariant = room.gameOptions?.cardVariant;
+  const scenePalette = useMemo(
+    () => getVariantStyles(cardVariant).scene,
+    [cardVariant],
+  );
 
   // Sync modal dismissal state with game over state
   const [modalDismissed, setModalDismissed] = useState(false);
@@ -235,14 +246,6 @@ export function ActiveGameView({
     handlePlayActionCard,
   });
 
-  const { turnStatusVariant, turnStatusText } = useTurnStatus({
-    isGameOver: !!isGameOver,
-    currentTurnPlayer: currentTurnPlayer ?? undefined,
-    currentUserId: currentUserId || '',
-    resolveDisplayName,
-    t: t as (key: string) => string,
-  });
-
   const modalPlayers = useMemo(
     () =>
       snapshot.players.map((p: CriticalPlayerState) => ({
@@ -257,7 +260,8 @@ export function ActiveGameView({
   );
 
   return (
-    <>
+    <ScenePaletteProvider palette={scenePalette}>
+      <SceneBackdrop />
       <CriticalGameHeader
         room={room}
         t={
@@ -267,8 +271,6 @@ export function ActiveGameView({
           ) => string
         }
         idleTimerEnabled={idleTimerEnabled}
-        turnStatusVariant={turnStatusVariant}
-        turnStatusText={turnStatusText}
         actionBusy={actionBusy}
         isGameOver={!!isGameOver}
         currentPlayer={currentPlayer ?? undefined}
@@ -280,6 +282,15 @@ export function ActiveGameView({
         handleStopAutoplay={handleStopAutoplay}
         isFullscreen={isFullscreen}
         toggleFullscreen={toggleFullscreen}
+      />
+      <TurnBanner
+        isMyTurn={!!isMyTurn}
+        currentPlayerName={
+          currentTurnPlayer
+            ? resolveDisplayName(currentTurnPlayer.playerId, 'Player')
+            : ''
+        }
+        secondsRemaining={null}
       />
 
       <ActiveGameContent
@@ -399,7 +410,45 @@ export function ActiveGameView({
         omniscienceModal={omniscienceModal}
         onCloseOmniscienceModal={handleCloseOmniscienceModal}
         stealDrawModal={stealDrawModal}
+        isMobile={isMobile}
       />
+
+      {/* Mobile-only target pickers; desktop falls through to GameModals */}
+      {isMobile && (
+        <MobileActionSheet
+          isOpen={targetedAttackModal}
+          title={t('games.table.mobile.attack.title')}
+          description={t('games.table.mobile.attack.description')}
+          opponents={aliveOpponents}
+          resolveDisplayName={resolveDisplayName}
+          confirmLabel={t('games.table.mobile.play')}
+          cancelLabel={t('games.table.mobile.cancel')}
+          onConfirm={(targetId) => {
+            actions.playActionCard('targeted_strike', {
+              targetPlayerId: targetId,
+            });
+            handleCloseTargetedAttackModal();
+          }}
+          onCancel={handleCloseTargetedAttackModal}
+        />
+      )}
+
+      {isMobile && (
+        <MobileActionSheet
+          isOpen={favorModal}
+          title={t('games.table.mobile.favor.title')}
+          description={t('games.table.mobile.favor.description')}
+          opponents={aliveOpponents}
+          resolveDisplayName={resolveDisplayName}
+          confirmLabel={t('games.table.mobile.play')}
+          cancelLabel={t('games.table.mobile.cancel')}
+          onConfirm={(targetId) => {
+            actions.playFavor(targetId);
+            handleCloseFavorModal();
+          }}
+          onCancel={handleCloseFavorModal}
+        />
+      )}
 
       <GameResultModal
         isOpen={!!showResultModal}
@@ -414,6 +463,6 @@ export function ActiveGameView({
         rematchLoading={rematch.rematchLoading}
         t={t}
       />
-    </>
+    </ScenePaletteProvider>
   );
 }

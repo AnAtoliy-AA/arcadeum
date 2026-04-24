@@ -15,6 +15,8 @@ import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { IdleBadge } from '@/shared/ui';
 import { useMedia, Text } from 'tamagui';
 import type { GameVariant } from '@arcadeum/ui';
+import { useScenePalette } from './ScenePaletteContext';
+import { useTranslation } from '@/shared/lib/useTranslation';
 
 export interface TablePlayerProps {
   player: CriticalPlayerTableState;
@@ -27,6 +29,8 @@ export interface TablePlayerProps {
   cardVariant?: string;
   resolveDisplayName: (playerId: string, fallback: string) => string;
 }
+
+const ELIMINATED_RING_COLOR = 'rgba(239, 68, 68, 0.85)';
 
 function findLastMessage(logs: CriticalLogEntry[], playerId: string) {
   return logs.findLast(
@@ -58,6 +62,15 @@ export function TablePlayer({
   const isPlayerIdle = idlePlayers.includes(playerId);
   const media = useMedia();
   const isMobile = media.sm;
+  const palette = useScenePalette();
+  const { t } = useTranslation();
+
+  // Task 11 sizing: 58/68 outer wrapper, 48/56 inner avatar (mobile/desktop).
+  const avatarWrapperSize = isMobile ? 58 : 68;
+  const avatarInnerSize = isMobile ? 48 : 56;
+
+  const showTurnRing = isCurrent && player.alive;
+  const showEliminatedRing = !player.alive;
 
   const initials = displayName
     .split(' ')
@@ -144,38 +157,38 @@ export function TablePlayer({
           </TurnIndicator>
         )}
 
-        {/* Avatar with animated ring */}
+        {/* Avatar with turn / elimination decorations */}
         <div
           style={{
             position: 'relative',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: 54,
-            height: 54,
+            width: avatarWrapperSize,
+            height: avatarWrapperSize,
           }}
         >
-          {isCurrent && (
+          {showTurnRing && (
             <div
-              className="player-avatar-ring-spin"
+              data-testid="player-turn-ring"
               style={{
                 position: 'absolute',
-                inset: -5,
+                inset: 0,
                 borderRadius: '50%',
-                border: '2px dashed rgba(255,255,255,0.5)',
+                border: `2px solid ${palette.opponentTurnRingColor}`,
+                boxShadow: `0 0 24px ${palette.opponentTurnHaloColor}`,
                 pointerEvents: 'none',
               }}
             />
           )}
-          {isCurrent && (
+          {showEliminatedRing && (
             <div
-              className="player-avatar-glow-pulse"
+              data-testid="player-eliminated-ring"
               style={{
                 position: 'absolute',
-                inset: -8,
+                inset: 0,
                 borderRadius: '50%',
-                background:
-                  'radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%)',
+                border: `2px dashed ${ELIMINATED_RING_COLOR}`,
                 pointerEvents: 'none',
               }}
             />
@@ -184,8 +197,8 @@ export function TablePlayer({
             $isCurrentTurn={isCurrent}
             $isAlive={player.alive}
             $variant={cardVariant as GameVariant}
-            width={44}
-            height={44}
+            width={avatarInnerSize}
+            height={avatarInnerSize}
             borderRadius={9999}
             alignItems="center"
             justifyContent="center"
@@ -212,6 +225,18 @@ export function TablePlayer({
           {displayName}
           {isPlayerIdle && <IdleBadge />}
         </PlayerName>
+        {!player.alive && (
+          <Text
+            data-testid={`player-eliminated-label-${playerId}`}
+            fontSize={11}
+            fontWeight="700"
+            letterSpacing={1}
+            textTransform="uppercase"
+            color={ELIMINATED_RING_COLOR}
+          >
+            {t('games.table.players.eliminated')}
+          </Text>
+        )}
         {player.alive && (
           <PlayerStatsContainer>
             <PlayerCardCount $isCurrentTurn={isCurrent}>

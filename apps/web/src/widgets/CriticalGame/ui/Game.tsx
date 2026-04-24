@@ -6,7 +6,6 @@ import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { useFullscreen } from '@/features/games/hooks/useFullscreen';
 import { CriticalLobby } from './CriticalLobby';
 import { ActiveGameView } from './ActiveGameView';
-import { ParticleOverlay } from './ParticleOverlay';
 import { GameContainer } from './styles';
 import type { GameVariant } from '@arcadeum/ui';
 
@@ -99,8 +98,6 @@ export default function CriticalGame({
       $isMyTurn={!!isMyTurn}
       $variant={cardVariant as GameVariant}
     >
-      <ParticleOverlay variant={cardVariant as string} />
-
       <ActiveGameView
         currentUserId={currentUserId}
         room={room}

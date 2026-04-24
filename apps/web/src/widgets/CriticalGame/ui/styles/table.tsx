@@ -99,19 +99,24 @@ export const PlayerPositionWrapper = styled(YStack, {
 
 export const CardSlot = styled(YStack, {
   name: 'CardSlot',
-  width: 130,
-  height: 195,
   position: 'relative',
   alignItems: 'center',
   justifyContent: 'center',
   zIndex: 2,
 
-  $sm: {
-    width: 90,
-    height: 135,
-  },
-
   variants: {
+    $role: {
+      deck: {
+        width: 74,
+        height: 102,
+        $sm: { width: 58, height: 80 },
+      },
+      lastPlayed: {
+        width: 92,
+        height: 126,
+        $sm: { width: 72, height: 100 },
+      },
+    },
     $variant: (_val: unknown) => ({}),
   } as const,
 });
@@ -120,7 +125,7 @@ export const CenterTable = styled(XStack, {
   name: 'CenterTable',
   alignItems: 'center',
   justifyContent: 'center',
-  gap: '$6',
+  gap: 32,
   padding: '$4',
   borderRadius: 1000, // Circular
   width: 340,
@@ -148,5 +153,6 @@ export const CenterTable = styled(XStack, {
     height: 220,
     padding: '$2',
     marginTop: -10,
+    gap: 14,
   },
 });

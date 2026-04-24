@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.22] - 2026-04-24
+
+### Added
+- respect prefers-reduced-motion in TurnBanner + scene (ARC-480)
+- add MobileActionSheet with $sm-gated rendering (ARC-480)
+- restyle HUD, actions, and log strip (ARC-480)
+- restyle player hand fan (desktop) + strip (mobile) (ARC-480)
+- restyle opponent avatars with turn ring + halo (ARC-480)
+- restyle center stacks with scene palette (ARC-480)
+- mount SceneBackdrop + TurnBanner in ActiveGameView (ARC-480)
+- add TurnBanner component (ARC-480)
+- add SceneBackdrop component (ARC-480)
+- add scene backdrop styled components (ARC-480)
+- add ScenePaletteProvider context (ARC-480)
+- add getCardRole helper covering ALL_GAME_CARDS (ARC-480)
+- add per-variant scene palettes (ARC-480)
+- add base scene palette + resolution test (ARC-480)
+- add VariantScenePalette type (scene palette skeleton) (ARC-480)
+
+### Fixed
+- update translation keys for mobile action sheet in ActiveGameView (ARC-480)
+- update translation key for eliminated players in TablePlayer component (ARC-480)
+
+### Refactored
+- remove ParticleOverlay (replaced by SceneBackdrop) (ARC-480)
+- hoist deck style literal to avoid drift (ARC-480)
+
+### Documentation
+- add critical active game redesign implementation plan (ARC-480)
+- add critical active game redesign spec (ARC-480)
+
+
 ## [1.9.21] - 2026-04-24
 
 ### Refactored

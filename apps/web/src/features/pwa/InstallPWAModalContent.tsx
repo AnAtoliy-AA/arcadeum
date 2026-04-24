@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, YStack, Paragraph } from 'tamagui';
+import { XStack, Paragraph } from 'tamagui';
 import {
   Avatar,
   Modal,
@@ -13,6 +13,12 @@ import {
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { usePWAOptional } from './context';
 import { Button } from '@arcadeum/ui';
+import {
+  PWAFeaturesList,
+  PWAFeatureItem,
+  PWAFeatureIcon,
+  PWAManualInstructions,
+} from './styles';
 
 export function InstallPWAModalContent() {
   const { t } = useTranslation();
@@ -44,51 +50,19 @@ export function InstallPWAModalContent() {
             {t('pwa.install.description')}
           </Paragraph>
 
-          <ul
-            style={{
-              listStyle: 'none',
-              padding: 0,
-              margin: '1.5rem 0 0',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.75rem',
-            }}
-          >
-            <li
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-                color: 'rgba(236,239,238,0.7)',
-                fontSize: '0.9rem',
-              }}
-            >
-              <span style={{ fontSize: '1.25rem' }}>⚡</span>
+          <PWAFeaturesList>
+            <PWAFeatureItem>
+              <PWAFeatureIcon>⚡</PWAFeatureIcon>
               {t('pwa.install.features.fast')}
-            </li>
-            <li
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-                color: 'rgba(236,239,238,0.7)',
-                fontSize: '0.9rem',
-              }}
-            >
-              <span style={{ fontSize: '1.25rem' }}>🔔</span>
+            </PWAFeatureItem>
+            <PWAFeatureItem>
+              <PWAFeatureIcon>🔔</PWAFeatureIcon>
               {t('pwa.install.features.notifications')}
-            </li>
-          </ul>
+            </PWAFeatureItem>
+          </PWAFeaturesList>
 
           {!isPromptAvailable && (
-            <YStack
-              marginTop="$5"
-              padding="$4"
-              backgroundColor="$background"
-              borderRadius={12}
-              borderWidth={1}
-              borderColor="$borderColor"
-            >
+            <PWAManualInstructions>
               <Paragraph
                 textAlign="left"
                 color="$color"
@@ -103,7 +77,7 @@ export function InstallPWAModalContent() {
                   ? t('pwa.install.manual.ios', { icon: '⎙', plus: '⊞' })
                   : t('pwa.install.manual.generic')}
               </Paragraph>
-            </YStack>
+            </PWAManualInstructions>
           )}
         </ModalBody>
         <ModalFooter>

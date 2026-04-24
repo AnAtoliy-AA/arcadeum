@@ -1,5 +1,6 @@
 import { styled, YStack, Text } from 'tamagui';
 import { getVariantStyles } from './variants';
+import { scrollbarStyles } from '@/shared/lib/styles';
 
 export const ChatCard = styled(YStack, {
   name: 'ChatCard',
@@ -39,6 +40,8 @@ export const ChatMessages = styled(YStack, {
   overflowY: 'auto',
   gap: '$3',
   padding: '$2',
+
+  ...scrollbarStyles,
 });
 
 export const ChatCloseButton = styled(Text, {
@@ -67,12 +70,27 @@ export const ChatCloseButton = styled(Text, {
   },
 });
 
+// Log-pill spec (Task 13 Step 3): single line, soft blur, variant-tinted border
+// at ~0.35 alpha, ellipsis truncation on overflow.
+export const LOG_PILL_STYLE = {
+  paddingVertical: '$1',
+  paddingHorizontal: '$3',
+  borderRadius: 999,
+  backgroundColor: 'rgba(255, 255, 255, 0.04)',
+  backdropFilter: 'blur(8px)',
+  borderWidth: 1,
+  borderColor: 'rgba(255, 255, 255, 0.14)',
+} as const;
+
 export const LogEntry = styled(Text, {
   name: 'LogEntry',
-  paddingVertical: '$2',
-  paddingHorizontal: '$3',
-  borderRadius: 8,
-  backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  ...LOG_PILL_STYLE,
+  fontSize: 12,
+  lineHeight: 20,
+  numberOfLines: 1,
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
+  textOverflow: 'ellipsis',
 
   variants: {
     $type: (_val: unknown) => ({}),
@@ -87,4 +105,6 @@ export const GameLog = styled(YStack, {
   overflowY: 'auto',
   gap: '$2',
   padding: '$2',
+
+  ...scrollbarStyles,
 });

@@ -96,7 +96,7 @@ export default function ChatPage() {
             <Button
               variant="primary"
               size="lg"
-              onPress={() => (window.location.href = '/auth')}
+              onClick={() => (window.location.href = '/auth')}
             >
               Log In
             </Button>

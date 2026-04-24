@@ -11,6 +11,7 @@ import {
   CloseIcon,
 } from '@arcadeum/ui';
 import type { ScrollView as TamaguiScrollView } from 'tamagui';
+import { scrollbarStyles } from '@/shared/lib/styles';
 import { useGameChatStore } from '../store/gameChatStore';
 import type { ChatScope } from '../store/gameChatStore';
 
@@ -70,7 +71,7 @@ export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
           <Button
             size="sm"
             variant="ghost"
-            onPress={onClose}
+            onClick={onClose}
             circular
             icon={<CloseIcon size={16} />}
             aria-label="Close Chat"
@@ -92,7 +93,7 @@ export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
             key={value}
             size="sm"
             variant={chatScope === value ? 'primary' : 'secondary'}
-            onPress={() => setChatScope(value)}
+            onClick={() => setChatScope(value)}
             flex={1}
           >
             {label}
@@ -106,6 +107,7 @@ export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
         ref={scrollRef}
         paddingHorizontal="$4"
         paddingVertical="$2"
+        className={scrollbarStyles.className}
       >
         {logs.length === 0 ? (
           <YStack flex={1} ai="center" jc="center" py="$10">

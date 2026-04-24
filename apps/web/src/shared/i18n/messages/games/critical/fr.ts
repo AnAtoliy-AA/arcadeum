@@ -231,6 +231,8 @@ export const frMessages = {
       alive: 'En vie',
       eliminated: 'Éliminé',
       yourTurn: 'Votre tour',
+      yourMove: 'À vous de jouer',
+      playerTurn: 'Tour de {{name}}',
       waitingFor: "En attente d'un joueur...",
     },
     status: {
@@ -298,6 +300,18 @@ export const frMessages = {
     eliminated: {
       title: 'Vous avez été éliminé !',
       message: 'Regardez les joueurs restants se battre',
+    },
+    mobile: {
+      attack: {
+        title: 'Choisir la cible',
+        description: 'Jouer Attaque sur quel joueur ?',
+      },
+      favor: {
+        title: 'Choisir la cible',
+        description: 'Demander une faveur à quel joueur ?',
+      },
+      cancel: 'Annuler',
+      play: 'Jouer',
     },
     victory: {
       title: 'Victoire !',

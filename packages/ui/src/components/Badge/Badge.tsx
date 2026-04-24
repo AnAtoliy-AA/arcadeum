@@ -98,7 +98,12 @@ const StyledBadge = styled(Text, {
 import { memo } from 'react';
 import type { ReactElement } from 'react';
 
-export type BadgeProps = ComponentProps<typeof StyledBadge>;
+export type BadgeProps = ComponentProps<typeof StyledBadge> & {
+  title?: string;
+  /** @deprecated Use onClick instead */
+  onPress?: () => void;
+  onClick?: (e: unknown) => void;
+};
 
 interface BadgeInnerProps extends BadgeProps {
   // Destructure props that might leak
@@ -107,24 +112,26 @@ interface BadgeInnerProps extends BadgeProps {
   isHost?: boolean;
 }
 
+import { filterProps } from '../../utils/filterProps';
+
 export const Badge = memo(function Badge({ 
   variant, 
   size, 
   gameVariant, 
   pulse,
-  // Destructure props that might leak
-  $variant,
-  $status,
-  isHost,
-  ...props 
+  onPress,
+  onClick,
+  ...rest 
 }: BadgeInnerProps): ReactElement {
+  const filteredProps = filterProps({ ...rest, onPress, onClick });
+
   return (
     <StyledBadge 
       variant={variant} 
       size={size} 
       gameVariant={gameVariant} 
       pulse={pulse}
-      {...props} 
+      {...filteredProps} 
     />
   );
 });

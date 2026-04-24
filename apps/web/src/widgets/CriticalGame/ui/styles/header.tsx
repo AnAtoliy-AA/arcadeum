@@ -12,6 +12,7 @@ export const GameHeader = styled(XStack, {
   gap: '$3',
   paddingHorizontal: '$7',
   paddingVertical: '$2',
+  height: 50,
   backgroundColor: '$glassBg',
   backdropFilter: 'blur(16px)',
   borderBottomWidth: 1,
@@ -29,6 +30,7 @@ export const GameHeader = styled(XStack, {
     marginHorizontal: -8,
     marginTop: -8,
     gap: '$2',
+    height: 42,
   },
 
   variants: {

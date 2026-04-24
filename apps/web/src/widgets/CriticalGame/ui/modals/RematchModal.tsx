@@ -110,7 +110,7 @@ const StyledMessageInput = styled(TextArea, {
   },
 });
 
-export function RematchModal({
+export default function RematchModal({
   isOpen,
   players,
   currentUserId,
@@ -162,7 +162,7 @@ export function RematchModal({
   return (
     <Modal open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <ModalContent
-        onPress={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
         $variant={cardVariant as GameVariant}
       >
         <ModalTitle $variant={cardVariant as GameVariant}>
@@ -176,7 +176,7 @@ export function RematchModal({
           {otherPlayers.map((player) => (
             <PlayerItem
               key={player.playerId}
-              onPress={() => togglePlayer(player.playerId)}
+              onClick={() => togglePlayer(player.playerId)}
               selected={selectedPlayers.has(player.playerId)}
             >
               <TamaCheckbox
@@ -211,12 +211,12 @@ export function RematchModal({
         <ModalActions>
           <ModalButton
             variant="secondary"
-            onPress={onClose}
+            onClick={onClose}
             disabled={rematchLoading}
           >
             {t('games.table.modals.common.cancel')}
           </ModalButton>
-          <ModalButton onPress={handleConfirm} disabled={rematchLoading}>
+          <ModalButton onClick={handleConfirm} disabled={rematchLoading}>
             {rematchLoading
               ? t('games.table.rematch.loading')
               : t('games.table.rematch.button')}

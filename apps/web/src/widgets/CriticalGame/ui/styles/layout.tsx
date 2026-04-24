@@ -6,6 +6,7 @@ import {
 } from '@arcadeum/ui';
 import { getVariantStyles } from './variants';
 import { TamaguiTheme } from './variants/types';
+import { scrollbarStyles } from '@/shared/lib/styles';
 
 export const GameContainer = styled(BaseGameContainer, {
   name: 'GameContainer',
@@ -19,9 +20,11 @@ export const GameContainer = styled(BaseGameContainer, {
   overflowX: 'hidden',
   overflowY: 'auto',
   backdropFilter: 'blur(20px)',
-  height: '100%',
+  height: 'auto',
   flexDirection: 'column',
   minWidth: 0,
+
+  ...scrollbarStyles,
 
   $sm: {
     paddingHorizontal: '$2',
@@ -66,7 +69,6 @@ export const GameContainer = styled(BaseGameContainer, {
           theme.borderColor?.val || '',
         ),
         shadowColor: config.getRoomShadow(!!isMyTurn),
-        ...config.getBackgroundEffects(),
       };
     },
   } as const,
@@ -82,7 +84,6 @@ export const GameBoard = styled(BaseGameBoard, {
   flexGrow: 0,
   flexShrink: 0,
   flexBasis: 'auto',
-  overflow: 'visible',
 
   variants: {
     $variant: (_val: unknown) => ({}),

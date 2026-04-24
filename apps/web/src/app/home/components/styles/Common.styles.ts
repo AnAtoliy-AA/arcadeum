@@ -1,13 +1,16 @@
 'use client';
 
-import { styled, H2, Text, Main } from 'tamagui';
+import { styled, H2, Text, YStack } from 'tamagui';
 import { Container } from '@/shared/ui';
 
-export const PageWrapper = styled(Main, {
+export const PageWrapper = styled(YStack, {
   name: 'PageWrapper',
-  minHeight: '100vh',
-  flexDirection: 'column',
-  overflowX: 'hidden',
+  flex: 1,
+  width: '100%',
+  position: 'relative',
+  // Use CSS variables to avoid hydration mismatches
+  background:
+    'radial-gradient(circle at 50% 50%, var(--backgroundRadialStart) 0%, var(--backgroundRadialEnd) 100%)',
 });
 
 export const SectionContainer = styled(Container, {

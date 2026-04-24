@@ -1,6 +1,8 @@
-import { GlassCard, Typography, YStack } from '@arcadeum/ui';
-import { DownloadButtons } from '@/shared/ui';
-import { usePWAInstallProps } from '@/features/pwa';
+import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
+import { Typography } from '@arcadeum/ui/components/Typography/Typography';
+import { DownloadButtons } from '@/shared/ui/DownloadButtons/DownloadButtons';
+import { usePWAInstallProps } from '@/features/pwa/context';
+import { YStack } from 'tamagui';
 
 import type { DownloadSectionLabels } from '../types';
 

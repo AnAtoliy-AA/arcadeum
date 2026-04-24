@@ -31,7 +31,7 @@ interface StashModalProps {
   cardVariant?: string;
 }
 
-export const StashModal: React.FC<StashModalProps> = ({
+const StashModal: React.FC<StashModalProps> = ({
   isOpen,
   onClose,
   hand,
@@ -68,7 +68,7 @@ export const StashModal: React.FC<StashModalProps> = ({
   return (
     <Modal open={isOpen}>
       <ModalContent
-        onPress={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
         $variant={cardVariant as GameVariant}
       >
         <ModalHeader $variant={cardVariant as GameVariant}>
@@ -76,7 +76,7 @@ export const StashModal: React.FC<StashModalProps> = ({
             🏰 {t('games.table.modals.stash.title')}
           </ModalTitle>
           <CloseButton
-            onPress={handleClose}
+            onClick={handleClose}
             $variant={cardVariant as GameVariant}
           >
             ×
@@ -95,7 +95,7 @@ export const StashModal: React.FC<StashModalProps> = ({
                   $cardType={card}
                   $index={0}
                   $variant={cardVariant as GameVariant}
-                  onPress={() => toggleCard(index)}
+                  onClick={() => toggleCard(index)}
                   scale={isSelected ? 1.05 : 1}
                   shadowColor={
                     isSelected ? 'rgba(255, 255, 255, 0.5)' : undefined
@@ -123,11 +123,11 @@ export const StashModal: React.FC<StashModalProps> = ({
           </CardsGrid>
         </ModalSection>
         <ModalActions>
-          <ModalButton variant="secondary" onPress={handleClose}>
+          <ModalButton variant="secondary" onClick={handleClose}>
             {t('games.table.modals.common.cancel')}
           </ModalButton>
           <ModalButton
-            onPress={handleConfirm}
+            onClick={handleConfirm}
             disabled={selectedIndices.length === 0}
           >
             {t('games.table.modals.stash.confirm')}
@@ -137,3 +137,5 @@ export const StashModal: React.FC<StashModalProps> = ({
     </Modal>
   );
 };
+
+export default StashModal;

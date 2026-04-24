@@ -1,3 +1,4 @@
+import './scrollbar.css';
 import React, { useRef } from 'react';
 import { styled, XStack, YStack, Text } from 'tamagui';
 import {
@@ -9,6 +10,7 @@ import {
 } from '@arcadeum/ui';
 import { MaximizeIcon, MinimizeIcon } from '@/shared/ui';
 import { useFullscreen } from '../hooks/useFullscreen';
+import { scrollbarStyles } from '@/shared/lib/styles';
 
 // --- Styled components (based on CriticalGame's layout.tsx) ---
 
@@ -24,11 +26,13 @@ const Container = styled(BaseGameContainer, {
   overflowX: 'hidden',
   overflowY: 'auto',
   backdropFilter: 'blur(20px)',
-  height: '100%',
+  height: 'auto',
   flexDirection: 'column',
   minWidth: 0,
   borderWidth: 1,
   borderColor: '$glassBorder',
+
+  ...scrollbarStyles,
 
   $sm: {
     paddingHorizontal: '$2',
@@ -277,7 +281,7 @@ interface GameWidgetContainerProps {
   isMyTurn?: boolean;
 }
 
-const gameWidgetFullscreenStyles = `
+const gameWidgetGlobalStyles = `
   .game-widget-container:fullscreen,
   .game-widget-container:-webkit-full-screen,
   .game-widget-container:-moz-full-screen {
@@ -354,7 +358,7 @@ export function GameWidgetContainer({
           {headerProps.extraActions}
 
           <FullscreenButton
-            onPress={toggleFullscreen}
+            onClick={toggleFullscreen}
             title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
           >
             {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
@@ -365,7 +369,7 @@ export function GameWidgetContainer({
 
   return (
     <>
-      <style>{gameWidgetFullscreenStyles}</style>
+      <style>{gameWidgetGlobalStyles}</style>
       <Container
         ref={containerRef as React.RefObject<never>}
         className="game-widget-container"

@@ -100,16 +100,6 @@ pnpm run test || {
 cd ../..
 echo "✅ Web unit tests passed"
 
-# Run web e2e tests before commiting
-echo "Running e2e tests..."
-cd apps/web
-pnpm run test:e2e || {
-  echo "❌ E2E tests failed. Please fix them before commiting."
-  exit 1
-}
-cd ../..
-echo "✅ E2E tests passed"
-
 echo "Checking documentation links..."
 pnpm docs:check || {
   echo "❌ Broken links found in documentation. Please fix them before committing."

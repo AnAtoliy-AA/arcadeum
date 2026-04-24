@@ -1,7 +1,5 @@
-'use client';
-
-import { PageLoading } from '@/shared/ui';
+import { PageLoading } from '@arcadeum/ui/components/LoadingState/PageLoading';
 
 export default function GameRoomLoading() {
-  return <PageLoading layout="standard" />;
+  return <PageLoading layout="room" />;
 }

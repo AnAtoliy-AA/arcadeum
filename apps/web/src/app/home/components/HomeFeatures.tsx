@@ -1,23 +1,8 @@
 'use client';
 
-import { Text } from 'tamagui';
 import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { appConfig } from '@/shared/config/app-config';
 import { useScrollReveal } from '@/shared/lib/useScrollReveal';
-import {
-  SectionHeader,
-  SectionTitle,
-  SectionSubtitle,
-} from './styles/Common.styles';
-import {
-  FeaturesSection,
-  FeaturesGrid,
-  FeatureCard,
-  FeatureIcon,
-  FeatureTitle,
-  FeatureDescription,
-  ComingSoonBadge,
-} from './styles/Features.styles';
 
 interface Feature {
   icon: string;
@@ -92,7 +77,7 @@ export default function HomeFeatures() {
   const { messages } = useLanguage();
   const homeCopy = messages.home ?? {};
   const { appName } = appConfig;
-  const sectionRef = useScrollReveal<HTMLDivElement>();
+  const sectionRef = useScrollReveal<HTMLElement>();
 
   const sectionTitle =
     formatMessage((homeCopy as Record<string, string>).featuresTitle, {
@@ -105,12 +90,17 @@ export default function HomeFeatures() {
     (homeCopy as Record<string, string>).comingSoon ?? 'Coming Soon';
 
   return (
-    <FeaturesSection data-testid="features-section" ref={sectionRef as never}>
-      <SectionHeader data-reveal data-reveal-delay="1">
-        <SectionTitle>{sectionTitle}</SectionTitle>
-        <SectionSubtitle>{sectionSubtitle}</SectionSubtitle>
-      </SectionHeader>
-      <FeaturesGrid>
+    <section
+      id="features"
+      data-testid="features-section"
+      ref={sectionRef}
+      className="features-section-main"
+    >
+      <div className="section-header-main" data-reveal data-reveal-delay="1">
+        <h2 className="section-title-main">{sectionTitle}</h2>
+        <p className="section-subtitle-main">{sectionSubtitle}</p>
+      </div>
+      <div className="features-grid-main">
         {FEATURES.map((feature, index) => {
           const title =
             (homeCopy as Record<string, string>)[feature.titleKey] ??
@@ -120,29 +110,42 @@ export default function HomeFeatures() {
             feature.defaultDescription;
 
           return (
-            <FeatureCard
+            <div
               key={feature.titleKey}
-              flex={1}
-              minWidth={280}
-              className="feature-card-hover"
               data-reveal
               data-reveal-delay={String(Math.min(index + 2, 6))}
+              className="feature-card-main"
             >
-              <FeatureIcon
-                data-feature-icon
+              <div
+                className="feature-icon-main"
                 style={{ boxShadow: '0 4px 20px rgba(87,195,255,0.12)' }}
               >
-                <Text>{feature.icon}</Text>
-              </FeatureIcon>
-              <FeatureTitle>{title}</FeatureTitle>
-              <FeatureDescription>{description}</FeatureDescription>
+                <span>{feature.icon}</span>
+              </div>
+              <h3 className="feature-title-main">{title}</h3>
+              <p className="feature-description-main">{description}</p>
               {feature.comingSoon && (
-                <ComingSoonBadge>{comingSoonLabel}</ComingSoonBadge>
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 'var(--t-space-4)',
+                    right: 'var(--t-space-4)',
+                    padding: 'var(--t-space-1) var(--t-space-2)',
+                    borderRadius: 'var(--t-radius-4)',
+                    backgroundColor: 'rgba(255,255,255,0.1)',
+                    fontSize: '10px',
+                    fontWeight: 'bold',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                  }}
+                >
+                  {comingSoonLabel}
+                </div>
               )}
-            </FeatureCard>
+            </div>
           );
         })}
-      </FeaturesGrid>
-    </FeaturesSection>
+      </div>
+    </section>
   );
 }

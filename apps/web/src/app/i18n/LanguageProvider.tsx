@@ -18,7 +18,10 @@ import {
   loadMessages,
 } from '@/shared/i18n';
 
-import { LanguageContext, LanguageContextValue } from '@/shared/i18n/context';
+import {
+  LanguageContext,
+  LanguageContextValue,
+} from '@/shared/i18n/LanguageContext';
 
 const emptySubscribe = () => () => {};
 const getClientSnapshot = () => true;

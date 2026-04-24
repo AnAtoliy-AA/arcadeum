@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { AuthPageWrapper } from '@/features/auth/ui/AuthPageWrapper';
+import AuthPageWrapper from '@/features/auth/ui/AuthPageWrapper';
 
 // metadata moved to layout.tsx
 

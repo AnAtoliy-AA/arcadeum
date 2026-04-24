@@ -2,21 +2,18 @@
 
 import { useState } from 'react';
 import { useLanguage } from '@/shared/i18n/context';
-import {
-  PageLayout,
-  Container,
-  GlassCard,
-  PageTitle,
-  Typography,
-  Section,
-  Card,
-  Input,
-  TextArea,
-  Button,
-  XStack,
-  YStack,
-  FormGroup,
-} from '@/shared/ui';
+import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
+import { Container } from '@arcadeum/ui/components/Container/Container';
+import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
+import { PageTitle } from '@arcadeum/ui/components/PageTitle/PageTitle';
+import { Typography } from '@arcadeum/ui/components/Typography/Typography';
+import { Section } from '@arcadeum/ui/components/Section/Section';
+import { Card } from '@arcadeum/ui/components/Card/Card';
+import { Input } from '@arcadeum/ui/components/Input/Input';
+import { TextArea } from '@arcadeum/ui/components/TextArea/TextArea';
+import { Button } from '@arcadeum/ui/components/Button/Button';
+import { FormGroup } from '@arcadeum/ui/components/FormGroup/FormGroup';
+import { XStack, YStack } from 'tamagui';
 import { formatMessage } from '@/shared/i18n';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
@@ -26,7 +23,7 @@ export interface ContactViewProps {
   WORKING_HOURS: string;
 }
 
-export function ContactView({
+export default function ContactView({
   t: initialT,
   SUPPORT_EMAIL,
   WORKING_HOURS,

@@ -81,8 +81,15 @@ export const StepNumber = styled(YStack, {
   justifyContent: 'center',
   position: 'relative',
   zIndex: 1,
-  shadowColor: 'transparent',
-} as Record<string, unknown>);
+  transition: 'transform 0.2s ease-out, box-shadow 0.2s ease-out',
+
+  hoverStyle: {
+    scale: 1.08,
+    shadowColor: 'rgba(87, 195, 255, 0.35)',
+    shadowRadius: 28,
+    borderColor: 'rgba(87, 195, 255, 0.2)',
+  },
+} as unknown as Record<string, unknown>);
 
 export const StepContent = styled(YStack, {
   name: 'StepContent',

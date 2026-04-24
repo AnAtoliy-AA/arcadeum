@@ -145,7 +145,12 @@ export class GamesService {
     }
 
     // Emit real-time event
-    this.realtimeService.emitPlayerLeft(result.room, userId, result.deleted);
+    this.realtimeService.emitPlayerLeft(
+      result.room,
+      userId,
+      result.deleted,
+      result.kicked,
+    );
 
     return result;
   }

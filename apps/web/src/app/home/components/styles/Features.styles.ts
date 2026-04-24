@@ -1,6 +1,13 @@
 'use client';
 
-import { styled, YStack, XStack, Text } from 'tamagui';
+import {
+  styled,
+  YStack,
+  XStack,
+  Text,
+  type GetThemeValueForKey,
+} from 'tamagui';
+import { GlassCard } from '@/shared/ui';
 import { SectionContainer } from './Common.styles';
 
 export const FeaturesSection = styled(SectionContainer, {
@@ -14,9 +21,21 @@ export const FeaturesGrid = styled(XStack, {
   gap: '$6',
 });
 
-// FeatureCard uses GlassCard directly in the component — see HomeFeatures.tsx
-// exported here as a re-export alias so the component import doesn't change
-export { GlassCard as FeatureCard } from '@/shared/ui';
+export const FeatureCard = styled(GlassCard, {
+  name: 'FeatureCard',
+  cursor: 'default',
+  group: 'card' as unknown as boolean,
+  style: {
+    transition:
+      'transform 0.2s ease-out, box-shadow 0.2s ease-out, border-color 0.2s ease-out',
+  },
+
+  hoverStyle: {
+    transform: 'translateY(-4px)',
+    boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)',
+    borderColor: 'rgba(87, 195, 255, 0.35)',
+  },
+});
 
 export const FeatureIcon = styled(YStack, {
   name: 'FeatureIcon',
@@ -28,7 +47,14 @@ export const FeatureIcon = styled(YStack, {
   backgroundColor: 'rgba(255,255,255,0.08)',
   borderWidth: 1,
   borderColor: '$glassBorder',
-});
+  style: {
+    transition: 'transform 0.2s ease-out',
+  },
+
+  '$group-card-hover': {
+    scale: 1.1,
+  },
+} as never);
 
 export const FeatureTitle = styled(Text, {
   name: 'FeatureTitle',
@@ -42,7 +68,7 @@ export const FeatureDescription = styled(Text, {
   name: 'FeatureDescription',
   margin: 0,
   fontSize: '$3',
-  lineHeight: '$4' as never,
+  lineHeight: '$4' as unknown as GetThemeValueForKey<'lineHeight'>,
   color: '$color',
   opacity: 0.7,
 });

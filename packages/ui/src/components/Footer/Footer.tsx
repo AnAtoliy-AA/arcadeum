@@ -10,6 +10,7 @@ import {
   ThreadsIcon,
   XIcon,
   DiscordIcon,
+  GithubIcon,
   SupportIcon,
   ChevronDownIcon,
 } from '../Icons';
@@ -56,9 +57,10 @@ const SOCIAL_MAPPING = [
   { id: 'threads', label: 'Threads', Icon: ThreadsIcon },
   { id: 'x', label: 'X', Icon: XIcon },
   { id: 'discord', label: 'Discord', Icon: DiscordIcon },
+  { id: 'github', label: 'GitHub', Icon: GithubIcon },
 ] as const;
 
-const CURRENT_YEAR = new Date().getFullYear();
+const CURRENT_YEAR = 2026;
 
 const FooterRoot = styled(View, {
   name: 'Footer',
@@ -176,7 +178,7 @@ const CollapsibleColumn = ({ title, children, defaultOpen = false }: Collapsible
 
   return (
     <FooterColumnContainer>
-      <ColumnHeader onPress={toggle}>
+      <ColumnHeader onClick={toggle}>
         <Typography variant="heading" uiSize="sm" weight="700" tracking="sm">
           {title.toUpperCase()}
         </Typography>

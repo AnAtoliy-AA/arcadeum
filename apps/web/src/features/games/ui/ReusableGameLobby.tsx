@@ -62,6 +62,8 @@ export interface ReusableGameLobbyProps {
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
   onDeleteRoom?: () => void;
+  onKickPlayer?: (userId: string) => void;
+  onLeaveRoom?: () => void;
   onRefresh?: () => void;
 
   // Game info
@@ -95,6 +97,8 @@ export interface ReusableGameLobbyProps {
     botCountLabel?: string;
     startWithBotsLabel?: string;
     deleteRoomLabel?: string;
+    kickPlayerLabel?: string;
+    leaveRoomLabel?: string;
   };
   // Theme
   theme?: GameLobbyTheme;
@@ -146,6 +150,8 @@ export function ReusableGameLobby({
   onReorderPlayers,
   onReinvite,
   onDeleteRoom,
+  onKickPlayer,
+  onLeaveRoom,
   onRefresh,
   gameName,
   gameIcon,
@@ -286,7 +292,6 @@ export function ReusableGameLobby({
           {showFullscreenButton && onToggleFullscreen && (
             <IconButton
               onClick={onToggleFullscreen}
-              onPress={onToggleFullscreen}
               title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
             >
               {isFullscreen ? '⤓' : '⤢'}
@@ -336,7 +341,7 @@ export function ReusableGameLobby({
                         key={count}
                         data-testid={`bot-count-${count}`}
                         $isActive={botCount === count}
-                        onPress={() => setBotCount(count)}
+                        onClick={() => setBotCount(count)}
                       >
                         {count}
                       </BotCountButton>
@@ -346,7 +351,6 @@ export function ReusableGameLobby({
               )}
               <StartButton
                 onClick={handleStart}
-                onPress={handleStart}
                 disabled={
                   startBusy ||
                   (room.playerCount < (minPlayers || 2) &&
@@ -380,6 +384,8 @@ export function ReusableGameLobby({
           onReorderPlayers={onReorderPlayers}
           onReinvite={onReinvite}
           onDeleteRoom={isHost ? handleDeleteClick : undefined}
+          onKickPlayer={isHost ? onKickPlayer : undefined}
+          onLeaveRoom={!isHost ? onLeaveRoom : undefined}
           deleteRoomLabel={deleteRoomLabel || deleteRoomTranslations.button}
           extraPlayersCardSlot={extraPlayersCardSlot}
           onRefresh={onRefresh}

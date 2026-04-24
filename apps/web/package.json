@@ -1,12 +1,12 @@
 {
   "name": "web",
-  "version": "1.9.17",
+  "version": "1.9.22",
   "private": true,
   "scripts": {
     "dev": "next dev -p $(node ../../scripts/resolve-env-port.js .env.local WEB_PORT 3000)",
     "dev:next": "next dev -p $(node ../../scripts/resolve-env-port.js .env.local WEB_PORT 3000)",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p $(node ../../scripts/resolve-env-port.js .env.local WEB_PORT 3000)",
     "lint": "eslint",
     "type-check": "tsc --noEmit",
     "storybook": "node scripts/patch-next-config.js && storybook dev -p 6006",

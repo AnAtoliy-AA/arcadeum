@@ -19,7 +19,7 @@ import { CARD_GROUPS } from '../lib/constants';
 import { CriticalCard } from '../types';
 import type { GameVariant } from '@arcadeum/ui';
 import { TranslationKey } from '@/shared/lib/useTranslation';
-import { CloseIcon } from '@/shared/ui';
+import { CloseIcon } from '@arcadeum/ui/components/Icons/index';
 
 interface RulesModalProps {
   isOpen: boolean;
@@ -144,7 +144,7 @@ export function RulesModal({
             </ModalTitle>
             <Dialog.Close asChild>
               <CloseButton
-                onPress={onClose}
+                onClick={onClose}
                 $variant={currentVariant as GameVariant}
                 data-testid="modal-close-button"
               >

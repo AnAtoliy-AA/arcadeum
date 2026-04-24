@@ -118,7 +118,7 @@ const CheckboxItem: React.FC<CheckboxItemProps> = ({
   <Label
     secondary={secondary}
     opacity={disabled ? 0.5 : 1}
-    onPress={() => !disabled && onCheckedChange(!checked)}
+    onClick={() => !disabled && onCheckedChange(!checked)}
   >
     <TamaCheckbox
       id={label}
@@ -184,7 +184,7 @@ export const AutoplayControls: React.FC<AutoplayControlsProps> = ({
 
   return (
     <Container onClick={handleContainerClick}>
-      <Header onPress={() => setExpanded(!expanded)} expanded={expanded}>
+      <Header onClick={() => setExpanded(!expanded)} expanded={expanded}>
         <HeaderText>{t('games.table.autoplay.title')}</HeaderText>
         <Toggle>{expanded ? '▲' : '▼'}</Toggle>
       </Header>

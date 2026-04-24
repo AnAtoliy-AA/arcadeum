@@ -6,7 +6,6 @@ import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { useFullscreen } from '@/features/games/hooks/useFullscreen';
 import { CriticalLobby } from './CriticalLobby';
 import { ActiveGameView } from './ActiveGameView';
-import { ParticleOverlay } from './ParticleOverlay';
 import { GameContainer } from './styles';
 import type { GameVariant } from '@arcadeum/ui';
 
@@ -28,6 +27,8 @@ export default function CriticalGame({
 
   const storeRoom = useGameStore((s: GameState) => s.room);
   const storeDeleteRoom = useGameStore((s: GameState) => s.deleteRoom);
+  const storeKickPlayer = useGameStore((s: GameState) => s.kickPlayer);
+  const storeLeaveRoom = useGameStore((s: GameState) => s.leaveRoom);
   const storeRefreshRoom = useGameStore((s: GameState) => s.refreshRoom);
 
   const room =
@@ -72,6 +73,17 @@ export default function CriticalGame({
         onReorderPlayers={reorderParticipants}
         onReinvite={rematch.handleReinvite}
         onDeleteRoom={() => storeDeleteRoom(roomId)}
+        onKickPlayer={
+          currentUserId
+            ? (targetUserId) =>
+                storeKickPlayer(roomId, targetUserId, currentUserId)
+            : undefined
+        }
+        onLeaveRoom={
+          currentUserId
+            ? () => storeLeaveRoom(roomId, currentUserId)
+            : undefined
+        }
         onRefresh={() => storeRefreshRoom(roomId)}
         t={t}
       />
@@ -86,8 +98,6 @@ export default function CriticalGame({
       $isMyTurn={!!isMyTurn}
       $variant={cardVariant as GameVariant}
     >
-      <ParticleOverlay variant={cardVariant as string} />
-
       <ActiveGameView
         currentUserId={currentUserId}
         room={room}

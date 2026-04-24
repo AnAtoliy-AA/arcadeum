@@ -2,7 +2,8 @@
 
 import { GetProps } from 'tamagui';
 import { useMemo, Children } from 'react';
-import type { ReactNode, MouseEventHandler } from 'react';
+import { filterProps } from '../../utils/filterProps';
+import type { ReactNode, MouseEventHandler, KeyboardEventHandler } from 'react';
 import Link from 'next/link';
 import { Typography } from '../Typography/Typography';
 import { StyledLinkButton } from './StyledLinkButton';
@@ -29,11 +30,15 @@ export interface LinkButtonProps extends StyledLinkButtonProps {
   icon?: ReactNode;
   id?: string;
   className?: string;
+  /** @deprecated Use onClick instead */
   onPress?: StyledLinkButtonProps['onPress'];
-  onClick?: MouseEventHandler<any>;
+  onClick?: MouseEventHandler<unknown>;
   'data-testid'?: string;
   'aria-label'?: string;
   prefetch?: boolean;
+  as?: React.ElementType;
+  fontWeight?: string | number;
+  letterSpacing?: string | number;
 }
 
 export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
@@ -83,6 +88,8 @@ export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
       [children, size, variant]
     );
 
+    const filteredProps = filterProps({ ...props, onPress, onClick });
+
     return (
       <Link
         href={href}
@@ -103,9 +110,7 @@ export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
           className={className}
           id={id}
           aria-label={ariaLabel}
-          onPress={onPress}
-          onClick={onClick}
-          {...props}
+          {...filteredProps}
           ref={ref}
           data-testid={testId}
         >

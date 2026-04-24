@@ -7,14 +7,14 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { isValidPaymentUrl, parseAmount } from '@/shared/config/payment-config';
 import { paymentApi } from '@/features/payment/api';
-import { Button, XStack, Typography } from '@arcadeum/ui';
-import {
-  PageLayout,
-  Container,
-  Section,
-  FormGroup,
-  GlassCard,
-} from '@/shared/ui';
+import { XStack, YStack } from 'tamagui';
+import { Button } from '@arcadeum/ui/components/Button/Button';
+import { Typography } from '@arcadeum/ui/components/Typography/Typography';
+import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
+import { Container } from '@arcadeum/ui/components/Container/Container';
+import { Section } from '@arcadeum/ui/components/Section/Section';
+import { FormGroup } from '@arcadeum/ui/components/FormGroup/FormGroup';
+import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { PaymentHeader, PaymentPresets, AmountDisplay } from './ui';
 import { StyledTextArea, StatusMessage } from './styles';
 
@@ -51,7 +51,7 @@ const backgroundStyles = `
   }
 `;
 
-export function PaymentPage() {
+export default function PaymentPage() {
   const { snapshot } = useSessionTokens();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
@@ -191,130 +191,134 @@ export function PaymentPage() {
           </XStack>
 
           <GlassCard>
-            <form
-              onSubmit={handleSubmit}
-              style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}
-            >
-              {mode === 'subscription' && (
-                <XStack jc="center" mb="$4" gap="$2">
-                  <Button
-                    variant={interval === 'MONTHLY' ? 'secondary' : 'ghost'}
-                    size="sm"
-                    onClick={(e: React.MouseEvent) => {
-                      e.preventDefault();
-                      setInterval('MONTHLY');
-                    }}
-                  >
-                    {t('payments.intervals.monthly') || 'Monthly'}
-                  </Button>
-                  <Button
-                    variant={interval === 'YEARLY' ? 'secondary' : 'ghost'}
-                    size="sm"
-                    onClick={(e: React.MouseEvent) => {
-                      e.preventDefault();
-                      setInterval('YEARLY');
-                    }}
-                  >
-                    {t('payments.intervals.yearly') || 'Yearly'}
-                  </Button>
-                </XStack>
-              )}
+            <YStack gap="$8">
+              <form onSubmit={handleSubmit}>
+                {mode === 'subscription' && (
+                  <XStack jc="center" mb="$4" gap="$2">
+                    <Button
+                      variant={interval === 'MONTHLY' ? 'secondary' : 'ghost'}
+                      size="sm"
+                      onClick={(e: React.MouseEvent) => {
+                        e.preventDefault();
+                        setInterval('MONTHLY');
+                      }}
+                    >
+                      {t('payments.intervals.monthly') || 'Monthly'}
+                    </Button>
+                    <Button
+                      variant={interval === 'YEARLY' ? 'secondary' : 'ghost'}
+                      size="sm"
+                      onClick={(e: React.MouseEvent) => {
+                        e.preventDefault();
+                        setInterval('YEARLY');
+                      }}
+                    >
+                      {t('payments.intervals.yearly') || 'Yearly'}
+                    </Button>
+                  </XStack>
+                )}
 
-              <FormGroup
-                label={t('payments.amountLabel') || 'Select Amount'}
-                htmlFor="payment-amount"
-                required
-              >
-                <PaymentPresets amount={amount} onSelect={setAmount} />
-                <AmountDisplay amount={amount} onChange={handleAmountChange} />
-              </FormGroup>
-
-              <FormGroup
-                label={t('payments.noteLabel') || 'Leave a message (optional)'}
-                htmlFor="payment-note"
-              >
-                <StyledTextArea
-                  id="payment-note"
-                  placeholder={
-                    t('payments.notePlaceholder') || 'Say something nice...'
-                  }
-                  value={note}
-                  onChangeText={setNote}
-                  aria-label={
-                    t('payments.noteAria') || 'Payment note or description'
-                  }
-                  fullWidth
-                  rows={3}
-                  {...({} as Record<string, unknown>)}
-                />
-              </FormGroup>
-
-              {!!snapshot.userId && !!note.trim() && (
-                <label
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.75rem',
-                    cursor: 'pointer',
-                    padding: '0.75rem 1rem',
-                    borderRadius: 12,
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                  }}
+                <FormGroup
+                  label={t('payments.amountLabel') || 'Select Amount'}
+                  htmlFor="payment-amount"
+                  required
                 >
-                  <input
-                    type="checkbox"
-                    id="show-name"
-                    checked={showName}
-                    onChange={(e) => setShowName(e.target.checked)}
-                    style={{
-                      width: '1.25rem',
-                      height: '1.25rem',
-                      accentColor: '#3b82f6',
-                      cursor: 'pointer',
-                    }}
+                  <PaymentPresets amount={amount} onSelect={setAmount} />
+                  <AmountDisplay
+                    amount={amount}
+                    onChange={handleAmountChange}
                   />
-                  <Typography uiSize="sm" color="rgba(255,255,255,0.8)">
-                    {t('payments.showNameLabel') ||
-                      'Show my name with this note'}
-                  </Typography>
-                </label>
-              )}
+                </FormGroup>
 
-              {error && (
-                <StatusMessage messageType="error">
-                  <span role="img" aria-label="error">
-                    ⚠️
-                  </span>
-                  <Typography uiSize="sm" color="#fca5a5">
-                    {error}
-                  </Typography>
-                </StatusMessage>
-              )}
-              {success && (
-                <StatusMessage messageType="success">
-                  <span role="img" aria-label="success">
-                    ✅
-                  </span>
-                  <Typography uiSize="sm" color="#86efac">
-                    {t('payments.status.success') ||
-                      'Payment session created successfully!'}
-                  </Typography>
-                </StatusMessage>
-              )}
+                <FormGroup
+                  label={
+                    t('payments.noteLabel') || 'Leave a message (optional)'
+                  }
+                  htmlFor="payment-note"
+                >
+                  <StyledTextArea
+                    id="payment-note"
+                    placeholder={
+                      t('payments.notePlaceholder') || 'Say something nice...'
+                    }
+                    value={note}
+                    onChangeText={setNote}
+                    aria-label={
+                      t('payments.noteAria') || 'Payment note or description'
+                    }
+                    fullWidth
+                    rows={3}
+                    {...({} as Record<string, unknown>)}
+                  />
+                </FormGroup>
 
-              <Button
-                variant="primary"
-                type="submit"
-                disabled={loading}
-                size="lg"
-                fullWidth
-              >
-                {loading
-                  ? t('payments.submitting') || 'Processing...'
-                  : t('payments.submit') || 'Continue to Checkout'}
-              </Button>
-            </form>
+                {!!snapshot.userId && !!note.trim() && (
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.75rem',
+                      cursor: 'pointer',
+                      padding: '0.75rem 1rem',
+                      borderRadius: 12,
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      id="show-name"
+                      checked={showName}
+                      onChange={(e) => setShowName(e.target.checked)}
+                      style={{
+                        width: '1.25rem',
+                        height: '1.25rem',
+                        accentColor: '#3b82f6',
+                        cursor: 'pointer',
+                      }}
+                    />
+                    <Typography uiSize="sm" color="rgba(255,255,255,0.8)">
+                      {t('payments.showNameLabel') ||
+                        'Show my name with this note'}
+                    </Typography>
+                  </label>
+                )}
+
+                {error && (
+                  <StatusMessage messageType="error">
+                    <span role="img" aria-label="error">
+                      ⚠️
+                    </span>
+                    <Typography uiSize="sm" color="#fca5a5">
+                      {error}
+                    </Typography>
+                  </StatusMessage>
+                )}
+                {success && (
+                  <StatusMessage messageType="success">
+                    <span role="img" aria-label="success">
+                      ✅
+                    </span>
+                    <Typography uiSize="sm" color="#86efac">
+                      {t('payments.status.success') ||
+                        'Payment session created successfully!'}
+                    </Typography>
+                  </StatusMessage>
+                )}
+
+                <Button
+                  variant="primary"
+                  type="submit"
+                  disabled={loading}
+                  size="lg"
+                  fullWidth
+                >
+                  {loading
+                    ? t('payments.submitting') || 'Processing...'
+                    : t('payments.submit') || 'Continue to Checkout'}
+                </Button>
+              </form>
+            </YStack>
           </GlassCard>
 
           <XStack jc="center" ai="center" gap="$2" opacity={0.5} mt="$8">

@@ -5,8 +5,7 @@ import './globals.css';
 
 import { cookies } from 'next/headers';
 import { appConfig } from '@/shared/config/app-config';
-import { Header } from '@/widgets/header';
-
+import { Header } from '@/widgets/header/ui/Header';
 import { JsonLd } from '@/shared/ui/JsonLd';
 
 const geistSans = Geist({
@@ -90,6 +89,11 @@ import { setupTamagui } from '@/shared/config/tamagui.config';
 import { ThemeName, ThemePreference } from '@/shared/config/theme';
 import { Locale } from '@/shared/i18n';
 
+// Provider Imports (Hoisted)
+import { LanguageProvider } from '@/app/i18n/LanguageProvider';
+import { PWAProvider } from '@/features/pwa/PWAContext';
+import { AppThemeProvider } from '@/app/theme/ThemeContext';
+
 // Prime Tamagui config as early as possible on the server
 setupTamagui();
 
@@ -156,10 +160,16 @@ export default async function RootLayout({
         <JsonLd data={jsonLd} />
       </head>
       <body className={fontClassName}>
-        <BrowserRegistry initialTheme={theme} initialLocale={locale}>
-          <Header />
-          {children}
-        </BrowserRegistry>
+        <AppThemeProvider initialTheme={theme}>
+          <LanguageProvider initialLocale={locale}>
+            <PWAProvider>
+              <BrowserRegistry>
+                <Header />
+                {children}
+              </BrowserRegistry>
+            </PWAProvider>
+          </LanguageProvider>
+        </AppThemeProvider>
       </body>
     </html>
   );

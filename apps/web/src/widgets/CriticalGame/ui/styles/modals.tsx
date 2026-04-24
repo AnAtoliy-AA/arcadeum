@@ -82,18 +82,21 @@ export const ModalContent = ({
   variant,
   $variant,
   onPress,
+  onClick,
   ...props
 }: {
   children: React.ReactNode;
   variant?: GameVariant;
   $variant?: GameVariant;
-  onPress?: (e: { stopPropagation: () => void }) => void;
+  /** @deprecated Use onClick instead */
+  onPress?: () => void;
+  onClick?: (e: { stopPropagation: () => void }) => void;
   [key: string]: unknown;
 }) => {
   return (
     <StyledModalFrame
       variant={variant || ($variant as GameVariant)}
-      onPress={onPress}
+      onClick={onClick || onPress}
       {...props}
     >
       <StyledScrollArea>{children}</StyledScrollArea>
@@ -144,12 +147,15 @@ export const CloseButton = ({
   $variant,
   children,
   onPress,
+  onClick,
   ...props
 }: {
   variant?: GameVariant;
   $variant?: GameVariant;
   children?: React.ReactNode;
-  onPress?: (e: { stopPropagation: () => void }) => void;
+  /** @deprecated Use onClick instead */
+  onPress?: () => void;
+  onClick?: (e: { stopPropagation: () => void }) => void;
   [key: string]: unknown;
 }) => (
   <Button
@@ -157,7 +163,7 @@ export const CloseButton = ({
     size="sm"
     hoverStyle={{ rotate: '90deg' }}
     gameVariant={(variant || $variant) as GameVariant}
-    onPress={onPress}
+    onClick={onClick || onPress}
     {...props}
   >
     {children}

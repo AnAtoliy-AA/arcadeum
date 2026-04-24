@@ -1,22 +1,33 @@
 'use client';
-import { Main, styled } from 'tamagui';
-import type { ComponentProps } from 'react';
-import { setupTamagui } from '../../tamagui.config';
 
-setupTamagui();
+import React from 'react';
 
-const StyledPageLayout = styled(Main, {
-  name: 'PageLayout',
-  minHeight: '100vh',
-  padding: '$5',
-  backgroundColor: '$background',
-  width: '100%',
-  paddingTop: '$8',
-  background: 'radial-gradient(circle at top left, $backgroundRadialStart, transparent 55%), radial-gradient(circle at bottom right, $backgroundRadialEnd, transparent 55%), $background',
-});
+/**
+ * PageLayout is a high-performance Client Component that provides the base 
+ * structure and glassmorphism background for all pages.
+ * 
+ * By using a standard <main> element and static CSS classes instead of a Tamagui 
+ * styled component here, we avoid the hydration overhead and attribute mismatches 
+ * that occur with the Tamagui 'Main' component during SSR.
+ * 
+ * This approach restores maximum performance while ensuring perfect hydration stability.
+ */
 
-export const PageLayout = StyledPageLayout.styleable((props, ref) => (
-  <StyledPageLayout {...props} ref={ref} />
-));
+export interface PageLayoutProps {
+  children: React.ReactNode;
+  className?: string;
+  [key: string]: any;
+}
 
-export type PageLayoutProps = ComponentProps<typeof PageLayout>;
+export const PageLayout = ({ children, className = '', ...props }: PageLayoutProps) => {
+  return (
+    <main
+      {...props}
+      className={`page-layout-glass-bg page-layout-base ${className}`}
+    >
+      {children}
+    </main>
+  );
+};
+
+PageLayout.displayName = 'PageLayout';

@@ -1,15 +1,6 @@
 'use client';
 
-import type { FC, ReactNode } from 'react';
-import {
-  styled,
-  YStack,
-  XStack,
-  Text,
-  H1,
-  type GetThemeValueForKey,
-  type GetProps,
-} from 'tamagui';
+import { styled, YStack, XStack, Text, H1 } from 'tamagui';
 
 export const HeroSection = styled(YStack, {
   alignItems: 'center',
@@ -17,7 +8,7 @@ export const HeroSection = styled(YStack, {
   minHeight: '90vh',
   padding: '$6',
   position: 'relative',
-  overflow: 'hidden',
+  overflow: 'visible',
   gap: '$10',
 });
 
@@ -30,32 +21,30 @@ export const HeroBackground = styled(YStack, {
   pointerEvents: 'none',
   zIndex: 0,
   overflow: 'hidden',
+  // Subtle theme-aware overlay for the hero section
+  background:
+    'radial-gradient(circle at 50% 50%, $backgroundRadialStart 0%, transparent 70%)',
+  opacity: 0.6,
 });
 
 export const HeroContent = styled(YStack, {
   position: 'relative',
   zIndex: 2,
   gap: '$6',
-  alignItems: 'center',
   maxWidth: 650,
-
-  $gtMd: {
-    alignItems: 'flex-start',
-  },
 });
 
 export const HeroVisual = styled(YStack, {
   position: 'relative',
   width: '100%',
-  maxWidth: 540,
-  height: 460,
-  display: 'none',
+  maxWidth: 600,
+  height: 540,
   alignItems: 'center',
   justifyContent: 'center',
   zIndex: 1,
 
-  $gtMd: {
-    display: 'flex',
+  $md: {
+    display: 'none',
   },
 });
 
@@ -68,9 +57,9 @@ export const CardStack = styled(YStack, {
 const StyledHeroCard = styled(YStack, {
   name: 'HeroCard',
   backgroundColor: '$glassBg',
-  borderColor: '$glassBorder',
-  borderWidth: 2,
-  borderRadius: 20,
+  borderColor: 'rgba(255, 255, 255, 0.2)', // More visible border
+  borderWidth: 1.5,
+  borderRadius: 24,
   padding: '$6',
   display: 'flex',
   flexDirection: 'column',
@@ -86,21 +75,12 @@ const StyledHeroCard = styled(YStack, {
   },
 });
 
-export const HeroCard: FC<
-  GetProps<typeof StyledHeroCard> & {
-    children?: ReactNode;
-    rotate?: string | number;
-    x?: string | number;
-    y?: string | number;
-    scale?: number;
-    opacity?: number;
-    zIndex?: number;
-    className?: string;
-    hoverStyle?: GetProps<typeof StyledHeroCard>['hoverStyle'];
-  }
-> = (props) => <StyledHeroCard {...props} />;
+export const HeroCard = styled(StyledHeroCard, {
+  name: 'HeroCard',
+});
 
 export const Kicker = styled(Text, {
+  name: 'Kicker',
   fontSize: '$3',
   fontWeight: '700',
   letterSpacing: 2,
@@ -114,37 +94,29 @@ export const Kicker = styled(Text, {
   borderWidth: 1,
   borderColor: '$accent',
   opacity: 0.8,
-  animation: 'lazy', // For tamagui internal
-  style: {
-    animation: 'fadeInUp 0.6s ease-out 0.15s both, shimmer 3s linear infinite',
-  },
-} as never);
-
-const StyledHeroTitle = styled(H1, {
-  display: 'block',
-  fontWeight: '$8',
-  fontSize:
-    'clamp(3.5rem, 8vw, 6rem)' as unknown as GetThemeValueForKey<'fontSize'>,
-  lineHeight: '1.1' as unknown as GetThemeValueForKey<'lineHeight'>,
+  position: 'relative',
+  overflow: 'hidden',
 });
 
-export const HeroTitle: FC<
-  GetProps<typeof StyledHeroTitle> & {
-    children?: ReactNode;
-    id?: string;
-    className?: string;
-  }
-> = (props) => <StyledHeroTitle {...props} />;
+export const HeroTitle = styled(H1, {
+  name: 'HeroTitle',
+  display: 'block',
+  fontSize: 100,
+  fontWeight: '900',
+  lineHeight: 120,
+  letterSpacing: -2,
+  $md: {
+    fontSize: '$10',
+    lineHeight: 60,
+  },
+});
 
 export const Tagline = styled(Text, {
   margin: 0,
   fontSize: '$6',
   fontWeight: '600',
   color: '$color',
-  style: {
-    animation: 'fadeInUp 0.6s ease-out 0.2s both',
-  },
-} as never);
+});
 
 export const HeroDescription = styled(Text, {
   margin: 0,
@@ -152,21 +124,10 @@ export const HeroDescription = styled(Text, {
   fontSize: '$4',
   color: '$color',
   opacity: 0.75,
-  style: {
-    animation: 'fadeInUp 0.6s ease-out 0.3s both',
-  },
-} as never);
+});
 
 export const HeroActions = styled(XStack, {
   marginTop: '$4',
   flexWrap: 'wrap',
   gap: '$4',
-  justifyContent: 'center',
-  style: {
-    animation: 'fadeInUp 0.6s ease-out 0.4s both',
-  },
-
-  $gtMd: {
-    justifyContent: 'flex-start',
-  },
-} as never);
+});

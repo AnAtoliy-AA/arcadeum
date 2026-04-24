@@ -25,8 +25,22 @@ const StyledContainer = styled(YStack, {
   },
 });
 
-export const Container = StyledContainer.styleable<
-  { size?: ContainerSize } & GetProps<typeof StyledContainer>
->((props, ref) => <StyledContainer {...props} ref={ref} />);
+import { filterProps } from '../../utils/filterProps';
 
-export type ContainerProps = ComponentProps<typeof Container>;
+export type ContainerProps = GetProps<typeof StyledContainer> & {
+  size?: ContainerSize;
+  /** @deprecated Use onClick instead */
+  onPress?: () => void;
+  onClick?: (e: unknown) => void;
+};
+
+export const Container = StyledContainer.styleable<ContainerProps>(({ onPress, onClick, ...props }, ref) => {
+  const filteredProps = filterProps({ ...props, onPress, onClick });
+
+  return (
+    <StyledContainer 
+      {...filteredProps} 
+      ref={ref} 
+    />
+  );
+});

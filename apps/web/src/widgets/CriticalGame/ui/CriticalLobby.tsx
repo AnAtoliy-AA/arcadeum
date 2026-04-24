@@ -52,6 +52,8 @@ export interface CriticalLobbyProps {
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
   onDeleteRoom?: () => void;
+  onKickPlayer?: (userId: string) => void;
+  onLeaveRoom?: () => void;
   onRefresh?: () => void;
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
@@ -67,6 +69,8 @@ export function CriticalLobby({
   onReorderPlayers,
   onReinvite,
   onDeleteRoom,
+  onKickPlayer,
+  onLeaveRoom,
   onRefresh,
   t,
 }: CriticalLobbyProps) {
@@ -98,11 +102,7 @@ export function CriticalLobby({
 
   // Rules button
   const headerActionsSlot = (
-    <IconButton
-      onClick={() => setShowRules(true)}
-      onPress={() => setShowRules(true)}
-      title="Game Rules"
-    >
+    <IconButton onClick={() => setShowRules(true)} title="Game Rules">
       📖
     </IconButton>
   );
@@ -131,6 +131,8 @@ export function CriticalLobby({
       onReorderPlayers={onReorderPlayers}
       onReinvite={onReinvite}
       onDeleteRoom={onDeleteRoom}
+      onKickPlayer={onKickPlayer}
+      onLeaveRoom={onLeaveRoom}
       onRefresh={onRefresh}
       // Game info
       gameName={t('games.critical_v1.name')}

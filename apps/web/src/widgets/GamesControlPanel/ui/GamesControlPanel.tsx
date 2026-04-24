@@ -194,7 +194,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         <Button
           variant="glass"
           size="sm"
-          onPress={onToggleChat}
+          onClick={onToggleChat}
           data-testid="toggle-chat-button"
           aria-label={
             showChat ? t('games.table.chat.hide') : t('games.table.chat.show')

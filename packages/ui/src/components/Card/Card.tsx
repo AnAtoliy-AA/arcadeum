@@ -100,6 +100,11 @@ export type CardProps = GetProps<typeof StyledCard> & {
   padding?: CardPadding;
   interactive?: boolean;
   children?: ReactNode;
+  group?: string | boolean;
+  title?: string;
+  /** @deprecated Use onClick instead */
+  onPress?: () => void;
+  onClick?: (e: unknown) => void;
 };
 
 interface CardInnerProps extends CardProps {
@@ -111,8 +116,10 @@ interface CardInnerProps extends CardProps {
   $isCurrentUser?: boolean;
   $variant?: string;
   $status?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
+
+import { filterProps } from '../../utils/filterProps';
 
 export const Card = StyledCard.styleable<CardProps>(
   (
@@ -121,26 +128,21 @@ export const Card = StyledCard.styleable<CardProps>(
       padding = 'md',
       interactive = false,
       children,
-      // Destructure props that might leak to the DOM
-      isCurrent,
-      isHost,
-      isCurrentUserCard,
-      $isCurrent,
-      $isHost,
-      $isCurrentUser,
-      $variant,
-      $status,
+      onPress,
+      onClick,
       ...rest
     }: CardInnerProps,
     ref,
   ) => {
+    const filteredProps = filterProps({ ...rest, onPress, onClick });
+
     return (
       <StyledCard
         ref={ref}
         variant={variant}
         cardPadding={padding}
         interactive={interactive}
-        {...rest}
+        {...filteredProps}
       >
         <TopLine visible={interactive} className="card-top-line" />
         {children}

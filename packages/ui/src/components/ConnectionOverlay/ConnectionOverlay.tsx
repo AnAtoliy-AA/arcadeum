@@ -48,7 +48,7 @@ export const ConnectionOverlay = memo(function ConnectionOverlay({
   if (!visible) return null;
 
   return (
-    <Backdrop onPress={onReconnect} testID={testId}>
+    <Backdrop onClick={onReconnect} testID={testId}>
       {reconnecting ? (
         <Spinner size="lg" />
       ) : (

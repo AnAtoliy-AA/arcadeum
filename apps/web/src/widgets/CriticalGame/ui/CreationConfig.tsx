@@ -8,7 +8,8 @@ import {
 import { ExpansionPacksSection } from '@/features/games/ui/create/ExpansionPacksSection';
 import { RulesModal } from '@/widgets/CriticalGame/ui/RulesModal';
 import { IDLE_TIMER_DURATION_SEC } from '@/shared/config/game';
-import { Section, Button } from '@/shared/ui';
+import { Section } from '@arcadeum/ui/components/Section/Section';
+import { Button } from '@arcadeum/ui/components/Button/Button';
 import {
   GameSelector,
   GameTileName,
@@ -34,7 +35,7 @@ interface CriticalGameOptions {
   idleTimerEnabled?: boolean;
 }
 
-export function CriticalCreationConfig({
+export default function CriticalCreationConfig({
   options,
   onChange,
 }: GameCreationConfigProps<CriticalGameOptions>) {
@@ -87,7 +88,7 @@ export function CriticalCreationConfig({
             <GameTileContainer
               key={variant.id}
               disabled={variant.disabled}
-              onPress={() =>
+              onClick={() =>
                 !variant.disabled && handleUpdate({ cardVariant: variant.id })
               }
             >

@@ -4,50 +4,47 @@ import { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { routes } from '@/shared/config/routes';
+import { Button } from '@arcadeum/ui/components/Button/Button';
+import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import {
-  Button,
   SupportIcon,
   MenuIcon,
   CloseIcon,
-  LinkButton,
-  MobileLoginIndicator,
-} from '@arcadeum/ui';
+} from '@arcadeum/ui/components/Icons/index';
+import { MobileLoginIndicator } from '@arcadeum/ui/components/MobileLoginIndicator/MobileLoginIndicator';
 import dynamic from 'next/dynamic';
 
-const ProfileMenu = dynamic(
-  () => import('./ProfileMenu').then((m) => m.ProfileMenu),
-  { ssr: false },
-);
-const MobileMenu = dynamic(
-  () => import('./MobileMenu').then((m) => m.MobileMenu),
-  { ssr: false },
-);
-const LanguageSwitcher = dynamic(
-  () => import('./LanguageSwitcher').then((m) => m.LanguageSwitcher),
-  { ssr: false },
-);
-const InstallPWAButton = dynamic(
-  () => import('@/features/pwa').then((m) => m.InstallPWAButton),
-  { ssr: false },
-);
+const ProfileMenu = dynamic(() => import('@/widgets/header/ui/ProfileMenu'), {
+  ssr: false,
+  loading: () => <div className="profile-menu-placeholder" />,
+});
+const MobileMenu = dynamic(() => import('@/widgets/header/ui/MobileMenu'), {
+  ssr: false,
+  loading: () => null,
+});
+import LanguageSwitcher from '@/widgets/header/ui/LanguageSwitcher';
+import { InstallPWAButton } from '@/features/pwa/InstallPWA';
 
 import {
-  Nav,
-  Actions,
   DesktopOnly,
   MobileMenuContainer,
   NavLinkWrapper,
   NavHeaderLink,
   NavLinkIndicator,
 } from './styles';
-import { useIsMounted } from './useIsMounted';
 import { useHeaderAuth } from './useHeaderAuth';
 import { useMobileMenu } from './useMobileMenu';
+import { useIsMounted } from './useIsMounted';
 
 export function HeaderInteractive() {
   const isMounted = useIsMounted();
   const pathname = usePathname();
-  const { isAuthenticated, displayName } = useHeaderAuth();
+  const {
+    isAuthenticated: authStatus,
+    displayName,
+    hydrated,
+  } = useHeaderAuth();
+  const isAuthenticated = hydrated ? authStatus : false;
   const { t } = useTranslation();
   const { isOpen: isMobileMenuOpen, toggle: toggleMobileMenu } =
     useMobileMenu();
@@ -63,89 +60,97 @@ export function HeaderInteractive() {
     [t],
   );
 
-  if (!isMounted) {
-    return null;
-  }
-
   return (
     <>
-      <Nav>
-        {navItems.map((item) => (
-          <NavLinkWrapper key={item.href}>
-            <NavHeaderLink
-              href={item.href}
-              variant="ghost"
-              size="sm"
-              isActive={pathname === item.href}
-              data-testid={`nav-${item.href.replace('/', '') || 'home'}`}
-            >
-              {item.label}
-            </NavHeaderLink>
-            <NavLinkIndicator
-              active={pathname === item.href}
-              data-testid="nav-link-indicator"
+      <nav className="nav-styled" aria-label="Main navigation">
+        {isMounted &&
+          navItems.map((item) => (
+            <NavLinkWrapper key={item.href}>
+              <NavHeaderLink
+                href={item.href}
+                variant="ghost"
+                size="sm"
+                isActive={pathname === item.href}
+                data-testid={`nav-${item.href.replace('/', '') || 'home'}`}
+              >
+                {item.label}
+              </NavHeaderLink>
+              <NavLinkIndicator
+                active={pathname === item.href}
+                data-testid="nav-link-indicator"
+              />
+            </NavLinkWrapper>
+          ))}
+      </nav>
+
+      <div className="actions-styled">
+        {isMounted && (
+          <>
+            <InstallPWAButton />
+            <DesktopOnly>
+              <LinkButton
+                href={routes.support}
+                variant="secondary"
+                size="sm"
+                gap="$2"
+                aria-label={t('common.actions.support')}
+              >
+                <SupportIcon size={18} />
+                {t('common.actions.support')}
+              </LinkButton>
+            </DesktopOnly>
+            <LanguageSwitcher
+              data-testid="header-language-switcher"
+              className="header-language-switcher"
             />
-          </NavLinkWrapper>
-        ))}
-      </Nav>
+            {isAuthenticated && displayName && <ProfileMenu />}
 
-      <Actions>
-        <InstallPWAButton />
-        <DesktopOnly>
-          <LinkButton
-            href={routes.support}
-            variant="secondary"
-            size="sm"
-            gap="$2"
-            aria-label={t('common.actions.support')}
-          >
-            <SupportIcon size={18} />
-            {t('common.actions.support')}
-          </LinkButton>
-        </DesktopOnly>
-        <LanguageSwitcher data-testid="header-language-switcher" />
-        {isAuthenticated && displayName && <ProfileMenu />}
-
-        {!isAuthenticated && (
-          <DesktopOnly>
-            <LinkButton
-              variant="primary"
-              size="sm"
-              href="/auth"
-              data-testid="desktop-login-button"
-            >
-              {t('common.actions.login')}
-            </LinkButton>
-          </DesktopOnly>
-        )}
-
-        <MobileLoginIndicator
-          href={isAuthenticated ? routes.settings : routes.auth}
-          isAuthenticated={isAuthenticated}
-          title={isAuthenticated ? displayName || 'Logged in' : 'Not logged in'}
-          data-testid="mobile-login-indicator"
-        />
-
-        <MobileMenuContainer>
-          <Button
-            variant="icon"
-            size="sm"
-            onPress={toggleMobileMenu}
-            aria-label="Toggle menu"
-            aria-expanded={isMobileMenuOpen}
-            data-mobile-menu-button
-            data-testid="mobile-menu-button"
-          >
-            {isMobileMenuOpen ? (
-              <CloseIcon size={20} />
-            ) : (
-              <MenuIcon size={20} />
+            {!isAuthenticated && (
+              <DesktopOnly>
+                <LinkButton
+                  variant="primary"
+                  size="sm"
+                  href="/auth"
+                  data-testid="desktop-login-button"
+                >
+                  {t('common.actions.login')}
+                </LinkButton>
+              </DesktopOnly>
             )}
-          </Button>
-        </MobileMenuContainer>
-      </Actions>
 
-      <MobileMenu isOpen={isMobileMenuOpen} navItems={navItems} />
+            <MobileLoginIndicator
+              href={isAuthenticated ? routes.settings : routes.auth}
+              isAuthenticated={isAuthenticated}
+              title={
+                isAuthenticated ? displayName || 'Logged in' : 'Not logged in'
+              }
+              data-testid="mobile-login-indicator"
+            />
+
+            <MobileMenuContainer>
+              <Button
+                variant="icon"
+                size="md"
+                onClick={toggleMobileMenu}
+                aria-label="Toggle menu"
+                aria-expanded={isMobileMenuOpen}
+                data-mobile-menu-button
+                data-testid="mobile-menu-button"
+              >
+                {isMobileMenuOpen ? (
+                  <CloseIcon size={20} />
+                ) : (
+                  <MenuIcon size={20} />
+                )}
+              </Button>
+            </MobileMenuContainer>
+          </>
+        )}
+      </div>
+
+      {isMounted && (
+        <MobileMenu isOpen={isMobileMenuOpen} navItems={navItems} />
+      )}
     </>
   );
 }

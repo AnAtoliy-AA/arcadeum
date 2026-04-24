@@ -17,7 +17,7 @@ describe('useTranslation', () => {
     // Mock the dependency BEFORE importing the module under test
     const useLanguageMock = vi.fn().mockReturnValue({ locale, messages });
 
-    vi.doMock('@/shared/i18n/context', () => ({
+    vi.doMock('@/shared/i18n/useLanguage', () => ({
       useLanguage: useLanguageMock,
     }));
 

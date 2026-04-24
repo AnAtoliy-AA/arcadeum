@@ -2,8 +2,6 @@ import {
   GameHeader,
   GameInfo,
   GameTitle,
-  TurnStatus,
-  TurnStatusPill,
   VariantIconBadge,
   HeaderActions,
   TimerControlsWrapper,
@@ -23,13 +21,12 @@ import { TranslationKey } from '@/shared/lib/useTranslation';
 import type { GameVariant } from '@arcadeum/ui';
 import { YStack, Text } from 'tamagui';
 import { getVariantStyles } from './styles/variants';
+import { useScenePalette } from './ScenePaletteContext';
 
 interface CriticalGameHeaderProps {
   room: GameRoomSummary;
   t: (key: string, params?: Record<string, string | number>) => string;
   idleTimerEnabled: boolean;
-  turnStatusVariant: 'completed' | 'yourTurn' | 'waiting' | 'default';
-  turnStatusText: string;
   actionBusy: string | null;
   isGameOver: boolean;
   currentPlayer: CriticalSnapshot['players'][0] | undefined;
@@ -47,8 +44,6 @@ export function CriticalGameHeader({
   room,
   t,
   idleTimerEnabled,
-  turnStatusVariant,
-  turnStatusText,
   actionBusy,
   isGameOver,
   currentPlayer,
@@ -62,6 +57,7 @@ export function CriticalGameHeader({
   toggleFullscreen,
 }: CriticalGameHeaderProps) {
   const cardVariant = room.gameOptions?.cardVariant;
+  const scene = useScenePalette();
   const [showRules, setShowRules] = useState(false);
 
   const { isLongPending, progress, elapsedSeconds } = useServerWakeUpProgress(
@@ -88,7 +84,13 @@ export function CriticalGameHeader({
 
       {/* Left: variant identity */}
       <GameInfo>
-        <VariantIconBadge>
+        <VariantIconBadge
+          style={{
+            background: scene.turnBannerBorderGradient,
+            borderColor: 'rgba(255,255,255,0.2)',
+            boxShadow: `0 0 12px ${scene.opponentTurnHaloColor}`,
+          }}
+        >
           <Text fontSize={15}>
             {CARD_VARIANTS.find((v) => v.id === cardVariant)?.emoji ?? '🎲'}
           </Text>
@@ -122,11 +124,6 @@ export function CriticalGameHeader({
         </YStack>
       </GameInfo>
 
-      {/* Center: turn status */}
-      <TurnStatusPill $status={turnStatusVariant}>
-        <TurnStatus $status={turnStatusVariant}>{turnStatusText}</TurnStatus>
-      </TurnStatusPill>
-
       {/* Right: actions */}
       <HeaderActions>
         {isLongPending && (
@@ -157,12 +154,12 @@ export function CriticalGameHeader({
           </TimerControlsWrapper>
         )}
 
-        <FullscreenButton onPress={() => setShowRules(true)} title="Game Rules">
+        <FullscreenButton onClick={() => setShowRules(true)} title="Game Rules">
           📖
         </FullscreenButton>
 
         <FullscreenButton
-          onPress={toggleFullscreen}
+          onClick={toggleFullscreen}
           title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
         >
           {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}

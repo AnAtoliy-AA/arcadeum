@@ -2,7 +2,7 @@
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 
 import dynamic from 'next/dynamic';
-import { PageLoading } from '@/shared/ui';
+import { PageLoading } from '@/shared/ui/Loading/PageLoading';
 
 const LeaderboardsPageDynamic = dynamic(
   () => import('./LeaderboardsPageContent'),

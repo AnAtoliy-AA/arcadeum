@@ -19,14 +19,14 @@ export function CenterTableSection({
 }: CenterTableSectionProps) {
   return (
     <CenterTable $variant={cardVariant as GameVariant}>
-      <CardSlot>
+      <CardSlot $role="lastPlayed">
         <LastPlayedCardDisplay
           discardPile={discardPile}
           t={t}
           cardVariant={cardVariant}
         />
       </CardSlot>
-      <CardSlot>
+      <CardSlot $role="deck">
         <DeckDisplay deck={deck} t={t} cardVariant={cardVariant} />
       </CardSlot>
     </CenterTable>

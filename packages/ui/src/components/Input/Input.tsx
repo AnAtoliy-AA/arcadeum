@@ -50,8 +50,28 @@ export type InputProps = GetProps<typeof TamaguiInput> & {
   size?: 'sm' | 'md' | 'lg';
   error?: boolean;
   fullWidth?: boolean;
+  /** @deprecated Use onClick instead */
+  onPress?: () => void;
+  onClick?: (e: unknown) => void;
 };
 
-export const Input: TamaguiComponent<InputProps> = StyledInput as TamaguiComponent<InputProps>;
+import { filterProps } from '../../utils/filterProps';
+
+export const Input = StyledInput.styleable<InputProps>((
+  { size, error, fullWidth, onPress, onClick, ...props }, 
+  ref
+) => {
+  const filteredProps = filterProps({ ...props, onPress, onClick });
+
+  return (
+    <StyledInput
+      {...(filteredProps as unknown as GetProps<typeof StyledInput>)}
+      ref={ref}
+      size={size}
+      error={error}
+      fullWidth={fullWidth}
+    />
+  );
+});
 
 Input.displayName = 'Input';

@@ -1,14 +1,14 @@
 import { shorthands } from '@tamagui/shorthands';
-import { createTamagui, createTokens } from '@tamagui/web';
+import { createTamagui, createTokens, createFont } from '@tamagui/web';
 
-const font = {
+const font = createFont({
   family: 'inherit',
   size: { 1: 12, 2: 14, 3: 16, 4: 18, 5: 20, 6: 24, 7: 28, 8: 32, 9: 40, 10: 48, sm: 14, md: 16, lg: 18, xl: 20, true: 16 },
-  lineHeight: { 1: 16, 2: 18, 3: 20, 4: 24, 5: 28, 6: 30, 7: 34, 8: 38, 9: 46, 10: 54, sm: 18, md: 20, lg: 24, xl: 28, tight: 1.1, relaxed: 1.5, none: 1, normal: 1.4, multiplier16: 1.6, multiplier17: 1.7, 13: 13, 48: 48, true: 24 },
+  lineHeight: { 1: 16, 2: 18, 3: 20, 4: 24, 5: 28, 6: 30, 7: 34, 8: 38, 9: 46, 10: 54, sm: 18, md: 20, lg: 24, xl: 28, tight: 1.1, relaxed: 24, none: 1, normal: 22, multiplier16: 32, multiplier17: 48, 13: 13, 48: 48, true: 24 },
   weight: { 4: '400', 5: '500', 6: '600', 7: '700', 8: '800', 9: '900' },
   letterSpacing: { 4: 0, 6: 0, 7: 0, 8: 0, 9: 0 },
   face: {},
-};
+});
 
 const tokens = createTokens({
   size: { 0: 0, 1: 4, 2: 8, 3: 12, 4: 16, 5: 20, 6: 24, 7: 28, 8: 32, 9: 36, 10: 40, 11: 44, 12: 48, true: 16 },
@@ -118,6 +118,8 @@ const themeBase = {
   victoryText: '#1a1a1a',
   victoryGradientStart: '#ffe866',
   victoryGradientEnd: '#ff9500',
+  backgroundRadialStart: 'rgba(59, 130, 246, 0.18)',
+  backgroundRadialEnd: 'rgba(126, 58, 242, 0.16)',
 };
 
 const lightTheme = {
@@ -135,6 +137,8 @@ const lightTheme = {
   infoText: '#0f172a',
   glassBg: 'rgba(255, 255, 255, 0.8)',
   glassBorder: 'rgba(0, 0, 0, 0.1)',
+  backgroundRadialStart: 'rgba(96, 165, 250, 0.22)',
+  backgroundRadialEnd: 'rgba(129, 140, 248, 0.18)',
 };
 
 const neonDarkTheme = {
@@ -145,6 +149,8 @@ const neonDarkTheme = {
   victoryText: '#1a1a1a',
   accent: '#38bdf8',
   glassBg: 'rgba(6, 1, 27, 0.72)',
+  backgroundRadialStart: 'rgba(87, 195, 255, 0.35)',
+  backgroundRadialEnd: 'rgba(255, 106, 247, 0.35)',
 };
 
 const neonLightTheme = {
@@ -162,6 +168,8 @@ const violetDarkTheme = {
   victoryText: '#1a1a1a',
   accent: '#9333ea',
   glassBg: 'rgba(13, 10, 24, 0.72)',
+  backgroundRadialStart: 'rgba(124, 58, 237, 0.22)',
+  backgroundRadialEnd: 'rgba(192, 132, 252, 0.18)',
 };
 
 const violetLightTheme = {
@@ -175,6 +183,8 @@ const violetLightTheme = {
   primaryText: '#ffffff',
   secondaryText: '#ffffff',
   victoryText: '#1a1a1a',
+  backgroundRadialStart: 'rgba(167, 139, 250, 0.28)',
+  backgroundRadialEnd: 'rgba(196, 181, 253, 0.24)',
 };
 
 const tealDarkTheme = {
@@ -185,6 +195,8 @@ const tealDarkTheme = {
   victoryText: '#1a1a1a',
   accent: '#2dd4bf',
   glassBg: 'rgba(4, 15, 15, 0.72)',
+  backgroundRadialStart: 'rgba(13,148,136,0.22)',
+  backgroundRadialEnd: 'rgba(6,182,212,0.18)',
 };
 
 const tealLightTheme = {
@@ -198,6 +210,8 @@ const tealLightTheme = {
   primaryText: '#0f172a',
   secondaryText: '#ffffff',
   victoryText: '#1a1a1a',
+  backgroundRadialStart: 'rgba(13,148,136,0.18)',
+  backgroundRadialEnd: 'rgba(6,182,212,0.14)',
 };
 
 export const config = createTamagui({
@@ -246,18 +260,18 @@ declare global {
 
 export const setupTamagui = () => {
   if (typeof globalThis !== 'undefined') {
-    // Avoid re-initialization if already set and consistent
+    // Avoid re-initialization if already set
     if (!globalThis.TamaguiConfig) {
       globalThis.TamaguiConfig = config;
     }
   }
 };
 
-// Initialize immediately to ensure config is available to any early imports
+// Prime config immediately on module evaluation to ensure availability for styled components
 try {
   setupTamagui();
 } catch (e) {
-  // Silent catch for edge cases during server initialization
+  // Safe ignore for environment-specific initialization edge cases
 }
 
 export type AppConfig = typeof config;

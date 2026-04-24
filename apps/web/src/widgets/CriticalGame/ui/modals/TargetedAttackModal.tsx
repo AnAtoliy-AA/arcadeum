@@ -36,7 +36,7 @@ interface TargetedAttackModalProps {
   cardVariant?: string;
 }
 
-export const TargetedAttackModal: React.FC<TargetedAttackModalProps> = ({
+const TargetedAttackModal: React.FC<TargetedAttackModalProps> = ({
   isOpen,
   onClose,
   aliveOpponents,
@@ -56,14 +56,14 @@ export const TargetedAttackModal: React.FC<TargetedAttackModalProps> = ({
   return (
     <Modal open={isOpen}>
       <ModalContent
-        onPress={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
         $variant={cardVariant as GameVariant}
       >
         <ModalHeader $variant={cardVariant as GameVariant}>
           <ModalTitle $variant={cardVariant as GameVariant}>
             {emoji} {t(titleKey)}
           </ModalTitle>
-          <CloseButton onPress={onClose} $variant={cardVariant as GameVariant}>
+          <CloseButton onClick={onClose} $variant={cardVariant as GameVariant}>
             ×
           </CloseButton>
         </ModalHeader>
@@ -80,7 +80,7 @@ export const TargetedAttackModal: React.FC<TargetedAttackModalProps> = ({
                 key={opponent.playerId}
                 $selected={selectedTarget === opponent.playerId}
                 $variant={cardVariant as GameVariant}
-                onPress={() => onSelectTarget(opponent.playerId)}
+                onClick={() => onSelectTarget(opponent.playerId)}
                 disabled={
                   opponent.hand.length === 0 &&
                   false /* Opponents don't need cards to be attacked */
@@ -105,10 +105,10 @@ export const TargetedAttackModal: React.FC<TargetedAttackModalProps> = ({
           </OptionGrid>
         </ModalSection>
         <ModalActions>
-          <ModalButton variant="secondary" onPress={onClose}>
+          <ModalButton variant="secondary" onClick={onClose}>
             {t('games.table.modals.common.cancel')}
           </ModalButton>
-          <ModalButton onPress={onConfirm} disabled={!selectedTarget}>
+          <ModalButton onClick={onConfirm} disabled={!selectedTarget}>
             {t('games.table.modals.common.confirm') || 'Confirm'}
           </ModalButton>
         </ModalActions>
@@ -116,3 +116,5 @@ export const TargetedAttackModal: React.FC<TargetedAttackModalProps> = ({
     </Modal>
   );
 };
+
+export default TargetedAttackModal;

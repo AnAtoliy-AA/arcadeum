@@ -4,65 +4,14 @@ import { HEADER_HEIGHT } from '@/shared/config/layout';
 import React from 'react';
 
 import Link from 'next/link';
-import { styled, GetProps, Nav as TamaguiNav, XStack } from 'tamagui';
+import { styled, XStack } from 'tamagui';
 import { YStack, Typography, LinkButton } from '@arcadeum/ui';
-
-// ─── Header Container ─────────────────────────────────────────────────────────
-
-export function HeaderOuter({
-  children,
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<'header'>) {
-  return (
-    <header
-      role="banner"
-      className={`header-outer ${className || ''}`}
-      {...props}
-    >
-      {children}
-    </header>
-  );
-}
-
-export function HeaderBorderLine({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<'div'>) {
-  return <div className={`header-border ${className || ''}`} {...props} />;
-}
+import './header-stable.css';
 
 // ─── Header Inner ─────────────────────────────────────────────────────────────
-
-export function HeaderInner({
-  children,
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<'div'>) {
-  return (
-    <div
-      className={`header-inner header-inner-gap ${className || ''}`}
-      data-testid="header-inner"
-      {...props}
-    >
-      {children}
-    </div>
-  );
-}
+// (Using plain HTML in HeaderLayout for hydration safety)
 
 // ─── Logo ─────────────────────────────────────────────────────────────────────
-
-export function LogoInner({
-  children,
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<'div'>) {
-  return (
-    <div className={`logo-inner logo-hover ${className || ''}`} {...props}>
-      {children}
-    </div>
-  );
-}
 
 export function Logo({
   href,
@@ -72,52 +21,19 @@ export function Logo({
   children: React.ReactNode;
 }) {
   return (
-    <Link href={href} prefetch={false} style={{ textDecoration: 'none' }}>
-      <LogoInner data-testid="logo-inner">{children}</LogoInner>
+    <Link href={href} prefetch={false} className="link-no-decoration">
+      <div className="logo-inner" data-testid="logo-inner">
+        {children}
+      </div>
     </Link>
   );
 }
 
-export function LogoText({
-  children,
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<'span'>) {
-  return (
-    <span
-      className={`logo-text logo-text-desktop ${className || ''}`}
-      data-testid="logo-text"
-      {...props}
-    >
-      {children}
-    </span>
-  );
-}
-
 // ─── Navigation ───────────────────────────────────────────────────────────────
-
-const NavStyled = styled(TamaguiNav, {
-  name: 'Nav',
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: '$4',
-  flex: 1,
-  $md: { display: 'none' },
-});
-
-export const Nav = (props: GetProps<typeof NavStyled>) => (
-  <NavStyled {...props} />
-);
+// (Using plain HTML in HeaderInteractive for hydration safety)
 
 // ─── Actions ──────────────────────────────────────────────────────────────────
-
-export const Actions = styled(XStack, {
-  name: 'Actions',
-  alignItems: 'center',
-  gap: '$4',
-  flexShrink: 0,
-  $xs: { gap: '$2' },
-});
+// (Using plain HTML in HeaderInteractive for hydration safety)
 // ─── Navigation Link ──────────────────────────────────────────────────────────
 
 export const NavLinkWrapper = styled(XStack, {
@@ -142,7 +58,9 @@ export const NavLinkIndicator = styled(XStack, {
   pointerEvents: 'none',
   zIndex: 10,
   opacity: 0,
-  transition: 'all 0.2s ease-in-out' as unknown as undefined,
+  style: {
+    transition: 'all 0.2s ease-in-out',
+  },
 
   variants: {
     active: {
@@ -215,29 +133,29 @@ export const ProfileDropdown = styled(YStack, {
   } as const,
 });
 
-export function ProfileDropdownWrapper({
-  isOpen,
-  children,
-  ...props
-}: {
-  isOpen: boolean;
-  children: React.ReactNode;
-} & GetProps<typeof ProfileDropdown>) {
-  return (
-    <ProfileDropdown isOpen={isOpen} {...props}>
-      <YStack
-        position="absolute"
-        top={0}
-        left={0}
-        right={0}
-        height={1}
-        pointerEvents="none"
-        background="linear-gradient(90deg, transparent, color-mix(in srgb, var(--primaryGradientStart) 25%, transparent), transparent)"
-      />
-      {children}
-    </ProfileDropdown>
-  );
-}
+export const ProfileDropdownWrapper = ProfileDropdown.styleable(
+  ({ isOpen, children, onPress, onClick, ...props }, ref) => {
+    return (
+      <ProfileDropdown
+        ref={ref}
+        isOpen={isOpen}
+        {...props}
+        onClick={(onClick || onPress || undefined) as React.MouseEventHandler}
+      >
+        <YStack
+          position="absolute"
+          top={0}
+          left={0}
+          right={0}
+          height={1}
+          pointerEvents="none"
+          background="linear-gradient(90deg, transparent, color-mix(in srgb, var(--primaryGradientStart) 25%, transparent), transparent)"
+        />
+        {children}
+      </ProfileDropdown>
+    );
+  },
+);
 
 export function DropdownLink({
   href,
@@ -252,7 +170,7 @@ export function DropdownLink({
     <Link
       href={href}
       prefetch={false}
-      style={{ textDecoration: 'none' }}
+      className="link-no-decoration"
       onClick={onClick}
     >
       <XStack

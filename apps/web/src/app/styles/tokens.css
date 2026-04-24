@@ -1,0 +1,55 @@
+:root {
+  --background: #151718;
+  --foreground: #ecefee;
+  --muted-foreground: #9ba1a6;
+  --card-background: rgba(31, 34, 40, 0.88);
+  --card-border: rgba(68, 72, 80, 0.45);
+  --surface-background: rgba(22, 24, 28, 0.78);
+  --primary-gradient-start: #38bdf8;
+  --glassBg: rgba(15, 17, 18, 0.72);
+  --backgroundRadialStart: rgba(56, 189, 248, 0.15); /* Light blue fallback */
+  --backgroundRadialEnd: rgba(15, 17, 18, 1);
+
+  /* Layout Tokens */
+  --container-xl: 1200px;
+
+  /* Spacing Tokens (matching Tamagui config) */
+  --t-space-1: 4px;
+  --t-space-2: 8px;
+  --t-space-3: 12px;
+  --t-space-4: 16px;
+  --t-space-5: 20px;
+  --t-space-6: 24px;
+  --t-space-7: 28px;
+  --t-space-8: 32px;
+  --t-space-9: 36px;
+  --t-space-10: 40px;
+  --t-space-12: 48px;
+  --t-space-28: 112px;
+
+  /* Font Size Tokens */
+  --t-font-size-3: 16px;
+  --t-font-size-4: 18px;
+  --t-font-size-5: 20px;
+  --t-font-size-6: 24px;
+  --t-font-size-8: 32px;
+
+  /* Radius Tokens */
+  --t-radius-4: 16px;
+  --t-radius-6: 24px;
+}
+
+[data-theme='dark'] {
+  --backgroundRadialStart: rgba(56, 189, 248, 0.12);
+  --backgroundRadialEnd: #151718;
+}
+
+[data-theme='neon'] {
+  --backgroundRadialStart: rgba(0, 255, 153, 0.15);
+  --backgroundRadialEnd: #0a0c10;
+}
+
+[data-theme='purple'] {
+  --backgroundRadialStart: rgba(168, 85, 247, 0.15);
+  --backgroundRadialEnd: #110e1a;
+}

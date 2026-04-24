@@ -36,7 +36,7 @@ interface GiveFavorModalProps {
   cardVariant?: string;
 }
 
-export const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
+const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
   isOpen,
   requesterName,
   myHand,
@@ -60,7 +60,7 @@ export const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
   return (
     <Modal open={isOpen}>
       <ModalContent
-        onPress={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
         $variant={gameVariant}
       >
         <ModalHeader $variant={gameVariant}>
@@ -81,7 +81,7 @@ export const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
                 $cardType={card}
                 $index={index}
                 $variant={cardVariant as GameVariant}
-                onPress={() => setSelectedCard(card)}
+                onClick={() => setSelectedCard(card)}
                 selected={selectedCard === card}
               >
                 <CardCorner $position="tl" />
@@ -109,7 +109,7 @@ export const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
           </ScrollableCardsGrid>
         </ModalSection>
         <ModalActions>
-          <ModalButton onPress={handleConfirm} disabled={!selectedCard}>
+          <ModalButton onClick={handleConfirm} disabled={!selectedCard}>
             {t('games.table.modals.giveFavor.confirm')}
           </ModalButton>
         </ModalActions>
@@ -117,3 +117,5 @@ export const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
     </Modal>
   );
 };
+
+export default GiveFavorModal;

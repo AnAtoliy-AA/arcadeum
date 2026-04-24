@@ -1,13 +1,12 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import GameRoomLoading from './loading';
-
+import { PageLoading } from '@/shared/ui/Loading/PageLoading';
 import type { GameInitialData } from '@/shared/types/games';
 
 const GameRoomPageDynamic = dynamic(() => import('./components/GameRoomPage'), {
   ssr: false,
-  loading: () => <GameRoomLoading />,
+  loading: () => <PageLoading layout="room" />,
 });
 
 interface GameRoomClientProps {

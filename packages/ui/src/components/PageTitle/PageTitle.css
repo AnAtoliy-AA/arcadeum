@@ -20,23 +20,12 @@
 }
 
 .page-title-gradient {
-  color: transparent !important;
-  /* Fallback gradients if CSS variables are not yet ready */
-  background: #38bdf8;
-  background: linear-gradient(135deg, #ecefee 0%, #0369a1 100%) !important;
-  /* Dynamic gradient using theme variables */
-  background: linear-gradient(135deg, var(--color, #ecefee) 0%, var(--primary, #0369a1) 100%) !important;
-  
-  background-size: 200% 200% !important;
-  background-clip: text !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
   display: inline-block;
   padding-top: 0.5em;
   padding-bottom: 0.5em;
   margin-top: -0.5em;
   margin-bottom: -0.5em;
-  animation: pageTitleEnter 200ms ease-out both, gradientShift 4s ease infinite !important;
+  animation: pageTitleEnter 200ms ease-out both, gradientShift 4s ease infinite;
 }
 
 .page-title-base {

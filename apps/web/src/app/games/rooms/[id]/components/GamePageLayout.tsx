@@ -1,10 +1,11 @@
 'use client';
 
+import '@/features/games/ui/scrollbar.css';
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { useMedia } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { useFullscreen } from '@/features/games/hooks';
-import { ConnectionOverlay } from '@/shared/ui';
+import { useFullscreen } from '@/features/games/hooks/useFullscreen';
+import { ConnectionOverlay } from '@arcadeum/ui/components/ConnectionOverlay/ConnectionOverlay';
 import { GamesControlPanel } from '@/widgets/GamesControlPanel';
 import {
   GameChat,

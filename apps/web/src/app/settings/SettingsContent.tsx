@@ -6,10 +6,12 @@ import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { useThemeController } from '@/app/theme/ThemeContext';
 import { useHapticsSetting } from '@/shared/hooks/useHapticsSetting';
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
-import { usePWAInstallProps } from '@/features/pwa';
+import { usePWAInstallProps } from '@/features/pwa/context';
 import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
 import type { ThemePreference } from '@/shared/config/theme';
-import { PageLayout, PageTitle, Section } from '@/shared/ui';
+import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
+import { PageTitle } from '@arcadeum/ui/components/PageTitle/PageTitle';
+import { Section } from '@arcadeum/ui/components/Section/Section';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { appConfig } from '@/shared/config/app-config';
 
@@ -19,6 +21,7 @@ import {
   PillGroup,
   AccountStatus,
   AccountActions,
+  AccountActionItem,
   ToggleRow,
   ToggleLabel,
   ToggleInput,
@@ -26,10 +29,12 @@ import {
   settingsStyles,
 } from './styles';
 
-import { Button, LinkButton } from '@arcadeum/ui';
-import { DownloadButtons, OptionCard } from '@/shared/ui';
+import { Button } from '@arcadeum/ui/components/Button/Button';
+import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
+import { DownloadButtons } from '@/shared/ui/DownloadButtons/DownloadButtons';
+import { OptionCard } from '@/shared/ui/OptionCard/OptionCard';
 import { BlockedUsersSection } from './BlockedUsersSection';
-import { AppFooter } from '@/widgets/footer';
+import AppFooter from '@/widgets/footer/ui/AppFooter';
 
 type DownloadConfig = {
   title: string;
@@ -247,7 +252,7 @@ export default function SettingsContent({
                   key={option.code}
                   data-testid={`theme-${option.code}`}
                   isActive={themePreference === option.code}
-                  onPress={() => handleThemeSelect(option.code)}
+                  onClick={() => handleThemeSelect(option.code)}
                   label={option.label}
                   description={option.description}
                 />
@@ -270,7 +275,7 @@ export default function SettingsContent({
                   variant={locale === option.code ? 'primary' : 'secondary'}
                   size="md"
                   minWidth={90}
-                  onPress={() => setLocale(option.code)}
+                  onClick={() => setLocale(option.code)}
                 >
                   {option.label}
                 </Button>
@@ -279,7 +284,7 @@ export default function SettingsContent({
           </Section>
 
           <Section title={gameplayTitle} description={gameplayDescription}>
-            <ToggleRow data-testid="sound-row" onPress={handleToggleSound}>
+            <ToggleRow data-testid="sound-row" onClick={handleToggleSound}>
               <ToggleLabel>{settingsCopy.soundLabel ?? 'Sound'}</ToggleLabel>
               <ToggleInput
                 type="checkbox"
@@ -288,7 +293,7 @@ export default function SettingsContent({
                 aria-label={settingsCopy.soundLabel ?? 'Sound'}
               />
             </ToggleRow>
-            <ToggleRow data-testid="haptics-row" onPress={handleToggleHaptics}>
+            <ToggleRow data-testid="haptics-row" onClick={handleToggleHaptics}>
               <ToggleLabel>{hapticsLabel}</ToggleLabel>
               <ToggleInput
                 type="checkbox"
@@ -307,17 +312,19 @@ export default function SettingsContent({
             </AccountStatus>
             <AccountActions>
               {snapshot.email ? (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={handleAccountAction}
-                  data-testid="account-logout-button"
-                  flex={1}
-                >
-                  {accountPrimaryCta}
-                </Button>
+                <AccountActionItem>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={handleAccountAction}
+                    data-testid="account-logout-button"
+                    fullWidth
+                  >
+                    {accountPrimaryCta}
+                  </Button>
+                </AccountActionItem>
               ) : (
-                <span style={{ flex: 1 }}>
+                <AccountActionItem>
                   <LinkButton
                     href="/auth"
                     variant="primary"
@@ -327,9 +334,9 @@ export default function SettingsContent({
                   >
                     {accountPrimaryCta}
                   </LinkButton>
-                </span>
+                </AccountActionItem>
               )}
-              <span style={{ flex: 1 }}>
+              <AccountActionItem>
                 <LinkButton
                   href={supportCta.href}
                   variant="secondary"
@@ -338,7 +345,7 @@ export default function SettingsContent({
                 >
                   {accountSupportLabel}
                 </LinkButton>
-              </span>
+              </AccountActionItem>
             </AccountActions>
           </Section>
 

@@ -1,4 +1,5 @@
-import { Footer } from '@arcadeum/ui';
+'use client';
+import { Footer } from '@arcadeum/ui/components/Footer/Footer';
 import { appConfig } from '@/shared/config/app-config';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
@@ -41,7 +42,7 @@ export default function AppFooter() {
       appName={appName}
       social={social}
       copyrightLabel={t('home.footerRights', {
-        year: new Date().getFullYear(),
+        year: 2026,
         appName,
       })}
       versionLabel={appVersion}

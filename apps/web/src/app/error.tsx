@@ -16,7 +16,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <main className="main-outer">
+    <div className="main-outer">
       <XStack
         padding="$10"
         justifyContent="center"
@@ -30,6 +30,6 @@ export default function Error({
           retryLabel="Try again"
         />
       </XStack>
-    </main>
+    </div>
   );
 }

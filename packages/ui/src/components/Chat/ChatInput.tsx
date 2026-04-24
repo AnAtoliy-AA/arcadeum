@@ -37,7 +37,7 @@ export const ChatInput = memo(function ChatInput({
 }: ChatInputProps) {
   const [isFocused, setIsFocused] = useState(false);
 
-  const handleKeyPress = (e: any) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       onSend();
@@ -52,7 +52,7 @@ export const ChatInput = memo(function ChatInput({
         <Input
           value={value}
           onChangeText={onChange}
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyDown}
           placeholder={placeholder}
           disabled={disabled}
           fullWidth
@@ -66,7 +66,7 @@ export const ChatInput = memo(function ChatInput({
         />
       </View>
       <Button
-        onPress={onSend}
+        onClick={onSend}
         disabled={disabled || !value.trim()}
         variant="primary"
         size="sm"

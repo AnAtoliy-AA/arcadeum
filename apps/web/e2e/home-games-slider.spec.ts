@@ -24,7 +24,11 @@ test.describe('Home Page Games Grid Refinement', () => {
   test('should navigate slider via arrows', async ({ page }) => {
     await page.setViewportSize({ width: 400, height: 800 });
 
-    const sliderTrack = page.locator('div[class*="slider-track"]');
+    const sliderTrack = page
+      .locator('main')
+      .first()
+      .locator('div[class*="slider-track"]')
+      .first();
     await expect(sliderTrack).toBeVisible();
 
     const nextButton = page.getByTestId('next-game-button');
@@ -44,7 +48,11 @@ test.describe('Home Page Games Grid Refinement', () => {
   test('should open game details modal from slider', async ({ page }) => {
     await expect(page.locator('body')).toBeVisible();
 
-    const criticalCard = page.getByTestId('game-card-critical_v1');
+    const criticalCard = page
+      .locator('main')
+      .first()
+      .getByTestId('game-card-critical_v1')
+      .first();
     await expect(criticalCard).toBeVisible();
 
     const questionIcon = criticalCard.getByTestId('game-help-button');
@@ -64,8 +72,12 @@ test.describe('Home Page Games Grid Refinement', () => {
   test('should redirect to create page with preselected game', async ({
     page,
   }) => {
-    const criticalCard = page.getByTestId('game-card-critical_v1');
-    const playNowButton = criticalCard.getByTestId('game-play-button');
+    const criticalCard = page
+      .locator('main')
+      .first()
+      .getByTestId('game-card-critical_v1')
+      .first();
+    const playNowButton = criticalCard.getByTestId('game-play-button').first();
 
     await playNowButton.click({ force: true });
 

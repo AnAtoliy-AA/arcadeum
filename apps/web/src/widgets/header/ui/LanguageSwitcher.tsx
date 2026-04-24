@@ -2,6 +2,7 @@
 
 import { useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useIsMounted } from './useIsMounted';
 import { XStack, GlobeIcon } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES, Locale } from '@/shared/i18n';
@@ -20,19 +21,16 @@ interface LanguageSwitcherProps {
   'data-testid'?: string;
 }
 
-export function LanguageSwitcher({
+export default function LanguageSwitcher({
   className,
   'data-testid': testId,
 }: LanguageSwitcherProps) {
   const router = useRouter();
-  const {
-    locale: storeLocale,
-    setLocale,
-    isReady,
-    initialLocale,
-  } = useLanguage();
+  const { locale: storeLocale, setLocale, initialLocale } = useLanguage();
 
-  const locale = isReady ? storeLocale : initialLocale || DEFAULT_LOCALE;
+  const mounted = useIsMounted();
+
+  const locale = mounted ? storeLocale : initialLocale || DEFAULT_LOCALE;
 
   const handleLocaleChange = useCallback(
     (val: string) => {
@@ -57,7 +55,6 @@ export function LanguageSwitcher({
     <XStack
       alignItems="center"
       gap="$2"
-      marginHorizontal="$3"
       $md={{ marginHorizontal: '$5' }}
       className={className}
     >

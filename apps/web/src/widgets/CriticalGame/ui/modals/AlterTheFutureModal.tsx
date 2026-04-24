@@ -159,7 +159,7 @@ interface AlterTheFutureModalProps {
   onClose?: () => void;
 }
 
-export function AlterTheFutureModal({
+export default function AlterTheFutureModal({
   isOpen,
   cards,
   isShare = false,
@@ -241,7 +241,7 @@ export function AlterTheFutureModal({
         </DndContext>
 
         <ModalFooter>
-          <ModalButton variant="primary" onPress={handleConfirm}>
+          <ModalButton variant="primary" onClick={handleConfirm}>
             {t('games.table.modals.alterTheFuture.confirm')}
           </ModalButton>
         </ModalFooter>

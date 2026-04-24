@@ -43,6 +43,7 @@ import {
   RefreshButton,
 } from './lobbyStyles';
 import { SortablePlayerItem, AVATAR_COLORS } from './SortablePlayerItem';
+import { ConfirmationModal } from './ConfirmationModal';
 import { RefreshIcon } from '@arcadeum/ui';
 
 interface LobbySidebarProps {
@@ -64,6 +65,8 @@ interface LobbySidebarProps {
     waitingForPlayerLabel?: string;
     fastRoomLabel?: string;
     deleteRoomLabel?: string;
+    kickPlayerLabel?: string;
+    leaveRoomLabel?: string;
   };
   showReorderControls: boolean;
   showInvitedPlayers: boolean;
@@ -71,6 +74,8 @@ interface LobbySidebarProps {
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
   onDeleteRoom?: () => void;
+  onKickPlayer?: (userId: string) => void;
+  onLeaveRoom?: () => void;
   deleteRoomLabel: string;
   extraPlayersCardSlot?: React.ReactNode;
   onRefresh?: () => void;
@@ -87,6 +92,8 @@ export function LobbySidebar({
   onReorderPlayers,
   onReinvite,
   onDeleteRoom,
+  onKickPlayer,
+  onLeaveRoom,
   deleteRoomLabel,
   extraPlayersCardSlot,
   onRefresh,
@@ -130,6 +137,12 @@ export function LobbySidebar({
 
   const getInitials = (name: string) => name.slice(0, 2).toUpperCase();
 
+  const [kickTarget, setKickTarget] = React.useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [showLeaveConfirm, setShowLeaveConfirm] = React.useState(false);
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, {
@@ -161,7 +174,6 @@ export function LobbySidebar({
           {onRefresh && (
             <RefreshButton
               onClick={onRefresh}
-              onPress={onRefresh}
               title="Refresh Room"
               data-testid="refresh-room-button"
             >
@@ -200,6 +212,15 @@ export function LobbySidebar({
                       );
                       onReorderPlayers?.(newOrder);
                     }}
+                    onKick={
+                      onKickPlayer && member.id !== room.hostId
+                        ? () =>
+                            setKickTarget({
+                              id: member.id,
+                              name: member.displayName,
+                            })
+                        : undefined
+                    }
                   />
                 ))}
               </SortableContext>
@@ -224,6 +245,24 @@ export function LobbySidebar({
                       </Badge>
                     )}
                   </PlayerInfo>
+                  {onKickPlayer && !isRoomHost && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        setKickTarget({
+                          id: member.id,
+                          name: member.displayName,
+                        })
+                      }
+                      paddingVertical="$1"
+                      paddingHorizontal="$2"
+                      minWidth="auto"
+                      style={{ color: '#ef4444' }}
+                    >
+                      ✕
+                    </Button>
+                  )}
                 </PlayerItem>
               );
             })
@@ -295,7 +334,6 @@ export function LobbySidebar({
                       variant="ghost"
                       size="sm"
                       onClick={() => onReinvite?.([u.id])}
-                      onPress={() => onReinvite?.([u.id])}
                       marginLeft="$2"
                     >
                       {reinviteLabel}
@@ -344,15 +382,47 @@ export function LobbySidebar({
       </LobbyCard>
 
       {isHost && onDeleteRoom && (
-        <DeleteButton
-          onClick={onDeleteRoom}
-          onPress={onDeleteRoom}
-          marginTop="$2"
-          width="100%"
-        >
+        <DeleteButton onClick={onDeleteRoom} marginTop="$2" width="100%">
           {deleteRoomLabel}
         </DeleteButton>
       )}
+
+      {!isHost && onLeaveRoom && (
+        <DeleteButton
+          onClick={() => setShowLeaveConfirm(true)}
+          marginTop="$2"
+          width="100%"
+        >
+          {labels.leaveRoomLabel || t('games.common.leaveRoom.button')}
+        </DeleteButton>
+      )}
+
+      <ConfirmationModal
+        open={!!kickTarget}
+        onClose={() => setKickTarget(null)}
+        onConfirm={() => {
+          if (kickTarget) {
+            onKickPlayer?.(kickTarget.id);
+            setKickTarget(null);
+          }
+        }}
+        title={t('games.common.kickPlayer.confirmTitle')}
+        message={t('games.common.kickPlayer.confirmMessage', {
+          playerName: kickTarget?.name ?? '',
+        })}
+        confirmLabel={t('games.common.kickPlayer.confirmButton')}
+        cancelLabel={t('games.common.kickPlayer.cancelButton')}
+      />
+
+      <ConfirmationModal
+        open={showLeaveConfirm}
+        onClose={() => setShowLeaveConfirm(false)}
+        onConfirm={onLeaveRoom}
+        title={t('games.common.leaveRoom.confirmTitle')}
+        message={t('games.common.leaveRoom.confirmMessage')}
+        confirmLabel={t('games.common.leaveRoom.confirmButton')}
+        cancelLabel={t('games.common.leaveRoom.cancelButton')}
+      />
     </Sidebar>
   );
 }

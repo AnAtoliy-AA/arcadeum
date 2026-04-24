@@ -17,11 +17,12 @@ import {
 } from '@/shared/lib/socket';
 import { GamePageLayout } from './GamePageLayout';
 import { gamesApi } from '@/features/games/api';
-import { useGameRoom, type GameType } from '@/features/games/hooks';
+import { useGameRoom } from '@/features/games/hooks/useGameRoom';
+import type { GameType } from '@/features/games/hooks/useGameActions';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useIdleReconnect } from '@/shared/hooks/useIdleReconnect';
 import { useIdleDetection } from '@/shared/hooks/useIdleDetection';
-import { Page } from '@/shared/ui';
+import { Page } from '@/shared/ui/Page/Page';
 import { mapToGameType } from '@/features/games/lib/gameIdMapping';
 import { gameFactory } from '@/features/games/lib/gameFactory';
 import { gameMetadata } from '@/features/games/registry';

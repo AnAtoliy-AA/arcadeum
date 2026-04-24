@@ -1,3 +1,4 @@
+'use client';
 import { HeaderLayout } from './HeaderLayout';
 import { HeaderInteractive } from './HeaderInteractive';
 

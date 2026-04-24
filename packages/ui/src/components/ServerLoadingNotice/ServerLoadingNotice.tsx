@@ -56,7 +56,7 @@ export const ServerLoadingNotice = memo(function ServerLoadingNotice({
         </YStack>
       </YStack>
       <XStack justifyContent="flex-end" marginTop="$2">
-        <Button variant="outlined" size="$2" onPress={onSupportClick}>
+        <Button variant="outlined" size="$2" onClick={onSupportClick}>
           {supportLabel}
         </Button>
       </XStack>

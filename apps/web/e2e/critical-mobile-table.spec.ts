@@ -266,5 +266,14 @@ test.describe('Critical Game Table Mobile Layout', () => {
     for (let i = 0; i < 4; i++) {
       await expect(playerNames.nth(i)).toBeVisible();
     }
+
+    // Redesign markers (ARC-480): scene backdrop + turn banner mount on
+    // mobile too; the mobile action sheet should be latent (not visible
+    // until an attack/favor card is selected).
+    await expect(page.locator('[data-testid="scene-backdrop"]')).toBeVisible();
+    await expect(page.locator('[data-testid="turn-banner"]')).toBeVisible();
+    await expect(
+      page.locator('[data-testid="mobile-action-sheet"]'),
+    ).toHaveCount(0);
   });
 });

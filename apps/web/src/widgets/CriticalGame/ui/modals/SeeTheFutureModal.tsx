@@ -28,7 +28,7 @@ interface SeeTheFutureModalProps {
   cardVariant?: string;
 }
 
-export const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
+const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
   isOpen,
   onClose,
   cards,
@@ -40,14 +40,14 @@ export const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
   return (
     <Modal open={isOpen}>
       <ModalContent
-        onPress={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
         $variant={cardVariant as GameVariant}
       >
         <ModalHeader $variant={cardVariant as GameVariant}>
           <ModalTitle $variant={cardVariant as GameVariant}>
             🔮 {t('games.table.modals.seeTheFuture.title')}
           </ModalTitle>
-          <CloseButton onPress={onClose} $variant={cardVariant as GameVariant}>
+          <CloseButton onClick={onClose} $variant={cardVariant as GameVariant}>
             ×
           </CloseButton>
         </ModalHeader>
@@ -86,7 +86,7 @@ export const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
           ))}
         </OptionGrid>
         <ModalActions>
-          <ModalButton onPress={onClose}>
+          <ModalButton onClick={onClose}>
             {t('games.table.modals.seeTheFuture.confirm')}
           </ModalButton>
         </ModalActions>
@@ -94,3 +94,5 @@ export const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
     </Modal>
   );
 };
+
+export default SeeTheFutureModal;

@@ -1,7 +1,7 @@
 import { styled, YStack, TamaguiComponent } from 'tamagui';
 import { sharedButtonVariants, sharedButtonSizes } from './SharedButtonStyles';
 
-export const StyledLinkButton: TamaguiComponent<any, any, any, any> = styled(YStack, {
+export const StyledLinkButton = styled(YStack, {
   name: 'LinkButton',
   display: 'flex',
   alignItems: 'center',
@@ -9,6 +9,12 @@ export const StyledLinkButton: TamaguiComponent<any, any, any, any> = styled(YSt
   flexDirection: 'row',
   borderRadius: '$4',
   cursor: 'pointer',
+
+  focusStyle: {
+    borderColor: '$primary',
+    borderWidth: 2,
+    outlineColor: 'transparent',
+  },
 
   variants: {
     ...sharedButtonSizes,

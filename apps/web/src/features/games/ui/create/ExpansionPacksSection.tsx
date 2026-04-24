@@ -2,7 +2,8 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { Button, CollapsibleSection } from '@/shared/ui';
+import { Button } from '@arcadeum/ui/components/Button/Button';
+import { CollapsibleSection } from '@arcadeum/ui/components/CollapsibleSection/CollapsibleSection';
 
 import { ExpansionId, EXPANSION_PACK_DETAILS } from './constants';
 import {
@@ -165,7 +166,7 @@ export function ExpansionPacksSection({
           <ExpandablePackContainer key={pack.id}>
             <ExpandablePackHeader
               disabled={!pack.available}
-              onPress={(e: React.BaseSyntheticEvent) => {
+              onClick={(e: React.BaseSyntheticEvent) => {
                 // Don't toggle expand if clicking on checkbox
                 if (e.target.tagName === 'INPUT') return;
                 if (pack.available && pack.cards.length > 0) {

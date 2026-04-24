@@ -1,7 +1,7 @@
 'use client';
 
 import { InstallPWAModalContent } from './InstallPWAModalContent';
-import { Button } from '@arcadeum/ui';
+import { Button } from '@arcadeum/ui/components/Button/Button';
 import { usePWAOptional } from './context';
 
 export function InstallPWAModal() {
@@ -16,7 +16,7 @@ export function InstallPWAButton() {
   return (
     <Button
       variant="icon"
-      size="sm"
+      size="md"
       onClick={pwa.openModal}
       aria-label="Install App"
       data-testid="install-pwa-header-button"

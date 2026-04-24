@@ -11,17 +11,14 @@ test.describe('Profile and Settings', () => {
 
   test('should display user profile information', async ({ page }) => {
     await navigateTo(page, '/settings');
-    // Wait for hydration
-    await expect(page.locator('html')).toHaveAttribute(
-      'data-theme-preference',
-      /.*/,
-      { timeout: 10000 },
-    );
+    // Wait for session data to be hydrated in the UI
+    await expect(async () => {
+      const username = page.getByText(/testuser/i).first();
+      const email = page.getByText(/test@example.com/i).first();
 
-    await expect(page.getByText(/testuser/i).first()).toBeVisible({
-      timeout: 15000,
-    });
-    await expect(page.getByText(/test@example.com/i).first()).toBeVisible({
+      await expect(username).toBeVisible();
+      await expect(email).toBeVisible();
+    }).toPass({
       timeout: 15000,
     });
   });

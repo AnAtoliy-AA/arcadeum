@@ -40,83 +40,82 @@ export const DownloadButtons: React.FC<DownloadButtonsProps> = ({
   onShowInstructions,
   labels,
 }) => {
-  const themeName = useThemeName();
   const theme = useTheme();
-  const iconColor = theme.color.get() as string;
-  
-  const invertedTheme = themeName.includes('light')
-    ? themeName.replace('light', 'dark')
-    : themeName.replace('dark', 'light');
+
+  // Stable inverted theme logic - avoid useThemeName if possible for initial render
+  // but if we must, we ensure the fallback is consistent.
+  const themeName = useThemeName();
+  const invertedTheme = themeName.includes('light') ? 'dark' : 'light';
 
   if (!iosHref && !androidHref && !onInstall && !onShowInstructions) {
     return null;
   }
 
-  return (
-    <Theme name={invertedTheme as ThemeName}>
-      <S.Container>
-        {iosHref && (
-          <DownloadLinkAnchor
-            tag="a"
-            href={iosHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-testid="download-ios-button"
-            style={{ textDecoration: 'none' }}
-            animation="quick"
-          >
-            <S.IconWrapper>
-              <AppleIcon size={32} color={iconColor} />
-            </S.IconWrapper>
-            <S.TextWrapper>
-              <S.SmallText>{labels.iosStore.small}</S.SmallText>
-              <S.LargeText>{labels.iosStore.large}</S.LargeText>
-            </S.TextWrapper>
-          </DownloadLinkAnchor>
-        )}
+  const content = (
+    <S.Container>
+      {iosHref && (
+        <DownloadLinkAnchor
+          tag="a"
+          href={iosHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-testid="download-ios-button"
+          style={{ textDecoration: 'none' }}
+          animation="quick"
+        >
+          <S.IconWrapper>
+            <AppleIcon size={32} />
+          </S.IconWrapper>
+          <S.TextWrapper>
+            <S.SmallText>{labels.iosStore.small}</S.SmallText>
+            <S.LargeText>{labels.iosStore.large}</S.LargeText>
+          </S.TextWrapper>
+        </DownloadLinkAnchor>
+      )}
 
-        {androidHref && (
-          <DownloadLinkAnchor
-            tag="a"
-            href={androidHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-testid="download-android-button"
-            style={{ textDecoration: 'none' }}
-            animation="quick"
-          >
-            <S.IconWrapper>
-              <AndroidIcon size={32} color={iconColor} />
-            </S.IconWrapper>
-            <S.TextWrapper>
-              <S.SmallText>{labels.googlePlay.small}</S.SmallText>
-              <S.LargeText>{labels.googlePlay.large}</S.LargeText>
-            </S.TextWrapper>
-          </DownloadLinkAnchor>
-        )}
+      {androidHref && (
+        <DownloadLinkAnchor
+          tag="a"
+          href={androidHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-testid="download-android-button"
+          style={{ textDecoration: 'none' }}
+          animation="quick"
+        >
+          <S.IconWrapper>
+            <AndroidIcon size={32} />
+          </S.IconWrapper>
+          <S.TextWrapper>
+            <S.SmallText>{labels.googlePlay.small}</S.SmallText>
+            <S.LargeText>{labels.googlePlay.large}</S.LargeText>
+          </S.TextWrapper>
+        </DownloadLinkAnchor>
+      )}
 
-        {(onInstall || onShowInstructions) && (
-          <DownloadLinkAnchor
-            tag="button"
-            onPress={onInstall || onShowInstructions}
-            data-testid="install-pwa-button"
-            isButton
-            animation="quick"
-          >
-            <S.IconWrapper>
-              <SmartphoneIcon size={32} color={iconColor} />
-            </S.IconWrapper>
-            <S.TextWrapper>
-              <S.SmallText>
-                {onInstall ? labels.installAs : labels.getThe}
-              </S.SmallText>
-              <S.LargeText>
-                {onInstall ? labels.webApp : labels.appGuide}
-              </S.LargeText>
-            </S.TextWrapper>
-          </DownloadLinkAnchor>
-        )}
-      </S.Container>
-    </Theme>
+      {(onInstall || onShowInstructions) && (
+        <DownloadLinkAnchor
+          tag="button"
+          onClick={onInstall || onShowInstructions}
+          data-testid="install-pwa-button"
+          isButton
+          animation="quick"
+        >
+          <S.IconWrapper>
+            <SmartphoneIcon size={32} />
+          </S.IconWrapper>
+          <S.TextWrapper>
+            <S.SmallText>
+              {onInstall ? labels.installAs : labels.getThe}
+            </S.SmallText>
+            <S.LargeText>
+              {onInstall ? labels.webApp : labels.appGuide}
+            </S.LargeText>
+          </S.TextWrapper>
+        </DownloadLinkAnchor>
+      )}
+    </S.Container>
   );
+
+  return <Theme name={invertedTheme as ThemeName}>{content}</Theme>;
 };

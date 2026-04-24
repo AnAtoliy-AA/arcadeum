@@ -1,29 +1,36 @@
-import { styled, XStack, YStack } from 'tamagui';
+import {
+  styled,
+  XStack,
+  YStack,
+  type GetProps,
+  type TamaguiComponent,
+} from 'tamagui';
 import { Card, Badge, Typography } from '@arcadeum/ui';
-import type { ReactNode } from 'react';
+import type { ReactNode, ComponentType } from 'react';
 
-export const EntriesGrid = ({ children }: { children: ReactNode }) => (
-  <div
-    style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-      gap: '1.25rem',
-    }}
-  >
-    {children}
-  </div>
-);
+type WithGetProps<
+  T extends TamaguiComponent | ComponentType<Record<string, unknown>>,
+> = GetProps<T> &
+  React.HTMLAttributes<HTMLElement> & {
+    children?: ReactNode;
+  };
+
+export const EntriesGrid = styled(YStack, {
+  display: 'grid' as 'flex',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+  gap: '$4',
+  width: '100%',
+});
 
 export const EntryCard = styled(Card, {
   name: 'EntryCard',
-  variant: 'elevated' as never,
-  cardPadding: 'md' as never,
+  variant: 'elevated',
+  cardPadding: 'md',
   interactive: true,
   flexDirection: 'column',
   gap: '$3',
   cursor: 'pointer',
-  group: 'entry' as never,
-} as Record<string, unknown>);
+});
 
 export const EntryHeader = styled(XStack, {
   jc: 'space-between',
@@ -43,14 +50,13 @@ const StyledEntryGameName = styled(Typography, {
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
   width: '100%',
-} as Record<string, unknown>);
+});
 
 export const EntryGameName = ({
   children,
   title,
   ...props
-}: { children?: ReactNode; title?: string } & Record<string, unknown>) => (
-  // @ts-expect-error tamagui styled typings
+}: { title?: string } & WithGetProps<typeof StyledEntryGameName>) => (
   <StyledEntryGameName title={title} {...props}>
     {children}
   </StyledEntryGameName>
@@ -63,14 +69,13 @@ const StyledEntryRoomName = styled(Typography, {
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
   width: '100%',
-} as Record<string, unknown>);
+});
 
 export const EntryRoomName = ({
   children,
   title,
   ...props
-}: { children?: ReactNode; title?: string } & Record<string, unknown>) => (
-  // @ts-expect-error tamagui styled typings
+}: { title?: string } & WithGetProps<typeof StyledEntryRoomName>) => (
   <StyledEntryRoomName title={title} {...props}>
     {children}
   </StyledEntryRoomName>
@@ -79,14 +84,8 @@ export const EntryRoomName = ({
 export const EntryStatus = ({
   children,
   ...props
-}: { children?: ReactNode } & Record<string, unknown>) => (
-  <Badge
-    variant="info"
-    size="sm"
-    borderRadius={999}
-    flexShrink={0}
-    {...(props as Record<string, unknown>)}
-  >
+}: WithGetProps<typeof Badge>) => (
+  <Badge variant="info" size="sm" borderRadius={999} flexShrink={0} {...props}>
     {children}
   </Badge>
 );
@@ -109,16 +108,13 @@ export const EntryFooter = styled(XStack, {
 export const EntryTimestamp = styled(Typography, {
   uiSize: 'xs',
   alpha: 'medium',
-} as Record<string, unknown>);
+});
 
 export const EntryViewDetails = styled(Typography, {
   uiSize: 'sm',
   weight: '600',
   color: '$primary',
-  '$group-entry-hover': {
-    opacity: 0.8,
-  },
-} as Record<string, unknown>);
+});
 
 export const PaginationSpinner = styled(YStack, {
   name: 'PaginationSpinner',
@@ -137,4 +133,4 @@ export const EndOfListText = styled(Typography, {
   padding: '$8',
   gridColumn: '1 / -1',
   width: '100%',
-} as Record<string, unknown>);
+});

@@ -53,19 +53,11 @@ export const Container = styled(YStack, {
   gap: '$8',
 } as Record<string, unknown>);
 
-export function OptionList({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      style={{
-        display: 'grid',
-        gap: '1.25rem',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-      }}
-    >
-      {children}
-    </div>
-  );
-}
+export const OptionList = styled(YStack, {
+  display: 'grid',
+  gap: '1.25rem',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+} as unknown as Record<string, unknown>);
 
 export const PillGroup = styled(XStack, {
   flexWrap: 'wrap',
@@ -96,6 +88,11 @@ export const AccountActions = styled(XStack, {
   flexWrap: 'wrap',
   gap: '$5',
   marginTop: '$3',
+} as Record<string, unknown>);
+
+export const AccountActionItem = styled(YStack, {
+  flex: 1,
+  minWidth: 150, // Added minWidth for better responsiveness on small screens
 } as Record<string, unknown>);
 
 export const ToggleRow = styled(XStack, {

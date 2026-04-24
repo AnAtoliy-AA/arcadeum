@@ -87,6 +87,11 @@ test.describe('Accessibility', () => {
   test('should have alt text on images', async ({ page }) => {
     await navigateTo(page, '/');
     const images = page.locator('img');
+    // Wait for at least one image to be present if we expect images on the homepage
+    await images
+      .first()
+      .waitFor({ state: 'attached', timeout: 10000 })
+      .catch(() => null);
     const imageCount = await images.count();
 
     for (let i = 0; i < imageCount; i++) {

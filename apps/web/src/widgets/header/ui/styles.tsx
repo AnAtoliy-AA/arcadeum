@@ -4,101 +4,14 @@ import { HEADER_HEIGHT } from '@/shared/config/layout';
 import React from 'react';
 
 import Link from 'next/link';
-import { styled, GetProps, Nav as TamaguiNav, XStack, Header } from 'tamagui';
+import { styled, XStack } from 'tamagui';
 import { YStack, Typography, LinkButton } from '@arcadeum/ui';
-
-// ─── Header Container ─────────────────────────────────────────────────────────
-
-// We'll use the 'as' prop at the call site or define it as a header primitive
-const HeaderOuterPrimitive = styled(Header, {
-  name: 'HeaderOuter',
-  position: 'sticky',
-  top: 0,
-  zIndex: 100,
-  backgroundColor: '$glassBg',
-  backdropFilter: 'blur(32px) saturate(200%)',
-  boxShadow: '0 4px 24px -1px rgba(0, 0, 0, 0.2)',
-  display: 'flex',
-  flexDirection: 'column',
-});
-
-export function HeaderOuter({
-  children,
-  className,
-  /** @deprecated Use onClick instead */
-  onPress,
-  onClick,
-  ...props
-}: GetProps<typeof HeaderOuterPrimitive> & {
-  /** @deprecated Use onClick instead */
-  onPress?: () => void;
-  onClick?: () => void;
-}) {
-  return (
-    <HeaderOuterPrimitive
-      className={className}
-      {...props}
-      onClick={onClick || onPress}
-    >
-      {children}
-    </HeaderOuterPrimitive>
-  );
-}
-
-export const HeaderBorderLine = styled(YStack, {
-  name: 'HeaderBorderLine',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  right: 0,
-  height: 1,
-  pointerEvents: 'none',
-  background:
-    'linear-gradient(90deg, transparent 0%, $glassBorder 15%, $primaryGradientStart 50%, $glassBorder 85%, transparent 100%)',
-  boxShadow: '0 0 15px rgba(87, 195, 255, 0.15)',
-  opacity: 0.8,
-});
+import './header-stable.css';
 
 // ─── Header Inner ─────────────────────────────────────────────────────────────
-
-export const HeaderInner = styled(XStack, {
-  name: 'HeaderInner',
-  maxWidth: 1400,
-  width: '100%',
-  alignSelf: 'center',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  height: 72,
-  paddingHorizontal: '$6',
-  gap: '$4',
-
-  $xs: {
-    paddingHorizontal: '$4',
-    gap: '$2',
-  },
-
-  $gtLg: {
-    gap: '$8',
-  },
-});
+// (Using plain HTML in HeaderLayout for hydration safety)
 
 // ─── Logo ─────────────────────────────────────────────────────────────────────
-
-export const LogoInner = styled(XStack, {
-  name: 'LogoInner',
-  alignItems: 'center',
-  gap: '$3',
-  flexShrink: 0,
-  cursor: 'pointer',
-  style: {
-    transition: 'transform 80ms ease-out, opacity 80ms ease-out',
-  },
-
-  hoverStyle: {
-    scale: 1.1,
-    opacity: 0.7,
-  },
-});
 
 export function Logo({
   href,
@@ -108,59 +21,19 @@ export function Logo({
   children: React.ReactNode;
 }) {
   return (
-    <Link href={href} prefetch={false} style={{ textDecoration: 'none' }}>
-      <LogoInner data-testid="logo-inner">{children}</LogoInner>
+    <Link href={href} prefetch={false} className="link-no-decoration">
+      <div className="logo-inner" data-testid="logo-inner">
+        {children}
+      </div>
     </Link>
   );
 }
 
-import { Text } from 'tamagui';
-
-export const LogoText = styled(Text, {
-  name: 'LogoText',
-  color: '$primary',
-  fontWeight: '800',
-  fontSize: 24,
-  lineHeight: 32,
-  letterSpacing: -0.5,
-  fontFamily: '$body',
-
-  $xs: {
-    display: 'none',
-  },
-});
-
 // ─── Navigation ───────────────────────────────────────────────────────────────
-
-const NavStyled = styled(TamaguiNav, {
-  name: 'Nav',
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: '$4',
-  flex: 1,
-  $md: { display: 'none' },
-});
-
-export const Nav = ({
-  /** @deprecated Use onClick instead */
-  onPress,
-  onClick,
-  ...props
-}: GetProps<typeof NavStyled> & {
-  /** @deprecated Use onClick instead */
-  onPress?: () => void;
-  onClick?: () => void;
-}) => <NavStyled {...props} onClick={onClick || onPress} />;
+// (Using plain HTML in HeaderInteractive for hydration safety)
 
 // ─── Actions ──────────────────────────────────────────────────────────────────
-
-export const Actions = styled(XStack, {
-  name: 'Actions',
-  alignItems: 'center',
-  gap: '$4',
-  flexShrink: 0,
-  $xs: { gap: '$2' },
-});
+// (Using plain HTML in HeaderInteractive for hydration safety)
 // ─── Navigation Link ──────────────────────────────────────────────────────────
 
 export const NavLinkWrapper = styled(XStack, {
@@ -260,35 +133,29 @@ export const ProfileDropdown = styled(YStack, {
   } as const,
 });
 
-export function ProfileDropdownWrapper({
-  isOpen,
-  children,
-  /** @deprecated Use onClick instead */
-  onPress,
-  onClick,
-  ...props
-}: {
-  isOpen: boolean;
-  children: React.ReactNode;
-  /** @deprecated Use onClick instead */
-  onPress?: () => void;
-  onClick?: () => void;
-} & GetProps<typeof ProfileDropdown>) {
-  return (
-    <ProfileDropdown isOpen={isOpen} {...props} onClick={onClick || onPress}>
-      <YStack
-        position="absolute"
-        top={0}
-        left={0}
-        right={0}
-        height={1}
-        pointerEvents="none"
-        background="linear-gradient(90deg, transparent, color-mix(in srgb, var(--primaryGradientStart) 25%, transparent), transparent)"
-      />
-      {children}
-    </ProfileDropdown>
-  );
-}
+export const ProfileDropdownWrapper = ProfileDropdown.styleable(
+  ({ isOpen, children, onPress, onClick, ...props }, ref) => {
+    return (
+      <ProfileDropdown
+        ref={ref}
+        isOpen={isOpen}
+        {...props}
+        onClick={(onClick || onPress || undefined) as React.MouseEventHandler}
+      >
+        <YStack
+          position="absolute"
+          top={0}
+          left={0}
+          right={0}
+          height={1}
+          pointerEvents="none"
+          background="linear-gradient(90deg, transparent, color-mix(in srgb, var(--primaryGradientStart) 25%, transparent), transparent)"
+        />
+        {children}
+      </ProfileDropdown>
+    );
+  },
+);
 
 export function DropdownLink({
   href,
@@ -303,7 +170,7 @@ export function DropdownLink({
     <Link
       href={href}
       prefetch={false}
-      style={{ textDecoration: 'none' }}
+      className="link-no-decoration"
       onClick={onClick}
     >
       <XStack

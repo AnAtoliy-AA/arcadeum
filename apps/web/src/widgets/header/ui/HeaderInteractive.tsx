@@ -16,24 +16,16 @@ import dynamic from 'next/dynamic';
 
 const ProfileMenu = dynamic(() => import('@/widgets/header/ui/ProfileMenu'), {
   ssr: false,
-  loading: () => <div style={{ width: 40, height: 40 }} />,
+  loading: () => <div className="profile-menu-placeholder" />,
 });
 const MobileMenu = dynamic(() => import('@/widgets/header/ui/MobileMenu'), {
   ssr: false,
   loading: () => null,
 });
-const LanguageSwitcher = dynamic(
-  () => import('@/widgets/header/ui/LanguageSwitcher'),
-  {
-    ssr: false,
-    loading: () => <div style={{ width: 80, height: 40 }} />,
-  },
-);
-import { InstallPWAButton } from '@/features/pwa';
+import LanguageSwitcher from '@/widgets/header/ui/LanguageSwitcher';
+import { InstallPWAButton } from '@/features/pwa/InstallPWA';
 
 import {
-  Nav,
-  Actions,
   DesktopOnly,
   MobileMenuContainer,
   NavLinkWrapper,
@@ -42,10 +34,17 @@ import {
 } from './styles';
 import { useHeaderAuth } from './useHeaderAuth';
 import { useMobileMenu } from './useMobileMenu';
+import { useIsMounted } from './useIsMounted';
 
 export function HeaderInteractive() {
+  const isMounted = useIsMounted();
   const pathname = usePathname();
-  const { isAuthenticated, displayName } = useHeaderAuth();
+  const {
+    isAuthenticated: authStatus,
+    displayName,
+    hydrated,
+  } = useHeaderAuth();
+  const isAuthenticated = hydrated ? authStatus : false;
   const { t } = useTranslation();
   const { isOpen: isMobileMenuOpen, toggle: toggleMobileMenu } =
     useMobileMenu();
@@ -63,83 +62,95 @@ export function HeaderInteractive() {
 
   return (
     <>
-      <Nav>
-        {navItems.map((item) => (
-          <NavLinkWrapper key={item.href}>
-            <NavHeaderLink
-              href={item.href}
-              variant="ghost"
-              size="sm"
-              isActive={pathname === item.href}
-              data-testid={`nav-${item.href.replace('/', '') || 'home'}`}
-            >
-              {item.label}
-            </NavHeaderLink>
-            <NavLinkIndicator
-              active={pathname === item.href}
-              data-testid="nav-link-indicator"
+      <nav className="nav-styled" aria-label="Main navigation">
+        {isMounted &&
+          navItems.map((item) => (
+            <NavLinkWrapper key={item.href}>
+              <NavHeaderLink
+                href={item.href}
+                variant="ghost"
+                size="sm"
+                isActive={pathname === item.href}
+                data-testid={`nav-${item.href.replace('/', '') || 'home'}`}
+              >
+                {item.label}
+              </NavHeaderLink>
+              <NavLinkIndicator
+                active={pathname === item.href}
+                data-testid="nav-link-indicator"
+              />
+            </NavLinkWrapper>
+          ))}
+      </nav>
+
+      <div className="actions-styled">
+        {isMounted && (
+          <>
+            <InstallPWAButton />
+            <DesktopOnly>
+              <LinkButton
+                href={routes.support}
+                variant="secondary"
+                size="sm"
+                gap="$2"
+                aria-label={t('common.actions.support')}
+              >
+                <SupportIcon size={18} />
+                {t('common.actions.support')}
+              </LinkButton>
+            </DesktopOnly>
+            <LanguageSwitcher
+              data-testid="header-language-switcher"
+              className="header-language-switcher"
             />
-          </NavLinkWrapper>
-        ))}
-      </Nav>
+            {isAuthenticated && displayName && <ProfileMenu />}
 
-      <Actions>
-        <InstallPWAButton />
-        <DesktopOnly>
-          <LinkButton
-            href={routes.support}
-            variant="secondary"
-            size="sm"
-            gap="$2"
-            aria-label={t('common.actions.support')}
-          >
-            <SupportIcon size={18} />
-            {t('common.actions.support')}
-          </LinkButton>
-        </DesktopOnly>
-        <LanguageSwitcher data-testid="header-language-switcher" />
-        {isAuthenticated && displayName && <ProfileMenu />}
-
-        {!isAuthenticated && (
-          <DesktopOnly>
-            <LinkButton
-              variant="primary"
-              size="sm"
-              href="/auth"
-              data-testid="desktop-login-button"
-            >
-              {t('common.actions.login')}
-            </LinkButton>
-          </DesktopOnly>
-        )}
-
-        <MobileLoginIndicator
-          href={isAuthenticated ? routes.settings : routes.auth}
-          isAuthenticated={isAuthenticated}
-          title={isAuthenticated ? displayName || 'Logged in' : 'Not logged in'}
-          data-testid="mobile-login-indicator"
-        />
-
-        <MobileMenuContainer>
-          <Button
-            variant="icon"
-            size="sm"
-            onClick={toggleMobileMenu}
-            aria-label="Toggle menu"
-            aria-expanded={isMobileMenuOpen}
-            data-mobile-menu-button
-            data-testid="mobile-menu-button"
-          >
-            {isMobileMenuOpen ? (
-              <CloseIcon size={20} />
-            ) : (
-              <MenuIcon size={20} />
+            {!isAuthenticated && (
+              <DesktopOnly>
+                <LinkButton
+                  variant="primary"
+                  size="sm"
+                  href="/auth"
+                  data-testid="desktop-login-button"
+                >
+                  {t('common.actions.login')}
+                </LinkButton>
+              </DesktopOnly>
             )}
-          </Button>
-        </MobileMenuContainer>
-      </Actions>
 
-      <MobileMenu isOpen={isMobileMenuOpen} navItems={navItems} />
+            <MobileLoginIndicator
+              href={isAuthenticated ? routes.settings : routes.auth}
+              isAuthenticated={isAuthenticated}
+              title={
+                isAuthenticated ? displayName || 'Logged in' : 'Not logged in'
+              }
+              data-testid="mobile-login-indicator"
+            />
+
+            <MobileMenuContainer>
+              <Button
+                variant="icon"
+                size="md"
+                onClick={toggleMobileMenu}
+                aria-label="Toggle menu"
+                aria-expanded={isMobileMenuOpen}
+                data-mobile-menu-button
+                data-testid="mobile-menu-button"
+              >
+                {isMobileMenuOpen ? (
+                  <CloseIcon size={20} />
+                ) : (
+                  <MenuIcon size={20} />
+                )}
+              </Button>
+            </MobileMenuContainer>
+          </>
+        )}
+      </div>
+
+      {isMounted && (
+        <MobileMenu isOpen={isMobileMenuOpen} navItems={navItems} />
+      )}
     </>
   );
 }

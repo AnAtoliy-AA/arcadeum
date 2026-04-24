@@ -65,35 +65,44 @@ export async function navigateTo(
     page.on('response', onResponse);
 
     try {
-      await page.goto(path, { timeout: 60000, waitUntil: 'domcontentloaded' });
+      // Increased timeout to 90s to match global config and handle slow dev server compilation
+      await page.goto(path, { timeout: 90000, waitUntil: 'domcontentloaded' });
       await page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
 
       if (shouldReload) {
-        console.log(
-          `Detected issue (Hydration: ${hydrationError}), reloading... (Attempt ${attempt + 1})`,
+        console.warn(
+          `Detected issue (Hydration: ${hydrationError}) on ${path}, reloading... (Attempt ${attempt + 1})`,
         );
-        await page.reload({ waitUntil: 'load', timeout: 60000 });
+        await page.reload({ waitUntil: 'load', timeout: 90000 });
       }
 
-      // Wait for hydration attribute
-      await expect(page.locator('html'))
-        .toHaveAttribute('data-hydrated', 'true', { timeout: 15000 })
-        .catch(async () => {
-          // If hydration attribute missing, check if app-ready is there
-          const isReady = await page
-            .locator('html')
-            .getAttribute('data-app-ready');
-          if (isReady !== 'true') {
-            throw new Error('Hydration timed out');
-          }
-        });
+      // Robust hydration check: wait for either data-hydrated or data-app-ready
+      await expect(async () => {
+        const html = page.locator('html');
+        const hydrated = await html.getAttribute('data-hydrated');
+        const appReady = await html.getAttribute('data-app-ready');
+
+        if (hydrated !== 'true' && appReady !== 'true') {
+          throw new Error('Hydration markers not found');
+        }
+      }).toPass({
+        timeout: 20000,
+        intervals: [1000, 2000, 5000],
+      });
 
       success = true;
     } catch (err) {
       attempt++;
-      if (attempt > maxRetries) throw err;
-      console.warn(`Navigation attempt ${attempt} failed, retrying: ${err}`);
-      await page.waitForTimeout(1000 * attempt);
+      if (attempt > maxRetries) {
+        console.error(
+          `Navigation to ${path} failed after ${maxRetries} retries: ${err}`,
+        );
+        throw err;
+      }
+      console.warn(
+        `Navigation attempt ${attempt} for ${path} failed, retrying... Error: ${err}`,
+      );
+      await page.waitForTimeout(2000 * attempt); // Slightly longer exponential backoff
     } finally {
       page.off('pageerror', onPageError);
       page.off('response', onResponse);

@@ -1,0 +1,109 @@
+/* Stable Hero Styles to prevent Hydration Mismatches */
+
+.hero-title-shimmer {
+  background-image: linear-gradient(
+    135deg,
+    var(--color) 0%,
+    var(--primary) 25%,
+    #ffffff 50%,
+    var(--primary) 75%,
+    var(--accent) 100%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: hero-shimmer 12s linear infinite;
+  display: block;
+  /* Ensure font properties match the styled component fallback */
+  font-weight: 900;
+}
+
+@keyframes hero-shimmer {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.hero-section-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 90vh;
+  position: relative;
+  overflow: visible;
+  width: 100%;
+}
+
+.hero-background-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--backgroundRadialStart) 0%,
+    transparent 70%
+  );
+  opacity: 0.6;
+}
+
+/* Static Button Styles */
+.home-link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  border-radius: var(--t-radius-5);
+  cursor: pointer;
+  height: 60px;
+  padding: 0 var(--t-space-8);
+  font-weight: 800;
+  text-decoration: none;
+  transition:
+    transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    filter 0.2s ease-in-out;
+}
+
+.home-link-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.home-link-button:active {
+  transform: scale(0.98);
+}
+
+.home-link-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+
+.home-link-button-primary {
+  background-image: linear-gradient(160deg, #ffe866 0%, #ff9500 100%);
+  color: rgb(26, 26, 26);
+  border-top: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: rgba(255, 165, 0, 0.7) 0px 4px 12px;
+}
+
+.home-link-button-ghost {
+  background-color: transparent;
+  color: var(--color);
+  border: 1px solid var(--borderColor);
+  box-shadow: none;
+}
+.home-link-button-ghost:hover {
+  background-color: var(--colorHover);
+}
+
+.home-btn-gap-2 {
+  gap: var(--t-space-2);
+}

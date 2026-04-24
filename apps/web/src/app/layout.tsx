@@ -5,8 +5,7 @@ import './globals.css';
 
 import { cookies } from 'next/headers';
 import { appConfig } from '@/shared/config/app-config';
-import { Header } from '@/widgets/header';
-
+import { Header } from '@/widgets/header/ui/Header';
 import { JsonLd } from '@/shared/ui/JsonLd';
 
 const geistSans = Geist({
@@ -92,8 +91,8 @@ import { Locale } from '@/shared/i18n';
 
 // Provider Imports (Hoisted)
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
-import { PWAProvider } from '@/features/pwa';
-import { AppThemeProvider } from './theme/ThemeContext';
+import { PWAProvider } from '@/features/pwa/PWAContext';
+import { AppThemeProvider } from '@/app/theme/ThemeContext';
 
 // Prime Tamagui config as early as possible on the server
 setupTamagui();

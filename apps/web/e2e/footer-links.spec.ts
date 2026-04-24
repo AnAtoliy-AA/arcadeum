@@ -5,7 +5,6 @@ import { navigateTo } from './fixtures/test-utils';
 test.describe('Footer Links', () => {
   // Footer tests are sensitive to slow page loads across parallel browsers.
   test.describe.configure({ mode: 'serial' });
-  test.setTimeout(90000);
 
   // Navigate and scroll to footer, waiting for it to render
   async function scrollToFooter(page: import('@playwright/test').Page) {
@@ -13,9 +12,7 @@ test.describe('Footer Links', () => {
     await page.waitForLoadState('load');
     // Scroll to bottom and re-scroll in case content shifted
     for (let i = 0; i < 3; i++) {
-      await page.evaluate(() =>
-        window.scrollTo(0, document.body.scrollHeight),
-      );
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
       await page.waitForTimeout(500);
     }
     await expect(page.locator('footer')).toBeVisible({ timeout: 15000 });
@@ -83,11 +80,7 @@ test.describe('Footer Links', () => {
         .catch(() => false))
     ) {
       const followToggle = footer.getByText(/follow us/i).first();
-      if (
-        await followToggle
-          .isVisible({ timeout: 3000 })
-          .catch(() => false)
-      ) {
+      if (await followToggle.isVisible({ timeout: 3000 }).catch(() => false)) {
         await followToggle.click({ force: true });
         await page.waitForTimeout(500);
       }

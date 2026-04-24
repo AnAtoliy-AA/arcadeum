@@ -19,7 +19,7 @@ test.describe('Home Page Section Order', () => {
         name: 'Watch the Trailer',
         selector: '[data-testid="presentation-section"]',
       },
-      { name: 'Project Vision', selector: '#presentation' },
+      { name: 'Project Vision', selector: '#pitch-deck' },
       {
         name: 'Mobile Builds',
         selector: '[data-testid="download-cta-section"]',

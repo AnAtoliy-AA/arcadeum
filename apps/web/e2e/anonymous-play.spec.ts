@@ -11,8 +11,6 @@ import {
 } from './fixtures/test-utils';
 
 test.describe('Anonymous Play', () => {
-  test.setTimeout(60000);
-
   const anonymousId = 'anon_test_user_123';
 
   test.beforeEach(async ({ page }) => {

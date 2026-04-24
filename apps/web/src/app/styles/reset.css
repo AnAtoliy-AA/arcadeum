@@ -19,9 +19,6 @@ body {
   flex-direction: column;
   min-height: 100vh;
   font-family: var(--font-geist-sans), sans-serif;
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
 }
 
 a {

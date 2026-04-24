@@ -11,8 +11,6 @@ import {
 } from './fixtures/test-utils';
 
 test.describe('Critical Single Player Mode', () => {
-  test.setTimeout(60000);
-
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
   });

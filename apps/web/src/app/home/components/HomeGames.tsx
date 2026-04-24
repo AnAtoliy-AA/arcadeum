@@ -1,52 +1,18 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { YStack, TamaguiElement } from 'tamagui';
 import { useLanguage } from '@/shared/i18n/context';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 import { routes } from '@/shared/config/routes';
-import {
-  SectionHeader,
-  SectionTitle,
-  SectionSubtitle,
-} from './styles/Common.styles';
-import {
-  SliderSection,
-  SliderContainer,
-  SliderTrack,
-  SliderItem,
-  SliderControls,
-  SliderButton,
-  MainGameCard,
-  MainGameInfo,
-  GameHeaderWrapper,
-  StyledGameIcon,
-  GameTitle,
-  GameDescription,
-  StyledGameTags,
-  GameTag,
-  HelpIcon,
-  CardFooter,
-} from './styles/Games.styles';
-import { LinkButton } from '@/shared/ui';
+import Link from 'next/link';
 import { featuredGames } from '../data/games';
 import { HomeGameDetailsModal } from './modals/HomeGameDetailsModal';
-
-// Tamagui styled YStack types don't expose `tag`/`title` even though they work at runtime.
-// These typed aliases add the props for TS without breaking behaviour.
-type WithHtmlProps<T> = T & { tag?: string; title?: string };
-const SliderButtonEl = SliderButton as React.ComponentType<
-  WithHtmlProps<React.ComponentProps<typeof SliderButton>>
->;
-const HelpIconEl = HelpIcon as React.ComponentType<
-  WithHtmlProps<React.ComponentProps<typeof HelpIcon>>
->;
 
 export default function HomeGames() {
   const { t } = useTranslation();
   const { messages } = useLanguage();
-  const sliderRef = useRef<TamaguiElement>(null);
+  const sliderRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
@@ -74,7 +40,7 @@ export default function HomeGames() {
 
   const checkScroll = () => {
     if (sliderRef.current) {
-      const el = sliderRef.current as unknown as HTMLDivElement;
+      const el = sliderRef.current;
       const { scrollLeft, scrollWidth, clientWidth } = el;
       setCanScrollLeft(scrollLeft > 10);
       setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
@@ -89,7 +55,7 @@ export default function HomeGames() {
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!sliderRef.current) return;
-    const el = sliderRef.current as unknown as HTMLDivElement;
+    const el = sliderRef.current;
     setIsDragging(true);
     setHasMoved(false);
     setStartX(e.pageX - el.offsetLeft);
@@ -102,7 +68,7 @@ export default function HomeGames() {
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !sliderRef.current) return;
-    const el = sliderRef.current as unknown as HTMLDivElement;
+    const el = sliderRef.current;
     e.preventDefault();
     const x = e.pageX - el.offsetLeft;
     const walk = (x - startX) * 2; // scroll-fast
@@ -112,7 +78,7 @@ export default function HomeGames() {
 
   const handleMouseUp = () => {
     if (!sliderRef.current) return;
-    const el = sliderRef.current as unknown as HTMLDivElement;
+    const el = sliderRef.current;
     setIsDragging(false);
 
     // Re-enable smooth scroll and snap
@@ -125,7 +91,7 @@ export default function HomeGames() {
 
   const scroll = (direction: 'left' | 'right') => {
     if (sliderRef.current) {
-      const el = sliderRef.current as unknown as HTMLDivElement;
+      const el = sliderRef.current;
       const scrollAmount = 392; // card width (360) + gap (32)
       el.style.scrollBehavior = 'smooth';
       el.scrollBy({
@@ -135,7 +101,7 @@ export default function HomeGames() {
     }
   };
 
-  const sectionRef = useScrollReveal<HTMLDivElement>();
+  const sectionRef = useScrollReveal<HTMLElement>();
 
   const withKeyboardClick =
     (callback: () => void) => (e: React.KeyboardEvent) => {
@@ -161,118 +127,151 @@ export default function HomeGames() {
     withKeyboardClick(handleScrollRight)(e);
 
   return (
-    <SliderSection id="games" ref={sectionRef as never}>
-      <SectionHeader data-reveal data-reveal-delay="1">
-        <SectionTitle>{homeCopy.gamesTitle ?? 'Featured Games'}</SectionTitle>
-        <SectionSubtitle>
+    <section id="games" ref={sectionRef} className="games-section-main">
+      <div className="section-header-main" data-reveal data-reveal-delay="1">
+        <h2 className="section-title-main">
+          {homeCopy.gamesTitle ?? 'Featured Games'}
+        </h2>
+        <p className="section-subtitle-main">
           {homeCopy.gamesSubtitle ??
             'Discover our collection of premium multiplayer games'}
-        </SectionSubtitle>
-      </SectionHeader>
+        </p>
+      </div>
 
-      <SliderContainer data-reveal data-reveal-delay="2">
-        <SliderTrack
+      <div className="slider-container-main" data-reveal data-reveal-delay="2">
+        <div
           ref={sliderRef}
-          className="slider-track"
+          className="slider-track-main slider-track"
           onScroll={checkScroll}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
-          overflowX="auto"
           style={{
-            scrollSnapType: 'x mandatory',
-            WebkitOverflowScrolling: 'touch',
+            cursor: isDragging ? 'grabbing' : 'grab',
+            userSelect: isDragging ? 'none' : 'auto',
           }}
-          paddingBottom="$7"
-          paddingTop="$4"
-          cursor={isDragging ? 'grabbing' : 'grab'}
-          userSelect={isDragging ? 'none' : 'auto'}
         >
           {featuredGames.map((game) => (
-            <SliderItem key={game.id} style={{ scrollSnapAlign: 'center' }}>
-              <MainGameCard
+            <div
+              key={game.id}
+              className="slider-item-main"
+              style={{ scrollSnapAlign: 'center' }}
+            >
+              <div
                 data-testid={`game-card-${game.id}`}
-                padding="$5"
-                flex={1}
+                className="game-card-main"
               >
-                {/* Gradient hover overlay replaces $gradient ::before */}
-                <YStack
-                  position="absolute"
-                  top={0}
-                  left={0}
-                  right={0}
-                  bottom={0}
-                  zIndex={0}
-                  pointerEvents="none"
-                  opacity={0}
-                  hoverStyle={{ opacity: 0.08 }}
-                  background={game.gradient ?? 'transparent'}
+                {/* Gradient hover overlay */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    zIndex: 0,
+                    pointerEvents: 'none',
+                    opacity: 0,
+                    background: game.gradient ?? 'transparent',
+                    transition: 'opacity 0.2s ease-out',
+                  }}
+                  className="game-card-overlay"
                 />
-                <MainGameInfo>
-                  <GameHeaderWrapper>
-                    <StyledGameIcon>{game.emoji}</StyledGameIcon>
-                    <GameTitle
+                <div
+                  className="game-info-wrapper"
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 'var(--t-space-3)',
+                    position: 'relative',
+                    zIndex: 2,
+                  }}
+                >
+                  <div className="game-header-main">
+                    <span className="game-icon-main">{game.emoji}</span>
+                    <h3
                       data-testid={`game-title-${game.id}`}
-                      background={game.gradient}
-                      className="text-gradient"
+                      style={{
+                        background: game.gradient,
+                        backgroundClip: 'text',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                      }}
+                      className="game-title-main"
                     >
                       {t(game.nameKey)}
-                    </GameTitle>
-                    <HelpIconEl
-                      role="button"
-                      tabIndex={0}
+                    </h3>
+                    <button
+                      type="button"
                       onClick={handleHelpClick(game.id)}
                       onKeyDown={handleHelpKeyDown(game.id)}
                       title={homeCopy.showMore ?? 'Show Details'}
+                      aria-label={homeCopy.showMore ?? 'Show Details'}
                       data-testid="game-help-button"
+                      className="game-help-btn-main"
                     >
-                      <GameDescription fontSize={14} opacity={1} margin={0}>
+                      <span
+                        style={{
+                          fontSize: '14px',
+                          fontWeight: 'bold',
+                          color: 'var(--color)',
+                        }}
+                      >
                         ?
-                      </GameDescription>
-                    </HelpIconEl>
-                  </GameHeaderWrapper>
+                      </span>
+                    </button>
+                  </div>
 
-                  <GameDescription>{t(game.descriptionKey)}</GameDescription>
+                  <p className="game-description-main">
+                    {t(game.descriptionKey)}
+                  </p>
 
-                  <StyledGameTags>
+                  <div className="game-tags-main">
                     {game.tags.map((tag) => (
-                      <GameTag key={tag}>{tag}</GameTag>
+                      <span key={tag} className="game-tag-main">
+                        {tag}
+                      </span>
                     ))}
-                  </StyledGameTags>
+                  </div>
 
-                  <CardFooter>
-                    <LinkButton
+                  <div className="game-card-footer-main">
+                    <Link
                       href={
                         game.isPlayable
                           ? `${routes.gameCreate}?gameId=${game.id}`
                           : '#'
                       }
-                      fullWidth
+                      style={{ width: '100%' }}
+                      className="home-link-button home-link-button-primary"
                       data-testid="game-play-button"
                       aria-label={`${game.isPlayable ? (homeCopy.gamePlayButton ?? 'Play Now') : (homeCopy.gameComingSoon ?? 'Coming Soon')} ${t(game.nameKey)}`}
                     >
                       {game.isPlayable
                         ? (homeCopy.gamePlayButton ?? 'Play Now')
                         : (homeCopy.gameComingSoon ?? 'Coming Soon')}
-                    </LinkButton>
-                  </CardFooter>
-                </MainGameInfo>
-              </MainGameCard>
-            </SliderItem>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
           ))}
-        </SliderTrack>
+        </div>
 
-        <SliderControls>
-          <SliderButtonEl
-            role="button"
-            tabIndex={0}
+        <div className="slider-controls-main">
+          <button
+            type="button"
             onClick={handleScrollLeft}
             onKeyDown={handleScrollLeftKeyDown}
             aria-label="Previous game"
             data-testid="prev-game-button"
-            opacity={canScrollLeft ? 1 : 0.3}
-            pointerEvents={canScrollLeft ? 'auto' : 'none'}
+            disabled={!canScrollLeft}
+            className="slider-btn-main"
+            style={{
+              opacity: canScrollLeft ? 1 : 0.3,
+              pointerEvents: canScrollLeft ? 'auto' : 'none',
+            }}
           >
             <svg
               width={24}
@@ -286,16 +285,19 @@ export default function HomeGames() {
             >
               <path d="M15 18l-6-6 6-6" />
             </svg>
-          </SliderButtonEl>
-          <SliderButtonEl
-            role="button"
-            tabIndex={0}
+          </button>
+          <button
+            type="button"
             onClick={handleScrollRight}
             onKeyDown={handleScrollRightKeyDown}
             aria-label="Next game"
             data-testid="next-game-button"
-            opacity={canScrollRight ? 1 : 0.3}
-            pointerEvents={canScrollRight ? 'auto' : 'none'}
+            disabled={!canScrollRight}
+            className="slider-btn-main"
+            style={{
+              opacity: canScrollRight ? 1 : 0.3,
+              pointerEvents: canScrollRight ? 'auto' : 'none',
+            }}
           >
             <svg
               width={24}
@@ -309,9 +311,9 @@ export default function HomeGames() {
             >
               <path d="M9 5l6 6-6 6" />
             </svg>
-          </SliderButtonEl>
-        </SliderControls>
-      </SliderContainer>
+          </button>
+        </div>
+      </div>
 
       <HomeGameDetailsModal
         isOpen={!!detailsState.gameId}
@@ -319,6 +321,6 @@ export default function HomeGames() {
         gameId={detailsState.gameId || ''}
         initialTab={detailsState.initialTab}
       />
-    </SliderSection>
+    </section>
   );
 }

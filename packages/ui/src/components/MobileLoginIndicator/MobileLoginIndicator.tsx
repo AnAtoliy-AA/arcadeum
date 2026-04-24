@@ -50,6 +50,7 @@ export function MobileLoginIndicator({
       prefetch={false}
       style={{ textDecoration: 'none' }}
       title={title}
+      aria-label={title || (isAuthenticated ? 'User profile' : 'Login')}
       data-testid={testId}
     >
       <IndicatorCircle isAuthenticated={isAuthenticated}>

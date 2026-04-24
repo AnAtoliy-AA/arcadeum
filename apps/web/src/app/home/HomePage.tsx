@@ -1,5 +1,3 @@
-'use client';
-
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import HomeHero from './components/HomeHero';
 import HomeGames from './components/HomeGames';
@@ -11,26 +9,19 @@ const HomePresentation = dynamic(() => import('./components/HomePresentation'));
 const HomePitchDeck = dynamic(() => import('./components/HomePitchDeck'));
 const HomeDownloadCta = dynamic(() => import('./components/HomeDownloadCta'));
 
-import AppFooter from '@/widgets/footer/ui/AppFooter';
+import HomeFooter from './components/HomeFooter';
 
 export default function HomePage() {
   return (
-    <>
-      <PageLayout
-        data-testid="page-layout"
-        justifyContent="flex-start"
-        alignItems="stretch"
-        padding={0}
-      >
-        <HomeHero />
-        <HomeGames />
-        <HomeHowItWorks />
-        <HomeFeatures />
-        <HomePresentation />
-        <HomePitchDeck />
-        <HomeDownloadCta />
-      </PageLayout>
-      <AppFooter />
-    </>
+    <PageLayout data-testid="page-layout">
+      <HomeHero />
+      <HomeGames />
+      <HomeHowItWorks />
+      <HomeFeatures />
+      <HomePresentation />
+      <HomePitchDeck />
+      <HomeDownloadCta />
+      <HomeFooter />
+    </PageLayout>
   );
 }

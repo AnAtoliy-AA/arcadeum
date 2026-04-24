@@ -1,10 +1,11 @@
 import { Suspense } from 'react';
-import HomeClient from './home/HomeClient';
+import HomePage from './home/HomePage';
+import { PageLoading } from '@/shared/ui/Loading/PageLoading';
 
 export default function HomeRoute() {
   return (
-    <Suspense fallback={null}>
-      <HomeClient />
+    <Suspense fallback={<PageLoading layout="home" />}>
+      <HomePage />
     </Suspense>
   );
 }

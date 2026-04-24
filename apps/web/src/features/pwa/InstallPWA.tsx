@@ -16,7 +16,7 @@ export function InstallPWAButton() {
   return (
     <Button
       variant="icon"
-      size="sm"
+      size="md"
       onClick={pwa.openModal}
       aria-label="Install App"
       data-testid="install-pwa-header-button"

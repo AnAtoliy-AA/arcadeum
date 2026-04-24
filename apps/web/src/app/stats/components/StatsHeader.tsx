@@ -61,4 +61,4 @@ const Header = styled(XStack, {
   justifyContent: 'space-between',
   alignItems: 'center',
   marginBottom: '$7',
-} as never);
+});

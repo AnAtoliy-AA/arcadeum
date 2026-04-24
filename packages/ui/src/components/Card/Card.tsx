@@ -100,6 +100,8 @@ export type CardProps = GetProps<typeof StyledCard> & {
   padding?: CardPadding;
   interactive?: boolean;
   children?: ReactNode;
+  group?: string | boolean;
+  title?: string;
   /** @deprecated Use onClick instead */
   onPress?: () => void;
   onClick?: (e: unknown) => void;

@@ -2,31 +2,18 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
-import type { TamaguiElement } from 'tamagui';
 import {
-  Button,
   ArrowLeftIcon,
   ArrowRightIcon,
   MaximizeIcon,
   MinimizeIcon,
 } from '@arcadeum/ui';
 import { slides } from '../data/slides';
-import {
-  PresentationContainer,
-  SlideContent,
-  ControlsOverlay,
-  TopBar,
-  BottomBar,
-  ProgressBar,
-  ProgressSegment,
-  SlideCounter,
-  NavButtonContainer,
-  FullscreenButtonContainer,
-} from './styles/WebPresentation.styles';
+import './styles/presentation-stable.css';
 
 export function WebPresentation() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const containerRef = useRef<TamaguiElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   // Track which slides have been loaded to minimize bandwidth.
@@ -130,16 +117,18 @@ export function WebPresentation() {
   );
 
   return (
-    <PresentationContainer
+    <div
       ref={containerRef}
+      className="presentation-container"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {slides.map((slide, index) => {
         const isActive = index === currentSlide;
         return (
-          <SlideContent
+          <div
             key={slide.id}
+            className="presentation-slide"
             role="group"
             aria-roledescription="slide"
             aria-label={`${index + 1} of ${slides.length}: ${slide.title}`}
@@ -166,24 +155,26 @@ export function WebPresentation() {
                 }}
               />
             ) : null}
-          </SlideContent>
+          </div>
         );
       })}
 
-      <ControlsOverlay>
-        <TopBar
+      <div className="presentation-controls">
+        <div
+          className="presentation-top-bar"
           style={{
             background:
               'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%)',
           }}
         >
-          <ProgressBar>
+          <div className="presentation-progress-bar">
             {slides.map((_, index) => {
               const isActive = index === currentSlide;
               const isViewed = index < currentSlide;
               return (
-                <ProgressSegment
+                <div
                   key={index}
+                  className="presentation-progress-segment"
                   onClick={createSlideClickHandler(index)}
                   role="button"
                   aria-label={`Go to slide ${index + 1}`}
@@ -200,57 +191,58 @@ export function WebPresentation() {
                 />
               );
             })}
-          </ProgressBar>
-        </TopBar>
+          </div>
+        </div>
 
         {/* Floating Navigation Buttons (Desktop) */}
-        <NavButtonContainer
-          opacity={isHovered ? 1 : 0}
-          style={{ left: 16, transform: 'translateY(-50%)' }}
+        <div
+          className="presentation-nav-container"
+          style={{
+            left: 16,
+            transform: 'translateY(-50%)',
+            opacity: isHovered ? 1 : 0,
+          }}
         >
-          <Button
-            variant="glass"
-            size="md"
-            isActive={false}
+          <button
+            className="presentation-btn-glass presentation-btn-glass-md"
             onClick={prevSlide}
             aria-label="Previous slide"
-            style={{ borderRadius: '50%' }}
           >
             <ArrowLeftIcon size={24} />
-          </Button>
-        </NavButtonContainer>
+          </button>
+        </div>
 
-        <NavButtonContainer
-          opacity={isHovered ? 1 : 0}
-          style={{ right: 16, transform: 'translateY(-50%)' }}
+        <div
+          className="presentation-nav-container"
+          style={{
+            right: 16,
+            transform: 'translateY(-50%)',
+            opacity: isHovered ? 1 : 0,
+          }}
         >
-          <Button
-            variant="glass"
-            size="md"
-            isActive={false}
+          <button
+            className="presentation-btn-glass presentation-btn-glass-md"
             onClick={nextSlide}
             aria-label="Next slide"
-            style={{ borderRadius: '50%' }}
           >
             <ArrowRightIcon size={24} />
-          </Button>
-        </NavButtonContainer>
+          </button>
+        </div>
 
-        <BottomBar
+        <div
+          className="presentation-bottom-bar"
           style={{
             background:
               'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)',
           }}
         >
-          <SlideCounter>
+          <div className="presentation-counter">
             {currentSlide + 1} / {slides.length}
-          </SlideCounter>
+          </div>
 
-          <FullscreenButtonContainer>
-            <Button
-              variant="glass"
-              size="sm"
-              isActive={false}
+          <div className="presentation-fullscreen-container">
+            <button
+              className="presentation-btn-glass presentation-btn-glass-sm"
               onClick={toggleFullscreen}
               aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
             >
@@ -259,10 +251,10 @@ export function WebPresentation() {
               ) : (
                 <MaximizeIcon size={20} />
               )}
-            </Button>
-          </FullscreenButtonContainer>
-        </BottomBar>
-      </ControlsOverlay>
-    </PresentationContainer>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

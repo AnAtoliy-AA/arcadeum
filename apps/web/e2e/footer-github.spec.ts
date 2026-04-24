@@ -3,7 +3,6 @@ import { test, navigateTo } from './fixtures/test-utils';
 
 test.describe('Footer GitHub Link', () => {
   test.describe.configure({ mode: 'serial' });
-  test.setTimeout(90000);
 
   async function scrollToFooter(page: import('@playwright/test').Page) {
     await navigateTo(page, '/');

@@ -13,7 +13,12 @@ test.describe('Video Presentation', () => {
     await page.waitForSelector('[data-testid="presentation-section"]', {
       timeout: 15000,
     });
-    const thumbnail = page.getByTestId('video-thumbnail');
+    await page.waitForTimeout(1000); // Allow layout to stabilize
+    const thumbnail = page
+      .locator('main')
+      .first()
+      .getByTestId('video-thumbnail')
+      .first();
     await expect(thumbnail).toBeVisible({ timeout: 10000 });
     await expect(thumbnail).toHaveAttribute(
       'alt',
@@ -23,7 +28,12 @@ test.describe('Video Presentation', () => {
   });
 
   test('should play video on click', async ({ page }) => {
-    const playButton = page.getByTestId('play-btn');
+    await page.waitForTimeout(1000); // Allow layout to stabilize
+    const playButton = page
+      .locator('main')
+      .first()
+      .getByTestId('play-btn')
+      .first();
     await playButton.waitFor({ state: 'visible', timeout: 10000 });
     // Note: scrollIntoViewIfNeeded can fail if element is being re-rendered or detached during scroll.
     // Playwright's click action automatically scrolls to the element.

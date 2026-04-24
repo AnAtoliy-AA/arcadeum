@@ -60,7 +60,7 @@ const SOCIAL_MAPPING = [
   { id: 'github', label: 'GitHub', Icon: GithubIcon },
 ] as const;
 
-const CURRENT_YEAR = new Date().getFullYear();
+const CURRENT_YEAR = 2026;
 
 const FooterRoot = styled(View, {
   name: 'Footer',

@@ -114,6 +114,7 @@ test.describe('Sea Battle Popup Challenge', () => {
 
     const challengeButton = page.getByTestId('challenge-button');
     await expect(challengeButton).toBeVisible({ timeout: 10000 });
+    await challengeButton.scrollIntoViewIfNeeded();
     await expect(challengeButton).toBeInViewport();
 
     // Wait a bit for the UI to be fully interactive

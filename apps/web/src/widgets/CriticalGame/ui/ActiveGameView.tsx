@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useMedia } from 'tamagui';
 import { useGameChatIntegration } from '@/features/games/hooks';
-import { useTranslation, TranslationKey } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import type {
   CriticalCard,
   HandLayoutMode,
@@ -417,14 +417,12 @@ export function ActiveGameView({
       {isMobile && (
         <MobileActionSheet
           isOpen={targetedAttackModal}
-          title={t('games.critical_v1.mobile.attack.title' as TranslationKey)}
-          description={t(
-            'games.critical_v1.mobile.attack.description' as TranslationKey,
-          )}
+          title={t('games.table.mobile.attack.title')}
+          description={t('games.table.mobile.attack.description')}
           opponents={aliveOpponents}
           resolveDisplayName={resolveDisplayName}
-          confirmLabel={t('games.critical_v1.mobile.play' as TranslationKey)}
-          cancelLabel={t('games.critical_v1.mobile.cancel' as TranslationKey)}
+          confirmLabel={t('games.table.mobile.play')}
+          cancelLabel={t('games.table.mobile.cancel')}
           onConfirm={(targetId) => {
             actions.playActionCard('targeted_strike', {
               targetPlayerId: targetId,
@@ -438,14 +436,12 @@ export function ActiveGameView({
       {isMobile && (
         <MobileActionSheet
           isOpen={favorModal}
-          title={t('games.critical_v1.mobile.favor.title' as TranslationKey)}
-          description={t(
-            'games.critical_v1.mobile.favor.description' as TranslationKey,
-          )}
+          title={t('games.table.mobile.favor.title')}
+          description={t('games.table.mobile.favor.description')}
           opponents={aliveOpponents}
           resolveDisplayName={resolveDisplayName}
-          confirmLabel={t('games.critical_v1.mobile.play' as TranslationKey)}
-          cancelLabel={t('games.critical_v1.mobile.cancel' as TranslationKey)}
+          confirmLabel={t('games.table.mobile.play')}
+          cancelLabel={t('games.table.mobile.cancel')}
           onConfirm={(targetId) => {
             actions.playFavor(targetId);
             handleCloseFavorModal();

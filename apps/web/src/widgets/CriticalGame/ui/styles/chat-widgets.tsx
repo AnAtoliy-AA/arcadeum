@@ -129,12 +129,15 @@ export const EmptyState = styled(YStack, {
 const StyledChatBubbleContainer = styled(YStack, {
   name: 'ChatBubbleContainer',
   position: 'absolute',
-  backgroundColor: '$background',
-  padding: '$2 $3',
-  borderRadius: 12,
+  // log-pill aesthetic: soft glass bubble with blurred backdrop + tinted border
+  backgroundColor: 'rgba(15, 23, 42, 0.6)',
+  backdropFilter: 'blur(8px)',
+  paddingVertical: '$1',
+  paddingHorizontal: '$3',
+  borderRadius: 999,
   elevation: 5,
   borderWidth: 1,
-  borderColor: '$borderColor',
+  borderColor: 'rgba(255, 255, 255, 0.14)',
   maxWidth: 180,
   zIndex: 100,
 

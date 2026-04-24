@@ -86,5 +86,10 @@ test.describe('Critical Card Visibility', () => {
     });
 
     expect(containerBg).toContain('rgba(0, 0, 0');
+
+    // Redesign markers (ARC-480): scene backdrop + turn banner should mount
+    // once the active game view has rendered.
+    await expect(page.locator('[data-testid="scene-backdrop"]')).toBeVisible();
+    await expect(page.locator('[data-testid="turn-banner"]')).toBeVisible();
   });
 });

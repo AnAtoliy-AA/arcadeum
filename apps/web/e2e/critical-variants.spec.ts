@@ -125,5 +125,9 @@ test.describe('Critical Variant Selection', () => {
         timeout: 15000,
       },
     );
+
+    // Redesign markers (ARC-480): verify scene backdrop + turn banner mount.
+    await expect(page.locator('[data-testid="scene-backdrop"]')).toBeVisible();
+    await expect(page.locator('[data-testid="turn-banner"]')).toBeVisible();
   });
 });

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useMedia } from 'tamagui';
 import {
   TableInfo,
   TableStat,
@@ -25,6 +26,8 @@ export const TableStats: React.FC<TableStatsProps> = ({
   pendingDraws,
   cardVariant,
 }) => {
+  const media = useMedia();
+  if (media.sm) return null;
   return (
     <TableInfo $variant={cardVariant as GameVariant}>
       {(cardVariant as string) === GAME_VARIANT.UNDERWATER && (

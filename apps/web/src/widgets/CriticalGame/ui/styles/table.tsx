@@ -149,10 +149,28 @@ export const CenterTable = styled(XStack, {
   } as const,
 
   $sm: {
-    width: 220,
-    height: 220,
-    padding: '$2',
-    marginTop: -10,
-    gap: 14,
+    display: 'none' as const,
   },
+});
+
+export const CenterTableRow = styled(XStack, {
+  name: 'CenterTableRow',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-around',
+  gap: '$3',
+  paddingHorizontal: '$3',
+  height: 150,
+  width: '100%',
+  position: 'relative',
+  zIndex: 1,
+  display: 'none',
+
+  $sm: {
+    display: 'flex',
+  },
+
+  variants: {
+    $variant: (_val: unknown) => ({}),
+  } as const,
 });

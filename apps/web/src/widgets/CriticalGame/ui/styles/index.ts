@@ -41,6 +41,7 @@ export {
   PlayersRing,
   PlayerPositionWrapper,
   CenterTable,
+  CenterTableRow,
   CardSlot,
 } from './table';
 

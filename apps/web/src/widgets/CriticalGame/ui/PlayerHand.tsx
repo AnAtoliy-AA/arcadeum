@@ -19,7 +19,8 @@ import { CardImage } from './styles/card-image';
 import { useCardFlip } from '../hooks/useCardFlip';
 import { useScenePalette } from './ScenePaletteContext';
 import { ActionsSection } from './ActionsSection';
-import { HandLayoutDropdown } from './HandLayoutDropdown';
+import { MobileHandPopover } from './MobileHandPopover';
+import { HandControlsPanel } from './HandControlsPanel';
 
 import {
   HandSection,
@@ -42,8 +43,6 @@ import {
   StashIcon,
   HandHeader,
   HandTitle,
-  HandControls,
-  HandToggleButton,
 } from './styles';
 
 interface PlayerHandProps {
@@ -119,12 +118,21 @@ export function PlayerHand({
 }: PlayerHandProps) {
   const [showNames, setShowNames] = useState(true);
   const [showDescriptions, setShowDescriptions] = useState(true);
+  const [selectedCardId, setSelectedCardId] = useState<CriticalCard | null>(
+    null,
+  );
   const scene = useScenePalette();
   const media = useMedia();
   const isMobile = media.sm;
   const handSize = isMobile ? 'mobileFlat' : 'desktopFan';
   const isFanned = !isMobile && handLayout === 'grid';
   const effectiveLayout: HandLayoutMode = isMobile ? 'linear' : handLayout;
+
+  // Only treat selectedCardId as active if the card is still in hand.
+  const activeSelectedCardId =
+    selectedCardId && currentPlayer.hand.includes(selectedCardId)
+      ? selectedCardId
+      : null;
 
   // Group current hand by card type/count for rendering logic
   const groupedHand = useMemo(() => {
@@ -180,6 +188,13 @@ export function PlayerHand({
       // Check if it's the player's turn and they can act
       if (!isMyTurn || isGameOver || !canAct) return;
 
+      // On mobile, tap a card to open the popover; the popover dispatches the
+      // actual action via its own buttons. Tapping the same card again closes.
+      if (isMobile) {
+        setSelectedCardId((prev) => (prev === card ? null : card));
+        return;
+      }
+
       // Special handling for certain cards
       if (card === 'insight') {
         onPlaySeeTheFuture();
@@ -212,6 +227,7 @@ export function PlayerHand({
       }
     },
     [
+      isMobile,
       isMyTurn,
       isGameOver,
       canAct,
@@ -308,36 +324,18 @@ export function PlayerHand({
                 : t('games.table.state.cards')}
               )
             </HandTitle>
-            <HandControls>
-              <HandToggleButton
-                $variant={cardVariant as GameVariant}
-                variant="secondary"
-                onClick={() => setShowNames(!showNames)}
-              >
-                {showNames
-                  ? t('games.table.hand.hideNames') || 'Hide Names'
-                  : t('games.table.hand.showNames') || 'Show Names'}
-              </HandToggleButton>
-              <HandToggleButton
-                $variant={cardVariant as GameVariant}
-                variant="secondary"
-                onClick={() => setShowDescriptions(!showDescriptions)}
-              >
-                {showDescriptions
-                  ? t('games.table.hand.hideDescriptions') ||
-                    'Hide Descriptions'
-                  : t('games.table.hand.showDescriptions') ||
-                    'Show Descriptions'}
-              </HandToggleButton>
-              {setHandLayout && (
-                <HandLayoutDropdown
-                  layout={handLayout}
-                  onChange={setHandLayout}
-                  variant={cardVariant as GameVariant}
-                  t={t}
-                />
-              )}
-            </HandControls>
+            {!isMobile && (
+              <HandControlsPanel
+                showNames={showNames}
+                showDescriptions={showDescriptions}
+                handLayout={handLayout}
+                setShowNames={setShowNames}
+                setShowDescriptions={setShowDescriptions}
+                setHandLayout={setHandLayout}
+                cardVariant={cardVariant}
+                t={t}
+              />
+            )}
           </HandHeader>
 
           <CardsGrid data-testid="hand-grid" $layout={effectiveLayout}>
@@ -439,14 +437,14 @@ export function PlayerHand({
                       cardType={card}
                       faceDown={isFlipping ? showBack : false}
                     />
-                    {showNames && (
+                    {!isMobile && showNames && (
                       <CardNameContainer $variant={cardVariant as GameVariant}>
                         <CardName $variant={cardVariant as GameVariant}>
                           {t(getCardTranslationKey(card, cardVariant)) || card}
                         </CardName>
                       </CardNameContainer>
                     )}
-                    {showDescriptions && (
+                    {!isMobile && showDescriptions && (
                       <CardDescriptionContainer
                         $variant={cardVariant as GameVariant}
                       >
@@ -461,6 +459,32 @@ export function PlayerHand({
               );
             })}
           </CardsGrid>
+
+          {isMobile && (
+            <MobileHandPopover
+              selectedCard={activeSelectedCardId}
+              count={
+                activeSelectedCardId
+                  ? (groupedHand.find(
+                      ({ card }) => card === activeSelectedCardId,
+                    )?.count ?? 0)
+                  : 0
+              }
+              isMyTurn={isMyTurn}
+              canAct={canAct}
+              allowActionCardCombos={allowActionCardCombos}
+              hasOpponents={aliveOpponents.length > 0}
+              cardVariant={cardVariant}
+              hand={currentPlayer.hand}
+              t={t}
+              onPlaySeeTheFuture={onPlaySeeTheFuture}
+              onOpenFavorModal={onOpenFavorModal}
+              onPlayNope={onPlayNope}
+              onPlayActionCard={onPlayActionCard}
+              onOpenEventCombo={onOpenEventCombo}
+              onClose={() => setSelectedCardId(null)}
+            />
+          )}
         </InfoCard>
       </HandContainer>
     </HandSection>

@@ -54,6 +54,7 @@ export function LanguageProvider({
 
     document.documentElement.setAttribute('lang', locale);
     document.documentElement.setAttribute('data-hydrated', 'true');
+    document.documentElement.setAttribute('data-app-ready', 'true');
 
     // Sync to cookie
     const cookieOptions = 'path=/; max-age=31536000; SameSite=Lax';

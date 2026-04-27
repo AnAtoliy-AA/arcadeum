@@ -4,8 +4,9 @@ import { HEADER_HEIGHT } from '@/shared/config/layout';
 import React from 'react';
 
 import Link from 'next/link';
-import { styled, XStack } from 'tamagui';
-import { YStack, Typography, LinkButton } from '@arcadeum/ui';
+import { styled, XStack, YStack } from 'tamagui';
+import { Typography } from '@arcadeum/ui/components/Typography/Typography';
+import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import './header-stable.css';
 
 // ─── Header Inner ─────────────────────────────────────────────────────────────
@@ -21,7 +22,12 @@ export function Logo({
   children: React.ReactNode;
 }) {
   return (
-    <Link href={href} prefetch={false} className="link-no-decoration">
+    <Link
+      href={href}
+      prefetch={false}
+      className="link-no-decoration"
+      aria-label="Arcadeum"
+    >
       <div className="logo-inner" data-testid="logo-inner">
         {children}
       </div>

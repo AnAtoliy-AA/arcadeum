@@ -1,6 +1,7 @@
 'use client';
-import { useEffect, useRef } from 'react';
-import { useLanguage, formatMessage } from '@/shared/i18n/context';
+import React, { useEffect, useRef, useMemo } from 'react';
+import { useLanguage } from '@/shared/i18n/context';
+import { formatMessage } from '@/shared/i18n';
 import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import {
@@ -14,14 +15,20 @@ import { CARD_VARIANTS } from '@/features/games/lib/criticalVariants';
 
 type ThemeColor = '$red10' | '$blue10' | '$purple10';
 const THEME_COLORS: ThemeColor[] = ['$red10', '$blue10', '$purple10'];
-const HERO_CARDS = [...CARD_VARIANTS].slice(0, 3).map((v, i) => ({
-  name: v.name,
-  icon: v.emoji,
-  colorToken: THEME_COLORS[i % THEME_COLORS.length],
-}));
 
 export default function HomeHero() {
   const sectionRef = useRef<HTMLElement>(null);
+  const { t } = useTranslation();
+
+  const heroCards = useMemo(
+    () =>
+      [...CARD_VARIANTS].slice(0, 3).map((v, i) => ({
+        name: v.name,
+        icon: v.emoji,
+        colorToken: THEME_COLORS[i % THEME_COLORS.length],
+      })),
+    [],
+  );
 
   useEffect(() => {
     // Manually add the hydration class to avoid a full React re-render of this
@@ -47,9 +54,6 @@ export default function HomeHero() {
   const supportLabel = homeCopy.supportCtaLabel ?? 'Support the developers';
 
   const primaryHref = routes.games;
-
-  const { t } = useTranslation();
-  const cards = HERO_CARDS;
 
   return (
     <section
@@ -101,22 +105,10 @@ export default function HomeHero() {
             className="animate-fade-in-up"
             style={{ animationDelay: '0.4s' }}
           >
-            <div
-              className="hero-actions-responsive"
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 'var(--t-space-4)',
-                marginTop: 'var(--t-space-4)',
-              }}
-            >
+            <div className="hero-actions-responsive">
               <Link
                 href={primaryHref}
                 className="home-link-button home-link-button-primary"
-                style={{
-                  marginLeft: 'var(--t-space-10)',
-                  marginBottom: 'var(--t-space-10)',
-                }}
               >
                 {primaryLabel}
               </Link>
@@ -140,8 +132,8 @@ export default function HomeHero() {
             className="hero-card-stack-main hero-card-stack"
             data-testid="hero-card-stack"
           >
-            {cards.map((card, index) => {
-              const isLast = index === cards.length - 1;
+            {heroCards.map((card, index) => {
+              const isLast = index === heroCards.length - 1;
 
               // spread them out slightly more for better visibility of the "not covered" parts
               const x = (index - 1) * 65;
@@ -156,11 +148,16 @@ export default function HomeHero() {
                 <div
                   key={index}
                   className="hero-card-main"
-                  style={{
-                    transform: `translate(${x}px, ${y}px) rotate(${rotate}) scale(${scale})`,
-                    zIndex: zIndexVal,
-                    opacity: opacity,
-                  }}
+                  style={
+                    {
+                      '--card-x': `${x}px`,
+                      '--card-y': `${y}px`,
+                      '--card-rotate': rotate,
+                      '--card-scale': scale,
+                      zIndex: zIndexVal,
+                      opacity: opacity,
+                    } as React.CSSProperties
+                  }
                   data-testid={`hero-card-${index}`}
                 >
                   <div

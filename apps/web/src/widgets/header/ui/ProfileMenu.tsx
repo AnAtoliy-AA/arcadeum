@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useCallback, useEffect } from 'react';
+import { Avatar } from '@arcadeum/ui/components/Avatar/Avatar';
+import { Button } from '@arcadeum/ui/components/Button/Button';
+import { Divider } from '@arcadeum/ui/components/Divider/Divider';
+import { RoleBadge } from '@arcadeum/ui/components/RoleBadge/RoleBadge';
 import {
-  Avatar,
-  Button,
-  Divider,
   SettingsIcon,
   BarChartIcon,
   GiftIcon,
@@ -12,13 +13,12 @@ import {
   LockIcon,
   MailIcon,
   LogoutIcon,
-  RoleBadge,
   ChevronIcon,
-} from '@arcadeum/ui';
+} from '@arcadeum/ui/components/Icons/index';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useCosmeticBadges } from '@/features/referrals/hooks/useCosmeticBadges';
-import { CosmeticBadge } from '@/shared/ui';
+import { CosmeticBadge } from '@arcadeum/ui/components/CosmeticBadge/CosmeticBadge';
 import { routes } from '@/shared/config/routes';
 import {
   ProfileMenuContainer,

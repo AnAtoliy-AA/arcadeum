@@ -223,16 +223,16 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(__dirname, '../../'),
     resolveAlias: {
-      '@tamagui/web': './node_modules/@tamagui/web',
-      '@tamagui/core': './node_modules/@tamagui/core',
-      tamagui: './node_modules/tamagui',
+      tamagui: '../../node_modules/tamagui',
+      '@tamagui/core': '../../node_modules/@tamagui/core',
+      '@tamagui/web': '../../node_modules/@tamagui/web',
     },
   },
   productionBrowserSourceMaps: false,
 };
 
 const tamaguiPlugin = withTamagui({
-  config: path.resolve(process.cwd(), './src/shared/config/tamagui.config.ts'),
+  config: path.resolve(__dirname, '../../packages/ui/src/tamagui.config.ts'),
   components: ['tamagui', '@arcadeum/ui'],
   appDir: true,
 });

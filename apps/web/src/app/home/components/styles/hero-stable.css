@@ -104,6 +104,73 @@
   background-color: var(--colorHover);
 }
 
-.home-btn-gap-2 {
+.hero-btn-gap-2 {
   gap: var(--t-space-2);
+}
+
+.hero-actions-responsive {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--t-space-4);
+  margin-top: var(--t-space-6);
+  justify-content: center;
+}
+
+@media (min-width: 1151px) {
+  .hero-actions-responsive {
+    justify-content: flex-start;
+  }
+}
+
+/* Card stack animations */
+.hero-card-stack {
+  position: relative;
+  width: 320px;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-card-main {
+  position: absolute;
+  width: 280px;
+  height: 380px;
+  background: rgba(30, 32, 35, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transform: translate(var(--card-x), var(--card-y)) rotate(var(--card-rotate))
+    scale(var(--card-scale));
+  opacity: 0;
+  transition:
+    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.6s ease-out,
+    box-shadow 0.3s ease;
+  pointer-events: none;
+}
+
+.is-hydrated .hero-card-main {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hero-card-main:hover {
+  transform: translate(var(--card-x), calc(var(--card-y) - 20px))
+    rotate(var(--card-rotate)) scale(1.05) !important;
+  z-index: 100 !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 1150px) {
+  .hero-card-stack {
+    margin-top: 60px;
+    margin-bottom: 40px;
+    transform: scale(0.85);
+  }
 }

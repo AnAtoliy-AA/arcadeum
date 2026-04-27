@@ -85,7 +85,7 @@ export default function HomeFooter() {
     SOCIAL_MAPPING.forEach(({ id, label, Icon }) => {
       const href = social[id as keyof typeof social];
       if (href && typeof href === 'string') {
-        socialLinks.push({ id, label, icon: <Icon size={18} />, href });
+        socialLinks.push({ id, label, icon: <Icon size={22} />, href });
       }
     });
   }
@@ -94,7 +94,7 @@ export default function HomeFooter() {
     socialLinks.push({
       id: 'support',
       label: 'Support',
-      icon: <SupportIcon size={16} />,
+      icon: <SupportIcon size={20} />,
       href: '/support',
     });
   }

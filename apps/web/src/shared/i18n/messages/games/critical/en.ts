@@ -303,6 +303,11 @@ export const enMessages = {
       },
       cancel: 'Cancel',
       play: 'Play',
+      popover: {
+        play: 'Play',
+        combo: 'Play as Combo (×{{count}})',
+        close: 'Close',
+      },
     },
     victory: { title: 'Victory!', message: 'Congratulations! You survived!' },
     defeat: { title: 'Game Over', message: 'Better luck next time!' },

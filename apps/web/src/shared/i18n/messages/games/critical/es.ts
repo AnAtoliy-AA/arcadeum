@@ -306,6 +306,11 @@ export const esMessages = {
       },
       cancel: 'Cancelar',
       play: 'Jugar',
+      popover: {
+        play: 'Jugar',
+        combo: 'Combo (×{{count}})',
+        close: 'Cerrar',
+      },
     },
     victory: { title: '¡Victoria!', message: '¡Felicidades! ¡Sobreviviste!' },
     defeat: {

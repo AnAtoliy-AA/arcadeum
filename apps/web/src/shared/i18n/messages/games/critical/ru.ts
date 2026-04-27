@@ -308,6 +308,11 @@ export const ruMessages = {
       },
       cancel: 'Отмена',
       play: 'Сыграть',
+      popover: {
+        play: 'Сыграть',
+        combo: 'Комбо (×{{count}})',
+        close: 'Закрыть',
+      },
     },
     victory: { title: 'Победа!', message: 'Поздравляем! Вы выжили!' },
     defeat: { title: 'Игра окончена', message: 'Повезет в следующий раз!' },

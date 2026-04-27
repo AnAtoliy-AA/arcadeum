@@ -313,6 +313,11 @@ export const frMessages = {
       },
       cancel: 'Annuler',
       play: 'Jouer',
+      popover: {
+        play: 'Jouer',
+        combo: 'Combo (×{{count}})',
+        close: 'Fermer',
+      },
     },
     victory: {
       title: 'Victoire !',

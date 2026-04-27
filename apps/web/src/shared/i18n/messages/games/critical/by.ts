@@ -307,6 +307,11 @@ export const byMessages = {
       },
       cancel: 'Адмена',
       play: 'Згуляць',
+      popover: {
+        play: 'Згуляць',
+        combo: 'Камба (×{{count}})',
+        close: 'Зачыніць',
+      },
     },
     victory: { title: 'Перамога!', message: 'Віншуем! Вы выжылі!' },
     defeat: { title: 'Гульня скончана', message: 'Пашанцуе ў наступны раз!' },

@@ -401,6 +401,7 @@ export function PlayerHand({
               return (
                 <div key={id} style={wrapperStyle}>
                   <HandCard
+                    data-cardtype={card}
                     $cardType={card}
                     $index={idx}
                     $size={handSize}

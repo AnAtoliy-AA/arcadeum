@@ -153,6 +153,24 @@ export const CenterTable = styled(XStack, {
   },
 });
 
+export const OpponentStrip = styled(XStack, {
+  name: 'OpponentStrip',
+  flexDirection: 'row',
+  overflowX: 'auto',
+  overflowY: 'hidden',
+  gap: '$3',
+  paddingHorizontal: '$3',
+  paddingVertical: '$2',
+  height: 80,
+  width: '100%',
+  flexShrink: 0,
+  alignItems: 'center',
+
+  variants: {
+    $variant: (_val: unknown) => ({}),
+  } as const,
+});
+
 export const CenterTableRow = styled(XStack, {
   name: 'CenterTableRow',
   flexDirection: 'row',

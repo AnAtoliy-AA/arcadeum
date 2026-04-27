@@ -124,11 +124,7 @@ export function PlayerHand({
   const isMobile = media.sm;
   const handSize = isMobile ? 'mobileFlat' : 'desktopFan';
   const isFanned = !isMobile && handLayout === 'grid';
-  const handCardCount = currentPlayer.hand.length;
-  const effectiveLayout: HandLayoutMode =
-    isMobile && handLayout === 'grid' && handCardCount > 6
-      ? 'linear'
-      : handLayout;
+  const effectiveLayout: HandLayoutMode = isMobile ? 'linear' : handLayout;
 
   // Group current hand by card type/count for rendering logic
   const groupedHand = useMemo(() => {

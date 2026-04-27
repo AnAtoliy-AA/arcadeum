@@ -69,7 +69,26 @@ export const FormContainer = styled(YStack, {
   name: 'FormContainer',
   flexDirection: 'column',
   gap: '$5',
+  $xs: { paddingBottom: 96 },
 });
+
+export const StickyMobileCta = styled(YStack, {
+  name: 'StickyMobileCta',
+  $xs: {
+    position: 'fixed' as unknown as 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: '$3',
+    paddingBottom:
+      'calc(env(safe-area-inset-bottom, 0px) + 12px)' as unknown as number,
+    backgroundColor: 'rgba(15, 23, 42, 0.92)',
+    backdropFilter: 'blur(16px)',
+    borderTopWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    zIndex: 100,
+  },
+} as unknown as Record<string, unknown>);
 
 export const GameSelector = styled(YStack, {
   name: 'GameSelector',

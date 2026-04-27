@@ -21,6 +21,7 @@ import { useScenePalette } from './ScenePaletteContext';
 import { ActionsSection } from './ActionsSection';
 import { MobileHandPopover } from './MobileHandPopover';
 import { HandControlsPanel } from './HandControlsPanel';
+import { MobileActionBar } from './MobileActionBar';
 
 import {
   HandSection,
@@ -128,52 +129,34 @@ export function PlayerHand({
   const isFanned = !isMobile && handLayout === 'grid';
   const effectiveLayout: HandLayoutMode = isMobile ? 'linear' : handLayout;
 
-  // Only treat selectedCardId as active if the card is still in hand.
+  // Treat selectedCardId as active only if the card is still in hand.
   const activeSelectedCardId =
     selectedCardId && currentPlayer.hand.includes(selectedCardId)
       ? selectedCardId
       : null;
-
   // Group current hand by card type/count for rendering logic
   const groupedHand = useMemo(() => {
-    const items: {
-      card: CriticalCard;
-      count: number;
-      id: string;
-    }[] = [];
-
-    const handCounts = new Map<CriticalCard, number>();
+    const counts = new Map<CriticalCard, number>();
     currentPlayer.hand.forEach((card: CriticalCard) =>
-      handCounts.set(card, (handCounts.get(card) || 0) + 1),
+      counts.set(card, (counts.get(card) || 0) + 1),
     );
-
-    const distinctCards = Array.from(handCounts.keys());
-
-    distinctCards.forEach((card) => {
-      items.push({
-        card,
-        count: handCounts.get(card) || 0,
-        id: card,
-      });
-    });
-
-    return items;
+    return Array.from(counts.entries()).map(([card, count]) => ({
+      card,
+      count,
+      id: card,
+    }));
   }, [currentPlayer.hand]);
 
   const stashItems = useMemo(() => {
-    const items: {
-      card: CriticalCard;
-      count: number;
-      id: string;
-    }[] = [];
-    const stashCounts = new Map<CriticalCard, number>();
+    const counts = new Map<CriticalCard, number>();
     (currentPlayer.stash || []).forEach((card: CriticalCard) =>
-      stashCounts.set(card, (stashCounts.get(card) || 0) + 1),
+      counts.set(card, (counts.get(card) || 0) + 1),
     );
-    Array.from(stashCounts.entries()).forEach(([card, count]) => {
-      items.push({ card, count, id: `stash-${card}` });
-    });
-    return items;
+    return Array.from(counts.entries()).map(([card, count]) => ({
+      card,
+      count,
+      id: `stash-${card}`,
+    }));
   }, [currentPlayer.stash]);
 
   const distinctCardTypes = useMemo(
@@ -276,7 +259,7 @@ export function PlayerHand({
 
   return (
     <HandSection>
-      {isMyTurn && !isGameOver && (
+      {isMyTurn && !isGameOver && !isMobile && (
         <ActionsSection
           currentPlayer={currentPlayer}
           canAct={canAct}
@@ -299,7 +282,7 @@ export function PlayerHand({
       )}
 
       {/* Show Nope button on other turns when there's a pending action */}
-      {!isMyTurn && !isGameOver && canPlayNope && (
+      {!isMyTurn && !isGameOver && canPlayNope && !isMobile && (
         <InfoCard>
           <InfoTitle>{t('games.table.actions.start') || 'Actions'}</InfoTitle>
           <ActionButton
@@ -487,6 +470,18 @@ export function PlayerHand({
           )}
         </InfoCard>
       </HandContainer>
+
+      <MobileActionBar
+        isMyTurn={isMyTurn}
+        isGameOver={isGameOver}
+        canAct={canAct}
+        canPlayNope={canPlayNope}
+        actionBusy={actionBusy}
+        cardVariant={cardVariant}
+        t={t}
+        onDraw={onDraw}
+        onPlayNope={onPlayNope}
+      />
     </HandSection>
   );
 }

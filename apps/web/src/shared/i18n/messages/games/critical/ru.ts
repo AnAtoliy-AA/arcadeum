@@ -313,6 +313,10 @@ export const ruMessages = {
         combo: 'Комбо (×{{count}})',
         close: 'Закрыть',
       },
+      actionBar: {
+        draw: 'Взять',
+        nope: 'Отмена',
+      },
     },
     victory: { title: 'Победа!', message: 'Поздравляем! Вы выжили!' },
     defeat: { title: 'Игра окончена', message: 'Повезет в следующий раз!' },

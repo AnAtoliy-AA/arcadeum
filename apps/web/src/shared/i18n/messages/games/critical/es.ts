@@ -311,6 +311,10 @@ export const esMessages = {
         combo: 'Combo (×{{count}})',
         close: 'Cerrar',
       },
+      actionBar: {
+        draw: 'Robar',
+        nope: 'No',
+      },
     },
     victory: { title: '¡Victoria!', message: '¡Felicidades! ¡Sobreviviste!' },
     defeat: {

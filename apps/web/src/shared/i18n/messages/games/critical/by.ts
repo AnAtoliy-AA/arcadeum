@@ -312,6 +312,10 @@ export const byMessages = {
         combo: 'Камба (×{{count}})',
         close: 'Зачыніць',
       },
+      actionBar: {
+        draw: 'Узяць',
+        nope: 'Не',
+      },
     },
     victory: { title: 'Перамога!', message: 'Віншуем! Вы выжылі!' },
     defeat: { title: 'Гульня скончана', message: 'Пашанцуе ў наступны раз!' },

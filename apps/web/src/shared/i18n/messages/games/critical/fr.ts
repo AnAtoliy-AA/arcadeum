@@ -318,6 +318,10 @@ export const frMessages = {
         combo: 'Combo (×{{count}})',
         close: 'Fermer',
       },
+      actionBar: {
+        draw: 'Piocher',
+        nope: 'Non',
+      },
     },
     victory: {
       title: 'Victoire !',

@@ -65,6 +65,8 @@ export {
 
 export { InfoTitle, ActionsHeader, ActionsToggleButton } from './table-widgets';
 
+export { ActionBar } from './mobile-action-bar';
+
 // Player Components
 export { PlayerCard, PlayerAvatar, PlayerName } from './players';
 

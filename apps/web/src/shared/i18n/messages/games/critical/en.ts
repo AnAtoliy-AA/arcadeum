@@ -183,6 +183,7 @@ export const enMessages = {
       variants: cardVariants,
     },
     actions: {
+      title: 'ACTIONS',
       start: 'Start Game',
       starting: 'Starting...',
       draw: 'Draw Card',

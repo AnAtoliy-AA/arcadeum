@@ -190,6 +190,7 @@ export const frMessages = {
       variants: cardVariants,
     },
     actions: {
+      title: 'ACTIONS',
       start: 'Démarrer le Jeu',
       starting: 'Démarrage...',
       draw: 'Piocher',

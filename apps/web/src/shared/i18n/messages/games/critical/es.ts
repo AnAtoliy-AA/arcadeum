@@ -185,6 +185,7 @@ export const esMessages = {
       variants: cardVariants,
     },
     actions: {
+      title: 'ACCIONES',
       start: 'Iniciar Juego',
       starting: 'Iniciando...',
       draw: 'Robar Carta',

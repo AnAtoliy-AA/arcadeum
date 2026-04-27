@@ -189,6 +189,7 @@ export const ruMessages = {
       variants: cardVariants,
     },
     actions: {
+      title: 'ДЕЙСТВИЯ',
       start: 'Начать игру',
       starting: 'Запуск...',
       draw: 'Взять карту',

@@ -187,6 +187,7 @@ export const byMessages = {
       variants: cardVariants,
     },
     actions: {
+      title: 'ДЗЕЯННІ',
       start: 'Пачаць гульню',
       starting: 'Запуск...',
       draw: 'Узяць карту',

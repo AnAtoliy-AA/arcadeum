@@ -169,8 +169,8 @@ export const HandCard = styled(Card, {
         },
       },
       mobileFlat: {
-        width: 62,
-        height: 88,
+        width: 88,
+        height: 120,
         aspectRatio: undefined,
         pressStyle: {
           y: -14,

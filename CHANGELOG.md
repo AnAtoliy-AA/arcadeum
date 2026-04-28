@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.23] - 2026-04-28
+
+### Refactored
+- update presentation and hero section layout with responsive design improvements and animations (ARC-486)
+
+
 ## [1.9.22] - 2026-04-24
 
 ### Added

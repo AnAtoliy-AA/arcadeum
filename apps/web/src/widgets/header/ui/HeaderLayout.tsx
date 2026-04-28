@@ -14,7 +14,13 @@ export function HeaderLayout({ children }: HeaderLayoutProps) {
     <header className="header-outer" role="banner">
       <div className="header-inner" data-testid="header-inner">
         <Logo href="/">
-          <Image src="/logo.png" alt="" width={32} height={32} priority />
+          <Image
+            src="/logo.png"
+            alt={`${appConfig.appName || 'Arcadeum'} Logo`}
+            width={32}
+            height={32}
+            priority
+          />
           <span className="logo-text" data-testid="logo-text">
             {appConfig.appName || 'Arcadeum'}
           </span>

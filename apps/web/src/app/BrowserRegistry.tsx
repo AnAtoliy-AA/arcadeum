@@ -24,9 +24,18 @@ export default function BrowserRegistry({ children }: BrowserRegistryProps) {
         );
         // Try fallback initialization
         setupTamagui();
-        if (!tamaguiConfig) return null;
+        if (!tamaguiConfig) {
+          console.error(
+            'CRITICAL: tamaguiConfig is still missing after setupTamagui()',
+          );
+          return null;
+        }
       }
       if (typeof tamaguiConfig.getCSS !== 'function') {
+        console.error(
+          'tamaguiConfig.getCSS is not a function. Current config:',
+          Object.keys(tamaguiConfig || {}),
+        );
         throw new Error('tamaguiConfig.getCSS is not a function');
       }
       const code = tamaguiConfig.getCSS();

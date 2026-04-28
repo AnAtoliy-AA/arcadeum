@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useCosmeticBadges } from '@/features/referrals/hooks/useCosmeticBadges';
-import { CosmeticBadge } from '@/shared/ui';
+import { CosmeticBadge } from '@arcadeum/ui/components/CosmeticBadge/CosmeticBadge';
 import { routes } from '@/shared/config/routes';
 import { appConfig } from '@/shared/config/app-config';
 import {
@@ -15,16 +15,12 @@ import {
   MobileVersionText,
   NavMobileLink,
 } from './styles';
-import {
-  Button,
-  YStack,
-  XStack,
-  LogoutIcon,
-  SupportIcon,
-  RoleBadge,
-  LinkButton,
-  Divider,
-} from '@arcadeum/ui';
+import { XStack, YStack } from 'tamagui';
+import { Button } from '@arcadeum/ui/components/Button/Button';
+import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
+import { Divider } from '@arcadeum/ui/components/Divider/Divider';
+import { RoleBadge } from '@arcadeum/ui/components/RoleBadge/RoleBadge';
+import { LogoutIcon, SupportIcon } from '@arcadeum/ui/components/Icons/index';
 import { useIsMounted } from './useIsMounted';
 import { useHeaderAuth } from './useHeaderAuth';
 

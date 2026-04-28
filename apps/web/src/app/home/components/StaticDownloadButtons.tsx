@@ -18,33 +18,35 @@ export const StaticDownloadButtons: React.FC<StaticDownloadButtonsProps> = ({
 
   return (
     <div className="download-buttons-container">
-      <a
-        href="#"
-        className="download-btn-static"
-        aria-label="Download on the App Store"
+      <div
+        className="download-btn-static disabled"
+        aria-label={`App Store - ${t('home.comingSoon')}`}
       >
         <div className="download-btn-icon">
           <AppleIcon size={24} />
         </div>
         <div className="download-btn-text">
-          <span className="download-btn-small">Download on the</span>
+          <span className="download-btn-small">
+            {t('home.comingSoon')?.toUpperCase()}
+          </span>
           <span className="download-btn-large">App Store</span>
         </div>
-      </a>
+      </div>
 
-      <a
-        href="#"
-        className="download-btn-static"
-        aria-label="Get it on Google Play"
+      <div
+        className="download-btn-static disabled"
+        aria-label={`Google Play - ${t('home.comingSoon')}`}
       >
         <div className="download-btn-icon">
           <AndroidIcon size={24} />
         </div>
         <div className="download-btn-text">
-          <span className="download-btn-small">GET IT ON</span>
+          <span className="download-btn-small">
+            {t('home.comingSoon')?.toUpperCase()}
+          </span>
           <span className="download-btn-large">Google Play</span>
         </div>
-      </a>
+      </div>
 
       {(onInstall || onShowInstructions) && (
         <button

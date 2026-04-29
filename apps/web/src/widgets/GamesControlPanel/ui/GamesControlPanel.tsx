@@ -111,6 +111,15 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       justifyContent="flex-start"
       gap="$4"
       flexWrap="wrap"
+      $sm={{
+        flexWrap: 'nowrap',
+        overflowX: 'auto',
+        gap: '$1.5',
+        justifyContent: 'center',
+        paddingVertical: '$1',
+        paddingHorizontal: '$2',
+        borderRadius: 8,
+      }}
       paddingVertical="$3"
       paddingHorizontal="$6"
       backgroundColor="$glassBg"
@@ -119,12 +128,6 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       borderColor="$glassBorder"
       position="relative"
       zIndex={50}
-      $sm={{
-        justifyContent: 'center',
-        gap: '$2',
-        paddingVertical: '$2',
-        paddingHorizontal: '$4',
-      }}
     >
       {isSpectating && (
         <XStack
@@ -155,6 +158,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       <Button
         variant="glass"
         size="sm"
+        $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
         data-testid="fullscreen-button"
         onClick={toggleFullscreen}
         aria-label={
@@ -178,6 +182,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         <Button
           variant="glass"
           size="sm"
+          $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
           onClick={onShowRules}
           aria-label={t('games.table.controlPanel.rules') || 'Game Rules'}
           title={t('games.table.controlPanel.rules') || 'Game Rules'}
@@ -194,6 +199,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         <Button
           variant="glass"
           size="sm"
+          $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
           onClick={onToggleChat}
           data-testid="toggle-chat-button"
           aria-label={
@@ -292,6 +298,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       <Button
         variant="glass"
         size="sm"
+        $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
         onClick={handleCopyInviteLink}
         aria-label={
           isCopied
@@ -313,6 +320,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       <Button
         variant="glass"
         size="sm"
+        $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
         onClick={handleExitRoom}
         aria-label={t('games.table.controlPanel.exitRoom') || 'Exit'}
         title={
@@ -331,6 +339,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         <Button
           variant="danger"
           size="sm"
+          $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
           onClick={handleLeaveGame}
           aria-label={t('games.table.controlPanel.leaveRoom')}
           title={

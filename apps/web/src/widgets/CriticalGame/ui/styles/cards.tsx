@@ -1,4 +1,4 @@
-import { styled, XStack, Text } from 'tamagui';
+import { styled, XStack, Text, useMedia } from 'tamagui';
 import { Button, ButtonProps, GameVariant } from '@arcadeum/ui';
 import { Card } from './cards-base';
 import { getVariantStyles } from './variants';
@@ -14,14 +14,17 @@ export const ActionButton = ({
   variant,
   $variant,
   ...props
-}: ActionButtonProps) => (
-  <Button
-    variant={(variant || 'primary') as ButtonProps['variant']}
-    size="md"
-    gameVariant={(variant || $variant) as GameVariant}
-    {...props}
-  />
-);
+}: ActionButtonProps) => {
+  const media = useMedia();
+  return (
+    <Button
+      variant={(variant || 'primary') as ButtonProps['variant']}
+      size={media.sm ? 'sm' : 'md'}
+      gameVariant={(variant || $variant) as GameVariant}
+      {...props}
+    />
+  );
+};
 
 export const LastPlayedCard = styled(Card, {
   name: 'LastPlayedCard',

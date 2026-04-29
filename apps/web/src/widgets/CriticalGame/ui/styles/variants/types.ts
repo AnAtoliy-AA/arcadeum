@@ -93,7 +93,7 @@ export interface VariantStyleConfig {
   cards: {
     glowEffect: string;
     borderEffect: string;
-    deckBorderColor?: string;           // replaces getDeckBorder
+    deckBorderColor?: string; // replaces getDeckBorder
     getDecorationBackground?: () => string;
     getDecorationBorder?: () => string;
     getDecorationEffects?: () => Record<string, unknown>;
@@ -107,8 +107,8 @@ export interface VariantStyleConfig {
     getCardSpriteUrl?: (variant?: string) => string | undefined;
     getDeckStyles?: () => Record<string, unknown>;
     getCardStyles?: () => Record<string, unknown>;
-    getHoverGlow?: () => string;         // box-shadow string for card hover
-    getCardNameColor?: () => string;     // color for name label overlay
+    getHoverGlow?: () => string; // box-shadow string for card hover
+    getCardNameColor?: () => string; // color for name label overlay
   };
   scene: VariantScenePalette;
 }
@@ -122,6 +122,8 @@ export interface VariantScenePalette {
   backlightColor: string;
   vignetteColor: string;
   particleColors: string[];
+  ambientGlowColorA: string;
+  ambientGlowColorB: string;
 
   // Turn banner
   turnBannerBorderGradient: string;

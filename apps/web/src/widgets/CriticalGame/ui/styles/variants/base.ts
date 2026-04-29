@@ -5,27 +5,6 @@ import { VARIANT_COLORS } from '../variant-palette';
 export const baseVariantStyles: VariantStyleConfig = {
   layout: {
     getBackgroundEffects: () => ({
-      before: {
-        content: '""',
-        position: 'absolute',
-        top: '-60%',
-        left: '-60%',
-        width: '220%',
-        height: '220%',
-        background: `radial-gradient(
-            circle at 30% 30%,
-            rgba(99, 102, 241, 0.12) 0%,
-            transparent 35%
-          ),
-          radial-gradient(
-            circle at 70% 70%,
-            rgba(236, 72, 153, 0.1) 0%,
-            transparent 35%
-          )`,
-        animation: 'ambientGlow 12s ease-in-out infinite',
-        pointerEvents: 'none',
-        zIndex: 0,
-      },
       after: {
         content: '""',
         position: 'absolute',
@@ -259,6 +238,9 @@ export const baseVariantStyles: VariantStyleConfig = {
       'rgba(168, 85, 247, 0.75)',
       'rgba(99, 102, 241, 0.6)',
     ],
+    ambientGlowColorA: 'rgba(99, 102, 241, 0.12)',
+    ambientGlowColorB: 'rgba(236, 72, 153, 0.1)',
+
     turnBannerBorderGradient:
       'linear-gradient(90deg, rgba(168, 85, 247, 1), rgba(236, 72, 153, 1))',
     turnBannerDotColor: 'rgba(236, 72, 153, 1)',
@@ -266,8 +248,7 @@ export const baseVariantStyles: VariantStyleConfig = {
       '0 0 24px rgba(168, 85, 247, 0.6), 0 0 48px rgba(236, 72, 153, 0.35)',
     opponentTurnRingColor: 'rgba(236, 72, 153, 1)',
     opponentTurnHaloColor: 'rgba(236, 72, 153, 0.35)',
-    youAvatarGradient:
-      'linear-gradient(135deg, #f5c56a 0%, #c4902f 100%)',
+    youAvatarGradient: 'linear-gradient(135deg, #f5c56a 0%, #c4902f 100%)',
     deckGradient:
       'linear-gradient(160deg, rgba(30, 15, 55, 1) 0%, rgba(12, 5, 22, 1) 100%)',
     deckGlow:
@@ -284,14 +265,11 @@ export const baseVariantStyles: VariantStyleConfig = {
         'linear-gradient(160deg, rgba(236, 72, 153, 1) 0%, rgba(139, 28, 98, 1) 100%)',
       defuse:
         'linear-gradient(160deg, rgba(34, 197, 94, 1) 0%, rgba(6, 95, 70, 1) 100%)',
-      skip:
-        'linear-gradient(160deg, rgba(239, 68, 68, 1) 0%, rgba(127, 29, 29, 1) 100%)',
-      nope:
-        'linear-gradient(160deg, rgba(100, 116, 139, 1) 0%, rgba(30, 41, 59, 1) 100%)',
+      skip: 'linear-gradient(160deg, rgba(239, 68, 68, 1) 0%, rgba(127, 29, 29, 1) 100%)',
+      nope: 'linear-gradient(160deg, rgba(100, 116, 139, 1) 0%, rgba(30, 41, 59, 1) 100%)',
       favor:
         'linear-gradient(160deg, rgba(249, 115, 22, 1) 0%, rgba(154, 52, 18, 1) 100%)',
-      see:
-        'linear-gradient(160deg, rgba(56, 189, 248, 1) 0%, rgba(12, 74, 110, 1) 100%)',
+      see: 'linear-gradient(160deg, rgba(56, 189, 248, 1) 0%, rgba(12, 74, 110, 1) 100%)',
       combo:
         'linear-gradient(160deg, rgba(168, 85, 247, 1) 0%, rgba(76, 29, 149, 1) 100%)',
       special:

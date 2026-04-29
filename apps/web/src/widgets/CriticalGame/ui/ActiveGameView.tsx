@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { useMedia } from 'tamagui';
+import { useMedia, YStack, XStack } from 'tamagui';
 import { useGameChatIntegration } from '@/features/games/hooks';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type {
@@ -206,10 +206,10 @@ export function ActiveGameView({
     handleOpenEventCombo,
     setSelectedMode,
     setSelectedTarget,
-    setStashModal: () => {}, // Handled by useCriticalModals
-    setMarkModal: () => {},
-    setStealDrawModal: () => {},
-    setSmiteModal: () => {},
+    setStashModal: () => { }, // Handled by useCriticalModals
+    setMarkModal: () => { },
+    setStealDrawModal: () => { },
+    setSmiteModal: () => { },
     setTargetedAttackModal,
   });
 
@@ -262,67 +262,71 @@ export function ActiveGameView({
   return (
     <ScenePaletteProvider palette={scenePalette}>
       <SceneBackdrop />
-      <CriticalGameHeader
-        room={room}
-        t={
-          t as unknown as (
-            key: string,
-            params?: Record<string, string | number>,
-          ) => string
-        }
-        idleTimerEnabled={idleTimerEnabled}
-        actionBusy={actionBusy}
-        isGameOver={!!isGameOver}
-        currentPlayer={currentPlayer ?? undefined}
-        canAct={!!canAct}
-        isMyTurn={!!isMyTurn}
-        handleIdleTimeout={handleIdleTimeout}
-        autoplayState={autoplayState}
-        idleTimerTriggered={idleTimerTriggered}
-        handleStopAutoplay={handleStopAutoplay}
-        isFullscreen={isFullscreen}
-        toggleFullscreen={toggleFullscreen}
-      />
-      <TurnBanner
-        isMyTurn={!!isMyTurn}
-        currentPlayerName={
-          currentTurnPlayer
-            ? resolveDisplayName(currentTurnPlayer.playerId, 'Player')
-            : ''
-        }
-        secondsRemaining={null}
-      />
+      <YStack flex={1} className="animate-entrance">
+        <CriticalGameHeader
+          room={room}
+          t={
+            t as unknown as (
+              key: string,
+              params?: Record<string, string | number>,
+            ) => string
+          }
+          idleTimerEnabled={idleTimerEnabled}
+          actionBusy={actionBusy}
+          isGameOver={!!isGameOver}
+          currentPlayer={currentPlayer ?? undefined}
+          canAct={!!canAct}
+          isMyTurn={!!isMyTurn}
+          handleIdleTimeout={handleIdleTimeout}
+          autoplayState={autoplayState}
+          idleTimerTriggered={idleTimerTriggered}
+          handleStopAutoplay={handleStopAutoplay}
+          isFullscreen={isFullscreen}
+          toggleFullscreen={toggleFullscreen}
+        />
+        <XStack justifyContent="center">
+          <TurnBanner
+            isMyTurn={!!isMyTurn}
+            currentPlayerName={
+              currentTurnPlayer
+                ? resolveDisplayName(currentTurnPlayer.playerId, 'Player')
+                : ''
+            }
+            secondsRemaining={null}
+          />
+        </XStack>
 
-      <ActiveGameContent
-        room={room}
-        snapshot={snapshot}
-        currentUserId={currentUserId}
-        currentPlayer={currentPlayer}
-        cardVariant={cardVariant}
-        isGameOver={!!isGameOver}
-        isMyTurn={!!isMyTurn}
-        canAct={!!canAct}
-        canPlayNope={!!canPlayNope}
-        actionBusy={actionBusy}
-        aliveOpponents={aliveOpponents}
-        handLayout={handLayout}
-        setHandLayout={setHandLayout}
-        resolveDisplayName={resolveDisplayName}
-        t={
-          t as unknown as (
-            key: string,
-            params?: Record<string, string | number>,
-          ) => string
-        }
-        actions={actions}
-        idleTimerTriggered={idleTimerTriggered}
-        autoplayState={autoplayState}
-        handleUnstash={handleUnstash}
-        handlePlayActionCard={handlePlayActionCard}
-        handleOpenFavorModal={handleOpenFavorModal}
-        handleOpenEventCombo={handleOpenEventCombo}
-        handleOpenFiverCombo={handleOpenFiverCombo}
-      />
+        <ActiveGameContent
+          room={room}
+          snapshot={snapshot}
+          currentUserId={currentUserId}
+          currentPlayer={currentPlayer}
+          cardVariant={cardVariant}
+          isGameOver={!!isGameOver}
+          isMyTurn={!!isMyTurn}
+          canAct={!!canAct}
+          canPlayNope={canPlayNope}
+          actionBusy={actionBusy}
+          aliveOpponents={aliveOpponents}
+          handLayout={handLayout}
+          setHandLayout={setHandLayout}
+          resolveDisplayName={resolveDisplayName}
+          t={
+            t as unknown as (
+              key: string,
+              params?: Record<string, string | number>,
+            ) => string
+          }
+          actions={actions}
+          idleTimerTriggered={idleTimerTriggered}
+          autoplayState={autoplayState}
+          handleUnstash={handleUnstash}
+          handlePlayActionCard={handlePlayActionCard}
+          handleOpenFavorModal={handleOpenFavorModal}
+          handleOpenEventCombo={handleOpenEventCombo}
+          handleOpenFiverCombo={handleOpenFiverCombo}
+        />
+      </YStack>
 
       {currentPlayer && (
         <GameStatusMessage

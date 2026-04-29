@@ -1464,6 +1464,77 @@
   pointer-events: none;
 }
 
+.animate-entrance {
+  animation: fadeInScale 0.4s ease-out both;
+}
+
+@keyframes ambientGlow {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.25;
+  }
+  33% {
+    transform: translate(2%, 2%) scale(1.05);
+    opacity: 0.35;
+  }
+  66% {
+    transform: translate(-2%, 1%) scale(0.98);
+    opacity: 0.2;
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes spinAvatar {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes reticleSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes reticlePulse {
+  0%,
+  100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 /* Respect prefers-reduced-motion: collapse every keyframe animation to a
    single frame and short-circuit CSS transitions. Scene + variant visuals
    remain fully styled (gradients, shadows, borders) — only autonomous

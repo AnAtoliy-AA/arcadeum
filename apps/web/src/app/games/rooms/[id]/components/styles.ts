@@ -39,8 +39,8 @@ export const Container = styled(YStack, {
     overflowY: 'auto',
   },
   $sm: {
-    padding: '$3',
-    gap: '$3',
+    padding: '$2',
+    gap: '$2',
     flex: 1,
     overflowY: 'auto',
   },

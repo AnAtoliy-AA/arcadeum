@@ -14,7 +14,9 @@ import {
   makeBacklightStyle,
   makeScanlinesStyle,
   makeVignetteStyle,
+  makeAmbientGlowStyle,
   SCENE_LAYER_TESTIDS,
+  SceneAmbientGlow,
 } from './styles/scene';
 
 const PARTICLE_LAYOUT = [
@@ -33,6 +35,10 @@ export function SceneBackdrop() {
       data-testid={SCENE_LAYER_TESTIDS.backdrop}
       style={{ background: p.sceneBgGradient }}
     >
+      <SceneAmbientGlow
+        data-testid={SCENE_LAYER_TESTIDS.ambientGlow}
+        style={makeAmbientGlowStyle(p.ambientGlowColorA, p.ambientGlowColorB)}
+      />
       <SceneGridFloor
         data-testid={SCENE_LAYER_TESTIDS.gridFloor}
         style={makeGridFloorStyle(p.gridLineColorA, p.gridLineColorB)}
@@ -64,8 +70,7 @@ export function SceneBackdrop() {
               width: dot.size,
               height: dot.size,
               borderRadius: '50%',
-              background:
-                p.particleColors[i % p.particleColors.length],
+              background: p.particleColors[i % p.particleColors.length],
               boxShadow: `0 0 ${dot.size * 4}px ${
                 p.particleColors[i % p.particleColors.length]
               }`,

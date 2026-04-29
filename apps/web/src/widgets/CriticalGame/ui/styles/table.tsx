@@ -16,10 +16,11 @@ export const GameTable = styled(YStack, {
   overflow: 'hidden',
 
   $sm: {
-    paddingTop: '$9',
-    paddingBottom: '$4',
+    paddingTop: '$2',
+    paddingBottom: '$2',
     paddingHorizontal: '$2',
-    minHeight: 360,
+    minHeight: 320,
+    overflow: 'visible',
   },
 
   variants: {
@@ -88,8 +89,9 @@ export const PlayerPositionWrapper = styled(YStack, {
   $sm: {
     position: 'relative',
     transform: 'none',
-    width: '48%',
+    width: 'auto',
     alignItems: 'center',
+    flexShrink: 0,
   },
 
   variants: {
@@ -161,14 +163,23 @@ export const OpponentStrip = styled(XStack, {
   gap: '$3',
   paddingHorizontal: '$3',
   paddingVertical: '$2',
-  height: 80,
+  height: 110,
   width: '100%',
+  minWidth: 0,
   flexShrink: 0,
   alignItems: 'center',
+  position: 'relative',
+  zIndex: 10,
 
-  variants: {
-    $variant: (_val: unknown) => ({}),
-  } as const,
+  $sm: {
+    height: 110,
+    gap: '$2',
+    overflowX: 'auto',
+    overflowY: 'hidden',
+    paddingHorizontal: 0,
+    justifyContent: 'flex-start',
+    flexWrap: 'nowrap',
+  },
 });
 
 export const CenterTableRow = styled(XStack, {

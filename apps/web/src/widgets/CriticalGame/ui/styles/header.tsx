@@ -27,8 +27,8 @@ export const GameHeader = styled(XStack, {
   $sm: {
     paddingHorizontal: '$4',
     paddingVertical: '$2',
-    marginHorizontal: -8,
-    marginTop: -8,
+    marginHorizontal: 0,
+    marginTop: 0,
     gap: '$2',
     height: 42,
   },
@@ -86,7 +86,9 @@ export const GameTitle = styled(Text, {
   fontWeight: '800',
   letterSpacing: -0.3,
   position: 'relative',
-  numberOfLines: 1,
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
 
   $sm: {
     fontSize: 14,
@@ -170,7 +172,7 @@ export const VariantIconBadge = styled(YStack, {
 });
 
 export const StartButton = (props: ButtonProps) => (
-  <Button variant="secondary" {...props} />
+  <Button variant="secondary" $sm={{ size: 'sm', scale: 0.9 }} {...props} />
 );
 
 export const FullscreenButton = (props: ButtonProps) => (
@@ -179,6 +181,7 @@ export const FullscreenButton = (props: ButtonProps) => (
     padding="$2"
     borderRadius={8}
     pressStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+    $sm={{ scale: 0.85, padding: '$1' }}
     {...props}
   />
 );

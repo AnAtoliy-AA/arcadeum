@@ -15,24 +15,25 @@ export const GameContainer = styled(BaseGameContainer, {
   paddingTop: '$7',
   paddingBottom: 0,
   borderRadius: 24,
+  flex: 1,
   minHeight: 0,
   position: 'relative',
   overflowX: 'hidden',
   overflowY: 'auto',
+
   backdropFilter: 'blur(20px)',
-  height: 'auto',
+  height: '100%',
   flexDirection: 'column',
   minWidth: 0,
 
   ...scrollbarStyles,
 
   $sm: {
-    paddingHorizontal: '$2',
+    paddingHorizontal: 0,
     paddingTop: 0,
     paddingBottom: 0,
     borderRadius: 16,
     gap: '$2',
-    overflowX: 'hidden',
     overflowY: 'auto',
   },
 
@@ -70,6 +71,7 @@ export const GameContainer = styled(BaseGameContainer, {
           theme.borderColor?.val || '',
         ),
         shadowColor: config.getRoomShadow(!!isMyTurn),
+        ...config.getBackgroundEffects(),
       };
     },
   } as const,
@@ -88,6 +90,7 @@ export const GameBoard = styled(BaseGameBoard, {
 
   $sm: {
     gap: '$2',
+    padding: 0,
   },
 
   variants: {

@@ -7,12 +7,9 @@ export const PlayerCard = styled(YStack, {
   position: 'relative',
   alignItems: 'center',
   justifyContent: 'center',
-
   variants: {
     $animate: {
-      true: {
-        animation: 'fast',
-      },
+      true: {},
     },
     $isCurrentTurn: {
       true: {},
@@ -65,6 +62,13 @@ export const PlayerCard = styled(YStack, {
     },
   } as const,
 
+  $sm: {
+    minWidth: 80,
+    maxWidth: 100,
+    padding: '$2',
+    gap: '$1',
+  },
+
   defaultVariants: {
     $animate: true,
   },
@@ -77,9 +81,7 @@ export const PlayerAvatar = styled(YStack, {
 
   variants: {
     $animate: {
-      true: {
-        animation: 'fast',
-      },
+      true: {},
     },
     $isCurrentTurn: {
       true: {},
@@ -152,6 +154,14 @@ export const PlayerName = styled(Text, {
   color: '$color',
   textAlign: 'center',
   maxWidth: 120,
+
+  $sm: {
+    fontSize: 11,
+    maxWidth: 70,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 
   variants: {
     $variant: (

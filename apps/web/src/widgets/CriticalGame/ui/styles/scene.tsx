@@ -26,11 +26,18 @@ export const SceneGridFloor = styled(YStack, {
 
 export const SceneHorizon = styled(YStack, { name: 'CriticalSceneHorizon' });
 
-export const SceneBacklight = styled(YStack, { name: 'CriticalSceneBacklight' });
+export const SceneBacklight = styled(YStack, {
+  name: 'CriticalSceneBacklight',
+});
 
-export const SceneScanlines = styled(YStack, { name: 'CriticalSceneScanlines' });
+export const SceneScanlines = styled(YStack, {
+  name: 'CriticalSceneScanlines',
+});
 
 export const SceneVignette = styled(YStack, { name: 'CriticalSceneVignette' });
+export const SceneAmbientGlow = styled(YStack, {
+  name: 'CriticalSceneAmbientGlow',
+});
 
 export const SceneParticles = styled(YStack, {
   name: 'CriticalSceneParticles',
@@ -53,8 +60,7 @@ export function makeGridFloorStyle(a: string, b: string): CSSProperties {
     transformOrigin: 'center bottom',
     WebkitMaskImage:
       'linear-gradient(to top, rgba(0,0,0,1) 30%, transparent 90%)',
-    maskImage:
-      'linear-gradient(to top, rgba(0,0,0,1) 30%, transparent 90%)',
+    maskImage: 'linear-gradient(to top, rgba(0,0,0,1) 30%, transparent 90%)',
   };
 }
 
@@ -107,8 +113,27 @@ export function makeVignetteStyle(color: string): CSSProperties {
   };
 }
 
+export function makeAmbientGlowStyle(
+  glow1: string,
+  glow2: string,
+): CSSProperties {
+  return {
+    position: 'absolute',
+    top: '-60%',
+    left: '-60%',
+    width: '220%',
+    height: '220%',
+    background: `radial-gradient(circle at 30% 30%, ${glow1} 0%, transparent 35%),
+                 radial-gradient(circle at 70% 70%, ${glow2} 0%, transparent 35%)`,
+    animation: 'ambientGlow 12s ease-in-out infinite',
+    pointerEvents: 'none',
+    zIndex: 0,
+  };
+}
+
 export const SCENE_LAYER_TESTIDS = {
   backdrop: 'scene-backdrop',
+  ambientGlow: 'scene-ambient-glow',
   gridFloor: 'scene-grid-floor',
   horizon: 'scene-horizon',
   backlight: 'scene-backlight',

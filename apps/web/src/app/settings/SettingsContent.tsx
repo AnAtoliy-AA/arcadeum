@@ -6,7 +6,6 @@ import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { useThemeController } from '@/app/theme/ThemeContext';
 import { useHapticsSetting } from '@/shared/hooks/useHapticsSetting';
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
-import { usePWAInstallProps } from '@/features/pwa/context';
 import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
 import type { ThemePreference } from '@/shared/config/theme';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
@@ -31,9 +30,9 @@ import {
 
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
-import { DownloadButtons } from '@/shared/ui/DownloadButtons/DownloadButtons';
 import { OptionCard } from '@/shared/ui/OptionCard/OptionCard';
 import { BlockedUsersSection } from './BlockedUsersSection';
+import { InstallAppCta } from '@/widgets/install-app';
 import AppFooter from '@/widgets/footer/ui/AppFooter';
 
 type DownloadConfig = {
@@ -234,8 +233,6 @@ export default function SettingsContent({
     [],
   );
 
-  const { onInstall, onShowInstructions } = usePWAInstallProps();
-
   return (
     <>
       <style>{settingsStyles}</style>
@@ -355,17 +352,7 @@ export default function SettingsContent({
             </VersionText>
           </Section>
 
-          <Section
-            title="Downloads"
-            description="Download the app for your device or install the web version."
-          >
-            <DownloadButtons
-              iosHref={appConfig.downloads.iosHref}
-              androidHref={appConfig.downloads.androidHref}
-              onInstall={onInstall}
-              onShowInstructions={onShowInstructions}
-            />
-          </Section>
+          <InstallAppCta />
         </Container>
       </PageLayout>
       <AppFooter />

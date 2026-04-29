@@ -7,7 +7,9 @@ const HomeHowItWorks = dynamic(() => import('./components/HomeHowItWorks'));
 const HomeFeatures = dynamic(() => import('./components/HomeFeatures'));
 const HomePresentation = dynamic(() => import('./components/HomePresentation'));
 const HomePitchDeck = dynamic(() => import('./components/HomePitchDeck'));
-const HomeDownloadCta = dynamic(() => import('./components/HomeDownloadCta'));
+const InstallAppCta = dynamic(() =>
+  import('@/widgets/install-app').then((m) => m.InstallAppCta),
+);
 
 import HomeFooter from './components/HomeFooter';
 
@@ -20,7 +22,7 @@ export default function HomePage() {
       <HomeFeatures />
       <HomePresentation />
       <HomePitchDeck />
-      <HomeDownloadCta />
+      <InstallAppCta />
       <HomeFooter />
     </PageLayout>
   );

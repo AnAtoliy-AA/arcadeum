@@ -5,7 +5,7 @@ import { appConfig } from '@/shared/config/app-config';
 import { usePWAInstallProps } from '@/features/pwa';
 import { StaticDownloadButtons } from './StaticDownloadButtons';
 
-export default function HomeDownloadCta() {
+export default function InstallAppCta() {
   const { messages } = useLanguage();
   const homeCopy = messages.home ?? {};
 

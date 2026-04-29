@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { AppleIcon, AndroidIcon, SmartphoneIcon } from '@arcadeum/ui';
-import './styles/download-stable.css';
+import './styles.css';
 
 export interface StaticDownloadButtonsProps {
   onInstall?: () => void;

@@ -9,14 +9,16 @@ import {
   closeGameRulesModal,
 } from './fixtures/test-utils';
 
-test.describe('Critical Game Table Mobile Layout', () => {
+test.describe('Critical Game Table Layout', () => {
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
   });
 
-  test('player cards should not overlap on mobile with 5 players', async ({
+  test('player cards should not overlap with 5 players', async ({
     page,
+    viewport,
   }) => {
+    const isMobileViewport = !!viewport && viewport.width <= 800;
     const roomId = '507f1f77bcf86cd799439011';
     const userId = '507f191e810c19729de860ea';
 
@@ -123,7 +125,16 @@ test.describe('Critical Game Table Mobile Layout', () => {
     const playerCards = page.locator('[data-testid^="player-card-"]');
     await expect(playerCards.first()).toBeVisible({ timeout: 15000 });
 
-    await expect(playerCards).toHaveCount(5, { timeout: 15000 });
+    // ARC-485: on $sm the viewer is excluded from the OpponentStrip (their
+    // stats render in the hand zone), so the strip has playerOrder.length-1
+    // cards. On desktop, every seat renders around the table circle.
+    const expectedCount = isMobileViewport
+      ? mockState.playerOrder.length - 1
+      : mockState.playerOrder.length;
+    await expect(playerCards).toHaveCount(expectedCount, { timeout: 15000 });
+    await expect(
+      page.locator(`[data-testid="player-card-${userId}"]`),
+    ).toHaveCount(isMobileViewport ? 0 : 1);
 
     await expect(async () => {
       const boxes: {
@@ -133,7 +144,7 @@ test.describe('Critical Game Table Mobile Layout', () => {
         w: number;
         h: number;
       }[] = [];
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < expectedCount; i++) {
         const card = playerCards.nth(i);
         const box = await card.boundingBox();
         expect(box).not.toBeNull();
@@ -165,9 +176,11 @@ test.describe('Critical Game Table Mobile Layout', () => {
     }).toPass({ timeout: 15000, intervals: [1000] });
   });
 
-  test('all player names should be fully visible on mobile', async ({
+  test('all player names should be fully visible', async ({
     page,
+    viewport,
   }) => {
+    const isMobileViewport = !!viewport && viewport.width <= 800;
     const roomId = '507f1f77bcf86cd799439011';
     const userId = '507f191e810c19729de860ea';
 
@@ -261,9 +274,18 @@ test.describe('Critical Game Table Mobile Layout', () => {
     const playerNames = page.locator('[data-testid^="player-name-"]');
     await expect(playerNames.first()).toBeVisible({ timeout: 15000 });
 
-    await expect(playerNames).toHaveCount(4, { timeout: 15000 });
+    // ARC-485: on $sm the viewer is excluded from the OpponentStrip (their
+    // name appears in the hand zone), so the strip has playerOrder.length-1
+    // names. On desktop, every seat renders around the table circle.
+    const expectedCount = isMobileViewport
+      ? mockState.playerOrder.length - 1
+      : mockState.playerOrder.length;
+    await expect(playerNames).toHaveCount(expectedCount, { timeout: 15000 });
+    await expect(
+      page.locator(`[data-testid="player-name-${userId}"]`),
+    ).toHaveCount(isMobileViewport ? 0 : 1);
 
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < expectedCount; i++) {
       await expect(playerNames.nth(i)).toBeVisible();
     }
 

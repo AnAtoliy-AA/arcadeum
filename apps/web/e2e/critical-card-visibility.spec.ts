@@ -72,10 +72,16 @@ test.describe('Critical Card Visibility', () => {
     await waitForRoomReady(page);
     await closeGameRulesModal(page);
 
-    const cardName = page.getByText(/Attack/i).first();
+    // Anchor on the actual hand card via data-cardtype to avoid picking up
+    // hidden CardName instances elsewhere in the DOM (rules modal, off-screen
+    // siblings, etc). Works on both desktop and mobile after ARC-485.
+    const handStrike = page.locator('[data-cardtype="strike"]').first();
+    await expect(handStrike).toBeVisible({ timeout: 15000 });
+
+    const cardName = handStrike.locator('.is_CardName').first();
     await expect(cardName).toBeVisible({ timeout: 15000 });
 
-    const cardDescription = page.locator('.tamagui-CardDescription').first();
+    const cardDescription = handStrike.locator('.is_CardDescription').first();
     if (await cardDescription.isVisible()) {
       await expect(cardDescription).toBeVisible();
     }

@@ -307,18 +307,16 @@ export function PlayerHand({
                 : t('games.table.state.cards')}
               )
             </HandTitle>
-            {!isMobile && (
-              <HandControlsPanel
-                showNames={showNames}
-                showDescriptions={showDescriptions}
-                handLayout={handLayout}
-                setShowNames={setShowNames}
-                setShowDescriptions={setShowDescriptions}
-                setHandLayout={setHandLayout}
-                cardVariant={cardVariant}
-                t={t}
-              />
-            )}
+            <HandControlsPanel
+              showNames={showNames}
+              showDescriptions={showDescriptions}
+              handLayout={handLayout}
+              setShowNames={setShowNames}
+              setShowDescriptions={setShowDescriptions}
+              setHandLayout={isMobile ? undefined : setHandLayout}
+              cardVariant={cardVariant}
+              t={t}
+            />
           </HandHeader>
 
           <CardsGrid data-testid="hand-grid" $layout={effectiveLayout}>
@@ -421,14 +419,14 @@ export function PlayerHand({
                       cardType={card}
                       faceDown={isFlipping ? showBack : false}
                     />
-                    {!isMobile && showNames && (
+                    {showNames && (
                       <CardNameContainer $variant={cardVariant as GameVariant}>
                         <CardName $variant={cardVariant as GameVariant}>
                           {t(getCardTranslationKey(card, cardVariant)) || card}
                         </CardName>
                       </CardNameContainer>
                     )}
-                    {!isMobile && showDescriptions && (
+                    {showDescriptions && (
                       <CardDescriptionContainer
                         $variant={cardVariant as GameVariant}
                       >

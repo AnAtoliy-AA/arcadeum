@@ -183,6 +183,7 @@ export const enMessages = {
       variants: cardVariants,
     },
     actions: {
+      title: 'ACTIONS',
       start: 'Start Game',
       starting: 'Starting...',
       draw: 'Draw Card',
@@ -302,6 +303,15 @@ export const enMessages = {
       },
       cancel: 'Cancel',
       play: 'Play',
+      popover: {
+        play: 'Play',
+        combo: 'Play as Combo (×{{count}})',
+        close: 'Close',
+      },
+      actionBar: {
+        draw: 'Draw',
+        nope: 'Nope',
+      },
     },
     victory: { title: 'Victory!', message: 'Congratulations! You survived!' },
     defeat: { title: 'Game Over', message: 'Better luck next time!' },

@@ -15,7 +15,6 @@ export function WebPresentation() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   // Track which slides have been loaded to minimize bandwidth.
   // Initially load current, next (+1, +2), and previous (for loop wrap-around).
   const [loadedIndices, setLoadedIndices] = useState<Set<number>>(() => {
@@ -117,12 +116,7 @@ export function WebPresentation() {
   );
 
   return (
-    <div
-      ref={containerRef}
-      className="presentation-container"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <div ref={containerRef} className="presentation-container">
       {slides.map((slide, index) => {
         const isActive = index === currentSlide;
         return (
@@ -196,11 +190,10 @@ export function WebPresentation() {
 
         {/* Floating Navigation Buttons (Desktop) */}
         <div
-          className="presentation-nav-container"
+          className="presentation-nav-container presentation-nav-left"
           style={{
             left: 16,
             transform: 'translateY(-50%)',
-            opacity: isHovered ? 1 : 0,
           }}
         >
           <button
@@ -213,11 +206,10 @@ export function WebPresentation() {
         </div>
 
         <div
-          className="presentation-nav-container"
+          className="presentation-nav-container presentation-nav-right"
           style={{
             right: 16,
             transform: 'translateY(-50%)',
-            opacity: isHovered ? 1 : 0,
           }}
         >
           <button

@@ -187,6 +187,7 @@ export const byMessages = {
       variants: cardVariants,
     },
     actions: {
+      title: 'ДЗЕЯННІ',
       start: 'Пачаць гульню',
       starting: 'Запуск...',
       draw: 'Узяць карту',
@@ -306,6 +307,15 @@ export const byMessages = {
       },
       cancel: 'Адмена',
       play: 'Згуляць',
+      popover: {
+        play: 'Згуляць',
+        combo: 'Камба (×{{count}})',
+        close: 'Зачыніць',
+      },
+      actionBar: {
+        draw: 'Узяць',
+        nope: 'Не',
+      },
     },
     victory: { title: 'Перамога!', message: 'Віншуем! Вы выжылі!' },
     defeat: { title: 'Гульня скончана', message: 'Пашанцуе ў наступны раз!' },

@@ -28,11 +28,12 @@ export const GameContainer = styled(BaseGameContainer, {
 
   $sm: {
     paddingHorizontal: '$2',
-    paddingTop: '$2',
+    paddingTop: 0,
     paddingBottom: 0,
     borderRadius: 16,
+    gap: '$2',
     overflowX: 'hidden',
-    overflowY: 'hidden',
+    overflowY: 'auto',
   },
 
   variants: {
@@ -85,6 +86,10 @@ export const GameBoard = styled(BaseGameBoard, {
   flexShrink: 0,
   flexBasis: 'auto',
 
+  $sm: {
+    gap: '$2',
+  },
+
   variants: {
     $variant: (_val: unknown) => ({}),
   } as const,
@@ -118,6 +123,12 @@ export const HandSection = styled(YStack, {
   borderTopWidth: 1,
   borderTopColor: '$borderColor',
   paddingTop: '$4',
+
+  $sm: {
+    borderTopWidth: 0,
+    paddingTop: 0,
+    gap: '$2',
+  },
 
   variants: {
     $variant: (_val: unknown) => ({}),

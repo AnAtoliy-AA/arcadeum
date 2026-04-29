@@ -86,16 +86,19 @@ test.describe('Accessibility', () => {
 
   test('should have alt text on images', async ({ page }) => {
     await navigateTo(page, '/');
-    const images = page.locator('img');
-    // Wait for at least one image to be present if we expect images on the homepage
-    await images
-      .first()
-      .waitFor({ state: 'attached', timeout: 10000 })
-      .catch(() => null);
-    const imageCount = await images.count();
 
-    for (let i = 0; i < imageCount; i++) {
-      const img = images.nth(i);
+    // Wait for the main content to be visible to ensure images have started loading
+    await expect(page.locator('main')).toBeVisible();
+
+    // Use all() to get a stable collection of locators at this point in time
+    const images = await page.locator('img').all();
+
+    // We expect at least the logo and some content images
+    expect(images.length).toBeGreaterThanOrEqual(1);
+
+    for (const img of images) {
+      // Each 'img' is a stable locator. We expect it to have an alt attribute.
+      // Note: alt="" is valid for decorative images, but the attribute must exist.
       await expect(img).toHaveAttribute('alt');
     }
   });

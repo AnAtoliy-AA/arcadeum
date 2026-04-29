@@ -44,6 +44,7 @@ import {
   GameTileName,
   GameTileSummary,
   Row,
+  StickyMobileCta,
 } from '@/features/games/ui/create/styles';
 import { YStack, XStack } from 'tamagui';
 
@@ -447,16 +448,18 @@ export default function CreateGameRoomPage() {
               </Card>
             )}
 
-            <CreateRoomButton
-              type="submit"
-              disabled={loading}
-              fullWidth
-              data-testid="create-room-button"
-            >
-              {loading
-                ? t('games.create.submitCreating') || 'Creating...'
-                : t('games.common.createRoom') || 'Create Room'}
-            </CreateRoomButton>
+            <StickyMobileCta>
+              <CreateRoomButton
+                type="submit"
+                disabled={loading}
+                fullWidth
+                data-testid="create-room-button"
+              >
+                {loading
+                  ? t('games.create.submitCreating') || 'Creating...'
+                  : t('games.common.createRoom') || 'Create Room'}
+              </CreateRoomButton>
+            </StickyMobileCta>
           </FormContainer>
         </form>
       </Container>

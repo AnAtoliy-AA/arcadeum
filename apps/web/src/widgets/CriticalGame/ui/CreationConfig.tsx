@@ -79,6 +79,7 @@ export default function CriticalCreationConfig({
             mb="$4"
             type="button"
             onClick={() => setShowRules(true)}
+            data-testid="view-rules-button"
           >
             📖 {t('games.rules.button') || 'View Game Rules'}
           </Button>

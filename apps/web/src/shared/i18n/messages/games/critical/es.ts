@@ -185,6 +185,7 @@ export const esMessages = {
       variants: cardVariants,
     },
     actions: {
+      title: 'ACCIONES',
       start: 'Iniciar Juego',
       starting: 'Iniciando...',
       draw: 'Robar Carta',
@@ -305,6 +306,15 @@ export const esMessages = {
       },
       cancel: 'Cancelar',
       play: 'Jugar',
+      popover: {
+        play: 'Jugar',
+        combo: 'Combo (×{{count}})',
+        close: 'Cerrar',
+      },
+      actionBar: {
+        draw: 'Robar',
+        nope: 'No',
+      },
     },
     victory: { title: '¡Victoria!', message: '¡Felicidades! ¡Sobreviviste!' },
     defeat: {

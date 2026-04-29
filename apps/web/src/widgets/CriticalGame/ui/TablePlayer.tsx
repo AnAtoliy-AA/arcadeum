@@ -65,9 +65,9 @@ export function TablePlayer({
   const palette = useScenePalette();
   const { t } = useTranslation();
 
-  // Task 11 sizing: 58/68 outer wrapper, 48/56 inner avatar (mobile/desktop).
-  const avatarWrapperSize = isMobile ? 58 : 68;
-  const avatarInnerSize = isMobile ? 48 : 56;
+  // Mobile uses chip mode (32/28). Desktop keeps the larger 68/56 avatar.
+  const avatarWrapperSize = isMobile ? 32 : 68;
+  const avatarInnerSize = isMobile ? 28 : 56;
 
   const showTurnRing = isCurrent && player.alive;
   const showEliminatedRing = !player.alive;

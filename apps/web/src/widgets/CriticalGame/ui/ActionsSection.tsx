@@ -109,7 +109,7 @@ export function ActionsSection({
   return (
     <InfoCard>
       <ActionsHeader>
-        <InfoTitle>{t('games.table.actions.start') || 'Actions'}</InfoTitle>
+        <InfoTitle>{t('games.table.actions.title') || 'Actions'}</InfoTitle>
         <ActionsToggleButton
           $variant={cardVariant as GameVariant}
           onClick={() => setShowActions(!showActions)}

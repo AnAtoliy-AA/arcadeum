@@ -190,6 +190,7 @@ export const frMessages = {
       variants: cardVariants,
     },
     actions: {
+      title: 'ACTIONS',
       start: 'Démarrer le Jeu',
       starting: 'Démarrage...',
       draw: 'Piocher',
@@ -312,6 +313,15 @@ export const frMessages = {
       },
       cancel: 'Annuler',
       play: 'Jouer',
+      popover: {
+        play: 'Jouer',
+        combo: 'Combo (×{{count}})',
+        close: 'Fermer',
+      },
+      actionBar: {
+        draw: 'Piocher',
+        nope: 'Non',
+      },
     },
     victory: {
       title: 'Victoire !',

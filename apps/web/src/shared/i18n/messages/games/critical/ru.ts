@@ -189,6 +189,7 @@ export const ruMessages = {
       variants: cardVariants,
     },
     actions: {
+      title: 'ДЕЙСТВИЯ',
       start: 'Начать игру',
       starting: 'Запуск...',
       draw: 'Взять карту',
@@ -307,6 +308,15 @@ export const ruMessages = {
       },
       cancel: 'Отмена',
       play: 'Сыграть',
+      popover: {
+        play: 'Сыграть',
+        combo: 'Комбо (×{{count}})',
+        close: 'Закрыть',
+      },
+      actionBar: {
+        draw: 'Взять',
+        nope: 'Отмена',
+      },
     },
     victory: { title: 'Победа!', message: 'Поздравляем! Вы выжили!' },
     defeat: { title: 'Игра окончена', message: 'Повезет в следующий раз!' },

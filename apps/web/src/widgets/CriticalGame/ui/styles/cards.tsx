@@ -84,6 +84,16 @@ export const CardsGrid = styled(XStack, {
   justifyContent: 'center',
   padding: '$2',
 
+  $sm: {
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    overflowX: 'auto',
+    paddingVertical: '$2',
+    paddingHorizontal: '$2',
+    gap: '$2',
+    justifyContent: 'flex-start',
+  },
+
   variants: {
     $layout: {
       grid: {

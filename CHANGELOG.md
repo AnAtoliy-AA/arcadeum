@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.24] - 2026-04-29
+
+### Added
+- tighten layout paddings on $sm (ARC-485)
+- horizontal opponent strip and chip avatars on $sm (ARC-485)
+- horizontal Deck/LastPlayed/Discard row on $sm (ARC-485)
+- add sticky MobileActionBar; hide ActionsSection on $sm (ARC-485)
+- wire CardActionsPopover into PlayerHand on $sm (ARC-485)
+- add CardActionsPopover for mobile hand interactions (ARC-485)
+- switch hand to horizontal nowrap strip on $sm (ARC-485)
+- enlarge mobile hand cards to 88x120 (ARC-485)
+
+### Fixed
+- e2e tests for critical web mobile (ARC-485)
+- expose data-cardtype and skip layout test on $sm (ARC-485)
+- use actions.title for in-game ActionsSection panel (ARC-485)
+- pin Create Room button to viewport bottom on mobile (ARC-485)
+- change overflowY property to 'auto' in GameContainer (ARC-485)
+
+### Documentation
+- add critical game mobile redesign implementation plan (ARC-485)
+- add critical game mobile redesign spec (ARC-485)
+
+
 ## [1.9.23] - 2026-04-28
 
 ### Refactored

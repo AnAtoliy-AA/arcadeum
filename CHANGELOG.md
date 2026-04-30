@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.27] - 2026-04-30
+
+### Fixed
+- home hero animation (ARC-554)
+
+### Documentation
+- update upstream remote URL and project live demo link (N/A)
+
+
 ## [1.9.26] - 2026-04-29
 
 ### Added

@@ -8,12 +8,7 @@ import type { VariantStrategy } from './variant.strategy';
 
 export class LivesHeatsStrategy implements VariantStrategy {
   initSession(s: GlimwormSession): void {
-    const worms = Object.values(s.worms);
-    // Idempotent init: only seed default lives when no worm has been
-    // initialized yet (every worm still at the makeWorm default of 1).
-    const alreadyInitialized = worms.some((w) => w.livesLeft !== 1);
-    if (alreadyInitialized) return;
-    worms.forEach((w) => {
+    Object.values(s.worms).forEach((w) => {
       w.livesLeft = GLIMWORM_LIVES_HEATS_LIVES;
     });
   }

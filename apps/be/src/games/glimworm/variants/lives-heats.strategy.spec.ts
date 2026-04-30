@@ -83,7 +83,6 @@ describe('LivesHeatsStrategy', () => {
       makeWorm('a', { livesLeft: 2 }),
       makeWorm('b', { livesLeft: 1 }),
     ]);
-    new LivesHeatsStrategy().initSession(s);
     jest.spyOn(Date, 'now').mockReturnValue((s.startedAt ?? 0) + 1000);
     expect(new LivesHeatsStrategy().checkEndCondition(s)).toBeNull();
     jest.restoreAllMocks();
@@ -94,7 +93,6 @@ describe('LivesHeatsStrategy', () => {
       makeWorm('a', { livesLeft: 0, alive: false }),
       makeWorm('b', { livesLeft: 2 }),
     ]);
-    new LivesHeatsStrategy().initSession(s);
     jest.spyOn(Date, 'now').mockReturnValue((s.startedAt ?? 0) + 1000);
     expect(new LivesHeatsStrategy().checkEndCondition(s)).toBe('b');
     jest.restoreAllMocks();
@@ -111,7 +109,6 @@ describe('LivesHeatsStrategy', () => {
       ],
       startedAt,
     );
-    new LivesHeatsStrategy().initSession(s);
     jest
       .spyOn(Date, 'now')
       .mockReturnValue(startedAt + GLIMWORM_LIVES_HEATS_TIMEOUT_MS + 1);
@@ -129,7 +126,6 @@ describe('LivesHeatsStrategy', () => {
       ],
       startedAt,
     );
-    new LivesHeatsStrategy().initSession(s);
     jest
       .spyOn(Date, 'now')
       .mockReturnValue(startedAt + GLIMWORM_LIVES_HEATS_TIMEOUT_MS + 1);

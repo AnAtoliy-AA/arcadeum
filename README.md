@@ -2,7 +2,7 @@
 
 A monorepo for the Arcadeum gaming platform, featuring a mobile app, web application, and backend API.
 
-**Live Demo:** [https://arcadeum.vercel.app/](https://arcadeum.vercel.app/)
+**Live Demo:** [https://arcadeum.games](https://arcadeum.games/)
 
 ## Documentation
 

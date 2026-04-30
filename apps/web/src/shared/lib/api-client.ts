@@ -123,7 +123,7 @@ export const apiClient = {
     const config: RequestInit = {
       ...fetchOptions,
       headers,
-      cache: 'no-store', // Always fetch fresh to avoid hydration/stale data issues in E2E
+      cache: 'no-cache', // Use no-cache instead of no-store to allow bfcache while still revalidating
       signal: customSignal || controller.signal,
     };
 

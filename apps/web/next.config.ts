@@ -46,7 +46,7 @@ const cspImgSrc = "'self' blob: data: https:";
 const cspFontSrc = "'self' data:";
 
 const cspFrameSrc =
-  "'self' https://www.youtube-nocookie.com https://vercel.com";
+  "'self' https://www.youtube-nocookie.com https://vercel.com https://vercel.live";
 
 const nextConfig: NextConfig = {
   headers: async () => {
@@ -92,14 +92,10 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
-          ...(isE2E
-            ? []
-            : [
-                {
-                  key: 'Content-Security-Policy',
-                  value: csp,
-                },
-              ]),
+          {
+            key: 'Content-Security-Policy',
+            value: csp,
+          },
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=63072000; includeSubDomains; preload',
@@ -162,7 +158,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Cache-Control',
-            value: 'no-cache, no-store, must-revalidate',
+            value: 'no-cache, must-revalidate',
           },
           {
             key: 'Content-Security-Policy',
@@ -182,7 +178,9 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=0, must-revalidate',
+            value: isDev
+              ? 'no-cache, no-store, must-revalidate'
+              : 'public, max-age=0, must-revalidate, stale-while-revalidate=59',
           },
         ],
       })),

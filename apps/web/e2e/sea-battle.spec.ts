@@ -41,7 +41,7 @@ test.describe('Sea Battle Game', () => {
     const seaBattleGame = page.getByText(
       /sea battle|морской бой|bataille navale|batalla naval/i,
     );
-    await expect(seaBattleGame.first()).toBeVisible({ timeout: 15000 });
+    await expect(seaBattleGame.first()).toBeVisible({});
   });
 
   test('should display game create page for Sea Battle', async ({ page }) => {
@@ -72,11 +72,9 @@ test.describe('Sea Battle Game', () => {
       await createBtn.click();
 
       // Wait for navigation to room
-      await page
-        .waitForURL(/\/games\/rooms\/.*/, { timeout: 10000 })
-        .catch(() => {
-          // May not navigate if mocking doesn't create room
-        });
+      await page.waitForURL(/\/games\/rooms\/.*/, {}).catch(() => {
+        // May not navigate if mocking doesn't create room
+      });
     }
   });
 

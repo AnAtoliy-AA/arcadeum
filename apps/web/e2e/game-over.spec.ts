@@ -71,13 +71,13 @@ test.describe('Game Over Screen', () => {
     await waitForRoomReady(page);
 
     const victoryHeading = page.getByTestId('game-result-title');
-    await expect(victoryHeading).toBeVisible({ timeout: 30000 });
+    await expect(victoryHeading).toBeVisible({});
     await expect(victoryHeading).toContainText(/Victory|🏆|won|победа/i);
 
     const rematchBtn = page.getByRole('button', {
       name: /Play Again|Rematch/i,
     });
-    await expect(rematchBtn.first()).toBeVisible({ timeout: 15000 });
+    await expect(rematchBtn.first()).toBeVisible({});
 
     const homeBtn = page.getByRole('link', { name: /Back to Home/i }).first();
     await expect(homeBtn).toBeVisible();
@@ -143,7 +143,7 @@ test.describe('Game Over Screen', () => {
     await waitForRoomReady(page);
 
     const defeatHeading = page.getByTestId('game-result-title');
-    await expect(defeatHeading).toBeVisible({ timeout: 30000 });
+    await expect(defeatHeading).toBeVisible({});
     await expect(defeatHeading).toContainText(/Game Over|💀|lost|поражение/i);
 
     const homeBtn = page.getByRole('link', { name: /Back to Home/i }).first();

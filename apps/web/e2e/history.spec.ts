@@ -142,7 +142,7 @@ test.describe('Game History', () => {
       await expect(card.getByTestId('history-status')).toContainText(
         /completed/i,
       );
-    }).toPass({ timeout: 10000 });
+    }).toPass({});
   });
 
   test('should open detail modal', async ({ page }) => {
@@ -152,13 +152,13 @@ test.describe('Game History', () => {
     await expect(async () => {
       await expect(entry).toBeVisible();
       await entry.click({ force: true });
-    }).toPass({ timeout: 15000 });
+    }).toPass({});
 
     const modal = page.getByTestId('history-detail-modal');
     await expect(async () => {
       await expect(modal).toBeVisible();
       await expect(modal).toContainText(/completed/i);
-    }).toPass({ timeout: 15000 });
+    }).toPass({});
   });
 
   test('should handle rematch action', async ({ page }) => {
@@ -167,11 +167,8 @@ test.describe('Game History', () => {
     await page.getByText('Awesome Battle').click({ force: true });
 
     // Wait for modal content
-    await expect(page.getByText('Game started')).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(page.getByText('Game started')).toBeVisible({});
 
-    await page.waitForTimeout(500); // Wait for modal animation
     const rematchBtn = page.getByTestId('rematch-button');
     await expect(rematchBtn).toBeVisible();
 
@@ -186,6 +183,6 @@ test.describe('Game History', () => {
 
     // Should redirect to new room
     // Use a more robust expectation with poll if needed, but toHaveURL should be enough if button click worked
-    await expect(page).toHaveURL(/rematch-room-id/, { timeout: 15000 });
+    await expect(page).toHaveURL(/rematch-room-id/, {});
   });
 });

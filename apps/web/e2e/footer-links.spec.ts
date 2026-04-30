@@ -13,23 +13,18 @@ test.describe('Footer Links', () => {
     // Scroll to bottom and re-scroll in case content shifted
     for (let i = 0; i < 3; i++) {
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-      await page.waitForTimeout(500);
     }
-    await expect(page.locator('footer')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('footer')).toBeVisible({});
   }
 
   test('should show copyright information', async ({ page }) => {
     await scrollToFooter(page);
-    await expect(page.locator('footer')).toContainText(/©|2026|Arcadeum/, {
-      timeout: 10000,
-    });
+    await expect(page.locator('footer')).toContainText(/©|2026|Arcadeum/, {});
   });
 
   test('should show app version', async ({ page }) => {
     await scrollToFooter(page);
-    await expect(page.locator('footer')).toContainText(/\d+\.\d+\.\d+/, {
-      timeout: 10000,
-    });
+    await expect(page.locator('footer')).toContainText(/\d+\.\d+\.\d+/, {});
   });
 
   test('should show legal links in footer and not in header', async ({
@@ -46,14 +41,11 @@ test.describe('Footer Links', () => {
         .or(footer.getByText('Legal'))
         .or(footer.getByText('legal'))
         .first();
-      if (await legalToggle.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await legalToggle.isVisible({}).catch(() => false)) {
         await legalToggle.click({ force: true });
-        await page.waitForTimeout(500);
       }
     }
-    await expect(footer.locator('a[href="/privacy"]')).toBeVisible({
-      timeout: 10000,
-    });
+    await expect(footer.locator('a[href="/privacy"]')).toBeVisible({});
     await expect(footer.locator('a[href="/terms"]')).toBeVisible();
     await expect(footer.locator('a[href="/contact"]')).toBeVisible();
 
@@ -76,16 +68,15 @@ test.describe('Footer Links', () => {
     if (
       !(await socialLinks
         .first()
-        .isVisible({ timeout: 3000 })
+        .isVisible({})
         .catch(() => false))
     ) {
       const followToggle = footer.getByText(/follow us/i).first();
-      if (await followToggle.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await followToggle.isVisible({}).catch(() => false)) {
         await followToggle.click({ force: true });
-        await page.waitForTimeout(500);
       }
     }
 
-    await expect(socialLinks.first()).toBeVisible({ timeout: 10000 });
+    await expect(socialLinks.first()).toBeVisible({});
   });
 });

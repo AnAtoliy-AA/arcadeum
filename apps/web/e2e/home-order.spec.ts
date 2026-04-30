@@ -30,7 +30,7 @@ test.describe('Home Page Section Order', () => {
     const elements = await Promise.all(
       sections.map(async (s) => {
         const locator = page.locator(s.selector).first();
-        await expect(locator).toBeVisible({ timeout: 15000 });
+        await expect(locator).toBeVisible({});
         const box = await locator.boundingBox();
         return { name: s.name, y: box?.y ?? 0 };
       }),

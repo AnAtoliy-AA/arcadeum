@@ -11,9 +11,7 @@ export async function closeGameRulesModal(page: Page): Promise<void> {
   const closeBtnSelector = `${modalSelector} [data-testid="modal-close-button"]`;
 
   // Check if any rules modal is visible
-  const isVisible = await page
-    .isVisible(modalSelector, { timeout: 2000 })
-    .catch(() => false);
+  const isVisible = await page.isVisible(modalSelector, {}).catch(() => false);
   if (!isVisible) return;
 
   // 1. Try standard click first
@@ -22,7 +20,7 @@ export async function closeGameRulesModal(page: Page): Promise<void> {
   for (let i = 0; i < count; i++) {
     await closeButtons
       .nth(i)
-      .click({ force: true, timeout: 2000 })
+      .click({ force: true })
       .catch(() => {});
   }
 
@@ -55,7 +53,6 @@ export async function closeGameRulesModal(page: Page): Promise<void> {
         }, modalSelector);
       },
       {
-        timeout: 10000,
         message: 'Rules modal did not close within 10 seconds',
       },
     )
@@ -73,16 +70,12 @@ export async function waitForRoomReady(
 
   // Wait for the game room container to be visible (the .games-room-container
   // class is only applied in the fully-loaded state of GameRoomPage).
-  await expect(page.locator('.games-room-container')).toBeVisible({
-    timeout: 60000,
-  });
+  await expect(page.locator('.games-room-container')).toBeVisible({});
 
   await expect(page.locator('body')).not.toContainText(
     /Game is loading|Joining\.\.\.|Server is waking up\.\.\.|Loading room\.\.\.|Loading game\.\.\.|Loading\.\.\./i,
-    { timeout: 60000 },
+    {},
   );
-
-  await page.waitForTimeout(1000);
 
   if (autoCloseRules) {
     await closeGameRulesModal(page);
@@ -97,7 +90,7 @@ export async function clickButtonByTestId(
 ): Promise<void> {
   const button = page.getByTestId(testId);
   await expect(button).toBeVisible();
-  await button.click({ force: true });
+  await button.click();
 }
 
 export async function clickModalClose(page: Page): Promise<void> {
@@ -106,12 +99,12 @@ export async function clickModalClose(page: Page): Promise<void> {
     .locator('[data-testid="rules-modal"] [data-testid="modal-close-button"]')
     .first();
   if (await rulesClose.isVisible()) {
-    await rulesClose.click({ force: true, timeout: 5000 });
+    await rulesClose.click({ force: true });
     return;
   }
 
   const closeBtn = page.getByTestId('modal-close-button').first();
-  await closeBtn.click({ force: true, timeout: 5000 });
+  await closeBtn.click({ force: true });
 }
 
 export interface MockRoomInfoOverrides {

@@ -99,35 +99,32 @@ test.describe('Sea Battle Popup Challenge', () => {
 
     // Wait for the game to be ready - this ensures socket and state are sync'd
     const main = page.locator('main').first();
-    await main.waitFor({ state: 'visible', timeout: 30000 });
+    await main.waitFor({ state: 'visible' });
 
     // Verify Chat Bubble exists in DOM
     const bubble = page.getByTestId('chat-bubble');
-    await bubble.waitFor({ state: 'attached', timeout: 15000 });
-    await expect(bubble).toBeVisible({ timeout: 5000 });
+    await bubble.waitFor({ state: 'attached' });
+    await expect(bubble).toBeVisible({});
     await expect(bubble).toHaveText(/Challenge me!/i);
 
     // Verify Sea Battle challenge popup is visible
     const popupContainer = page.getByTestId('sea-battle-popup-container');
 
-    await expect(popupContainer).toBeVisible({ timeout: 15000 });
+    await expect(popupContainer).toBeVisible({});
 
     const challengeButton = page.getByTestId('challenge-button');
-    await expect(challengeButton).toBeVisible({ timeout: 10000 });
+    await expect(challengeButton).toBeVisible({});
     await challengeButton.scrollIntoViewIfNeeded();
     await expect(challengeButton).toBeInViewport();
 
     // Wait a bit for the UI to be fully interactive
-    await page.waitForTimeout(1000);
 
     // Click challenge with fallback mechanism
     await challengeButton.click({ force: true });
     await challengeButton.dispatchEvent('click').catch(() => {});
 
     // Verify redirection to game creation page
-    await page.waitForURL(/.*\/games\/create\?gameId=sea_battle_v1.*/, {
-      timeout: 20000,
-    });
+    await page.waitForURL(/.*\/games\/create\?gameId=sea_battle_v1.*/, {});
     await expect(page).toHaveURL(/.*opponentId=other-user-id.*/);
   });
 });

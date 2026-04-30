@@ -96,7 +96,7 @@ test.describe('Home Page', () => {
 
       const heroCards = cardStack.locator('[data-testid^="hero-card-"]');
       await expect(heroCards).toHaveCount(3);
-    }).toPass({ timeout: 15000 });
+    }).toPass({});
   });
 
   test('should have modernized support developers button', async ({ page }) => {

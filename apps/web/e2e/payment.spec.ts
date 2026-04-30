@@ -145,6 +145,6 @@ test.describe('Payment Flow', () => {
     await submitBtn.click({ force: true });
 
     // Verify redirection
-    await expect(page).toHaveURL(/mock-subscription/i, { timeout: 15000 });
+    await expect(page).toHaveURL(/mock-subscription/i, {});
   });
 });

@@ -29,11 +29,9 @@ test.describe('Game Lobby - Shared Functionality', () => {
       await createBtn.click();
 
       // Wait for navigation to room
-      await page
-        .waitForURL(/\/games\/rooms\/.*/, { timeout: 10000 })
-        .catch(() => {
-          // May not navigate if mocking doesn't create room
-        });
+      await page.waitForURL(/\/games\/rooms\/.*/, {}).catch(() => {
+        // May not navigate if mocking doesn't create room
+      });
 
       // Verify lobby elements are visible
       const pageContent = await page.content();
@@ -69,11 +67,9 @@ test.describe('Game Lobby - Shared Functionality', () => {
       await createBtn.click();
 
       // Wait for navigation to room
-      await page
-        .waitForURL(/\/games\/rooms\/.*/, { timeout: 10000 })
-        .catch(() => {
-          // May not navigate if mocking doesn't create room
-        });
+      await page.waitForURL(/\/games\/rooms\/.*/, {}).catch(() => {
+        // May not navigate if mocking doesn't create room
+      });
 
       // Verify page content
       const pageContent = await page.content();

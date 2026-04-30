@@ -74,10 +74,11 @@ test.describe('Game Room Creation', () => {
 
     await navigateTo(page, '/games/create?gameId=critical_v1');
     // Wait for page to be hydrated by checking for a visible element
-    await expect(
-      page.locator('h1, h2, [class*="Title"]').first(),
-    ).toBeVisible({ timeout: 30000 });
-    await page.waitForTimeout(1000); // Buffer for hydration and theme initialization
+    await expect(page.locator('h1, h2, [class*="Title"]').first()).toBeVisible(
+      {},
+    );
+    // Wait for dynamic component to mount and set the default variant in URL
+    await expect(page).toHaveURL(/variant=/);
   });
 
   test('should load creation page with correct game selected', async ({
@@ -132,9 +133,10 @@ test.describe('Game Room Creation', () => {
     await expect(maxInput).toHaveValue('6');
     await submitBtn.click();
 
-    await expect(page).toHaveURL(/\/games\/rooms\/507f1f77bcf86cd799439011/, {
-      timeout: 20000,
-    });
+    await expect(page).toHaveURL(
+      /\/games\/rooms\/507f1f77bcf86cd799439011/,
+      {},
+    );
   });
 
   test('should clear max players with Auto button', async ({ page }) => {

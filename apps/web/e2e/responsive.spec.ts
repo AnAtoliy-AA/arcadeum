@@ -19,11 +19,11 @@ test.describe('Responsive Layout', () => {
     await menuButton.click({ force: true });
 
     const mobileNav = page.getByTestId('mobile-nav');
-    await expect(mobileNav).toHaveCSS('opacity', '1', { timeout: 15000 });
+    await expect(mobileNav).toHaveCSS('opacity', '1', {});
     await expect(mobileNav).toBeVisible();
 
     const navLink = mobileNav.getByRole('link').first();
-    await expect(navLink).toBeVisible({ timeout: 5000 });
+    await expect(navLink).toBeVisible({});
   });
 
   test('should adjust grid layout on mobile', async ({ page }) => {

@@ -83,7 +83,7 @@ test.describe('Hand Layout', () => {
     }
 
     const turnText = page.getByText(/Your turn/i).first();
-    await expect(turnText).toBeVisible({ timeout: 15000 });
+    await expect(turnText).toBeVisible({});
 
     // Locate the layout trigger
     const layoutTrigger = page.getByTestId('layout-trigger');

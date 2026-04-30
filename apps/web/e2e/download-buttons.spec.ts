@@ -47,13 +47,13 @@ test.describe('Download Buttons', () => {
       .first()
       .locator('[data-testid="download-cta-section"]')
       .first();
-    await expect(downloadSection).toBeVisible({ timeout: 15000 });
+    await expect(downloadSection).toBeVisible({});
 
     // Check if PWA install button is visible
     const pwaButton = page
       .locator('[data-testid="install-pwa-button"]')
       .first();
-    await expect(pwaButton).toBeVisible({ timeout: 15000 });
+    await expect(pwaButton).toBeVisible({});
   });
 
   test('should be visible in Settings', async ({ page }) => {
@@ -63,6 +63,6 @@ test.describe('Download Buttons', () => {
     const pwaButton = page
       .locator('[data-testid="install-pwa-button"]')
       .first();
-    await expect(pwaButton).toBeVisible({ timeout: 15000 });
+    await expect(pwaButton).toBeVisible({});
   });
 });

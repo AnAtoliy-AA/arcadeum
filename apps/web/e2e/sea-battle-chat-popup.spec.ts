@@ -158,12 +158,10 @@ test.describe('Sea Battle Chat Message Popup', () => {
     );
 
     const popup = page.getByTestId('chat-message-popup');
-    await expect(popup).toBeVisible({ timeout: 10000 });
+    await expect(popup).toBeVisible({});
 
-    await expect(popup.getByText('Admiral')).toBeVisible({ timeout: 5000 });
-    await expect(popup.getByText('Prepare for battle!')).toBeVisible({
-      timeout: 5000,
-    });
+    await expect(popup.getByText('Admiral')).toBeVisible({});
+    await expect(popup.getByText('Prepare for battle!')).toBeVisible({});
   });
 
   test('should auto-dismiss popup after timeout', async ({ page }) => {
@@ -270,9 +268,9 @@ test.describe('Sea Battle Chat Message Popup', () => {
     );
 
     const popup = page.getByTestId('chat-message-popup');
-    await expect(popup).toBeVisible({ timeout: 10000 });
+    await expect(popup).toBeVisible({});
 
-    await expect(popup).not.toBeVisible({ timeout: 12000 });
+    await expect(popup).not.toBeVisible({});
   });
 
   test('should also show popup for own messages', async ({ page }) => {
@@ -379,9 +377,7 @@ test.describe('Sea Battle Chat Message Popup', () => {
     );
 
     const popup = page.getByTestId('chat-message-popup');
-    await expect(popup).toBeVisible({ timeout: 10000 });
-    await expect(popup.getByText('My own message')).toBeVisible({
-      timeout: 5000,
-    });
+    await expect(popup).toBeVisible({});
+    await expect(popup.getByText('My own message')).toBeVisible({});
   });
 });

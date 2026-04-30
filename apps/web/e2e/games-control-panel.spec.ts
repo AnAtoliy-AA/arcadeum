@@ -48,6 +48,6 @@ test.describe('Games Control Panel Responsiveness', () => {
       // On mobile, icon only should be small
       expect(box?.width).toBeLessThan(70);
       await expect(page.getByText('Fullscreen')).not.toBeVisible();
-    }).toPass({ timeout: 10000 });
+    }).toPass({});
   });
 });

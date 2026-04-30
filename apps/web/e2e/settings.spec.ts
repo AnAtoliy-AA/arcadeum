@@ -14,7 +14,7 @@ test.describe('Settings Page', () => {
       page.getByRole('heading', {
         name: /appearance|внешний вид|vörp|aspecto/i,
       }),
-    ).toBeVisible({ timeout: 10000 });
+    ).toBeVisible({});
     await expect(
       page.getByRole('heading', { name: /language|язык|мова|idioma/i }),
     ).toBeVisible();
@@ -34,7 +34,7 @@ test.describe('Settings Page', () => {
     await hapticsRow.click();
 
     await expect
-      .poll(async () => await hapticsCheckbox.isChecked(), { timeout: 15000 })
+      .poll(async () => await hapticsCheckbox.isChecked(), {})
       .toBe(!initialState);
   });
 
@@ -47,7 +47,7 @@ test.describe('Settings Page', () => {
     await soundRow.click();
 
     await expect
-      .poll(async () => await soundCheckbox.isChecked(), { timeout: 15000 })
+      .poll(async () => await soundCheckbox.isChecked(), {})
       .toBe(!initialState);
   });
 
@@ -60,34 +60,27 @@ test.describe('Settings Page', () => {
 
     await darkThemeBtn.click({ force: true });
     await expect
-      .poll(async () => await darkThemeBtn.getAttribute('aria-pressed'), {
-        timeout: 15000,
-      })
+      .poll(async () => await darkThemeBtn.getAttribute('aria-pressed'), {})
       .toBe('true');
 
     await expect(page.locator('html')).toHaveAttribute(
       'data-theme-preference',
       'dark',
-      { timeout: 15000 },
+      {},
     );
 
     // Wait for state to settle
-    await page.waitForTimeout(500);
 
     await lightThemeBtn.click({ force: true });
     await expect
-      .poll(async () => await lightThemeBtn.getAttribute('aria-pressed'), {
-        timeout: 15000,
-      })
+      .poll(async () => await lightThemeBtn.getAttribute('aria-pressed'), {})
       .toBe('true');
 
-    await expect(darkThemeBtn).toHaveAttribute('aria-pressed', 'false', {
-      timeout: 15000,
-    });
+    await expect(darkThemeBtn).toHaveAttribute('aria-pressed', 'false', {});
     await expect(page.locator('html')).toHaveAttribute(
       'data-theme-preference',
       'light',
-      { timeout: 15000 },
+      {},
     );
   });
 
@@ -97,36 +90,24 @@ test.describe('Settings Page', () => {
 
     await expect(spanishBtn).toBeVisible();
     await spanishBtn.click({ force: true });
-    await page.waitForTimeout(1000);
 
     await expect(page.locator('[data-current-locale]')).toHaveAttribute(
       'data-current-locale',
       'es',
-      { timeout: 15000 },
+      {},
     );
-    await expect(page.locator('html')).toHaveAttribute('lang', 'es', {
-      timeout: 10000,
-    });
+    await expect(page.locator('html')).toHaveAttribute('lang', 'es', {});
     await expect(
       page.getByRole('heading', { name: /configuraci/i }),
-    ).toBeVisible({ timeout: 15000 });
-    await expect(spanishBtn).toHaveAttribute('aria-pressed', 'true', {
-      timeout: 15000,
-    });
+    ).toBeVisible({});
+    await expect(spanishBtn).toHaveAttribute('aria-pressed', 'true', {});
 
     await englishBtn.click({ force: true });
-    await page.waitForTimeout(1000);
-    await expect(page.locator('html')).toHaveAttribute('lang', 'en', {
-      timeout: 10000,
-    });
-    await expect(page.getByRole('heading', { name: /settings/i })).toBeVisible({
-      timeout: 15000,
-    });
-    await expect(englishBtn).toHaveAttribute('aria-pressed', 'true', {
-      timeout: 15000,
-    });
-    await expect(spanishBtn).toHaveAttribute('aria-pressed', 'false', {
-      timeout: 15000,
-    });
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en', {});
+    await expect(page.getByRole('heading', { name: /settings/i })).toBeVisible(
+      {},
+    );
+    await expect(englishBtn).toHaveAttribute('aria-pressed', 'true', {});
+    await expect(spanishBtn).toHaveAttribute('aria-pressed', 'false', {});
   });
 });

@@ -18,9 +18,7 @@ test.describe('Profile and Settings', () => {
 
       await expect(username).toBeVisible();
       await expect(email).toBeVisible();
-    }).toPass({
-      timeout: 15000,
-    });
+    }).toPass({});
   });
 
   test('should allow toggling sound settings', async ({ page }) => {

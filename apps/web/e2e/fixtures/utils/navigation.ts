@@ -13,7 +13,6 @@ export async function ensureNavigationVisible(page: Page): Promise<void> {
       await menuButton.click({ force: true });
       await expect(mobileNav).toBeVisible();
       // Wait for menu animation to finish
-      await page.waitForTimeout(500);
     }
   }
 }
@@ -66,14 +65,14 @@ export async function navigateTo(
 
     try {
       // Increased timeout to 90s to match global config and handle slow dev server compilation
-      await page.goto(path, { timeout: 90000, waitUntil: 'domcontentloaded' });
-      await page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
+      await page.goto(path, { waitUntil: 'domcontentloaded' });
+      await page.waitForLoadState('load', {}).catch(() => {});
 
       if (shouldReload) {
         console.warn(
           `Detected issue (Hydration: ${hydrationError}) on ${path}, reloading... (Attempt ${attempt + 1})`,
         );
-        await page.reload({ waitUntil: 'load', timeout: 90000 });
+        await page.reload({ waitUntil: 'load' });
       }
 
       // Robust hydration check: wait for either data-hydrated or data-app-ready
@@ -86,7 +85,6 @@ export async function navigateTo(
           throw new Error('Hydration markers not found');
         }
       }).toPass({
-        timeout: 20000,
         intervals: [1000, 2000, 5000],
       });
 

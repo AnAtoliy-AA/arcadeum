@@ -36,13 +36,11 @@ test.describe('Error Handling', () => {
     await expect(tryAgainBtn).toBeVisible();
 
     // Small wait to ensure hydration/event listeners are attached
-    await page.waitForTimeout(1000);
 
     // Note: In this specific test case, clicking "Try Again" will just re-render the
     // component with the same URL (which still has ?crash=true), so it effectively
     // "re-crashes". This confirms the button is reachable and interactive.
     await tryAgainBtn.click();
-    await page.waitForTimeout(1000);
 
     await expect(page.getByText(/something went wrong/i)).toBeVisible();
   });

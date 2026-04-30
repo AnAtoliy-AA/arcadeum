@@ -14,7 +14,7 @@ test.describe('Auth Availability Checking', () => {
     await page.waitForLoadState('networkidle');
     const toggleBtn = page.getByTestId('auth-toggle-mode-button');
     await toggleBtn.scrollIntoViewIfNeeded();
-    await expect(toggleBtn).toBeVisible({ timeout: 15000 });
+    await expect(toggleBtn).toBeVisible({});
     const text = (await toggleBtn.textContent()) || '';
     if (!/already|уже/i.test(text)) {
       await toggleBtn.click({ force: true });
@@ -22,7 +22,7 @@ test.describe('Auth Availability Checking', () => {
     await expect(page.locator('form')).toHaveAttribute(
       'data-mode',
       'register',
-      { timeout: 10000 },
+      {},
     );
 
     const usernameInput = page.locator('input[placeholder*="username" i]');
@@ -38,9 +38,7 @@ test.describe('Auth Availability Checking', () => {
       /available|доступно|disponible|даступна/i,
     );
 
-    await expect(checkingText.or(availableText)).toBeVisible({
-      timeout: 10000,
-    });
+    await expect(checkingText.or(availableText)).toBeVisible({});
   });
 
   test('should show availability status for email field in register mode', async ({
@@ -49,7 +47,7 @@ test.describe('Auth Availability Checking', () => {
     await page.waitForLoadState('networkidle');
     const toggleBtn = page.getByTestId('auth-toggle-mode-button');
     await toggleBtn.scrollIntoViewIfNeeded();
-    await expect(toggleBtn).toBeVisible({ timeout: 15000 });
+    await expect(toggleBtn).toBeVisible({});
     const text = (await toggleBtn.textContent()) || '';
     if (!/already|уже/i.test(text)) {
       await toggleBtn.click({ force: true });
@@ -57,7 +55,7 @@ test.describe('Auth Availability Checking', () => {
     await expect(page.locator('form')).toHaveAttribute(
       'data-mode',
       'register',
-      { timeout: 10000 },
+      {},
     );
 
     const emailInput = page.locator('input[type="email"]');
@@ -73,9 +71,7 @@ test.describe('Auth Availability Checking', () => {
       /available|доступно|disponible|даступна/i,
     );
 
-    await expect(checkingText.or(availableText)).toBeVisible({
-      timeout: 10000,
-    });
+    await expect(checkingText.or(availableText)).toBeVisible({});
   });
 
   test('should display user-friendly error when registering with taken username', async ({
@@ -84,7 +80,7 @@ test.describe('Auth Availability Checking', () => {
     await page.waitForLoadState('networkidle');
     const toggleBtn = page.getByTestId('auth-toggle-mode-button');
     await toggleBtn.scrollIntoViewIfNeeded();
-    await expect(toggleBtn).toBeVisible({ timeout: 15000 });
+    await expect(toggleBtn).toBeVisible({});
     const text = (await toggleBtn.textContent()) || '';
     if (!/already|уже/i.test(text)) {
       await toggleBtn.click({ force: true });
@@ -92,7 +88,7 @@ test.describe('Auth Availability Checking', () => {
     await expect(page.locator('form')).toHaveAttribute(
       'data-mode',
       'register',
-      { timeout: 10000 },
+      {},
     );
 
     // Mock specific 'taken' result for this test
@@ -120,8 +116,6 @@ test.describe('Auth Availability Checking', () => {
     await usernameInput.fill('testexisting');
     await usernameInput.blur();
 
-    await page.waitForTimeout(500);
-
     const takenText = page.getByText(
       /already taken|уже занято|déjà pris|ya está en uso|ўжо занята/i,
     );
@@ -136,20 +130,20 @@ test.describe('Auth Availability Checking', () => {
     await page.waitForLoadState('networkidle');
     const toggleBtn = page.getByTestId('auth-toggle-mode-button');
     await toggleBtn.scrollIntoViewIfNeeded();
-    await expect(toggleBtn).toBeVisible({ timeout: 15000 });
+    await expect(toggleBtn).toBeVisible({});
     const text = (await toggleBtn.textContent()) || '';
     if (/already|уже/i.test(text)) {
       await toggleBtn.click({ force: true });
     }
-    await expect(page.locator('form')).toHaveAttribute('data-mode', 'login', {
-      timeout: 10000,
-    });
+    await expect(page.locator('form')).toHaveAttribute(
+      'data-mode',
+      'login',
+      {},
+    );
 
     const emailInput = page.locator('input[type="email"]');
     await emailInput.fill('test@example.com');
     await emailInput.blur();
-
-    await page.waitForTimeout(300);
 
     const checkingText = page.getByText(
       /checking|проверка|vérification|comprobando|праверка/i,

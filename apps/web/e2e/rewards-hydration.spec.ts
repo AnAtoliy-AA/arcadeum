@@ -25,7 +25,6 @@ test.describe('Rewards Page Hydration', () => {
     await navigateTo(page, '/rewards');
 
     // Wait a bit for hydration to complete
-    await page.waitForTimeout(1000);
 
     // Assert no hydration errors were found
     expect(

@@ -3,8 +3,8 @@
   "version": "1.9.28",
   "private": true,
   "scripts": {
-    "dev": "next dev -p $(node ../../scripts/resolve-env-port.js .env.local WEB_PORT 3000)",
-    "dev:next": "next dev -p $(node ../../scripts/resolve-env-port.js .env.local WEB_PORT 3000)",
+    "dev": "rm -rf .next && next dev -p $(node ../../scripts/resolve-env-port.js .env.local WEB_PORT 3000)",
+    "dev:next": "rm -rf .next && next dev -p $(node ../../scripts/resolve-env-port.js .env.local WEB_PORT 3000)",
     "build": "next build",
     "start": "next start -p $(node ../../scripts/resolve-env-port.js .env.local WEB_PORT 3000)",
     "lint": "eslint",

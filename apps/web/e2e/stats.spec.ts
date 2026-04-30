@@ -99,15 +99,13 @@ test.describe('Player Stats', () => {
           .catch(() => leaderboardTab.dispatchEvent('click'));
       }
       // Check for entries
-      await expect(page.getByText('proplayer')).toBeVisible({ timeout: 5000 });
+      await expect(page.getByText('proplayer')).toBeVisible({});
 
       // Win rate is hidden on mobile (max-width: 768px)
       if (!getIsMobile(page)) {
-        await expect(page.getByText(/60(\.0)?%/)).toBeVisible({
-          timeout: 5000,
-        });
+        await expect(page.getByText(/60(\.0)?%/)).toBeVisible({});
       }
-    }).toPass({ timeout: 20000 });
+    }).toPass({});
   });
 
   test('should not display anonymous users in leaderboard', async ({
@@ -143,8 +141,8 @@ test.describe('Player Stats', () => {
       const row = page
         .locator('div.stats-leaderboard-row')
         .filter({ hasText: 'testuser' });
-      await expect(row).toBeVisible({ timeout: 5000 });
-    }).toPass({ timeout: 20000 });
+      await expect(row).toBeVisible({});
+    }).toPass({});
 
     // Check that 'anonymous' text is not present in the leaderboard rows
     const leaderboardRows = page.locator('.stats-leaderboard-row');

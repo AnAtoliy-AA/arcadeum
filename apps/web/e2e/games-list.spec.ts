@@ -58,14 +58,14 @@ test.describe('Games List Page', () => {
     await expect(async () => {
       expect(await filters.count()).toBeGreaterThan(0);
       await expect(filters.first()).toBeVisible();
-    }).toPass({ timeout: 15000 });
+    }).toPass({});
   });
 
   test('should handle navigation to create room', async ({ page }) => {
     await navigateTo(page, '/games');
     await expect(
       page.getByRole('heading', { name: /Game Rooms/i }),
-    ).toBeVisible({ timeout: 15000 });
+    ).toBeVisible({});
 
     const createLink = page
       .getByRole('link', { name: /create|new|создать|crear/i })
@@ -85,7 +85,7 @@ test.describe('Games List Page', () => {
       const cardsCount = await page.getByTestId('room-card').count();
       const isEmpty = await page.getByTestId('games-empty').isVisible();
       expect(cardsCount > 0 || isEmpty).toBe(true);
-    }).toPass({ timeout: 10000, intervals: [1000] });
+    }).toPass({ intervals: [1000] });
   });
 
   test('should clear search and restore list', async ({ page }) => {
@@ -99,7 +99,7 @@ test.describe('Games List Page', () => {
     // Use toPass to wait for the UI to settle after potential deferred updates
     await expect(async () => {
       await expect(page.getByTestId('games-empty')).toBeVisible();
-    }).toPass({ timeout: 10000 });
+    }).toPass({});
   });
   test('should not display anonymous games in the list', async ({ page }) => {
     await page.route('**/games/rooms*', async (route) => {
@@ -129,6 +129,6 @@ test.describe('Games List Page', () => {
       const anonGame = page.getByText('Anonymous Bot Game');
       const isVisible = await anonGame.isVisible();
       expect(isVisible).toBe(false);
-    }).toPass({ timeout: 20000 });
+    }).toPass({});
   });
 });

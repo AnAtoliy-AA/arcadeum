@@ -88,9 +88,9 @@ test.describe('Critical Single Player Mode', () => {
     await navigateTo(page, `/games/rooms/${roomId}`);
     await waitForRoomReady(page);
 
-    await expect(page.getByRole('heading', { name: /Critical/i })).toBeVisible({
-      timeout: 30000,
-    });
+    await expect(page.getByRole('heading', { name: /Critical/i })).toBeVisible(
+      {},
+    );
 
     const startBtn = page.getByTestId('start-with-bots-button');
     await expect(startBtn).toBeEnabled();
@@ -98,9 +98,7 @@ test.describe('Critical Single Player Mode', () => {
 
     await closeGameRulesModal(page);
     await expect(page.getByRole('heading', { name: /your hand/i })).toBeVisible(
-      {
-        timeout: 30000,
-      },
+      {},
     );
   });
 
@@ -193,13 +191,23 @@ test.describe('Critical Single Player Mode', () => {
 
     const drawBtn = page.getByRole('button', { name: /draw/i }).first();
     await expect(drawBtn).toBeVisible();
-    await drawBtn.click();
 
     const showChatBtn = page.getByRole('button', { name: /show chat/i });
-    if (await showChatBtn.isVisible()) {
-      await showChatBtn.click();
-    }
 
-    await expect(page.getByText(/Drawn/i).first()).toBeVisible();
+    await expect(async () => {
+      // Only click if the button is still visible (it disappears after a successful click)
+      // We use force: true to bypass WebKit hanging on actionability checks due to the "Your turn" toast overlay
+      if (await drawBtn.isVisible()) {
+        await drawBtn.click({ force: true });
+      }
+
+      // On mobile, the chat might be hidden behind a toggle
+      if (await showChatBtn.isVisible()) {
+        await showChatBtn.click({ force: true });
+      }
+
+      // Synchronous check to avoid explicit timeouts inside the test
+      expect(await page.getByText(/Drawn/i).first().isVisible()).toBe(true);
+    }).toPass();
   });
 });

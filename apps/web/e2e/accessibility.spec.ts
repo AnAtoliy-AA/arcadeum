@@ -44,13 +44,13 @@ test.describe('Accessibility', () => {
     await first.focus();
 
     // Explicitly wait for focus to land
-    await expect(first).toBeFocused({ timeout: 5000 });
+    await expect(first).toBeFocused({});
 
     // 3. Simple Tab Press
     await page.keyboard.press('Tab', { delay: 300 });
 
     // Ensure the first element LOST focus
-    await expect(first).not.toBeFocused({ timeout: 5000 });
+    await expect(first).not.toBeFocused({});
 
     // Verify some element is focused and it's NOT the body
     await expect
@@ -73,7 +73,6 @@ test.describe('Accessibility', () => {
         },
         {
           message: 'Some interactive element should be focused after Tab',
-          timeout: 5000,
         },
       )
       .toBe(true);

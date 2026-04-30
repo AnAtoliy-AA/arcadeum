@@ -56,14 +56,14 @@ test.describe('Room Clear Functionality', () => {
 
     // Verify "Delete Room" button is visible for host
     const deleteButton = page.getByRole('button', { name: /delete room/i });
-    await expect(deleteButton).toBeVisible({ timeout: 15000 });
+    await expect(deleteButton).toBeVisible({});
 
     // Click "Delete Room" - should open custom modal
     await deleteButton.click();
 
     // Verify custom ConfirmationModal is visible
     const modal = page.locator('div[role="dialog"]');
-    await expect(modal).toBeVisible({ timeout: 15000 });
+    await expect(modal).toBeVisible({});
     await expect(modal).toContainText(
       /are you sure you want to delete this room/i,
     );
@@ -73,12 +73,12 @@ test.describe('Room Clear Functionality', () => {
       .getByRole('button', { name: /delete room/i })
       .first();
     const cancelBtn = modal.getByRole('button', { name: /keep room/i });
-    await expect(confirmBtn).toBeVisible({ timeout: 10000 });
-    await expect(cancelBtn).toBeVisible({ timeout: 10000 });
+    await expect(confirmBtn).toBeVisible({});
+    await expect(cancelBtn).toBeVisible({});
 
     // Click Cancel first
     await cancelBtn.click();
-    await expect(modal).not.toBeVisible({ timeout: 10000 });
+    await expect(modal).not.toBeVisible({});
 
     // Open again and confirm
     await deleteButton.click();

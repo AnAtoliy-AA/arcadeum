@@ -25,7 +25,9 @@ export function InstallPWAModalContent() {
   const pwa = usePWAOptional();
 
   if (!pwa) return null;
-  const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isIos =
+    typeof navigator !== 'undefined' &&
+    /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   const { isModalOpen, closeModal, install, isPromptAvailable } = pwa;
 

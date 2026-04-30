@@ -71,10 +71,14 @@ test.describe('Player Stats', () => {
     await expect(
       page.locator('h1, h2, [class*="Title"]').first(),
     ).toBeVisible();
-    await expect(page.getByText('10', { exact: true }).first()).toBeVisible(); // Total games
-    await expect(page.getByText('7', { exact: true }).first()).toBeVisible(); // Wins
+    await expect(page.getByTestId('stats-total-games')).toHaveText('10'); // Total games
+    await expect(page.getByTestId('stats-wins')).toHaveText('7'); // Wins
     await expect(page.getByText('70%').first()).toBeVisible(); // Win rate
-    await expect(page.getByText('Critical', { exact: true })).toBeVisible(); // Game ID should be human readable
+
+    // Use a more specific locator for the game name in the breakdown table
+    await expect(
+      page.locator('.stats-breakdown-row').getByText('Critical'),
+    ).toBeVisible();
   });
 
   test('should switch to leaderboard and display entries', async ({ page }) => {

@@ -66,7 +66,20 @@ export default defineConfig({
     },
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+        launchOptions: {
+          firefoxUserPrefs: {
+            'privacy.bounceTrackingProtection.enabled': false,
+            'privacy.bounceTrackingProtection.hasUserInteraction.enabled':
+              false,
+            'privacy.bounceTrackingProtection.requireInteraction.enabled':
+              false,
+            'privacy.bounceTrackingProtection.bounceTrackingGracePeriodSec': 31536000,
+            'network.cookie.cookieBehavior': 0,
+          },
+        },
+      },
     },
     {
       name: 'webkit',

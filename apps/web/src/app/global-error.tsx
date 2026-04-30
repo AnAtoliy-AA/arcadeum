@@ -1,17 +1,5 @@
 'use client';
 
-import { Geist, Geist_Mono } from 'next/font/google';
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
 export default function GlobalError({
   reset,
 }: {
@@ -44,10 +32,10 @@ export default function GlobalError({
         `}</style>
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} t_${theme}`}
+        className={`t_${theme}`}
         style={{
           margin: 0,
-          fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+          fontFamily: 'system-ui, sans-serif',
           backgroundColor: 'var(--ge-bg)',
           color: 'var(--ge-fg)',
         }}

@@ -112,6 +112,7 @@ export default defineConfig({
         WEB_PORT: WEB_PORT,
         BE_PORT: BE_PORT,
         NODE_ENV: process.env.E2E_PROD ? 'production' : 'development',
+        E2E: 'true',
       },
     },
     {
@@ -126,6 +127,7 @@ export default defineConfig({
         WEB_PORT: WEB_PORT,
         BE_PORT: BE_PORT,
         NODE_ENV: process.env.E2E_PROD ? 'production' : 'development',
+        E2E: 'true',
       },
     },
   ],

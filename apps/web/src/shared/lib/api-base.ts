@@ -1,4 +1,4 @@
-const DEFAULT_API_BASE = 'http://127.0.0.1:4000';
+const DEFAULT_API_BASE = 'http://localhost:4000';
 
 function normalizeBase(value?: string | null): string {
   if (!value) {

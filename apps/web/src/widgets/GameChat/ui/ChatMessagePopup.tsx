@@ -20,7 +20,11 @@ export function ChatMessagePopup({
   return (
     <div
       onClick={onDismiss}
-      onAnimationEnd={onDismiss}
+      onAnimationEnd={(e) => {
+        if (e.animationName === 'popupAutoDismiss') {
+          onDismiss();
+        }
+      }}
       data-testid="chat-message-popup"
       style={{
         cursor: 'pointer',

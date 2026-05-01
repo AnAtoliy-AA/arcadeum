@@ -4,11 +4,11 @@
 
 export function getAllowedOrigins(): string[] {
   const allowedOrigins = (process.env.ALLOWED_ORIGINS?.split(',') || [])
-    .map(origin => origin.trim())
-    .filter(origin => origin.length > 0);
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0);
 
-  // Add localhost only in non-production environments
-  if (process.env.NODE_ENV !== 'production') {
+  // Add localhost in development or E2E environments
+  if (process.env.NODE_ENV !== 'production' || process.env.E2E === 'true') {
     const webPort = process.env.WEB_PORT || '3000';
     allowedOrigins.push(
       `http://localhost:${webPort}`,

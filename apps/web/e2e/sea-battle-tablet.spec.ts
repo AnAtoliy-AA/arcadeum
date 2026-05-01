@@ -1,4 +1,5 @@
 import { expect } from '@playwright/test';
+import { handleRoute } from './fixtures/test-utils';
 import {
   test,
   mockSession,
@@ -94,11 +95,7 @@ test.describe('Sea Battle Tablet Layout', () => {
     const userId = MOCK_OBJECT_ID;
 
     await page.route('**/games/room-info*', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        json: battleRoomMock,
-      });
+      await handleRoute(route, battleRoomMock);
     });
 
     await mockGameSocket(page, roomId, userId, {
@@ -144,11 +141,7 @@ test.describe('Sea Battle Tablet Layout', () => {
     const userId = MOCK_OBJECT_ID;
 
     await page.route('**/games/room-info*', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        json: battleRoomMock,
-      });
+      await handleRoute(route, battleRoomMock);
     });
 
     await mockGameSocket(page, roomId, userId, {
@@ -180,11 +173,7 @@ test.describe('Sea Battle Tablet Layout', () => {
     const userId = MOCK_OBJECT_ID;
 
     await page.route('**/games/room-info*', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        json: placementRoomMock,
-      });
+      await handleRoute(route, placementRoomMock);
     });
 
     await mockGameSocket(page, roomId, userId, {

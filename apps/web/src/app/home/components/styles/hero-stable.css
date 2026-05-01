@@ -1,27 +1,141 @@
 /* Stable Hero Styles to prevent Hydration Mismatches */
 
 .hero-title-shimmer {
-  background-image: linear-gradient(
-    135deg,
-    var(--color) 0%,
-    var(--primary) 25%,
-    #ffffff 50%,
-    var(--primary) 75%,
-    var(--accent) 100%
-  );
-  background-size: 200% auto;
+  position: relative;
+  display: block;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  margin: 0;
+  padding: 0;
+  line-height: 1.1;
+  text-align: center;
+
+  /* Base Layer: Solid 3D Extrusion with Directional Lighting */
+  color: #042f2e;
+  -webkit-text-fill-color: #042f2e;
+
+  /* Sculpted 3D Stack (Lighter on top, darker on bottom for realistic lighting) */
+  text-shadow:
+    1px 1px #2dd4bf,
+    /* Highlight top edge */ 2px 2px #0d9488,
+    /* Mid-tone side */ 3px 3px #0f766e,
+    /* Shadow side */ 4px 4px #115e59,
+    /* Shadow side */ 5px 5px #134e4a,
+    /* Deep shadow */ 6px 6px #064e3b,
+    /* Deep shadow */ 12px 18px 30px rgba(0, 0, 0, 0.6); /* Soft floor shadow */
+
+  animation: hero-float-3d 6s ease-in-out infinite;
+  will-change: transform;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Surface Layer: Luminous Rainbow Skin with Glass Lustre */
+.hero-title-shimmer::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+
+  /* Primary Rainbow + Glass Shine Overlay */
+  background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0) 40%,
+      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0) 60%,
+      rgba(255, 255, 255, 0) 100%
+    ),
+    linear-gradient(
+      90deg,
+      #ff0080 0%,
+      #7928ca 20%,
+      #007cf0 40%,
+      #00dfd8 60%,
+      #4ade80 80%,
+      #fbbf24 100%,
+      #ff0080 120%
+    );
+  background-size:
+    200% auto,
+    200% auto;
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: hero-shimmer 12s linear infinite;
-  display: block;
-  /* Ensure font properties match the styled component fallback */
-  font-weight: 900;
+
+  /* Internal Glow Filter - Makes the rainbow POP off the dark base */
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.5));
+
+  /* Lifted physically and visually */
+  transform: translateZ(5px);
+
+  animation:
+    hero-shimmer 8s linear infinite,
+    hero-color-shift 15s linear infinite;
+
+  will-change: background-position, filter;
+}
+
+/* Cleanup */
+.hero-title-shimmer::before {
+  display: none !important;
+}
+
+@keyframes hero-shimmer {
+  0% {
+    background-position:
+      200% center,
+      0% center;
+  }
+  100% {
+    background-position:
+      -200% center,
+      200% center;
+  }
+}
+
+@keyframes hero-color-shift {
+  0% {
+    filter: hue-rotate(0deg) drop-shadow(0 0 1px rgba(255, 255, 255, 0.5));
+  }
+  50% {
+    filter: hue-rotate(180deg) drop-shadow(0 0 2px rgba(255, 255, 255, 0.8));
+  }
+  100% {
+    filter: hue-rotate(360deg) drop-shadow(0 0 1px rgba(255, 255, 255, 0.5));
+  }
+}
+
+@keyframes hero-float-3d {
+  0%,
+  100% {
+    transform: translateY(0) rotateX(0deg) rotateY(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotateX(4deg) rotateY(4deg);
+  }
+  50% {
+    transform: translateY(-5px) rotateX(-2deg) rotateY(-6deg);
+  }
+  75% {
+    transform: translateY(-8px) rotateX(2deg) rotateY(2deg);
+  }
 }
 
 @keyframes hero-shimmer {
   0% {
     background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes hero-glint-flow {
+  0% {
+    background-position: -200% center;
   }
   100% {
     background-position: 200% center;

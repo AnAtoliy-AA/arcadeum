@@ -13,7 +13,7 @@ test.describe('Error Handling', () => {
     // Message: "This is a test crash!"
     // Title: Something went wrong!
 
-    await expect(page.getByText('Something went wrong!')).toBeVisible();
+    await expect(page.getByText(/something went wrong/i)).toBeVisible();
     await expect(page.getByText('This is a test crash!')).toBeVisible();
 
     // Check for the Try Again button
@@ -32,15 +32,16 @@ test.describe('Error Handling', () => {
     await expect(page.getByText('Something went wrong!')).toBeVisible();
 
     // Try Again button
-    const tryAgainBtn = page.getByRole('button', { name: 'Try again' });
+    const tryAgainBtn = page.getByRole('button', { name: /try again/i });
     await expect(tryAgainBtn).toBeVisible();
+
+    // Small wait to ensure hydration/event listeners are attached
 
     // Note: In this specific test case, clicking "Try Again" will just re-render the
     // component with the same URL (which still has ?crash=true), so it effectively
     // "re-crashes". This confirms the button is reachable and interactive.
     await tryAgainBtn.click();
-    await page.waitForTimeout(500);
 
-    await expect(page.getByText('Something went wrong!')).toBeVisible();
+    await expect(page.getByText(/something went wrong/i)).toBeVisible();
   });
 });

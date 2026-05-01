@@ -24,7 +24,7 @@ test.describe('Header Language Switcher', () => {
     await page.getByRole('option', { name: 'ES' }).click();
 
     // The value should be updated
-    await expect(languageSwitcher).toContainText('ES', { timeout: 10000 });
+    await expect(languageSwitcher).toContainText('ES', {});
   });
 
   test('should display language switcher in header and not in mobile menu on mobile devices', async ({
@@ -32,7 +32,6 @@ test.describe('Header Language Switcher', () => {
   }) => {
     // Resize to mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.waitForTimeout(500);
 
     // 1. Check it's visible in the header
     const headerLanguageSwitcher = page
@@ -60,8 +59,6 @@ test.describe('Header Language Switcher', () => {
     await page.getByRole('option', { name: 'FR' }).click();
 
     // Verify language changed (header text should update)
-    await expect(headerLanguageSwitcher).toContainText('FR', {
-      timeout: 10000,
-    });
+    await expect(headerLanguageSwitcher).toContainText('FR', {});
   });
 });

@@ -82,6 +82,7 @@ export default function HomeHero() {
             <h1
               id="hero-heading"
               className="hero-title-main hero-title-shimmer"
+              data-text={appName}
             >
               {appName}
             </h1>

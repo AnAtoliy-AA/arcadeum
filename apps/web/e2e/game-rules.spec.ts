@@ -9,9 +9,9 @@ test.describe('Game Rules', () => {
   // role-based matches like the lobby's GamesControlPanel rules icon.
   async function openRulesModal(page: Page) {
     const rulesBtn = page.getByTestId('view-rules-button');
-    await expect(rulesBtn).toBeAttached({ timeout: 15000 });
+    await expect(rulesBtn).toBeAttached({});
     await rulesBtn.scrollIntoViewIfNeeded();
-    await expect(rulesBtn).toBeVisible({ timeout: 15000 });
+    await expect(rulesBtn).toBeVisible({});
     await rulesBtn.click();
   }
 
@@ -20,7 +20,7 @@ test.describe('Game Rules', () => {
     await openRulesModal(page);
 
     const modal = page.getByTestId('rules-modal');
-    await expect(modal).toBeVisible({ timeout: 20000 });
+    await expect(modal).toBeVisible({});
     await expect(modal.getByText(/objective|goal|цель/i).first()).toBeVisible();
   });
 
@@ -29,7 +29,7 @@ test.describe('Game Rules', () => {
     await openRulesModal(page);
 
     const modal = page.getByTestId('rules-modal');
-    await expect(modal).toBeVisible({ timeout: 20000 });
+    await expect(modal).toBeVisible({});
     await expect(modal.getByText(/objective|goal|цель/i).first()).toBeVisible();
   });
 
@@ -38,11 +38,11 @@ test.describe('Game Rules', () => {
     await openRulesModal(page);
 
     const modal = page.getByTestId('rules-modal');
-    await expect(modal).toBeVisible({ timeout: 20000 });
+    await expect(modal).toBeVisible({});
 
     const closeBtn = modal.getByTestId('modal-close-button').first();
     await closeBtn.click({ force: true });
 
-    await expect(modal).not.toBeVisible({ timeout: 15000 });
+    await expect(modal).not.toBeVisible({});
   });
 });

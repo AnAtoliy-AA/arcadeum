@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
+import { test, handleRoute } from './fixtures/test-utils';
 import {
   navigateTo,
   mockSession,
@@ -19,79 +19,63 @@ test.describe('Chat Functionality', () => {
     // Mock getting chats list
     await page.route('**/chat', async (route) => {
       if (route.request().method() === 'GET') {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify([
-            {
-              chatId: 'chat-1',
-              participants: [
-                {
-                  id: '507f191e810c19729de860ea',
-                  username: 'testuser',
-                  displayName: 'Test User',
-                },
-                {
-                  id: '507f191e810c19729de860e2',
-                  username: 'otheruser',
-                  displayName: 'Other User',
-                },
-              ],
-              lastMessage: {
-                senderUsername: 'otheruser',
-                content: 'Hello there!',
-                timestamp: new Date().toISOString(),
+        await handleRoute(route, [
+          {
+            chatId: 'chat-1',
+            participants: [
+              {
+                id: '507f191e810c19729de860ea',
+                username: 'testuser',
+                displayName: 'Test User',
               },
+              {
+                id: '507f191e810c19729de860e2',
+                username: 'otheruser',
+                displayName: 'Other User',
+              },
+            ],
+            lastMessage: {
+              senderUsername: 'otheruser',
+              content: 'Hello there!',
+              timestamp: new Date().toISOString(),
             },
-          ]),
-        });
+          },
+        ]);
       } else if (route.request().method() === 'POST') {
-        await route.fulfill({
-          status: 201,
-          contentType: 'application/json',
-          body: JSON.stringify({ chatId: 'new-chat-id' }),
-        });
+        await handleRoute(route, { chatId: 'new-chat-id' }, 201);
       } else {
         // Return empty for other requests to prevent 500s
-        await route.fulfill({ status: 200, body: JSON.stringify([]) });
+        await handleRoute(route, []);
       }
     });
 
     // Mock search
     await page.route('**/chat/search?q=*', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([
-          {
-            id: '507f191e810c19729de860e3',
-            username: 'searchuser',
-            displayName: 'Search User',
-            email: 'search@example.com',
-          },
-        ]),
-      });
+      await handleRoute(route, [
+        {
+          id: '507f191e810c19729de860e3',
+          username: 'searchuser',
+          displayName: 'Search User',
+          email: 'search@example.com',
+        },
+      ]);
     });
 
     // Mock messages for any chat
     await page.route('**/chat/*/messages*', async (route) => {
       // Handle both path-based and potentially query-based if refactored, but pattern favors path
       // The * at end handles query params
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([
-          {
-            id: 'msg-1',
-            chatId: 'chat-1',
-            senderId: '507f191e810c19729de860e2',
-            senderUsername: 'otheruser',
-            receiverIds: ['507f191e810c19729de860ea'],
-            content: 'Hello there!',
-            timestamp: new Date(Date.now() - 60000).toISOString(),
-          },
-        ]),
-      });
+      await handleRoute(route, [
+        {
+          id: 'msg-1',
+          chatId: 'chat-1',
+          senderId: '507f191e810c19729de860e2',
+          senderUsername: 'otheruser',
+          receiverIds: ['507f191e810c19729de860ea'],
+          content: 'Hello there!',
+          timestamp: new Date(Date.now() - 60000).toISOString(),
+        },
+      ]);
     });
   });
 

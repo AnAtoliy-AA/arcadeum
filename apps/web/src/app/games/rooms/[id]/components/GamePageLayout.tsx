@@ -71,6 +71,12 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     });
   }, [media.gtMd]);
 
+  useEffect(() => {
+    queueMicrotask(() => {
+      setShowChat(media.gtMd);
+    });
+  }, [media.gtMd]);
+
   // Chat message popup — reads from global store written by game widgets
   const logs = useGameChatStore((s) => s.logs);
   const { latestMessage, dismiss: dismissPopup } = useLatestChatMessage(logs);

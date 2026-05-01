@@ -53,18 +53,18 @@ test.describe('Navigation', () => {
 
     // If chunk errors occurred during client-side navigation, reload
     if (chunkLoadError) {
-      await page.reload({ waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page.reload({ waitUntil: 'domcontentloaded' });
     }
     page.off('pageerror', onPageError);
 
     // Increased timeout for check and ensure we wait for URL to be exactly /
-    await expect(page).toHaveURL('/', { timeout: 15000 });
+    await expect(page).toHaveURL('/', {});
 
     // Wait for hydration on the home page
     await expect(page.locator('html')).toHaveAttribute(
       'data-hydrated',
       'true',
-      { timeout: 10000 },
+      {},
     );
   });
 
@@ -75,7 +75,7 @@ test.describe('Navigation', () => {
       : page.getByTestId('nav-games');
     await expect(gamesLink).toBeVisible();
     await gamesLink.click();
-    await expect(page).toHaveURL(/\/games/, { timeout: 10000 });
+    await expect(page).toHaveURL(/\/games/, {});
   });
 
   test('should navigate to auth page', async ({ page }) => {

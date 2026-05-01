@@ -171,21 +171,18 @@ test.describe('Contrast Hardening Verification', () => {
             return document.documentElement?.getAttribute('data-theme') === t;
           },
           theme,
-          { timeout: 5000 },
+          {},
         )
         .catch(() => null);
 
       // Ensure the page has re-hydrated and main content is visible
       await page.waitForLoadState('domcontentloaded');
-      await expect(page.locator('main').first()).toBeVisible({
-        timeout: 10000,
-      });
-      await page.waitForTimeout(500); // Allow styles to settle
+      await expect(page.locator('main').first()).toBeVisible({});
 
       const ctaSelector =
         '.is_LinkButton:has-text("Get started"), a:has-text("Get started")';
       const cta = page.locator(ctaSelector).first();
-      await expect(cta).toBeVisible({ timeout: 15000 });
+      await expect(cta).toBeVisible({});
 
       const ratio = await checkContrast(page, ctaSelector);
 

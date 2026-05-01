@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.30] - 2026-05-01
+
+### Fixed
+- stabilize idle detection tests by adding store synchronization and updating e2e configurations (ARC-446)
+- prevent stale initialData from overwriting active room state and update E2E room mocks to support dynamic state synchronization (ARC-446)
+
+
+## [1.9.29] - 2026-05-01
+
+### Fixed
+- sea battle chat e2e test (ARC-446)
+- resolve CORS errors in e2e tests (ARC-446)
+- e2e tests timeouts (ARC-446)
+- e2e tests warnings (ARC-446)
+
+### Refactored
+- use polling with state verification to improve E2E test reliability for chat popups (ARC-446)
+
+
+## [1.9.28] - 2026-04-30
+
+
+## [1.9.27] - 2026-04-30
+
+### Fixed
+- home hero animation (ARC-554)
+
+### Documentation
+- update upstream remote URL and project live demo link (N/A)
+
+
 ## [1.9.26] - 2026-04-29
 
 ### Added

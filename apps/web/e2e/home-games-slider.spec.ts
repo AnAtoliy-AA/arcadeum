@@ -39,7 +39,6 @@ test.describe('Home Page Games Grid Refinement', () => {
     }
 
     await nextButton.click({ force: true });
-    await page.waitForTimeout(1500);
 
     const newScrollLeft = await sliderTrack.evaluate((el) => el.scrollLeft);
     expect(newScrollLeft).toBeGreaterThanOrEqual(0);
@@ -58,12 +57,11 @@ test.describe('Home Page Games Grid Refinement', () => {
     const questionIcon = criticalCard.getByTestId('game-help-button');
     await expect(questionIcon).toBeVisible();
 
-    await page.waitForTimeout(1000);
     await questionIcon.click({ force: true });
 
     await expect(
       page.locator('[role="dialog"][data-state="open"]'),
-    ).toBeVisible({ timeout: 15000 });
+    ).toBeVisible({});
     await expect(
       page.getByRole('heading', { name: /Objective/i }),
     ).toBeVisible();

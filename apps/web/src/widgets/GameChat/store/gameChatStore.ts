@@ -24,3 +24,9 @@ export const useGameChatStore = create<GameChatStore>((set) => ({
   registerSendMessage: (fn) => set({ sendMessage: fn }),
   clear: () => set({ logs: [], sendMessage: null }),
 }));
+
+if (typeof window !== 'undefined') {
+  (
+    window as unknown as { useGameChatStore: typeof useGameChatStore }
+  ).useGameChatStore = useGameChatStore;
+}

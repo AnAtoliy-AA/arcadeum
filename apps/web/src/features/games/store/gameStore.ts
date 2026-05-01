@@ -73,9 +73,16 @@ export const useGameStore = create<GameState>((set, get) => ({
     set({
       loading: !isSameRoom && !initialData?.room,
       error: isSameRoom ? currentState.error : null,
-      room: initialData?.room || (isSameRoom ? currentState.room : null),
+      // Prefer current room if it's the same roomId to avoid overwriting fresher
+      // data from refresh/socket with potentially stale initialData
+      room:
+        isSameRoom && currentState.room
+          ? currentState.room
+          : initialData?.room || null,
       session:
-        initialData?.session || (isSameRoom ? currentState.session : null),
+        isSameRoom && currentState.session
+          ? currentState.session
+          : initialData?.session || null,
       accessToken,
     });
 

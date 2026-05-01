@@ -1,10 +1,24 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures/test-utils';
-import { mockSession, navigateTo } from './fixtures/test-utils';
+import { mockSession, navigateTo, handleRoute } from './fixtures/test-utils';
 
 test.describe('Game Lobby - Shared Functionality', () => {
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
+
+    // Mock games list to prevent CORS errors during navigation
+    await page.route('**/games/rooms*', async (route) => {
+      if (route.request().method() === 'GET') {
+        await handleRoute(route, { rooms: [], total: 0 });
+      } else {
+        await route.continue();
+      }
+    });
+
+    // Mock socket.io polling to prevent connection errors
+    await page.route('**/socket.io/*', async (route) => {
+      await handleRoute(route, { status: 'ok' });
+    });
   });
 
   test('should display Critical game lobby with variant selector', async ({
@@ -29,11 +43,9 @@ test.describe('Game Lobby - Shared Functionality', () => {
       await createBtn.click();
 
       // Wait for navigation to room
-      await page
-        .waitForURL(/\/games\/rooms\/.*/, { timeout: 10000 })
-        .catch(() => {
-          // May not navigate if mocking doesn't create room
-        });
+      await page.waitForURL(/\/games\/rooms\/.*/, {}).catch(() => {
+        // May not navigate if mocking doesn't create room
+      });
 
       // Verify lobby elements are visible
       const pageContent = await page.content();
@@ -69,11 +81,9 @@ test.describe('Game Lobby - Shared Functionality', () => {
       await createBtn.click();
 
       // Wait for navigation to room
-      await page
-        .waitForURL(/\/games\/rooms\/.*/, { timeout: 10000 })
-        .catch(() => {
-          // May not navigate if mocking doesn't create room
-        });
+      await page.waitForURL(/\/games\/rooms\/.*/, {}).catch(() => {
+        // May not navigate if mocking doesn't create room
+      });
 
       // Verify page content
       const pageContent = await page.content();
@@ -109,6 +119,20 @@ test.describe('Game Lobby - Shared Functionality', () => {
 test.describe('Game Lobby - Room Info Display', () => {
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
+
+    // Mock games list to prevent CORS errors during navigation
+    await page.route('**/games/rooms*', async (route) => {
+      if (route.request().method() === 'GET') {
+        await handleRoute(route, { rooms: [], total: 0 });
+      } else {
+        await route.continue();
+      }
+    });
+
+    // Mock socket.io polling to prevent connection errors
+    await page.route('**/socket.io/*', async (route) => {
+      await handleRoute(route, { status: 'ok' });
+    });
   });
 
   test('should display games list with multiple games', async ({ page }) => {

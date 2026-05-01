@@ -17,12 +17,12 @@ describe('api-base', () => {
   it('falls back to default if environment variables are missing', () => {
     vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', '');
     vi.stubEnv('NEXT_PUBLIC_WEB_API_BASE_URL', '');
-    expect(resolveApiBase()).toBe('http://127.0.0.1:4000');
+    expect(resolveApiBase()).toBe('http://localhost:4000');
   });
 
   it('handles whitespace only environment variables', () => {
     vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', '   ');
-    expect(resolveApiBase()).toBe('http://127.0.0.1:4000');
+    expect(resolveApiBase()).toBe('http://localhost:4000');
   });
 
   it('falls back to WEB_API_BASE_URL if API_BASE_URL is missing', () => {

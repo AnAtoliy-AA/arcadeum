@@ -10,26 +10,31 @@ test.describe('Footer Links', () => {
   async function scrollToFooter(page: import('@playwright/test').Page) {
     await navigateTo(page, '/');
     await page.waitForLoadState('load');
-    // Scroll to bottom and re-scroll in case content shifted
-    for (let i = 0; i < 3; i++) {
-      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-      await page.waitForTimeout(500);
-    }
-    await expect(page.locator('footer')).toBeVisible({ timeout: 15000 });
+    // Ensure the footer is attached to the DOM
+    const footer = page.locator('main footer');
+    await footer.waitFor({ state: 'attached' });
+
+    // Scroll to the bottom
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+
+    // Verify visibility using standard assertion
+    await expect(footer).toBeVisible();
   }
 
   test('should show copyright information', async ({ page }) => {
     await scrollToFooter(page);
-    await expect(page.locator('footer')).toContainText(/©|2026|Arcadeum/, {
-      timeout: 10000,
-    });
+    await expect(page.locator('main footer')).toContainText(
+      /©|2026|Arcadeum/,
+      {},
+    );
   });
 
   test('should show app version', async ({ page }) => {
     await scrollToFooter(page);
-    await expect(page.locator('footer')).toContainText(/\d+\.\d+\.\d+/, {
-      timeout: 10000,
-    });
+    await expect(page.locator('main footer')).toContainText(
+      /\d+\.\d+\.\d+/,
+      {},
+    );
   });
 
   test('should show legal links in footer and not in header', async ({
@@ -37,7 +42,7 @@ test.describe('Footer Links', () => {
   }) => {
     await scrollToFooter(page);
 
-    const footer = page.locator('footer');
+    const footer = page.locator('main footer');
     // On mobile, footer sections are collapsible - expand Legal section if needed
     const privacyLink = footer.locator('a[href="/privacy"]');
     if (!(await privacyLink.isVisible())) {
@@ -46,14 +51,11 @@ test.describe('Footer Links', () => {
         .or(footer.getByText('Legal'))
         .or(footer.getByText('legal'))
         .first();
-      if (await legalToggle.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await legalToggle.isVisible({}).catch(() => false)) {
         await legalToggle.click({ force: true });
-        await page.waitForTimeout(500);
       }
     }
-    await expect(footer.locator('a[href="/privacy"]')).toBeVisible({
-      timeout: 10000,
-    });
+    await expect(footer.locator('a[href="/privacy"]')).toBeVisible({});
     await expect(footer.locator('a[href="/terms"]')).toBeVisible();
     await expect(footer.locator('a[href="/contact"]')).toBeVisible();
 
@@ -70,22 +72,21 @@ test.describe('Footer Links', () => {
   test('should show social or support links', async ({ page }) => {
     await scrollToFooter(page);
 
-    const footer = page.locator('footer');
+    const footer = page.locator('main footer');
     // On mobile, footer sections may be collapsed - expand "Follow Us" if needed
     const socialLinks = footer.locator('[data-testid^="footer-social-"]');
     if (
       !(await socialLinks
         .first()
-        .isVisible({ timeout: 3000 })
+        .isVisible({})
         .catch(() => false))
     ) {
       const followToggle = footer.getByText(/follow us/i).first();
-      if (await followToggle.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await followToggle.isVisible({}).catch(() => false)) {
         await followToggle.click({ force: true });
-        await page.waitForTimeout(500);
       }
     }
 
-    await expect(socialLinks.first()).toBeVisible({ timeout: 10000 });
+    await expect(socialLinks.first()).toBeVisible({});
   });
 });

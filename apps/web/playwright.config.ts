@@ -39,7 +39,7 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 2,
+  retries: 0,
   workers: process.env.CI
     ? 1
     : process.env.PLAYWRIGHT_WORKERS
@@ -66,7 +66,20 @@ export default defineConfig({
     },
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+        launchOptions: {
+          firefoxUserPrefs: {
+            'privacy.bounceTrackingProtection.enabled': false,
+            'privacy.bounceTrackingProtection.hasUserInteraction.enabled':
+              false,
+            'privacy.bounceTrackingProtection.requireInteraction.enabled':
+              false,
+            'privacy.bounceTrackingProtection.bounceTrackingGracePeriodSec': 31536000,
+            'network.cookie.cookieBehavior': 0,
+          },
+        },
+      },
     },
     {
       name: 'webkit',
@@ -99,6 +112,7 @@ export default defineConfig({
         WEB_PORT: WEB_PORT,
         BE_PORT: BE_PORT,
         NODE_ENV: process.env.E2E_PROD ? 'production' : 'development',
+        E2E: 'true',
       },
     },
     {
@@ -113,6 +127,7 @@ export default defineConfig({
         WEB_PORT: WEB_PORT,
         BE_PORT: BE_PORT,
         NODE_ENV: process.env.E2E_PROD ? 'production' : 'development',
+        E2E: 'true',
       },
     },
   ],

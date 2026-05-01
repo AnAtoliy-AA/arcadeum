@@ -14,7 +14,7 @@ test.describe('Contact Form', () => {
     await submitBtn.click({ force: true });
 
     // Check for browser validation or HTML5 validation
-    await expect(page.locator('form')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('form')).toBeVisible({});
   });
 
   test('should validate email format', async ({ page }) => {
@@ -32,7 +32,7 @@ test.describe('Contact Form', () => {
     await submitBtn.click({ force: true });
 
     // Form should not be submitted
-    await expect(page.locator('form')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('form')).toBeVisible({});
   });
 
   test('should show success message on valid submission', async ({ page }) => {
@@ -53,19 +53,17 @@ test.describe('Contact Form', () => {
       await submitBtn
         .click({ force: true })
         .catch(() => submitBtn.dispatchEvent('click'));
-      await expect(page.getByTestId('contact-success-message')).toBeVisible({
-        timeout: 5000,
-      });
-    }).toPass({ timeout: 15000 });
+      await expect(page.getByTestId('contact-success-message')).toBeVisible({});
+    }).toPass({});
 
-    await expect(page.locator('form')).not.toBeVisible({ timeout: 10000 });
+    await expect(page.locator('form')).not.toBeVisible({});
   });
 
   test('should have working external links', async ({ page }) => {
     await navigateTo(page, '/contact');
 
     const emailLink = page.locator('a[href^="mailto:"]');
-    await expect(emailLink).toBeVisible({ timeout: 15000 });
+    await expect(emailLink).toBeVisible({});
     await expect(emailLink).toHaveAttribute(
       'href',
       /arcadeum\.care@gmail\.com/,

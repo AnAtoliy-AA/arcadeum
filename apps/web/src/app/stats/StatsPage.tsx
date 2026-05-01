@@ -47,7 +47,14 @@ export default function StatsPage({
   const selectedGame = searchParams?.get('game') || '';
   const [activeTab, setActiveTab] = useState<TabType>('my-stats');
 
-  const { snapshot } = useSessionTokens();
+  const { snapshot, hydrated } = useSessionTokens();
+
+  const isLoggedIn = useMemo(() => {
+    // During hydration/SSR, we trust initialStats presence (server source of truth)
+    if (!hydrated) return !!initialStats;
+    // After hydration, we trust the store (client source of truth)
+    return !!snapshot.accessToken;
+  }, [hydrated, snapshot.accessToken, initialStats]);
 
   const { stats, loading, refreshing, error, refresh } = useStats({
     accessToken: snapshot.accessToken,
@@ -132,7 +139,7 @@ export default function StatsPage({
         )}
 
         {activeTab === 'my-stats' ? (
-          snapshot.accessToken ? (
+          isLoggedIn ? (
             <>
               <StatsOverview stats={stats} loading={loading} />
               <GameBreakdown stats={stats} loading={loading} />

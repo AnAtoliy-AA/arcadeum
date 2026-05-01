@@ -29,7 +29,7 @@ test.describe('Home Page', () => {
   });
 
   test('should render footer', async ({ page }) => {
-    const footer = page.locator('footer').first();
+    const footer = page.locator('main footer');
     await expect(footer).toBeVisible();
   });
 
@@ -96,7 +96,7 @@ test.describe('Home Page', () => {
 
       const heroCards = cardStack.locator('[data-testid^="hero-card-"]');
       await expect(heroCards).toHaveCount(3);
-    }).toPass({ timeout: 15000 });
+    }).toPass({});
   });
 
   test('should have modernized support developers button', async ({ page }) => {

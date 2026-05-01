@@ -254,6 +254,16 @@ export class GlimwormService implements OnModuleDestroy {
     }
   }
 
+  setColor(roomId: string, userId: string, color: string): string {
+    const session = this.stateStore.get(roomId);
+    if (!session) throw new Error('No session for room');
+    const worm = session.worms[userId];
+    if (!worm) throw new Error('No worm for user');
+    const picked = nextFreeColor(session, color);
+    worm.color = picked;
+    return picked;
+  }
+
   endSession(roomId: string, winner: WormId | null): void {
     const session = this.stateStore.get(roomId);
     if (!session) return;

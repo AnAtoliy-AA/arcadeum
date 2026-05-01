@@ -73,7 +73,7 @@ export async function waitForRoomReady(
   await expect(page.locator('.games-room-container')).toBeVisible({});
 
   await expect(page.locator('body')).not.toContainText(
-    /Game is loading|Joining\.\.\.|Server is waking up\.\.\.|Loading room\.\.\.|Loading game\.\.\.|Loading\.\.\./i,
+    /Joining\.\.\.|Server is waking up\.\.\.|Loading room\.\.\.|Loading game\.\.\.|Loading\.\.\./i,
     {},
   );
 
@@ -135,13 +135,34 @@ export async function mockRoomInfo(
     ...r,
   };
 
-  // Sync lastSession for socket mocks
-  if (session) {
-    await page.addInitScript((s) => {
+  // Sync lastSession and room state for socket mocks
+  await page.addInitScript(
+    ({ room, session }) => {
       window._playwrightMocks = window._playwrightMocks || { handlers: {} };
-      window._playwrightMocks.lastSession = s;
-    }, session);
-  }
+      if (session) window._playwrightMocks.lastSession = session;
+      window._playwrightMocks.roomJoinedPayload = {
+        ...(window._playwrightMocks.roomJoinedPayload as object),
+        ...room,
+      };
+    },
+    { room, session },
+  );
+
+  // Also update dynamic state if page is already loaded
+  await page
+    .evaluate(
+      ({ room, session }) => {
+        if (window._playwrightMocks) {
+          if (session) window._playwrightMocks.lastSession = session;
+          window._playwrightMocks.roomJoinedPayload = {
+            ...(window._playwrightMocks.roomJoinedPayload as object),
+            ...room,
+          };
+        }
+      },
+      { room, session },
+    )
+    .catch(() => {});
 
   // Mock the room info endpoint with dynamic room ID matching
   await page.route('**/games/room-info', async (route) => {

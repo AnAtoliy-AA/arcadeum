@@ -89,37 +89,34 @@ test.describe('Anonymous Play', () => {
   test('should allow creating a room without login', async ({ page }) => {
     await navigateTo(page, '/games/create?gameId=critical_v1');
 
-    await expect(page).toHaveURL(/\/games\/create/, { timeout: 15000 });
+    await expect(page).toHaveURL(/\/games\/create/, {});
     await expect(
       page.getByRole('heading', { name: /create game room/i }),
-    ).toBeVisible({ timeout: 15000 });
+    ).toBeVisible({});
 
     const nameInput = page.getByLabel('Room Name', { exact: false });
-    await expect(nameInput).toBeVisible({ timeout: 15000 });
+    await expect(nameInput).toBeVisible({});
     await nameInput.fill('Anonymous Bot Game');
 
     const createBtn = page.getByTestId('create-room-button');
-    await expect(createBtn).toBeVisible({ timeout: 15000 });
-    await page.waitForTimeout(1000); // Allow state to settle
+    await expect(createBtn).toBeVisible({});
     await createBtn.scrollIntoViewIfNeeded();
 
     await expect(async () => {
       await page.getByTestId('create-room-button').click({ force: true });
       await expect(page).toHaveURL(
         new RegExp(`/games/rooms/${MOCK_OBJECT_ID}`),
-        { timeout: 5000 },
+        {},
       );
-    }).toPass({ timeout: 30000 });
+    }).toPass({});
 
     await waitForRoomReady(page);
 
-    await expect(page.getByTestId('exit-room-button').first()).toBeVisible({
-      timeout: 30000,
-    });
+    await expect(page.getByTestId('exit-room-button').first()).toBeVisible({});
 
     // The host should be able to start the game directly.
     const startBtn = page.getByTestId('start-with-bots-button');
-    await expect(startBtn).toBeVisible({ timeout: 15000 });
+    await expect(startBtn).toBeVisible({});
     await startBtn.click({ force: true });
   });
 
@@ -165,15 +162,14 @@ test.describe('Anonymous Play', () => {
     await navigateTo(page, '/games/create');
     await expect(
       page.getByRole('heading', { name: /create game room/i }),
-    ).toBeVisible({ timeout: 15000 });
+    ).toBeVisible({});
 
     const nameInput = page.getByLabel('Room Name', { exact: false });
-    await expect(nameInput).toBeVisible({ timeout: 15000 });
+    await expect(nameInput).toBeVisible({});
     await nameInput.fill('Private Link Test');
 
     const visibilityBtn = page.getByTestId('visibility-toggle-button');
     await visibilityBtn.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(500); // Wait for potential layout shifts
     await visibilityBtn.click({ force: true });
 
     // Retry click + navigation check to handle hydration race conditions
@@ -183,9 +179,9 @@ test.describe('Anonymous Play', () => {
       await startBtn.click({ force: true });
       await expect(page).toHaveURL(
         new RegExp(`/games/rooms/${MOCK_OBJECT_ID}`),
-        { timeout: 5000 },
+        {},
       );
-    }).toPass({ timeout: 30000 });
+    }).toPass({});
     const inviteUrl = page.url();
 
     // Create a NEW context and page for the second player to ensure complete isolation
@@ -256,13 +252,12 @@ test.describe('Anonymous Play', () => {
     // on the dev server during multi-browser runs.
     await newPage.goto(inviteUrl, {
       waitUntil: 'domcontentloaded',
-      timeout: 90000,
     });
     await waitForRoomReady(newPage);
 
-    await expect(newPage.getByTestId('exit-room-button').first()).toBeVisible({
-      timeout: 30000,
-    });
+    await expect(newPage.getByTestId('exit-room-button').first()).toBeVisible(
+      {},
+    );
 
     await expect(
       newPage

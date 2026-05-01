@@ -65,7 +65,7 @@ test.describe('Idle Connection Overlay', () => {
       }
     });
 
-    await expect(overlay).toBeVisible({ timeout: 5000 });
+    await expect(overlay).toBeVisible({});
     await expect(overlay).toContainText(
       /Connection Lost|Connexion perdue|Conexión perdida|Злучэнне страчана|Соединение потеряно/,
     );
@@ -100,13 +100,13 @@ test.describe('Idle Connection Overlay', () => {
     });
 
     const overlay = page.locator('[data-testid^="connection-overlay-"]');
-    await expect(overlay).toBeVisible({ timeout: 10000 });
+    await expect(overlay).toBeVisible({});
 
-    await overlay.click({ timeout: 5000 });
+    await overlay.click({});
 
     await expect(overlay).toContainText(
       /Reconnecting|Reconectando|Reconnexion|Пераключэнне|Переподключение/,
-      { timeout: 15000 },
+      {},
     );
   });
 
@@ -137,7 +137,7 @@ test.describe('Idle Connection Overlay', () => {
     });
 
     const overlay = page.getByTestId('connection-overlay-disconnected');
-    await expect(overlay).toBeVisible({ timeout: 5000 });
+    await expect(overlay).toBeVisible({});
 
     const container = page.locator('main').first();
     await expect(container).toBeVisible();

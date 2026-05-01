@@ -73,7 +73,7 @@ test.describe('Header and Footer Modernization', () => {
         .first();
 
       // Wait for the indicator to become visible (it has a 0.2s transition)
-      await expect(activeIndicator).toBeVisible({ timeout: 10000 });
+      await expect(activeIndicator).toBeVisible({});
 
       const opacity = await activeIndicator.evaluate(
         (el) => window.getComputedStyle(el).opacity,
@@ -124,7 +124,7 @@ test.describe('Header and Footer Modernization', () => {
       const isPartiallyTransparent = parseFloat(styles.opacity) < 1;
 
       expect(hasTransform || hasScale || isPartiallyTransparent).toBe(true);
-    }).toPass({ timeout: 10000 });
+    }).toPass({});
   });
 
   test('footer social icons should have hover effect', async ({
@@ -182,6 +182,6 @@ test.describe('Header and Footer Modernization', () => {
       expect(hasTransform || hasScale || hasRotate || hasOpacityChange).toBe(
         true,
       );
-    }).toPass({ timeout: 10000 });
+    }).toPass({});
   });
 });

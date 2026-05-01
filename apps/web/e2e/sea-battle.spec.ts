@@ -1,10 +1,20 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures/test-utils';
-import { mockSession, navigateTo } from './fixtures/test-utils';
+import { mockSession, navigateTo, handleRoute } from './fixtures/test-utils';
 
 test.describe('Sea Battle Game', () => {
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
+
+    // Mock games list to prevent CORS errors during navigation
+    await page.route('**/games/rooms*', async (route) => {
+      await handleRoute(route, { rooms: [], total: 0 });
+    });
+
+    // Mock socket.io polling to prevent connection errors
+    await page.route('**/socket.io/*', async (route) => {
+      await handleRoute(route, { status: 'ok' });
+    });
   });
 
   test('should verify Sea Battle game presence on games list', async ({
@@ -12,25 +22,21 @@ test.describe('Sea Battle Game', () => {
   }) => {
     // Mock games list to include Sea Battle room
     await page.route('**/games/rooms*', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          rooms: [
-            {
-              id: '507f191e810c19729de860ea',
-              gameId: 'sea_battle_v1',
-              name: 'E2E Sea Battle',
-              hostId: 'test-user',
-              visibility: 'public',
-              playerCount: 1,
-              maxPlayers: 4,
-              status: 'lobby',
-              createdAt: new Date().toISOString(),
-            },
-          ],
-          total: 1,
-        }),
+      await handleRoute(route, {
+        rooms: [
+          {
+            id: '507f191e810c19729de860ea',
+            gameId: 'sea_battle_v1',
+            name: 'E2E Sea Battle',
+            hostId: 'test-user',
+            visibility: 'public',
+            playerCount: 1,
+            maxPlayers: 4,
+            status: 'lobby',
+            createdAt: new Date().toISOString(),
+          },
+        ],
+        total: 1,
       });
     });
 
@@ -41,7 +47,7 @@ test.describe('Sea Battle Game', () => {
     const seaBattleGame = page.getByText(
       /sea battle|морской бой|bataille navale|batalla naval/i,
     );
-    await expect(seaBattleGame.first()).toBeVisible({ timeout: 15000 });
+    await expect(seaBattleGame.first()).toBeVisible({});
   });
 
   test('should display game create page for Sea Battle', async ({ page }) => {
@@ -72,11 +78,9 @@ test.describe('Sea Battle Game', () => {
       await createBtn.click();
 
       // Wait for navigation to room
-      await page
-        .waitForURL(/\/games\/rooms\/.*/, { timeout: 10000 })
-        .catch(() => {
-          // May not navigate if mocking doesn't create room
-        });
+      await page.waitForURL(/\/games\/rooms\/.*/, {}).catch(() => {
+        // May not navigate if mocking doesn't create room
+      });
     }
   });
 
@@ -91,6 +95,16 @@ test.describe('Sea Battle Game', () => {
 test.describe('Sea Battle Game Flow', () => {
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
+
+    // Mock games list to prevent CORS errors during navigation
+    await page.route('**/games/rooms*', async (route) => {
+      await handleRoute(route, { rooms: [], total: 0 });
+    });
+
+    // Mock socket.io polling to prevent connection errors
+    await page.route('**/socket.io/*', async (route) => {
+      await handleRoute(route, { status: 'ok' });
+    });
   });
 
   test('should maintain responsive layout', async ({ page }) => {
@@ -139,27 +153,23 @@ test.describe('Sea Battle Game Flow', () => {
 
     // Mock room info API to avoid 404
     await page.route('**/games/room-info*', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          id: '507f191e810c19729de860eb',
-          name: 'E2E Test Room',
-          status: 'lobby',
-          gameId: 'sea_battle_v1',
-          hostId: 'test-user',
-          playerCount: 1,
-          maxPlayers: 2,
-          visibility: 'public',
-          gameOptions: {},
-          members: [
-            {
-              id: 'test-user',
-              displayName: 'Test User',
-              isHost: true,
-            },
-          ],
-        }),
+      await handleRoute(route, {
+        id: '507f191e810c19729de860eb',
+        name: 'E2E Test Room',
+        status: 'lobby',
+        gameId: 'sea_battle_v1',
+        hostId: 'test-user',
+        playerCount: 1,
+        maxPlayers: 2,
+        visibility: 'public',
+        gameOptions: {},
+        members: [
+          {
+            id: 'test-user',
+            displayName: 'Test User',
+            isHost: true,
+          },
+        ],
       });
     });
 

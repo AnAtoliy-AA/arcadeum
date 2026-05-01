@@ -35,8 +35,8 @@ test.describe('Chat Interactions', () => {
       /Send a note to everyone|сообщение|message/i,
     );
 
-    await expect(input).toBeVisible({ timeout: 10000 });
-    await expect(input).toBeEnabled({ timeout: 15000 });
+    await expect(input).toBeVisible({});
+    await expect(input).toBeEnabled({});
     await input.click();
     await input.fill('');
     await expect(sendBtn).toBeDisabled();
@@ -49,8 +49,8 @@ test.describe('Chat Interactions', () => {
     const input = page.getByPlaceholder(
       /Send a note to everyone|сообщение|message/i,
     );
-    await expect(input).toBeVisible({ timeout: 10000 });
-    await expect(input).toBeEnabled({ timeout: 15000 });
+    await expect(input).toBeVisible({});
+    await expect(input).toBeEnabled({});
     await input.fill(longMessage);
 
     const sendBtn = page.getByRole('button', { name: /send|отправить/i });
@@ -88,7 +88,7 @@ test.describe('Chat Interactions', () => {
     await navigateTo(page, '/chat?chatId=chat-1&title=Test%20User');
 
     const senderElement = page.getByText('otheruser');
-    await expect(senderElement.first()).toBeVisible({ timeout: 15000 });
+    await expect(senderElement.first()).toBeVisible({});
   });
 
   test('should auto-scroll to bottom on new message', async ({ page }) => {
@@ -133,13 +133,12 @@ test.describe('Chat Interactions', () => {
 
     // Ensure the chat input is visible first (indicates hydration is complete)
     const input = page.getByPlaceholder(/message|сообщение|Type a message/i);
-    await expect(input.first()).toBeVisible({ timeout: 15000 });
+    await expect(input.first()).toBeVisible({});
 
     // Wait for the newest message to appear
     const newestMessage = page.getByText('Newest message');
-    await expect(newestMessage).toBeVisible({ timeout: 15000 });
+    await expect(newestMessage).toBeVisible({});
 
     // Additional wait to ensure scroll has completed
-    await page.waitForTimeout(1000);
   });
 });

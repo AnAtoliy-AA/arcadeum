@@ -206,8 +206,6 @@ export function DropdownLink({
 
 export const MobileMenuContainer = styled(XStack, {
   name: 'MobileMenuContainer',
-  display: 'none',
-  $md: { display: 'flex' },
 });
 
 export const MobileNav = styled(YStack, {

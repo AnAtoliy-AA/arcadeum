@@ -76,10 +76,10 @@ test.describe('Critical Card Visibility', () => {
     // hidden CardName instances elsewhere in the DOM (rules modal, off-screen
     // siblings, etc). Works on both desktop and mobile after ARC-485.
     const handStrike = page.locator('[data-cardtype="strike"]').first();
-    await expect(handStrike).toBeVisible({ timeout: 15000 });
+    await expect(handStrike).toBeVisible({});
 
     const cardName = handStrike.locator('.is_CardName').first();
-    await expect(cardName).toBeVisible({ timeout: 15000 });
+    await expect(cardName).toBeVisible({});
 
     const cardDescription = handStrike.locator('.is_CardDescription').first();
     if (await cardDescription.isVisible()) {

@@ -25,11 +25,10 @@ import { useIsMounted } from './useIsMounted';
 import { useHeaderAuth } from './useHeaderAuth';
 
 interface MobileMenuProps {
-  isOpen: boolean;
   navItems: Array<{ href: string; label: string }>;
 }
 
-export default function MobileMenu({ isOpen, navItems }: MobileMenuProps) {
+export default function MobileMenu({ navItems }: MobileMenuProps) {
   const pathname = usePathname();
   // clearTokens and snapshot.role are MobileMenu-specific — not in useHeaderAuth
   const { snapshot, clearTokens } = useSessionTokens();
@@ -44,7 +43,7 @@ export default function MobileMenu({ isOpen, navItems }: MobileMenuProps) {
     window.location.replace('/');
   }, [clearTokens]);
 
-  if (!mounted || !isOpen) return null;
+  if (!mounted) return null;
 
   const content = (
     <MobileNav data-mobile-menu data-testid="mobile-nav">

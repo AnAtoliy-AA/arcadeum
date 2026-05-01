@@ -46,7 +46,7 @@ import {
   Row,
   StickyMobileCta,
 } from '@/features/games/ui/create/styles';
-import { YStack, XStack } from 'tamagui';
+import { YStack, XStack, Text } from 'tamagui';
 
 // Filter out hidden games for display
 const visibleGames = gamesCatalog.filter((game) => !game.isHidden);
@@ -235,6 +235,9 @@ export default function CreateGameRoomPage() {
     },
     onSuccess: (data) => {
       triggerRefresh(['games', 'rooms']); // Refresh lists
+      if (!data?.room?.id) {
+        return;
+      }
       let roomUrl = routes.gameRoom(data.room.id);
       if (data.room.inviteCode) {
         roomUrl += `?inviteCode=${encodeURIComponent(data.room.inviteCode)}`;
@@ -444,7 +447,7 @@ export default function CreateGameRoomPage() {
 
             {error && (
               <Card variant="error" padding="sm">
-                {error}
+                <Text>{error}</Text>
               </Card>
             )}
 

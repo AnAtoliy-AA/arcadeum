@@ -82,7 +82,7 @@ test.describe('Payment Notes Page', () => {
         page.getByText('Great project! Keep up the amazing work!'),
       ).toBeVisible();
       await expect(page.getByText('$25')).toBeVisible();
-    }).toPass({ timeout: 20000 });
+    }).toPass({});
 
     // Check for anonymous supporter note
     await expect(
@@ -106,7 +106,7 @@ test.describe('Payment Notes Page', () => {
       await expect(page.getByText('$25')).toBeVisible();
       await expect(page.getByText('$50')).toBeVisible();
       await expect(page.getByText('$10')).toBeVisible();
-    }).toPass({ timeout: 20000 });
+    }).toPass({});
   });
 
   test('should display dates for notes', async ({ page }) => {
@@ -118,7 +118,7 @@ test.describe('Payment Notes Page', () => {
       await expect(
         page.getByText(/jan.*15.*2026|15.*jan.*2026/i),
       ).toBeVisible();
-    }).toPass({ timeout: 20000 });
+    }).toPass({});
   });
 
   test('should show empty state when no notes exist', async ({ page }) => {
@@ -151,9 +151,7 @@ test.describe('Payment Notes Page', () => {
         .getByRole('main')
         .getByText(/no notes yet|be the first/i)
         .first(),
-    ).toBeVisible({
-      timeout: 15000,
-    });
+    ).toBeVisible({});
   });
 
   test('should support infinite scroll when more pages exist', async ({
@@ -194,7 +192,7 @@ test.describe('Payment Notes Page', () => {
     // Wait for first page notes to load
     await expect(async () => {
       await expect(page.getByText('Test note from page 0')).toBeVisible();
-    }).toPass({ timeout: 20000 });
+    }).toPass({});
 
     // Verify the first page content is visible
     await expect(page.getByText('Test note from page 0')).toBeVisible();

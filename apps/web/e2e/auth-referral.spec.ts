@@ -11,7 +11,7 @@ test.describe('Auth Referral Code Registration', () => {
 
     // 1. Switch to Register mode
     const toggleBtn = page.getByTestId('auth-toggle-mode-button');
-    await expect(toggleBtn).toBeVisible({ timeout: 10000 });
+    await expect(toggleBtn).toBeVisible({});
     const text = (await toggleBtn.textContent()) || '';
     if (!/already|уже/i.test(text)) {
       await toggleBtn.click({ force: true });
@@ -19,7 +19,7 @@ test.describe('Auth Referral Code Registration', () => {
       await expect(page.locator('form')).toHaveAttribute(
         'data-mode',
         'register',
-        { timeout: 10000 },
+        {},
       );
     }
 
@@ -43,7 +43,7 @@ test.describe('Auth Referral Code Registration', () => {
     }
 
     // Wait for validation to pass (debounced checks)
-    await expect(submitBtn).toBeEnabled({ timeout: 10000 });
+    await expect(submitBtn).toBeEnabled({});
 
     // 5. Fill referral code
     await referralCodeInput.fill('SOME_REFERRAL_CODE');
@@ -71,12 +71,12 @@ test.describe('Auth Referral Code Registration', () => {
 
     // 2. Wait for registration mode to be active
     const toggleBtn = page.getByTestId('auth-toggle-mode-button');
-    await expect(toggleBtn).toBeVisible({ timeout: 10000 });
+    await expect(toggleBtn).toBeVisible({});
     // In register mode, the toggle button should offer to go back to login
     await expect(page.locator('form')).toHaveAttribute(
       'data-mode',
       'register',
-      { timeout: 10000 },
+      {},
     );
 
     // 3. Locate the referral code input

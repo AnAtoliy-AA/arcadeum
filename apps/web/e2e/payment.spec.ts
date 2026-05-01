@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
+import { test, handleRoute } from './fixtures/test-utils';
 import { navigateTo, mockSession } from './fixtures/test-utils';
 
 test.describe('Payment Flow', () => {
@@ -9,16 +9,12 @@ test.describe('Payment Flow', () => {
     // Mock payment API (broad match to catch /payments/session)
     await page.route('**/payments/session', async (route) => {
       if (route.request().method() === 'POST') {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            paymentUrl: 'https://checkout.stripe.com/mock-session',
-          }),
+        await handleRoute(route, {
+          paymentUrl: 'https://checkout.stripe.com/mock-session',
         });
       } else {
         // Prevent 500s
-        await route.fulfill({ status: 200, body: JSON.stringify({}) });
+        await handleRoute(route, {});
       }
     });
   });
@@ -98,12 +94,8 @@ test.describe('Payment Flow', () => {
   test('should allow selecting recurring subscription', async ({ page }) => {
     // Mock subscription API
     await page.route('**/payments/subscription', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          paymentUrl: 'https://www.sandbox.paypal.com/mock-subscription',
-        }),
+      await handleRoute(route, {
+        paymentUrl: 'https://www.sandbox.paypal.com/mock-subscription',
       });
     });
 
@@ -145,6 +137,6 @@ test.describe('Payment Flow', () => {
     await submitBtn.click({ force: true });
 
     // Verify redirection
-    await expect(page).toHaveURL(/mock-subscription/i, { timeout: 15000 });
+    await expect(page).toHaveURL(/mock-subscription/i, {});
   });
 });

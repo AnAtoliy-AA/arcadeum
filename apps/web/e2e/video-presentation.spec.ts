@@ -10,16 +10,13 @@ test.describe('Video Presentation', () => {
   test('should render video placeholder with custom cover image', async ({
     page,
   }) => {
-    await page.waitForSelector('[data-testid="presentation-section"]', {
-      timeout: 15000,
-    });
-    await page.waitForTimeout(1000); // Allow layout to stabilize
+    await page.waitForSelector('[data-testid="presentation-section"]', {});
     const thumbnail = page
       .locator('main')
       .first()
       .getByTestId('video-thumbnail')
       .first();
-    await expect(thumbnail).toBeVisible({ timeout: 10000 });
+    await expect(thumbnail).toBeVisible({});
     await expect(thumbnail).toHaveAttribute(
       'alt',
       'Arcadeum Trailer Illustration',
@@ -28,23 +25,21 @@ test.describe('Video Presentation', () => {
   });
 
   test('should play video on click', async ({ page }) => {
-    await page.waitForTimeout(1000); // Allow layout to stabilize
     const playButton = page
       .locator('main')
       .first()
       .getByTestId('play-btn')
       .first();
-    await playButton.waitFor({ state: 'visible', timeout: 10000 });
+    await playButton.waitFor({ state: 'visible' });
     // Note: scrollIntoViewIfNeeded can fail if element is being re-rendered or detached during scroll.
     // Playwright's click action automatically scrolls to the element.
-    await expect(playButton).toBeVisible({ timeout: 10000 });
-    await page.waitForTimeout(1000); // Give WebKit a moment to stabilize
+    await expect(playButton).toBeVisible({});
     await playButton.click({ force: true });
     await expect(playButton).toBeHidden();
     await expect(page.getByTestId('video-placeholder')).toBeHidden();
 
     const iframe = page.locator('iframe');
-    await expect(iframe).toBeVisible({ timeout: 15000 });
+    await expect(iframe).toBeVisible({});
     await expect(iframe).toHaveAttribute('src', /youtube-nocookie\.com/);
   });
 });

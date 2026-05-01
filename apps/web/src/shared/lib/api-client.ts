@@ -193,7 +193,7 @@ export const apiClient = {
 
         if (isDev && attempts === maxAttempts && isConnectionError) {
           console.error(
-            `[apiClient] Final attempt failed. Connection refused to ${url}. Please ensure the backend is running on port 4500.`,
+            `[apiClient] Final attempt failed. Connection refused to ${url}. Please ensure the backend is running and reachable.`,
           );
         }
 

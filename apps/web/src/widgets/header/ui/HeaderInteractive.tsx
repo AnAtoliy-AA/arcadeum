@@ -87,6 +87,7 @@ export function HeaderInteractive() {
         {isMounted && (
           <>
             <InstallPWAButton />
+
             <DesktopOnly>
               <LinkButton
                 href={routes.support}
@@ -99,10 +100,12 @@ export function HeaderInteractive() {
                 {t('common.actions.support')}
               </LinkButton>
             </DesktopOnly>
+
             <LanguageSwitcher
               data-testid="header-language-switcher"
               className="header-language-switcher"
             />
+
             {isAuthenticated && displayName && <ProfileMenu />}
 
             {!isAuthenticated && (
@@ -127,7 +130,7 @@ export function HeaderInteractive() {
               data-testid="mobile-login-indicator"
             />
 
-            <MobileMenuContainer>
+            <MobileMenuContainer className="mobile-menu-container">
               <Button
                 variant="icon"
                 size="md"
@@ -148,9 +151,7 @@ export function HeaderInteractive() {
         )}
       </div>
 
-      {isMounted && (
-        <MobileMenu isOpen={isMobileMenuOpen} navItems={navItems} />
-      )}
+      {isMobileMenuOpen && <MobileMenu navItems={navItems} />}
     </>
   );
 }

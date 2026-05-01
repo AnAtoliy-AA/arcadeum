@@ -80,18 +80,15 @@ test.describe('Idle Detection', () => {
     });
 
     // Wait for store to update
-    await page.waitForFunction(
-      () => {
-        const win = window as unknown as Record<string, unknown>;
-        const store = win.__ZUSTAND_GAME_STORE__ as
-          | { getState: () => { idlePlayers: string[] } }
-          | undefined;
-        return store
-          ?.getState?.()
-          ?.idlePlayers?.includes('507f191e810c19729de860e2');
-      },
-      { timeout: 5000 },
-    );
+    await page.waitForFunction(() => {
+      const win = window as unknown as Record<string, unknown>;
+      const store = win.__ZUSTAND_GAME_STORE__ as
+        | { getState: () => { idlePlayers: string[] } }
+        | undefined;
+      return store
+        ?.getState?.()
+        ?.idlePlayers?.includes('507f191e810c19729de860e2');
+    }, {});
 
     const idleAfter = await page.evaluate(() => {
       const win = window as unknown as Record<string, unknown>;
@@ -132,8 +129,6 @@ test.describe('Idle Detection', () => {
       }
     });
 
-    await page.waitForTimeout(300);
-
     await page.evaluate(() => {
       const win = window as unknown as Record<string, unknown>;
       const socket = win.gameSocket as
@@ -156,8 +151,6 @@ test.describe('Idle Detection', () => {
         }
       }
     });
-
-    await page.waitForTimeout(300);
 
     const idleAfterActive = await page.evaluate(() => {
       const win = window as unknown as Record<string, unknown>;

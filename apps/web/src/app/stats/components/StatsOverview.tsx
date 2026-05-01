@@ -49,15 +49,21 @@ export function StatsOverview({ stats, loading }: StatsOverviewProps) {
       <div className="stats-overview-grid">
         <Card variant="glass" cardPadding="md">
           <StatLabel>{t('stats.totalGames')}</StatLabel>
-          <StatValue>{stats.totalGames}</StatValue>
+          <StatValue data-testid="stats-total-games">
+            {stats.totalGames}
+          </StatValue>
         </Card>
         <Card variant="glass" cardPadding="md">
           <StatLabel>{t('stats.wins')}</StatLabel>
-          <StatValue color="$success">{stats.wins}</StatValue>
+          <StatValue data-testid="stats-wins" color="$success">
+            {stats.wins}
+          </StatValue>
         </Card>
         <Card variant="glass" cardPadding="md">
           <StatLabel>{t('stats.losses')}</StatLabel>
-          <StatValue color="$danger">{stats.losses}</StatValue>
+          <StatValue data-testid="stats-losses" color="$danger">
+            {stats.losses}
+          </StatValue>
         </Card>
         <Card variant="glass" cardPadding="md">
           <WinRateCardContent>

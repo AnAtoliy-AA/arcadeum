@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
+import { test, handleRoute } from './fixtures/test-utils';
 import { navigateTo, mockSession } from './fixtures/test-utils';
 
 test.describe('Referral Dashboard', () => {
@@ -7,77 +7,69 @@ test.describe('Referral Dashboard', () => {
     await mockSession(page);
 
     await page.route('**/referrals/stats', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          referralCode: 'ABCD1234',
-          totalReferrals: 4,
-          rewards: [
-            {
-              rewardId: 'badge_social_butterfly',
-              rewardType: 'badge',
-              unlockedAt: '2026-02-10T12:00:00Z',
-              tier: 1,
-            },
-          ],
-          tiers: [
-            {
-              tier: 1,
-              requiredInvites: 3,
-              rewards: [
-                {
-                  rewardId: 'badge_social_butterfly',
-                  rewardType: 'badge',
-                  label: 'Social Butterfly',
-                },
-              ],
-              unlocked: true,
-            },
-            {
-              tier: 2,
-              requiredInvites: 5,
-              rewards: [
-                {
-                  rewardId: 'early_access_heist',
-                  rewardType: 'early_access',
-                  label: 'Early Access: The Heist',
-                },
-              ],
-              unlocked: false,
-            },
-            {
-              tier: 3,
-              requiredInvites: 10,
-              rewards: [
-                {
-                  rewardId: 'early_access_cursed_banquet',
-                  rewardType: 'early_access',
-                  label: 'Early Access: The Cursed Banquet',
-                },
-                {
-                  rewardId: 'badge_legend_recruiter',
-                  rewardType: 'badge',
-                  label: 'Legend Recruiter',
-                },
-              ],
-              unlocked: false,
-            },
-          ],
-          nextTier: {
-            requiredInvites: 5,
-            remaining: 1,
+      await handleRoute(route, {
+        referralCode: 'ABCD1234',
+        totalReferrals: 4,
+        rewards: [
+          {
+            rewardId: 'badge_social_butterfly',
+            rewardType: 'badge',
+            unlockedAt: '2026-02-10T12:00:00Z',
+            tier: 1,
           },
-        }),
+        ],
+        tiers: [
+          {
+            tier: 1,
+            requiredInvites: 3,
+            rewards: [
+              {
+                rewardId: 'badge_social_butterfly',
+                rewardType: 'badge',
+                label: 'Social Butterfly',
+              },
+            ],
+            unlocked: true,
+          },
+          {
+            tier: 2,
+            requiredInvites: 5,
+            rewards: [
+              {
+                rewardId: 'early_access_heist',
+                rewardType: 'early_access',
+                label: 'Early Access: The Heist',
+              },
+            ],
+            unlocked: false,
+          },
+          {
+            tier: 3,
+            requiredInvites: 10,
+            rewards: [
+              {
+                rewardId: 'early_access_cursed_banquet',
+                rewardType: 'early_access',
+                label: 'Early Access: The Cursed Banquet',
+              },
+              {
+                rewardId: 'badge_legend_recruiter',
+                rewardType: 'badge',
+                label: 'Legend Recruiter',
+              },
+            ],
+            unlocked: false,
+          },
+        ],
+        nextTier: {
+          requiredInvites: 5,
+          remaining: 1,
+        },
       });
     });
 
     await page.route('**/referrals/code', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ referralCode: 'ABCD1234' }),
-      });
+      await handleRoute(route, { referralCode: 'ABCD1234' });
     });
   });
 

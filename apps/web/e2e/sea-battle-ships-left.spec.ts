@@ -101,9 +101,7 @@ test.describe('Sea Battle Ships Left', () => {
     await closeRulesModal(page);
 
     // Wait for game to load with increased timeout
-    await expect(page.getByText(/ships remaining/i).first()).toBeVisible({
-      timeout: 20000,
-    });
+    await expect(page.getByText(/ships remaining/i).first()).toBeVisible({});
 
     // Check for "Your Fleet" with more flexible matching
     await expect(page.locator('body')).toContainText(/your fleet/i);
@@ -128,14 +126,14 @@ test.describe('Sea Battle Ships Left', () => {
       .filter({ has: page.getByText(/ships remaining/i) }) // Ensure it's the section with ships
       .first();
 
-    await expect(opponentSection).toBeVisible({ timeout: 15000 });
+    await expect(opponentSection).toBeVisible({});
 
     // Within opponent section, find the Cruiser with more flexible matching
     const cruiserWrapper = opponentSection
       .locator('div[title="Cruiser"]')
       .or(opponentSection.locator('div[data-title="Cruiser"]'))
       .first();
-    await expect(cruiserWrapper).toBeVisible({ timeout: 15000 });
+    await expect(cruiserWrapper).toBeVisible({});
 
     // Check the data-sunk attribute specifically
     const cruiserSunkAttr = await cruiserWrapper.getAttribute('data-sunk');
@@ -145,7 +143,7 @@ test.describe('Sea Battle Ships Left', () => {
       .locator('div[title="Battleship"]')
       .or(opponentSection.locator('div[data-title="Battleship"]'))
       .first();
-    await expect(battleshipWrapper).toBeVisible({ timeout: 15000 });
+    await expect(battleshipWrapper).toBeVisible({});
 
     // Check the data-sunk attribute specifically
     const battleshipSunkAttr =

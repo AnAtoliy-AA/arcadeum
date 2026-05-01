@@ -101,6 +101,10 @@
   text-decoration: none;
 }
 
+.header-inner .mobile-menu-container {
+  display: none;
+}
+
 @media (max-width: 1150px) {
   .header-inner {
     padding-left: 16px;
@@ -112,5 +116,8 @@
   }
   .logo-text {
     display: none;
+  }
+  .header-inner .mobile-menu-container {
+    display: flex;
   }
 }

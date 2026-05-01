@@ -278,7 +278,9 @@ export function ReusableGameLobby({
           </GameTitleText>
           <RoomNameBadge>
             <RoomNameIcon>{roomIcon}</RoomNameIcon>
-            <RoomNameText>{room.name}</RoomNameText>
+            <RoomNameText data-testid="room-name-text">
+              {room.name}
+            </RoomNameText>
           </RoomNameBadge>
           {isFastMode && (
             <FastBadge>

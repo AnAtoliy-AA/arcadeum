@@ -126,14 +126,10 @@ describe('LanguageProvider', () => {
     expect(mockSetLocale).toHaveBeenCalledWith('en');
   });
 
-  it('throws error when useLanguage is used outside provider', () => {
-    // Suppress console.error for this test as React will log an error when a component throws
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  it('falls back to default locale when useLanguage is used outside provider', () => {
+    render(<Consumer />);
 
-    expect(() => render(<Consumer />)).toThrow(
-      'useLanguage must be used within LanguageProvider',
-    );
-
-    consoleSpy.mockRestore();
+    expect(screen.getByTestId('locale')).toHaveTextContent('en');
+    expect(screen.getByTestId('ready')).toHaveTextContent('false');
   });
 });

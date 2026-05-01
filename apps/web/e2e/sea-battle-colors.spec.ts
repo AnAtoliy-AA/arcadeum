@@ -94,14 +94,12 @@ test.describe('Sea Battle Color Visibility', () => {
       // Verify we are in placement phase
       await expect(page.locator('body').first()).toContainText(
         /place your ships/i,
-        {
-          timeout: 15000,
-        },
+        {},
       );
 
       // Find a board cell and read its initial (non-highlighted) background
       const cell = page.locator('[data-row="1"][data-col="1"]').first();
-      await expect(cell).toBeVisible({ timeout: 15000 });
+      await expect(cell).toBeVisible({});
 
       const initialBg = await cell.evaluate(
         (el) => window.getComputedStyle(el).backgroundColor,
@@ -109,12 +107,11 @@ test.describe('Sea Battle Color Visibility', () => {
 
       // Select a ship to enable placement highlights (from the palette)
       const shipItem = page.getByTestId('ship-palette-item').first();
-      await expect(shipItem).toBeVisible({ timeout: 15000 });
+      await expect(shipItem).toBeVisible({});
       await shipItem.scrollIntoViewIfNeeded();
-      await shipItem.click({ timeout: 5000 });
+      await shipItem.click({});
 
       // Small delay to ensure React state update (ship selection) is processed
-      await page.waitForTimeout(500);
 
       // Hover the cell — use mouse.move with bounding box for reliable WebKit pointer events
       await cell.scrollIntoViewIfNeeded();
@@ -137,11 +134,10 @@ test.describe('Sea Battle Color Visibility', () => {
           return currentBg !== initialBg;
         },
         { selector: '[data-row="1"][data-col="1"]', initialBg },
-        { timeout: 15000 },
+        {},
       );
 
       // Small delay to ensure the highlight color is stable
-      await page.waitForTimeout(500);
 
       // Now read the highlighted background for the final assertion
       const highlightedBg = await cell.evaluate(

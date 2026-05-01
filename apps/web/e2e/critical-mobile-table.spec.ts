@@ -123,7 +123,7 @@ test.describe('Critical Game Table Layout', () => {
     await closeGameRulesModal(page);
 
     const playerCards = page.locator('[data-testid^="player-card-"]');
-    await expect(playerCards.first()).toBeVisible({ timeout: 15000 });
+    await expect(playerCards.first()).toBeVisible({});
 
     // ARC-485: on $sm the viewer is excluded from the OpponentStrip (their
     // stats render in the hand zone), so the strip has playerOrder.length-1
@@ -131,7 +131,7 @@ test.describe('Critical Game Table Layout', () => {
     const expectedCount = isMobileViewport
       ? mockState.playerOrder.length - 1
       : mockState.playerOrder.length;
-    await expect(playerCards).toHaveCount(expectedCount, { timeout: 15000 });
+    await expect(playerCards).toHaveCount(expectedCount, {});
     await expect(
       page.locator(`[data-testid="player-card-${userId}"]`),
     ).toHaveCount(isMobileViewport ? 0 : 1);
@@ -173,7 +173,7 @@ test.describe('Critical Game Table Layout', () => {
           );
         }
       }
-    }).toPass({ timeout: 15000, intervals: [1000] });
+    }).toPass({ intervals: [1000] });
   });
 
   test('all player names should be fully visible', async ({
@@ -272,7 +272,7 @@ test.describe('Critical Game Table Layout', () => {
     await closeGameRulesModal(page);
 
     const playerNames = page.locator('[data-testid^="player-name-"]');
-    await expect(playerNames.first()).toBeVisible({ timeout: 15000 });
+    await expect(playerNames.first()).toBeVisible({});
 
     // ARC-485: on $sm the viewer is excluded from the OpponentStrip (their
     // name appears in the hand zone), so the strip has playerOrder.length-1
@@ -280,7 +280,7 @@ test.describe('Critical Game Table Layout', () => {
     const expectedCount = isMobileViewport
       ? mockState.playerOrder.length - 1
       : mockState.playerOrder.length;
-    await expect(playerNames).toHaveCount(expectedCount, { timeout: 15000 });
+    await expect(playerNames).toHaveCount(expectedCount, {});
     await expect(
       page.locator(`[data-testid="player-name-${userId}"]`),
     ).toHaveCount(isMobileViewport ? 0 : 1);

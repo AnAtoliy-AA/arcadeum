@@ -15,9 +15,7 @@ test.describe('OAuth Redirect Resolution', () => {
     // Wait for the request to happen with a promise
     const requestPromise = page.waitForRequest(
       (req) => req.url().includes('accounts.google.com/o/oauth2/v2/auth'),
-      {
-        timeout: 10000,
-      },
+      {},
     );
 
     await oauthBtn.click();

@@ -87,7 +87,7 @@ test.describe('Accessibility', () => {
     await navigateTo(page, '/');
 
     // Wait for the main content to be visible to ensure images have started loading
-    await expect(page.locator('main')).toBeVisible();
+    await expect(page.locator('main').first()).toBeVisible();
 
     // Use all() to get a stable collection of locators at this point in time
     const images = await page.locator('img').all();

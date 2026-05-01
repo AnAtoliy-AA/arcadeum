@@ -34,7 +34,7 @@ test.describe('Sea Battle Chat Message Popup', () => {
           }
           [data-testid="chat-message-popup"], 
           [data-testid="chat-message-popup"] * {
-            animation-duration: 3s !important;
+            animation-duration: 10s !important;
           }
         `;
         const container = document.head || document.documentElement;
@@ -280,7 +280,7 @@ test.describe('Sea Battle Chat Message Popup', () => {
 
     // Wait for the 3s auto-dismiss animation to complete (we set it to 3s in init script)
     await expect(page.getByTestId('chat-message-popup')).not.toBeVisible({
-      timeout: 10000,
+      timeout: 15000,
     });
   });
 

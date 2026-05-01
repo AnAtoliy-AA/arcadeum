@@ -34,7 +34,7 @@ import {
 } from './styles';
 import { useHeaderAuth } from './useHeaderAuth';
 import { useMobileMenu } from './useMobileMenu';
-import { useIsMounted } from './useIsMounted';
+import { useIsMounted } from '@/shared/hooks/useIsMounted';
 
 export function HeaderInteractive() {
   const isMounted = useIsMounted();

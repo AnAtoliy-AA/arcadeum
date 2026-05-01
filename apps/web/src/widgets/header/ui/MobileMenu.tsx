@@ -21,7 +21,7 @@ import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import { Divider } from '@arcadeum/ui/components/Divider/Divider';
 import { RoleBadge } from '@arcadeum/ui/components/RoleBadge/RoleBadge';
 import { LogoutIcon, SupportIcon } from '@arcadeum/ui/components/Icons/index';
-import { useIsMounted } from './useIsMounted';
+import { useIsMounted } from '@/shared/hooks/useIsMounted';
 import { useHeaderAuth } from './useHeaderAuth';
 
 interface MobileMenuProps {

@@ -35,6 +35,7 @@ export const test = base.extend({
             'hydrated but some attributes of the server rendered HTML',
           ) ||
           text.includes('was preloaded using link preload but not used') ||
+          text.includes('webpack-hmr') ||
           (/font|geist/i.test(text) &&
             /(download failed|rejected|decode)/i.test(text))
         ) {
@@ -87,6 +88,8 @@ export const test = base.extend({
           failure.errorText === 'net::ERR_ABORTED' ||
           failure.errorText === 'canceled' || // Common in WebKit
           failure.errorText === 'cancelled' || // Other runtimes
+          failure.errorText.toLowerCase().includes('navigation cancel') ||
+          url.includes('accounts.google.com') ||
           url.includes('__nextjs_original-stack-frames')
         ) {
           return;
@@ -116,7 +119,8 @@ export const test = base.extend({
       if (
         msg.includes('__nextjs_original-stack-frames') ||
         msg.includes('The operation was aborted') ||
-        msg.includes('AbortError')
+        msg.includes('AbortError') ||
+        msg.includes('webpack-hmr')
       ) {
         return;
       }

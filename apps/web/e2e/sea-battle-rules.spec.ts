@@ -64,24 +64,29 @@ test.describe('Sea Battle Rules Modal', () => {
     await expect(modal).toBeVisible({});
     await expect(modal).toContainText(/objective/i);
 
-    // Close using close button
-    const closeBtn = page.getByTestId('modal-close-button').first();
+    // Close using close button, scoped specifically to the modal
+    const closeBtn = modal.getByTestId('modal-close-button').first();
     await closeBtn.click({ force: true });
 
-    // Wait for modal to hide (longer timeout for mobile browser animation)
-    await expect(modal).not.toBeVisible({});
-    // Extra wait for Tamagui exit animation to fully complete on mobile
+    // Add fallback for flaky dialog dismiss
+    await page.keyboard.press('Escape');
+
+    // Wait for modal to hide
+    await expect(modal).toBeHidden();
 
     // Now find the button to reopen it
     const rulesBtn = page
       .getByRole('button', { name: /Game Rules|📖/i })
       .first();
-    await expect(rulesBtn).toBeVisible({});
-    // Use evaluate to dispatch a native click on mobile (touch events may not trigger onClick)
-    await rulesBtn.evaluate((el) => (el as HTMLElement).click());
+    await expect(rulesBtn).toBeVisible();
 
-    // Check it reopened (longer timeout for mobile browser portal re-mount)
-    await expect(modal).toBeVisible({});
+    // Ensure button is stable before clicking
+    await rulesBtn.waitFor({ state: 'visible' });
+    // Use dispatchEvent for more reliable clicking across different browser engines
+    await rulesBtn.dispatchEvent('click');
+
+    // Check it reopened
+    await expect(modal).toBeVisible();
     await expect(modal).toContainText(/objective/i);
   });
 

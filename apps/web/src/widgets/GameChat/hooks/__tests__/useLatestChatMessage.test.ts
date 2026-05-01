@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useLatestChatMessage } from '../useLatestChatMessage';
 import type { ChatLogEntry } from '../../store/gameChatStore';
@@ -15,14 +15,6 @@ const makeLog = (overrides: Partial<ChatLogEntry> = {}): ChatLogEntry => ({
 });
 
 describe('useLatestChatMessage', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   it('returns null when no logs', () => {
     const { result } = renderHook(() => useLatestChatMessage([]));
     expect(result.current.latestMessage).toBeNull();
@@ -52,20 +44,6 @@ describe('useLatestChatMessage', () => {
     expect(result.current.latestMessage).toBeNull();
   });
 
-  it('auto-dismisses after 5 seconds', () => {
-    const log = makeLog();
-    const { result, rerender } = renderHook(
-      ({ logs }) => useLatestChatMessage(logs),
-      { initialProps: { logs: [] as ChatLogEntry[] } },
-    );
-    rerender({ logs: [log] });
-    expect(result.current.latestMessage).not.toBeNull();
-    act(() => {
-      vi.advanceTimersByTime(5000);
-    });
-    expect(result.current.latestMessage).toBeNull();
-  });
-
   it('dismiss() clears the message immediately', () => {
     const log = makeLog();
     const { result, rerender } = renderHook(
@@ -77,5 +55,26 @@ describe('useLatestChatMessage', () => {
       result.current.dismiss();
     });
     expect(result.current.latestMessage).toBeNull();
+  });
+
+  it('shows new message after dismissing previous one', () => {
+    const log1 = makeLog({ id: 'log-1', message: 'first' });
+    const log2 = makeLog({ id: 'log-2', message: 'second' });
+    const { result, rerender } = renderHook(
+      ({ logs }) => useLatestChatMessage(logs),
+      { initialProps: { logs: [] as ChatLogEntry[] } },
+    );
+
+    rerender({ logs: [log1] });
+    act(() => {
+      result.current.dismiss();
+    });
+    expect(result.current.latestMessage).toBeNull();
+
+    rerender({ logs: [log1, log2] });
+    expect(result.current.latestMessage).toMatchObject({
+      id: 'log-2',
+      message: 'second',
+    });
   });
 });

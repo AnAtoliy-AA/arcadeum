@@ -10,7 +10,7 @@ test.describe('Footer GitHub Link', () => {
     for (let i = 0; i < 3; i++) {
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     }
-    await expect(page.locator('footer')).toBeVisible({});
+    await expect(page.locator('main footer')).toBeVisible({});
   }
 
   test('should show github link in footer', async ({ page }) => {

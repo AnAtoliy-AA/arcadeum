@@ -337,7 +337,8 @@ export default function GameRoomPage({
   }
 
   // If we are auto-joining or loading generally (and not manually submitting), show loading
-  if (isAutoJoining || (roomLoading && !manualSubmitPending)) {
+  // We only show the full-page loader if we don't have room data yet to prevent flickering during refreshes
+  if (isAutoJoining || (roomLoading && !room && !manualSubmitPending)) {
     return (
       <Page fixedHeight>
         <Container>

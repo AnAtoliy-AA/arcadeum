@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import type { ChatLogEntry } from '../store/gameChatStore';
 
 interface LatestChatMessage {
@@ -15,52 +15,32 @@ interface UseLatestChatMessageResult {
 export function useLatestChatMessage(
   logs: ChatLogEntry[],
 ): UseLatestChatMessageResult {
-  const [latestMessage, setLatestMessage] =
-    useState<LatestChatMessage | null>(null);
-  const previousLogCountRef = useRef(logs.length);
-  const dismissTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [dismissedId, setDismissedId] = useState<string | null>(null);
+
+  const derivedMessage = useMemo<LatestChatMessage | null>(() => {
+    if (logs.length === 0) return null;
+
+    const lastChatMessage = [...logs]
+      .reverse()
+      .find((log) => log.type === 'message' && log.senderId);
+
+    if (!lastChatMessage) return null;
+
+    return {
+      id: lastChatMessage.id,
+      senderName: lastChatMessage.senderName || 'Player',
+      message: lastChatMessage.message,
+    };
+  }, [logs]);
+
+  const latestMessage =
+    derivedMessage && derivedMessage.id !== dismissedId ? derivedMessage : null;
 
   const dismiss = useCallback(() => {
-    setLatestMessage(null);
-    if (dismissTimerRef.current) {
-      clearTimeout(dismissTimerRef.current);
-      dismissTimerRef.current = null;
+    if (derivedMessage) {
+      setDismissedId(derivedMessage.id);
     }
-  }, []);
-
-  const startDismissTimer = useCallback(() => {
-    if (dismissTimerRef.current) clearTimeout(dismissTimerRef.current);
-    dismissTimerRef.current = setTimeout(() => {
-      setLatestMessage(null);
-      dismissTimerRef.current = null;
-    }, 5000);
-  }, []);
-
-  useEffect(() => {
-    const prevCount = previousLogCountRef.current;
-    previousLogCountRef.current = logs.length;
-    if (logs.length <= prevCount) return;
-
-    const newLogs = logs.slice(prevCount);
-    const lastChatMessage = newLogs
-      .filter((log) => log.type === 'message' && log.senderId)
-      .pop();
-
-    if (lastChatMessage) {
-      setLatestMessage({
-        id: lastChatMessage.id,
-        senderName: lastChatMessage.senderName || 'Player',
-        message: lastChatMessage.message,
-      });
-      startDismissTimer();
-    }
-  }, [logs, startDismissTimer]);
-
-  useEffect(() => {
-    return () => {
-      if (dismissTimerRef.current) clearTimeout(dismissTimerRef.current);
-    };
-  }, []);
+  }, [derivedMessage]);
 
   return { latestMessage, dismiss };
 }

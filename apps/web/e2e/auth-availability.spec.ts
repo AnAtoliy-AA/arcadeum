@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
+import { test, handleRoute } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
 
 test.describe('Auth Availability Checking', () => {
@@ -93,11 +93,7 @@ test.describe('Auth Availability Checking', () => {
 
     // Mock specific 'taken' result for this test
     await page.route('**/auth/check/username/testexisting', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ available: false }),
-      });
+      await handleRoute(route, { available: false });
     });
 
     const emailInput = page.locator('input[type="email"]');

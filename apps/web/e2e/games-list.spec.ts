@@ -23,15 +23,12 @@ test.describe('Games List Page', () => {
     });
 
     await page.route('**/games/rooms*', async (route) => {
-      // Only handle if not handled by previous routes (technically this executes first if registered first? No, LIFO)
-      // Wait, LIFO.
-      // Registered 2nd => Checked 1st.
-      // If matches, good.
-      // If not, checked 1st (Catch-all).
-      // So games/rooms matches 2nd. it handles.
-      // games/stats matches 1st (Catch-all). It handles.
-      // games/rooms request logic:
       await handleRoute(route, { rooms: [], total: 0 });
+    });
+
+    // Mock socket.io polling to prevent connection errors
+    await page.route('**/socket.io/*', async (route) => {
+      await handleRoute(route, { status: 'ok' });
     });
   });
 

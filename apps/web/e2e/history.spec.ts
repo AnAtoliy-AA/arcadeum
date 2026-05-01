@@ -16,7 +16,7 @@ test.describe('Game History', () => {
       if (url.includes('/history') || url.includes('/rematch')) {
         return route.continue();
       }
-      await route.fulfill({ status: 200, body: JSON.stringify({}) });
+      await handleRoute(route, {});
     });
 
     // State for the mock
@@ -53,16 +53,12 @@ test.describe('Game History', () => {
 
     // Mock room details for rematch target
     await page.route('**/games/rooms/rematch-room-id**', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          id: 'rematch-room-id',
-          name: 'Rematch Room',
-          gameId: 'critical_v1',
-          status: 'waiting',
-          participants: [],
-        }),
+      await handleRoute(route, {
+        id: 'rematch-room-id',
+        name: 'Rematch Room',
+        gameId: 'critical_v1',
+        status: 'waiting',
+        participants: [],
       });
     });
 

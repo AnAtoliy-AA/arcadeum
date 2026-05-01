@@ -104,6 +104,20 @@ test.describe('Sea Battle Chat Message Popup', () => {
     await page.goto(`/games/rooms/${roomId}`);
     await waitForRoomReady(page);
 
+    // Wait for socket listeners to be registered
+    await page.waitForFunction(() => {
+      const socket = (
+        window as unknown as {
+          gameSocket: { _mockListeners?: Record<string, unknown[]> };
+        }
+      ).gameSocket;
+      return (
+        socket &&
+        socket._mockListeners &&
+        socket._mockListeners['games.session.snapshot']
+      );
+    });
+
     await page.evaluate(
       ({ otherUserId, roomId, userId }) => {
         const state = {
@@ -214,6 +228,20 @@ test.describe('Sea Battle Chat Message Popup', () => {
     await page.goto(`/games/rooms/${roomId}`);
     await waitForRoomReady(page);
 
+    // Wait for socket listeners to be registered
+    await page.waitForFunction(() => {
+      const socket = (
+        window as unknown as {
+          gameSocket: { _mockListeners?: Record<string, unknown[]> };
+        }
+      ).gameSocket;
+      return (
+        socket &&
+        socket._mockListeners &&
+        socket._mockListeners['games.session.snapshot']
+      );
+    });
+
     await page.evaluate(
       ({ otherUserId, roomId, userId }) => {
         const state = {
@@ -268,9 +296,10 @@ test.describe('Sea Battle Chat Message Popup', () => {
     );
 
     const popup = page.getByTestId('chat-message-popup');
-    await expect(popup).toBeVisible({});
+    await expect(popup).toBeVisible();
 
-    await expect(popup).not.toBeVisible({});
+    // Wait for the 5s auto-dismiss animation to complete
+    await expect(page.getByTestId('chat-message-popup')).not.toBeVisible();
   });
 
   test('should also show popup for own messages', async ({ page }) => {
@@ -322,6 +351,20 @@ test.describe('Sea Battle Chat Message Popup', () => {
 
     await page.goto(`/games/rooms/${roomId}`);
     await waitForRoomReady(page);
+
+    // Wait for socket listeners to be registered
+    await page.waitForFunction(() => {
+      const socket = (
+        window as unknown as {
+          gameSocket: { _mockListeners?: Record<string, unknown[]> };
+        }
+      ).gameSocket;
+      return (
+        socket &&
+        socket._mockListeners &&
+        socket._mockListeners['games.session.snapshot']
+      );
+    });
 
     await page.evaluate(
       ({ userId, roomId, otherUserId }) => {

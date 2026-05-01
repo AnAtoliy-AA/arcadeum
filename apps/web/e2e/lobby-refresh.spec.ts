@@ -42,40 +42,44 @@ test.describe('Lobby Refresh', () => {
     const refreshButton = page.getByTestId('refresh-room-button');
     await expect(refreshButton).toBeVisible();
 
-    // Mock the room-info API again with a modified state to verify refresh
-    let refreshCalled = false;
-    await page.route('**/games/room-info', async (route) => {
-      refreshCalled = true;
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          room: {
-            id: roomId,
-            name: 'Refreshed Name',
-            gameId: 'critical_v1',
-            status: 'lobby',
-            members: [
-              {
-                id: MOCK_OBJECT_ID,
-                userId: MOCK_OBJECT_ID,
-                displayName: 'Test User',
-                isHost: true,
-              },
-            ],
+    // Unroute the previous mock and set up a new one with the refreshed name
+    await page.unroute('**/games/room-info');
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        name: 'Refreshed Name',
+        gameId: 'critical_v1',
+        status: 'lobby',
+        members: [
+          {
+            id: MOCK_OBJECT_ID,
+            userId: MOCK_OBJECT_ID,
+            displayName: 'Test User',
+            isHost: true,
           },
-          session: null,
-        }),
-      });
+        ],
+      },
     });
+
+    // Set up response listener
+    const responsePromise = page.waitForResponse(
+      (response) =>
+        response.url().includes('/games/room-info') &&
+        response.request().method() === 'POST',
+    );
 
     // Click refresh
     await refreshButton.click();
+    await responsePromise;
 
-    // Verify API was called
-    expect(refreshCalled).toBe(true);
-
-    // Verify UI updated with new room name
-    await expect(page.getByText('Refreshed Name')).toBeVisible();
+    // Verify UI updated
+    await expect(async () => {
+      const roomNameDisplay = page.getByTestId('room-name-text');
+      // Use a short timeout for individual assertions so toPass can poll quickly
+      await expect(roomNameDisplay).toHaveText('Refreshed Name', {
+        timeout: 2000,
+      });
+      await expect(roomNameDisplay).toBeVisible({ timeout: 2000 });
+    }).toPass();
   });
 });

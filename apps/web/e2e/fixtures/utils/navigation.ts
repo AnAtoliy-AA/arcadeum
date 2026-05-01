@@ -7,13 +7,19 @@ export function getIsMobile(page: Page): boolean {
 export async function ensureNavigationVisible(page: Page): Promise<void> {
   if (getIsMobile(page)) {
     const mobileNav = page.getByTestId('mobile-nav');
-    if (!(await mobileNav.isVisible())) {
-      const menuButton = page.getByTestId('mobile-menu-button');
-      await expect(menuButton).toBeVisible();
-      await menuButton.click({ force: true });
-      await expect(mobileNav).toBeVisible();
-      // Wait for menu animation to finish
-    }
+
+    // Check if it's already visible
+    const isVisible = await mobileNav.isVisible();
+    if (isVisible) return;
+
+    const menuButton = page.getByTestId('mobile-menu-button');
+    await expect(menuButton).toBeVisible();
+
+    // Use dispatchEvent for more reliable clicking on mobile safari
+    await menuButton.dispatchEvent('click');
+
+    // Wait for the navigation to become visible
+    await expect(mobileNav).toBeVisible();
   }
 }
 
@@ -100,7 +106,7 @@ export async function navigateTo(
       console.warn(
         `Navigation attempt ${attempt} for ${path} failed, retrying... Error: ${err}`,
       );
-      await page.waitForTimeout(2000 * attempt); // Slightly longer exponential backoff
+      // Removed hardcoded timeout to follow project rules
     } finally {
       page.off('pageerror', onPageError);
       page.off('response', onResponse);

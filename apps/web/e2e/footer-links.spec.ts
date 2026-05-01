@@ -10,21 +10,31 @@ test.describe('Footer Links', () => {
   async function scrollToFooter(page: import('@playwright/test').Page) {
     await navigateTo(page, '/');
     await page.waitForLoadState('load');
-    // Scroll to bottom and re-scroll in case content shifted
-    for (let i = 0; i < 3; i++) {
-      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    }
-    await expect(page.locator('footer')).toBeVisible({});
+    // Ensure the footer is attached to the DOM
+    const footer = page.locator('main footer');
+    await footer.waitFor({ state: 'attached' });
+
+    // Scroll to the bottom
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+
+    // Verify visibility using standard assertion
+    await expect(footer).toBeVisible();
   }
 
   test('should show copyright information', async ({ page }) => {
     await scrollToFooter(page);
-    await expect(page.locator('footer')).toContainText(/©|2026|Arcadeum/, {});
+    await expect(page.locator('main footer')).toContainText(
+      /©|2026|Arcadeum/,
+      {},
+    );
   });
 
   test('should show app version', async ({ page }) => {
     await scrollToFooter(page);
-    await expect(page.locator('footer')).toContainText(/\d+\.\d+\.\d+/, {});
+    await expect(page.locator('main footer')).toContainText(
+      /\d+\.\d+\.\d+/,
+      {},
+    );
   });
 
   test('should show legal links in footer and not in header', async ({
@@ -32,7 +42,7 @@ test.describe('Footer Links', () => {
   }) => {
     await scrollToFooter(page);
 
-    const footer = page.locator('footer');
+    const footer = page.locator('main footer');
     // On mobile, footer sections are collapsible - expand Legal section if needed
     const privacyLink = footer.locator('a[href="/privacy"]');
     if (!(await privacyLink.isVisible())) {
@@ -62,7 +72,7 @@ test.describe('Footer Links', () => {
   test('should show social or support links', async ({ page }) => {
     await scrollToFooter(page);
 
-    const footer = page.locator('footer');
+    const footer = page.locator('main footer');
     // On mobile, footer sections may be collapsed - expand "Follow Us" if needed
     const socialLinks = footer.locator('[data-testid^="footer-social-"]');
     if (

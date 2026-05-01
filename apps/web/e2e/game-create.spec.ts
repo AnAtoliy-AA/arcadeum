@@ -23,7 +23,7 @@ test.describe('Game Room Creation', () => {
       if (url.includes('/rooms')) {
         return route.fallback();
       }
-      await route.fulfill({ status: 200, body: JSON.stringify({}) });
+      await handleRoute(route, {});
     });
 
     const mockRoom = {

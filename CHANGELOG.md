@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.29] - 2026-05-01
+
+### Fixed
+- sea battle chat e2e test (ARC-446)
+- resolve CORS errors in e2e tests (ARC-446)
+- e2e tests timeouts (ARC-446)
+- e2e tests warnings (ARC-446)
+
+### Refactored
+- use polling with state verification to improve E2E test reliability for chat popups (ARC-446)
+
+
 ## [1.9.28] - 2026-04-30
 
 

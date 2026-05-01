@@ -10,34 +10,36 @@ test.describe('Video Presentation', () => {
   test('should render video placeholder with custom cover image', async ({
     page,
   }) => {
-    await page.waitForSelector('[data-testid="presentation-section"]', {
-      timeout: 15000,
-    });
-    const thumbnail = page.getByTestId('video-thumbnail');
-    await expect(thumbnail).toBeVisible({ timeout: 10000 });
+    await page.waitForSelector('[data-testid="presentation-section"]', {});
+    const thumbnail = page
+      .locator('main')
+      .first()
+      .getByTestId('video-thumbnail')
+      .first();
+    await expect(thumbnail).toBeVisible({});
     await expect(thumbnail).toHaveAttribute(
       'alt',
       'Arcadeum Trailer Illustration',
     );
-    await expect(thumbnail).toHaveAttribute(
-      'src',
-      '/images/home/video-cover.png',
-    );
+    await expect(thumbnail).toHaveAttribute('src', /video-cover\.png/);
   });
 
   test('should play video on click', async ({ page }) => {
-    const playButton = page.getByTestId('play-btn');
-    await playButton.waitFor({ state: 'visible', timeout: 10000 });
+    const playButton = page
+      .locator('main')
+      .first()
+      .getByTestId('play-btn')
+      .first();
+    await playButton.waitFor({ state: 'visible' });
     // Note: scrollIntoViewIfNeeded can fail if element is being re-rendered or detached during scroll.
     // Playwright's click action automatically scrolls to the element.
-    await expect(playButton).toBeVisible({ timeout: 10000 });
-    await page.waitForTimeout(1000); // Give WebKit a moment to stabilize
+    await expect(playButton).toBeVisible({});
     await playButton.click({ force: true });
     await expect(playButton).toBeHidden();
     await expect(page.getByTestId('video-placeholder')).toBeHidden();
 
     const iframe = page.locator('iframe');
-    await expect(iframe).toBeVisible({ timeout: 15000 });
+    await expect(iframe).toBeVisible({});
     await expect(iframe).toHaveAttribute('src', /youtube-nocookie\.com/);
   });
 });

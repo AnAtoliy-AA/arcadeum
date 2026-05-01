@@ -1,9 +1,7 @@
-'use client';
-
 import React from 'react';
-import styled from 'styled-components';
+import { styled, YStack, XStack } from 'tamagui';
 import type { GameSessionSummary } from '@/shared/types/games';
-import { Card, Badge, Avatar } from '@/shared/ui';
+import { Card, Badge, Avatar, Typography } from '@arcadeum/ui';
 
 interface PlayerListProps {
   session: GameSessionSummary | null;
@@ -11,103 +9,63 @@ interface PlayerListProps {
   className?: string;
   showStatus?: boolean;
   showScore?: boolean;
-  maxPlayers?: number;
   onPlayerAction?: (playerId: string, action: string) => void;
 }
 
-const List = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-height: 300px;
-  overflow-y: auto;
-`;
+const List = styled(YStack, {
+  name: 'PlayerList',
+  gap: '$2',
+  maxHeight: 300,
+  overflowY: 'auto',
+});
 
-const PlayerItem = styled(Card)<{
-  $isCurrent?: boolean;
-  $isHost?: boolean;
-  $isActive?: boolean;
-}>`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  cursor: pointer;
-  background: ${({ theme, $isCurrent }) =>
-    $isCurrent
-      ? 'linear-gradient(135deg, #3b82f620, #1d4ed820)'
-      : theme.surfaces.card.background};
-  border: 1px solid
-    ${({ theme, $isCurrent, $isHost }) => {
-      if ($isCurrent) return '#3b82f6';
-      if ($isHost) return '#10b981';
-      return theme.surfaces.card.border;
-    }};
+const StyledPlayerItem = styled(Card, {
+  name: 'PlayerItem',
+  flexDirection: 'row',
+  alignItems: 'center',
+  padding: 'sm',
+  cursor: 'pointer',
+  borderWidth: 1,
 
-  &:hover {
-    transform: translateX(2px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-`;
+  hoverStyle: {
+    x: 2,
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    shadowRadius: 8,
+  },
 
-const PlayerAvatar = styled(Avatar)<{ $isHost?: boolean }>`
-  background: ${({ theme, $isHost }) =>
-    $isHost
-      ? 'linear-gradient(135deg, #10b981, #059669)'
-      : theme.buttons.secondary.background};
-`;
+  variants: {
+    $isCurrent: {
+      true: {
+        background:
+          'linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(29, 78, 216, 0.12))',
+        borderColor: '$primary',
+      },
+      false: {
+        backgroundColor: '$background',
+        borderColor: '$borderColor',
+      },
+    },
+    $isHost: {
+      true: {
+        borderColor: '#10b981',
+      },
+    },
+  } as const,
+});
 
-const PlayerInfo = styled.div`
-  flex: 1;
-  min-width: 0;
-`;
-
-const PlayerName = styled.div<{ $isCurrent?: boolean }>`
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: ${({ theme, $isCurrent }) =>
-    $isCurrent ? theme.text.primary : theme.text.primary};
-  margin-bottom: 0.25rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-`;
-
-const PlayerDetails = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.75rem;
-  color: ${({ theme }) => theme.text.secondary};
-`;
-
-const StatusIndicator = styled.span<{ $status: string }>`
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: ${({ $status }) => {
-    switch ($status) {
-      case 'active':
-        return '#10b981';
-      case 'inactive':
-        return '#6b7280';
-      case 'away':
-        return '#f59e0b';
-      case 'offline':
-        return '#6b7280';
-      default:
-        return '#6b7280';
-    }
-  }};
-`;
-
-const Score = styled.span`
-  font-weight: 600;
-  color: ${({ theme }) => theme.text.primary};
-`;
+const StatusIndicator = styled(YStack, {
+  width: 8,
+  height: 8,
+  borderRadius: 4,
+  variants: {
+    status: {
+      active: { backgroundColor: '#10b981' },
+      inactive: { backgroundColor: '#6b7280' },
+      away: { backgroundColor: '#f59e0b' },
+      offline: { backgroundColor: '#6b7280' },
+    },
+  } as const,
+});
 
 export function PlayerList({
   session,
@@ -115,24 +73,24 @@ export function PlayerList({
   className,
   showStatus = true,
   showScore = false,
-  maxPlayers: _maxPlayers,
   onPlayerAction,
 }: PlayerListProps) {
   if (!session) {
     return (
       <List className={className}>
-        <PlayerItem>
+        <StyledPlayerItem>
           <Avatar name="?" size="sm" />
-          <PlayerInfo>
-            <PlayerName>No players</PlayerName>
-          </PlayerInfo>
-        </PlayerItem>
+          <YStack flex={1} marginLeft="$3">
+            <Typography fontWeight="600" fontSize="$2">
+              No players
+            </Typography>
+          </YStack>
+        </StyledPlayerItem>
       </List>
     );
   }
 
-  // For now, we'll create a simple player representation
-  // In a real implementation, this would use actual player data from the session
+  // Sample data kept for logic consistency
   const players = [
     {
       id: 'player1',
@@ -155,32 +113,49 @@ export function PlayerList({
   return (
     <List className={className}>
       {players.map((player) => (
-        <PlayerItem
+        <StyledPlayerItem
           key={player.id}
           $isCurrent={player.isCurrent}
           $isHost={player.isHost}
-          $isActive={player.status === 'active'}
           onClick={() => onPlayerAction?.(player.id, 'info')}
         >
-          <PlayerAvatar name={player.name} size="sm" $isHost={player.isHost} />
+          <Avatar
+            name={player.name}
+            size="sm"
+            {...(player.isHost
+              ? {
+                  backgroundColor: '#10b981',
+                }
+              : {})}
+          />
 
-          <PlayerInfo>
-            <PlayerName $isCurrent={player.isCurrent}>
-              {player.name}
+          <YStack flex={1} marginLeft="$3">
+            <XStack alignItems="center" gap="$2" marginBottom="$1">
+              <Typography
+                fontWeight="600"
+                fontSize="$2"
+                ellipsizeMode="tail"
+                numberOfLines={1}
+              >
+                {player.name}
+              </Typography>
               {player.isHost && (
                 <Badge variant="success" size="sm">
                   Host
                 </Badge>
               )}
-            </PlayerName>
+            </XStack>
 
-            <PlayerDetails>
-              {showStatus && <StatusIndicator $status={player.status} />}
-
-              {showScore && <Score>{player.score} pts</Score>}
-            </PlayerDetails>
-          </PlayerInfo>
-        </PlayerItem>
+            <XStack alignItems="center" gap="$2">
+              {showStatus && <StatusIndicator status={player.status} />}
+              {showScore && (
+                <Typography fontSize="$1" color="$textSecondary">
+                  {player.score} pts
+                </Typography>
+              )}
+            </XStack>
+          </YStack>
+        </StyledPlayerItem>
       ))}
     </List>
   );

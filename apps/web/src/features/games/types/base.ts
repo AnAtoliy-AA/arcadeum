@@ -72,6 +72,24 @@ export interface BaseGameProps {
 }
 
 /**
+ * Standardized props interface for all game widgets.
+ * Each game widget receives these props from GamePageLayout via DynamicGameRenderer.
+ * Chat integration is handled via useGameChatIntegration hook (not props).
+ */
+export interface BaseGameWidgetProps {
+  roomId: string;
+  room: GameRoomSummary;
+  session: GameSessionSummary | null;
+  currentUserId: string | null;
+  isHost: boolean;
+  accessToken: string | null;
+  showRulesOpen: boolean;
+  onShowRulesClose: () => void;
+  isFullscreen: boolean;
+  toggleFullscreen: () => void;
+}
+
+/**
  * Game state interface for saving/loading game state
  */
 export interface GameState {

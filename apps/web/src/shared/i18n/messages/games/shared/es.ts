@@ -30,8 +30,11 @@ export const esMessages = {
   rooms: {
     status: {
       lobby: 'Sala de espera',
+      waiting: 'Esperando',
       in_progress: 'En progreso',
       completed: 'Completado',
+      placement: 'Colocación',
+      active: 'Activo',
     },
     hostedBy: 'Anfitrión: {{host}}',
     participants: 'Participantes',
@@ -79,6 +82,21 @@ export const esMessages = {
         '¿Estás seguro de que quieres eliminar esta sala? Esta acción no se puede deshacer y todos los jugadores serán desconectados.',
       confirmButton: 'Eliminar sala',
       cancelButton: 'Mantener sala',
+    },
+    kickPlayer: {
+      button: 'Eliminar',
+      confirmTitle: 'Eliminar jugador',
+      confirmMessage:
+        '¿Estás seguro de que quieres eliminar a {{playerName}} de la sala?',
+      confirmButton: 'Eliminar',
+      cancelButton: 'Cancelar',
+    },
+    leaveRoom: {
+      button: 'Salir de la sala',
+      confirmTitle: 'Salir de la sala',
+      confirmMessage: '¿Estás seguro de que quieres salir de esta sala?',
+      confirmButton: 'Salir',
+      cancelButton: 'Quedarse',
     },
   },
   create: {
@@ -185,5 +203,10 @@ export const esMessages = {
     label: 'Inactivo',
     title: '💤 Estás inactivo',
     message: 'Mueve el ratón o pulsa una tecla para continuar',
+  },
+  table: {
+    controlPanel: {
+      spectating: 'Spectating',
+    },
   },
 };

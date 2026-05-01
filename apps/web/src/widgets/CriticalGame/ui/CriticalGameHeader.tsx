@@ -2,36 +2,31 @@ import {
   GameHeader,
   GameInfo,
   GameTitle,
-  TurnStatus,
+  VariantIconBadge,
   HeaderActions,
   TimerControlsWrapper,
-  ChatToggleButton,
   FullscreenButton,
-} from './styles';
-import {
-  RoomNameBadge,
-  RoomNameIcon,
-  RoomNameText,
-  FastBadge,
-} from './styles/lobby';
+} from './styles/header';
+import { appConfig } from '@/shared/config/app-config';
 import { IdleTimerDisplay } from './IdleTimerDisplay';
 import { AutoplayControls } from './AutoplayControls';
-import { ServerLoadingNotice } from '@/shared/ui/ServerLoadingNotice';
+import { ServerLoadingNotice, MaximizeIcon, MinimizeIcon } from '@/shared/ui';
 import type { GameRoomSummary, CriticalSnapshot } from '@/shared/types/games';
 import { UseAutoplayReturn } from '../hooks/useAutoplay';
 import { CARD_VARIANTS } from '../lib/constants';
 import { RulesModal } from './RulesModal';
 import React, { useState } from 'react';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
-import { MaximizeIcon, MinimizeIcon } from '@/shared/ui';
 import { TranslationKey } from '@/shared/lib/useTranslation';
+import type { GameVariant } from '@arcadeum/ui';
+import { YStack, Text } from 'tamagui';
+import { getVariantStyles } from './styles/variants';
+import { useScenePalette } from './ScenePaletteContext';
 
 interface CriticalGameHeaderProps {
   room: GameRoomSummary;
-  t: (key: string, params?: Record<string, unknown>) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
   idleTimerEnabled: boolean;
-  turnStatusVariant: 'completed' | 'yourTurn' | 'waiting' | 'default';
-  turnStatusText: string;
   actionBusy: string | null;
   isGameOver: boolean;
   currentPlayer: CriticalSnapshot['players'][0] | undefined;
@@ -41,8 +36,6 @@ interface CriticalGameHeaderProps {
   autoplayState: UseAutoplayReturn;
   idleTimerTriggered: boolean;
   handleStopAutoplay: () => void;
-  showChat: boolean;
-  handleToggleChat: () => void;
   isFullscreen: boolean;
   toggleFullscreen: () => void;
 }
@@ -51,8 +44,6 @@ export function CriticalGameHeader({
   room,
   t,
   idleTimerEnabled,
-  turnStatusVariant,
-  turnStatusText,
   actionBusy,
   isGameOver,
   currentPlayer,
@@ -62,18 +53,26 @@ export function CriticalGameHeader({
   autoplayState,
   idleTimerTriggered,
   handleStopAutoplay,
-  showChat,
-  handleToggleChat,
   isFullscreen,
   toggleFullscreen,
 }: CriticalGameHeaderProps) {
   const cardVariant = room.gameOptions?.cardVariant;
+  const scene = useScenePalette();
   const [showRules, setShowRules] = useState(false);
 
-  const { isLongPending } = useServerWakeUpProgress(Boolean(actionBusy));
+  const { isLongPending, progress, elapsedSeconds } = useServerWakeUpProgress(
+    Boolean(actionBusy),
+  );
+
+  const variantName = (() => {
+    const variant = CARD_VARIANTS.find((v) => v.id === cardVariant);
+    return variant
+      ? t(variant.name as TranslationKey)
+      : t('games.critical_v1.variants.cyberpunk.name' as TranslationKey);
+  })();
 
   return (
-    <GameHeader $variant={cardVariant}>
+    <GameHeader $variant={cardVariant as GameVariant}>
       <RulesModal
         isOpen={showRules}
         onClose={() => setShowRules(false)}
@@ -82,56 +81,66 @@ export function CriticalGameHeader({
         isPrivate={room.visibility === 'private'}
         t={t}
       />
+
+      {/* Left: variant identity */}
       <GameInfo>
-        <GameTitle>
-          {t('games.critical_v1.name')}
-          <span
-            style={{
-              background: 'linear-gradient(135deg, #FF0080 0%, #7928CA 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              fontSize: '0.8em',
-            }}
-          >
-            :{' '}
-            {(() => {
-              const variant = CARD_VARIANTS.find(
-                (v) => v.id === room.gameOptions?.cardVariant,
-              );
-              return variant
-                ? t(variant.name as TranslationKey)
-                : t(
-                    'games.critical_v1.variants.cyberpunk.name' as TranslationKey,
-                  ); // Fallback to default variant name instead of 'Classic'
-            })()}
-          </span>
-        </GameTitle>
-        <RoomNameBadge>
-          <RoomNameIcon>
-            {CARD_VARIANTS.find((v) => v.id === room.gameOptions?.cardVariant)
-              ?.emoji || '🎲'}
-          </RoomNameIcon>
-          <RoomNameText>{room.name}</RoomNameText>
-        </RoomNameBadge>
-        {idleTimerEnabled && (
-          <FastBadge>
-            <span>⚡</span>
-            <span>{t('games.rooms.fastRoom')}</span>
-          </FastBadge>
-        )}
-        <TurnStatus $variant={turnStatusVariant}>{turnStatusText}</TurnStatus>
-        {isLongPending && <ServerLoadingNotice actionBusy={actionBusy} />}
-      </GameInfo>
-      <HeaderActions>
-        <FullscreenButton
-          onClick={() => setShowRules(true)}
-          title="Game Rules"
-          style={{ fontSize: '1.2rem', marginRight: '0.5rem' }}
+        <VariantIconBadge
+          style={{
+            background: scene.turnBannerBorderGradient,
+            borderColor: 'rgba(255,255,255,0.2)',
+            boxShadow: `0 0 12px ${scene.opponentTurnHaloColor}`,
+          }}
         >
-          📖
-        </FullscreenButton>
+          <Text fontSize={15}>
+            {CARD_VARIANTS.find((v) => v.id === cardVariant)?.emoji ?? '🎲'}
+          </Text>
+        </VariantIconBadge>
+
+        <YStack gap={0} minWidth={0} flex={1}>
+          <GameTitle numberOfLines={1}>
+            <span
+              className="text-gradient"
+              style={{
+                background: getVariantStyles(
+                  cardVariant || 'default',
+                ).header.getTitleBackground(),
+              }}
+            >
+              {t('games.critical_v1.name')}
+              {' · '}
+              {variantName}
+            </span>
+          </GameTitle>
+
+          <Text
+            fontSize={11}
+            opacity={0.45}
+            numberOfLines={1}
+            $sm={{ display: 'none' }}
+          >
+            {room.name}
+            {idleTimerEnabled ? ' · ⚡' : ''}
+          </Text>
+        </YStack>
+      </GameInfo>
+
+      {/* Right: actions */}
+      <HeaderActions>
+        {isLongPending && (
+          <ServerLoadingNotice
+            title={t('common.loading.title')}
+            message={t('common.loading.message')}
+            progress={progress}
+            elapsedSeconds={elapsedSeconds}
+            supportLabel={t('common.support')}
+            onSupportClick={() =>
+              window.open(appConfig.supportCta.href, '_blank')
+            }
+          />
+        )}
+
         {!isGameOver && currentPlayer && (
-          <TimerControlsWrapper>
+          <TimerControlsWrapper $sm={{ display: 'none' }}>
             <IdleTimerDisplay
               enabled={idleTimerEnabled}
               isMyTurn={isMyTurn}
@@ -141,19 +150,14 @@ export function CriticalGameHeader({
               onStop={handleStopAutoplay}
               t={t}
             />
-            <AutoplayControls
-              autoplayState={autoplayState}
-              t={t as (key: string) => string}
-            />
+            <AutoplayControls autoplayState={autoplayState} t={t} />
           </TimerControlsWrapper>
         )}
-        <ChatToggleButton
-          type="button"
-          onClick={handleToggleChat}
-          $active={showChat}
-        >
-          {showChat ? t('games.table.chat.hide') : t('games.table.chat.show')}
-        </ChatToggleButton>
+
+        <FullscreenButton onClick={() => setShowRules(true)} title="Game Rules">
+          📖
+        </FullscreenButton>
+
         <FullscreenButton
           onClick={toggleFullscreen}
           title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}

@@ -1,16 +1,17 @@
-import type { Locale } from '../../../types';
-import { enMessages } from './en';
-import { esMessages } from './es';
-import { frMessages } from './fr';
-import { ruMessages } from './ru';
-import { byMessages } from './by';
+import { enMessages as en } from './en';
+import { esMessages as es } from './es';
+import { frMessages as fr } from './fr';
+import { ruMessages as ru } from './ru';
+import { byMessages as by } from './by';
 
-export type SeaBattleGamesMessages = typeof enMessages;
+export { en, es, fr, ru, by };
 
-export const seaBattleMessages: Record<Locale, SeaBattleGamesMessages> = {
-  en: enMessages,
-  es: esMessages,
-  fr: frMessages,
-  ru: ruMessages,
-  by: byMessages,
-};
+export type SeaBattleGamesMessages = typeof en;
+
+export const seaBattleMessages = {
+  en,
+  es,
+  fr,
+  ru,
+  by,
+} as const;

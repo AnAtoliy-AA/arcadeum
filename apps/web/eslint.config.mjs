@@ -17,10 +17,15 @@ const eslintConfig = defineConfig([
     "storybook-static/**",
     "scripts/**",
     "coverage/**",
+    // Generated Playwright artifacts (also gitignored).
+    "playwright-report/**",
+    "playwright/.cache/**",
+    "test-results/**",
   ]),
   {
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-empty-object-type': ['error', { allowInterfaces: 'with-single-extends' }],
       'max-lines': ['error', { max: 500, skipBlankLines: true, skipComments: true }],
       '@typescript-eslint/no-unused-vars': ['warn', {
         argsIgnorePattern: '^_',

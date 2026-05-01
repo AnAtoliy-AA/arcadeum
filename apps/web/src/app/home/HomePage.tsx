@@ -1,44 +1,29 @@
-'use client';
-
-import { HomeHero } from './components/HomeHero';
+import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
+import HomeHero from './components/HomeHero';
+import HomeGames from './components/HomeGames';
 import dynamic from 'next/dynamic';
 
-const HomeGames = dynamic(() =>
-  import('./components/HomeGames').then((mod) => mod.HomeGames),
+const HomeHowItWorks = dynamic(() => import('./components/HomeHowItWorks'));
+const HomeFeatures = dynamic(() => import('./components/HomeFeatures'));
+const HomePresentation = dynamic(() => import('./components/HomePresentation'));
+const HomePitchDeck = dynamic(() => import('./components/HomePitchDeck'));
+const InstallAppCta = dynamic(() =>
+  import('@/widgets/install-app').then((m) => m.InstallAppCta),
 );
-const HomeHowItWorks = dynamic(() =>
-  import('./components/HomeHowItWorks').then((mod) => mod.HomeHowItWorks),
-);
-const HomeFeatures = dynamic(() =>
-  import('./components/HomeFeatures').then((mod) => mod.HomeFeatures),
-);
-const HomePresentation = dynamic(() =>
-  import('./components/HomePresentation').then((mod) => mod.HomePresentation),
-);
-const HomePitchDeck = dynamic(() =>
-  import('./components/HomePitchDeck').then((mod) => mod.HomePitchDeck),
-);
-const HomeDownloadCta = dynamic(() =>
-  import('./components/HomeDownloadCta').then((mod) => mod.HomeDownloadCta),
-);
-const HomeFooter = dynamic(() =>
-  import('./components/HomeFooter').then((mod) => mod.HomeFooter),
-);
-import { PageWrapper } from './components/styles/Common.styles';
 
-export function HomePage() {
+import HomeFooter from './components/HomeFooter';
+
+export default function HomePage() {
   return (
-    <PageWrapper>
+    <PageLayout data-testid="page-layout">
       <HomeHero />
       <HomeGames />
       <HomeHowItWorks />
       <HomeFeatures />
       <HomePresentation />
       <HomePitchDeck />
-      <HomeDownloadCta />
+      <InstallAppCta />
       <HomeFooter />
-    </PageWrapper>
+    </PageLayout>
   );
 }
-
-export default HomePage;

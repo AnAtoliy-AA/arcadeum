@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures/test-utils';
-import { navigateTo, mockSession } from './fixtures/test-utils';
+import { navigateTo, mockSession, handleRoute } from './fixtures/test-utils';
 
 test.describe('Game History', () => {
   test.beforeEach(async ({ page }) => {
@@ -16,14 +16,14 @@ test.describe('Game History', () => {
       if (url.includes('/history') || url.includes('/rematch')) {
         return route.continue();
       }
-      await route.fulfill({ status: 200, body: JSON.stringify({}) });
+      await handleRoute(route, {});
     });
 
     // State for the mock
     let historyItems = [
       {
         roomId: 'game-1',
-        sessionId: 'session-1',
+        sessionId: '507f191e810c19729de860f1',
         gameId: 'critical_v1',
         roomName: 'Awesome Battle',
         status: 'completed',
@@ -39,7 +39,11 @@ test.describe('Game History', () => {
             username: 'testuser',
             isHost: true,
           },
-          { id: 'user-2', username: 'otheruser', isHost: false },
+          {
+            id: '507f191e810c19729de860e2',
+            username: 'otheruser',
+            isHost: false,
+          },
         ],
         gameOptions: {
           cardVariant: 'cyberpunk',
@@ -49,16 +53,12 @@ test.describe('Game History', () => {
 
     // Mock room details for rematch target
     await page.route('**/games/rooms/rematch-room-id**', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          id: 'rematch-room-id',
-          name: 'Rematch Room',
-          gameId: 'critical_v1',
-          status: 'waiting',
-          participants: [],
-        }),
+      await handleRoute(route, {
+        id: 'rematch-room-id',
+        name: 'Rematch Room',
+        gameId: 'critical_v1',
+        status: 'waiting',
+        participants: [],
       });
     });
 
@@ -67,63 +67,57 @@ test.describe('Game History', () => {
       const url = route.request().url();
       const method = route.request().method();
 
+      if (method === 'OPTIONS') {
+        await handleRoute(route, null);
+        return;
+      }
+
       if (url.includes('rematch')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ room: { id: 'rematch-room-id' } }),
-        });
+        if (method === 'POST') {
+          await handleRoute(route, { room: { id: 'rematch-room-id' } });
+        } else {
+          await route.continue();
+        }
         return;
       }
 
       if (method === 'DELETE') {
         // Remove item from state
         historyItems = [];
-        await route.fulfill({ status: 200 });
+        await handleRoute(route, { success: true });
         return;
       }
 
       if (method === 'GET') {
         // Determine if it's a detail request (has ID at end) or list request
-        // Broaden regex to ensure we catch IDs that might fail strict splitting
-        // Any path that isn't 'history' exactly or query params is detail?
         const isList =
           url.endsWith('/history') ||
           url.includes('/history?') ||
           url.includes('/history/search');
-        const isDetail = !isList; // Assume anything else under /history is detail/rematch (but rematch handled above)
+        const isDetail = !isList;
 
         if (isDetail) {
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              summary: historyItems[0] || {},
-              logs: [
-                {
-                  id: 'log-1',
-                  type: 'system',
-                  message: 'Game started',
-                  createdAt: new Date(Date.now() - 86400000).toISOString(),
-                },
-              ],
-            }),
+          await handleRoute(route, {
+            summary: historyItems[0] || {},
+            logs: [
+              {
+                id: 'log-1',
+                type: 'system',
+                message: 'Game started',
+                createdAt: new Date(Date.now() - 86400000).toISOString(),
+              },
+            ],
           });
         } else {
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              entries: historyItems,
-              total: historyItems.length,
-              hasMore: false,
-              page: 1,
-            }),
+          await handleRoute(route, {
+            entries: historyItems,
+            total: historyItems.length,
+            hasMore: false,
+            page: 0,
           });
         }
       } else {
-        // Fallback for any other history requests to prevent 500s
-        await route.fulfill({ status: 200, body: JSON.stringify({}) });
+        await handleRoute(route, {});
       }
     });
   });
@@ -144,20 +138,23 @@ test.describe('Game History', () => {
       await expect(card.getByTestId('history-status')).toContainText(
         /completed/i,
       );
-    }).toPass({ timeout: 10000 });
+    }).toPass({});
   });
 
   test('should open detail modal', async ({ page }) => {
     await navigateTo(page, '/history');
 
     const entry = page.getByText('Awesome Battle');
-    await expect(entry).toBeVisible({ timeout: 10000 });
-    await entry.click();
+    await expect(async () => {
+      await expect(entry).toBeVisible();
+      await entry.click({ force: true });
+    }).toPass({});
 
-    // Wait for modal content
-    await expect(page.getByText('Game started')).toBeVisible({
-      timeout: 10000,
-    });
+    const modal = page.getByTestId('history-detail-modal');
+    await expect(async () => {
+      await expect(modal).toBeVisible();
+      await expect(modal).toContainText(/completed/i);
+    }).toPass({});
   });
 
   test('should handle rematch action', async ({ page }) => {
@@ -166,11 +163,8 @@ test.describe('Game History', () => {
     await page.getByText('Awesome Battle').click({ force: true });
 
     // Wait for modal content
-    await expect(page.getByText('Game started')).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(page.getByText('Game started')).toBeVisible({});
 
-    await page.waitForTimeout(500); // Wait for modal animation
     const rematchBtn = page.getByTestId('rematch-button');
     await expect(rematchBtn).toBeVisible();
 
@@ -185,6 +179,6 @@ test.describe('Game History', () => {
 
     // Should redirect to new room
     // Use a more robust expectation with poll if needed, but toHaveURL should be enough if button click worked
-    await expect(page).toHaveURL(/rematch-room-id/, { timeout: 15000 });
+    await expect(page).toHaveURL(/rematch-room-id/, {});
   });
 });

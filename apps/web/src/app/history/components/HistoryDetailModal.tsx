@@ -1,5 +1,13 @@
 'use client';
 
+import {
+  Button,
+  Avatar,
+  Badge,
+  Card,
+  ArrowLeftIcon,
+  XStack,
+} from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   Modal,
@@ -7,14 +15,10 @@ import {
   ModalHeader,
   ModalTitle,
   ModalBody,
-  Button,
   LoadingState,
   ErrorState,
-  Avatar,
-  Badge,
-  Card,
+  Section,
 } from '@/shared/ui';
-import { ArrowLeftIcon } from '@/shared/ui/Icons';
 import type {
   HistorySummary,
   HistoryDetail,
@@ -22,7 +26,6 @@ import type {
 } from '../types';
 import {
   DetailTimestamp,
-  Section,
   SectionTitle,
   SectionDescription,
   ParticipantRow,
@@ -35,7 +38,7 @@ import {
   LogScope,
   LogSender,
   LogMessage,
-  ConfirmRow,
+  EntryStatus,
 } from '../styles';
 
 interface HistoryDetailModalProps {
@@ -89,7 +92,7 @@ export function HistoryDetailModal({
 
   return (
     <Modal open={!!selectedEntry} onClose={onClose}>
-      <ModalContent maxWidth="800px">
+      <ModalContent maxWidth="800px" data-testid="history-detail-modal">
         <ModalHeader onClose={onClose}>
           <Button
             variant="ghost"
@@ -100,7 +103,13 @@ export function HistoryDetailModal({
             <ArrowLeftIcon size={16} />
             {t('history.detail.backToList')}
           </Button>
-          <ModalTitle>{selectedEntry.roomName}</ModalTitle>
+          <XStack ai="center" gap="$3">
+            <ModalTitle>{selectedEntry.roomName}</ModalTitle>
+            <EntryStatus data-testid="history-status">
+              {t(`history.status.${selectedEntry.status}`) ||
+                selectedEntry.status}
+            </EntryStatus>
+          </XStack>
         </ModalHeader>
 
         <ModalBody>
@@ -217,14 +226,16 @@ export function HistoryDetailModal({
                   </Badge>
                 )}
                 {showRemoveConfirm ? (
-                  <ConfirmRow>
+                  <XStack gap="$4">
                     <Button
+                      flex={1}
                       variant="secondary"
                       onClick={() => onSetShowRemoveConfirm(false)}
                     >
                       {t('history.detail.removeCancel')}
                     </Button>
                     <Button
+                      flex={1}
                       variant="danger"
                       onClick={onRemove}
                       disabled={removeLoading}
@@ -234,7 +245,7 @@ export function HistoryDetailModal({
                         ? t('history.detail.removeRemoving')
                         : t('history.detail.removeConfirm')}
                     </Button>
-                  </ConfirmRow>
+                  </XStack>
                 ) : (
                   <Button
                     variant="danger"

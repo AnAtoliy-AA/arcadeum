@@ -1,0 +1,33 @@
+@keyframes pageTitleEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradientShift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.page-title-gradient {
+  display: inline-block;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  margin-top: -0.5em;
+  margin-bottom: -0.5em;
+  animation: pageTitleEnter 200ms ease-out both, gradientShift 4s ease infinite;
+}
+
+.page-title-base {
+  animation: pageTitleEnter 200ms ease-out both;
+}

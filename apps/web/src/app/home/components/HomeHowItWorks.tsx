@@ -1,21 +1,8 @@
 'use client';
 
-import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
+import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { appConfig } from '@/shared/config/app-config';
-import {
-  SectionHeader,
-  SectionTitle,
-  SectionSubtitle,
-} from './styles/Common.styles';
-import {
-  HowItWorksSection,
-  StepsContainer,
-  StepItem,
-  StepNumber,
-  StepContent,
-  StepTitle,
-  StepDescription,
-} from './styles/HowItWorks.styles';
+import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 
 interface Step {
   number: number;
@@ -51,10 +38,12 @@ const STEPS: Step[] = [
   },
 ];
 
-export function HomeHowItWorks() {
+export default function HomeHowItWorks() {
   const { messages } = useLanguage();
   const homeCopy = messages.home ?? {};
   const { appName } = appConfig;
+
+  const sectionRef = useScrollReveal<HTMLElement>();
 
   const sectionTitle =
     (homeCopy as Record<string, string>).howItWorksTitle ?? 'How It Works';
@@ -63,13 +52,18 @@ export function HomeHowItWorks() {
     'Get started in three simple steps';
 
   return (
-    <HowItWorksSection data-testid="how-it-works-section">
-      <SectionHeader>
-        <SectionTitle>{sectionTitle}</SectionTitle>
-        <SectionSubtitle>{sectionSubtitle}</SectionSubtitle>
-      </SectionHeader>
-      <StepsContainer>
-        {STEPS.map((step) => {
+    <section
+      id="how-it-works"
+      data-testid="how-it-works-section"
+      ref={sectionRef}
+      className="how-it-works-section-main"
+    >
+      <div className="section-header-main" data-reveal data-reveal-delay="1">
+        <h2 className="section-title-main">{sectionTitle}</h2>
+        <p className="section-subtitle-main">{sectionSubtitle}</p>
+      </div>
+      <div className="steps-container-main">
+        {STEPS.map((step, index) => {
           const title =
             (homeCopy as Record<string, string>)[step.titleKey] ??
             step.defaultTitle;
@@ -80,16 +74,34 @@ export function HomeHowItWorks() {
             formatMessage(rawDescription, { appName }) ?? rawDescription;
 
           return (
-            <StepItem key={step.number}>
-              <StepNumber>{step.number}</StepNumber>
-              <StepContent>
-                <StepTitle>{title}</StepTitle>
-                <StepDescription>{description}</StepDescription>
-              </StepContent>
-            </StepItem>
+            <div
+              key={step.number}
+              data-reveal
+              data-reveal-delay={String(Math.min(index + 2, 6))}
+              className="step-item-main"
+            >
+              {index < STEPS.length - 1 && (
+                <div className="step-connector-main" />
+              )}
+              <div className="step-number-main">
+                <span
+                  style={{
+                    color: 'var(--primary)',
+                    fontWeight: '700',
+                    fontSize: 'var(--t-font-size-5)',
+                  }}
+                >
+                  {step.number}
+                </span>
+              </div>
+              <div className="step-content-main">
+                <h3 className="step-title-main">{title}</h3>
+                <p className="step-description-main">{description}</p>
+              </div>
+            </div>
           );
         })}
-      </StepsContainer>
-    </HowItWorksSection>
+      </div>
+    </section>
   );
 }

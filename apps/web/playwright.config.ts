@@ -1,4 +1,35 @@
 import { defineConfig, devices } from '@playwright/test';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import dotenv from 'dotenv';
+
+/**
+ * Robust port resolver to match the development scripts
+ */
+function getPort(
+  envFile: string,
+  varName: string,
+  defaultPort: string,
+): string {
+  if (process.env[varName]) return process.env[varName]!;
+  if (process.env.PORT) return process.env.PORT!;
+
+  const envPath = path.resolve(__dirname, envFile);
+  if (fs.existsSync(envPath)) {
+    const config = dotenv.parse(fs.readFileSync(envPath, 'utf8'));
+    return config[varName] || config.PORT || defaultPort;
+  }
+  return defaultPort;
+}
+
+const WEB_PORT = getPort('.env.local', 'WEB_PORT', '3000');
+const BE_PORT = getPort('../be/.env', 'BE_PORT', '4000');
+const BASE_URL = `http://localhost:${WEB_PORT}`;
+const BE_URL = `http://localhost:${BE_PORT}`;
+
+// Export for use in tests/fixtures
+process.env.WEB_PORT = WEB_PORT;
+process.env.BE_PORT = BE_PORT;
 
 /**
  * Playwright configuration for e2e tests
@@ -8,24 +39,24 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  retries: 0,
   workers: process.env.CI
     ? 1
     : process.env.PLAYWRIGHT_WORKERS
       ? parseInt(process.env.PLAYWRIGHT_WORKERS)
       : undefined,
   reporter: process.env.CI ? 'list' : 'html',
-  timeout: 90000,
+  timeout: 120000,
   expect: {
-    timeout: 20000,
+    timeout: 30000,
   },
 
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: BASE_URL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
-    actionTimeout: 10000,
-    navigationTimeout: 30000,
+    actionTimeout: 20000,
+    navigationTimeout: 60000,
   },
 
   projects: [
@@ -35,7 +66,20 @@ export default defineConfig({
     },
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+        launchOptions: {
+          firefoxUserPrefs: {
+            'privacy.bounceTrackingProtection.enabled': false,
+            'privacy.bounceTrackingProtection.hasUserInteraction.enabled':
+              false,
+            'privacy.bounceTrackingProtection.requireInteraction.enabled':
+              false,
+            'privacy.bounceTrackingProtection.bounceTrackingGracePeriodSec': 31536000,
+            'network.cookie.cookieBehavior': 0,
+          },
+        },
+      },
     },
     {
       name: 'webkit',
@@ -57,21 +101,34 @@ export default defineConfig({
 
   webServer: [
     {
-      command: process.env.CI
-        ? 'pnpm --filter be start:prod'
-        : 'pnpm --filter be dev',
-      url: 'http://localhost:4000/health',
+      command:
+        process.env.CI || process.env.E2E_PROD
+          ? 'pnpm --filter be start:prod'
+          : 'pnpm --filter be dev',
+      url: `${BE_URL}/health`,
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
+      env: {
+        WEB_PORT: WEB_PORT,
+        BE_PORT: BE_PORT,
+        NODE_ENV: process.env.E2E_PROD ? 'production' : 'development',
+        E2E: 'true',
+      },
     },
     {
       command:
         process.env.CI || process.env.E2E_PROD
-          ? 'npm run start'
-          : 'npm run dev:next',
-      url: 'http://localhost:3000',
+          ? 'NEXT_PUBLIC_E2E=true pnpm run start'
+          : 'NEXT_PUBLIC_E2E=true pnpm run dev:next',
+      url: BASE_URL,
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
+      env: {
+        WEB_PORT: WEB_PORT,
+        BE_PORT: BE_PORT,
+        NODE_ENV: process.env.E2E_PROD ? 'production' : 'development',
+        E2E: 'true',
+      },
     },
   ],
 });

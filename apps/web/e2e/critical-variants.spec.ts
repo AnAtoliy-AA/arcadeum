@@ -54,7 +54,7 @@ test.describe('Critical Variant Selection', () => {
               ],
             },
             session: {
-              id: 'session-1',
+              id: '507f191e810c19729de860f1',
               status: 'active',
               state: {
                 players: [
@@ -81,29 +81,27 @@ test.describe('Critical Variant Selection', () => {
 
     // Navigate to game creation page
     await navigateTo(page, '/games/create');
+    await page.waitForLoadState('networkidle');
 
     // Select Critical game tile
-    const criticalTile = page
-      .locator('div,a,button')
-      .filter({ hasText: /^Critical$/ })
-      .first();
-    await expect(criticalTile).toBeVisible();
-    await criticalTile.click();
+    const criticalTile = page.getByTestId('game-tile-critical_v1');
+    await expect(criticalTile).toBeVisible({});
+    await criticalTile.click({ force: true });
 
     // Select High-Altitude Hike variant tile
     const hikeVariant = page
       .locator('button')
       .filter({ hasText: /High-Altitude Hike/i });
-    await expect(hikeVariant).toBeVisible({ timeout: 10000 });
+    await expect(hikeVariant).toBeVisible({});
     await hikeVariant.click();
 
     // Create room
     const createBtn = page.getByTestId('create-room-button');
-    await expect(createBtn).toBeEnabled();
+    await expect(createBtn).toBeEnabled({});
     await createBtn.click({ force: true });
 
     // The create button should trigger navigation to the room
-    await expect(page).toHaveURL(/\/games\/rooms\//, { timeout: 30000 });
+    await expect(page).toHaveURL(/\/games\/rooms\//, {});
     await page.waitForLoadState('domcontentloaded');
     await waitForRoomReady(page);
 
@@ -112,7 +110,7 @@ test.describe('Critical Variant Selection', () => {
       .locator('h1,h2,h3')
       .filter({ hasText: /Critical/i })
       .first();
-    await expect(gameHeading).toBeVisible({ timeout: 20000 });
+    await expect(gameHeading).toBeVisible({});
 
     const startBtn = page.getByRole('button', { name: /start with/i });
     await expect(startBtn).toBeEnabled();
@@ -122,9 +120,11 @@ test.describe('Critical Variant Selection', () => {
 
     // Check if we are in the game
     await expect(page.getByRole('heading', { name: /your hand/i })).toBeVisible(
-      {
-        timeout: 15000,
-      },
+      {},
     );
+
+    // Redesign markers (ARC-480): verify scene backdrop + turn banner mount.
+    await expect(page.locator('[data-testid="scene-backdrop"]')).toBeVisible();
+    await expect(page.locator('[data-testid="turn-banner"]')).toBeVisible();
   });
 });

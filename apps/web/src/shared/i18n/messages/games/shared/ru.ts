@@ -30,8 +30,11 @@ export const ruMessages = {
   rooms: {
     status: {
       lobby: 'Лобби',
+      waiting: 'Ожидание',
       in_progress: 'В процессе',
       completed: 'Завершено',
+      placement: 'Размещение',
+      active: 'Активная',
     },
     hostedBy: 'Организатор: {{host}}',
     participants: 'Участники',
@@ -79,6 +82,21 @@ export const ruMessages = {
         'Вы уверены, что хотите удалить этот зал? Это действие нельзя отменить, и все игроки будут отключены.',
       confirmButton: 'Удалить зал',
       cancelButton: 'Оставить зал',
+    },
+    kickPlayer: {
+      button: 'Удалить',
+      confirmTitle: 'Удалить игрока',
+      confirmMessage:
+        'Вы уверены, что хотите удалить {{playerName}} из комнаты?',
+      confirmButton: 'Удалить',
+      cancelButton: 'Отмена',
+    },
+    leaveRoom: {
+      button: 'Покинуть комнату',
+      confirmTitle: 'Покинуть комнату',
+      confirmMessage: 'Вы уверены, что хотите покинуть эту комнату?',
+      confirmButton: 'Покинуть',
+      cancelButton: 'Остаться',
     },
   },
   create: {
@@ -182,5 +200,10 @@ export const ruMessages = {
     label: 'Неактивен',
     title: '💤 Вы неактивны',
     message: 'Пошевелите мышкой или нажмите клавишу, чтобы продолжить',
+  },
+  table: {
+    controlPanel: {
+      spectating: 'Наблюдение',
+    },
   },
 };

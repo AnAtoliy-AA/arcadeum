@@ -190,6 +190,7 @@ export const frMessages = {
       variants: cardVariants,
     },
     actions: {
+      title: 'ACTIONS',
       start: 'Démarrer le Jeu',
       starting: 'Démarrage...',
       draw: 'Piocher',
@@ -231,6 +232,8 @@ export const frMessages = {
       alive: 'En vie',
       eliminated: 'Éliminé',
       yourTurn: 'Votre tour',
+      yourMove: 'À vous de jouer',
+      playerTurn: 'Tour de {{name}}',
       waitingFor: "En attente d'un joueur...",
     },
     status: {
@@ -298,6 +301,27 @@ export const frMessages = {
     eliminated: {
       title: 'Vous avez été éliminé !',
       message: 'Regardez les joueurs restants se battre',
+    },
+    mobile: {
+      attack: {
+        title: 'Choisir la cible',
+        description: 'Jouer Attaque sur quel joueur ?',
+      },
+      favor: {
+        title: 'Choisir la cible',
+        description: 'Demander une faveur à quel joueur ?',
+      },
+      cancel: 'Annuler',
+      play: 'Jouer',
+      popover: {
+        play: 'Jouer',
+        combo: 'Combo (×{{count}})',
+        close: 'Fermer',
+      },
+      actionBar: {
+        draw: 'Piocher',
+        nope: 'Non',
+      },
     },
     victory: {
       title: 'Victoire !',
@@ -415,9 +439,11 @@ export const frMessages = {
       },
     },
     controlPanel: {
+      spectating: 'Observation',
       fullscreen: 'Plein écran',
       exitFullscreen: 'Quitter le plein écran',
       enterFullscreen: 'Entrer en plein écran',
+      rules: 'Règles',
       leaveRoom: 'Quitter',
       leaveConfirmMessage:
         'Êtes-vous sûr de vouloir quitter la partie ? Vous serez retiré de la liste des participants.',

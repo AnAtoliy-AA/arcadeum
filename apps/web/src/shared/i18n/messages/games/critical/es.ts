@@ -185,6 +185,7 @@ export const esMessages = {
       variants: cardVariants,
     },
     actions: {
+      title: 'ACCIONES',
       start: 'Iniciar Juego',
       starting: 'Iniciando...',
       draw: 'Robar Carta',
@@ -227,6 +228,8 @@ export const esMessages = {
       alive: 'Vivo',
       eliminated: 'Eliminado',
       yourTurn: 'Tu turno',
+      yourMove: 'Tu jugada',
+      playerTurn: 'Turno de {{name}}',
       waitingFor: 'Esperando jugador...',
     },
     status: {
@@ -291,6 +294,27 @@ export const esMessages = {
     eliminated: {
       title: '¡Has sido eliminado!',
       message: 'Observa cómo los jugadores restantes batallan',
+    },
+    mobile: {
+      attack: {
+        title: 'Selecciona objetivo',
+        description: '¿Jugar Ataque contra qué jugador?',
+      },
+      favor: {
+        title: 'Selecciona objetivo',
+        description: '¿A qué jugador pedir un favor?',
+      },
+      cancel: 'Cancelar',
+      play: 'Jugar',
+      popover: {
+        play: 'Jugar',
+        combo: 'Combo (×{{count}})',
+        close: 'Cerrar',
+      },
+      actionBar: {
+        draw: 'Robar',
+        nope: 'No',
+      },
     },
     victory: { title: '¡Victoria!', message: '¡Felicidades! ¡Sobreviviste!' },
     defeat: {
@@ -405,9 +429,11 @@ export const esMessages = {
       },
     },
     controlPanel: {
+      spectating: 'Espectando',
       fullscreen: 'Pantalla completa',
       exitFullscreen: 'Salir de pantalla completa',
       enterFullscreen: 'Entrar en pantalla completa',
+      rules: 'Reglas',
       leaveRoom: 'Salir',
       leaveConfirmMessage:
         '¿Estás seguro de que quieres salir del juego? Serás eliminado de la lista de participantes.',

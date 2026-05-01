@@ -1,7 +1,6 @@
 'use client';
 
-import { GlassCard } from '@/shared/ui';
-import { ProgressBar } from '@/shared/ui/Progress/Progress';
+import { GlassCard, ProgressBar } from '@/shared/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { ReferralStats } from '../types';
 import {
@@ -44,11 +43,11 @@ export function ReferralProgressCard({ stats }: ReferralProgressCardProps) {
             </ProgressTarget>
           )}
         </ProgressLabel>
-        <ProgressBar value={Math.min(progressValue, 100)} height={12} animate />
+        <ProgressBar value={Math.min(progressValue, 100)} />
         <ProgressLabel>
-          <span>{t('referrals.progressCard.friendsInvited')}</span>
+          <span style={{ fontSize: '0.875rem', color: 'rgba(236,239,238,0.7)' }}>{t('referrals.progressCard.friendsInvited')}</span>
           {nextTier && (
-            <span>
+            <span style={{ fontSize: '0.875rem', color: 'rgba(236,239,238,0.7)' }}>
               {t('referrals.progressCard.remaining', {
                 count: String(nextTier.remaining),
               })}

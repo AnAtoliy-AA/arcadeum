@@ -42,23 +42,15 @@ export type CriticalExpansion =
   | 'chaos'
   | 'deity';
 
-// ===== DEITY PACK EXPANSION CARDS =====
-export type DeityPackCard = 'omniscience' | 'miracle' | 'smite' | 'rapture';
-
-export const DEITY_PACK_CARDS: DeityPackCard[] = [
-  'omniscience',
-  'miracle',
-  'smite',
-  'rapture',
-];
-
 // ===== ATTACK PACK EXPANSION CARDS =====
 export type AttackPackCard =
   | 'targeted_strike'
   | 'private_strike'
   | 'recursive_strike'
   | 'mega_evade'
-  | 'invert';
+  | 'invert'
+  | 'chain_strike'
+  | 'shield_bash';
 
 export const ATTACK_PACK_CARDS: AttackPackCard[] = [
   'targeted_strike',
@@ -66,6 +58,28 @@ export const ATTACK_PACK_CARDS: AttackPackCard[] = [
   'recursive_strike',
   'mega_evade',
   'invert',
+  'chain_strike',
+  'shield_bash',
+];
+
+// ===== DEITY PACK EXPANSION CARDS =====
+export type DeityPackCard =
+  | 'omniscience'
+  | 'miracle'
+  | 'smite'
+  | 'rapture'
+  | 'resurrection'
+  | 'judgment'
+  | 'prophecy';
+
+export const DEITY_PACK_CARDS: DeityPackCard[] = [
+  'omniscience',
+  'miracle',
+  'smite',
+  'rapture',
+  'resurrection',
+  'judgment',
+  'prophecy',
 ];
 
 // ===== FUTURE PACK EXPANSION CARDS =====
@@ -92,16 +106,20 @@ export const FUTURE_PACK_CARDS: FuturePackCard[] = [
 
 // ===== THEFT PACK EXPANSION CARDS =====
 export type TheftPackCard =
-  | 'wildcard' // Wildcard for combos (substitute any collection card)
-  | 'mark' // Tag a card in target's hand to steal later
-  | 'steal_draw' // Steal the next card a player draws
-  | 'stash'; // Protected storage for cards
+  | 'wildcard'
+  | 'mark'
+  | 'steal_draw'
+  | 'stash'
+  | 'swap_hands'
+  | 'snatch';
 
 export const THEFT_PACK_CARDS: TheftPackCard[] = [
   'wildcard',
   'mark',
   'steal_draw',
   'stash',
+  'swap_hands',
+  'snatch',
 ];
 
 // ===== CHAOS PACK EXPANSION CARDS =====
@@ -110,7 +128,9 @@ export type ChaosPackCard =
   | 'containment_field'
   | 'fission'
   | 'tribute'
-  | 'blackout';
+  | 'blackout'
+  | 'echo'
+  | 'scramble';
 
 export const CHAOS_PACK_CARDS: ChaosPackCard[] = [
   'critical_implosion',
@@ -118,7 +138,11 @@ export const CHAOS_PACK_CARDS: ChaosPackCard[] = [
   'fission',
   'tribute',
   'blackout',
+  'echo',
+  'scramble',
 ];
+
+export const ANYTIME_ACTION_CARDS: CriticalCard[] = ['cancel', 'shield_bash'];
 
 export const CARDS_REQUIRING_DRAWS: CriticalCard[] = [
   'strike',
@@ -127,12 +151,11 @@ export const CARDS_REQUIRING_DRAWS: CriticalCard[] = [
   'mark',
   'steal_draw',
   'stash',
-  ...ATTACK_PACK_CARDS,
+  'snatch',
+  ...ATTACK_PACK_CARDS.filter((c) => c !== 'shield_bash'),
   ...FUTURE_PACK_CARDS,
   ...DEITY_PACK_CARDS,
 ];
-
-export const ANYTIME_ACTION_CARDS: CriticalCard[] = ['cancel'];
 
 // ===== COMBINED CARD TYPE =====
 export type CriticalCard =

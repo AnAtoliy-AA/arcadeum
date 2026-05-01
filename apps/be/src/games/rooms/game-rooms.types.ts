@@ -63,6 +63,7 @@ export interface LeaveGameRoomResult {
   room: GameRoomSummary | null;
   deleted: boolean;
   removedPlayerId: string;
+  kicked: boolean;
 }
 
 export interface DeleteGameRoomResult {

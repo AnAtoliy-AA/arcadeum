@@ -8,9 +8,10 @@ interface GetHistoryParams {
   status?: string;
   page?: number;
   limit?: number;
+  grouped?: boolean;
 }
 
-interface GetHistoryResponse {
+export interface GetHistoryResponse {
   entries: HistorySummary[];
   total: number;
   hasMore: boolean;
@@ -92,14 +93,16 @@ export const historyApi = {
     limit?: number,
     offset?: number,
     gameId?: string,
+    options?: ApiClientOptions,
   ): Promise<LeaderboardResponse> => {
     const params = new URLSearchParams();
     if (limit) params.append('limit', String(limit));
-    if (offset) params.append('offset', String(offset));
+    if (offset !== undefined) params.append('offset', String(offset));
     if (gameId) params.append('gameId', gameId);
     const queryString = params.toString() ? `?${params.toString()}` : '';
     return apiClient.get<LeaderboardResponse>(
       `/games/leaderboard${queryString}`,
+      options,
     );
   },
 

@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import type { GameRoomSummary, GameInitialData } from '@/shared/types/games';
-import { useGameStore } from '../store/gameStore';
+import { useGameStore, type GameState } from '../store/gameStore';
 
 interface UseGameRoomOptions {
   roomId: string;
@@ -38,15 +38,15 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
     initialData,
   } = options;
 
-  const room = useGameStore((s) => s.room);
-  const session = useGameStore((s) => s.session);
-  const loading = useGameStore((s) => s.loading);
-  const error = useGameStore((s) => s.error);
-  const connect = useGameStore((s) => s.connect);
-  const disconnect = useGameStore((s) => s.disconnect);
-  const joinRoom = useGameStore((s) => s.joinRoom);
-  const storeLeaveRoom = useGameStore((s) => s.leaveRoom);
-  const storeDeleteRoom = useGameStore((s) => s.deleteRoom);
+  const room = useGameStore((s: GameState) => s.room);
+  const session = useGameStore((s: GameState) => s.session);
+  const loading = useGameStore((s: GameState) => s.loading);
+  const error = useGameStore((s: GameState) => s.error);
+  const connect = useGameStore((s: GameState) => s.connect);
+  const disconnect = useGameStore((s: GameState) => s.disconnect);
+  const joinRoom = useGameStore((s: GameState) => s.joinRoom);
+  const storeLeaveRoom = useGameStore((s: GameState) => s.leaveRoom);
+  const storeDeleteRoom = useGameStore((s: GameState) => s.deleteRoom);
   const isHost = room?.hostId === userId;
 
   useEffect(() => {

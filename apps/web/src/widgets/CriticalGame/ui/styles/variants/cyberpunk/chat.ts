@@ -1,4 +1,3 @@
-import { css, RuleSet } from 'styled-components';
 import { VARIANT_COLORS } from '../../variant-palette';
 
 export const chatStyles = {
@@ -10,18 +9,21 @@ export const chatStyles = {
   getInputFocusBorder: (): string => VARIANT_COLORS.cyberpunk.secondary,
   getInputFocusShadow: (): string =>
     `0 0 12px ${VARIANT_COLORS.cyberpunk.secondary}66`,
-  getInputStyles: (): RuleSet<object> => css`
-    font-family: 'Courier New', monospace;
-    border-radius: 4px;
-    padding: 0.5rem;
-  `,
-  getTurnStatusStyles: (): RuleSet<object> => css`
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid ${VARIANT_COLORS.cyberpunk.primary}66;
-    border-left: 3px solid ${VARIANT_COLORS.cyberpunk.primary};
-    font-family: 'Courier New', monospace;
-    color: ${VARIANT_COLORS.cyberpunk.primary};
-    text-shadow: 0 0 5px ${VARIANT_COLORS.cyberpunk.primary}80;
-    border-radius: 2px;
-  `,
+  getInputStyles: () => ({
+    fontFamily: '"Courier New", monospace',
+    borderRadius: 4,
+    padding: '0.5rem',
+  }),
+  getTurnStatusStyles: () => ({
+    background: 'rgba(0, 0, 0, 0.6)',
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: `${VARIANT_COLORS.cyberpunk.primary}66`,
+    borderLeftWidth: 3,
+    borderLeftColor: VARIANT_COLORS.cyberpunk.primary,
+    fontFamily: '"Courier New", monospace',
+    color: VARIANT_COLORS.cyberpunk.primary,
+    textShadow: `0 0 5px ${VARIANT_COLORS.cyberpunk.primary}80`,
+    borderRadius: 2,
+  }),
 };

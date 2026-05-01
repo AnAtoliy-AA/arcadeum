@@ -77,13 +77,11 @@ test.describe('Sea Battle Bot Count Selection', () => {
           clearInterval(poll);
           const originalEmit = s.emit.bind(s);
           s.emit = (event: string, payload: unknown) => {
-            console.log(`[TestInterceptor] Emitting ${event}`, payload);
             (
               window as unknown as { _emittedEvents: EmittedEvent[] }
             )._emittedEvents.push({ event, payload });
             return originalEmit(event, payload);
           };
-          console.log('[TestInterceptor] Socket intercepted');
         }
       }, 50);
     });
@@ -93,34 +91,30 @@ test.describe('Sea Battle Bot Count Selection', () => {
     await closeRulesModal(page);
 
     // Wait for the bot selection UI to be present
-    await expect(page.locator('body')).toContainText(/bots|number of bots/i, {
-      timeout: 20000,
-    });
+    await expect(page.locator('body')).toContainText(
+      /bots|number of bots/i,
+      {},
+    );
 
     const botButton4 = page.getByTestId('bot-count-4');
-    await expect(botButton4).toBeVisible({ timeout: 15000 });
+    await expect(botButton4).toBeVisible({});
     await clickButtonByTestId(page, 'bot-count-4');
 
-    const startBtn = page.getByRole('button', { name: /Start with 4 🤖/i });
-    await expect(startBtn).toBeVisible({ timeout: 15000 });
+    const startBtn = page.getByTestId('start-with-bots-button');
+    await expect(startBtn).toBeVisible({});
     await startBtn.click();
 
     await expect
-      .poll(
-        async () => {
-          const events = await page.evaluate(
-            () =>
-              (window as unknown as { _emittedEvents: EmittedEvent[] })
-                ._emittedEvents,
-          );
-          return events.find(
-            (e: EmittedEvent) => e.event === 'seaBattle.session.start',
-          )?.payload;
-        },
-        {
-          timeout: 15000,
-        },
-      )
+      .poll(async () => {
+        const events = await page.evaluate(
+          () =>
+            (window as unknown as { _emittedEvents: EmittedEvent[] })
+              ._emittedEvents,
+        );
+        return events.find(
+          (e: EmittedEvent) => e.event === 'seaBattle.session.start',
+        )?.payload;
+      }, {})
       .toMatchObject({
         withBots: true,
         botCount: 4,

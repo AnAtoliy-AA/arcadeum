@@ -1,54 +1,35 @@
 import dynamic from 'next/dynamic';
 
-const ComboModal = dynamic(
-  () => import('./modals/ComboModal').then((m) => m.ComboModal),
-  { ssr: false },
-);
-const StashModal = dynamic(
-  () => import('./modals/StashModal').then((m) => m.StashModal),
-  { ssr: false },
-);
-const SeeTheFutureModal = dynamic(
-  () => import('./modals/SeeTheFutureModal').then((m) => m.SeeTheFutureModal),
-  { ssr: false },
-);
+const ComboModal = dynamic(() => import('./modals/ComboModal'), { ssr: false });
+const StashModal = dynamic(() => import('./modals/StashModal'), { ssr: false });
+const SeeTheFutureModal = dynamic(() => import('./modals/SeeTheFutureModal'), {
+  ssr: false,
+});
 const AlterTheFutureModal = dynamic(
-  () =>
-    import('./modals/AlterTheFutureModal').then((m) => m.AlterTheFutureModal),
+  () => import('./modals/AlterTheFutureModal'),
   { ssr: false },
 );
-const FavorModal = dynamic(
-  () => import('./modals/FavorModal').then((m) => m.FavorModal),
-  { ssr: false },
-);
+const FavorModal = dynamic(() => import('./modals/FavorModal'), { ssr: false });
 const TargetedAttackModal = dynamic(
-  () =>
-    import('./modals/TargetedAttackModal').then((m) => m.TargetedAttackModal),
+  () => import('./modals/TargetedAttackModal'),
   { ssr: false },
 );
-const GiveFavorModal = dynamic(
-  () => import('./modals/GiveFavorModal').then((m) => m.GiveFavorModal),
-  { ssr: false },
-);
-const DefuseModal = dynamic(
-  () => import('./modals/DefuseModal').then((m) => m.DefuseModal),
-  { ssr: false },
-);
-const RematchModal = dynamic(
-  () => import('./modals/RematchModal').then((m) => m.RematchModal),
-  { ssr: false },
-);
+const GiveFavorModal = dynamic(() => import('./modals/GiveFavorModal'), {
+  ssr: false,
+});
+const DefuseModal = dynamic(() => import('./modals/DefuseModal'), {
+  ssr: false,
+});
+const RematchModal = dynamic(() => import('./modals/RematchModal'), {
+  ssr: false,
+});
 const RematchInvitationModal = dynamic(
-  () =>
-    import('./modals/RematchInvitationModal').then(
-      (m) => m.RematchInvitationModal,
-    ),
+  () => import('./modals/RematchInvitationModal'),
   { ssr: false },
 );
-const OmniscienceModal = dynamic(
-  () => import('./OmniscienceModal').then((m) => m.OmniscienceModal),
-  { ssr: false },
-);
+const OmniscienceModal = dynamic(() => import('./OmniscienceModal'), {
+  ssr: false,
+});
 import type {
   CriticalCard,
   EventComboModalState,
@@ -155,6 +136,10 @@ export interface GameModalsProps {
   onConfirmSmite: () => void;
   omniscienceModal: OmniscienceModalState | null;
   onCloseOmniscienceModal: () => void;
+
+  // Mobile gating — suppresses TargetedAttackModal + FavorModal on $sm;
+  // ActiveGameView renders MobileActionSheet in their place.
+  isMobile?: boolean;
 }
 
 export function GameModals({
@@ -241,6 +226,7 @@ export function GameModals({
   onSelectTarget,
   omniscienceModal,
   onCloseOmniscienceModal,
+  isMobile = false,
 }: GameModalsProps) {
   return (
     <>
@@ -322,31 +308,35 @@ export function GameModals({
           />
         )}
 
-      {/* Targeted Attack Modal */}
-      <TargetedAttackModal
-        isOpen={targetedAttackModal}
-        onClose={onCloseTargetedAttackModal}
-        aliveOpponents={aliveOpponents}
-        selectedTarget={selectedTarget}
-        onSelectTarget={onSelectTarget}
-        onConfirm={onConfirmTargetedAttack}
-        resolveDisplayName={resolveDisplayName}
-        t={t}
-        cardVariant={cardVariant}
-      />
+      {/* Targeted Attack Modal — desktop only; mobile uses MobileActionSheet */}
+      {!isMobile && (
+        <TargetedAttackModal
+          isOpen={targetedAttackModal}
+          onClose={onCloseTargetedAttackModal}
+          aliveOpponents={aliveOpponents}
+          selectedTarget={selectedTarget}
+          onSelectTarget={onSelectTarget}
+          onConfirm={onConfirmTargetedAttack}
+          resolveDisplayName={resolveDisplayName}
+          t={t}
+          cardVariant={cardVariant}
+        />
+      )}
 
-      {/* Favor Modal */}
-      <FavorModal
-        isOpen={favorModal}
-        onClose={onCloseFavorModal}
-        aliveOpponents={aliveOpponents}
-        selectedTarget={selectedTarget}
-        onSelectTarget={onSelectTarget}
-        onConfirm={onConfirmFavor}
-        resolveDisplayName={resolveDisplayName}
-        t={t}
-        cardVariant={cardVariant}
-      />
+      {/* Favor Modal — desktop only; mobile uses MobileActionSheet */}
+      {!isMobile && (
+        <FavorModal
+          isOpen={favorModal}
+          onClose={onCloseFavorModal}
+          aliveOpponents={aliveOpponents}
+          selectedTarget={selectedTarget}
+          onSelectTarget={onSelectTarget}
+          onConfirm={onConfirmFavor}
+          resolveDisplayName={resolveDisplayName}
+          t={t}
+          cardVariant={cardVariant}
+        />
+      )}
 
       {/* Defuse Modal - shows when player must defuse */}
       <DefuseModal

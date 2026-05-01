@@ -183,6 +183,7 @@ export const enMessages = {
       variants: cardVariants,
     },
     actions: {
+      title: 'ACTIONS',
       start: 'Start Game',
       starting: 'Starting...',
       draw: 'Draw Card',
@@ -224,6 +225,8 @@ export const enMessages = {
       alive: 'Alive',
       eliminated: 'Eliminated',
       yourTurn: 'Your turn',
+      yourMove: 'Your move',
+      playerTurn: "{{name}}'s turn",
       waitingFor: 'Waiting for player...',
     },
     status: {
@@ -288,6 +291,27 @@ export const enMessages = {
     eliminated: {
       title: 'You have been eliminated!',
       message: 'Watch the remaining players battle it out',
+    },
+    mobile: {
+      attack: {
+        title: 'Select target',
+        description: 'Play Attack on which player?',
+      },
+      favor: {
+        title: 'Select target',
+        description: 'Ask which player for a favor?',
+      },
+      cancel: 'Cancel',
+      play: 'Play',
+      popover: {
+        play: 'Play',
+        combo: 'Play as Combo (×{{count}})',
+        close: 'Close',
+      },
+      actionBar: {
+        draw: 'Draw',
+        nope: 'Nope',
+      },
     },
     victory: { title: 'Victory!', message: 'Congratulations! You survived!' },
     defeat: { title: 'Game Over', message: 'Better luck next time!' },
@@ -399,9 +423,11 @@ export const enMessages = {
       },
     },
     controlPanel: {
+      spectating: 'Spectating',
       fullscreen: 'Fullscreen',
       exitFullscreen: 'Exit fullscreen',
       enterFullscreen: 'Enter fullscreen',
+      rules: 'Rules',
       leaveRoom: 'Leave',
       leaveConfirmMessage:
         'Are you sure you want to leave the game? You will be removed from the participants list.',

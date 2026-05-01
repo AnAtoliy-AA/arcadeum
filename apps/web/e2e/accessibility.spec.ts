@@ -12,9 +12,16 @@ test.describe('Accessibility', () => {
     expect(count).toBeGreaterThan(0);
   });
 
-  test('should support keyboard navigation (Tab)', async ({ page }) => {
+  test('should support keyboard navigation (Tab)', async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(
+      browserName === 'webkit',
+      'WebKit on macOS requires system-level keyboard navigation enabled',
+    );
+
     await navigateTo(page, '/');
-    await page.waitForLoadState('networkidle');
 
     // LOCATE ALL INTERACTIVE ELEMENTS
     const interactives = page.locator(
@@ -37,13 +44,13 @@ test.describe('Accessibility', () => {
     await first.focus();
 
     // Explicitly wait for focus to land
-    await expect(first).toBeFocused({ timeout: 5000 });
+    await expect(first).toBeFocused({});
 
     // 3. Simple Tab Press
     await page.keyboard.press('Tab', { delay: 300 });
 
     // Ensure the first element LOST focus
-    await expect(first).not.toBeFocused({ timeout: 5000 });
+    await expect(first).not.toBeFocused({});
 
     // Verify some element is focused and it's NOT the body
     await expect
@@ -66,7 +73,6 @@ test.describe('Accessibility', () => {
         },
         {
           message: 'Some interactive element should be focused after Tab',
-          timeout: 5000,
         },
       )
       .toBe(true);
@@ -79,11 +85,19 @@ test.describe('Accessibility', () => {
 
   test('should have alt text on images', async ({ page }) => {
     await navigateTo(page, '/');
-    const images = page.locator('img');
-    const imageCount = await images.count();
 
-    for (let i = 0; i < imageCount; i++) {
-      const img = images.nth(i);
+    // Wait for the main content to be visible to ensure images have started loading
+    await expect(page.locator('main')).toBeVisible();
+
+    // Use all() to get a stable collection of locators at this point in time
+    const images = await page.locator('img').all();
+
+    // We expect at least the logo and some content images
+    expect(images.length).toBeGreaterThanOrEqual(1);
+
+    for (const img of images) {
+      // Each 'img' is a stable locator. We expect it to have an alt attribute.
+      // Note: alt="" is valid for decorative images, but the attribute must exist.
       await expect(img).toHaveAttribute('alt');
     }
   });

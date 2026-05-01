@@ -2,36 +2,38 @@
 
 import { useCallback, useMemo } from 'react';
 
-import { useLanguage, formatMessage } from '@/app/i18n/LanguageProvider';
+import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { useThemeController } from '@/app/theme/ThemeContext';
 import { useHapticsSetting } from '@/shared/hooks/useHapticsSetting';
-import { usePWAInstallProps } from '@/features/pwa';
+import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
 import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
 import type { ThemePreference } from '@/shared/config/theme';
-import { PageLayout, PageTitle, Section } from '@/shared/ui';
+import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
+import { PageTitle } from '@arcadeum/ui/components/PageTitle/PageTitle';
+import { Section } from '@arcadeum/ui/components/Section/Section';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { appConfig } from '@/shared/config/app-config';
 
 import {
   Container,
   OptionList,
-  OptionButton,
-  OptionLabel,
-  OptionDescription,
   PillGroup,
-  PillButton,
   AccountStatus,
   AccountActions,
-  ActionButton,
-  SecondaryButton,
+  AccountActionItem,
   ToggleRow,
   ToggleLabel,
   ToggleInput,
   VersionText,
+  settingsStyles,
 } from './styles';
 
-import { Button, DownloadButtons } from '@/shared/ui';
+import { Button } from '@arcadeum/ui/components/Button/Button';
+import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
+import { OptionCard } from '@/shared/ui/OptionCard/OptionCard';
 import { BlockedUsersSection } from './BlockedUsersSection';
+import { InstallAppCta } from '@/widgets/install-app';
+import AppFooter from '@/widgets/footer/ui/AppFooter';
 
 type DownloadConfig = {
   title: string;
@@ -95,6 +97,26 @@ const DEFAULT_THEME_OPTIONS: Array<{
     label: 'Neon Dark',
     description: 'High-contrast vaporwave styling for dramatic game tables.',
   },
+  {
+    code: 'violetDark',
+    label: 'Violet Dark',
+    description: 'Deep violet-black with lavender glass and purple glow.',
+  },
+  {
+    code: 'violetLight',
+    label: 'Violet Light',
+    description: 'Soft lavender-white with crisp violet accents.',
+  },
+  {
+    code: 'tealDark',
+    label: 'Teal Dark',
+    description: 'Deep teal-black with mint glass and ocean glow.',
+  },
+  {
+    code: 'tealLight',
+    label: 'Teal Light',
+    description: 'Fresh teal-white with clean emerald accents.',
+  },
 ];
 
 const LANGUAGE_LABELS: Record<Locale, string> = {
@@ -111,6 +133,7 @@ export default function SettingsContent({
 }: SettingsContentProps) {
   const { themePreference, setThemePreference } = useThemeController();
   const { hapticsEnabled, setHapticsEnabled } = useHapticsSetting();
+  const { soundEnabled, setSoundEnabled } = useSoundSetting();
   const { locale, setLocale, messages } = useLanguage();
 
   const settingsCopy = messages.settings ?? {};
@@ -191,6 +214,14 @@ export default function SettingsContent({
     [setThemePreference],
   );
 
+  const handleToggleSound = useCallback(() => {
+    setSoundEnabled(!soundEnabled);
+  }, [setSoundEnabled, soundEnabled]);
+
+  const handleToggleHaptics = useCallback(() => {
+    setHapticsEnabled(!hapticsEnabled);
+  }, [setHapticsEnabled, hapticsEnabled]);
+
   const languageGroupLabel = languageTitle;
 
   const languageOptions = useMemo(
@@ -202,109 +233,129 @@ export default function SettingsContent({
     [],
   );
 
-  const { onInstall, onShowInstructions } = usePWAInstallProps();
-
   return (
-    <PageLayout>
-      <Container data-current-locale={locale}>
-        <PageTitle size="xl" gradient>
-          {pageTitle}
-        </PageTitle>
+    <>
+      <style>{settingsStyles}</style>
+      <PageLayout>
+        <Container data-current-locale={locale}>
+          <PageTitle size="xl" gradient>
+            {pageTitle}
+          </PageTitle>
 
-        <Section title={appearanceTitle} description={appearanceDescription}>
-          <OptionList>
-            {themeOptions.map((option) => (
-              <OptionButton
-                key={option.code}
-                data-testid={`theme-${option.code}`}
-                isActive={themePreference === option.code}
-                onClick={() => handleThemeSelect(option.code)}
-              >
-                <OptionLabel>{option.label}</OptionLabel>
-                <OptionDescription>{option.description}</OptionDescription>
-              </OptionButton>
-            ))}
-          </OptionList>
-        </Section>
+          <Section title={appearanceTitle} description={appearanceDescription}>
+            <OptionList key={themePreference}>
+              {themeOptions.map((option) => (
+                <OptionCard
+                  key={option.code}
+                  data-testid={`theme-${option.code}`}
+                  isActive={themePreference === option.code}
+                  onClick={() => handleThemeSelect(option.code)}
+                  label={option.label}
+                  description={option.description}
+                />
+              ))}
+            </OptionList>
+          </Section>
 
-        <Section title={languageTitle} description={languageDescription}>
-          <PillGroup role="group" aria-label={languageGroupLabel}>
-            {languageOptions.map((option) => (
-              <PillButton
-                key={option.code}
-                data-testid={`lang-btn-${option.code}`}
-                isActive={locale === option.code}
-                variant={locale === option.code ? 'primary' : 'secondary'}
-                onClick={() => setLocale(option.code)}
-              >
-                {option.label}
-              </PillButton>
-            ))}
-          </PillGroup>
-        </Section>
-
-        <Section title={gameplayTitle} description={gameplayDescription}>
-          <ToggleRow>
-            <ToggleLabel>{hapticsLabel}</ToggleLabel>
-            <ToggleInput
-              type="checkbox"
-              checked={hapticsEnabled}
-              onChange={(e) => setHapticsEnabled(e.target.checked)}
-            />
-          </ToggleRow>
-        </Section>
-
-        <BlockedUsersSection />
-
-        <Section title={accountTitle} description={accountDescription}>
-          <AccountStatus>
-            {accountStatus} {snapshot.username && `(@${snapshot.username})`}
-          </AccountStatus>
-          <AccountActions>
-            {snapshot.email ? (
-              <Button
-                variant="primary"
-                onClick={handleAccountAction}
-                data-testid="account-logout-button"
-                style={{ flex: 1, borderRadius: '999px', minWidth: '140px' }}
-              >
-                {accountPrimaryCta}
-              </Button>
-            ) : (
-              <ActionButton href="/auth" data-testid="account-signin-button">
-                {accountPrimaryCta}
-              </ActionButton>
-            )}
-            <SecondaryButton
-              as="a"
-              href={supportCta.href}
-              target="_blank"
-              rel="noopener noreferrer"
+          <Section title={languageTitle} description={languageDescription}>
+            <PillGroup
+              key={locale}
+              role="group"
+              aria-label={languageGroupLabel}
             >
-              {accountSupportLabel}
-            </SecondaryButton>
-          </AccountActions>
-        </Section>
+              {languageOptions.map((option) => (
+                <Button
+                  key={option.code}
+                  data-testid={`lang-btn-${option.code}`}
+                  isActive={locale === option.code}
+                  aria-pressed={locale === option.code ? 'true' : 'false'}
+                  variant={locale === option.code ? 'primary' : 'secondary'}
+                  size="md"
+                  minWidth={90}
+                  onClick={() => setLocale(option.code)}
+                >
+                  {option.label}
+                </Button>
+              ))}
+            </PillGroup>
+          </Section>
 
-        <Section
-          title={appConfig.downloads.title}
-          description={
-            settingsCopy.downloadsDescription ??
-            'Install Arcadeum on your device for the best experience.'
-          }
-        >
-          <DownloadButtons
-            onInstall={onInstall}
-            onShowInstructions={onShowInstructions}
-          />
-        </Section>
+          <Section title={gameplayTitle} description={gameplayDescription}>
+            <ToggleRow data-testid="sound-row" onClick={handleToggleSound}>
+              <ToggleLabel>{settingsCopy.soundLabel ?? 'Sound'}</ToggleLabel>
+              <ToggleInput
+                type="checkbox"
+                checked={soundEnabled}
+                readOnly
+                aria-label={settingsCopy.soundLabel ?? 'Sound'}
+              />
+            </ToggleRow>
+            <ToggleRow data-testid="haptics-row" onClick={handleToggleHaptics}>
+              <ToggleLabel>{hapticsLabel}</ToggleLabel>
+              <ToggleInput
+                type="checkbox"
+                checked={hapticsEnabled}
+                readOnly
+                aria-label={hapticsLabel}
+              />
+            </ToggleRow>
+          </Section>
 
-        <Section title={aboutTitle} description={aboutDescription}>
-          <VersionText>
-            {versionLabel}: {appVersion}
-          </VersionText>
-        </Section>
-      </Container>
-    </PageLayout>
+          <BlockedUsersSection />
+
+          <Section title={accountTitle} description={accountDescription}>
+            <AccountStatus>
+              {accountStatus} {snapshot.username && `(@${snapshot.username})`}
+            </AccountStatus>
+            <AccountActions>
+              {snapshot.email ? (
+                <AccountActionItem>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={handleAccountAction}
+                    data-testid="account-logout-button"
+                    fullWidth
+                  >
+                    {accountPrimaryCta}
+                  </Button>
+                </AccountActionItem>
+              ) : (
+                <AccountActionItem>
+                  <LinkButton
+                    href="/auth"
+                    variant="primary"
+                    size="sm"
+                    data-testid="account-signin-button"
+                    fullWidth
+                  >
+                    {accountPrimaryCta}
+                  </LinkButton>
+                </AccountActionItem>
+              )}
+              <AccountActionItem>
+                <LinkButton
+                  href={supportCta.href}
+                  variant="secondary"
+                  size="sm"
+                  fullWidth
+                >
+                  {accountSupportLabel}
+                </LinkButton>
+              </AccountActionItem>
+            </AccountActions>
+          </Section>
+
+          <Section title={aboutTitle} description={aboutDescription}>
+            <VersionText>
+              {versionLabel}: {appVersion}
+            </VersionText>
+          </Section>
+
+          <InstallAppCta />
+        </Container>
+      </PageLayout>
+      <AppFooter />
+    </>
   );
 }

@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 import path from 'path';
 import withPWAInit from '@ducanh2912/next-pwa';
+import { withTamagui } from '@tamagui/next-plugin';
 import packageJson from './package.json';
 
 const withPWA = withPWAInit({
@@ -31,9 +32,12 @@ const cspConnectSrc = [
   'https://arcadeum-be-reserve.onrender.com',
   'wss://arcadeum-be-reserve.onrender.com',
   'https://accounts.google.com',
+  'https://vercel.live',
+  'wss://*.vercel.live',
+  'https://*.vercel.app',
 ];
 
-const cspScriptSrc = "'unsafe-inline'";
+const cspScriptSrc = "'unsafe-inline' https://vercel.live https://*.vercel.app";
 
 const cspStyleSrc = "'self' 'unsafe-inline'";
 
@@ -41,7 +45,8 @@ const cspImgSrc = "'self' blob: data: https:";
 
 const cspFontSrc = "'self' data:";
 
-const cspFrameSrc = "'self' https://www.youtube-nocookie.com";
+const cspFrameSrc =
+  "'self' https://www.youtube-nocookie.com https://vercel.com https://vercel.live";
 
 const nextConfig: NextConfig = {
   headers: async () => {
@@ -87,14 +92,10 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
-          ...(isE2E
-            ? []
-            : [
-                {
-                  key: 'Content-Security-Policy',
-                  value: csp,
-                },
-              ]),
+          {
+            key: 'Content-Security-Policy',
+            value: csp,
+          },
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=63072000; includeSubDomains; preload',
@@ -108,6 +109,10 @@ const nextConfig: NextConfig = {
             value: 'DENY',
           },
           {
+            key: 'X-Robots-Tag',
+            value: 'index, follow',
+          },
+          {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
           },
@@ -115,6 +120,32 @@ const nextConfig: NextConfig = {
             key: 'Permissions-Policy',
             value:
               'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+          },
+        ],
+      },
+      {
+        source: '/robots.txt',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'text/plain',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
+          },
+        ],
+      },
+      {
+        source: '/sitemap.xml',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/xml',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
           },
         ],
       },
@@ -127,7 +158,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Cache-Control',
-            value: 'no-cache, no-store, must-revalidate',
+            value: 'no-cache, must-revalidate',
           },
           {
             key: 'Content-Security-Policy',
@@ -147,34 +178,61 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'private, no-cache, no-transform',
+            value: isDev
+              ? 'no-cache, no-store, must-revalidate'
+              : 'public, max-age=0, must-revalidate, stale-while-revalidate=59',
           },
         ],
       })),
     ];
   },
-  reactCompiler: true,
-  compiler: {
-    styledComponents: {
-      ssr: true,
-      displayName: true,
-    },
-  },
-  typedRoutes: false,
-  turbopack: {
-    root: path.resolve(process.cwd(), '../..'),
-  },
   env: {
     NEXT_PUBLIC_APP_VERSION: packageJson.version,
   },
-  productionBrowserSourceMaps: true,
+  reactCompiler: false,
+  compiler: {
+    styledComponents: {
+      ssr: true,
+    },
+  },
+  transpilePackages: [
+    'tamagui',
+    '@tamagui/core',
+    '@tamagui/web',
+    '@tamagui/shorthands',
+    '@tamagui/config',
+    '@tamagui/lucide-icons',
+    '@tamagui/font-inter',
+    'react-native-web',
+    '@arcadeum/ui',
+  ],
   experimental: {
     optimizePackageImports: [
-      '@arcadeum/shared-ui',
+      'tamagui',
+      '@tamagui/core',
+      '@tamagui/web',
+      '@tamagui/shorthands',
+      '@tamagui/config',
+      '@tamagui/lucide-icons',
       'lucide-react',
-      'framer-motion',
+      '@arcadeum/ui',
     ],
   },
+  turbopack: {
+    root: path.resolve(__dirname, '../../'),
+    resolveAlias: {
+      tamagui: '../../node_modules/tamagui',
+      '@tamagui/core': '../../node_modules/@tamagui/core',
+      '@tamagui/web': '../../node_modules/@tamagui/web',
+    },
+  },
+  productionBrowserSourceMaps: false,
 };
 
-export default withPWA(nextConfig);
+const tamaguiPlugin = withTamagui({
+  config: path.resolve(__dirname, '../../packages/ui/src/tamagui.config.ts'),
+  components: ['tamagui', '@arcadeum/ui'],
+  appDir: true,
+});
+
+export default tamaguiPlugin(withPWA(nextConfig));

@@ -92,6 +92,7 @@ export const enMessages = {
         yourTurnAttack: '🎯 Your Turn - Attack an opponent!',
         placeShips: 'Place your ships',
         waitingFor: 'Waiting for {{player}}...',
+        targetBadge: 'Target',
       },
       phase: {
         lobby: 'Lobby',
@@ -110,6 +111,7 @@ export const enMessages = {
         randomize: 'Randomize Ships',
         resetPlacement: 'Reset Placement',
         waitingForOthers: 'Waiting for others...',
+        dragHint: 'Drag to board · Click to select',
       },
       attack: {
         hit: 'Hit!',
@@ -125,6 +127,7 @@ export const enMessages = {
         hostCanStart: "Click 'Start Game' when ready",
         waitingForHost: 'Waiting for host to start the game',
         hostControls: 'Host Controls',
+        theme: 'Theme',
         roomInfo: 'Room Info',
         host: 'Host',
       },
@@ -135,6 +138,19 @@ export const enMessages = {
       defeat: {
         title: 'Defeat',
         message: 'All your ships have been sunk.',
+      },
+      controlPanel: {
+        spectating: 'Spectating',
+        fullscreen: 'Fullscreen',
+        exitFullscreen: 'Exit Fullscreen',
+        enterFullscreen: 'Enter Fullscreen',
+        rules: 'Rules',
+        leaveRoom: 'Leave',
+        leaveConfirmMessage:
+          'Are you sure you want to leave the game? You will be removed from the participants list.',
+        exitRoom: 'Exit',
+        exitRoomTooltip: 'Go back to lobby but stay in the game',
+        leaveGameTooltip: 'Remove yourself from the game and return to lobby',
       },
       chat: {
         title: 'Battle Chat',

@@ -306,12 +306,9 @@ features/
 **Themed Component:**
 
 ```typescript
-import { styled } from 'styled-components';
-import { useThemeController } from '@/app/theme/ThemeContext';
+import { YStack, Text, styled } from 'tamagui';
 
 function MyComponent() {
-  const { theme } = useThemeController();
-
   return (
     <Container>
       <Title>My Component</Title>
@@ -319,14 +316,15 @@ function MyComponent() {
   );
 }
 
-const Container = styled.div`
-  background-color: ${props => props.theme.background.base};
-  padding: 16px;
-`;
+const Container = styled(YStack, {
+  backgroundColor: '$background',
+  padding: '$4',
+});
 
-const Title = styled.h1`
-  color: ${props => props.theme.text.primary};
-`;
+const Title = styled(Text, {
+  tag: 'h1',
+  color: '$color',
+});
 ```
 
 **Zustand Store:**
@@ -355,15 +353,15 @@ export const useGameStore = create<GameState>()(
 
 ### Styling Best Practices
 
-1. **Use styled-components** - For component-specific styles
-2. **Use CSS variables** - For theme-aware values
-3. **Keep styles local** - Define styles within component file
+1. **Use Tamagui** - `YStack`, `XStack`, `Text`, and `styled()` from `tamagui` for component-specific styles
+2. **Use Tamagui tokens** - `$background`, `$color`, `$borderColor`, `$accent`, etc. for theme-aware values
+3. **Keep styles local** - Define styles within the component file or a companion `styles.ts`
 
 ```typescript
 // Good
-const Container = styled.div`
-  background-color: ${props => props.theme.background.base};
-`;
+const Container = styled(YStack, {
+  backgroundColor: '$background',
+});
 
 // Bad
 <div style={{ backgroundColor: 'var(--background)' }}>
@@ -694,7 +692,7 @@ In addition for the Web App:
 
 - [Next.js Documentation](https://nextjs.org/docs)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)
-- [Styled Components](https://styled-components.com/docs)
+- [Tamagui](https://tamagui.dev/docs/intro/introduction)
 - [Zustand](https://zustand-demo.pmnd.rs/)
 - [React Query](https://tanstack.com/query/latest/docs/react/overview)
 

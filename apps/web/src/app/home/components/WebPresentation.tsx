@@ -1,20 +1,15 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { slides } from '../data/slides';
+import Image from 'next/image';
 import {
-  PresentationContainer,
-  SlideContent,
-  SlideImage,
-  ControlsOverlay,
-  TopBar,
-  BottomBar,
-  ProgressBar,
-  ProgressSegment,
-  SlideCounter,
-  NavButton,
-  FullscreenButton,
-} from './styles/WebPresentation.styles';
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  MaximizeIcon,
+  MinimizeIcon,
+} from '@arcadeum/ui';
+import { slides } from '../data/slides';
+import './styles/presentation-stable.css';
 
 export function WebPresentation() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -82,7 +77,9 @@ export function WebPresentation() {
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen().catch(() => {});
+      (containerRef.current as HTMLElement | null)
+        ?.requestFullscreen()
+        .catch(() => {});
     } else {
       document.exitFullscreen();
     }
@@ -119,127 +116,137 @@ export function WebPresentation() {
   );
 
   return (
-    <PresentationContainer ref={containerRef}>
-      {slides.map((slide, index) => (
-        <SlideContent
-          key={slide.id}
-          $isActive={index === currentSlide}
-          role="group"
-          aria-roledescription="slide"
-          aria-label={`${index + 1} of ${slides.length}: ${slide.title}`}
-        >
-          {loadedIndices.has(index) ? (
-            <SlideImage
-              src={slide.image}
-              alt={slide.title}
-              // Keep eager for purely the current one to ensure priority,
-              // though strict lazy state handles most of it.
-              loading={index === currentSlide ? 'eager' : 'lazy'}
-            />
-          ) : null}
-        </SlideContent>
-      ))}
-
-      <ControlsOverlay>
-        <TopBar>
-          <ProgressBar>
-            {slides.map((_, index) => (
-              <ProgressSegment
-                key={index}
-                $isActive={index === currentSlide}
-                $isViewed={index < currentSlide}
-                onClick={createSlideClickHandler(index)}
-                role="button"
-                aria-label={`Go to slide ${index + 1}`}
+    <div ref={containerRef} className="presentation-container">
+      {slides.map((slide, index) => {
+        const isActive = index === currentSlide;
+        return (
+          <div
+            key={slide.id}
+            className="presentation-slide"
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${index + 1} of ${slides.length}: ${slide.title}`}
+            style={{
+              opacity: isActive ? 1 : 0,
+              visibility: isActive ? 'visible' : 'hidden',
+              transition:
+                'opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.6s',
+              zIndex: isActive ? 1 : 0,
+            }}
+          >
+            {loadedIndices.has(index) ? (
+              <Image
+                src={slide.image}
+                alt={slide.title}
+                fill
+                sizes="(max-width: 1400px) 100vw, 1400px"
+                loading={index === currentSlide ? 'eager' : 'lazy'}
+                style={{
+                  objectFit: 'cover',
+                  animation: isActive
+                    ? 'scaleIn 0.6s cubic-bezier(0.22, 1, 0.36, 1)'
+                    : 'none',
+                }}
               />
-            ))}
-          </ProgressBar>
-        </TopBar>
+            ) : null}
+          </div>
+        );
+      })}
+
+      <div className="presentation-controls">
+        <div
+          className="presentation-top-bar"
+          style={{
+            background:
+              'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%)',
+          }}
+        >
+          <div className="presentation-progress-bar">
+            {slides.map((_, index) => {
+              const isActive = index === currentSlide;
+              const isViewed = index < currentSlide;
+              return (
+                <div
+                  key={index}
+                  className="presentation-progress-segment"
+                  onClick={createSlideClickHandler(index)}
+                  role="button"
+                  aria-label={`Go to slide ${index + 1}`}
+                  style={{
+                    background: isActive
+                      ? 'var(--accent, #81f1ff)'
+                      : isViewed
+                        ? 'rgba(255,255,255,0.5)'
+                        : 'rgba(255,255,255,0.2)',
+                    boxShadow: isActive
+                      ? '0 0 8px rgba(255,255,255,0.4)'
+                      : 'none',
+                  }}
+                />
+              );
+            })}
+          </div>
+        </div>
 
         {/* Floating Navigation Buttons (Desktop) */}
-        <NavButton
-          $position="left"
-          onClick={() => {
-            prevSlide();
+        <div
+          className="presentation-nav-container presentation-nav-left"
+          style={{
+            left: 16,
+            transform: 'translateY(-50%)',
           }}
-          aria-label="Previous slide"
         >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+          <button
+            className="presentation-btn-glass presentation-btn-glass-md"
+            onClick={prevSlide}
+            aria-label="Previous slide"
           >
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </NavButton>
+            <ArrowLeftIcon size={24} />
+          </button>
+        </div>
 
-        <NavButton
-          $position="right"
-          onClick={() => {
-            nextSlide();
+        <div
+          className="presentation-nav-container presentation-nav-right"
+          style={{
+            right: 16,
+            transform: 'translateY(-50%)',
           }}
-          aria-label="Next slide"
         >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+          <button
+            className="presentation-btn-glass presentation-btn-glass-md"
+            onClick={nextSlide}
+            aria-label="Next slide"
           >
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </NavButton>
+            <ArrowRightIcon size={24} />
+          </button>
+        </div>
 
-        <BottomBar>
-          <SlideCounter>
+        <div
+          className="presentation-bottom-bar"
+          style={{
+            background:
+              'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)',
+          }}
+        >
+          <div className="presentation-counter">
             {currentSlide + 1} / {slides.length}
-          </SlideCounter>
+          </div>
 
-          <FullscreenButton
-            onClick={() => {
-              toggleFullscreen();
-            }}
-            aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-          >
-            {isFullscreen ? (
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
-              </svg>
-            ) : (
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
-              </svg>
-            )}
-          </FullscreenButton>
-        </BottomBar>
-      </ControlsOverlay>
-    </PresentationContainer>
+          <div className="presentation-fullscreen-container">
+            <button
+              className="presentation-btn-glass presentation-btn-glass-sm"
+              onClick={toggleFullscreen}
+              aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+            >
+              {isFullscreen ? (
+                <MinimizeIcon size={20} />
+              ) : (
+                <MaximizeIcon size={20} />
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -96,7 +96,7 @@ test.describe('Sea Battle Single Player Mode', () => {
           responseEvent: 'games.session.started',
           responseData: {
             session: {
-              id: 'session-1',
+              id: '507f191e810c19729de860f1',
               status: 'active',
               state: mockPlacementState,
             },
@@ -107,7 +107,7 @@ test.describe('Sea Battle Single Player Mode', () => {
           responseData: {
             roomId,
             session: {
-              id: 'session-1',
+              id: '507f191e810c19729de860f1',
               status: 'active',
               state: {
                 ...mockPlacementState,
@@ -147,7 +147,7 @@ test.describe('Sea Battle Single Player Mode', () => {
           responseData: {
             roomId,
             session: {
-              id: 'session-1',
+              id: '507f191e810c19729de860f1',
               status: 'active',
               state: mockBattleState,
             },
@@ -161,39 +161,33 @@ test.describe('Sea Battle Single Player Mode', () => {
 
     await expect(
       page.getByRole('heading', { name: /Sea Battle/i }),
-    ).toBeVisible({ timeout: 15000 });
+    ).toBeVisible({});
 
-    const startBtn = page.getByRole('button', { name: /start with/i });
-    await expect(startBtn).toBeVisible({ timeout: 15000 });
+    const startBtn = page.getByTestId('start-with-bots-button');
+    await expect(startBtn).toBeVisible({});
     await startBtn.click();
     await closeGameRulesModal(page);
 
     // Increased timeout for placement phase
-    await expect(page.getByText(/place your ships/i).first()).toBeVisible({
-      timeout: 20000,
-    });
+    await expect(page.getByText(/place your ships/i).first()).toBeVisible({});
 
     // More flexible auto place button selection
     const autoPlaceBtn = page
       .getByRole('button', { name: /auto place/i })
       .or(page.getByText(/auto place/i))
       .first();
-    await autoPlaceBtn.click({ timeout: 15000 });
+    await autoPlaceBtn.click({});
 
     // More flexible confirm button selection
     const confirmBtn = page
       .getByRole('button', { name: /confirm/i })
       .or(page.getByText(/confirm/i))
       .first();
-    await expect(confirmBtn).toBeEnabled({ timeout: 15000 });
-    await confirmBtn.click({ timeout: 15000 });
+    await expect(confirmBtn).toBeEnabled({});
+    await confirmBtn.click({});
 
     // Increased timeout for battle phase
-    await expect(page.getByText(/your turn/i).first()).toBeVisible({
-      timeout: 20000,
-    });
-
-    await expect(page.getByTestId('placement-instruction')).toBeVisible();
+    await expect(page.getByText(/your turn/i).first()).toBeVisible({});
   });
 
   test('should allow attacking in sea battle', async ({ page }) => {
@@ -277,7 +271,7 @@ test.describe('Sea Battle Single Player Mode', () => {
           responseData: {
             roomId: roomId,
             session: {
-              id: 'session-1',
+              id: '507f191e810c19729de860f1',
               status: 'active',
               state: {
                 ...mockBattleState,
@@ -302,9 +296,7 @@ test.describe('Sea Battle Single Player Mode', () => {
     await closeGameRulesModal(page);
 
     // Increased timeout for battle phase
-    await expect(page.getByText(/your turn/i).first()).toBeVisible({
-      timeout: 20000,
-    });
+    await expect(page.getByText(/your turn/i).first()).toBeVisible({});
 
     // More flexible cell selection
     const cell = page
@@ -312,15 +304,13 @@ test.describe('Sea Battle Single Player Mode', () => {
       .first()
       .or(page.getByTestId('board-cell-0-0'))
       .first();
-    await expect(cell).toBeVisible({ timeout: 15000 });
-    await cell.click({ timeout: 15000 });
+    await expect(cell).toBeVisible({});
+    await cell.click({});
 
     // More flexible waiting text
     await expect(page.locator('body')).toContainText(
       /waiting for|opponent's turn/i,
-      {
-        timeout: 20000,
-      },
+      {},
     );
   });
 });

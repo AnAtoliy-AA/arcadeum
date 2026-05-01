@@ -99,7 +99,7 @@ console.log('\nSummary:');
 if (!schemeFound) {
   console.log('- Scheme not found in CFBundleURLTypes.');
   console.log(
-    '- Ensure AUTH_IOS_REDIRECT_SCHEME is correct in fe/.env and rebuild (npm run ios).',
+    '- Ensure AUTH_IOS_REDIRECT_SCHEME is correct in fe/.env and rebuild (pnpm run ios).',
   );
 }
 if (/Error|failed|does not/.test(openOut)) {

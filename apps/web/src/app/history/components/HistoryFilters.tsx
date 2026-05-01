@@ -1,12 +1,8 @@
 'use client';
 
+import { XStack, YStack } from '@arcadeum/ui';
+import { Input, Select, Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import {
-  FilterBar,
-  SearchInput,
-  FilterSelect,
-  ClearFiltersButton,
-} from '../styles';
 
 interface HistoryFiltersProps {
   searchQuery: string;
@@ -29,31 +25,49 @@ export function HistoryFilters({
   };
 
   return (
-    <FilterBar>
-      <SearchInput
+    <XStack
+      flexWrap="wrap"
+      gap="$4"
+      ai="center"
+      $xs={{ flexDirection: 'column' }}
+    >
+      <Input
+        flex={1}
+        minWidth={250}
+        $xs={{ minWidth: '100%', width: '100%' }}
         type="text"
         placeholder={t('history.search.placeholder')}
         value={searchQuery}
-        onChange={(e) => onSearchChange(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          onSearchChange(e.target.value)
+        }
         aria-label={t('history.search.label')}
+        size="md"
       />
-      <FilterSelect
-        value={statusFilter}
-        onChange={(e) => onStatusChange(e.target.value)}
-        aria-label={t('history.filter.label')}
-      >
-        <option value="all">{t('history.filter.all')}</option>
-        <option value="lobby">{t('history.status.lobby')}</option>
-        <option value="in_progress">{t('history.status.in_progress')}</option>
-        <option value="completed">{t('history.status.completed')}</option>
-        <option value="waiting">{t('history.status.waiting')}</option>
-        <option value="active">{t('history.status.active')}</option>
-      </FilterSelect>
+      <YStack style={{ minWidth: 180 }} $xs={{ width: '100%' }}>
+        <Select
+          id="status-select"
+          value={statusFilter}
+          onValueChange={onStatusChange}
+          size="md"
+          options={[
+            { value: 'all', label: t('history.filter.all') },
+            { value: 'win', label: t('stats.wins') },
+            { value: 'loss', label: t('stats.losses') },
+          ]}
+        />
+      </YStack>
       {(searchQuery || statusFilter !== 'all') && (
-        <ClearFiltersButton onClick={handleClearFilters}>
+        <Button
+          variant="ghost"
+          size="sm"
+          whiteSpace="nowrap"
+          $xs={{ width: '100%' }}
+          onClick={handleClearFilters}
+        >
           {t('history.filter.clear')}
-        </ClearFiltersButton>
+        </Button>
       )}
-    </FilterBar>
+    </XStack>
   );
 }

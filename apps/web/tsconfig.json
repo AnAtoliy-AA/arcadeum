@@ -2,6 +2,10 @@
   "compilerOptions": {
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "sourceMap": true,
+    "inlineSources": true,
+    "declaration": true,
+    "declarationMap": true,
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,7 +23,12 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@arcadeum/ui": ["../../packages/ui/src"],
+      "@arcadeum/ui/*": ["../../packages/ui/src/*"],
+      "tamagui": ["../../node_modules/tamagui"],
+      "@tamagui/core": ["../../node_modules/@tamagui/core"],
+      "@tamagui/web": ["../../node_modules/@tamagui/web"]
     }
   },
   "include": [

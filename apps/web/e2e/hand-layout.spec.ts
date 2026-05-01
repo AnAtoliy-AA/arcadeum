@@ -61,7 +61,14 @@ test.describe('Hand Layout', () => {
     });
   });
 
-  test('should allow switching grid layouts', async ({ page }) => {
+  test('should allow switching grid layouts', async ({ page, viewport }) => {
+    // The hand layout dropdown is desktop-only (ARC-485 hides it on $sm),
+    // so skip this test on mobile viewports where the trigger doesn't render.
+    test.skip(
+      !!viewport && viewport.width <= 800,
+      'Hand layout dropdown is hidden on mobile viewports',
+    );
+
     await navigateTo(page, `/games/rooms/${roomId}`);
     await waitForRoomReady(page);
 
@@ -76,7 +83,7 @@ test.describe('Hand Layout', () => {
     }
 
     const turnText = page.getByText(/Your turn/i).first();
-    await expect(turnText).toBeVisible({ timeout: 15000 });
+    await expect(turnText).toBeVisible({});
 
     // Locate the layout trigger
     const layoutTrigger = page.getByTestId('layout-trigger');

@@ -6,7 +6,7 @@ import type {
   CriticalCard,
   CriticalComboCard,
 } from '../types';
-import { getCardTranslationKey } from '../lib/cardUtils';
+import { getCardName } from '../lib/cardUtils';
 import { COMBO_CARDS, FIVER_COMBO_SIZE, SPECIAL_CARDS } from '../types';
 import {
   InfoCard,
@@ -17,6 +17,8 @@ import {
   ActionsToggleButton,
 } from './styles';
 import { ExpansionActions } from './ExpansionActions';
+import type { GameVariant } from '@arcadeum/ui';
+import { XStack } from 'tamagui';
 
 export type ActionBusyState =
   | 'draw'
@@ -105,11 +107,11 @@ export function ActionsSection({
   const [showActions, setShowActions] = useState(true);
 
   return (
-    <InfoCard $variant={cardVariant}>
-      <ActionsHeader $variant={cardVariant}>
-        <InfoTitle>{t('games.table.actions.start') || 'Actions'}</InfoTitle>
+    <InfoCard>
+      <ActionsHeader>
+        <InfoTitle>{t('games.table.actions.title') || 'Actions'}</InfoTitle>
         <ActionsToggleButton
-          $variant={cardVariant}
+          $variant={cardVariant as GameVariant}
           onClick={() => setShowActions(!showActions)}
           title={showActions ? 'Hide Actions' : 'Show Actions'}
         >
@@ -118,131 +120,145 @@ export function ActionsSection({
       </ActionsHeader>
 
       {showActions && (
-        <ActionButtons $variant={cardVariant}>
-          <ActionButton
-            $variant={cardVariant}
-            onClick={onDraw}
-            disabled={
-              !canAct ||
-              [
-                'draw',
-                'cancel',
-                'insight',
-                'trade',
-                'nope',
-                'see_the_future',
-                'favor',
-              ].includes(actionBusy as string)
-            }
+        <ActionButtons justifyContent="space-between" alignItems="center">
+          <XStack
+            gap="$2"
+            flexWrap="wrap"
+            flex={1}
+            $sm={{ width: '100%' }}
+            alignItems="center"
           >
-            {actionBusy === 'draw'
-              ? t('games.table.actions.drawing') || 'Drawing...'
-              : t('games.table.actions.draw') || 'Draw Card'}
-          </ActionButton>
-          {currentPlayer.hand.includes('evade') && (
+            {currentPlayer.hand.includes('strike') && (
+              <ActionButton
+                $variant={cardVariant as GameVariant}
+                variant="danger"
+                onClick={() => onPlayActionCard('strike')}
+                data-testid="play-strike-button"
+                disabled={!canAct || actionBusy === 'strike'}
+              >
+                {actionBusy === 'strike'
+                  ? 'Playing...'
+                  : `Play ${getCardName('strike', cardVariant || 'adventure')}`}
+              </ActionButton>
+            )}
+            {currentPlayer.hand.includes('evade') && (
+              <ActionButton
+                $variant={cardVariant as GameVariant}
+                variant="secondary"
+                onClick={() => onPlayActionCard('evade')}
+                data-testid="play-evade-button"
+                disabled={!canAct || actionBusy === 'evade'}
+              >
+                {actionBusy === 'evade'
+                  ? 'Playing...'
+                  : `Play ${getCardName('evade', cardVariant || 'adventure')}`}
+              </ActionButton>
+            )}
+            {currentPlayer.hand.includes('reorder') && (
+              <ActionButton
+                $variant={cardVariant as GameVariant}
+                variant="secondary"
+                onClick={() => onPlayActionCard('reorder')}
+                disabled={!canAct || actionBusy === 'reorder'}
+              >
+                {actionBusy === 'reorder'
+                  ? 'Playing...'
+                  : `🔀 ${getCardName('reorder', cardVariant || 'adventure')}`}
+              </ActionButton>
+            )}
+            {currentPlayer.hand.includes('trade') && (
+              <ActionButton
+                $variant={cardVariant as GameVariant}
+                variant="primary"
+                onClick={onOpenFavorModal}
+                disabled={!canAct || actionBusy === 'favor'}
+              >
+                {actionBusy === 'favor'
+                  ? 'Playing...'
+                  : `🤝 ${getCardName('trade', cardVariant || 'adventure')}`}
+              </ActionButton>
+            )}
+            {currentPlayer.hand.includes('insight') && (
+              <ActionButton
+                $variant={cardVariant as GameVariant}
+                variant="primary"
+                onClick={onPlaySeeTheFuture}
+                disabled={!canAct || actionBusy === 'see_the_future'}
+              >
+                {actionBusy === 'see_the_future'
+                  ? 'Playing...'
+                  : `🔮 ${getCardName('insight', cardVariant || 'adventure')}`}
+              </ActionButton>
+            )}
+            {canPlayCombo && (
+              <ActionButton
+                $variant={cardVariant as GameVariant}
+                variant="primary"
+                onClick={() => onOpenEventCombo(availableCombos)}
+                disabled={actionBusy === 'event_combo'}
+              >
+                {actionBusy === 'event_combo'
+                  ? 'Playing...'
+                  : `🌪️ ${t('games.table.modals.eventCombo.title')}`}
+              </ActionButton>
+            )}
+            {fiverAvailable && canAct && (
+              <ActionButton
+                $variant={cardVariant as GameVariant}
+                variant="primary"
+                onClick={onOpenFiverCombo}
+                disabled={actionBusy === 'event_combo'}
+              >
+                {actionBusy === 'event_combo'
+                  ? 'Playing...'
+                  : '🃏 Fiver (5 Cards)'}
+              </ActionButton>
+            )}
+            <ExpansionActions
+              currentPlayer={currentPlayer}
+              canAct={canAct}
+              actionBusy={actionBusy as string | null}
+              cardVariant={cardVariant}
+              t={t}
+              onPlayActionCard={onPlayActionCard}
+            />
+          </XStack>
+
+          <XStack gap="$2" marginLeft="auto" alignItems="center">
+            {currentPlayer.hand.includes('cancel') && (
+              <ActionButton
+                $variant={cardVariant as GameVariant}
+                variant="secondary"
+                onClick={onPlayNope}
+                disabled={!canAct || actionBusy === 'nope'}
+              >
+                {actionBusy === 'nope'
+                  ? 'Playing...'
+                  : `🚫 ${getCardName('cancel', cardVariant || 'adventure')}`}
+              </ActionButton>
+            )}
             <ActionButton
-              $variant={cardVariant}
-              variant="secondary"
-              onClick={() => onPlayActionCard('evade')}
-              disabled={!canAct || actionBusy === 'evade'}
+              $variant={cardVariant as GameVariant}
+              onClick={onDraw}
+              data-testid="draw-card-button"
+              disabled={
+                !canAct ||
+                [
+                  'draw',
+                  'cancel',
+                  'insight',
+                  'trade',
+                  'nope',
+                  'see_the_future',
+                  'favor',
+                ].includes(actionBusy as string)
+              }
             >
-              {actionBusy === 'evade'
-                ? 'Playing...'
-                : `Play ${t(getCardTranslationKey('evade', cardVariant))}`}
+              {actionBusy === 'draw'
+                ? t('games.table.actions.drawing') || 'Drawing...'
+                : t('games.table.actions.draw') || 'Draw Card'}
             </ActionButton>
-          )}
-          {currentPlayer.hand.includes('strike') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="danger"
-              onClick={() => onPlayActionCard('strike')}
-              disabled={!canAct || actionBusy === 'strike'}
-            >
-              {actionBusy === 'strike'
-                ? 'Playing...'
-                : `Play ${t(getCardTranslationKey('strike', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('reorder') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="secondary"
-              onClick={() => onPlayActionCard('reorder')}
-              disabled={!canAct || actionBusy === 'reorder'}
-            >
-              {actionBusy === 'reorder'
-                ? 'Playing...'
-                : `🔀 ${t(getCardTranslationKey('reorder', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('cancel') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="secondary"
-              onClick={onPlayNope}
-              disabled={!canAct || actionBusy === 'nope'}
-            >
-              {actionBusy === 'nope'
-                ? 'Playing...'
-                : `🚫 ${t(getCardTranslationKey('cancel', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('trade') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="primary"
-              onClick={onOpenFavorModal}
-              disabled={!canAct || actionBusy === 'favor'}
-            >
-              {actionBusy === 'favor'
-                ? 'Playing...'
-                : `🤝 ${t(getCardTranslationKey('trade', cardVariant))}`}
-            </ActionButton>
-          )}
-          {currentPlayer.hand.includes('insight') && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="primary"
-              onClick={onPlaySeeTheFuture}
-              disabled={!canAct || actionBusy === 'see_the_future'}
-            >
-              {actionBusy === 'see_the_future'
-                ? 'Playing...'
-                : `🔮 ${t(getCardTranslationKey('insight', cardVariant))}`}
-            </ActionButton>
-          )}
-          {canPlayCombo && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="primary"
-              onClick={() => onOpenEventCombo(availableCombos)}
-              disabled={actionBusy === 'event_combo'}
-            >
-              {actionBusy === 'event_combo'
-                ? 'Playing...'
-                : `🌪️ ${t('games.table.modals.eventCombo.title')}`}
-            </ActionButton>
-          )}
-          {fiverAvailable && canAct && (
-            <ActionButton
-              $variant={cardVariant}
-              variant="primary"
-              onClick={onOpenFiverCombo}
-              disabled={actionBusy === 'event_combo'}
-            >
-              {actionBusy === 'event_combo'
-                ? 'Playing...'
-                : '🃏 Fiver (5 Cards)'}
-            </ActionButton>
-          )}
-          <ExpansionActions
-            currentPlayer={currentPlayer}
-            canAct={canAct}
-            actionBusy={actionBusy as string | null}
-            cardVariant={cardVariant}
-            t={t}
-            onPlayActionCard={onPlayActionCard}
-          />
+          </XStack>
         </ActionButtons>
       )}
     </InfoCard>

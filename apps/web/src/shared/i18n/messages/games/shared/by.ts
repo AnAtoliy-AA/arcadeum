@@ -30,8 +30,11 @@ export const byMessages = {
   rooms: {
     status: {
       lobby: 'Лобі',
+      waiting: 'Чаканне',
       in_progress: 'У працэсе',
       completed: 'Завершана',
+      placement: 'Размяшчэнне',
+      active: 'Актыўная',
     },
     hostedBy: 'Арганізатар: {{host}}',
     participants: 'Удзельнікі',
@@ -79,6 +82,21 @@ export const byMessages = {
         'Вы ўпэўненыя, што хочаце выдаліць гэтую залу? Гэта дзеянне нельга адмяніць, і ўсе гульцы будуць адключаныя.',
       confirmButton: 'Выдаліць залу',
       cancelButton: 'Пакінуць залу',
+    },
+    kickPlayer: {
+      button: 'Выдаліць',
+      confirmTitle: 'Выдаліць гульца',
+      confirmMessage:
+        'Вы ўпэўненыя, што хочаце выдаліць {{playerName}} з залы?',
+      confirmButton: 'Выдаліць',
+      cancelButton: 'Адмена',
+    },
+    leaveRoom: {
+      button: 'Пакінуць залу',
+      confirmTitle: 'Пакінуць залу',
+      confirmMessage: 'Вы ўпэўненыя, што хочаце пакінуць гэтую залу?',
+      confirmButton: 'Пакінуць',
+      cancelButton: 'Застацца',
     },
   },
   create: {
@@ -179,8 +197,13 @@ export const byMessages = {
     reconnecting: 'Переключэнне...',
   },
   idle: {
-    label: 'Неактыўны',
-    title: '💤 Вы неактыўны',
-    message: 'Рухайце мышку або націсніце клавішу, каб працягнуць',
+    label: 'Бяздзейнасць',
+    title: '💤 Вы бяздзейнічаеце',
+    message: 'Рухайце мышшу альбо націсніце любую клавішу для вяртання',
+  },
+  table: {
+    controlPanel: {
+      spectating: 'Spectating',
+    },
   },
 };

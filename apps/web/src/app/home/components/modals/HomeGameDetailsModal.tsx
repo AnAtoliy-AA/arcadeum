@@ -1,21 +1,22 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import styled from 'styled-components';
+import { YStack, XStack, Text, styled, H4, SizableText } from 'tamagui';
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalTitle,
   ModalBody,
-} from '@/shared/ui/Modal';
+} from '@arcadeum/ui';
 import { LinkButton } from '@/shared/ui';
 import { routes } from '@/shared/config/routes';
 import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import { useLanguage } from '@/app/i18n/LanguageProvider';
+import { useLanguage } from '@/shared/i18n/context';
+
 interface HomeGameDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -23,195 +24,28 @@ interface HomeGameDetailsModalProps {
   initialTab?: 'rules' | 'info';
 }
 
-const ModalGlassContent = styled(ModalContent)`
-  background: ${({ theme }) => theme.surfaces.card.background}cc;
-  backdrop-filter: blur(20px);
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  position: relative;
-  overflow: hidden;
-`;
+const ModalGlassContent = styled(ModalContent, {
+  backgroundColor: 'rgba(21,23,24,0.8)',
+  backdropFilter: 'blur(20px)',
+  borderWidth: 1,
+  borderColor: '$borderColor',
+  position: 'relative',
+  overflow: 'hidden',
+});
 
-const HeaderBackgroundEmoji = styled.div`
-  position: absolute;
-  top: -20px;
-  right: -20px;
-  font-size: 10rem;
-  opacity: 0.1;
-  pointer-events: none;
-  filter: blur(4px);
-  z-index: 0;
-`;
+const HeaderBackgroundEmoji = styled(YStack, {
+  position: 'absolute',
+  top: -20,
+  right: -20,
+  opacity: 0.1,
+  pointerEvents: 'none',
+  zIndex: 0,
+});
 
-const StyledModalTitle = styled(ModalTitle)<{ $gradient?: string }>`
-  background: ${({ $gradient }) =>
-    $gradient ?? 'linear-gradient(135deg, #ff4d4d 0%, #f9cb28 100%)'};
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-size: 2.25rem;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-`;
-
-const TabsWrapper = styled.div`
-  display: flex;
-  background: ${({ theme }) => theme.surfaces.card.border}40;
-  padding: 0.35rem;
-  border-radius: 999px;
-  width: fit-content;
-  margin-bottom: 2.5rem;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border}50;
-`;
-
-const TabPill = styled.button<{ $isActive: boolean }>`
-  background: ${({ $isActive, theme }) =>
-    $isActive ? theme.surfaces.card.background : 'transparent'};
-  color: ${({ $isActive, theme }) =>
-    $isActive ? theme.text.primary : theme.text.secondary};
-  border: none;
-  border-radius: 999px;
-  padding: 0.6rem 2rem;
-  font-size: 0.9rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: ${({ $isActive }) =>
-    $isActive ? '0 4px 12px rgba(0, 0, 0, 0.2)' : 'none'};
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-
-  &:hover:not(:disabled) {
-    color: ${({ theme }) => theme.text.primary};
-  }
-`;
-
-const ContentGrid = styled.div`
-  display: grid;
-  gap: 1.5rem;
-  position: relative;
-  z-index: 1;
-`;
-
-const RulesGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.25rem;
-`;
-
-const RuleCard = styled.div`
-  background: ${({ theme }) => theme.surfaces.card.background}80;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  border-radius: 20px;
-  padding: 1.5rem;
-  display: flex;
-  gap: 1.25rem;
-  transition: transform 0.2s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-    border-color: ${({ theme }) => theme.buttons.primary.gradientStart}40;
-  }
-`;
-
-const RuleIcon = styled.div<{ $gradient?: string }>`
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: ${({ $gradient }) =>
-    $gradient ?? 'linear-gradient(135deg, #ff4d4d 0%, #f9cb28 100%)'};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 900;
-  color: white;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-`;
-
-const RuleText = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-
-  h5 {
-    margin: 0;
-    color: ${({ theme }) => theme.text.primary};
-    font-size: 1.1rem;
-    font-weight: 700;
-  }
-
-  p {
-    margin: 0;
-    color: ${({ theme }) => theme.text.secondary};
-    font-size: 0.95rem;
-    line-height: 1.5;
-  }
-`;
-
-const ThemeCardsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1rem;
-`;
-
-const ThemeCard = styled.div<{ $isPlayable?: boolean }>`
-  background: ${({ theme }) => theme.surfaces.card.background}80;
-  border: 1px solid
-    ${({ theme, $isPlayable }) =>
-      $isPlayable ? theme.surfaces.card.border : 'transparent'};
-  border-radius: 16px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  opacity: ${({ $isPlayable }) => ($isPlayable === false ? 0.6 : 1)};
-  transition: all 0.2s ease;
-
-  ${({ $isPlayable, theme }) =>
-    $isPlayable &&
-    `
-    &:hover {
-      border-color: ${theme.buttons.primary.gradientStart}60;
-      transform: scale(1.02);
-      background: ${theme.surfaces.card.background};
-    }
-  `}
-`;
-
-const ThemeName = styled.span`
-  color: ${({ theme }) => theme.text.primary};
-  font-weight: 700;
-  font-size: 1rem;
-`;
-
-const StatusBadge = styled.span<{ $active?: boolean }>`
-  font-size: 0.7rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.25rem 0.6rem;
-  border-radius: 6px;
-  width: fit-content;
-  background: ${({ $active, theme }) =>
-    $active
-      ? `${theme.buttons.primary.gradientStart}20`
-      : `${theme.text.muted}20`};
-  color: ${({ $active, theme }) =>
-    $active ? theme.buttons.primary.gradientStart : theme.text.muted};
-`;
-
-const ModalActionFooter = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 2.5rem;
-  padding-top: 2rem;
-  border-top: 1px solid ${({ theme }) => theme.surfaces.card.border}50;
-`;
-
-const StyledPlayNowButton = styled(LinkButton)`
-  padding: 1rem 2.5rem;
-  font-size: 1.1rem;
-  border-radius: 14px;
+const tabStyles = `
+  .tab-pill { background: transparent; border: none; border-radius: 999px; padding: 0.6rem 2rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); text-transform: uppercase; letter-spacing: 0.05em; color: rgba(236,239,238,0.7); }
+  .tab-pill.active { background: #151718; color: #ecefee; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+  .tab-pill:hover { color: #ecefee; }
 `;
 
 import { featuredGames } from '../../data/games';
@@ -270,39 +104,109 @@ export function HomeGameDetailsModal({
   }, [game, t]);
 
   const renderRules = () => (
-    <ContentGrid>
-      <RulesGrid>
-        {rulesData.map((rule) => (
-          <RuleCard key={rule.id}>
-            <RuleIcon $gradient={game?.gradient}>{rule.index}</RuleIcon>
-            <RuleText>
-              <h5>{rule.name}</h5>
-              <p>{rule.description}</p>
-            </RuleText>
-          </RuleCard>
-        ))}
-      </RulesGrid>
-    </ContentGrid>
+    <YStack gap="$4" position="relative" zIndex={1}>
+      {rulesData.map((rule) => (
+        <XStack
+          key={rule.id}
+          backgroundColor="rgba(21,23,24,0.5)"
+          borderWidth={1}
+          borderColor="$borderColor"
+          borderRadius={20}
+          padding="$5"
+          gap="$5"
+          alignItems="flex-start"
+        >
+          <YStack
+            width={44}
+            height={44}
+            borderRadius={12}
+            background={
+              game?.gradient ?? 'linear-gradient(135deg,#ff4d4d,#f9cb28)'
+            }
+            alignItems="center"
+            justifyContent="center"
+            flexShrink={0}
+            boxShadow="0 4px 12px rgba(0,0,0,0.2)"
+          >
+            <SizableText fontWeight="900" size="$4" color="white">
+              {rule.index}
+            </SizableText>
+          </YStack>
+          <YStack gap="$2" flex={1}>
+            <H4
+              role="heading"
+              aria-level={4}
+              fontWeight="700"
+              size="$5"
+              color="$color"
+              lineHeight={24}
+            >
+              {rule.name}
+            </H4>
+            <SizableText color="$color" opacity={0.7} size="$3" lineHeight={20}>
+              {rule.description}
+            </SizableText>
+          </YStack>
+        </XStack>
+      ))}
+    </YStack>
   );
 
   const renderGameInfo = () => {
     if (!game) return null;
 
     return (
-      <ContentGrid>
-        <ThemeCardsGrid>
-          {game.variants.map((v) => (
-            <ThemeCard key={v.id} $isPlayable={!v.disabled}>
-              <ThemeName>{t(v.nameKey) || v.id}</ThemeName>
-              <StatusBadge $active={!v.disabled}>
-                {!v.disabled
-                  ? (homeCopy.gameAvailableNow ?? 'Playable')
-                  : (homeCopy.gameComingSoon ?? 'Coming Soon')}
-              </StatusBadge>
-            </ThemeCard>
-          ))}
-        </ThemeCardsGrid>
-      </ContentGrid>
+      <YStack gap="$5" position="relative" zIndex={1}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+            gap: '1rem',
+          }}
+        >
+          {game.variants.map((v) => {
+            const active = !v.disabled;
+            return (
+              <YStack
+                key={v.id}
+                borderRadius={16}
+                padding="$4"
+                gap="$3"
+                opacity={v.disabled ? 0.6 : 1}
+                borderWidth={1}
+                borderColor={active ? '$borderColor' : 'transparent'}
+                hoverStyle={
+                  active
+                    ? { backgroundColor: '$backgroundHover', scale: 1.05 }
+                    : undefined
+                }
+              >
+                <Text color="$color" fontWeight="700" fontSize="$4">
+                  {t(v.nameKey) || v.id}
+                </Text>
+                <SizableText
+                  fontSize={11}
+                  fontWeight="800"
+                  textTransform="uppercase"
+                  letterSpacing={1}
+                  paddingHorizontal="$3"
+                  paddingVertical="$1"
+                  borderRadius={6}
+                  backgroundColor={
+                    active ? 'rgba(122,215,255,0.12)' : 'rgba(236,239,238,0.12)'
+                  }
+                  color={active ? '#7ad7ff' : 'rgba(236,239,238,0.45)'}
+                  width="fit-content"
+                >
+                  {active
+                    ? (homeCopy.gameAvailableNow ?? 'Playable')
+                    : (homeCopy.gameComingSoon ?? 'Coming Soon')}
+                </SizableText>
+              </YStack>
+            );
+          })}
+        </div>
+      </YStack>
     );
   };
 
@@ -311,41 +215,76 @@ export function HomeGameDetailsModal({
   return (
     <Modal open={isOpen} onClose={onClose}>
       <ModalGlassContent maxWidth="800px">
-        <HeaderBackgroundEmoji>{game.emoji}</HeaderBackgroundEmoji>
+        <style>{tabStyles}</style>
+        <HeaderBackgroundEmoji>
+          <span style={{ fontSize: '10rem', filter: 'blur(4px)' }}>
+            {game.emoji}
+          </span>
+        </HeaderBackgroundEmoji>
         <ModalHeader onClose={onClose}>
-          <StyledModalTitle $gradient={game.gradient}>
-            {t(game.nameKey)}
-          </StyledModalTitle>
+          <ModalTitle>
+            <span
+              className="text-gradient"
+              style={{
+                background:
+                  game.gradient ??
+                  'linear-gradient(135deg, #ff4d4d 0%, #f9cb28 100%)',
+                fontSize: '2.25rem',
+                fontWeight: '900',
+                letterSpacing: '-0.02em',
+              }}
+            >
+              {t(game.nameKey)}
+            </span>
+          </ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <TabsWrapper>
-            <TabPill
-              $isActive={activeTab === 'rules'}
+          <div
+            style={{
+              background: 'rgba(50,53,61,0.25)',
+              padding: '0.35rem',
+              borderRadius: 999,
+              width: 'fit-content',
+              marginBottom: '2.5rem',
+              border: '1px solid rgba(50,53,61,0.31)',
+              display: 'flex',
+            }}
+          >
+            <button
+              className={`tab-pill${activeTab === 'rules' ? ' active' : ''}`}
               onClick={() => setActiveTab('rules')}
             >
               {homeCopy.rulesTab ?? 'Rules'}
-            </TabPill>
-            <TabPill
-              $isActive={activeTab === 'info'}
+            </button>
+            <button
+              className={`tab-pill${activeTab === 'info' ? ' active' : ''}`}
               onClick={() => setActiveTab('info')}
             >
               {homeCopy.infoTab ?? 'Game Themes'}
-            </TabPill>
-          </TabsWrapper>
+            </button>
+          </div>
 
           {activeTab === 'rules' ? renderRules() : renderGameInfo()}
 
-          <ModalActionFooter>
-            <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+          <XStack
+            justifyContent="space-between"
+            alignItems="center"
+            marginTop="$7"
+            paddingTop="$6"
+            borderTopWidth={1}
+            borderTopColor="$borderColor"
+          >
+            <SizableText color="rgba(236, 239, 238, 0.7)" fontSize="$3">
               {locale.toUpperCase()} •{' '}
               {t(`games.shared.category.${game.type}Game` as TranslationKey)}
-            </div>
-            <StyledPlayNowButton
+            </SizableText>
+            <LinkButton
               href={`${routes.gameCreate}?gameId=${game.id}`}
+              aria-label={`${homeCopy.gamePlayButton ?? 'Play Now!'} ${t(game.nameKey)}`}
             >
               {homeCopy.gamePlayButton ?? 'Play Now!'}
-            </StyledPlayNowButton>
-          </ModalActionFooter>
+            </LinkButton>
+          </XStack>
         </ModalBody>
       </ModalGlassContent>
     </Modal>

@@ -1,6 +1,8 @@
 'use client';
 
-import { useRef, useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { useMedia, YStack, XStack } from 'tamagui';
+import { useGameChatIntegration } from '@/features/games/hooks';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type {
   CriticalCard,
@@ -17,17 +19,18 @@ import {
   useSeeTheFutureFromLogs,
   useOmniscienceFromLogs,
   useGameAutoplayIntegration,
-  useTurnStatus,
 } from '../hooks';
 import { useGameHandlers } from '../hooks/useGameHandlers';
 import { GameModals } from './GameModals';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
-import { ChatSection } from './ChatSection';
 import { GameStatusMessage } from './GameStatusMessage';
-import { PlayerHand } from './PlayerHand';
-import { GameTableSection } from './GameTableSection';
-import { GameBoard, TableArea } from './styles';
+import { ActiveGameContent } from './ActiveGameContent';
 import { CriticalGameHeader } from './CriticalGameHeader';
+import { MobileActionSheet } from './MobileActionSheet';
+import { getVariantStyles } from './styles/variants';
+import { ScenePaletteProvider } from './ScenePaletteContext';
+import { SceneBackdrop } from './SceneBackdrop';
+import { TurnBanner } from './TurnBanner';
 import type { UseGameActionsReturn } from '@/features/games/hooks/useGameActions';
 import type { RematchInvitation } from '../hooks/useRematch';
 
@@ -48,6 +51,9 @@ interface ActiveGameViewProps {
   canPlayNope: boolean;
   aliveOpponents: CriticalPlayerState[];
   isGameOver: boolean;
+  // Rules modal state from parent
+  showRulesOpen: boolean;
+  onShowRulesClose: () => void;
   // Rematch props
   rematch: {
     rematchLoading: boolean;
@@ -88,11 +94,16 @@ export function ActiveGameView({
   rematch,
 }: ActiveGameViewProps) {
   const { t } = useTranslation();
-  const chatMessagesRef = useRef<HTMLDivElement | null>(null);
+  const media = useMedia();
+  const isMobile = media.sm;
 
   // Layout State
   const [handLayout, setHandLayout] = useState<HandLayoutMode>('grid');
   const cardVariant = room.gameOptions?.cardVariant;
+  const scenePalette = useMemo(
+    () => getVariantStyles(cardVariant).scene,
+    [cardVariant],
+  );
 
   // Sync modal dismissal state with game over state
   const [modalDismissed, setModalDismissed] = useState(false);
@@ -126,43 +137,43 @@ export function ActiveGameView({
     handleSelectComboCard,
     handleToggleFiverCard,
     favorModal,
-    setFavorModal,
+    handleOpenFavorModal,
+    handleCloseFavorModal,
+    handleConfirmFavor,
     targetedAttackModal,
     setTargetedAttackModal,
     seeTheFutureModal,
-    setSeeTheFutureModal,
-    chatMessage,
-    setChatMessage,
-    chatScope,
-    setChatScope,
-    showChat,
-    handleToggleChat,
-    clearChatMessage,
+    handleCloseSeeTheFutureModal,
     stashModal,
-    setStashModal,
+    handleCloseStashModal,
     markModal,
-    setMarkModal,
+    handleCloseMarkModal,
     stealDrawModal,
-    setStealDrawModal,
+    handleCloseStealDrawModal,
     smiteModal,
-    setSmiteModal,
+    handleCloseSmiteModal,
     omniscienceModal,
-    setOmniscienceModal,
+    handleCloseOmniscienceModal,
   } = useCriticalModals({
-    chatMessagesRef,
-    chatLogCount: snapshot?.logs?.length ?? 0,
+    playFavor: actions.playFavor,
   });
+
+  useGameChatIntegration(snapshot?.logs, actions.postHistoryNote);
 
   // Monitor logs for seeTheFuture.reveal and omniscience.reveal entries
   useSeeTheFutureFromLogs({
     logs: snapshot?.logs,
     currentUserId,
-    setSeeTheFutureModal,
+    setSeeTheFutureModal: (_val: unknown) => {
+      // Compatibility if needed, but useCriticalModals should handle it
+    },
   });
   useOmniscienceFromLogs({
     logs: snapshot?.logs,
     currentUserId,
-    setOmniscienceModal,
+    setOmniscienceModal: (_val: unknown) => {
+      // Compatibility
+    },
   });
 
   const youLabel = t('games.table.players.you');
@@ -171,7 +182,7 @@ export function ActiveGameView({
     (cardType: CriticalCard) => t(getCardTranslationKey(cardType, cardVariant)),
     [t, cardVariant],
   );
-  const { resolveDisplayName, formatLogMessage } = useDisplayNames({
+  const { resolveDisplayName } = useDisplayNames({
     currentUserId,
     room,
     snapshot,
@@ -188,8 +199,6 @@ export function ActiveGameView({
     selectedFiverCards,
     selectedDiscardCard,
     eventComboModal,
-    chatMessage,
-    chatScope,
     currentPlayerHand: currentPlayer?.hand ?? [],
     discardPile: snapshot?.discardPile ?? [],
     actions,
@@ -197,17 +206,15 @@ export function ActiveGameView({
     handleOpenEventCombo,
     setSelectedMode,
     setSelectedTarget,
-    setStashModal,
-    setMarkModal,
-    setStealDrawModal,
-    setSmiteModal,
-    clearChatMessage,
+    setStashModal: () => { }, // Handled by useCriticalModals
+    setMarkModal: () => { },
+    setStealDrawModal: () => { },
+    setSmiteModal: () => { },
     setTargetedAttackModal,
   });
 
   const {
     handleConfirmEventCombo,
-    handleSendChatMessage,
     handleOpenFiverCombo,
     handleConfirmStash,
     handleConfirmMark,
@@ -215,11 +222,8 @@ export function ActiveGameView({
     handleUnstash,
     handlePlayActionCard,
     handleCloseTargetedAttackModal,
-    handleCloseMarkModal,
-    handleCloseStealDrawModal,
     handleConfirmTargetedAttack,
     handleConfirmAlterFuture,
-    handleCloseSmiteModal,
     handleConfirmSmite,
   } = gameHandlers;
 
@@ -242,42 +246,6 @@ export function ActiveGameView({
     handlePlayActionCard,
   });
 
-  const { turnStatusVariant, turnStatusText } = useTurnStatus({
-    isGameOver: !!isGameOver,
-    currentTurnPlayer: currentTurnPlayer ?? undefined,
-    currentUserId: currentUserId || '',
-    resolveDisplayName,
-    t: t as (key: string) => string,
-  });
-
-  const handleOpenFavorModal = useCallback(
-    () => setFavorModal(true),
-    [setFavorModal],
-  );
-  const handleCloseFavorModal = useCallback(() => {
-    setFavorModal(false);
-    setSelectedTarget(null);
-  }, [setFavorModal, setSelectedTarget]);
-  const handleConfirmFavor = useCallback(() => {
-    if (selectedTarget) {
-      actions.playFavor(selectedTarget);
-      setFavorModal(false);
-      setSelectedTarget(null);
-    }
-  }, [selectedTarget, actions, setFavorModal, setSelectedTarget]);
-  const handleCloseSeeTheFutureModal = useCallback(
-    () => setSeeTheFutureModal(null),
-    [setSeeTheFutureModal],
-  );
-  const handleCloseStashModal = useCallback(
-    () => setStashModal(false),
-    [setStashModal],
-  );
-  const handleCloseOmniscienceModal = useCallback(
-    () => setOmniscienceModal(null),
-    [setOmniscienceModal],
-  );
-
   const modalPlayers = useMemo(
     () =>
       snapshot.players.map((p: CriticalPlayerState) => ({
@@ -292,110 +260,81 @@ export function ActiveGameView({
   );
 
   return (
-    <>
-      <CriticalGameHeader
-        room={room}
-        t={t as (key: string, params?: Record<string, unknown>) => string}
-        idleTimerEnabled={idleTimerEnabled}
-        turnStatusVariant={turnStatusVariant}
-        turnStatusText={turnStatusText}
-        actionBusy={actionBusy}
-        isGameOver={!!isGameOver}
-        currentPlayer={currentPlayer ?? undefined}
-        canAct={!!canAct}
-        isMyTurn={!!isMyTurn}
-        handleIdleTimeout={handleIdleTimeout}
-        autoplayState={autoplayState}
-        idleTimerTriggered={idleTimerTriggered}
-        handleStopAutoplay={handleStopAutoplay}
-        showChat={showChat}
-        handleToggleChat={handleToggleChat}
-        isFullscreen={isFullscreen}
-        toggleFullscreen={toggleFullscreen}
-      />
-
-      <GameBoard>
-        <TableArea $showChat={showChat}>
-          <GameTableSection
-            players={snapshot.players}
-            playerOrder={snapshot.playerOrder}
-            currentTurnIndex={snapshot.currentTurnIndex}
-            currentUserId={currentUserId}
-            deck={snapshot.deck}
-            discardPileLength={snapshot.discardPile.length}
-            pendingDraws={snapshot.pendingDraws}
-            discardPile={snapshot.discardPile}
-            logs={snapshot.logs ?? []}
-            resolveDisplayName={resolveDisplayName}
-            t={t as (key: string) => string}
-            cardVariant={cardVariant}
+    <ScenePaletteProvider palette={scenePalette}>
+      <SceneBackdrop />
+      <YStack flex={1} className="animate-entrance">
+        <CriticalGameHeader
+          room={room}
+          t={
+            t as unknown as (
+              key: string,
+              params?: Record<string, string | number>,
+            ) => string
+          }
+          idleTimerEnabled={idleTimerEnabled}
+          actionBusy={actionBusy}
+          isGameOver={!!isGameOver}
+          currentPlayer={currentPlayer ?? undefined}
+          canAct={!!canAct}
+          isMyTurn={!!isMyTurn}
+          handleIdleTimeout={handleIdleTimeout}
+          autoplayState={autoplayState}
+          idleTimerTriggered={idleTimerTriggered}
+          handleStopAutoplay={handleStopAutoplay}
+          isFullscreen={isFullscreen}
+          toggleFullscreen={toggleFullscreen}
+        />
+        <XStack justifyContent="center">
+          <TurnBanner
+            isMyTurn={!!isMyTurn}
+            currentPlayerName={
+              currentTurnPlayer
+                ? resolveDisplayName(currentTurnPlayer.playerId, 'Player')
+                : ''
+            }
+            secondsRemaining={null}
           />
+        </XStack>
 
-          {currentPlayer && currentPlayer.alive && !isGameOver && (
-            <PlayerHand
-              currentPlayer={currentPlayer}
-              onUnstashCard={handleUnstash}
-              isMyTurn={!!isMyTurn}
-              isGameOver={!!isGameOver}
-              canAct={!!canAct}
-              canPlayNope={!!canPlayNope}
-              actionBusy={actionBusy}
-              aliveOpponents={aliveOpponents}
-              discardPileLength={snapshot?.discardPile?.length ?? 0}
-              logs={snapshot?.logs ?? []}
-              pendingAction={snapshot?.pendingAction ?? null}
-              pendingFavor={snapshot?.pendingFavor ?? null}
-              pendingDefuse={snapshot?.pendingDefuse ?? null}
-              deckSize={snapshot?.deck?.length ?? 0}
-              playerOrder={snapshot?.playerOrder ?? []}
-              currentUserId={currentUserId}
-              allowActionCardCombos={snapshot?.allowActionCardCombos ?? false}
-              t={t as (key: string) => string}
-              onDraw={actions.drawCard}
-              onPlayActionCard={handlePlayActionCard}
-              onPlayNope={actions.playNope}
-              onPlaySeeTheFuture={actions.playSeeTheFuture}
-              onOpenFavorModal={handleOpenFavorModal}
-              onGiveFavorCard={actions.giveFavorCard}
-              onPlayDefuse={actions.playDefuse}
-              onOpenEventCombo={handleOpenEventCombo}
-              onOpenFiverCombo={handleOpenFiverCombo}
-              forceEnableAutoplay={idleTimerTriggered}
-              onAutoplayEnabledChange={autoplayState.setAllEnabled}
-              cardVariant={cardVariant}
-              handLayout={handLayout}
-              setHandLayout={setHandLayout}
-            />
-          )}
+        <ActiveGameContent
+          room={room}
+          snapshot={snapshot}
+          currentUserId={currentUserId}
+          currentPlayer={currentPlayer}
+          cardVariant={cardVariant}
+          isGameOver={!!isGameOver}
+          isMyTurn={!!isMyTurn}
+          canAct={!!canAct}
+          canPlayNope={canPlayNope}
+          actionBusy={actionBusy}
+          aliveOpponents={aliveOpponents}
+          handLayout={handLayout}
+          setHandLayout={setHandLayout}
+          resolveDisplayName={resolveDisplayName}
+          t={
+            t as unknown as (
+              key: string,
+              params?: Record<string, string | number>,
+            ) => string
+          }
+          actions={actions}
+          idleTimerTriggered={idleTimerTriggered}
+          autoplayState={autoplayState}
+          handleUnstash={handleUnstash}
+          handlePlayActionCard={handlePlayActionCard}
+          handleOpenFavorModal={handleOpenFavorModal}
+          handleOpenEventCombo={handleOpenEventCombo}
+          handleOpenFiverCombo={handleOpenFiverCombo}
+        />
+      </YStack>
 
-          {showChat && (
-            <ChatSection
-              logs={snapshot.logs ?? []}
-              chatMessagesRef={chatMessagesRef}
-              chatMessage={chatMessage}
-              onChatMessageChange={setChatMessage}
-              chatScope={chatScope}
-              onChatScopeChange={setChatScope}
-              onSendMessage={handleSendChatMessage}
-              currentUserId={currentUserId}
-              turnStatus={turnStatusText}
-              resolveDisplayName={resolveDisplayName}
-              formatLogMessage={formatLogMessage}
-              t={t as (key: string) => string}
-              cardVariant={cardVariant}
-              onClose={handleToggleChat}
-            />
-          )}
-        </TableArea>
-
-        {currentPlayer && (
-          <GameStatusMessage
-            currentPlayerAlive={currentPlayer.alive}
-            isGameOver={!!isGameOver}
-            t={t as (key: string) => string}
-          />
-        )}
-      </GameBoard>
+      {currentPlayer && (
+        <GameStatusMessage
+          currentPlayerAlive={currentPlayer.alive}
+          isGameOver={!!isGameOver}
+          t={t as (key: string) => string}
+        />
+      )}
 
       <GameModals
         // Rematch Modal
@@ -466,7 +405,6 @@ export function ActiveGameView({
         markModal={markModal}
         onCloseMarkModal={handleCloseMarkModal}
         onConfirmMark={handleConfirmMark}
-        stealDrawModal={stealDrawModal}
         onCloseStealDrawModal={handleCloseStealDrawModal}
         onConfirmStealDraw={handleConfirmStealDraw}
         smiteModal={smiteModal}
@@ -475,7 +413,46 @@ export function ActiveGameView({
         // Omniscience Modal
         omniscienceModal={omniscienceModal}
         onCloseOmniscienceModal={handleCloseOmniscienceModal}
+        stealDrawModal={stealDrawModal}
+        isMobile={isMobile}
       />
+
+      {/* Mobile-only target pickers; desktop falls through to GameModals */}
+      {isMobile && (
+        <MobileActionSheet
+          isOpen={targetedAttackModal}
+          title={t('games.table.mobile.attack.title')}
+          description={t('games.table.mobile.attack.description')}
+          opponents={aliveOpponents}
+          resolveDisplayName={resolveDisplayName}
+          confirmLabel={t('games.table.mobile.play')}
+          cancelLabel={t('games.table.mobile.cancel')}
+          onConfirm={(targetId) => {
+            actions.playActionCard('targeted_strike', {
+              targetPlayerId: targetId,
+            });
+            handleCloseTargetedAttackModal();
+          }}
+          onCancel={handleCloseTargetedAttackModal}
+        />
+      )}
+
+      {isMobile && (
+        <MobileActionSheet
+          isOpen={favorModal}
+          title={t('games.table.mobile.favor.title')}
+          description={t('games.table.mobile.favor.description')}
+          opponents={aliveOpponents}
+          resolveDisplayName={resolveDisplayName}
+          confirmLabel={t('games.table.mobile.play')}
+          cancelLabel={t('games.table.mobile.cancel')}
+          onConfirm={(targetId) => {
+            actions.playFavor(targetId);
+            handleCloseFavorModal();
+          }}
+          onCancel={handleCloseFavorModal}
+        />
+      )}
 
       <GameResultModal
         isOpen={!!showResultModal}
@@ -490,6 +467,6 @@ export function ActiveGameView({
         rematchLoading={rematch.rematchLoading}
         t={t}
       />
-    </>
+    </ScenePaletteProvider>
   );
 }

@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures/test-utils';
-import { navigateTo, mockSession } from './fixtures/test-utils';
+import { navigateTo, mockSession, handleRoute } from './fixtures/test-utils';
 
 test.describe('Game Room Creation', () => {
   test.beforeEach(async ({ page }) => {
@@ -23,7 +23,7 @@ test.describe('Game Room Creation', () => {
       if (url.includes('/rooms')) {
         return route.fallback();
       }
-      await route.fulfill({ status: 200, body: JSON.stringify({}) });
+      await handleRoute(route, {});
     });
 
     const mockRoom = {
@@ -51,38 +51,34 @@ test.describe('Game Room Creation', () => {
       const url = route.request().url();
 
       if (method === 'POST') {
-        await route.fulfill({
-          status: 201,
-          contentType: 'application/json',
-          body: JSON.stringify({
+        await handleRoute(
+          route,
+          {
             id: mockRoom.id,
             room: mockRoom,
-          }),
-        });
+          },
+          201,
+        );
       } else if (method === 'GET') {
         if (url.includes(mockRoom.id)) {
           // Specific room request
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ room: mockRoom }),
-          });
+          await handleRoute(route, { room: mockRoom });
         } else {
           // List request
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ rooms: [mockRoom], total: 1 }),
-          });
+          await handleRoute(route, { rooms: [mockRoom], total: 1 });
         }
       } else {
-        await route.fulfill({ status: 200, body: JSON.stringify({}) });
+        await handleRoute(route, {});
       }
     });
 
     await navigateTo(page, '/games/create?gameId=critical_v1');
-    // Ensure network is idle and page is hydrated
-    await page.waitForLoadState('networkidle');
+    // Wait for page to be hydrated by checking for a visible element
+    await expect(page.locator('h1, h2, [class*="Title"]').first()).toBeVisible(
+      {},
+    );
+    // Wait for dynamic component to mount and set the default variant in URL
+    await expect(page).toHaveURL(/variant=/);
   });
 
   test('should load creation page with correct game selected', async ({
@@ -104,7 +100,7 @@ test.describe('Game Room Creation', () => {
   test('should show validation error for empty name', async ({ page }) => {
     const nameInput = page.getByLabel(/room name/i);
     await expect(nameInput).toBeVisible();
-    await nameInput.clear();
+    await nameInput.fill('');
     await expect(nameInput).toHaveValue('');
 
     const submitBtn = page.getByTestId('create-room-button');
@@ -137,7 +133,10 @@ test.describe('Game Room Creation', () => {
     await expect(maxInput).toHaveValue('6');
     await submitBtn.click();
 
-    await expect(page).toHaveURL(/\/games\/rooms\/507f1f77bcf86cd799439011/);
+    await expect(page).toHaveURL(
+      /\/games\/rooms\/507f1f77bcf86cd799439011/,
+      {},
+    );
   });
 
   test('should clear max players with Auto button', async ({ page }) => {
@@ -147,7 +146,7 @@ test.describe('Game Room Creation', () => {
     await maxInput.fill('5');
     await expect(maxInput).toHaveValue('5');
 
-    const autoBtn = page.getByRole('button', { name: /auto/i });
+    const autoBtn = page.getByTestId('auto-max-players-button');
     await expect(autoBtn).toBeVisible();
     await autoBtn.click();
 

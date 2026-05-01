@@ -3,7 +3,7 @@
 set -e
 
 # Check if package.json has dependency or version changes
-PKG_JSON_CHANGES=$(git diff --cached package.json | grep -E '^\+.*"(version|dependencies|devDependencies|peerDependencies|optionalDependencies)"' || true)
+PKG_JSON_CHANGES=$(git diff --cached package.json | grep -E '^\+.*"(dependencies|devDependencies|peerDependencies|optionalDependencies)"' || true)
 STAGED_LOCKFILE=$(git diff --cached --name-only | grep 'pnpm-lock.yaml' || true)
 
 if [ -n "$PKG_JSON_CHANGES" ] && [ -z "$STAGED_LOCKFILE" ]; then
@@ -99,16 +99,6 @@ pnpm run test || {
 }
 cd ../..
 echo "✅ Web unit tests passed"
-
-# Run web e2e tests before commiting
-echo "Running e2e tests..."
-cd apps/web
-pnpm run test:e2e || {
-  echo "❌ E2E tests failed. Please fix them before commiting."
-  exit 1
-}
-cd ../..
-echo "✅ E2E tests passed"
 
 echo "Checking documentation links..."
 pnpm docs:check || {

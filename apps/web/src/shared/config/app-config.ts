@@ -1,5 +1,8 @@
 import { routes } from './routes';
 
+export const SSR_TIMEOUT =
+  process.env.NODE_ENV === 'development' ? 15000 : 5000;
+
 type CtaConfig = {
   href: string;
   label: string;
@@ -22,6 +25,7 @@ type SocialConfig = {
   threads?: string;
   x?: string;
   discord?: string;
+  github?: string;
 };
 
 export type WebAppConfig = {
@@ -87,8 +91,8 @@ function readAppConfig(): WebAppConfig {
     appName,
     appVersion,
     presentationVideoId,
-    seoTitle: `${appName} - Online Board Game Platform`,
-    seoDescription: `${appName} is your online platform to play board games with friends.`,
+    seoTitle: `${appName} - Play Board Games Online | Best Online Board Game Platform`,
+    seoDescription: `Play the best board games online with friends on ${appName}. Create private rooms, automate rules, and enjoy a premium tabletop experience in your browser. No registration required.`,
     primaryCta: {
       href: primaryCtaHref,
       label: 'Get started',
@@ -113,6 +117,9 @@ function readAppConfig(): WebAppConfig {
       threads: trim(process.env.NEXT_PUBLIC_SOCIAL_THREADS),
       x: trim(process.env.NEXT_PUBLIC_SOCIAL_X),
       discord: trim(process.env.NEXT_PUBLIC_SOCIAL_DISCORD),
+      github:
+        trim(process.env.NEXT_PUBLIC_SOCIAL_GITHUB) ??
+        'https://github.com/AnAtoliy-AA/arcadeum',
     },
     siteUrl: trim(process.env.NEXT_PUBLIC_SITE_URL) ?? 'https://arcadeum.games',
   };

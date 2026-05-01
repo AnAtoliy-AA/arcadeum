@@ -1,163 +1,191 @@
-import styled from 'styled-components';
-import { Button as SharedButton } from '@/shared/ui';
+import { styled, XStack, YStack, Text } from 'tamagui';
+import { Input as UIInput } from '@/shared/ui';
 
-export const Page = styled.main`
-  min-height: 100vh;
-  background: ${({ theme }) => theme.background.base};
-  color: ${({ theme }) => theme.text.primary};
-  position: relative;
-`;
-
-export const Container = styled.div`
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-
-  &:fullscreen,
-  &:-webkit-full-screen,
-  &:-moz-full-screen {
-    max-width: 100%;
-    width: 100%;
-    height: 100%;
-    background: ${({ theme }) => theme.background.base};
-    padding: 1rem 2rem;
-    overflow-y: auto;
-    overflow-x: hidden;
+// ─── Fullscreen CSS for Container ─────────────────────────────────────────────
+export const fullscreenStyles = `
+  .games-room-container:fullscreen,
+  .games-room-container:-webkit-full-screen,
+  .games-room-container:-moz-full-screen {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: #151718 !important;
+    padding: 1rem 2rem !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
   }
 `;
 
-export const LoadingContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 50vh;
-  font-size: 1.125rem;
-  color: ${({ theme }) => theme.text.secondary};
-`;
+// Using Page component from shared/ui
 
-export const ErrorContainer = styled.div`
-  padding: 2rem;
-  text-align: center;
-  color: #dc2626;
-`;
+export const Container = styled(YStack, {
+  name: 'Container',
+  maxWidth: 1400,
+  width: '100%',
+  marginHorizontal: 'auto',
+  padding: '1rem',
+  flexDirection: 'column',
+  gap: '1rem',
+  flex: 1,
+  minHeight: 0,
+  // Removed minHeight: 0 and overflowY: hidden for better stability
+  $md: {
+    overflowY: 'auto',
+  },
+  $tablet: {
+    padding: '$3',
+    gap: '$3',
+    flex: 1,
+    overflowY: 'auto',
+  },
+  $sm: {
+    padding: '$2',
+    gap: '$2',
+    flex: 1,
+    overflowY: 'auto',
+  },
+} as Record<string, unknown>);
 
-export const GameWrapper = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-`;
+export const LoadingContainer = styled(YStack, {
+  name: 'LoadingContainer',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minHeight: '50vh',
+  fontSize: '1.125rem',
+  color: 'rgba(236,239,238,0.7)',
+} as Record<string, unknown>);
 
-export const Card = styled.div`
-  background: rgba(30, 30, 40, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  padding: 3rem 2rem;
-  max-width: 480px;
-  width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
+export const ErrorContainer = styled(YStack, {
+  name: 'ErrorContainer',
+  padding: '2rem',
+  alignItems: 'center',
+  color: '#dc2626',
+} as Record<string, unknown>);
 
-export const Title = styled.h2`
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-  background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-`;
+export const GameWrapper = styled(YStack, {
+  name: 'GameWrapper',
+  flex: 1,
+  minWidth: 0,
+  minHeight: 0,
+  overflow: 'visible',
+  borderRadius: '$4',
+  flexDirection: 'column',
 
-export const Description = styled.p`
-  color: ${({ theme }) => theme.text.secondary};
-  margin-bottom: 2rem;
-  line-height: 1.6;
-  font-size: 1rem;
-`;
+  $md: {
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    overflow: 'visible',
+    minHeight: 'calc(100dvh - 180px)',
+  },
+  $tablet: {
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    overflow: 'visible',
+  },
+  $sm: {
+    flex: 1,
+    minHeight: 0,
+    overflow: 'visible',
+  },
+} as Record<string, unknown>);
 
-export const Form = styled.form`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
+// Glassmorphism card — no GlassCard in @arcadeum/ui, use YStack with inline styles
+export const Card = styled(YStack, {
+  name: 'Card',
+  background: 'rgba(30,30,40,0.6)',
+  backdropFilter: 'blur(12px)',
+  WebkitBackdropFilter: 'blur(12px)',
+  borderWidth: 1,
+  borderColor: 'rgba(255,255,255,0.1)',
+  borderRadius: 24,
+  padding: '3rem 2rem',
+  maxWidth: 480,
+  width: '100%',
+  marginHorizontal: 'auto',
+  boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+  flexDirection: 'column',
+  alignItems: 'center',
+} as Record<string, unknown>);
 
-export const InputGroup = styled.div`
-  display: flex;
-  gap: 0.75rem;
-  width: 100%;
-`;
+// Title: rendered with gradient via inline style in consuming component
 
-export const ErrorMessage = styled.div`
-  color: #ef4444;
-  font-size: 0.875rem;
-  text-align: left;
-  background: rgba(239, 68, 68, 0.1);
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  border: 1px solid rgba(239, 68, 68, 0.2);
-`;
+export const Title = styled(YStack, {
+  name: 'Title',
+  tag: 'h2',
+  fontSize: '1.75rem',
+  fontWeight: '700',
+  marginBottom: '0.75rem',
+} as Record<string, unknown>);
 
-export const Input = styled.input`
-  flex: 1;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 0.875rem 1rem;
-  border-radius: 12px;
-  color: ${({ theme }) => theme.text.primary};
-  font-size: 1rem;
-  transition: all 0.2s ease;
+export const titleGradientStyle = {
+  background: 'linear-gradient(135deg, #fff 0%, #a5b4fc 100%)',
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  backgroundClip: 'text',
+} as const;
 
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) =>
-      theme.buttons?.primary?.gradientStart || '#3b82f6'};
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-  }
+export const Description = styled(Text, {
+  name: 'Description',
+  color: 'rgba(236,239,238,0.7)',
+  marginBottom: '2rem',
+  lineHeight: '$multiplier16',
+  fontSize: '1rem',
+});
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
+export const Form = styled(YStack, {
+  name: 'Form',
+  tag: 'form',
+  width: '100%',
+  flexDirection: 'column',
+  gap: '1rem',
+} as Record<string, unknown>);
 
-export const Button = styled(SharedButton).attrs({
-  variant: 'primary',
-  size: 'md',
-})`
-  padding: 0 1.5rem;
-`;
+export const InputGroup = styled(XStack, {
+  name: 'InputGroup',
+  gap: '0.75rem',
+  width: '100%',
+} as Record<string, unknown>);
 
-export const LoginLink = styled.a`
-  color: ${({ theme }) => theme.text.notice};
-  text-decoration: underline;
-  margin-top: 1rem;
-  display: inline-block;
+export const ErrorMessage = styled(YStack, {
+  name: 'ErrorMessage',
+  color: '#ef4444',
+  fontSize: '0.875rem',
+  background: 'rgba(239,68,68,0.1)',
+  padding: '0.5rem 0.75rem',
+  borderRadius: 6,
+  borderWidth: 1,
+  borderColor: 'rgba(239,68,68,0.2)',
+} as Record<string, unknown>);
 
-  &:hover {
-    opacity: 0.8;
-  }
-`;
+// Input: use @arcadeum/ui Input instead of styled.input
+export { UIInput as Input };
 
-export const LockIcon = styled.div`
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
+export const LoginLink = styled(YStack, {
+  name: 'LoginLink',
+  tag: 'a',
+  color: '$accent',
+  textDecoration: 'underline',
+  marginTop: '1rem',
+  display: 'inline-block',
+} as Record<string, unknown>);
 
-export const NoticeMessage = styled(ErrorMessage)`
-  background: ${({ theme }) => theme.interactive.pill.activeBackground};
-  border-color: ${({ theme }) => theme.interactive.pill.activeBorder};
-  color: ${({ theme }) => theme.text.notice};
-`;
+export const LockIcon = styled(YStack, {
+  name: 'LockIcon',
+  fontSize: '3rem',
+  marginBottom: '1rem',
+  justifyContent: 'center',
+  alignItems: 'center',
+} as Record<string, unknown>);
+
+export const NoticeMessage = styled(YStack, {
+  name: 'NoticeMessage',
+  color: '$accent',
+  fontSize: '0.875rem',
+  background: '$backgroundHover',
+  padding: '0.5rem 0.75rem',
+  borderRadius: 6,
+  borderWidth: 1,
+  borderColor: '$borderColor',
+} as Record<string, unknown>);

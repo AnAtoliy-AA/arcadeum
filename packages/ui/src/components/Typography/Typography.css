@@ -1,0 +1,47 @@
+.typography-gradient-primary {
+  background: linear-gradient(135deg, var(--color) 0%, var(--primary) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent !important;
+}
+
+.typography-gradient-gold {
+  background: var(--goldGradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent !important;
+}
+
+.typography-gradient-silver {
+  background: var(--silverGradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent !important;
+}
+
+/* Stable Typography Classes to prevent hydration mismatches */
+.typography-size-xs { font-size: 12px; line-height: 16px; }
+.typography-size-sm { font-size: 14px; line-height: 18px; }
+.typography-size-md { font-size: 16px; line-height: 24px; }
+.typography-size-lg { font-size: 18px; line-height: 28px; }
+.typography-size-xl { font-size: 20px; line-height: 30px; }
+.typography-size-2xl { font-size: 24px; line-height: 32px; }
+.typography-size-3xl { font-size: 32px; line-height: 40px; }
+
+.typography-variant-heading { font-weight: 800; letter-spacing: -0.5px; }
+.typography-variant-subheading { font-weight: 700; letter-spacing: -0.2px; }
+.typography-variant-body { font-weight: 400; }
+.typography-variant-label { font-weight: 600; letter-spacing: 1px; }
+.typography-variant-caption { font-weight: 400; opacity: 0.6; }
+
+.typography-weight-400 { font-weight: 400; }
+.typography-weight-500 { font-weight: 500; }
+.typography-weight-600 { font-weight: 600; }
+.typography-weight-700 { font-weight: 700; }
+.typography-weight-800 { font-weight: 800; }
+
+.typography-text-center { text-align: center; }
+.typography-text-right { text-align: right; }

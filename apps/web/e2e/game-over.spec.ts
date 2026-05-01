@@ -10,11 +10,6 @@ import {
 
 test.describe('Game Over Screen', () => {
   test.beforeEach(async ({ page }) => {
-    page.on('console', (msg) => {
-      if (msg.type() === 'error' || msg.type() === 'warning') {
-        console.log(`BROWSER [${msg.type()}]: ${msg.text()}`);
-      }
-    });
     await mockSession(page);
   });
 
@@ -26,7 +21,7 @@ test.describe('Game Over Screen', () => {
       status: 'completed' as const,
       members: [
         { id: '507f191e810c19729de860ea', displayName: 'Winner', isHost: true },
-        { id: 'user-2', displayName: 'Loser', isHost: false },
+        { id: '507f191e810c19729de860e2', displayName: 'Loser', isHost: false },
       ],
       gameOptions: { cardVariant: 'default' },
     };
@@ -44,9 +39,14 @@ test.describe('Game Over Screen', () => {
             hand: [],
             stash: [],
           },
-          { playerId: 'user-2', alive: false, hand: [], stash: [] },
+          {
+            playerId: '507f191e810c19729de860e2',
+            alive: false,
+            hand: [],
+            stash: [],
+          },
         ],
-        playerOrder: ['507f191e810c19729de860ea', 'user-2'],
+        playerOrder: ['507f191e810c19729de860ea', '507f191e810c19729de860e2'],
         currentTurnIndex: 0,
         deck: [],
         discardPile: [],
@@ -71,13 +71,13 @@ test.describe('Game Over Screen', () => {
     await waitForRoomReady(page);
 
     const victoryHeading = page.getByTestId('game-result-title');
-    await expect(victoryHeading).toBeVisible({ timeout: 30000 });
+    await expect(victoryHeading).toBeVisible({});
     await expect(victoryHeading).toContainText(/Victory|🏆|won|победа/i);
 
     const rematchBtn = page.getByRole('button', {
       name: /Play Again|Rematch/i,
     });
-    await expect(rematchBtn.first()).toBeVisible({ timeout: 15000 });
+    await expect(rematchBtn.first()).toBeVisible({});
 
     const homeBtn = page.getByRole('link', { name: /Back to Home/i }).first();
     await expect(homeBtn).toBeVisible();
@@ -89,11 +89,11 @@ test.describe('Game Over Screen', () => {
 
     const roomData = {
       id: roomId,
-      hostId: 'user-2',
+      hostId: '507f191e810c19729de860e2',
       status: 'completed' as const,
       members: [
         { id: '507f191e810c19729de860ea', displayName: 'Loser', isHost: false },
-        { id: 'user-2', displayName: 'Winner', isHost: true },
+        { id: '507f191e810c19729de860e2', displayName: 'Winner', isHost: true },
       ],
       gameOptions: { cardVariant: 'default' },
     };
@@ -111,14 +111,19 @@ test.describe('Game Over Screen', () => {
             hand: [],
             stash: [],
           },
-          { playerId: 'user-2', alive: true, hand: [], stash: [] },
+          {
+            playerId: '507f191e810c19729de860e2',
+            alive: true,
+            hand: [],
+            stash: [],
+          },
         ],
-        playerOrder: ['507f191e810c19729de860ea', 'user-2'],
+        playerOrder: ['507f191e810c19729de860ea', '507f191e810c19729de860e2'],
         currentTurnIndex: 1,
         deck: [],
         discardPile: [],
         logs: [],
-        winnerId: 'user-2',
+        winnerId: '507f191e810c19729de860e2',
       },
     };
 
@@ -138,7 +143,7 @@ test.describe('Game Over Screen', () => {
     await waitForRoomReady(page);
 
     const defeatHeading = page.getByTestId('game-result-title');
-    await expect(defeatHeading).toBeVisible({ timeout: 30000 });
+    await expect(defeatHeading).toBeVisible({});
     await expect(defeatHeading).toContainText(/Game Over|💀|lost|поражение/i);
 
     const homeBtn = page.getByRole('link', { name: /Back to Home/i }).first();

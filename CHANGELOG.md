@@ -7,17 +7,487 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.30] - 2026-05-01
+
+### Fixed
+- stabilize idle detection tests by adding store synchronization and updating e2e configurations (ARC-446)
+- prevent stale initialData from overwriting active room state and update E2E room mocks to support dynamic state synchronization (ARC-446)
+
+
+## [1.9.29] - 2026-05-01
+
+### Fixed
+- sea battle chat e2e test (ARC-446)
+- resolve CORS errors in e2e tests (ARC-446)
+- e2e tests timeouts (ARC-446)
+- e2e tests warnings (ARC-446)
+
+### Refactored
+- use polling with state verification to improve E2E test reliability for chat popups (ARC-446)
+
+
+## [1.9.28] - 2026-04-30
+
+
+## [1.9.27] - 2026-04-30
+
+### Fixed
+- home hero animation (ARC-554)
+
+### Documentation
+- update upstream remote URL and project live demo link (N/A)
+
+
+## [1.9.26] - 2026-04-29
+
+### Added
+- optimize mobile layout and enhance background animations (N/A)
+
+
+## [1.9.25] - 2026-04-29
+
+### Refactored
+- extract InstallAppCta widget and reuse on settings (ARC-487)
+
+
+## [1.9.24] - 2026-04-29
+
+### Added
+- tighten layout paddings on $sm (ARC-485)
+- horizontal opponent strip and chip avatars on $sm (ARC-485)
+- horizontal Deck/LastPlayed/Discard row on $sm (ARC-485)
+- add sticky MobileActionBar; hide ActionsSection on $sm (ARC-485)
+- wire CardActionsPopover into PlayerHand on $sm (ARC-485)
+- add CardActionsPopover for mobile hand interactions (ARC-485)
+- switch hand to horizontal nowrap strip on $sm (ARC-485)
+- enlarge mobile hand cards to 88x120 (ARC-485)
+
+### Fixed
+- e2e tests for critical web mobile (ARC-485)
+- expose data-cardtype and skip layout test on $sm (ARC-485)
+- use actions.title for in-game ActionsSection panel (ARC-485)
+- pin Create Room button to viewport bottom on mobile (ARC-485)
+- change overflowY property to 'auto' in GameContainer (ARC-485)
+
+### Documentation
+- add critical game mobile redesign implementation plan (ARC-485)
+- add critical game mobile redesign spec (ARC-485)
+
+
+## [1.9.23] - 2026-04-28
+
+### Refactored
+- update presentation and hero section layout with responsive design improvements and animations (ARC-486)
+
+
+## [1.9.22] - 2026-04-24
+
+### Added
+- respect prefers-reduced-motion in TurnBanner + scene (ARC-480)
+- add MobileActionSheet with $sm-gated rendering (ARC-480)
+- restyle HUD, actions, and log strip (ARC-480)
+- restyle player hand fan (desktop) + strip (mobile) (ARC-480)
+- restyle opponent avatars with turn ring + halo (ARC-480)
+- restyle center stacks with scene palette (ARC-480)
+- mount SceneBackdrop + TurnBanner in ActiveGameView (ARC-480)
+- add TurnBanner component (ARC-480)
+- add SceneBackdrop component (ARC-480)
+- add scene backdrop styled components (ARC-480)
+- add ScenePaletteProvider context (ARC-480)
+- add getCardRole helper covering ALL_GAME_CARDS (ARC-480)
+- add per-variant scene palettes (ARC-480)
+- add base scene palette + resolution test (ARC-480)
+- add VariantScenePalette type (scene palette skeleton) (ARC-480)
+
+### Fixed
+- update translation keys for mobile action sheet in ActiveGameView (ARC-480)
+- update translation key for eliminated players in TablePlayer component (ARC-480)
+
+### Refactored
+- remove ParticleOverlay (replaced by SceneBackdrop) (ARC-480)
+- hoist deck style literal to avoid drift (ARC-480)
+
+### Documentation
+- add critical active game redesign implementation plan (ARC-480)
+- add critical active game redesign spec (ARC-480)
+
+
+## [1.9.21] - 2026-04-24
+
+### Refactored
+- modernize e2e tests with mockGameSocket and wrap dynamic renderer error messages in Text component (ARC-482)
+- migrate UI components from Tamagui to native CSS for improved layout stability and performance (ARC-482)
+
+
+## [1.9.20] - 2026-04-20
+
+### Added
+- footer github icon (ARC-481)
+
+
+## [1.9.19] - 2026-04-20
+
+### Refactored
+- global css styles (ARC-479)
+
+
+## [1.9.18] - 2026-04-19
+
+### Added
+- add kick/leave UI, store actions, game wiring, and fix flaky e2e tests (N/A)
+- pass kicked flag through realtime emitPlayerLeft (N/A)
+- extend leaveRoom authorization for host kick flow (N/A)
+- add kickedBy to LeaveGameRoomDto and kicked flag to result type (N/A)
+
+### Documentation
+- add lobby kick/leave implementation plan (N/A)
+- add lobby kick & leave design spec (N/A)
+
+
+## [1.9.17] - 2026-04-16
+
+### Fixed
+- build import error (ARC-471)
+- be cors policy (ARC-471)
+
+
+## [1.9.16] - 2026-04-16
+
+### Fixed
+- sea battle ships placement styles (ARC-472)
+
+
+## [1.9.15] - 2026-04-16
+
+### Fixed
+- staging cors errors (ARC-471)
+
+
+## [1.9.14] - 2026-04-15
+
+### Added
+- images for additional critical game variants (ARC-457)
+
+
+## [1.9.13] - 2026-04-15
+
+### Fixed
+- unuseed tamgui in page loading (ARC-471)
+
+
+## [1.9.12] - 2026-04-15
+
+### Fixed
+- get started button logic (ARC-470)
+
+
+## [1.9.11] - 2026-04-14
+
+### Fixed
+- e2e ci cd less shards with jobs (ARC-469)
+
+
+## [1.9.10] - 2026-04-14
+
+### Fixed
+- critical games styles (ARC-468)
+
+
+## [1.9.9] - 2026-04-14
+
+### Fixed
+- home page seo and a11y (ARC-467)
+
+
+## [1.9.8] - 2026-04-13
+
+### Refactored
+- same games widget container for all games (ARC-465)
+
+
+## [1.9.7] - 2026-04-13
+
+### Fixed
+- tamagui configs (ARC-466)
+
+
+## [1.9.6] - 2026-04-13
+
+### Fixed
+- request errors and warnings (ARC-461)
+
+
+## [1.9.5] - 2026-04-10
+
+### Fixed
+- remove react query (ARC-460)
+
+
+## [1.9.4] - 2026-04-07
+
+### Added
+- wire crime/horror/adventure full variant styles in getVariantStyles (ARC-456)
+- full variant immersion styles for adventure theme (ARC-456)
+- full variant immersion styles for horror theme (ARC-456)
+- compact single-row CriticalGameHeader with glassy pill (ARC-456)
+- add SeaBattleThemePreview component (ARC-456)
+- redesign SeaBattleLobby with theme tabs and live board preview (ARC-456)
+- redesign AttackBoard with sunk cells, emoji icons, glassmorphism (ARC-456)
+- add useDragPlacement hook (ARC-456)
+- add TurnBadge component (ARC-456)
+- add CSS animations hook for sea battle UI (ARC-456)
+
+### Fixed
+- critical game widget styles (ARC-456)
+- fill viewport on mobile and eliminate empty space below game content (ARC-456)
+- apply GameTitle gradient via inline span to avoid Tamagui DOM prop warning (ARC-456)
+- export TurnStatusPill/VariantIconBadge from barrel, clean up header (ARC-456)
+- sea battle game styles (ARC-456)
+- e2e tests failings (ARC-456)
+- game chat layout (ARC-456)
+- game control pannel styles (ARC-456)
+
+### Refactored
+- compact glassy pill header styled components (ARC-456)
+- no-op getTitleTextStyles in all existing variant configs (ARC-456)
+- compute ownIcon once per cell in AttackBoard own-board render (ARC-456)
+
+### Documentation
+- add Critical game header and variant styles design spec (ARC-456)
+- add Sea Battle UI redesign spec (ARC-456) (ARC-456)
+
+
+## [1.9.3] - 2026-04-02
+
+### Added
+
+- PORT env var for web and be (ARC-458)
+
+## [1.9.2] - 2026-04-01
+
+### Added
+
+- add prophecy deity pack card with commit_prophecy (ARC-432) (ARC-432
+  ARC-432)
+- add judgment deity pack card (ARC-432) (ARC-432
+  ARC-432)
+- add resurrection deity pack card (ARC-432)
+- add echo chaos pack card with dispatchCard helper (ARC-432) (ARC-432
+  ARC-432)
+- add scramble chaos pack card (ARC-432) (ARC-432
+  ARC-432)
+- add snatch theft pack card (ARC-432) (ARC-432
+  ARC-432)
+- add swap_hands theft pack card (ARC-432) (ARC-432
+  ARC-432)
+- implement shield_bash card (ARC-432)
+- implement chain_strike card (ARC-432)
+- add eliminatedPlayers and pendingJudgment state fields (ARC-432)
+- extend card type definitions and deck quantities for 9 new cards (ARC-432)
+
+### Fixed
+
+- lint warnings (ARC-432)
+- update deck size assertions for new attack and theft pack cards (ARC-432) (ARC-432
+  ARC-432)
+- fix prophecy duplicate card validation and split deity spec file (ARC-432) (ARC-432
+  ARC-432)
+- add critical_implosion to echo forbidden list and integration test (ARC-432) (ARC-432
+  ARC-432)
+- remove dead code in scramble un-cancel branch (ARC-432) (ARC-432
+  ARC-432)
+- add snatch to CARDS_REQUIRING_DRAWS and fix validation (ARC-432) (ARC-432
+  ARC-432)
+- fix swap_hands cancel handler, self-target guard, and add tests (ARC-432) (ARC-432
+  ARC-432)
+- add shield_bash validation and available actions (ARC-432) (ARC-432
+  ARC-432)
+- add chain_strike validation and available actions entry (ARC-432)
+
+### Refactored
+
+- remove duplicate chain_strike carry-over block (ARC-432)
+
+## [1.9.1] - 2026-04-01
+
+### Added
+
+- pages from footer list (ARC-425)
+- presentation and pitch deck scroll reveal (ARC-425)
+- how it works scroll reveal and step number hover glow (ARC-425)
+- features section scroll reveal and card/icon hover (ARC-425)
+- games section scroll reveal and card hover lift (ARC-425)
+- improve hero proportions, kicker badge, demote support CTA (ARC-425)
+- add useScrollReveal hook and CSS reveal/stagger system (ARC-425)
+- add violet and teal theme options to settings picker (N/A)
+- register violetDark, violetLight, tealDark, tealLight Tamagui themes (N/A)
+- add violetDark, violetLight, tealDark, tealLight theme tokens (N/A)
+- expand ThemeName type with violetDark, violetLight, tealDark, tealLight (ARC-425)
+- complete home page tamagui migration — remove Animations.styles (ARC-425)
+- migrate HomePitchDeck and WebPresentation styles to tamagui (ARC-425)
+- migrate HomePresentation styles to tamagui (ARC-425)
+- migrate HomeDownloadCta styles to tamagui (ARC-425)
+- migrate HomeGames styles to tamagui (ARC-425)
+- migrate HomeHowItWorks styles to tamagui (ARC-425)
+- migrate HomeFeatures styles to tamagui (ARC-425)
+- migrate HomeHero styles to tamagui (ARC-425)
+- migrate home Common styles and add CSS keyframes to tamagui (ARC-425)
+- auth page styles to tamagui (ARC-425)
+- mobile menu styles (ARC-425)
+- wrap SeaBattleGame in ThemeProvider, remove styled-components (ARC-425)
+- migrate ShipPlacementBoard to Tamagui context (ARC-425)
+- migrate AttackBoard to Tamagui context (ARC-425)
+- migrate remaining UI components to Tamagui (ShipsLeft, Popup, RulesModal, Grids, Lobby, Table) (ARC-425)
+- migrate SeaBattleGame styles/ from styled-components to Tamagui (ARC-425)
+- add TurnIndicator component to packages/ui (ARC-425)
+- create SeaBattleThemeContext with provider and hook (ARC-425)
+- add chat message popup via shared GameChat hook (N/A)
+- replace ChatSection with shared GameChat widget (N/A)
+- add ChatMessagePopup component and update exports (N/A)
+- add useLatestChatMessage hook (N/A)
+- add frosted glass card containers with responsive sprites (ARC-425)
+- enable crime, horror, adventure card variants (ARC-425)
+- add isolated ParticleOverlay to ActiveGameContent (ARC-425)
+- add ParticleOverlay with per-variant ambient effects and global cardFlip keyframe (ARC-425)
+- update PlayerHand to use CardImage, GradientScrim, and card flip animation (ARC-425)
+- add useCardFlip hook for card draw reveal animation (ARC-425)
+- update DeckDisplay — replace CardEmoji with CardImage sprite frames (ARC-425)
+- add CardImage sprite-sheet component (ARC-425)
+- update DeckCard/StashedCard variant handlers; add hover glow to HandCard (ARC-425)
+- add GradientScrim component to cards-base (ARC-425)
+- add crime, horror, adventure variant configs and register in index (ARC-425)
+- remove getDeckBackground/getDeckBorder from existing variant files; add getHoverGlow, getCardNameColor (ARC-425)
+- update VariantStyleConfig — add getHoverGlow, getCardNameColor, deckBorderColor; remove getDeckBackground/getDeckBorder (ARC-425)
+- add Tamagui GameRow and ChatPanel layout components (ARC-425)
+- update SeaBattle ChatMessagePopup to use ChatMessageBubble (ARC-425)
+- add GameChat to GameRoomPage with showChat state (ARC-425)
+- convert GamesControlPanel to Tamagui, add chat toggle (ARC-425)
+- remove chat from CriticalGame, add gameChatStore bridge (ARC-425)
+- add GameChat panel component (ARC-425)
+- add gameChatStore Zustand bridge (ARC-425)
+- change styled components to tamagui in widgets critical (ARC-425)
+- change styled components to tamagui in features games folder (ARC-425)
+- tamagui ui kit (ARC-425)
+
+### Fixed
+
+- header hover e2e ci tests (ARC-425)
+- e2e header test (ARC-425)
+- e2e test (ARC-425)
+- e2e test (ARC-425)
+- cors warnings in e2e (ARC-425)
+- unit tests failed on ci (ARC-425)
+- accessibility colors (ARC-425)
+- any types (ARC-425)
+- sync chat visibility to breakpoint, fix container scroll on md screens (ARC-425)
+- prevent game widget overflow bleeding onto chat panel on narrow screens (ARC-425)
+- haptic toggler styles (ARC-425)
+- home screen support developrs button (ARC-425)
+- use render-phase pathname check in useMobileMenu to satisfy lint (ARC-425)
+- header and footer styles (ARC-425)
+- download pwa button (ARC-425)
+- handle 500 (ARC-425)
+- e2e tests (ARC-425)
+- remove warnings (ARC-425)
+- hero title styles (ARC-425)
+- hero cards styles (ARC-425)
+- fix CardTitle/ProgressLabel/ShareLinkRow text styling (N/A)
+- hoist style tag to outermost wrapper in ReferralDashboard (N/A)
+- address code review issues — style tag placement, aria-label on haptics toggle (N/A)
+- export notesStyles, restore stagger animation, fix AmountBadge (N/A)
+- address code review issues — style dedup, dead exports, GameIcon, color tokens (N/A)
+- address code review issues — class names, mobile grid, hover, XStack, scroll context (N/A)
+- address code review issues — orphaned Footer.styles, text-secondary color token (N/A)
+- home page unit tests (ARC-425)
+- accessibility and code quality fixes from final review (ARC-425)
+- add delay cap to HIW steps, disable hover motion for prefers-reduced-motion (ARC-425)
+- icon scales on card hover via CSS descendant selector (ARC-425)
+- use Tamagui Text for support link to preserve color/font tokens (ARC-425)
+- restore YouTube embed privacy params in HomePresentation (ARC-425)
+- resolve Hero section CSS vars, perspective, and hover effect (ARC-425)
+- restore size=xl and overflowX on Common styles (ARC-425)
+- restore CSS grid layout for BoardWithLabels (ARC-425)
+- fix missing animations, PlayerStats and ActionButton in Tamagui style files (ARC-425)
+- unnecessry chat in sea battle games (ARC-425)
+- correct scope value in useLatestChatMessage test fixture (N/A)
+- clean up GameChat imports and test fixture types (ARC-425)
+- use properly-typed fn in gameChatStore tests (ARC-425)
+
+### Refactored
+
+- simplify MobileMenu using extracted hooks (ARC-425)
+- simplify HeaderInteractive using extracted hooks (ARC-425)
+- extract useMobileMenu hook for header widget (ARC-425)
+- extract useClickOutside hook for header widget (ARC-425)
+- extract useHeaderAuth hook for header widget (ARC-425)
+- extract useIsMounted hook for header widget (ARC-425)
+- remove styled-components ThemeProvider from preview (N/A)
+- remove StyledThemeProvider and styled-components infrastructure (N/A)
+- replace InstallPWAModalContent styled-components with Tamagui (N/A)
+- replace referrals/ui/styles.ts styled-components with Tamagui (N/A)
+- convert scrollbarStyles from styled-components css to plain string (N/A)
+- replace error, offline, payment/cancel styled-components with Tamagui (N/A)
+- replace styled-components with Tamagui (N/A)
+- replace styled-components with Tamagui (N/A)
+- replace NotesPage styled-components with Tamagui (N/A)
+- replace ChatListPage styled-components with Tamagui (N/A)
+- fix Leaderboard.tsx ref type — use native div for IntersectionObserver target (N/A)
+- replace StatsOverview.tsx styled-components with Tamagui (N/A)
+- replace GameBreakdown.tsx styled-components with Tamagui (N/A)
+- replace StatsHeader.tsx styled-components with Tamagui (N/A)
+- replace Leaderboard.tsx styled-components with Tamagui (N/A)
+- replace StatsPage.tsx styled-components with Tamagui (N/A)
+- replace styles.ts styled-components with Tamagui (N/A)
+- replace InviteCodeModal styled-components with Tamagui (N/A)
+- replace GameDetailPage styled-components with Tamagui (N/A)
+- replace rooms/[id]/components/styles.ts styled-components with Tamagui (N/A)
+- replace create/styles.ts styled-components with Tamagui (N/A)
+- replace room-card.styles styled-components with Tamagui (N/A)
+- replace games/styles.ts styled-components with Tamagui (N/A)
+- replace HomeGameDetailsModal styled-components with Tamagui (N/A)
+- replace Footer.styles styled-components with Tamagui (N/A)
+- replace PaymentSuccessView styled-components with Tamagui — payment migration complete (N/A)
+- replace PaymentPage styled-components with Tamagui (N/A)
+- replace AmountDisplay styled-components with Tamagui (N/A)
+- replace PaymentPresets styled-components with Tamagui (N/A)
+- replace PaymentHeader styled-components with Tamagui (N/A)
+- rewrite logs styles with Tamagui — history page migration complete (N/A)
+- rewrite participants styles with Tamagui (N/A)
+- replace ConfirmRow styled-component with Tamagui XStack (N/A)
+- rewrite details styles with Tamagui (N/A)
+- rewrite entries styles with Tamagui (N/A)
+- replace HistoryFilters styled-components with Tamagui (N/A)
+- replace HistoryHeader styled-components with Tamagui (N/A)
+- replace Page/Container styled-components with Tamagui (N/A)
+- ui kit components (ARC-425)
+
+### Documentation
+
+- add styled-components to Tamagui implementation plan (N/A)
+- add 640px breakpoint row, fix success criteria ordering (N/A)
+- fix token gaps, breakpoints, fullscreen special case, scrollbar consumer note (N/A)
+- update migration spec with corrected token mapping, breakpoints, and special cases (N/A)
+- add styled-components to Tamagui migration design spec (N/A)
+- clarify why data-reveal must be on descendants not ref target (ARC-425)
+- clarify useScrollReveal ref vs data-reveal constraint (ARC-425)
+- add home page tamagui migration spec (ARC-425)
+- add CriticalGame rework implementation plan (N/A)
+- finalize CriticalGame rework spec after review (N/A)
+- add CriticalGame widget rework design spec (N/A)
+
+## [1.9.0] - 2026-03-19
+
 ## [1.8.2] - 2026-03-19
 
 ### Added
-- SEO optimizations for new domen (ARC-480)
 
+- SEO optimizations for new domen (ARC-480)
 
 ## [1.8.1] - 2026-03-11
 
 ### Fixed
-- changelog md changes (ARC-450)
 
+- changelog md changes (ARC-450)
 
 ## [1.8.0] - 2026-03-11
 

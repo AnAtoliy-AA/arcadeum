@@ -1,91 +1,8 @@
 'use client';
-import React from 'react';
+import { YStack, XStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import styled from 'styled-components';
 import { Ship, SHIPS } from '../types';
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.25);
-  border-radius: 8px;
-  width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-`;
-
-const TitleContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-`;
-
-const Title = styled.div`
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-`;
-
-const ShipCount = styled.div`
-  font-size: 0.85rem;
-  color: #10b981;
-  font-weight: 800;
-  font-family: monospace;
-`;
-
-const FleetGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-`;
-
-const ShipWrapper = styled.div<{ $sunk: boolean }>`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  opacity: ${(props) => (props.$sunk ? 0.5 : 1)};
-  transition: all 0.3s ease;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: -2px;
-    right: -2px;
-    height: 2px;
-    background: #ff4444;
-    transform: translateY(-50%) rotate(-15deg);
-    display: ${(props) => (props.$sunk ? 'block' : 'none')};
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
-  }
-`;
-
-const ShipBody = styled.div`
-  display: flex;
-  gap: 1px;
-`;
-
-const ShipBlock = styled.div<{
-  $sunk: boolean;
-  $isMe: boolean;
-  $idx: number;
-}>`
-  width: 10px;
-  height: 10px;
-  background-color: ${(props) => {
-    if (props.$sunk) return '#ff4444';
-    if (props.$isMe) return '#4caf50';
-    return '#ccc';
-  }};
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  border-radius: 2px;
-`;
+import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
 
 interface ShipsLeftProps {
   ships: Ship[];
@@ -94,43 +11,79 @@ interface ShipsLeftProps {
 
 export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
   const { t } = useTranslation();
-
+  const theme = useSeaBattleTheme();
   const sortedConfig = [...SHIPS].sort((a, b) => b.size - a.size);
-
   const totalShips = sortedConfig.length;
-  const sunkCount = ships ? ships.filter((s) => s.sunk).length : 0;
+  const sunkCount = ships?.filter((s) => s.sunk).length ?? 0;
   const aliveCount = totalShips - sunkCount;
 
   return (
-    <Container>
-      <TitleContainer>
-        <Title>{t('games.sea_battle_v1.table.state.shipsRemaining')}</Title>
-        <ShipCount>
+    <YStack
+      gap="$2"
+      padding="$3"
+      backgroundColor="rgba(0,0,0,0.25)"
+      borderRadius={8}
+      width="100%"
+      borderWidth={1}
+      borderColor="rgba(255,255,255,0.05)"
+    >
+      <XStack justifyContent="space-between" alignItems="center" width="100%">
+        <Text
+          fontSize={13}
+          color="rgba(255,255,255,0.6)"
+          fontWeight="600"
+          textTransform="uppercase"
+          letterSpacing={0.5}
+        >
+          {t('games.sea_battle_v1.table.state.shipsRemaining')}
+        </Text>
+        <Text
+          fontSize={13}
+          color="$success"
+          fontWeight="800"
+          style={{ fontFamily: 'monospace' }}
+        >
           {aliveCount}/{totalShips}
-        </ShipCount>
-      </TitleContainer>
-      <FleetGrid>
+        </Text>
+      </XStack>
+
+      <XStack flexWrap="wrap" gap="$2">
         {sortedConfig.map((config) => {
-          const shipState = ships?.find((s) => s.id === config.id);
-
-          const isSunk = shipState?.sunk ?? false;
-
+          const isSunk = ships?.find((s) => s.id === config.id)?.sunk ?? false;
           return (
-            <ShipWrapper
+            <YStack
               key={config.id}
-              $sunk={isSunk}
-              title={config.name}
-              data-sunk={isSunk ? 'true' : 'false'}
+              alignItems="center"
+              gap={2}
+              opacity={isSunk ? 0.5 : 1}
+              position="relative"
+              aria-label={config.name}
+              data-title={config.name}
+              data-sunk={String(isSunk)}
             >
-              <ShipBody>
+              <XStack gap={1}>
                 {Array.from({ length: config.size }).map((_, i) => (
-                  <ShipBlock key={i} $sunk={isSunk} $isMe={isMe} $idx={i} />
+                  <YStack
+                    key={i}
+                    width={10}
+                    height={10}
+                    backgroundColor={
+                      isSunk
+                        ? `${theme.hitColor}59`
+                        : isMe
+                          ? theme.primaryColor
+                          : theme.textSecondaryColor
+                    }
+                    borderWidth={1}
+                    borderColor="rgba(0,0,0,0.3)"
+                    borderRadius={2}
+                  />
                 ))}
-              </ShipBody>
-            </ShipWrapper>
+              </XStack>
+            </YStack>
           );
         })}
-      </FleetGrid>
-    </Container>
+      </XStack>
+    </YStack>
   );
 }

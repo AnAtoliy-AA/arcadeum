@@ -70,12 +70,13 @@ describe('historyApi', () => {
 
     // No params
     await historyApi.getLeaderboard();
-    expect(apiClient.get).toHaveBeenCalledWith('/games/leaderboard');
+    expect(apiClient.get).toHaveBeenCalledWith('/games/leaderboard', undefined);
 
     // With params
     await historyApi.getLeaderboard(10, 20, 'game-1');
     expect(apiClient.get).toHaveBeenCalledWith(
       '/games/leaderboard?limit=10&offset=20&gameId=game-1',
+      undefined,
     );
   });
 

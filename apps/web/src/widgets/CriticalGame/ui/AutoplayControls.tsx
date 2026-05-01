@@ -1,11 +1,141 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import {
+  YStack,
+  XStack,
+  Text,
+  Checkbox as TamaCheckbox,
+  styled,
+} from 'tamagui';
 import type { UseAutoplayReturn } from '../hooks/useAutoplay';
 
 interface AutoplayControlsProps {
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
   autoplayState: UseAutoplayReturn;
 }
+
+const Container = styled(YStack, {
+  position: 'relative',
+  zIndex: 50,
+});
+
+const Header = styled(XStack, {
+  alignItems: 'center',
+  gap: '$2',
+  cursor: 'pointer',
+  padding: '$2 $3',
+  userSelect: 'none',
+  borderWidth: 1,
+  borderColor: 'rgba(99, 102, 241, 0.3)',
+  borderRadius: '$4',
+
+  hoverStyle: {
+    backgroundColor: 'rgba(99, 102, 241, 0.2)',
+  },
+
+  variants: {
+    expanded: {
+      true: {
+        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+      },
+      false: {
+        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+      },
+    },
+  } as const,
+});
+
+const HeaderText = styled(Text, {
+  color: 'rgba(255, 255, 255, 0.95)',
+  fontSize: '$3',
+  fontWeight: '600',
+});
+
+const Toggle = styled(Text, {
+  color: 'rgba(255, 255, 255, 0.7)',
+  fontSize: '$2',
+});
+
+const DropdownMenu = styled(YStack, {
+  position: 'absolute',
+  top: '100%',
+  left: 0,
+  marginTop: '$2',
+  width: 280,
+  backgroundColor: '#1e1e2e',
+  borderWidth: 1,
+  borderColor: 'rgba(99, 102, 241, 0.3)',
+  borderRadius: '$4',
+  shadowColor: 'rgba(0, 0, 0, 0.2)',
+  shadowOffset: { width: 0, height: 4 },
+  shadowRadius: 6,
+  padding: '$2',
+  gap: '$1',
+  overflow: 'hidden',
+});
+
+const Label = styled(XStack, {
+  alignItems: 'center',
+  gap: '$3',
+  cursor: 'pointer',
+  padding: '$2 $3',
+  borderRadius: '$2',
+
+  hoverStyle: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+
+  variants: {
+    secondary: {
+      true: {
+        paddingLeft: '$6',
+        opacity: 0.9,
+      },
+    },
+  } as const,
+});
+
+const ControlText = styled(Text, {
+  color: 'rgba(255, 255, 255, 0.9)',
+  fontSize: '$3',
+  fontWeight: '500',
+});
+
+interface CheckboxItemProps {
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+  label: string;
+  secondary?: boolean;
+  disabled?: boolean;
+}
+
+const CheckboxItem: React.FC<CheckboxItemProps> = ({
+  checked,
+  onCheckedChange,
+  label,
+  secondary,
+  disabled,
+}) => (
+  <Label
+    secondary={secondary}
+    opacity={disabled ? 0.5 : 1}
+    onClick={() => !disabled && onCheckedChange(!checked)}
+  >
+    <TamaCheckbox
+      id={label}
+      size="$4"
+      checked={checked}
+      onCheckedChange={onCheckedChange}
+      disabled={disabled}
+      borderColor="rgba(99, 102, 241, 0.5)"
+      backgroundColor="rgba(99, 102, 241, 0.1)"
+    >
+      <TamaCheckbox.Indicator>
+        <Text color="#6366f1">✓</Text>
+      </TamaCheckbox.Indicator>
+    </TamaCheckbox>
+    <ControlText ml="$2">{label}</ControlText>
+  </Label>
+);
 
 export const AutoplayControls: React.FC<AutoplayControlsProps> = ({
   t,
@@ -32,7 +162,6 @@ export const AutoplayControls: React.FC<AutoplayControlsProps> = ({
     setAutoDefuseEnabled,
   } = autoplayState;
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = () => {
       if (expanded) {
@@ -55,174 +184,62 @@ export const AutoplayControls: React.FC<AutoplayControlsProps> = ({
 
   return (
     <Container onClick={handleContainerClick}>
-      <Header onClick={() => setExpanded(!expanded)} $expanded={expanded}>
+      <Header onClick={() => setExpanded(!expanded)} expanded={expanded}>
         <HeaderText>{t('games.table.autoplay.title')}</HeaderText>
         <Toggle>{expanded ? '▲' : '▼'}</Toggle>
       </Header>
       {expanded && (
         <DropdownMenu>
-          <Label>
-            <Checkbox
-              type="checkbox"
-              checked={allEnabled}
-              onChange={(e) => setAllEnabled(e.target.checked)}
-            />
-            <Text>{t('games.table.autoplay.autoPlay')}</Text>
-          </Label>
-          <Label $secondary>
-            <Checkbox
-              type="checkbox"
-              checked={autoDrawEnabled}
-              onChange={(e) => setAutoDrawEnabled(e.target.checked)}
-            />
-            <Text>{t('games.table.autoplay.autoDraw')}</Text>
-          </Label>
-          <Label $secondary>
-            <Checkbox
-              type="checkbox"
-              checked={autoSkipEnabled}
-              onChange={(e) => setAutoSkipEnabled(e.target.checked)}
-            />
-            <Text>{t('games.table.autoplay.autoSkip')}</Text>
-          </Label>
-          <Label $secondary>
-            <Checkbox
-              type="checkbox"
-              checked={autoShuffleAfterDefuseEnabled}
-              onChange={(e) =>
-                setAutoShuffleAfterDefuseEnabled(e.target.checked)
-              }
-            />
-            <Text>{t('games.table.autoplay.autoShuffle')}</Text>
-          </Label>
-          <Label $secondary>
-            <Checkbox
-              type="checkbox"
-              checked={autoDrawSkipAfterShuffleEnabled}
-              disabled={!autoShuffleAfterDefuseEnabled}
-              style={{
-                opacity: autoShuffleAfterDefuseEnabled ? 1 : 0.5,
-                marginLeft: '1rem',
-              }}
-              onChange={(e) =>
-                setAutoDrawSkipAfterShuffleEnabled(e.target.checked)
-              }
-            />
-            <Text>{t('games.table.autoplay.autoDrawSkipAfterShuffle')}</Text>
-          </Label>
-          <Label $secondary>
-            <Checkbox
-              type="checkbox"
-              checked={autoNopeAttackEnabled}
-              onChange={(e) => setAutoNopeAttackEnabled(e.target.checked)}
-            />
-            <Text>{t('games.table.autoplay.autoNopeAttack')}</Text>
-          </Label>
-          <Label $secondary>
-            <Checkbox
-              type="checkbox"
-              checked={autoGiveFavorEnabled}
-              onChange={(e) => setAutoGiveFavorEnabled(e.target.checked)}
-            />
-            <Text>{t('games.table.autoplay.autoGiveFavor')}</Text>
-          </Label>
-          <Label $secondary>
-            <Checkbox
-              type="checkbox"
-              checked={autoDefuseEnabled}
-              onChange={(e) => setAutoDefuseEnabled(e.target.checked)}
-            />
-            <Text>{t('games.table.autoplay.autoDefuse')}</Text>
-          </Label>
+          <CheckboxItem
+            checked={allEnabled}
+            onCheckedChange={setAllEnabled}
+            label={t('games.table.autoplay.autoPlay')}
+          />
+          <CheckboxItem
+            checked={autoDrawEnabled}
+            onCheckedChange={setAutoDrawEnabled}
+            label={t('games.table.autoplay.autoDraw')}
+            secondary
+          />
+          <CheckboxItem
+            checked={autoSkipEnabled}
+            onCheckedChange={setAutoSkipEnabled}
+            label={t('games.table.autoplay.autoSkip')}
+            secondary
+          />
+          <CheckboxItem
+            checked={autoShuffleAfterDefuseEnabled}
+            onCheckedChange={setAutoShuffleAfterDefuseEnabled}
+            label={t('games.table.autoplay.autoShuffle')}
+            secondary
+          />
+          <CheckboxItem
+            checked={autoDrawSkipAfterShuffleEnabled}
+            onCheckedChange={setAutoDrawSkipAfterShuffleEnabled}
+            label={t('games.table.autoplay.autoDrawSkipAfterShuffle')}
+            secondary
+            disabled={!autoShuffleAfterDefuseEnabled}
+          />
+          <CheckboxItem
+            checked={autoNopeAttackEnabled}
+            onCheckedChange={setAutoNopeAttackEnabled}
+            label={t('games.table.autoplay.autoNopeAttack')}
+            secondary
+          />
+          <CheckboxItem
+            checked={autoGiveFavorEnabled}
+            onCheckedChange={setAutoGiveFavorEnabled}
+            label={t('games.table.autoplay.autoGiveFavor')}
+            secondary
+          />
+          <CheckboxItem
+            checked={autoDefuseEnabled}
+            onCheckedChange={setAutoDefuseEnabled}
+            label={t('games.table.autoplay.autoDefuse')}
+            secondary
+          />
         </DropdownMenu>
       )}
     </Container>
   );
 };
-
-// Styled components
-const Container = styled.div`
-  position: relative;
-  z-index: 50;
-`;
-
-const Header = styled.div<{ $expanded: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  padding: 0.5rem 0.75rem;
-  user-select: none;
-  background: ${({ $expanded }) =>
-    $expanded ? 'rgba(99, 102, 241, 0.2)' : 'rgba(99, 102, 241, 0.1)'};
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  border-radius: 0.5rem;
-  transition: all 0.2s;
-
-  &:hover {
-    background: rgba(99, 102, 241, 0.2);
-  }
-`;
-
-const HeaderText = styled.span`
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 0.9rem;
-  font-weight: 600;
-`;
-
-const Toggle = styled.span`
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.8rem;
-`;
-
-const DropdownMenu = styled.div`
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 0.5rem;
-  width: 280px;
-  background: #1e1e2e;
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  border-radius: 0.5rem;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  padding: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  overflow: hidden;
-`;
-
-const Label = styled.label<{ $secondary?: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  cursor: pointer;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.25rem;
-  transition: background 0.2s;
-  ${({ $secondary }) =>
-    $secondary &&
-    `
-    padding-left: 1.5rem;
-    opacity: 0.9;
-  `}
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-`;
-
-const Checkbox = styled.input`
-  width: 1.1rem;
-  height: 1.1rem;
-  cursor: pointer;
-  accent-color: #6366f1;
-`;
-
-const Text = styled.span`
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.9rem;
-  font-weight: 500;
-`;

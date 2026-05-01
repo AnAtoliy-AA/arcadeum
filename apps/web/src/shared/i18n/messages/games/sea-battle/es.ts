@@ -92,6 +92,7 @@ export const esMessages = {
         yourTurnAttack: '🎯 ¡Tu turno! - ¡Ataca a un oponente!',
         placeShips: 'Coloca tus barcos',
         waitingFor: 'Esperando a {{player}}...',
+        targetBadge: 'Objetivo',
       },
       phase: {
         lobby: 'Vestíbulo',
@@ -110,6 +111,7 @@ export const esMessages = {
         randomize: 'Aleatorio',
         resetPlacement: 'Reiniciar',
         waitingForOthers: 'Esperando a otros...',
+        dragHint: 'Arrastra al tablero · Haz clic para seleccionar',
       },
       attack: {
         hit: '¡Impacto!',
@@ -125,6 +127,7 @@ export const esMessages = {
         hostCanStart: "Haz clic en 'Iniciar Juego' cuando estés listo",
         waitingForHost: 'Esperando al anfitrión',
         hostControls: 'Controles del Anfitrión',
+        theme: 'Tema',
         roomInfo: 'Información de la Sala',
         host: 'Anfitrión',
       },
@@ -135,6 +138,19 @@ export const esMessages = {
       defeat: {
         title: 'Derrota',
         message: 'Todos tus barcos han sido hundidos.',
+      },
+      controlPanel: {
+        spectating: 'Espectando',
+        fullscreen: 'Pantalla completa',
+        exitFullscreen: 'Salir de pantalla completa',
+        enterFullscreen: 'Entrar en pantalla completa',
+        rules: 'Reglas',
+        leaveRoom: 'Salir',
+        leaveConfirmMessage:
+          '¿Estás seguro de que quieres salir de la partida? Serás eliminado de la lista de participantes.',
+        exitRoom: 'Salir',
+        exitRoomTooltip: 'Volver al vestíbulo pero mantenerte en el juego',
+        leaveGameTooltip: 'Eliminarte del juego y volver al vestíbulo',
       },
       chat: {
         title: 'Chat de Batalla',

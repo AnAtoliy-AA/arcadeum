@@ -1,6 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
-import { navigateTo } from './fixtures/test-utils';
+import { test, navigateTo } from './fixtures/test-utils';
 
 test.describe('Header Language Switcher', () => {
   test.beforeEach(async ({ page }) => {
@@ -10,58 +9,56 @@ test.describe('Header Language Switcher', () => {
   test('should display language switcher on header for all devices and change language', async ({
     page,
   }) => {
-    await page.waitForLoadState('networkidle');
-
     const languageSwitcher = page
       .locator('header')
       .getByTestId('header-language-switcher');
 
-    // Wait for the select to be visible and stable
+    // Wait for the trigger to be visible
     await expect(languageSwitcher).toBeVisible();
-    await languageSwitcher.waitFor({ state: 'visible', timeout: 5000 });
 
-    // Default language is typically en
-    await expect(languageSwitcher).toHaveValue('en');
+    // Default language from text
+    await expect(languageSwitcher).toContainText('EN');
 
     // Change language to Spanish
-    // Use selectOption and wait for the value to actually change
-    await languageSwitcher.selectOption('es');
+    await languageSwitcher.click();
+    await page.getByRole('option', { name: 'ES' }).click();
 
-    // The value should be updated (expect already polls)
-    await expect(languageSwitcher).toHaveValue('es', { timeout: 10000 });
+    // The value should be updated
+    await expect(languageSwitcher).toContainText('ES', {});
   });
 
-  test('should display language switcher and change language on mobile menu', async ({
+  test('should display language switcher in header and not in mobile menu on mobile devices', async ({
     page,
   }) => {
-    // We conditionally test the mobile menu without skipping
-    // to prevent Playwright warning about skipped tests.
-    // If it's a desktop browser, we don't have a mobile menu toggle button visible,
-    // so we can just assert that and exit cleanly or resize the viewport.
-
-    // Resize to mobile viewport to enforce mobile menu visibility across all environments
+    // Resize to mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.waitForTimeout(500); // Allow viewport recalculations
 
-    // Open mobile menu
+    // 1. Check it's visible in the header
+    const headerLanguageSwitcher = page
+      .locator('header')
+      .getByTestId('header-language-switcher');
+    await expect(headerLanguageSwitcher).toBeVisible();
+
+    // 2. Open mobile menu
     const menuButton = page.getByTestId('mobile-menu-button');
     await expect(menuButton).toBeVisible();
-    await menuButton.dispatchEvent('click');
+    await menuButton.click();
 
     // The mobile menu should be open
     const mobileNav = page.getByTestId('mobile-nav');
     await expect(mobileNav).toBeVisible();
 
-    const languageSwitcher = mobileNav.locator('select');
-    await expect(languageSwitcher).toBeVisible();
+    // 3. Verify it's NOT in the mobile menu
+    const menuLanguageSwitcher = mobileNav.getByTestId(
+      'header-language-switcher',
+    );
+    await expect(menuLanguageSwitcher).not.toBeVisible();
 
-    // Default language
-    await expect(languageSwitcher).toHaveValue('en');
+    // 4. Change language from header while menu is open
+    await headerLanguageSwitcher.click();
+    await page.getByRole('option', { name: 'FR' }).click();
 
-    // Change language to French
-    await languageSwitcher.selectOption('fr');
-
-    // The value should be updated
-    await expect(languageSwitcher).toHaveValue('fr');
+    // Verify language changed (header text should update)
+    await expect(headerLanguageSwitcher).toContainText('FR', {});
   });
 });

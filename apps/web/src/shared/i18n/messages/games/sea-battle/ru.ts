@@ -91,6 +91,7 @@ export const ruMessages = {
         yourTurnAttack: '🎯 Ваш ход - Атакуйте противника!',
         placeShips: 'Расставьте свои корабли',
         waitingFor: 'Ждем {{player}}...',
+        targetBadge: 'Цель',
       },
       phase: {
         lobby: 'Лобби',
@@ -109,6 +110,7 @@ export const ruMessages = {
         randomize: 'Перемешать',
         resetPlacement: 'Сбросить',
         waitingForOthers: 'Ожидание других...',
+        dragHint: 'Перетащите на поле · Нажмите для выбора',
       },
       attack: {
         hit: 'Попал!',
@@ -124,6 +126,7 @@ export const ruMessages = {
         hostCanStart: "Нажмите 'Начать игру', когда готовы",
         waitingForHost: 'Ожидание начала игры хостом',
         hostControls: 'Управление хоста',
+        theme: 'Тема',
         roomInfo: 'Информация о комнате',
         host: 'Хост',
       },
@@ -133,7 +136,20 @@ export const ruMessages = {
       },
       defeat: {
         title: 'Поражение',
-        message: 'Все ваши корабли потоплены.',
+        message: 'Все ваши корабли были потоплены.',
+      },
+      controlPanel: {
+        spectating: 'Наблюдение',
+        fullscreen: 'Полноэкранный режим',
+        exitFullscreen: 'Выйти из полноэкранного режима',
+        enterFullscreen: 'На весь экран',
+        rules: 'Правила',
+        leaveRoom: 'Покинуть',
+        leaveConfirmMessage:
+          'Вы уверены, что хотите покинуть игру? Вы будете удалены из списка участников.',
+        exitRoom: 'Выйти',
+        exitRoomTooltip: 'Вернуться в лобби, но остаться в игре',
+        leaveGameTooltip: 'Удалить себя из игры и вернуться в лобби',
       },
       chat: {
         title: 'Чат битвы',

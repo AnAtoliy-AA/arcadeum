@@ -189,6 +189,7 @@ export const ruMessages = {
       variants: cardVariants,
     },
     actions: {
+      title: 'ДЕЙСТВИЯ',
       start: 'Начать игру',
       starting: 'Запуск...',
       draw: 'Взять карту',
@@ -230,6 +231,8 @@ export const ruMessages = {
       alive: 'Жив',
       eliminated: 'Выбыл',
       yourTurn: 'Ваш ход',
+      yourMove: 'Ваш ход',
+      playerTurn: 'Ход {{name}}',
       waitingFor: 'Ожидание игрока...',
     },
     status: {
@@ -293,6 +296,27 @@ export const ruMessages = {
     eliminated: {
       title: 'Вы выбыли!',
       message: 'Следите за битвой оставшихся игроков',
+    },
+    mobile: {
+      attack: {
+        title: 'Выберите цель',
+        description: 'Сыграть «Атаку» против кого?',
+      },
+      favor: {
+        title: 'Выберите цель',
+        description: 'У кого попросить карту?',
+      },
+      cancel: 'Отмена',
+      play: 'Сыграть',
+      popover: {
+        play: 'Сыграть',
+        combo: 'Комбо (×{{count}})',
+        close: 'Закрыть',
+      },
+      actionBar: {
+        draw: 'Взять',
+        nope: 'Отмена',
+      },
     },
     victory: { title: 'Победа!', message: 'Поздравляем! Вы выжили!' },
     defeat: { title: 'Игра окончена', message: 'Повезет в следующий раз!' },
@@ -403,9 +427,11 @@ export const ruMessages = {
       },
     },
     controlPanel: {
-      fullscreen: 'Весь экран',
+      spectating: 'Наблюдение',
+      fullscreen: 'Полноэкранный режим',
       exitFullscreen: 'Выйти из полноэкранного режима',
       enterFullscreen: 'На весь экран',
+      rules: 'Правила',
       leaveRoom: 'Покинуть',
       leaveConfirmMessage:
         'Вы уверены, что хотите покинуть игру? Вы будете удалены из списка участников.',

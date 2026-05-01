@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from '@/shared/hooks/useMutation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useSocket } from '@/shared/lib/socket';
 import { rematchApi } from '@/features/rematch/api';
@@ -86,7 +86,7 @@ export function useRematch({
   useSocket('games.rematch.invited', handleRematchInvited);
 
   // Mutation for creating a rematch
-  const { mutateAsync: createRematchMutate, isPending: rematchLoading } =
+  const { mutateAsync: createRematchMutate, isLoading: rematchLoading } =
     useMutation({
       mutationFn: async (params: {
         participantIds: string[];
@@ -122,7 +122,6 @@ export function useRematch({
         token: snapshot.accessToken || undefined,
       });
     },
-    onError: () => {},
   });
 
   // Mutation for reinviting users
@@ -132,7 +131,6 @@ export function useRematch({
         token: snapshot.accessToken || undefined,
       });
     },
-    onError: (_err) => {},
   });
 
   // Mutation for blocking rematch
@@ -145,7 +143,6 @@ export function useRematch({
     onSuccess: () => {
       setInvitation(null);
     },
-    onError: (_err) => {},
   });
 
   // Mutation for blocking user
@@ -158,7 +155,6 @@ export function useRematch({
     onSuccess: () => {
       setInvitation(null);
     },
-    onError: (_err) => {},
   });
 
   // Timer logic - auto-decline when time expires
@@ -172,7 +168,7 @@ export function useRematch({
           const currentInvitation = invitationRef.current;
           setInvitation(null);
 
-          if (snapshot.accessToken && currentInvitation?.newRoomId) {
+          if (snapshot.userId && currentInvitation?.newRoomId) {
             declineInvitationMutate(currentInvitation.newRoomId);
           }
           return 0;
@@ -185,7 +181,7 @@ export function useRematch({
   }, [
     invitation,
     invitationTimeLeft,
-    snapshot.accessToken,
+    snapshot.userId,
     declineInvitationMutate,
   ]);
 
@@ -200,14 +196,14 @@ export function useRematch({
 
   const handleRematch = useCallback(
     async (participantIds: string[], message?: string) => {
-      if (!snapshot.accessToken) {
+      if (!snapshot.userId) {
         setRematchError('Authentication required');
         return;
       }
       setRematchError(null);
       await createRematchMutate({ participantIds, message });
     },
-    [snapshot.accessToken, createRematchMutate],
+    [snapshot.userId, createRematchMutate],
   );
 
   const handleAcceptInvitation = useCallback(() => {
@@ -223,36 +219,36 @@ export function useRematch({
     const targetRoomId = invitation.newRoomId;
     setInvitation(null);
 
-    if (snapshot.accessToken) {
+    if (snapshot.userId) {
       declineInvitationMutate(targetRoomId);
     }
-  }, [invitation, snapshot.accessToken, declineInvitationMutate]);
+  }, [invitation, snapshot.userId, declineInvitationMutate]);
 
   const handleReinvite = useCallback(
     (userIds: string[]) => {
-      if (snapshot.accessToken) {
+      if (snapshot.userId) {
         reinviteMutate(userIds);
       }
     },
-    [snapshot.accessToken, reinviteMutate],
+    [snapshot.userId, reinviteMutate],
   );
 
   const handleBlockUser = useCallback(
     (userId: string) => {
-      if (snapshot.accessToken) {
+      if (snapshot.userId) {
         blockUserMutate(userId);
       }
     },
-    [snapshot.accessToken, blockUserMutate],
+    [snapshot.userId, blockUserMutate],
   );
 
   const handleBlockRematch = useCallback(
     (targetRoomId: string) => {
-      if (snapshot.accessToken) {
+      if (snapshot.userId) {
         blockRematchMutate(targetRoomId);
       }
     },
-    [snapshot.accessToken, blockRematchMutate],
+    [snapshot.userId, blockRematchMutate],
   );
 
   return {

@@ -2,11 +2,10 @@
 
 import {
   ReactNode,
-  createContext,
-  useContext,
   useEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
 } from 'react';
 
 import { useLanguageStore } from './store/languageStore';
@@ -16,29 +15,37 @@ import {
   TranslationBundle,
   formatMessage,
   getMessages,
+  loadMessages,
 } from '@/shared/i18n';
 
-export type LanguageContextValue = {
-  locale: Locale;
-  setLocale: (next: Locale) => void;
-  messages: TranslationBundle;
-  isReady: boolean;
-};
+import {
+  LanguageContext,
+  LanguageContextValue,
+} from '@/shared/i18n/LanguageContext';
 
-const LanguageContext = createContext<LanguageContextValue | undefined>(
-  undefined,
-);
+const emptySubscribe = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
+export function LanguageProvider({
+  children,
+  initialLocale,
+}: {
+  children: ReactNode;
+  initialLocale?: Locale;
+}) {
   const locale = useLanguageStore((state) => state.locale);
   const setLocale = useLanguageStore((state) => state.setLocale);
-  const [isReady, setIsReady] = useState(false);
+  const isReady = useSyncExternalStore(
+    emptySubscribe,
+    getClientSnapshot,
+    getServerSnapshot,
+  );
 
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      setIsReady(true);
-    });
-  }, []);
+  // Initialize with messages for the initial locale (usually 'en' which is statically loaded)
+  const [loadedMessages, setLoadedMessages] = useState<TranslationBundle>(() =>
+    getMessages(initialLocale || DEFAULT_LOCALE),
+  );
 
   useEffect(() => {
     if (typeof document === 'undefined') {
@@ -46,17 +53,35 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
 
     document.documentElement.setAttribute('lang', locale);
+    document.documentElement.setAttribute('data-hydrated', 'true');
+    document.documentElement.setAttribute('data-app-ready', 'true');
+
+    // Sync to cookie
+    const cookieOptions = 'path=/; max-age=31536000; SameSite=Lax';
+    document.cookie = `app-language=${locale}; ${cookieOptions}`;
+
+    // Dynamically load the messages for the new locale
+    let isMounted = true;
+    loadMessages(locale).then((msgs) => {
+      if (isMounted) {
+        setLoadedMessages(msgs);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, [locale]);
 
-  const messages = useMemo(() => {
-    // During hydration, always use default locale to match server
-    if (!isReady) return getMessages(DEFAULT_LOCALE);
-    return getMessages(locale);
-  }, [locale, isReady]);
-
   const value = useMemo<LanguageContextValue>(
-    () => ({ locale, setLocale, messages, isReady }),
-    [locale, setLocale, messages, isReady],
+    () => ({
+      locale,
+      setLocale,
+      messages: loadedMessages,
+      isReady,
+      initialLocale,
+    }),
+    [locale, setLocale, loadedMessages, isReady, initialLocale],
   );
 
   return (
@@ -64,16 +89,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       {children}
     </LanguageContext.Provider>
   );
-}
-
-export function useLanguage(): LanguageContextValue {
-  const context = useContext(LanguageContext);
-
-  if (!context) {
-    throw new Error('useLanguage must be used within LanguageProvider');
-  }
-
-  return context;
 }
 
 export { formatMessage };

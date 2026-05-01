@@ -1,15 +1,19 @@
 import React from 'react';
 import type { CriticalCard } from '../types';
-import { getCardEmoji, getCardTranslationKey } from '../lib/cardUtils';
+import { getCardTranslationKey } from '../lib/cardUtils';
 import {
-  LastPlayedCard, // Reuse positioning/style if possible, or use DeckCard
+  LastPlayedCard,
   DeckCard,
   CardCorner,
   CardFrame,
   CardInner,
-  CardEmoji,
   CardName,
+  CardNameContainer,
 } from './styles';
+import { CardImage } from './styles/card-image';
+import { GradientScrim } from './styles/cards-base';
+import { useScenePalette } from './ScenePaletteContext';
+import type { GameVariant } from '@arcadeum/ui';
 
 interface DeckDisplayProps {
   deck: CriticalCard[];
@@ -22,40 +26,60 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
   t,
   cardVariant,
 }) => {
+  const scene = useScenePalette();
+  const deckStyle = {
+    background: scene.deckGradient,
+    boxShadow: scene.deckGlow,
+  };
+
   if (!deck || deck.length === 0) {
-    return <DeckCard style={{ opacity: 0.5, cursor: 'default' }} />;
+    return (
+      <DeckCard
+        data-testid="deck-card"
+        $variant={cardVariant as GameVariant}
+        style={{ ...deckStyle, opacity: 0.3, cursor: 'default' }}
+      />
+    );
   }
 
-  const topCard = deck[0]; // Logic: line 58 of logic utils uses shift(), so 0 is top.
+  const topCard = deck[0];
 
   if ((topCard as string) !== 'hidden') {
-    // Show Face Up Card
+    // Show Face Up Card in the Deck Slot (some game variants allow this)
     return (
       <LastPlayedCard
-        as="div"
+        data-testid="deck-card"
         $isAnimating={false}
-        $variant={cardVariant}
-        style={{
-          position: 'relative',
-          transform: 'none',
-          left: 'auto',
-          top: 'auto',
-          animation: 'none',
-        }}
+        $variant={cardVariant as GameVariant}
+        style={{ ...deckStyle, position: 'relative' }}
       >
-        <CardCorner $position="tl" />
-        <CardCorner $position="tr" />
-        <CardCorner $position="bl" />
-        <CardCorner $position="br" />
-        <CardFrame />
-        <CardInner>
-          <CardEmoji>{getCardEmoji(topCard)}</CardEmoji>
-          <CardName>{t(getCardTranslationKey(topCard, cardVariant))}</CardName>
+        <CardImage variant={cardVariant ?? ''} cardType={topCard as string} />
+        <GradientScrim />
+        <CardCorner $position="tl" $variant={cardVariant} />
+        <CardCorner $position="tr" $variant={cardVariant} />
+        <CardCorner $position="bl" $variant={cardVariant} />
+        <CardCorner $position="br" $variant={cardVariant} />
+        <CardFrame $variant={cardVariant} />
+        <CardInner style={{ zIndex: 2 }}>
+          <CardNameContainer $variant={cardVariant as GameVariant}>
+            <CardName $variant={cardVariant}>
+              {t(getCardTranslationKey(topCard, cardVariant))}
+            </CardName>
+          </CardNameContainer>
         </CardInner>
       </LastPlayedCard>
     );
   }
 
-  // Show Face Down Deck
-  return <DeckCard $variant={cardVariant} />;
+  // Show Face Down Deck with "Stacked" effect using shadow/border
+  return (
+    <DeckCard
+      data-testid="deck-card"
+      $variant={cardVariant as GameVariant}
+      style={deckStyle}
+    >
+      <CardImage variant={cardVariant ?? ''} faceDown />
+      <CardFrame $variant={cardVariant} />
+    </DeckCard>
+  );
 };

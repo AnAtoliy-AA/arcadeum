@@ -11,21 +11,7 @@ import {
 } from './fixtures/test-utils';
 
 test.describe('Critical Single Player Mode', () => {
-  test.setTimeout(60000);
-
   test.beforeEach(async ({ page }) => {
-    page.on('console', (msg) => {
-      if (
-        msg.type() === 'error' ||
-        msg.type() === 'warning' ||
-        msg.text().includes('session') ||
-        msg.text().includes('room')
-      ) {
-        console.log(
-          `BROWSER [${msg.type()}]: ${msg.text()}${msg.location().url ? ' @ ' + msg.location().url : ''}`,
-        );
-      }
-    });
     await mockSession(page);
   });
 
@@ -43,6 +29,7 @@ test.describe('Critical Single Player Mode', () => {
         members: [
           { id: userId, userId, displayName: 'Test User', isHost: true },
         ],
+        playerCount: 1,
       },
     });
 
@@ -79,7 +66,7 @@ test.describe('Critical Single Player Mode', () => {
                     stash: [],
                   },
                   {
-                    playerId: 'bot-1',
+                    playerId: '507f191e810c19729de860b1',
                     alive: true,
                     hand: [],
                     defuseCount: 1,
@@ -89,7 +76,7 @@ test.describe('Critical Single Player Mode', () => {
                 deck: [],
                 discardPile: [],
                 currentTurnIndex: 0,
-                playerOrder: [userId, 'bot-1'],
+                playerOrder: [userId, '507f191e810c19729de860b1'],
                 pendingAction: null,
               },
             },
@@ -101,9 +88,9 @@ test.describe('Critical Single Player Mode', () => {
     await navigateTo(page, `/games/rooms/${roomId}`);
     await waitForRoomReady(page);
 
-    await expect(page.getByRole('heading', { name: /Critical/i })).toBeVisible({
-      timeout: 30000,
-    });
+    await expect(page.getByRole('heading', { name: /Critical/i })).toBeVisible(
+      {},
+    );
 
     const startBtn = page.getByTestId('start-with-bots-button');
     await expect(startBtn).toBeEnabled();
@@ -111,9 +98,7 @@ test.describe('Critical Single Player Mode', () => {
 
     await closeGameRulesModal(page);
     await expect(page.getByRole('heading', { name: /your hand/i })).toBeVisible(
-      {
-        timeout: 30000,
-      },
+      {},
     );
   });
 
@@ -133,7 +118,7 @@ test.describe('Critical Single Player Mode', () => {
           stash: [],
         },
         {
-          playerId: 'bot-1',
+          playerId: '507f191e810c19729de860b1',
           alive: true,
           hand: ['strike'],
           defuseCount: 1,
@@ -143,7 +128,7 @@ test.describe('Critical Single Player Mode', () => {
       deck: Array(40).fill('strike'),
       discardPile: [],
       currentTurnIndex: 0,
-      playerOrder: [userId, 'bot-1'],
+      playerOrder: [userId, '507f191e810c19729de860b1'],
       pendingAction: null,
     };
 
@@ -156,13 +141,21 @@ test.describe('Critical Single Player Mode', () => {
           { id: userId, userId, displayName: 'Test User', isHost: true },
         ],
       },
-      session: { id: 'session-1', status: 'active', state: mockState },
+      session: {
+        id: '507f191e810c19729de860f1',
+        status: 'active',
+        state: mockState,
+      },
     });
 
     await mockGameSocket(page, roomId, userId, {
       roomJoinedPayload: {
         status: 'active',
-        session: { id: 'session-1', status: 'active', state: mockState },
+        session: {
+          id: '507f191e810c19729de860f1',
+          status: 'active',
+          state: mockState,
+        },
       },
       handlers: {
         'games.session.draw': {
@@ -170,7 +163,7 @@ test.describe('Critical Single Player Mode', () => {
           responseData: {
             roomId,
             session: {
-              id: 'session-1',
+              id: '507f191e810c19729de860f1',
               status: 'active',
               state: {
                 ...mockState,
@@ -194,17 +187,27 @@ test.describe('Critical Single Player Mode', () => {
     await waitForRoomReady(page);
 
     await closeGameRulesModal(page);
-    await expect(page.locator('body')).toContainText(/your turn/i);
+    await expect(page.locator('body')).toContainText(/your (turn|move)/i);
 
     const drawBtn = page.getByRole('button', { name: /draw/i }).first();
     await expect(drawBtn).toBeVisible();
-    await drawBtn.click();
 
     const showChatBtn = page.getByRole('button', { name: /show chat/i });
-    if (await showChatBtn.isVisible()) {
-      await showChatBtn.click();
-    }
 
-    await expect(page.getByText(/Drawn/i).first()).toBeVisible();
+    await expect(async () => {
+      // Only click if the button is still visible (it disappears after a successful click)
+      // We use force: true to bypass WebKit hanging on actionability checks due to the "Your turn" toast overlay
+      if (await drawBtn.isVisible()) {
+        await drawBtn.click({ force: true });
+      }
+
+      // On mobile, the chat might be hidden behind a toggle
+      if (await showChatBtn.isVisible()) {
+        await showChatBtn.click({ force: true });
+      }
+
+      // Synchronous check to avoid explicit timeouts inside the test
+      expect(await page.getByText(/Drawn/i).first().isVisible()).toBe(true);
+    }).toPass();
   });
 });

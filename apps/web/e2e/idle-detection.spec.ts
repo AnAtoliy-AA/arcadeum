@@ -23,7 +23,7 @@ test.describe('Idle Detection', () => {
     await mockRoomInfo(page, {
       room: {
         id: roomId,
-        status: 'in_progress',
+        status: 'lobby',
         visibility: 'public',
         members: [
           {
@@ -31,7 +31,11 @@ test.describe('Idle Detection', () => {
             displayName: 'Test User',
             isHost: true,
           },
-          { id: 'user-2', displayName: 'Opponent', isHost: false },
+          {
+            id: '507f191e810c19729de860e2',
+            displayName: 'Opponent',
+            isHost: false,
+          },
         ],
       },
     });
@@ -63,29 +67,28 @@ test.describe('Idle Detection', () => {
       if (socket) {
         if (typeof socket.trigger === 'function') {
           socket.trigger('games.player.idle_changed', {
-            userId: 'user-2',
+            userId: '507f191e810c19729de860e2',
             idle: true,
           });
         } else if (typeof socket.listeners === 'function') {
           const handlers = socket.listeners('games.player.idle_changed');
           for (const handler of handlers) {
-            handler({ userId: 'user-2', idle: true });
+            handler({ userId: '507f191e810c19729de860e2', idle: true });
           }
         }
       }
     });
 
     // Wait for store to update
-    await page.waitForFunction(
-      () => {
-        const win = window as unknown as Record<string, unknown>;
-        const store = win.__ZUSTAND_GAME_STORE__ as
-          | { getState: () => { idlePlayers: string[] } }
-          | undefined;
-        return store?.getState?.()?.idlePlayers?.includes('user-2');
-      },
-      { timeout: 5000 },
-    );
+    await page.waitForFunction(() => {
+      const win = window as unknown as Record<string, unknown>;
+      const store = win.__ZUSTAND_GAME_STORE__ as
+        | { getState: () => { idlePlayers: string[] } }
+        | undefined;
+      return store
+        ?.getState?.()
+        ?.idlePlayers?.includes('507f191e810c19729de860e2');
+    }, {});
 
     const idleAfter = await page.evaluate(() => {
       const win = window as unknown as Record<string, unknown>;
@@ -94,7 +97,7 @@ test.describe('Idle Detection', () => {
         | undefined;
       return store?.getState?.()?.idlePlayers ?? [];
     });
-    expect(idleAfter).toContain('user-2');
+    expect(idleAfter).toContain('507f191e810c19729de860e2');
   });
 
   test('should remove player from idle list when active event is received', async ({
@@ -114,19 +117,17 @@ test.describe('Idle Detection', () => {
       if (socket) {
         if (typeof socket.trigger === 'function') {
           socket.trigger('games.player.idle_changed', {
-            userId: 'user-2',
+            userId: '507f191e810c19729de860e2',
             idle: true,
           });
         } else if (typeof socket.listeners === 'function') {
           const handlers = socket.listeners('games.player.idle_changed');
           for (const handler of handlers) {
-            handler({ userId: 'user-2', idle: true });
+            handler({ userId: '507f191e810c19729de860e2', idle: true });
           }
         }
       }
     });
-
-    await page.waitForTimeout(300);
 
     await page.evaluate(() => {
       const win = window as unknown as Record<string, unknown>;
@@ -139,19 +140,17 @@ test.describe('Idle Detection', () => {
       if (socket) {
         if (typeof socket.trigger === 'function') {
           socket.trigger('games.player.idle_changed', {
-            userId: 'user-2',
+            userId: '507f191e810c19729de860e2',
             idle: false,
           });
         } else if (typeof socket.listeners === 'function') {
           const handlers = socket.listeners('games.player.idle_changed');
           for (const handler of handlers) {
-            handler({ userId: 'user-2', idle: false });
+            handler({ userId: '507f191e810c19729de860e2', idle: false });
           }
         }
       }
     });
-
-    await page.waitForTimeout(300);
 
     const idleAfterActive = await page.evaluate(() => {
       const win = window as unknown as Record<string, unknown>;
@@ -160,6 +159,6 @@ test.describe('Idle Detection', () => {
         | undefined;
       return store?.getState?.()?.idlePlayers ?? [];
     });
-    expect(idleAfterActive).not.toContain('user-2');
+    expect(idleAfterActive).not.toContain('507f191e810c19729de860e2');
   });
 });

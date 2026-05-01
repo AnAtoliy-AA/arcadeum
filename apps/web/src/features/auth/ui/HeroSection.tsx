@@ -1,32 +1,12 @@
-import {
-  HeroCard,
-  Badge,
-  Title,
-  Description,
-  Status,
-  StatusHeadline,
-  StatusDescription,
-  Actions,
-  PrimaryAction,
-  SecondaryAction,
-  HomeLink,
-  HomeLinkIcon,
-  ShortcutsList,
-  ShortcutLink,
-  ShortcutIcon,
-} from './styles';
+import Link from 'next/link';
+import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
+import { Badge } from '@arcadeum/ui/components/Badge/Badge';
+import { PageTitle } from '@arcadeum/ui/components/PageTitle/PageTitle';
+import { Typography } from '@arcadeum/ui/components/Typography/Typography';
+import { Button } from '@arcadeum/ui/components/Button/Button';
+import { XStack, YStack } from 'tamagui';
 
-export interface HeroSectionLabels {
-  badgeLabel: string;
-  heroTitle: string;
-  heroDescription: string;
-  heroStatusHeadline: string;
-  heroStatusDescription: string;
-  primaryActionLabel: string;
-  secondaryActionLabel: string;
-  homeLinkLabel: string;
-  browseGamesLabel: string;
-}
+import type { HeroSectionLabels } from '../types';
 
 export interface HeroSectionConfig {
   primaryActionHref: string;
@@ -54,32 +34,63 @@ export function HeroSection({ labels, config }: HeroSectionProps) {
   const { primaryActionHref, secondaryActionHref } = config;
 
   return (
-    <HeroCard>
-      <Badge>{badgeLabel}</Badge>
-      <Title>{heroTitle}</Title>
-      <Description>{heroDescription}</Description>
-      <Status>
-        <StatusHeadline>{heroStatusHeadline}</StatusHeadline>
-        <StatusDescription>{heroStatusDescription}</StatusDescription>
-        <Actions>
-          <PrimaryAction href={primaryActionHref}>
-            {primaryActionLabel}
-          </PrimaryAction>
-          <SecondaryAction href={secondaryActionHref}>
-            {secondaryActionLabel}
-          </SecondaryAction>
-        </Actions>
-      </Status>
-      <HomeLink href="/">
-        <HomeLinkIcon aria-hidden="true">←</HomeLinkIcon>
-        <span>{homeLinkLabel}</span>
-      </HomeLink>
-      <ShortcutsList>
-        <ShortcutLink href="/games">
-          <ShortcutIcon aria-hidden="true">→</ShortcutIcon>
-          <span>{browseGamesLabel}</span>
-        </ShortcutLink>
-      </ShortcutsList>
-    </HeroCard>
+    <GlassCard gap="$5" padding="$7">
+      <Badge size="sm" variant="neutral" alignSelf="flex-start">
+        {badgeLabel}
+      </Badge>
+
+      <PageTitle>{heroTitle}</PageTitle>
+
+      <Typography variant="body" uiSize="lg" color="$colorMuted">
+        {heroDescription}
+      </Typography>
+
+      <YStack
+        gap="$2"
+        padding="$5"
+        borderRadius={18}
+        borderWidth={1}
+        borderColor="$borderColor"
+        backgroundColor="$backgroundHover"
+      >
+        <Typography variant="heading" uiSize="md">
+          {heroStatusHeadline}
+        </Typography>
+        <Typography variant="body" uiSize="md" color="$colorMuted">
+          {heroStatusDescription}
+        </Typography>
+
+        <XStack flexWrap="wrap" gap="$3" marginTop="$2">
+          <Link href={primaryActionHref} passHref>
+            <Button variant="primary" size="md">
+              {primaryActionLabel}
+            </Button>
+          </Link>
+          <Link href={secondaryActionHref} passHref>
+            <Button variant="secondary" size="md">
+              {secondaryActionLabel}
+            </Button>
+          </Link>
+        </XStack>
+      </YStack>
+
+      <Link href="/" passHref style={{ textDecoration: 'none' }}>
+        <XStack alignItems="center" gap="$1.5">
+          <Typography color="$accent" weight="600">
+            ← {homeLinkLabel}
+          </Typography>
+        </XStack>
+      </Link>
+
+      <XStack flexWrap="wrap" gap="$3">
+        <Link href="/games" passHref style={{ textDecoration: 'none' }}>
+          <XStack alignItems="center" gap="$1.5">
+            <Typography color="$accent" weight="600">
+              → {browseGamesLabel}
+            </Typography>
+          </XStack>
+        </Link>
+      </XStack>
+    </GlassCard>
   );
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ReferralDashboard } from './ReferralDashboard';
+import ReferralsClient from './ReferralsClient';
 
 export const metadata: Metadata = {
   title: 'Invite Friends | Earn Rewards',
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function ReferralsPage() {
-  return <ReferralDashboard />;
+  return <ReferralsClient />;
 }

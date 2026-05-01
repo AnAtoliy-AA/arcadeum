@@ -18,7 +18,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { Button } from '@/shared/ui';
+import { Button, Badge } from '@arcadeum/ui';
 import {
   Sidebar,
   LobbyCard,
@@ -28,46 +28,54 @@ import {
   LobbyPlayerAvatar,
   PlayerInfo,
   LobbyPlayerName,
-  PlayerBadge,
+  LobbyPlayerAvatarText,
   EmptySlot,
   EmptyAvatar,
+  EmptyAvatarText,
   InfoRow,
   InfoLabel,
   StatusBadge,
   InfoValue,
   FastBadge,
+  FastBadgeText,
   DeleteButton,
   CardHeader,
   RefreshButton,
 } from './lobbyStyles';
 import { SortablePlayerItem, AVATAR_COLORS } from './SortablePlayerItem';
-import { RefreshIcon } from '@/shared/ui/Icons';
+import { ConfirmationModal } from './ConfirmationModal';
+import { RefreshIcon } from '@arcadeum/ui';
 
 interface LobbySidebarProps {
   room: GameRoomSummary;
   isHost: boolean;
   minPlayers: number;
   isFastMode?: boolean;
-  playersLabel: string;
-  invitedPlayersLabel: string;
-  declinedLabel: string;
-  reinviteLabel: string;
-  roomInfoLabel: string;
-  statusLabel: string;
-  statusWaitingLabel?: string;
-  statusActiveLabel?: string;
-  visibilityLabel: string;
-  visibilityPublicLabel: string;
-  visibilityPrivateLabel: string;
-  inviteCodeLabel: string;
-  waitingForPlayerLabel: string;
-  fastRoomLabel: string;
+  labels: {
+    playersLabel?: string;
+    invitedPlayersLabel?: string;
+    declinedLabel?: string;
+    reinviteLabel?: string;
+    roomInfoLabel?: string;
+    statusLabel?: string;
+    visibilityLabel?: string;
+    visibilityPublicLabel?: string;
+    visibilityPrivateLabel?: string;
+    inviteCodeLabel?: string;
+    waitingForPlayerLabel?: string;
+    fastRoomLabel?: string;
+    deleteRoomLabel?: string;
+    kickPlayerLabel?: string;
+    leaveRoomLabel?: string;
+  };
   showReorderControls: boolean;
   showInvitedPlayers: boolean;
   members: Required<GameRoomSummary>['members'];
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
   onDeleteRoom?: () => void;
+  onKickPlayer?: (userId: string) => void;
+  onLeaveRoom?: () => void;
   deleteRoomLabel: string;
   extraPlayersCardSlot?: React.ReactNode;
   onRefresh?: () => void;
@@ -78,28 +86,33 @@ export function LobbySidebar({
   isHost,
   minPlayers,
   isFastMode,
-  playersLabel,
-  invitedPlayersLabel,
-  declinedLabel,
-  reinviteLabel,
-  roomInfoLabel,
-  statusLabel,
-  visibilityLabel,
-  visibilityPublicLabel,
-  visibilityPrivateLabel,
-  inviteCodeLabel,
-  waitingForPlayerLabel,
-  fastRoomLabel,
   showReorderControls,
   showInvitedPlayers,
   members,
   onReorderPlayers,
   onReinvite,
   onDeleteRoom,
+  onKickPlayer,
+  onLeaveRoom,
   deleteRoomLabel,
   extraPlayersCardSlot,
   onRefresh,
+  labels,
 }: LobbySidebarProps) {
+  const {
+    playersLabel = 'Players',
+    invitedPlayersLabel = 'Invited Players',
+    declinedLabel = 'Declined',
+    reinviteLabel = 'Re-invite',
+    roomInfoLabel = 'Room Info',
+    statusLabel = 'Status',
+    visibilityLabel = 'Visibility',
+    visibilityPublicLabel = 'Public',
+    visibilityPrivateLabel = 'Private',
+    inviteCodeLabel = 'Invite Code',
+    waitingForPlayerLabel = 'Waiting for player...',
+    fastRoomLabel = 'Fast Room',
+  } = labels;
   const { t } = useTranslation();
   const maxPlayers = room.maxPlayers ?? 5;
 
@@ -122,6 +135,14 @@ export function LobbySidebar({
   const pendingInvited = invitedUsers.filter((u) => !joinedIds.has(u.id));
   const pendingDeclined = declinedUsers.filter((u) => !joinedIds.has(u.id));
 
+  const getInitials = (name: string) => name.slice(0, 2).toUpperCase();
+
+  const [kickTarget, setKickTarget] = React.useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [showLeaveConfirm, setShowLeaveConfirm] = React.useState(false);
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, {
@@ -142,8 +163,6 @@ export function LobbySidebar({
       }
     }
   };
-
-  const getInitials = (name: string) => name.slice(0, 2).toUpperCase();
 
   return (
     <Sidebar>
@@ -193,6 +212,15 @@ export function LobbySidebar({
                       );
                       onReorderPlayers?.(newOrder);
                     }}
+                    onKick={
+                      onKickPlayer && member.id !== room.hostId
+                        ? () =>
+                            setKickTarget({
+                              id: member.id,
+                              name: member.displayName,
+                            })
+                        : undefined
+                    }
                   />
                 ))}
               </SortableContext>
@@ -204,13 +232,37 @@ export function LobbySidebar({
                 AVATAR_COLORS[member.displayName.length % AVATAR_COLORS.length];
               return (
                 <PlayerItem key={member.id} $isHost={isRoomHost}>
-                  <LobbyPlayerAvatar $color={avatarColor}>
-                    {getInitials(member.displayName)}
+                  <LobbyPlayerAvatar backgroundColor={avatarColor}>
+                    <LobbyPlayerAvatarText>
+                      {getInitials(member.displayName)}
+                    </LobbyPlayerAvatarText>
                   </LobbyPlayerAvatar>
                   <PlayerInfo>
                     <LobbyPlayerName>{member.displayName}</LobbyPlayerName>
-                    {isRoomHost && <PlayerBadge>HOST</PlayerBadge>}
+                    {isRoomHost && (
+                      <Badge variant="info" size="sm">
+                        HOST
+                      </Badge>
+                    )}
                   </PlayerInfo>
+                  {onKickPlayer && !isRoomHost && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        setKickTarget({
+                          id: member.id,
+                          name: member.displayName,
+                        })
+                      }
+                      paddingVertical="$1"
+                      paddingHorizontal="$2"
+                      minWidth="auto"
+                      style={{ color: '#ef4444' }}
+                    >
+                      ✕
+                    </Button>
+                  )}
                 </PlayerItem>
               );
             })
@@ -218,7 +270,9 @@ export function LobbySidebar({
           {Array.from({ length: Math.max(0, minPlayers - members.length) }).map(
             (_, i) => (
               <EmptySlot key={`empty-${i}`}>
-                <EmptyAvatar>?</EmptyAvatar>
+                <EmptyAvatar>
+                  <EmptyAvatarText>?</EmptyAvatarText>
+                </EmptyAvatar>
                 <InfoLabel>{waitingForPlayerLabel}</InfoLabel>
               </EmptySlot>
             ),
@@ -236,12 +290,14 @@ export function LobbySidebar({
               {pendingInvited.map((u) => (
                 <PlayerItem key={u.id} style={{ opacity: 0.7 }}>
                   <LobbyPlayerAvatar
-                    $color={
+                    backgroundColor={
                       AVATAR_COLORS[u.displayName.length % AVATAR_COLORS.length]
                     }
                     style={{ filter: 'grayscale(1)' }}
                   >
-                    {getInitials(u.displayName)}
+                    <LobbyPlayerAvatarText>
+                      {getInitials(u.displayName)}
+                    </LobbyPlayerAvatarText>
                   </LobbyPlayerAvatar>
                   <PlayerInfo>
                     <LobbyPlayerName>{u.displayName}</LobbyPlayerName>
@@ -255,10 +311,12 @@ export function LobbySidebar({
                     style={{ display: 'flex', alignItems: 'center', flex: 1 }}
                   >
                     <LobbyPlayerAvatar
-                      $color="#ccc"
+                      backgroundColor="#ccc"
                       style={{ filter: 'grayscale(1)' }}
                     >
-                      {getInitials(u.displayName)}
+                      <LobbyPlayerAvatarText>
+                        {getInitials(u.displayName)}
+                      </LobbyPlayerAvatarText>
                     </LobbyPlayerAvatar>
                     <PlayerInfo>
                       <LobbyPlayerName
@@ -275,8 +333,8 @@ export function LobbySidebar({
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => onReinvite([u.id])}
-                      style={{ marginLeft: '8px' }}
+                      onClick={() => onReinvite?.([u.id])}
+                      marginLeft="$2"
                     >
                       {reinviteLabel}
                     </Button>
@@ -298,7 +356,9 @@ export function LobbySidebar({
         {isFastMode && (
           <InfoRow>
             <InfoLabel>Mode</InfoLabel>
-            <FastBadge>⚡ {fastRoomLabel}</FastBadge>
+            <FastBadge>
+              <FastBadgeText>⚡ {fastRoomLabel}</FastBadgeText>
+            </FastBadge>
           </InfoRow>
         )}
         <InfoRow>
@@ -322,13 +382,47 @@ export function LobbySidebar({
       </LobbyCard>
 
       {isHost && onDeleteRoom && (
-        <DeleteButton
-          onClick={onDeleteRoom}
-          style={{ marginTop: '0.5rem', width: '100%' }}
-        >
+        <DeleteButton onClick={onDeleteRoom} marginTop="$2" width="100%">
           {deleteRoomLabel}
         </DeleteButton>
       )}
+
+      {!isHost && onLeaveRoom && (
+        <DeleteButton
+          onClick={() => setShowLeaveConfirm(true)}
+          marginTop="$2"
+          width="100%"
+        >
+          {labels.leaveRoomLabel || t('games.common.leaveRoom.button')}
+        </DeleteButton>
+      )}
+
+      <ConfirmationModal
+        open={!!kickTarget}
+        onClose={() => setKickTarget(null)}
+        onConfirm={() => {
+          if (kickTarget) {
+            onKickPlayer?.(kickTarget.id);
+            setKickTarget(null);
+          }
+        }}
+        title={t('games.common.kickPlayer.confirmTitle')}
+        message={t('games.common.kickPlayer.confirmMessage', {
+          playerName: kickTarget?.name ?? '',
+        })}
+        confirmLabel={t('games.common.kickPlayer.confirmButton')}
+        cancelLabel={t('games.common.kickPlayer.cancelButton')}
+      />
+
+      <ConfirmationModal
+        open={showLeaveConfirm}
+        onClose={() => setShowLeaveConfirm(false)}
+        onConfirm={onLeaveRoom}
+        title={t('games.common.leaveRoom.confirmTitle')}
+        message={t('games.common.leaveRoom.confirmMessage')}
+        confirmLabel={t('games.common.leaveRoom.confirmButton')}
+        cancelLabel={t('games.common.leaveRoom.cancelButton')}
+      />
     </Sidebar>
   );
 }

@@ -2,13 +2,14 @@ import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GameRoomMemberSummary } from '@/shared/types/games';
-import { Button } from '@/shared/ui';
+import { Button, Badge } from '@arcadeum/ui';
+import { XStack } from 'tamagui';
 import {
   PlayerItem,
   LobbyPlayerAvatar,
   PlayerInfo,
   LobbyPlayerName,
-  PlayerBadge,
+  LobbyPlayerAvatarText,
 } from './lobbyStyles';
 
 // ============ Avatar Colors ============
@@ -30,6 +31,7 @@ export interface SortablePlayerItemProps {
   totalCount: number;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  onKick?: () => void;
 }
 
 export function SortablePlayerItem({
@@ -40,6 +42,7 @@ export function SortablePlayerItem({
   totalCount,
   onMoveUp,
   onMoveDown,
+  onKick,
 }: SortablePlayerItemProps) {
   const {
     attributes,
@@ -57,52 +60,78 @@ export function SortablePlayerItem({
     cursor: isHost ? 'grab' : 'default',
   };
 
-  const getInitials = (name: string) => name.slice(0, 2).toUpperCase();
   const avatarColor =
     AVATAR_COLORS[member.displayName.length % AVATAR_COLORS.length];
 
   return (
-    <PlayerItem
+    <div
       ref={setNodeRef}
       style={style}
       {...(isHost ? { ...attributes, ...listeners } : {})}
-      $isHost={isRoomHost}
     >
-      <LobbyPlayerAvatar $color={avatarColor}>
-        {getInitials(member.displayName)}
-      </LobbyPlayerAvatar>
-      <PlayerInfo>
-        <LobbyPlayerName>{member.displayName}</LobbyPlayerName>
-        {isRoomHost && <PlayerBadge>HOST</PlayerBadge>}
-      </PlayerInfo>
-      {isHost && totalCount > 1 && (
-        <div style={{ display: 'flex', gap: '4px' }}>
+      <PlayerItem $isHost={isRoomHost}>
+        <LobbyPlayerAvatar backgroundColor={avatarColor}>
+          <LobbyPlayerAvatarText>
+            {member.displayName.slice(0, 2).toUpperCase()}
+          </LobbyPlayerAvatarText>
+        </LobbyPlayerAvatar>
+        <PlayerInfo>
+          <LobbyPlayerName>{member.displayName}</LobbyPlayerName>
+          {isRoomHost && (
+            <Badge variant="info" size="sm">
+              HOST
+            </Badge>
+          )}
+        </PlayerInfo>
+        {isHost && totalCount > 1 && (
+          <XStack gap="$1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e: { stopPropagation: () => void }) => {
+                e.stopPropagation();
+                onMoveUp();
+              }}
+              disabled={index === 0}
+              paddingVertical="$1"
+              paddingHorizontal="$2"
+              minWidth="auto"
+            >
+              ↑
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e: { stopPropagation: () => void }) => {
+                e.stopPropagation();
+                onMoveDown();
+              }}
+              disabled={index === totalCount - 1}
+              paddingVertical="$1"
+              paddingHorizontal="$2"
+              minWidth="auto"
+            >
+              ↓
+            </Button>
+          </XStack>
+        )}
+        {onKick && !isRoomHost && (
           <Button
             variant="ghost"
             size="sm"
-            onClick={(e) => {
+            onClick={(e: { stopPropagation: () => void }) => {
               e.stopPropagation();
-              onMoveUp();
+              onKick();
             }}
-            disabled={index === 0}
-            style={{ padding: '4px 8px', minWidth: 'auto' }}
+            paddingVertical="$1"
+            paddingHorizontal="$2"
+            minWidth="auto"
+            style={{ color: '#ef4444' }}
           >
-            ↑
+            ✕
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              onMoveDown();
-            }}
-            disabled={index === totalCount - 1}
-            style={{ padding: '4px 8px', minWidth: 'auto' }}
-          >
-            ↓
-          </Button>
-        </div>
-      )}
-    </PlayerItem>
+        )}
+      </PlayerItem>
+    </div>
   );
 }

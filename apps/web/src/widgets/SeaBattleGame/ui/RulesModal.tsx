@@ -1,26 +1,7 @@
-import React from 'react';
-import { createPortal } from 'react-dom';
-import {
-  ModalOverlay,
-  ModalContainer,
-  ModalHeader,
-  ModalTitle,
-  CloseButton,
-  ScrollArea,
-  Section,
-  SectionHeader,
-  IconWrapper,
-  SectionTitle,
-  RulesText,
-  FleetGrid,
-  ShipCard,
-  ShipHeader,
-  ShipName,
-  ShipSize,
-  ShipDescription,
-} from './RulesModal.styles';
-import { TranslationKey } from '@/shared/lib/useTranslation';
-import { CloseIcon } from '@/shared/ui/Icons';
+'use client';
+import { YStack, XStack, Text } from 'tamagui';
+import { Modal, ModalContent, ModalHeader, ModalTitle, ModalBody } from '@arcadeum/ui';
+import { type TranslationKey } from '@/shared/lib/useTranslation';
 
 interface RulesModalProps {
   isOpen: boolean;
@@ -29,126 +10,127 @@ interface RulesModalProps {
 }
 
 export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
-  }, []);
-
-  if (!isOpen || !mounted) return null;
-
   const shipsRaw = t('games.sea_battle_v1.rules.ships');
   const ships = shipsRaw
     .split('\n')
     .map((line) => {
       const match = line.match(/•\s+(.+)\s+\((\d+)\s+.*\)\s+-\s+(.+)/);
-      if (match) {
-        return {
-          name: match[1],
-          size: match[2],
-          description: match[3],
-        };
-      }
+      if (match) return { name: match[1], size: match[2], description: match[3] };
       return null;
     })
     .filter(Boolean);
 
-  return createPortal(
-    <ModalOverlay onClick={onClose} data-testid="rules-modal">
-      <ModalContainer
-        onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: '850px' }}
-      >
-        <ModalHeader>
-          <ModalTitle>{t('games.sea_battle_v1.rules.title')}</ModalTitle>
-          <CloseButton
-            onClick={onClose}
-            aria-label="Close rules modal"
-            data-testid="modal-close-button"
-          >
-            <CloseIcon size={20} />
-          </CloseButton>
+  const sections = [
+    {
+      icon: '🎯',
+      gradient: 'linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%)',
+      header: t('games.sea_battle_v1.rules.headers.objective' as TranslationKey),
+      text: t('games.sea_battle_v1.rules.objective' as TranslationKey),
+    },
+    {
+      icon: '🎮',
+      gradient: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+      header: t('games.sea_battle_v1.rules.headers.gameplay' as TranslationKey),
+      text: t('games.sea_battle_v1.rules.gameplay' as TranslationKey),
+    },
+    {
+      icon: '⚓',
+      gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+      header: t('games.sea_battle_v1.rules.headers.placement' as TranslationKey),
+      text: t('games.sea_battle_v1.rules.placement' as TranslationKey),
+    },
+    {
+      icon: '💥',
+      gradient: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+      header: t('games.sea_battle_v1.rules.headers.battle' as TranslationKey),
+      text: t('games.sea_battle_v1.rules.battle' as TranslationKey),
+    },
+  ];
+
+  return (
+    <Modal open={isOpen} onClose={onClose}>
+      <ModalContent maxWidth={850} data-testid="rules-modal">
+        <ModalHeader onClose={onClose}>
+          <ModalTitle>{t('games.sea_battle_v1.rules.title' as TranslationKey)}</ModalTitle>
         </ModalHeader>
+        <ModalBody>
+          <YStack gap="$6">
+            {sections.map((section) => (
+              <YStack key={section.header} gap="$3">
+                <XStack alignItems="center" gap="$3">
+                  <YStack
+                    width={42}
+                    height={42}
+                    borderRadius={12}
+                    alignItems="center"
+                    justifyContent="center"
+                    style={{ background: section.gradient }}
+                  >
+                    <Text fontSize={20}>{section.icon}</Text>
+                  </YStack>
+                  <Text fontWeight="700" fontSize={18} color="#f1f5f9">
+                    {section.header}
+                  </Text>
+                </XStack>
+                <Text fontSize={18} lineHeight={27} color="#94a3b8" paddingLeft={54}>
+                  {section.text}
+                </Text>
+              </YStack>
+            ))}
 
-        <ScrollArea>
-          <Section style={{ animationDelay: '0.1s' }}>
-            <SectionHeader>
-              <IconWrapper $gradient="linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%)">
-                🎯
-              </IconWrapper>
-              <SectionTitle>
-                {t('games.sea_battle_v1.rules.headers.objective')}
-              </SectionTitle>
-            </SectionHeader>
-            <RulesText>{t('games.sea_battle_v1.rules.objective')}</RulesText>
-          </Section>
-
-          <Section style={{ animationDelay: '0.2s' }}>
-            <SectionHeader>
-              <IconWrapper $gradient="linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)">
-                🎮
-              </IconWrapper>
-              <SectionTitle>
-                {t('games.sea_battle_v1.rules.headers.gameplay')}
-              </SectionTitle>
-            </SectionHeader>
-            <RulesText>{t('games.sea_battle_v1.rules.gameplay')}</RulesText>
-          </Section>
-
-          <Section style={{ animationDelay: '0.3s' }}>
-            <SectionHeader>
-              <IconWrapper $gradient="linear-gradient(135deg, #10b981 0%, #059669 100%)">
-                ⚓
-              </IconWrapper>
-              <SectionTitle>
-                {t('games.sea_battle_v1.rules.headers.placement')}
-              </SectionTitle>
-            </SectionHeader>
-            <RulesText>{t('games.sea_battle_v1.rules.placement')}</RulesText>
-          </Section>
-
-          <Section style={{ animationDelay: '0.4s' }}>
-            <SectionHeader>
-              <IconWrapper $gradient="linear-gradient(135deg, #ef4444 0%, #dc2626 100%)">
-                💥
-              </IconWrapper>
-              <SectionTitle>
-                {t('games.sea_battle_v1.rules.headers.battle')}
-              </SectionTitle>
-            </SectionHeader>
-            <RulesText>{t('games.sea_battle_v1.rules.battle')}</RulesText>
-          </Section>
-
-          <Section style={{ animationDelay: '0.5s' }}>
-            <SectionHeader>
-              <IconWrapper $gradient="linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)">
-                🚢
-              </IconWrapper>
-              <SectionTitle>
-                {t('games.sea_battle_v1.rules.headers.ships')}
-              </SectionTitle>
-            </SectionHeader>
-            <FleetGrid>
-              {ships.map((ship, idx) => (
-                <ShipCard key={idx}>
-                  <ShipHeader>
-                    <ShipName>{ship?.name}</ShipName>
-                    <ShipSize>
-                      {ship?.size}{' '}
-                      {t(
-                        'games.sea_battle_v1.table.state.cells' as TranslationKey,
-                      )}
-                    </ShipSize>
-                  </ShipHeader>
-                  <ShipDescription>{ship?.description}</ShipDescription>
-                </ShipCard>
-              ))}
-            </FleetGrid>
-          </Section>
-        </ScrollArea>
-      </ModalContainer>
-    </ModalOverlay>,
-    document.body,
+            {/* Fleet section */}
+            <YStack gap="$3">
+              <XStack alignItems="center" gap="$3">
+                <YStack
+                  width={42}
+                  height={42}
+                  borderRadius={12}
+                  alignItems="center"
+                  justifyContent="center"
+                  style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' }}
+                >
+                  <Text fontSize={20}>🚢</Text>
+                </YStack>
+                <Text fontWeight="700" fontSize={18} color="#f1f5f9">
+                  {t('games.sea_battle_v1.rules.headers.ships' as TranslationKey)}
+                </Text>
+              </XStack>
+              <XStack flexWrap="wrap" gap="$3" paddingLeft={54}>
+                {ships.map((ship, idx) => (
+                  <YStack
+                    key={idx}
+                    backgroundColor="rgba(255,255,255,0.03)"
+                    borderWidth={1}
+                    borderColor="rgba(56,189,248,0.1)"
+                    borderRadius={16}
+                    padding="$3"
+                    gap="$2"
+                    flexBasis="45%"
+                    flexGrow={1}
+                  >
+                    <XStack justifyContent="space-between" alignItems="center">
+                      <Text fontWeight="700" color="#f8fafc">{ship?.name}</Text>
+                      <XStack
+                        backgroundColor="rgba(56,189,248,0.1)"
+                        paddingHorizontal="$2"
+                        paddingVertical={2}
+                        borderRadius={8}
+                      >
+                        <Text color="#38bdf8" fontSize={11} fontWeight="700" textTransform="uppercase">
+                          {ship?.size} {t('games.sea_battle_v1.table.state.cells' as TranslationKey)}
+                        </Text>
+                      </XStack>
+                    </XStack>
+                    <Text fontSize={14} color="#64748b" lineHeight={20}>
+                      {ship?.description}
+                    </Text>
+                  </YStack>
+                ))}
+              </XStack>
+            </YStack>
+          </YStack>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   );
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { YStack, Text } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -12,8 +13,8 @@ import {
   ModalActions,
   ModalButton,
 } from '../styles';
+import { type GameVariant } from '@arcadeum/ui';
 import type { CriticalCard } from '../../types';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
 
 interface FavorModalProps {
   isOpen: boolean;
@@ -26,11 +27,11 @@ interface FavorModalProps {
   onSelectTarget: (target: string) => void;
   onConfirm: () => void;
   resolveDisplayName: (playerId?: string, fallback?: string) => string;
-  t: (key: TranslationKey) => string;
+  t: (key: string) => string;
   cardVariant?: string;
 }
 
-export const FavorModal: React.FC<FavorModalProps> = ({
+const FavorModal: React.FC<FavorModalProps> = ({
   isOpen,
   onClose,
   aliveOpponents,
@@ -44,44 +45,50 @@ export const FavorModal: React.FC<FavorModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <Modal onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
-        <ModalHeader $variant={cardVariant}>
-          <ModalTitle $variant={cardVariant}>
+    <Modal open={isOpen}>
+      <ModalContent
+        onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        $variant={cardVariant as GameVariant}
+      >
+        <ModalHeader $variant={cardVariant as GameVariant}>
+          <ModalTitle $variant={cardVariant as GameVariant}>
             🤝 {t('games.table.modals.favor.title')}
           </ModalTitle>
-          <CloseButton onClick={onClose} $variant={cardVariant}>
+          <CloseButton onClick={onClose} $variant={cardVariant as GameVariant}>
             ×
           </CloseButton>
         </ModalHeader>
         <ModalSection>
-          <SectionLabel>
+          <SectionLabel $variant={cardVariant as GameVariant}>
             {t('games.table.modals.favor.selectPlayer')}
           </SectionLabel>
-          <p style={{ fontSize: '0.9rem', opacity: 0.8, marginBottom: '1rem' }}>
+          <Text fontSize="$3" opacity={0.8} marginBottom="$4">
             {t('games.table.modals.favor.description')}
-          </p>
+          </Text>
           <OptionGrid>
             {aliveOpponents.map((opponent) => (
               <OptionButton
                 key={opponent.playerId}
                 $selected={selectedTarget === opponent.playerId}
+                $variant={cardVariant as GameVariant}
                 onClick={() => onSelectTarget(opponent.playerId)}
                 disabled={opponent.hand.length === 0}
               >
-                <div style={{ fontSize: '1.5rem' }}>🎮</div>
-                <div>
-                  {resolveDisplayName(
-                    opponent.playerId,
-                    `Player ${opponent.playerId.slice(0, 8)}`,
-                  )}
-                </div>
-                <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
-                  {t('games.table.modals.favor.cardsCount').replace(
-                    '{count}',
-                    opponent.hand.length.toString(),
-                  )}
-                </div>
+                <Text fontSize="$6">🎮</Text>
+                <YStack>
+                  <Text>
+                    {resolveDisplayName(
+                      opponent.playerId,
+                      `Player ${opponent.playerId.slice(0, 8)}`,
+                    )}
+                  </Text>
+                  <Text fontSize="$2" opacity={0.7}>
+                    {t('games.table.modals.favor.cardsCount').replace(
+                      '{count}',
+                      opponent.hand.length.toString(),
+                    )}
+                  </Text>
+                </YStack>
               </OptionButton>
             ))}
           </OptionGrid>
@@ -98,3 +105,5 @@ export const FavorModal: React.FC<FavorModalProps> = ({
     </Modal>
   );
 };
+
+export default FavorModal;

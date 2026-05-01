@@ -20,11 +20,11 @@ describe('gamesApi', () => {
       const mockPaged = { rooms: [{ id: '1' }], total: 100 };
       vi.mocked(apiClient.get).mockResolvedValueOnce(mockPaged);
 
-      const result = await gamesApi.getRooms({ page: 1 });
+      const result = await gamesApi.getRooms({ page: 0 });
 
       expect(result).toEqual(mockPaged);
       expect(apiClient.get).toHaveBeenCalledWith(
-        expect.stringContaining('page=1'),
+        expect.stringContaining('page=0'),
         undefined,
       );
     });
@@ -93,10 +93,10 @@ describe('gamesApi', () => {
       );
     });
 
-    it('throws room_not_found_error on 500', async () => {
+    it('throws failed_to_load_error on 500', async () => {
       vi.mocked(apiClient.get).mockRejectedValueOnce({ status: 500 });
       await expect(gamesApi.getRoomVisibility('r1')).rejects.toThrow(
-        'room_not_found_error',
+        'failed_to_load_error',
       );
     });
 
@@ -143,10 +143,19 @@ describe('gamesApi', () => {
       );
     });
 
-    it('throws room_not_found_error on 500', async () => {
-      vi.mocked(apiClient.post).mockRejectedValueOnce({ status: 500 });
+    it('throws room_not_found_error on 404', async () => {
+      vi.mocked(apiClient.post).mockRejectedValueOnce({
+        status: HttpStatus.NOT_FOUND,
+      });
       await expect(gamesApi.getRoomInfo('r1')).rejects.toThrow(
         'room_not_found_error',
+      );
+    });
+
+    it('throws failed_to_load_error on 500', async () => {
+      vi.mocked(apiClient.post).mockRejectedValueOnce({ status: 500 });
+      await expect(gamesApi.getRoomInfo('r1')).rejects.toThrow(
+        'failed_to_load_error',
       );
     });
 

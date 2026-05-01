@@ -1,10 +1,17 @@
 import React from 'react';
-import styled from 'styled-components';
+import { styled, YStack, Text } from 'tamagui';
 import type { PlayerStats } from '@/features/history/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { Card } from '@/shared/ui';
-import { SkeletonText } from '@/shared/ui/Skeleton';
-import { ProgressCircle, PROGRESS_COLORS } from '@/shared/ui/Progress';
+import { SkeletonText, ProgressCircle } from '@arcadeum/ui';
+
+export const statsOverviewCSS = `
+  .stats-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.25rem;
+  }
+`;
 
 interface StatsOverviewProps {
   stats: PlayerStats | null;
@@ -16,86 +23,80 @@ export function StatsOverview({ stats, loading }: StatsOverviewProps) {
 
   if (loading && !stats) {
     return (
-      <Grid>
-        {[1, 2, 3, 4].map((i) => (
-          <Card key={i} variant="glass" padding="md">
-            <SkeletonText width="60%" height="14px" $delay={i * 0.1} />
-            <SkeletonValue $delay={i * 0.1 + 0.05} />
-          </Card>
-        ))}
-      </Grid>
+      <>
+        <style>{statsOverviewCSS}</style>
+        <div className="stats-overview-grid">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i} variant="glass" cardPadding="md">
+              <SkeletonText width="60%" height="14px" delay={i * 0.1} />
+              <SkeletonText
+                width="100px"
+                height="32px"
+                delay={i * 0.1 + 0.05}
+              />
+            </Card>
+          ))}
+        </div>
+      </>
     );
   }
 
   if (!stats) return null;
 
   return (
-    <Grid>
-      <StatCard variant="glass" padding="md" interactive>
-        <StatLabel>{t('stats.totalGames')}</StatLabel>
-        <StatValue>{stats.totalGames}</StatValue>
-      </StatCard>
-      <StatCard variant="glass" padding="md" interactive>
-        <StatLabel>{t('stats.wins')}</StatLabel>
-        <StatValue $color={PROGRESS_COLORS.success}>{stats.wins}</StatValue>
-      </StatCard>
-      <StatCard variant="glass" padding="md" interactive>
-        <StatLabel>{t('stats.losses')}</StatLabel>
-        <StatValue $color={PROGRESS_COLORS.danger}>{stats.losses}</StatValue>
-      </StatCard>
-      <WinRateCard variant="glass" padding="md" interactive>
-        <StatLabel>{t('stats.winRate')}</StatLabel>
-        <ProgressCircle
-          value={stats.winRate}
-          size={80}
-          strokeWidth={8}
-          animate
-        />
-      </WinRateCard>
-    </Grid>
+    <>
+      <style>{statsOverviewCSS}</style>
+      <div className="stats-overview-grid">
+        <Card variant="glass" cardPadding="md">
+          <StatLabel>{t('stats.totalGames')}</StatLabel>
+          <StatValue data-testid="stats-total-games">
+            {stats.totalGames}
+          </StatValue>
+        </Card>
+        <Card variant="glass" cardPadding="md">
+          <StatLabel>{t('stats.wins')}</StatLabel>
+          <StatValue data-testid="stats-wins" color="$success">
+            {stats.wins}
+          </StatValue>
+        </Card>
+        <Card variant="glass" cardPadding="md">
+          <StatLabel>{t('stats.losses')}</StatLabel>
+          <StatValue data-testid="stats-losses" color="$danger">
+            {stats.losses}
+          </StatValue>
+        </Card>
+        <Card variant="glass" cardPadding="md">
+          <WinRateCardContent>
+            <StatLabel>{t('stats.winRate')}</StatLabel>
+            <ProgressCircle value={stats.winRate} size={80} strokeWidth={8} />
+          </WinRateCardContent>
+        </Card>
+      </div>
+    </>
   );
 }
 
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1.25rem;
-`;
+const StatLabel = styled(Text, {
+  name: 'StatsOverviewStatLabel',
+  fontSize: '$2',
+  color: 'rgba(236,239,238,0.45)',
+  textTransform: 'uppercase',
+  letterSpacing: 1.2,
+  fontWeight: '500',
+});
 
-const StatCard = styled(Card)`
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-`;
+const StatValue = styled(Text, {
+  name: 'StatsOverviewStatValue',
+  fontSize: '$10',
+  fontWeight: '800',
+  color: '$primaryGradientStart',
+  lineHeight: '$none',
+  letterSpacing: -0.5,
+});
 
-const StatLabel = styled.div`
-  font-size: 0.85rem;
-  color: ${({ theme }) => theme.text.muted};
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 500;
-`;
-
-const StatValue = styled.div<{ $color?: string }>`
-  font-size: 2.75rem;
-  font-weight: 800;
-  color: ${({ $color, theme }) =>
-    $color || theme.buttons.primary.gradientStart};
-  line-height: 1;
-  letter-spacing: -0.02em;
-`;
-
-const SkeletonValue = styled.div<{ $delay?: number }>`
-  height: 32px;
-  width: 100px;
-  background: ${({ theme }) => theme.surfaces.card.border};
-  border-radius: 8px;
-    }
-  }
-`;
-
-const WinRateCard = styled(StatCard)`
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-`;
+const WinRateCardContent = styled(YStack, {
+  name: 'StatsOverviewWinRateContent',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '$4',
+});

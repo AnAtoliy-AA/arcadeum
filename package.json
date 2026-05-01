@@ -1,11 +1,13 @@
 {
   "name": "aicoapp-monorepo",
-  "version": "1.8.2",
+  "version": "1.9.30",
   "private": true,
   "packageManager": "pnpm@9.15.0",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "prepare": "husky",
-    "dev": "turbo run dev --parallel",
+    "dev": "turbo run dev --parallel --filter be --filter web --filter \"@arcadeum/ui\"",
+    "dev:all": "turbo run dev --parallel && cd packages/ui && pnpm run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
@@ -13,17 +15,33 @@
     "check-file-length": "node scripts/check-file-length.js",
     "check-translations": "node scripts/check_translation.js",
     "docs:check": "node scripts/check-doc-links.js",
-    "changelog": "auto-changelog --stdout --template ./scripts/changelog-template.hbs --unreleased --commit-limit false > CHANGELOG.md"
+    "generate-sprites": "node scripts/generate_spritesheet.js",
+    "changelog": "auto-changelog --stdout --template ./scripts/changelog-template.hbs --unreleased --commit-limit false > CHANGELOG.md",
+    "release": "standard-version"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.4.3",
     "@commitlint/config-conventional": "^20.4.3",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
     "auto-changelog": "^2.5.0",
+    "dotenv": "^17.2.2",
     "husky": "^9.1.4",
     "jimp": "^0.22.12",
     "lint-staged": "^15.2.10",
     "markdown-it": "^14.1.1",
     "prettier": "3.4.2",
+    "standard-version": "^9.5.0",
     "turbo": "^2.1.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "tamagui": "2.0.0-rc.23",
+      "@tamagui/core": "2.0.0-rc.23",
+      "@tamagui/web": "2.0.0-rc.23",
+      "@tamagui/shorthands": "2.0.0-rc.23",
+      "@tamagui/config": "2.0.0-rc.23",
+      "@tamagui/lucide-icons": "2.0.0-rc.23"
+    }
   }
 }

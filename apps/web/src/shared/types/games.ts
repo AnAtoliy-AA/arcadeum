@@ -30,6 +30,7 @@ export interface GameRoomSummary {
   maxPlayers: number | null;
   createdAt: string;
   status: 'lobby' | 'in_progress' | 'completed';
+  notes?: string | null;
   inviteCode?: string;
   gameOptions?: GameOptions;
   rematchInvitedUsers?: GameRoomMemberSummary[];

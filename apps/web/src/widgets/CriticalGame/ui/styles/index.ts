@@ -16,9 +16,10 @@ export {
   GameInfo,
   GameTitle,
   TurnStatus,
+  TurnStatusPill,
+  VariantIconBadge,
   StartButton,
   FullscreenButton,
-  ChatToggleButton,
 } from './header';
 
 export {
@@ -40,6 +41,8 @@ export {
   PlayersRing,
   PlayerPositionWrapper,
   CenterTable,
+  CenterTableRow,
+  OpponentStrip,
   CardSlot,
 } from './table';
 
@@ -64,6 +67,8 @@ export {
 
 export { InfoTitle, ActionsHeader, ActionsToggleButton } from './table-widgets';
 
+export { ActionBar } from './mobile-action-bar';
+
 // Player Components
 export { PlayerCard, PlayerAvatar, PlayerName } from './players';
 
@@ -86,6 +91,8 @@ export {
 } from './player-widgets';
 
 // Card Components
+export { GradientScrim } from './cards-base';
+
 export {
   CardsGrid,
   Card,
@@ -100,7 +107,9 @@ export {
 
 export {
   CardName,
+  CardNameContainer,
   CardDescription,
+  CardDescriptionContainer,
   CardCountBadge,
   CardInner,
   CardFrame,
@@ -135,6 +144,7 @@ export {
   ModalContent,
   ModalHeader,
   ModalTitle,
+  ModalOverlay,
   CloseButton,
   ModalSection,
   SectionLabel,
@@ -144,4 +154,6 @@ export {
   ModalButton,
   ScrollableCardsGrid,
   SelectableCard,
+  RulesText,
+  RulesTextPre,
 } from './modals';

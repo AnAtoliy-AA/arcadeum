@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { useMedia } from 'tamagui';
 import {
   CriticalPlayerState,
   CriticalCard,
@@ -11,13 +12,16 @@ import {
   PendingFavor,
 } from '../types';
 import { PLAYABLE_ACTION_CARDS } from '../lib/constants';
-import {
-  getCardEmoji,
-  getCardTranslationKey,
-  getCardDescriptionKey,
-} from '../lib/cardUtils';
+import { getCardTranslationKey, getCardDescriptionKey } from '../lib/cardUtils';
+import { getCardRole } from '../lib/cardRoles';
+import { getFanTransform } from '../lib/handLayout';
+import { CardImage } from './styles/card-image';
+import { useCardFlip } from '../hooks/useCardFlip';
+import { useScenePalette } from './ScenePaletteContext';
 import { ActionsSection } from './ActionsSection';
-import { HandLayoutDropdown } from './HandLayoutDropdown';
+import { MobileHandPopover } from './MobileHandPopover';
+import { HandControlsPanel } from './HandControlsPanel';
+import { MobileActionBar } from './MobileActionBar';
 
 import {
   HandSection,
@@ -29,17 +33,17 @@ import {
   CardCorner,
   CardFrame,
   CardInner,
-  CardEmoji,
+  GradientScrim,
   CardName,
+  CardNameContainer,
   CardDescription,
+  CardDescriptionContainer,
   CardCountBadge,
   ActionButton,
   StashedCard,
   StashIcon,
   HandHeader,
   HandTitle,
-  HandControls,
-  HandToggleButton,
 } from './styles';
 
 interface PlayerHandProps {
@@ -77,6 +81,8 @@ interface PlayerHandProps {
   setHandLayout?: (layout: HandLayoutMode) => void;
 }
 
+import { type GameVariant } from '@arcadeum/ui';
+
 export function PlayerHand({
   currentPlayer,
   onUnstashCard,
@@ -113,54 +119,64 @@ export function PlayerHand({
 }: PlayerHandProps) {
   const [showNames, setShowNames] = useState(true);
   const [showDescriptions, setShowDescriptions] = useState(true);
+  const [selectedCardId, setSelectedCardId] = useState<CriticalCard | null>(
+    null,
+  );
+  const scene = useScenePalette();
+  const media = useMedia();
+  const isMobile = media.sm;
+  const handSize = isMobile ? 'mobileFlat' : 'desktopFan';
+  const isFanned = !isMobile && handLayout === 'grid';
+  const effectiveLayout: HandLayoutMode = isMobile ? 'linear' : handLayout;
 
+  // Treat selectedCardId as active only if the card is still in hand.
+  const activeSelectedCardId =
+    selectedCardId && currentPlayer.hand.includes(selectedCardId)
+      ? selectedCardId
+      : null;
   // Group current hand by card type/count for rendering logic
   const groupedHand = useMemo(() => {
-    const items: {
-      card: CriticalCard;
-      count: number;
-      id: string;
-    }[] = [];
-
-    const handCounts = new Map<CriticalCard, number>();
+    const counts = new Map<CriticalCard, number>();
     currentPlayer.hand.forEach((card: CriticalCard) =>
-      handCounts.set(card, (handCounts.get(card) || 0) + 1),
+      counts.set(card, (counts.get(card) || 0) + 1),
     );
-
-    const distinctCards = Array.from(handCounts.keys());
-
-    distinctCards.forEach((card) => {
-      items.push({
-        card,
-        count: handCounts.get(card) || 0,
-        id: card,
-      });
-    });
-
-    return items;
+    return Array.from(counts.entries()).map(([card, count]) => ({
+      card,
+      count,
+      id: card,
+    }));
   }, [currentPlayer.hand]);
 
   const stashItems = useMemo(() => {
-    const items: {
-      card: CriticalCard;
-      count: number;
-      id: string;
-    }[] = [];
-    const stashCounts = new Map<CriticalCard, number>();
+    const counts = new Map<CriticalCard, number>();
     (currentPlayer.stash || []).forEach((card: CriticalCard) =>
-      stashCounts.set(card, (stashCounts.get(card) || 0) + 1),
+      counts.set(card, (counts.get(card) || 0) + 1),
     );
-    Array.from(stashCounts.entries()).forEach(([card, count]) => {
-      items.push({ card, count, id: `stash-${card}` });
-    });
-    return items;
+    return Array.from(counts.entries()).map(([card, count]) => ({
+      card,
+      count,
+      id: `stash-${card}`,
+    }));
   }, [currentPlayer.stash]);
+
+  const distinctCardTypes = useMemo(
+    () => groupedHand.map((item) => item.card),
+    [groupedHand],
+  );
+  const { flippingCardType, showBack } = useCardFlip(distinctCardTypes);
 
   // Handle clicking on a card in hand
   const handleCardClick = useCallback(
     (card: CriticalCard, count: number) => {
       // Check if it's the player's turn and they can act
       if (!isMyTurn || isGameOver || !canAct) return;
+
+      // On mobile, tap a card to open the popover; the popover dispatches the
+      // actual action via its own buttons. Tapping the same card again closes.
+      if (isMobile) {
+        setSelectedCardId((prev) => (prev === card ? null : card));
+        return;
+      }
 
       // Special handling for certain cards
       if (card === 'insight') {
@@ -194,6 +210,7 @@ export function PlayerHand({
       }
     },
     [
+      isMobile,
       isMyTurn,
       isGameOver,
       canAct,
@@ -242,7 +259,7 @@ export function PlayerHand({
 
   return (
     <HandSection>
-      {isMyTurn && !isGameOver && (
+      {isMyTurn && !isGameOver && !isMobile && (
         <ActionsSection
           currentPlayer={currentPlayer}
           canAct={canAct}
@@ -265,7 +282,7 @@ export function PlayerHand({
       )}
 
       {/* Show Nope button on other turns when there's a pending action */}
-      {!isMyTurn && !isGameOver && canPlayNope && (
+      {!isMyTurn && !isGameOver && canPlayNope && !isMobile && (
         <InfoCard>
           <InfoTitle>{t('games.table.actions.start') || 'Actions'}</InfoTitle>
           <ActionButton
@@ -290,48 +307,27 @@ export function PlayerHand({
                 : t('games.table.state.cards')}
               )
             </HandTitle>
-            <HandControls>
-              <HandToggleButton
-                $variant={cardVariant}
-                variant="secondary"
-                onClick={() => setShowNames(!showNames)}
-              >
-                {showNames
-                  ? t('games.table.hand.hideNames') || 'Hide Names'
-                  : t('games.table.hand.showNames') || 'Show Names'}
-              </HandToggleButton>
-              <HandToggleButton
-                $variant={cardVariant}
-                variant="secondary"
-                onClick={() => setShowDescriptions(!showDescriptions)}
-              >
-                {showDescriptions
-                  ? t('games.table.hand.hideDescriptions') ||
-                    'Hide Descriptions'
-                  : t('games.table.hand.showDescriptions') ||
-                    'Show Descriptions'}
-              </HandToggleButton>
-              {setHandLayout && (
-                <HandLayoutDropdown
-                  layout={handLayout}
-                  onChange={setHandLayout}
-                  variant={cardVariant}
-                  t={t}
-                />
-              )}
-            </HandControls>
+            <HandControlsPanel
+              showNames={showNames}
+              showDescriptions={showDescriptions}
+              handLayout={handLayout}
+              setShowNames={setShowNames}
+              setShowDescriptions={setShowDescriptions}
+              setHandLayout={isMobile ? undefined : setHandLayout}
+              cardVariant={cardVariant}
+              t={t}
+            />
           </HandHeader>
 
-          <CardsGrid data-testid="hand-grid" $layout={handLayout}>
+          <CardsGrid data-testid="hand-grid" $layout={effectiveLayout}>
             {/* Render Stash first if any */}
             {stashItems.map(({ card, count, id }, idx) => (
               <StashedCard
                 key={id}
                 $cardType={card}
                 $index={idx + 10}
-                $variant={cardVariant}
+                $variant={cardVariant as GameVariant}
                 onClick={() => onUnstashCard?.(card)}
-                title="Stashed card - Click to return to hand"
               >
                 <StashIcon>🏰</StashIcon>
                 <CardCorner $position="tl" />
@@ -339,17 +335,24 @@ export function PlayerHand({
                 <CardCorner $position="bl" />
                 <CardCorner $position="br" />
                 <CardFrame />
-                <CardInner>
-                  <CardEmoji>{getCardEmoji(card)}</CardEmoji>
+                <CardImage variant={cardVariant ?? ''} cardType={card} />
+                <GradientScrim />
+                <CardInner style={{ zIndex: 2 }}>
                   {showNames && (
-                    <CardName $variant={cardVariant}>
-                      {t(getCardTranslationKey(card, cardVariant)) || card}
-                    </CardName>
+                    <CardNameContainer $variant={cardVariant as GameVariant}>
+                      <CardName $variant={cardVariant as GameVariant}>
+                        {t(getCardTranslationKey(card, cardVariant)) || card}
+                      </CardName>
+                    </CardNameContainer>
                   )}
                   {showDescriptions && (
-                    <CardDescription $variant={cardVariant}>
-                      {t(getCardDescriptionKey(card))}
-                    </CardDescription>
+                    <CardDescriptionContainer
+                      $variant={cardVariant as GameVariant}
+                    >
+                      <CardDescription $variant={cardVariant as GameVariant}>
+                        {t(getCardDescriptionKey(card))}
+                      </CardDescription>
+                    </CardDescriptionContainer>
                   )}
                 </CardInner>
                 {count > 1 && <CardCountBadge>{count}</CardCountBadge>}
@@ -362,42 +365,122 @@ export function PlayerHand({
               );
               const clickable = isCardClickable(card, count);
               const dimmed = isComboCard && count === 1;
+              const isFlipping = card === flippingCardType;
+              const role = getCardRole(card);
+              const roleGradient = scene.handColorByRole[role];
+              const fan = isFanned
+                ? getFanTransform(idx, groupedHand.length)
+                : null;
+              const wrapperStyle: React.CSSProperties = {
+                ...(isFlipping ? { perspective: '600px' } : {}),
+                ...(fan
+                  ? {
+                      marginLeft: idx === 0 ? 0 : -20,
+                      zIndex: idx,
+                    }
+                  : {}),
+              };
+              const cardStyle: React.CSSProperties = {
+                background: roleGradient,
+                ...(fan
+                  ? {
+                      transform: `rotate(${fan.angle}deg) translateY(${fan.offsetY}px)`,
+                      transformOrigin: 'bottom center',
+                    }
+                  : {}),
+                ...(isFlipping
+                  ? {
+                      transformStyle: 'preserve-3d',
+                      animation: 'cardFlip 600ms ease-in-out',
+                    }
+                  : {}),
+              };
 
               return (
-                <HandCard
-                  key={id}
-                  $cardType={card}
-                  $index={idx}
-                  $variant={cardVariant}
-                  $clickable={clickable}
-                  $dimmed={dimmed}
-                  onClick={() => handleCardClick(card, count)}
-                >
-                  <CardCorner $position="tl" />
-                  <CardCorner $position="tr" />
-                  <CardCorner $position="bl" />
-                  <CardCorner $position="br" />
-                  <CardFrame />
-                  <CardInner>
-                    <CardEmoji>{getCardEmoji(card)}</CardEmoji>
+                <div key={id} style={wrapperStyle}>
+                  <HandCard
+                    data-cardtype={card}
+                    $cardType={card}
+                    $index={idx}
+                    $size={handSize}
+                    $variant={cardVariant as GameVariant}
+                    $clickable={clickable}
+                    $dimmed={dimmed}
+                    onClick={() => handleCardClick(card, count)}
+                    style={cardStyle}
+                  >
+                    <CardCorner $position="tl" />
+                    <CardCorner $position="tr" />
+                    <CardCorner $position="bl" />
+                    <CardCorner $position="br" />
+                    <CardFrame />
+                    <CardImage
+                      variant={cardVariant ?? ''}
+                      cardType={card}
+                      faceDown={isFlipping ? showBack : false}
+                    />
                     {showNames && (
-                      <CardName $variant={cardVariant}>
-                        {t(getCardTranslationKey(card, cardVariant)) || card}
-                      </CardName>
+                      <CardNameContainer $variant={cardVariant as GameVariant}>
+                        <CardName $variant={cardVariant as GameVariant}>
+                          {t(getCardTranslationKey(card, cardVariant)) || card}
+                        </CardName>
+                      </CardNameContainer>
                     )}
                     {showDescriptions && (
-                      <CardDescription $variant={cardVariant}>
-                        {t(getCardDescriptionKey(card))}
-                      </CardDescription>
+                      <CardDescriptionContainer
+                        $variant={cardVariant as GameVariant}
+                      >
+                        <CardDescription $variant={cardVariant as GameVariant}>
+                          {t(getCardDescriptionKey(card))}
+                        </CardDescription>
+                      </CardDescriptionContainer>
                     )}
-                  </CardInner>
-                  {count > 1 && <CardCountBadge>{count}</CardCountBadge>}
-                </HandCard>
+                    {count > 1 && <CardCountBadge>{count}</CardCountBadge>}
+                  </HandCard>
+                </div>
               );
             })}
           </CardsGrid>
+
+          {isMobile && (
+            <MobileHandPopover
+              selectedCard={activeSelectedCardId}
+              count={
+                activeSelectedCardId
+                  ? (groupedHand.find(
+                      ({ card }) => card === activeSelectedCardId,
+                    )?.count ?? 0)
+                  : 0
+              }
+              isMyTurn={isMyTurn}
+              canAct={canAct}
+              allowActionCardCombos={allowActionCardCombos}
+              hasOpponents={aliveOpponents.length > 0}
+              cardVariant={cardVariant}
+              hand={currentPlayer.hand}
+              t={t}
+              onPlaySeeTheFuture={onPlaySeeTheFuture}
+              onOpenFavorModal={onOpenFavorModal}
+              onPlayNope={onPlayNope}
+              onPlayActionCard={onPlayActionCard}
+              onOpenEventCombo={onOpenEventCombo}
+              onClose={() => setSelectedCardId(null)}
+            />
+          )}
         </InfoCard>
       </HandContainer>
+
+      <MobileActionBar
+        isMyTurn={isMyTurn}
+        isGameOver={isGameOver}
+        canAct={canAct}
+        canPlayNope={canPlayNope}
+        actionBusy={actionBusy}
+        cardVariant={cardVariant}
+        t={t}
+        onDraw={onDraw}
+        onPlayNope={onPlayNope}
+      />
     </HandSection>
   );
 }

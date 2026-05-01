@@ -145,7 +145,12 @@ export class GamesService {
     }
 
     // Emit real-time event
-    this.realtimeService.emitPlayerLeft(result.room, userId, result.deleted);
+    this.realtimeService.emitPlayerLeft(
+      result.room,
+      userId,
+      result.deleted,
+      result.kicked,
+    );
 
     return result;
   }
@@ -286,14 +291,8 @@ export class GamesService {
       grouped?: boolean;
     },
   ) {
-    // Get all history
-    const allHistory = await this.historyService.listHistoryForUser(
-      userId,
-      options?.grouped || false,
-    );
-
-    // Use utility for filtering and pagination
-    return this.utilities.filterAndPaginateHistory(allHistory, options);
+    // Use the optimized service with DB-level pagination
+    return this.historyService.listHistoryForUser(userId, options);
   }
 
   /**

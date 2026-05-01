@@ -1,7 +1,11 @@
-
-"use client";
-import { HomePage } from "@/app/home/HomePage";
+import { Suspense } from 'react';
+import HomePage from './home/HomePage';
+import { PageLoading } from '@/shared/ui/Loading/PageLoading';
 
 export default function HomeRoute() {
-  return <HomePage />;
+  return (
+    <Suspense fallback={<PageLoading layout="home" />}>
+      <HomePage />
+    </Suspense>
+  );
 }

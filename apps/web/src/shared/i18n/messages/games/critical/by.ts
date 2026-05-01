@@ -187,6 +187,7 @@ export const byMessages = {
       variants: cardVariants,
     },
     actions: {
+      title: 'ДЗЕЯННІ',
       start: 'Пачаць гульню',
       starting: 'Запуск...',
       draw: 'Узяць карту',
@@ -228,6 +229,8 @@ export const byMessages = {
       alive: 'Жывы',
       eliminated: 'Выбыў',
       yourTurn: 'Ваш ход',
+      yourMove: 'Ваш ход',
+      playerTurn: 'Ход {{name}}',
       waitingFor: 'Чаканне гульца...',
     },
     status: {
@@ -292,6 +295,27 @@ export const byMessages = {
     eliminated: {
       title: 'Вы выбылі!',
       message: 'Сачыце за бітвай астатніх гульцоў',
+    },
+    mobile: {
+      attack: {
+        title: 'Выберыце мэту',
+        description: 'Згуляць «Атаку» супраць каго?',
+      },
+      favor: {
+        title: 'Выберыце мэту',
+        description: 'У каго папрасіць карту?',
+      },
+      cancel: 'Адмена',
+      play: 'Згуляць',
+      popover: {
+        play: 'Згуляць',
+        combo: 'Камба (×{{count}})',
+        close: 'Зачыніць',
+      },
+      actionBar: {
+        draw: 'Узяць',
+        nope: 'Не',
+      },
     },
     victory: { title: 'Перамога!', message: 'Віншуем! Вы выжылі!' },
     defeat: { title: 'Гульня скончана', message: 'Пашанцуе ў наступны раз!' },
@@ -401,9 +425,11 @@ export const byMessages = {
       },
     },
     controlPanel: {
-      fullscreen: 'Увесь экран',
+      spectating: 'Назіранне',
+      fullscreen: 'Поўнаэкранны рэжым',
       exitFullscreen: 'Выйсці з поўнаэкраннага рэжыму',
       enterFullscreen: 'На ўвесь экран',
+      rules: 'Правілы',
       leaveRoom: 'Пакінуць',
       leaveConfirmMessage:
         'Вы ўпэўнены, што хочаце пакінуць гульню? Вы будзеце выдалены са спіса ўдзельнікаў.',

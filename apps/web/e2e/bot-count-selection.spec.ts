@@ -35,6 +35,7 @@ test.describe('Bot Count Selection', () => {
         members: [
           { id: userId, userId, displayName: 'Test User', isHost: true },
         ],
+        playerCount: 1,
       },
     });
 
@@ -61,18 +62,17 @@ test.describe('Bot Count Selection', () => {
       };
     });
 
-    await expect(page.getByText(/Number of bots/i)).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(page.getByText(/Number of bots/i)).toBeVisible({});
 
     // Select 3 bots
     const botButton3 = page.getByTestId('bot-count-3');
-    await expect(botButton3).toBeVisible({ timeout: 10000 });
+    await expect(botButton3).toBeVisible({});
     await clickButtonByTestId(page, 'bot-count-3');
 
     // Start button should update label
-    const startBtn = page.getByRole('button', { name: /Start with 3 🤖/i });
+    const startBtn = page.getByTestId('start-with-bots-button');
     await expect(startBtn).toBeVisible();
+    await expect(startBtn).toHaveText(/3/);
     await startBtn.click();
 
     // Verify payload

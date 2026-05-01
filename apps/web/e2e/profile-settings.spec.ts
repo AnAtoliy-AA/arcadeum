@@ -11,31 +11,25 @@ test.describe('Profile and Settings', () => {
 
   test('should display user profile information', async ({ page }) => {
     await navigateTo(page, '/settings');
-    // Wait for hydration
-    await expect(page.locator('html')).toHaveAttribute(
-      'data-theme-preference',
-      /.*/,
-      { timeout: 10000 },
-    );
+    // Wait for session data to be hydrated in the UI
+    await expect(async () => {
+      const username = page.getByText(/testuser/i).first();
+      const email = page.getByText(/test@example.com/i).first();
 
-    await expect(page.getByText(/testuser/i).first()).toBeVisible({
-      timeout: 15000,
-    });
-    await expect(page.getByText(/test@example.com/i).first()).toBeVisible({
-      timeout: 15000,
-    });
+      await expect(username).toBeVisible();
+      await expect(email).toBeVisible();
+    }).toPass({});
   });
 
   test('should allow toggling sound settings', async ({ page }) => {
     await navigateTo(page, '/settings');
-    const soundToggle = page
-      .getByRole('checkbox', { name: /sound|звук/i })
-      .first();
-    if (await soundToggle.isVisible()) {
-      const isChecked = await soundToggle.isChecked();
-      await soundToggle.click();
-      expect(await soundToggle.isChecked()).toBe(!isChecked);
-    }
+    const soundRow = page.getByTestId('sound-row');
+    const soundCheckbox = soundRow.locator('input[type="checkbox"]');
+
+    await expect(soundRow).toBeVisible();
+    const isChecked = await soundCheckbox.isChecked();
+    await soundRow.click();
+    await expect(soundCheckbox).toBeChecked({ checked: !isChecked });
   });
 
   test('should allow toggling notification settings', async ({ page }) => {

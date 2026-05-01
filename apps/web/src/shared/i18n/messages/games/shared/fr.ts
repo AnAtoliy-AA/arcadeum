@@ -30,8 +30,11 @@ export const frMessages = {
   rooms: {
     status: {
       lobby: "Salon d'attente",
+      waiting: 'En attente',
       in_progress: 'En cours',
       completed: 'Terminé',
+      placement: 'Placement',
+      active: 'Actif',
     },
     hostedBy: 'Hébergé par {{host}}',
     participants: 'Participants',
@@ -79,6 +82,21 @@ export const frMessages = {
         'Êtes-vous sûr de vouloir supprimer cette salle ? Cette action est irréversible et tous les joueurs seront déconnectés.',
       confirmButton: 'Supprimer la salle',
       cancelButton: 'Garder la salle',
+    },
+    kickPlayer: {
+      button: 'Retirer',
+      confirmTitle: 'Retirer le joueur',
+      confirmMessage:
+        'Êtes-vous sûr de vouloir retirer {{playerName}} de la salle ?',
+      confirmButton: 'Retirer',
+      cancelButton: 'Annuler',
+    },
+    leaveRoom: {
+      button: 'Quitter la salle',
+      confirmTitle: 'Quitter la salle',
+      confirmMessage: 'Êtes-vous sûr de vouloir quitter cette salle ?',
+      confirmButton: 'Quitter',
+      cancelButton: 'Rester',
     },
   },
   create: {
@@ -187,5 +205,10 @@ export const frMessages = {
     label: 'Inactif',
     title: '💤 Vous êtes inactif',
     message: 'Bougez votre souris ou appuyez sur une touche pour reprendre',
+  },
+  table: {
+    controlPanel: {
+      spectating: 'Spectating',
+    },
   },
 };

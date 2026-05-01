@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
+import { Button } from '@arcadeum/ui/components/Button/Button';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   Card,
   Title,
+  titleGradientStyle,
   Description,
   Form,
   InputGroup,
   Input,
-  Button,
   ErrorMessage,
   LockIcon,
   NoticeMessage,
@@ -43,10 +44,12 @@ export function PrivateRoomForm({
   return (
     <Card>
       <LockIcon>🔒</LockIcon>
-      <Title>{t('games.roomPage.privateRoom.title')}</Title>
+      <Title style={titleGradientStyle}>
+        {t('games.roomPage.privateRoom.title')}
+      </Title>
       <Description>{t('games.roomPage.privateRoom.description')}</Description>
 
-      <Form onSubmit={handleSubmit}>
+      <Form {...({ onSubmit: handleSubmit } as Record<string, unknown>)}>
         <InputGroup>
           <Input
             type="text"
@@ -60,7 +63,13 @@ export function PrivateRoomForm({
             disabled={isSubmitting}
             autoFocus
           />
-          <Button type="submit" disabled={isSubmitting || !inviteCode.trim()}>
+          <Button
+            variant="primary"
+            size="md"
+            type="submit"
+            disabled={isSubmitting || !inviteCode.trim()}
+            style={{ padding: '0 1.5rem' }}
+          >
             {isSubmitting ? '...' : t('games.roomPage.privateRoom.joinButton')}
           </Button>
         </InputGroup>

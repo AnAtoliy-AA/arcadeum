@@ -6,19 +6,24 @@ import {
   useEffect,
   useCallback,
   useDeferredValue,
+  useRef,
 } from 'react';
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useInfiniteQuery } from '@/shared/hooks/useInfiniteQuery';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi, GetRoomsResponse } from '@/features/games/api';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 import { gameSocket, connectSockets } from '@/shared/lib/socket';
+import { useRefreshStore } from '@/shared/model/useRefreshStore';
 import { GamesEmpty } from './components/GamesEmpty';
 import { GamesError } from './components/GamesError';
 import { GamesFilters } from './components/GamesFilters';
 import { GamesHeader } from './components/GamesHeader';
 import { GamesList } from './components/GamesList';
 import { GamesLoading } from './components/GamesLoading';
-import { Container, Page, RoomsContainer } from './styles';
+import { PageLayout, Container } from '@/shared/ui';
+import { GlassCard } from '@arcadeum/ui';
+import styles from './GamesPage.module.css';
 import type {
   GamesParticipationFilter,
   GamesStatusFilter,
@@ -27,40 +32,95 @@ import type {
 
 const PAGE_SIZE = 12;
 
-export function GamesPage() {
-  const { snapshot } = useSessionTokens();
+interface GamesPageProps {
+  initialData: GetRoomsResponse | null;
+}
 
-  const [statusFilter, setStatusFilter] = useState<GamesStatusFilter>('all');
-  const [participationFilter, setParticipationFilter] =
-    useState<GamesParticipationFilter>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+export default function GamesPage({ initialData }: GamesPageProps) {
+  const { snapshot, hydrated } = useSessionTokens();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // URL state management
+  const statusFilter =
+    (searchParams?.get('status') as GamesStatusFilter) || 'all';
+  const participationFilter =
+    (searchParams?.get('participation') as GamesParticipationFilter) || 'all';
+  const initialSearchQuery = searchParams?.get('search') || '';
+
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const [viewMode, setViewMode] = useState<GamesViewMode>('grid');
 
-  // Pagination state
-  const [limit] = useState(PAGE_SIZE);
+  // Update URL helper - ref to current params to avoid dependency loop
+  const searchParamsRef = useRef(searchParams);
+  useEffect(() => {
+    searchParamsRef.current = searchParams;
+  }, [searchParams]);
 
-  const handleStatusChange = useCallback((status: typeof statusFilter) => {
-    setStatusFilter(status);
-  }, []);
+  const updateParams = useCallback(
+    (updates: Record<string, string | undefined>) => {
+      const currentParams = new URLSearchParams(
+        searchParamsRef.current?.toString() || '',
+      );
+      let changed = false;
+
+      Object.entries(updates).forEach(([key, value]) => {
+        const currentValue = currentParams.get(key);
+        const newValue = value === 'all' || value === '' ? undefined : value;
+
+        if (newValue === undefined) {
+          if (currentParams.has(key)) {
+            currentParams.delete(key);
+            changed = true;
+          }
+        } else if (currentValue !== newValue) {
+          currentParams.set(key, newValue);
+          changed = true;
+        }
+      });
+
+      if (changed) {
+        router.push(`${pathname}?${currentParams.toString()}`, {
+          scroll: false,
+        });
+      }
+    },
+    [pathname, router],
+  );
+
+  const handleStatusChange = useCallback(
+    (status: GamesStatusFilter) => {
+      updateParams({ status });
+    },
+    [updateParams],
+  );
 
   const handleParticipationChange = useCallback(
-    (participation: typeof participationFilter) => {
-      setParticipationFilter(participation);
+    (participation: GamesParticipationFilter) => {
+      updateParams({ participation });
     },
-    [],
+    [updateParams],
   );
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
   }, []);
 
-  const queryClient = useQueryClient();
+  // Sync deferred search query to URL - only if it actually changed from current URL
+  useEffect(() => {
+    const currentUrlSearch = searchParamsRef.current?.get('search') || '';
+    if (deferredSearchQuery !== currentUrlSearch) {
+      updateParams({ search: deferredSearchQuery });
+    }
+  }, [deferredSearchQuery, updateParams]);
+
+  const triggerRefresh = useRefreshStore((state) => state.triggerRefresh);
 
   useEffect(() => {
     connectSockets(snapshot.accessToken || undefined);
     return () => {
-      // Disconnect sockets when leaving the games page to allow bfcache
       import('@/shared/lib/socket').then(({ disconnectSockets }) => {
         disconnectSockets();
       });
@@ -69,13 +129,10 @@ export function GamesPage() {
 
   useEffect(() => {
     const handleRoomUpdate = () => {
-      // Invalidate the list query to trigger a refetch
-      // React Query handles deduplication of concurrent invalidations
-      queryClient.invalidateQueries({ queryKey: ['games', 'list'] });
+      // Use custom refresh store signal instead of query client invalidation
+      triggerRefresh('games');
     };
 
-    // Listen for room updates (create, update, delete)
-    // Note: 'games.room.updated' is now broadcast globally for lobby updates
     gameSocket.on('games.room.created', handleRoomUpdate);
     gameSocket.on('games.room.updated', handleRoomUpdate);
     gameSocket.on('games.room.deleted', handleRoomUpdate);
@@ -85,7 +142,11 @@ export function GamesPage() {
       gameSocket.off('games.room.updated', handleRoomUpdate);
       gameSocket.off('games.room.deleted', handleRoomUpdate);
     };
-  }, [queryClient]);
+  }, [triggerRefresh]);
+
+  const memoizedInitialData = useMemo(() => {
+    return initialData ? { pages: [initialData] } : null;
+  }, [initialData]);
 
   const {
     data,
@@ -94,51 +155,45 @@ export function GamesPage() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteQuery<GetRoomsResponse>({
+  } = useInfiniteQuery<GetRoomsResponse, number>({
     queryKey: [
       'games',
       'list',
       statusFilter,
       participationFilter,
       deferredSearchQuery,
-      limit,
       snapshot.accessToken,
     ],
-    queryFn: async ({ pageParam = 1 }) => {
+    queryFn: async ({ pageParam = 0 }) => {
       return gamesApi.getRooms(
         {
           status: statusFilter,
           participation: participationFilter,
           search: deferredSearchQuery || undefined,
           page: pageParam as number,
-          limit,
+          limit: PAGE_SIZE,
         },
         { token: snapshot.accessToken || undefined },
       );
     },
     getNextPageParam: (lastPage, allPages) => {
-      const totalPages = Math.ceil(lastPage.total / limit);
-      const nextPage = allPages.length + 1;
-      return nextPage <= totalPages ? nextPage : undefined;
+      const totalPages = Math.ceil(lastPage.total / PAGE_SIZE);
+      const nextPage = allPages.length; // 0-based: length of 1 means index 1 is next
+      return nextPage < totalPages ? nextPage : undefined;
     },
-    initialPageParam: 1,
+    initialPageParam: 0,
+    initialData: memoizedInitialData,
+    refreshKey: 'games',
+    enabled: hydrated,
+    refetchOnMount: true,
   });
 
-  // Track loading progress for server wake-up message
   const { isLongPending: isLoadingLongPending } =
     useServerWakeUpProgress(isLoading);
 
   const rooms = useMemo(() => {
     return data?.pages.flatMap((page) => page.rooms) || [];
   }, [data]);
-
-  const loading = isLoading;
-  const error =
-    queryError instanceof globalThis.Error
-      ? queryError.message
-      : queryError
-        ? 'Failed to load rooms'
-        : null;
 
   const sortedRooms = useMemo(() => {
     return [...rooms].sort(
@@ -147,12 +202,14 @@ export function GamesPage() {
     );
   }, [rooms]);
 
+  const error = queryError ? 'Failed to load rooms' : null;
+
   const renderContent = () => {
-    if (loading) {
+    if (isLoading) {
       return <GamesLoading isLoadingLongPending={isLoadingLongPending} />;
     }
 
-    if (error) {
+    if (error && !rooms.length) {
       return <GamesError error={error} />;
     }
 
@@ -172,10 +229,12 @@ export function GamesPage() {
   };
 
   return (
-    <Page>
-      <Container>
-        <GamesHeader viewMode={viewMode} onViewModeChange={setViewMode} />
-
+    <PageLayout>
+      <Container
+        size="xl"
+        style={{ animation: 'fadeInUp 0.5s ease-out' }}
+        gap="$6"
+      >
         <GamesFilters
           searchQuery={searchQuery}
           onSearch={handleSearch}
@@ -186,8 +245,19 @@ export function GamesPage() {
           isAuthenticated={!!snapshot.accessToken}
         />
 
-        <RoomsContainer $viewMode={viewMode}>{renderContent()}</RoomsContainer>
+        <GlassCard padding="$6">
+          <GamesHeader viewMode={viewMode} onViewModeChange={setViewMode} />
+
+          <div
+            className={`${styles.roomsContainer}${
+              viewMode === 'list' ? ` ${styles.listView}` : ''
+            }`}
+            style={{ marginTop: '1.5rem' }}
+          >
+            {renderContent()}
+          </div>
+        </GlassCard>
       </Container>
-    </Page>
+    </PageLayout>
   );
 }

@@ -29,7 +29,7 @@ test.describe('Language Switching', () => {
       if (!/настройки/i.test(text)) {
         throw new Error(`Not yet Russian. Current text: "${text}"`);
       }
-    }).toPass({ timeout: 15000 });
+    }).toPass({});
 
     // 4. Navigate back to Home and verify it is translated
     await navigateTo(page, '/');
@@ -39,24 +39,24 @@ test.describe('Language Switching', () => {
     await ensureNavigationVisible(page);
     await expect(
       page.getByRole('link', { name: /games/i }).first(),
-    ).not.toBeVisible({ timeout: 10000 });
+    ).not.toBeVisible({});
 
     await expect(page.getByRole('link', { name: /игры/i }).first()).toBeVisible(
-      { timeout: 10000 },
+      {},
     );
 
     // 5. Reload page and verify language persists
     await page.reload();
     // Wait for hydration after reload
     await expect(page.locator('html')).toHaveAttribute(
-      'data-theme-preference',
-      /.+/,
-      { timeout: 10000 },
+      'data-hydrated',
+      'true',
+      {},
     );
 
     await ensureNavigationVisible(page);
     await expect(page.getByRole('link', { name: /игры/i }).first()).toBeVisible(
-      { timeout: 10000 },
+      {},
     );
 
     // 6. Change back to English
@@ -64,7 +64,7 @@ test.describe('Language Switching', () => {
     await page.getByTestId('lang-btn-en').click();
     await expect(page.getByRole('heading', { level: 1 })).toContainText(
       /settings/i,
-      { timeout: 10000 },
+      {},
     );
   });
 });

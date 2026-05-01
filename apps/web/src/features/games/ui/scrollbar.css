@@ -1,0 +1,25 @@
+.modern-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--glassBorder) transparent;
+}
+
+.modern-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.modern-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modern-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--glassBorder);
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  transition: background 0.2s ease;
+}
+
+.modern-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--glassBorder) 300%, transparent);
+}

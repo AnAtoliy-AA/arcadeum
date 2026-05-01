@@ -1,7 +1,7 @@
 // Lightweight runtime validation for critical OAuth environment variables.
 // In production we throw if required variables are missing; in development we only warn.
 
-const CORE_REQUIRED = ['OAUTH_ISSUER'];
+const CORE_REQUIRED = ['OAUTH_ISSUER', 'ALLOWED_ORIGINS'];
 
 const WEB_CLIENT_OPTIONS: Array<{
   idKey: string;

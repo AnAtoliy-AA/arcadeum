@@ -38,7 +38,7 @@ test.describe('Support Page', () => {
   test('should have working external links', async ({ page }) => {
     // Both social links in footer and external links in section
     const externalLinks = page.locator('a[target="_blank"]');
-    await expect(externalLinks.first()).toBeVisible({ timeout: 15000 });
+    await expect(externalLinks.first()).toBeVisible({});
     expect(await externalLinks.count()).toBeGreaterThan(0);
   });
 
@@ -53,7 +53,7 @@ test.describe('Support Page', () => {
 
   test('should satisfy accessibility requirements', async ({ page }) => {
     // Check for standard landmarks like banner (header)
-    await expect(page.getByRole('banner')).toBeVisible();
+    await expect(page.getByRole('banner').first()).toBeVisible();
 
     // Scroll to bottom to ensure footer is visible
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));

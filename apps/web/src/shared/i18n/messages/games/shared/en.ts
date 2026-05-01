@@ -30,8 +30,11 @@ export const enMessages = {
   rooms: {
     status: {
       lobby: 'Lobby',
+      waiting: 'Waiting',
       in_progress: 'In Progress',
       completed: 'Completed',
+      placement: 'Placement',
+      active: 'Active',
     },
     hostedBy: 'Hosted by {{host}}',
     participants: 'Participants',
@@ -79,6 +82,21 @@ export const enMessages = {
         'Are you sure you want to delete this room? This action cannot be undone and all players will be disconnected.',
       confirmButton: 'Delete Room',
       cancelButton: 'Keep Room',
+    },
+    kickPlayer: {
+      button: 'Remove',
+      confirmTitle: 'Remove Player',
+      confirmMessage:
+        'Are you sure you want to remove {{playerName}} from the room?',
+      confirmButton: 'Remove',
+      cancelButton: 'Cancel',
+    },
+    leaveRoom: {
+      button: 'Leave Room',
+      confirmTitle: 'Leave Room',
+      confirmMessage: 'Are you sure you want to leave this room?',
+      confirmButton: 'Leave',
+      cancelButton: 'Stay',
     },
   },
   create: {
@@ -182,5 +200,18 @@ export const enMessages = {
     label: 'Idle',
     title: '💤 You are idle',
     message: 'Move your mouse or press a key to resume',
+  },
+  table: {
+    controlPanel: {
+      spectating: 'Spectating',
+      fullscreen: 'Fullscreen',
+      exitFullscreen: 'Exit Fullscreen',
+      enterFullscreen: 'Enter Fullscreen',
+      rules: 'Rules',
+    },
+    chat: {
+      show: 'Show Chat',
+      hide: 'Hide Chat',
+    },
   },
 };

@@ -1,6 +1,6 @@
 import type { LegalMessages } from './types';
 
-export const legalMessagesBy: LegalMessages = {
+export const by: LegalMessages = {
   nav: {
     terms: 'Умовы',
     privacy: 'Канфідэнцыяльнасць',
@@ -70,7 +70,7 @@ export const legalMessagesBy: LegalMessages = {
             'Час апрацоўкі: вяртанне сродкаў апрацоўваецца на працягу 5-10 працоўных дзён',
         },
         contact:
-          'Каб запытаць вяртанне, звяжыцеся са мной праз старонку падтрымкі.',
+          'Каб запытаць вяртанне, звязяцеся са мной праз старонку падтрымкі.',
       },
       acceptableUse: {
         title: '8. Дапушчальнае выкарыстанне',
@@ -254,3 +254,5 @@ export const legalMessagesBy: LegalMessages = {
     },
   },
 };
+
+export const legalMessagesBy = by;

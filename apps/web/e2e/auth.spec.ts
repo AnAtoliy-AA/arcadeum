@@ -20,6 +20,7 @@ test.describe('Auth Page', () => {
     // Look for common OAuth providers (Google, GitHub, etc.) inside main content
     const authButtons = page
       .locator('main')
+      .first()
       .locator('button, a')
       .filter({
         hasText: /google|github|sign in|login|continue with/i,

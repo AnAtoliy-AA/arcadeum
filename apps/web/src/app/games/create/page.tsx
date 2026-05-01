@@ -1,11 +1,16 @@
-import { Suspense } from "react";
-import { CreateGameRoomPage } from "./CreateGameRoomPage";
+'use client';
+
+import dynamic from 'next/dynamic';
+import { PageLoading } from '@/shared/ui/Loading/PageLoading';
+
+const CreateGameRoomPage = dynamic(
+  () => import('@/features/games/ui/create/CreateGameRoomPage'),
+  {
+    ssr: false,
+    loading: () => <PageLoading />,
+  },
+);
 
 export default function CreateGameRoomRoute() {
-  return (
-    <Suspense fallback={<div style={{ padding: "2rem", textAlign: "center" }}>Loading...</div>}>
-      <CreateGameRoomPage />
-    </Suspense>
-  );
+  return <CreateGameRoomPage />;
 }
-

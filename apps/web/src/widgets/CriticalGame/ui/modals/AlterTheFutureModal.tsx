@@ -16,71 +16,83 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { YStack, XStack, Text, styled } from 'tamagui';
 import type { CriticalCard } from '@/widgets/CriticalGame/types';
-import {
-  getCardTranslationKey,
-  getCardEmoji,
-} from '@/widgets/CriticalGame/lib/cardUtils';
+import { getCardTranslationKey } from '@/widgets/CriticalGame/lib/cardUtils';
 import {
   Modal as Overlay,
   ModalContent as ModalContainer,
   ModalHeader,
   ModalTitle,
   ModalActions as ModalFooter,
-  ModalButton as Button,
+  ModalButton,
+  Card,
+  CardFrame,
+  CardCorner,
+  GradientScrim,
 } from '../styles';
+import { CardImage } from '../styles/card-image';
+import { type GameVariant } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import styled from 'styled-components';
 
-const CardList = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-`;
+const CardList = styled(XStack, {
+  name: 'CardList',
+  justifyContent: 'center',
+  gap: '$4',
+  marginBottom: '$8',
+  flexWrap: 'wrap',
+});
 
-const SortableCardWrapper = styled.div<{ $isDragging?: boolean }>`
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  min-width: 100px;
-  cursor: grab;
-  touch-action: none; // Prevent scroll while dragging
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+const SortableCardWrapper = styled(YStack, {
+  name: 'SortableCardWrapper',
+  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  borderWidth: 2,
+  borderColor: 'rgba(255, 255, 255, 0.2)',
+  borderRadius: '$4',
+  padding: '$4',
+  alignItems: 'center',
+  gap: '$2',
+  minWidth: 100,
+  cursor: 'grab',
 
-  // Highlighting when dragging
-  opacity: ${(props) => (props.$isDragging ? 0.5 : 1)};
-  box-shadow: ${(props) =>
-    props.$isDragging ? '0 0 10px rgba(255,255,255,0.5)' : 'none'};
+  variants: {
+    isDragging: {
+      true: {
+        opacity: 0.5,
+        shadowColor: 'rgba(255, 255, 255, 0.5)',
+        shadowOffset: { width: 0, height: 0 },
+        shadowRadius: 10,
+      },
+    },
+  } as const,
 
-  &:active {
-    cursor: grabbing;
-  }
-`;
+  pressStyle: {
+    cursor: 'grabbing',
+  },
+});
 
-const CardEmoji = styled.div`
-  font-size: 2.5rem;
-`;
+// Removed CardEmoji styled component as it is replaced by CardImage
 
-const CardName = styled.div`
-  font-size: 0.9rem;
-  text-align: center;
-  color: #fff;
-`;
+const CardName = styled(Text, {
+  name: 'CardName',
+  fontSize: '$3',
+  textAlign: 'center',
+  color: '#fff',
+});
 
-const CardIndex = styled.div`
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
-  margin-bottom: 0.25rem;
-`;
+const CardIndex = styled(Text, {
+  name: 'CardIndex',
+  fontSize: '$2',
+  color: 'rgba(255, 255, 255, 0.6)',
+  marginBottom: '$1',
+});
+
+const DescriptionText = styled(Text, {
+  name: 'DescriptionText',
+  textAlign: 'center',
+  marginBottom: '$6',
+  color: '#ccc',
+});
 
 interface SortableCardProps {
   id: string;
@@ -105,16 +117,32 @@ function SortableCard({ id, card, index, t, cardVariant }: SortableCardProps) {
     transition,
   };
 
+  const { role, ...restAttributes } = attributes;
+
   return (
     <SortableCardWrapper
-      ref={setNodeRef}
-      style={style}
-      $isDragging={isDragging}
-      {...attributes}
+      ref={(node: unknown) => setNodeRef(node as HTMLElement | null)}
+      style={{ ...style, touchAction: 'none' }}
+      isDragging={isDragging}
+      role={role as unknown as 'presentation'}
+      {...restAttributes}
       {...listeners}
     >
       <CardIndex>#{index + 1}</CardIndex>
-      <CardEmoji>{getCardEmoji(card)}</CardEmoji>
+      <Card
+        $cardType={card}
+        $variant={cardVariant as GameVariant}
+        width="100%"
+        marginBottom="$2"
+      >
+        <CardCorner $position="tl" $variant={cardVariant} />
+        <CardCorner $position="tr" $variant={cardVariant} />
+        <CardCorner $position="bl" $variant={cardVariant} />
+        <CardCorner $position="br" $variant={cardVariant} />
+        <CardFrame $variant={cardVariant} />
+        <CardImage variant={cardVariant ?? ''} cardType={card} />
+        <GradientScrim />
+      </Card>
       <CardName>
         {t(getCardTranslationKey(card, cardVariant) as string)}
       </CardName>
@@ -125,18 +153,19 @@ function SortableCard({ id, card, index, t, cardVariant }: SortableCardProps) {
 interface AlterTheFutureModalProps {
   isOpen: boolean;
   cards: CriticalCard[];
-  isShare?: boolean; // If true, "Share the Future" mode (cards are revealed)
+  isShare?: boolean;
   onConfirm: (newOrder: CriticalCard[]) => void;
   cardVariant?: string;
   onClose?: () => void;
 }
 
-export function AlterTheFutureModal({
+export default function AlterTheFutureModal({
   isOpen,
   cards,
   isShare = false,
   onConfirm,
   cardVariant,
+  onClose,
 }: AlterTheFutureModalProps) {
   const { t } = useTranslation();
 
@@ -146,12 +175,6 @@ export function AlterTheFutureModal({
       card,
     })),
   );
-
-  // Sync items if cards prop changes (e.g. if we want to support updates while open)
-  // But to avoid "setState in effect" warning causing loop, we can verify equality or rely on parent remounting.
-  // Ideally parent should conditionally render this modal.
-  // We rely on parent conditional rendering to initialize state.
-  // Removing useEffect to prevent resetting state when parent re-renders (e.g. due to timer ticks).
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -179,21 +202,19 @@ export function AlterTheFutureModal({
   if (!isOpen) return null;
 
   return (
-    <Overlay>
-      <ModalContainer $variant={cardVariant}>
-        <ModalHeader $variant={cardVariant}>
-          <ModalTitle $variant={cardVariant}>
+    <Overlay open={isOpen} onOpenChange={(open) => !open && onClose?.()}>
+      <ModalContainer $variant={cardVariant as GameVariant}>
+        <ModalHeader $variant={cardVariant as GameVariant}>
+          <ModalTitle $variant={cardVariant as GameVariant}>
             {isShare
               ? t('games.table.modals.shareTheFuture.title')
               : t('games.table.modals.alterTheFuture.title')}
           </ModalTitle>
         </ModalHeader>
 
-        <p
-          style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#ccc' }}
-        >
+        <DescriptionText>
           {t('games.table.modals.alterTheFuture.description')}
-        </p>
+        </DescriptionText>
 
         <DndContext
           sensors={sensors}
@@ -220,9 +241,9 @@ export function AlterTheFutureModal({
         </DndContext>
 
         <ModalFooter>
-          <Button variant="primary" onClick={handleConfirm}>
+          <ModalButton variant="primary" onClick={handleConfirm}>
             {t('games.table.modals.alterTheFuture.confirm')}
-          </Button>
+          </ModalButton>
         </ModalFooter>
       </ModalContainer>
     </Overlay>

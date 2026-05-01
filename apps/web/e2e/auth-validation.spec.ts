@@ -14,7 +14,7 @@ test.describe('Auth Validation', () => {
 
     // 1. Switch to Register mode
     const toggleBtn = page.getByTestId('auth-toggle-mode-button');
-    await expect(toggleBtn).toBeVisible({ timeout: 10000 });
+    await expect(toggleBtn).toBeVisible({});
     const text = (await toggleBtn.textContent()) || '';
     if (!/already|уже/i.test(text)) {
       await toggleBtn.click({ force: true });
@@ -22,7 +22,7 @@ test.describe('Auth Validation', () => {
     await expect(page.locator('form')).toHaveAttribute(
       'data-mode',
       'register',
-      { timeout: 10000 },
+      {},
     );
     const confirmInput = page.getByTestId('auth-confirm-password-input');
 
@@ -71,7 +71,7 @@ test.describe('Auth Validation', () => {
   }) => {
     // 1. Switch to Register mode
     const toggleBtn = page.getByTestId('auth-toggle-mode-button');
-    await expect(toggleBtn).toBeVisible({ timeout: 10000 });
+    await expect(toggleBtn).toBeVisible({});
     const text = (await toggleBtn.textContent()) || '';
     if (!/already|уже/i.test(text)) {
       await toggleBtn.click({ force: true });
@@ -79,7 +79,7 @@ test.describe('Auth Validation', () => {
     await expect(page.locator('form')).toHaveAttribute(
       'data-mode',
       'register',
-      { timeout: 10000 },
+      {},
     );
 
     const confirmInput = page.getByTestId('auth-confirm-password-input');

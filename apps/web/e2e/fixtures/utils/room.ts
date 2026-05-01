@@ -1,5 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 import { MOCK_OBJECT_ID } from './auth';
+import { handleRoute } from './network';
 
 export interface WaitForRoomReadyOptions {
   autoCloseRules?: boolean;
@@ -10,9 +11,7 @@ export async function closeGameRulesModal(page: Page): Promise<void> {
   const closeBtnSelector = `${modalSelector} [data-testid="modal-close-button"]`;
 
   // Check if any rules modal is visible
-  const isVisible = await page
-    .isVisible(modalSelector, { timeout: 2000 })
-    .catch(() => false);
+  const isVisible = await page.isVisible(modalSelector, {}).catch(() => false);
   if (!isVisible) return;
 
   // 1. Try standard click first
@@ -21,7 +20,7 @@ export async function closeGameRulesModal(page: Page): Promise<void> {
   for (let i = 0; i < count; i++) {
     await closeButtons
       .nth(i)
-      .click({ force: true, timeout: 2000 })
+      .click({ force: true })
       .catch(() => {});
   }
 
@@ -31,11 +30,15 @@ export async function closeGameRulesModal(page: Page): Promise<void> {
     btns.forEach((b) => (b as HTMLElement).click());
   }, closeBtnSelector);
 
-  // 3. Final cleanup: manually remove from DOM if still there
+  // 3. Final cleanup: manually remove modal content and overlay from DOM if still there
   await page.evaluate((sel) => {
     const modals = document.querySelectorAll(sel);
     modals.forEach((m) => m.remove());
   }, modalSelector);
+  await page.evaluate(() => {
+    const overlays = document.querySelectorAll('[data-testid="modal-overlay"]');
+    overlays.forEach((o) => o.remove());
+  });
 
   // Wait for all rules modals to disappear (should be instant now)
   await expect
@@ -50,7 +53,6 @@ export async function closeGameRulesModal(page: Page): Promise<void> {
         }, modalSelector);
       },
       {
-        timeout: 10000,
         message: 'Rules modal did not close within 10 seconds',
       },
     )
@@ -63,18 +65,17 @@ export async function waitForRoomReady(
 ): Promise<void> {
   const { autoCloseRules = true } = options;
 
-  await page
-    .waitForLoadState('networkidle', { timeout: 15000 })
-    .catch(() => {});
+  // We removed networkidle here as it hangs intermittently due to active socket mocks.
+  // The visibility check for .games-room-container below is a more reliable ready-signal.
 
-  await expect(page.locator('main')).toBeVisible({ timeout: 60000 });
+  // Wait for the game room container to be visible (the .games-room-container
+  // class is only applied in the fully-loaded state of GameRoomPage).
+  await expect(page.locator('.games-room-container')).toBeVisible({});
 
   await expect(page.locator('body')).not.toContainText(
-    /Game is loading|Joining\.\.\.|Server is waking up\.\.\.|Loading room\.\.\.|Loading game\.\.\.|Loading\.\.\./i,
-    { timeout: 60000 },
+    /Joining\.\.\.|Server is waking up\.\.\.|Loading room\.\.\.|Loading game\.\.\.|Loading\.\.\./i,
+    {},
   );
-
-  await page.waitForTimeout(1000);
 
   if (autoCloseRules) {
     await closeGameRulesModal(page);
@@ -89,7 +90,7 @@ export async function clickButtonByTestId(
 ): Promise<void> {
   const button = page.getByTestId(testId);
   await expect(button).toBeVisible();
-  await button.click({ force: true });
+  await button.click();
 }
 
 export async function clickModalClose(page: Page): Promise<void> {
@@ -98,12 +99,12 @@ export async function clickModalClose(page: Page): Promise<void> {
     .locator('[data-testid="rules-modal"] [data-testid="modal-close-button"]')
     .first();
   if (await rulesClose.isVisible()) {
-    await rulesClose.click({ force: true, timeout: 5000 });
+    await rulesClose.click({ force: true });
     return;
   }
 
   const closeBtn = page.getByTestId('modal-close-button').first();
-  await closeBtn.click({ force: true, timeout: 5000 });
+  await closeBtn.click({ force: true });
 }
 
 export interface MockRoomInfoOverrides {
@@ -130,20 +131,48 @@ export async function mockRoomInfo(
         isHost: true,
       },
     ],
+    playerCount: r.members ? (r.members as unknown[]).length : 1,
     ...r,
   };
 
-  // Sync lastSession for socket mocks
-  if (session) {
-    await page.addInitScript((s) => {
+  // Sync lastSession and room state for socket mocks
+  await page.addInitScript(
+    ({ room, session }) => {
       window._playwrightMocks = window._playwrightMocks || { handlers: {} };
-      window._playwrightMocks.lastSession = s;
-    }, session);
-  }
+      if (session) window._playwrightMocks.lastSession = session;
+      window._playwrightMocks.roomJoinedPayload = {
+        ...(window._playwrightMocks.roomJoinedPayload as object),
+        ...room,
+      };
+    },
+    { room, session },
+  );
+
+  // Also update dynamic state if page is already loaded
+  await page
+    .evaluate(
+      ({ room, session }) => {
+        if (window._playwrightMocks) {
+          if (session) window._playwrightMocks.lastSession = session;
+          window._playwrightMocks.roomJoinedPayload = {
+            ...(window._playwrightMocks.roomJoinedPayload as object),
+            ...room,
+          };
+        }
+      },
+      { room, session },
+    )
+    .catch(() => {});
 
   // Mock the room info endpoint with dynamic room ID matching
   await page.route('**/games/room-info', async (route) => {
-    if (route.request().method() !== 'POST') return route.continue();
+    const method = route.request().method();
+    if (method !== 'POST' && method !== 'OPTIONS') return route.continue();
+
+    if (method === 'OPTIONS') {
+      await handleRoute(route, null);
+      return;
+    }
 
     const postData = await route.request().postDataJSON();
     const roomId = postData?.roomId;
@@ -154,16 +183,18 @@ export async function mockRoomInfo(
       id: roomId || room.id,
     };
 
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ room: mockRoom, session }),
-    });
+    await handleRoute(route, { room: mockRoom, session });
   });
 
   // Mock the create room endpoint
   await page.route('**/games/rooms', async (route) => {
-    if (route.request().method() !== 'POST') return route.continue();
+    const method = route.request().method();
+    if (method !== 'POST' && method !== 'OPTIONS') return route.continue();
+
+    if (method === 'OPTIONS') {
+      await handleRoute(route, null);
+      return;
+    }
 
     const postData = await route.request().postDataJSON();
     const roomId = postData?.gameId
@@ -175,10 +206,6 @@ export async function mockRoomInfo(
       id: roomId,
     };
 
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ room: createdRoom }),
-    });
+    await handleRoute(route, { room: createdRoom });
   });
 }

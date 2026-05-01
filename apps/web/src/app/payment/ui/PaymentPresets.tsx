@@ -1,61 +1,6 @@
-import styled from 'styled-components';
-import { Button } from '@/shared/ui';
+import { Typography, YStack, XStack } from '@arcadeum/ui';
+import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-
-const PresetGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-`;
-
-const PresetCard = styled(Button).attrs({
-  variant: 'secondary',
-  size: 'md',
-})<{ $active?: boolean }>`
-  background: ${(props) =>
-    props.$active
-      ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2))'
-      : 'rgba(255, 255, 255, 0.03)'};
-  border: 1px solid
-    ${(props) =>
-      props.$active ? 'rgba(59, 130, 246, 0.5)' : 'rgba(255, 255, 255, 0.08)'};
-  border-radius: 16px;
-  padding: 1rem;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    background: ${(props) =>
-      props.$active
-        ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.3))'
-        : 'rgba(255, 255, 255, 0.08)'};
-    border-color: ${(props) =>
-      props.$active ? 'rgba(59, 130, 246, 0.6)' : 'rgba(255, 255, 255, 0.2)'};
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-`;
-
-const Emoji = styled.span`
-  font-size: 2rem;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-`;
-
-const PresetLabel = styled.span`
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 500;
-`;
-
-const PresetValue = styled.span`
-  font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
-`;
 
 interface PaymentPresetsProps {
   amount: string;
@@ -77,19 +22,60 @@ export function PaymentPresets({ amount, onSelect }: PaymentPresetsProps) {
   ];
 
   return (
-    <PresetGrid>
-      {presets.map((preset) => (
-        <PresetCard
-          key={preset.value}
-          type="button"
-          $active={amount === preset.value}
-          onClick={() => onSelect(preset.value)}
-        >
-          <Emoji>{preset.emoji}</Emoji>
-          <PresetLabel>{preset.label}</PresetLabel>
-          <PresetValue>${preset.value}</PresetValue>
-        </PresetCard>
-      ))}
-    </PresetGrid>
+    <XStack
+      gap="$4"
+      {...({
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        $gtXs: {
+          gridTemplateColumns: 'repeat(4, 1fr)',
+        },
+      } as unknown as Record<string, unknown>)}
+    >
+      {presets.map((preset) => {
+        const isActive = amount === preset.value;
+        return (
+          <Button
+            key={preset.value}
+            type="button"
+            variant="glass"
+            buttonSize="lg"
+            height="auto"
+            minHeight={130}
+            isActive={isActive}
+            padding="$4"
+            flexDirection="column"
+            gap="$3"
+            borderWidth={1.5}
+            borderColor={isActive ? '$primary' : '$glassBorder'}
+            backgroundColor={isActive ? '$glassBgHover' : '$glassBg'}
+            hoverStyle={{
+              y: -5,
+              borderColor: isActive ? '$accent' : '$glassBorderHover',
+              backgroundColor: '$glassBgHover',
+              scale: 1.02,
+            }}
+            onClick={() => onSelect(preset.value)}
+          >
+            <Typography fontSize={38} marginBottom="$1">
+              {preset.emoji}
+            </Typography>
+            <YStack ai="center" gap="$1">
+              <Typography variant="label" uiSize="xs" alpha="medium" textCenter>
+                {preset.label}
+              </Typography>
+              <Typography
+                variant="heading"
+                uiSize="xl"
+                fontWeight="800"
+                textCenter
+              >
+                ${preset.value}
+              </Typography>
+            </YStack>
+          </Button>
+        );
+      })}
+    </XStack>
   );
 }

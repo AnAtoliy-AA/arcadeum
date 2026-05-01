@@ -1,12 +1,13 @@
 import React from 'react';
+import { Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { gameFactory, BaseGameProps } from '@/features/games';
+import { gameFactory, type BaseGameWidgetProps } from '@/features/games';
 import { type GameType } from '@/features/games/hooks';
 import { ErrorContainer } from './styles';
 
 interface DynamicGameRendererProps {
   gameType: GameType;
-  props: BaseGameProps;
+  props: BaseGameWidgetProps;
 }
 
 export const DynamicGameRenderer: React.FC<DynamicGameRendererProps> = ({
@@ -18,7 +19,7 @@ export const DynamicGameRenderer: React.FC<DynamicGameRendererProps> = ({
   if (!gameType) {
     return (
       <ErrorContainer>
-        {t('games.roomPage.errors.gameTypeMissing')}
+        <Text>{t('games.roomPage.errors.gameTypeMissing')}</Text>
       </ErrorContainer>
     );
   }
@@ -26,7 +27,7 @@ export const DynamicGameRenderer: React.FC<DynamicGameRendererProps> = ({
   if (!props || !props.room) {
     return (
       <ErrorContainer>
-        {t('games.roomPage.errors.gameDataIncomplete')}
+        <Text>{t('games.roomPage.errors.gameDataIncomplete')}</Text>
       </ErrorContainer>
     );
   }
@@ -35,7 +36,7 @@ export const DynamicGameRenderer: React.FC<DynamicGameRendererProps> = ({
   if (!LoadedGame) {
     return (
       <ErrorContainer>
-        {t('games.roomPage.errors.gameComponentNotFound')}
+        <Text>{t('games.roomPage.errors.gameComponentNotFound')}</Text>
       </ErrorContainer>
     );
   }

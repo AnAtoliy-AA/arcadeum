@@ -6,6 +6,7 @@ import {
   type GameLobbyTheme,
   IconButton,
 } from '@/features/games/ui/ReusableGameLobby';
+import { TamaguiElement } from 'tamagui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { CARD_VARIANTS, RANDOM_VARIANT, GAME_VARIANT } from '../lib/constants';
 import { VariantSelector } from './VariantSelector';
@@ -45,14 +46,16 @@ export interface CriticalLobbyProps {
   isHost: boolean;
   startBusy: boolean;
   isFullscreen: boolean;
-  containerRef: React.RefObject<HTMLDivElement | null>;
+  containerRef?: React.RefObject<TamaguiElement | null>;
   onToggleFullscreen: () => void;
   onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
   onDeleteRoom?: () => void;
+  onKickPlayer?: (userId: string) => void;
+  onLeaveRoom?: () => void;
   onRefresh?: () => void;
-  t: (key: string) => string;
+  t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
 
 export function CriticalLobby({
@@ -66,6 +69,8 @@ export function CriticalLobby({
   onReorderPlayers,
   onReinvite,
   onDeleteRoom,
+  onKickPlayer,
+  onLeaveRoom,
   onRefresh,
   t,
 }: CriticalLobbyProps) {
@@ -97,11 +102,7 @@ export function CriticalLobby({
 
   // Rules button
   const headerActionsSlot = (
-    <IconButton
-      onClick={() => setShowRules(true)}
-      title="Game Rules"
-      style={{ fontSize: '1.2rem' }}
-    >
+    <IconButton onClick={() => setShowRules(true)} title="Game Rules">
       📖
     </IconButton>
   );
@@ -130,6 +131,8 @@ export function CriticalLobby({
       onReorderPlayers={onReorderPlayers}
       onReinvite={onReinvite}
       onDeleteRoom={onDeleteRoom}
+      onKickPlayer={onKickPlayer}
+      onLeaveRoom={onLeaveRoom}
       onRefresh={onRefresh}
       // Game info
       gameName={t('games.critical_v1.name')}
@@ -138,27 +141,27 @@ export function CriticalLobby({
       roomIcon={variantInfo.emoji}
       minPlayers={2}
       // Labels using translations
-      waitingLabel={t('games.table.lobby.waitingToStart')}
-      subtitleText={getSubtitleText()}
-      playersLabel={t('games.table.lobby.players')}
-      hostControlsLabel={t('games.table.lobby.hostControls')}
-      startLabel={t('games.table.actions.start')}
-      startingLabel={t('games.table.actions.starting')}
-      roomInfoLabel={t('games.table.lobby.roomInfo')}
-      statusLabel={t('games.table.lobby.status')}
-      statusWaitingLabel={t('games.table.lobby.statusWaiting')}
-      statusActiveLabel={t('games.table.lobby.statusActive')}
-      visibilityLabel={t('games.table.lobby.visibility')}
-      visibilityPublicLabel={t('games.table.lobby.visibilityPublic')}
-      visibilityPrivateLabel={t('games.table.lobby.visibilityPrivate')}
-      inviteCodeLabel={t('games.table.lobby.inviteCode')}
-      waitingForPlayerLabel={t('games.table.lobby.waitingForPlayer')}
-      invitedPlayersLabel={t('games.table.lobby.invitedPlayers')}
-      declinedLabel={t('games.table.lobby.statusDeclined')}
-      reinviteLabel={t('games.table.lobby.reinvite')}
-      fastRoomLabel={t('games.rooms.fastRoom')}
-      botCountLabel={t('games.lobby.botCountLabel')}
-      startWithBotsLabel={t('games.lobby.startWithBots')}
+      labels={{
+        waitingLabel: t('games.table.lobby.waitingToStart'),
+        subtitleText: getSubtitleText(),
+        playersLabel: t('games.table.lobby.players'),
+        hostControlsLabel: t('games.table.lobby.hostControls'),
+        startLabel: t('games.table.actions.start'),
+        startingLabel: t('games.table.actions.starting'),
+        roomInfoLabel: t('games.table.lobby.roomInfo'),
+        statusLabel: t('games.table.lobby.status'),
+        visibilityLabel: t('games.table.lobby.visibility'),
+        visibilityPublicLabel: t('games.table.lobby.visibilityPublic'),
+        visibilityPrivateLabel: t('games.table.lobby.visibilityPrivate'),
+        inviteCodeLabel: t('games.table.lobby.inviteCode'),
+        waitingForPlayerLabel: t('games.table.lobby.waitingForPlayer'),
+        invitedPlayersLabel: t('games.table.lobby.invitedPlayers'),
+        declinedLabel: t('games.table.lobby.statusDeclined'),
+        reinviteLabel: t('games.table.lobby.reinvite'),
+        fastRoomLabel: t('games.rooms.fastRoom'),
+        botCountLabel: t('games.lobby.botCountLabel'),
+        startWithBotsLabel: t('games.lobby.startWithBots'),
+      }}
       // Theme
       theme={theme}
       isFastMode={isFastMode}

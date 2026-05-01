@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from '@/shared/hooks/useQuery';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { historyApi } from '@/features/history/api';
 import { useHistoryStore } from '../store/historyStore';
@@ -38,7 +38,7 @@ export function useHistoryDetail({
   const [manualError, setManualError] = useState<string | null>(null);
 
   const {
-    data: detail = null,
+    data: detail,
     isLoading: detailLoading,
     error: queryError,
   } = useQuery({
@@ -131,9 +131,10 @@ export function useHistoryDetail({
     register(detail.summary.host);
     detail.summary.participants.forEach(register);
 
-    return Array.from(unique.entries()).sort(
+    const replacements = Array.from(unique.entries()).sort(
       (a, b) => b[0].length - a[0].length,
     );
+    return replacements;
   }, [detail, formatParticipantName]);
 
   const formatLogMessage = useCallback(

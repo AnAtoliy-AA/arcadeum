@@ -1,14 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import {
-  CreateButton,
-  Header,
-  HeaderControls,
-  Title,
-  ViewToggle,
-  ViewToggleButton,
-  JoinByCodeButton,
-} from '../styles';
+import { Header, HeaderControls, Title, ViewToggle } from '../styles';
+import { Button, CreateRoomLinkButton } from '@arcadeum/ui';
 import { InviteCodeModal } from './InviteCodeModal';
 import type { GamesViewMode } from '../types';
 
@@ -23,30 +16,42 @@ export function GamesHeader({ viewMode, onViewModeChange }: GamesHeaderProps) {
 
   return (
     <Header>
-      <Title>{t('games.lounge.activeTitle')}</Title>
+      <Title size="xl" gradient>
+        {t('games.lounge.activeTitle')}
+      </Title>
       <HeaderControls>
         <ViewToggle>
-          <ViewToggleButton
-            $active={viewMode === 'grid'}
+          <Button
+            variant="chip"
+            size="sm"
+            isActive={viewMode === 'grid'}
             onClick={() => onViewModeChange('grid')}
             title="Grid view"
+            style={{ borderRadius: 0 }}
           >
             ▦
-          </ViewToggleButton>
-          <ViewToggleButton
-            $active={viewMode === 'list'}
+          </Button>
+          <Button
+            variant="chip"
+            size="sm"
+            isActive={viewMode === 'list'}
             onClick={() => onViewModeChange('list')}
             title="List view"
+            style={{ borderRadius: 0 }}
           >
             ☰
-          </ViewToggleButton>
+          </Button>
         </ViewToggle>
-        <JoinByCodeButton onClick={() => setIsInviteModalOpen(true)}>
+        <Button
+          variant="secondary"
+          size="md"
+          onClick={() => setIsInviteModalOpen(true)}
+        >
           {t('games.common.joinByCode') || 'Join by Code'}
-        </JoinByCodeButton>
-        <CreateButton href="/games/create">
+        </Button>
+        <CreateRoomLinkButton href="/games/create">
           {t('games.common.createRoom')}
-        </CreateButton>
+        </CreateRoomLinkButton>
       </HeaderControls>
 
       <InviteCodeModal

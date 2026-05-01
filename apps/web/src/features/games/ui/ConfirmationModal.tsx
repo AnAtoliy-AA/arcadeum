@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import styled from 'styled-components';
 import {
   Modal,
   ModalContent,
@@ -7,8 +6,9 @@ import {
   ModalTitle,
   ModalBody,
   ModalFooter,
-} from '@/shared/ui/Modal';
-import { Button } from '@/shared/ui/Button';
+  Button,
+  Typography,
+} from '@arcadeum/ui';
 
 interface ConfirmationModalProps {
   open: boolean;
@@ -18,14 +18,7 @@ interface ConfirmationModalProps {
   message: string;
   confirmLabel?: string;
   cancelLabel?: string;
-  isDestructive?: boolean;
 }
-
-const MessageText = styled.p`
-  margin: 0;
-  color: ${({ theme }) => theme.text.secondary};
-  line-height: 1.5;
-`;
 
 export function ConfirmationModal({
   open,
@@ -35,7 +28,6 @@ export function ConfirmationModal({
   message,
   confirmLabel = 'Confirm',
   cancelLabel = 'Cancel',
-  isDestructive = true,
 }: ConfirmationModalProps) {
   const handleConfirm = useCallback(() => {
     onConfirm?.();
@@ -44,21 +36,18 @@ export function ConfirmationModal({
 
   return (
     <Modal open={open} onClose={onClose}>
-      <ModalContent maxWidth="400px">
+      <ModalContent maxWidth={400}>
         <ModalHeader onClose={onClose}>
           <ModalTitle>{title}</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <MessageText>{message}</MessageText>
+          <Typography color="$textSecondary">{message}</Typography>
         </ModalBody>
         <ModalFooter>
           <Button variant="secondary" onClick={onClose}>
             {cancelLabel}
           </Button>
-          <Button
-            variant={isDestructive ? 'primary' : 'primary'} // Assuming primary is fine, or check if destructive variant exists
-            onClick={handleConfirm}
-          >
+          <Button variant="danger" onClick={handleConfirm}>
             {confirmLabel}
           </Button>
         </ModalFooter>

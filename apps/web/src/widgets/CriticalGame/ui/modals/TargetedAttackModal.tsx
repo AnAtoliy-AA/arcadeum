@@ -1,4 +1,5 @@
 import React from 'react';
+import { YStack, Text } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -12,6 +13,7 @@ import {
   ModalActions,
   ModalButton,
 } from '../styles';
+import { type GameVariant } from '@arcadeum/ui';
 import type { CriticalCard } from '../../types';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 
@@ -34,7 +36,7 @@ interface TargetedAttackModalProps {
   cardVariant?: string;
 }
 
-export const TargetedAttackModal: React.FC<TargetedAttackModalProps> = ({
+const TargetedAttackModal: React.FC<TargetedAttackModalProps> = ({
   isOpen,
   onClose,
   aliveOpponents,
@@ -52,45 +54,52 @@ export const TargetedAttackModal: React.FC<TargetedAttackModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <Modal onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
-        <ModalHeader $variant={cardVariant}>
-          <ModalTitle $variant={cardVariant}>
+    <Modal open={isOpen}>
+      <ModalContent
+        onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        $variant={cardVariant as GameVariant}
+      >
+        <ModalHeader $variant={cardVariant as GameVariant}>
+          <ModalTitle $variant={cardVariant as GameVariant}>
             {emoji} {t(titleKey)}
           </ModalTitle>
-          <CloseButton onClick={onClose} $variant={cardVariant}>
+          <CloseButton onClick={onClose} $variant={cardVariant as GameVariant}>
             ×
           </CloseButton>
         </ModalHeader>
         <ModalSection>
-          <SectionLabel>{t(selectPlayerKey)}</SectionLabel>
-          <p style={{ fontSize: '0.9rem', opacity: 0.8, marginBottom: '1rem' }}>
+          <SectionLabel $variant={cardVariant as GameVariant}>
+            {t(selectPlayerKey)}
+          </SectionLabel>
+          <Text fontSize="$3" opacity={0.8} marginBottom="$4">
             {t(descriptionKey)}
-          </p>
+          </Text>
           <OptionGrid>
             {aliveOpponents.map((opponent) => (
               <OptionButton
                 key={opponent.playerId}
                 $selected={selectedTarget === opponent.playerId}
+                $variant={cardVariant as GameVariant}
                 onClick={() => onSelectTarget(opponent.playerId)}
                 disabled={
                   opponent.hand.length === 0 &&
                   false /* Opponents don't need cards to be attacked */
                 }
               >
-                <div style={{ fontSize: '1.5rem' }}>🎮</div>
-                <div>
-                  {resolveDisplayName(
-                    opponent.playerId,
-                    `Player ${opponent.playerId.slice(0, 8)}`,
-                  )}
-                </div>
-                <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
-                  {t('games.table.modals.favor.cardsCount').replace(
-                    '{count}',
-                    opponent.hand.length.toString(),
-                  )}
-                </div>
+                <Text fontSize="$6">🎮</Text>
+                <YStack>
+                  <Text>
+                    {resolveDisplayName(
+                      opponent.playerId,
+                      `Player ${opponent.playerId.slice(0, 8)}`,
+                    )}
+                  </Text>
+                  <Text fontSize="$2" opacity={0.7}>
+                    {t('games.table.modals.favor.cardsCount', {
+                      count: opponent.hand.length,
+                    })}
+                  </Text>
+                </YStack>
               </OptionButton>
             ))}
           </OptionGrid>
@@ -107,3 +116,5 @@ export const TargetedAttackModal: React.FC<TargetedAttackModalProps> = ({
     </Modal>
   );
 };
+
+export default TargetedAttackModal;

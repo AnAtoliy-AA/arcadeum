@@ -190,6 +190,7 @@ export class GamesRealtimeService {
     room: GameRoomSummary | null,
     userId: string,
     roomDeleted: boolean,
+    kicked = false,
   ): void {
     if (!this.server || !room) {
       return;
@@ -200,6 +201,7 @@ export class GamesRealtimeService {
         room,
         userId,
         roomDeleted,
+        kicked,
       }),
     );
     // Also broadcast global update for lobbies

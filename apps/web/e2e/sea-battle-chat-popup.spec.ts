@@ -7,49 +7,54 @@ import {
   mockGameSocket,
   waitForRoomReady,
 } from './fixtures/test-utils';
-
-const BOARD_SIZE = 10;
-
-function createEmptyBoard() {
-  return Array.from({ length: BOARD_SIZE }, () =>
-    Array.from({ length: BOARD_SIZE }, () => 0),
-  );
-}
-
-function createSeaBattleState(
-  userId: string,
-  otherUserId: string,
-  logs: Record<string, unknown>[] = [],
-) {
-  return {
-    phase: 'battle',
-    playerOrder: [userId, otherUserId],
-    currentTurnIndex: 0,
-    players: [
-      {
-        playerId: userId,
-        alive: true,
-        board: createEmptyBoard(),
-        ships: [],
-        shipsRemaining: 5,
-        placementComplete: true,
-      },
-      {
-        playerId: otherUserId,
-        alive: true,
-        board: createEmptyBoard(),
-        ships: [],
-        shipsRemaining: 5,
-        placementComplete: true,
-      },
-    ],
-    logs,
-  };
-}
+import {
+  createSeaBattleState,
+  TestWindow,
+} from './fixtures/sea-battle-chat-utils';
 
 test.describe('Sea Battle Chat Message Popup', () => {
+  test.use({
+    contextOptions: {
+      reducedMotion: 'no-preference',
+    },
+  });
+
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
+    // Disable animations for stability but keep popup visible long enough to be caught
+    await page.addInitScript(() => {
+      try {
+        const style = document.createElement('style');
+        style.textContent = `
+          * { 
+            animation-duration: 0.1s !important; 
+            animation-delay: 0s !important;
+            transition-duration: 0.1s !important;
+            transition-delay: 0s !important;
+          }
+          [data-testid="chat-message-popup"], 
+          [data-testid="chat-message-popup"] * {
+            animation-duration: 3s !important;
+          }
+        `;
+        const container = document.head || document.documentElement;
+        if (container) {
+          container.appendChild(style);
+        } else {
+          // Fallback if neither head nor documentElement are ready
+          const observer = new MutationObserver(() => {
+            const target = document.head || document.documentElement;
+            if (target) {
+              target.appendChild(style);
+              observer.disconnect();
+            }
+          });
+          observer.observe(document, { childList: true, subtree: true });
+        }
+      } catch (e) {
+        console.error('Animation kill script failed', e);
+      }
+    });
   });
 
   test('should show popup when opponent sends a chat message', async ({
@@ -104,66 +109,65 @@ test.describe('Sea Battle Chat Message Popup', () => {
     await page.goto(`/games/rooms/${roomId}`);
     await waitForRoomReady(page);
 
-    await page.evaluate(
-      ({ otherUserId, roomId, userId }) => {
-        const state = {
-          phase: 'battle',
-          playerOrder: [userId, otherUserId],
-          currentTurnIndex: 0,
-          players: [
-            {
-              playerId: userId,
-              alive: true,
-              board: Array.from({ length: 10 }, () =>
-                Array.from({ length: 10 }, () => 0),
-              ),
-              ships: [],
-              shipsRemaining: 5,
-              placementComplete: true,
-            },
-            {
-              playerId: otherUserId,
-              alive: true,
-              board: Array.from({ length: 10 }, () =>
-                Array.from({ length: 10 }, () => 0),
-              ),
-              ships: [],
-              shipsRemaining: 5,
-              placementComplete: true,
-            },
-          ],
-          logs: [
-            {
-              id: 'chat-msg-1',
-              type: 'message',
-              senderId: otherUserId,
-              senderName: 'Admiral',
-              message: 'Prepare for battle!',
-              createdAt: new Date().toISOString(),
-            },
-          ],
-        };
-
-        const snapshot = {
-          roomId,
-          session: {
-            id: 'session-1',
-            status: 'active',
-            state,
-          },
-        };
-        window.gameSocket?.trigger('games.session.snapshot', snapshot);
+    // Wait for socket and store to be ready
+    await page.waitForFunction(
+      () => {
+        const socket = (window as unknown as TestWindow).gameSocket;
+        const store = (window as unknown as TestWindow).useGameChatStore;
+        return (
+          socket?.connected &&
+          socket._mockListeners?.['games.session.snapshot'] &&
+          !!store
+        );
       },
-      { otherUserId, roomId, userId },
+      { timeout: 60000 },
     );
 
-    const popup = page.getByTestId('chat-message-popup');
-    await expect(popup).toBeVisible({ timeout: 10000 });
+    const expectedMsg = 'Prepare for battle!';
+    const state = createSeaBattleState(userId, otherUserId, [
+      {
+        id: `chat-msg-opponent-${Date.now()}`,
+        type: 'message',
+        senderId: otherUserId,
+        senderName: 'Admiral',
+        message: expectedMsg,
+        createdAt: new Date().toISOString(),
+      },
+    ]);
 
-    await expect(popup.getByText('Admiral')).toBeVisible({ timeout: 5000 });
-    await expect(popup.getByText('Prepare for battle!')).toBeVisible({
-      timeout: 5000,
-    });
+    // Robustly trigger snapshot until store is updated (handles Mobile Safari race conditions)
+    await expect
+      .poll(
+        async () => {
+          await page.evaluate(
+            ({ roomId, state }) => {
+              const snapshot = {
+                roomId,
+                session: {
+                  id: 'session-1',
+                  status: 'active',
+                  state,
+                },
+              };
+              window.gameSocket?.trigger('games.session.snapshot', snapshot);
+            },
+            { roomId, state },
+          );
+
+          return await page.evaluate((msg) => {
+            const store = (window as unknown as TestWindow).useGameChatStore;
+            return store?.getState().logs.some((l) => l.message === msg);
+          }, expectedMsg);
+        },
+        { timeout: 30000, intervals: [1000] },
+      )
+      .toBe(true);
+
+    const popup = page.getByTestId('chat-message-popup');
+    await expect(popup.getByText('Admiral', { exact: false })).toBeVisible();
+    await expect(
+      popup.getByText('Prepare for battle!', { exact: false }),
+    ).toBeVisible();
   });
 
   test('should auto-dismiss popup after timeout', async ({ page }) => {
@@ -216,63 +220,68 @@ test.describe('Sea Battle Chat Message Popup', () => {
     await page.goto(`/games/rooms/${roomId}`);
     await waitForRoomReady(page);
 
-    await page.evaluate(
-      ({ otherUserId, roomId, userId }) => {
-        const state = {
-          phase: 'battle',
-          playerOrder: [userId, otherUserId],
-          currentTurnIndex: 0,
-          players: [
-            {
-              playerId: userId,
-              alive: true,
-              board: Array.from({ length: 10 }, () =>
-                Array.from({ length: 10 }, () => 0),
-              ),
-              ships: [],
-              shipsRemaining: 5,
-              placementComplete: true,
-            },
-            {
-              playerId: otherUserId,
-              alive: true,
-              board: Array.from({ length: 10 }, () =>
-                Array.from({ length: 10 }, () => 0),
-              ),
-              ships: [],
-              shipsRemaining: 5,
-              placementComplete: true,
-            },
-          ],
-          logs: [
-            {
-              id: 'chat-msg-dismiss',
-              type: 'message',
-              senderId: otherUserId,
-              senderName: 'Captain',
-              message: 'I will sink you!',
-              createdAt: new Date().toISOString(),
-            },
-          ],
-        };
-
-        const snapshot = {
-          roomId,
-          session: {
-            id: 'session-1',
-            status: 'active',
-            state,
-          },
-        };
-        window.gameSocket?.trigger('games.session.snapshot', snapshot);
+    // Wait for socket and store to be ready
+    await page.waitForFunction(
+      () => {
+        const socket = (window as unknown as TestWindow).gameSocket;
+        const store = (window as unknown as TestWindow).useGameChatStore;
+        return (
+          socket?.connected &&
+          socket._mockListeners?.['games.session.snapshot'] &&
+          !!store
+        );
       },
-      { otherUserId, roomId, userId },
+      { timeout: 60000 },
     );
 
-    const popup = page.getByTestId('chat-message-popup');
-    await expect(popup).toBeVisible({ timeout: 10000 });
+    const expectedMsg = 'I will sink you!';
+    const state = createSeaBattleState(userId, otherUserId, [
+      {
+        id: `chat-msg-opponent-${Date.now()}`,
+        type: 'message',
+        senderId: otherUserId,
+        senderName: 'Captain',
+        message: expectedMsg,
+        createdAt: new Date().toISOString(),
+      },
+    ]);
 
-    await expect(popup).not.toBeVisible({ timeout: 8000 });
+    // Robustly trigger snapshot until store is updated
+    await expect
+      .poll(
+        async () => {
+          await page.evaluate(
+            ({ roomId, state }) => {
+              const snapshot = {
+                roomId,
+                session: {
+                  id: 'session-1',
+                  status: 'active',
+                  state,
+                },
+              };
+              window.gameSocket?.trigger('games.session.snapshot', snapshot);
+            },
+            { roomId, state },
+          );
+
+          return await page.evaluate((msg) => {
+            const store = (window as unknown as TestWindow).useGameChatStore;
+            return store?.getState().logs.some((l) => l.message === msg);
+          }, expectedMsg);
+        },
+        { timeout: 30000, intervals: [1000] },
+      )
+      .toBe(true);
+
+    const popup = page.getByTestId('chat-message-popup');
+    await expect(popup.getByText('Captain', { exact: false })).toBeVisible();
+    await expect(popup).toBeVisible();
+
+    // Wait for the 3s auto-dismiss animation to complete (we set it to 3s in init script)
+    await expect(page.getByTestId('chat-message-popup')).not.toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test('should also show popup for own messages', async ({ page }) => {
@@ -325,63 +334,63 @@ test.describe('Sea Battle Chat Message Popup', () => {
     await page.goto(`/games/rooms/${roomId}`);
     await waitForRoomReady(page);
 
-    await page.evaluate(
-      ({ userId, roomId, otherUserId }) => {
-        const state = {
-          phase: 'battle',
-          playerOrder: [userId, otherUserId],
-          currentTurnIndex: 0,
-          players: [
-            {
-              playerId: userId,
-              alive: true,
-              board: Array.from({ length: 10 }, () =>
-                Array.from({ length: 10 }, () => 0),
-              ),
-              ships: [],
-              shipsRemaining: 5,
-              placementComplete: true,
-            },
-            {
-              playerId: otherUserId,
-              alive: true,
-              board: Array.from({ length: 10 }, () =>
-                Array.from({ length: 10 }, () => 0),
-              ),
-              ships: [],
-              shipsRemaining: 5,
-              placementComplete: true,
-            },
-          ],
-          logs: [
-            {
-              id: 'chat-msg-own',
-              type: 'message',
-              senderId: userId,
-              senderName: 'Me',
-              message: 'My own message',
-              createdAt: new Date().toISOString(),
-            },
-          ],
-        };
-
-        const snapshot = {
-          roomId,
-          session: {
-            id: 'session-1',
-            status: 'active',
-            state,
-          },
-        };
-        window.gameSocket?.trigger('games.session.snapshot', snapshot);
+    // Wait for socket and store to be ready
+    await page.waitForFunction(
+      () => {
+        const socket = (window as unknown as TestWindow).gameSocket;
+        const store = (window as unknown as TestWindow).useGameChatStore;
+        return (
+          socket?.connected &&
+          socket._mockListeners?.['games.session.snapshot'] &&
+          !!store
+        );
       },
-      { userId, roomId, otherUserId },
+      { timeout: 60000 },
     );
 
+    const expectedMsg = 'My own message';
+    const state = createSeaBattleState(userId, otherUserId, [
+      {
+        id: `chat-msg-own-${Date.now()}`,
+        type: 'message',
+        senderId: userId,
+        senderName: 'Me',
+        message: expectedMsg,
+        createdAt: new Date().toISOString(),
+      },
+    ]);
+
+    // Robustly trigger snapshot until store is updated
+    await expect
+      .poll(
+        async () => {
+          await page.evaluate(
+            ({ roomId, state }) => {
+              const snapshot = {
+                roomId,
+                session: {
+                  id: 'session-1',
+                  status: 'active',
+                  state,
+                },
+              };
+              window.gameSocket?.trigger('games.session.snapshot', snapshot);
+            },
+            { roomId, state },
+          );
+
+          return await page.evaluate((msg) => {
+            const store = (window as unknown as TestWindow).useGameChatStore;
+            return store?.getState().logs.some((l) => l.message === msg);
+          }, expectedMsg);
+        },
+        { timeout: 30000, intervals: [1000] },
+      )
+      .toBe(true);
+
     const popup = page.getByTestId('chat-message-popup');
-    await expect(popup).toBeVisible({ timeout: 10000 });
-    await expect(popup.getByText('My own message')).toBeVisible({
-      timeout: 5000,
-    });
+    await expect(
+      popup.getByText('My own message', { exact: false }),
+    ).toBeVisible();
   });
 });

@@ -1,10 +1,12 @@
 'use client';
 
-import { useTranslation } from '@/shared/lib/useTranslation';
-import { LoadingState, EmptyState, ErrorState } from '@/shared/ui';
+import { useEffect, useRef } from 'react';
+import { TranslationKey, useTranslation } from '@/shared/lib/useTranslation';
+import { LoadingState, EmptyState, ErrorState, Spinner } from '@/shared/ui';
 import type { HistorySummary, HistoryParticipant } from '../types';
 import { HistoryCard } from './HistoryCard';
-import { EntriesGrid } from '../styles';
+import { EntriesGrid, PaginationSpinner, EndOfListText } from '../styles';
+import { TamaguiElement } from 'tamagui';
 
 interface HistoryListProps {
   entries: HistorySummary[];
@@ -12,7 +14,10 @@ interface HistoryListProps {
   error: string | null;
   isAuthenticated: boolean;
   hasFilters: boolean;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
   onRetry: () => void;
+  onLoadMore: () => void;
   onSelectEntry: (entry: HistorySummary) => void;
   formatParticipantName: (
     participant: HistoryParticipant | undefined | null,
@@ -26,18 +31,42 @@ export function HistoryList({
   error,
   isAuthenticated,
   hasFilters,
+  hasNextPage,
+  isFetchingNextPage,
   onRetry,
+  onLoadMore,
   onSelectEntry,
   formatParticipantName,
   formatDate,
 }: HistoryListProps) {
   const { t } = useTranslation();
+  const observerTarget = useRef<TamaguiElement & Element>(null);
 
-  if (loading) {
+  useEffect(() => {
+    const element = observerTarget.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          onLoadMore();
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    observer.observe(element);
+
+    return () => {
+      observer.unobserve(element);
+    };
+  }, [hasNextPage, isFetchingNextPage, onLoadMore]);
+
+  if (loading && entries.length === 0) {
     return <LoadingState message={t('history.loading')} />;
   }
 
-  if (error) {
+  if (error && entries.length === 0) {
     return (
       <ErrorState
         message={error}
@@ -68,6 +97,17 @@ export function HistoryList({
           formatDate={formatDate}
         />
       ))}
+
+      {hasNextPage || isFetchingNextPage ? (
+        <PaginationSpinner ref={observerTarget}>
+          {isFetchingNextPage && <Spinner size="md" />}
+        </PaginationSpinner>
+      ) : entries.length > 0 ? (
+        <EndOfListText>
+          {t('history.list.noMoreEntries' as TranslationKey) ||
+            'No more entries to show'}
+        </EndOfListText>
+      ) : null}
     </EntriesGrid>
   );
 }

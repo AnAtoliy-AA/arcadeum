@@ -122,7 +122,7 @@ Add screenshots or screen recordings to demonstrate UI changes.
 2.  **Add upstream remote** to sync with main repository:
 
     ```bash
-    git remote add upstream https://github.com/arcadeum/arcadeum.git
+    git remote add upstream https://github.com/AnAtoliy-AA/arcadeum.git
     ```
 
 3.  **Install dependencies**:

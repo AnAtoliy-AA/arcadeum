@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useMemo, useState } from 'react';
+import { TamaguiElement } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { GameRoomSummary } from '@/shared/types/games';
 import {
@@ -55,12 +56,14 @@ export interface ReusableGameLobbyProps {
   isHost: boolean;
   startBusy: boolean;
   isFullscreen?: boolean;
-  containerRef?: React.RefObject<HTMLDivElement | null>;
+  containerRef?: React.RefObject<TamaguiElement | null>;
   onToggleFullscreen?: () => void;
   onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
   onDeleteRoom?: () => void;
+  onKickPlayer?: (userId: string) => void;
+  onLeaveRoom?: () => void;
   onRefresh?: () => void;
 
   // Game info
@@ -73,27 +76,30 @@ export interface ReusableGameLobbyProps {
   minPlayers?: number;
 
   // Labels (with sensible defaults)
-  waitingLabel?: string;
-  subtitleText?: string;
-  playersLabel?: string;
-  hostControlsLabel?: string;
-  startLabel?: string;
-  startingLabel?: string;
-  roomInfoLabel?: string;
-  statusLabel?: string;
-  statusWaitingLabel?: string;
-  statusActiveLabel?: string;
-  visibilityLabel?: string;
-  visibilityPublicLabel?: string;
-  visibilityPrivateLabel?: string;
-  inviteCodeLabel?: string;
-  waitingForPlayerLabel?: string;
-  invitedPlayersLabel?: string;
-  declinedLabel?: string;
-  reinviteLabel?: string;
-  fastRoomLabel?: string;
-  botCountLabel?: string;
-  startWithBotsLabel?: string;
+  labels?: {
+    waitingLabel?: string;
+    subtitleText?: string;
+    playersLabel?: string;
+    hostControlsLabel?: string;
+    startLabel?: string;
+    startingLabel?: string;
+    roomInfoLabel?: string;
+    statusLabel?: string;
+    visibilityLabel?: string;
+    visibilityPublicLabel?: string;
+    visibilityPrivateLabel?: string;
+    inviteCodeLabel?: string;
+    waitingForPlayerLabel?: string;
+    invitedPlayersLabel?: string;
+    declinedLabel?: string;
+    reinviteLabel?: string;
+    fastRoomLabel?: string;
+    botCountLabel?: string;
+    startWithBotsLabel?: string;
+    deleteRoomLabel?: string;
+    kickPlayerLabel?: string;
+    leaveRoomLabel?: string;
+  };
   // Theme
   theme?: GameLobbyTheme;
 
@@ -107,13 +113,29 @@ export interface ReusableGameLobbyProps {
   extraPlayersCardSlot?: React.ReactNode;
 
   // Enable/disable features
-  showVariantSelector?: boolean;
-  showRulesButton?: boolean;
   showFullscreenButton?: boolean;
   showReorderControls?: boolean;
   showInvitedPlayers?: boolean;
   enableBots?: boolean;
 }
+
+// Styles
+
+const floatStyle: React.CSSProperties = {
+  animation: 'float 3s ease-in-out infinite',
+};
+
+const slideInStyle: React.CSSProperties = {
+  animation: 'slideIn 0.5s ease-out both',
+};
+
+const slideInDelayedStyle: React.CSSProperties = {
+  animation: 'slideIn 0.5s ease-out 0.15s both',
+};
+
+const dotPulseStyle = (delayMs: number): React.CSSProperties => ({
+  animation: `dotPulse 1.4s ease-in-out ${delayMs}ms infinite`,
+});
 
 // ============ Component ============
 
@@ -128,35 +150,17 @@ export function ReusableGameLobby({
   onReorderPlayers,
   onReinvite,
   onDeleteRoom,
+  onKickPlayer,
+  onLeaveRoom,
   onRefresh,
   gameName,
   gameIcon,
   variantName,
   roomIcon = '🎲',
   minPlayers = 2,
-  waitingLabel = 'Waiting for game to start...',
-  subtitleText,
-  playersLabel = 'Players',
-  hostControlsLabel = 'Host Controls',
-  startLabel = 'Start Game',
-  startingLabel = 'Starting...',
-  roomInfoLabel = 'Room Info',
-  statusLabel = 'Status',
-  statusWaitingLabel = 'Waiting',
-  statusActiveLabel = 'Active',
-  visibilityLabel = 'Visibility',
-  visibilityPublicLabel = 'Public',
-  visibilityPrivateLabel = 'Private',
-  inviteCodeLabel = 'Invite Code',
-  waitingForPlayerLabel = 'Waiting for player...',
-  invitedPlayersLabel = 'Invited Players',
-  declinedLabel = 'Declined',
-  reinviteLabel = 'Re-invite',
-  fastRoomLabel = 'Fast Room',
-  botCountLabel = 'Number of bots',
-  startWithBotsLabel = 'Start with {{count}} 🤖',
   theme = {},
   isFastMode,
+  labels = {},
   optionsSlot,
   headerActionsSlot,
   rulesModalSlot,
@@ -166,11 +170,36 @@ export function ReusableGameLobby({
   showInvitedPlayers = true,
   enableBots = false,
 }: ReusableGameLobbyProps) {
+  const {
+    waitingLabel = 'Waiting for game to start...',
+    subtitleText,
+    playersLabel = 'Players',
+    hostControlsLabel = 'Host Controls',
+    startLabel = 'Start Game',
+    startingLabel = 'Starting...',
+    fastRoomLabel = 'Fast Room',
+    botCountLabel = 'Number of bots',
+    startWithBotsLabel = 'Start with {{count}} 🤖',
+    deleteRoomLabel,
+  } = labels;
   const { t } = useTranslation();
   const [botCount, setBotCount] = useState(1);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const members = room.members ?? [];
   const maxPlayers = room.maxPlayers ?? 6;
+  const cooldownRef = React.useRef(0);
+  const handleStart = React.useCallback(() => {
+    const now = Date.now();
+    if (now - cooldownRef.current < 1000) return;
+    cooldownRef.current = now;
+
+    if (enableBots && room.playerCount === 1) {
+      onStartGame({ withBots: true, botCount });
+    } else {
+      onStartGame();
+    }
+  }, [enableBots, room.playerCount, botCount, onStartGame]);
+
   const progress = Math.round((room.playerCount / maxPlayers) * 100);
 
   const deleteRoomTranslations = useMemo(
@@ -216,17 +245,32 @@ export function ReusableGameLobby({
         message={deleteRoomTranslations.confirmMessage}
         confirmLabel={deleteRoomTranslations.confirmButton}
         cancelLabel={deleteRoomTranslations.cancelButton}
-        isDestructive
       />
 
       <GameHeader>
         <GameInfo>
-          <GameTitleText $gradient={theme.titleGradient}>
+          <GameTitleText
+            background={theme.titleGradient}
+            className={
+              theme.titleGradient ? 'text-gradient shimmer-animated' : undefined
+            }
+            style={theme.titleGradient ? { backgroundSize: '200% auto' } : {}}
+          >
             {gameName}
             {variantName && (
               <>
                 {' '}
-                <VariantText $gradient={theme.variantGradient}>
+                <VariantText
+                  background={theme.variantGradient}
+                  className={
+                    theme.variantGradient
+                      ? 'text-gradient shimmer-animated'
+                      : undefined
+                  }
+                  style={
+                    theme.variantGradient ? { backgroundSize: '200% auto' } : {}
+                  }
+                >
                   : {variantName}
                 </VariantText>
               </>
@@ -234,7 +278,9 @@ export function ReusableGameLobby({
           </GameTitleText>
           <RoomNameBadge>
             <RoomNameIcon>{roomIcon}</RoomNameIcon>
-            <RoomNameText>{room.name}</RoomNameText>
+            <RoomNameText data-testid="room-name-text">
+              {room.name}
+            </RoomNameText>
           </RoomNameBadge>
           {isFastMode && (
             <FastBadge>
@@ -242,7 +288,6 @@ export function ReusableGameLobby({
               <span>{fastRoomLabel}</span>
             </FastBadge>
           )}
-          {optionsSlot}
         </GameInfo>
         <HeaderActions>
           {headerActionsSlot}
@@ -258,9 +303,11 @@ export function ReusableGameLobby({
       </GameHeader>
 
       <LobbyContent>
-        <CenterSection>
-          <GameIcon>{gameIcon}</GameIcon>
-          <LobbyTitle>{waitingLabel}</LobbyTitle>
+        <CenterSection style={slideInStyle as never}>
+          <GameIcon style={floatStyle as never}>{gameIcon}</GameIcon>
+          <LobbyTitle style={slideInDelayedStyle as never}>
+            {waitingLabel}
+          </LobbyTitle>
           <LobbySubtitle>{subtitleText || defaultSubtitle}</LobbySubtitle>
 
           <ProgressWrapper>
@@ -271,14 +318,14 @@ export function ReusableGameLobby({
               </span>
             </ProgressLabel>
             <ProgressBar>
-              <ProgressFill $percent={progress} />
+              <ProgressFill width={`${progress}%`} />
             </ProgressBar>
           </ProgressWrapper>
 
           <WaitingDots>
-            <Dot $delay={0} />
-            <Dot $delay={0.2} />
-            <Dot $delay={0.4} />
+            <Dot style={dotPulseStyle(0) as never} />
+            <Dot style={dotPulseStyle(200) as never} />
+            <Dot style={dotPulseStyle(400) as never} />
           </WaitingDots>
 
           {isHost && room.status === 'lobby' && (
@@ -295,7 +342,7 @@ export function ReusableGameLobby({
                       <BotCountButton
                         key={count}
                         data-testid={`bot-count-${count}`}
-                        isActive={botCount === count}
+                        $isActive={botCount === count}
                         onClick={() => setBotCount(count)}
                       >
                         {count}
@@ -305,13 +352,7 @@ export function ReusableGameLobby({
                 </BotCountSelector>
               )}
               <StartButton
-                onClick={() => {
-                  if (enableBots && room.playerCount === 1) {
-                    onStartGame({ withBots: true, botCount });
-                  } else {
-                    onStartGame();
-                  }
-                }}
+                onClick={handleStart}
                 disabled={
                   startBusy ||
                   (room.playerCount < (minPlayers || 2) &&
@@ -330,6 +371,8 @@ export function ReusableGameLobby({
               </StartButton>
             </HostControls>
           )}
+
+          {optionsSlot}
         </CenterSection>
 
         <LobbySidebar
@@ -337,29 +380,18 @@ export function ReusableGameLobby({
           isHost={isHost}
           minPlayers={minPlayers}
           isFastMode={isFastMode}
-          playersLabel={playersLabel}
-          invitedPlayersLabel={invitedPlayersLabel}
-          declinedLabel={declinedLabel}
-          reinviteLabel={reinviteLabel}
-          roomInfoLabel={roomInfoLabel}
-          statusLabel={statusLabel}
-          statusWaitingLabel={statusWaitingLabel}
-          statusActiveLabel={statusActiveLabel}
-          visibilityLabel={visibilityLabel}
-          visibilityPublicLabel={visibilityPublicLabel}
-          visibilityPrivateLabel={visibilityPrivateLabel}
-          inviteCodeLabel={inviteCodeLabel}
-          waitingForPlayerLabel={waitingForPlayerLabel}
-          fastRoomLabel={fastRoomLabel || 'Fast Mode'}
           showReorderControls={showReorderControls}
           showInvitedPlayers={showInvitedPlayers}
           members={members}
           onReorderPlayers={onReorderPlayers}
           onReinvite={onReinvite}
           onDeleteRoom={isHost ? handleDeleteClick : undefined}
-          deleteRoomLabel={deleteRoomTranslations.button}
+          onKickPlayer={isHost ? onKickPlayer : undefined}
+          onLeaveRoom={!isHost ? onLeaveRoom : undefined}
+          deleteRoomLabel={deleteRoomLabel || deleteRoomTranslations.button}
           extraPlayersCardSlot={extraPlayersCardSlot}
           onRefresh={onRefresh}
+          labels={labels}
         />
       </LobbyContent>
     </GameContainer>

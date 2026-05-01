@@ -1,14 +1,18 @@
 import React from 'react';
 import type { CriticalCard } from '../types';
-import { getCardEmoji, getCardTranslationKey } from '../lib/cardUtils';
+import { getCardTranslationKey } from '../lib/cardUtils';
 import {
   LastPlayedCard,
   CardCorner,
   CardFrame,
   CardInner,
-  CardEmoji,
   CardName,
+  CardNameContainer,
 } from './styles';
+import { CardImage } from './styles/card-image';
+import { GradientScrim } from './styles/cards-base';
+import { useScenePalette } from './ScenePaletteContext';
+import type { GameVariant } from '@arcadeum/ui';
 
 interface LastPlayedCardDisplayProps {
   discardPile: CriticalCard[];
@@ -21,6 +25,8 @@ export const LastPlayedCardDisplay: React.FC<LastPlayedCardDisplayProps> = ({
   t,
   cardVariant,
 }) => {
+  const scene = useScenePalette();
+
   if (discardPile.length === 0) {
     return null;
   }
@@ -29,18 +35,28 @@ export const LastPlayedCardDisplay: React.FC<LastPlayedCardDisplayProps> = ({
 
   return (
     <LastPlayedCard
+      data-testid="last-played-card"
       $cardType={lastCard}
       $isAnimating={false}
-      $variant={cardVariant}
+      $variant={cardVariant as GameVariant}
+      style={{
+        background: scene.lastPlayedGradient,
+        boxShadow: `0 0 24px ${scene.lastPlayedHaloColor}`,
+      }}
     >
-      <CardCorner $position="tl" />
-      <CardCorner $position="tr" />
-      <CardCorner $position="bl" />
-      <CardCorner $position="br" />
-      <CardFrame />
+      <CardImage variant={cardVariant ?? ''} cardType={lastCard as string} />
+      <GradientScrim />
+      <CardCorner $position="tl" $variant={cardVariant} />
+      <CardCorner $position="tr" $variant={cardVariant} />
+      <CardCorner $position="bl" $variant={cardVariant} />
+      <CardCorner $position="br" $variant={cardVariant} />
+      <CardFrame $variant={cardVariant} />
       <CardInner>
-        <CardEmoji>{getCardEmoji(lastCard)}</CardEmoji>
-        <CardName>{t(getCardTranslationKey(lastCard, cardVariant))}</CardName>
+        <CardNameContainer $variant={cardVariant as GameVariant}>
+          <CardName $variant={cardVariant}>
+            {t(getCardTranslationKey(lastCard, cardVariant))}
+          </CardName>
+        </CardNameContainer>
       </CardInner>
     </LastPlayedCard>
   );

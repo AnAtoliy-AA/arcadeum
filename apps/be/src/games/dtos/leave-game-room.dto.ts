@@ -1,7 +1,11 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class LeaveGameRoomDto {
   @IsString()
   @IsNotEmpty()
   roomId: string;
+
+  @IsOptional()
+  @IsString()
+  kickedBy?: string;
 }

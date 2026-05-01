@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures/test-utils';
-import { navigateTo } from './fixtures/test-utils';
+import { navigateTo, handleRoute } from './fixtures/test-utils';
 
 test.describe('Games List Page', () => {
   test.beforeEach(async ({ page }) => {
@@ -19,23 +19,16 @@ test.describe('Games List Page', () => {
       if (url.includes('/rooms') || url.includes('/history')) {
         return route.continue();
       }
-      await route.fulfill({ status: 200, body: JSON.stringify({}) });
+      await handleRoute(route, {});
     });
 
     await page.route('**/games/rooms*', async (route) => {
-      // Only handle if not handled by previous routes (technically this executes first if registered first? No, LIFO)
-      // Wait, LIFO.
-      // Registered 2nd => Checked 1st.
-      // If matches, good.
-      // If not, checked 1st (Catch-all).
-      // So games/rooms matches 2nd. it handles.
-      // games/stats matches 1st (Catch-all). It handles.
-      // games/rooms request logic:
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ rooms: [], total: 0 }),
-      });
+      await handleRoute(route, { rooms: [], total: 0 });
+    });
+
+    // Mock socket.io polling to prevent connection errors
+    await page.route('**/socket.io/*', async (route) => {
+      await handleRoute(route, { status: 'ok' });
     });
   });
 
@@ -49,25 +42,27 @@ test.describe('Games List Page', () => {
 
   test('should display filters and search', async ({ page }) => {
     await navigateTo(page, '/games');
-    const searchInput = page.locator(
-      'input[type="search"], input[placeholder*="search" i]',
-    );
+    const searchInput = page
+      .locator('input[type="search"], input[placeholder*="search" i]')
+      .first();
     if (await searchInput.isVisible()) {
       await expect(searchInput).toBeVisible();
     }
     const filters = page
       .locator('button')
       .filter({ hasText: /all|lobby|active|finished|все|все|всего/i });
-    if ((await filters.count()) > 0) {
+
+    await expect(async () => {
+      expect(await filters.count()).toBeGreaterThan(0);
       await expect(filters.first()).toBeVisible();
-    }
+    }).toPass({});
   });
 
   test('should handle navigation to create room', async ({ page }) => {
     await navigateTo(page, '/games');
     await expect(
       page.getByRole('heading', { name: /Game Rooms/i }),
-    ).toBeVisible({ timeout: 15000 });
+    ).toBeVisible({});
 
     const createLink = page
       .getByRole('link', { name: /create|new|создать|crear/i })
@@ -80,53 +75,57 @@ test.describe('Games List Page', () => {
 
   test('should display game cards or empty state', async ({ page }) => {
     await navigateTo(page, '/games');
-    const mainContent = page.locator('main, [class*="Container"]').first();
+    const mainContent = page.locator('main').first();
     await expect(mainContent).toBeVisible();
 
     await expect(async () => {
       const cardsCount = await page.getByTestId('room-card').count();
       const isEmpty = await page.getByTestId('games-empty').isVisible();
       expect(cardsCount > 0 || isEmpty).toBe(true);
-    }).toPass({ timeout: 10000, intervals: [1000] });
+    }).toPass({ intervals: [1000] });
   });
 
   test('should clear search and restore list', async ({ page }) => {
     await navigateTo(page, '/games');
-    const searchInput = page.locator(
-      'input[type="search"], input[placeholder*="search" i]',
-    );
+    const searchInput = page
+      .locator('input[type="search"], input[placeholder*="search" i]')
+      .first();
     await searchInput.fill('some search');
     await searchInput.fill(''); // Clear
 
-    await expect(page.getByTestId('games-empty')).toBeVisible();
+    // Use toPass to wait for the UI to settle after potential deferred updates
+    await expect(async () => {
+      await expect(page.getByTestId('games-empty')).toBeVisible();
+    }).toPass({});
   });
   test('should not display anonymous games in the list', async ({ page }) => {
     await page.route('**/games/rooms*', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          rooms: [
-            {
-              id: 'room-1',
-              gameId: 'critical_v1',
-              name: 'Normal Room',
-              hostId: 'user-123',
-              visibility: 'public',
-              playerCount: 2,
-              maxPlayers: 4,
-              status: 'lobby',
-              createdAt: new Date().toISOString(),
-            },
-          ],
-          total: 1,
-        }),
+      await handleRoute(route, {
+        rooms: [
+          {
+            id: '507f191e810c19729de860ee',
+            gameId: 'critical_v1',
+            name: 'Normal Room',
+            hostId: 'user-123',
+            visibility: 'public',
+            playerCount: 2,
+            maxPlayers: 4,
+            status: 'lobby',
+            createdAt: new Date().toISOString(),
+          },
+        ],
+        total: 1,
       });
     });
 
     await navigateTo(page, '/games');
 
-    await expect(page.getByText('Normal Room')).toBeVisible({ timeout: 30000 });
-    await expect(page.getByText('Anonymous Bot Game')).not.toBeVisible();
+    // Use toPass to handle hydration and fetch timing
+    await expect(async () => {
+      await expect(page.getByText('Normal Room')).toBeVisible();
+      const anonGame = page.getByText('Anonymous Bot Game');
+      const isVisible = await anonGame.isVisible();
+      expect(isVisible).toBe(false);
+    }).toPass({});
   });
 });

@@ -1,0 +1,27 @@
+/* Footer Styles for stability and hydration safety */
+.footer-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background-color: #28a745; /* Success color */
+}
+
+.footer-bottom-bar {
+  border-top: 1px solid var(--borderColor);
+  margin-top: 48px;
+  padding-top: 32px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .footer-bottom-bar {
+    flex-direction: column;
+    align-items: center;
+    margin-top: 40px;
+  }
+}

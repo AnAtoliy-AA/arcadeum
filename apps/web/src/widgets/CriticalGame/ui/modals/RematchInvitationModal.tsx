@@ -1,7 +1,6 @@
 'use client';
 
-import styled from 'styled-components';
-import { Button } from '@/shared/ui';
+import { YStack, Text, styled } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -9,6 +8,7 @@ import {
   ModalActions,
   ModalButton,
 } from '../styles';
+import { type GameVariant } from '@arcadeum/ui';
 
 interface RematchInvitationModalProps {
   isOpen: boolean;
@@ -26,7 +26,84 @@ interface RematchInvitationModalProps {
   cardVariant?: string;
 }
 
-export function RematchInvitationModal({
+const ModalDescription = styled(Text, {
+  name: 'ModalDescription',
+  fontSize: '$4',
+  marginBottom: '$6',
+  opacity: 0.8,
+});
+
+const MessageBlock = styled(YStack, {
+  name: 'MessageBlock',
+  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  borderRadius: '$4',
+  padding: '$4',
+  marginBottom: '$6',
+});
+
+const MessageLabel = styled(Text, {
+  name: 'MessageLabel',
+  fontSize: '$2',
+  opacity: 0.6,
+  marginBottom: '$1',
+  textTransform: 'uppercase',
+  letterSpacing: 1,
+});
+
+const MessageText = styled(Text, {
+  name: 'MessageText',
+  fontSize: '$4',
+  whiteSpace: 'pre-wrap',
+  fontStyle: 'italic',
+});
+
+const TimerContainer = styled(YStack, {
+  name: 'TimerContainer',
+  marginBottom: '$8',
+  alignItems: 'center',
+  gap: '$1',
+});
+
+const TimerValue = styled(Text, {
+  name: 'TimerValue',
+  fontSize: '$9',
+  fontWeight: '700',
+
+  variants: {
+    low: {
+      true: { color: '#ef4444' },
+      false: { color: '#6366f1' },
+    },
+  } as const,
+});
+
+const TimerLabel = styled(Text, {
+  name: 'TimerLabel',
+  fontSize: '$3',
+  opacity: 0.6,
+});
+
+const BlockOptions = styled(YStack, {
+  name: 'BlockOptions',
+  alignItems: 'center',
+  gap: '$1',
+  marginTop: '$4',
+});
+
+const BlockLink = styled(Text, {
+  name: 'BlockLink',
+  marginTop: '$4',
+  padding: '$2',
+  textDecorationLine: 'underline',
+  cursor: 'pointer',
+  fontSize: '$3',
+
+  hoverStyle: {
+    color: '#ef4444',
+  },
+});
+
+export default function RematchInvitationModal({
   isOpen,
   hostName,
   hostId,
@@ -44,9 +121,12 @@ export function RematchInvitationModal({
   if (!isOpen) return null;
 
   return (
-    <Modal onClick={onDecline}>
-      <ModalContent onClick={(e) => e.stopPropagation()} $variant={cardVariant}>
-        <ModalTitle $variant={cardVariant}>
+    <Modal open={isOpen}>
+      <ModalContent
+        onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
+        $variant={cardVariant as GameVariant}
+      >
+        <ModalTitle $variant={cardVariant as GameVariant}>
           {t('games.table.rematch.invitationTitle')}
         </ModalTitle>
         <ModalDescription>
@@ -61,7 +141,7 @@ export function RematchInvitationModal({
         )}
 
         <TimerContainer>
-          <TimerValue $low={timeLeft <= 10}>{timeLeft}s</TimerValue>
+          <TimerValue low={timeLeft <= 10}>{timeLeft}s</TimerValue>
           <TimerLabel>{t('games.table.rematch.toDecide')}</TimerLabel>
         </TimerContainer>
 
@@ -86,12 +166,16 @@ export function RematchInvitationModal({
               onClick={() => onBlockRematch(roomId)}
               disabled={accepting}
             >
-              {t('games.table.rematch.blockThisRematch')}
+              <Text textDecorationLine="underline">
+                {t('games.table.rematch.blockThisRematch')}
+              </Text>
             </BlockLink>
           )}
           {onBlockUser && hostId && (
             <BlockLink onClick={() => onBlockUser(hostId)} disabled={accepting}>
-              {t('games.table.rematch.blockInvitations')}
+              <Text textDecorationLine="underline">
+                {t('games.table.rematch.blockInvitations')}
+              </Text>
             </BlockLink>
           )}
         </BlockOptions>
@@ -99,74 +183,3 @@ export function RematchInvitationModal({
     </Modal>
   );
 }
-
-const ModalDescription = styled.p`
-  margin: 0 0 1.5rem;
-  font-size: 1rem;
-  color: ${({ theme }) => theme.text.secondary};
-`;
-
-const MessageBlock = styled.div`
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 0.5rem;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  text-align: left;
-`;
-
-const MessageLabel = styled.div`
-  font-size: 0.75rem;
-  color: ${({ theme }) => theme.text.secondary};
-  margin-bottom: 0.25rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-`;
-
-const MessageText = styled.div`
-  font-size: 1rem;
-  color: ${({ theme }) => theme.text.primary};
-  white-space: pre-wrap;
-  font-style: italic;
-`;
-
-const TimerContainer = styled.div`
-  margin-bottom: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-`;
-
-const TimerValue = styled.div<{ $low: boolean }>`
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: ${({ $low }) => ($low ? '#ef4444' : '#6366f1')};
-  transition: color 0.3s ease;
-`;
-
-const TimerLabel = styled.div`
-  font-size: 0.85rem;
-  color: ${({ theme }) => theme.text.secondary};
-`;
-
-const BlockOptions = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-  margin-top: 1rem;
-`;
-
-const BlockLink = styled(Button).attrs({
-  variant: 'ghost',
-  size: 'sm',
-})`
-  margin-top: 1rem;
-  padding: 0.5rem;
-  color: ${({ theme }) => theme.text.secondary};
-  text-decoration: underline;
-
-  &:hover:not(:disabled) {
-    color: #ef4444;
-  }
-`;

@@ -19,7 +19,7 @@ test.describe('Home Page Section Order', () => {
         name: 'Watch the Trailer',
         selector: '[data-testid="presentation-section"]',
       },
-      { name: 'Project Vision', selector: '#presentation' },
+      { name: 'Project Vision', selector: '#pitch-deck' },
       {
         name: 'Mobile Builds',
         selector: '[data-testid="download-cta-section"]',
@@ -30,7 +30,7 @@ test.describe('Home Page Section Order', () => {
     const elements = await Promise.all(
       sections.map(async (s) => {
         const locator = page.locator(s.selector).first();
-        await expect(locator).toBeVisible({ timeout: 15000 });
+        await expect(locator).toBeVisible({});
         const box = await locator.boundingBox();
         return { name: s.name, y: box?.y ?? 0 };
       }),

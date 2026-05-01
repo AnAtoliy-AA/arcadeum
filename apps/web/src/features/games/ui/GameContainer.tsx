@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useRef, useCallback, useState, useEffect } from 'react';
-import styled from 'styled-components';
+import React, { useRef, useState, useEffect } from 'react';
+import { styled, YStack } from 'tamagui';
 import { GamesControlPanel } from '@/widgets/GamesControlPanel';
 import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
@@ -15,53 +15,56 @@ interface GameContainerProps {
   className?: string;
 }
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  height: 100%;
-  min-height: 600px;
-  position: relative;
+const StyledContainer = styled(YStack, {
+  name: 'GameContainer',
+  gap: '$5',
+  height: '100%',
+  minHeight: 600,
+  position: 'relative',
 
-  /* Fullscreen styles */
-  &:fullscreen,
-  &:-webkit-full-screen,
-  &:-moz-full-screen {
-    height: 100vh;
-    width: 100vw;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 9999;
-    border-radius: 0;
-    padding: 1rem;
-    gap: 1rem;
-  }
+  // responsive
+  $gtSm: {
+    padding: '$5',
+    gap: '$5',
+  },
 
-  @media (max-width: 768px) {
-    gap: 1rem;
-    padding: 1rem;
-  }
-`;
+  variants: {
+    isFullscreen: {
+      true: {
+        height: '100vh',
+        width: '100vw',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        zIndex: '$5',
+        borderRadius: 0,
+        padding: '$4',
+        gap: '$4',
+        backgroundColor: '$background',
+      },
+    },
+  } as const,
+});
 
-const GameArea = styled.div`
-  flex: 1;
-  border-radius: 16px;
-  border: 1px solid ${({ theme }) => theme.surfaces.card.border};
-  background: ${({ theme }) => theme.surfaces.card.background};
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  flex-direction: column;
+const StyledGameArea = styled(YStack, {
+  name: 'GameArea',
+  flex: 1,
+  borderRadius: 16,
+  borderWidth: 1,
+  borderColor: '$borderColor',
+  backgroundColor: '$background',
+  overflow: 'hidden',
+  position: 'relative',
 
-  /* Fullscreen optimizations */
-  &:fullscreen,
-  &:-webkit-full-screen,
-  &:-moz-full-screen {
-    border-radius: 0;
-    border: none;
-  }
-`;
+  variants: {
+    isFullscreen: {
+      true: {
+        borderRadius: 0,
+        borderWidth: 0,
+      },
+    },
+  } as const,
+});
 
 export function GameContainer({
   room: _room,
@@ -72,19 +75,8 @@ export function GameContainer({
   roomId,
   className,
 }: GameContainerProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [_isFullscreen, setIsFullscreen] = useState(false);
-
-  const _handleFullscreenToggle = useCallback(async () => {
-    if (!containerRef.current) return;
-    try {
-      if (!document.fullscreenElement) {
-        await containerRef.current.requestFullscreen();
-      } else {
-        await document.exitFullscreen();
-      }
-    } catch {}
-  }, []);
+  const containerRef = useRef<React.ElementRef<typeof StyledContainer>>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     const handler = () => setIsFullscreen(!!document.fullscreenElement);
@@ -93,9 +85,13 @@ export function GameContainer({
   }, []);
 
   return (
-    <Container ref={containerRef} className={className}>
+    <StyledContainer
+      ref={containerRef}
+      className={className}
+      isFullscreen={isFullscreen}
+    >
       <GamesControlPanel roomId={roomId} />
-      <GameArea>{children}</GameArea>
-    </Container>
+      <StyledGameArea isFullscreen={isFullscreen}>{children}</StyledGameArea>
+    </StyledContainer>
   );
 }

@@ -1,4 +1,4 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Page, type Response } from '@playwright/test';
 
 export function getIsMobile(page: Page): boolean {
   return (page.viewportSize()?.width || 0) <= 900;
@@ -7,27 +7,116 @@ export function getIsMobile(page: Page): boolean {
 export async function ensureNavigationVisible(page: Page): Promise<void> {
   if (getIsMobile(page)) {
     const mobileNav = page.getByTestId('mobile-nav');
-    if (!(await mobileNav.isVisible())) {
-      const menuButton = page.getByTestId('mobile-menu-button');
-      await expect(menuButton).toBeVisible();
-      await menuButton.click({ force: true });
-      await expect(mobileNav).toBeVisible();
-      // Wait for menu animation to finish
-      await page.waitForTimeout(500);
+
+    // Check if it's already visible
+    const isVisible = await mobileNav.isVisible();
+    if (isVisible) return;
+
+    const menuButton = page.getByTestId('mobile-menu-button');
+    await expect(menuButton).toBeVisible();
+
+    // Use dispatchEvent for more reliable clicking on mobile safari
+    await menuButton.dispatchEvent('click');
+
+    // Wait for the navigation to become visible
+    await expect(mobileNav).toBeVisible();
+  }
+}
+
+export async function navigateTo(
+  page: Page,
+  path: string,
+  options?: { maxRetries?: number },
+): Promise<void> {
+  const maxRetries = options?.maxRetries ?? 2;
+  let attempt = 0;
+  let success = false;
+
+  while (attempt <= maxRetries && !success) {
+    let shouldReload = false;
+    let hydrationError = false;
+
+    const onPageError = (err: Error) => {
+      const msg = err.message;
+      if (
+        msg.includes('ChunkLoadError') ||
+        msg.includes('Failed to load chunk') ||
+        msg.includes('Hydration failed') ||
+        msg.includes('initial UI does not match') ||
+        msg.includes('Minified React error #418') ||
+        msg.includes('Minified React error #423') ||
+        msg.includes('Module factory not available')
+      ) {
+        shouldReload = true;
+        if (msg.includes('Hydration') || msg.includes('UI does not match')) {
+          hydrationError = true;
+        }
+      }
+    };
+
+    page.on('pageerror', onPageError);
+
+    const onResponse = (response: Response) => {
+      const status = response.status();
+      const url = response.url();
+      if (
+        (status === 404 && url.includes('.js')) ||
+        (status === 500 && url === page.url())
+      ) {
+        shouldReload = true;
+      }
+    };
+
+    page.on('response', onResponse);
+
+    try {
+      // Increased timeout to 90s to match global config and handle slow dev server compilation
+      await page.goto(path, { waitUntil: 'domcontentloaded' });
+      await page.waitForLoadState('load', {}).catch(() => {});
+
+      if (shouldReload) {
+        console.warn(
+          `Detected issue (Hydration: ${hydrationError}) on ${path}, reloading... (Attempt ${attempt + 1})`,
+        );
+        await page.reload({ waitUntil: 'load' });
+      }
+
+      // Robust hydration check: wait for either data-hydrated or data-app-ready
+      await expect(async () => {
+        const html = page.locator('html');
+        const hydrated = await html.getAttribute('data-hydrated');
+        const appReady = await html.getAttribute('data-app-ready');
+
+        if (hydrated !== 'true' && appReady !== 'true') {
+          throw new Error('Hydration markers not found');
+        }
+      }).toPass({
+        intervals: [1000, 2000, 5000],
+      });
+
+      success = true;
+    } catch (err) {
+      attempt++;
+      if (attempt > maxRetries) {
+        console.error(
+          `Navigation to ${path} failed after ${maxRetries} retries: ${err}`,
+        );
+        throw err;
+      }
+      console.warn(
+        `Navigation attempt ${attempt} for ${path} failed, retrying... Error: ${err}`,
+      );
+      // Removed hardcoded timeout to follow project rules
+    } finally {
+      page.off('pageerror', onPageError);
+      page.off('response', onResponse);
     }
   }
 }
 
-export async function navigateTo(page: Page, path: string): Promise<void> {
-  await page.goto(path, { timeout: 60000, waitUntil: 'domcontentloaded' });
-  await page.waitForLoadState('domcontentloaded', { timeout: 60000 });
-
-  // Wait for hydration - theme provider sets these attributes in useEffect
-  // This is a reliable way to ensure React has finished mounting and effects have run.
-  await expect(page.locator('html'))
-    .toHaveAttribute('data-theme-preference', /.*/, { timeout: 15000 })
-    .catch(() => {
-      // Fallback if the attribute is not set, just wait a bit more
-      return page.waitForTimeout(2000);
-    });
+export async function clearState(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
 }

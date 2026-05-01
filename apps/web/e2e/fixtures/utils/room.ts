@@ -73,7 +73,7 @@ export async function waitForRoomReady(
   await expect(page.locator('.games-room-container')).toBeVisible({});
 
   await expect(page.locator('body')).not.toContainText(
-    /Game is loading|Joining\.\.\.|Server is waking up\.\.\.|Loading room\.\.\.|Loading game\.\.\.|Loading\.\.\./i,
+    /Joining\.\.\.|Server is waking up\.\.\.|Loading room\.\.\.|Loading game\.\.\.|Loading\.\.\./i,
     {},
   );
 

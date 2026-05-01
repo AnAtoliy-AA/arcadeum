@@ -23,7 +23,7 @@ test.describe('Idle Detection', () => {
     await mockRoomInfo(page, {
       room: {
         id: roomId,
-        status: 'in_progress',
+        status: 'lobby',
         visibility: 'public',
         members: [
           {

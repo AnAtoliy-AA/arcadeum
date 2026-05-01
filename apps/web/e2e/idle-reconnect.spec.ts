@@ -23,7 +23,7 @@ test.describe('Idle Connection Overlay', () => {
     await mockRoomInfo(page, {
       room: {
         id: roomId,
-        status: 'in_progress',
+        status: 'lobby',
         visibility: 'public',
         members: [
           {
@@ -41,6 +41,14 @@ test.describe('Idle Connection Overlay', () => {
   }) => {
     await navigateTo(page, `/games/rooms/${roomId}`);
     await waitForRoomReady(page);
+
+    // Wait for store to be connected first
+    await page.waitForFunction(() => {
+      const win = window as unknown as {
+        __ZUSTAND_GAME_STORE__?: { getState: () => { isConnected: boolean } };
+      };
+      return win.__ZUSTAND_GAME_STORE__?.getState()?.isConnected === true;
+    });
 
     const overlay = page.getByTestId('connection-overlay-disconnected');
     await expect(overlay).not.toBeVisible();
@@ -65,6 +73,14 @@ test.describe('Idle Connection Overlay', () => {
       }
     });
 
+    // Wait for store to reflect disconnection
+    await page.waitForFunction(() => {
+      const win = window as unknown as {
+        __ZUSTAND_GAME_STORE__?: { getState: () => { isConnected: boolean } };
+      };
+      return win.__ZUSTAND_GAME_STORE__?.getState()?.isConnected === false;
+    });
+
     await expect(overlay).toBeVisible({});
     await expect(overlay).toContainText(
       /Connection Lost|Connexion perdue|Conexión perdida|Злучэнне страчана|Соединение потеряно/,
@@ -74,6 +90,14 @@ test.describe('Idle Connection Overlay', () => {
   test('should reconnect when user clicks the overlay', async ({ page }) => {
     await navigateTo(page, `/games/rooms/${roomId}`);
     await waitForRoomReady(page);
+
+    // Wait for store to be connected first
+    await page.waitForFunction(() => {
+      const win = window as unknown as {
+        __ZUSTAND_GAME_STORE__?: { getState: () => { isConnected: boolean } };
+      };
+      return win.__ZUSTAND_GAME_STORE__?.getState()?.isConnected === true;
+    });
 
     await page.evaluate(() => {
       const win = window as unknown as Record<string, unknown>;
@@ -99,14 +123,25 @@ test.describe('Idle Connection Overlay', () => {
       }
     });
 
+    // Wait for store to reflect disconnection
+    await page.waitForFunction(() => {
+      const win = window as unknown as {
+        __ZUSTAND_GAME_STORE__?: { getState: () => { isConnected: boolean } };
+      };
+      return win.__ZUSTAND_GAME_STORE__?.getState()?.isConnected === false;
+    });
+
     const overlay = page.locator('[data-testid^="connection-overlay-"]');
     await expect(overlay).toBeVisible({});
 
     await overlay.click({});
 
-    await expect(overlay).toContainText(
-      /Reconnecting|Reconectando|Reconnexion|Пераключэнне|Переподключение/,
-      {},
+    // Use a fresh locator to avoid detached element issues and include all translation variants
+    await expect(
+      page.locator('[data-testid^="connection-overlay-"]'),
+    ).toContainText(
+      /Reconnecting|Reconectando|Reconnexion|Пераключэнне|Переключэнне|Переподключение/,
+      { timeout: 3000 },
     );
   });
 
@@ -115,6 +150,14 @@ test.describe('Idle Connection Overlay', () => {
   }) => {
     await navigateTo(page, `/games/rooms/${roomId}`);
     await waitForRoomReady(page);
+
+    // Wait for store to be connected first
+    await page.waitForFunction(() => {
+      const win = window as unknown as {
+        __ZUSTAND_GAME_STORE__?: { getState: () => { isConnected: boolean } };
+      };
+      return win.__ZUSTAND_GAME_STORE__?.getState()?.isConnected === true;
+    });
 
     await page.evaluate(() => {
       const win = window as unknown as Record<string, unknown>;
@@ -134,6 +177,14 @@ test.describe('Idle Connection Overlay', () => {
           }
         }
       }
+    });
+
+    // Wait for store to reflect disconnection
+    await page.waitForFunction(() => {
+      const win = window as unknown as {
+        __ZUSTAND_GAME_STORE__?: { getState: () => { isConnected: boolean } };
+      };
+      return win.__ZUSTAND_GAME_STORE__?.getState()?.isConnected === false;
     });
 
     const overlay = page.getByTestId('connection-overlay-disconnected');

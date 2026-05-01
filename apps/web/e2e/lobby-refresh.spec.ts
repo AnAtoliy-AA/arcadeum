@@ -18,6 +18,7 @@ test.describe('Lobby Refresh', () => {
     await mockRoomInfo(page, {
       room: {
         id: roomId,
+        name: 'Initial Room Name',
         gameId: 'critical_v1',
         status: 'lobby',
         members: [

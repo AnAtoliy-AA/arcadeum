@@ -79,7 +79,7 @@ const nextConfig: NextConfig = {
       "object-src 'none';",
       "base-uri 'self';",
       "form-action 'self';",
-      "frame-ancestors 'none';",
+      "frame-ancestors 'self';",
       `frame-src ${cspFrameSrc};`,
       `connect-src ${connectSrc};`,
       ...(allowLocalhost ? [] : ['upgrade-insecure-requests;']),
@@ -90,7 +90,7 @@ const nextConfig: NextConfig = {
 
     return [
       {
-        source: '/(.*)',
+        source: '/((?!_next/|_vercel/|favicon.ico|apple-touch-icon).*)',
         headers: [
           {
             key: 'Content-Security-Policy',
@@ -106,7 +106,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'X-Frame-Options',
-            value: 'DENY',
+            value: 'SAMEORIGIN',
           },
           {
             key: 'X-Robots-Tag',

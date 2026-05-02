@@ -55,7 +55,7 @@ describe('GlimwormBotService', () => {
     expect(Math.cos(angle)).toBeGreaterThan(0);
   });
 
-  it('avoids a very close trail blocking the food path', () => {
+  it('avoids a very close trail blocking the food path (over a few ticks)', () => {
     const bot = makeWorm({ id: 'bot-1', segments: [{ x: 1000, y: 1000 }] });
     const other = makeWorm({
       id: 'other',
@@ -63,7 +63,12 @@ describe('GlimwormBotService', () => {
     });
     const s = makeSession([bot, other]);
     s.food.push({ id: 'f1', pos: { x: 1500, y: 1000 }, value: 1 });
-    const angle = service.pickAngle(s, bot);
+    // Heading smoothing means the turn happens over several ticks. Iterate.
+    let angle = bot.heading;
+    for (let i = 0; i < 6; i++) {
+      angle = service.pickAngle(s, bot);
+      bot.heading = angle;
+    }
     expect(Math.cos(angle)).toBeLessThan(0.5);
   });
 

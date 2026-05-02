@@ -9,6 +9,7 @@ export const gameLoaders: Record<
 > = {
   critical_v1: () => import('@/widgets/CriticalGame'),
   sea_battle_v1: () => import('@/widgets/SeaBattleGame'),
+  glimworm_v1: () => import('@/widgets/GlimwormGame'),
   // Future game implementations will be added here
   // chess_v1: () => import("@/widgets/ChessGame"),
   // checkers_v1: () => import("@/widgets/CheckersGame"),
@@ -52,6 +53,24 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     implementationPath: '@/widgets/TexasHoldemGame',
     lastUpdated: '2024-01-01',
     status: 'active',
+  },
+  glimworm_v1: {
+    slug: 'glimworm_v1',
+    name: 'Glimworm',
+    description: 'A glow-in-the-dark snake battle for 2–10 players.',
+    category: 'Action',
+    minPlayers: 2,
+    maxPlayers: 10,
+    estimatedDuration: 5,
+    complexity: 1,
+    ageRating: 'G',
+    thumbnail: '/games/glimworm.jpg',
+    version: '1.0.0',
+    supportsAI: true,
+    tags: ['action', 'arena', 'real-time', 'snake', 'casual'],
+    implementationPath: '@/widgets/GlimwormGame',
+    lastUpdated: '2026-05-02',
+    status: 'beta',
   },
   sea_battle_v1: {
     slug: 'sea_battle_v1',

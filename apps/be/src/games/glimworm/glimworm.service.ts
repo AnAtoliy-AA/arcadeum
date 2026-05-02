@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy, Optional } from '@nestjs/common';
 import {
   GLIMWORM_BASE_SPEED,
   GLIMWORM_INPUT_RATE_LIMIT_HZ,
@@ -64,7 +64,7 @@ export class GlimwormService implements OnModuleDestroy {
   constructor(
     private readonly stateStore: GlimwormStateStore,
     private readonly realtimeService: GamesRealtimeService,
-    random?: RandomFn,
+    @Optional() random?: RandomFn,
   ) {
     this.random = random ?? Math.random;
   }

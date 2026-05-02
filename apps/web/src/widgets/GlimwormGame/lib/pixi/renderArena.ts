@@ -24,7 +24,11 @@ export function createArenaRenderer(
 /**
  * Per-frame update — only the safe-zone changes (shrinks over time in BR).
  */
-export function updateArena(state: ArenaRenderState, arena: Arena): void {
+export function updateArena(
+  state: ArenaRenderState,
+  arena: Arena | undefined,
+): void {
+  if (!arena) return;
   drawSafeZone(state.safeZone, arena);
 }
 

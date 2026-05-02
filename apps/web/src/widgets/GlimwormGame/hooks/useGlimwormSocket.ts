@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { gameSocket } from '@/shared/lib/socket';
+import { maybeDecrypt } from '@/shared/lib/socket-encryption';
 import { useGlimwormStore } from '../store/glimwormStore';
 import type {
   GlimwormDiscreteEvent,
@@ -32,8 +33,10 @@ export function useGlimwormSocket(opts: UseGlimwormSocketOptions): void {
   // Snapshot listener
   useEffect(() => {
     const handler = (raw: unknown) => {
-      const snap = raw as GlimwormSnapshot;
-      useGlimwormStore.getState().ingestSnapshot(snap);
+      void (async () => {
+        const snap = await maybeDecrypt<GlimwormSnapshot>(raw);
+        useGlimwormStore.getState().ingestSnapshot(snap);
+      })();
     };
     gameSocket.on('glimworm.snapshot', handler);
     return () => {
@@ -44,8 +47,10 @@ export function useGlimwormSocket(opts: UseGlimwormSocketOptions): void {
   // Discrete event listener
   useEffect(() => {
     const handler = (raw: unknown) => {
-      const ev = raw as GlimwormDiscreteEvent;
-      useGlimwormStore.getState().pushEvent(ev);
+      void (async () => {
+        const ev = await maybeDecrypt<GlimwormDiscreteEvent>(raw);
+        useGlimwormStore.getState().pushEvent(ev);
+      })();
     };
     gameSocket.on('glimworm.event', handler);
     return () => {

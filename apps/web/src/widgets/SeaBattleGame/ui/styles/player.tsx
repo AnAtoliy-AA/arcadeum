@@ -3,8 +3,8 @@ import { styled, XStack, YStack, Text } from 'tamagui';
 export const PlayerSection = styled(YStack, {
   name: 'PlayerSection',
   alignItems: 'center',
-  gap: '$2',
-  padding: '$4',
+  gap: '$1.5',
+  padding: '$3',
   borderWidth: 2,
   borderRadius: 12,
   minWidth: 0,
@@ -25,9 +25,18 @@ export const PlayerSection = styled(YStack, {
     animated: true,
   },
 
-  $sm: {
+  $md: {
     padding: '$2',
     gap: '$1',
+  },
+  $sm: {
+    padding: '$1',
+    gap: 2,
+    borderRadius: 8,
+  },
+  $short: {
+    padding: '$1',
+    gap: 1,
   },
 });
 
@@ -37,16 +46,25 @@ export const PlayerSectionWrapper = styled(YStack, {
   name: 'PlayerSectionWrapper',
   position: 'relative',
   overflow: 'visible',
-  paddingTop: 12,
+  paddingTop: 8,
   width: '100%',
-  maxWidth: 500,
+  maxWidth: 480,
   alignSelf: 'center',
 
   $gtMd: {
+    paddingTop: 10,
     width: 'auto',
     alignSelf: 'auto',
     flex: 1,
-    maxWidth: 'min(520px, calc(100vh - 350px))',
+    maxWidth: 'min(480px, calc(100vh - 380px))',
+    minWidth: 300,
+  },
+  $sm: {
+    paddingTop: 6,
+    maxWidth: 'none',
+  },
+  $short: {
+    paddingTop: 4,
   },
 });
 
@@ -62,8 +80,12 @@ export const BadgeWrapper = styled(XStack, {
 export const PlayerName = styled(Text, {
   name: 'PlayerName',
   margin: 0,
-  fontSize: 16,
-  fontWeight: '500',
+  fontSize: 15,
+  fontWeight: '600',
+
+  $sm: {
+    fontSize: 13,
+  },
 });
 
 export const PlayerStats = styled(YStack, {

@@ -71,8 +71,9 @@ export function BoardWithLabels({ children }: { children: ReactNode }) {
         display: 'grid',
         gridTemplateColumns: 'auto 1fr',
         gridTemplateRows: 'auto auto',
-        gap: '4px',
+        gap: '2px',
         width: '100%',
+        maxWidth: '100%',
       }}
     >
       {children}
@@ -83,31 +84,40 @@ export function BoardWithLabels({ children }: { children: ReactNode }) {
 export const RowLabels = styled(YStack, {
   name: 'RowLabels',
   justifyContent: 'space-around',
-  paddingVertical: 4,
+  paddingVertical: 2,
 });
 
 export const ColLabels = styled(XStack, {
   name: 'ColLabels',
   justifyContent: 'space-around',
-  paddingHorizontal: 4,
+  paddingHorizontal: 2,
 });
 
 export const Label = styled(Text, {
   name: 'Label',
-  fontSize: 14,
-  width: 24,
-  height: 24,
+  fontSize: 12,
+  width: 20,
+  height: 20,
   textAlign: 'center',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  opacity: 0.6,
 
   $md: {
-    fontSize: 14,
-    width: 25,
-    height: 25,
+    fontSize: 11,
+    width: 18,
+    height: 18,
   },
 
   $sm: {
-    fontSize: 10,
-    width: 16,
-    height: 16,
+    fontSize: 8,
+    width: 12,
+    height: 12,
+  },
+  $short: {
+    fontSize: 8,
+    width: 10,
+    height: 10,
   },
 });

@@ -332,6 +332,8 @@ export const frMessages = {
       message: 'Meilleure chance la prochaine fois !',
     },
     rematch: {
+      title: 'Rejouer ?',
+      description: 'Sélectionnez les joueurs à inviter:',
       button: 'Rejouer',
       loading: 'Création...',
       modalTitle: 'Démarrer la Revanche',

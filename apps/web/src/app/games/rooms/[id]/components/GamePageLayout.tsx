@@ -22,6 +22,7 @@ interface GamePageLayoutProps {
   roomId: string;
   room: GameRoomSummary;
   inviteCode?: string;
+  userId: string | null;
 
   // Connection overlays
   isDisconnected: boolean;
@@ -46,6 +47,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     roomId,
     room: _room,
     inviteCode,
+    userId,
     isDisconnected,
     isReconnecting,
     isIdle,
@@ -134,6 +136,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
             message={latestMessage.message}
             visible={!!latestMessage}
             onDismiss={dismissPopup}
+            isOwn={latestMessage.senderId === userId}
           />
         )}
       </Container>

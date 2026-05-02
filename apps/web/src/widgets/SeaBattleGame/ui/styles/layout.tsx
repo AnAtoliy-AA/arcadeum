@@ -2,42 +2,37 @@ import { styled, XStack, YStack } from 'tamagui';
 
 export const MainGameArea = styled(YStack, {
   name: 'MainGameArea',
-  gap: '$5',
+  gap: '$4',
   width: '100%',
-  flex: 1,
+  flexGrow: 1,
+  flexShrink: 0,
   minHeight: 0,
+  padding: '$2',
 
   $md: {
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 'auto',
-  },
-  $tablet: {
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 'auto',
+    gap: '$3',
+    padding: '$1',
   },
   $sm: {
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 'auto',
-    gap: '$3',
+    gap: '$2',
+    padding: 0,
   },
 });
 
 export const GameBoardWrapper = styled(XStack, {
   name: 'GameBoardWrapper',
-  gap: '$6',
+  gap: '$4',
   flexWrap: 'wrap',
   width: '100%',
+  justifyContent: 'center',
 
   $md: {
     flexDirection: 'column',
-    gap: '$4',
+    gap: '$3',
   },
   $sm: {
     flexDirection: 'column',
-    gap: '$4',
+    gap: '$2',
   },
 });
 
@@ -45,16 +40,18 @@ export const BoardContainer = styled(YStack, {
   name: 'BoardContainer',
   flex: 1,
   maxWidth: 520,
+  width: '100%',
 
   $md: {
     flex: 0,
-    width: '100%',
     maxWidth: 500,
     alignSelf: 'center',
   },
   $sm: {
     flex: 0,
-    width: '100%',
     maxWidth: 'none',
+  },
+  $short: {
+    maxWidth: 420,
   },
 });

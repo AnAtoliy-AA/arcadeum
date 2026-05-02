@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { styled, YStack, XStack, H1, Paragraph, Text } from 'tamagui';
-import { Button, CloseIcon, LinkButton, ModalButton } from '@arcadeum/ui';
+import { Button, CloseIcon, LinkButton } from '@arcadeum/ui';
 import { useSyncExternalStore } from 'react';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { Modal, CloseButton } from './SharedModalStyles';
@@ -29,15 +29,17 @@ const StyledBackdrop = styled(YStack, {
   bottom: 0,
   zIndex: -1,
   backgroundColor: 'rgba(0, 0, 0, 0.85)',
-  backdropFilter: 'blur(8px)',
+  backdropFilter: 'blur(12px)',
 
   variants: {
     $isVictory: {
       true: {
-        backgroundColor: 'rgba(20, 0, 10, 0.9)',
+        background:
+          'radial-gradient(circle at center, rgba(255, 215, 0, 0.1) 0%, rgba(0, 0, 0, 0.95) 100%)',
       },
       false: {
-        backgroundColor: 'rgba(10, 10, 10, 0.95)',
+        background:
+          'radial-gradient(circle at center, rgba(255, 77, 77, 0.08) 0%, rgba(0, 0, 0, 0.95) 100%)',
       },
     },
   } as const,
@@ -47,15 +49,19 @@ const ContentWrapper = styled(YStack, {
   name: 'GameResultContent',
   alignItems: 'center',
   padding: '$10',
-  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  borderRadius: 32,
+  backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  backdropFilter: 'blur(40px)',
+  borderRadius: 40,
   borderWidth: 1,
   borderColor: 'rgba(255, 255, 255, 0.1)',
-  shadowColor: 'rgba(0, 0, 0, 0.5)',
-  shadowRadius: 60,
+  shadowColor: 'rgba(0, 0, 0, 0.8)',
+  shadowRadius: 100,
+  shadowOffset: { width: 0, height: 40 },
   maxWidth: '90%',
-  width: 500,
+  width: 520,
   position: 'relative',
+  borderTopColor: 'rgba(255, 255, 255, 0.2)',
+  borderLeftColor: 'rgba(255, 255, 255, 0.15)',
 });
 
 const ResultTitleText = styled(H1, {
@@ -70,9 +76,13 @@ const ResultTitleText = styled(H1, {
     $isVictory: {
       true: {
         color: '#FFD700',
+        textShadowColor: 'rgba(255, 215, 0, 0.4)',
+        textShadowRadius: 20,
       },
       false: {
         color: '#ff4d4d',
+        textShadowColor: 'rgba(255, 77, 77, 0.4)',
+        textShadowRadius: 20,
       },
     },
   } as const,
@@ -89,14 +99,15 @@ const ResultMessage = styled(Paragraph, {
 
 const ActionsContainer = styled(YStack, {
   name: 'ResultActions',
-  gap: '$4',
+  gap: '$5',
   width: '100%',
 });
 
 const HomeLink = styled(LinkButton, {
   name: 'HomeLink',
-  variant: 'ghost',
+  variant: 'secondary',
   marginTop: '$2',
+  width: '100%',
 });
 
 const ConfettiWrapper = styled(YStack, {
@@ -204,7 +215,7 @@ export function GameResultModal({
             </Dialog.Description>
           </VisuallyHidden>
 
-          <ContentWrapper>
+          <ContentWrapper className="animate-entrance">
             {onClose && (
               <XStack position="absolute" top="$4" right="$4">
                 <CloseButton onClick={onClose} data-testid="modal-close-button">
@@ -213,25 +224,36 @@ export function GameResultModal({
               </XStack>
             )}
 
-            <YStack alignItems="center" gap="$5" marginBottom="$5">
+            <YStack alignItems="center" gap="$2" marginBottom="$6">
+              <Text
+                fontSize={80}
+                marginBottom="$2"
+                style={{ animation: 'float 3s ease-in-out infinite' }}
+              >
+                {isVictory ? '🏆' : '💀'}
+              </Text>
               <ResultTitleText
                 $isVictory={isVictory}
                 data-testid="game-result-title"
+                style={{
+                  animation: isVictory
+                    ? 'pulse 2s infinite ease-in-out'
+                    : 'none',
+                }}
               >
-                <YStack alignItems="center" gap="$2">
-                  <Text fontSize={80}>{isVictory ? '🏆' : '💀'}</Text>
-                  <Text>
-                    {t(`games.table.${result}.title` as TranslationKey)}
-                  </Text>
-                </YStack>
+                {t(`games.table.${result}.title` as TranslationKey)}
               </ResultTitleText>
             </YStack>
 
-            <ResultMessage>
+            <ResultMessage
+              style={{ animation: 'fadeInUp 0.6s ease-out both 0.2s' }}
+            >
               {t(`games.table.${result}.message` as TranslationKey)}
             </ResultMessage>
 
-            <ActionsContainer>
+            <ActionsContainer
+              style={{ animation: 'fadeInUp 0.6s ease-out both 0.4s' }}
+            >
               {onRematch && (
                 <Button
                   variant={isVictory ? 'primary' : 'secondary'}
@@ -239,6 +261,7 @@ export function GameResultModal({
                   onClick={onRematch}
                   disabled={rematchLoading}
                   data-testid="rematch-button"
+                  showShimmer={isVictory}
                   {...(isVictory
                     ? { animation: 'quick', pressStyle: { scale: 0.95 } }
                     : {})}
@@ -254,9 +277,9 @@ export function GameResultModal({
               </HomeLink>
 
               {onClose && (
-                <ModalButton variant="ghost" onClick={onClose} padding="$3">
+                <Button variant="ghost" onClick={onClose} size="md">
                   {t('games.table.modals.common.close' as TranslationKey)}
-                </ModalButton>
+                </Button>
               )}
             </ActionsContainer>
           </ContentWrapper>

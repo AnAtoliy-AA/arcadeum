@@ -320,6 +320,8 @@ export const byMessages = {
     victory: { title: 'Перамога!', message: 'Віншуем! Вы выжылі!' },
     defeat: { title: 'Гульня скончана', message: 'Пашанцуе ў наступны раз!' },
     rematch: {
+      title: 'Згуляць яшчэ?',
+      description: 'Выберыце гульцоў для запрашэння ў новую гульню:',
       button: 'Гуляць зноў',
       loading: 'Стварэнне...',
       modalTitle: 'Пачаць рэванш',

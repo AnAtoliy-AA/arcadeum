@@ -1,6 +1,7 @@
 export const ruMessages = {
   coup: { name: 'Coup' },
   'pandemic-lite': { name: 'Pandemic: Rapid Response' },
+  glimworm_v1: { name: 'Глимворм' },
   lounge: {
     activeTitle: 'Игровые залы',
     emptyTitle: 'Залы не найдены. Создайте первый, чтобы начать!',
@@ -204,6 +205,30 @@ export const ruMessages = {
   table: {
     controlPanel: {
       spectating: 'Наблюдение',
+      fullscreen: 'Полноэкранный режим',
+      exitFullscreen: 'Выйти из полноэкранного режима',
+      enterFullscreen: 'Войти в полноэкранный режим',
+      rules: 'Правила',
+    },
+    chat: {
+      show: 'Показать чат',
+      hide: 'Скрыть чат',
+    },
+    victory: {
+      title: 'Победа!',
+      message: 'Отличная игра! Вы доминировали в этом матче.',
+    },
+    defeat: {
+      title: 'Поражение',
+      message: 'В этот раз не повезло. Готовы к следующему раунду?',
+    },
+    rematch: {
+      title: 'Сыграть еще?',
+      description: 'Выберите игроков, которых вы хотите пригласить на реванш.',
+      button: 'Запросить реванш',
+      loading: 'Отправка...',
+      noPlayers: 'Нет других игроков для реванша',
+      messagePlaceholder: 'Добавьте дружеское сообщение (необязательно)',
     },
   },
 };

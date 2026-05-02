@@ -46,6 +46,11 @@ interface GlimwormReadyBody {
   ready: unknown;
 }
 
+interface GlimwormRestartBody {
+  roomId: string;
+  userId: string;
+}
+
 const VALID_VARIANTS: ReadonlySet<GlimwormVariant> = new Set([
   'battle_royale',
   'time_attack',
@@ -189,6 +194,28 @@ export class GlimwormGateway {
         roomId,
         userId,
         userMessage: 'Unable to start round.',
+      });
+    }
+  }
+
+  @SubscribeMessage('glimworm.restart')
+  handleRestart(
+    @MessageBody() payload: GlimwormRestartBody,
+    @ConnectedSocket() client: Socket,
+  ): void {
+    const { roomId, userId } = extractRoomAndUser(
+      payload as unknown as Record<string, unknown>,
+    );
+    try {
+      this.glimwormService.restart(roomId, userId);
+      client.emit('glimworm.restart.ack', maybeEncrypt({ roomId, userId }));
+    } catch (error) {
+      this.handleException({
+        error,
+        action: 'glimworm restart',
+        roomId,
+        userId,
+        userMessage: 'Unable to restart round.',
       });
     }
   }

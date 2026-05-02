@@ -75,6 +75,34 @@ export default function GlimwormGame(
           <GlimwormDeathOverlay />
         </>
       )}
+      {isHost && currentUserId && !isLobby && (
+        <button
+          type="button"
+          onClick={() => {
+            gameSocket.emit('glimworm.restart', {
+              roomId,
+              userId: currentUserId,
+            });
+          }}
+          style={{
+            position: 'absolute',
+            top: 16,
+            right: 16,
+            zIndex: 2,
+            padding: '8px 14px',
+            borderRadius: 6,
+            background: 'rgba(177,94,255,0.85)',
+            color: '#fff',
+            border: '1px solid rgba(255,255,255,0.18)',
+            cursor: 'pointer',
+            fontWeight: 600,
+            fontSize: 13,
+            fontFamily: 'system-ui, sans-serif',
+          }}
+        >
+          ↻ Restart
+        </button>
+      )}
     </div>
   );
 }

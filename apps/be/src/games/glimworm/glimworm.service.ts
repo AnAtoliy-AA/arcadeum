@@ -2,6 +2,7 @@ import { Injectable, Logger, OnModuleDestroy, Optional } from '@nestjs/common';
 import {
   GLIMWORM_BASE_SPEED,
   GLIMWORM_INPUT_RATE_LIMIT_HZ,
+  GLIMWORM_PALETTE,
   GLIMWORM_START_LENGTH,
   GLIMWORM_TICK_MS,
 } from './glimworm.constants';
@@ -72,22 +73,11 @@ export class GlimwormService implements OnModuleDestroy {
   private static readonly SOLO_FILL_TARGET = 3;
 
   private fillWithBots(session: GlimwormSession, target: number): void {
-    const palette = [
-      '#ff5e5e',
-      '#ffb05e',
-      '#ffe65e',
-      '#7cff5e',
-      '#5effb6',
-      '#5ee0ff',
-      '#5e8cff',
-      '#b15eff',
-      '#ff5ed4',
-      '#a0ffea',
-    ];
     const used = new Set(Object.values(session.worms).map((w) => w.color));
     while (Object.keys(session.worms).length < target) {
       const id = `bot-${Math.random().toString(36).slice(2, 10)}`;
-      const color = palette.find((c) => !used.has(c)) ?? palette[0];
+      const color =
+        GLIMWORM_PALETTE.find((c) => !used.has(c)) ?? GLIMWORM_PALETTE[0];
       used.add(color);
       session.worms[id] = {
         id,
@@ -316,6 +306,48 @@ export class GlimwormService implements OnModuleDestroy {
     const picked = nextFreeColor(session, color);
     worm.color = picked;
     return picked;
+  }
+
+  /**
+   * Reset the session back to lobby state without removing players. The host
+   * can then call `start()` again. Bots remain in the session.
+   */
+  restart(roomId: string, hostUserId: string): void {
+    const session = this.stateStore.get(roomId);
+    if (!session) throw new Error('No session for room');
+    if (session.hostUserId !== hostUserId) {
+      throw new Error('Only host can restart');
+    }
+    this.stopTickLoop(roomId);
+    this.strategies.delete(roomId);
+    this.growthTargets.delete(roomId);
+
+    session.status = 'lobby';
+    session.startedAt = null;
+    session.endsAt = null;
+    session.winner = null;
+    session.tickNum = 0;
+    session.food = [];
+    session.powerups = [];
+    session.lastInputAt = {};
+    session.damageTickAt = {};
+    session.lastPowerupSpawnAt = 0;
+    delete session.arena.safeZone;
+
+    for (const worm of Object.values(session.worms)) {
+      worm.segments = [];
+      worm.alive = true;
+      worm.score = 0;
+      worm.livesLeft = 1;
+      worm.activePowerup = null;
+      worm.inventoryPowerup = null;
+      delete worm.respawnAt;
+      delete worm.disconnected;
+      delete worm.disconnectedAt;
+    }
+
+    // Push a fresh snapshot so clients see the lobby state.
+    this.emitSnapshots(session);
   }
 
   endSession(roomId: string, winner: WormId | null): void {

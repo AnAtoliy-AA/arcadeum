@@ -225,35 +225,23 @@ export function GameResultModal({
             )}
 
             <YStack alignItems="center" gap="$2" marginBottom="$6">
-              <Text
-                fontSize={80}
-                marginBottom="$2"
-                style={{ animation: 'float 3s ease-in-out infinite' }}
-              >
+              <Text fontSize={80} marginBottom="$2" className="float">
                 {isVictory ? '🏆' : '💀'}
               </Text>
               <ResultTitleText
                 $isVictory={isVictory}
                 data-testid="game-result-title"
-                style={{
-                  animation: isVictory
-                    ? 'pulse 2s infinite ease-in-out'
-                    : 'none',
-                }}
+                className={isVictory ? 'pulse' : undefined}
               >
                 {t(`games.table.${result}.title` as TranslationKey)}
               </ResultTitleText>
             </YStack>
 
-            <ResultMessage
-              style={{ animation: 'fadeInUp 0.6s ease-out both 0.2s' }}
-            >
+            <ResultMessage className="animate-fade-in-up-delay-2">
               {t(`games.table.${result}.message` as TranslationKey)}
             </ResultMessage>
 
-            <ActionsContainer
-              style={{ animation: 'fadeInUp 0.6s ease-out both 0.4s' }}
-            >
+            <ActionsContainer className="animate-fade-in-up-delay-4">
               {onRematch && (
                 <Button
                   variant={isVictory ? 'primary' : 'secondary'}

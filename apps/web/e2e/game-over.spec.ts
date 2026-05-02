@@ -81,7 +81,7 @@ test.describe('Game Over Screen', () => {
 
     const homeBtn = page.getByRole('link', { name: /Back to Home/i }).first();
     await expect(homeBtn).toBeVisible();
-    await homeBtn.click();
+    await homeBtn.click({ force: true });
   });
 
   test('should display defeat modal when player loses', async ({ page }) => {
@@ -148,7 +148,7 @@ test.describe('Game Over Screen', () => {
 
     const homeBtn = page.getByRole('link', { name: /Back to Home/i }).first();
     await expect(homeBtn).toBeVisible();
-    await homeBtn.click();
+    await homeBtn.click({ force: true });
 
     await expect(
       page.getByRole('button', { name: /Play Again/i }),

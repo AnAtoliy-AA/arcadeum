@@ -1,5 +1,6 @@
 import { GlimwormService } from './glimworm.service';
 import { GlimwormStateStore } from './glimworm.state';
+import { GlimwormBotService } from './glimworm-bot.service';
 import type { GamesRealtimeService } from '../games.realtime.service';
 import type { Worm } from './glimworm.types';
 
@@ -17,6 +18,7 @@ export interface MakeServiceResult {
   service: GlimwormService;
   store: GlimwormStateStore;
   realtime: RealtimeMock;
+  bot: GlimwormBotService;
 }
 
 export const makeService = (
@@ -24,12 +26,14 @@ export const makeService = (
 ): MakeServiceResult => {
   const store = new GlimwormStateStore();
   const realtime = buildMockRealtime();
+  const bot = new GlimwormBotService();
   const service = new GlimwormService(
     store,
     realtime as unknown as GamesRealtimeService,
+    bot,
     random,
   );
-  return { service, store, realtime };
+  return { service, store, realtime, bot };
 };
 
 /**

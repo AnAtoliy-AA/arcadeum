@@ -7,6 +7,7 @@ import {
 } from './glimworm.constants';
 // Single-tick displacement equals speed * dt (used for segment seeding).
 import { GlimwormStateStore } from './glimworm.state';
+import { GlimwormBotService } from './glimworm-bot.service';
 import { GamesRealtimeService } from '../games.realtime.service';
 import { getPowerup } from './powerups/powerup.def';
 // Importing power-ups for side-effect registration in the registry.
@@ -58,15 +59,51 @@ export class GlimwormService implements OnModuleDestroy {
   private readonly growthTargets = new Map<string, Map<WormId, number>>();
   private readonly random: RandomFn;
 
-  // TODO(ARC-555 A12): inject GlimwormBotService via @Inject(forwardRef(...))
-  // once the bot service exists. For now, fillWithBots is a no-op signal.
-
   constructor(
     private readonly stateStore: GlimwormStateStore,
     private readonly realtimeService: GamesRealtimeService,
+    private readonly botService: GlimwormBotService,
     @Optional() random?: RandomFn,
   ) {
     this.random = random ?? Math.random;
+  }
+
+  /** Minimum total worms required to start. Used when filling with bots. */
+  private static readonly SOLO_FILL_TARGET = 3;
+
+  private fillWithBots(session: GlimwormSession, target: number): void {
+    const palette = [
+      '#ff5e5e',
+      '#ffb05e',
+      '#ffe65e',
+      '#7cff5e',
+      '#5effb6',
+      '#5ee0ff',
+      '#5e8cff',
+      '#b15eff',
+      '#ff5ed4',
+      '#a0ffea',
+    ];
+    const used = new Set(Object.values(session.worms).map((w) => w.color));
+    while (Object.keys(session.worms).length < target) {
+      const id = `bot-${Math.random().toString(36).slice(2, 10)}`;
+      const color = palette.find((c) => !used.has(c)) ?? palette[0];
+      used.add(color);
+      session.worms[id] = {
+        id,
+        color,
+        segments: [],
+        heading: 0,
+        speed: GLIMWORM_BASE_SPEED,
+        alive: true,
+        livesLeft: 1,
+        score: 0,
+        ready: true,
+        activePowerup: null,
+        inventoryPowerup: null,
+        isBot: true,
+      };
+    }
   }
 
   onModuleDestroy(): void {
@@ -150,12 +187,14 @@ export class GlimwormService implements OnModuleDestroy {
     if (session.hostUserId !== hostUserId) {
       throw new Error('Only host can start');
     }
+    if (opts.fillWithBots) {
+      this.fillWithBots(session, GlimwormService.SOLO_FILL_TARGET);
+    }
+
     const readyWorms = Object.values(session.worms).filter((w) => w.ready);
     if (readyWorms.length < 2) {
       throw new Error('Need at least 2 ready players');
     }
-
-    void opts.fillWithBots; // reserved for Task A12
 
     session.variant = opts.variant;
     session.powerupsEnabled = opts.powerupsEnabled;
@@ -335,8 +374,11 @@ export class GlimwormService implements OnModuleDestroy {
       random: this.random,
     };
 
-    // Phase 1: apply inputs (already done in submitInput; clamp defensively)
+    // Phase 1: apply inputs (humans set heading via submitInput; bots decide here).
     for (const worm of Object.values(session.worms)) {
+      if (worm.isBot && worm.alive && !worm.disconnected) {
+        worm.heading = this.botService.pickAngle(session, worm);
+      }
       if (!Number.isFinite(worm.heading)) worm.heading = 0;
     }
 

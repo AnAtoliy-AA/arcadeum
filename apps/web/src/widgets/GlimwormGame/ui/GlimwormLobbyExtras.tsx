@@ -65,18 +65,20 @@ export function GlimwormLobbyExtras({
     });
   };
 
-  const handleStart = () => {
+  const startWith = (fillWithBots: boolean) => {
     setBusy(true);
     void emitEncrypted(gameSocket, 'glimworm.start', {
       roomId,
       userId,
       variant,
       powerupsEnabled,
-      fillWithBots: false,
+      fillWithBots,
     });
     // Re-enable after a short window in case BE rejects.
     setTimeout(() => setBusy(false), 1200);
   };
+  const handleStart = () => startWith(false);
+  const handleStartSolo = () => startWith(true);
 
   return (
     <div
@@ -240,6 +242,28 @@ export function GlimwormLobbyExtras({
           </button>
         )}
       </div>
+
+      {isHost && (
+        <button
+          type="button"
+          onClick={handleStartSolo}
+          disabled={busy}
+          style={{
+            padding: '10px 12px',
+            borderRadius: 6,
+            background: busy
+              ? 'rgba(255,255,255,0.08)'
+              : 'rgba(177,94,255,0.85)',
+            color: '#fff',
+            border: '1px solid rgba(255,255,255,0.18)',
+            cursor: busy ? 'wait' : 'pointer',
+            fontWeight: 600,
+            fontSize: 13,
+          }}
+        >
+          Start Solo (vs bots)
+        </button>
+      )}
     </div>
   );
 }

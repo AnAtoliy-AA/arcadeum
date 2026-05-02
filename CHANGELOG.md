@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.2] - 2026-05-02
+
+### Fixed
+- mobile menu sign out button color (ARC-561)
+- hero support button styles (ARC-561)
+- ships left gaps (ARC-561)
+- game over e2e test (ARC-561)
+- sea battle field styles (ARC-561)
+
+
 ## [1.10.1] - 2026-05-02
 
 ### Fixed

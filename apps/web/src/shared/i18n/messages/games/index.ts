@@ -14,6 +14,7 @@ export const en = {
   ...critical.en,
   ...texasHoldem.en,
   ...seaBattle.en,
+  glimworm_v1: { name: 'Glimworm' },
 };
 
 export const es = {
@@ -21,6 +22,7 @@ export const es = {
   ...critical.es,
   ...texasHoldem.es,
   ...seaBattle.es,
+  glimworm_v1: { name: 'Glimworm' },
 };
 
 export const fr = {
@@ -28,6 +30,7 @@ export const fr = {
   ...critical.fr,
   ...texasHoldem.fr,
   ...seaBattle.fr,
+  glimworm_v1: { name: 'Glimworm' },
 };
 
 export const ru = {
@@ -35,6 +38,7 @@ export const ru = {
   ...critical.ru,
   ...texasHoldem.ru,
   ...seaBattle.ru,
+  glimworm_v1: { name: 'Глимворм' },
 };
 
 export const by = {
@@ -42,6 +46,7 @@ export const by = {
   ...critical.by,
   ...texasHoldem.by,
   ...seaBattle.by,
+  glimworm_v1: { name: 'Глімворм' },
 };
 
 export const gamesMessages = {

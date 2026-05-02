@@ -29,10 +29,15 @@ export const StyledLinkButton = styled(YStack, {
         backgroundColor: '$glassBgHover',
       },
     },
+    circular: {
+      true: {
+        borderRadius: 999,
+      },
+    },
   } as const,
 
   defaultVariants: {
     variant: 'primary',
-    buttonSize: 'md',
+    $uiSize: 'md',
   },
 });

@@ -316,6 +316,8 @@ export const enMessages = {
     victory: { title: 'Victory!', message: 'Congratulations! You survived!' },
     defeat: { title: 'Game Over', message: 'Better luck next time!' },
     rematch: {
+      title: 'Play Again?',
+      description: 'Select players to invite to the new game:',
       button: 'Play Again',
       loading: 'Creating...',
       modalTitle: 'Start Rematch',

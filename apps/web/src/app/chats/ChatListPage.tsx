@@ -8,7 +8,7 @@ import { XStack, YStack, Text } from 'tamagui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useDebounce } from '@/shared/hooks/useDebounce';
-import { useIsMounted } from '@/widgets/header/ui/useIsMounted';
+import { useIsMounted } from '@/shared/hooks/useIsMounted';
 import { Button } from '@arcadeum/ui';
 import {
   PageLayout,

@@ -221,7 +221,6 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
           gap="$1"
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius={8}
           padding="$1"
           scale={1}
           $sm={{ scale: 0.9 }}

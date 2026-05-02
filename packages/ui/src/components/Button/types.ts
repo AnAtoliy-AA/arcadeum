@@ -20,11 +20,13 @@ export type ButtonVariant =
 
 export type GameVariant = 'cyberpunk' | 'underwater' | 'crime' | 'horror' | 'adventure' | 'high-altitude-hike';
 export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ResponsiveProp<T> = T | { [key: string]: T };
 
-export type ButtonProps = Omit<GetProps<typeof StyledButton>, 'size' | 'onClick'> & {
+
+export type ButtonProps = Omit<GetProps<typeof StyledButton>, 'size' | 'onClick' | '$uiSize' | 'buttonSize'> & {
   children?: React.ReactNode;
-  variant?: ButtonVariant;
-  size?: ButtonSize;
+  variant?: ResponsiveProp<ButtonVariant>;
+  size?: ResponsiveProp<ButtonSize>;
   loading?: boolean;
   showShimmer?: boolean;
   fullWidth?: boolean;

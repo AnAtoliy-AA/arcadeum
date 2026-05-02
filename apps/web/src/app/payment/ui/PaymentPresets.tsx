@@ -39,7 +39,7 @@ export function PaymentPresets({ amount, onSelect }: PaymentPresetsProps) {
             key={preset.value}
             type="button"
             variant="glass"
-            buttonSize="lg"
+            size="lg"
             height="auto"
             minHeight={130}
             isActive={isActive}

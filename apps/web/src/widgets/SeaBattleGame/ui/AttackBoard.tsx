@@ -139,7 +139,10 @@ export function AttackBoard({
               borderColor={theme.cellBorder}
               style={{ backdropFilter: 'blur(8px)' } as React.CSSProperties}
             >
-              <PlayerName color={theme.textColor}>
+              <PlayerName
+                data-testid="player-board-name"
+                color={theme.textColor}
+              >
                 {resolveDisplayName(currentPlayer.playerId, 'You')} (Your Fleet)
                 {idlePlayers.includes(currentPlayer.playerId) && <IdleBadge />}
               </PlayerName>
@@ -207,7 +210,7 @@ export function AttackBoard({
                               display="flex"
                               alignItems="center"
                               justifyContent="center"
-                              fontSize={15}
+                              fontSize={13}
                               style={
                                 {
                                   pointerEvents: 'none',
@@ -233,10 +236,10 @@ export function AttackBoard({
                               }
                             >
                               <YStack
-                                width={9}
-                                height={9}
+                                width={6}
+                                height={6}
                                 borderRadius={100}
-                                backgroundColor="rgba(255,255,255,0.75)"
+                                backgroundColor="rgba(255,255,255,0.7)"
                               />
                             </YStack>
                           )}
@@ -254,22 +257,28 @@ export function AttackBoard({
           <PlayerSectionWrapper key={opponent.playerId}>
             <BadgeWrapper
               backgroundColor={theme.boardBackground}
-              borderRadius={12}
-              paddingHorizontal="$2"
+              borderRadius={8}
+              paddingHorizontal="$1.5"
+              top={-4}
             >
               {isMyTurn && (
                 <XStack
                   alignItems="center"
                   gap="$1"
-                  paddingHorizontal="$3"
-                  paddingVertical="$1"
-                  borderRadius={12}
+                  paddingHorizontal="$2"
+                  paddingVertical="$0.5"
+                  borderRadius={8}
                   borderWidth={1}
-                  backgroundColor="rgba(239,68,68,0.15)"
-                  borderColor="rgba(239,68,68,0.4)"
+                  backgroundColor="rgba(239,68,68,0.1)"
+                  borderColor="rgba(239,68,68,0.3)"
                 >
-                  <Text fontSize={12}>🎯</Text>
-                  <Text fontSize={10} fontWeight="600" color="#fca5a5">
+                  <Text fontSize={10}>🎯</Text>
+                  <Text
+                    fontSize={9}
+                    fontWeight="700"
+                    color="#fca5a5"
+                    textTransform="uppercase"
+                  >
                     {t(
                       'games.sea_battle_v1.table.players.targetBadge' as TranslationKey,
                     )}
@@ -284,7 +293,10 @@ export function AttackBoard({
               className={isMyTurn ? 'sb-breathe' : undefined}
               style={{ backdropFilter: 'blur(8px)' } as React.CSSProperties}
             >
-              <PlayerName color={theme.textColor}>
+              <PlayerName
+                data-testid="player-board-name"
+                color={theme.textColor}
+              >
                 {resolveDisplayName(opponent.playerId, 'Opponent')}
                 {idlePlayers.includes(opponent.playerId) && <IdleBadge />}
               </PlayerName>
@@ -336,9 +348,9 @@ export function AttackBoard({
                       );
                       const iconFilter =
                         icon === '💀'
-                          ? 'drop-shadow(0 0 6px rgba(239,68,68,0.95))'
+                          ? 'drop-shadow(0 0 4px rgba(239,68,68,0.9))'
                           : icon === '🔥'
-                            ? 'drop-shadow(0 0 6px rgba(251,146,60,0.95))'
+                            ? 'drop-shadow(0 0 4px rgba(251,146,60,0.9))'
                             : undefined;
 
                       return (
@@ -350,14 +362,14 @@ export function AttackBoard({
                           hoverStyle={
                             canAttack
                               ? {
-                                  scale: 1.08,
+                                  scale: 1.05,
                                   backgroundColor: theme.cellHover,
                                   borderColor: theme.primaryColor,
                                 }
                               : undefined
                           }
                           borderColor={theme.cellBorder}
-                          borderRadius={parseInt(theme.borderRadius) || 4}
+                          borderRadius={parseInt(theme.borderRadius) || 3}
                           data-row={rIndex}
                           data-col={cIndex}
                           className={getCellAnimClass(
@@ -382,7 +394,7 @@ export function AttackBoard({
                               display="flex"
                               alignItems="center"
                               justifyContent="center"
-                              fontSize={15}
+                              fontSize={13}
                               style={
                                 {
                                   pointerEvents: 'none',
@@ -408,10 +420,10 @@ export function AttackBoard({
                               }
                             >
                               <YStack
-                                width={9}
-                                height={9}
+                                width={6}
+                                height={6}
                                 borderRadius={100}
-                                backgroundColor="rgba(255,255,255,0.75)"
+                                backgroundColor="rgba(255,255,255,0.7)"
                               />
                             </YStack>
                           )}

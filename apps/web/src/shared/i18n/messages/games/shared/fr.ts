@@ -1,6 +1,7 @@
 export const frMessages = {
   coup: { name: 'Coup' },
   'pandemic-lite': { name: 'Pandemic: Rapid Response' },
+  glimworm_v1: { name: 'Glimworm' },
   lounge: {
     activeTitle: 'Salles de Jeu',
     emptyTitle: 'Aucune salle trouvée. Créez-en une pour commencer !',
@@ -208,7 +209,32 @@ export const frMessages = {
   },
   table: {
     controlPanel: {
-      spectating: 'Spectating',
+      spectating: 'Spectateur',
+      fullscreen: 'Plein écran',
+      exitFullscreen: 'Quitter le plein écran',
+      enterFullscreen: 'Plein écran',
+      rules: 'Règles',
+    },
+    chat: {
+      show: 'Afficher le chat',
+      hide: 'Masquer le chat',
+    },
+    victory: {
+      title: 'Victoire !',
+      message: 'Excellente performance ! Vous avez dominé la partie.',
+    },
+    defeat: {
+      title: 'Défaite',
+      message: 'Pas de chance cette fois. Prêt pour une autre manche ?',
+    },
+    rematch: {
+      title: 'Rejouer ?',
+      description:
+        'Sélectionnez les joueurs que vous souhaitez inviter pour une revanche.',
+      button: 'Demander une revanche',
+      loading: 'Envoi...',
+      noPlayers: 'Aucun autre joueur disponible pour une revanche',
+      messagePlaceholder: 'Ajouter un message amical (optionnel)',
     },
   },
 };

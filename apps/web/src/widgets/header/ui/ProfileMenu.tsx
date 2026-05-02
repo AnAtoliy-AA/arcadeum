@@ -123,6 +123,7 @@ export default function ProfileMenu() {
           onClick={handleLogout}
           data-testid="desktop-logout-button"
           icon={<LogoutIcon size={16} />}
+          gap="$3"
         >
           {t('common.actions.logout')}
         </Button>

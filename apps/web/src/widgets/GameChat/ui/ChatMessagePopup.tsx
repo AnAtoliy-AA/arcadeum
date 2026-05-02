@@ -7,6 +7,7 @@ interface ChatMessagePopupProps {
   message: string;
   visible: boolean;
   onDismiss: () => void;
+  isOwn?: boolean;
 }
 
 export function ChatMessagePopup({
@@ -14,6 +15,7 @@ export function ChatMessagePopup({
   message,
   visible,
   onDismiss,
+  isOwn,
 }: ChatMessagePopupProps) {
   if (!visible) return null;
 
@@ -41,6 +43,7 @@ export function ChatMessagePopup({
         senderName={senderName}
         message={message}
         type="message"
+        isOwn={isOwn}
       />
     </div>
   );

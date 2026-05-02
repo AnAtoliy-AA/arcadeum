@@ -321,6 +321,8 @@ export const ruMessages = {
     victory: { title: 'Победа!', message: 'Поздравляем! Вы выжили!' },
     defeat: { title: 'Игра окончена', message: 'Повезет в следующий раз!' },
     rematch: {
+      title: 'Сыграть еще?',
+      description: 'Выберите игроков для приглашения в новую игру:',
       button: 'Играть снова',
       loading: 'Создание...',
       modalTitle: 'Начать реванш',

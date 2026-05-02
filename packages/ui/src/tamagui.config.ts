@@ -214,7 +214,35 @@ const tealLightTheme = {
   backgroundRadialEnd: 'rgba(6,182,212,0.14)',
 };
 
+const animations = {
+  fast: {
+    type: 'spring',
+    damping: 20,
+    mass: 1,
+    stiffness: 250,
+  },
+  medium: {
+    type: 'spring',
+    damping: 20,
+    mass: 1,
+    stiffness: 120,
+  },
+  slow: {
+    type: 'spring',
+    damping: 20,
+    mass: 1,
+    stiffness: 40,
+  },
+  quick: {
+    type: 'spring',
+    damping: 20,
+    mass: 1,
+    stiffness: 250,
+  },
+};
+
 export const config = createTamagui({
+  animations: animations as any,
   defaultTheme: 'dark',
   shouldAddPrefersColorSelection: true,
   themeClassNameOnRoot: true,
@@ -247,7 +275,7 @@ export const config = createTamagui({
     gtTablet: { minWidth: 1024 },
     gtMd: { minWidth: 1151 },
     gtLg: { minWidth: 1281 },
-    short: { maxHeight: 820 },
+    short: { maxHeight: 480 },
     tall: { minHeight: 820 },
     hoverNone: { hover: 'none' },
     pointerCoarse: { pointer: 'coarse' },

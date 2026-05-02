@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { gameSocket, emitEncrypted } from '@/shared/lib/socket';
 import { GLIMWORM_VARIANTS } from '@/features/games/lib/glimwormVariants';
@@ -42,6 +42,29 @@ export function GlimwormLobbyExtras({
   const [powerupsEnabled, setPowerupsEnabled] = useState(false);
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
+
+  // Listen for BE responses so users see why a click didn't transition.
+  useEffect(() => {
+    const onStartAck = (): void => {
+      setFeedback('Starting…');
+      setBusy(false);
+    };
+    const onException = (err: unknown): void => {
+      const msg =
+        typeof err === 'object' && err && 'message' in err
+          ? String((err as { message: unknown }).message)
+          : 'Server rejected the request';
+      setFeedback(msg);
+      setBusy(false);
+    };
+    gameSocket.on('glimworm.start.ack', onStartAck);
+    gameSocket.on('exception', onException);
+    return () => {
+      gameSocket.off('glimworm.start.ack', onStartAck);
+      gameSocket.off('exception', onException);
+    };
+  }, []);
 
   const taken = new Set(takenColors);
 
@@ -67,6 +90,7 @@ export function GlimwormLobbyExtras({
 
   const startWith = (fillWithBots: boolean) => {
     setBusy(true);
+    setFeedback(`Starting${fillWithBots ? ' solo' : ''}…`);
     void emitEncrypted(gameSocket, 'glimworm.start', {
       roomId,
       userId,
@@ -74,8 +98,8 @@ export function GlimwormLobbyExtras({
       powerupsEnabled,
       fillWithBots,
     });
-    // Re-enable after a short window in case BE rejects.
-    setTimeout(() => setBusy(false), 1200);
+    // Failsafe re-enable in case neither ack nor exception arrives.
+    setTimeout(() => setBusy(false), 3000);
   };
   const handleStart = () => startWith(false);
   const handleStartSolo = () => startWith(true);
@@ -202,6 +226,22 @@ export function GlimwormLobbyExtras({
           })}
         </div>
       </div>
+
+      {feedback && (
+        <div
+          style={{
+            fontSize: 12,
+            padding: '6px 8px',
+            borderRadius: 4,
+            background: feedback.startsWith('Starting')
+              ? 'rgba(94,224,255,0.15)'
+              : 'rgba(255,94,94,0.15)',
+            color: feedback.startsWith('Starting') ? '#a0e8ff' : '#ffaaaa',
+          }}
+        >
+          {feedback}
+        </div>
+      )}
 
       <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
         <button

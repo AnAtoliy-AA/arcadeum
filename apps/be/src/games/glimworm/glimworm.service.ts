@@ -182,18 +182,33 @@ export class GlimwormService implements OnModuleDestroy {
   }
 
   start(roomId: string, hostUserId: string, opts: GlimwormStartOpts): void {
-    const session = this.stateStore.get(roomId);
-    if (!session) throw new Error('No session for room');
+    // Lazy-create the session if no auto-join reached the BE yet.
+    // The caller becomes the host of the new in-memory session.
+    let session = this.stateStore.get(roomId);
+    if (!session) {
+      this.joinRoom(roomId, hostUserId);
+      session = this.stateStore.get(roomId);
+      if (!session) throw new Error('No session for room');
+    }
     if (session.hostUserId !== hostUserId) {
       throw new Error('Only host can start');
     }
+    // Ensure the host is registered as a worm and marked ready.
+    if (!session.worms[hostUserId]) {
+      this.joinRoom(roomId, hostUserId);
+    }
+    const hostWorm = session.worms[hostUserId];
+    if (hostWorm) hostWorm.ready = true;
+
     if (opts.fillWithBots) {
       this.fillWithBots(session, GlimwormService.SOLO_FILL_TARGET);
     }
 
     const readyWorms = Object.values(session.worms).filter((w) => w.ready);
     if (readyWorms.length < 2) {
-      throw new Error('Need at least 2 ready players');
+      throw new Error(
+        `Need at least 2 ready players (have ${readyWorms.length})`,
+      );
     }
 
     session.variant = opts.variant;

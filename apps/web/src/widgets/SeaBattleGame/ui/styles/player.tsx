@@ -2,7 +2,7 @@ import { styled, XStack, YStack, Text } from 'tamagui';
 
 export const PlayerSection = styled(YStack, {
   name: 'PlayerSection',
-  alignItems: 'center',
+  alignItems: 'stretch',
   gap: '$1.5',
   padding: '$3',
   borderWidth: 2,
@@ -82,6 +82,7 @@ export const PlayerName = styled(Text, {
   margin: 0,
   fontSize: 15,
   fontWeight: '600',
+  textAlign: 'center',
 
   $sm: {
     fontSize: 13,
@@ -90,6 +91,7 @@ export const PlayerName = styled(Text, {
 
 export const PlayerStats = styled(YStack, {
   name: 'PlayerStats',
+  width: '100%',
   // @ts-expect-error — fontSize cascades to child Text nodes
   fontSize: 14,
 });

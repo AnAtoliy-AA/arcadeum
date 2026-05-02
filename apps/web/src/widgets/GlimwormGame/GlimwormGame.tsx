@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useGlimwormSocket } from './hooks/useGlimwormSocket';
 import { useGlimwormPixi } from './hooks/useGlimwormPixi';
 import { useGlimwormControls } from './hooks/useGlimwormControls';
@@ -8,43 +8,32 @@ import { GlimwormHud } from './ui/GlimwormHud';
 import { GlimwormDeathOverlay } from './ui/GlimwormDeathOverlay';
 import { GlimwormLobbyExtras } from './ui/GlimwormLobbyExtras';
 import { useGlimwormStore } from './store/glimwormStore';
+import { gameSocket, emitEncrypted } from '@/shared/lib/socket';
 import type { BaseGameWidgetProps } from '@/features/games/types/base';
-import type { GlimwormVariant } from './types';
-
-const DEFAULT_VARIANT: GlimwormVariant = 'battle_royale';
-
-function readVariantFromRoom(
-  room: BaseGameWidgetProps['room'],
-): GlimwormVariant {
-  const opts = room.gameOptions as { variant?: string } | undefined;
-  const v = opts?.variant;
-  if (v === 'battle_royale' || v === 'time_attack' || v === 'lives_heats') {
-    return v;
-  }
-  return DEFAULT_VARIANT;
-}
-
-function readPowerupsFromRoom(room: BaseGameWidgetProps['room']): boolean {
-  const opts = room.gameOptions as { powerupsEnabled?: boolean } | undefined;
-  return opts?.powerupsEnabled === true;
-}
 
 export default function GlimwormGame(
   props: BaseGameWidgetProps,
 ): React.JSX.Element {
-  const { roomId, currentUserId, room } = props;
+  const { roomId, currentUserId, isHost } = props;
   const canvasRef = useRef<HTMLDivElement | null>(null);
 
   useGlimwormSocket({ roomId, userId: currentUserId });
   const { getHeadScreenPos } = useGlimwormPixi(canvasRef);
   useGlimwormControls({ canvasRef, getHeadScreenPos });
 
+  // Auto-join Glimworm session on mount so the BE knows about this player.
+  useEffect(() => {
+    if (!currentUserId) return;
+    void emitEncrypted(gameSocket, 'glimworm.join', {
+      roomId,
+      userId: currentUserId,
+    });
+  }, [roomId, currentUserId]);
+
   const snapshotStatus = useGlimwormStore(
     (s) => s.latestSnapshot?.status ?? 'lobby',
   );
-  const isLobby = snapshotStatus === 'lobby' || room.status === 'lobby';
-  const variant = readVariantFromRoom(room);
-  const powerupsEnabled = readPowerupsFromRoom(room);
+  const isLobby = snapshotStatus === 'lobby' || snapshotStatus === 'countdown';
 
   return (
     <div
@@ -69,15 +58,14 @@ export default function GlimwormGame(
             position: 'absolute',
             top: 16,
             left: 16,
-            width: 280,
+            width: 320,
             zIndex: 1,
           }}
         >
           <GlimwormLobbyExtras
             roomId={roomId}
             userId={currentUserId}
-            variant={variant}
-            powerupsEnabled={powerupsEnabled}
+            isHost={isHost}
           />
         </div>
       )}

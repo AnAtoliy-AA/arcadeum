@@ -34,6 +34,18 @@ interface GlimwormColorPickBody {
   color: unknown;
 }
 
+interface GlimwormJoinBody {
+  roomId: string;
+  userId: string;
+  color?: unknown;
+}
+
+interface GlimwormReadyBody {
+  roomId: string;
+  userId: string;
+  ready: unknown;
+}
+
 const VALID_VARIANTS: ReadonlySet<GlimwormVariant> = new Set([
   'battle_royale',
   'time_attack',
@@ -64,6 +76,59 @@ export class GlimwormGateway {
       { action, roomId: roomId ?? '', userId: userId ?? '' },
       userMessage,
     );
+  }
+
+  @SubscribeMessage('glimworm.join')
+  handleJoin(
+    @MessageBody() payload: GlimwormJoinBody,
+    @ConnectedSocket() client: Socket,
+  ): void {
+    const { roomId, userId } = extractRoomAndUser(
+      payload as unknown as Record<string, unknown>,
+    );
+    try {
+      const color =
+        typeof payload.color === 'string' ? payload.color : undefined;
+      const worm = this.glimwormService.joinRoom(roomId, userId, color);
+      client.emit(
+        'glimworm.join.ack',
+        maybeEncrypt({ roomId, userId, color: worm.color }),
+      );
+    } catch (error) {
+      this.handleException({
+        error,
+        action: 'glimworm join',
+        roomId,
+        userId,
+        userMessage: 'Unable to join Glimworm room.',
+      });
+    }
+  }
+
+  @SubscribeMessage('glimworm.ready')
+  handleReady(
+    @MessageBody() payload: GlimwormReadyBody,
+    @ConnectedSocket() client: Socket,
+  ): void {
+    const { roomId, userId } = extractRoomAndUser(
+      payload as unknown as Record<string, unknown>,
+    );
+    try {
+      const ready = payload.ready === true;
+      this.glimwormService.markReady(roomId, userId, ready);
+      client.emit(
+        'glimworm.ready.ack',
+        maybeEncrypt({ roomId, userId, ready }),
+      );
+    } catch (error) {
+      this.handleException({
+        error,
+        action: 'glimworm ready',
+        roomId,
+        userId,
+        userMessage: 'Unable to update ready state.',
+      });
+    }
   }
 
   @SubscribeMessage('glimworm.input')

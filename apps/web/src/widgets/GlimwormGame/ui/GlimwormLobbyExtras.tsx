@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { gameSocket, emitEncrypted } from '@/shared/lib/socket';
 import { GLIMWORM_VARIANTS } from '@/features/games/lib/glimwormVariants';
@@ -22,8 +23,7 @@ const PALETTE = [
 interface GlimwormLobbyExtrasProps {
   roomId: string;
   userId: string;
-  variant: GlimwormVariant;
-  powerupsEnabled: boolean;
+  isHost: boolean;
   /** Colors already taken by other players in the lobby. */
   takenColors?: string[];
 }
@@ -31,14 +31,18 @@ interface GlimwormLobbyExtrasProps {
 export function GlimwormLobbyExtras({
   roomId,
   userId,
-  variant,
-  powerupsEnabled,
+  isHost,
   takenColors = [],
 }: GlimwormLobbyExtrasProps): React.JSX.Element {
   const { t } = useTranslation();
   const selectedColor = useGlimwormStore((s) => s.selectedColor);
   const setColor = useGlimwormStore((s) => s.setColor);
-  const variantMeta = GLIMWORM_VARIANTS.find((v) => v.id === variant);
+
+  const [variant, setVariant] = useState<GlimwormVariant>('battle_royale');
+  const [powerupsEnabled, setPowerupsEnabled] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [busy, setBusy] = useState(false);
+
   const taken = new Set(takenColors);
 
   const handleColor = (color: string) => {
@@ -51,38 +55,119 @@ export function GlimwormLobbyExtras({
     });
   };
 
+  const handleReady = () => {
+    const next = !ready;
+    setReady(next);
+    void emitEncrypted(gameSocket, 'glimworm.ready', {
+      roomId,
+      userId,
+      ready: next,
+    });
+  };
+
+  const handleStart = () => {
+    setBusy(true);
+    void emitEncrypted(gameSocket, 'glimworm.start', {
+      roomId,
+      userId,
+      variant,
+      powerupsEnabled,
+      fillWithBots: false,
+    });
+    // Re-enable after a short window in case BE rejects.
+    setTimeout(() => setBusy(false), 1200);
+  };
+
   return (
     <div
       style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 16,
+        gap: 14,
         padding: 16,
-        background: 'rgba(255,255,255,0.04)',
+        background: 'rgba(20,22,40,0.85)',
         borderRadius: 8,
         color: '#fff',
         fontFamily: 'system-ui, sans-serif',
+        backdropFilter: 'blur(6px)',
       }}
     >
       <div>
-        <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 4 }}>
+        <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 6 }}>
           {t('games.glimworm_v1.lobby.variant')}
         </div>
-        <div style={{ fontSize: 16, fontWeight: 'bold' }}>
-          {variantMeta?.emoji}{' '}
-          {variantMeta?.name ? t(variantMeta.name as never) : variant}
-        </div>
+        {isHost ? (
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {GLIMWORM_VARIANTS.map((v) => {
+              const active = variant === v.id;
+              return (
+                <button
+                  key={v.id}
+                  type="button"
+                  onClick={() => setVariant(v.id as GlimwormVariant)}
+                  style={{
+                    padding: '6px 10px',
+                    borderRadius: 6,
+                    background: active
+                      ? 'rgba(124,255,94,0.22)'
+                      : 'rgba(255,255,255,0.06)',
+                    color: '#fff',
+                    border: active
+                      ? '1px solid #7cff5e'
+                      : '1px solid rgba(255,255,255,0.12)',
+                    cursor: 'pointer',
+                    fontSize: 13,
+                  }}
+                >
+                  {v.emoji} {t(v.name as never)}
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <div style={{ fontSize: 14 }}>
+            {GLIMWORM_VARIANTS.find((v) => v.id === variant)?.emoji}{' '}
+            {t(
+              (GLIMWORM_VARIANTS.find((v) => v.id === variant)?.name ??
+                '') as never,
+            )}
+          </div>
+        )}
       </div>
 
       <div>
-        <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 4 }}>
+        <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 6 }}>
           {t('games.glimworm_v1.lobby.powerups')}
         </div>
-        <div style={{ fontSize: 14 }}>
-          {powerupsEnabled
-            ? t('games.glimworm_v1.lobby.powerupsOn')
-            : t('games.glimworm_v1.lobby.powerupsOff')}
-        </div>
+        {isHost ? (
+          <button
+            type="button"
+            onClick={() => setPowerupsEnabled((p) => !p)}
+            style={{
+              padding: '6px 10px',
+              borderRadius: 6,
+              background: powerupsEnabled
+                ? 'rgba(124,255,94,0.22)'
+                : 'rgba(255,255,255,0.06)',
+              color: '#fff',
+              border: powerupsEnabled
+                ? '1px solid #7cff5e'
+                : '1px solid rgba(255,255,255,0.12)',
+              cursor: 'pointer',
+              fontSize: 13,
+            }}
+          >
+            {powerupsEnabled
+              ? t('games.glimworm_v1.lobby.powerupsOn')
+              : t('games.glimworm_v1.lobby.powerupsOff')}
+          </button>
+        ) : (
+          <div style={{ fontSize: 14 }}>
+            {powerupsEnabled
+              ? t('games.glimworm_v1.lobby.powerupsOn')
+              : t('games.glimworm_v1.lobby.powerupsOff')}
+          </div>
+        )}
       </div>
 
       <div>
@@ -114,6 +199,46 @@ export function GlimwormLobbyExtras({
             );
           })}
         </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+        <button
+          type="button"
+          onClick={handleReady}
+          style={{
+            flex: 1,
+            padding: '10px 12px',
+            borderRadius: 6,
+            background: ready ? '#7cff5e' : 'rgba(255,255,255,0.08)',
+            color: ready ? '#06070d' : '#fff',
+            border: '1px solid rgba(255,255,255,0.18)',
+            cursor: 'pointer',
+            fontWeight: 600,
+            fontSize: 14,
+          }}
+        >
+          {ready ? '✓ Ready' : 'Ready'}
+        </button>
+        {isHost && (
+          <button
+            type="button"
+            onClick={handleStart}
+            disabled={busy}
+            style={{
+              flex: 1,
+              padding: '10px 12px',
+              borderRadius: 6,
+              background: busy ? 'rgba(255,255,255,0.08)' : '#5ee0ff',
+              color: '#06070d',
+              border: '1px solid rgba(255,255,255,0.18)',
+              cursor: busy ? 'wait' : 'pointer',
+              fontWeight: 700,
+              fontSize: 14,
+            }}
+          >
+            Start
+          </button>
+        )}
       </div>
     </div>
   );

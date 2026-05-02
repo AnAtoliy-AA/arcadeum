@@ -8,7 +8,7 @@ import { GlimwormHud } from './ui/GlimwormHud';
 import { GlimwormDeathOverlay } from './ui/GlimwormDeathOverlay';
 import { GlimwormLobbyExtras } from './ui/GlimwormLobbyExtras';
 import { useGlimwormStore } from './store/glimwormStore';
-import { gameSocket, emitEncrypted } from '@/shared/lib/socket';
+import { gameSocket } from '@/shared/lib/socket';
 import type { BaseGameWidgetProps } from '@/features/games/types/base';
 
 export default function GlimwormGame(
@@ -24,7 +24,7 @@ export default function GlimwormGame(
   // Auto-join Glimworm session on mount so the BE knows about this player.
   useEffect(() => {
     if (!currentUserId) return;
-    void emitEncrypted(gameSocket, 'glimworm.join', {
+    gameSocket.emit('glimworm.join', {
       roomId,
       userId: currentUserId,
     });

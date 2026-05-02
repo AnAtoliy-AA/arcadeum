@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { gameSocket, emitEncrypted } from '@/shared/lib/socket';
+import { gameSocket } from '@/shared/lib/socket';
 import { GLIMWORM_VARIANTS } from '@/features/games/lib/glimwormVariants';
 import { useGlimwormStore } from '../store/glimwormStore';
 import type { GlimwormVariant } from '../types';
@@ -71,7 +71,7 @@ export function GlimwormLobbyExtras({
   const handleColor = (color: string) => {
     if (taken.has(color) && color !== selectedColor) return;
     setColor(color);
-    void emitEncrypted(gameSocket, 'glimworm.color.pick', {
+    gameSocket.emit('glimworm.color.pick', {
       roomId,
       userId,
       color,
@@ -81,7 +81,7 @@ export function GlimwormLobbyExtras({
   const handleReady = () => {
     const next = !ready;
     setReady(next);
-    void emitEncrypted(gameSocket, 'glimworm.ready', {
+    gameSocket.emit('glimworm.ready', {
       roomId,
       userId,
       ready: next,
@@ -91,7 +91,7 @@ export function GlimwormLobbyExtras({
   const startWith = (fillWithBots: boolean) => {
     setBusy(true);
     setFeedback(`Starting${fillWithBots ? ' solo' : ''}…`);
-    void emitEncrypted(gameSocket, 'glimworm.start', {
+    gameSocket.emit('glimworm.start', {
       roomId,
       userId,
       variant,

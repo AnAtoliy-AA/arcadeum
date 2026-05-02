@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { gameSocket, emitEncrypted } from '@/shared/lib/socket';
+import { gameSocket } from '@/shared/lib/socket';
 import { useGlimwormStore } from '../store/glimwormStore';
 import type {
   GlimwormDiscreteEvent,
@@ -85,7 +85,7 @@ export function useGlimwormSocket(opts: UseGlimwormSocketOptions): void {
         angle: localInput.angle,
         usePowerup: localInput.usePowerup,
       };
-      void emitEncrypted(gameSocket, 'glimworm.input', {
+      gameSocket.emit('glimworm.input', {
         roomId,
         userId,
         ...payload,

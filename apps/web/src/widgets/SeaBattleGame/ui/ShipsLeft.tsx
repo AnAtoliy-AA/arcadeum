@@ -87,6 +87,8 @@ export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
               flex={config.size}
               height={isMobile ? 10 : 14}
               position="relative"
+              data-title={config.name}
+              data-sunk={isSunk.toString()}
             >
               {Array.from({ length: config.size }).map((_, i) => (
                 <YStack

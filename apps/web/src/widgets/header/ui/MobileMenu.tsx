@@ -82,6 +82,7 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
             data-testid="mobile-logout-button"
             onClick={handleLogout}
             icon={<LogoutIcon size={18} />}
+            gap="$3"
           >
             {t('common.actions.logout')}
           </Button>

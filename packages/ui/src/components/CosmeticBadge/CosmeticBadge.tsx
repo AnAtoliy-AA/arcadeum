@@ -35,9 +35,9 @@ const BADGE_LABELS: Record<string, string> = {
 const BadgePill = styled(XStack, {
   name: 'CosmeticBadge',
   alignItems: 'center',
-  paddingHorizontal: '$3',
-  paddingVertical: '$3',
-  borderRadius: 100,
+  paddingHorizontal: '$2',
+  paddingVertical: '$1',
+  borderRadius: 6,
   gap: '$1',
 
   variants: {

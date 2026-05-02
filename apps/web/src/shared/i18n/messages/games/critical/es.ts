@@ -322,6 +322,8 @@ export const esMessages = {
       message: '¡Mejor suerte la próxima vez!',
     },
     rematch: {
+      title: '¿Jugar de nuevo?',
+      description: 'Selecciona jugadores para invitar:',
       button: 'Jugar de Nuevo',
       loading: 'Creando...',
       modalTitle: 'Iniciar Revancha',

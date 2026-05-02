@@ -1,25 +1,23 @@
 'use client';
 
 import { GetProps } from 'tamagui';
-import { useMemo, Children } from 'react';
+import React, { useMemo, Children } from 'react';
 import { filterProps } from '../../utils/filterProps';
 import type { ReactNode, MouseEventHandler, KeyboardEventHandler } from 'react';
 import Link from 'next/link';
 import { Typography } from '../Typography/Typography';
 import { StyledLinkButton } from './StyledLinkButton';
 import { Shimmer } from './StyledButton';
-import type { ButtonVariant, ButtonSize } from './types';
+import type { ButtonVariant, ButtonSize, ResponsiveProp } from './types';
 
-// Variants that use vibrant backgrounds and need white text for contrast
-const VIBRANT_VARIANTS = ['primary', 'secondary', 'danger', 'success', 'warning', 'info', 'victory'];
 
 type StyledLinkButtonProps = GetProps<typeof StyledLinkButton>;
 
-export interface LinkButtonProps extends StyledLinkButtonProps {
+export type LinkButtonProps = Omit<StyledLinkButtonProps, 'size' | 'variant'> & {
   href: string;
   children: ReactNode;
-  variant?: ButtonVariant;
-  size?: ButtonSize;
+  variant?: ResponsiveProp<ButtonVariant>;
+  size?: ResponsiveProp<ButtonSize>;
   external?: boolean;
   fullWidth?: boolean;
   isActive?: boolean;
@@ -39,7 +37,7 @@ export interface LinkButtonProps extends StyledLinkButtonProps {
   as?: React.ElementType;
   fontWeight?: string | number;
   letterSpacing?: string | number;
-}
+};
 
 export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
   (
@@ -67,25 +65,27 @@ export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
     },
     ref
   ) => {
-    const renderedChildren = useMemo(
-      () =>
-        Children.map(children, (child) => {
-          if (typeof child === 'string') {
-            const isVibrant = VIBRANT_VARIANTS.includes((variant as string) || 'primary');
-            return (
-              <Typography 
-                uiSize={size} 
-                variant="label"
-                fontWeight="800"
-                color={isVibrant ? `$${variant || 'primary'}Text` as never : undefined}
-              >
-                {child}
-              </Typography>
-            );
-          }
-          return child;
-        }),
-      [children, size, variant]
+    const hasTextChildren = Children.toArray(children).some(
+      child => typeof child === 'string' || typeof child === 'number'
+    );
+
+    const renderedChildren = hasTextChildren ? (
+      <Typography
+        uiSize={size as any}
+        color="inherit"
+        fontWeight="600"
+        variant="label"
+      >
+        {children}
+      </Typography>
+    ) : (
+      children
+    );
+
+    const renderedIcon = icon && (typeof icon === 'string' || typeof icon === 'number') ? (
+      <Typography uiSize={size as any} color="inherit">{icon}</Typography>
+    ) : (
+      icon
     );
 
     const filteredProps = filterProps({ ...props, onPress, onClick });
@@ -99,9 +99,8 @@ export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
         prefetch={prefetch}
       >
         <StyledLinkButton
-          as="span"
-          variant={variant}
-          buttonSize={size}
+          variant={variant as any}
+          $uiSize={size as any}
           fullWidth={fullWidth}
           isActive={isActive}
           pulse={pulse}
@@ -114,7 +113,7 @@ export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
           ref={ref}
           data-testid={testId}
         >
-          {icon}
+          {renderedIcon}
           {renderedChildren}
           {showShimmer && <Shimmer />}
         </StyledLinkButton>

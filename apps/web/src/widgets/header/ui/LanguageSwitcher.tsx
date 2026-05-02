@@ -2,7 +2,7 @@
 
 import { useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useIsMounted } from './useIsMounted';
+import { useIsMounted } from '@/shared/hooks/useIsMounted';
 import { XStack, GlobeIcon } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES, Locale } from '@/shared/i18n';

@@ -34,7 +34,7 @@ import {
 } from './styles';
 import { useHeaderAuth } from './useHeaderAuth';
 import { useMobileMenu } from './useMobileMenu';
-import { useIsMounted } from './useIsMounted';
+import { useIsMounted } from '@/shared/hooks/useIsMounted';
 
 export function HeaderInteractive() {
   const isMounted = useIsMounted();
@@ -93,7 +93,7 @@ export function HeaderInteractive() {
                 href={routes.support}
                 variant="secondary"
                 size="sm"
-                gap="$2"
+                gap="$3"
                 aria-label={t('common.actions.support')}
               >
                 <SupportIcon size={18} />

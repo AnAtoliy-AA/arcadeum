@@ -54,6 +54,8 @@ export const DeleteButton = ({
   <Button
     variant="primary"
     size="lg"
+    $sm={{ $uiSize: 'md', borderRadius: 8 }}
+    $short={{ $uiSize: 'sm', borderRadius: 8 }}
     width={width}
     fontWeight="600"
     borderRadius={12}
@@ -87,6 +89,8 @@ export const StartButton = ({
   <Button
     variant="primary"
     size="lg"
+    $sm={{ $uiSize: 'md', borderRadius: 8 }}
+    $short={{ $uiSize: 'sm', borderRadius: 8 }}
     width={width}
     fontWeight="600"
     borderRadius={12}
@@ -124,7 +128,7 @@ export const IconButton = ({
     size={size}
     backgroundColor={backgroundColor}
     borderColor={borderColor}
-    hoverStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+    hoverStyle={{ rotate: '180deg', scale: 1.1, ...props.hoverStyle }}
     data-testid={testId || props['data-testid']}
     {...props}
   >
@@ -150,7 +154,7 @@ export const RefreshButton = ({
     {children}
   </IconButton>
 );
-export interface ModalButtonProps extends ButtonProps {}
+export interface ModalButtonProps extends ButtonProps { }
 
 export const ModalButton = (props: ModalButtonProps) => (
   <Button flex={1} {...props} />
@@ -182,6 +186,8 @@ export const CreateRoomButton = (props: ButtonProps) => (
   <Button
     variant="victory"
     size="lg"
+    $sm={{ $uiSize: 'md' }}
+    $short={{ $uiSize: 'sm' }}
     pulse
     jump
     showShimmer

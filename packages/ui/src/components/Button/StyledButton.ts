@@ -11,19 +11,26 @@ export const Shimmer: TamaguiComponent = styled(YStack, {
 
 export const StyledButton: TamaguiComponent = styled(TButton, {
   name: 'AppButton',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexDirection: 'row',
+  cursor: 'pointer',
   borderRadius: '$4',
   borderWidth: 1,
   borderColor: 'transparent',
+  backgroundColor: 'transparent', // Reset default button bg
+  padding: 0, // Reset default button padding
   position: 'relative',
   overflow: 'hidden',
   shadowColor: 'rgba(0,0,0,0.5)',
   shadowOffset: { width: 0, height: 4 },
   shadowOpacity: 1,
   shadowRadius: 2,
+  transition: 'transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.4s ease',
 
   hoverStyle: {
-    y: -5,
-    scale: 1.02,
+    transform: 'translateY(-5px) scale(1.02)',
     borderColor: '$borderColorHover',
     opacity: 1,
     shadowOffset: { width: 0, height: 10 },
@@ -54,12 +61,22 @@ export const StyledButton: TamaguiComponent = styled(TButton, {
 
     isActive: {
       true: {
+        backgroundColor: '$primary',
+        background: 'linear-gradient(160deg, $primaryGradientStart 0%, $primaryGradientEnd 100%)',
+        color: '$primaryText',
+        borderColor: '$glassBorder',
         y: -3,
         shadowOffset: { width: 0, height: 6 },
         shadowRadius: 3,
         shadowOpacity: 1,
       },
       false: {},
+    },
+
+    circular: {
+      true: {
+        borderRadius: 999,
+      },
     },
 
     disabled: {
@@ -235,7 +252,7 @@ export const StyledButton: TamaguiComponent = styled(TButton, {
   } as const,
 
   defaultVariants: {
-    buttonSize: 'md',
+    $uiSize: 'md',
     variant: 'secondary',
   },
 });

@@ -182,10 +182,11 @@ export function DropdownLink({
       <XStack
         alignItems="center"
         gap="$3"
-        paddingVertical={11}
+        height={44}
         paddingHorizontal="$4"
         cursor="pointer"
-        hoverStyle={{ backgroundColor: '$backgroundHover' }}
+        hoverStyle={{ backgroundColor: '$glassBgHover' }}
+        transition="background-color 0.2s ease"
       >
         <Typography
           uiSize="sm"

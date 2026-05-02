@@ -3,10 +3,10 @@ import { test } from './fixtures/test-utils';
 import {
   mockSession,
   navigateTo,
-  closeRulesModal,
   mockRoomInfo,
   MOCK_OBJECT_ID,
   mockGameSocket,
+  waitForRoomReady,
 } from './fixtures/test-utils';
 
 test.describe('Sea Battle Ships Left', () => {
@@ -98,7 +98,7 @@ test.describe('Sea Battle Ships Left', () => {
     });
 
     await navigateTo(page, `/games/rooms/${roomId}`);
-    await closeRulesModal(page);
+    await waitForRoomReady(page);
 
     // Wait for game to load with increased timeout
     await expect(page.getByText(/ships remaining/i).first()).toBeVisible({});

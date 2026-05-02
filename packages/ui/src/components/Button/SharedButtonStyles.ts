@@ -154,22 +154,30 @@ export const sharedButtonVariants = {
     },
     icon: {
       padding: 0,
-      backgroundColor: 'transparent',
+      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+      borderColor: 'rgba(255, 255, 255, 0.1)',
+      borderWidth: 1,
+      borderRadius: 999,
+      aspectRatio: 1,
       color: '$color',
       shadowOpacity: 0,
+      justifyContent: 'center',
+      alignItems: 'center',
       hoverStyle: {
         y: -2,
         opacity: 1,
-        scale: 1.15,
-        backgroundColor: '$glassBgHover',
-        shadowColor: 'rgba(0,0,0,0.2)',
+        transform: 'rotate(180deg) scale(1.1)',
+        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+        borderColor: 'rgba(255, 255, 255, 0.25)',
+        shadowColor: 'rgba(0,0,0,0.3)',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 1,
-        shadowRadius: 8,
+        shadowRadius: 10,
       },
       pressStyle: {
         y: 1,
         scale: 0.95,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
         shadowOpacity: 0,
       },
     },
@@ -185,6 +193,10 @@ export const sharedButtonVariants = {
       },
     },
     chip: {
+      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+      color: '$color',
+      borderColor: 'rgba(255, 255, 255, 0.1)',
+      borderWidth: 1,
       borderRadius: '$4',
       height: 28,
       px: '$3',
@@ -211,10 +223,13 @@ export const sharedButtonVariants = {
       justifyContent: 'flex-start',
       width: '100%',
       shadowOpacity: 0,
+      height: 44,
+      px: '$4',
+      color: '$color',
       hoverStyle: {
         y: 0,
         opacity: 1,
-        backgroundColor: '$glassBg',
+        backgroundColor: '$glassBgHover',
         shadowOpacity: 0,
       },
     },
@@ -348,7 +363,7 @@ export const sharedButtonVariants = {
 } as const;
 
 export const sharedButtonSizes = {
-  buttonSize: {
+  $uiSize: {
     sm: { height: 36, px: '$4', py: '$2', borderRadius: '$3' },
     md: { height: 48, px: '$6', py: '$3', borderRadius: '$4' },
     lg: { height: 60, px: '$8', py: '$4', borderRadius: '$5' },

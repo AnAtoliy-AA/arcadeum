@@ -178,7 +178,7 @@ export const CloseButton = ({ $variant, ...props }: CloseButtonProps) => (
     variant="icon"
     size="sm"
     data-testid="modal-close-button"
-    hoverStyle={{ rotate: '90deg' }}
+    hoverStyle={{ rotate: '180deg', scale: 1.1, ...props.hoverStyle }}
     gameVariant={$variant as GameVariant}
     {...props}
   />

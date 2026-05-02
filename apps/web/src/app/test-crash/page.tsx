@@ -2,10 +2,12 @@
 
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import { useIsMounted } from '@/shared/hooks/useIsMounted';
 
 function TestCrashContent() {
   const searchParams = useSearchParams();
-  const shouldCrash = searchParams?.get('crash') === 'true';
+  const isMounted = useIsMounted();
+  const shouldCrash = isMounted && searchParams?.get('crash') === 'true';
 
   if (shouldCrash) {
     throw new Error('This is a test crash!');

@@ -399,6 +399,7 @@ export default function GameRoomPage({
       <GamePageLayout
         roomId={roomId}
         room={room}
+        userId={snapshot.userId}
         inviteCode={room?.inviteCode}
         isDisconnected={isDisconnected}
         isReconnecting={isReconnecting}

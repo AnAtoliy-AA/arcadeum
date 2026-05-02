@@ -179,7 +179,6 @@ export const FullscreenButton = (props: ButtonProps) => (
   <IconButton
     size="sm"
     padding="$2"
-    borderRadius={8}
     pressStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
     $sm={{ scale: 0.85, padding: '$1' }}
     {...props}

@@ -281,13 +281,13 @@ export function ShipPlacementBoard({
     </ShipPalette>
   );
 
-  const btnSize = isMobile ? 'md' : 'lg';
+  const btnSize = isMobile ? 'sm' : 'lg';
 
   const actionsEl = (
     <PlacementActions>
       <RotateButton
         variant="secondary"
-        buttonSize={btnSize}
+        size={btnSize}
         onClick={handleRotate}
         disabled={!selectedShip}
       >
@@ -299,7 +299,7 @@ export function ShipPlacementBoard({
       </RotateButton>
       <ActionButton
         variant="primary"
-        buttonSize={btnSize}
+        size={btnSize}
         disabled={!isAllShipsPlaced || isPlacementComplete}
         onClick={onConfirmPlacement}
         className={
@@ -323,18 +323,14 @@ export function ShipPlacementBoard({
       {placedShipIds.size > 0 && !isPlacementComplete && (
         <ActionButton
           variant="secondary"
-          buttonSize={btnSize}
+          size={btnSize}
           onClick={onResetPlacement}
         >
           ↺ {t('games.sea_battle_v1.table.actions.resetPlacement')}
         </ActionButton>
       )}
       {!isPlacementComplete && onAutoPlace && (
-        <ActionButton
-          variant="secondary"
-          buttonSize={btnSize}
-          onClick={onAutoPlace}
-        >
+        <ActionButton variant="secondary" size={btnSize} onClick={onAutoPlace}>
           🎲{' '}
           {placedShipIds.size > 0
             ? t('games.sea_battle_v1.table.actions.randomize')
@@ -345,95 +341,96 @@ export function ShipPlacementBoard({
   );
 
   const boardEl = (
-    <BoardContainer>
-      <PlayerSection
-        backgroundColor={theme.boardBackground}
-        borderColor={theme.cellBorder}
-      >
-        <PlayerName color={theme.textColor}>
-          {t('games.sea_battle_v1.table.state.yourBoard')}
-        </PlayerName>
-        <BoardWithLabels>
-          <div />
-          <ColLabels>
-            {COL_LABELS.map((label) => (
-              <Label key={label} color={theme.textSecondaryColor}>
-                {label}
-              </Label>
-            ))}
-          </ColLabels>
-          <RowLabels>
-            {ROW_LABELS.map((label) => (
-              <Label key={label} color={theme.textSecondaryColor}>
-                {label}
-              </Label>
-            ))}
-          </RowLabels>
-          <BoardGrid
-            backgroundColor={theme.boardBackground}
-            borderColor={theme.cellBorder}
-            data-testid="sea-battle-board-grid"
-            pointerEvents="auto"
-          >
-            {board.map((row, rIndex) =>
-              row.map((cellState, cIndex) => {
-                const isHovered = hoveredCells.some(
-                  (c) => c.row === rIndex && c.col === cIndex,
-                );
-                const isInvalidCell = isHovered && isInvalidHover;
-                return (
-                  <BoardCell
-                    key={`${rIndex}-${cIndex}`}
-                    isClickable={!!selectedShip}
-                    backgroundColor={getCellBg(
-                      cellState,
-                      theme,
-                      isHovered,
-                      isInvalidCell,
-                    )}
-                    borderColor={
-                      isInvalidCell ? 'rgba(239,68,68,0.6)' : theme.cellBorder
-                    }
-                    borderRadius={parseInt(theme.borderRadius) || 4}
-                    data-row={rIndex}
-                    data-col={cIndex}
-                    data-highlighted={isHovered ? 'true' : 'false'}
-                    className={
-                      isHovered && !isInvalidCell ? 'sb-valid-pulse' : undefined
-                    }
-                    onMouseEnter={() => handleCellHover(rIndex, cIndex)}
-                    onMouseLeave={() => {
-                      handleCellHover(-1, -1);
-                      setIsInvalidHover(false);
-                    }}
-                    onPointerEnter={() => handleCellHover(rIndex, cIndex)}
-                    onPointerMove={() => handleCellHover(rIndex, cIndex)}
-                    onPointerLeave={() => {
-                      handleCellHover(-1, -1);
-                      setIsInvalidHover(false);
-                    }}
-                    onClick={() => handleCellClick(rIndex, cIndex)}
-                    {...getDropProps(rIndex, cIndex)}
-                  />
-                );
-              }),
-            )}
-          </BoardGrid>
-        </BoardWithLabels>
-      </PlayerSection>
-    </BoardContainer>
+    <PlayerSection
+      backgroundColor={theme.boardBackground}
+      borderColor={theme.cellBorder}
+    >
+      <PlayerName color={theme.textColor}>
+        {t('games.sea_battle_v1.table.state.yourBoard')}
+      </PlayerName>
+      <BoardWithLabels>
+        <div />
+        <ColLabels>
+          {COL_LABELS.map((label) => (
+            <Label key={label} color={theme.textSecondaryColor}>
+              {label}
+            </Label>
+          ))}
+        </ColLabels>
+        <RowLabels>
+          {ROW_LABELS.map((label) => (
+            <Label key={label} color={theme.textSecondaryColor}>
+              {label}
+            </Label>
+          ))}
+        </RowLabels>
+        <BoardGrid
+          backgroundColor={theme.boardBackground}
+          borderColor={theme.cellBorder}
+          data-testid="sea-battle-board-grid"
+          pointerEvents="auto"
+        >
+          {board.map((row, rIndex) =>
+            row.map((cellState, cIndex) => {
+              const isHovered = hoveredCells.some(
+                (c) => c.row === rIndex && c.col === cIndex,
+              );
+              const isInvalidCell = isHovered && isInvalidHover;
+              return (
+                <BoardCell
+                  key={`${rIndex}-${cIndex}`}
+                  isClickable={!!selectedShip}
+                  backgroundColor={getCellBg(
+                    cellState,
+                    theme,
+                    isHovered,
+                    isInvalidCell,
+                  )}
+                  borderColor={
+                    isInvalidCell ? 'rgba(239,68,68,0.6)' : theme.cellBorder
+                  }
+                  borderRadius={parseInt(theme.borderRadius) || 4}
+                  data-row={rIndex}
+                  data-col={cIndex}
+                  data-highlighted={isHovered ? 'true' : 'false'}
+                  className={
+                    isHovered && !isInvalidCell ? 'sb-valid-pulse' : undefined
+                  }
+                  onMouseEnter={() => handleCellHover(rIndex, cIndex)}
+                  onMouseLeave={() => {
+                    handleCellHover(-1, -1);
+                    setIsInvalidHover(false);
+                  }}
+                  onPointerEnter={() => handleCellHover(rIndex, cIndex)}
+                  onPointerMove={() => handleCellHover(rIndex, cIndex)}
+                  onPointerLeave={() => {
+                    handleCellHover(-1, -1);
+                    setIsInvalidHover(false);
+                  }}
+                  onClick={() => handleCellClick(rIndex, cIndex)}
+                  {...getDropProps(rIndex, cIndex)}
+                />
+              );
+            }),
+          )}
+        </BoardGrid>
+      </BoardWithLabels>
+    </PlayerSection>
   );
 
   // Mobile: compact palette + actions above board so buttons don't overlap the grid
   // Desktop: palette beside board, actions below
   if (isMobile) {
     return (
-      <YStack width="100%" gap="$2" onDragEnd={handleDragEnd}>
+      <YStack
+        width="100%"
+        gap="$2"
+        onDragEnd={handleDragEnd}
+        paddingHorizontal="$1"
+      >
         {shipPaletteEl}
         {actionsEl}
-        <YStack maxWidth={420} alignSelf="center" width="100%">
-          {boardEl}
-        </YStack>
+        <BoardContainer alignSelf="center">{boardEl}</BoardContainer>
       </YStack>
     );
   }

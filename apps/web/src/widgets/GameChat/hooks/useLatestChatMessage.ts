@@ -3,6 +3,7 @@ import type { ChatLogEntry } from '../store/gameChatStore';
 
 interface LatestChatMessage {
   id: string;
+  senderId: string;
   senderName: string;
   message: string;
 }
@@ -28,6 +29,7 @@ export function useLatestChatMessage(
 
     return {
       id: lastChatMessage.id,
+      senderId: lastChatMessage.senderId || '',
       senderName: lastChatMessage.senderName || 'Player',
       message: lastChatMessage.message,
     };

@@ -51,7 +51,7 @@ const AmbientGlow = styled(YStack, {
   top: '-60%',
   left: '-60%',
   width: '220%',
-  height: '220%',
+  height: '100%',
   pointerEvents: 'none',
   zIndex: 0,
   opacity: 0.5,

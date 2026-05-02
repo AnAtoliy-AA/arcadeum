@@ -1,6 +1,7 @@
 export const esMessages = {
   coup: { name: 'Coup' },
   'pandemic-lite': { name: 'Pandemic: Rapid Response' },
+  glimworm_v1: { name: 'Glimworm' },
   lounge: {
     activeTitle: 'Salas de Juego',
     emptyTitle: 'No se encontraron salas. ¡Crea una para empezar!',
@@ -206,7 +207,32 @@ export const esMessages = {
   },
   table: {
     controlPanel: {
-      spectating: 'Spectating',
+      spectating: 'Espectador',
+      fullscreen: 'Pantalla completa',
+      exitFullscreen: 'Salir de pantalla completa',
+      enterFullscreen: 'Pantalla completa',
+      rules: 'Reglas',
+    },
+    chat: {
+      show: 'Mostrar chat',
+      hide: 'Ocultar chat',
+    },
+    victory: {
+      title: '¡Victoria!',
+      message: '¡Excelente desempeño! Has dominado la partida.',
+    },
+    defeat: {
+      title: 'Derrota',
+      message: 'Mala suerte esta vez. ¿Listo para otra ronda?',
+    },
+    rematch: {
+      title: '¿Jugar de nuevo?',
+      description:
+        'Selecciona a los jugadores que quieres invitar para la revancha.',
+      button: 'Solicitar revancha',
+      loading: 'Enviando...',
+      noPlayers: 'No hay otros jugadores disponibles para la revancha',
+      messagePlaceholder: 'Añade un mensaje amistoso (opcional)',
     },
   },
 };

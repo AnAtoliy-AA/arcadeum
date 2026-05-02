@@ -79,7 +79,8 @@ const GameHeader = styled(XStack, {
   borderBottomColor: '$glassBorder',
   marginHorizontal: -28,
   marginTop: -28,
-  position: 'relative',
+  position: 'sticky',
+  top: -28,
   zIndex: 30,
   flexShrink: 0,
   overflow: 'hidden',
@@ -89,6 +90,7 @@ const GameHeader = styled(XStack, {
     paddingVertical: '$2',
     marginHorizontal: -8,
     marginTop: -8,
+    top: -8,
     gap: '$2',
   },
 });
@@ -198,7 +200,6 @@ const FullscreenButton = (props: React.ComponentProps<typeof IconButton>) => (
   <IconButton
     size="sm"
     padding="$2"
-    borderRadius={8}
     pressStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
     {...props}
   />

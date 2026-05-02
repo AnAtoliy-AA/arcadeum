@@ -93,7 +93,7 @@ export function HeaderInteractive() {
                 href={routes.support}
                 variant="secondary"
                 size="sm"
-                gap="$2"
+                gap="$3"
                 aria-label={t('common.actions.support')}
               >
                 <SupportIcon size={18} />

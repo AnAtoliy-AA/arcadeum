@@ -1,6 +1,7 @@
 export const enMessages = {
   coup: { name: 'Coup' },
   'pandemic-lite': { name: 'Pandemic: Rapid Response' },
+  glimworm_v1: { name: 'Glimworm' },
   lounge: {
     activeTitle: 'Game Rooms',
     emptyTitle: 'No rooms found. Create one to get started!',
@@ -212,6 +213,22 @@ export const enMessages = {
     chat: {
       show: 'Show Chat',
       hide: 'Hide Chat',
+    },
+    victory: {
+      title: 'Victory!',
+      message: 'Excellent performance! You dominated the game.',
+    },
+    defeat: {
+      title: 'Defeat',
+      message: 'Tough luck this time. Ready for another round?',
+    },
+    rematch: {
+      title: 'Play Again?',
+      description: 'Select the players you want to invite for a rematch.',
+      button: 'Request Rematch',
+      loading: 'Sending...',
+      noPlayers: 'No other players available for a rematch',
+      messagePlaceholder: 'Add a friendly message (optional)',
     },
   },
 };

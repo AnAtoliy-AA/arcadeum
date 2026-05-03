@@ -1,13 +1,15 @@
-'use client';
+import PaymentClient from './PaymentClient';
+import type { Metadata } from 'next';
+import { routes } from '@/shared/config/routes';
 
-import dynamic from 'next/dynamic';
-import { PageLoading } from '@/shared/ui/Loading/PageLoading';
-
-const PaymentPage = dynamic(() => import('./PaymentPage'), {
-  loading: () => <PageLoading />,
-  ssr: false,
-});
+export const metadata: Metadata = {
+  title: 'Payment',
+  description: 'Manage your payments and subscriptions.',
+  alternates: {
+    canonical: routes.payment,
+  },
+};
 
 export default function PaymentRoute() {
-  return <PaymentPage />;
+  return <PaymentClient />;
 }

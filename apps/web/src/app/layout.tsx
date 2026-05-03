@@ -23,9 +23,6 @@ export const metadata: Metadata = {
   },
   description: appConfig.seoDescription,
   manifest: '/manifest.json',
-  alternates: {
-    canonical: '/',
-  },
   icons: {
     icon: '/favicon.png',
     apple: '/icon-192x192.png',

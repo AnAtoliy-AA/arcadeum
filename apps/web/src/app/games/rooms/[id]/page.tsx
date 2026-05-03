@@ -6,6 +6,7 @@ import { appConfig, SSR_TIMEOUT } from '@/shared/config/app-config';
 import { handleSsrFetchError } from '@/shared/lib/ssr';
 import GameRoomClient from './GameRoomClient';
 import GameRoomLoading from './loading';
+import { routes } from '@/shared/config/routes';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -18,6 +19,9 @@ export async function generateMetadata({
   return {
     title: `Game Room | ${appConfig.appName}`,
     description: `Join game room ${resolvedParams.id} on ${appConfig.appName}.`,
+    alternates: {
+      canonical: routes.gameRoom(resolvedParams.id),
+    },
   };
 }
 

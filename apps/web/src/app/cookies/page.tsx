@@ -1,5 +1,15 @@
 import { getTranslations } from '@/shared/i18n/server';
+import type { Metadata } from 'next';
+import { routes } from '@/shared/config/routes';
 import CookiePolicyClient from './CookiePolicyClient';
+
+export const metadata: Metadata = {
+  title: 'Cookie Policy',
+  description: 'How we use cookies to improve your experience.',
+  alternates: {
+    canonical: routes.cookies,
+  },
+};
 
 /**
  * Cookie Policy Page

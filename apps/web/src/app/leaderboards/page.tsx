@@ -1,5 +1,14 @@
 import { getTranslations } from '@/shared/i18n/server';
+import type { Metadata } from 'next';
 import LeaderboardsClient from './LeaderboardsClient';
+
+export const metadata: Metadata = {
+  title: 'Leaderboards',
+  description: 'See the top players and rankings.',
+  alternates: {
+    canonical: '/leaderboards',
+  },
+};
 
 /**
  * Leaderboards Page

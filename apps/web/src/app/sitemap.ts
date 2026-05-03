@@ -16,7 +16,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/stats',
     '/referrals',
     '/blog',
-    '/chat',
     '/chats',
     '/community',
     '/cookies',

@@ -1,5 +1,16 @@
 import { getTranslations } from '@/shared/i18n/server';
+import type { Metadata } from 'next';
+import { routes } from '@/shared/config/routes';
 import HelpClient from './HelpClient';
+
+export const metadata: Metadata = {
+  title: 'Help Center',
+  description:
+    'Find answers to common questions and learn how to use the platform.',
+  alternates: {
+    canonical: routes.help,
+  },
+};
 
 /**
  * Help Page

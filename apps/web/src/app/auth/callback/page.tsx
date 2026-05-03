@@ -1,20 +1,18 @@
-'use client';
+import AuthCallbackClient from './AuthCallbackClient';
+import type { Metadata } from 'next';
+import { routes } from '@/shared/config/routes';
 
-import dynamic from 'next/dynamic';
-import { Suspense } from 'react';
-
-const AuthPageWrapper = dynamic(
-  () => import('@/features/auth/ui/AuthPageWrapper'),
-  {
-    ssr: false,
-    loading: () => null,
+export const metadata: Metadata = {
+  title: 'Auth Callback',
+  robots: {
+    index: false,
+    follow: false,
   },
-);
+  alternates: {
+    canonical: routes.authCallback,
+  },
+};
 
 export default function AuthCallbackRoute() {
-  return (
-    <Suspense fallback={null}>
-      <AuthPageWrapper />
-    </Suspense>
-  );
+  return <AuthCallbackClient />;
 }

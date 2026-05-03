@@ -45,6 +45,7 @@ export const routes = {
   community: '/community',
   rewards: '/rewards',
   tournaments: '/tournaments',
+  leaderboards: '/leaderboards',
   developers: '/developers',
 
   // System

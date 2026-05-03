@@ -4,9 +4,23 @@ import type { GameRoomSummary } from '@/shared/types/games';
 import { SSR_TIMEOUT } from '@/shared/config/app-config';
 import { handleSsrFetchError } from '@/shared/lib/ssr';
 import GameDetailClient from './GameDetailClient';
+import type { Metadata } from 'next';
+import { routes } from '@/shared/config/routes';
 
 interface PageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  return {
+    title: 'Game Details',
+    alternates: {
+      canonical: routes.gameDetail(id),
+    },
+  };
 }
 
 export default async function GameDetailRoute({ params }: PageProps) {

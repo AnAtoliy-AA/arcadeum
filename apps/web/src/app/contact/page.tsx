@@ -1,5 +1,6 @@
 import { appConfig } from '@/shared/config/app-config';
 import { getTranslations } from '@/shared/i18n/server';
+import { routes } from '@/shared/config/routes';
 import ContactClient from './ContactClient';
 
 const SUPPORT_EMAIL =
@@ -9,6 +10,9 @@ const WORKING_HOURS =
 
 export const metadata = {
   title: `Contact Us - ${appConfig.appName}`,
+  alternates: {
+    canonical: routes.contact,
+  },
 };
 
 export default async function ContactPage() {

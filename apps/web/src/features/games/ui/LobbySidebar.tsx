@@ -143,6 +143,26 @@ export function LobbySidebar({
   } | null>(null);
   const [showLeaveConfirm, setShowLeaveConfirm] = React.useState(false);
 
+  const handleKickClose = React.useCallback(() => {
+    setKickTarget(null);
+  }, [setKickTarget]);
+
+  const handleKickConfirm = React.useCallback(() => {
+    if (kickTarget) {
+      onKickPlayer?.(kickTarget.id);
+      setKickTarget(null);
+    }
+  }, [kickTarget, onKickPlayer, setKickTarget]);
+
+  const handleLeaveClose = React.useCallback(() => {
+    setShowLeaveConfirm(false);
+  }, [setShowLeaveConfirm]);
+
+  const handleLeaveConfirm = React.useCallback(() => {
+    onLeaveRoom?.();
+    setShowLeaveConfirm(false);
+  }, [onLeaveRoom, setShowLeaveConfirm]);
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, {
@@ -399,13 +419,8 @@ export function LobbySidebar({
 
       <ConfirmationModal
         open={!!kickTarget}
-        onClose={() => setKickTarget(null)}
-        onConfirm={() => {
-          if (kickTarget) {
-            onKickPlayer?.(kickTarget.id);
-            setKickTarget(null);
-          }
-        }}
+        onClose={handleKickClose}
+        onConfirm={handleKickConfirm}
         title={t('games.common.kickPlayer.confirmTitle')}
         message={t('games.common.kickPlayer.confirmMessage', {
           playerName: kickTarget?.name ?? '',
@@ -416,8 +431,8 @@ export function LobbySidebar({
 
       <ConfirmationModal
         open={showLeaveConfirm}
-        onClose={() => setShowLeaveConfirm(false)}
-        onConfirm={onLeaveRoom}
+        onClose={handleLeaveClose}
+        onConfirm={handleLeaveConfirm}
         title={t('games.common.leaveRoom.confirmTitle')}
         message={t('games.common.leaveRoom.confirmMessage')}
         confirmLabel={t('games.common.leaveRoom.confirmButton')}

@@ -29,7 +29,7 @@ test.describe('Home Page', () => {
   });
 
   test('should render footer', async ({ page }) => {
-    const footer = page.locator('main footer');
+    const footer = page.getByTestId('home-footer').first();
     await expect(footer).toBeVisible();
   });
 

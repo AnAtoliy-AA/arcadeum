@@ -10,6 +10,7 @@ import {
   EmptyState,
   YStack,
   Button,
+  Spinner,
 } from '@arcadeum/ui';
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -36,7 +37,23 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Store
-  const { messages, isConnected, setMessages, reset } = useChatStore();
+  const {
+    messages,
+    isConnected,
+    setMessages,
+    reset,
+    loading: isLoading,
+    setLoading,
+  } = useChatStore();
+
+  // Handle chatId changes: reset messages and set loading state
+  // We do this during render to avoid cascading renders in useEffect
+  const [prevChatId, setPrevChatId] = useState(chatId);
+  if (chatId !== prevChatId) {
+    setPrevChatId(chatId);
+    setLoading(true);
+    reset();
+  }
 
   // Socket Hook
   const { sendMessage } = useChatSocket({ chatId, receiverIds });
@@ -48,12 +65,16 @@ export default function ChatPage() {
     chatApi
       .getMessages(chatId, { token: snapshot.accessToken })
       .then(setMessages)
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [chatId, snapshot.accessToken, setMessages, setLoading]);
 
+  // Reset messages on unmount
+  useEffect(() => {
     return () => {
       reset();
     };
-  }, [chatId, snapshot.accessToken, setMessages, reset]);
+  }, [reset]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
@@ -142,26 +163,41 @@ export default function ChatPage() {
             }
           />
 
-          <ScrollView flex={1} paddingHorizontal="$4" paddingVertical="$4">
-            <YStack gap="$4">
-              {messages.map((msg: ChatMessageData) => {
-                if (!msg) return null;
-                const isEncrypted = !msg.content && '__encrypted' in msg;
-                if (!msg.content && !isEncrypted) return null;
-
-                const isOwn = msg.senderId === snapshot.userId;
-
-                return (
-                  <ChatMessage
-                    key={msg.id}
-                    content={msg.content || ''}
-                    senderName={msg.senderUsername}
-                    timestamp={formatSafeTime(msg.timestamp)}
-                    isOwn={isOwn}
-                    isEncrypted={isEncrypted}
+          <ScrollView
+            flex={1}
+            paddingHorizontal="$4"
+            paddingVertical="$4"
+            data-testid="chat-scroll-view"
+          >
+            <YStack gap="$4" data-testid="chat-messages-list">
+              {isLoading && messages.length === 0 ? (
+                <YStack flex={1} ai="center" jc="center" py="$10">
+                  <Spinner
+                    data-testid="chat-loading-spinner"
+                    size="large"
+                    color="$primary"
                   />
-                );
-              })}
+                </YStack>
+              ) : (
+                messages.map((msg: ChatMessageData) => {
+                  if (!msg) return null;
+                  const isEncrypted = !msg.content && '__encrypted' in msg;
+                  if (!msg.content && !isEncrypted) return null;
+
+                  const isOwn = msg.senderId === snapshot.userId;
+
+                  return (
+                    <ChatMessage
+                      key={msg.id}
+                      content={msg.content || ''}
+                      senderName={msg.senderUsername}
+                      timestamp={formatSafeTime(msg.timestamp)}
+                      isOwn={isOwn}
+                      isEncrypted={isEncrypted}
+                    />
+                  );
+                })
+              )}
               <div ref={messagesEndRef} />
             </YStack>
           </ScrollView>

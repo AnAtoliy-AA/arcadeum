@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.2] - 2026-05-03
+
+### Fixed
+- token colors (N/A)
+- sitemap ts (ARC-564)
+- homepage e2e test (ARC-564)
+- chat message e2e test for ci (ARC-564)
+- chat interactions e2e test (N/A)
+- tamagui config colors (N/A)
+
+### Refactored
+- integrate Tamagui Dialog.Close for modal dismissals and optimize confirmation modal event handlers (ARC-564)
+- integrate Tamagui Dialog.Close for modal dismissals and optimize confirmation modal event handlers (ARC-564)
+- update routing configuration, implement SEO metadata across pages, and add TestCrash utility (ARC-564)
+
+
 ## [1.11.1] - 2026-05-03
 
 ### Fixed

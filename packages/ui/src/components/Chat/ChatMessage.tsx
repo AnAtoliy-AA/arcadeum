@@ -123,6 +123,7 @@ export const ChatMessage = memo(function ChatMessage({
       isOwn={isOwn} 
       type={type}
       enterStyle={{ opacity: 0, scale: 0.9, y: 15 }}
+      data-testid="chat-message"
     >
       {!isOwn && !isSystem && senderName && (
         <XStack ai="center" gap="$2" mb="$1" px="$2">

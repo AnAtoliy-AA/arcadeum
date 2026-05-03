@@ -134,17 +134,27 @@ test.describe('Chat Interactions', () => {
 
     await navigateTo(page, '/chat?chatId=chat-1&title=Test%20User');
 
-    // Ensure the chat input is visible (indicates hydration is complete)
+    // Ensure the chat input is visible (indicates basic component rendering)
     const input = page.getByPlaceholder(/message|сообщение|Type a message/i);
     await expect(input.first()).toBeVisible();
 
-    // Wait for initial messages to be rendered to ensure the component is stable
-    // We use a more relaxed locator for the first message and ensure it's attached
-    const firstMessage = page.getByText('Message 1').first();
-    await expect(firstMessage).toBeAttached();
+    // Wait for the message list container to be present
+    const messagesList = page.getByTestId('chat-messages-list');
+    await expect(messagesList).toBeAttached();
+
+    // Wait for messages to be loaded (spinner disappears and messages appear)
+    // We expect "Message 1" to be in the list
+    const firstMessage = page
+      .getByTestId('chat-message')
+      .filter({ hasText: 'Message 1' })
+      .first();
+    await expect(firstMessage).toBeAttached({ timeout: 15000 });
 
     // Wait for the newest message to appear in the DOM
-    const newestMessage = page.getByText('Newest message').first();
+    const newestMessage = page
+      .getByTestId('chat-message')
+      .filter({ hasText: 'Newest message' })
+      .first();
     await expect(newestMessage).toBeAttached();
 
     // Finally verify it is visible to the user (scrolled into view/rendered)

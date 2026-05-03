@@ -213,9 +213,18 @@ export function ReusableGameLobby({
     [t],
   );
 
+  const handleDeleteClose = useCallback(() => {
+    setShowDeleteConfirm(false);
+  }, [setShowDeleteConfirm]);
+
+  const handleDeleteConfirm = useCallback(() => {
+    onDeleteRoom?.();
+    setShowDeleteConfirm(false);
+  }, [onDeleteRoom, setShowDeleteConfirm]);
+
   const handleDeleteClick = useCallback(() => {
     setShowDeleteConfirm(true);
-  }, []);
+  }, [setShowDeleteConfirm]);
 
   const defaultSubtitle = useMemo(() => {
     if (room.status !== 'lobby') {
@@ -239,8 +248,8 @@ export function ReusableGameLobby({
 
       <ConfirmationModal
         open={showDeleteConfirm}
-        onClose={() => setShowDeleteConfirm(false)}
-        onConfirm={onDeleteRoom}
+        onClose={handleDeleteClose}
+        onConfirm={handleDeleteConfirm}
         title={deleteRoomTranslations.confirmTitle}
         message={deleteRoomTranslations.confirmMessage}
         confirmLabel={deleteRoomTranslations.confirmButton}

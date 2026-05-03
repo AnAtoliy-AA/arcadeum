@@ -49,11 +49,14 @@ export default function ChatPage() {
       .getMessages(chatId, { token: snapshot.accessToken })
       .then(setMessages)
       .catch(() => {});
+  }, [chatId, snapshot.accessToken, setMessages]);
 
+  // Reset messages only when chatId changes or component unmounts
+  useEffect(() => {
     return () => {
       reset();
     };
-  }, [chatId, snapshot.accessToken, setMessages, reset]);
+  }, [chatId, reset]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });

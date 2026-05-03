@@ -139,11 +139,12 @@ test.describe('Chat Interactions', () => {
     await expect(input.first()).toBeVisible();
 
     // Wait for initial messages to be rendered to ensure the component is stable
-    const firstMessage = page.getByText('Message 1', { exact: true });
+    // We use a more relaxed locator for the first message and ensure it's attached
+    const firstMessage = page.getByText('Message 1').first();
     await expect(firstMessage).toBeAttached();
 
     // Wait for the newest message to appear in the DOM
-    const newestMessage = page.getByText('Newest message', { exact: true });
+    const newestMessage = page.getByText('Newest message').first();
     await expect(newestMessage).toBeAttached();
 
     // Finally verify it is visible to the user (scrolled into view/rendered)

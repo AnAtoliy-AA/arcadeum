@@ -172,7 +172,11 @@ export default function ChatPage() {
             <YStack gap="$4" data-testid="chat-messages-list">
               {isLoading && messages.length === 0 ? (
                 <YStack flex={1} ai="center" jc="center" py="$10">
-                  <Spinner size="large" color="$primary" />
+                  <Spinner
+                    data-testid="chat-loading-spinner"
+                    size="large"
+                    color="$primary"
+                  />
                 </YStack>
               ) : (
                 messages.map((msg: ChatMessageData) => {

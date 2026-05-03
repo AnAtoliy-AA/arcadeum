@@ -57,7 +57,18 @@ export default function SeaBattleGame({
 
   const isLobby = room?.status === 'lobby';
 
-  const [showRules, setShowRules] = useState(isLobby);
+  // Rules visibility logic
+  const [showRules, setShowRules] = useState(false);
+  const [lastIsLobby, setLastIsLobby] = useState(false);
+
+  // Sync showRules with isLobby change (auto-show rules when entering lobby)
+  if (isLobby && !lastIsLobby) {
+    setLastIsLobby(true);
+    setShowRules(true);
+  } else if (!isLobby && lastIsLobby) {
+    setLastIsLobby(false);
+  }
+
   const [resultModalDismissed, setResultModalDismissed] = useState(false);
 
   const {

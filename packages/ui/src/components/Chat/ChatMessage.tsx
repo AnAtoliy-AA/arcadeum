@@ -123,7 +123,6 @@ export const ChatMessage = memo(function ChatMessage({
       isOwn={isOwn} 
       type={type}
       enterStyle={{ opacity: 0, scale: 0.9, y: 15 }}
-      data-testid="chat-message"
     >
       {!isOwn && !isSystem && senderName && (
         <XStack ai="center" gap="$2" mb="$1" px="$2">
@@ -133,7 +132,7 @@ export const ChatMessage = memo(function ChatMessage({
           </Typography>
         </XStack>
       )}
-      <MessageBubble isOwn={isOwn} type={type}>
+      <MessageBubble isOwn={isOwn} type={type} data-testid="chat-message">
         <Typography 
           uiSize={isSystem ? 'xs' : 'sm'} 
           color={isOwn && !isSystem ? 'white' : '$color'}

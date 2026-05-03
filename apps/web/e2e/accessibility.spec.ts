@@ -47,7 +47,7 @@ test.describe('Accessibility', () => {
     await expect(first).toBeFocused({});
 
     // 3. Simple Tab Press
-    await page.keyboard.press('Tab', { delay: 300 });
+    await page.keyboard.press('Tab', { delay: 100 });
 
     // Ensure the first element LOST focus
     await expect(first).not.toBeFocused({});
@@ -85,10 +85,6 @@ test.describe('Accessibility', () => {
 
   test('should have alt text on images', async ({ page }) => {
     await navigateTo(page, '/');
-
-    // Ensure the page is fully loaded and settled
-    await page.waitForLoadState('domcontentloaded');
-    await page.waitForLoadState('networkidle');
 
     // Wait for the main content to be visible to ensure images have started loading
     await expect(page.locator('main').first()).toBeVisible();

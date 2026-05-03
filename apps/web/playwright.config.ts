@@ -24,8 +24,8 @@ function getPort(
 
 const WEB_PORT = getPort('.env.local', 'WEB_PORT', '3000');
 const BE_PORT = getPort('../be/.env', 'BE_PORT', '4000');
-const BASE_URL = `http://localhost:${WEB_PORT}`;
-const BE_URL = `http://localhost:${BE_PORT}`;
+const BASE_URL = `http://127.0.0.1:${WEB_PORT}`;
+const BE_URL = `http://127.0.0.1:${BE_PORT}`;
 
 // Export for use in tests/fixtures
 process.env.WEB_PORT = WEB_PORT;

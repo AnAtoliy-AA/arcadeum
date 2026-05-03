@@ -92,13 +92,15 @@ test.describe('Chat Interactions', () => {
   });
 
   test('should auto-scroll to bottom on new message', async ({ page }) => {
+    // Close WebSocket to avoid interference from socket events that might overwrite state
+    await page.routeWebSocket('**/socket.io/**', (ws) => ws.close());
+
     await page.route(
       (url) =>
         url.pathname.includes('/chat/') && url.pathname.endsWith('/messages'),
       async (route) => {
         const method = route.request().method();
         if (method === 'GET') {
-          // Use timestamps in the past to ensure stable rendering and sorting
           const now = Date.now();
           const messages = Array.from({ length: 30 }).map((_, index) => ({
             id: `${index + 1}`,
@@ -124,8 +126,6 @@ test.describe('Chat Interactions', () => {
           });
 
           await handleRoute(route, messages);
-        } else if (method === 'OPTIONS') {
-          await handleRoute(route, null);
         } else {
           await route.continue();
         }
@@ -134,7 +134,11 @@ test.describe('Chat Interactions', () => {
 
     await navigateTo(page, '/chat?chatId=chat-1&title=Test%20User');
 
-    // Ensure the chat input is visible (indicates basic component rendering)
+    // Wait for the loading spinner to disappear to ensure messages are rendered
+    const spinner = page.getByTestId('chat-loading-spinner');
+    await expect(spinner).not.toBeVisible({ timeout: 10000 });
+
+    // Ensure the chat input is visible
     const input = page.getByPlaceholder(/message|сообщение|Type a message/i);
     await expect(input.first()).toBeVisible();
 
@@ -142,12 +146,8 @@ test.describe('Chat Interactions', () => {
     const messagesList = page.getByTestId('chat-messages-list');
     await expect(messagesList).toBeAttached();
 
-    // Wait for messages to be loaded (spinner disappears and messages appear)
-    // We expect "Message 1" to be in the list
-    const firstMessage = page
-      .getByTestId('chat-message')
-      .filter({ hasText: 'Message 1' })
-      .first();
+    // Wait for messages to be loaded. We expect "Message 1" to be in the list.
+    const firstMessage = page.getByText('Message 1').first();
     await expect(firstMessage).toBeAttached({ timeout: 15000 });
 
     // Wait for the newest message to appear in the DOM

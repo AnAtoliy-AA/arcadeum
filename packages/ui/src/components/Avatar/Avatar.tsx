@@ -87,7 +87,7 @@ export const Avatar = memo(function Avatar({
       {src ? (
         <img
           src={src}
-          alt={alt || name}
+          alt={alt ?? name}
           style={{ width: sizeValue, height: sizeValue, objectFit: 'cover', borderRadius: '50%' }}
           onError={(e) => {
             e.currentTarget.style.display = 'none';

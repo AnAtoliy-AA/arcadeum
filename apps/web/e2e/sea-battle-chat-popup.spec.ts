@@ -32,9 +32,10 @@ test.describe('Sea Battle Chat Message Popup', () => {
             transition-duration: 0.1s !important;
             transition-delay: 0s !important;
           }
-          [data-testid="chat-message-popup"], 
+          [data-testid="chat-message-popup"],
           [data-testid="chat-message-popup"] * {
-            animation-duration: 10s !important;
+            --popup-dismiss-duration: 30s !important;
+            animation-duration: 30s !important;
           }
         `;
         const container = document.head || document.documentElement;
@@ -278,9 +279,9 @@ test.describe('Sea Battle Chat Message Popup', () => {
     await expect(popup.getByText('Captain', { exact: false })).toBeVisible();
     await expect(popup).toBeVisible();
 
-    // Wait for the 3s auto-dismiss animation to complete (we set it to 3s in init script)
+    // Wait for the auto-dismiss animation to complete (we set it to 30s in init script for stability, but Playwright will wait)
     await expect(page.getByTestId('chat-message-popup')).not.toBeVisible({
-      timeout: 15000,
+      timeout: 45000,
     });
   });
 

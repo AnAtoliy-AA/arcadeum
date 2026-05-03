@@ -6,7 +6,7 @@ import { useGlimwormPixi } from './hooks/useGlimwormPixi';
 import { useGlimwormControls } from './hooks/useGlimwormControls';
 import { GlimwormHud } from './ui/GlimwormHud';
 import { GlimwormDeathOverlay } from './ui/GlimwormDeathOverlay';
-import { GlimwormLobbyExtras } from './ui/GlimwormLobbyExtras';
+import { GlimwormLobby } from './ui/GlimwormLobby';
 import { useGlimwormStore } from './store/glimwormStore';
 import { gameSocket } from '@/shared/lib/socket';
 import type { BaseGameWidgetProps } from '@/features/games/types/base';
@@ -14,7 +14,7 @@ import type { BaseGameWidgetProps } from '@/features/games/types/base';
 export default function GlimwormGame(
   props: BaseGameWidgetProps,
 ): React.JSX.Element {
-  const { roomId, currentUserId, isHost } = props;
+  const { roomId, currentUserId, isHost, room } = props;
   const canvasRef = useRef<HTMLDivElement | null>(null);
 
   useGlimwormSocket({ roomId, userId: currentUserId });
@@ -31,9 +31,23 @@ export default function GlimwormGame(
   }, [roomId, currentUserId]);
 
   const snapshotStatus = useGlimwormStore(
-    (s) => s.latestSnapshot?.status ?? 'lobby',
+    (s) => s.latestSnapshot?.status ?? null,
   );
-  const isLobby = snapshotStatus === 'lobby' || snapshotStatus === 'countdown';
+  // Use the live snapshot when present; otherwise fall back to room.status.
+  // Treat 'lobby' AND 'countdown' as lobby for UI purposes.
+  const effectiveStatus = snapshotStatus ?? room.status;
+  const isLobby =
+    effectiveStatus === 'lobby' || effectiveStatus === 'countdown';
+
+  if (isLobby && currentUserId) {
+    return (
+      <GlimwormLobby
+        room={room}
+        isHost={isHost}
+        currentUserId={currentUserId}
+      />
+    );
+  }
 
   return (
     <div
@@ -52,30 +66,9 @@ export default function GlimwormGame(
           background: '#06070d',
         }}
       />
-      {isLobby && currentUserId && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 16,
-            left: 16,
-            width: 320,
-            zIndex: 1,
-          }}
-        >
-          <GlimwormLobbyExtras
-            roomId={roomId}
-            userId={currentUserId}
-            isHost={isHost}
-          />
-        </div>
-      )}
-      {!isLobby && (
-        <>
-          <GlimwormHud />
-          <GlimwormDeathOverlay />
-        </>
-      )}
-      {isHost && currentUserId && !isLobby && (
+      <GlimwormHud />
+      <GlimwormDeathOverlay />
+      {isHost && currentUserId && (
         <button
           type="button"
           onClick={() => {

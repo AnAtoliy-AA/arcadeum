@@ -59,8 +59,8 @@ export const violetDarkTokens: ThemeTokens = {
   },
   buttons: {
     primary: {
-      gradientStart: '#6d28d9',
-      gradientEnd: '#a78bfa',
+      gradientStart: '#5b21b6',
+      gradientEnd: '#7c3aed',
       text: '#fff',
       shadow: '0 12px 30px rgba(109,40,217,0.45)',
       hoverShadow: '0 16px 36px rgba(109,40,217,0.55)',
@@ -144,8 +144,8 @@ export const violetLightTokens: ThemeTokens = {
   },
   buttons: {
     primary: {
-      gradientStart: '#6d28d9',
-      gradientEnd: '#8b5cf6',
+      gradientStart: '#5b21b6',
+      gradientEnd: '#7c3aed',
       text: '#ffffff',
       shadow: '0 12px 30px rgba(109,40,217,0.3)',
       hoverShadow: '0 16px 36px rgba(109,40,217,0.4)',

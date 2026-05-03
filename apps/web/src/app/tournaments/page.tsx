@@ -1,5 +1,15 @@
 import { getTranslations } from '@/shared/i18n/server';
+import type { Metadata } from 'next';
+import { routes } from '@/shared/config/routes';
 import TournamentsClient from './TournamentsClient';
+
+export const metadata: Metadata = {
+  title: 'Tournaments',
+  description: 'Join competitive tournaments and win prizes.',
+  alternates: {
+    canonical: routes.tournaments,
+  },
+};
 
 /**
  * Tournaments Page

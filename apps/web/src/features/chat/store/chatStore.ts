@@ -12,6 +12,7 @@ interface ChatState {
   addMessage: (message: ChatMessage) => void;
   setConnected: (status: boolean) => void;
   setAuthenticated: (status: boolean) => void;
+  setLoading: (loading: boolean) => void;
   reset: () => void;
 }
 
@@ -47,6 +48,7 @@ export const useChatStore = create<ChatState>((set) => ({
     }),
   setConnected: (isConnected) => set({ isConnected }),
   setAuthenticated: (isAuthenticated) => set({ isAuthenticated }),
+  setLoading: (loading) => set({ loading }),
   reset: () =>
     set({
       messages: [],

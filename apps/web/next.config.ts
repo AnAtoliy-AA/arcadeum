@@ -227,6 +227,16 @@ const nextConfig: NextConfig = {
     },
   },
   productionBrowserSourceMaps: false,
+  trailingSlash: false,
+  async redirects() {
+    return [
+      {
+        source: '/home',
+        destination: '/',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 const tamaguiPlugin = withTamagui({

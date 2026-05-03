@@ -8,10 +8,14 @@ import {
 import { SSR_TIMEOUT } from '@/shared/config/app-config';
 import StatsClient from './StatsClient';
 import StatsLoading from './loading';
+import { routes } from '@/shared/config/routes';
 
 export const metadata = {
   title: 'Player Statistics - Arcadeum',
   description: 'View your game performance and statistics',
+  alternates: {
+    canonical: routes.stats,
+  },
 };
 
 interface PageProps {

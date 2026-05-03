@@ -35,8 +35,11 @@ export function useLatestChatMessage(
     };
   }, [logs]);
 
-  const latestMessage =
-    derivedMessage && derivedMessage.id !== dismissedId ? derivedMessage : null;
+  const latestMessage = useMemo(() => {
+    return derivedMessage && derivedMessage.id !== dismissedId
+      ? derivedMessage
+      : null;
+  }, [derivedMessage, dismissedId]);
 
   const dismiss = useCallback(() => {
     if (derivedMessage) {

@@ -70,9 +70,9 @@ export async function navigateTo(
     page.on('response', onResponse);
 
     try {
-      // Increased timeout to 90s to match global config and handle slow dev server compilation
-      await page.goto(path, { waitUntil: 'domcontentloaded' });
-      await page.waitForLoadState('load', {}).catch(() => {});
+      // Use 'commit' to avoid waiting for full DOM parsing/scripts during slow dev compilation.
+      // Ready state is instead verified via robust hydration markers below.
+      await page.goto(path, { waitUntil: 'commit' });
 
       if (shouldReload) {
         console.warn(

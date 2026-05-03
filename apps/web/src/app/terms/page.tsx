@@ -1,5 +1,6 @@
 import { appConfig } from '@/shared/config/app-config';
 import { getTranslations } from '@/shared/i18n/server';
+import { routes } from '@/shared/config/routes';
 import TermsClient from './TermsClient';
 
 const LEGAL_NAME =
@@ -14,6 +15,9 @@ const WORKING_HOURS =
 
 export const metadata = {
   title: `Terms of Service - ${appConfig.appName}`,
+  alternates: {
+    canonical: routes.terms,
+  },
 };
 
 export default async function TermsPage() {

@@ -1,5 +1,6 @@
 import { appConfig } from '@/shared/config/app-config';
 import { getTranslations } from '@/shared/i18n/server';
+import { routes } from '@/shared/config/routes';
 import PrivacyClient from './PrivacyClient';
 
 const PRIVACY_EMAIL =
@@ -7,6 +8,9 @@ const PRIVACY_EMAIL =
 
 export const metadata = {
   title: `Privacy Policy - ${appConfig.appName}`,
+  alternates: {
+    canonical: routes.privacy,
+  },
 };
 
 export default async function PrivacyPage() {

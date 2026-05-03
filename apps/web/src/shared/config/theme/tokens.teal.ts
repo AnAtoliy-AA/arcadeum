@@ -144,8 +144,8 @@ export const tealLightTokens: ThemeTokens = {
   },
   buttons: {
     primary: {
-      gradientStart: '#0d9488',
-      gradientEnd: '#2dd4bf',
+      gradientStart: '#0f766e',
+      gradientEnd: '#0d9488',
       text: '#fff',
       shadow: '0 12px 30px rgba(13,148,136,0.3)',
       hoverShadow: '0 16px 36px rgba(13,148,136,0.4)',

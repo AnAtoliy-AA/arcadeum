@@ -92,12 +92,16 @@ test.describe('Chat Interactions', () => {
   });
 
   test('should auto-scroll to bottom on new message', async ({ page }) => {
+    // Close WebSocket to avoid interference from socket events that might overwrite state
+    await page.routeWebSocket('**/socket.io/**', (ws) => ws.close());
+
     await page.route(
       (url) =>
         url.pathname.includes('/chat/') && url.pathname.endsWith('/messages'),
       async (route) => {
         const method = route.request().method();
         if (method === 'GET') {
+          const now = Date.now();
           const messages = Array.from({ length: 30 }).map((_, index) => ({
             id: `${index + 1}`,
             chatId: 'chat-1',
@@ -108,8 +112,9 @@ test.describe('Chat Interactions', () => {
             content: `Message ${index + 1}`,
             senderUsername: index % 2 === 0 ? 'testuser' : 'otheruser',
             receiverIds: ['507f191e810c19729de860ea'],
-            timestamp: new Date(Date.now() + index * 1000).toISOString(),
+            timestamp: new Date(now - (40 - index) * 1000).toISOString(),
           }));
+
           messages.push({
             id: 'last',
             chatId: 'chat-1',
@@ -117,12 +122,10 @@ test.describe('Chat Interactions', () => {
             content: 'Newest message',
             senderUsername: 'otheruser',
             receiverIds: ['507f191e810c19729de860ea'],
-            timestamp: new Date().toISOString(),
+            timestamp: new Date(now).toISOString(),
           });
 
           await handleRoute(route, messages);
-        } else if (method === 'OPTIONS') {
-          await handleRoute(route, null);
         } else {
           await route.continue();
         }
@@ -131,14 +134,30 @@ test.describe('Chat Interactions', () => {
 
     await navigateTo(page, '/chat?chatId=chat-1&title=Test%20User');
 
-    // Ensure the chat input is visible first (indicates hydration is complete)
+    // Wait for the loading spinner to disappear to ensure messages are rendered
+    const spinner = page.getByTestId('chat-loading-spinner');
+    await expect(spinner).not.toBeVisible({ timeout: 10000 });
+
+    // Ensure the chat input is visible
     const input = page.getByPlaceholder(/message|сообщение|Type a message/i);
-    await expect(input.first()).toBeVisible({});
+    await expect(input.first()).toBeVisible();
 
-    // Wait for the newest message to appear
-    const newestMessage = page.getByText('Newest message');
-    await expect(newestMessage).toBeVisible({});
+    // Wait for the message list container to be present
+    const messagesList = page.getByTestId('chat-messages-list');
+    await expect(messagesList).toBeAttached();
 
-    // Additional wait to ensure scroll has completed
+    // Wait for messages to be loaded. We expect "Message 1" to be in the list.
+    const firstMessage = page.getByText('Message 1').first();
+    await expect(firstMessage).toBeAttached({ timeout: 15000 });
+
+    // Wait for the newest message to appear in the DOM
+    const newestMessage = page
+      .getByTestId('chat-message')
+      .filter({ hasText: 'Newest message' })
+      .first();
+    await expect(newestMessage).toBeAttached();
+
+    // Finally verify it is visible to the user (scrolled into view/rendered)
+    await expect(newestMessage).toBeVisible();
   });
 });

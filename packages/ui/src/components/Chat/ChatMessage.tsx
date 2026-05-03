@@ -132,7 +132,7 @@ export const ChatMessage = memo(function ChatMessage({
           </Typography>
         </XStack>
       )}
-      <MessageBubble isOwn={isOwn} type={type}>
+      <MessageBubble isOwn={isOwn} type={type} data-testid="chat-message">
         <Typography 
           uiSize={isSystem ? 'xs' : 'sm'} 
           color={isOwn && !isSystem ? 'white' : '$color'}

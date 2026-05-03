@@ -6,10 +6,14 @@ import { appConfig, SSR_TIMEOUT } from '@/shared/config/app-config';
 import { handleSsrFetchError } from '@/shared/lib/ssr';
 import GamesClient from './GamesClient';
 import GamesLoading from './loading';
+import { routes } from '@/shared/config/routes';
 
 export const metadata: Metadata = {
   title: 'Games',
   description: `Explore the library of available board games on ${appConfig.appName}. Join or create a room to play with friends.`,
+  alternates: {
+    canonical: routes.games,
+  },
 };
 
 interface PageProps {

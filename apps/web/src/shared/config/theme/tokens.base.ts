@@ -59,8 +59,8 @@ export const lightTokens: ThemeTokens = {
   },
   buttons: {
     primary: {
-      gradientStart: '#2563eb',
-      gradientEnd: '#38bdf8',
+      gradientStart: '#1d4ed8',
+      gradientEnd: '#2563eb',
       text: '#f8fafc',
       shadow: '0 12px 30px rgba(37, 99, 235, 0.25)',
       hoverShadow: '0 16px 36px rgba(37, 99, 235, 0.35)',

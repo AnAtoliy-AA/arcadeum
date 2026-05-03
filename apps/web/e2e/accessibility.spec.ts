@@ -47,7 +47,7 @@ test.describe('Accessibility', () => {
     await expect(first).toBeFocused({});
 
     // 3. Simple Tab Press
-    await page.keyboard.press('Tab', { delay: 300 });
+    await page.keyboard.press('Tab', { delay: 100 });
 
     // Ensure the first element LOST focus
     await expect(first).not.toBeFocused({});
@@ -89,16 +89,26 @@ test.describe('Accessibility', () => {
     // Wait for the main content to be visible to ensure images have started loading
     await expect(page.locator('main').first()).toBeVisible();
 
-    // Use all() to get a stable collection of locators at this point in time
-    const images = await page.locator('img').all();
+    // Use a fresh locator count to handle dynamic rendering
+    const locator = page.locator('img');
+    const imagesCount = await locator.count();
 
     // We expect at least the logo and some content images
-    expect(images.length).toBeGreaterThanOrEqual(1);
+    expect(imagesCount).toBeGreaterThanOrEqual(1);
 
-    for (const img of images) {
-      // Each 'img' is a stable locator. We expect it to have an alt attribute.
-      // Note: alt="" is valid for decorative images, but the attribute must exist.
-      await expect(img).toHaveAttribute('alt');
+    for (let i = 0; i < imagesCount; i++) {
+      const img = locator.nth(i);
+      // Ensure the element is still attached before checking attributes
+      // This helps with race conditions during hydration/re-renders
+      try {
+        await img.waitFor({ state: 'attached' });
+        await expect(img).toHaveAttribute('alt');
+      } catch (e) {
+        // If an image was unmounted during iteration, we skip it
+        // but only if it's truly gone (not just slow to load)
+        if ((await img.count()) === 0) continue;
+        throw e;
+      }
     }
   });
 

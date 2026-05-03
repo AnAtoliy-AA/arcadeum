@@ -6,11 +6,12 @@ describe('routes config', () => {
     expect(routes.home).toBe('/');
     expect(routes.auth).toBe('/auth');
     expect(routes.settings).toBe('/settings');
+    expect(routes.chat).toBe('/chat');
   });
 
   it('generates dynamic routes correctly', () => {
     expect(routes.gameDetail('123')).toBe('/games/123');
     expect(routes.gameRoom('abc')).toBe('/games/rooms/abc');
-    expect(routes.chat('chat-1')).toBe('/chat/chat-1');
+    expect(routes.chatDetail('chat-1')).toBe('/chat/chat-1');
   });
 });

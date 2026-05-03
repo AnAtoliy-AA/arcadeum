@@ -134,7 +134,7 @@ export default function HomeFooter() {
 
   return (
     <div className="home-footer-wrapper">
-      <footer className="home-footer-root">
+      <footer className="home-footer-root" data-testid="home-footer">
         <div className="home-footer-border-line" />
         <div className="home-footer-container">
           <div className="home-footer-grid">

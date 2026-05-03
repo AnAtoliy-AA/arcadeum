@@ -12,16 +12,8 @@ import {
   CloseIcon,
 } from '@arcadeum/ui/components/Icons/index';
 import { MobileLoginIndicator } from '@arcadeum/ui/components/MobileLoginIndicator/MobileLoginIndicator';
-import dynamic from 'next/dynamic';
-
-const ProfileMenu = dynamic(() => import('@/widgets/header/ui/ProfileMenu'), {
-  ssr: false,
-  loading: () => <div className="profile-menu-placeholder" />,
-});
-const MobileMenu = dynamic(() => import('@/widgets/header/ui/MobileMenu'), {
-  ssr: false,
-  loading: () => null,
-});
+import ProfileMenu from '@/widgets/header/ui/ProfileMenu';
+import MobileMenu from '@/widgets/header/ui/MobileMenu';
 import LanguageSwitcher from '@/widgets/header/ui/LanguageSwitcher';
 import { InstallPWAButton } from '@/features/pwa/InstallPWA';
 

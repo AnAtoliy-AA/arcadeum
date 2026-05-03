@@ -1,5 +1,15 @@
 import { getTranslations } from '@/shared/i18n/server';
+import type { Metadata } from 'next';
+import { routes } from '@/shared/config/routes';
 import BlogClient from './BlogClient';
+
+export const metadata: Metadata = {
+  title: 'Blog',
+  description: 'Latest news and updates from Arcadeum.',
+  alternates: {
+    canonical: routes.blog,
+  },
+};
 
 /**
  * Blog Page

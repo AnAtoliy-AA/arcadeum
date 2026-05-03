@@ -1,5 +1,15 @@
 import { getTranslations } from '@/shared/i18n/server';
+import type { Metadata } from 'next';
+import { routes } from '@/shared/config/routes';
 import DevelopersClient from './DevelopersClient';
+
+export const metadata: Metadata = {
+  title: 'Developers',
+  description: 'API documentation and developer resources.',
+  alternates: {
+    canonical: routes.developers,
+  },
+};
 
 /**
  * Developers Page

@@ -9,12 +9,16 @@ import { getTranslations } from '@/shared/i18n/server';
 import { handleSsrFetchError } from '@/shared/lib/ssr';
 import ChatsClient from './ChatsClient';
 import ChatsLoading from './loading';
+import { routes } from '@/shared/config/routes';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Chats',
   description: 'Manage your direct conversations and messages.',
+  alternates: {
+    canonical: routes.chats,
+  },
 };
 
 export default function ChatsRoute() {

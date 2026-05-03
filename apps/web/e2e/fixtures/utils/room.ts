@@ -10,53 +10,46 @@ export async function closeGameRulesModal(page: Page): Promise<void> {
   const modalSelector = '[data-testid="rules-modal"]';
   const closeBtnSelector = `${modalSelector} [data-testid="modal-close-button"]`;
 
-  // Check if any rules modal is visible
-  const isVisible = await page.isVisible(modalSelector, {}).catch(() => false);
-  if (!isVisible) return;
-
-  // 1. Try standard click first
-  const closeButtons = page.locator(closeBtnSelector);
-  const count = await closeButtons.count();
-  for (let i = 0; i < count; i++) {
-    await closeButtons
-      .nth(i)
-      .click({ force: true })
-      .catch(() => {});
+  // 1. Wait for modal to be visible or return if it's not there
+  try {
+    await page.waitForSelector(modalSelector, {
+      state: 'visible',
+      timeout: 2000,
+    });
+  } catch (_e) {
+    // Modal not visible, nothing to close
+    return;
   }
 
-  // 2. Aggressive evaluate-based click
-  await page.evaluate((sel) => {
-    const btns = document.querySelectorAll(sel);
-    btns.forEach((b) => (b as HTMLElement).click());
-  }, closeBtnSelector);
+  // 2. Click the close button
+  const closeButton = page.locator(closeBtnSelector).first();
+  if (await closeButton.isVisible()) {
+    // Standard click first, it should trigger React state change
+    await closeButton.click({ timeout: 5000 }).catch(async () => {
+      // Fallback to force click if intercepted
+      await closeButton.click({ force: true, timeout: 5000 }).catch(() => {});
+    });
+  }
 
-  // 3. Final cleanup: manually remove modal content and overlay from DOM if still there
-  await page.evaluate((sel) => {
-    const modals = document.querySelectorAll(sel);
-    modals.forEach((m) => m.remove());
+  // 3. Wait for the modal to actually disappear from the DOM naturally
+  await expect(page.locator(modalSelector)).not.toBeVisible({ timeout: 10000 });
+
+  // 4. Final check: if it's STILL in the DOM (e.g. detached or ghost), then and only then remove it
+  // But we prefer waiting for React to do its job first to avoid re-render loops.
+  const stillExists = await page.evaluate((sel) => {
+    return !!document.querySelector(sel);
   }, modalSelector);
-  await page.evaluate(() => {
-    const overlays = document.querySelectorAll('[data-testid="modal-overlay"]');
-    overlays.forEach((o) => o.remove());
-  });
 
-  // Wait for all rules modals to disappear (should be instant now)
-  await expect
-    .poll(
-      async () => {
-        return await page.evaluate((sel) => {
-          const modals = document.querySelectorAll(sel);
-          return (
-            modals.length === 0 ||
-            Array.from(modals).every((m) => !(m as HTMLElement).isConnected)
-          );
-        }, modalSelector);
-      },
-      {
-        message: 'Rules modal did not close within 10 seconds',
-      },
-    )
-    .toBe(true);
+  if (stillExists) {
+    await page.evaluate((sel) => {
+      const modals = document.querySelectorAll(sel);
+      modals.forEach((m) => m.remove());
+      const overlays = document.querySelectorAll(
+        '[data-testid="modal-overlay"]',
+      );
+      overlays.forEach((o) => o.remove());
+    }, modalSelector);
+  }
 }
 
 export async function waitForRoomReady(

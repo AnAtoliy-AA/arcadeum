@@ -1,16 +1,15 @@
-'use client';
+import CreateGameRoomClient from './CreateGameRoomClient';
+import type { Metadata } from 'next';
+import { routes } from '@/shared/config/routes';
 
-import dynamic from 'next/dynamic';
-import { PageLoading } from '@/shared/ui/Loading/PageLoading';
-
-const CreateGameRoomPage = dynamic(
-  () => import('@/features/games/ui/create/CreateGameRoomPage'),
-  {
-    ssr: false,
-    loading: () => <PageLoading />,
+export const metadata: Metadata = {
+  title: 'Create Game Room',
+  description: 'Create a new game room and invite your friends.',
+  alternates: {
+    canonical: routes.gameCreate,
   },
-);
+};
 
 export default function CreateGameRoomRoute() {
-  return <CreateGameRoomPage />;
+  return <CreateGameRoomClient />;
 }

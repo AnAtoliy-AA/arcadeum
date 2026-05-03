@@ -6,6 +6,16 @@ import { ApiError } from '@/shared/lib/api-client';
 import { HttpStatus } from '@/shared/lib/http-status';
 import HistoryClient from './HistoryClient';
 import HistoryLoading from './loading';
+import type { Metadata } from 'next';
+import { routes } from '@/shared/config/routes';
+
+export const metadata: Metadata = {
+  title: 'Game History',
+  description: 'Review your past games and results.',
+  alternates: {
+    canonical: routes.history,
+  },
+};
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

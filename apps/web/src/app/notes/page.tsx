@@ -1,6 +1,16 @@
 import { paymentApi } from '@/features/payment/api';
 import { SSR_TIMEOUT } from '@/shared/config/app-config';
+import type { Metadata } from 'next';
+import { routes } from '@/shared/config/routes';
 import NotesClient from './NotesClient';
+
+export const metadata: Metadata = {
+  title: 'Patch Notes',
+  description: 'Latest changes and updates to the platform.',
+  alternates: {
+    canonical: routes.notes,
+  },
+};
 
 export const dynamic = 'force-dynamic';
 

@@ -1,0 +1,20 @@
+'use client';
+
+import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
+
+const AuthPageWrapper = dynamic(
+  () => import('@/features/auth/ui/AuthPageWrapper'),
+  {
+    ssr: false,
+    loading: () => null,
+  },
+);
+
+export default function AuthCallbackClient() {
+  return (
+    <Suspense fallback={null}>
+      <AuthPageWrapper />
+    </Suspense>
+  );
+}

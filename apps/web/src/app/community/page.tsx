@@ -1,5 +1,15 @@
 import { getTranslations } from '@/shared/i18n/server';
+import type { Metadata } from 'next';
+import { routes } from '@/shared/config/routes';
 import CommunityClient from './CommunityClient';
+
+export const metadata: Metadata = {
+  title: 'Community',
+  description: 'Connect with other players in the Arcadeum community.',
+  alternates: {
+    canonical: routes.community,
+  },
+};
 
 /**
  * Community Page

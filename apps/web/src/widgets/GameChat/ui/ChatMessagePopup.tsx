@@ -23,6 +23,7 @@ export function ChatMessagePopup({
     <div
       onClick={onDismiss}
       onAnimationEnd={(e) => {
+        e.stopPropagation();
         if (e.animationName === 'popupAutoDismiss') {
           onDismiss();
         }
@@ -36,7 +37,8 @@ export function ChatMessagePopup({
         right: 24,
         zIndex: 10000,
         pointerEvents: 'auto',
-        animation: 'popupAutoDismiss 5s forwards',
+        animation:
+          'popupAutoDismiss var(--popup-dismiss-duration, 5s) forwards',
       }}
     >
       <ChatMessageBubble

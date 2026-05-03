@@ -1,5 +1,15 @@
 import { getTranslations } from '@/shared/i18n/server';
+import type { Metadata } from 'next';
+import { routes } from '@/shared/config/routes';
 import RewardsClient from './RewardsClient';
+
+export const metadata: Metadata = {
+  title: 'Rewards',
+  description: 'Earn rewards for playing and referring friends.',
+  alternates: {
+    canonical: routes.rewards,
+  },
+};
 
 /**
  * Rewards Page

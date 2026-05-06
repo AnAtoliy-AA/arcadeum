@@ -49,6 +49,7 @@ import {
 } from './ContactView.styles';
 import { ContactSidePanel } from './ContactSidePanel';
 import { ContactFaq, getFaqItems } from './ContactFaq';
+import { ContactAvatars } from './ContactAvatars';
 
 export interface ContactViewProps {
   t?: ContactMessages;
@@ -233,6 +234,9 @@ export default function ContactView({
                 <HeroPill icon={<ClockIcon />}>
                   {formatMessage(hero?.medianReply, { hours: '4' })}
                 </HeroPill>
+                <HeroPill icon={<ContactAvatars count={3} size={20} />}>
+                  {formatMessage(hero?.humansOnline, { count: '3' })}
+                </HeroPill>
                 <HeroPill icon={<GlobeIcon />}>
                   {formatMessage(hero?.languages, { count: '5' })}
                 </HeroPill>
@@ -298,9 +302,12 @@ export default function ContactView({
                         {form?.title ?? 'Send the team a message'}
                       </Typography>
                     </YStack>
-                    <Typography variant="caption" alpha="medium">
-                      {form?.repliesNote ?? 'Replies hit your email'}
-                    </Typography>
+                    <XStack alignItems="center" gap="$2">
+                      <ContactAvatars count={3} size={26} />
+                      <Typography variant="caption" alpha="medium">
+                        {form?.repliesNote ?? 'Replies hit your email'}
+                      </Typography>
+                    </XStack>
                   </div>
                   <hr style={ruleStyle} aria-hidden="true" />
                   {submitted ? (

@@ -2,8 +2,9 @@
 
 import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
-import { YStack } from 'tamagui';
+import { XStack, YStack } from 'tamagui';
 import { GithubIcon } from './ContactView.icons';
+import { ContactAvatars } from './ContactAvatars';
 import {
   externalIssueLinkStyle,
   labelChipStyle,
@@ -34,12 +35,15 @@ export function ContactSidePanel({
         <span style={labelChipStyle}>
           {side?.onCall ?? 'On call right now'}
         </span>
-        <Typography fontWeight="700" marginTop="$2">
-          Maria, Anatoliy +2
-        </Typography>
-        <Typography variant="caption" alpha="medium">
-          Support · EU + LATAM
-        </Typography>
+        <XStack alignItems="center" gap="$3" marginTop="$2">
+          <ContactAvatars count={4} size={32} />
+          <YStack gap={2}>
+            <Typography fontWeight="700">Maria, Anatoliy +2</Typography>
+            <Typography variant="caption" alpha="medium">
+              Support · EU + LATAM
+            </Typography>
+          </YStack>
+        </XStack>
         <hr style={ruleStyle} aria-hidden="true" />
         <YStack gap="$2">
           <div style={sideRowStyle}>

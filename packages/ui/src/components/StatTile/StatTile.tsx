@@ -36,16 +36,15 @@ const LabelText = styled(Text, {
 });
 
 const sparkStyle: CSSProperties = {
-  position: 'absolute',
-  right: 14,
-  top: 18,
-  width: 56,
-  height: 14,
+  marginTop: 4,
+  height: 2,
+  width: '60%',
+  maxWidth: 120,
   background:
-    'linear-gradient(90deg, transparent 0%, var(--accent) 50%, transparent 100%)',
-  opacity: 0.25,
+    'linear-gradient(90deg, transparent 0%, var(--accent) 35%, var(--accent) 65%, transparent 100%)',
+  opacity: 0.55,
+  borderRadius: 2,
   pointerEvents: 'none',
-  borderRadius: 4,
 };
 
 export function StatTile({

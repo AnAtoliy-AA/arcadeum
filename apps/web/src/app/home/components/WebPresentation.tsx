@@ -16,37 +16,28 @@ export function WebPresentation() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   // Track which slides have been loaded to minimize bandwidth.
-  // Initially load current, next (+1, +2), and previous (for loop wrap-around).
-  const [loadedIndices, setLoadedIndices] = useState<Set<number>>(() => {
-    const initial = new Set<number>();
-    initial.add(0); // Current
-    initial.add(1); // Next
-    initial.add(2); // Next + 1
-    initial.add(slides.length - 1); // Prev (wrap)
-    return initial;
-  });
+  // Initial set covers current + next so the first nav click is instant on
+  // both mobile and desktop. Further indices are added by updateLoadedSlides
+  // (mobile: only ahead; desktop: ahead + behind for back-button).
+  const [loadedIndices, setLoadedIndices] = useState<Set<number>>(
+    () => new Set([0, 1]),
+  );
 
   const updateLoadedSlides = useCallback((index: number) => {
     setLoadedIndices((prev) => {
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
       const nextIndex = (index + 1) % slides.length;
-      const nextNextIndex = (index + 2) % slides.length;
       const prevIndex = (index - 1 + slides.length) % slides.length;
+      const target = isMobile
+        ? [index, nextIndex]
+        : [index, nextIndex, prevIndex];
 
-      // Only update state if new indices need to be added
-      if (
-        prev.has(index) &&
-        prev.has(nextIndex) &&
-        prev.has(nextNextIndex) &&
-        prev.has(prevIndex)
-      ) {
+      if (target.every((i) => prev.has(i))) {
         return prev;
       }
 
       const newSet = new Set(prev);
-      newSet.add(index);
-      newSet.add(nextIndex);
-      newSet.add(nextNextIndex);
-      newSet.add(prevIndex);
+      target.forEach((i) => newSet.add(i));
       return newSet;
     });
   }, []);
@@ -139,8 +130,8 @@ export function WebPresentation() {
                 src={slide.image}
                 alt={slide.title}
                 fill
-                sizes="(max-width: 1400px) 100vw, 1400px"
-                loading={index === currentSlide ? 'eager' : 'lazy'}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1100px"
+                priority={index === 0}
                 style={{
                   objectFit: 'cover',
                   animation: isActive

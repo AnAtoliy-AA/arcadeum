@@ -31,7 +31,14 @@
   transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Surface Layer: Luminous Rainbow Skin with Glass Lustre */
+/*
+ * Surface Layer: Luminous Rainbow Skin with Glass Lustre.
+ * Disabled on mobile (see media query below) — on small viewports the
+ * rainbow overlay paints over the same area as the base <h1>, becomes
+ * the LCP element, and waits on full font + render-blocking CSS, dragging
+ * mobile LCP from ~1.35s (FCP) to ~5s. Desktop keeps the visual since
+ * its LCP budget is more forgiving.
+ */
 .hero-title-shimmer::after {
   content: attr(data-text);
   position: absolute;
@@ -97,14 +104,12 @@
 }
 
 @keyframes hero-color-shift {
-  0% {
-    filter: hue-rotate(0deg) drop-shadow(0 0 1px rgba(255, 255, 255, 0.5));
+  0%,
+  100% {
+    filter: hue-rotate(0deg);
   }
   50% {
-    filter: hue-rotate(180deg) drop-shadow(0 0 2px rgba(255, 255, 255, 0.8));
-  }
-  100% {
-    filter: hue-rotate(360deg) drop-shadow(0 0 1px rgba(255, 255, 255, 0.5));
+    filter: hue-rotate(180deg);
   }
 }
 
@@ -139,6 +144,18 @@
   }
   100% {
     background-position: 200% center;
+  }
+}
+
+@media (max-width: 1150px) {
+  /*
+   * Hide the rainbow overlay entirely on smaller viewports. It would
+   * otherwise paint over the <h1> after font load and become the LCP
+   * element with a 5s+ time. The base 3D-extruded title (FCP-time) is
+   * the LCP element instead.
+   */
+  .hero-title-shimmer::after {
+    display: none;
   }
 }
 
@@ -302,5 +319,9 @@
     margin-top: 60px;
     margin-bottom: 40px;
     transform: scale(0.85);
+  }
+
+  .hero-card-main {
+    background: rgba(30, 32, 35, 0.92);
   }
 }

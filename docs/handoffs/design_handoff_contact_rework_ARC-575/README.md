@@ -321,6 +321,28 @@ No new image assets. All visuals are CSS / inline SVG icons (Discord, Twitter/X,
 
 ---
 
+## API contract (future)
+
+The form currently simulates submission with a 700 ms launch
+animation and `setSubmitted(true)` — there is no `/api/contact`
+endpoint today. When the optional `support` BE module from this
+handoff lands, mirror these limits in the DTO with
+`class-validator` decorators so the client and server agree:
+
+- `POST /api/contact` body: `{ name, email, subject, message }`
+  - `name` — 1..120 chars
+  - `email` — RFC 5322
+  - `subject` — 1..200 chars
+  - `message` — 1..1200 chars _(matches the `FloatingLabelTextArea` `maxLength` on the contact page)_
+
+The frontend's `FloatingLabelTextArea` enforces the 1200-char cap
+client-side via the native `maxLength` attribute and surfaces a
+counter that turns warning at 85 % of the limit. The BE DTO must
+hard-cap at the same number — never trust client-side validation
+alone.
+
+---
+
 ## Acceptance checklist
 
 - [ ] Existing e2e `apps/web/e2e/contact.spec.ts` still passes (test IDs preserved: `contact-name-input`, `contact-email-input`, `contact-subject-input`, `contact-message-textarea`, `contact-submit-button`, `contact-success-message`).

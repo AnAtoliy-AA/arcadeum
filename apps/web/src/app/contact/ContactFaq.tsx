@@ -5,15 +5,7 @@ import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { YStack } from 'tamagui';
 import { ChevronIcon } from './ContactView.icons';
-import {
-  chevronStyle,
-  faqAnswerStyle,
-  faqButtonStyle,
-  faqHeaderRowStyle,
-  faqItemStyle,
-  helpLinkStyle,
-  labelChipStyle,
-} from './ContactView.styles';
+import { useContactStyles } from './useContactStyles';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
 export type FaqItem = { key: string; question: string; answerTemplate: string };
@@ -34,7 +26,11 @@ export function getFaqItems(t?: ContactMessages): FaqItem[] {
   return items;
 }
 
-function renderAnswer(template: string, email: string): ReactNode {
+function renderAnswer(
+  template: string,
+  email: string,
+  accent: string,
+): ReactNode {
   if (!template.includes('{{email}}')) return template;
   const parts = template.split('{{email}}');
   const nodes: ReactNode[] = [];
@@ -45,7 +41,7 @@ function renderAnswer(template: string, email: string): ReactNode {
         <a
           key={`m-${i}`}
           href={`mailto:${email}`}
-          style={{ color: 'var(--accent)', textDecoration: 'underline' }}
+          style={{ color: accent, textDecoration: 'underline' }}
         >
           {email}
         </a>,
@@ -68,13 +64,14 @@ export function ContactFaq({
   title,
   browseLabel,
 }: ContactFaqProps) {
+  const s = useContactStyles();
   const [openKey, setOpenKey] = useState<string | null>(items[0]?.key ?? null);
   if (items.length === 0) return null;
   return (
     <GlassCard>
-      <div style={faqHeaderRowStyle}>
+      <div style={s.faqHeaderRowStyle}>
         <YStack gap={2}>
-          <span style={labelChipStyle}>Common questions</span>
+          <span style={s.labelChipStyle}>Common questions</span>
           <Typography variant="heading" uiSize="xl">
             {title ?? 'Maybe we already answered this'}
           </Typography>
@@ -83,7 +80,7 @@ export function ContactFaq({
           href="https://help.arcadeum.games"
           target="_blank"
           rel="noopener noreferrer"
-          style={helpLinkStyle}
+          style={s.helpLinkStyle}
         >
           {browseLabel ?? 'Browse help center'}
         </a>
@@ -92,21 +89,25 @@ export function ContactFaq({
         {items.map((it) => {
           const open = openKey === it.key;
           return (
-            <div key={it.key} style={faqItemStyle(open)}>
+            <div key={it.key} style={s.faqItemStyle(open)}>
               <button
                 type="button"
-                style={faqButtonStyle}
+                style={s.faqButtonStyle}
                 aria-expanded={open}
                 onClick={() => setOpenKey(open ? null : it.key)}
               >
                 <span>{it.question}</span>
-                <span style={chevronStyle(open)}>
+                <span style={s.chevronStyle(open)}>
                   <ChevronIcon />
                 </span>
               </button>
               {open ? (
-                <div style={faqAnswerStyle}>
-                  {renderAnswer(it.answerTemplate, supportEmail)}
+                <div style={s.faqAnswerStyle}>
+                  {renderAnswer(
+                    it.answerTemplate,
+                    supportEmail,
+                    s.tokens.accent,
+                  )}
                 </div>
               ) : null}
             </div>

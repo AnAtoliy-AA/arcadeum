@@ -5,13 +5,7 @@ import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { XStack, YStack } from 'tamagui';
 import { GithubIcon } from './ContactView.icons';
 import { ContactAvatars } from './ContactAvatars';
-import {
-  externalIssueLinkStyle,
-  labelChipStyle,
-  ruleStyle,
-  sideRowStyle,
-  sideStackStyle,
-} from './ContactView.styles';
+import { useContactStyles } from './useContactStyles';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
 export type ContactSidePanelProps = {
@@ -27,10 +21,11 @@ export function ContactSidePanel({
   side,
   workingHours,
 }: ContactSidePanelProps) {
+  const s = useContactStyles();
   return (
-    <YStack flex={1} minWidth={0} style={sideStackStyle}>
+    <YStack flex={1} minWidth={0} style={s.sideStackStyle}>
       <GlassCard>
-        <span style={labelChipStyle}>
+        <span style={s.labelChipStyle}>
           {side?.onCall ?? 'On call right now'}
         </span>
         <XStack alignItems="center" gap="$3" marginTop="$2">
@@ -42,21 +37,21 @@ export function ContactSidePanel({
             </Typography>
           </YStack>
         </XStack>
-        <hr style={ruleStyle} aria-hidden="true" />
+        <hr style={s.ruleStyle} aria-hidden="true" />
         <YStack gap="$2">
-          <div style={sideRowStyle}>
+          <div style={s.sideRowStyle}>
             <Typography alpha="medium">
               {side?.medianFirstReply ?? 'Median first reply'}
             </Typography>
             <Typography fontWeight="700">4 hr</Typography>
           </div>
-          <div style={sideRowStyle}>
+          <div style={s.sideRowStyle}>
             <Typography alpha="medium">
               {side?.workingHours ?? 'Working hours'}
             </Typography>
             <Typography fontWeight="700">{workingHours}</Typography>
           </div>
-          <div style={sideRowStyle}>
+          <div style={s.sideRowStyle}>
             <Typography alpha="medium">
               {side?.coverage ?? 'Coverage'}
             </Typography>
@@ -66,7 +61,7 @@ export function ContactSidePanel({
       </GlassCard>
 
       <GlassCard>
-        <span style={labelChipStyle}>For developers</span>
+        <span style={s.labelChipStyle}>For developers</span>
         <Typography variant="heading" uiSize="md" marginTop="$2">
           {side?.devsTitle ?? 'Bugs & integration'}
         </Typography>
@@ -79,7 +74,7 @@ export function ContactSidePanel({
             href="https://github.com/arcadeum"
             target="_blank"
             rel="noopener noreferrer"
-            style={externalIssueLinkStyle}
+            style={s.externalIssueLinkStyle}
           >
             <GithubIcon />
             <span>{side?.openIssue ?? 'Open an issue'}</span>
@@ -88,13 +83,13 @@ export function ContactSidePanel({
       </GlassCard>
 
       <GlassCard>
-        <span style={labelChipStyle}>
+        <span style={s.labelChipStyle}>
           {side?.press ?? 'Press & partnerships'}
         </span>
         <Typography fontWeight="700" marginTop="$2">
           <a
             href={`mailto:${side?.pressEmail ?? 'hello@arcadeum.games'}`}
-            style={{ color: 'var(--accent)', textDecoration: 'underline' }}
+            style={{ color: s.tokens.accent, textDecoration: 'underline' }}
           >
             {side?.pressEmail ?? 'hello@arcadeum.games'}
           </a>

@@ -1,4 +1,7 @@
+'use client';
+
 import type { CSSProperties } from 'react';
+import { useTheme } from 'tamagui';
 
 const palettes = [
   'linear-gradient(135deg,#5eead4,#818cf8)',
@@ -40,15 +43,23 @@ export type ContactAvatarsProps = {
   borderColor?: string;
 };
 
+type ThemeRecord = Record<string, { val?: string; get?: () => string }>;
+
 export function ContactAvatars({
   count = 3,
   size = 24,
-  borderColor = 'var(--background)',
+  borderColor,
 }: ContactAvatarsProps) {
+  const theme = useTheme() as unknown as ThemeRecord;
+  const resolvedBorder =
+    borderColor ??
+    theme.background?.val ??
+    theme.background?.get?.() ??
+    '#06011b';
   return (
     <span style={stackStyle} aria-hidden="true">
       {Array.from({ length: count }).map((_, i) => (
-        <span key={i} style={avatarStyle(size, i, borderColor)}>
+        <span key={i} style={avatarStyle(size, i, resolvedBorder)}>
           {initials[i % initials.length]}
         </span>
       ))}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useState, type CSSProperties, type ReactNode } from 'react';
 import { useLanguage } from '@/shared/i18n/context';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import { Container } from '@arcadeum/ui/components/Container/Container';
@@ -24,29 +24,7 @@ import {
   TelegramIcon,
   TwitterIcon,
 } from './ContactView.icons';
-import {
-  burstStyle,
-  eyebrowDotStyle,
-  eyebrowStyle,
-  formCardInnerStyle,
-  formGridStyle,
-  formHeaderStyle,
-  helpLinkStyle,
-  heroTaglineStyle,
-  heroTitleStyle,
-  heroWrapStyle,
-  labelChipStyle,
-  orbStyle,
-  pillStyle,
-  privacyStyle,
-  ruleStyle,
-  statCellWrap,
-  statStripStyle,
-  submitRowStyle,
-  successCardStyle,
-  tilesGridStyle,
-  titleAccentStyle,
-} from './ContactView.styles';
+import { useContactStyles } from './useContactStyles';
 import { ContactSidePanel } from './ContactSidePanel';
 import { ContactFaq, getFaqItems } from './ContactFaq';
 import { ContactAvatars } from './ContactAvatars';
@@ -60,9 +38,11 @@ export interface ContactViewProps {
 function HeroPill({
   icon,
   children,
+  pillStyle,
 }: {
   icon?: ReactNode;
   children: ReactNode;
+  pillStyle: CSSProperties;
 }) {
   return (
     <span style={pillStyle}>
@@ -115,6 +95,7 @@ export default function ContactView({
   SUPPORT_EMAIL,
   WORKING_HOURS,
 }: ContactViewProps) {
+  const s = useContactStyles();
   const { messages } = useLanguage();
   const t = (messages.legal?.contact as unknown as ContactMessages) || initialT;
   const sections = t?.sections;
@@ -195,49 +176,57 @@ export default function ContactView({
     <PageLayout>
       <Container size="lg" maxWidth={1120}>
         <YStack gap="$8">
-          <div style={heroWrapStyle}>
+          <div style={s.heroWrapStyle}>
             <span
               aria-hidden="true"
-              style={orbStyle(360, '-160px', '-80px', 'rgba(56,189,248,0.45)')}
+              style={s.orbStyle(
+                360,
+                '-160px',
+                '-80px',
+                'rgba(56,189,248,0.45)',
+              )}
             />
             <span
               aria-hidden="true"
-              style={orbStyle(320, '-100px', '70%', 'rgba(244,114,182,0.45)')}
+              style={s.orbStyle(320, '-100px', '70%', 'rgba(244,114,182,0.45)')}
             />
             <YStack gap="$4" position="relative" zIndex={1}>
               <XStack flexWrap="wrap" alignItems="center" gap="$3">
-                <span style={eyebrowStyle}>
-                  <span aria-hidden="true" style={eyebrowDotStyle} />
+                <span style={s.eyebrowStyle}>
+                  <span aria-hidden="true" style={s.eyebrowDotStyle} />
                   {hero?.eyebrow ?? 'Player support'}
                 </span>
                 <Typography variant="caption" alpha="medium">
                   arcadeum.games / contact
                 </Typography>
               </XStack>
-              <h1 style={heroTitleStyle}>
+              <h1 style={s.heroTitleStyle}>
                 {titleHead ? `${titleHead} ` : ''}
-                <span style={titleAccentStyle}>{lastWord}</span>
+                <span style={s.titleAccentStyle}>{lastWord}</span>
               </h1>
-              <p style={heroTaglineStyle}>{hero?.tagline ?? t?.tagline}</p>
+              <p style={s.heroTaglineStyle}>{hero?.tagline ?? t?.tagline}</p>
               <XStack flexWrap="wrap" gap="$3" marginTop="$3">
-                <HeroPill>
+                <HeroPill pillStyle={s.pillStyle}>
                   <span
                     aria-hidden="true"
                     style={{
-                      ...eyebrowDotStyle,
+                      ...s.eyebrowDotStyle,
                       background: '#34d399',
                       boxShadow: '0 0 8px #34d399',
                     }}
                   />
                   {hero?.statusOk ?? 'All systems operational'}
                 </HeroPill>
-                <HeroPill icon={<ClockIcon />}>
+                <HeroPill pillStyle={s.pillStyle} icon={<ClockIcon />}>
                   {formatMessage(hero?.medianReply, { hours: '4' })}
                 </HeroPill>
-                <HeroPill icon={<ContactAvatars count={3} size={20} />}>
+                <HeroPill
+                  pillStyle={s.pillStyle}
+                  icon={<ContactAvatars count={3} size={20} />}
+                >
                   {formatMessage(hero?.humansOnline, { count: '3' })}
                 </HeroPill>
-                <HeroPill icon={<GlobeIcon />}>
+                <HeroPill pillStyle={s.pillStyle} icon={<GlobeIcon />}>
                   {formatMessage(hero?.languages, { count: '5' })}
                 </HeroPill>
               </XStack>
@@ -247,31 +236,31 @@ export default function ContactView({
             </YStack>
           </div>
 
-          <div style={statStripStyle}>
-            <div style={statCellWrap}>
+          <div style={s.statStripStyle}>
+            <div style={s.statCellWrap}>
               <StatTile
                 value="2,840"
                 label={stats?.ticketsResolved ?? 'Tickets resolved this month'}
               />
             </div>
-            <div style={statCellWrap}>
+            <div style={s.statCellWrap}>
               <StatTile
                 value="4.9 ★"
                 label={stats?.avgRating ?? 'Avg. support rating'}
               />
             </div>
-            <div style={statCellWrap}>
+            <div style={s.statCellWrap}>
               <StatTile
                 value="5"
                 label={stats?.languagesSupported ?? 'Languages supported'}
               />
             </div>
-            <div style={statCellWrap}>
+            <div style={s.statCellWrap}>
               <StatTile value="98%" label={stats?.slaHit ?? 'SLA hit rate'} />
             </div>
           </div>
 
-          <div style={tilesGridStyle}>
+          <div style={s.tilesGridStyle}>
             {channelDefs.map((c) => (
               <ChannelTile
                 key={c.key}
@@ -292,10 +281,10 @@ export default function ContactView({
           >
             <YStack flex={1.6} minWidth={0}>
               <GlassCard>
-                <div style={formCardInnerStyle}>
-                  <div style={formHeaderStyle}>
+                <div style={s.formCardInnerStyle}>
+                  <div style={s.formHeaderStyle}>
                     <YStack gap={2}>
-                      <span style={labelChipStyle}>
+                      <span style={s.labelChipStyle}>
                         {form?.subtitle ?? 'Direct message'}
                       </span>
                       <Typography variant="heading" uiSize="xl">
@@ -309,11 +298,11 @@ export default function ContactView({
                       </Typography>
                     </XStack>
                   </div>
-                  <hr style={ruleStyle} aria-hidden="true" />
+                  <hr style={s.ruleStyle} aria-hidden="true" />
                   {submitted ? (
                     <Card variant="glass" data-testid="contact-success-message">
-                      <div style={successCardStyle}>
-                        <div aria-hidden="true" style={burstStyle}>
+                      <div style={s.successCardStyle}>
+                        <div aria-hidden="true" style={s.burstStyle}>
                           ✦
                         </div>
                         <Typography variant="heading" uiSize="lg">
@@ -333,7 +322,7 @@ export default function ContactView({
                           <button
                             type="button"
                             onClick={reset}
-                            style={helpLinkStyle}
+                            style={s.helpLinkStyle}
                           >
                             {form?.sendAnother ?? 'Send another'}
                           </button>
@@ -343,7 +332,7 @@ export default function ContactView({
                   ) : (
                     <form onSubmit={handleSubmit}>
                       <YStack gap="$4">
-                        <div style={formGridStyle}>
+                        <div style={s.formGridStyle}>
                           <FloatingLabelInput
                             id="contact-name"
                             name="name"
@@ -389,8 +378,8 @@ export default function ContactView({
                           maxLength={1200}
                           data-testid="contact-message-textarea"
                         />
-                        <div style={submitRowStyle}>
-                          <span style={privacyStyle}>
+                        <div style={s.submitRowStyle}>
+                          <span style={s.privacyStyle}>
                             <span aria-hidden="true">🔒</span>
                             {form?.privacy ??
                               'Private — we never share your email.'}

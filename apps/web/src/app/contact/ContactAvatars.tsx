@@ -57,9 +57,9 @@ export function ContactAvatars({
     theme.background?.get?.() ??
     '#06011b';
   return (
-    <span style={stackStyle} aria-hidden="true">
+    <span style={stackStyle} aria-hidden="true" data-testid="contact-avatars">
       {Array.from({ length: count }).map((_, i) => (
-        <span key={i} style={avatarStyle(size, i, resolvedBorder)}>
+        <span key={i} style={avatarStyle(size, i, resolvedBorder)} data-avatar>
           {initials[i % initials.length]}
         </span>
       ))}

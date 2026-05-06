@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.1] - 2026-05-06
+
+### Improved
+- drop hero LCP-blocking visual effects on mobile (ARC-570)
+- defer hero ::after LCP overlay; dynamic-import below-fold; a11y (ARC-570)
+- polish in-progress home perf diff + add bundle analyzer (ARC-570)
+
+
 ## [1.12.0] - 2026-05-03
 
 

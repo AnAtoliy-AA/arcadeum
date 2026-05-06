@@ -234,9 +234,17 @@ export const ru: LegalMessages = {
         avgRating: 'Средняя оценка поддержки',
         languagesSupported: 'Поддерживаемые языки',
         slaHit: 'Соблюдение SLA',
+        ticketsResolvedValue: '2 840',
+        avgRatingValue: '4,9 ★',
+        languagesSupportedValue: '5',
+        slaHitValue: '98%',
       },
       channels: {
-        discord: { title: 'Discord', sub: 'Живой чат · {{count}} участников' },
+        discord: {
+          title: 'Discord',
+          sub: 'Живой чат · {{count}} участников',
+          memberCount: '12,4 тыс.',
+        },
         twitter: { title: '@arcadeum', sub: 'Личные сообщения открыты' },
         telegram: { title: 'Telegram', sub: 't.me/arcadeum' },
         github: { title: 'GitHub Issues', sub: 'Баги и предложения функций' },
@@ -269,9 +277,14 @@ export const ru: LegalMessages = {
       },
       side: {
         onCall: 'Сейчас на смене',
+        onCallTeam: 'Maria, Anatoliy +{{extra}}',
+        onCallRegion: 'Поддержка · EU + LATAM',
         medianFirstReply: 'Медианное время первого ответа',
+        medianFirstReplyValue: '4 ч',
         workingHours: 'Рабочие часы',
         coverage: 'Покрытие',
+        coverageValue: 'GMT-5 → GMT+8',
+        devsLabel: 'Для разработчиков',
         devsTitle: 'Баги и интеграция',
         devsBody:
           'Воспроизводимые баги, проблемы с API и вопросы по SDK мы отслеживаем в GitHub. Берём в работу в течение 24 часов.',
@@ -279,6 +292,9 @@ export const ru: LegalMessages = {
         press: 'Пресса и партнёрство',
         pressEmail: 'hello@arcadeum.games',
         pressBody: 'Для СМИ, авторов и партнёрских студий.',
+      },
+      common: {
+        questionsLabel: 'Частые вопросы',
       },
       ticker: {
         label: 'Лента команды',

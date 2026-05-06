@@ -234,11 +234,16 @@ export const by: LegalMessages = {
         avgRating: 'Сярэдняя ацэнка падтрымкі',
         languagesSupported: 'Падтрымліваныя мовы',
         slaHit: 'Выкананне SLA',
+        ticketsResolvedValue: '2 840',
+        avgRatingValue: '4,9 ★',
+        languagesSupportedValue: '5',
+        slaHitValue: '98%',
       },
       channels: {
         discord: {
           title: 'Discord',
           sub: 'Жывы чат · {{count}} удзельнікаў',
+          memberCount: '12,4 тыс.',
         },
         twitter: { title: '@arcadeum', sub: 'Лічкі адкрытыя' },
         telegram: { title: 'Telegram', sub: 't.me/arcadeum' },
@@ -275,9 +280,14 @@ export const by: LegalMessages = {
       },
       side: {
         onCall: 'Зараз на змене',
+        onCallTeam: 'Maria, Anatoliy +{{extra}}',
+        onCallRegion: 'Падтрымка · EU + LATAM',
         medianFirstReply: 'Медыяна першага адказу',
+        medianFirstReplyValue: '4 гадз',
         workingHours: 'Працоўныя гадзіны',
         coverage: 'Пакрыццё',
+        coverageValue: 'GMT-5 → GMT+8',
+        devsLabel: 'Для распрацоўшчыкаў',
         devsTitle: 'Памылкі і інтэграцыя',
         devsBody:
           'Узнаўляльныя памылкі, праблемы з API і пытанні па SDK адсочваюцца ў GitHub. Бярэм у працу на працягу 24 гадзін.',
@@ -285,6 +295,9 @@ export const by: LegalMessages = {
         press: 'Прэса і партнёрства',
         pressEmail: 'hello@arcadeum.games',
         pressBody: 'Для СМІ, аўтараў і партнёрскіх студый.',
+      },
+      common: {
+        questionsLabel: 'Частыя пытанні',
       },
       ticker: {
         label: 'Стужка штаба',

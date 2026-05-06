@@ -56,6 +56,7 @@ export type ContactFaqProps = {
   supportEmail: string;
   title?: string;
   browseLabel?: string;
+  questionsLabel?: string;
 };
 
 export function ContactFaq({
@@ -63,6 +64,7 @@ export function ContactFaq({
   supportEmail,
   title,
   browseLabel,
+  questionsLabel,
 }: ContactFaqProps) {
   const s = useContactStyles();
   const [openKey, setOpenKey] = useState<string | null>(items[0]?.key ?? null);
@@ -71,7 +73,9 @@ export function ContactFaq({
     <GlassCard>
       <div style={s.faqHeaderRowStyle}>
         <YStack gap={2}>
-          <span style={s.labelChipStyle}>Common questions</span>
+          <span style={s.labelChipStyle}>
+            {questionsLabel ?? 'Common questions'}
+          </span>
           <Typography variant="heading" uiSize="xl">
             {title ?? 'Maybe we already answered this'}
           </Typography>

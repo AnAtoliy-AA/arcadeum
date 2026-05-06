@@ -235,9 +235,17 @@ export const es: LegalMessages = {
         avgRating: 'Valoración media de soporte',
         languagesSupported: 'Idiomas soportados',
         slaHit: 'Cumplimiento de SLA',
+        ticketsResolvedValue: '2.840',
+        avgRatingValue: '4,9 ★',
+        languagesSupportedValue: '5',
+        slaHitValue: '98%',
       },
       channels: {
-        discord: { title: 'Discord', sub: 'Chat en vivo · {{count}} miembros' },
+        discord: {
+          title: 'Discord',
+          sub: 'Chat en vivo · {{count}} miembros',
+          memberCount: '12,4k',
+        },
         twitter: { title: '@arcadeum', sub: 'DMs abiertos' },
         telegram: { title: 'Telegram', sub: 't.me/arcadeum' },
         github: {
@@ -273,9 +281,14 @@ export const es: LegalMessages = {
       },
       side: {
         onCall: 'En servicio ahora',
+        onCallTeam: 'Maria, Anatoliy +{{extra}}',
+        onCallRegion: 'Soporte · EU + LATAM',
         medianFirstReply: 'Mediana de primera respuesta',
+        medianFirstReplyValue: '4 h',
         workingHours: 'Horario de trabajo',
         coverage: 'Cobertura',
+        coverageValue: 'GMT-5 → GMT+8',
+        devsLabel: 'Para desarrolladores',
         devsTitle: 'Bugs e integración',
         devsBody:
           'Los bugs reproducibles, problemas de API y dudas del SDK se gestionan en GitHub. Triamos en menos de 24 horas.',
@@ -283,6 +296,9 @@ export const es: LegalMessages = {
         press: 'Prensa y partnerships',
         pressEmail: 'hello@arcadeum.games',
         pressBody: 'Para medios, creadores y estudios partner.',
+      },
+      common: {
+        questionsLabel: 'Preguntas comunes',
       },
       ticker: {
         label: 'Feed en directo',

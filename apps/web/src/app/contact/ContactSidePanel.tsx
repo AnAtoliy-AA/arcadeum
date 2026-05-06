@@ -6,6 +6,7 @@ import { XStack, YStack } from 'tamagui';
 import { GithubIcon } from './ContactView.icons';
 import { ContactAvatars } from './ContactAvatars';
 import { useContactStyles } from './useContactStyles';
+import { formatMessage } from '@/shared/i18n';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
 export type ContactSidePanelProps = {
@@ -31,9 +32,12 @@ export function ContactSidePanel({
         <XStack alignItems="center" gap="$3" marginTop="$2">
           <ContactAvatars count={4} size={32} />
           <YStack gap={2}>
-            <Typography fontWeight="700">Maria, Anatoliy +2</Typography>
+            <Typography fontWeight="700">
+              {formatMessage(side?.onCallTeam, { extra: '2' }) ??
+                'Maria, Anatoliy +2'}
+            </Typography>
             <Typography variant="caption" alpha="medium">
-              Support · EU + LATAM
+              {side?.onCallRegion ?? 'Support · EU + LATAM'}
             </Typography>
           </YStack>
         </XStack>
@@ -43,7 +47,9 @@ export function ContactSidePanel({
             <Typography alpha="medium">
               {side?.medianFirstReply ?? 'Median first reply'}
             </Typography>
-            <Typography fontWeight="700">4 hr</Typography>
+            <Typography fontWeight="700">
+              {side?.medianFirstReplyValue ?? '4 hr'}
+            </Typography>
           </div>
           <div style={s.sideRowStyle}>
             <Typography alpha="medium">
@@ -55,13 +61,17 @@ export function ContactSidePanel({
             <Typography alpha="medium">
               {side?.coverage ?? 'Coverage'}
             </Typography>
-            <Typography fontWeight="700">GMT-5 → GMT+8</Typography>
+            <Typography fontWeight="700">
+              {side?.coverageValue ?? 'GMT-5 → GMT+8'}
+            </Typography>
           </div>
         </YStack>
       </GlassCard>
 
       <GlassCard>
-        <span style={s.labelChipStyle}>For developers</span>
+        <span style={s.labelChipStyle}>
+          {side?.devsLabel ?? 'For developers'}
+        </span>
         <Typography variant="heading" uiSize="md" marginTop="$2">
           {side?.devsTitle ?? 'Bugs & integration'}
         </Typography>

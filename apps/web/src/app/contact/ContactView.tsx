@@ -142,7 +142,9 @@ export default function ContactView({
       key: 'discord',
       icon: <DiscordIcon />,
       title: channels?.discord?.title ?? 'Discord',
-      sub: formatMessage(channels?.discord?.sub, { count: '12.4k' }),
+      sub: formatMessage(channels?.discord?.sub, {
+        count: channels?.discord?.memberCount ?? '12.4k',
+      }),
       gradient: 'linear-gradient(135deg,#5865f2 0%,#8b5cf6 100%)',
       href: 'https://discord.gg/arcadeum',
     },
@@ -239,24 +241,27 @@ export default function ContactView({
           <div style={s.statStripStyle}>
             <div style={s.statCellWrap}>
               <StatTile
-                value="2,840"
+                value={stats?.ticketsResolvedValue ?? '2,840'}
                 label={stats?.ticketsResolved ?? 'Tickets resolved this month'}
               />
             </div>
             <div style={s.statCellWrap}>
               <StatTile
-                value="4.9 ★"
+                value={stats?.avgRatingValue ?? '4.9 ★'}
                 label={stats?.avgRating ?? 'Avg. support rating'}
               />
             </div>
             <div style={s.statCellWrap}>
               <StatTile
-                value="5"
+                value={stats?.languagesSupportedValue ?? '5'}
                 label={stats?.languagesSupported ?? 'Languages supported'}
               />
             </div>
             <div style={s.statCellWrap}>
-              <StatTile value="98%" label={stats?.slaHit ?? 'SLA hit rate'} />
+              <StatTile
+                value={stats?.slaHitValue ?? '98%'}
+                label={stats?.slaHit ?? 'SLA hit rate'}
+              />
             </div>
           </div>
 
@@ -408,6 +413,7 @@ export default function ContactView({
             supportEmail={SUPPORT_EMAIL}
             title={faq?.title}
             browseLabel={faq?.browse}
+            questionsLabel={sections?.common?.questionsLabel}
           />
         </YStack>
       </Container>

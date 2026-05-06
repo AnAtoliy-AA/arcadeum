@@ -170,9 +170,13 @@ export type ContactMessages = {
       avgRating?: string;
       languagesSupported?: string;
       slaHit?: string;
+      ticketsResolvedValue?: string;
+      avgRatingValue?: string;
+      languagesSupportedValue?: string;
+      slaHitValue?: string;
     };
     channels?: {
-      discord?: { title?: string; sub?: string };
+      discord?: { title?: string; sub?: string; memberCount?: string };
       twitter?: { title?: string; sub?: string };
       telegram?: { title?: string; sub?: string };
       github?: { title?: string; sub?: string };
@@ -203,15 +207,23 @@ export type ContactMessages = {
     };
     side?: {
       onCall?: string;
+      onCallTeam?: string;
+      onCallRegion?: string;
       medianFirstReply?: string;
+      medianFirstReplyValue?: string;
       workingHours?: string;
       coverage?: string;
+      coverageValue?: string;
       devsTitle?: string;
       devsBody?: string;
+      devsLabel?: string;
       openIssue?: string;
       press?: string;
       pressEmail?: string;
       pressBody?: string;
+    };
+    common?: {
+      questionsLabel?: string;
     };
     ticker?: {
       label?: string;

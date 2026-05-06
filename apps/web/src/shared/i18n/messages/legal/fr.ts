@@ -237,11 +237,16 @@ export const fr: LegalMessages = {
         avgRating: 'Note moyenne du support',
         languagesSupported: 'Langues prises en charge',
         slaHit: 'Taux de SLA respecté',
+        ticketsResolvedValue: '2 840',
+        avgRatingValue: '4,9 ★',
+        languagesSupportedValue: '5',
+        slaHitValue: '98 %',
       },
       channels: {
         discord: {
           title: 'Discord',
           sub: 'Chat en direct · {{count}} membres',
+          memberCount: '12,4k',
         },
         twitter: { title: '@arcadeum', sub: 'Les DMs sont ouverts' },
         telegram: { title: 'Telegram', sub: 't.me/arcadeum' },
@@ -278,9 +283,14 @@ export const fr: LegalMessages = {
       },
       side: {
         onCall: 'En service maintenant',
+        onCallTeam: 'Maria, Anatoliy +{{extra}}',
+        onCallRegion: 'Support · EU + LATAM',
         medianFirstReply: 'Médiane première réponse',
+        medianFirstReplyValue: '4 h',
         workingHours: 'Heures de travail',
         coverage: 'Couverture',
+        coverageValue: 'GMT-5 → GMT+8',
+        devsLabel: 'Pour les développeurs',
         devsTitle: 'Bugs et intégration',
         devsBody:
           'Les bugs reproductibles, problèmes API et questions SDK sont suivis sur GitHub. Triage sous 24 heures.',
@@ -288,6 +298,9 @@ export const fr: LegalMessages = {
         press: 'Presse et partenariats',
         pressEmail: 'hello@arcadeum.games',
         pressBody: 'Pour les médias, créateurs et studios partenaires.',
+      },
+      common: {
+        questionsLabel: 'Questions fréquentes',
       },
       ticker: {
         label: 'Flux QG en direct',

@@ -193,7 +193,7 @@ export default function ContactView({
 
   return (
     <PageLayout>
-      <Container size="md">
+      <Container size="lg" maxWidth={1120}>
         <YStack gap="$8">
           <div style={heroWrapStyle}>
             <span

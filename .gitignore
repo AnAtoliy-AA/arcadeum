@@ -28,4 +28,4 @@ backend-e2e-errors.log
 .playwright-mcp
 .superpowers
 
-docs/superpowers
+# docs/superpowers

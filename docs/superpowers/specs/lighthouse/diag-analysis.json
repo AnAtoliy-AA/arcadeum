@@ -1,0 +1,342 @@
+[
+  {
+    "run": 1,
+    "fcp_ms": 1362.728,
+    "lcp_ms": 5285.956,
+    "tti_ms": 5302.6424,
+    "tbt_ms": 35.5,
+    "lcp_phases": [
+      {
+        "phase": "TTFB",
+        "timing": 456.364,
+        "percent": "9%"
+      },
+      {
+        "phase": "Load Delay",
+        "timing": 0,
+        "percent": "0%"
+      },
+      {
+        "phase": "Load Time",
+        "timing": 0,
+        "percent": "0%"
+      },
+      {
+        "phase": "Render Delay",
+        "timing": 4829.592000000001,
+        "percent": "91%"
+      }
+    ],
+    "lcp_element_selector": "section.hero-section-container > div.hero-container-main > div.hero-content-main > h1#hero-heading",
+    "long_tasks": [
+      {
+        "url": "http://localhost:3500/_next/static/chunks/2caea913813b5f0c.js",
+        "duration": 107,
+        "startTime": 5345.820000000001
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/c01a137e28f1db91.js",
+        "duration": 64,
+        "startTime": 5281.820000000001
+      }
+    ],
+    "bootup_top5": [
+      {
+        "url": "http://localhost:3500/_next/static/chunks/4807ab8da895a53b.js",
+        "total": 357.9000000000001,
+        "scripting": 78.4279999999999,
+        "scriptParseCompile": 6.867999999999999
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/2caea913813b5f0c.js",
+        "total": 340.1599999999979,
+        "scripting": 202.3999999999979,
+        "scriptParseCompile": 12.24
+      },
+      {
+        "url": "http://localhost:3500/",
+        "total": 239.86799999999994,
+        "scripting": 6.175999999999999,
+        "scriptParseCompile": 6.695999999999994
+      },
+      {
+        "url": "Unattributable",
+        "total": 84.5840000000002,
+        "scripting": 7.923999999999998,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/c01a137e28f1db91.js",
+        "total": 64.31999999999991,
+        "scripting": 55.3279999999999,
+        "scriptParseCompile": 8.847999999999999
+      }
+    ],
+    "network_requests_count": 35,
+    "render_blocking": [
+      {
+        "url": "http://localhost:3500/_next/static/chunks/0af83fd63868533c.css",
+        "totalBytes": 1754,
+        "wastedMs": 306
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/3c01e0b5f5a012c2.css",
+        "totalBytes": 855,
+        "wastedMs": 306
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/7089ba1f328f791f.css",
+        "totalBytes": 2036,
+        "wastedMs": 306
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/73ae0e0c81543bd9.css",
+        "totalBytes": 1062,
+        "wastedMs": 306
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/270d071582cde5a4.css",
+        "totalBytes": 962,
+        "wastedMs": 306
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/fc8d382e1d35650c.css",
+        "totalBytes": 5914,
+        "wastedMs": 306
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/00dcd01fbf613745.css",
+        "totalBytes": 1213,
+        "wastedMs": 306
+      }
+    ]
+  },
+  {
+    "run": 2,
+    "fcp_ms": 1355.948,
+    "lcp_ms": 5720.818000000001,
+    "tti_ms": 5735.818000000001,
+    "tbt_ms": 36.5,
+    "lcp_phases": [
+      {
+        "phase": "TTFB",
+        "timing": 452.974,
+        "percent": "8%"
+      },
+      {
+        "phase": "Load Delay",
+        "timing": 0,
+        "percent": "0%"
+      },
+      {
+        "phase": "Load Time",
+        "timing": 0,
+        "percent": "0%"
+      },
+      {
+        "phase": "Render Delay",
+        "timing": 5267.844000000001,
+        "percent": "92%"
+      }
+    ],
+    "lcp_element_selector": "section.hero-section-container > div.hero-container-main > div.hero-content-main > h1#hero-heading",
+    "long_tasks": [
+      {
+        "url": "http://localhost:3500/_next/static/chunks/2caea913813b5f0c.js",
+        "duration": 105,
+        "startTime": 5622.818
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/2caea913813b5f0c.js",
+        "duration": 58,
+        "startTime": 4667.844
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/2caea913813b5f0c.js",
+        "duration": 52,
+        "startTime": 5570.818
+      }
+    ],
+    "bootup_top5": [
+      {
+        "url": "http://localhost:3500/_next/static/chunks/2caea913813b5f0c.js",
+        "total": 400.9720000000061,
+        "scripting": 275.21200000000607,
+        "scriptParseCompile": 11.787999999999998
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/4807ab8da895a53b.js",
+        "total": 344.9160000000001,
+        "scripting": 73.38799999999996,
+        "scriptParseCompile": 6.743999999999999
+      },
+      {
+        "url": "http://localhost:3500/",
+        "total": 214.10399999999996,
+        "scripting": 5.667999999999998,
+        "scriptParseCompile": 6.071999999999995
+      },
+      {
+        "url": "Unattributable",
+        "total": 79.90400000000028,
+        "scripting": 7.975999999999999,
+        "scriptParseCompile": 0
+      }
+    ],
+    "network_requests_count": 35,
+    "render_blocking": [
+      {
+        "url": "http://localhost:3500/_next/static/chunks/0af83fd63868533c.css",
+        "totalBytes": 1754,
+        "wastedMs": 303
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/3c01e0b5f5a012c2.css",
+        "totalBytes": 855,
+        "wastedMs": 303
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/00dcd01fbf613745.css",
+        "totalBytes": 1213,
+        "wastedMs": 303
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/7089ba1f328f791f.css",
+        "totalBytes": 2036,
+        "wastedMs": 303
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/73ae0e0c81543bd9.css",
+        "totalBytes": 1062,
+        "wastedMs": 303
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/fc8d382e1d35650c.css",
+        "totalBytes": 5914,
+        "wastedMs": 303
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/270d071582cde5a4.css",
+        "totalBytes": 962,
+        "wastedMs": 303
+      }
+    ]
+  },
+  {
+    "run": 3,
+    "fcp_ms": 1357.004,
+    "lcp_ms": 6048.2570000000005,
+    "tti_ms": 6075.932100000001,
+    "tbt_ms": 37.5,
+    "lcp_phases": [
+      {
+        "phase": "TTFB",
+        "timing": 453.502,
+        "percent": "7%"
+      },
+      {
+        "phase": "Load Delay",
+        "timing": 0,
+        "percent": "0%"
+      },
+      {
+        "phase": "Load Time",
+        "timing": 0,
+        "percent": "0%"
+      },
+      {
+        "phase": "Render Delay",
+        "timing": 5594.755,
+        "percent": "93%"
+      }
+    ],
+    "lcp_element_selector": "section.hero-section-container > div.hero-container-main > div.hero-content-main > h1#hero-heading",
+    "long_tasks": [
+      {
+        "url": "http://localhost:3500/_next/static/chunks/2caea913813b5f0c.js",
+        "duration": 100,
+        "startTime": 6225.008000000002
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/c01a137e28f1db91.js",
+        "duration": 61,
+        "startTime": 6164.008000000002
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/2caea913813b5f0c.js",
+        "duration": 57,
+        "startTime": 5414.008000000001
+      }
+    ],
+    "bootup_top5": [
+      {
+        "url": "http://localhost:3500/_next/static/chunks/4807ab8da895a53b.js",
+        "total": 365.4359999999995,
+        "scripting": 79.00399999999998,
+        "scriptParseCompile": 6.231999999999999
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/2caea913813b5f0c.js",
+        "total": 350.4279999999969,
+        "scripting": 227.651999999997,
+        "scriptParseCompile": 12.072
+      },
+      {
+        "url": "http://localhost:3500/",
+        "total": 232.77600000000004,
+        "scripting": 6.163999999999999,
+        "scriptParseCompile": 6.015999999999995
+      },
+      {
+        "url": "Unattributable",
+        "total": 72.75600000000033,
+        "scripting": 7.52,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/c01a137e28f1db91.js",
+        "total": 61.20799999999991,
+        "scripting": 52.22399999999991,
+        "scriptParseCompile": 8.879999999999999
+      }
+    ],
+    "network_requests_count": 35,
+    "render_blocking": [
+      {
+        "url": "http://localhost:3500/_next/static/chunks/0af83fd63868533c.css",
+        "totalBytes": 1754,
+        "wastedMs": 304
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/3c01e0b5f5a012c2.css",
+        "totalBytes": 855,
+        "wastedMs": 304
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/fc8d382e1d35650c.css",
+        "totalBytes": 5914,
+        "wastedMs": 304
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/7089ba1f328f791f.css",
+        "totalBytes": 2036,
+        "wastedMs": 304
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/00dcd01fbf613745.css",
+        "totalBytes": 1213,
+        "wastedMs": 304
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/73ae0e0c81543bd9.css",
+        "totalBytes": 1062,
+        "wastedMs": 304
+      },
+      {
+        "url": "http://localhost:3500/_next/static/chunks/270d071582cde5a4.css",
+        "totalBytes": 962,
+        "wastedMs": 304
+      }
+    ]
+  }
+]

@@ -7,9 +7,7 @@ test.describe('Contact Form', () => {
     await navigateTo(page, '/contact');
 
     // Try to submit empty form
-    const submitBtn = page.getByRole('button', {
-      name: /send|submit|отправить/i,
-    });
+    const submitBtn = page.getByTestId('contact-submit-button');
     await submitBtn.scrollIntoViewIfNeeded();
     await submitBtn.click({ force: true });
 
@@ -62,7 +60,9 @@ test.describe('Contact Form', () => {
   test('should have working external links', async ({ page }) => {
     await navigateTo(page, '/contact');
 
-    const emailLink = page.locator('a[href^="mailto:"]');
+    const emailLink = page
+      .locator('a[href^="mailto:arcadeum.care@gmail.com"]')
+      .first();
     await expect(emailLink).toBeVisible({});
     await expect(emailLink).toHaveAttribute(
       'href',

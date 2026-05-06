@@ -1,21 +1,54 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useLanguage } from '@/shared/i18n/context';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import { Container } from '@arcadeum/ui/components/Container/Container';
 import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
-import { PageTitle } from '@arcadeum/ui/components/PageTitle/PageTitle';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
-import { Section } from '@arcadeum/ui/components/Section/Section';
 import { Card } from '@arcadeum/ui/components/Card/Card';
-import { Input } from '@arcadeum/ui/components/Input/Input';
-import { TextArea } from '@arcadeum/ui/components/TextArea/TextArea';
-import { Button } from '@arcadeum/ui/components/Button/Button';
-import { FormGroup } from '@arcadeum/ui/components/FormGroup/FormGroup';
+import { ActivityTicker } from '@arcadeum/ui/components/ActivityTicker';
+import { ChannelTile } from '@arcadeum/ui/components/ChannelTile';
+import { StatTile } from '@arcadeum/ui/components/StatTile';
+import { FloatingLabelInput } from '@arcadeum/ui/components/FloatingLabelInput';
+import { FloatingLabelTextArea } from '@arcadeum/ui/components/FloatingLabelTextArea';
+import { LaunchButton } from '@arcadeum/ui/components/LaunchButton';
 import { XStack, YStack } from 'tamagui';
 import { formatMessage } from '@/shared/i18n';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
+import {
+  ClockIcon,
+  DiscordIcon,
+  GithubIcon,
+  GlobeIcon,
+  TelegramIcon,
+  TwitterIcon,
+} from './ContactView.icons';
+import {
+  burstStyle,
+  eyebrowDotStyle,
+  eyebrowStyle,
+  formCardInnerStyle,
+  formGridStyle,
+  formHeaderStyle,
+  helpLinkStyle,
+  heroTaglineStyle,
+  heroTitleStyle,
+  heroWrapStyle,
+  labelChipStyle,
+  orbStyle,
+  pillStyle,
+  privacyStyle,
+  ruleStyle,
+  statCellWrap,
+  statStripStyle,
+  submitRowStyle,
+  successCardStyle,
+  tilesGridStyle,
+  titleAccentStyle,
+} from './ContactView.styles';
+import { ContactSidePanel } from './ContactSidePanel';
+import { ContactFaq, getFaqItems } from './ContactFaq';
 
 export interface ContactViewProps {
   t?: ContactMessages;
@@ -23,187 +56,367 @@ export interface ContactViewProps {
   WORKING_HOURS: string;
 }
 
+function HeroPill({
+  icon,
+  children,
+}: {
+  icon?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <span style={pillStyle}>
+      {icon ? <span aria-hidden="true">{icon}</span> : null}
+      {children}
+    </span>
+  );
+}
+
+const tickerItems = [
+  {
+    tag: 'support',
+    who: 'Maria',
+    what: 'answered a ticket',
+    when: '12s ago',
+    color: '#22d3ee',
+  },
+  {
+    tag: 'release',
+    who: 'v2.41',
+    what: 'shipped to production',
+    when: '4m ago',
+    color: '#a78bfa',
+  },
+  {
+    tag: 'bug',
+    who: 'Anatoliy',
+    what: 'fixed lobby latency on EU-West',
+    when: '11m ago',
+    color: '#f472b6',
+  },
+  {
+    tag: 'support',
+    who: 'Sergey',
+    what: 'joined Discord office hours',
+    when: '23m ago',
+    color: '#22d3ee',
+  },
+  {
+    tag: 'status',
+    who: 'All systems',
+    what: 'operational · 99.98% uptime',
+    when: '—',
+    color: '#34d399',
+  },
+];
+
 export default function ContactView({
   t: initialT,
   SUPPORT_EMAIL,
   WORKING_HOURS,
 }: ContactViewProps) {
-  const [submitted, setSubmitted] = useState(false);
   const { messages } = useLanguage();
   const t = (messages.legal?.contact as unknown as ContactMessages) || initialT;
-  const s = t?.sections;
-  const getInTouch = s?.getInTouch as Record<string, string> | undefined;
-  const form = s?.form as Record<string, string> | undefined;
-  const faq = s?.faq as Record<string, Record<string, string>> | undefined;
+  const sections = t?.sections;
+  const hero = sections?.hero;
+  const stats = sections?.stats;
+  const channels = sections?.channels;
+  const form = sections?.form;
+  const side = sections?.side;
+  const ticker = sections?.ticker;
+  const faq = sections?.faq;
+
+  const [submitted, setSubmitted] = useState(false);
+  const [launching, setLaunching] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLaunching(true);
+    setTimeout(() => {
+      setSubmitted(true);
+      setLaunching(false);
+    }, 700);
   };
+
+  const reset = () => {
+    setSubmitted(false);
+    setName('');
+    setEmail('');
+    setSubject('');
+    setMessage('');
+  };
+
+  const titleParts = (hero?.title ?? '').trim().split(/\s+/);
+  const lastWord = titleParts.pop() ?? '';
+  const titleHead = titleParts.join(' ');
+
+  const faqItems = getFaqItems(t, SUPPORT_EMAIL);
+
+  const channelDefs = [
+    {
+      key: 'discord',
+      icon: <DiscordIcon />,
+      title: channels?.discord?.title ?? 'Discord',
+      sub: formatMessage(channels?.discord?.sub, { count: '12.4k' }),
+      gradient: 'linear-gradient(135deg,#5865f2 0%,#8b5cf6 100%)',
+      href: 'https://discord.gg/arcadeum',
+    },
+    {
+      key: 'twitter',
+      icon: <TwitterIcon />,
+      title: channels?.twitter?.title ?? '@arcadeum',
+      sub: channels?.twitter?.sub ?? 'DMs are open',
+      gradient: 'linear-gradient(135deg,#0f1419 0%,#1a8cd8 100%)',
+      href: 'https://twitter.com/arcadeum',
+    },
+    {
+      key: 'telegram',
+      icon: <TelegramIcon />,
+      title: channels?.telegram?.title ?? 'Telegram',
+      sub: channels?.telegram?.sub ?? 't.me/arcadeum',
+      gradient: 'linear-gradient(135deg,#229ed9 0%,#26a5e4 100%)',
+      href: 'https://t.me/arcadeum',
+    },
+    {
+      key: 'github',
+      icon: <GithubIcon />,
+      title: channels?.github?.title ?? 'GitHub Issues',
+      sub: channels?.github?.sub ?? 'Bugs & feature requests',
+      gradient: 'linear-gradient(135deg,#1f2328 0%,#6e40c9 100%)',
+      href: 'https://github.com/arcadeum',
+    },
+  ];
 
   return (
     <PageLayout>
       <Container size="md">
-        <GlassCard>
-          <PageTitle size="xl" gradient>
-            {t?.title}
-          </PageTitle>
-          <Typography variant="body" uiSize="lg" alpha="medium">
-            {t?.tagline}
-          </Typography>
-        </GlassCard>
-
-        <Section variant="legal" title={getInTouch?.title}>
-          <XStack flexWrap="wrap" gap="$4">
-            <Card flex={1} minWidth={200} p="$4" variant="glass">
-              <Typography uiSize="2xl">📧</Typography>
-              <Typography variant="label" uiSize="xs" marginTop="$2">
-                {getInTouch?.email}
-              </Typography>
-              <Typography fontWeight="700">
-                <a
-                  href={`mailto:${SUPPORT_EMAIL}`}
-                  style={{ color: 'inherit', textDecoration: 'none' }}
-                >
-                  {SUPPORT_EMAIL}
-                </a>
-              </Typography>
-            </Card>
-
-            <Card flex={1} minWidth={200} p="$4" variant="glass">
-              <Typography uiSize="2xl">🕐</Typography>
-              <Typography variant="label" uiSize="xs" marginTop="$2">
-                {getInTouch?.workingHours}
-              </Typography>
-              <Typography fontWeight="700">{WORKING_HOURS}</Typography>
-            </Card>
-
-            <Card flex={1} minWidth={200} p="$4" variant="glass">
-              <Typography uiSize="2xl">⏱️</Typography>
-              <Typography variant="label" uiSize="xs" marginTop="$2">
-                {getInTouch?.responseTime}
-              </Typography>
-              <Typography fontWeight="700">
-                {getInTouch?.responseValue}
-              </Typography>
-            </Card>
-          </XStack>
-        </Section>
-
-        <Section variant="legal" title={form?.title}>
-          {submitted ? (
-            <Card
-              variant="glass"
-              p="$6"
-              alignItems="center"
-              data-testid="contact-success-message"
-            >
-              <Typography fontWeight="500" textAlign="center">
-                {form?.success}
-              </Typography>
-            </Card>
-          ) : (
-            <form onSubmit={handleSubmit}>
-              <YStack gap="$5">
-                <FormGroup label={form?.nameLabel} htmlFor="name" required>
-                  <Input
-                    id="name"
-                    name="name"
-                    placeholder={form?.namePlaceholder}
-                    required
-                    data-testid="contact-name-input"
-                    fullWidth
+        <YStack gap="$8">
+          <div style={heroWrapStyle}>
+            <span
+              aria-hidden="true"
+              style={orbStyle(360, '-160px', '-80px', 'rgba(56,189,248,0.45)')}
+            />
+            <span
+              aria-hidden="true"
+              style={orbStyle(320, '-100px', '70%', 'rgba(244,114,182,0.45)')}
+            />
+            <YStack gap="$4" position="relative" zIndex={1}>
+              <XStack flexWrap="wrap" alignItems="center" gap="$3">
+                <span style={eyebrowStyle}>
+                  <span aria-hidden="true" style={eyebrowDotStyle} />
+                  {hero?.eyebrow ?? 'Player support'}
+                </span>
+                <Typography variant="caption" alpha="medium">
+                  arcadeum.games / contact
+                </Typography>
+              </XStack>
+              <h1 style={heroTitleStyle}>
+                {titleHead ? `${titleHead} ` : ''}
+                <span style={titleAccentStyle}>{lastWord}</span>
+              </h1>
+              <p style={heroTaglineStyle}>{hero?.tagline ?? t?.tagline}</p>
+              <XStack flexWrap="wrap" gap="$3" marginTop="$3">
+                <HeroPill>
+                  <span
+                    aria-hidden="true"
+                    style={{
+                      ...eyebrowDotStyle,
+                      background: '#34d399',
+                      boxShadow: '0 0 8px #34d399',
+                    }}
                   />
-                </FormGroup>
-
-                <FormGroup label={form?.emailLabel} htmlFor="email" required>
-                  <Input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder={form?.emailPlaceholder}
-                    required
-                    data-testid="contact-email-input"
-                    fullWidth
-                  />
-                </FormGroup>
-
-                <FormGroup
-                  label={form?.subjectLabel}
-                  htmlFor="subject"
-                  required
-                >
-                  <Input
-                    id="subject"
-                    name="subject"
-                    placeholder={form?.subjectPlaceholder}
-                    required
-                    data-testid="contact-subject-input"
-                    fullWidth
-                  />
-                </FormGroup>
-
-                <FormGroup
-                  label={form?.messageLabel}
-                  htmlFor="message"
-                  required
-                >
-                  <TextArea
-                    id="message"
-                    name="message"
-                    placeholder={form?.messagePlaceholder}
-                    required
-                    data-testid="contact-message-textarea"
-                    fullWidth
-                  />
-                </FormGroup>
-
-                <YStack mt="$2">
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    data-testid="contact-submit-button"
-                  >
-                    {form?.submit}
-                  </Button>
-                </YStack>
+                  {hero?.statusOk ?? 'All systems operational'}
+                </HeroPill>
+                <HeroPill icon={<ClockIcon />}>
+                  {formatMessage(hero?.medianReply, { hours: '4' })}
+                </HeroPill>
+                <HeroPill icon={<GlobeIcon />}>
+                  {formatMessage(hero?.languages, { count: '5' })}
+                </HeroPill>
+              </XStack>
+              <YStack marginTop="$4">
+                <ActivityTicker items={tickerItems} label={ticker?.label} />
               </YStack>
-            </form>
-          )}
-        </Section>
+            </YStack>
+          </div>
 
-        <Section variant="legal" title={faq?.title as string | undefined}>
-          <YStack gap="$4">
-            <Card variant="glass" p="$4">
-              <Typography variant="label" uiSize="xs">
-                {faq?.refund?.question}
-              </Typography>
-              <Typography marginTop="$1">
-                {formatMessage(faq?.refund?.answer, {
-                  email: SUPPORT_EMAIL,
-                })}
-              </Typography>
-            </Card>
+          <div style={statStripStyle}>
+            <div style={statCellWrap}>
+              <StatTile
+                value="2,840"
+                label={stats?.ticketsResolved ?? 'Tickets resolved this month'}
+              />
+            </div>
+            <div style={statCellWrap}>
+              <StatTile
+                value="4.9 ★"
+                label={stats?.avgRating ?? 'Avg. support rating'}
+              />
+            </div>
+            <div style={statCellWrap}>
+              <StatTile
+                value="5"
+                label={stats?.languagesSupported ?? 'Languages supported'}
+              />
+            </div>
+            <div style={statCellWrap}>
+              <StatTile value="98%" label={stats?.slaHit ?? 'SLA hit rate'} />
+            </div>
+          </div>
 
-            <Card variant="glass" p="$4">
-              <Typography variant="label" uiSize="xs">
-                {faq?.password?.question}
-              </Typography>
-              <Typography marginTop="$1">{faq?.password?.answer}</Typography>
-            </Card>
+          <div style={tilesGridStyle}>
+            {channelDefs.map((c) => (
+              <ChannelTile
+                key={c.key}
+                icon={c.icon}
+                title={c.title}
+                sub={c.sub}
+                gradient={c.gradient}
+                href={c.href}
+                external
+              />
+            ))}
+          </div>
 
-            <Card variant="glass" p="$4">
-              <Typography variant="label" uiSize="xs">
-                {faq?.deleteAccount?.question}
-              </Typography>
-              <Typography marginTop="$1">
-                {formatMessage(faq?.deleteAccount?.answer, {
-                  email: SUPPORT_EMAIL,
-                })}
-              </Typography>
-            </Card>
+          <YStack
+            $gtMd={{ flexDirection: 'row' }}
+            flexDirection="column"
+            gap="$5"
+          >
+            <YStack flex={1.6} minWidth={0}>
+              <GlassCard>
+                <div style={formCardInnerStyle}>
+                  <div style={formHeaderStyle}>
+                    <YStack gap={2}>
+                      <span style={labelChipStyle}>
+                        {form?.subtitle ?? 'Direct message'}
+                      </span>
+                      <Typography variant="heading" uiSize="xl">
+                        {form?.title ?? 'Send the team a message'}
+                      </Typography>
+                    </YStack>
+                    <Typography variant="caption" alpha="medium">
+                      {form?.repliesNote ?? 'Replies hit your email'}
+                    </Typography>
+                  </div>
+                  <hr style={ruleStyle} aria-hidden="true" />
+                  {submitted ? (
+                    <Card variant="glass" data-testid="contact-success-message">
+                      <div style={successCardStyle}>
+                        <div aria-hidden="true" style={burstStyle}>
+                          ✦
+                        </div>
+                        <Typography variant="heading" uiSize="lg">
+                          {form?.successTitle ??
+                            form?.success ??
+                            'Message away.'}
+                        </Typography>
+                        <Typography
+                          variant="body"
+                          alpha="medium"
+                          marginTop="$2"
+                        >
+                          {form?.successBody ??
+                            'Expect a reply within 4 hours. We sent a copy to your email.'}
+                        </Typography>
+                        <YStack alignItems="center" marginTop="$4">
+                          <button
+                            type="button"
+                            onClick={reset}
+                            style={helpLinkStyle}
+                          >
+                            {form?.sendAnother ?? 'Send another'}
+                          </button>
+                        </YStack>
+                      </div>
+                    </Card>
+                  ) : (
+                    <form onSubmit={handleSubmit}>
+                      <YStack gap="$4">
+                        <div style={formGridStyle}>
+                          <FloatingLabelInput
+                            id="contact-name"
+                            name="name"
+                            label={form?.name ?? form?.nameLabel ?? 'Your name'}
+                            value={name}
+                            onChange={setName}
+                            required
+                            autoComplete="name"
+                            data-testid="contact-name-input"
+                          />
+                          <FloatingLabelInput
+                            id="contact-email"
+                            name="email"
+                            type="email"
+                            label={form?.email ?? form?.emailLabel ?? 'Email'}
+                            value={email}
+                            onChange={setEmail}
+                            required
+                            autoComplete="email"
+                            data-testid="contact-email-input"
+                          />
+                        </div>
+                        <FloatingLabelInput
+                          id="contact-subject"
+                          name="subject"
+                          label={
+                            form?.subject ?? form?.subjectLabel ?? 'Subject'
+                          }
+                          value={subject}
+                          onChange={setSubject}
+                          required
+                          data-testid="contact-subject-input"
+                        />
+                        <FloatingLabelTextArea
+                          id="contact-message"
+                          name="message"
+                          label={
+                            form?.message ?? form?.messageLabel ?? 'Message'
+                          }
+                          value={message}
+                          onChange={setMessage}
+                          required
+                          maxLength={1200}
+                          data-testid="contact-message-textarea"
+                        />
+                        <div style={submitRowStyle}>
+                          <span style={privacyStyle}>
+                            <span aria-hidden="true">🔒</span>
+                            {form?.privacy ??
+                              'Private — we never share your email.'}
+                          </span>
+                          <LaunchButton
+                            isLaunching={launching}
+                            data-testid="contact-submit-button"
+                          >
+                            {launching
+                              ? (form?.submitting ?? 'Sending…')
+                              : (form?.submit ?? 'Launch message')}
+                          </LaunchButton>
+                        </div>
+                      </YStack>
+                    </form>
+                  )}
+                </div>
+              </GlassCard>
+            </YStack>
+
+            <ContactSidePanel
+              side={side}
+              workingHours={WORKING_HOURS}
+              supportEmail={SUPPORT_EMAIL}
+            />
           </YStack>
-        </Section>
+
+          <ContactFaq
+            items={faqItems}
+            title={faq?.title}
+            browseLabel={faq?.browse}
+          />
+        </YStack>
       </Container>
     </PageLayout>
   );

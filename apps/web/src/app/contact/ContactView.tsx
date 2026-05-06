@@ -286,7 +286,7 @@ export default function ContactView({
           </div>
 
           <YStack
-            $gtMd={{ flexDirection: 'row' }}
+            $gtMd={{ flexDirection: 'row', alignItems: 'flex-start' }}
             flexDirection="column"
             gap="$5"
           >

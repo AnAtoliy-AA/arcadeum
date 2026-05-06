@@ -38,6 +38,8 @@ export * from './components/MobileLoginIndicator/MobileLoginIndicator';
 export * from './components/Chat';
 export * from './components/CollapsibleSection/CollapsibleSection';
 export * from './components/ActivityTicker';
+export * from './components/ChannelTile';
+export * from './components/StatTile';
 
 export * from './components/ConnectionOverlay/ConnectionOverlay';
 export * from './components/Footer/Footer';

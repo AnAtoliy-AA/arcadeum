@@ -47,6 +47,11 @@ export const StaticDownloadButtons: React.FC<StaticDownloadButtonsProps> = ({
           className="download-btn-static"
           data-testid="install-pwa-button"
           onClick={onInstall || onShowInstructions}
+          aria-label={
+            onInstall
+              ? `${t('pwa.install.installAs')} ${t('pwa.install.webApp')}`
+              : `${t('pwa.install.getThe')} ${t('pwa.install.appGuide')}`
+          }
         >
           <div className="download-btn-icon">
             <SmartphoneIcon size={24} />

@@ -92,7 +92,10 @@ const themeBase = {
   borderColorFocus: '#4a4d59',
   shadowColor: 'rgba(0, 0, 0, 0.2)',
   overlayBg: 'rgba(0, 0, 0, 0.5)',
-  primary: '#0284c7',
+  // primary darkened from #0284c7 (sky-600) to #0369a1 (sky-700) so that
+  // white-on-primary buttons (e.g. Header desktop login LinkButton) reach
+  // WCAG AA 4.5:1 contrast — was 4.09:1, fails. Phase 2 audit ARC-570.
+  primary: '#0369a1',
   primaryText: '#ffffff',
   secondary: '#4338ca',
   danger: '#b91c1c',
@@ -131,7 +134,7 @@ const lightTheme = {
   borderColor: '#cbd5e1',
   borderColorHover: '#b1bdcd',
   borderColorPress: '#94a3b8',
-  primary: '#0284c7',
+  primary: '#0369a1',
   primaryGradientStart: '#1d4ed8',
   primaryGradientEnd: '#1e40af',
   primaryText: '#ffffff',

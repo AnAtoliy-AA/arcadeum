@@ -8,7 +8,6 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import './styles/hero-stable.css';
 import { SupportIcon } from '@/shared/ui';
 import Link from 'next/link';
 import { CARD_VARIANTS } from '@/features/games/lib/criticalVariants';

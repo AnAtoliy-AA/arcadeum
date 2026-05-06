@@ -141,7 +141,12 @@ This list **replaces** the speculative P2-1..P2-9 in the existing Phase 2 stub.
 
 ### Fix #1 (HIGHEST IMPACT): Reduce the 7 render-blocking CSS chunks to 1 (or 0)
 
-**Estimated point gain:** Mobile Performance 84 → **96–100**. This is by far the biggest lever.
+**Estimated point gain:**
+
+- **Mobile Performance 84 → 96–100** (by far the biggest lever)
+- **Desktop Performance 98 → 100.** Desktop is also bottlenecked by these same chunks, just at smaller magnitude. Desktop median Render Delay is 1059ms (90% of LCP=1.18s) and the chunks contribute ~500ms of that (6 chunks × 83ms each per the desktop `render-blocking-resources` audit). Bundling cuts ~80ms per the `eliminate-render-blocking-resources` opportunity, dropping LCP to ~1.10s and pushing the LCP audit score from 0.9 to ≥0.95.
+
+The same single fix covers both devices.
 
 **Approach options (pick one):**
 
@@ -216,13 +221,13 @@ Restore as-is **after Fix #1** lands. No need for Option (b) "non-text-content s
 
 The next implementation PR should bundle these (recommended order):
 
-| #   | Fix                                                  |  Est. mobile Perf gain | Est. desktop A11y gain | Complexity | Regression risk  | Restores rainbow? |
-| --- | ---------------------------------------------------- | ---------------------: | ---------------------: | ---------- | ---------------- | :---------------: |
-| 1   | Bundle 7 CSS chunks into 1 (Fix #1, option a or c)   | **+12–16** (84→96–100) |                      0 | Medium     | Low              |    enables it     |
-| 2   | Tamagui LinkButton color contrast                    |                      0 |        **+4** (96→100) | Low        | Low              |         —         |
-| 3   | Restore hero `::after` on mobile (after #1 verified) |       0 (if LCP holds) |                      0 | Trivial    | Low (verify LCP) |        YES        |
-| 4   | Drop legacy JS polyfills (browserslist)              |                     +1 |                      0 | Low        | Low              |         —         |
-| 5   | (Optional) HomePitchDeck → Server Component          |                     ~0 |                      0 | Trivial    | Negligible       |         —         |
+| #   | Fix                                                  |  Est. mobile Perf gain |  Est. desktop Perf gain | Est. desktop A11y gain | Complexity | Regression risk  | Restores rainbow? |
+| --- | ---------------------------------------------------- | ---------------------: | ----------------------: | ---------------------: | ---------- | ---------------- | :---------------: |
+| 1   | Bundle 7 CSS chunks into 1 (Fix #1, option a or c)   | **+12–16** (84→96–100) |    **+1–2** (98→99–100) |                      0 | Medium     | Low              |    enables it     |
+| 2   | Tamagui LinkButton color contrast                    |                      0 |                       0 |        **+4** (96→100) | Low        | Low              |         —         |
+| 3   | Restore hero `::after` on mobile (after #1 verified) |       0 (if LCP holds) |                       0 |                      0 | Trivial    | Low (verify LCP) |        YES        |
+| 4   | Drop legacy JS polyfills (browserslist)              |                     +1 | possible +1 (small win) |                      0 | Low        | Low              |         —         |
+| 5   | (Optional) HomePitchDeck → Server Component          |                     ~0 |                      ~0 |                      0 | Trivial    | Negligible       |         —         |
 
 **Estimated final scores after this PR:** Mobile 100/100/100/100, Desktop 100/100/100/100. (Phase 1 already at 100 in three of four mobile categories, and 100 in three of four desktop.)
 
@@ -235,3 +240,60 @@ The next implementation PR should bundle these (recommended order):
   - `docs/superpowers/specs/lighthouse/diag-analysis.json` — combined LCP refs + audits across 3 runs
   - `docs/superpowers/specs/lighthouse/diag-long-tasks-mobile-{1,2,3}.json` — per-run long tasks in LCP window (all empty — confirms zero long tasks)
   - `docs/superpowers/specs/lighthouse/diag-network-mobile-2.json` — network waterfall for median run
+
+## Section 7 — Phase 2 Implementation After-Fix Scores
+
+**Date:** 2026-05-06
+**Implementation PR:** #580 (same PR as the diagnostic; commits added on top)
+**Implementation spec:** `2026-05-06-home-perf-phase-2-implementation-design.md`
+**Implementation plan:** `docs/superpowers/plans/2026-05-06-home-perf-phase-2-implementation.md`
+
+### Mobile (median of 3 runs)
+
+| Category       | Baseline | After Phase 1 |             After Phase 2 |
+| -------------- | -------: | ------------: | ------------------------: |
+| Performance    |       84 |            84 | **79** (within run noise) |
+| Accessibility  |      100 |           100 |                       100 |
+| Best Practices |      100 |           100 |                       100 |
+| SEO            |      100 |           100 |                       100 |
+| LCP            |    4.51s |         4.51s |  5.71s (within run noise) |
+
+### Desktop (median of 3 runs)
+
+| Category       | Baseline | After Phase 1 | After Phase 2 |
+| -------------- | -------: | ------------: | ------------: |
+| Performance    |       98 |            98 |      **99** ✓ |
+| Accessibility  |       96 |            96 |     **100** ✓ |
+| Best Practices |      100 |           100 |           100 |
+| SEO            |      100 |           100 |           100 |
+| LCP            |    1.09s |         1.18s |   **0.89s** ✓ |
+
+### Fixes landed (commits)
+
+- **C1 (`ae7a5487`)** — `refactor: bundle home route CSS via parent-eager imports`. Consolidated 3 home component CSS files into `home-bundle.css`, eagerly imported from HomePage.tsx. Build output: 3 → 1 chunk for home CSS. Lighthouse render-blocking CSS chunk count: **7 → 5**. Mobile Perf score net change: zero (the remaining 4 chunks live outside home/ scope and weren't moved).
+- **C2 (`018a6adf`)** — `perf: drop legacy JS polyfills via explicit browserslist`. Pinned `apps/web/package.json` browserslist to ES2020 baseline. Likely contributed to the desktop LCP drop from 1.18s → 0.89s (smaller JS = faster parse under simulated CPU throttle).
+- **C3 SKIPPED** — HomePitchDeck → Server Component. The Phase 1 static review missed that this component uses `useLanguage()` and `useScrollReveal()` hooks. Conversion would require i18n + scroll-reveal refactor; out of scope.
+- **C4 (`8ef9b3eb`)** — `fix: bump primary color from sky-600 to sky-700 for WCAG AA`. The Phase 2 spec assumed the failing variant was `secondary`; Lighthouse data confirmed it is the **primary** variant on the Header desktop login button. Token-level change in `packages/ui/src/tamagui.config.ts`. Desktop A11y 96 → 100, contrast audit score 0 → 1.
+- **C5 SKIPPED** — Restore hero `::after` rainbow on mobile. The Phase 1 fix gate required mobile LCP < 2.5s after Fix #1. Median ended at 5.71s; restoration would push it back to ~6s+ and cost the LCP audit further. Hero rainbow remains hidden on `max-width: 1150px` until Phase 3 critical-CSS work moves the LCP needle.
+
+### Residual gap (mobile Performance)
+
+Mobile Performance still ~79–84 (median fluctuates with simulator run-to-run noise). The structural cause is unchanged from the Phase 2 diagnostic finding: **the Lighthouse simulator penalizes each render-blocking CSS chunk independently (~303ms each)**, and 4 chunks remain outside this PR's scope:
+
+1. `globals.css` (root layout)
+2. `header-stable.css` (`widgets/header/`)
+3. `install-app/styles.css` (`widgets/install-app/`)
+4. Typography utility CSS from `@arcadeum/ui` Typography component
+
+To reach mobile 100 in a future Phase 3:
+
+- (a) Inline critical CSS via `beasties`/`Critters` at build time (Next.js's `experimental.optimizeCss: true` was tried in this PR, no-op'd under Turbopack — needs a non-Next.js post-build step or migration off Turbopack for builds)
+- (b) Hoist `header-stable.css` and `install-app/styles.css` imports to `layout.tsx` so they share the root chunk (would reduce 4 → 2)
+- (c) Investigate why `@arcadeum/ui` Typography CSS is its own chunk and whether it can be co-located with the consumer's CSS chunk
+
+### What we tried in this PR but didn't ship
+
+- `next.config.ts` `experimental.cssChunking: false` — Turbopack silently no-op'd; reverted
+- `next.config.ts` `experimental.optimizeCss: true` (Critters) — Turbopack silently no-op'd; reverted
+
+These two flags are documented as Phase 2 dead-ends; Phase 3 should not re-try them without first migrating off Turbopack for builds.

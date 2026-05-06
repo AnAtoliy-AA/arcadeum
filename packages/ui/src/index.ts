@@ -40,6 +40,7 @@ export * from './components/CollapsibleSection/CollapsibleSection';
 export * from './components/ActivityTicker';
 export * from './components/ChannelTile';
 export * from './components/StatTile';
+export * from './components/LaunchButton';
 
 export * from './components/ConnectionOverlay/ConnectionOverlay';
 export * from './components/Footer/Footer';

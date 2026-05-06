@@ -216,8 +216,32 @@ export const en: LegalMessages = {
         responseTime: 'Response Time',
         responseValue: 'Within 24-48 hours',
       },
+      hero: {
+        eyebrow: 'Player support',
+        title: "We're on the same team.",
+        tagline:
+          'Drop a question, report a bug, hand us a feature idea — we read every message and the whole team plays the games we ship.',
+        statusOk: 'All systems operational',
+        medianReply: '~ {{hours}} hr median reply',
+        humansOnline: '{{count}} humans online',
+        languages: '{{count}} languages',
+      },
+      stats: {
+        ticketsResolved: 'Tickets resolved this month',
+        avgRating: 'Avg. support rating',
+        languagesSupported: 'Languages supported',
+        slaHit: 'SLA hit rate',
+      },
+      channels: {
+        discord: { title: 'Discord', sub: 'Live chat · {{count}} members' },
+        twitter: { title: '@arcadeum', sub: 'DMs are open' },
+        telegram: { title: 'Telegram', sub: 't.me/arcadeum' },
+        github: { title: 'GitHub Issues', sub: 'Bugs & feature requests' },
+      },
       form: {
-        title: 'Send a Message',
+        title: 'Send the team a message',
+        subtitle: 'Direct message',
+        repliesNote: 'Replies hit your email',
         nameLabel: 'Your Name',
         namePlaceholder: 'Enter your name',
         emailLabel: 'Email Address',
@@ -226,26 +250,63 @@ export const en: LegalMessages = {
         subjectPlaceholder: 'What is this about?',
         messageLabel: 'Message',
         messagePlaceholder: 'Tell us how we can help...',
-        submit: 'Send Message →',
+        name: 'Your name',
+        email: 'Email',
+        subject: 'Subject',
+        message: 'Message',
+        privacy: 'Private — we never share your email.',
+        submit: 'Launch message',
+        submitting: 'Sending…',
+        successTitle: 'Message away.',
+        successBody:
+          'Expect a reply within 4 hours. We sent a copy to your email.',
+        sendAnother: 'Send another',
         success:
           "✓ Thank you! Your message has been sent. We'll get back to you soon.",
       },
+      side: {
+        onCall: 'On call right now',
+        medianFirstReply: 'Median first reply',
+        workingHours: 'Working hours',
+        coverage: 'Coverage',
+        devsTitle: 'Bugs & integration',
+        devsBody:
+          'Reproducible bugs, API issues, and SDK questions are tracked in GitHub. We triage within 24 hours.',
+        openIssue: 'Open an issue',
+        press: 'Press & partnerships',
+        pressEmail: 'hello@arcadeum.games',
+        pressBody: 'For media, creators, and partner studios.',
+      },
+      ticker: {
+        label: 'HQ live feed',
+      },
       faq: {
-        title: 'Frequently Asked Questions',
+        title: 'Maybe we already answered this',
+        browse: 'Browse help center',
         refund: {
-          question: 'How do I request a refund?',
+          question: 'Can I get a refund on a purchase?',
           answer:
-            'Please email {{email}} with your account email and order details. Refund requests are processed within 5-10 business days.',
+            "Refund eligibility depends on the item and the time since purchase. Reach out to {{email}} with your order ID and we'll get back to you within one business day.",
         },
         password: {
-          question: 'I forgot my password. What should I do?',
+          question: 'How do I reset my password?',
           answer:
-            'Use the "Forgot Password" link on the login page to reset your password via email.',
+            "Use the 'Forgot password' link on the sign-in screen. The reset email arrives in about a minute — check spam if it doesn't show up. If your email changed, contact support.",
         },
         deleteAccount: {
-          question: 'How do I delete my account?',
+          question: 'How can I delete my account?',
           answer:
-            'Contact us through this form or email {{email}} with your request. Account deletion is processed within 48 hours.',
+            'Account deletion is permanent and removes your stats, friends list, and game history. Email {{email}} from the address tied to your account to begin the process.',
+        },
+        multiplayerLag: {
+          question: 'Why is my game laggy in multiplayer?',
+          answer:
+            'Most lag is region routing. Switch your matchmaking region in Settings → Network, or check status.arcadeum.games to see if any servers are degraded.',
+        },
+        reportPlayer: {
+          question: 'How do I report another player?',
+          answer:
+            "Use the in-game ⋯ menu next to the player's name → Report. Our moderation team reviews reports within 24 hours and takes action when our community guidelines are broken.",
         },
       },
     },

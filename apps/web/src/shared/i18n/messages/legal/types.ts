@@ -143,6 +143,8 @@ export type PrivacyMessages = {
   };
 };
 
+export type FaqEntry = { question?: string; answer?: string };
+
 export type ContactMessages = {
   title?: string;
   tagline?: string;
@@ -154,8 +156,31 @@ export type ContactMessages = {
       responseTime?: string;
       responseValue?: string;
     };
+    hero?: {
+      eyebrow?: string;
+      title?: string;
+      tagline?: string;
+      statusOk?: string;
+      medianReply?: string;
+      humansOnline?: string;
+      languages?: string;
+    };
+    stats?: {
+      ticketsResolved?: string;
+      avgRating?: string;
+      languagesSupported?: string;
+      slaHit?: string;
+    };
+    channels?: {
+      discord?: { title?: string; sub?: string };
+      twitter?: { title?: string; sub?: string };
+      telegram?: { title?: string; sub?: string };
+      github?: { title?: string; sub?: string };
+    };
     form?: {
       title?: string;
+      subtitle?: string;
+      repliesNote?: string;
       nameLabel?: string;
       namePlaceholder?: string;
       emailLabel?: string;
@@ -164,23 +189,41 @@ export type ContactMessages = {
       subjectPlaceholder?: string;
       messageLabel?: string;
       messagePlaceholder?: string;
+      name?: string;
+      email?: string;
+      subject?: string;
+      message?: string;
+      privacy?: string;
       submit?: string;
+      submitting?: string;
+      successTitle?: string;
+      successBody?: string;
+      sendAnother?: string;
       success?: string;
+    };
+    side?: {
+      onCall?: string;
+      medianFirstReply?: string;
+      workingHours?: string;
+      coverage?: string;
+      devsTitle?: string;
+      devsBody?: string;
+      openIssue?: string;
+      press?: string;
+      pressEmail?: string;
+      pressBody?: string;
+    };
+    ticker?: {
+      label?: string;
     };
     faq?: {
       title?: string;
-      refund?: {
-        question?: string;
-        answer?: string;
-      };
-      password?: {
-        question?: string;
-        answer?: string;
-      };
-      deleteAccount?: {
-        question?: string;
-        answer?: string;
-      };
+      browse?: string;
+      refund?: FaqEntry;
+      password?: FaqEntry;
+      deleteAccount?: FaqEntry;
+      multiplayerLag?: FaqEntry;
+      reportPlayer?: FaqEntry;
     };
   };
 };

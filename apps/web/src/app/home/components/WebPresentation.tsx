@@ -9,7 +9,6 @@ import {
   MinimizeIcon,
 } from '@arcadeum/ui';
 import { slides } from '../data/slides';
-import './styles/presentation-stable.css';
 
 export function WebPresentation() {
   const [currentSlide, setCurrentSlide] = useState(0);

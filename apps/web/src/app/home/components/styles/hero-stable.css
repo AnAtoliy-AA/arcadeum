@@ -31,8 +31,14 @@
   transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Surface Layer: Luminous Rainbow Skin with Glass Lustre */
-.hero-title-shimmer::after {
+/*
+ * Surface Layer: Luminous Rainbow Skin with Glass Lustre.
+ * Scoped under .is-hydrated (set post-mount by HomeHero) so this overlay
+ * does not paint until after hydration. Without this scope it becomes the
+ * LCP element on mobile and waits on the full Geist font + render-blocking
+ * CSS, dragging mobile LCP from ~1.35s (FCP) to ~4.5s.
+ */
+.is-hydrated .hero-title-shimmer::after {
   content: attr(data-text);
   position: absolute;
   inset: 0;
@@ -141,7 +147,7 @@
 }
 
 @media (max-width: 1150px) {
-  .hero-title-shimmer::after {
+  .is-hydrated .hero-title-shimmer::after {
     filter: none;
     background-size: 100% auto;
   }

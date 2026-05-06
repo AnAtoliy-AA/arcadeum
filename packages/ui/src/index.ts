@@ -16,6 +16,8 @@ export * from './components/Spinner/Spinner';
 export * from './components/Input/Input';
 export * from './components/TextArea/TextArea';
 export * from './components/Select/Select';
+export * from './components/FloatingLabelInput';
+export * from './components/FloatingLabelTextArea';
 
 export * from './components/Icons/index';
 export * from './components/FormGroup/FormGroup';

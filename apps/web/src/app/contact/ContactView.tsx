@@ -286,12 +286,12 @@ export default function ContactView({
           </div>
 
           <YStack
-            $gtMd={{ flexDirection: 'row', alignItems: 'flex-start' }}
+            $gtSm={{ flexDirection: 'row', alignItems: 'stretch' }}
             flexDirection="column"
             gap="$5"
           >
             <YStack flex={1.6} minWidth={0}>
-              <GlassCard>
+              <GlassCard flex={1}>
                 <div style={formCardInnerStyle}>
                   <div style={formHeaderStyle}>
                     <YStack gap={2}>
@@ -341,8 +341,16 @@ export default function ContactView({
                       </div>
                     </Card>
                   ) : (
-                    <form onSubmit={handleSubmit}>
-                      <YStack gap="$4">
+                    <form
+                      onSubmit={handleSubmit}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flex: 1,
+                        minHeight: 0,
+                      }}
+                    >
+                      <YStack gap="$4" flex={1} minHeight={0}>
                         <div style={formGridStyle}>
                           <FloatingLabelInput
                             id="contact-name"

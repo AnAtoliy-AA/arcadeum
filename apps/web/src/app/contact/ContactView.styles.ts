@@ -7,7 +7,7 @@ export const heroWrapStyle: CSSProperties = {
   border: '1px solid var(--glassBorder)',
   background:
     'radial-gradient(80% 80% at 50% 100%, rgba(56,189,248,0.18), transparent 70%), radial-gradient(60% 60% at 0% 0%, rgba(3,105,161,0.22), transparent 65%), var(--background)',
-  padding: '56px 32px',
+  padding: 'clamp(28px, 5vw, 56px) clamp(20px, 3vw, 32px)',
 };
 
 export const orbStyle = (
@@ -155,6 +155,8 @@ export const formCardInnerStyle: CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   gap: 20,
+  flex: 1,
+  minHeight: 0,
 };
 
 export const formHeaderStyle: CSSProperties = {
@@ -177,7 +179,8 @@ export const submitRowStyle: CSSProperties = {
   justifyContent: 'space-between',
   flexWrap: 'wrap',
   gap: 12,
-  marginTop: 4,
+  marginTop: 'auto',
+  paddingTop: 4,
 };
 
 export const privacyStyle: CSSProperties = {

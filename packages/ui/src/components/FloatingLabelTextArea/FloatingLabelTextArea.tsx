@@ -47,7 +47,7 @@ const StyledFlTextArea = styled(TamaguiTextArea, {
   color: '$color',
   fontSize: 15,
   width: '100%',
-  minHeight: 140,
+  minHeight: 200,
   hoverStyle: { borderColor: '$primary' },
   focusStyle: {
     borderColor: '$accent',

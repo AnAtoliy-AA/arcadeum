@@ -154,7 +154,7 @@ export default function ContactView({
   const lastWord = titleParts.pop() ?? '';
   const titleHead = titleParts.join(' ');
 
-  const faqItems = getFaqItems(t, SUPPORT_EMAIL);
+  const faqItems = getFaqItems(t);
 
   const channelDefs = [
     {
@@ -411,15 +411,12 @@ export default function ContactView({
               </GlassCard>
             </YStack>
 
-            <ContactSidePanel
-              side={side}
-              workingHours={WORKING_HOURS}
-              supportEmail={SUPPORT_EMAIL}
-            />
+            <ContactSidePanel side={side} workingHours={WORKING_HOURS} />
           </YStack>
 
           <ContactFaq
             items={faqItems}
+            supportEmail={SUPPORT_EMAIL}
             title={faq?.title}
             browseLabel={faq?.browse}
           />

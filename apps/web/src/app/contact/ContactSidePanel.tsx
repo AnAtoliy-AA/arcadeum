@@ -21,13 +21,11 @@ export type ContactSidePanelProps = {
       : never
     : never;
   workingHours: string;
-  supportEmail: string;
 };
 
 export function ContactSidePanel({
   side,
   workingHours,
-  supportEmail,
 }: ContactSidePanelProps) {
   return (
     <YStack flex={1} minWidth={0} style={sideStackStyle}>
@@ -95,22 +93,14 @@ export function ContactSidePanel({
         </span>
         <Typography fontWeight="700" marginTop="$2">
           <a
-            href={`mailto:${supportEmail}`}
-            style={{ color: 'inherit', textDecoration: 'none' }}
+            href={`mailto:${side?.pressEmail ?? 'hello@arcadeum.games'}`}
+            style={{ color: 'var(--accent)', textDecoration: 'underline' }}
           >
-            {supportEmail}
+            {side?.pressEmail ?? 'hello@arcadeum.games'}
           </a>
         </Typography>
         <Typography variant="caption" alpha="medium" marginTop="$1">
           {side?.pressBody ?? 'For media, creators, and partner studios.'}
-        </Typography>
-        <Typography variant="caption" alpha="medium" marginTop="$2">
-          <a
-            href={`mailto:${side?.pressEmail ?? 'hello@arcadeum.games'}`}
-            style={{ color: 'inherit' }}
-          >
-            {side?.pressEmail ?? 'hello@arcadeum.games'}
-          </a>
         </Typography>
       </GlassCard>
     </YStack>

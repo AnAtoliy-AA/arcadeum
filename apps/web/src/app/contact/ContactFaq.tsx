@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { YStack } from 'tamagui';
@@ -14,26 +14,17 @@ import {
   helpLinkStyle,
   labelChipStyle,
 } from './ContactView.styles';
-import { formatMessage } from '@/shared/i18n';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
-export type FaqItem = { key: string; question: string; answer: string };
+export type FaqItem = { key: string; question: string; answerTemplate: string };
 
-export function getFaqItems(
-  t?: ContactMessages,
-  supportEmail?: string,
-): FaqItem[] {
+export function getFaqItems(t?: ContactMessages): FaqItem[] {
   const faq = t?.sections?.faq;
   if (!faq) return [];
   const items: FaqItem[] = [];
   const push = (key: string, e?: { question?: string; answer?: string }) => {
     if (!e?.question || !e?.answer) return;
-    items.push({
-      key,
-      question: e.question,
-      answer:
-        formatMessage(e.answer, { email: supportEmail ?? '' }) ?? e.answer,
-    });
+    items.push({ key, question: e.question, answerTemplate: e.answer });
   };
   push('refund', faq.refund);
   push('password', faq.password);
@@ -43,13 +34,40 @@ export function getFaqItems(
   return items;
 }
 
+function renderAnswer(template: string, email: string): ReactNode {
+  if (!template.includes('{{email}}')) return template;
+  const parts = template.split('{{email}}');
+  const nodes: ReactNode[] = [];
+  parts.forEach((part, i) => {
+    nodes.push(part);
+    if (i < parts.length - 1) {
+      nodes.push(
+        <a
+          key={`m-${i}`}
+          href={`mailto:${email}`}
+          style={{ color: 'var(--accent)', textDecoration: 'underline' }}
+        >
+          {email}
+        </a>,
+      );
+    }
+  });
+  return nodes;
+}
+
 export type ContactFaqProps = {
   items: FaqItem[];
+  supportEmail: string;
   title?: string;
   browseLabel?: string;
 };
 
-export function ContactFaq({ items, title, browseLabel }: ContactFaqProps) {
+export function ContactFaq({
+  items,
+  supportEmail,
+  title,
+  browseLabel,
+}: ContactFaqProps) {
   const [openKey, setOpenKey] = useState<string | null>(items[0]?.key ?? null);
   if (items.length === 0) return null;
   return (
@@ -86,7 +104,11 @@ export function ContactFaq({ items, title, browseLabel }: ContactFaqProps) {
                   <ChevronIcon />
                 </span>
               </button>
-              {open ? <div style={faqAnswerStyle}>{it.answer}</div> : null}
+              {open ? (
+                <div style={faqAnswerStyle}>
+                  {renderAnswer(it.answerTemplate, supportEmail)}
+                </div>
+              ) : null}
             </div>
           );
         })}

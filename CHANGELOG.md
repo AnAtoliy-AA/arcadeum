@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.2] - 2026-05-06
+
+### Fixed
+- bump primary color from sky-600 to sky-700 for WCAG AA (ARC-570)
+- restore aria-label on install-pwa-button (e2e regression) (ARC-570)
+
+### Improved
+- drop legacy JS polyfills via explicit browserslist (ARC-570)
+
+### Refactored
+- bundle home route CSS via parent-eager imports (ARC-570)
+
+### Documentation
+- Phase 2 implementation results + spec/plan (ARC-570)
+- track docs/superpowers + Phase 2 diagnostic results (ARC-570)
+
+
 ## [1.12.1] - 2026-05-06
 
 ### Improved

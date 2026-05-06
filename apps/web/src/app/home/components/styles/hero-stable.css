@@ -97,14 +97,12 @@
 }
 
 @keyframes hero-color-shift {
-  0% {
-    filter: hue-rotate(0deg) drop-shadow(0 0 1px rgba(255, 255, 255, 0.5));
+  0%,
+  100% {
+    filter: hue-rotate(0deg);
   }
   50% {
-    filter: hue-rotate(180deg) drop-shadow(0 0 2px rgba(255, 255, 255, 0.8));
-  }
-  100% {
-    filter: hue-rotate(360deg) drop-shadow(0 0 1px rgba(255, 255, 255, 0.5));
+    filter: hue-rotate(180deg);
   }
 }
 
@@ -139,6 +137,13 @@
   }
   100% {
     background-position: 200% center;
+  }
+}
+
+@media (max-width: 1150px) {
+  .hero-title-shimmer::after {
+    filter: none;
+    background-size: 100% auto;
   }
 }
 
@@ -302,5 +307,9 @@
     margin-top: 60px;
     margin-bottom: 40px;
     transform: scale(0.85);
+  }
+
+  .hero-card-main {
+    background: rgba(30, 32, 35, 0.92);
   }
 }

@@ -68,17 +68,14 @@ export default function HomeHero() {
         <div className="hero-content-main">
           <div
             className="animate-fade-in-up"
-            style={{ animationDelay: '0.15s' }}
+            style={{ animationDelay: '0.2s' }}
           >
             <span className="hero-kicker-main kicker-hydration-shimmer">
               ✦ {kicker}
             </span>
           </div>
 
-          <div
-            className="animate-fade-in-up"
-            style={{ animationDelay: '0.1s' }}
-          >
+          <div className="animate-fade-in-up" style={{ animationDelay: '0s' }}>
             <h1
               id="hero-heading"
               className="hero-title-main hero-title-shimmer"
@@ -90,7 +87,7 @@ export default function HomeHero() {
 
           <div
             className="animate-fade-in-up"
-            style={{ animationDelay: '0.2s' }}
+            style={{ animationDelay: '0.1s' }}
           >
             <p className="hero-tagline-main">{tagline}</p>
           </div>

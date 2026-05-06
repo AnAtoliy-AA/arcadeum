@@ -155,8 +155,6 @@ export const formCardInnerStyle: CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   gap: 20,
-  flex: 1,
-  minHeight: 0,
 };
 
 export const formHeaderStyle: CSSProperties = {
@@ -179,8 +177,7 @@ export const submitRowStyle: CSSProperties = {
   justifyContent: 'space-between',
   flexWrap: 'wrap',
   gap: 12,
-  marginTop: 'auto',
-  paddingTop: 4,
+  marginTop: 4,
 };
 
 export const privacyStyle: CSSProperties = {

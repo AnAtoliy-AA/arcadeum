@@ -7,7 +7,12 @@ import {
   type ChangeEvent,
   type CSSProperties,
 } from 'react';
-import { TextArea as TamaguiTextArea, YStack, styled } from 'tamagui';
+import {
+  TextArea as TamaguiTextArea,
+  YStack,
+  styled,
+  useTheme,
+} from 'tamagui';
 
 export type FloatingLabelTextAreaProps = {
   id?: string;
@@ -74,43 +79,6 @@ const baseLabelStyle: CSSProperties = {
   fontFamily: 'inherit',
 };
 
-const restingLabelStyle: CSSProperties = {
-  top: 18,
-  fontSize: 15,
-  color: 'var(--textSecondary)',
-  backgroundColor: 'transparent',
-};
-
-const floatedLabelStyle: CSSProperties = {
-  top: -8,
-  fontSize: 11,
-  fontWeight: 600,
-  letterSpacing: '0.1em',
-  textTransform: 'uppercase',
-  color: 'var(--accent)',
-  backgroundColor: 'var(--background)',
-};
-
-const requiredStyle: CSSProperties = {
-  color: 'var(--accent)',
-  marginLeft: 2,
-};
-
-const counterStyle: CSSProperties = {
-  position: 'absolute',
-  right: 12,
-  bottom: 8,
-  fontSize: 11,
-  fontVariantNumeric: 'tabular-nums',
-  color: 'var(--textSecondary)',
-  pointerEvents: 'none',
-};
-
-const counterWarnStyle: CSSProperties = {
-  ...counterStyle,
-  color: 'var(--warning)',
-};
-
 export const FloatingLabelTextArea = forwardRef<
   HTMLTextAreaElement,
   FloatingLabelTextAreaProps
@@ -132,6 +100,7 @@ export const FloatingLabelTextArea = forwardRef<
   },
   ref,
 ) {
+  const theme = useTheme();
   const generatedId = useId();
   const id = idProp ?? generatedId;
   const isControlled = valueProp !== undefined;
@@ -139,6 +108,31 @@ export const FloatingLabelTextArea = forwardRef<
   const value = isControlled ? valueProp : internal;
   const [focused, setFocused] = useState(false);
   const filled = (value ?? '').length > 0;
+
+  const accent = theme.accent?.get?.() ?? '#38bdf8';
+  const background = theme.background?.get?.() ?? '#06011b';
+  const textSecondary = theme.textSecondary?.get?.() ?? '#8e9196';
+  const warning = theme.warning?.get?.() ?? '#f59e0b';
+
+  const isFloated = focused || filled;
+  const labelStyle: CSSProperties = isFloated
+    ? {
+        ...baseLabelStyle,
+        top: -8,
+        fontSize: 11,
+        fontWeight: 600,
+        letterSpacing: '0.1em',
+        textTransform: 'uppercase',
+        color: accent,
+        backgroundColor: background,
+      }
+    : {
+        ...baseLabelStyle,
+        top: 18,
+        fontSize: 15,
+        color: textSecondary,
+        backgroundColor: 'transparent',
+      };
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const v = e.target.value;
@@ -148,6 +142,15 @@ export const FloatingLabelTextArea = forwardRef<
 
   const length = (value ?? '').length;
   const warn = maxLength ? length > maxLength * 0.85 : false;
+  const counterStyle: CSSProperties = {
+    position: 'absolute',
+    right: 12,
+    bottom: 8,
+    fontSize: 11,
+    fontVariantNumeric: 'tabular-nums',
+    color: warn ? warning : textSecondary,
+    pointerEvents: 'none',
+  };
 
   return (
     <Wrapper fullWidth={fullWidth}>
@@ -167,18 +170,14 @@ export const FloatingLabelTextArea = forwardRef<
         placeholder=" "
         data-testid={testId}
       />
-      <label
-        htmlFor={id}
-        style={{
-          ...baseLabelStyle,
-          ...(focused || filled ? floatedLabelStyle : restingLabelStyle),
-        }}
-      >
+      <label htmlFor={id} style={labelStyle}>
         {label}
-        {required ? <span style={requiredStyle}> *</span> : null}
+        {required ? (
+          <span style={{ color: accent, marginLeft: 2 }}> *</span>
+        ) : null}
       </label>
       {maxLength ? (
-        <span style={warn ? counterWarnStyle : counterStyle}>
+        <span style={counterStyle}>
           {length} / {maxLength}
         </span>
       ) : null}

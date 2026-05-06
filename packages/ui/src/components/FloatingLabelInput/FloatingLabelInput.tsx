@@ -1,7 +1,13 @@
 'use client';
 
-import { forwardRef, useState, useId, type ChangeEvent, type CSSProperties } from 'react';
-import { Input as TamaguiInput, YStack, styled } from 'tamagui';
+import {
+  forwardRef,
+  useState,
+  useId,
+  type ChangeEvent,
+  type CSSProperties,
+} from 'react';
+import { Input as TamaguiInput, YStack, styled, useTheme } from 'tamagui';
 
 export type FloatingLabelInputProps = {
   id?: string;
@@ -68,28 +74,6 @@ const baseLabelStyle: CSSProperties = {
   fontFamily: 'inherit',
 };
 
-const restingLabelStyle: CSSProperties = {
-  top: 17,
-  fontSize: 15,
-  color: 'var(--textSecondary)',
-  backgroundColor: 'transparent',
-};
-
-const floatedLabelStyle: CSSProperties = {
-  top: -8,
-  fontSize: 11,
-  fontWeight: 600,
-  letterSpacing: '0.1em',
-  textTransform: 'uppercase',
-  color: 'var(--accent)',
-  backgroundColor: 'var(--background)',
-};
-
-const requiredStyle: CSSProperties = {
-  color: 'var(--accent)',
-  marginLeft: 2,
-};
-
 export const FloatingLabelInput = forwardRef<
   HTMLInputElement,
   FloatingLabelInputProps
@@ -111,6 +95,7 @@ export const FloatingLabelInput = forwardRef<
   },
   ref,
 ) {
+  const theme = useTheme();
   const generatedId = useId();
   const id = idProp ?? generatedId;
   const isControlled = valueProp !== undefined;
@@ -118,6 +103,30 @@ export const FloatingLabelInput = forwardRef<
   const value = isControlled ? valueProp : internal;
   const [focused, setFocused] = useState(false);
   const filled = (value ?? '').length > 0;
+
+  const accent = theme.accent?.get?.() ?? '#38bdf8';
+  const background = theme.background?.get?.() ?? '#06011b';
+  const textSecondary = theme.textSecondary?.get?.() ?? '#8e9196';
+
+  const isFloated = focused || filled;
+  const labelStyle: CSSProperties = isFloated
+    ? {
+        ...baseLabelStyle,
+        top: -8,
+        fontSize: 11,
+        fontWeight: 600,
+        letterSpacing: '0.1em',
+        textTransform: 'uppercase',
+        color: accent,
+        backgroundColor: background,
+      }
+    : {
+        ...baseLabelStyle,
+        top: 17,
+        fontSize: 15,
+        color: textSecondary,
+        backgroundColor: 'transparent',
+      };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value;
@@ -143,15 +152,11 @@ export const FloatingLabelInput = forwardRef<
         placeholder=" "
         data-testid={testId}
       />
-      <label
-        htmlFor={id}
-        style={{
-          ...baseLabelStyle,
-          ...(focused || filled ? floatedLabelStyle : restingLabelStyle),
-        }}
-      >
+      <label htmlFor={id} style={labelStyle}>
         {label}
-        {required ? <span style={requiredStyle}> *</span> : null}
+        {required ? (
+          <span style={{ color: accent, marginLeft: 2 }}> *</span>
+        ) : null}
       </label>
     </Wrapper>
   );

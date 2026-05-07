@@ -11,6 +11,7 @@ import {
   Ship,
   SeaBattleState,
 } from './sea-battle.types';
+import { getActiveShooterId } from './team-rotation.utils';
 
 export function createEmptyBoard(): CellState[][] {
   return Array.from(
@@ -154,8 +155,10 @@ export function getSeaBattleAvailableActions(
   }
 
   if (state.phase === GAME_PHASE.BATTLE) {
-    const currentPlayerId = state.playerOrder[state.currentTurnIndex];
-    if (playerId === currentPlayerId) {
+    const activeId = state.teams
+      ? getActiveShooterId(state)
+      : state.playerOrder[state.currentTurnIndex];
+    if (playerId === activeId) {
       actions.push('attack');
     }
   }

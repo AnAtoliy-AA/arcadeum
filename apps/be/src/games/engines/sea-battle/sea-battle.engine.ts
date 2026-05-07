@@ -54,9 +54,9 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       gameId: 'sea_battle_v1',
       name: 'Sea Battle',
       minPlayers: 2,
-      maxPlayers: 6,
-      version: '1.0.0',
-      description: 'Classic naval combat game',
+      maxPlayers: 8,
+      version: '1.1.0',
+      description: 'Classic naval combat game (FFA up to 6, team mode up to 8)',
       category: 'Strategy',
     };
   }

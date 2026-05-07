@@ -243,6 +243,26 @@ describe('SeaBattleEngine — team mode', () => {
     });
   });
 
+  describe('getAvailableActions — team mode', () => {
+    function ready() {
+      const s = engine.initializeState(['a', 'b', 'c', 'd'], {
+        teams: [
+          { id: 't1', name: 'Red', color: '#E33', playerIds: ['a', 'b'] },
+          { id: 't2', name: 'Blue', color: '#36C', playerIds: ['c', 'd'] },
+        ],
+      });
+      s.phase = GAME_PHASE.BATTLE;
+      return s;
+    }
+
+    it('only the active shooter can attack', () => {
+      const s = ready();
+      expect(engine.getAvailableActions(s, 'a')).toContain('attack');
+      expect(engine.getAvailableActions(s, 'b')).not.toContain('attack');
+      expect(engine.getAvailableActions(s, 'c')).not.toContain('attack');
+    });
+  });
+
   describe('isGameOver / getWinners — team mode', () => {
     function teamStateWithKills(
       survivors: string[],

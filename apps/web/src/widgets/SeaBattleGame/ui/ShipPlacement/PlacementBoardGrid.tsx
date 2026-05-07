@@ -59,7 +59,6 @@ const PlacementBoardCell = memo(
     theme,
     isHovered,
     isInvalidCell,
-    isClickable,
     rIndex,
     cIndex,
     onMouseEnter,
@@ -88,20 +87,21 @@ const PlacementBoardCell = memo(
 
     return (
       <BoardCell
-        isClickable={isClickable}
-        backgroundColor={getCellBg(cellState, theme, isHovered, isInvalidCell)}
-        borderColor={isInvalidCell ? 'rgba(239,68,68,0.6)' : theme.cellBorder}
-        borderRadius={parseInt(theme.borderRadius) || 4}
+        style={{
+          backgroundColor: getCellBg(cellState, theme, isHovered, isInvalidCell),
+          borderColor: isInvalidCell ? 'rgba(239,68,68,0.6)' : theme.cellBorder,
+          borderRadius: parseInt(theme.borderRadius) || 4,
+        }}
         data-row={rIndex}
         data-col={cIndex}
         data-highlighted={isHovered ? 'true' : 'false'}
-        className={isHovered && !isInvalidCell ? 'sb-valid-pulse' : undefined}
+        className={`sb-cell ${isHovered && !isInvalidCell ? 'sb-valid-pulse' : ''}`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={onMouseLeave}
         onPointerEnter={handleMouseEnter}
         onPointerMove={handleMouseEnter}
         onPointerLeave={onMouseLeave}
-        onPress={handleClick}
+        onClick={handleClick}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         onDragLeave={onDragLeave}
@@ -153,23 +153,24 @@ export const PlacementBoardGrid = memo(
           <div />
           <ColLabels>
             {COL_LABELS.map((label) => (
-              <Label key={label} color={theme.textSecondaryColor}>
+              <Label key={label} style={{ color: theme.textSecondaryColor }}>
                 {label}
               </Label>
             ))}
           </ColLabels>
           <RowLabels>
             {ROW_LABELS.map((label) => (
-              <Label key={label} color={theme.textSecondaryColor}>
+              <Label key={label} style={{ color: theme.textSecondaryColor }}>
                 {label}
               </Label>
             ))}
           </RowLabels>
           <BoardGrid
-            backgroundColor={theme.boardBackground}
-            borderColor={theme.cellBorder}
+            style={{
+              backgroundColor: theme.boardBackground,
+              borderColor: theme.cellBorder,
+            }}
             data-testid="sea-battle-board-grid"
-            pointerEvents="auto"
           >
             {board.map((row, rIndex) =>
               row.map((cellState, cIndex) => {

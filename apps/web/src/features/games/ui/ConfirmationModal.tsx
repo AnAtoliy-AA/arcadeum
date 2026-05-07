@@ -45,18 +45,16 @@ export function ConfirmationModal({
           <Typography color="$textSecondary">{message}</Typography>
         </ModalBody>
         <ModalFooter>
-          <Dialog.Close asChild>
-            <Button
-              variant="secondary"
-              onPress={onClose}
-              aria-label={cancelLabel}
-            >
-              {cancelLabel}
-            </Button>
-          </Dialog.Close>
+          <Button
+            variant="secondary"
+            onClick={onClose}
+            aria-label={cancelLabel}
+          >
+            {cancelLabel}
+          </Button>
           <Button
             variant="danger"
-            onPress={handleConfirm}
+            onClick={handleConfirm}
             aria-label={confirmLabel}
           >
             {confirmLabel}

@@ -121,7 +121,7 @@ test.describe('Sea Battle Ships Left', () => {
     // This isolates the Opponent's PlayerSection from the global container or user section.
     const opponentSection = page
       .locator('div')
-      .filter({ has: page.getByText(/^Opponent$/i) })
+      .filter({ has: page.getByText(/Opponent/i) })
       .filter({ hasNot: page.getByText(/Your Fleet/i) })
       .filter({ has: page.getByText(/ships remaining/i) }) // Ensure it's the section with ships
       .first();

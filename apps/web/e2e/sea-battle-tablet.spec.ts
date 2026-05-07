@@ -127,11 +127,17 @@ test.describe('Sea Battle Tablet Layout', () => {
     const chatArea = page.getByTestId('game-chat-area');
     await expect(chatArea).toBeVisible();
 
-    // Check if grids container uses row layout (flexbox)
-    const containerFlexDirection = await mainArea
+    // Check if grids container uses grid layout with 2 columns
+    const containerDisplay = await mainArea
       .getByTestId('sea-battle-grids-container')
-      .evaluate((el) => getComputedStyle(el).flexDirection);
-    expect(containerFlexDirection).toBe('column');
+      .evaluate((el) => getComputedStyle(el).display);
+    expect(containerDisplay).toBe('grid');
+
+    const gridColumns = await mainArea
+      .getByTestId('sea-battle-grids-container')
+      .evaluate((el) => getComputedStyle(el).gridTemplateColumns);
+    // Should have 2 columns (e.g., "500px 500px" or similar)
+    expect(gridColumns.split(' ').length).toBe(2);
   });
 
   test('should have stacked layout on portrait tablet (768x1024)', async ({

@@ -172,6 +172,77 @@ describe('SeaBattleEngine — team mode', () => {
     });
   });
 
+  describe('sanitizeStateForPlayer — team mode', () => {
+    function placedTeamState(hide: boolean) {
+      const s = engine.initializeState(['a', 'b', 'c', 'd'], {
+        teams: [
+          { id: 't1', name: 'Red', color: '#E33', playerIds: ['a', 'b'] },
+          { id: 't2', name: 'Blue', color: '#36C', playerIds: ['c', 'd'] },
+        ],
+        hideShipsFromTeammates: hide,
+      });
+      for (const p of s.players) {
+        const r = engine.executeAction(s, 'autoPlace', {
+          userId: p.playerId,
+          roomId: '',
+          sessionId: '',
+          timestamp: new Date(),
+        });
+        Object.assign(s, r.state);
+      }
+      return s;
+    }
+
+    it('reveals teammate ship cells when hideShipsFromTeammates is false', () => {
+      const s = placedTeamState(false);
+      const sanitized = engine.sanitizeStateForPlayer(s, 'a') as typeof s;
+      const teammateB = sanitized.players.find((p) => p.playerId === 'b')!;
+      const hasShipCell = teammateB.board.some((row) =>
+        row.some((c) => c === CELL_STATE.SHIP),
+      );
+      expect(hasShipCell).toBe(true);
+      expect(teammateB.ships.length).toBeGreaterThan(0);
+      expect(teammateB.ships.every((sh) => sh.cells.length > 0)).toBe(true);
+    });
+
+    it('hides teammate ship cells when hideShipsFromTeammates is true', () => {
+      const s = placedTeamState(true);
+      const sanitized = engine.sanitizeStateForPlayer(s, 'a') as typeof s;
+      const teammateB = sanitized.players.find((p) => p.playerId === 'b')!;
+      const hasShipCell = teammateB.board.some((row) =>
+        row.some((c) => c === CELL_STATE.SHIP),
+      );
+      expect(hasShipCell).toBe(false);
+    });
+
+    it('still hides enemy ship cells regardless of toggle', () => {
+      const s = placedTeamState(false);
+      const sanitized = engine.sanitizeStateForPlayer(s, 'a') as typeof s;
+      const enemyC = sanitized.players.find((p) => p.playerId === 'c')!;
+      const hasShipCell = enemyC.board.some((row) =>
+        row.some((c) => c === CELL_STATE.SHIP),
+      );
+      expect(hasShipCell).toBe(false);
+    });
+
+    it('filters team-scoped logs to teammates only', () => {
+      const s = placedTeamState(false);
+      s.logs.push({
+        id: 'log-1',
+        type: 'message',
+        message: 'go',
+        createdAt: new Date().toISOString(),
+        scope: 'team',
+        senderId: 'a',
+        senderName: 'A',
+      });
+      const seenByB = (engine.sanitizeStateForPlayer(s, 'b') as typeof s).logs;
+      const seenByC = (engine.sanitizeStateForPlayer(s, 'c') as typeof s).logs;
+      expect(seenByB.some((l) => l.id === 'log-1')).toBe(true);
+      expect(seenByC.some((l) => l.id === 'log-1')).toBe(false);
+    });
+  });
+
   describe('isGameOver / getWinners — team mode', () => {
     function teamStateWithKills(
       survivors: string[],

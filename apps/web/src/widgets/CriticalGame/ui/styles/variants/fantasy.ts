@@ -18,4 +18,8 @@ export const fantasyVariantStyles: VariantStyleConfig = {
     turnBannerBorderGradient: 'linear-gradient(90deg, #065f46, #d4af37)',
     turnBannerDotColor: '#065f46',
   },
+  cards: {
+    ...baseVariantStyles.cards,
+    getCardSpriteUrl: () => '/images/cards/fantasy_sprites.png',
+  },
 };

@@ -15,7 +15,11 @@ export const westernVariantStyles: VariantStyleConfig = {
       'rgba(253, 230, 138, 0.7)',
       'rgba(124, 45, 18, 0.6)',
     ],
-    turnBannerBorderGradient: 'linear-gradient(90deg, #9a3412, #fde68a)',
-    turnBannerDotColor: '#9a3412',
+    turnBannerBorderGradient: 'linear-gradient(90deg, #78350f, #d97706)',
+    turnBannerDotColor: '#78350f',
+  },
+  cards: {
+    ...baseVariantStyles.cards,
+    getCardSpriteUrl: () => '/images/cards/western_sprites.png',
   },
 };

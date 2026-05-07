@@ -18,4 +18,8 @@ export const galaxyVariantStyles: VariantStyleConfig = {
     turnBannerBorderGradient: 'linear-gradient(90deg, #6b21a8, #1e3a8a)',
     turnBannerDotColor: '#6b21a8',
   },
+  cards: {
+    ...baseVariantStyles.cards,
+    getCardSpriteUrl: () => '/images/cards/galaxy_sprites.png',
+  },
 };

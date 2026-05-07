@@ -18,9 +18,9 @@ export type BoardGridProps = GetProps<typeof BoardGridContainer>;
 
 export const BoardGrid = (props: BoardGridProps) => (
   <BoardGridContainer
-    display="grid"
     {...props}
     style={{
+      display: 'grid',
       gridTemplateColumns: 'repeat(10, 1fr)',
       gridTemplateRows: 'repeat(10, 1fr)',
       ...(props.style as any),
@@ -62,9 +62,9 @@ export type BoardWithLabelsProps = GetProps<typeof BoardWithLabelsContainer>;
 
 export const BoardWithLabels = (props: BoardWithLabelsProps) => (
   <BoardWithLabelsContainer
-    display="grid"
     {...props}
     style={{
+      display: 'grid',
       gridTemplateColumns: 'auto 1fr',
       gridTemplateRows: 'auto auto',
       ...(props.style as any),

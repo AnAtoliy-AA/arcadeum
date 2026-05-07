@@ -1,5 +1,5 @@
 import { SeaBattleEngine } from './sea-battle.engine';
-import { GAME_PHASE } from './sea-battle.constants';
+import { GAME_PHASE, CELL_STATE } from './sea-battle.constants';
 
 describe('SeaBattleEngine — team mode', () => {
   const engine = new SeaBattleEngine();
@@ -72,6 +72,103 @@ describe('SeaBattleEngine — team mode', () => {
         { targetPlayerId: 'c', row: 0, col: 0 },
       );
       expect(ok).toBe(true);
+    });
+  });
+
+  describe('executeAction (attack) — team rotation', () => {
+    function readyTeamState(
+      playerIds: string[],
+      teams: { id: string; playerIds: string[] }[],
+    ) {
+      const s = engine.initializeState(playerIds, {
+        teams: teams.map((t) => ({
+          id: t.id,
+          name: t.id,
+          color: '#000',
+          playerIds: t.playerIds,
+        })),
+      });
+      for (const p of s.players) {
+        const r1 = engine.executeAction(s, 'autoPlace', {
+          userId: p.playerId,
+          roomId: '',
+          sessionId: '',
+          timestamp: new Date(),
+        });
+        Object.assign(s, r1.state);
+        const r2 = engine.executeAction(s, 'confirmPlacement', {
+          userId: p.playerId,
+          roomId: '',
+          sessionId: '',
+          timestamp: new Date(),
+        });
+        Object.assign(s, r2.state);
+      }
+      return s;
+    }
+
+    it("miss advances team and rotates active team's shooter", () => {
+      const s = readyTeamState(
+        ['a', 'b', 'c', 'd'],
+        [
+          { id: 't1', playerIds: ['a', 'b'] },
+          { id: 't2', playerIds: ['c', 'd'] },
+        ],
+      );
+      const c = s.players.find((p) => p.playerId === 'c')!;
+      let mr = -1,
+        mc = -1;
+      outer: for (let r = 0; r < c.board.length; r++) {
+        for (let cc = 0; cc < c.board[r].length; cc++) {
+          if (c.board[r][cc] === CELL_STATE.EMPTY) {
+            mr = r;
+            mc = cc;
+            break outer;
+          }
+        }
+      }
+      expect(mr).toBeGreaterThanOrEqual(0);
+      const result = engine.executeAction(
+        s,
+        'attack',
+        { userId: 'a', roomId: '', sessionId: '', timestamp: new Date() },
+        { targetPlayerId: 'c', row: mr, col: mc },
+      );
+      const ns = result.state!;
+      expect(ns.currentTeamIndex).toBe(1);
+      expect(ns.teams!.find((t) => t.id === 't1')!.currentShooterIndex).toBe(1);
+    });
+
+    it('hit keeps the same shooter (no pointer change)', () => {
+      const four = readyTeamState(
+        ['a', 'b', 'c', 'd'],
+        [
+          { id: 't1', playerIds: ['a', 'b'] },
+          { id: 't2', playerIds: ['c', 'd'] },
+        ],
+      );
+      const c = four.players.find((p) => p.playerId === 'c')!;
+      let hr = -1,
+        hc = -1;
+      outer: for (let r = 0; r < c.board.length; r++) {
+        for (let cc = 0; cc < c.board[r].length; cc++) {
+          if (c.board[r][cc] === CELL_STATE.SHIP) {
+            hr = r;
+            hc = cc;
+            break outer;
+          }
+        }
+      }
+      expect(hr).toBeGreaterThanOrEqual(0);
+      const result = engine.executeAction(
+        four,
+        'attack',
+        { userId: 'a', roomId: '', sessionId: '', timestamp: new Date() },
+        { targetPlayerId: 'c', row: hr, col: hc },
+      );
+      const ns = result.state!;
+      expect(ns.currentTeamIndex).toBe(0); // unchanged on hit
+      expect(ns.teams!.find((t) => t.id === 't1')!.currentShooterIndex).toBe(0);
     });
   });
 });

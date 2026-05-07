@@ -38,6 +38,10 @@ import {
   validateResetPlacement,
   validateAttack,
 } from './sea-battle.validators';
+import {
+  advanceTeamRotationOnMiss,
+  getActiveShooterId,
+} from './team-rotation.utils';
 
 @Injectable()
 export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
@@ -225,13 +229,10 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     // 2. Generate placements
     const placements = randomlyPlaceShips();
     if (Object.keys(placements).length === 0) {
-      // Should not happen with standard board, but handle gracefully
       return this.errorResult('Failed to generate ship placement');
     }
 
     // 3. Place ships
-    // We already have utilities but to keep it self-contained and reusing types:
-    // We'll iterate the generated placements and apply them.
     for (const shipId of Object.keys(placements)) {
       const cells = placements[shipId];
       const shipConfig = SHIPS.find((s) => s.id === shipId);
@@ -395,7 +396,16 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
 
     // Only advance turn on miss - hit gives another turn
     if (result === ATTACK_RESULT.MISS) {
-      this.advanceToNextPlayer(state);
+      if (state.teams) {
+        advanceTeamRotationOnMiss(state);
+        // keep currentTurnIndex/playerOrder in sync for legacy consumers
+        const shooter = getActiveShooterId(state);
+        if (shooter) {
+          state.currentTurnIndex = state.playerOrder.indexOf(shooter);
+        }
+      } else {
+        this.advanceToNextPlayer(state);
+      }
     }
 
     return this.successResult(state);

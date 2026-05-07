@@ -5,6 +5,7 @@ import { styled, XStack, YStack, Text } from 'tamagui';
 
 export const BoardGrid = styled(YStack, {
   name: 'BoardGrid',
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   display: 'grid' as any,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   gridTemplateColumns: 'repeat(10, 1fr)' as any,
@@ -43,6 +44,7 @@ export const BoardCell = styled(YStack, {
 // [row labels ] [board grid ]
 export const BoardWithLabels = styled(YStack, {
   name: 'BoardWithLabels',
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   display: 'grid' as any,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   gridTemplateColumns: 'auto 1fr' as any,

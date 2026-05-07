@@ -258,6 +258,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
             key="attack-board"
             players={snapshot.players}
             currentUserId={currentUserId}
+            currentTurnPlayerId={currentTurnPlayer?.playerId ?? null}
             isMyTurn={isMyTurn}
             onAttack={attack}
             resolveDisplayName={resolveDisplayNameBound}

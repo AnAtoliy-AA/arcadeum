@@ -154,6 +154,7 @@ interface AttackPlayerBoardProps {
   resolveDisplayName: (id: string, fallback: string) => string;
   idlePlayers: string[];
   isMyTurn: boolean;
+  isCurrentTurn: boolean;
   disabled: boolean;
   sunkCellSet: Set<string>;
   onAttack?: (targetPlayerId: string, row: number, col: number) => void;
@@ -168,6 +169,7 @@ const AttackPlayerBoard = memo(
     resolveDisplayName,
     idlePlayers,
     isMyTurn,
+    isCurrentTurn,
     disabled,
     sunkCellSet,
     onAttack,
@@ -239,6 +241,7 @@ const AttackPlayerBoard = memo(
 
     if (isMe) {
       const isDefending = !isMyTurn && player.alive;
+      const showBadge = player.alive;
       return (
         <PlayerSectionWrapper>
           <BadgeWrapper
@@ -247,7 +250,7 @@ const AttackPlayerBoard = memo(
             paddingHorizontal="$1.5"
             top={-4}
           >
-            {isDefending && (
+            {showBadge && (
               <XStack
                 alignItems="center"
                 gap="$1"
@@ -255,19 +258,20 @@ const AttackPlayerBoard = memo(
                 paddingVertical="$0.5"
                 borderRadius={8}
                 borderWidth={1}
-                backgroundColor="$dangerBgSoft"
-                borderColor="$dangerBorder"
+                backgroundColor={isCurrentTurn ? "$dangerBgSoft" : "$warningBgSoft"}
+                borderColor={isCurrentTurn ? "$dangerBorder" : "$warningBorder"}
+                className={isCurrentTurn ? "sb-danger-breathe" : undefined}
               >
-                <Text fontSize={10}>🛡️</Text>
+                <Text fontSize={10}>{isCurrentTurn ? '🎯' : '🛡️'}</Text>
                 <Text
                   fontSize={9}
                   fontWeight="700"
-                  color="$danger"
+                  color={isCurrentTurn ? "$danger" : "$warning"}
                   textTransform="uppercase"
                 >
-                  {t(
-                    'games.sea_battle_v1.table.players.defendingBadge' as TranslationKey,
-                  )}
+                  {isCurrentTurn
+                    ? t('games.sea_battle_v1.table.players.yourTurnAttack' as TranslationKey).replace('🎯 ', '')
+                    : t('games.sea_battle_v1.table.players.defendingBadge' as TranslationKey)}
                 </Text>
               </XStack>
             )}
@@ -316,7 +320,7 @@ const AttackPlayerBoard = memo(
           paddingHorizontal="$1.5"
           top={-4}
         >
-          {isMyTurn && (
+          {isCurrentTurn ? (
             <XStack
               alignItems="center"
               gap="$1"
@@ -326,6 +330,7 @@ const AttackPlayerBoard = memo(
               borderWidth={1}
               backgroundColor="$dangerBgSoft"
               borderColor="$dangerBorder"
+              className="sb-danger-breathe"
             >
               <Text fontSize={10}>🎯</Text>
               <Text
@@ -334,12 +339,33 @@ const AttackPlayerBoard = memo(
                 color="$danger"
                 textTransform="uppercase"
               >
+                ATTACKING
+              </Text>
+            </XStack>
+          ) : isMyTurn ? (
+            <XStack
+              alignItems="center"
+              gap="$1"
+              paddingHorizontal="$2"
+              paddingVertical="$0.5"
+              borderRadius={8}
+              borderWidth={1}
+              backgroundColor="$infoBgSoft"
+              borderColor="$infoBorder"
+            >
+              <Text fontSize={10}>🎯</Text>
+              <Text
+                fontSize={9}
+                fontWeight="700"
+                color="$info"
+                textTransform="uppercase"
+              >
                 {t(
                   'games.sea_battle_v1.table.players.targetBadge' as TranslationKey,
                 )}
               </Text>
             </XStack>
-          )}
+          ) : null}
         </BadgeWrapper>
         <PlayerSection
           isTargetable={isMyTurn}
@@ -383,6 +409,7 @@ AttackPlayerBoard.displayName = 'AttackPlayerBoard';
 interface AttackBoardProps {
   players: SeaBattlePlayerState[];
   currentUserId: string | null;
+  currentTurnPlayerId: string | null;
   isMyTurn: boolean;
   onAttack: (targetPlayerId: string, row: number, col: number) => void;
   resolveDisplayName: (id: string, fallback: string) => string;
@@ -392,6 +419,7 @@ interface AttackBoardProps {
 export const AttackBoard = memo(function AttackBoard({
   players,
   currentUserId,
+  currentTurnPlayerId,
   isMyTurn,
   onAttack,
   resolveDisplayName,
@@ -431,6 +459,7 @@ export const AttackBoard = memo(function AttackBoard({
             theme={theme}
             resolveDisplayName={resolveDisplayName}
             idlePlayers={idlePlayers}
+            isCurrentTurn={currentPlayer.playerId === currentTurnPlayerId}
             isMyTurn={isMyTurn}
             disabled={disabled}
             sunkCellSet={sunkCellSet}
@@ -446,6 +475,7 @@ export const AttackBoard = memo(function AttackBoard({
             theme={theme}
             resolveDisplayName={resolveDisplayName}
             idlePlayers={idlePlayers}
+            isCurrentTurn={opponent.playerId === currentTurnPlayerId}
             isMyTurn={isMyTurn}
             disabled={disabled}
             sunkCellSet={sunkCellSet}

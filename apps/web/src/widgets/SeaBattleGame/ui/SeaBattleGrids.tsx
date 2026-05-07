@@ -1,27 +1,16 @@
 'use client';
-import { Children, type ReactNode } from 'react';
+import { Children, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useMedia } from 'tamagui';
 
 interface SeaBattleGridsProps {
   children: ReactNode;
 }
 
-/**
- * Picks the column count for the boards grid:
- *   - mobile portrait (narrow & not "short"): 1 column (one board per row)
- *   - mobile landscape ("short" viewport): 2 columns
- *   - tablet+: as big as possible while keeping the last row full when
- *     possible. Prefers a balanced layout over taller stacks for common
- *     counts (2,4,6,8 fit perfectly; 3/5/7 leave one trailing empty cell).
- */
-function pickColumns(
-  count: number,
-  isMobilePortrait: boolean,
-  isShort: boolean,
-): number {
+const MIN_BOARD_WIDTH_DESKTOP = 280;
+const MIN_BOARD_WIDTH_MOBILE_LANDSCAPE = 220;
+
+function idealCols(count: number): number {
   if (count <= 1) return 1;
-  if (isMobilePortrait) return 1;
-  if (isShort) return Math.min(2, count);
   if (count === 2) return 2;
   if (count === 3) return 3;
   if (count <= 4) return 2; // 2x2
@@ -29,15 +18,57 @@ function pickColumns(
   return 4; // up to 8 → 4 wide
 }
 
+/**
+ * Picks the column count for the boards grid:
+ *   - mobile portrait (narrow & not "short"): 1 column
+ *   - mobile landscape ("short" viewport): up to 2 columns, but no
+ *     narrower than MIN_BOARD_WIDTH_MOBILE_LANDSCAPE per board
+ *   - tablet+: prefer the balanced layout from idealCols(), but cap by
+ *     how many MIN_BOARD_WIDTH_DESKTOP-wide boards fit in the actual
+ *     container width so boards never overlap when the chat panel
+ *     is open or the viewport is otherwise narrow
+ */
 export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   const media = useMedia();
   const isMobilePortrait = !media.gtSm && !media.short;
   const count = Children.count(children);
-  const cols = pickColumns(count, isMobilePortrait, !!media.short);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    const node = containerRef.current;
+    if (!node) return;
+    setContainerWidth(node.getBoundingClientRect().width);
+    const ro = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) setContainerWidth(entry.contentRect.width);
+    });
+    ro.observe(node);
+    return () => ro.disconnect();
+  }, []);
+
+  let cols: number;
+  if (count <= 1 || isMobilePortrait) {
+    cols = 1;
+  } else if (media.short) {
+    const fits = Math.max(
+      1,
+      Math.floor(containerWidth / MIN_BOARD_WIDTH_MOBILE_LANDSCAPE),
+    );
+    cols = Math.min(2, count, fits);
+  } else {
+    const ideal = idealCols(count);
+    const fits = Math.max(
+      1,
+      Math.floor(containerWidth / MIN_BOARD_WIDTH_DESKTOP),
+    );
+    cols = Math.min(ideal, count, fits || ideal);
+  }
 
   if (cols === 1) {
     return (
       <div
+        ref={containerRef}
         data-testid="sea-battle-grids-container"
         className="sb-grids-container-mobile"
         style={{
@@ -58,6 +89,7 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
 
   return (
     <div
+      ref={containerRef}
       data-testid="sea-battle-grids-container"
       className="sb-grids-container"
       style={{

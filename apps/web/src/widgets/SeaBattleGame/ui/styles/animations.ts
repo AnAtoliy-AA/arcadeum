@@ -43,6 +43,13 @@ const CSS = `
 .sb-preview-fade  { animation: preview-fade 0.2s ease-out forwards; }
 .sb-dot-blink     { animation: dot-blink 1.2s ease-in-out infinite; }
 .sb-turn-pulse    { animation: turn-pulse 2s ease-in-out infinite; }
+/* Performance Cursors */
+.sb-board-grid.sb-my-turn .sb-cell.sb-attackable {
+  cursor: crosshair !important;
+}
+.sb-board-grid:not(.sb-my-turn) .sb-cell {
+  cursor: default !important;
+}
 `;
 
 let mountCount = 0;

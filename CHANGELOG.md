@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.3] - 2026-05-07
+
+### Added
+- fix tablet layout and finalize rendering optimization (N/A)
+- optimize rendering performance and refactor placement board (N/A)
+
+
 ## [1.12.2] - 2026-05-06
 
 ### Fixed

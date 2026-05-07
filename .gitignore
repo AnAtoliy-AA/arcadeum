@@ -29,3 +29,6 @@ backend-e2e-errors.log
 .superpowers
 
 # docs/superpowers
+
+# E2E test results
+test-results/

@@ -38,11 +38,6 @@ function SubmitButton({
 export function ContactForm({ form }: ContactFormProps) {
   const s = useContactStyles();
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [subject, setSubject] = useState('');
-  const [message, setMessage] = useState('');
-
   const [actionState, formAction] = useActionState(
     submitContactAction,
     initialContactActionState,
@@ -55,17 +50,20 @@ export function ContactForm({ form }: ContactFormProps) {
     typeof actionState | null
   >(null);
 
+  // Bumping this key remounts the form subtree on "Send another", which
+  // clears DOM values and FloatingLabelInput's internal filled-state
+  // without us having to mirror every field in React state. We never bump
+  // it on validation failures, so failed submits preserve typed values.
+  const [formKey, setFormKey] = useState(0);
+
   const fieldErrors =
     actionState.status === 'invalid' ? actionState.fieldErrors : undefined;
   const showSuccess =
     actionState.status === 'ok' && actionState !== dismissedState;
 
   const reset = () => {
-    setName('');
-    setEmail('');
-    setSubject('');
-    setMessage('');
     setDismissedState(actionState);
+    setFormKey((k) => k + 1);
   };
 
   return (
@@ -109,15 +107,13 @@ export function ContactForm({ form }: ContactFormProps) {
             </div>
           </Card>
         ) : (
-          <form action={formAction}>
+          <form key={formKey} action={formAction}>
             <YStack gap="$4">
               <div style={s.formGridStyle}>
                 <FloatingLabelInput
                   id="contact-name"
                   name="name"
                   label={form?.name ?? form?.nameLabel ?? 'Your name'}
-                  value={name}
-                  onChange={setName}
                   required
                   autoComplete="name"
                   error={!!fieldErrors?.name}
@@ -128,8 +124,6 @@ export function ContactForm({ form }: ContactFormProps) {
                   name="email"
                   type="email"
                   label={form?.email ?? form?.emailLabel ?? 'Email'}
-                  value={email}
-                  onChange={setEmail}
                   required
                   autoComplete="email"
                   error={!!fieldErrors?.email}
@@ -140,8 +134,6 @@ export function ContactForm({ form }: ContactFormProps) {
                 id="contact-subject"
                 name="subject"
                 label={form?.subject ?? form?.subjectLabel ?? 'Subject'}
-                value={subject}
-                onChange={setSubject}
                 required
                 error={!!fieldErrors?.subject}
                 data-testid="contact-subject-input"
@@ -150,8 +142,6 @@ export function ContactForm({ form }: ContactFormProps) {
                 id="contact-message"
                 name="message"
                 label={form?.message ?? form?.messageLabel ?? 'Message'}
-                value={message}
-                onChange={setMessage}
                 required
                 maxLength={1200}
                 error={!!fieldErrors?.message}

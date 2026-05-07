@@ -106,8 +106,11 @@
 .sb-breathe {
   animation: breathe 3s ease-in-out infinite;
 }
-.sb-danger-breathe {
+.sb-section-danger-breathe {
   animation: danger-breathe 3s ease-in-out infinite;
+}
+.sb-badge-danger-breathe {
+  animation: danger-breathe 2s ease-in-out infinite;
 }
 .sb-glow-hit {
   animation: glow-hit 2s ease-in-out infinite;

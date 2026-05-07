@@ -260,7 +260,7 @@ const AttackPlayerBoard = memo(
                 borderWidth={1}
                 backgroundColor={isCurrentTurn ? "$dangerBgSoft" : "$warningBgSoft"}
                 borderColor={isCurrentTurn ? "$dangerBorder" : "$warningBorder"}
-                className={isCurrentTurn ? "sb-danger-breathe" : undefined}
+                className={isCurrentTurn ? "sb-badge-danger-breathe" : undefined}
               >
                 <Text fontSize={10}>{isCurrentTurn ? '🎯' : '🛡️'}</Text>
                 <Text
@@ -279,7 +279,7 @@ const AttackPlayerBoard = memo(
           <PlayerSection
             backgroundColor={theme.boardBackground}
             borderColor={isDefending ? theme.hitColor : theme.cellBorder}
-            className={isDefending ? 'sb-danger-breathe' : undefined}
+            className={isDefending ? 'sb-section-danger-breathe' : undefined}
             backdropFilter="blur(8px)"
           >
             <PlayerName data-testid="player-board-name" color={theme.textColor}>
@@ -330,7 +330,7 @@ const AttackPlayerBoard = memo(
               borderWidth={1}
               backgroundColor="$dangerBgSoft"
               borderColor="$dangerBorder"
-              className="sb-danger-breathe"
+              className="sb-badge-danger-breathe"
             >
               <Text fontSize={10}>🎯</Text>
               <Text

@@ -119,8 +119,8 @@ test.describe('Sea Battle Turn Visibility', () => {
     // My section should have DEFENDING badge
     await expect(page.getByText('DEFENDING')).toBeVisible();
 
-    // Check for danger breathe animation class
-    const myBoardSection = page.locator('.sb-danger-breathe');
+    // Check for danger breathe animation class on the section
+    const myBoardSection = page.locator('.sb-section-danger-breathe');
     await expect(myBoardSection).toBeVisible();
   });
 });

@@ -257,8 +257,9 @@ describe('SeaBattleEngine — team mode', () => {
 
     it('only the active shooter can attack', () => {
       const s = ready();
-      expect(engine.getAvailableActions(s, 'a')).toContain('attack');
-      expect(engine.getAvailableActions(s, 'b')).not.toContain('attack');
+      s.teams![0].currentShooterIndex = 1; // FFA would still say 'a', team mode says 'b'
+      expect(engine.getAvailableActions(s, 'b')).toContain('attack');
+      expect(engine.getAvailableActions(s, 'a')).not.toContain('attack');
       expect(engine.getAvailableActions(s, 'c')).not.toContain('attack');
     });
   });
@@ -318,6 +319,58 @@ describe('SeaBattleEngine — team mode', () => {
         ],
       );
       expect(engine.getWinners(s).sort()).toEqual(['a', 'b']);
+    });
+
+    it('eliminates the last enemy and announces the winner', () => {
+      const s = engine.initializeState(['a', 'b', 'c', 'd'], {
+        teams: [
+          { id: 't1', name: 'Red', color: '#E33', playerIds: ['a', 'b'] },
+          { id: 't2', name: 'Blue', color: '#36C', playerIds: ['c', 'd'] },
+        ],
+      });
+      s.phase = GAME_PHASE.BATTLE;
+      // Auto-place all so c has real ships.
+      for (const p of s.players) {
+        const r = engine.executeAction(s, 'autoPlace', {
+          userId: p.playerId,
+          roomId: '',
+          sessionId: '',
+          timestamp: new Date(),
+        });
+        Object.assign(s, r.state);
+      }
+      // Mark b, d dead and reduce c to a single 1-cell ship.
+      s.players.find((p) => p.playerId === 'b')!.alive = false;
+      s.players.find((p) => p.playerId === 'd')!.alive = false;
+      const c = s.players.find((p) => p.playerId === 'c')!;
+      // Wipe c's board and ships, place one 1-cell ship at (0,0).
+      c.board = c.board.map((row) => row.map(() => CELL_STATE.EMPTY));
+      c.ships = [
+        {
+          id: 'sub',
+          name: 'Submarine',
+          size: 1,
+          cells: [{ row: 0, col: 0 }],
+          hits: 0,
+          sunk: false,
+        },
+      ];
+      c.board[0][0] = CELL_STATE.SHIP;
+      c.shipsRemaining = 1;
+
+      const result = engine.executeAction(
+        s,
+        'attack',
+        { userId: 'a', roomId: '', sessionId: '', timestamp: new Date() },
+        { targetPlayerId: 'c', row: 0, col: 0 },
+      );
+      const ns = result.state!;
+      expect(engine.isGameOver(ns)).toBe(true);
+      expect(ns.winnerId).toBe('t1');
+      expect(
+        ns.logs.some((l) => l.message.toLowerCase().includes('game over')),
+      ).toBe(true);
+      expect(engine.getWinners(ns).sort()).toEqual(['a', 'b']);
     });
   });
 });

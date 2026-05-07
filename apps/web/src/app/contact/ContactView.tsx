@@ -1,6 +1,12 @@
 'use client';
 
-import { useState, type CSSProperties, type ReactNode } from 'react';
+import {
+  useActionState,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
+import { useFormStatus } from 'react-dom';
 import { useLanguage } from '@/shared/i18n/context';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import { Container } from '@arcadeum/ui/components/Container/Container';
@@ -29,6 +35,7 @@ import { useContactStyles } from './useContactStyles';
 import { ContactSidePanel } from './ContactSidePanel';
 import { ContactFaq, getFaqItems } from './ContactFaq';
 import { ContactAvatars } from './ContactAvatars';
+import { initialContactActionState, submitContactAction } from './actions';
 
 export interface ContactViewProps {
   t?: ContactMessages;
@@ -50,6 +57,21 @@ function HeroPill({
       {icon ? <span aria-hidden="true">{icon}</span> : null}
       {children}
     </span>
+  );
+}
+
+function SubmitButton({
+  idleLabel,
+  sendingLabel,
+}: {
+  idleLabel: string;
+  sendingLabel: string;
+}) {
+  const { pending } = useFormStatus();
+  return (
+    <LaunchButton isLaunching={pending} data-testid="contact-submit-button">
+      {pending ? sendingLabel : idleLabel}
+    </LaunchButton>
   );
 }
 
@@ -108,28 +130,34 @@ export default function ContactView({
   const ticker = sections?.ticker;
   const faq = sections?.faq;
 
-  const [submitted, setSubmitted] = useState(false);
-  const [launching, setLaunching] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLaunching(true);
-    setTimeout(() => {
-      setSubmitted(true);
-      setLaunching(false);
-    }, 700);
-  };
+  const [actionState, formAction] = useActionState(
+    submitContactAction,
+    initialContactActionState,
+  );
+
+  // Track which action-state object the user has dismissed. New submissions
+  // produce a fresh state object, so identity comparison gives us a fresh
+  // success card per submit without setState-in-effect.
+  const [dismissedState, setDismissedState] = useState<
+    typeof actionState | null
+  >(null);
+
+  const fieldErrors =
+    actionState.status === 'invalid' ? actionState.fieldErrors : undefined;
+  const showSuccess =
+    actionState.status === 'ok' && actionState !== dismissedState;
 
   const reset = () => {
-    setSubmitted(false);
     setName('');
     setEmail('');
     setSubject('');
     setMessage('');
+    setDismissedState(actionState);
   };
 
   const titleParts = (hero?.title ?? '').trim().split(/\s+/);
@@ -309,7 +337,7 @@ export default function ContactView({
                     </XStack>
                   </div>
                   <hr style={s.ruleStyle} aria-hidden="true" />
-                  {submitted ? (
+                  {showSuccess ? (
                     <Card variant="glass" data-testid="contact-success-message">
                       <div style={s.successCardStyle}>
                         <div aria-hidden="true" style={s.burstStyle}>
@@ -340,7 +368,7 @@ export default function ContactView({
                       </div>
                     </Card>
                   ) : (
-                    <form onSubmit={handleSubmit}>
+                    <form action={formAction}>
                       <YStack gap="$4">
                         <div style={s.formGridStyle}>
                           <FloatingLabelInput
@@ -351,6 +379,7 @@ export default function ContactView({
                             onChange={setName}
                             required
                             autoComplete="name"
+                            error={!!fieldErrors?.name}
                             data-testid="contact-name-input"
                           />
                           <FloatingLabelInput
@@ -362,6 +391,7 @@ export default function ContactView({
                             onChange={setEmail}
                             required
                             autoComplete="email"
+                            error={!!fieldErrors?.email}
                             data-testid="contact-email-input"
                           />
                         </div>
@@ -374,6 +404,7 @@ export default function ContactView({
                           value={subject}
                           onChange={setSubject}
                           required
+                          error={!!fieldErrors?.subject}
                           data-testid="contact-subject-input"
                         />
                         <FloatingLabelTextArea
@@ -386,6 +417,7 @@ export default function ContactView({
                           onChange={setMessage}
                           required
                           maxLength={1200}
+                          error={!!fieldErrors?.message}
                           data-testid="contact-message-textarea"
                         />
                         <div style={s.submitRowStyle}>
@@ -394,14 +426,10 @@ export default function ContactView({
                             {form?.privacy ??
                               'Private — we never share your email.'}
                           </span>
-                          <LaunchButton
-                            isLaunching={launching}
-                            data-testid="contact-submit-button"
-                          >
-                            {launching
-                              ? (form?.submitting ?? 'Sending…')
-                              : (form?.submit ?? 'Launch message')}
-                          </LaunchButton>
+                          <SubmitButton
+                            idleLabel={form?.submit ?? 'Launch message'}
+                            sendingLabel={form?.submitting ?? 'Sending…'}
+                          />
                         </div>
                       </YStack>
                     </form>

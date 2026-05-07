@@ -18,7 +18,7 @@ export interface GamePlayerState {
   [key: string]: unknown;
 }
 
-export type ChatScope = 'all' | 'players' | 'private';
+export type ChatScope = 'all' | 'players' | 'private' | 'team';
 
 export interface GameLogEntry {
   id: string;

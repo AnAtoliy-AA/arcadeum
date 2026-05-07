@@ -375,7 +375,9 @@ const AttackPlayerBoard = memo(
           backdropFilter="blur(8px)"
         >
           <PlayerName data-testid="player-board-name" color={theme.textColor}>
-            {resolveDisplayName(player.playerId, 'Opponent')}
+            {t('games.sea_battle_v1.table.players.opponentBadge' as TranslationKey)}
+            {' · '}
+            {resolveDisplayName(player.playerId, 'Unknown')}
             {idlePlayers.includes(player.playerId) && <IdleBadge />}
           </PlayerName>
           <PlayerStats>

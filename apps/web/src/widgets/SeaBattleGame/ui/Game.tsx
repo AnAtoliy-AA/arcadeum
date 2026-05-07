@@ -155,10 +155,24 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       if (!currentUserId || !room) return fallback || id || '';
       if (id === currentUserId)
         return t('games.sea_battle_v1.table.players.you');
+
       const member = room.members?.find((m) => m.id === id);
-      return member?.displayName || fallback || id || '';
+      if (member?.displayName) return member.displayName;
+
+      // Handle bots sequentially
+      if (id?.startsWith('bot-')) {
+        const botOrder =
+          snapshot?.playerOrder.filter((pId) => pId.startsWith('bot-')) || [];
+        const botIndex = botOrder.indexOf(id);
+        if (botIndex !== -1) {
+          return `${t('games.lobby.botCountLabel' as TranslationKey).split(' ')[0]} ${botIndex + 1}`;
+        }
+        return 'Bot';
+      }
+
+      return fallback || id || '';
     },
-    [currentUserId, room, t],
+    [currentUserId, room, t, snapshot],
   );
 
   const cardVariant = (room?.gameOptions?.variant ||

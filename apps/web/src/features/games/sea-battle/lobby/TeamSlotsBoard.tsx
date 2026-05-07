@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Avatar,
   Badge,
@@ -68,25 +68,20 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
   const isHost = userId === hostId;
   const botLabel = t('games.sea_battle_v1.teamMode.slots.botLabel');
 
-  const [drafts, setDrafts] = useState<TeamDraft[]>(() =>
-    teams.map((team) => ({
+  const buildDrafts = (source: SeaBattleTeam[]): TeamDraft[] =>
+    source.map((team) => ({
       id: team.id,
       name: team.name,
       color: team.color,
       targetSize: team.targetSize,
-    })),
-  );
+    }));
 
-  useEffect(() => {
-    setDrafts(
-      teams.map((team) => ({
-        id: team.id,
-        name: team.name,
-        color: team.color,
-        targetSize: team.targetSize,
-      })),
-    );
-  }, [teams]);
+  const [drafts, setDrafts] = useState<TeamDraft[]>(() => buildDrafts(teams));
+  const [prevTeams, setPrevTeams] = useState(teams);
+  if (prevTeams !== teams) {
+    setPrevTeams(teams);
+    setDrafts(buildDrafts(teams));
+  }
 
   const commit = (next: TeamDraft[]) => {
     emitSetTeamConfig({
@@ -171,9 +166,7 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
                   />
                   <SizeStepper
                     value={draft.targetSize}
-                    onChange={(n) =>
-                      updateDraft(team.id, { targetSize: n })
-                    }
+                    onChange={(n) => updateDraft(team.id, { targetSize: n })}
                   />
                   {drafts.length > MIN_TEAMS && (
                     <Button

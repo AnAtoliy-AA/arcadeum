@@ -9,7 +9,6 @@ import {
   Button,
   Typography,
 } from '@arcadeum/ui';
-import { Dialog } from 'tamagui';
 
 interface ConfirmationModalProps {
   open: boolean;

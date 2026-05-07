@@ -100,7 +100,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     isWinner,
     teamMode,
     teams,
-    activeShooterId,
     viewerTeam,
     winnerTeam,
   } = useSeaBattleState({
@@ -338,6 +337,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       handleAutoPlace,
       isBattlePhase,
       currentUserId,
+      currentTurnPlayer?.playerId,
       isMyTurn,
       attack,
       resolveDisplayNameBound,
@@ -346,7 +346,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       isGameOver,
       teamMode,
       teams,
-      activeShooterId,
       winnerTeam,
       t,
     ],

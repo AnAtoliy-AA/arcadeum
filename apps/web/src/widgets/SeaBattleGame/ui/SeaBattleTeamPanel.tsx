@@ -2,7 +2,110 @@
 
 import React, { useCallback } from 'react';
 import { Card, Typography, XStack, YStack } from '@arcadeum/ui';
-import { Switch, Text } from 'tamagui';
+import { Text } from 'tamagui';
+
+interface LabeledToggleProps {
+  checked: boolean;
+  onCheckedChange: (next: boolean) => void;
+  ariaLabel: string;
+  testId?: string;
+}
+
+function LabeledToggle({
+  checked,
+  onCheckedChange,
+  ariaLabel,
+  testId,
+}: LabeledToggleProps) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={ariaLabel}
+      data-testid={testId}
+      onClick={() => onCheckedChange(!checked)}
+      style={{
+        position: 'relative',
+        width: 60,
+        height: 30,
+        borderRadius: 999,
+        border: '1px solid',
+        borderColor: checked ? '#3b82f6' : 'rgba(148,163,184,0.4)',
+        backgroundColor: checked ? '#2563eb' : 'rgba(15,23,42,0.6)',
+        padding: 0,
+        cursor: 'pointer',
+        transition: 'background-color 120ms ease, border-color 120ms ease',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: checked ? 'flex-end' : 'flex-start',
+        boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.2)',
+      }}
+    >
+      <span
+        aria-hidden
+        style={{
+          position: 'absolute',
+          left: 8,
+          fontSize: 9,
+          fontWeight: 700,
+          letterSpacing: 1,
+          color: checked ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0)',
+          pointerEvents: 'none',
+        }}
+      >
+        ON
+      </span>
+      <span
+        aria-hidden
+        style={{
+          position: 'absolute',
+          right: 8,
+          fontSize: 9,
+          fontWeight: 700,
+          letterSpacing: 1,
+          color: checked ? 'rgba(0,0,0,0)' : 'rgba(203,213,225,0.85)',
+          pointerEvents: 'none',
+        }}
+      >
+        OFF
+      </span>
+      <span
+        style={{
+          width: 24,
+          height: 24,
+          margin: 2,
+          borderRadius: '50%',
+          backgroundColor: '#ffffff',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.5)',
+          transition: 'transform 120ms ease',
+        }}
+      />
+    </button>
+  );
+}
+
+function StatusBadge({ active }: { active: boolean }) {
+  return (
+    <span
+      style={{
+        fontSize: 10,
+        fontWeight: 700,
+        letterSpacing: 1,
+        textTransform: 'uppercase',
+        padding: '4px 10px',
+        borderRadius: 999,
+        border: '1px solid',
+        borderColor: active ? '#3b82f6' : 'rgba(148,163,184,0.4)',
+        backgroundColor: active ? 'rgba(37,99,235,0.18)' : 'rgba(15,23,42,0.6)',
+        color: active ? '#93c5fd' : 'rgba(203,213,225,0.85)',
+      }}
+    >
+      {active ? 'ON' : 'OFF'}
+    </span>
+  );
+}
+
 import {
   useTranslation,
   type TranslationKey,
@@ -92,16 +195,15 @@ export const SeaBattleTeamPanel = React.memo(function SeaBattleTeamPanel({
           {enableLabel}
         </Typography>
         {isHost ? (
-          <Switch
-            size="$3"
+          <LabeledToggle
             checked={teamMode}
             onCheckedChange={handleToggleTeamMode}
-            aria-label={enableLabel}
-            data-testid="team-mode-switch"
-          >
-            <Switch.Thumb />
-          </Switch>
-        ) : null}
+            ariaLabel={enableLabel}
+            testId="team-mode-switch"
+          />
+        ) : (
+          <StatusBadge active={teamMode} />
+        )}
       </XStack>
 
       {isHost && teamMode && (
@@ -109,15 +211,12 @@ export const SeaBattleTeamPanel = React.memo(function SeaBattleTeamPanel({
           <Typography variant="caption" uiSize="sm">
             {hideShipsLabel}
           </Typography>
-          <Switch
-            size="$2"
+          <LabeledToggle
             checked={hideShipsFromTeammates}
             onCheckedChange={handleToggleHideShips}
-            aria-label={hideShipsLabel}
-            data-testid="hide-ships-switch"
-          >
-            <Switch.Thumb />
-          </Switch>
+            ariaLabel={hideShipsLabel}
+            testId="hide-ships-switch"
+          />
         </XStack>
       )}
     </XStack>

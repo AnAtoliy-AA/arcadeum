@@ -27,6 +27,7 @@ const TileShell = styled(XStack, {
   position: 'relative',
   overflow: 'hidden',
   cursor: 'pointer',
+  flex: 1,
   hoverStyle: {
     borderColor: '$accent',
     y: -2,
@@ -76,7 +77,8 @@ const Arrow = styled(Text, {
 const linkResetStyle: CSSProperties = {
   textDecoration: 'none',
   color: 'inherit',
-  display: 'block',
+  display: 'flex',
+  height: '100%',
 };
 
 const gradientOverlayStyle = (gradient: string): CSSProperties => ({

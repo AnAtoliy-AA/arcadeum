@@ -206,9 +206,20 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     </IconButton>
   );
 
+  // When team mode is on, the team panel + lobby together exceed the viewport,
+  // so the wrapping YStack scrolls as one unit instead of fighting flex space
+  // with ReusableGameLobby's internal scroll. In FFA the wrapper claims full
+  // height and ReusableGameLobby's own scroll handles overflow.
+  const showTeamPanel = room.status === 'lobby' && (isHost || teamMode);
+
   return (
-    <YStack flex={1} minHeight={0} gap="$3">
-      {room.status === 'lobby' && (isHost || teamMode) && (
+    <YStack
+      flex={1}
+      minHeight={0}
+      gap="$3"
+      style={showTeamPanel ? { overflowY: 'auto' } : undefined}
+    >
+      {showTeamPanel && (
         <SeaBattleTeamPanel
           roomId={room.id}
           userId={userId ?? ''}
@@ -221,7 +232,10 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
           teamStartBlocked={teamStartBlocked}
         />
       )}
-      <YStack flex={1} minHeight={0}>
+      <YStack
+        flex={showTeamPanel ? undefined : 1}
+        minHeight={showTeamPanel ? 720 : 0}
+      >
         <ReusableGameLobby
           room={room}
           isHost={isHost}

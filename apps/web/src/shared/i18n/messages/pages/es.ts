@@ -159,6 +159,65 @@ export const es = {
     subtitle: 'Descubre tu posición entre los mejores jugadores',
     description:
       'Sigue tu posición en todos los juegos, compara estadísticas con amigos y sigue a los mejores jugadores. Las clasificaciones se actualizan en tiempo real.',
+    live: 'En vivo',
+    capturedAt: 'Capturado {time}',
+    modes: {
+      all: 'Todos los juegos',
+      mafia: 'Mafia',
+      werewolf: 'Hombre lobo',
+      crime: 'Crimen',
+      horror: 'Terror',
+    },
+    cup: {
+      title: 'Copa de Otoño',
+      endsIn: 'Termina en',
+      prizePool: 'Bote de premios',
+      participants: 'Participantes',
+    },
+    mythic: {
+      label: 'Mítico',
+      streak: 'Racha de {count} partidas',
+      leadOver: '+{delta} sobre #2',
+      cta: 'Ver perfil',
+    },
+    table: {
+      rank: '#',
+      player: 'Jugador',
+      region: 'Región',
+      rating: 'Puntuación',
+      record: 'V–D–E',
+      winrate: 'Ratio',
+      form: 'Forma',
+      trend: 'Tendencia',
+    },
+    trend: {
+      up: 'Sube {n}',
+      down: 'Baja {n}',
+      same: 'Sin cambios',
+    },
+    climbers: { title: 'Mayores ascensos' },
+    fallers: { title: 'Mayores caídas' },
+    squads: { title: 'Mejores escuadras', members: '{count} miembros' },
+    regions: { title: 'Por región' },
+    rewards: {
+      title: 'Escala de recompensas',
+      mythic: 'Corona mítica + 12k oro',
+      diamond: 'Fragmento diamante + 6k oro',
+      platinum: 'Trofeo platino + 3k oro',
+      gold: '1k oro + cosmético',
+    },
+    self: {
+      pinned: 'Tu rango',
+      unranked: 'Sin clasificar — juega 5 partidas clasificadas para aparecer',
+    },
+    empty: {
+      title: 'Aún no hay clasificaciones',
+      body: 'Sé el primero en escalar la clasificación.',
+    },
+    errorState: {
+      title: 'No se pudo cargar la clasificación',
+      retry: 'Reintentar',
+    },
     features: [
       {
         title: 'Clasificación de amigos',

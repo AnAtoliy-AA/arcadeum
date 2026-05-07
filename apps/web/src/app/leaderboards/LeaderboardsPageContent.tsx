@@ -1,17 +1,20 @@
 'use client';
+import { useState } from 'react';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
-
 import { useLanguage } from '@/shared/i18n/context';
-import {
-  PageLayout,
-  Container,
-  GlassCard,
-  PageTitle,
-  Typography,
-  Section,
-  XStack,
-  YStack,
-} from '@arcadeum/ui';
+import { PageLayout, Container, YStack } from '@arcadeum/ui';
+import { useLeaderboard } from '@/entities/leaderboard/model/useLeaderboard';
+import type { GameMode } from '@/entities/leaderboard/model/types';
+import { MythicSpotlight } from '@arcadeum/ui';
+
+import { CupCountdown } from './_components/CupCountdown';
+import { GameModeTabs } from './_components/GameModeTabs';
+import { ClimbersFallersRail } from './_components/ClimbersFallersRail';
+import { SquadStrip } from './_components/SquadStrip';
+import { RegionStrip } from './_components/RegionStrip';
+import { RewardLadder } from './_components/RewardLadder';
+import { RankTable } from './_components/RankTable';
+import { PinnedSelfRow } from './_components/PinnedSelfRow';
 
 interface LeaderboardsPageContentProps {
   t?: PageTranslations;
@@ -23,62 +26,54 @@ export default function LeaderboardsPageContent({
   const { messages } = useLanguage();
   const t =
     (messages.pages?.leaderboards as unknown as PageTranslations) || initialT;
+  const [mode, setMode] = useState<GameMode>('all');
+  const { data, isLoading } = useLeaderboard({ mode });
+
+  const mythicLabels = (t?.mythic ?? {}) as {
+    streak?: string;
+    leadOver?: string;
+    cta?: string;
+  };
 
   return (
     <PageLayout>
-      <Container size="md">
-        <GlassCard>
-          <PageTitle size="xl" gradient>
-            {t?.title}
-          </PageTitle>
-          <Typography variant="caption" alpha="medium">
-            {t?.subtitle}
-          </Typography>
-        </GlassCard>
-
-        <Section variant="legal">
-          <Typography variant="body" uiSize="md" alpha="high">
-            {t?.description}
-          </Typography>
-        </Section>
-
-        {t?.features && (
-          <Section variant="legal">
-            <XStack flexWrap="wrap" gap="$4" marginHorizontal="$-2">
-              {(
-                t.features as ({ title: string; description: string } | null)[]
-              ).map((feature, index: number) => {
-                if (!feature) return null;
-                return (
-                  <GlassCard
-                    key={index}
-                    flex={1}
-                    minWidth={280}
-                    p="$4"
-                    borderWidth={1}
-                    borderColor="$borderColor"
-                  >
-                    <YStack gap="$2">
-                      <Typography variant="label" uiSize="md" fontWeight="700">
-                        {feature.title}
-                      </Typography>
-                      <Typography variant="body" uiSize="sm" alpha="medium">
-                        {feature.description}
-                      </Typography>
-                    </YStack>
-                  </GlassCard>
-                );
-              })}
-            </XStack>
-          </Section>
-        )}
-
-        <Section variant="legal">
-          <Typography variant="body" uiSize="md" alpha="medium">
-            {t?.comingSoon}
-          </Typography>
-        </Section>
+      <Container size="lg">
+        <YStack gap="$6" paddingBottom="$10">
+          <CupCountdown cup={data?.cup ?? null} t={t} />
+          {data?.mythic ? (
+            <MythicSpotlight
+              rank={data.mythic.rank}
+              name={data.mythic.name}
+              rating={data.mythic.rating}
+              ratingDelta={data.mythic.ratingDelta}
+              streak={data.mythic.streak}
+              region={data.mythic.region}
+              streakLabel={(
+                mythicLabels.streak ?? '{count}-game streak'
+              ).replace('{count}', String(data.mythic.streak))}
+              leadLabel={(mythicLabels.leadOver ?? '+{delta} over #2').replace(
+                '{delta}',
+                String(data.mythic.ratingDelta),
+              )}
+              ctaLabel={mythicLabels.cta ?? 'View profile'}
+              onPressCta={() => {
+                /* TODO(ARC-588-profile): route to player profile */
+              }}
+            />
+          ) : null}
+          <GameModeTabs value={mode} onChange={setMode} t={t} />
+          <ClimbersFallersRail
+            climbers={data?.climbers ?? []}
+            fallers={data?.fallers ?? []}
+            t={t}
+          />
+          <RewardLadder rewards={data?.rewards ?? []} t={t} />
+          <RankTable rows={data?.rows ?? []} loading={isLoading} t={t} />
+          <SquadStrip squads={data?.squads ?? []} t={t} />
+          <RegionStrip regions={data?.regions ?? []} t={t} />
+        </YStack>
       </Container>
+      {data?.self ? <PinnedSelfRow player={data.self} t={t} /> : null}
     </PageLayout>
   );
 }

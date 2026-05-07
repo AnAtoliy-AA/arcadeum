@@ -1,0 +1,90 @@
+export type GameMode = 'all' | 'mafia' | 'werewolf' | 'crime' | 'horror';
+
+export type Region = 'na' | 'eu' | 'sa' | 'asia' | 'oceania' | 'africa' | 'me';
+
+export type Tier =
+  | 'bronze'
+  | 'silver'
+  | 'gold'
+  | 'platinum'
+  | 'diamond'
+  | 'mythic';
+
+export type FormResult = 'W' | 'L' | 'D';
+
+export type LeaderboardPlayer = {
+  id: string;
+  rank: number;
+  prevRank?: number;
+  name: string;
+  avatarUrl?: string;
+  countryCode?: string;
+  region: Region;
+  tier: Tier;
+  rating: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  winrate: number;
+  recentForm: FormResult[];
+  isOnline?: boolean;
+  isFriend?: boolean;
+};
+
+export type MythicPlayer = LeaderboardPlayer & {
+  ratingDelta: number;
+  streak: number;
+};
+
+export type CupSnapshot = {
+  id: string;
+  title: string;
+  startsAt: string;
+  endsAt: string;
+  prizePoolUSD: number;
+  participantCount: number;
+};
+
+export type RewardTierItem = {
+  tier: Tier;
+  rankFrom: number;
+  rankTo: number;
+  rewardLabel: string;
+  iconKey?: string;
+};
+
+export type RegionDistribution = Array<{
+  region: Region;
+  share: number;
+  topPlayer?: { id: string; name: string };
+}>;
+
+export type ClimberFaller = {
+  player: LeaderboardPlayer;
+  delta: number;
+};
+
+export type Squad = {
+  id: string;
+  name: string;
+  tag: string;
+  rating: number;
+  memberCount: number;
+  rank: number;
+};
+
+export type LeaderboardSnapshot = {
+  capturedAt: string;
+  mode: GameMode;
+  mythic: MythicPlayer | null;
+  podium: [LeaderboardPlayer, LeaderboardPlayer, LeaderboardPlayer] | null;
+  rows: LeaderboardPlayer[];
+  totalRows: number;
+  cup: CupSnapshot | null;
+  rewards: RewardTierItem[];
+  regions: RegionDistribution;
+  climbers: ClimberFaller[];
+  fallers: ClimberFaller[];
+  squads: Squad[];
+  self: LeaderboardPlayer | null;
+};

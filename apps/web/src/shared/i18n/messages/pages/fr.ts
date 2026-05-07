@@ -159,6 +159,65 @@ export const fr = {
     subtitle: 'Voyez où vous vous situez parmi les meilleurs joueurs',
     description:
       'Suivez votre position dans tous les jeux, comparez vos statistiques avec vos amis et suivez les meilleurs joueurs. Les classements se mettent à jour en temps réel.',
+    live: 'En direct',
+    capturedAt: 'Capturé {time}',
+    modes: {
+      all: 'Tous les jeux',
+      mafia: 'Mafia',
+      werewolf: 'Loup-garou',
+      crime: 'Crime',
+      horror: 'Horreur',
+    },
+    cup: {
+      title: "Coupe d'automne",
+      endsIn: 'Se termine dans',
+      prizePool: 'Cagnotte',
+      participants: 'Participants',
+    },
+    mythic: {
+      label: 'Mythique',
+      streak: 'Série de {count} parties',
+      leadOver: "+{delta} d'avance sur #2",
+      cta: 'Voir le profil',
+    },
+    table: {
+      rank: '#',
+      player: 'Joueur',
+      region: 'Région',
+      rating: 'Score',
+      record: 'V–D–N',
+      winrate: 'Ratio',
+      form: 'Forme',
+      trend: 'Tendance',
+    },
+    trend: {
+      up: 'Hausse de {n}',
+      down: 'Baisse de {n}',
+      same: 'Inchangé',
+    },
+    climbers: { title: 'Plus fortes hausses' },
+    fallers: { title: 'Plus fortes baisses' },
+    squads: { title: 'Meilleures équipes', members: '{count} membres' },
+    regions: { title: 'Par région' },
+    rewards: {
+      title: 'Échelle des récompenses',
+      mythic: "Couronne mythique + 12k d'or",
+      diamond: "Éclat de diamant + 6k d'or",
+      platinum: "Trophée platine + 3k d'or",
+      gold: "1k d'or + cosmétique",
+    },
+    self: {
+      pinned: 'Votre rang',
+      unranked: 'Non classé — jouez 5 parties classées pour apparaître',
+    },
+    empty: {
+      title: 'Aucun classement pour le moment',
+      body: 'Soyez le premier à grimper.',
+    },
+    errorState: {
+      title: 'Impossible de charger le classement',
+      retry: 'Réessayer',
+    },
     features: [
       {
         title: "Classement d'amis",

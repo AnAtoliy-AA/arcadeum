@@ -159,6 +159,65 @@ export const en = {
     subtitle: 'See where you rank among top players',
     description:
       'Track your position across all games, compare stats with friends, and follow the top players in each category. Rankings update in real time after every match.',
+    live: 'Live',
+    capturedAt: 'Captured {time}',
+    modes: {
+      all: 'All games',
+      mafia: 'Mafia',
+      werewolf: 'Werewolf',
+      crime: 'Crime',
+      horror: 'Horror',
+    },
+    cup: {
+      title: 'Autumn Cup',
+      endsIn: 'Ends in',
+      prizePool: 'Prize pool',
+      participants: 'Participants',
+    },
+    mythic: {
+      label: 'Mythic',
+      streak: '{count}-game streak',
+      leadOver: '+{delta} over #2',
+      cta: 'View profile',
+    },
+    table: {
+      rank: '#',
+      player: 'Player',
+      region: 'Region',
+      rating: 'Rating',
+      record: 'W–L–D',
+      winrate: 'Winrate',
+      form: 'Form',
+      trend: 'Trend',
+    },
+    trend: {
+      up: 'Up {n}',
+      down: 'Down {n}',
+      same: 'No change',
+    },
+    climbers: { title: 'Top climbers' },
+    fallers: { title: 'Biggest drops' },
+    squads: { title: 'Top squads', members: '{count} members' },
+    regions: { title: 'By region' },
+    rewards: {
+      title: 'Reward ladder',
+      mythic: 'Mythic crown + 12k gold',
+      diamond: 'Diamond shard + 6k gold',
+      platinum: 'Platinum trophy + 3k gold',
+      gold: '1k gold + cosmetic',
+    },
+    self: {
+      pinned: 'Your rank',
+      unranked: 'Unranked — play 5 ranked games to appear',
+    },
+    empty: {
+      title: 'No rankings yet',
+      body: 'Be the first to climb the ladder.',
+    },
+    errorState: {
+      title: "Couldn't load leaderboard",
+      retry: 'Retry',
+    },
     features: [
       {
         title: 'Friends Leaderboard',

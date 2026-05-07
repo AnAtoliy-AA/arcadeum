@@ -298,7 +298,7 @@ const gameWidgetGlobalStyles = `
   }
 `;
 
-export function GameWidgetContainer({
+export const GameWidgetContainer = React.memo(function GameWidgetContainer({
   headerProps,
   header,
   board,
@@ -396,4 +396,4 @@ export function GameWidgetContainer({
       </Container>
     </>
   );
-}
+});

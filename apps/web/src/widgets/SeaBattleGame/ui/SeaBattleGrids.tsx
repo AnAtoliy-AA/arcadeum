@@ -33,9 +33,11 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
       style={{
         display: 'grid',
         gridTemplateColumns:
-          (media.tablet && media.short) || (media.sm && media.gtXs)
+          (media.tablet && media.short) ||
+          (media.sm && media.gtXs) ||
+          media.gtSm
             ? 'repeat(2, 1fr)'
-            : 'repeat(auto-fit, minmax(280px, 1fr))',
+            : '1fr',
       }}
       gap={media.short ? 10 : media.sm ? 12 : 16}
       width="100%"

@@ -170,6 +170,7 @@ export const ruMessages = {
     button: 'Правила игры',
   },
   lobby: {
+    bot: 'Бот',
     botCountLabel: 'Количество ботов',
     startWithBots: 'Начать с {{count}} 🤖',
     playWithBotsNotice: 'Начните с ботами сразу или дождитесь других игроков',

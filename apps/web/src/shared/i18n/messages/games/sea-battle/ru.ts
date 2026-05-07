@@ -93,6 +93,7 @@ export const ruMessages = {
         waitingFor: 'Ждем {{player}}...',
         targetBadge: 'Цель',
         defendingBadge: 'Оборона',
+        opponentBadge: 'Оппонент',
       },
       phase: {
         lobby: 'Лобби',

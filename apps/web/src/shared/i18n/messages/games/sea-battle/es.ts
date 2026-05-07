@@ -94,6 +94,7 @@ export const esMessages = {
         waitingFor: 'Esperando a {{player}}...',
         targetBadge: 'Objetivo',
         defendingBadge: 'Defendiendo',
+        opponentBadge: 'Oponente',
       },
       phase: {
         lobby: 'Vestíbulo',

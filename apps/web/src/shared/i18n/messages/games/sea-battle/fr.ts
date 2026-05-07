@@ -94,6 +94,7 @@ export const frMessages = {
         waitingFor: 'En attente de {{player}}...',
         targetBadge: 'Cible',
         defendingBadge: 'En défense',
+        opponentBadge: 'Adversaire',
       },
       phase: {
         lobby: 'Salon',

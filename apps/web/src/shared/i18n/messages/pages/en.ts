@@ -161,12 +161,19 @@ export const en = {
       'Track your position across all games, compare stats with friends, and follow the top players in each category. Rankings update in real time after every match.',
     live: 'Live',
     capturedAt: 'Captured {time}',
+    hero: {
+      eyebrow: 'Live · Season 4',
+      title: 'Race the leaderboard.',
+      tagline:
+        'Updated every 30 seconds. Top 100 players gear up for the Champions Cup.',
+    },
+    ticker: { live: 'Live' },
     modes: {
-      all: 'All games',
-      mafia: 'Mafia',
-      werewolf: 'Werewolf',
-      crime: 'Crime',
-      horror: 'Horror',
+      all: { name: 'All games', subtitle: 'Combined ladder', icon: '◎' },
+      mafia: { name: 'Mafia', subtitle: '5v5 tactical', icon: '♤' },
+      werewolf: { name: 'Werewolf', subtitle: 'Social deduction', icon: '♢' },
+      crime: { name: 'Crime', subtitle: 'Co-op heist', icon: '♧' },
+      horror: { name: 'Horror', subtitle: '1v4 asymmetric', icon: '♡' },
     },
     cup: {
       eyebrow: 'Tournament',
@@ -174,12 +181,33 @@ export const en = {
       endsIn: 'Ends in',
       prizePool: 'Prize pool',
       participants: 'Participants',
+      qualifiedLabel: 'Qualified',
     },
     mythic: {
       label: 'Mythic',
       streak: '{count}-game streak',
       leadOver: '+{delta} over #2',
-      cta: 'View profile',
+      recentLabel: 'Last 12 matches',
+      challenge: '⚔ Challenge',
+      watch: '▶ Watch replay',
+      follow: 'Follow',
+      runnerUp: 'Runner · Up',
+      thirdPlace: '3rd · Place',
+    },
+    controls: {
+      global: 'Global',
+      perGame: 'Per-game',
+      tournaments: 'Tournaments',
+      friends: 'Friends',
+      regional: 'Regional',
+      searchPlaceholder: 'Find player…',
+      jumpToMe: '↓ Jump to me',
+      ranges: {
+        today: 'Today',
+        week: 'Week',
+        month: 'Month',
+        season: 'Season',
+      },
     },
     table: {
       rank: '#',
@@ -219,6 +247,7 @@ export const en = {
     self: {
       pinned: 'Your rank',
       unranked: 'Unranked — play 5 ranked games to appear',
+      share: 'Share',
     },
     loadMore: 'Load more',
     empty: {

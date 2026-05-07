@@ -1,6 +1,12 @@
 'use client';
 import { XStack, YStack, Text, View, styled } from 'tamagui';
-import { RankBadge, FormPips } from '@arcadeum/ui';
+import {
+  RankBadge,
+  FormPips,
+  TrendPill,
+  EnergyBar,
+  LiveChip,
+} from '@arcadeum/ui';
 import type { LeaderboardPlayer } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 
@@ -25,23 +31,27 @@ const HeaderRow = styled(XStack, {
   gap: '$3',
 });
 
-function trendArrow(rank: number, prev?: number) {
-  if (prev == null)
-    return { glyph: '·', color: '$textSecondary' as const, n: 0 };
-  if (prev > rank)
-    return { glyph: '▲', color: '$success' as const, n: prev - rank };
-  if (prev < rank)
-    return { glyph: '▼', color: '$danger' as const, n: rank - prev };
-  return { glyph: '·', color: '$textSecondary' as const, n: 0 };
-}
+const TagPill = styled(XStack, {
+  name: 'GameTag',
+  paddingHorizontal: 8,
+  paddingVertical: 2,
+  borderRadius: 999,
+  borderWidth: 1,
+  borderColor: '$borderColor',
+  backgroundColor: 'rgba(255,255,255,0.02)',
+});
 
 export function RankTable({
   rows,
   loading,
+  topRating,
+  liveMatchRanks = [],
   t,
 }: {
   rows: LeaderboardPlayer[];
   loading?: boolean;
+  topRating?: number;
+  liveMatchRanks?: number[];
   t?: PageTranslations;
 }) {
   const labels = ((t?.table as Record<string, string>) ?? {}) as Record<
@@ -52,6 +62,9 @@ export function RankTable({
     string,
     string
   >;
+  const liveLabel = (t?.live as string) ?? 'Live';
+  const max = topRating ?? rows[0]?.rating ?? 1;
+
   return (
     <YStack
       borderRadius="$4"
@@ -72,36 +85,16 @@ export function RankTable({
           {labels.region ?? 'Region'}
         </Text>
         <Text
-          width={80}
-          textAlign="right"
+          width={240}
           fontSize="$1"
           opacity={0.6}
           textTransform="uppercase"
+          $sm={{ display: 'none' }}
         >
           {labels.rating ?? 'Rating'}
         </Text>
         <Text
-          width={96}
-          textAlign="right"
-          fontSize="$1"
-          opacity={0.6}
-          textTransform="uppercase"
-          $sm={{ display: 'none' }}
-        >
-          {labels.record ?? 'W–L–D'}
-        </Text>
-        <Text
-          width={72}
-          textAlign="right"
-          fontSize="$1"
-          opacity={0.6}
-          textTransform="uppercase"
-          $sm={{ display: 'none' }}
-        >
-          {labels.winrate ?? 'WR'}
-        </Text>
-        <Text
-          width={120}
+          width={140}
           fontSize="$1"
           opacity={0.6}
           textTransform="uppercase"
@@ -109,7 +102,16 @@ export function RankTable({
         >
           {labels.form ?? 'Form'}
         </Text>
-        <Text width={56} fontSize="$1" opacity={0.6} textTransform="uppercase">
+        <Text
+          width={120}
+          fontSize="$1"
+          opacity={0.6}
+          textTransform="uppercase"
+          $md={{ display: 'none' }}
+        >
+          Tags
+        </Text>
+        <Text width={72} fontSize="$1" opacity={0.6} textTransform="uppercase">
           {labels.trend ?? 'Trend'}
         </Text>
       </HeaderRow>
@@ -140,49 +142,49 @@ export function RankTable({
                 borderRadius={4}
               />
               <View
-                width={80}
-                height={18}
+                width={240}
+                height={22}
                 backgroundColor="rgba(255,255,255,0.06)"
-                borderRadius={4}
-              />
-              <View
-                width={96}
-                height={14}
-                backgroundColor="rgba(255,255,255,0.04)"
-                borderRadius={4}
+                borderRadius={11}
                 $sm={{ display: 'none' }}
               />
               <View
-                width={72}
-                height={14}
+                width={140}
+                height={16}
                 backgroundColor="rgba(255,255,255,0.04)"
                 borderRadius={4}
                 $sm={{ display: 'none' }}
               />
               <View
                 width={120}
-                height={14}
+                height={20}
                 backgroundColor="rgba(255,255,255,0.04)"
-                borderRadius={4}
-                $sm={{ display: 'none' }}
+                borderRadius={10}
+                $md={{ display: 'none' }}
               />
               <View
-                width={56}
-                height={14}
+                width={72}
+                height={20}
                 backgroundColor="rgba(255,255,255,0.04)"
-                borderRadius={4}
+                borderRadius={10}
               />
             </Row>
           ))
         : rows.map((p) => {
-            const trend = trendArrow(p.rank, p.prevRank);
+            const live = p.isInMatch ?? liveMatchRanks.includes(p.rank);
+            const flag = p.countryCode ? regionFlag(p.countryCode) : null;
             return (
               <Row key={p.id} testID={`leaderboard-row-${p.rank}`}>
                 <View width={56}>
                   <RankBadge tier={p.tier as never}>{`#${p.rank}`}</RankBadge>
                 </View>
                 <YStack flex={1} gap={2}>
-                  <XStack gap="$2" alignItems="center">
+                  <XStack gap="$2" alignItems="center" flexWrap="wrap">
+                    {flag ? (
+                      <Text fontSize="$3" accessibilityLabel={p.countryCode}>
+                        {flag}
+                      </Text>
+                    ) : null}
                     <Text fontWeight="700" numberOfLines={1}>
                       {p.name}
                     </Text>
@@ -194,9 +196,17 @@ export function RankTable({
                         backgroundColor="$success"
                       />
                     ) : null}
-                    {p.isFriend ? (
-                      <Text fontSize="$1" opacity={0.6}>
-                        · friend
+                    {p.streak && p.streak >= 3 ? (
+                      <Text fontSize="$2">🔥 {p.streak}</Text>
+                    ) : null}
+                    {live ? (
+                      <View testID="row-live-chip">
+                        <LiveChip label={liveLabel} />
+                      </View>
+                    ) : null}
+                    {p.elo ? (
+                      <Text fontSize="$1" opacity={0.5} letterSpacing={1}>
+                        {p.elo} ELO
                       </Text>
                     ) : null}
                   </XStack>
@@ -204,47 +214,36 @@ export function RankTable({
                 <Text width={80} fontSize="$2" opacity={0.8} numberOfLines={1}>
                   {regionLabels[p.region] ?? p.region.toUpperCase()}
                 </Text>
-                <Text
-                  width={80}
-                  textAlign="right"
-                  fontWeight="700"
-                  letterSpacing={1}
-                >
-                  {p.rating.toLocaleString()}
-                </Text>
-                <Text
-                  width={96}
-                  textAlign="right"
-                  fontSize="$2"
-                  letterSpacing={1}
-                  opacity={0.85}
-                  $sm={{ display: 'none' }}
-                >
-                  {p.wins}–{p.losses}–{p.draws}
-                </Text>
-                <Text
-                  width={72}
-                  textAlign="right"
-                  fontSize="$2"
-                  letterSpacing={1}
-                  $sm={{ display: 'none' }}
-                >
-                  {Math.round(p.winrate * 100)}%
-                </Text>
-                <View width={120} $sm={{ display: 'none' }}>
-                  <FormPips results={p.recentForm} max={7} />
+                <View width={240} $sm={{ display: 'none' }}>
+                  <EnergyBar value={p.rating} max={max} />
                 </View>
-                <XStack width={56} gap={4} alignItems="center">
-                  <Text color={trend.color}>{trend.glyph}</Text>
-                  {trend.n > 0 ? (
-                    <Text fontSize="$2" letterSpacing={1} color={trend.color}>
-                      {trend.n}
-                    </Text>
-                  ) : null}
-                </XStack>
+                <View width={140} $sm={{ display: 'none' }}>
+                  <FormPips results={p.recentForm} max={8} variant="letter" />
+                </View>
+                <YStack width={120} gap={4} $md={{ display: 'none' }}>
+                  {(p.gameTags ?? []).slice(0, 2).map((tag) => (
+                    <TagPill key={tag}>
+                      <Text fontSize="$1" opacity={0.85}>
+                        {tag}
+                      </Text>
+                    </TagPill>
+                  ))}
+                </YStack>
+                <View width={72}>
+                  <TrendPill rank={p.rank} prevRank={p.prevRank} />
+                </View>
               </Row>
             );
           })}
     </YStack>
+  );
+}
+
+function regionFlag(code: string): string {
+  if (code.length !== 2) return '';
+  const A = 0x1f1e6;
+  return String.fromCodePoint(
+    A + code.toUpperCase().charCodeAt(0) - 65,
+    A + code.toUpperCase().charCodeAt(1) - 65,
   );
 }

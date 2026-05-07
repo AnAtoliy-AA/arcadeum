@@ -1,10 +1,29 @@
 'use client';
-import { XStack, Text } from 'tamagui';
+import { XStack } from 'tamagui';
 import type { KeyboardEvent } from 'react';
+import { ModeTab } from '@arcadeum/ui';
 import type { GameMode } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 
 const MODES: GameMode[] = ['all', 'mafia', 'werewolf', 'crime', 'horror'];
+
+const GRADIENTS: Record<GameMode, string> = {
+  all: 'linear-gradient(135deg,#22d3ee,#a78bfa)',
+  mafia: 'linear-gradient(135deg,#f472b6,#fbbf24)',
+  werewolf: 'linear-gradient(135deg,#34d399,#22d3ee)',
+  crime: 'linear-gradient(135deg,#a78bfa,#f472b6)',
+  horror: 'linear-gradient(135deg,#fbbf24,#f97316)',
+};
+
+const FALLBACK_ICONS: Record<GameMode, string> = {
+  all: '◎',
+  mafia: '♤',
+  werewolf: '♢',
+  crime: '♧',
+  horror: '♡',
+};
+
+type ModeMeta = { name?: string; subtitle?: string; icon?: string };
 
 export function GameModeTabs({
   value,
@@ -15,7 +34,7 @@ export function GameModeTabs({
   onChange: (m: GameMode) => void;
   t?: PageTranslations;
 }) {
-  const labels = (t?.modes ?? {}) as Record<string, string>;
+  const modeLabels = (t?.modes ?? {}) as Record<string, ModeMeta>;
 
   function handleKey(e: KeyboardEvent<HTMLDivElement>, current: GameMode) {
     const idx = MODES.indexOf(current);
@@ -39,39 +58,21 @@ export function GameModeTabs({
   }
 
   return (
-    <XStack gap="$2" flexWrap="wrap" role="tablist">
+    <XStack gap="$3" flexWrap="wrap" role="tablist">
       {MODES.map((m) => {
-        const active = value === m;
+        const meta = modeLabels[m] ?? {};
         return (
-          <XStack
+          <ModeTab
             key={m}
-            paddingHorizontal="$3"
-            paddingVertical="$2"
-            borderRadius="$2"
-            borderWidth={1}
-            borderColor={active ? '$mythicAccent' : '$borderColor'}
-            backgroundColor={
-              active ? 'rgba(236,72,153,0.12)' : 'rgba(255,255,255,0.02)'
-            }
-            cursor="pointer"
-            testID={`mode-tab-${m}`}
-            role="tab"
-            tabIndex={active ? 0 : -1}
-            aria-selected={active}
-            onPress={() => onChange(m)}
+            id={m}
+            name={meta.name ?? m}
+            subtitle={meta.subtitle}
+            icon={meta.icon ?? FALLBACK_ICONS[m]}
+            gradient={GRADIENTS[m]}
+            active={value === m}
+            onSelect={() => onChange(m)}
             onKeyDown={(e) => handleKey(e, m)}
-            hoverStyle={{ backgroundColor: 'rgba(255,255,255,0.06)' }}
-            focusStyle={{ borderColor: '$mythicAccent', outlineWidth: 0 }}
-          >
-            <Text
-              fontSize="$3"
-              fontWeight={active ? '700' : '500'}
-              color={active ? '$mythicAccent' : undefined}
-              textTransform="capitalize"
-            >
-              {labels[m] ?? m}
-            </Text>
-          </XStack>
+          />
         );
       })}
     </XStack>

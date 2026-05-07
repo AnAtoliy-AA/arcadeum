@@ -160,12 +160,23 @@ export const ru = {
       'Отслеживайте свою позицию во всех играх, сравнивайте статистику с друзьями и следите за лучшими игроками. Рейтинги обновляются в реальном времени.',
     live: 'В прямом эфире',
     capturedAt: 'Снимок {time}',
+    hero: {
+      eyebrow: 'В прямом эфире · Сезон 4',
+      title: 'Догоняй таблицу.',
+      tagline:
+        'Обновляется каждые 30 секунд. Топ-100 игроков готовится к Кубку чемпионов.',
+    },
+    ticker: { live: 'В эфире' },
     modes: {
-      all: 'Все игры',
-      mafia: 'Мафия',
-      werewolf: 'Оборотни',
-      crime: 'Криминал',
-      horror: 'Хоррор',
+      all: { name: 'Все игры', subtitle: 'Сводный рейтинг', icon: '◎' },
+      mafia: { name: 'Мафия', subtitle: 'Тактика 5 на 5', icon: '♤' },
+      werewolf: {
+        name: 'Оборотни',
+        subtitle: 'Социальная дедукция',
+        icon: '♢',
+      },
+      crime: { name: 'Криминал', subtitle: 'Кооп-ограбление', icon: '♧' },
+      horror: { name: 'Хоррор', subtitle: 'Асимметрия 1 на 4', icon: '♡' },
     },
     cup: {
       eyebrow: 'Турнир',
@@ -173,12 +184,33 @@ export const ru = {
       endsIn: 'Заканчивается через',
       prizePool: 'Призовой фонд',
       participants: 'Участники',
+      qualifiedLabel: 'Прошли',
     },
     mythic: {
       label: 'Мифик',
       streak: 'Серия из {count} побед',
       leadOver: '+{delta} над #2',
-      cta: 'Открыть профиль',
+      recentLabel: 'Последние 12 матчей',
+      challenge: '⚔ Вызвать',
+      watch: '▶ Смотреть запись',
+      follow: 'Подписаться',
+      runnerUp: 'Серебро',
+      thirdPlace: 'Бронза',
+    },
+    controls: {
+      global: 'Глобальный',
+      perGame: 'По играм',
+      tournaments: 'Турниры',
+      friends: 'Друзья',
+      regional: 'Регион',
+      searchPlaceholder: 'Найти игрока…',
+      jumpToMe: '↓ К моему рангу',
+      ranges: {
+        today: 'Сегодня',
+        week: 'Неделя',
+        month: 'Месяц',
+        season: 'Сезон',
+      },
     },
     table: {
       rank: '#',
@@ -218,6 +250,7 @@ export const ru = {
     self: {
       pinned: 'Ваш ранг',
       unranked: 'Без ранга — сыграйте 5 рейтинговых матчей',
+      share: 'Поделиться',
     },
     loadMore: 'Показать ещё',
     empty: {

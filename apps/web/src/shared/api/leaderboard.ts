@@ -5,9 +5,19 @@ import type {
   Region,
   Tier,
   FormResult,
+  TickerEvent,
 } from '@/entities/leaderboard/model/types';
 
 const REGIONS: Region[] = ['na', 'eu', 'sa', 'asia', 'oceania', 'africa', 'me'];
+const COUNTRIES: Record<Region, string> = {
+  na: 'us',
+  eu: 'de',
+  sa: 'br',
+  asia: 'kr',
+  oceania: 'au',
+  africa: 'za',
+  me: 'ae',
+};
 const TIERS: Tier[] = [
   'bronze',
   'silver',
@@ -38,6 +48,7 @@ const NAMES = [
   'Hollowind',
   'Tessera',
 ];
+const GAME_TAGS = ['Mafia', 'Werewolf', 'Crime', 'Horror'];
 
 function seededRandom(seed: number) {
   let s = seed || 1;
@@ -52,7 +63,7 @@ function makePlayer(rng: () => number, rank: number): LeaderboardPlayer {
   const losses = Math.floor(40 + rng() * 30);
   const draws = Math.floor(rng() * 8);
   const total = wins + losses + draws;
-  const form: FormResult[] = Array.from({ length: 7 }, () => {
+  const form: FormResult[] = Array.from({ length: 12 }, () => {
     const r = rng();
     return r > 0.4 ? 'W' : r > 0.15 ? 'L' : 'D';
   });
@@ -64,6 +75,13 @@ function makePlayer(rng: () => number, rank: number): LeaderboardPlayer {
         : rank <= 50
           ? 'platinum'
           : (TIERS[Math.floor(rng() * 4)] ?? 'silver');
+  const region: Region = REGIONS[Math.floor(rng() * REGIONS.length)] ?? 'eu';
+  const rating = 2800 - rank * 8 + Math.floor(rng() * 30);
+  const tagCount = 1 + Math.floor(rng() * 2);
+  const gameTags = Array.from(
+    { length: tagCount },
+    (_, i) => GAME_TAGS[(rank + i) % GAME_TAGS.length] ?? 'Mafia',
+  );
 
   return {
     id: `p_${rank}`,
@@ -72,16 +90,21 @@ function makePlayer(rng: () => number, rank: number): LeaderboardPlayer {
     name:
       (NAMES[(rank - 1) % NAMES.length] ?? 'Player') +
       (rank > NAMES.length ? rank : ''),
-    region: REGIONS[Math.floor(rng() * REGIONS.length)] ?? 'eu',
+    region,
+    countryCode: COUNTRIES[region],
     tier,
-    rating: 2800 - rank * 8 + Math.floor(rng() * 30),
+    rating,
+    elo: rating + 80,
     wins,
     losses,
     draws,
     winrate: total > 0 ? wins / total : 0,
     recentForm: form,
+    streak: rng() > 0.7 ? 3 + Math.floor(rng() * 9) : 0,
     isOnline: rng() > 0.6,
     isFriend: rng() > 0.92,
+    isInMatch: false,
+    gameTags,
   };
 }
 
@@ -108,6 +131,14 @@ export async function getLeaderboard(
     makePlayer(rng, start + i),
   );
 
+  // Tag a few rows as in-match for the LIVE chip indicator
+  const liveMatchRanks = [rows[2]?.rank, rows[7]?.rank, rows[14]?.rank].filter(
+    (r): r is number => typeof r === 'number',
+  );
+  rows.forEach((r) => {
+    if (liveMatchRanks.includes(r.rank)) r.isInMatch = true;
+  });
+
   const podium =
     page === 1
       ? ([rows[0], rows[1], rows[2]] as LeaderboardSnapshot['podium'])
@@ -122,6 +153,40 @@ export async function getLeaderboard(
         }
       : null;
 
+  const climbers = rows.slice(20, 25).map((p) => {
+    const delta = 8 + Math.floor(rng() * 12);
+    return { player: p, delta, fromRank: p.rank + delta, toRank: p.rank };
+  });
+  const fallers = rows.slice(30, 35).map((p) => {
+    const delta = -(5 + Math.floor(rng() * 10));
+    return { player: p, delta, fromRank: p.rank + delta, toRank: p.rank };
+  });
+
+  const tickerEvents: TickerEvent[] = [
+    {
+      who: rows[0]?.name ?? 'Player',
+      what: 'won the Mythic streak challenge — +12 rating',
+      color: '#ec4899',
+    },
+    {
+      who: rows[3]?.name ?? 'Player',
+      what: 'climbed into the Top 10 in Mafia',
+      color: '#22d3ee',
+    },
+    {
+      who: rows[7]?.name ?? 'Player',
+      what: 'started a 6-game win streak',
+      color: '#34d399',
+    },
+    {
+      who: rows[12]?.name ?? 'Player',
+      what: 'qualified for the Autumn Cup quarterfinals',
+      color: '#facc15',
+    },
+  ];
+
+  const topRating = rows[0]?.rating ?? 2800;
+
   return {
     capturedAt: new Date().toISOString(),
     mode,
@@ -129,6 +194,9 @@ export async function getLeaderboard(
     podium,
     rows,
     totalRows: total,
+    topRating,
+    liveMatchRanks,
+    tickerEvents,
     cup: {
       id: 'autumn_cup_2026',
       title: 'Autumn Cup',
@@ -136,6 +204,7 @@ export async function getLeaderboard(
       endsAt: '2026-05-21T23:59:59Z',
       prizePoolUSD: 12_000,
       participantCount: 4_312,
+      qualified: rows.slice(0, 8),
     },
     rewards: [
       {
@@ -143,38 +212,48 @@ export async function getLeaderboard(
         rankFrom: 1,
         rankTo: 1,
         rewardLabel: 'rewards.mythic',
+        icon: '♛',
+        color: '#ec4899',
       },
       {
         tier: 'diamond',
         rankFrom: 2,
         rankTo: 10,
         rewardLabel: 'rewards.diamond',
+        icon: '◆',
+        color: '#22d3ee',
       },
       {
         tier: 'platinum',
         rankFrom: 11,
         rankTo: 50,
         rewardLabel: 'rewards.platinum',
+        icon: '◇',
+        color: '#a78bfa',
       },
       {
         tier: 'gold',
         rankFrom: 51,
         rankTo: 200,
         rewardLabel: 'rewards.gold',
+        icon: '★',
+        color: '#facc15',
+      },
+      {
+        tier: 'silver',
+        rankFrom: 201,
+        rankTo: 500,
+        rewardLabel: 'rewards.silver',
+        icon: '✦',
+        color: '#94a3b8',
       },
     ],
     regions: REGIONS.map((r, i) => ({
       region: r,
       share: [0.31, 0.28, 0.14, 0.13, 0.07, 0.05, 0.02][i] ?? 0.01,
     })),
-    climbers: rows.slice(20, 25).map((p) => ({
-      player: p,
-      delta: 8 + Math.floor(rng() * 12),
-    })),
-    fallers: rows.slice(30, 35).map((p) => ({
-      player: p,
-      delta: -(5 + Math.floor(rng() * 10)),
-    })),
+    climbers,
+    fallers,
     squads: Array.from({ length: 5 }, (_, i) => ({
       id: `sq_${i}`,
       name:
@@ -189,6 +268,7 @@ export async function getLeaderboard(
       rating: 9800 - i * 80,
       memberCount: 6 + i,
       rank: i + 1,
+      isYou: i === 1,
     })),
     self: {
       ...makePlayer(seededRandom(selfId ? selfId.length : 7), 247),

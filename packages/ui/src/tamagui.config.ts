@@ -110,6 +110,7 @@ const themeBase = {
   silverAccent: '#94a3b8',
   bronzeAccent: '#b45309',
   neutral: '#8e9196',
+  gridLine: 'rgba(255,255,255,0.04)',
   backgroundTransparent: 'transparent',
   glassBg: 'rgba(15, 17, 18, 0.8)',
   glassBgHover: 'rgba(255, 255, 255, 0.12)',

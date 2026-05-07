@@ -1,5 +1,6 @@
 'use client';
 import { XStack, YStack, Text } from 'tamagui';
+import { DeltaChip } from '@arcadeum/ui';
 import type { ClimberFaller } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 
@@ -17,12 +18,12 @@ export function ClimbersFallersRail({
       <Column
         title={(t?.climbers as { title?: string })?.title ?? 'Top climbers'}
         rows={climbers}
-        positive
+        accent="$success"
       />
       <Column
         title={(t?.fallers as { title?: string })?.title ?? 'Biggest drops'}
         rows={fallers}
-        positive={false}
+        accent="$danger"
       />
     </XStack>
   );
@@ -31,11 +32,11 @@ export function ClimbersFallersRail({
 function Column({
   title,
   rows,
-  positive,
+  accent,
 }: {
   title: string;
   rows: ClimberFaller[];
-  positive: boolean;
+  accent: '$success' | '$danger';
 }) {
   return (
     <YStack
@@ -45,6 +46,8 @@ function Column({
       padding="$4"
       borderRadius="$4"
       borderWidth={1}
+      borderTopWidth={2}
+      borderTopColor={accent}
       borderColor="$borderColor"
       backgroundColor="rgba(255,255,255,0.02)"
     >
@@ -57,28 +60,17 @@ function Column({
         {title}
       </Text>
       <YStack gap="$2">
-        {rows.map(({ player, delta }) => (
+        {rows.map(({ player, fromRank, toRank }) => (
           <XStack
             key={player.id}
             alignItems="center"
             justifyContent="space-between"
             gap="$3"
           >
-            <XStack gap="$2" alignItems="center" flex={1}>
-              <Text opacity={0.6} letterSpacing={1}>
-                #{player.rank}
-              </Text>
-              <Text fontWeight="600" numberOfLines={1}>
-                {player.name}
-              </Text>
-            </XStack>
-            <Text
-              fontWeight="700"
-              letterSpacing={1}
-              color={positive ? '$success' : '$danger'}
-            >
-              {positive ? '▲' : '▼'} {Math.abs(delta)}
+            <Text fontWeight="600" numberOfLines={1} flex={1}>
+              {player.name}
             </Text>
+            <DeltaChip from={fromRank} to={toRank} />
           </XStack>
         ))}
       </YStack>

@@ -161,12 +161,23 @@ export const es = {
       'Sigue tu posición en todos los juegos, compara estadísticas con amigos y sigue a los mejores jugadores. Las clasificaciones se actualizan en tiempo real.',
     live: 'En vivo',
     capturedAt: 'Capturado {time}',
+    hero: {
+      eyebrow: 'En vivo · Temporada 4',
+      title: 'Persigue la clasificación.',
+      tagline:
+        'Actualizado cada 30 segundos. Los 100 mejores se preparan para la Copa.',
+    },
+    ticker: { live: 'En vivo' },
     modes: {
-      all: 'Todos los juegos',
-      mafia: 'Mafia',
-      werewolf: 'Hombre lobo',
-      crime: 'Crimen',
-      horror: 'Terror',
+      all: { name: 'Todos los juegos', subtitle: 'Tabla combinada', icon: '◎' },
+      mafia: { name: 'Mafia', subtitle: 'Táctico 5v5', icon: '♤' },
+      werewolf: {
+        name: 'Hombre lobo',
+        subtitle: 'Deducción social',
+        icon: '♢',
+      },
+      crime: { name: 'Crimen', subtitle: 'Atraco cooperativo', icon: '♧' },
+      horror: { name: 'Terror', subtitle: 'Asimétrico 1v4', icon: '♡' },
     },
     cup: {
       eyebrow: 'Torneo',
@@ -174,12 +185,33 @@ export const es = {
       endsIn: 'Termina en',
       prizePool: 'Bote de premios',
       participants: 'Participantes',
+      qualifiedLabel: 'Clasificados',
     },
     mythic: {
       label: 'Mítico',
       streak: 'Racha de {count} partidas',
       leadOver: '+{delta} sobre #2',
-      cta: 'Ver perfil',
+      recentLabel: 'Últimas 12 partidas',
+      challenge: '⚔ Desafiar',
+      watch: '▶ Ver repetición',
+      follow: 'Seguir',
+      runnerUp: 'Subcampeón',
+      thirdPlace: 'Tercer puesto',
+    },
+    controls: {
+      global: 'Global',
+      perGame: 'Por juego',
+      tournaments: 'Torneos',
+      friends: 'Amigos',
+      regional: 'Regional',
+      searchPlaceholder: 'Buscar jugador…',
+      jumpToMe: '↓ Ir a mí',
+      ranges: {
+        today: 'Hoy',
+        week: 'Semana',
+        month: 'Mes',
+        season: 'Temporada',
+      },
     },
     table: {
       rank: '#',
@@ -219,6 +251,7 @@ export const es = {
     self: {
       pinned: 'Tu rango',
       unranked: 'Sin clasificar — juega 5 partidas clasificadas para aparecer',
+      share: 'Compartir',
     },
     loadMore: 'Cargar más',
     empty: {

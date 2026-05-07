@@ -160,12 +160,23 @@ export const by = {
       'Адсочвайце сваю пазіцыю ва ўсіх гульнях, параўноўвайце статыстыку з сябрамі і сачыце за лепшымі гульцамі. Рэйтынгі абнаўляюцца ў рэжыме рэальнага часу.',
     live: 'У прамым эфіры',
     capturedAt: 'Здымак {time}',
+    hero: {
+      eyebrow: 'У прамым эфіры · Сезон 4',
+      title: 'Даганяй табліцу.',
+      tagline:
+        'Абнаўляецца кожныя 30 секунд. Топ-100 гульцоў рыхтуецца да Кубка чэмпіёнаў.',
+    },
+    ticker: { live: 'У эфіры' },
     modes: {
-      all: 'Усе гульні',
-      mafia: 'Мафія',
-      werewolf: 'Пярэваратні',
-      crime: 'Крымінал',
-      horror: 'Хорар',
+      all: { name: 'Усе гульні', subtitle: 'Зводны рэйтынг', icon: '◎' },
+      mafia: { name: 'Мафія', subtitle: 'Тактыка 5 на 5', icon: '♤' },
+      werewolf: {
+        name: 'Пярэваратні',
+        subtitle: 'Сацыяльная дэдукцыя',
+        icon: '♢',
+      },
+      crime: { name: 'Крымінал', subtitle: 'Кааператыўны рабунак', icon: '♧' },
+      horror: { name: 'Хорар', subtitle: 'Асіметрыя 1 на 4', icon: '♡' },
     },
     cup: {
       eyebrow: 'Турнір',
@@ -173,12 +184,33 @@ export const by = {
       endsIn: 'Заканчваецца праз',
       prizePool: 'Прызавы фонд',
       participants: 'Удзельнікі',
+      qualifiedLabel: 'Прайшлі',
     },
     mythic: {
       label: 'Мітык',
       streak: 'Серыя з {count} гульняў',
       leadOver: '+{delta} над #2',
-      cta: 'Адкрыць профіль',
+      recentLabel: 'Апошнія 12 матчаў',
+      challenge: '⚔ Выклікаць',
+      watch: '▶ Глядзець паўтор',
+      follow: 'Падпісацца',
+      runnerUp: 'Срэбра',
+      thirdPlace: 'Бронза',
+    },
+    controls: {
+      global: 'Глабальны',
+      perGame: 'Па гульнях',
+      tournaments: 'Турніры',
+      friends: 'Сябры',
+      regional: 'Рэгіянальны',
+      searchPlaceholder: 'Знайсці гульца…',
+      jumpToMe: '↓ Да майго рангу',
+      ranges: {
+        today: 'Сёння',
+        week: 'Тыдзень',
+        month: 'Месяц',
+        season: 'Сезон',
+      },
     },
     table: {
       rank: '#',
@@ -218,6 +250,7 @@ export const by = {
     self: {
       pinned: 'Ваш ранг',
       unranked: 'Без рангу — згуляйце 5 рэйтынгавых матчаў',
+      share: 'Падзяліцца',
     },
     loadMore: 'Загрузіць яшчэ',
     empty: {

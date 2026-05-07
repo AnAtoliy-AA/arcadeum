@@ -27,7 +27,7 @@ describe('ContactSidePanel', () => {
       </Wrapper>,
     );
     const link = screen.getByRole('link', { name: /Open an issue/i });
-    expect(link).toHaveAttribute('href', 'https://github.com/arcadeum');
+    expect(link.getAttribute('href')).toMatch(/^https:\/\/github\.com\//);
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
     expect(link).toHaveAttribute('target', '_blank');
   });

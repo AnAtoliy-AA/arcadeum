@@ -6,6 +6,7 @@ import { XStack, YStack } from 'tamagui';
 import { GithubIcon } from './ContactView.icons';
 import { ContactAvatars } from './ContactAvatars';
 import { useContactStyles } from './useContactStyles';
+import { appConfig } from '@/shared/config/app-config';
 import { formatMessage } from '@/shared/i18n';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
@@ -79,17 +80,19 @@ export function ContactSidePanel({
           {side?.devsBody ??
             'Reproducible bugs, API issues, and SDK questions are tracked in GitHub. We triage within 24 hours.'}
         </Typography>
-        <YStack marginTop="$3">
-          <a
-            href="https://github.com/arcadeum"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={s.externalIssueLinkStyle}
-          >
-            <GithubIcon />
-            <span>{side?.openIssue ?? 'Open an issue'}</span>
-          </a>
-        </YStack>
+        {appConfig.social.github ? (
+          <YStack marginTop="$3">
+            <a
+              href={appConfig.social.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={s.externalIssueLinkStyle}
+            >
+              <GithubIcon />
+              <span>{side?.openIssue ?? 'Open an issue'}</span>
+            </a>
+          </YStack>
+        ) : null}
       </GlassCard>
 
       <GlassCard>

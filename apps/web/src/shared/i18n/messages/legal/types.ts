@@ -177,7 +177,9 @@ export type ContactMessages = {
     };
     channels?: {
       discord?: { title?: string; sub?: string; memberCount?: string };
+      x?: { title?: string; sub?: string };
       twitter?: { title?: string; sub?: string };
+      instagram?: { title?: string; sub?: string };
       telegram?: { title?: string; sub?: string };
       github?: { title?: string; sub?: string };
     };

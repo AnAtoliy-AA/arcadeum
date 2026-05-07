@@ -245,7 +245,9 @@ export const by: LegalMessages = {
           sub: 'Жывы чат · {{count}} удзельнікаў',
           memberCount: '12,4 тыс.',
         },
-        twitter: { title: '@arcadeum', sub: 'Лічкі адкрытыя' },
+        x: { title: '@_arcadeum_', sub: 'Лічкі адкрытыя' },
+        twitter: { title: '@_arcadeum_', sub: 'Лічкі адкрытыя' },
+        instagram: { title: 'Instagram', sub: 'Навіны і скрыншоты' },
         telegram: { title: 'Telegram', sub: 't.me/arcadeum' },
         github: {
           title: 'GitHub Issues',

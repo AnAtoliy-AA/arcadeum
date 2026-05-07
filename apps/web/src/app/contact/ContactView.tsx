@@ -7,6 +7,7 @@ import { Container } from '@arcadeum/ui/components/Container/Container';
 import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { Card } from '@arcadeum/ui/components/Card/Card';
+import { appConfig } from '@/shared/config/app-config';
 import { ActivityTicker } from '@arcadeum/ui/components/ActivityTicker';
 import { ChannelTile } from '@arcadeum/ui/components/ChannelTile';
 import { StatTile } from '@arcadeum/ui/components/StatTile';
@@ -21,7 +22,7 @@ import {
   DiscordIcon,
   GithubIcon,
   GlobeIcon,
-  TelegramIcon,
+  InstagramIcon,
   TwitterIcon,
 } from './ContactView.icons';
 import { useContactStyles } from './useContactStyles';
@@ -137,8 +138,9 @@ export default function ContactView({
 
   const faqItems = getFaqItems(t);
 
+  const social = appConfig.social;
   const channelDefs = [
-    {
+    social.discord && {
       key: 'discord',
       icon: <DiscordIcon />,
       title: channels?.discord?.title ?? 'Discord',
@@ -146,33 +148,33 @@ export default function ContactView({
         count: channels?.discord?.memberCount ?? '12.4k',
       }),
       gradient: 'linear-gradient(135deg,#5865f2 0%,#8b5cf6 100%)',
-      href: 'https://discord.gg/arcadeum',
+      href: social.discord,
     },
-    {
-      key: 'twitter',
+    social.x && {
+      key: 'x',
       icon: <TwitterIcon />,
-      title: channels?.twitter?.title ?? '@arcadeum',
-      sub: channels?.twitter?.sub ?? 'DMs are open',
+      title: channels?.x?.title ?? channels?.twitter?.title ?? '@_arcadeum_',
+      sub: channels?.x?.sub ?? channels?.twitter?.sub ?? 'DMs are open',
       gradient: 'linear-gradient(135deg,#0f1419 0%,#1a8cd8 100%)',
-      href: 'https://twitter.com/arcadeum',
+      href: social.x,
     },
-    {
-      key: 'telegram',
-      icon: <TelegramIcon />,
-      title: channels?.telegram?.title ?? 'Telegram',
-      sub: channels?.telegram?.sub ?? 't.me/arcadeum',
-      gradient: 'linear-gradient(135deg,#229ed9 0%,#26a5e4 100%)',
-      href: 'https://t.me/arcadeum',
+    social.instagram && {
+      key: 'instagram',
+      icon: <InstagramIcon />,
+      title: channels?.instagram?.title ?? 'Instagram',
+      sub: channels?.instagram?.sub ?? 'Daily updates & screenshots',
+      gradient: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)',
+      href: social.instagram,
     },
-    {
+    social.github && {
       key: 'github',
       icon: <GithubIcon />,
       title: channels?.github?.title ?? 'GitHub Issues',
       sub: channels?.github?.sub ?? 'Bugs & feature requests',
       gradient: 'linear-gradient(135deg,#1f2328 0%,#6e40c9 100%)',
-      href: 'https://github.com/arcadeum',
+      href: social.github,
     },
-  ];
+  ].filter((c): c is Exclude<typeof c, false | undefined | ''> => Boolean(c));
 
   return (
     <PageLayout>

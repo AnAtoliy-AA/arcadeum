@@ -246,7 +246,9 @@ export const es: LegalMessages = {
           sub: 'Chat en vivo · {{count}} miembros',
           memberCount: '12,4k',
         },
-        twitter: { title: '@arcadeum', sub: 'DMs abiertos' },
+        x: { title: '@_arcadeum_', sub: 'DMs abiertos' },
+        twitter: { title: '@_arcadeum_', sub: 'DMs abiertos' },
+        instagram: { title: 'Instagram', sub: 'Novedades y capturas' },
         telegram: { title: 'Telegram', sub: 't.me/arcadeum' },
         github: {
           title: 'GitHub Issues',

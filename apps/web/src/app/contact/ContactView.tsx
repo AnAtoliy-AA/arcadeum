@@ -153,8 +153,8 @@ export default function ContactView({
     social.x && {
       key: 'x',
       icon: <TwitterIcon />,
-      title: channels?.x?.title ?? channels?.twitter?.title ?? '@_arcadeum_',
-      sub: channels?.x?.sub ?? channels?.twitter?.sub ?? 'DMs are open',
+      title: channels?.x?.title ?? '@_arcadeum_',
+      sub: channels?.x?.sub ?? 'DMs are open',
       gradient: 'linear-gradient(135deg,#0f1419 0%,#1a8cd8 100%)',
       href: social.x,
     },
@@ -222,16 +222,19 @@ export default function ContactView({
                   {hero?.statusOk ?? 'All systems operational'}
                 </HeroPill>
                 <HeroPill pillStyle={s.pillStyle} icon={<ClockIcon />}>
-                  {formatMessage(hero?.medianReply, { hours: '4' })}
+                  {formatMessage(hero?.medianReply, { hours: '4' }) ??
+                    '~ 4 hr median reply'}
                 </HeroPill>
                 <HeroPill
                   pillStyle={s.pillStyle}
                   icon={<ContactAvatars count={3} size={20} />}
                 >
-                  {formatMessage(hero?.humansOnline, { count: '3' })}
+                  {formatMessage(hero?.humansOnline, { count: '3' }) ??
+                    '3 humans online'}
                 </HeroPill>
                 <HeroPill pillStyle={s.pillStyle} icon={<GlobeIcon />}>
-                  {formatMessage(hero?.languages, { count: '5' })}
+                  {formatMessage(hero?.languages, { count: '5' }) ??
+                    '5 languages'}
                 </HeroPill>
               </XStack>
               <YStack marginTop="$4">

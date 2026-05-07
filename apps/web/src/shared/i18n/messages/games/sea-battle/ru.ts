@@ -162,5 +162,59 @@ export const ruMessages = {
         placeholder: 'Введите сообщение...',
       },
     },
+    teamMode: {
+      enableLabel: 'Командный режим',
+      disableLabel: 'Отключить командный режим',
+      hideShipsLabel: 'Скрывать корабли от союзников',
+      teammateBadge: 'Союзник',
+      cannotAttackTeammate: 'Нельзя атаковать союзника',
+      description:
+        'Играйте в командах. Задайте количество команд и размеры — игроки могут выбрать сами или быть назначены хостом.',
+      setup: {
+        title: 'Настройка команд',
+        teamNamePlaceholder: 'Название команды',
+        teamColorLabel: 'Цвет',
+        slotCountLabel: 'Слоты',
+        addTeam: 'Добавить команду',
+        removeTeam: 'Удалить команду',
+        addBot: 'Добавить бота',
+        removeBot: 'Удалить',
+        totalSlots: 'Всего слотов: {{used}} / {{max}}',
+        minTeamsHint: 'Нужно минимум 2 команды',
+        maxTeamsHint: 'До 4 команд (в каждой минимум 2 игрока)',
+        minSizeHint: 'В каждой команде должно быть минимум 2 слота',
+      },
+      slots: {
+        joinTeam: 'Вступить в команду',
+        leaveTeam: 'Покинуть команду',
+        moveTo: 'Перейти в {{team}}',
+        botLabel: 'Бот',
+        emptySlot: 'Свободное место',
+      },
+      unassigned: {
+        title: 'Без команды',
+        empty: 'Все распределены по командам',
+      },
+      start: {
+        disabledNotFull: 'Все слоты должны быть заполнены перед началом',
+        disabledNotEnoughTeams: 'Нужно минимум 2 команды',
+      },
+      errors: {
+        roomFull: 'В командном режиме не более 8 игроков',
+        teamFull: 'Эта команда заполнена',
+        teamNotFound: 'Команда не найдена',
+        notHost: 'Только хост может изменить состав команд',
+      },
+      chat: {
+        channelTeam: 'Команда',
+        channelAll: 'Все',
+        channelPrivate: 'Лично',
+      },
+      banner: {
+        eliminatedSpectator:
+          'Вы выбыли. Вы по-прежнему можете общаться в чате команды и наблюдать за боем.',
+        teamWon: '{{team}} побеждает!',
+      },
+    },
   },
 };

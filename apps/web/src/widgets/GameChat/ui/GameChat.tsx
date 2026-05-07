@@ -18,20 +18,34 @@ import type { ChatScope } from '../store/gameChatStore';
 interface GameChatProps {
   resolveDisplayName?: (id?: string, fallback?: string) => string | undefined;
   onClose?: () => void;
+  teamMode?: boolean;
 }
 
-const SCOPES: { value: ChatScope; label: string }[] = [
+const FFA_SCOPES: { value: ChatScope; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'players', label: 'Players' },
   { value: 'private', label: 'Private' },
 ];
 
-export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
+const TEAM_SCOPES: { value: ChatScope; label: string }[] = [
+  { value: 'team', label: 'Team' },
+  { value: 'all', label: 'All' },
+  { value: 'private', label: 'Private' },
+];
+
+export function GameChat({
+  resolveDisplayName,
+  onClose,
+  teamMode,
+}: GameChatProps) {
   const logs = useGameChatStore((s) => s.logs);
   const sendMessage = useGameChatStore((s) => s.sendMessage);
 
+  const scopes = teamMode ? TEAM_SCOPES : FFA_SCOPES;
   const [chatMessage, setChatMessage] = useState('');
-  const [chatScope, setChatScope] = useState<ChatScope>('all');
+  const [chatScope, setChatScope] = useState<ChatScope>(
+    teamMode ? 'team' : 'all',
+  );
   const scrollRef = useRef<TamaguiScrollView>(null);
 
   useEffect(() => {
@@ -88,7 +102,7 @@ export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
         borderBottomWidth={1}
         borderBottomColor="$glassBorder"
       >
-        {SCOPES.map(({ value, label }) => (
+        {scopes.map(({ value, label }) => (
           <Button
             key={value}
             size="sm"
@@ -147,7 +161,9 @@ export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
             ? 'Send to everyone'
             : chatScope === 'players'
               ? 'Send to players'
-              : 'Private note'
+              : chatScope === 'team'
+                ? 'Send to team'
+                : 'Private note'
         }
       />
     </GlassCard>

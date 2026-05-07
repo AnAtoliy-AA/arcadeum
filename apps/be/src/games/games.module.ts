@@ -19,6 +19,7 @@ import { GameEnginesModule } from './engines/engines.module';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameRoomsMapper } from './rooms/game-rooms.mapper';
 import { GameRoomsRematchService } from './rooms/game-rooms.rematch.service';
+import { SeaBattleTeamConfigService } from './rooms/sea-battle-team-config.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import { GameHistoryService } from './history/game-history.service';
 import { GameHistoryBuilderService } from './history/game-history-builder.service';
@@ -52,6 +53,7 @@ import { AuthModule } from '../auth/auth.module';
     GameRoomsService,
     GameRoomsMapper,
     GameRoomsRematchService,
+    SeaBattleTeamConfigService,
     GameSessionsService,
     GameHistoryService,
     GameHistoryBuilderService,

@@ -11,6 +11,7 @@ import {
   Ship,
   SeaBattleState,
 } from './sea-battle.types';
+import { getActiveShooterId } from './team-rotation.utils';
 
 export function createEmptyBoard(): CellState[][] {
   return Array.from(
@@ -85,19 +86,28 @@ export function sanitizeSeaBattleState(
   state: SeaBattleState,
   playerId: string,
 ): Partial<SeaBattleState> {
-  // Deep clone state
   const sanitized = JSON.parse(JSON.stringify(state)) as SeaBattleState;
 
-  for (const player of sanitized.players) {
-    if (player.playerId !== playerId) {
+  const viewerTeam = sanitized.teams?.find((t) =>
+    t.playerIds.includes(playerId),
+  );
+  const viewerTeamId = viewerTeam?.id;
+
+  for (const p of sanitized.players) {
+    if (p.playerId === playerId) continue;
+
+    const sameTeam = !!viewerTeam && viewerTeam.playerIds.includes(p.playerId);
+    const reveal = sameTeam && sanitized.hideShipsFromTeammates !== true;
+
+    if (!reveal) {
       for (let row = 0; row < BOARD_SIZE; row++) {
         for (let col = 0; col < BOARD_SIZE; col++) {
-          if (player.board[row][col] === CELL_STATE.SHIP) {
-            player.board[row][col] = CELL_STATE.EMPTY;
+          if (p.board[row][col] === CELL_STATE.SHIP) {
+            p.board[row][col] = CELL_STATE.EMPTY;
           }
         }
       }
-      player.ships = player.ships.map((ship: Ship) => ({
+      p.ships = p.ships.map((ship: Ship) => ({
         ...ship,
         cells: ship.sunk ? ship.cells : [],
       }));
@@ -107,6 +117,13 @@ export function sanitizeSeaBattleState(
   sanitized.logs = sanitized.logs.filter((log) => {
     if (log.scope === 'private') {
       return log.senderId === playerId;
+    }
+    if (log.scope === 'team') {
+      if (!viewerTeamId) return false;
+      const senderTeam = sanitized.teams?.find((t) =>
+        t.playerIds.includes(log.senderId ?? ''),
+      );
+      return senderTeam?.id === viewerTeamId;
     }
     return true;
   });
@@ -138,8 +155,10 @@ export function getSeaBattleAvailableActions(
   }
 
   if (state.phase === GAME_PHASE.BATTLE) {
-    const currentPlayerId = state.playerOrder[state.currentTurnIndex];
-    if (playerId === currentPlayerId) {
+    const activeId = state.teams
+      ? getActiveShooterId(state)
+      : state.playerOrder[state.currentTurnIndex];
+    if (playerId === activeId) {
       actions.push('attack');
     }
   }

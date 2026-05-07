@@ -163,5 +163,60 @@ export const frMessages = {
         placeholder: 'Tapez un message...',
       },
     },
+    teamMode: {
+      enableLabel: 'Mode équipe',
+      disableLabel: 'Désactiver le mode équipe',
+      hideShipsLabel: 'Masquer les navires aux coéquipiers',
+      teammateBadge: 'Coéquipier',
+      cannotAttackTeammate: 'Impossible d’attaquer un coéquipier',
+      description:
+        'Jouez en équipes. Définissez le nombre d’équipes et leurs tailles — les joueurs peuvent choisir ou être assignés par l’hôte.',
+      setup: {
+        title: 'Configuration des équipes',
+        teamNamePlaceholder: 'Nom de l’équipe',
+        teamColorLabel: 'Couleur',
+        slotCountLabel: 'Cases',
+        addTeam: 'Ajouter une équipe',
+        removeTeam: 'Supprimer l’équipe',
+        addBot: 'Ajouter un bot',
+        removeBot: 'Supprimer',
+        totalSlots: 'Cases totales : {{used}} / {{max}}',
+        minTeamsHint: 'Au moins 2 équipes requises',
+        maxTeamsHint: 'Jusqu’à 4 équipes (chacune avec au moins 2 joueurs)',
+        minSizeHint: 'Chaque équipe nécessite au moins 2 cases',
+      },
+      slots: {
+        joinTeam: 'Rejoindre l’équipe',
+        leaveTeam: 'Quitter l’équipe',
+        moveTo: 'Déplacer vers {{team}}',
+        botLabel: 'Bot',
+        emptySlot: 'Place libre',
+      },
+      unassigned: {
+        title: 'Non assigné',
+        empty: 'Tout le monde est dans une équipe',
+      },
+      start: {
+        disabledNotFull:
+          'Toutes les places doivent être remplies avant de commencer',
+        disabledNotEnoughTeams: 'Au moins 2 équipes requises',
+      },
+      errors: {
+        roomFull: 'La salle ne peut pas dépasser 8 joueurs en mode équipe',
+        teamFull: 'Cette équipe est pleine',
+        teamNotFound: 'Équipe introuvable',
+        notHost: 'Seul l’hôte peut modifier la configuration des équipes',
+      },
+      chat: {
+        channelTeam: 'Équipe',
+        channelAll: 'Tous',
+        channelPrivate: 'Privé',
+      },
+      banner: {
+        eliminatedSpectator:
+          'Vous avez été éliminé. Vous pouvez toujours discuter avec votre équipe et regarder la bataille.',
+        teamWon: 'Victoire de {{team}} !',
+      },
+    },
   },
 };

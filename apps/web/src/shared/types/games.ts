@@ -197,7 +197,7 @@ export interface CriticalPlayerState {
 }
 
 // ===== SHARED TYPES =====
-export type ChatScope = 'all' | 'players' | 'private';
+export type ChatScope = 'all' | 'players' | 'private' | 'team';
 
 export interface CriticalLogEntry {
   id: string;

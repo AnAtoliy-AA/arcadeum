@@ -163,5 +163,60 @@ export const esMessages = {
         placeholder: 'Escribe un mensaje...',
       },
     },
+    teamMode: {
+      enableLabel: 'Modo equipo',
+      disableLabel: 'Desactivar modo equipo',
+      hideShipsLabel: 'Ocultar barcos a tus compañeros',
+      teammateBadge: 'Compañero',
+      cannotAttackTeammate: 'No puedes atacar a un compañero',
+      description:
+        'Juega en equipos. Configura el número de equipos y los tamaños — los jugadores pueden elegir o ser asignados por el anfitrión.',
+      setup: {
+        title: 'Configuración de equipos',
+        teamNamePlaceholder: 'Nombre del equipo',
+        teamColorLabel: 'Color',
+        slotCountLabel: 'Espacios',
+        addTeam: 'Añadir equipo',
+        removeTeam: 'Eliminar equipo',
+        addBot: 'Añadir bot',
+        removeBot: 'Eliminar',
+        totalSlots: 'Espacios totales: {{used}} / {{max}}',
+        minTeamsHint: 'Se requieren al menos 2 equipos',
+        maxTeamsHint: 'Hasta 4 equipos (cada uno con al menos 2 jugadores)',
+        minSizeHint: 'Cada equipo necesita al menos 2 espacios',
+      },
+      slots: {
+        joinTeam: 'Unirse al equipo',
+        leaveTeam: 'Salir del equipo',
+        moveTo: 'Mover a {{team}}',
+        botLabel: 'Bot',
+        emptySlot: 'Espacio libre',
+      },
+      unassigned: {
+        title: 'Sin asignar',
+        empty: 'Todos están en un equipo',
+      },
+      start: {
+        disabledNotFull:
+          'Todos los espacios deben estar ocupados antes de iniciar',
+        disabledNotEnoughTeams: 'Se requieren al menos 2 equipos',
+      },
+      errors: {
+        roomFull: 'La sala no puede superar 8 jugadores en modo equipo',
+        teamFull: 'Este equipo está lleno',
+        teamNotFound: 'Equipo no encontrado',
+        notHost: 'Solo el anfitrión puede cambiar la configuración del equipo',
+      },
+      chat: {
+        channelTeam: 'Equipo',
+        channelAll: 'Todos',
+        channelPrivate: 'Privado',
+      },
+      banner: {
+        eliminatedSpectator:
+          'Has sido eliminado. Aún puedes chatear con tu equipo y ver la batalla.',
+        teamWon: '¡{{team}} gana!',
+      },
+    },
   },
 };

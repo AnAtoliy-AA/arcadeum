@@ -45,7 +45,7 @@ interface GamePageLayoutProps {
 export function GamePageLayout(props: GamePageLayoutProps) {
   const {
     roomId,
-    room: _room,
+    room,
     inviteCode,
     userId,
     isDisconnected,
@@ -56,6 +56,9 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     isSpectating,
     children,
   } = props;
+
+  const teamMode = !!(room.gameOptions as { teamMode?: boolean } | undefined)
+    ?.teamMode;
 
   const { t } = useTranslation();
   const media = useMedia();
@@ -119,7 +122,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
           {children({ isFullscreen, toggleFullscreen })}
 
           <ChatPanel visible={showChat} data-testid="game-chat-area">
-            <GameChat onClose={() => setShowChat(false)} />
+            <GameChat onClose={() => setShowChat(false)} teamMode={teamMode} />
           </ChatPanel>
         </GameRow>
 

@@ -11,6 +11,7 @@ import {
   GAME_PHASE,
   BOARD_SIZE,
 } from '../engines/sea-battle/sea-battle.constants';
+import { getTeamForPlayer } from '../engines/sea-battle/team-rotation.utils';
 
 @Injectable()
 export class SeaBattleBotService {
@@ -186,18 +187,29 @@ export class SeaBattleBotService {
         const activeOpponents = state.players.filter(
           (p: SeaBattlePlayer) => p.playerId !== botId && p.alive,
         );
-        if (activeOpponents.length === 0) {
+
+        // In team mode, exclude teammates from the candidate pool
+        const botTeam = getTeamForPlayer(state, botId);
+        const eligibleOpponents = botTeam
+          ? activeOpponents.filter(
+              (p) => !botTeam.playerIds.includes(p.playerId),
+            )
+          : activeOpponents;
+
+        if (eligibleOpponents.length === 0) {
           this.logger.warn(`Bot ${botId} playTurn: NO ACTIVE OPPONENTS FOUND!`);
           break;
         }
 
-        const damagedOpponent = activeOpponents.find((p) =>
+        const damagedOpponent = eligibleOpponents.find((p) =>
           p.ships.some((s: Ship) => s.hits > 0 && !s.sunk),
         );
 
         const target =
           damagedOpponent ||
-          activeOpponents[Math.floor(Math.random() * activeOpponents.length)];
+          eligibleOpponents[
+            Math.floor(Math.random() * eligibleOpponents.length)
+          ];
 
         // Smart Target Logic: Finish off damaged ships
         let choice: { r: number; c: number } | null =

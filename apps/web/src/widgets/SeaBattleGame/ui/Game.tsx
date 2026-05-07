@@ -365,6 +365,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
         <SeaBattleLobby
           room={room}
           isHost={isHost}
+          userId={currentUserId ?? undefined}
           startBusy={!!startBusy}
           onStartGame={handleStartGame}
           onReorderPlayers={handleReorderPlayers}

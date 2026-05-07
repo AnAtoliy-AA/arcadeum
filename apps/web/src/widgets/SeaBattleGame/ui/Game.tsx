@@ -165,7 +165,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
           snapshot?.playerOrder.filter((pId) => pId.startsWith('bot-')) || [];
         const botIndex = botOrder.indexOf(id);
         if (botIndex !== -1) {
-          return `${t('games.lobby.botCountLabel' as TranslationKey).split(' ')[0]} ${botIndex + 1}`;
+          return `${t('games.lobby.bot' as TranslationKey)} ${botIndex + 1}`;
         }
         return 'Bot';
       }

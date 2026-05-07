@@ -161,5 +161,57 @@ export const byMessages = {
         placeholder: 'Увядзіце паведамленне...',
       },
     },
+    teamMode: {
+      enableLabel: 'Камандны рэжым',
+      disableLabel: 'Адключыць камандны рэжым',
+      hideShipsLabel: 'Хаваць караблі ад саюзнікаў',
+      description:
+        'Гуляйце ў камандах. Задайце колькасць каманд і памеры — гульцы могуць выбраць самі або быць прызначаны хостам.',
+      setup: {
+        title: 'Налада каманд',
+        teamNamePlaceholder: 'Назва каманды',
+        teamColorLabel: 'Колер',
+        slotCountLabel: 'Слоты',
+        addTeam: 'Дадаць каманду',
+        removeTeam: 'Выдаліць каманду',
+        addBot: 'Дадаць бота',
+        removeBot: 'Выдаліць',
+        totalSlots: 'Усяго слотаў: {{used}} / {{max}}',
+        minTeamsHint: 'Патрэбна мінімум 2 каманды',
+        maxTeamsHint: 'Да 4 каманд (у кожнай мінімум 2 гульцы)',
+        minSizeHint: 'У кожнай камандзе мінімум 2 слоты',
+      },
+      slots: {
+        joinTeam: 'Далучыцца да каманды',
+        leaveTeam: 'Пакінуць каманду',
+        moveTo: 'Перайсці ў {{team}}',
+        botLabel: 'Бот',
+        emptySlot: 'Свабоднае месца',
+      },
+      unassigned: {
+        title: 'Без каманды',
+        empty: 'Усе размеркаваны па камандах',
+      },
+      start: {
+        disabledNotFull: 'Усе слоты павінны быць запоўнены перад пачаткам',
+        disabledNotEnoughTeams: 'Патрэбна мінімум 2 каманды',
+      },
+      errors: {
+        roomFull: 'У камандным рэжыме не больш за 8 гульцоў',
+        teamFull: 'Гэтая каманда запоўнена',
+        teamNotFound: 'Каманда не знойдзена',
+        notHost: 'Толькі хост можа змяніць склад каманд',
+      },
+      chat: {
+        channelTeam: 'Каманда',
+        channelAll: 'Усе',
+        channelPrivate: 'Асабіста',
+      },
+      banner: {
+        eliminatedSpectator:
+          'Вы выбылі. Вы ўсё яшчэ можаце размаўляць з камандай і назіраць за боем.',
+        teamWon: '{{team}} перамагае!',
+      },
+    },
   },
 };

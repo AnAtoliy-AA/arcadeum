@@ -161,5 +161,57 @@ export const enMessages = {
         placeholder: 'Type a message...',
       },
     },
+    teamMode: {
+      enableLabel: 'Team Mode',
+      disableLabel: 'Disable Team Mode',
+      hideShipsLabel: 'Hide ships from teammates',
+      description:
+        'Play in teams. Set up team count and sizes — players can self-pick or be assigned by the host.',
+      setup: {
+        title: 'Team Setup',
+        teamNamePlaceholder: 'Team name',
+        teamColorLabel: 'Color',
+        slotCountLabel: 'Slots',
+        addTeam: 'Add Team',
+        removeTeam: 'Remove Team',
+        addBot: 'Add Bot',
+        removeBot: 'Remove',
+        totalSlots: 'Total slots: {{used}} / {{max}}',
+        minTeamsHint: 'At least 2 teams required',
+        maxTeamsHint: 'Up to 4 teams (each with at least 2 players)',
+        minSizeHint: 'Each team needs at least 2 slots',
+      },
+      slots: {
+        joinTeam: 'Join team',
+        leaveTeam: 'Leave team',
+        moveTo: 'Move to {{team}}',
+        botLabel: 'Bot',
+        emptySlot: 'Open slot',
+      },
+      unassigned: {
+        title: 'Unassigned',
+        empty: 'Everyone is on a team',
+      },
+      start: {
+        disabledNotFull: 'All team slots must be filled before starting',
+        disabledNotEnoughTeams: 'At least 2 teams required',
+      },
+      errors: {
+        roomFull: 'Room cannot exceed 8 players in team mode',
+        teamFull: 'This team is full',
+        teamNotFound: 'Team not found',
+        notHost: 'Only the host can change team configuration',
+      },
+      chat: {
+        channelTeam: 'Team',
+        channelAll: 'All',
+        channelPrivate: 'Private',
+      },
+      banner: {
+        eliminatedSpectator:
+          'You have been eliminated. You can still chat with your team and watch the battle.',
+        teamWon: '{{team}} wins!',
+      },
+    },
   },
 };

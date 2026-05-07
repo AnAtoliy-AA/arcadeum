@@ -1,4 +1,6 @@
-export const variants = {
+import { extraVariants } from './variants/ru-extra';
+
+export const variants: Record<string, Record<string, string>> = {
   cyberpunk: {
     name: 'Короткое замыкание',
     description: 'Киберпанк-хакеры предотвращают перегрузку системы',
@@ -286,6 +288,11 @@ export const variants = {
     miracle: 'Вертолет спасения',
     smite: 'Удар грома',
     rapture: 'Метель',
+  },
+  ...extraVariants,
+  random: {
+    name: 'Случайная тема',
+    description: 'Удивите меня случайной темой!',
   },
   default: {
     critical_event: 'Критическая ситуация',

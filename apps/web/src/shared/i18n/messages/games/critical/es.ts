@@ -38,36 +38,7 @@ export const esMessages = {
       setup:
         'Cada jugador comienza con una carta de Desactivación y una mano de cartas aleatorias. El mazo contiene algunas cartas Explosivas... ¡ten cuidado!',
     },
-    variants: {
-      cyberpunk: {
-        name: 'Cortocircuito',
-        description: 'Hackers cyberpunk evitan la sobrecarga del sistema',
-      },
-      underwater: {
-        name: 'Presión Profunda',
-        description: 'Horror bajo el agua en un submarino con fugas',
-      },
-      crime: {
-        name: 'El Atraco',
-        description: 'Tema noir con redadas policiales y huidas',
-      },
-      horror: {
-        name: 'Banquete Maldito',
-        description: 'Tema de horror social en la fiesta de un mago oscuro',
-      },
-      adventure: {
-        name: 'El Templo Antiguo',
-        description: 'Supervivencia en una aventura en un templo misterioso',
-      },
-      'high-altitude-hike': {
-        name: 'Caminata por la Montaña',
-        description: 'Supervivencia en una aventura escapando de una avalancha',
-      },
-      random: {
-        name: 'Tema Aleatorio',
-        description: '¡Sorpréndeme con un tema al azar!',
-      },
-    },
+    variants: cardVariants,
   },
 
   table: {

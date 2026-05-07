@@ -5,6 +5,12 @@ export const GAME_VARIANT = {
   HORROR: 'horror',
   ADVENTURE: 'adventure',
   HIGH_ALTITUDE_HIKE: 'high-altitude-hike',
+  GALAXY: 'galaxy',
+  FANTASY: 'fantasy',
+  WESTERN: 'western',
+  EGYPT: 'egypt',
+  STEAMPUNK: 'steampunk',
+  ZEN: 'zen',
 } as const;
 
 export const CARD_VARIANTS = [
@@ -49,6 +55,48 @@ export const CARD_VARIANTS = [
     description: 'games.critical_v1.variants.high-altitude-hike.description',
     emoji: '🏔️',
     gradient: 'linear-gradient(135deg, #7dd3fc 0%, #1e3a8a 100%)',
+  },
+  {
+    id: GAME_VARIANT.GALAXY,
+    name: 'games.critical_v1.variants.galaxy.name',
+    description: 'games.critical_v1.variants.galaxy.description',
+    emoji: '🌌',
+    gradient: 'linear-gradient(135deg, #6b21a8 0%, #1e1b4b 100%)',
+  },
+  {
+    id: GAME_VARIANT.FANTASY,
+    name: 'games.critical_v1.variants.fantasy.name',
+    description: 'games.critical_v1.variants.fantasy.description',
+    emoji: '🐉',
+    gradient: 'linear-gradient(135deg, #065f46 0%, #d4af37 100%)',
+  },
+  {
+    id: GAME_VARIANT.WESTERN,
+    name: 'games.critical_v1.variants.western.name',
+    description: 'games.critical_v1.variants.western.description',
+    emoji: '🤠',
+    gradient: 'linear-gradient(135deg, #9a3412 0%, #fde68a 100%)',
+  },
+  {
+    id: GAME_VARIANT.EGYPT,
+    name: 'games.critical_v1.variants.egypt.name',
+    description: 'games.critical_v1.variants.egypt.description',
+    emoji: '🏺',
+    gradient: 'linear-gradient(135deg, #b45309 0%, #1e3a8a 100%)',
+  },
+  {
+    id: GAME_VARIANT.STEAMPUNK,
+    name: 'games.critical_v1.variants.steampunk.name',
+    description: 'games.critical_v1.variants.steampunk.description',
+    emoji: '⚙️',
+    gradient: 'linear-gradient(135deg, #78350f 0%, #fef3c7 100%)',
+  },
+  {
+    id: GAME_VARIANT.ZEN,
+    name: 'games.critical_v1.variants.zen.name',
+    description: 'games.critical_v1.variants.zen.description',
+    emoji: '🏮',
+    gradient: 'linear-gradient(135deg, #db2777 0%, #1e1b4b 100%)',
   },
 ] as const;
 

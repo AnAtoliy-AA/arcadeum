@@ -7,6 +7,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.6] - 2026-05-07
+
+### Added
+- add team chat channel switcher (ARC-427) (ARC-427)
+- show team rosters and teammate boards in sea battle (ARC-427) (ARC-427)
+- mount team-mode UI in sea battle lobby (ARC-427) (ARC-427)
+- add team-mode lobby components for sea battle (ARC-427) (ARC-427)
+- add i18n keys for sea battle team mode (ARC-427) (ARC-427)
+- make sea battle bot team-aware (ARC-427) (ARC-427)
+- wire team config into sea battle session start (ARC-427) (ARC-427)
+- add team-mode lobby socket events to sea battle gateway (ARC-427) (ARC-427)
+- add SeaBattleTeamConfigService for lobby team management (ARC-427) (ARC-427)
+- add sea battle team-mode DTOs (ARC-427) (ARC-427)
+- gate attack action on active shooter and bump max players (ARC-427) (ARC-427)
+- team-aware sanitization in sea battle (ARC-427) (ARC-427)
+- team-aware win condition in sea battle (ARC-427) (ARC-427)
+- rotate by team on miss in sea battle (ARC-427) (ARC-427)
+- block teammate attacks in sea battle (ARC-427) (ARC-427)
+- initialize team state in sea battle engine (ARC-427) (ARC-427)
+- add team rotation helpers for sea battle (ARC-427) (ARC-427)
+- add sea battle team-mode types and constants (ARC-427) (ARC-427)
+
+### Fixed
+- clear lint errors on ARC-427 branch (ARC-427) (ARC-427
+ARC-427)
+- cap board grid columns by container width (ARC-427) (ARC-427)
+- show sequential bot labels instead of "Unknown" (ARC-427) (ARC-427)
+- pick board grid columns from board count (ARC-427) (ARC-427)
+- remove duplicate sea battle team roster (ARC-427) (ARC-427)
+- render teammate ships on attack board (ARC-427) (ARC-427)
+- collapse to a single lobby scroll in team mode (ARC-427) (ARC-427)
+- make team-mode lobby scroll as one container (ARC-427) (ARC-427)
+- merge team setup into team cards to remove duplication (ARC-427) (ARC-427)
+- make team-mode toggles clearly visible (ARC-427) (ARC-427)
+- restore lobby flex height after team panel hoist (ARC-427) (ARC-427)
+- unify sea battle team-mode lobby into single card (ARC-427) (ARC-427)
+- polish sea battle team-mode UX (ARC-427) (ARC-427)
+- team-aware win detection and shooter cleanup on eliminate (ARC-427) (ARC-427)
+
+### Refactored
+- split AttackBoard.tsx and add team color frames (ARC-427) (ARC-427)
+- move Toggle and StatusBadge into @arcadeum/ui (ARC-427) (ARC-427)
+- reuse ChatScope type in sea battle ChatPayload (ARC-427) (ARC-427)
+
+### Documentation
+- add sea battle team mode implementation plan (ARC-427) (ARC-427)
+- add sea battle team mode design spec (ARC-427) (ARC-427)
+
+
 ## [1.12.5] - 2026-05-07
 
 ### Added

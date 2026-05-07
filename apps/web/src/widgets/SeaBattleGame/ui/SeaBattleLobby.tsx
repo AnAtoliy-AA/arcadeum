@@ -49,7 +49,7 @@ interface SeaBattleLobbyProps {
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
 
-export function SeaBattleLobby({
+export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   room,
   isHost,
   startBusy,
@@ -215,4 +215,4 @@ export function SeaBattleLobby({
       enableBots={true}
     />
   );
-}
+});

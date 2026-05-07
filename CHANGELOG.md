@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.5] - 2026-05-07
+
+### Added
+- show opponent names and sequential bot labels on boards [ARC-585] (ARC-585)
+- fix board layout and improve turn visibility [ARC-585] (ARC-585)
+- improve turn visibility and refactor animations [ARC-585] (ARC-585)
+
+### Fixed
+- update ships-left test locator to support new player headers [ARC-585] (ARC-585)
+- add missing translation keys to all languages to fix build [ARC-585] (ARC-585)
+- add missing translations and fix bot naming [ARC-585] (ARC-585)
+- update sea-battle tests for grid layout and specific animation classes [ARC-585] (ARC-585)
+- optimize board scaling and fix label alignment in 3-column layout [ARC-585] (ARC-585)
+- improve grid layout for 6 players and fix turn visibility [ARC-585] (ARC-585)
+- improve modal close reliability on WebKit by using onClick [ARC-585] (ARC-585)
+- resolve Tamagui display grid type restriction [ARC-585] (ARC-585)
+- refactor board grid styles without ts-ignore using functional wrappers [ARC-585] (ARC-585)
+- resolve grid layout type error in board styles [ARC-585] (ARC-585)
+
+### Refactored
+- remove Tamagui from board components to improve stability [ARC-585] (ARC-585)
+
+
 ## [1.12.4] - 2026-05-07
 
 ### Added

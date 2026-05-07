@@ -164,6 +164,8 @@ export const ruMessages = {
       enableLabel: 'Командный режим',
       disableLabel: 'Отключить командный режим',
       hideShipsLabel: 'Скрывать корабли от союзников',
+      teammateBadge: 'Союзник',
+      cannotAttackTeammate: 'Нельзя атаковать союзника',
       description:
         'Играйте в командах. Задайте количество команд и размеры — игроки могут выбрать сами или быть назначены хостом.',
       setup: {

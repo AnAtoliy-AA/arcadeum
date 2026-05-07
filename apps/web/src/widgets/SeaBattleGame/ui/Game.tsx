@@ -23,6 +23,7 @@ import {
 import { ShipPlacementBoard } from './ShipPlacementBoard';
 import { AttackBoard } from './AttackBoard';
 import { SeaBattleLobby } from './SeaBattleLobby';
+import { SeaBattleTable } from './SeaBattleTable';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
@@ -100,6 +101,8 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     isGameOver,
     isWinner,
     teamMode,
+    teams,
+    activeShooterId,
     viewerTeam,
     winnerTeam,
   } = useSeaBattleState({
@@ -266,6 +269,19 @@ export const SeaBattleGame = memo(function SeaBattleGame({
           />
         )}
 
+        {isBattlePhase && teamMode && snapshot && teams && (
+          <SeaBattleTable
+            key="team-roster"
+            players={snapshot.players}
+            currentUserId={currentUserId}
+            currentTurnIndex={snapshot.currentTurnIndex}
+            playerOrder={snapshot.playerOrder}
+            resolveDisplayName={resolveDisplayNameBound}
+            teams={teams}
+            activeShooterId={activeShooterId}
+          />
+        )}
+
         {isBattlePhase && currentPlayer && !currentPlayer.alive && (
           <Card
             variant="error"
@@ -327,6 +343,8 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       teammateIds,
       isGameOver,
       teamMode,
+      teams,
+      activeShooterId,
       winnerTeam,
       t,
     ],

@@ -314,6 +314,9 @@ const AttackPlayerBoard = memo(
               borderWidth={1}
               backgroundColor="rgba(34,197,94,0.1)"
               borderColor="rgba(34,197,94,0.3)"
+              aria-label={t(
+                'games.sea_battle_v1.teamMode.cannotAttackTeammate' as TranslationKey,
+              )}
             >
               <Text fontSize={10}>🤝</Text>
               <Text
@@ -322,7 +325,9 @@ const AttackPlayerBoard = memo(
                 color="#86efac"
                 textTransform="uppercase"
               >
-                Teammate
+                {t(
+                  'games.sea_battle_v1.teamMode.teammateBadge' as TranslationKey,
+                )}
               </Text>
             </XStack>
           ) : (

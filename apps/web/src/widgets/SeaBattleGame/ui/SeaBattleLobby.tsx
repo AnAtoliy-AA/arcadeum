@@ -235,10 +235,32 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
 
   return (
     <YStack gap="$3">
+      {teamStartBlocked && isHost && room.status === 'lobby' && (
+        <XStack
+          alignItems="center"
+          justifyContent="center"
+          paddingHorizontal="$3"
+          paddingVertical="$2"
+          borderRadius={10}
+          borderWidth={1}
+          backgroundColor="rgba(251,191,36,0.08)"
+          borderColor="rgba(251,191,36,0.3)"
+          role="status"
+          aria-live="polite"
+          data-testid="team-start-blocked-notice"
+        >
+          <Text fontSize={12} fontWeight="600" color="#fcd34d">
+            {t(
+              'games.sea_battle_v1.teamMode.start.disabledNotFull' as TranslationKey,
+            )}
+          </Text>
+        </XStack>
+      )}
       <ReusableGameLobby
         room={room}
         isHost={isHost}
-        startBusy={startBusy || teamStartBlocked}
+        startBusy={startBusy}
+        startDisabled={teamStartBlocked}
         onStartGame={handleStart}
         onReorderPlayers={onReorderPlayers}
         onDeleteRoom={onDeleteRoom}

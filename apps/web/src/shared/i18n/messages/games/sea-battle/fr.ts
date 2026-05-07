@@ -165,6 +165,8 @@ export const frMessages = {
       enableLabel: 'Mode équipe',
       disableLabel: 'Désactiver le mode équipe',
       hideShipsLabel: 'Masquer les navires aux coéquipiers',
+      teammateBadge: 'Coéquipier',
+      cannotAttackTeammate: 'Impossible d’attaquer un coéquipier',
       description:
         'Jouez en équipes. Définissez le nombre d’équipes et leurs tailles — les joueurs peuvent choisir ou être assignés par l’hôte.',
       setup: {

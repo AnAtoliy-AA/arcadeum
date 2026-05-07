@@ -165,6 +165,8 @@ export const byMessages = {
       enableLabel: 'Камандны рэжым',
       disableLabel: 'Адключыць камандны рэжым',
       hideShipsLabel: 'Хаваць караблі ад саюзнікаў',
+      teammateBadge: 'Саюзнік',
+      cannotAttackTeammate: 'Нельга атакаваць саюзніка',
       description:
         'Гуляйце ў камандах. Задайце колькасць каманд і памеры — гульцы могуць выбраць самі або быць прызначаны хостам.',
       setup: {

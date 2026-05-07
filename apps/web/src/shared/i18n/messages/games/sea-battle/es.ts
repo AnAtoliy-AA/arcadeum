@@ -165,6 +165,8 @@ export const esMessages = {
       enableLabel: 'Modo equipo',
       disableLabel: 'Desactivar modo equipo',
       hideShipsLabel: 'Ocultar barcos a tus compañeros',
+      teammateBadge: 'Compañero',
+      cannotAttackTeammate: 'No puedes atacar a un compañero',
       description:
         'Juega en equipos. Configura el número de equipos y los tamaños — los jugadores pueden elegir o ser asignados por el anfitrión.',
       setup: {

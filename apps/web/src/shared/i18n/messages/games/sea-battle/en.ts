@@ -165,6 +165,8 @@ export const enMessages = {
       enableLabel: 'Team Mode',
       disableLabel: 'Disable Team Mode',
       hideShipsLabel: 'Hide ships from teammates',
+      teammateBadge: 'Teammate',
+      cannotAttackTeammate: 'Cannot attack teammate',
       description:
         'Play in teams. Set up team count and sizes — players can self-pick or be assigned by the host.',
       setup: {

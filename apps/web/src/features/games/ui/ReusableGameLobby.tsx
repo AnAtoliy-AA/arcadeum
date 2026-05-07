@@ -55,6 +55,7 @@ export interface ReusableGameLobbyProps {
   room: GameRoomSummary;
   isHost: boolean;
   startBusy: boolean;
+  startDisabled?: boolean;
   isFullscreen?: boolean;
   containerRef?: React.RefObject<TamaguiElement | null>;
   onToggleFullscreen?: () => void;
@@ -143,6 +144,7 @@ export function ReusableGameLobby({
   room,
   isHost,
   startBusy,
+  startDisabled = false,
   isFullscreen = false,
   containerRef,
   onToggleFullscreen,
@@ -364,6 +366,7 @@ export function ReusableGameLobby({
                 onClick={handleStart}
                 disabled={
                   startBusy ||
+                  startDisabled ||
                   (room.playerCount < (minPlayers || 2) &&
                     !(enableBots && room.playerCount === 1))
                 }

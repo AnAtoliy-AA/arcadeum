@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, memo } from 'react';
-import { XStack, YStack, Text } from 'tamagui';
+import { XStack, Text } from 'tamagui';
 import type { SeaBattlePlayerState } from '../types';
 import { CELL_STATE, ROW_LABELS, COL_LABELS } from '../types';
 import { ShipsLeft } from './ShipsLeft';
@@ -83,21 +83,12 @@ const AttackBoardCell = memo(
 
     return (
       <BoardCell
-        isClickable={isAttackable}
-        position="relative"
-        backgroundColor={getCellBg(displayState, theme)}
-        borderColor={theme.cellBorder}
-        borderRadius={parseInt(theme.borderRadius) || 4}
+        style={{
+          backgroundColor: getCellBg(displayState, theme),
+          borderColor: theme.cellBorder,
+          borderRadius: parseInt(theme.borderRadius) || 4,
+        }}
         className={`sb-cell ${isAttackable ? 'sb-attackable' : ''} ${animClass || ''}`}
-        hoverStyle={
-          isAttackable
-            ? {
-                scale: 1.05,
-                backgroundColor: theme.cellHover,
-                borderColor: theme.primaryColor,
-              }
-            : undefined
-        }
         data-row={!isMe ? rIndex : undefined}
         data-col={!isMe ? cIndex : undefined}
       >
@@ -126,24 +117,29 @@ const AttackBoardCell = memo(
           </Text>
         )}
         {displayState === CELL_STATE.MISS && (
-          <YStack
-            position="absolute"
-            top={0}
-            left={0}
-            right={0}
-            bottom={0}
-            alignItems="center"
-            justifyContent="center"
-            pointerEvents="none"
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              pointerEvents: 'none',
+            }}
           >
-            <YStack
-              width={6}
-              height={6}
-              borderRadius={100}
-              backgroundColor="$color"
-              opacity={0.7}
+            <div
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: 100,
+                backgroundColor: 'currentColor',
+                opacity: 0.7,
+              }}
             />
-          </YStack>
+          </div>
         )}
       </BoardCell>
     );
@@ -200,8 +196,10 @@ const AttackPlayerBoard = memo(
     const boardGrid = (
       <BoardGrid
         className={`sb-board-grid ${!isMe && isMyTurn ? 'sb-my-turn' : ''}`}
-        backgroundColor={theme.boardBackground}
-        borderColor={theme.cellBorder}
+        style={{
+          backgroundColor: theme.boardBackground,
+          borderColor: theme.cellBorder,
+        }}
         onClick={handleGridClick}
       >
         {player.board.map((row, rIndex) =>
@@ -291,14 +289,14 @@ const AttackPlayerBoard = memo(
               <div />
               <ColLabels>
                 {COL_LABELS.map((label) => (
-                  <Label key={label} color={theme.textSecondaryColor}>
+                  <Label key={label} style={{ color: theme.textSecondaryColor }}>
                     {label}
                   </Label>
                 ))}
               </ColLabels>
               <RowLabels>
                 {ROW_LABELS.map((label) => (
-                  <Label key={label} color={theme.textSecondaryColor}>
+                  <Label key={label} style={{ color: theme.textSecondaryColor }}>
                     {label}
                   </Label>
                 ))}
@@ -361,14 +359,14 @@ const AttackPlayerBoard = memo(
             <div />
             <ColLabels>
               {COL_LABELS.map((label) => (
-                <Label key={label} color={theme.textSecondaryColor}>
+                <Label key={label} style={{ color: theme.textSecondaryColor }}>
                   {label}
                 </Label>
               ))}
             </ColLabels>
             <RowLabels>
               {ROW_LABELS.map((label) => (
-                <Label key={label} color={theme.textSecondaryColor}>
+                <Label key={label} style={{ color: theme.textSecondaryColor }}>
                   {label}
                 </Label>
               ))}

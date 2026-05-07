@@ -81,13 +81,6 @@ const AttackBoardCell = memo(
     const icon = getCellIcon(isSunk, displayState);
     const animClass = getCellAnimClass(isSunk, displayState);
 
-    const iconFilter =
-      icon === '💀'
-        ? 'drop-shadow(0 0 5px rgba(239,68,68,0.9))'
-        : icon === '🔥'
-          ? 'drop-shadow(0 0 5px rgba(251,146,60,0.9))'
-          : undefined;
-
     return (
       <BoardCell
         isClickable={isAttackable}
@@ -96,11 +89,6 @@ const AttackBoardCell = memo(
         borderColor={theme.cellBorder}
         borderRadius={parseInt(theme.borderRadius) || 4}
         className={`sb-cell ${isAttackable ? 'sb-attackable' : ''} ${animClass || ''}`}
-        style={
-          iconFilter
-            ? ({ '--icon-filter': iconFilter } as React.CSSProperties)
-            : undefined
-        }
         hoverStyle={
           isAttackable
             ? {
@@ -124,12 +112,14 @@ const AttackBoardCell = memo(
             alignItems="center"
             justifyContent="center"
             fontSize={13}
-            style={
-              {
-                pointerEvents: 'none',
-                userSelect: 'none',
-                filter: iconFilter,
-              } as React.CSSProperties
+            pointerEvents="none"
+            userSelect="none"
+            className={
+              icon === '💀'
+                ? 'sb-icon-sunk'
+                : icon === '🔥'
+                  ? 'sb-icon-hit'
+                  : undefined
             }
           >
             {icon}
@@ -144,13 +134,14 @@ const AttackBoardCell = memo(
             bottom={0}
             alignItems="center"
             justifyContent="center"
-            style={{ pointerEvents: 'none' } as React.CSSProperties}
+            pointerEvents="none"
           >
             <YStack
               width={6}
               height={6}
               borderRadius={100}
-              backgroundColor="rgba(255,255,255,0.7)"
+              backgroundColor="$color"
+              opacity={0.7}
             />
           </YStack>
         )}
@@ -249,12 +240,45 @@ const AttackPlayerBoard = memo(
     );
 
     if (isMe) {
+      const isDefending = !isMyTurn && player.alive;
       return (
         <PlayerSectionWrapper>
+          <BadgeWrapper
+            backgroundColor={theme.boardBackground}
+            borderRadius={8}
+            paddingHorizontal="$1.5"
+            top={-4}
+          >
+            {isDefending && (
+              <XStack
+                alignItems="center"
+                gap="$1"
+                paddingHorizontal="$2"
+                paddingVertical="$0.5"
+                borderRadius={8}
+                borderWidth={1}
+                backgroundColor="$dangerBgSoft"
+                borderColor="$dangerBorder"
+              >
+                <Text fontSize={10}>🛡️</Text>
+                <Text
+                  fontSize={9}
+                  fontWeight="700"
+                  color="$danger"
+                  textTransform="uppercase"
+                >
+                  {t(
+                    'games.sea_battle_v1.table.players.defendingBadge' as TranslationKey,
+                  )}
+                </Text>
+              </XStack>
+            )}
+          </BadgeWrapper>
           <PlayerSection
             backgroundColor={theme.boardBackground}
-            borderColor={theme.cellBorder}
-            style={{ backdropFilter: 'blur(8px)' } as React.CSSProperties}
+            borderColor={isDefending ? theme.hitColor : theme.cellBorder}
+            className={isDefending ? 'sb-danger-breathe' : undefined}
+            backdropFilter="blur(8px)"
           >
             <PlayerName data-testid="player-board-name" color={theme.textColor}>
               {resolveDisplayName(player.playerId, 'You')} (Your Fleet)
@@ -302,14 +326,14 @@ const AttackPlayerBoard = memo(
               paddingVertical="$0.5"
               borderRadius={8}
               borderWidth={1}
-              backgroundColor="rgba(239,68,68,0.1)"
-              borderColor="rgba(239,68,68,0.3)"
+              backgroundColor="$dangerBgSoft"
+              borderColor="$dangerBorder"
             >
               <Text fontSize={10}>🎯</Text>
               <Text
                 fontSize={9}
                 fontWeight="700"
-                color="#fca5a5"
+                color="$danger"
                 textTransform="uppercase"
               >
                 {t(
@@ -324,7 +348,7 @@ const AttackPlayerBoard = memo(
           backgroundColor={theme.boardBackground}
           borderColor={isMyTurn ? theme.accentColor : theme.cellBorder}
           className={isMyTurn ? 'sb-breathe' : undefined}
-          style={{ backdropFilter: 'blur(8px)' } as React.CSSProperties}
+          backdropFilter="blur(8px)"
         >
           <PlayerName data-testid="player-board-name" color={theme.textColor}>
             {resolveDisplayName(player.playerId, 'Opponent')}

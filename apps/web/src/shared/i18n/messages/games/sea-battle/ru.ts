@@ -92,6 +92,7 @@ export const ruMessages = {
         placeShips: 'Расставьте свои корабли',
         waitingFor: 'Ждем {{player}}...',
         targetBadge: 'Цель',
+        defendingBadge: 'Оборона',
       },
       phase: {
         lobby: 'Лобби',

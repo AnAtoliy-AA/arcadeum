@@ -92,7 +92,8 @@ export const byMessages = {
         yourTurnAttack: '🎯 Ваш ход - Атакуйце праціўніка!',
         placeShips: 'Растаўце свае караблі',
         waitingFor: 'Чакаем {{player}}...',
-        targetBadge: 'Мэта',
+        targetBadge: 'Цэль',
+        defendingBadge: 'Абарона',
       },
       phase: {
         lobby: 'Лобі',

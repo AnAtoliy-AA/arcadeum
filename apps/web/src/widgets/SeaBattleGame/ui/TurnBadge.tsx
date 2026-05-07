@@ -17,27 +17,25 @@ export function TurnBadge({ isYourTurn, text }: TurnBadgeProps) {
       borderRadius={20}
       borderWidth={1}
       className={isYourTurn ? 'sb-turn-pulse' : undefined}
-      style={{
-        background: isYourTurn
-          ? 'rgba(16, 185, 129, 0.12)'
-          : 'rgba(255, 255, 255, 0.06)',
-        borderColor: isYourTurn
-          ? 'rgba(16, 185, 129, 0.4)'
-          : 'rgba(255, 255, 255, 0.1)',
-      }}
+      backgroundColor={
+        isYourTurn ? '$successBgSoft' : 'rgba(255, 255, 255, 0.06)'
+      }
+      borderColor={isYourTurn ? '$successBorder' : 'rgba(255, 255, 255, 0.1)'}
     >
       <YStack
         width={7}
         height={7}
         borderRadius={100}
         className={isYourTurn ? 'sb-dot-blink' : undefined}
-        backgroundColor={isYourTurn ? '#10b981' : 'rgba(255,255,255,0.3)'}
+        backgroundColor={isYourTurn ? '$success' : '$color'}
+        opacity={isYourTurn ? 1 : 0.3}
       />
       <Text
         fontSize={11}
         fontWeight="600"
         letterSpacing={0.8}
-        color={isYourTurn ? '#10b981' : 'rgba(255,255,255,0.5)'}
+        color={isYourTurn ? '$success' : '$color'}
+        opacity={isYourTurn ? 1 : 0.5}
       >
         {text}
       </Text>

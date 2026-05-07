@@ -93,6 +93,7 @@ export const esMessages = {
         placeShips: 'Coloca tus barcos',
         waitingFor: 'Esperando a {{player}}...',
         targetBadge: 'Objetivo',
+        defendingBadge: 'Defendiendo',
       },
       phase: {
         lobby: 'Vestíbulo',

@@ -28,7 +28,7 @@ import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 
 import { RulesModal } from './RulesModal';
-import { useSeaBattleAnimations } from './styles/animations';
+import './styles/animations.css';
 
 export const SeaBattleGame = memo(function SeaBattleGame({
   roomId,
@@ -43,7 +43,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   toggleFullscreen: _toggleFullscreen,
 }: SeaBattleGameProps) {
   const { t } = useTranslation();
-  useSeaBattleAnimations();
 
   const storeRoom = useGameStore((s: GameState) => s.room);
   const storeDeleteRoom = useGameStore((s: GameState) => s.deleteRoom);

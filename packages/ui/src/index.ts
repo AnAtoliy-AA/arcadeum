@@ -16,6 +16,8 @@ export * from './components/Spinner/Spinner';
 export * from './components/Input/Input';
 export * from './components/TextArea/TextArea';
 export * from './components/Select/Select';
+export * from './components/FloatingLabelInput';
+export * from './components/FloatingLabelTextArea';
 
 export * from './components/Icons/index';
 export * from './components/FormGroup/FormGroup';
@@ -35,6 +37,10 @@ export * from './components/MobileLoginIndicator/MobileLoginIndicator';
 
 export * from './components/Chat';
 export * from './components/CollapsibleSection/CollapsibleSection';
+export * from './components/ActivityTicker';
+export * from './components/ChannelTile';
+export * from './components/StatTile';
+export * from './components/LaunchButton';
 
 export * from './components/ConnectionOverlay/ConnectionOverlay';
 export * from './components/Footer/Footer';

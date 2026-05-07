@@ -167,10 +167,8 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       if (id === currentUserId)
         return t('games.sea_battle_v1.table.players.you');
 
-      const member = room.members?.find((m) => m.id === id);
-      if (member?.displayName) return member.displayName;
-
-      // Handle bots sequentially
+      // Bot ids always get a sequential label, even if the backend
+      // stamped them with a placeholder displayName like "Unknown".
       if (id?.startsWith('bot-')) {
         const botOrder =
           snapshot?.playerOrder.filter((pId) => pId.startsWith('bot-')) || [];
@@ -180,6 +178,9 @@ export const SeaBattleGame = memo(function SeaBattleGame({
         }
         return 'Bot';
       }
+
+      const member = room.members?.find((m) => m.id === id);
+      if (member?.displayName) return member.displayName;
 
       return fallback || id || '';
     },

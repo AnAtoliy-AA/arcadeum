@@ -15,6 +15,9 @@ import { SeaBattleThemePreview } from './SeaBattleThemePreview';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 import { SeaBattleTeamPanel } from './SeaBattleTeamPanel';
 import type { SeaBattleGameOptions } from '@/features/games/sea-battle/lobby';
+import { gamesApi } from '@/features/games/api';
+import { useMutation } from '@/shared/hooks/useMutation';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 
 const getSeaBattleTheme = (variantId?: string): GameLobbyTheme => {
   const variant = SEA_BATTLE_VARIANTS.find((v) => v.id === variantId);
@@ -69,6 +72,29 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   const roomVariant = (room.gameOptions?.variant as string) || 'classic';
   const [selectedVariant, setSelectedVariant] = React.useState(roomVariant);
   const [showAllVariants, setShowAllVariants] = React.useState(false);
+  const { snapshot } = useSessionTokens();
+
+  const { mutate: persistVariant } = useMutation({
+    mutationFn: async (newVariant: string) => {
+      await gamesApi.updateRoomOptions(
+        room.id,
+        { variant: newVariant },
+        { token: snapshot.accessToken ?? undefined },
+      );
+    },
+    onError: () => {
+      setSelectedVariant(roomVariant);
+    },
+  });
+
+  const handleVariantSelect = React.useCallback(
+    (variantId: string) => {
+      if (variantId === selectedVariant) return;
+      setSelectedVariant(variantId);
+      persistVariant(variantId);
+    },
+    [persistVariant, selectedVariant],
+  );
 
   // Team mode state derived from room game options
   const teamOpts = (room.gameOptions ?? {}) as SeaBattleGameOptions;
@@ -148,7 +174,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
                 borderRadius={20}
                 borderWidth={1.5}
                 cursor="pointer"
-                onClick={() => setSelectedVariant(variant.id)}
+                onClick={() => handleVariantSelect(variant.id)}
                 borderColor={
                   selectedVariant === variant.id
                     ? 'rgba(96,165,250,0.6)'

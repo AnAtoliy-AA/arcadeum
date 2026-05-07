@@ -55,7 +55,18 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     };
   }
 
-  initializeState(playerIds: string[]): SeaBattleState {
+  initializeState(
+    playerIds: string[],
+    config?: {
+      teams?: Array<{
+        id: string;
+        name: string;
+        color: string;
+        playerIds: string[];
+      }>;
+      hideShipsFromTeammates?: boolean;
+    } & Record<string, unknown>,
+  ): SeaBattleState {
     const players: SeaBattlePlayer[] = playerIds.map((id) => ({
       playerId: id,
       alive: true,
@@ -65,13 +76,28 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       placementComplete: false,
     }));
 
-    return {
+    const baseState: SeaBattleState = {
       phase: GAME_PHASE.PLACEMENT,
       players,
       playerOrder: playerIds,
       currentTurnIndex: 0,
       logs: [this.createLogEntry('system', 'Game started! Place your ships.')],
     };
+
+    if (config?.teams && config.teams.length > 0) {
+      baseState.teams = config.teams.map((t) => ({
+        id: t.id,
+        name: t.name,
+        color: t.color,
+        playerIds: [...t.playerIds],
+        currentShooterIndex: 0,
+      }));
+      baseState.teamOrder = config.teams.map((t) => t.id);
+      baseState.currentTeamIndex = 0;
+      baseState.hideShipsFromTeammates = !!config.hideShipsFromTeammates;
+    }
+
+    return baseState;
   }
 
   validateAction(

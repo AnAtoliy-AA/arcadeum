@@ -227,6 +227,13 @@ export type ContactMessages = {
     common?: {
       questionsLabel?: string;
     };
+    tips?: {
+      label?: string;
+      title?: string;
+      orderId?: string;
+      bugs?: string;
+      screenshots?: string;
+    };
     ticker?: {
       label?: string;
     };

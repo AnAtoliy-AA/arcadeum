@@ -304,6 +304,15 @@ export const fr: LegalMessages = {
       common: {
         questionsLabel: 'Questions fréquentes',
       },
+      tips: {
+        label: 'Réponses plus rapides',
+        title: 'Aidez-nous à vous répondre plus vite',
+        orderId:
+          'Indiquez votre numéro de commande pour les remboursements ou paiements — on retrouve le reçu instantanément.',
+        bugs: 'Pour les bugs : étapes de reproduction, navigateur et appareil. Plus c’est précis, plus on triage vite.',
+        screenshots:
+          'Les captures d’écran sont les bienvenues — collez-les directement dans le message, pas besoin de pièces jointes.',
+      },
       ticker: {
         label: 'Flux QG en direct',
       },

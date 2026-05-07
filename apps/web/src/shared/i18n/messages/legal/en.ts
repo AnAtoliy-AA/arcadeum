@@ -295,6 +295,15 @@ export const en: LegalMessages = {
       common: {
         questionsLabel: 'Common questions',
       },
+      tips: {
+        label: 'Faster replies',
+        title: 'Help us help you faster',
+        orderId:
+          'Include your order ID for refund or payment questions — we can pull the receipt instantly.',
+        bugs: 'For bugs: steps to reproduce, your browser, and your device. The more specific, the faster we triage.',
+        screenshots:
+          'Screenshots are welcome — paste them straight into the message field, no need to attach.',
+      },
       ticker: {
         label: 'HQ live feed',
       },

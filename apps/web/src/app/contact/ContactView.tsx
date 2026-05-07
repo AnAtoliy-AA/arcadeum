@@ -25,6 +25,7 @@ import { ContactSidePanel } from './ContactSidePanel';
 import { ContactFaq, getFaqItems } from './ContactFaq';
 import { ContactAvatars } from './ContactAvatars';
 import { ContactForm } from './ContactForm';
+import { ContactTips } from './ContactTips';
 
 export interface ContactViewProps {
   t?: ContactMessages;
@@ -261,8 +262,9 @@ export default function ContactView({
             flexDirection="column"
             gap="$5"
           >
-            <YStack flex={1.6} minWidth={0}>
+            <YStack flex={1.6} minWidth={0} gap="$4">
               <ContactForm form={form} />
+              <ContactTips tips={sections?.tips} />
             </YStack>
             <ContactSidePanel side={side} workingHours={WORKING_HOURS} />
           </YStack>

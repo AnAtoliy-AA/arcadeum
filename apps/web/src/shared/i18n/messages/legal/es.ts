@@ -302,6 +302,15 @@ export const es: LegalMessages = {
       common: {
         questionsLabel: 'Preguntas comunes',
       },
+      tips: {
+        label: 'Respuestas más rápidas',
+        title: 'Ayúdanos a responderte antes',
+        orderId:
+          'Incluye el ID de pedido para reembolsos o pagos — encontramos el recibo al instante.',
+        bugs: 'Para bugs: pasos para reproducir, navegador y dispositivo. Cuanto más concreto, mejor.',
+        screenshots:
+          'Las capturas son bienvenidas — pégalas directamente en el campo del mensaje, sin adjuntar.',
+      },
       ticker: {
         label: 'Feed en directo',
       },

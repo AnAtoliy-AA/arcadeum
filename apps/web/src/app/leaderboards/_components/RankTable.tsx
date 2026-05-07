@@ -117,18 +117,22 @@ export function RankTable({
       {loading
         ? Array.from({ length: 8 }).map((_, i) => (
             <Row key={`sk_${i}`} minHeight={56}>
-              <View
-                width={36}
-                height={22}
-                backgroundColor="rgba(255,255,255,0.06)"
-                borderRadius={4}
-              />
-              <View
-                flex={1}
-                height={18}
-                backgroundColor="rgba(255,255,255,0.06)"
-                borderRadius={4}
-              />
+              <View width={56} alignItems="flex-start">
+                <View
+                  width={36}
+                  height={22}
+                  backgroundColor="rgba(255,255,255,0.06)"
+                  borderRadius={4}
+                />
+              </View>
+              <YStack flex={1} gap={4}>
+                <View
+                  width="60%"
+                  height={16}
+                  backgroundColor="rgba(255,255,255,0.06)"
+                  borderRadius={4}
+                />
+              </YStack>
               <View
                 width={80}
                 height={14}
@@ -139,6 +143,33 @@ export function RankTable({
                 width={80}
                 height={18}
                 backgroundColor="rgba(255,255,255,0.06)"
+                borderRadius={4}
+              />
+              <View
+                width={96}
+                height={14}
+                backgroundColor="rgba(255,255,255,0.04)"
+                borderRadius={4}
+                $sm={{ display: 'none' }}
+              />
+              <View
+                width={72}
+                height={14}
+                backgroundColor="rgba(255,255,255,0.04)"
+                borderRadius={4}
+                $sm={{ display: 'none' }}
+              />
+              <View
+                width={120}
+                height={14}
+                backgroundColor="rgba(255,255,255,0.04)"
+                borderRadius={4}
+                $sm={{ display: 'none' }}
+              />
+              <View
+                width={56}
+                height={14}
+                backgroundColor="rgba(255,255,255,0.04)"
                 borderRadius={4}
               />
             </Row>

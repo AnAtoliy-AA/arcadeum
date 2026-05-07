@@ -220,6 +220,7 @@ export const en = {
       pinned: 'Your rank',
       unranked: 'Unranked — play 5 ranked games to appear',
     },
+    loadMore: 'Load more',
     empty: {
       title: 'No rankings yet',
       body: 'Be the first to climb the ladder.',

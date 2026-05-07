@@ -1,10 +1,24 @@
 import { XStack, View, Text, styled } from 'tamagui';
-import { useEffect, useState } from 'react';
 
 export type LiveChipProps = {
   label?: string;
   testID?: string;
 };
+
+const PULSE_STYLE_ID = '__arcadeum-live-pulse';
+const PULSE_KEYFRAMES = `
+@keyframes arcadeum-live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+`;
+
+if (typeof document !== 'undefined' && !document.getElementById(PULSE_STYLE_ID)) {
+  const styleEl = document.createElement('style');
+  styleEl.id = PULSE_STYLE_ID;
+  styleEl.textContent = PULSE_KEYFRAMES;
+  document.head.appendChild(styleEl);
+}
 
 const Root = styled(XStack, {
   name: 'LiveChip',
@@ -27,14 +41,11 @@ const Dot = styled(View, {
 });
 
 export function LiveChip({ label = 'Live', testID }: LiveChipProps) {
-  const [pulse, setPulse] = useState(true);
-  useEffect(() => {
-    const id = setInterval(() => setPulse((p) => !p), 800);
-    return () => clearInterval(id);
-  }, []);
   return (
     <Root testID={testID}>
-      <Dot opacity={pulse ? 1 : 0.35} />
+      <Dot
+        style={{ animation: 'arcadeum-live-pulse 1.6s ease-in-out infinite' }}
+      />
       <Text fontSize="$1" fontWeight="700" letterSpacing={1} color="#ef4444">
         {label.toUpperCase()}
       </Text>

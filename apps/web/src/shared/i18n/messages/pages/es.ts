@@ -220,6 +220,7 @@ export const es = {
       pinned: 'Tu rango',
       unranked: 'Sin clasificar — juega 5 partidas clasificadas para aparecer',
     },
+    loadMore: 'Cargar más',
     empty: {
       title: 'Aún no hay clasificaciones',
       body: 'Sé el primero en escalar la clasificación.',

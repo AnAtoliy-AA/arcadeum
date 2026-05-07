@@ -190,13 +190,12 @@ export async function getLeaderboard(
       memberCount: 6 + i,
       rank: i + 1,
     })),
-    self: selfId
-      ? {
-          ...makePlayer(seededRandom(selfId.length), 247),
-          id: selfId,
-          name: 'You',
-        }
-      : null,
+    self: {
+      ...makePlayer(seededRandom(selfId ? selfId.length : 7), 247),
+      id: selfId ?? 'anon',
+      name: selfId ? 'You' : 'Guest',
+      isFriend: false,
+    },
   };
 }
 

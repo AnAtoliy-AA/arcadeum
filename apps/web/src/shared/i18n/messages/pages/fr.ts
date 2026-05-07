@@ -220,6 +220,7 @@ export const fr = {
       pinned: 'Votre rang',
       unranked: 'Non classé — jouez 5 parties classées pour apparaître',
     },
+    loadMore: 'Charger plus',
     empty: {
       title: 'Aucun classement pour le moment',
       body: 'Soyez le premier à grimper.',

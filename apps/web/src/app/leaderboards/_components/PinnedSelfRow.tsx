@@ -11,7 +11,8 @@ export function PinnedSelfRow({
   player: LeaderboardPlayer;
   t?: PageTranslations;
 }) {
-  const tt = (t?.self ?? {}) as { pinned?: string };
+  const tt = (t?.self ?? {}) as { pinned?: string; unranked?: string };
+  const isAnon = player.id === 'anon';
   return (
     <View
       position="sticky"
@@ -34,14 +35,24 @@ export function PinnedSelfRow({
         >
           {tt.pinned ?? 'Your rank'}
         </Text>
-        <RankBadge tier={player.tier as never}>{`#${player.rank}`}</RankBadge>
-        <Text fontWeight="700">{player.name}</Text>
-        <Text fontWeight="700" letterSpacing={1}>
-          {player.rating.toLocaleString()}
-        </Text>
-        <YStack flex={1} alignItems="flex-end" $sm={{ display: 'none' }}>
-          <FormPips results={player.recentForm} max={7} />
-        </YStack>
+        {isAnon ? (
+          <Text fontSize="$3" opacity={0.85}>
+            {tt.unranked ?? 'Unranked — play 5 ranked games to appear'}
+          </Text>
+        ) : (
+          <>
+            <RankBadge tier={player.tier as never}>
+              {`#${player.rank}`}
+            </RankBadge>
+            <Text fontWeight="700">{player.name}</Text>
+            <Text fontWeight="700" letterSpacing={1}>
+              {player.rating.toLocaleString()}
+            </Text>
+            <YStack flex={1} alignItems="flex-end" $sm={{ display: 'none' }}>
+              <FormPips results={player.recentForm} max={7} />
+            </YStack>
+          </>
+        )}
       </XStack>
     </View>
   );

@@ -19,10 +19,10 @@ export type MythicSpotlightProps = {
 const Glow = styled(View, {
   name: 'MythicGlow',
   position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
+  top: -80,
+  left: -80,
+  right: -80,
+  bottom: -80,
   pointerEvents: 'none',
 });
 
@@ -70,7 +70,8 @@ export function MythicSpotlight({
       <Glow
         style={{
           background:
-            'radial-gradient(60% 80% at 20% 20%, rgba(236,72,153,0.28), transparent 70%)',
+            'radial-gradient(closest-side, rgba(236,72,153,0.35), rgba(236,72,153,0))',
+          filter: 'blur(40px)',
         }}
       />
       <XStack alignItems="center" gap="$5" flexWrap="wrap">

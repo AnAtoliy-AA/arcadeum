@@ -1,38 +1,56 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
-import { navigateTo } from './fixtures/test-utils';
+import { test, navigateTo } from './fixtures/test-utils';
 
 test.describe('Leaderboards page', () => {
-  test('renders mythic spotlight + rank table', async ({ page }) => {
+  test('renders cup countdown, mythic spotlight, and table', async ({
+    page,
+  }) => {
     await navigateTo(page, '/leaderboards');
 
+    await expect(page.getByTestId('cup-countdown-seconds')).toBeVisible();
     await expect(
       page.getByTestId('leaderboard-mythic-spotlight'),
     ).toBeVisible();
     await expect(page.getByTestId('leaderboard-table')).toBeVisible();
-
-    const firstRow = page.getByTestId('leaderboard-row-1');
-    await expect(firstRow).toBeVisible();
+    await expect(page.getByTestId('leaderboard-row-1')).toBeVisible();
   });
 
-  test('switching mode keeps table visible', async ({ page }) => {
+  test('switching mode updates the first row name', async ({ page }) => {
     await navigateTo(page, '/leaderboards');
 
+    const firstRow = page.getByTestId('leaderboard-row-1');
+    const before = (await firstRow.textContent()) ?? '';
     await page.getByTestId('mode-tab-mafia').click();
     await expect(page.getByTestId('leaderboard-table')).toBeVisible();
-
-    await page.getByTestId('mode-tab-all').click();
-    await expect(page.getByTestId('leaderboard-table')).toBeVisible();
+    await expect(firstRow).not.toHaveText(before);
   });
 
-  test('cup countdown ticks', async ({ page }) => {
+  test('mode tabs are keyboard navigable (ArrowRight)', async ({ page }) => {
+    await navigateTo(page, '/leaderboards');
+    const all = page.getByTestId('mode-tab-all');
+    await all.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(page.getByTestId('mode-tab-mafia')).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+  });
+
+  test('pinned self row stays in viewport on scroll', async ({ page }) => {
+    await navigateTo(page, '/leaderboards');
+    const self = page.getByTestId('leaderboard-self-row');
+    await expect(self).toBeVisible();
+    await page.mouse.wheel(0, 2000);
+    await expect(self).toBeInViewport();
+  });
+
+  test('cup countdown ticks within 2s', async ({ page }) => {
     await navigateTo(page, '/leaderboards');
     const clock = page.getByTestId('cup-countdown-seconds');
     await expect(clock).toBeVisible();
-
-    const a = await clock.textContent();
-    await page.waitForTimeout(1200);
-    const b = await clock.textContent();
-    expect(a).not.toEqual(b);
+    const before = await clock.textContent();
+    await page.waitForTimeout(1500);
+    const after = await clock.textContent();
+    expect(after).not.toEqual(before);
   });
 });

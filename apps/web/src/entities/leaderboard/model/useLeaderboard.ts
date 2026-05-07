@@ -4,8 +4,16 @@ import {
   getLeaderboard,
   type GetLeaderboardArgs,
 } from '@/shared/api/leaderboard';
+import type { LeaderboardSnapshot } from '@/entities/leaderboard/model/types';
 
-export function useLeaderboard(args: GetLeaderboardArgs = {}) {
+type UseLeaderboardArgs = GetLeaderboardArgs & {
+  onSuccess?: (data: LeaderboardSnapshot) => void;
+};
+
+export function useLeaderboard({
+  onSuccess,
+  ...args
+}: UseLeaderboardArgs = {}) {
   return useQuery({
     queryKey: [
       'leaderboard',
@@ -14,5 +22,6 @@ export function useLeaderboard(args: GetLeaderboardArgs = {}) {
       args.selfId ?? null,
     ],
     queryFn: () => getLeaderboard(args),
+    onSuccess,
   });
 }

@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { XStack, YStack, Text, styled } from 'tamagui';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { XStack, YStack, Text, styled, useTheme } from 'tamagui';
+
+type ThemeRecord = Record<string, { val?: string; get?: () => string }>;
 
 export type ActivityTickerItem = {
   tag: string;
@@ -74,18 +76,24 @@ const TickerRow = styled(XStack, {
   } as const,
 });
 
-const TickerTag = styled(Text, {
-  name: 'ActivityTickerTag',
+// Plain HTML span — Tamagui's runtime emits styled-component output that
+// differs between server and client when `style` overrides include shorthand
+// props like `borderColor`, which produces hydration mismatches. A plain
+// span with inline style hydrates consistently regardless of theme runtime.
+const tagBaseStyle: CSSProperties = {
+  display: 'inline-block',
   fontSize: 10,
-  fontWeight: '700',
-  letterSpacing: 1.2,
+  fontWeight: 700,
+  letterSpacing: '0.1em',
   textTransform: 'uppercase',
-  paddingHorizontal: 8,
-  paddingVertical: 3,
+  padding: '3px 8px',
   borderRadius: 999,
   borderWidth: 1,
+  borderStyle: 'solid',
   flexShrink: 0,
-});
+  fontFamily: 'inherit',
+  lineHeight: 1.2,
+};
 
 export function ActivityTicker({
   items,
@@ -94,6 +102,14 @@ export function ActivityTicker({
   pauseOnHover = true,
   'data-testid': testId,
 }: ActivityTickerProps) {
+  const theme = useTheme() as unknown as ThemeRecord;
+  const colorMain =
+    theme.color?.val ?? theme.color?.get?.() ?? '#ecefee';
+  const colorMuted =
+    theme.textSecondary?.val ??
+    theme.textSecondary?.get?.() ??
+    '#8e9196';
+
   const [idx, setIdx] = useState(0);
   const [paused, setPaused] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -137,30 +153,44 @@ export function ActivityTicker({
           const accent = it.color ?? '#38bdf8';
           return (
             <TickerRow key={`${it.tag}-${i}`} active={active}>
-              <TickerTag style={{ color: accent, borderColor: accent }}>
-                {it.tag}
-              </TickerTag>
-              <Text
-                fontSize={13}
-                color="$color"
-                flex={1}
-                numberOfLines={1}
-                ellipsizeMode="tail"
+              <span
+                style={{
+                  ...tagBaseStyle,
+                  color: accent,
+                  borderColor: accent,
+                }}
               >
-                <Text fontWeight="700" color="$color">
+                {it.tag}
+              </span>
+              <span
+                style={{
+                  fontSize: 13,
+                  color: colorMain,
+                  flex: 1,
+                  minWidth: 0,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  fontFamily: 'inherit',
+                }}
+              >
+                <strong style={{ fontWeight: 700, color: colorMain }}>
                   {it.who}
-                </Text>{' '}
-                <Text color="$textSecondary">{it.what}</Text>
-              </Text>
+                </strong>{' '}
+                <span style={{ color: colorMuted }}>{it.what}</span>
+              </span>
               {it.when ? (
-                <Text
-                  fontSize={12}
-                  color="$textSecondary"
-                  flexShrink={0}
-                  $sm={{ display: 'none' }}
+                <span
+                  className="ticker-when"
+                  style={{
+                    fontSize: 12,
+                    color: colorMuted,
+                    flexShrink: 0,
+                    fontFamily: 'inherit',
+                  }}
                 >
                   {it.when}
-                </Text>
+                </span>
               ) : null}
             </TickerRow>
           );

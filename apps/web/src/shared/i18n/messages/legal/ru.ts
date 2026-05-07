@@ -294,6 +294,10 @@ export const ru: LegalMessages = {
         press: 'Пресса и партнёрство',
         pressEmail: 'hello@arcadeum.games',
         pressBody: 'Для СМИ, авторов и партнёрских студий.',
+        statusLabel: 'Статус систем',
+        statusTitle: 'Все системы работают',
+        statusBody: 'Аптайм 99,98% за последние 30 дней.',
+        statusLinkLabel: 'Открыть статус-страницу',
       },
       common: {
         questionsLabel: 'Частые вопросы',

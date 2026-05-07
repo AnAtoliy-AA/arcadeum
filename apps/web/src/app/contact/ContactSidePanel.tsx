@@ -111,6 +111,41 @@ export function ContactSidePanel({
           {side?.pressBody ?? 'For media, creators, and partner studios.'}
         </Typography>
       </GlassCard>
+
+      <GlassCard>
+        <span style={s.labelChipStyle}>
+          {side?.statusLabel ?? 'System status'}
+        </span>
+        <XStack alignItems="center" gap="$2" marginTop="$2">
+          <span
+            aria-hidden="true"
+            style={{
+              width: 9,
+              height: 9,
+              borderRadius: '50%',
+              background: '#34d399',
+              boxShadow: '0 0 8px #34d399',
+              flexShrink: 0,
+            }}
+          />
+          <Typography fontWeight="700">
+            {side?.statusTitle ?? 'All systems operational'}
+          </Typography>
+        </XStack>
+        <Typography variant="caption" alpha="medium" marginTop="$1">
+          {side?.statusBody ?? '99.98% uptime over the last 30 days.'}
+        </Typography>
+        <YStack marginTop="$3">
+          <a
+            href="https://status.arcadeum.games"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={s.externalIssueLinkStyle}
+          >
+            <span>{side?.statusLinkLabel ?? 'View status page'}</span>
+          </a>
+        </YStack>
+      </GlassCard>
     </YStack>
   );
 }

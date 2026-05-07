@@ -223,6 +223,10 @@ export type ContactMessages = {
       press?: string;
       pressEmail?: string;
       pressBody?: string;
+      statusLabel?: string;
+      statusTitle?: string;
+      statusBody?: string;
+      statusLinkLabel?: string;
     };
     common?: {
       questionsLabel?: string;

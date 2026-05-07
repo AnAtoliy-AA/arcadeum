@@ -300,6 +300,10 @@ export const fr: LegalMessages = {
         press: 'Presse et partenariats',
         pressEmail: 'hello@arcadeum.games',
         pressBody: 'Pour les médias, créateurs et studios partenaires.',
+        statusLabel: 'État des systèmes',
+        statusTitle: 'Tous les systèmes opérationnels',
+        statusBody: '99,98 % de disponibilité sur les 30 derniers jours.',
+        statusLinkLabel: 'Voir la page de statut',
       },
       common: {
         questionsLabel: 'Questions fréquentes',

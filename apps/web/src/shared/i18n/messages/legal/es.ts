@@ -298,6 +298,10 @@ export const es: LegalMessages = {
         press: 'Prensa y partnerships',
         pressEmail: 'hello@arcadeum.games',
         pressBody: 'Para medios, creadores y estudios partner.',
+        statusLabel: 'Estado de los sistemas',
+        statusTitle: 'Todos los sistemas operativos',
+        statusBody: 'Uptime del 99,98 % en los últimos 30 días.',
+        statusLinkLabel: 'Ver página de estado',
       },
       common: {
         questionsLabel: 'Preguntas comunes',

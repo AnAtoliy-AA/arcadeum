@@ -171,4 +171,62 @@ describe('SeaBattleEngine — team mode', () => {
       expect(ns.teams!.find((t) => t.id === 't1')!.currentShooterIndex).toBe(0);
     });
   });
+
+  describe('isGameOver / getWinners — team mode', () => {
+    function teamStateWithKills(
+      survivors: string[],
+      dead: string[],
+      teams: { id: string; playerIds: string[] }[],
+    ) {
+      const s = engine.initializeState([...survivors, ...dead], {
+        teams: teams.map((t) => ({
+          id: t.id,
+          name: t.id,
+          color: '#000',
+          playerIds: t.playerIds,
+        })),
+      });
+      s.phase = GAME_PHASE.BATTLE;
+      for (const p of s.players) {
+        if (dead.includes(p.playerId)) p.alive = false;
+      }
+      return s;
+    }
+
+    it('isGameOver returns true when only one team has alive players', () => {
+      const s = teamStateWithKills(
+        ['a', 'b'],
+        ['c', 'd'],
+        [
+          { id: 't1', playerIds: ['a', 'b'] },
+          { id: 't2', playerIds: ['c', 'd'] },
+        ],
+      );
+      expect(engine.isGameOver(s)).toBe(true);
+    });
+
+    it('isGameOver returns false when ≥2 teams have alive players', () => {
+      const s = teamStateWithKills(
+        ['a', 'c'],
+        ['b', 'd'],
+        [
+          { id: 't1', playerIds: ['a', 'b'] },
+          { id: 't2', playerIds: ['c', 'd'] },
+        ],
+      );
+      expect(engine.isGameOver(s)).toBe(false);
+    });
+
+    it('getWinners returns all surviving team members', () => {
+      const s = teamStateWithKills(
+        ['a', 'b'],
+        ['c', 'd'],
+        [
+          { id: 't1', playerIds: ['a', 'b'] },
+          { id: 't2', playerIds: ['c', 'd'] },
+        ],
+      );
+      expect(engine.getWinners(s).sort()).toEqual(['a', 'b']);
+    });
+  });
 });

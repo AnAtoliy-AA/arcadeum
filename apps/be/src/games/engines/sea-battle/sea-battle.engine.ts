@@ -40,7 +40,9 @@ import {
 } from './sea-battle.validators';
 import {
   advanceTeamRotationOnMiss,
+  countAliveTeams,
   getActiveShooterId,
+  isTeamAlive,
 } from './team-rotation.utils';
 
 @Injectable()
@@ -185,7 +187,6 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     payload: PlaceShipPayload,
   ): GameActionResult<SeaBattleState> {
     const shipConfig = SHIPS.find((s) => s.id === payload.shipId) as ShipConfig;
-
     const ship: Ship = {
       id: payload.shipId,
       name: shipConfig.name,
@@ -194,13 +195,10 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       hits: 0,
       sunk: false,
     };
-
     player.ships.push(ship);
-
     for (const cell of payload.cells) {
       player.board[cell.row][cell.col] = CELL_STATE.SHIP;
     }
-
     state.logs.push(
       this.createLogEntry('action', `Placed ${ship.name}`, {
         scope: 'private',
@@ -215,7 +213,6 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     state: SeaBattleState,
     player: SeaBattlePlayer,
   ): GameActionResult<SeaBattleState> {
-    // 1. Reset board
     for (let r = 0; r < BOARD_SIZE; r++) {
       for (let c = 0; c < BOARD_SIZE; c++) {
         if (player.board[r][c] === CELL_STATE.SHIP) {
@@ -225,14 +222,10 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     }
     player.ships = [];
     player.placementComplete = false;
-
-    // 2. Generate placements
     const placements = randomlyPlaceShips();
     if (Object.keys(placements).length === 0) {
       return this.errorResult('Failed to generate ship placement');
     }
-
-    // 3. Place ships
     for (const shipId of Object.keys(placements)) {
       const cells = placements[shipId];
       const shipConfig = SHIPS.find((s) => s.id === shipId);
@@ -295,7 +288,6 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     state: SeaBattleState,
     player: SeaBattlePlayer,
   ): GameActionResult<SeaBattleState> {
-    // Clear board
     for (let r = 0; r < BOARD_SIZE; r++) {
       for (let c = 0; c < BOARD_SIZE; c++) {
         if (player.board[r][c] === CELL_STATE.SHIP) {
@@ -303,8 +295,6 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         }
       }
     }
-
-    // Clear ships
     player.ships = [];
     player.placementComplete = false;
 
@@ -351,9 +341,7 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
           target.shipsRemaining--;
           result = ATTACK_RESULT.SUNK;
 
-          // Mark surrounding cells as miss
           markSurroundingCellsAsMiss(target, hitShip);
-
           state.logs.push(
             this.createLogEntry('action', `sunk ${shipName}!`, {
               senderId: player.playerId,
@@ -367,7 +355,6 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         state.logs.push(
           this.createLogEntry('system', 'A player has been eliminated!'),
         );
-
         this.checkAndSetWinner(state);
       }
     } else {
@@ -394,11 +381,9 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       ),
     );
 
-    // Only advance turn on miss - hit gives another turn
     if (result === ATTACK_RESULT.MISS) {
       if (state.teams) {
         advanceTeamRotationOnMiss(state);
-        // keep currentTurnIndex/playerOrder in sync for legacy consumers
         const shooter = getActiveShooterId(state);
         if (shooter) {
           state.currentTurnIndex = state.playerOrder.indexOf(shooter);
@@ -445,11 +430,27 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
 
   isGameOver(state: SeaBattleState): boolean {
     if (state.phase !== GAME_PHASE.BATTLE) return false;
+    if (state.teams) {
+      return countAliveTeams(state) <= 1;
+    }
     const alivePlayers = state.players.filter((p) => p.alive);
     return alivePlayers.length <= 1;
   }
 
   getWinners(state: SeaBattleState): string[] {
+    if (state.teams && state.teamOrder) {
+      const survivingTeamIds = state.teamOrder.filter((tid) =>
+        isTeamAlive(state, tid),
+      );
+      if (survivingTeamIds.length === 1) {
+        const team = state.teams.find((t) => t.id === survivingTeamIds[0])!;
+        return [...team.playerIds];
+      }
+      if (survivingTeamIds.length === 0) {
+        this.logger.error('Sea Battle ended with no surviving teams');
+      }
+      return [];
+    }
     const alivePlayers = state.players.filter((p) => p.alive);
     if (alivePlayers.length === 1) {
       state.winnerId = alivePlayers[0].playerId;
@@ -475,7 +476,6 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
   ): GameActionResult<SeaBattleState> {
     const newState = this.cloneState(state);
     const player = newState.players.find((p) => p.playerId === playerId);
-
     if (player) {
       player.alive = false;
       newState.logs.push(
@@ -483,7 +483,6 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       );
       this.checkAndSetWinner(newState);
     }
-
     return this.successResult(newState);
   }
 

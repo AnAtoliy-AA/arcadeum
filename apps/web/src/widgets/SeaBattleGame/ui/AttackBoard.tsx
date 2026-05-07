@@ -230,7 +230,7 @@ const AttackPlayerBoard = memo(
             const displayState =
               !isMe && isSunk
                 ? CELL_STATE.HIT
-                : !isMe && cellState === CELL_STATE.SHIP
+                : !isMe && !isTeammate && cellState === CELL_STATE.SHIP
                   ? CELL_STATE.EMPTY
                   : cellState;
             const isAttackable =

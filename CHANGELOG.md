@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.7] - 2026-05-07
+
+### Fixed
+- persist sea battle lobby variant changes to backend (ARC-578) (ARC-578)
+
+
 ## [1.12.6] - 2026-05-07
 
 ### Added

@@ -177,7 +177,25 @@ describe('team-rotation.utils', () => {
       expect(countAliveTeams(state)).toBe(2);
     });
   });
-});
 
-// suppress unused-import warning: getActiveTeam is exported and used by engine code
-void getActiveTeam;
+  describe('getActiveTeam', () => {
+    it('returns the team at currentTeamIndex', () => {
+      const state = makeState({
+        teams: [
+          { id: 't1', players: [{ id: 'a', alive: true }] },
+          { id: 't2', players: [{ id: 'b', alive: true }] },
+        ],
+        currentTeamIndex: 1,
+      });
+      expect(getActiveTeam(state)?.id).toBe('t2');
+    });
+
+    it('returns undefined when team mode is off', () => {
+      const state = makeState({
+        teams: [{ id: 't1', players: [{ id: 'a', alive: true }] }],
+      });
+      delete state.teams;
+      expect(getActiveTeam(state)).toBeUndefined();
+    });
+  });
+});

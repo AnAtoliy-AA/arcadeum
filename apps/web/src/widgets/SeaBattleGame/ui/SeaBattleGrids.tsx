@@ -14,39 +14,55 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
 
   if (isMobilePortrait) {
     return (
-      <YStack
-        gap="$4"
-        width="100%"
-        paddingTop="$1"
-        paddingHorizontal="$1"
-        alignItems="stretch"
+      <div
         data-testid="sea-battle-grids-container"
+        className="sb-grids-container-mobile"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 16,
+          width: '100%',
+          paddingTop: 4,
+          paddingLeft: 4,
+          paddingRight: 4,
+          boxSizing: 'border-box',
+        }}
       >
         {children}
-      </YStack>
+      </div>
     );
   }
 
   return (
-    <YStack
+    <div
       data-testid="sea-battle-grids-container"
+      className="sb-grids-container"
       style={{
         display: 'grid',
         gridTemplateColumns:
-          (media.tablet && media.short) ||
-          (media.sm && media.gtXs) ||
-          media.gtSm
-            ? 'repeat(2, 1fr)'
-            : '1fr',
+          media.gtLg && !media.short
+            ? 'repeat(3, minmax(0, 1fr))'
+            : (media.tablet && media.short) ||
+                (media.sm && media.gtXs) ||
+                media.gtSm
+              ? 'repeat(2, minmax(0, 1fr))'
+              : '1fr',
+        gridAutoRows: 'min-content',
+        gap: media.short ? 10 : media.sm ? 12 : 16,
+        width: '100%',
+        minWidth: 0,
+        maxWidth: media.short ? 1000 : '100%',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        padding: media.short ? 4 : media.sm ? 4 : 8,
+        boxSizing: 'border-box',
+        alignItems: 'stretch',
+        justifyItems: 'center',
+        alignContent: 'center',
+        flexGrow: 1,
       }}
-      gap={media.short ? 10 : media.sm ? 12 : 16}
-      width="100%"
-      maxWidth={media.short ? 1000 : '100%'}
-      marginHorizontal="auto"
-      padding={media.short ? 4 : media.sm ? 4 : 8}
-      alignItems="flex-start"
     >
       {children}
-    </YStack>
+    </div>
   );
 }

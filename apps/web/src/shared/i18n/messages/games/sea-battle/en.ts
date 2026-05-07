@@ -93,6 +93,8 @@ export const enMessages = {
         placeShips: 'Place your ships',
         waitingFor: 'Waiting for {{player}}...',
         targetBadge: 'Target',
+        defendingBadge: 'Defending',
+        opponentBadge: 'Opponent',
       },
       phase: {
         lobby: 'Lobby',

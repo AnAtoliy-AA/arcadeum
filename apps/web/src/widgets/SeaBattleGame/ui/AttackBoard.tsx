@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, memo } from 'react';
-import { XStack, YStack, Text } from 'tamagui';
+import { XStack, Text } from 'tamagui';
 import type { SeaBattlePlayerState } from '../types';
 import { CELL_STATE, ROW_LABELS, COL_LABELS } from '../types';
 import { ShipsLeft } from './ShipsLeft';
@@ -81,35 +81,14 @@ const AttackBoardCell = memo(
     const icon = getCellIcon(isSunk, displayState);
     const animClass = getCellAnimClass(isSunk, displayState);
 
-    const iconFilter =
-      icon === '💀'
-        ? 'drop-shadow(0 0 5px rgba(239,68,68,0.9))'
-        : icon === '🔥'
-          ? 'drop-shadow(0 0 5px rgba(251,146,60,0.9))'
-          : undefined;
-
     return (
       <BoardCell
-        isClickable={isAttackable}
-        position="relative"
-        backgroundColor={getCellBg(displayState, theme)}
-        borderColor={theme.cellBorder}
-        borderRadius={parseInt(theme.borderRadius) || 4}
+        style={{
+          backgroundColor: getCellBg(displayState, theme),
+          borderColor: theme.cellBorder,
+          borderRadius: parseInt(theme.borderRadius) || 4,
+        }}
         className={`sb-cell ${isAttackable ? 'sb-attackable' : ''} ${animClass || ''}`}
-        style={
-          iconFilter
-            ? ({ '--icon-filter': iconFilter } as React.CSSProperties)
-            : undefined
-        }
-        hoverStyle={
-          isAttackable
-            ? {
-                scale: 1.05,
-                backgroundColor: theme.cellHover,
-                borderColor: theme.primaryColor,
-              }
-            : undefined
-        }
         data-row={!isMe ? rIndex : undefined}
         data-col={!isMe ? cIndex : undefined}
       >
@@ -124,35 +103,43 @@ const AttackBoardCell = memo(
             alignItems="center"
             justifyContent="center"
             fontSize={13}
-            style={
-              {
-                pointerEvents: 'none',
-                userSelect: 'none',
-                filter: iconFilter,
-              } as React.CSSProperties
+            pointerEvents="none"
+            userSelect="none"
+            className={
+              icon === '💀'
+                ? 'sb-icon-sunk'
+                : icon === '🔥'
+                  ? 'sb-icon-hit'
+                  : undefined
             }
           >
             {icon}
           </Text>
         )}
         {displayState === CELL_STATE.MISS && (
-          <YStack
-            position="absolute"
-            top={0}
-            left={0}
-            right={0}
-            bottom={0}
-            alignItems="center"
-            justifyContent="center"
-            style={{ pointerEvents: 'none' } as React.CSSProperties}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              pointerEvents: 'none',
+            }}
           >
-            <YStack
-              width={6}
-              height={6}
-              borderRadius={100}
-              backgroundColor="rgba(255,255,255,0.7)"
+            <div
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: 100,
+                backgroundColor: 'currentColor',
+                opacity: 0.7,
+              }}
             />
-          </YStack>
+          </div>
         )}
       </BoardCell>
     );
@@ -167,6 +154,7 @@ interface AttackPlayerBoardProps {
   resolveDisplayName: (id: string, fallback: string) => string;
   idlePlayers: string[];
   isMyTurn: boolean;
+  isCurrentTurn: boolean;
   disabled: boolean;
   sunkCellSet: Set<string>;
   onAttack?: (targetPlayerId: string, row: number, col: number) => void;
@@ -181,6 +169,7 @@ const AttackPlayerBoard = memo(
     resolveDisplayName,
     idlePlayers,
     isMyTurn,
+    isCurrentTurn,
     disabled,
     sunkCellSet,
     onAttack,
@@ -209,8 +198,10 @@ const AttackPlayerBoard = memo(
     const boardGrid = (
       <BoardGrid
         className={`sb-board-grid ${!isMe && isMyTurn ? 'sb-my-turn' : ''}`}
-        backgroundColor={theme.boardBackground}
-        borderColor={theme.cellBorder}
+        style={{
+          backgroundColor: theme.boardBackground,
+          borderColor: theme.cellBorder,
+        }}
         onClick={handleGridClick}
       >
         {player.board.map((row, rIndex) =>
@@ -249,12 +240,47 @@ const AttackPlayerBoard = memo(
     );
 
     if (isMe) {
+      const isDefending = !isMyTurn && player.alive;
+      const showBadge = player.alive;
       return (
         <PlayerSectionWrapper>
+          <BadgeWrapper
+            backgroundColor={theme.boardBackground}
+            borderRadius={8}
+            paddingHorizontal="$1.5"
+            top={-4}
+          >
+            {showBadge && (
+              <XStack
+                alignItems="center"
+                gap="$1"
+                paddingHorizontal="$2"
+                paddingVertical="$0.5"
+                borderRadius={8}
+                borderWidth={1}
+                backgroundColor={isCurrentTurn ? "$dangerBgSoft" : "$warningBgSoft"}
+                borderColor={isCurrentTurn ? "$dangerBorder" : "$warningBorder"}
+                className={isCurrentTurn ? "sb-badge-danger-breathe" : undefined}
+              >
+                <Text fontSize={10}>{isCurrentTurn ? '🎯' : '🛡️'}</Text>
+                <Text
+                  fontSize={9}
+                  fontWeight="700"
+                  color={isCurrentTurn ? "$danger" : "$warning"}
+                  textTransform="uppercase"
+                >
+                  {isCurrentTurn
+                    ? t('games.sea_battle_v1.table.players.yourTurnAttack' as TranslationKey).replace('🎯 ', '')
+                    : t('games.sea_battle_v1.table.players.defendingBadge' as TranslationKey)}
+                </Text>
+              </XStack>
+            )}
+          </BadgeWrapper>
           <PlayerSection
             backgroundColor={theme.boardBackground}
-            borderColor={theme.cellBorder}
-            style={{ backdropFilter: 'blur(8px)' } as React.CSSProperties}
+            borderColor={isDefending ? theme.hitColor : theme.cellBorder}
+            className={isDefending ? 'sb-section-danger-breathe' : undefined}
+            backdropFilter="blur(8px)"
           >
             <PlayerName data-testid="player-board-name" color={theme.textColor}>
               {resolveDisplayName(player.playerId, 'You')} (Your Fleet)
@@ -267,14 +293,14 @@ const AttackPlayerBoard = memo(
               <div />
               <ColLabels>
                 {COL_LABELS.map((label) => (
-                  <Label key={label} color={theme.textSecondaryColor}>
+                  <Label key={label} style={{ color: theme.textSecondaryColor }}>
                     {label}
                   </Label>
                 ))}
               </ColLabels>
               <RowLabels>
                 {ROW_LABELS.map((label) => (
-                  <Label key={label} color={theme.textSecondaryColor}>
+                  <Label key={label} style={{ color: theme.textSecondaryColor }}>
                     {label}
                   </Label>
                 ))}
@@ -294,7 +320,7 @@ const AttackPlayerBoard = memo(
           paddingHorizontal="$1.5"
           top={-4}
         >
-          {isMyTurn && (
+          {isCurrentTurn ? (
             <XStack
               alignItems="center"
               gap="$1"
@@ -302,14 +328,36 @@ const AttackPlayerBoard = memo(
               paddingVertical="$0.5"
               borderRadius={8}
               borderWidth={1}
-              backgroundColor="rgba(239,68,68,0.1)"
-              borderColor="rgba(239,68,68,0.3)"
+              backgroundColor="$dangerBgSoft"
+              borderColor="$dangerBorder"
+              className="sb-badge-danger-breathe"
             >
               <Text fontSize={10}>🎯</Text>
               <Text
                 fontSize={9}
                 fontWeight="700"
-                color="#fca5a5"
+                color="$danger"
+                textTransform="uppercase"
+              >
+                ATTACKING
+              </Text>
+            </XStack>
+          ) : isMyTurn ? (
+            <XStack
+              alignItems="center"
+              gap="$1"
+              paddingHorizontal="$2"
+              paddingVertical="$0.5"
+              borderRadius={8}
+              borderWidth={1}
+              backgroundColor="$infoBgSoft"
+              borderColor="$infoBorder"
+            >
+              <Text fontSize={10}>🎯</Text>
+              <Text
+                fontSize={9}
+                fontWeight="700"
+                color="$info"
                 textTransform="uppercase"
               >
                 {t(
@@ -317,17 +365,19 @@ const AttackPlayerBoard = memo(
                 )}
               </Text>
             </XStack>
-          )}
+          ) : null}
         </BadgeWrapper>
         <PlayerSection
           isTargetable={isMyTurn}
           backgroundColor={theme.boardBackground}
           borderColor={isMyTurn ? theme.accentColor : theme.cellBorder}
           className={isMyTurn ? 'sb-breathe' : undefined}
-          style={{ backdropFilter: 'blur(8px)' } as React.CSSProperties}
+          backdropFilter="blur(8px)"
         >
           <PlayerName data-testid="player-board-name" color={theme.textColor}>
-            {resolveDisplayName(player.playerId, 'Opponent')}
+            {t('games.sea_battle_v1.table.players.opponentBadge' as TranslationKey)}
+            {' · '}
+            {resolveDisplayName(player.playerId, 'Unknown')}
             {idlePlayers.includes(player.playerId) && <IdleBadge />}
           </PlayerName>
           <PlayerStats>
@@ -337,14 +387,14 @@ const AttackPlayerBoard = memo(
             <div />
             <ColLabels>
               {COL_LABELS.map((label) => (
-                <Label key={label} color={theme.textSecondaryColor}>
+                <Label key={label} style={{ color: theme.textSecondaryColor }}>
                   {label}
                 </Label>
               ))}
             </ColLabels>
             <RowLabels>
               {ROW_LABELS.map((label) => (
-                <Label key={label} color={theme.textSecondaryColor}>
+                <Label key={label} style={{ color: theme.textSecondaryColor }}>
                   {label}
                 </Label>
               ))}
@@ -361,6 +411,7 @@ AttackPlayerBoard.displayName = 'AttackPlayerBoard';
 interface AttackBoardProps {
   players: SeaBattlePlayerState[];
   currentUserId: string | null;
+  currentTurnPlayerId: string | null;
   isMyTurn: boolean;
   onAttack: (targetPlayerId: string, row: number, col: number) => void;
   resolveDisplayName: (id: string, fallback: string) => string;
@@ -370,6 +421,7 @@ interface AttackBoardProps {
 export const AttackBoard = memo(function AttackBoard({
   players,
   currentUserId,
+  currentTurnPlayerId,
   isMyTurn,
   onAttack,
   resolveDisplayName,
@@ -409,6 +461,7 @@ export const AttackBoard = memo(function AttackBoard({
             theme={theme}
             resolveDisplayName={resolveDisplayName}
             idlePlayers={idlePlayers}
+            isCurrentTurn={currentPlayer.playerId === currentTurnPlayerId}
             isMyTurn={isMyTurn}
             disabled={disabled}
             sunkCellSet={sunkCellSet}
@@ -424,6 +477,7 @@ export const AttackBoard = memo(function AttackBoard({
             theme={theme}
             resolveDisplayName={resolveDisplayName}
             idlePlayers={idlePlayers}
+            isCurrentTurn={opponent.playerId === currentTurnPlayerId}
             isMyTurn={isMyTurn}
             disabled={disabled}
             sunkCellSet={sunkCellSet}

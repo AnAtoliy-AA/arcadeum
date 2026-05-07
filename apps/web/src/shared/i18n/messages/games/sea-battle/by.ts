@@ -93,6 +93,8 @@ export const byMessages = {
         placeShips: 'Растаўце свае караблі',
         waitingFor: 'Чакаем {{player}}...',
         targetBadge: 'Мэта',
+        defendingBadge: 'Абарона',
+        opponentBadge: 'Апанент',
       },
       phase: {
         lobby: 'Лобі',

@@ -28,7 +28,7 @@ import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 
 import { RulesModal } from './RulesModal';
-import { useSeaBattleAnimations } from './styles/animations';
+import './styles/animations.css';
 
 export const SeaBattleGame = memo(function SeaBattleGame({
   roomId,
@@ -43,7 +43,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   toggleFullscreen: _toggleFullscreen,
 }: SeaBattleGameProps) {
   const { t } = useTranslation();
-  useSeaBattleAnimations();
 
   const storeRoom = useGameStore((s: GameState) => s.room);
   const storeDeleteRoom = useGameStore((s: GameState) => s.deleteRoom);
@@ -156,10 +155,24 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       if (!currentUserId || !room) return fallback || id || '';
       if (id === currentUserId)
         return t('games.sea_battle_v1.table.players.you');
+
       const member = room.members?.find((m) => m.id === id);
-      return member?.displayName || fallback || id || '';
+      if (member?.displayName) return member.displayName;
+
+      // Handle bots sequentially
+      if (id?.startsWith('bot-')) {
+        const botOrder =
+          snapshot?.playerOrder.filter((pId) => pId.startsWith('bot-')) || [];
+        const botIndex = botOrder.indexOf(id);
+        if (botIndex !== -1) {
+          return `${t('games.lobby.bot' as TranslationKey)} ${botIndex + 1}`;
+        }
+        return 'Bot';
+      }
+
+      return fallback || id || '';
     },
-    [currentUserId, room, t],
+    [currentUserId, room, t, snapshot],
   );
 
   const cardVariant = (room?.gameOptions?.variant ||
@@ -259,6 +272,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
             key="attack-board"
             players={snapshot.players}
             currentUserId={currentUserId}
+            currentTurnPlayerId={currentTurnPlayer?.playerId ?? null}
             isMyTurn={isMyTurn}
             onAttack={attack}
             resolveDisplayName={resolveDisplayNameBound}

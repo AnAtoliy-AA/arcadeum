@@ -170,6 +170,7 @@ export const enMessages = {
     button: 'Game Rules',
   },
   lobby: {
+    bot: 'Bot',
     botCountLabel: 'Number of bots',
     startWithBots: 'Start with {{count}} 🤖',
     playWithBotsNotice: 'Start with bots immediately or wait for other players',

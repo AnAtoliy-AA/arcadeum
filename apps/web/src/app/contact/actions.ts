@@ -15,8 +15,6 @@ export type ContactActionState =
   | { status: 'invalid'; fieldErrors: ContactFieldErrors }
   | { status: 'error'; message: string };
 
-export const initialContactActionState: ContactActionState = { status: 'idle' };
-
 function readField(formData: FormData, key: string): string {
   const value = formData.get(key);
   return typeof value === 'string' ? value.trim() : '';

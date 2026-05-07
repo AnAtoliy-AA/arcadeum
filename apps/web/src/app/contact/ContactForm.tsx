@@ -11,7 +11,9 @@ import { LaunchButton } from '@arcadeum/ui/components/LaunchButton';
 import { XStack, YStack } from 'tamagui';
 import { ContactAvatars } from './ContactAvatars';
 import { useContactStyles } from './useContactStyles';
-import { initialContactActionState, submitContactAction } from './actions';
+import { submitContactAction, type ContactActionState } from './actions';
+
+const initialContactActionState: ContactActionState = { status: 'idle' };
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
 type FormCopy = NonNullable<NonNullable<ContactMessages['sections']>['form']>;

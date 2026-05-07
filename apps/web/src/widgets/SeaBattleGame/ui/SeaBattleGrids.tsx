@@ -41,15 +41,16 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
         display: 'grid',
         gridTemplateColumns:
           media.gtLg && !media.short
-            ? 'repeat(3, 1fr)'
+            ? 'repeat(3, minmax(0, 1fr))'
             : (media.tablet && media.short) ||
                 (media.sm && media.gtXs) ||
                 media.gtSm
-              ? 'repeat(2, 1fr)'
+              ? 'repeat(2, minmax(0, 1fr))'
               : '1fr',
         gridAutoRows: 'min-content',
         gap: media.short ? 10 : media.sm ? 12 : 16,
         width: '100%',
+        minWidth: 0,
         maxWidth: media.short ? 1000 : '100%',
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -57,6 +58,8 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
         boxSizing: 'border-box',
         alignItems: 'stretch',
         justifyItems: 'center',
+        alignContent: 'center',
+        flexGrow: 1,
       }}
     >
       {children}

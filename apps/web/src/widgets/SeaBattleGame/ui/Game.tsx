@@ -26,6 +26,7 @@ import { SeaBattleLobby } from './SeaBattleLobby';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
+import { Card, Typography } from '@arcadeum/ui';
 
 import { RulesModal } from './RulesModal';
 import { useSeaBattleAnimations } from './styles/animations';
@@ -98,12 +99,20 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     isPlacementComplete,
     isGameOver,
     isWinner,
+    teamMode,
+    viewerTeam,
+    winnerTeam,
   } = useSeaBattleState({
     roomId,
     currentUserId,
     initialSession,
     room: room ?? undefined,
   });
+
+  const teammateIds = useMemo(() => {
+    if (!viewerTeam || !currentUserId) return undefined;
+    return viewerTeam.playerIds.filter((id) => id !== currentUserId);
+  }, [viewerTeam, currentUserId]);
 
   // Use shared chat integration hook
   useGameChatIntegration(snapshot?.logs, postHistoryNoteAction);
@@ -215,9 +224,12 @@ export const SeaBattleGame = memo(function SeaBattleGame({
 
   const gameResult = useMemo(() => {
     if (!isGameOver) return null;
+    if (teamMode) {
+      return isWinner ? 'victory' : 'defeat';
+    }
     if (isWinner || snapshot?.winnerId === currentUserId) return 'victory';
     return 'defeat';
-  }, [isGameOver, isWinner, snapshot?.winnerId, currentUserId]);
+  }, [isGameOver, isWinner, snapshot?.winnerId, currentUserId, teamMode]);
 
   const headerTitle = useMemo(
     () =>
@@ -254,6 +266,37 @@ export const SeaBattleGame = memo(function SeaBattleGame({
           />
         )}
 
+        {isBattlePhase && currentPlayer && !currentPlayer.alive && (
+          <Card
+            variant="error"
+            padding="md"
+            marginHorizontal="$3"
+            marginBottom="$3"
+          >
+            <Typography>
+              {t(
+                'games.sea_battle_v1.teamMode.banner.eliminatedSpectator' as TranslationKey,
+              )}
+            </Typography>
+          </Card>
+        )}
+
+        {isGameOver && teamMode && winnerTeam && (
+          <Card
+            variant="elevated"
+            padding="md"
+            marginHorizontal="$3"
+            marginBottom="$3"
+          >
+            <Typography>
+              {t(
+                'games.sea_battle_v1.teamMode.banner.teamWon' as TranslationKey,
+                { team: winnerTeam.name },
+              )}
+            </Typography>
+          </Card>
+        )}
+
         {isBattlePhase && snapshot && (
           <AttackBoard
             key="attack-board"
@@ -262,6 +305,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
             isMyTurn={isMyTurn}
             onAttack={attack}
             resolveDisplayName={resolveDisplayNameBound}
+            teammateIds={teammateIds}
           />
         )}
       </>
@@ -280,6 +324,11 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       attack,
       resolveDisplayNameBound,
       snapshot,
+      teammateIds,
+      isGameOver,
+      teamMode,
+      winnerTeam,
+      t,
     ],
   );
 

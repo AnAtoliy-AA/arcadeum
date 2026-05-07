@@ -168,6 +168,7 @@ interface AttackPlayerBoardProps {
   idlePlayers: string[];
   isMyTurn: boolean;
   disabled: boolean;
+  isTeammate?: boolean;
   sunkCellSet: Set<string>;
   onAttack?: (targetPlayerId: string, row: number, col: number) => void;
   t: (key: TranslationKey) => string;
@@ -182,13 +183,16 @@ const AttackPlayerBoard = memo(
     idlePlayers,
     isMyTurn,
     disabled,
+    isTeammate = false,
     sunkCellSet,
     onAttack,
     t,
   }: AttackPlayerBoardProps) => {
+    const isAttackDisabled = disabled || isTeammate;
+    const showTargeting = isMyTurn && !isTeammate;
     const handleGridClick = useCallback(
       (e: React.MouseEvent) => {
-        if (!isMyTurn || disabled || !onAttack) return;
+        if (!isMyTurn || isAttackDisabled || !onAttack) return;
 
         // Find the closest sb-cell that is attackable
         const cell = (e.target as HTMLElement).closest(
@@ -203,15 +207,20 @@ const AttackPlayerBoard = memo(
           onAttack(player.playerId, parseInt(row), parseInt(col));
         }
       },
-      [isMyTurn, disabled, onAttack, player.playerId],
+      [isMyTurn, isAttackDisabled, onAttack, player.playerId],
     );
 
     const boardGrid = (
       <BoardGrid
-        className={`sb-board-grid ${!isMe && isMyTurn ? 'sb-my-turn' : ''}`}
+        className={`sb-board-grid ${showTargeting ? 'sb-my-turn' : ''}`}
         backgroundColor={theme.boardBackground}
         borderColor={theme.cellBorder}
         onClick={handleGridClick}
+        style={
+          isTeammate
+            ? ({ cursor: 'not-allowed' } as React.CSSProperties)
+            : undefined
+        }
       >
         {player.board.map((row, rIndex) =>
           row.map((cellState, cIndex) => {
@@ -226,6 +235,7 @@ const AttackPlayerBoard = memo(
                   : cellState;
             const isAttackable =
               !isMe &&
+              !isTeammate &&
               cellState !== CELL_STATE.HIT &&
               cellState !== CELL_STATE.MISS &&
               !isSunk;
@@ -294,7 +304,7 @@ const AttackPlayerBoard = memo(
           paddingHorizontal="$1.5"
           top={-4}
         >
-          {isMyTurn && (
+          {isTeammate ? (
             <XStack
               alignItems="center"
               gap="$1"
@@ -302,28 +312,51 @@ const AttackPlayerBoard = memo(
               paddingVertical="$0.5"
               borderRadius={8}
               borderWidth={1}
-              backgroundColor="rgba(239,68,68,0.1)"
-              borderColor="rgba(239,68,68,0.3)"
+              backgroundColor="rgba(34,197,94,0.1)"
+              borderColor="rgba(34,197,94,0.3)"
             >
-              <Text fontSize={10}>🎯</Text>
+              <Text fontSize={10}>🤝</Text>
               <Text
                 fontSize={9}
                 fontWeight="700"
-                color="#fca5a5"
+                color="#86efac"
                 textTransform="uppercase"
               >
-                {t(
-                  'games.sea_battle_v1.table.players.targetBadge' as TranslationKey,
-                )}
+                Teammate
               </Text>
             </XStack>
+          ) : (
+            showTargeting && (
+              <XStack
+                alignItems="center"
+                gap="$1"
+                paddingHorizontal="$2"
+                paddingVertical="$0.5"
+                borderRadius={8}
+                borderWidth={1}
+                backgroundColor="rgba(239,68,68,0.1)"
+                borderColor="rgba(239,68,68,0.3)"
+              >
+                <Text fontSize={10}>🎯</Text>
+                <Text
+                  fontSize={9}
+                  fontWeight="700"
+                  color="#fca5a5"
+                  textTransform="uppercase"
+                >
+                  {t(
+                    'games.sea_battle_v1.table.players.targetBadge' as TranslationKey,
+                  )}
+                </Text>
+              </XStack>
+            )
           )}
         </BadgeWrapper>
         <PlayerSection
-          isTargetable={isMyTurn}
+          isTargetable={showTargeting}
           backgroundColor={theme.boardBackground}
-          borderColor={isMyTurn ? theme.accentColor : theme.cellBorder}
-          className={isMyTurn ? 'sb-breathe' : undefined}
+          borderColor={showTargeting ? theme.accentColor : theme.cellBorder}
+          className={showTargeting ? 'sb-breathe' : undefined}
           style={{ backdropFilter: 'blur(8px)' } as React.CSSProperties}
         >
           <PlayerName data-testid="player-board-name" color={theme.textColor}>
@@ -365,6 +398,7 @@ interface AttackBoardProps {
   onAttack: (targetPlayerId: string, row: number, col: number) => void;
   resolveDisplayName: (id: string, fallback: string) => string;
   disabled?: boolean;
+  teammateIds?: string[];
 }
 
 export const AttackBoard = memo(function AttackBoard({
@@ -374,6 +408,7 @@ export const AttackBoard = memo(function AttackBoard({
   onAttack,
   resolveDisplayName,
   disabled = false,
+  teammateIds,
 }: AttackBoardProps) {
   const { t } = useTranslation();
   const theme = useSeaBattleTheme();
@@ -416,21 +451,25 @@ export const AttackBoard = memo(function AttackBoard({
           />
         )}
 
-        {opponents.map((opponent) => (
-          <AttackPlayerBoard
-            key={opponent.playerId}
-            player={opponent}
-            isMe={false}
-            theme={theme}
-            resolveDisplayName={resolveDisplayName}
-            idlePlayers={idlePlayers}
-            isMyTurn={isMyTurn}
-            disabled={disabled}
-            sunkCellSet={sunkCellSet}
-            onAttack={onAttack}
-            t={t}
-          />
-        ))}
+        {opponents.map((opponent) => {
+          const isTeammate = !!teammateIds?.includes(opponent.playerId);
+          return (
+            <AttackPlayerBoard
+              key={opponent.playerId}
+              player={opponent}
+              isMe={false}
+              theme={theme}
+              resolveDisplayName={resolveDisplayName}
+              idlePlayers={idlePlayers}
+              isMyTurn={isMyTurn}
+              disabled={disabled}
+              isTeammate={isTeammate}
+              sunkCellSet={sunkCellSet}
+              onAttack={isTeammate ? undefined : onAttack}
+              t={t}
+            />
+          );
+        })}
       </SeaBattleGrids>
     </MainGameArea>
   );

@@ -1,10 +1,12 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import {
   Avatar,
   Badge,
   Button,
   Card,
+  Input,
   Typography,
   XStack,
   YStack,
@@ -14,8 +16,10 @@ import {
   emitAddBotToTeam,
   emitAssignTeam,
   emitRemoveBotFromTeam,
+  emitSetTeamConfig,
 } from './team-mode.api';
-import type { SeaBattleTeam } from './team-mode.types';
+import { ColorPalette, SizeStepper } from './team-controls';
+import { MIN_TEAMS, type SeaBattleTeam } from './team-mode.types';
 
 export interface TeamSlotsMember {
   userId: string;
@@ -29,6 +33,13 @@ interface TeamSlotsBoardProps {
   hostId: string;
   teams: SeaBattleTeam[];
   members: TeamSlotsMember[];
+}
+
+interface TeamDraft {
+  id: string;
+  name: string;
+  color: string;
+  targetSize: number;
 }
 
 function isBot(id: string): boolean {
@@ -46,10 +57,10 @@ function memberDisplayName(
 }
 
 /**
- * Visible to all players. Each team is a card with N slots; empty slots are
- * "Join team" buttons; filled slots show avatar + name. The host can move any
- * non-self player between teams via inline action buttons, remove bots, and
- * add bots to fill open slots.
+ * Visible to all players. Each team is a card with a colored stripe, header
+ * (editable for host: name + color + size + remove; read-only otherwise),
+ * and N filled-or-empty slots. The host can also move non-self players
+ * between teams, remove bots, and add bots to fill open slots.
  */
 export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
   const { roomId, userId, hostId, teams, members } = props;
@@ -57,9 +68,61 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
   const isHost = userId === hostId;
   const botLabel = t('games.sea_battle_v1.teamMode.slots.botLabel');
 
+  const [drafts, setDrafts] = useState<TeamDraft[]>(() =>
+    teams.map((team) => ({
+      id: team.id,
+      name: team.name,
+      color: team.color,
+      targetSize: team.targetSize,
+    })),
+  );
+
+  useEffect(() => {
+    setDrafts(
+      teams.map((team) => ({
+        id: team.id,
+        name: team.name,
+        color: team.color,
+        targetSize: team.targetSize,
+      })),
+    );
+  }, [teams]);
+
+  const commit = (next: TeamDraft[]) => {
+    emitSetTeamConfig({
+      roomId,
+      userId,
+      teams: next.map((d) => ({
+        id: d.id,
+        name: d.name,
+        color: d.color,
+        targetSize: d.targetSize,
+      })),
+    });
+  };
+
+  const updateDraft = (id: string, patch: Partial<TeamDraft>) => {
+    const next = drafts.map((d) => (d.id === id ? { ...d, ...patch } : d));
+    setDrafts(next);
+    commit(next);
+  };
+
+  const removeTeam = (id: string) => {
+    if (drafts.length <= MIN_TEAMS) return;
+    const next = drafts.filter((d) => d.id !== id);
+    setDrafts(next);
+    commit(next);
+  };
+
   return (
     <XStack gap="$3" flexWrap="wrap" data-testid="team-slots-board">
       {teams.map((team) => {
+        const draft = drafts.find((d) => d.id === team.id) ?? {
+          id: team.id,
+          name: team.name,
+          color: team.color,
+          targetSize: team.targetSize,
+        };
         const filled = team.playerIds;
         const emptyCount = Math.max(0, team.targetSize - filled.length);
         const teamFull = filled.length >= team.targetSize;
@@ -73,19 +136,68 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
             data-testid={`team-card-${team.id}`}
             style={{
               borderLeftWidth: 4,
-              borderLeftColor: team.color,
-              minWidth: 220,
+              borderLeftColor: draft.color,
+              minWidth: 260,
               flex: 1,
             }}
           >
             <YStack gap="$2">
-              <Typography
-                variant="heading"
-                uiSize="md"
-                style={{ color: team.color }}
-              >
-                {team.name}
-              </Typography>
+              {isHost ? (
+                <XStack
+                  gap="$2"
+                  alignItems="center"
+                  flexWrap="wrap"
+                  data-testid={`team-row-${team.id}`}
+                >
+                  <Input
+                    flex={1}
+                    minWidth={120}
+                    type="text"
+                    value={draft.name}
+                    placeholder={t(
+                      'games.sea_battle_v1.teamMode.setup.teamNamePlaceholder',
+                    )}
+                    aria-label={t(
+                      'games.sea_battle_v1.teamMode.setup.teamNamePlaceholder',
+                    )}
+                    size="sm"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      updateDraft(team.id, { name: e.target.value })
+                    }
+                  />
+                  <ColorPalette
+                    color={draft.color}
+                    onChange={(c) => updateDraft(team.id, { color: c })}
+                  />
+                  <SizeStepper
+                    value={draft.targetSize}
+                    onChange={(n) =>
+                      updateDraft(team.id, { targetSize: n })
+                    }
+                  />
+                  {drafts.length > MIN_TEAMS && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      aria-label={t(
+                        'games.sea_battle_v1.teamMode.setup.removeTeam',
+                      )}
+                      data-testid={`team-remove-${team.id}`}
+                      onClick={() => removeTeam(team.id)}
+                    >
+                      ×
+                    </Button>
+                  )}
+                </XStack>
+              ) : (
+                <Typography
+                  variant="heading"
+                  uiSize="md"
+                  style={{ color: team.color }}
+                >
+                  {team.name}
+                </Typography>
+              )}
 
               {filled.map((id) => {
                 const display = memberDisplayName(id, members, botLabel);

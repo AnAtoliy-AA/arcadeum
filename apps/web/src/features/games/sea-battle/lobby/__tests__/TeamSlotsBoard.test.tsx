@@ -5,11 +5,18 @@ import type { ReactNode } from 'react';
 const emitAssignTeam = vi.fn();
 const emitAddBotToTeam = vi.fn();
 const emitRemoveBotFromTeam = vi.fn();
+const emitSetTeamConfig = vi.fn();
 
 vi.mock('../team-mode.api', () => ({
   emitAssignTeam: (...args: unknown[]) => emitAssignTeam(...args),
   emitAddBotToTeam: (...args: unknown[]) => emitAddBotToTeam(...args),
   emitRemoveBotFromTeam: (...args: unknown[]) => emitRemoveBotFromTeam(...args),
+  emitSetTeamConfig: (...args: unknown[]) => emitSetTeamConfig(...args),
+}));
+
+vi.mock('../team-controls', () => ({
+  ColorPalette: () => null,
+  SizeStepper: () => null,
 }));
 
 vi.mock('@/shared/lib/useTranslation', () => ({
@@ -45,6 +52,17 @@ vi.mock('@arcadeum/ui', () => ({
     </button>
   ),
   Avatar: ({ name }: { name?: string }) => <span>{name}</span>,
+  Input: (
+    props: { value?: string; onChange?: (e: unknown) => void } & Record<
+      string,
+      unknown
+    >,
+  ) => (
+    <input
+      value={props.value ?? ''}
+      onChange={props.onChange as (e: unknown) => void}
+    />
+  ),
   Badge: ({ children }: ChildrenProps) => <span>{children}</span>,
   Typography: ({ children }: ChildrenProps) => <span>{children}</span>,
   XStack: ({

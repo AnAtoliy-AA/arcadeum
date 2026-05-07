@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Button, Card, Input, Typography, XStack, YStack } from '@arcadeum/ui';
+import { Button, Card, Typography, XStack, YStack } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { emitSetTeamConfig, type TeamConfigDraft } from './team-mode.api';
+import { emitSetTeamConfig } from './team-mode.api';
 import {
   MAX_TEAMS,
   MAX_TOTAL_PLAYERS,
@@ -20,72 +19,36 @@ interface TeamSetupPanelProps {
   teams: SeaBattleTeam[];
 }
 
-interface TeamDraft extends TeamConfigDraft {
-  id: string;
-}
-
-function toDraft(team: SeaBattleTeam): TeamDraft {
-  return {
-    id: team.id,
-    name: team.name,
-    color: team.color,
-    targetSize: team.targetSize,
-  };
-}
-
 /**
- * Host-only setup form for configuring teams (name, color, target size).
- * Renders as a compact stack of single-row entries; the parent supplies the
- * surrounding card container, hide-ships toggle, and validation banner.
- *
- * The panel mirrors `props.teams` into local state so the inputs stay
- * controlled. Each user-initiated change emits the full updated team list to
- * the backend, which atomically replaces the configuration.
+ * Host-only footer for the team setup section: Add Team button, total slot
+ * counter, and a validation banner. The per-team editable controls (name,
+ * color, size, remove) live inside each team's card in TeamSlotsBoard.
  */
 export function TeamSetupPanel(props: TeamSetupPanelProps) {
   const { roomId, userId, hostId, teams } = props;
   const { t } = useTranslation();
-  const [drafts, setDrafts] = useState<TeamDraft[]>(() => teams.map(toDraft));
-
-  useEffect(() => {
-    setDrafts(teams.map(toDraft));
-  }, [teams]);
 
   if (userId !== hostId) return null;
 
-  const totalSlots = drafts.reduce((sum, d) => sum + d.targetSize, 0);
+  const totalSlots = teams.reduce((sum, team) => sum + team.targetSize, 0);
   const isOverCap = totalSlots > MAX_TOTAL_PLAYERS;
-  const tooFewTeams = drafts.length < MIN_TEAMS;
-  const someUnderMin = drafts.some((d) => d.targetSize < MIN_TEAM_SIZE);
+  const tooFewTeams = teams.length < MIN_TEAMS;
+  const someUnderMin = teams.some((team) => team.targetSize < MIN_TEAM_SIZE);
   const hasErrors = isOverCap || tooFewTeams || someUnderMin;
 
-  const commit = (next: TeamDraft[]) => {
-    emitSetTeamConfig({
-      roomId,
-      userId,
-      teams: next.map((d) => ({
-        id: d.id,
-        name: d.name,
-        color: d.color,
-        targetSize: d.targetSize,
-      })),
-    });
-  };
-
-  const updateDraft = (idx: number, patch: Partial<TeamDraft>) => {
-    const next = drafts.map((d, i) => (i === idx ? { ...d, ...patch } : d));
-    setDrafts(next);
-    commit(next);
-  };
-
   const addTeam = () => {
-    if (drafts.length >= MAX_TEAMS) return;
-    const idx = drafts.length;
+    if (teams.length >= MAX_TEAMS) return;
+    const idx = teams.length;
     const placeholder = t(
       'games.sea_battle_v1.teamMode.setup.teamNamePlaceholder',
     );
-    const next: TeamDraft[] = [
-      ...drafts,
+    const next = [
+      ...teams.map((team) => ({
+        id: team.id,
+        name: team.name,
+        color: team.color,
+        targetSize: team.targetSize,
+      })),
       {
         id: `t${idx + 1}`,
         name: `${placeholder} ${idx + 1}`,
@@ -93,80 +56,16 @@ export function TeamSetupPanel(props: TeamSetupPanelProps) {
         targetSize: MIN_TEAM_SIZE,
       },
     ];
-    setDrafts(next);
-    commit(next);
-  };
-
-  const removeTeam = (idx: number) => {
-    if (drafts.length <= MIN_TEAMS) return;
-    const next = drafts.filter((_, i) => i !== idx);
-    setDrafts(next);
-    commit(next);
+    emitSetTeamConfig({ roomId, userId, teams: next });
   };
 
   return (
     <YStack gap="$2" data-testid="team-setup-panel">
-      <Typography variant="caption" uiSize="sm">
-        {t('games.sea_battle_v1.teamMode.setup.title')}
-      </Typography>
-
-      {drafts.map((draft, idx) => (
-        <XStack
-          key={draft.id}
-          gap="$2"
-          alignItems="center"
-          flexWrap="wrap"
-          paddingHorizontal="$2"
-          paddingVertical="$2"
-          borderRadius="$3"
-          borderLeftWidth={3}
-          borderLeftColor={draft.color}
-          backgroundColor="rgba(255,255,255,0.03)"
-          data-testid={`team-row-${draft.id}`}
-        >
-          <Input
-            flex={1}
-            minWidth={120}
-            maxWidth={180}
-            type="text"
-            value={draft.name}
-            placeholder={t(
-              'games.sea_battle_v1.teamMode.setup.teamNamePlaceholder',
-            )}
-            aria-label={t(
-              'games.sea_battle_v1.teamMode.setup.teamNamePlaceholder',
-            )}
-            size="sm"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              updateDraft(idx, { name: e.target.value })
-            }
-          />
-          <ColorPalette
-            color={draft.color}
-            onChange={(c) => updateDraft(idx, { color: c })}
-          />
-          <SizeStepper
-            value={draft.targetSize}
-            onChange={(n) => updateDraft(idx, { targetSize: n })}
-          />
-          {drafts.length > MIN_TEAMS && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => removeTeam(idx)}
-              data-testid={`team-remove-${draft.id}`}
-            >
-              {t('games.sea_battle_v1.teamMode.setup.removeTeam')}
-            </Button>
-          )}
-        </XStack>
-      ))}
-
       <XStack gap="$3" alignItems="center" flexWrap="wrap">
         <Button
           variant="secondary"
           size="sm"
-          disabled={drafts.length >= MAX_TEAMS}
+          disabled={teams.length >= MAX_TEAMS}
           onClick={addTeam}
           data-testid="team-add-btn"
         >
@@ -202,76 +101,5 @@ export function TeamSetupPanel(props: TeamSetupPanelProps) {
         </Card>
       )}
     </YStack>
-  );
-}
-
-interface ColorPaletteProps {
-  color: string;
-  onChange: (next: string) => void;
-}
-
-function ColorPalette({ color, onChange }: ColorPaletteProps) {
-  return (
-    <XStack gap="$1" data-testid="color-palette">
-      {TEAM_DEFAULT_COLORS.map((c) => {
-        const selected = c === color;
-        return (
-          <button
-            key={c}
-            type="button"
-            aria-label={c}
-            aria-pressed={selected}
-            onClick={() => onChange(c)}
-            style={{
-              backgroundColor: c,
-              outline: selected ? '2px solid white' : 'none',
-              outlineOffset: 1,
-              width: 20,
-              height: 20,
-              padding: 0,
-              minWidth: 20,
-              border: 'none',
-              borderRadius: 5,
-              cursor: 'pointer',
-            }}
-          />
-        );
-      })}
-    </XStack>
-  );
-}
-
-interface SizeStepperProps {
-  value: number;
-  onChange: (next: number) => void;
-}
-
-function SizeStepper({ value, onChange }: SizeStepperProps) {
-  return (
-    <XStack alignItems="center" gap="$1" data-testid="size-stepper">
-      <Button
-        size="sm"
-        variant="secondary"
-        aria-label="decrement"
-        onClick={() => onChange(Math.max(MIN_TEAM_SIZE, value - 1))}
-      >
-        −
-      </Button>
-      <Typography
-        variant="body"
-        uiSize="md"
-        style={{ minWidth: 24, textAlign: 'center' }}
-      >
-        {value}
-      </Typography>
-      <Button
-        size="sm"
-        variant="secondary"
-        aria-label="increment"
-        onClick={() => onChange(value + 1)}
-      >
-        +
-      </Button>
-    </XStack>
   );
 }

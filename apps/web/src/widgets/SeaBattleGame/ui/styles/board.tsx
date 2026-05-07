@@ -1,16 +1,11 @@
-import { styled, XStack, YStack, Text } from 'tamagui';
+import { styled, XStack, YStack, Text, GetProps } from 'tamagui';
+import type { CSSProperties } from 'react';
 
 // CSS Grid wrapper — 10×10 grid that reliably computes its own height.
 // Accepts the same theme props (backgroundColor, borderColor) as inline styles.
 
-export const BoardGrid = styled(YStack, {
-  name: 'BoardGrid',
-  // @ts-ignore
-  display: 'grid',
-  // @ts-ignore
-  gridTemplateColumns: 'repeat(10, 1fr)',
-  // @ts-ignore
-  gridTemplateRows: 'repeat(10, 1fr)',
+const BoardGridContainer = styled(YStack, {
+  name: 'BoardGridContainer',
   aspectRatio: '1',
   padding: 4,
   width: '100%',
@@ -18,6 +13,20 @@ export const BoardGrid = styled(YStack, {
   boxSizing: 'border-box',
   pointerEvents: 'auto',
 });
+
+export type BoardGridProps = GetProps<typeof BoardGridContainer>;
+
+export const BoardGrid = (props: BoardGridProps) => (
+  <BoardGridContainer
+    display="grid"
+    {...props}
+    style={{
+      gridTemplateColumns: 'repeat(10, 1fr)',
+      gridTemplateRows: 'repeat(10, 1fr)',
+      ...(props.style as any),
+    }}
+  />
+);
 
 // State-aware coloring is done inline by the component via useSeaBattleTheme()
 export const BoardCell = styled(YStack, {
@@ -42,18 +51,26 @@ export const BoardCell = styled(YStack, {
 
 // CSS Grid layout: [empty corner] [col labels]
 // [row labels ] [board grid ]
-export const BoardWithLabels = styled(YStack, {
-  name: 'BoardWithLabels',
-  // @ts-ignore
-  display: 'grid',
-  // @ts-ignore
-  gridTemplateColumns: 'auto 1fr',
-  // @ts-ignore
-  gridTemplateRows: 'auto auto',
+const BoardWithLabelsContainer = styled(YStack, {
+  name: 'BoardWithLabelsContainer',
   gap: 2,
   width: '100%',
   maxWidth: '100%',
 });
+
+export type BoardWithLabelsProps = GetProps<typeof BoardWithLabelsContainer>;
+
+export const BoardWithLabels = (props: BoardWithLabelsProps) => (
+  <BoardWithLabelsContainer
+    display="grid"
+    {...props}
+    style={{
+      gridTemplateColumns: 'auto 1fr',
+      gridTemplateRows: 'auto auto',
+      ...(props.style as any),
+    }}
+  />
+);
 
 export const RowLabels = styled(YStack, {
   name: 'RowLabels',

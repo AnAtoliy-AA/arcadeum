@@ -322,6 +322,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
             onAttack={attack}
             resolveDisplayName={resolveDisplayNameBound}
             teammateIds={teammateIds}
+            teams={teams}
           />
         )}
       </>

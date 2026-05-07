@@ -5,12 +5,12 @@ import { styled, XStack, YStack, Text } from 'tamagui';
 
 export const BoardGrid = styled(YStack, {
   name: 'BoardGrid',
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  display: 'grid' as any,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  gridTemplateColumns: 'repeat(10, 1fr)' as any,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  gridTemplateRows: 'repeat(10, 1fr)' as any,
+  // @ts-ignore
+  display: 'grid',
+  // @ts-ignore
+  gridTemplateColumns: 'repeat(10, 1fr)',
+  // @ts-ignore
+  gridTemplateRows: 'repeat(10, 1fr)',
   aspectRatio: '1',
   padding: 4,
   width: '100%',
@@ -44,12 +44,12 @@ export const BoardCell = styled(YStack, {
 // [row labels ] [board grid ]
 export const BoardWithLabels = styled(YStack, {
   name: 'BoardWithLabels',
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  display: 'grid' as any,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  gridTemplateColumns: 'auto 1fr' as any,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  gridTemplateRows: 'auto auto' as any,
+  // @ts-ignore
+  display: 'grid',
+  // @ts-ignore
+  gridTemplateColumns: 'auto 1fr',
+  // @ts-ignore
+  gridTemplateRows: 'auto auto',
   gap: 2,
   width: '100%',
   maxWidth: '100%',

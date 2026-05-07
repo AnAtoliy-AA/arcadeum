@@ -135,16 +135,8 @@ export function ContactSidePanel({
         <Typography variant="caption" alpha="medium" marginTop="$1">
           {side?.statusBody ?? '99.98% uptime over the last 30 days.'}
         </Typography>
-        <YStack marginTop="$3">
-          <a
-            href="https://status.arcadeum.games"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={s.externalIssueLinkStyle}
-          >
-            <span>{side?.statusLinkLabel ?? 'View status page'}</span>
-          </a>
-        </YStack>
+        {/* TODO(ARC-575): restore status-page CTA once status.arcadeum.games
+            is live. */}
       </GlassCard>
     </YStack>
   );

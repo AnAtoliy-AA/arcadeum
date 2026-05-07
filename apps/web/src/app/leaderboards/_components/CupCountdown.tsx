@@ -34,11 +34,11 @@ export function CupCountdown({
             opacity={0.7}
             textTransform="uppercase"
           >
-            {tt.title ?? cup.title}
+            {tt.eyebrow ?? 'Tournament'}
           </Text>
         </XStack>
         <Text fontSize="$8" fontWeight="800">
-          {cup.title}
+          {tt.title ?? cup.title}
         </Text>
         <XStack gap="$5" flexWrap="wrap">
           <Stat

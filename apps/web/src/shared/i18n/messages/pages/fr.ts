@@ -169,6 +169,7 @@ export const fr = {
       horror: 'Horreur',
     },
     cup: {
+      eyebrow: 'Tournoi',
       title: "Coupe d'automne",
       endsIn: 'Se termine dans',
       prizePool: 'Cagnotte',
@@ -198,7 +199,16 @@ export const fr = {
     climbers: { title: 'Plus fortes hausses' },
     fallers: { title: 'Plus fortes baisses' },
     squads: { title: 'Meilleures équipes', members: '{count} membres' },
-    regions: { title: 'Par région' },
+    regions: {
+      title: 'Par région',
+      na: 'Amérique du Nord',
+      eu: 'Europe',
+      sa: 'Amérique du Sud',
+      asia: 'Asie',
+      oceania: 'Océanie',
+      africa: 'Afrique',
+      me: 'Moyen-Orient',
+    },
     rewards: {
       title: 'Échelle des récompenses',
       mythic: "Couronne mythique + 12k d'or",

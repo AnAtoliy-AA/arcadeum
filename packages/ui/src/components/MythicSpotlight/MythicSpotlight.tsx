@@ -1,4 +1,5 @@
 import { XStack, YStack, Text, View, styled } from 'tamagui';
+import { Button } from '../Button/Button';
 import { RankBadge } from '../RankBadge/RankBadge';
 
 export type MythicSpotlightProps = {
@@ -18,12 +19,10 @@ export type MythicSpotlightProps = {
 const Glow = styled(View, {
   name: 'MythicGlow',
   position: 'absolute',
-  top: -40,
-  left: -40,
-  right: -40,
-  bottom: -40,
-  borderRadius: 200,
-  backgroundColor: 'rgba(236,72,153,0.18)',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
   pointerEvents: 'none',
 });
 
@@ -68,7 +67,12 @@ export function MythicSpotlight({
   const initial = name.charAt(0).toUpperCase();
   return (
     <Card testID="leaderboard-mythic-spotlight">
-      <Glow />
+      <Glow
+        style={{
+          background:
+            'radial-gradient(60% 80% at 20% 20%, rgba(236,72,153,0.28), transparent 70%)',
+        }}
+      />
       <XStack alignItems="center" gap="$5" flexWrap="wrap">
         <Avatar>
           {avatarUrl ? (
@@ -121,21 +125,19 @@ export function MythicSpotlight({
           </XStack>
         </YStack>
         {onPressCta ? (
-          <XStack
-            paddingHorizontal="$4"
-            paddingVertical="$3"
-            borderRadius="$3"
-            borderWidth={1}
-            borderColor="$mythicAccent"
-            backgroundColor="rgba(236,72,153,0.12)"
-            cursor="pointer"
-            onPress={onPressCta}
-            hoverStyle={{ backgroundColor: 'rgba(236,72,153,0.2)' }}
+          <Button
+            variant="ghost"
+            onClick={onPressCta}
+            aria-label={ctaLabel}
+            data-testid="leaderboard-mythic-spotlight-cta"
+            style={{
+              borderColor: 'var(--mythicAccent)',
+              backgroundColor: 'rgba(236,72,153,0.12)',
+              color: 'var(--mythicAccent)',
+            }}
           >
-            <Text fontWeight="700" color="$mythicAccent">
-              {ctaLabel}
-            </Text>
-          </XStack>
+            {ctaLabel}
+          </Button>
         ) : null}
       </XStack>
     </Card>

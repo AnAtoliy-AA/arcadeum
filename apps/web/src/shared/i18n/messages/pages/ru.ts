@@ -168,6 +168,7 @@ export const ru = {
       horror: 'Хоррор',
     },
     cup: {
+      eyebrow: 'Турнир',
       title: 'Осенний кубок',
       endsIn: 'Заканчивается через',
       prizePool: 'Призовой фонд',
@@ -197,7 +198,16 @@ export const ru = {
     climbers: { title: 'Топ роста' },
     fallers: { title: 'Крупнейшие падения' },
     squads: { title: 'Топ кланов', members: '{count} участников' },
-    regions: { title: 'По регионам' },
+    regions: {
+      title: 'По регионам',
+      na: 'Северная Америка',
+      eu: 'Европа',
+      sa: 'Южная Америка',
+      asia: 'Азия',
+      oceania: 'Океания',
+      africa: 'Африка',
+      me: 'Ближний Восток',
+    },
     rewards: {
       title: 'Лестница наград',
       mythic: 'Мифическая корона + 12 тыс. золота',

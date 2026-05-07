@@ -169,6 +169,7 @@ export const en = {
       horror: 'Horror',
     },
     cup: {
+      eyebrow: 'Tournament',
       title: 'Autumn Cup',
       endsIn: 'Ends in',
       prizePool: 'Prize pool',
@@ -198,7 +199,16 @@ export const en = {
     climbers: { title: 'Top climbers' },
     fallers: { title: 'Biggest drops' },
     squads: { title: 'Top squads', members: '{count} members' },
-    regions: { title: 'By region' },
+    regions: {
+      title: 'By region',
+      na: 'North America',
+      eu: 'Europe',
+      sa: 'South America',
+      asia: 'Asia',
+      oceania: 'Oceania',
+      africa: 'Africa',
+      me: 'Middle East',
+    },
     rewards: {
       title: 'Reward ladder',
       mythic: 'Mythic crown + 12k gold',

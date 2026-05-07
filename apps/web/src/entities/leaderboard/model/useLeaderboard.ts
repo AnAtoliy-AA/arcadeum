@@ -7,7 +7,12 @@ import {
 
 export function useLeaderboard(args: GetLeaderboardArgs = {}) {
   return useQuery({
-    queryKey: ['leaderboard', args.mode ?? 'all', args.page ?? 1],
+    queryKey: [
+      'leaderboard',
+      args.mode ?? 'all',
+      args.page ?? 1,
+      args.selfId ?? null,
+    ],
     queryFn: () => getLeaderboard(args),
   });
 }

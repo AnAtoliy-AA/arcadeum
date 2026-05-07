@@ -18,22 +18,25 @@ import { PinnedSelfRow } from './_components/PinnedSelfRow';
 
 interface LeaderboardsPageContentProps {
   t?: PageTranslations;
+  selfId?: string;
 }
 
 export default function LeaderboardsPageContent({
   t: initialT,
+  selfId,
 }: LeaderboardsPageContentProps) {
   const { messages } = useLanguage();
   const t =
     (messages.pages?.leaderboards as unknown as PageTranslations) || initialT;
   const [mode, setMode] = useState<GameMode>('all');
-  const { data, isLoading } = useLeaderboard({ mode });
+  const { data, isLoading } = useLeaderboard({ mode, selfId });
 
   const mythicLabels = (t?.mythic ?? {}) as {
     streak?: string;
     leadOver?: string;
     cta?: string;
   };
+  const regionLabels = (t?.regions ?? {}) as Record<string, string | undefined>;
 
   return (
     <PageLayout>
@@ -47,7 +50,10 @@ export default function LeaderboardsPageContent({
               rating={data.mythic.rating}
               ratingDelta={data.mythic.ratingDelta}
               streak={data.mythic.streak}
-              region={data.mythic.region}
+              region={
+                regionLabels[data.mythic.region] ??
+                data.mythic.region.toUpperCase()
+              }
               streakLabel={(
                 mythicLabels.streak ?? '{count}-game streak'
               ).replace('{count}', String(data.mythic.streak))}

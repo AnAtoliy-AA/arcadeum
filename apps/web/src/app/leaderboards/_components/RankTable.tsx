@@ -26,12 +26,13 @@ const HeaderRow = styled(XStack, {
 });
 
 function trendArrow(rank: number, prev?: number) {
-  if (prev == null) return { glyph: '·', color: '$neutral' as const, n: 0 };
+  if (prev == null)
+    return { glyph: '·', color: '$textSecondary' as const, n: 0 };
   if (prev > rank)
     return { glyph: '▲', color: '$success' as const, n: prev - rank };
   if (prev < rank)
     return { glyph: '▼', color: '$danger' as const, n: rank - prev };
-  return { glyph: '·', color: '$neutral' as const, n: 0 };
+  return { glyph: '·', color: '$textSecondary' as const, n: 0 };
 }
 
 export function RankTable({
@@ -44,6 +45,10 @@ export function RankTable({
   t?: PageTranslations;
 }) {
   const labels = ((t?.table as Record<string, string>) ?? {}) as Record<
+    string,
+    string
+  >;
+  const regionLabels = ((t?.regions as Record<string, string>) ?? {}) as Record<
     string,
     string
   >;
@@ -111,16 +116,28 @@ export function RankTable({
 
       {loading
         ? Array.from({ length: 8 }).map((_, i) => (
-            <Row key={`sk_${i}`}>
+            <Row key={`sk_${i}`} minHeight={56}>
               <View
                 width={36}
-                height={20}
+                height={22}
                 backgroundColor="rgba(255,255,255,0.06)"
                 borderRadius={4}
               />
               <View
                 flex={1}
-                height={20}
+                height={18}
+                backgroundColor="rgba(255,255,255,0.06)"
+                borderRadius={4}
+              />
+              <View
+                width={80}
+                height={14}
+                backgroundColor="rgba(255,255,255,0.04)"
+                borderRadius={4}
+              />
+              <View
+                width={80}
+                height={18}
                 backgroundColor="rgba(255,255,255,0.06)"
                 borderRadius={4}
               />
@@ -153,13 +170,8 @@ export function RankTable({
                     ) : null}
                   </XStack>
                 </YStack>
-                <Text
-                  width={80}
-                  fontSize="$2"
-                  textTransform="uppercase"
-                  opacity={0.8}
-                >
-                  {p.region}
+                <Text width={80} fontSize="$2" opacity={0.8} numberOfLines={1}>
+                  {regionLabels[p.region] ?? p.region.toUpperCase()}
                 </Text>
                 <Text
                   width={80}

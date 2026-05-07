@@ -118,7 +118,7 @@ export async function getLeaderboard(
       ? {
           ...rows[0],
           ratingDelta: rows[0].rating - rows[1].rating,
-          streak: 11,
+          streak: 8 + Math.floor(rng() * 8),
         }
       : null;
 

@@ -169,6 +169,7 @@ export const es = {
       horror: 'Terror',
     },
     cup: {
+      eyebrow: 'Torneo',
       title: 'Copa de Otoño',
       endsIn: 'Termina en',
       prizePool: 'Bote de premios',
@@ -198,7 +199,16 @@ export const es = {
     climbers: { title: 'Mayores ascensos' },
     fallers: { title: 'Mayores caídas' },
     squads: { title: 'Mejores escuadras', members: '{count} miembros' },
-    regions: { title: 'Por región' },
+    regions: {
+      title: 'Por región',
+      na: 'Norteamérica',
+      eu: 'Europa',
+      sa: 'Sudamérica',
+      asia: 'Asia',
+      oceania: 'Oceanía',
+      africa: 'África',
+      me: 'Oriente Medio',
+    },
     rewards: {
       title: 'Escala de recompensas',
       mythic: 'Corona mítica + 12k oro',

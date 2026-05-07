@@ -21,7 +21,8 @@ export function RegionStrip({
   t?: PageTranslations;
 }) {
   if (!regions.length) return null;
-  const title = (t?.regions as { title?: string })?.title ?? 'By region';
+  const tRegions = (t?.regions ?? {}) as Record<string, string | undefined>;
+  const title = tRegions.title ?? 'By region';
   return (
     <YStack gap="$3">
       <Text
@@ -56,8 +57,8 @@ export function RegionStrip({
               borderRadius={5}
               backgroundColor={COLORS[r.region] ?? '#94a3b8'}
             />
-            <Text fontSize="$2" textTransform="uppercase" opacity={0.85}>
-              {r.region}
+            <Text fontSize="$2" opacity={0.85}>
+              {tRegions[r.region] ?? r.region.toUpperCase()}
             </Text>
             <Text fontSize="$2" opacity={0.6} letterSpacing={1}>
               {Math.round(r.share * 100)}%

@@ -168,6 +168,7 @@ export const by = {
       horror: 'Хорар',
     },
     cup: {
+      eyebrow: 'Турнір',
       title: 'Восеньскі кубак',
       endsIn: 'Заканчваецца праз',
       prizePool: 'Прызавы фонд',
@@ -197,7 +198,16 @@ export const by = {
     climbers: { title: 'Топ росту' },
     fallers: { title: 'Найбуйнейшыя падзенні' },
     squads: { title: 'Топ кланаў', members: '{count} удзельнікаў' },
-    regions: { title: 'Па рэгіёнах' },
+    regions: {
+      title: 'Па рэгіёнах',
+      na: 'Паўночная Амерыка',
+      eu: 'Еўропа',
+      sa: 'Паўднёвая Амерыка',
+      asia: 'Азія',
+      oceania: 'Акіянія',
+      africa: 'Афрыка',
+      me: 'Блізкі Усход',
+    },
     rewards: {
       title: 'Лесвіца ўзнагарод',
       mythic: 'Мітычная карона + 12 тыс. золата',

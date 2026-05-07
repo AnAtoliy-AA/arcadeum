@@ -1,5 +1,5 @@
 import { CellState, GamePhase, AttackResult } from './sea-battle.constants';
-import { GameLogEntry } from '../base/game-engine.interface';
+import { ChatScope, GameLogEntry } from '../base/game-engine.interface';
 
 export interface SeaBattleTeam {
   id: string;
@@ -68,5 +68,5 @@ export interface AttackPayload {
 
 export interface ChatPayload {
   message: string;
-  scope?: 'all' | 'players' | 'private' | 'team';
+  scope?: ChatScope;
 }

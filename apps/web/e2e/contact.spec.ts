@@ -45,15 +45,11 @@ test.describe('Contact Form', () => {
 
     const submitBtn = page.getByTestId('contact-submit-button');
     await submitBtn.scrollIntoViewIfNeeded();
+    await submitBtn.click({ force: true });
 
-    // Verify success message with polling and robust click
-    await expect(async () => {
-      await submitBtn
-        .click({ force: true })
-        .catch(() => submitBtn.dispatchEvent('click'));
-      await expect(page.getByTestId('contact-success-message')).toBeVisible({});
-    }).toPass({});
-
+    await expect(page.getByTestId('contact-success-message')).toBeVisible({
+      timeout: 15000,
+    });
     await expect(page.locator('form')).not.toBeVisible({});
   });
 

@@ -207,7 +207,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   );
 
   return (
-    <YStack gap="$3">
+    <YStack flex={1} minHeight={0} gap="$3">
       {room.status === 'lobby' && (isHost || teamMode) && (
         <SeaBattleTeamPanel
           roomId={room.id}
@@ -221,43 +221,47 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
           teamStartBlocked={teamStartBlocked}
         />
       )}
-      <ReusableGameLobby
-        room={room}
-        isHost={isHost}
-        startBusy={startBusy}
-        startDisabled={teamStartBlocked}
-        onStartGame={handleStart}
-        onReorderPlayers={onReorderPlayers}
-        onDeleteRoom={onDeleteRoom}
-        onKickPlayer={onKickPlayer}
-        onLeaveRoom={onLeaveRoom}
-        onRefresh={onRefresh}
-        gameName={t('games.sea_battle_v1.name' as TranslationKey)}
-        gameIcon="🚢"
-        roomIcon={variantInfo.emoji || '⚓'}
-        variantName={
-          variantInfo.name ? t(variantInfo.name as TranslationKey) : undefined
-        }
-        minPlayers={MIN_PLAYERS}
-        labels={{
-          waitingLabel: t('games.sea_battle_v1.table.lobby.waitingToStart'),
-          subtitleText: getSubtitleText(),
-          playersLabel: t('games.rooms.playersLabel'),
-          hostControlsLabel: t('games.sea_battle_v1.table.lobby.hostControls'),
-          startLabel: t('games.sea_battle_v1.table.actions.start'),
-          startingLabel: t('games.sea_battle_v1.table.actions.starting'),
-          roomInfoLabel: t('games.sea_battle_v1.table.lobby.roomInfo'),
-          fastRoomLabel: t('games.rooms.fastRoom'),
-          botCountLabel: t('games.lobby.botCountLabel'),
-          startWithBotsLabel: t('games.lobby.startWithBots'),
-        }}
-        theme={theme}
-        showReorderControls={true}
-        showInvitedPlayers={false}
-        optionsSlot={optionsSlot}
-        headerActionsSlot={headerActionsSlot}
-        enableBots={true}
-      />
+      <YStack flex={1} minHeight={0}>
+        <ReusableGameLobby
+          room={room}
+          isHost={isHost}
+          startBusy={startBusy}
+          startDisabled={teamStartBlocked}
+          onStartGame={handleStart}
+          onReorderPlayers={onReorderPlayers}
+          onDeleteRoom={onDeleteRoom}
+          onKickPlayer={onKickPlayer}
+          onLeaveRoom={onLeaveRoom}
+          onRefresh={onRefresh}
+          gameName={t('games.sea_battle_v1.name' as TranslationKey)}
+          gameIcon="🚢"
+          roomIcon={variantInfo.emoji || '⚓'}
+          variantName={
+            variantInfo.name ? t(variantInfo.name as TranslationKey) : undefined
+          }
+          minPlayers={MIN_PLAYERS}
+          labels={{
+            waitingLabel: t('games.sea_battle_v1.table.lobby.waitingToStart'),
+            subtitleText: getSubtitleText(),
+            playersLabel: t('games.rooms.playersLabel'),
+            hostControlsLabel: t(
+              'games.sea_battle_v1.table.lobby.hostControls',
+            ),
+            startLabel: t('games.sea_battle_v1.table.actions.start'),
+            startingLabel: t('games.sea_battle_v1.table.actions.starting'),
+            roomInfoLabel: t('games.sea_battle_v1.table.lobby.roomInfo'),
+            fastRoomLabel: t('games.rooms.fastRoom'),
+            botCountLabel: t('games.lobby.botCountLabel'),
+            startWithBotsLabel: t('games.lobby.startWithBots'),
+          }}
+          theme={theme}
+          showReorderControls={true}
+          showInvitedPlayers={false}
+          optionsSlot={optionsSlot}
+          headerActionsSlot={headerActionsSlot}
+          enableBots={true}
+        />
+      </YStack>
     </YStack>
   );
 });

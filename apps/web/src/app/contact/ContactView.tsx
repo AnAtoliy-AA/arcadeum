@@ -26,6 +26,7 @@ import { ContactFaq, getFaqItems } from './ContactFaq';
 import { ContactAvatars } from './ContactAvatars';
 import { ContactForm } from './ContactForm';
 import { ContactTips } from './ContactTips';
+import styles from './ContactView.module.css';
 
 export interface ContactViewProps {
   t?: ContactMessages;
@@ -257,17 +258,15 @@ export default function ContactView({
             ))}
           </div>
 
-          <YStack
-            $gtSm={{ flexDirection: 'row', alignItems: 'flex-start' }}
-            flexDirection="column"
-            gap="$5"
-          >
-            <YStack flex={1.6} minWidth={0} gap="$4">
+          <div className={styles.row}>
+            <div className={styles.formCol}>
               <ContactForm form={form} />
               <ContactTips tips={sections?.tips} />
-            </YStack>
-            <ContactSidePanel side={side} workingHours={WORKING_HOURS} />
-          </YStack>
+            </div>
+            <div className={styles.sideCol}>
+              <ContactSidePanel side={side} workingHours={WORKING_HOURS} />
+            </div>
+          </div>
 
           <ContactFaq
             items={faqItems}

@@ -2,13 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { Button, Card, Input, Typography, XStack, YStack } from '@arcadeum/ui';
-import { Switch } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import {
-  emitSetTeamConfig,
-  emitToggleHideShips,
-  type TeamConfigDraft,
-} from './team-mode.api';
+import { emitSetTeamConfig, type TeamConfigDraft } from './team-mode.api';
 import {
   MAX_TEAMS,
   MAX_TOTAL_PLAYERS,
@@ -23,7 +18,6 @@ interface TeamSetupPanelProps {
   userId: string;
   hostId: string;
   teams: SeaBattleTeam[];
-  hideShipsFromTeammates: boolean;
 }
 
 interface TeamDraft extends TeamConfigDraft {
@@ -40,15 +34,16 @@ function toDraft(team: SeaBattleTeam): TeamDraft {
 }
 
 /**
- * Host-only setup panel for configuring teams (name, color, target size).
- * Includes the "Hide ships from teammates" toggle and a validation banner.
+ * Host-only setup form for configuring teams (name, color, target size).
+ * Renders as a compact stack of single-row entries; the parent supplies the
+ * surrounding card container, hide-ships toggle, and validation banner.
  *
  * The panel mirrors `props.teams` into local state so the inputs stay
  * controlled. Each user-initiated change emits the full updated team list to
  * the backend, which atomically replaces the configuration.
  */
 export function TeamSetupPanel(props: TeamSetupPanelProps) {
-  const { roomId, userId, hostId, teams, hideShipsFromTeammates } = props;
+  const { roomId, userId, hostId, teams } = props;
   const { t } = useTranslation();
   const [drafts, setDrafts] = useState<TeamDraft[]>(() => teams.map(toDraft));
 
@@ -110,122 +105,103 @@ export function TeamSetupPanel(props: TeamSetupPanelProps) {
   };
 
   return (
-    <Card variant="outlined" padding="md" data-testid="team-setup-panel">
-      <YStack gap="$3">
-        <Typography variant="heading" uiSize="lg">
-          {t('games.sea_battle_v1.teamMode.setup.title')}
-        </Typography>
+    <YStack gap="$2" data-testid="team-setup-panel">
+      <Typography variant="caption" uiSize="sm">
+        {t('games.sea_battle_v1.teamMode.setup.title')}
+      </Typography>
 
-        {drafts.map((draft, idx) => (
-          <Card
-            key={draft.id}
-            variant="default"
-            padding="sm"
-            data-testid={`team-row-${draft.id}`}
-          >
-            <YStack gap="$2">
-              <XStack gap="$2" alignItems="center" flexWrap="wrap">
-                <Input
-                  flex={1}
-                  minWidth={140}
-                  type="text"
-                  value={draft.name}
-                  placeholder={t(
-                    'games.sea_battle_v1.teamMode.setup.teamNamePlaceholder',
-                  )}
-                  aria-label={t(
-                    'games.sea_battle_v1.teamMode.setup.teamNamePlaceholder',
-                  )}
-                  size="sm"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    updateDraft(idx, { name: e.target.value })
-                  }
-                />
-                <ColorPalette
-                  color={draft.color}
-                  onChange={(c) => updateDraft(idx, { color: c })}
-                />
-                <SizeStepper
-                  value={draft.targetSize}
-                  onChange={(n) => updateDraft(idx, { targetSize: n })}
-                />
-                {drafts.length > MIN_TEAMS && (
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => removeTeam(idx)}
-                    data-testid={`team-remove-${draft.id}`}
-                  >
-                    {t('games.sea_battle_v1.teamMode.setup.removeTeam')}
-                  </Button>
-                )}
-              </XStack>
-            </YStack>
-          </Card>
-        ))}
-
-        <XStack gap="$3" alignItems="center" flexWrap="wrap">
-          <Button
-            variant="secondary"
+      {drafts.map((draft, idx) => (
+        <XStack
+          key={draft.id}
+          gap="$2"
+          alignItems="center"
+          flexWrap="wrap"
+          paddingHorizontal="$2"
+          paddingVertical="$2"
+          borderRadius="$3"
+          borderLeftWidth={3}
+          borderLeftColor={draft.color}
+          backgroundColor="rgba(255,255,255,0.03)"
+          data-testid={`team-row-${draft.id}`}
+        >
+          <Input
+            flex={1}
+            minWidth={120}
+            maxWidth={180}
+            type="text"
+            value={draft.name}
+            placeholder={t(
+              'games.sea_battle_v1.teamMode.setup.teamNamePlaceholder',
+            )}
+            aria-label={t(
+              'games.sea_battle_v1.teamMode.setup.teamNamePlaceholder',
+            )}
             size="sm"
-            disabled={drafts.length >= MAX_TEAMS}
-            onClick={addTeam}
-            data-testid="team-add-btn"
-          >
-            {t('games.sea_battle_v1.teamMode.setup.addTeam')}
-          </Button>
-          <Typography variant="caption" uiSize="sm">
-            {t('games.sea_battle_v1.teamMode.setup.totalSlots', {
-              used: totalSlots,
-              max: MAX_TOTAL_PLAYERS,
-            })}
-          </Typography>
-        </XStack>
-
-        <XStack gap="$3" alignItems="center">
-          <Typography variant="label" uiSize="md">
-            {t('games.sea_battle_v1.teamMode.hideShipsLabel')}
-          </Typography>
-          <Switch
-            size="$3"
-            checked={hideShipsFromTeammates}
-            onCheckedChange={(next: boolean) =>
-              emitToggleHideShips({ roomId, userId, enabled: next })
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              updateDraft(idx, { name: e.target.value })
             }
-            aria-label={t('games.sea_battle_v1.teamMode.hideShipsLabel')}
-            data-testid="hide-ships-switch"
-          >
-            <Switch.Thumb />
-          </Switch>
+          />
+          <ColorPalette
+            color={draft.color}
+            onChange={(c) => updateDraft(idx, { color: c })}
+          />
+          <SizeStepper
+            value={draft.targetSize}
+            onChange={(n) => updateDraft(idx, { targetSize: n })}
+          />
+          {drafts.length > MIN_TEAMS && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => removeTeam(idx)}
+              data-testid={`team-remove-${draft.id}`}
+            >
+              {t('games.sea_battle_v1.teamMode.setup.removeTeam')}
+            </Button>
+          )}
         </XStack>
+      ))}
 
-        {hasErrors && (
-          <Card
-            variant="error"
-            padding="sm"
-            data-testid="team-setup-validation"
-          >
-            <YStack gap="$1">
-              {isOverCap && (
-                <Typography variant="caption" uiSize="sm">
-                  {t('games.sea_battle_v1.teamMode.errors.roomFull')}
-                </Typography>
-              )}
-              {tooFewTeams && (
-                <Typography variant="caption" uiSize="sm">
-                  {t('games.sea_battle_v1.teamMode.setup.minTeamsHint')}
-                </Typography>
-              )}
-              {someUnderMin && (
-                <Typography variant="caption" uiSize="sm">
-                  {t('games.sea_battle_v1.teamMode.setup.minSizeHint')}
-                </Typography>
-              )}
-            </YStack>
-          </Card>
-        )}
-      </YStack>
-    </Card>
+      <XStack gap="$3" alignItems="center" flexWrap="wrap">
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled={drafts.length >= MAX_TEAMS}
+          onClick={addTeam}
+          data-testid="team-add-btn"
+        >
+          {t('games.sea_battle_v1.teamMode.setup.addTeam')}
+        </Button>
+        <Typography variant="caption" uiSize="sm">
+          {t('games.sea_battle_v1.teamMode.setup.totalSlots', {
+            used: totalSlots,
+            max: MAX_TOTAL_PLAYERS,
+          })}
+        </Typography>
+      </XStack>
+
+      {hasErrors && (
+        <Card variant="error" padding="sm" data-testid="team-setup-validation">
+          <YStack gap="$1">
+            {isOverCap && (
+              <Typography variant="caption" uiSize="sm">
+                {t('games.sea_battle_v1.teamMode.errors.roomFull')}
+              </Typography>
+            )}
+            {tooFewTeams && (
+              <Typography variant="caption" uiSize="sm">
+                {t('games.sea_battle_v1.teamMode.setup.minTeamsHint')}
+              </Typography>
+            )}
+            {someUnderMin && (
+              <Typography variant="caption" uiSize="sm">
+                {t('games.sea_battle_v1.teamMode.setup.minSizeHint')}
+              </Typography>
+            )}
+          </YStack>
+        </Card>
+      )}
+    </YStack>
   );
 }
 
@@ -250,12 +226,12 @@ function ColorPalette({ color, onChange }: ColorPaletteProps) {
               backgroundColor: c,
               outline: selected ? '2px solid white' : 'none',
               outlineOffset: 1,
-              width: 24,
-              height: 24,
+              width: 20,
+              height: 20,
               padding: 0,
-              minWidth: 24,
+              minWidth: 20,
               border: 'none',
-              borderRadius: 6,
+              borderRadius: 5,
               cursor: 'pointer',
             }}
           />

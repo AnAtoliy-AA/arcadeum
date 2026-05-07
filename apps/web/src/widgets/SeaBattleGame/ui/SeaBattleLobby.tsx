@@ -13,12 +13,7 @@ import { TranslationKey } from '@/shared/lib/useTranslation';
 import { IconButton } from '@/features/games/ui/ReusableGameLobby';
 import { SeaBattleThemePreview } from './SeaBattleThemePreview';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
-import {
-  TeamModeToggle,
-  TeamSetupPanel,
-  TeamSlotsBoard,
-  UnassignedPool,
-} from '@/features/games/sea-battle/lobby';
+import { SeaBattleTeamPanel } from './SeaBattleTeamPanel';
 import type { SeaBattleGameOptions } from '@/features/games/sea-battle/lobby';
 
 const getSeaBattleTheme = (variantId?: string): GameLobbyTheme => {
@@ -122,105 +117,83 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     return t('games.sea_battle_v1.table.lobby.waitingForHost');
   };
 
+  // Theme picker + preview only — team mode controls now live in the
+  // dedicated SeaBattleTeamPanel above the lobby so they don't compete with
+  // the Start button for stacking context.
   const optionsSlot =
     isHost && room.status === 'lobby' ? (
-      <YStack gap="$4">
-        <XStack
-          gap="$4"
-          flexWrap="wrap"
-          alignItems="flex-start"
-          $md={{ flexDirection: 'column', gap: '$3' }}
-        >
-          {/* Theme picker tabs */}
-          <YStack gap="$2">
-            <Text
-              fontSize={10}
-              color="rgba(148,163,184,0.6)"
-              letterSpacing={2}
-              textTransform="uppercase"
-            >
-              {t('games.sea_battle_v1.table.lobby.theme' as TranslationKey)}
-            </Text>
-            <XStack gap="$2" flexWrap="wrap">
-              {visibleVariants.map((variant) => (
-                <XStack
-                  key={variant.id}
-                  alignItems="center"
-                  gap="$1"
-                  paddingHorizontal="$3"
-                  paddingVertical="$2"
-                  borderRadius={20}
-                  borderWidth={1.5}
-                  cursor="pointer"
-                  onClick={() => setSelectedVariant(variant.id)}
-                  borderColor={
-                    selectedVariant === variant.id
-                      ? 'rgba(96,165,250,0.6)'
-                      : 'rgba(255,255,255,0.1)'
-                  }
-                  backgroundColor={
-                    selectedVariant === variant.id
-                      ? 'rgba(96,165,250,0.12)'
-                      : 'rgba(255,255,255,0.03)'
-                  }
+      <XStack
+        gap="$4"
+        flexWrap="wrap"
+        alignItems="flex-start"
+        $md={{ flexDirection: 'column', gap: '$3' }}
+      >
+        <YStack gap="$2">
+          <Text
+            fontSize={10}
+            color="rgba(148,163,184,0.6)"
+            letterSpacing={2}
+            textTransform="uppercase"
+          >
+            {t('games.sea_battle_v1.table.lobby.theme' as TranslationKey)}
+          </Text>
+          <XStack gap="$2" flexWrap="wrap">
+            {visibleVariants.map((variant) => (
+              <XStack
+                key={variant.id}
+                alignItems="center"
+                gap="$1"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                borderRadius={20}
+                borderWidth={1.5}
+                cursor="pointer"
+                onClick={() => setSelectedVariant(variant.id)}
+                borderColor={
+                  selectedVariant === variant.id
+                    ? 'rgba(96,165,250,0.6)'
+                    : 'rgba(255,255,255,0.1)'
+                }
+                backgroundColor={
+                  selectedVariant === variant.id
+                    ? 'rgba(96,165,250,0.12)'
+                    : 'rgba(255,255,255,0.03)'
+                }
+              >
+                <Text fontSize={14}>{variant.emoji}</Text>
+                <Text
+                  fontSize={11}
+                  fontWeight="500"
+                  color={selectedVariant === variant.id ? '#93c5fd' : '#cbd5e1'}
                 >
-                  <Text fontSize={14}>{variant.emoji}</Text>
-                  <Text
-                    fontSize={11}
-                    fontWeight="500"
-                    color={
-                      selectedVariant === variant.id ? '#93c5fd' : '#cbd5e1'
-                    }
-                  >
-                    {t(variant.name as TranslationKey)}
-                  </Text>
-                </XStack>
-              ))}
-              {!showAllVariants && hiddenCount > 0 && (
-                <XStack
-                  alignItems="center"
-                  paddingHorizontal="$3"
-                  paddingVertical="$2"
-                  borderRadius={20}
-                  borderWidth={1}
-                  borderColor="rgba(255,255,255,0.1)"
-                  cursor="pointer"
-                  onClick={() => setShowAllVariants(true)}
-                  aria-label="Show all themes"
-                >
-                  <Text fontSize={11} color="rgba(148,163,184,0.5)">
-                    + {hiddenCount} more ▾
-                  </Text>
-                </XStack>
-              )}
-            </XStack>
-          </YStack>
+                  {t(variant.name as TranslationKey)}
+                </Text>
+              </XStack>
+            ))}
+            {!showAllVariants && hiddenCount > 0 && (
+              <XStack
+                alignItems="center"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                borderRadius={20}
+                borderWidth={1}
+                borderColor="rgba(255,255,255,0.1)"
+                cursor="pointer"
+                onClick={() => setShowAllVariants(true)}
+                aria-label="Show all themes"
+              >
+                <Text fontSize={11} color="rgba(148,163,184,0.5)">
+                  + {hiddenCount} more ▾
+                </Text>
+              </XStack>
+            )}
+          </XStack>
+        </YStack>
 
-          {/* Live board preview */}
-          <SeaBattleThemeProvider variant={selectedVariant}>
-            <SeaBattleThemePreview selectedVariant={selectedVariant} />
-          </SeaBattleThemeProvider>
-        </XStack>
-
-        {/* Team mode toggle (host-only; component self-guards) */}
-        <TeamModeToggle
-          roomId={room.id}
-          userId={userId ?? ''}
-          hostId={room.hostId}
-          enabled={teamMode}
-        />
-
-        {/* Team setup panel (host-only; component self-guards) */}
-        {teamMode && (
-          <TeamSetupPanel
-            roomId={room.id}
-            userId={userId ?? ''}
-            hostId={room.hostId}
-            teams={teams}
-            hideShipsFromTeammates={hideShipsFromTeammates}
-          />
-        )}
-      </YStack>
+        <SeaBattleThemeProvider variant={selectedVariant}>
+          <SeaBattleThemePreview selectedVariant={selectedVariant} />
+        </SeaBattleThemeProvider>
+      </XStack>
     ) : null;
 
   const headerActionsSlot = (
@@ -235,26 +208,18 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
 
   return (
     <YStack gap="$3">
-      {teamStartBlocked && isHost && room.status === 'lobby' && (
-        <XStack
-          alignItems="center"
-          justifyContent="center"
-          paddingHorizontal="$3"
-          paddingVertical="$2"
-          borderRadius={10}
-          borderWidth={1}
-          backgroundColor="rgba(251,191,36,0.08)"
-          borderColor="rgba(251,191,36,0.3)"
-          role="status"
-          aria-live="polite"
-          data-testid="team-start-blocked-notice"
-        >
-          <Text fontSize={12} fontWeight="600" color="#fcd34d">
-            {t(
-              'games.sea_battle_v1.teamMode.start.disabledNotFull' as TranslationKey,
-            )}
-          </Text>
-        </XStack>
+      {room.status === 'lobby' && (isHost || teamMode) && (
+        <SeaBattleTeamPanel
+          roomId={room.id}
+          userId={userId ?? ''}
+          hostId={room.hostId}
+          isHost={isHost}
+          teamMode={teamMode}
+          teams={teams}
+          hideShipsFromTeammates={hideShipsFromTeammates}
+          members={roomMembers}
+          teamStartBlocked={teamStartBlocked}
+        />
       )}
       <ReusableGameLobby
         room={room}
@@ -293,20 +258,6 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
         headerActionsSlot={headerActionsSlot}
         enableBots={true}
       />
-
-      {/* Team slots visible to all players when team mode is active */}
-      {teamMode && room.status === 'lobby' && (
-        <YStack gap="$3">
-          <TeamSlotsBoard
-            roomId={room.id}
-            userId={userId ?? ''}
-            hostId={room.hostId}
-            teams={teams}
-            members={roomMembers}
-          />
-          <UnassignedPool members={roomMembers} teams={teams} />
-        </YStack>
-      )}
     </YStack>
   );
 });

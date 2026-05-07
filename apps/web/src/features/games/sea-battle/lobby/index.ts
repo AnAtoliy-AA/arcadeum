@@ -1,4 +1,3 @@
-export { TeamModeToggle } from './TeamModeToggle';
 export { TeamSetupPanel } from './TeamSetupPanel';
 export { TeamSlotsBoard } from './TeamSlotsBoard';
 export type { TeamSlotsMember } from './TeamSlotsBoard';

@@ -158,6 +158,10 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
                                 other.playerIds.length >= other.targetSize
                               }
                               data-testid={`move-${id}-to-${other.id}`}
+                              aria-label={t(
+                                'games.sea_battle_v1.teamMode.slots.moveTo',
+                                { team: other.name },
+                              )}
                               onClick={() =>
                                 emitAssignTeam({
                                   roomId,
@@ -166,10 +170,24 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
                                   teamId: other.id,
                                 })
                               }
+                              style={{
+                                paddingInline: 8,
+                                fontSize: 11,
+                                minHeight: 26,
+                              }}
                             >
-                              {t('games.sea_battle_v1.teamMode.slots.moveTo', {
-                                team: other.name,
-                              })}
+                              <span
+                                aria-hidden
+                                style={{
+                                  display: 'inline-block',
+                                  width: 8,
+                                  height: 8,
+                                  borderRadius: 2,
+                                  backgroundColor: other.color,
+                                  marginRight: 6,
+                                }}
+                              />
+                              {other.name}
                             </Button>
                           ))}
                       </XStack>

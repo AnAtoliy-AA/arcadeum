@@ -3,11 +3,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { ReactNode } from 'react';
 
 const emitSetTeamConfig = vi.fn();
-const emitToggleHideShips = vi.fn();
 
 vi.mock('../team-mode.api', () => ({
   emitSetTeamConfig: (...args: unknown[]) => emitSetTeamConfig(...args),
-  emitToggleHideShips: (...args: unknown[]) => emitToggleHideShips(...args),
 }));
 
 vi.mock('@/shared/lib/useTranslation', () => ({
@@ -63,33 +61,19 @@ vi.mock('@arcadeum/ui', () => ({
     />
   ),
   Typography: ({ children }: ChildrenProps) => <span>{children}</span>,
-  XStack: ({ children }: ChildrenProps) => <div>{children}</div>,
-  YStack: ({ children }: ChildrenProps) => <div>{children}</div>,
+  XStack: ({
+    children,
+    ...rest
+  }: ChildrenProps & { 'data-testid'?: string }) => (
+    <div data-testid={rest['data-testid']}>{children}</div>
+  ),
+  YStack: ({
+    children,
+    ...rest
+  }: ChildrenProps & { 'data-testid'?: string }) => (
+    <div data-testid={rest['data-testid']}>{children}</div>
+  ),
 }));
-
-interface SwitchProps {
-  checked?: boolean;
-  onCheckedChange?: (next: boolean) => void;
-  'aria-label'?: string;
-  'data-testid'?: string;
-  children?: ReactNode;
-}
-
-vi.mock('tamagui', () => {
-  const Switch = ({ checked, onCheckedChange, ...rest }: SwitchProps) => (
-    <button
-      role="switch"
-      aria-checked={!!checked}
-      aria-label={rest['aria-label']}
-      data-testid={rest['data-testid']}
-      onClick={() => onCheckedChange?.(!checked)}
-    />
-  );
-  const SwitchThumb = () => null;
-  SwitchThumb.displayName = 'SwitchThumb';
-  Switch.Thumb = SwitchThumb;
-  return { Switch };
-});
 
 import { TeamSetupPanel } from '../TeamSetupPanel';
 import { MAX_TEAMS, MIN_TEAMS } from '../team-mode.types';
@@ -110,7 +94,6 @@ function makeTeams(count: number, targetSize = 2) {
 describe('TeamSetupPanel', () => {
   beforeEach(() => {
     emitSetTeamConfig.mockClear();
-    emitToggleHideShips.mockClear();
   });
 
   it('renders nothing for non-host viewers', () => {
@@ -120,7 +103,6 @@ describe('TeamSetupPanel', () => {
         userId="player-2"
         hostId={HOST}
         teams={makeTeams(MIN_TEAMS)}
-        hideShipsFromTeammates={false}
       />,
     );
     expect(container).toBeEmptyDOMElement();
@@ -133,7 +115,6 @@ describe('TeamSetupPanel', () => {
         userId={HOST}
         hostId={HOST}
         teams={makeTeams(MAX_TEAMS)}
-        hideShipsFromTeammates={false}
       />,
     );
     const addBtn = screen.getByTestId('team-add-btn');
@@ -147,7 +128,6 @@ describe('TeamSetupPanel', () => {
         userId={HOST}
         hostId={HOST}
         teams={makeTeams(MIN_TEAMS)}
-        hideShipsFromTeammates={false}
       />,
     );
     expect(screen.queryByTestId('team-remove-t1')).toBeNull();
@@ -162,27 +142,29 @@ describe('TeamSetupPanel', () => {
         userId={HOST}
         hostId={HOST}
         teams={makeTeams(MAX_TEAMS, 3)}
-        hideShipsFromTeammates={false}
       />,
     );
     expect(screen.getByTestId('team-setup-validation')).toBeInTheDocument();
   });
 
-  it('emits hide-ships toggle when host flips the switch', () => {
+  it('emits team config when host adds a team', () => {
     render(
       <TeamSetupPanel
         roomId={ROOM}
         userId={HOST}
         hostId={HOST}
         teams={makeTeams(MIN_TEAMS)}
-        hideShipsFromTeammates={false}
       />,
     );
-    fireEvent.click(screen.getByTestId('hide-ships-switch'));
-    expect(emitToggleHideShips).toHaveBeenCalledWith({
-      roomId: ROOM,
-      userId: HOST,
-      enabled: true,
-    });
+    fireEvent.click(screen.getByTestId('team-add-btn'));
+    expect(emitSetTeamConfig).toHaveBeenCalled();
+    const lastArg = emitSetTeamConfig.mock.calls.at(-1)?.[0] as {
+      roomId: string;
+      userId: string;
+      teams: unknown[];
+    };
+    expect(lastArg.roomId).toBe(ROOM);
+    expect(lastArg.userId).toBe(HOST);
+    expect(lastArg.teams).toHaveLength(MIN_TEAMS + 1);
   });
 });

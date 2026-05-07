@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.4] - 2026-05-07
+
+### Added
+- expand contact tips card to balance the columns (ARC-575) (ARC-575)
+- add system-status card to contact side panel (ARC-575) (ARC-575)
+- add tips card under contact form (ARC-575) (ARC-575)
+- convert contact form to a Server Action (ARC-575) (ARC-575)
+- rework /contact page with new components (ARC-575) (ARC-575)
+- add contact rework keys for en/ru/es/fr/by (ARC-575) (ARC-575)
+- add LaunchButton variant (ARC-575) (ARC-575)
+- add ChannelTile and StatTile components (ARC-575) (ARC-575)
+- add FloatingLabelInput / FloatingLabelTextArea (ARC-575) (ARC-575)
+- add ActivityTicker component (ARC-575) (ARC-575)
+
+### Fixed
+- keep contact action file pure async exports (ARC-575) (ARC-575)
+- ChannelTile fills its grid cell so tiles match heights (ARC-575) (ARC-575)
+- drop e2e click-retry that races with the Server Action (ARC-575) (ARC-575)
+- hide status-page CTA until status.arcadeum.games is live (ARC-575) (ARC-575)
+- balance contact columns via CSS module (ARC-575) (ARC-575)
+- resolve ActivityTicker hydration mismatch (ARC-575) (ARC-575)
+- server-render the /contact page (ARC-575) (ARC-575)
+- trim x fallback chain, fill Instagram icon, default hero pills (ARC-575) (ARC-575)
+- drive contact channel tiles from appConfig.social (ARC-575) (ARC-575)
+- swap hard-coded contact strings for i18n (ARC-575) (ARC-575)
+- resolve theme tokens via useTheme on /contact (ARC-575) (ARC-575)
+- natural form height and resolved floating-label colors (ARC-575) (ARC-575)
+- widen contact container to 1120px (ARC-575) (ARC-575)
+- tighten contact form responsive + remove blank space (ARC-575) (ARC-575)
+- collapse blank space under contact form (ARC-575) (ARC-575)
+- trim press card and link FAQ emails (ARC-575) (ARC-575)
+- match contact-page design — avatars + stat sparkline (ARC-575) (ARC-575)
+
+### Refactored
+- drop redundant controlled state in ContactForm (ARC-575) (ARC-575)
+- extract ContactForm component (ARC-575) (ARC-575)
+
+### Documentation
+- document contact API constraints (ARC-575) (ARC-575)
+- add contact-rework design handoff (ARC-575) (ARC-575)
+
+
 ## [1.12.3] - 2026-05-07
 
 ### Added

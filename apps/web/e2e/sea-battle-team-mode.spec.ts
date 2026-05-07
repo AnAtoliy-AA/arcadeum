@@ -158,10 +158,14 @@ test.describe('Sea Battle Team Mode UI smoke tests', () => {
 
     await expect(page.getByTestId('team-mode-toggle')).toBeVisible();
     await expect(page.getByTestId('team-setup-panel')).toBeVisible();
-    await expect(page.getByTestId(`team-card-${RED_TEAM.id}`)).toBeVisible();
-    await expect(page.getByTestId(`team-card-${BLUE_TEAM.id}`)).toBeVisible();
-    await expect(page.getByText('Red', { exact: true }).first()).toBeVisible();
-    await expect(page.getByText('Blue', { exact: true }).first()).toBeVisible();
+    const redCard = page.getByTestId(`team-card-${RED_TEAM.id}`);
+    const blueCard = page.getByTestId(`team-card-${BLUE_TEAM.id}`);
+    await expect(redCard).toBeVisible();
+    await expect(blueCard).toBeVisible();
+    // Host sees each team name in an editable Input, so assert the input value
+    // inside each team card rather than free-floating text content.
+    await expect(redCard.locator('input').first()).toHaveValue('Red');
+    await expect(blueCard.locator('input').first()).toHaveValue('Blue');
     await expect(page.getByTestId(`add-bot-${RED_TEAM.id}`)).toBeVisible();
     await expect(page.getByTestId(`add-bot-${BLUE_TEAM.id}`)).toBeVisible();
   });

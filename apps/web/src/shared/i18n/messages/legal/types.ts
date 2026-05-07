@@ -237,6 +237,10 @@ export type ContactMessages = {
       orderId?: string;
       bugs?: string;
       screenshots?: string;
+      account?: string;
+      urgent?: string;
+      language?: string;
+      footer?: string;
     };
     ticker?: {
       label?: string;

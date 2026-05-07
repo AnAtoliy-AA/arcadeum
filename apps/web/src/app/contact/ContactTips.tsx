@@ -21,7 +21,16 @@ export function ContactTips({ tips }: ContactTipsProps) {
       'For bugs: steps to reproduce, your browser, and your device. The more specific, the faster we triage.',
     tips?.screenshots ??
       'Screenshots are welcome — paste them straight into the message field, no need to attach.',
+    tips?.account ??
+      'For login or account issues, include the email you registered with so we can match the account.',
+    tips?.urgent ??
+      "Time-sensitive? Add 'urgent' to the subject and we'll route it to the on-call team.",
+    tips?.language ??
+      'Write in whichever language you think in — we answer in EN, RU, ES, FR, BY.',
   ];
+  const footer =
+    tips?.footer ??
+    'Every message is read by a human on our team — no chatbots, no autoresponders.';
   return (
     <GlassCard>
       <span style={s.labelChipStyle}>{tips?.label ?? 'Faster replies'}</span>
@@ -45,6 +54,13 @@ export function ContactTips({ tips }: ContactTipsProps) {
           </XStack>
         ))}
       </YStack>
+      <hr
+        style={{ ...s.ruleStyle, marginTop: 16, marginBottom: 12 }}
+        aria-hidden="true"
+      />
+      <Typography variant="caption" alpha="medium">
+        {footer}
+      </Typography>
     </GlassCard>
   );
 }

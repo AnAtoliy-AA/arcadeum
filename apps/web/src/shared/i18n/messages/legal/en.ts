@@ -307,6 +307,14 @@ export const en: LegalMessages = {
         bugs: 'For bugs: steps to reproduce, your browser, and your device. The more specific, the faster we triage.',
         screenshots:
           'Screenshots are welcome — paste them straight into the message field, no need to attach.',
+        account:
+          'For login or account issues, include the email you registered with so we can match the account.',
+        urgent:
+          "Time-sensitive? Add 'urgent' to the subject and we'll route it to the on-call team.",
+        language:
+          'Write in whichever language you think in — we answer in EN, RU, ES, FR, BY.',
+        footer:
+          'Every message is read by a human on our team — no chatbots, no autoresponders.',
       },
       ticker: {
         label: 'HQ live feed',

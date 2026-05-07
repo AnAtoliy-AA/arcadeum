@@ -314,6 +314,14 @@ export const es: LegalMessages = {
         bugs: 'Para bugs: pasos para reproducir, navegador y dispositivo. Cuanto más concreto, mejor.',
         screenshots:
           'Las capturas son bienvenidas — pégalas directamente en el campo del mensaje, sin adjuntar.',
+        account:
+          'Para problemas de acceso o cuenta — añade el email con el que te registraste para que podamos localizarla.',
+        urgent:
+          "¿Urgente? Añade 'urgent' al asunto y lo enviaremos al equipo de guardia.",
+        language:
+          'Escribe en el idioma que prefieras — respondemos en EN, RU, ES, FR, BY.',
+        footer:
+          'Cada mensaje lo lee una persona del equipo — sin chatbots, sin respuestas automáticas.',
       },
       ticker: {
         label: 'Feed en directo',

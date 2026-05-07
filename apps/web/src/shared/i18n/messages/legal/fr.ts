@@ -316,6 +316,14 @@ export const fr: LegalMessages = {
         bugs: 'Pour les bugs : étapes de reproduction, navigateur et appareil. Plus c’est précis, plus on triage vite.',
         screenshots:
           'Les captures d’écran sont les bienvenues — collez-les directement dans le message, pas besoin de pièces jointes.',
+        account:
+          "Pour les soucis de connexion ou de compte — indiquez l'email d'inscription pour qu'on retrouve votre compte.",
+        urgent:
+          "Urgent ? Ajoutez « urgent » à l'objet et on l'envoie à l'équipe de garde.",
+        language:
+          'Écrivez dans la langue de votre choix — on répond en EN, RU, ES, FR, BY.',
+        footer:
+          'Chaque message est lu par un humain de notre équipe — pas de chatbot, pas de réponse auto.',
       },
       ticker: {
         label: 'Flux QG en direct',

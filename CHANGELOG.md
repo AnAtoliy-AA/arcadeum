@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.1] - 2026-05-08
+
+### Fixed
+- advance turn when active player leaves (ARC-600) (ARC-600)
+
+
 ## [1.13.0] - 2026-05-08
 
 

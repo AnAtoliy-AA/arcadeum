@@ -38,6 +38,7 @@ import {
   advanceTeamRotationOnMiss,
   countAliveTeams,
   getActiveShooterId,
+  getActiveTeam,
   isTeamAlive,
 } from './team-rotation.utils';
 import {
@@ -380,12 +381,25 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
   ): GameActionResult<SeaBattleState> {
     const newState = this.cloneState(state);
     const player = newState.players.find((p) => p.playerId === playerId);
-    if (player) {
-      player.alive = false;
-      newState.logs.push(
-        this.createLogEntry('system', 'A player has left the game'),
-      );
-      if (newState.teams) {
+    if (!player) {
+      return this.successResult(newState);
+    }
+
+    player.alive = false;
+    newState.logs.push(
+      this.createLogEntry('system', 'A player has left the game'),
+    );
+
+    if (newState.teams) {
+      const wasActiveShooter = getActiveShooterId(newState) === playerId;
+
+      if (wasActiveShooter) {
+        // Active shooter forfeits the turn — advance like a miss so the
+        // next team plays and the leaver's team rotates to the next teammate.
+        advanceTeamRotationOnMiss(newState);
+      } else {
+        // Otherwise, only patch up the leaver's own team shooter pointer so
+        // a live teammate is queued up when their team plays again.
         const team = newState.teams.find((t) => t.playerIds.includes(playerId));
         if (team && team.playerIds[team.currentShooterIndex] === playerId) {
           const n = team.playerIds.length;
@@ -402,8 +416,22 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
           }
         }
       }
-      this.checkAndSetWinner(newState);
+
+      // Keep currentTurnIndex in sync with the active shooter so consumers
+      // that read playerOrder[currentTurnIndex] (e.g. the bot service) match.
+      const activeTeam = getActiveTeam(newState);
+      if (activeTeam) {
+        const shooter = getActiveShooterId(newState);
+        if (shooter) {
+          const idx = newState.playerOrder.indexOf(shooter);
+          if (idx >= 0) newState.currentTurnIndex = idx;
+        }
+      }
+    } else if (newState.playerOrder[newState.currentTurnIndex] === playerId) {
+      this.advanceToNextPlayer(newState);
     }
+
+    this.checkAndSetWinner(newState);
     return this.successResult(newState);
   }
 

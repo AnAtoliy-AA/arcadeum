@@ -187,6 +187,8 @@ export const ru = {
       prizePool: 'Призовой фонд',
       participants: 'Участники',
       qualifiedLabel: 'Прошли',
+      comingSoon: 'Скоро',
+      comingSoonBody: 'Турниры с призовыми фондами появятся в ближайшее время.',
     },
     mythic: {
       label: 'Мифик',

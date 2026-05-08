@@ -187,6 +187,9 @@ export const fr = {
       prizePool: 'Cagnotte',
       participants: 'Participants',
       qualifiedLabel: 'Qualifiés',
+      comingSoon: 'Bientôt disponible',
+      comingSoonBody:
+        'Les tournois en direct et les cagnottes arrivent bientôt.',
     },
     mythic: {
       label: 'Mythique',

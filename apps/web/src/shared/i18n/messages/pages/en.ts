@@ -184,6 +184,8 @@ export const en = {
       prizePool: 'Prize pool',
       participants: 'Participants',
       qualifiedLabel: 'Qualified',
+      comingSoon: 'Coming soon',
+      comingSoonBody: 'Live tournaments and prize pools are coming soon.',
     },
     mythic: {
       label: 'Mythic',

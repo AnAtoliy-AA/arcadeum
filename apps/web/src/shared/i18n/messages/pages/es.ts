@@ -188,6 +188,9 @@ export const es = {
       prizePool: 'Bote de premios',
       participants: 'Participantes',
       qualifiedLabel: 'Clasificados',
+      comingSoon: 'Próximamente',
+      comingSoonBody:
+        'Los torneos en vivo y los premios estarán disponibles muy pronto.',
     },
     mythic: {
       label: 'Mítico',

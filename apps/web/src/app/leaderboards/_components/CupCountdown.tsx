@@ -4,6 +4,10 @@ import { CountdownClock, LiveChip } from '@arcadeum/ui';
 import type { CupSnapshot } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 
+// Temporary: tournaments aren't live yet. Flip to `true` to render the
+// real cup UI (prize pool / countdown / qualified pills) defined below.
+const TOURNAMENTS_ENABLED = false;
+
 export function CupCountdown({
   cup,
   t,
@@ -11,8 +15,45 @@ export function CupCountdown({
   cup: CupSnapshot | null;
   t?: PageTranslations;
 }) {
-  if (!cup) return null;
   const tt = (t?.cup ?? {}) as Record<string, string>;
+
+  if (!TOURNAMENTS_ENABLED) {
+    return (
+      <YStack
+        gap="$3"
+        padding="$5"
+        borderRadius="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+        backgroundColor="rgba(255,255,255,0.02)"
+        alignItems="center"
+        testID="cup-coming-soon"
+      >
+        <Text
+          fontSize="$1"
+          letterSpacing={2}
+          opacity={0.7}
+          textTransform="uppercase"
+        >
+          {tt.eyebrow ?? 'Tournament'}
+        </Text>
+        <Text
+          fontSize="$8"
+          fontWeight="800"
+          color="$mythicAccent"
+          textAlign="center"
+        >
+          {tt.comingSoon ?? 'Coming soon'}
+        </Text>
+        <Text fontSize="$3" opacity={0.75} textAlign="center" maxWidth={520}>
+          {tt.comingSoonBody ??
+            'Live tournaments and prize pools are coming soon.'}
+        </Text>
+      </YStack>
+    );
+  }
+
+  if (!cup) return null;
   const qualified = cup.qualified ?? [];
   const visiblePills = qualified.slice(0, 8);
   const overflow = Math.max(0, qualified.length - visiblePills.length);

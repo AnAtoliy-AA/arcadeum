@@ -187,6 +187,8 @@ export const by = {
       prizePool: 'Прызавы фонд',
       participants: 'Удзельнікі',
       qualifiedLabel: 'Прайшлі',
+      comingSoon: 'Хутка',
+      comingSoonBody: "Турніры з прызавымі фондамі з'явяцца ўжо хутка.",
     },
     mythic: {
       label: 'Мітык',

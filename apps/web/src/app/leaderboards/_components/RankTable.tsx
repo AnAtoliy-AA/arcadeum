@@ -181,7 +181,7 @@ export function RankTable({
                 <YStack flex={1} gap={2}>
                   <XStack gap="$2" alignItems="center" flexWrap="wrap">
                     {flag ? (
-                      <Text fontSize="$3" accessibilityLabel={p.countryCode}>
+                      <Text fontSize="$3" aria-label={p.countryCode}>
                         {flag}
                       </Text>
                     ) : null}

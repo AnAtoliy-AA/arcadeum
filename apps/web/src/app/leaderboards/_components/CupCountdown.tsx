@@ -93,7 +93,7 @@ export function CupCountdown({
                 style={{
                   background: 'linear-gradient(180deg,#22d3ee,#6366f1)',
                 }}
-                accessibilityLabel={p.name}
+                aria-label={p.name}
               >
                 <Text fontSize={11} fontWeight="700" color="#ffffff">
                   {p.name.slice(0, 2).toUpperCase()}

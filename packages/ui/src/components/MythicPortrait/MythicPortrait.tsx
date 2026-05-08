@@ -74,7 +74,7 @@ export function MythicPortrait({
         right={-4}
         fontSize={28}
         color="#fbbf24"
-        accessibilityLabel="Crown"
+        aria-label="Crown"
       >
         ♛
       </Text>

@@ -78,7 +78,7 @@ export function FormPips({
     <XStack
       gap={4}
       alignItems="center"
-      accessibilityLabel="Recent form"
+      aria-label="Recent form"
       {...rest}
     >
       {sliced.map((r, i) =>

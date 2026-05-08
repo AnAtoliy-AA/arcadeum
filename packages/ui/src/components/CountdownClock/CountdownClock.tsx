@@ -54,7 +54,7 @@ export function CountdownClock({
         fontWeight="700"
         letterSpacing={1}
         testID={testID}
-        accessibilityLabel={`${d} days ${h} hours ${m} minutes`}
+        aria-label={`${d} days ${h} hours ${m} minutes`}
       >
         {`${pad(h + d * 24)}:${pad(m)}:${pad(s)}`}
       </Text>

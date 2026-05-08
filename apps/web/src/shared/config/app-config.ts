@@ -3,6 +3,11 @@ import { routes } from './routes';
 export const SSR_TIMEOUT =
   process.env.NODE_ENV === 'development' ? 15000 : 5000;
 
+// Browser-initiated requests have no SSR render budget, so they get a more
+// generous default. 5s caused spurious "Request timed out" errors on cold
+// starts, heavy queries, and slow mobile networks (ARC-594).
+export const CLIENT_TIMEOUT = 30000;
+
 type CtaConfig = {
   href: string;
   label: string;

@@ -1,7 +1,12 @@
 'use client';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useLanguage } from '@/shared/i18n/context';
+import {
+  connectSockets,
+  connectSocketsAnonymous,
+  useLeaderboardSocket,
+} from '@/shared/lib/socket';
 import {
   PageLayout,
   Container,
@@ -77,6 +82,43 @@ export default function LeaderboardsPageContent({
     page,
     pageSize: PAGE_SIZE,
     onSuccess: handleLoaded,
+  });
+
+  useEffect(() => {
+    if (accessToken) connectSockets(accessToken);
+    else connectSocketsAnonymous();
+  }, [accessToken]);
+
+  // Refetch on capture broadcast (debounced via natural React batching).
+  useLeaderboardSocket('leaderboards.captured', () => {
+    if (page === 1) {
+      refetch().catch(() => {});
+    }
+  });
+
+  // Optimistic in-place update when a single entry's flags change.
+  useLeaderboardSocket('leaderboards.entry.updated', (...args: unknown[]) => {
+    const update = args[0] as
+      | {
+          userId?: string;
+          mode?: GameMode;
+          isInMatch?: boolean;
+          rating?: number;
+        }
+      | undefined;
+    if (!update?.userId) return;
+    if (update.mode && update.mode !== mode) return;
+    setAccumulated((prev) =>
+      prev.map((p) =>
+        p.id === update.userId
+          ? {
+              ...p,
+              isInMatch: update.isInMatch ?? p.isInMatch,
+              rating: update.rating ?? p.rating,
+            }
+          : p,
+      ),
+    );
   });
 
   function handleModeChange(next: GameMode) {

@@ -39,6 +39,11 @@ const gamesSocket = io(
 
 const chatsSocket = io(SOCKET_BASE_URL, SOCKET_OPTIONS) as AuthenticatedSocket;
 
+const leaderboardsSocket = io(
+  `${SOCKET_BASE_URL}/leaderboards`,
+  SOCKET_OPTIONS,
+) as AuthenticatedSocket;
+
 let currentAuthToken: string | null = null;
 
 /**
@@ -104,16 +109,23 @@ export function connectSockets(token: string | null | undefined): void {
     if (chatsSocket.connected) {
       chatsSocket.disconnect();
     }
+    if (leaderboardsSocket.connected) {
+      leaderboardsSocket.disconnect();
+    }
   }
 
   applyAuth(gamesSocket, token);
   applyAuth(chatsSocket, token);
+  applyAuth(leaderboardsSocket, token);
 
   if (!gamesSocket.connected) {
     gamesSocket.connect();
   }
   if (!chatsSocket.connected) {
     chatsSocket.connect();
+  }
+  if (!leaderboardsSocket.connected) {
+    leaderboardsSocket.connect();
   }
 }
 
@@ -128,9 +140,13 @@ export function connectSocketsAnonymous(): void {
 
   // Clear any auth
   gamesSocket.auth = {};
+  leaderboardsSocket.auth = {};
 
   if (!gamesSocket.connected) {
     gamesSocket.connect();
+  }
+  if (!leaderboardsSocket.connected) {
+    leaderboardsSocket.connect();
   }
 }
 
@@ -143,14 +159,19 @@ export function disconnectSockets(): void {
   if (chatsSocket) {
     chatsSocket.disconnect();
   }
+  if (leaderboardsSocket) {
+    leaderboardsSocket.disconnect();
+  }
 
   gamesSocket.auth = {};
   chatsSocket.auth = {};
+  leaderboardsSocket.auth = {};
   resetEncryptionKey();
 }
 
 export const gameSocket: Socket = gamesSocket;
 export const chatSocket: Socket = chatsSocket;
+export const leaderboardSocket: Socket = leaderboardsSocket;
 
 // Expose sockets to window for E2E testing
 if (typeof window !== 'undefined') {
@@ -212,6 +233,19 @@ export function useChatSocket(
 
     return () => {
       chatSocket.off(event, listener);
+    };
+  }, [event, handler]);
+}
+
+export function useLeaderboardSocket(
+  event: string,
+  handler: SocketEventHandler,
+): void {
+  useEffect(() => {
+    const listener = (...args: unknown[]) => handler(...args);
+    leaderboardSocket.on(event, listener);
+    return () => {
+      leaderboardSocket.off(event, listener);
     };
   }, [event, handler]);
 }

@@ -114,7 +114,7 @@ export function GlimwormLobby({
   const variantInfo = GLIMWORM_VARIANTS.find((v) => v.id === variant);
 
   const optionsSlot =
-    isHost && room.status === 'lobby' ? (
+    room.status === 'lobby' ? (
       <div
         style={{
           display: 'flex',
@@ -123,7 +123,7 @@ export function GlimwormLobby({
           padding: '12px 0',
         }}
       >
-        {/* Variant picker */}
+        {/* Variant picker — host-only interactive; guests see static label */}
         <div>
           <div
             style={{
@@ -143,7 +143,8 @@ export function GlimwormLobby({
                 <button
                   key={v.id}
                   type="button"
-                  onClick={() => setVariant(v.id as GlimwormVariant)}
+                  disabled={!isHost}
+                  onClick={() => isHost && setVariant(v.id as GlimwormVariant)}
                   style={{
                     padding: '8px 14px',
                     borderRadius: 20,
@@ -154,7 +155,8 @@ export function GlimwormLobby({
                       ? '1.5px solid rgba(94,224,255,0.6)'
                       : '1.5px solid rgba(255,255,255,0.10)',
                     color: active ? '#a0e8ff' : '#cbd5e1',
-                    cursor: 'pointer',
+                    cursor: isHost ? 'pointer' : 'default',
+                    opacity: isHost || active ? 1 : 0.5,
                     fontSize: 13,
                     fontWeight: 500,
                     fontFamily: 'inherit',
@@ -165,9 +167,21 @@ export function GlimwormLobby({
               );
             })}
           </div>
+          {!isHost && (
+            <div
+              style={{
+                marginTop: 6,
+                fontSize: 11,
+                color: 'rgba(148,163,184,0.6)',
+                fontStyle: 'italic',
+              }}
+            >
+              Host chooses the variant.
+            </div>
+          )}
         </div>
 
-        {/* Power-ups toggle */}
+        {/* Power-ups toggle — host-only */}
         <div>
           <div
             style={{
@@ -182,7 +196,8 @@ export function GlimwormLobby({
           </div>
           <button
             type="button"
-            onClick={() => setPowerupsEnabled((p) => !p)}
+            disabled={!isHost}
+            onClick={() => isHost && setPowerupsEnabled((p) => !p)}
             style={{
               padding: '8px 14px',
               borderRadius: 20,
@@ -193,7 +208,8 @@ export function GlimwormLobby({
                 ? '1.5px solid rgba(177,94,255,0.6)'
                 : '1.5px solid rgba(255,255,255,0.10)',
               color: powerupsEnabled ? '#d4a8ff' : '#cbd5e1',
-              cursor: 'pointer',
+              cursor: isHost ? 'pointer' : 'default',
+              opacity: isHost ? 1 : 0.7,
               fontSize: 13,
               fontWeight: 500,
               fontFamily: 'inherit',

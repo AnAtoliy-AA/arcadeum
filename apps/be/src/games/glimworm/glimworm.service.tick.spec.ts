@@ -25,6 +25,9 @@ describe('GlimwormService — tick mutation phases', () => {
       powerupsEnabled: false,
     });
     const session = store.get('r1') as GlimwormSession;
+    // Skip the 3-second countdown (real-time setTimeout) so tick simulation
+    // runs immediately. Tests stub setInterval but not setTimeout.
+    session.status = 'playing';
     placeWormAt(session.worms['u1'], 500, 500, GLIMWORM_START_LENGTH, 0);
     placeWormAt(
       session.worms['u2'],
@@ -41,6 +44,9 @@ describe('GlimwormService — tick mutation phases', () => {
       .spyOn(global, 'setInterval')
       .mockImplementation(() => 0 as unknown as ReturnType<typeof setInterval>);
     jest.spyOn(global, 'clearInterval').mockImplementation(() => {});
+    jest
+      .spyOn(global, 'setTimeout')
+      .mockImplementation(() => 0 as unknown as ReturnType<typeof setTimeout>);
   });
 
   afterEach(() => {

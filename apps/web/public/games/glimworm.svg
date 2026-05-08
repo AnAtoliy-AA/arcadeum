@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" width="400" height="225">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="80%">
+      <stop offset="0%" stop-color="#1a1d3a"/>
+      <stop offset="100%" stop-color="#06070d"/>
+    </radialGradient>
+    <linearGradient id="worm1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7cff5e"/>
+      <stop offset="100%" stop-color="#5ee0ff"/>
+    </linearGradient>
+    <linearGradient id="worm2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ff5ed4"/>
+      <stop offset="100%" stop-color="#b15eff"/>
+    </linearGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7cff5e"/>
+      <stop offset="50%" stop-color="#5ee0ff"/>
+      <stop offset="100%" stop-color="#b15eff"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="400" height="225" fill="url(#bg)"/>
+
+  <g opacity="0.15" stroke="#5ee0ff" stroke-width="0.5">
+    <path d="M0 50 H400 M0 100 H400 M0 150 H400 M0 200 H400"/>
+    <path d="M50 0 V225 M100 0 V225 M150 0 V225 M200 0 V225 M250 0 V225 M300 0 V225 M350 0 V225"/>
+  </g>
+
+  <!-- Worm 1: green→cyan, curving -->
+  <path d="M40 170 Q90 130 140 150 T240 120"
+    fill="none" stroke="url(#worm1)" stroke-width="14" stroke-linecap="round" filter="url(#glow)"/>
+  <circle cx="240" cy="120" r="9" fill="#5ee0ff" filter="url(#glow)"/>
+
+  <!-- Worm 2: pink→purple, curving the other way -->
+  <path d="M360 60 Q310 100 260 80 T160 110"
+    fill="none" stroke="url(#worm2)" stroke-width="14" stroke-linecap="round" filter="url(#glow)"/>
+  <circle cx="160" cy="110" r="9" fill="#ff5ed4" filter="url(#glow)"/>
+
+  <!-- Food dots -->
+  <circle cx="80" cy="80" r="4" fill="#ffe65e" filter="url(#glow)"/>
+  <circle cx="320" cy="170" r="4" fill="#ffe65e" filter="url(#glow)"/>
+  <circle cx="200" cy="190" r="4" fill="#ffe65e" filter="url(#glow)"/>
+  <circle cx="290" cy="40" r="4" fill="#ffb05e" filter="url(#glow)"/>
+
+  <!-- Title -->
+  <text x="200" y="40"
+    font-family="system-ui, sans-serif"
+    font-size="28" font-weight="900"
+    text-anchor="middle"
+    fill="url(#title)"
+    filter="url(#glow)">GLIMWORM</text>
+</svg>

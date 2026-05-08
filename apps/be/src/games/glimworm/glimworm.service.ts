@@ -1,8 +1,8 @@
 import { Injectable, Logger, OnModuleDestroy, Optional } from '@nestjs/common';
 import {
   GLIMWORM_BASE_SPEED,
+  GLIMWORM_COUNTDOWN_MS,
   GLIMWORM_INPUT_RATE_LIMIT_HZ,
-  GLIMWORM_PALETTE,
   GLIMWORM_START_LENGTH,
   GLIMWORM_TICK_MS,
 } from './glimworm.constants';
@@ -24,6 +24,7 @@ import {
   advanceHeads,
   buildSnapshotForViewer,
   expireActivePowerups,
+  fillWithBots,
   findSpawnPosition,
   nextFreeColor,
   resolveCollisions,
@@ -71,30 +72,6 @@ export class GlimwormService implements OnModuleDestroy {
 
   /** Minimum total worms required to start. Used when filling with bots. */
   private static readonly SOLO_FILL_TARGET = 3;
-
-  private fillWithBots(session: GlimwormSession, target: number): void {
-    const used = new Set(Object.values(session.worms).map((w) => w.color));
-    while (Object.keys(session.worms).length < target) {
-      const id = `bot-${Math.random().toString(36).slice(2, 10)}`;
-      const color =
-        GLIMWORM_PALETTE.find((c) => !used.has(c)) ?? GLIMWORM_PALETTE[0];
-      used.add(color);
-      session.worms[id] = {
-        id,
-        color,
-        segments: [],
-        heading: 0,
-        speed: GLIMWORM_BASE_SPEED,
-        alive: true,
-        livesLeft: 1,
-        score: 0,
-        ready: true,
-        activePowerup: null,
-        inventoryPowerup: null,
-        isBot: true,
-      };
-    }
-  }
 
   onModuleDestroy(): void {
     for (const [, timer] of this.tickIntervals) {
@@ -191,7 +168,7 @@ export class GlimwormService implements OnModuleDestroy {
     if (hostWorm) hostWorm.ready = true;
 
     if (opts.fillWithBots) {
-      this.fillWithBots(session, GlimwormService.SOLO_FILL_TARGET);
+      fillWithBots(session, GlimwormService.SOLO_FILL_TARGET);
     }
 
     const readyWorms = Object.values(session.worms).filter((w) => w.ready);
@@ -376,6 +353,15 @@ export class GlimwormService implements OnModuleDestroy {
 
   private startTickLoop(roomId: string): void {
     if (this.tickIntervals.has(roomId)) return;
+    // Schedule the countdown→playing transition. Until then the tick loop
+    // emits snapshots without running the simulation.
+    setTimeout(() => {
+      const session = this.stateStore.get(roomId);
+      if (session && session.status === 'countdown') {
+        session.status = 'playing';
+      }
+    }, GLIMWORM_COUNTDOWN_MS);
+
     const timer = setInterval(() => {
       try {
         this.tick(roomId);
@@ -400,8 +386,12 @@ export class GlimwormService implements OnModuleDestroy {
     const session = this.stateStore.get(roomId);
     if (!session) return;
     if (session.status !== 'playing' && session.status !== 'countdown') return;
+    // During countdown: keep emitting snapshots so the client can render the
+    // 3-2-1 overlay, but skip simulation. The transition to 'playing' is
+    // scheduled by startTickLoop.
     if (session.status === 'countdown') {
-      session.status = 'playing';
+      this.emitSnapshots(session);
+      return;
     }
 
     session.tickNum += 1;

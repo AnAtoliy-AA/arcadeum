@@ -89,6 +89,31 @@ export function GlimwormHud(): React.JSX.Element | null {
             {t('games.glimworm_v1.hud.lives')}: {self.livesLeft}
           </div>
         )}
+        {self && (
+          <div
+            style={{
+              marginTop: 4,
+              paddingTop: 4,
+              borderTop: '1px solid rgba(255,255,255,0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              fontSize: 12,
+            }}
+          >
+            <span
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: '50%',
+                background: self.color,
+                boxShadow: `0 0 8px ${self.color}`,
+                display: 'inline-block',
+              }}
+            />
+            <span style={{ color: 'rgba(203,213,225,0.85)' }}>You</span>
+          </div>
+        )}
       </div>
 
       <div

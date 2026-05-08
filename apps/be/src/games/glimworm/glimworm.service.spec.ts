@@ -91,6 +91,11 @@ describe('GlimwormService — lifecycle', () => {
       clearIntervalSpy = jest
         .spyOn(global, 'clearInterval')
         .mockImplementation(() => {});
+      jest
+        .spyOn(global, 'setTimeout')
+        .mockImplementation(
+          () => 0 as unknown as ReturnType<typeof setTimeout>,
+        );
     });
 
     it('throws when caller is not host', () => {
@@ -198,6 +203,11 @@ describe('GlimwormService — lifecycle', () => {
       const clearSpy = jest
         .spyOn(global, 'clearInterval')
         .mockImplementation(() => {});
+      jest
+        .spyOn(global, 'setTimeout')
+        .mockImplementation(
+          () => 0 as unknown as ReturnType<typeof setTimeout>,
+        );
       const { service, store, realtime } = makeService();
       service.joinRoom('r1', 'u1');
       service.joinRoom('r1', 'u2');

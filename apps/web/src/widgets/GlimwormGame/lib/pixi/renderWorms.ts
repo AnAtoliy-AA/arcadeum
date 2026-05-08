@@ -6,6 +6,7 @@ interface WormVisual {
   body: Graphics;
   head: Graphics;
   shieldRing: Graphics;
+  selfRing: Graphics;
 }
 
 export class WormRenderState {
@@ -17,6 +18,7 @@ export class WormRenderState {
       v.body.destroy();
       v.head.destroy();
       v.shieldRing.destroy();
+      v.selfRing.destroy();
     }
     this.visuals.clear();
   }
@@ -30,6 +32,7 @@ export class WormRenderState {
     interpolatedSegmentsById: Map<WormId, Vec2[]>,
   ): void {
     const seen = new Set<WormId>();
+    const now = performance.now();
     for (const w of worms) {
       seen.add(w.id);
       const visual = this.ensureVisual(w);
@@ -37,6 +40,7 @@ export class WormRenderState {
       drawBody(visual.body, segments, w);
       drawHead(visual.head, segments[0], w);
       drawShield(visual.shieldRing, segments[0], w);
+      drawSelfRing(visual.selfRing, segments[0], w, now);
     }
     // Remove any visuals for worms no longer in the snapshot
     for (const [id, visual] of this.visuals) {
@@ -44,6 +48,7 @@ export class WormRenderState {
         visual.body.destroy();
         visual.head.destroy();
         visual.shieldRing.destroy();
+        visual.selfRing.destroy();
         this.visuals.delete(id);
       }
     }
@@ -55,12 +60,13 @@ export class WormRenderState {
     const body = new Graphics();
     const head = new Graphics();
     const shieldRing = new Graphics();
+    const selfRing = new Graphics();
     const tint = parseHexColor(w.color);
     body.filters = [
       new GlowFilter({ distance: 12, outerStrength: 1.6, color: tint }),
     ];
-    this.layer.addChild(body, head, shieldRing);
-    const visual: WormVisual = { body, head, shieldRing };
+    this.layer.addChild(body, head, shieldRing, selfRing);
+    const visual: WormVisual = { body, head, shieldRing, selfRing };
     this.visuals.set(w.id, visual);
     return visual;
   }
@@ -111,6 +117,28 @@ function drawShield(
     color: 0xa0e8ff,
     width: 3,
     alpha: 0.85,
+  });
+}
+
+/**
+ * Pulsing ring around the player's own worm head so they can find themselves
+ * at a glance. Pulses radius and alpha at ~1Hz; only drawn for `self`.
+ */
+function drawSelfRing(
+  g: Graphics,
+  pos: Vec2 | undefined,
+  w: GlimwormWormSnapshot,
+  nowMs: number,
+): void {
+  g.clear();
+  if (!pos || !w.self || !w.alive) return;
+  const phase = (nowMs / 1200) % 1; // 0..1 over ~1.2s
+  const radius = 22 + phase * 10;
+  const alpha = 0.7 * (1 - phase);
+  g.circle(pos.x, pos.y, radius).stroke({
+    color: 0xffffff,
+    width: 2,
+    alpha,
   });
 }
 

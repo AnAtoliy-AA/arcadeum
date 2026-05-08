@@ -64,7 +64,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     estimatedDuration: 5,
     complexity: 1,
     ageRating: 'G',
-    thumbnail: '/games/glimworm.jpg',
+    thumbnail: '/games/glimworm.svg',
     version: '1.0.0',
     supportsAI: true,
     tags: ['action', 'arena', 'real-time', 'snake', 'casual'],

@@ -1,5 +1,6 @@
 import { TimeAttackStrategy } from './time-attack.strategy';
 import {
+  GLIMWORM_COUNTDOWN_MS,
   GLIMWORM_RESPAWN_DELAY_MS,
   GLIMWORM_TIME_ATTACK_DURATION_MS,
 } from '../glimworm.constants';
@@ -46,11 +47,13 @@ const makeSession = (
 });
 
 describe('TimeAttackStrategy', () => {
-  it('initSession sets endsAt = startedAt + 90_000, infinite lives, no safe zone', () => {
+  it('initSession sets endsAt = startedAt + countdown + 90_000, infinite lives, no safe zone', () => {
     const startedAt = 1_000_000;
     const s = makeSession([makeWorm('a'), makeWorm('b')], startedAt);
     new TimeAttackStrategy().initSession(s);
-    expect(s.endsAt).toBe(startedAt + GLIMWORM_TIME_ATTACK_DURATION_MS);
+    expect(s.endsAt).toBe(
+      startedAt + GLIMWORM_COUNTDOWN_MS + GLIMWORM_TIME_ATTACK_DURATION_MS,
+    );
     expect(s.worms.a.livesLeft).toBe(Number.POSITIVE_INFINITY);
     expect(s.worms.b.livesLeft).toBe(Number.POSITIVE_INFINITY);
     expect(s.arena.safeZone).toBeUndefined();
@@ -114,7 +117,12 @@ describe('TimeAttackStrategy', () => {
     new TimeAttackStrategy().initSession(s);
     jest
       .spyOn(Date, 'now')
-      .mockReturnValue(startedAt + GLIMWORM_TIME_ATTACK_DURATION_MS + 1);
+      .mockReturnValue(
+        startedAt +
+          GLIMWORM_COUNTDOWN_MS +
+          GLIMWORM_TIME_ATTACK_DURATION_MS +
+          1,
+      );
     expect(new TimeAttackStrategy().checkEndCondition(s)).toBe('b');
 
     const s2 = makeSession(

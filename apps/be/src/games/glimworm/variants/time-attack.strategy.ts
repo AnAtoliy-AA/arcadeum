@@ -1,4 +1,5 @@
 import {
+  GLIMWORM_COUNTDOWN_MS,
   GLIMWORM_RESPAWN_DELAY_MS,
   GLIMWORM_TIME_ATTACK_DURATION_MS,
 } from '../glimworm.constants';
@@ -11,7 +12,9 @@ export class TimeAttackStrategy implements VariantStrategy {
       w.livesLeft = Number.POSITIVE_INFINITY;
     });
     const startedAt = s.startedAt ?? Date.now();
-    s.endsAt = startedAt + GLIMWORM_TIME_ATTACK_DURATION_MS;
+    // Add the countdown so the 90-second clock starts when play actually begins.
+    s.endsAt =
+      startedAt + GLIMWORM_COUNTDOWN_MS + GLIMWORM_TIME_ATTACK_DURATION_MS;
   }
 
   onWormDeath(s: GlimwormSession, victim: Worm, killer: Worm | null): void {

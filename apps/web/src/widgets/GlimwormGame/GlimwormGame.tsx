@@ -7,6 +7,9 @@ import { useGlimwormControls } from './hooks/useGlimwormControls';
 import { GlimwormHud } from './ui/GlimwormHud';
 import { GlimwormDeathOverlay } from './ui/GlimwormDeathOverlay';
 import { GlimwormLobby } from './ui/GlimwormLobby';
+import { GlimwormCountdown } from './ui/GlimwormCountdown';
+import { GlimwormControlsHint } from './ui/GlimwormControlsHint';
+import { GlimwormResultOverlay } from './ui/GlimwormResultOverlay';
 import { useGlimwormStore } from './store/glimwormStore';
 import { gameSocket } from '@/shared/lib/socket';
 import type { BaseGameWidgetProps } from '@/features/games/types/base';
@@ -42,10 +45,19 @@ export default function GlimwormGame(
     (s) => s.latestSnapshot?.status ?? null,
   );
   // Use the live snapshot when present; otherwise fall back to room.status.
-  // Treat 'lobby' AND 'countdown' as lobby for UI purposes.
+  // 'lobby' shows the lobby; 'countdown' / 'playing' / 'ended' show the canvas.
   const effectiveStatus = snapshotStatus ?? room.status;
-  const isLobby =
-    effectiveStatus === 'lobby' || effectiveStatus === 'countdown';
+  const isLobby = effectiveStatus === 'lobby';
+  const isCountdown = effectiveStatus === 'countdown';
+  const isEnded = effectiveStatus === 'ended';
+
+  const handleRematch = useCallback(() => {
+    if (!currentUserId) return;
+    gameSocket.emit('glimworm.restart', {
+      roomId,
+      userId: currentUserId,
+    });
+  }, [roomId, currentUserId]);
 
   if (isLobby && currentUserId) {
     return (
@@ -76,15 +88,15 @@ export default function GlimwormGame(
       />
       <GlimwormHud />
       <GlimwormDeathOverlay />
-      {isHost && currentUserId && (
+      {isCountdown && <GlimwormCountdown />}
+      {!isCountdown && !isEnded && <GlimwormControlsHint />}
+      {isEnded && (
+        <GlimwormResultOverlay isHost={isHost} onRematch={handleRematch} />
+      )}
+      {isHost && currentUserId && !isEnded && (
         <button
           type="button"
-          onClick={() => {
-            gameSocket.emit('glimworm.restart', {
-              roomId,
-              userId: currentUserId,
-            });
-          }}
+          onClick={handleRematch}
           style={{
             position: 'absolute',
             top: 16,

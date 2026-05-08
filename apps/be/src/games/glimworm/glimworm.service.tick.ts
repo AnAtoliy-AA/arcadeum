@@ -23,6 +23,35 @@ import type {
   WormId,
 } from './glimworm.types';
 
+/**
+ * Add bot worms until the session has at least `target` total worms. Bots are
+ * marked ready and isBot, get a free palette color, and start with empty
+ * segments (the service start() flow places them later).
+ */
+export function fillWithBots(session: GlimwormSession, target: number): void {
+  const used = new Set(Object.values(session.worms).map((w) => w.color));
+  while (Object.keys(session.worms).length < target) {
+    const id = `bot-${Math.random().toString(36).slice(2, 10)}`;
+    const color =
+      GLIMWORM_PALETTE.find((c) => !used.has(c)) ?? GLIMWORM_PALETTE[0];
+    used.add(color);
+    session.worms[id] = {
+      id,
+      color,
+      segments: [],
+      heading: 0,
+      speed: GLIMWORM_BASE_SPEED,
+      alive: true,
+      livesLeft: 1,
+      score: 0,
+      ready: true,
+      activePowerup: null,
+      inventoryPowerup: null,
+      isBot: true,
+    };
+  }
+}
+
 export type RandomFn = () => number;
 
 const HEAD_RADIUS = 8;

@@ -98,6 +98,45 @@ export class LeaderboardsService {
     private readonly historyStats: GameHistoryStatsService,
   ) {}
 
+  // De-dupe in-flight upstream calls so concurrent requests don't all run
+  // the full-collection scan.
+  private inFlight = new Map<
+    string,
+    Promise<Awaited<ReturnType<GameHistoryStatsService['getLeaderboard']>>>
+  >();
+
+  /**
+   * Cached + de-duped wrapper around historyStats.getLeaderboard. The
+   * upstream scans every completed GameSession + GameRoom; without this
+   * each request would pay that cost. Cache TTL matches the snapshot
+   * cache (30s) and capture / markInMatch invalidate both layers.
+   */
+  private async cachedRealLeaderboard(
+    limit: number,
+    offset: number,
+    gameId: string | undefined,
+  ) {
+    const key = LeaderboardsCacheService.rawKeyFor({ gameId, limit, offset });
+    const cached =
+      this.cache.getRaw<
+        Awaited<ReturnType<GameHistoryStatsService['getLeaderboard']>>
+      >(key);
+    if (cached) return cached;
+    const existing = this.inFlight.get(key);
+    if (existing) return existing;
+    const fresh = this.historyStats
+      .getLeaderboard(limit, offset, gameId)
+      .then((value) => {
+        this.cache.setRaw(key, value);
+        return value;
+      })
+      .finally(() => {
+        this.inFlight.delete(key);
+      });
+    this.inFlight.set(key, fresh);
+    return fresh;
+  }
+
   /**
    * Flip the in-match flag for a set of users. Called by GamesService when a
    * match starts/ends so the rank table can show LIVE chips in real time.
@@ -139,7 +178,7 @@ export class LeaderboardsService {
     const perMode = await Promise.all(
       GAME_MODE_VALUES.map(async (mode) => {
         const gameId = MODE_TO_GAME_ID[mode];
-        const board = await this.historyStats.getLeaderboard(500, 0, gameId);
+        const board = await this.cachedRealLeaderboard(500, 0, gameId);
         const entry = board.entries.find((e) => e.playerId === userId);
         return entry ? { mode, entry } : null;
       }),
@@ -208,7 +247,7 @@ export class LeaderboardsService {
     // sync with the stats tab.
     const gameId = MODE_TO_GAME_ID[mode];
     const realLimit = Math.min(500, pageSize * page + pageSize);
-    const real = await this.historyStats.getLeaderboard(realLimit, 0, gameId);
+    const real = await this.cachedRealLeaderboard(realLimit, 0, gameId);
 
     const filtered = trimmedQ
       ? real.entries.filter((e) =>

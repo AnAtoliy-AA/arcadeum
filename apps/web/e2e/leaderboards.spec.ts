@@ -82,4 +82,30 @@ test.describe('Leaderboards page', () => {
     const after = await clock.textContent();
     expect(after).not.toEqual(before);
   });
+
+  test('freshness indicator renders above the cup card', async ({ page }) => {
+    await navigateTo(page, '/leaderboards');
+    await expect(page.getByTestId('leaderboard-freshness')).toBeVisible();
+  });
+
+  test('mythic challenge CTA navigates to /players/<id>', async ({ page }) => {
+    await navigateTo(page, '/leaderboards');
+    await page.getByTestId('mythic-challenge').click();
+    await page.waitForURL(/\/players\//);
+    await expect(
+      page.getByTestId(
+        new RegExp('^player-profile-' + page.url().split('/players/')[1] + '$'),
+      ),
+    ).toBeVisible();
+  });
+
+  test('player profile back button returns to leaderboard', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/leaderboards');
+    await page.getByTestId('mythic-challenge').click();
+    await page.waitForURL(/\/players\//);
+    await page.getByTestId('player-profile-back').click();
+    await expect(page).toHaveURL(/\/leaderboards/);
+  });
 });

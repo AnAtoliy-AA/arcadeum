@@ -80,6 +80,16 @@ export type TickerEventDto = {
   color?: string;
 };
 
+export type PlayerProfileDto = {
+  player: LeaderboardPlayerDto;
+  modeRanks: Array<{
+    mode: GameMode;
+    rank: number;
+    rating: number;
+  }>;
+  squad?: SquadDto;
+};
+
 export type LeaderboardSnapshotDto = {
   capturedAt: string;
   mode: GameMode;

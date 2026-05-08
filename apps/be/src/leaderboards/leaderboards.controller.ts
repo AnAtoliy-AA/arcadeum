@@ -1,10 +1,12 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   NotFoundException,
+  Param,
   Post,
   Query,
   Req,
@@ -42,6 +44,16 @@ export class LeaderboardsController {
       q: query.q,
       selfUserId: user?.userId,
     });
+  }
+
+  @Get('players/:id')
+  async getPlayer(@Param('id') id: string) {
+    if (!id || id.length > 64) {
+      throw new BadRequestException('invalid player id');
+    }
+    const player = await this.service.getPlayer(id);
+    if (!player) throw new NotFoundException();
+    return player;
   }
 
   @Post('admin/seed')

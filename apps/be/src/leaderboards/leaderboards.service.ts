@@ -6,6 +6,7 @@ import {
   type GameMode,
   type Region,
   REGION_VALUES,
+  GAME_MODE_VALUES,
 } from './schemas/leaderboard-entry.schema';
 import { Cup } from './schemas/cup.schema';
 import { Squad } from './schemas/squad.schema';
@@ -18,6 +19,7 @@ import type {
   LeaderboardPlayerDto,
   LeaderboardSnapshotDto,
   MythicPlayerDto,
+  PlayerProfileDto,
   RegionDistributionDto,
   RewardTierItemDto,
   SquadDto,
@@ -127,6 +129,46 @@ export class LeaderboardsService {
 
   invalidateCache(): void {
     this.cache.invalidateAll();
+  }
+
+  async getPlayer(userId: string): Promise<PlayerProfileDto | null> {
+    const season = currentSeason();
+    const docs = await this.entryModel.find({ userId, season }).lean().exec();
+    if (docs.length === 0) return null;
+
+    const docByMode = new Map(docs.map((d) => [d.mode, d]));
+    const primary =
+      docByMode.get('all') ?? [...docs].sort((a, b) => b.rating - a.rating)[0];
+    if (!primary) return null;
+
+    const modeRanks = GAME_MODE_VALUES.flatMap((mode) => {
+      const entry = docByMode.get(mode);
+      if (!entry) return [];
+      return [{ mode, rank: entry.rank ?? 0, rating: entry.rating }];
+    });
+
+    const squadDoc = await this.squadModel
+      .findOne({ memberUserIds: userId })
+      .lean()
+      .exec();
+
+    const squad: SquadDto | undefined = squadDoc
+      ? {
+          id: squadDoc.squadId,
+          name: squadDoc.name,
+          tag: squadDoc.tag,
+          rating: squadDoc.rating,
+          memberCount: squadDoc.memberCount,
+          rank: squadDoc.rank ?? 0,
+          isYou: true,
+        }
+      : undefined;
+
+    return {
+      player: toPlayerDto(primary, primary.rank ?? 0),
+      modeRanks,
+      squad,
+    };
   }
 
   async getSnapshot(

@@ -89,6 +89,16 @@ export type TickerEvent = {
   color?: string;
 };
 
+export type PlayerProfile = {
+  player: LeaderboardPlayer;
+  modeRanks: Array<{
+    mode: GameMode;
+    rank: number;
+    rating: number;
+  }>;
+  squad?: Squad;
+};
+
 export type LeaderboardSnapshot = {
   capturedAt: string;
   mode: GameMode;

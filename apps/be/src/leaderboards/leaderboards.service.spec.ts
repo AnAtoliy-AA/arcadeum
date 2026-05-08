@@ -186,4 +186,40 @@ describe('LeaderboardsService', () => {
     expect(matched).toBe(0);
     expect(entryModel.updateMany).not.toHaveBeenCalled();
   });
+
+  it('getPlayer returns null when no entries exist', async () => {
+    entryModel.find = jest.fn().mockReturnValue({
+      lean: jest.fn().mockReturnThis(),
+      exec: jest.fn().mockResolvedValue([]),
+    });
+    const profile = await service.getPlayer('ghost');
+    expect(profile).toBeNull();
+  });
+
+  it('getPlayer aggregates per-mode ranks and resolves the squad', async () => {
+    const entries = [
+      { ...baseEntry, userId: 'me', mode: 'all', rank: 247 },
+      { ...baseEntry, userId: 'me', mode: 'mafia', rank: 12, rating: 2200 },
+    ];
+    entryModel.find = jest.fn().mockReturnValue({
+      lean: jest.fn().mockReturnThis(),
+      exec: jest.fn().mockResolvedValue(entries),
+    });
+    squadModel.findOne = jest.fn().mockReturnValue({
+      lean: jest.fn().mockReturnThis(),
+      exec: jest.fn().mockResolvedValue({
+        squadId: 'sq_1',
+        name: 'Ember Pact',
+        tag: 'EMBR',
+        rating: 9720,
+        memberCount: 7,
+        rank: 2,
+      }),
+    });
+    const profile = await service.getPlayer('me');
+    expect(profile?.player.id).toBe('me');
+    expect(profile?.modeRanks.length).toBe(2);
+    expect(profile?.modeRanks.find((m) => m.mode === 'mafia')?.rank).toBe(12);
+    expect(profile?.squad?.tag).toBe('EMBR');
+  });
 });

@@ -2,12 +2,14 @@ import type {
   LeaderboardSnapshot,
   GameMode,
   LeaderboardPlayer,
+  PlayerProfile,
   Region,
   Tier,
   FormResult,
   TickerEvent,
 } from '@/entities/leaderboard/model/types';
-import { apiClient } from '@/shared/lib/api-client';
+import { apiClient, ApiError } from '@/shared/lib/api-client';
+import { HttpStatus } from '@/shared/lib/http-status';
 
 const REGIONS: Region[] = ['na', 'eu', 'sa', 'asia', 'oceania', 'africa', 'me'];
 const COUNTRIES: Record<Region, string> = {
@@ -141,6 +143,46 @@ export async function getLeaderboard(
     );
   }
   return getMockLeaderboard(args);
+}
+
+export async function getPlayer(
+  id: string,
+  accessToken?: string | null,
+): Promise<PlayerProfile | null> {
+  if (shouldUseMock()) return getMockPlayer(id);
+  try {
+    return await apiClient.get<PlayerProfile>(
+      `/leaderboards/players/${encodeURIComponent(id)}`,
+      accessToken ? { token: accessToken } : {},
+    );
+  } catch (err) {
+    if (err instanceof ApiError && err.status === HttpStatus.NOT_FOUND) {
+      return null;
+    }
+    throw err;
+  }
+}
+
+export function getMockPlayer(id: string): PlayerProfile {
+  const rng = seededRandom(id.length || 7);
+  const player = makePlayer(rng, 247);
+  player.id = id;
+  return {
+    player,
+    modeRanks: [
+      { mode: 'all', rank: 247, rating: player.rating },
+      { mode: 'mafia', rank: 18, rating: player.rating - 80 },
+    ],
+    squad: {
+      id: 'sq_1',
+      name: 'Ember Pact',
+      tag: 'EMBR',
+      rating: 9720,
+      memberCount: 7,
+      rank: 2,
+      isYou: true,
+    },
+  };
 }
 
 export async function getMockLeaderboard(

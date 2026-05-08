@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-08
 **Branch:** ARC-602
-**Status:** Approved (pending spec review)
+**Status:** Approved (pending final spec review)
 
 ## Context
 
@@ -13,19 +13,30 @@ must not be indexed by search engines.
 The codebase today has:
 
 - `User.role` with `admin` already in `USER_ROLES`
-  ([apps/be/src/auth/lib/roles.ts](../../apps/be/src/auth/lib/roles.ts),
-  [apps/be/src/auth/schemas/user.schema.ts](../../apps/be/src/auth/schemas/user.schema.ts))
+  ([apps/be/src/auth/lib/roles.ts](../../../apps/be/src/auth/lib/roles.ts),
+  [apps/be/src/auth/schemas/user.schema.ts](../../../apps/be/src/auth/schemas/user.schema.ts))
 - `JwtAuthGuard` and `GET /auth/me`
-  ([apps/be/src/auth/auth.controller.ts](../../apps/be/src/auth/auth.controller.ts))
-  but **no** `RolesGuard` / `@Roles()` decorator and **no** admin endpoints
+  ([apps/be/src/auth/auth.controller.ts](../../../apps/be/src/auth/auth.controller.ts))
+  but **no** `RolesGuard` / `@Roles()` decorator and **no** admin endpoints.
+  Important: `JwtStrategy.validate()` returns
+  `AuthenticatedUser = { userId, email, username }` — **no `role` field** on
+  `req.user`. The admin gate must therefore read role from the DB, not from
+  the JWT.
 - `getServerAccessToken()` for reading the auth cookie in Server Components
-  ([apps/web/src/entities/session/api/serverTokens.ts](../../apps/web/src/entities/session/api/serverTokens.ts))
+  ([apps/web/src/entities/session/api/serverTokens.ts](../../../apps/web/src/entities/session/api/serverTokens.ts))
+- `fetchProfile(accessToken)` already typed `Promise<AuthUserProfile>` in
+  [apps/web/src/entities/session/api/authApi.ts](../../../apps/web/src/entities/session/api/authApi.ts)
 - `robots.ts` already disallows `/admin/`
-  ([apps/web/src/app/robots.ts](../../apps/web/src/app/robots.ts))
+  ([apps/web/src/app/robots.ts](../../../apps/web/src/app/robots.ts))
+- `@arcadeum/ui` exports `Container`, `GlassCard`, `XStack`, `YStack`,
+  `PageLayout`, `Typography` (verified in
+  [packages/ui/src/index.ts](../../../packages/ui/src/index.ts)). No new
+  shared components needed for this spec.
 - A static "coming soon" `/tournaments` page; no tournaments backend
 - A `payment-note` schema with paginated `getNotes`; no full payment-history
   persistence
 - No announcements / notifications module
+- Locale files at `apps/web/src/shared/i18n/messages/pages/{en,ru,es,fr,by}.ts`
 
 ## Scope
 
@@ -35,7 +46,8 @@ spec → plan → implementation cycle and slot into the shell defined here.
 
 ### In scope (v1)
 
-1. Reusable `RolesGuard` + `@Roles()` decorator on the backend
+1. Reusable `RolesGuard` + `@Roles()` decorator on the backend, with the
+   guard performing a DB lookup to resolve the current user's role
 2. A trivial `GET /admin/ping` endpoint to validate the wiring end-to-end
 3. `/admin` Server Component route on web, gated to `role === 'admin'`,
    non-admins get `notFound()` (HTTP 404)
@@ -51,8 +63,13 @@ spec → plan → implementation cycle and slot into the shell defined here.
 - Payment history viewer (only the existing `/payments/notes` listing exists)
 - Announcement broadcast module
 - Tournament engine, schema, or "start" action
-- Per-section role gating (e.g. moderators getting partial access)
+- Per-section role gating (e.g. moderators getting partial access). Note:
+  `RolesGuard` accepts a variadic `...roles: UserRole[]` so future specs can
+  add `@Roles('moderator', 'admin')` without changing the guard. This is
+  intentional foundation, not premature generalization.
 - Audit logging of admin actions
+- Adding `role` to the JWT payload (would require token rotation; we do a
+  fresh DB lookup instead)
 
 ## Architecture
 
@@ -60,33 +77,48 @@ spec → plan → implementation cycle and slot into the shell defined here.
 
 ```
 apps/web/src/app/admin/
-├── layout.tsx        Server Component, calls requireAdmin(), exports noindex metadata
-├── page.tsx          Landing dashboard inside the shell (placeholder for v1)
-├── error.tsx         Local error boundary so admin failures don't fall back to global error
-└── AdminLayoutClient.tsx   'use client' — Tamagui shell (sidebar + content slot)
+├── layout.tsx            Server Component: calls requireAdmin(), exports noindex metadata
+├── page.tsx              Landing dashboard inside the shell (placeholder for v1)
+├── error.tsx             'use client' Client Component (Next.js requirement) — local error boundary
+├── not-found.tsx         Renders the same neutral "Page not found" as the global 404
+└── AdminLayoutClient.tsx 'use client' — Tamagui shell (sidebar + content slot)
+
+apps/web/src/app/admin/_components/
+└── sidebarItems.ts       Static config for the 4 future-section nav items (kept tiny)
 ```
 
 ### Backend module
 
 ```
 apps/be/src/admin/
-├── admin.controller.ts    GET /admin/ping → { ok: true }, guarded
-├── admin.module.ts
+├── admin.controller.ts        GET /admin/ping → { ok: true }, guarded
+├── admin.module.ts            Imports AuthModule (for JwtAuthGuard) and User model
 └── admin.controller.spec.ts
 
 apps/be/src/auth/guards/
-├── roles.decorator.ts     @Roles(...roles: UserRole[]) via SetMetadata
-├── roles.guard.ts         Reflector-based, expects req.user from JwtAuthGuard
+├── roles.constants.ts         export const ROLES_KEY = 'roles'
+├── roles.decorator.ts         @Roles(...roles: UserRole[]) via SetMetadata(ROLES_KEY, roles)
+├── roles.guard.ts             Reflector-based, looks up user in DB to read role
 └── roles.guard.spec.ts
 ```
 
-`AdminModule` is registered in `apps/be/src/app.module.ts`.
+`AdminModule` is registered in
+[apps/be/src/app.module.ts](../../../apps/be/src/app.module.ts).
+
+`AdminModule` imports:
+
+- `AuthModule` — to make `JwtAuthGuard` and the JWT strategy available
+- `MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])` —
+  for the `RolesGuard` DB lookup
+
+If `AuthModule` already exports the User model, `AdminModule` reuses that
+export rather than re-registering. (Verified during implementation.)
 
 ### Shared FE helper
 
 ```
 apps/web/src/entities/session/api/
-├── requireAdmin.ts        Server-only: reads cookie, fetches /auth/me, returns admin user or notFound()
+├── requireAdmin.ts        Server-only: reads cookie, fetches /auth/me, returns AuthUserProfile or notFound()
 └── requireAdmin.test.ts
 ```
 
@@ -99,53 +131,78 @@ apps/web/src/entities/session/api/
 2. render <AdminLayoutClient user={user}>{children}</AdminLayoutClient>
 ```
 
-**`requireAdmin()` internals:**
+**`requireAdmin()` internals (returns `AuthUserProfile`):**
 
 ```text
 1. token = await getServerAccessToken()
 2. if (!token) → notFound()
-3. res = await fetch(`${BE}/auth/me`, {
-     headers: { Authorization: `Bearer ${token}` },
-     cache: 'no-store',
-   })
-4. if (!res.ok) → notFound()         // 401 expired, 5xx, network — all collapse to 404
-5. user = await res.json()
+3. try {
+     res = await fetch(api('/auth/me'), {
+       headers: { Authorization: `Bearer ${token}` },
+       cache: 'no-store',
+     })
+   } catch { → notFound() }            // network errors collapse to 404 too
+4. if (!res.ok) → notFound()           // 401 expired, 5xx — same outcome
+5. user = (await res.json()) as AuthUserProfile
 6. if (user.role !== 'admin') → notFound()
 7. return user
 ```
 
-**Backend request flow:**
+`requireAdmin()` does **not** reuse `fetchProfile()` because that helper
+throws on non-2xx and lacks `cache: 'no-store'`. We could extend `fetchProfile`
+to accept options, but doing so changes its public surface for callers we
+don't need to touch. Inlining a small server-side fetch keeps blast radius
+contained. The response is typed via the existing `AuthUserProfile` type.
+
+**Backend `RolesGuard` flow:**
 
 ```text
-1. JwtAuthGuard runs → populates req.user from JWT, 401 if missing/invalid
-2. RolesGuard runs   → checks req.user.role against @Roles(...), 403 if mismatch
+1. JwtAuthGuard runs   → populates req.user = { userId, email, username }, 401 if invalid
+2. RolesGuard runs:
+   a. required = reflector.getAllAndOverride(ROLES_KEY, [handler, class])
+   b. if (!required || required.length === 0) return true   // fall-open
+   c. if (!req.user?.userId) throw ForbiddenException()
+   d. user = await this.userModel.findById(req.user.userId).select('role').lean()
+   e. if (!user) throw ForbiddenException()
+   f. return required.includes(user.role)   // false → throws ForbiddenException
 3. Handler executes
 ```
 
+The DB lookup is acceptable because:
+
+- It only runs on routes that opt in via `@Roles()` (admin/staff routes —
+  low-frequency by definition)
+- It guarantees role changes take effect immediately (no token rotation)
+- It avoids JWT schema migration
+
+`RolesGuard` is **not** registered globally in `APP_GUARD` for v1. It is
+applied per-controller via `@UseGuards(JwtAuthGuard, RolesGuard)` on
+`AdminController`. Future specs may register it globally when more controllers
+need it; that decision is deferred.
+
 ### Key design choices
 
-- **Single failure mode = 404.** Every non-admin path (no token, expired token,
-  BE down, role !== admin) collapses to `notFound()`. No information leak about
-  whether the user is signed in or whether the route exists. This pairs with
-  `robots.ts` `Disallow: /admin/` to keep the route invisible.
-- **`cache: 'no-store'`** on the role check. Role can change; never cache "you
-  are admin".
+- **Single failure mode = 404.** Every non-admin path (no token, expired
+  token, BE down, network throw, role !== admin) collapses to `notFound()`.
+  No information leak about whether the user is signed in or whether the
+  route exists. Pairs with `robots.ts` `Disallow: /admin/`.
+- **`cache: 'no-store'`** on the role check. Role can change; never cache
+  "you are admin".
 - **No token refresh inside the gate.** Refresh lives on the client. Expired
   access tokens fall through to `notFound()`; the user re-authenticates
-  normally and tries again. Adding refresh to a server gate widens attack
-  surface for a v1 admin shell.
-- **`RolesGuard` falls open when `@Roles()` is absent.** Lets the guard be
-  applied broadly (e.g. globally on a controller) without breaking unannotated
-  routes. The decorator is the explicit opt-in.
-- **FE gate is UX, BE guard is the security boundary.** The frontend never
-  sees a 403 because the layout filters non-admins client-side-of-the-network.
-  But every admin BE endpoint must use `@UseGuards(JwtAuthGuard, RolesGuard)`
-  - `@Roles('admin')` — that's the real defense.
-- **Server Component for the gate.** No client flash of admin UI before the
-  redirect/404; no admin HTML shipped to non-admins; SEO-safe by construction.
+  normally and tries again.
+- **`RolesGuard` falls open when `@Roles()` is absent.** Lets the guard
+  eventually be applied broadly without breaking unannotated routes. v1 only
+  applies it on `AdminController`; the fall-open behavior is foundation for
+  later.
+- **FE gate is UX, BE guard is the security boundary.** Every admin BE
+  endpoint must use `@UseGuards(JwtAuthGuard, RolesGuard)` + `@Roles('admin')`
+  — that's the real defense. The FE gate just avoids shipping a 403-then-
+  redirect UX.
+- **Server Component for the gate.** No client flash; no admin HTML shipped
+  to non-admins; SEO-safe by construction.
 - **Two layers of no-index** — `robots.ts` (already in place) plus per-page
-  `metadata.robots = { index: false, follow: false }` on the layout. Belt
-  and braces.
+  `metadata.robots = { index: false, follow: false }` on the admin layout.
 
 ## Components
 
@@ -154,27 +211,42 @@ apps/web/src/entities/session/api/
 ```ts
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(
+    private readonly reflector: Reflector,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+  ) {}
 
-  canActivate(ctx: ExecutionContext): boolean {
+  async canActivate(ctx: ExecutionContext): Promise<boolean> {
     const required = this.reflector.getAllAndOverride<UserRole[] | undefined>(
-      'roles',
+      ROLES_KEY,
       [ctx.getHandler(), ctx.getClass()],
     );
     if (!required || required.length === 0) return true;
 
-    const req = ctx.switchToHttp().getRequest();
-    const user = req.user as { role?: UserRole } | undefined;
-    if (!user?.role) throw new ForbiddenException();
+    const req = ctx.switchToHttp().getRequest<{ user?: AuthenticatedUser }>();
+    const userId = req.user?.userId;
+    if (!userId) throw new ForbiddenException();
+
+    const user = await this.userModel
+      .findById(userId)
+      .select('role')
+      .lean<{ role: UserRole } | null>();
+    if (!user) throw new ForbiddenException();
     return required.includes(user.role);
   }
 }
 ```
 
+### `roles.constants.ts` (`apps/be/src/auth/guards/roles.constants.ts`)
+
+```ts
+export const ROLES_KEY = 'roles';
+```
+
 ### `@Roles()` decorator (`apps/be/src/auth/guards/roles.decorator.ts`)
 
 ```ts
-export const Roles = (...roles: UserRole[]) => SetMetadata('roles', roles);
+export const Roles = (...roles: UserRole[]) => SetMetadata(ROLES_KEY, roles);
 ```
 
 ### `AdminController` (`apps/be/src/admin/admin.controller.ts`)
@@ -185,7 +257,7 @@ export const Roles = (...roles: UserRole[]) => SetMetadata('roles', roles);
 @Roles('admin')
 export class AdminController {
   @Get('ping')
-  ping() {
+  ping(): { ok: true } {
     return { ok: true };
   }
 }
@@ -193,19 +265,26 @@ export class AdminController {
 
 ### `requireAdmin()` (`apps/web/src/entities/session/api/requireAdmin.ts`)
 
-Server-only helper. Encapsulates the gate flow above. Returns the typed admin
-user object so consumers can use it without a second fetch.
+Server-only helper. Encapsulates the gate flow above. Returns the typed
+`AuthUserProfile` so consumers can use the user without a second fetch.
 
 ### `AdminLayoutClient` (`apps/web/src/app/admin/AdminLayoutClient.tsx`)
 
 `'use client'` (Tamagui requires it). Renders:
 
-- A two-column layout using `@arcadeum/ui`: `Container` → `XStack` with a
-  sidebar `YStack` and a content `YStack`
-- Sidebar items: Dashboard (active), Roles, Payments, Announcements,
-  Tournaments — all but Dashboard are disabled with a "coming soon" caption
-- Header strip showing the current admin's username + role badge
+- A two-column layout using `@arcadeum/ui`: `PageLayout` → `Container` →
+  `XStack` with a sidebar `YStack` and a content `YStack`
+- Sidebar items pulled from `_components/sidebarItems.ts`: Dashboard
+  (active), Roles, Payments, Announcements, Tournaments — all but Dashboard
+  are visually disabled with a "coming soon" caption
+- A simple greeting strip: "Signed in as `<username>`". **No role badge** in
+  v1 (only admins reach this page; the badge is redundant). Avoids extra i18n
+  keys and a new `RoleBadge` component.
 - Children rendered in the content column
+
+If `AdminLayoutClient.tsx` exceeds 200 lines, split the sidebar into its own
+`AdminSidebar.tsx`. The 500-line ceiling enforced by `pnpm check-file-length`
+must be respected.
 
 ### `/admin/page.tsx`
 
@@ -215,8 +294,28 @@ data.
 
 ### `/admin/error.tsx`
 
-Local error boundary. Renders a "Something went wrong" card so a thrown error
-in any future panel doesn't fall through to the global error page.
+```tsx
+'use client';
+
+export default function AdminError({
+  reset,
+}: {
+  error: Error;
+  reset: () => void;
+}) {
+  // Renders a localized "Something went wrong" card with a retry button.
+}
+```
+
+(`'use client'` is mandatory — Next.js requires error boundaries to be
+Client Components.)
+
+### `/admin/not-found.tsx`
+
+Renders the same neutral 404 the rest of the site uses (or a minimal local
+copy if no shared 404 component exists). Critical: it must look identical to
+the global 404 to a non-admin viewer — no admin chrome, no admin nav. The
+Playwright tests assert on this.
 
 ## i18n
 
@@ -225,6 +324,7 @@ New `pages.admin` namespace. Minimum keys for v1:
 - `pages.admin.title` — "Admin"
 - `pages.admin.welcome` — heading on the landing page
 - `pages.admin.welcomeBody` — short description
+- `pages.admin.signedInAs` — "Signed in as {username}"
 - `pages.admin.nav.dashboard`
 - `pages.admin.nav.roles`
 - `pages.admin.nav.payments`
@@ -233,8 +333,10 @@ New `pages.admin` namespace. Minimum keys for v1:
 - `pages.admin.nav.comingSoon` — caption shown next to disabled items
 - `pages.admin.error.title`
 - `pages.admin.error.body`
+- `pages.admin.error.retry`
 
-Add to `en`, `ru`, `es`, `fr`, `by`.
+Add to all 5 locale files at
+`apps/web/src/shared/i18n/messages/pages/{en,ru,es,fr,by}.ts`.
 
 ## Testing
 
@@ -242,44 +344,75 @@ Add to `en`, `ru`, `es`, `fr`, `by`.
 
 `roles.guard.spec.ts`:
 
-- allows when `req.user.role` matches one of `@Roles(...)`
-- denies (`ForbiddenException`) when role doesn't match
-- falls open (allows) when no `@Roles()` metadata is present
-- denies when `req.user` is missing (defensive — should be unreachable behind
-  `JwtAuthGuard`, but worth pinning)
+- allows when DB lookup returns a role matching one of `@Roles(...)`
+- denies (`ForbiddenException`) when the DB role doesn't match
+- denies (`ForbiddenException`) when DB lookup returns null (deleted user)
+- falls open (allows, no DB lookup) when no `@Roles()` metadata is present
+- denies when `req.user` is missing (defensive — should be unreachable
+  behind `JwtAuthGuard`)
+- mocks the `userModel` so the spec is a pure unit test (no real DB)
 
-`admin.controller.spec.ts` (integration via Nest test module):
+`admin.controller.spec.ts` (Nest test module integration):
 
-- 401 with no token
-- 403 with token for non-admin user (e.g. `developer`, `moderator`, `free`)
+- 401 with no token (real `JwtAuthGuard`)
+- 403 with token for non-admin user (e.g. `developer`, `moderator`)
 - 200 `{ ok: true }` with admin token
+
+The spec uses Nest's `Test.createTestingModule` with the real guards, JWT
+secret resolved via `resolveJwtSecret(config)` (test value), and a mocked
+`userModel` so role lookups are deterministic. The pattern matches existing
+auth-touching specs (e.g. `chat.controller.spec.ts`).
 
 ### Frontend unit (Vitest)
 
-`requireAdmin.test.ts` — mocks `cookies()` and `fetch`:
+`requireAdmin.test.ts` — mocks `next/headers#cookies` and `fetch`:
 
-- calls `notFound()` when no token cookie
+- calls `notFound()` when no token cookie is present
+- calls `notFound()` when `fetch` throws (network error)
 - calls `notFound()` when `/auth/me` returns 401
 - calls `notFound()` when `/auth/me` returns 5xx
 - calls `notFound()` when role is `free`, `developer`, `moderator`,
-  `supporter`, `vip`, `premium`, `tester`
-- returns the user object when role is `admin`
+  `supporter`, `vip`, `premium`, or `tester`
+- returns the typed `AuthUserProfile` when role is `admin`
 
 ### Frontend e2e (Playwright)
 
 `apps/web/e2e/admin.spec.ts`:
 
-- Anonymous user navigates to `/admin` → 404 page (not the admin shell, not a
-  redirect)
-- Logged-in non-admin user → 404
-- Logged-in admin user → sees the admin shell with sidebar items
-- SEO: `<meta name="robots" content="noindex, nofollow">` present on `/admin`
-- `GET /robots.txt` includes `Disallow: /admin/` (regression pin)
+- **Anonymous user navigates to `/admin`** → `not-found.tsx` rendered
+  (assert visible "Page not found" text and absence of admin sidebar)
+- **Logged-in non-admin user** → same not-found page
+- **Logged-in admin user** → admin shell visible (sidebar + welcome card)
+- **SEO:** `<meta name="robots" content="noindex, nofollow">` present on
+  `/admin` HTML
+- **`GET /robots.txt`** includes `Disallow: /admin/` (regression pin)
+- **`GET /sitemap.xml`** does NOT contain `/admin` (regression pin)
+
+**Admin user fixture:** the e2e suite needs a way to log in as an admin.
+The existing `apps/web/e2e/fixtures/test-utils.ts` provides login helpers
+for normal users, but no admin role is seeded. Add to v1:
+
+- A small fixture helper `loginAsAdmin(page)` in
+  `apps/web/e2e/fixtures/test-utils.ts` (or a new
+  `apps/web/e2e/fixtures/admin-utils.ts`) that:
+  1. Calls a test-only BE seed endpoint **OR** uses an existing test user
+     promoted via direct DB write **OR** depends on a seeded admin in the
+     test environment.
+- Choice between (1)/(2)/(3) is implementation detail, but the spec mandates
+  **one** of the following be true before the e2e is written:
+  - The BE has a documented test-only mechanism for setting a user's role
+    (e.g. `apps/be/test/seed.ts` or an existing fixture script)
+  - OR the test environment is seeded with one known admin user whose
+    credentials are read from env vars
+
+If neither exists, the implementation plan must add a minimal seed step.
+Document the chosen approach in the e2e file's header comment.
 
 ### Out of scope for v1 tests
 
 - Behavior of disabled sidebar links — their target features own those tests
-- Load/perf tests on the gate — one cheap fetch per `/admin` navigation
+- Load/perf tests on the gate — one cheap fetch + DB lookup per `/admin`
+  navigation
 
 ## File Inventory
 
@@ -287,6 +420,7 @@ Add to `en`, `ru`, `es`, `fr`, `by`.
 
 **Backend:**
 
+- `apps/be/src/auth/guards/roles.constants.ts`
 - `apps/be/src/auth/guards/roles.decorator.ts`
 - `apps/be/src/auth/guards/roles.guard.ts`
 - `apps/be/src/auth/guards/roles.guard.spec.ts`
@@ -301,47 +435,56 @@ Add to `en`, `ru`, `es`, `fr`, `by`.
 - `apps/web/src/app/admin/layout.tsx`
 - `apps/web/src/app/admin/page.tsx`
 - `apps/web/src/app/admin/error.tsx`
+- `apps/web/src/app/admin/not-found.tsx`
 - `apps/web/src/app/admin/AdminLayoutClient.tsx`
+- `apps/web/src/app/admin/_components/sidebarItems.ts`
 - `apps/web/e2e/admin.spec.ts`
+- (Maybe) `apps/web/e2e/fixtures/admin-utils.ts` — see Testing → fixture
+  section
 
 ### Modified files
 
 - `apps/be/src/app.module.ts` — register `AdminModule`
-- `apps/web/src/shared/i18n/messages/*.ts` — add `pages.admin` namespace in
-  all 5 locales
-- (Verify `apps/web/src/app/sitemap.ts` does not list `/admin`. It currently
-  doesn't, but pin it.)
+- `apps/web/src/shared/i18n/messages/pages/{en,ru,es,fr,by}.ts` — add
+  `pages.admin` namespace in all 5 locales
+- (If chosen) `apps/web/e2e/fixtures/test-utils.ts` — add `loginAsAdmin`
 
 ### Unchanged but relied upon
 
 - `apps/web/src/app/robots.ts` — already disallows `/admin/`
+- `apps/web/src/app/sitemap.ts` — does not list `/admin`; the e2e regression
+  pins this
+- `apps/be/src/auth/auth.module.ts` — exports the JWT plumbing
 
 ## Risks & Mitigations
 
 - **Risk:** Future admin sub-routes forget to add `@UseGuards(JwtAuthGuard,
 RolesGuard)` to their controllers.
-  **Mitigation:** spec the convention here; the `AdminController` is the
-  reference. Optionally future work: apply `RolesGuard` globally so missing
-  `@Roles()` is fail-open but every controller still benefits from
-  `JwtAuthGuard`-+-Reflector wiring. Not done in v1 to keep blast radius small.
+  **Mitigation:** the `AdminController` is the reference implementation;
+  `JwtAuthGuard, RolesGuard` together is the canonical incantation.
+  Future spec may switch to a global guard registration in `APP_GUARD`.
 
-- **Risk:** Server-side `/auth/me` fetch on every `/admin` navigation adds
-  latency.
-  **Mitigation:** acceptable for an admin-only route; alternative is a signed
-  role claim in the JWT, which is much more code and creates revocation
-  problems. Revisit if admin usage grows.
+- **Risk:** Server-side `/auth/me` fetch + DB lookup on every `/admin`
+  navigation adds latency.
+  **Mitigation:** acceptable for an admin-only route. If admin usage grows,
+  revisit by caching the role in a short-TTL signed cookie or by adding it
+  to the JWT payload (with token-rotation cost).
 
 - **Risk:** `notFound()` for expired tokens is confusing to admins ("page
   vanished after lunch break").
   **Mitigation:** documented behavior; admin re-auths and reloads. Refresh
   inside the gate is explicitly out of scope for v1.
 
-## Open Questions
+- **Risk:** The DB lookup in `RolesGuard` introduces a Mongoose dependency
+  to anything that imports the guard.
+  **Mitigation:** scoped to `AdminModule` for v1; if/when other modules
+  adopt it, they import from `AuthModule` (which already has Mongoose).
 
-None blocking. Future specs will decide:
+## Deferred to Future Specs
 
-- Whether `/admin/roles` needs an audit log
-- Whether `/admin/payments` shows Stripe transactions vs. just our
+- Whether `/admin/roles` needs an audit log of role changes
+- Whether `/admin/payments` shows raw Stripe transactions vs. just our
   `payment-note` records
 - Whether announcements push to socket subscribers or just persist for pull
 - The full tournament lifecycle (draft → open → live → finished)
+- Whether `RolesGuard` should be promoted to a global guard via `APP_GUARD`

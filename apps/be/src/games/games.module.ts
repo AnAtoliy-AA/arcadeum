@@ -28,6 +28,7 @@ import { CriticalActionsService } from './actions/critical/critical-actions.serv
 import { TexasHoldemActionsService } from './actions/texas-holdem/texas-holdem-actions.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
 import { GamesRematchService } from './games.rematch.service';
+import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 
 import { CriticalService } from './critical/critical.service';
 import { CriticalBotService } from './critical/critical-bot.service';
@@ -35,6 +36,11 @@ import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { SeaBattleBotService } from './sea-battle/sea-battle-bot.service';
 import { AuthModule } from '../auth/auth.module';
+import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
+// Note: GamesModule ↔ LeaderboardsModule is a circular dep
+// (LeaderboardsService.markInMatch is called from GamesService when matches
+// start/end; LeaderboardsService.getSnapshot now reads stats from
+// GameHistoryStatsService). Both sides use forwardRef to break the cycle.
 
 @Module({
   imports: [
@@ -46,6 +52,7 @@ import { AuthModule } from '../auth/auth.module';
     ]),
     GameEnginesModule, // Import the game engines module
     forwardRef(() => AuthModule), // Import AuthModule for AuthService
+    forwardRef(() => LeaderboardsModule),
   ],
   controllers: [GamesController],
   providers: [
@@ -73,6 +80,7 @@ import { AuthModule } from '../auth/auth.module';
     // Facade service (main entry point)
     GamesService,
     GamesRematchService,
+    GamesLeaderboardSyncService,
     // Gateways
     GamesGateway,
     CriticalGateway,
@@ -80,5 +88,6 @@ import { AuthModule } from '../auth/auth.module';
     TexasHoldemGateway,
     SeaBattleGateway,
   ],
+  exports: [GameHistoryStatsService],
 })
 export class GamesModule {}

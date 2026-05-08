@@ -17,6 +17,7 @@ import {
   RefreshTokenService,
   GoogleOAuthService,
 } from './services';
+import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
 
 @Module({
   imports: [
@@ -30,17 +31,11 @@ import {
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => {
-        const secret = config.get<string>('AUTH_JWT_SECRET');
-        if (!secret) {
-          throw new Error('AUTH_JWT_SECRET is not set');
-        }
-        return {
-          global: true,
-          secret,
-          signOptions: { expiresIn: '15m' },
-        };
-      },
+      useFactory: (config: ConfigService) => ({
+        global: true,
+        secret: resolveJwtSecret(config),
+        signOptions: { expiresIn: '15m' },
+      }),
     }),
   ],
   controllers: [AuthController],

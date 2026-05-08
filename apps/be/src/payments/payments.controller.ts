@@ -17,6 +17,7 @@ import { PaymentSession } from './interfaces/payment-session.interface';
 import type { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
 
 interface JwtPayload {
   sub: string;
@@ -32,8 +33,9 @@ export class PaymentsController {
     private readonly notesService: PaymentNotesService,
     private readonly config: ConfigService,
   ) {
-    const secret = this.config.get<string>('AUTH_JWT_SECRET');
-    this.jwtService = new JwtService({ secret });
+    this.jwtService = new JwtService({
+      secret: resolveJwtSecret(this.config),
+    });
   }
 
   @Post('session')

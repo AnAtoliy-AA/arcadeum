@@ -6,6 +6,7 @@ export const en = {
   historyTab: 'History',
   settingsTab: 'Settings',
   statsTab: 'Statistics',
+  adminTab: 'Admin',
 };
 
 export const es = {
@@ -14,6 +15,7 @@ export const es = {
   historyTab: 'Historial',
   settingsTab: 'Configuración',
   statsTab: 'Estadísticas',
+  adminTab: 'Administración',
 };
 
 export const fr = {
@@ -22,6 +24,7 @@ export const fr = {
   historyTab: 'Historique',
   settingsTab: 'Paramètres',
   statsTab: 'Statistiques',
+  adminTab: 'Administration',
 };
 
 export const ru = {
@@ -30,6 +33,7 @@ export const ru = {
   historyTab: 'История',
   settingsTab: 'Настройки',
   statsTab: 'Статистика',
+  adminTab: 'Админ',
 };
 
 export const by = {
@@ -38,6 +42,7 @@ export const by = {
   historyTab: 'Гісторыя',
   settingsTab: 'Налады',
   statsTab: 'Статыстыка',
+  adminTab: 'Адмін',
 };
 
 export const navigationMessages = {

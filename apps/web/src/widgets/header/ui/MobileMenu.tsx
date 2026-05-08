@@ -20,7 +20,11 @@ import { Button } from '@arcadeum/ui/components/Button/Button';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import { Divider } from '@arcadeum/ui/components/Divider/Divider';
 import { RoleBadge } from '@arcadeum/ui/components/RoleBadge/RoleBadge';
-import { LogoutIcon, SupportIcon } from '@arcadeum/ui/components/Icons/index';
+import {
+  LogoutIcon,
+  SupportIcon,
+  UserIcon,
+} from '@arcadeum/ui/components/Icons/index';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
 import { useHeaderAuth } from './useHeaderAuth';
 
@@ -76,6 +80,20 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
               <CosmeticBadge key={badgeId} badgeId={badgeId} />
             ))}
           </MobileUserInfo>
+          {role === 'admin' && (
+            <LinkButton
+              href={routes.admin}
+              variant="ghost"
+              size="sm"
+              gap="$2"
+              isActive={pathname === routes.admin}
+              fullWidth
+              data-testid="mobile-admin-link"
+            >
+              <UserIcon size={18} />
+              {t('navigation.adminTab')}
+            </LinkButton>
+          )}
           <Button
             variant="listItem"
             mt="$2"

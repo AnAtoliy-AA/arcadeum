@@ -14,6 +14,7 @@ import {
   MailIcon,
   LogoutIcon,
   ChevronIcon,
+  UserIcon,
 } from '@arcadeum/ui/components/Icons/index';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -84,6 +85,20 @@ export default function ProfileMenu() {
       </Button>
 
       <ProfileDropdownWrapper isOpen={isOpen}>
+        {role === 'admin' && (
+          <>
+            <DropdownLink
+              href={routes.admin}
+              onClick={closeMenu}
+              data-testid="header-admin-link"
+            >
+              <UserIcon size={16} />
+              {t('navigation.adminTab')}
+            </DropdownLink>
+            <Divider spacing="sm" />
+          </>
+        )}
+
         <DropdownLink href="/settings" onClick={closeMenu}>
           <SettingsIcon size={16} />
           {t('navigation.settingsTab')}

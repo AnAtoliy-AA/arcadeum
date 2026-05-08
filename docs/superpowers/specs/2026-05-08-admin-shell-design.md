@@ -107,12 +107,15 @@ apps/be/src/auth/guards/
 
 `AdminModule` imports:
 
-- `AuthModule` — to make `JwtAuthGuard` and the JWT strategy available
+- `AuthModule` — strictly speaking optional, since `JwtModule` is registered
+  with `global: true` in `AuthModule` so `JwtAuthGuard`/the JWT strategy
+  resolves from anywhere. We import it for explicitness and to keep the
+  module's dependencies legible.
 - `MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])` —
-  for the `RolesGuard` DB lookup
-
-If `AuthModule` already exports the User model, `AdminModule` reuses that
-export rather than re-registering. (Verified during implementation.)
+  required for the `RolesGuard` DB lookup. **Register the User model locally
+  in `AdminModule`**; do not attempt to re-export it from `AuthModule`. This
+  matches the convention already used by `payments.module.ts`,
+  `chat.module.ts`, `referrals/referral.module.ts`, and `games/games.module.ts`.
 
 ### Shared FE helper
 
@@ -128,8 +131,11 @@ apps/web/src/entities/session/api/
 
 ```text
 1. user = await requireAdmin()       // throws notFound() on any failure
-2. render <AdminLayoutClient user={user}>{children}</AdminLayoutClient>
+2. render <AdminLayoutClient username={user.username}>{children}</AdminLayoutClient>
 ```
+
+(Pass only `username` across the Server → Client boundary, not the full
+`AuthUserProfile` — see `AdminLayoutClient` Components section.)
 
 **`requireAdmin()` internals (returns `AuthUserProfile`):**
 
@@ -137,7 +143,7 @@ apps/web/src/entities/session/api/
 1. token = await getServerAccessToken()
 2. if (!token) → notFound()
 3. try {
-     res = await fetch(api('/auth/me'), {
+     res = await fetch(resolveApiUrl('/auth/me'), {
        headers: { Authorization: `Bearer ${token}` },
        cache: 'no-store',
      })
@@ -153,6 +159,9 @@ throws on non-2xx and lacks `cache: 'no-store'`. We could extend `fetchProfile`
 to accept options, but doing so changes its public surface for callers we
 don't need to touch. Inlining a small server-side fetch keeps blast radius
 contained. The response is typed via the existing `AuthUserProfile` type.
+The URL is built via the already-public `resolveApiUrl(path)` helper from
+`@/shared/lib/api-base` — do **not** import the module-private `api()` from
+`authApi.ts`, and do not duplicate URL-joining logic.
 
 **Backend `RolesGuard` flow:**
 
@@ -209,6 +218,20 @@ need it; that decision is deferred.
 ### `RolesGuard` (`apps/be/src/auth/guards/roles.guard.ts`)
 
 ```ts
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User, UserDocument } from '../schemas/user.schema';
+import { UserRole } from '../lib/roles';
+import { AuthenticatedUser } from '../jwt/jwt.strategy';
+import { ROLES_KEY } from './roles.constants';
+
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(
@@ -270,7 +293,22 @@ Server-only helper. Encapsulates the gate flow above. Returns the typed
 
 ### `AdminLayoutClient` (`apps/web/src/app/admin/AdminLayoutClient.tsx`)
 
-`'use client'` (Tamagui requires it). Renders:
+`'use client'` (Tamagui requires it).
+
+**Server → Client boundary:** the layout is a Server Component that calls
+`requireAdmin()` and gets a full `AuthUserProfile`. It must pass **only
+`{ username: string }`** to `AdminLayoutClient`, not the whole profile —
+the greeting only needs the username, and we don't want `email`/`id`
+serialized into the client bundle. Component prop type:
+
+```ts
+interface AdminLayoutClientProps {
+  username: string;
+  children: React.ReactNode;
+}
+```
+
+Renders:
 
 - A two-column layout using `@arcadeum/ui`: `PageLayout` → `Container` →
   `XStack` with a sidebar `YStack` and a content `YStack`
@@ -356,6 +394,9 @@ Add to all 5 locale files at
 
 - 401 with no token (real `JwtAuthGuard`)
 - 403 with token for non-admin user (e.g. `developer`, `moderator`)
+- 403 with valid admin-issued token but the user record was deleted
+  between token issuance and the request (mocked `userModel.findById`
+  returns null) — exercises both guards in sequence
 - 200 `{ ok: true }` with admin token
 
 The spec uses Nest's `Test.createTestingModule` with the real guards, JWT
@@ -477,8 +518,14 @@ RolesGuard)` to their controllers.
 
 - **Risk:** The DB lookup in `RolesGuard` introduces a Mongoose dependency
   to anything that imports the guard.
-  **Mitigation:** scoped to `AdminModule` for v1; if/when other modules
-  adopt it, they import from `AuthModule` (which already has Mongoose).
+  **Mitigation:** every module that uses `RolesGuard` must register the
+  User model locally via `MongooseModule.forFeature(...)` (same pattern as
+  every existing domain module). The guard does **not** rely on
+  `AuthModule` re-exporting the model — `AuthModule` does not currently do
+  that, and the v1 spec deliberately does not change `AuthModule`. If
+  adoption grows, a future spec may either move the User-model registration
+  into a shared `UsersModule` or have `AuthModule` re-export it; that's a
+  follow-up decision.
 
 ## Deferred to Future Specs
 

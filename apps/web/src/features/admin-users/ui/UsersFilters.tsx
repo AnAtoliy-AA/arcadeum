@@ -1,0 +1,73 @@
+'use client';
+import { useEffect, useState } from 'react';
+import { XStack } from 'tamagui';
+import { useDebounce } from '@/shared/hooks/useDebounce';
+import { USER_ROLES, type UserRole } from '@/entities/session/model/types';
+
+export interface UsersFiltersLabels {
+  searchPlaceholder: string;
+  roleFilterPlaceholder: string;
+  roleFilterAll: string;
+  roleLabels: Record<UserRole, string>;
+}
+
+export interface UsersFiltersProps {
+  q: string;
+  role: UserRole | null;
+  onChange: (next: { q: string; role: UserRole | null }) => void;
+  labels: UsersFiltersLabels;
+}
+
+export function UsersFilters({ q, role, onChange, labels }: UsersFiltersProps) {
+  const [localQ, setLocalQ] = useState(q);
+  const debouncedQ = useDebounce(localQ, 300);
+
+  useEffect(() => {
+    if (debouncedQ !== q) {
+      onChange({ q: debouncedQ, role });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedQ]);
+
+  return (
+    <XStack gap="$3" alignItems="center" flexWrap="wrap">
+      <input
+        placeholder={labels.searchPlaceholder}
+        value={localQ}
+        onChange={(e) => setLocalQ(e.target.value)}
+        style={{
+          padding: '6px 10px',
+          borderRadius: 6,
+          border: '1px solid #555',
+          background: 'transparent',
+          color: 'inherit',
+          minWidth: 220,
+        }}
+      />
+      <select
+        data-testid="role-filter"
+        value={role ?? ''}
+        onChange={(e) =>
+          onChange({
+            q: localQ,
+            role: e.target.value === '' ? null : (e.target.value as UserRole),
+          })
+        }
+        style={{
+          padding: '6px 10px',
+          borderRadius: 6,
+          border: '1px solid #555',
+          background: 'transparent',
+          color: 'inherit',
+        }}
+      >
+        <option value="">{labels.roleFilterAll}</option>
+        {USER_ROLES.map((r) => (
+          <option key={r} value={r}>
+            {labels.roleLabels[r] ?? r}
+          </option>
+        ))}
+      </select>
+    </XStack>
+  );
+}

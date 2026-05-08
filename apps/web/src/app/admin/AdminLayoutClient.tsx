@@ -8,6 +8,7 @@ import {
   XStack,
   YStack,
 } from '@arcadeum/ui';
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { useLanguage } from '@/shared/i18n/context';
 import { ADMIN_SIDEBAR_ITEMS } from './_components/sidebarItems';
@@ -19,7 +20,7 @@ interface AdminLayoutClientProps {
 
 interface AdminNavTranslations {
   dashboard?: string;
-  roles?: string;
+  users?: string;
   payments?: string;
   announcements?: string;
   tournaments?: string;
@@ -58,23 +59,36 @@ export default function AdminLayoutClient({
             minWidth={200}
             data-testid="admin-sidebar"
           >
-            {ADMIN_SIDEBAR_ITEMS.map((item) => (
-              <GlassCard
-                key={item.id}
-                p="$3"
-                opacity={item.enabled ? 1 : 0.5}
-                data-testid={`admin-nav-${item.id}`}
-              >
-                <Typography variant="label" uiSize="md" fontWeight="700">
-                  {navT?.[item.id] ?? item.id}
-                </Typography>
-                {!item.enabled && (
-                  <Typography variant="caption" alpha="low">
-                    {navT?.comingSoon ?? 'Coming soon'}
+            {ADMIN_SIDEBAR_ITEMS.map((item) => {
+              const card = (
+                <GlassCard
+                  p="$3"
+                  opacity={item.enabled ? 1 : 0.5}
+                  data-testid={`admin-nav-${item.id}`}
+                >
+                  <Typography variant="label" uiSize="md" fontWeight="700">
+                    {navT?.[item.id] ?? item.id}
                   </Typography>
-                )}
-              </GlassCard>
-            ))}
+                  {!item.enabled && (
+                    <Typography variant="caption" alpha="low">
+                      {navT?.comingSoon ?? 'Coming soon'}
+                    </Typography>
+                  )}
+                </GlassCard>
+              );
+              if (item.enabled && item.href) {
+                return (
+                  <Link
+                    key={item.id}
+                    href={item.href}
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    {card}
+                  </Link>
+                );
+              }
+              return <div key={item.id}>{card}</div>;
+            })}
           </YStack>
 
           <YStack flex={1} minWidth={280}>

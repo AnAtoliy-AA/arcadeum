@@ -30,6 +30,9 @@ backend-e2e-errors.log
 
 # docs/superpowers
 
+# Lighthouse audit reports (large auto-generated JSON)
+docs/superpowers/specs/lighthouse/
+
 # E2E test results
 test-results/
 

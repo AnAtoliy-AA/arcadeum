@@ -46,15 +46,23 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, act } from '@testing-library/react';
 
 // ---- Mock apiClient ----
-vi.mock('@/shared/lib/api-client', async () => {
-  const actual = await vi.importActual<
-    typeof import('@/shared/lib/api-client')
-  >('@/shared/lib/api-client');
+// Re-implement ApiError minimally rather than using vi.importActual, which
+// causes an extra module-resolution roundtrip and may pull in unrelated
+// side-effects from the real api-client module on first load.
+vi.mock('@/shared/lib/api-client', () => {
+  class ApiError extends Error {
+    constructor(
+      message: string,
+      public readonly status: number,
+      public readonly data: unknown = null,
+    ) {
+      super(message);
+      this.name = 'ApiError';
+    }
+  }
   return {
-    ...actual,
-    apiClient: {
-      get: vi.fn(),
-    },
+    apiClient: { get: vi.fn() },
+    ApiError,
   };
 });
 
@@ -83,9 +91,14 @@ const setStoreState = (next: Partial<StoreState>) => {
   storeRef.listeners.forEach((l) => l(storeRef.state, prev));
 };
 
+// Mock harness stubs only the methods SessionRoleSync touches:
+// `getState` and `subscribe`. Add `setState`/`destroy`/etc. only if a
+// future revision of the SUT needs them.
 vi.mock('../store/sessionStore', () => ({
   useSessionStore: Object.assign(
-    // selector usage — not used by SessionRoleSync, but provide a stub
+    // Callable form — not used by SessionRoleSync (it uses getState/
+    // subscribe directly), but provided so React DevTools / other
+    // consumers don't crash if they evaluate the module.
     (selector: (s: StoreState) => unknown) => selector(storeRef.state),
     {
       getState: () => storeRef.state,
@@ -103,6 +116,10 @@ vi.mock('../store/sessionStore', () => ({
 import { apiClient, ApiError } from '@/shared/lib/api-client';
 import { SessionRoleSync } from './SessionRoleSync';
 
+// vi.mock above replaces apiClient.get with a vi.fn() at module load,
+// so accessing it as a Mock at runtime is safe. The double-cast is the
+// idiomatic way to bridge from the typed `apiClient.get` (returning
+// `Promise<T>`) to vi's mock control surface.
 const apiGetMock = apiClient.get as unknown as ReturnType<typeof vi.fn>;
 
 const PROFILE = {
@@ -131,7 +148,16 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-const flushPromises = () => act(async () => {});
+// Drains microtasks more aggressively than a single `act` cycle so
+// multi-await chains inside the SUT's effect (apiClient.get -> setTokens
+// -> ref update) all complete before assertions run.
+const flushPromises = async () => {
+  await act(async () => {
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+  });
+};
 
 describe('SessionRoleSync', () => {
   it('fetches /auth/me on mount when hydrated and accessToken present', async () => {
@@ -163,6 +189,9 @@ describe('SessionRoleSync', () => {
     render(<SessionRoleSync />);
     await flushPromises();
     expect(apiGetMock).not.toHaveBeenCalled();
+    // Defensive: confirm the subscribe listener was actually attached
+    // by the effect before we drive the hydration flip.
+    expect(storeRef.listeners.length).toBe(1);
 
     setStoreState({ hydrated: true });
     await flushPromises();
@@ -475,13 +504,12 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 
 - Modify: `apps/web/src/app/BrowserRegistry.tsx`
 
-- [ ] **Step 1: Read the current return statement**
+- [ ] **Step 1: Confirm the current return statement**
 
-```bash
-grep -n "return" apps/web/src/app/BrowserRegistry.tsx | tail -5
-```
-
-Confirm the file currently returns `<>{children}</>` (or similar wrapper).
+Open `apps/web/src/app/BrowserRegistry.tsx`. As of planning time the
+component returns `<>{children}</>` near the bottom of the file.
+Confirm this is still the case (a trivial wrapper around `{children}`)
+before editing.
 
 - [ ] **Step 2: Add the import + render**
 
@@ -542,8 +570,9 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 pnpm --filter web test
 ```
 
-Expected: prior 347 tests + 11 new SessionRoleSync tests = 358 total
-(approximate; recount may differ slightly).
+Expected: all tests pass; the 11 new `SessionRoleSync` tests are
+included. Don't pin an absolute count — other PRs landing on develop
+may shift it.
 
 - [ ] **Step 2: Lint + file-length + translations + build**
 

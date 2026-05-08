@@ -82,6 +82,23 @@ describe('LeaderboardsSeederService', () => {
     expect(summary.tickerEventsInserted).toBe(4);
   });
 
+  it('seeded ticker events do not carry expiresAt (ARC-594)', async () => {
+    let inserted: Array<Record<string, unknown>> = [];
+    tickerModel.insertMany.mockImplementation(
+      (docs: Array<Record<string, unknown>>) => {
+        inserted = docs;
+        return Promise.resolve(docs);
+      },
+    );
+
+    await service.seed({ rowsPerMode: 4, season: '2026Q2' });
+
+    expect(inserted).toHaveLength(4);
+    for (const doc of inserted) {
+      expect(doc).not.toHaveProperty('expiresAt');
+    }
+  });
+
   it('seedIfEmpty inserts when the season has no entries', async () => {
     entryModel.countDocuments = jest.fn().mockReturnValue({
       exec: jest.fn().mockResolvedValue(0),

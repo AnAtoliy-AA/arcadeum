@@ -1,13 +1,13 @@
 import { useState, useCallback } from 'react';
 
-interface UseMutationOptions<T, V> {
+export interface UseMutationOptions<T, V> {
   mutationFn: (variables: V) => Promise<T>;
   onSuccess?: (data: T, variables: V) => void;
   onError?: (error: Error, variables: V) => void;
   onSettled?: (data: T | undefined, error: Error | null, variables: V) => void;
 }
 
-interface UseMutationResult<T, V> {
+export interface UseMutationResult<T, V> {
   mutate: (variables: V) => void;
   mutateAsync: (variables: V) => Promise<T>;
   data: T | null;

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LeaderboardsController } from './leaderboards.controller';
 import { LeaderboardsService } from './leaderboards.service';
@@ -14,6 +14,7 @@ import { Cup, CupSchema } from './schemas/cup.schema';
 import { Squad, SquadSchema } from './schemas/squad.schema';
 import { TickerEvent, TickerEventSchema } from './schemas/ticker-event.schema';
 import { AuthModule } from '../auth/auth.module';
+import { GamesModule } from '../games/games.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuthModule } from '../auth/auth.module';
       { name: TickerEvent.name, schema: TickerEventSchema },
     ]),
     AuthModule,
+    forwardRef(() => GamesModule),
   ],
   controllers: [LeaderboardsController],
   providers: [

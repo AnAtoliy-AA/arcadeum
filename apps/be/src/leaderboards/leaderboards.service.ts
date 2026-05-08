@@ -4,8 +4,6 @@ import { Model } from 'mongoose';
 import {
   LeaderboardEntry,
   type GameMode,
-  type Region,
-  REGION_VALUES,
   GAME_MODE_VALUES,
 } from './schemas/leaderboard-entry.schema';
 import { Cup } from './schemas/cup.schema';
@@ -13,14 +11,19 @@ import { Squad } from './schemas/squad.schema';
 import { TickerEvent } from './schemas/ticker-event.schema';
 import { LeaderboardsGateway } from './leaderboards.gateway';
 import { LeaderboardsCacheService } from './leaderboards.cache';
+import { GameHistoryStatsService } from '../games/history/game-history-stats.service';
+import {
+  MODE_TO_GAME_ID,
+  aggregateRegionsFromReal,
+  hydratePlayer,
+  type RealLeaderboardEntry,
+} from './leaderboards.hydrate';
 import type {
-  ClimberFallerDto,
   CupSnapshotDto,
   LeaderboardPlayerDto,
   LeaderboardSnapshotDto,
   MythicPlayerDto,
   PlayerProfileDto,
-  RegionDistributionDto,
   RewardTierItemDto,
   SquadDto,
   TickerEventDto,
@@ -79,10 +82,6 @@ export type GetLeaderboardArgs = {
   q?: string;
 };
 
-function escapeRegex(input: string): string {
-  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 @Injectable()
 export class LeaderboardsService {
   constructor(
@@ -95,6 +94,8 @@ export class LeaderboardsService {
     @Inject(forwardRef(() => LeaderboardsGateway))
     private readonly gateway: LeaderboardsGateway,
     private readonly cache: LeaderboardsCacheService,
+    @Inject(forwardRef(() => GameHistoryStatsService))
+    private readonly historyStats: GameHistoryStatsService,
   ) {}
 
   /**
@@ -132,20 +133,30 @@ export class LeaderboardsService {
   }
 
   async getPlayer(userId: string): Promise<PlayerProfileDto | null> {
-    const season = currentSeason();
-    const docs = await this.entryModel.find({ userId, season }).lean().exec();
-    if (docs.length === 0) return null;
+    // Pull all leaderboards (one per mode) and find the player by id; the
+    // user's primary rank is whatever the 'all' tab shows. Per-mode ranks
+    // come from the per-game leaderboards.
+    const perMode = await Promise.all(
+      GAME_MODE_VALUES.map(async (mode) => {
+        const gameId = MODE_TO_GAME_ID[mode];
+        const board = await this.historyStats.getLeaderboard(500, 0, gameId);
+        const entry = board.entries.find((e) => e.playerId === userId);
+        return entry ? { mode, entry } : null;
+      }),
+    );
+    const found = perMode.filter(
+      (m): m is { mode: GameMode; entry: RealLeaderboardEntry } => m != null,
+    );
+    if (found.length === 0) return null;
 
-    const docByMode = new Map(docs.map((d) => [d.mode, d]));
     const primary =
-      docByMode.get('all') ?? [...docs].sort((a, b) => b.rating - a.rating)[0];
-    if (!primary) return null;
-
-    const modeRanks = GAME_MODE_VALUES.flatMap((mode) => {
-      const entry = docByMode.get(mode);
-      if (!entry) return [];
-      return [{ mode, rank: entry.rank ?? 0, rating: entry.rating }];
-    });
+      found.find((m) => m.mode === 'all') ??
+      [...found].sort((a, b) => b.entry.wins - a.entry.wins)[0];
+    const modeRanks = found.map(({ mode, entry }) => ({
+      mode,
+      rank: entry.rank,
+      rating: 1500 + entry.wins * 12 - entry.losses * 4,
+    }));
 
     const squadDoc = await this.squadModel
       .findOne({ memberUserIds: userId })
@@ -165,7 +176,7 @@ export class LeaderboardsService {
       : undefined;
 
     return {
-      player: toPlayerDto(primary, primary.rank ?? 0),
+      player: hydratePlayer(primary.entry),
       modeRanks,
       squad,
     };
@@ -180,12 +191,7 @@ export class LeaderboardsService {
       MAX_PAGE_SIZE,
       Math.max(1, args.pageSize ?? DEFAULT_PAGE_SIZE),
     );
-    const season = currentSeason();
     const trimmedQ = args.q?.trim();
-    const baseFilter: Record<string, unknown> = { mode, season };
-    if (trimmedQ) {
-      baseFilter.username = { $regex: escapeRegex(trimmedQ), $options: 'i' };
-    }
 
     const cacheKey = LeaderboardsCacheService.keyFor({
       mode,
@@ -197,31 +203,45 @@ export class LeaderboardsService {
     const cached = this.cache.get(cacheKey);
     if (cached) return cached;
 
-    const [
-      entries,
-      totalRows,
-      topRow,
-      cup,
-      squads,
-      tickerEvents,
-      regionAgg,
-      climbersRaw,
-      fallersRaw,
-      selfEntry,
-    ] = await Promise.all([
-      this.entryModel
-        .find(baseFilter)
-        .sort({ rating: -1 })
-        .skip((page - 1) * pageSize)
-        .limit(pageSize)
-        .lean()
-        .exec(),
-      this.entryModel.countDocuments(baseFilter).exec(),
-      this.entryModel
-        .findOne({ mode, season })
-        .sort({ rating: -1 })
-        .lean()
-        .exec(),
+    // Pull a window of real leaderboard data from completed game history.
+    // Same source the Stats page uses, so the new page never falls out of
+    // sync with the stats tab.
+    const gameId = MODE_TO_GAME_ID[mode];
+    const realLimit = Math.min(500, pageSize * page + pageSize);
+    const real = await this.historyStats.getLeaderboard(realLimit, 0, gameId);
+
+    const filtered = trimmedQ
+      ? real.entries.filter((e) =>
+          e.username.toLowerCase().includes(trimmedQ.toLowerCase()),
+        )
+      : real.entries;
+
+    const totalRows = trimmedQ ? filtered.length : real.total;
+    const start = (page - 1) * pageSize;
+    const pageEntries = filtered.slice(start, start + pageSize);
+    const rows = pageEntries.map((e) => hydratePlayer(e));
+
+    // Mythic + podium come from page 1's top of the unfiltered window so a
+    // search that hides the top players still shows the real mythic.
+    const top = real.entries.slice(0, 3).map((e) => hydratePlayer(e));
+    const podium: LeaderboardSnapshotDto['podium'] =
+      page === 1 && top[0] && top[1] && top[2]
+        ? [top[0], top[1], top[2]]
+        : null;
+    const mythic: MythicPlayerDto | null =
+      page === 1 && top[0] && top[1]
+        ? {
+            ...top[0],
+            ratingDelta: top[0].rating - top[1].rating,
+            streak: top[0].streak ?? 0,
+          }
+        : null;
+
+    // Climbers / fallers / cup / squads / ticker / regions don't have a real
+    // signal yet — leave the rails empty rather than show fabricated data.
+    // Synthetic sources (cup, squads, ticker) still come from the seed
+    // collections so dev still sees the cinematic frame.
+    const [cup, squadsDocs, tickerEvents] = await Promise.all([
       this.findActiveCup(),
       this.squadModel.find().sort({ rating: -1 }).limit(5).lean().exec(),
       this.tickerEventModel
@@ -235,82 +255,11 @@ export class LeaderboardsService {
         .limit(8)
         .lean()
         .exec(),
-      this.aggregateRegions(mode, season),
-      this.entryModel
-        .find({ mode, season, prevRank: { $exists: true, $ne: null } })
-        .sort({ rating: -1 })
-        .limit(200)
-        .lean()
-        .exec(),
-      this.entryModel
-        .find({ mode, season, prevRank: { $exists: true, $ne: null } })
-        .sort({ rating: -1 })
-        .limit(200)
-        .lean()
-        .exec(),
-      args.selfUserId
-        ? this.entryModel
-            .findOne({ mode, season, userId: args.selfUserId })
-            .lean()
-            .exec()
-        : Promise.resolve(null),
     ]);
 
-    const rows = entries.map((e, i) =>
-      toPlayerDto(e, (page - 1) * pageSize + i + 1),
-    );
+    const regionAgg = aggregateRegionsFromReal(real.entries);
 
-    const podium: LeaderboardSnapshotDto['podium'] =
-      page === 1 && rows[0] && rows[1] && rows[2]
-        ? [rows[0], rows[1], rows[2]]
-        : null;
-
-    const mythic: MythicPlayerDto | null =
-      page === 1 && rows[0] && rows[1]
-        ? {
-            ...rows[0],
-            ratingDelta: rows[0].rating - rows[1].rating,
-            streak: rows[0].streak ?? 0,
-          }
-        : null;
-
-    const climbers: ClimberFallerDto[] = climbersRaw
-      .filter(
-        (e) => typeof e.prevRank === 'number' && typeof e.rank === 'number',
-      )
-      .map((e) => {
-        const fromRank = e.prevRank as number;
-        const toRank = e.rank as number;
-        return {
-          player: toPlayerDto(e, toRank),
-          delta: fromRank - toRank,
-          fromRank,
-          toRank,
-        };
-      })
-      .filter((c) => c.delta > 0)
-      .sort((a, b) => b.delta - a.delta)
-      .slice(0, 5);
-
-    const fallers: ClimberFallerDto[] = fallersRaw
-      .filter(
-        (e) => typeof e.prevRank === 'number' && typeof e.rank === 'number',
-      )
-      .map((e) => {
-        const fromRank = e.prevRank as number;
-        const toRank = e.rank as number;
-        return {
-          player: toPlayerDto(e, toRank),
-          delta: fromRank - toRank,
-          fromRank,
-          toRank,
-        };
-      })
-      .filter((f) => f.delta < 0)
-      .sort((a, b) => a.delta - b.delta)
-      .slice(0, 5);
-
-    const squadsDto: SquadDto[] = squads.map((s, i) => ({
+    const squadsDto: SquadDto[] = squadsDocs.map((s, i) => ({
       id: s.squadId,
       name: s.name,
       tag: s.tag,
@@ -330,20 +279,17 @@ export class LeaderboardsService {
           endsAt: cup.endsAt.toISOString(),
           prizePoolUSD: cup.prizePoolUSD,
           participantCount: cup.participantCount,
-          qualified: cup.qualifiedUserIds.length
-            ? await this.resolveQualifiedPlayers(
-                mode,
-                season,
-                cup.qualifiedUserIds,
-              )
-            : [],
+          qualified: top,
         }
       : null;
 
-    const liveMatchRanks = rows.filter((r) => r.isInMatch).map((r) => r.rank);
+    const liveMatchRanks: number[] = [];
 
-    const self: LeaderboardPlayerDto | null = selfEntry
-      ? toPlayerDto(selfEntry, selfEntry.rank ?? 0)
+    const selfRaw = args.selfUserId
+      ? real.entries.find((e) => e.playerId === args.selfUserId)
+      : undefined;
+    const self: LeaderboardPlayerDto | null = selfRaw
+      ? hydratePlayer(selfRaw)
       : null;
 
     const tickerEventsDto: TickerEventDto[] = tickerEvents.map((e) => ({
@@ -362,13 +308,13 @@ export class LeaderboardsService {
       cup: cupDto,
       rewards: REWARDS,
       regions: regionAgg,
-      climbers,
-      fallers,
+      climbers: [],
+      fallers: [],
       squads: squadsDto,
       self,
       tickerEvents: tickerEventsDto,
       liveMatchRanks,
-      topRating: topRow?.rating ?? 0,
+      topRating: top[0]?.rating ?? 0,
     };
     this.cache.set(cacheKey, snapshot);
     return snapshot;
@@ -382,88 +328,6 @@ export class LeaderboardsService {
       .lean()
       .exec();
   }
-
-  private async resolveQualifiedPlayers(
-    mode: GameMode,
-    season: string,
-    userIds: string[],
-  ): Promise<LeaderboardPlayerDto[]> {
-    const limited = userIds.slice(0, 32);
-    const docs = await this.entryModel
-      .find({ mode, season, userId: { $in: limited } })
-      .lean()
-      .exec();
-    const order = new Map(limited.map((id, i) => [id, i]));
-    return docs
-      .sort((a, b) => (order.get(a.userId) ?? 0) - (order.get(b.userId) ?? 0))
-      .map((e, i) => toPlayerDto(e, e.rank ?? i + 1));
-  }
-
-  private async aggregateRegions(
-    mode: GameMode,
-    season: string,
-  ): Promise<RegionDistributionDto> {
-    const agg = await this.entryModel
-      .aggregate<{
-        _id: Region;
-        count: number;
-      }>([
-        { $match: { mode, season } },
-        { $group: { _id: '$region', count: { $sum: 1 } } },
-      ])
-      .exec();
-    const total = agg.reduce((sum, r) => sum + r.count, 0) || 1;
-    const byRegion = new Map(agg.map((r) => [r._id, r.count]));
-    return REGION_VALUES.map((region) => ({
-      region,
-      share: (byRegion.get(region) ?? 0) / total,
-    })).filter((r) => r.share > 0);
-  }
-}
-
-function toPlayerDto(
-  e: Pick<
-    LeaderboardEntry,
-    | 'userId'
-    | 'username'
-    | 'region'
-    | 'countryCode'
-    | 'tier'
-    | 'rating'
-    | 'elo'
-    | 'wins'
-    | 'losses'
-    | 'draws'
-    | 'recentForm'
-    | 'streak'
-    | 'isOnline'
-    | 'isInMatch'
-    | 'gameTags'
-    | 'prevRank'
-  >,
-  rank: number,
-): LeaderboardPlayerDto {
-  const total = e.wins + e.losses + e.draws;
-  return {
-    id: e.userId,
-    rank,
-    prevRank: e.prevRank,
-    name: e.username,
-    region: e.region,
-    countryCode: e.countryCode,
-    tier: e.tier,
-    rating: e.rating,
-    elo: e.elo,
-    wins: e.wins,
-    losses: e.losses,
-    draws: e.draws,
-    winrate: total > 0 ? e.wins / total : 0,
-    recentForm: e.recentForm ?? [],
-    streak: e.streak,
-    isOnline: e.isOnline,
-    isInMatch: e.isInMatch,
-    gameTags: e.gameTags ?? [],
-  };
 }
 
 function currentSeason(now: Date = new Date()): string {

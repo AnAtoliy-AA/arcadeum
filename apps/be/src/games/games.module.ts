@@ -37,6 +37,10 @@ import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { SeaBattleBotService } from './sea-battle/sea-battle-bot.service';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
+// Note: GamesModule ↔ LeaderboardsModule is a circular dep
+// (LeaderboardsService.markInMatch is called from GamesService when matches
+// start/end; LeaderboardsService.getSnapshot now reads stats from
+// GameHistoryStatsService). Both sides use forwardRef to break the cycle.
 
 @Module({
   imports: [
@@ -48,7 +52,7 @@ import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
     ]),
     GameEnginesModule, // Import the game engines module
     forwardRef(() => AuthModule), // Import AuthModule for AuthService
-    LeaderboardsModule,
+    forwardRef(() => LeaderboardsModule),
   ],
   controllers: [GamesController],
   providers: [
@@ -84,5 +88,6 @@ import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
     TexasHoldemGateway,
     SeaBattleGateway,
   ],
+  exports: [GameHistoryStatsService],
 })
 export class GamesModule {}

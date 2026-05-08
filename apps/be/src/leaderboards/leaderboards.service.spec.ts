@@ -7,6 +7,7 @@ import { LeaderboardEntry } from './schemas/leaderboard-entry.schema';
 import { Cup } from './schemas/cup.schema';
 import { Squad } from './schemas/squad.schema';
 import { TickerEvent } from './schemas/ticker-event.schema';
+import { GameHistoryStatsService } from '../games/history/game-history-stats.service';
 
 function makeQuery<T>(result: T) {
   return {
@@ -18,38 +19,27 @@ function makeQuery<T>(result: T) {
   };
 }
 
-const baseEntry = {
-  userId: 'p_1',
-  username: 'Nightblade',
-  region: 'eu',
-  countryCode: 'de',
-  tier: 'mythic',
-  rating: 2870,
-  elo: 2950,
-  wins: 100,
-  losses: 25,
-  draws: 5,
-  recentForm: ['W', 'W', 'L', 'W', 'W', 'D', 'W', 'W', 'W', 'L', 'W', 'W'],
-  streak: 11,
-  isOnline: true,
-  isInMatch: false,
-  gameTags: ['Critical'],
-};
+function realEntry(
+  rank: number,
+  playerId: string,
+  username: string,
+  wins: number,
+  losses: number,
+) {
+  const totalGames = wins + losses;
+  const winRate = totalGames > 0 ? (wins / totalGames) * 100 : 0;
+  return { rank, playerId, username, totalGames, wins, losses, winRate };
+}
 
-const secondEntry = {
-  ...baseEntry,
-  userId: 'p_2',
-  username: 'Frostbyte',
-  rating: 2806,
-  streak: 4,
-};
-
-const thirdEntry = {
-  ...baseEntry,
-  userId: 'p_3',
-  username: 'VoidPriest',
-  rating: 2750,
-  streak: 0,
+const realBoard = {
+  entries: [
+    realEntry(1, 'p_1', 'Nightblade', 80, 20),
+    realEntry(2, 'p_2', 'Frostbyte', 70, 25),
+    realEntry(3, 'p_3', 'VoidPriest', 65, 30),
+    realEntry(4, 'p_4', 'EmberQueen', 60, 35),
+  ],
+  hasMore: false,
+  total: 4,
 };
 
 describe('LeaderboardsService', () => {
@@ -58,23 +48,16 @@ describe('LeaderboardsService', () => {
   let cupModel: Record<string, jest.Mock>;
   let squadModel: Record<string, jest.Mock>;
   let tickerModel: Record<string, jest.Mock>;
+  let historyStats: { getLeaderboard: jest.Mock };
   let module: TestingModule;
 
   beforeEach(async () => {
-    entryModel = {
-      find: jest.fn(),
-      findOne: jest.fn(),
-      countDocuments: jest.fn(),
-      aggregate: jest.fn(),
-    };
-    cupModel = {
-      findOne: jest.fn(),
-    };
-    squadModel = {
-      find: jest.fn(),
-    };
-    tickerModel = {
-      find: jest.fn(),
+    entryModel = { find: jest.fn(), findOne: jest.fn(), updateMany: jest.fn() };
+    cupModel = { findOne: jest.fn() };
+    squadModel = { find: jest.fn(), findOne: jest.fn() };
+    tickerModel = { find: jest.fn() };
+    historyStats = {
+      getLeaderboard: jest.fn().mockResolvedValue(realBoard),
     };
 
     module = await Test.createTestingModule({
@@ -92,6 +75,7 @@ describe('LeaderboardsService', () => {
           useValue: { emitCaptured: jest.fn(), emitEntryUpdated: jest.fn() },
         },
         LeaderboardsCacheService,
+        { provide: GameHistoryStatsService, useValue: historyStats },
       ],
     }).compile();
 
@@ -102,70 +86,73 @@ describe('LeaderboardsService', () => {
     await module.close();
   });
 
-  function wireDefaultMocks(
-    rows: (typeof baseEntry)[] = [baseEntry, secondEntry, thirdEntry],
-  ) {
-    entryModel.find
-      .mockReturnValueOnce(makeQuery(rows)) // top page
-      .mockReturnValueOnce(makeQuery(rows)) // climbers
-      .mockReturnValueOnce(makeQuery(rows)); // fallers
-    entryModel.findOne.mockReturnValue(makeQuery(rows[0])); // topRow / self
-    entryModel.countDocuments.mockReturnValue({
-      exec: jest.fn().mockResolvedValue(rows.length),
-    });
-    entryModel.aggregate.mockReturnValue({
-      exec: jest.fn().mockResolvedValue([
-        { _id: 'eu', count: 2 },
-        { _id: 'na', count: 1 },
-      ]),
-    });
+  function wireFlavor() {
     cupModel.findOne.mockReturnValue(makeQuery(null));
     squadModel.find.mockReturnValue(makeQuery([]));
     tickerModel.find.mockReturnValue(makeQuery([]));
   }
 
-  it('returns the top row as mythic with rating delta', async () => {
-    wireDefaultMocks();
-    const snap = await service.getSnapshot({ mode: 'all' });
-    expect(snap.mythic).not.toBeNull();
-    expect(snap.mythic?.id).toBe('p_1');
-    expect(snap.mythic?.ratingDelta).toBe(2870 - 2806);
+  it('forwards the mode-to-gameId mapping when fetching real stats', async () => {
+    wireFlavor();
+    await service.getSnapshot({ mode: 'critical' });
+    expect(historyStats.getLeaderboard).toHaveBeenCalledWith(
+      expect.any(Number),
+      0,
+      'critical_v1',
+    );
   });
 
-  it('renders rows with sequential ranks starting from page offset', async () => {
-    wireDefaultMocks();
+  it('returns no gameId filter for the all-modes leaderboard', async () => {
+    wireFlavor();
+    await service.getSnapshot({ mode: 'all' });
+    expect(historyStats.getLeaderboard).toHaveBeenCalledWith(
+      expect.any(Number),
+      0,
+      undefined,
+    );
+  });
+
+  it('hydrates rows from the real leaderboard with mythic on top', async () => {
+    wireFlavor();
+    const snap = await service.getSnapshot({ mode: 'all' });
+    expect(snap.rows.length).toBe(4);
+    expect(snap.rows[0]?.id).toBe('p_1');
+    expect(snap.mythic?.id).toBe('p_1');
+    const r0 = snap.rows[0]?.rating ?? 0;
+    const r1 = snap.rows[1]?.rating ?? 0;
+    expect(snap.mythic?.ratingDelta).toBe(r0 - r1);
+  });
+
+  it('paginates with sequential ranks honoring page offset', async () => {
+    wireFlavor();
     const snap = await service.getSnapshot({
       mode: 'all',
       page: 2,
-      pageSize: 10,
+      pageSize: 2,
     });
-    expect(snap.rows[0]?.rank).toBe(11);
+    expect(snap.rows[0]?.rank).toBe(3);
+    expect(snap.rows[0]?.id).toBe('p_3');
   });
 
-  it('aggregates region distribution into shares that sum to ~1', async () => {
-    wireDefaultMocks();
-    const snap = await service.getSnapshot({ mode: 'all' });
-    const totalShare = snap.regions.reduce((acc, r) => acc + r.share, 0);
-    expect(totalShare).toBeGreaterThan(0.99);
-    expect(totalShare).toBeLessThan(1.01);
+  it('filters rows by username substring (case-insensitive)', async () => {
+    wireFlavor();
+    const snap = await service.getSnapshot({ mode: 'all', q: 'NIGHT' });
+    expect(snap.rows.length).toBe(1);
+    expect(snap.rows[0]?.id).toBe('p_1');
+    expect(snap.totalRows).toBe(1);
   });
 
   it('returns no self when selfUserId is not provided', async () => {
-    wireDefaultMocks();
+    wireFlavor();
     const snap = await service.getSnapshot({ mode: 'all' });
     expect(snap.self).toBeNull();
   });
 
-  it('returns self entry when selfUserId resolves to a row', async () => {
-    wireDefaultMocks();
-    entryModel.findOne
-      .mockReturnValueOnce(makeQuery(baseEntry)) // topRow
-      .mockReturnValueOnce(
-        makeQuery({ ...baseEntry, userId: 'me', rank: 247 }),
-      );
-    const snap = await service.getSnapshot({ mode: 'all', selfUserId: 'me' });
-    expect(snap.self?.id).toBe('me');
-    expect(snap.self?.rank).toBe(247);
+  it('returns self entry when selfUserId matches a real row', async () => {
+    wireFlavor();
+    const snap = await service.getSnapshot({ mode: 'all', selfUserId: 'p_2' });
+    expect(snap.self?.id).toBe('p_2');
+    expect(snap.self?.rank).toBe(2);
   });
 
   it('markInMatch updates entries and emits per user when mode is given', async () => {
@@ -187,27 +174,37 @@ describe('LeaderboardsService', () => {
     expect(entryModel.updateMany).not.toHaveBeenCalled();
   });
 
-  it('getPlayer returns null when no entries exist', async () => {
-    entryModel.find = jest.fn().mockReturnValue({
-      lean: jest.fn().mockReturnThis(),
-      exec: jest.fn().mockResolvedValue([]),
+  it('getPlayer returns null when no leaderboards contain the user', async () => {
+    historyStats.getLeaderboard.mockResolvedValue({
+      entries: [],
+      hasMore: false,
+      total: 0,
     });
+    squadModel.findOne.mockReturnValue(makeQuery(null));
     const profile = await service.getPlayer('ghost');
     expect(profile).toBeNull();
   });
 
-  it('getPlayer aggregates per-mode ranks and resolves the squad', async () => {
-    const entries = [
-      { ...baseEntry, userId: 'me', mode: 'all', rank: 247 },
-      { ...baseEntry, userId: 'me', mode: 'critical', rank: 12, rating: 2200 },
-    ];
-    entryModel.find = jest.fn().mockReturnValue({
-      lean: jest.fn().mockReturnThis(),
-      exec: jest.fn().mockResolvedValue(entries),
-    });
-    squadModel.findOne = jest.fn().mockReturnValue({
-      lean: jest.fn().mockReturnThis(),
-      exec: jest.fn().mockResolvedValue({
+  it('getPlayer aggregates per-mode ranks for a known user', async () => {
+    historyStats.getLeaderboard.mockImplementation(
+      (_l: number, _o: number, gameId?: string) => {
+        if (!gameId)
+          return Promise.resolve({
+            entries: [realEntry(247, 'me', 'Me', 50, 50)],
+            hasMore: false,
+            total: 1,
+          });
+        if (gameId === 'critical_v1')
+          return Promise.resolve({
+            entries: [realEntry(12, 'me', 'Me', 30, 10)],
+            hasMore: false,
+            total: 1,
+          });
+        return Promise.resolve({ entries: [], hasMore: false, total: 0 });
+      },
+    );
+    squadModel.findOne.mockReturnValue(
+      makeQuery({
         squadId: 'sq_1',
         name: 'Ember Pact',
         tag: 'EMBR',
@@ -215,7 +212,7 @@ describe('LeaderboardsService', () => {
         memberCount: 7,
         rank: 2,
       }),
-    });
+    );
     const profile = await service.getPlayer('me');
     expect(profile?.player.id).toBe('me');
     expect(profile?.modeRanks.length).toBe(2);

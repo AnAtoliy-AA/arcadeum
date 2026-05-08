@@ -4,8 +4,7 @@ import { useRouter } from 'next/navigation';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useLanguage } from '@/shared/i18n/context';
 import {
-  connectSockets,
-  connectSocketsAnonymous,
+  connectLeaderboardSocket,
   useLeaderboardSocket,
 } from '@/shared/lib/socket';
 import { useDebounce } from '@/shared/hooks/useDebounce';
@@ -109,10 +108,12 @@ export default function LeaderboardsPageContent({
     process.env.NEXT_PUBLIC_E2E !== 'true' &&
     process.env.NEXT_PUBLIC_USE_LEADERBOARD_MOCK !== 'true';
 
+  // Page-scoped: only the leaderboards namespace socket connects on this
+  // route, and it tears down on unmount so background pings don't follow
+  // the user to other pages.
   useEffect(() => {
     if (!realtimeEnabled) return;
-    if (accessToken) connectSockets(accessToken);
-    else connectSocketsAnonymous();
+    return connectLeaderboardSocket(accessToken ?? null);
   }, [accessToken, realtimeEnabled]);
 
   // Bug #6: stable handlers via useCallback so the socket subscription

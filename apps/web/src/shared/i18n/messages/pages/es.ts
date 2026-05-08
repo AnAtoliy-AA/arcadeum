@@ -170,14 +170,26 @@ export const es = {
     ticker: { live: 'En vivo' },
     modes: {
       all: { name: 'Todos los juegos', subtitle: 'Tabla combinada', icon: '◎' },
-      mafia: { name: 'Mafia', subtitle: 'Táctico 5v5', icon: '♤' },
-      werewolf: {
-        name: 'Hombre lobo',
-        subtitle: 'Deducción social',
-        icon: '♢',
+      critical: {
+        name: 'Critical',
+        subtitle: 'Cartas de alto riesgo',
+        icon: '♠',
       },
-      crime: { name: 'Crimen', subtitle: 'Atraco cooperativo', icon: '♧' },
-      horror: { name: 'Terror', subtitle: 'Asimétrico 1v4', icon: '♡' },
+      sea_battle: {
+        name: 'Batalla naval',
+        subtitle: 'Estrategia naval',
+        icon: '⚓',
+      },
+      texas_holdem: {
+        name: "Texas Hold'em",
+        subtitle: 'Póker sin límite',
+        icon: '♣',
+      },
+      tic_tac_toe: {
+        name: 'Tres en raya',
+        subtitle: 'Clásico rápido',
+        icon: '✕',
+      },
     },
     cup: {
       eyebrow: 'Torneo',

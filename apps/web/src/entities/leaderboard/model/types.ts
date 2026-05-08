@@ -1,4 +1,9 @@
-export type GameMode = 'all' | 'mafia' | 'werewolf' | 'crime' | 'horror';
+export type GameMode =
+  | 'all'
+  | 'critical'
+  | 'sea_battle'
+  | 'texas_holdem'
+  | 'tic_tac_toe';
 
 export type Region = 'na' | 'eu' | 'sa' | 'asia' | 'oceania' | 'africa' | 'me';
 

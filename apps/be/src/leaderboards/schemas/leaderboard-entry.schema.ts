@@ -3,10 +3,10 @@ import { Document } from 'mongoose';
 
 export const GAME_MODE_VALUES = [
   'all',
-  'mafia',
-  'werewolf',
-  'crime',
-  'horror',
+  'critical',
+  'sea_battle',
+  'texas_holdem',
+  'tic_tac_toe',
 ] as const;
 export type GameMode = (typeof GAME_MODE_VALUES)[number];
 

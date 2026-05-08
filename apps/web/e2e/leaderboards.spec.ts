@@ -30,7 +30,7 @@ test.describe('Leaderboards page', () => {
     await navigateTo(page, '/leaderboards');
     const firstRow = page.getByTestId('leaderboard-row-1');
     const before = (await firstRow.textContent()) ?? '';
-    await page.getByTestId('mode-tab-mafia').click();
+    await page.getByTestId('mode-tab-critical').click();
     await expect(page.getByTestId('leaderboard-table')).toBeVisible();
     await expect(firstRow).not.toHaveText(before);
   });
@@ -40,7 +40,7 @@ test.describe('Leaderboards page', () => {
     const all = page.getByTestId('mode-tab-all');
     await all.focus();
     await page.keyboard.press('ArrowRight');
-    await expect(page.getByTestId('mode-tab-mafia')).toHaveAttribute(
+    await expect(page.getByTestId('mode-tab-critical')).toHaveAttribute(
       'aria-selected',
       'true',
     );

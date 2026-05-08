@@ -5,22 +5,28 @@ import { ModeTab } from '@arcadeum/ui';
 import type { GameMode } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 
-const MODES: GameMode[] = ['all', 'mafia', 'werewolf', 'crime', 'horror'];
+const MODES: GameMode[] = [
+  'all',
+  'critical',
+  'sea_battle',
+  'texas_holdem',
+  'tic_tac_toe',
+];
 
 const GRADIENTS: Record<GameMode, string> = {
   all: 'linear-gradient(135deg,#22d3ee,#a78bfa)',
-  mafia: 'linear-gradient(135deg,#f472b6,#fbbf24)',
-  werewolf: 'linear-gradient(135deg,#34d399,#22d3ee)',
-  crime: 'linear-gradient(135deg,#a78bfa,#f472b6)',
-  horror: 'linear-gradient(135deg,#fbbf24,#f97316)',
+  critical: 'linear-gradient(135deg,#f472b6,#fbbf24)',
+  sea_battle: 'linear-gradient(135deg,#22d3ee,#0ea5e9)',
+  texas_holdem: 'linear-gradient(135deg,#facc15,#f97316)',
+  tic_tac_toe: 'linear-gradient(135deg,#34d399,#22d3ee)',
 };
 
 const FALLBACK_ICONS: Record<GameMode, string> = {
   all: '◎',
-  mafia: '♤',
-  werewolf: '♢',
-  crime: '♧',
-  horror: '♡',
+  critical: '♠',
+  sea_battle: '⚓',
+  texas_holdem: '♣',
+  tic_tac_toe: '✕',
 };
 
 type ModeMeta = { name?: string; subtitle?: string; icon?: string };

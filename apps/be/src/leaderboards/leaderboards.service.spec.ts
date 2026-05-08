@@ -33,7 +33,7 @@ const baseEntry = {
   streak: 11,
   isOnline: true,
   isInMatch: false,
-  gameTags: ['Mafia'],
+  gameTags: ['Critical'],
 };
 
 const secondEntry = {
@@ -172,17 +172,17 @@ describe('LeaderboardsService', () => {
     entryModel.updateMany = jest.fn().mockReturnValue({
       exec: jest.fn().mockResolvedValue({ modifiedCount: 2 }),
     });
-    const matched = await service.markInMatch(['u1', 'u2'], true, 'mafia');
+    const matched = await service.markInMatch(['u1', 'u2'], true, 'critical');
     expect(matched).toBe(2);
     expect(entryModel.updateMany).toHaveBeenCalledWith(
-      { userId: { $in: ['u1', 'u2'] }, mode: 'mafia' },
+      { userId: { $in: ['u1', 'u2'] }, mode: 'critical' },
       { $set: { isInMatch: true } },
     );
   });
 
   it('markInMatch is a no-op for empty user list', async () => {
     entryModel.updateMany = jest.fn();
-    const matched = await service.markInMatch([], true, 'mafia');
+    const matched = await service.markInMatch([], true, 'critical');
     expect(matched).toBe(0);
     expect(entryModel.updateMany).not.toHaveBeenCalled();
   });
@@ -199,7 +199,7 @@ describe('LeaderboardsService', () => {
   it('getPlayer aggregates per-mode ranks and resolves the squad', async () => {
     const entries = [
       { ...baseEntry, userId: 'me', mode: 'all', rank: 247 },
-      { ...baseEntry, userId: 'me', mode: 'mafia', rank: 12, rating: 2200 },
+      { ...baseEntry, userId: 'me', mode: 'critical', rank: 12, rating: 2200 },
     ];
     entryModel.find = jest.fn().mockReturnValue({
       lean: jest.fn().mockReturnThis(),
@@ -219,7 +219,9 @@ describe('LeaderboardsService', () => {
     const profile = await service.getPlayer('me');
     expect(profile?.player.id).toBe('me');
     expect(profile?.modeRanks.length).toBe(2);
-    expect(profile?.modeRanks.find((m) => m.mode === 'mafia')?.rank).toBe(12);
+    expect(profile?.modeRanks.find((m) => m.mode === 'critical')?.rank).toBe(
+      12,
+    );
     expect(profile?.squad?.tag).toBe('EMBR');
   });
 });

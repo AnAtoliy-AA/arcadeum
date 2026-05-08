@@ -51,7 +51,7 @@ const NAMES = [
   'Hollowind',
   'Tessera',
 ];
-const GAME_TAGS = ['Mafia', 'Werewolf', 'Crime', 'Horror'];
+const GAME_TAGS = ['Critical', 'Sea Battle', "Texas Hold'em", 'Tic Tac Toe'];
 
 function seededRandom(seed: number) {
   let s = seed || 1;
@@ -171,7 +171,7 @@ export function getMockPlayer(id: string): PlayerProfile {
     player,
     modeRanks: [
       { mode: 'all', rank: 247, rating: player.rating },
-      { mode: 'mafia', rank: 18, rating: player.rating - 80 },
+      { mode: 'critical', rank: 18, rating: player.rating - 80 },
     ],
     squad: {
       id: 'sq_1',
@@ -243,7 +243,7 @@ export async function getMockLeaderboard(
     },
     {
       who: rows[3]?.name ?? 'Player',
-      what: 'climbed into the Top 10 in Mafia',
+      what: 'climbed into the Top 10 in Critical',
       color: '#22d3ee',
     },
     {

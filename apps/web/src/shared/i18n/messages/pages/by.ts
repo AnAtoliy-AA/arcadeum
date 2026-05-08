@@ -169,14 +169,26 @@ export const by = {
     ticker: { live: 'У эфіры' },
     modes: {
       all: { name: 'Усе гульні', subtitle: 'Зводны рэйтынг', icon: '◎' },
-      mafia: { name: 'Мафія', subtitle: 'Тактыка 5 на 5', icon: '♤' },
-      werewolf: {
-        name: 'Пярэваратні',
-        subtitle: 'Сацыяльная дэдукцыя',
-        icon: '♢',
+      critical: {
+        name: 'Critical',
+        subtitle: 'Карты з высокімі стаўкамі',
+        icon: '♠',
       },
-      crime: { name: 'Крымінал', subtitle: 'Кааператыўны рабунак', icon: '♧' },
-      horror: { name: 'Хорар', subtitle: 'Асіметрыя 1 на 4', icon: '♡' },
+      sea_battle: {
+        name: 'Марскі бой',
+        subtitle: 'Марская стратэгія',
+        icon: '⚓',
+      },
+      texas_holdem: {
+        name: 'Тэхаскі холдэм',
+        subtitle: 'Покер без ліміту',
+        icon: '♣',
+      },
+      tic_tac_toe: {
+        name: 'Крыжыкі-нулікі',
+        subtitle: 'Хуткая класіка',
+        icon: '✕',
+      },
     },
     cup: {
       eyebrow: 'Турнір',

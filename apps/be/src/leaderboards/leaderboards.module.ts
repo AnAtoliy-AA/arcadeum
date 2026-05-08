@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LeaderboardsController } from './leaderboards.controller';
 import { LeaderboardsService } from './leaderboards.service';
+import { LeaderboardsSeederService } from './leaderboards.seeder';
+import { LeaderboardsCaptureService } from './leaderboards.capture.service';
+import { LeaderboardsGateway } from './leaderboards.gateway';
 import {
   LeaderboardEntry,
   LeaderboardEntrySchema,
@@ -22,7 +25,12 @@ import { AuthModule } from '../auth/auth.module';
     AuthModule,
   ],
   controllers: [LeaderboardsController],
-  providers: [LeaderboardsService],
+  providers: [
+    LeaderboardsService,
+    LeaderboardsSeederService,
+    LeaderboardsCaptureService,
+    LeaderboardsGateway,
+  ],
   exports: [LeaderboardsService],
 })
 export class LeaderboardsModule {}

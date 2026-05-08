@@ -17,6 +17,7 @@ import { GamesRematchService } from './games.rematch.service';
 import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
 import { Inject, forwardRef } from '@nestjs/common';
+import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 
 /**
  * Games Service Facade
@@ -39,6 +40,7 @@ export class GamesService {
     private readonly seaBattleService: SeaBattleService,
     @Inject(forwardRef(() => CriticalService))
     private readonly criticalService: CriticalService,
+    private readonly leaderboardSync: GamesLeaderboardSyncService,
   ) {}
 
   // ========== Room Operations ==========
@@ -140,9 +142,14 @@ export class GamesService {
         // Sync status if game completed via leave/forfeit
         if (updatedSession.status === 'completed') {
           await this.roomsService.updateRoomStatus(dto.roomId, 'completed');
+          const remaining = await this.roomsService.getRoomParticipants(
+            dto.roomId,
+          );
+          await this.leaderboardSync.syncInMatch(remaining, false);
         }
       }
     }
+    await this.leaderboardSync.syncInMatch([userId], false);
 
     // Emit real-time event
     this.realtimeService.emitPlayerLeft(
@@ -199,6 +206,9 @@ export class GamesService {
 
     // Update room status
     await this.roomsService.updateRoomStatus(roomId, 'in_progress');
+
+    // Mark players as in-match for the leaderboard LIVE chip.
+    await this.leaderboardSync.syncInMatch(playerIds, true);
 
     // Emit real-time event
     await this.realtimeService.emitGameStarted(
@@ -257,6 +267,10 @@ export class GamesService {
     // Sync room status if game completed
     if (session.status === 'completed') {
       await this.roomsService.updateRoomStatus(session.roomId, 'completed');
+      const players = await this.roomsService.getRoomParticipants(
+        session.roomId,
+      );
+      await this.leaderboardSync.syncInMatch(players, false);
     }
 
     return session;

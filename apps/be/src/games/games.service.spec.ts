@@ -10,6 +10,7 @@ import { AuthService } from '../auth/auth.service';
 import { GamesRematchService } from './games.rematch.service';
 import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
+import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { GameRoomSummary } from './rooms/game-rooms.types';
 import { GameSessionSummary } from './sessions/game-sessions.service';
@@ -71,6 +72,9 @@ describe('GamesService', () => {
 
     const mockSeaBattleService = {};
     const mockCriticalService = {};
+    const mockLeaderboardSync = {
+      syncInMatch: jest.fn().mockResolvedValue(undefined),
+    };
 
     module = await Test.createTestingModule({
       providers: [
@@ -84,6 +88,10 @@ describe('GamesService', () => {
         { provide: GamesRematchService, useValue: mockRematchService },
         { provide: SeaBattleService, useValue: mockSeaBattleService },
         { provide: CriticalService, useValue: mockCriticalService },
+        {
+          provide: GamesLeaderboardSyncService,
+          useValue: mockLeaderboardSync,
+        },
       ],
     }).compile();
 

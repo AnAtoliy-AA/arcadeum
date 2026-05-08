@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
@@ -10,6 +10,7 @@ import {
 import { Cup } from './schemas/cup.schema';
 import { Squad } from './schemas/squad.schema';
 import { TickerEvent } from './schemas/ticker-event.schema';
+import { LeaderboardsGateway } from './leaderboards.gateway';
 import type {
   ClimberFallerDto,
   CupSnapshotDto,
@@ -83,7 +84,36 @@ export class LeaderboardsService {
     @InjectModel(Squad.name) private readonly squadModel: Model<Squad>,
     @InjectModel(TickerEvent.name)
     private readonly tickerEventModel: Model<TickerEvent>,
+    @Inject(forwardRef(() => LeaderboardsGateway))
+    private readonly gateway: LeaderboardsGateway,
   ) {}
+
+  /**
+   * Flip the in-match flag for a set of users. Called by GamesService when a
+   * match starts/ends so the rank table can show LIVE chips in real time.
+   */
+  async markInMatch(
+    userIds: string[],
+    isInMatch: boolean,
+    mode?: GameMode,
+  ): Promise<number> {
+    if (userIds.length === 0) return 0;
+    const filter: { userId: { $in: string[] }; mode?: GameMode } = {
+      userId: { $in: userIds },
+    };
+    if (mode) filter.mode = mode;
+    const res = await this.entryModel
+      .updateMany(filter, { $set: { isInMatch } })
+      .exec();
+    const matched = res.modifiedCount ?? 0;
+    if (matched > 0 && mode) {
+      const season = currentSeason();
+      for (const userId of userIds) {
+        this.gateway.emitEntryUpdated({ userId, mode, season, isInMatch });
+      }
+    }
+    return matched;
+  }
 
   async getSnapshot(
     args: GetLeaderboardArgs = {},

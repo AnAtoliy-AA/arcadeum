@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { LeaderboardsService } from './leaderboards.service';
+import { LeaderboardsGateway } from './leaderboards.gateway';
 import { LeaderboardEntry } from './schemas/leaderboard-entry.schema';
 import { Cup } from './schemas/cup.schema';
 import { Squad } from './schemas/squad.schema';
@@ -85,6 +86,10 @@ describe('LeaderboardsService', () => {
         { provide: getModelToken(Cup.name), useValue: cupModel },
         { provide: getModelToken(Squad.name), useValue: squadModel },
         { provide: getModelToken(TickerEvent.name), useValue: tickerModel },
+        {
+          provide: LeaderboardsGateway,
+          useValue: { emitCaptured: jest.fn(), emitEntryUpdated: jest.fn() },
+        },
       ],
     }).compile();
 
@@ -159,5 +164,24 @@ describe('LeaderboardsService', () => {
     const snap = await service.getSnapshot({ mode: 'all', selfUserId: 'me' });
     expect(snap.self?.id).toBe('me');
     expect(snap.self?.rank).toBe(247);
+  });
+
+  it('markInMatch updates entries and emits per user when mode is given', async () => {
+    entryModel.updateMany = jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue({ modifiedCount: 2 }),
+    });
+    const matched = await service.markInMatch(['u1', 'u2'], true, 'mafia');
+    expect(matched).toBe(2);
+    expect(entryModel.updateMany).toHaveBeenCalledWith(
+      { userId: { $in: ['u1', 'u2'] }, mode: 'mafia' },
+      { $set: { isInMatch: true } },
+    );
+  });
+
+  it('markInMatch is a no-op for empty user list', async () => {
+    entryModel.updateMany = jest.fn();
+    const matched = await service.markInMatch([], true, 'mafia');
+    expect(matched).toBe(0);
+    expect(entryModel.updateMany).not.toHaveBeenCalled();
   });
 });

@@ -179,16 +179,6 @@ export const ru = {
         subtitle: 'Морская стратегия',
         icon: '⚓',
       },
-      texas_holdem: {
-        name: 'Техасский холдем',
-        subtitle: 'Покер без лимита',
-        icon: '♣',
-      },
-      tic_tac_toe: {
-        name: 'Крестики-нолики',
-        subtitle: 'Быстрая классика',
-        icon: '✕',
-      },
     },
     cup: {
       eyebrow: 'Турнир',

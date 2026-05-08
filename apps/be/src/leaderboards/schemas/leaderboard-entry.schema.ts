@@ -1,13 +1,7 @@
 import { Schema, SchemaFactory, Prop } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export const GAME_MODE_VALUES = [
-  'all',
-  'critical',
-  'sea_battle',
-  'texas_holdem',
-  'tic_tac_toe',
-] as const;
+export const GAME_MODE_VALUES = ['all', 'critical', 'sea_battle'] as const;
 export type GameMode = (typeof GAME_MODE_VALUES)[number];
 
 export const REGION_VALUES = [

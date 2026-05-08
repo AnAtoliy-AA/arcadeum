@@ -180,16 +180,6 @@ export const es = {
         subtitle: 'Estrategia naval',
         icon: '⚓',
       },
-      texas_holdem: {
-        name: "Texas Hold'em",
-        subtitle: 'Póker sin límite',
-        icon: '♣',
-      },
-      tic_tac_toe: {
-        name: 'Tres en raya',
-        subtitle: 'Clásico rápido',
-        icon: '✕',
-      },
     },
     cup: {
       eyebrow: 'Torneo',

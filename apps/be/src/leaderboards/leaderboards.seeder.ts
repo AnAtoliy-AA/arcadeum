@@ -46,7 +46,7 @@ const COUNTRIES: Record<Region, string> = {
   africa: 'za',
   me: 'ae',
 };
-const GAME_TAGS = ['Critical', 'Sea Battle', "Texas Hold'em", 'Tic Tac Toe'];
+const GAME_TAGS = ['Critical', 'Sea Battle'];
 
 function seededRandom(seed: number) {
   let s = seed || 1;

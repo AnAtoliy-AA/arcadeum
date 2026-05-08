@@ -5,28 +5,18 @@ import { ModeTab } from '@arcadeum/ui';
 import type { GameMode } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 
-const MODES: GameMode[] = [
-  'all',
-  'critical',
-  'sea_battle',
-  'texas_holdem',
-  'tic_tac_toe',
-];
+const MODES: GameMode[] = ['all', 'critical', 'sea_battle'];
 
 const GRADIENTS: Record<GameMode, string> = {
   all: 'linear-gradient(135deg,#22d3ee,#a78bfa)',
   critical: 'linear-gradient(135deg,#f472b6,#fbbf24)',
   sea_battle: 'linear-gradient(135deg,#22d3ee,#0ea5e9)',
-  texas_holdem: 'linear-gradient(135deg,#facc15,#f97316)',
-  tic_tac_toe: 'linear-gradient(135deg,#34d399,#22d3ee)',
 };
 
 const FALLBACK_ICONS: Record<GameMode, string> = {
   all: '◎',
   critical: '♠',
   sea_battle: '⚓',
-  texas_holdem: '♣',
-  tic_tac_toe: '✕',
 };
 
 type ModeMeta = { name?: string; subtitle?: string; icon?: string };

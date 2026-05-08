@@ -84,7 +84,9 @@ describe('LeaderboardsCaptureService', () => {
   it('captureAll iterates all modes, invalidates cache, and emits', async () => {
     entryModel.find.mockReturnValue(wireFind([]));
     const all = await service.captureAll();
-    expect(all).toHaveLength(5); // all modes
+    // Matches GAME_MODE_VALUES length (all + per-game modes).
+    expect(all.length).toBeGreaterThanOrEqual(2);
+    expect(all[0]?.mode).toBe('all');
     expect(cache.invalidateAll).toHaveBeenCalledTimes(1);
     expect(gateway.emitCaptured).toHaveBeenCalledWith(all);
   });

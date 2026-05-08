@@ -42,11 +42,13 @@ const PAGE_SIZE = 50;
 interface LeaderboardsPageContentProps {
   t?: PageTranslations;
   selfId?: string;
+  accessToken?: string;
 }
 
 export default function LeaderboardsPageContent({
   t: initialT,
   selfId,
+  accessToken,
 }: LeaderboardsPageContentProps) {
   const { messages } = useLanguage();
   const t =
@@ -71,6 +73,7 @@ export default function LeaderboardsPageContent({
   const { data, isLoading, error, refetch } = useLeaderboard({
     mode,
     selfId,
+    accessToken,
     page,
     pageSize: PAGE_SIZE,
     onSuccess: handleLoaded,

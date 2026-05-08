@@ -7,6 +7,7 @@ import type {
   FormResult,
   TickerEvent,
 } from '@/entities/leaderboard/model/types';
+import { apiClient } from '@/shared/lib/api-client';
 
 const REGIONS: Region[] = ['na', 'eu', 'sa', 'asia', 'oceania', 'africa', 'me'];
 const COUNTRIES: Record<Region, string> = {
@@ -113,9 +114,34 @@ export type GetLeaderboardArgs = {
   page?: number;
   pageSize?: number;
   selfId?: string;
+  accessToken?: string | null;
 };
 
+function shouldUseMock() {
+  return (
+    process.env.NEXT_PUBLIC_E2E === 'true' ||
+    process.env.NEXT_PUBLIC_USE_LEADERBOARD_MOCK === 'true'
+  );
+}
+
 export async function getLeaderboard(
+  args: GetLeaderboardArgs = {},
+): Promise<LeaderboardSnapshot> {
+  if (!shouldUseMock()) {
+    const { mode = 'all', page = 1, pageSize = 50, accessToken } = args;
+    const qs = new URLSearchParams();
+    qs.set('mode', mode);
+    qs.set('page', String(page));
+    qs.set('pageSize', String(pageSize));
+    return apiClient.get<LeaderboardSnapshot>(
+      `/leaderboards?${qs.toString()}`,
+      accessToken ? { token: accessToken } : {},
+    );
+  }
+  return getMockLeaderboard(args);
+}
+
+export async function getMockLeaderboard(
   args: GetLeaderboardArgs = {},
 ): Promise<LeaderboardSnapshot> {
   const { mode = 'all', page = 1, pageSize = 50, selfId } = args;
@@ -131,7 +157,6 @@ export async function getLeaderboard(
     makePlayer(rng, start + i),
   );
 
-  // Tag a few rows as in-match for the LIVE chip indicator
   const liveMatchRanks = [rows[2]?.rank, rows[7]?.rank, rows[14]?.rank].filter(
     (r): r is number => typeof r === 'number',
   );
@@ -278,7 +303,3 @@ export async function getLeaderboard(
     },
   };
 }
-
-// TODO(ARC-588-be): replace with real call:
-//   const res = await apiClient.get('/leaderboard', { params: args });
-//   return res.data as LeaderboardSnapshot;

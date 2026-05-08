@@ -14,10 +14,17 @@ export const metadata: Metadata = {
 export default async function LeaderboardsPage() {
   const messages = await getTranslations();
   const t = messages.pages?.leaderboards;
-  // TODO(ARC-588-be): resolve user id from session on the BE; for now we send
-  // a per-user opaque token so the mock can render a stable self row.
   const accessToken = await getServerAccessToken();
+  // Mock fallback (NEXT_PUBLIC_E2E / NEXT_PUBLIC_USE_LEADERBOARD_MOCK) keys
+  // its synthetic self row off this opaque id; the real BE resolves the user
+  // from the access token via JwtOptionalAuthGuard.
   const selfId = accessToken ? accessToken.slice(0, 16) : undefined;
 
-  return <LeaderboardsClient t={t} selfId={selfId} />;
+  return (
+    <LeaderboardsClient
+      t={t}
+      selfId={selfId}
+      accessToken={accessToken ?? undefined}
+    />
+  );
 }

@@ -20,6 +20,7 @@ export function useLeaderboard({
       args.mode ?? 'all',
       args.page ?? 1,
       args.selfId ?? null,
+      args.accessToken ? 'authed' : 'anon',
     ],
     queryFn: () => getLeaderboard(args),
     onSuccess,

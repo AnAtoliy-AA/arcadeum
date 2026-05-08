@@ -18,10 +18,7 @@ export const StaticDownloadButtons: React.FC<StaticDownloadButtonsProps> = ({
 
   return (
     <div className="download-buttons-container">
-      <div
-        className="download-btn-static disabled"
-        aria-label={`App Store - ${t('home.comingSoon')}`}
-      >
+      <div className="download-btn-static disabled">
         <div className="download-btn-icon">
           <AppleIcon size={24} />
         </div>
@@ -33,10 +30,7 @@ export const StaticDownloadButtons: React.FC<StaticDownloadButtonsProps> = ({
         </div>
       </div>
 
-      <div
-        className="download-btn-static disabled"
-        aria-label={`Google Play - ${t('home.comingSoon')}`}
-      >
+      <div className="download-btn-static disabled">
         <div className="download-btn-icon">
           <AndroidIcon size={24} />
         </div>
@@ -55,8 +49,8 @@ export const StaticDownloadButtons: React.FC<StaticDownloadButtonsProps> = ({
           onClick={onInstall || onShowInstructions}
           aria-label={
             onInstall
-              ? t('pwa.install.installAs') + ' ' + t('pwa.install.webApp')
-              : t('pwa.install.getThe') + ' ' + t('pwa.install.appGuide')
+              ? `${t('pwa.install.installAs')} ${t('pwa.install.webApp')}`
+              : `${t('pwa.install.getThe')} ${t('pwa.install.appGuide')}`
           }
         >
           <div className="download-btn-icon">

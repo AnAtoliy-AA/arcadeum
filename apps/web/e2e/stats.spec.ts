@@ -68,6 +68,13 @@ test.describe('Player Stats', () => {
   test('should display overview stats', async ({ page }) => {
     await navigateTo(page, '/stats');
 
+    // Stats page now defaults to the leaderboard tab — switch to My Stats
+    // before asserting on the overview metrics.
+    const myStatsTab = page.getByTestId('stats-tab-my-stats');
+    await myStatsTab
+      .click({ force: true })
+      .catch(() => myStatsTab.dispatchEvent('click'));
+
     await expect(
       page.locator('h1, h2, [class*="Title"]').first(),
     ).toBeVisible();

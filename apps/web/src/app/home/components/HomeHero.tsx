@@ -8,7 +8,6 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import './styles/hero-stable.css';
 import { SupportIcon } from '@/shared/ui';
 import Link from 'next/link';
 import { CARD_VARIANTS } from '@/features/games/lib/criticalVariants';
@@ -68,29 +67,30 @@ export default function HomeHero() {
         <div className="hero-content-main">
           <div
             className="animate-fade-in-up"
-            style={{ animationDelay: '0.15s' }}
+            style={{ animationDelay: '0.2s' }}
           >
             <span className="hero-kicker-main kicker-hydration-shimmer">
               ✦ {kicker}
             </span>
           </div>
 
-          <div
-            className="animate-fade-in-up"
-            style={{ animationDelay: '0.1s' }}
+          {/*
+           * Title is intentionally NOT wrapped in animate-fade-in-up so it
+           * paints at full opacity at FCP and becomes the LCP element with
+           * minimal latency. The kicker, tagline, description, and CTAs
+           * still fade in for visual rhythm.
+           */}
+          <h1
+            id="hero-heading"
+            className="hero-title-main hero-title-shimmer"
+            data-text={appName}
           >
-            <h1
-              id="hero-heading"
-              className="hero-title-main hero-title-shimmer"
-              data-text={appName}
-            >
-              {appName}
-            </h1>
-          </div>
+            {appName}
+          </h1>
 
           <div
             className="animate-fade-in-up"
-            style={{ animationDelay: '0.2s' }}
+            style={{ animationDelay: '0.1s' }}
           >
             <p className="hero-tagline-main">{tagline}</p>
           </div>

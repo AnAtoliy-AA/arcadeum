@@ -220,8 +220,45 @@ export const es: LegalMessages = {
         responseTime: 'Tiempo de Respuesta',
         responseValue: 'Dentro de 24-48 horas',
       },
+      hero: {
+        eyebrow: 'Soporte de jugadores',
+        title: 'Estamos en el mismo equipo.',
+        tagline:
+          'Lánzanos una pregunta, reporta un bug o cuéntanos una idea — leemos cada mensaje y todo el equipo juega los juegos que enviamos.',
+        statusOk: 'Todos los sistemas operativos',
+        medianReply: '~ {{hours}} h de respuesta media',
+        humansOnline: '{{count}} personas en línea',
+        languages: '{{count}} idiomas',
+      },
+      stats: {
+        ticketsResolved: 'Tickets resueltos este mes',
+        avgRating: 'Valoración media de soporte',
+        languagesSupported: 'Idiomas soportados',
+        slaHit: 'Cumplimiento de SLA',
+        ticketsResolvedValue: '2.840',
+        avgRatingValue: '4,9 ★',
+        languagesSupportedValue: '5',
+        slaHitValue: '98%',
+      },
+      channels: {
+        discord: {
+          title: 'Discord',
+          sub: 'Chat en vivo · {{count}} miembros',
+          memberCount: '12,4k',
+        },
+        x: { title: '@_arcadeum_', sub: 'DMs abiertos' },
+        twitter: { title: '@_arcadeum_', sub: 'DMs abiertos' },
+        instagram: { title: 'Instagram', sub: 'Novedades y capturas' },
+        telegram: { title: 'Telegram', sub: 't.me/arcadeum' },
+        github: {
+          title: 'GitHub Issues',
+          sub: 'Bugs y solicitudes de funciones',
+        },
+      },
       form: {
-        title: 'Enviar un Mensaje',
+        title: 'Envía un mensaje al equipo',
+        subtitle: 'Mensaje directo',
+        repliesNote: 'Las respuestas llegarán a tu email',
         nameLabel: 'Su Nombre',
         namePlaceholder: 'Ingrese su nombre',
         emailLabel: 'Dirección de Correo',
@@ -230,26 +267,92 @@ export const es: LegalMessages = {
         subjectPlaceholder: '¿De qué se trata?',
         messageLabel: 'Mensaje',
         messagePlaceholder: 'Cuéntenos cómo podemos ayudar...',
-        submit: 'Enviar Mensaje →',
+        name: 'Tu nombre',
+        email: 'Email',
+        subject: 'Asunto',
+        message: 'Mensaje',
+        privacy: 'Privado — nunca compartimos tu email.',
+        submit: 'Lanzar mensaje',
+        submitting: 'Enviando…',
+        successTitle: 'Mensaje enviado.',
+        successBody:
+          'Espera una respuesta en menos de 4 horas. Te enviamos una copia a tu email.',
+        sendAnother: 'Enviar otro',
         success:
           '✓ ¡Gracias! Su mensaje ha sido enviado. Nos pondremos en contacto pronto.',
       },
+      side: {
+        onCall: 'En servicio ahora',
+        onCallTeam: 'Maria, Anatoliy +{{extra}}',
+        onCallRegion: 'Soporte · EU + LATAM',
+        medianFirstReply: 'Mediana de primera respuesta',
+        medianFirstReplyValue: '4 h',
+        workingHours: 'Horario de trabajo',
+        coverage: 'Cobertura',
+        coverageValue: 'GMT-5 → GMT+8',
+        devsLabel: 'Para desarrolladores',
+        devsTitle: 'Bugs e integración',
+        devsBody:
+          'Los bugs reproducibles, problemas de API y dudas del SDK se gestionan en GitHub. Triamos en menos de 24 horas.',
+        openIssue: 'Abrir un issue',
+        press: 'Prensa y partnerships',
+        pressEmail: 'hello@arcadeum.games',
+        pressBody: 'Para medios, creadores y estudios partner.',
+        statusLabel: 'Estado de los sistemas',
+        statusTitle: 'Todos los sistemas operativos',
+        statusBody: 'Uptime del 99,98 % en los últimos 30 días.',
+        statusLinkLabel: 'Ver página de estado',
+      },
+      common: {
+        questionsLabel: 'Preguntas comunes',
+      },
+      tips: {
+        label: 'Respuestas más rápidas',
+        title: 'Ayúdanos a responderte antes',
+        orderId:
+          'Incluye el ID de pedido para reembolsos o pagos — encontramos el recibo al instante.',
+        bugs: 'Para bugs: pasos para reproducir, navegador y dispositivo. Cuanto más concreto, mejor.',
+        screenshots:
+          'Las capturas son bienvenidas — pégalas directamente en el campo del mensaje, sin adjuntar.',
+        account:
+          'Para problemas de acceso o cuenta — añade el email con el que te registraste para que podamos localizarla.',
+        urgent:
+          "¿Urgente? Añade 'urgent' al asunto y lo enviaremos al equipo de guardia.",
+        language:
+          'Escribe en el idioma que prefieras — respondemos en EN, RU, ES, FR, BY.',
+        footer:
+          'Cada mensaje lo lee una persona del equipo — sin chatbots, sin respuestas automáticas.',
+      },
+      ticker: {
+        label: 'Feed en directo',
+      },
       faq: {
-        title: 'Preguntas Frecuentes',
+        title: 'Quizá ya lo hayamos contestado',
+        browse: 'Ir al centro de ayuda',
         refund: {
-          question: '¿Cómo solicito un reembolso?',
+          question: '¿Puedo obtener un reembolso?',
           answer:
-            'Por favor envíe un correo a {{email}} con el correo de su cuenta y los detalles del pedido. Las solicitudes de reembolso se procesan en 5-10 días hábiles.',
+            'La elegibilidad para reembolsos depende del producto y del tiempo desde la compra. Escríbenos a {{email}} con tu ID de pedido y te responderemos en un día hábil.',
         },
         password: {
-          question: 'Olvidé mi contraseña. ¿Qué debo hacer?',
+          question: '¿Cómo restablezco mi contraseña?',
           answer:
-            'Use el enlace "Olvidé mi contraseña" en la página de inicio de sesión para restablecer su contraseña por correo electrónico.',
+            'Usa el enlace "Olvidé mi contraseña" en la pantalla de inicio de sesión. El correo de restablecimiento llega en aproximadamente un minuto — revisa el spam si no aparece. Si tu email cambió, contacta a soporte.',
         },
         deleteAccount: {
           question: '¿Cómo elimino mi cuenta?',
           answer:
-            'Contáctenos a través de este formulario o envíe un correo a {{email}} con su solicitud. La eliminación de cuenta se procesa en 48 horas.',
+            'La eliminación de cuenta es permanente y borra tus estadísticas, lista de amigos e historial. Escribe desde el correo asociado a tu cuenta a {{email}} para iniciar el proceso.',
+        },
+        multiplayerLag: {
+          question: '¿Por qué tengo lag en multijugador?',
+          answer:
+            'La mayoría del lag es por enrutamiento de región. Cambia tu región de matchmaking en Ajustes → Red, o consulta status.arcadeum.games para ver si algún servidor está degradado.',
+        },
+        reportPlayer: {
+          question: '¿Cómo reporto a otro jugador?',
+          answer:
+            'En el juego usa el menú ⋯ junto al nombre del jugador → Reportar. Nuestro equipo de moderación revisa los reportes en menos de 24 horas.',
         },
       },
     },

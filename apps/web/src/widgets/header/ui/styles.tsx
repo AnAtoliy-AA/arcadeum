@@ -22,12 +22,7 @@ export function Logo({
   children: React.ReactNode;
 }) {
   return (
-    <Link
-      href={href}
-      prefetch={false}
-      className="link-no-decoration"
-      aria-label="Arcadeum"
-    >
+    <Link href={href} prefetch={false} className="link-no-decoration">
       <div className="logo-inner" data-testid="logo-inner">
         {children}
       </div>

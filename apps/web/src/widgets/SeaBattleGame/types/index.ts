@@ -96,6 +96,14 @@ export interface LastAttack {
   shipName?: string;
 }
 
+export interface SeaBattleTeam {
+  id: string;
+  name: string;
+  color: string;
+  playerIds: string[];
+  currentShooterIndex: number;
+}
+
 export interface SeaBattleSnapshot {
   phase: GamePhase;
   players: SeaBattlePlayerState[];
@@ -104,6 +112,10 @@ export interface SeaBattleSnapshot {
   winnerId?: string;
   logs: GameLogEntry[];
   lastAttack?: LastAttack;
+  teams?: SeaBattleTeam[];
+  teamOrder?: string[];
+  currentTeamIndex?: number;
+  hideShipsFromTeammates?: boolean;
 }
 
 export interface SeaBattleGameProps extends BaseGameWidgetProps {}

@@ -1,5 +1,13 @@
 import { CellState, GamePhase, AttackResult } from './sea-battle.constants';
-import { GameLogEntry } from '../base/game-engine.interface';
+import { ChatScope, GameLogEntry } from '../base/game-engine.interface';
+
+export interface SeaBattleTeam {
+  id: string;
+  name: string;
+  color: string;
+  playerIds: string[];
+  currentShooterIndex: number;
+}
 
 export interface ShipCell {
   row: number;
@@ -40,6 +48,10 @@ export interface SeaBattleState {
     result: AttackResult;
     shipName?: string;
   };
+  teams?: SeaBattleTeam[];
+  teamOrder?: string[];
+  currentTeamIndex?: number;
+  hideShipsFromTeammates?: boolean;
   [key: string]: unknown;
 }
 
@@ -56,5 +68,5 @@ export interface AttackPayload {
 
 export interface ChatPayload {
   message: string;
-  scope?: 'all' | 'players' | 'private';
+  scope?: ChatScope;
 }

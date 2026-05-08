@@ -15,7 +15,6 @@ import {
   SupportIcon,
   ChevronDownIcon,
 } from '@arcadeum/ui';
-import './styles/footer-stable.css';
 
 export const SOCIAL_MAPPING = [
   { id: 'instagram', label: 'Instagram', Icon: InstagramIcon },

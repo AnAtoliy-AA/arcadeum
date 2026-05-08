@@ -1,6 +1,10 @@
-import { SSR_TIMEOUT } from '../config/app-config';
+import { CLIENT_TIMEOUT, SSR_TIMEOUT } from '../config/app-config';
 import { resolveApiUrl } from './api-base';
 import { HttpStatus } from './http-status';
+
+function defaultTimeout(): number {
+  return typeof window === 'undefined' ? SSR_TIMEOUT : CLIENT_TIMEOUT;
+}
 
 interface NetworkError extends Error {
   code?: string;
@@ -52,7 +56,7 @@ export const apiClient = {
       token,
       data,
       headers: customHeaders,
-      timeout = SSR_TIMEOUT,
+      timeout = defaultTimeout(),
       signal: customSignal,
       ...fetchOptions
     } = options;

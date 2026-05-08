@@ -11,6 +11,10 @@ import {
   AttackPayload,
 } from './sea-battle.types';
 import { areCellsValid, areCellsConnected } from './sea-battle.utils';
+import {
+  arePlayersOnSameTeam,
+  getActiveShooterId,
+} from './team-rotation.utils';
 
 export function validatePlaceShip(
   state: SeaBattleState,
@@ -95,8 +99,11 @@ export function validateAttack(
 ): boolean {
   if (state.phase !== GAME_PHASE.BATTLE) return false;
 
-  const currentPlayerId = state.playerOrder[state.currentTurnIndex];
-  if (player.playerId !== currentPlayerId) return false;
+  // Determine who is allowed to attack right now.
+  const activeId = state.teams
+    ? getActiveShooterId(state)
+    : state.playerOrder[state.currentTurnIndex];
+  if (player.playerId !== activeId) return false;
 
   if (
     !payload?.targetPlayerId ||
@@ -107,6 +114,14 @@ export function validateAttack(
   }
 
   if (payload.targetPlayerId === player.playerId) return false;
+
+  // No friendly fire in team mode.
+  if (
+    state.teams &&
+    arePlayersOnSameTeam(state, player.playerId, payload.targetPlayerId)
+  ) {
+    return false;
+  }
 
   const target = state.players.find(
     (p) => p.playerId === payload.targetPlayerId,

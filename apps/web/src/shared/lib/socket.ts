@@ -32,12 +32,30 @@ const SOCKET_OPTIONS = {
   autoConnect: false,
 };
 
+// Leaderboards realtime is a "nice-to-have" push channel — the page renders
+// fine without it. Going websocket-only skips socket.io's polling preamble
+// (~3 XHRs per connect) and the long-poll heartbeats it keeps alive when
+// polling is in the transport list. If the websocket can't be established
+// (e.g. behind a strict proxy) the page just falls back to capture-driven
+// refetches; nothing breaks.
+const LEADERBOARD_SOCKET_OPTIONS = {
+  transports: ['websocket'],
+  autoConnect: false,
+  reconnectionAttempts: 5,
+  reconnectionDelayMax: 10_000,
+};
+
 const gamesSocket = io(
   `${SOCKET_BASE_URL}/games`,
   SOCKET_OPTIONS,
 ) as AuthenticatedSocket;
 
 const chatsSocket = io(SOCKET_BASE_URL, SOCKET_OPTIONS) as AuthenticatedSocket;
+
+const leaderboardsSocket = io(
+  `${SOCKET_BASE_URL}/leaderboards`,
+  LEADERBOARD_SOCKET_OPTIONS,
+) as AuthenticatedSocket;
 
 let currentAuthToken: string | null = null;
 
@@ -118,6 +136,23 @@ export function connectSockets(token: string | null | undefined): void {
 }
 
 /**
+ * Connect the leaderboards namespace socket only when a page that needs it
+ * mounts (currently /leaderboards). Auth is applied if a token is provided.
+ * Returns a teardown function the caller should run on unmount so we don't
+ * leak background pings.
+ */
+export function connectLeaderboardSocket(
+  token: string | null | undefined,
+): () => void {
+  if (token) applyAuth(leaderboardsSocket, token);
+  else leaderboardsSocket.auth = {};
+  if (!leaderboardsSocket.connected) leaderboardsSocket.connect();
+  return () => {
+    if (leaderboardsSocket.connected) leaderboardsSocket.disconnect();
+  };
+}
+
+/**
  * Connect game socket without authentication (for spectating public games)
  */
 export function connectSocketsAnonymous(): void {
@@ -143,14 +178,19 @@ export function disconnectSockets(): void {
   if (chatsSocket) {
     chatsSocket.disconnect();
   }
+  if (leaderboardsSocket) {
+    leaderboardsSocket.disconnect();
+  }
 
   gamesSocket.auth = {};
   chatsSocket.auth = {};
+  leaderboardsSocket.auth = {};
   resetEncryptionKey();
 }
 
 export const gameSocket: Socket = gamesSocket;
 export const chatSocket: Socket = chatsSocket;
+export const leaderboardSocket: Socket = leaderboardsSocket;
 
 // Expose sockets to window for E2E testing
 if (typeof window !== 'undefined') {
@@ -212,6 +252,19 @@ export function useChatSocket(
 
     return () => {
       chatSocket.off(event, listener);
+    };
+  }, [event, handler]);
+}
+
+export function useLeaderboardSocket(
+  event: string,
+  handler: SocketEventHandler,
+): void {
+  useEffect(() => {
+    const listener = (...args: unknown[]) => handler(...args);
+    leaderboardSocket.on(event, listener);
+    return () => {
+      leaderboardSocket.off(event, listener);
     };
   }, [event, handler]);
 }

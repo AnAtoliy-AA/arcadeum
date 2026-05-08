@@ -102,17 +102,15 @@ export const ModalHeader = memo(function ModalHeader({ children, onClose, 'data-
     >
       {children}
       {onClose && (
-        <Dialog.Close asChild>
-          <Button
-            variant="icon"
-            size="sm"
-            onPress={onClose}
-            aria-label="Close modal"
-            data-testid="modal-close-button"
-          >
-            <CloseIcon size={20} />
-          </Button>
-        </Dialog.Close>
+        <Button
+          variant="icon"
+          size="sm"
+          onClick={onClose}
+          aria-label="Close modal"
+          data-testid="modal-close-button"
+        >
+          <CloseIcon size={20} />
+        </Button>
       )}
     </XStack>
   );

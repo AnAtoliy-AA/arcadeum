@@ -2,7 +2,12 @@ import type { NextConfig } from 'next';
 import path from 'path';
 import withPWAInit from '@ducanh2912/next-pwa';
 import { withTamagui } from '@tamagui/next-plugin';
+import withBundleAnalyzer from '@next/bundle-analyzer';
 import packageJson from './package.json';
+
+const bundleAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
 
 const withPWA = withPWAInit({
   dest: 'public',
@@ -237,6 +242,10 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 3600,
+  },
 };
 
 const tamaguiPlugin = withTamagui({
@@ -245,4 +254,4 @@ const tamaguiPlugin = withTamagui({
   appDir: true,
 });
 
-export default tamaguiPlugin(withPWA(nextConfig));
+export default bundleAnalyzer(tamaguiPlugin(withPWA(nextConfig)));

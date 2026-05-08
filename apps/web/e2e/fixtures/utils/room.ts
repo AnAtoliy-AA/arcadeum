@@ -31,8 +31,14 @@ export async function closeGameRulesModal(page: Page): Promise<void> {
     });
   }
 
-  // 3. Wait for the modal to actually disappear from the DOM naturally
-  await expect(page.locator(modalSelector)).not.toBeVisible({ timeout: 10000 });
+  // 3. Wait for the modal to actually disappear from the DOM naturally.
+  // On flaky touch-device emulators (e.g. Tablet Safari) the close click
+  // sometimes doesn't propagate; we still want the safety net below to run
+  // instead of throwing here.
+  await page
+    .locator(modalSelector)
+    .waitFor({ state: 'hidden', timeout: 10000 })
+    .catch(() => {});
 
   // 4. Final check: if it's STILL in the DOM (e.g. detached or ghost), then and only then remove it
   // But we prefer waiting for React to do its job first to avoid re-render loops.

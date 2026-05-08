@@ -20,12 +20,6 @@ interface DragProps {
   onDragStart: (e: DragEvent<HTMLElement>) => void;
 }
 
-interface DropProps {
-  onDragOver: (e: DragEvent<HTMLElement>) => void;
-  onDrop: (e: DragEvent<HTMLElement>) => void;
-  onDragLeave: (e: DragEvent<HTMLElement>) => void;
-}
-
 function getCells(
   row: number,
   col: number,
@@ -103,45 +97,48 @@ export function useDragPlacement({
     [placedShipIds, setSelectedShipId],
   );
 
-  const getDropProps = useCallback(
-    (row: number, col: number): DropProps => ({
-      onDragOver: (e: DragEvent<HTMLElement>) => {
-        e.preventDefault();
-        const shipId = draggingShipId.current;
-        if (!shipId) return;
-        const ship = SHIPS.find((s) => s.id === shipId);
-        if (!ship) return;
-        const cells = getCells(row, col, ship.size, isVertical);
-        if (cells && canPlace(cells, board)) {
-          setHoveredCells(cells);
-          setIsInvalidHover?.(false);
-        } else {
-          setHoveredCells([]);
-          setIsInvalidHover?.(true);
-        }
-      },
-      onDrop: (e: DragEvent<HTMLElement>) => {
-        e.preventDefault();
-        const shipId = e.dataTransfer.getData('text/plain');
-        if (!shipId) return;
-        const ship = SHIPS.find((s) => s.id === shipId);
-        if (!ship) return;
-        const cells = getCells(row, col, ship.size, isVertical);
-        if (cells && canPlace(cells, board)) {
-          onPlaceShip(shipId, cells);
-        }
-        setHoveredCells([]);
+  const onDragOver = useCallback(
+    (row: number, col: number, e: DragEvent<HTMLElement>) => {
+      e.preventDefault();
+      const shipId = draggingShipId.current;
+      if (!shipId) return;
+      const ship = SHIPS.find((s) => s.id === shipId);
+      if (!ship) return;
+      const cells = getCells(row, col, ship.size, isVertical);
+      if (cells && canPlace(cells, board)) {
+        setHoveredCells(cells);
         setIsInvalidHover?.(false);
-        setIsDragging(false);
-        draggingShipId.current = null;
-      },
-      onDragLeave: () => {
+      } else {
         setHoveredCells([]);
-        setIsInvalidHover?.(false);
-      },
-    }),
+        setIsInvalidHover?.(true);
+      }
+    },
+    [board, isVertical, setHoveredCells, setIsInvalidHover],
+  );
+
+  const onDrop = useCallback(
+    (row: number, col: number, e: DragEvent<HTMLElement>) => {
+      e.preventDefault();
+      const shipId = e.dataTransfer.getData('text/plain');
+      if (!shipId) return;
+      const ship = SHIPS.find((s) => s.id === shipId);
+      if (!ship) return;
+      const cells = getCells(row, col, ship.size, isVertical);
+      if (cells && canPlace(cells, board)) {
+        onPlaceShip(shipId, cells);
+      }
+      setHoveredCells([]);
+      setIsInvalidHover?.(false);
+      setIsDragging(false);
+      draggingShipId.current = null;
+    },
     [board, isVertical, onPlaceShip, setHoveredCells, setIsInvalidHover],
   );
+
+  const onDragLeave = useCallback(() => {
+    setHoveredCells([]);
+    setIsInvalidHover?.(false);
+  }, [setHoveredCells, setIsInvalidHover]);
 
   const handleDragEnd = useCallback(() => {
     setIsDragging(false);
@@ -150,5 +147,12 @@ export function useDragPlacement({
     setIsInvalidHover?.(false);
   }, [setHoveredCells, setIsInvalidHover]);
 
-  return { getDragProps, getDropProps, handleDragEnd, isDragging };
+  return {
+    getDragProps,
+    onDragOver,
+    onDrop,
+    onDragLeave,
+    handleDragEnd,
+    isDragging,
+  };
 }

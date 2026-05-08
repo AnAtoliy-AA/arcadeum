@@ -190,12 +190,13 @@ export class LeaderboardsSeederService implements OnModuleInit {
         color: '#facc15',
       },
     ];
-    const tickerExpiresAt = new Date(Date.now() + 30 * 60 * 1000);
+    // Seeded ticker events never expire — they're a dev fixture, not real
+    // events. The 30-minute TTL we used to set here silently broke e2e a
+    // half-hour after each fresh seed (ARC-594 follow-up).
     const tickers = await this.tickerEventModel.insertMany(
       tickerInputs.map((e) => ({
         ...e,
         occurredAt: new Date(),
-        expiresAt: tickerExpiresAt,
       })),
     );
 

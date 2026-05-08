@@ -208,7 +208,7 @@ export default function LeaderboardsPageContent({
   return (
     <PageLayout>
       <Container size="lg">
-        <YStack gap="$6" paddingBottom="$10">
+        <YStack gap="$6" paddingBottom={120}>
           <HeroBackdrop testID="leaderboard-hero">
             <YStack gap="$3" maxWidth={680}>
               <Text

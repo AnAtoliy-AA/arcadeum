@@ -24,15 +24,17 @@ export function PinnedSelfRow({
   const max = topRating ?? player.rating;
   return (
     <View
-      position="sticky"
-      bottom={0}
-      width="100%"
       backgroundColor="rgba(15,12,25,0.92)"
       borderTopWidth={1}
       borderColor="$mythicAccent"
       paddingHorizontal="$4"
       paddingVertical="$3"
       style={{
+        position: 'fixed',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 50,
         backdropFilter: 'blur(12px)',
         boxShadow: '0 -16px 32px -8px rgba(236,72,153,0.35)',
       }}

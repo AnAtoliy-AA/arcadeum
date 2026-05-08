@@ -1,5 +1,6 @@
 'use client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useLanguage } from '@/shared/i18n/context';
 import {
@@ -7,6 +8,7 @@ import {
   connectSocketsAnonymous,
   useLeaderboardSocket,
 } from '@/shared/lib/socket';
+import { useDebounce } from '@/shared/hooks/useDebounce';
 import {
   PageLayout,
   Container,
@@ -41,6 +43,7 @@ import {
   type Scope,
   type Range,
 } from './_components/LeaderboardControls';
+import { FreshnessIndicator } from './_components/FreshnessIndicator';
 
 const PAGE_SIZE = 50;
 
@@ -55,6 +58,7 @@ export default function LeaderboardsPageContent({
   selfId,
   accessToken,
 }: LeaderboardsPageContentProps) {
+  const router = useRouter();
   const { messages } = useLanguage();
   const t =
     (messages.pages?.leaderboards as unknown as PageTranslations) || initialT;
@@ -64,6 +68,7 @@ export default function LeaderboardsPageContent({
   const [scope, setScope] = useState<Scope>('global');
   const [range, setRange] = useState<Range>('week');
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 300);
   const selfRowRef = useRef<HTMLDivElement | null>(null);
 
   const handleLoaded = useCallback(
@@ -81,16 +86,29 @@ export default function LeaderboardsPageContent({
     accessToken,
     page,
     pageSize: PAGE_SIZE,
+    q: debouncedSearch,
     onSuccess: handleLoaded,
   });
+
+  // Reset accumulator + page when the debounced query changes so we don't
+  // append filtered rows onto previously unfiltered ones.
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setPage(1);
+      setAccumulated([]);
+    }, 0);
+    return () => clearTimeout(id);
+  }, [debouncedSearch]);
 
   useEffect(() => {
     if (accessToken) connectSockets(accessToken);
     else connectSocketsAnonymous();
   }, [accessToken]);
 
-  // Refetch on capture broadcast (debounced via natural React batching).
+  // Refetch on capture broadcast and bump the freshness pulse.
+  const [freshnessPulseKey, setFreshnessPulseKey] = useState(0);
   useLeaderboardSocket('leaderboards.captured', () => {
+    setFreshnessPulseKey((k) => k + 1);
     if (page === 1) {
       refetch().catch(() => {});
     }
@@ -154,12 +172,11 @@ export default function LeaderboardsPageContent({
   const errorT = (t?.errorState ?? {}) as { title?: string; retry?: string };
   const loadMoreLabel = (t?.loadMore as string) ?? 'Load more';
 
-  const filteredRows = useMemo(() => {
-    const base = accumulated.length > 0 ? accumulated : (data?.rows ?? []);
-    if (!search.trim()) return base;
-    const needle = search.trim().toLowerCase();
-    return base.filter((p) => p.name.toLowerCase().includes(needle));
-  }, [accumulated, data?.rows, search]);
+  // BE applies the `q` filter; we just render whatever the server returns.
+  const filteredRows = useMemo(
+    () => (accumulated.length > 0 ? accumulated : (data?.rows ?? [])),
+    [accumulated, data?.rows],
+  );
 
   if (error) {
     return (
@@ -186,6 +203,7 @@ export default function LeaderboardsPageContent({
 
   const second = data?.rows[1];
   const third = data?.rows[2];
+  const mythic = data?.mythic ?? null;
 
   return (
     <PageLayout>
@@ -218,40 +236,44 @@ export default function LeaderboardsPageContent({
             </View>
           </HeroBackdrop>
 
+          <FreshnessIndicator
+            capturedAt={data?.capturedAt}
+            pulseKey={freshnessPulseKey}
+            t={t}
+          />
           <CupCountdown cup={data?.cup ?? null} t={t} />
 
-          {data?.mythic ? (
+          {mythic ? (
             <XStack gap="$4" flexWrap="wrap" alignItems="stretch">
               <View flex={2} minWidth={360}>
                 <MythicSpotlight
-                  rank={data.mythic.rank}
-                  name={data.mythic.name}
-                  rating={data.mythic.rating}
-                  ratingDelta={data.mythic.ratingDelta}
-                  streak={data.mythic.streak}
+                  rank={mythic.rank}
+                  name={mythic.name}
+                  rating={mythic.rating}
+                  ratingDelta={mythic.ratingDelta}
+                  streak={mythic.streak}
                   region={
-                    regionLabels[data.mythic.region] ??
-                    data.mythic.region.toUpperCase()
+                    regionLabels[mythic.region] ?? mythic.region.toUpperCase()
                   }
-                  recentForm={data.mythic.recentForm}
+                  recentForm={mythic.recentForm}
                   streakLabel={(
                     mythicLabels.streak ?? '{count}-game streak'
-                  ).replace('{count}', String(data.mythic.streak))}
+                  ).replace('{count}', String(mythic.streak))}
                   leadLabel={(
                     mythicLabels.leadOver ?? '+{delta} over #2'
-                  ).replace('{delta}', String(data.mythic.ratingDelta))}
+                  ).replace('{delta}', String(mythic.ratingDelta))}
                   recentLabel={mythicLabels.recentLabel ?? 'Last 12 matches'}
                   challengeLabel={mythicLabels.challenge ?? '⚔ Challenge'}
                   watchLabel={mythicLabels.watch ?? '▶ Watch replay'}
                   followLabel={mythicLabels.follow ?? 'Follow'}
                   onChallenge={() => {
-                    /* TODO(ARC-588-profile) */
+                    router.push(`/players/${mythic.id}`);
                   }}
                   onWatch={() => {
-                    /* TODO(ARC-588-profile) */
+                    router.push(`/players/${mythic.id}`);
                   }}
                   onFollow={() => {
-                    /* TODO(ARC-588-profile) */
+                    router.push(`/players/${mythic.id}`);
                   }}
                 />
               </View>

@@ -14,6 +14,7 @@ import {
   type GameMode,
 } from './schemas/leaderboard-entry.schema';
 import { LeaderboardsGateway } from './leaderboards.gateway';
+import { LeaderboardsCacheService } from './leaderboards.cache';
 
 const DEFAULT_INTERVAL_MS = 60_000;
 
@@ -35,6 +36,7 @@ export class LeaderboardsCaptureService
     private readonly entryModel: Model<LeaderboardEntry>,
     @Inject(forwardRef(() => LeaderboardsGateway))
     private readonly gateway: LeaderboardsGateway,
+    private readonly cache: LeaderboardsCacheService,
   ) {}
 
   onModuleInit(): void {
@@ -72,6 +74,7 @@ export class LeaderboardsCaptureService
     for (const mode of GAME_MODE_VALUES) {
       results.push(await this.capture(mode, season));
     }
+    this.cache.invalidateAll();
     this.gateway.emitCaptured(results);
     return results;
   }

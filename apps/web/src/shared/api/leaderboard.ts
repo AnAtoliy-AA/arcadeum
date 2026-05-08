@@ -115,6 +115,7 @@ export type GetLeaderboardArgs = {
   pageSize?: number;
   selfId?: string;
   accessToken?: string | null;
+  q?: string;
 };
 
 function shouldUseMock() {
@@ -128,11 +129,12 @@ export async function getLeaderboard(
   args: GetLeaderboardArgs = {},
 ): Promise<LeaderboardSnapshot> {
   if (!shouldUseMock()) {
-    const { mode = 'all', page = 1, pageSize = 50, accessToken } = args;
+    const { mode = 'all', page = 1, pageSize = 50, accessToken, q } = args;
     const qs = new URLSearchParams();
     qs.set('mode', mode);
     qs.set('page', String(page));
     qs.set('pageSize', String(pageSize));
+    if (q && q.trim()) qs.set('q', q.trim());
     return apiClient.get<LeaderboardSnapshot>(
       `/leaderboards?${qs.toString()}`,
       accessToken ? { token: accessToken } : {},
@@ -144,7 +146,7 @@ export async function getLeaderboard(
 export async function getMockLeaderboard(
   args: GetLeaderboardArgs = {},
 ): Promise<LeaderboardSnapshot> {
-  const { mode = 'all', page = 1, pageSize = 50, selfId } = args;
+  const { mode = 'all', page = 1, pageSize = 50, selfId, q } = args;
   const rng = seededRandom(mode.length * 31 + page);
 
   if (process.env.NODE_ENV !== 'production') {
@@ -153,9 +155,13 @@ export async function getMockLeaderboard(
 
   const total = 1248;
   const start = (page - 1) * pageSize + 1;
-  const rows = Array.from({ length: pageSize }, (_, i) =>
+  const generated = Array.from({ length: pageSize }, (_, i) =>
     makePlayer(rng, start + i),
   );
+  const needle = q?.trim().toLowerCase();
+  const rows = needle
+    ? generated.filter((p) => p.name.toLowerCase().includes(needle))
+    : generated;
 
   const liveMatchRanks = [rows[2]?.rank, rows[7]?.rank, rows[14]?.rank].filter(
     (r): r is number => typeof r === 'number',

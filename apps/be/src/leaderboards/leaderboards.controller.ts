@@ -39,6 +39,7 @@ export class LeaderboardsController {
       mode: query.mode,
       page: query.page,
       pageSize: query.pageSize,
+      q: query.q,
       selfUserId: user?.userId,
     });
   }

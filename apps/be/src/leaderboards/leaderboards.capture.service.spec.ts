@@ -2,12 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { LeaderboardsCaptureService } from './leaderboards.capture.service';
 import { LeaderboardsGateway } from './leaderboards.gateway';
+import { LeaderboardsCacheService } from './leaderboards.cache';
 import { LeaderboardEntry } from './schemas/leaderboard-entry.schema';
 
 describe('LeaderboardsCaptureService', () => {
   let service: LeaderboardsCaptureService;
   let entryModel: Record<string, jest.Mock>;
   let gateway: { emitCaptured: jest.Mock };
+  let cache: { invalidateAll: jest.Mock };
   let module: TestingModule;
 
   beforeEach(async () => {
@@ -16,6 +18,7 @@ describe('LeaderboardsCaptureService', () => {
       bulkWrite: jest.fn(),
     };
     gateway = { emitCaptured: jest.fn() };
+    cache = { invalidateAll: jest.fn() };
 
     module = await Test.createTestingModule({
       providers: [
@@ -25,6 +28,7 @@ describe('LeaderboardsCaptureService', () => {
           useValue: entryModel,
         },
         { provide: LeaderboardsGateway, useValue: gateway },
+        { provide: LeaderboardsCacheService, useValue: cache },
       ],
     }).compile();
 
@@ -77,10 +81,11 @@ describe('LeaderboardsCaptureService', () => {
     expect(entryModel.bulkWrite).not.toHaveBeenCalled();
   });
 
-  it('captureAll iterates all modes and emits via gateway', async () => {
+  it('captureAll iterates all modes, invalidates cache, and emits', async () => {
     entryModel.find.mockReturnValue(wireFind([]));
     const all = await service.captureAll();
     expect(all).toHaveLength(5); // all modes
+    expect(cache.invalidateAll).toHaveBeenCalledTimes(1);
     expect(gateway.emitCaptured).toHaveBeenCalledWith(all);
   });
 });

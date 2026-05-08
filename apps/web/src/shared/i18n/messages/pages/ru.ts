@@ -253,6 +253,19 @@ export const ru = {
       share: 'Поделиться',
     },
     loadMore: 'Показать ещё',
+    freshness: {
+      updatedAt: 'Обновлено {ago}',
+      justNow: 'только что',
+      secondsAgo: '{n} с назад',
+      minutesAgo: '{n} мин назад',
+      hoursAgo: '{n} ч назад',
+    },
+    profile: {
+      eyebrow: 'Игрок',
+      placeholder:
+        'Полный профиль с историей рейтинга, последними матчами и информацией о клане скоро появится.',
+      back: 'Назад к таблице',
+    },
     empty: {
       title: 'Рейтингов пока нет',
       body: 'Будьте первым на вершине.',

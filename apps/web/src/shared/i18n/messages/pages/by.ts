@@ -253,6 +253,19 @@ export const by = {
       share: 'Падзяліцца',
     },
     loadMore: 'Загрузіць яшчэ',
+    freshness: {
+      updatedAt: 'Абноўлена {ago}',
+      justNow: 'толькі што',
+      secondsAgo: '{n} с таму',
+      minutesAgo: '{n} хв таму',
+      hoursAgo: '{n} г таму',
+    },
+    profile: {
+      eyebrow: 'Гулец',
+      placeholder:
+        "Поўны профіль з гісторыяй рэйтынгу, апошнімі матчамі і інфармацыяй пра клан хутка з'явіцца.",
+      back: 'Назад да табліцы',
+    },
     empty: {
       title: 'Рэйтынгаў пакуль няма',
       body: 'Будзьце першым на вяршыні.',

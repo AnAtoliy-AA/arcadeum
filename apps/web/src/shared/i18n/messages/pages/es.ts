@@ -254,6 +254,19 @@ export const es = {
       share: 'Compartir',
     },
     loadMore: 'Cargar más',
+    freshness: {
+      updatedAt: 'Actualizado {ago}',
+      justNow: 'ahora mismo',
+      secondsAgo: 'hace {n} s',
+      minutesAgo: 'hace {n} min',
+      hoursAgo: 'hace {n} h',
+    },
+    profile: {
+      eyebrow: 'Jugador',
+      placeholder:
+        'El perfil completo con historial de puntuación, partidas recientes e info de escuadra llegará pronto.',
+      back: 'Volver a la clasificación',
+    },
     empty: {
       title: 'Aún no hay clasificaciones',
       body: 'Sé el primero en escalar la clasificación.',

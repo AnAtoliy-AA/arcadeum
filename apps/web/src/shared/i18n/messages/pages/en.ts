@@ -250,6 +250,19 @@ export const en = {
       share: 'Share',
     },
     loadMore: 'Load more',
+    freshness: {
+      updatedAt: 'Updated {ago}',
+      justNow: 'just now',
+      secondsAgo: '{n}s ago',
+      minutesAgo: '{n}m ago',
+      hoursAgo: '{n}h ago',
+    },
+    profile: {
+      eyebrow: 'Player',
+      placeholder:
+        'Full profile with rating history, recent matches, and squad info is coming soon.',
+      back: 'Back to leaderboard',
+    },
     empty: {
       title: 'No rankings yet',
       body: 'Be the first to climb the ladder.',

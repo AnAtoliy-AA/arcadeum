@@ -253,6 +253,19 @@ export const fr = {
       share: 'Partager',
     },
     loadMore: 'Charger plus',
+    freshness: {
+      updatedAt: 'Mis à jour {ago}',
+      justNow: "à l'instant",
+      secondsAgo: 'il y a {n} s',
+      minutesAgo: 'il y a {n} min',
+      hoursAgo: 'il y a {n} h',
+    },
+    profile: {
+      eyebrow: 'Joueur',
+      placeholder:
+        "Profil complet avec historique du score, parties récentes et infos d'équipe à venir.",
+      back: 'Retour au classement',
+    },
     empty: {
       title: 'Aucun classement pour le moment',
       body: 'Soyez le premier à grimper.',

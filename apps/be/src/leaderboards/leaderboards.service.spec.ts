@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { LeaderboardsService } from './leaderboards.service';
 import { LeaderboardsGateway } from './leaderboards.gateway';
+import { LeaderboardsCacheService } from './leaderboards.cache';
 import { LeaderboardEntry } from './schemas/leaderboard-entry.schema';
 import { Cup } from './schemas/cup.schema';
 import { Squad } from './schemas/squad.schema';
@@ -90,6 +91,7 @@ describe('LeaderboardsService', () => {
           provide: LeaderboardsGateway,
           useValue: { emitCaptured: jest.fn(), emitEntryUpdated: jest.fn() },
         },
+        LeaderboardsCacheService,
       ],
     }).compile();
 

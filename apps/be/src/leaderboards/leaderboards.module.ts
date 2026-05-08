@@ -5,6 +5,7 @@ import { LeaderboardsService } from './leaderboards.service';
 import { LeaderboardsSeederService } from './leaderboards.seeder';
 import { LeaderboardsCaptureService } from './leaderboards.capture.service';
 import { LeaderboardsGateway } from './leaderboards.gateway';
+import { LeaderboardsCacheService } from './leaderboards.cache';
 import {
   LeaderboardEntry,
   LeaderboardEntrySchema,
@@ -30,6 +31,7 @@ import { AuthModule } from '../auth/auth.module';
     LeaderboardsSeederService,
     LeaderboardsCaptureService,
     LeaderboardsGateway,
+    LeaderboardsCacheService,
   ],
   exports: [LeaderboardsService],
 })

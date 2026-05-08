@@ -11,6 +11,7 @@ import { Cup } from './schemas/cup.schema';
 import { Squad } from './schemas/squad.schema';
 import { TickerEvent } from './schemas/ticker-event.schema';
 import { LeaderboardsGateway } from './leaderboards.gateway';
+import { LeaderboardsCacheService } from './leaderboards.cache';
 import type {
   ClimberFallerDto,
   CupSnapshotDto,
@@ -73,7 +74,12 @@ export type GetLeaderboardArgs = {
   page?: number;
   pageSize?: number;
   selfUserId?: string;
+  q?: string;
 };
+
+function escapeRegex(input: string): string {
+  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 @Injectable()
 export class LeaderboardsService {
@@ -86,6 +92,7 @@ export class LeaderboardsService {
     private readonly tickerEventModel: Model<TickerEvent>,
     @Inject(forwardRef(() => LeaderboardsGateway))
     private readonly gateway: LeaderboardsGateway,
+    private readonly cache: LeaderboardsCacheService,
   ) {}
 
   /**
@@ -106,13 +113,20 @@ export class LeaderboardsService {
       .updateMany(filter, { $set: { isInMatch } })
       .exec();
     const matched = res.modifiedCount ?? 0;
-    if (matched > 0 && mode) {
-      const season = currentSeason();
-      for (const userId of userIds) {
-        this.gateway.emitEntryUpdated({ userId, mode, season, isInMatch });
+    if (matched > 0) {
+      this.cache.invalidateAll();
+      if (mode) {
+        const season = currentSeason();
+        for (const userId of userIds) {
+          this.gateway.emitEntryUpdated({ userId, mode, season, isInMatch });
+        }
       }
     }
     return matched;
+  }
+
+  invalidateCache(): void {
+    this.cache.invalidateAll();
   }
 
   async getSnapshot(
@@ -125,6 +139,21 @@ export class LeaderboardsService {
       Math.max(1, args.pageSize ?? DEFAULT_PAGE_SIZE),
     );
     const season = currentSeason();
+    const trimmedQ = args.q?.trim();
+    const baseFilter: Record<string, unknown> = { mode, season };
+    if (trimmedQ) {
+      baseFilter.username = { $regex: escapeRegex(trimmedQ), $options: 'i' };
+    }
+
+    const cacheKey = LeaderboardsCacheService.keyFor({
+      mode,
+      page,
+      pageSize,
+      q: trimmedQ,
+      selfUserId: args.selfUserId,
+    });
+    const cached = this.cache.get(cacheKey);
+    if (cached) return cached;
 
     const [
       entries,
@@ -139,13 +168,13 @@ export class LeaderboardsService {
       selfEntry,
     ] = await Promise.all([
       this.entryModel
-        .find({ mode, season })
+        .find(baseFilter)
         .sort({ rating: -1 })
         .skip((page - 1) * pageSize)
         .limit(pageSize)
         .lean()
         .exec(),
-      this.entryModel.countDocuments({ mode, season }).exec(),
+      this.entryModel.countDocuments(baseFilter).exec(),
       this.entryModel
         .findOne({ mode, season })
         .sort({ rating: -1 })
@@ -281,7 +310,7 @@ export class LeaderboardsService {
       color: e.color,
     }));
 
-    return {
+    const snapshot: LeaderboardSnapshotDto = {
       capturedAt: new Date().toISOString(),
       mode,
       mythic,
@@ -299,6 +328,8 @@ export class LeaderboardsService {
       liveMatchRanks,
       topRating: topRow?.rating ?? 0,
     };
+    this.cache.set(cacheKey, snapshot);
+    return snapshot;
   }
 
   private async findActiveCup() {

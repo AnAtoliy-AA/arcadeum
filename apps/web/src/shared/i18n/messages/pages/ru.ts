@@ -7,7 +7,7 @@ export const ru = {
     signedInAs: 'Вы вошли как {username}',
     nav: {
       dashboard: 'Панель',
-      roles: 'Роли',
+      users: 'Пользователи',
       payments: 'Платежи',
       announcements: 'Объявления',
       tournaments: 'Турниры',
@@ -17,6 +17,50 @@ export const ru = {
       title: 'Что-то пошло не так',
       body: 'Произошла ошибка при загрузке этой страницы.',
       retry: 'Повторить',
+    },
+    users: {
+      title: 'Пользователи',
+      search: {
+        placeholder: 'Поиск по имени, email или отображаемому имени',
+      },
+      filter: {
+        role: { all: 'Все роли', placeholder: 'Фильтр по роли' },
+      },
+      table: {
+        username: 'Имя пользователя',
+        email: 'Email',
+        role: 'Роль',
+        createdAt: 'Создан',
+        actions: 'Действия',
+      },
+      empty: {
+        noResults: 'Нет пользователей по фильтру.',
+        noUsers: 'Пользователей пока нет.',
+      },
+      pagination: {
+        prev: 'Назад',
+        next: 'Вперёд',
+        of: 'Страница {current} из {total}',
+      },
+      totalLabel: '{total} пользователей',
+      selfTooltip: 'Нельзя изменить свою собственную роль.',
+      role: {
+        free: 'Бесплатный',
+        premium: 'Премиум',
+        vip: 'VIP',
+        supporter: 'Спонсор',
+        moderator: 'Модератор',
+        tester: 'Тестер',
+        developer: 'Разработчик',
+        admin: 'Админ',
+      },
+      errors: {
+        SELF_ROLE_CHANGE_FORBIDDEN: 'Нельзя изменить свою собственную роль.',
+        LAST_ADMIN_PROTECTED: 'Нельзя понизить последнего администратора.',
+        USER_NOT_FOUND: 'Пользователь не найден.',
+        INVALID_USER_ID: 'Неверный идентификатор пользователя.',
+        generic: 'Что-то пошло не так. Попробуйте ещё раз.',
+      },
     },
   },
   tournaments: {

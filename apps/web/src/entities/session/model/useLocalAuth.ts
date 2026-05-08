@@ -246,6 +246,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
             profile.username ??
             profile.email ??
             baseSnapshot.displayName,
+          role: profile.role ?? baseSnapshot.role,
         });
         applySnapshot(merged);
       } catch (profileError) {
@@ -270,6 +271,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
               profile.username ??
               profile.email ??
               refreshed.displayName,
+            role: profile.role ?? refreshed.role,
           });
           applySnapshot(merged);
         } catch (retryError) {

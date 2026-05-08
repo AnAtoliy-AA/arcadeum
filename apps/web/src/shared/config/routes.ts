@@ -26,6 +26,10 @@ export const routes = {
   stats: '/stats',
   referrals: '/referrals',
 
+  // Admin (visible only to role==='admin')
+  admin: '/admin',
+  adminUsers: '/admin/users',
+
   // Support & Payments
   support: '/support',
   payment: '/payment',

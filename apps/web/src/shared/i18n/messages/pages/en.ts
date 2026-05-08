@@ -7,7 +7,7 @@ export const en = {
     signedInAs: 'Signed in as {username}',
     nav: {
       dashboard: 'Dashboard',
-      roles: 'Roles',
+      users: 'Users',
       payments: 'Payments',
       announcements: 'Announcements',
       tournaments: 'Tournaments',
@@ -17,6 +17,48 @@ export const en = {
       title: 'Something went wrong',
       body: 'An error occurred while loading this admin page.',
       retry: 'Try again',
+    },
+    users: {
+      title: 'Users',
+      search: { placeholder: 'Search by username, email, or display name' },
+      filter: {
+        role: { all: 'All roles', placeholder: 'Filter by role' },
+      },
+      table: {
+        username: 'Username',
+        email: 'Email',
+        role: 'Role',
+        createdAt: 'Created',
+        actions: 'Actions',
+      },
+      empty: {
+        noResults: 'No users match your filters.',
+        noUsers: 'No users yet.',
+      },
+      pagination: {
+        prev: 'Previous',
+        next: 'Next',
+        of: 'Page {current} of {total}',
+      },
+      totalLabel: '{total} users',
+      selfTooltip: "You can't change your own role.",
+      role: {
+        free: 'Free',
+        premium: 'Premium',
+        vip: 'VIP',
+        supporter: 'Supporter',
+        moderator: 'Moderator',
+        tester: 'Tester',
+        developer: 'Developer',
+        admin: 'Admin',
+      },
+      errors: {
+        SELF_ROLE_CHANGE_FORBIDDEN: "You can't change your own role.",
+        LAST_ADMIN_PROTECTED: "Can't demote the last admin.",
+        USER_NOT_FOUND: 'User not found.',
+        INVALID_USER_ID: 'Invalid user id.',
+        generic: 'Something went wrong. Please try again.',
+      },
     },
   },
   tournaments: {

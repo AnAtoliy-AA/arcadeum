@@ -165,6 +165,7 @@ async function applySessionResponse(
       response.user?.username ??
       response.user?.email ??
       null,
+    role: response.user?.role ?? null,
   });
 }
 

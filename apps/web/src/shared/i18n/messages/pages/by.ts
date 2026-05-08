@@ -7,7 +7,7 @@ export const by = {
     signedInAs: 'Вы ўвайшлі як {username}',
     nav: {
       dashboard: 'Панэль',
-      roles: 'Ролі',
+      users: 'Карыстальнікі',
       payments: 'Плацяжы',
       announcements: "Аб'явы",
       tournaments: 'Турніры',
@@ -17,6 +17,48 @@ export const by = {
       title: 'Нешта пайшло не так',
       body: 'Адбылася памылка пры загрузцы гэтай старонкі.',
       retry: 'Паўтарыць',
+    },
+    users: {
+      title: 'Карыстальнікі',
+      search: { placeholder: 'Пошук па імі, email або псеўданіме' },
+      filter: {
+        role: { all: 'Усе ролі', placeholder: 'Фільтр па ролі' },
+      },
+      table: {
+        username: 'Імя карыстальніка',
+        email: 'Email',
+        role: 'Роля',
+        createdAt: 'Створаны',
+        actions: 'Дзеянні',
+      },
+      empty: {
+        noResults: 'Няма карыстальнікаў па фільтру.',
+        noUsers: 'Карыстальнікаў пакуль няма.',
+      },
+      pagination: {
+        prev: 'Назад',
+        next: 'Наперад',
+        of: 'Старонка {current} з {total}',
+      },
+      totalLabel: '{total} карыстальнікаў',
+      selfTooltip: 'Вы не можаце змяніць сваю ўласную ролю.',
+      role: {
+        free: 'Бясплатны',
+        premium: 'Прэміум',
+        vip: 'VIP',
+        supporter: 'Спонсар',
+        moderator: 'Мадэратар',
+        tester: 'Тэстар',
+        developer: 'Распрацоўшчык',
+        admin: 'Адмін',
+      },
+      errors: {
+        SELF_ROLE_CHANGE_FORBIDDEN: 'Вы не можаце змяніць сваю ўласную ролю.',
+        LAST_ADMIN_PROTECTED: 'Нельга паніжаць апошняга адміністратара.',
+        USER_NOT_FOUND: 'Карыстальнік не знойдзены.',
+        INVALID_USER_ID: 'Няправільны ідэнтыфікатар карыстальніка.',
+        generic: 'Нешта пайшло не так. Калі ласка, паспрабуйце яшчэ раз.',
+      },
     },
   },
   tournaments: {

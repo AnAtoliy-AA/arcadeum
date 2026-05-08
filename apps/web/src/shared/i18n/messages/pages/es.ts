@@ -7,7 +7,7 @@ export const es = {
     signedInAs: 'Sesión iniciada como {username}',
     nav: {
       dashboard: 'Panel',
-      roles: 'Roles',
+      users: 'Usuarios',
       payments: 'Pagos',
       announcements: 'Anuncios',
       tournaments: 'Torneos',
@@ -17,6 +17,48 @@ export const es = {
       title: 'Algo salió mal',
       body: 'Se produjo un error al cargar esta página.',
       retry: 'Reintentar',
+    },
+    users: {
+      title: 'Usuarios',
+      search: { placeholder: 'Buscar por usuario, email o nombre' },
+      filter: {
+        role: { all: 'Todos los roles', placeholder: 'Filtrar por rol' },
+      },
+      table: {
+        username: 'Usuario',
+        email: 'Email',
+        role: 'Rol',
+        createdAt: 'Creado',
+        actions: 'Acciones',
+      },
+      empty: {
+        noResults: 'No hay usuarios que coincidan con los filtros.',
+        noUsers: 'Aún no hay usuarios.',
+      },
+      pagination: {
+        prev: 'Anterior',
+        next: 'Siguiente',
+        of: 'Página {current} de {total}',
+      },
+      totalLabel: '{total} usuarios',
+      selfTooltip: 'No puedes cambiar tu propio rol.',
+      role: {
+        free: 'Gratis',
+        premium: 'Premium',
+        vip: 'VIP',
+        supporter: 'Patrocinador',
+        moderator: 'Moderador',
+        tester: 'Tester',
+        developer: 'Desarrollador',
+        admin: 'Admin',
+      },
+      errors: {
+        SELF_ROLE_CHANGE_FORBIDDEN: 'No puedes cambiar tu propio rol.',
+        LAST_ADMIN_PROTECTED: 'No se puede degradar al último administrador.',
+        USER_NOT_FOUND: 'Usuario no encontrado.',
+        INVALID_USER_ID: 'Identificador de usuario no válido.',
+        generic: 'Algo salió mal. Inténtalo de nuevo.',
+      },
     },
   },
   tournaments: {

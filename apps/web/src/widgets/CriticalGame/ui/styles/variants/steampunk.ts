@@ -18,4 +18,8 @@ export const steampunkVariantStyles: VariantStyleConfig = {
     turnBannerBorderGradient: 'linear-gradient(90deg, #78350f, #fef3c7)',
     turnBannerDotColor: '#78350f',
   },
+  cards: {
+    ...baseVariantStyles.cards,
+    getCardSpriteUrl: () => '/images/cards/steampunk_sprites.png',
+  },
 };

@@ -18,4 +18,8 @@ export const egyptVariantStyles: VariantStyleConfig = {
     turnBannerBorderGradient: 'linear-gradient(90deg, #b45309, #1e3a8a)',
     turnBannerDotColor: '#b45309',
   },
+  cards: {
+    ...baseVariantStyles.cards,
+    getCardSpriteUrl: () => '/images/cards/egypt_sprites.png',
+  },
 };

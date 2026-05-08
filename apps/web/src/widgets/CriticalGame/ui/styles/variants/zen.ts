@@ -18,4 +18,8 @@ export const zenVariantStyles: VariantStyleConfig = {
     turnBannerBorderGradient: 'linear-gradient(90deg, #db2777, #1e3a8a)',
     turnBannerDotColor: '#db2777',
   },
+  cards: {
+    ...baseVariantStyles.cards,
+    getCardSpriteUrl: () => '/images/cards/zen_sprites.png',
+  },
 };

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.10] - 2026-05-08
+
+### Fixed
+- keep seeded ticker events from expiring (ARC-594) (ARC-594)
+- use generous default timeout for browser fetches (ARC-594) (ARC-594)
+
+
 ## [1.12.9] - 2026-05-08
 
 

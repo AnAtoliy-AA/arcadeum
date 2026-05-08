@@ -5,6 +5,9 @@
 // Player limits
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 6;
+export const MAX_PLAYERS_TEAM_MODE = 8;
+export const MIN_TEAM_SIZE = 2;
+export const MIN_TEAMS = 2;
 
 export const BOARD_SIZE = 10;
 

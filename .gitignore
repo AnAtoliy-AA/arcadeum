@@ -28,4 +28,13 @@ backend-e2e-errors.log
 .playwright-mcp
 .superpowers
 
-docs/superpowers
+# docs/superpowers
+
+# E2E test results
+test-results/
+
+# Local debug screenshots (Playwright MCP captures, etc.)
+# Repo-root *.png/*.jpg are screenshots; legitimate assets live under apps/, packages/, and assets/
+/*.png
+/*.jpg
+/*.jpeg

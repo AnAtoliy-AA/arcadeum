@@ -1,6 +1,10 @@
 import { useMemo } from 'react';
 import { useGameSession } from '@/features/games/hooks';
-import type { SeaBattleSnapshot, SeaBattlePlayerState } from '../types';
+import type {
+  SeaBattleSnapshot,
+  SeaBattlePlayerState,
+  SeaBattleTeam,
+} from '../types';
 
 import { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
@@ -36,18 +40,36 @@ export function useSeaBattleState({
     return snapshot.players.find((p) => p.playerId === currentUserId) || null;
   }, [snapshot, currentUserId]);
 
+  const teams: SeaBattleTeam[] | undefined = snapshot?.teams;
+  const teamMode = !!teams && teams.length > 0;
+
+  const viewerTeam = useMemo(() => {
+    if (!teams || !currentUserId) return undefined;
+    return teams.find((t) => t.playerIds.includes(currentUserId));
+  }, [teams, currentUserId]);
+
+  const activeShooterId = useMemo<string | undefined>(() => {
+    if (!snapshot) return undefined;
+    if (
+      teams &&
+      snapshot.teamOrder &&
+      snapshot.currentTeamIndex !== undefined
+    ) {
+      const activeTeamId = snapshot.teamOrder[snapshot.currentTeamIndex];
+      const activeTeam = teams.find((t) => t.id === activeTeamId);
+      return activeTeam?.playerIds[activeTeam.currentShooterIndex];
+    }
+    return snapshot.playerOrder[snapshot.currentTurnIndex];
+  }, [snapshot, teams]);
+
   const currentTurnPlayer = useMemo(() => {
-    if (!snapshot) return null;
-    const turnPlayerId = snapshot.playerOrder[snapshot.currentTurnIndex];
-    return snapshot.players.find((p) => p.playerId === turnPlayerId) || null;
-  }, [snapshot]);
+    if (!snapshot || !activeShooterId) return null;
+    return snapshot.players.find((p) => p.playerId === activeShooterId) || null;
+  }, [snapshot, activeShooterId]);
 
   const isMyTurn = useMemo(() => {
-    return (
-      currentTurnPlayer?.playerId === currentUserId &&
-      currentPlayer?.alive === true
-    );
-  }, [currentTurnPlayer, currentUserId, currentPlayer]);
+    return activeShooterId === currentUserId && currentPlayer?.alive === true;
+  }, [activeShooterId, currentUserId, currentPlayer]);
 
   const opponents = useMemo(() => {
     if (!snapshot || !currentUserId) return [];
@@ -62,13 +84,24 @@ export function useSeaBattleState({
   const isGameOver =
     gamePhase === 'game_over' || session?.status === 'completed';
 
+  const winnerTeam = useMemo<SeaBattleTeam | undefined>(() => {
+    if (!isGameOver || !snapshot || !teams) return undefined;
+    if (snapshot.winnerId) {
+      return teams.find((t) => t.id === snapshot.winnerId);
+    }
+    return undefined;
+  }, [isGameOver, snapshot, teams]);
+
   const winner = useMemo(() => {
     if (!isGameOver || !snapshot) return null;
+    if (teams) return null; // teams use winnerTeam instead
     const alivePlayers = snapshot.players.filter((p) => p.alive);
     return alivePlayers.length === 1 ? alivePlayers[0] : null;
-  }, [isGameOver, snapshot]);
+  }, [isGameOver, snapshot, teams]);
 
-  const isWinner = winner?.playerId === currentUserId;
+  const isWinner = teams
+    ? !!viewerTeam && winnerTeam?.id === viewerTeam.id
+    : winner?.playerId === currentUserId;
 
   const placedShips = currentPlayer?.ships || [];
   const isPlacementComplete = currentPlayer?.placementComplete || false;
@@ -93,5 +126,10 @@ export function useSeaBattleState({
     isPlacementComplete,
     lastAttack: snapshot?.lastAttack,
     logs: snapshot?.logs || [],
+    teams,
+    teamMode,
+    viewerTeam,
+    activeShooterId,
+    winnerTeam,
   };
 }

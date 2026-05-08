@@ -1,0 +1,46 @@
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.row > * {
+  min-width: 0;
+}
+
+.formCol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 801px) {
+  .row {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .row > .formCol {
+    flex: 1.6 1 0;
+  }
+
+  .row > .sideCol {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .row > .formCol > :last-child {
+    flex: 1 1 auto;
+  }
+
+  .row > .sideCol > * {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .row > .sideCol > * > :last-child {
+    flex: 1 1 auto;
+  }
+}

@@ -170,6 +170,7 @@ export const byMessages = {
     button: 'Правілы гульні',
   },
   lobby: {
+    bot: 'Бот',
     botCountLabel: 'Колькасць ботаў',
     startWithBots: 'Пачаць з {{count}} 🤖',
     playWithBotsNotice: 'Пачніце з ботамі адразу або дачакайцеся іншых гульцоў',

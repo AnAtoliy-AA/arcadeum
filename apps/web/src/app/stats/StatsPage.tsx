@@ -45,7 +45,7 @@ export default function StatsPage({
 
   // URL state management for filters
   const selectedGame = searchParams?.get('game') || '';
-  const [activeTab, setActiveTab] = useState<TabType>('my-stats');
+  const [activeTab, setActiveTab] = useState<TabType>('leaderboard');
 
   const { snapshot, hydrated } = useSessionTokens();
 

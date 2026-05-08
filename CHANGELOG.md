@@ -7,6 +7,195 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.8] - 2026-05-08
+
+### Added
+- tournament section "coming soon" placeholder (ARC-588) (ARC-588)
+- leaderboards reads real data from game history (ARC-588) (ARC-588)
+- auto-seed leaderboards in dev when empty (ARC-588) (ARC-588)
+- leaderboards player profile + storybook + e2e (ARC-588) (ARC-588)
+- leaderboards search, cache, freshness, profile stub (ARC-588) (ARC-588)
+- leaderboards push updates via realtime gateway (ARC-588) (ARC-588)
+- leaderboards seeder, capture, gateway, live-match (ARC-588) (ARC-588)
+- leaderboards module + FE wiring (ARC-588) (ARC-588)
+- leaderboards Neon Arcade visual rebuild (ARC-588) (ARC-588)
+- leaderboard page with mythic spotlight and rank table (ARC-588) (ARC-588)
+
+### Fixed
+- address PR #591 review (ARC-588) (ARC-588)
+- default Stats page to the Leaderboard tab (ARC-588) (ARC-588)
+- use aria-label instead of accessibilityLabel on web (ARC-588) (ARC-588)
+- drop Texas Hold'em and Tic Tac Toe modes (ARC-588) (ARC-588)
+- use real Arcadeum games (Critical, Sea Battle, Texas Hold'em, Tic Tac Toe) (ARC-588) (ARC-588)
+- dev fallback for MONGODB_URI (ARC-588) (ARC-588)
+- dev fallback for AUTH_JWT_SECRET (N/A)
+- skip leaderboards socket connect under mock (ARC-588) (ARC-588)
+- pin leaderboard self row via position:fixed (ARC-588) (ARC-588)
+- address review #2 for leaderboards (ARC-588) (ARC-588)
+- address PR #591 review for leaderboards (ARC-588) (ARC-588)
+
+### Improved
+- cut socket spam on leaderboards (ARC-588) (ARC-588)
+- cache + dedupe leaderboards upstream scan (ARC-588) (ARC-588)
+
+
+## [1.12.7] - 2026-05-07
+
+### Fixed
+- persist sea battle lobby variant changes to backend (ARC-578) (ARC-578)
+
+
+## [1.12.6] - 2026-05-07
+
+### Added
+- add team chat channel switcher (ARC-427) (ARC-427)
+- show team rosters and teammate boards in sea battle (ARC-427) (ARC-427)
+- mount team-mode UI in sea battle lobby (ARC-427) (ARC-427)
+- add team-mode lobby components for sea battle (ARC-427) (ARC-427)
+- add i18n keys for sea battle team mode (ARC-427) (ARC-427)
+- make sea battle bot team-aware (ARC-427) (ARC-427)
+- wire team config into sea battle session start (ARC-427) (ARC-427)
+- add team-mode lobby socket events to sea battle gateway (ARC-427) (ARC-427)
+- add SeaBattleTeamConfigService for lobby team management (ARC-427) (ARC-427)
+- add sea battle team-mode DTOs (ARC-427) (ARC-427)
+- gate attack action on active shooter and bump max players (ARC-427) (ARC-427)
+- team-aware sanitization in sea battle (ARC-427) (ARC-427)
+- team-aware win condition in sea battle (ARC-427) (ARC-427)
+- rotate by team on miss in sea battle (ARC-427) (ARC-427)
+- block teammate attacks in sea battle (ARC-427) (ARC-427)
+- initialize team state in sea battle engine (ARC-427) (ARC-427)
+- add team rotation helpers for sea battle (ARC-427) (ARC-427)
+- add sea battle team-mode types and constants (ARC-427) (ARC-427)
+
+### Fixed
+- clear lint errors on ARC-427 branch (ARC-427) (ARC-427
+ARC-427)
+- cap board grid columns by container width (ARC-427) (ARC-427)
+- show sequential bot labels instead of "Unknown" (ARC-427) (ARC-427)
+- pick board grid columns from board count (ARC-427) (ARC-427)
+- remove duplicate sea battle team roster (ARC-427) (ARC-427)
+- render teammate ships on attack board (ARC-427) (ARC-427)
+- collapse to a single lobby scroll in team mode (ARC-427) (ARC-427)
+- make team-mode lobby scroll as one container (ARC-427) (ARC-427)
+- merge team setup into team cards to remove duplication (ARC-427) (ARC-427)
+- make team-mode toggles clearly visible (ARC-427) (ARC-427)
+- restore lobby flex height after team panel hoist (ARC-427) (ARC-427)
+- unify sea battle team-mode lobby into single card (ARC-427) (ARC-427)
+- polish sea battle team-mode UX (ARC-427) (ARC-427)
+- team-aware win detection and shooter cleanup on eliminate (ARC-427) (ARC-427)
+
+### Refactored
+- split AttackBoard.tsx and add team color frames (ARC-427) (ARC-427)
+- move Toggle and StatusBadge into @arcadeum/ui (ARC-427) (ARC-427)
+- reuse ChatScope type in sea battle ChatPayload (ARC-427) (ARC-427)
+
+### Documentation
+- add sea battle team mode implementation plan (ARC-427) (ARC-427)
+- add sea battle team mode design spec (ARC-427) (ARC-427)
+
+
+## [1.12.5] - 2026-05-07
+
+### Added
+- show opponent names and sequential bot labels on boards [ARC-585] (ARC-585)
+- fix board layout and improve turn visibility [ARC-585] (ARC-585)
+- improve turn visibility and refactor animations [ARC-585] (ARC-585)
+
+### Fixed
+- update ships-left test locator to support new player headers [ARC-585] (ARC-585)
+- add missing translation keys to all languages to fix build [ARC-585] (ARC-585)
+- add missing translations and fix bot naming [ARC-585] (ARC-585)
+- update sea-battle tests for grid layout and specific animation classes [ARC-585] (ARC-585)
+- optimize board scaling and fix label alignment in 3-column layout [ARC-585] (ARC-585)
+- improve grid layout for 6 players and fix turn visibility [ARC-585] (ARC-585)
+- improve modal close reliability on WebKit by using onClick [ARC-585] (ARC-585)
+- resolve Tamagui display grid type restriction [ARC-585] (ARC-585)
+- refactor board grid styles without ts-ignore using functional wrappers [ARC-585] (ARC-585)
+- resolve grid layout type error in board styles [ARC-585] (ARC-585)
+
+### Refactored
+- remove Tamagui from board components to improve stability [ARC-585] (ARC-585)
+
+
+## [1.12.4] - 2026-05-07
+
+### Added
+- expand contact tips card to balance the columns (ARC-575) (ARC-575)
+- add system-status card to contact side panel (ARC-575) (ARC-575)
+- add tips card under contact form (ARC-575) (ARC-575)
+- convert contact form to a Server Action (ARC-575) (ARC-575)
+- rework /contact page with new components (ARC-575) (ARC-575)
+- add contact rework keys for en/ru/es/fr/by (ARC-575) (ARC-575)
+- add LaunchButton variant (ARC-575) (ARC-575)
+- add ChannelTile and StatTile components (ARC-575) (ARC-575)
+- add FloatingLabelInput / FloatingLabelTextArea (ARC-575) (ARC-575)
+- add ActivityTicker component (ARC-575) (ARC-575)
+
+### Fixed
+- keep contact action file pure async exports (ARC-575) (ARC-575)
+- ChannelTile fills its grid cell so tiles match heights (ARC-575) (ARC-575)
+- drop e2e click-retry that races with the Server Action (ARC-575) (ARC-575)
+- hide status-page CTA until status.arcadeum.games is live (ARC-575) (ARC-575)
+- balance contact columns via CSS module (ARC-575) (ARC-575)
+- resolve ActivityTicker hydration mismatch (ARC-575) (ARC-575)
+- server-render the /contact page (ARC-575) (ARC-575)
+- trim x fallback chain, fill Instagram icon, default hero pills (ARC-575) (ARC-575)
+- drive contact channel tiles from appConfig.social (ARC-575) (ARC-575)
+- swap hard-coded contact strings for i18n (ARC-575) (ARC-575)
+- resolve theme tokens via useTheme on /contact (ARC-575) (ARC-575)
+- natural form height and resolved floating-label colors (ARC-575) (ARC-575)
+- widen contact container to 1120px (ARC-575) (ARC-575)
+- tighten contact form responsive + remove blank space (ARC-575) (ARC-575)
+- collapse blank space under contact form (ARC-575) (ARC-575)
+- trim press card and link FAQ emails (ARC-575) (ARC-575)
+- match contact-page design — avatars + stat sparkline (ARC-575) (ARC-575)
+
+### Refactored
+- drop redundant controlled state in ContactForm (ARC-575) (ARC-575)
+- extract ContactForm component (ARC-575) (ARC-575)
+
+### Documentation
+- document contact API constraints (ARC-575) (ARC-575)
+- add contact-rework design handoff (ARC-575) (ARC-575)
+
+
+## [1.12.3] - 2026-05-07
+
+### Added
+- fix tablet layout and finalize rendering optimization (N/A)
+- optimize rendering performance and refactor placement board (N/A)
+
+
+## [1.12.2] - 2026-05-06
+
+### Fixed
+- bump primary color from sky-600 to sky-700 for WCAG AA (ARC-570)
+- restore aria-label on install-pwa-button (e2e regression) (ARC-570)
+
+### Improved
+- drop legacy JS polyfills via explicit browserslist (ARC-570)
+
+### Refactored
+- bundle home route CSS via parent-eager imports (ARC-570)
+
+### Documentation
+- Phase 2 implementation results + spec/plan (ARC-570)
+- track docs/superpowers + Phase 2 diagnostic results (ARC-570)
+
+
+## [1.12.1] - 2026-05-06
+
+### Improved
+- drop hero LCP-blocking visual effects on mobile (ARC-570)
+- defer hero ::after LCP overlay; dynamic-import below-fold; a11y (ARC-570)
+- polish in-progress home perf diff + add bundle analyzer (ARC-570)
+
+
+## [1.12.0] - 2026-05-03
+
+
+
+
 ## [1.11.2] - 2026-05-03
 
 ### Fixed

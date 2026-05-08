@@ -48,7 +48,7 @@ export const PlayerSectionWrapper = styled(YStack, {
   overflow: 'visible',
   paddingTop: 8,
   width: '100%',
-  maxWidth: 480,
+  maxWidth: 520,
   alignSelf: 'center',
 
   $gtMd: {
@@ -56,8 +56,8 @@ export const PlayerSectionWrapper = styled(YStack, {
     width: 'auto',
     alignSelf: 'auto',
     flex: 1,
-    maxWidth: 'min(480px, calc(100vh - 380px))',
-    minWidth: 300,
+    maxWidth: 'min(580px, calc(100vh - 240px))',
+    minWidth: 260,
   },
   $sm: {
     paddingTop: 6,
@@ -65,6 +65,7 @@ export const PlayerSectionWrapper = styled(YStack, {
   },
   $short: {
     paddingTop: 4,
+    maxWidth: 'min(420px, calc(100vh - 120px))',
   },
 });
 

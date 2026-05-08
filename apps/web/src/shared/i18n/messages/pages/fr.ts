@@ -1,4 +1,24 @@
 export const fr = {
+  admin: {
+    title: 'Administration',
+    welcome: "Bienvenue dans l'espace administrateur",
+    welcomeBody:
+      'Les panneaux apparaîtront ici au fur et à mesure de leur publication. Utilisez la barre latérale pour naviguer.',
+    signedInAs: 'Connecté en tant que {username}',
+    nav: {
+      dashboard: 'Tableau de bord',
+      roles: 'Rôles',
+      payments: 'Paiements',
+      announcements: 'Annonces',
+      tournaments: 'Tournois',
+      comingSoon: 'Bientôt',
+    },
+    error: {
+      title: "Une erreur s'est produite",
+      body: 'Une erreur est survenue lors du chargement de cette page.',
+      retry: 'Réessayer',
+    },
+  },
   tournaments: {
     title: 'Tournois',
     subtitle: 'Affrontez les meilleurs joueurs du monde',

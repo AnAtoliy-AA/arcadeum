@@ -10,6 +10,7 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { PaymentsModule } from './payments/payments.module';
 import { ReferralModule } from './referrals/referral.module';
 import { LeaderboardsModule } from './leaderboards/leaderboards.module';
+import { AdminModule } from './admin/admin.module';
 import { resolveMongoUri } from './common/utils/mongo-uri.util';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -26,6 +27,7 @@ import { MessageCodeInterceptor } from './common/interceptors/message-code.inter
     PaymentsModule,
     ReferralModule,
     LeaderboardsModule,
+    AdminModule,
     MongooseModule.forRoot(resolveMongoUri()),
   ],
   controllers: [AppController],

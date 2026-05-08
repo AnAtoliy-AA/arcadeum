@@ -1,4 +1,24 @@
 export const es = {
+  admin: {
+    title: 'Administración',
+    welcome: 'Bienvenido al panel de administración',
+    welcomeBody:
+      'Los paneles aparecerán aquí a medida que se publiquen. Usa la barra lateral para navegar.',
+    signedInAs: 'Sesión iniciada como {username}',
+    nav: {
+      dashboard: 'Panel',
+      roles: 'Roles',
+      payments: 'Pagos',
+      announcements: 'Anuncios',
+      tournaments: 'Torneos',
+      comingSoon: 'Próximamente',
+    },
+    error: {
+      title: 'Algo salió mal',
+      body: 'Se produjo un error al cargar esta página.',
+      retry: 'Reintentar',
+    },
+  },
   tournaments: {
     title: 'Torneos',
     subtitle: 'Compite contra los mejores jugadores del mundo',

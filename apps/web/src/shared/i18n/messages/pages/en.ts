@@ -1,4 +1,24 @@
 export const en = {
+  admin: {
+    title: 'Admin',
+    welcome: 'Welcome to the admin area',
+    welcomeBody:
+      'Feature panels will appear here as they ship. Use the sidebar to navigate.',
+    signedInAs: 'Signed in as {username}',
+    nav: {
+      dashboard: 'Dashboard',
+      roles: 'Roles',
+      payments: 'Payments',
+      announcements: 'Announcements',
+      tournaments: 'Tournaments',
+      comingSoon: 'Coming soon',
+    },
+    error: {
+      title: 'Something went wrong',
+      body: 'An error occurred while loading this admin page.',
+      retry: 'Try again',
+    },
+  },
   tournaments: {
     title: 'Tournaments',
     subtitle: 'Compete against the best players worldwide',

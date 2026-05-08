@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, type OnModuleInit } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
@@ -71,7 +71,7 @@ export type SeedSummary = {
 };
 
 @Injectable()
-export class LeaderboardsSeederService {
+export class LeaderboardsSeederService implements OnModuleInit {
   private readonly logger = new Logger(LeaderboardsSeederService.name);
 
   constructor(
@@ -82,6 +82,39 @@ export class LeaderboardsSeederService {
     @InjectModel(TickerEvent.name)
     private readonly tickerEventModel: Model<TickerEvent>,
   ) {}
+
+  async onModuleInit(): Promise<void> {
+    if (process.env.NODE_ENV === 'production') return;
+    if (process.env.NODE_ENV === 'test') return;
+    if (process.env.LEADERBOARDS_AUTO_SEED === 'false') return;
+    try {
+      await this.seedIfEmpty();
+    } catch (err) {
+      // Mongo not running yet, or some other infra issue — don't crash boot.
+      this.logger.warn(
+        `Auto-seed skipped: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+      );
+    }
+  }
+
+  /**
+   * Seed only when the current season has no entries. Idempotent across
+   * BE restarts: a populated DB is never touched.
+   */
+  async seedIfEmpty(options: SeedOptions = {}): Promise<SeedSummary | null> {
+    const season = options.season ?? currentSeason();
+    const existing = await this.entryModel.countDocuments({ season }).exec();
+    if (existing > 0) {
+      this.logger.debug(
+        `Auto-seed skipped — season=${season} already has ${existing} entries.`,
+      );
+      return null;
+    }
+    this.logger.log(`Auto-seeding leaderboards for season=${season}.`);
+    return this.seed({ ...options, season });
+  }
 
   async seed(options: SeedOptions = {}): Promise<SeedSummary> {
     const rowsPerMode = options.rowsPerMode ?? 200;
@@ -143,7 +176,7 @@ export class LeaderboardsSeederService {
       },
       {
         who: top4[1]?.username ?? 'Player',
-        what: 'climbed into the Top 10 in Mafia',
+        what: 'climbed into the Top 10 in Critical',
         color: '#22d3ee',
       },
       {
@@ -208,7 +241,7 @@ function buildEntry(
   const tagCount = 1 + Math.floor(rng() * 2);
   const gameTags = Array.from(
     { length: tagCount },
-    (_, i) => GAME_TAGS[(rank + i) % GAME_TAGS.length] ?? 'Mafia',
+    (_, i) => GAME_TAGS[(rank + i) % GAME_TAGS.length] ?? 'Critical',
   );
   return {
     userId: `seed_${mode}_${rank}`,

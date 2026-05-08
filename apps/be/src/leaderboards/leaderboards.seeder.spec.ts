@@ -20,6 +20,9 @@ describe('LeaderboardsSeederService', () => {
         exec: jest.fn().mockResolvedValue({ deletedCount: 0 }),
       }),
       insertMany: jest.fn().mockResolvedValue([]),
+      countDocuments: jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue(0),
+      }),
     };
     cupModel = {
       deleteMany: jest.fn().mockReturnValue({
@@ -77,6 +80,27 @@ describe('LeaderboardsSeederService', () => {
     expect(summary.cupsInserted).toBe(1);
     expect(summary.squadsInserted).toBe(5);
     expect(summary.tickerEventsInserted).toBe(4);
+  });
+
+  it('seedIfEmpty inserts when the season has no entries', async () => {
+    entryModel.countDocuments = jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue(0),
+    });
+    const summary = await service.seedIfEmpty({
+      rowsPerMode: 5,
+      season: '2026Q2',
+    });
+    expect(summary).not.toBeNull();
+    expect(entryModel.insertMany).toHaveBeenCalled();
+  });
+
+  it('seedIfEmpty is a no-op when the season already has entries', async () => {
+    entryModel.countDocuments = jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue(42),
+    });
+    const summary = await service.seedIfEmpty({ season: '2026Q2' });
+    expect(summary).toBeNull();
+    expect(entryModel.insertMany).not.toHaveBeenCalled();
   });
 
   it('produces unique userIds across (mode, rank) pairs', async () => {

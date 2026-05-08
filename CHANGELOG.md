@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.3] - 2026-05-08
+
+### Added
+- add admin link visible only to role=admin (ARC-604) (ARC-604)
+- wire /admin/users page + sidebar + i18n + e2e (ARC-604) (ARC-604)
+- add roleColors + UI components (ARC-604) (ARC-604)
+- add api + hooks (useAdminUsers, useUpdateUserRole) (ARC-604) (ARC-604)
+- add apiClient.patch<T> method (ARC-604) (ARC-604)
+- add AdminUsersService + AdminUsersController (ARC-604) (ARC-604)
+- add escapeRegExp helper, DTOs, AdminUserItem interface (ARC-604) (ARC-604)
+- register global ValidationPipe (ARC-604) (ARC-604)
+
+### Fixed
+- include role in OAuth setTokens call (ARC-604) (ARC-604)
+- refresh role from /auth/me into snapshot on app load (ARC-604) (ARC-604)
+
+### Documentation
+- apply plan-review fixes (ARC-604) (ARC-604)
+- add user-list & role-editor implementation plan (ARC-604) (ARC-604)
+- apply final spec review fixes (ARC-604) (ARC-604)
+- apply spec review fixes (ARC-604) (ARC-604)
+- add user-list & role-editor design spec (ARC-604) (ARC-604)
+
+
 ## [1.13.2] - 2026-05-08
 
 ### Added

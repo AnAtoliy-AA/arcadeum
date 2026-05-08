@@ -358,70 +358,26 @@ git commit -m "feat(admin): add AdminModule with /admin/ping demo endpoint (ARC-
 
 - Create: `apps/be/src/admin/admin.controller.spec.ts`
 
-- [ ] **Step 1: Write the integration spec**
+**Approach:** there is no existing precedent in `apps/be` for HTTP integration tests with `JwtStrategy`/Passport (verified — `chat.controller.spec.ts` only does direct controller method calls, no supertest). Wiring `JwtStrategy` with a real `ConfigService` is fragile and out of scope.
 
-Pattern matches `apps/be/src/chat/chat.controller.spec.ts`. The spec mocks the User model and uses Nest's testing module so both guards run for real.
+Instead, use Nest's `Test.createTestingModule` with `.overrideGuard(JwtAuthGuard)` to short-circuit `JwtAuthGuard` (it just sets `req.user`), then let `RolesGuard` run for real against a mocked `userModel`. The 401 case (no token) is `JwtAuthGuard`'s responsibility; that guard comes from `@nestjs/passport` and is verified at the e2e layer (Playwright Task 6.2).
+
+- [ ] **Step 1: Write the spec**
 
 ```ts
 // apps/be/src/admin/admin.controller.spec.ts
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ExecutionContext } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { JwtModule, JwtService } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
 import { getModelToken } from '@nestjs/mongoose';
 import * as request from 'supertest';
 import { AdminController } from './admin.controller';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { JwtStrategy } from '../auth/jwt/jwt.strategy';
+import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { User } from '../auth/schemas/user.schema';
-
-const TEST_SECRET = 'test-secret-do-not-use-in-prod';
 
 describe('AdminController (integration)', () => {
   let app: INestApplication;
-  let jwt: JwtService;
   let userModel: { findById: jest.Mock };
-
-  const tokenFor = (sub: string) =>
-    jwt.sign({ sub, email: `${sub}@x`, username: sub });
-
-  beforeAll(async () => {
-    userModel = { findById: jest.fn() };
-
-    const moduleRef = await Test.createTestingModule({
-      imports: [
-        PassportModule.register({ defaultStrategy: 'jwt' }),
-        JwtModule.register({ secret: TEST_SECRET }),
-      ],
-      controllers: [AdminController],
-      providers: [
-        RolesGuard,
-        JwtStrategy,
-        {
-          provide: 'CONFIG_SERVICE_NOT_USED', // JwtStrategy reads via ConfigService; provide one
-          useValue: {},
-        },
-        {
-          provide: 'ConfigService',
-          useValue: { get: () => TEST_SECRET },
-        },
-        { provide: getModelToken(User.name), useValue: userModel },
-      ],
-    })
-      .overrideProvider(JwtStrategy)
-      .useFactory({
-        factory: () => new JwtStrategy({ get: () => TEST_SECRET } as never),
-      })
-      .compile();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-    jwt = moduleRef.get(JwtService);
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
 
   const mockRole = (role: string | null) =>
     userModel.findById.mockReturnValue({
@@ -430,51 +386,81 @@ describe('AdminController (integration)', () => {
       }),
     });
 
-  it('returns 401 with no token', async () => {
-    await request(app.getHttpServer()).get('/admin/ping').expect(401);
+  beforeAll(async () => {
+    userModel = { findById: jest.fn() };
+
+    const moduleRef = await Test.createTestingModule({
+      controllers: [AdminController],
+      providers: [
+        RolesGuard,
+        { provide: getModelToken(User.name), useValue: userModel },
+      ],
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({
+        canActivate: (ctx: ExecutionContext) => {
+          ctx.switchToHttp().getRequest().user = {
+            userId: 'u1',
+            email: 'u@x',
+            username: 'u',
+          };
+          return true;
+        },
+      })
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
   });
 
-  it('returns 403 with token for non-admin user', async () => {
+  afterAll(async () => {
+    await app.close();
+  });
+
+  beforeEach(() => {
+    userModel.findById.mockReset();
+  });
+
+  it('returns 403 for a non-admin role', async () => {
     mockRole('developer');
-    await request(app.getHttpServer())
-      .get('/admin/ping')
-      .set('Authorization', `Bearer ${tokenFor('u1')}`)
-      .expect(403);
+    await request(app.getHttpServer()).get('/admin/ping').expect(403);
   });
 
-  it('returns 403 when user record was deleted', async () => {
+  it('returns 403 when the user record was deleted', async () => {
     mockRole(null);
-    await request(app.getHttpServer())
-      .get('/admin/ping')
-      .set('Authorization', `Bearer ${tokenFor('u1')}`)
-      .expect(403);
+    await request(app.getHttpServer()).get('/admin/ping').expect(403);
   });
 
-  it('returns 200 with admin token', async () => {
+  it('returns 200 { ok: true } for an admin role', async () => {
     mockRole('admin');
     const res = await request(app.getHttpServer())
       .get('/admin/ping')
-      .set('Authorization', `Bearer ${tokenFor('u1')}`)
       .expect(200);
     expect(res.body).toEqual({ ok: true });
   });
 });
 ```
 
-- [ ] **Step 2: Run the spec**
+This isn't strict supertest-with-real-JWT, but it exercises `RolesGuard` against the real controller via the HTTP pipeline — which is the wiring this PR actually adds.
+
+- [ ] **Step 2: Verify `supertest` is a BE dev dependency, install if missing**
+
+```bash
+grep -q '"supertest"' apps/be/package.json && echo OK || pnpm --filter be add -D supertest @types/supertest
+```
+
+- [ ] **Step 3: Run the spec**
 
 ```bash
 pnpm --filter be exec jest src/admin/admin.controller.spec.ts
 ```
 
-Expected: all 4 tests pass.
+Expected: all 3 tests pass.
 
-If `JwtStrategy` instantiation fails, simplify by replacing the providers block with a custom `JwtStrategy` factory that hard-codes the secret — see how `auth.controller` is tested elsewhere if you need a reference. Do NOT skip the integration test; if it can't be made to work after a reasonable attempt, surface back to the human.
-
-- [ ] **Step 3: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
-git add apps/be/src/admin/admin.controller.spec.ts
+git add apps/be/src/admin/admin.controller.spec.ts apps/be/package.json pnpm-lock.yaml 2>/dev/null || git add apps/be/src/admin/admin.controller.spec.ts
 git commit -m "test(admin): add /admin/ping integration tests (ARC-602)"
 ```
 
@@ -704,18 +690,16 @@ admin: {
 },
 ```
 
-- [ ] **Step 2: Add the same shape to `ru.ts`, `es.ts`, `fr.ts`, `by.ts`**
+- [ ] **Step 2: Add the same shape to `ru.ts`, `es.ts`, `fr.ts`, `by.ts` with locale-appropriate translations**
 
-Use translations appropriate for each locale. If unsure, use English as a placeholder and flag for translation review (acceptable for an admin-only page that isn't user-facing).
+Provide actual translations — do **not** leave English strings in non-English locale files. Use the suggested values below as a starting point; refine if the locale already has an established term in adjacent namespaces (e.g. how `tournaments` translates "Welcome" in `ru.ts`).
 
-Example placeholders:
+- `ru.ts` — `title: 'Админ'`, `welcome: 'Добро пожаловать в панель администратора'`, `welcomeBody: 'Панели функций будут появляться здесь по мере готовности. Используйте боковое меню для навигации.'`, `signedInAs: 'Вы вошли как {username}'`, `nav.dashboard: 'Панель'`, `nav.roles: 'Роли'`, `nav.payments: 'Платежи'`, `nav.announcements: 'Объявления'`, `nav.tournaments: 'Турниры'`, `nav.comingSoon: 'Скоро'`, `error.title: 'Что-то пошло не так'`, `error.body: 'Произошла ошибка при загрузке этой страницы.'`, `error.retry: 'Повторить'`.
+- `es.ts` — `title: 'Administración'`, `welcome: 'Bienvenido al panel de administración'`, `welcomeBody: 'Los paneles aparecerán aquí a medida que se publiquen. Usa la barra lateral para navegar.'`, `signedInAs: 'Sesión iniciada como {username}'`, `nav.dashboard: 'Panel'`, `nav.roles: 'Roles'`, `nav.payments: 'Pagos'`, `nav.announcements: 'Anuncios'`, `nav.tournaments: 'Torneos'`, `nav.comingSoon: 'Próximamente'`, `error.title: 'Algo salió mal'`, `error.body: 'Se produjo un error al cargar esta página.'`, `error.retry: 'Reintentar'`.
+- `fr.ts` — `title: 'Administration'`, `welcome: "Bienvenue dans l'espace administrateur"`, `welcomeBody: 'Les panneaux apparaîtront ici au fur et à mesure de leur publication. Utilisez la barre latérale pour naviguer.'`, `signedInAs: 'Connecté en tant que {username}'`, `nav.dashboard: 'Tableau de bord'`, `nav.roles: 'Rôles'`, `nav.payments: 'Paiements'`, `nav.announcements: 'Annonces'`, `nav.tournaments: 'Tournois'`, `nav.comingSoon: 'Bientôt'`, `error.title: "Une erreur s'est produite"`, `error.body: 'Une erreur est survenue lors du chargement de cette page.'`, `error.retry: 'Réessayer'`.
+- `by.ts` — `title: 'Адмін'`, `welcome: 'Сардэчна запрашаем у панэль адміністратара'`, `welcomeBody: 'Панэлі функцый будуць з\'яўляцца тут па меры гатоўнасці. Выкарыстоўвайце бакавое меню для навігацыі.'`, `signedInAs: 'Вы ўвайшлі як {username}'`, `nav.dashboard: 'Панэль'`, `nav.roles: 'Ролі'`, `nav.payments: 'Плацяжы'`, `nav.announcements: 'Аб\'явы'`, `nav.tournaments: 'Турніры'`, `nav.comingSoon: 'Хутка'`, `error.title: 'Нешта пайшло не так'`, `error.body: 'Адбылася памылка пры загрузцы гэтай старонкі.'`, `error.retry: 'Паўтарыць'`.
 
-- `ru`: `Админ`, `Добро пожаловать в админ-панель`, `Панели появятся здесь по мере готовности.`, `Вы вошли как {username}`, etc.
-- `es`: `Administración`, `Bienvenido al panel de administración`, etc.
-- `fr`: `Administration`, `Bienvenue dans l'espace administrateur`, etc.
-- `by`: similar to `ru` style.
-
-The `pnpm check-translations` script will flag missing keys; passing it is the bar.
+The `pnpm check-translations` script will fail if any key is missing in any locale.
 
 - [ ] **Step 3: Verify translations validate**
 
@@ -957,7 +941,7 @@ export default function AdminError({
 }
 ```
 
-If `Button` is not the correct `@arcadeum/ui` button name, check `packages/ui/src/index.ts` and use the right one. (`@arcadeum/ui` exports several button variants; pick whichever matches existing usage in pages like `tournaments`.)
+(`Button` is verified to be exported from `@arcadeum/ui` at `packages/ui/src/index.ts`.)
 
 - [ ] **Step 4: not-found.tsx (must look like the global 404)**
 
@@ -991,7 +975,7 @@ export default function AdminNotFound() {
 }
 ```
 
-**Critical:** this page must NOT show the admin sidebar. It is rendered by Next.js when the layout calls `notFound()`, and it deliberately looks like the rest of the site's 404 — no admin chrome, no nav. The Playwright tests assert this.
+**Critical:** this page must NOT show the admin sidebar. Because the layout threw via `notFound()`, the admin shell layout never mounts; this `not-found.tsx` is rendered standalone (Next.js routes the response to the closest `not-found.tsx` outside the failing layout). Just keep it free of `AdminLayoutClient` imports and admin nav. The Playwright tests assert this.
 
 - [ ] **Step 5: Verify the build**
 
@@ -1018,45 +1002,35 @@ git commit -m "feat(web): add /admin shell with server-side admin gate (ARC-602)
 
 - Modify: `apps/web/e2e/fixtures/utils/auth.ts`
 
-The existing `mockSession` already mocks `/auth/me`. Extend it to optionally inject a `role` field on both the snapshot and the mocked profile response.
+**Spec deviation note:** the spec's "Admin user fixture" section describes 3 alternatives (test-only seed endpoint / DB write / env-seeded admin). Task 6.1 supersedes that — we use route-mocking via Playwright's `page.route('**/auth/me', ...)`, which matches the existing `mockSession` pattern and avoids any BE seeding work. This is a strict improvement: same coverage, zero new infrastructure.
 
-- [ ] **Step 1: Add a `role` option**
+**Mock-shape commitment:** the existing `mockSession` mocks `/auth/me` with `{ user: { ... } }` (a wrapped shape), but the real BE `GET /auth/me` returns the raw `AuthUserProfile` (verified at [apps/be/src/auth/auth.controller.ts:83-91](../../../apps/be/src/auth/auth.controller.ts#L83-L91)). The new `requireAdmin()` consumes the raw shape. **Decision:** do not modify the shared `mockSession` `/auth/me` route (existing tests rely on the wrapped shape, however buggy). Instead, the admin e2e (Task 6.2) overrides the `/auth/me` route inline with the raw shape. The shared `mockSession` only needs to set the auth cookie; we don't need it to return the right profile shape for the admin tests.
 
-In `apps/web/e2e/fixtures/utils/auth.ts`, update `MockSessionOptions`:
+This means Task 6.1's role parameter is used only to set the cookie/session-state; the actual profile response is mocked in Task 6.2.
+
+- [ ] **Step 1: Add a `role` option to `MockSessionOptions`**
+
+In `apps/web/e2e/fixtures/utils/auth.ts`:
 
 ```ts
-import type { UserRole } from '@/features/auth/types';
-
 export interface MockSessionOptions {
   persistent?: boolean;
-  role?: UserRole | null;
+  role?:
+    | 'free'
+    | 'admin'
+    | 'developer'
+    | 'moderator'
+    | 'tester'
+    | 'premium'
+    | 'vip'
+    | 'supporter'
+    | null;
 }
 ```
 
-(If the import path for `UserRole` is awkward in e2e, inline the type:
-`role?: 'free' | 'admin' | 'developer' | 'moderator' | 'tester' | 'premium' | 'vip' | 'supporter' | null`.)
+In the function body, replace the literal `role: null` inside `snapshot` with `role: options.role ?? null`. **Do not change the `/auth/me` route mock** — existing tests rely on its current shape; Task 6.2 overrides the route inline.
 
-In the function body, replace `role: null` in `snapshot` with `role: options.role ?? null` and update the `/auth/me` mock to include `role: snapshot.role`:
-
-```ts
-await page.route('**/auth/me', async (route) => {
-  await handleRoute(route, {
-    id: MOCK_OBJECT_ID,
-    email: 'test@example.com',
-    username: 'testuser',
-    displayName: 'Test User',
-    role: snapshot.role,
-  });
-});
-```
-
-Note: the existing mock returns `{ user: { ... } }` wrapping. **Verify the actual response shape** by reading [apps/be/src/auth/auth.controller.ts:83-91](../../apps/be/src/auth/auth.controller.ts#L83-L91) and [apps/be/src/auth/auth.service.ts](../../apps/be/src/auth/auth.service.ts) — `getUserProfileById` returns the raw `AuthUserProfile`, not wrapped. The existing test mock wraps in `{ user: ... }` which means existing e2e tests rely on a different code path; make sure the new `requireAdmin()` flow gets the raw shape. If the existing tests break due to this change, investigate before proceeding.
-
-If wrapping is required for backwards compat with existing tests, add a separate route mock for the admin tests rather than changing the shared one.
-
-- [ ] **Step 2: Verify existing e2e tests still pass with the change**
-
-Run a small smoke set:
+- [ ] **Step 2: Verify the existing auth e2e suite still passes**
 
 ```bash
 pnpm --filter web exec playwright test e2e/auth.spec.ts
@@ -1068,7 +1042,7 @@ Expected: still passing.
 
 ```bash
 git add apps/web/e2e/fixtures/utils/auth.ts
-git commit -m "test(e2e): extend mockSession to support role injection (ARC-602)"
+git commit -m "test(e2e): add role option to mockSession (ARC-602)"
 ```
 
 ---
@@ -1079,17 +1053,46 @@ git commit -m "test(e2e): extend mockSession to support role injection (ARC-602)
 
 - Create: `apps/web/e2e/admin.spec.ts`
 
-- [ ] **Step 1: Write the spec**
+- [ ] **Step 1: Verify `mockSession` is re-exported from `test-utils`**
+
+```bash
+grep -n "auth" apps/web/e2e/fixtures/test-utils.ts
+```
+
+Expected: a line like `export * from './utils/auth';`. (Verified during planning that this re-export exists. If it doesn't, add it.)
+
+- [ ] **Step 2: Write the spec**
+
+The admin tests override `/auth/me` inline with the raw `AuthUserProfile` shape (matches the real BE), independent of `mockSession`'s mock shape. The anonymous-user test uses an explicit 401 response to avoid any flakiness from the `/auth/me` route hitting a real (or missing) BE.
 
 ```ts
 // apps/web/e2e/admin.spec.ts
-import { test, expect } from '@playwright/test';
-import { mockSession } from './fixtures/test-utils';
+import { test, expect, type Page, type Route } from '@playwright/test';
+import { mockSession, MOCK_OBJECT_ID } from './fixtures/test-utils';
+
+const profile = (role: string) => ({
+  id: MOCK_OBJECT_ID,
+  email: 'admin@example.com',
+  username: 'adminuser',
+  displayName: 'Admin',
+  role,
+});
+
+const stubAuthMe = async (page: Page, body: unknown, status = 200) => {
+  await page.route('**/auth/me', (route: Route) =>
+    route.fulfill({
+      status,
+      contentType: 'application/json',
+      body: JSON.stringify(body),
+    }),
+  );
+};
 
 test.describe('/admin gate', () => {
   test('anonymous user gets the local 404 page', async ({ page }) => {
+    // Stub /auth/me to 401 so the gate does not depend on BE availability.
+    await stubAuthMe(page, { error: 'unauthorized' }, 401);
     const res = await page.goto('/admin');
-    // notFound() from a layout produces a 404 status response
     expect(res?.status()).toBe(404);
     await expect(page.getByTestId('admin-not-found')).toBeVisible();
     await expect(page.getByTestId('admin-sidebar')).toHaveCount(0);
@@ -1097,6 +1100,7 @@ test.describe('/admin gate', () => {
 
   test('logged-in non-admin user gets 404', async ({ page }) => {
     await mockSession(page, { role: 'free' });
+    await stubAuthMe(page, profile('free'));
     const res = await page.goto('/admin');
     expect(res?.status()).toBe(404);
     await expect(page.getByTestId('admin-not-found')).toBeVisible();
@@ -1105,6 +1109,7 @@ test.describe('/admin gate', () => {
 
   test('logged-in admin user sees the admin shell', async ({ page }) => {
     await mockSession(page, { role: 'admin' });
+    await stubAuthMe(page, profile('admin'));
     await page.goto('/admin');
     await expect(page.getByTestId('admin-sidebar')).toBeVisible();
     await expect(page.getByTestId('admin-dashboard')).toBeVisible();
@@ -1113,6 +1118,7 @@ test.describe('/admin gate', () => {
 
   test('admin page has noindex robots meta', async ({ page }) => {
     await mockSession(page, { role: 'admin' });
+    await stubAuthMe(page, profile('admin'));
     await page.goto('/admin');
     const robotsMeta = await page
       .locator('meta[name="robots"]')
@@ -1137,7 +1143,11 @@ test.describe('/admin gate', () => {
 });
 ```
 
-- [ ] **Step 2: Run the spec**
+**`page.route` ordering caveat:** `mockSession` also calls `page.route('**/auth/me', ...)`. Playwright runs registered routes in **last-added first** order, so calling `stubAuthMe` after `mockSession` should win. Verify this empirically — if the wrong handler answers, use `page.unroute('**/auth/me')` before adding the new one.
+
+**`data-testid` caveat:** the admin shell uses `data-testid` on Tamagui-styled `GlassCard`/`YStack` components, which forward `data-*` attributes to the rendered DOM by default. If `getByTestId` fails to locate a node despite the attribute being present in the props, the Tamagui wrapper may strip it; in that case switch to a stable `id`-based selector.
+
+- [ ] **Step 3: Run the spec**
 
 ```bash
 pnpm --filter web exec playwright test e2e/admin.spec.ts
@@ -1145,9 +1155,7 @@ pnpm --filter web exec playwright test e2e/admin.spec.ts
 
 Expected: all 6 tests pass.
 
-If a test fails because `mockSession`'s `/auth/me` shape doesn't match what `requireAdmin()` expects, adjust the route mock in `auth.ts` to return the raw `AuthUserProfile` shape (no `{ user: ... }` wrapper) for the admin path. Test the failing case with `await page.route('**/auth/me', ...)` overridden inline first to confirm the diagnosis.
-
-- [ ] **Step 3: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
 git add apps/web/e2e/admin.spec.ts

@@ -44,6 +44,10 @@ describe('RolesGuard', () => {
     return moduleRef.get(RolesGuard);
   };
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('falls open when no @Roles() metadata is present', async () => {
     const model = buildModel('free');
     const guard = await setup(model);

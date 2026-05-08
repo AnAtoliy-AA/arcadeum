@@ -49,15 +49,19 @@ conflict:
 1. Register a global `ValidationPipe` in `apps/be/src/main.ts` with
    `transform: true, whitelist: true, forbidNonWhitelisted: true` so DTOs
    actually validate.
-2. `GET /admin/users` — paginated, searchable, role-filterable
-3. `PATCH /admin/users/:id/role` — update a single user's role
-4. `/admin/users` page — table UI with inline role dropdown, search box,
+2. Add a `patch<T>` method to `apiClient` at
+   `apps/web/src/shared/lib/api-client.ts` — mirrors the existing `put`
+   one-liner. Also add a small unit test alongside the existing
+   `api-client.test.ts`.
+3. `GET /admin/users` — paginated, searchable, role-filterable
+4. `PATCH /admin/users/:id/role` — update a single user's role
+5. `/admin/users` page — table UI with inline role dropdown, search box,
    role filter, pagination footer, role chips
-5. Sidebar: rename the `'roles'` item literal to `'users'` (changes the
+6. Sidebar: rename the `'roles'` item literal to `'users'` (changes the
    sidebar `id` union type), enable it, point at `/admin/users`. Rename
    `pages.admin.nav.roles` → `pages.admin.nav.users` in all 5 locales.
-6. i18n in all 5 locales for the new `pages.admin.users` namespace
-7. Tests: BE unit + integration, FE Vitest, Playwright e2e for navigation +
+7. i18n in all 5 locales for the new `pages.admin.users` namespace
+8. Tests: BE unit + integration, FE Vitest, Playwright e2e for navigation +
    accessibility (not the list/edit flow itself — same Server Component
    fetch constraint as ARC-602)
 
@@ -374,8 +378,7 @@ inherited; the page intentionally exports nothing to avoid overriding
 import { apiClient } from '@/shared/lib/api-client';
 import type { UserRole } from '@/entities/session/model/types';
 
-// (Verify the FE UserRole import path during implementation; if FE doesn't
-// have a public UserRole export yet, add one to entities/session.)
+// `UserRole` is already exported from this path (verified during planning).
 
 export interface AdminUserItem {
   /* matches BE AdminUserItem */
@@ -429,8 +432,8 @@ import { useQuery } from '@/shared/hooks/useQuery';
 import { useMutation } from '@/shared/hooks/useMutation';
 import { useRefreshStore } from '@/shared/model/useRefreshStore';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
-// (Verify session store path during implementation; this is the canonical
-// place where the access token lives client-side.)
+// `useSessionStore.snapshot.accessToken` is the canonical client-side
+// access token (verified during planning).
 
 const ADMIN_USERS_REFRESH_KEY = 'admin-users';
 
@@ -702,6 +705,8 @@ hook unit tests are the source of truth for behavior.
 
 - `apps/be/src/main.ts` — register global `ValidationPipe`
 - `apps/be/src/admin/admin.module.ts` — add new controller/service
+- `apps/web/src/shared/lib/api-client.ts` — add `patch<T>` method
+- `apps/web/src/shared/lib/api-client.test.ts` — extend with `patch` test
 - `apps/web/src/app/admin/_components/sidebarItems.ts` — `id` literal
   union changes; the `'roles'` item becomes `'users'`, enabled, with
   `href`

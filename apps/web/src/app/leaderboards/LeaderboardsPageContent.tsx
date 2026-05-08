@@ -100,10 +100,17 @@ export default function LeaderboardsPageContent({
     return () => clearTimeout(id);
   }, [debouncedSearch]);
 
+  // Skip socket setup when running against the mock — there's no BE gateway
+  // to talk to and the connection retries pollute the dev console.
+  const realtimeEnabled =
+    process.env.NEXT_PUBLIC_E2E !== 'true' &&
+    process.env.NEXT_PUBLIC_USE_LEADERBOARD_MOCK !== 'true';
+
   useEffect(() => {
+    if (!realtimeEnabled) return;
     if (accessToken) connectSockets(accessToken);
     else connectSocketsAnonymous();
-  }, [accessToken]);
+  }, [accessToken, realtimeEnabled]);
 
   // Refetch on capture broadcast and bump the freshness pulse.
   const [freshnessPulseKey, setFreshnessPulseKey] = useState(0);

@@ -786,6 +786,9 @@ export class AdminUsersService {
     if (!updated) {
       throw new NotFoundException({ code: 'USER_NOT_FOUND' });
     }
+    // Cast: Mongoose's findByIdAndUpdate with `lean: true` returns a
+    // `Document | null`-shaped type that doesn't expose lean fields cleanly;
+    // the cast is the simplest path. Verified at runtime by toAdminUserItem.
     return this.toAdminUserItem(updated as unknown as UserDocLean);
   }
 
@@ -1184,7 +1187,9 @@ grep -n "describe\|it(" apps/web/src/shared/lib/api-client.test.ts
 
 - [ ] **Step 2: Append a `patch` test inside the existing `describe('apiClient', ...)`**
 
-Add this before the closing `});` of the `describe`:
+Add this before the closing `});` of the `describe`. Note the existing
+`api-client.test.ts` imports `type Mock` from `vitest` at the top of the
+file — no new import needed:
 
 ```ts
 it('performs PATCH request with data', async () => {
@@ -1423,7 +1428,7 @@ export async function updateUserRole(
 }
 ```
 
-Note: `apiClient` accepts `{ token }` in `ApiClientOptions` — verify by reading [apps/web/src/shared/lib/api-client.ts:32-36](apps/web/src/shared/lib/api-client.ts#L32-L36) for the option name. If it's actually `accessToken` or similar, adjust.
+Note: `apiClient` accepts `{ token }` in `ApiClientOptions` (verified at planning time at `apps/web/src/shared/lib/api-client.ts:32-36`).
 
 - [ ] **Step 2: Run, expect PASS**
 
@@ -1526,10 +1531,11 @@ describe('useAdminUsers', () => {
       useAdminUsers({ page: 1, pageSize: 50 }),
     );
 
-    // Wait a tick — no fetch should fire
-    await new Promise((r) => setTimeout(r, 0));
+    // Allow microtasks + a couple of effect cycles to flush; no fetch may fire.
+    await new Promise((r) => setTimeout(r, 50));
     expect(apiMock.get).not.toHaveBeenCalled();
     expect(result.current.isLoading).toBe(false);
+    expect(result.current.data).toBeNull();
   });
 });
 
@@ -1765,7 +1771,7 @@ export function RoleBadge({ role, label }: { role: UserRole; label: string }) {
 - Create: `apps/web/src/features/admin-users/ui/RoleSelect.tsx`
 - Create: `apps/web/src/features/admin-users/ui/RoleSelect.test.tsx`
 
-The control is a styled native `<select>` for accessibility (keyboard, screen readers, native keyboard nav). If `@arcadeum/ui` ships a `Select` component, prefer that — but check during implementation. v1 ships native if unsure.
+The control is a styled native `<select>` for accessibility (keyboard, screen readers, native keyboard nav). `@arcadeum/ui` does not export a `Select` component (verified at planning time in `packages/ui/src/index.ts`); using native HTML controls is the conscious decision.
 
 - [ ] **Step 1: Test**
 
@@ -2439,51 +2445,175 @@ admin: {
 },
 ```
 
-- [ ] **Step 2: Add to `ru.ts`** with `nav.users: 'Пользователи'` and the `users` block translated. Use these strings:
+- [ ] **Step 2: Add to `ru.ts`** — also rename `nav.roles` → `nav.users: 'Пользователи'`:
 
-```text
-title: 'Пользователи'
-search.placeholder: 'Поиск по имени, email или отображаемому имени'
-filter.role.all: 'Все роли'
-filter.role.placeholder: 'Фильтр по роли'
-table.username: 'Имя пользователя'
-table.email: 'Email'
-table.role: 'Роль'
-table.createdAt: 'Создан'
-table.actions: 'Действия'
-empty.noResults: 'Нет пользователей по фильтру.'
-empty.noUsers: 'Пользователей пока нет.'
-pagination.prev: 'Назад'
-pagination.next: 'Вперёд'
-pagination.of: 'Страница {current} из {total}'
-totalLabel: '{total} пользователей'
-selfTooltip: 'Нельзя изменить свою собственную роль.'
-role.free: 'Free' / 'Бесплатный'   // pick the project's existing convention
-role.premium: 'Premium'
-role.vip: 'VIP'
-role.supporter: 'Спонсор'
-role.moderator: 'Модератор'
-role.tester: 'Тестер'
-role.developer: 'Разработчик'
-role.admin: 'Админ'
-errors.SELF_ROLE_CHANGE_FORBIDDEN: 'Нельзя изменить свою собственную роль.'
-errors.LAST_ADMIN_PROTECTED: 'Нельзя понизить последнего администратора.'
-errors.USER_NOT_FOUND: 'Пользователь не найден.'
-errors.INVALID_USER_ID: 'Неверный идентификатор пользователя.'
-errors.generic: 'Что-то пошло не так. Попробуйте ещё раз.'
+```ts
+admin: {
+  // ...
+  nav: { /* ...existing keys... */ users: 'Пользователи', /* ...others unchanged... */ },
+  users: {
+    title: 'Пользователи',
+    search: { placeholder: 'Поиск по имени, email или отображаемому имени' },
+    filter: { role: { all: 'Все роли', placeholder: 'Фильтр по роли' } },
+    table: {
+      username: 'Имя пользователя',
+      email: 'Email',
+      role: 'Роль',
+      createdAt: 'Создан',
+      actions: 'Действия',
+    },
+    empty: {
+      noResults: 'Нет пользователей по фильтру.',
+      noUsers: 'Пользователей пока нет.',
+    },
+    pagination: { prev: 'Назад', next: 'Вперёд', of: 'Страница {current} из {total}' },
+    totalLabel: '{total} пользователей',
+    selfTooltip: 'Нельзя изменить свою собственную роль.',
+    role: {
+      free: 'Бесплатный',
+      premium: 'Премиум',
+      vip: 'VIP',
+      supporter: 'Спонсор',
+      moderator: 'Модератор',
+      tester: 'Тестер',
+      developer: 'Разработчик',
+      admin: 'Админ',
+    },
+    errors: {
+      SELF_ROLE_CHANGE_FORBIDDEN: 'Нельзя изменить свою собственную роль.',
+      LAST_ADMIN_PROTECTED: 'Нельзя понизить последнего администратора.',
+      USER_NOT_FOUND: 'Пользователь не найден.',
+      INVALID_USER_ID: 'Неверный идентификатор пользователя.',
+      generic: 'Что-то пошло не так. Попробуйте ещё раз.',
+    },
+  },
+},
 ```
 
-For the role labels, check what existing locale files use for `free`/`premium`/etc. and stay consistent. If those role names don't exist in i18n elsewhere, the strings above are reasonable defaults.
+- [ ] **Step 3: Add to `es.ts`** — `nav.users: 'Usuarios'` plus:
 
-- [ ] **Step 3: Add to `es.ts`, `fr.ts`, `by.ts`** with appropriate translations:
+```ts
+users: {
+  title: 'Usuarios',
+  search: { placeholder: 'Buscar por usuario, email o nombre' },
+  filter: { role: { all: 'Todos los roles', placeholder: 'Filtrar por rol' } },
+  table: {
+    username: 'Usuario',
+    email: 'Email',
+    role: 'Rol',
+    createdAt: 'Creado',
+    actions: 'Acciones',
+  },
+  empty: {
+    noResults: 'No hay usuarios que coincidan con los filtros.',
+    noUsers: 'Aún no hay usuarios.',
+  },
+  pagination: { prev: 'Anterior', next: 'Siguiente', of: 'Página {current} de {total}' },
+  totalLabel: '{total} usuarios',
+  selfTooltip: 'No puedes cambiar tu propio rol.',
+  role: {
+    free: 'Gratis',
+    premium: 'Premium',
+    vip: 'VIP',
+    supporter: 'Patrocinador',
+    moderator: 'Moderador',
+    tester: 'Tester',
+    developer: 'Desarrollador',
+    admin: 'Admin',
+  },
+  errors: {
+    SELF_ROLE_CHANGE_FORBIDDEN: 'No puedes cambiar tu propio rol.',
+    LAST_ADMIN_PROTECTED: 'No se puede degradar al último administrador.',
+    USER_NOT_FOUND: 'Usuario no encontrado.',
+    INVALID_USER_ID: 'Identificador de usuario no válido.',
+    generic: 'Algo salió mal. Inténtalo de nuevo.',
+  },
+},
+```
 
-`es.ts` — `nav.users: 'Usuarios'`, `title: 'Usuarios'`, `search.placeholder: 'Buscar por usuario, email o nombre'`, `filter.role.all: 'Todos los roles'`, `selfTooltip: 'No puedes cambiar tu propio rol.'`, etc.
+- [ ] **Step 4: Add to `fr.ts`** — `nav.users: 'Utilisateurs'` plus:
 
-`fr.ts` — `nav.users: 'Utilisateurs'`, `title: 'Utilisateurs'`, `search.placeholder: "Recherche par nom d'utilisateur, email ou nom"`, `filter.role.all: 'Tous les rôles'`, `selfTooltip: 'Vous ne pouvez pas changer votre propre rôle.'`, etc.
+```ts
+users: {
+  title: 'Utilisateurs',
+  search: { placeholder: "Recherche par nom d'utilisateur, email ou nom" },
+  filter: { role: { all: 'Tous les rôles', placeholder: 'Filtrer par rôle' } },
+  table: {
+    username: "Nom d'utilisateur",
+    email: 'Email',
+    role: 'Rôle',
+    createdAt: 'Créé le',
+    actions: 'Actions',
+  },
+  empty: {
+    noResults: 'Aucun utilisateur ne correspond aux filtres.',
+    noUsers: 'Aucun utilisateur pour le moment.',
+  },
+  pagination: { prev: 'Précédent', next: 'Suivant', of: 'Page {current} sur {total}' },
+  totalLabel: '{total} utilisateurs',
+  selfTooltip: 'Vous ne pouvez pas changer votre propre rôle.',
+  role: {
+    free: 'Gratuit',
+    premium: 'Premium',
+    vip: 'VIP',
+    supporter: 'Soutien',
+    moderator: 'Modérateur',
+    tester: 'Testeur',
+    developer: 'Développeur',
+    admin: 'Admin',
+  },
+  errors: {
+    SELF_ROLE_CHANGE_FORBIDDEN: 'Vous ne pouvez pas changer votre propre rôle.',
+    LAST_ADMIN_PROTECTED: 'Impossible de rétrograder le dernier administrateur.',
+    USER_NOT_FOUND: 'Utilisateur introuvable.',
+    INVALID_USER_ID: 'Identifiant utilisateur invalide.',
+    generic: "Quelque chose s'est mal passé. Veuillez réessayer.",
+  },
+},
+```
 
-`by.ts` — `nav.users: 'Карыстальнікі'`, `title: 'Карыстальнікі'`, `search.placeholder: "Пошук па імі, email або псеўданіме"`, `filter.role.all: 'Усе ролі'`, `selfTooltip: 'Вы не можаце змяніць сваю ўласную ролю.'`, etc.
+- [ ] **Step 5: Add to `by.ts`** — `nav.users: 'Карыстальнікі'` plus:
 
-The implementer should produce idiomatic translations consistent with each locale file's style. If unclear, use English temporarily and add a TODO — but `pnpm check-translations` requires every key be present.
+```ts
+users: {
+  title: 'Карыстальнікі',
+  search: { placeholder: 'Пошук па імі, email або псеўданіме' },
+  filter: { role: { all: 'Усе ролі', placeholder: 'Фільтр па ролі' } },
+  table: {
+    username: 'Імя карыстальніка',
+    email: 'Email',
+    role: 'Роля',
+    createdAt: 'Створаны',
+    actions: 'Дзеянні',
+  },
+  empty: {
+    noResults: 'Няма карыстальнікаў па фільтру.',
+    noUsers: 'Карыстальнікаў пакуль няма.',
+  },
+  pagination: { prev: 'Назад', next: 'Наперад', of: 'Старонка {current} з {total}' },
+  totalLabel: '{total} карыстальнікаў',
+  selfTooltip: 'Вы не можаце змяніць сваю ўласную ролю.',
+  role: {
+    free: 'Бясплатны',
+    premium: 'Прэміум',
+    vip: 'VIP',
+    supporter: 'Спонсар',
+    moderator: 'Мадэратар',
+    tester: 'Тэстар',
+    developer: 'Распрацоўшчык',
+    admin: 'Адмін',
+  },
+  errors: {
+    SELF_ROLE_CHANGE_FORBIDDEN: 'Вы не можаце змяніць сваю ўласную ролю.',
+    LAST_ADMIN_PROTECTED: 'Нельга паніжаць апошняга адміністратара.',
+    USER_NOT_FOUND: 'Карыстальнік не знойдзены.',
+    INVALID_USER_ID: 'Няправільны ідэнтыфікатар карыстальніка.',
+    generic: 'Нешта пайшло не так. Калі ласка, паспрабуйце яшчэ раз.',
+  },
+},
+```
+
+Real translations only — no English placeholders in non-English locale files.
 
 - [ ] **Step 4: Run translation check**
 
@@ -2530,9 +2660,24 @@ export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
 ];
 ```
 
-- [ ] **Step 2: Verify the existing `AdminLayoutClient.tsx` still compiles**
+- [ ] **Step 2: Update the inline `AdminNavTranslations` interface in `AdminLayoutClient.tsx`**
 
-`AdminLayoutClient.tsx` uses `navT?.[item.id]` to read the label. The i18n key `nav.users` was added in Phase 11; the type change here is consistent.
+`AdminLayoutClient.tsx` declares an inline interface (lines 20–27 at the time of planning):
+
+```ts
+interface AdminNavTranslations {
+  dashboard?: string;
+  roles?: string; // <-- rename to `users?`
+  payments?: string;
+  announcements?: string;
+  tournaments?: string;
+  comingSoon?: string;
+}
+```
+
+Rename `roles?: string` → `users?: string`. Without this, `navT?.[item.id]` (where `item.id` is now the literal `'users'`) won't type-check.
+
+- [ ] **Step 3: Verify TS compiles**
 
 ```bash
 pnpm --filter web exec tsc --noEmit
@@ -2540,7 +2685,7 @@ pnpm --filter web exec tsc --noEmit
 
 Expected: clean.
 
-- [ ] **Step 3: Verify `AdminLayoutClient.tsx`'s navigation** — sidebar items now have `href` for users. If the existing `AdminLayoutClient.tsx` doesn't use `href` for navigation (it might only display them as cards), wire it up. Read the file first:
+- [ ] **Step 4: Wire navigation `href` if `AdminLayoutClient.tsx` doesn't already** — sidebar items now carry `href` for the Users panel. If the existing `AdminLayoutClient.tsx` only renders disabled cards, wrap enabled cards in a Next.js `Link`. Read the file first:
 
 ```bash
 cat apps/web/src/app/admin/AdminLayoutClient.tsx
@@ -2690,7 +2835,7 @@ describe('AdminUsersClient', () => {
     expect(screen.getByText('no users')).toBeInTheDocument();
   });
 
-  it('clamps pageSize to <= 200', () => {
+  it('passes default page=1 and pageSize=50 to useAdminUsers', () => {
     useAdminUsersMock.mockReturnValue({
       data: { items: [], total: 0, page: 1, pageSize: 50 },
       isLoading: false,
@@ -2698,14 +2843,17 @@ describe('AdminUsersClient', () => {
       error: null,
     });
     useUpdateUserRoleMock.mockReturnValue({
-      mutate: () => {},
+      mutateAsync: vi.fn(),
       isPending: false,
     });
     render(<AdminUsersClient currentUserId="me" />);
-    // Internal call shape — assert via the mock invocation
     expect(useAdminUsersMock).toHaveBeenCalled();
-    const args = useAdminUsersMock.mock.calls[0]?.[0] as { pageSize?: number };
-    expect(args.pageSize).toBeLessThanOrEqual(200);
+    const args = useAdminUsersMock.mock.calls[0]?.[0] as {
+      page?: number;
+      pageSize?: number;
+    };
+    expect(args.page).toBe(1);
+    expect(args.pageSize).toBe(50);
   });
 });
 ```
@@ -2715,7 +2863,7 @@ describe('AdminUsersClient', () => {
 ```tsx
 // apps/web/src/app/admin/users/AdminUsersClient.tsx
 'use client';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Container, PageLayout, PageTitle, YStack } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { useAdminUsers, useUpdateUserRole } from '@/features/admin-users/hooks';
@@ -2765,7 +2913,7 @@ export default function AdminUsersClient({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [pendingUserId, setPendingUserId] = useState<string | undefined>();
 
-  const pageSize = Math.min(200, PAGE_SIZE);
+  const pageSize = PAGE_SIZE;
 
   const {
     data,
@@ -2786,35 +2934,22 @@ export default function AdminUsersClient({
     setPage(1);
   };
 
-  const handleRoleChange = (userId: string, newRole: UserRole) => {
+  const handleRoleChange = async (userId: string, newRole: UserRole) => {
     if (!t) return;
     setPendingUserId(userId);
     setErrorMsg(null);
-    mutation.mutate(
-      { userId, role: newRole },
-      // useMutation here takes options as second arg only if you call mutateAsync;
-      // the simple mutate() returns void. Use error/isError observables.
-    );
-    // We listen for error via mutation state below in useEffect-equivalent —
-    // but useMutation here is fire-and-forget; on next render mutation.error
-    // is observable. For simplicity, watch via an effect:
-  };
-
-  // Surface errors from the latest mutation
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  useMemo(() => {
-    if (mutation.isError && t) {
-      const apiErr = mutation.error as ApiError | null;
+    try {
+      await mutation.mutateAsync({ userId, role: newRole });
+    } catch (err) {
+      const apiErr = err as ApiError | null;
       const code = (apiErr?.data as { code?: string } | undefined)?.code;
       const msg =
         (code && t.errors[code as keyof typeof t.errors]) || t.errors.generic;
       setErrorMsg(msg);
+    } finally {
       setPendingUserId(undefined);
     }
-    if (mutation.isSuccess) {
-      setPendingUserId(undefined);
-    }
-  }, [mutation.isError, mutation.isSuccess, mutation.error, t]);
+  };
 
   const labels = t
     ? {
@@ -2881,13 +3016,11 @@ export default function AdminUsersClient({
 }
 ```
 
-**Note on the `useMemo`-instead-of-`useEffect` for surfacing errors:** the
-implementer should swap to a real `useEffect` once verified to behave
-correctly in StrictMode. The pseudo-code above is illustrative — a clean
-implementation uses `useEffect` watching `mutation.isError` /
-`mutation.isSuccess`. Verify the actual `useMutation` shape (already
-inspected during planning) supports observing state via the returned
-object.
+**Why `mutateAsync` + try/catch instead of effect-based error surfacing:**
+the project's `useMutation` ([apps/web/src/shared/hooks/useMutation.ts:42-68](apps/web/src/shared/hooks/useMutation.ts#L42-L68))
+returns `mutateAsync` which throws on failure. Awaiting it inside the
+handler with try/catch is the simplest correct pattern — no effect
+synchronization, no StrictMode duplication risk.
 
 - [ ] **Step 4: Verify build + tests**
 

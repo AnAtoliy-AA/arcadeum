@@ -9,7 +9,7 @@ test.describe('Leaderboards page', () => {
 
     await expect(page.getByTestId('leaderboard-hero')).toBeVisible();
     await expect(page.getByTestId('leaderboard-ticker')).toBeVisible();
-    await expect(page.getByTestId('cup-countdown-seconds')).toBeVisible();
+    await expect(page.getByTestId('cup-coming-soon')).toBeVisible();
     await expect(
       page.getByTestId('leaderboard-mythic-spotlight'),
     ).toBeVisible();
@@ -19,11 +19,9 @@ test.describe('Leaderboards page', () => {
     await expect(page.getByTestId('leaderboard-row-1')).toBeVisible();
   });
 
-  test('mythic spotlight has 3 CTAs', async ({ page }) => {
+  test('mythic spotlight exposes the profile CTA', async ({ page }) => {
     await navigateTo(page, '/leaderboards');
     await expect(page.getByTestId('mythic-challenge')).toBeVisible();
-    await expect(page.getByTestId('mythic-watch')).toBeVisible();
-    await expect(page.getByTestId('mythic-follow')).toBeVisible();
   });
 
   test('switching mode updates the first row', async ({ page }) => {
@@ -73,14 +71,11 @@ test.describe('Leaderboards page', () => {
     await expect(self).toBeInViewport();
   });
 
-  test('cup countdown ticks within 2s', async ({ page }) => {
+  test('tournament section shows coming-soon placeholder', async ({ page }) => {
     await navigateTo(page, '/leaderboards');
-    const clock = page.getByTestId('cup-countdown-seconds');
-    await expect(clock).toBeVisible();
-    const before = await clock.textContent();
-    await page.waitForTimeout(1500);
-    const after = await clock.textContent();
-    expect(after).not.toEqual(before);
+    const panel = page.getByTestId('cup-coming-soon');
+    await expect(panel).toBeVisible();
+    await expect(panel).toContainText(/coming soon/i);
   });
 
   test('freshness indicator renders above the cup card', async ({ page }) => {

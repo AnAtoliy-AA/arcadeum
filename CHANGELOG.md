@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.8] - 2026-05-08
+
+### Added
+- tournament section "coming soon" placeholder (ARC-588) (ARC-588)
+- leaderboards reads real data from game history (ARC-588) (ARC-588)
+- auto-seed leaderboards in dev when empty (ARC-588) (ARC-588)
+- leaderboards player profile + storybook + e2e (ARC-588) (ARC-588)
+- leaderboards search, cache, freshness, profile stub (ARC-588) (ARC-588)
+- leaderboards push updates via realtime gateway (ARC-588) (ARC-588)
+- leaderboards seeder, capture, gateway, live-match (ARC-588) (ARC-588)
+- leaderboards module + FE wiring (ARC-588) (ARC-588)
+- leaderboards Neon Arcade visual rebuild (ARC-588) (ARC-588)
+- leaderboard page with mythic spotlight and rank table (ARC-588) (ARC-588)
+
+### Fixed
+- address PR #591 review (ARC-588) (ARC-588)
+- default Stats page to the Leaderboard tab (ARC-588) (ARC-588)
+- use aria-label instead of accessibilityLabel on web (ARC-588) (ARC-588)
+- drop Texas Hold'em and Tic Tac Toe modes (ARC-588) (ARC-588)
+- use real Arcadeum games (Critical, Sea Battle, Texas Hold'em, Tic Tac Toe) (ARC-588) (ARC-588)
+- dev fallback for MONGODB_URI (ARC-588) (ARC-588)
+- dev fallback for AUTH_JWT_SECRET (N/A)
+- skip leaderboards socket connect under mock (ARC-588) (ARC-588)
+- pin leaderboard self row via position:fixed (ARC-588) (ARC-588)
+- address review #2 for leaderboards (ARC-588) (ARC-588)
+- address PR #591 review for leaderboards (ARC-588) (ARC-588)
+
+### Improved
+- cut socket spam on leaderboards (ARC-588) (ARC-588)
+- cache + dedupe leaderboards upstream scan (ARC-588) (ARC-588)
+
+
 ## [1.12.7] - 2026-05-07
 
 ### Fixed

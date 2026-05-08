@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.2] - 2026-05-08
+
+### Added
+- add /admin shell with server-side admin gate (ARC-602) (ARC-602)
+- add admin namespace to all 5 locales (ARC-602) (ARC-602)
+- add requireAdmin server helper for /admin gate (ARC-602) (ARC-602)
+- add AdminModule with /admin/ping demo endpoint (ARC-602) (ARC-602)
+- add RolesGuard with DB-backed role lookup (ARC-602) (ARC-602)
+- add ROLES_KEY constant and @Roles() decorator (ARC-602) (ARC-602)
+
+### Documentation
+- apply plan review fixes (ARC-602) (ARC-602)
+- add implementation plan for admin shell (ARC-602) (ARC-602)
+- apply final spec review fixes (ARC-602) (ARC-602)
+- address spec review feedback (ARC-602) (ARC-602)
+- add admin shell design spec (ARC-602) (ARC-602)
+
+
 ## [1.13.1] - 2026-05-08
 
 ### Fixed

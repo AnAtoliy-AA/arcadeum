@@ -169,8 +169,6 @@ export class ListAdminNotesDto {
 **Response interface** (`admin-payment-note.interface.ts`):
 
 ```ts
-import type { Types } from 'mongoose';
-
 export interface AdminPaymentNoteItem {
   id: string;
   note: string;
@@ -191,6 +189,26 @@ export interface AdminPaymentNotesResponse {
 }
 ```
 
+**Lean document type** (declared in `payment-notes.service.ts` next to
+the new method to avoid `as unknown as` casts):
+
+```ts
+import type { Types } from 'mongoose';
+
+interface LeanPaymentNote {
+  _id: Types.ObjectId;
+  note: string;
+  amount: number;
+  currency: string;
+  userId?: Types.ObjectId | null;
+  displayName?: string | null;
+  transactionId: string;
+  isPublic: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
 **Service method** (`payment-notes.service.ts:listForAdmin`):
 
 ```text
@@ -198,29 +216,39 @@ export interface AdminPaymentNotesResponse {
    - visibility === 'public'  → { isPublic: true }
    - visibility === 'private' → { isPublic: false }
    - visibility === 'all'     → {}
-2. If q non-empty:
+2. If q AND q.trim() is non-empty (whitespace-only treated as no-filter):
    - escaped = escapeRegExp(q.trim())
    - AND { $or: [
-       { note:        { $regex: escaped, $options: 'i' } },
-       { displayName: { $regex: escaped, $options: 'i' } },
+       { note:          { $regex: escaped, $options: 'i' } },
+       { displayName:   { $regex: escaped, $options: 'i' } },
        { transactionId: { $regex: escaped, $options: 'i' } },
      ] }
 3. const skip = (page - 1) * pageSize
+   (Note: 1-based pagination, matches admin-users convention. The
+    public getNotes endpoint uses 0-based; do NOT harmonize.)
 4. Run two queries in parallel:
    - this.noteModel.find(filter)
        .sort({ createdAt: -1, _id: -1 })
-       .skip(skip).limit(pageSize).lean()
+       .skip(skip).limit(pageSize).lean<LeanPaymentNote[]>()
    - this.noteModel.countDocuments(filter)
 5. Enrich userId-bearing notes with display name (existing pattern from
-   getNotes — fetch users by _id, build a Map, merge).
-6. Map docs → AdminPaymentNoteItem explicitly. Cast doc.createdAt /
-   doc._id correctly (lean returns plain objects with Date / ObjectId).
+   getNotes — fetch users by _id with .select('_id displayName username'),
+   build a Map, merge). The .select() is the contract that prevents
+   passwordHash leaks; a unit test pins it.
+6. Map docs → AdminPaymentNoteItem using the LeanPaymentNote type so no
+   ad-hoc casts are needed. doc.createdAt is a Date (call .toISOString());
+   doc._id is a Types.ObjectId (call .toString()).
 7. Return { items, total, page, pageSize }.
 ```
 
 The `escapeRegExp` helper currently lives at
 `apps/be/src/admin/lib/escape-regexp.ts` (from ARC-604). The cleanest
 re-use is to import it directly from there. No need to duplicate.
+
+**Default pagination divergence (intentional):** admin defaults are
+`pageSize=50` capped at `200`, mirroring `ListAdminUsersDto`. The public
+`getNotes` defaults to `limit=20` capped at `100`. Do not harmonize
+either way — admin and public endpoints have different access patterns.
 
 ## FE — Page + components
 
@@ -240,12 +268,16 @@ export default async function AdminPaymentsPage() {
 
 ### Client (`AdminPaymentsClient.tsx`)
 
-State: `{ page, q, visibility }`. Calls `useAdminPaymentNotes` (custom
-`useQuery` + `useRefreshStore` — same pattern as `useAdminUsers`).
+`'use client'`. State: `{ page, q, visibility }`. Calls
+`useAdminPaymentNotes` (custom `useQuery` + `useRefreshStore` — same
+pattern as `useAdminUsers`).
 
 Composition:
 
 ```tsx
+'use client';
+// ...imports
+
 <PageLayout>
   <Container size="lg">
     <YStack gap="$3">
@@ -283,13 +315,16 @@ state. Read-only.
 
 Columns:
 
-- `displayName` (or `Anonymous` placeholder when null)
-- `amount` formatted with `currency` (e.g. `$5.00 USD`)
-- `note` (truncated to 200 chars in display, full visible on hover)
+- `displayName` (or localized `Anonymous` placeholder when null)
+- `amount` formatted via `new Intl.NumberFormat(undefined, { style:
+'currency', currency }).format(amount)`. Wrap in try/catch: if
+  `currency` is somehow invalid (the schema upper-cases on write but
+  doesn't validate), fall back to `${amount} ${currency}`.
+- `note` (truncated to 200 chars in display, full visible on hover via
+  `title` attribute)
 - `isPublic` chip — `Public` (green) or `Private` (gray)
 - `createdAt` — locale-formatted date+time
-- `transactionId` — small monospace, copyable (just text in v1, no copy
-  button)
+- `transactionId` — small monospace, plain text in v1 (no copy button)
 
 Empty / loading / error states. Pagination footer with prev/next + page
 indicator (same pattern as `UsersTable`).
@@ -334,9 +369,14 @@ non-English files.
 - `visibility: 'all'` (default) applies no `isPublic` constraint
 - `q` matches across `note`, `displayName`, `transactionId`
   case-insensitively
+- whitespace-only `q` (e.g. `'   '`) is treated as no filter
 - regex metacharacters in `q` are escaped (test with `*`, `+`, `(`)
 - combines `q` + `visibility`
 - enriches `userId`-bearing notes with `displayName` from User model
+- **regression: User join uses `.select('_id displayName username')`**
+  — pins the contract that prevents `passwordHash` leakage. Assert via
+  the mocked `userModel.find().select` mock that the exact projection
+  string is passed.
 - maps doc → `AdminPaymentNoteItem` exposing
   `transactionId`/`isPublic`/`userId`
 - `total` is independent of pagination slice

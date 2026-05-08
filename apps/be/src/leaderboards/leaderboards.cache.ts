@@ -79,6 +79,8 @@ export class LeaderboardsCacheService {
     page: number;
     pageSize: number;
     q?: string;
+    scope?: string;
+    range?: string;
     selfUserId?: string;
   }): string {
     return [
@@ -86,6 +88,8 @@ export class LeaderboardsCacheService {
       args.page,
       args.pageSize,
       args.q ?? '',
+      args.scope ?? '',
+      args.range ?? '',
       args.selfUserId ?? '',
     ].join('|');
   }

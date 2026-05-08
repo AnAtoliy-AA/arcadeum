@@ -36,4 +36,14 @@ export class GetLeaderboardDto {
   @IsString()
   @MaxLength(64)
   q?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  scope?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  range?: string;
 }

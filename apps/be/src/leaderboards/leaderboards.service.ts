@@ -80,6 +80,8 @@ export type GetLeaderboardArgs = {
   pageSize?: number;
   selfUserId?: string;
   q?: string;
+  scope?: string;
+  range?: string;
 };
 
 @Injectable()
@@ -231,12 +233,18 @@ export class LeaderboardsService {
       Math.max(1, args.pageSize ?? DEFAULT_PAGE_SIZE),
     );
     const trimmedQ = args.q?.trim();
+    // TODO(ARC-588-scope-range): scope ('global'|'friends'|...) and range
+    // ('week'|'month'|...) are accepted on the wire and bust the cache, but
+    // are not yet applied to the upstream filter. Implement once the
+    // games-history layer supports them.
 
     const cacheKey = LeaderboardsCacheService.keyFor({
       mode,
       page,
       pageSize,
       q: trimmedQ,
+      scope: args.scope,
+      range: args.range,
       selfUserId: args.selfUserId,
     });
     const cached = this.cache.get(cacheKey);
@@ -322,8 +330,6 @@ export class LeaderboardsService {
         }
       : null;
 
-    const liveMatchRanks: number[] = [];
-
     const selfRaw = args.selfUserId
       ? real.entries.find((e) => e.playerId === args.selfUserId)
       : undefined;
@@ -340,6 +346,7 @@ export class LeaderboardsService {
     const snapshot: LeaderboardSnapshotDto = {
       capturedAt: new Date().toISOString(),
       mode,
+      page,
       mythic,
       podium,
       rows,
@@ -352,7 +359,6 @@ export class LeaderboardsService {
       squads: squadsDto,
       self,
       tickerEvents: tickerEventsDto,
-      liveMatchRanks,
       topRating: top[0]?.rating ?? 0,
     };
     this.cache.set(cacheKey, snapshot);

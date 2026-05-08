@@ -45,13 +45,13 @@ export function RankTable({
   rows,
   loading,
   topRating,
-  liveMatchRanks = [],
+  selfId,
   t,
 }: {
   rows: LeaderboardPlayer[];
   loading?: boolean;
   topRating?: number;
-  liveMatchRanks?: number[];
+  selfId?: string;
   t?: PageTranslations;
 }) {
   const labels = ((t?.table as Record<string, string>) ?? {}) as Record<
@@ -171,10 +171,15 @@ export function RankTable({
             </Row>
           ))
         : rows.map((p) => {
-            const live = p.isInMatch ?? liveMatchRanks.includes(p.rank);
+            const live = p.isInMatch ?? false;
             const flag = p.countryCode ? regionFlag(p.countryCode) : null;
+            const isSelf = !!selfId && p.id === selfId;
             return (
-              <Row key={p.id} testID={`leaderboard-row-${p.rank}`}>
+              <Row
+                key={p.id}
+                testID={`leaderboard-row-${p.rank}`}
+                {...(isSelf ? { 'data-self': 'true' } : {})}
+              >
                 <View width={56}>
                   <RankBadge tier={p.tier as never}>{`#${p.rank}`}</RankBadge>
                 </View>
@@ -239,8 +244,8 @@ export function RankTable({
   );
 }
 
-function regionFlag(code: string): string {
-  if (code.length !== 2) return '';
+function regionFlag(code: string): string | null {
+  if (code.length !== 2) return null;
   const A = 0x1f1e6;
   return String.fromCodePoint(
     A + code.toUpperCase().charCodeAt(0) - 65,

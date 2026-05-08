@@ -22,6 +22,8 @@ export function useLeaderboard({
       args.selfId ?? null,
       args.accessToken ? 'authed' : 'anon',
       args.q?.trim() ?? '',
+      args.scope ?? '',
+      args.range ?? '',
     ],
     queryFn: () => getLeaderboard(args),
     onSuccess,

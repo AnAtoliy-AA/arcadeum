@@ -102,6 +102,7 @@ export type PlayerProfile = {
 export type LeaderboardSnapshot = {
   capturedAt: string;
   mode: GameMode;
+  page: number;
   mythic: MythicPlayer | null;
   podium: [LeaderboardPlayer, LeaderboardPlayer, LeaderboardPlayer] | null;
   rows: LeaderboardPlayer[];
@@ -114,6 +115,5 @@ export type LeaderboardSnapshot = {
   squads: Squad[];
   self: LeaderboardPlayer | null;
   tickerEvents: TickerEvent[];
-  liveMatchRanks: number[];
   topRating: number;
 };

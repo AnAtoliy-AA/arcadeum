@@ -118,6 +118,8 @@ export type GetLeaderboardArgs = {
   selfId?: string;
   accessToken?: string | null;
   q?: string;
+  scope?: string;
+  range?: string;
 };
 
 function shouldUseMock() {
@@ -131,12 +133,22 @@ export async function getLeaderboard(
   args: GetLeaderboardArgs = {},
 ): Promise<LeaderboardSnapshot> {
   if (!shouldUseMock()) {
-    const { mode = 'all', page = 1, pageSize = 50, accessToken, q } = args;
+    const {
+      mode = 'all',
+      page = 1,
+      pageSize = 50,
+      accessToken,
+      q,
+      scope,
+      range,
+    } = args;
     const qs = new URLSearchParams();
     qs.set('mode', mode);
     qs.set('page', String(page));
     qs.set('pageSize', String(pageSize));
     if (q && q.trim()) qs.set('q', q.trim());
+    if (scope) qs.set('scope', scope);
+    if (range) qs.set('range', range);
     return apiClient.get<LeaderboardSnapshot>(
       `/leaderboards?${qs.toString()}`,
       accessToken ? { token: accessToken } : {},
@@ -185,53 +197,66 @@ export function getMockPlayer(id: string): PlayerProfile {
   };
 }
 
+// Memoized full population per mode so mock filtering applies across the
+// whole leaderboard, not just the page slice (Bug #9).
+const POPULATION_CACHE = new Map<string, LeaderboardPlayer[]>();
+const TOTAL_POPULATION = 1248;
+
+function getPopulationFor(mode: GameMode): LeaderboardPlayer[] {
+  const cached = POPULATION_CACHE.get(mode);
+  if (cached) return cached;
+  const rng = seededRandom(mode.length * 31);
+  const pop = Array.from({ length: TOTAL_POPULATION }, (_, i) =>
+    makePlayer(rng, i + 1),
+  );
+  // Tag a few rows as in-match (single source of truth — no liveMatchRanks).
+  for (const idx of [2, 7, 14]) {
+    if (pop[idx]) pop[idx].isInMatch = true;
+  }
+  POPULATION_CACHE.set(mode, pop);
+  return pop;
+}
+
 export async function getMockLeaderboard(
   args: GetLeaderboardArgs = {},
 ): Promise<LeaderboardSnapshot> {
   const { mode = 'all', page = 1, pageSize = 50, selfId, q } = args;
-  const rng = seededRandom(mode.length * 31 + page);
 
   if (process.env.NODE_ENV !== 'production') {
     await new Promise((r) => setTimeout(r, 220));
   }
 
-  const total = 1248;
-  const start = (page - 1) * pageSize + 1;
-  const generated = Array.from({ length: pageSize }, (_, i) =>
-    makePlayer(rng, start + i),
-  );
+  const population = getPopulationFor(mode);
   const needle = q?.trim().toLowerCase();
-  const rows = needle
-    ? generated.filter((p) => p.name.toLowerCase().includes(needle))
-    : generated;
+  const filtered = needle
+    ? population.filter((p) => p.name.toLowerCase().includes(needle))
+    : population;
+  const total = filtered.length;
+  const start = (page - 1) * pageSize;
+  const rows = filtered.slice(start, start + pageSize);
 
-  const liveMatchRanks = [rows[2]?.rank, rows[7]?.rank, rows[14]?.rank].filter(
-    (r): r is number => typeof r === 'number',
-  );
-  rows.forEach((r) => {
-    if (liveMatchRanks.includes(r.rank)) r.isInMatch = true;
-  });
-
+  const top3 = population.slice(0, 3);
   const podium =
-    page === 1
-      ? ([rows[0], rows[1], rows[2]] as LeaderboardSnapshot['podium'])
+    page === 1 && top3[0] && top3[1] && top3[2]
+      ? ([top3[0], top3[1], top3[2]] as LeaderboardSnapshot['podium'])
       : null;
 
+  const rngM = seededRandom(mode.length * 17);
   const mythic =
-    page === 1 && rows[0] && rows[1]
+    page === 1 && top3[0] && top3[1]
       ? {
-          ...rows[0],
-          ratingDelta: rows[0].rating - rows[1].rating,
-          streak: 8 + Math.floor(rng() * 8),
+          ...top3[0],
+          ratingDelta: top3[0].rating - top3[1].rating,
+          streak: 8 + Math.floor(rngM() * 8),
         }
       : null;
 
-  const climbers = rows.slice(20, 25).map((p) => {
-    const delta = 8 + Math.floor(rng() * 12);
+  const climbers = population.slice(20, 25).map((p) => {
+    const delta = 8 + Math.floor(rngM() * 12);
     return { player: p, delta, fromRank: p.rank + delta, toRank: p.rank };
   });
-  const fallers = rows.slice(30, 35).map((p) => {
-    const delta = -(5 + Math.floor(rng() * 10));
+  const fallers = population.slice(30, 35).map((p) => {
+    const delta = -(5 + Math.floor(rngM() * 10));
     return { player: p, delta, fromRank: p.rank + delta, toRank: p.rank };
   });
 
@@ -263,12 +288,12 @@ export async function getMockLeaderboard(
   return {
     capturedAt: new Date().toISOString(),
     mode,
+    page,
     mythic,
     podium,
     rows,
     totalRows: total,
     topRating,
-    liveMatchRanks,
     tickerEvents,
     cup: {
       id: 'autumn_cup_2026',

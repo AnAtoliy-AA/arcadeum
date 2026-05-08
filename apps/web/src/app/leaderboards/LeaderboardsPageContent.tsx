@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useLanguage } from '@/shared/i18n/context';
@@ -46,6 +46,9 @@ import {
 import { FreshnessIndicator } from './_components/FreshnessIndicator';
 
 const PAGE_SIZE = 50;
+const SELF_ROW_FALLBACK_HEIGHT = 88;
+const SELF_ROW_PADDING = 32;
+const HEADER_OFFSET = 80;
 
 interface LeaderboardsPageContentProps {
   t?: PageTranslations;
@@ -69,16 +72,15 @@ export default function LeaderboardsPageContent({
   const [range, setRange] = useState<Range>('week');
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 300);
-  const selfRowRef = useRef<HTMLDivElement | null>(null);
+  const [selfRowHeight, setSelfRowHeight] = useState(SELF_ROW_FALLBACK_HEIGHT);
 
-  const handleLoaded = useCallback(
-    (snapshot: LeaderboardSnapshot) => {
-      setAccumulated((prev) =>
-        page === 1 ? snapshot.rows : [...prev, ...snapshot.rows],
-      );
-    },
-    [page],
-  );
+  // Bug #7: merge keyed off the snapshot's own page so we never depend on
+  // the latest React `page` state — async fetches can resolve out of order.
+  const handleLoaded = useCallback((snapshot: LeaderboardSnapshot) => {
+    setAccumulated((prev) =>
+      snapshot.page === 1 ? snapshot.rows : [...prev, ...snapshot.rows],
+    );
+  }, []);
 
   const { data, isLoading, error, refetch } = useLeaderboard({
     mode,
@@ -87,17 +89,18 @@ export default function LeaderboardsPageContent({
     page,
     pageSize: PAGE_SIZE,
     q: debouncedSearch,
+    scope,
+    range,
     onSuccess: handleLoaded,
   });
 
-  // Reset accumulator + page when the debounced query changes so we don't
-  // append filtered rows onto previously unfiltered ones.
+  // Single reset path for every filter change. setPage(1) inside a
+  // user-event handler is lint-clean; for `debouncedSearch` we still need
+  // an effect, so we synchronously reset before the next snapshot lands.
   useEffect(() => {
-    const id = setTimeout(() => {
-      setPage(1);
-      setAccumulated([]);
-    }, 0);
-    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPage(1);
+    setAccumulated([]);
   }, [debouncedSearch]);
 
   // Skip socket setup when running against the mock — there's no BE gateway
@@ -112,39 +115,48 @@ export default function LeaderboardsPageContent({
     else connectSocketsAnonymous();
   }, [accessToken, realtimeEnabled]);
 
-  // Refetch on capture broadcast and bump the freshness pulse.
+  // Bug #6: stable handlers via useCallback so the socket subscription
+  // doesn't re-bind on every render.
   const [freshnessPulseKey, setFreshnessPulseKey] = useState(0);
-  useLeaderboardSocket('leaderboards.captured', () => {
+  const handleCaptured = useCallback(() => {
     setFreshnessPulseKey((k) => k + 1);
     if (page === 1) {
-      refetch().catch(() => {});
+      refetch().catch((err: unknown) => {
+        // #20: don't swallow silently. Until we wire telemetry this at
+        // least surfaces a flapping BE in the dev console.
+        console.warn('[leaderboards] refetch on capture failed', err);
+      });
     }
-  });
+  }, [page, refetch]);
+  useLeaderboardSocket('leaderboards.captured', handleCaptured);
 
-  // Optimistic in-place update when a single entry's flags change.
-  useLeaderboardSocket('leaderboards.entry.updated', (...args: unknown[]) => {
-    const update = args[0] as
-      | {
-          userId?: string;
-          mode?: GameMode;
-          isInMatch?: boolean;
-          rating?: number;
-        }
-      | undefined;
-    if (!update?.userId) return;
-    if (update.mode && update.mode !== mode) return;
-    setAccumulated((prev) =>
-      prev.map((p) =>
-        p.id === update.userId
-          ? {
-              ...p,
-              isInMatch: update.isInMatch ?? p.isInMatch,
-              rating: update.rating ?? p.rating,
-            }
-          : p,
-      ),
-    );
-  });
+  const handleEntryUpdated = useCallback(
+    (...args: unknown[]) => {
+      const update = args[0] as
+        | {
+            userId?: string;
+            mode?: GameMode;
+            isInMatch?: boolean;
+            rating?: number;
+          }
+        | undefined;
+      if (!update?.userId) return;
+      if (update.mode && update.mode !== mode) return;
+      setAccumulated((prev) =>
+        prev.map((p) =>
+          p.id === update.userId
+            ? {
+                ...p,
+                isInMatch: update.isInMatch ?? p.isInMatch,
+                rating: update.rating ?? p.rating,
+              }
+            : p,
+        ),
+      );
+    },
+    [mode],
+  );
+  useLeaderboardSocket('leaderboards.entry.updated', handleEntryUpdated);
 
   function handleModeChange(next: GameMode) {
     setMode(next);
@@ -152,8 +164,32 @@ export default function LeaderboardsPageContent({
     setAccumulated([]);
   }
 
+  function handleScopeChange(next: Scope) {
+    setScope(next);
+    setPage(1);
+    setAccumulated([]);
+  }
+
+  function handleRangeChange(next: Range) {
+    setRange(next);
+    setPage(1);
+    setAccumulated([]);
+  }
+
+  // Blocker #3: jump to the actual self row inside the table, not the
+  // already-in-viewport pinned bar. Use window.scrollTo with a header
+  // offset (per project guideline) — scrollIntoView breaks header math.
   function jumpToSelf() {
-    selfRowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (!data?.self) return;
+    const target = document.querySelector<HTMLElement>('[data-self="true"]');
+    if (!target) {
+      // Self row isn't on the current page yet — TODO(ARC-588-self-page):
+      // compute which page contains data.self.rank and load it.
+      return;
+    }
+    const top =
+      target.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET - 16;
+    window.scrollTo({ top, behavior: 'smooth' });
   }
 
   function handleShare() {
@@ -167,6 +203,18 @@ export default function LeaderboardsPageContent({
     }
   }
 
+  // Blocker #4: measure the pinned row so the page reserves room for it
+  // even when it wraps to two lines on small viewports.
+  const selfRowMountRef = useCallback((node: HTMLDivElement | null) => {
+    if (!node || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) setSelfRowHeight(entry.contentRect.height);
+    });
+    ro.observe(node);
+    return () => ro.disconnect();
+  }, []);
+
   const heroT = (t?.hero ?? {}) as {
     eyebrow?: string;
     title?: string;
@@ -179,11 +227,20 @@ export default function LeaderboardsPageContent({
   const errorT = (t?.errorState ?? {}) as { title?: string; retry?: string };
   const loadMoreLabel = (t?.loadMore as string) ?? 'Load more';
 
-  // BE applies the `q` filter; we just render whatever the server returns.
+  // BE applies the `q` / `scope` / `range` filters; we just render whatever
+  // the server returns.
   const filteredRows = useMemo(
     () => (accumulated.length > 0 ? accumulated : (data?.rows ?? [])),
     [accumulated, data?.rows],
   );
+
+  // Bug #10: live updates can bump rating past the snapshot's topRating.
+  // Recompute max from current rows so the EnergyBar fill stays correct.
+  const maxRating = useMemo(() => {
+    let max = data?.topRating ?? 0;
+    for (const r of filteredRows) if (r.rating > max) max = r.rating;
+    return max;
+  }, [data?.topRating, filteredRows]);
 
   if (error) {
     return (
@@ -211,11 +268,14 @@ export default function LeaderboardsPageContent({
   const second = data?.rows[1];
   const third = data?.rows[2];
   const mythic = data?.mythic ?? null;
+  const paddingBottom = data?.self
+    ? Math.ceil(selfRowHeight + SELF_ROW_PADDING)
+    : 32;
 
   return (
     <PageLayout>
       <Container size="lg">
-        <YStack gap="$6" paddingBottom={120}>
+        <YStack gap="$6" paddingBottom={paddingBottom}>
           <HeroBackdrop testID="leaderboard-hero">
             <YStack gap="$3" maxWidth={680}>
               <Text
@@ -227,7 +287,12 @@ export default function LeaderboardsPageContent({
               >
                 {heroT.eyebrow ?? 'Live · Season 4'}
               </Text>
-              <Text fontSize="$10" fontWeight="900" letterSpacing={-1}>
+              <Text
+                fontSize="$10"
+                fontWeight="900"
+                letterSpacing={-1}
+                $sm={{ fontSize: '$8' }}
+              >
                 {heroT.title ?? 'Race the leaderboard.'}
               </Text>
               <Text fontSize="$4" opacity={0.85}>
@@ -270,16 +335,11 @@ export default function LeaderboardsPageContent({
                     mythicLabels.leadOver ?? '+{delta} over #2'
                   ).replace('{delta}', String(mythic.ratingDelta))}
                   recentLabel={mythicLabels.recentLabel ?? 'Last 12 matches'}
-                  challengeLabel={mythicLabels.challenge ?? '⚔ Challenge'}
-                  watchLabel={mythicLabels.watch ?? '▶ Watch replay'}
-                  followLabel={mythicLabels.follow ?? 'Follow'}
+                  // Bug #8: until the three CTAs do distinct things,
+                  // expose only "View profile" so we don't train users to
+                  // ignore the toolbar.
+                  challengeLabel={mythicLabels.cta ?? 'View profile'}
                   onChallenge={() => {
-                    router.push(`/players/${mythic.id}`);
-                  }}
-                  onWatch={() => {
-                    router.push(`/players/${mythic.id}`);
-                  }}
-                  onFollow={() => {
                     router.push(`/players/${mythic.id}`);
                   }}
                 />
@@ -330,12 +390,12 @@ export default function LeaderboardsPageContent({
 
           <LeaderboardControls
             scope={scope}
-            onScopeChange={setScope}
+            onScopeChange={handleScopeChange}
             range={range}
-            onRangeChange={setRange}
+            onRangeChange={handleRangeChange}
             search={search}
             onSearchChange={setSearch}
-            onJumpToSelf={jumpToSelf}
+            onJumpToSelf={data?.self ? jumpToSelf : undefined}
             t={t}
           />
 
@@ -348,8 +408,8 @@ export default function LeaderboardsPageContent({
               <RankTable
                 rows={filteredRows}
                 loading={isLoading && accumulated.length === 0}
-                topRating={data?.topRating}
-                liveMatchRanks={data?.liveMatchRanks}
+                topRating={maxRating}
+                selfId={data?.self?.id}
                 t={t}
               />
               {canLoadMore ? (
@@ -370,10 +430,10 @@ export default function LeaderboardsPageContent({
         </YStack>
       </Container>
       {data?.self ? (
-        <View ref={selfRowRef as never}>
+        <View ref={selfRowMountRef as never}>
           <PinnedSelfRow
             player={data.self}
-            topRating={data.topRating}
+            topRating={maxRating}
             onShare={handleShare}
             t={t}
           />

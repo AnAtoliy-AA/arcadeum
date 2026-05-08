@@ -37,20 +37,24 @@ export function PinnedSelfRow({
         zIndex: 50,
         backdropFilter: 'blur(12px)',
         boxShadow: '0 -16px 32px -8px rgba(236,72,153,0.35)',
+        // Clear iOS home-indicator safe area without overflowing on
+        // browsers that don't support env().
+        paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
       }}
       testID="leaderboard-self-row"
     >
-      <XStack alignItems="center" gap="$3" flexWrap="wrap">
+      <XStack alignItems="center" gap="$3" flexWrap="nowrap">
         <Text
           fontSize="$1"
           letterSpacing={2}
           opacity={0.6}
           textTransform="uppercase"
+          $sm={{ display: 'none' }}
         >
           {tt.pinned ?? 'Your rank'}
         </Text>
         {isAnon ? (
-          <Text fontSize="$3" opacity={0.85} flex={1}>
+          <Text fontSize="$3" opacity={0.85} flex={1} numberOfLines={1}>
             {tt.unranked ?? 'Unranked — play 5 ranked games to appear'}
           </Text>
         ) : (
@@ -58,8 +62,16 @@ export function PinnedSelfRow({
             <RankBadge tier={player.tier as never}>
               {`#${player.rank}`}
             </RankBadge>
-            <Text fontWeight="700">{player.name}</Text>
-            <View flex={1} minWidth={160} maxWidth={320}>
+            <Text fontWeight="700" numberOfLines={1}>
+              {player.name}
+            </Text>
+            {/* Hide rating viz on small screens so the row stays one line */}
+            <View
+              flex={1}
+              minWidth={120}
+              maxWidth={320}
+              $sm={{ display: 'none' }}
+            >
               <EnergyBar value={player.rating} max={max} />
             </View>
             <YStack alignItems="flex-end" $sm={{ display: 'none' }}>

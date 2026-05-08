@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useInsertionEffect, useState } from 'react';
 import { XStack, Text, View } from 'tamagui';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 
@@ -13,10 +13,9 @@ const PULSE_KEYFRAMES = `
 }
 `;
 
-if (
-  typeof document !== 'undefined' &&
-  !document.getElementById(PULSE_STYLE_ID)
-) {
+function injectPulseKeyframes() {
+  if (typeof document === 'undefined') return;
+  if (document.getElementById(PULSE_STYLE_ID)) return;
   const styleEl = document.createElement('style');
   styleEl.id = PULSE_STYLE_ID;
   styleEl.textContent = PULSE_KEYFRAMES;
@@ -56,19 +55,25 @@ export function FreshnessIndicator({
   const [now, setNow] = useState(() => Date.now());
   const [pulse, setPulse] = useState(false);
 
+  // Move keyframe injection out of module top-level so SSR-rendered routes
+  // that never mount this component don't pay the side effect.
+  useInsertionEffect(() => {
+    injectPulseKeyframes();
+  }, []);
+
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 5_000);
     return () => clearInterval(id);
   }, []);
 
+  // Cleared on each pulseKey change; the timer turns the pulse off at the
+  // end of the keyframe so the next bump can re-fire it.
   useEffect(() => {
     if (pulseKey === 0) return;
-    const on = setTimeout(() => setPulse(true), 0);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPulse(true);
     const off = setTimeout(() => setPulse(false), LIVE_PULSE_MS);
-    return () => {
-      clearTimeout(on);
-      clearTimeout(off);
-    };
+    return () => clearTimeout(off);
   }, [pulseKey]);
 
   if (!capturedAt) return null;

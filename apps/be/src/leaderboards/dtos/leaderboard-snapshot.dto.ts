@@ -93,6 +93,7 @@ export type PlayerProfileDto = {
 export type LeaderboardSnapshotDto = {
   capturedAt: string;
   mode: GameMode;
+  page: number;
   mythic: MythicPlayerDto | null;
   podium:
     | [LeaderboardPlayerDto, LeaderboardPlayerDto, LeaderboardPlayerDto]
@@ -107,6 +108,5 @@ export type LeaderboardSnapshotDto = {
   squads: SquadDto[];
   self: LeaderboardPlayerDto | null;
   tickerEvents: TickerEventDto[];
-  liveMatchRanks: number[];
   topRating: number;
 };

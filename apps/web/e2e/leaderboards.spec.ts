@@ -67,7 +67,9 @@ test.describe('Leaderboards page', () => {
     await navigateTo(page, '/leaderboards');
     const self = page.getByTestId('leaderboard-self-row');
     await expect(self).toBeVisible();
-    await page.mouse.wheel(0, 2000);
+    // mouse.wheel isn't supported in mobile WebKit; window.scrollBy works
+    // across every project we run e2e on.
+    await page.evaluate(() => window.scrollBy(0, 2000));
     await expect(self).toBeInViewport();
   });
 

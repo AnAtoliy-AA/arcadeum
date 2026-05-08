@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.4] - 2026-05-08
+
+### Added
+- add SessionRoleSync component (ARC-606) (ARC-606)
+
+### Documentation
+- apply plan-review fixes (ARC-606) (ARC-606)
+- add session role sync implementation plan (ARC-606) (ARC-606)
+- apply spec review fixes (ARC-606) (ARC-606)
+- add role-sync design spec (ARC-606) (ARC-606)
+
+
 ## [1.13.3] - 2026-05-08
 
 ### Added

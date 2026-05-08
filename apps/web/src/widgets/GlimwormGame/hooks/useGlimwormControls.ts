@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, type RefObject } from 'react';
+import { useEffect } from 'react';
 import { useGlimwormStore } from '../store/glimwormStore';
 
 interface UseGlimwormControlsOptions {
-  /** The DOM element containing the pixi canvas. */
-  canvasRef: RefObject<HTMLDivElement | null>;
+  /** The DOM element containing the pixi canvas (null while unmounted). */
+  canvasEl: HTMLDivElement | null;
   /** Returns the self-worm's head position in CSS pixels relative to the
    *  canvas root, or null if no head is currently rendered. */
   getHeadScreenPos: () => { x: number; y: number } | null;
@@ -21,10 +21,10 @@ interface UseGlimwormControlsOptions {
  * after one emit.
  */
 export function useGlimwormControls(opts: UseGlimwormControlsOptions): void {
-  const { canvasRef, getHeadScreenPos } = opts;
+  const { canvasEl, getHeadScreenPos } = opts;
 
   useEffect(() => {
-    const root = canvasRef.current;
+    const root = canvasEl;
     if (!root) return;
 
     let cursorX = 0;
@@ -92,5 +92,5 @@ export function useGlimwormControls(opts: UseGlimwormControlsOptions): void {
       window.removeEventListener('keydown', onKey);
       cancelAnimationFrame(raf);
     };
-  }, [canvasRef, getHeadScreenPos]);
+  }, [canvasEl, getHeadScreenPos]);
 }

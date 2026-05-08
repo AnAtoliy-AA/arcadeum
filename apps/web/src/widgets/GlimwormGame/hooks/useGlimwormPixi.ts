@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, type RefObject } from 'react';
+import { useEffect, useRef } from 'react';
 import { useGlimwormStore } from '../store/glimwormStore';
 import {
   createGlimwormApp,
@@ -36,7 +36,7 @@ interface UseGlimwormPixiResult {
  * controls hook to project the self-worm head into screen space.
  */
 export function useGlimwormPixi(
-  canvasRef: RefObject<HTMLDivElement | null>,
+  canvasEl: HTMLDivElement | null,
 ): UseGlimwormPixiResult {
   const appRef = useRef<GlimwormPixiApp | null>(null);
   const arenaStateRef = useRef<ArenaRenderState | null>(null);
@@ -46,7 +46,7 @@ export function useGlimwormPixi(
   const fxStateRef = useRef<FxRenderState | null>(null);
 
   useEffect(() => {
-    const root = canvasRef.current;
+    const root = canvasEl;
     if (!root) return;
 
     let alive = true;
@@ -140,7 +140,7 @@ export function useGlimwormPixi(
       appRef.current?.destroy();
       appRef.current = null;
     };
-  }, [canvasRef]);
+  }, [canvasEl]);
 
   const getHeadScreenPos = (): { x: number; y: number } | null => {
     const ga = appRef.current;

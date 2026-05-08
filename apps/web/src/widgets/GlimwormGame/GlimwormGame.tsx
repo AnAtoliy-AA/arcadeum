@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useGlimwormSocket } from './hooks/useGlimwormSocket';
 import { useGlimwormPixi } from './hooks/useGlimwormPixi';
 import { useGlimwormControls } from './hooks/useGlimwormControls';
@@ -15,11 +15,19 @@ export default function GlimwormGame(
   props: BaseGameWidgetProps,
 ): React.JSX.Element {
   const { roomId, currentUserId, isHost, room } = props;
-  const canvasRef = useRef<HTMLDivElement | null>(null);
+
+  // State-backed callback ref: when the canvas div is mounted (after the
+  // lobby branch ends), `setCanvasEl` flips the state and the pixi/controls
+  // hooks' effects re-run with a real DOM node. A plain ref wouldn't work
+  // here because its identity doesn't change across the lobby→playing flip.
+  const [canvasEl, setCanvasEl] = useState<HTMLDivElement | null>(null);
+  const canvasRef = useCallback((el: HTMLDivElement | null) => {
+    setCanvasEl(el);
+  }, []);
 
   useGlimwormSocket({ roomId, userId: currentUserId });
-  const { getHeadScreenPos } = useGlimwormPixi(canvasRef);
-  useGlimwormControls({ canvasRef, getHeadScreenPos });
+  const { getHeadScreenPos } = useGlimwormPixi(canvasEl);
+  useGlimwormControls({ canvasEl, getHeadScreenPos });
 
   // Auto-join Glimworm session on mount so the BE knows about this player.
   useEffect(() => {

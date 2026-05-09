@@ -1,7 +1,10 @@
 import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { ChatScope } from './engines/base/game-engine.interface';
 import { GameRoomsService } from './rooms/game-rooms.service';
-import { GameSessionsService } from './sessions/game-sessions.service';
+import {
+  GameSessionsService,
+  GameSessionSummary,
+} from './sessions/game-sessions.service';
 import { GameHistoryService } from './history/game-history.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
@@ -68,16 +71,10 @@ export class GamesService {
     return room;
   }
 
-  /**
-   * List game rooms
-   */
   async listRooms(filters: ListRoomsFilters = {}, viewerId?: string) {
     return this.roomsService.listRooms(filters, viewerId);
   }
 
-  /**
-   * Get a specific room
-   */
   async getRoom(roomId: string, userId?: string) {
     return this.roomsService.getRoom(roomId, userId);
   }
@@ -279,21 +276,16 @@ export class GamesService {
         session.roomId,
       );
       await this.leaderboardSync.syncInMatch(players, false);
+      await this.payoutGameWin(session);
     }
 
     return session;
   }
 
-  /**
-   * Get sanitized session state for a player
-   */
   async getSanitizedState(sessionId: string, playerId: string) {
     return this.sessionsService.getSanitizedStateForPlayer(sessionId, playerId);
   }
 
-  /**
-   * Get available actions for a player
-   */
   async getAvailableActions(sessionId: string, playerId: string) {
     return this.sessionsService.getAvailableActions(sessionId, playerId);
   }
@@ -317,30 +309,18 @@ export class GamesService {
     return this.historyService.listHistoryForUser(userId, options);
   }
 
-  /**
-   * Get a specific history entry
-   */
   async getHistoryEntry(userId: string, roomId: string) {
     return this.historyService.getHistoryEntry(roomId, userId);
   }
 
-  /**
-   * Hide a history entry
-   */
   async hideHistoryEntry(userId: string, roomId: string) {
     return this.historyService.hideHistoryEntry(userId, roomId);
   }
 
-  /**
-   * Get player statistics
-   */
   async getPlayerStats(userId: string) {
     return this.historyService.getPlayerStats(userId);
   }
 
-  /**
-   * Get leaderboard of top players
-   */
   async getLeaderboard(limit?: number, offset?: number, gameId?: string) {
     return this.historyService.getLeaderboard(limit, offset, gameId);
   }
@@ -368,23 +348,14 @@ export class GamesService {
     );
   }
 
-  /**
-   * Decline a rematch invitation
-   */
   async declineInvitation(roomId: string, userId: string): Promise<void> {
     return this.rematchService.declineInvitation(roomId, userId);
   }
 
-  /**
-   * Block re-invites for a specific rematch room
-   */
   async blockRematchRoom(roomId: string, userId: string): Promise<void> {
     return this.rematchService.blockRematchRoom(roomId, userId);
   }
 
-  /**
-   * Re-invite players to a rematch
-   */
   async reinvitePlayers(
     roomId: string,
     hostId: string,
@@ -424,9 +395,6 @@ export class GamesService {
 
   // ========== Utility Operations ==========
 
-  /**
-   * Find session by room ID
-   */
   async findSessionByRoom(roomId: string) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (session) {
@@ -439,9 +407,6 @@ export class GamesService {
     return session;
   }
 
-  /**
-   * Ensure user is a participant in a room
-   */
   async ensureParticipant(roomId: string, userId: string) {
     const added = await this.roomsService.ensureParticipant(roomId, userId);
     const room = await this.roomsService.getRoom(roomId, userId);
@@ -453,16 +418,10 @@ export class GamesService {
     return room;
   }
 
-  /**
-   * Validate user IDs
-   */
   async validateUserIds(userIds: string[]) {
     return this.utilities.validateUserIds(userIds);
   }
 
-  /**
-   * Update room options
-   */
   async updateRoomOptions(
     roomId: string,
     userId: string,
@@ -477,9 +436,6 @@ export class GamesService {
     return room;
   }
 
-  /**
-   * Reorder participants in a room
-   */
   async reorderParticipants(
     roomId: string,
     userId: string,
@@ -495,5 +451,34 @@ export class GamesService {
     this.realtimeService.emitRoomUpdate(room);
 
     return room;
+  }
+
+  async payoutGameWin(session: GameSessionSummary): Promise<void> {
+    try {
+      const sessionId = session.id;
+      const winners = await this.sessionsService.getWinners(sessionId);
+      if (winners.length === 0) return;
+
+      for (const winnerId of winners) {
+        try {
+          await this.wallet.credit(
+            winnerId,
+            'coins',
+            this.gameWinCoinReward,
+            'game_win',
+            `game-${sessionId}-payout-${winnerId}`,
+            { sessionId, gameId: session.gameId },
+          );
+        } catch (err) {
+          this.logger.warn(
+            `Game-win payout failed for session ${sessionId} winner ${winnerId}: ${(err as Error).message}`,
+          );
+        }
+      }
+    } catch (err) {
+      this.logger.warn(
+        `Failed to determine winners for session ${session.id}: ${(err as Error).message}`,
+      );
+    }
   }
 }

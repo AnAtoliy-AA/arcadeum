@@ -211,6 +211,84 @@ describe('WalletService', () => {
       expect(r.items).toHaveLength(1);
       expect(r.nextCursor).toBe(null);
     });
+
+    it('passes currency filter to find()', async () => {
+      const find = jest.fn().mockReturnValue({
+        sort: () => ({ limit: () => ({ lean: () => Promise.resolve([]) }) }),
+      });
+      txModel.find = find;
+      await service.getHistory(userId, { currency: 'gems', limit: 5 });
+      const calls = find.mock.calls as unknown[][];
+      const filter = calls[0][0] as Record<string, unknown>;
+      expect(filter.currency).toBe('gems');
+      expect(filter.userId).toBeInstanceOf(Types.ObjectId);
+    });
+
+    it('emits a non-null nextCursor when the page is full and round-trips it back', async () => {
+      const lastId = new Types.ObjectId();
+      const lastCreatedAt = new Date('2026-05-09T01:00:00Z');
+      const olderId = new Types.ObjectId();
+      const items = [
+        makeTxDoc({
+          _id: lastId,
+          userId: new Types.ObjectId(userId),
+          currency: 'coins',
+          delta: 5,
+          balanceAfter: 5,
+          reason: 'admin_grant',
+          idempotencyKey: 'a',
+          createdAt: lastCreatedAt,
+        }),
+        makeTxDoc({
+          _id: olderId,
+          userId: new Types.ObjectId(userId),
+          currency: 'coins',
+          delta: 1,
+          balanceAfter: 4,
+          reason: 'admin_grant',
+          idempotencyKey: 'b',
+          createdAt: new Date('2026-05-09T00:30:00Z'),
+        }),
+        // 3rd item: triggers hasMore (limit + 1).
+        makeTxDoc({
+          _id: new Types.ObjectId(),
+          userId: new Types.ObjectId(userId),
+          currency: 'coins',
+          delta: 1,
+          balanceAfter: 3,
+          reason: 'admin_grant',
+          idempotencyKey: 'c',
+          createdAt: new Date('2026-05-09T00:00:00Z'),
+        }),
+      ];
+      const find = jest.fn().mockReturnValue({
+        sort: () => ({ limit: () => ({ lean: () => Promise.resolve(items) }) }),
+      });
+      txModel.find = find;
+
+      const first = await service.getHistory(userId, { limit: 2 });
+
+      expect(first.items).toHaveLength(2);
+      expect(first.nextCursor).not.toBe(null);
+
+      // Hand the cursor back in; the service should decode it and add an
+      // (createdAt < X) OR (createdAt = X AND _id < Y) filter clause.
+      find.mockReturnValueOnce({
+        sort: () => ({ limit: () => ({ lean: () => Promise.resolve([]) }) }),
+      });
+      await service.getHistory(userId, {
+        cursor: first.nextCursor as string,
+        limit: 2,
+      });
+      const secondCalls = find.mock.calls as unknown[][];
+      const secondFilter = secondCalls[1][0] as {
+        $or?: { createdAt: unknown; _id?: unknown }[];
+      };
+      expect(Array.isArray(secondFilter.$or)).toBe(true);
+      expect(secondFilter.$or).toHaveLength(2);
+      // Tie-break clause must include _id.
+      expect(secondFilter.$or?.[1]._id).toBeDefined();
+    });
   });
 
   describe('idempotency', () => {

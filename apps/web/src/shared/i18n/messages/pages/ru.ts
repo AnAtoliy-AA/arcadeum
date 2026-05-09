@@ -1,5 +1,7 @@
 import { adminAnnouncementsRu } from './admin-announcements/ru';
 import { adminTournamentsRu } from './admin-tournaments/ru';
+import { walletRu } from './wallet/ru';
+import { adminWalletRu } from './admin-wallet/ru';
 
 export const ru = {
   admin: {
@@ -102,6 +104,7 @@ export const ru = {
     },
     announcements: adminAnnouncementsRu,
     tournaments: adminTournamentsRu,
+    wallet: adminWalletRu,
   },
   tournaments: {
     title: 'Турниры',
@@ -449,4 +452,5 @@ export const ru = {
     ],
     comingSoon: 'Магазин наград скоро откроется!',
   },
+  wallet: walletRu,
 };

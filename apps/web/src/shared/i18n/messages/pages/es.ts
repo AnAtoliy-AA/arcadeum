@@ -1,5 +1,7 @@
 import { adminAnnouncementsEs } from './admin-announcements/es';
 import { adminTournamentsEs } from './admin-tournaments/es';
+import { walletEs } from './wallet/es';
+import { adminWalletEs } from './admin-wallet/es';
 
 export const es = {
   admin: {
@@ -96,6 +98,7 @@ export const es = {
     },
     announcements: adminAnnouncementsEs,
     tournaments: adminTournamentsEs,
+    wallet: adminWalletEs,
   },
   tournaments: {
     title: 'Torneos',
@@ -446,4 +449,5 @@ export const es = {
     ],
     comingSoon: '¡La tienda de recompensas llegará pronto!',
   },
+  wallet: walletEs,
 };

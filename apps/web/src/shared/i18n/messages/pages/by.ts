@@ -1,5 +1,7 @@
 import { adminAnnouncementsBy } from './admin-announcements/by';
 import { adminTournamentsBy } from './admin-tournaments/by';
+import { walletBy } from './wallet/by';
+import { adminWalletBy } from './admin-wallet/by';
 
 export const by = {
   admin: {
@@ -100,6 +102,7 @@ export const by = {
     },
     announcements: adminAnnouncementsBy,
     tournaments: adminTournamentsBy,
+    wallet: adminWalletBy,
   },
   tournaments: {
     title: 'Турніры',
@@ -448,4 +451,5 @@ export const by = {
     ],
     comingSoon: 'Крама ўзнагарод хутка адкрыецца!',
   },
+  wallet: walletBy,
 };

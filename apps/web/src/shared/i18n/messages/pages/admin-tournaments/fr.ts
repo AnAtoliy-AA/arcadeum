@@ -1,0 +1,80 @@
+export const adminTournamentsFr = {
+  title: 'Tournois',
+  actions: {
+    new: '+ Nouveau',
+    edit: 'Modifier',
+    delete: 'Supprimer',
+    cancel: 'Annuler',
+    save: 'Enregistrer',
+    transition: 'Transition',
+  },
+  filters: {
+    searchPlaceholder: 'Rechercher par nom…',
+    status: { label: 'Tous les statuts' },
+    gameType: { label: 'Jeu', all: 'Tous les jeux' },
+  },
+  table: {
+    name: 'Nom',
+    gameType: 'Jeu',
+    scheduled: 'Programmé',
+    status: 'Statut',
+    registered: 'Inscrits',
+    createdBy: 'Créé par',
+    actions: 'Actions',
+  },
+  status: {
+    scheduled: 'Programmé',
+    registration_open: 'Inscription ouverte',
+    live: 'En cours',
+    completed: 'Terminé',
+    cancelled: 'Annulé',
+  },
+  gameType: {
+    critical_v1: 'Critical',
+    sea_battle_v1: 'Bataille navale',
+  },
+  form: {
+    sections: { settings: 'Paramètres', content: 'Contenu' },
+    gameType: 'Jeu',
+    scheduledAt: 'Date du tournoi',
+    registrationOpensAt: 'Ouverture des inscriptions',
+    registrationClosesAt: 'Clôture des inscriptions',
+    optional: 'facultatif',
+    maxPlayers: 'Max joueurs',
+    prizeDescription: 'Prix',
+    tabs: {
+      en: 'English',
+      ru: 'Русский',
+      es: 'Español',
+      fr: 'Français',
+      by: 'Беларуская',
+    },
+    name: 'Nom',
+    description: 'Description (facultatif)',
+    errors: {
+      nameRequired: 'Le nom en anglais est requis.',
+      capacityRange: 'La capacité doit être entre 2 et 256.',
+      windowOrder:
+        "La clôture des inscriptions doit être postérieure à l'ouverture.",
+    },
+  },
+  transitionPrompt: {
+    title: 'Faire passer « {name} » à :',
+    resultLabel: 'Texte de résultat (facultatif)',
+    confirm: 'Confirmer',
+    cancel: 'Annuler',
+  },
+  confirm: {
+    delete: 'Supprimer le tournoi « {name} » ? Cette action est irréversible.',
+  },
+  empty: {
+    noResults: 'Aucun tournoi ne correspond à vos filtres.',
+    noTournaments: 'Aucun tournoi. Cliquez sur + Nouveau pour en créer un.',
+  },
+  pagination: {
+    prev: 'Précédent',
+    next: 'Suivant',
+    of: 'Page {current} sur {total}',
+  },
+  totalLabel: 'Affichage {start}–{end} sur {total}',
+};

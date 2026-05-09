@@ -9,5 +9,5 @@ export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
   { id: 'users', href: '/admin/users', enabled: true },
   { id: 'payments', href: '/admin/payments', enabled: true },
   { id: 'announcements', href: '/admin/announcements', enabled: true },
-  { id: 'tournaments', href: null, enabled: false },
+  { id: 'tournaments', href: '/admin/tournaments', enabled: true },
 ];

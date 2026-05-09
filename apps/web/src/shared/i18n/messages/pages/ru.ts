@@ -135,11 +135,29 @@ export const ru = {
       card: {
         registered: 'Записано {count} / {max}',
         prize: 'Приз',
+        entryFee: 'Взнос',
+        prizePool: 'Призовой фонд',
         registerCta: 'Зарегистрироваться',
         unregisterCta: 'Отменить регистрацию',
         signInToRegister: 'Войдите, чтобы зарегистрироваться',
         full: 'В лист ожидания',
         registrationClosed: 'Регистрация закрыта',
+        confirmRegister: {
+          title: 'Подтвердить участие',
+          body: 'Этот турнир стоит {fee} монет. Ваш баланс: {balance} монет.',
+          confirm: 'Оплатить и зарегистрироваться',
+          cancel: 'Отмена',
+        },
+        confirmUnregister: {
+          refund: 'Вам будет возвращено {amount} монет.',
+          title: 'Отмена регистрации',
+          body: 'Вы уверены?',
+          confirm: 'Да, отменить',
+          cancelButton: 'Нет, остаться',
+        },
+        errors: {
+          insufficientFunds: 'Недостаточно монет для участия.',
+        },
         effectiveStatus: {
           scheduled: 'Запланирован',
           registration_open: 'Регистрация открыта',

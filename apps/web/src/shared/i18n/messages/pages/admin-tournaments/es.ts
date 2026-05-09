@@ -42,6 +42,8 @@ export const adminTournamentsEs = {
     optional: 'opcional',
     maxPlayers: 'Máx. jugadores',
     prizeDescription: 'Premio',
+    entryFeeLabel: 'Cuota de entrada (monedas)',
+    prizePoolLabel: 'Premio en monedas',
     tabs: {
       en: 'English',
       ru: 'Русский',
@@ -55,6 +57,20 @@ export const adminTournamentsEs = {
       nameRequired: 'Se requiere un nombre en inglés.',
       capacityRange: 'La capacidad debe estar entre 2 y 256.',
       windowOrder: 'El cierre de inscripción debe ser posterior a la apertura.',
+    },
+  },
+  markComplete: {
+    button: 'Marcar como completado',
+    dialog: {
+      title: 'Seleccionar ganador',
+      body: '¿Quién ganó este torneo?',
+      confirm: 'Marcar como completado',
+      cancel: 'Cancelar',
+    },
+    errors: {
+      notRegistered: 'El usuario seleccionado no está inscrito en este torneo.',
+      notLive: 'El torneo debe estar en curso para marcarlo como completado.',
+      generic: 'No se pudo completar. Por favor, inténtalo de nuevo.',
     },
   },
   transitionPrompt: {

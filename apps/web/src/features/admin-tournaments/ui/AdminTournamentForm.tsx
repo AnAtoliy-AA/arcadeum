@@ -22,6 +22,8 @@ export interface AdminTournamentFormLabels {
   optional: string;
   maxPlayers: string;
   prizeDescription: string;
+  entryFeeLabel: string;
+  prizePoolLabel: string;
   tabs: Record<TournamentLocale, string>;
   name: string;
   description: string;
@@ -45,6 +47,8 @@ interface FormState {
   registrationClosesAt: string;
   maxPlayers: string;
   prizeDescription: string;
+  entryFeeCoins: string;
+  prizePoolCoins: string;
   content: Record<TournamentLocale, TournamentLocaleContent>;
   activeLocale: TournamentLocale;
 }
@@ -81,6 +85,8 @@ function toFormState(initial: AdminTournamentItem | null): FormState {
       : '',
     maxPlayers: String(initial?.maxPlayers ?? 16),
     prizeDescription: initial?.prizeDescription ?? '',
+    entryFeeCoins: String(initial?.entryFeeCoins ?? 0),
+    prizePoolCoins: String(initial?.prizePoolCoins ?? 0),
     content,
     activeLocale: 'en',
   };
@@ -114,6 +120,8 @@ function toBody(s: FormState): CreateTournamentBody {
     prizeDescription: s.prizeDescription.trim()
       ? s.prizeDescription.trim()
       : null,
+    entryFeeCoins: Math.max(0, parseInt(s.entryFeeCoins, 10) || 0),
+    prizePoolCoins: Math.max(0, parseInt(s.prizePoolCoins, 10) || 0),
     content: content as CreateTournamentBody['content'],
   };
 }
@@ -222,6 +230,32 @@ export function AdminTournamentForm({
             setState((s) => ({ ...s, maxPlayers: e.target.value }))
           }
           style={{ ...INPUT_STYLE, width: 100 }}
+        />
+
+        <Text>{labels.entryFeeLabel}</Text>
+        <input
+          type="number"
+          data-testid="form-entryFeeCoins"
+          min={0}
+          max={1_000_000}
+          value={state.entryFeeCoins}
+          onChange={(e) =>
+            setState((s) => ({ ...s, entryFeeCoins: e.target.value }))
+          }
+          style={{ ...INPUT_STYLE, width: 120 }}
+        />
+
+        <Text>{labels.prizePoolLabel}</Text>
+        <input
+          type="number"
+          data-testid="form-prizePoolCoins"
+          min={0}
+          max={1_000_000}
+          value={state.prizePoolCoins}
+          onChange={(e) =>
+            setState((s) => ({ ...s, prizePoolCoins: e.target.value }))
+          }
+          style={{ ...INPUT_STYLE, width: 120 }}
         />
       </XStack>
 

@@ -42,6 +42,8 @@ export const adminTournamentsFr = {
     optional: 'facultatif',
     maxPlayers: 'Max joueurs',
     prizeDescription: 'Prix',
+    entryFeeLabel: "Frais d'entrée (pièces)",
+    prizePoolLabel: 'Cagnotte (pièces)',
     tabs: {
       en: 'English',
       ru: 'Русский',
@@ -56,6 +58,21 @@ export const adminTournamentsFr = {
       capacityRange: 'La capacité doit être entre 2 et 256.',
       windowOrder:
         "La clôture des inscriptions doit être postérieure à l'ouverture.",
+    },
+  },
+  markComplete: {
+    button: 'Marquer comme terminé',
+    dialog: {
+      title: 'Sélectionner le gagnant',
+      body: 'Qui a remporté ce tournoi ?',
+      confirm: 'Marquer comme terminé',
+      cancel: 'Annuler',
+    },
+    errors: {
+      notRegistered:
+        "L'utilisateur sélectionné n'est pas inscrit à ce tournoi.",
+      notLive: 'Le tournoi doit être en cours pour être marqué comme terminé.',
+      generic: 'Impossible de terminer le tournoi. Veuillez réessayer.',
     },
   },
   transitionPrompt: {

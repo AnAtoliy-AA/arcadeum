@@ -60,6 +60,41 @@ export const by = {
         generic: 'Нешта пайшло не так. Калі ласка, паспрабуйце яшчэ раз.',
       },
     },
+    payments: {
+      title: 'Плацяжы',
+      search: { placeholder: 'Пошук па нататцы, імі або ID транзакцыі' },
+      filter: {
+        visibility: {
+          label: 'Бачнасць',
+          all: 'Усе',
+          public: 'Толькі публічныя',
+          private: 'Толькі прыватныя',
+        },
+      },
+      table: {
+        user: 'Карыстальнік',
+        amount: 'Сума',
+        note: 'Нататка',
+        visibility: 'Бачнасць',
+        createdAt: 'Створана',
+        transactionId: 'Транзакцыя',
+      },
+      chip: {
+        public: 'Публічная',
+        private: 'Прыватная',
+        anonymous: 'Ананімны',
+      },
+      empty: {
+        noResults: 'Няма плацяжоў па фільтру.',
+        noNotes: 'Плацяжоў пакуль няма.',
+      },
+      pagination: {
+        prev: 'Назад',
+        next: 'Наперад',
+        of: 'Старонка {current} з {total}',
+      },
+      totalLabel: '{total} плацяжоў',
+    },
   },
   tournaments: {
     title: 'Турніры',

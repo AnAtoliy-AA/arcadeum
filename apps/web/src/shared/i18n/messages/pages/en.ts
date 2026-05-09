@@ -60,6 +60,41 @@ export const en = {
         generic: 'Something went wrong. Please try again.',
       },
     },
+    payments: {
+      title: 'Payments',
+      search: { placeholder: 'Search by note, name, or transaction id' },
+      filter: {
+        visibility: {
+          label: 'Visibility',
+          all: 'All',
+          public: 'Public only',
+          private: 'Private only',
+        },
+      },
+      table: {
+        user: 'User',
+        amount: 'Amount',
+        note: 'Note',
+        visibility: 'Visibility',
+        createdAt: 'Created',
+        transactionId: 'Transaction',
+      },
+      chip: {
+        public: 'Public',
+        private: 'Private',
+        anonymous: 'Anonymous',
+      },
+      empty: {
+        noResults: 'No payment notes match your filters.',
+        noNotes: 'No payment notes yet.',
+      },
+      pagination: {
+        prev: 'Previous',
+        next: 'Next',
+        of: 'Page {current} of {total}',
+      },
+      totalLabel: '{total} notes',
+    },
   },
   tournaments: {
     title: 'Tournaments',

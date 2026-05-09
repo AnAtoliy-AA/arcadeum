@@ -7,6 +7,32 @@ import {
 } from './schemas/payment-note.schema';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { User, UserDocument } from '../auth/schemas/user.schema';
+import { escapeRegExp } from '../admin/lib/escape-regexp';
+import type {
+  AdminPaymentNoteItem,
+  AdminPaymentNotesResponse,
+} from './interfaces/admin-payment-note.interface';
+import type { AdminNotesVisibility } from './dto/list-admin-notes.dto';
+
+interface LeanPaymentNote {
+  _id: Types.ObjectId;
+  note: string;
+  amount: number;
+  currency: string;
+  userId?: Types.ObjectId | null;
+  displayName?: string | null;
+  transactionId: string;
+  isPublic: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface ListForAdminArgs {
+  page?: number;
+  pageSize?: number;
+  q?: string;
+  visibility?: AdminNotesVisibility;
+}
 
 export interface NoteWithUser {
   id: string;
@@ -117,5 +143,78 @@ export class PaymentNotesService {
       limit: safeLimit,
       totalPages: Math.ceil(total / safeLimit),
     };
+  }
+
+  async listForAdmin(
+    args: ListForAdminArgs,
+  ): Promise<AdminPaymentNotesResponse> {
+    const page = args.page ?? 1;
+    const pageSize = args.pageSize ?? 50;
+    const visibility = args.visibility ?? 'all';
+
+    const filter: Record<string, unknown> = {};
+    if (visibility === 'public') filter.isPublic = true;
+    else if (visibility === 'private') filter.isPublic = false;
+
+    const trimmed = args.q?.trim();
+    if (trimmed) {
+      const escaped = escapeRegExp(trimmed);
+      filter.$or = [
+        { note: { $regex: escaped, $options: 'i' } },
+        { displayName: { $regex: escaped, $options: 'i' } },
+        { transactionId: { $regex: escaped, $options: 'i' } },
+      ];
+    }
+
+    const skip = (page - 1) * pageSize;
+
+    const [docs, total] = await Promise.all([
+      this.noteModel
+        .find(filter)
+        .sort({ createdAt: -1, _id: -1 })
+        .skip(skip)
+        .limit(pageSize)
+        .lean<LeanPaymentNote[]>(),
+      this.noteModel.countDocuments(filter),
+    ]);
+
+    const userIds = docs
+      .filter(
+        (d): d is LeanPaymentNote & { userId: Types.ObjectId } =>
+          d.userId !== null && d.userId !== undefined,
+      )
+      .map((d) => d.userId);
+
+    const users =
+      userIds.length > 0
+        ? await this.userModel
+            .find({ _id: { $in: userIds } })
+            .select('_id displayName username')
+            .lean()
+            .exec()
+        : [];
+
+    const userMap = new Map(
+      users.map((u) => [
+        (u._id as Types.ObjectId).toString(),
+        u.displayName || u.username,
+      ]),
+    );
+
+    const items: AdminPaymentNoteItem[] = docs.map((d) => ({
+      id: d._id.toString(),
+      note: d.note,
+      amount: d.amount,
+      currency: d.currency,
+      displayName: d.userId
+        ? userMap.get(d.userId.toString()) || null
+        : (d.displayName ?? null),
+      createdAt: d.createdAt.toISOString(),
+      transactionId: d.transactionId,
+      isPublic: d.isPublic,
+      userId: d.userId ? d.userId.toString() : null,
+    }));
+
+    return { items, total, page, pageSize };
   }
 }

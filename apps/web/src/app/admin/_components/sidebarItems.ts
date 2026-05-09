@@ -7,7 +7,7 @@ export interface AdminSidebarItem {
 export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
   { id: 'dashboard', href: '/admin', enabled: true },
   { id: 'users', href: '/admin/users', enabled: true },
-  { id: 'payments', href: null, enabled: false },
+  { id: 'payments', href: '/admin/payments', enabled: true },
   { id: 'announcements', href: '/admin/announcements', enabled: true },
   { id: 'tournaments', href: null, enabled: false },
 ];

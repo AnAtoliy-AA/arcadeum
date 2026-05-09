@@ -1,3 +1,5 @@
+import { adminAnnouncementsEn } from './admin-announcements/en';
+
 export const en = {
   admin: {
     title: 'Admin',
@@ -60,100 +62,42 @@ export const en = {
         generic: 'Something went wrong. Please try again.',
       },
     },
-    announcements: {
-      title: 'Announcements',
-      actions: {
-        new: '+ New',
-        edit: 'Edit',
-        delete: 'Delete',
-        cancel: 'Cancel',
-        save: 'Save',
-      },
-      filters: {
-        searchPlaceholder: 'Search by title…',
-        status: {
-          label: 'Status',
-          all: 'All statuses',
-          active: 'Active',
-          scheduled: 'Scheduled',
-          expired: 'Expired',
-        },
-        severity: {
-          label: 'Severity',
-          all: 'All severities',
-          info: 'Info',
-          warning: 'Warning',
-          critical: 'Critical',
+    payments: {
+      title: 'Payments',
+      search: { placeholder: 'Search by note, name, or transaction id' },
+      filter: {
+        visibility: {
+          label: 'Visibility',
+          all: 'All',
+          public: 'Public only',
+          private: 'Private only',
         },
       },
       table: {
-        title: 'Title',
-        severity: 'Severity',
-        audience: 'Audience',
-        window: 'Window',
-        createdBy: 'Created by',
-        actions: 'Actions',
-        nowPill: 'Now',
+        user: 'User',
+        amount: 'Amount',
+        note: 'Note',
+        visibility: 'Visibility',
+        createdAt: 'Created',
+        transactionId: 'Transaction',
       },
-      severity: {
-        info: 'Info',
-        warning: 'Warning',
-        critical: 'Critical',
-      },
-      audience: {
-        all: 'All',
-        authenticated: 'Signed in',
+      chip: {
+        public: 'Public',
+        private: 'Private',
         anonymous: 'Anonymous',
       },
-      status: {
-        active: 'Active',
-        scheduled: 'Scheduled',
-        expired: 'Expired',
-      },
-      windowLabels: {
-        now: 'Now',
-        forever: 'Forever',
-        always: 'Always',
-      },
-      form: {
-        sections: { settings: 'Settings', content: 'Content' },
-        severity: 'Severity',
-        audience: 'Audience',
-        startsAt: 'Starts at',
-        endsAt: 'Ends at',
-        immediately: 'Immediately',
-        forever: 'No expiry',
-        tabs: {
-          en: 'English',
-          ru: 'Русский',
-          es: 'Español',
-          fr: 'Français',
-          by: 'Беларуская',
-        },
-        title: 'Title',
-        body: 'Body (optional)',
-        ctaLabel: 'CTA label (optional)',
-        ctaHref: 'CTA URL (optional)',
-        errors: {
-          titleRequired: 'English title is required.',
-          endsBeforeStarts: 'End time must be after start time.',
-          invalidUrl: 'Must be an https URL or a path starting with /.',
-        },
-      },
-      confirm: {
-        delete: "Delete announcement '{title}'? This cannot be undone.",
-      },
       empty: {
-        noResults: 'No announcements match your filters.',
-        noAnnouncements: 'No announcements yet. Click + New to create one.',
+        noResults: 'No payment notes match your filters.',
+        noNotes: 'No payment notes yet.',
       },
       pagination: {
         prev: 'Previous',
         next: 'Next',
         of: 'Page {current} of {total}',
       },
-      totalLabel: 'Showing {start}–{end} of {total}',
+      totalLabel: '{total} notes',
     },
+    announcements: adminAnnouncementsEn,
   },
   tournaments: {
     title: 'Tournaments',

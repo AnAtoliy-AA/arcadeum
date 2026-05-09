@@ -1,3 +1,5 @@
+import { adminAnnouncementsEs } from './admin-announcements/es';
+
 export const es = {
   admin: {
     title: 'Administración',
@@ -60,101 +62,38 @@ export const es = {
         generic: 'Algo salió mal. Inténtalo de nuevo.',
       },
     },
-    announcements: {
-      title: 'Anuncios',
-      actions: {
-        new: '+ Nuevo',
-        edit: 'Editar',
-        delete: 'Eliminar',
-        cancel: 'Cancelar',
-        save: 'Guardar',
-      },
-      filters: {
-        searchPlaceholder: 'Buscar por título…',
-        status: {
-          label: 'Estado',
-          all: 'Todos los estados',
-          active: 'Activos',
-          scheduled: 'Programados',
-          expired: 'Expirados',
-        },
-        severity: {
-          label: 'Severidad',
-          all: 'Todas',
-          info: 'Información',
-          warning: 'Advertencia',
-          critical: 'Crítico',
+    payments: {
+      title: 'Pagos',
+      search: { placeholder: 'Buscar por nota, nombre o ID de transacción' },
+      filter: {
+        visibility: {
+          label: 'Visibilidad',
+          all: 'Todos',
+          public: 'Solo públicos',
+          private: 'Solo privados',
         },
       },
       table: {
-        title: 'Título',
-        severity: 'Severidad',
-        audience: 'Audiencia',
-        window: 'Ventana',
-        createdBy: 'Creado por',
-        actions: 'Acciones',
-        nowPill: 'Ahora',
+        user: 'Usuario',
+        amount: 'Monto',
+        note: 'Nota',
+        visibility: 'Visibilidad',
+        createdAt: 'Creado',
+        transactionId: 'Transacción',
       },
-      severity: {
-        info: 'Información',
-        warning: 'Advertencia',
-        critical: 'Crítico',
-      },
-      audience: {
-        all: 'Todos',
-        authenticated: 'Conectados',
-        anonymous: 'Anónimos',
-      },
-      status: {
-        active: 'Activo',
-        scheduled: 'Programado',
-        expired: 'Expirado',
-      },
-      windowLabels: {
-        now: 'Ahora',
-        forever: 'Sin fin',
-        always: 'Siempre',
-      },
-      form: {
-        sections: { settings: 'Ajustes', content: 'Contenido' },
-        severity: 'Severidad',
-        audience: 'Audiencia',
-        startsAt: 'Inicio',
-        endsAt: 'Fin',
-        immediately: 'Inmediatamente',
-        forever: 'Sin caducidad',
-        tabs: {
-          en: 'English',
-          ru: 'Русский',
-          es: 'Español',
-          fr: 'Français',
-          by: 'Беларуская',
-        },
-        title: 'Título',
-        body: 'Cuerpo (opcional)',
-        ctaLabel: 'Etiqueta CTA (opcional)',
-        ctaHref: 'URL CTA (opcional)',
-        errors: {
-          titleRequired: 'Se requiere un título en inglés.',
-          endsBeforeStarts: 'El fin debe ser posterior al inicio.',
-          invalidUrl: 'Debe ser una URL https o una ruta que empiece por /.',
-        },
-      },
-      confirm: {
-        delete: "¿Eliminar el anuncio '{title}'? Esto no se puede deshacer.",
-      },
+      chip: { public: 'Público', private: 'Privado', anonymous: 'Anónimo' },
       empty: {
-        noResults: 'Ningún anuncio coincide con tus filtros.',
-        noAnnouncements:
-          'Aún no hay anuncios. Haz clic en + Nuevo para crear uno.',
+        noResults: 'No hay pagos que coincidan con los filtros.',
+        noNotes: 'Aún no hay pagos.',
       },
       pagination: {
         prev: 'Anterior',
         next: 'Siguiente',
         of: 'Página {current} de {total}',
       },
-      totalLabel: 'Mostrando {start}–{end} de {total}',
+      totalLabel: '{total} notas',
     },
+    announcements: adminAnnouncementsEs,
   },
   tournaments: {
     title: 'Torneos',

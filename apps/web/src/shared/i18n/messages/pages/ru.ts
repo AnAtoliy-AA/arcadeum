@@ -1,3 +1,5 @@
+import { adminAnnouncementsRu } from './admin-announcements/ru';
+
 export const ru = {
   admin: {
     title: 'Админ',
@@ -62,99 +64,42 @@ export const ru = {
         generic: 'Что-то пошло не так. Попробуйте ещё раз.',
       },
     },
-    announcements: {
-      title: 'Объявления',
-      actions: {
-        new: '+ Создать',
-        edit: 'Изменить',
-        delete: 'Удалить',
-        cancel: 'Отмена',
-        save: 'Сохранить',
-      },
-      filters: {
-        searchPlaceholder: 'Поиск по заголовку…',
-        status: {
-          label: 'Статус',
-          all: 'Все статусы',
-          active: 'Активные',
-          scheduled: 'Запланированные',
-          expired: 'Истёкшие',
-        },
-        severity: {
-          label: 'Важность',
-          all: 'Все уровни',
-          info: 'Инфо',
-          warning: 'Предупреждение',
-          critical: 'Критично',
+    payments: {
+      title: 'Платежи',
+      search: { placeholder: 'Поиск по тексту, имени или ID транзакции' },
+      filter: {
+        visibility: {
+          label: 'Видимость',
+          all: 'Все',
+          public: 'Только публичные',
+          private: 'Только приватные',
         },
       },
       table: {
-        title: 'Заголовок',
-        severity: 'Важность',
-        audience: 'Аудитория',
-        window: 'Окно показа',
-        createdBy: 'Создал',
-        actions: 'Действия',
-        nowPill: 'Сейчас',
+        user: 'Пользователь',
+        amount: 'Сумма',
+        note: 'Заметка',
+        visibility: 'Видимость',
+        createdAt: 'Создано',
+        transactionId: 'Транзакция',
       },
-      severity: {
-        info: 'Инфо',
-        warning: 'Предупреждение',
-        critical: 'Критично',
+      chip: {
+        public: 'Публичная',
+        private: 'Приватная',
+        anonymous: 'Аноним',
       },
-      audience: {
-        all: 'Все',
-        authenticated: 'Авторизованные',
-        anonymous: 'Гости',
-      },
-      status: {
-        active: 'Активно',
-        scheduled: 'Запланировано',
-        expired: 'Истекло',
-      },
-      windowLabels: {
-        now: 'Сейчас',
-        forever: 'Бессрочно',
-        always: 'Всегда',
-      },
-      form: {
-        sections: { settings: 'Настройки', content: 'Содержимое' },
-        severity: 'Важность',
-        audience: 'Аудитория',
-        startsAt: 'Начало',
-        endsAt: 'Окончание',
-        immediately: 'Немедленно',
-        forever: 'Без окончания',
-        tabs: {
-          en: 'English',
-          ru: 'Русский',
-          es: 'Español',
-          fr: 'Français',
-          by: 'Беларуская',
-        },
-        title: 'Заголовок',
-        body: 'Текст (необязательно)',
-        ctaLabel: 'Текст кнопки (необязательно)',
-        ctaHref: 'Ссылка кнопки (необязательно)',
-        errors: {
-          titleRequired: 'Английский заголовок обязателен.',
-          endsBeforeStarts: 'Окончание должно быть позже начала.',
-          invalidUrl: 'Должен быть https-URL или путь, начинающийся с /.',
-        },
-      },
-      confirm: { delete: "Удалить объявление '{title}'? Это нельзя отменить." },
       empty: {
-        noResults: 'Объявлений по фильтрам не найдено.',
-        noAnnouncements:
-          'Объявлений пока нет. Нажмите «+ Создать», чтобы добавить.',
+        noResults: 'Нет платежей по фильтру.',
+        noNotes: 'Платежей пока нет.',
       },
       pagination: {
         prev: 'Назад',
         next: 'Вперёд',
         of: 'Страница {current} из {total}',
       },
-      totalLabel: 'Показано {start}–{end} из {total}',
+      totalLabel: '{total} платежей',
     },
+    announcements: adminAnnouncementsRu,
   },
   tournaments: {
     title: 'Турниры',

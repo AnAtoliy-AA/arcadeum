@@ -1,3 +1,5 @@
+import { adminAnnouncementsBy } from './admin-announcements/by';
+
 export const by = {
   admin: {
     title: 'Адмін',
@@ -60,101 +62,42 @@ export const by = {
         generic: 'Нешта пайшло не так. Калі ласка, паспрабуйце яшчэ раз.',
       },
     },
-    announcements: {
-      title: 'Анансы',
-      actions: {
-        new: '+ Стварыць',
-        edit: 'Рэдагаваць',
-        delete: 'Выдаліць',
-        cancel: 'Адмена',
-        save: 'Захаваць',
-      },
-      filters: {
-        searchPlaceholder: 'Пошук па загалоўку…',
-        status: {
-          label: 'Статус',
-          all: 'Усе статусы',
-          active: 'Актыўныя',
-          scheduled: 'Запланаваныя',
-          expired: 'Завершаныя',
-        },
-        severity: {
-          label: 'Важнасць',
-          all: 'Усе ўзроўні',
-          info: 'Інфа',
-          warning: 'Папярэджанне',
-          critical: 'Крытычна',
+    payments: {
+      title: 'Плацяжы',
+      search: { placeholder: 'Пошук па нататцы, імі або ID транзакцыі' },
+      filter: {
+        visibility: {
+          label: 'Бачнасць',
+          all: 'Усе',
+          public: 'Толькі публічныя',
+          private: 'Толькі прыватныя',
         },
       },
       table: {
-        title: 'Загаловак',
-        severity: 'Важнасць',
-        audience: 'Аўдыторыя',
-        window: 'Акно паказу',
-        createdBy: 'Стварыў',
-        actions: 'Дзеянні',
-        nowPill: 'Зараз',
+        user: 'Карыстальнік',
+        amount: 'Сума',
+        note: 'Нататка',
+        visibility: 'Бачнасць',
+        createdAt: 'Створана',
+        transactionId: 'Транзакцыя',
       },
-      severity: {
-        info: 'Інфа',
-        warning: 'Папярэджанне',
-        critical: 'Крытычна',
-      },
-      audience: {
-        all: 'Усе',
-        authenticated: 'Аўтарызаваныя',
-        anonymous: 'Ананімныя',
-      },
-      status: {
-        active: 'Актыўна',
-        scheduled: 'Запланавана',
-        expired: 'Завершана',
-      },
-      windowLabels: {
-        now: 'Зараз',
-        forever: 'Бестэрмінова',
-        always: 'Заўсёды',
-      },
-      form: {
-        sections: { settings: 'Налады', content: 'Змесціва' },
-        severity: 'Важнасць',
-        audience: 'Аўдыторыя',
-        startsAt: 'Пачатак',
-        endsAt: 'Канец',
-        immediately: 'Адразу',
-        forever: 'Без канца',
-        tabs: {
-          en: 'English',
-          ru: 'Русский',
-          es: 'Español',
-          fr: 'Français',
-          by: 'Беларуская',
-        },
-        title: 'Загаловак',
-        body: 'Тэкст (неабавязкова)',
-        ctaLabel: 'Тэкст кнопкі (неабавязкова)',
-        ctaHref: 'Спасылка кнопкі (неабавязкова)',
-        errors: {
-          titleRequired: 'Англійскі загаловак абавязковы.',
-          endsBeforeStarts: 'Канец павінен быць пазней за пачатак.',
-          invalidUrl: 'Павінна быць https-URL або шлях, што пачынаецца з /.',
-        },
-      },
-      confirm: {
-        delete: "Выдаліць аб'яву «{title}»? Гэта нельга адмяніць.",
+      chip: {
+        public: 'Публічная',
+        private: 'Прыватная',
+        anonymous: 'Ананімны',
       },
       empty: {
-        noResults: 'Анансаў па вашых фільтрах не знойдзена.',
-        noAnnouncements:
-          'Анансаў пакуль няма. Націсніце «+ Стварыць», каб дадаць.',
+        noResults: 'Няма плацяжоў па фільтру.',
+        noNotes: 'Плацяжоў пакуль няма.',
       },
       pagination: {
         prev: 'Назад',
         next: 'Наперад',
         of: 'Старонка {current} з {total}',
       },
-      totalLabel: 'Паказана {start}–{end} з {total}',
+      totalLabel: '{total} плацяжоў',
     },
+    announcements: adminAnnouncementsBy,
   },
   tournaments: {
     title: 'Турніры',

@@ -1,3 +1,5 @@
+import { adminAnnouncementsFr } from './admin-announcements/fr';
+
 export const fr = {
   admin: {
     title: 'Administration',
@@ -64,102 +66,38 @@ export const fr = {
         generic: "Quelque chose s'est mal passé. Veuillez réessayer.",
       },
     },
-    announcements: {
-      title: 'Annonces',
-      actions: {
-        new: '+ Nouvelle',
-        edit: 'Modifier',
-        delete: 'Supprimer',
-        cancel: 'Annuler',
-        save: 'Enregistrer',
-      },
-      filters: {
-        searchPlaceholder: 'Rechercher par titre…',
-        status: {
-          label: 'Statut',
-          all: 'Tous les statuts',
-          active: 'Actives',
-          scheduled: 'Planifiées',
-          expired: 'Expirées',
-        },
-        severity: {
-          label: 'Sévérité',
-          all: 'Toutes',
-          info: 'Info',
-          warning: 'Avertissement',
-          critical: 'Critique',
+    payments: {
+      title: 'Paiements',
+      search: { placeholder: 'Recherche par note, nom ou ID de transaction' },
+      filter: {
+        visibility: {
+          label: 'Visibilité',
+          all: 'Tous',
+          public: 'Publics seulement',
+          private: 'Privés seulement',
         },
       },
       table: {
-        title: 'Titre',
-        severity: 'Sévérité',
-        audience: 'Audience',
-        window: 'Fenêtre',
-        createdBy: 'Créé par',
-        actions: 'Actions',
-        nowPill: 'Maintenant',
+        user: 'Utilisateur',
+        amount: 'Montant',
+        note: 'Note',
+        visibility: 'Visibilité',
+        createdAt: 'Créé le',
+        transactionId: 'Transaction',
       },
-      severity: {
-        info: 'Info',
-        warning: 'Avertissement',
-        critical: 'Critique',
-      },
-      audience: {
-        all: 'Tous',
-        authenticated: 'Connectés',
-        anonymous: 'Anonymes',
-      },
-      status: {
-        active: 'Active',
-        scheduled: 'Planifiée',
-        expired: 'Expirée',
-      },
-      windowLabels: {
-        now: 'Maintenant',
-        forever: 'Sans fin',
-        always: 'Toujours',
-      },
-      form: {
-        sections: { settings: 'Paramètres', content: 'Contenu' },
-        severity: 'Sévérité',
-        audience: 'Audience',
-        startsAt: 'Début',
-        endsAt: 'Fin',
-        immediately: 'Immédiatement',
-        forever: 'Sans expiration',
-        tabs: {
-          en: 'English',
-          ru: 'Русский',
-          es: 'Español',
-          fr: 'Français',
-          by: 'Беларуская',
-        },
-        title: 'Titre',
-        body: 'Corps (facultatif)',
-        ctaLabel: 'Texte CTA (facultatif)',
-        ctaHref: 'URL CTA (facultatif)',
-        errors: {
-          titleRequired: 'Le titre en anglais est requis.',
-          endsBeforeStarts: 'La fin doit être après le début.',
-          invalidUrl: 'Doit être une URL https ou un chemin commençant par /.',
-        },
-      },
-      confirm: {
-        delete:
-          "Supprimer l'annonce « {title} » ? Cette action est irréversible.",
-      },
+      chip: { public: 'Public', private: 'Privé', anonymous: 'Anonyme' },
       empty: {
-        noResults: 'Aucune annonce ne correspond à vos filtres.',
-        noAnnouncements:
-          'Aucune annonce. Cliquez sur + Nouvelle pour en créer une.',
+        noResults: 'Aucun paiement ne correspond aux filtres.',
+        noNotes: 'Aucun paiement pour le moment.',
       },
       pagination: {
         prev: 'Précédent',
         next: 'Suivant',
         of: 'Page {current} sur {total}',
       },
-      totalLabel: 'Affichage {start}–{end} sur {total}',
+      totalLabel: '{total} notes',
     },
+    announcements: adminAnnouncementsFr,
   },
   tournaments: {
     title: 'Tournois',

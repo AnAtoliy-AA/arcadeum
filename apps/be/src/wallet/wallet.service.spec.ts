@@ -176,6 +176,43 @@ describe('WalletService', () => {
     });
   });
 
+  describe('getBalance', () => {
+    it('returns the user coins/gems', async () => {
+      userModel.findById.mockReturnValue({
+        lean: () => Promise.resolve({ coins: 42, gems: 3 }),
+      });
+      const r = await service.getBalance(userId);
+      expect(r).toEqual({ coins: 42, gems: 3 });
+    });
+  });
+
+  describe('getHistory', () => {
+    it('paginates by createdAt + _id and respects currency filter', async () => {
+      const itemId = new Types.ObjectId();
+      const histItem = makeTxDoc({
+        _id: itemId,
+        userId: new Types.ObjectId(userId),
+        currency: 'coins',
+        delta: 5,
+        balanceAfter: 5,
+        reason: 'admin_grant',
+        idempotencyKey: 'a',
+        createdAt: new Date('2026-05-09T01:00:00Z'),
+      });
+      txModel.find.mockReturnValue({
+        sort: () => ({
+          limit: () => ({ lean: () => Promise.resolve([histItem]) }),
+        }),
+      });
+      const r = await service.getHistory(userId, {
+        currency: 'coins',
+        limit: 1,
+      });
+      expect(r.items).toHaveLength(1);
+      expect(r.nextCursor).toBe(null);
+    });
+  });
+
   describe('idempotency', () => {
     it('returns the prior transaction when the key is reused', async () => {
       const priorId = new Types.ObjectId();

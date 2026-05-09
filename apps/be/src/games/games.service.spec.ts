@@ -11,6 +11,8 @@ import { GamesRematchService } from './games.rematch.service';
 import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
+import { WalletService } from '../wallet/wallet.service';
+import { ConfigService } from '@nestjs/config';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { GameRoomSummary } from './rooms/game-rooms.types';
 import { GameSessionSummary } from './sessions/game-sessions.service';
@@ -75,6 +77,12 @@ describe('GamesService', () => {
     const mockLeaderboardSync = {
       syncInMatch: jest.fn().mockResolvedValue(undefined),
     };
+    const mockWalletService = {
+      credit: jest.fn(),
+    };
+    const mockConfigService = {
+      get: jest.fn().mockReturnValue(undefined),
+    };
 
     module = await Test.createTestingModule({
       providers: [
@@ -92,6 +100,8 @@ describe('GamesService', () => {
           provide: GamesLeaderboardSyncService,
           useValue: mockLeaderboardSync,
         },
+        { provide: WalletService, useValue: mockWalletService },
+        { provide: ConfigService, useValue: mockConfigService },
       ],
     }).compile();
 

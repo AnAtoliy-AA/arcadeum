@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { ChatScope } from './engines/base/game-engine.interface';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
@@ -16,8 +16,9 @@ import { ListRoomsFilters } from './rooms/game-rooms.types';
 import { GamesRematchService } from './games.rematch.service';
 import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
-import { Inject, forwardRef } from '@nestjs/common';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
+import { WalletService } from '../wallet/wallet.service';
+import { ConfigService } from '@nestjs/config';
 
 /**
  * Games Service Facade
@@ -28,6 +29,9 @@ import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
  */
 @Injectable()
 export class GamesService {
+  private readonly logger = new Logger(GamesService.name);
+  private readonly gameWinCoinReward: number;
+
   constructor(
     private readonly roomsService: GameRoomsService,
     private readonly sessionsService: GameSessionsService,
@@ -41,7 +45,14 @@ export class GamesService {
     @Inject(forwardRef(() => CriticalService))
     private readonly criticalService: CriticalService,
     private readonly leaderboardSync: GamesLeaderboardSyncService,
-  ) {}
+    private readonly wallet: WalletService,
+    private readonly config: ConfigService,
+  ) {
+    const raw = this.config.get<string>('GAME_WIN_COIN_REWARD');
+    const parsed = raw ? Number(raw) : 50;
+    this.gameWinCoinReward =
+      Number.isInteger(parsed) && parsed > 0 ? parsed : 50;
+  }
 
   // ========== Room Operations ==========
 
@@ -88,9 +99,8 @@ export class GamesService {
           session = { ...session, state: sanitized as Record<string, unknown> };
         }
       } catch {
-        // If sanitization fails, return null session or handle appropriately
-        // For now, we'll log logs if we had a logger, but safely continue
-        // typically we might want to return a filtered "spectator" view if we could
+        // If sanitization fails, return null session or handle appropriately;
+        // safely continue with the unsanitized session state
       }
     }
 
@@ -219,7 +229,6 @@ export class GamesService {
           s.id,
           pId,
         );
-        // Ensure we return a GameSessionSummary structure
         if (sanitized && typeof sanitized === 'object') {
           return { ...s, state: sanitized as Record<string, unknown> };
         }
@@ -246,7 +255,6 @@ export class GamesService {
       payload,
     });
 
-    // Emit real-time event
     // Emit real-time event
     await this.realtimeService.emitActionExecuted(
       session,
@@ -439,7 +447,6 @@ export class GamesService {
     const room = await this.roomsService.getRoom(roomId, userId);
 
     if (added) {
-      // If user was added (not just rejoining), broadcast to room
       this.realtimeService.emitPlayerJoined(room, userId);
     }
 

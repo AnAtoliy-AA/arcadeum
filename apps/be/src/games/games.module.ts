@@ -37,6 +37,7 @@ import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { SeaBattleBotService } from './sea-battle/sea-battle-bot.service';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
+import { WalletModule } from '../wallet/wallet.module';
 // Note: GamesModule ↔ LeaderboardsModule is a circular dep
 // (LeaderboardsService.markInMatch is called from GamesService when matches
 // start/end; LeaderboardsService.getSnapshot now reads stats from
@@ -53,6 +54,7 @@ import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
     GameEnginesModule, // Import the game engines module
     forwardRef(() => AuthModule), // Import AuthModule for AuthService
     forwardRef(() => LeaderboardsModule),
+    WalletModule,
   ],
   controllers: [GamesController],
   providers: [

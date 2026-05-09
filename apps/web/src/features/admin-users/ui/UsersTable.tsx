@@ -1,5 +1,5 @@
 'use client';
-import { Button, YStack, XStack } from '@arcadeum/ui';
+import { Button, GlassCard, YStack, XStack } from '@arcadeum/ui';
 import { Spinner, Text } from 'tamagui';
 import type { AdminUserItem } from '../api';
 import type { UserRole } from '@/entities/session/model/types';
@@ -49,7 +49,7 @@ export function UsersTable({
 }: UsersTableProps) {
   if (isLoading && items.length === 0) {
     return (
-      <YStack alignItems="center" padding="$4">
+      <YStack alignItems="center" padding="$5">
         <Spinner />
       </YStack>
     );
@@ -57,47 +57,87 @@ export function UsersTable({
 
   if (!isLoading && items.length === 0) {
     return (
-      <YStack alignItems="center" padding="$4" data-testid="users-table-empty">
+      <GlassCard p="$5" alignItems="center" data-testid="users-table-empty">
         <Text opacity={0.7}>
           {hasFilter ? labels.empty.noResults : labels.empty.noUsers}
         </Text>
-      </YStack>
+      </GlassCard>
     );
   }
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   return (
-    <YStack gap="$2" data-testid="users-table">
-      <Text opacity={0.7} fontSize="$1">
-        {labels.totalLabel.replace('{total}', String(total))}
-      </Text>
-      {items.map((it) => (
-        <UsersTableRow
-          key={it.id}
-          item={it}
-          currentUserId={currentUserId}
-          onRoleChange={onRoleChange}
-          roleLabels={labels.roleLabels}
-          selfTooltip={labels.selfTooltip}
-          isPending={pendingUserId === it.id}
-        />
-      ))}
+    <YStack gap="$3" data-testid="users-table">
+      <XStack
+        alignItems="center"
+        justifyContent="space-between"
+        paddingHorizontal="$1"
+      >
+        <Text opacity={0.7} fontSize="$1">
+          {labels.totalLabel.replace('{total}', String(total))}
+        </Text>
+      </XStack>
+
+      <GlassCard p="$0" overflow="hidden">
+        <XStack
+          gap="$3"
+          alignItems="center"
+          paddingVertical="$2"
+          paddingHorizontal="$3"
+          backgroundColor="$backgroundFocus"
+          borderBottomWidth={1}
+          borderColor="$borderColor"
+          data-testid="users-table-header"
+        >
+          <YStack width={32} />
+          <Text flex={1} fontWeight="700" fontSize="$1" opacity={0.85}>
+            {labels.table.username}
+          </Text>
+          <Text width={120} fontWeight="700" fontSize="$1" opacity={0.85}>
+            {labels.table.role}
+          </Text>
+          <Text width={150} fontWeight="700" fontSize="$1" opacity={0.85}>
+            {labels.table.actions}
+          </Text>
+        </XStack>
+
+        {items.map((it, i) => (
+          <UsersTableRow
+            key={it.id}
+            item={it}
+            currentUserId={currentUserId}
+            onRoleChange={onRoleChange}
+            roleLabels={labels.roleLabels}
+            selfTooltip={labels.selfTooltip}
+            isPending={pendingUserId === it.id}
+            zebra={i % 2 === 1}
+          />
+        ))}
+      </GlassCard>
+
       <XStack
         gap="$3"
         alignItems="center"
         justifyContent="center"
-        paddingTop="$3"
+        paddingTop="$2"
       >
-        <Button onPress={() => onPageChange(page - 1)} disabled={page <= 1}>
+        <Button
+          variant="outline"
+          size="sm"
+          onPress={() => onPageChange(page - 1)}
+          disabled={page <= 1}
+        >
           {labels.pagination.prev}
         </Button>
-        <Text>
+        <Text opacity={0.8} fontSize="$2">
           {labels.pagination.of
             .replace('{current}', String(page))
             .replace('{total}', String(totalPages))}
         </Text>
         <Button
+          variant="outline"
+          size="sm"
           onPress={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
         >

@@ -23,11 +23,15 @@ export function RoleSelect({
       data-testid={testId}
       onChange={(e) => onChange(e.target.value as UserRole)}
       style={{
-        padding: '4px 8px',
-        borderRadius: 4,
-        border: '1px solid #555',
+        padding: '6px 10px',
+        borderRadius: 6,
+        border: '1px solid var(--borderColor, rgba(255,255,255,0.18))',
         background: 'transparent',
         color: 'inherit',
+        fontSize: 13,
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? 0.55 : 1,
+        minWidth: 140,
       }}
     >
       {USER_ROLES.map((r) => (

@@ -1,3 +1,5 @@
+import { adminAnnouncementsRu } from './admin-announcements/ru';
+
 export const ru = {
   admin: {
     title: 'Админ',
@@ -97,6 +99,7 @@ export const ru = {
       },
       totalLabel: '{total} платежей',
     },
+    announcements: adminAnnouncementsRu,
   },
   tournaments: {
     title: 'Турниры',

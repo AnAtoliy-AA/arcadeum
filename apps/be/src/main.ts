@@ -6,9 +6,9 @@ import { ArcadeumLogger } from './common/logger/arcadeum-logger.service';
 import { getAllowedOrigins } from './common/utils/cors.util';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    logger: new ArcadeumLogger(),
-  });
+  const logger = new ArcadeumLogger();
+  logger.setLogLevels(['error', 'warn', 'log']);
+  const app = await NestFactory.create(AppModule, { logger });
 
   app.useGlobalPipes(
     new ValidationPipe({

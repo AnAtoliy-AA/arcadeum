@@ -11,6 +11,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { ReferralModule } from './referrals/referral.module';
 import { LeaderboardsModule } from './leaderboards/leaderboards.module';
 import { AdminModule } from './admin/admin.module';
+import { AnnouncementsModule } from './announcements/announcements.module';
 import { resolveMongoUri } from './common/utils/mongo-uri.util';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -28,6 +29,7 @@ import { MessageCodeInterceptor } from './common/interceptors/message-code.inter
     ReferralModule,
     LeaderboardsModule,
     AdminModule,
+    AnnouncementsModule,
     MongooseModule.forRoot(resolveMongoUri()),
   ],
   controllers: [AppController],

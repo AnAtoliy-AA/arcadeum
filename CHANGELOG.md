@@ -10,31 +10,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.13.5] - 2026-05-09
 
 ### Added
+
 - add /admin/payments viewer page (ARC-607) (ARC-607)
 - add admin payment-notes endpoint (ARC-607) (ARC-607)
 
 ### Documentation
+
 - apply plan-review fixes (ARC-607) (ARC-607)
 - add payment notes implementation plan (ARC-607) (ARC-607)
 - apply spec review fixes (ARC-607) (ARC-607)
 - add payment notes viewer design spec (ARC-607) (ARC-607)
 
-
 ## [1.13.4] - 2026-05-08
 
 ### Added
+
 - add SessionRoleSync component (ARC-606) (ARC-606)
 
 ### Documentation
+
 - apply plan-review fixes (ARC-606) (ARC-606)
 - add session role sync implementation plan (ARC-606) (ARC-606)
 - apply spec review fixes (ARC-606) (ARC-606)
 - add role-sync design spec (ARC-606) (ARC-606)
 
-
 ## [1.13.3] - 2026-05-08
 
 ### Added
+
 - add admin link visible only to role=admin (ARC-604) (ARC-604)
 - wire /admin/users page + sidebar + i18n + e2e (ARC-604) (ARC-604)
 - add roleColors + UI components (ARC-604) (ARC-604)
@@ -45,20 +48,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - register global ValidationPipe (ARC-604) (ARC-604)
 
 ### Fixed
+
 - include role in OAuth setTokens call (ARC-604) (ARC-604)
 - refresh role from /auth/me into snapshot on app load (ARC-604) (ARC-604)
 
 ### Documentation
+
 - apply plan-review fixes (ARC-604) (ARC-604)
 - add user-list & role-editor implementation plan (ARC-604) (ARC-604)
 - apply final spec review fixes (ARC-604) (ARC-604)
 - apply spec review fixes (ARC-604) (ARC-604)
 - add user-list & role-editor design spec (ARC-604) (ARC-604)
 
-
 ## [1.13.2] - 2026-05-08
 
 ### Added
+
 - add /admin shell with server-side admin gate (ARC-602) (ARC-602)
 - add admin namespace to all 5 locales (ARC-602) (ARC-602)
 - add requireAdmin server helper for /admin gate (ARC-602) (ARC-602)
@@ -67,37 +72,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add ROLES_KEY constant and @Roles() decorator (ARC-602) (ARC-602)
 
 ### Documentation
+
 - apply plan review fixes (ARC-602) (ARC-602)
 - add implementation plan for admin shell (ARC-602) (ARC-602)
 - apply final spec review fixes (ARC-602) (ARC-602)
 - address spec review feedback (ARC-602) (ARC-602)
 - add admin shell design spec (ARC-602) (ARC-602)
 
-
 ## [1.13.1] - 2026-05-08
 
 ### Fixed
+
 - advance turn when active player leaves (ARC-600) (ARC-600)
 
-
 ## [1.13.0] - 2026-05-08
-
-
-
 
 ## [1.12.10] - 2026-05-08
 
 ### Fixed
+
 - keep seeded ticker events from expiring (ARC-594) (ARC-594)
 - use generous default timeout for browser fetches (ARC-594) (ARC-594)
 
-
 ## [1.12.9] - 2026-05-08
-
 
 ## [1.12.8] - 2026-05-08
 
 ### Added
+
 - tournament section "coming soon" placeholder (ARC-588) (ARC-588)
 - leaderboards reads real data from game history (ARC-588) (ARC-588)
 - auto-seed leaderboards in dev when empty (ARC-588) (ARC-588)
@@ -110,6 +112,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - leaderboard page with mythic spotlight and rank table (ARC-588) (ARC-588)
 
 ### Fixed
+
 - address PR #591 review (ARC-588) (ARC-588)
 - default Stats page to the Leaderboard tab (ARC-588) (ARC-588)
 - use aria-label instead of accessibilityLabel on web (ARC-588) (ARC-588)
@@ -123,19 +126,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - address PR #591 review for leaderboards (ARC-588) (ARC-588)
 
 ### Improved
+
 - cut socket spam on leaderboards (ARC-588) (ARC-588)
 - cache + dedupe leaderboards upstream scan (ARC-588) (ARC-588)
-
 
 ## [1.12.7] - 2026-05-07
 
 ### Fixed
-- persist sea battle lobby variant changes to backend (ARC-578) (ARC-578)
 
+- persist sea battle lobby variant changes to backend (ARC-578) (ARC-578)
 
 ## [1.12.6] - 2026-05-07
 
 ### Added
+
 - add team chat channel switcher (ARC-427) (ARC-427)
 - show team rosters and teammate boards in sea battle (ARC-427) (ARC-427)
 - mount team-mode UI in sea battle lobby (ARC-427) (ARC-427)
@@ -156,8 +160,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add sea battle team-mode types and constants (ARC-427) (ARC-427)
 
 ### Fixed
+
 - clear lint errors on ARC-427 branch (ARC-427) (ARC-427
-ARC-427)
+  ARC-427)
 - cap board grid columns by container width (ARC-427) (ARC-427)
 - show sequential bot labels instead of "Unknown" (ARC-427) (ARC-427)
 - pick board grid columns from board count (ARC-427) (ARC-427)
@@ -173,23 +178,26 @@ ARC-427)
 - team-aware win detection and shooter cleanup on eliminate (ARC-427) (ARC-427)
 
 ### Refactored
+
 - split AttackBoard.tsx and add team color frames (ARC-427) (ARC-427)
 - move Toggle and StatusBadge into @arcadeum/ui (ARC-427) (ARC-427)
 - reuse ChatScope type in sea battle ChatPayload (ARC-427) (ARC-427)
 
 ### Documentation
+
 - add sea battle team mode implementation plan (ARC-427) (ARC-427)
 - add sea battle team mode design spec (ARC-427) (ARC-427)
-
 
 ## [1.12.5] - 2026-05-07
 
 ### Added
+
 - show opponent names and sequential bot labels on boards [ARC-585] (ARC-585)
 - fix board layout and improve turn visibility [ARC-585] (ARC-585)
 - improve turn visibility and refactor animations [ARC-585] (ARC-585)
 
 ### Fixed
+
 - update ships-left test locator to support new player headers [ARC-585] (ARC-585)
 - add missing translation keys to all languages to fix build [ARC-585] (ARC-585)
 - add missing translations and fix bot naming [ARC-585] (ARC-585)
@@ -202,12 +210,13 @@ ARC-427)
 - resolve grid layout type error in board styles [ARC-585] (ARC-585)
 
 ### Refactored
-- remove Tamagui from board components to improve stability [ARC-585] (ARC-585)
 
+- remove Tamagui from board components to improve stability [ARC-585] (ARC-585)
 
 ## [1.12.4] - 2026-05-07
 
 ### Added
+
 - expand contact tips card to balance the columns (ARC-575) (ARC-575)
 - add system-status card to contact side panel (ARC-575) (ARC-575)
 - add tips card under contact form (ARC-575) (ARC-575)
@@ -220,6 +229,7 @@ ARC-427)
 - add ActivityTicker component (ARC-575) (ARC-575)
 
 ### Fixed
+
 - keep contact action file pure async exports (ARC-575) (ARC-575)
 - ChannelTile fills its grid cell so tiles match heights (ARC-575) (ARC-575)
 - drop e2e click-retry that races with the Server Action (ARC-575) (ARC-575)
@@ -239,54 +249,56 @@ ARC-427)
 - match contact-page design — avatars + stat sparkline (ARC-575) (ARC-575)
 
 ### Refactored
+
 - drop redundant controlled state in ContactForm (ARC-575) (ARC-575)
 - extract ContactForm component (ARC-575) (ARC-575)
 
 ### Documentation
+
 - document contact API constraints (ARC-575) (ARC-575)
 - add contact-rework design handoff (ARC-575) (ARC-575)
-
 
 ## [1.12.3] - 2026-05-07
 
 ### Added
+
 - fix tablet layout and finalize rendering optimization (N/A)
 - optimize rendering performance and refactor placement board (N/A)
-
 
 ## [1.12.2] - 2026-05-06
 
 ### Fixed
+
 - bump primary color from sky-600 to sky-700 for WCAG AA (ARC-570)
 - restore aria-label on install-pwa-button (e2e regression) (ARC-570)
 
 ### Improved
+
 - drop legacy JS polyfills via explicit browserslist (ARC-570)
 
 ### Refactored
+
 - bundle home route CSS via parent-eager imports (ARC-570)
 
 ### Documentation
+
 - Phase 2 implementation results + spec/plan (ARC-570)
 - track docs/superpowers + Phase 2 diagnostic results (ARC-570)
-
 
 ## [1.12.1] - 2026-05-06
 
 ### Improved
+
 - drop hero LCP-blocking visual effects on mobile (ARC-570)
 - defer hero ::after LCP overlay; dynamic-import below-fold; a11y (ARC-570)
 - polish in-progress home perf diff + add bundle analyzer (ARC-570)
 
-
 ## [1.12.0] - 2026-05-03
-
-
-
 
 ## [1.11.2] - 2026-05-03
 
 ### Fixed
+
 - token colors (N/A)
 - sitemap ts (ARC-564)
 - homepage e2e test (ARC-564)
@@ -295,90 +307,86 @@ ARC-427)
 - tamagui config colors (N/A)
 
 ### Refactored
+
 - integrate Tamagui Dialog.Close for modal dismissals and optimize confirmation modal event handlers (ARC-564)
 - integrate Tamagui Dialog.Close for modal dismissals and optimize confirmation modal event handlers (ARC-564)
 - update routing configuration, implement SEO metadata across pages, and add TestCrash utility (ARC-564)
 
-
 ## [1.11.1] - 2026-05-03
 
 ### Fixed
+
 - release yml (ARC-560)
 
-
 ## [1.11.0] - 2026-05-02
-
-
-
 
 ## [1.10.2] - 2026-05-02
 
 ### Fixed
+
 - mobile menu sign out button color (ARC-561)
 - hero support button styles (ARC-561)
 - ships left gaps (ARC-561)
 - game over e2e test (ARC-561)
 - sea battle field styles (ARC-561)
 
-
 ## [1.10.1] - 2026-05-02
 
 ### Fixed
+
 - test crash e2e message (ARC-560)
 - release yml (ARC-560)
 
-
 ## [1.10.0] - 2026-05-01
-
-
-
 
 ## [1.9.30] - 2026-05-01
 
 ### Fixed
+
 - stabilize idle detection tests by adding store synchronization and updating e2e configurations (ARC-446)
 - prevent stale initialData from overwriting active room state and update E2E room mocks to support dynamic state synchronization (ARC-446)
-
 
 ## [1.9.29] - 2026-05-01
 
 ### Fixed
+
 - sea battle chat e2e test (ARC-446)
 - resolve CORS errors in e2e tests (ARC-446)
 - e2e tests timeouts (ARC-446)
 - e2e tests warnings (ARC-446)
 
 ### Refactored
+
 - use polling with state verification to improve E2E test reliability for chat popups (ARC-446)
 
-
 ## [1.9.28] - 2026-04-30
-
 
 ## [1.9.27] - 2026-04-30
 
 ### Fixed
+
 - home hero animation (ARC-554)
 
 ### Documentation
-- update upstream remote URL and project live demo link (N/A)
 
+- update upstream remote URL and project live demo link (N/A)
 
 ## [1.9.26] - 2026-04-29
 
 ### Added
-- optimize mobile layout and enhance background animations (N/A)
 
+- optimize mobile layout and enhance background animations (N/A)
 
 ## [1.9.25] - 2026-04-29
 
 ### Refactored
-- extract InstallAppCta widget and reuse on settings (ARC-487)
 
+- extract InstallAppCta widget and reuse on settings (ARC-487)
 
 ## [1.9.24] - 2026-04-29
 
 ### Added
+
 - tighten layout paddings on $sm (ARC-485)
 - horizontal opponent strip and chip avatars on $sm (ARC-485)
 - horizontal Deck/LastPlayed/Discard row on $sm (ARC-485)
@@ -389,6 +397,7 @@ ARC-427)
 - enlarge mobile hand cards to 88x120 (ARC-485)
 
 ### Fixed
+
 - e2e tests for critical web mobile (ARC-485)
 - expose data-cardtype and skip layout test on $sm (ARC-485)
 - use actions.title for in-game ActionsSection panel (ARC-485)
@@ -396,19 +405,20 @@ ARC-427)
 - change overflowY property to 'auto' in GameContainer (ARC-485)
 
 ### Documentation
+
 - add critical game mobile redesign implementation plan (ARC-485)
 - add critical game mobile redesign spec (ARC-485)
-
 
 ## [1.9.23] - 2026-04-28
 
 ### Refactored
-- update presentation and hero section layout with responsive design improvements and animations (ARC-486)
 
+- update presentation and hero section layout with responsive design improvements and animations (ARC-486)
 
 ## [1.9.22] - 2026-04-24
 
 ### Added
+
 - respect prefers-reduced-motion in TurnBanner + scene (ARC-480)
 - add MobileActionSheet with $sm-gated rendering (ARC-480)
 - restyle HUD, actions, and log strip (ARC-480)
@@ -426,132 +436,136 @@ ARC-427)
 - add VariantScenePalette type (scene palette skeleton) (ARC-480)
 
 ### Fixed
+
 - update translation keys for mobile action sheet in ActiveGameView (ARC-480)
 - update translation key for eliminated players in TablePlayer component (ARC-480)
 
 ### Refactored
+
 - remove ParticleOverlay (replaced by SceneBackdrop) (ARC-480)
 - hoist deck style literal to avoid drift (ARC-480)
 
 ### Documentation
+
 - add critical active game redesign implementation plan (ARC-480)
 - add critical active game redesign spec (ARC-480)
-
 
 ## [1.9.21] - 2026-04-24
 
 ### Refactored
+
 - modernize e2e tests with mockGameSocket and wrap dynamic renderer error messages in Text component (ARC-482)
 - migrate UI components from Tamagui to native CSS for improved layout stability and performance (ARC-482)
-
 
 ## [1.9.20] - 2026-04-20
 
 ### Added
-- footer github icon (ARC-481)
 
+- footer github icon (ARC-481)
 
 ## [1.9.19] - 2026-04-20
 
 ### Refactored
-- global css styles (ARC-479)
 
+- global css styles (ARC-479)
 
 ## [1.9.18] - 2026-04-19
 
 ### Added
+
 - add kick/leave UI, store actions, game wiring, and fix flaky e2e tests (N/A)
 - pass kicked flag through realtime emitPlayerLeft (N/A)
 - extend leaveRoom authorization for host kick flow (N/A)
 - add kickedBy to LeaveGameRoomDto and kicked flag to result type (N/A)
 
 ### Documentation
+
 - add lobby kick/leave implementation plan (N/A)
 - add lobby kick & leave design spec (N/A)
-
 
 ## [1.9.17] - 2026-04-16
 
 ### Fixed
+
 - build import error (ARC-471)
 - be cors policy (ARC-471)
-
 
 ## [1.9.16] - 2026-04-16
 
 ### Fixed
-- sea battle ships placement styles (ARC-472)
 
+- sea battle ships placement styles (ARC-472)
 
 ## [1.9.15] - 2026-04-16
 
 ### Fixed
-- staging cors errors (ARC-471)
 
+- staging cors errors (ARC-471)
 
 ## [1.9.14] - 2026-04-15
 
 ### Added
-- images for additional critical game variants (ARC-457)
 
+- images for additional critical game variants (ARC-457)
 
 ## [1.9.13] - 2026-04-15
 
 ### Fixed
-- unuseed tamgui in page loading (ARC-471)
 
+- unuseed tamgui in page loading (ARC-471)
 
 ## [1.9.12] - 2026-04-15
 
 ### Fixed
-- get started button logic (ARC-470)
 
+- get started button logic (ARC-470)
 
 ## [1.9.11] - 2026-04-14
 
 ### Fixed
-- e2e ci cd less shards with jobs (ARC-469)
 
+- e2e ci cd less shards with jobs (ARC-469)
 
 ## [1.9.10] - 2026-04-14
 
 ### Fixed
-- critical games styles (ARC-468)
 
+- critical games styles (ARC-468)
 
 ## [1.9.9] - 2026-04-14
 
 ### Fixed
-- home page seo and a11y (ARC-467)
 
+- home page seo and a11y (ARC-467)
 
 ## [1.9.8] - 2026-04-13
 
 ### Refactored
-- same games widget container for all games (ARC-465)
 
+- same games widget container for all games (ARC-465)
 
 ## [1.9.7] - 2026-04-13
 
 ### Fixed
-- tamagui configs (ARC-466)
 
+- tamagui configs (ARC-466)
 
 ## [1.9.6] - 2026-04-13
 
 ### Fixed
-- request errors and warnings (ARC-461)
 
+- request errors and warnings (ARC-461)
 
 ## [1.9.5] - 2026-04-10
 
 ### Fixed
-- remove react query (ARC-460)
 
+- remove react query (ARC-460)
 
 ## [1.9.4] - 2026-04-07
 
 ### Added
+
 - wire crime/horror/adventure full variant styles in getVariantStyles (ARC-456)
 - full variant immersion styles for adventure theme (ARC-456)
 - full variant immersion styles for horror theme (ARC-456)
@@ -564,6 +578,7 @@ ARC-427)
 - add CSS animations hook for sea battle UI (ARC-456)
 
 ### Fixed
+
 - critical game widget styles (ARC-456)
 - fill viewport on mobile and eliminate empty space below game content (ARC-456)
 - apply GameTitle gradient via inline span to avoid Tamagui DOM prop warning (ARC-456)
@@ -574,14 +589,15 @@ ARC-427)
 - game control pannel styles (ARC-456)
 
 ### Refactored
+
 - compact glassy pill header styled components (ARC-456)
 - no-op getTitleTextStyles in all existing variant configs (ARC-456)
 - compute ownIcon once per cell in AttackBoard own-board render (ARC-456)
 
 ### Documentation
+
 - add Critical game header and variant styles design spec (ARC-456)
 - add Sea Battle UI redesign spec (ARC-456) (ARC-456)
-
 
 ## [1.9.3] - 2026-04-02
 

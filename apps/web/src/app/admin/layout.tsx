@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { requireAdmin } from '@/entities/session/api/requireAdmin';
-import AdminLayoutClient from './AdminLayoutClient';
+import AdminLayoutShell from './AdminLayoutShell';
 
 export const metadata: Metadata = {
   title: 'Admin',
@@ -15,6 +15,6 @@ export default async function AdminLayout({
 }) {
   const user = await requireAdmin();
   return (
-    <AdminLayoutClient username={user.username}>{children}</AdminLayoutClient>
+    <AdminLayoutShell username={user.username}>{children}</AdminLayoutShell>
   );
 }

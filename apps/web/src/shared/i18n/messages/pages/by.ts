@@ -1,3 +1,5 @@
+import { adminAnnouncementsBy } from './admin-announcements/by';
+
 export const by = {
   admin: {
     title: 'Адмін',
@@ -95,6 +97,7 @@ export const by = {
       },
       totalLabel: '{total} плацяжоў',
     },
+    announcements: adminAnnouncementsBy,
   },
   tournaments: {
     title: 'Турніры',

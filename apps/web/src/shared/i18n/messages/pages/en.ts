@@ -1,3 +1,5 @@
+import { adminAnnouncementsEn } from './admin-announcements/en';
+
 export const en = {
   admin: {
     title: 'Admin',
@@ -95,6 +97,7 @@ export const en = {
       },
       totalLabel: '{total} notes',
     },
+    announcements: adminAnnouncementsEn,
   },
   tournaments: {
     title: 'Tournaments',

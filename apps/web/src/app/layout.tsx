@@ -6,6 +6,7 @@ import './globals.css';
 import { cookies } from 'next/headers';
 import { appConfig } from '@/shared/config/app-config';
 import { Header } from '@/widgets/header/ui/Header';
+import { AnnouncementBanner } from '@/widgets/AnnouncementBanner/ui/AnnouncementBanner';
 import { JsonLd } from '@/shared/ui/JsonLd';
 
 const geistSans = Geist({
@@ -156,6 +157,7 @@ export default async function RootLayout({
           <LanguageProvider initialLocale={locale}>
             <PWAProvider>
               <BrowserRegistry>
+                <AnnouncementBanner />
                 <Header />
                 {children}
               </BrowserRegistry>

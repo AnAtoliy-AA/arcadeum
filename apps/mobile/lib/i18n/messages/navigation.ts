@@ -19,6 +19,7 @@ export const navigationMessages = {
     gameCreateTitle: 'Create game',
     gameDetailsTitle: 'Game details',
     notFoundTitle: 'Page not found',
+    walletTitle: 'My wallet',
     backButtonHint: 'Go back to the previous screen',
   },
   es: {
@@ -41,6 +42,7 @@ export const navigationMessages = {
     gameCreateTitle: 'Crear partida',
     gameDetailsTitle: 'Detalles del juego',
     notFoundTitle: 'Página no encontrada',
+    walletTitle: 'Mi cartera',
     backButtonHint: 'Volver a la pantalla anterior',
   },
   fr: {
@@ -63,6 +65,7 @@ export const navigationMessages = {
     gameCreateTitle: 'Créer une partie',
     gameDetailsTitle: 'Détails de la partie',
     notFoundTitle: 'Page introuvable',
+    walletTitle: 'Mon portefeuille',
     backButtonHint: "Revenir à l'écran précédent",
   },
 };

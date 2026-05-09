@@ -1,5 +1,5 @@
 'use client';
-import { Avatar } from '@arcadeum/ui';
+import { Avatar, Button } from '@arcadeum/ui';
 import { XStack, YStack, Text } from 'tamagui';
 import type { AdminUserItem } from '../api';
 import type { UserRole } from '@/entities/session/model/types';
@@ -10,8 +10,10 @@ export interface UsersTableRowProps {
   item: AdminUserItem;
   currentUserId: string;
   onRoleChange: (userId: string, role: UserRole) => void;
+  onWalletOpen: (userId: string) => void;
   roleLabels: Record<UserRole, string>;
   selfTooltip: string;
+  walletButtonLabel: string;
   isPending?: boolean;
   zebra?: boolean;
 }
@@ -20,8 +22,10 @@ export function UsersTableRow({
   item,
   currentUserId,
   onRoleChange,
+  onWalletOpen,
   roleLabels,
   selfTooltip,
+  walletButtonLabel,
   isPending,
   zebra,
 }: UsersTableRowProps) {
@@ -62,15 +66,25 @@ export function UsersTableRow({
         )}
       </YStack>
       <RoleBadge role={item.role} label={roleLabels[item.role]} />
-      <span title={isSelf ? selfTooltip : undefined}>
-        <RoleSelect
-          value={item.role}
-          onChange={(r) => onRoleChange(item.id, r)}
-          labels={roleLabels}
-          disabled={isSelf || isPending}
-          testId={`role-select-${item.id}`}
-        />
-      </span>
+      <XStack gap="$2" alignItems="center">
+        <span title={isSelf ? selfTooltip : undefined}>
+          <RoleSelect
+            value={item.role}
+            onChange={(r) => onRoleChange(item.id, r)}
+            labels={roleLabels}
+            disabled={isSelf || isPending}
+            testId={`role-select-${item.id}`}
+          />
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          onPress={() => onWalletOpen(item.id)}
+          data-testid={`wallet-open-${item.id}`}
+        >
+          {walletButtonLabel}
+        </Button>
+      </XStack>
     </XStack>
   );
 }

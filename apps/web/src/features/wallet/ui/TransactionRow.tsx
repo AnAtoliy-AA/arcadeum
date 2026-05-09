@@ -7,6 +7,10 @@ import type {
 const REASON_LABELS: Record<WalletReason, string> = {
   admin_grant: 'Granted by admin',
   admin_deduct: 'Deducted by admin',
+  game_win: 'Game win',
+  tournament_entry: 'Tournament entry',
+  tournament_refund: 'Tournament refund',
+  tournament_prize: 'Tournament prize',
 };
 
 interface Props {

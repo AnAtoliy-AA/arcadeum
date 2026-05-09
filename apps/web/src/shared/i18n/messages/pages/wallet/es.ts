@@ -36,6 +36,10 @@ export const walletEs: WalletI18n = {
   reasons: {
     admin_grant: 'Otorgado por el administrador',
     admin_deduct: 'Deducido por el administrador',
+    game_win: 'Victoria en partida',
+    tournament_entry: 'Inscripción al torneo',
+    tournament_refund: 'Reembolso del torneo',
+    tournament_prize: 'Premio del torneo',
   },
   errors: {
     insufficientFunds: 'Saldo insuficiente.',

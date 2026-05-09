@@ -1,5 +1,11 @@
 export type WalletCurrency = 'coins' | 'gems';
-export type WalletReason = 'admin_grant' | 'admin_deduct';
+export type WalletReason =
+  | 'admin_grant'
+  | 'admin_deduct'
+  | 'game_win'
+  | 'tournament_entry'
+  | 'tournament_refund'
+  | 'tournament_prize';
 
 export interface WalletBalance {
   coins: number;

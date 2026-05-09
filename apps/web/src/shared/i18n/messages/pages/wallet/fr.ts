@@ -36,6 +36,10 @@ export const walletFr: WalletI18n = {
   reasons: {
     admin_grant: "Accordé par l'administrateur",
     admin_deduct: "Déduit par l'administrateur",
+    game_win: 'Victoire en jeu',
+    tournament_entry: 'Inscription au tournoi',
+    tournament_refund: 'Remboursement du tournoi',
+    tournament_prize: 'Prix du tournoi',
   },
   errors: {
     insufficientFunds: 'Solde insuffisant.',

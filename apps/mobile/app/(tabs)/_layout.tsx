@@ -14,10 +14,15 @@ import { useAppName } from '@/hooks/useAppName';
 import { platform } from '@/constants/platform';
 import { platformShadow } from '@/lib/platformShadow';
 import { useTranslation } from '@/lib/i18n';
+import { useSessionTokens } from '@/stores/sessionTokens';
+import { useWalletSocket } from '@/features/wallet/api/useWalletSocket';
+
 export default function TabLayout() {
   const { colorScheme, isDarkLike } = useColorScheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { tokens } = useSessionTokens();
+  useWalletSocket(tokens.accessToken);
   const appName = useAppName();
 
   const palette: ThemePalette = Colors[colorScheme];

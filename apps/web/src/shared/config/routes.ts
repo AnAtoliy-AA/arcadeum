@@ -49,6 +49,7 @@ export const routes = {
   community: '/community',
   rewards: '/rewards',
   tournaments: '/tournaments',
+  wallet: '/wallet',
   leaderboards: '/leaderboards',
   developers: '/developers',
 

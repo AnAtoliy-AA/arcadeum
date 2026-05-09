@@ -17,9 +17,23 @@ import { getWalletBalance } from '../server/wallet.server';
 async function BalanceChipInner() {
   const messages = await getTranslations();
   const t = messages.pages?.wallet;
-  // Destructure to avoid the no-restricted-syntax MemberExpression rule that
-  // bans direct `.coins` / `.gems` access anywhere outside the wallet module.
-  const { coins, gems } = await getWalletBalance();
+
+  // Header is rendered on every page. If the BE is unreachable or the token
+  // is stale, getWalletBalance() throws (401/network) — and Suspense does not
+  // catch thrown errors, so the throw would bubble up and break SSR for the
+  // whole layout. Treat any failure as "balance unknown, render nothing"
+  // instead of cascading.
+  let coins = 0;
+  let gems = 0;
+  try {
+    const balance = await getWalletBalance();
+    // Destructure to avoid the no-restricted-syntax MemberExpression rule that
+    // bans direct `.coins` / `.gems` access anywhere outside the wallet module.
+    ({ coins, gems } = balance);
+  } catch {
+    // Auth expired, BE unreachable, or any transient failure — render nothing.
+    return null;
+  }
   const fmt = new Intl.NumberFormat();
 
   return (

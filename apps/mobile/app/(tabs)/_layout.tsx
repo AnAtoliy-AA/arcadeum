@@ -99,6 +99,7 @@ export default function TabLayout() {
               canGoBack={canGoBack}
               onBack={canGoBack ? () => navigation.goBack() : undefined}
               onSettingsPress={handleSettingsPress}
+              showBalanceChip={Boolean(tokens.accessToken)}
             />
           ),
         };

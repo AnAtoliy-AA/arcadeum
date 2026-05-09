@@ -153,11 +153,12 @@ Sort `{ severity: -1, startsAt: -1 }`, limit 1 for the public endpoint.
   - Response shape: `{ announcement: AnnouncementPublicDto | null }`.
   - `AnnouncementPublicDto` = `{ id, severity, updatedAt, title, body?, ctaLabel?, ctaHref? }` — locale already resolved server-side with English fallback. Admin-only fields stripped (`createdBy`, full `content` map, `audience`).
   - `Cache-Control: private, max-age=30, stale-while-revalidate=60`.
+  - **Cache vs. auth-state:** the `private` cache is per-browser and varies implicitly with the `Authorization` header (different bearer → different cache key in modern browsers). Up to 30 s of staleness is acceptable across an auth-state change; the FE's window-focus refetch (see "FE banner behavior") covers the gap on next interaction.
 
 ### Admin (guarded by `JwtAuthGuard + RolesGuard + @Roles('admin')`)
 
 - `GET /admin/announcements?page=&pageSize=&q=&status=&severity=`
-  - `page` 1-based (admin convention), `pageSize` ≤ 100.
+  - `page` 1-based (admin convention), `pageSize` ≤ 100 (server cap). FE table defaults to `pageSize=25`.
   - `status` ∈ `'all' | 'active' | 'scheduled' | 'expired'` — derived from `startsAt`/`endsAt` vs `now()` in the aggregation.
   - `q` matches `content.en.title` (escaped via `escapeRegExp`, case-insensitive).
   - Response: `{ items: AnnouncementAdminDto[], total, page, pageSize }`. `AnnouncementAdminDto` includes the full `content` map plus `createdBy.displayName` joined in.
@@ -167,18 +168,19 @@ Sort `{ severity: -1, startsAt: -1 }`, limit 1 for the public endpoint.
 
 ### Status derivation
 
+An announcement is **active** iff `(startsAt is null OR startsAt ≤ now) AND (endsAt is null OR now < endsAt)` — same predicate as the active-now query above. Otherwise:
+
 ```
-now < startsAt              → 'scheduled'
-startsAt ≤ now < endsAt     → 'active'   (or endsAt null + startsAt ≤ now)
-now ≥ endsAt                → 'expired'
+now < startsAt              → 'scheduled'   (startsAt non-null and in the future)
+now ≥ endsAt                → 'expired'     (endsAt non-null and in the past)
 ```
 
 Note: `startsAt: null` means "active immediately" — treated as `-∞`.
-`endsAt: null` means "no expiry" — treated as `+∞`.
+`endsAt: null` means "no expiry" — treated as `+∞`. An announcement with both null is always active.
 
 ## FE banner behavior
 
-- `useActiveAnnouncement()` wraps the existing custom `useQuery` hook (same pattern as `useAdminPaymentNotes`). Refetches on window focus + every 60 s while tab is visible.
+- `useActiveAnnouncement()` wraps the existing custom `useQuery` hook (same pattern as `useAdminPaymentNotes`). Refetches on window focus + every 60 s while the tab is visible. The polling interval explicitly checks `document.visibilityState === 'visible'` before firing the refetch — the custom `useQuery` does not auto-pause polling, so the hook must guard.
 - Dismissal store: `localStorage['arc:announcements:dismissed']` = JSON `Array<{ id: string, updatedAt: string }>`. Cap 50 entries (FIFO eviction). Malformed JSON → treated as empty.
 - A banner is hidden if `dismissedIds` contains a matching `{id, updatedAt}` pair AND `severity !== 'critical'`.
 - When admin edits content, `updatedAt` changes → previous dismissal entry no longer matches → banner re-appears with the new content.

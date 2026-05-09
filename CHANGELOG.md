@@ -7,6 +7,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.8] - 2026-05-09
+
+### Added
+- add mobile wallet i18n (en/es/fr) (ARC-615)
+- add wallet screen at /wallet route (ARC-615)
+- mount balance chip in mobile header (ARC-615)
+- mount wallet socket subscription in tabs layout (ARC-615)
+- add mobile wallet socket client (ARC-615)
+- add mobile wallet balance + transactions hooks (ARC-615)
+- hook admin wallet drawer into admin-users row action (ARC-615)
+- add admin wallet drawer with grant/deduct form (ARC-615)
+- add admin-wallet server actions for grant/deduct/load (ARC-615)
+- add /wallet page with cursor-paginated history (ARC-615) (ARC-615)
+- mount BalanceChip in header (ARC-615) (ARC-615)
+- add WalletLiveBridge with root-layout mount (ARC-615) (ARC-615)
+- add BalanceChip Server Component (ARC-615) (ARC-615)
+- add web wallet socket client (ARC-615) (ARC-615)
+- add wallet and admin-wallet i18n namespaces (en/ru/es/fr/by) (ARC-615)
+- add web server module for wallet data fetching (ARC-615)
+- backfill coins/gems on application bootstrap (ARC-615) (ARC-615)
+- emit wallet:updated socket event on every mutation (ARC-615) (ARC-615)
+- add admin wallet controller (ARC-615) (ARC-615)
+- add player wallet controller (ARC-615) (ARC-615)
+- add grant/deduct/list DTOs with class-validator (ARC-615) (ARC-615)
+- implement getBalance and getHistory (ARC-615) (ARC-615)
+- implement debit with insufficient-funds guard (ARC-615) (ARC-615)
+- implement credit with idempotency + validation (ARC-615) (ARC-615)
+- scaffold WalletModule and service (ARC-615) (ARC-615)
+- add coins and gems balance fields to User (ARC-615) (ARC-615)
+- add balance and transaction view interfaces (ARC-615) (ARC-615)
+- add WalletTransaction ledger schema (ARC-615) (ARC-615)
+- add insufficient-funds and invalid-currency exceptions (ARC-615) (ARC-615)
+- add currency and reason type unions (ARC-615) (ARC-615)
+
+### Fixed
+- BalanceChip swallows BE errors so SSR never cascades (ARC-615) (ARC-615)
+- unauthenticated /wallet renders empty state + sitemap entry (ARC-615) (ARC-615)
+- register JwtModule in WalletModule for gateway DI (ARC-615) (ARC-615)
+
+### Documentation
+- split interfaces import in plan task 6 (ARC-615) (ARC-615)
+- fold plan reviewer recommendations into ARC-615 plan (ARC-615)
+- add ARC-615 implementation plan (ARC-615)
+- fold reviewer recommendations into spec (ARC-615) (ARC-615)
+- add foundation design spec (ARC-615) (ARC-615)
+
+
 ## [1.13.7] - 2026-05-09
 
 ### Added

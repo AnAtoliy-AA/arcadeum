@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import { useLanguage } from '@/shared/i18n/context';
 import {
   PageLayout,
@@ -18,6 +19,9 @@ import {
   TournamentCard,
   type TournamentCardLabels,
 } from '@/features/tournaments/ui/TournamentCard';
+import { RegisterConfirm } from '@/features/tournaments/ui/RegisterConfirm';
+import { UnregisterConfirm } from '@/features/tournaments/ui/UnregisterConfirm';
+import type { PublicTournamentItem } from '@/features/tournaments/api';
 
 interface TournamentsListI18n {
   loading: string;
@@ -43,8 +47,37 @@ export default function TournamentsPageContent() {
   const registerMut = useRegisterTournament();
   const unregisterMut = useUnregisterTournament();
 
+  const [pendingRegister, setPendingRegister] =
+    useState<PublicTournamentItem | null>(null);
+  const [pendingUnregister, setPendingUnregister] =
+    useState<PublicTournamentItem | null>(null);
+
   const items = data?.items ?? [];
   const showEmpty = !isLoading && items.length === 0;
+
+  const handleRegisterClick = (id: string) => {
+    const item = items.find((it) => it.id === id);
+    if (!item) return;
+    if (item.entryFeeCoins > 0) {
+      setPendingRegister(item);
+    } else {
+      registerMut.mutate({ id });
+    }
+  };
+
+  const handleUnregisterClick = (id: string) => {
+    const item = items.find((it) => it.id === id);
+    if (!item) return;
+    setPendingUnregister(item);
+  };
+
+  const confirmRegister = async (id: string) => {
+    await registerMut.mutateAsync({ id });
+  };
+
+  const confirmUnregister = async (id: string) => {
+    await unregisterMut.mutateAsync({ id });
+  };
 
   return (
     <PageLayout>
@@ -83,12 +116,41 @@ export default function TournamentsPageContent() {
                   item={item}
                   isAuthenticated={isAuthenticated}
                   isPending={registerMut.isPending || unregisterMut.isPending}
-                  onRegister={(id) => registerMut.mutate({ id })}
-                  onUnregister={(id) => unregisterMut.mutate({ id })}
+                  onRegister={handleRegisterClick}
+                  onUnregister={handleUnregisterClick}
                   labels={listT.card}
                 />
               ))}
             </YStack>
+          )}
+
+          {pendingRegister && listT && (
+            <RegisterConfirm
+              tournamentId={pendingRegister.id}
+              entryFeeCoins={pendingRegister.entryFeeCoins}
+              currentBalanceCoins={null}
+              open={true}
+              onClose={() => setPendingRegister(null)}
+              onSuccess={() => setPendingRegister(null)}
+              onRegister={confirmRegister}
+              labels={{
+                ...listT.card.confirmRegister,
+                errors: listT.card.errors,
+              }}
+            />
+          )}
+
+          {pendingUnregister && listT && (
+            <UnregisterConfirm
+              tournamentId={pendingUnregister.id}
+              entryFeeCoins={pendingUnregister.entryFeeCoins}
+              status={pendingUnregister.status}
+              open={true}
+              onClose={() => setPendingUnregister(null)}
+              onSuccess={() => setPendingUnregister(null)}
+              onUnregister={confirmUnregister}
+              labels={listT.card.confirmUnregister}
+            />
           )}
         </YStack>
       </Container>

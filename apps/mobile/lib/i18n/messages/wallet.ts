@@ -29,6 +29,10 @@ export const walletMessages = {
     reasons: {
       admin_grant: 'Granted by admin',
       admin_deduct: 'Deducted by admin',
+      game_win: 'Game win',
+      tournament_entry: 'Tournament entry',
+      tournament_refund: 'Tournament refund',
+      tournament_prize: 'Tournament prize',
     },
     errors: {
       insufficientFunds: 'Insufficient balance.',
@@ -63,6 +67,10 @@ export const walletMessages = {
     reasons: {
       admin_grant: 'Otorgado por el administrador',
       admin_deduct: 'Deducido por el administrador',
+      game_win: 'Victoria en partida',
+      tournament_entry: 'Inscripción al torneo',
+      tournament_refund: 'Reembolso del torneo',
+      tournament_prize: 'Premio del torneo',
     },
     errors: {
       insufficientFunds: 'Saldo insuficiente.',
@@ -97,6 +105,10 @@ export const walletMessages = {
     reasons: {
       admin_grant: "Accordé par l'administrateur",
       admin_deduct: "Déduit par l'administrateur",
+      game_win: 'Victoire en jeu',
+      tournament_entry: 'Inscription au tournoi',
+      tournament_refund: 'Remboursement du tournoi',
+      tournament_prize: 'Prix du tournoi',
     },
     errors: {
       insufficientFunds: 'Solde insuffisant.',

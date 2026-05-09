@@ -325,11 +325,11 @@ import {
   WalletTransactionDocument,
 } from './schemas/wallet-transaction.schema';
 import type { WalletCurrency, WalletReason } from './interfaces/wallet-types';
+import type { WalletBalance } from './interfaces/wallet-balance.interface';
 import type {
-  WalletBalance,
   WalletTransactionView,
   PaginatedWalletTransactions,
-} from './interfaces/wallet-balance.interface';
+} from './interfaces/wallet-transaction.interface';
 
 @Injectable()
 export class WalletService {

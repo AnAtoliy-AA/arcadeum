@@ -7,6 +7,7 @@ import { Tournament, TournamentSchema } from './schemas/tournament.schema';
 import { TournamentsService } from './tournaments.service';
 import { AdminTournamentsController } from './admin-tournaments.controller';
 import { PublicTournamentsController } from './public-tournaments.controller';
+import { TournamentsBootstrap } from './lib/tournaments-bootstrap';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { PublicTournamentsController } from './public-tournaments.controller';
     ]),
   ],
   controllers: [AdminTournamentsController, PublicTournamentsController],
-  providers: [TournamentsService, RolesGuard],
+  providers: [TournamentsService, RolesGuard, TournamentsBootstrap],
   exports: [TournamentsService],
 })
 export class TournamentsModule {}

@@ -64,6 +64,37 @@ export const fr = {
         generic: "Quelque chose s'est mal passé. Veuillez réessayer.",
       },
     },
+    payments: {
+      title: 'Paiements',
+      search: { placeholder: 'Recherche par note, nom ou ID de transaction' },
+      filter: {
+        visibility: {
+          label: 'Visibilité',
+          all: 'Tous',
+          public: 'Publics seulement',
+          private: 'Privés seulement',
+        },
+      },
+      table: {
+        user: 'Utilisateur',
+        amount: 'Montant',
+        note: 'Note',
+        visibility: 'Visibilité',
+        createdAt: 'Créé le',
+        transactionId: 'Transaction',
+      },
+      chip: { public: 'Public', private: 'Privé', anonymous: 'Anonyme' },
+      empty: {
+        noResults: 'Aucun paiement ne correspond aux filtres.',
+        noNotes: 'Aucun paiement pour le moment.',
+      },
+      pagination: {
+        prev: 'Précédent',
+        next: 'Suivant',
+        of: 'Page {current} sur {total}',
+      },
+      totalLabel: '{total} notes',
+    },
   },
   tournaments: {
     title: 'Tournois',

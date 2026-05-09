@@ -62,6 +62,41 @@ export const ru = {
         generic: 'Что-то пошло не так. Попробуйте ещё раз.',
       },
     },
+    payments: {
+      title: 'Платежи',
+      search: { placeholder: 'Поиск по тексту, имени или ID транзакции' },
+      filter: {
+        visibility: {
+          label: 'Видимость',
+          all: 'Все',
+          public: 'Только публичные',
+          private: 'Только приватные',
+        },
+      },
+      table: {
+        user: 'Пользователь',
+        amount: 'Сумма',
+        note: 'Заметка',
+        visibility: 'Видимость',
+        createdAt: 'Создано',
+        transactionId: 'Транзакция',
+      },
+      chip: {
+        public: 'Публичная',
+        private: 'Приватная',
+        anonymous: 'Аноним',
+      },
+      empty: {
+        noResults: 'Нет платежей по фильтру.',
+        noNotes: 'Платежей пока нет.',
+      },
+      pagination: {
+        prev: 'Назад',
+        next: 'Вперёд',
+        of: 'Страница {current} из {total}',
+      },
+      totalLabel: '{total} платежей',
+    },
   },
   tournaments: {
     title: 'Турниры',

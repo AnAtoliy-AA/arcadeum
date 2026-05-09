@@ -60,6 +60,37 @@ export const es = {
         generic: 'Algo salió mal. Inténtalo de nuevo.',
       },
     },
+    payments: {
+      title: 'Pagos',
+      search: { placeholder: 'Buscar por nota, nombre o ID de transacción' },
+      filter: {
+        visibility: {
+          label: 'Visibilidad',
+          all: 'Todos',
+          public: 'Solo públicos',
+          private: 'Solo privados',
+        },
+      },
+      table: {
+        user: 'Usuario',
+        amount: 'Monto',
+        note: 'Nota',
+        visibility: 'Visibilidad',
+        createdAt: 'Creado',
+        transactionId: 'Transacción',
+      },
+      chip: { public: 'Público', private: 'Privado', anonymous: 'Anónimo' },
+      empty: {
+        noResults: 'No hay pagos que coincidan con los filtros.',
+        noNotes: 'Aún no hay pagos.',
+      },
+      pagination: {
+        prev: 'Anterior',
+        next: 'Siguiente',
+        of: 'Página {current} de {total}',
+      },
+      totalLabel: '{total} notas',
+    },
   },
   tournaments: {
     title: 'Torneos',

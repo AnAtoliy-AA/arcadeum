@@ -76,6 +76,13 @@ export default function AdminPaymentsClient() {
         chipPublic: t.chip.public,
         chipPrivate: t.chip.private,
         anonymous: t.chip.anonymous,
+        header: {
+          user: t.table.user,
+          amount: t.table.amount,
+          note: t.table.note,
+          visibility: t.table.visibility,
+          createdAt: t.table.createdAt,
+        },
       }
     : null;
 

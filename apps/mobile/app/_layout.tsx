@@ -78,6 +78,8 @@ function NavigationRoot() {
           return t('navigation.paymentTitle');
         case 'support':
           return t('navigation.supportTitle');
+        case 'wallet':
+          return t('navigation.walletTitle');
         case 'games/create':
           return t('navigation.gameCreateTitle');
         case 'games/[id]':
@@ -151,6 +153,7 @@ function NavigationRoot() {
           <Stack.Screen name="settings" />
           <Stack.Screen name="payment" />
           <Stack.Screen name="support" />
+          <Stack.Screen name="wallet" />
           <Stack.Screen name="+not-found" />
         </Stack>
         <StatusBar style={isDarkLike ? 'light' : 'dark'} />

@@ -9,6 +9,7 @@ import {
 } from './schemas/wallet-transaction.schema';
 import { WalletService } from './wallet.service';
 import { WalletController } from './wallet.controller';
+import { AdminWalletController } from './admin-wallet.controller';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { WalletController } from './wallet.controller';
       { name: WalletTransaction.name, schema: WalletTransactionSchema },
     ]),
   ],
-  controllers: [WalletController],
+  controllers: [WalletController, AdminWalletController],
   providers: [WalletService, RolesGuard],
   exports: [WalletService],
 })

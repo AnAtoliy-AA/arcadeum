@@ -67,6 +67,10 @@ This is the smallest end-to-end loop that proves the economy works. ARC-617 (rea
 
 **Why an explicit endpoint:** The existing tournament transitions don't have a "complete with winner" step. Patching `update-tournament.dto.ts` to accept a winner ID would muddy normal updates. A dedicated endpoint is cleaner and more audit-friendly.
 
+**Status transition path:** Tournaments today move `upcoming → active → completed`. `markComplete` requires `status === 'active'`. Promoting `upcoming` directly to `completed` is rejected — admins must run the existing transition to `active` first. This keeps the prize payout tied to a tournament that actually ran.
+
+**Admin UI:** the winner selector renders a **dropdown populated from the tournament's `registrations[]`**, not a free-text userId field. Free-text is a typo footgun for a payout flow.
+
 ### D6 — Idempotency keys are deterministic
 
 **Decision:** All wallet calls in this ticket use deterministic idempotency keys derived from the source entity:
@@ -238,6 +242,8 @@ async register(id, userId) {
 
 **Cross-session coordination (subtle):** `WalletService.debit` already wraps its work in its own Mongo transaction (ARC-615). To avoid nested-transaction issues, `WalletService.debit` accepts an optional `parentSession?: ClientSession` parameter — when present, the wallet uses that session instead of opening its own. This is a small extension to the wallet service signature, not a redesign.
 
+**Backward compatibility:** `parentSession` is optional and trailing on the signature. All existing ARC-615 call sites (admin grant/deduct controllers, future internal callers) remain unchanged — they continue to use the wallet's own session. The unit and integration tests from ARC-615 must continue to pass byte-for-byte after this extension.
+
 `unregister(id, userId)`:
 
 ```ts
@@ -280,6 +286,46 @@ async unregister(id, userId) {
   await this.tournamentModel.updateOne(...);
 }
 ```
+
+### TournamentsService — admin cancel (refund all)
+
+If an admin cancels an `upcoming` tournament, every paid registration is refunded. The existing tournament-cancellation transition (or a new admin endpoint if one doesn't exist — implementer to confirm during planning) iterates `registrations[]` and calls `WalletService.credit(...)` with `reason: 'tournament_refund'` and the same deterministic key as a self-unregister (`tournament-${id}-refund-${userId}`) — so a player who already unregistered can't be double-refunded by the admin pass.
+
+```ts
+async cancelUpcoming(id): Promise<void> {
+  const tournament = await this.tournamentModel.findById(id).lean();
+  if (!tournament || tournament.status !== 'upcoming') {
+    throw new BadRequestException('tournaments.cannotCancel');
+  }
+  const session = await this.connection.startSession();
+  try {
+    await session.withTransaction(async () => {
+      await this.tournamentModel.updateOne(
+        { _id: id },
+        { $set: { status: 'cancelled' } },
+        { session },
+      );
+      if (tournament.entryFeeCoins > 0) {
+        for (const reg of tournament.registrations) {
+          await this.wallet.credit(
+            reg.userId,
+            'coins',
+            tournament.entryFeeCoins,
+            'tournament_refund',
+            `tournament-${id}-refund-${reg.userId}`,
+            { tournamentId: id, reason: 'admin_cancel' },
+            // pass session
+          );
+        }
+      }
+    });
+  } finally {
+    await session.endSession();
+  }
+}
+```
+
+(If a `cancelled` status doesn't already exist, add it to the tournament status union as part of the schema work.)
 
 ### TournamentsService — markComplete
 

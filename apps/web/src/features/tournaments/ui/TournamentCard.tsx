@@ -11,11 +11,27 @@ import type { TournamentGameType } from '@/features/admin-tournaments/api';
 export interface TournamentCardLabels {
   registered: string;
   prize: string;
+  entryFee: string;
+  prizePool: string;
   registerCta: string;
   unregisterCta: string;
   signInToRegister: string;
   full: string;
   registrationClosed: string;
+  confirmRegister: {
+    title: string;
+    body: string;
+    confirm: string;
+    cancel: string;
+  };
+  confirmUnregister: {
+    refund: string;
+    title: string;
+    body: string;
+    confirm: string;
+    cancelButton: string;
+  };
+  errors: { insufficientFunds: string };
   effectiveStatus: Record<EffectiveTournamentStatus, string>;
   gameType: Record<TournamentGameType, string>;
 }
@@ -140,6 +156,23 @@ export function TournamentCard({
         <Text fontSize="$2">
           <Text fontWeight="700">{labels.prize}:</Text> {item.prizeDescription}
         </Text>
+      )}
+
+      {(item.entryFeeCoins > 0 || item.prizePoolCoins > 0) && (
+        <XStack gap="$3" flexWrap="wrap">
+          {item.entryFeeCoins > 0 && (
+            <Text fontSize="$2" data-testid={`entry-fee-${item.id}`}>
+              <Text fontWeight="700">{labels.entryFee}:</Text>{' '}
+              {item.entryFeeCoins.toLocaleString()}
+            </Text>
+          )}
+          {item.prizePoolCoins > 0 && (
+            <Text fontSize="$2" data-testid={`prize-pool-${item.id}`}>
+              <Text fontWeight="700">{labels.prizePool}:</Text>{' '}
+              {item.prizePoolCoins.toLocaleString()}
+            </Text>
+          )}
+        </XStack>
       )}
 
       <XStack alignItems="center" justifyContent="space-between">

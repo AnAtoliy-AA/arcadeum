@@ -11,6 +11,7 @@ import { WalletService } from './wallet.service';
 import { WalletController } from './wallet.controller';
 import { AdminWalletController } from './admin-wallet.controller';
 import { WalletGateway } from './wallet.gateway';
+import { WalletBootstrap } from './lib/wallet-bootstrap';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { WalletGateway } from './wallet.gateway';
     ]),
   ],
   controllers: [WalletController, AdminWalletController],
-  providers: [WalletService, WalletGateway, RolesGuard],
+  providers: [WalletService, WalletGateway, WalletBootstrap, RolesGuard],
   exports: [WalletService],
 })
 export class WalletModule {}

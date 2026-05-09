@@ -27,7 +27,10 @@ import type {
 import { AdminTournamentsFilters } from '@/features/admin-tournaments/ui/AdminTournamentsFilters';
 import { AdminTournamentsTable } from '@/features/admin-tournaments/ui/AdminTournamentsTable';
 import { AdminTournamentForm } from '@/features/admin-tournaments/ui/AdminTournamentForm';
+import { MarkCompleteDialog } from '@/features/admin-tournaments/ui/MarkCompleteDialog';
 import { nextStatuses } from '@/features/admin-tournaments/lib/transitions';
+import { useRefreshStore } from '@/shared/model/useRefreshStore';
+import { ADMIN_TOURNAMENTS_REFRESH_KEY } from '@/features/admin-tournaments/hooks';
 
 interface TournamentsI18n {
   title: string;
@@ -64,6 +67,8 @@ interface TournamentsI18n {
     optional: string;
     maxPlayers: string;
     prizeDescription: string;
+    entryFeeLabel: string;
+    prizePoolLabel: string;
     tabs: { en: string; ru: string; es: string; fr: string; by: string };
     name: string;
     description: string;
@@ -72,6 +77,11 @@ interface TournamentsI18n {
       capacityRange: string;
       windowOrder: string;
     };
+  };
+  markComplete: {
+    button: string;
+    dialog: { title: string; body: string; confirm: string; cancel: string };
+    errors: { notRegistered: string; notLive: string; generic: string };
   };
   transitionPrompt: {
     title: string;
@@ -114,6 +124,9 @@ export default function AdminTournamentsClient() {
   const [pendingTransition, setPendingTransition] =
     useState<TransitionState | null>(null);
   const [resultText, setResultText] = useState('');
+  const [markCompleteItem, setMarkCompleteItem] =
+    useState<AdminTournamentItem | null>(null);
+  const triggerRefresh = useRefreshStore((s) => s.triggerRefresh);
 
   const { data, isLoading } = useAdminTournaments({
     page,
@@ -159,6 +172,7 @@ export default function AdminTournamentsClient() {
     edit: t.actions.edit,
     delete: t.actions.delete,
     transition: t.actions.transition,
+    markComplete: t.markComplete.button,
   };
 
   const formLabels = {
@@ -171,6 +185,8 @@ export default function AdminTournamentsClient() {
     optional: t.form.optional,
     maxPlayers: t.form.maxPlayers,
     prizeDescription: t.form.prizeDescription,
+    entryFeeLabel: t.form.entryFeeLabel,
+    prizePoolLabel: t.form.prizePoolLabel,
     tabs: t.form.tabs,
     name: t.form.name,
     description: t.form.description,
@@ -253,6 +269,7 @@ export default function AdminTournamentsClient() {
             onEdit={(item) => setModal({ mode: 'edit', initial: item })}
             onDelete={(item) => setPendingDelete(item)}
             onTransition={onTransition}
+            onMarkComplete={(item) => setMarkCompleteItem(item)}
             labels={tableLabels}
           />
 
@@ -292,6 +309,19 @@ export default function AdminTournamentsClient() {
                 <Button onPress={confirmDelete}>{t.actions.delete}</Button>
               </XStack>
             </YStack>
+          )}
+
+          {markCompleteItem && (
+            <MarkCompleteDialog
+              tournament={markCompleteItem}
+              open={true}
+              onClose={() => setMarkCompleteItem(null)}
+              onSuccess={() => {
+                setMarkCompleteItem(null);
+                triggerRefresh(ADMIN_TOURNAMENTS_REFRESH_KEY);
+              }}
+              labels={t.markComplete}
+            />
           )}
 
           {pendingTransition && (

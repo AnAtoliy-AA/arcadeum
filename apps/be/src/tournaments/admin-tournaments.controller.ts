@@ -21,6 +21,7 @@ import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { ListAdminTournamentsDto } from './dto/list-admin-tournaments.dto';
 import { TransitionStatusDto } from './dto/transition-status.dto';
+import { MarkTournamentCompleteDto } from './dto/mark-complete.dto';
 import type {
   AdminTournamentItem,
   AdminTournamentsListResponse,
@@ -85,5 +86,13 @@ export class AdminTournamentsController {
       page ? Number(page) : 1,
       pageSize ? Number(pageSize) : 50,
     );
+  }
+
+  @Post(':id/complete')
+  complete(
+    @Param('id') id: string,
+    @Body() dto: MarkTournamentCompleteDto,
+  ): Promise<AdminTournamentItem> {
+    return this.service.markComplete(id, dto.winnerUserId);
   }
 }

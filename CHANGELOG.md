@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.6] - 2026-05-09
+
+### Added
+- add i18n + SEO regression test (ARC-608) (ARC-608)
+- add /admin/announcements page + sidebar (ARC-608) (ARC-608)
+- api/hooks/UI components (ARC-608) (ARC-608)
+- add widget + mount in root layout (ARC-608) (ARC-608)
+- add dismissedStorage + ctaHrefSafety helpers (ARC-608) (ARC-608)
+- wire AnnouncementsModule into AppModule (ARC-608) (ARC-608)
+- public active endpoint with locale fallback + cache headers (ARC-608) (ARC-608)
+- admin CRUD controller with role guard (ARC-608) (ARC-608)
+- add service with admin CRUD and active-for-caller (ARC-608) (ARC-608)
+- add Create/Update/List/Active DTOs and validators (ARC-608) (ARC-608)
+- add status derivation and active-filter helpers (ARC-608) (ARC-608)
+- add Announcement schema and interfaces (ARC-608) (ARC-608)
+
+### Fixed
+- register User schema in module so RolesGuard resolves (ARC-608) (ARC-608)
+
+### Refactored
+- split layout into server shell + client sidebar (ARC-608) (ARC-608)
+
+### Documentation
+- apply plan review fixes (ARC-608) (ARC-608)
+- add announcements implementation plan (ARC-608) (ARC-608)
+- apply spec review clarifications (ARC-608) (ARC-608)
+- add announcements design spec (ARC-608) (ARC-608)
+
+
 ## [1.13.5] - 2026-05-09
 
 ### Added

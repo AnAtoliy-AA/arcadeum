@@ -65,13 +65,13 @@ class TournamentRegistration {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId!: Types.ObjectId;
 
-  @Prop({ default: null, maxlength: 100 })
-  displayName?: string | null;
+  @Prop({ type: String, default: null, maxlength: 100 })
+  displayName!: string | null;
 
   @Prop({ type: Date, default: Date.now })
   registeredAt!: Date;
 
-  @Prop({ default: false })
+  @Prop({ type: Boolean, default: false })
   waitlist!: boolean;
 }
 const TournamentRegistrationSchema = SchemaFactory.createForClass(

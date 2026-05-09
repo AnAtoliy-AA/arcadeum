@@ -61,10 +61,19 @@ class AnnouncementContent {
 const AnnouncementContentSchema =
   SchemaFactory.createForClass(AnnouncementContent);
 
+export const SEVERITY_RANK: Record<AnnouncementSeverity, number> = {
+  critical: 3,
+  warning: 2,
+  info: 1,
+};
+
 @Schema({ timestamps: true, collection: 'announcements' })
 export class Announcement {
   @Prop({ required: true, enum: ANNOUNCEMENT_SEVERITIES })
   severity!: AnnouncementSeverity;
+
+  @Prop({ required: true, type: Number })
+  severityRank!: number;
 
   @Prop({ required: true, enum: ANNOUNCEMENT_AUDIENCES, default: 'all' })
   audience!: AnnouncementAudience;
@@ -86,4 +95,4 @@ export type AnnouncementDocument = Announcement & Document;
 export const AnnouncementSchema = SchemaFactory.createForClass(Announcement);
 
 AnnouncementSchema.index({ startsAt: 1, endsAt: 1 });
-AnnouncementSchema.index({ severity: -1, startsAt: -1 });
+AnnouncementSchema.index({ severityRank: -1, startsAt: -1 });

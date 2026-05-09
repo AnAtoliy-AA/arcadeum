@@ -292,7 +292,26 @@ private async doWrite(
 
 **Notes on subtle correctness:**
 
-- **Duplicate-key handling with a parent session** — when the caller owns the session, we cannot do the "abort, then non-transactional read" trick (the caller may not abort; we'd be reading uncommitted state). Throw the dup-key error to the caller. Callers that pass `parentSession` MUST be prepared to handle this — in practice the `tournaments.service` call sites use brand-new keys (entry/refund/prize per tournament+user) and only retry deliberately, so a true duplicate is rare. To make recovery easy, expose a tiny helper:
+- **Duplicate-key handling with a parent session** — when the caller owns the session, we cannot do the "abort, then non-transactional read" trick (the caller may not abort; we'd be reading uncommitted state). **Strategy:** when `parentSession` is set, re-throw the dup-key error to the caller. The caller's `withTransaction` aborts (which is what we want — the registration insert / etc. should also roll back), and after the transaction has aborted the caller can retrieve the prior tx via `WalletService.findByIdempotencyKey(key)` if it needs the result. The caller-side pattern (only used by deliberate retries — the four ARC-616 keys are unique per (entity, user) so a same-call duplicate is truly a retry):
+
+  ```ts
+  try {
+    await session.withTransaction(async () => {
+      await this.wallet.debit(..., session);
+      await this.tournamentModel.updateOne(..., { session });
+    });
+  } catch (err) {
+    if (looksLikeDuplicateKey(err)) {
+      const prior = await this.wallet.findByIdempotencyKey(key);
+      // The caller decides whether to treat the prior tx as success or surface
+      // the error. Tournaments treat it as a retry and proceed.
+      if (prior) return; // ... proceed as if the original call succeeded
+    }
+    throw err;
+  }
+  ```
+
+  In practice the `tournaments.service` call sites use brand-new keys per (tournament, user, action) so a true duplicate is rare and only happens during legitimate retries. Expose a tiny helper:
 
   ```ts
   async findByIdempotencyKey(key: string): Promise<WalletTransactionView | null> {
@@ -309,7 +328,7 @@ private async doWrite(
   }
   ```
 
-  And expose `getBalance(userId)` to fetch the post-commit balance for emission. Callers do:
+  `WalletService.getBalance(userId)` is **already exposed** by ARC-615 (see [apps/be/src/wallet/wallet.service.ts:200](../../apps/be/src/wallet/wallet.service.ts#L200)) and is the right way to fetch the post-commit balance for emission. Callers do:
 
   ```ts
   await session.withTransaction(async () => {
@@ -822,7 +841,7 @@ git commit -m "feat(tournaments): refund entry fee on unregister before start (A
 - Modify: `apps/be/src/tournaments/tournaments.service.ts`
 - Modify: `apps/be/src/tournaments/tournaments.service.spec.ts`
 
-The existing tournament cancellation already happens via the `transitionStatus(id, 'cancelled')` path (or whatever the existing transition method is named). The fix is to refund inside that transition when there are paid registrations.
+The existing tournament cancellation already happens via the `transition(id, 'cancelled')` path (or whatever the existing transition method is named). The fix is to refund inside that transition when there are paid registrations.
 
 - [ ] **Step 1: Locate the existing cancel/transition method** (`grep "cancelled\|transition" apps/be/src/tournaments/tournaments.service.ts`)
 
@@ -841,7 +860,7 @@ describe('cancel tournament refunds all paid registrants', () => {
     });
     // ... set up session mocks ...
 
-    await service.transitionStatus(tournament._id.toString(), 'cancelled');
+    await service.transition(tournament._id.toString(), 'cancelled');
 
     expect(walletService.credit).toHaveBeenCalledTimes(2);
     expect(walletService.credit).toHaveBeenCalledWith(
@@ -869,7 +888,7 @@ describe('cancel tournament refunds all paid registrants', () => {
       entryFeeCoins: 0,
       registrations: [{ userId: 'u1' /* ... */ }],
     });
-    await service.transitionStatus(tournament._id.toString(), 'cancelled');
+    await service.transition(tournament._id.toString(), 'cancelled');
     expect(walletService.credit).not.toHaveBeenCalled();
   });
 });

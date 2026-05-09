@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from '../auth/auth.module';
+import { WalletModule } from '../wallet/wallet.module';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { Tournament, TournamentSchema } from './schemas/tournament.schema';
@@ -12,6 +13,7 @@ import { TournamentsBootstrap } from './lib/tournaments-bootstrap';
 @Module({
   imports: [
     AuthModule,
+    WalletModule,
     MongooseModule.forFeature([
       { name: Tournament.name, schema: TournamentSchema },
       { name: User.name, schema: UserSchema },

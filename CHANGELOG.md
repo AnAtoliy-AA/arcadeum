@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.5] - 2026-05-09
+
+### Added
+- add /admin/payments viewer page (ARC-607) (ARC-607)
+- add admin payment-notes endpoint (ARC-607) (ARC-607)
+
+### Documentation
+- apply plan-review fixes (ARC-607) (ARC-607)
+- add payment notes implementation plan (ARC-607) (ARC-607)
+- apply spec review fixes (ARC-607) (ARC-607)
+- add payment notes viewer design spec (ARC-607) (ARC-607)
+
+
 ## [1.13.4] - 2026-05-08
 
 ### Added

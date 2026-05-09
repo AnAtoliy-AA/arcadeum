@@ -614,11 +614,12 @@ export class AdminPaymentNotesController {
 
 - Modify: `apps/be/src/payments/payments.module.ts`
 
-- [ ] **Step 1: Add controller and RolesGuard provider**
+- [ ] **Step 1: Add controller, AuthModule import, and RolesGuard provider**
 
 Add the imports near the top:
 
 ```ts
+import { AuthModule } from '../auth/auth.module';
 import { AdminPaymentNotesController } from './admin-payment-notes.controller';
 import { RolesGuard } from '../auth/guards/roles.guard';
 ```
@@ -626,11 +627,18 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 Update the `@Module` decorator:
 
 ```ts
+imports: [
+  /* ...existing... */
+  AuthModule,
+],
 controllers: [PaymentsController, AdminPaymentNotesController],
 providers: [PaymentsService, PaymentNotesService, RolesGuard],
 ```
 
-(`exports` stays unchanged. `RolesGuard` doesn't need to be exported.)
+(`exports` stays unchanged. `RolesGuard` doesn't need to be exported.
+`AuthModule` import matches the `AdminModule` precedent — JwtModule is
+`global: true` so it would work without, but the explicit import
+documents the dependency for readers.)
 
 - [ ] **Step 2: Verify build**
 
@@ -982,16 +990,18 @@ vi.mock('@/shared/lib/api-client', () => ({
   apiClient: { get: vi.fn() },
 }));
 
-const triggerRefreshMock = vi.fn();
+// useQuery reads useRefreshStore via its `refreshKey` plumbing; provide
+// a no-op stub. We don't need to assert triggerRefresh in this read-only
+// feature (no mutations to invalidate from).
 vi.mock('@/shared/model/useRefreshStore', () => ({
   useRefreshStore: (
     selector: (state: {
-      triggerRefresh: typeof triggerRefreshMock;
+      triggerRefresh: () => void;
       getSignal: () => number;
     }) => unknown,
   ) =>
     selector({
-      triggerRefresh: triggerRefreshMock,
+      triggerRefresh: () => undefined,
       getSignal: () => 0,
     }),
 }));
@@ -1215,7 +1225,6 @@ export interface AdminPaymentsTableProps {
   page: number;
   pageSize: number;
   isLoading: boolean;
-  isError: boolean;
   hasFilter: boolean;
   onPageChange: (next: number) => void;
   labels: AdminPaymentsTableLabels;
@@ -1476,6 +1485,32 @@ describe('AdminPaymentsTable', () => {
     );
     expect(screen.getByText('Page 1 of 3')).toBeInTheDocument();
   });
+
+  it('disables Prev on first page', () => {
+    renderWith(
+      <AdminPaymentsTable
+        {...baseProps}
+        items={[sampleItem]}
+        total={120}
+        page={1}
+      />,
+    );
+    expect(screen.getByText('Prev').closest('button')).toBeDisabled();
+    expect(screen.getByText('Next').closest('button')).not.toBeDisabled();
+  });
+
+  it('disables Next on last page', () => {
+    renderWith(
+      <AdminPaymentsTable
+        {...baseProps}
+        items={[sampleItem]}
+        total={120}
+        page={3}
+      />,
+    );
+    expect(screen.getByText('Next').closest('button')).toBeDisabled();
+    expect(screen.getByText('Prev').closest('button')).not.toBeDisabled();
+  });
 });
 ```
 
@@ -1696,7 +1731,7 @@ payments: {
   chip: {
     public: 'Публічная',
     private: 'Прыватная',
-    anonymous: 'Аноним',
+    anonymous: 'Ананімны',
   },
   empty: {
     noResults: 'Няма плацяжоў па фільтру.',
@@ -1836,11 +1871,7 @@ export default function AdminPaymentsClient() {
   const [q, setQ] = useState('');
   const [visibility, setVisibility] = useState<AdminNotesVisibility>('all');
 
-  const {
-    data,
-    isLoading,
-    error: queryError,
-  } = useAdminPaymentNotes({
+  const { data, isLoading } = useAdminPaymentNotes({
     page,
     pageSize: PAGE_SIZE,
     q,
@@ -1897,7 +1928,6 @@ export default function AdminPaymentsClient() {
               page={page}
               pageSize={PAGE_SIZE}
               isLoading={isLoading}
-              isError={!!queryError}
               hasFilter={!!q || visibility !== 'all'}
               onPageChange={setPage}
               labels={tableLabels}
